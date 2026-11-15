@@ -31,9 +31,9 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/monsterAppearanceSession.test.ts`
   - [ ] `test/npcPrerequisiteSession.test.ts`
   - [ ] `test/npcRewardSession.test.ts`
-  - [ ] `test/toolHostileArgs.test.ts`
+  - [x] `test/toolHostileArgs.test.ts`
 - **1** — `ReferenceError: ResizeObserver is not defined`
-  - [ ] `test/databaseSystemModern.test.ts`
+  - [x] `test/databaseSystemModern.test.ts`
 - **1** — `AssertionError: expected null to be '/assets/easyrpg/title/TitleN.png' // Object.is equality`
   - [ ] `test/exportAssetResolution.test.ts`
 - **1** — `Error: expected { kind: 'not-configured' } to deeply equal { kind: 'connected', source: 'remote' }`
@@ -90,7 +90,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/tileLayerPolicyClusterRegression.test.ts`
   - [ ] `test/tilePaletteGridRoving.test.ts`
   - [ ] `test/tilesetFamilyGuard.test.ts`
-  - [ ] `test/titleScreen.test.ts`
+  - [x] `test/titleScreen.test.ts`
   - [ ] `test/toolsMapRegionCopy.test.ts`
   - [ ] `test/uploadedCharsetTransparency.test.ts`
   - [ ] `test/verificationFindingOwnership.test.ts`
@@ -104,7 +104,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/databaseTabIcons.test.ts`
   - [ ] `test/editRenderGate.test.ts`
   - [ ] `test/seCatalog.test.ts`
-  - [ ] `test/starterMapShowcase.test.ts`
+  - [x] `test/starterMapShowcase.test.ts`
   - [ ] `test/structureKitBrushConditions.test.ts`
   - [ ] `test/structurePlacements.test.ts`
   - [ ] `test/team/webProjectCreation.test.ts`
@@ -135,7 +135,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/aiPanelAutoExpand.test.ts`
 - **4** — `AssertionError: expected [ …(N) ] to deeply equal []`
   - [ ] `test/charsetCatalogCoverage.test.ts`
-  - [ ] `test/charsetQuery.test.ts`
+  - [x] `test/charsetQuery.test.ts`
   - [ ] `test/roleNameComparisonGate.test.ts`
   - [ ] `test/toolSchemaProviderCompat.test.ts`
 - **3** — `ReferenceError: window is not defined`
@@ -191,7 +191,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/terrainEvolution.test.ts`
 - **2** — `AssertionError: expected [] to have a length of N but got +N`
   - [ ] `test/runtimePerfHotPaths.test.ts`
-  - [ ] `test/tileEraseGround.test.ts`
+  - [x] `test/tileEraseGround.test.ts`
 - **2** — `AssertionError: expected [ { …(N) }, { …(N) }, …(N) ] to have a length of N but got N`
   - [ ] `test/scarloxyPeopleGallery4.test.ts`
   - [ ] `test/sharedPortraitAssets.test.ts`
@@ -230,7 +230,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected [] to include '⚠ 범위: 이 제안에는 이전 계획(숲 마을)이 포함되어 있습니다.'`
   - [ ] `test/assistantProposalAssembly.test.ts`
 - **1** — `AssertionError: expected [ { index: +N, label: '편집', …(N) } ] to have a length of N but got N`
-  - [ ] `test/authoredProjectBaseline.test.ts`
+  - [x] `test/authoredProjectBaseline.test.ts`
 - **1** — `AssertionError: {"tools":[]}: expected undefined to be 'approved' // Object.is equality`
   - [ ] `test/authoredSoftConfirmReviewEquality.test.ts`
 - **1** — `AssertionError: expected { id: 'anim_hit', …(N) } to deeply equal { id: 'anim_hit', …(N) }`
@@ -282,7 +282,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected 'charging' to be 'actorCommand' // Object.is equality`
   - [ ] `test/defaultItemRecordsIntegrity.test.ts`
 - **1** — `AssertionError: expected [ { id: 'sw_N', name: '' }, …(N) ] to have a length of N but got N`
-  - [ ] `test/defaults.test.ts`
+  - [x] `test/defaults.test.ts`
 - **1** — `AssertionError: expected { kind: 'returnToTitle', …(N) } to deeply equal { kind: 'returnToTitle', …(N) }`
   - [ ] `test/defeatRecovery.test.ts`
 - **1** — `TypeError: target.matches is not a function`
@@ -360,7 +360,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected 'timeout' to be 'written' // Object.is equality`
   - [ ] `test/playerOpenSaveMenu.test.ts`
 - **1** — `AssertionError: expected { version: N, meta: { …(N) }, …(N) } to deeply equal { version: N, meta: { …(N) }, …(N) }`
-  - [ ] `test/projectResetTool.test.ts`
+  - [x] `test/projectResetTool.test.ts`
 - **1** — `AssertionError: expected { width: N, height: N, …(N) } to be { width: N, height: N, …(N) } // Object.is equality`
   - [ ] `test/reliefUx2Residents.test.ts`
 - **1** — `AssertionError: expected undefined to match object { id: 'request-N:functional:N', …(N) }`
@@ -460,7 +460,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected [ 'stamp_object', …(N) ] to deeply equal []`
   - [ ] `test/tilesetTeachingGuards.test.ts`
 - **1** — `AssertionError: expected [ 'newGame', 'continueGame', …(N) ] to deeply equal [ 'newGame', 'continueGame', 'quit' ]`
-  - [ ] `test/titleScreenMenuLabels.test.ts`
+  - [x] `test/titleScreenMenuLabels.test.ts`
 - **1** — `Error: ENOENT: no such file or directory, open '/home/runner/work/OpenRPGMaker/OpenRPGMaker/src/styles/editor/core.part-`
   - [ ] `test/toolCursor.test.ts`
 - **1** — `AssertionError: expected [ 'find_tools', …(N) ] to include 'author_house'`

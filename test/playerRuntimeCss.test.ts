@@ -45,6 +45,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
 // 표면 진입 시트 src/styles/runtime/index.css 의 @import 순서(2026-09-11 Task 7 이후). 옛 배럴(battle.css,
 // battle-skins/index.css)은 사라져 슬라이스가 직접 나열된다. playerRuntime.css 는 이 시트로 전달하는 한 줄 허브다.
 // #2782·#2816·#3324·#3370 이 VN·모바일·전투 깊이 시트를 덧붙였다(76개).
+// 그 뒤 주간 일정표(#4008, schedule.css)와 클래식 윈도우 스킨(b4bd8fcab, windowSkinSurfaces.css — 스킨이 다른 시트 위에 칠하므로 맨 끝)이 들어와 78개다.
 const RUNTIME_IMPORTS = [
   "./fonts.css",
   "./system.css",
@@ -89,6 +90,7 @@ const RUNTIME_IMPORTS = [
   "./battle/29-impact-contact.css",
   "./battle/31-battle-depth.css",
   "./commerce.css",
+  "./schedule.css",
   "./tacticsBattle.css",
   "./shop.css",
   "./title.css",
@@ -122,6 +124,7 @@ const RUNTIME_IMPORTS = [
   "./from-database-modern-utility-records.css",
   "./fieldHud.css",
   "./mobileUi.css",
+  "./windowSkinSurfaces.css",
 ] as const;
 
 describe("exported player runtime CSS", () => {
