@@ -35,6 +35,12 @@ export const FS_HIT_FLASH: Readonly<Record<string, { core: string; edge: string 
   actor_fs2_sarah: { core: "#e6e9ee", edge: "#d0283c" },
 };
 
+/** 무기 계열 → 전투 시트(ActorRecord.weaponBattleSheets). 카엘은 검사로 그려졌지만 창도 든다(철 창·경비 미늘창·장창·별꿰기 창·로한의 창) —
+ *  창을 장비하면 창을 든 시트로 선다. 다른 인물은 시트가 하나뿐이라 표가 없다(무기를 바꿔도 지금 시트 그대로). */
+export const FS_WEAPON_BATTLE_SHEETS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  actor_hero: { spear: "charset-battler-actor1-0-spear" },
+};
+
 /** 녹슨 붉은 창끝 — 새라 색조(연출 레코드 tint). */
 const RUST = "#b0482a";
 
@@ -86,6 +92,15 @@ function applyHitFlash(project: Project, report: HeroSkillIdentityReport): void 
     if (!actor) { report.skipped.push(`섬광 색 ${actorId} — 배우 없음`); continue; }
     actor.battleHitFlash = { ...flash };
     report.applied.push(`섬광 색 ${actor.name} ${flash.core}/${flash.edge}`);
+  }
+}
+
+function applyWeaponBattleSheets(project: Project, report: HeroSkillIdentityReport): void {
+  for (const [actorId, sheets] of Object.entries(FS_WEAPON_BATTLE_SHEETS)) {
+    const actor = project.database.actors.find((row) => row.id === actorId) as ActorRecord | undefined;
+    if (!actor) { report.skipped.push(`무기 시트 ${actorId} — 배우 없음`); continue; }
+    actor.weaponBattleSheets = { ...sheets };
+    report.applied.push(`무기 시트 ${actor.name} ${Object.entries(sheets).map(([kind, sheet]) => `${kind}→${sheet}`).join(" · ")}`);
   }
 }
 
@@ -167,6 +182,7 @@ function applyChoreographies(project: Project, report: HeroSkillIdentityReport):
 export function applyFallenHeroSkillIdentity(project: Project): HeroSkillIdentityReport {
   const report = { applied: [] as string[], skipped: [] as string[] };
   applyHitFlash(project, report);
+  applyWeaponBattleSheets(project, report);
   applyStarMarks(project, report);
   applyChoreographies(project, report);
   return report;
