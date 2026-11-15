@@ -47,7 +47,7 @@ import { dressBeodeulWaterLife, fallBridgeCells, hangBeodeulWaterfalls, layBeode
 import { standKitPictures } from "@/project/standKit";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { houseSetTableFor } from "@/assets/houseSets";
-import { tilesetLookPlaza, tilesetLookReliefStyle } from "@/assets/tilesetLooks";
+import { tilesetLookReliefStyle } from "@/assets/tilesetLooks";
 import { tilesetStand, tilesetStandTableFor } from "@/assets/tilesetStands";
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import { beodeulObjectsCuttingWays, dressBeodeulObjects } from "./beodeulObjectSets";
@@ -55,6 +55,8 @@ import { settlementGround } from "./beodeulSettlementRank";
 import { planCommons } from "./beodeulCommons";
 import { doorsideSpots, planEdgeDrifts } from "./beodeulEarthDressing";
 import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS, townPrecinct } from "./beodeulTownCore";
+import { TOWN_SQUARE_TAG } from "./beodeulSquareGuard";
+import { addMapLocation } from "@/project/mapNamedLocations";
 import { planQuay } from "./beodeulQuay";
 import { emptyWindows, planLandPlots } from "./beodeulLandUse";
 
@@ -1442,18 +1444,18 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         const flank = (x: number) => x < 0 || x >= W || occ[idx(x, b0)] === WATERC || occ[idx(x, b0)] === KEEP || (lv[idx(x, b0)] === lo && lv[idx(x, b0 + up)] === hi);
         // 다듬을 수 있는 옆면 칸: 빈 땅. 게임의 절벽 습관으로 만든 땅에서는 너머 칸(far)이 이미 높은 단이면 길이어도 된다 — 절벽 끝 길과 만나는 굽은 절벽에서
         // 발치 칸 하나만 낮추면 계단이 선다(2026-11-14: 절벽 줄 굽이가 길 바로 옆에 서면 「옆 절벽」 으로 계단을 못 놓았다).
-        const trimmable = (n: number, far: boolean) => !codeT?.water[n] && !rampCells.has(n) && (occ[n] === FREE || (far && !!codeT?.habit && lv[n] === hi && occ[n] !== WATERC && occ[n] !== KEEP));
+        // 코드 지형에서는 습관이 없어도 너머 칸이 이미 높은 단인 길이면 된다 — 제 길이 굽어 돌아와 계단 옆 절벽 끝을 지나는 경우(예전에는 그 길 때문에 계단을 못 놓아 길이 단에서 끊겼다)
+        const trimmable = (n: number, far: boolean) => !codeT?.water[n] && !rampCells.has(n) && (occ[n] === FREE || (far && lv[n] === hi && ((!!codeT?.habit && occ[n] !== WATERC && occ[n] !== KEEP) || (!!codeT && isRoad(n)))));
         // 옆면이 같은 절벽 면이 아니고 그 두 칸이 빈 땅이면 절벽을 한 칸 곧게 다듬는다(발치 칸 = lo, 그 너머 = hi) — 계단 옆벽이 절벽에 묻힌다
-        // 다듬을 수 있는 옆면: 발치 칸은 빈 땅, 그 너머 칸은 빈 땅이거나 이미 높은 단인 길(코드 지형 — 제 길이 굽어 돌아와 계단 옆 절벽 끝을 지나는 경우. 예전에는 그 길 때문에 계단을 못 놓아 길이 단에서 끊겼다)
-        const canTrue = (x: number) => x >= 0 && x < W && [idx(x, b0), idx(x, b0 + up)].every((n, k) => trimmable(n, k === 1) || (k === 1 && !codeT?.water[n] && !rampCells.has(n) && !!codeT && isRoad(n) && lv[n] === hi));
         const trueFlank = (x: number): boolean => {
           if (flank(x)) return true;
           const a = idx(x, b0), b = idx(x, b0 + up);
-          if (!canTrue(x)) return false;
-          lv[a] = lo; if (occ[b] === FREE) lv[b] = hi; cutCells += 1;
+          if (![a, b].every((n) => trimmable(n, n === b))) return false;
+          lv[a] = lo; lv[b] = hi; cutCells += 1;
           return true;
         };
         const side = (x: number) => x < 0 || x >= W || flight.every((y) => { const n = idx(x, y); return !rampCells.has(n) && (relax || !isRoad(n)); });
+        const canTrue = (x: number) => x >= 0 && x < W && trimmable(idx(x, b0), false) && trimmable(idx(x, b0 + up), true);
         const fits = (a: number, b: number) => (flank(a - 1) || canTrue(a - 1)) && (flank(b + 1) || canTrue(b + 1)) && side(a - 1) && side(b + 1);
         let add = -1;
         if (xs.length === 1) {
@@ -1861,10 +1863,25 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let y = cy - pry - 3; y <= cy + pry + 2; y += 1) for (let x = plazaX - prx - 3; x <= plazaX + prx + 2; x += 1) near.push([x, y]);
       const far = (p: [number, number]) => Math.abs(p[0] + k.w / 2 - plazaX) + Math.abs(p[1] + k.h / 2 - cy) * 1.5;
       near.sort((p, q) => far(q) - far(p) || p[1] - q[1] || p[0] - q[0]);
-      for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza) && offStreet(k, x, y));
+      // 읍 광장(테 두른 네모)에 가운데 기물이 섰으면 우물은 광장 밖 곁 빈 땅에 선다 — 한 광장에 물 기물·기념물은 하나(beodeulSquareGuard), 테 줄에는 아무것도 안 선다
+      const offSquare = !!sq && centred;
+      if (!offSquare) for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza) && offStreet(k, x, y));
       near.reverse(); // 광장 곁 빈 땅은 광장에 가까운 자리부터
       for (const [x, y] of near) tryAt(x, y, () => propFits(k, x, y));
-      for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza));
+      if (!offSquare) for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza));
+    }
+    // 읍의 광장은 네 안쪽 모서리에 등 — 좌판 줄보다 먼저 세워 모서리를 차지한다(줄이 먼저 서면 등이 안으로 밀려 한쪽에 몰렸다)
+    if (sq) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
+      const k = K(lamp);
+      // 발은 테 안쪽 돌 위(테 줄·광장을 지나는 길 줄에 서면 길을 끊는다) — 모서리에서 안으로 세 칸까지 찾는다
+      for (const [sx, sy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
+        let done = false;
+        for (let t = 1; t <= 3 && !done; t += 1) for (const u of [1, 2]) {
+          const x = sx > 0 ? sq.x0 + t : sq.x1 - t, foot = sy > 0 ? sq.y0 + 1 + u : sq.y1 - u, c = idx(x, foot);
+          if (done || !sqInner.has(c) || throughPlaza.has(c) || main.cells.has(c) || !fits(k, x, foot - k.h + 1, 0, onPlaza)) continue;
+          claim(k, x, foot - k.h + 1, PROP, false); n += 1; done = true;
+        }
+      }
     }
     const ring = have(look.ring);
     // 둘레 기물의 발(아래 두 줄)은 판석 위·길 줄 밖에 — 좌판 차양 같은 윗줄(사람 위에 그려지는 칸)은 광장 밖 빈 땅이나 길 줄 위로 걸쳐도 된다
@@ -1904,19 +1921,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         }
       }
     }
-    // 읍의 광장은 네 모서리에 등(테 줄 위) — 그 밖의 광장은 예전처럼 양옆에
-    if (sq) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
-      const k = K(lamp);
-      // 발은 테 안쪽 돌 위(테 줄·광장을 지나는 길 줄에 서면 길을 끊는다) — 모서리에서 안으로 세 칸까지 찾는다
-      for (const [sx, sy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
-        let done = false;
-        for (let t = 1; t <= 3 && !done; t += 1) for (const u of [1, 2]) {
-          const x = sx > 0 ? sq.x0 + t : sq.x1 - t, foot = sy > 0 ? sq.y0 + 1 + u : sq.y1 - u, c = idx(x, foot);
-          if (done || !sqInner.has(c) || throughPlaza.has(c) || main.cells.has(c) || !fits(k, x, foot - k.h + 1, 0, onPlaza)) continue;
-          claim(k, x, foot - k.h + 1, PROP, false); n += 1; done = true;
-        }
-      }
-    } else if (look.lamps) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
+    // 읍이 아닌 광장의 등은 예전처럼 양옆에(읍의 광장은 위에서 모서리에 세웠다)
+    if (!sq && look.lamps) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
       const k = K(lamp);
       for (const sx of [-1, 1]) { const x = plazaX + sx * (prx + 1), y = cy - k.h + 1; if (fits(k, x, y)) { claim(k, x, y, PROP, false); n += 1; } }
     }
@@ -3644,9 +3650,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const inner = new Set(squareFloor.kit && kitIndex.has(squareFloor.kit) ? square.inner.filter((c) => plazaPaint.includes(c)) : []);
     paintCells([...plazaPaint.filter((c) => !squareRingSet.has(c) && !inner.has(c) && !quaySet.has(c)), ...courtUnder.filter((c) => occ[c] === BLD || occ[c] === PROP)], spec.plaza);
     // 포구의 돌 둑: 시골 포구는 광장 재료가 흙이므로 둑은 판석 재료로 따로 깐다(어구 밑도)
-    // 자갈 재질은 시골·마을 급에 쓰지 않는다(오너 «강자갈 마당은 너무 어색하군») — 그 게임의 광장 재질이 자갈이면 둑은 청회색 판석 표본으로 깐다. 읍의 돌 포장은 그대로다.
-    const quaySlate = ground.rank !== "town" && tilesetLookPlaza(TS_ID, gameLook) === "plaza-cobble" && SQUARE_FLOORS[0]!.kit && kitIndex.has(SQUARE_FLOORS[0]!.kit) ? SQUARE_FLOORS[0]!.kit : undefined;
-    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), quaySlate ? { kit: quaySlate } : { mat: PLAZA });
+    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), { mat: PLAZA });
     if (inner.size) paintCells(inner, { kit: squareFloor.kit! });
   }
   paintStep("광장 판석", [PLAZAC]);
@@ -4389,6 +4393,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 바닥 덧그림(겉모습 stand·meadow): 숲 바닥 · 풀밭 얼룩 · 문 앞 닳은 땅 · 길가·물가 띠. 2층 투명 덧그림이라 걷는 칸은 그대로다 — 다 지은 뒤에 깐다.
   layBeodeulGroundCover(draft, draft.maps[mapId]!, gameLook, {
     seed, worn: doorFronts.map((d) => idx(d.x, d.y)), road: (c) => occ[c] === ROAD || occ[c] === PLAZAC, water: (c) => occ[c] === WATERC || occ[c] === KEEP,
+    grain: false, // 풀 결은 땅 꾸미기(기초·밑동·풀포기)까지 끝난 뒤에 깐다(authorBeodeulTown) — 꾸미기의 자리 고르기가 결 없는 판과 같게
   });
   const distinct = new Set(placedHouses.map((h) => h.id)).size;
   function skeletonText(): string {
@@ -4399,6 +4404,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     return `큰길 하나(굽은 폭 2)·${side}개 갈래길${form === "plaza" ? `, 광장(${plazaX},${Math.round(plazaCy)})` : ", 광장 없음"}`;
   }
   const streetNames = streets.map((s) => s.name);
+  // 읍 광장을 맵에 적어 둔다 — 그 뒤에 찍는 기물(조수의 stamp_object)이 광장 규칙을 따른다(beodeulSquareGuard). 시공기 자신의 기물은 이미 다 섰다.
+  { const b = squareBox(W, squareCells); if (b) addMapLocation(map, { name: "광장", x: b.x0, y: b.y0, w: b.x1 - b.x0 + 1, h: b.y1 - b.y0 + 1, tags: [TOWN_SQUARE_TAG] }); }
   // 한 칸 폭 들길 나루는 널판 대신 물 징검돌로(새 기물 킷이 있는 사본만) — 물결과 깊이 띠가 돌 사이로 보인다. 도달 검사가 끝난 뒤에 바꾼다:
   // 이 시공기의 걷기 검사는 네 층이 모두 걷는 칸이어야 걷는다고 보지만, 게임은 맨 위 그림(징검돌 — 걷는 칸)이 정한다.
   if (naturalWater && fordStones.length) stoneBeodeulFords(draft.maps[mapId]!, ts, { fords: fordStones.map((f) => f.c), water: fullWater, seed, newKits: !!activeKitLook(), wet: (c) => occ[c] === WATERC || occ[c] === KEEP });

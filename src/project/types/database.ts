@@ -61,6 +61,12 @@ export interface ActorRecord {
   characterTransparent: boolean;
   battleCharacterResourceId?: string;
   /**
+   * 무기 계열 → 전투 시트 id. 계열은 무기 칸에 장비한 것의 공격 속성(attackElementIds — sword·spear·bow·hit 등, 기술의 「무기 공명」과 같은 낱말)이다.
+   * 그 무기가 가진 계열 가운데 이 표에 있는 첫 것의 시트로 선다. 표가 없거나 맞는 계열이 없으면 battleCharacterResourceId 그대로.
+   * 「창을 든 카엘은 창 자세로 선다」. 전투 중 장비가 바뀌면 다음 자세부터 바뀐다. 저장하는 것은 장비뿐이고 시트는 그때그때 고른다.
+   */
+  weaponBattleSheets?: Record<string, string>;
+  /**
    * 측면 전투에서 이 배우 그림의 표시 크기(50~300%, 정수). 생략 = 100%.
    * 지금은 파티원 몬스터 도트 시트(party-pixel-*)에 적용된다 — 마왕·드래곤처럼 사람보다 커야 하는 파티원.
    */

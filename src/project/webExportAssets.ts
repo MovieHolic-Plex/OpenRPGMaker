@@ -298,6 +298,8 @@ function collectProjectStrings(project: Project): Set<string> {
   const facing = BATTLER_PLACEMENTS[skinId].partyFacing;
   // Include reserve actors too: party membership/order can change after export.
   for (const actor of project.database.actors) {
+    // 무기 계열로 갈아 서는 시트(ActorRecord.weaponBattleSheets) — 어느 무기를 들지는 내보낸 뒤에 정해진다.
+    for (const sheet of Object.values(actor.weaponBattleSheets ?? {})) values.add(sheet);
     if (facing === "front") {
       const retro = getBattleSkin(skinId).motionStyle === "retro";
       const sheet = resolvePartyBattleCharset(actor, retro);

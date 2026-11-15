@@ -290,6 +290,8 @@ export function resolveWhere(
   };
   const cells: Cell[] = [];
   for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) if (fits({ x, y })) cells.push({ x, y });
+  // 바깥 맵의 사람은 맵 끝 칸에 서지 않는다 — 한쪽에서만 말을 걸 수 있고 화면 끝에 숨는다(2026-11-15 r5 «물레강 마을»: 입구 곁 주민이 (41,13) 끝 칸에 섰다). 안쪽에 설 칸이 하나도 없을 때만 남긴다.
+  if (!fp && !indoor) { const inner = cells.filter((c) => c.x > 0 && c.y > 0 && c.x < w - 1 && c.y < map.height - 1); if (inner.length) cells.splice(0, cells.length, ...inner); }
 
   const before = walkReach(project, map, start, blockers);
   const connectedWithout = (block: readonly Cell[]): boolean => {

@@ -32,6 +32,16 @@ const CLASS_BATTLERS = [
     label: "걷기 칩 전투 · 사무라이",
   },
   {
+    // 창을 든 검사(actor1-0) — 몸 층은 actor1-0 그대로, 무기만 창으로 다시 찍었다(scripts/asset-gen/charset-battler/repaint_weapons.py 의 무기 찍기,
+    // 공격 네 자세는 찌르기 각도). 자동 대응은 고르지 않는다 — 배우의 weaponBattleSheets(무기 계열 → 시트)가 가리킬 때만 선다.
+    resourceId: "charset-battler-actor1-0-spear",
+    path: "assets/generated/charset-battlers/actor1-0-spear.png",
+    castPath: "assets/generated/charset-battlers/cast/actor1-0-spear.png",
+    characterResourceId: "easyrpg-charset-actor1",
+    characterIndex: 0,
+    label: "걷기 칩 전투 · 창을 든 검사",
+  },
+  {
     resourceId: "charset-battler-silver-swordswoman",
     path: "assets/generated/charset-battlers/silver-swordswoman.png",
     castPath: "assets/generated/charset-battlers/cast/silver-swordswoman.png",

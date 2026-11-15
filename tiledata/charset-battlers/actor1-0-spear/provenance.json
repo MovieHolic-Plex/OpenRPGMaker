@@ -1,0 +1,465 @@
+{
+ "source": "actor1-0",
+ "script": "scripts/asset-gen/charset-battler/derive_weapon.py",
+ "weapon": "spear",
+ "angles": {
+  "attack_windup": 90,
+  "attack_strike": 0,
+  "attack": 0,
+  "attack_follow": 0,
+  "skill": 0,
+  "dying": 0
+ },
+ "poses": {
+  "attack.png": [
+   {
+    "angle": 0,
+    "grip": [
+     15,
+     34
+    ],
+    "repairedHand": false
+   }
+  ],
+  "attack_follow.png": [
+   {
+    "angle": 0,
+    "grip": [
+     15,
+     38
+    ],
+    "repairedHand": false
+   }
+  ],
+  "attack_strike.png": [
+   {
+    "angle": 0,
+    "grip": [
+     19,
+     26
+    ],
+    "repairedHand": false
+   }
+  ],
+  "attack_windup.png": [
+   {
+    "angle": 90,
+    "grip": [
+     35,
+     29
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_arcane_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     38
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_arcane_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     15,
+     25
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_arcane_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_charge.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     38
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_dark_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     38
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_dark_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     19,
+     38
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_dark_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     40
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_fire_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_fire_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     29,
+     35
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_fire_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     34
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_heal_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     18,
+     32
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_heal_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     35,
+     24
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_heal_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     29,
+     35
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_ice_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     16,
+     30
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_ice_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     32,
+     40
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_ice_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     11,
+     33
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_raise.png": [
+   {
+    "angle": 90,
+    "grip": [
+     15,
+     25
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_release.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_support_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     35
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_support_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     19,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_support_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     31,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_thunder_1.png": [
+   {
+    "angle": 90,
+    "grip": [
+     18,
+     40
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_thunder_2.png": [
+   {
+    "angle": 90,
+    "grip": [
+     30,
+     38
+    ],
+    "repairedHand": false
+   }
+  ],
+  "cast_thunder_3.png": [
+   {
+    "angle": 90,
+    "grip": [
+     28,
+     40
+    ],
+    "repairedHand": false
+   }
+  ],
+  "dead.png": [
+   {
+    "angle": 0,
+    "grip": [
+     21,
+     42
+    ],
+    "repairedHand": false
+   }
+  ],
+  "defend.png": [
+   {
+    "angle": 45,
+    "grip": [
+     18,
+     33
+    ],
+    "repairedHand": false
+   }
+  ],
+  "dying.png": [
+   {
+    "angle": 0,
+    "grip": [
+     20,
+     42
+    ],
+    "repairedHand": false
+   }
+  ],
+  "evade.png": [
+   {
+    "angle": 315,
+    "grip": [
+     36,
+     34
+    ],
+    "repairedHand": false
+   }
+  ],
+  "front.png": [
+   {
+    "angle": 90,
+    "grip": [
+     32,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "guard_hit.png": [
+   {
+    "angle": 45,
+    "grip": [
+     20,
+     33
+    ],
+    "repairedHand": false
+   }
+  ],
+  "hit.png": [
+   {
+    "angle": 315,
+    "grip": [
+     34,
+     34
+    ],
+    "repairedHand": false
+   }
+  ],
+  "idle.png": [
+   {
+    "angle": 45,
+    "grip": [
+     18,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "item.png": [
+   {
+    "angle": 90,
+    "grip": [
+     29,
+     37
+    ],
+    "repairedHand": false
+   }
+  ],
+  "revive.png": [
+   {
+    "angle": 45,
+    "grip": [
+     16,
+     41
+    ],
+    "repairedHand": false
+   }
+  ],
+  "skill.png": [
+   {
+    "angle": 0,
+    "grip": [
+     15,
+     33
+    ],
+    "repairedHand": false
+   }
+  ],
+  "victory.png": [
+   {
+    "angle": 90,
+    "grip": [
+     31,
+     25
+    ],
+    "repairedHand": false
+   }
+  ],
+  "victory_b.png": [
+   {
+    "angle": 90,
+    "grip": [
+     31,
+     22
+    ],
+    "repairedHand": false
+   }
+  ],
+  "walk_a.png": [
+   {
+    "angle": 45,
+    "grip": [
+     18,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "walk_b.png": [
+   {
+    "angle": 45,
+    "grip": [
+     18,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "walk_c.png": [
+   {
+    "angle": 45,
+    "grip": [
+     18,
+     36
+    ],
+    "repairedHand": false
+   }
+  ],
+  "weak.png": [
+   {
+    "angle": 315,
+    "grip": [
+     17,
+     34
+    ],
+    "repairedHand": false
+   }
+  ]
+ }
+}

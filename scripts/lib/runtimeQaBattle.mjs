@@ -9,6 +9,7 @@
 //     "expect": "victory",           // 전투가 끝났을 때 이겼어야 한다 — 게임 오버·패배·도주로 끝나면 op 가 실패한다(「이길 수 있다」를 보는 체크포인트용).
 //                                    // 없으면 예전대로 「전투 화면이 사라졌다」만 본다(게임 오버로 끝나도 통과한다).
 //     "stopAfter": "skill",          // 기술 명령을 낸 뒤 연출이 시작되면 바로 돌아온다(연출 도중 스크린샷용)
+//                                    // "attack" 이면 통상 공격 명령을 낸 뒤 연출이 시작될 때 돌아온다(무기를 든 자세를 찍을 때).
 //     "timeoutMs": 90000 }
 // 배우별 큐는 앞에서부터 하나씩 쓰고, 마지막 하나는 계속 되풀이한다.
 // 명령 뒤에 「@대상」을 붙이면 그 명령만 대상을 따로 고른다: "item:item_ether@1"(두 번째 아군), "skill_x@enemy-2", "attack@last".
@@ -119,6 +120,7 @@ export async function battleQaOp(page, op) {
   let pendingTarget;
   let forceFallback = false;
   let skillIssued = false;
+  let attackIssued = false;
   let stuckSince = null;
   await page.waitForSelector('[data-testid="battle-scene"]', { timeout: op.sceneTimeoutMs ?? 60_000 });
   await installBattleLog(page);
@@ -130,7 +132,7 @@ export async function battleQaOp(page, op) {
   while (Date.now() < deadline) {
     const ui = await readBattleUi(page);
     // stopAfter:"skill" — 기술 명령을 낸 뒤 연출이 시작되면(busy) 바로 돌아온다(연출 도중 한 장을 찍을 때).
-    if (op.stopAfter === "skill" && skillIssued && ui.busy) {
+    if (((op.stopAfter === "skill" && skillIssued) || (op.stopAfter === "attack" && attackIssued)) && ui.busy) {
       await dumpLog(page, op, issued);
       return { issued, ended: false };
     }
@@ -276,6 +278,7 @@ export async function battleQaOp(page, op) {
       else { wanted = choice; ok = await press(page, "actor-command-skill"); }
       if (!ok) throw new Error(`battle op: ${ui.active} 의 명령 ${choice} 를 누를 수 없다 (보이는 것: ${root.join(", ")})`);
       if (!["attack", "defend", "escape"].includes(choice) && !choice.startsWith("item:") && !choice.startsWith("capture:")) skillIssued = true;
+      if (choice === "attack") attackIssued = true;
       issued += 1;
       await sleep(300);
       continue;

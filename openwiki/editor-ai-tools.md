@@ -546,6 +546,7 @@ Scarloxy 주민은 `people`, 농장 동물은 `animal`로 분류한다. `animal`
 source 737의 빈 잔디와 검증된 집/나무만 대상. 이벤트·전이 착지·시작점·문 앞을 보호하고, 통/장작은 기존 출입 경로를 끊으면 취소한다.
 기초 벽 줄 ★는 기존 벽의 통행을 보존한다. 반복 호출은 중복하지 않는다. 다른 잔디색이나 집 모양에 강제하지 않는다.
 `tools/beodeulGroundTools.ts`, `defaults/beodeulGround.ts`, `tiledata/beodeul-ground/`가 소유한다.
+`lay_beodeul_grass({mapId,kind,area?,mix?,seed?})`(2026-11-14): 풀밭(737)의 2층에 풀 결(우거진 풀·옅은 결·풀 포기·들꽃·토끼풀·잔돌 덩이, 또는 게임의 섞음 전체)을 깔거나 걷는다. 1층·통행 그대로. `tools/beodeulGrassGrain.ts` — `openwiki/beodeul-city.md` 「풀 결」.
 채팅/Pi 공통 안내 `promptPolicies.ts`; 마을 생성기는 잔디 테마 완성 뒤 같은 함수를 부르고 재시공 시 이전 이 팩 덧그림만 제거한다.
 실제 조수 읽기→배치→SQLite 저장·재로드→게임 왕복 근거: `verify-shots/beodeul-ground/README.md`.
 
