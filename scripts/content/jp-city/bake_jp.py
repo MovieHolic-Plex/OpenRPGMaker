@@ -574,6 +574,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         for a in B.get('autotiles', []): pending_autotiles.append((bname, a))
         for g in B.get('groups', []): pending_groups.append((bname, g))
         for k in B.get('kits', []): pending_kits.append((bname, k))
+        pins.pad(bname)               # 예약 블록(bake_lib.RESERVE)이면 남는 자리를 빈 칸으로 채워 번호 구간을 고정한다
         block_info.append(dict(name=bname, cells=len(B['cells']), autotiles=len(B.get('autotiles', [])), groups=len(B.get('groups', [])), kits=len(B.get('kits', [])), notes=B.get('notes', '')))
     L = lambda b, loc: local2tid[(b, loc)]
     extra_conn = {}                # 오토타일 id → 다른 블록이 덧붙이는 연결 칸(키트용 복사 칸)
@@ -712,6 +713,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     # ---- 8) 정의 JSON
     SOLID = dict(up=False, down=False, left=False, right=False); PASS = dict(up=True, down=True, left=True, right=True)
     passability, priority, terrain, tile_meta = [], [], [], []
+    reserved_pad = {v for k, v in pins.map.items() if BL.PAD in k}
     for tid in range(count):
         inf = cells.info.get(tid)
         if inf is None:
@@ -722,7 +724,8 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
                 tile_meta.append(m)
             else:
                 passability.append(dict(SOLID)); priority.append('lower'); terrain.append(0)
-                tile_meta.append(dict(label='옛 굽기 칸', description='옛 굽기 칸(번호 고정용) — 지금은 쓰지 않는다.', source='bundled-default'))
+                tile_meta.append(dict(label='예약 칸', description='예약 칸(블록 번호 구간 고정용, 빈 칸) — 쓰지 않는다.', source='bundled-default') if tid in reserved_pad else
+                                 dict(label='옛 굽기 칸', description='옛 굽기 칸(번호 고정용) — 지금은 쓰지 않는다.', source='bundled-default'))
             continue
         prio, passable, passage, home = BL.PC[inf['pc']]
         passability.append(dict(inf['dirs']) if inf.get('dirs') else dict(PASS) if passable else dict(SOLID)); priority.append(prio); terrain.append(0)
