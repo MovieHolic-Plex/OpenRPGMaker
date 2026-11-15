@@ -13,7 +13,7 @@ import { localizeCultureSpec } from "../../place/builders/joseon";
 import { isComposedWorld, parseWorldStyle, pickWorld, spareKind, worldKind, worldOf, worldPlaceSpec } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "../../place/builders/village";
-import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
+import { codeTerrainFor, usesCodeTerrain, villageCliffHabitFor } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { interiorBuilder } from "../../place/builders/interior";
@@ -273,7 +273,7 @@ export function placeVerbs(c: VerbContext) {
           if (!hasLayout && (!kept || (kept.shape !== shape && kept.previews < 3))) {
             const [width, height] = villageMapSize(spec, va);
             const terrainSeed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
-            const terrain = codeTerrainFor(vt, va, width, height, terrainSeed);
+            const terrain = codeTerrainFor(vt, va, width, height, terrainSeed, villageCliffHabitFor(env.ctx));
             session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });
             // 칸 배치 마을(2026-10-31): 땅 그림·격자·요약·조각 목록(영어)을 주고 spec.villageLayout 을 받는다.
             if (bboxVillageSpec(spec)) { layoutSession(session).cards.add(`village:${spec.name}`); return villageLayoutCard(env, spec, String(task ?? ""), toBboxTerrain(terrain, vt)); }
