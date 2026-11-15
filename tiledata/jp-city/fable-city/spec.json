@@ -507,7 +507,7 @@
 "words": [
 "전파상",
 "electrical appliance shop",
-"電器"
+"でんき"
 ],
 "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
 "program": "jp_bookstore"
@@ -746,7 +746,7 @@
 "words": [
 "꼬치구이집",
 "yakitori grill",
-"焼鳥"
+"やきとり"
 ],
 "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
 "program": "jp_izakaya"
@@ -780,6 +780,566 @@
 ],
 "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
 "program": "jp_bookstore"
+},
+{
+"id": "jp-bldg-f-machiya-hira-a",
+"type": "building",
+"name": "마치야",
+"en": "eave-front machiya town house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"마치야",
+"eave-front machiya town house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house"
+},
+{
+"id": "jp-bldg-f-machiya-hira-b",
+"type": "building",
+"name": "마치야",
+"en": "plastered town house",
+"kind": "structure",
+"w": 5,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"마치야",
+"plastered town house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house"
+},
+{
+"id": "jp-bldg-f-house-tile-b",
+"type": "building",
+"name": "기와 2층집",
+"en": "two-storey family house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"기와 2층집",
+"two-storey family house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-tile-c",
+"type": "building",
+"name": "기와 2층집",
+"en": "two-storey family house",
+"kind": "structure",
+"w": 5,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"기와 2층집",
+"two-storey family house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-tile-d",
+"type": "building",
+"name": "차고 달린 좁은 2층집",
+"en": "narrow house with a garage",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"차고 달린 좁은 2층집",
+"narrow house with a garage"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-old-a",
+"type": "building",
+"name": "툇마루 있는 옛 목조집",
+"en": "old one-storey wooden house",
+"kind": "structure",
+"w": 4,
+"h": 5,
+"tier": "small",
+"floors": 1,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"툇마루 있는 옛 목조집",
+"old one-storey wooden house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-old-b",
+"type": "building",
+"name": "덧문 닫은 옛 목조집",
+"en": "old one-storey wooden house",
+"kind": "structure",
+"w": 5,
+"h": 5,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"덧문 닫은 옛 목조집",
+"old one-storey wooden house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-box-a",
+"type": "building",
+"name": "흰 상자형 현대 주택",
+"en": "modern box house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:flat"
+],
+"words": [
+"흰 상자형 현대 주택",
+"modern box house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-box-b",
+"type": "building",
+"name": "검은 금속판 상자형 주택",
+"en": "modern box house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+0
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:flat"
+],
+"words": [
+"검은 금속판 상자형 주택",
+"modern box house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-apart-a",
+"type": "building",
+"name": "바깥 계단 목조 연립",
+"en": "two-storey wooden apartment block",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+0,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"바깥 계단 목조 연립",
+"two-storey wooden apartment block"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_mokuchin",
+"touch": false
+},
+{
+"id": "jp-bldg-f-apart-b",
+"type": "building",
+"name": "바깥 계단 철골 연립",
+"en": "two-storey apartment block",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+1,
+4
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"바깥 계단 철골 연립",
+"two-storey apartment block"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_mokuchin",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-gable-a",
+"type": "building",
+"name": "박공 2층집",
+"en": "gable-front house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:gable"
+],
+"words": [
+"박공 2층집",
+"gable-front house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-l",
+"type": "building",
+"name": "두 덩이 집",
+"en": "two-volume house with a low wing",
+"kind": "structure",
+"w": 7,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"두 덩이 집",
+"two-volume house with a low wing"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-porch",
+"type": "building",
+"name": "현관 지붕이 나온 2층집",
+"en": "two-storey house with a projecting entrance porch",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+4
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"현관 지붕이 나온 2층집",
+"two-storey house with a projecting entrance porch"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-kaki-plaster",
+"type": "building",
+"name": "기와 얹은 흰 회벽 담",
+"en": "tile-capped plaster garden wall",
+"kind": "structure",
+"w": 2,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"기와 얹은 흰 회벽 담",
+"tile-capped plaster garden wall"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다."
+},
+{
+"id": "jp-bldg-f-kaki-block",
+"type": "building",
+"name": "블록 담",
+"en": "concrete block garden wall",
+"kind": "structure",
+"w": 2,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"블록 담",
+"concrete block garden wall"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다."
+},
+{
+"id": "jp-bldg-f-kaki-wood",
+"type": "building",
+"name": "검은 널 판자 담",
+"en": "dark wooden board fence",
+"kind": "structure",
+"w": 2,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"검은 널 판자 담",
+"dark wooden board fence"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다."
+},
+{
+"id": "jp-bldg-f-kaki-gate-roofed",
+"type": "building",
+"name": "지붕 얹은 나무 대문",
+"en": "roofed wooden garden gate",
+"kind": "structure",
+"w": 3,
+"h": 3,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"지붕 얹은 나무 대문",
+"roofed wooden garden gate"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"pass": [
+1
+]
+},
+{
+"id": "jp-bldg-f-kaki-gate-modern",
+"type": "building",
+"name": "기둥 대문",
+"en": "modern gate posts with a low iron gate",
+"kind": "structure",
+"w": 3,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"기둥 대문",
+"modern gate posts with a low iron gate"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"pass": [
+1
+]
 }
 ]
 }

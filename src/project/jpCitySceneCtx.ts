@@ -56,6 +56,9 @@ export interface PutOpts {
   readonly stack?: boolean;
 }
 
+/** 집 필지 앞줄의 담·대문 키트 한 조각. lot = 필지(집) 번호, door = 그 대문이 마주 보는 현관 칸. */
+export interface SceneKaki { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number; readonly gate: boolean; readonly lot: number; readonly door?: { readonly x: number; readonly y: number } }
+
 export class SceneCtx {
   readonly occ: Uint8Array;
   /** 소품 그림이 덮은 칸(층 무관) — 두 소품이 같은 칸에 그려지지 않게 */
@@ -79,6 +82,7 @@ export class SceneCtx {
   /** 칸의 바닥 가족(GROUND_FAMILIES 번호) */ readonly gfam: Uint8Array;
   readonly runCells: { family: string; cells: { x: number; y: number }[] }[] = [];
   readonly stPlaced: { name: string; look: string; x: number; y: number; w: number; h: number; anchor: string; repeat: boolean }[] = [];
+  /** 집 필지 앞줄의 담·대문 키트(jp-bldg-f-kaki-*)가 놓인 자리 — 검사가 «허공에서 끝나지 않는다 · 필지에 대문 하나»를 본다 */ readonly kaki: SceneKaki[] = [];
   /** 대문 자리(집 필지의 길 선에서 문 앞 칸) — 경계 줄 짓기가 여기에 대문 조각을 놓는다 */ readonly gates: { x: number; y: number }[] = [];
   /** 고리 담의 트인 자리(공원·신사·주차장 입구) — 경계 줄 짓기가 메우지 않고, 그 양옆은 끝 조각으로 맺는다 */ readonly openings = new Set<string>();
 
@@ -319,7 +323,7 @@ export class SceneCtx {
       const min = Math.min(...scored.map((c) => c.n));
       return scored.filter((c) => c.n === min).sort((a, b) => Number(a.b.h === o.notH) - Number(b.b.h === o.notH) || a.ord - b.ord)[0]!.b;
     };
-    if (o.role) return pick(undefined, true) ?? pick(undefined, false);                // 요청한 가게는 되풀이여도 세운다
+    if (o.role) return pick(undefined, true) ?? (this.fable ? undefined : pick(undefined, false));                // 요청한 가게는 되풀이여도 세운다
     // 먼저 모든 분류에서 아직 안 세운 그림을 찾고, 다 썼을 때만 멀리 떨어진 되풀이를 허락한다.
     // 되풀이는 이 분류들의 그림을 지도에 다 세웠을 때만(맞는 크기가 없어 남은 것은 되풀이의 이유가 아니다 — 그 자리는 틈·빈터 쓰임이 채운다).
     const allUsed = this.buildingPool.filter((b) => cats.includes(b.cat) && b.tier !== "xlarge" && b.tier !== "landmark").every((b) => this.usedLooks.has(this.lookOf(b)));
@@ -345,6 +349,25 @@ export class SceneCtx {
     this.usedLooks.set(look, [...(this.usedLooks.get(look) ?? []), { x, y, w: b.w, h: b.h }]);
     this.bldgs.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${b.id}`, mapId: this.mapId, x, y }, optional: true, note: `bldg:${this.placed.length - 1}` });
     return p;
+  }
+  /** 경계 줄의 모서리 한 칸을 적는다(길가 소품의 윗칸이 겹쳐 있어도 — 담이 그 뒤에 선다). */
+  cornerCell(x: number, y: number, material: string): void {
+    const family = runFamilyOf(material), v = this.at(x, y);
+    if (!family || !this.inside(x, y) || (v !== Occ.Lot && v !== Occ.Walk)) return;
+    this.occ[y * this.W + x] = Occ.Wall;
+    this.runCells.push({ family, cells: [{ x, y }] });
+  }
+  /** 담·대문 키트(건물 일꾼의 jp-bldg-f-kaki-*)를 발 줄 foot 에 찍는다. 담은 두 줄 다 막힌 칸으로 적고(윗줄은 갓 — 소품이 서지 않는다), 대문은 가운데 열이 걷는 칸이다. */
+  stampKaki(id: string, x: number, foot: number, lot: number, door?: { x: number; y: number }): boolean {
+    const sz = SCENE_SIZES[id];
+    if (!sz) return false;
+    const [w, h] = sz, y = foot - h + 1, gate = id.includes("-gate-");
+    if (x < 0 || y < 0 || x + w > this.W || foot >= this.H) return false;
+    for (let yy = y; yy <= foot; yy++) for (let xx = x; xx < x + w; xx++) { const v = this.at(xx, yy); if (v !== Occ.Lot && v !== Occ.Walk) return false; }   // 길가에 선 키 큰 소품의 윗칸이 겹치는 것은 괜찮다(소품이 담 앞에 선다)
+    for (let yy = y; yy <= foot; yy++) for (let xx = x; xx < x + w; xx++) { const i = yy * this.W + xx; this.drawn[i] = 1; this.occ[i] = gate && xx === x + 1 ? Occ.Walk : Occ.Wall; }
+    this.walls.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId: this.mapId, x, y }, optional: true, note: "kaki" });
+    this.kaki.push({ id, x, y, w, h, gate, lot, ...(door ? { door } : {}) });
+    return true;
   }
   /** 앞 건물의 오른쪽 처마 칸을 다음 건물이 덮었을 때 그 한 열을 4층에 되살린다. */
   restoreCol(p: ScenePlaced): void {

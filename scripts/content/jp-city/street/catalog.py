@@ -49,9 +49,10 @@ def build():
         tier = next((x[5:] for x in tags if x.startswith('tier:')), None)
         if short.startswith('f-'):
             s = short[2:]
+            if s.startswith('kaki-'): continue                              # 담·대문 키트는 건물이 아니다(집 필지의 길 선에 구성기가 놓는다 — 크기는 sizes 에 있다)
             tier = tier or 'medium'
-            cat = F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka')) else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
-            role = F_ROLE.get(s) or ('house' if cat == 'house' else None) or ('shop' if cat == 'shop' else s)
+            cat = F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
+            role = F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
         else:
             base = short[:-5] if short.endswith('-shut') else short
             cat = next((CAT_BY_TAG[x] for x in tags if x in CAT_BY_TAG), 'shop')

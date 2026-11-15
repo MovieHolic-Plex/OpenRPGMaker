@@ -77,7 +77,7 @@ def _finalize():
             grid.append(row)
         if it['type'] == 'building':
             ps = set(it.get('pass', []))
-            parts = [dict(kind='entrance', x=c, y=h - 1, w=1, h=1, label='지나는 문' if c in ps else '출입구') for c in it['doors']]
+            parts = [dict(kind='entrance', x=c, y=h - 1, w=1, h=1, label='출입구') for c in it['doors'] if c not in ps]   # 지나는 문(pass 열)은 칸이 ★ 이라 entrance 부품을 두지 않고 접근칸만 둔다
             access = [dict(x=c, y=h) for c in it['doors']]
             desc = '%s — %s 건물(%s), %d층, 폭 %d칸×높이 %d칸(밑면 막힘 %d줄, 키트 폭 = 벽 폭). 탑 3/4 시점 — 정면 벽 위에 내려다본 지붕 윗면(기와 경사·평지붕 바닥과 옥상 기물·박공)이 그림에 들어 있다. %s%s %s' % (
                 it['name'], TIER_KO[it['tier']], it['en'], it['floors'], w, h, it['depth'],

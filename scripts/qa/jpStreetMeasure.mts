@@ -5,9 +5,9 @@
 import { inMainWalkComponent, mainWalkComponent } from "../../src/project/walkComponent.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 
-const BUILT_KIT = /^jp-(bldg|bx|recipe|house|shop-(?!cover)|apt|mansion|office|tower|school$|station|temple|shrine-hall|gas-office|izakaya-brick|fg-|inaka-(kominka|kawara-farm|kura|dagashiya|wooden-station)|prop-(nakamise|honden|pagoda|kaminarimon|hozomon|led-tower|theatre))/;
+const BUILT_KIT = /^jp-(bldg-(?!f-kaki-)|bx|recipe|house|shop-(?!cover)|apt|mansion|office|tower|school$|station|temple|shrine-hall|gas-office|izakaya-brick|fg-|inaka-(kominka|kawara-farm|kura|dagashiya|wooden-station)|prop-(nakamise|honden|pagoda|kaminarimon|hozomon|led-tower|theatre))/;
 const PART_KIT = /^jp-(sf|roof|door|wire|in|arcade-roof|recipe-part)-/;
-const INFRA_KIT = /^jp-(river|water-(?!tank)|bank|bridge|mark|crosswalk|road-(lane|trunk|mark)|foot-shadow|wall-drain|rail|via|tram|subway|platform|gnd-|pave|school-(ground|gomu|track)|lot-bay|tone-|ground-)/;
+const INFRA_KIT = /^jp-(bldg-f-kaki-|river|water-(?!tank)|bank|bridge|mark|crosswalk|road-(lane|trunk|mark)|foot-shadow|wall-drain|rail|via|tram|subway|platform|gnd-|pave|school-(ground|gomu|track)|lot-bay|tone-|ground-)/;
 const CAR_KIT = /^jp-(st-car-|prop-(car|van|bus|ad-truck)|inaka-(keitora|red-tractor)|car-|kei-|taxi|truck)/;
 const EDGE_AUTOTILES = ["jp-wall-block", "jp-hedge", "jp-fence-mesh", "jp-guardrail"];
 const ROAD_AUTOTILES = ["jp-lane-road", "jp-rail-track"];

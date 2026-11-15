@@ -49,7 +49,7 @@ function one(kind: string, seed: number, key: string) {
     numbers: {
       kind, seed, buildings: plan.placed.length, distinctLooks: new Set(looks).size, repeatedLooks: looks.length - new Set(looks).size, oldKits: plan.placed.filter((p) => p.kit && !p.kit.id.startsWith("jp-bldg-f-")).length,
       shopsInLongestRow: Math.max(0, ...rows.values()), props: standing.length, distinctProps: new Set(standing.map((p) => p.look)).size,
-      roadShare: road / (W * H), deadShare: bare / (W * H), runs: f.runs.length, gates: f.runs.reduce((a, r) => a + r.gates.length, 0), violations: audit.length,
+      roadShare: road / (W * H), deadShare: bare / (W * H), runs: f.runs.length, gates: f.runs.reduce((a, r) => a + r.gates.length, 0) + f.kaki.filter((k) => k.gate).length, kakiGates: f.kaki.filter((k) => k.gate).length, kakiWalls: f.kaki.filter((k) => !k.gate).length, violations: audit.length,
     },
   };
 }

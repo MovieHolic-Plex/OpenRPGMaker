@@ -52,9 +52,12 @@ describe("jp_city new street rules (fable_street pieces)", () => {
 
   it("closes every boundary run — no end in mid-air — and opens a house lot with one gate", () => {
     expect(broken("loose-run-end")).toEqual([]);
-    // 대문은 집 필지에만 선다 — 새 집 키트가 하나뿐인 동안은 주택가 지도에도 대문이 드물다(집이 늘면 늘어난다)
-    const gates = plans.filter((p) => ["jutaku", "kawa-jutaku", "tera-machi"].includes(p.id)).map((p) => p.plan.fable!.runs.reduce((a, r) => a + r.gates.length, 0));
-    expect(gates.reduce((a, b) => a + b, 0)).toBeGreaterThanOrEqual(3);
+    // 주택가 지도마다 집 필지 셋 이상이 길 선의 담 키트(jp-bldg-f-kaki-*)와 대문 하나로 닫힌다. 담이 허공에서 끝나지 않는다 · 필지에 대문 하나 · 대문은 현관 앞이고 현관까지 걷는 칸 · 한 필지 한 담 종류는 auditFable 의 kaki-* 규칙이 본다(위 0건 시험).
+    for (const p of plans.filter((q) => ["jutaku", "kawa-jutaku", "tera-machi"].includes(q.id))) {
+      const k = p.plan.fable!.kaki;
+      expect(k.filter((q) => q.gate).length, `${p.id}#${p.seed} walled house lots`).toBeGreaterThanOrEqual(3);
+      expect(new Set(k.filter((q) => !q.gate).map((q) => q.id)).size, `${p.id}#${p.seed} wall kinds`).toBeGreaterThanOrEqual(2);
+    }
     // 대문은 필지마다 하나: 같은 줄에서 대문끼리 붙어 서지 않는다
     for (const p of plans) for (const r of p.plan.fable!.runs) for (const a of r.gates) for (const b of r.gates) if (a !== b && a.y === b.y) expect(Math.abs(a.x - b.x), `${p.id}#${p.seed} ${r.family}`).toBeGreaterThan(2);
   });

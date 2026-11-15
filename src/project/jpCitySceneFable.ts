@@ -2,7 +2,7 @@
 // 새 거리(fable_street 조각)의 마무리 — 강둑, 노면 표시, 경계 줄 짓기, 재료가 만나는 자리의 테, 건물 발치 그림자, 아케이드(입면), 바닥 덧조각, 그리고 검사.
 // 왜(오너 2026-11-15, jp-redo/BRIEF.md 6~15): 표지판이 차도에 서고, 담 없는 대문 기둥이 줄지어 서고, 담이 허공에서 끊기고, 포장이 테 없이 맞닿고,
 //   차선이 아무 데서나 끊기고, 아케이드가 평면도 지붕으로 길을 덮었다. 여기 규칙은 그 꼴을 «만들 수 없게» 한다 — 규칙마다 auditScene 의 검사 하나.
-import { Occ, type SceneBand, type SceneCtx, type SceneLayout, type SceneVStreet } from "@/project/jpCitySceneCtx";
+import { Occ, type SceneBand, type SceneCtx, type SceneLayout, type SceneVStreet, type SceneKaki } from "@/project/jpCitySceneCtx";
 import { GROUND_FAMILIES, groundFamilyOf, STREET_PIECES, STREET_RUNS, streetTagged, type GroundFamily } from "@/project/jpCityStreetPieces";
 import type { JpStreetStep } from "@/project/jpCityStreetComposer";
 
@@ -20,6 +20,7 @@ export interface FableInfo {
   /** 횡단보도·교차로 칸(차선이 끊겨도 되는 칸) */ readonly crossings: ReadonlySet<string>;
   /** 테 조각이 놓인 칸 */ readonly borders: ReadonlySet<string>;
   /** 노면 선이 놓인 칸 → 조각 이름 */ readonly marks: ReadonlyMap<string, string>;
+  /** 집 필지 앞줄의 담·대문 키트(jp-bldg-f-kaki-*) */ readonly kaki: readonly SceneKaki[];
 }
 
 // ───────────────────────── 강둑 ─────────────────────────
@@ -170,8 +171,11 @@ export function fableRuns(c: SceneCtx, isStreet: (x: number, y: number) => boole
   const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
   const deg = (x: number, y: number) => DIRS.filter(([dx, dy]) => has(x + dx, y + dy)).length;
   const gateAt = new Set(c.gates.map((g) => key(g.x, g.y)));
+  const kakiCell = new Set<string>();
+  for (const k of c.kaki) for (let yy = k.y; yy < k.y + k.h; yy++) for (let xx = k.x; xx < k.x + k.w; xx++) kakiCell.add(key(xx, yy));
   /** 끝 칸에서 줄이 뻗는 방향 너머가 닿아 있는가: 막힌 칸(건물·길·물·지도 끝) 또는 바닥 가족이 바뀌는 칸(필지 끝). */
-  const attached = (x: number, y: number, dx: number, dy: number) => solid(x + dx, y + dy) || has(x + dx, y + dy) || isStreet(x + dx, y + dy) || gateAt.has(key(x + dx, y + dy)) || c.openings.has(key(x + dx, y + dy));
+  const attached = (x: number, y: number, dx: number, dy: number) => solid(x + dx, y + dy) || has(x + dx, y + dy) || isStreet(x + dx, y + dy) || gateAt.has(key(x + dx, y + dy)) || c.openings.has(key(x + dx, y + dy))
+    || (dy !== 0 && (kakiCell.has(key(x - 1, y)) || kakiCell.has(key(x + 1, y))));   // 세로 줄의 끝이 집 앞 담 키트 옆에 닿았다(모서리)
   // 지도 맨 윗줄의 가로 줄은 윗칸(갓돌 칸)이 지도 밖이다 — 짓지 않는다.
   for (const k of [...owner.keys()]) { const [x, y] = k.split(",").map(Number) as [number, number]; if (y === 0 && !has(x, 1)) { owner.delete(k); c.occ[x] = Occ.Lot; } }
   // 1) 허공에서 끝나는 팔을 늘이거나 잘라 낸다
@@ -522,6 +526,29 @@ export function auditFable(f: FableInfo): string[] {
       if (r.cls === "one" && m.startsWith("mark-centre")) out.push(`centre-line-on-one-lane (${x},${y})`);
     }
   }
+  // 집 필지 앞줄의 담·대문 키트: 담은 허공에서 끝나지 않는다(끝이 다른 담·대문·집 옆·줄·길·지도 끝에 닿는다), 필지에 대문 하나, 대문은 현관 앞이고 현관까지 걷는 칸이 이어진다, 한 필지 안의 담은 한 종류.
+  const kakiAt = new Set<string>();
+  for (const k of f.kaki) for (let x = k.x; x < k.x + k.w; x++) kakiAt.add(key(x, k.y + k.h - 1));
+  const STREETISH = new Set(["pave", "forecourt", "tarmac", "alley", "lane", "laneside", "water"]);
+  const lots = new Map<number, SceneKaki[]>();
+  for (const k of f.kaki) {
+    lots.set(k.lot, [...(lots.get(k.lot) ?? []), k]);
+    const foot = k.y + k.h - 1;
+    for (const nx of [k.x - 1, k.x + k.w]) {
+      if (kakiAt.has(key(nx, foot))) continue;
+      const v = at(nx, foot);
+      if (!(solid(v) || v === Occ.Road || v === Occ.Water || STREETISH.has(fam(nx, foot)))) out.push(`kaki-loose-end ${k.id} (${nx},${foot})`);
+    }
+    if (k.gate) {
+      const mid = k.x + 1;
+      if (!k.door || k.door.x !== mid) out.push(`kaki-gate-not-at-door (${mid},${foot})`);
+      else for (let y = k.door.y + 1; y <= foot; y++) if (at(mid, y) !== Occ.Walk) out.push(`kaki-gate-walk-blocked (${mid},${y})`);
+    }
+  }
+  for (const [lot, ks] of lots) {
+    if (ks.filter((k) => k.gate).length !== 1) out.push(`kaki-gate-count lot ${lot}: ${ks.filter((k) => k.gate).length}`);
+    if (new Set(ks.filter((k) => !k.gate).map((k) => k.id)).size > 1) out.push(`kaki-mixed-lot lot ${lot}`);
+  }
   return out;
 }
 
@@ -557,5 +584,5 @@ export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; gro
   fableAccents(c, new Set([...borders, ...marks.keys()]));
   fableShades(c);
   const ground = fableGround(c);
-  return { ground, info: { W: c.W, H: c.H, occ: c.occ, gfam: c.gfam, placed: c.stPlaced, runs, roads, crossings, borders, marks } };
+  return { ground, info: { W: c.W, H: c.H, occ: c.occ, gfam: c.gfam, placed: c.stPlaced, runs, roads, crossings, borders, marks, kaki: c.kaki } };
 }

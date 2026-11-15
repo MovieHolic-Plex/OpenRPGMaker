@@ -8,7 +8,7 @@
 시점은 그림이 정한다(오너 2026-11-15: 「탑 3/4 뷰가 안지켜진게 좀 보이네. 프롬프트만 다시해서 … 매우 강하게, 단, 검증게이트는 넣지말고」):
 건물 한 채 = 맨 위 부품이 지붕 윗면(기와 경사 · 평지붕 바닥과 그 위 옥상 기물 · 박공 ㅅ), 그 아래가 정면 벽. 전부 모델이 그린 부품이고, 코드는 지붕을 그리지 않는다.
 이 스크립트에는 시점을 재거나 가리는 검사가 없다(일부러 없다 — 눈으로 본다).
-레시피 한 채: {id, w, h(칸), stack:[부품 열쇠 | [옆으로 나란한 열쇠…]] (위→아래), signs:[['board', 글, 색 줄, x, y] | ['side', 글, 색 줄, x, y] | ['text', 글, x, y, 글 색, 그림자 색|null]]}  좌표는 쌓은 그림 기준.
+레시피 한 채: {id, w, h(칸), stack:[부품 열쇠 | [옆으로 나란한 열쇠…]] (위→아래) 또는 cols:[[왼쪽 덩이 열쇠…], [오른쪽 덩이 열쇠…]](발 맞춤), noedge(담·대문), signs:[['board', 글, 색 줄, x, y] | ['side', 글, 색 줄, x, y] | ['text', 글, x, y, 글 색, 그림자 색|null]]}  좌표는 쌓은 그림 기준.
 코드가 더하는 것(그 밖의 화소는 부품 그대로):
   - 간판 글자: 문 위 작은 판(12px 높이, 9px 글자 1px 획 — Galmuri9, SIL OFL; 쓰는 글자만 glyphs9.json 에 구워 둔다 — 테·윗변 빛·붓결·못·떨어진 그늘) · 세로 돌출 간판 · 노렌/차양 위 글자.
   - 벽 가장자리: 맨 위 부품(지붕) 아래의 왼쪽 1px 한 단, 오른쪽 1px 두 단, 맨 아랫줄 두 단 어둡게(그 화소의 재료 줄 안에서)."""
@@ -124,16 +124,25 @@ def seed_of(bid): return zlib.crc32(bid.encode()) % 9973
 
 def assemble(b):
     W = b['w'] * 16; Hh = b['h'] * 16; bid = b['id']; sd = seed_of(bid)
-    rows = [load(bid + '.' + k) if isinstance(k, str) else np.concatenate([load(bid + '.' + kk) for kk in k], 1) for k in b['stack']]
-    top = rows[0].shape[0]                                    # 맨 위 부품 = 지붕 윗면: 가장자리는 그림 그대로 둔다
-    f = np.concatenate(rows, 0); assert f.shape == (Hh, W, 4), (bid, f.shape)
+    if b.get('cols'):                                         # 좌우 덩이(높이가 다른 두 채가 붙은 집): 덩이마다 쌓고 발을 맞춘다 — 낮은 덩이 위는 투명
+        cols = []
+        for keys in b['cols']:
+            c = np.concatenate([load(bid + '.' + k) for k in keys], 0)
+            cols.append(np.concatenate([np.zeros((Hh - c.shape[0], c.shape[1], 4), np.uint8), c], 0))
+        f = np.concatenate(cols, 1); top = b.get('edgetop', 0)
+    else:
+        rows = [load(bid + '.' + k) if isinstance(k, str) else np.concatenate([load(bid + '.' + kk) for kk in k], 1) for k in b['stack']]
+        top = b.get('edgetop', rows[0].shape[0])              # 맨 위 부품 = 지붕 윗면: 가장자리는 그림 그대로 둔다
+        f = np.concatenate(rows, 0)
+    assert f.shape == (Hh, W, 4), (bid, f.shape)
     for i, s in enumerate(b.get('signs', [])):
         if s[0] == 'board': board(f, s[1], s[2], s[3], s[4], seed=i + sd)
         elif s[0] == 'side': side(f, s[1], s[2], s[3], s[4], seed=i + sd)
         elif s[0] == 'text': stamp(f, pack(s[1], 2), s[2], s[3], col(s[4]), col(s[5]) if s[5] else None)
-    for y in range(top, Hh):
-        f[y, 0] = shade(f[y, 0], 1); f[y, W - 1] = shade(f[y, W - 1], 2)
-    for x in range(W): f[-1, x] = shade(f[-1, x], 2)
+    if not b.get('noedge'):                                   # 담·대문 조각은 좌우로 이어 놓으므로 가장자리를 건드리지 않는다
+        for y in range(top, Hh):
+            f[y, 0] = shade(f[y, 0], 1); f[y, W - 1] = shade(f[y, W - 1], 2)
+        for x in range(W): f[-1, x] = shade(f[-1, x], 2)
     return Image.fromarray(f, 'RGBA')
 
 
