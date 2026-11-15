@@ -195,6 +195,7 @@ npm test                 # 단위 테스트 (GitHub CI 용; 로컬에서는 OPRN
 | 이름과 로고 | [TRADEMARKS.md](TRADEMARKS.md) |
 
 **만든 게임은 만든 사람의 것입니다** — 팔아도 되고 나눠도 되며 로열티는 없습니다.
+[OPRN PLAY](https://play.openrpgmaker.com/?lang=ko) 에는 무료 · 비영리 게임만 올릴 수 있습니다. 다른 곳에서 팔거나 수익화하는 게임은 OPRN PLAY 에 함께 올릴 수 없습니다.
 기여는 [CLA](CLA.md) 에 따라 환영합니다.
 
 OPRN Studio 는 RPG Maker(쯔꾸르), Gotcha Gotcha Games, KADOKAWA 와 관계가 없습니다.

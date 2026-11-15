@@ -449,11 +449,29 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 **올리기는 데이터만.** 작가 업로드는 그림·소리·글꼴·json·md·txt 뿐이고 파일 앞 바이트(매직 넘버)까지 본다. html·js·css·svg·wasm 은
 운영자가 올린 공식 플레이어 빌드의 sha256 만 받는다(`store_game_trusted_files`). project.json 은 모양 검사, 크기·개수·속도 제한, 판본 폴더 덮어쓰기 금지.
 
+**비영리 전용 · 게임 공개 선언 (2026-11-15).** OPRN PLAY 는 무료 · 비영리 창작 게임만 싣는다. 만든 게임을 다른 곳에서 상업 출시하는 것은
+전과 같이 자유다(`LICENSE.md` 「Your Games」) — 다만 **다른 곳에서 팔거나 수익화하는 게임은 OPRN PLAY 에 함께 올릴 수 없다.**
+- **선언은 올릴 때마다**(새 게임·새 판본 모두, 운영자도). 문구는 스토어가 정본이다: `GET /api/v1/games/declaration?lang=` 이 판(version)·다섯 항목
+  (비영리 · 직접 만든 게임 · 내용 · 만 14세 이상 · 약관 동의)·사는 곳 질문(대한민국 / 대한민국 밖)·약관 주소를 준다. **문구를 이 저장소에 베껴 두지 않는다** —
+  편집기와 명령줄은 받은 글을 그대로 보여 준다(`normalizeStoreGameDeclarationDoc` 이 다섯 항목·선택지 둘·http(s) 약관 주소가 다 있을 때만 받는다).
+- 편집기: 발행 창 「스토어에서 바로 플레이」 칸에 선언 상자가 뜬다. 다섯 항목을 모두 확인하고 사는 곳을 골라야 「스토어에 올리기」가 켜지고,
+  올리고 나면 확인 표시는 지워진다(사는 곳은 남는다). 다리 `window.oprn.store.gameDeclaration`, 게시 요청의 `declaration`(`electron/shared/schemas.ts` 가
+  다섯 항목이 모두 `true` 일 때만 통과시킨다). 선언을 모르는 옛 스토어(문구 주소가 404)에는 선언 없이 올린다. 문구를 못 받으면 올리지 않는다.
+- **대한민국 밖에 사는 작가의 게임은 대한민국에서는 보이지 않는다**(스토어의 진열 범위 `outside_kr` — 운영자가 게임마다 바꿀 수 있다). 선언 상자와 결과 줄에 그 문장이 그대로 나온다.
+- **바로 공개되지 않는 경우**: 스토어가 202 와 `status: "pending"`·`held`(이유 코드)·`message`(사람 말)를 준다 — 처음 올리는 게임, 게임 안에서 후원·결제 주소가
+  발견됨, 확인이 필요한 낱말, 숨겨진 게임, 선언한 사는 곳이 진열 범위와 다름. 편집기는 「v1.0 을 보냈습니다 — 아직 공개되지 않았습니다. …」로 보여 주고
+  (`storeGamePublishLine`), 다음에 창을 열면 기다리는 제출·돌려보낸 사유를 보여 준다(`games/mine` 의 `submission`, `storeGameSubmissionLine`).
+- **거절(400)**: 게임 글·소식·코멘트·답글에 후원·결제·판매·크라우드펀딩·광고 주소가 있으면 스토어가 「비영리 규칙: …에는 후원·결제·판매·광고 주소를 넣을 수
+  없습니다(걸린 주소: …)」로 거절한다. 편집기는 그 말을 그대로 「올리지 못했습니다: …」 뒤에 보여 준다(`storeFailure`). 에셋 팩 글도 같은 검사를 받는다(팩은 선언 없음).
+- **옛 편집기**(선언을 보내지 못하는 빌드)는 「올리지 못했습니다: 게임을 올리려면 게임 공개 선언(…)이 필요합니다. … 편집기를 최신 버전으로 올린 뒤 다시 올려 주세요.」를 본다.
+- 문서·화면에서는 사실만 적는다(「무료 · 비영리 창작 게임」). 법적 지위를 말하는 낱말은 쓰지 않는다. 시험: `test/storeGameDeclaration.test.ts`.
+
 **게시.**
-- 편집기(데스크톱 앱): 발행 대화상자 「스토어에서 바로 플레이」 칸 — 다음 판본(자동)·「큰 갱신」·바뀐 점(자동으로 채움)·「스토어에 올리기」.
-  다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
+- 편집기(데스크톱 앱): 발행 대화상자 「스토어에서 바로 플레이」 칸 — 다음 판본(자동)·「큰 갱신」·바뀐 점(자동으로 채움)·게임 공개 선언·「스토어에 올리기」.
+  다리: `window.oprn.store.gameMine/gameDeclaration/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
 - 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
-  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player` — `dist/export-player` 가 마지막 런타임 커밋(src, 편집기 제외)보다 오래면 게시를 거절한다(2026-10-30 마왕 편의점 스테이징 1.5·1.6 이 아침 묶음으로 나간 사고, 우회는 `--allow-stale-player`). 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
+  되돌리기 `--rollback <slug>@<판본>`. **선언(운영자도 올릴 때마다):** 명령이 스토어의 선언 문구를 stderr 에 찍는다 — 읽고 모두 맞으면
+  `--declare <문구 판> --residence kr|outside_kr` 을 붙인다. 없거나 옛 판이면 파일을 올리기 전에 종료 코드 2 로 멈춘다. 문구만 보기: `--show-declaration --target staging`. 플레이어는 먼저 `npm run build:player` — `dist/export-player` 가 마지막 런타임 커밋(src, 편집기 제외)보다 오래면 게시를 거절한다(2026-10-30 마왕 편의점 스테이징 1.5·1.6 이 아침 묶음으로 나간 사고, 우회는 `--allow-stale-player`). 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
 - 제3자 이름 자원(2026-10-30): 판본은 프로젝트 자원 목록 전체를 싣는데, 기본 목록에는 쓰지 않는 「RefmapDoll · REFMAP 변형 인물」 걷기 칩 321장이 딸려 왔다.
   `store:publish-game` 은 `splitStoreGameThirdPartyProfiles`(`src/assetStore/storeGameThirdParty.ts`)로 스토어가 막는 이름(`storeThirdPartyName`)의 자원을
   게임이 쓰지 않으면 빼고, 쓰면(assetId 가 자원 목록 밖에 나오면) 게시를 멈춘다. 공개 라이선스 카탈로그(`cc0-`·`easyrpg-`)는 「rtp」 낱말이 있어도 막지 않는다.

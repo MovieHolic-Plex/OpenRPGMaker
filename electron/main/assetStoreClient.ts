@@ -11,7 +11,7 @@ import { isSha256, STORE_LIMITS, STORE_SLUG, validateManifest, type StoreCatalog
 import { decodePackBundle, type DecodedPackBundle } from "../../src/assetStore/pack";
 import { sniffMime } from "../../src/assetStore/sniff";
 import { normalizeGameConcept, type GameConcept } from "../../src/concepts/format";
-import { publishStoreGame, type StoreGameMine, type StoreGamePublishRequest, type StoreGamePublishResult } from "../../src/assetStore/gamePublish";
+import { normalizeStoreGameDeclarationDoc, publishStoreGame, type StoreGameDeclarationDoc, type StoreGameMine, type StoreGamePublishRequest, type StoreGamePublishResult } from "../../src/assetStore/gamePublish";
 import type { StoreReviewsPage } from "../../src/assetStore/bridgeTypes";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
@@ -389,6 +389,19 @@ export class AssetStoreClient {
       }
     }
     return { ...mine, baselineProject };
+  }
+
+  /**
+   * 게임 공개 선언 문구(스토어가 정본 — 문구가 바뀌면 판(version)이 바뀐다). 로그인 없이 받는다.
+   * 선언을 모르는 옛 스토어(404)면 null — 그 스토어에는 선언 없이 올린다. 받은 문구가 온전하지 않으면 던진다(빈 칸에 동의하게 하지 않는다).
+   */
+  async gameDeclaration(lang?: string): Promise<StoreGameDeclarationDoc | null> {
+    try {
+      return normalizeStoreGameDeclarationDoc(await this.json<unknown>(`/api/v1/games/declaration?lang=${encodeURIComponent(lang ?? "ko")}`, { auth: false }));
+    } catch (error) {
+      if (error instanceof StoreError && error.status === 404) return null;
+      throw error;
+    }
   }
 
   /** 게임 판본 올리기. 판본 번호는 서버가 정한다(1.0 → 1.1, 큰 갱신이면 2.0). */
