@@ -7,6 +7,7 @@ import { createBlankProject } from "@/project/defaults";
 import { exteriorLook, exteriorWall } from "@/ai/v2/place/builders/interiorExterior";
 import { interiorTilesetOf, resolveKind } from "@/ai/v2/place/builders/interiorKind";
 import { pickTemplate } from "@/ai/v2/place/builders/interiorFill";
+import { interiorTilesetFor } from "@/ai/v2/place/interiorCatalog";
 import { personalPlan } from "@/editor/handInterior/personal";
 import { furnishRooms } from "@/editor/handInterior/furnish";
 import { withComposedRooms } from "@/editor/handInterior/rooms";
@@ -55,9 +56,10 @@ describe("버들항 실내 사양", () => {
   });
   it("벽면이 테두리를 정한다 — 돌벽 방에 나무 벽 윗면이 서지 않는다", () => {
     const build = (wall: string) => buildHandInteriorLayers({ plan: ["#####", "#...#", "#...#", "#...#", "##.##"], floor: "flag", wall }, undefined, S);
-    expect(build("plaster").lowerTiles[0]).toBe(S.ceilings.default![0] ?? -1);
-    const stone = build("rubble");
-    expect(S.ceilings.rock).toContain(stone.lowerTiles[1]); expect(S.ceilings.default).not.toContain(stone.lowerTiles[1]);
+    const edge = (id: string) => new Set<number>([...S.ceilings[id]!, ...Object.values(S.ceilingCorners![id]!)]);
+    const rim = (L: ReturnType<typeof build>) => [0, 1, 2, 3, 4].map((x) => L.lowerTiles[x]!);
+    for (const t of rim(build("plaster"))) expect(edge("default").has(t), String(t)).toBe(true);
+    for (const t of rim(build("rubble"))) { expect(edge("rock").has(t), String(t)).toBe(true); expect(edge("default").has(t)).toBe(false); }
   });
 });
 
@@ -73,8 +75,8 @@ describe("버들항 방 견본", () => {
       expect(L.issues.filter((i) => i.severity === "error").map((i) => `${t.id}: ${i.message}`)).toEqual([]);
     }
   });
-  it("방 종류마다 그 방의 일(불·판매대·침대…)이 있고, 불 없는 방에는 등이 있다", () => {
-    const light = (id: string) => !!S.objects[id]?.use?.includes("light") || id === "window";
+  it("방마다 빛이 있다 — 불·등, 없으면 창", () => {
+    const light = (id: string) => !!S.objects[id]?.use?.includes("light") || /window$/u.test(id);   // 등·불, 또는 창(낮 빛)
     for (const t of tpls) expect(t.items.some((i) => light(i.id)), t.id).toBe(true);
     expect(S.rooms!.examples.length).toBe(tpls.length);
     for (const k of new Set(tpls.map((t) => t.kind))) expect(S.rooms!.kinds[k], k).toBeTruthy();
@@ -91,13 +93,20 @@ describe("집 안은 바깥을 따른다", () => {
   const project = createBlankProject();
   const ts = createBeodeulCityTileset();
   project.tilesets[ts.id] = ts;
-  project.maps[project.startMapId]!.tilesetId = ts.id;
+  const village = project.maps[project.startMapId]!;
+  village.tilesetId = ts.id; village.upperTiles[0] = 1;   // 무엇이 지어진 버들항 맵(잔디 한 장뿐인 빈 맵은 마을이 아니다 — 아래 시험)
   const kitOf = (style: string) => ts.structureKits!.find((k) => k.ai?.tags?.includes(`style:${style}`))!.id;
   it("바깥 맵이 버들항이면 버들항 칩셋으로 짓고, 화풍 낱말이 다른 칩셋을 부르면 그쪽이다", () => {
     expect(interiorTilesetOf(project, { type: "interior", name: "여관" }, project.startMapId).tilesetId).toBe(ts.id);
     expect(interiorTilesetOf(project, { type: "interior", name: "여관", exterior: { tileset: ts.id } }).tilesetId).toBe(ts.id);
     expect(interiorTilesetOf(project, { type: "interior", name: "여관", style: "modern" }, project.startMapId).tilesetId).not.toBe(ts.id);
     expect(interiorTilesetOf(createBlankProject(), { type: "interior", name: "여관" }).tilesetId).toBe("atlas_biome_interior");
+    // 빈 프로젝트의 시작 맵(버들항 칩셋의 잔디 한 장)에서는 종전대로 v5 — 목록 카드도 같다
+    const blank = createBlankProject();
+    expect(blank.tilesets[blank.maps[blank.startMapId]!.tilesetId]?.roomKit).toBeTruthy();
+    expect(interiorTilesetOf(blank, { type: "interior", name: "여관" }, blank.startMapId).tilesetId).toBe("atlas_biome_interior");
+    expect(interiorTilesetFor(blank, blank.startMapId)?.id).toBe("atlas_biome_interior");
+    expect(interiorTilesetFor(project, project.startMapId)?.id).toBe(ts.id);
   });
   it("문이 달린 집 킷의 양식이 벽면을 고른다 — 불 방의 돌과 표에 없는 벽은 그대로", () => {
     const look = (style: string) => exteriorLook(project, { exterior: { tileset: ts.id, kit: kitOf(style) } })!;
@@ -108,6 +117,7 @@ describe("집 안은 바깥을 따른다", () => {
     expect(exteriorWall(S, look("violetslate"), "rubble")).toBe("grey");
     expect(exteriorWall(S, look("halftimber"), "plaster")).toBe("plaster");
     expect(exteriorWall(S, look("log"), "slumw")).toBe("slumw");
+    expect(look("log").cat).toBeTruthy(); expect(["small", "medium", "large", "xlarge"]).toContain(look("log").tier);
     // 양식 태그가 없는 원본 버들항 집 = 목골 그대로
     expect(exteriorWall(S, exteriorLook(project, { exterior: { tileset: ts.id, kit: "bd-house-smithy" } }), "plaster")).toBe("plaster");
   });
@@ -141,6 +151,11 @@ describe("사는 사람의 물건", () => {
     expect(new Set(plain.map((p) => p.sets.join("+"))).size).toBeGreaterThanOrEqual(8);
     expect(personalPlan(S, "living", { key: "k", text: "집" })).toEqual(personalPlan(S, "living", { key: "k", text: "집" }));
     expect(personalPlan(S, "forge", { key: "k", text: "대장간" })).toBeUndefined();
+    // 그 집 킷의 갈래(구조 자료)가 이름보다 먼저 — 농장 집은 농부, 농장의 사냥꾼 집은 농부 + 사냥꾼
+    expect(personalPlan(S, "living", { key: "k", text: "한스의 집", cat: "farm" })!.sets[0]).toBe("farmer");
+    expect(personalPlan(S, "living", { key: "k", text: "사냥꾼의 집", cat: "farm" })!.sets.slice(0, 2)).toEqual(["farmer", "hunter"]);
+    expect(personalPlan(S, "living", { key: "k", text: "한스의 집", cat: "town" })!.sets.every((id) => !P.sets[id]!.alias?.length)).toBe(true);
+    for (const set of Object.values(P.sets)) for (const c of set.cats ?? []) expect(["farm", "harbour", "town", "castle", "work"]).toContain(c);
   });
   it("같은 견본으로 지은 두 집이 같은 방이 아니고, 넣은 물건이 길을 막지 않는다", () => {
     const tset = createBeodeulCityTileset();

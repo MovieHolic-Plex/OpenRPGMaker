@@ -52,6 +52,9 @@ const FLOOR_IDS = [...uniq((s) => s.floors), "floor"];
 const WALL_IDS = [...uniq((s) => s.walls), "wall"];
 const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
+/** 미루어 고를 때의 후보 — 실내 전용 칩셋만. 바깥 칩셋이 방 표를 같이 든 것(모습 표 looks — 버들항)은 재질 낱말(plank·plaster)을 v5 와 같이 쓰므로
+ *  이름·재질·시작 맵으로 미루어 고르지 않는다: tileset 을 직접 주거나 고치는 맵이 그 칩셋일 때만 쓴다. */
+const INFER_IDS = TILESET_IDS.filter((t) => !HAND_INTERIOR_SPECS[t]!.looks);
 /** 새 실내 맵에 BGM 을 자동으로 고르는 현대 칩셋. */
 const MODERN_BGM_TILESETS: ReadonlySet<string> = new Set(["modern_campus", MODERN_CITY_INTERIOR_TILESET_ID, JP_INTERIOR_TILESET_ID]);
 const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋 — 2층 단독주택은 layout:{program:"jp-house-1f"|"jp-house-2f", seed} 가 가운데 복도·현관·계단·물 쓰는 곳 덩이·독립 화장실 구조로 짓는다) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 백화점·대형 마트·지하철역·종합병원·영화관 아케이드·레스토랑 바·미술관 박물관·사무실·편의점·아파트·빌딩 로비·카페·은행·창고 — layout:{program:"department-store"|"supermarket-mart"|"subway-station"|"hospital-ward"|"cinema-arcade"|"restaurant-bar"|"museum-gallery"|"office-floor"|"konbini"|"apartment"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
@@ -67,7 +70,7 @@ function inferTileset(project: Project, args: Record<string, unknown>): string {
   const map = typeof args.mapId === "string" ? project.maps[args.mapId] : undefined;
   if (map && (HAND_INTERIOR_SPECS[map.tilesetId] || roomSpecOf(project.tilesets[map.tilesetId]))) return map.tilesetId;
   for (const [key, id] of [["floors", args.floor], ["walls", args.wall]] as const) {
-    const found = typeof id === "string" ? TILESET_IDS.filter((t) => HAND_INTERIOR_SPECS[t]![key][id]) : [];
+    const found = typeof id === "string" ? INFER_IDS.filter((t) => HAND_INTERIOR_SPECS[t]![key][id]) : [];
     if (found.length === 1) return found[0]!;
   }
   const nameText = typeof args.name === "string" ? args.name : "";
@@ -85,7 +88,7 @@ function inferTileset(project: Project, args: Record<string, unknown>): string {
   const prog = args.layout && typeof args.layout === "object" ? (args.layout as Record<string, unknown>).program : undefined;
   if (typeof prog === "string" && prog.trim()) {
     const p = prog.trim();
-    const pOwners = TILESET_IDS.filter((t) => programKinds(t, p));
+    const pOwners = INFER_IDS.filter((t) => programKinds(t, p));
     if (pOwners.length === 1) return pOwners[0]!;
     if (nameWantsJp && pOwners.includes(JP_INTERIOR_TILESET_ID)) return JP_INTERIOR_TILESET_ID;
     if (nameWantsCampus && pOwners.includes("modern_campus")) return "modern_campus";
@@ -102,7 +105,7 @@ function inferTileset(project: Project, args: Record<string, unknown>): string {
   if (nameWantsCampus) return "modern_campus";
   if (nameWantsModernCity) return MODERN_CITY_INTERIOR_TILESET_ID;
   const startMap = project.maps[project.startMapId];
-  if (startMap && HAND_INTERIOR_SPECS[startMap.tilesetId] && startMap.tilesetId !== HAND_INTERIOR_TILESET_ID) {
+  if (startMap && INFER_IDS.includes(startMap.tilesetId) && startMap.tilesetId !== HAND_INTERIOR_TILESET_ID) {
     return startMap.tilesetId;
   }
   if (jpRe.test(text)) return JP_INTERIOR_TILESET_ID;

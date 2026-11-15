@@ -98,8 +98,8 @@ export interface HandInteriorSpec {
    */
   readonly looks?: { readonly edge?: Readonly<Record<string, string>>; readonly style?: Readonly<Record<string, Readonly<Record<string, string>>>> };
   /** 사는 사람의 물건 표 — 견본을 심은 방에 그 집 열쇠·집 이름의 직업으로 몇 점 더 놓는다(personal.ts). kinds = 받는 방 종류, surfaces = 탁상 물건을 올려도 되는 가구,
-   *  count = [적게, 많이] 점 수, sets = 묶음(alias 가 있으면 직업 묶음 — 집 이름에 그 낱말이 있을 때만). */
-  readonly personal?: { readonly kinds: readonly string[]; readonly surfaces: readonly string[]; readonly count: readonly [number, number]; readonly sets: Readonly<Record<string, { readonly ko: string; readonly alias?: readonly string[]; readonly pieces: readonly string[] }>> };
+   *  count = [적게, 많이] 점 수, sets = 묶음(cats·alias 가 있으면 직업 묶음 — 그 집 킷의 갈래(cats)가 먼저, 다음이 집 이름의 별칭(alias)). */
+  readonly personal?: { readonly kinds: readonly string[]; readonly surfaces: readonly string[]; readonly count: readonly [number, number]; readonly sets: Readonly<Record<string, { readonly ko: string; readonly alias?: readonly string[]; readonly cats?: readonly string[]; readonly pieces: readonly string[] }>> };
 }
 export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
 /** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */

@@ -204,7 +204,7 @@ export const interiorBuilder: PlaceBuilder = {
         ...(shapeOut ? { exitAt: shapeOut.exitAt, composeSeed: hashText(`${varietyKey}|furnish`) % 1_000_000 } : designExit !== undefined ? { exitAt: designExit } : {}),
         ...(designed ? { designs } : {}),
         // 사는 사람의 물건(칩셋 사양의 personal 표가 있을 때만) — 열쇠에 집 이름이 들어 있어 한 마을의 두 집이 같은 방이 아니다.
-        ...(roomSpec?.personal ? { personal: Object.fromEntries(rooms.filter((r) => !r.vig).map((r) => [r.id, { key: `${varietyKey}|${r.id}`, text: `${spec.name} ${r.zone.purpose ?? ""} ${spec.theme ?? ""}` }])) } : {}),
+        ...(roomSpec?.personal ? { personal: Object.fromEntries(rooms.filter((r) => !r.vig).map((r) => [r.id, { key: `${varietyKey}|${r.id}`, text: `${spec.name} ${r.zone.purpose ?? ""} ${spec.theme ?? ""}`, ...(outside?.cat ? { cat: outside.cat } : {}) }])) } : {}),
         ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
