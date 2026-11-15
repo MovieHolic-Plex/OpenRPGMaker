@@ -165,16 +165,19 @@ export function fableRuns(c: SceneCtx, isStreet: (x: number, y: number) => boole
     owner.set(key(q.x, q.y), r.family);
   }
   for (const b of c.placed) for (const d of b.doors) c.openings.add(key(b.x + d, b.foot + 1));
+  // 현관에서 길까지 걷는 열(문 앞 줄 아래로 이어지는 걷는 칸): 줄이 늘어나며 이 열을 막지 않는다 — 줄 끝이 여기에 닿으면 트인 자리로 본다.
+  const doorPath = new Set<string>();
+  for (const b of c.placed) for (const d of b.doors) for (let y = b.foot + 1; y <= b.foot + 4 && c.at(b.x + d, y) === Occ.Walk; y++) doorPath.add(key(b.x + d, y));
   const has = (x: number, y: number) => owner.has(key(x, y));
   const solid = (x: number, y: number) => !c.inside(x, y) || c.at(x, y) === Occ.Bldg || c.at(x, y) === Occ.Slit || c.at(x, y) === Occ.Road || c.at(x, y) === Occ.Water || (c.at(x, y) === Occ.Wall && !has(x, y));   // 먼저 선 난간(다리)도 닿는 곳
-  const free = (x: number, y: number) => c.inside(x, y) && !has(x, y) && !c.openings.has(key(x, y)) && (c.at(x, y) === Occ.Lot || c.at(x, y) === Occ.Walk) && !c.drawn[y * W + x];
+  const free = (x: number, y: number) => c.inside(x, y) && !has(x, y) && !c.openings.has(key(x, y)) && !doorPath.has(key(x, y)) && (c.at(x, y) === Occ.Lot || c.at(x, y) === Occ.Walk) && !c.drawn[y * W + x];
   const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
   const deg = (x: number, y: number) => DIRS.filter(([dx, dy]) => has(x + dx, y + dy)).length;
   const gateAt = new Set(c.gates.map((g) => key(g.x, g.y)));
   const kakiCell = new Set<string>();
   for (const k of c.kaki) for (let yy = k.y; yy < k.y + k.h; yy++) for (let xx = k.x; xx < k.x + k.w; xx++) kakiCell.add(key(xx, yy));
   /** 끝 칸에서 줄이 뻗는 방향 너머가 닿아 있는가: 막힌 칸(건물·길·물·지도 끝) 또는 바닥 가족이 바뀌는 칸(필지 끝). */
-  const attached = (x: number, y: number, dx: number, dy: number) => solid(x + dx, y + dy) || has(x + dx, y + dy) || isStreet(x + dx, y + dy) || gateAt.has(key(x + dx, y + dy)) || c.openings.has(key(x + dx, y + dy))
+  const attached = (x: number, y: number, dx: number, dy: number) => solid(x + dx, y + dy) || has(x + dx, y + dy) || isStreet(x + dx, y + dy) || gateAt.has(key(x + dx, y + dy)) || c.openings.has(key(x + dx, y + dy)) || doorPath.has(key(x + dx, y + dy))
     || (dy !== 0 && (kakiCell.has(key(x - 1, y)) || kakiCell.has(key(x + 1, y))));   // 세로 줄의 끝이 집 앞 담 키트 옆에 닿았다(모서리)
   // 지도 맨 윗줄의 가로 줄은 윗칸(갓돌 칸)이 지도 밖이다 — 짓지 않는다.
   for (const k of [...owner.keys()]) { const [x, y] = k.split(",").map(Number) as [number, number]; if (y === 0 && !has(x, 1)) { owner.delete(k); c.occ[x] = Occ.Lot; } }

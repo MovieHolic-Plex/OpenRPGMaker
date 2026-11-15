@@ -95,13 +95,13 @@ describe("jp_city street scene composer", () => {
     expect((named.res.data as { streetKind?: string; style?: string })).toMatchObject({ streetKind: "monzen", style: "shitamachi" });
   });
 
-  it("closes the lots behind shop rows with backyards and lets quiet lanes have a narrow crosswalk", () => {
+  it("gives the strip behind shop rows a use (back lane, bounded lots) and lets quiet lanes have a narrow crosswalk", () => {
     for (let seed = 1; seed <= 3; seed++) {
       const plan = planJpCityScene({ mapId: "m", width: 60, height: 48, seed, style: "shopping", key: "game-a" });
       expect(plan.scenes, `seed ${seed}`).toContain("backalley");
-      // 뒷마당 바닥: 새 거리 조각이 구워져 있으면 바닥은 가족 단위 단계(ground_cells)로 깔린다 — 흙·잔디 사각형이 셋 넘게 있어야 한다(옛 재료 이름의 fill_region 대신).
+      // 가게 줄 뒤: 새 거리 조각이 구워져 있으면 바닥은 가족 단위 단계(ground_cells)로 깔린다 — 뒷길 포장(lane)과 뒤 필지(흙·잔디)의 사각형이 셋 넘게 있어야 한다(옛 거리는 재료 이름의 fill_region).
       const yards = plan.fable
-        ? plan.steps.filter((s) => s.tool === "ground_cells" && ["earth", "lawn"].includes(String((s.args as { family?: string }).family))).flatMap((s) => (s.args as { rects: unknown[] }).rects)
+        ? plan.steps.filter((s) => s.tool === "ground_cells" && ["lane", "earth", "lawn"].includes(String((s.args as { family?: string }).family))).flatMap((s) => (s.args as { rects: unknown[] }).rects)
         : plan.steps.filter((s) => s.tool === "fill_region" && ["산길 흙", "校庭 흙 바닥", "자갈 참배길", "온천가 돌길(이시다타미)"].includes(String((s.args as { material?: string }).material)));
       expect(yards.length, `seed ${seed}`).toBeGreaterThanOrEqual(3);
     }

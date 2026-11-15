@@ -212,6 +212,7 @@ export function backStrip(c: SceneCtx, b: SceneBlock, row: readonly ScenePlaced[
   const laneTop = deep ? minY - 2 : yT;
   const colTop = (x: number) => row.find((q) => x >= q.x && x < q.x + q.w)?.y ?? minY;
   const pool = [...streetTagged("backdoor"), ...streetTagged("bike")];
+  c.scenesUsed.add("backalley");
   const cuts = [b.sx, ...tall.flatMap((p) => [p.x, p.x + p.w]), b.ex].sort((p, q) => p - q);
   for (let k = 0; k + 1 < cuts.length; k += 2) {
     const sx = Math.max(b.sx, cuts[k]!), ex = Math.min(b.ex, cuts[k + 1]!);
