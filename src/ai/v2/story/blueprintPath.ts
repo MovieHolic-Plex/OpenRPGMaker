@@ -121,7 +121,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
       item: { type: "string", description: "an object these lines hand over or let the player pick up — it enters the inventory. Not news or an opened way" },
       choices: { type: "array", description: "choice step: the 2–3 options the player picks from", items: { type: "object", properties: {
         text: { type: "string", description: "the option as the player reads it" },
-        lines: { type: "array", items: { type: "string" }, description: "what the person answers when this is picked" },
+        lines: { type: "array", items: { type: "string" }, description: "what the person answers when this is picked («(» starts narration)" },
         later: { type: "string", description: "one line shown at the ending: what this choice led to" },
       }, required: ["text"] } },
     }, required: ["id"] } },

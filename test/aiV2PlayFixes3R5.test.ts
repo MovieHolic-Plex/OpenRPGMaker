@@ -21,6 +21,7 @@ import { objectiveCommand } from "@/ai/v2/judge/objectiveCommand";
 import { createZoneFeedbackModel, currentObjectiveText, updateZoneFeedback } from "@/player/zoneFeedback";
 import { blockCutsPath } from "@/editor/tools/dungeonTools";
 import { localizeCultureSpec } from "@/ai/v2/place/builders/joseon";
+import { sayAs } from "@/ai/v2/story/playerLines";
 
 type Obj = Record<string, unknown>;
 const page = (conditions: unknown[], commands: unknown[], kind = "action", more: Obj = {}) =>
@@ -226,5 +227,15 @@ describe("장소 이름의 낱말과 문화권 — 확인 빌드 r5", () => {
     expect((localizeCultureSpec(inn, "조선 시대 사극 게임", built()) as { style?: string }).style).toBe("joseon");
     // 아직 지은 맵이 없으면 종전대로 이름으로 고른다.
     expect((localizeCultureSpec(inn, "강가 마을 게임", createBlankProject() as Project) as { style?: string }).style).toBe("joseon");
+  });
+});
+
+// 등대지기를 그린 서술 줄이 등대지기의 이름표와 얼굴 밑에 떴다.
+describe("사람 단계의 서술 줄 — 확인 빌드 r5", () => {
+  it("그 사람을 이름으로 부르며 시작하는 평서형 줄은 서술이다 — 그 사람의 말은 그대로 이름표를 단다", () => {
+    const [about, said, named] = sayAs(["등대지기는 어두운 등불 앞에서 고개를 떨구고 있다.", "이제 불을 켤 일만 남았소.", "등대지기는 나 하나뿐이오!"], "등대지기");
+    expect(about).toEqual({ kind: "text", body: "등대지기는 어두운 등불 앞에서 고개를 떨구고 있다." });
+    expect(said!.speaker).toBe("등대지기");
+    expect(named!.speaker).toBe("등대지기");
   });
 });

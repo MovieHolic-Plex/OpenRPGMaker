@@ -26,9 +26,15 @@ export function wordlessLine(step: StepNames): string {
   return step.kind === "battle" ? `(${who}${josa(who, "이", "가")} 앞을 막아선다.)` : `(${who}${josa(who, "과", "와")} 이야기를 나누었다.)`;
 }
 
-/** 말하는 사람이 있는 대사 — 「(」로 시작하는 줄은 서술이라 이름을 붙이지 않는다. */
+/**
+ * 그 사람을 이름으로 부르며 시작해 평서형(«…다.»)으로 끝나는 줄 — 그 사람의 말이 아니라 그 사람을 그린 서술이다.
+ * 왜(2026-11-15 확인 빌드 r5): 모델이 쓴 «등대지기는 어두운 등불 앞에서 고개를 떨구고 있다.» 가 등대지기의 이름표와 얼굴 밑에 떴다.
+ */
+const aboutSpeaker = (body: string, speaker: string): boolean => body.trimStart().startsWith(speaker) && /^(?:은|는|이|가|의|도)\s/u.test(body.trimStart().slice(speaker.length)) && /다[.…]?\s*$/u.test(body);
+
+/** 말하는 사람이 있는 대사 — 「(」로 시작하는 줄과 그 사람을 그린 줄은 서술이라 이름을 붙이지 않는다. */
 export const sayAs = (lines: readonly string[] | undefined, speaker: string | undefined): Record<string, unknown>[] => (lines ?? []).filter((l) => l.trim())
-  .map((body) => (speaker && !/^\s*[(（]/u.test(body) ? { kind: "text", speaker, body } : { kind: "text", body }));
+  .map((body) => (speaker && !/^\s*[(（]/u.test(body) && !aboutSpeaker(body, speaker) ? { kind: "text", speaker, body } : { kind: "text", body }));
 
 /**
  * 이긴 뒤의 글 — 큰따옴표·낫표로 감싼 줄만 그 상대의 마지막 말(이름표)이고, 나머지는 서술이다: 쓰러진 상대가 제 쓰러짐을 제 입으로 말하지 않는다.
