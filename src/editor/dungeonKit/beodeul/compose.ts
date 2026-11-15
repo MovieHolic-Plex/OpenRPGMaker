@@ -791,7 +791,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const decalCells = cells.filter((c) => c.lo >= 0 && c.up < 0 && isFloor(c.x, c.y));
     // 길을 막는 물건이면 되돌린다(바닥 위 걸을 수 없는 칸이 새로 생긴 경우만 검사).
     const blocks = cells.some((c) => isFloor(c.x, c.y) && !passTile(c.up >= 0 ? c.up : c.lo));
-    if (blocks && !opts.free && !connected()) {
+    // 갈아 끼운 그림은 옛 그림과 막는 칸이 다를 수 있다 — 옛 것이 «길을 안 막는 그림» 이라 검사 없이(free) 놓이던 자리도 길을 다시 본다(우거진 풀 자리에 선 석상이 회랑을 막았다).
+    if (blocks && (!opts.free || usedId !== kitId) && !connected()) {
       cells.forEach((c, i) => { lower[idx(c.x, c.y)] = before[i]![0]; upper[idx(c.x, c.y)] = before[i]![1]; });
       return false;
     }

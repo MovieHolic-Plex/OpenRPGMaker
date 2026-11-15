@@ -132,6 +132,10 @@ describe("버들항 던전 겉가죽 입히기", () => {
     }
   });
 
+  it("갈아 끼운 그림이 길을 막지 않는다: 옛 것이 «길을 안 막는 바닥 그림» 이라 검사 없이 놓이던 자리도 새 그림으로는 길을 다시 본다(물에 잠긴 신전 씨앗 1·3 — 우거진 풀 자리의 석상이 회랑을 막아 방 셋이 끊겼다)", () => {
+    for (const seed of [1, 3]) for (const name of NAMES) expect(() => build("temple", { flooded: true }, name, seed), `${name} ${seed}`).not.toThrow();
+  });
+
   it("한 게임은 한 모습: 같은 겉모습 이름이면 층마다 같은 벽, 다른 이름이면 다른 벽", () => {
     const wall = (name: string, seed: number) => {
       const { maps } = build("catacomb", {}, name, seed);

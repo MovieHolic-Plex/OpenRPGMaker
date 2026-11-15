@@ -3416,7 +3416,8 @@
      "en": "sea weed",
      "swap": [
       "bd-pick-temple-ruins-rubble-temple",
-      "bd-pick-aqueduct-sewer-bones"
+      "bd-pick-aqueduct-sewer-bones",
+      "bd-pick-dungeon-theme-overgrown"
      ],
      "words": [
       "바닷말",
@@ -3465,8 +3466,7 @@
      "ko": "바다에 삭은 석상",
      "en": "sea-worn statue",
      "swap": [
-      "bd-pick-dungeon-theme-statue-head",
-      "bd-pick-dungeon-theme-overgrown"
+      "bd-pick-dungeon-theme-statue-head"
      ],
      "words": [
       "석상",
