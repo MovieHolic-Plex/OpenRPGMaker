@@ -1267,6 +1267,12 @@
    "chipset": "beodeul_city"
   },
   {
+   "png": "tiledata/beodeul-interiors/pieces/tower-bell.png",
+   "kind": "structure",
+   "id": "bd-in-tower-bell",
+   "chipset": "beodeul_city"
+  },
+  {
    "png": "tiledata/beodeul-interiors/pieces/hearth-glow.png",
    "kind": "flat",
    "id": "bd-in-hearth-glow",

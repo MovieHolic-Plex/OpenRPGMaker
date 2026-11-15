@@ -20,6 +20,7 @@
 //   riverbank 물가 띠 마을(강만) — 큰길이 넓은 둑을 따라 남북으로, 들길 하나가 가장자리에서 들어온다. 앵커는 들길 어귀.
 //   scatter   흩어진 마을 — 모랫길 폭 1, 집 간격 4~8칸, 갈림길 하나가 모이는 곳. 풀밭 마을은 집마다 울타리 텃밭.
 // 밭은 형태와 상관없이 이어진 울타리로 두른다(풀밭 마을만 — 울타리 조각이 숲 계열이다). 문 한 칸은 길 쪽.
+import { kitServesBuilding, type BuildingNeed } from "@/project/kitTier";
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "@/project/defaults/beodeulGround";
 import { translateTiles } from "@/project/objectStamp";
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
@@ -147,6 +148,8 @@ export function resolveVillageWater(theme: BeodeulVillageTheme, seed: number, fo
 /** 숲(river·coast·snow 마을): edge 마을 둘레 숲 덩이(기본) · dense 숲속 빈터 — 집·길·작은 밭 사이를 숲이 메운다(숲속 마을). */
 export const BEODEUL_VILLAGE_WOODS = ["edge", "dense"] as const;
 export interface BeodeulVillageOptions {
+  /** 이야기가 청한 큰 건물(여관·회관·성당·성) — 그 쓰임·단의 킷(킷 태그 tier:·interior:·cat:, src/project/kitTier.ts)을 모이는 곳 곁에 먼저 세운다. 요청 낱말이 아니라 청사진 장소 종류가 준다. */
+  buildings?: readonly BuildingNeed[];
   /** 숲 밀도(edge·dense). 생략하면 edge. */
   woods?: string;
   /** 강가 어촌(코드 지형): 물가 길에 어촌 일터 소품 띠와 매어 둔 배. 포구(coast)는 늘. */
@@ -388,12 +391,19 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   for (const k of ts.structureKits ?? []) {
     const ent = (k.parts ?? []).find((p) => p.kind === "entrance");
     // 허용 건물(bd-house-rv-*)의 문은 두 칸 높이(dy = 문 윗칸) — 문 앞 계산은 아랫칸 기준이라 아랫칸으로 맞춘다
-    const doorDy = ent ? (reviewedPrefix(k.id) ? ent.dy + Math.max(1, ent.h ?? 1) - 1 : ent.dy) : 0;
+    // 참고 건물(bd-bld-ref-*)의 문도 두 칸 높이다 — 이야기가 청한 큰 건물로 설 때 같은 셈.
+    const doorDy = ent ? (reviewedPrefix(k.id) || k.id.startsWith("bd-bld-ref-") ? ent.dy + Math.max(1, ent.h ?? 1) - 1 : ent.dy) : 0;
     kitIndex.set(k.id, { id: k.id, w: k.width, h: k.height, door: ent ? { dx: ent.dx, dy: doorDy } : null, def: k });
   }
   const have = (ids: readonly string[]) => ids.filter((id) => kitIndex.has(id));
   const K = (id: string) => kitIndex.get(id)!;
   const doorAtBottom = (id: string) => { const d = K(id).door; return !!d && d.dy === K(id).h - 1; };
+  // 이야기가 청한 건물마다 맞는 킷 하나(같은 주문이면 같은 킷 — seed 로 고른다). 맞는 킷이 없으면 그 주문은 건너뛴다(부른 쪽이 문 목록으로 안다).
+  const wantKits: string[] = [];
+  (options.buildings ?? []).forEach((need, i) => {
+    const fit = [...kitIndex.keys()].filter((id) => !wantKits.includes(id) && doorAtBottom(id) && kitServesBuilding(K(id).def, need)).sort();
+    if (fit.length) wantKits.push(fit[Math.abs(Math.floor(seed) + i * 7) % fit.length]!);
+  });
   // 지붕을 정하지 않았는데 조수가 houses[].kind 로 보통·큰 집을 달라 했으면, 그 폭 그림이 없는 지붕 무리(청회색·이끼는 폭 4 집뿐)를 씨앗으로 고르지 않는다 —
   // 고르면 medium·large 요청이 모두 작은 집이 되고 「작은 집만 늘어섰다」(2026-10-30 실조수 opus 강가 마을: 6채 모두 폭 4).
   if (roofs && (options.roofs === undefined || options.roofs === "")) {
@@ -775,10 +785,17 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     const shuffled = <T,>(xs: readonly T[]): T[] => xs.map((v) => ({ v, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.v);
     const doorKits = (ids: readonly string[]) => have(ids).filter(doorAtBottom).map(K);
-    if (layout.landmark) { const ks = shuffled(doorKits(culturePool(TIER_LANDMARKS[theme] ?? spec.anchors))); if (ks.length) place("landmark", ks, layout.landmark); }
+    // 청한 큰 건물을 먼저: 첫째는 앵커 자리, 둘째는 높은 곳 건물 자리, 셋째는 일터 자리, 더 있으면 모이는 곳 곁. 그 자리를 차지하면 마을의 제 앵커·랜드마크는 서지 않는다.
+    const taken = new Set<string>();
+    wantKits.map(K).forEach((k, i) => {
+      const slot = (["anchor", "landmark", "work"] as const)[i];
+      const at = (slot ? layout[slot] : undefined) ?? layout.anchor ?? gWant;
+      if (place(slot && layout[slot] ? slot : "anchor", [k], at) && slot && layout[slot]) taken.add(slot);
+    });
+    if (layout.landmark && !taken.has("landmark")) { const ks = shuffled(doorKits(culturePool(TIER_LANDMARKS[theme] ?? spec.anchors))).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("landmark", ks, layout.landmark); }
     const anchorIds = roofs === "medieval" && have(MEDIEVAL_ANCHORS).length ? MEDIEVAL_ANCHORS : culturePool(spec.anchors);
-    if (layout.anchor) { const ks = shuffled(doorKits(anchorIds)).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("anchor", ks, layout.anchor); }
-    if (layout.work) { const ks = shuffled(doorKits(LOW_WORKS[theme] ?? [])); if (ks.length) place("work", ks, layout.work); }
+    if (layout.anchor && !taken.has("anchor")) { const ks = shuffled(doorKits(anchorIds)).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("anchor", ks, layout.anchor); }
+    if (layout.work && !taken.has("work")) { const ks = shuffled(doorKits(LOW_WORKS[theme] ?? [])).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("work", ks, layout.work); }
     const last: string[] = [];
     const houseUse = new Map<string, number>();
     // 조수가 집 자리를 주면 그 수가 정한다(12채까지) — size 의 집 수(3~5)는 자동 배치에만
@@ -1649,8 +1666,27 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 중세 건물 마을은 모이는 곳에 시청·장터·예배당·여관 같은 공공 건물(2026-10-25 VQA: 광장·장터·교회가 없고 앵커가 원본 버들항 집이었다)
     const anchorPool = roofs === "medieval" ? have(MEDIEVAL_ANCHORS) : [];
     const cand = (anchorPool.length ? anchorPool : have(culturePool(spec.anchors))).filter((id) => K(id).door);
-    const order = cand.map((id) => ({ id, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.id);
+    // 청한 큰 건물이 있으면 그것을 앵커로 먼저 앉혀 본다(안 맞으면 제 앵커).
+    const shuffledCand = cand.map((id) => ({ id, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.id);
     let done = false;
+    // 청한 큰 건물은 하나씩, 모이는 곳 길가의 모든 자리를 다 본 뒤에야 포기한다(가까운 자리에서 제 앵커에 밀리지 않게). 첫째가 앵커 자리를 맡고, 못 앉으면 제 앵커가 선다.
+    const tryAt = (order: readonly string[], setback: number, off: number): boolean => {
+      for (const id of order) {
+        const k = K(id); const d = k.door!; const fx = gather.x + off; const top = yAt(gather.s, fx) ?? -1;
+        if (top < 0) continue;
+        const x = fx - d.dx, y = top - 1 - d.dy - setback;
+        const stub = Array.from({ length: setback }, (_, j) => idx(fx, top - 1 - j));
+        if (stub.some((c) => occ[c] !== FREE) || !flatCells([...stub, idx(fx, top)])) continue;
+        if (fits(k, x, y)) {
+          claim(k, x, y, BLD, true); for (const c of stub) occ[c] = ROAD;
+          anchors.push(id); doorFronts.push({ x: fx, y: top - setback, kit: id }); if (!done) gatherDoor = { x: fx, y: top }; done = true; return true;
+        }
+      }
+      return false;
+    };
+    const OFFS = [0, -2, 2, -4, 4, -6, 6, -8, 8, -10, 10, -13, 13, -16, 16];
+    for (const id of wantKits.filter((w) => K(w).door)) { let ok = false; for (const setback of [0, 1, 2]) { for (const off of [...OFFS, -20, 20, -24, 24]) if ((ok = tryAt([id], setback, off))) break; if (ok) break; } }
+    const order = done ? [] : shuffledCand;
     // 가까운 자리부터, 안 되면 ±16칸까지(계단식 비탈 물가 띠 88×56 seed 11 은 ±10 안이 다 단 경계였다 — 길가 집 띠가 지형·물에 좁아진 마을에서 앵커를 놓치지 않게 — 앞 자리에서 찾으면 결과는 그대로)
     // 길에 바로 붙일 자리가 없으면 1~2칸 물러앉히고 문 앞을 길로 잇는다(굽은 길이 집 밑으로 파고드는 자리·좁은 집 띠) — 바로 붙는 자리를 다 본 뒤에만
     for (const setback of [0, 1, 2]) {

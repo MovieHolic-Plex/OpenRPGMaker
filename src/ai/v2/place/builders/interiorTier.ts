@@ -31,7 +31,7 @@ export function tierProgramOf(project: BuildRun["ctx"]["project"], ask: Pick<Tie
   if (!o?.tier || o.tier === "small" || o.tileset !== ask.tilesetId) return undefined;
   const tags = o.kit ? project.tilesets[o.tileset]?.structureKits?.find((k) => k.id === o.kit)?.ai?.tags ?? [] : [];
   const kit = kitInteriorKinds(table, tags);
-  const got = tierProgramFor(table, o.tier, ask.named ? [ask.mainKind, ...kit] : [...kit, ask.mainKind], ask.varietyKey);
+  const got = tierProgramFor(table, o.tier, ask.named ? [ask.mainKind, ...kit] : [...kit, ask.mainKind], ask.varietyKey, o.cat);
   return got ? { ...got, table } : undefined;
 }
 
@@ -57,8 +57,19 @@ export function buildTier(run: BuildRun, spec: PlaceSpec, ask: TierAsk, notes: s
     if (!a.ok && mapId) a = build(run, { ...base, mapId: undefined, replace: undefined, layout });
     if (!a.ok) return a.summary.slice(0, 240);
     if (!reachOk(a)) return `닿지 못하는 바닥 ${(a.data?.unreachedFloor as unknown[] | undefined)?.length ?? "?"}칸`;
+    // 문 앞 발깔개는 바깥문 방에만 — 안쪽 방(칸막이 문으로 드나드는 방)의 남쪽 벽 앞 깔개는 걷는다.
+    const rb0 = a.data?.rebuild as Rebuild;
+    const exitRoom = placed.exit.width === 0 ? undefined : rb0.rooms.find((r) => r.id === placed.exit.room);
+    const inExit = (o: { x: number; y: number }) => !!exitRoom && o.x >= exitRoom.x0 && o.x <= exitRoom.x1 && o.y >= exitRoom.y0 && o.y <= exitRoom.y1;
+    const kept = rb0.objects.filter((o) => o.id !== "door mat" || inExit(o));
+    let rb = rb0;
+    if (kept.length < rb0.objects.length) {
+      const again = build(run, argsFromRebuild({ ...base, mapId: String(a.data?.mapId), replace: true }, { ...rb0, objects: kept }));
+      if (again.ok && reachOk(again)) rb = { ...rb0, objects: kept };
+      else build(run, argsFromRebuild({ ...base, mapId: String(a.data?.mapId), replace: true }, rb0));
+    }
     const entrance = Array.isArray(a.data?.entrance) ? (a.data!.entrance as { x: number; y: number }[])[0] : undefined;
-    return { mapId: String(a.data?.mapId), rb: a.data?.rebuild as Rebuild, base: { ...base, mapId: String(a.data?.mapId), replace: true }, ...(entrance ? { entrance } : {}) };
+    return { mapId: String(a.data?.mapId), rb, base: { ...base, mapId: String(a.data?.mapId), replace: true }, ...(entrance ? { entrance } : {}) };
   };
   const n = program.shapes.length;
   const first = ask.force?.shape ?? ask.prev?.shape ?? mixHash(hashText(`${ask.varietyKey}|shape|${programId}`)) % n;

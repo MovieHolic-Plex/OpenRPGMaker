@@ -350,4 +350,5 @@ OBJECTS += [
     ("confessional", "confessional", "wall", 2, 1, "church", "고해소", ["본당", "대성당"], "structure", {}),
     ("council bench", "council-bench", "floor", 3, 1, "office", "재판·평의 단상", ["읍사무소", "세관", "회관"], "structure", {}),
     ("hoist", "hoist", "floor", 2, 1, "store", "짐 끌어올리는 틀", ["창고", "세관", "방앗간"], "structure", {}),
+    ("tower bell", "tower-bell", "floor", 2, 1, "church", "종탑의 종(나무 틀)", ["종탑", "대성당"], "structure", {}),
 ]

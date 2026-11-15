@@ -30,6 +30,9 @@ import { exteriorLook, exteriorWall } from "./interiorExterior";
 /** 조합 길로 짓는 방 종류(2026-10-29 서재부터 — 다른 종류는 서재 결과를 본 뒤). */
 const COMPOSED_KINDS: ReadonlySet<string> = new Set(["study"]);
 
+/** 그 단의 집 안에 적어도 있어야 하는 방 수(구성 표의 가장 작은 평면 — 중형 2 · 대형 4 · 초대형 8). */
+const TIER_MIN_ROOMS: Readonly<Record<string, number>> = { medium: 2, large: 4, xlarge: 8 };
+
 export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
 - ★ You design every cell: put one cell layout in spec.layout — map size, the landmark, the outer wall ring, partition walls (wall to wall), doors on those walls, the entrance, one label per room (floor, purpose), wall_items bound to a wall (windows, shelves, fireplace, beds, stairs up) and floor objects (catalog ids). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, open walls, unlabelled pockets, wall-face rules, a door that joins nothing, unreachable rooms, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
 - layout format: ${LAYOUT_FORMAT}
@@ -65,7 +68,17 @@ export const interiorBuilder: PlaceBuilder = {
     // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
-    if (hasLayout(spec)) {
+    // 큰 집(문이 달린 집 킷의 단이 중형 이상)에 방이 모자란 칸 배치가 오면 그 집의 단과 필요한 방 수를 말해 돌려보낸다 — 고치기를 다 쓰면 구성 표대로 짓는다(interiorTier.ts).
+    const prevTier = (prev as { tier?: TierState } | undefined)?.tier;
+    const houseTier = prevTier ? tierTableOf(tilesetId)?.programs[prevTier.program]?.tier : outside?.tier;
+    const tierRooms = houseTier && tierTableOf(tilesetId) && (prevTier || outside?.tileset === tilesetId) ? TIER_MIN_ROOMS[houseTier] : undefined;
+    const sentRooms = hasLayout(spec) ? Math.max(1, ((spec.layout as { regions?: unknown[] }).regions ?? []).length) : 0;
+    const thinLayout = !!tierRooms && hasLayout(spec) && sentRooms < tierRooms;
+    if (thinLayout && Number(spec.hints?.layoutRepairsLeft ?? 2) > 0) {
+      return { ok: false, mapIds: [], warnings: [], missingArt: [], calls: run.calls,
+        summary: `Rejected: "${spec.name}" is the inside of a ${houseTier} building${outside?.kit ? ` (house kit ${outside.kit})` : ""} — a ${houseTier} building has at least ${tierRooms} rooms, and this layout has ${sentRooms}. Send make_place again with a layout of ${tierRooms} or more regions joined by openings, or send it without layout and the builder lays the ${houseTier} plan (rooms, doors between them, stairs to other floors).` };
+    }
+    if (hasLayout(spec) && !thinLayout) {
       // 모델은 목록 카드의 id 로 썼다 — 카드가 바깥 칩셋의 것이었을 때만(지금 맵의 칩셋이 역할표를 든다, interiorTilesetFor) 그 칩셋으로 깐다.
       const shown = interiorTilesetFor(run.ctx.project, run.ctx.currentMapId)?.id;
       const lt = outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
@@ -98,7 +111,6 @@ export const interiorBuilder: PlaceBuilder = {
     const varietyKey = `${spec.variety ?? run.ctx.project.meta.title ?? ""}|${spec.name}|${spec.theme ?? ""}`;
     // 크기 단(중형·대형·초대형): 문이 달린 집 킷의 tier 태그가 한 방짜리보다 큰 단이고 칩셋에 그 단의 구성이 있으면 구성 표대로 짓는다(interiorTier.ts).
     // 모델이 설계한 방(zone.design)이 있으면 그 설계가 먼저다.
-    const prevTier = (prev as { tier?: TierState } | undefined)?.tier;
     if ((prevTier || (outside?.tier && outside.tier !== "small")) && tierTableOf(tilesetId) && !(spec.zones ?? []).some((z) => z.design)) {
       const kindOut: { fallback?: boolean } = {};
       const mainKind = resolveKind(tilesetId, firstFloor[0] ?? { kind: spec.name, purpose: spec.name }, [], `${spec.name} ${spec.theme ?? ""}`, true, kindOut);

@@ -8,7 +8,7 @@
   "bundle",
   "shared"
  ],
- "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 167(큰 물건 118 · 사는 사람의 물건 34 · 큰 공간 15) · 빛 무늬 3 · 탁상 물건 24. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 다시 그린 것 11장). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
+ "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 194(사는 사람의 물건 35 · 큰 공간과 성당·성의 큰 물건 포함) · 단상 3 · 빛 무늬 3 · 탁상 물건 24 — 모두 242장. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 한 번 다시 그린 것 포함). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
  "items": [
   {
    "pixelSha256": "7f8c25e01a4cc454ac14c9d6e362de46e48e135ddbe6d4942bf607e154f173ad",
@@ -9211,6 +9211,48 @@
      "5683613fa3eb54ee",
      "b3326abe9fb61a44",
      "f0b692fd1430df2d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e1015e01c9b079ca3c6fd0d04b9f4b571774ce4b1382360e278875918ea07093",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-tower-bell",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "038a42ea4759b301",
+     "4090b7e06aab4c74",
+     "75e3c7f7e2884f88",
+     "7d5da94304b424f5",
+     "7ea034ba38a86cea",
+     "d121aed110fc527a"
+    ],
+    "24": [
+     "29a00add42a1fa2d",
+     "2fba6a316d0d97a6",
+     "37a42110137b3a7d",
+     "915dbd0a2d977440",
+     "99ae303c6ac06166",
+     "a2f4b0bd50ebb735",
+     "b37c1eace3f3bf1c",
+     "bf7e2479a62290b6",
+     "da278e1ebfef9195",
+     "dac9acf16cd3faf2",
+     "edf55ab24035cfd0",
+     "fdce1593b3d63001"
+    ],
+    "32": [
+     "55ec382e2586e914",
+     "585058ce8b8717b2",
+     "745939774299b859",
+     "77cf37d48b767313"
+    ],
+    "48": [
+     "2c5ba7c77773d638",
+     "9654906be842ef06",
+     "d40c24ea3151256a"
     ]
    }
   },

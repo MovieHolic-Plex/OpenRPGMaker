@@ -13,6 +13,7 @@ import { beodeulGroundReferences } from './beodeulGround';
 import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
 import {ensureBeodeulOrganic} from './beodeulOrganic';
+import {stampBeodeulKitUse} from './beodeulKitUse';
 import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
 import {beodeulMassingHostReferences,ensureBeodeulMassing} from './beodeulMassing';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
@@ -154,6 +155,8 @@ export function createBeodeulCityTileset(): TilesetDef {
   ensureBeodeulReviewed(tileset);
   ensureBeodeulMassing(tileset);
   ensureBeodeulOrganic(tileset);
+  // 문 달린 건물 킷 전부에 크기 단(tier:)과 표에 있는 안의 방 종류(interior:)를 적는다 — beodeulKitUse.ts.
+  stampBeodeulKitUse(tileset);
   return tileset;
 }
 

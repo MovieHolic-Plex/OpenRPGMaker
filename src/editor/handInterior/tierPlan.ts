@@ -36,6 +36,8 @@ export interface TierProgram {
   readonly tier: TierName; readonly ko: string;
   /** 이 구성이 맡는 장소의 방 종류(문이 달린 집 킷의 interior 태그 첫 방 · 장소 이름이 가리키는 종류). */
   readonly serves: readonly string[];
+  /** 이 갈래(킷 태그 cat:)의 집에만 — 성 본채는 성읍 건물에만, 세관은 항구 건물에만. 없으면 어느 갈래든. */
+  readonly cats?: readonly string[];
   /** 본채 평면의 벌들 — 게임 열쇠가 하나를 고른다(같은 건물도 게임마다 모양이 다르다). */
   readonly shapes: readonly TierMapPlan[];
   /** 본채에 딸린 다른 맵(위층·지하·탑·별채)과 그 길. 초대형은 여러 장이다. */
@@ -137,11 +139,16 @@ export function kitInteriorKinds(table: TierTable | undefined, tags: readonly st
  * 이 집의 구성: 단(tier)은 문이 달린 집 킷의 것 그대로. 무엇의 집인가는 종류 후보(kinds — 앞이 먼저)에서 그 단에 구성이 있는 첫 종류.
  * 그 종류를 맡는 구성이 여럿이면 게임 열쇠가 고른다. 없으면 undefined(한 방짜리로 짓는다).
  */
-export function tierProgramFor(table: TierTable | undefined, tier: string | undefined, kinds: readonly string[], key: string): { id: string; program: TierProgram } | undefined {
+export function tierProgramFor(table: TierTable | undefined, tier: string | undefined, kinds: readonly string[], key: string, cat?: string): { id: string; program: TierProgram } | undefined {
   if (!table || !tier) return undefined;
-  for (const kind of kinds) {
-    const ids = Object.entries(table.programs).filter(([, p]) => p.tier === tier && p.serves.includes(kind)).map(([id]) => id).sort();
-    if (ids.length) { const id = ids[mixHash(hashText(`${key}|tier|${kind}`)) % ids.length]!; return { id, program: table.programs[id]! }; }
+  // 그 단에 그 종류의 구성이 없으면 한 단씩 내려 본다(초대형 킷의 살림집 → 대형 저택, 큰 등대 → 중형 망루). 소형까지 내려가면 한 방짜리.
+  const down = ["xlarge", "large", "medium"];
+  for (const t of down.slice(Math.max(0, down.indexOf(tier)))) {
+    if (!down.includes(tier)) break;
+    for (const kind of kinds) {
+      const ids = Object.entries(table.programs).filter(([, p]) => p.tier === t && p.serves.includes(kind) && (!p.cats || (!!cat && p.cats.includes(cat)))).map(([id]) => id).sort();
+      if (ids.length) { const id = ids[mixHash(hashText(`${key}|tier|${kind}`)) % ids.length]!; return { id, program: table.programs[id]! }; }
+    }
   }
   return undefined;
 }

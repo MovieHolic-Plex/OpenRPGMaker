@@ -1,4 +1,5 @@
 // 끝맺음 단계가 모델 대신 부르는 것 — 청사진 경로 짓기, 이동 칸 앞 비우기, 청사진 장소 짓기·잇기. 세션에 걸어 둔다.
+import { kitServesBuilding, type BuildingNeed } from "@/project/kitTier";
 import { createBuildRun } from "../shared/buildRun";
 import { builderFor } from "../place/builders";
 import { parseWorldStyle, pickWorldDoor, worldKind, worldOf, worldPlaceSpec } from "../place/world";
@@ -95,6 +96,16 @@ export function installSessionHooks(c: VerbContext) {
       if (pm) for (const d of roleDoors(env.ctx.project, pm)) used.add(`${d.front.x},${d.front.y}`);
       return villageDoors(parent.result ?? ({ state: undefined } as unknown as PlaceBuildResult)).filter((d) => !used.has(`${d.x},${d.y}`));
     };
+    // 큰 건물(크기 단): 청사진의 실내 장소 종류가 바깥 건물을 정하면(world kind 의 building — 여관·회관·성당·성) 그 장소가 달릴 마을이 그 건물을 세운다.
+    // 달릴 마을 = 청사진이 적은 from, 없으면 마지막 마을. 장소 이름·요청 낱말은 보지 않는다.
+    const villages = plan.filter((e) => { const k = kindOf(e.place); return !!world && !!k && !k.indoor && worldPlaceSpec(world, k, e.name).type === "village"; }).map((e) => e.name);
+    const wantedBy = new Map<string, BuildingNeed[]>();
+    for (const e of plan) {
+      const need = kindOf(e.place)?.building;
+      const host = need ? (e.place?.from && villages.includes(e.place.from) ? e.place.from : villages.at(-1)) : undefined;
+      if (need && host) wantedBy.set(host, [...(wantedBy.get(host) ?? []), need]);
+    }
+    const kitOf = (mapId: string, id: string | undefined) => { const m = env.ctx.project.maps[mapId]; return id && m ? env.ctx.project.tilesets[m.tilesetId]?.structureKits?.find((k) => k.id === id) : undefined; };
     const outdoors: Built[] = [];
     let prev: Built = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
     for (const { name, place } of plan) {
@@ -112,13 +123,24 @@ export function installSessionHooks(c: VerbContext) {
       const hostMap = planned ? mapOf(planned.host, true) : undefined;
       const roleDoor = hostMap ? roleDoors(env.ctx.project, hostMap).find((d) => d.need === planned!.needId) : undefined;
       const parent: Built = roleDoor ? recordOf(hostMap!.id) : fromMap ? recordOf(fromMap.id) : doorHost ?? (world && kind ? outdoors.at(-1) : undefined) ?? prev;
-      const door = roleDoor ? { x: roleDoor.front.x, y: roleDoor.front.y, kit: roleDoor.kit } : world && kind?.indoor ? pickWorldDoor(world, kind, freeDoors(parent)) : undefined;
+      // 큰 건물 종류는 그 쓰임·단의 건물 문에. 그 밖의 실내는 아직 주인을 못 만난 청한 건물의 문을 남겨 둔다(촌장 집이 여관 건물을 가져가지 않게).
+      const free = world && kind?.indoor && !roleDoor ? freeDoors(parent) : [];
+      const serves = (d: { kit?: string }, need: BuildingNeed) => { const k = kitOf(parent.mapId, d.kit); return !!k && kitServesBuilding(k, need); };
+      const pending = plan.slice(plan.findIndex((e) => e.name === name) + 1).map((e) => kindOf(e.place)?.building).filter((b): b is BuildingNeed => !!b);
+      const own = kind?.building ? free.find((d) => serves(d, kind.building!)) : undefined;
+      const spare = free.filter((d) => !pending.some((need) => serves(d, need)));
+      const door = roleDoor ? { x: roleDoor.front.x, y: roleDoor.front.y, kit: roleDoor.kit } : own ?? (world && kind?.indoor ? pickWorldDoor(world, kind, spare.length ? spare : free) : undefined);
       let map = mapOf(name, !!place);
       if (!map) {
         const guess = world && kind ? worldPlaceSpec(world, kind, name) : guessPlaceSpec(name, env.ctx.project, bp.genre, String(task ?? ""));
         const composed = !!parseWorldStyle(guess.style);
+        const wanted = guess.type === "village" ? wantedBy.get(name) : undefined;
+        const bigSize = wanted?.some((w) => !w.tiers.includes("medium")) ? "large" : wanted && guess.size === "small" ? "medium" : undefined;
+        const bigBuildings: Partial<PlaceSpec> = wanted ? { hints: { ...(guess.hints ?? {}), buildings: wanted as never }, ...(bigSize ? { size: bigSize } : {}) } : {};
         const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
           ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}),
+          // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildings) — 큰 건물이 설 터가 있게 마을도 한 단 크게.
+          ...bigBuildings,
           // 집 안은 그 집의 바깥을 따른다 — 문이 달린 맵의 칩셋과 그 문의 집 킷을 명세에 적는다(실내 빌더가 칩셋·벽면을 고른다, interiorExterior.ts).
           ...(isInside(guess) && !composed && env.ctx.project.maps[parent.mapId] ? { exterior: { tileset: env.ctx.project.maps[parent.mapId]!.tilesetId, ...(door?.kit ? { kit: door.kit } : {}) } } : {}),
           ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) };

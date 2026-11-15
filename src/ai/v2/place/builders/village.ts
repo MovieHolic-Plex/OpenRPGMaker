@@ -5,6 +5,7 @@ import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
 import { isPassable } from "@/project/collision";
+import { kitServesBuilding, type BuildingNeed } from "@/project/kitTier";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { eventsOf, tileLabel } from "../cells";
 import { roadCells } from "../surface";
@@ -32,7 +33,7 @@ export function cleanLayoutHint(value: unknown): Record<string, unknown> | null 
   return lay.gather || lay.houses ? lay : null;
 }
 
-const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour"]);
+const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "buildings", "width", "height", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
@@ -185,6 +186,27 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 집 수 맞추기: 씨앗을 정하지 않았으면 사본 위에서 씨앗 몇 개를 미리 지어 보고 요청한 집 수에 가장 가까운 것을 고른다.
   // 실제 맵에 한 번 지으면 「완성된 집 보호」로 AI 가 다시 지을 수 없어서(2026-10-23 v2), 고르기는 짓기 전에 끝낸다.
   const wantHouses = num(args.houseCount);
+  // 이야기가 청한 큰 건물(hints.buildings): 지형·물에 따라 그 킷이 못 앉는 씨앗이 있다 — 사본 위에서 씨앗 몇 개를 지어 보고 청한 건물이 모두 선 첫 씨앗을 고른다(없으면 가장 많이 선 것).
+  const needs = (Array.isArray(args.buildings) ? args.buildings : []) as BuildingNeed[];
+  if (!prev && args.seed === undefined && needs.length && !args.layout) {
+    let best: { seed: number; stood: number } | undefined;
+    const salt = spec.salt ?? [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    for (let i = 0; i < 6; i++) {
+      const seed = (salt + i * 7919) % 100000;
+      const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
+      const r = trial.call("author_beodeul_town", { name: spec.name, ...args, seed, ...(mapId ? { mapId } : {}) });
+      const data = r.data as { mapId?: string; doors?: { kit?: string; reached?: boolean }[] } | undefined;
+      const tm = data?.mapId ? trial.ctx.project.maps[data.mapId] : undefined;
+      if (!r.ok || !tm) continue;
+      const kits = (data?.doors ?? []).filter((d) => d.reached !== false).map((d) => trial.ctx.project.tilesets[tm.tilesetId]?.structureKits?.find((k) => k.id === d.kit)).filter((k) => !!k);
+      // 한 킷은 한 주문만 채운다(여관과 회관을 한 건물이 겸하지 않는다).
+      const left = [...kits]; let stood = 0;
+      for (const need of needs) { const at = left.findIndex((k) => kitServesBuilding(k!, need)); if (at >= 0) { left.splice(at, 1); stood++; } }
+      if (!best || stood > best.stood) best = { seed, stood };
+      if (stood === needs.length) break;
+    }
+    if (best) args.seed = best.seed;
+  }
   if (!prev && args.seed === undefined && wantHouses === undefined && spec.salt !== undefined) args.seed = spec.salt % 100000;
   if (!prev && args.seed === undefined && wantHouses !== undefined && !args.layout) {
     let best: { seed: number; houses: number } | undefined;

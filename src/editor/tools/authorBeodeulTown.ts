@@ -1,3 +1,4 @@
+import type { BuildingNeed } from "@/project/kitTier";
 import { naturalizeBeodeulHamlet } from './beodeulHamletTools';
 import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 // author_beodeul_town — 버들항 문법으로 마을·도시를 블록 키트 조립으로 깐다(2026-10-01).
@@ -712,7 +713,9 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     layoutNotes.splice(0, layoutNotes.length, ...notes);
     return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed, villageCliffHabit(activeTilesetLook(tileset) ?? projectTilesetLook(draft, BEODEUL_TILESET_ID, activeKitLook()))), layout };
   };
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  // 이야기가 청한 큰 건물(조수 v2 마을 빌더가 청사진 장소 종류에서 넘긴다 — 스키마에 싣지 않는 안쪽 인자). 모양이 맞는 것만 받는다.
+  const buildings = (Array.isArray(args.buildings) ? args.buildings : []).filter((b): b is BuildingNeed => !!b && typeof b === "object" && Array.isArray((b as BuildingNeed).kinds) && Array.isArray((b as BuildingNeed).tiers)).slice(0, 4);
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(buildings.length ? { buildings } : {}), ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).

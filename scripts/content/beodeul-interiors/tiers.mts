@@ -20,26 +20,26 @@ const T = (r: Omit<TierRoomSpec, "tier" | "building">): TierRoomSpec => ({ ...r,
 export const TIER_ROOMS: TierRoomSpec[] = [
   // ── 복도(가로): 바닥 두 줄 — 위아래 방으로 문이 난다. 벽에는 등과 걸개, 바닥에는 긴 양탄자 ──
   T({ id: "corr-a", kind: "t_corridor", floor: "dplank", wall: "plaster",
-    legend: { l: "wall lantern", t: "tapestry", c: "crate", h: "hat stand" },
-    hang: "..l....t..l..",
-    plan: [".............", "c...........h"], daises: [["dais red", 1, 0, 11, 1]] }),
+    legend: { l: "wall lantern", c: "wall clock", t: "tapestry", A: "armor stand", g: "geranium", x: "crate", n: "cushion bench", h: "hat stand" },
+    hang: "..l..c.t..l..",
+    plan: ["A...........g", "x...n.......h"], daises: [["dais red", 1, 0, 4, 1], ["dais red", 8, 0, 4, 1]] }),
   T({ id: "corr-b", kind: "t_corridor", floor: "dplank", wall: "plaster",
-    legend: { l: "wall lantern", p: "portrait", b: "barrel", u: "umbrella jar", n: "cushion bench" },
-    hang: "..l.....p.....l....",
-    plan: ["...................", "b.n.............u.."], daises: [["dais blue", 1, 0, 17, 1]] }),
+    legend: { l: "wall lantern", m: "mirror", p: "portrait", c: "wall clock", B: "bookcase", k: "knight statue", b: "barrel", n: "cushion bench", g: "geranium", u: "umbrella jar" },
+    hang: "..l..m..p..c..l....",
+    plan: ["B................k.", "b.n.....g...n...u.."], daises: [["dais blue", 2, 0, 6, 1], ["dais blue", 11, 0, 6, 1]] }),
   T({ id: "corr-c", kind: "t_corridor", floor: "dplank", wall: "plaster",
-    legend: { l: "wall lantern", p: "portrait pair", t: "tapestry", h: "hat stand", k: "chest", n: "cushion bench" },
-    hang: "..l......t.....p....t.....l..",
-    plan: [".............................", "h..n....................k...."], daises: [["dais red", 1, 0, 27, 1]] }),
+    legend: { l: "wall lantern", p: "portrait pair", t: "tapestry", c: "wall clock", A: "armor stand", h: "hat stand", n: "cushion bench", g: "geranium", k: "chest" },
+    hang: "..l...p..t.....c....t..p..l..",
+    plan: ["A...........................A", "h..n....g...........g..n..k.."], daises: [["dais red", 2, 0, 8, 1], ["dais red", 11, 0, 7, 1], ["dais red", 19, 0, 8, 1]] }),
   // ── 계단참: 나선 계단 하나(탑·위층으로) ──
   T({ id: "stair-a", kind: "t_stair", floor: "flag", wall: "rubble",
     legend: { S: "spiral stairs", l: "wall lantern", b: "barrel", c: "crate" },
     hang: "...l.",
     plan: ["S....", ".....", "b...c", "....."] }),
   T({ id: "corr-d", kind: "t_corridor", floor: "dplank", wall: "plaster",
-    legend: { l: "wall lantern", p: "portrait pair", t: "tapestry", h: "hat stand", k: "chest" },
-    hang: "..l......t.......p.......t.....l...",
-    plan: [".".repeat(35), `h${".".repeat(32)}k.`], daises: [["dais red", 1, 0, 33, 1]] }),
+    legend: { l: "wall lantern", p: "portrait pair", t: "tapestry", b: "banner", c: "wall clock", A: "armor stand", h: "hat stand", n: "cushion bench", g: "geranium", s: "knight statue", k: "chest" },
+    hang: "..l...p..t...b...c...b...t..p..l...",
+    plan: [`A${".".repeat(33)}A`, "h..n....g......s...s......g...n..k."], daises: [["dais red", 2, 0, 9, 1], ["dais red", 13, 0, 9, 1], ["dais red", 24, 0, 9, 1]] }),
   // ── 위층 복도(내려가는 계단이 끝에) · 큰 계단 현관 · 지하로 내려가는 계단참 ──
   T({ id: "upcorr-a", kind: "t_upcorr", floor: "dplank", wall: "plaster",
     legend: { D: "stairs down", l: "wall lantern", h: "hat stand" },
@@ -54,9 +54,9 @@ export const TIER_ROOMS: TierRoomSpec[] = [
     hang: "...l.",
     plan: ["D....", ".....", "b...c", "....."] }),
   T({ id: "belfry-a", kind: "t_belfry", floor: "flag", wall: "rubble",
-    legend: { S: "spiral stairs", W: "window", w: "window light", r: "rope coil", c: "crate", b: "barrel", k: "keg" },
+    legend: { S: "spiral stairs", W: "window", w: "window light", r: "rope coil", c: "crate", b: "barrel", B: "tower bell" },
     hang: "W.....W",
-    plan: ["wS....w", ".......", "r.....c", ".......", "b.....k"] }),
+    plan: ["wS....w", ".......", "r..B..c", ".......", "b......"] }),
   // ══ 큰 홀 — 홀마다 «다른 것 하나»(기둥·식탁의 같은 간격 되풀이로만 채우지 않는다) ══
   // 큰 주점: 무대 — 뒤 벽 가운데 무대, 왼쪽에 바, 오른쪽에 큰 벽난로와 긴 식탁
   T({ id: "tavhall-a", kind: "t_tavern_hall", floor: "dplank", wall: "plaster",
@@ -130,6 +130,22 @@ export const TIER_ROOMS: TierRoomSpec[] = [
       "................",
       "....F.........c.",
     ], daises: [["dais stone", 5, 0, 5, 2], ["dais red", 7, 2, 2, 9]] }),
+  // 대성당 본당(성소와 벽 없이 트인다 — 뒤 벽에 거는 것이 없다): 돌기둥 두 줄, 장의자, 설교단, 가운데 긴 양탄자
+  T({ id: "nave-b", kind: "t_nave_open", floor: "grey", wall: "grey",
+    legend: { s: "stone column", P: "pulpit", p: "pew", k: "knight statue", F: "font", c: "candelabrum" },
+    hang: "................",
+    plan: [
+      ".s..........P.s.",
+      "..p.p.....p.p...",
+      "..p.p.....p.p...",
+      ".s............s.",
+      "..p.p.....p.p...",
+      "..p.p.....p.p...",
+      ".s............s.",
+      "..p.p.....p.p...",
+      "................",
+      "k...F.........c.",
+    ], daises: [["dais red", 7, 0, 2, 10]] }),
   // 성소(대성당 안쪽): 큰 단 위 주 제단, 오르간, 성가대석
   T({ id: "sanct-a", kind: "t_sanctuary", floor: "grey", wall: "grey",
     legend: { G: "stained window", w: "window light", O: "rose window", R: "organ", a: "altar", X: "confessional", f: "floor candle", p: "pew" },
@@ -297,14 +313,14 @@ export const TIER_PROGRAMS: Record<string, TierProgram> = {
       R("living", "living", "W:court:end"), R("study", "study", "E:court:end"), R("dining", "dining", "N:court:center"), R("kitchen", "kitchen", "W:dining:end"), R("store", "storeroom", "E:dining:end")]),
   ], maps: [M("up", "위층", undefined, [R("landing", "t_upcorr"), R("bed1", "bedroom", "N:landing:start"), R("bed2", "bedroom", "N:landing:end"), R("lib", "library", "S:landing:center")])],
     links: [{ from: "main/entry/grand stairs", to: "up/landing/stairs down" }] },
-  "l-guild": { tier: "large", ko: "조합 회관", serves: ["great_hall", "study"], shapes: [
+  "l-guild": { tier: "large", ko: "조합 회관", serves: ["great_hall"], shapes: [
     M("l-guild-stairs", "큰 계단 홀 — 홀 양옆에 서기 방과 대기실, 뒤 복도에 서고·식당·창고", "hall", [R("hall", "great_hall", undefined, { template: "hall-l" }), R("office", "study", "W:hall:end"), R("wait", "waiting_room", "E:hall:end"),
       R("corr", "t_corridor", "N:hall:center", { template: "corr-d" }), R("lib", "library", "N:corr:start"), R("dining", "dining", "N:corr:center"), R("store", "storeroom", "N:corr:end")]),
     M("l-guild-board", "게시판 홀 — 게시판 벽 홀 옆으로 계단 현관·서기 방이 한 줄, 왼쪽에 대기실, 뒤에 서고", "hall", [R("hall", "t_guild_hall"), R("stair", "t_stairhall", "E:hall:end"), R("office", "study", "E:stair:end"),
       R("wait", "waiting_room", "W:hall:end"), R("lib", "library", "N:hall:start")]),
   ], maps: [M("up", "위층", undefined, [R("landing", "t_upcorr"), R("master", "study", "N:landing:start"), R("guest", "inn_room", "N:landing:end")])],
     links: [{ from: "main/*/grand stairs", to: "up/landing/stairs down" }] },
-  "l-townhall": { tier: "large", ko: "읍사무소", serves: ["waiting_room"], shapes: [
+  "l-townhall": { tier: "large", ko: "읍사무소", serves: ["waiting_room", "study"], shapes: [
     M("l-townhall-deep", "앞뒤 — 대기실 뒤 평의실, 평의실 양옆에 사무실, 대기실 양옆에 문서 창고와 금고", "wait", [R("wait", "waiting_room"), R("council", "t_council", "N:wait:center"), R("office1", "study", "W:council:end"), R("office2", "study", "E:council:end"),
       R("archive", "storeroom", "W:wait:end"), R("vault", "t_vault", "E:wait:end")]),
     M("l-townhall-corr", "현관 복도 — 긴 복도에 대기실·평의실·사무실이 나란히, 평의실 뒤에 문서 창고, 복도 끝에 금고", "corr", [R("corr", "t_corridor", undefined, { template: "corr-d" }), R("wait", "waiting_room", "N:corr:start"), R("council", "t_council", "N:corr:center"),
@@ -338,7 +354,7 @@ export const TIER_PROGRAMS: Record<string, TierProgram> = {
     M("l-school-hall", "열람실 가운데 — 큰 서고 양옆에 교실, 뒤에 훈장 방과 필사실", "hall", [R("hall", "t_library_hall"), R("class1", "classroom", "W:hall:end"), R("class2", "classroom", "E:hall:end"), R("office", "study", "N:hall:start"), R("scribe", "t_scriptorium", "E:office:end")]),
   ] },
   // ════ 초대형 — 돌아다니는 장소(본채 44×32칸 넘게, 맵 3~4장: 탑·지하·위층이 계단으로 이어진다) ════
-  "x-castle": { tier: "xlarge", ko: "성 본채", serves: ["great_hall", "guard_room", "jail", "dining"], shapes: [
+  "x-castle": { tier: "xlarge", ko: "성 본채", serves: ["great_hall", "guard_room", "jail", "dining"], cats: ["castle"], shapes: [
     M("x-castle-main", "문간 · 안뜰 · 알현실이 한 축 — 안뜰 서쪽에 부엌과 식당, 동쪽에 무기고와 경비실, 알현실 양옆에 예배실과 서기 방", "gate", [R("gate", "t_stairhall"), R("court", "t_court", "N:gate:center"), R("throne", "t_throne", "N:court:center"),
       R("kitchen", "t_castle_kitchen", "W:court:end"), R("mess", "t_refectory", "W:kitchen:end"), R("armoury", "t_armoury", "E:court:end"), R("guard", "guard_room", "E:armoury:end"),
       R("chapel", "chapel", "W:throne:end"), R("clerk", "study", "E:throne:end"), R("down", "t_downstair", "E:gate:end"), R("tower", "t_stair", "W:gate:end")]),
@@ -348,14 +364,14 @@ export const TIER_PROGRAMS: Record<string, TierProgram> = {
     M("up", "위층 처소", undefined, [R("landing", "t_upcorr"), R("royal", "bedroom", "N:landing:start"), R("solar", "study", "N:landing:end"), R("dorm", "t_dorm", "S:landing:center")]),
   ], links: [{ from: "main/down/stairs down", to: "dungeon/st/spiral stairs" }, { from: "main/tower/spiral stairs", to: "keep/lamp/spiral stairs" }, { from: "main/gate/grand stairs", to: "up/landing/stairs down" }] },
   "x-cathedral": { tier: "xlarge", ko: "대성당", serves: ["chapel"], shapes: [
-    M("x-cathedral-main", "긴 축 — 현관 복도 · 본당 · 성소 · 뒤 회랑 · 성모 예배실, 본당 양옆에 곁 예배실, 성소 양옆에 성구실과 보물 방, 곁 예배실 바깥에 종탑과 지하 계단", "porch", [R("porch", "t_corridor", undefined, { template: "corr-d" }),
-      R("nave", "t_nave", "N:porch:center"), R("north", "chapel", "W:nave:end"), R("south", "chapel", "E:nave:end"), R("sanct", "t_sanctuary", "N:nave:center"), R("vestry", "study", "W:sanct:end"), R("treasury", "t_vault", "E:sanct:end"),
+    M("x-cathedral-main", "긴 축 — 현관 복도 · 본당과 성소(벽 없이 트인 한 공간) · 뒤 회랑 · 성모 예배실, 본당 양옆에 곁 예배실, 성소 양옆에 성구실과 보물 방, 곁 예배실 바깥에 종탑과 지하 계단", "porch", [R("porch", "t_corridor", undefined, { template: "corr-d" }),
+      R("nave", "t_nave_open", "N:porch:center"), R("north", "chapel", "W:nave:end"), R("south", "chapel", "E:nave:end"), R("sanct", "t_sanctuary", "N:nave:center", { open: true }), R("vestry", "study", "W:sanct:end"), R("treasury", "t_vault", "E:sanct:end"),
       R("amb", "t_corridor", "N:sanct:center", { template: "corr-b" }), R("lady", "chapel", "N:amb:center"), R("belfry", "t_stair", "W:north:end"), R("down", "t_downstair", "E:south:end")]),
   ], maps: [
     M("crypt", "지하 묘", undefined, [R("crypt", "t_crypt"), R("ossuary", "cellar", "E:crypt:end")]),
     M("bells", "종탑", undefined, [R("ringers", "t_belfry")]),
   ], links: [{ from: "main/down/stairs down", to: "crypt/crypt/spiral stairs" }, { from: "main/belfry/spiral stairs", to: "bells/ringers/spiral stairs" }] },
-  "x-monastery": { tier: "xlarge", ko: "수도원과 큰 서고", serves: ["library", "study"], shapes: [
+  "x-monastery": { tier: "xlarge", ko: "수도원과 큰 서고", serves: ["library"], shapes: [
     M("x-monastery-main", "안뜰 둘레 — 문간 뒤 회랑 뜰을 식당·필사실·큰 서고가 둘러싸고, 식당 뒤에 부엌, 필사실 뒤에 공동 침실과 옆에 예배실, 서고 양옆에 참사 회의실과 탑 계단, 뒤에 원장 방", "gate", [R("gate", "t_corridor", undefined, { template: "corr-a" }),
       R("court", "t_court", "N:gate:center"), R("lib", "t_library_hall", "N:court:center"), R("refectory", "t_refectory", "W:court:end"), R("kitchen", "t_castle_kitchen", "N:refectory:start"),
       R("scribe", "t_scriptorium", "E:court:end"), R("chapel", "chapel", "E:scribe:end"), R("dorm", "t_dorm", "N:chapel:start"), R("chapter", "t_council", "W:lib:start"), R("stair", "t_stair", "E:lib:start"),
@@ -364,7 +380,7 @@ export const TIER_PROGRAMS: Record<string, TierProgram> = {
     M("stacks", "위층 서고", undefined, [R("st", "t_stair"), R("east", "library", "E:st:end"), R("west", "library", "W:st:end"), R("rare", "study", "N:east:start")]),
     M("cellar", "지하 저장고", undefined, [R("st", "t_stair"), R("wine", "cellar", "E:st:end"), R("brew", "brewery", "W:st:end"), R("store", "storeroom", "N:wine:start")]),
   ], links: [{ from: "main/stair/spiral stairs", to: "stacks/st/spiral stairs" }, { from: "main/down/stairs down", to: "cellar/st/spiral stairs" }] },
-  "x-customs": { tier: "xlarge", ko: "세관", serves: ["waiting_room", "storeroom"], shapes: [
+  "x-customs": { tier: "xlarge", ko: "세관", serves: ["waiting_room", "storeroom"], cats: ["harbour"], shapes: [
     M("x-customs-main", "긴 복도형 — 세관 큰 홀 뒤 긴 복도에 사무실 셋과 그 뒤 문서고, 홀 서쪽에 짐 다루는 큰 칸과 곳간, 동쪽에 금고·대기실·등탑 계단", "hall", [R("hall", "t_customs_hall"), R("corr", "t_corridor", "N:hall:center", { template: "corr-d" }),
       R("office1", "study", "N:corr:start"), R("office2", "study", "N:corr:center"), R("office3", "study", "N:corr:end"), R("archive", "library", "N:office2:center"),
       R("floor", "t_warehouse_hall", "W:hall:end"), R("bond", "storeroom", "W:floor:end"), R("down", "t_downstair", "W:bond:end"), R("vault", "t_vault", "E:hall:end"), R("wait", "waiting_room", "E:vault:end"), R("stair", "t_stair", "E:wait:end")]),

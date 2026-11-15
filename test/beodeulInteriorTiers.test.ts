@@ -10,6 +10,10 @@ import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildTier, tierProgramOf } from "@/ai/v2/place/builders/interiorTier";
 import { interiorBuilder } from "@/ai/v2/place/builders/interior";
 import { interiorCatalogCard } from "@/ai/v2/prompt/placeSpecs";
+import { kitEntranceCount, kitServesBuilding, kitTier, kitTierByFootprint, type BuildingNeed } from "@/project/kitTier";
+import { BEODEUL_KIT_INTERIOR } from "@/project/defaults/beodeulKitUse";
+import { WORLDS, worldPlaceSpec } from "@/ai/v2/place/world";
+import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
 import type { ToolContext } from "@/editor/tools/types";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
 
@@ -181,6 +185,78 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     expect(ask(undefined, "tavern", true)).toBeUndefined();
     expect(tierProgramFor(table, "medium", ["없는 종류"], "k")).toBeUndefined();
   });
+  it("문 달린 킷 224개가 모두 단을 갖는다 — 참고 건물은 적힌 태그, 나머지는 킷 자료(문 하나에 딸린 넓이)로 센 것", () => {
+    const doorKits = ts.structureKits!.filter((k) => kitEntranceCount(k) > 0);
+    expect(doorKits.length).toBeGreaterThanOrEqual(224);
+    const count: Record<string, number> = {};
+    for (const k of doorKits) {
+      const tag = k.ai?.tags?.find((t) => t.startsWith("tier:"))?.slice(5);
+      expect(tag, k.id).toBeTruthy();
+      if (!k.id.startsWith("bd-bld-ref-")) expect(tag, k.id).toBe(kitTierByFootprint(k));   // 다른 굽기가 킷을 다시 만들었으면 kit-tiers.mts 를 다시 돌린다
+      count[tag!] = (count[tag!] ?? 0) + 1;
+    }
+    // 작은 것이 많고 큰 것이 적다
+    expect(count.small!).toBeGreaterThan(count.medium!); expect(count.medium!).toBeGreaterThan(count.large!); expect(count.xlarge!).toBeGreaterThanOrEqual(10);
+    // 금: 40 · 72 · 150칸
+    const kitOf = (w: number, h: number, doors = 1) => ({ width: w, height: h, parts: Array.from({ length: doors }, () => ({ kind: "entrance" })) }) as never;
+    expect([kitTierByFootprint(kitOf(6, 6)), kitTierByFootprint(kitOf(5, 8)), kitTierByFootprint(kitOf(9, 8)), kitTierByFootprint(kitOf(12, 13)), kitTierByFootprint(kitOf(20, 8, 4)), kitTierByFootprint(kitOf(3, 3, 0))])
+      .toEqual(["small", "medium", "large", "xlarge", "small", undefined]);
+    // 태그 없는 옛 사본의 킷도 같은 단
+    const old = { ...kit("bd-house-inn"), ai: { ...kit("bd-house-inn").ai, tags: ["버들항", "house"] } };
+    expect(kitTier(old as never)).toBe("medium");
+  });
+  it("그 단에 그 종류의 구성이 없으면 한 단씩 내려간다 — 한 방짜리로 바로 떨어지지 않는다", () => {
+    expect(tierProgramFor(table, "xlarge", ["living"], "k")?.id).toBe("l-manor");
+    expect(tierProgramFor(table, "xlarge", ["lighthouse"], "k")?.id).toBe("m-tower");
+    expect(tierProgramFor(table, "xlarge", ["chapel"], "k")?.id).toBe("x-cathedral");
+    expect(tierProgramFor(table, "large", ["fisher"], "k")?.id).toBe("m-fisher");
+    expect(tierProgramFor(table, "small", ["tavern"], "k")).toBeUndefined();
+  });
+  it("킷 쓰임 표: 이름 붙은 건물은 안의 방 종류를 태그로 갖고, 청한 건물에 맞는 킷을 태그로 찾는다", () => {
+    expect(kitInteriorKinds(table, kit("bd-house-cathedral").ai!.tags!)).toEqual(["chapel"]);
+    expect(kitInteriorKinds(table, kit("bd-house-mk-town-hall").ai!.tags!)).toEqual(["waiting_room", "study"]);
+    for (const id of Object.keys(BEODEUL_KIT_INTERIOR)) expect(ts.structureKits!.some((k) => k.id === id), id).toBe(true);
+    const fits = (need: BuildingNeed) => ts.structureKits!.filter((k) => kitEntranceCount(k) > 0 && kitServesBuilding(k, need)).map((k) => k.id);
+    const kindOf = (id: string) => WORLDS.find((w) => w.id === "beodeul")!.kinds.find((k) => k.id === id)!;
+    expect(fits(kindOf("inn").building!)).toEqual(expect.arrayContaining(["bd-house-inn", "bd-house-mk-inn", "bd-bld-ref-tavern-a", "bd-bld-ref-tavern-b"]));
+    expect(fits(kindOf("hall").building!)).toEqual(expect.arrayContaining(["bd-bld-ref-guildhall-a", "bd-house-mk-town-hall", "bd-house-mk-great-hall"]));
+    expect(fits(kindOf("church").building!)).toEqual(expect.arrayContaining(["bd-house-cathedral", "bd-house-mk-chapel"]));
+    expect(fits(kindOf("castle").building!)).toEqual(["bd-bld-ref-gatehall-a"]);
+    // 살림집 킷은 어느 주문에도 맞지 않는다(쓰임이 적히지 않았다)
+    for (const need of ["inn", "hall", "church", "castle"].map((id) => kindOf(id).building!)) expect(kitServesBuilding(kit("bd-house-h101_0"), need)).toBe(false);
+    // 성 본채 구성은 성읍 갈래 킷에만, 갈래가 다른 초대형 회관은 대형 조합 회관으로
+    expect(tierProgramFor(table, "xlarge", ["great_hall"], "k", "castle")?.id).toBe("x-castle");
+    expect(tierProgramFor(table, "xlarge", ["great_hall"], "k", "town")?.id).toBe("l-guild");
+    expect(tierProgramFor(table, "large", ["study"], "k")?.id).toBe("l-townhall");
+  });
+  it("이야기가 청한 큰 건물은 마을 바깥에 선다 — 여관·회관·성당·성마다 그 쓰임·단의 킷이 문 목록에 있다", () => {
+    const world = WORLDS.find((w) => w.id === "beodeul")!;
+    const village = world.kinds.find((k) => k.id === "village")!;
+    for (const kind of ["inn", "hall", "church", "castle"]) {
+      const need = world.kinds.find((k) => k.id === kind)!.building!;
+      const a = fresh();
+      const base = worldPlaceSpec(world, village, "시험 마을");
+      const r = VILLAGE_BUILDER.build(a.run, { ...base, size: need.tiers.includes("medium") ? "medium" : "large", salt: 11, hints: { ...(base.hints ?? {}), buildings: [need] } } as unknown as PlaceSpec);
+      expect(r.ok, r.summary).toBe(true);
+      const doors = ((r.state as { doors?: { kit?: string }[] } | undefined)?.doors ?? []).map((d) => a.ts.structureKits!.find((k) => k.id === d.kit));
+      expect(doors.some((k) => !!k && kitServesBuilding(k, need)), `${kind}: ${doors.map((k) => k?.id).join(" ")}`).toBe(true);
+    }
+  }, 300_000);
+  it("큰 집에 방이 모자란 칸 배치가 오면 그 집의 단과 방 수를 말해 거절하고, 고치기를 다 쓰면 구성 표대로 짓는다", () => {
+    const a = fresh();
+    const one = { map: { w: 9, h: 8 }, entrance: { x: 4, y: 7 }, regions: [{ id: "r", x: 1, y: 1, w: 7, h: 6, floor: "dplank", wall: "plaster" }] };
+    const spec = { type: "interior", name: "물레방아 여관", mapId: "map_inn", exterior: { tileset: a.ts.id, kit: "bd-bld-ref-tavern-b" }, layout: one } as unknown as PlaceSpec;
+    const no = interiorBuilder.build(a.run, spec);
+    expect(no.ok).toBe(false);
+    expect(no.summary).toMatch(/medium building/u); expect(no.summary).toMatch(/at least 2 rooms/u); expect(no.summary).toContain("bd-bld-ref-tavern-b");
+    const forced = interiorBuilder.build(a.run, { ...spec, hints: { layoutRepairsLeft: 0 } } as PlaceSpec);
+    expect(forced.ok, forced.summary).toBe(true);
+    expect(roomsOf(a.run, forced.mapIds[0]!)).toHaveLength(4);
+    // 작은 집의 한 방 배치는 전처럼 그대로 받는다(거절 글이 단을 말하지 않는다)
+    const b = fresh();
+    const small = interiorBuilder.build(b.run, { ...spec, exterior: { tileset: b.ts.id, kit: "bd-bld-ref-rootcellar-a" } } as PlaceSpec);
+    expect(small.summary).not.toMatch(/building has at least/u);
+  }, 120_000);
   it("실내 빌더: 중형 킷의 문으로 들어가는 여관은 방 넷, 킷을 모르는 여관은 전처럼 한 방", () => {
     const a = fresh();
     const big = interiorBuilder.build(a.run, { type: "interior", name: "물레방아 여관", mapId: "map_inn", exterior: { tileset: a.ts.id, kit: "bd-bld-ref-tavern-b" } } as PlaceSpec);
