@@ -584,6 +584,14 @@ export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; gro
     for (let x = p.x; x < p.x + p.w; x++) if (solid(c.at(x, foot - 1))) n++;
     if (n * 2 < p.w) c.stRemove(i);
   }
+  // 세운 뒤에 바닥이 바뀐 «필지 안» 소품(마당 것이 섰던 자리에 주차장·길이 깔렸다)은 치운다.
+  const LOT_FAMS = ["forecourt", "earth", "lawn", "alley", "pave"];
+  for (let i = c.stPlaced.length - 1; i >= 0; i--) {
+    const p = c.stPlaced[i]!;
+    if (p.anchor !== "lot" && p.anchor !== "open") continue;
+    const foot = p.y + p.h - 1;
+    for (let x = p.x; x < p.x + p.w; x++) if (!LOT_FAMS.includes(c.famAt(x, foot))) { c.stRemove(i); break; }
+  }
   fableFill(c);
   const borders = fableBorders(c, marks);
   fableAccents(c, new Set([...borders, ...marks.keys()]));
