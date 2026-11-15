@@ -13,12 +13,11 @@ describe("tool-made event pages carry full movement", () => {
     const context: ToolContext = { project: createBlankProject() };
     // maps 는 맵 id 로 찾는 표다(Record<MapId, GameMap>) — 순번 [0] 으로는 아무것도 나오지 않는다. 시작 맵을 id 로 집는다.
     const mapId = context.project.startMapId;
-    const map = context.project.maps[mapId]!;
-    expect(map?.id).toBe(mapId);
+    expect(context.project.maps[mapId]?.id).toBe(mapId);
     const result = runTool(context, "tile_change_effect", {
-      targetMapId: map.id,
+      targetMapId: mapId,
       changes: [{ layer: "lower", rect: { x: 1, y: 1, w: 1, h: 1 }, tile: 0 }],
-      trigger: { mapId: map.id, x: 2, y: 2, name: "레버", text: "레버를 당겼다." },
+      trigger: { mapId, x: 2, y: 2, name: "레버", text: "레버를 당겼다." },
     }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     const pages = context.project.maps[mapId]!.events.flatMap((event) => event.pages);
