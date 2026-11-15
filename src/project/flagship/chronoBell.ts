@@ -43,8 +43,8 @@ import { applyFallenStoryPass } from "./fallen/storyPass";
 import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules, FS_HUB_SAVE_STONE } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
-import { applyFallenAct2Opening, letAct2PierceWoundLand } from "./fallen/act2Opening";
-import { tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
+import { applyFallenAct2Opening, FS2_HUB_NIGHT_ID, letAct2PierceWoundLand } from "./fallen/act2Opening";
+import { blockPlazaFlagCells, tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
 import { applyFallenWorldPass, applyFallenWorldPassTown } from "./fallen/worldPass";
 import { assertExaminesReachable } from "./fallen/worldPass/examine";
 import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
@@ -2508,6 +2508,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   tidyFallenFirstVillage(project, ids.hub);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
+  // 통금의 밤 광장은 문 이벤트만 복제한다 — 광장 깃발 천을 막는 칸(firstVillageTidy)을 밤 판에도 놓는다.
+  blockPlazaFlagCells(project, FS2_HUB_NIGHT_ID);
   // 월드 정비 — 가게 간판·광장 이정표·게시판과 서브 퀘스트 둘, 서리 가도 보급 행상(fallen/worldPass). 통금의 밤 복제(2막) 뒤라 밤 광장에는 안 붙는다.
   applyFallenWorldPass(project, execTool, { hub: ids.hub, forestEdge: "fs_forest_edge", snowRoad: "map_snow_north_1" });
   // 1막 맵 마감 — 추락지 빈터의 줄 지은 들꽃·불씨·덤불을 충격 자국으로 다시 짠다(fallen/act1MapPolish.ts). 모든 숲 단계 뒤.
