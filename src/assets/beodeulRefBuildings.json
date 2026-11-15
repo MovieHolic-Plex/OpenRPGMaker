@@ -1753,7 +1753,7 @@
     "market-village",
     "market-town",
     "festival",
-    "pilgrim-town",
+    "shrine-hamlet",
     "garrison-town"
    ],
    "w": 13,
@@ -1788,7 +1788,7 @@
    "tier": "xlarge",
    "style": "halftimber",
    "kinds": [
-    "pilgrim-town",
+    "monastery",
     "scholar-town",
     "herbalist",
     "vineyard"

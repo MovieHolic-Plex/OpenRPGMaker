@@ -2092,7 +2092,7 @@
     "market-village",
     "market-town",
     "festival",
-    "pilgrim-town",
+    "shrine-hamlet",
     "garrison-town"
    ],
    "ref": "새로 지음(읍 건물의 부품)",
@@ -2136,7 +2136,7 @@
    "setting": "rural",
    "style": "halftimber",
    "kinds": [
-    "pilgrim-town",
+    "monastery",
     "scholar-town",
     "herbalist",
     "vineyard"
