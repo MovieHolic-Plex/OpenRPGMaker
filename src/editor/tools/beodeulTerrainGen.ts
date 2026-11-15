@@ -13,6 +13,7 @@
 //   5. 요약: 단 덩이(높이·넓이·중심·평평한 자리)·가장 높은 곳·강 건널 곳·못 — 마을 자리는 조수가 이 요약과 그림을 보고 고른다.
 // 같은 요청이라도 씨앗마다 다르고, 직선·계단꼴 띠가 생기지 않는다(단 경계는 높이맵의 등고선).
 import { tidyLevels } from "./beodeulTerrain";
+import { bandFallPlan, clearRiverView, flowingRiverCells, riverFalls, settleRiverLevels, type RiverFall } from "./beodeulRiverShape";
 
 export const TERRAIN_CHARACTERS = ["hill", "slope", "terraces", "plateau", "flat"] as const;
 export type TerrainCharacter = (typeof TERRAIN_CHARACTERS)[number];
@@ -29,6 +30,8 @@ export interface TerrainGenInput {
   tiers?: number;
   /** 평지 요청(땅 모양 낱말 없음): 단은 북쪽의 동서 띠 하나뿐 — 남북 경계 토막·평지 한가운데 계단이 없다. 물이 띠를 가로지르면 단 없음. */
   bands?: boolean;
+  /** 강 없는 풀밭 마을: 가장 낮은 안쪽 땅(우묵한 곳)에 작은 못 하나 — 씨앗 셋에 둘꼴. 수련이 뜨는 못이다(2026-11-14). */
+  pond?: boolean;
   /** 그림 도안에서 읽은 칸 지도(행 문자열, 칸 하나 = 글자 하나): 0~3 땅 단 · ~ 강 · | 폭포(강으로 그린다) · o 못. 주면 생성한 단·물 대신 이 모양(맵 크기에 맞춰 늘린다). */
   given?: { readonly rows: readonly string[] };
   /**
@@ -66,6 +69,10 @@ export interface CodeTerrain {
   areas: TerrainArea[];
   /** 강 건널 자리 후보(강이 곧게 3칸 흐르고 양쪽 둑이 같은 단). */
   crossings: { x: number; y: number; dir: "ns" | "ew" }[];
+  /** 강이 단을 넘어 남쪽으로 떨어지는 자리(폭포) — 시공기가 절벽면에 폭포 그림을 건다. */
+  falls: RiverFall[];
+  /** 고인 물 자리(강 굽이의 소·못 가운데) — 수련·갈대 무리가 모인다. */
+  pools: number[];
   /** 긴 남향 절벽의 끊을 자리(위 단 칸) — 시공기가 절벽 위·아래에 숲 덩이를 세워 긴 띠를 조각으로 끊어 보이게 한다. */
   cliffBreaks: { x: number; y: number }[];
   maxLevel: number;
@@ -407,6 +414,9 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   // ── 물 ──
   const water = new Uint8Array(W * H);
   const river: number[] = [];
+  const pools: number[] = [];
+  let riverLv: Uint8Array | null = null; // 강 칸의 단(폭포를 세운 직후) — 뒤의 다듬기가 좁은 강 칸의 단을 둑 따라 바꿔 한 칸짜리 가짜 폭포가 섰다. 끝에서 되돌린다.
+  let gorges = 0; // 강이 단을 내려가는데 남쪽으로 떨어질 자리가 없어 윗단을 골짜기로 가른 곳
   const notes: string[] = [];
   const edgeOf = (x: number, y: number) => x === 0 ? "west" : x === W - 1 ? "east" : y === 0 ? "north" : y === H - 1 ? "south" : null;
   if (input.water === "sea") {
@@ -426,25 +436,31 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     const edges = ["north", "south", "west", "east"] as const;
     const cellsOf = (e: string) => { const out: number[] = []; for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (edgeOf(x, y) === e && Math.min(x, y, W - 1 - x, H - 1 - y) === 0 && (e === "north" || e === "south" ? x >= 6 && x <= W - 7 : y >= 6 && y <= H - 7)) out.push(y * W + x); return out; };
     const meanH = (e: string) => { const cs = cellsOf(e); return cs.reduce((s, c) => s + h[c]!, 0) / Math.max(1, cs.length); };
-    const src = high !== "center" ? high : edges[Math.floor(r() * 4)]!;
+    // 높은 쪽이 남쪽이면 강은 옆 가장자리에서 든다 — 남쪽에서 북쪽으로 내려오는 강은 단을 넘을 때 폭포를 그릴 남향 절벽면이 없다(3/4 시점)
+    // 높은 쪽이 서쪽·동쪽이면 강은 북쪽에서 들어 비탈을 비껴 남쪽으로 흐른다 — 비탈을 곧장 내려오면 단을 옆으로 넘어 윗단을 골짜기로 갈랐다(옆 폭포는 그릴 수 없다)
+    const src = high === "south" ? (r() < 0.5 ? "west" : "east") : high === "west" || high === "east" ? "north" : high !== "center" ? high : edges[Math.floor(r() * 4)]!;
     const opp = { north: "south", south: "north", west: "east", east: "west" } as const;
     const sinks = edges.filter((e) => e !== src).sort((a, b) => meanH(a) - meanH(b));
     const sink = r() < 0.6 ? opp[src] : sinks[0]!;
     // 들어오는 자리: 그 가장자리의 낮은 칸(골짜기 어귀) 몇 개
     const from = cellsOf(src).sort((a, b) => h[a]! - h[b]!).slice(0, 4);
     const wig = gradientNoise(seed * 31 + 9);
-    const path = meanderPath(riverPath(h, W, H, from, (x, y) => edgeOf(x, y) === sink, (x, y) => 0.5 + 0.5 * wig(x / 4, y / 4)), W, H, r);
-    if (path.length > 8) {
+    const raw = meanderPath(riverPath(h, W, H, from, (x, y) => edgeOf(x, y) === sink, (x, y) => 0.5 + 0.5 * wig(x / 4, y / 4)), W, H, r);
+    if (raw.length > 8) {
+      // 흐르는 강 모양(굽이의 소·곧은 데의 좁은 목·둥근 둑 — beodeulRiverShape.ts): 가운데 줄도 그 편 곡선을 따른다
+      const shape = flowingRiverCells(raw, W, H, seed), path = shape.line;
+      pools.push(...shape.pools);
       // 강바닥은 하류로 갈수록 낮게(canyon) — 둑은 강에서 멀어질수록 원래 높이로
       let run = Infinity; const bed = new Float32Array(path.length);
       path.forEach((c, i) => { run = Math.min(run, h[c]!) - 0.004; bed[i] = run; });
       const dist = new Float32Array(W * H).fill(Infinity); const near = new Int32Array(W * H).fill(-1); const q: number[] = [];
       path.forEach((c, i) => { dist[c] = 0; near[c] = i; q.push(c); });
-      for (let i = 0; i < q.length; i += 1) { const c = q[i]!, x = c % W, y = (c - x) / W; if (dist[c]! >= 4) continue;
+      for (let i = 0; i < q.length; i += 1) { const c = q[i]!, x = c % W, y = (c - x) / W; if (dist[c]! >= 7) continue;
         for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (dist[n]! > dist[c]! + 1) { dist[n] = dist[c]! + 1; near[n] = near[c]!; q.push(n); } } }
       for (let c = 0; c < W * H; c += 1) {
         if (near[c]! < 0) continue; const b = bed[near[c]!]!, d = dist[c]!;
-        if (d <= 1) { water[c] = 1; h[c] = b; } else h[c] = Math.min(h[c]!, b + 0.035 * (d - 1));
+        // 물 칸은 흐르는 강 모양(굽이의 소·곧은 데의 좁은 목·둥근 둑 — beodeulRiverShape.ts)이 정한다. 둑은 물에서 멀어질수록 원래 높이로.
+        if (shape.cells.has(c)) { water[c] = 1; h[c] = b; } else if (d <= 4) h[c] = Math.min(h[c]!, b + 0.035 * Math.max(0, d - 1));
       }
       river.push(...path);
       notes.push(`강은 ${src} → ${sink}`);
@@ -462,12 +478,15 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     let n = 0; for (const v of water) if (v === 2) n += 1;
     notes.push(`늪 물 ${Math.round((100 * n) / (W * H))}%`);
   }
-  if (input.water === "lake" || input.water === "oasis") {
+  const smallPond = input.water === "none" && !!input.pond && !input.given && r() < 0.67;
+  if (input.water === "lake" || input.water === "oasis" || smallPond) {
     // 채운 웅덩이 깊이가 깊은 곳이 못 — 없으면(사막 오아시스는 늘) 가장 낮은 안쪽 땅에 둥근 분지를 판다
     const f = priorityFlood(h, W, H);
     const deep = (c: number) => f[c]! - h[c]! > 0.012;
     const { list } = components(W, H, () => true, (c) => deep(c) && !water[c]);
-    const lakes = list.filter((cs) => cs.length >= 5).sort((a, b) => b.length - a.length).slice(0, 1);
+    // 작은 못은 둥근 덩이여야 한다 — 가는 골짜기 모양 웅덩이는 한 칸 폭 물줄기 토막으로 보였다(명세 은행 lay-base-village-to-field). 네 이웃이 모두 물인 속 칸이 셋은 있어야 못이다.
+    const plump = (cs: readonly number[]): boolean => { const set = new Set(cs); let inner = 0; for (const c of cs) if (set.has(c - 1) && set.has(c + 1) && set.has(c - W) && set.has(c + W)) inner += 1; return inner >= 3; };
+    const lakes = list.filter((cs) => cs.length >= 5 && (!smallPond || (cs.length <= 40 && plump(cs)))).sort((a, b) => b.length - a.length).slice(0, 1);
     for (const cs of lakes) for (const c of cs) water[c] = 2;
     const want = 1;
     let made = lakes.length;
@@ -476,12 +495,13 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       // 가장 낮은 안쪽 칸 근처에 잡음으로 일그러진 분지
       let best = -1; for (let k = 0; k < 40; k += 1) { const x = 5 + Math.floor(r() * (W - 10)), y = 5 + Math.floor(r() * (H - 10)); const c = y * W + x; if (water[c]) continue; if (best < 0 || h[c]! < h[best]!) best = c; }
       if (best < 0) break;
-      const bx = best % W, by = (best - bx) / W; const rx = 3 + r() * 2.5, ry = rx * (0.6 + r() * 0.5);
-      let n = 0;
+      const bx = best % W, by = (best - bx) / W; const rx = smallPond ? 2.3 + r() * 1.5 : 3 + r() * 2.5, ry = rx * (smallPond ? 0.75 + r() * 0.35 : 0.6 + r() * 0.5);
+      const dug: number[] = [];
       for (let y = Math.max(1, Math.floor(by - ry - 2)); y <= Math.min(H - 2, by + ry + 2); y += 1) for (let x = Math.max(1, Math.floor(bx - rx - 2)); x <= Math.min(W - 2, bx + rx + 2); x += 1) {
-        const ex = (x - bx) / rx, ey = (y - by) / ry; if (ex * ex + ey * ey + 0.45 * ln(x / 3, y / 3) <= 1) { const c = y * W + x; water[c] = 2; n += 1; }
+        const ex = (x - bx) / rx, ey = (y - by) / ry; if (ex * ex + ey * ey + (smallPond ? 0.3 : 0.45) * ln(x / 3, y / 3) <= 1) { const c = y * W + x; if (!water[c]) { water[c] = 2; dug.push(c); } }
       }
-      if (n >= 6) made += 1;
+      if (smallPond && !plump(dug)) { for (const c of dug) water[c] = 0; continue; }   // 가는 조각이면 지우고 다른 자리에서 다시
+      if (dug.length >= 6) made += 1;
     }
     // 못은 한 덩이(2026-10-30 「사막 못이 쪼개진다」): 잡음 일그러짐·채운 웅덩이 합집합이 조각 여럿을 남겼다 — 가장 큰 덩이만 남기고 그 안 구멍은 메운다
     { const { list } = components(W, H, () => true, (c) => water[c] === 2);
@@ -489,7 +509,9 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       for (let c = 0; c < W * H; c += 1) if (water[c] === 2 && !ks.has(c)) water[c] = 0;
       const { list: holes } = components(W, H, () => true, (c) => water[c] !== 2);
       for (const cs of holes) if (cs.length < 12 && !cs.some((c) => { const x = c % W, y = (c - x) / W; return x === 0 || y === 0 || x === W - 1 || y === H - 1; })) for (const c of cs) water[c] = 2; }
-    notes.push(`${input.water === "oasis" ? "오아시스 못" : "못"} ${made}개`);
+    // 못 가운데 칸 — 수련 무리가 뜰 자리
+    { let sx = 0, sy = 0, k = 0; for (let c = 0; c < W * H; c += 1) if (water[c] === 2) { sx += c % W; sy += Math.floor(c / W); k += 1; } if (k) pools.push(Math.round(sy / k) * W + Math.round(sx / k)); }
+    notes.push(`${input.water === "oasis" ? "오아시스 못" : smallPond ? "작은 못" : "못"} ${made}개`);
   }
 
   // ── 단 자르기 ──
@@ -522,7 +544,10 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   // 물: 강·못·바다는 그 물에 닿은 땅 중 가장 낮은 단에 — 물 칸과 둘레 한 칸(둑)을 그 단으로
   {
     const { list } = components(W, H, (a, b) => water[a] === water[b], (c) => water[c]! > 0);
+    // 강은 단을 따라 내려온다(폭포) — 뭍 다듬기가 다 끝난 뒤 맨 끝에서 한 번 앉힌다(settleRiverLevels). 못·바다는 닿은 땅 중 가장 낮은 단.
+    const stepped = river.length > 0 && !input.bands && !input.given;
     for (const cs of list) {
+      if (stepped && water[cs[0]!] === 1) continue;
       let low = 99; for (const c of cs) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (!water[n]) low = Math.min(low, lv[n]!); } }
       if (low === 99) low = 0;
       for (const c of cs) { lv[c] = low; const x = c % W, y = (c - x) / W; for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (!water[n] && lv[n]! > low) lv[n] = low; } }
@@ -638,14 +663,22 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     for (let x = 1; x < W; x += 1) b[x] = Math.max(b[x - 1]! - 1, Math.min(b[x - 1]! + 1, b[x]!));
     // 같은 줄 3열 미만 토막은 앞 토막에 붙인다(한 열짜리 톱니 금지)
     { let x0 = 0; for (let x = 1; x <= W; x += 1) if (x === W || b[x] !== b[x0]) { if (x - x0 < 3 && x0 > 0) for (let k = x0; k < x; k += 1) b[k] = b[x0 - 1]!; x0 = x; } }
-    const gap = new Uint8Array(W);
-    for (let x = 0; x < W; x += 1) { let top = H; for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx; if (X < 0 || X >= W) continue; for (let y = 0; y < top; y += 1) if (water[y * W + X]) { top = y; break; } }
-      if (b[x]! > top - 3) gap[x] = 1; }
+    // up > 0: 그 줄 위의 강은 띠 위를 흐른다(폭포로 내려온다) — 띠를 끊는 물로 치지 않는다
+    // 폭포 자리(f0~f1 열)의 강은 띠 끝에서 바로 떨어진다 — 그 열의 강은 띠를 물리지 않는다. 그 밖의 강(폭포 아래에서 옆으로 굽는 물)은 전처럼 세 줄 띄운다.
+    const gapsOf = (bb: Int16Array, up: number, f0 = W, f1 = -1) => { const g = new Uint8Array(W);
+      for (let x = 0; x < W; x += 1) { let top = H; for (let dx = -2; dx <= 2; dx += 1) { const X = x + dx; if (X < 0 || X >= W) continue; for (let y = 0; y < top; y += 1) if (water[y * W + X] && !(water[y * W + X] === 1 && (y < up || (X >= f0 && X <= f1)))) { top = y; break; } }
+        if (bb[x]! > top - 3) g[x] = 1; }
+      return g; };
+    let gap = gapsOf(b, 0);
+    // 강이 띠를 남쪽으로 넘으면 띠를 끊지 않고 폭포로 떨어뜨린다(2026-11-14) — 띠 아래 경계를 그 둘레에서 곧게 편다
+    let fallY = 0, fallX0 = W, fallX1 = -1;
+    const plan = river.length ? bandFallPlan(river, water, b, W, H) : null;
+    if (plan) { const g2 = gapsOf(plan.band, plan.y, plan.x0 - 1, plan.x1 + 1); if (!g2.slice(Math.max(0, plan.x0 - 4), plan.x1 + 5).some((v) => v)) { b.set(plan.band); gap = g2; fallY = plan.y; fallX0 = plan.x0 - 4; fallX1 = plan.x1 + 4; } }
     // 일부러 끊는 곳은 긴 띠(가로 70칸 이상)만 하나 — 좁은 맵에서 둘씩 끊으니 어깨 둘이 마주 보는 골짜기(V자 도랑)로 보였다(3판 r12 강가 시골). 물이 지나는 곳은 늘 끊긴다.
     const nGaps = W >= 70 ? 1 : 0;
     for (let g = 0, t = 0; g < nGaps && t < 30; t += 1) {
       const gw = 6 + Math.floor(r() * 5), gx = 6 + Math.floor(r() * Math.max(1, W - 12 - gw));
-      if ([...gap.slice(Math.max(0, gx - 8), Math.min(W, gx + gw + 8))].some((v) => v)) continue;
+      if ([...gap.slice(Math.max(0, gx - 8), Math.min(W, gx + gw + 8))].some((v) => v) || (gx + gw + 8 > fallX0 && gx - 8 < fallX1)) continue;
       for (let k = 0; k < gw; k += 1) gap[gx + k] = 1; g += 1;
     }
     for (let x = 0; x < W; x += 1) if (gap[x] || b[x]! < 3) b[x] = 0;
@@ -663,11 +696,29 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       bandGaps.push({ x: Math.min(W - 2, Math.max(1, hx + dir * 3)), y: Math.max(3, Math.round(bh / 2) + 2) });
       bandGaps.push({ x: Math.min(W - 2, Math.max(1, hx - dir * 3)), y: Math.min(H - 6, Math.max(3, Math.round(bh / 2) + 2)) });
     }
-    for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; lv[c] = ok && !water[c] && y < b[x]! ? 1 : 0; }
+    for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; lv[c] = ok && (!water[c] || (water[c] === 1 && y < fallY)) && y < b[x]! ? 1 : 0; }
+    if (ok && fallY > 0) { settleRiverLevels(lv, water, W, H, river); riverLv = Uint8Array.from(lv); } else riverLv = null;
     notes.push(ok ? `평지 요청: 북쪽 굽은 띠(끊긴 곳 어깨 ${bandGaps.length / 2 | 0}곳)` : "평지 요청: 물이 띠를 가로질러 단 없음");
   }
   if (input.given) applyGivenTerrain(input.given.rows, W, H, lv, water, river, notes);
   tidyLevels(lv, W, H);
+  if (river.length && !input.given) {
+    // 강의 단은 뭍 다듬기가 다 끝난 지금 앉힌다 — 다듬기 전에 앉히면 꺾기·작은 조각 합치기가 둑을 낮춰 강이 둑보다 높이 떠 있거나(공중 물길) 폭포가 한 칸으로 줄었다.
+    // 뭍은 강보다 두 단 넘게 높지 않게 한 번 더 깎는다(물 칸은 그대로).
+    if (!input.bands) {
+      gorges = settleRiverLevels(lv, water, W, H, river).gorges;
+      for (let pass = 0; pass < 6; pass += 1) {
+        let changed = false;
+        for (let c = 0; c < W * H; c += 1) { if (water[c]) continue; const x = c % W, y = (c - x) / W;
+          for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; if (lv[c]! - lv[Y * W + X]! > 1) { lv[c] -= 1; changed = true; break; } } }
+        if (!changed) break;
+      }
+      riverLv = Uint8Array.from(lv);
+    }
+    const pin = () => { if (riverLv) for (let c = 0; c < W * H; c += 1) if (water[c] === 1) lv[c] = riverLv[c]!; };
+    pin();
+    if (clearRiverView(lv, water, W, H)) { tidyLevels(lv, W, H); pin(); }
+  }
   // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
   // 3/4 에서 남향 절벽면이 두 칸 높이로 그려지고, 길은 세 칸 계단으로 오른다.
   // 절벽 습관(2026-11-14): 게임마다 한 칸·두 칸·세 칸 — 단이 하나뿐이면 lone, 둘이면 step, 셋 이상이면 두 칸까지.
@@ -724,9 +775,11 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       if (!cliff && x0 >= 0) { const len = x - x0; if (len >= 10) for (let bx = x0 + 5 + Math.floor(r() * 3); bx < x - 3; bx += 8 + Math.floor(r() * 4)) cliffBreaks.push({ x: bx, y }); x0 = -1; }
     }
   }
+  const falls = input.given ? [] : riverFalls(lv, water, W, H).filter((f) => f.x1 - f.x0 <= 6);
+  if (falls.length || gorges) notes.push(`폭포 ${falls.length}곳${gorges ? ` · 남쪽으로 떨어질 자리가 없어 골짜기로 내려온 단 ${gorges}곳` : ""}`);
   const counts = new Map<number, number>(); for (let c = 0; c < W * H; c += 1) if (!water[c]) counts.set(lv[c]!, (counts.get(lv[c]!) ?? 0) + 1);
   const note = `코드 지형 · ${CHAR_LABEL[character]}(높은 곳 ${high}) · 단 ${[...counts.keys()].sort().map((k) => `${k}:${counts.get(k)}`).join("/")}${notes.length ? " · " + notes.join(" · ") : ""}`;
-  return { W, H, character, high, height: h, levels: lv, water, river, forest, areas, crossings, cliffBreaks, maxLevel, tierStep, cliffStraight: habit?.straight && !input.given ? Math.max(3, habit.straight) : 0, habit: !!habit, note };
+  return { W, H, character, high, height: h, levels: lv, water, river, forest, areas, crossings, falls, pools: pools.filter((c) => water[c]), cliffBreaks, maxLevel, tierStep, cliffStraight: habit?.straight && !input.given ? Math.max(3, habit.straight) : 0, habit: !!habit, note };
 }
 
 /** 모델에게 보여 줄 지형 요약(글) — 좌표는 칸(x 오른쪽, y 아래). */

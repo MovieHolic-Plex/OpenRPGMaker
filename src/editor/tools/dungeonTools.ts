@@ -26,6 +26,7 @@ import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, link
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
 import { beodeulNatureTileset, planBeodeulCanopy, raiseBeodeulCrowns, writeBeodeulCanopy } from "./beodeulForest";
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
+import { relayBeodeulWaterSurface } from "./beodeulWater";
 import { activeTilesetLook } from "@/project/kitLook";
 import { tilesetLookReliefStyle } from "@/assets/tilesetLooks";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
@@ -178,6 +179,8 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
       for (const to of tr.map.values()) { tileset.priority[to] = "upper"; tileset.passability[to] = { up: true, down: true, left: true, right: true }; }
       for (const [c, t] of want) setLayerTileAt(map, 2, c, tr.map.get(t)!);
     }
+    // 풀 둑 물(숲 던전의 못·개울)은 마을 물과 같은 둑·깊이 띠로 다시 깐다(beodeulWater.ts) — 늪·용암 둑은 그대로
+    if (composed.banks.style === "grass") relayBeodeulWaterSurface(map, tileset, wet.size * 31 + W);
   }
   // 야외 던전(숲·늪, 2026-10-23 dungeon-themes): 벽 칸을 버들항 수관 숲 오토타일로 덮는다(2·3층, 막힘). 숲 남쪽 끝 줄엔 줄기·뿌리, 그 아래 빈터엔 숲 그늘.
   if (composed.canopy) {

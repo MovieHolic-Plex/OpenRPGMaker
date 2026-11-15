@@ -55,7 +55,9 @@ export interface ReliefLayerOptions {
   readonly ground?: ReliefGroundSurface;
   readonly tileSize: number;
   /** 벽면 장식을 그릴 타일셋 텍스처. 없으면 장식을 건너뛴다. */
-  readonly wallDecor: { readonly textureKey: string; readonly frame: (tile: number) => string } | null;
+  readonly wallDecor: { readonly textureKey: string; readonly frame: (tile: number) => string;
+    /** 장식 칸의 그림을 직접 만든다(움직이는 칸은 스프라이트). 없으면 서 있는 그림 한 장. */
+    readonly create?: (x: number, y: number, tile: number) => ReliefImage } | null;
 }
 
 export interface ReliefRenderScene<TImage extends ReliefImage> {
@@ -92,7 +94,8 @@ export function renderReliefLayer<TImage extends ReliefImage>(
   if (!wallDecor) return;
   for (const decor of relief.wallDecor ?? []) {
     const top = decor.y * tileSize - reliefLiftPx(map, decor.x, decor.y, tileSize);
-    const image = scene.add.image(decor.x * tileSize, top + decor.row * tileSize, wallDecor.textureKey, wallDecor.frame(decor.tile));
+    const image = (wallDecor.create?.(decor.x * tileSize, top + decor.row * tileSize, decor.tile) as TImage | undefined)
+      ?? scene.add.image(decor.x * tileSize, top + decor.row * tileSize, wallDecor.textureKey, wallDecor.frame(decor.tile));
     image.setOrigin(0, 0);
     image.setDepth(reliefRowDepth(decor.y, tileSize, RELIEF_WALL_DECOR_DEPTH));
     onCreated(image);
