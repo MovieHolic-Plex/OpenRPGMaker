@@ -95,7 +95,7 @@ export const storageSavepointScenario = {
     },
     {
       id: "touch-savepoint",
-      note: "크리스탈 조사 → 체크포인트 저장 + 「기록했다」 대사(판정점)",
+      note: "크리스탈 조사 → 체크포인트 저장 + 「기록한다」 대사(판정점)",
       ops: [
         { kind: "action" },
         { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15_000 },

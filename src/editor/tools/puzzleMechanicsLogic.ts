@@ -305,11 +305,11 @@ export const brazierRelationalOrder: MechanicDef = {
         se("fire7"),
         particles("fire", 1000, b.at(c)),
         setVar(vStep, k + 1),
-        ...(k === 3 ? finale(ctx, b, "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!", fireTheme) : [textCmd(`화르륵— ${BRAZIER_NAMES[i]} 화로가 타오른다. (${k + 1}/4)`)]),
+        ...(k === 3 ? finale(ctx, b, "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!", fireTheme) : [textCmd(`화르륵. ${BRAZIER_NAMES[i]} 화로가 타오른다.\n불붙은 화로는 이제 ${["하나다", "둘이다", "셋이다"][k]}.`)]),
       ];
       const id = ctx.evId(`brazier_${i}`);
       return puzzleEvent(id, `${BRAZIER_NAMES[i]} 화로`, b.at(c), [
-        makePage({ id: `${id}_cold`, name: "꺼진 화로", graphic: TRANSPARENT, commands: [ifVar(vStep, "==", k, light, [...wrongBuzz("불길이 역류해 모든 화로가 꺼졌다! 순서가 틀렸다."), ...douse])] }),
+        makePage({ id: `${id}_cold`, name: "꺼진 화로", graphic: TRANSPARENT, commands: [ifVar(vStep, "==", k, light, [...wrongBuzz("불길이 역류해 화로가 모두 꺼진다.\n순서가 틀렸다."), ...douse])] }),
         makePage({ id: `${id}_lit`, name: "타는 화로", conditions: [{ kind: "switch", switchId: swLit[i]!, value: true }], graphic: TRANSPARENT, commands: [textCmd("화로가 타오르고 있다.")] }),
       ]);
     });

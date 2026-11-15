@@ -76,6 +76,23 @@ describe("place_chest", () => {
     expect(result.summary).toContain(item.name);
   });
 
+  // 2026-11-14 폴른 스타 윤문: 「보물상자를 열었다! 불씨 병 · 60G를 손에 넣었다.」 — 얻은 것 알림은 과거형 한 줄, 조사는 받침을 본다.
+  it("얻은 것 알림은 한 줄이고 조사를 받침에 맞춘다", () => {
+    const bodyOf = (contents: Record<string, unknown>): string => {
+      const { project, mapId } = projectWithMap();
+      project.database.items.push({ ...project.database.items[0]!, id: "item_t_flask", name: "불씨 병" }, { ...project.database.items[0]!, id: "item_t_herb", name: "각성초" });
+      const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents });
+      const event = project.maps[mapId].events.find((entry) => entry.id === (result.data as { eventId: string }).eventId)!;
+      return (event.pages![0].commands.find((command) => command.kind === "text") as { body: string }).body;
+    };
+    expect(bodyOf({ itemId: "item_t_flask", gold: 60 })).toBe("「불씨 병」과 60G를 얻었다.");
+    expect(bodyOf({ itemId: "item_t_herb", gold: 120 })).toBe("「각성초」와 120G를 얻었다.");
+    expect(bodyOf({ itemId: "item_t_flask" })).toBe("「불씨 병」을 얻었다.");
+    expect(bodyOf({ itemId: "item_t_herb" })).toBe("「각성초」를 얻었다.");
+    expect(bodyOf({ itemId: "item_t_herb", count: 2 })).toBe("「각성초」 2개를 얻었다.");
+    expect(bodyOf({ gold: 150 })).toBe("150G를 얻었다.");
+  });
+
   it("골드만 있으면 동전 SE → changeGold 만 지급한다", () => {
     const { project, mapId } = projectWithMap();
     const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { gold: 20 } });

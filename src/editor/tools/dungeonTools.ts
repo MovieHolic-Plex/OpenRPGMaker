@@ -28,6 +28,7 @@ import { beodeulNatureTileset, planBeodeulCanopy, raiseBeodeulCrowns, writeBeode
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import { relayBeodeulWaterSurface } from "./beodeulWater";
 import { activeTilesetLook } from "@/project/kitLook";
+import { tilesetLookReliefStyle } from "@/assets/tilesetLooks";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
@@ -152,7 +153,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   map.mapRole = "dungeon";
   // 설계한 높이 단(rooms[].level): 마을 지형과 같은 map.relief + 버들항 돌계단(*-steps). 다시 짓기는 옛 높이를 지운다.
   if (composed.relief) {
-    map.relief = { width: map.width, height: map.height, levels: composed.relief.levels.slice(), ramps: composed.relief.ramps.slice(), style: composed.relief.style };
+    map.relief = { width: map.width, height: map.height, levels: composed.relief.levels.slice(), ramps: composed.relief.ramps.slice(), style: tilesetLookReliefStyle(tileset.id, activeTilesetLook(tileset), composed.relief.style) };
     invalidateReliefSlopes(map.relief);
     const painted = paintReliefStairTiles(map, tileset);
     if (painted.ew) notes.push(`고침: 동서로 오르는 계단 ${painted.ew}칸은 칩셋에 옆 계단 조각이 없어 바닥 비탈로 그렸다(걷기는 계단과 같다).`);
@@ -422,7 +423,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
   roomCells.sort((a, b) => Math.hypot(a.x - key.x, a.y - key.y) - Math.hypot(b.x - key.x, b.y - key.y));
   const placedLever = placeLever(draft, map, [...wallFirst(draft, map, roomCells), key], `ev_${map.id}_lever`, "레버", sw,
-    [...block.openCommands, { kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+    [...block.openCommands, { kind: "text", body: rock ? "쿠르릉. 어디선가 바위가 굴러가는 소리가 울린다." : "어디선가 쇠창살이 올라가는 소리가 울린다." } as Command], "녹슨 레버다. 힘껏 당긴다.", "레버는 이미 당겨져 있다.");
   if (!placedLever) { warnings.push(`${map.name}: 레버 자리를 못 찾았다`); return ""; }
   const at = placedLever.at;
   return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → ${block.tiles ? "쇠창살문(타일 키트 — 문간 이벤트 " : "쇠창살 "}${block.cells.map((c) => `(${c.x},${c.y})`).join(" ")}${block.tiles ? ")" : "(통로 폭 전체)"} 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;

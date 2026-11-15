@@ -95,7 +95,9 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     resolveAnchor: (anchor, source) => resolveLightAnchor(scene, anchor, source),
     mapBounds: mapWorldBounds(scene),
     darkMargin: scene.map?.background?.showInEmptyCells === true,
+    bleed: shakeBleedPx(camera),
   });
+  const bleed = params.bleed ?? 0;
   const resized = texture.width !== params.width || texture.height !== params.height;
   if (resized) {
     texture.setSize(params.width, params.height);
@@ -105,7 +107,8 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
   // 줌 3·6 맵(폴른 스타 서리여울·하늘 탑)에서 불빛이 3·6배로 부풀고 「캄캄하다」는 밤이 환했다(2026-10-31).
   // 날씨·맵 배경 층(playSceneWeather·playSceneMapBackground)과 같이 줌을 되돌려 화면 px 그대로 덮는다.
   const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
-  overlay.setPosition((params.width / 2) * (1 - 1 / zoom), (params.height / 2) * (1 - 1 / zoom));
+  // 흔들리는 동안에는 네 변으로 bleed 만큼 넓은 막을 같은 가운데에 둔다.
+  overlay.setPosition(((params.width - bleed * 2) / 2) * (1 - 1 / zoom) - bleed / zoom, ((params.height - bleed * 2) / 2) * (1 - 1 / zoom) - bleed / zoom);
   overlay.setDisplaySize(params.width / zoom, params.height / zoom);
   const signature = lightingMaskSignature(params);
   if (!resized && signature === scene.lightingMaskSignature) return;
@@ -151,6 +154,20 @@ export function applyLightingStep(
 }
 
 /** 맵이 그려지는 세계 사각(북쪽 돌출 포함) — 어둠 막은 이 안에만 칠한다. */
+/**
+ * 카메라가 흔들리는 동안 화면이 밀릴 수 있는 최대 폭(화면 px). Phaser 는 흔들림을 보기 행렬에 얹어 화면 고정 층(scrollFactor 0)도 함께 민다 —
+ * 밀림은 세기 × 화면 크기 × 배율² 이다(playSceneMapCommands.shakeCamera 주석). 흔들림이 없으면 0.
+ */
+function shakeBleedPx(camera: Phaser.Cameras.Scene2D.Camera): number {
+  const shake = camera.shakeEffect;
+  if (!shake?.isRunning) return 0;
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const width = camera.width || PLAY_RESOLUTION.width;
+  const height = camera.height || PLAY_RESOLUTION.height;
+  const reach = Math.max((shake.intensity?.x ?? 0) * width, (shake.intensity?.y ?? 0) * height) * zoom * zoom;
+  return reach > 0 ? Math.min(Math.ceil(reach) + 2, Math.round(Math.max(width, height) / 2)) : 0;
+}
+
 function mapWorldBounds(scene: PlaySceneContext): { x: number; y: number; width: number; height: number } | undefined {
   const map = scene.map;
   if (!map) return undefined;
