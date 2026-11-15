@@ -10,7 +10,7 @@ import hs as L
 def save(style, name, grid, ramps, ramp):
     cs = [L.hx(c) for c in ramps[ramp]]; h, w = len(grid), len(grid[0]); a = np.zeros((h, w, 4), np.uint8)
     for y in range(h):
-        for x in range(w): a[y, x, :3] = cs[grid[y][x]]; a[y, x, 3] = 255
+        for x in range(w): a[y, x, :3] = cs[min(grid[y][x], len(cs) - 1)]; a[y, x, 3] = 255
     Image.fromarray(a, "RGBA").save(L.STORE / style / "parts" / f"{name}.png")
 def tiles(style, ramps):
     D, M, Lt, Hh = 1, 3, 5, 6
@@ -53,7 +53,7 @@ def borrow(style, ramps, src_style, parts, rename):
     for r, cs in src.items():
         to = ramps.get(rename.get(r, r))
         if to is None: continue
-        for k, c in enumerate(cs): lut.setdefault(L.hx(c), L.hx(to[min(k, len(to) - 1)]))
+        for k, c in enumerate(cs): lut.setdefault(L.hx(c), L.hx(to[k if len(to) == len(cs) else round(k * (len(to) - 1) / max(1, len(cs) - 1))]))     # 단 수가 다른 줄은 비례로
     for name, from_name in parts.items():
         a = np.array(Image.open(L.STORE / src_style / "parts" / f"{from_name}.png").convert("RGBA")); out = a.copy()
         for c, t in lut.items(): out[(a[:, :, :3] == c).all(2) & (a[:, :, 3] > 0), :3] = t
@@ -61,13 +61,13 @@ def borrow(style, ramps, src_style, parts, rename):
 def main(style):
     import importlib, json, sys
     sys.path.insert(0, str(L.HERE))
-    cfg = getattr(importlib.import_module(f"recipes.{style}"), "STYLE", {}); R = L.ramps_of(style); made = {}
+    cfg = getattr(importlib.import_module(f"recipes.{style}"), "STYLE", {}); R = L.ramps_of(style); made = {}; (L.STORE / style / "parts").mkdir(parents=True, exist_ok=True)
     if any(alt.get("l") for alt in cfg.get("alt", {}).values()): tiles(style, R); made.update({n: "코드 — 원본 붉은 기와 지붕의 되풀이 단위" for n in ("tile", "tile-l", "tile-r")})
     if cfg.get("rubble", True) and "stone" in R: rubble(style, R); made["stone"] = "코드 — 원본 여관 막돌의 짜임"
     if cfg.get("borrow"):
         src, parts, rename = cfg["borrow"]; borrow(style, R, src, parts, rename)
         made.update({n: f"코드 — {src} 양식의 Fable 부품 {f} 를 색 줄만 옮김" for n, f in parts.items()})
-    folder = L.STORE / style / "parts"
+    folder = L.STORE / style / "parts"; folder.mkdir(parents=True, exist_ok=True)
     table = {p.stem: made.get(p.stem, "Fable 5.2 medium 그림") for p in sorted(folder.glob("*.png"))}
     (L.STORE / style / "parts.json").write_text(json.dumps(table, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(style, "Fable", sum(1 for v in table.values() if v.startswith("Fable")), "· 코드", sum(1 for v in table.values() if v.startswith("코드")))

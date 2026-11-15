@@ -3,17 +3,21 @@
 부품은 tiledata/beodeul-house-styles/<양식>/parts/*.png (Claude Fable 5.2 medium 이 부품마다 한 번 그린 것 + code_parts.py 가 원본 버들항 무늬로 짠 재질 판),
 색 줄은 <양식>/ramps.json, 집마다의 조립 순서는 recipes/<양식>.py.
 
-덩어리는 둘이다 — 어느 쪽도 지붕 옆선은 수직이고 옆벽은 보이지 않는다(직교 3/4 시점, ~/z-project/assistant-fable-runs/redraw/CONTRACT.md 의 직각 지붕 규칙을 박공에 적용한 읽기):
+덩어리는 어느 쪽도 지붕 옆선이 수직이고 옆벽은 보이지 않는다(직교 3/4 시점, ~/z-project/assistant-fable-runs/redraw/CONTRACT.md 의 직각 지붕 규칙을 박공에 적용한 읽기):
  · 처마 정면(k 'e', 용마루가 좌우): 지붕은 직사각형.
- · 박공 정면(k 'g', 용마루가 앞뒤): 지붕은 «옆선 수직 + 위·아래가 갈매기 모양» 띠이고 그 밑에 세모 박공벽. 원본 버들항 4×6 박공집과 같은 투영.
+ · 박공 정면(k 'g', 용마루가 앞뒤): 지붕은 «옆선 수직 + 위·아래가 갈매기 모양» 띠이고 그 밑에 세모 박공벽. 원본 버들항 4×6 박공집과 같은 투영. steps 를 주면 박공벽이 계단 모양으로 지붕 앞을 가린다(계단 박공).
+ · 평지붕(k 'f'): 위에서 본 옥상 바닥 직사각형 + 난간벽(앞 난간은 parapet 부품).
+ · 벽만(k 'w'): 지붕 없이 벽만 — 탑 몸통·종벽. cap 을 주면 그 부품(탑 지붕·돔)을 꼭대기에 얹는다.
+ · 둥근 집(k 'r'): 원통 벽 + 원뿔 초가(왼 절반 부품을 거울로 맞춘다).
 십자·ㄱ·ㅜ 지붕은 덩어리의 합이고, 지붕창은 처마 정면 지붕 위의 작은 박공 정면 덩어리다. 사다리꼴·모임지붕·옆면은 그리지 않는다.
+둥근 집의 원뿔과 탑 지붕(위에서 본 둥근·네모 탑)만 옆선이 수직이 아니다 — 옆선 편차를 재지 않고 «둥근 지붕·탑» 으로 따로 센다.
 """
-import json, pathlib
+import json, os, pathlib
 import numpy as np
 from PIL import Image
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-STORE = ROOT / "tiledata/beodeul-house-styles"
+STORE = pathlib.Path(os.environ.get("HS_STORE") or ROOT / "tiledata/beodeul-house-styles")     # HS_STORE: 그림이 오기 전에 자리 표시 부품으로 조립 순서(칸 크기·문 칸·옆선)만 시험할 때
 T = 16
 def hx(c): return tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))
 def ramps_of(style): return json.loads((STORE / style / "ramps.json").read_text(encoding="utf-8"))["ramps"]
@@ -27,9 +31,13 @@ class Kit:
         import importlib, sys
         if str(HERE) not in sys.path: sys.path.insert(0, str(HERE))
         s.style = style; s.R = ramps_of(style); s.P = {}; s.idx = {}; s.roofmat = 'roof'
-        # 양식 설정: frame 목골을 두르는 벽 재질 · face 지붕 판 부품 · alt 둘째 지붕(색 줄 이름 → 앞면·왼 물매·오른 물매 판) · barge 박공널 색 · corner 모서리 널 색(없으면 그리지 않는다)
-        s.cfg = dict(frame=(), face='shingle', alt={}, barge=('timber:5', 'timber:4', 'timber:3', 'timber:1'), corner=None, **getattr(importlib.import_module(f'recipes.{style}'), 'STYLE', {}))
+        # 양식 설정: frame 목골을 두르는 벽 재질 · face 지붕 판 부품 · alt 둘째 지붕(색 줄 이름 → 앞면·왼 물매·오른 물매 판) · barge 박공널 색 · corner 모서리 널 색(없으면 그리지 않는다) ·
+        # ridge·eave 용마루·처마 끝 부품(None 이면 줄만 긋는다) · gface 'rot' 박공 정면 지붕의 줄을 용마루와 나란히(판을 돌려 쓴다) · foot 벽 밑동 색 줄 · quoin 벽 모서리 귀돌 색 줄 ·
+        # noshift 그늘 단을 옮기지 않는 색 줄(무늬 물감) · terrace 평지붕 바닥 판 · rim 평지붕 난간에 쓰는 벽 색 줄 · cap 계단 박공 덮개돌 석 줄의 색
+        s.cfg = {**dict(frame=(), face='shingle', alt={}, barge=('timber:5', 'timber:4', 'timber:3', 'timber:1'), corner=None, ridge='ridge', eave='eave', gface=None, foot='iron', quoin=None, noshift=(),
+                        terrace='terrace', rim='wall', cap=('frame:3', 'frame:2', 'frame:0')), **getattr(importlib.import_module(f'recipes.{style}'), 'STYLE', {})}
         for r, cs in s.R.items():
+            if r in s.cfg['noshift']: continue
             for i, c in enumerate(cs): s.idx.setdefault(hx(c), (r, i))
     ROOFED = ('ridge', 'eave', 'dormer', 'win-shop')        # 지붕 색이 실린 부품 — 기와 집에서는 너와 색 줄을 기와 색 줄의 같은 단으로 옮긴다
     def part(s, name):
@@ -67,9 +75,10 @@ class Kit:
                         r, i = s.idx.get(key[:3], (None, 0))
                         lut[key] = key if r is None else hx(s.R[r][0 if i < 2 else max(floor, i + k)]) + (255,)
                     a[y, x] = lut[key]
-    def tile(s, name, w, h, ox=0, oy=0):
-        t = s.part(name); th, tw = t.shape[:2]
-        ys = (np.arange(h) + oy) % th; xs = (np.arange(w) + ox) % tw
+    def tile(s, name, w, h, ox=0, oy=0): return s.tile_of(s.part(name), w, h, ox, oy)
+    @staticmethod
+    def tile_of(t, w, h, ox=0, oy=0):
+        th, tw = t.shape[:2]; ys = (np.arange(h) + oy) % th; xs = (np.arange(w) + ox) % tw
         return t[ys][:, xs].copy()
     @staticmethod
     def put(a, src, x, y, mask=None):
@@ -104,18 +113,20 @@ class Kit:
         s.put(a, np.rot90(b, 1)[::-1].copy(), x, y0, mask)   # 윗변(빛) → 왼쪽
     def footing(s, a, x0, x1, y):
         """벽 밑동 두 줄 — 버들항 중세 집과 같은 회색 돌 줄 + 어두운 줄."""
+        f = s.cfg['foot']; hi = min(7, len(s.R[f]) - 1)
         for x in range(x0, x1):
-            s.px(a, x, y, 'iron:7' if (x * 7 + y) % 11 == 0 else 'iron:3' if (x * 5) % 13 == 0 else 'iron:5'); s.px(a, x, y + 1, 'iron:2' if (x * 3) % 9 == 0 else 'iron:1')
+            s.px(a, x, y, f'{f}:{hi}' if (x * 7 + y) % 11 == 0 else f'{f}:3' if (x * 5) % 13 == 0 else f'{f}:{min(5, hi)}'); s.px(a, x, y + 1, f'{f}:2' if (x * 3) % 9 == 0 else f'{f}:1')
     # ── 지붕 ────────────────────────────────────────────────────────────
     def eave_roof(s, a, x0, w, ytop, rh, back=3):
         """처마 정면 지붕(용마루 좌우): 직사각형 [x0, x0+w) × [ytop, ytop+rh) + 그 아래 처마 끝 2줄 그늘. 위에서 back 줄은 뒤 물매, 그 밑이 용마루."""
         f = s.tile(s.face(), w, rh, ox=x0 * 3, oy=ytop * 4); s.put(a, f, x0, ytop)
         if back: s.shift(a, -1, x0, ytop, x0 + w, ytop + back)
-        s.put(a, s.tile('ridge', w, 6, ox=x0 * 3), x0, ytop + back)
+        if s.cfg['ridge']: s.put(a, s.tile(s.cfg['ridge'], w, 6, ox=x0 * 3), x0, ytop + back)
+        else: s.hline(a, x0, x0 + w, ytop + back, 'roof:6'); s.hline(a, x0, x0 + w, ytop + back + 1, 'roof:5'); s.hline(a, x0, x0 + w, ytop + back + 2, 'roof:1')      # 용마루 부품이 없는 지붕(잔디·초가): 밝은 등줄과 그 밑 그늘 줄
         third = max(3, (rh - back - 6) // 3)
         if s.roofmat == 'roof' or not s.cfg['alt'][s.roofmat].get('l'): s.shift(a, +1, x0, ytop + back + 6, x0 + w, ytop + back + 6 + third)          # 용마루 쪽이 밝다(기와는 원본처럼 처마 쪽만 어둡게)
         else: s.shift(a, -1, x0, ytop + rh - 6 - third // 2, x0 + w, ytop + rh - 3)
-        ev = s.tile('eave', w, 8, ox=x0 * 3); body = ev[:6]; s.put(a, body, x0, ytop + rh - 6)
+        if s.cfg['eave']: ev = s.tile(s.cfg['eave'], w, 8, ox=x0 * 3); body = ev[:6]; s.put(a, body, x0, ytop + rh - 6)
         s.shift(a, -1, x0, ytop + rh - 3, x0 + w, ytop + rh)
         s.vline(a, x0, ytop, ytop + rh - 1, 'roof:5'); s.shift(a, -1, x0 + w - 3, ytop, x0 + w, ytop + rh)
         s.vline(a, x0 + w - 1, ytop, ytop + rh, 'roof:0'); s.hline(a, x0, x0 + w, ytop, 'roof:1')
@@ -130,7 +141,9 @@ class Kit:
         sh = s.gable_shape(x0, w, ye, rd, rise); cx = x0 + w // 2; y00 = ye - rise - rd; fh = rd + rise + 2
         # 용마루선 기준 왼 물매는 빛, 오른 물매는 그늘(빛은 왼쪽 위). 기와는 원본의 왼·오른 물매 무늬를 그대로, 너와는 같은 판을 색 줄 안에서 옮긴다.
         alt = s.cfg['alt'].get(s.roofmat) if s.roofmat != 'roof' else None; tile = bool(alt and alt.get('l'))     # 왼·오른 물매 판이 따로 있는 지붕(원본 붉은 기와)
-        fl = s.tile(alt['l'] if tile else s.face(), w, fh, ox=0, oy=ye * 4); fr = s.tile(alt['r'] if tile else s.face(), w, fh, ox=0, oy=ye * 4)
+        if s.cfg['gface'] == 'rot' and not tile:      # 줄이 용마루와 나란한 지붕: 판을 돌려 낱장 밑 그늘 줄이 물매 아래쪽(왼 물매는 왼쪽, 오른 물매는 오른쪽)에 오게 한다
+            t = s.part(s.face()); fl = s.tile_of(np.rot90(t, -1), w, fh, ox=0, oy=ye * 4); fr = s.tile_of(np.rot90(t, 1), w, fh, ox=0, oy=ye * 4)
+        else: fl = s.tile(alt['l'] if tile else s.face(), w, fh, ox=0, oy=ye * 4); fr = s.tile(alt['r'] if tile else s.face(), w, fh, ox=0, oy=ye * 4)
         for x, (t, b) in sh.items():
             src = fl if x < cx else fr
             for y in range(max(0, t), min(a.shape[0], b)):
@@ -159,7 +172,10 @@ class Kit:
     def volume(s, a, v, H, rec):
         """v: k 'e'|'g' · x,w(벽 px) · floors [(재질, 높이)…] 아래층부터 · base(벽 밑, 기본 H-2) · ov(지붕 옆 내밂) ·
         e: rh(지붕 높이) back · g: rd(지붕 띠 두께) rise(박공 높이) · posts [x…] braces [(x0,x1,방향)] · frame False 면 목골 없음."""
-        x, w = v['x'], v['w']; base = v.get('base', H - 2); ov = v.get('ov', 2); y = base; bands = []
+        if v['k'] == 'r': return s.round_vol(a, v, H, rec)
+        x, w = v['x'], v['w']; base = v.get('base', H - 2); ov = v.get('ov', 1 if v['k'] == 'f' else 2); y = base; bands = []
+        assert v['k'] == 'w' or (x - ov >= 0 and x + w + ov <= a.shape[1]), f"덩어리 지붕이 그림 밖으로 나간다: x {x} w {w} ov {ov} (폭 {a.shape[1]})"
+        assert base - sum(fh for _, fh in v['floors']) - {'e': v.get('rh', 0) - 3, 'g': v.get('rise', 0) + v.get('rd', 0) - 2, 'f': v.get('th', 0), 'w': 0}[v['k']] >= 0, f"덩어리가 그림 위로 나간다: {v['k']} x {x}"
         for mat, fh in v['floors']: bands.append((mat, y - fh, y)); y -= fh
         top = y; m = np.zeros(a.shape[:2], bool)
         for i, (mat, y0, y1) in enumerate(bands):
@@ -172,6 +188,7 @@ class Kit:
                 if s.cfg['corner'] and mat != 'stone':
                     cn = s.cfg['corner']
                     for i, nm in enumerate(cn): s.vline(a, x + i, y0, y1, nm); s.vline(a, x + w - len(cn) + i, y0, y1, nm)
+                if s.cfg['quoin'] and mat != 'stone': s.quoins(a, x, x + w, y0, y1)
             if mat in s.cfg['frame'] and v.get('frame', True):
                 s.beam(a, x, y0, w, 4); s.beam(a, x, y1 - (5 if i > 0 else 4), w, 5 if i > 0 else 4)
                 for px_ in [x, x + w - 3] + [x + p for p in v.get('posts', {}).get(i, [])]: s.post(a, px_, y0, y1 - y0, 3)
@@ -179,8 +196,28 @@ class Kit:
                     ya, yb = y0 + 4, y1 - 6
                     s.line(a, x + (bx0 if d > 0 else bx1), ya, x + (bx1 if d > 0 else bx0), yb, ['timber:5', 'timber:3', 'timber:1'])
             if i > 0: s.shade_under(a, x, x + w, y1, 2)                       # 위층 들보 밑 그늘(아래층 벽 윗줄)
-        s.footing(a, x, x + w, base)
-        if v['k'] == 'e':
+        if not v.get('nofoot'): s.footing(a, x, x + w, base)      # nofoot: 옥상 위에 선 덩어리
+        if v['k'] == 'w':                                                         # 벽만: 탑 몸통 · 종벽
+            if v.get('round'): s.cyl_shade(a, x, w, top, base + 2)
+            if v.get('cap'):
+                cp = s.part(v['cap'][0]); cy = top + v['cap'][1] - cp.shape[0]; cx0 = x + w // 2 - cp.shape[1] // 2; s.put(a, cp, cx0, cy)
+                for xx in range(max(x, cx0), min(x + w, cx0 + cp.shape[1])):
+                    ys = np.nonzero(cp[:, xx - cx0, 3])[0]
+                    if len(ys): s.shade_under(a, xx, xx + 1, cy + int(ys.max()) + 1, 3)
+                rm = np.zeros(a.shape[:2], bool); sub = rm[max(0, cy):cy + cp.shape[0], max(0, cx0):cx0 + cp.shape[1]]; sub |= cp[max(0, -cy):, max(0, -cx0):, 3][:sub.shape[0], :sub.shape[1]] > 0
+                rec['roofs'].append(dict(k='t', exempt=True, mask=rm))
+        elif v['k'] == 'f':                                                       # 평지붕: 옥상 바닥(위에서 본 직사각형) + 난간벽
+            th = v['th']; ry = top - th; X0, X1 = x - ov, x + w + ov; rim = s.cfg['rim']; n = len(s.R[rim]) - 1
+            s.put(a, s.tile(s.cfg['terrace'], X1 - X0, th + 2, ox=X0 * 3, oy=ry * 5), X0, ry)
+            s.shift(a, -1, X0 + 3, ry + 3, X1 - 3, ry + 5); s.shift(a, -1, X0 + 3, ry + 3, X0 + 5, top)                       # 뒤·왼 난간이 옥상 바닥에 떨구는 그늘
+            for i, t in enumerate((n, n - 1, n - 2)): s.hline(a, X0, X1, ry + i, f'{rim}:{t}')                                   # 뒤 난간(윗면)
+            for i, t in enumerate((n, n, n - 1)): s.vline(a, X0 + i, ry, top, f'{rim}:{t}')                                      # 왼 난간
+            for i, t in enumerate((n - 1, n - 2, n - 3)): s.vline(a, X1 - 3 + i, ry, top, f'{rim}:{t}')                          # 오른 난간(그늘 쪽)
+            par = s.tile('parapet', X1 - X0, 12, ox=X0 * 3); s.put(a, par, X0, top - 5)                                       # 앞 난간: 부품의 5번째 줄이 벽 윗줄
+            s.shift(a, -1, X1 - 3, top - 5, X1, top + 7)
+            rm = np.zeros(a.shape[:2], bool); rm[max(0, ry):top + 5, max(0, X0):X1] = True
+            rec['roofs'].append(dict(k='f', x0=X0, x1=X1 - 1, side=(ry, top + 5), mask=rm, wall_top=top + 5))
+        elif v['k'] == 'e':
             rh = v['rh']; ry = top - rh + 3
             s.shade_under(a, x, x + w, top + 3, 3)
             before = a[:, :, 3].copy(); s.eave_roof(a, x - ov, w + 2 * ov, ry, rh, v.get('back', 3))
@@ -200,11 +237,60 @@ class Kit:
             s.gable_roof(a, x - ov, w + 2 * ov, ye, rd, rise)
             for xx, (t, b) in sh.items():
                 if x <= xx < x + w: s.shade_under(a, xx, xx + 1, b, 3)
+            if v.get('steps'): s.stepped(a, x, w, sh, v['steps'], mat)
             rm = np.zeros(a.shape[:2], bool)
             for xx, (t, b) in sh.items():
                 if 0 <= xx < a.shape[1]: rm[max(0, t):b, xx] = True
             rec['roofs'].append(dict(k='g', x0=x - ov, x1=x + w + ov - 1, side=(sh[x - ov][0], ye), mask=rm, wall_top=ye))
         rec['walls'].append((x, top if v['k'] == 'e' else top, x + w, base + 2))
+    def quoins(s, a, x0, x1, y0, y1):
+        """벽 두 모서리의 귀돌: 넉 줄 높이의 긴 돌(6px)과 짧은 돌(4px)이 번갈아."""
+        q = s.cfg['quoin']
+        for y in range(y0, y1):
+            k = (y - y0) // 4; wd = 6 if k % 2 == 0 else 4; r = (y - y0) % 4
+            for side in (0, 1):
+                for i in range(wd):
+                    xx = x0 + i if side == 0 else x1 - 1 - i
+                    tone = 1 if r == 3 else (3 if r == 0 else 2) - (1 if side == 1 and r != 3 else 0)
+                    if i == wd - 1 and r != 3: tone = 1
+                    s.px(a, xx, y, f'{q}:{max(0, tone)}')
+    def stepped(s, a, x, w, sh, n, mat):
+        """계단 박공: 박공벽이 지붕 앞 끝(아래 갈매기 선)을 가리며 가운데로 n 단 올라간다. 단마다 윗줄은 덮개돌(밝은 줄), 바깥 옆줄은 그늘."""
+        cx = x + w // 2; half = w / 2.0; sw = half / n; cap = s.cfg['cap']
+        for xx in range(x, x + w):
+            k = min(n - 1, int((half - abs(xx + 0.5 - (x + half))) / sw)); lo, hi = x + int(round(k * sw)), x + w - int(round(k * sw))    # 이 단의 바깥 끝 두 열
+            ytop = min(sh[c][1] for c in (lo, hi - 1)) - 5; b = sh[xx][1]
+            if ytop >= b: continue
+            tex = s.tile(mat, 1, b - ytop, ox=xx * 5, oy=ytop * 7)
+            a[ytop:b, xx] = tex[:, 0]
+            s.px(a, xx, ytop, cap[0]); s.px(a, xx, ytop + 1, cap[1]); s.px(a, xx, ytop + 2, cap[2])
+            if xx in (lo, hi - 1): s.vline(a, xx, ytop, b, cap[0] if xx == lo and xx < cx else cap[2])
+    def cyl_shade(s, a, x, w, y0, y1):
+        """원통 벽의 밝기: 왼쪽 여섯째는 한 단 밝게, 오른쪽 넷째는 한 단, 맨 오른쪽 열째는 두 단 어둡게."""
+        for i in range(w):
+            u = (i + 0.5) / w; k = 1 if u < 0.16 else 0 if u < 0.62 else -1 if u < 0.88 else -2
+            if k: s.shift(a, k, x + i, y0, x + i + 1, y1)
+    def round_vol(s, a, v, H, rec):
+        """둥근 집: x,w(벽 지름 px) · wh(벽 높이) · cone(원뿔 왼 절반 부품) · drop(원뿔 맨 아랫줄이 벽 윗줄보다 내려오는 px) · curve(벽 밑이 양 끝에서 올라가는 px) · bands [(부품, 벽 윗줄부터 y)…]."""
+        x, w = v['x'], v['w']; base = v.get('base', H - 2); wh = v['wh']; top = base - wh; curve = v.get('curve', 4); half = w / 2.0; mat = v.get('mat', 'wall')
+        tex = s.tile(mat, w, wh + 2, ox=x * 5 + top * 3, oy=top * 7 + x)
+        for (bp, by) in v.get('bands', []):
+            b = s.tile(bp, w, s.part(bp).shape[0], ox=x * 3); tex[by:by + b.shape[0]] = b[:max(0, min(b.shape[0], tex.shape[0] - by))]
+        f = s.cfg['foot']; hi = min(7, len(s.R[f]) - 1)
+        for i in range(w):
+            u = (i + 0.5 - half) / half; d = int(round(curve * (1 - (1 - u * u) ** 0.5))); xx = x + i; yb = base + 2 - d
+            if not 0 <= xx < a.shape[1]: continue
+            a[top:yb, xx] = tex[d:d + yb - top, i] if v.get('wrap', True) else tex[:yb - top, i]          # 무늬 띠도 벽을 따라 양 끝에서 올라간다
+            a[yb - 2, xx] = s.c(f'{f}:{hi}' if (xx * 7) % 11 == 0 else f'{f}:{min(5, hi)}'); a[yb - 1, xx] = s.c(f'{f}:1')
+        s.cyl_shade(a, x, w, top, base + 2)
+        cone = s.part(v['cone']); ch, cw = cone.shape[:2]; full = np.concatenate([cone, cone[:, ::-1]], axis=1); X0 = x + w // 2 - cw; Y0 = top + v.get('drop', 8) - ch
+        s.put(a, full, X0, Y0)
+        rm = np.zeros(a.shape[:2], bool); yy0, xx0 = max(0, Y0), max(0, X0); sub = rm[yy0:Y0 + ch, xx0:X0 + 2 * cw]; sub |= full[yy0 - Y0:, xx0 - X0:, 3][:sub.shape[0], :sub.shape[1]] > 0
+        s.shift_floor(a, -1, 1, X0 + cw, 0, X0 + 2 * cw, a.shape[0], rm)                                 # 거울로 맞춘 오른 절반은 한 단 어둡게
+        for xx in range(max(0, x), min(a.shape[1], x + w)):
+            ys = np.nonzero(rm[:, xx])[0]
+            if len(ys): s.shade_under(a, xx, xx + 1, int(ys.max()) + 1, 3)
+        rec['roofs'].append(dict(k='r', exempt=True, mask=rm)); rec['walls'].append((x, top, x + w, base + 2))
     # ── 붙는 것 ─────────────────────────────────────────────────────────
     def feat(s, a, f, H):
         """f: (부품, x, 밑 y[, 옵션]) — 밑 y 는 부품 맨 아랫줄 다음 줄. 옵션: crop (x0,y0,x1,y1) · w 이어 붙일 폭 · flip · dark 어둡게 한 단."""
@@ -227,6 +313,7 @@ def measure(a, rec):
     """지붕 덩어리마다 옆선 수직 편차(px): 옆선 구간 줄들에서 그 덩어리 지붕 화소의 맨 왼쪽·맨 오른쪽 x 의 흩어짐."""
     worst = 0
     for r in rec['roofs']:
+        if r.get('exempt'): continue                       # 둥근 집의 원뿔 · 위에서 본 탑 지붕
         y0, y1 = r['side']; ls, rs = [], []
         for y in range(max(0, y0), min(a.shape[0], y1)):
             xs = np.nonzero(r['mask'][y])[0]
