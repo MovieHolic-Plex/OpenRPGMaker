@@ -444,6 +444,13 @@
   flex-wrap: wrap;
   row-gap: 2px;
 }
+/* 띠 안 기술·아이템 목록은 띠 전체 폭으로 편다 — 목록이 열린 동안 오른쪽 파티 창은 숨는데(_retro2003.css) 목록은 왼쪽 45% 에 남아
+   띠의 절반이 검게 비었다(2026-11-14 QA minor 13, 390×844). 가로 화면의 목록이 파티 자리까지 펴지는 것과 같은 규칙이고, 창 칸이 있는 세로 화면에만 걸린다. */
+.player-layout .play-viewport[data-window-panel] .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="corner"]:not([data-look-party="boxesTop"]):not([data-look-party="mini"]):has(.battle-command-menu > .battle-submenu-header) > .battle-command-host {
+  /* 오른쪽 끝은 파티 창의 오른쪽 끝과 같은 자리(명령 창이 4px, 파티 창이 2px 안쪽에서 시작한다). */
+  width: calc((var(--panel-room-w) - 2px) / var(--hud-zoom));
+  margin-right: 0;
+}
 .player-layout .play-viewport[data-window-panel] .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong {
   flex: 1 0 100%;
   overflow: visible;

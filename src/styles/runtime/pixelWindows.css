@@ -437,6 +437,10 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-row.up .status-menu-stat-delta-value { color: var(--px-gain); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-row.down .status-menu-stat-delta-value { color: var(--px-loss); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-item-facts .status-menu-stat-delta-row { grid-template-columns: max-content minmax(0, 1fr); }
+/* 상태 화면: 파티원 줄은 이름과 직업뿐이라 좁게, 그 사람의 장을 넓게 둔다. */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.has-showcase[data-status-menu-command="status"] { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-sheet-section { border-top-color: var(--px-line); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-sheet-section.two-up { column-gap: 14px; }
 .oprn-status-menu .status-menu-delta { font-size: 10px; font-family: var(--px-small-font); text-align: right; white-space: nowrap; }
 .oprn-status-menu .status-menu-delta.up { color: var(--px-gain, rgba(144, 220, 168, 1)); }
 .oprn-status-menu .status-menu-delta.down { color: var(--px-loss, rgba(255, 158, 151, 1)); }

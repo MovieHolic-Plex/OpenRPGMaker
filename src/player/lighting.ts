@@ -31,6 +31,12 @@ export type LightingMaskContext = {
    * 빛 색 얹기는 그대로 맵 사각 안이다(벽 너머 빛 쐐기 방지).
    */
   readonly darkMargin?: boolean;
+  /**
+   * 화면 네 변 바깥으로 더 그릴 폭(화면 px). 카메라가 흔들리면 화면 고정 층도 같이 밀려, 화면 크기에 딱 맞춘 어둠 막은
+   * 밀린 만큼 가장자리가 비어 낮 밝기의 띠가 드러났다(2026-11-14 QA minor 16). 흔들리는 동안 그만큼 넓게 그린다.
+   * 빛·맵 사각은 같은 세계 좌표로 계산해 한쪽으로 bleed 만큼 옮긴다 — 막은 세계에 붙어 같이 흔들린다.
+   */
+  readonly bleed?: number;
 };
 
 export type LightGradientParam = {
@@ -60,6 +66,8 @@ export type LightingMaskParams = {
   readonly clip?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
   /** true 면 어둠 막·비네트는 clip 없이 화면 전체, 빛 색만 clip 안(LightingMaskContext.darkMargin). */
   readonly darkMargin?: boolean;
+  /** width·height 에 이미 들어 있는 네 변 여유(px) — LightingMaskContext.bleed. 화면은 (bleed, bleed) 에서 시작한다. */
+  readonly bleed?: number;
   readonly gradients: readonly LightGradientParam[];
 };
 
@@ -68,8 +76,9 @@ export function lightingGradientParams(
   context: LightingMaskContext
 ): LightingMaskParams {
   const state = normalizeLightingState(lighting);
-  const width = Math.max(1, Math.round(context.viewportWidth));
-  const height = Math.max(1, Math.round(context.viewportHeight));
+  const bleed = Math.max(0, Math.round(context.bleed ?? 0));
+  const width = Math.max(1, Math.round(context.viewportWidth)) + bleed * 2;
+  const height = Math.max(1, Math.round(context.viewportHeight)) + bleed * 2;
   // 밝은 색 어둠 막은 같은 색상의 어두운 색조로 낮춘다(effectiveDarkness) — 방 전체가 안개 낀 듯 뭉개지지 않게.
   const blend = lightingBlend(state);
   const darkness = effectiveDarkness(state.color, state.ambient, blend);
@@ -85,24 +94,25 @@ export function lightingGradientParams(
     vignette: state.vignette ?? 0,
     width,
     height,
-    ...(context.mapBounds ? { clip: mapClip(context, width, height) } : {}),
+    ...(context.mapBounds ? { clip: mapClip(context, width, height, bleed) } : {}),
     ...(context.darkMargin ? { darkMargin: true } : {}),
+    ...(bleed > 0 ? { bleed } : {}),
     // 화면과 겹치지 않는 광원은 마스크에 아무 픽셀도 바꾸지 않는다. 서명·그리기에서 빼야 화면 밖
     // 깜빡이는 광원 하나 때문에 16ms 마다 캔버스 전체를 다시 그리고 텍스처를 올리지 않는다.
     gradients: sources
-      .map((source) => lightGradientParam(source, context))
+      .map((source) => lightGradientParam(source, context, bleed))
       .filter((param): param is LightGradientParam => param !== null && gradientTouchesViewport(param, width, height)),
   };
 }
 
 /** 맵 세계 사각을 화면(캔버스 px)으로 옮겨 화면 안으로 자른다. 정수로 맞춰 가장자리에 반 픽셀 띠가 남지 않게 한다. */
-function mapClip(context: LightingMaskContext, width: number, height: number): NonNullable<LightingMaskParams["clip"]> {
+function mapClip(context: LightingMaskContext, width: number, height: number, bleed = 0): NonNullable<LightingMaskParams["clip"]> {
   const bounds = context.mapBounds!;
   const zoom = Number.isFinite(context.zoom) && context.zoom > 0 ? context.zoom : 1;
-  const left = Math.max(0, Math.round((bounds.x - context.cameraX) * zoom));
-  const top = Math.max(0, Math.round((bounds.y - context.cameraY) * zoom));
-  const right = Math.min(width, Math.round((bounds.x + bounds.width - context.cameraX) * zoom));
-  const bottom = Math.min(height, Math.round((bounds.y + bounds.height - context.cameraY) * zoom));
+  const left = Math.max(0, Math.round((bounds.x - context.cameraX) * zoom) + bleed);
+  const top = Math.max(0, Math.round((bounds.y - context.cameraY) * zoom) + bleed);
+  const right = Math.min(width, Math.round((bounds.x + bounds.width - context.cameraX) * zoom) + bleed);
+  const bottom = Math.min(height, Math.round((bounds.y + bounds.height - context.cameraY) * zoom) + bleed);
   return { x: left, y: top, width: Math.max(0, right - left), height: Math.max(0, bottom - top) };
 }
 
@@ -201,7 +211,9 @@ const LIGHT_TINT_STRENGTH = 0.8;
  * 밤 장면이 화면 끝까지 같은 밝기의 판으로 깔려 「색만 입힌 낮」으로 읽혔다(폴른 스타 서리나루 밤, 2026-11-03).
  */
 function drawVignette(context: CanvasRenderingContext2D, params: LightingMaskParams, clip: LightingMaskParams["clip"]): void {
-  const w = params.width, h = params.height;
+  // 비네트는 화면 크기로 그린다 — 여유(bleed) 바깥은 가장 짙은 끝 값으로 이어진다.
+  const bleed = params.bleed ?? 0;
+  const w = params.width - bleed * 2, h = params.height - bleed * 2;
   const cx = w / 2;
   context.save();
   context.globalCompositeOperation = "source-over";
@@ -211,13 +223,13 @@ function drawVignette(context: CanvasRenderingContext2D, params: LightingMaskPar
     context.clip();
   }
   // 가로로 긴 화면에 맞춘 타원 — 세로를 h/w 로 눌러 원을 그린다. 눌린 좌표에서 화면 네 귀퉁이는 가운데서 cx·√2 다.
-  context.translate(cx, h / 2);
+  context.translate(bleed + cx, bleed + h / 2);
   context.scale(1, h / w);
   const gradient = context.createRadialGradient(0, 0, 0, 0, 0, cx * Math.SQRT2);
   const v = clamp01(params.vignette);
   for (const [at, k] of VIGNETTE_CURVE) gradient.addColorStop(at, `rgba(0,0,0,${v * k})`);
   context.fillStyle = gradient;
-  context.fillRect(-cx, -cx, w, w);
+  context.fillRect(-cx - bleed, -(h / 2 + bleed) * (w / h), w + bleed * 2, (h + bleed * 2) * (w / h));
   context.restore();
 }
 
@@ -244,12 +256,12 @@ function hexRgb(color: string): string | null {
   return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
 }
 
-function lightGradientParam(source: LightSource, context: LightingMaskContext): LightGradientParam | null {
+function lightGradientParam(source: LightSource, context: LightingMaskContext, bleed = 0): LightGradientParam | null {
   const position = context.resolveAnchor(source.at, source);
   if (!position) return null;
   const zoom = Number.isFinite(context.zoom) && context.zoom > 0 ? context.zoom : 1;
-  const centerX = ((position.x + 0.5) * context.tileSize - context.cameraX) * zoom;
-  const centerY = ((position.y + 0.5) * context.tileSize - context.cameraY) * zoom;
+  const centerX = ((position.x + 0.5) * context.tileSize - context.cameraX) * zoom + bleed;
+  const centerY = ((position.y + 0.5) * context.tileSize - context.cameraY) * zoom + bleed;
   return {
     id: source.id,
     centerX,

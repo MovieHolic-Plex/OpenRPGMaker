@@ -132,11 +132,15 @@ export function autoLayout(t: CodeTerrain, seed: number, houseCount: number, nea
     const r = 8 + (i % 3) * 4 + rand() * 3;
     houses.push({ x: Math.max(2, Math.min(W - 3, Math.round(hub.x + Math.cos(a) * r * 1.3))), y: Math.max(2, Math.min(H - 3, Math.round(hub.y + Math.sin(a) * r * 0.9))) });
   }
+  // 큰 건물 자리: 모이는 곳 북쪽 여섯 칸 — 그 둘레(가로 9·세로 7)에 물이 있으면 남쪽·동쪽·서쪽 순으로 물 없는 자리를 고른다
+  // (강이 굽이쳐 모이는 곳 바로 북쪽을 지나면 큰 건물이 물 위에 떨어져 «9칸 안에 자리 없음» 이 됐다).
+  const dry = (cx: number, cy: number) => { for (let dy = -3; dy <= 3; dy += 1) for (let dx = -4; dx <= 4; dx += 1) { const x = cx + dx, y = cy + dy; if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1 || t.water[y * W + x] === 1) return false; } return true; };
+  const anchor = ([[1, -6], [1, 7], [9, -1], [-9, -1], [8, -6], [-8, -6]] as const).map(([dx, dy]) => ({ x: g.x + dx, y: g.y + dy })).find((p) => dry(p.x, p.y)) ?? { x: g.x + 1, y: g.y - 6 };
   const far = (k: number) => { const a = ph + Math.PI * (0.5 + k); return { x: Math.max(4, Math.min(W - 5, Math.round(g.x + Math.cos(a) * 18))), y: Math.max(4, Math.min(H - 5, Math.round(g.y + Math.sin(a) * 12))) }; };
   return {
     gather: { ...g },
     ...(top ? { landmark: { x: top.cx, y: top.cy } } : {}),
-    anchor: { x: g.x + 1, y: g.y - 6 },
+    anchor,
     work: far(0.3),
     houses,
     fields: [far(0.9), far(1.5)],

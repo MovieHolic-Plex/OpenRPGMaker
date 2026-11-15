@@ -18,7 +18,7 @@ import { composeExactFloor } from "@/editor/dungeonKit/beodeul/compose";
 import { Grid } from "@/editor/dungeonKit/grid";
 import { BBOX_VILLAGE_FORMAT, BBOX_VILLAGE_RULES, bboxTerrainText, bboxVillageCatalog, bboxVillageCatalogText, checkBboxVillage, type BboxVillageLayout, type BboxVillageTerrain } from "@/editor/tools/bboxVillage";
 import { BBOX_DECL_TAG, readLayoutDecl } from "@/editor/tools/bboxPlaceTools";
-import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
+import { codeTerrainFor, usesCodeTerrain, villageCliffHabitFor } from "@/editor/tools/authorBeodeulTown";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { themedTroops } from "@/editor/tools/dungeonTools";
 import { chestLoot } from "@/editor/tools/jrpgVolumeTools";
@@ -160,18 +160,18 @@ export const BBOX_DUNGEON_BUILDER: PlaceBuilder = {
 
 // ── 마을 빌더 ──
 /** 마을 명세의 코드 지형(make_place 가 미리보기로 보여 준 땅). 같은 씨앗·크기면 같은 땅이다. */
-function villageTerrainFor(spec: PlaceSpec): BboxVillageTerrain {
+function villageTerrainFor(spec: PlaceSpec, ctx: Parameters<typeof villageCliffHabitFor>[0]): BboxVillageTerrain {
   const va = villageArgs(spec).args; const theme = String(va.theme ?? "river");
   const [width, height] = villageMapSize(spec, va);
   const seed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
-  const t = codeTerrainFor(theme, va, width, height, seed);
+  const t = codeTerrainFor(theme, va, width, height, seed, villageCliffHabitFor(ctx));
   return { W: t.W, H: t.H, levels: Array.from(t.levels), water: Array.from(t.water), theme, river: t.river, crossings: t.crossings, areas: t.areas };
 }
 
 function buildVillage(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const firstCall = run.calls.length;
   const prevTerrain = (previous?.result.state as { terrain?: BboxVillageTerrain } | undefined)?.terrain;
-  const T = prevTerrain ?? villageTerrainFor(spec);
+  const T = prevTerrain ?? villageTerrainFor(spec, run.ctx);
   const mapId = targetMapId(run, spec, previous);
   const vts = run.ctx.project.tilesets[TS];
   const pre = vts ? checkBboxVillage(bboxVillageCatalog(vts), spec.villageLayout as BboxVillageLayout, T) : { ok: false, errors: ["the beodeul_city chipset is not in this project."] };

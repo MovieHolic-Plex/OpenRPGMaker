@@ -17,7 +17,7 @@ import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
 import { galleryRows, listEndingRows, listGallerySlots, resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { resolveTerms } from "@/project/terms";
-import type { Project } from "@/project/types";
+import type { ActorRecord, Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
 import { menuSkinFor } from "@/player/menuSkins/registry";
 import { actorFieldStateNames } from "@/player/actorFieldStates";
@@ -340,15 +340,7 @@ export function createPlayerStatusMenuSnapshot(
     const level = session.actorLevels[actorId] ?? actor.initialLevel;
     const hpRatio = vitalRatio(vitals?.hp, vitals?.maxHp);
     const classId = effectiveActorClassId(project, session, actorId);
-    const normalized = normalizeActorRecord(actor);
-    const levelBase = totalExpForLevel(normalized.expCurve, level);
-    // 시작 레벨이 1보다 높거나 레벨을 직접 정한 동료는 누적 EXP 가 0 으로 남는다 — 보상 적립(battleRewardsToSession)과
-    // 같은 바닥에서 센다. 안 그러면 Lv14 에서 「다음 7306」(누적 전체)이 나오다 첫 승리 뒤 갑자기 725 로 떨어졌다(fs2 I02).
-    const exp = Math.max(session.actorExperience?.[actorId] ?? 0, levelBase);
-    const levelNext = totalExpForLevel(normalized.expCurve, level + 1);
-    const nextLevel = level < normalized.maxLevel && levelNext > levelBase
-      ? { remaining: Math.max(0, levelNext - exp), ratio: vitalRatio(exp - levelBase, levelNext - levelBase) }
-      : undefined;
+    const nextLevel = actorNextLevel(session, actor);
     const stateNames = actorFieldStateNames(project, session, actorId);
     return [{
       actorId,
@@ -477,6 +469,20 @@ function vitalRatio(current: number | undefined, max: number | undefined): numbe
   const total = max as number;
   if (total <= 0) return 0;
   return Math.max(0, Math.min(1, (current as number) / total));
+}
+
+/** 다음 레벨까지 남은 경험치와 이번 레벨 구간 진행률(0~1). 최대 레벨이면 undefined. 메뉴 첫 화면과 상태 화면이 같은 값을 쓴다. */
+export function actorNextLevel(session: PlaySession, actor: ActorRecord): { readonly remaining: number; readonly ratio: number } | undefined {
+  const level = session.actorLevels[actor.id] ?? actor.initialLevel;
+  const normalized = normalizeActorRecord(actor);
+  const levelBase = totalExpForLevel(normalized.expCurve, level);
+  // 시작 레벨이 1보다 높거나 레벨을 직접 정한 동료는 누적 EXP 가 0 으로 남는다 — 보상 적립(battleRewardsToSession)과
+  // 같은 바닥에서 센다. 안 그러면 Lv14 에서 「다음 7306」(누적 전체)이 나오다 첫 승리 뒤 갑자기 725 로 떨어졌다(fs2 I02).
+  const exp = Math.max(session.actorExperience?.[actor.id] ?? 0, levelBase);
+  const levelNext = totalExpForLevel(normalized.expCurve, level + 1);
+  return level < normalized.maxLevel && levelNext > levelBase
+    ? { remaining: Math.max(0, levelNext - exp), ratio: vitalRatio(exp - levelBase, levelNext - levelBase) }
+    : undefined;
 }
 
 export function partyVitalLevel(ratio: number): PartyVitalLevel {
