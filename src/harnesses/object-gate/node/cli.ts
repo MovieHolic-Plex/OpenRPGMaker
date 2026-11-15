@@ -45,13 +45,16 @@ export async function run(argv: string[]): Promise<number> {
     const badContext = contexts.filter(c => !(OBJECT_GATE_WAIVER_CONTEXTS as readonly string[]).includes(c));
     if (badContext.length) { console.error(`거절: 오너 면제가 닿을 수 없는 출구 ${badContext.join(', ')} — 스토어 출구는 면제를 받지 않는다(허용: ${OBJECT_GATE_WAIVER_CONTEXTS.join(', ')})`); return 3; }
     if (listOwnerWaiverBatches().some(b => b.id === id) && !argv.includes('--replace')) { console.error(`거절: 면제 묶음 ${id} 가 이미 있다 — 같은 묶음을 다시 쓰려면 --replace`); return 3; }
-    const doc = JSON.parse(readFileSync(resolve(manifest), 'utf8')) as { items?: Array<{ png?: string; kind?: string; id?: string; label?: string; chipset?: string }> };
+    const doc = JSON.parse(readFileSync(resolve(manifest), 'utf8')) as { items?: Array<{ png?: string; kind?: string; id?: string; label?: string; chipset?: string; partOf?: string }> };
     const calibratedFinal = calibratedFinalProfiles();
     const items: ObjectGateOwnerWaiverItem[] = [], problems: string[] = [];
+    const parts: Array<{ item: ObjectGateOwnerWaiverItem; parent: string }> = [];   // 부품(part): 달린 조립 그림이 같은 묶음에 있어야 한다
     for (const raw of doc.items ?? []) {
       const label = `${raw.chipset ? `${raw.chipset}/` : ''}${raw.label ?? raw.id ?? ''}`;
       if (!raw.png || !existsSync(resolve(raw.png))) { problems.push(`${label || '?'}: 그림 파일이 없다(${raw.png})`); continue; }
-      if (!raw.kind || !(raw.kind in OBJECT_GATE_KINDS)) { problems.push(`${label}: 모르는 종류 ${raw.kind}`); continue; }
+      const isPart = raw.kind === 'part';
+      if (!raw.kind || !(isPart || raw.kind in OBJECT_GATE_KINDS)) { problems.push(`${label}: 모르는 종류 ${raw.kind}`); continue; }
+      if (isPart && !raw.partOf?.trim()) { problems.push(`${label}: 부품(part)은 혼자 면제할 수 없다 — 그것이 달린 조립 그림의 이름을 partOf 로 적고 그 그림을 같은 묶음에 넣어라`); continue; }
       if (!label) { problems.push(`${raw.png}: 이름(id|label)이 없다`); continue; }
       const { width, height, data } = readPng(resolve(raw.png));
       const sha = await pngPixelSha256(resolve(raw.png));
@@ -60,7 +63,14 @@ export async function run(argv: string[]): Promise<number> {
       const final = readFinal(sha);
       if (finalApplies(final, sha, calibratedFinal)) { problems.push(`${label}: 보정된 Opus 최종 판정(${final.verdict})이 있는 그림이다 — 그 판정이 최종이다`); continue; }
       if (items.some(i => i.pixelSha256 === sha)) continue;
-      items.push({ pixelSha256: sha, kind: raw.kind as ObjectGateKind, label, width, height, cells: receiptCells(width, height, data) });
+      const item: ObjectGateOwnerWaiverItem = { pixelSha256: sha, kind: raw.kind as ObjectGateKind | 'part', label, width, height, cells: receiptCells(width, height, data) };
+      items.push(item);
+      if (isPart) parts.push({ item, parent: `${raw.chipset ? `${raw.chipset}/` : ''}${raw.partOf!.trim()}` });
+    }
+    for (const { item, parent } of parts) {
+      const p = items.find(i => i.label === parent && i.kind !== 'part');
+      if (!p) problems.push(`${item.label}: 부품(part)이 달린 조립 그림 ${parent} 가 같은 묶음에 없다 — 부품만 면제할 수 없다`);
+      else item.partOf = p.pixelSha256;
     }
     if (problems.length) { console.error(`거절: ${problems.length}장을 묶음에 넣을 수 없다\n${problems.join('\n')}`); return 3; }
     if (!items.length) { console.error('거절: 묶음에 넣을 그림이 없다'); return 3; }

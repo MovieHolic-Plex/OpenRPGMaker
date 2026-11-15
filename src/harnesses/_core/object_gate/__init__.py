@@ -188,6 +188,8 @@ def owner_waiver_applies(waiver: dict | None, sha: str, kind: str | None, contex
         return False
     if item.get("pixelSha256") != sha:
         return False
+    if item.get("kind") == "part":  # 조립 그림에 실려 다니는 부품(2026-11-15): 종류 'part' 로 물을 때만(TS 와 같다)
+        return kind == "part"
     return kind is None or item.get("kind") == kind
 
 
