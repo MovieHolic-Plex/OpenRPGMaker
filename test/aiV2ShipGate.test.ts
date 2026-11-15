@@ -17,6 +17,8 @@ const CONTINUE = "아직 다 안 된 것 같아. 처음에 부탁한 대로 끝�
 function adventure(): Project {
   const p = createBlankProject() as Project;
   p.meta.title = "새벽의 약속";
+  // 이 게임이 올린 타이틀 그림 — 등록(assets.uploaded)돼 있어야 «이 게임의 그림» 이다. 등록되지 않은 id 는 엔진이 싣고 온 번들 그림으로 본다(isBundledPictureId).
+  p.assets.uploaded["bg-dawn-village"] = { id: "bg-dawn-village" } as never;
   p.system.titleScreen = { ...p.system.titleScreen!, title: "새벽의 약속", backgroundResourceId: "bg-dawn-village" };
   p.gameBlueprint = {
     request: WHOLE, title: "새벽의 약속", premise: "마을에서 시작하는 모험", playerGoal: "등불을 밝힌다", steps: [],
@@ -139,11 +141,17 @@ describe("a bundled still is not this game's picture", () => {
     expect(bundledPictureLeft(own)).toHaveLength(0);
     own.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: `opening-still:forest_title_dark@1000` } as never;
     expect(bundledPictureLeft(own)).toHaveLength(0);
+    // 프로젝트에 등록되지 않은 id 는 이름이 무엇이든 이 게임의 그림이 아니다(타이틀도 같다).
+    const unregistered = adventure();
+    unregistered.system.titleScreen = { ...unregistered.system.titleScreen!, backgroundResourceId: "bg-never-uploaded" };
+    expect(bundledPictureLeft(unregistered).map((b) => b.evidence)).toContain("titleScreen.backgroundResourceId=bg-never-uploaded");
   });
 
   it("lets the romance key art through only in a romance game, and an uploaded or generated picture always", () => {
     const p = adventure();
     p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: "oprn-title-romance-campus" };
+    // 생성 그림은 generate_art 가 upsert_resource 로 프로젝트에 등록한다 — 등록된 그림만 «이 게임의 그림» 으로 통과한다.
+    p.assets.uploaded["generated-ending-dawn"] = { id: "generated-ending-dawn" } as never;
     p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "generated-ending-dawn" } as never;
     // 연애 게임이 아니면 연애 키아트도 번들 그림이다(b1 school-1: 학교 추리 엔딩이 oprn-title-romance-school 로 통과했다).
     expect(bundledPictureLeft(p).map((b) => b.evidence.split("=")[0])).toEqual(["titleScreen.backgroundResourceId", expect.stringContaining("endings[e1]")].slice(0, 1));
