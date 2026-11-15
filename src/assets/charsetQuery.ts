@@ -65,9 +65,9 @@ const SYNONYMS: readonly {
   { terms: ["여자", "여성", "woman", "female"], gender: "female", tags: ["여성"] },
   { terms: ["남자", "남성", "man", "male"], gender: "male", tags: ["남성"] },
   { terms: ["아이", "어린이", "kid", "child"], age: "child", tags: ["아이", "어린이"] },
-  { terms: ["청년", "youth", "young"], age: "youth", tags: ["청년"] },
+  { terms: ["청년", "젊은", "youth", "young"], age: "youth", tags: ["청년"] },
   { terms: ["중년", "middle aged", "middle-aged"], age: "middle", tags: ["중년"] },
-  { terms: ["노인", "elder", "old", "aged"], age: "elder", tags: ["노인"] },
+  { terms: ["노인", "늙은", "elder", "old", "aged"], age: "elder", tags: ["노인"] },
   { terms: ["merchant", "shopkeeper", "상인", "여관 주인", "여관주인"], tags: ["상인", "여관", "여관주인"] },
   { terms: ["soldier", "guard", "병사"], tags: ["병사"] },
   { terms: ["knight", "기사"], tags: ["기사"] },
@@ -196,14 +196,16 @@ export function npcGraphicPersonQuery(text: string): string | undefined {
   return words.length ? words.join(" ") : undefined;
 }
 
-/** 성별·나이만 가리키는 낱말(낱말 표의 성별·나이 줄의 낱말·꼬리표)과 «주민» — 칩의 차림을 가리키지 않는다. */
-const PERSON_ONLY_WORDS: ReadonlySet<string> = new Set(["주민", ...SYNONYMS.filter((s) => s.gender || s.age).flatMap((s) => [...s.terms, ...(s.tags ?? [])]).map((t) => normalizeQuery(t))]);
+/** 성별·나이만 가리키는 낱말(낱말 표의 성별·나이 줄의 낱말·꼬리표)과 «주민», 시트 갈래 낱말(«주인공») — 칩의 차림을 가리키지 않는다. */
+const PERSON_ONLY_WORDS: ReadonlySet<string> = new Set(["주민", ...SYNONYMS.filter((s) => s.gender || s.age || s.category === "actor").flatMap((s) => [...s.terms, ...(s.tags ?? [])]).map((t) => normalizeQuery(t))]);
+/** 머리 꼬리표(«금발» · «파란머리») — 몸의 생김새이지 차림이 아니다. */
+const HAIR_TAG = /머리$|^(금|흑|백|은)발$/u;
 
 /** 칩의 «차림» 꼬리표 — 성별·나이 낱말과 «주민», 칩 이름을 옮긴 첫 칸을 뺀 것(왕관·메이드·기사·토끼·상인…). */
 function costumeTags(entry: CharsetSemanticEntry): string[] {
   // 꼬리표 첫 칸은 칩 이름을 그대로 옮긴 것이다(«청년 남성» · «어린 소녀») — 그 한 칸만 뺀다. 이름이 곧 차림인 칩(왕·수녀·하녀)은 같은 낱말이 뒤에 한 번 더 있다.
   const label = normalizeQuery(entry.label);
-  return entry.tags.map((t) => normalizeQuery(t)).filter((t, i) => t && !(i === 0 && t === label) && !PERSON_ONLY_WORDS.has(t));
+  return entry.tags.map((t) => normalizeQuery(t)).filter((t, i) => t && !(i === 0 && t === label) && !PERSON_ONLY_WORDS.has(t) && !HAIR_TAG.test(t));
 }
 
 /** 그냥 사람 칩인가 — «주민» 꼬리표가 붙었거나 차림 꼬리표가 하나도 없다(노파 = 노인·여성·할머니뿐). */
@@ -362,10 +364,14 @@ function defaultNpcGraphics(catalog: readonly CharsetSemanticEntry[] = CHARSET_S
     .sort((a, b) => b.score - a.score);
 }
 
-/** Complete semantic matches; resource pagination must not lose entries after 100. */
+/**
+ * Complete semantic matches; resource pagination must not lose entries after 100.
+ * whole: 모든 낱말이 맞는 칸만(고르기). 목록·검색은 끄고 부른다 — 그때는 다 맞는 칸이 없으면 가장 가까운 칸을 준다(아래).
+ */
 export function findNpcGraphicMatches(
   query: string | undefined,
   overrides?: readonly CharsetLabelOverride[],
+  whole = false,
 ): NpcGraphicMatch[] {
   const catalog = catalogFor(overrides);
   const normalized = normalizeQuery(query ?? "");
@@ -396,10 +402,12 @@ export function findNpcGraphicMatches(
     })
     .filter((match) => match.score > 0)
     .sort((a, b) => b.score - a.score);
-  if (strict.length > 0 || queryTerms.length < 2) return strict;
-  // 모든 낱말을 가진 칸이 없으면 «가장 많은 낱말이 맞는 칸»을 준다(성별·나이 의도는 그대로 지킨다).
+  if (strict.length > 0 || queryTerms.length < 2 || whole) return strict;
+  // 모든 낱말을 가진 칸이 없으면 «가장 많은 낱말이 맞는 칸»을 준다(성별·나이 의도는 그대로 지킨다) — 목록·검색에만. 보는 쪽이 안 맞은 낱말(unmatchedNpcGraphicTerms)을 읽고 고른다.
   // 왜(2026-10-25 심사 J66): 「하얀 드레스 여자 유령」이 0건이라 조수가 「유령」 한 낱말로 다시 찾아 만화풍 흰 시트 유령을
   // 하얀 드레스 여자 자리에 놓았다 — 판정자 눈에 고무 오리였다. 의도 낱말이 아닌 낱말이 하나는 맞아야 한다.
+  // 고르기(pickNpcGraphic · resolveNpcGraphic)는 이 칸들을 받지 않는다: 같은 함수를 타던 동안 graphic:{query:"고양이 석상"} 이 살아 있는 고양이로,
+  // 「나무 통」 이 나무 보물상자로 조용히 섰다(2026-11-15 — 2026-09-27 전수 조사의 못 placementMatchingAudit 이 그때부터 빨갰다).
   const described = queryTerms.filter((term) => !intentTerms.has(term));
   return catalog
     .map((entry) => {
@@ -419,6 +427,16 @@ export function unmatchedNpcGraphicTerms(query: string, entry: CharsetSemanticEn
   return normalized.split(/\s+/).filter((term) => term && !intentTerms.has(term) && textMatchScore(term, entry) <= 0);
 }
 
+/**
+ * 고르기가 거절한 질의에 가장 가까운 칸과 그 칸에 없는 낱말 — 거절 글에 붙여 모델이 어느 낱말이 안 맞았는지 읽게 한다(모델이 읽는 글이라 영어).
+ * 가까운 칸도 없으면 빈 글.
+ */
+export function npcGraphicMissNote(query: string, overrides?: readonly CharsetLabelOverride[]): string {
+  const near = findNpcGraphicMatches(query, overrides)[0]?.entry;
+  const missing = near ? unmatchedNpcGraphicTerms(query, near) : [];
+  return near && missing.length ? ` No chip has every word: the closest, "${near.label}", lacks "${missing.join('", "')}".` : "";
+}
+
 /** 사람(여자·소녀·부인…)이 유령인 인물 — 사람 칩에 반투명 빛(blendMode add)으로 그린다. 시트 유령 몬스터 칩이 아니다. */
 export const GHOST_WORDS = /유령|귀신|원령|망령|혼령|ghost|phantom|spirit/iu;
 export const PERSON_WORDS = /여자|여성|남자|남성|소녀|소년|아이|아가씨|부인|아주머니|할머니|할아버지|노인|신부|하녀|메이드|언니|누나|엄마|어머니|아버지|사람|woman|girl|boy|man|lady|bride|maid/iu;
@@ -432,7 +450,8 @@ export function resolveNpcGraphic(
   query: string,
   overrides?: readonly CharsetLabelOverride[],
 ): CharsetSemanticEntry | null {
-  return queryNpcGraphics(query, 1, overrides)[0]?.entry ?? null;
+  // 모든 낱말이 맞는 칸만 — 없는 그림을 가장 가까운 칸으로 바꾸지 않는다(findNpcGraphicMatches 의 whole).
+  return findNpcGraphicMatches(query, overrides, true)[0]?.entry ?? null;
 }
 
 export type NpcGraphicPickOptions = {
@@ -472,7 +491,8 @@ export function isGenericNpcGraphicQuery(query: string): boolean {
 export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {}): CharsetSemanticEntry | null {
   const topK = Math.max(1, Math.min(24, options.sampleTopK ?? 8));
   const poolLimit = Math.max(topK, 16);
-  let matches = queryNpcGraphics(query, poolLimit, options.overrides);
+  // 모든 낱말이 맞는 칸만 — 없으면 null 이고 부르는 쪽이 거절하거나 제 기본 그림으로 선다(가까운 칸은 목록·검색이 안 맞은 낱말과 함께 보인다).
+  let matches = findNpcGraphicMatches(query, options.overrides, true).slice(0, poolLimit);
   if (matches.length === 0) return null;
 
   const avoid = options.avoidKeys;

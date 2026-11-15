@@ -30,6 +30,8 @@ import {
 import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import { CANCEL_KEY_LABEL, SHOP_CONFIRM_KEY_LABEL, SHOP_FOCUS_GROUP_KEY_LABEL } from "@/player/keyBindings";
 import { effectiveShopUiPreset } from "@/project/shopUiPresets";
+import { shopSurfaceForMenu } from "@/project/uiLook";
+import { menuSkinFor } from "@/player/menuSkins/registry";
 import { partyFit, recoveryPreview } from "@/player/shopPartyFit";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -84,7 +86,11 @@ export function createShopOverlay(): HTMLElement {
   // 개별 창이 그린다. 이 노드에 fill 을 걸면 가게가 아니라 플레이 영역 전체를 덮는 한 장의 상자가 된다.
   applySystemWindowSkinVariable(overlay);
   // 고전 윈도스킨 게임은 가게 창도 같은 그림으로(오버레이는 스크림 그대로, 창 칸만 — windowSkinSurfaces.css).
-  markClassicWindowSkin(overlay);
+  // 그 밖의 게임은 메뉴와 같은 판으로(게임마다 UI 모습 한 벌) — 청색 도트 창이 기본이라 그때는 표식을 달지 않는다(shop.css 끝).
+  if (!markClassicWindowSkin(overlay)) {
+    const surface = shopSurfaceForMenu(menuSkinFor(store.getCurrent()).id);
+    if (surface !== "blue") overlay.dataset.shopSurface = surface;
+  }
   return overlay;
 }
 

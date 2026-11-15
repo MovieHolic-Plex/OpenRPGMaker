@@ -53,7 +53,9 @@ function facts(p: Project): { lines: string[]; counts: Record<string, number> } 
     const setterHead = bare(named(setter.ev).split(/\s+/u).at(-1) ?? "");
     const body = texts(pages[lockedAt]!.commands).filter((l) => !/^먼저\s/u.test(l)).map(bare).join(" ");
     const other = heads.find((h) => h.head !== setterHead && !bare(named(setter.ev)).includes(h.head) && !bare(named(ev)).includes(h.head) && body.includes(h.head));
-    if (other && !(setterHead.length >= 2 && body.includes(setterHead))) {
+    // 열림 조건인 물건의 이름을 대는 글은 맞는 선행 조건을 말한 것이다 — 물건 이름에 다른 단계의 낱말이 들어 있어도(«기관실 통행증» 의 «기관») 틀린 글이 아니다.
+    const needName = cond.itemId ? bare(String((p.database?.items ?? []).find((i: { id?: string }) => i.id === cond.itemId)?.name ?? "")) : "";
+    if (other && !(setterHead.length >= 2 && body.includes(setterHead)) && !(needName.length >= 2 && body.includes(needName))) {
       bump("G wrong-prerequisite");
       lines.push(`G  「${named(ev) || ev.id}」(${map.name}) 잠김 글 «${texts(pages[lockedAt]!.commands).join(" / ").slice(0, 110)}» — 실제 조건은 「${named(setter.ev)}」, 글은 ${other.id} «${other.head}» 를 말한다`);
     }

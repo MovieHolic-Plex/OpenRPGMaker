@@ -22,6 +22,7 @@ export { stage as stepFoes } from "./step-foes";
 export { stage as fitUnwinnableBattles } from "./fit-unwinnable-battles";
 export { stage as pathBattles } from "./path-battles";
 export { stage as bossRest } from "./boss-rest";
+export { stage as defeatReturnsLate } from "./defeat-returns-late";
 export { stage as fillUnsetConditions } from "./fill-unset-conditions";
 export { stage as ungateTalkBattles } from "./ungate-talk-battles";
 export { stage as orderStepBattles } from "./order-step-battles";

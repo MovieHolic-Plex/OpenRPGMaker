@@ -2,7 +2,7 @@
 // 길 위 전투 맞추기(path-battles) 앞에 돈다 — 다시 놓은 적도 예산에 맞춰진다. 경로를 다시 짓지 않는 «계속» 턴이 옛 판을 고치는 자리다.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../shared/buildRun";
-import { restockOffThemePlaces } from "../../place/worldPopulate";
+import { clearFoesFromStoryWays, restockOffThemePlaces } from "../../place/worldPopulate";
 import { redrawStepFoesIn, settleStepFoesIn, themeBattleBackdropsIn } from "../../story/stepFoes";
 import { settleCurrentArtIn } from "../../story/currentFoes";
 import { artGapLine } from "@/project/artGap";
@@ -19,6 +19,7 @@ export const stage: FinishStage = {
       assembled.push(...settleStepFoesIn(env.ctx.project));
       const run = createBuildRun(env.ctx);
       assembled.push(...restockOffThemePlaces(run, (gap) => session.missingArt.add(gap)));
+      assembled.push(...clearFoesFromStoryWays(run, (gap) => session.missingArt.add(gap)));
       // 맵에서 싸우는 적마다 현행 그림을 넣고 옛 걷기 칩을 전투 그림으로 — 현행 그림이 없는 종은 없는 그림 줄(그릴 목록)로 남긴다.
       const art = settleCurrentArtIn(env.ctx.project);
       assembled.push(...art.notes);
