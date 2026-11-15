@@ -1720,6 +1720,21 @@ function foeTroops(map: GameMap): string[] {
 }
 
 const SAVE_CRYSTAL_KIT = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
+/**
+ * 광장 기록석 — 수정 덩이(1×2)의 윗칸. 조사하는 몸통은 한 칸 아래((x, y + 1))다.
+ * 포고를 듣는 백성(chronoBell 의 군중 배치)은 기록석보다 먼저 서므로, 그쪽이 이 좌표를 보고 둘레를 비워 둔다.
+ */
+export const FS_HUB_SAVE_STONE = { x: 37, y: 28 } as const;
+/** 기록석 몸통의 네 이웃 가운데 걸어 들어가 설 수 있는 칸(통행 칸이고 길을 막는 이벤트가 없다). */
+export function openSidesOfHubSaveStone(project: Project, hubId = "fs_hub"): Cell[] {
+  const hub = project.maps[hubId];
+  if (!hub) return [];
+  const body = { x: FS_HUB_SAVE_STONE.x, y: FS_HUB_SAVE_STONE.y + 1 };
+  // 평소 모습(첫 페이지)이 같은 높이로 선 이벤트만 센다 — 포위 장면의 병사는 스위치가 켜질 때만 나타난다.
+  const solid = (e: GameEvent): boolean => e.pages?.[0]?.priority === "same";
+  return STEPS.map(([, dx, dy]) => ({ x: body.x + dx, y: body.y + dy }))
+    .filter((c) => isPassable(project, hub, c.x, c.y) && !hub.events.some((e) => e.x === c.x && e.y === c.y && solid(e)));
+}
 
 export function applyFallenFieldRules(project: Project, exec: Exec): void {
   for (const [mapId, target] of LEVELING_FOES) {
@@ -1760,8 +1775,11 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
     sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6, approachStyle: "auto" });
   exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
   // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
-  exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 28, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot",
+  exec(project, "place_savepoint", { mapId: "fs_hub", x: FS_HUB_SAVE_STONE.x, y: FS_HUB_SAVE_STONE.y, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot",
     objectId: SAVE_CRYSTAL_KIT, prompt: SAVE_PROMPT, sparkleRadius: 2 });
+  // 첫 저장 지점이다 — 네 방향 가운데 둘은 열려 있어야 한다(QA 2026-11-14 minor 10: 군중과 덤불에 둘러싸여 다가갈 칸이 좁았다).
+  { const open = openSidesOfHubSaveStone(project);
+    if (open.length < 2) throw new Error(`[fallen-star] 광장 기록석 둘레가 막혔다 — 열린 칸 ${open.length}곳(${open.map((c) => `${c.x},${c.y}`).join(" ")})`); }
   // 세 세이브 포인트(마을·숲 사당·지하 4층)는 같은 모습이다 — 받침 위 수정 덩이(빛 3장면), 다가가면 반짝임, 「기록하시겠습니까?」.
   exec(project, "stamp_object", { objectId: SAVE_CRYSTAL_KIT, mapId: "fs_vault_b4", x: 10, y: 26 });
   for (const [mapId, eventId] of [["fs_vault_b4", "ev_fs_b4_crystal"], ["fs_forest_shrine", "ev_fs_forest_shrine_rest"]] as const) {

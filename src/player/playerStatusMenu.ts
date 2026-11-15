@@ -160,6 +160,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onEquipItem: options.actions.onEquipItem,
     onUnequipItem: options.actions.onUnequipItem,
     onOptimizeEquipment: options.actions.onOptimizeEquipment,
+    onSelectStatusActor: options.actions.onSelectStatusActor,
     onToggleRow: options.actions.onToggleRow,
     onSelectFormationActor: options.actions.onSelectFormationActor,
     onMoveFormationActor: options.actions.onMoveFormationActor,
@@ -186,14 +187,17 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "endings" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "endings" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length || entry.sheet);
   const sideParty = skin.sideParty && !snapshot.relationship && !snapshot.story && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
+  const plainSaveList = (selectedCommand === "save" || selectedCommand === "load")
+    && !options.slots.some((slot) => slot.kind === "present" && slot.snapshot.monsterSummary);
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: (!detail.layout?.startsWith("campaign-") || detail.layout === "campaign-box") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
+    // 저장·불러오기는 행이 장소·플레이 시간·레벨을, 아래 안내 줄이 저장 날짜를 보인다 — 같은 저장 정보를 요약으로 한 번 더 그리지 않는다(2026-11-14 QA minor 9).
+    showcase: (!detail.layout?.startsWith("campaign-") || detail.layout === "campaign-box") && selectedCommand !== "options" && !plainSaveList && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
@@ -283,7 +287,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
       skin.railColumns, skin.id === "field-list",
       options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
-      resolveDialogueSystem(options.project)
+      resolveDialogueSystem(options.project),
+      mode === "function" && detail.entries.filter((entry) => entry.onActivate && !entry.disabled)[options.selectedDetailActionIndex ?? -1]?.onAdjust !== undefined,
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -887,6 +892,7 @@ function renderFooter(
   railColumns: number, compact = false,
   messageKind?: "description",
   system?: AuthoredDialogueSystem,
+  adjustable = false,
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -897,8 +903,9 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode, railColumns, compact, system),
-    dataset: { testid: "status-menu-controls" },
+    text: mode === "function" && adjustable ? dialogueUiText(system, "controls.adjust") : statusMenuControls(mode, railColumns, compact, system),
+    // 좌우로 값을 바꾸는 줄(설정의 음량)에 커서가 오면 「← 메뉴」 대신 「←→ 조절」을 보인다 — 커서만 옮길 때는 다시 그리지 않으므로 두 글을 실어 둔다.
+    dataset: { testid: "status-menu-controls", ...(mode === "function" ? { controlsDefault: statusMenuControls(mode, railColumns, compact, system), controlsAdjust: dialogueUiText(system, "controls.adjust") } : {}) },
   }));
   return footer;
 }
