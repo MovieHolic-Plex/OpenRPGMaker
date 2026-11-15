@@ -65,7 +65,11 @@ describe("options screen", () => {
   const ids = (detail: ReturnType<typeof createPlayerOptionsDetail>) => detail.entries.map((entry) => entry.testId);
   it("is exactly the old screen for a plain project", () => {
     const detail = createPlayerOptionsDetail(undefined, createBlankProject());
-    expect(ids(detail)).toEqual(["player-option-bgm-down", "player-option-bgm-up", "player-option-se-down", "player-option-se-up", "player-option-voice-down", "player-option-voice-up", "player-option-text-speed", "player-option-menu-motion"]);
+    // 음량은 한 줄에 하나(←→ 로 조절). 빈 프로젝트의 대사창(유리)은 목소리가 없어 「대사 목소리」 줄이 없다(2026-11-14 QA minor 6).
+    expect(ids(detail)).toEqual(["player-option-bgm", "player-option-se", "player-option-text-speed", "player-option-always-run", "player-option-menu-motion"]);
+    const spoken = createBlankProject();
+    spoken.system.dialogueStyle = "pixel-cinematic";
+    expect(ids(createPlayerOptionsDetail(undefined, spoken))).toEqual(["player-option-bgm", "player-option-se", "player-option-voice", "player-option-text-speed", "player-option-always-run", "player-option-menu-motion"]);
     expect(detail.title).toBe("설정");
     expect(detail.entries.find((entry) => entry.testId === "player-option-text-speed")?.value).toBe("보통");
     expect(createPlayerOptionsDetail().entries.length).toBe(detail.entries.length);

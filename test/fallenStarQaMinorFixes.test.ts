@@ -6,11 +6,13 @@ import { playInn } from "@/player/playSceneCommerce";
 import { itemToGoods } from "@/player/playSceneShopGoods";
 import { formationDetail } from "@/player/playerFormationDetail";
 import { updatePlayerPreferences } from "@/player/playerPreferences";
+import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { listStatusMenuCommandIds } from "@/player/playerStatusMenuModel";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { recoveryPreview } from "@/player/shopPartyFit";
 import { createBlankProject } from "@/project/defaults";
+import { equipmentSlots } from "@/project/equipmentSlots";
 import { deserialize, serialize } from "@/project/io";
 import { listPartyBondEntries } from "@/project/partyBonds";
 import { startSession } from "@/project/session";
@@ -169,5 +171,66 @@ describe("상점 회복 미리보기(쓰러진 동료)", () => {
     expect(recoveryPreview(f.project, f.session, itemToGoods(f.item))?.[0]).toMatchObject({ current: 1, next: 1 });
     f.vitals.hp = 0;
     expect(recoveryPreview(f.project, f.session, itemToGoods(f.item))?.[0]?.next).toBe(Math.min(f.vitals.maxHp, 40));
+  });
+});
+
+describe("파티 상태 화면 — 파티원의 장(QA minor 4)", () => {
+  function statusDetail(select?: (actorId: string) => void) {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const detail = createStatusMenuDetail({ project, session, selectedCommand: "status", slots: [], waitModeEnabled: true, ...(select ? { onSelectStatusActor: select } : {}) });
+    return { project, session, detail };
+  }
+
+  it("파티원마다 능력치 · 장비 · 걸린 상태 · 다음 레벨까지가 한 장에 있다", () => {
+    const { project, session, detail } = statusDetail(() => undefined);
+    expect(detail.entries).toHaveLength(session.partyActorIds.length);
+    const sheet = detail.entries[0]?.sheet;
+    expect(sheet?.sections.map((section) => section.id)).toEqual(["vitals", "stats", "equipment"]);
+    const rows = (id: string) => sheet?.sections.find((section) => section.id === id)?.rows ?? [];
+    expect(rows("vitals").map((row) => row.id)).toEqual(["hp", "mp", "states", "next"]);
+    expect(rows("vitals").find((row) => row.id === "hp")?.value).toMatch(/^\d+\/\d+$/);
+    expect(rows("vitals").find((row) => row.id === "states")?.value).toBe("정상");
+    expect(rows("vitals").find((row) => row.id === "next")?.value).toMatch(/^(\d+|최고 레벨)$/);
+    expect(rows("stats").map((row) => row.label)).toEqual(["공격", "방어", "정신", "민첩"]);
+    for (const row of rows("stats")) expect(row.value).toMatch(/^\d+$/);
+    expect(rows("equipment").map((row) => row.id)).toEqual(equipmentSlots(project).map((slot) => slot.id));
+    // 줄 안에는 한 줄 요약을 되풀이하지 않는다 — 장이 보인다.
+    expect(detail.entries[0]?.description).toBeUndefined();
+  });
+
+  it("걸린 상태는 이름으로, 눈에 띄는 색으로 적는다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0]!;
+    const state = project.database.states[0]!;
+    session.actorStateIds = { ...session.actorStateIds, [actorId]: [state.id] };
+    const detail = createStatusMenuDetail({ project, session, selectedCommand: "status", slots: [], waitModeEnabled: true, onSelectStatusActor: () => undefined });
+    const states = detail.entries[0]?.sheet?.sections.find((section) => section.id === "vitals")?.rows.find((row) => row.id === "states");
+    expect(states).toMatchObject({ value: state.name, tone: "down" });
+  });
+
+  it("줄을 고르면 그 파티원을 알려 준다 — Enter 가 「선택할 수 없습니다」로 끝나지 않는다", () => {
+    const picked: string[] = [];
+    const { session, detail } = statusDetail((actorId) => picked.push(actorId));
+    detail.entries[0]?.onActivate?.();
+    expect(picked).toEqual([session.partyActorIds[0]]);
+  });
+
+  it("고르는 콜백이 없는 읽기 전용 목록은 전처럼 줄 안에 HP·MP 요약을 둔다", () => {
+    const { detail } = statusDetail();
+    expect(detail.entries[0]?.onActivate).toBeUndefined();
+    expect(detail.entries[0]?.description).toMatch(/HP \d+\/\d+ · MP \d+\/\d+ · 정상/);
+  });
+
+  it("장은 목록 옆 쇼케이스 자리에 그려진다", () => {
+    const { project, detail } = statusDetail(() => undefined);
+    const panel = renderStatusMenuDetailPanel(project, detail, { selectedActionIndex: 0, showcase: true });
+    const sheet = panel.querySelector<HTMLElement>("[data-testid='status-menu-detail-showcase']");
+    expect(sheet?.classList.contains("status-menu-member-sheet")).toBe(true);
+    for (const id of ["status-menu-sheet-vitals", "status-menu-sheet-stats", "status-menu-sheet-equipment", "status-menu-sheet-vitals-next", "status-menu-sheet-stats-attack"]) {
+      expect(panel.querySelector(`[data-testid='${id}']`), id).not.toBeNull();
+    }
+    expect(panel.querySelector("[data-testid='status-menu-sheet-stats']")?.classList.contains("two-up")).toBe(true);
   });
 });

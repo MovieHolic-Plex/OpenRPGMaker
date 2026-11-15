@@ -73,7 +73,7 @@ describe("place_chest — 수량", () => {
     const ctx = start("starter");
     const three = call(ctx, "place_chest", { mapId: VILLAGE, x: 10, y: 12, contents: { itemId: "item_potion", count: 3 } });
     expect(examine(ctx.project, made(three))).toContainEqual({ kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 });
-    expect(interact(eventOf(ctx.project, made(three)) as never, freshSession(), ctx.project as never).texts.join(" ")).toContain("회복약 3개");
+    expect(interact(eventOf(ctx.project, made(three)) as never, freshSession(), ctx.project as never).texts.join(" ")).toContain("「회복약」 3개를 얻었다.");
     const one = call(ctx, "place_chest", { mapId: VILLAGE, x: 12, y: 12, contents: { itemId: "item_potion", count: 0, gold: 0 } });
     expect(examine(ctx.project, made(one))).toContainEqual({ kind: "changeItem", itemId: "item_potion", op: "+=", amount: 1 });
   });

@@ -305,14 +305,14 @@ try {
   await page.waitForTimeout(300);
   console.log("submenu", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll<HTMLElement>("button")].filter((n) => n.offsetParent).map((n) => `${n.dataset.testid}:${n.textContent?.trim().slice(0, 12)}`))));
   await page.evaluate(() => [...document.querySelectorAll<HTMLElement>("button")].find((n) => n.offsetParent && n.textContent?.trim().startsWith("설정"))?.click());
-  await page.waitForSelector("[data-testid='player-option-voice-up']", { state: "attached", timeout: 10_000 });
-  const voiceBefore = await page.locator("[data-testid='player-option-voice-down']").textContent();
-  await page.evaluate(() => document.querySelector<HTMLElement>("[data-testid='player-option-voice-up']")?.click());
+  await page.waitForSelector("[data-testid='player-option-voice']", { state: "attached", timeout: 10_000 });
+  const voiceBefore = await page.locator("[data-testid='player-option-voice']").textContent();
+  await page.evaluate(() => document.querySelector<HTMLElement>("[data-testid='player-option-voice']")?.click());
   await page.waitForTimeout(150);
   await shot(page, "16-voice-volume");
   evidence.voice = {
     before: voiceBefore,
-    after: await page.locator("[data-testid='player-option-voice-down']").textContent(),
+    after: await page.locator("[data-testid='player-option-voice']").textContent(),
     saved: await page.evaluate(() => Object.entries(localStorage).filter(([k]) => /pref|option/i.test(k)).map(([k, v]) => `${k}=${v.slice(0, 200)}`)),
   };
 } finally {

@@ -326,7 +326,7 @@ export async function exerciseExport(page, { url, kind, outDir }) {
     }
     await keyTo(page, "Enter", `!!document.querySelector('[data-testid="status-menu-group-command-save"]')`);
     await keyTo(page, "Enter", `!!document.querySelector('[data-testid="save-slot-1"]')`);
-    await keyTo(page, "Enter", `/저장됨/.test(document.querySelector('[data-testid="save-slot-1"]').textContent)`);
+    await keyTo(page, "Enter", `!/비어 있음/.test(document.querySelector('[data-testid="save-slot-1"]').textContent)`);
     await shot("saved");
     await page.reload({ waitUntil: "load" });
     await page.getByTestId("title-screen").waitFor({ state: "visible" });
