@@ -16,7 +16,7 @@ export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
-type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly plaza?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[];
+type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[];
   /** 수종(trees) 선택지: 킷 → 덮은 그림의 칸마다 불투명 몫(0~100) — 숲길의 나무 composer 가 읽는다. */
   readonly cover?: Readonly<Record<string, readonly number[]>> };
 export type TilesetLookTable = {
@@ -123,11 +123,6 @@ export function tilesetLookGrafts(tileset: LookTileset): readonly TileGraft[] {
   }
   cache.set(tileset, { signature, stored, length: stored?.length ?? 0, grafts: out });
   return out;
-}
-
-/** 그 겉모습의 광장 재질 이름(굽는 명세의 textures id — 예: plaza-cobble). 원래 그림이면 undefined. */
-export function tilesetLookPlaza(tilesetId: string, look: TilesetLook | undefined): string | undefined {
-  return tilesetLookTableFor(tilesetId)?.parts.surface.options[look?.surface ?? ""]?.plaza;
 }
 
 /** 그 겉모습의 바닥 재질 이름(표의 grounds 열쇠) — 절벽 둑 색처럼 바닥 색을 따라가야 하는 코드가 읽는다. 원래 풀밭이면 undefined. */

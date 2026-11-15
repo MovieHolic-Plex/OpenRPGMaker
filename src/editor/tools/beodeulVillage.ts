@@ -45,7 +45,7 @@ import { activeKitLook, activeTilesetLook, lookHash, withoutHouseSet, withTreePi
 import { standKitPictures } from "@/project/standKit";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { houseSetTableFor } from "@/assets/houseSets";
-import { tilesetLookGround, tilesetLookPlaza } from "@/assets/tilesetLooks";
+import { tilesetLookGround } from "@/assets/tilesetLooks";
 import { tilesetStand, tilesetStandTableFor } from "@/assets/tilesetStands";
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import { beodeulObjectsCuttingWays, dressBeodeulObjects } from "./beodeulObjectSets";
@@ -54,6 +54,8 @@ import { settlementGround } from "./beodeulSettlementRank";
 import { planCommons } from "./beodeulCommons";
 import { doorsideSpots, planEdgeDrifts } from "./beodeulEarthDressing";
 import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS, townPrecinct } from "./beodeulTownCore";
+import { TOWN_SQUARE_TAG } from "./beodeulSquareGuard";
+import { addMapLocation } from "@/project/mapNamedLocations";
 import { planQuay } from "./beodeulQuay";
 import { planLandPlots } from "./beodeulLandUse";
 
@@ -1761,10 +1763,25 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let y = cy - pry - 3; y <= cy + pry + 2; y += 1) for (let x = plazaX - prx - 3; x <= plazaX + prx + 2; x += 1) near.push([x, y]);
       const far = (p: [number, number]) => Math.abs(p[0] + k.w / 2 - plazaX) + Math.abs(p[1] + k.h / 2 - cy) * 1.5;
       near.sort((p, q) => far(q) - far(p) || p[1] - q[1] || p[0] - q[0]);
-      for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza) && offStreet(k, x, y));
+      // 읍 광장(테 두른 네모)에 가운데 기물이 섰으면 우물은 광장 밖 곁 빈 땅에 선다 — 한 광장에 물 기물·기념물은 하나(beodeulSquareGuard), 테 줄에는 아무것도 안 선다
+      const offSquare = !!sq && centred;
+      if (!offSquare) for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza) && offStreet(k, x, y));
       near.reverse(); // 광장 곁 빈 땅은 광장에 가까운 자리부터
       for (const [x, y] of near) tryAt(x, y, () => propFits(k, x, y));
-      for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza));
+      if (!offSquare) for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza));
+    }
+    // 읍의 광장은 네 안쪽 모서리에 등 — 좌판 줄보다 먼저 세워 모서리를 차지한다(줄이 먼저 서면 등이 안으로 밀려 한쪽에 몰렸다)
+    if (sq) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
+      const k = K(lamp);
+      // 발은 테 안쪽 돌 위(테 줄·광장을 지나는 길 줄에 서면 길을 끊는다) — 모서리에서 안으로 세 칸까지 찾는다
+      for (const [sx, sy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
+        let done = false;
+        for (let t = 1; t <= 3 && !done; t += 1) for (const u of [1, 2]) {
+          const x = sx > 0 ? sq.x0 + t : sq.x1 - t, foot = sy > 0 ? sq.y0 + 1 + u : sq.y1 - u, c = idx(x, foot);
+          if (done || !sqInner.has(c) || throughPlaza.has(c) || main.cells.has(c) || !fits(k, x, foot - k.h + 1, 0, onPlaza)) continue;
+          claim(k, x, foot - k.h + 1, PROP, false); n += 1; done = true;
+        }
+      }
     }
     const ring = have(look.ring);
     // 둘레 기물의 발(아래 두 줄)은 판석 위·길 줄 밖에 — 좌판 차양 같은 윗줄(사람 위에 그려지는 칸)은 광장 밖 빈 땅이나 길 줄 위로 걸쳐도 된다
@@ -1804,19 +1821,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         }
       }
     }
-    // 읍의 광장은 네 모서리에 등(테 줄 위) — 그 밖의 광장은 예전처럼 양옆에
-    if (sq) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
-      const k = K(lamp);
-      // 발은 테 안쪽 돌 위(테 줄·광장을 지나는 길 줄에 서면 길을 끊는다) — 모서리에서 안으로 세 칸까지 찾는다
-      for (const [sx, sy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
-        let done = false;
-        for (let t = 1; t <= 3 && !done; t += 1) for (const u of [1, 2]) {
-          const x = sx > 0 ? sq.x0 + t : sq.x1 - t, foot = sy > 0 ? sq.y0 + 1 + u : sq.y1 - u, c = idx(x, foot);
-          if (done || !sqInner.has(c) || throughPlaza.has(c) || main.cells.has(c) || !fits(k, x, foot - k.h + 1, 0, onPlaza)) continue;
-          claim(k, x, foot - k.h + 1, PROP, false); n += 1; done = true;
-        }
-      }
-    } else if (look.lamps) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
+    // 읍이 아닌 광장의 등은 예전처럼 양옆에(읍의 광장은 위에서 모서리에 세웠다)
+    if (!sq && look.lamps) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
       const k = K(lamp);
       for (const sx of [-1, 1]) { const x = plazaX + sx * (prx + 1), y = cy - k.h + 1; if (fits(k, x, y)) { claim(k, x, y, PROP, false); n += 1; } }
     }
@@ -3424,9 +3430,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const inner = new Set(squareFloor.kit && kitIndex.has(squareFloor.kit) ? square.inner.filter((c) => plazaPaint.includes(c)) : []);
     paintCells([...plazaPaint.filter((c) => !squareRingSet.has(c) && !inner.has(c) && !quaySet.has(c)), ...courtUnder.filter((c) => occ[c] === BLD || occ[c] === PROP)], spec.plaza);
     // 포구의 돌 둑: 시골 포구는 광장 재료가 흙이므로 둑은 판석 재료로 따로 깐다(어구 밑도)
-    // 자갈 재질은 시골·마을 급에 쓰지 않는다(오너 «강자갈 마당은 너무 어색하군») — 그 게임의 광장 재질이 자갈이면 둑은 청회색 판석 표본으로 깐다. 읍의 돌 포장은 그대로다.
-    const quaySlate = ground.rank !== "town" && tilesetLookPlaza(TS_ID, gameLook) === "plaza-cobble" && SQUARE_FLOORS[0]!.kit && kitIndex.has(SQUARE_FLOORS[0]!.kit) ? SQUARE_FLOORS[0]!.kit : undefined;
-    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), quaySlate ? { kit: quaySlate } : { mat: PLAZA });
+    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), { mat: PLAZA });
     if (inner.size) paintCells(inner, { kit: squareFloor.kit! });
   }
   paintStep("광장 판석", [PLAZAC]);
@@ -4108,6 +4112,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     return `큰길 하나(굽은 폭 2)·${side}개 갈래길${form === "plaza" ? `, 광장(${plazaX},${Math.round(plazaCy)})` : ", 광장 없음"}`;
   }
   const streetNames = streets.map((s) => s.name);
+  // 읍 광장을 맵에 적어 둔다 — 그 뒤에 찍는 기물(조수의 stamp_object)이 광장 규칙을 따른다(beodeulSquareGuard). 시공기 자신의 기물은 이미 다 섰다.
+  { const b = squareBox(W, squareCells); if (b) addMapLocation(map, { name: "광장", x: b.x0, y: b.y0, w: b.x1 - b.x0 + 1, h: b.y1 - b.y0 + 1, tags: [TOWN_SQUARE_TAG] }); }
   return {
     summary: `${terrainSwapped ? `${terrainNote} ` : ""}버들항 ${spec.label} · ${FORM_LABEL[form]}(form ${form}) · 지형 ${TERRAIN_LABEL[terrain.name]}(terrain ${terrain.name}${terrain.name !== terrainName ? `, 요청 ${terrainName} → ${terrain.note}` : hasTerrain ? `, ${terrain.note}, 길 경사로 ${rampCount}곳` : ""}) ${W}×${H} (맵 ${mapId}, seed ${seed}): ${skeletonText()}, 모이는 곳 = ${gather.why}${gatherDoor ? `(${gatherDoor.x},${gatherDoor.y})` : "(자리 없음)"}, ` +
       `집 ${placedHouses.length}채(${distinct}종${roofs ? `, 지붕 ${houseSetLabel ?? ROOF_PALETTE_LABEL[roofs]}(roofs ${roofs})` : ""})${anchors.length ? `, 앵커 ${anchors.map((a) => a.replace(/^bd-(pick-|house-)/, "")).join("·")}` : ""}` +
