@@ -25,7 +25,10 @@ F_PASSAGE = {'sanmon'}
 # 대형 건물: 분류 large — 큰길 줄의 블록 끝(오피스·호텔·백화점·병원)과 주택가의 깊은 필지(단지·맨션)에 구성기가 종류로 불러 세운다.
 F_LARGE = {'mansion': 'mansion', 'office': 'office-tower', 'depato': 'mall', 'hotel': 'hotel', 'byoin': 'hospital', 'danchi': 'danchi'}
 # 차가 드나드는 입(차고·구급차 자리·주차장 입구): 키트에 부품이 없어 문이 아닌 쪽(더 넓은 쪽)으로 읽는다 — 그 앞에는 담·가로 시설을 두지 않는다.
-F_BAY = {'house-tile-d', 'byoin', 'office'}
+# 초대형(블록 면 하나를 차지): 역 앞 상가 빌딩 · 구청 · 타워 맨션 — 지도에 하나까지
+F_XL = {'ekimae': 'station-mall', 'shiyakusho': 'ward-office', 'tower': 'tower-mansion'}
+# 차가 드나드는 입(차고·구급차 자리·주차장 입구)의 열 [첫 열, 폭] — 키트에 그 부품이 없어 그림에서 읽어 적었다(건물 일꾼이 부품을 달면 거기서 읽는다)
+F_BAY = {'house-tile-d': [0, 3], 'byoin': [4, 4], 'office': [4, 4], 'shiyakusho': [9, 3], 'tower': [9, 3]}
 F_ROLE = {'ramen': 'ramen', 'sushi': 'restaurant', 'izakaya': 'izakaya', 'yakitori': 'izakaya', 'kissa': 'cafe', 'sentaku': 'laundry', 'zakkyo': 'office', 'bento': 'bento', 'business-hotel': 'hotel', 'bank': 'bank', 'ryokan': 'ryokan', 'karaoke': 'karaoke', 'pachinko': 'pachinko', 'game-center': 'arcade', 'manga-cafe': 'cafe', 'tea': 'cafe',
           'family-restaurant': 'restaurant', 'soba-stand': 'restaurant', 'takoyaki': 'restaurant', 'taiyaki': 'restaurant', 'hospital': 'clinic', 'dentist': 'clinic', 'vet': 'clinic', 'acupuncture': 'clinic',
           'ward-office': 'office', 'tv-station': 'office', 'library': 'library', 'museum': 'museum', 'cinema': 'cinema', 'police-station': 'koban', 'fire-station': 'fire', 'department-store': 'mall',
@@ -57,9 +60,9 @@ def build():
         if short.startswith('f-'):
             s = short[2:]
             if s.startswith('kaki-') or s in F_PASSAGE: continue                              # 담·대문 키트는 건물이 아니다(집 필지의 길 선에 구성기가 놓는다 — 크기는 sizes 에 있다)
-            tier = tier or 'medium'
-            cat = ('medium' if s in F_MEDIUM else 'large' if s in F_LARGE else 'sacred' if s == 'jinja' else None) or F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
-            role = F_MEDIUM.get(s) or F_LARGE.get(s) or ('shrine' if s == 'jinja' else None) or F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
+            tier = 'xlarge' if s in F_XL else tier or 'medium'
+            cat = ('medium' if s in F_MEDIUM else 'large' if s in F_LARGE else 'xlarge' if s in F_XL else 'sacred' if s == 'jinja' else None) or F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
+            role = F_MEDIUM.get(s) or F_LARGE.get(s) or F_XL.get(s) or ('shrine' if s == 'jinja' else None) or F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
         else:
             base = short[:-5] if short.endswith('-shut') else short
             cat = next((CAT_BY_TAG[x] for x in tags if x in CAT_BY_TAG), 'shop')
@@ -68,9 +71,7 @@ def build():
             if base in ZONE_ONLY: cat = ZONE_ONLY[base]
             tier = tier or ('large' if w >= 14 or h >= 13 else 'medium' if w >= 9 or h >= 11 else 'small')
         b = dict(id=kid, w=w, h=h, doors=doors, ml=ml, mr=mr, cat=cat, role=role, tier=tier, ko=k.get('name') or kid)
-        if short.startswith('f-') and short[2:] in F_BAY and doors:
-            left, right = doors[0], w - 1 - doors[-1]
-            b['bay'] = [0, left] if left >= right else [doors[-1] + 1, right]
+        if short.startswith('f-') and short[2:] in F_BAY: b['bay'] = F_BAY[short[2:]]
         if short.endswith('-shut'): b['look'] = 'jp-bldg-' + short[:-5]
         buildings.append(b)
     # 시타마치·쇼텐가이 일체형 줄 키트(shitamachi_pack — 문 없는 풍경 건물, 처마 칸 없음). 거리 종류의 mix.flavor 가 부른다.

@@ -162,7 +162,7 @@ export class SceneCtx {
     if (this.doorFrontN !== this.placed.length) { this.doorFrontSet.clear(); for (const b of this.placed) { for (const d of b.doors) this.doorFrontSet.add(`${b.x + d},${b.foot + 1}`); const bay = b.kit?.bay; if (bay) for (let k = 0; k < bay[1]; k++) this.doorFrontSet.add(`${b.x + bay[0] + k},${b.foot + 1}`); } this.doorFrontN = this.placed.length; }
     return this.doorFrontSet.has(`${x},${y}`);
   }
-  stFits(name: string, x: number, foot: number, o: { stack?: boolean; lax?: boolean } = {}): boolean {
+  stFits(name: string, x: number, foot: number, o: { stack?: boolean; lax?: boolean; /** 짝으로 놓는 것(참배길 석등): 같은 그림이 곁에 있어도 선다 */ pair?: boolean } = {}): boolean {
     const p = STREET_PIECES[name];
     if (!p) return false;
     if (p.layer !== "floor" && p.layer !== "ground" && p.anchor !== "facade" && p.anchor !== "road" && p.anchor !== "water") for (let k = 0; k < p.w; k++) if (this.doorFront(x + k, foot) || this.doorFront(x + k, foot - 1)) return false;   // 문 앞 두 칸은 비운다
@@ -190,11 +190,11 @@ export class SceneCtx {
       case "floor": { const need = p.tags.find((t) => t.startsWith("on:"))?.slice(3).split("+"); if (need && !cols.every((xx) => need.includes(fam(xx)))) return false; break; }
       default: return false;                                                                    // run 조각은 줄 짓기만 놓는다
     }
-    if (!p.repeat) { const look = p.look ?? name; for (const q of this.stPlaced) if (q.look === look && Math.abs(q.x - x) < 20 && Math.abs(q.y - y) < 15) return false; }
+    if (!p.repeat && !o.pair) { const look = p.look ?? name; for (const q of this.stPlaced) if (q.look === look && Math.abs(q.x - x) < 20 && Math.abs(q.y - y) < 15) return false; }
     return true;
   }
   /** 조각 하나를 놓는다(검사 없이 — stFits 를 통과한 자리 또는 줄 짓기가 정한 자리). */
-  stStamp(name: string, x: number, foot: number, o: { stack?: boolean; early?: boolean; late?: boolean; ground?: GroundFamily } = {}): void {
+  stStamp(name: string, x: number, foot: number, o: { stack?: boolean; early?: boolean; late?: boolean; ground?: GroundFamily; pair?: boolean } = {}): void {
     const p = STREET_PIECES[name]!;
     const y = foot - p.h + 1;
     for (let yy = Math.max(0, y); yy <= foot; yy++) for (let xx = x; xx < x + p.w; xx++) {
@@ -206,7 +206,7 @@ export class SceneCtx {
     const ground = g0 === "laneside" ? "lane" : g0;                          // 길가 띠 위에 서는 것은 생활도로 포장의 그림자 변형
     const step: JpStreetStep = { tool: "stamp_object", args: { objectId: `kit:jp_city/${streetKitId(name, ground)}`, mapId: this.mapId, x, y }, optional: true, note: p.layer === "floor" ? "floor2" : p.layer === "ground" ? "bank" : "prop4" };
     (p.layer === "floor" || p.layer === "ground" ? this.marks : o.early ? this.early : o.late ? this.late : p.anchor === "run" ? this.walls : this.props).push(step);
-    this.stPlaced.push({ name, look: p.look ?? name, x, y, w: p.w, h: p.h, anchor: p.anchor, repeat: p.repeat === true });
+    this.stPlaced.push({ name, look: p.look ?? name, x, y, w: p.w, h: p.h, anchor: p.anchor, repeat: p.repeat === true || o.pair === true });
     this.usedProps.set(name, (this.usedProps.get(name) ?? 0) + 1);
   }
   /** 놓은 조각 하나를 거둔다(단계와 칸 쓰임을 되돌린다). */

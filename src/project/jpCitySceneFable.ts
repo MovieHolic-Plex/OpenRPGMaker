@@ -201,6 +201,14 @@ export function fableRuns(c: SceneCtx, isStreet: (x: number, y: number) => boole
     }
     if (!changed) break;
   }
+  // 외톨이 한 칸(이웃 줄 칸도, 곁의 담 키트도 없는 칸)은 줄이 아니다 — 거둔다.
+  for (const k of [...owner.keys()]) {
+    const [x, y] = k.split(",").map(Number) as [number, number];
+    if (deg(x, y) === 0 && !kakiCell.has(key(x - 1, y)) && !kakiCell.has(key(x + 1, y)) && !kakiCell.has(key(x, y + 1)) && !kakiCell.has(key(x, y - 1))) { owner.delete(k); c.occ[y * W + x] = Occ.Lot; continue; }
+    // 다른 줄 한가운데에 낀 한 칸(제 가족 이웃이 없다)은 그 줄의 가족을 따른다 — 담 한 줄에 판자 한 칸이 끼지 않는다.
+    const fam = owner.get(k)!, other = DIRS.map(([dx, dy]) => owner.get(key(x + dx, y + dy))).filter((f): f is string => !!f);
+    if (other.length && !other.includes(fam)) owner.set(k, other[0]!);
+  }
   // 2) 가족마다 조각을 놓는다
   const upperOwned = new Set<string>();
   for (const family of families) {

@@ -64,7 +64,7 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && (gate ? qx >= px - 2 && qx <= px + 3 : qx >= px - 1 && qx <= px + 2));
   if (!gate) c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
   // 석등은 참배길 양옆에 짝으로(새 거리: 문 안쪽부터 본전 앞까지 세 줄 걸러 한 쌍)
-  if (c.fable) { for (let y = (gate ? foot - sm![1] : foot) - 2; y > hfoot + 1; y -= 3) if (c.stFits("lantern-stone", px - 1, y) && c.stFits("lantern-stone", px + 2, y)) { c.stPut(["lantern-stone"], px - 1, y); c.stPut(["lantern-stone"], px + 2, y); } }
+  if (c.fable) { for (let y = (gate ? foot - sm![1] : foot) - 2; y > hfoot + 1; y -= 3) if (c.stFits("lantern-stone", px - 1, y, { pair: true }) && c.stFits("lantern-stone", px + 2, y, { pair: true })) { c.stStamp("lantern-stone", px - 1, y, { pair: true }); c.stStamp("lantern-stone", px + 2, y, { pair: true }); } }
   else for (let y = foot - 3; y > hfoot + 1; y -= 3) for (const lx of [px - 1, px + 2]) c.putAny(sceneList("jinja", "lantern"), lx, y);
   const side = sceneList("jinja", "side");
   scatter(c, x + 1, hfoot + 2, Math.max(1, px - x - 3), Math.max(1, foot - hfoot - 2), side, 2);

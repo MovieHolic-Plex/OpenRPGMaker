@@ -34,7 +34,7 @@ function assembled(c: SceneCtx, role: string, x: number, foot: number, w: number
 }
 
 /** 가게 줄 하나. 돌려주는 값 = 세운 건물들(왼쪽부터). */
-function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number, wanted: string[], mix: Readonly<Record<string, number>>, big = false, mainRow = false): ScenePlaced[] {
+function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number, wanted: string[], mix: Readonly<Record<string, number>>, big = false, mainRow = false, carFront = false): ScenePlaced[] {
   const maxH = foot - top + 1;
   const row: ScenePlaced[] = [];
   let cursor = sx, prev: ScenePlaced | undefined, share = false;
@@ -44,12 +44,14 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
   if (c.fable && ex - sx >= 16 && c.rng() < 0.75) {
     const shuffle = (list: readonly string[]) => list.map((r) => ({ r, k: c.rng() })).sort((a, b) => a.k - b.k).map((q) => q.r);
     // 대형 건물(블록 면에 하나): 고층 종류의 큰길 줄에 오피스·호텔·백화점, 큰길 줄에 병원 — 띠가 건물 키보다 얕으면 서지 않는다(nextKit 이 키를 본다).
-    const largeRoles = mainRow || big ? shuffle([...(c.kind.tall ? LARGE_DOWNTOWN : []), "hospital"]) : [];
+    const largeRoles = mainRow || big ? shuffle([...(c.kind.tall ? LARGE_DOWNTOWN : []), ...(carFront && c.rng() < 0.6 ? ["hospital"] : [])]) : [];   // 병원은 차도가 있는 큰길에만(구급차 자리가 차도로 열린다)
     const roles = [...(c.rng() < 0.8 ? largeRoles : []), ...shuffle([...MEDIUM_SHOP, ...(mainRow || big ? ["koban"] : []), ...(c.kind.houseShare >= 0.15 ? MEDIUM_HOME : [])])];
     const left = c.rng() < 0.5;
-    for (const role of roles) {
-      const kit = c.nextKit([], { x: left ? sx : ex - 8, foot }, ex - sx - 9, maxH, { role });
-      if (!kit) continue;
+    // 초대형(역 앞 상가 빌딩·구청·타워 맨션): 고층 종류의 큰길 줄 블록 끝에, 지도에 하나까지 — 12칸 폭과 제 키만큼의 띠 깊이가 있을 때만.
+    const xl = c.kind.tall && mainRow && carFront ? shuffle(XLARGE) : [];
+    for (const role of [...xl, ...roles]) {
+      const kit = c.nextKit([], { x: left ? sx : ex - 8, foot }, ex - sx - 9, maxH, { role, big: xl.includes(role) });
+      if (!kit || (kit.bay && !carFront)) continue;                                    // 차가 드나드는 입이 있는 건물은 차도 앞에만
       if (left) { const p = c.placeKit(kit, sx, foot); row.push(p); prev = p; cursor = sx + kit.w; } else { endKit = kit; ex -= kit.w; }   // 오른쪽 끝: 자리만 잡아 두고, 줄을 다 세운 뒤 마지막 가게에 벽을 맞대 세운다
       break;
     }
@@ -95,6 +97,7 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
 }
 
 /** 중형 건물의 종류(사전의 role): 가게 거리의 블록 끝에 서는 것 · 집이 섞이는 동네에 서는 것. */
+const XLARGE = ["station-mall", "ward-office", "tower-mansion"];
 const LARGE_DOWNTOWN = ["office-tower", "hotel", "mall"];
 const MEDIUM_SHOP = ["konbini", "market", "bank", "post"], MEDIUM_HOME = ["clinic", "juku"], MEDIUM_RESIDENTIAL = ["clinic", "juku", "sento"];
 
@@ -351,10 +354,13 @@ function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number
     if (!kit) break;
     const hf = foot - depth;
     const left = carport && c.rng() < 0.5;
-    const kakiLot = kakiRow && kit.id.startsWith("jp-bldg-f-") && (kit.cat === "house" || kit.cat === "apartment") && x + kit.w + 5 <= ex;
+    const kakiLot0 = kakiRow && kit.id.startsWith("jp-bldg-f-") && (kit.cat === "house" || kit.cat === "apartment") && x + kit.w + 5 <= ex;
+    // 차고가 현관 바로 옆인 집: 대문 키트(세 칸)가 차고 입을 가린다 — 길 선을 담 없이 열고 앞마당을 통째로 포장한다(옆 울타리는 그대로).
+    const openFront = kakiLot0 && !!kit.bay && (kit.doors[0] ?? 0) - 1 < kit.bay[0] + kit.bay[1] && (kit.doors[0] ?? 0) + 1 >= kit.bay[0];
+    const kakiLot = kakiLot0 && !openFront;
     // 담 키트는 두 칸 폭이다 — 대문(세 칸, 문 앞) 왼쪽과 오른쪽 담 길이가 짝수가 되게 옆 마당 폭(1~2칸)을 고른다. 필지 오른쪽 끝 한 칸은 이웃과의 옆 울타리(길 선에서 뒤 담까지 한 가지).
     const d0 = kit.doors[0] ?? Math.floor(kit.w / 2);
-    const sideL = kakiLot ? ((d0 + 1) % 2 === 0 ? 2 : 1) : 0, sideR = kakiLot ? ((kit.w - d0) % 2 === 0 ? 2 : 1) : 0;
+    const sideL = kakiLot ? ((d0 + 1) % 2 === 0 ? 2 : 1) : openFront ? 1 : 0, sideR = kakiLot ? ((kit.w - d0) % 2 === 0 ? 2 : 1) : openFront ? 1 : 0;
     // 카포트 필지: 집 오른쪽에 세 칸 폭 진입로(길까지 포장, 담이 트인다)와 카포트 — 차고 달린 집에는 두지 않는다.
     const drive = kakiLot && !kit.bay && depth >= 3 && x + kit.w + sideL + sideR + 4 <= ex && c.rng() < 0.3 ? 3 : 0;
     const hx = x + (left ? side : 0) + sideL, lw = kit.w + side + sideL + sideR + drive;
@@ -368,6 +374,14 @@ function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number
     const p = c.placeKit(kit, hx, hf);
     row.push(p); prevH = kit.h; lastKaki = undefined;
     if (shopLike) { if (depth >= 1) { c.fill(x, hf + 1, lw, depth, tone.sidewalk); c.mark(x, hf + 1, lw, depth, Occ.Walk, [Occ.Lot]); } }   // 동네 가게 앞은 담 없이 포장
+    else if (openFront) {
+      c.fillFamily(x, top, gx - x, foot - top + 1, "earth");
+      c.fillFamily(x, hf + 1, gx - x, depth, "forecourt");
+      c.mark(x, hf + 1, gx - x, depth, Occ.Walk, [Occ.Lot]);
+      c.gates.push({ x: hx + d0, y: foot });
+      if (gx < ex) { c.edge(c.vline(gx, top + 1, foot - 2 - top), sideMat); c.cornerCell(gx, foot - 1, sideMat); c.cornerCell(gx, foot, sideMat); }
+      if (depth >= 2) for (const xx of [hx + kit.w, hx - 1]) if (c.stPut(streetTagged("housefront").filter((n) => n.startsWith("pot") || n.startsWith("planter")), xx, hf + 1, { lax: true })) break;
+    }
     else if (kakiLot) {
       const style = KAKI[lot % KAKI.length]!, doorX = hx + d0, lotNo = c.placed.length - 1;
       lastKaki = { wall: style.wall, lotNo };
@@ -491,7 +505,7 @@ export function fillRows(c: SceneCtx, _L: SceneLayout, b: SceneBlock, wanted: st
   const fTop = rearTop(c, b, house ? 12 : 10);
   const paved = s.type !== "lane" && s.type !== "path";
   const front: RowFront = { nA: s.nA, ...(s.type === "kerb" ? { nK: s.nK! } : {}), paved };
-  const row = house ? houseRow(c, b.sx, b.ex, band.foot, fTop, wanted) : shopRow(c, b.sx, b.ex, band.foot, fTop, wanted, band.index === 0 && kind.mainMix ? kind.mainMix : kind.mix, band.index === 0 && fTop === band.top, band.index === 0 && !!kind.mainMix);
+  const row = house ? houseRow(c, b.sx, b.ex, band.foot, fTop, wanted) : shopRow(c, b.sx, b.ex, band.foot, fTop, wanted, band.index === 0 && kind.mainMix ? kind.mainMix : kind.mix, band.index === 0 && fTop === band.top, band.index === 0 && !!kind.mainMix, band.front.type === "kerb");
   if (!house && s.type !== "river") dressShopFront(c, row, front, b.sx, b.ex);
   else if (!house) dressShopFront(c, row, { nA: s.nA, paved: false }, b.sx, b.ex);
   fillRear(c, b, fTop, house);
