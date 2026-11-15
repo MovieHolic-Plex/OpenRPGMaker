@@ -2846,7 +2846,22 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     cands.sort((a, b) => b.s - a.s || a.y - b.y || a.x - b.x);
     const crops = have(spec.field.decals ?? []);
-    for (const p of cands.slice(0, 600)) { // 울타리 문이 길에 닿는 첫 자리 — 앞 스물넷만 보면 탑집 곁 후보가 모두 문을 못 내 남은 땅이 비었다(산골 씨앗 25)
+    // 밭 울타리가 걷던 땅을 끊으면 안 된다(탐침 언덕 씨앗 11: 훑어 놓은 밭이 단의 목을 막아 못 닿는 윗단 칸이 20 에서 161 이 됐다) —
+    // 길에서 걸어 닿던 칸(빈 땅·비워 둔 땅·길, 단은 오르막으로만) 가운데 그 네모를 막은 뒤 못 닿게 되는 칸이 여섯을 넘는 자리는 건너뛴다.
+    const walkable = (c: number) => { const v = occ[c]!; return v === FREE || v === CLEAR || v === ROAD || v === PLAZAC || v === POND_RING || v === NOOK; };
+    const reach = (bx0: number, by0: number, bx1: number, by1: number): Uint8Array => {
+      const seen = new Uint8Array(W * H), q: number[] = [];
+      for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) { seen[c] = 1; q.push(c); }
+      for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of side4) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny) || (nx >= bx0 && nx <= bx1 && ny >= by0 && ny <= by1)) continue; const n = idx(nx, ny);
+          if (seen[n] || !walkable(n) || !trustStep(x, y, nx, ny)) continue; seen[n] = 1; q.push(n); } }
+      return seen;
+    };
+    const open0 = reach(-1, -1, -1, -1);
+    for (const p of cands.slice(0, 600)) {
+      const after = reach(p.x - 1, p.y - 1, p.x + p.w, p.y + p.h); let lost = 0;
+      for (let c = 0; c < W * H && lost <= 6; c += 1) if (open0[c] && !after[c]) { const x = c % W, y = (c - x) / W; if (x < p.x - 1 || x > p.x + p.w || y < p.y - 1 || y > p.y + p.h) lost += 1; }
+      if (lost > 6) continue; // 울타리 문이 길에 닿는 첫 자리 — 앞 스물넷만 보면 탑집 곁 후보가 모두 문을 못 내 남은 땅이 비었다(산골 씨앗 25)
       if (!planFence(p.x - 1, p.y - 1, p.x + p.w, p.y + p.h, (c) => distRoad[c]!)) continue;
       const crop = crops.length ? crops[lookHash(`plot|${seed}|${p.x}|${p.y}`) % crops.length]! : null;
       for (let j = 0; j < p.h; j += 1) for (let i = 0; i < p.w; i += 1) {

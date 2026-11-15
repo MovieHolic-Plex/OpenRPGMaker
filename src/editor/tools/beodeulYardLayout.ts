@@ -163,7 +163,7 @@ type YardAsk = { houses: number; anchor: boolean; work: boolean; loose: readonly
   /** 높은 곳 건물이 선 덩이와 단 — 그 터는 이미 쓰이고 있다. */ landmarkOn?: { bank: number; level: number } };
 
 /** 후보 마당 하나에 건물을 앉힌다: 여관이 가운데 네모 북쪽 줄, 집은 날개 북쪽 줄과 여관 곁, 남는 집은 무리, 일터·밭은 마을 몸 바깥. */
-function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want: YardAsk): { plan: YardPlan; houses: YardSeat[] } {
+function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want: YardAsk): { plan: YardPlan; houses: YardSeat[]; seats: readonly YardSeat[] } {
   const { W, H } = t;
   const r = cand.r, w = r.x1 - r.x0 + 1, h = r.y1 - r.y0 + 1;
   // 우물은 마당의 한쪽 삼분 자리(가운데 축을 피한다) — 원래 모이는 곳에 가까운 쪽
@@ -342,7 +342,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
     }
   }
   plan.cells = yardCells(plan, W);
-  return { plan, houses };
+  return { plan, houses, seats: all as readonly YardSeat[] };
 }
 
 /**
@@ -350,7 +350,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
  * 마당에 문을 낸 집이 가장 많은 것으로 남긴다(want.skip 째). 셋(집이 넷보다 적으면 전부)에 못 미치면 작은 마당·작은 집으로, 그래도 못 미치면 띠 마당으로 더 본다. 맞는 것이 없으면 기준 그대로 두고 null.
  */
 export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, env: YardEnv, want: YardAsk): YardPlan | null {
-  const { W } = t;
+  const { W, H } = t;
   const start = env.mark();
   const base = env.routes(g.y * W + g.x, new Set());
   env.clear();
@@ -370,16 +370,33 @@ export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, en
     keep();
     return now;
   };
+  // 마당 둘레의 건물이 마당 단의 목을 막으면 그 마당은 쓰지 않는다(탐침 산골 씨앗 24: 여관이 윗단 움푹한 터의 목에 서서 그 뒤 60칸 남짓이 못 닿는 칸이 됐다 — 기준은 13칸).
+  // 건물이 없다고 치고 우물에서 같은 단 마른 땅으로 번져 닿던 칸 가운데, 건물이 선 뒤 못 닿게 된 칸 수.
+  const cutByBuildings = (plan: YardPlan, seats: readonly YardSeat[]): number => {
+    const L = plan.level, yard = new Set(plan.cells), f = plan.gather.y * W + plan.gather.x, inB = new Uint8Array(W * H);
+    for (const sp of seats) for (let y = sp.y; y < sp.y + sp.h; y += 1) for (let x = sp.x; x < sp.x + sp.w; x += 1) if (x >= 0 && y >= 0 && x < W && y < H) inB[y * W + x] = 1;
+    const flood = (through: boolean): Uint8Array => {
+      const seen = new Uint8Array(W * H), q = [f]; seen[f] = 1;
+      for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const n = ny * W + nx;
+          if (seen[n] || t.levels[n] !== L || t.water[n] || !(env.free(n) || yard.has(n) || (through && inB[n]))) continue; seen[n] = 1; q.push(n); } }
+      return seen;
+    };
+    const before = flood(true), after = flood(false);
+    let lost = 0; for (let c = 0; c < W * H; c += 1) if (before[c] && !after[c] && !inB[c]) lost += 1;
+    return lost;
+  };
   const good: { plan: YardPlan; s: number; near: number; goal: number; keep: () => void }[] = [];
   for (const mode of [0, 1, 2] as const) {
     if (mode && (want.plaza || good.some((b) => b.near >= b.goal))) break;
     const compact = mode > 0;
     for (const cand of yardCandidates(t, g, level, want.houses, env.rand, env.free, want, mode)) {
       cleared();
-      const { plan, houses } = seatYard(t, cand, g, env, { ...want, compact });
+      const { plan, houses, seats } = seatYard(t, cand, g, env, { ...want, compact });
       const gi = plan.gather.y * W + plan.gather.x, on = new Set(yardParts(plan.cells, W, gi)[0] ?? []);
       const got = withLandmark(gi, on, env.routes(gi, on));
       if (got.exits < base.exits || got.houses < base.houses || got.others < base.others || (base.landmark && !got.landmark)) continue;
+      if (cutByBuildings(plan, seats) > 10) continue;
       const core = [...rectCells(plan, W), ...plan.lobes.flatMap((l) => rectCells(l, W))];
       const onTier = houses.filter((s) => t.levels[s.front.y * W + s.front.x] === plan.level);
       const near = onTier.filter((s) => core.some((c) => Math.max(Math.abs((c % W) - s.front.x), Math.abs(Math.floor(c / W) - s.front.y)) <= 6)).length;
