@@ -1,0 +1,62 @@
+# 버들항 집 안 — beodeul_city 실내 토막 `fable_interior` (2026-11-15)
+
+오너(2026-11-15, 실제 모델 빌드를 끝까지 해 보고): 「… 실내도 이제 그리고 …」. 그날의 방은 바깥이 버들항 그림인데 안은 전부 손 도트 실내 v5(`atlas_biome_interior`)의
+같은 작은 상자였다 — 목골 여관 안이 통나무집, 회색 테가 검은색으로 떨어지는 테두리, 방마다 같은 가구. 원인은 둘: 실내 칩셋을 화풍 낱말로만 골랐고(바깥과 무관),
+`PlaceSpec` 에 그 방이 든 집이 없었다.
+
+## 무엇이 들어왔나
+
+- **그림**: 공용 버들항 시트의 고정 예약 토막 **48,512 ~ 52,607(4,096칸 = 32줄)**. 쓴 칸 1,148(남은 칸은 빈 칸으로 채움 — 다음 토막 52,608 부터는 남의 것). 시트 2048×6576px.
+  - 벽면 8: `plaster` 목골 회벽+판자 징두리 · `rubble` 막돌+들보 · `log` 통나무 · `stablew` 세로 널 · `stone` 크림 돌 · `grey` 다듬은 회색 돌 · `slumw` 붉은 벽돌 · `hobbitw` 흙벽.
+  - 바닥 7: `dplank` 넓은 참나무 널 · `plank` 밝은 가게 널 · `flag` 판석 · `ovenf` 벽돌 헤링본 · `earth` 다진 흙+짚 · `parquet` 쪽마루 · `grey` 회색 큰 판석.
+  - 테두리 3(천장 띠 자리): `default` 참나무 벽 윗면 · `rock` 막돌 · `gold` 크림 돌. 검은 천장이 아니라 **위에서 본 벽 두께 8px** 다 — 방 쪽 반 칸에 벽 윗면, 바깥 반 칸은 어둠.
+    벽면이 테두리를 정한다(`looks.edge`, `handInteriorStructure`): 천장을 따로 주지 않으면 돌벽 방은 돌 윗면.
+  - id 는 v5 가 쓰던 낱말을 빌렸다 — 방 짓기 도구의 바닥·벽면·천장 enum 과 v5 견본의 재질 이름이 그대로 통한다(도구 정의는 한 글자도 늘지 않는다).
+  - 가구 192: 새 그림 103(주점·살림집·가게·객실·부엌·창고·대장간·빵집·회관·예배당·방앗간·마구간·어부 집·경비실·저택·불빛·깔개·계단) + **이미 구워진 바깥 기물 89종을 칸 번호 그대로 등록**
+    (`table.py EXISTING` — 통·상자·자루·베틀·증류기·여물통…: 같은 칩셋이라 새로 굽지 않는다). 탁상 물건 12. 빛 무늬 3(벽난로 앞·창 아래·등 아래 — 코드가 만든 반투명 판).
+- **3/4 관문 미통과 — 오너 면제**(묶음 `fable-interiors-beodeul-2026-11-15`, 133장, 출구 bundle·shared, 스토어 불가). 오너의 상시 말씀(2026-11-12)으로 `object-gate owner-waive` 단계가 적었다.
+  Claude Fable 5.2 medium 한 방(`claude -p`, 행 문자열), 결함을 적어 다시 그린 것 7장(참나무 널·가게 널·테두리 — 시범 / 화덕 갓·흔들의자·침상·그물 걸이). 호출 117 · $16.62(시범 포함).
+- **값 분리(감독 2026-11-15)**: 테두리가 가장 어둡고 바닥이 중간, 가구는 더 밝고 따뜻하다. 선 가구는 발치 오른쪽 아래로 짧은 그림자, 탁자·의자는 다리 사이 밑 그늘(`prepare.py shadow` — 반투명 어둠).
+  불·초·등은 둘레 세 단 번짐(`halo`), 벽난로 앞 바닥·창 아래 바닥·등 아래 바닥은 빛 무늬를 깐다. 바닥과 회벽은 고요한 채로 둔다(방 전체 평탄도 33~36% — 점을 뿌려 숫자를 맞추지 않는다).
+
+## 굽기
+
+```
+python3 scripts/content/beodeul-interiors/prepare.py     # tiledata/beodeul-interiors/raw → pieces (앉히기 · 색 줄 옮기기 · 그림자 · 번짐)
+python3 scripts/content/beodeul-interiors/bake.py --manifest && npm run harness -- object-gate owner-waive --manifest tiledata/beodeul-interiors/gate-manifest.json --batch … --replace   # 그림이 바뀌었을 때만(오너의 말이 있을 때)
+python3 scripts/content/beodeul-interiors/bake.py        # 시트 · 정의 · 사양(src/assets/beodeulInteriorSpec.json) · catalog.json
+bun scripts/content/beodeul-interiors/rooms.mts          # 방 견본(src/assets/beodeulInteriorRoomTemplates.json) · 사양의 방 표 — 조립기 오류가 있으면 멈춘다
+```
+
+- 칸 번호는 덧붙이기 전용: 열쇠(`obj/bar counter/0,-1`) → 번호를 `tiledata/beodeul-interiors/catalog.json pins` 에 못박는다. 새 항목은 `table.py` 각 목록의 끝에.
+- 내 토막만 제자리에서 다시 쓴다(앞 칸·줄 폭 128·뒤 토막은 그대로). 토막 안에 남의 칸이 보이면 멈춘다.
+- 방 그림: `BD_LAYERS=<파일> bun …/rooms.mts --check && python3 …/render.py <파일> <폴더>` — 조립기가 낸 칸을 시트에서 그대로 그린다.
+
+## 방 견본 — 36방 · 23종류
+
+`scripts/content/beodeul-interiors/rooms.mts`(글자 그림, 형식은 `interior-authored/lib.mts`). 방은 작다(오너: 화면의 삼분의 일쯤이 맞다).
+주점 3 · 살림집 3 · 잡화점 2 · 무기점 · 약방 · 객실 2 · 침실 2 · 부엌 2 · 창고 2 · 지하 술 창고 · 대장간 2 · 빵집 2 · 사무실 2 · 대기실 · 회관 큰 방 · 예배당 2 · 방앗간 · 양조장 · 직조 일터 · 마구간 · 경비실 · 저택 식당 · 교실.
+같은 종류의 벌은 가구가 다르다(주점: 술통 선반+긴 식탁 / 큰 술통+둥근 탁자+계단 / 판석 술청) — **게임 열쇠가 한 벌을 고른다**(`pickTemplate`). 「작게」가 넓이 같은 두 벌 중 이름순 첫 벌만 고르던 것을
+고쳤다(띠 끝과 넓이가 같은 견본은 같이 든다). 견본 id 머리 `authored-` = 그 크기에서 조립 검사를 지난 구성이라 빌더가 줄이거나 메우거나 뒤집지 않는다.
+불 없는 방에는 등(벽 등·등잔·바닥 촛대)을 둔다 — 시험이 지킨다.
+
+## 조수 v2 배선 — 집 안은 바깥을 따른다 (`src/ai/v2/place/builders/interiorExterior.ts`)
+
+- `PlaceSpec.exterior {tileset, kit?, style?}` — 짓는 쪽이 넣는다(모델은 쓰지 않는다, 요청 낱말 목록 없음). 청사진 자동 짓기(`sessionHooks.ts`)는 그 방이 달릴 **문의 집 킷**을 적는다.
+- `exteriorLook`: 바깥 맵(명세의 exterior, 없으면 짓는 순간의 지금 맵)의 칩셋이 사양 + 모습 표(`looks`) + 방 견본을 가지면 그 칩셋으로 짓는다(`interiorTilesetOf`). 화풍 낱말이 다른 실내 칩셋(마법 학교·전국·현대)을 부르면 그쪽이 먼저.
+- 벽면: 견본이 쓴 «집 벽» 둘(`plaster` = 그 집의 벽, `rubble` = 돌 아래층·불 방)을 킷 태그 `style:<양식>` 으로 바꾼다(`looks.style`, `exteriorWall`) — 통나무 집 안은 통나무, 크림 석조 항구 집 안은 크림 돌,
+  보랏빛 슬레이트 성읍은 다듬은 회색 돌. 통나무·널집의 불 방은 막돌 그대로. 표에 없는 벽(빵집 벽돌·예배당 돌)과 양식 태그가 없는 원본 버들항 집(목골)은 그대로.
+- 방 종류: `resolveKind` 가 모습 표를 가진 칩셋의 방 표 별칭을 읽는다(「촌장 집」→ `living`, 「방앗간」→ `mill`).
+- **모델이 읽는 글이 바뀌는 곳은 하나**: 칩셋에 `roomKit` 이 붙어서, 지금 맵이 버들항일 때 실내 목록 카드(`interiorCatalogCard`)·`find_pieces` 가 v5 목록 대신 버들항 목록(5,596자 · 가구 192)을 보인다.
+  golden 157요청 가운데 실내 요청 12개의 시스템 글이 약 1만 자 **줄었다**(예: 빈 프로젝트 「여관 1층 하나 지어 줘」 48,337 → 38,195). 새로 쓴 지시문은 없다.
+  모델이 칸 배치(`spec.layout`)를 써 오면, 카드가 버들항 것이었을 때만 버들항 칩셋으로 깐다(`buildFromLayout` — 카드와 까는 칩셋이 늘 같다).
+  끄는 법: `beodeulCity.ts` 의 `roomKit` 한 줄을 빼면 카드·칸 배치는 v5 로 돌아가고(글 변화 0자) 견본이 짓는 방만 버들항으로 남는다.
+- 자동 설계(`designMissingRooms`)는 v5 로 짓는 방에만 묻는다 — 버들항 집 안은 견본이 짓는다(모델 호출 없음).
+- 번들 소유 킷 `bd-in:<id>`(덧찍기·고치기용, 태그 «주제 소품» 이라 바깥 빈 땅 채우기에 흩지 않는다) — `ensureBeodeulCityTileset` 이 옛 사본에 채우고 `roomKit` 도 채운다.
+
+## 못 한 것 · 다음
+
+- 불·물 애니메이션 없음(벽난로 불은 멈춘 그림). 크기 자동 탁자(`tables`)·줄 깔개(`lines`)·단(`daises`) 없음 — 탁자는 통짜 가구, 통로 깔개는 한 칸짜리를 이어 깐다.
+- 집 양식 여덟 가운데 지금 main 에 태그가 있는 것은 넷(halftimber·log·harbourstone·violetslate, 참고 건물 44킷). `agent/beodeul-house-styles` 가 들어오면 그 킷의 `style:` 태그를 그대로 읽는다(표는 여덟 다 있다).
+- 여러 방 건물(여관 1층+부엌+객실)은 견본을 방마다 고르는 종전 배치기가 짠다 — 버들항 견본으로 지어지는 것만 확인했고 따로 다듬지 않았다.
+- 감옥 창살·등대 나선 계단·학교 긴 책상은 그리지 않았다(바깥 기물의 기운 책상·강의 판으로 교실을 짰다).

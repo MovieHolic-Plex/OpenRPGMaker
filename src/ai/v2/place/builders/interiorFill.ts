@@ -348,7 +348,8 @@ export function pickTemplate(tilesetId: string, kind: string, size: string | und
   const area = (t: InteriorRoomTemplate) => t.w * t.h;
   const median = area(pool[Math.floor((pool.length - 1) / 2)]!);
   const half = Math.ceil(pool.length / 2);
-  const band = size === "small" ? pool.slice(0, half) : size === "large" ? pool.slice(pool.length - half) : pool.filter((t) => area(t) >= median * 0.5 && area(t) <= median * 1.8);
+  // 띠의 끝과 넓이가 같은 견본은 같이 든다 — 넓이가 같은 두 벌짜리 종류(대장간·잡화점)에서 «작게»가 늘 이름순 첫 벌만 골라 게임마다 같은 방이었다(2026-11-15 버들항 실내).
+  const band = size === "small" ? pool.filter((t) => area(t) <= area(pool[half - 1]!)) : size === "large" ? pool.filter((t) => area(t) >= area(pool[pool.length - half]!)) : pool.filter((t) => area(t) >= median * 0.5 && area(t) <= median * 1.8);
   // 성격이 다른 설계는 빼고(평범한 서재·귀족 서재에 엘프 잎 벽·마법진 견본이 오지 않게), 그다음 앞 방 화풍.
   const ids = (t: InteriorRoomTemplate) => [...t.items.map((it) => it.id), t.floor, t.wall];
   // 마법·엘프처럼 드문 성격 낱말이면 그 성격 견본을 크기 띠 밖에서라도 먼저(마법사의 서재 → 탑 서재).

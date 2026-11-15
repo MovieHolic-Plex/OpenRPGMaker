@@ -1,6 +1,7 @@
 // 칸 배치(spec.layout)로 손 도트 실내를 짓는다 — 검증(interiorLayout.checkLayout) → build_hand_interior_room(plan·zones·objects·lines·daises·start)
 // → 맵 위치 기록(방마다 hand-layout-room·model-designed, 방 그래프 선언·랜드마크, 칸 배치 선언). 함수는 칸·가구·방 수를 고르지 않는다.
 // 고치기 횟수(hints.layoutRepairsLeft)를 다 쓰면 여전히 걸리는 기물만 빼고 나머지를 깐다(무엇을 뺐는지 알린다).
+import { exteriorWall, type ExteriorLook } from "./interiorExterior";
 import type { HandInteriorSpec } from "@/editor/handInterior/builder";
 import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
@@ -24,7 +25,7 @@ function joins(o: { x: number; y: number; w?: number; h?: number }, a: { x: numb
   return near(a) && near(b);
 }
 
-export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined): PlaceBuildResult {
+export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined, outside?: ExteriorLook): PlaceBuildResult {
   const L = spec.layout as InteriorLayout;
   const tileset = run.ctx.project.tilesets[tilesetId];
   if (!tileset) return { ok: false, mapIds: [], summary: `spec.layout needs a chipset with a room table; ${tilesetId} is missing. Drop layout and use zones.`, warnings: [], missingArt: [], calls: run.calls };
@@ -49,7 +50,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   const soft = check.soft ?? [];
   if (soft.length && left > 0) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
 
-  // 짓기는 모델이 적은 id 를 그대로 깐다 — 게임마다의 천 색은 목록 카드가 모델에게 건넨다(interiorCatalog.ts «이 게임의 평면»).
+  // 벽면은 바깥 양식을 따르고, 게임마다의 천 색은 목록 카드가 모델에게 건넨다(interiorCatalog.ts «이 게임의 평면»).
   // 모델이 쓰지 않는 칸인 천장만 게임마다 고른다(interiorPalette.ts interiorCeiling, 씨앗 = 게임 열쇠 + 장소 이름). 고른 천장은 칸 배치 선언에 적고(ceiling:<id>),
   // 다시 까는 맵(review_layout · edit_place · 같은 이름 다시 짓기)은 그것을 그대로 쓴다. 적힌 것이 없는 옛 방은 기본 천장 그대로다. 열쇠 없는 실행도 기본 천장.
   const laidBefore = mapId ? (run.ctx.project.maps[mapId]?.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG)) : undefined;
@@ -57,7 +58,9 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     : run.ctx.assistantRun ? interiorCeiling(S, run.ctx.lookKey?.trim() ? `${run.ctx.lookKey}|${spec.name}` : undefined) : undefined;
   const input = check.input;
   const args: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-    plan: input.plan, floor: input.floor, wall: input.wall, zones: input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages,
+    plan: input.plan, floor: input.floor, wall: exteriorWall(S, outside, input.wall),
+    zones: outside ? input.zones?.map((z) => (z.wall ? { ...z, wall: exteriorWall(S, outside, z.wall) } : z)) : input.zones,
+    objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages,
     ...(ceiling ? { ceiling } : {}) };
   const clean = (a: Record<string, unknown>) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== undefined));
   let r = run.call("build_hand_interior_room", clean(args));
