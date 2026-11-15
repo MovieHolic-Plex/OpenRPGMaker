@@ -771,6 +771,20 @@ const ROOMS: Room[] = [
     legend: { G: "stained window", w: "window light", f: "floor candle", a: "altar", p: "pew", r: "aisle runner", k: "kneeler", c: "candelabrum", m: "door mat" },
     hang: ".G...G.",
     plan: ["fwa..wf", ".......", "p..r.p.", "...r...", "p..r.p.", "k..m..c"] },
+  // ══ 크기 단 — 큰 방 견본(대형 공간의 홀): 기둥 두 줄 · 가운데 융단 길 · 큰 계단 · 샹들리에 ══
+  { id: "hall-l", kind: "great_hall", building: "bd_hall", floor: "dplank", wall: "plaster",
+    legend: { b: "banner", W: "window", w: "window light", A: "armor stand", G: "grand stairs", R: "royal runner", P: "oak post", n: "bench", L: "long table", C: "chandelier", k: "strongbox", c: "floor candle" },
+    hang: "b..W..b.....b..W..b",
+    plan: [
+      "A..w....G......w..A",
+      "........R..........",
+      ".n..P...R.....P.n..",
+      ".L...C..R...C...L..",
+      "........R..........",
+      ".n..P...R.....P.n..",
+      "........R..........",
+      "k.......R.........c",
+    ] },
 ];
 
 const spec = JSON.parse(fs.readFileSync(SPEC, "utf8")) as HandInteriorSpec & { rooms?: unknown };

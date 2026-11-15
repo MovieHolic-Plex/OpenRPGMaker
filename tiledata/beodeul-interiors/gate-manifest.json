@@ -1009,6 +1009,96 @@
    "chipset": "beodeul_city"
   },
   {
+   "png": "tiledata/beodeul-interiors/pieces/stone-column.png",
+   "kind": "column",
+   "id": "bd-in-stone-column",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/oak-post.png",
+   "kind": "column",
+   "id": "bd-in-oak-post",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/chandelier.png",
+   "kind": "other",
+   "id": "bd-in-chandelier",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/throne.png",
+   "kind": "structure",
+   "id": "bd-in-throne",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/royal-runner.png",
+   "kind": "flat",
+   "id": "bd-in-royal-runner",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/grand-stairs.png",
+   "kind": "structure",
+   "id": "bd-in-grand-stairs",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-nw.png",
+   "kind": "flat",
+   "id": "bd-in-dais-nw",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-n.png",
+   "kind": "flat",
+   "id": "bd-in-dais-n",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-ne.png",
+   "kind": "flat",
+   "id": "bd-in-dais-ne",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-w.png",
+   "kind": "flat",
+   "id": "bd-in-dais-w",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-c.png",
+   "kind": "flat",
+   "id": "bd-in-dais-c",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-e.png",
+   "kind": "flat",
+   "id": "bd-in-dais-e",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-sw.png",
+   "kind": "flat",
+   "id": "bd-in-dais-sw",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-s.png",
+   "kind": "flat",
+   "id": "bd-in-dais-s",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-se.png",
+   "kind": "flat",
+   "id": "bd-in-dais-se",
+   "chipset": "beodeul_city"
+  },
+  {
    "png": "tiledata/beodeul-interiors/pieces/hearth-glow.png",
    "kind": "flat",
    "id": "bd-in-hearth-glow",

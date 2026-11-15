@@ -136,8 +136,8 @@ def obj_entry(oid, im, kind, w, foot, cat, ko, tags, o, add):
             c = cell(im, x, y)
             if not c.getchannel("A").getbbox(): continue
             dy = y - top
-            passage = "walk" if kind == "flat" else "solid" if kind in ("floor", "wall") and dy >= 0 else "star"
-            cs.append([x, dy, add(f"obj/{oid}/{x},{dy}", c, passage, f"{LABEL} · {ko}" + (f" ({x},{dy})" if w * rows > 1 else ""), [TB.CATS[cat], *tags]), 3 if kind != "flat" or o.get("stairs") else 2])
+            passage = "star" if o.get("over") else "walk" if kind == "flat" else "solid" if kind in ("floor", "wall") and dy >= 0 else "star"
+            cs.append([x, dy, add(f"obj/{oid}/{x},{dy}", c, passage, f"{LABEL} · {ko}" + (f" ({x},{dy})" if w * rows > 1 else ""), [TB.CATS[cat], *tags]), 3 if kind != "flat" or o.get("stairs") or o.get("over") else 2])
     b = im.getchannel("A").getbbox()
     up = 0 if kind in ("hang", "flat") else max(0, (rows - foot) * T - b[1])
     e = dict(ko=ko, category=cat, category_ko=TB.CATS[cat], kind=kind, w=w, h=0 if kind == "hang" else foot, up=up, cells=cs,

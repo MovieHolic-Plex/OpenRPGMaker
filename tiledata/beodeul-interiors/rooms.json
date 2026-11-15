@@ -6437,5 +6437,188 @@
   "goods": [],
   "kind": "chapel",
   "building": "bd_chapel"
+ },
+ "hall-l": {
+  "plan": [
+   "#####################",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "##########.##########"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "banner",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 4,
+    "y": 1
+   },
+   {
+    "id": "banner",
+    "x": 7,
+    "y": 1
+   },
+   {
+    "id": "banner",
+    "x": 13,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 16,
+    "y": 1
+   },
+   {
+    "id": "banner",
+    "x": 19,
+    "y": 1
+   },
+   {
+    "id": "armor stand",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 4,
+    "y": 3
+   },
+   {
+    "id": "grand stairs",
+    "x": 9,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 16,
+    "y": 3
+   },
+   {
+    "id": "armor stand",
+    "x": 19,
+    "y": 3
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 4
+   },
+   {
+    "id": "bench",
+    "x": 2,
+    "y": 5
+   },
+   {
+    "id": "oak post",
+    "x": 5,
+    "y": 5
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 5
+   },
+   {
+    "id": "oak post",
+    "x": 15,
+    "y": 5
+   },
+   {
+    "id": "bench",
+    "x": 17,
+    "y": 5
+   },
+   {
+    "id": "long table",
+    "x": 2,
+    "y": 6
+   },
+   {
+    "id": "chandelier",
+    "x": 6,
+    "y": 6
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 6
+   },
+   {
+    "id": "chandelier",
+    "x": 13,
+    "y": 6
+   },
+   {
+    "id": "long table",
+    "x": 17,
+    "y": 6
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 7
+   },
+   {
+    "id": "bench",
+    "x": 2,
+    "y": 8
+   },
+   {
+    "id": "oak post",
+    "x": 5,
+    "y": 8
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 8
+   },
+   {
+    "id": "oak post",
+    "x": 15,
+    "y": 8
+   },
+   {
+    "id": "bench",
+    "x": 17,
+    "y": 8
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 9
+   },
+   {
+    "id": "strongbox",
+    "x": 1,
+    "y": 10
+   },
+   {
+    "id": "royal runner",
+    "x": 9,
+    "y": 10
+   },
+   {
+    "id": "floor candle",
+    "x": 19,
+    "y": 10
+   }
+  ],
+  "goods": [],
+  "kind": "great_hall",
+  "building": "bd_hall"
  }
 }

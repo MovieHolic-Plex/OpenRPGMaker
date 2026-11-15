@@ -4,10 +4,10 @@
 가구 줄: (id, 원본, 종류, 폭, 발밑 줄 수, 갈래, 이름, 방 태그, 관문 종류, 선택)
   원본 = raw/<이름>.png 또는 (이름, x, y, w, h) 로 한 장에서 잘라 낸 조각.
   종류 floor(바닥에 선 것) · wall(북벽 앞에 선 것) · hang(벽면에 건 것 — 발밑 0, rows 줄) · flat(밟는 무늬).
-  선택: rows(hang 줄 수) · oy(hang 위 여백) · use · pair · stairs · halo(불빛 번짐) · noshadow · remap · desc
+  선택: over(걸어 지나가고 사람 위에 그리는 것 — 샹들리에) · rows(hang 줄 수) · oy(hang 위 여백) · use · pair · stairs · halo(불빛 번짐) · noshadow · remap · desc
 """
 CATS = dict(tavern="주점", home="살림집", shop="가게", kitchen="부엌", store="창고", smith="대장간", bake="빵집", office="회관·사무실", church="예배당",
-            farm="농가·마구간", mill="방앗간", fisher="어부 집", guard="경비실", manor="저택", light="불빛", rug="깔개", stairs="계단", craft="일터", tower="등대·감옥", own="사는 사람의 물건")
+            farm="농가·마구간", mill="방앗간", fisher="어부 집", guard="경비실", manor="저택", light="불빛", rug="깔개", stairs="계단", craft="일터", tower="등대·감옥", own="사는 사람의 물건", hall="큰 공간")
 
 # id 는 손 도트 실내 v5 가 이미 쓰는 낱말을 빌린다(plaster·rubble·log·dplank·plank·flag·default·rock …) — 방 짓기 도구의 바닥·벽면·천장 enum 과 v5 견본의 재질 이름이 그대로 통한다(모델이 읽는 글이 늘지 않는다).
 # ── 벽면(48×32 한 칸 폭 3열) · 바닥 · 테두리 ────────────────────────────────────────────
@@ -208,6 +208,22 @@ OBJECTS = [
     ("parrot stand", ("p-floor-c", 48, 0, 16, 32), "floor", 1, 1, "own", "앵무새 새장", ["살림"], "column", dict(cx=1)),
     ("hat stand", ("p-floor-c", 64, 0, 16, 32), "floor", 1, 1, "own", "외투 걸이", ["살림"], "column", dict(cx=1)),
     ("blanket chest", ("p-floor-c", 80, 0, 16, 32), "floor", 1, 1, "own", "개어 둔 이불 궤", ["살림"], "box", dict(cx=1)),
+    # ── 크기 단(오너 2026-11-15 «중형공간, 대형공간, 초대형공간») — 한 방짜리에는 없던 조각 ──
+    ("stone column", "column-stone", "floor", 1, 1, "hall", "돌기둥", ["큰 홀", "성", "본당"], "column", {}),
+    ("oak post", "column-wood", "floor", 1, 1, "hall", "참나무 기둥과 버팀목", ["큰 홀", "회관", "주점"], "column", {}),
+    ("chandelier", "chandelier", "flat", 2, 2, "hall", "쇠 바퀴 샹들리에(공중 — 밑으로 걸어 지난다)", ["큰 홀", "성", "회관"], "other", dict(over=1, use=["light"], halo=1)),
+    ("throne", "throne", "floor", 3, 1, "hall", "왕좌", ["알현실", "성"], "structure", dict(use=["sit"])),
+    ("royal runner", "royal-runner", "flat", 3, 1, "hall", "넓은 붉은 융단 길(위아래로 잇는다)", ["큰 홀", "성", "본당"], "flat", {}),
+    ("grand stairs", "grand-stairs", "wall", 3, 1, "stairs", "큰 계단(올라간다)", ["저택", "회관", "큰 여관"], "structure", dict(stairs="up", use=["travel"], noshadow=1)),
+    ("dais nw", ("dais", 0, 0, 16, 16), "flat", 1, 1, "hall", "돌 단 · 뒤 왼쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais n", ("dais", 16, 0, 16, 16), "flat", 1, 1, "hall", "돌 단 · 뒤", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais ne", ("dais", 32, 0, 16, 16), "flat", 1, 1, "hall", "돌 단 · 뒤 오른쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais w", ("dais", 0, 16, 16, 16), "flat", 1, 1, "hall", "돌 단 · 왼쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais c", ("dais", 16, 16, 16, 16), "flat", 1, 1, "hall", "돌 단 · 가운데", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais e", ("dais", 32, 16, 16, 16), "flat", 1, 1, "hall", "돌 단 · 오른쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais sw", ("dais", 0, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞 왼쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais s", ("dais", 16, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞", ["알현실", "제단", "큰 홀"], "flat", {}),
+    ("dais se", ("dais", 32, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞 오른쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
 ]
 # 코드로 만드는 빛 무늬(밟는 무늬, 반투명) — prepare.py 가 그린다
 GLOWS = [
