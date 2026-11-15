@@ -1,6 +1,6 @@
 {
  "set": "fallen-spear-kael",
- "note": "폴른 스타 · 창을 든 카엘(ActorRecord.weaponBattleSheets). 픽스처는 scripts/qa/runtime/fallen-battle-fixture.mjs 가 구운 play.json 에서 만든다(--project .omo/fs-battle/fixture.json). 카엘의 전투 그림 노드 data-battle-sheet 로 어느 시트로 섰는지 보고, 공격 연출 동안의 자세·그림 기록을 verify-shots/fs-spear/trace/<id>.json 에 남긴다. 장비는 sessionPatch.actorEquipment 로 입힌다. swap 은 픽스처의 troop_qa_spear_swap(카엘이 방어하면 창으로 바꾸는 전투 이벤트).",
+ "note": "폴른 스타 · 창을 든 카엘(ActorRecord.weaponBattleSheets). 픽스처는 scripts/qa/runtime/fallen-battle-fixture.mjs 가 구운 play.json 에서 만든다(--project .omo/fs-battle/fixture.json). 카엘의 전투 그림 노드 data-battle-sheet 로 어느 시트로 섰는지 보고, 공격 연출 동안의 자세·그림 기록을 verify-shots/fs-spear/trace/<id>.json 에 남긴다. 장비는 sessionPatch.actorEquipment 로 입힌다. swap 은 무기가 바뀌는 순간의 기록을 trace/swap-change.json 에 따로 남긴다 — 픽스처의 troop_qa_spear_swap(카엘이 방어하면 창으로 바꾸는 전투 이벤트).",
  "projectFixture": ".omo/fs-battle/fixture.json",
  "viewport": {
   "width": 960,
@@ -423,6 +423,11 @@
      "note": "카엘이 방어 → 전투 이벤트가 무기를 로한의 창으로 바꾼다",
      "ops": [
       {
+       "kind": "evalToFile",
+       "fn": "() => { const rec = []; window.__spearTrace = rec; const t0 = performance.now(); let last = ''; const tick = () => { const n = document.querySelector('[data-testid=\"battle-actor-actor_hero\"]'); const s = n ? n.querySelector('.battle-actor-sprite, .battle-actor-image') : null; const cs = s ? getComputedStyle(s) : null; const m = cs ? cs.backgroundImage.match(/(cast\\/)?[^\\/\"]+\\.png/) : null; const row = { sheet: n ? (n.dataset.battleSheet ?? null) : null, pose: n ? (n.dataset.battlePose ?? null) : null, image: m ? m[0] : null, pos: cs ? cs.backgroundPosition : null }; const key = JSON.stringify(row); if (key !== last) { last = key; rec.push({ t: Math.round(performance.now() - t0), ...row }); } if (performance.now() - t0 < 30000 && window.__spearTrace === rec) requestAnimationFrame(tick); }; tick(); return true; }",
+       "out": "verify-shots/fs-spear/trace/swap-change-start.json"
+      },
+      {
        "kind": "battle",
        "plan": {
         "actor_hero": [
@@ -454,6 +459,11 @@
        "kind": "hold",
        "dir": null,
        "ms": 600
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => ({ trace: window.__spearTrace ?? null, sheets: Object.fromEntries([...document.querySelectorAll('.battle-actor-group .battle-actor')].map((n) => [n.dataset.recordId, n.dataset.battleSheet ?? null])) })",
+       "out": "verify-shots/fs-spear/trace/swap-change.json"
       }
      ],
      "shot": true
