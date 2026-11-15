@@ -87,6 +87,9 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
     const message = entry.message.trim();
     if (!message) continue;
     const surface = entry.surface.trim();
+    // 목표는 사건이 아니라 상태다 — 이미 한 번 뜬 글이 다시 걸려도 그 글이 지금 목표다(메뉴 첫 화면 · 저장 · 장면을 다시 만든 뒤와 같은 «마지막 objectiveChip»).
+    // 전에는 본 글을 건너뛰어, 같은 때 필드 줄과 메뉴의 「현재 목표」가 다른 글을 보였다(2026-11-15 확인 빌드 r5).
+    if (surface === "objectiveChip") { objective = completedObjective(message) ? null : message; continue; }
     const key = `${surface}\u0000${message}`;
     if (seen.has(key)) continue;
     if (seen === model.seen) seen = new Set(model.seen);
@@ -95,9 +98,6 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
     switch (surface) {
       case "banner":
         banner = { message, expiresAtMs: input.nowMs + BANNER_DURATION_MS };
-        break;
-      case "objectiveChip":
-        objective = completedObjective(message) ? null : message;
         break;
       case "checkpoint":
         toast = timedToast(message, entry.durationMs, input.nowMs);
