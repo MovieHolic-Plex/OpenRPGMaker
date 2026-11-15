@@ -1500,6 +1500,13 @@
   --shop-radius-small: calc(var(--play-scale, 2) * 3px);
   text-shadow: none;
 }
+/* 플레이어 안(게임 화소 틀 — 위 «플레이어 안 상점» 규칙이 도트 글꼴과 12px 을 박는다)에서도 같은 글꼴: 화면 글꼴은 도트 글꼴의 제 크기(12px)를 따를 까닭이 없어 메뉴의 본문 크기(9px · 작은 글 7px)를 쓴다. */
+.player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="navy"], [data-shop-surface="glass"]) {
+  --shop-ui-font: var(--runtime-ui-font);
+  --shop-text-body: 9px;
+  --shop-text-title: 9px;
+  --shop-text-small: 7px;
+}
 .runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="navy"], [data-shop-surface="glass"]) :is(.runtime-shop-greeting-panel, .runtime-shop-list-panel, .runtime-shop-detail-panel,
   .runtime-shop-party-panel, .runtime-shop-desc-panel, .runtime-shop-purse-panel, .runtime-shop-comparison, .runtime-shop-haggle-shell) { border-width: calc(var(--play-scale, 2) * 1px); }
 .runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="navy"], [data-shop-surface="glass"]) .runtime-shop-item-row,
