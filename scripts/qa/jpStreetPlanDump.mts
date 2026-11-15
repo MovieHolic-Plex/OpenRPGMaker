@@ -18,6 +18,16 @@ const POOL = arg("pool") === "planned" ? planned.buildings : arg("pool") === "si
 const STYLE: Record<string, "shopping" | "residential" | "shitamachi" | "shotengai"> = {};
 for (const k of SCENE_KINDS) STYLE[k.id] = k.styles[0] as never;
 
+const TARMAC = GROUND_FAMILIES.indexOf("tarmac");
+/** 그 칸을 지나는 아스팔트가 가로·세로 모두 두 칸 넘게 이어지는가(한 칸 폭 자투리가 아닌가). */
+function wide(g: Uint8Array, x: number, y: number): boolean {
+  let h = 1, v = 1;
+  for (let k = x - 1; k >= 0 && g[y * W + k] === TARMAC; k--) h++;
+  for (let k = x + 1; k < W && g[y * W + k] === TARMAC; k++) h++;
+  for (let k = y - 1; k >= 0 && g[k * W + x] === TARMAC; k--) v++;
+  for (let k = y + 1; k < H && g[k * W + x] === TARMAC; k++) v++;
+  return Math.min(h, v) >= 2;
+}
 function one(kind: string, seed: number, key: string) {
   const plan = planJpCityScene({ mapId: "m", width: W, height: H, seed, key, kind, style: STYLE[kind] ?? "shopping", fable: true, ...(POOL ? { buildings: POOL } : {}) });
   const f = plan.fable!;
@@ -28,7 +38,7 @@ function one(kind: string, seed: number, key: string) {
   for (const p of f.placed) if (STREET_PIECES[p.name]?.layer !== "floor" && STREET_PIECES[p.name]?.layer !== "ground") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (x >= 0 && y >= 0 && x < W && y < H) thing[y * W + x] = 1;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
-    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { road++; continue; }   // jpStreetMeasure 와 같은 뜻: 아스팔트 칸(차도·주차장) 가운데 차가 덮지 않은 것. 돌길 골목은 차도 몫이 아니다
+    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { if (wide(f.gfam, x, y)) road++; continue; }   // jpStreetMeasure 와 같은 뜻: 폭 두 칸이 넘는 아스팔트(차도·주차장) 가운데 차가 덮지 않은 칸. 생활도로 포장은 차도 몫이 아니다
     if (thing[i] || GROUND_FAMILIES[f.gfam[i]!] === "water") continue;
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }

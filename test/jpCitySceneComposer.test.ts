@@ -99,11 +99,15 @@ describe("jp_city street scene composer", () => {
     for (let seed = 1; seed <= 3; seed++) {
       const plan = planJpCityScene({ mapId: "m", width: 60, height: 48, seed, style: "shopping", key: "game-a" });
       expect(plan.scenes, `seed ${seed}`).toContain("backalley");
-      const yards = plan.steps.filter((s) => s.tool === "fill_region" && ["산길 흙", "校庭 흙 바닥", "자갈 참배길", "온천가 돌길(이시다타미)"].includes(String((s.args as { material?: string }).material)));
+      // 뒷마당 바닥: 새 거리 조각이 구워져 있으면 바닥은 가족 단위 단계(ground_cells)로 깔린다 — 흙·잔디 사각형이 셋 넘게 있어야 한다(옛 재료 이름의 fill_region 대신).
+      const yards = plan.fable
+        ? plan.steps.filter((s) => s.tool === "ground_cells" && ["earth", "lawn"].includes(String((s.args as { family?: string }).family))).flatMap((s) => (s.args as { rects: unknown[] }).rects)
+        : plan.steps.filter((s) => s.tool === "fill_region" && ["산길 흙", "校庭 흙 바닥", "자갈 참배길", "온천가 돌길(이시다타미)"].includes(String((s.args as { material?: string }).material)));
       expect(yards.length, `seed ${seed}`).toBeGreaterThanOrEqual(3);
     }
     const zebra = Array.from({ length: 16 }, (_, seed) => planJpCityScene({ mapId: "m", width: 48, height: 36, seed, style: "residential", key: "game-b", crosswalkTile: 7 }))
-      .filter((p) => p.steps.some((s) => s.tool === "paint_tiles" && (s.args as { tile?: number }).tile === 7));
+      // 조용한 길의 좁은 횡단보도: 새 거리에서는 줄무늬 조각(jp-st-mark-zebra-*), 옛 거리에서는 줄무늬 칸 칠하기
+      .filter((p) => p.steps.some((s) => (s.tool === "paint_tiles" && (s.args as { tile?: number }).tile === 7) || String((s.args as { objectId?: string }).objectId ?? "").includes("jp-st-mark-zebra")));
     expect(zebra.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -122,6 +126,6 @@ describe("jp_city street scene composer", () => {
     const plan = planJpCityScene({ mapId: map.id, width: map.width, height: map.height, seed: Number(composed.args.seed), style: "shopping", key: "game-a", crosswalkTile: sceneCrosswalkTile(ctx.project.tilesets[JP_CITY_ID]) });
     const ids = plan.steps.map((s) => String((s.args as { objectId?: string }).objectId ?? ""));
     expect(ids.some((id) => id.includes("bridge"))).toBe(true);
-    expect(ids.some((id) => id.includes("vending"))).toBe(true);
+    expect(ids.some((id) => id.includes("vending") || id.includes("jp-st-vend-"))).toBe(true);   // 새 거리의 자판기 조각은 jp-st-vend-*
   });
 });

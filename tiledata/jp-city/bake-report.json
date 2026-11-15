@@ -11,8 +11,8 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 16527,
-  "legacy": 12895,
+  "block_cells": 16578,
+  "legacy": 12844,
   "legacy_ids": [
    3747,
    3748,
@@ -110,41 +110,41 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 16527
+   "block": 16578
   }
  },
  "pc_counts": {
   "star": 7893,
-  "solid": 5203,
-  "floor": 4111,
+  "solid": 5209,
+  "floor": 4124,
   "solidfloor": 1326,
-  "flat": 976,
+  "flat": 1008,
   "blank": 155
  },
  "kits": {
-  "total": 2486,
+  "total": 2554,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 2310
+   "block-kit": 2378
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 2310
+  "block_kit": 2378
  },
  "groups": {
-  "total": 392,
+  "total": 394,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
    "block": 224,
-   "fable-street": 15
+   "fable-street": 17
   }
  },
  "autotiles": {
@@ -655,16 +655,16 @@
    },
    {
     "name": "fable_street",
-    "cells": 1435,
+    "cells": 1486,
     "autotiles": 0,
-    "groups": 15,
-    "kits": 918,
-    "notes": "Fable 5.2 그림 918키트(거리 바닥·테·노면 표시·경계 줄·가로 소품) — 그림 PNG 를 그대로 자른 칸. 3/4 관문 미통과 — 오너 면제 묶음 fable-jpstreet-2026-11-15."
+    "groups": 17,
+    "kits": 986,
+    "notes": "Fable 5.2 그림 986키트(거리 바닥·테·노면 표시·경계 줄·가로 소품) — 그림 PNG 를 그대로 자른 칸. 3/4 관문 미통과 — 오너 면제 묶음 fable-jpstreet-2026-11-15."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 2486,
+  "kits_checked": 2554,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -757,7 +757,7 @@
    "side": 2,
    "stage": 1,
    "spring": 1,
-   "st": 918
+   "st": 986
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -768,8 +768,8 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 32559,
-  "kits_checked": 2486,
-  "groups_checked": 392,
+  "kits_checked": 2554,
+  "groups_checked": 394,
   "autotiles_checked": 25
  },
  "relayout_identical": {
@@ -778,7 +778,7 @@
   "ids": []
  },
  "palette": {
-  "allowed_colors": 719,
+  "allowed_colors": 725,
   "cells_with_off_palette": 0,
   "off_palette_examples": {},
   "marker_pixels": 0,
@@ -831,10 +831,10 @@
    }
   }
  },
- "sheet_hash": "cf6a893d8cd67c1c76c41a8a39763c36fde1ed95",
+ "sheet_hash": "44b4441def2a05711a4608ffbb3bd371948bf117",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 2486,
+  "kits_checked": 2554,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -927,7 +927,7 @@
    "side": 2,
    "stage": 1,
    "spring": 1,
-   "st": 918
+   "st": 986
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -938,8 +938,8 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 32559,
-  "kits_checked": 2486,
-  "groups_checked": 392,
+  "kits_checked": 2554,
+  "groups_checked": 394,
   "autotiles_checked": 25
  },
  "files": {

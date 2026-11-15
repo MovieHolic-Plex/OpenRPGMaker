@@ -1,5 +1,6 @@
 // project/jpCitySceneRun.ts
 // 거리 장면 계획(planJpCityScene)을 실행한다 — 도구 호출은 부르는 쪽이 준 call 로, 칩셋을 읽어야 하는 단계(담 모양·4층 덧그림·처마 칸 되살리기)는 여기서 풀어 찍는다.
+import { STREET_PIECES, streetPieceOfKit } from "@/project/jpCityStreetPieces";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { fillLotUses, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
 import type { JpStreetBuiltBuilding } from "@/project/jpCityStreetComposer";
@@ -55,7 +56,7 @@ export function runJpScenePlan(plan: ScenePlan, call: Call, view: () => LotUseVi
     const lower = (id: string): number[][] | undefined => { const k = kitOf(id); return k ? k.rows.map((r) => [...(r.tiles ?? [])]) : undefined; };
     const a = lower(`jp-st-gnd-${family}`), b = lower(`jp-st-gnd-${family}-2`);
     if (!a || !a.length) return;
-    const ph = a.length, pw = a[0]!.length, wrap = pw * ph >= 9 && family !== "pave" && family !== "forecourt" && family !== "water";
+    const ph = a.length, pw = a[0]!.length, wrap = family !== "pave" && family !== "forecourt" && family !== "water";   // 무늬가 이어지는 바닥은 자리대로, 낱장 바닥(보도 블록·앞마당 판·물)은 섞어 깐다
     const hash = (x: number, y: number) => { let h = Math.imul(x + 374761393, 668265263) ^ Math.imul(y + plan.seed * 31 + 1274126177, 2246822519); h = Math.imul(h ^ (h >>> 13), 1274126177); return (h ^ (h >>> 16)) >>> 0; };
     for (const r of rects) {
       const grid: number[][] = [];
@@ -86,7 +87,9 @@ export function runJpScenePlan(plan: ScenePlan, call: Call, view: () => LotUseVi
       }
       if (note === "prop4" || note === "wire" || note === "floor2") {
         if (avoid?.(kitId)) continue;
-        if (layer(kitId, Number(step.args.x), Number(step.args.y), note === "floor2" ? "2" : "4") && note !== "wire") props++;
+        // 소품 수: 서 있는 것만 센다 — 새 거리의 바닥 덧조각(테·노면 표시)과 경계 줄 조각은 소품이 아니다.
+        const st = streetPieceOfKit(kitId), piece = st ? STREET_PIECES[st] : undefined;
+        if (layer(kitId, Number(step.args.x), Number(step.args.y), note === "floor2" ? "2" : "4") && note !== "wire" && (!piece || (piece.layer !== "floor" && piece.anchor !== "run"))) props++;
         continue;
       }
       const result = call(step.tool, step.args);

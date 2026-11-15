@@ -39,18 +39,18 @@ export interface ScenePlan extends JpStreetPlan {
 export const STREET_BAKED = STREET_PIECE_COUNT > 0 && SCENE_SIZES["jp-st-kerb-s"] !== undefined;
 
 /** 새 거리의 톤: 옛 재료 이름 대신 바닥 가족 이름을 쓴다. 게임마다 다른 것은 마당 순서(흙 먼저·잔디 먼저)와 가게 뒤 바닥이다. */
-function fableTone(t: SceneTone): SceneTone {
+/** 돌길을 까는 거리 종류 — 참배길과 옛 골목. 그 밖의 보도 없는 길·골목은 낡은 포장(lane)이다(조율자 2026-11-15: 주택가에 돌길 띠는 일본 주택가가 아니다). */
+const STONE_KINDS: ReadonlySet<string> = new Set(["monzen", "roji"]);
+function fableTone(t: SceneTone, stone: boolean): SceneTone {
   const yard = t.yard.map((m) => (m === t.green ? "@lawn" : "@earth"));
-  return { ...t, lot: ["@forecourt", yard[0] === "@lawn" ? "@alley" : "@forecourt"], sidewalk: "@pave", road: "@tarmac", plaza: "@pave", alley: "@alley", yard: [...new Set(yard)], green: "@lawn" };
+  return { ...t, lot: ["@forecourt", stone && yard[0] === "@lawn" ? "@alley" : "@forecourt"], sidewalk: "@pave", road: "@tarmac", plaza: "@pave", alley: stone ? "@alley" : "@lane", yard: [...new Set(yard)], green: "@lawn" };
 }
 
 const RIVER_W = 3;
 
 function layout(c: SceneCtx): SceneLayout {
   const { W, H, kind, rng } = c;
-  const rw0 = kind.mainW[0]! + Math.floor(rng() * (kind.mainW[1]! - kind.mainW[0]! + 1));
-  // 새 거리: 60×48 급 지도에 연석 큰길 둘 + 연석 세로 길이면 네 줄 큰길은 아스팔트 몫이 19% 를 넘는다 — 세 줄로 낸다(두 차로 큰길은 높이 62줄부터).
-  const rw = c.fable && kind.main === "kerb" && kind.cross === "kerb" && H < 62 ? Math.min(3, rw0) : rw0;
+  const rw = kind.mainW[0]! + Math.floor(rng() * (kind.mainW[1]! - kind.mainW[0]! + 1));
   const rowsOf = (t: string) => (t === "kerb" ? rw + 4 : t === "lane" ? 3 : t === "path" ? 2 : t === "mall" ? 6 : 10 + RIVER_W);
   const wantRiver = W >= 44 && rng() < kind.river;
   const typesFor = (n: number, river: boolean): SceneStreet["type"][] => {
@@ -103,10 +103,9 @@ function layout(c: SceneCtx): SceneLayout {
   const vstreets: SceneVStreet[] = [];
   const two = W >= 52 && rng() < 0.8;
   let mainLane = wantOverpass ? 2 : laneOf();
-  if (c.fable && kind.cross === "kerb") {   // 새 거리: 큰길이 넓은 종류(역 앞)는 세로 큰길을 한 칸씩 좁혀 아스팔트 몫을 19% 아래로
-    const rows = bands.reduce((a, b) => a + (b.front.type === "kerb" ? b.front.road1 - b.front.road0 + 1 : b.front.type === "lane" ? 2 : 0), 0);
-    while (mainLane > 2 && (rows * W + mainLane * (H - rows)) / (W * H) > 0.16) mainLane--;
-  }
+  const kerbRows = bands.reduce((a, b) => a + (b.front.type === "kerb" ? b.front.road1 - b.front.road0 + 1 : 0), 0);
+  // 새 거리: 연석 큰길이 넓은 종류(역 앞·번화가)는 세로 큰길을 좁혀 넓은 차도가 지도를 덮지 않게 한다(아스팔트 차도 몫 19%).
+  if (c.fable && kind.cross === "kerb") while (mainLane > 2 && (kerbRows * W + mainLane * (H - kerbRows)) / (W * H) > 0.16) mainLane--;
   const mx = two ? Math.floor(W * (rng() < 0.5 ? 0.28 : 0.6) + rng() * 4) : Math.floor(W * 0.38 + rng() * W * 0.2);
   vstreets.push(mk(Math.max(7, Math.min(W - 12, mx)), mainLane, 0, N - 1, true));
   if (two) {
@@ -120,13 +119,12 @@ function layout(c: SceneCtx): SceneLayout {
       // 맨 위 띠는 가게 줄이 길게 이어지게 둘째 세로 길이 끊지 않는다(가게·시장 거리). 주택가는 T자도 된다.
       if (!lanes || (r < 0.3 && N >= 3)) from = 1; else if (r < 0.55 && N >= 3) to = N - 2;
       if (river >= 0 && from <= river && to > river && rng() < 0.5) { if (river + 1 <= N - 1) from = river + 1; }   // 다리는 하나면 된다 — 가끔 둘
-      // 새 거리: 둘째 세로 길까지 아스팔트면 차도 몫이 19% 를 넘는 지도는 둘째 길을 돌길 골목(보도 없음, 두 칸)으로 낸다.
+      // 새 거리: 둘째 세로 길까지 연석 차도면 아스팔트 몫이 넘치는 지도는 둘째 길을 보도 없는 생활도로(두 칸)로 낸다 — 큰길 하나에 샛길 하나.
       const lane2 = laneOf();
-      const roadRows = bands.reduce((a, b) => a + (b.front.type === "kerb" ? b.front.road1 - b.front.road0 + 1 : b.front.type === "lane" ? 2 : 0), 0);
-      const span = (f: number, t: number) => (t === N - 1 ? H - 1 : bands[t]!.front.road0 - 1) - (f === 0 ? 0 : bands[f - 1]!.front.road1 + 1) + 1;
-      const asphalt = (roadRows * W + (m.sw ? m.lane * (H - roadRows) : 0) + lane2 * span(from, to)) / (W * H);
-      const alley = c.fable && kind.cross === "kerb" && asphalt > 0.155;   // 주차장·빈터 아스팔트 몫(두세 푼)을 남겨 둔다
-      vstreets.push(mk(x2, alley ? 2 : lane2, from, to, false, alley));
+      const span = (to === N - 1 ? H - 1 : bands[to]!.front.road0 - 1) - (from === 0 ? 0 : bands[from - 1]!.front.road1 + 1) + 1;
+      const asphalt = (kerbRows * W + (m.sw ? m.lane * (H - kerbRows) : 0) + lane2 * span) / (W * H);
+      const side = c.fable && kind.cross === "kerb" && asphalt > 0.155;   // 주차장 아스팔트 몫(두세 푼)을 남겨 둔다
+      vstreets.push(mk(x2, side ? 2 : lane2, from, to, false, side));
     }
   }
   return { bands, vstreets, blocks: [], ...(wantOverpass ? { overpass: true } : {}) } as SceneLayout & { overpass?: boolean };
@@ -148,8 +146,8 @@ function paintStreets(c: SceneCtx, L: SceneLayout): void {
       c.mark(0, s.road0, W, s.road1 - s.road0 + 1, Occ.Road); c.mark(0, s.sA!, W, 1, Occ.Walk);
     } else if (s.type === "lane") {
       c.fill(0, s.road0, W, 3, SHARED_LANE); c.mark(0, s.road0, W, 3, Occ.Road);
-      // 새 거리: 생활도로의 북쪽 한 줄은 길가 띠(보도 블록) — 사람이 걷고 전봇대·가로등이 선다. 차도는 두 줄(차도 칸에는 차와 노면 표시만 오므로 설 자리를 따로 둔다).
-      if (c.fable) { c.fill(0, s.road0, W, 1, tone.sidewalk); c.mark(0, s.road0, W, 1, Occ.Walk, [Occ.Road]); }
+      // 새 거리: 생활도로는 연석 없는 낡은 포장 세 줄 — 북쪽 한 줄은 길가 띠(배수로와 흰 선 안쪽: 사람이 걷고 전봇대·가로등이 선다), 차는 남쪽 두 줄.
+      if (c.fable) { c.fill(0, s.road0, W, 3, "@lane"); c.fill(0, s.road0, W, 1, "@laneside"); c.mark(0, s.road0, W, 1, Occ.Walk, [Occ.Road]); }
     } else if (s.type === "path") {
       c.fill(0, s.y0, W, 2, tone.alley); c.mark(0, s.y0, W, 1, Occ.Walk);
     } else if (s.type === "mall") {
@@ -174,7 +172,7 @@ function paintStreets(c: SceneCtx, L: SceneLayout): void {
       }
       continue;
     }
-    if (c.fable && !v.sw) { for (let y = v.y0; y <= v.y1; y++) if (c.famAt(v.x, y) !== "tarmac") c.fill(v.x, y, v.lane, 1, "@alley"); }   // 새 거리: 보도 없는 골목은 돌길(아스팔트는 차선 있는 길만 — 큰길과 만나는 칸은 큰길 그대로)
+    if (c.fable && !v.sw) { for (let y = v.y0; y <= v.y1; y++) if (c.famAt(v.x, y) !== "tarmac") c.fill(v.x, y, v.lane, 1, tone.alley); }   // 새 거리: 보도 없는 세로 길은 낡은 포장(참배길·옛 골목 종류만 돌길). 연석 큰길과 만나는 칸은 큰길 그대로
     else c.fill(v.x + v.sw, v.y0, v.lane, h, v.sw ? tone.road : SHARED_LANE); c.mark(v.x + v.sw, v.y0, v.lane, h, Occ.Road);
     if (!v.sw) continue;                                                // 보도 없는 골목: 차선 표시 없음
     for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
@@ -235,7 +233,7 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
   const key = opts.key || "default";
   const kind = pickSceneKind({ style, shops: opts.shops, key, seed, kind: opts.kind });
   const fable = opts.fable ?? STREET_BAKED;
-  const tone = fable ? fableTone(sceneTone(kind, key)) : sceneTone(kind, key);
+  const tone = fable ? fableTone(sceneTone(kind, key), STONE_KINDS.has(kind.id)) : sceneTone(kind, key);
   const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0), fable, opts.buildings);
   const L = layout(c) as SceneLayout & { overpass?: boolean };
   paintStreets(c, L);

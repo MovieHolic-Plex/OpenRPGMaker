@@ -40,7 +40,9 @@ describe("jp_city 이야기 기물", () => {
         expect(ts.priority[tile]).toBe(item.place === "decal" ? "lower" : "upper");
       }));
     }
-    expect(next).toBe(ts.count);
+    // 이 묶음 뒤에 예약 블록(fable_city · fable_street)이 붙는다 — 이 묶음의 칸은 여전히 20459 부터 이어진 한 구간이고 시트 안에 있다.
+    expect(next).toBe(FIRST + ITEMS.reduce((n, item) => n + item.w * item.h, 0));
+    expect(next).toBeLessThanOrEqual(ts.count);
     expect((ts.referenceDocuments ?? []).some((category) => category.documents.some((doc) => doc.id === "jp-story-objects"))).toBe(true);
   });
 

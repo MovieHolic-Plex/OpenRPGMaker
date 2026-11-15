@@ -175,11 +175,11 @@ export class SceneCtx {
     const solid = (v: Occ) => v === Occ.Bldg || v === Occ.Wall || v === Occ.Slit;
     switch (p.anchor) {
       case "wall": if (cols.filter((xx) => solid(this.at(xx, foot - 1))).length * 2 < p.w) return false; break;
-      case "kerb": if (!cols.every((xx) => fam(xx) === "pave") || !cols.some((xx) => this.at(xx, foot + 1) === Occ.Road || this.at(xx, foot - 1) === Occ.Road)) return false; break;
+      case "kerb": if (!cols.every((xx) => fam(xx) === "pave" || fam(xx) === "laneside") || !cols.some((xx) => this.at(xx, foot + 1) === Occ.Road || this.at(xx, foot - 1) === Occ.Road)) return false; break;
       case "lot": if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx))) || !this.near(x, foot, p.w, 1, (v, xx, yy) => solid(v) || (this.gfam[yy * this.W + xx] !== this.gfam[foot * this.W + x] && v !== Occ.Road))) return false; break;
       case "open": if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx)))) return false; break;
       case "facade": if (!cols.every((xx) => this.at(xx, foot) === Occ.Bldg)) return false; break;
-      case "road": if (!cols.every((xx) => this.at(xx, foot) === Occ.Road && fam(xx) === "tarmac")) return false; break;
+      case "road": if (!cols.every((xx) => this.at(xx, foot) === Occ.Road && (fam(xx) === "tarmac" || fam(xx) === "lane"))) return false; break;
       case "water": if (!cols.every((xx) => fam(xx) === "water")) return false; break;
       case "floor": { const need = p.tags.find((t) => t.startsWith("on:"))?.slice(3).split("+"); if (need && !cols.every((xx) => need.includes(fam(xx)))) return false; break; }
       default: return false;                                                                    // run 조각은 줄 짓기만 놓는다
@@ -196,7 +196,8 @@ export class SceneCtx {
       this.drawn[i] = 1;
       if (yy === foot && p.layer !== "floor" && p.layer !== "ground" && p.anchor !== "road" && p.anchor !== "facade" && p.anchor !== "water") this.occ[i] = p.anchor === "run" ? Occ.Wall : Occ.Prop;
     }
-    const ground = o.ground ?? this.famAt(x, Math.min(this.H - 1, foot + (p.anchor === "run" ? 1 : 0)));
+    const g0 = o.ground ?? this.famAt(x, Math.min(this.H - 1, foot + (p.anchor === "run" ? 1 : 0)));
+    const ground = g0 === "laneside" ? "lane" : g0;                          // 길가 띠 위에 서는 것은 생활도로 포장의 그림자 변형
     const step: JpStreetStep = { tool: "stamp_object", args: { objectId: `kit:jp_city/${streetKitId(name, ground)}`, mapId: this.mapId, x, y }, optional: true, note: p.layer === "floor" ? "floor2" : p.layer === "ground" ? "bank" : "prop4" };
     (p.layer === "floor" || p.layer === "ground" ? this.marks : o.early ? this.early : o.late ? this.late : p.anchor === "run" ? this.walls : this.props).push(step);
     this.stPlaced.push({ name, look: p.look ?? name, x, y, w: p.w, h: p.h, anchor: p.anchor, repeat: p.repeat === true });

@@ -3,7 +3,7 @@
 // 키가 큰 띠는 뒷골목을 사이에 두고 뒷줄을 한 줄 더 세운다. 건물은 SceneCtx.nextKit 이 골라 한 지도에 같은 그림이 두 번 서지 않는다.
 import { randomBuildingArgs } from "@/project/jpCityStreetComposer";
 import { Occ, type SceneBlock, type SceneCtx, type SceneLayout, type ScenePlaced } from "@/project/jpCitySceneCtx";
-import { SCENE_BUILDINGS, SCENE_ROOFS, sceneList, yardGround } from "@/project/jpCitySceneKinds";
+import { SCENE_ROOFS, sceneList, yardGround } from "@/project/jpCitySceneKinds";
 import { streetTagged } from "@/project/jpCityStreetPieces";
 
 const ASSEMBLED_KO: Readonly<Record<string, string>> = { konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };
@@ -46,7 +46,7 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
       const role = wanted[i]!;
       kit = c.nextKit([], at, ex - cursor + (canShare ? 1 : 0), maxH, { role });
       if (kit) wanted.splice(i, 1);
-      else if (!c.fable && !SCENE_BUILDINGS.some((q) => q.role === role) && ASSEMBLED_KO[role] && ex - cursor >= 5) { wanted.splice(i, 1); built = assembled(c, role, cursor, foot, Math.min(6, ex - cursor), maxH); }
+      else if (!c.buildingPool.some((q) => q.role === role) && ASSEMBLED_KO[role] && ex - cursor >= 5) { wanted.splice(i, 1); built = assembled(c, role, cursor, foot, Math.min(6, ex - cursor), maxH); }
     }
     if (built) { row.push(built); prev = built; cursor = built.x + built.w; share = false; continue; }
     // 좁은 가게(폭 8칸까지)를 먼저 — 한 줄에 여러 채가 연달아 서게. 섞임에 맞는 것이 없으면 다른 분류의 안 세운 건물로 줄을 잇는다.
@@ -138,7 +138,7 @@ function treeBehind(c: SceneCtx, p: ScenePlaced, top: number): void {
 function backYards(c: SceneCtx, row: readonly ScenePlaced[], sx: number, ex: number, yT: number, openW: boolean, openE: boolean): void {
   const { tone, rng } = c;
   // 뒷마당 바닥: 흙·자갈·돌길 — 대지 포장과 같은 재료, 아스팔트(차도로 읽힌다)는 뺀다.
-  const grounds = [...new Set([...tone.yard.filter((m) => m !== tone.green), "자갈 참배길", tone.alley])].filter((m) => !tone.lot.includes(m) && m !== tone.road);
+  const grounds = [...new Set([...tone.yard.filter((m) => m !== tone.green), "자갈 참배길", ...(tone.alley === "@lane" ? [] : [tone.alley])])].filter((m) => !tone.lot.includes(m) && m !== tone.road);
   const pool = sceneList("backalley", "yard");
   const sorted = [...row].sort((a, b) => a.x - b.x);
   let bay = false, any = false;

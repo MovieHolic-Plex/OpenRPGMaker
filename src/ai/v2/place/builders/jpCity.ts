@@ -12,6 +12,7 @@ import { planJpCityScene } from "@/project/jpCitySceneComposer";
 import { sceneKindById } from "@/project/jpCitySceneKinds";
 import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
 import { planJpCityStreet, type JpStreetStyle } from "@/project/jpCityStreetComposer";
+import { GROUND_FAMILIES } from "@/project/jpCityStreetPieces";
 import type { GameMap, Project } from "@/project/types";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
@@ -165,6 +166,12 @@ function planView(mapId: string, w: number, h: number, seed: number, style: JpSt
     const sids = sp.steps.filter((s) => s.tool === "stamp_object" || s.tool === "build_jp_city_building").map((s) => String((s.args as Record<string, unknown>).objectId ?? (s.args as Record<string, unknown>).kind ?? (s.args as Record<string, unknown>).preset ?? ""));
     // 횡단보도는 줄무늬 칸을 칠하는 단계라 id 가 없다 — 확인 규칙이 읽는 낱말로 적는다.
     if (sp.steps.some((s) => s.tool === "paint_tiles" && (s.args as Record<string, unknown>).tile === scene.crosswalkTile)) sids.push("crosswalk");
+    // 새 거리 조각(jp-st-*)은 이름이 다르다 — 확인 규칙이 읽는 낱말로 옮겨 적는다(자판기·횡단보도·정류장·하천·다리·주차).
+    if (sp.fable) {
+      const st = sids.filter((id) => id.includes("/jp-st-")).map((id) => id.split("/jp-st-")[1]!.split("--")[0]!);
+      for (const [re, word] of [[/^vend-/, "vending"], [/^mark-zebra/, "crosswalk"], [/^busstop/, "bus-stop"], [/^(paymachine|sign-p)$/, "parking"], [/^bridge-/, "bridge"]] as const) if (st.some((n) => re.test(n))) sids.push(word);
+      if (sp.fable.gfam.includes(GROUND_FAMILIES.indexOf("water"))) sids.push("jp-river");
+    }
     return { ids: sids, parks: sp.pieces.filter((u) => u === "park").length };
   }
   const plan = planJpCityStreet({ mapId, width: w, height: h, seed, style, shops });

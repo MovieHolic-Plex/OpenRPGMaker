@@ -25,9 +25,11 @@ GROUNDS = {
  'alley':     dict(ko='거리 · 골목 돌길', src='g-alley', mode='wrap', shade=R('stone', 1), base=R('stone', 3)),
  'earth':     dict(ko='거리 · 다진 흙', src='g-earth', mode='wrap', shade=R('earth', 0), base=R('earth', 3)),
  'lawn':      dict(ko='거리 · 잔디 마당', src='g-grass', mode='wrap', shade=hx('#204c2c') + (255,), base=R('lawn', 3)),
+ 'lane':      dict(ko='거리 · 생활도로 포장', src='g-lane', mode='wrap', shade=R('lane', 0), base=R('lane', 3)),
+ 'laneside':  dict(ko='거리 · 생활도로 길가 띠', src='g-laneside', mode='wrap', shade=R('lane', 0), base=R('lane', 3)),
  'water':     dict(ko='거리 · 강물', src='g-water', mode='shuffle', shade=R('teal', 0), base=R('teal', 1)),
 }
-STAND = {'wall': ['pave', 'forecourt', 'alley', 'earth'], 'kerb': ['pave'], 'lot': ['earth', 'lawn', 'forecourt', 'alley', 'pave'], 'open': ['earth', 'lawn', 'forecourt', 'alley', 'pave']}
+STAND = {'wall': ['pave', 'forecourt', 'alley', 'earth'], 'kerb': ['pave', 'lane'], 'lot': ['earth', 'lawn', 'forecourt', 'alley', 'pave'], 'open': ['earth', 'lawn', 'forecourt', 'alley', 'pave']}
 PIECES = {}; KITS = {}; RUNS = {}
 def save(kit, im): KITS[kit] = im
 def shadow_mask(a, reach=3):
@@ -155,6 +157,8 @@ def borders():
         for name, (r, c) in {'kerb-i-se': (0, 0), 'kerb-i-sw': (0, 2), 'kerb-i-ne': (2, 0), 'kerb-i-nw': (2, 2)}.items(): raw(name, light(k2[r][c]), 'floor', ['border'], '연석 안쪽 모퉁이')
     e = cells_of('g-lotedge')
     if e: border_set('sett', dict(n=e[0][1], s=e[2][1], w=e[1][0], e=e[1][2], nw=e[0][0], ne=e[0][2], se=e[2][2], sw=e[2][0]), '필지 테 돌', ['border'])
+    ge = cells_of('g-lanedge')
+    if ge: border_set('gutter', dict(n=ge[0][1], s=ge[2][1], w=ge[1][0], e=ge[1][2], nw=ge[0][0], ne=ge[0][2], se=ge[2][2], sw=ge[2][0]), '배수로 테', ['border'])
     t = cells_of('g-grassedge')
     if t:
         lawn3 = R('lawn', 3)
@@ -165,7 +169,7 @@ def borders():
                 inside = (a[:, :, 3] > 0) & ~keep; out[inside] = (0, 0, 0, 0); out[keep] = a[keep]
                 return Image.fromarray(out, 'RGBA')
             return f
-        border_set('turf', dict(n=t[0][1], s=t[2][1], w=t[1][0], e=t[1][2], nw=t[0][0], ne=t[0][2], se=t[2][2], sw=t[2][0]), '잔디 가장자리', ['border'], variants={g: turf(g) for g in ('earth', 'forecourt', 'pave', 'alley', 'tarmac')})
+        border_set('turf', dict(n=t[0][1], s=t[2][1], w=t[1][0], e=t[1][2], nw=t[0][0], ne=t[0][2], se=t[2][2], sw=t[2][0]), '잔디 가장자리', ['border'], variants={g: turf(g) for g in ('earth', 'forecourt', 'pave', 'alley', 'tarmac', 'lane')})
     for g, d in GROUNDS.items():
         if g == 'water': continue
     sh = {}
@@ -329,6 +333,14 @@ def flats():
         big = src('g-asphalt-d').crop((0, 0, 32, 16)); raw('tarmac-patch-big', big, 'floor', ['road', 'accent-tarmac', 'on:tarmac'], '보수 자국')
         for i, (nm, ko) in enumerate((('tarmac-patch', '보수 자국'), ('tarmac-crack-a', '금'), ('tarmac-crack-b', '금'), ('tarmac-oil', '기름 얼룩'), ('tarmac-wheel', '바퀴 띠'))):
             raw(nm, c[0][2 + i], 'floor', ['road', 'on:tarmac'] + ([] if nm == 'tarmac-wheel' else ['accent-tarmac']), ko)
+    ld = src('g-lane-d')
+    if ld is not None:
+        raw('lane-trench', ld.crop((0, 0, 32, 16)), 'floor', ['road', 'accent-lane', 'on:lane'], '굴착 보수 자국')
+        raw('lane-patch', ld.crop((32, 0, 48, 16)), 'floor', ['road', 'accent-lane', 'on:lane'], '보수 자국'); raw('lane-valve', ld.crop((48, 0, 64, 16)), 'floor', ['road', 'accent-lane', 'on:lane'], '밸브 뚜껑')
+    br = src('p-bridge')
+    if br is not None:
+        for side, x0 in (('w', 0), ('e', 16)):
+            for part, y0 in (('-n', 0), ('', 16), ('-s', 32)): raw(f'bridge-{side}{part}', br.crop((x0, y0, x0 + 16, y0 + 16)), 'run', ['bridge'], '다리 난간', layer='prop')
     e = src('g-emb')
     if e is not None:
         for i in range(4): raw(f'emb-{i}', e.crop((i * 16, 0, i * 16 + 16, 48)), 'water', ['emb'], '강둑', layer='ground')
@@ -379,7 +391,7 @@ def main():
     cells = sum((im.width // 16) * (im.height // 16) for im in KITS.values())
     data = dict(version=1, _doc='생성물 — scripts/content/jp-city/street/fable_street_spec.py. 손으로 고치지 않는다.',
                 grounds={f: g['ko'] for f, g in GROUNDS.items()}, pieces=PIECES, runs=RUNS, alias=alias(ROOT),
-                groundOf={'생활도로': 'tarmac', '수로': 'water', '거리 · 주차장': 'tarmac', '자갈 참배길': 'earth', '산길 흙': 'earth', '판석 광장': 'pave', '잔디': 'lawn', '校庭 흙 바닥': 'earth'},
+                groundOf={'생활도로': 'lane', '수로': 'water', '거리 · 주차장': 'tarmac', '자갈 참배길': 'earth', '산길 흙': 'earth', '판석 광장': 'pave', '잔디': 'lawn', '校庭 흙 바닥': 'earth'},
                 runOf={'블록담': 'wall', '생울타리': 'hedge', '판자담': 'fence', '철망 울타리': 'net', '가드레일': 'guard'})
     index = dict(grounds={f: dict(kit=f'jp-st-gnd-{f}', mode=g['mode'], cw=g.get('cw'), ch=g.get('ch'), weights=g.get('weights'), kit2=(f'jp-st-gnd-{f}-2' if f'jp-st-gnd-{f}-2' in KITS else None)) for f, g in GROUNDS.items()}, kits=sorted(KITS))
     json.dump(index, open(f'{D}/index.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=0)

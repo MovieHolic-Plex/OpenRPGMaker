@@ -8,7 +8,7 @@
   "bundle",
   "shared"
  ],
- "note": "jp_city 블록 fable_street 의 조각 그림 — Claude Fable 5.2 medium 한 방(그림 한 장에 호출 1번, 고칠 때 1번 더)으로 그린 원본(tiledata/jp-city/fable-street/sheets)을 코드(scripts/content/jp-city/street/fable_street_spec.py)가 칸에 맞춰 자르고 바닥별 발치 그림자·재료 테를 원본 화소와 그늘 한 단으로 만든 것. 3/4 관문 미통과 — 오너 면제.",
+ "note": "jp_city 블록 fable_street 의 조각 그림 — Claude Fable 5.2 medium 한 방(그림 한 장에 호출 1번, 고칠 때 1번 더)으로 그린 원본(tiledata/jp-city/fable-street/sheets)을 코드(scripts/content/jp-city/street/fable_street_spec.py)가 칸에 맞춰 자르고 바닥별 발치 그림자·재료 테를 원본 화소와 그늘 한 단으로 만든 것. 3/4 관문 미통과 — 오너 면제. 같은 날 다시 적음(--replace): 생활도로 포장·길가 띠·배수로 테·보수 자국·다리 난간을 더하고 잔디를 둘째 시범의 그림으로 되돌렸다(조율자 지시).",
  "items": [
   {
    "pixelSha256": "56ace8b05e4a2fd206826764a91f3ee41ae2e2b58c771a7d976c5c9b351af568",
@@ -1803,7 +1803,7 @@
   {
    "pixelSha256": "58adf0402a5c9a91761588b2c7d701bc707a3c9f0a1f7b67bb2d6ad273021b9c",
    "kind": "other",
-   "label": "jp_city/jp-st-bench--pave",
+   "label": "jp_city/jp-st-bench--lane",
    "width": 32,
    "height": 32,
    "cells": {
@@ -1849,7 +1849,7 @@
   {
    "pixelSha256": "b784733003a9dd64787274db002ff917441ae6349580e6fe12e1c2106a9a0895",
    "kind": "other",
-   "label": "jp_city/jp-st-bench-bus--pave",
+   "label": "jp_city/jp-st-bench-bus--lane",
    "width": 32,
    "height": 32,
    "cells": {
@@ -1895,7 +1895,7 @@
   {
    "pixelSha256": "c3f57ec4cfc896f4ecddb20c5669bffb0fe695b9c2c88988e89beaf69975c7ab",
    "kind": "other",
-   "label": "jp_city/jp-st-bench-plain--pave",
+   "label": "jp_city/jp-st-bench-plain--lane",
    "width": 32,
    "height": 32,
    "cells": {
@@ -2838,7 +2838,7 @@
   {
    "pixelSha256": "3ef7028932883de2b0435b41ebb3502e24b0cc3c986e62281836a586bbde8615",
    "kind": "other",
-   "label": "jp_city/jp-st-bikerack--pave",
+   "label": "jp_city/jp-st-bikerack--lane",
    "width": 48,
    "height": 32,
    "cells": {
@@ -3060,7 +3060,7 @@
   {
    "pixelSha256": "738fdc1299e555c436630ad73892c47a7b454eb193156727c36c25f720e5bc08",
    "kind": "other",
-   "label": "jp_city/jp-st-bollard-stone--pave",
+   "label": "jp_city/jp-st-bollard-stone--lane",
    "width": 16,
    "height": 32,
    "cells": {
@@ -3094,7 +3094,7 @@
   {
    "pixelSha256": "6d173ab6b4d4fccf99b13ca4db5446952ed8f1d3e3af7eb8c81a29406dafa970",
    "kind": "other",
-   "label": "jp_city/jp-st-bollards--pave",
+   "label": "jp_city/jp-st-bollards--lane",
    "width": 16,
    "height": 32,
    "cells": {
@@ -3458,6 +3458,222 @@
    }
   },
   {
+   "pixelSha256": "3822d5915e26649f416debaf7b675f338adf66d017a153f8cb6572c19cd5e8f9",
+   "kind": "wall_structure",
+   "label": "jp_city/jp-st-bridge-e",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "615e1de335438095"
+    ],
+    "24": [
+     "1aeebd9da35f6bc8",
+     "644a90367fba4ea4",
+     "70d32d80df5afc7c",
+     "aef419a56cedc94c",
+     "b7ebf59ce4859f3e",
+     "cd9cb2a9b99ca1be"
+    ],
+    "32": [
+     "62c1d3de0202a0c4",
+     "82d4ba5f7e43a37e",
+     "8e44efa0bbd9ec5e",
+     "ac874ce7396f1b44",
+     "bb1acdbc4a5c3f86",
+     "e54646492484f1dc"
+    ],
+    "48": [
+     "1e0de80f34df2ddc",
+     "357fdd6b54d1ad61",
+     "4f1f5c8ee5636634",
+     "6460e1b41f3e97b2",
+     "6e405504a7775280",
+     "ec6f7e48ea59a7b6"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c479f05b848b51f8185f795151ccb8eb8ba03195c73f59da130a4f9f7a2dd4f4",
+   "kind": "wall_structure",
+   "label": "jp_city/jp-st-bridge-e-n",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "c835dc3be892c688"
+    ],
+    "24": [
+     "03144e293e016f08",
+     "2c14aad2658f0759",
+     "3418c0347d316fc6",
+     "9115d684ef94fb03",
+     "91bec0998ad4c379",
+     "d4a24bcafae9e6a1"
+    ],
+    "32": [
+     "178f17e092c71ea3",
+     "30694b3f6227237f",
+     "8f53b3e1de417f09",
+     "8f987f39a2ad5369",
+     "a865470d8a6a100c",
+     "b2d0e69e4aa02524"
+    ],
+    "48": [
+     "1c2d7d2eccb82b53",
+     "3a17165552d3e326",
+     "546cf7e55efb4ec5",
+     "8438aae0b946c1e5",
+     "a6afe47cebed987a",
+     "f6039a9a6bc416b5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "de4bbfaa7a9463ebd54281c9d8a857498aeba9e71d1ae450dcf027b147b98f3f",
+   "kind": "wall_structure",
+   "label": "jp_city/jp-st-bridge-e-s",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9e5ea2e28ec9a7cb"
+    ],
+    "24": [
+     "128fbac11de5f8ca",
+     "22c677622e411355",
+     "3d1ec8fa22ce2fa2",
+     "47a3c7c1e36d3c10",
+     "a1ae5d8524bd0e11",
+     "ce066a61ef2df462"
+    ],
+    "32": [
+     "0387e37427803f00",
+     "7f4522dd26f91c74",
+     "ab9a6b5bb999f162",
+     "ae187a4d22f13ab7",
+     "c2cedbe97ac4841a",
+     "f7d2b20096919988"
+    ],
+    "48": [
+     "0a7b74ceed9891e8",
+     "4d789a15fe024ffa",
+     "56472f2c967f9e92",
+     "61b90c69e1ab0098",
+     "b9bb310118f50342",
+     "ef7716db7939c6d0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6d07e64855e9b2ec2fe7e9e53ae0247162e29162f898c10d68d1b6344cbf1a2d",
+   "kind": "wall_structure",
+   "label": "jp_city/jp-st-bridge-w",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e898a9e299a607a2"
+    ],
+    "24": [
+     "0e363cf224d202ba",
+     "2cbe4fdc184750f8",
+     "2eeeb01f06ab7c12",
+     "5ba6b0ea01244bfc",
+     "ae298ad35cc0dd4d",
+     "d349ef3db0cc40cb"
+    ],
+    "32": [
+     "0a2fd2c61b2ffffb",
+     "215dd0b3958a7eb2",
+     "6b35a9acd823ae37",
+     "b323cec3b8717587",
+     "b4627417173d6ef6",
+     "d7133a735f311523"
+    ],
+    "48": [
+     "190180b19e305c33",
+     "2478a2cdd1c6ddd6",
+     "3a0a4d1b77b908c8",
+     "66a9c7b3bc767e87",
+     "9f3a2301cfbf04a4",
+     "deb86d689cd1abfb"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5b21cc18e895cadba73ac1e89e624455c4331d56d4c46407e9567612cb4627f9",
+   "kind": "wall_structure",
+   "label": "jp_city/jp-st-bridge-w-n",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "8cc2893e726b3404"
+    ],
+    "24": [
+     "05edce0d7e3a3882",
+     "9be28d183b14777a",
+     "c7b5f1c902d638dc",
+     "cc91c6ebd0058a6c",
+     "cfbb209ad8c89b48",
+     "e89ba92c93947a05"
+    ],
+    "32": [
+     "28401e0d48641376",
+     "4cfc54531a169fc1",
+     "66c780adab929552",
+     "736578d3a3b04cec",
+     "ccd0cb0be78cc36f",
+     "f277ba67fae6a7b8"
+    ],
+    "48": [
+     "30028d123a6ac8a2",
+     "48796ec201aa65b0",
+     "95c9b2a700b59b5a",
+     "a3db3eb7cdabb068",
+     "aaf604369e9515f4",
+     "f6cd79dce7aef92d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "17136e79654e10ef046c214212eeb866a276bfd91d606a34b8f26b41a6ab8812",
+   "kind": "wall_structure",
+   "label": "jp_city/jp-st-bridge-w-s",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "95173d5d393747a2"
+    ],
+    "24": [
+     "100890664bcec7e0",
+     "2693559a1d100a2e",
+     "32961bfc1bc3a086",
+     "a6c721b8febc8524",
+     "c04fd2b02b417992",
+     "e3e068203b13c282"
+    ],
+    "32": [
+     "2dcec7a6094e5811",
+     "4c487d74a9a2ed53",
+     "afee52b0417348c3",
+     "c524d16a6ffb9cb0",
+     "c9f0cac0fdfa8830",
+     "e7cffef5fa83849c"
+    ],
+    "48": [
+     "5be9121e5d632c36",
+     "61a4beb41aa0eeab",
+     "712c6c391f36906e",
+     "a3647207a7cc6872",
+     "a54460c32bb8bcc6",
+     "bdc2eff919b80c02"
+    ]
+   }
+  },
+  {
    "pixelSha256": "6e99162af801dd595fd82e343de39f5710be02159361e29703ca6f08a84d7be1",
    "kind": "other",
    "label": "jp_city/jp-st-buckets--alley",
@@ -3604,7 +3820,7 @@
   {
    "pixelSha256": "2c2da39a43ab33824be6a7f7fe6bad64f4a3af71fe35fa069956a739262d3f50",
    "kind": "other",
-   "label": "jp_city/jp-st-busstop--pave",
+   "label": "jp_city/jp-st-busstop--lane",
    "width": 16,
    "height": 48,
    "cells": {
@@ -3645,7 +3861,7 @@
   {
    "pixelSha256": "bca3d54f63bc92961ae333ae9400393e4d84504f9269f14b8abcf4145cfc7e0f",
    "kind": "other",
-   "label": "jp_city/jp-st-cage--pave",
+   "label": "jp_city/jp-st-cage--lane",
    "width": 32,
    "height": 32,
    "cells": {
@@ -10443,117 +10659,227 @@
    }
   },
   {
-   "pixelSha256": "24974d183d2bf0f68e73078633434dc9ed3bae255bf8137408680bfe58bd6384",
+   "pixelSha256": "0d709a5f57fd083df23ec688545077103a28b576d3bd0371292f563be2658c0b",
    "kind": "terrain",
-   "label": "jp_city/jp-st-gnd-lawn",
+   "label": "jp_city/jp-st-gnd-lane",
    "width": 64,
    "height": 64,
    "cells": {
     "16": [
-     "0680fd9e0e479e8e",
-     "0c09b37168921519",
-     "104ecf32e1efc945",
-     "369520dfaa9d6bc1",
-     "4cb1245833060583",
-     "4cc2823399aa1e61",
-     "59c00aa1b021e0c6",
-     "6dea773f725910fe",
-     "73b102c402c50f2b",
-     "8cf089f10b34bede",
-     "927173c4f55fd2af",
-     "9aa183ed422e3796",
-     "bf5ae4498a78053b",
-     "ec21eec218b44e6f",
-     "eddc1447393162fc",
-     "f2e46892768ca7a3"
+     "165217e76a6fccf3",
+     "165fc671618e01f8",
+     "17b3e1feb32d185f",
+     "19d6642f6726ca8e",
+     "2736d6c1582926ba",
+     "4a799b2bdf8324cc",
+     "656746d49029ecaa",
+     "6891ad7b85b6805b",
+     "73eb426e346d548b",
+     "8d4400e4ca5a09e6",
+     "b0bf7a4fb3c9a8ed",
+     "ccfe109155bcf982",
+     "d3f6a5b280e3a000",
+     "d54208e426d7d2bc",
+     "e3653a36221c0f09",
+     "edbeb5fb4cb7e433"
     ],
     "24": [
-     "02ba06929b2f2d35",
-     "0ec9b0b6a97ed99f",
-     "0eca86087ba37f15",
-     "114255cfb88f147d",
-     "12547cdb015efdd1",
-     "1cc4e2e490c29e19",
-     "2130b2ca74e9f112",
-     "242b606fb7d7568b",
-     "2818159bd163877b",
-     "2d30a1c0a2f4f2b5",
-     "31dd8d0f6e7e040e",
-     "32e78b23bcbdcd3c",
-     "36d18698c3798b38",
-     "45aecf6feac8edf0",
-     "47328fa9b9b25077",
-     "49f4d64efb157068",
-     "4c3beb9c9dc406b1",
-     "4e4a2b521c304bba",
-     "5108c01209ebc692",
-     "58c3a36164674f71",
-     "5b1b529b97e545d1",
-     "631edec814cc1662",
-     "6c4b44d0fc1cccaa",
-     "736ae35978ea75c0",
-     "7409c3592fa1ed50",
-     "760caf04c0c8de98",
-     "823f6884fed2e3c8",
-     "848563646034dc41",
-     "8729f821ba8e270c",
-     "8781f1a648edd535",
-     "8b0df7779f4375da",
-     "8cb00a4450c76a6c",
-     "8f21864086b2721b",
-     "90f5e8b8039f7557",
-     "941d82b6a1b8219c",
-     "9607fea80d288e12",
-     "9fb6a97327daca1e",
-     "a0819b5892fd7d69",
-     "a5cc8652ccb6a6ff",
-     "aae766d976a70501",
-     "ae6b88c7b5adb97c",
-     "b1555b6e6348c120",
-     "b85c86fe6bf730fa",
-     "b862add95c1c346b",
-     "c164cc2068e9e0a0",
-     "c76b8224bf5ab9d4",
-     "cf29dfaa11086f6e",
-     "d1ff9fa155f24a76",
-     "d33b2360f7aa0fe6",
-     "e2527ac8cd98e0af",
-     "e4da468d17c9c9d7",
-     "e84c4e07853d1e70",
-     "f606245713a4d6eb",
-     "f8815fe1b5a7f059"
+     "080664528524b675",
+     "0becc934ddbf55e2",
+     "0f779d9849deeb72",
+     "10c8695459e28899",
+     "151dd1bf84a17306",
+     "174c659a067c02d6",
+     "19f1a45423ecd43e",
+     "1dd60d9632ef0571",
+     "20dc89ce83feee84",
+     "278af57a498ebad9",
+     "32d40d5af0f7d5ac",
+     "35f0bcd5a81f90ab",
+     "398c3cfbc6a112d6",
+     "3b36b53b7cbe5a18",
+     "3c072675376a360e",
+     "4b1c1a2664903eba",
+     "4b63bac5c644f808",
+     "5599b9b4912c8daa",
+     "5da888f04428c3ef",
+     "627f68c7208d5cc7",
+     "63e9eac974aa9297",
+     "69e57cb9efaf7a2d",
+     "6cca8da2a9882ef8",
+     "6ea05bdca3520fa3",
+     "7528daf27e236ac7",
+     "7bde35bbcbad3c9b",
+     "7e30bfe14952c88b",
+     "7f3918eb641627df",
+     "888da9ebf0936c53",
+     "8b01e5008627786a",
+     "a14b664552159738",
+     "aac586d5519062ce",
+     "ac570567a9f5cf04",
+     "aca92e4f89c31450",
+     "b006beacb5c9e5d2",
+     "b1bd1dafb1a1d14a",
+     "b74076467ef25c3c",
+     "b748a48cc1fc8ff6",
+     "baa0a6680988f9bd",
+     "bb78551fa2f17040",
+     "c372e233d05f1da1",
+     "d3bd7026d17a7571",
+     "d4a99411014ad95c",
+     "da5c17d60d3d4bbb",
+     "df15b8ffbce2d9ae",
+     "df68819b33bcf8d6",
+     "e1c630dff67b97b9",
+     "e4103bbf392cc577",
+     "e748bc2b39ff7715",
+     "eca29d57b53bc1bc",
+     "ed6c7ec769423d93",
+     "f4af3b5d0603d219",
+     "f7b7a8759bd78cb0",
+     "fd6df1a5a66d4262"
     ],
     "32": [
-     "7ab766e319547ca7",
-     "930ff3850d924875",
-     "968fa6c2b3061858",
-     "d43e1c0684845c99"
+     "6ce0c4c7cf4698ca",
+     "78ecc7e088e4f59e",
+     "99205671439489da",
+     "d6602ecef501a739"
     ],
     "48": [
-     "0adcfd946ca60aae",
-     "0b41cbbbef285ac4",
-     "1085bdce1e326fb2",
-     "3d151ad515c9ca41",
-     "400513b660e6704e",
-     "5a49b5d290c1f0de",
-     "5f346bbf99b1ef6f",
-     "6632098ec0c3478c",
-     "67ba2a2d25b6fbcf",
-     "714bcf237c9f6c52",
-     "714f255bcd789fbf",
-     "7f140398259c87c5",
-     "97bbea1278d3e025",
-     "a1081bfd7cd26eec",
-     "a5c69683d71ed7d9",
-     "a73981deba638b5e",
-     "aa9b4469fb8c3838",
-     "aac806fc5b12d2e8",
-     "bbe6657b519f0db6",
-     "c93478fda1fe25fb",
-     "ddbfea3aaf2d71dc",
-     "eaa033f2218da8d2",
-     "ef811ff69733efe2",
-     "f81fdb479eba490d"
+     "0cd20993f7681cfa",
+     "13c13a5b7e136473",
+     "2632224574b87153",
+     "2668680c0907ac82",
+     "33b066e4d50bd6ae",
+     "3e5f341d31219dec",
+     "46260a8201b9b7db",
+     "499d1359bd775626",
+     "4b7973467c0899e1",
+     "5de26293345db7aa",
+     "7520625a8083dbd3",
+     "7d2ed37292a4cd86",
+     "8ce01bb16099ce0c",
+     "b100c6d82b8570f2",
+     "b7fa8d100413fd31",
+     "b9eddc4f47ac4260",
+     "d6967f87ce2b71d0",
+     "d8b5c1e16aac6185",
+     "e7df488a0f6095d3",
+     "eaa1a862b2f84f54",
+     "ef86ba56d3e52e5b",
+     "f262c2e66ff25269",
+     "fa9e95c80e47f835",
+     "fe28254e5300464e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "fa74262788d87fbe0f0c53bb71dac7e4853f9424291718c124fc6735ad750451",
+   "kind": "terrain",
+   "label": "jp_city/jp-st-gnd-laneside",
+   "width": 64,
+   "height": 16,
+   "cells": {
+    "16": [
+     "310fc7f4a8548c91",
+     "5d813c7e42776db8",
+     "892bb72e65ca762b",
+     "e1f7cb63c037ad72"
+    ],
+    "24": [
+     "0c86338eebd7d148",
+     "1df34f3870a16655",
+     "1eec7426c033eb61",
+     "6bcd3d58328c68cb",
+     "7989502afe0d3a86",
+     "85224eda3ca5bcca",
+     "8acc2d836738105f",
+     "90a0a3d5da8a7f82",
+     "9596d99622fd2056",
+     "a0bf3b7a070b474f",
+     "a680a25decb01e34",
+     "c0769e28504f6ae2",
+     "c7d8e2b0cb81cae4",
+     "d7a554dc97bd4eaf",
+     "e31ce6633c9803c5",
+     "ef710578c0968f37",
+     "f41d188fcba8aca3",
+     "fe3fc83f404c09b4"
+    ],
+    "32": [
+     "274024b235ba1170",
+     "75d287c83e23d3fd",
+     "7eeb7b7cfc56f19a",
+     "9c4a354f61f1fa34"
+    ],
+    "48": [
+     "13e5b0ef9ba85cf3",
+     "262826124f801d5e",
+     "2ec2fa8ed16e28f5",
+     "540d39b1c6b1fc58",
+     "5422f07060d0f717",
+     "5fea6e12da9296eb",
+     "a7f39d308e5030f2",
+     "bbc681e05fadc122",
+     "c4dff979f1f218c5",
+     "c8b13bac22d56c05",
+     "d394d035d987bd6b",
+     "d9c8f5915cff73ae"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2fb31b4c88e7e49698a7d86513e62880baf4abcfe8797d98649ddc0ddfc8d29d",
+   "kind": "terrain",
+   "label": "jp_city/jp-st-gnd-lawn",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "11dad532b06e60fd",
+     "223dba1c85071eb3",
+     "56e69139e07254f0",
+     "6606dce1c5652a0f",
+     "796a848363242177",
+     "d03ec1d6d1eea332",
+     "e36a4f7faddd50d1",
+     "f9685b50103d58d3",
+     "fef757e7ab33fbae"
+    ],
+    "24": [
+     "88f3ce447eecb96d",
+     "c2ed94f3d7ee3086",
+     "ebd30bd8fceb10f9",
+     "f2966cc698e67ccc"
+    ],
+    "32": [
+     "0188202a6cf802d4",
+     "0bd5ac7f255a05a0",
+     "2d646c2d2729c809",
+     "374c0fcf8e2091c1",
+     "3b63916cc7f35b67",
+     "3d938f3ef341ab3d",
+     "564c879f8b4e2f11",
+     "655ce678012f1e61",
+     "767033aefcb955e3",
+     "76e6de255d77cd1c",
+     "777d94b3e5ab45ee",
+     "8648d1b9a8425ac9",
+     "8b39f7121b95bd9d",
+     "957fafb51ff317c8",
+     "9a55cf48daa71065",
+     "9e18184797a16579",
+     "9fa0dde34d9c6607",
+     "a230937d7167b467",
+     "af6149fce07de857",
+     "b4db8b953dd44623",
+     "ccecfe37c52a177c",
+     "e464f01033de212e",
+     "ec95ebd5c05d0e56",
+     "f959994cd118676c"
+    ],
+    "48": [
+     "6a8321cbf8222e7f"
     ]
    }
   },
@@ -11273,6 +11599,474 @@
      "9643c5225f1f34bb",
      "a1bc50e74711c884",
      "f7799a76eb82ee47"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "afb3a9ff795cbc16160762577f87a3d4e20401b5ed73ebf4b027d6ade6a1361d",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-e",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9ba2213701b47e64"
+    ],
+    "24": [
+     "0ea1d274890b0235",
+     "6459ebb5be2bc910",
+     "8ef105fcb9cb5523",
+     "9dfbdfca005b089d",
+     "c1a009b0084365f5",
+     "f36d6b29350afeee"
+    ],
+    "32": [
+     "3d857460eef345ab",
+     "42ee97ed40d35465",
+     "798c19901ef56106",
+     "b89305ee1eed8092",
+     "d50f15818f52751f",
+     "d5cf5d828f7f25e9"
+    ],
+    "48": [
+     "2f1b36c6087e7b3d",
+     "4dd61e774ed2b7f3",
+     "70fc019f267216fc",
+     "ddf4647b2e3fd5e7",
+     "ea277278ab1de2b0",
+     "fe6b13ea46430351"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2bbf23521d78f19238f8e066cfde3eb85b93e09a330755dacf7f652d02b772d5",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-es",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1ccec811e6ee2109"
+    ],
+    "24": [
+     "3c4cbc1461c5e094",
+     "59e0034ad2c03273",
+     "6854bf335ddb76cb",
+     "770dcfed65b5b87b",
+     "9f2adf92e9bc9307",
+     "a04cb99cb3acf0d3"
+    ],
+    "32": [
+     "5bfebaac341d2fe3",
+     "675c7c58550deeaf",
+     "7e3163c916500751",
+     "a3bdebbfa49d2fcc",
+     "da6caa8f8fafe5c7",
+     "ea6cd01f083904e2"
+    ],
+    "48": [
+     "44e85603de4246e7",
+     "90abe651350cca28",
+     "b0d16482040a2522",
+     "beb6d98b7ced285e",
+     "bfd93c3b3e85444f",
+     "f3d4c5ebfb27fd9d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5fa6e7c1b4faae46c7dfe333f67f288aa2ada9e0efbdeaf99ef9fb3830cf3b8a",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-esw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "d77ed391e651a2cd"
+    ],
+    "24": [
+     "2c67fb9bbddf6153",
+     "404793aea403483d",
+     "7e2ac13b827e12fb",
+     "a571b8e590b09e21",
+     "e157a406af72f447",
+     "e26f408d377e9b59"
+    ],
+    "32": [
+     "2680ea05f866bfe4",
+     "2b4e9bbad5a798d9",
+     "6cc2cddbba557e33",
+     "873d31558d0544b0",
+     "a40c5e41b96554ff",
+     "bad6a0153a822d9c"
+    ],
+    "48": [
+     "2b102b1bbb43ec3f",
+     "48685958df1377df",
+     "6c3ddb375c0bede1",
+     "8a7cf35f7d94925c",
+     "a79ff687f7b6b037",
+     "f2cf0bd670cf257e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5b30a6c1a12afa6d2783eaf0dbe81669d2f114f802fcde20888dc6b0dae39f51",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-ew",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "b20020df15eab032"
+    ],
+    "24": [
+     "2014bebf5db3e330",
+     "25710d1893d837d6",
+     "700467ef8faa8a4d",
+     "8ff01fce2e8ca5c3",
+     "aaf95a6082881d4e",
+     "edea8e43db2777bf"
+    ],
+    "32": [
+     "04fca9d9ef1be6c5",
+     "0b0756672df41290",
+     "0cb6291877e809cb",
+     "0e13a33586ebf205",
+     "2ffb4b9b9774dc00",
+     "b9e1a877c68306a0"
+    ],
+    "48": [
+     "09631a690f579c19",
+     "0e92edb0817557ba",
+     "1db2f3c54b66cb06",
+     "378c03552118e26d",
+     "43471c8bdcc8b7d0",
+     "d7136ecf1792734c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a40872e6f9bd5d825f5afde62e3c3a13118d89ab5f8c1e810726d81126bbf5d6",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-n",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "ef02eb655f3cedcb"
+    ],
+    "24": [
+     "05f4796ee50144c9",
+     "8c09018d321387c0",
+     "accf7753e809cfef",
+     "c7b8028561aac8ce",
+     "c94dc7a419819728",
+     "ce928df30c3dada6"
+    ],
+    "32": [
+     "66d59d20a39281bf",
+     "6ec9a7583f3bc990",
+     "cc37e6de5a727a18",
+     "dd2e50188d533011",
+     "e9cab943a5af5006",
+     "f34479e985603ada"
+    ],
+    "48": [
+     "089b5c136b4491f0",
+     "1f5e6931bfab9975",
+     "2428ecaa7c6b5baa",
+     "359087c5a6153a3b",
+     "6d0269c84e602528",
+     "ed0fb7d05626a752"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4b8b630617f557a8d3adc901e6f0541c467287fa22b19683f0fd18d38dbedb9c",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-ne",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "d3a57c7572ef9a86"
+    ],
+    "24": [
+     "59417cf0c87e7ebc",
+     "60a3c014c9b835fe",
+     "8870616aec6d555f",
+     "a90adf5d7fa5fbd1",
+     "d9910d76e192d999",
+     "e7a5a2989110f3b7"
+    ],
+    "32": [
+     "1e101635cd5d394a",
+     "5445a7ac5d26f27a",
+     "594b6670469f8386",
+     "6ae3fd424149e21a",
+     "9aab29acd6cc7271",
+     "c9641c1135197c2d"
+    ],
+    "48": [
+     "52b3c31d9043ce91",
+     "6ba17c55a05a76ef",
+     "904d3a14b290c6ad",
+     "ddccd0f5f21dbd50",
+     "e60b3bc066767ac1",
+     "f5a9e270de0dca8b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d6f831994dbb1f1ddcbc1eac2c4c5bf4dd8311c6be02b03bfd5f6a81c67f81d0",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-nes",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "05728d10b1be25d4"
+    ],
+    "24": [
+     "5b8300da54266aa8",
+     "78503437334cf11a",
+     "c3008e595dc3037b",
+     "c3940665f94b9838",
+     "e36bd26e5425c032",
+     "f9fdbda583a9d429"
+    ],
+    "32": [
+     "146f5c727ec4418a",
+     "65097cde888d95ce",
+     "72ba47788d98082e",
+     "820cac4ded967eb7",
+     "bd4e1c7a4da8fedf",
+     "f212fddc5bc0405c"
+    ],
+    "48": [
+     "1a7bd185c8ba0fcd",
+     "2e3fe94a91c7358b",
+     "7f4a1dd1b8207b54",
+     "bbb6285c4e119bd6",
+     "c83b27eaa8f27459",
+     "e1ace0d56b5c3153"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c95da4f5654954e1af4712fbae2626aab96f2ddf084e5ec6e7fb716e6786649d",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-nesw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "65effaa4cf8d1651"
+    ],
+    "24": [
+     "5807040480246416",
+     "5e7906e93b39dffe",
+     "80877a07d7a582c4",
+     "9fac71c43944a9f8",
+     "b9279e0c06f91498",
+     "eda8e228b2bae4d6"
+    ],
+    "32": [
+     "96cc3bdfef514f69",
+     "9b5505a50c5a5adf",
+     "af5ff151e85592e5",
+     "c359796a00b4b334",
+     "dc34b681844774a2",
+     "f1385ccc83fbaf4a"
+    ],
+    "48": [
+     "13fef1071aa43ad2",
+     "2c84da06bfbc5bd1",
+     "476df107050729b4",
+     "539ca3356405c154",
+     "e0d15c6ddfa34e34",
+     "e1438b05aeee3505"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d2e5a02adf1d89a2cf064057c3b1729ceb6a79f98c7361e1c9209d4be469cea4",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-new",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "3374b496dc9a393d"
+    ],
+    "24": [
+     "1a75b27d1945a6d6",
+     "2db9599911d013b2",
+     "34e0260e8d75e140",
+     "cc3846ab1e0b303b",
+     "cf41161914aa9750",
+     "eb45861d8d3433a3"
+    ],
+    "32": [
+     "1bf52e54c0ca8c7e",
+     "66ddb918817c017e",
+     "68605d44149bdf9e",
+     "b1ca5dcf3b9f26e6",
+     "dbaab196f037b1e8",
+     "dea4b2281fdae3fd"
+    ],
+    "48": [
+     "12e5a163b916bf84",
+     "18751193b35034fd",
+     "2b6142224265b0ea",
+     "329a80122aeaaeae",
+     "610aff5ed4a0363b",
+     "e07b4bc0017ba48b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "51d8b01961d8ba7e9ca0ec877ae6bc18dcc73bcb6b7740ee159edfc72d5b5418",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-ns",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "15d210628c9fdf5e"
+    ],
+    "24": [
+     "05f54ee37d57a0ed",
+     "42a379a61888e331",
+     "712040b4cdb3d18c",
+     "e2b3b922b8d82359",
+     "f3a60afe90c591b9",
+     "f965428811aa784d"
+    ],
+    "32": [
+     "05b080e0f701a253",
+     "2e7a3a930711252d",
+     "4aecb1e571990650",
+     "8c854c51fe424b6a",
+     "a9263bf9ef7a2e36",
+     "c9558a52dfe4207e"
+    ],
+    "48": [
+     "1148b05e34c285c0",
+     "16d17bb950721ee1",
+     "7c70da8ff8b2159b",
+     "af87b3ee012c473f",
+     "bab4abc87e4caba1",
+     "e72794ffef7719cb"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "1c82fc73eb201aca78a83647a3ec77ea8946d0317c7f7bcbea9ce1915a4dc366",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-nsw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "b9b6674e8936d2ef"
+    ],
+    "24": [
+     "78ab4319a20d5508",
+     "7ed2c6c623151eb7",
+     "b67646c4be748fac",
+     "c28c76d4d5a43d94",
+     "d859a3e709ea3846",
+     "f0179605fc0f1596"
+    ],
+    "32": [
+     "05b8c32d1619aa12",
+     "104bac7656568808",
+     "2fc30de9c6a9cdc3",
+     "752a72709daec18a",
+     "9d1803983bedb3d2",
+     "fbab3c14c09e2380"
+    ],
+    "48": [
+     "05c782c2a4f54d48",
+     "1ef0b21410a4987c",
+     "696d8076ca383316",
+     "9762d2d0836f95bf",
+     "d63639bb042a868e",
+     "fbd86f4933fdd96d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b7050820607206e6c61d01614db6b2bcd68fa1880647bbd3a9f8378b7be5d510",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-nw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1caadeabcc0fad69"
+    ],
+    "24": [
+     "03caf26c91185eeb",
+     "7cf55ddfe38e7131",
+     "b7c8b4d1b76d9642",
+     "c1fac9c620d5b82a",
+     "c46c9d52f1ecd2ed",
+     "e83764a0c1c75d11"
+    ],
+    "32": [
+     "043cd25418ea5272",
+     "0c7431baa1391ef2",
+     "216ffe449b56489a",
+     "9ab11ecba66188ce",
+     "a23bf061f3e79e0a",
+     "e1bc0528d18de364"
+    ],
+    "48": [
+     "37c63d811fda6c24",
+     "3cdcc4956690d568",
+     "749fc652b776a2cc",
+     "bb284b91ce1df0b0",
+     "bf6fb0c0c0991a1e",
+     "bf9298fdcb3d5b66"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d82dd473a8b5c194e2c3f6df11ddc64d09543c97cdba5353fe35ba24483b1653",
+   "kind": "flat",
+   "label": "jp_city/jp-st-gutter-sw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "5dcd9c714632f4a1"
+    ],
+    "24": [
+     "089a3cc63385177d",
+     "17f485549d68f527",
+     "4da41bba6d9fd010",
+     "6cbf8c2f0c05c918",
+     "a25229eb65299871",
+     "dae3218a0e99b44e"
+    ],
+    "32": [
+     "57c5abd1a5c6b1d7",
+     "8ed172dc81dcee68",
+     "a1df9a427ba62679",
+     "e1cac005a01480d7",
+     "e88b95304feb7ea0",
+     "f4bb5f1ea60088b6"
+    ],
+    "48": [
+     "073abe68b6bb2b3c",
+     "0918122a4c787641",
+     "52d70bb5f8d19256",
+     "648c0e3b17d4086d",
+     "79d1e7337d50d6dd",
+     "ffca7b780a7303a5"
     ]
    }
   },
@@ -14437,7 +15231,7 @@
   {
    "pixelSha256": "a1620263b07f8dd245f06766131e342c1c387dad8eacac67c3ddfabdaeda9352",
    "kind": "other",
-   "label": "jp_city/jp-st-hydrant--pave",
+   "label": "jp_city/jp-st-hydrant--lane",
    "width": 16,
    "height": 32,
    "cells": {
@@ -15747,7 +16541,7 @@
   {
    "pixelSha256": "fbf7f4c630a767af152dd34699af14655db8e6647f16e427272f0ac15dc94842",
    "kind": "other",
-   "label": "jp_city/jp-st-lamp-gas--pave",
+   "label": "jp_city/jp-st-lamp-gas--lane",
    "width": 16,
    "height": 64,
    "cells": {
@@ -15804,7 +16598,7 @@
   {
    "pixelSha256": "56216061445afddf2540b094807a3857b7ed571d1cd57e655cbce576821407d3",
    "kind": "other",
-   "label": "jp_city/jp-st-lamp-modern--pave",
+   "label": "jp_city/jp-st-lamp-modern--lane",
    "width": 16,
    "height": 64,
    "cells": {
@@ -15861,7 +16655,7 @@
   {
    "pixelSha256": "a0cfbb386bcb90259892a0e08db2046b5fb94bbbddb770cb40c4456599ac88a9",
    "kind": "other",
-   "label": "jp_city/jp-st-lamp-shotengai--pave",
+   "label": "jp_city/jp-st-lamp-shotengai--lane",
    "width": 16,
    "height": 64,
    "cells": {
@@ -15918,7 +16712,7 @@
   {
    "pixelSha256": "2c4d470ec1724c652796d562945944801ba4278d10c201649b4d7c92ba742956",
    "kind": "other",
-   "label": "jp_city/jp-st-lamp-wood--pave",
+   "label": "jp_city/jp-st-lamp-wood--lane",
    "width": 16,
    "height": 64,
    "cells": {
@@ -15969,6 +16763,117 @@
      "d86ea6334f8a2770",
      "dc1e38bdc7d00704",
      "ec1916692c01e9da"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "50d60f810bbc903429171870b6b3a1b63c2b04b2a2c92994671cf87799518c0c",
+   "kind": "flat",
+   "label": "jp_city/jp-st-lane-patch",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e23ce29e9c356a9c"
+    ],
+    "24": [
+     "00c03d09069d342f",
+     "1793dcc6c881b941",
+     "3cb397b88ce93a9b",
+     "6ed14227f76d9b10",
+     "cd1eec48c15ef07a",
+     "dcda4d6d2e620058"
+    ],
+    "32": [
+     "2815e7ee28e43b3f",
+     "3ab12cf96c3e42ab",
+     "3e3f3b50e29ff976",
+     "406f3f84952cedf8",
+     "685b9d00ddc4f737",
+     "79b7a7d6d65b26c3"
+    ],
+    "48": [
+     "07157fb0df6440f0",
+     "2f5e29c96111be89",
+     "64d87958c7ebfd02",
+     "76d3f32061836805",
+     "7f4f299fe0e467b0",
+     "e3781bd651b26f3e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "dbe103b6280cebfdb151ee69c61f454c6247df2b2dbc7c7a0ca3f6019ad08fdb",
+   "kind": "flat",
+   "label": "jp_city/jp-st-lane-trench",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1a0b34c3639890f6",
+     "7e220f50836f356a"
+    ],
+    "24": [
+     "032464bc65c29d3b",
+     "30868f73c7a58142",
+     "3beb6b1e9ddba2b8",
+     "3df20f7610ecdbe6",
+     "5720fd9a3c98af16",
+     "76d532cf1905f065",
+     "7f7899a268aa8013",
+     "cfeefbcc8ccbb748",
+     "dedbc26e219916da",
+     "e267fbdc664ef214",
+     "eac6b03fba87c5ff",
+     "efb4ed80b7b8e48a"
+    ],
+    "32": [
+     "3aa37c292e6c12e2",
+     "5708c5198e70624d"
+    ],
+    "48": [
+     "192eb6412c8980d3",
+     "3258f61a698d2efc",
+     "6449d6a7cb378d8b",
+     "79f4870c0570c4ad",
+     "83b244360f01e321",
+     "8a14a84cc000627c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "42d83416df709fc0238f17b5f44f1af154e0490b4f6fc425e4b99d0bef4d32d5",
+   "kind": "flat",
+   "label": "jp_city/jp-st-lane-valve",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "048eabae570db6b2"
+    ],
+    "24": [
+     "0daedb452c1882ee",
+     "3d3947b88476403d",
+     "4948e162a802f2ed",
+     "6181696b452e47dc",
+     "aa7af444ce06382b",
+     "c9226aa3fc9a87a8"
+    ],
+    "32": [
+     "01f9b43b9d3ac363",
+     "1c09814c5bd2aa77",
+     "47a0eb308afc933d",
+     "b8121ff7645c53ec",
+     "be6cd9c2635cb17f",
+     "dae798987904f500"
+    ],
+    "48": [
+     "1d125134380aaa1a",
+     "3c77aa46029a2b14",
+     "5530666e2e77d1f0",
+     "a343db8ffefee862",
+     "aafdb1ae813fd4a9",
+     "dbe42545aef9d16d"
     ]
    }
   },
@@ -18017,7 +18922,7 @@
   {
    "pixelSha256": "a57f65b57d6fa0c6c06b95649cd22d1369995e75b40b2acbc75b75290005eebf",
    "kind": "other",
-   "label": "jp_city/jp-st-mirror--pave",
+   "label": "jp_city/jp-st-mirror--lane",
    "width": 16,
    "height": 64,
    "cells": {
@@ -20120,7 +21025,7 @@
   {
    "pixelSha256": "f2d1d821149fb48660431575455f0c102822b7d6329b3836c5eac7286042b1ae",
    "kind": "other",
-   "label": "jp_city/jp-st-planter-long--pave",
+   "label": "jp_city/jp-st-planter-long--lane",
    "width": 32,
    "height": 32,
    "cells": {
@@ -20160,7 +21065,7 @@
   {
    "pixelSha256": "8616e40917eb3619c9c03cb99b966065e65111023f8a7b0fca1f2298d5858838",
    "kind": "other",
-   "label": "jp_city/jp-st-pole-a--pave",
+   "label": "jp_city/jp-st-pole-a--lane",
    "width": 16,
    "height": 80,
    "cells": {
@@ -20233,7 +21138,7 @@
   {
    "pixelSha256": "ea1badf48420876f76ae756f3c685a832b08d3b07616a6ce4b9c73e30ac2cef6",
    "kind": "other",
-   "label": "jp_city/jp-st-pole-light--pave",
+   "label": "jp_city/jp-st-pole-light--lane",
    "width": 16,
    "height": 80,
    "cells": {
@@ -20306,7 +21211,7 @@
   {
    "pixelSha256": "c4a8ac95f6d6b62f07d7aedfb1c1e0224d58c9466694d8e327ab5d1071c74ba7",
    "kind": "other",
-   "label": "jp_city/jp-st-pole-trans--pave",
+   "label": "jp_city/jp-st-pole-trans--lane",
    "width": 16,
    "height": 80,
    "cells": {
@@ -20379,7 +21284,7 @@
   {
    "pixelSha256": "709e7bdec31eb33b8e72cab387387d07292d3834dd7bcd0230f41c5fa7a245d6",
    "kind": "other",
-   "label": "jp_city/jp-st-postbox--pave",
+   "label": "jp_city/jp-st-postbox--lane",
    "width": 16,
    "height": 48,
    "cells": {
@@ -25158,6 +26063,42 @@
    }
   },
   {
+   "pixelSha256": "bfa5a24751a92c27d3d619482b8725ee226f797a70e6a0385d4d95a38ce5cf53",
+   "kind": "flat",
+   "label": "jp_city/jp-st-shade-n--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "765f4203b1703501"
+    ],
+    "24": [
+     "3c557fe17ce987dd",
+     "473107ffa2477ca0",
+     "9f92ba7ae57b9ebf",
+     "b94d23f43d71cb42",
+     "d7c5fb5875183e76",
+     "ed54cc8942258eee"
+    ],
+    "32": [
+     "14c8cd4d7c8f7f17",
+     "1ecdf9c8d102f45f",
+     "45bb0b06739d3800",
+     "5cd255ce85a521a6",
+     "ab7d8bf49dcd5752",
+     "fcfd45a2c16e0c24"
+    ],
+    "48": [
+     "19eb62b0b8b67d11",
+     "4720eb376fd3beb2",
+     "563be36a26f510ce",
+     "78c2cf66e7b1ef45",
+     "c0f88d0e9b4cc1a6",
+     "c2fcf97076e39d19"
+    ]
+   }
+  },
+  {
    "pixelSha256": "9f0fe3468bd5117df9e17972bc1a2574bcdb6c33479168d3cee729bb3f7227e3",
    "kind": "flat",
    "label": "jp_city/jp-st-shade-n--lawn",
@@ -25468,7 +26409,7 @@
   {
    "pixelSha256": "6d83393b5b472891ce2f6d1dcdc56e5492c821539b33f7e2977772f89605e2e6",
    "kind": "other",
-   "label": "jp_city/jp-st-shelter--pave",
+   "label": "jp_city/jp-st-shelter--lane",
    "width": 48,
    "height": 48,
    "cells": {
@@ -25523,7 +26464,7 @@
   {
    "pixelSha256": "8e05ffa727aff971bd60a2b6fad1500fd7e11ba2e41dbca1161586af2c9c7a02",
    "kind": "other",
-   "label": "jp_city/jp-st-sign-noparking--pave",
+   "label": "jp_city/jp-st-sign-noparking--lane",
    "width": 16,
    "height": 48,
    "cells": {
@@ -25769,7 +26710,7 @@
   {
    "pixelSha256": "6feeceea2e1d69738e1672f3ac0bafa661662dcdf663d8a75284eca8f64147dd",
    "kind": "other",
-   "label": "jp_city/jp-st-sign-school--pave",
+   "label": "jp_city/jp-st-sign-school--lane",
    "width": 16,
    "height": 48,
    "cells": {
@@ -25810,7 +26751,7 @@
   {
    "pixelSha256": "5ae80944a7d1fc26b07911bc0350c66386f4b01a22fcae9cba926e6f54180d07",
    "kind": "other",
-   "label": "jp_city/jp-st-sign-stop--pave",
+   "label": "jp_city/jp-st-sign-stop--lane",
    "width": 16,
    "height": 48,
    "cells": {
@@ -25851,7 +26792,7 @@
   {
    "pixelSha256": "d27eb82fcaa93ffab20969c7a6c975bee55a8aaa7c36cb8ac4331bae4560a587",
    "kind": "other",
-   "label": "jp_city/jp-st-signal-ped--pave",
+   "label": "jp_city/jp-st-signal-ped--lane",
    "width": 16,
    "height": 48,
    "cells": {
@@ -28494,7 +29435,7 @@
   {
    "pixelSha256": "f8f702be4d803ff425075c770e0a4b934be137cfd40b0715856790ae9a3a894b",
    "kind": "other",
-   "label": "jp_city/jp-st-tub--pave",
+   "label": "jp_city/jp-st-tub--lane",
    "width": 16,
    "height": 32,
    "cells": {
@@ -28630,6 +29571,42 @@
      "82570254e088532f",
      "ce629ff85add6f5d",
      "dc8d1fa4aa0864dd"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ba968a8ab81defa08e31063647cc708330bb480539a49ef8dacccd6fb92e721e",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-e--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e61242bda79fdcc6"
+    ],
+    "24": [
+     "62154e546df69844",
+     "658198cf8b6a1c13",
+     "a0e011dd45e4e31f",
+     "a69d3f9bcb1842b5",
+     "e0457fb78363f53c",
+     "ed3c006f4fd2e7f8"
+    ],
+    "32": [
+     "0379db4e1f1153b8",
+     "09adb24971fa3d2d",
+     "402c304f99d8f6a4",
+     "66a7b7ae5ad08acd",
+     "85aa02b2472b915d",
+     "990dc07c4f23fccb"
+    ],
+    "48": [
+     "254c5a91a13a09c2",
+     "2cb11f2246733067",
+     "67426a4f6fd33d67",
+     "7592e2c30fe78b5f",
+     "7cfafb59efa70322",
+     "cb8751db60ef8c39"
     ]
    }
   },
@@ -28814,6 +29791,42 @@
    }
   },
   {
+   "pixelSha256": "8a38cde546918730fc661017f1ffed5eb133483d366646e7973c9ccd5cc7f70b",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-es--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1e87327f7c82ba82"
+    ],
+    "24": [
+     "0700a3f0ae872f43",
+     "0951d99ac3af0f75",
+     "629c018bb499a1ca",
+     "631297aa19f9129c",
+     "7867bd6232ba0639",
+     "cd9ac2b2975d0a94"
+    ],
+    "32": [
+     "06ad70083d34ea21",
+     "38cabbd34cf09696",
+     "3ad10a111de7fe4c",
+     "c150a03ca3e0fea5",
+     "c299d2d612a38b6c",
+     "d01647c23cf9803c"
+    ],
+    "48": [
+     "18f6e25cfbada756",
+     "59fe2648024d4cad",
+     "73d922a4a09cb5b5",
+     "82a9a7ead549bb20",
+     "9b5456ad6014e2c7",
+     "f0f9086376858fdb"
+    ]
+   }
+  },
+  {
    "pixelSha256": "b974fe6b666c6a13d1bb5174bbd2cf81fbec75e8c15794e1bc73b444802bc39e",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-es--pave",
@@ -28990,6 +30003,42 @@
      "83628beeccce461d",
      "d503424f9d0671ee",
      "f3680f9f223b35e1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "35fa566177ff593044b568ca9403d69a8feca70387bc2b1e3f0a2d1fde3fdb5e",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-esw--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "a7869a521900655d"
+    ],
+    "24": [
+     "02e7e4f4ac2d39bf",
+     "18f2db2a634315a9",
+     "5a1b4bcfea4b9c4e",
+     "6cd796f5a1971d78",
+     "97e7924d4f50022a",
+     "fe7c94cf72d9e6e4"
+    ],
+    "32": [
+     "518c5faea9591269",
+     "8dc8a32f7dede63d",
+     "9d154927908b829f",
+     "9e81aecbdfcd6dcd",
+     "cf97b1e322b6f819",
+     "d82ba44dbacaf6d8"
+    ],
+    "48": [
+     "08b2631be8399149",
+     "34826a14e2688f19",
+     "8daf619550d4d46b",
+     "ac87c4ea88b1c89e",
+     "b61961b6927824e0",
+     "fe95e245f96ae994"
     ]
    }
   },
@@ -29210,6 +30259,42 @@
    }
   },
   {
+   "pixelSha256": "0b5eacf9a4965bb4ab99fb46598081180abd514d950db6274ef72dd85eebf932",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-n--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "81f1b943315a3dbb"
+    ],
+    "24": [
+     "0d982df563b69e6b",
+     "2390b99785a34c47",
+     "31aad222a27288b1",
+     "7749e562240bfe03",
+     "e7c847dbcefced10",
+     "e8d6c4714a9ca924"
+    ],
+    "32": [
+     "1ef1c860155235f4",
+     "28cee63abd926300",
+     "7fcb9eac0ed279e3",
+     "9890de7dde07ebdb",
+     "ab9589d8fbe41021",
+     "bd94ff7a376f1f04"
+    ],
+    "48": [
+     "28fd3e7c694e86ed",
+     "6644aee6a040e174",
+     "705300eb9b759ef9",
+     "ea0634d81e1b8a72",
+     "ec2117686b6856f9",
+     "f8af1e183f8e4292"
+    ]
+   }
+  },
+  {
    "pixelSha256": "714c5eee1b64f15d3b0066e0cbdb7da005dfa61e389dc114d8414f9b8eb68907",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-n--pave",
@@ -29390,6 +30475,42 @@
    }
   },
   {
+   "pixelSha256": "86879823f5353623c9025c5b7e8ece4ef2e78ab948ef4dbe48764bb9817d42b5",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-ne--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "56f2f93ddba930f3"
+    ],
+    "24": [
+     "12ed1f61596d6fef",
+     "2e8636e93b411211",
+     "301fa78a987f7794",
+     "a001ee15786bd6f6",
+     "b53cb964658f2cf1",
+     "e718acf162f92f74"
+    ],
+    "32": [
+     "171b8ccd9ba61a0b",
+     "3f7ce75d9698073a",
+     "61730a983cf8d48d",
+     "61fd573d78cd9cc9",
+     "c8d988634a5e00a1",
+     "dcc1324d9b6851c6"
+    ],
+    "48": [
+     "16ed6947f8442c52",
+     "3cb400eda05a8b32",
+     "40209daf57e344ab",
+     "82936ffdad4b7077",
+     "beddb7dee2603db9",
+     "e5bf44fc650413d9"
+    ]
+   }
+  },
+  {
    "pixelSha256": "5408587bc6e0f0a086d6f2d2eb8f71730113eefec3ae4144e7284c31d3ff3d5e",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-ne--pave",
@@ -29566,6 +30687,42 @@
      "a5ac8a2c09aa2e0d",
      "e5931bc526e32776",
      "e9126838018295e5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cbe82a80776ac2a2f8c0a5628993b65de14e9bcc9c6d4204c9c9b2f36a1ebec8",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-nes--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "cae6a01cb83d5423"
+    ],
+    "24": [
+     "151487f28865ad05",
+     "6f9afafe10f2cae7",
+     "93c2bdc0c033c8b5",
+     "b5b9d0b3a101463f",
+     "c4e0ac84d55ffd02",
+     "cb1cfeb3a3a9510f"
+    ],
+    "32": [
+     "26d3e28945676ca4",
+     "35d98f508202b06d",
+     "57a1deb682d9f3b8",
+     "5be6358f17002c9d",
+     "649fb13b44e1957b",
+     "b521d5a67b36096e"
+    ],
+    "48": [
+     "3531db688be7835e",
+     "41fd0adde5c6c2f7",
+     "a1699689e1e09d8a",
+     "a9fdb4ac7b47958e",
+     "b33a81824d26321d",
+     "bb946b1ed73686cb"
     ]
    }
   },
@@ -29786,6 +30943,42 @@
    }
   },
   {
+   "pixelSha256": "7392cb7bcf6c83b9d1e195596faa0c7f23b31b61fc7cf4e536e5c4e34e132ce9",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-new--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "eeb36027c81da08b"
+    ],
+    "24": [
+     "3f00ce54e351254b",
+     "73c0d2e38301a2b0",
+     "9144a1dab9112bf5",
+     "9a10968810667adc",
+     "9cac05cc589a40dc",
+     "b1e50c524c7b265b"
+    ],
+    "32": [
+     "0bff1aacce8bc93f",
+     "1c5fdcff0c39062b",
+     "3a19493eff40f7ad",
+     "4a5a55d47c70bc55",
+     "74128bc50aa7e5aa",
+     "f1096fe3ca256101"
+    ],
+    "48": [
+     "064fa8d258f48778",
+     "affe9904ec485bbf",
+     "b9bf7ce9f64c4ca2",
+     "baf213c1ac235d7f",
+     "dcd173e148a801e5",
+     "e9b4b5f482eeaaf1"
+    ]
+   }
+  },
+  {
    "pixelSha256": "de52d93b579bbdb3cfbd2ed1b881f8b3842d481bf6af636ad0c1ee56312c312e",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-new--pave",
@@ -30002,6 +31195,42 @@
    }
   },
   {
+   "pixelSha256": "4786baf876dbbfcbbd13d8f73955265a2597085911e5cdc78234729e3ab7837e",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-nsw--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "ebf2d8adf8eebe06"
+    ],
+    "24": [
+     "1bf1e3e306a2a912",
+     "4f282e901e0e2165",
+     "60c3b120fb65d3cd",
+     "d0201f8e46c8e0ff",
+     "e9288d48856e53a4",
+     "ed3e0daf0c10778d"
+    ],
+    "32": [
+     "3df19bb4b923b7be",
+     "3e867da6acf931b5",
+     "59c025197e6eef73",
+     "9e268ce3b59731c9",
+     "b26afcdcb6884bac",
+     "b317671c90c63be4"
+    ],
+    "48": [
+     "03a5c910d8c6b205",
+     "1695e6313253d226",
+     "6304ae0229f067fb",
+     "712d38f7d34b0470",
+     "c61f54b80888e1bf",
+     "ff34a6bc9a5a8c9c"
+    ]
+   }
+  },
+  {
    "pixelSha256": "093c6012ab39d0afd3eb041fdd0e3e7ee0d8234cd94ea498bb6cbade33d62000",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-nsw--pave",
@@ -30178,6 +31407,42 @@
      "999181a89ff12c68",
      "9be7839f49d3ae57",
      "b50121b145361280"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6f234ef9a397ca977bbcd76ccb09f2ae9d3d8dc1b9b95c2dbb7c02b05693cffe",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-nw--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "2901e762cf4d5dc4"
+    ],
+    "24": [
+     "2e579cd058559f48",
+     "3b04a80bbabe5d47",
+     "925e2f565c918f67",
+     "b50fa8d4db348676",
+     "b5d0127917f9a052",
+     "cb8f0124cb3fb891"
+    ],
+    "32": [
+     "33f203cb4450bb15",
+     "360e4bdc3531c912",
+     "4afaf57c2c729733",
+     "6ea4f44505dd1769",
+     "90468a9b7479ff77",
+     "9d16f45f31987313"
+    ],
+    "48": [
+     "06e92d6d6c694275",
+     "08af784413bbcb81",
+     "2e10ead6e4586020",
+     "8ebf8e8f222c00dd",
+     "afaf8f05cc889ac8",
+     "e2fcda851ea640ed"
     ]
    }
   },
@@ -30362,6 +31627,42 @@
    }
   },
   {
+   "pixelSha256": "722d584658d982f6896b1ff0df78d36b0a14e4b70d66be4aa64d7cafbf2e9692",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-s--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9489003926456e72"
+    ],
+    "24": [
+     "1b26725debb7bed3",
+     "43c435459723f9c6",
+     "55717fae2c7f88d1",
+     "89ddfb38356c6eb9",
+     "8b1c648bcbdb19e1",
+     "8caa99617941f7a3"
+    ],
+    "32": [
+     "0035888e8034fc01",
+     "2ba14ae353d956e3",
+     "41c840db2fec0f5e",
+     "6d3fd8b5d66d080f",
+     "a1b631f314b2910b",
+     "b430c1013d859c75"
+    ],
+    "48": [
+     "4bacfbaf0ed44c25",
+     "7a807320093be715",
+     "96667e8b8cd71a33",
+     "d36fffc0d4042e0b",
+     "d80f34cee20141b6",
+     "dd26cae4baae413b"
+    ]
+   }
+  },
+  {
    "pixelSha256": "8e63cfb1f5dab3ac27356db6748ca0df30be5689c13b543d3cb09a8ed98e76c6",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-s--pave",
@@ -30542,6 +31843,42 @@
    }
   },
   {
+   "pixelSha256": "d19f56eb8339b1473d10b87073edabbaa17cc91bec9217664d0015b5268e4d67",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-sw--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "dd9454976fd43c19"
+    ],
+    "24": [
+     "155e32410388c6de",
+     "2988d4e7df1bd97c",
+     "67c9d8542ef0a522",
+     "a1774a16934edc2b",
+     "c02e9e164cb1aa3f",
+     "d1bc1f0cde30fad6"
+    ],
+    "32": [
+     "0a1d0fbc1b896d60",
+     "18c5171cb088295a",
+     "aa18007669edfce1",
+     "b203fd9133d9ff9e",
+     "d77b06b6e4a13d98",
+     "f5a00e9c2e52398a"
+    ],
+    "48": [
+     "46ca7f6fdcb42e4e",
+     "6f718238aa586ad4",
+     "b6ef677a1edaf202",
+     "c633d84b570278d3",
+     "d92ddca3639f4d67",
+     "f76ab29c0c5e074d"
+    ]
+   }
+  },
+  {
    "pixelSha256": "a28e7dc66b939091826df89f40f185dfd2adaa8acf99ff7b20806300b1b222af",
    "kind": "flat",
    "label": "jp_city/jp-st-turf-sw--pave",
@@ -30718,6 +32055,42 @@
      "af7903ec4ae3e96f",
      "d4c7440d43df5ce9",
      "e50772a0849cf6dc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0afd67aebc464e1c44f6af81e2769c73ea697a281b91b31a4aa7646a73a1c529",
+   "kind": "flat",
+   "label": "jp_city/jp-st-turf-w--lane",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "2a1b61b65444d036"
+    ],
+    "24": [
+     "0d576432ac0e887a",
+     "1ab8d809e2141b5a",
+     "2340bde912a02fb7",
+     "3b4543763e27f31c",
+     "539741e3ea3ab516",
+     "7f7cf5372755f289"
+    ],
+    "32": [
+     "0f1f731fbc4128f7",
+     "1d0f14c3c40aa11f",
+     "22870588e67534c3",
+     "3dd2993102fd3142",
+     "f2e7cbad281cdf2f",
+     "f6ca744ad4521589"
+    ],
+    "48": [
+     "259c9aadf35ffd0a",
+     "3208018fc36c3f79",
+     "69287d9bb7ffa32c",
+     "7553f23b6df087b7",
+     "b93ff9d44fbdb77c",
+     "fe2a22f1ec33e472"
     ]
    }
   },

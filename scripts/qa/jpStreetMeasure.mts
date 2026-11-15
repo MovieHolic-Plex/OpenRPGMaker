@@ -148,10 +148,19 @@ export function measureJpStreet(project: Project, map: GameMap): JpStreetMeasure
     else if (ix.road.has(low)) kind[i] = 2;
     else if (ix.water.has(low)) kind[i] = 1;
   }
+  // 도로 몫: 폭 두 칸이 넘는 아스팔트 차도만 센다(차가 다니는 길 — 한 칸 폭 자투리와 보도 없는 생활도로 포장은 차도 몫이 아니다. 조율자 2026-11-15).
+  const wide = (x: number, y: number): boolean => {
+    let h = 1, v = 1;
+    for (let k = x - 1; k >= 0 && ix.road.has(map.lowerTiles[y * W + k] ?? -1); k--) h++;
+    for (let k = x + 1; k < W && ix.road.has(map.lowerTiles[y * W + k] ?? -1); k++) h++;
+    for (let k = y - 1; k >= 0 && ix.road.has(map.lowerTiles[k * W + x] ?? -1); k--) v++;
+    for (let k = y + 1; k < H && ix.road.has(map.lowerTiles[k * W + x] ?? -1); k++) v++;
+    return Math.min(h, v) >= 2;
+  };
   let road = 0, dead = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
-    if (kind[i] === 2) { road++; continue; }
+    if (kind[i] === 2) { if (wide(x, y)) road++; continue; }
     if (kind[i] === 3 || kind[i] === 1) continue;                    // 물은 죽은 띠가 아니다(석축·둑·빈 포장·빈 대지만 센다)
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) {

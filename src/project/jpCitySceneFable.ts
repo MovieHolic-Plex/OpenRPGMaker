@@ -3,7 +3,7 @@
 // 왜(오너 2026-11-15, jp-redo/BRIEF.md 6~15): 표지판이 차도에 서고, 담 없는 대문 기둥이 줄지어 서고, 담이 허공에서 끊기고, 포장이 테 없이 맞닿고,
 //   차선이 아무 데서나 끊기고, 아케이드가 평면도 지붕으로 길을 덮었다. 여기 규칙은 그 꼴을 «만들 수 없게» 한다 — 규칙마다 auditScene 의 검사 하나.
 import { Occ, type SceneBand, type SceneCtx, type SceneLayout, type SceneVStreet } from "@/project/jpCitySceneCtx";
-import { GROUND_FAMILIES, STREET_PIECES, STREET_RUNS, streetTagged, type GroundFamily } from "@/project/jpCityStreetPieces";
+import { GROUND_FAMILIES, groundFamilyOf, STREET_PIECES, STREET_RUNS, streetTagged, type GroundFamily } from "@/project/jpCityStreetPieces";
 import type { JpStreetStep } from "@/project/jpCityStreetComposer";
 
 const key = (x: number, y: number) => `${x},${y}`;
@@ -36,11 +36,17 @@ export function fableRiver(c: SceneCtx, L: SceneLayout): void {
     c.fillFamily(0, rv.bank1, W, 1, "pave");
     c.mark(0, rv.bank1, W, 1, Occ.Lot);
     for (const v of cross) {                                                // 다리: 세로 길의 바닥이 물 위로 이어진다
-      c.fillFamily(v.x, rv.wall, v.w, rv.bank1 - rv.wall + 1, v.sw ? "pave" : "tarmac");
-      c.fillFamily(v.x + v.sw, rv.wall, v.lane, rv.bank1 - rv.wall + 1, "tarmac");
+      const deck = v.sw ? "tarmac" : groundFamilyOf(c.tone.alley);              // 다리 바닥: 그 길의 바닥 그대로
+      c.fillFamily(v.x, rv.wall, v.w, rv.bank1 - rv.wall + 1, v.sw ? "pave" : deck);
+      c.fillFamily(v.x + v.sw, rv.wall, v.lane, rv.bank1 - rv.wall + 1, deck);
       c.mark(v.x, rv.wall, v.w, rv.bank1 - rv.wall + 1, Occ.Walk);
       c.mark(v.x + v.sw, rv.wall, v.lane, rv.bank1 - rv.wall + 1, Occ.Road);
-      for (const x of [v.x - 1, v.x + v.w]) if (x >= 0 && x < W) c.runCells.push({ family: "rail", cells: c.vline(x, rv.wall, rv.bank0 - rv.wall + 1) });
+      // 다리 난간: 길 양옆(물 쪽 칸)에 콘크리트 난간이 둑에서 둑까지 — 북쪽 끝 기둥 · 가운데 · 남쪽 끝 기둥
+      for (const [x, side] of [[v.x - 1, "w"], [v.x + v.w, "e"]] as const) {
+        if (x < 0 || x >= W) continue;
+        if (!STREET_PIECES[`bridge-${side}`]) { c.runCells.push({ family: "rail", cells: c.vline(x, rv.wall, rv.bank0 - rv.wall + 1) }); continue; }
+        for (let y = rv.wall; y <= rv.bank0; y++) c.stStamp(`bridge-${side}${y === rv.wall ? "-n" : y === rv.bank0 ? "-s" : ""}`, x, y);
+      }
     }
     let stairX = -1;
     const stair = streetTagged("embstair")[0];
@@ -53,8 +59,8 @@ export function fableRiver(c: SceneCtx, L: SceneLayout): void {
       if (far.length) c.stStamp(far[(x * 5 + c.seed) % far.length]!, x, rv.bank0);
     }
     // 난간: 북쪽은 갓돌 위(둑 맨 윗줄), 남쪽은 남쪽 갓돌 위 — 다리와 계단 자리에서 끊기고 끝 기둥으로 닫힌다.
-    const north = c.hline(0, rv.wall, W).filter((q) => !inSpan(q.x) && q.x !== stairX && q.x !== stairX + 1);
-    const south = c.hline(0, rv.bank0, W).filter((q) => !inSpan(q.x));
+    const north = c.hline(0, rv.wall, W).filter((q) => !inSpan(q.x, 1) && q.x !== stairX && q.x !== stairX + 1);   // 다리 난간 끝 기둥 칸은 비운다
+    const south = c.hline(0, rv.bank0, W).filter((q) => !inSpan(q.x, 1));
     c.runCells.push({ family: "railcap", cells: north }, { family: "rail", cells: south });
     for (const q of [...north, ...south]) c.drawn[(q.y - 1) * W + q.x] = 1;
     const boats = streetTagged("afloat");
@@ -72,7 +78,7 @@ function roadsOf(c: SceneCtx, L: SceneLayout): FableRoad[] {
   for (const b of L.bands) {
     const s = b.front;
     if (s.type === "kerb") out.push({ dir: "h", cls: s.road1 - s.road0 + 1 >= 4 ? "two" : "one", a: s.road0, b: s.road1, from: 0, to: c.W - 1 });
-    else if (s.type === "lane") out.push({ dir: "h", cls: "one", a: s.road0 + 1, b: s.road1, from: 0, to: c.W - 1 });   // 북쪽 한 줄은 길가 띠
+    else if (s.type === "lane") out.push({ dir: "h", cls: "alley", a: s.road0 + 1, b: s.road1, from: 0, to: c.W - 1 });   // 생활도로: 북쪽 한 줄은 길가 띠, 차도에는 선을 긋지 않는다(흰 선은 길가 띠 그림에 있다)
   }
   for (const v of L.vstreets) if (!v.arcade) out.push({ dir: "v", cls: !v.sw ? "alley" : v.lane >= 4 ? "two" : "one", a: v.x + v.sw, b: v.x + v.sw + v.lane - 1, from: v.y0, to: v.y1 });
   return out;
@@ -112,6 +118,18 @@ export function fableMarks(c: SceneCtx, L: SceneLayout, roads: readonly FableRoa
     // 모퉁이: 세로 길 차도가 큰길 보도 줄을 지나는 칸(보도가 구획 사이로 이어진다)
     for (const v of vs) if (v.sw && !v.arcade) for (const y of [s.nA, s.nK, s.sA, s.sB]) if (y !== undefined && y >= v.y0 && y <= v.y1) for (let x = v.x + v.sw; x < v.x + v.sw + v.lane; x++) if (roadCell(x, y)) { put("mark-zebra-v", x, y); crossings.add(key(x, y)); }
   }
+  // 생활도로의 좁은 횡단보도: 세로 길이 만나는 줄에 가끔 한 칸 폭(조용한 길도 건널 자리 하나)
+  for (const b of L.bands) {
+    const s = b.front;
+    if (s.type !== "lane" || rng() >= 0.5) continue;
+    const vs = touching(L, b);
+    const v = vs[Math.floor(rng() * vs.length)];
+    if (!v) continue;
+    const x = v.x + v.w + 1 < W - 2 ? v.x + v.w + 1 : v.x - 2;
+    if (x < 1 || x >= W - 1 || c.at(x, s.road1) !== Occ.Road) continue;
+    put("mark-zebra-h-n", x, s.road0 + 1); put("mark-zebra-h-s", x, s.road1);
+    crossings.add(key(x, s.road0 + 1)); crossings.add(key(x, s.road1));
+  }
   // 선
   for (const r of roads) {
     if (r.cls === "alley") continue;
@@ -147,7 +165,7 @@ export function fableRuns(c: SceneCtx, isStreet: (x: number, y: number) => boole
   }
   for (const b of c.placed) for (const d of b.doors) c.openings.add(key(b.x + d, b.foot + 1));
   const has = (x: number, y: number) => owner.has(key(x, y));
-  const solid = (x: number, y: number) => !c.inside(x, y) || c.at(x, y) === Occ.Bldg || c.at(x, y) === Occ.Slit || c.at(x, y) === Occ.Road || c.at(x, y) === Occ.Water;
+  const solid = (x: number, y: number) => !c.inside(x, y) || c.at(x, y) === Occ.Bldg || c.at(x, y) === Occ.Slit || c.at(x, y) === Occ.Road || c.at(x, y) === Occ.Water || (c.at(x, y) === Occ.Wall && !has(x, y));   // 먼저 선 난간(다리)도 닿는 곳
   const free = (x: number, y: number) => c.inside(x, y) && !has(x, y) && !c.openings.has(key(x, y)) && (c.at(x, y) === Occ.Lot || c.at(x, y) === Occ.Walk) && !c.drawn[y * W + x];
   const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
   const deg = (x: number, y: number) => DIRS.filter(([dx, dy]) => has(x + dx, y + dy)).length;
@@ -233,12 +251,14 @@ export function fableRuns(c: SceneCtx, isStreet: (x: number, y: number) => boole
 }
 
 // ───────────────────────── 재료가 만나는 자리 ─────────────────────────
-type Border = "kerb" | "sett" | "turf";
+type Border = "kerb" | "sett" | "turf" | "gutter";
 /** a 칸이 b 가족과 맞닿을 때 a 칸에 놓을 테(없으면 undefined). */
 export function borderBetween(a: GroundFamily, b: GroundFamily, bRoad: boolean): Border | undefined {
-  if (a === b || a === "none" || b === "none" || a === "water" || b === "water" || a === "tarmac") return undefined;
-  if (a === "pave") return b === "tarmac" && bRoad ? "kerb" : undefined;
+  if (a === b || a === "none" || b === "none" || a === "water" || b === "water" || a === "tarmac" || a === "lane" || a === "laneside") return undefined;
+  if (b === "laneside") return undefined;                                                   // 길가 띠는 제 배수로를 갖고 있다
+  if (a === "pave") return b === "tarmac" && bRoad ? "kerb" : b === "lane" ? "gutter" : undefined;
   if (a === "lawn") return "turf";
+  if (b === "lane") return "gutter";                                                        // 생활도로 옆 필지: 콘크리트 배수로 테
   if (b === "pave" || b === "tarmac") return "sett";
   if (a === "forecourt") return b === "lawn" ? undefined : "sett";
   if (a === "earth") return b === "alley" ? "sett" : undefined;
@@ -294,7 +314,7 @@ export function fableArcade(c: SceneCtx, L: SceneLayout): void {
     if (!v.arcade || v.w < 4 || !STREET_PIECES["arch-l"]) continue;
     for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
       const y0 = b.index === 0 ? 0 : (L.bands[b.index - 1]!.front.sA ?? b.top), y1 = b.front.type === "edge" ? b.front.y0 : (b.front.nK ?? b.foot);
-      c.fillFamily(v.x, y0, v.w, y1 - y0 + 1, "alley");
+      c.fillFamily(v.x, y0, v.w, y1 - y0 + 1, "pave");
       c.mark(v.x, y0, v.w, y1 - y0 + 1, Occ.Walk);
       for (const foot of [y1, y0 + 3]) {                                    // 남쪽 입구(큰길 쪽) · 북쪽 입구
         if (foot - 3 < 0 || foot > y1 || (foot === y0 + 3 && (y0 === 0 || y1 - y0 < 9))) continue;
@@ -405,12 +425,12 @@ export function fableFill(c: SceneCtx): void {
 /** 바닥 덧조각(드문드문): 잔디·흙·아스팔트의 한 칸 무늬, 맨홀, 큰길 가운데 줄의 바퀴 띠. 다른 바닥 조각이 있는 칸은 건너뛴다. */
 export function fableAccents(c: SceneCtx, taken: ReadonlySet<string>): void {
   const { W, H, rng } = c;
-  const pools: Partial<Record<GroundFamily, string[]>> = { lawn: streetTagged("accent-lawn"), earth: streetTagged("accent-earth"), tarmac: streetTagged("accent-tarmac") };
+  const pools: Partial<Record<GroundFamily, string[]>> = { lawn: streetTagged("accent-lawn"), earth: streetTagged("accent-earth"), tarmac: streetTagged("accent-tarmac"), lane: streetTagged("accent-lane") };
   const used = new Set<string>();
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const f = c.famAt(x, y), pool = pools[f];
-    if (!pool?.length || taken.has(key(x, y)) || c.drawn[y * W + x] || (f !== "tarmac" && c.at(x, y) !== Occ.Lot && c.at(x, y) !== Occ.Walk)) continue;
-    if (rng() >= (f === "tarmac" ? 0.07 : 0.1) || used.has(key(x - 1, y)) || used.has(key(x, y - 1)) || used.has(key(x + 1, y - 1)) || used.has(key(x - 1, y - 1))) continue;
+    if (!pool?.length || taken.has(key(x, y)) || c.drawn[y * W + x] || (f !== "tarmac" && f !== "lane" && c.at(x, y) !== Occ.Lot && c.at(x, y) !== Occ.Walk)) continue;
+    if (rng() >= (f === "tarmac" ? 0.07 : f === "lane" ? 0.04 : 0.1) || used.has(key(x - 1, y)) || used.has(key(x, y - 1)) || used.has(key(x + 1, y - 1)) || used.has(key(x - 1, y - 1))) continue;
     const fits = pool.filter((n) => c.stFits(n, x, y));
     if (!fits.length) continue;
     const name = fits[Math.floor(rng() * fits.length)]!;
@@ -461,7 +481,7 @@ export function auditFable(f: FableInfo): string[] {
     // 앵커 자리
     const foot = p.y + p.h - 1, cols = Array.from({ length: p.w }, (_, k) => p.x + k);
     if (p.anchor === "wall" && cols.filter((x) => solid(at(x, foot - 1))).length * 2 < p.w) out.push(`anchor-wall ${p.name} (${p.x},${foot})`);
-    if (p.anchor === "kerb" && !(cols.every((x) => fam(x, foot) === "pave") && cols.some((x) => at(x, foot + 1) === Occ.Road || at(x, foot - 1) === Occ.Road))) out.push(`anchor-kerb ${p.name} (${p.x},${foot})`);
+    if (p.anchor === "kerb" && !(cols.every((x) => fam(x, foot) === "pave" || fam(x, foot) === "laneside") && cols.some((x) => at(x, foot + 1) === Occ.Road || at(x, foot - 1) === Occ.Road))) out.push(`anchor-kerb ${p.name} (${p.x},${foot})`);
     if (p.anchor === "road" && !cols.every((x) => at(x, foot) === Occ.Road)) out.push(`anchor-road ${p.name} (${p.x},${foot})`);
     if (p.anchor === "water" && !cols.every((x) => fam(x, foot) === "water")) out.push(`anchor-water ${p.name} (${p.x},${foot})`);
     if ((p.anchor === "lot" || p.anchor === "open") && !cols.every((x) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(x, foot)))) out.push(`anchor-lot ${p.name} (${p.x},${foot})`);

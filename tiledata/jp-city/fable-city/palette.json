@@ -1,5 +1,5 @@
 {
- "_doc": "Fable 건물·거리 그림의 확장 팔레트 — 재료마다 6~7단. lawn·earth·tarmac 은 거리 바닥(fable_street) 램프.",
+ "_doc": "Fable 건물·거리 그림의 확장 팔레트 — 재료마다 6~7단. lawn·earth·tarmac·lane 은 거리 바닥(fable_street) 램프.",
  "ramps": {
   "ink": [
    "#1a1226",
@@ -290,6 +290,14 @@
    "#4c4a5a",
    "#565464",
    "#615f6e"
+  ],
+  "lane": [
+   "#6f6a7c",
+   "#7c7786",
+   "#85808d",
+   "#8d8894",
+   "#969199",
+   "#a09ba1"
   ]
  }
 }

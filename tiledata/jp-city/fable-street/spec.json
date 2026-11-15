@@ -691,6 +691,22 @@
 ]
 },
 {
+"id": "jp-st-bench--lane",
+"piece": "bench",
+"ground": "lane",
+"w": 2,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "벤치 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"promenade",
+"bench"
+]
+},
+{
 "id": "jp-st-bench--pave",
 "piece": "bench",
 "ground": "pave",
@@ -707,6 +723,21 @@
 ]
 },
 {
+"id": "jp-st-bench-bus--lane",
+"piece": "bench-bus",
+"ground": "lane",
+"w": 2,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "정류장 의자 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"bench"
+]
+},
+{
 "id": "jp-st-bench-bus--pave",
 "piece": "bench-bus",
 "ground": "pave",
@@ -718,6 +749,22 @@
 "name": "정류장 의자 · 거리 · 보도 블록 위",
 "tags": [
 "kerb-low",
+"bench"
+]
+},
+{
+"id": "jp-st-bench-plain--lane",
+"piece": "bench-plain",
+"ground": "lane",
+"w": 2,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "나무 걸상 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"promenade",
 "bench"
 ]
 },
@@ -1066,6 +1113,21 @@
 ]
 },
 {
+"id": "jp-st-bikerack--lane",
+"piece": "bikerack",
+"ground": "lane",
+"w": 3,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "자전거 거치대 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"bikes"
+]
+},
+{
 "id": "jp-st-bikerack--pave",
 "piece": "bikerack",
 "ground": "pave",
@@ -1155,6 +1217,21 @@
 ]
 },
 {
+"id": "jp-st-bollard-stone--lane",
+"piece": "bollard-stone",
+"ground": "lane",
+"w": 1,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "돌 말뚝 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"promenade"
+]
+},
+{
 "id": "jp-st-bollard-stone--pave",
 "piece": "bollard-stone",
 "ground": "pave",
@@ -1167,6 +1244,20 @@
 "tags": [
 "kerb-low",
 "promenade"
+]
+},
+{
+"id": "jp-st-bollards--lane",
+"piece": "bollards",
+"ground": "lane",
+"w": 1,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "볼라드 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low"
 ]
 },
 {
@@ -1300,6 +1391,90 @@
 ]
 },
 {
+"id": "jp-st-bridge-e",
+"piece": "bridge-e",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "prop",
+"kind": "wall_structure",
+"anchor": "run",
+"name": "다리 난간",
+"tags": [
+"bridge"
+]
+},
+{
+"id": "jp-st-bridge-e-n",
+"piece": "bridge-e-n",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "prop",
+"kind": "wall_structure",
+"anchor": "run",
+"name": "다리 난간",
+"tags": [
+"bridge"
+]
+},
+{
+"id": "jp-st-bridge-e-s",
+"piece": "bridge-e-s",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "prop",
+"kind": "wall_structure",
+"anchor": "run",
+"name": "다리 난간",
+"tags": [
+"bridge"
+]
+},
+{
+"id": "jp-st-bridge-w",
+"piece": "bridge-w",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "prop",
+"kind": "wall_structure",
+"anchor": "run",
+"name": "다리 난간",
+"tags": [
+"bridge"
+]
+},
+{
+"id": "jp-st-bridge-w-n",
+"piece": "bridge-w-n",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "prop",
+"kind": "wall_structure",
+"anchor": "run",
+"name": "다리 난간",
+"tags": [
+"bridge"
+]
+},
+{
+"id": "jp-st-bridge-w-s",
+"piece": "bridge-w-s",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "prop",
+"kind": "wall_structure",
+"anchor": "run",
+"name": "다리 난간",
+"tags": [
+"bridge"
+]
+},
+{
 "id": "jp-st-buckets--alley",
 "piece": "buckets",
 "ground": "alley",
@@ -1356,6 +1531,21 @@
 ]
 },
 {
+"id": "jp-st-busstop--lane",
+"piece": "busstop",
+"ground": "lane",
+"w": 1,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "버스 정류장 표지 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"roadsign"
+]
+},
+{
 "id": "jp-st-busstop--pave",
 "piece": "busstop",
 "ground": "pave",
@@ -1368,6 +1558,21 @@
 "tags": [
 "kerb-tall",
 "roadsign"
+]
+},
+{
+"id": "jp-st-cage--lane",
+"piece": "cage",
+"ground": "lane",
+"w": 2,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "쓰레기 수거 망 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"garbage"
 ]
 },
 {
@@ -3759,11 +3964,39 @@
 ]
 },
 {
-"id": "jp-st-gnd-lawn",
-"piece": "gnd-lawn",
+"id": "jp-st-gnd-lane",
+"piece": "gnd-lane",
 "ground": null,
 "w": 4,
 "h": 4,
+"layer": "ground",
+"kind": "terrain",
+"anchor": null,
+"name": "바닥 무늬 · 거리 · 생활도로 포장",
+"tags": [
+"바닥"
+]
+},
+{
+"id": "jp-st-gnd-laneside",
+"piece": "gnd-laneside",
+"ground": null,
+"w": 4,
+"h": 1,
+"layer": "ground",
+"kind": "terrain",
+"anchor": null,
+"name": "바닥 무늬 · 거리 · 생활도로 길가 띠",
+"tags": [
+"바닥"
+]
+},
+{
+"id": "jp-st-gnd-lawn",
+"piece": "gnd-lawn",
+"ground": null,
+"w": 3,
+"h": 3,
 "layer": "ground",
 "kind": "terrain",
 "anchor": null,
@@ -3967,6 +4200,216 @@
 "name": "가드레일",
 "tags": [
 "run"
+]
+},
+{
+"id": "jp-st-gutter-e",
+"piece": "gutter-e",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-es",
+"piece": "gutter-es",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-esw",
+"piece": "gutter-esw",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-ew",
+"piece": "gutter-ew",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-n",
+"piece": "gutter-n",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-ne",
+"piece": "gutter-ne",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-nes",
+"piece": "gutter-nes",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-nesw",
+"piece": "gutter-nesw",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-new",
+"piece": "gutter-new",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-ns",
+"piece": "gutter-ns",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-nsw",
+"piece": "gutter-nsw",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-nw",
+"piece": "gutter-nw",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-s",
+"piece": "gutter-s",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-sw",
+"piece": "gutter-sw",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-gutter-w",
+"piece": "gutter-w",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "배수로 테",
+"tags": [
+"border"
 ]
 },
 {
@@ -5117,6 +5560,20 @@
 ]
 },
 {
+"id": "jp-st-hydrant--lane",
+"piece": "hydrant",
+"ground": "lane",
+"w": 1,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "소화전 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low"
+]
+},
+{
 "id": "jp-st-hydrant--pave",
 "piece": "hydrant",
 "ground": "pave",
@@ -5629,6 +6086,22 @@
 ]
 },
 {
+"id": "jp-st-lamp-gas--lane",
+"piece": "lamp-gas",
+"ground": "lane",
+"w": 1,
+"h": 4,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "가스등 꼴 가로등 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"lamp",
+"promenade-tall"
+]
+},
+{
 "id": "jp-st-lamp-gas--pave",
 "piece": "lamp-gas",
 "ground": "pave",
@@ -5645,6 +6118,21 @@
 ]
 },
 {
+"id": "jp-st-lamp-modern--lane",
+"piece": "lamp-modern",
+"ground": "lane",
+"w": 1,
+"h": 4,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "가로등 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"lamp"
+]
+},
+{
 "id": "jp-st-lamp-modern--pave",
 "piece": "lamp-modern",
 "ground": "pave",
@@ -5654,6 +6142,21 @@
 "kind": "other",
 "anchor": "kerb",
 "name": "가로등 · 거리 · 보도 블록 위",
+"tags": [
+"kerb-tall",
+"lamp"
+]
+},
+{
+"id": "jp-st-lamp-shotengai--lane",
+"piece": "lamp-shotengai",
+"ground": "lane",
+"w": 1,
+"h": 4,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "상점가 가로등 · 거리 · 생활도로 포장 위",
 "tags": [
 "kerb-tall",
 "lamp"
@@ -5675,6 +6178,21 @@
 ]
 },
 {
+"id": "jp-st-lamp-wood--lane",
+"piece": "lamp-wood",
+"ground": "lane",
+"w": 1,
+"h": 4,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "나무 전등 기둥 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"lamp"
+]
+},
+{
 "id": "jp-st-lamp-wood--pave",
 "piece": "lamp-wood",
 "ground": "pave",
@@ -5687,6 +6205,54 @@
 "tags": [
 "kerb-tall",
 "lamp"
+]
+},
+{
+"id": "jp-st-lane-patch",
+"piece": "lane-patch",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "보수 자국",
+"tags": [
+"road",
+"accent-lane",
+"on:lane"
+]
+},
+{
+"id": "jp-st-lane-trench",
+"piece": "lane-trench",
+"ground": null,
+"w": 2,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "굴착 보수 자국",
+"tags": [
+"road",
+"accent-lane",
+"on:lane"
+]
+},
+{
+"id": "jp-st-lane-valve",
+"piece": "lane-valve",
+"ground": null,
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "밸브 뚜껑",
+"tags": [
+"road",
+"accent-lane",
+"on:lane"
 ]
 },
 {
@@ -6527,6 +7093,21 @@
 ]
 },
 {
+"id": "jp-st-mirror--lane",
+"piece": "mirror",
+"ground": "lane",
+"w": 1,
+"h": 4,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "도로 반사경 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"roadsign"
+]
+},
+{
 "id": "jp-st-mirror--pave",
 "piece": "mirror",
 "ground": "pave",
@@ -7285,6 +7866,21 @@
 ]
 },
 {
+"id": "jp-st-planter-long--lane",
+"piece": "planter-long",
+"ground": "lane",
+"w": 2,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "긴 화단 상자 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"promenade"
+]
+},
+{
 "id": "jp-st-planter-long--pave",
 "piece": "planter-long",
 "ground": "pave",
@@ -7300,6 +7896,21 @@
 ]
 },
 {
+"id": "jp-st-pole-a--lane",
+"piece": "pole-a",
+"ground": "lane",
+"w": 1,
+"h": 5,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "전봇대 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"pole"
+]
+},
+{
 "id": "jp-st-pole-a--pave",
 "piece": "pole-a",
 "ground": "pave",
@@ -7309,6 +7920,21 @@
 "kind": "other",
 "anchor": "kerb",
 "name": "전봇대 · 거리 · 보도 블록 위",
+"tags": [
+"kerb-tall",
+"pole"
+]
+},
+{
+"id": "jp-st-pole-light--lane",
+"piece": "pole-light",
+"ground": "lane",
+"w": 1,
+"h": 5,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "전봇대(가로등) · 거리 · 생활도로 포장 위",
 "tags": [
 "kerb-tall",
 "pole"
@@ -7330,6 +7956,21 @@
 ]
 },
 {
+"id": "jp-st-pole-trans--lane",
+"piece": "pole-trans",
+"ground": "lane",
+"w": 1,
+"h": 5,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "전봇대(변압기) · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"pole"
+]
+},
+{
 "id": "jp-st-pole-trans--pave",
 "piece": "pole-trans",
 "ground": "pave",
@@ -7342,6 +7983,20 @@
 "tags": [
 "kerb-tall",
 "pole"
+]
+},
+{
+"id": "jp-st-postbox--lane",
+"piece": "postbox",
+"ground": "lane",
+"w": 1,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "우체통 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall"
 ]
 },
 {
@@ -9139,6 +9794,34 @@
 ]
 },
 {
+"id": "jp-st-shade-n--lane",
+"piece": "shade-n",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "shade",
+"kind": "flat",
+"anchor": "floor",
+"name": "건물 발치 그늘 · 거리 · 생활도로 포장 위",
+"tags": [
+"그늘"
+]
+},
+{
+"id": "jp-st-shade-n--laneside",
+"piece": "shade-n",
+"ground": "laneside",
+"w": 1,
+"h": 1,
+"layer": "shade",
+"kind": "flat",
+"anchor": "floor",
+"name": "건물 발치 그늘 · 거리 · 생활도로 길가 띠 위",
+"tags": [
+"그늘"
+]
+},
+{
 "id": "jp-st-shade-n--lawn",
 "piece": "shade-n",
 "ground": "lawn",
@@ -9251,6 +9934,20 @@
 ]
 },
 {
+"id": "jp-st-shelter--lane",
+"piece": "shelter",
+"ground": "lane",
+"w": 3,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "버스 쉘터 · 거리 · 생활도로 포장 위",
+"tags": [
+"station"
+]
+},
+{
 "id": "jp-st-shelter--pave",
 "piece": "shelter",
 "ground": "pave",
@@ -9262,6 +9959,21 @@
 "name": "버스 쉘터 · 거리 · 보도 블록 위",
 "tags": [
 "station"
+]
+},
+{
+"id": "jp-st-sign-noparking--lane",
+"piece": "sign-noparking",
+"ground": "lane",
+"w": 1,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "주차 금지 표지 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"roadsign"
 ]
 },
 {
@@ -9350,6 +10062,21 @@
 ]
 },
 {
+"id": "jp-st-sign-school--lane",
+"piece": "sign-school",
+"ground": "lane",
+"w": 1,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "통학로 표지 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"roadsign"
+]
+},
+{
 "id": "jp-st-sign-school--pave",
 "piece": "sign-school",
 "ground": "pave",
@@ -9359,6 +10086,21 @@
 "kind": "other",
 "anchor": "kerb",
 "name": "통학로 표지 · 거리 · 보도 블록 위",
+"tags": [
+"kerb-tall",
+"roadsign"
+]
+},
+{
+"id": "jp-st-sign-stop--lane",
+"piece": "sign-stop",
+"ground": "lane",
+"w": 1,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "정지 표지 · 거리 · 생활도로 포장 위",
 "tags": [
 "kerb-tall",
 "roadsign"
@@ -9377,6 +10119,21 @@
 "tags": [
 "kerb-tall",
 "roadsign"
+]
+},
+{
+"id": "jp-st-signal-ped--lane",
+"piece": "signal-ped",
+"ground": "lane",
+"w": 1,
+"h": 3,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "보행 신호등 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-tall",
+"signal"
 ]
 },
 {
@@ -10317,6 +11074,21 @@
 ]
 },
 {
+"id": "jp-st-tub--lane",
+"piece": "tub",
+"ground": "lane",
+"w": 1,
+"h": 2,
+"layer": "prop",
+"kind": "other",
+"anchor": "kerb",
+"name": "꽃 화분 · 거리 · 생활도로 포장 위",
+"tags": [
+"kerb-low",
+"promenade"
+]
+},
+{
 "id": "jp-st-tub--pave",
 "piece": "tub",
 "ground": "pave",
@@ -10369,6 +11141,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-e--lane",
+"piece": "turf-e",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -10444,6 +11230,20 @@
 ]
 },
 {
+"id": "jp-st-turf-es--lane",
+"piece": "turf-es",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-es--pave",
 "piece": "turf-es",
 "ground": "pave",
@@ -10509,6 +11309,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-esw--lane",
+"piece": "turf-esw",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -10584,6 +11398,20 @@
 ]
 },
 {
+"id": "jp-st-turf-ew--lane",
+"piece": "turf-ew",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-ew--pave",
 "piece": "turf-ew",
 "ground": "pave",
@@ -10649,6 +11477,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-n--lane",
+"piece": "turf-n",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -10724,6 +11566,20 @@
 ]
 },
 {
+"id": "jp-st-turf-ne--lane",
+"piece": "turf-ne",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-ne--pave",
 "piece": "turf-ne",
 "ground": "pave",
@@ -10789,6 +11645,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-nes--lane",
+"piece": "turf-nes",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -10864,6 +11734,20 @@
 ]
 },
 {
+"id": "jp-st-turf-nesw--lane",
+"piece": "turf-nesw",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-nesw--pave",
 "piece": "turf-nesw",
 "ground": "pave",
@@ -10929,6 +11813,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-new--lane",
+"piece": "turf-new",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -11004,6 +11902,20 @@
 ]
 },
 {
+"id": "jp-st-turf-ns--lane",
+"piece": "turf-ns",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-ns--pave",
 "piece": "turf-ns",
 "ground": "pave",
@@ -11069,6 +11981,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-nsw--lane",
+"piece": "turf-nsw",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -11144,6 +12070,20 @@
 ]
 },
 {
+"id": "jp-st-turf-nw--lane",
+"piece": "turf-nw",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-nw--pave",
 "piece": "turf-nw",
 "ground": "pave",
@@ -11209,6 +12149,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-s--lane",
+"piece": "turf-s",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]
@@ -11284,6 +12238,20 @@
 ]
 },
 {
+"id": "jp-st-turf-sw--lane",
+"piece": "turf-sw",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
+"tags": [
+"border"
+]
+},
+{
 "id": "jp-st-turf-sw--pave",
 "piece": "turf-sw",
 "ground": "pave",
@@ -11349,6 +12317,20 @@
 "kind": "flat",
 "anchor": "floor",
 "name": "잔디 가장자리 · 거리 · 앞마당 판 위",
+"tags": [
+"border"
+]
+},
+{
+"id": "jp-st-turf-w--lane",
+"piece": "turf-w",
+"ground": "lane",
+"w": 1,
+"h": 1,
+"layer": "floor",
+"kind": "flat",
+"anchor": "floor",
+"name": "잔디 가장자리 · 거리 · 생활도로 포장 위",
 "tags": [
 "border"
 ]

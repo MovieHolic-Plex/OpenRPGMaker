@@ -5,8 +5,11 @@
 // 자료: src/assets/jpCityStreetPieces.json (생성물 — scripts/content/jp-city/street/fable_street_spec.py).
 import piecesJson from "@/assets/jpCityStreetPieces.json";
 
-/** 바닥 가족: 0 없음 · pave 보도 블록 · forecourt 가게 앞마당 판 · tarmac 아스팔트 · alley 골목 돌길 · earth 다진 흙 · lawn 잔디 · water 물 */
-export const GROUND_FAMILIES = ["none", "pave", "forecourt", "tarmac", "alley", "earth", "lawn", "water"] as const;
+/**
+ * 바닥 가족: 0 없음 · pave 보도 블록 · forecourt 가게 앞마당 판 · tarmac 아스팔트(연석 있는 차도·주차장) · alley 골목 돌길(참배길·옛 골목) · earth 다진 흙 · lawn 잔디 · water 물 ·
+ * lane 생활도로 포장(보도 없는 길의 낡은 포장) · laneside 생활도로 길가 띠(북쪽 한 줄 — 배수로·흰 선이 그림에 들어 있다)
+ */
+export const GROUND_FAMILIES = ["none", "pave", "forecourt", "tarmac", "alley", "earth", "lawn", "water", "lane", "laneside"] as const;
 export type GroundFamily = (typeof GROUND_FAMILIES)[number];
 
 /**
