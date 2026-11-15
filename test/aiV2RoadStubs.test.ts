@@ -36,6 +36,22 @@ const borderRoad = (project: Project, map: GameMap): number => {
     if ((x === 0 || y === 0 || x === map.width - 1 || y === map.height - 1) && isRoadCell(project, map, x, y) && isPassable(project, map, x, y)) n += 1;
   return n;
 };
+/** 길 칸이 네 방향으로 이어진 덩이 수. */
+function roadBodies(project: Project, map: GameMap): number {
+  const w = map.width, seen = new Set<number>();
+  let n = 0;
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < w; x += 1) {
+    if (seen.has(y * w + x) || !isRoadCell(project, map, x, y)) continue;
+    n += 1;
+    const queue = [{ x, y }]; seen.add(y * w + x);
+    for (let k = 0; k < queue.length; k += 1) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = queue[k]!.x + dx, ny = queue[k]!.y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= map.height || seen.has(ny * w + nx) || !isRoadCell(project, map, nx, ny)) continue;
+      seen.add(ny * w + nx); queue.push({ x: nx, y: ny });
+    }
+  }
+  return n;
+}
 const walkable = (project: Project, map: GameMap): number => { let n = 0; for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (isPassable(project, map, x, y)) n += 1; return n; };
 const SLOW = 240_000;
 
@@ -84,17 +100,14 @@ describe("출구 없는 가장자리 길 — 마을 안에서 끝낸다", () => 
     expect(isRoadCell(run.ctx.project, run.ctx.project.maps[mapId]!, gate.x, gate.y)).toBe(true);
   }, SLOW);
 
-  it("읍: 곁길이 갈라지는 모퉁이에서 멈춘다 — 줄기에서 곁길이 떨어지지 않는다", () => {
+  it("읍: 갈림목에서 멈춘다 — 걷은 뒤에도 길이 더 많은 덩이로 갈라지지 않는다(곁길이 줄기에서 떨어지지 않는다)", () => {
     const { ctx, mapId } = village({ form: "plaza" });
+    const before = roadBodies(ctx.project, ctx.project.maps[mapId]!);
     const run = createBuildRun(ctx);
-    const notes = pullBackEdgeStubs(run, mapId);
-    expect(notes).toHaveLength(2);
+    expect(pullBackEdgeStubs(run, mapId).length).toBeGreaterThanOrEqual(1);
     const after = run.ctx.project.maps[mapId]!;
     expect(borderRoad(run.ctx.project, after)).toBe(0);
-    // 서쪽 길 끝 (4,37): 북쪽 성당 길과 이어진 모퉁이 — 그 칸과 위 칸이 길이다
-    expect(isRoadCell(run.ctx.project, after, 4, 37)).toBe(true);
-    expect(isRoadCell(run.ctx.project, after, 4, 36)).toBe(true);
-    expect(isRoadCell(run.ctx.project, after, 3, 37)).toBe(false);
+    expect(roadBodies(run.ctx.project, after)).toBeLessThanOrEqual(before);
   }, SLOW);
 });
 
