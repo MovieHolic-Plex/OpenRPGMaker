@@ -8,7 +8,7 @@
   "bundle",
   "shared"
  ],
- "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 152(큰 물건 118 · 사는 사람의 물건 34) · 빛 무늬 3 · 탁상 물건 24. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 다시 그린 것 9장). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
+ "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 152(큰 물건 118 · 사는 사람의 물건 34) · 빛 무늬 3 · 탁상 물건 24. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 다시 그린 것 11장). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
  "items": [
   {
    "pixelSha256": "7f8c25e01a4cc454ac14c9d6e362de46e48e135ddbe6d4942bf607e154f173ad",
@@ -4603,51 +4603,48 @@
    }
   },
   {
-   "pixelSha256": "66395e7ca086bd8e4bce4bb645a52fdd27c8619fd942d97c75add2ddc9cc8570",
+   "pixelSha256": "2fa7bd69f5105a0f17c62788894110422d93680ce761f285b2632b440334fdb9",
    "kind": "low_furniture",
    "label": "beodeul_city/bd-in-cot",
    "width": 32,
    "height": 32,
    "cells": {
     "16": [
-     "31476def2926264c",
-     "3d26408382a6a4c1",
-     "62555ffe378c13ae",
-     "ff382cacc7f45928"
+     "0c01c2003354ac65",
+     "6a66d605cd1c17c4",
+     "c79dd121a7179181",
+     "dbf50fd799a4a44d"
     ],
     "24": [
-     "12b34f1e5f9f9534",
-     "20223ffbc977668a",
-     "25efd72ef64649ae",
-     "27131f4029548c8f",
-     "2c378db6fe0ce4ea",
-     "2d01e70beb3b4184",
-     "39499e6dc2633117",
-     "419252879c2a3fd9",
-     "43a9c52d81be8c00",
-     "4881ac41b0b2be89",
-     "5057cfcb70ae36b3",
-     "64388c3b0908abe0",
-     "7097aab9aecf4f0e",
-     "7d9f3a78ea046a44",
-     "86478331d4ecec5e",
-     "86c2a9da1a230539",
-     "9ae0db4bc2af3678",
-     "9c62ce37dd7a0ceb",
-     "bba48274a16e4a7d",
-     "d77d6bc571a07b29",
-     "f0a48a8d922e5b1f"
+     "17ecda9c87a9e5d1",
+     "1b48eb12a6d230aa",
+     "25a9d0727b26df9c",
+     "33d4ea0e732e1722",
+     "37a1f2dbbdf1a331",
+     "5833c235b6f5f481",
+     "5dd1b56d268fbaaa",
+     "7805364a1507fd4b",
+     "7e155769ce322a9e",
+     "7efe290f6d6448d1",
+     "8fee8083c0c4fc59",
+     "9811363b0a6cac36",
+     "a8c2748630651982",
+     "ab56fd04c3a9a4c5",
+     "accd032811116de3",
+     "c9604ec9bdc90ccf",
+     "dd7d188eef8a40ea",
+     "e0b8aa3632099c5d"
     ],
     "32": [
-     "e811e32460f01143"
+     "9fcf7d83b6e2c376"
     ],
     "48": [
-     "2c43f4f4abbca3b3",
-     "451cfa058b44c863",
-     "47ada35dbbb01db3",
-     "54b69844e3af3bde",
-     "6e3f71d33037a72a",
-     "fc8481a290dc2cf6"
+     "093d24a2bdac8e20",
+     "366c52df4fbf4e64",
+     "7257738312d89643",
+     "75143897a521a815",
+     "7fe3a713717d36ca",
+     "d766a16bad312cf6"
     ]
    }
   },
@@ -5549,41 +5546,41 @@
    }
   },
   {
-   "pixelSha256": "07504288d81ade64fd55bda9ae6841ae8d8a4ac65c1b9d5a2fc2599f916c4220",
+   "pixelSha256": "be58a86da2ef108f86bfc10efef118f60f797f9160753d55d13ba66f8f4f27b9",
    "kind": "low_furniture",
    "label": "beodeul_city/bd-in-pallet",
    "width": 32,
    "height": 16,
    "cells": {
     "16": [
-     "188df26abde38934",
-     "8d6a760de490e4b4"
+     "6ad52415c538748b",
+     "c4b0cca632ec1c84"
     ],
     "24": [
-     "1d725d09f675e607",
-     "3794ef5412d812e3",
-     "4c3a9b2411ec158d",
-     "8c548ac75f5ef58a",
-     "90ddb20f748fe6cd",
-     "937a975d490c91e5",
-     "acca32c8d8b78e61",
-     "c28000f1321896c8",
-     "de85eddafc3135b2",
-     "eb664bdfdefc361c",
-     "f1d61212ba4731e5",
-     "fa514ec4e9340195"
+     "0c7bf6b30df1c02d",
+     "1286f343184af015",
+     "4aac5c873d294f3b",
+     "52391a13e24fef00",
+     "63964034befe3098",
+     "6a1934334ca85bf3",
+     "725f095e11a8cc07",
+     "7ba123af183521f3",
+     "7baba8d6af6c187f",
+     "7eb331c4433688e6",
+     "c9c00d37e385b088",
+     "fe66f7e56d7bb25a"
     ],
     "32": [
-     "1b4433075d2a7c93",
-     "b324809ca5b6dee0"
+     "1384cc24510b3ce7",
+     "9d18ba483aa2d82d"
     ],
     "48": [
-     "1142b62e8fc9e1db",
-     "1dfbc029d43a8db0",
-     "4294305d8d8f3b3d",
-     "9bd3a0bb5e4719a7",
-     "a84e334ad6dcf44b",
-     "adb5795703b2865e"
+     "11f229fbdcca7314",
+     "186170074b941313",
+     "5a9a92c5c63686ce",
+     "713b9757e7ec678e",
+     "a3c34df004d5175b",
+     "c6d24bdbce67b83a"
     ]
    }
   },

@@ -135,7 +135,7 @@ OBJECTS = [
     ("millstones", "millstones", "floor", 3, 2, "mill", "맷돌과 깔때기", ["방앗간"], "structure", {}),
     ("stable stall", "stall", "wall", 2, 1, "farm", "마구간 칸(여물 시렁·구유)", ["마구간", "헛간"], "frame", {}),
     ("net rail", "net-rack", "hang", 3, 0, "fisher", "그물·말린 생선 걸이", ["어부 집", "배 창고"], "wall_mounted", dict(oy=1)),
-    ("cot", "cot", "floor", 2, 1, "guard", "낮은 침상", ["경비실", "감옥", "등대", "객실"], "low_furniture", dict(use=["sleep"], remap=[("iron", "brick", {8: 5, 7: 5, 6: 4, 5: 3, 4: 3, 3: 2, 2: 1, 1: 1})])),   # 회색 담요가 돌판으로 읽혔다 — 갈색 모직 담요로
+    ("cot", "cot-b", "floor", 2, 1, "guard", "낮은 침상", ["경비실", "감옥", "등대", "객실"], "low_furniture", dict(use=["sleep"])),   # 세 번째 그림(cot-b): 줄무늬 붉은 모직 담요 — 앞의 둘은 회색 돌판으로 읽혔다
     ("spear stand", "spear-stand", "floor", 1, 1, "guard", "창 세움과 방패", ["경비실", "무기고"], "frame", {}),
     ("dining table", "dining-table", "floor", 4, 1, "manor", "저택 긴 식탁(은 촛대)", ["저택", "식당"], "low_furniture", dict(pair=["high chair"])),
     ("canopy bed", "canopy-bed", "floor", 2, 2, "manor", "캐노피 침대", ["저택", "침실"], "low_furniture", dict(use=["sleep"])),
@@ -160,7 +160,7 @@ OBJECTS = [
     ("boat", "boat", "floor", 3, 1, "fisher", "엎어 둔 나룻배", ["어부 집", "배 창고"], "low_furniture", {}),
     ("cell bars", ("cell-bars", 0, 0, 16, 32), "floor", 1, 1, "tower", "쇠창살(옆으로 잇는다)", ["감옥"], "structure", dict(noshadow=1)),
     ("cell door", ("cell-bars", 16, 0, 16, 32), "floor", 1, 1, "tower", "쇠창살 문", ["감옥"], "structure", dict(noshadow=1)),
-    ("pallet", "pallet", "floor", 2, 1, "tower", "짚 요", ["감옥", "가난한 집", "헛간"], "low_furniture", dict(use=["sleep"], remap=[("iron", "brick", {8: 5, 7: 5, 6: 4, 5: 3, 4: 3, 3: 2, 2: 1, 1: 1})])),   # 회색 담요가 돌판으로 읽혔다 — 갈색 모직 담요로(색 줄만 옮긴다)
+    ("pallet", "pallet-b", "floor", 2, 1, "tower", "짚 요", ["감옥", "가난한 집", "헛간"], "low_furniture", dict(use=["sleep"])),   # 세 번째 그림(pallet-b): 짚 자루 + 기운 갈색 담요 — 앞의 둘은 회색 상자로 읽혔다
     ("spiral stairs", "spiral-stairs", "wall", 2, 1, "tower", "돌 나선 계단", ["등대", "탑"], "structure", dict(stairs="up", use=["travel"], noshadow=1)),
     ("lighthouse lamp", "lens", "floor", 2, 1, "tower", "등대 큰 등", ["등대"], "structure", dict(use=["light"])),
     ("telescope", "telescope", "floor", 1, 1, "tower", "삼각대 망원경", ["등대", "서재"], "column", {}),
