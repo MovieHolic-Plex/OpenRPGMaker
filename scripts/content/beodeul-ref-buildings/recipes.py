@@ -115,17 +115,17 @@ def R():
     # ── 항구 ──
     WF = [('buff', 30), ('darkframe', 34), ('darkframe', 28)]
     H['warehouse-a'] = dict(roof='tile', door='whdoor', vols=[
-        dict(k='g', x=2, w=52, floors=WF, rd=22, rise=24, ov=2, inset=False, feats=[('win-attic', 23, 48), ('hoist', 17, 76), ('loftdoor', 20, 108)]),
+        dict(k='g', x=2, w=52, floors=WF, rd=22, rise=24, ov=2, inset=False, feats=[('win-attic', 23, 48), ('hoist', 17, 76), ('loftbale', 20, 108)]),
         dict(k='g', x=56, w=54, floors=WF, rd=22, rise=24, ov=2, inset=False, feats=[('win-attic', 78, 48), ('hoist', 72, 76), ('win-plain', 77, 104), ('whdoor', 80, 144, dict(shade=False))])])
     H['warehouse-b'] = dict(roof='tile', door='whdoor', vols=[
-        dict(k='g', x=2, w=60, floors=WF, rd=22, rise=24, ov=2, inset=False, feats=[('win-attic', 27, 48), ('hoist', 21, 76), ('loftdoor', 24, 108)])],
+        dict(k='g', x=2, w=60, floors=WF, rd=22, rise=24, ov=2, inset=False, feats=[('win-attic', 27, 48), ('hoist', 21, 76), ('loftbale', 24, 108)])],
         feats=[('clutter', 44, 142, BAR)])
     H['warehouse-c'] = dict(roof='tile', door='whdoor', vols=[
         dict(k='e', x=2, w=92, floors=[('buff', 30), ('darkframe', 30)], rh=38, ov=2, inset=False, feats=[('chimney-grey', 64, 30), ('dormer', 22, 50), ('win-plain', 12, 74), ('win-plain', 62, 74)]),
         dict(k='g', x=92, w=50, floors=[('buff', 30), ('darkframe', 30)], rd=22, rise=22, ov=2, inset=False, feats=[('hoist', 106, 74), ('whdoor', 109, 112, dict(shade=False))])],
         feats=[('clutter', 62, 110, BAR)])
     H['cranehouse-a'] = dict(roof='tile', door=None, vols=[
-        dict(k='g', x=4, w=56, floors=[('darkframe', 40), ('darkframe', 34), ('darkframe', 28)], rd=26, rise=24, ov=2, feats=[('win-attic', 27, 52), ('hoist', 21, 82), ('loftdoor', 24, 114)])],
+        dict(k='g', x=4, w=56, floors=[('darkframe', 40), ('darkframe', 34), ('darkframe', 28)], rd=26, rise=24, ov=2, feats=[('win-attic', 27, 52), ('hoist', 21, 82), ('loftbale', 24, 114)])],
         feats=[('stilts', 4, 158, dict(shade=False))])
     H['crane-a'] = dict(feats=[('crane-a', 1, 64, dict(shade=False))], blockonly=True, block=[(8, 32, 40, 64)])
     H['crane-b'] = dict(feats=[('crane-b', 2, 64, dict(shade=False))], blockonly=True, block=[(0, 48, 48, 64)])
@@ -148,7 +148,7 @@ def R():
         feats=[('crenel', 0, 21, dict(w=80, shade=False)), ('gateway', 32, 80, dict(shade=False)), ('gpost', 24, 80, dict(shade=False)), ('gpost', 48, 80, dict(shade=False)), ('banner', 8, 52), ('banner', 60, 52)])
     H['gatehall-a'] = dict(roof='slate', vols=[
         dict(k='e', x=2, w=220, floors=[('ashlar', 46), ('ashlar', 28)], rh=38, ov=2, inset=False,
-             feats=[('chimney-brick', 78, 34), ('chimney-brick', 134, 34), ('sdormer', 70, 52), ('sdormer', 102, 52), ('sdormer', 134, 52), ('vwin-box', 64, 78), ('vwin-box', 142, 78)]),
+             feats=[('chimney-brick', 78, 34), ('chimney-brick', 134, 34), ('sdormer', 70, 52, dict(lift=1)), ('sdormer', 102, 52, dict(lift=1)), ('sdormer', 134, 52, dict(lift=1)), ('vwin-box', 64, 78), ('vwin-box', 142, 78)]),
         dict(k='g', x=2, w=56, floors=[('ashlar', 46), ('ashlar', 30)], rd=24, rise=22, ov=2, inset=False, feats=[('vwin-box', 21, 78), ('vwin-tall', 22, 118)]),
         dict(k='g', x=166, w=56, floors=[('ashlar', 46), ('ashlar', 30)], rd=24, rise=22, ov=2, inset=False, feats=[('vwin-box', 185, 78), ('vwin-tall', 186, 118)])],
         feats=[('passage', 96, 128, dict(shade=False)), ('banner', 106, 78), ('banner', 86, 76), ('banner', 126, 76)])

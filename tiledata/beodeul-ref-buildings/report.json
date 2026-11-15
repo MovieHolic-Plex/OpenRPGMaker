@@ -3275,8 +3275,8 @@
   "roofSideDeviationPx": 0,
   "roofVolumes": [],
   "roof": "roof",
-  "flatPercent": 29.4,
-  "colours": 20
+  "flatPercent": 31.1,
+  "colours": 22
  },
  "stall-green": {
   "size": [
@@ -3314,7 +3314,7 @@
   "roofSideDeviationPx": 0,
   "roofVolumes": [],
   "roof": "roof",
-  "flatPercent": 34.8,
+  "flatPercent": 27.0,
   "colours": 26
  },
  "stall-striped": {
@@ -3353,8 +3353,8 @@
   "roofSideDeviationPx": 0,
   "roofVolumes": [],
   "roof": "roof",
-  "flatPercent": 19.9,
-  "colours": 24
+  "flatPercent": 19.0,
+  "colours": 23
  },
  "stall-cloth": {
   "size": [
@@ -3392,8 +3392,8 @@
   "roofSideDeviationPx": 0,
   "roofVolumes": [],
   "roof": "roof",
-  "flatPercent": 33.5,
-  "colours": 23
+  "flatPercent": 35.8,
+  "colours": 22
  },
  "markethall-a": {
   "size": [
@@ -3690,8 +3690,8 @@
    "g"
   ],
   "roof": "tile",
-  "flatPercent": 12.7,
-  "colours": 59
+  "flatPercent": 12.9,
+  "colours": 58
  },
  "warehouse-b": {
   "size": [
@@ -3806,7 +3806,7 @@
    "g"
   ],
   "roof": "tile",
-  "flatPercent": 13.2,
+  "flatPercent": 13.6,
   "colours": 56
  },
  "warehouse-c": {
@@ -4095,8 +4095,8 @@
    "g"
   ],
   "roof": "tile",
-  "flatPercent": 19.0,
-  "colours": 44
+  "flatPercent": 19.3,
+  "colours": 43
  },
  "crane-a": {
   "size": [
@@ -5173,8 +5173,8 @@
    "g"
   ],
   "roof": "slate",
-  "flatPercent": 19.6,
-  "colours": 61
+  "flatPercent": 19.7,
+  "colours": 60
  },
  "guardhouse-a": {
   "size": [

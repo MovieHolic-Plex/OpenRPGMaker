@@ -235,13 +235,16 @@ class Kit:
         rec['walls'].append((x, top if v['k'] == 'e' else top, x + w, base + 2))
     # ── 붙는 것 ─────────────────────────────────────────────────────────
     def feat(s, a, f, H):
-        """f: (부품, x, 밑 y[, 옵션]) — 밑 y 는 부품 맨 아랫줄 다음 줄. 옵션: crop (x0,y0,x1,y1) · w 이어 붙일 폭 · flip · dark 어둡게 한 단."""
+        """f: (부품, x, 밑 y[, 옵션]) — 밑 y 는 부품 맨 아랫줄 다음 줄. 옵션: crop (x0,y0,x1,y1) · w 이어 붙일 폭 · flip · lift 밝게 할 단 수."""
         name, x, yb = f[0], f[1], f[2]; o = f[3] if len(f) > 3 else {}
         p = s.part(name)
         if 'w' in o: p = s.tile(name, o['w'], p.shape[0], ox=o.get('ox', 0))
         if 'crop' in o: x0, y0, x1, y1 = o['crop']; p = p[y0:y1, x0:x1]
         if o.get('flip'): p = p[:, ::-1]
         y = yb - p.shape[0]; s.put(a, p.copy(), x, y)
+        if o.get('lift'):                                                    # 부품을 놓은 자리만 같은 색 줄 안에서 lift 단 밝게(어두운 지붕 위에서 묻히는 지붕창)
+            m = np.zeros(a.shape[:2], bool); hh, ww = p.shape[:2]; y0, x0 = max(0, y), max(0, x); m[y0:y + hh, x0:x + ww] = p[y0 - y:, x0 - x:, 3][:a.shape[0] - y0, :a.shape[1] - x0] > 0
+            s.shift(a, o['lift'], x, y, x + ww, y + hh, m)
         if o.get('shade', name.startswith(('balcony', 'win-shop'))): s.shade_under(a, x + 1, x + p.shape[1] - 1, yb - (2 if name == 'balcony' else 0), 2)
 def assemble(kit, h):
     """h: dict(w, h(칸), vols, feats) → (본체 RGBA, 기록)."""

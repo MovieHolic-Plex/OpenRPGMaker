@@ -6763,9 +6763,9 @@
    "roof": "roof",
    "roofVolumes": [],
    "roofSideDeviationPx": 0,
-   "flatPercent": 29.4,
-   "colours": 20,
-   "sha256": "b4111f5038991662e99155a73805c0698f4b2b3a8f91eea1b609599b1f2b35f0",
+   "flatPercent": 31.1,
+   "colours": 22,
+   "sha256": "84a239361c01815e387a69a2a857229d14e2fe4b92d66f1cd9dfb3b0d57f49cf",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -6840,9 +6840,9 @@
    "roof": "roof",
    "roofVolumes": [],
    "roofSideDeviationPx": 0,
-   "flatPercent": 34.8,
+   "flatPercent": 27.0,
    "colours": 26,
-   "sha256": "76ca4ab3b2d83dfae59637fc1ff07d0bf10ab7799b0cdac46af2045b805c81fd",
+   "sha256": "2dfa87d45f7690f7df96d019601863f7675b2e2dafe599de47442bb4957575f3",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -6917,9 +6917,9 @@
    "roof": "roof",
    "roofVolumes": [],
    "roofSideDeviationPx": 0,
-   "flatPercent": 19.9,
-   "colours": 24,
-   "sha256": "857ecf79f5201d6dd3c06a4089d4764c8fac8aeefdffe3beac2f5212bb353ea2",
+   "flatPercent": 19.0,
+   "colours": 23,
+   "sha256": "11ebde3adeac966ae7709a7404e0a5ef5fb1f8d1d9c87bfaa6f498da19119d8f",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -6994,9 +6994,9 @@
    "roof": "roof",
    "roofVolumes": [],
    "roofSideDeviationPx": 0,
-   "flatPercent": 33.5,
-   "colours": 23,
-   "sha256": "0c057a6f402d0e988804daf2be80e15a5a403980fcdc3335b2b3fae9bb610de2",
+   "flatPercent": 35.8,
+   "colours": 22,
+   "sha256": "a2c12c79f59cdcdfc619897dc7c837ea1a47cd4afa665608eb8449cfd19db96c",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -7590,9 +7590,9 @@
     "g"
    ],
    "roofSideDeviationPx": 0,
-   "flatPercent": 12.7,
-   "colours": 59,
-   "sha256": "5a42687ab3c8101a11d2f0343b7f25011c7f6db05f85a903db67f8acc14801fa",
+   "flatPercent": 12.9,
+   "colours": 58,
+   "sha256": "73ad1295194110ee28ac923adf3311426bd47dba7cad74157505dbac41c76233",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -7822,9 +7822,9 @@
     "g"
    ],
    "roofSideDeviationPx": 0,
-   "flatPercent": 13.2,
+   "flatPercent": 13.6,
    "colours": 56,
-   "sha256": "cdc1c2440f691a37f67925e2b21c0b70b7071043d23785dab9758279a65ed182",
+   "sha256": "7b417fa72f3ab4e95c6a300c2ef6a22ae3ebc44b02bf7770e82122733d455680",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -8401,9 +8401,9 @@
     "g"
    ],
    "roofSideDeviationPx": 0,
-   "flatPercent": 19.0,
-   "colours": 44,
-   "sha256": "8d03bb695cead886f384a16a5328c2f04b4164e1ab35f308cc9ddc02453b2785",
+   "flatPercent": 19.3,
+   "colours": 43,
+   "sha256": "bc4fe8df46ecc205a8b1df674dd1ebf12799a355c383fd1fd541130a5a067ec0",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
@@ -10565,9 +10565,9 @@
     "g"
    ],
    "roofSideDeviationPx": 0,
-   "flatPercent": 19.6,
-   "colours": 61,
-   "sha256": "558cdd462c4f960d99da45cf944c2bab5145584cde04505d646c7747e377f3a5",
+   "flatPercent": 19.7,
+   "colours": 60,
+   "sha256": "d50107d5987fccdb07519b7a390ebfa456b95f83b666e795ae880b391b223e1c",
    "waiver": "fable-refbuildings-beodeul-2026-11-15"
   },
   {
