@@ -490,5 +490,55 @@
    "label": "석상 광장 · 화단",
    "en": "a formal square around a statue with planters"
   }
+ },
+ "cliff": {
+  "earth": {
+   "label": "돌 박힌 흙 둑",
+   "en": "earth banks studded with boulders",
+   "style": "cliff-earth",
+   "step": 2,
+   "lone": 2,
+   "straight": 4
+  },
+  "strata": {
+   "label": "켜 절벽",
+   "en": "banded strata cliffs",
+   "style": "cliff-strata",
+   "step": 2,
+   "lone": 3,
+   "straight": 4
+  },
+  "rubble": {
+   "label": "회색 막돌 둑",
+   "en": "grey rubble banks",
+   "style": "cliff-rubble",
+   "step": 2,
+   "lone": 2,
+   "straight": 4
+  },
+  "ledge": {
+   "label": "턱진 바위 턱",
+   "en": "ledged rock steps",
+   "style": "cliff-ledge",
+   "step": 2,
+   "lone": 2,
+   "straight": 4
+  },
+  "crag": {
+   "label": "갈비 바위벽",
+   "en": "tall ribbed crags",
+   "style": "cliff-crag",
+   "step": 2,
+   "lone": 3,
+   "straight": 4
+  },
+  "rock": {
+   "label": "금 간 바위 절벽",
+   "en": "grey-brown fissured rock cliffs with a scalloped edge",
+   "style": "cliff-rock",
+   "step": 2,
+   "lone": 3,
+   "straight": 4
+  }
  }
 }

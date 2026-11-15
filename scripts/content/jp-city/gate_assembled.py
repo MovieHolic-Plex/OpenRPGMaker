@@ -141,6 +141,8 @@ def covering(kid: str, context: str = 'bundle') -> tuple[str | None, str]:
                 why_last = f'띠 그림이 조립 표본 {name} 에 화소 그대로 들어 있지 않다(띠를 다시 그렸다 — gate_assembled.py build 후 다시 판정)'; continue
             import gate_kinds as GK
             st, why = GK.state(m['png'], 'structure', context)
+            if st == 'waived' and not GK.owner_waived(OG.pixel_sha256(os.path.join(STRIP_DIR, kid + '.png')), 'part', context):
+                why_last = f'조립 표본 {name} 는 오너 면제인데 이 띠는 면제 묶음에 없다'; continue
             if st: return name, st
             why_last = f'조립 표본 {name}: {why}'
     return None, why_last

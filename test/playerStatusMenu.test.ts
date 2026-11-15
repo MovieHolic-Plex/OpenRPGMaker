@@ -148,7 +148,7 @@ describe("player status menu", () => {
     }
   });
 
-  it("shows the level and save clock on every filled slot, and the full date on the selected one", () => {
+  it("shows place, play time and level on every filled slot, and the save date once for the selected one", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -186,13 +186,17 @@ describe("player status menu", () => {
 
       const first = findByTestId(menu, "save-slot-1");
       const second = findByTestId(menu, "save-slot-2");
-      expect(first?.querySelector(".status-menu-detail-value")?.textContent).toBe("저장됨 · L4 · 10/27 05:40");
-      expect(second?.querySelector(".status-menu-detail-value")?.textContent).toBe("저장됨 · L12 · 08/14 05:05");
-      const detail = findByTestId(menu, "status-menu-showcase-description")?.textContent ?? "";
-      expect(detail).toContain("안개 항구 마을");
-      expect(detail).toContain("15:00");
-      expect(detail).toContain("2026.10.27 05:40");
-      expect(detail).not.toContain("폐등대 창고");
+      expect(first?.querySelector(".status-menu-detail-value")?.textContent).toBe("안개 항구 마을 · 15:00 · L4");
+      expect(second?.querySelector(".status-menu-detail-value")?.textContent).toBe("폐등대 창고 · 5:00:00 · L12");
+      // 같은 저장 정보를 목록 아래 요약으로 다시 그리지 않는다(2026-11-14 QA minor 9: 행 · 요약 · 안내 줄 세 번).
+      expect(findByTestId(menu, "status-menu-detail-showcase")).toBeNull();
+      const footer = findByTestId(menu, "status-menu-message")?.textContent ?? "";
+      expect(footer).toContain("2026.10.27 05:40");
+      expect(footer).not.toContain("안개 항구 마을");
+      expect(footer).not.toContain("15:00");
+      const shown = menu.textContent ?? "";
+      expect(shown.split("안개 항구 마을").length - 1).toBe(1);
+      expect(shown.split("2026.10.27 05:40").length - 1).toBe(1);
     } finally {
       restoreDom();
     }

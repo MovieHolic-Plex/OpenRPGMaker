@@ -35,6 +35,15 @@ function renderHint(hint: string): HTMLElement {
 }
 
 const detailContexts = new WeakMap<HTMLElement, { project: Project; detail: StatusMenuDetail; showcase: boolean }>();
+const detailAdjusters = new WeakMap<HTMLElement, (delta: -1 | 1) => void>();
+
+/** 좌우 키로 값을 바꾸는 행이면 바꾸고 true. 그런 행이 아니면 false(← 는 레일로 돌아간다). */
+export function adjustStatusMenuDetailRow(row: HTMLElement | undefined, delta: -1 | 1): boolean {
+  const adjust = row ? detailAdjusters.get(row) : undefined;
+  if (!adjust) return false;
+  adjust(delta);
+  return true;
+}
 
 /** Cursor movement keeps the list, its focus and its scroll position alive. */
 export function updateStatusMenuDetailSelection(panel: HTMLElement, index: number): string | undefined {
@@ -54,6 +63,10 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   if (footer) {
     if (entry?.unavailableReason ?? entry?.description) footer.dataset.messageKind = "description";
     else delete footer.dataset.messageKind;
+  }
+  const controls = panel.closest(".oprn-status-menu")?.querySelector<HTMLElement>(".status-menu-controls");
+  if (controls?.dataset.controlsAdjust && controls.dataset.controlsDefault) {
+    controls.textContent = entry?.onAdjust ? controls.dataset.controlsAdjust : controls.dataset.controlsDefault;
   }
   return entry?.unavailableReason ?? entry?.description ?? detail.hint;
 }
@@ -247,6 +260,7 @@ function renderDetailEntry(options: {
         attrs: informationalList ? { role: "listitem" } : undefined,
         dataset: detailEntryDataset(entry, undefined),
       });
+  if (entry.onActivate && entry.onAdjust) detailAdjusters.set(row, entry.onAdjust);
   if (selected) row.classList.add("selected");
   if (entry.textInput) {
     const field = entry.textInput;
@@ -324,6 +338,7 @@ function renderDetailEntry(options: {
 /** 선택된 항목의 그림(아이콘/얼굴)을 크게, 이름·수치·설명 전문을 그린다. 그릴 것이 없으면(동작 확인문 등) null. */
 function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): HTMLElement | null {
   if (entry.attributes?.boxNav !== undefined) return null; // 보관함 머리 줄(◀ 이름 ▶)은 그릴 그림이 없다.
+  if (entry.sheet) return renderMemberSheet(project, entry, entry.sheet);
   if (!entry.icon && !entry.face && !entry.description && !entry.unavailableReason && !entry.statDelta && !entry.facts?.length) return null;
   const art = entry.icon
     ? renderDetailEntryIcon(project, { ...entry.icon, testId: "status-menu-showcase-art" })
@@ -380,6 +395,40 @@ function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): H
     attrs: { "aria-live": "polite" },
     dataset: { testid: "status-menu-detail-showcase" },
     children,
+  });
+}
+
+/** 파티원 한 사람의 상태 장 — 얼굴 · 이름 · 직업과 레벨, 그 아래 구획(HP·MP·상태·다음 레벨 / 능력치 / 장비). 줄 모양은 아이템 정보 줄과 같다. */
+function renderMemberSheet(project: Project, entry: StatusMenuDetailEntry, sheet: NonNullable<StatusMenuDetailEntry["sheet"]>): HTMLElement {
+  // 얼굴은 24px — 줄이 열한 개라 32px 얼굴이면 마지막 장비 줄이 창 밖으로 나가는 스킨이 있다.
+  const face = sheet.face ? renderDetailFace(project, sheet.face, 24) : null;
+  face?.classList.add("status-menu-showcase-art");
+  return el("aside", {
+    class: "status-menu-detail-showcase status-menu-member-sheet",
+    attrs: { "aria-live": "polite" },
+    dataset: { testid: "status-menu-detail-showcase" },
+    children: [
+      el("div", { class: "status-menu-sheet-head", children: [
+        ...(face ? [el("div", { class: "status-menu-showcase-frame", children: [face] })] : []),
+        el("div", { class: "status-menu-sheet-id", children: [
+          el("div", { class: "status-menu-showcase-name", text: entry.label, dataset: { testid: "status-menu-showcase-name" } }),
+          el("div", { class: "status-menu-showcase-value", text: entry.value }),
+        ] }),
+      ] }),
+      ...sheet.sections.map((section) => el("section", {
+        class: `status-menu-stat-delta status-menu-item-facts status-menu-sheet-section${section.twoUp ? " two-up" : ""}`,
+        attrs: { "aria-label": section.title },
+        dataset: { testid: `status-menu-sheet-${section.id}` },
+        children: section.rows.map((row) => el("div", {
+          class: `status-menu-stat-delta-row${row.tone ? ` ${row.tone}` : ""}`,
+          dataset: { testid: `status-menu-sheet-${section.id}-${row.id}` },
+          children: [
+            el("span", { class: "status-menu-stat-delta-label", text: row.label }),
+            el("span", { class: "status-menu-stat-delta-value", text: row.value }),
+          ],
+        })),
+      })),
+    ],
   });
 }
 

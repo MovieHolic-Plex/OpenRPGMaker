@@ -853,11 +853,13 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     let node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
     if (!node) continue;
     // 변신(transformResourceId)이 바뀌면 그 배우 노드만 새 그림으로 다시 만든다(연기 펑 클래스).
+    // 무기를 바꿔 전투 시트가 달라졌을 때도(battleWeaponSheet.ts — 창을 들면 창 시트) 그 배우 노드만 다시 만든다. 다음 자세부터 새 그림이다.
     const form = presentedForm(actor, presentation);
-    if ((node.dataset.battleForm ?? "") !== (form ?? "")) {
+    const formChanged = (node.dataset.battleForm ?? "") !== (form ?? "");
+    if (formChanged || (node.dataset.battleSheet ?? "") !== (actor.battleCharacterResourceId ?? "")) {
       const shownCount = group.querySelectorAll(".battle-actor").length;
       const next = actorNode({ ...actor, transformResourceId: form }, index, shownCount);
-      next.classList.add("battle-actor-transformed");
+      if (formChanged) next.classList.add("battle-actor-transformed");
       node.replaceWith(next);
       node = next;
     }
@@ -1620,6 +1622,8 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   node.dataset.battlerId = actor.id;
   node.dataset.facing = "left";
   if (actor.transformResourceId) node.dataset.battleForm = actor.transformResourceId;
+  // 변신과 별개로, 이 노드를 만들 때의 전투 시트(무기 계열로 고른 것) — 달라지면 갱신 쪽이 노드를 다시 만든다.
+  node.dataset.battleSheet = view.battleCharacterResourceId ?? "";
   node.dataset.battlerWeak = String(actor.hp > 0 && actor.hp <= actor.maxHp / 4);
   node.dataset.battlerDefending = String(actor.defending);
   node.setAttribute("aria-label", actor.name);

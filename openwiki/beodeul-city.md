@@ -1569,6 +1569,52 @@ jrpg-x1 은 광산 문이 «서쪽 길 끝»(두 칸 폭 길이라 이벤트 둘
 
 안 된 것: 집이 마당을 둘러서는 배치(자동 배치는 집을 모이는 곳에서 12~30칸 떨어뜨린다 — 배치 가지 몫, 여기는 마당 자리를 받는 자리만 열었다) · 띠 지형 길(성벽·옛 지형)은 길 줄을 몰라 흙이 부풀기만 하고 굽이치지 않는다 · 읍의 집을 벽을 맞댄 구획으로 줄 세우기(집 사이 한 칸 띄우기가 그대로다) · 광장을 보는 건물 셋 이상(배치가 정한다) · 광장 안 돌은 두 가지뿐이다 · 둑은 남쪽 바다만 · 과수원·방목지·못 가장자리는 넣지 않았다(나무·양·기물이 든다).
 
+## 물 beodeul-water (2026-11-14) — 게임마다 물빛 넷 · 깊이 띠 · 물가 둑 · 흐르는 강 · 폭포 · 물 위 살림
+
+오너(참고 마을 여섯 장을 보고): «물 색깔이나 뭐 ... 그런 것들을 좀 더 고려해야할거같군», «이제 문제는 '언덕' 의 모양새랑 , '물' 의 느낌이겠지», 참고 3번을 보고 «이거 보니까 뭐 폭포도 있음 좋겠고».
+잰 것(모델 없음, `scripts/content/beodeul-water/waterVillages.mts`): 조수가 지은 마을의 물은 색상 171~172°(초록 쪽)였고 몸통 칸 하나(23152)를 깔아 물 칸 안 물 화소의 4~8할이 한 색이었다.
+참고 마을은 180~188°에 가장 많은 색이 4~10%다. 코드 지형의 강은 폭이 한 가지인 계단 띠였고, 단을 만나면 윗단을 골짜기로 가르고 평평하게 흘렀다.
+
+**그림은 겹칠 뿐이다.** 물 칸의 번호·통행·오토타일(`beodeul_canal_lake_47`)·«물인가» 검사·8프레임 물결은 그대로다. 겉모습이 없는 게임(옛 저장본)은 한 화소도 달라지지 않는다
+(`scripts/content/beodeul-water/oldSaves.mts` 가 고치기 전 체크아웃이 지은 프로젝트를 다시 그려 그때 그림과 견준다).
+
+| 것 | 내용 | 어디서 |
+|---|---|---|
+| 물빛 `look.water` | clear 맑은 청록 187° · deep 깊은 푸른 물 203° · jade 비취빛 177° · tarn 어두운 산못 194°. 겉모습을 받는 새 게임은 늘 하나를 받는다(«원래 그림» 선택지 없음), `look.waterKey` 에 그림판 열쇠 | `src/assets/tilesetLooks.ts`(`TILESET_LOOK_PARTS` 끝에 `water`) · `src/assets/tilesetWater.ts` · `src/project/tilesetLook.ts` |
+| 그림판 `tex_beodeul_water` | 물 화소가 실린 시트 칸 9,258칸을 물빛마다 다시 칠한 칸(물과 풀·포석이 함께 실린 칸은 바닥·길 겉모습마다 한 벌), 물가 둑 256꼴 × 바닥 겉모습, 깊이 띠 셋, 폭포 띠. 시트 화소와 수식뿐 — 새로 그린 그림 없음(관문 항목 없음) | 굽기 `scripts/content/beodeul-water/bake.py`(`--check`) · 결과 `public/assets/beodeul-water/chipset.png` · `src/assets/beodeulWater.json` |
+| 깊이·물가 | 2층 ★ 덧그림. 물가 칸: 풀 입술 · 젖은 테 · 옅은 얕은 물 줄 · 얕은 띠 · 그 너머 옅은 물골 막. 안쪽: 뭍에서의 거리(chamfer 5·12·21, 잡음으로 흔든다)로 띠 셋 | `src/editor/tools/beodeulWater.ts` `layBeodeulWaterSurface` · 이미 지은 맵은 `relayBeodeulWaterSurface`(숲길 못 · 풀 둑 던전 물) |
+| 강 모양 | 가운데 줄을 곡선으로 펴고 굽이마다 소로 부풀린다(곧은 데는 두세 칸). 운하·항구 물(돌 둑)은 손대지 않는다 | `src/editor/tools/beodeulRiverShape.ts` `flowingRiverCells` |
+| 폭포 | 강이 단을 따라 내려오고, 단이 내려가는 자리는 상류의 «남쪽 한 걸음» 으로 옮겨 3~5칸 폭으로 떨어진다(3/4 시점에서 보이는 절벽면은 남향뿐). 넓은 소에서는 목을 좁히고 밑은 용소로 넓어진다. 두 단이면 폭포 둘. 강 남쪽 둑은 강을 가리지 않게 물러난다 | `settleRiverLevels` · `clearRiverView` · `bandFallPlan`(평지 요청의 북쪽 띠) · 결과는 `CodeTerrain.falls` |
+| 폭포 그림 | `relief.wallDecor` 에 움직이는 폭포 칸(원본 킷 `bd-waterfall-drop` 화소), 4층에 물마루·용소 물보라 — 절벽 그림이 무엇이든 그 위에 겹친다(`src/project/relief/**` 는 건드리지 않았다) | `hangBeodeulWaterfalls` · 플레이어 `playSceneMapRuntime.ts`·`playSceneRelief.ts` · 1배 그림기 `scripts/qa-game/render.mts` |
+| 물 위 살림 | 소·굽이에 수련 두세 장 무리와 가까운 둑의 갈대, 한 칸 나루는 디딤돌, 폭포 위·아래 널다리. 다리·나루·부두·폭포 줄은 비운다 | `dressBeodeulWaterLife` · `stoneBeodeulFords` · `fallBridgeCells` |
+| 작은 못 | 강 없는 마을(`water: "none"`)은 셋 중 둘이 우묵한 곳에 작은 못을 받는다 | `beodeulTerrainGen.ts` `pond` |
+
+**쓰는 킷 id(있으면 쓰고 없으면 건너뛴다):** `bd-obj-water-lilies` · `bd-pick-dungeon-theme-lily-pads`(`-2`) · `bd-obj-bulrush` · `bd-pick-desert-oasis-reed` · `bd-obj-step-stone-a`·`-b` · 널판 `bd-pick-fishing-port-jetty-west`.
+같은 종류의 새 킷을 그리면 `beodeulWater.ts` 머리의 목록(`LILY_WIDE`·`LILY_ONE`·`REEDS`·`STEP_STONES`)에 id 를 더한다.
+
+**함께 고친 것.** ① 물가 결함: 자연 물을 칠할 때 틈 메우기가 뭍 칸을 물로 바꿔 포구 뭍 위에 청록 네모와 회색 띠가 떴다 — 자연 물은 요청한 칸만 칠한다.
+② 플레이어: 단 지형 맵에서 물결이 멈춰 있었다(바닥을 띠 그림으로 굽는 길이 움직이는 칸을 한 장으로 구웠다, main 에 원래 있던 것) — 움직이는 칸은 다시 그린다.
+③ 자동 배치의 앵커 자리가 강 위에 놓이지 않게 후보 여섯에서 고른다(`beodeulCodeLayout.ts`).
+
+**다시 구울 때.** 겉모습 그림판(`beodeul-looks`)을 다시 구우면 이것도 다시 굽는다(바닥 겉모습의 풀 그림을 읽는다). 표의 칸 번호는 굽기마다 다시 매겨진다 — 맵은 그림판 칸을 직접 가리키지 않고 이식 목록(`tileGrafts`)으로 가리키므로,
+이미 지은 맵의 둑·띠·폭포 칸은 그 번호의 새 그림을 그린다. 덧그림 칸의 차례를 바꾸는 굽기는 그래서 이미 지은 게임의 물가 그림을 바꾼다 — 머지된 뒤에는 칸을 뒤에만 붙인다.
+
+**남은 것.** 남쪽·가운데가 높은 지형은 강이 단을 넘지 않는다(폭포 없음 — 남쪽으로만 떨어질 수 있어서다). 평지 요청의 북쪽 띠는 강이 띠 위에서 들어오는 판에서만 폭포가 선다(40판 중 17판).
+폭포 그림은 한 벌(원본 킷)이다. 물빛은 색만 바꾼다 — 물결 무늬는 넷이 같다. 숲길의 도안 못은 네모 그대로다(모양은 숲길 빌더 몫).
+
+## 참고 건물 유형 beodeul-ref-buildings (2026-11-15) — 농장 · 읍 · 항구 · 성읍 건물 44킷 `bd-bld-ref-*`
+
+오너(2026-11-15): 「레퍼런스에 있는 건물들의 유형을 자세히 살펴보고, 그거에 기반한 건물들을 버들항 타일셋에 편입시켜줘」. 참고 그림 여섯 장에 서 있는 건물을 한 채씩 뜯어, 살림집(집 양식 `bd-house-st-*` 몫)이 아닌 **유형** 을 새 킷으로 그렸다. 참고 그림은 저장소에 없고 베끼지 않았다(구조와 밀도만).
+**그림은 3/4 관문 미통과 — 오너 면제**(묶음 `fable-refbuildings-beodeul-2026-11-15`, 출구 bundle·shared, 스토어 출구는 막힌 그대로).
+
+- **무엇**: 농장 14(널판 농장집 · 데크 농장집 · 청록 너와 큰 농장집 · 지붕창 긴 본채 · 곳간·헛간 · 마구간·외양간 · 축대 저장굴 · 저장 헛간) · 읍 13(누마루 주막 · 지하문 상가 창고 · 조합 회관 · 두 층 긴 채 · 창살 창고 · 성벽 창고 · 차양 노점 넷 · 장터 지붕) · 항구 9(부두 창고 셋 · 기중기 집 · 기중기 둘 · 세관 · 관리소 · 뾰족 아치 문) · 성읍 8(탑 셋 · 성읍 문 · 문루 회관 · 탑 달린 관리소 · 기둥 회랑 채 · 벽돌 창고). 폭 3~14칸.
+- **그리는 법**: 부품(지붕 판 · 벽 판 · 문 · 창 · 트인 칸 · 난간 …)은 Claude Fable 5.2 medium 한 방 + 원본 버들항 무늬의 코드 판, 건물은 코드 조립(`scripts/content/beodeul-ref-buildings/rb.py` — 집 양식 조립기를 옮긴 것, `recipes.py` 가 건물마다의 덩어리와 붙는 것). 색 줄과 재질 처방은 집 양식과 같다(같은 마을에 나란히 선다). 어느 판이 Fable 그림이고 어느 판이 코드인지는 `tiledata/beodeul-ref-buildings/parts.json`.
+- **지붕**: 모든 지붕 덩어리의 좌우 변은 수직(편차 0px), 박공 정면은 ㅅ 꼴, 처마 정면은 직사각형. 탑 뾰족지붕만 정면에서 본 세모(좌우 대칭)다.
+- **킷**: 본체 한 장(윗층). 벽 칸은 막히고 지붕·처마 칸은 ★. 문 부품(entrance)은 문 폭×2칸, 문 앞은 그 아래 칸. **지나가는 칸**(성읍 문 · 문루 회관 밑 길)은 바닥 그림이 아래층(`tiles`)에 깔려 사람이 그 위를 걷는다(`bd-wall-gatehouse` 와 같은 법), 뾰족 아치 문은 그 칸이 빈 칸이다. 그림자·기초 동반 킷은 없다.
+- **태그**: `cat:farm|work|town|harbour|castle` · `setting:rural|town|harbour|castle` · `tier:` · `style:<맞는 집 양식>` · `kind:<마을 종류 id>`(종류 표 `tiledata/beodeul-objects/kinds.json` 의 이름) · `interior:<실내 이름>`. 같은 내용이 `src/assets/beodeulRefBuildings.json`(빌더용 표: 문 칸 · 지나가는 칸 · 그림에 든 것 · 곁에 놓을 기물 id)에 있다. **아직 어느 빌더도 이 킷을 놓지 않는다.**
+- **시트 자리**: 46,464~48,511(16줄). 이야기 기물 꼬리(34,944~38,271)와 집 양식 꼬리(38,272~46,463) 뒤의 못박힌 토막이다 — 굽기는 제 칸만 제자리에서 다시 쓴다. 집 양식이 아직 안 들어온 시트에서는 그 사이가 빈 줄이다.
+- 다시 굽기: `types_src.py` → `code_parts.py` → `assemble.py` → `bake.py`. 낱말 탐침 `bun scripts/content/beodeul-ref-buildings/words.mts`(옛 킷의 이름 조각·태그 3,972개 가운데 첫째가 바뀐 낱말 0). 시험 `test/beodeulRefBuildings.test.ts`.
+
 ## 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 버들항 B1 활엽 숲(낙성 숲 화풍) 나무 사이에 놓는 자연 기물 37종. 버들항 잠금 팔레트(원본 키트에서 뽑은 137색) 코드 손 도트다. 생성 이미지·object-gen 은 쓰지 않았다.
