@@ -2818,6 +2818,45 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 자동 배치의 마당·길가 앞마당은 밭·숲·덤불이 앉지 않는 빈 터로 남긴다(바닥을 칠하는 쪽은 codePlan.layout.yard 를 읽는다)
   if (codePlan?.layout.yard) for (const c of codePlan.layout.yard.cells) if (occ[c] === FREE) occ[c] = CLEAR;
   let fields = 0;
+  let lateFields = 0; // 숲이 선 뒤 남은 땅에 더 놓은 밭(아래 «남은 땅의 쓰임»)
+  // 훑어 놓는 밭(숲이 먼저인 마을): 집을 마당가로 모으면 남는 빈 땅이 길·기물·굴 자리 사이로 잘게 갈려, 난수로 찍은 네모는 거의 맞지 않는다
+  // (장터 마을 씨앗 43: 맵 어디든 137번 찍어 0번). 빈 평평한 네모를 모두 훑어 가장 좋은 자리에 울타리 밭을 놓는다 — 건물만 홀로 선 단(탑집 하나에 맨 잔디인 윗단)이 먼저,
+  // 그다음 다른 밭에서 멀고 길에서 가까운 자리. 울타리 문에서 길까지 걸어갈 수 있는 자리에만 선다(planFence). 난수 줄을 쓰지 않는다.
+  const scanField = (): boolean => {
+    if (!spec.field || !fenced) return false;
+    const side4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+    const dF = new Int16Array(W * H).fill(99), dB = new Int16Array(W * H).fill(99); const qF: number[] = [], qB: number[] = [];
+    const withField = new Set<number>(), withBld = new Set<number>();
+    for (let c = 0; c < W * H; c += 1) { const v = occ[c]!; if (v === FIELD || v === FENCE) { dF[c] = 0; qF.push(c); withField.add(lv[c]!); } else if (v === BLD) { dB[c] = 0; qB.push(c); withBld.add(lv[c]!); } }
+    for (const [d, q] of [[dF, qF], [dB, qB]] as const) for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; if (d[c]! >= 20) continue;
+      for (const [dx, dy] of side4) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && d[n]! > d[c]! + 1) { d[n] = d[c]! + 1; q.push(n); } } }
+    const cands: { x: number; y: number; w: number; h: number; s: number }[] = [];
+    for (const [w, h] of [[7, 4], [6, 4], [5, 3], [4, 3]] as const) {
+      for (let y = 2; y + h < H - 1; y += 1) for (let x = 2; x + w < W - 1; x += 1) {
+        const m = idx(x + (w >> 1), y + (h >> 1)), L = lv[m]!;
+        if (dF[m]! < 7) continue;
+        let ok = true;
+        for (let j = -1; j <= h && ok; j += 1) for (let i = -1; i <= w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== FREE || lv[c] !== L || rampCells.has(c)) { ok = false; break; } }
+        if (!ok) continue;
+        const lonely = withBld.has(L) && !withField.has(L) && dB[m]! <= 14;
+        cands.push({ x, y, w, h, s: Math.min(dF[m]!, 16) + (lonely ? 12 : 0) - Math.min(distRoad[m]!, 20) * 0.4 + w * h * 0.15 });
+      }
+    }
+    cands.sort((a, b) => b.s - a.s || a.y - b.y || a.x - b.x);
+    const crops = have(spec.field.decals ?? []);
+    for (const p of cands.slice(0, 24)) {
+      if (!planFence(p.x - 1, p.y - 1, p.x + p.w, p.y + p.h, (c) => distRoad[c]!)) continue;
+      const crop = crops.length ? crops[lookHash(`plot|${seed}|${p.x}|${p.y}`) % crops.length]! : null;
+      for (let j = 0; j < p.h; j += 1) for (let i = 0; i < p.w; i += 1) {
+        if ((i === 0 || i === p.w - 1) && (j === 0 || j === p.h - 1)) continue; // 네 귀퉁이는 풀(둥근 울타리 모서리)
+        const c = idx(p.x + i, p.y + j); occ[c] = FIELD;
+        if (spec.field.sample) surfaceAt.set(c, spec.field.sample);
+        if (crop) { stamps.push({ kit: crop, x: p.x + i, y: p.y + j, record: false }); decalAt.add(c); }
+      }
+      fields += 1; return true;
+    }
+    return false;
+  };
   if (spec.field) {
     // 풀밭 마을의 높은 단(오르막·윗길을 낸 곳)은 밭 자리 — 그 단 안에서 먼저 두 번까지 고른다(단 위의 쓰임). 나머지는 예전처럼 맵 전체에서.
     const upperTries: { cells: number[]; climb: Climb }[] = fenced ? climbs.map((cl) => ({ cells: cl.cells, climb: cl })) : [];
@@ -2826,8 +2865,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const fieldCap = denseWoods ? 2 : bodyNear ? 6 : 5;
     const fieldPts = (codePlan?.layout.fields ?? []).flatMap((p) => [p, { x: p.x + ri(-3, 3), y: p.y + ri(-2, 2) }, { x: p.x + ri(-4, 4), y: p.y + ri(-3, 3) }]);
     let fieldFromLayout = 0;
-    // 숲이 먼저인 마을(bodyNear): 집 곁(마을 몸 안)에 작은 밭을 먼저 놓고, 그래도 다섯에 못 미치면 예전처럼 맵 어디든 큰 밭으로 채운다 —
-    // 몸 안에서만 고르자 30판의 밭이 85 에서 52 로 줄고 윗단은 탑집 하나에 맨 잔디였다(2026-11-15 감독). 숲 몫 창(woodsHeld)은 비워 둔 채라 밭이 숲 자리를 먹지 않는다.
+    // 숲이 먼저인 마을(bodyNear): 집 곁(마을 몸 안)에 작은 밭을 먼저 놓고, 그래도 다섯에 못 미치면 고리 뒤에서 맵의 남은 빈 땅을 훑어 채운다(scanField) —
+    // 몸 안에서만 고르자 30판의 밭이 85 에서 52 로 줄고 윗단은 탑집 하나에 맨 잔디였다(2026-11-15 감독). 울타리가 없는 마을은 예전처럼 맵 어디든 난수로 찍는다.
     let bodyLeft = bodyNear ? 400 : 0;
     for (let t = 0; t < (bodyNear ? 400 : 0) + 140 + upperLeft + fieldPts.length && fields < fieldCap + upperTries.length; t += 1) {
       const ut = upperLeft > 0 ? upperTries[upperLeft % upperTries.length]! : null;
@@ -2839,7 +2878,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (ut) { upperLeft -= 1; const c = ut.cells[Math.floor(rand() * ut.cells.length)]!; x = (c % W) - Math.floor(fw / 2); y = Math.floor(c / W) - Math.floor(fh / 2); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
       else if (fp) { x = fp.x - Math.floor(fw / 2); y = fp.y - Math.floor(fh / 2); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
       else if (bodyCells && bodyLeft > 0) { bodyLeft -= 1; if (fields >= fieldCap || !bodyCells.length) { bodyLeft = 0; continue; } const c = bodyCells[ri(0, bodyCells.length - 1)]!; x = (c % W) - (fw >> 1); y = Math.floor(c / W) - (fh >> 1); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
-      else { if (fields >= (bodyNear ? 5 : fieldCap) || (codePlan && !codePlan.report.auto)) break; x = ri(1, W - fw - 1); y = ri(1, H - fh - 1); }
+      else { if (fields >= fieldCap || (bodyNear && fenced) || (codePlan && !codePlan.report.auto)) break; x = ri(1, W - fw - 1); y = ri(1, H - fh - 1); }
       if (small && !bodyNear![idx(x + (fw >> 1), y + (fh >> 1))]) continue;
       let ok = true;
       for (let j = -1; j <= fh && ok; j += 1) for (let i = -1; i <= fw; i += 1) { const v = at(x + i, y + j); if (v !== FREE && v !== 255) { ok = false; break; } }
@@ -2864,6 +2903,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (fp) { fieldFromLayout += 1; const want = codePlan!.layout.fields!; const k = want.findIndex((w) => Math.abs(w.x - fp.x) <= 4 && Math.abs(w.y - fp.y) <= 3); if (k >= 0) for (let i = fieldPts.length - 1; i >= 0; i -= 1) if (Math.abs(fieldPts[i]!.x - want[k]!.x) <= 4 && Math.abs(fieldPts[i]!.y - want[k]!.y) <= 3) fieldPts.splice(i, 1); }
       cluster(spec.field.edge, x + fw + 1, y + fh - 1, 1, 1);
     }
+    // 집 곁의 작은 밭이 다섯에 못 미치면 맵의 남은 빈 땅을 훑어 채운다(숲 몫 창은 비워 둔 채라 밭이 숲 자리를 먹지 않는다)
+    if (bodyNear && !denseWoods) while (fields < 5 && scanField()) { /* 한 뙈기씩 */ }
   }
   // 목초지(2026-10-30 「빈 단에 쓰임을 — 코드가 아니라 조수가 고른 자리로」): 울타리 두른 풀밭에 양 몇 마리·짚가리. 풀밭 마을만(울타리 조각).
   let pastureCount = 0;
@@ -2925,7 +2966,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 시골 마을(흙 몸을 깐 마을)만, 자리를 스스로 잡는 배치만(조수가 자리를 준 마을에는 코드가 빈 땅을 골라 채우지 않는다). 숲속 빈터 마을은 숲이 맡는다.
   // 울타리 문에서 길까지 걸어갈 수 있는 자리에만 선다(planFence) — 길이 안 닿는 귀퉁이는 숲이 덮는다. 난수 줄을 쓰지 않는다(뒤따르는 숲·덤불 자리가 밀리지 않게).
   let landPlots = 0;
-  let lateFields = 0; // 숲이 선 뒤 남은 땅에 더 놓은 밭(아래 «남은 땅의 쓰임»)
   if (fenced && ground.commons && spec.field && !denseWoods && (!codePlan || codePlan.report.auto)) {
     const usedCell = (c: number) => { const v = occ[c]!; return v === BLD || v === PROP || v === FENCE || (v === FIELD && !decalAt.has(c)); };
     const crops = have(spec.field.decals ?? []);
@@ -3247,42 +3287,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
-  // 남은 땅의 쓰임(2026-11-15 감독 «집을 마당가로 모았다고 나머지 땅이 비면 안 된다»): 숲이 먼저인 마을에서 숲까지 선 뒤에도 밭이 다섯에 못 미치면
-  // 남은 평평한 빈 땅에 울타리 밭을 더 놓는다 — 건물만 홀로 선 단(탑집 하나에 맨 잔디인 윗단)이 먼저, 그다음 다른 밭에서 멀고 길에서 가까운 자리.
-  // 울타리 문에서 길까지 걸어갈 수 있는 자리에만 선다(planFence). 숲 뒤에 놓으므로 숲 자리를 먹지 않고, 난수 줄을 쓰지 않는다.
-  if (bodyNear && fenced && spec.field && !denseWoods) {
-    const crops = have(spec.field.decals ?? []); const side4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
-    for (let round = 0; round < 6 && fields < 5; round += 1) {
-      const dF = new Int16Array(W * H).fill(99), dB = new Int16Array(W * H).fill(99); const qF: number[] = [], qB: number[] = [];
-      const withField = new Set<number>(), withBld = new Set<number>();
-      for (let c = 0; c < W * H; c += 1) { const v = occ[c]!; if (v === FIELD || v === FENCE) { dF[c] = 0; qF.push(c); withField.add(lv[c]!); } else if (v === BLD) { dB[c] = 0; qB.push(c); withBld.add(lv[c]!); } }
-      for (const [d, q] of [[dF, qF], [dB, qB]] as const) for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; if (d[c]! >= 20) continue;
-        for (const [dx, dy] of side4) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && d[n]! > d[c]! + 1) { d[n] = d[c]! + 1; q.push(n); } } }
-      let best = null as { x: number; y: number; w: number; h: number; s: number } | null;
-      for (const [w, h] of [[7, 4], [6, 4], [5, 3]] as const) {
-        for (let y = 2; y + h < H - 1; y += 1) for (let x = 2; x + w < W - 1; x += 1) {
-          const m = idx(x + (w >> 1), y + (h >> 1)), L = lv[m]!;
-          if (dF[m]! < 8 || distRoad[m]! > 12) continue;
-          let ok = true;
-          for (let j = -1; j <= h && ok; j += 1) for (let i = -1; i <= w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== FREE || lv[c] !== L || rampCells.has(c)) { ok = false; break; } }
-          if (!ok) continue;
-          const lonely = withBld.has(L) && !withField.has(L) && dB[m]! <= 14;
-          const sc = Math.min(dF[m]!, 16) + (lonely ? 12 : 0) - distRoad[m]! * 0.5 + w * 0.5;
-          if (!best || sc > best.s) best = { x, y, w, h, s: sc };
-        }
-        if (best) break;
-      }
-      if (!best || !planFence(best.x - 1, best.y - 1, best.x + best.w, best.y + best.h, (c) => distRoad[c]!)) break;
-      const crop = crops.length ? crops[lookHash(`plot|${seed}|${best.x}|${best.y}`) % crops.length]! : null;
-      for (let j = 0; j < best.h; j += 1) for (let i = 0; i < best.w; i += 1) {
-        if ((i === 0 || i === best.w - 1) && (j === 0 || j === best.h - 1)) continue; // 네 귀퉁이는 풀(둥근 울타리 모서리)
-        const c = idx(best.x + i, best.y + j); occ[c] = FIELD;
-        if (spec.field.sample) surfaceAt.set(c, spec.field.sample);
-        if (crop) { stamps.push({ kit: crop, x: best.x + i, y: best.y + j, record: false }); decalAt.add(c); }
-      }
-      fields += 1; lateFields += 1;
-    }
-  }
+  // 남은 땅의 쓰임(2026-11-15 감독 «집을 마당가로 모았다고 나머지 땅이 비면 안 된다»): 숲까지 선 뒤에도 밭이 다섯에 못 미치면 남은 빈 땅을 한 번 더 훑는다.
+  if (bodyNear && !denseWoods) while (fields < 5 && scanField()) lateFields += 1;
   // 볼 것 없는 화면(20×15 창) 수 — 건물·기물·밭·울타리·숲 덩이·물 위 소품이 하나도 안 걸리는 창. 낱 나무를 심기 전에 센다.
   const emptyScreens = emptyWindows({ W, H, used: (c) => { const v = occ[c]!; return v === BLD || v === PROP || v === FENCE || v === FIELD || v === FOREST || onWater.has(c); } }).length;
   // 낱 나무 덩이: 길에서 3칸 이상 떨어진 빈 땅에 덩이 중심, 덩이마다 3~7그루(숲 덩이가 있으면 몇 덩이만)
