@@ -13,6 +13,7 @@ import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, share
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { roadCutAt } from "./roadCutGuard";
 import { squareSpot } from "./beodeulSquareGuard";
+import { isRoadCell } from "@/ai/v2/place/surface";
 import { protectedHouseCells } from "./houseProtection";
 import { lookKit, withKitSite } from "@/project/kitLook";
 import { rejectOnSceneStage } from "./sceneStageGuard";
@@ -190,10 +191,11 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         const cells = footprintFromUpper(pattern.width, pattern.height, pattern.upper, resolved.source);
         const label = `「${resolved.name}」(${objectId})`, mode = String(args.onOverlap ?? "refuse");
         const feetAt = (ox: number, oy: number) => cells.filter((c) => c.foot).map((c) => ({ x: ox + c.dx, y: oy + c.dy }));
+        // 옮길 자리: 발자국 통과 · 발이 길 칸(거리·광장 테) 위가 아님(돌 수조가 거리 턱에 반쯤 걸쳐 섰다) · 보호 칸 밖
         let ownedCells: Set<number> | undefined; // 완성된 집·시공기 기물의 보호 칸 — 그 위로 옮기면 뒤에서 거절된다
         const owned = () => ownedCells ??= new Set(protectedHouseCells(map).map((c) => c.y * map.width + c.x));
         const hit = squareSpot(map, mapTileset, kitDef, { x: Number(args.x), y: Number(args.y) }, cells, label,
-          { replace: mode === "replace", free: (ox, oy) => !footprintRefusal(project, map, cells, ox, oy, label) && !roadCutAt(project, map, feetAt(ox, oy)) && !cells.some((c) => owned().has((oy + c.dy) * map.width + ox + c.dx)) });
+          { replace: mode === "replace", free: (ox, oy) => !footprintRefusal(project, map, cells, ox, oy, label) && !feetAt(ox, oy).some((c) => isRoadCell(project, map, c.x, c.y)) && !cells.some((c) => owned().has((oy + c.dy) * map.width + ox + c.dx)) });
         if (!hit) return;
         if (mode === "nearest" && hit.free) {
           overlapNotes.push(`${hit.message} — stamped on the nearest allowed spot (${hit.free.x},${hit.free.y}) instead`);
