@@ -2817,6 +2817,22 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   // 자동 배치의 마당·길가 앞마당은 밭·숲·덤불이 앉지 않는 빈 터로 남긴다(바닥을 칠하는 쪽은 codePlan.layout.yard 를 읽는다)
   if (codePlan?.layout.yard) for (const c of codePlan.layout.yard.cells) if (occ[c] === FREE) occ[c] = CLEAR;
+  // 한 귀퉁이가 설 땅(beodeulObjectSets 5번 «한 귀퉁이» 의 자: 8×6 창에 빈 칸이 마흔넷 이상이고 그 안에 길·광장에 맞닿은 빈 칸이 있다)의 창 목록.
+  // gone = 곧 막힐 칸. 숲이 먼저인 마을에서 숲 덩이와 «남은 땅의 쓰임» 밭이 그런 창을 하나는 남기게 하는 데 쓴다(아래 keepCorner).
+  const cornerRooms = (gone?: (c: number) => boolean, first = false): number[] => {
+    const S = W + 1, free = new Int32Array(S * (H + 1)), road = new Int32Array(S * (H + 1));
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      const c = idx(x, y), f = occ[c] === FREE && !rampCells.has(c) && !gone?.(c);
+      const r = f && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const v = at(x + dx!, y + dy!); return v === ROAD || v === PLAZAC; });
+      free[(y + 1) * S + x + 1] = (f ? 1 : 0) + free[y * S + x + 1]! + free[(y + 1) * S + x]! - free[y * S + x]!;
+      road[(y + 1) * S + x + 1] = (r ? 1 : 0) + road[y * S + x + 1]! + road[(y + 1) * S + x]! - road[y * S + x]!;
+    }
+    const sum = (a: Int32Array, x: number, y: number) => a[(y + 6) * S + x + 8]! - a[y * S + x + 8]! - a[(y + 6) * S + x]! + a[y * S + x]!;
+    const out: number[] = [];
+    for (let y = 2; y + 6 < H - 2; y += 1) for (let x = 2; x + 8 < W - 2; x += 1) if (sum(free, x, y) >= 44 && sum(road, x, y) >= 1) { out.push(idx(x, y)); if (first) return out; }
+    return out;
+  };
+  let keepCorner = false;
   let fields = 0;
   let lateFields = 0; // 숲이 선 뒤 남은 땅에 더 놓은 밭(아래 «남은 땅의 쓰임»)
   // 훑어 놓는 밭(숲이 먼저인 마을): 집을 마당가로 모으면 남는 빈 땅이 길·기물·굴 자리 사이로 잘게 갈려, 난수로 찍은 네모는 거의 맞지 않는다
@@ -2858,10 +2874,15 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       return seen;
     };
     const open0 = reach(-1, -1, -1, -1);
+    const rooms = keepCorner ? cornerRooms() : [];
+    // 그 네모(울타리까지)가 막아도 한 귀퉁이 창이 남는가 — 네모와 안 겹치는 창이 있으면 바로 참, 없으면 다시 센다
+    const leavesCorner = (p: { x: number; y: number; w: number; h: number }): boolean => !rooms.length
+      || rooms.some((r) => { const rx = r % W, ry = (r - rx) / W; return rx > p.x + p.w || rx + 7 < p.x - 1 || ry > p.y + p.h || ry + 5 < p.y - 1; })
+      || cornerRooms((c) => { const x = c % W, y = (c - x) / W; return x >= p.x - 1 && x <= p.x + p.w && y >= p.y - 1 && y <= p.y + p.h; }, true).length > 0;
     for (const p of cands.slice(0, 600)) {
       const after = reach(p.x - 1, p.y - 1, p.x + p.w, p.y + p.h); let lost = 0;
       for (let c = 0; c < W * H && lost <= 12; c += 1) if (open0[c] && !after[c]) { const x = c % W, y = (c - x) / W; if (x < p.x - 1 || x > p.x + p.w || y < p.y - 1 || y > p.y + p.h) lost += 1; }
-      if (lost > 12) continue; // 울타리 문이 길에 닿는 첫 자리 — 앞 스물넷만 보면 탑집 곁 후보가 모두 문을 못 내 남은 땅이 비었다(산골 씨앗 25)
+      if (lost > 12 || !leavesCorner(p)) continue; // 울타리 문이 길에 닿는 첫 자리 — 앞 스물넷만 보면 탑집 곁 후보가 모두 문을 못 내 남은 땅이 비었다(산골 씨앗 25)
       if (!planFence(p.x - 1, p.y - 1, p.x + p.w, p.y + p.h, (c) => distRoad[c]!)) continue;
       const crop = crops.length ? crops[lookHash(`plot|${seed}|${p.x}|${p.y}`) % crops.length]! : null;
       for (let j = 0; j < p.h; j += 1) for (let i = 0; i < p.w; i += 1) {
@@ -3056,6 +3077,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     fitsLand: (k, x, y) => propFits(K(k.id), x, y), placeLand: (k, x, y) => { claim(K(k.id), x, y, PROP, false); } }) : null;
   };
   if (!keyedLast) dressKeyed();
+  // 한 귀퉁이 자리: 기물이 숲·밭 뒤에 놓이면 게임마다 하나인 «한 귀퉁이»(묘지·옛 터·야영 — 길에서 닿는 빈 8×6)가 설 땅을 숲과 밭이 먼저 써 버린다
+  // (게임 열쇠 여섯 마을에서 세 마을에 서던 것이 한 마을에도 안 섰다). 그런 창이 지금 있으면 숲 덩이와 남은 땅의 밭은 마지막 하나를 막지 않는다 —
+  // 자리를 미리 찍어 비워 두는 것은 해 보고 버렸다(가장 넓은 빈 땅이 잡혀 탐침 30판의 밭이 89 에서 85, 숲이 4,399 에서 4,268칸). 열쇠와 무관하게 정해진다.
+  keepCorner = keyedLast && (theme === "river" || theme === "coast") && cornerRooms(undefined, true).length > 0;
   // 숲 덩이(2026-10-18 사용자 반려 「버들 마을은 풀이 뭉쳐진 .. '숲' 을 구현하질 못함」): 나무 키트를 3~7그루씩 흩어 심으면
   // 수관 사이로 잔디가 보이는 덤불 뭉치가 된다. 풀밭·설원 마을은 길에서 떨어진 빈 땅에 둥근 숲 덩이(FOREST, 막힘)를 잡고
   // 12b 에서 이어진 수관 오토타일(BEODEUL_NATURE.forestCanopy)로 한 장에 덮는다. 낱 나무 덩이는 숲 가장자리 몇 그루로만 남긴다.
@@ -3178,6 +3203,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (cut.length > (woodsStyle === "deep" ? 48 : 8) || cut.some((c) => !okCell(c, lv[c]!) && !(late && lv[c] === 0))) continue; // 깊은 숲은 그쪽 빈 땅을 통째로 삼킨다
         for (const c of cut) if (okCell(c, lv[c]!)) blob.add(c);
       }
+      if (keepCorner && !cornerRooms((c) => forestSet.has(c) || blob.has(c), true).length) continue; // 한 귀퉁이가 설 마지막 창은 남긴다
       for (const c of blob) forestSet.add(c);
     }
     };
