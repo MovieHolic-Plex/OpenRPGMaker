@@ -66,6 +66,7 @@ import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import { STORY_JOURNAL_DEFAULT_TITLE, journalLineStateLabel, journalWriterName, storyJournal } from "@/project/storyJournal";
 import {
+  actorNextLevel,
   isStatusMenuGroupEntryId,
   listStatusMenuGroupCommandIds,
   statusMenuCommandLabel,
@@ -111,7 +112,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
     case "load": return loadDetail(options);
-    case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
+    case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
     case "battle-reports": return battleReportDetail(options);
@@ -787,19 +788,52 @@ function autosaveTriggerText(trigger: SaveSnapshot["autosaveTrigger"], text: (ke
   return undefined;
 }
 
-function statusDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const entries = partyActors(project, session).map((actor) => {
+/**
+ * 「상태」 — 왼쪽은 파티원 줄, 커서가 올라간 사람의 장(능력치 · 장비 · 걸린 상태 · 다음 레벨까지)을 그 옆에 한 화면으로 보인다.
+ * 전에는 이름 · 직업 · HP/MP 두 줄뿐이라 메뉴 첫 화면이 이미 보인 것을 되풀이했고, Enter 는 「선택할 수 없습니다」였다(2026-11-14 QA minor 4).
+ */
+function statusDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const { project, session } = options;
+  const terms = resolveTerms(project);
+  const equipmentById = new Map(project.database.equipment.map((item) => [item.id, item]));
+  const select = options.onSelectStatusActor;
+  const entries = partyActors(project, session).map((actor): StatusMenuDetailEntry => {
     const vitals = session.actorVitals[actor.id];
     const className = classNameFor(project, session, actor);
     const level = actorLevel(session, actor);
+    const stateNames = actorFieldStateNames(project, session, actor.id);
+    const worn = actorEquipment(project, session, actor);
+    const stats = actorDerivedStats(project, normalizeActorRecord(actor), {
+      level, classOverrides: session.classOverrides, promotionLineage: session.promotionLineage,
+      growthProgress: session.growthProgress, paramBonuses: session.actorParamBonuses?.[actor.id], equipment: worn,
+    });
+    const next = actorNextLevel(session, actor);
+    const faceResourceId = resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor);
     return {
       label: actor.name,
       value: `${className} L${level}`,
-      // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지
-      // 읽히지 않는다. 가운뎃점으로 갈라 분수 슬래시만 슬래시로 남긴다.
-      description: vitals
-        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${actorFieldStateNames(project, session, actor.id).join(" · ") || "정상"}`
-        : "HP 0/0 · MP 0/0 · 정상",
+      // 읽기 전용 목록(고르는 콜백이 없는 호출)에서는 장을 그릴 자리가 없다 — 전처럼 한 줄 요약을 줄 안에 둔다.
+      // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지 읽히지 않는다. 가운뎃점으로 가른다.
+      ...(select ? {} : {
+        description: vitals
+          ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${stateNames.join(" · ") || "정상"}`
+          : "HP 0/0 · MP 0/0 · 정상",
+      }),
+      sheet: {
+        ...(faceResourceId ? { face: { resourceId: faceResourceId, alt: actor.name, testId: `status-menu-sheet-face-${actor.id}` } } : {}),
+        sections: [
+          { id: "vitals", title: "상태", rows: [
+            { id: "hp", label: terms.hp, value: vitals ? `${vitals.hp}/${vitals.maxHp}` : "0/0" },
+            { id: "mp", label: terms.mp, value: vitals ? `${vitals.mp}/${vitals.maxMp}` : "0/0" },
+            { id: "states", label: "상태", value: stateNames.join(" · ") || "정상", ...(stateNames.length ? { tone: "down" as const } : {}) },
+            { id: "next", label: "다음 레벨까지", value: next ? `${next.remaining}` : "최고 레벨" },
+          ] },
+          { id: "stats", title: "능력치", twoUp: true, rows: STAT_LABELS.map(([key, label]) => ({ id: key, label, value: String(stats[key]) })) },
+          { id: "equipment", title: "장비", rows: equipmentSlots(project).map((slot) => ({ id: slot.id, label: slot.label, value: equipmentName(equipmentById, worn[slot.id]) })) },
+        ],
+      },
+      testId: `status-menu-status-actor-${actor.id}`,
+      ...(select ? { onActivate: () => select(actor.id) } : {}),
     };
   });
   return { title: "상태", entries, emptyLabel: "상태를 볼 파티원이 없습니다" };

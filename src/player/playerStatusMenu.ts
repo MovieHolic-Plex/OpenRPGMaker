@@ -160,6 +160,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onEquipItem: options.actions.onEquipItem,
     onUnequipItem: options.actions.onUnequipItem,
     onOptimizeEquipment: options.actions.onOptimizeEquipment,
+    onSelectStatusActor: options.actions.onSelectStatusActor,
     onToggleRow: options.actions.onToggleRow,
     onSelectFormationActor: options.actions.onSelectFormationActor,
     onMoveFormationActor: options.actions.onMoveFormationActor,
@@ -186,7 +187,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "endings" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "endings" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length || entry.sheet);
   const sideParty = skin.sideParty && !snapshot.relationship && !snapshot.story && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;

@@ -38,6 +38,8 @@ export type StatusMenuDetailEntry = {
   readonly statDelta?: readonly StatusMenuStatDelta[];
   /** Inventory showcase facts (type / active effects / use eligibility). Machine values, not row copy. */
   readonly facts?: readonly StatusMenuDetailFact[];
+  /** 파티원 한 사람의 상태 장(능력치 · 장비 · 걸린 상태 · 다음 레벨까지). 커서가 올라간 행의 장을 목록 옆에 그린다. */
+  readonly sheet?: StatusMenuMemberSheet;
   /** Semantic DOM attributes for state/behavior assertions (not prose). */
   readonly attributes?: Readonly<Record<string, string>>;
   /** 글자 입력 행(별명 짓기). 값은 Enter 로 확정, Esc 로 취소 — 키는 입력창이 받고 게임 키로 새지 않는다. */
@@ -47,6 +49,17 @@ export type StatusMenuDetailEntry = {
   readonly onAdjust?: (delta: -1 | 1) => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;
+};
+
+export type StatusMenuMemberSheet = {
+  readonly face?: NonNullable<StatusMenuDetailEntry["face"]>;
+  readonly sections: readonly {
+    readonly id: "vitals" | "stats" | "equipment";
+    readonly title: string;
+    /** 짧은 숫자 줄(능력치)은 두 칸씩 놓는다. */
+    readonly twoUp?: boolean;
+    readonly rows: readonly { readonly id: string; readonly label: string; readonly value: string; readonly tone?: "down" }[];
+  }[];
 };
 
 export type StatusMenuDetailFactId = "type" | "effects" | "eligibility";
@@ -161,6 +174,8 @@ export type StatusMenuDetailOptions = {
   readonly onUnequipItem?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   /** 「최강 장비」 — bestEquipmentPlan 의 조합을 한 번에 장착한다. */
   readonly onOptimizeEquipment?: (actorId: string) => void;
+  /** 「상태」 화면에서 파티원 줄을 골랐을 때 — 커서를 그 줄로 옮긴다(터치에서는 눌러서 고른다). 없으면 상태 화면은 읽기 전용 목록이다. */
+  readonly onSelectStatusActor?: (actorId: string) => void;
   readonly onToggleRow?: (actorId: string) => void;
   readonly onSelectFormationActor?: (actorId: string) => void;
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
