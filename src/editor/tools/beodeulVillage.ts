@@ -3158,6 +3158,17 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   // 낱 나무 덩이: 길에서 3칸 이상 떨어진 빈 땅에 덩이 중심, 덩이마다 3~7그루(숲 덩이가 있으면 몇 덩이만)
   const trees = have(spec.trees), shrubs = have(spec.shrubs);
+  // 나무·덤불 킷 고르기. 마을 종류가 선 마을(숲 구성을 고른 게임)에서는 덤불을 덜 심긴 킷부터 고른다 — 장면과 그 둘레·시작 칸 둘레의 비워 둔 자리가
+  // 덤불 자리를 줄여(잰 것: 강가 50×40 에서 빈 땅 456 칸이 349 칸, 덤불 다섯 그루가 세 그루) 무작위로 고르면 한 가지 덤불만 남았다. 몇 그루뿐이어도 수종이 갈리게 한다.
+  // 종류가 없는 마을은 전과 같다(난수 한 번 — 같은 킷).
+  const plantPick = (xs: readonly string[]): string => {
+    const r = rand();
+    if (xs !== shrubs || !villageKind || !stand || xs.length < 2) return xs[Math.floor(r * xs.length)]!;
+    const used = new Map<string, number>(); for (const st of stamps) if (xs.includes(st.kit)) used.set(st.kit, (used.get(st.kit) ?? 0) + 1);
+    const least = Math.min(...xs.map((id) => used.get(id) ?? 0));
+    const pool = xs.filter((id) => (used.get(id) ?? 0) === least);
+    return pool[Math.floor(r * pool.length)]!;
+  };
   let treeCount = 0;
   const treeFits = (k: Kit, x: number, y: number, gap: number) => {
     if (!fits(k, x, y, 0, (v) => v === FREE || v === POND_RING)) return false;
@@ -3196,7 +3207,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (let y = 1; y < H; y += 1) {
       const nb = ex - side; // 선 건너 칸 — 높은 단 쪽이면 골, 골 쪽이면 높은 단
       if (at(ex, y) !== FREE || (high ? lv[idx(ex, y)] === 0 : !inMap(nb, y) || lv[idx(nb, y)] === 0) || (!high && rand() < 0.45)) continue;
-      const k = K(choice(shrubs.length && (rand() < 0.65 || !trees.length) ? shrubs : trees));
+      const k = K(plantPick(shrubs.length && (rand() < 0.65 || !trees.length) ? shrubs : trees));
       const x = side < 0 ? ex - k.w + 1 : ex, yy = y + k.h - 1 < H ? y : H - k.h;
       if (treeFits(k, x, yy, 1)) { claim(k, x, yy, PROP, false); treeCount += 1; y += k.h - 1; }
     }
@@ -3209,7 +3220,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         const c = cl.cells[Math.floor(rand() * cl.cells.length)]!; const cx = c % W, cy = (c - cx) / W;
         if (at(cx, cy) !== FREE || distRoad[c]! < 3) continue;
         let n = 0;
-        for (let m = 0; m < 12 && n < 4; m += 1) { const k = K(choice(rand() < 0.7 ? trees : shrubs.length ? shrubs : trees)); const x = cx + ri(-3, 3) - Math.floor(k.w / 2), y = cy + ri(-2, 2) - k.h + 1;
+        for (let m = 0; m < 12 && n < 4; m += 1) { const k = K(plantPick(rand() < 0.7 ? trees : shrubs.length ? shrubs : trees)); const x = cx + ri(-3, 3) - Math.floor(k.w / 2), y = cy + ri(-2, 2) - k.h + 1;
           if (treeFits(k, x, y, 2)) { claim(k, x, y, PROP, false); treeCount += 1; n += 1; } }
         if (n) groves += 1;
       }
@@ -3361,7 +3372,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const members = [{ x, y, w: k.w, h: k.h }];
       const more = ri(1, 3);
       for (let m = 0; m < more * 6 && members.length <= more; m += 1) {
-        const k2 = K(choice(rand() < 0.7 || !shrubs.length ? trees : shrubs)), p = members[Math.floor(rand() * members.length)]!;
+        const k2 = K(plantPick(rand() < 0.7 || !shrubs.length ? trees : shrubs)), p = members[Math.floor(rand() * members.length)]!;
         const [x2, y2] = clumpNext(p, k2);
         if (treeFits(k2, x2, y2, 1)) { claim(k2, x2, y2, PROP, false); treeCount += 1; members.push({ x: x2, y: y2, w: k2.w, h: k2.h }); if (k2.w >= 3) budget -= 1; }
       }
@@ -3376,7 +3387,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 가운데서 ±3칸 아무 데나 두면 덤불이 1~2칸씩 떨어진 낱개로 고르게 흩어져 점박이·격자로 읽혔다.
     const members: { x: number; y: number; w: number; h: number }[] = []; let placed = 0;
     for (let m = 0; m < n * 8 && placed < n; m += 1) {
-      const k = K(choice(rand() < (stand ? 0.85 : 0.75) ? trees : shrubs.length ? shrubs : trees));
+      const k = K(plantPick(rand() < (stand ? 0.85 : 0.75) ? trees : shrubs.length ? shrubs : trees));
       const p = members.length ? members[Math.floor(rand() * members.length)]! : undefined;
       const [x, y] = p ? clumpNext(p, k) : [cx - Math.floor(k.w / 2), cy - k.h + 1];
       if (treeFits(k, x, y, 2)) { claim(k, x, y, PROP, false); treeCount += 1; placed += 1; members.push({ x, y, w: k.w, h: k.h }); }
@@ -3427,7 +3438,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const items = grove || stand ? ri(3, 6) : ri(2, 3);
     const members: { x: number; y: number; w: number; h: number }[] = [];
     for (let m = 0; m < items * 4 && members.length < items && shrubs.length; m += 1) {
-      const k = K(choice((stand ? trees.length && rand() < 0.5 : grove && trees.length && rand() < 0.6) ? trees : shrubs));
+      const k = K(plantPick((stand ? trees.length && rand() < 0.5 : grove && trees.length && rand() < 0.6) ? trees : shrubs));
       const p = members.length ? members[Math.floor(rand() * members.length)]! : undefined; // 덩이로 붙여 키운다(위 낱 나무 덩이와 같은 규칙)
       const [x, y] = p ? clumpNext(p, k) : [cx, cy - k.h + 1];
       if (treeFits(k, x, y, 1)) { claim(k, x, y, PROP, false); n += 1; members.push({ x, y, w: k.w, h: k.h }); } }
