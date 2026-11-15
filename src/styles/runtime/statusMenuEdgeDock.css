@@ -435,6 +435,15 @@
 .oprn-status-menu .has-stat-delta .status-menu-showcase-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .oprn-status-menu .has-item-facts { gap: 2px; min-height: 0; }
 .oprn-status-menu .has-item-facts .status-menu-item-facts { align-self: start; width: 100%; }
+/* 파티원의 장(상태 화면) — 얼굴 옆에 이름·직업과 레벨, 그 아래 구획(HP·MP·상태·다음 레벨 / 능력치 / 장비). 능력치는 두 칸씩. */
+.oprn-status-menu .status-menu-sheet-head { align-items: center; display: flex; gap: 6px; min-width: 0; width: 100%; }
+.oprn-status-menu .status-menu-sheet-id { min-width: 0; }
+.oprn-status-menu .status-menu-sheet-head .status-menu-showcase-frame { flex: none; height: 28px; width: 28px; }
+.oprn-status-menu .status-menu-sheet-section { border-top: 1px solid var(--status-edge-border); padding-top: 2px; }
+/* 장은 줄이 열한 개라 기본 쇼케이스 열(76px)과 간격(5px)으로는 마지막 장비 줄이 잘렸다 — 열을 넓히고 구획 사이를 좁힌다. */
+.oprn-status-menu .status-menu-detail.has-showcase[data-status-menu-command="status"] { grid-template-columns: minmax(0, 1fr) minmax(76px, 44%); }
+.oprn-status-menu .status-menu-member-sheet { gap: 2px; }
+.oprn-status-menu .status-menu-sheet-section.two-up { column-gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .oprn-status-menu .has-item-facts .status-menu-showcase-description { display: none; }
 .oprn-status-menu .status-menu-detail-value { max-width: 100%; }
 /* 장착 목록은 여러 장비 이름을 쉼표로 잇는다 — 한 줄 말줄임이면 뒤쪽 장비가 통째로 사라진다

@@ -623,7 +623,7 @@ export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: 
   // 땅 모양 낱말이 없는 강·평지 요청은 동서 띠 하나만(남북 단 경계 토막·평지 한가운데 계단 금지, 2026-10-30 ab19)
   const bands = !(Number.isFinite(tiers0) && tiers0 > 0) && water !== "bog" && ((plain && ch === "hill") || ch === "flat"); // 평지(낱말·기본 모두)도 덩이 둔덕 대신 띠
   const mapRows = Array.isArray(args.terrainMap) && args.terrainMap.length >= 6 && args.terrainMap.every((r) => typeof r === "string" && TERRAIN_MAP_CHARS.test(r)) ? (args.terrainMap as string[]) : undefined;
-  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}), ...(mapRows ? { given: { rows: mapRows } } : {}) });
+  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}), ...(theme === "river" && water === "none" ? { pond: true } : {}), ...(mapRows ? { given: { rows: mapRows } } : {}) });
 }
 
 function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {

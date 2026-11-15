@@ -14,7 +14,7 @@ it('initializes the singleton from device preferences and applies options to bot
   updatePlayerPreferences({ bgm: 0.3, se: 0.4 });
   const engine = getAudioEngine();
   expect(engine.audioStateSnapshot().volume).toEqual({ bgm: 0.3, se: 0.4 });
-  createPlayerOptionsDetail().entries.find(e => e.testId === 'player-option-se-down')!.onActivate!();
+  createPlayerOptionsDetail().entries.find(e => e.testId === 'player-option-se')!.onAdjust!(-1);
   expect(engine.audioStateSnapshot().volume).toEqual({ bgm: 0.3, se: 0.3 });
 });
 it.each([['normal', 24], ['fast', 12], ['slow', 48]] as const)('dialogue schedules actual characters at %s device speed', (textSpeed, delay) => {

@@ -373,7 +373,17 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu:has(> .battle-submenu-header) {
   grid-template-columns: minmax(0, 1fr);
 }
-.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue { grid-column: 1 / -1; }
+/* 「더 있다」 표시(▾)는 12px 글리프라 이 무대(화면에 0.5배쯤으로 줄어 그려진다)에서는 점만 남고, 목록 한가운데 아래에 떠서
+   마지막으로 보이는 기술의 「MP 3」 바로 뒤에 붙었다 — 「MP 3,」 쉼표로 읽혔다(2026-11-14 QA minor 13).
+   좁은 목록(세로 화면)은 소모 칸이 가운데서 끝나고 넓은 목록(가로 화면)은 소모 칸이 오른쪽 끝에 있다 — 둘 다 비어 있는
+   오른쪽 4분의 1 자리에 두고, 읽히는 크기로 키운다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue {
+  grid-column: 1 / -1;
+  justify-self: end;
+  margin-right: 22%;
+  font-size: 22px;
+  line-height: 1;
+}
 /* 「뒤로」는 머리줄(「스킬」) 오른쪽 빈자리에 앉는다. 목록 끝 행으로 두면 기술 3개만으로 4행 스크롤포트가
    차서 뒤로 행 하나 때문에 「▾」가 기술 행 위에 떴다 — 기술은 다 보이는데 더 있다고 말했다(2026-10-29 실측). */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu > .battle-submenu-header { grid-row: 1; grid-column: 1; }

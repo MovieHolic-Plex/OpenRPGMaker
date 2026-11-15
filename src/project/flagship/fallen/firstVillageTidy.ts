@@ -16,11 +16,13 @@
  *     민 풀 칸(737) 한 가지만 깔린 잔디에 가장 부드러운 변형 둘을 불규칙한 덩이로 깔고, 길 가장자리엔 풀 포기·토끼풀 띠, 들꽃은 나무·벽
  *     발치에만, 줄 지은 들꽃은 솎는다 — 오너 「너무 반듯한데서 나오는 기괴함」.
  *     다리 상판 위 수납 통(은수저 퀘스트)은 그림을 나무 상자로 바꿔 다리 끝 난간 기둥 곁 둑으로, 토비는 그 옆 길 칸으로 옮긴다.
- *  4. 주인 없는 그림자 정리(clearOrphanShadows), 그리고 정리 전에 걸어 닿던 이벤트가 하나라도 닿지 않게 되면 굽기를 멈춘다.
+ *  4. 광장 남쪽 깃발 천 세 칸을 막고(blockPlazaFlagCells), 주인 없는 그림자를 정리하고(clearOrphanShadows), 정리 전에 걸어 닿던 이벤트가
+ *     하나라도 닿지 않게 되면 굽기를 멈춘다.
  * 2막 「통금의 밤」 광장(fs2_hub_night)은 이 맵을 복제하므로 act2Opening 앞에서 부른다.
  */
 import { unreachableEvents } from "@/ai/v2/judge/eventReach";
-import type { GameMap, Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
+import type { GameEvent, GameMap, Project } from "@/project/types";
 import { clearOrphanShadows } from "../fallenStarMapPolish";
 
 const GRASS = 737;
@@ -42,6 +44,43 @@ const CRATE = 26606;
 const TUFT = /^버들항 장소 · (풀밭 들꽃 무더기|들꽃 풀덩이|고사리|낮은 헤더 덤불|들꽃·고사리 무더기)/;
 const PAVED = /길|포석|판석|광장|다리 상판/;
 const STRUCTURE = /건물|성벽|울타리|담|벽|문/;
+
+/** 광장 남쪽 길드 깃발 — 기둥 밑동 칸. 그 위 세 칸이 깃발 천이다. */
+const PLAZA_FLAG_BASE = { x: 42, y: 33 } as const;
+const FLAG_POLE = /길드 깃발 기둥/;
+
+/**
+ * 광장 깃발 천 세 칸을 막는다 — 칩셋에서 그 칸은 「뒤로 지나가는」 칸(★)이라 주인공이 깃발 뒤에 통째로 묻힌 채 세 칸을 걸었다
+ * (QA 2026-11-14 minor 11). 칩셋 통행은 다른 게임도 쓰므로 그대로 두고, 이 맵의 그 칸에만 보이지 않는 막는 이벤트를 놓는다
+ * (place_field_obstacle 의 blockCells 와 같은 꼴: 투명 · 같은 높이 · 명령 없음 — 명령이 없으면 조사 안내도 뜨지 않는다).
+ * 성문 양옆 깃발(45·51열)은 넓은 판석 위라 그대로 둔다 — 통금의 밤 순찰병이 그 줄을 걷는다.
+ * 통금의 밤 광장은 문만 복제하므로(duplicate_map events:"doors") 그 맵에도 따로 부른다. 두 번 불러도 같다.
+ */
+export function blockPlazaFlagCells(project: Project, mapId: string): number {
+  const map = project.maps[mapId];
+  if (!map) throw new Error(`[fallen-village] 맵 ${mapId} 이 없다`);
+  const meta = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const isPole = (x: number, y: number): boolean => { const t = map.upperTiles[y * map.width + x] ?? -1; return t >= 0 && FLAG_POLE.test(meta[t]?.label ?? ""); };
+  if (!isPole(PLAZA_FLAG_BASE.x, PLAZA_FLAG_BASE.y)) throw new Error(`[fallen-village] ${mapId} 광장 깃발 기둥이 (${PLAZA_FLAG_BASE.x},${PLAZA_FLAG_BASE.y})에 없다 — 마을 배치가 바뀌었다`);
+  const prefix = "ev_fs_plaza_flag_block_";
+  map.events = map.events.filter((e) => !String(e.id).startsWith(prefix));
+  let placed = 0;
+  for (let y = PLAZA_FLAG_BASE.y - 1; y >= 0 && isPole(PLAZA_FLAG_BASE.x, y); y -= 1) {
+    if (!isPassable(project, map as GameMap, PLAZA_FLAG_BASE.x, y)) continue;
+    const other = map.events.find((e) => e.x === PLAZA_FLAG_BASE.x && e.y === y);
+    if (other) throw new Error(`[fallen-village] ${mapId} 깃발 칸 (${PLAZA_FLAG_BASE.x},${y})에 이벤트 ${other.id} 가 있다`);
+    placed += 1;
+    const id = `${prefix}${placed}`;
+    map.events.push({
+      id, name: "광장 깃발", x: PLAZA_FLAG_BASE.x, y, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: `${id}_p`, name: "막힘", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" },
+        priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
+      }],
+    } as unknown as GameEvent);
+  }
+  return placed;
+}
 
 export type FirstVillageTidy = { props: number; tufts: number; roadCells: number; trees: number; shadows: number };
 
@@ -240,7 +279,8 @@ export function tidyFallenFirstVillage(project: Project, hubId: string): FirstVi
     if (TUFT.test(label(up[at(x - 2, y)])) && TUFT.test(label(up[at(x + 2, y)]))) { up[i] = -1; tufts += 1; }
   }
 
-  // ── 4. 그림자·도달성 ──
+  // ── 4. 광장 깃발 천 칸 막기 · 그림자 · 도달성 ──
+  blockPlazaFlagCells(project, hubId);
   const shadows = clearOrphanShadows(project, map as GameMap);
   const lost = unreachableEvents(project, hubId).filter((id) => !before.has(id));
   if (lost.length) throw new Error(`[fallen-village] 정리 뒤 걸어 닿지 않게 된 이벤트: ${lost.join(", ")}`);

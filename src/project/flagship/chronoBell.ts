@@ -41,10 +41,10 @@ import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
 import { applyFallenStoryIndex } from "./fallen/storyIndex";
-import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
+import { applyFallenAct1Finale, applyFallenFieldRules, FS_HUB_SAVE_STONE } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
-import { applyFallenAct2Opening, letAct2PierceWoundLand } from "./fallen/act2Opening";
-import { tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
+import { applyFallenAct2Opening, FS2_HUB_NIGHT_ID, letAct2PierceWoundLand } from "./fallen/act2Opening";
+import { blockPlazaFlagCells, tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
 import { applyFallenWorldPass, applyFallenWorldPassTown } from "./fallen/worldPass";
 import { assertExaminesReachable } from "./fallen/worldPass/examine";
 import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
@@ -396,7 +396,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
     const rec = c as unknown as Record<string, unknown>;
     if (rec.kind === "changeItem" && rec.itemId === "item_shared_fishing_shrimp-1") rec.itemId = "item_hi_potion";
   }
-  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("상자를 열었다.\n「상급 회복약」을 찾았다.")]);
+  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "「기본 새우」를 얻었다.", [narrate("상자를 열었다.\n「상급 회복약」을 찾았다.")]);
 
   // 보기 셋 선택지는 질문과 함께 띄운다 — 480×270 에서 셋째 보기가 잘리던 것은 엔진이 고쳤다(#3128, 선택 창이 보기 수만큼 자란다).
 
@@ -545,7 +545,7 @@ function stageTalk(event: GameEvent | undefined): void {
  * 대사 종류를 단다 — 서술·안내·석판·외침이 모두 같은 창이라 누가 말하는지 읽기 어려웠다(가혹 검수 r6 「대사」 6.5).
  * 서술은 내레이션 창, 얻음·동료 합류·화로 진행은 시스템 안내, 석판은 표지판, 정해 둔 외침 두 줄은 외침.
  */
-const SYSTEM_LINE = /(얻었다|받았다|손에 넣었다|동료가 되었다|\(\d\/\d\)|상자는 비어 있다)/u;
+const SYSTEM_LINE = /(얻었다|받았다|손에 넣었다|동료가 되었다|\(\d\/\d\)|불붙은 화로는 이제|상자는 비어 있다)/u;
 function tagLineContext(cmd: Command): void {
   const line = cmd as Command & { speaker?: string; body?: string; context?: string };
   if (line.kind !== "text" || typeof line.body !== "string") return;
@@ -797,7 +797,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const spots: { x: number; y: number }[] = [];
   const candidates: { x: number; y: number; d: number }[] = [];
   // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
-  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 8; x += 1) {
+  // 동쪽 세 줄(+9~+11)은 기록석 둘레를 비우고도 여섯이 설 자리가 모자랄 때만 쓴다(아래 stoneRing).
+  const CROWD_EAST = 8, CROWD_EAST_SPARE = 11;
+  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + CROWD_EAST_SPARE; x += 1) {
     if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
     // 엘레나 대사 때 주인공이 옆으로 두 걸음 비켜선다 — 그 두 칸 바로 아래에 서면 몸이 겹쳐 그려졌다(QA fs49).
     if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
@@ -810,8 +812,24 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
   }
   candidates.sort((p, q) => p.d - q.d);
-  for (const c of candidates) {
+  // 광장 기록석(나중에 놓인다) 둘레는 비운다 — 상인이 기록석 윗칸 바로 옆에 서서 조사 키를 가로챘고, 처녀가 벤치와 우물 사이
+  // 한 칸 길목에 서서 기록석에서 북동쪽으로 나가려면 돌아가야 했다(QA 2026-11-14 minor 10).
+  // stoneRing: 0 = 기록석(윗칸·몸통)에서 두 칸 밖, 1 = 두 칸 안이지만 맞닿지 않은 칸, 2 = 윗칸·몸통과 맞닿은 칸.
+  // 차례: 두 칸 밖(원래 폭) → 두 칸 밖(동쪽 여분 세 줄) → 두 칸 안 → 맞닿은 칸. 군중 수는 전과 같다(townCast 가 여섯 모두를 찾는다).
+  const stoneRing = (x: number, y: number): 0 | 1 | 2 => {
+    const dx = Math.abs(x - FS_HUB_SAVE_STONE.x), dy = Math.min(Math.abs(y - FS_HUB_SAVE_STONE.y), Math.abs(y - (FS_HUB_SAVE_STONE.y + 1)));
+    return dx + dy <= 1 ? 2 : Math.max(dx, dy) <= 2 ? 1 : 0;
+  };
+  const spare = (c: { x: number }): boolean => c.x > valen.x + CROWD_EAST;
+  const passes: ((c: { x: number; y: number }) => boolean)[] = [
+    (c) => stoneRing(c.x, c.y) === 0 && !spare(c),
+    (c) => stoneRing(c.x, c.y) === 0 && spare(c),
+    (c) => stoneRing(c.x, c.y) === 1 && !spare(c),
+    (c) => stoneRing(c.x, c.y) === 2 && !spare(c),
+  ];
+  for (const pass of passes) for (const c of candidates) {
     if (spots.length >= crowd.length) break;
+    if (!pass(c)) continue;
     if (spots.some((s) => near(c.x, c.y, 1, s) || (s.x === c.x && Math.abs(s.y - c.y) <= 2))) continue;
     spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
   }
@@ -1870,7 +1888,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
           say("석판", "첫 불은 동쪽 두 화로 가운데 하나에 붙인다."),
           say("석판", "북서는 남서와 북동보다 먼저 탄다.\n남서는 셋째가 아니다."),
         );
-      } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
+      } else if (rec.body.startsWith("불길이 역류해 화로가 모두 꺼진다")) {
         // VQA 2026-10-31: 엘레나가 석판 답을 그대로 읊어 추론이 사라졌다 — 석판으로 돌려보내기만 한다.
         list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자."));
       } else if (rec.body === "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!") {
@@ -2490,6 +2508,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   tidyFallenFirstVillage(project, ids.hub);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
+  // 통금의 밤 광장은 문 이벤트만 복제한다 — 광장 깃발 천을 막는 칸(firstVillageTidy)을 밤 판에도 놓는다.
+  blockPlazaFlagCells(project, FS2_HUB_NIGHT_ID);
   // 월드 정비 — 가게 간판·광장 이정표·게시판과 서브 퀘스트 둘, 서리 가도 보급 행상(fallen/worldPass). 통금의 밤 복제(2막) 뒤라 밤 광장에는 안 붙는다.
   applyFallenWorldPass(project, execTool, { hub: ids.hub, forestEdge: "fs_forest_edge", snowRoad: "map_snow_north_1" });
   // 1막 맵 마감 — 추락지 빈터의 줄 지은 들꽃·불씨·덤불을 충격 자국으로 다시 짠다(fallen/act1MapPolish.ts). 모든 숲 단계 뒤.
