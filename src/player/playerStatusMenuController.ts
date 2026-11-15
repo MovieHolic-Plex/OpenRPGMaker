@@ -18,7 +18,7 @@ import { store } from "@/project/store";
 import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
-import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
+import { adjustStatusMenuDetailRow, updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
   isStatusMenuGroupEntryId,
@@ -297,6 +297,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           const name = skill?.name?.trim() || "이 스킬";
           options.emitMenuJuice("menu-select", renderMenu(`${withJosa(name, "은/는")} 전투에서 사용합니다.`, "skills"));
         },
+        // 상태 화면의 파티원 줄 — 고르면 커서가 그 줄로 가고 그 사람의 장이 옆에 그려진다(터치는 눌러서, 키보드는 ↑↓ 로 이미 옮긴다).
+        onSelectStatusActor: (actorId) => {
+          rememberDetailCursorFromTestId(`status-menu-status-actor-${actorId}`);
+          options.emitMenuJuice("menu-select", renderMenu(undefined, "status"));
+        },
         onSelectEquipmentActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-equipment-actor-${actorId}`);
           equipmentActorId = actorId;
@@ -522,6 +527,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         stepPocket(direction === "left" ? -1 : 1);
         return true;
       }
+      // 설정의 음량 줄은 좌우 키로 값을 내리고 올린다 — 그 줄에서만 ← 가 레일로 돌아가지 않는다(Esc 로 돌아간다).
+      if ((direction === "left" || direction === "right")
+        && adjustStatusMenuDetailRow(detailActionButtons()[selectedDetailActionIndex], direction === "left" ? -1 : 1)) return emitAndHandle("menu-select");
       if (direction === "left") {
         focusMenuArea("main");
         options.emitMenuJuice("menu-back", currentMenu());

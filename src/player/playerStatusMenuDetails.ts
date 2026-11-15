@@ -66,6 +66,7 @@ import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import { STORY_JOURNAL_DEFAULT_TITLE, journalLineStateLabel, journalWriterName, storyJournal } from "@/project/storyJournal";
 import {
+  actorNextLevel,
   isStatusMenuGroupEntryId,
   listStatusMenuGroupCommandIds,
   statusMenuCommandLabel,
@@ -111,7 +112,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
     case "load": return loadDetail(options);
-    case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
+    case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
     case "battle-reports": return battleReportDetail(options);
@@ -787,19 +788,52 @@ function autosaveTriggerText(trigger: SaveSnapshot["autosaveTrigger"], text: (ke
   return undefined;
 }
 
-function statusDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const entries = partyActors(project, session).map((actor) => {
+/**
+ * 「상태」 — 왼쪽은 파티원 줄, 커서가 올라간 사람의 장(능력치 · 장비 · 걸린 상태 · 다음 레벨까지)을 그 옆에 한 화면으로 보인다.
+ * 전에는 이름 · 직업 · HP/MP 두 줄뿐이라 메뉴 첫 화면이 이미 보인 것을 되풀이했고, Enter 는 「선택할 수 없습니다」였다(2026-11-14 QA minor 4).
+ */
+function statusDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const { project, session } = options;
+  const terms = resolveTerms(project);
+  const equipmentById = new Map(project.database.equipment.map((item) => [item.id, item]));
+  const select = options.onSelectStatusActor;
+  const entries = partyActors(project, session).map((actor): StatusMenuDetailEntry => {
     const vitals = session.actorVitals[actor.id];
     const className = classNameFor(project, session, actor);
     const level = actorLevel(session, actor);
+    const stateNames = actorFieldStateNames(project, session, actor.id);
+    const worn = actorEquipment(project, session, actor);
+    const stats = actorDerivedStats(project, normalizeActorRecord(actor), {
+      level, classOverrides: session.classOverrides, promotionLineage: session.promotionLineage,
+      growthProgress: session.growthProgress, paramBonuses: session.actorParamBonuses?.[actor.id], equipment: worn,
+    });
+    const next = actorNextLevel(session, actor);
+    const faceResourceId = resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor);
     return {
       label: actor.name,
       value: `${className} L${level}`,
-      // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지
-      // 읽히지 않는다. 가운뎃점으로 갈라 분수 슬래시만 슬래시로 남긴다.
-      description: vitals
-        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${actorFieldStateNames(project, session, actor.id).join(" · ") || "정상"}`
-        : "HP 0/0 · MP 0/0 · 정상",
+      // 읽기 전용 목록(고르는 콜백이 없는 호출)에서는 장을 그릴 자리가 없다 — 전처럼 한 줄 요약을 줄 안에 둔다.
+      // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지 읽히지 않는다. 가운뎃점으로 가른다.
+      ...(select ? {} : {
+        description: vitals
+          ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${stateNames.join(" · ") || "정상"}`
+          : "HP 0/0 · MP 0/0 · 정상",
+      }),
+      sheet: {
+        ...(faceResourceId ? { face: { resourceId: faceResourceId, alt: actor.name, testId: `status-menu-sheet-face-${actor.id}` } } : {}),
+        sections: [
+          { id: "vitals", title: "상태", rows: [
+            { id: "hp", label: terms.hp, value: vitals ? `${vitals.hp}/${vitals.maxHp}` : "0/0" },
+            { id: "mp", label: terms.mp, value: vitals ? `${vitals.mp}/${vitals.maxMp}` : "0/0" },
+            { id: "states", label: "상태", value: stateNames.join(" · ") || "정상", ...(stateNames.length ? { tone: "down" as const } : {}) },
+            { id: "next", label: "다음 레벨까지", value: next ? `${next.remaining}` : "최고 레벨" },
+          ] },
+          { id: "stats", title: "능력치", twoUp: true, rows: STAT_LABELS.map(([key, label]) => ({ id: key, label, value: String(stats[key]) })) },
+          { id: "equipment", title: "장비", rows: equipmentSlots(project).map((slot) => ({ id: slot.id, label: slot.label, value: equipmentName(equipmentById, worn[slot.id]) })) },
+        ],
+      },
+      testId: `status-menu-status-actor-${actor.id}`,
+      ...(select ? { onActivate: () => select(actor.id) } : {}),
     };
   });
   return { title: "상태", entries, emptyLabel: "상태를 볼 파티원이 없습니다" };
@@ -1365,9 +1399,9 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
   };
 }
 
-// 행의 오른쪽은 칸을 고르기 전에 비교하는 값이다. 「저장됨」만 있으면 세 칸이 같아 보이고,
-// 플레이 시간만으로는 더 짧은 옛 저장을 다시 이은 뒤의 최신 칸을 구분하지 못한다.
-// 레벨과 저장 시각을 행에 두고, 장소·플레이 시간·전체 날짜는 고른 칸의 설명에 둔다.
+// 행의 오른쪽은 칸을 고르기 전에 비교하는 값이다 — 장소 · 플레이 시간 · 레벨. 「저장됨」만 있으면 세 칸이 같아 보인다.
+// 플레이 시간만으로는 더 짧은 옛 저장을 다시 이은 뒤의 최신 칸을 구분하지 못하므로, 고른 칸의 저장 날짜를 아래 안내 줄에 한 번 보인다.
+// 예전에는 같은 저장 정보가 행 · 목록 아래 요약 · 안내 줄에 세 번 나왔다(2026-11-14 QA minor 9). 요약(쇼케이스)은 이 화면에서 그리지 않는다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
   confirmingOverwrite: boolean,
@@ -1390,14 +1424,12 @@ function saveSlotEntryParts(
       }
       const lines = [
         snapshot.projectTitle,
-        snapshot.mapName,
-        [level, played].filter(Boolean).join(" · "),
         when,
         vnCard && snapshot.sceneLine ? `“${snapshot.sceneLine}”` : "",
       ].filter((line) => Boolean(line));
       return {
-        value: saveSlotGlance(snapshot, confirmingOverwrite, text),
-        description: lines.join("\n"),
+        value: confirmingOverwrite ? text("save.overwrite") : [snapshot.mapName, played, level].filter(Boolean).join(" · ") || text("save.saved"),
+        description: lines.join(" · ") || undefined,
       };
     }
     case "present": return savedSnapshotParts(slot.snapshot, confirmingOverwrite, vnCard, text);    default: return assertNever(slot);
@@ -1430,10 +1462,6 @@ function savedSnapshotParts(
   vnCard: boolean,
   text: (key: VnUiKey) => string,
 ): { value: string; description?: string } {
-  const parts = [snapshot.projectTitle];
-  if (typeof snapshot.partyLevel === "number") parts.push(`L${snapshot.partyLevel}`);
-  if (snapshot.mapName) parts.push(snapshot.mapName);
-  if (typeof snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(snapshot.playTimeSeconds));
   const monster = snapshot.monsterSummary;
   if (monster) {
     // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
@@ -1441,15 +1469,13 @@ function savedSnapshotParts(
     const where = [progress, monster.trainer, snapshot.mapName, typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
     return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
   }
-  // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
-  if (vnCard) {
-    const when = formatSaveDate(snapshot.savedAt);
-    if (when) parts.push(when);
-    if (snapshot.sceneLine) parts.push(`“${snapshot.sceneLine}”`);
-  }
+  // 줄에는 장소 · 플레이 시간 · 레벨, 안내 줄에는 게임 이름과 저장 날짜(미연시 세이브 카드면 마지막 대사 한 줄도) — 수동 저장 칸과 같은 꼴.
+  const level = typeof snapshot.partyLevel === "number" ? `L${snapshot.partyLevel}` : undefined;
+  const played = typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined;
+  const rest = [snapshot.projectTitle, formatSaveDate(snapshot.savedAt) || undefined, vnCard && snapshot.sceneLine ? `“${snapshot.sceneLine}”` : undefined];
   return {
-    value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
-    description: parts.join(" / "),
+    value: confirmingOverwrite ? text("save.overwrite") : [snapshot.mapName, played, level].filter(Boolean).join(" · ") || text("save.saved"),
+    description: rest.filter(Boolean).join(" / "),
   };
 }
 

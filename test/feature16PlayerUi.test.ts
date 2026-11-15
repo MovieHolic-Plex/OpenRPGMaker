@@ -55,7 +55,7 @@ describe('player controls share every menu skin keyboard path', () => {
     for (let i = 0; i < 3; i++) f.controller.handleKey('ArrowDown');
     expect(f.selected()?.dataset.testid).toBe('status-menu-group-command-options');
     f.controller.handleKey('Enter');
-    expect(f.selected()?.dataset.testid).toBe('player-option-bgm-down');
+    expect(f.selected()?.dataset.testid).toBe('player-option-bgm');
     expect(f.layout.querySelector('[data-testid="player-option-text-speed"]')?.tagName).toBe('BUTTON');
     f.controller.handleKey('Escape');
     expect(f.layout.querySelector('[data-testid="status-menu-group-command-options"]')).not.toBeNull();

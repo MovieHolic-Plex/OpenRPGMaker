@@ -1415,6 +1415,12 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"]:has(.battle-command-menu > .battle-submenu-header) .battle-enemy:not(.defeated) .battle-enemy-chrome {
   display: none;
 }
+/* 근접 공격으로 아군 앞까지 달려가는 적은 이름표를 달고 간다 — 가는 길에 다른 적의 그림과 이름표 위를 지나가 판 둘이 맞붙어 한 장처럼 보였다
+   (2026-11-14 QA minor 12. 서 있을 때는 진형 벌리기가 판을 떼어 놓아 겹치지 않는다 — 겹침은 달려가는 동안에만 났다).
+   제자리를 떠나 있는 동안만 그 적의 이름표를 감춘다. 자리는 그대로 두므로(visibility) 돌아오면 같은 곳에 다시 보인다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"] .battle-enemy[data-retro-beat][data-retro-reach="melee"] .battle-enemy-chrome {
+  visibility: hidden;
+}
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"] .battle-enemy .battle-enemy-name {
   /* 전투 무대는 화면에 약 0.55 배로 줄어 그려진다 — 13px 이 1배 화면에서 7px 로 흐렸다(가혹 검수 r6). */
   font-size: 18px;

@@ -80,7 +80,7 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { movementKeyProblems, movementKeyRejectMessage, pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
-import { withJosa } from "@/util/josa";
+import { josa, withJosa } from "@/util/josa";
 import { npcStandReach } from "./npcStandReach";
 import { assertDoorExitWidths, playerAnchors, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
@@ -3974,6 +3974,11 @@ export const placeChest: ToolDefinition = {
     }
     const itemLabel = itemRecord?.name.trim() || itemId;
     const rewardText = [itemLabel ? (itemAmount > 1 ? `${itemLabel} ${itemAmount}개` : itemLabel) : null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
+    // 보물상자의 얻은 것 알림은 과거형 한 줄이다 — 「상급 회복약」과 120G를 / 「각성초」 2개를 / 150G를. 조사는 받침을 보고 고른다.
+    // 여는 동작은 뚜껑 그림과 소리가 보여 준다(예전 「보물상자를 열었다! 불씨 병 · 60G를 손에 넣었다.」).
+    const lootWord = itemAmount > 1 ? "개" : itemLabel ?? "";
+    const lootItem = itemLabel ? `「${itemLabel}」${itemAmount > 1 ? ` ${itemAmount}개` : ""}` : "";
+    const lootPhrase = lootItem ? (gold ? `${lootItem}${josa(lootWord, "와/과")} ${gold}G를` : `${lootItem}${josa(lootWord, "을/를")}`) : `${gold}G를`;
     const trigger: Trigger = { kind: "action" };
     if (lying) {
       // 바닥에 놓인 물건: 그 아이템의 아이콘이 칸에 보인다(한 장 그림 — 런타임이 16px 로 맞춘다). 주우면 그림도 막음도 사라진다.
@@ -4016,7 +4021,7 @@ export const placeChest: ToolDefinition = {
     const openCommands: Command[] = [
       ...chestOpenCommands(id, graphic),
       ...lootGrantCommands({ itemId, gold, ...(itemAmount > 1 ? { itemAmount } : {}) }),
-      { kind: "text", body: `보물상자를 열었다! ${/G$/u.test(rewardText) ? `${rewardText}를` : withJosa(rewardText, "을/를")} 손에 넣었다.` },
+      { kind: "text", body: `${lootPhrase} 얻었다.` },
       { kind: "setSelfSwitch", key: "A", value: true } as Command,
     ];
     const event: GameEvent = {
@@ -4265,17 +4270,17 @@ const placeSavepoint: ToolDefinition = {
             // 오브젝트 그림이면 빛은 그림 가운데 — 이벤트는 맨 아래 줄 가운데에 있다.
             ...(objectFootprint ? { offsetX: objectFootprint.x + (objectFootprint.w - 1) / 2 - x, offsetY: objectFootprint.y + (objectFootprint.h - 1) / 2 - y } : {}),
           } } : {}),
-          commands: healOnly ? [{ kind: "recoverAll" } as Command, { kind: "text", body: "기운이 돌아왔다." } as Command] : [
+          commands: healOnly ? [{ kind: "recoverAll" } as Command, { kind: "text", body: "기운이 돌아온다." } as Command] : [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),
             ...(prompt && saveMode !== "checkpoint"
-              ? [...(heal ? [{ kind: "text", body: "기운이 돌아왔다." } as Command] : []),
+              ? [...(heal ? [{ kind: "text", body: "기운이 돌아온다." } as Command] : []),
                 { kind: "choices", prompt, cancelBehavior: "branch", options: [
                   { text: "예", branch: [{ kind: "openSaveMenu" }] },
                   { text: "아니오", branch: [] },
                 ], cancelBranch: [] } as unknown as Command]
               : [
-                { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." } as Command,
+                { kind: "text", body: heal ? "기운이 돌아온다. 이곳에 모험을 기록한다." : saveMode === "checkpoint" ? "이곳에 모험을 기록한다." : "이곳에 모험을 기록할 수 있다." } as Command,
                 ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
               ]),
           ],

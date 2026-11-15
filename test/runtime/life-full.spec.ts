@@ -250,8 +250,8 @@ test("출하 투입 -> 수면 정산 -> 저장 -> 로드 재개를 실제 메뉴
   await page.keyboard.press("x");
   await rail(page, "system-menu");
   await choose(page, "status-menu-group-command-load");
-  // 저장 후에는 같은 칸이 "저장됨"으로 바뀌어야 한다 — 내 저장이 원인임을 못박는다.
-  await expect(page.getByTestId("load-slot-1")).toContainText("저장됨", { timeout: 20_000 });
+  // 저장 후에는 같은 칸에 저장한 곳이 떠야 한다 — 내 저장이 원인임을 못박는다.
+  await expect(page.getByTestId("load-slot-1")).toContainText("봄 밭", { timeout: 20_000 });
   await choose(page, "load-slot-1");
   // 재개 후 플레이가 다시 살아야 한다.
   await expect(page.getByTestId("main-menu")).toHaveCount(0, { timeout: 30_000 });

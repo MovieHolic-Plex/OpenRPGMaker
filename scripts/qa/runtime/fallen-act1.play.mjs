@@ -217,7 +217,7 @@ try {
     }
     seg.battleMessages = msgs;
     mark("valen_won");
-    await read(page, seg.texts, (s) => /회로.*손에 넣었다/.test(s.box ?? "") , { maxMs: 120_000 });
+    await read(page, seg.texts, (s) => /회로.*(얻었다|손에 넣었다)/.test(s.box ?? "") , { maxMs: 120_000 });
     shot(page, "valen-circuit", 300);
     await read(page, seg.texts, async () => false, { maxMs: 9_000 });
     mark("valen_end");
@@ -251,7 +251,7 @@ try {
     await read(page, seg.texts, (s) => /연기 터진다/.test(s.box ?? ""), { maxMs: 60_000 });
     mark("lose_ambush");
     shot(page, "lose-ambush", 400);
-    await read(page, seg.texts, (s) => /회로/.test(s.box ?? "") && /손에 넣었다|하넬/.test(s.box ?? ""), { maxMs: 90_000 });
+    await read(page, seg.texts, (s) => /회로/.test(s.box ?? "") && /얻었다|손에 넣었다|하넬/.test(s.box ?? ""), { maxMs: 90_000 });
     shot(page, "lose-circuit", 300);
     await read(page, seg.texts, async () => false, { maxMs: 12_000 });
     seg.after = await page.evaluate(() => { const s = window.__oprnDebug.readState(); return { lost: s.switches.sw_fs_valen_lost === true, circuit: s.inventory.item_fs_circuit ?? 0, map: s.currentMapId, over: !!document.querySelector('[data-testid="game-over-screen"]') }; });

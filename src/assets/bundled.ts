@@ -10,6 +10,7 @@ import beodeulNatureCatalog from './beodeulNatureCatalog.json';
 import { tilesetLookSheetCount } from './tilesetLooks';
 import { houseSetSheetCount } from './houseSets';
 import { tilesetStandSheetCount } from './tilesetStands';
+import { tilesetWaterSheetCount } from './tilesetWater';
 import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
@@ -144,6 +145,9 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS: readonly BundledImageAsset[] = [
   // 버들항 숲 그림판(2026-11-13) — 숲 구성(섞인 수종 나무·다시 지은 숲 수관)이 겹쳐 그리고, 숲 바닥·풀밭 얼룩 덧그림 칸이 이식 원본으로 가리킨다
   // (assets/tilesetStands.ts, 굽기 scripts/content/beodeul-looks/bake_stands.py). 고른 프로젝트만 싣는다(tileset.look.standKey 문자열로 찾는다).
   {textureKey:"tex_beodeul_stands",path:"assets/beodeul-stands/chipset.png",name:"버들항 · 게임마다 다른 숲(섞인 수종·숲 수관·숲 바닥·풀밭 얼룩)"},
+  // 버들항 물 그림판(2026-11-14) — 물가 둑·깊은 물 띠·폭포 덧그림 칸이 이식 원본으로 가리키고, 물빛을 고른 게임의 물 칸이 겹쳐 그린다
+  // (assets/tilesetWater.ts, 굽기 scripts/content/beodeul-water/bake.py). 쓰는 프로젝트만 싣는다(이식 원본 이름·tileset.look.waterKey 문자열로 찾는다).
+  {textureKey:"tex_beodeul_water",path:"assets/beodeul-water/chipset.png",name:"버들항 · 물가 둑·깊은 물·폭포와 게임마다 다른 물빛"},
 ];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
@@ -239,6 +243,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (tilesetLookSheetCount(key) !== undefined) return tilesetLookSheetCount(key)!;
   if (houseSetSheetCount(key) !== undefined) return houseSetSheetCount(key)!;
   if (tilesetStandSheetCount(key) !== undefined) return tilesetStandSheetCount(key)!;
+  if (tilesetWaterSheetCount(key) !== undefined) return tilesetWaterSheetCount(key)!;
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;

@@ -488,7 +488,7 @@ function placeBridge(c: Ctx): string {
   const roomCells: Pt[] = [];
   for (let yy = leverRoom.y; yy < leverRoom.y + leverRoom.h; yy += 1) for (let xx = leverRoom.x; xx < leverRoom.x + leverRoom.w; xx += 1) if (best.seen[yy * W + xx] && free(c, { x: xx, y: yy })) roomCells.push({ x: xx, y: yy });
   const placedLever = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells.length ? roomCells : [leverAt]), `ev_${c.map.id}_bridge_lever`, "다리 레버", sw,
-    [shake(3, 800), ...restore, sfx("stone-push"), textCmd(`쿠르릉… ${what} 위로 다리가 내려왔다!`)], `쇠사슬이 감긴 레버다. ${what} 건너편으로 다리를 내리는 장치 같다. 힘껏 당겼다!`, "레버는 이미 당겨져 있다. 다리가 내려와 있다.");
+    [shake(3, 800), ...restore, sfx("stone-push"), textCmd(`쿠르릉. ${what} 위로 다리가 내려온다.`)], `쇠사슬이 감긴 레버다. ${what} 건너편으로 다리를 내리는 장치 같다. 힘껏 당긴다.`, "레버는 이미 당겨져 있다. 다리가 내려와 있다.");
   if (!placedLever) return "";
   // 레버가 선 뒤에만 다리를 걷는다(못 놓으면 맵을 건드리지 않는다). 걷기는 채우기 뒤로 미룬다 — 미리 걷으면 건너편 적·상자가 「닿지 않는 칸」 경고를 받았다.
   const lift = () => { for (const [i, t] of swaps) c.map.lowerTiles[i] = t; };
@@ -564,7 +564,7 @@ function placeChokeLever(c: Ctx, entranceOk = true): string {
       ensureNamedSwitch(c.draft, sw, `${c.map.name}: 레버 당김(${rock ? "바위 치움" : "쇠창살 열림"})`);
       const gate = placeLeverBlock(c.draft, c.map, c.type, cells, sw, gatePlan, gateStyle)!;
       const placed = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells), `ev_${c.map.id}_lever`, "레버", sw,
-        [shake(3, 500), ...gate.openCommands, textCmd(rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다.")], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+        [shake(3, 500), ...gate.openCommands, textCmd(rock ? "쿠르릉. 어디선가 바위가 굴러가는 소리가 울린다." : "어디선가 쇠창살이 올라가는 소리가 울린다.")], "녹슨 레버다. 힘껏 당긴다.", "레버는 이미 당겨져 있다.");
       if (!placed) return "";
       const leverAt = placed.at;
       return `레버 퍼즐: 레버 ${leverRoom.id}(${leverAt.x},${leverAt.y}) → ${target.id} 앞 좁은 목 ${gate.tiles ? "쇠창살문(타일 키트, 문간 이벤트" : "쇠창살"} ${gate.cells.map((p) => `(${p.x},${p.y})`).join(" ")}${gate.tiles ? ")" : ""} 스위치 ${sw}.`;
