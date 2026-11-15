@@ -4730,10 +4730,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 나무가 몇 그루뿐인 마을(종류의 장면이 빈 땅을 먼저 쓴 마을, 갇힌 빈터를 열며 작은 덤불부터 걷힌 마을)은 같은 수종·같은 크기만 남았다
   // (신기루 VM, 여덟 씨앗 × 강가·포구 열여섯 판: 채우는 판이 종류 없는 main 열다섯, 종류가 서면 열둘).
   // 세는 법은 맵 그대로다 — 킷 첫 줄의 칸이 3층에 서 있어야 그 킷이 선 것이다(다른 수관에 가려 4층으로 간 나무는 세지 않는다).
-  // 모자라면 (1) 이미 선 나무·덤불 하나를 그 발치 네모 안에 드는 모자란 킷으로 바꿔 심는다 — 막힌 칸이 늘지 않는다(작은 킷이면 걷는 칸이 는다).
+  // 모자라면 (1) 이미 선 나무·덤불 하나를 모자란 킷으로 바꿔 심는다 — 그 발치 네모 안에 들면 막힌 칸이 늘지 않고(작은 킷이면 걷는 칸이 는다),
+  // 더 큰 킷이면 그 발치와 겹치는 자리 가운데 넘치는 칸이 빈 땅인 곳에만 심는다(3×3 만 선 마을에 3×4 가 없어 크기가 둘뿐이던 판 — 씨앗 250122 포구).
+  // 새 땅에 서는 나무의 발치에 걸어 지나는 한 칸 풀꽃(바닥 그림)이 있으면 그 풀꽃은 걷는다(data.standMix.tuftsCleared) — 풀꽃 한 포기가 나무 자리를 막지 않게.
   // (2) 그래도 모자라면 선 나무나 숲 덩이 곁의 빈 땅에 더 심는다 — 나무 심기와 같은 자리 규칙(treeFits: 길에서 한 칸, 한 단)에, 문 앞·장면 네모와 그 둘레는 비키고,
   // 심은 뒤 입구에서 닿던 칸이 하나라도 안 닿으면 되돌린다. 숲 덩이(수관 오토타일)의 칸은 건드리지 않는다. 끝내 못 채운 것은 경고와 data.standMix.short 에 적는다.
-  let standMix: { dominant: number; companion: number; shrub: number; sizes: number; swapped: number; added: number; short: string[] } | null = null;
+  let standMix: { dominant: number; companion: number; shrub: number; sizes: number; swapped: number; added: number; tuftsCleared?: number; short: string[]; tried?: { swaps: number; plantings: number; freeCellsBesideTrees: number } } | null = null;
   if (stand) {
     type Role = "dominant" | "companion" | "shrub";
     const roleIds = (role: Role): string[] => have(stand.kits[role] ?? []);
@@ -4746,14 +4748,20 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const sizes = new Set([...u.dominant, ...u.companion, ...u.shrub].map(sizeOf));
       return { u, sizes, short: Math.max(0, 1 - u.dominant.length) + Math.max(0, 1 - u.companion.length) + Math.max(0, 2 - u.shrub.length) + Math.max(0, 3 - sizes.size) };
     };
-    /** 나무 킷 하나를 찍는다(걷어 낼 수 있게 찍기 전 네 층을 남긴다). 찍기가 거절하면 null. */
-    const put = (kit: string, x: number, y: number): Stamp | null => {
+    /** 나무 킷 하나를 찍는다(걷어 낼 수 있게 찍기 전 네 층을 남긴다). 찍기가 거절하면 null. 그림 번호는 가까운 같은 킷과 다르게(되심을 때는 전의 번호 그대로). */
+    const put = (kit: string, x: number, y: number, keepPick?: number): Stamp | null => {
       const k = K(kit), st: Stamp = { kit, x, y, record: false, v: PROP };
       const layers: number[][] = [[], [], [], []];
       for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) { const c = inMap(x + i, y + j) ? idx(x + i, y + j) : -1; for (const L of [1, 2, 3, 4] as const) layers[L - 1]!.push(c < 0 ? -1 : layerTileAt(m, L, c)); }
       const pictures = standKitPictures(TS_ID, gameLook?.stand, kit);
-      if (pictures >= 2) treePicks.set(st, lookHash(`tree|${seed}|${kit}|${x}|${y}`) % pictures);
-      try { withTreePick(treePicks.get(st), () => stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${kit}`, mapId, x, y })); } catch { return null; }
+      if (keepPick !== undefined) treePicks.set(st, keepPick);
+      else if (pictures >= 2) {
+        let pick = lookHash(`tree|${seed}|${kit}|${x}|${y}`) % pictures;
+        const near = new Set(stamps.filter((o) => o.kit === kit && Math.abs(o.x - x) <= 7 && Math.abs(o.y - y) <= 7 && treePicks.has(o)).map((o) => treePicks.get(o)!));
+        for (let tries = 0; tries < pictures && near.has(pick); tries += 1) pick = (pick + 1) % pictures;
+        treePicks.set(st, pick);
+      }
+      try { withTreePick(treePicks.get(st), () => stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${kit}`, mapId, x, y })); } catch { treePicks.delete(st); return null; }
       undo.set(st, { w: k.w, h: k.h, layers }); stamps.push(st); treeCount += 1;
       for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (inMap(x + i, y + j) && occ[idx(x + i, y + j)] === FREE) occ[idx(x + i, y + j)] = PROP;
       return st;
@@ -4763,9 +4771,41 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const keepOut = new Uint8Array(W * H);
     for (const c of frontCells) { const x = c % W, y = (c - x) / W; for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (inMap(x + dx, y + dy)) keepOut[idx(x + dx, y + dy)] = 1; }
     for (const sc of scenesUp) { for (let y = sc.y - 1; y <= sc.y + sc.h; y += 1) for (let x = sc.x - 1; x <= sc.x + sc.w; x += 1) if (inMap(x, y)) keepOut[idx(x, y)] = 1; if (inMap(sc.stand.x, sc.stand.y)) keepOut[idx(sc.stand.x, sc.stand.y)] = 1; }
-    let swapped = 0, added = 0, attempts = 0;
+    /** 걸어 지나는 한 칸 풀꽃(바닥 그림 — 걷어 낼 수 있는 것)의 칸. 나무가 설 자리에 있으면 나무에 자리를 내준다. */
+    const tuftCells = (): Map<number, Stamp> => {
+      const shade = new Set(shadowOwner.values()); const out = new Map<number, Stamp>();
+      for (const [st, u] of undo) { if (st.v !== FIELD || u.w !== 1 || u.h !== 1 || failedStamps.has(st) || shade.has(st) || !inMap(st.x, st.y)) continue; const c = idx(st.x, st.y); if (decalAt.has(c) && occ[c] === FIELD) out.set(c, st); }
+      return out;
+    };
+    /** 새 땅을 쓰는 자리인가 — 나무 심기와 같은 자리 규칙(빈 땅 · 길에서 한 칸 · 한 단)에 문 앞·장면 둘레를 비킨다. 설 수 있으면 그 발치의 풀꽃들(없으면 빈 목록), 못 서면 null. */
+    const openSpot = (kw: Kit, x: number, y: number): Stamp[] | null => {
+      if (x < 0 || y < 0 || x + kw.w > W || y + kw.h > H) return null;
+      const tufts = tuftCells(); const under: Stamp[] = [];
+      for (let j = 0; j < kw.h; j += 1) for (let i = 0; i < kw.w; i += 1) { const c = idx(x + i, y + j); if (keepOut[c]) return null; const t = tufts.get(c); if (t) under.push(t); }
+      for (const t of under) occ[idx(t.x, t.y)] = FREE;
+      const ok = treeFits(kw, x, y, 1);
+      for (const t of under) occ[idx(t.x, t.y)] = FIELD;
+      return ok ? under : null;
+    };
+    type TuftBack = { st: Stamp; u: { w: number; h: number; layers: number[][] }; tiles: number[]; slot: string | undefined };
+    /** 풀꽃들을 걷는다 — 나무를 되돌릴 때 그대로 돌려놓을 수 있게 그 칸의 네 층을 적어 둔다. */
+    const takeTufts = (under: Stamp[]): TuftBack[] => under.map((st) => {
+      const c = idx(st.x, st.y); const back: TuftBack = { st, u: undo.get(st)!, tiles: ([1, 2, 3, 4] as const).map((L) => layerTileAt(m, L, c)), slot: newObjectStamps.get(st) };
+      liftStamp(st); return back;
+    });
+    const giveBack = (backs: TuftBack[]): void => { for (const b of backs) {
+      const c = idx(b.st.x, b.st.y); for (const L of [1, 2, 3, 4] as const) setLayerTileAt(m, L, c, b.tiles[L - 1]!);
+      undo.set(b.st, b.u); stamps.push(b.st); occ[c] = FIELD; if (b.slot && newObjects[b.slot] !== undefined) newObjects[b.slot]! += 1;
+    } };
+    /** 심은 뒤에도 입구에서 닿던 칸이 (새 나무의 발치 말고는) 다 닿는가. */
+    const stillReached = (before: Uint8Array, kw: Kit, x: number, y: number): boolean => {
+      const after = reachMap();
+      for (let n = 0; n < W * H; n += 1) if (before[n] && !after[n] && !(n % W >= x && n % W < x + kw.w && Math.floor(n / W) >= y && Math.floor(n / W) < y + kw.h)) return false;
+      return true;
+    };
+    let swapped = 0, added = 0, swapTries = 0, addTries = 0, spotsSeen = 0, tufts = 0;
     const tried = new Set<string>();
-    for (let round = 0; round < 12 && attempts < 120; round += 1) {
+    for (let round = 0; round < 12; round += 1) {
       const now = count(); if (!now.short) break;
       const usedAll = new Set([...now.u.dominant, ...now.u.companion, ...now.u.shrub]);
       const fresh = (ids: string[]) => ids.filter((id) => !usedAll.has(id));
@@ -4776,45 +4816,67 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (now.sizes.size < 3) lacking.push(...fresh([...roleIds("shrub"), ...roleIds("companion"), ...roleIds("dominant")]).filter((id) => !now.sizes.has(sizeOf(id))));
       // 새 크기를 주는 킷 먼저, 그다음 작은 킷(자리를 덜 가린다)
       const wants = [...new Set(lacking)].sort((a, b) => (now.sizes.has(sizeOf(a)) ? 1 : 0) - (now.sizes.has(sizeOf(b)) ? 1 : 0) || K(a).w * K(a).h - K(b).w * K(b).h || (a < b ? -1 : 1));
+      const reachBefore = reachMap();
       let done = false;
-      // (1) 바꿔 심기: 같은 킷이 여럿 선 것부터(하나를 바꿔도 그 킷은 남는다), 그다음 작은 것부터
-      for (let n = 0; n < 60 && !done && attempts < 120; n += 1) {
+      // (1) 바꿔 심기: 같은 킷이 여럿 선 것부터(하나를 바꿔도 그 킷은 남는다), 그다음 작은 것부터. 모자란 킷이 선 나무보다 작으면 그 발치 안에(막힌 칸이 늘지 않는다),
+      // 크면 발치와 겹치게 놓되 넘치는 칸이 빈 땅일 때만 — 넘친 칸이 닿던 길을 끊으면 되돌린다.
+      for (const want of wants) { const kw = K(want);
         const live = liveTrees(); const many = new Map<string, number>(); for (const st of live) many.set(st.kit, (many.get(st.kit) ?? 0) + 1);
-        const order = [...live].sort((a, b) => (many.get(b.kit)! > 1 ? 1 : 0) - (many.get(a.kit)! > 1 ? 1 : 0) || K(a.kit).w * K(a.kit).h - K(b.kit).w * K(b.kit).h || a.y - b.y || a.x - b.x);
-        let pair: { want: string; v: Stamp } | null = null;
-        for (const want of wants) { const kw = K(want);
-          const v = order.find((st) => st.kit !== want && K(st.kit).w >= kw.w && K(st.kit).h >= kw.h && !tried.has(`${want}@${st.x},${st.y}`));
-          if (v) { pair = { want, v }; break; } }
-        if (!pair) break;
-        const { want, v } = pair, kv = K(v.kit), kw = K(want), old = { kit: v.kit, x: v.x, y: v.y };
-        tried.add(`${want}@${old.x},${old.y}`); attempts += 1;
-        liftStamp(v);
-        const s2 = put(want, old.x + Math.floor((kv.w - kw.w) / 2), old.y + kv.h - kw.h);
-        if (s2 && count().short < now.short) { swapped += 1; done = true; break; }
-        if (s2) liftStamp(s2);
-        put(old.kit, old.x, old.y);
+        const order = live.filter((st) => st.kit !== want).sort((a, b) => (many.get(b.kit)! > 1 ? 1 : 0) - (many.get(a.kit)! > 1 ? 1 : 0) || K(a.kit).w * K(a.kit).h - K(b.kit).w * K(b.kit).h || a.y - b.y || a.x - b.x);
+        for (const v of order) {
+          if (swapTries >= 160) break;
+          const key = `${want}@${v.x},${v.y}`; if (tried.has(key)) continue;
+          tried.add(key); swapTries += 1;
+          const kv = K(v.kit), old = { kit: v.kit, x: v.x, y: v.y, pick: treePicks.get(v) };
+          // 놓아 볼 자리: 선 나무의 발치와 겹치는 모든 자리 — 많이 겹치는 것부터(새 땅을 덜 쓴다), 같으면 밑동 줄이 맞는 것, 가운데 것부터
+          const at2: { x: number; y: number; over: number; inside: boolean }[] = [];
+          for (let y = old.y - kw.h + 1; y < old.y + kv.h; y += 1) for (let x = old.x - kw.w + 1; x < old.x + kv.w; x += 1) {
+            const over = (Math.min(x + kw.w, old.x + kv.w) - Math.max(x, old.x)) * (Math.min(y + kw.h, old.y + kv.h) - Math.max(y, old.y));
+            at2.push({ x, y, over, inside: over === kw.w * kw.h });
+          }
+          const cx = old.x + (kv.w - kw.w) / 2, by = old.y + kv.h - kw.h;
+          at2.sort((p, q) => q.over - p.over || Math.abs(p.y - by) - Math.abs(q.y - by) || Math.abs(p.x - cx) - Math.abs(q.x - cx) || p.x - q.x);
+          liftStamp(v);
+          let puts = 0;
+          for (const { x, y, inside } of at2) {
+            if (puts >= 6) break;
+            const under = inside ? [] : openSpot(kw, x, y); if (!under) continue;
+            const back = takeTufts(under);
+            const s2 = put(want, x, y);
+            if (s2) { puts += 1;
+              if (count().short < now.short && (inside || stillReached(reachBefore, kw, x, y))) { swapped += 1; tufts += back.length; done = true; break; }
+              liftStamp(s2); }
+            giveBack(back);
+          }
+          if (done) break;
+          put(old.kit, old.x, old.y, old.pick);
+        }
+        if (done) break;
       }
       if (done) continue;
-      // (2) 더 심기: 선 나무·숲 덩이 곁의 빈 땅
+      // (2) 더 심기: 선 나무·숲 덩이 곁(두 칸 안)의 빈 땅 — 그 칸이 새 나무의 밑동 줄 가운데·왼쪽·오른쪽에 오게 놓아 본다
       const spots: number[] = []; const mark = new Uint8Array(W * H);
-      const near = (x: number, y: number) => { for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [2, 0], [-2, 0], [0, 2]] as const) { const X = x + dx, Y = y + dy; if (inMap(X, Y) && occ[idx(X, Y)] === FREE && !keepOut[idx(X, Y)] && !mark[idx(X, Y)]) { mark[idx(X, Y)] = 1; spots.push(idx(X, Y)); } } };
+      const near = (x: number, y: number) => { for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [2, 0], [-2, 0], [0, 2], [0, -2], [1, 1], [-1, 1], [1, -1], [-1, -1]] as const) { const X = x + dx, Y = y + dy; if (inMap(X, Y) && occ[idx(X, Y)] === FREE && !keepOut[idx(X, Y)] && !mark[idx(X, Y)]) { mark[idx(X, Y)] = 1; spots.push(idx(X, Y)); } } };
       for (const st of liveTrees()) { const k = K(st.kit); for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) near(st.x + i, st.y + j); }
       for (const c of forestSet) near(c % W, Math.floor(c / W));
       spots.sort((a, b) => ((Math.imul(a, 2654435761) ^ seed) >>> 0) - ((Math.imul(b, 2654435761) ^ seed) >>> 0));
-      const reachBefore = reachMap();
+      spotsSeen = Math.max(spotsSeen, spots.length);
       for (const want of wants) { const kw = K(want);
         for (const c of spots) {
-          if (attempts >= 120) break;
-          const x = (c % W) - Math.floor(kw.w / 2), y = Math.floor(c / W) - kw.h + 1;
-          if (tried.has(`+${want}@${x},${y}`) || !treeFits(kw, x, y, 1)) continue;
-          let clear = true; for (let j = 0; clear && j < kw.h; j += 1) for (let i = 0; i < kw.w; i += 1) if (keepOut[idx(x + i, y + j)]) { clear = false; break; }
-          if (!clear) continue;
-          tried.add(`+${want}@${x},${y}`); attempts += 1;
-          const s2 = put(want, x, y); if (!s2) continue;
-          const reachAfter = reachMap(); let ok = count().short < now.short;
-          for (let n = 0; ok && n < W * H; n += 1) if (reachBefore[n] && !reachAfter[n] && !(n % W >= x && n % W < x + kw.w && Math.floor(n / W) >= y && Math.floor(n / W) < y + kw.h)) ok = false;
-          if (ok) { added += 1; done = true; break; }
-          liftStamp(s2);
+          if (addTries >= 160) break;
+          const cx = c % W, y = Math.floor(c / W) - kw.h + 1;
+          for (const x of [...new Set([cx - Math.floor(kw.w / 2), cx, cx - kw.w + 1])]) {
+            if (tried.has(`+${want}@${x},${y}`)) continue;
+            const under = openSpot(kw, x, y); if (!under) continue;
+            tried.add(`+${want}@${x},${y}`); addTries += 1;
+            const back = takeTufts(under);
+            const s2 = put(want, x, y);
+            if (s2) {
+              if (count().short < now.short && stillReached(reachBefore, kw, x, y)) { added += 1; tufts += back.length; done = true; break; }
+              liftStamp(s2); }
+            giveBack(back);
+          }
+          if (done) break;
         }
         if (done) break;
       }
@@ -4825,8 +4887,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (!end.u.companion.length) short.push("companion tree kits 0/1");
     if (end.u.shrub.length < 2) short.push(`shrub kits ${end.u.shrub.length}/2`);
     if (end.sizes.size < 3) short.push(`tree sizes ${end.sizes.size}/3`);
-    standMix = { dominant: end.u.dominant.length, companion: end.u.companion.length, shrub: end.u.shrub.length, sizes: end.sizes.size, swapped, added, short };
-    if (short.length) warnings.push(`The stand "${gameLook?.stand}" could not be fully planted on this map (${short.join(", ")}): ${liveTrees().length} tree or shrub kit(s) stand and no spot beside them or the woods takes another one without closing a walkable way.`);
+    standMix = { dominant: end.u.dominant.length, companion: end.u.companion.length, shrub: end.u.shrub.length, sizes: end.sizes.size, swapped, added, ...(tufts ? { tuftsCleared: tufts } : {}), short, ...(short.length ? { tried: { swaps: swapTries, plantings: addTries, freeCellsBesideTrees: spotsSeen } } : {}) };
+    if (short.length) warnings.push(`The stand "${gameLook?.stand}" could not be fully planted on this map (${short.join(", ")}): ${liveTrees().length} tree or shrub kit(s) stand; ${swapTries} replanting(s) and ${addTries} new planting(s) on ${spotsSeen} free cell(s) beside them or the woods were tried, and none takes a missing kit without closing a walkable way.`);
   }
   const seen = reachMap();
   // 설 칸은 다 지은 뒤에 다시 고른다 — 놓을 때 빈 땅이던 칸에 뒤에 나무·덤불이 서면 조수가 그 칸에 사람을 세우지 못한다.
