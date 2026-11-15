@@ -899,7 +899,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const apart = spots.filter((sp) => sp.role === "house" || sp.role === "work").map((sp) => ({ ...siteOf(sp), role: sp.role as "house" | "work" }));
       const lmSpot = spots.find((sp) => sp.role === "landmark");
       const yard = layYardVillage({ ...codeT, levels: lv }, { x: gx, y: gy }, lv[g0]!, {
-        free: (c) => occ[c] === FREE, mark, rand: rng(seed * 977 + 31),
+        free: (c) => occ[c] === FREE, built: (c) => occ[c] === RESV || occ[c] === BLD, mark, rand: rng(seed * 977 + 31),
         hold: (cells) => { for (const c of cells) if (occ[c] === FREE) occ[c] = PLAZA_HOLD; },
         clear: () => {
           for (const sp of spots.filter((s0) => s0.role !== "landmark")) { for (let j = 0; j < sp.k.h; j += 1) for (let i = 0; i < sp.k.w; i += 1) occ[idx(sp.x + i, sp.y + j)] = FREE; occ[idx(sp.front.x, sp.front.y)] = FREE; spots.splice(spots.indexOf(sp), 1); }
