@@ -47,12 +47,20 @@ describe("이름 있는 사람의 얼굴 — 확인 빌드 r5", () => {
   });
 
   it("젊은 여자 주모는 젊은 여성 칩이 이미 서 있어도 노파로 서지 않는다", () => {
-    const project = createBlankProject() as Project;
-    const map = project.maps[project.startMapId]!;
-    map.events = standing([["people1", 3]]);
-    const pick = pickPersonGraphic(project, map, "주모", "젊은 여자 주모 앞치마", true)!;
-    expect(pick.label).toBe("젊은 여성");
-    expect(pick.shared).toBe(true);
+    const pickWith = (taken: readonly (readonly [string, number])[]) => {
+      const project = createBlankProject() as Project;
+      const map = project.maps[project.startMapId]!;
+      map.events = standing(taken);
+      return pickPersonGraphic(project, map, "주모", "젊은 여자 주모 앞치마", true)!;
+    };
+    // 젊은 여성 칩만 섰으면 안 선 이웃 나이(중년 여성) 칩으로 선다 — 얼굴을 나눠 쓰지 않는다.
+    const one = pickWith([["people1", 3]]);
+    expect(one.label).not.toBe("노파");
+    expect(one.shared ?? false).toBe(false);
+    // r5a 의 장면: 젊은 여성 · 중년 여성 칩이 다 섰고 남은 여성 칩은 노파뿐이다 — 노파로 서느니 젊은 여성 칩을 나눠 쓴다.
+    const two = pickWith([["people1", 3], ["people1", 5]]);
+    expect(two.label).toBe("젊은 여성");
+    expect(two.shared).toBe(true);
   });
 
   it("같은 사람을 다른 장소에 다시 세우면 같은 칩이다 — 이름 끝의 괄호는 선 자리일 뿐", () => {
