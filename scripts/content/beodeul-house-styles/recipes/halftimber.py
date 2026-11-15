@@ -1,5 +1,8 @@
 """halftimber(목골 상가주택) 조립 순서 — 집마다 덩어리(vols)와 붙는 것(feats). 좌표는 px, 붙는 것의 y 는 부품 맨 아랫줄 다음 줄.
 칸 크기·문 칸은 tiledata/beodeul-house-styles/styles.json 이 정한다(문은 조립기가 문 칸 열에 놓는다 — door 는 문 부품 이름). roof: 'roof' 짙은 갈색 너와(기본) · 'tile' 붉은 기와."""
+STYLE = dict(frame=('plaster',), face='shingle', alt=dict(tile=dict(face='tile', l='tile-l', r='tile-r')))
+
+
 def R():
     H = {}
     H['gable'] = dict(vols=[dict(k='g', x=2, w=60, floors=[('stone', 9), ('plaster', 21)], rd=36, rise=22, ov=2)],

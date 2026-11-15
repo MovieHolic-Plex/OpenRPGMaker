@@ -1,7 +1,8 @@
-"""코드로 만드는 재질 판(모델 호출 없음) — 원본 버들항 그림의 무늬를 그대로 따른다.
- · tile / tile-l / tile-r: 원본 붉은 기와 지붕의 되풀이 단위(앞면 4×4 · 왼 물매 8×4 · 오른 물매 4×4, bd-house-inn · bd-house-h110_0 에서 잰 것).
- · stone: 원본 여관 아래층 막돌의 짜임(4px 단, 낱돌 4~7px, 모서리 둥글고 줄눈은 보랏빛, 줄눈이 만나는 곳은 짙은 남보라) — Fable 판이 두 번 다 원본보다 크고 반듯했다.
-usage: python hs_code.py <style>"""
+"""코드로 만드는 부품(모델 호출 없음) — 양식마다 recipes/<양식>.py 의 STYLE 이 무엇을 만들지 정한다.   python3 scripts/content/beodeul-house-styles/code_parts.py <양식>…
+ · tile / tile-l / tile-r (STYLE alt 에 왼·오른 물매 판이 있는 양식): 원본 버들항 붉은 기와 지붕의 되풀이 단위(앞면 4×4 · 왼 물매 8×4 · 오른 물매 4×4 — bd-house-inn · bd-house-h110_0 에서 잰 것).
+ · stone (STYLE rubble): 원본 여관 아래층 막돌의 짜임(4px 단, 낱돌 4~7px, 모서리 둥글고 줄눈이 만나는 곳은 가장 짙은 단)을 그 양식의 stone 색 줄로.
+ · 빌린 부품(STYLE borrow = (빌려 주는 양식, {부품: 그 양식의 부품}, {색 줄 이름 바꾸기})): 다른 양식의 Fable 부품을 색 줄의 같은 단으로만 옮긴다(모양은 그대로) — 용마루·처마 끝·굴뚝·연기처럼 양식을 가르지 않는 것.
+어느 판이 Fable 그림이고 어느 판이 코드인지는 tiledata/beodeul-house-styles/<양식>/parts.json 에 적는다(이 스크립트가 쓴다)."""
 import random, sys, os
 import numpy as np
 from PIL import Image
@@ -47,7 +48,29 @@ def rubble(style, ramps, W=48, H=32, seed=7):
             if rnd.random() < 0.35: g[y0][xj] = 0
             if rnd.random() < 0.25: g[(y0 + 3) % H][(xj + 1) % W] = 1
     save(style, 'stone', g, ramps, 'stone')
-if __name__ == '__main__':
-    st = sys.argv[1]; R = L.ramps_of(st)
-    if 'tile' in R: tiles(st, R)
-    rubble(st, R)
+def borrow(style, ramps, src_style, parts, rename):
+    src = L.ramps_of(src_style); lut = {}
+    for r, cs in src.items():
+        to = ramps.get(rename.get(r, r))
+        if to is None: continue
+        for k, c in enumerate(cs): lut.setdefault(L.hx(c), L.hx(to[min(k, len(to) - 1)]))
+    for name, from_name in parts.items():
+        a = np.array(Image.open(L.STORE / src_style / "parts" / f"{from_name}.png").convert("RGBA")); out = a.copy()
+        for c, t in lut.items(): out[(a[:, :, :3] == c).all(2) & (a[:, :, 3] > 0), :3] = t
+        Image.fromarray(out, "RGBA").save(L.STORE / style / "parts" / f"{name}.png")
+def main(style):
+    import importlib, json, sys
+    sys.path.insert(0, str(L.HERE))
+    cfg = getattr(importlib.import_module(f"recipes.{style}"), "STYLE", {}); R = L.ramps_of(style); made = {}
+    if any(alt.get("l") for alt in cfg.get("alt", {}).values()): tiles(style, R); made.update({n: "코드 — 원본 붉은 기와 지붕의 되풀이 단위" for n in ("tile", "tile-l", "tile-r")})
+    if cfg.get("rubble", True) and "stone" in R: rubble(style, R); made["stone"] = "코드 — 원본 여관 막돌의 짜임"
+    if cfg.get("borrow"):
+        src, parts, rename = cfg["borrow"]; borrow(style, R, src, parts, rename)
+        made.update({n: f"코드 — {src} 양식의 Fable 부품 {f} 를 색 줄만 옮김" for n, f in parts.items()})
+    folder = L.STORE / style / "parts"
+    table = {p.stem: made.get(p.stem, "Fable 5.2 medium 그림") for p in sorted(folder.glob("*.png"))}
+    (L.STORE / style / "parts.json").write_text(json.dumps(table, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(style, "Fable", sum(1 for v in table.values() if v.startswith("Fable")), "· 코드", sum(1 for v in table.values() if v.startswith("코드")))
+if __name__ == "__main__":
+    import sys
+    for st in sys.argv[1:]: main(st)

@@ -24,7 +24,11 @@ def flatness(im):
     return 100.0 * same.sum() / max(1, int(op.sum())), len({tuple(p) for p in rgb[op]})
 class Kit:
     def __init__(s, style):
+        import importlib, sys
+        if str(HERE) not in sys.path: sys.path.insert(0, str(HERE))
         s.style = style; s.R = ramps_of(style); s.P = {}; s.idx = {}; s.roofmat = 'roof'
+        # 양식 설정: frame 목골을 두르는 벽 재질 · face 지붕 판 부품 · alt 둘째 지붕(색 줄 이름 → 앞면·왼 물매·오른 물매 판) · barge 박공널 색 · corner 모서리 널 색(없으면 그리지 않는다)
+        s.cfg = dict(frame=(), face='shingle', alt={}, barge=('timber:5', 'timber:4', 'timber:3', 'timber:1'), corner=None, **getattr(importlib.import_module(f'recipes.{style}'), 'STYLE', {}))
         for r, cs in s.R.items():
             for i, c in enumerate(cs): s.idx.setdefault(hx(c), (r, i))
     ROOFED = ('ridge', 'eave', 'dormer', 'win-shop')        # 지붕 색이 실린 부품 — 기와 집에서는 너와 색 줄을 기와 색 줄의 같은 단으로 옮긴다
@@ -37,7 +41,7 @@ class Kit:
                 for i, c in enumerate(src): a[(a[:, :, :3] == c).all(2) & (a[:, :, 3] > 0), :3] = dst[min(i, len(dst) - 1)]
             s.P[key] = a
         return s.P[key]
-    def face(s): return 'shingle' if s.roofmat == 'roof' else s.roofmat
+    def face(s): return s.cfg['face'] if s.roofmat == 'roof' else s.cfg['alt'][s.roofmat]['face']
     def c(s, name):
         r, i = name.split(':'); r = s.roofmat if r == 'roof' else r; return hx(s.R[r][int(i)]) + (255,)
     def shifted(s, px, k):
@@ -109,7 +113,7 @@ class Kit:
         if back: s.shift(a, -1, x0, ytop, x0 + w, ytop + back)
         s.put(a, s.tile('ridge', w, 6, ox=x0 * 3), x0, ytop + back)
         third = max(3, (rh - back - 6) // 3)
-        if s.roofmat == 'roof': s.shift(a, +1, x0, ytop + back + 6, x0 + w, ytop + back + 6 + third)          # 용마루 쪽이 밝다(기와는 원본처럼 처마 쪽만 어둡게)
+        if s.roofmat == 'roof' or not s.cfg['alt'][s.roofmat].get('l'): s.shift(a, +1, x0, ytop + back + 6, x0 + w, ytop + back + 6 + third)          # 용마루 쪽이 밝다(기와는 원본처럼 처마 쪽만 어둡게)
         else: s.shift(a, -1, x0, ytop + rh - 6 - third // 2, x0 + w, ytop + rh - 3)
         ev = s.tile('eave', w, 8, ox=x0 * 3); body = ev[:6]; s.put(a, body, x0, ytop + rh - 6)
         s.shift(a, -1, x0, ytop + rh - 3, x0 + w, ytop + rh)
@@ -125,8 +129,8 @@ class Kit:
     def gable_roof(s, a, x0, w, ye, rd, rise, barge=True):
         sh = s.gable_shape(x0, w, ye, rd, rise); cx = x0 + w // 2; y00 = ye - rise - rd; fh = rd + rise + 2
         # 용마루선 기준 왼 물매는 빛, 오른 물매는 그늘(빛은 왼쪽 위). 기와는 원본의 왼·오른 물매 무늬를 그대로, 너와는 같은 판을 색 줄 안에서 옮긴다.
-        tile = s.roofmat != 'roof'
-        fl = s.tile('tile-l' if tile else s.face(), w, fh, ox=0, oy=ye * 4); fr = s.tile('tile-r' if tile else s.face(), w, fh, ox=0, oy=ye * 4)
+        alt = s.cfg['alt'].get(s.roofmat) if s.roofmat != 'roof' else None; tile = bool(alt and alt.get('l'))     # 왼·오른 물매 판이 따로 있는 지붕(원본 붉은 기와)
+        fl = s.tile(alt['l'] if tile else s.face(), w, fh, ox=0, oy=ye * 4); fr = s.tile(alt['r'] if tile else s.face(), w, fh, ox=0, oy=ye * 4)
         for x, (t, b) in sh.items():
             src = fl if x < cx else fr
             for y in range(max(0, t), min(a.shape[0], b)):
@@ -142,7 +146,7 @@ class Kit:
         for x, (t, b) in sh.items():
             s.px(a, x, t, 'roof:1' if x >= cx else 'roof:5')                                              # 뒤쪽 끝 줄
             if barge:                                                                                    # 박공널(앞 끝) 3줄
-                s.px(a, x, b - 3, 'timber:5' if x < cx else 'timber:4'); s.px(a, x, b - 2, 'timber:4' if x < cx else 'timber:3'); s.px(a, x, b - 1, 'timber:1')
+                bg = s.cfg['barge']; s.px(a, x, b - 3, bg[0] if x < cx else bg[1]); s.px(a, x, b - 2, bg[1] if x < cx else bg[2]); s.px(a, x, b - 1, bg[3])
         t0, b0 = sh[cx]
         for y in range(t0, b0 - 3):                                                                       # 용마루(앞뒤로 달린다)
             s.px(a, cx - 1, y, 'roof:6' if y % 6 < 4 else 'roof:5'); s.px(a, cx, y, 'roof:4' if y % 6 < 5 else 'roof:1'); s.px(a, cx + 1, y, 'roof:0')
@@ -161,9 +165,14 @@ class Kit:
         for i, (mat, y0, y1) in enumerate(bands):
             inset = 1 if (mat == 'stone' and i == 0 and len(bands) > 1) else 0
             s.wall(a, x + inset, y0, w - 2 * inset, y1 - y0, mat)
-            if mat == 'stone':
-                s.shift(a, -1, x + w - 4 - inset, y0, x + w - inset, y1); s.vline(a, x + w - 1 - inset, y0, y1, 'stone:1')
-            if mat == 'plaster' and v.get('frame', True):
+            framed = mat in s.cfg['frame'] and v.get('frame', True)
+            if not framed:   # 목골이 없는 벽은 오른쪽 끝 넉 줄을 한 단 어둡게(빛은 왼쪽 위) — 모서리 널이 있는 양식은 그 널이 끝을 맺는다
+                s.shift(a, -1, x + w - 4 - inset, y0, x + w - inset, y1)
+                if mat == 'stone': s.vline(a, x + w - 1 - inset, y0, y1, 'stone:1')
+                if s.cfg['corner'] and mat != 'stone':
+                    cn = s.cfg['corner']
+                    for i, nm in enumerate(cn): s.vline(a, x + i, y0, y1, nm); s.vline(a, x + w - len(cn) + i, y0, y1, nm)
+            if mat in s.cfg['frame'] and v.get('frame', True):
                 s.beam(a, x, y0, w, 4); s.beam(a, x, y1 - (5 if i > 0 else 4), w, 5 if i > 0 else 4)
                 for px_ in [x, x + w - 3] + [x + p for p in v.get('posts', {}).get(i, [])]: s.post(a, px_, y0, y1 - y0, 3)
                 for (bx0, bx1, d) in v.get('braces', {}).get(i, []):
@@ -182,7 +191,7 @@ class Kit:
             for xx, (t, b) in sh.items():
                 if 0 <= xx < a.shape[1] and x <= xx < x + w: m[b:top, xx] = True
             s.wall(a, x, top - rise - 2, w, rise + 2, mat, m)
-            if mat == 'plaster' and v.get('frame', True):
+            if mat in s.cfg['frame'] and v.get('frame', True):
                 cx = x + w // 2
                 s.post(a, cx - 1, top - rise, rise, 3, m)                                   # 왕대공
                 q = w // 4
