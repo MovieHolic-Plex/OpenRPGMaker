@@ -50,6 +50,10 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     d: "Find empty outdoor ground rectangles (largest first) on any chipset — walkable terrain with nothing on it; roads, water and indoor floors do not count. Returns each lot's x,y,w,h, the bare-ground share, and the outdoor props this chipset has. To fill what it finds call furnish_outdoor_area with the same region.",
     p: { region: "all | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right | center (default all)." },
   },
+  lay_beodeul_grass: {
+    d: "Vary the lawn of a Beodeul (beodeul_city) map so the plain grass cell does not repeat. kind: mix (default — the game's own mix over the whole map or area: bands of tall grass along tree lines, banks, cliff feet and fences, paler grass beside roads, clusters of tufts and flowers) | tall | pale | tufts | flowers | clover | pebbles (one soft-edged drift inside area) | clear. Place drifts along something (under trees, at a bank, by a fence or a house) and leave plain lawn between them; never scatter. Only writes the ground overlay layer on plain grass cells: ground tile numbers, objects, events and walkability stay as they are; cells that already carry a shadow, bank or patch are skipped. Colours follow the game's ground look.",
+    p: { kind: "mix | tall | pale | tufts | flowers | clover | pebbles | clear.", area: "{x,y,w,h} in cells. Required for one drift (about 3×2 to 8×5); omit with mix/clear for the whole map.", mix: "Only with kind mix: which mix (omit = the game's own).", seed: "Another arrangement of the same request." },
+  },
   furnish_outdoor_area: {
     d: "Fill empty outdoor ground in one call: the tool splits the area into lots, puts a clump (trees / a feature with small props / a patch of low plants and rocks) in each, keeps a walking strip around them, leaves doors, exits and events clear, and undoes any piece that would cut off a reachable event. Works on any chipset that has outdoor prop kits. Give region (or area); props is optional. Returns what it placed where and the bare-ground share before → after.",
     p: {
