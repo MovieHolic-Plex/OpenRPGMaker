@@ -571,6 +571,47 @@ export function auditFable(f: FableInfo): string[] {
 }
 
 /** 계획의 마지막 단계: 길 표시 → 경계 줄 → 테 → 덧조각 → 건물 그림자 → 바닥. 검사에 쓸 정보를 돌려준다. */
+/**
+ * 모든 문은 걸어서 닿는다: 걷는 칸(필지·보도·차도)의 가장 큰 덩어리에 닿지 않는 문 앞 칸이 있으면, 그 문에서 큰 덩어리까지 가는 가장 짧은 길 위의 소품을 치운다
+ * (좁은 산책로를 벤치와 말뚝이 함께 막거나 대문 앞에 자전거가 선 자리). 담·건물·물은 건드리지 않는다.
+ */
+function fableOpenDoors(c: SceneCtx): void {
+  const { W, H } = c, N = W * H;
+  const open = (i: number) => { const v = c.occ[i]; return v === Occ.Lot || v === Occ.Walk || v === Occ.Road; };
+  const step = (i: number): number[] => { const x = i % W, out: number[] = []; if (x > 0) out.push(i - 1); if (x < W - 1) out.push(i + 1); if (i >= W) out.push(i - W); if (i < N - W) out.push(i + W); return out; };
+  for (let round = 0; round < 12; round++) {
+    const label = new Int32Array(N).fill(-1), size: number[] = [];
+    for (let s = 0; s < N; s++) {
+      if (label[s] !== -1 || !open(s)) continue;
+      const id = size.length; let n = 0; const queue = [s]; label[s] = id;
+      for (let q = 0; q < queue.length; q++) { n++; for (const j of step(queue[q]!)) if (label[j] === -1 && open(j)) { label[j] = id; queue.push(j); } }
+      size.push(n);
+    }
+    const main = size.indexOf(Math.max(...size));
+    const fronts = c.placed.flatMap((b) => b.doors.map((d) => (b.foot + 1) * W + b.x + d)).filter((i) => i < N && label[i] !== main && (open(i) || c.occ[i] === Occ.Prop));
+    if (!fronts.length) return;
+    let removed = 0;
+    for (const start of fronts) {
+      // 소품 칸도 지나는 너비 우선 탐색 — 큰 덩어리의 첫 칸까지
+      const prev = new Int32Array(N).fill(-2); prev[start] = -1;
+      const queue = [start]; let hit = -1;
+      for (let q = 0; q < queue.length && hit < 0; q++) for (const j of step(queue[q]!)) {
+        if (prev[j] !== -2 || !(open(j) || c.occ[j] === Occ.Prop)) continue;
+        prev[j] = queue[q]!;
+        if (label[j] === main) { hit = j; break; }
+        queue.push(j);
+      }
+      for (let i = hit; i >= 0; i = prev[i]!) {
+        if (c.occ[i] !== Occ.Prop) continue;
+        const x = i % W, y = Math.floor(i / W);
+        const k = c.stPlaced.findIndex((p) => p.anchor !== "run" && y === p.y + p.h - 1 && x >= p.x && x < p.x + p.w);
+        if (k >= 0) { c.stRemove(k); removed++; }
+      }
+    }
+    if (!removed) return;
+  }
+}
+
 export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; ground: JpStreetStep[] } {
   const roads = roadsOf(c, L);
   const crossings = new Set<string>(), marks = new Map<string, string>();
@@ -613,6 +654,7 @@ export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; gro
     }
   }
   fableFill(c);
+  fableOpenDoors(c);
   const borders = fableBorders(c, marks);
   fableAccents(c, new Set([...borders, ...marks.keys()]));
   fableShades(c);

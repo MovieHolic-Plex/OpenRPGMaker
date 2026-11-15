@@ -159,7 +159,10 @@ export class SceneCtx {
   private readonly doorFrontSet = new Set<string>();
   /** 건물 문 바로 앞 칸(접근칸)인가 — 서 있는 조각도 담도 여기를 막지 않는다. */
   doorFront(x: number, y: number): boolean {
-    if (this.doorFrontN !== this.placed.length) { this.doorFrontSet.clear(); for (const b of this.placed) { for (const d of b.doors) this.doorFrontSet.add(`${b.x + d},${b.foot + 1}`); const bay = b.kit?.bay; if (bay) for (let k = 0; k < bay[1]; k++) this.doorFrontSet.add(`${b.x + bay[0] + k},${b.foot + 1}`); } this.doorFrontN = this.placed.length; }
+    const stamp = this.placed.length * 4096 + this.kaki.length;
+    if (this.doorFrontN !== stamp) { this.doorFrontSet.clear();
+      for (const k of this.kaki) if (k.gate) this.doorFrontSet.add(`${k.x + 1},${k.y + k.h}`);   // 대문 바깥 한 칸(길 쪽)도 문 앞이다 — 벤치·자전거가 대문을 막지 않는다
+      for (const b of this.placed) { for (const d of b.doors) this.doorFrontSet.add(`${b.x + d},${b.foot + 1}`); const bay = b.kit?.bay; if (bay) for (let k = 0; k < bay[1]; k++) this.doorFrontSet.add(`${b.x + bay[0] + k},${b.foot + 1}`); } this.doorFrontN = stamp; }
     return this.doorFrontSet.has(`${x},${y}`);
   }
   stFits(name: string, x: number, foot: number, o: { stack?: boolean; lax?: boolean; /** 짝으로 놓는 것(참배길 석등): 같은 그림이 곁에 있어도 선다 */ pair?: boolean } = {}): boolean {
