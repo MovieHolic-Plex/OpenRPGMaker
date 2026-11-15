@@ -58,6 +58,13 @@ export function makeGameVerbs(c: VerbContext & Pick<ReturnType<typeof peopleVerb
           const ar = arrivalEntrance(spec, place.side); spec = ar.spec; if (ar.note) linkNotes.push(ar.note);
           if (parentMap && outsideBuilt(parentMap)) { const g = gateFor(env.ctx.project, parentMap, spec.dungeonDesign, place.side); if (g) spec = { ...spec, gate: g }; }
         }
+        // 길목은 지나가는 곳 — 부모에서 본 방향(side)의 맞은편 변으로 들어와, 이 길목에서 이어지는 다음 장소의 방향(없으면 같은 방향)으로 나간다.
+        if (builder?.id === "route" && !spec.exits?.length) {
+          const OPP = { north: "south", south: "north", east: "west", west: "east" } as const;
+          const into = place.side ? OPP[place.side] : "south";
+          const onward = order.find((p) => p.from === place.key && p.side && p.side !== into)?.side ?? (place.side ?? "north");
+          spec = { ...spec, exits: [into, onward] };
+        }
         if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
         await builder.prepare?.(spec);

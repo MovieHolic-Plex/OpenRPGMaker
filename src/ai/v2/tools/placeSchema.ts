@@ -3,7 +3,7 @@ import type { PlaceType } from "../shared/types";
 import { DUNGEON_LAYOUT_SCHEMA, VILLAGE_LAYOUT_SCHEMA, bboxPlacesOn } from "../place/builders/placeLayout";
 import { DUNGEON_DESIGN_SCHEMA } from "../place/dungeonParts";
 
-const PLACE_TYPES: PlaceType[] = ["interior", "village", "dungeon", "cave", "street", "house"];
+const PLACE_TYPES: PlaceType[] = ["interior", "village", "dungeon", "cave", "street", "house", "route"];
 
 export const SIZE = { type: "string", enum: ["small", "medium", "large"] };
 

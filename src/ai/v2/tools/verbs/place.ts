@@ -102,7 +102,7 @@ export function placeVerbs(c: VerbContext) {
   };
   const makePlace: PiToolShape = {
     name: "make_place", label: "장소 짓기", concurrency: "exclusive",
-    description: "Build a place (interior, village, dungeon, cave, street, house) from one spec. Do not write cells, coordinates or tile numbers — the function builds it and returns the 1x picture, machine checks and an independent critique."
+    description: "Build a place (interior, village, dungeon, cave, street, house, route) from one spec. Do not write cells, coordinates or tile numbers — the function builds it and returns the 1x picture, machine checks and an independent critique."
       + (bboxPlacesOn() ? " Exception: for a dungeon floor (type dungeon) and a village on code terrain the first call returns a card asking for your exact cell layout (spec.dungeonLayout / spec.villageLayout) — then write it as the card says." : ""),
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {

@@ -1,0 +1,1237 @@
+{
+ "tilesetId": "beodeul_city",
+ "texture": "tex_beodeul_city",
+ "tileSize": 16,
+ "tilesPerRow": 128,
+ "kitPrefix": "bd-rt-",
+ "base": 56704,
+ "end": 60800,
+ "used": 963,
+ "source": "scripts/content/beodeul-routes/bake.py (pieces by Claude Fable 5.2 medium one-shot, cut and assembled by code; path and canopy edge cells are the drawn textures behind a code-made edge shape)",
+ "gate": "3/4 gate not passed — owner waiver fable-routes-beodeul-2026-11-15",
+ "pieces": [
+  {
+   "id": "mt-bridge",
+   "kind": "terrain",
+   "sha256": "7b3bd5d94d51939d299acf57fee39a94190758dcbdf722394d54733ba80f8461"
+  },
+  {
+   "id": "mt-lodge",
+   "kind": "structure",
+   "sha256": "eec85ac782ca1d03269bb6c266372f784215ea53bae1dd9ed07555abd2832056"
+  },
+  {
+   "id": "mt-watchtower",
+   "kind": "structure",
+   "sha256": "ef0c577637ec019e7c8442e8c4c00818b42127b03a3b15e9a1c07efd9a40a32a"
+  },
+  {
+   "id": "mt-shelter",
+   "kind": "structure",
+   "sha256": "c9a6246ea52b0b1a35444c9d846c821783e4f57f6ff3ccf78a963848cb153e8c"
+  },
+  {
+   "id": "mt-rest-rock",
+   "kind": "other",
+   "sha256": "f09dc06624dfe15d64612eff6a53ffd0bd0521b9d7678b12d5e02f86c922ca59"
+  },
+  {
+   "id": "mt-rail",
+   "kind": "other",
+   "sha256": "fdbc7420fb6c86c5eadc86a9c00c8e3dd9c8076f84ee6d79154f3a8e16914131"
+  },
+  {
+   "id": "mt-summit-stone",
+   "kind": "other",
+   "sha256": "b5bdda6d91ab09341e1ad5fc736e8b17f83a17464eefdbfcc7a9ea011c6ca28f"
+  },
+  {
+   "id": "mt-log-pile",
+   "kind": "other",
+   "sha256": "eb5cc4f29ac477fc8084045c0ec53dd0814eb026fdcca76ab4e163efb48f5e88"
+  },
+  {
+   "id": "mt-sawhorse",
+   "kind": "other",
+   "sha256": "70d322cb37d2546356e18704ddf1fb4a5bc246a852946cc957984f330550fd12"
+  },
+  {
+   "id": "mt-spring-trough",
+   "kind": "other",
+   "sha256": "eb4aa25e112d4fa4c574ec4d7126c2f3fa8febec70b1de8776b81e74f1adb8cd"
+  },
+  {
+   "id": "mt-pine-a",
+   "kind": "organic",
+   "sha256": "65a18ee596a30300e66dc94bb67b9ea206a003413326212f9962fdb8b0bbcfbd"
+  },
+  {
+   "id": "mt-pine-b",
+   "kind": "organic",
+   "sha256": "069b86234f01ddc35390f2080d37575a6f0fe5b7ed9357dccb882f5b8f46ef65"
+  },
+  {
+   "id": "mt-snow-rock",
+   "kind": "other",
+   "sha256": "1ca46621b555691ccb81841a0da05bf8a40c94f7fded7604f8fe7f325aaf048e"
+  },
+  {
+   "id": "mt-snow-patch",
+   "kind": "flat",
+   "sha256": "2277b3ec9974fb98c9cc6d4c7a5fd8156ffdb9789fc7b7c50c93b858987b5367"
+  },
+  {
+   "id": "mt-herb-a",
+   "kind": "organic",
+   "sha256": "75f7aed04b27735bd6b175778c3cc6664c64f34f5ffec3853f37e6290ae4d030"
+  },
+  {
+   "id": "mt-herb-b",
+   "kind": "organic",
+   "sha256": "75c194601776796c13703b6239037921e4935315a643d5d325f87940f1d2061d"
+  },
+  {
+   "id": "mt-herb-basket",
+   "kind": "other",
+   "sha256": "7ae607ab070dd60edbd340f594de6df911b3ea911858708528b3f3d3641ad537"
+  },
+  {
+   "id": "mt-leaves",
+   "kind": "flat",
+   "sha256": "97d844157e45596d75186470c95bd1bfa654fa2e8dd4eb3b174a979836d697dc"
+  },
+  {
+   "id": "mt-rockfall",
+   "kind": "debris",
+   "sha256": "05a765b301192341ce789299f584823b75936ad1c7055261eb6d79bb0ae9ab6d"
+  },
+  {
+   "id": "mt-trail-gate",
+   "kind": "structure",
+   "sha256": "35cf45cf7a43276528e956f25397802d14e4d69207f0565f0053a1749f4a3aa7"
+  },
+  {
+   "id": "mt-tent",
+   "kind": "other",
+   "sha256": "5321b5163651580958d73e7a41324f5adc3bd4ba5a2d78e18eecd80e9e7667c0"
+  },
+  {
+   "id": "sp-ground-a",
+   "kind": "terrain",
+   "sha256": "550c6bf17e89e3c567dea867f1af06422665d4ad70545bd4fa7dcd5476af1736"
+  },
+  {
+   "id": "sp-ground-b",
+   "kind": "terrain",
+   "sha256": "e8b82d876a91fdba1873553b3e0c960cdbec4cdb4bf118e85ae3c29c5c468d59"
+  },
+  {
+   "id": "sp-path",
+   "kind": "terrain",
+   "sha256": "ed2b71daa0ba7d6de7a98579cb863fe3065ea000c8153a5ba4c8f91356e5f146"
+  },
+  {
+   "id": "sp-canopy",
+   "kind": "terrain",
+   "sha256": "f15b880e66adb48bf22abd175da32f7336d4c6ad77bf0e1791c65ad2875b77eb"
+  },
+  {
+   "id": "sp-bridge",
+   "kind": "terrain",
+   "sha256": "9a50ce5c5a55d54efc38efc7686996dcde5bb2d157e268637f2104e720dea9ff"
+  },
+  {
+   "id": "sp-tree-gate",
+   "kind": "organic",
+   "sha256": "8bdaaa6bc00b56909ba52ba21dc773b2543784e356c07b79ebfa4ad550c93c66"
+  },
+  {
+   "id": "sp-root-gate",
+   "kind": "organic",
+   "sha256": "dccf26d823d75223709827816732c4784d0f342b14a7c247b26e2a91ff5ed1ba"
+  },
+  {
+   "id": "sp-mist-stones",
+   "kind": "structure",
+   "sha256": "ba0456a3d8af7e779b00bdca10bd748933f2ecf414fedd4846649ec75f65ff1a"
+  },
+  {
+   "id": "sp-moon-spring",
+   "kind": "other",
+   "sha256": "dc9df7a541e215d1d69b2df9708717d92e54aa17822389c51bbdc63c6679c8c8"
+  },
+  {
+   "id": "sp-fairy-ring",
+   "kind": "flat",
+   "sha256": "e39821d85d925e1e48ae377efb8ace67f5d800589f36cba38681d7713929879e"
+  },
+  {
+   "id": "sp-shroom-s",
+   "kind": "organic",
+   "sha256": "1195041854490920aed5af2b15451fe669964e443b7df8385235e9e73b5b3a0f"
+  },
+  {
+   "id": "sp-shroom-m",
+   "kind": "organic",
+   "sha256": "f54524b765a88a788add54d28463c359978bd655a658dbe5f89f6df2b0cc599d"
+  },
+  {
+   "id": "sp-shroom-l",
+   "kind": "organic",
+   "sha256": "a0cc84363315a449a73c2cd0f2aa7751c8eeac9c525a17b3403de4d006828fbd"
+  },
+  {
+   "id": "sp-stone-a",
+   "kind": "other",
+   "sha256": "5b6f26712d1733640118ad9b8dcff5b69fecb95a1040ea1658f903a0a9ecc693"
+  },
+  {
+   "id": "sp-stone-b",
+   "kind": "other",
+   "sha256": "94f7ff3179e874695fa0dccb72c360eeb68fbdbf3cf80da868a2178a9ba44c12"
+  },
+  {
+   "id": "sp-guardian",
+   "kind": "figure",
+   "sha256": "10cf62e1a895dfdd120741a8ff2be588e0d148a5ee03ef4c6703d9afaf195a85"
+  },
+  {
+   "id": "sp-tree-a",
+   "kind": "organic",
+   "sha256": "b7a4fbbd647e8fc0ab311e023df1363c87a83971950182ea6c33e44a898d3a59"
+  },
+  {
+   "id": "sp-tree-b",
+   "kind": "organic",
+   "sha256": "c1a3b5596d2abf57245cd1148d5945bb9be9e548d0efd8f4324142f32a87b3f8"
+  },
+  {
+   "id": "sp-tree-c",
+   "kind": "organic",
+   "sha256": "5a3ba5859a287c0a4a3647c1bff6e64ac3ba2b4bbb66e9d00b6e29f3709e6e9b"
+  },
+  {
+   "id": "sp-crystal-tree",
+   "kind": "organic",
+   "sha256": "e16af995575842b78ace8804d4e27c01ab5bd991f76562aa9c95ecfb732684ad"
+  },
+  {
+   "id": "sp-crystal",
+   "kind": "other",
+   "sha256": "fc0efc86c31aff920f2caa7b5d00ca1ccacb50fd07c41ff83ab4cadff334ffdd"
+  },
+  {
+   "id": "sp-wisp",
+   "kind": "other",
+   "sha256": "b24d6c10d2211f8810a1b9cbfffee693f00107fd8bd7abd71052cf665ed682c6"
+  },
+  {
+   "id": "sp-petals",
+   "kind": "flat",
+   "sha256": "7faf816e22e70c0e1a3b615409b2e801f6e0fbd4b7567fcc9eef98e2f7dd4aa5"
+  },
+  {
+   "id": "sp-sleeper",
+   "kind": "figure",
+   "sha256": "407d023a27dab2b9eb31dee91a46d2a745a1e45afd05338f279f549ff3a25a11"
+  },
+  {
+   "id": "sp-star-shard",
+   "kind": "other",
+   "sha256": "0120e8ef12ace4243085db1060282ce53a13ea0b6af75f41f27ae63e2489fe5d"
+  },
+  {
+   "id": "sp-market",
+   "kind": "structure",
+   "sha256": "0307026df6ca978102a897dbc76ee20aa143307bca03729ac5e8c8c063bd0ded"
+  },
+  {
+   "id": "sp-lantern",
+   "kind": "other",
+   "sha256": "acf747afe949c7defd8e6954e5da9249aa3ffb2b2a52bd3a9249c680801dd785"
+  },
+  {
+   "id": "sp-stag",
+   "kind": "figure",
+   "sha256": "b6b05fad87d02c217c9c2630225065eea76516cd67880c89eac0829a3f913b34"
+  },
+  {
+   "id": "sp-world-root",
+   "kind": "organic",
+   "sha256": "0b39f5d43d08d1f253b5c6f4374eb89df192297f939f342240ab0631c606873a"
+  },
+  {
+   "id": "sp-flower",
+   "kind": "organic",
+   "sha256": "a1e631ae1d9950de0c50e7f611b2255c32ab9abc3a864444405c25afaec3a65f"
+  }
+ ],
+ "objects": [
+  {
+   "id": "mt-lodge",
+   "kit": "bd-rt-mt-lodge",
+   "rows": [
+    [
+     -1,
+     57260,
+     57261,
+     57262,
+     57263,
+     -1
+    ],
+    [
+     57264,
+     57265,
+     57266,
+     57267,
+     57268,
+     57269
+    ],
+    [
+     57270,
+     57271,
+     57272,
+     57273,
+     57274,
+     57275
+    ],
+    [
+     57276,
+     57277,
+     57278,
+     57279,
+     57280,
+     57281
+    ],
+    [
+     57282,
+     57283,
+     57284,
+     57285,
+     57286,
+     57287
+    ],
+    [
+     57288,
+     57289,
+     57290,
+     57291,
+     57292,
+     57293
+    ]
+   ]
+  },
+  {
+   "id": "mt-watchtower",
+   "kit": "bd-rt-mt-watchtower",
+   "rows": [
+    [
+     57294,
+     57295,
+     57296
+    ],
+    [
+     57297,
+     57298,
+     57299
+    ],
+    [
+     57300,
+     57301,
+     57302
+    ],
+    [
+     57303,
+     57304,
+     57305
+    ],
+    [
+     57306,
+     57307,
+     57308
+    ],
+    [
+     57309,
+     57310,
+     57311
+    ]
+   ]
+  },
+  {
+   "id": "mt-shelter",
+   "kit": "bd-rt-mt-shelter",
+   "rows": [
+    [
+     57312,
+     57313,
+     57314
+    ],
+    [
+     57315,
+     57316,
+     57317
+    ],
+    [
+     57318,
+     57319,
+     57320
+    ]
+   ]
+  },
+  {
+   "id": "mt-rest-rock",
+   "kit": "bd-rt-mt-rest-rock",
+   "rows": [
+    [
+     57321,
+     57322,
+     57323
+    ],
+    [
+     57324,
+     57325,
+     57326
+    ]
+   ]
+  },
+  {
+   "id": "mt-rail",
+   "kit": "bd-rt-mt-rail",
+   "rows": [
+    [
+     57327,
+     57328,
+     57329
+    ]
+   ]
+  },
+  {
+   "id": "mt-summit-stone",
+   "kit": "bd-rt-mt-summit-stone",
+   "rows": [
+    [
+     57330,
+     57331
+    ],
+    [
+     57332,
+     57333
+    ],
+    [
+     57334,
+     57335
+    ]
+   ]
+  },
+  {
+   "id": "mt-log-pile",
+   "kit": "bd-rt-mt-log-pile",
+   "rows": [
+    [
+     57336,
+     57337,
+     57338
+    ],
+    [
+     57339,
+     57340,
+     57341
+    ]
+   ]
+  },
+  {
+   "id": "mt-sawhorse",
+   "kit": "bd-rt-mt-sawhorse",
+   "rows": [
+    [
+     57342,
+     57343
+    ],
+    [
+     57344,
+     57345
+    ]
+   ]
+  },
+  {
+   "id": "mt-spring-trough",
+   "kit": "bd-rt-mt-spring-trough",
+   "rows": [
+    [
+     57346,
+     57347,
+     57348
+    ],
+    [
+     57349,
+     57350,
+     57351
+    ]
+   ]
+  },
+  {
+   "id": "mt-pine-a",
+   "kit": "bd-rt-mt-pine-a",
+   "rows": [
+    [
+     57352,
+     57353,
+     57354
+    ],
+    [
+     57355,
+     57356,
+     57357
+    ],
+    [
+     57358,
+     57359,
+     57360
+    ],
+    [
+     -1,
+     57361,
+     57362
+    ],
+    [
+     -1,
+     57363,
+     57364
+    ]
+   ]
+  },
+  {
+   "id": "mt-pine-b",
+   "kit": "bd-rt-mt-pine-b",
+   "rows": [
+    [
+     57365,
+     57366,
+     57367
+    ],
+    [
+     57368,
+     57369,
+     57370
+    ],
+    [
+     -1,
+     57371,
+     57372
+    ],
+    [
+     -1,
+     57373,
+     -1
+    ],
+    [
+     -1,
+     57374,
+     57375
+    ]
+   ]
+  },
+  {
+   "id": "mt-snow-rock",
+   "kit": "bd-rt-mt-snow-rock",
+   "rows": [
+    [
+     57376,
+     57377
+    ],
+    [
+     57378,
+     57379
+    ]
+   ]
+  },
+  {
+   "id": "mt-snow-patch",
+   "kit": "bd-rt-mt-snow-patch",
+   "rows": [
+    [
+     57380,
+     57381
+    ],
+    [
+     57382,
+     57383
+    ]
+   ]
+  },
+  {
+   "id": "mt-herb-a",
+   "kit": "bd-rt-mt-herb-a",
+   "rows": [
+    [
+     57384
+    ]
+   ]
+  },
+  {
+   "id": "mt-herb-b",
+   "kit": "bd-rt-mt-herb-b",
+   "rows": [
+    [
+     57385
+    ]
+   ]
+  },
+  {
+   "id": "mt-herb-basket",
+   "kit": "bd-rt-mt-herb-basket",
+   "rows": [
+    [
+     57386
+    ]
+   ]
+  },
+  {
+   "id": "mt-leaves",
+   "kit": "bd-rt-mt-leaves",
+   "rows": [
+    [
+     57387,
+     57388
+    ],
+    [
+     57389,
+     57390
+    ]
+   ]
+  },
+  {
+   "id": "mt-rockfall",
+   "kit": "bd-rt-mt-rockfall",
+   "rows": [
+    [
+     57391,
+     57392,
+     57393
+    ],
+    [
+     57394,
+     57395,
+     57396
+    ]
+   ]
+  },
+  {
+   "id": "mt-trail-gate",
+   "kit": "bd-rt-mt-trail-gate",
+   "rows": [
+    [
+     57397,
+     57398,
+     57399
+    ],
+    [
+     57400,
+     57401,
+     57402
+    ],
+    [
+     57403,
+     -1,
+     57404
+    ]
+   ]
+  },
+  {
+   "id": "mt-tent",
+   "kit": "bd-rt-mt-tent",
+   "rows": [
+    [
+     57405,
+     57406,
+     -1
+    ],
+    [
+     57407,
+     57408,
+     57409
+    ]
+   ]
+  },
+  {
+   "id": "sp-tree-gate",
+   "kit": "bd-rt-sp-tree-gate",
+   "rows": [
+    [
+     57410,
+     57411,
+     57412,
+     57413,
+     57414,
+     57415
+    ],
+    [
+     57416,
+     57417,
+     57418,
+     57419,
+     57420,
+     57421
+    ],
+    [
+     57422,
+     57423,
+     57424,
+     57425,
+     57426,
+     57427
+    ],
+    [
+     57428,
+     57429,
+     57430,
+     57431,
+     57432,
+     57433
+    ],
+    [
+     57434,
+     57435,
+     -1,
+     -1,
+     57436,
+     57437
+    ],
+    [
+     57438,
+     57439,
+     -1,
+     -1,
+     57440,
+     57441
+    ]
+   ]
+  },
+  {
+   "id": "sp-root-gate",
+   "kit": "bd-rt-sp-root-gate",
+   "rows": [
+    [
+     57442,
+     57443,
+     57444,
+     57445,
+     57446
+    ],
+    [
+     57447,
+     57448,
+     57449,
+     57450,
+     57451
+    ],
+    [
+     57452,
+     57453,
+     -1,
+     57454,
+     57455
+    ],
+    [
+     57456,
+     57457,
+     -1,
+     57458,
+     57459
+    ]
+   ]
+  },
+  {
+   "id": "sp-mist-stones",
+   "kit": "bd-rt-sp-mist-stones",
+   "rows": [
+    [
+     57460,
+     57461,
+     57462,
+     57463,
+     57464
+    ],
+    [
+     57465,
+     57466,
+     57467,
+     57468,
+     57469
+    ],
+    [
+     57470,
+     57471,
+     57472,
+     57473,
+     57474
+    ],
+    [
+     57475,
+     57476,
+     57477,
+     57478,
+     57479
+    ]
+   ]
+  },
+  {
+   "id": "sp-moon-spring",
+   "kit": "bd-rt-sp-moon-spring",
+   "rows": [
+    [
+     57480,
+     57481,
+     57482,
+     57483,
+     57484
+    ],
+    [
+     57485,
+     57486,
+     57487,
+     57488,
+     57489
+    ],
+    [
+     57490,
+     57491,
+     57492,
+     57493,
+     57494
+    ],
+    [
+     57495,
+     57496,
+     57497,
+     57498,
+     57499
+    ]
+   ]
+  },
+  {
+   "id": "sp-fairy-ring",
+   "kit": "bd-rt-sp-fairy-ring",
+   "rows": [
+    [
+     57500,
+     57501,
+     57502,
+     57503
+    ],
+    [
+     57504,
+     57505,
+     57506,
+     57507
+    ],
+    [
+     57508,
+     57509,
+     57510,
+     57511
+    ],
+    [
+     57512,
+     57513,
+     57514,
+     57515
+    ]
+   ]
+  },
+  {
+   "id": "sp-shroom-s",
+   "kit": "bd-rt-sp-shroom-s",
+   "rows": [
+    [
+     57516
+    ]
+   ]
+  },
+  {
+   "id": "sp-shroom-m",
+   "kit": "bd-rt-sp-shroom-m",
+   "rows": [
+    [
+     57517
+    ],
+    [
+     57518
+    ]
+   ]
+  },
+  {
+   "id": "sp-shroom-l",
+   "kit": "bd-rt-sp-shroom-l",
+   "rows": [
+    [
+     57519,
+     57520
+    ],
+    [
+     57521,
+     57522
+    ],
+    [
+     57523,
+     57524
+    ]
+   ]
+  },
+  {
+   "id": "sp-stone-a",
+   "kit": "bd-rt-sp-stone-a",
+   "rows": [
+    [
+     57525
+    ],
+    [
+     57526
+    ]
+   ]
+  },
+  {
+   "id": "sp-stone-b",
+   "kit": "bd-rt-sp-stone-b",
+   "rows": [
+    [
+     57527
+    ],
+    [
+     57528
+    ]
+   ]
+  },
+  {
+   "id": "sp-guardian",
+   "kit": "bd-rt-sp-guardian",
+   "rows": [
+    [
+     57529,
+     57530
+    ],
+    [
+     57531,
+     57532
+    ],
+    [
+     57533,
+     57534
+    ]
+   ]
+  },
+  {
+   "id": "sp-tree-a",
+   "kit": "bd-rt-sp-tree-a",
+   "rows": [
+    [
+     57535,
+     57536,
+     57537,
+     57538
+    ],
+    [
+     57539,
+     57540,
+     57541,
+     57542
+    ],
+    [
+     57543,
+     57544,
+     57545,
+     57546
+    ],
+    [
+     57547,
+     57548,
+     57549,
+     57550
+    ],
+    [
+     -1,
+     57551,
+     57552,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": "sp-tree-b",
+   "kit": "bd-rt-sp-tree-b",
+   "rows": [
+    [
+     57553,
+     57554,
+     57555,
+     57556
+    ],
+    [
+     57557,
+     57558,
+     57559,
+     57560
+    ],
+    [
+     57561,
+     57562,
+     57563,
+     57564
+    ],
+    [
+     -1,
+     57565,
+     57566,
+     -1
+    ],
+    [
+     -1,
+     57567,
+     57568,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": "sp-tree-c",
+   "kit": "bd-rt-sp-tree-c",
+   "rows": [
+    [
+     57569,
+     57570,
+     57571
+    ],
+    [
+     57572,
+     57573,
+     57574
+    ],
+    [
+     57575,
+     57576,
+     57577
+    ],
+    [
+     -1,
+     57578,
+     57579
+    ]
+   ]
+  },
+  {
+   "id": "sp-crystal-tree",
+   "kit": "bd-rt-sp-crystal-tree",
+   "rows": [
+    [
+     57580,
+     57581,
+     57582
+    ],
+    [
+     57583,
+     57584,
+     57585
+    ],
+    [
+     57586,
+     57587,
+     57588
+    ],
+    [
+     57589,
+     57590,
+     57591
+    ]
+   ]
+  },
+  {
+   "id": "sp-crystal",
+   "kit": "bd-rt-sp-crystal",
+   "rows": [
+    [
+     57592
+    ],
+    [
+     57593
+    ]
+   ]
+  },
+  {
+   "id": "sp-wisp",
+   "kit": "bd-rt-sp-wisp",
+   "rows": [
+    [
+     57594
+    ],
+    [
+     57595
+    ]
+   ]
+  },
+  {
+   "id": "sp-petals",
+   "kit": "bd-rt-sp-petals",
+   "rows": [
+    [
+     57596,
+     57597
+    ],
+    [
+     57598,
+     57599
+    ]
+   ]
+  },
+  {
+   "id": "sp-sleeper",
+   "kit": "bd-rt-sp-sleeper",
+   "rows": [
+    [
+     57600,
+     57601,
+     57602
+    ],
+    [
+     57603,
+     57604,
+     57605
+    ],
+    [
+     57606,
+     57607,
+     57608
+    ]
+   ]
+  },
+  {
+   "id": "sp-star-shard",
+   "kit": "bd-rt-sp-star-shard",
+   "rows": [
+    [
+     -1,
+     57609,
+     57610
+    ],
+    [
+     57611,
+     57612,
+     57613
+    ],
+    [
+     57614,
+     57615,
+     57616
+    ]
+   ]
+  },
+  {
+   "id": "sp-market",
+   "kit": "bd-rt-sp-market",
+   "rows": [
+    [
+     57617,
+     57618,
+     57619
+    ],
+    [
+     57620,
+     57621,
+     57622
+    ],
+    [
+     57623,
+     57624,
+     57625
+    ]
+   ]
+  },
+  {
+   "id": "sp-lantern",
+   "kit": "bd-rt-sp-lantern",
+   "rows": [
+    [
+     57626
+    ],
+    [
+     57627
+    ]
+   ]
+  },
+  {
+   "id": "sp-stag",
+   "kit": "bd-rt-sp-stag",
+   "rows": [
+    [
+     57628,
+     57629,
+     -1
+    ],
+    [
+     57630,
+     57631,
+     57632
+    ],
+    [
+     57633,
+     57634,
+     57635
+    ]
+   ]
+  },
+  {
+   "id": "sp-world-root",
+   "kit": "bd-rt-sp-world-root",
+   "rows": [
+    [
+     57636,
+     57637,
+     57638,
+     57639,
+     57640,
+     57641
+    ],
+    [
+     57642,
+     57643,
+     57644,
+     57645,
+     57646,
+     57647
+    ],
+    [
+     57648,
+     57649,
+     57650,
+     57651,
+     57652,
+     57653
+    ],
+    [
+     57654,
+     57655,
+     57656,
+     57657,
+     57658,
+     57659
+    ],
+    [
+     57660,
+     57661,
+     57662,
+     57663,
+     57664,
+     57665
+    ]
+   ]
+  },
+  {
+   "id": "sp-flower",
+   "kit": "bd-rt-sp-flower",
+   "rows": [
+    [
+     57666
+    ]
+   ]
+  }
+ ]
+}

@@ -13,7 +13,8 @@ export type PlaceType =
   | "dungeon" // 던전·탑·지하 묘지·신전(층 여럿 가능)
   | "cave" // 동굴(작은 던전)
   | "street" // 현대 일본 거리·골목(jp_city)
-  | "house"; // 현대 일본 집 실내(jp_city 실내) — 판타지 집 안은 interior
+  | "house" // 현대 일본 집 실내(jp_city 실내) — 판타지 집 안은 interior
+  | "route"; // 길목(지나가는 곳: 산길·정령 숲 …) — 가장자리에서 가장자리로 길이 이어지고 주인공 볼거리 하나가 있다(버들항)
 
 type PlaceSize = "small" | "medium" | "large";
 
@@ -62,7 +63,7 @@ export interface PlaceSpec {
   readonly gate?: { readonly fromMapId: string; readonly x: number; readonly y: number };
   /** 화풍·문화권 낱말: fantasy(기본) · jp-modern · wizarding · sengoku · modern-city … 카드가 고를 수 있는 값을 준다. */
   readonly style?: string;
-  /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … */
+  /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … 길목(route)은 갈래: mountain · spirit. */
   readonly theme?: string;
   readonly size?: PlaceSize;
   readonly zones?: readonly ZoneSpec[];
