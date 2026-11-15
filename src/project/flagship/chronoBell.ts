@@ -41,7 +41,7 @@ import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
 import { applyFallenStoryIndex } from "./fallen/storyIndex";
-import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
+import { applyFallenAct1Finale, applyFallenFieldRules, FS_HUB_SAVE_STONE } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
 import { applyFallenAct2Opening, letAct2PierceWoundLand } from "./fallen/act2Opening";
 import { tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
@@ -797,7 +797,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const spots: { x: number; y: number }[] = [];
   const candidates: { x: number; y: number; d: number }[] = [];
   // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
-  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 8; x += 1) {
+  // 동쪽 세 줄(+9~+11)은 기록석 둘레를 비우고도 여섯이 설 자리가 모자랄 때만 쓴다(아래 stoneRing).
+  const CROWD_EAST = 8, CROWD_EAST_SPARE = 11;
+  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + CROWD_EAST_SPARE; x += 1) {
     if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
     // 엘레나 대사 때 주인공이 옆으로 두 걸음 비켜선다 — 그 두 칸 바로 아래에 서면 몸이 겹쳐 그려졌다(QA fs49).
     if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
@@ -810,8 +812,24 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
   }
   candidates.sort((p, q) => p.d - q.d);
-  for (const c of candidates) {
+  // 광장 기록석(나중에 놓인다) 둘레는 비운다 — 상인이 기록석 윗칸 바로 옆에 서서 조사 키를 가로챘고, 처녀가 벤치와 우물 사이
+  // 한 칸 길목에 서서 기록석에서 북동쪽으로 나가려면 돌아가야 했다(QA 2026-11-14 minor 10).
+  // stoneRing: 0 = 기록석(윗칸·몸통)에서 두 칸 밖, 1 = 두 칸 안이지만 맞닿지 않은 칸, 2 = 윗칸·몸통과 맞닿은 칸.
+  // 차례: 두 칸 밖(원래 폭) → 두 칸 밖(동쪽 여분 세 줄) → 두 칸 안 → 맞닿은 칸. 군중 수는 전과 같다(townCast 가 여섯 모두를 찾는다).
+  const stoneRing = (x: number, y: number): 0 | 1 | 2 => {
+    const dx = Math.abs(x - FS_HUB_SAVE_STONE.x), dy = Math.min(Math.abs(y - FS_HUB_SAVE_STONE.y), Math.abs(y - (FS_HUB_SAVE_STONE.y + 1)));
+    return dx + dy <= 1 ? 2 : Math.max(dx, dy) <= 2 ? 1 : 0;
+  };
+  const spare = (c: { x: number }): boolean => c.x > valen.x + CROWD_EAST;
+  const passes: ((c: { x: number; y: number }) => boolean)[] = [
+    (c) => stoneRing(c.x, c.y) === 0 && !spare(c),
+    (c) => stoneRing(c.x, c.y) === 0 && spare(c),
+    (c) => stoneRing(c.x, c.y) === 1 && !spare(c),
+    (c) => stoneRing(c.x, c.y) === 2 && !spare(c),
+  ];
+  for (const pass of passes) for (const c of candidates) {
     if (spots.length >= crowd.length) break;
+    if (!pass(c)) continue;
     if (spots.some((s) => near(c.x, c.y, 1, s) || (s.x === c.x && Math.abs(s.y - c.y) <= 2))) continue;
     spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
   }
