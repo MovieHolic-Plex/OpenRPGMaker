@@ -309,6 +309,13 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 같은 내용은 건너뛰고(`DATA/store-uploads.json`), 내용이 바뀌면 같은 상품에 판본을 더한다. 상품 찾기는 운영자 세션의
   `/api/v1/me` 로 한다(공개 목록 첫 쪽만 보던 옛 방식은 상품이 24개를 넘자 중복을 만들었다).
 - 운영은 plan 이 보여 준 `contentHash` 를 `--confirm` 으로 돌려줘야 올라간다.
+- **스토어 출구의 칸 검사(2026-11-15, `scripts/store/storeExitGate.mts`).** 두 게시기(`publish-bundle` · `publish-buildings`)는 올리기 전에
+  에이전트 제출(`agentStore.mts`)과 같은 3/4 관문을 본다 — 맵에 깔리는 시트(chipset·tileset)의 비지 않은 칸이 전부 기준선 또는
+  `passingCellIndex("store")` 에 있어야 한다. 하나라도 걸리면 `--dry` · `--target plan` 을 포함해 `올리기 전 검사 실패`(exit 1)로 끝나고
+  아무것도 보내지 않는다. 마지막 줄 JSON 의 `gate` 에 시트마다 걸린 칸 수(`uncovered`), 오너 면제 묶음별 칸 수(`waived`), 어느 묶음에도
+  없는 칸 수(`unreceipted`)가 든다. 오너 면제(`waivers/<묶음>.json`)는 번들·공용 출구까지라 **면제 칸이 든 시트는 스토어에 올라가지 않는다** —
+  이 검사를 끄는 깃발은 없다. 기준선(`baseline-cells.txt`)이 아직 없어서(openwiki/harnesses/object-gate.md) 관문 도입 전부터 있던 번들 칸도
+  «판정 기록 없음» 으로 걸린다.
 - **`npm run harness -- beodeul-building-review publish` 는 스토어 게시가 아니다.** 검사를 통과한 후보를 로컬 검수 화면
   (`review.sqlite`)에 내놓는 단계다. 스토어 게시는 위 `OPRN_STORE_PUBLISHER` 경로뿐이다.
 - 로컬 시험은 스토어 저장소의 `node dist/local.mjs --data /tmp/<폴더> --port <포트> --host 127.0.0.1` 로 띄운 일회용 서버에만 한다.

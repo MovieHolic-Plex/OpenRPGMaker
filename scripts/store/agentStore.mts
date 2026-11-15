@@ -31,11 +31,12 @@ import {
 import { basicTilesetFor } from "../../src/assetStore/pack";
 import { pngSize, sniffMime } from "../../src/assetStore/sniff";
 import { passingCellIndex, readBaseline, uncoveredSheetCells } from "../../src/harnesses/object-gate/node/cells";
+import { STORE_GATED_KINDS } from "./storeExitGate.mts";
 
 const DEFAULT_BASE = "https://store.openrpgmaker.com";
 const TOKEN_PREFIX = "oprn_agent_";
-/** 3/4 관문(AGENTS.md hard rule)을 받아야 하는 에셋 종류: 맵에 깔리는 타일·기물 시트. */
-const GATED_KINDS: ReadonlySet<StoreAssetKind> = new Set(["chipset", "tileset"]);
+/** 3/4 관문(AGENTS.md hard rule)을 받아야 하는 에셋 종류: 맵에 깔리는 타일·기물 시트. 공식 번들 게시기(storeExitGate.mts)와 같은 집합이다. */
+const GATED_KINDS = STORE_GATED_KINDS;
 /** init 의 상품 종류 → 에셋 종류(스토어 서버 낱장 올리기와 같은 표). */
 const ASSET_KIND: Partial<Record<StoreItemKind, StoreAssetKind>> = {
   tileset: "chipset", character: "charset", face: "faceset", battler: "battleCharset", picture: "picture", music: "music", sound: "sound",
