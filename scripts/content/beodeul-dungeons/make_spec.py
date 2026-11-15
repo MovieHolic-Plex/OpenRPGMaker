@@ -88,7 +88,7 @@ CAVE = dict(
 
 RUIN = dict(
     id="ruin", ko="유적", types=["temple"],
-    floor=["ru-floor"], faces=["ru-wall-a", "ru-wall-b", "ru-wall-c"], top=["ru-top-b", "ru-top-c"], topRamps=["leaf"],
+    floor=["ru-floor", "ru-floor-b"], floorWeights=[0.6, 0.4], faces=["ru-wall-a", "ru-wall-b", "ru-wall-c"], top=["ru-top-b", "ru-top-c"], topRamps=["leaf"],
     rimS="ru-rim-s", rimW="ru-rim-w", sliver="lime:2", faceGap="buff:1",
     looks=[dict(id="buff", ko="잿빛 마름돌"), dict(id="sand", ko="사암 다각 쌓기", remap={"buff": "buffw"}, faces=["rub-wall-a", "rub-wall-b", "rub-wall-c"], floor=["rub-floor-a", "rub-floor-b"], floorWeights=[0.4, 0.6]), dict(id="rose", ko="붉은 돌", remap={"buff": "buffc"})],
     objects=[
@@ -108,7 +108,7 @@ RUIN = dict(
         O("ruin-ivy-curtain", "ru-ivy", 2, 3, "mount", "덩굴 발", "ivy curtain", [], ["덩굴", "ivy"]),
         O("ruin-leaves", "ru-leaves", 2, 1, "decal", "낙엽", "fallen leaves", [], ["낙엽", "leaves"]),
     ],
-    extras=[E("ruin-column-tall", "open", 0.7, 4), E("ruin-pool", "open", 0.3, 1), E("ruin-column-fallen", "open", 0.35, 1), E("ruin-statue", "edge", 0.35, 2),
+    extras=[E("ruin-column-tall", "open", 0.7, 4), E("ruin-pool", "open", 1, 1, once=True), E("ruin-column-fallen", "open", 0.35, 1), E("ruin-statue", "edge", 0.35, 2),
             E("ruin-ivy-curtain", "wall", 0.5, 2), E("ruin-door-sealed", "wall", 0.25, 1), E("ruin-leaves", "decal", 1.0, 3)],
 )
 

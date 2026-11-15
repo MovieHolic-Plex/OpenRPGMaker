@@ -81,6 +81,7 @@
   "py-wall-b": "terrain",
   "py-wall-c": "terrain",
   "ru-floor": "terrain",
+  "ru-floor-b": "terrain",
   "ru-rim-s": "terrain",
   "ru-rim-w": "terrain",
   "ru-top-b": "terrain",
@@ -322,6 +323,7 @@
   "py-wall-b",
   "py-wall-c",
   "ru-floor",
+  "ru-floor-b",
   "ru-rim-s",
   "ru-rim-w",
   "ru-top-b",
@@ -1108,7 +1110,12 @@
     "temple"
    ],
    "floor": [
-    "ru-floor"
+    "ru-floor",
+    "ru-floor-b"
+   ],
+   "floorWeights": [
+    0.6,
+    0.4
    ],
    "faces": [
     "ru-wall-a",
@@ -1460,8 +1467,9 @@
     {
      "id": "ruin-pool",
      "cls": "open",
-     "per": 0.3,
-     "max": 1
+     "per": 1,
+     "max": 1,
+     "once": true
     },
     {
      "id": "ruin-column-fallen",

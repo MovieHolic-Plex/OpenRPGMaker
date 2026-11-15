@@ -865,6 +865,12 @@
 "chipset": "beodeul_city"
 },
 {
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-floor-b",
+"chipset": "beodeul_city"
+},
+{
 "png": "tiledata/beodeul-dungeon/fable/pieces/ru-ivy.png",
 "kind": "wall_mounted",
 "label": "beodeul_dungeons/ru-ivy",
