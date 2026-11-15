@@ -85,6 +85,12 @@ it.each([false, true])("keeps the wiki exception explicit and does not let reset
   const result = await applyProposedProject(proposed, { base, baseline, source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject });
   expect(result.ok).toBe(!resetProject);
   expect(store.getCurrent().world?.entities).toEqual(expect.arrayContaining(world?.entities ?? []));
-  expect(history.getMapEditHistoryEntries()).toHaveLength(resetProject ? 0 : 2); // authoring plus the coordinator's observed receipt
+  // 받아들인 제안 하나 = 되돌리기 한 단계(적용 직전 스냅샷 하나). 적용은 커밋·변경 기록을 이미 남기므로 위키 쪽이 그것을 또 하나의 저작으로 적지 않는다
+  // (applyProposedProject 끝 «Do not turn it into another authored document»; projectWikiApplication.test 도 적용 두 번에 기록 둘을 본다).
+  // 전에는 «저작 + 위키 조정자의 관찰 영수증» 둘을 기대했는데, 그 둘째 기록은 공개 기준선(0d4f13e7c)의 제품에 이미 없었다.
+  expect(history.getMapEditHistoryEntries()).toHaveLength(resetProject ? 0 : 1);
   if (!resetProject) expect(store.getCurrent().meta.title).toBe("Reviewed title");
-});
+// 한도 60초: 빈 프로젝트(수십 MB)를 만들고 통째 지문(AuthoredProjectBaseline)·통째 복제를 거친 뒤 실제 적용까지 간다. reset=false 경우가 러너에서
+// 12.1~17.0초였다(ci-full 11-05~11-15 일곱 실행 12.1·12.3·12.6·13.6·15.1·15.8·16.5 · ci-vitest-files 43719165070 에서 17.0) — 기본 한도 15초를 넘나든다.
+// 그 열흘 사이 커밋에 따라 늘지 않았다(러너 빠르기 차이). 단언이 고쳐진 뒤 시간 초과로 다시 떨어지지 않게 이 두 경우만 한도를 둔다.
+}, 60_000);

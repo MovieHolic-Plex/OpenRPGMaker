@@ -110,6 +110,14 @@ describe("1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있
   });
 });
 
+// 아래 두 경우는 각본 대화로 AssistantSession 한 턴을 끝까지 돌린다. 세션은 만들 때와 턴 앞뒤에 기본 프로젝트(번들 칩셋 49벌)를 통째로 여러 번 복제해
+// 도구 호출이 하나뿐인 첫 경우도 CI 러너에서 8~14초가 든다 — 스위트 기본 한도 15초(vitest.config.ts testTimeout)에 걸쳐 있었다.
+// ci-vitest-files 실측(2026-11-15, 이 파일만 · 첫 경우 / 둘째 경우 / 파일 전체): 10-27 923287d87 9.8s / 16.0s / 59.7s · 11-04 541570951 12.5s / 19.7s / 74.4s ·
+// 11-10 d1dbcdfce 12.6s / 21.0s / 76.9s · 11-14 c4d21cf27 8.4s / 13.9s / 51.6s · 11-15 ba9fceeca 13.8s / 23.8s / 85.3s. 둘째 경우는 어느 커밋에서나 파일 전체 시간의
+// 0.26~0.28 배다 — 어떤 변경이 느리게 만든 것이 아니라 러너 빠르기에 따라 한도를 넘나든 것이다(넘은 날 빨강, 빠른 러너를 만난 11-14 판만 초록).
+// 그래서 이 두 경우만 한도를 60초로 둔다(가장 느린 실측 23.8초의 2.5배). 턴이 정말 멎으면 여전히 걸린다.
+const SESSION_TURN_TIMEOUT_MS = 60_000;
+
 describe("2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다", () => {
   it("맵 밖 에셋으로 거부된 set_build_spec 도 확장 경로를 안내한다", async () => {
     const chat = scriptedChat([
@@ -134,7 +142,7 @@ describe("2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실�
     expect(rejected!.issues).toContain("width:44");
     expect(rejected!.issues).toContain("height:34");
     expect(rejected!.issues).toContain("resize_map");
-  });
+  }, SESSION_TURN_TIMEOUT_MS);
 
   it("키운 뒤에는 같은 밑그림이 통과한다 — 막힘→확장→시공이 한 경로로 이어진다", async () => {
     // Given: resize_map 으로 키우고, 그 크기를 plannedMap 으로 선언한 뒤 집을 짓는 순서.
@@ -163,7 +171,7 @@ describe("2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실�
     ]);
     const map = session.getProposedProject().maps.m1;
     expect([map!.width, map!.height]).toEqual([40, 40]);
-  });
+  }, SESSION_TURN_TIMEOUT_MS);
 });
 
 describe("4. intentDeclaration — 문장의 규모가 크기로 환산돼 모델에게 돌아간다", () => {
