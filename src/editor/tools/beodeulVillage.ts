@@ -2489,9 +2489,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const earthUnder: number[] = [];
   if (ground.commons) {
     const gpt = codePlan ? codePlan.g : gatherDoor ? { x: gatherDoor.x, y: gatherDoor.y + gather.s.width + 1 } : null;
+    // 조수가 고른 밭·목초지·과수원 자리는 흙이 차지하지 않는다 — 흙 몸이 먼저 앉아 청한 밭이 서지 못했다(2026-11-15 명세 은행 lay-main-farm 밭 1 → 0). 자동 배치의 밭 자리는 붙들지 않는다(마당이 줄어든다).
+    const askedLayout = codePlan && !codePlan.report.auto ? codePlan.layout : undefined;
+    const askedPlots = [...(askedLayout?.fields ?? []).map((p) => ({ p, rx: 5, ry: 3 })), ...(askedLayout?.pastures ?? []).map((p) => ({ p, rx: 5, ry: 3 })), ...(askedLayout?.orchards ?? []).map((p) => ({ p, rx: 7, ry: 4 }))];
     const openEarth = (c: number): boolean => {
       if (occ[c] !== FREE || rampCells.has(c)) return false;
       const x = c % W, y = (c - x) / W;
+      if (askedPlots.some(({ p, rx, ry }) => Math.abs(x - p.x) <= rx && Math.abs(y - p.y) <= ry)) return false;
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
         if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy);
         if (lv[n] !== lv[c] || occ[n] === WATERC || occ[n] === KEEP || rampCells.has(n)) return false; // 절벽 끝·발치, 물가, 계단 옆구리는 풀로 남긴다

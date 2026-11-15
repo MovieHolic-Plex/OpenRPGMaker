@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
-import { readSettlementAreas, settlementGround, settlementRank } from "@/editor/tools/beodeulSettlementRank";
+import { readSettlementAreas, settlementGround, settlementRank, standableYard } from "@/editor/tools/beodeulSettlementRank";
 import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS } from "@/editor/tools/beodeulTownCore";
 import { townWallLayout } from "@/editor/tools/beodeulTownWall";
 import { planQuay } from "@/editor/tools/beodeulQuay";
@@ -78,6 +78,33 @@ describe("흙 몸(planCommons) — 길 뼈대 둘레에 모양으로 자란다",
     // 자로 그은 한 칸 줄이 아니다
     expect(straightEarthRuns(W, H, (c) => earth.has(c)).cells).toBeLessThan(straightEarthRuns(W, H, (c) => road.has(c)).cells);
   });
+  it("맵 가장자리 두 줄에는 흙을 새로 내지 않는다 — 가장자리에 닿는 것은 뼈대 길뿐이다(출구 없는 길 끝·넓어진 출구가 생기지 않는다)", () => {
+    const rim = (c: number) => { const x = c % W, y = (c - x) / W; return x <= 1 || y <= 1 || x >= W - 2 || y >= H - 2; };
+    for (const p of [plan(), plan({ paths: [{ cells, width: 1 }], freeRoad: () => true })]) {
+      expect(p.earth.length).toBeGreaterThan(60);
+      expect(p.earth.filter(rim)).toEqual([]);
+      // 길의 두 끝은 흙으로 남는다
+      expect(p.bare.includes(cells[0]!) || p.bare.includes(cells[W - 1]!)).toBe(false);
+    }
+  });
+});
+
+describe("사람이 서도 되는 흙 마당(standableYard)", () => {
+  // 13×7: 흙 5×5(x 1~5, y 1~5)와 떨어진 포석 4×5(x 8~11, y 1~5) — 둘 다 길로 센다
+  const W = 13, H = 7;
+  const lowerTiles = new Array<number>(W * H).fill(0);
+  for (let y = 1; y <= 5; y += 1) { for (let x = 1; x <= 5; x += 1) lowerTiles[y * W + x] = 1; for (let x = 8; x <= 11; x += 1) lowerTiles[y * W + x] = 2; }
+  const map = { width: W, height: H, lowerTiles } as unknown as GameMap;
+  const tileset = { tileMeta: [{ tags: ["grass"] }, { tags: ["sand"] }, { tags: ["road"] }] } as unknown as Project["tilesets"][string];
+  const roads = new Set<number>(); lowerTiles.forEach((t, c) => { if (t) roads.add(c); });
+  it("둘레 여덟 칸이 모두 길인 흙 칸만 — 흙의 가장자리 줄과 포석 거리는 들지 않는다", () => {
+    const yard = [...standableYard(map, tileset, roads)].sort((a, b) => a - b);
+    expect(yard).toEqual([2, 3, 4].flatMap((y) => [2, 3, 4].map((x) => y * W + x)));
+  });
+  it("길로 세지 않는 흙(사막의 모래 바닥)은 마당이 아니다", () => {
+    expect(standableYard(map, tileset, new Set([...roads].filter((c) => c !== 3 * W + 3))).size).toBe(0);
+    expect(standableYard(map, tileset, new Set()).size).toBe(0);
+  });
 });
 
 describe("시골 마을의 바닥 — 돌 포장 없이 흙", () => {
@@ -111,6 +138,18 @@ describe("시골 마을의 바닥 — 돌 포장 없이 흙", () => {
   it("사막 마을은 그대로다(제 바닥 표본) — 급은 적히지만 흙 몸을 깔지 않는다", () => {
     const { project, map } = town({ theme: "desert", seed: 17 });
     expect(readSettlementAreas(map, project.tilesets[TS]).earth.length).toBe(0);
+  }, 240_000);
+});
+
+describe("조수가 고른 밭 자리 — 흙 몸이 차지하지 않는다", () => {
+  it("흩어진 농가에 밭 자리를 주면 그 자리에 밭이 선다(2026-11-15 명세 은행 lay-main-farm: 흙 몸이 먼저 앉아 밭 1 → 0)", () => {
+    const { data } = town({ seed: 44061, form: "scatter", water: "none", houseCount: 3, terrainSeed: 88097,
+      layout: { gather: { x: 25, y: 24, plaza: false }, landmark: { x: 10, y: 5 }, anchor: { x: 26, y: 16 }, work: { x: 39, y: 17 },
+        houses: [{ x: 8, y: 17, kind: "small" }, { x: 10, y: 30, kind: "medium" }, { x: 39, y: 30, kind: "large" }],
+        fields: [{ x: 18, y: 18 }, { x: 20, y: 32 }], pastures: [{ x: 37, y: 24 }], props: [{ x: 25, y: 28 }], exits: ["south"] } });
+    expect(data.rank).toBe("hamlet");
+    expect(data.fields as number).toBeGreaterThanOrEqual(1);
+    expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
   }, 240_000);
 });
 
