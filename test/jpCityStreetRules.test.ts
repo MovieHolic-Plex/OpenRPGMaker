@@ -74,11 +74,13 @@ describe("jp_city new street rules (fable_street pieces)", () => {
     expect(broken("bare-seam")).toEqual([]);
   });
 
-  it("paves kerb-less lanes with the lane surface, keeps stone paving to the temple approach and the old alley, and bridges carry parapets", () => {
+  it("paves kerb-less lanes with the lane surface, keeps stone paving to the temple approach, the old alley and shrine grounds, and bridges carry parapets", () => {
     const fam = (p: (typeof plans)[number], name: string) => { const i = GROUND_FAMILIES.indexOf(name as never); let n = 0; for (const v of p.plan.fable!.gfam) if (v === i) n++; return n; };
     for (const p of plans) {
       const stone = p.id === "monzen" || p.id === "roji";
-      if (!stone) expect(fam(p, "alley"), `${p.id}#${p.seed} stone paving`).toBe(0);
+      // 돌길은 참배길(monzen)·옛 골목(roji) 종류와 신사 경내의 참배길(본전 앞 두 칸 폭)에만 깔린다
+      const shrine = p.plan.placed.some((b) => b.kit?.cat === "sacred");
+      if (!stone) expect(fam(p, "alley"), `${p.id}#${p.seed} stone paving`).toBeLessThanOrEqual(shrine ? 2 * 11 : 0);
       // 차가 다니는 칸은 아스팔트(연석 큰길)이거나 생활도로 포장이거나, 돌길 종류의 돌길이다
       const f = p.plan.fable!;
       for (let i = 0; i < f.occ.length; i++) if (f.occ[i] === Occ.Road) expect(["tarmac", "lane", ...(stone ? ["alley"] : [])], `${p.id}#${p.seed} road cell ${i}`).toContain(GROUND_FAMILIES[f.gfam[i]!]);

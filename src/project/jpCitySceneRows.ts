@@ -38,15 +38,15 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
   const row: ScenePlaced[] = [];
   let cursor = sx, prev: ScenePlaced | undefined, share = false;
   // 새 거리의 중형 건물: 블록(줄)에 하나까지, 블록 끝(모퉁이)에만 선다. 편의점·슈퍼·은행·우체국은 가게 거리, 파출소는 큰길 줄의 모퉁이(교차로), 의원·학원은 집이 섞이는 동네.
-  let endKit: ScenePlaced | undefined;
+  let endKit: NonNullable<ReturnType<SceneCtx["nextKit"]>> | undefined;
+  const exRow = ex;
   if (c.fable && ex - sx >= 16 && c.rng() < 0.75) {
     const roles = [...MEDIUM_SHOP, ...(mainRow || big ? ["koban"] : []), ...(c.kind.houseShare >= 0.15 ? MEDIUM_HOME : [])].map((r) => ({ r, k: c.rng() })).sort((a, b) => a.k - b.k).map((q) => q.r);
     const left = c.rng() < 0.5;
     for (const role of roles) {
       const kit = c.nextKit([], { x: left ? sx : ex - 8, foot }, ex - sx - 9, maxH, { role });
       if (!kit) continue;
-      const p = c.placeKit(kit, left ? sx : ex - kit.w, foot);
-      if (left) { row.push(p); prev = p; cursor = sx + kit.w; } else { endKit = p; ex -= kit.w; }
+      if (left) { const p = c.placeKit(kit, sx, foot); row.push(p); prev = p; cursor = sx + kit.w; } else { endKit = kit; ex -= kit.w; }   // 오른쪽 끝: 자리만 잡아 두고, 줄을 다 세운 뒤 마지막 가게에 벽을 맞대 세운다
       break;
     }
   }
@@ -85,8 +85,8 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
     const p = assembled(c, role, cursor, foot, Math.min(ex - cursor >= 9 ? 5 : 6, ex - cursor), Math.min(maxH, 9));
     row.push(p); cursor = p.x + p.w;
   }
+  if (endKit) { ex = exRow; if (cursor + endKit.w <= ex) { const p = c.placeKit(endKit, cursor, foot); row.push(p); cursor += endKit.w; } }
   closeGap(c, cursor, ex, foot);
-  if (endKit) row.push(endKit);
   return row;
 }
 
