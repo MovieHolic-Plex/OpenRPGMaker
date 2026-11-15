@@ -48,6 +48,13 @@ export function isCentrepieceKit(kit: KitLike | undefined): boolean {
   return (kit?.ai?.tags ?? []).some((tag) => CENTREPIECE_TAG.test(tag));
 }
 
+/** 가운데 기물 급 킷들의 위층 그림 칸 — 맵에 이미 선 물 기물·기념물을 타일로 알아본다. */
+function centrepieceTiles(tileset: Pick<TilesetDef, "structureKits"> | undefined): Set<number> {
+  const out = new Set<number>();
+  for (const k of tileset?.structureKits ?? []) if (isCentrepieceKit(k as KitLike)) for (const row of (k as KitLike).rows ?? []) for (const t of row.upperTiles ?? []) if (t >= 0) out.add(t);
+  return out;
+}
+
 /**
  * 서는 소품을 (x, y) 에 찍으면 광장 규칙을 어기는가. cells 는 찍기 도구의 발자국(그림이 있는 칸 · foot = 막는 칸).
  *  · 가운데 기물 급: 그 광장에 이미 가운데 기물이 있으면(가운데 자리에 무언가 섰거나 안쪽에 물 기물·기념물이 있다) 거절 — 한 광장에 하나.
@@ -73,8 +80,7 @@ export function squareRefusal(map: GameMap, tileset: Pick<TilesetDef, "structure
     const inCentre = !!sq.centre && feet.some((f) => inRect(sq.centre!, f.x, f.y));
     if (isCentrepieceKit(kit)) {
       // 이미 선 가운데 기물: 가운데 자리의 그림 칸, 또는 안쪽 어디든 물 기물·기념물의 그림 칸
-      const classTiles = new Set<number>();
-      for (const k of tileset?.structureKits ?? []) if (isCentrepieceKit(k as KitLike)) for (const row of (k as KitLike).rows ?? []) for (const t of row.upperTiles ?? []) if (t >= 0) classTiles.add(t);
+      const classTiles = centrepieceTiles(tileset);
       let has = false;
       for (let y = sq.inner.y0; y <= sq.inner.y1 && !has; y += 1) for (let x = sq.inner.x0; x <= sq.inner.x1; x += 1) {
         if (covered(x, y)) continue;
@@ -101,10 +107,19 @@ export function squareSpot(map: GameMap, tileset: Pick<TilesetDef, "structureKit
   opts: { readonly replace?: boolean; readonly free: (x: number, y: number) => boolean }): (SquareRefusal & { readonly free?: { x: number; y: number } }) | undefined {
   const no = squareRefusal(map, tileset, kit, at, cells, label, opts);
   if (!no) return undefined;
+  // 광장 밖으로 밀려난 물 기물·기념물은 다른 물 기물·기념물 곁(두 칸 안)에 서지 않는다 — 수조 둘이 나란히 붙어 섰다(r5 다시 돌리기)
+  const classTiles = isCentrepieceKit(kit) ? centrepieceTiles(tileset) : undefined;
+  const crowded = (x: number, y: number): boolean => !!classTiles && cells.some((c) => {
+    for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) {
+      const nx = x + c.dx + dx, ny = y + c.dy + dy;
+      if (nx >= 0 && ny >= 0 && nx < map.width && ny < map.height && classTiles.has(map.upperTiles[ny * map.width + nx] ?? -1)) return true;
+    }
+    return false;
+  });
   for (let r = 1; r <= 9; r += 1) for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
     if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
     const x = at.x + dx, y = at.y + dy;
-    if (opts.free(x, y) && !squareRefusal(map, tileset, kit, { x, y }, cells, label)) return { ...no, free: { x, y } };
+    if (opts.free(x, y) && !crowded(x, y) && !squareRefusal(map, tileset, kit, { x, y }, cells, label)) return { ...no, free: { x, y } };
   }
   return no;
 }

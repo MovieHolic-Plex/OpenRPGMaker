@@ -85,6 +85,11 @@ describe("광장 규칙(squareRefusal)", () => {
     expect(well?.code).toBe("square-centrepiece");
     const f = well!.free!;
     expect(f.x < 2 || f.x > 16 || f.y < 3 || f.y > 9).toBe(true);
+    // 광장 밖에 이미 선 우물 곁(두 칸 안)은 건너뛴다 — 물 기물 둘이 나란히 붙어 서지 않는다
+    put(map, f.x, f.y, 900);
+    const next = squareSpot(map, TILESET, WELL, { x: 12, y: 5 }, FOOT, "well", { free: () => true })!.free!;
+    expect(Math.max(Math.abs(next.x - f.x), Math.abs(next.y - f.y))).toBeGreaterThan(2);
+    expect(next.x < 2 || next.x > 16 || next.y < 3 || next.y > 9).toBe(true);
     // 다른 놓기 규칙이 모두 막으면 자리를 내지 않는다
     expect(squareSpot(map, TILESET, STALL, { x: 9, y: 5 }, FOOT, "stall", { free: () => false })?.free).toBeUndefined();
   });
