@@ -1645,6 +1645,192 @@
 ],
 "rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
 "program": "jp_office"
+},
+{
+"id": "jp-bldg-f-mansion",
+"type": "building",
+"name": "맨션",
+"en": "apartment block",
+"kind": "structure",
+"w": 8,
+"h": 16,
+"tier": "large",
+"floors": 6,
+"doors": [
+1,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"맨션",
+"apartment block"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-office",
+"type": "building",
+"name": "오피스 빌딩",
+"en": "office building",
+"kind": "structure",
+"w": 8,
+"h": 14,
+"tier": "large",
+"floors": 5,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"오피스 빌딩",
+"office building",
+"オフィス"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"program": "jp_office",
+"touch": false
+},
+{
+"id": "jp-bldg-f-depato",
+"type": "building",
+"name": "백화점",
+"en": "department store",
+"kind": "structure",
+"w": 8,
+"h": 12,
+"tier": "large",
+"floors": 4,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"백화점",
+"department store",
+"デパート"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-hotel",
+"type": "building",
+"name": "비즈니스 호텔",
+"en": "business hotel",
+"kind": "structure",
+"w": 6,
+"h": 16,
+"tier": "large",
+"floors": 6,
+"doors": [
+1,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"비즈니스 호텔",
+"business hotel",
+"ホテル"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-byoin",
+"type": "building",
+"name": "병원",
+"en": "hospital",
+"kind": "structure",
+"w": 8,
+"h": 12,
+"tier": "large",
+"floors": 4,
+"doors": [
+1,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"병원",
+"hospital",
+"びょういん"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"program": "jp_clinic",
+"touch": false
+},
+{
+"id": "jp-bldg-f-danchi",
+"type": "building",
+"name": "단지 아파트",
+"en": "public housing block",
+"kind": "structure",
+"w": 7,
+"h": 14,
+"tier": "large",
+"floors": 5,
+"doors": [
+5,
+6
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"단지 아파트",
+"public housing block"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
 }
 ]
 }
