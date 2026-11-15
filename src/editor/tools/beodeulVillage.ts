@@ -46,7 +46,7 @@ import { activeKitLook, activeTilesetLook, lookHash, withoutHouseSet, withTreePi
 import { standKitPictures } from "@/project/standKit";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { houseSetTableFor } from "@/assets/houseSets";
-import { tilesetLookGround } from "@/assets/tilesetLooks";
+import { tilesetLookGround, tilesetLookPlaza } from "@/assets/tilesetLooks";
 import { tilesetStand, tilesetStandTableFor } from "@/assets/tilesetStands";
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import { beodeulObjectsCuttingWays, dressBeodeulObjects } from "./beodeulObjectSets";
@@ -2553,9 +2553,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const earthUnder: number[] = [];
   if (ground.commons) {
     const gpt = codePlan ? codePlan.g : gatherDoor ? { x: gatherDoor.x, y: gatherDoor.y + gather.s.width + 1 } : null;
+    // 조수가 고른 밭·목초지·과수원 자리는 흙이 차지하지 않는다 — 흙 몸이 먼저 앉아 청한 밭이 서지 못했다(2026-11-15 명세 은행 lay-main-farm 밭 1 → 0). 자동 배치의 밭 자리는 붙들지 않는다(마당이 줄어든다).
+    const askedLayout = codePlan && !codePlan.report.auto ? codePlan.layout : undefined;
+    const askedPlots = [...(askedLayout?.fields ?? []).map((p) => ({ p, rx: 5, ry: 3 })), ...(askedLayout?.pastures ?? []).map((p) => ({ p, rx: 5, ry: 3 })), ...(askedLayout?.orchards ?? []).map((p) => ({ p, rx: 7, ry: 4 }))];
     const openEarth = (c: number): boolean => {
       if (occ[c] !== FREE || rampCells.has(c)) return false;
       const x = c % W, y = (c - x) / W;
+      if (askedPlots.some(({ p, rx, ry }) => Math.abs(x - p.x) <= rx && Math.abs(y - p.y) <= ry)) return false;
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
         if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy);
         if (lv[n] !== lv[c] || occ[n] === WATERC || occ[n] === KEEP || rampCells.has(n)) return false; // 절벽 끝·발치, 물가, 계단 옆구리는 풀로 남긴다
@@ -3555,7 +3559,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const inner = new Set(squareFloor.kit && kitIndex.has(squareFloor.kit) ? square.inner.filter((c) => plazaPaint.includes(c)) : []);
     paintCells([...plazaPaint.filter((c) => !squareRingSet.has(c) && !inner.has(c) && !quaySet.has(c)), ...courtUnder.filter((c) => occ[c] === BLD || occ[c] === PROP)], spec.plaza);
     // 포구의 돌 둑: 시골 포구는 광장 재료가 흙이므로 둑은 판석 재료로 따로 깐다(어구 밑도)
-    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), { mat: PLAZA });
+    // 자갈 재질은 시골·마을 급에 쓰지 않는다(오너 «강자갈 마당은 너무 어색하군») — 그 게임의 광장 재질이 자갈이면 둑은 청회색 판석 표본으로 깐다. 읍의 돌 포장은 그대로다.
+    const quaySlate = ground.rank !== "town" && tilesetLookPlaza(TS_ID, gameLook) === "plaza-cobble" && SQUARE_FLOORS[0]!.kit && kitIndex.has(SQUARE_FLOORS[0]!.kit) ? SQUARE_FLOORS[0]!.kit : undefined;
+    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), quaySlate ? { kit: quaySlate } : { mat: PLAZA });
     if (inner.size) paintCells(inner, { kit: squareFloor.kit! });
   }
   paintStep("광장 판석", [PLAZAC]);

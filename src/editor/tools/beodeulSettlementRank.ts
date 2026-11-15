@@ -96,3 +96,19 @@ export function readSettlementAreas(map: GameMap, tileset: TilesetDef | undefine
   }
   return out;
 }
+
+/**
+ * 사람이 서도 되는 흙 마당 칸 — 길로 세는 흙 칸 가운데 둘레 여덟 칸이 모두 길인 칸(폭 셋 이상인 흙의 속).
+ * 폭 한두 칸 길 줄기 · 건물 벽 바로 아래 문 앞 칸 · 포석 거리는 들지 않는다(거기 선 사람은 길을 좁힌다).
+ * 왜(2026-11-15 명세 은행 lay-main-farm): 흙 몸이 통째로 길로 세어져 «헛간 옆» 농부가 문에서 다섯 칸 밀려났다 — 시골 마을의 사람은 마당에 선다.
+ */
+export function standableYard(map: GameMap, tileset: TilesetDef | undefined, roads: ReadonlySet<number>): Set<number> {
+  const W = map.width, H = map.height, out = new Set<number>();
+  for (const c of readSettlementAreas(map, tileset).earth) {
+    if (!roads.has(c)) continue;
+    const x = c % W, y = (c - x) / W; let all = true;
+    for (let dy = -1; dy <= 1 && all; dy += 1) for (let dx = -1; dx <= 1; dx += 1) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H || !roads.has(ny * W + nx)) { all = false; break; } }
+    if (all) out.add(c);
+  }
+  return out;
+}
