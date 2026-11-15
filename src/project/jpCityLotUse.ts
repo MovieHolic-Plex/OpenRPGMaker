@@ -73,6 +73,8 @@ export function fillLotUses(opts: {
   readonly call: Call;
   /** 시타마치·쇼텐가이 변형: 생울타리로 두르는 쓰임(놀이터·텃밭)을 고르지 않는다 — 초록 띠 금지(2026-10-18 사용자). */
   readonly noGreen?: boolean;
+  /** 쓰임을 놓아도 되는 칸(1) — 주면 그 밖의 칸(길·산책로·이미 쓰임이 정해진 구획)은 건드리지 않는다. 거리 장면 구성기가 준다. */
+  readonly allow?: Uint8Array;
 }): LotUseResult {
   const { mapId, call } = opts;
   const { map, tileset } = opts.view();
@@ -112,7 +114,7 @@ export function fillLotUses(opts: {
     if (ups.some((t) => edge.has(t))) continue;                          // 담·생울타리 칸: 경계일 뿐
     if (ups.some((t) => !infraKit.has(t))) { cover[i] = 1; continue; }
     if (ups.length || infraKit.has(low)) continue;                       // 하천 석축·다리·노면 표시: 길·물의 일부
-    if (!infra.has(low)) free[i] = 1;
+    if (!infra.has(low) && (!opts.allow || opts.allow[i])) free[i] = 1;
   }
   const emptyRatio = (): number => {
     let lot = 0, empty = 0;

@@ -11,7 +11,7 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 | 텍스처 키 | `tex_jp_city` (접두 `tex_` 제거 규칙과 같아 `bundledTilesetIdForAsset` 에 분기 없음) |
 | 계열 | `oprn-jp` (라벨 "일본 도시(도트)", `src/project/tilesetFamily.ts`) |
 | 이름 | 일본 도시 · 상가·주택·역·신사 (도트) |
-| 시트 | 16px 칸, 한 줄 48열, 높이 ≤ 4096px |
+| 시트 | 16px 칸, 한 줄 96열(2026-10-08 에 48 → 96), 높이 ≤ 8192px(2026-11-14 에 4096 → 8192 — `bake_lib.MAX_H`, WebGL 최소 보장 텍스처 크기 안이고 `modern_city` 굽기 단언과 같은 값. 열 수는 그대로라 칸 번호는 안 바뀐다. 49,152칸까지) |
 | 조립 부품·오토타일 그룹·참고문서 id 머리 | `jp-` (번들 소유) |
 
 ## 파일
@@ -387,6 +387,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 | `jp-school` | 3 | 10 | 손 도트 小学校 33종: 층(트랙 선 2층)·배치 순서·빈칸 규칙 · 사전(칸 번호 전체) · 예제 맵 jp-city-school 전체 1~4층 배열 · 오류 3(`overlay-in-base-layer`·`door-access-blocked`·`anchor-blocked`) |
 | `jp-transit` | 3 | 10 | 탈것 14종·노면전차·지하철: `set_map_transit` 쓰는 법·좌측통행 칸 규칙·정류장·도구 거절 코드 · 키트 사전(거리+역) · さくら町駅 콘코스·승강장 전체 배열과 지하철 노선 · 탈것 도감·실제 런타임 화면 · 오류 2(`fare-gate-bypass`·`anchor-blocked`) |
 | `jp-errors` | 3 | 1 | 코드 → 문서·그림 지도 · 변조 좌표 전체표 · 엔진 판정 대 정의 층 설명 정정(전/후) |
+| `jp-buildings-f` | 3 | 5 | 새 건물 67종(탑 3/4 시점, `jp-bldg-f-*`): 쓰는 법(다음 x = x + w · 문 열 · 지나는 열) · 사전 2쪽(칸 번호 전체·통행 글자는 정의의 통행·층 표에서 읽음) · 역할별 도감 그림 5장. **따로 굽는다** — `refs_fable.py`(아래 「새 건물」 절). 3/4 관문 미통과 — 오너 면제 |
 
 ### 굽는 법 (한 줄)
 
@@ -525,3 +526,110 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
   (`_gate/assembled.json` → `gate_rooms.EXTRA_MANIFESTS`). 육교 조립·사다리 PASS(미보정 프로필 임시통과), 단상 조립은 눈 4/12 로 REFER → Opus 적대 VQA r24(major 0) 뒤 위임 허용
   (`harness-data/object-gate/vqa/jp-street-stairs.opus-vqa-r24.json`).
 - 출하 플레이어 걷기: `scripts/qa/runtime/jp-street-stairs-fixture.mts` → `jp-street-stairs.scenario.mjs`(육교 오르기·층계참 막힘·상판 건너기·내려오기·옆 막힘·옆 계단으로 단상 건너기·사다리).
+
+## 거리 장면 구성기 — 조수가 짓는 거리 (2026-11-15)
+
+오너 2026-11-14: «근데 생각해보니까 일본 도시랑 한국 도시는 어떻게할거임 ? 아직 퀄리티가 좀 떨어지는거같은데 .. 오브젝트 수랑 도로 뭐 이것저것»
+
+조수가 짓는 거리(게임 열쇠가 켜진 `compose_jp_city_street` 호출)는 옛 구성기(`jpCityStreetComposer.ts`) 대신 장면 구성기로 짓는다. 열쇠 없는 호출(사람 손 호출·대표작 `shitamachiFourthSeason`)은 옛 배치 그대로다 — 저장된 지도와 대표작이 그 배치에 기댄다.
+
+### 파일
+
+| 파일 | 맡은 일 |
+|---|---|
+| `src/assets/jpCityStreetKinds.json` | 손으로 쓰는 자료: 바닥 톤 4벌, 거리 종류 10가지, 장면 벌(소품 목록), 옥상 면 |
+| `src/assets/jpCityStreetCatalog.json` | 칩셋에서 뽑은 건물·킷 크기 목록. `python3 scripts/content/jp-city/street/catalog.py` 로 다시 만든다(`--check` 는 대조만) |
+| `src/project/jpCitySceneKinds.ts` | 자료 읽기와 종류 고르기(`pickSceneKind`) |
+| `src/project/jpCitySceneComposer.ts` | 계획(`planJpCityScene`, 순수 함수): 띠·길·구획·쓰임 |
+| `src/project/jpCitySceneRows.ts` | 가게 줄·집 줄·뒷골목·뒷마당 |
+| `src/project/jpCityScenePieces.ts` | 구획 조각: 공원·신사·작은 사당·코인 주차·공사장·자전거 주차장·빈터·역 앞 |
+| `src/project/jpCitySceneStreets.ts` | 길 꾸밈: 하천·다리·육교·횡단보도·전봇대·아케이드 |
+| `src/project/jpCitySceneRun.ts` | 계획 실행(담 모양·4층 덧그림·처마 칸 되살리기)과 건물 이름표 |
+| `scripts/qa/jp-street-measure.mts` | 측정(모델 없음): 건물·그림 종류·되풀이·소품 종류·도로 몫·죽은 띠·빈 8×6 창·닿지 않는 문 |
+
+### 거리 종류와 고르는 법
+
+| 꼴(style) | 종류 id |
+|---|---|
+| shopping | `ekimae` 역 앞 상가 · `kawazoi` 강변 상가 · `zakkyo` 잡거빌딩 번화가 |
+| residential | `jutaku` 조용한 주택가 · `kawa-jutaku` 강변 주택가 · `tera-machi` 신사 낀 주택가 |
+| shitamachi | `roji` 시타마치 골목 · `monzen` 참배길 문 앞 거리 |
+| shotengai | `arcade` 아케이드 상점가 · `ichiba` 노천 시장 거리 |
+
+- 종류 하나는 큰길 꼴(연석 차도 · 보도 없는 생활도로 · 보행자 시장 길), 하천, 건물 섞임, 구획 조각, 장면 벌, 바닥 톤을 한 벌로 묶는다.
+- 고르기: 꼴에 맞고 요청한 가게 수를 담을 수 있는 종류 가운데 `(게임 열쇠 해시 + 씨앗)` 번째. 같은 게임·같은 씨앗은 늘 같은 거리이고, 게임이 다르면 종류·톤·건물 순서가 다르다.
+- 이름으로 고르기: `style` 에 종류 id 를 준다(`compose_jp_city_street({style:"kawazoi"})`, v2 는 `hints.style`). 새 인자는 없다. 열쇠 없는 호출이어도 이름을 주면 장면 구성기로 짓는다.
+- v2 빌더(`src/ai/v2/place/builders/jpCity.ts`)는 요청 소품이 다 들어가는 씨앗을 찾을 때 도구가 실제로 세울 계획(같은 열쇠·같은 횡단보도 칸)을 미리 본다. 씨앗이 바뀌면 종류도 돌기 때문에 «강·다리» 요청은 강변 종류에 닿는다.
+- 결과 글: 도구 요약 앞머리와 빌더 요약에 종류 이름과 장면 벌 이름을 영어로 적는다(모델이 읽는 글). 도구 `data` 에 `streetKind`·`streetKindName`·`scenes`·`blockUses`.
+
+### 규칙
+
+- 같은 건물 그림은 한 지도에 한 번. 그 분류의 그림을 다 세웠을 때만 20칸 넘게 떨어진 자리에 되풀이한다. 맞는 크기가 없으면 세우지 않고 틈 쓰임(주차 한 칸 · 자판기 줄 · 화단 + 뒤 담)으로 닫는다.
+- 가게 줄은 벽을 맞대고(처마 칸 겹침) 집은 제 필지 바닥(흙·잔디·자갈) 위에 담·대문·디딤돌·카포트와 함께 선다. 포장은 길과 보도에만.
+- 가게 뒤 대지는 뒷마당이다: 건물마다 대지 포장과 다른 바닥(흙·자갈·돌길)을 깔고 빨래 건조대·쓰레기 수거함·물탱크·창고·프로판·실외기·자전거를 둔다. 세로 길에 닿는 끝 필지는 주차 한 칸.
+- 키 큰 소품(전봇대·가로등·벚나무·간판 기둥)과 건물 정면에 겹치는 진열대는 4층 덧그림으로 찍는다 — `stamp_object` 는 서 있는 그림이 윗층 칸과 겹치면 거절한다.
+- 지은 건물의 문은 모두 큰길에서 걸어서 닿아야 한다(`test/jpCitySceneComposer.test.ts`). 이름표 글 꼴은 옛 구성기와 같아 `link_jp_city_interior` 가 그대로 읽는다.
+- 새 건물(`jp-bldg-f-*`)·옥상 기물(`jp-prop-okujo-*`)이 구워지면 `catalog.py` 를 다시 돌리면 건물은 바로 쓰이고, 옥상 기물은 `jpCityStreetKinds.json` 의 `roofs`(건물 id 와 옥상 면 `[dx, dy, w, h]`)에 적은 건물에만 올라간다.
+
+### 실측 (60×48 · 씨앗 1~6 · 꼴 넷 = 24장, 전 = 열쇠 없는 옛 구성기)
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 같은 건물 그림 최대 되풀이가 1인 지도 | 0 / 24 | 24 / 24 |
+| 소품 종류 45 이상인 지도(최소) | 0 / 24 (20) | 22 / 24 (40) |
+| 건물도 기물도 없는 8×6 창(평균) | 11.2~12.3% | 0.3~1.4% |
+| 죽은 띠 6% 이하인 지도 | 8 / 24 | 24 / 24 |
+| 닿지 않는 문(52×34 포함 48장) | 51 / 769 | 0 / 604 |
+| 건물 20채 이상인 지도(최소) | 18 / 24 (18) | 8 / 24 (13) |
+| 도로 몫 19% 이하인 지도(최대) | 24 / 24 (17.1%) | 22 / 24 (19.8%) |
+
+건물 수가 준 것은 알려진 한계다: 같은 그림을 되풀이하지 않는데 지금 건물 킷 폭이 7~8칸이라 60칸 줄에 일곱 채쯤 선다. 폭 좁은 새 건물이 구워지면 다시 잰다.
+
+## 새 거리 조각과 규칙 — 블록 `fable_street` (2026-11-15)
+
+오너 2026-11-15 «확대해서 보면 엉망진창인 게 너무많다. 버들항급 퀄리티도 안 되고». 거리의 바닥·소품을 한 손(Fable 5.2)으로 다시 그리고, 구성기가 조각마다 «어디에 서는가»를 자료로 읽어 그 자리에만 놓는다. 건물은 건물 일꾼의 `fable_city`(`jp-bldg-f-*`) — 구워지면 그것만 쓴다.
+
+### 구운 것
+- 블록 `fable_street`, 칸 28527~32558(예약 4,032칸 — `bake_lib.RESERVE`), 쓴 칸 1,486. 조각 342종 · 키트 그림 986장(`jp-st-<조각>` 또는 `jp-st-<조각>--<바닥>` — 바닥별 발치 그림자 변형).
+- 바닥 무늬 9가족(`jp-st-gnd-<가족>`: pave 보도 블록 · forecourt 앞마당 판 · tarmac 아스팔트(결 둘 — 연석 큰길·주차장) · lane 생활도로 포장 · laneside 생활도로 길가 띠(배수로·흰 선) · alley 골목 돌길 · earth 다진 흙 · lawn 잔디 · water 물), 재료 테(연석·돌 테·배수로 테·잔디 테, 안·바깥 모퉁이), 다리 난간, 노면 표시, 둑(면·갓돌·계단·난간), 경계 줄 8가족(wall·hedge·fence·rail·railcap·guard·barricade·net — 끝·가운데·모퉁이·대문), 서 있는 소품 147종.
+- 원본 그림 `tiledata/jp-city/fable-street/sheets/` → `scripts/content/jp-city/street/fable_street_spec.py` 가 `pieces/`·`spec.json`·`index.json`·`src/assets/jpCityStreetPieces.json` 을 만든다 → 블록 `scripts/content/jp-city/blocks/fable_street.py` 가 굽는다. 팔레트는 `tiledata/jp-city/fable-city/palette.json`(거리 바닥 램프 lawn·earth·tarmac 포함).
+- 3/4 관문 미통과 — 오너 면제 묶음 `fable-jpstreet-2026-11-15`(935장, 도구 `object-gate owner-waive` 로 기록). 조각 그림이 한 화소라도 바뀌면 묶음을 다시 적어야 굽힌다.
+
+### 구성기
+- 켜짐: `STREET_BAKED`(칩셋에 `jp-st-kerb-s` 가 있으면). 열쇠 있는 호출(`planJpCityScene`)이 새 조각으로 짓는다. `SceneOptions.fable` 로 끄고 켤 수 있다. 사전(`jpCityStreetCatalog.json`)에 `jp-bldg-f-*` 가 하나라도 있으면 새 거리는 그것만 세운다(`SceneCtx.buildingPool`) — 문 열·폭은 키트에서 읽은 사전 그대로다. 같은 건물 그림은 한 지도에 한 번뿐이고(요청한 종류라도), 건물이 모자라 남는 앞줄은 필지 쓰임(공원·주차장·작은 신사·자전거 주차·빈터·공사장)이 채운다.
+- 파일: `jpCityStreetPieces.ts`(조각 표·앵커 등급) · `jpCitySceneFable.ts`(강·노면 표시·경계 줄·테·그늘·아케이드·꾸밈·빈 띠 메우기·바닥·검사 `auditFable`) · `jpCitySceneCtx.ts`(`stFits`·`stPut`·`doorFront`) · `jpCitySceneRun.ts`(`ground_cells` 단계 — 가족의 무늬 키트를 읽어 1층에 깐다).
+- 앵커 등급: wall 벽 앞 · kerb 연석 줄 · lot 필지 안 · open 광장·마당 · facade 벽면 · road 차도(차만) · water 물 · floor 바닥 덧그림 · run 경계 줄.
+- 규칙(검사 이름): 차도 칸에는 차와 노면 표시만(`on-carriageway`) · 앵커 자리(`anchor-*`) · 겹침·지도 끝 잘림 없음(`overlap`·`cut-by-edge`) · 같은 그림은 20×15 창에 한 번(`repeat-in-window`, 나무·경계 줄·바닥 조각 제외) · 경계 줄은 끝이 건물·다른 줄·길·지도 끝·트인 자리에 닿는다(`loose-run-end`), 집 필지는 대문 하나 · 재료가 만나는 자리마다 테(`bare-seam`) · 차선은 등급대로(`alley-marking`·`edge-line-gap`·`centre-line-gap`·`centre-line-on-one-lane`) · 문 앞 칸은 비운다.
+- 생활도로(보도 없는 길)·골목·뒷길은 연석 없는 낡은 포장(lane)이다. 가로 생활도로는 북쪽 한 줄이 길가 띠(laneside — 배수로와 흰 선 안쪽: 사람이 걷고 전봇대·가로등이 선다), 필지 쪽에는 배수로 테. 돌길(alley)은 참배길(monzen)·옛 골목(roji) 종류만 쓴다(조율자 2026-11-15). 전선은 바닥 위로 걸지 않는다.
+- 집 필지(새 집 `jp-bldg-f-house-*`·`machiya-hira-*`·`apart-*`): 7칸 키 집이 두 줄 물려 설 수 있는 띠의 집 줄(`houseRow`)은 집 양옆에 마당 1~2칸을 두고 2~3줄 물려 세운다. 길 선에는 건물 쪽 담 키트(`jp-bldg-f-kaki-block/-plaster/-wood`, 2×2 되풀이)와 대문 하나(`kaki-gate-roofed` 3×3 — 세 줄 물린 회벽·판자 담 필지, 아니면 `kaki-gate-modern` 3×2)가 현관 앞에 선다(`SceneCtx.stampKaki`). 담 길이가 짝수가 되게 옆 마당 폭을 고르고, 담 종류는 필지마다 바뀐다. 줄 끝의 자투리는 마지막 집의 담이 이어 닫고, 두 칸 담이 못 서는 한 칸은 거리 쪽 모서리 담(`cornerCell`)이 닫는다. 필지 사이 세로 담은 거리 쪽 줄 조각(블록 담·산울타리·판자 담)이다. 검사: `kaki-loose-end`(담 끝이 다른 담·대문·건물·줄·길에 닿는다) · `kaki-gate-count`(필지에 대문 하나) · `kaki-gate-not-at-door` · `kaki-gate-walk-blocked`(대문에서 현관까지 걷는 칸) · `kaki-mixed-lot`(한 필지 한 담 종류). 담·대문 키트는 사전의 건물 표에 넣지 않고(`catalog.py`), 측정도 건물로 세지 않는다.
+- 중형 건물(사전 분류 `medium` — `jp-bldg-f-konbini/-super/-ginko/-yubin/-koban/-clinic/-juku/-sento`): 줄의 섞임이 뽑지 않고 구성기가 종류로 불러 세운다. 가게 줄(`shopRow`)은 줄(블록)에 하나까지, 줄의 왼쪽 끝이나 오른쪽 끝에만 세운다 — 편의점·슈퍼·은행·우체국, 큰길 줄이면 파출소, 집이 섞이는 종류(`houseShare ≥ 0.15`)면 의원·학원도. 집 줄(`houseRow`)은 줄 머리에 의원·학원·목욕탕 가운데 하나가 설 수 있다(앞이 포장). 신사 본전(`jp-bldg-f-jinja`, 분류 `sacred`)은 경내 조각(`shrine` — tera-machi·monzen)이 세우고 참배길은 돌 포장이다. 산몬(`jp-bldg-f-sanmon`, 지나가는 문 — 건물 표에 없다)은 경내가 본전 6줄 + 문 6줄 + 길을 담을 만큼 깊을 때만 서고(`SceneCtx.stampPassage`), 지금 경내(11줄)에는 도리이가 선다.
+- 빈 띠 메우기(`fableFill`): 흙·잔디에는 정원 것과 마당 나무, 포장 필지에는 광장 것과 나무 구덩이, 길게 빈 보도 곁 연석 줄에는 낮은 가로 시설(다 썼으면 비둘기·고양이). 세운 뒤에 바닥이 바뀐 마당 소품은 치운다.
+- 세로 길이 강을 건너는 자리 양옆에 다리 난간(`bridge-w/-e`, 끝 기둥 `-n/-s`)이 선다.
+- 가게 줄 뒤 띠(`backStrip`): 맨흙으로 두지 않는다. 가게 뒤에는 생활도로 포장의 뒷길(뒷문 살림 — 쓰레기통·상자·자전거·실외기 — 은 북쪽 담과 낮은 건물의 뒷벽에 붙는다), 띠가 깊으면(5줄 넘게) 뒷길 두 줄 위에 뒤 필지가 선다: 뒷길을 보는 집 줄 · 놀이터 · 골목 사당 · 동전 주차장 · 자전거 주차장 · 빈터 가운데 구간마다 하나, 저마다 둘레(담·울타리·산울타리)를 갖고 필지를 채운다. 얕은 자투리(3~4줄)는 산울타리 한 줄과 정원수의 심은 띠. 키 큰 건물(9줄 넘는 것)은 띠 뒤까지 닿으므로 뒷길은 그 사이 구간마다 따로 선다. 맨땅 필지(빈터·공사장)는 지도에 하나까지(`EARTH_LOTS`). 초록을 안 쓰는 종류의 놀이터는 포장 마당이다.
+- 집 필지의 마당은 한 가지다: 잔디 + 대문에서 현관까지 디딤돌 / 다진 흙 + 소나무·정원 돌·석등 한 무리(집 앞 줄에 붙여) / 포장 앞마당 + 화분 — 필지 통째로 한 바닥. 이웃 필지와의 옆 경계는 길 선에서 띠 뒤 담까지 한 가지(산울타리, 초록을 안 쓰는 종류는 판자 담)로 이어지고 띠 맨 윗줄에 블록 담 한 줄이 선다. 차고가 현관 옆인 집(`bay` 가 대문 키트와 겹치는 집)은 길 선을 담 없이 열고 앞마당을 통째로 포장한다. 카포트 필지는 집 오른쪽 세 칸 진입로(길까지 포장, 담이 트인다).
+- 혼자 서지 않는 조각(`STREET_ATTACHED`: 대나무 가림 울·석등·물확·수도·헛간·개집·빨래·이불)은 벽·건물 옆이거나 걷는 칸 곁에만 선다(`stFits` 가 막고, 검사 `loose-piece` 가 본다).
+- 깊은 필지: 생활도로 종류에서 지도 끝 블록 둘(위아래 띠)을 사잇길째 합쳐 한 필지로 만든다(`assignUses` — `c.deepRows` 가 그 안의 띠 뒤 담을 막는다). 절·신사 곁 주택가는 경내(`shrine`): 길 선에 산몬(`jp-bldg-f-sanmon`, 지나가는 문 — `stampPassage`), 돌 참배길과 석등 짝(세 줄 걸러 한 쌍 — `pair`), 맨 뒤에 본전, 양옆에 나무. 깊은 필지가 없으면 산몬은 서지 않는다. 주택가는 단지(`estate`): 뒤에 단지 아파트·맨션, 앞마당 포장과 자전거·화분, 놀이 기구, 산울타리 둘레.
+- 도리이(`jp-bldg-f-torii`, 지나가는 문)는 산몬이 서지 않는 신사 경내의 길 선(참배길이 도리이 뒤로 두 줄 넘게 남을 때)과 골목 사당(`shrine-small` — 돌 참배길 끝 뒤 담에 지장 사당, 석등 한 쌍)에 선다. 신사·사당은 지도에 하나.
+- 대형(`large`: 맨션·오피스·백화점·호텔·병원·단지)·초대형(`xlarge`: 역 앞 상가 빌딩·구청·타워 맨션)은 가게 줄의 끝 건물 자리(줄에 하나, 길에 닿은 블록 끝 — 옆 구획의 건물이나 빈 필지에 닿은 끝에는 서지 않는다)에 종류로 불러 세운다. 오피스·호텔·백화점은 고층 종류(역 앞·잡거)의 큰길 줄, 병원은 차도 있는 큰길(연석 길) 줄, 초대형은 고층 종류의 차도 앞 큰길 줄에 지도 하나까지. 같은 종류는 지도에 한 번. 차가 드나드는 입(`CatBuilding.bay` — 차고·구급차 자리·주차장 입구, `catalog.py` 의 `F_BAY` 표: 키트에 부품이 없어 그림에서 읽어 적었다)이 있는 건물은 차도 앞에만 서고 그 열 앞에는 소품·담이 서지 않는다. 고층 종류는 아래 띠를 8줄로 얕게 잡아 큰길 띠에 16줄을 준다.
+- 역사 정면(`jp-bldg-f-eki`, 역할 `station-front`)은 역 앞 종류에서 세로 길이 큰길 띠의 앞길에 닿아 끝나는 자리 맞은편에, 문이 그 길의 축에 오게 선다(지도에 하나, 앞에 빈 마당을 만들지 않는다 — 가게 줄이 양옆에 벽을 맞댄다). 큰 목욕탕(`jp-bldg-f-osento`, 역할 `big-bath`)은 주택가 줄 머리의 중형 자리 — 목욕탕은 지도에 하나.
+- 지나갈 수 있는 윗칸(★)의 깊이: 서 있는 소품의 윗칸은 `foot-dy:N` 이름표로 제 발 줄과 함께 깊이 정렬된다(블록 `fable_street.py` — 280칸). 주인공이 석등·산울타리 윗칸에 서면 그 뒤에 가려 그려진다.
+- 모든 문은 걸어서 닿는다(`fableOpenDoors`, 꾸밈이 끝난 뒤): 걷는 칸의 가장 큰 덩어리에 닿지 않는 문 앞 칸이 있으면 그 문에서 큰 덩어리까지 가장 짧은 길 위의 소품을 치운다. 대문 키트의 바깥 한 칸(길 쪽)도 문 앞 칸이다(`doorFront`). 지은 지도 300장에서 닿지 않는 문 41개를 재서 고쳤다(2026-11-16).
+- **한 게임 안에서 건물 가족은 하나**(2026-11-16): 새 건물(`jp-bldg-f-*`)이 구워져 있으면 그것이 대신하는 옛 손 도트 건물(`jp-bldg-*` 69종)에 `ai.supersededBy` 가 붙는다(`defaults/jpCity.ts` — 정의를 읽을 때). 표시된 키트는 정의에 남아 id 로 부른 찍기(옛 저장본 · 열쇠 없는 옛 구성기)는 그대로 되지만 `list_structure_kits` · `list_spatial_designs` · 물건 사전(`buildStampObjectIndex`)에는 나오지 않는다. 번들 참고문서에서도 용도 `jp-buildings-hand` 를 내리고 읽는 순서 · 시트 지도가 새 용도(`jp-buildings-f`)를 가리킨다. 새 가족에 같은 구실이 없는 8종(학교 · 체육관 · 유치원 · 주유소 사무소 · 시장 건물 · 공장 · 창고 · 마치코바)은 표시하지 않는다 — 학교 용도(`jp-school`)의 예제가 그 키트를 부른다. 시험 `test/jpCityBuildingFamily.test.ts`.
+- 경계 줄 짓기(`fableRuns`): 줄 끝을 늘일 때 현관에서 길까지의 걷는 열은 막지 않고(트인 자리로 본다), 외톨이 한 칸은 거두며, 다른 줄 한가운데에 낀 한 칸은 그 줄의 가족을 따른다.
+- 도로 몫은 폭 두 칸이 넘는 아스팔트 차도만 센다 — 생활도로 포장과 주차장 아스팔트는 차도 몫도 죽은 띠도 아니다(계획 뽑기·테스트 같은 뜻. 지은 지도를 재는 `jpStreetMeasure.mts` 는 주차장 아스팔트를 도로로 센다).
+- 굽기: 이미 구운 칸의 그림이 바뀌면 굽기가 멈춘다(`old_cells_changed`). 이 블록이 main 에 들어가기 전에는 예약 굽기(`a2caf8da5`)의 시트·핀으로 되돌린 뒤 다시 굽는다. 들어간 뒤에는 새 키트 id 로 더한다.
+- 사람이 서는 자리는 칸 이름표로 갈린다(`placementRules.laneCells`): 아스팔트 칸은 차도, 보도 블록 칸은 걷는 길.
+- 테스트 `test/jpCityStreetRules.test.ts`(거리 종류 10 × 씨앗 12 의 계획 + 지은 지도 4장). 측정 `scripts/qa/jpStreetPlanDump.mts`(계획·검사) · `scripts/qa/jpStreetMeasure.mts`(지은 지도 — 새 조각 그룹을 안다).
+## 새 건물 67종 — 탑 3/4 시점 (블록 `fable_city`, `BLOCK_ORDER` 끝, 2026-11-15) — 3/4 관문 미통과 · 오너 면제
+
+오너(2026-11-15): «확대해서 보면 엉망진창인 게 너무많다. 버들항급 퀄리티도 안 되고 … 건물들도 그렇고» · «탑 3/4 뷰가 안지켜진게 좀 보이네. 프롬프트만 다시해서 건물들만 다시해봐. 프롬프트만 매우 강하게, 단, 검증게이트는 넣지말고». 거리 구성기가 세우는 건물을 한 손으로 새로 그렸다. **이 그림들은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-jpbuildings-2026-11-14`(`harness-data/object-gate/waivers/`, 도구 `object-gate owner-waive` 로 기록, 67장)가 그림 화소 해시·종류에 묶여 번들·공유 출구만 연다. 스토어 출구는 막힌다.
+
+- **그림**: Claude Fable 5.2 medium 한 방 부품(지붕 윗면 · 층 · 1층, 부품 하나 ≤ 약 3,000화소, 가로 ≤ 64px 조각). 지붕도 모델이 그린다 — 기와 경사(용마루·막새) · 평지붕 바닥과 옥상 기물 · 박공 ㅅ. 시점은 프롬프트로만 지킨다. **시점 검사·판정·자동 재시도는 어디에도 없다.**
+- **코드가 하는 일**(`scripts/content/jp-city/fable_city_build.py`): 부품 쌓기(세로 `stack` · 가로 `cols`, 같은 층 부품을 여러 번) · 간판 글자(Galmuri9 9px, 판·세로 간판·노렌 글자) · 벽 가장자리 한 줄. 큰 건물의 층은 코드가 쌓되 층 그림 둘(A·B)을 번갈아 쌓는다.
+- **자료**: `tiledata/jp-city/fable-city/` — `parts/`(부품 PNG) · `pieces/`(조립된 건물 PNG, 굽기가 읽는 것) · `recipes.json`(쌓는 법·간판) · `palette.json`(거리 일꾼의 바닥 줄 + 기와 색 줄 여섯) · `glyphs9.json` · `spec.json`(킷 정의). `fable_city_build.py` 는 인자 없이 돌리면 조립 결과가 `pieces/` 와 같은지 대조하고 `--write` 로 다시 쓴다.
+- **킷 규약**: id `jp-bldg-f-<이름>`. **키트 폭 = 벽 폭**(양옆 처마 칸 없음 → 다음 x = x + w, 옛 `jp-bldg-*` 의 x + w − 1 과 다르다). 맨 아래 D줄(대부분 2, 담·대문·도리이 1)만 막힘, 그 위는 ★. 문 칸 = (문 열, 맨 아래 줄) `entrance` 부품 + 그 아래 접근칸. **지나는 열**(대문 · 절 산문 · 도리이)은 열 전체가 ★ 이고 `entrance` 없이 접근칸만 둔다(`door-cell-not-solid` 검사 때문). 태그 `street:shop-row|residential|medium|large|landmark` · `tier:small|medium|large|xlarge|landmark` · `roof:tile|flat|gable|none`.
+- **목록**: 상점가 가게 24(폭 3칸, 7칸 높이) · 집 15 + 담 3 + 대문 2 · 중형 9(잡거 빌딩·학원·목욕탕·슈퍼·의원·우체국·파출소·편의점·은행) · 대형 6(맨션·오피스·백화점·호텔·병원·단지, 높이 12~16칸) · 초대형 3(역 앞 상가 빌딩·구청·타워 맨션, 폭 12칸) · 랜드마크 5(신사 본전·절 산문·도리이·역사 정면·큰 목욕탕). 간판은 가나 위주(4배에서 한자가 뭉개졌다), 실제 상표·로고·흰 바탕 빨간 십자는 없다(편의점 띠는 자두색 한 줄, 병원·약국 십자는 초록).
+- **시트 예약**: `bake_lib.RESERVE = {'fable_city': 8064, 'fable_street': 4032}`. 블록마다 예약 구간을 먼저 빈 칸(핀 키 `<블록>/_pad/<n>`)으로 잡아 두고 그림은 가장 낮은 빈 칸부터 채운다 — 건물 일꾼과 거리 일꾼이 서로의 칸 번호를 밀지 않는다. `fable_city` = 20463~28526 가운데 20463~22921 을 썼다. 예약 빈 칸은 핀 검사(`check-pins.mjs`·`base_pin_problems`)와 «옛 칸 화소 변경» 검사에서 뺀다(빈 칸이 그림을 받는 것은 변경이 아니다). 칸 수 28,527 은 예약 굽기 뒤로 그대로다.
+- **참고문서**: 용도 `jp-buildings-f` 는 `python3 scripts/content/jp-city/refs_fable.py` 로 따로 굽는다(이야기 기물 `refs_story.py` 와 같은 길 — `bake_refs.py` 는 끝에서 저장본 `tiledata/jp-city/fable-city/refs/category.json` 을 다시 붙인다). 그림 `public/assets/jp-city-fable-references/`. 통행 글자는 정의에서 읽은 값이고 엔진 실측이 아니다.
+- **알려진 문제(이 일 밖)**: `bake_refs.py --dump` 의 `engine_dump.mts` 는 지금 main 에서 죽는다 — 오토타일 그룹 25개 가운데 8개(`jp-inaka-at-*` 6 · `jp-forest4-bl` · `jp-forest4-bm`)에 `AT_DEMOS` 항목이 없어 580줄에서 `undefined.layer`. 그래서 옛 용도 문서의 칸 수 표기는 다시 굽지 못했다.
+

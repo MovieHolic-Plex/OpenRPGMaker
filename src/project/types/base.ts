@@ -431,6 +431,11 @@ export interface StructureKitAiMeta {
   placement?: PlacementSurfaceCondition[];
   /** 검색·매칭용. TileAiMetadata.tags 와 같은 이름. */
   tags?: string[];
+  /**
+   * 같은 타일셋의 새 키트 가족이 이 키트를 대신한다(값 = 새 가족의 id 머리). 정의에는 남아 옛 저장본·id 로 부른 찍기는 그대로 되지만,
+   * 조수에게 권하는 목록(list_structure_kits · list_spatial_designs · 물건 사전)에는 나오지 않는다 — 한 게임 안에서 건물 가족이 섞이지 않게.
+   */
+  supersededBy?: string;
   /** 분류. TileGroupRole enum 재사용. */
   role?: TileGroupRole;
   /**
