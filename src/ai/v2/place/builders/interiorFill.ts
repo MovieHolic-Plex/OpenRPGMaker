@@ -4,7 +4,7 @@ import { roomTemplates, templateStyle, type InteriorRoomTemplate } from "@/edito
 import { measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import type { BuildRun } from "../../shared/types";
 import { purposeOf } from "../roomPurpose";
-import { hashText, itemCharacters, itemsFitWords, roomCharacters } from "@/editor/handInterior/vignettes";
+import { hashText, mixHash, itemCharacters, itemsFitWords, roomCharacters } from "@/editor/handInterior/vignettes";
 import { Obj, Room, Rebuild, findPart, GENERIC_HOME } from "./interiorKind";
 
 /** 깔린 카펫 줄(lines: 사각 rect 또는 칸 목록)과 깔개(flat 물건)가 덮는 칸. */
@@ -360,7 +360,8 @@ export function pickTemplate(tilesetId: string, kind: string, size: string | und
   const styled = pick.style ? fit.filter((t) => templateStyle(t) === pick.style || templateStyle(t) === "any") : fit;
   const cands = styled.length ? styled : fit.length ? fit : pool;
   const designs = [...new Set(cands.map(templateDesign))].sort();
-  const design = designs[hashText(`${pick.key}|${kind}`) % designs.length]!;
+  // 섞은 뒤 나눈다 — 두 벌짜리 종류에서 `% 2` 가 글머리(게임 제목)만 다른 열쇠에 늘 같은 벌을 냈다(2026-11-15 버들항 실내: 세 게임의 주점·잡화점·대장간이 같은 방).
+  const design = designs[mixHash(hashText(`${pick.key}|${kind}`)) % designs.length]!;
   const target = median * (size === "small" ? 0.75 : size === "large" ? 1.4 : 1);
   return cands.filter((t) => templateDesign(t) === design).sort((a, b) => Math.abs(area(a) - target) - Math.abs(area(b) - target) || a.id.localeCompare(b.id))[0]!;
 }
