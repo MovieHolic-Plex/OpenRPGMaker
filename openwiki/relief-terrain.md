@@ -240,7 +240,7 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 회색 벽돌 계단을 보고 「계단을 이딴 식으로 하면 절대 안 된다니까 ?」. 조사한 다른 게임과 시안은 `~/claude-viz/rpg-terrain-refs.html` · `hill-looks.html`, 결과 견본은 `hill-cliff-looks.html`.
 
 - **자연 면(`ReliefStyleSpec.natural`, `render.ts` `natural*`)**: 절벽 면을 16px 가족 무늬 대신 절대 좌표(화면 x, 땅 기준 y)의 해시·값 잡음으로 화소마다 만든다 — 부분 굽기 창에서도 전체 그림과 같다.
-  `boulders` 돌 박힌 흙(기본 그림의 덩이) · `strata` 물결치는 가로 켜 · `ledges` 턱진 바위 선반 · `ribs` 세로 바위 갈비 · `rock` 기운 바위 조각 + 폭이 고르지 않은 세로 금 + 갓돌.
+  `boulders` 돌 박힌 흙(기본 그림의 덩이) · `strata` 물결치는 가로 켜 · `ledges` 턱진 바위 선반 · `ribs` 세로 바위 갈비 · `rock` 기운 바위 조각 두 벌(큰 판 폭 6~14px 사이를 잔 조각 폭 3~5px 이 메운다) + 폭이 고르지 않은 세로 금(셋에 하나는 끊기지 않는 긴 금) + 갓돌.
   풀 처마는 열마다 3~6px 로 다르게 드리우고(`rock` 은 처마 대신 갓돌), 처마 밑 두 줄은 그늘, 발치 세 줄은 짙고, 닿는 선을 풀 포기·잔돌이 끊는다.
   해시는 `nmix`(FNV 뒤 한 번 더 섞기)를 쓴다 — `hsh3` 의 아랫비트를 화소 잡음에 쓰면 빗금이 선다.
 - **양식 여섯(`RELIEF_STYLES`)**: `cliff-earth` · `cliff-strata` · `cliff-rubble` · `cliff-ledge` · `cliff-crag` · `cliff-rock`(오너가 보던 참고 그림의 회갈색 바위 절벽).
@@ -270,6 +270,8 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
   계단 옆면 다듬기(`placeCut` `trimmable`)는 너머 칸이 이미 높은 단이면 길이어도 된다. 같은 느슨함을 길 찾기(`cutFits`)에도 넣었던 판은 30마을 가운데 한 곳의 길을 바꿔 못 닿는 윗단 칸을 늘려서 뺐다.
 - **단 높이와 상관없이 같은 마을**: 길 찾기 값(`routePath` 의 `maxStep`·곧은 구간·오르는 값)과 자동 배치(`autoLayout` 이 터 높이에 매기는 값 — 두 칸 단 단위로 바꿔 준다)를
   두 칸 단에 맞춰 한 칸·세 칸 절벽 게임도 같은 땅이면 같은 터에 같은 길을 낸다. 맞추기 전에는 한 칸 절벽 게임이 윗단을 모이는 곳으로 골라 30마을 가운데 6곳이 나빠졌다.
+- **물 PR(#4724)과 합친 뒤(2026-11-15)**: 겉모습 갈래 순서는 … `meadow` · `water` · `cliff`. 여섯 열쇠의 다른 갈래 고르기는 main 과 같다(혼자·차례로 12판). 폭포(`beodeulWater.ts` `hangBeodeulWaterfalls`, `relief.wallDecor`)는
+  절벽 면 줄 수(단 차)만큼 칸을 걸어 새 면 위에서도 어긋나지 않는다 — rock·crag·ledge·strata 마을 넷을 그려 확인. 굽이는 물 둘레 한 칸을 건드리지 않아 폭포 자리의 절벽 줄은 곧다.
 - **폭포를 얹는 쪽이 알 것**: 절벽 면은 `kind = 1` 화소다. 단 차 n 칸의 면 높이는 n × 16px, 화면 y 는 윗단 남쪽 끝 줄(py)에서 `py + pad − 윗단×16 + 1` 부터 n × 16 줄.
   처마(풀 드리움)는 맨 위 3~6px(`rock` 은 갓돌 3~6px + 그 밑 그늘 한 줄), 발치는 맨 아래 한 줄이 닿는 선(벽 램프 0)이고 그 위 넉 줄 안에 풀 포기·잔돌이 선다. 면 화소의 주인 줄은 윗단 칸의 줄이다(벽 띠는 그 줄 캐릭터 위에 그려진다).
 - 확인: `scripts/check-relief-window.mts`·`check-relief-pages.mts`(새 양식만 뽑아도 일치), 시험 `test/reliefStyle.test.ts` · `test/tilesetLook.test.ts` · `test/beodeulTerrainCliffHabit.test.ts`.
