@@ -96,6 +96,8 @@ export interface DungeonSpec {
    * A 해안 흙굴 · B 산속 바위굴 · C 검푸른 심층굴 · none 옛 검은 천장. 생략하면 종류 기본(cave A · mine B · volcano C, 그 밖 none).
    */
   readonly rockLine?: "A" | "B" | "C" | "none";
+  /** false 면 이 게임의 겉모습이 던전 겉가죽(assets/dungeonSkins.ts)을 골랐어도 옛 그림으로 짓는다(견본·시험용). 기본은 겉모습을 따른다. */
+  readonly skin?: false;
   /**
    * 조수가 설계한 층(2026-10-29 「맵은 조수가 설계한다」, designLayout.ts): 방(역할·크기·모양·자리·물·특징)·잇는 길·입구 쪽.
    * 주면 불규칙 문법은 이 설계대로 파고(layoutDesignedBlob), 방+통로 문법은 rooms 로 옮긴다(designToRooms). 함수는 고친 것만 warnings 「고침:」 줄로 알린다.
@@ -150,6 +152,8 @@ export interface DungeonCompose {
   readonly canopy?: { readonly style: "leaf" | "snow"; readonly cells: readonly number[] };
   /** 자연 물가 둑 덧그림(2층): 액체 칸 목록 — 맵에 쓸 때 beodeul_nature 둑 칸(256 이웃 모양)으로 덮는다. 다리 칸은 이웃(같은 물)로 친다. */
   readonly banks?: { readonly style: "grass" | "bog" | "lava"; readonly cells: readonly number[] };
+  /** 겉가죽을 입은 층(assets/dungeonSkins.ts): 2층에 얹을 덧칸(벽 윗변 입술·물가) [칸, 그림] 과 빛을 내는 기물 자리 — 빛 띠는 채우기·장치가 끝난 뒤에 깐다. */
+  readonly skin?: { readonly theme: string; readonly look: string; readonly overlay: readonly (readonly [number, number])[]; readonly glows: readonly { readonly name: string; readonly x: number; readonly y: number }[] };
   readonly counts: Record<string, number>;
   /** 설계한 높이 단(rooms[].level)이 있으면 map.relief 로 쓸 높이·계단(코드 5~8)·양식(*-steps = 버들항 돌계단 화소). */
   readonly relief?: { readonly levels: number[]; readonly ramps: number[]; readonly style: string };

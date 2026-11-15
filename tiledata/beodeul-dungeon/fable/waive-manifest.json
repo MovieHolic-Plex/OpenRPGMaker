@@ -1,0 +1,1312 @@
+{
+"items": [
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/br-plank-ew.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/br-plank-ew",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/br-plank-ns.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/br-plank-ns",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/br-stone-ew.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/br-stone-ew",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/br-stone-ns.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/br-stone-ns",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-armor.png",
+"kind": "other",
+"label": "beodeul_dungeons/ca-armor",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-banner.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/ca-banner",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-carpet.png",
+"kind": "flat",
+"label": "beodeul_dungeons/ca-carpet",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-column.png",
+"kind": "other",
+"label": "beodeul_dungeons/ca-column",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ca-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ca-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ca-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-throne.png",
+"kind": "other",
+"label": "beodeul_dungeons/ca-throne",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ca-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ca-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ca-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ca-weapon-rack.png",
+"kind": "other",
+"label": "beodeul_dungeons/ca-weapon-rack",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-altar.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-altar",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-angel.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-angel",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-banner.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cr-banner",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-candelabra.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-candelabra",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-column.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-column",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cr-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cr-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cr-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-niche-skull.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cr-niche-skull",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-ossuary.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cr-ossuary",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-sarcophagus.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-sarcophagus",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-sarcophagus-ns.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-sarcophagus-ns",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-sarcophagus-open.png",
+"kind": "other",
+"label": "beodeul_dungeons/cr-sarcophagus-open",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-tomb-slab.png",
+"kind": "flat",
+"label": "beodeul_dungeons/cr-tomb-slab",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cr-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cr-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cr-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cr-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-bed-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-bed-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-bed-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-bed-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-bed-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-bed-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-bed-d.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-bed-d",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-bed-e.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-bed-e",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-bones.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-bones",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-crystal.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-crystal",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-earth.png",
+"kind": "flat",
+"label": "beodeul_dungeons/cv-earth",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-edge-s.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-edge-s",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-edge-w.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-edge-w",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-face-a2.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-face-a2",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-face-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-face-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-face-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-face-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-fall.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cv-fall",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-hollow.png",
+"kind": "flat",
+"label": "beodeul_dungeons/cv-hollow",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-moss.png",
+"kind": "flat",
+"label": "beodeul_dungeons/cv-moss",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-mushroom.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-mushroom",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-pebbles.png",
+"kind": "flat",
+"label": "beodeul_dungeons/cv-pebbles",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-rocks.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-rocks",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-shore.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-shore",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-shore-in.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-shore-in",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-spike-a.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-spike-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-spike-b.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-spike-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-stalactites.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cv-stalactites",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-stalag-big.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-stalag-big",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-stalag-set.png",
+"kind": "other",
+"label": "beodeul_dungeons/cv-stalag-set",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-top.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-top",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-torch.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cv-torch",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-vines.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/cv-vines",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/cv-water2.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/cv-water2",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-banner.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/hd-banner",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-bones.png",
+"kind": "flat",
+"label": "beodeul_dungeons/hd-bones",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-cage.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-cage",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-campfire.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-campfire",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-chief-seat.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-chief-seat",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-hide-rack.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-hide-rack",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-loot.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-loot",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-platform.png",
+"kind": "flat",
+"label": "beodeul_dungeons/hd-platform",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-table.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-table",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-tent.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-tent",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/hd-weapon-rack.png",
+"kind": "other",
+"label": "beodeul_dungeons/hd-weapon-rack",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-crystal.png",
+"kind": "other",
+"label": "beodeul_dungeons/ic-crystal",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-drift.png",
+"kind": "flat",
+"label": "beodeul_dungeons/ic-drift",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-face-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ic-face-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-face-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ic-face-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-face-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ic-face-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ic-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ic-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ic-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-frozen.png",
+"kind": "other",
+"label": "beodeul_dungeons/ic-frozen",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-great.png",
+"kind": "other",
+"label": "beodeul_dungeons/ic-great",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-icicles.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/ic-icicles",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-mound.png",
+"kind": "other",
+"label": "beodeul_dungeons/ic-mound",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-pillar.png",
+"kind": "other",
+"label": "beodeul_dungeons/ic-pillar",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ic-rock.png",
+"kind": "other",
+"label": "beodeul_dungeons/ic-rock",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mb-rim-s.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mb-rim-s",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mb-rim-w.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mb-rim-w",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-face-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mn-face-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-face-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mn-face-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-face-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mn-face-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mn-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mn-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/mn-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-hoist.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-hoist",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-lamp.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-lamp",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-minecart.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-minecart",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-ore.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-ore",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-ore-vein.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/mn-ore-vein",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-ore-vein-iron.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/mn-ore-vein-iron",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-post.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-post",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-rocks.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-rocks",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-timber-frame.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/mn-timber-frame",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/mn-tools.png",
+"kind": "other",
+"label": "beodeul_dungeons/mn-tools",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-column.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-column",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/py-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/py-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/py-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-gold.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-gold",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-jackal.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-jackal",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-jars.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-jars",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-obelisk.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-obelisk",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-sand.png",
+"kind": "flat",
+"label": "beodeul_dungeons/py-sand",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-sarcophagus.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-sarcophagus",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-scarab.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-scarab",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-sphinx.png",
+"kind": "other",
+"label": "beodeul_dungeons/py-sphinx",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/py-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/py-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/py-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/py-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-altar.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-altar",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-brazier.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-brazier",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-broken.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-broken",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-chips.png",
+"kind": "flat",
+"label": "beodeul_dungeons/ru-chips",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-column.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-column",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-door.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/ru-door",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-floor.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-floor",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-ivy.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/ru-ivy",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-leaves.png",
+"kind": "flat",
+"label": "beodeul_dungeons/ru-leaves",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-mosaic.png",
+"kind": "flat",
+"label": "beodeul_dungeons/ru-mosaic",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-niche-urn.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/ru-niche-urn",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-pillar.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-pillar",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-pool.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-pool",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-rim-s.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-rim-s",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-rim-w.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-rim-w",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-rubble.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-rubble",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-statue.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-statue",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-stump.png",
+"kind": "other",
+"label": "beodeul_dungeons/ru-stump",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-top-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-top-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-top-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-top-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-vines.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/ru-vines",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/ru-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/ru-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-barrel.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-barrel",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-bones.png",
+"kind": "flat",
+"label": "beodeul_dungeons/sh-bones",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-bucket.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-bucket",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-campfire.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-campfire",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-candles.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-candles",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-chains.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/sh-chains",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-crate.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-crate",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-cratestack.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-cratestack",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-rubble.png",
+"kind": "flat",
+"label": "beodeul_dungeons/sh-rubble",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-sacks.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-sacks",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sh-skulls.png",
+"kind": "other",
+"label": "beodeul_dungeons/sh-skulls",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/st-down-built.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/st-down-built",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/st-down-rock.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/st-down-rock",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/st-up-built.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/st-up-built",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/st-up-rock.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/st-up-rock",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-amphora.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-amphora",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-column.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-column",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-coral.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-coral",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/su-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/su-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/su-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-fountain.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-fountain",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-shell.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-shell",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-statue.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-statue",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-trident.png",
+"kind": "other",
+"label": "beodeul_dungeons/su-trident",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/su-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/su-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/su-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/su-weed.png",
+"kind": "flat",
+"label": "beodeul_dungeons/su-weed",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-bars.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/sw-bars",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-cistern.png",
+"kind": "other",
+"label": "beodeul_dungeons/sw-cistern",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-grate.png",
+"kind": "flat",
+"label": "beodeul_dungeons/sw-grate",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-outfall.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/sw-outfall",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-pier.png",
+"kind": "other",
+"label": "beodeul_dungeons/sw-pier",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-slime.png",
+"kind": "flat",
+"label": "beodeul_dungeons/sw-slime",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-valve.png",
+"kind": "other",
+"label": "beodeul_dungeons/sw-valve",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-wall-lamp.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/sw-wall-lamp",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/sw-water.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/sw-water",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-bookshelf.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-bookshelf",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-bookshelf-tall.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-bookshelf-tall",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-candelabra.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-candelabra",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-circle.png",
+"kind": "flat",
+"label": "beodeul_dungeons/tw-circle",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/tw-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/tw-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/tw-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-globe.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-globe",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-lectern.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-lectern",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-orrery.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-orrery",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-pedestal.png",
+"kind": "other",
+"label": "beodeul_dungeons/tw-pedestal",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-rug.png",
+"kind": "flat",
+"label": "beodeul_dungeons/tw-rug",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-wall-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/tw-wall-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-wall-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/tw-wall-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/tw-wall-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/tw-wall-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-altar.png",
+"kind": "other",
+"label": "beodeul_dungeons/vo-altar",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-columns.png",
+"kind": "other",
+"label": "beodeul_dungeons/vo-columns",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-embers.png",
+"kind": "flat",
+"label": "beodeul_dungeons/vo-embers",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-face-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/vo-face-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-face-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/vo-face-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-face-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/vo-face-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-firecrystal.png",
+"kind": "other",
+"label": "beodeul_dungeons/vo-firecrystal",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-floor-a.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/vo-floor-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-floor-b.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/vo-floor-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-floor-c.png",
+"kind": "terrain",
+"label": "beodeul_dungeons/vo-floor-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-lavafall.png",
+"kind": "wall_mounted",
+"label": "beodeul_dungeons/vo-lavafall",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-spike.png",
+"kind": "other",
+"label": "beodeul_dungeons/vo-spike",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-spike-tall.png",
+"kind": "other",
+"label": "beodeul_dungeons/vo-spike-tall",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-dungeon/fable/pieces/vo-vent.png",
+"kind": "other",
+"label": "beodeul_dungeons/vo-vent",
+"chipset": "beodeul_city"
+}
+]
+}

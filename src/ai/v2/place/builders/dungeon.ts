@@ -17,9 +17,8 @@ import { FOE_WORDS, BOSS_WORDS, DungeonPlan, Pt, art, planTroops } from "./dunge
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
 export const DUNGEON_CARD =
-  "[Dungeon/cave type:dungeon|cave] Beodeul chipset. theme words (Korean or English): forest (forest, jungle) · swamp (swamp, poison bog, marsh) · volcano (volcano, lava) · ice (ice, ice cave, snow mountain) · " +
-  "pyramid (pyramid, desert tomb) · tower (wizard tower, mage tower) · otherworld (other world, demon realm, hell, abyss) · castle (castle, demon king castle) · catacomb (catacombs, default) · temple (temple, ruins) · " +
-  "mine · sewer · labyrinth · cave. size small|medium|large, floors 1–5 (towers go up, the rest go down; the boss is in the innermost room of the last floor). " +
+  "[Dungeon/cave type:dungeon|cave] Beodeul chipset. theme = exactly one of: forest · swamp · volcano · ice · pyramid · tower · otherworld (demon realm) · castle · catacomb · temple (ruins) · " +
+  "mine · sewer · labyrinth · cave · sunken (drowned temple) · hideout (bandit cave); omitted = chosen per game. size small|medium|large, floors 1–5 (towers go up, the rest go down; the boss is in the innermost room of the last floor). " +
   "features: copy the enemy words from the request as written (늑대 wolf · 유령 ghost · 미라 mummy · 전갈 scorpion · 도마뱀 인간 lizardman · 눈알 eyeball · 갑옷 armor · 악마 demon · 박쥐 bat…) and boss words (히드라 hydra · 붉은 용 red dragon · 얼음 용 ice dragon · 대마법사 archmage · 마계의 군주 demon lord…), " +
   "plus boss · chests · enemies, trap devices (sand trap), bridge, magic circle, lever, ice slide, minecart, flooded (flooded room), goblin lair. Enemy words → visible enemy art, boss words → boss art. " +
   "You design the floor: spec.dungeonDesign = {entrance side, rooms[{id, role(entrance·boss·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at spot in the map, water(none·pool·lake·stream), features}], links[{from,to,kind}]} — vocabulary and sample pictures in dungeon_parts; the function only fixes overlap, paths and reachability (a call without a design is sent back once). " +
@@ -34,41 +33,36 @@ interface DungeonState { readonly args: Record<string, unknown>; readonly seed?:
 const words = (spec: PlaceSpec): string => [spec.name, spec.style, spec.theme, ...(spec.features ?? []), ...Object.values(spec.hints ?? {}).map(String)].join(" ").toLowerCase();
 const num = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
 
-/** 주제 낱말 → 도구 type. 앞이 더 구체적이다(「얼음 동굴」은 ice, 「마계 성」은 otherworld, 「마법사의 탑」은 tower). */
-const TYPE_WORDS: readonly [DungeonType, RegExp][] = [
-  ["otherworld", /otherworld|abyss|hell|demon\s*realm|netherworld|이세계|마계|지옥|심연|이계|차원/],
-  ["pyramid", /pyramid|desert|pharaoh|피라미드|사막|왕묘|파라오|모래\s*무덤/],
-  ["tower", /magic\s*tower|wizard|mage\s*tower|sorcer|마법사의\s*탑|마법탑|마도사|마탑|마술사의\s*탑/],
-  ["swamp", /swamp|marsh|bog|mangrove|늪|습지|소택|맹그로브/],
-  ["forest", /forest|jungle|woods|grove|world\s*tree|숲|정글|밀림|세계수|수풀/],
-  ["ice", /\bice\b|icy|frost|frozen|glacier|snow|얼음|빙굴|빙하|설산|서리|눈\s*덮/],
-  ["volcano", /volcan|lava|magma|화산|용암|마그마/],
-  ["mine", /\bmine\b|mines|mining|광산|갱도/],
-  ["sewer", /sewer|하수/],
-  ["labyrinth", /labyrinth|maze|미궁|미로/],
-  ["temple", /temple|ruin|shrine|신전|유적|사원|폐허/],
-  ["castle", /castle|fortress|keep|tower|마왕성|성채|요새|성\s|성$|탑/],
-  ["catacomb", /catacomb|grave|crypt|tomb|묘지|지하묘|무덤|납골|카타콤|감옥/],
-  ["cave", /cave|cavern|grotto|동굴|굴/],
-];
+/**
+ * 조수가 고르는 던전 종류 — 닫힌 집합(카드에 그대로 적힌다): 시공기 종류 14 + 깃발이 붙은 둘(sunken = 물에 잠긴 신전, hideout = 도적 소굴 동굴).
+ * 2026-11-15 감독: 종류는 이 집합의 값(spec.theme · hints.type)과 게임 열쇠·장소의 이야기 역할로 정한다 — 모델이 쓴 자유 낱말·이름을 정규식 표로 읽지 않는다.
+ */
+export const DUNGEON_KINDS = [...DUNGEON_TYPES, "sunken", "hideout"] as const;
+export type DungeonKind = (typeof DUNGEON_KINDS)[number];
+const KIND_FLAGS: Partial<Record<DungeonKind, { readonly type: DungeonType; readonly flag: "flooded" | "lair" }>> = { sunken: { type: "temple", flag: "flooded" }, hideout: { type: "cave", flag: "lair" } };
+/** 종류를 안 준 「던전」을 게임 열쇠로 고를 후보 — 이야기 역할마다: 보스가 있는 끝 던전(final)과 곁 던전(side). 숲·늪·이계·미궁은 말해야 나온다. */
+const KEY_KINDS: Readonly<Record<"final" | "side", readonly DungeonKind[]>> = {
+  final: ["castle", "tower", "volcano", "pyramid", "catacomb", "temple"],
+  side: ["catacomb", "sewer", "mine", "ice", "temple", "sunken", "castle", "cave", "hideout"],
+};
+const token = (v: unknown): string => String(v ?? "").trim().toLowerCase();
+/** 장소의 이야기 역할: features 에 boss 가 있거나 3층 이상이면 끝 던전. */
+export const dungeonRole = (spec: PlaceSpec): "final" | "side" => ((spec.features ?? []).some((f) => token(f) === "boss") || (spec.floors ?? 1) >= 3 ? "final" : "side");
 
-/** 테마 낱말이 없는 「던전」의 종류 후보 — 늘 지하묘지였다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」). 무작위로 하나. */
-const PLAIN_TYPES: readonly DungeonType[] = ["catacomb", "castle", "sewer", "temple", "mine"]; // 미궁은 판이 늘 같은 틀이라 뺐다
-
-function pickType(spec: PlaceSpec, text: string, keep?: DungeonType): DungeonType {
-  const hinted = String(spec.hints?.type ?? "");
+/** 종류 고르기: hints.type → theme(닫힌 값) → 다시 지을 때 앞 종류 → cave 장소는 동굴 → 게임 열쇠(variety)|이름 해시로 역할 후보 중 하나(열쇠가 없으면 salt). */
+export function pickDungeonKind(spec: PlaceSpec, keep?: DungeonType): DungeonKind {
+  const hinted = token(spec.hints?.type);
   if ((TYPES as readonly string[]).includes(hinted)) return hinted as DungeonType;
-  const own = `${spec.theme ?? ""} ${spec.style ?? ""} ${spec.name}`.toLowerCase();
-  for (const [t, re] of TYPE_WORDS) if (re.test(own)) return t;
+  const said = token(spec.theme);
+  if ((DUNGEON_KINDS as readonly string[]).includes(said)) return said as DungeonKind;
+  if (keep) return keep;
   if (spec.type === "cave") return "cave";
-  for (const [t, re] of TYPE_WORDS) if (t !== "cave" && re.test(text)) return t;
-  return keep ?? PLAIN_TYPES[(spec.salt ?? Math.floor(Math.random() * 1_000_000)) % PLAIN_TYPES.length]!;
+  const pool = KEY_KINDS[dungeonRole(spec)];
+  const pick = spec.variety !== undefined ? [...`kind|${spec.variety}|${spec.name}`].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 23) : spec.salt ?? Math.floor(Math.random() * 1_000_000);
+  return pool[pick % pool.length]!;
 }
-/** 장치 낱말 → gimmick. */
-const GIMMICK_WORDS: readonly [string, RegExp][] = [
-  ["sandpit", /함정|trap|pitfall|모래\s*구덩/], ["teleporter", /마법진|순간이동|teleport|warp/], ["iceslide", /미끄럼|빙판\s*길|ice\s*slide|slide/],
-  ["minecart", /광차|minecart|mine\s*cart/], ["lever", /레버|lever/], ["bridge", /도개교|내리는\s*다리|drawbridge/],
-];
+/** 장치 — features 의 닫힌 값(카드에 적힌 그대로) → gimmick. */
+const GIMMICK_FEATURES: Readonly<Record<string, string>> = { "sand trap": "sandpit", sandpit: "sandpit", "magic circle": "teleporter", teleporter: "teleporter", "ice slide": "iceslide", iceslide: "iceslide", minecart: "minecart", lever: "lever", bridge: "bridge" };
 
 /** 명세 → author_dungeon 인자 + 요청한 적·보스 + 표현 못 하는 요청·경고. */
 export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPlan {
@@ -76,7 +70,9 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   const missing: string[] = [];
   const warnings: string[] = [];
   const text = words(spec);
-  const type = pickType(spec, text, keepType);
+  const kind = pickDungeonKind(spec, keepType);
+  const type: DungeonType = KIND_FLAGS[kind]?.type ?? (kind as DungeonType);
+  const feats = new Set((spec.features ?? []).map(token));
   args.type = type;
   if (spec.size) args.size = spec.size;
   const floors = Math.max(1, Math.min(5, Math.round(spec.floors ?? 1)));
@@ -86,19 +82,19 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   else if (upWords && type !== "tower") warnings.push("탑이지만 floors 가 1 이다 — 층수를 주면 위로 오른다");
   const empty = /no.?enem|적\s*없|빈\s*던전|empty/.test(text);
   args.populate = !empty;
-  if (/flood|물에\s*잠|수몰|잠긴/.test(text)) {
+  if (KIND_FLAGS[kind]?.flag === "flooded" || feats.has("flooded") || feats.has("flooded room")) {
     if (["cave", "volcano", "ice", "forest", "swamp", "otherworld", "labyrinth"].includes(type)) warnings.push(`${type} 은 물에 잠기지 않는다(flooded 는 방 문법 던전만) — 무시했다`);
     else args.flooded = true;
   }
-  for (const [g, re] of GIMMICK_WORDS) if (re.test(text)) { args.gimmick = g; break; }
+  for (const f of feats) if (GIMMICK_FEATURES[f]) { args.gimmick = GIMMICK_FEATURES[f]; break; }
   // 장치를 말하지 않았으면 요청에 맞는 것으로: 늪·화산 「건너가는」 길 = 다리, 탑 = 마법진(레버 쇠창살은 좁은 탑 통로에 떠 보였다 — 2026-10-23 비교 검수).
   if (args.gimmick === undefined) {
-    if ((type === "swamp" || type === "volcano") || /다리|bridge|건너|cross/.test(text)) args.gimmick = "bridge";
+    if (type === "swamp" || type === "volcano") args.gimmick = "bridge";
     else if (type === "tower" || (type === "castle" && args.direction === "up")) args.gimmick = "teleporter";
     else if (type === "pyramid") args.gimmick = "sandpit";
     else if (type === "ice") args.gimmick = "iceslide";
   }
-  if (/goblin|lair|소굴|고블린/.test(text)) {
+  if (KIND_FLAGS[kind]?.flag === "lair" || feats.has("goblin lair") || feats.has("lair")) {
     if (type === "cave") args.lair = true;
     else warnings.push("고블린 소굴은 동굴 type 에서만 된다 — 무시했다");
   }

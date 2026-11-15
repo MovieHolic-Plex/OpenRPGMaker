@@ -3,6 +3,7 @@
 // 왜(2026-10-25 판정 J11~J14, 검은 장미 저택): 서재 문은 열쇠로 잠갔는데 1층 7번째 줄 복도가 벽 틈으로 서재에 바로 이어졌고,
 // 금고는 자기 대사에 비밀번호(1024)를 적어 일기장 없이 열렸고, 오프닝 이름표에 「@player」가 그대로 떴고, 구한 동생은 따라오지만
 // 파티에 없었다. 조각마다 따로 지으면 아무것도 사슬 전체를 보지 않는다 — 끝맺음 관문이 이 검사로 돌려보낸다. 순수 함수.
+import { leverGates } from "@/editor/tools/dungeonGateAudit";
 import { canMove, isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { eventBodyRect, eventPassageRect } from "@/project/eventFootprintQuery";
@@ -256,6 +257,18 @@ export function gatesThatOpenNothing(project: Project, changedIds?: ReadonlySet<
       if (fresh.length) continue;
       const cells = [...freed].slice(0, 3).map((k) => `(${k})`).join("·");
       out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id})가 ${cells} 칸을 열지만 그 너머는 이미 다른 길로 걸어 닿는다 — 장치를 안 써도 끝까지 간다`);
+    }
+    // 이벤트로 막는 길막이(막힌 바위·쇠창살·문간 — 스위치가 켜지면 비키는 이벤트)도 같은 물음이다(2026-11-15): 타일을 안 바꾸는 관문은 위 검사가 못 봤다.
+    for (const gate of leverGates(project, map)) {
+      if (!gate.blockers.length || (changedIds && !changedIds.has(gate.lever.id))) continue;
+      if (out.some((line) => line.includes(`(${gate.lever.id})`))) continue;
+      const cellsKey = new Set([...gate.blockers.map((e) => `${e.x},${e.y}`), ...gate.freed.map((p) => `${p.x},${p.y}`)]);
+      const before = reachWithout(project, map, cellsKey);
+      const after = reachWithout(project, gate.opened, new Set());
+      if (!before || !after) continue;
+      if ([...after].some((k) => !before.has(k) && !cellsKey.has(k))) continue;
+      const cells = gate.blockers.slice(0, 3).map((e) => `(${e.x},${e.y})`).join("·");
+      out.push(`${map.name}의 「${gate.lever.name || gate.lever.id}」(${gate.lever.id})가 길막이 ${cells} 를 열지만 그 너머는 이미 다른 길로 걸어 닿는다 — 장치를 안 써도 끝까지 간다`);
     }
   }
   return out;

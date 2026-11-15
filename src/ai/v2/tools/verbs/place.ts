@@ -27,6 +27,7 @@ import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_
 import { gateFor, innerDungeonParent, innerGateSpot } from "../../place/dungeonGates";
 import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, dungeonContext, dungeonParts, screenDungeonSpec } from "../../place/dungeonParts";
+import { dungeonArgs } from "../../place/builders/dungeon";
 import { buildsHandInterior, designMissingRooms } from "../../place/designRooms";
 import { dropModelSeed } from "../../place/modelSeed";
 import { V2_MAX_REPAIR_ROUNDS } from "../../turn/session";
@@ -248,7 +249,7 @@ export function placeVerbs(c: VerbContext) {
       }
       if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
         session.dungeonBounced.add(spec.name);
-        const parts = dungeonParts(`${spec.theme ?? ""} ${spec.name} ${spec.type}`, `${String(env.request.projectKey ?? run.ctx.project.meta.title ?? "")}|${session.nonce}`, dungeonContext(session.places.values(), spec.name));
+        const parts = dungeonParts(dungeonArgs(spec).type, `${String(env.request.projectKey ?? run.ctx.project.meta.title ?? "")}|${session.nonce}`, dungeonContext(session.places.values(), spec.name));
         return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 층은 네가 설계한다. 아래 parts(방 모양·역할·물·특징·잇는 모양, 뼈대가 다른 예시)를 보고 spec.dungeonDesign 을 채워 make_place 를 바로 다시 부르면 지어진다: `
           + `entrance(플레이어가 들어오는 길 쪽 — 이 굴로 오는 마을 출구·세계 배치에 맞춘다, parts.context)·rooms[{id, role(entrance 하나·boss 하나·treasure·lake·camp·shrine·hall·grotto), size, shape(blob·cavern·long·shaft·ring·twin), at("x,y" 0~1 — 방마다 다르게), level(0 바닥·1 한 단·2 두 단 — 높이가 다른 방 사이에 돌계단), water(none·pool·lake·stream), features}]·links[{from,to,kind}]. `
           + `무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지에 맞게 방 수(보통 5~7, 작은 굴 3~4·큰 굴 8~10)·자리·모양·길을 네가 정한다 — 함수는 겹침·길·도달만 고쳐 알린다. 예시는 참고, 베끼지 않는다. 그림은 dungeon_parts.`, parts });

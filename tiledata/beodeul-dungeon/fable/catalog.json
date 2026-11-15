@@ -1,0 +1,3025 @@
+{
+ "tilesetId": "beodeul_city",
+ "texture": "tex_beodeul_city",
+ "tileSize": 16,
+ "tilesPerRow": 128,
+ "kitPrefix": "bd-dgn-",
+ "base": 52608,
+ "end": 56704,
+ "used": 3956,
+ "source": "scripts/content/beodeul-dungeons/bake.py (pieces by Claude Fable 5.2 medium one-shot, cut and assembled by code; looks are the same pixels on another locked ramp)",
+ "gate": "3/4 gate not passed — owner waiver fable-dungeons-beodeul-2026-11-15",
+ "pieces": [
+  {
+   "id": "br-plank-ew",
+   "kind": "terrain",
+   "sha256": "36f93a368269f58807f20882baa21d7e35051ae4725638aa4e478d09203fd062"
+  },
+  {
+   "id": "br-plank-ns",
+   "kind": "terrain",
+   "sha256": "9a3d0b580984da735333d41b87aabfb6798525e8e4aa3c35c6787079ee042192"
+  },
+  {
+   "id": "br-stone-ew",
+   "kind": "terrain",
+   "sha256": "130c0b0ead5075c18a652f6317da6ebcb723a75e6fe84cd7cded6928e8e83f61"
+  },
+  {
+   "id": "br-stone-ns",
+   "kind": "terrain",
+   "sha256": "32265a102652691a7318c8d71437399d31491ac7eb8c90561a1c255e867f77fd"
+  },
+  {
+   "id": "ca-armor",
+   "kind": "other",
+   "sha256": "ae07eaf9f4bbaa47c3976e7d274709b007b137f832eb9b13bd755f6db64a010f"
+  },
+  {
+   "id": "ca-banner",
+   "kind": "wall_mounted",
+   "sha256": "dd8a76857bf07055f2984d1069d493dad57c84569108f09d6f0ff75b14658f40"
+  },
+  {
+   "id": "ca-carpet",
+   "kind": "flat",
+   "sha256": "61422a00b17d1915bee5f394502f4ae685edbe3e079eeab0340892ab017aebae"
+  },
+  {
+   "id": "ca-column",
+   "kind": "other",
+   "sha256": "3e4f1b5496402c5113d611b4bc78713386a289923b6047beba6e7700800af6e6"
+  },
+  {
+   "id": "ca-floor-a",
+   "kind": "terrain",
+   "sha256": "e47f7de854a986fd0a620625c294d4e0f809790b4039f228244c0b35b7e6572e"
+  },
+  {
+   "id": "ca-floor-b",
+   "kind": "terrain",
+   "sha256": "45d36ac1a0b156c00e517fc963430c4490bfde890505dc3181f1abcb25f055e9"
+  },
+  {
+   "id": "ca-floor-c",
+   "kind": "terrain",
+   "sha256": "c7901c27c6b75e0130e519dffd16608f272340fffbcd83ad7fd90b79ffbf3464"
+  },
+  {
+   "id": "ca-throne",
+   "kind": "other",
+   "sha256": "c4d6f1ba8fa3ad11a1c06409a708fdeb3d403cb212c8b76997e8785ae96770aa"
+  },
+  {
+   "id": "ca-wall-a",
+   "kind": "terrain",
+   "sha256": "21e04b108b25420590d19a56e2c7c9c8d5f7c33272054e85cc35c488d4197880"
+  },
+  {
+   "id": "ca-wall-b",
+   "kind": "terrain",
+   "sha256": "031b0bb006a7c1216a5de54d8e423190788f0250ffb0bae55ae7425b505f7ca0"
+  },
+  {
+   "id": "ca-wall-c",
+   "kind": "terrain",
+   "sha256": "88c6c6c2ec45a6b3469c6111d3feeb2e163ce4af1a297fbbb631a9c2915df895"
+  },
+  {
+   "id": "ca-weapon-rack",
+   "kind": "other",
+   "sha256": "d22b0413a24bf1b291d6b642e1128dce93524801078e1e8dbe0e0f89b19c9b34"
+  },
+  {
+   "id": "cr-altar",
+   "kind": "other",
+   "sha256": "d01ebfc9222120296cdc0f7073bac892addfe404beec3efd5170cd32d2897ee7"
+  },
+  {
+   "id": "cr-angel",
+   "kind": "other",
+   "sha256": "d5da6b8ea75d56fefd2a2e839bf402c4a8eec19320c69ee5290c8f7d0f15646e"
+  },
+  {
+   "id": "cr-banner",
+   "kind": "wall_mounted",
+   "sha256": "8eedeef77a971c314fe63875e2c2a10ff2553d1ebdd4e696e842298a686ac831"
+  },
+  {
+   "id": "cr-candelabra",
+   "kind": "other",
+   "sha256": "ed51556744237cff443c7782e9d3dee7501adda29ebb5d78d63598f8840b507d"
+  },
+  {
+   "id": "cr-column",
+   "kind": "other",
+   "sha256": "6591faa5ca3b3a63e79336e773493affdd46ee55dcbb1c4035d14d4f2b8dc3f9"
+  },
+  {
+   "id": "cr-floor-a",
+   "kind": "terrain",
+   "sha256": "f35f7c9fbb7d7c2316fa5996f908462e8aefeee53e9dbd06874cf4a69bd2c789"
+  },
+  {
+   "id": "cr-floor-b",
+   "kind": "terrain",
+   "sha256": "cae5dd2508e24bf8c067385a6ff4518820bea243b243fc35843d245508dae8dc"
+  },
+  {
+   "id": "cr-floor-c",
+   "kind": "terrain",
+   "sha256": "0d98fc8c601c56a874389d5fd134bc34cccd4da6e24e5f963f96bc243105778d"
+  },
+  {
+   "id": "cr-niche-skull",
+   "kind": "wall_mounted",
+   "sha256": "13a513718314c5a72d5263c8be21104d76125d4f8cfa2a367045546a88ae63e0"
+  },
+  {
+   "id": "cr-ossuary",
+   "kind": "wall_mounted",
+   "sha256": "a9248f160c76c21f2a3fd4c4fe8029776a77d1268c55d4eae192d3fabc7983be"
+  },
+  {
+   "id": "cr-sarcophagus",
+   "kind": "other",
+   "sha256": "fda14e0110a1adaabc151ec01e39bb1292cf3b934f062a6b919fb863fbfd8d09"
+  },
+  {
+   "id": "cr-sarcophagus-ns",
+   "kind": "other",
+   "sha256": "f1bf693ee21679a56859bb73e753582a980001d6cb06930948231d20517cebf2"
+  },
+  {
+   "id": "cr-sarcophagus-open",
+   "kind": "other",
+   "sha256": "2dc4964bf50f51e5f30bb9bc18f15e7e1bd240b1802e2429435ffa65dd783415"
+  },
+  {
+   "id": "cr-tomb-slab",
+   "kind": "flat",
+   "sha256": "7d11abc798f6617071d01cae136e4fbffc92b313f14259d7f2722859fe41b668"
+  },
+  {
+   "id": "cr-wall-a",
+   "kind": "terrain",
+   "sha256": "913bb8998fc833eb08db2df05326c7f4ec9a3966607c6a63d236ad7788465a4e"
+  },
+  {
+   "id": "cr-wall-b",
+   "kind": "terrain",
+   "sha256": "93bd5bffe65e588e7dceaad4e1b5cf7ed29a8e4c0789898c6b491d093df2b6ce"
+  },
+  {
+   "id": "cr-wall-c",
+   "kind": "terrain",
+   "sha256": "f77004b67d0edda84f02f5cbee6ef89d665345fc92f299dcb0f31d54d2827b4b"
+  },
+  {
+   "id": "cv-bed-a",
+   "kind": "terrain",
+   "sha256": "b156637b6194bae3218f9ac115f65c940d545a0ffb7fa4663f77087f64656c9a"
+  },
+  {
+   "id": "cv-bed-b",
+   "kind": "terrain",
+   "sha256": "9c14cc66983baa3d675eb185c998afd20c85ee1e7bd4798c5f647b1967243fd7"
+  },
+  {
+   "id": "cv-bed-c",
+   "kind": "terrain",
+   "sha256": "47b40247964594aec13697bc7580de6dae8e0d118d0211c7f899560c15fba737"
+  },
+  {
+   "id": "cv-bed-d",
+   "kind": "terrain",
+   "sha256": "d72adcab53900f36425cdc3a8ba02111e49bc5b6b1aecc67e5d25d2e07ee6f8f"
+  },
+  {
+   "id": "cv-bed-e",
+   "kind": "terrain",
+   "sha256": "0824650c1aa55a74a93b9841eb3b7d34198bf39fd69e3078e0b5c038c62da692"
+  },
+  {
+   "id": "cv-bones",
+   "kind": "other",
+   "sha256": "c0a4a7cd48e69ac59e1a339d9c49ea0750065959ffb29b58eb944c97a1b6a794"
+  },
+  {
+   "id": "cv-crystal",
+   "kind": "other",
+   "sha256": "ee8181fa3e2749ea6e7dd209f69224cc307469967ea63126f8cff83fa6548261"
+  },
+  {
+   "id": "cv-earth",
+   "kind": "flat",
+   "sha256": "6aaef6a9932d3491f172045efa59bba8fd2471273bbe4bcbcc2f53d4ab70c5d2"
+  },
+  {
+   "id": "cv-edge-s",
+   "kind": "terrain",
+   "sha256": "b29d7c4c72750f43ff98e540e1d26877504a8a74494907052de299ae68d11245"
+  },
+  {
+   "id": "cv-edge-w",
+   "kind": "terrain",
+   "sha256": "557a49e582a3eaa77646f9bf437c63ed4201a80e45a7e2b0bad747a86cae51be"
+  },
+  {
+   "id": "cv-face-a2",
+   "kind": "terrain",
+   "sha256": "9d333fd70a6ab9faceaf30d39bc606c64c01a55c501ba3bd94d2e8121feb6d2d"
+  },
+  {
+   "id": "cv-face-b",
+   "kind": "terrain",
+   "sha256": "5f91c59792bd58a02b20388e522237d407a4ec28907193eb6e1453f01f85e9d9"
+  },
+  {
+   "id": "cv-face-c",
+   "kind": "terrain",
+   "sha256": "435b6bd58ca8786e3cfc628fdcffcaa481d3f344526f6e466c43e9de1568a8b8"
+  },
+  {
+   "id": "cv-fall",
+   "kind": "wall_mounted",
+   "sha256": "5e4c89ef02d94a0a2c26a34b535992d8ead05ade7133eab82bb4843f845e2b1f"
+  },
+  {
+   "id": "cv-hollow",
+   "kind": "flat",
+   "sha256": "5e0c8b787ef5a17a461917b42d88a988839fe4134365a48126a777a129f4e15a"
+  },
+  {
+   "id": "cv-moss",
+   "kind": "flat",
+   "sha256": "c550a4b721249e3d8a39da4579cff958bab6c3c947b80eecef100e45c7efcdd7"
+  },
+  {
+   "id": "cv-mushroom",
+   "kind": "other",
+   "sha256": "b65d2841be990a58ad8020173aa5382a91a038c4a16cea787f44ab0a39f9beac"
+  },
+  {
+   "id": "cv-pebbles",
+   "kind": "flat",
+   "sha256": "f13edc4db3dd35a311d928ecf7560a5aeecd8e796b096b3d476b56e08049c437"
+  },
+  {
+   "id": "cv-rocks",
+   "kind": "other",
+   "sha256": "2ce528f6a7b274b4db381ffade8208567a30d9c0ea9862805290dcec0e30bb4a"
+  },
+  {
+   "id": "cv-shore",
+   "kind": "terrain",
+   "sha256": "0ff887e80fef60e1c6dd0cfe49c94298cc27418e4eecfb26fdc7b4b9c3c88f13"
+  },
+  {
+   "id": "cv-shore-in",
+   "kind": "terrain",
+   "sha256": "0a7ce70901869d67547165aafdfe8ca19342fcd0305fca1abdb0e52191189e2b"
+  },
+  {
+   "id": "cv-spike-a",
+   "kind": "other",
+   "sha256": "641db92a8f47a80e04e4ebc0200fa9cbdf4dffd597f1982903f164cfc6a81b00"
+  },
+  {
+   "id": "cv-spike-b",
+   "kind": "other",
+   "sha256": "56487df20c5afb404b9e5ee203b2f773ef726e803d2bb67d45ec0392c668a39f"
+  },
+  {
+   "id": "cv-stalactites",
+   "kind": "wall_mounted",
+   "sha256": "b83e5eec348c529cca6c9c7410fa2a27f640050a7abf4f608ff509e815aa8bc4"
+  },
+  {
+   "id": "cv-stalag-big",
+   "kind": "other",
+   "sha256": "c44424db837d343e6e647208fca9c8497df896553c52a741411fb41d9acf9eb8"
+  },
+  {
+   "id": "cv-stalag-set",
+   "kind": "other",
+   "sha256": "639f6c0ab930ecc7d66ce580cd0c02a2f9b10edb4e1b892aa4f6ec01955d0ddd"
+  },
+  {
+   "id": "cv-top",
+   "kind": "terrain",
+   "sha256": "387f04847d8c3dfe096d5fc089697a655c23b31348b8090d28129e420c253ae6"
+  },
+  {
+   "id": "cv-torch",
+   "kind": "wall_mounted",
+   "sha256": "4d5581484fb866cca800e25bb992c304f0035f57d5b7b8253fdc349dc6f61458"
+  },
+  {
+   "id": "cv-vines",
+   "kind": "wall_mounted",
+   "sha256": "686bccce2c880207391c85324602be7e7e9a59a3d6641d6e315078be4d246557"
+  },
+  {
+   "id": "cv-water2",
+   "kind": "terrain",
+   "sha256": "d3ba5e560cf5de642410c735dd5c48c14012bc358acfd98114ec6ee2239a6f0c"
+  },
+  {
+   "id": "hd-banner",
+   "kind": "wall_mounted",
+   "sha256": "45507466a04f14267c6ade66c2bdf3e38913c48c1a091af0ac493573b02a176f"
+  },
+  {
+   "id": "hd-bones",
+   "kind": "flat",
+   "sha256": "bd11aabd2f38960e25c365cc70a80b228d61de89dc2cd72c46eb9175db65b4cf"
+  },
+  {
+   "id": "hd-cage",
+   "kind": "other",
+   "sha256": "a2f22b6d73f17ae51037d7b117de56bc076c8ee4d7a626ff86ce75c0b5f8c8ac"
+  },
+  {
+   "id": "hd-campfire",
+   "kind": "other",
+   "sha256": "afa9c851f195898d965035d7293f98ce9bfc7beee400e43293320445557996e5"
+  },
+  {
+   "id": "hd-chief-seat",
+   "kind": "other",
+   "sha256": "710307a2170b8c8d47db5d8234215e2bdaf0d6bb9e0731e3397178e0e862f86f"
+  },
+  {
+   "id": "hd-hide-rack",
+   "kind": "other",
+   "sha256": "26355a9b53596e6bf65f4877d4e43b2d8a2703aeb9a5981d804e475fdf6773ba"
+  },
+  {
+   "id": "hd-loot",
+   "kind": "other",
+   "sha256": "24fda9d399d04bff79e4f00428874fc0bab8aea283791d4372fc05e639fb8d5d"
+  },
+  {
+   "id": "hd-platform",
+   "kind": "flat",
+   "sha256": "cbbb3aef9ca041786f62f479cdccb533b04f29e374112df27a0d5e02ed04504b"
+  },
+  {
+   "id": "hd-table",
+   "kind": "other",
+   "sha256": "bb85866625e815242ae9f94d7d3f75b37b73e28b19980d3e3f4adb728330b81e"
+  },
+  {
+   "id": "hd-tent",
+   "kind": "other",
+   "sha256": "d9af0a63fa36e14a29ac88d1be9df094457df115dd24eab9ca4eaa1a8d10827b"
+  },
+  {
+   "id": "hd-weapon-rack",
+   "kind": "other",
+   "sha256": "d58a5bdbe1488528b0633a7da58229ede13e6a103d580d183092bbb03697cba6"
+  },
+  {
+   "id": "ic-crystal",
+   "kind": "other",
+   "sha256": "b0f29352577b419fafc5f9853cd7258bac745bdf7f686a0073d35d1422208483"
+  },
+  {
+   "id": "ic-drift",
+   "kind": "flat",
+   "sha256": "ce66c281a6ff0bb49a20ebf2bb8a446f040aa7e6cdad2e176da10426d27f208a"
+  },
+  {
+   "id": "ic-face-a",
+   "kind": "terrain",
+   "sha256": "e7fe6aeeb4e4299eca7026406de19a16bbe06238dcbb716153983d32557e9179"
+  },
+  {
+   "id": "ic-face-b",
+   "kind": "terrain",
+   "sha256": "191fccde19e85cf65c8d494cec61a8a9774bb18949f965233aa06572756f4639"
+  },
+  {
+   "id": "ic-face-c",
+   "kind": "terrain",
+   "sha256": "0d283dfcaead84d54a5d2366182963d72d7c3890370b077f885ae60965a10240"
+  },
+  {
+   "id": "ic-floor-a",
+   "kind": "terrain",
+   "sha256": "cd8e4e06bb461ca22a868fb98e54c0068e7a77af4b819e8609a6c8c4d0f9fe8f"
+  },
+  {
+   "id": "ic-floor-b",
+   "kind": "terrain",
+   "sha256": "9e9ce7997d661124472ddf4342ee482b62d1c1fad1e03b464f9d687c165a495a"
+  },
+  {
+   "id": "ic-floor-c",
+   "kind": "terrain",
+   "sha256": "034e1114fa93c292750ffe490a01955e6debd99594329f0f1dd0d36c03158ab6"
+  },
+  {
+   "id": "ic-frozen",
+   "kind": "other",
+   "sha256": "5ab67bbdc48654f6411b8e315156cbeb978e24ccbadec8f35b4161140f13a52d"
+  },
+  {
+   "id": "ic-great",
+   "kind": "other",
+   "sha256": "f0a5f6c95eba452294b6b508d437102fa143b377971374cee194d9798db204d1"
+  },
+  {
+   "id": "ic-icicles",
+   "kind": "wall_mounted",
+   "sha256": "aaefe38c31ab37e34316290e2779353b383456d2770f67ec52e74c9b8a88cb56"
+  },
+  {
+   "id": "ic-mound",
+   "kind": "other",
+   "sha256": "dce837d98c545a83d2793931000cd2df1beb7ab0d60abdd47f7db3cb1184643b"
+  },
+  {
+   "id": "ic-pillar",
+   "kind": "other",
+   "sha256": "8169f9f650bf7a5341f89a85f3708231c1c98c8f05768805d2686a1b264c9239"
+  },
+  {
+   "id": "ic-rock",
+   "kind": "other",
+   "sha256": "3c09977490266c72670d1057ad1963b05721a2fb83d6d454d88cd05d4ce71127"
+  },
+  {
+   "id": "mb-rim-s",
+   "kind": "terrain",
+   "sha256": "1c89c75bece07bca13f17d6fa4267cd10a4af87aa3fbf43e75d0475b7d601adc"
+  },
+  {
+   "id": "mb-rim-w",
+   "kind": "terrain",
+   "sha256": "19dd2d4651b6c0d93077a2d7b139c09b58751523dbd428c97accf8b3f26ca9de"
+  },
+  {
+   "id": "mn-face-a",
+   "kind": "terrain",
+   "sha256": "624825d2e0d98a7b86b54581915053a6683d7fe4c5aa60da166b54513d74b03a"
+  },
+  {
+   "id": "mn-face-b",
+   "kind": "terrain",
+   "sha256": "fe440c141afe3032142f442949780d156ea8763e248a04ac2028ed5b3911e501"
+  },
+  {
+   "id": "mn-face-c",
+   "kind": "terrain",
+   "sha256": "522309fa59249a3edfd3de838e6b44c7caa89b9a66e24c63937646f4aea6e1a3"
+  },
+  {
+   "id": "mn-floor-a",
+   "kind": "terrain",
+   "sha256": "9e09d0c9106cbcd5bce4bb1e651c76ebd85650911046cee3a8a485b862136a5b"
+  },
+  {
+   "id": "mn-floor-b",
+   "kind": "terrain",
+   "sha256": "d3d66374643edac4685be6d4d40b6efc51d8ded2d659469efc08414ee64c8a7b"
+  },
+  {
+   "id": "mn-floor-c",
+   "kind": "terrain",
+   "sha256": "9e20c5065be4739efe0c63b2d8b0b564835a19649a8bae746eff12b8a7c03d2b"
+  },
+  {
+   "id": "mn-hoist",
+   "kind": "other",
+   "sha256": "a2b5c49319bba64ccc14a95976d6c524db13567249f4eea272ea5badee1cb884"
+  },
+  {
+   "id": "mn-lamp",
+   "kind": "other",
+   "sha256": "3d8000ce86e20e8e4e0b22f2c8a2acd8ee11bdd2f28a64ac0d56f0f8af1735b9"
+  },
+  {
+   "id": "mn-minecart",
+   "kind": "other",
+   "sha256": "8dfff6ab3095ddc5fbbbbc2a0f818219015bd45791e6197a38e569dcd1e5fa8f"
+  },
+  {
+   "id": "mn-ore",
+   "kind": "other",
+   "sha256": "e4ad0e17d44ac8f6382932217b906687ff4bbd26ac2c1421d2d5c9a7cfe23f1c"
+  },
+  {
+   "id": "mn-ore-vein",
+   "kind": "wall_mounted",
+   "sha256": "663ac93afeb2ccbb83760406b527002c1ba92d05ff559a075b54f7474c13455d"
+  },
+  {
+   "id": "mn-ore-vein-iron",
+   "kind": "wall_mounted",
+   "sha256": "e33c93884483b6aaa3c017bd7ee2893b6fd57a3c986cd39d59b8e7abcfa1649a"
+  },
+  {
+   "id": "mn-post",
+   "kind": "other",
+   "sha256": "4772c792fbbb81e5c6f6bc5cde3454e8db293f254ec2fef2aae6e8c6174a5210"
+  },
+  {
+   "id": "mn-rocks",
+   "kind": "other",
+   "sha256": "a5b5a9ff08c5c21ca146941a4a484309b281300bb249805b7222933bf511044f"
+  },
+  {
+   "id": "mn-timber-frame",
+   "kind": "wall_mounted",
+   "sha256": "6ac4b8d99b4b74e4444edf00292624f16b2c50018e04aaf5e92b22d7a2ab362e"
+  },
+  {
+   "id": "mn-tools",
+   "kind": "other",
+   "sha256": "d4f2add1105b7be989f9a90e03baf5a4d8cb22482a2fc9910fcd2b050513d807"
+  },
+  {
+   "id": "py-column",
+   "kind": "other",
+   "sha256": "5b1aaa023c3794e56d95480e19b5d17c4ff96b7c64cb779919e2d898ec1ac5a2"
+  },
+  {
+   "id": "py-floor-a",
+   "kind": "terrain",
+   "sha256": "fac7aa67a8c86ae0b058e7881b91a0501a1c1b3542db238325df3b0f3b29b6f3"
+  },
+  {
+   "id": "py-floor-b",
+   "kind": "terrain",
+   "sha256": "c2973b22db439408a0a5de1e9fb8b6e7b042e5dec71b0ec8ac0c1e0f7716d082"
+  },
+  {
+   "id": "py-floor-c",
+   "kind": "terrain",
+   "sha256": "93b030e2a9a842251ffe68d02cb648fdff3d5c3e312c0285fb6f87bf871684f1"
+  },
+  {
+   "id": "py-gold",
+   "kind": "other",
+   "sha256": "685da9cd1684496868c8745f58f0e07ab6a5898b6ff232d4dbe7d01d99c0bf1b"
+  },
+  {
+   "id": "py-jackal",
+   "kind": "other",
+   "sha256": "9e59f718178aa42630ed06997176ad74efbf1182513f5a16c323155fd11b8d9a"
+  },
+  {
+   "id": "py-jars",
+   "kind": "other",
+   "sha256": "cfba7837dcda40e883d1e48bd145a580e618db9cb4b91f9ff7798c67003bbc33"
+  },
+  {
+   "id": "py-obelisk",
+   "kind": "other",
+   "sha256": "b879f05b72658169263c627a5f6659748f0cea2d9b21aba8226ba37e8a4993b8"
+  },
+  {
+   "id": "py-sand",
+   "kind": "flat",
+   "sha256": "b6a31d3ff53d3976f27b816092d7ae9023f09c067bbd14485c8a0cfec5bdc5dc"
+  },
+  {
+   "id": "py-sarcophagus",
+   "kind": "other",
+   "sha256": "eff22a848a41d212e72fa324d19d0a7e1a117fc99fcc5a7a2164eb33269315ad"
+  },
+  {
+   "id": "py-scarab",
+   "kind": "other",
+   "sha256": "53bae797e2cbb6f6b3e21d87784ec8528606be8134d19b7da8257b9577116e7f"
+  },
+  {
+   "id": "py-sphinx",
+   "kind": "other",
+   "sha256": "d7cb4ba47c2b0bae067a4ba8d373d7f35a96e3883584d5e3923c0488cb396f27"
+  },
+  {
+   "id": "py-wall-a",
+   "kind": "terrain",
+   "sha256": "0c3f9414361e586b6a4519df471abd1cfca0acdaefc2e6f13df01cfc983ebedf"
+  },
+  {
+   "id": "py-wall-b",
+   "kind": "terrain",
+   "sha256": "d9fc79f448c5bdadce18f2f668653363f6c9d763a624b3b1445ac7b1ce7223c4"
+  },
+  {
+   "id": "py-wall-c",
+   "kind": "terrain",
+   "sha256": "a11a27a5b0820f9d4ebbff471b804c7769178bf1684dbb93583ab157c7cd8791"
+  },
+  {
+   "id": "ru-altar",
+   "kind": "other",
+   "sha256": "6b42cd566e290f31b1261712e18b9b424379bfba461689b077a3858b366f7479"
+  },
+  {
+   "id": "ru-brazier",
+   "kind": "other",
+   "sha256": "92d152b333d3c051863debd3d4787666fd69bf3b21b317cb58533b0cb33f5ae7"
+  },
+  {
+   "id": "ru-broken",
+   "kind": "other",
+   "sha256": "083c6e83657c72306226ad990a45dc22aecba7172e73151817fdff36325cda9b"
+  },
+  {
+   "id": "ru-chips",
+   "kind": "flat",
+   "sha256": "f98f792c936081af8e5e211c2aa7173cd7d4b4cd0d53881c5273d09c9df24638"
+  },
+  {
+   "id": "ru-column",
+   "kind": "other",
+   "sha256": "9623af41875e6a53c36ceac81b3915b5c7ae87f210a7b2b04d62d843bc785f52"
+  },
+  {
+   "id": "ru-door",
+   "kind": "wall_mounted",
+   "sha256": "c0b4ed180a68bf33f669363a4a47c78bd8383e742d8f9fd1e648f3fca6168178"
+  },
+  {
+   "id": "ru-floor",
+   "kind": "terrain",
+   "sha256": "d4d2649114682c464a3cc23e15e97ee6886a6064d34c08b4e52480db356c4d1f"
+  },
+  {
+   "id": "ru-ivy",
+   "kind": "wall_mounted",
+   "sha256": "6b1cf3b43ceeb5bcfc9fd7be49b9ed7fc276fc9d2b8f866c360c5bc48dfc719b"
+  },
+  {
+   "id": "ru-leaves",
+   "kind": "flat",
+   "sha256": "57500c8a6c238c1ad1f637eee1a3a60ed40d5dae48242aba354e8edfbf5f99d8"
+  },
+  {
+   "id": "ru-mosaic",
+   "kind": "flat",
+   "sha256": "73833693acb3dad681f36a633d693076cdd96b992c46e8c98d02e1be63c57ebb"
+  },
+  {
+   "id": "ru-niche-urn",
+   "kind": "wall_mounted",
+   "sha256": "9c6ab784b28a051019379ec29c2185d2fe0888e7f89a1dd8d0419ab70fea7b37"
+  },
+  {
+   "id": "ru-pillar",
+   "kind": "other",
+   "sha256": "7d0fa05b49ff70c41d6203a08065f74157838c01393d0f72c188276a5a254cba"
+  },
+  {
+   "id": "ru-pool",
+   "kind": "other",
+   "sha256": "2e9a9ce7a5a25375ed2d7dd77ebb28a8e40805f3c8d0397ba7c55c44ddff6cd0"
+  },
+  {
+   "id": "ru-rim-s",
+   "kind": "terrain",
+   "sha256": "8b599aa368ca2b96bb7b46d60d6d011767a4a657dfb01315f0ae2120dbf074a2"
+  },
+  {
+   "id": "ru-rim-w",
+   "kind": "terrain",
+   "sha256": "bf5d1559976a947d230a25e13978344c7c75cfa9867422275e0669f13fed8ea8"
+  },
+  {
+   "id": "ru-rubble",
+   "kind": "other",
+   "sha256": "51fe0c5e5f7c521936fb5c32fb3b53d36e392bfabbb8d830d22b84f9d561aaf1"
+  },
+  {
+   "id": "ru-statue",
+   "kind": "other",
+   "sha256": "fed2b76c6b1bef41fc21f3d4ce68e5e782f8c954c281ad88f4d94bf4debaf944"
+  },
+  {
+   "id": "ru-stump",
+   "kind": "other",
+   "sha256": "fe25d45b7901d8b9a99ccc189c4992a5e02cc1efd7570c50ff07a7b7e902cdaa"
+  },
+  {
+   "id": "ru-top-b",
+   "kind": "terrain",
+   "sha256": "058f7a7ca7d07a9d2bee30fbba5bda153822608fcbf3cfff912f4b9ddd8170db"
+  },
+  {
+   "id": "ru-top-c",
+   "kind": "terrain",
+   "sha256": "023f8453a9487cd181ef2eb1523bff788489c9e65b3e1dc43e392357d19f9283"
+  },
+  {
+   "id": "ru-vines",
+   "kind": "wall_mounted",
+   "sha256": "6842422840c9d58b90ebf600fdfa8548573f963b631b91a8b9ebaaf68547d2b1"
+  },
+  {
+   "id": "ru-wall-a",
+   "kind": "terrain",
+   "sha256": "9d70f3cedf11b450ecfc0cd37df49f37f7ca3434357bb895f2b8fdce5f9de774"
+  },
+  {
+   "id": "ru-wall-b",
+   "kind": "terrain",
+   "sha256": "c81f7cb31d331bcfa9e5d33a060618828bbeedd1d8add004bcf99dc029b7ce4c"
+  },
+  {
+   "id": "ru-wall-c",
+   "kind": "terrain",
+   "sha256": "aa18a2b640f32b9feb4bf8fee97f7128a156bf9975ae50789839d6fedc48d990"
+  },
+  {
+   "id": "sh-barrel",
+   "kind": "other",
+   "sha256": "73ead54df9c38560e7d660951a521be2a002c25cc07447864ec7114453b359fc"
+  },
+  {
+   "id": "sh-bones",
+   "kind": "flat",
+   "sha256": "3741a9c17f5ea5a408e2f5c709ae47124a05b79019155d777b35913830f371ad"
+  },
+  {
+   "id": "sh-bucket",
+   "kind": "other",
+   "sha256": "1649eea08259eb5d10e712d588a685ca06c0d87a297228df1b8e16e575bb7aff"
+  },
+  {
+   "id": "sh-campfire",
+   "kind": "other",
+   "sha256": "d941a8e94f97ef905c7870250b8f5f20e100d1b61d87248e90dadedea9b1920f"
+  },
+  {
+   "id": "sh-candles",
+   "kind": "other",
+   "sha256": "069df78a43142d1a66bf3bf5d2d93c3143d11a1dcacad513aa6ad5d28aa84963"
+  },
+  {
+   "id": "sh-chains",
+   "kind": "wall_mounted",
+   "sha256": "4286ef8c439326ba2fabe42d0ec18a05107c6c4a7504fcbf0b8dbe81affc9409"
+  },
+  {
+   "id": "sh-crate",
+   "kind": "other",
+   "sha256": "bdec0f36957652708a46ca05e3359c727af066bc46cf99aa27120ae5586b0f32"
+  },
+  {
+   "id": "sh-cratestack",
+   "kind": "other",
+   "sha256": "f6507fd63d9859e720996446f09fd64e1a613dafcbc80b8fe3ca7f4f522f0aaa"
+  },
+  {
+   "id": "sh-rubble",
+   "kind": "flat",
+   "sha256": "05e704c9f4cad817f19f623cdf37ae15de281135f94036364f23c4f23a03bb1e"
+  },
+  {
+   "id": "sh-sacks",
+   "kind": "other",
+   "sha256": "763e529af846c2c5acf489ee715b27fe3bd56c210236e34af65892765c155f86"
+  },
+  {
+   "id": "sh-skulls",
+   "kind": "other",
+   "sha256": "5cf51d933a6662c352f104a364dcf2d9e583fb75214e73244d68d9ed31d98a64"
+  },
+  {
+   "id": "st-down-built",
+   "kind": "terrain",
+   "sha256": "fce71eef09490cfc19707a81b28d226403cdf392a03ec1ec42a593006366fbd0"
+  },
+  {
+   "id": "st-down-rock",
+   "kind": "terrain",
+   "sha256": "ad28224f01acc423ad3c2bd1cc6d642a47d32ba22d1d402d09e396024c51a3e5"
+  },
+  {
+   "id": "st-up-built",
+   "kind": "terrain",
+   "sha256": "fe95d12bc89180fae03ec3182646908cc66feb9e881b28fa3b7c6da699d02bc5"
+  },
+  {
+   "id": "st-up-rock",
+   "kind": "terrain",
+   "sha256": "8ed8fa87bd7233927a635d8dff7129326f5091dc6da8a271ade636f1c97c5724"
+  },
+  {
+   "id": "su-amphora",
+   "kind": "other",
+   "sha256": "1a3166b0dc7d36e064f617f8f1bdb5c58d06a52d0b113b7136e602feddef3cb4"
+  },
+  {
+   "id": "su-column",
+   "kind": "other",
+   "sha256": "7a2bf30e516e55ce5e77b8d4818c65497dd378349bf798a7fce70ea19915917b"
+  },
+  {
+   "id": "su-coral",
+   "kind": "other",
+   "sha256": "341e90f4865888f11a1aa6e3a60ca1af55367214685974f2179f4802fb5b3c3b"
+  },
+  {
+   "id": "su-floor-a",
+   "kind": "terrain",
+   "sha256": "33491fccdcd833a84867c041a55108d5daa494686954952f28c8bdd68283038a"
+  },
+  {
+   "id": "su-floor-b",
+   "kind": "terrain",
+   "sha256": "e82deb75aa43b3c12ba65c5581ecb79fef6a94e97fe638a5818cc7e8147861ea"
+  },
+  {
+   "id": "su-floor-c",
+   "kind": "terrain",
+   "sha256": "5bc9710dfba87e98cda13a6e8b1c0ff89de264321cecb884ff5457e705f7d37f"
+  },
+  {
+   "id": "su-fountain",
+   "kind": "other",
+   "sha256": "87f46bb45ff5aa16ec26e7a6e7adf69f92e67a4252e0d7fe4c35844b1fd15f3d"
+  },
+  {
+   "id": "su-shell",
+   "kind": "other",
+   "sha256": "81d57d8af90dbd13b31ad90a62ee8589371fc89b48d21b99da9402ac5b782a9f"
+  },
+  {
+   "id": "su-statue",
+   "kind": "other",
+   "sha256": "e83c0caf3e6b22d9381c90bf27f689b727b86dcfb151ff68da4a2658a5365474"
+  },
+  {
+   "id": "su-trident",
+   "kind": "other",
+   "sha256": "fef92bd7d519ba3330559ba82af74c4e65e1f26e594e9ce145e2c4fa7b96ac29"
+  },
+  {
+   "id": "su-wall-a",
+   "kind": "terrain",
+   "sha256": "8ed6a52505191a88f8e6686ba10185bebd31c0c59a59c60f50a17b83e55a6a32"
+  },
+  {
+   "id": "su-wall-b",
+   "kind": "terrain",
+   "sha256": "c98c24c88110a4dc5b11e87deec6051df0f9862b26f9e4e22339b1a5cea7db18"
+  },
+  {
+   "id": "su-wall-c",
+   "kind": "terrain",
+   "sha256": "8c1bc445d2af406cde2f2cc622f6fb35adb8d078daddb8a537d221860c6e7838"
+  },
+  {
+   "id": "su-weed",
+   "kind": "flat",
+   "sha256": "1a02c06d41d1bea661819cffd3e8f948ebe77e165288dcd0ea4318a9a6bfd6fc"
+  },
+  {
+   "id": "sw-bars",
+   "kind": "wall_mounted",
+   "sha256": "dc9327c7d1028173f80a01f0cdd3667dcc1ee6b271984e01a1f7e769947e4cbc"
+  },
+  {
+   "id": "sw-cistern",
+   "kind": "other",
+   "sha256": "3e274b71791a252c4831f873ee67698b738c444d09ed2a1737beb7df6d45cc87"
+  },
+  {
+   "id": "sw-floor-a",
+   "kind": "terrain",
+   "sha256": "f97368d4a75232f69ff193a90b5b953bd3d7d5dddbbda4d96950904f23bb73d8"
+  },
+  {
+   "id": "sw-floor-b",
+   "kind": "terrain",
+   "sha256": "c381433b8838b0a46ba2ed45828cac445334d98c1b537c5b4010e9f04443f174"
+  },
+  {
+   "id": "sw-floor-c",
+   "kind": "terrain",
+   "sha256": "1f05642ce1f7d6ba89f1582f21e3b3e611b62a74121cc6b37a2e110a342e6f87"
+  },
+  {
+   "id": "sw-grate",
+   "kind": "flat",
+   "sha256": "bef922dd836aaba646cf588822456ef9f1c3c667246d344fa2ca3769e6fc6112"
+  },
+  {
+   "id": "sw-outfall",
+   "kind": "wall_mounted",
+   "sha256": "746a9e4eff5cdf177f583c0eeba0ee64bb4249c0946ba8103b33e5e527feb542"
+  },
+  {
+   "id": "sw-pier",
+   "kind": "other",
+   "sha256": "e00971436398bfeb09d927d7bdb35e65d94df364d183f7f6639815bca16f8a3b"
+  },
+  {
+   "id": "sw-slime",
+   "kind": "flat",
+   "sha256": "08480a32fa48538d5ae9e430646f1c128fef0a1da48b26365dc071a3ad9dadb4"
+  },
+  {
+   "id": "sw-valve",
+   "kind": "other",
+   "sha256": "4273e0d7822c43bd5e94e566dc04f90ce6ffc0a5f3f6d0f2be8a557d17339a87"
+  },
+  {
+   "id": "sw-wall-a",
+   "kind": "terrain",
+   "sha256": "35adedd5bae768260cbae3a344557f6c48b686c5b62b5f0bd580ec0da0286016"
+  },
+  {
+   "id": "sw-wall-b",
+   "kind": "terrain",
+   "sha256": "5a531a3f34116b2fc8ad8191a99d046c9948ce864b5f79ac638f21573c975a28"
+  },
+  {
+   "id": "sw-wall-c",
+   "kind": "terrain",
+   "sha256": "f8213847e97c76c098d8e8bfa904dc6f0fe75bd16fe265146df781008eb4759e"
+  },
+  {
+   "id": "sw-wall-lamp",
+   "kind": "wall_mounted",
+   "sha256": "1b271f0f12151dfb79f228459a101c4ca8598c1cb588f409e2e9e95f96fea34a"
+  },
+  {
+   "id": "sw-water",
+   "kind": "terrain",
+   "sha256": "342bb30490dbfd1fc662507a53524948880cb8a1731faf2c0f25dcee345627d4"
+  },
+  {
+   "id": "tw-bookshelf",
+   "kind": "other",
+   "sha256": "233676812620feb8a2d455c183b097f2b0d81e00a2e12ac6115d2a88c00f80b7"
+  },
+  {
+   "id": "tw-bookshelf-tall",
+   "kind": "other",
+   "sha256": "cae5323907aadf4a32c811605cc5f6a10bb3541a95352023bb0a99df05121a57"
+  },
+  {
+   "id": "tw-candelabra",
+   "kind": "other",
+   "sha256": "a46ce67b6caa154720500d5be31fd105a944f560e9569969673ea0dc2f45e8b8"
+  },
+  {
+   "id": "tw-circle",
+   "kind": "flat",
+   "sha256": "f3beba03360050a763f2aebf3eb4210192ff3a088e09005d597bbf66dac3f4ce"
+  },
+  {
+   "id": "tw-floor-a",
+   "kind": "terrain",
+   "sha256": "f6d8a205f14a1a4e3d9b11435a7ddbc019fc451f4250943e9e2df3d732da469e"
+  },
+  {
+   "id": "tw-floor-b",
+   "kind": "terrain",
+   "sha256": "02c890bc4019c4704abd992f0f4714b3e0ff2e7b8329cbe6f42293f9e568a15f"
+  },
+  {
+   "id": "tw-floor-c",
+   "kind": "terrain",
+   "sha256": "aa42188893c3db72f3ef6e4f37f0938659cb6e2cd05b7207e377ec2b5c1cf83d"
+  },
+  {
+   "id": "tw-globe",
+   "kind": "other",
+   "sha256": "8dbd02214999f474bff85f6a3f52847c682e7aa092aaf05db66939efbe6b7be8"
+  },
+  {
+   "id": "tw-lectern",
+   "kind": "other",
+   "sha256": "6d4d4a6200009969e58065314a0407d7ebeee0d5998ab731ee09a5416e67a8b4"
+  },
+  {
+   "id": "tw-orrery",
+   "kind": "other",
+   "sha256": "4e9749d1d3986bf7d737305b02fef0da07f1111293a0b5e32cee76bc53626e92"
+  },
+  {
+   "id": "tw-pedestal",
+   "kind": "other",
+   "sha256": "d1ea66b3ea6583d8d59f43b428454dcf29174cabe13ea78ef55fcedac029ec09"
+  },
+  {
+   "id": "tw-rug",
+   "kind": "flat",
+   "sha256": "f03d8e52e97210a01a223e4abfecc84b5b88f2fb7776093ce0894d3628fea381"
+  },
+  {
+   "id": "tw-wall-a",
+   "kind": "terrain",
+   "sha256": "0a65b26ccb74ace7d74b1f76869031587ed1a3af9d2abc8f083a8654d2302640"
+  },
+  {
+   "id": "tw-wall-b",
+   "kind": "terrain",
+   "sha256": "2d737315ce979f0dae3793c1b31c6bbf4f42040fe8a158ca8b021561d0df7a3d"
+  },
+  {
+   "id": "tw-wall-c",
+   "kind": "terrain",
+   "sha256": "eb76b514f83cff701ad91900970cd445ca02997b245c048dc32f26471e81194e"
+  },
+  {
+   "id": "vo-altar",
+   "kind": "other",
+   "sha256": "0e6788eb29c12100adccd53f22a457b19e503f7c0913028f2e25f6b2149b030c"
+  },
+  {
+   "id": "vo-columns",
+   "kind": "other",
+   "sha256": "6c035825b83941a9221db0b3decbecfd4457e85958770b72fd8c595827fb1559"
+  },
+  {
+   "id": "vo-embers",
+   "kind": "flat",
+   "sha256": "0dbac8a1d04c6532fa92d3e6525e4f20bb7312b83ac2254a3a4fbbefbaa366b2"
+  },
+  {
+   "id": "vo-face-a",
+   "kind": "terrain",
+   "sha256": "83751dd3f6ff3efdcdcd1b1023d426ddfe046887004cd8d19c62c5bdfb7e2a96"
+  },
+  {
+   "id": "vo-face-b",
+   "kind": "terrain",
+   "sha256": "7fa5009dd0cf0e751c2ed7592f1c9da66df499ca5d08db84ab7bd72693107c9f"
+  },
+  {
+   "id": "vo-face-c",
+   "kind": "terrain",
+   "sha256": "e53a85c0f2ebca8ee7e956b93d906b4c03fefb130e78154e74cd540c016635ff"
+  },
+  {
+   "id": "vo-firecrystal",
+   "kind": "other",
+   "sha256": "3e24795ba275800727434c0dab691f292499adb03059d3068bd16e3a9d43f4b5"
+  },
+  {
+   "id": "vo-floor-a",
+   "kind": "terrain",
+   "sha256": "aaf03e31f17abbc81e1231da5cad0438f10c9ff4646c1b2d400faf263a029985"
+  },
+  {
+   "id": "vo-floor-b",
+   "kind": "terrain",
+   "sha256": "00fce3af4ed065da2d583efc9cca5a2fe6323e41760b6bab1a8744a714e67f67"
+  },
+  {
+   "id": "vo-floor-c",
+   "kind": "terrain",
+   "sha256": "4255734a20fdcb3a688546f2ba3964fd46e4c4c444ee2ac6b7cd0d5395a8587a"
+  },
+  {
+   "id": "vo-lavafall",
+   "kind": "wall_mounted",
+   "sha256": "bb2635786fbf13f15b9c12919ed1860e0b4e9b37123812e7b4b7ff9be354b519"
+  },
+  {
+   "id": "vo-spike",
+   "kind": "other",
+   "sha256": "4bb859b11be4b32df72ec6d0e016cb7e5c60a1a75b5befc4e86d855ce5442d66"
+  },
+  {
+   "id": "vo-spike-tall",
+   "kind": "other",
+   "sha256": "941378d1c1e8aa6f11309a0c4b005b5a0afe8a6b325fa81bd9e7f03b44d72ad5"
+  },
+  {
+   "id": "vo-vent",
+   "kind": "other",
+   "sha256": "c58b323bb0a0813db32485d462e9b597e6930b292ac83eeb242ac4a33d88b62c"
+  }
+ ],
+ "objects": [
+  {
+   "id": "torch-wall",
+   "kit": "bd-dgn-torch-wall",
+   "theme": "shared",
+   "rows": [
+    [
+     52760
+    ],
+    [
+     52761
+    ]
+   ]
+  },
+  {
+   "id": "brazier",
+   "kit": "bd-dgn-brazier",
+   "theme": "shared",
+   "rows": [
+    [
+     52762
+    ],
+    [
+     52763
+    ]
+   ]
+  },
+  {
+   "id": "bones",
+   "kit": "bd-dgn-bones",
+   "theme": "shared",
+   "rows": [
+    [
+     52764
+    ]
+   ]
+  },
+  {
+   "id": "skulls",
+   "kit": "bd-dgn-skulls",
+   "theme": "shared",
+   "rows": [
+    [
+     52765
+    ]
+   ]
+  },
+  {
+   "id": "crate",
+   "kit": "bd-dgn-crate",
+   "theme": "shared",
+   "rows": [
+    [
+     52766
+    ]
+   ]
+  },
+  {
+   "id": "barrel",
+   "kit": "bd-dgn-barrel",
+   "theme": "shared",
+   "rows": [
+    [
+     52767
+    ]
+   ]
+  },
+  {
+   "id": "candles",
+   "kit": "bd-dgn-candles",
+   "theme": "shared",
+   "rows": [
+    [
+     52768
+    ]
+   ]
+  },
+  {
+   "id": "rubble",
+   "kit": "bd-dgn-rubble",
+   "theme": "shared",
+   "rows": [
+    [
+     52769
+    ]
+   ]
+  },
+  {
+   "id": "bucket",
+   "kit": "bd-dgn-bucket",
+   "theme": "shared",
+   "rows": [
+    [
+     52770
+    ]
+   ]
+  },
+  {
+   "id": "crate-stack",
+   "kit": "bd-dgn-crate-stack",
+   "theme": "shared",
+   "rows": [
+    [
+     52771
+    ],
+    [
+     52772
+    ]
+   ]
+  },
+  {
+   "id": "chains",
+   "kit": "bd-dgn-chains",
+   "theme": "shared",
+   "rows": [
+    [
+     52773
+    ]
+   ]
+  },
+  {
+   "id": "sack-pile",
+   "kit": "bd-dgn-sack-pile",
+   "theme": "shared",
+   "rows": [
+    [
+     52774,
+     52775
+    ],
+    [
+     52776,
+     52777
+    ]
+   ]
+  },
+  {
+   "id": "campfire",
+   "kit": "bd-dgn-campfire",
+   "theme": "shared",
+   "rows": [
+    [
+     52778
+    ]
+   ]
+  },
+  {
+   "id": "bone-heap",
+   "kit": "bd-dgn-bone-heap",
+   "theme": "shared",
+   "rows": [
+    [
+     52779,
+     52780
+    ],
+    [
+     52781,
+     52782
+    ]
+   ]
+  },
+  {
+   "id": "torch-wall-wisp",
+   "kit": "bd-dgn-torch-wall-wisp",
+   "theme": "shared",
+   "rows": [
+    [
+     52783
+    ],
+    [
+     52784
+    ]
+   ]
+  },
+  {
+   "id": "brazier-wisp",
+   "kit": "bd-dgn-brazier-wisp",
+   "theme": "shared",
+   "rows": [
+    [
+     52785
+    ],
+    [
+     52763
+    ]
+   ]
+  },
+  {
+   "id": "candles-wisp",
+   "kit": "bd-dgn-candles-wisp",
+   "theme": "shared",
+   "rows": [
+    [
+     52786
+    ]
+   ]
+  },
+  {
+   "id": "campfire-wisp",
+   "kit": "bd-dgn-campfire-wisp",
+   "theme": "shared",
+   "rows": [
+    [
+     52787
+    ]
+   ]
+  },
+  {
+   "id": "cave-mushroom",
+   "kit": "bd-dgn-cave-mushroom",
+   "theme": "cave",
+   "rows": [
+    [
+     53214
+    ]
+   ]
+  },
+  {
+   "id": "cave-moss",
+   "kit": "bd-dgn-cave-moss",
+   "theme": "cave",
+   "rows": [
+    [
+     53215
+    ]
+   ]
+  },
+  {
+   "id": "cave-stalagmite-a",
+   "kit": "bd-dgn-cave-stalagmite-a",
+   "theme": "cave",
+   "rows": [
+    [
+     53216
+    ],
+    [
+     53217
+    ]
+   ]
+  },
+  {
+   "id": "cave-stalagmite-b",
+   "kit": "bd-dgn-cave-stalagmite-b",
+   "theme": "cave",
+   "rows": [
+    [
+     53218
+    ],
+    [
+     53219
+    ]
+   ]
+  },
+  {
+   "id": "cave-stalactites",
+   "kit": "bd-dgn-cave-stalactites",
+   "theme": "cave",
+   "rows": [
+    [
+     53220
+    ],
+    [
+     53221
+    ]
+   ]
+  },
+  {
+   "id": "cave-vines",
+   "kit": "bd-dgn-cave-vines",
+   "theme": "cave",
+   "rows": [
+    [
+     53222
+    ],
+    [
+     53223
+    ]
+   ]
+  },
+  {
+   "id": "cave-pebbles",
+   "kit": "bd-dgn-cave-pebbles",
+   "theme": "cave",
+   "rows": [
+    [
+     53224
+    ]
+   ]
+  },
+  {
+   "id": "cave-stalagmite-big",
+   "kit": "bd-dgn-cave-stalagmite-big",
+   "theme": "cave",
+   "rows": [
+    [
+     53225,
+     53226
+    ],
+    [
+     53227,
+     53228
+    ],
+    [
+     53229,
+     53230
+    ]
+   ]
+  },
+  {
+   "id": "cave-stalagmite-group",
+   "kit": "bd-dgn-cave-stalagmite-group",
+   "theme": "cave",
+   "rows": [
+    [
+     53231,
+     53232
+    ],
+    [
+     53233,
+     53234
+    ]
+   ]
+  },
+  {
+   "id": "cave-boulders",
+   "kit": "bd-dgn-cave-boulders",
+   "theme": "cave",
+   "rows": [
+    [
+     53235,
+     53236
+    ],
+    [
+     53237,
+     53238
+    ]
+   ]
+  },
+  {
+   "id": "cave-crystal",
+   "kit": "bd-dgn-cave-crystal",
+   "theme": "cave",
+   "rows": [
+    [
+     53239,
+     53240
+    ],
+    [
+     53241,
+     53242
+    ]
+   ]
+  },
+  {
+   "id": "cave-spring",
+   "kit": "bd-dgn-cave-spring",
+   "theme": "cave",
+   "rows": [
+    [
+     53243
+    ],
+    [
+     53244
+    ],
+    [
+     53245
+    ]
+   ]
+  },
+  {
+   "id": "cave-hollow",
+   "kit": "bd-dgn-cave-hollow",
+   "theme": "cave",
+   "rows": [
+    [
+     53246,
+     53247,
+     53248
+    ],
+    [
+     53249,
+     53250,
+     53251
+    ]
+   ]
+  },
+  {
+   "id": "cave-earth",
+   "kit": "bd-dgn-cave-earth",
+   "theme": "cave",
+   "rows": [
+    [
+     53252,
+     53253,
+     53254
+    ],
+    [
+     53255,
+     53256,
+     53257
+    ]
+   ]
+  },
+  {
+   "id": "ruin-column",
+   "kit": "bd-dgn-ruin-column",
+   "theme": "ruin",
+   "rows": [
+    [
+     53587
+    ],
+    [
+     53588
+    ],
+    [
+     53589
+    ]
+   ]
+  },
+  {
+   "id": "ruin-column-stump",
+   "kit": "bd-dgn-ruin-column-stump",
+   "theme": "ruin",
+   "rows": [
+    [
+     53590
+    ],
+    [
+     53591
+    ]
+   ]
+  },
+  {
+   "id": "ruin-vines",
+   "kit": "bd-dgn-ruin-vines",
+   "theme": "ruin",
+   "rows": [
+    [
+     53592
+    ],
+    [
+     53593
+    ],
+    [
+     53594
+    ]
+   ]
+  },
+  {
+   "id": "ruin-niche-urn",
+   "kit": "bd-dgn-ruin-niche-urn",
+   "theme": "ruin",
+   "rows": [
+    [
+     53595
+    ],
+    [
+     53596
+    ]
+   ]
+  },
+  {
+   "id": "ruin-altar",
+   "kit": "bd-dgn-ruin-altar",
+   "theme": "ruin",
+   "rows": [
+    [
+     53597,
+     53598
+    ],
+    [
+     53599,
+     53600
+    ]
+   ]
+  },
+  {
+   "id": "ruin-chips",
+   "kit": "bd-dgn-ruin-chips",
+   "theme": "ruin",
+   "rows": [
+    [
+     53601
+    ]
+   ]
+  },
+  {
+   "id": "ruin-statue",
+   "kit": "bd-dgn-ruin-statue",
+   "theme": "ruin",
+   "rows": [
+    [
+     53602,
+     53603
+    ],
+    [
+     53604,
+     53605
+    ],
+    [
+     53606,
+     53607
+    ]
+   ]
+  },
+  {
+   "id": "ruin-rubble-heap",
+   "kit": "bd-dgn-ruin-rubble-heap",
+   "theme": "ruin",
+   "rows": [
+    [
+     53608,
+     53609
+    ],
+    [
+     53610,
+     53611
+    ]
+   ]
+  },
+  {
+   "id": "ruin-mosaic",
+   "kit": "bd-dgn-ruin-mosaic",
+   "theme": "ruin",
+   "rows": [
+    [
+     53612,
+     53613,
+     53614
+    ],
+    [
+     53615,
+     53616,
+     53617
+    ],
+    [
+     53618,
+     53619,
+     53620
+    ]
+   ]
+  },
+  {
+   "id": "ruin-column-tall",
+   "kit": "bd-dgn-ruin-column-tall",
+   "theme": "ruin",
+   "rows": [
+    [
+     53621,
+     53622
+    ],
+    [
+     53623,
+     53624
+    ],
+    [
+     53625,
+     53626
+    ],
+    [
+     53627,
+     53628
+    ]
+   ]
+  },
+  {
+   "id": "ruin-column-fallen",
+   "kit": "bd-dgn-ruin-column-fallen",
+   "theme": "ruin",
+   "rows": [
+    [
+     53629,
+     53630,
+     53631
+    ],
+    [
+     53632,
+     53633,
+     53634
+    ]
+   ]
+  },
+  {
+   "id": "ruin-pool",
+   "kit": "bd-dgn-ruin-pool",
+   "theme": "ruin",
+   "rows": [
+    [
+     53635,
+     53636,
+     53637,
+     53638
+    ],
+    [
+     53639,
+     53640,
+     53641,
+     53642
+    ],
+    [
+     53643,
+     53644,
+     53645,
+     53646
+    ]
+   ]
+  },
+  {
+   "id": "ruin-door-sealed",
+   "kit": "bd-dgn-ruin-door-sealed",
+   "theme": "ruin",
+   "rows": [
+    [
+     53647,
+     53648
+    ],
+    [
+     53649,
+     53650
+    ],
+    [
+     53651,
+     53652
+    ]
+   ]
+  },
+  {
+   "id": "ruin-ivy-curtain",
+   "kit": "bd-dgn-ruin-ivy-curtain",
+   "theme": "ruin",
+   "rows": [
+    [
+     53653,
+     53654
+    ],
+    [
+     53655,
+     53656
+    ],
+    [
+     53657,
+     53658
+    ]
+   ]
+  },
+  {
+   "id": "ruin-leaves",
+   "kit": "bd-dgn-ruin-leaves",
+   "theme": "ruin",
+   "rows": [
+    [
+     53659,
+     53660
+    ]
+   ]
+  },
+  {
+   "id": "ice-crystal",
+   "kit": "bd-dgn-ice-crystal",
+   "theme": "ice",
+   "rows": [
+    [
+     54000
+    ],
+    [
+     54001
+    ]
+   ]
+  },
+  {
+   "id": "ice-rock",
+   "kit": "bd-dgn-ice-rock",
+   "theme": "ice",
+   "rows": [
+    [
+     -1,
+     -1
+    ],
+    [
+     54002,
+     54003
+    ]
+   ]
+  },
+  {
+   "id": "ice-drift",
+   "kit": "bd-dgn-ice-drift",
+   "theme": "ice",
+   "rows": [
+    [
+     54004
+    ]
+   ]
+  },
+  {
+   "id": "ice-icicles",
+   "kit": "bd-dgn-ice-icicles",
+   "theme": "ice",
+   "rows": [
+    [
+     54005
+    ],
+    [
+     54006
+    ]
+   ]
+  },
+  {
+   "id": "ice-mound",
+   "kit": "bd-dgn-ice-mound",
+   "theme": "ice",
+   "rows": [
+    [
+     54007
+    ]
+   ]
+  },
+  {
+   "id": "ice-frozen-warrior",
+   "kit": "bd-dgn-ice-frozen-warrior",
+   "theme": "ice",
+   "rows": [
+    [
+     54008
+    ],
+    [
+     54009
+    ]
+   ]
+  },
+  {
+   "id": "ice-pillar",
+   "kit": "bd-dgn-ice-pillar",
+   "theme": "ice",
+   "rows": [
+    [
+     54010,
+     54011
+    ],
+    [
+     54012,
+     54013
+    ],
+    [
+     54014,
+     54015
+    ]
+   ]
+  },
+  {
+   "id": "ice-great-crystal",
+   "kit": "bd-dgn-ice-great-crystal",
+   "theme": "ice",
+   "rows": [
+    [
+     54016,
+     54017,
+     54018
+    ],
+    [
+     54019,
+     54020,
+     54021
+    ],
+    [
+     54022,
+     54023,
+     54024
+    ]
+   ]
+  },
+  {
+   "id": "volcano-embers",
+   "kit": "bd-dgn-volcano-embers",
+   "theme": "volcano",
+   "rows": [
+    [
+     54365
+    ]
+   ]
+  },
+  {
+   "id": "volcano-vent",
+   "kit": "bd-dgn-volcano-vent",
+   "theme": "volcano",
+   "rows": [
+    [
+     54366
+    ]
+   ]
+  },
+  {
+   "id": "volcano-fire-crystal",
+   "kit": "bd-dgn-volcano-fire-crystal",
+   "theme": "volcano",
+   "rows": [
+    [
+     54367
+    ]
+   ]
+  },
+  {
+   "id": "volcano-spike",
+   "kit": "bd-dgn-volcano-spike",
+   "theme": "volcano",
+   "rows": [
+    [
+     54368
+    ]
+   ]
+  },
+  {
+   "id": "volcano-spike-tall",
+   "kit": "bd-dgn-volcano-spike-tall",
+   "theme": "volcano",
+   "rows": [
+    [
+     54369
+    ],
+    [
+     54370
+    ]
+   ]
+  },
+  {
+   "id": "volcano-columns",
+   "kit": "bd-dgn-volcano-columns",
+   "theme": "volcano",
+   "rows": [
+    [
+     54371,
+     54372
+    ],
+    [
+     54373,
+     54374
+    ]
+   ]
+  },
+  {
+   "id": "volcano-lavafall",
+   "kit": "bd-dgn-volcano-lavafall",
+   "theme": "volcano",
+   "rows": [
+    [
+     54375
+    ],
+    [
+     54376
+    ],
+    [
+     54377
+    ]
+   ]
+  },
+  {
+   "id": "volcano-altar",
+   "kit": "bd-dgn-volcano-altar",
+   "theme": "volcano",
+   "rows": [
+    [
+     54378,
+     54379,
+     54380
+    ],
+    [
+     54381,
+     54382,
+     54383
+    ]
+   ]
+  },
+  {
+   "id": "mine-ore",
+   "kit": "bd-dgn-mine-ore",
+   "theme": "mine",
+   "rows": [
+    [
+     54647,
+     54648
+    ],
+    [
+     54649,
+     54650
+    ]
+   ]
+  },
+  {
+   "id": "mine-rocks",
+   "kit": "bd-dgn-mine-rocks",
+   "theme": "mine",
+   "rows": [
+    [
+     -1,
+     -1
+    ],
+    [
+     54651,
+     54652
+    ]
+   ]
+  },
+  {
+   "id": "mine-timber-frame",
+   "kit": "bd-dgn-mine-timber-frame",
+   "theme": "mine",
+   "rows": [
+    [
+     54653,
+     54654,
+     54655
+    ],
+    [
+     54656,
+     -1,
+     54657
+    ]
+   ]
+  },
+  {
+   "id": "mine-lamp",
+   "kit": "bd-dgn-mine-lamp",
+   "theme": "mine",
+   "rows": [
+    [
+     54658,
+     54659
+    ],
+    [
+     54660,
+     54661
+    ],
+    [
+     54662,
+     54663
+    ]
+   ]
+  },
+  {
+   "id": "mine-ore-vein-gold",
+   "kit": "bd-dgn-mine-ore-vein-gold",
+   "theme": "mine",
+   "rows": [
+    [
+     54664,
+     54665
+    ],
+    [
+     54666,
+     54667
+    ]
+   ]
+  },
+  {
+   "id": "mine-ore-vein-iron",
+   "kit": "bd-dgn-mine-ore-vein-iron",
+   "theme": "mine",
+   "rows": [
+    [
+     54668,
+     54669
+    ],
+    [
+     54670,
+     54671
+    ]
+   ]
+  },
+  {
+   "id": "mine-minecart",
+   "kit": "bd-dgn-mine-minecart",
+   "theme": "mine",
+   "rows": [
+    [
+     54672,
+     54673
+    ],
+    [
+     54674,
+     54675
+    ]
+   ]
+  },
+  {
+   "id": "mine-post",
+   "kit": "bd-dgn-mine-post",
+   "theme": "mine",
+   "rows": [
+    [
+     54676
+    ],
+    [
+     54677
+    ]
+   ]
+  },
+  {
+   "id": "mine-tools",
+   "kit": "bd-dgn-mine-tools",
+   "theme": "mine",
+   "rows": [
+    [
+     54678
+    ]
+   ]
+  },
+  {
+   "id": "mine-hoist",
+   "kit": "bd-dgn-mine-hoist",
+   "theme": "mine",
+   "rows": [
+    [
+     54679,
+     54680,
+     54681
+    ],
+    [
+     54682,
+     54683,
+     54684
+    ],
+    [
+     54685,
+     54686,
+     54687
+    ]
+   ]
+  },
+  {
+   "id": "crypt-column",
+   "kit": "bd-dgn-crypt-column",
+   "theme": "crypt",
+   "rows": [
+    [
+     54955
+    ],
+    [
+     54956
+    ],
+    [
+     54957
+    ]
+   ]
+  },
+  {
+   "id": "crypt-sarcophagus",
+   "kit": "bd-dgn-crypt-sarcophagus",
+   "theme": "crypt",
+   "rows": [
+    [
+     54958,
+     54959
+    ],
+    [
+     54960,
+     54961
+    ]
+   ]
+  },
+  {
+   "id": "crypt-sarcophagus-ns",
+   "kit": "bd-dgn-crypt-sarcophagus-ns",
+   "theme": "crypt",
+   "rows": [
+    [
+     54962
+    ],
+    [
+     54963
+    ]
+   ]
+  },
+  {
+   "id": "crypt-sarcophagus-open",
+   "kit": "bd-dgn-crypt-sarcophagus-open",
+   "theme": "crypt",
+   "rows": [
+    [
+     54964
+    ],
+    [
+     54965
+    ]
+   ]
+  },
+  {
+   "id": "crypt-banner",
+   "kit": "bd-dgn-crypt-banner",
+   "theme": "crypt",
+   "rows": [
+    [
+     54966
+    ],
+    [
+     54967
+    ]
+   ]
+  },
+  {
+   "id": "crypt-ossuary",
+   "kit": "bd-dgn-crypt-ossuary",
+   "theme": "crypt",
+   "rows": [
+    [
+     54968,
+     54969,
+     54970
+    ],
+    [
+     54971,
+     54972,
+     54973
+    ]
+   ]
+  },
+  {
+   "id": "crypt-niche-skull",
+   "kit": "bd-dgn-crypt-niche-skull",
+   "theme": "crypt",
+   "rows": [
+    [
+     54974
+    ],
+    [
+     54975
+    ]
+   ]
+  },
+  {
+   "id": "crypt-candelabra",
+   "kit": "bd-dgn-crypt-candelabra",
+   "theme": "crypt",
+   "rows": [
+    [
+     54976
+    ],
+    [
+     54977
+    ]
+   ]
+  },
+  {
+   "id": "crypt-altar",
+   "kit": "bd-dgn-crypt-altar",
+   "theme": "crypt",
+   "rows": [
+    [
+     54978,
+     54979
+    ],
+    [
+     54980,
+     54981
+    ]
+   ]
+  },
+  {
+   "id": "crypt-tomb-slab",
+   "kit": "bd-dgn-crypt-tomb-slab",
+   "theme": "crypt",
+   "rows": [
+    [
+     54982,
+     54983
+    ],
+    [
+     54984,
+     54985
+    ]
+   ]
+  },
+  {
+   "id": "crypt-angel",
+   "kit": "bd-dgn-crypt-angel",
+   "theme": "crypt",
+   "rows": [
+    [
+     54986,
+     54987
+    ],
+    [
+     54988,
+     54989
+    ],
+    [
+     54990,
+     54991
+    ]
+   ]
+  },
+  {
+   "id": "sewer-grate",
+   "kit": "bd-dgn-sewer-grate",
+   "theme": "sewer",
+   "rows": [
+    [
+     55320
+    ]
+   ]
+  },
+  {
+   "id": "sewer-pier",
+   "kit": "bd-dgn-sewer-pier",
+   "theme": "sewer",
+   "rows": [
+    [
+     55321
+    ],
+    [
+     55322
+    ],
+    [
+     55323
+    ]
+   ]
+  },
+  {
+   "id": "sewer-valve",
+   "kit": "bd-dgn-sewer-valve",
+   "theme": "sewer",
+   "rows": [
+    [
+     55324
+    ],
+    [
+     55325
+    ]
+   ]
+  },
+  {
+   "id": "sewer-outfall",
+   "kit": "bd-dgn-sewer-outfall",
+   "theme": "sewer",
+   "rows": [
+    [
+     55326,
+     55327
+    ],
+    [
+     55328,
+     55329
+    ]
+   ]
+  },
+  {
+   "id": "sewer-bars",
+   "kit": "bd-dgn-sewer-bars",
+   "theme": "sewer",
+   "rows": [
+    [
+     55330,
+     55331
+    ],
+    [
+     55332,
+     55333
+    ]
+   ]
+  },
+  {
+   "id": "sewer-wall-lamp",
+   "kit": "bd-dgn-sewer-wall-lamp",
+   "theme": "sewer",
+   "rows": [
+    [
+     55334
+    ],
+    [
+     55335
+    ]
+   ]
+  },
+  {
+   "id": "sewer-slime",
+   "kit": "bd-dgn-sewer-slime",
+   "theme": "sewer",
+   "rows": [
+    [
+     55336
+    ]
+   ]
+  },
+  {
+   "id": "sewer-cistern",
+   "kit": "bd-dgn-sewer-cistern",
+   "theme": "sewer",
+   "rows": [
+    [
+     55337,
+     55338,
+     55339
+    ],
+    [
+     55340,
+     55341,
+     55342
+    ],
+    [
+     55343,
+     55344,
+     55345
+    ]
+   ]
+  },
+  {
+   "id": "tower-bookshelf",
+   "kit": "bd-dgn-tower-bookshelf",
+   "theme": "tower",
+   "rows": [
+    [
+     55586,
+     55587
+    ],
+    [
+     55588,
+     55589
+    ]
+   ]
+  },
+  {
+   "id": "tower-bookshelf-tall",
+   "kit": "bd-dgn-tower-bookshelf-tall",
+   "theme": "tower",
+   "rows": [
+    [
+     55590,
+     55591
+    ],
+    [
+     55592,
+     55593
+    ],
+    [
+     55594,
+     55595
+    ]
+   ]
+  },
+  {
+   "id": "tower-pedestal",
+   "kit": "bd-dgn-tower-pedestal",
+   "theme": "tower",
+   "rows": [
+    [
+     55596
+    ],
+    [
+     55597
+    ]
+   ]
+  },
+  {
+   "id": "tower-candelabra",
+   "kit": "bd-dgn-tower-candelabra",
+   "theme": "tower",
+   "rows": [
+    [
+     55598
+    ],
+    [
+     55599
+    ]
+   ]
+  },
+  {
+   "id": "tower-lectern",
+   "kit": "bd-dgn-tower-lectern",
+   "theme": "tower",
+   "rows": [
+    [
+     55600
+    ],
+    [
+     55601
+    ]
+   ]
+  },
+  {
+   "id": "tower-rug",
+   "kit": "bd-dgn-tower-rug",
+   "theme": "tower",
+   "rows": [
+    [
+     55602,
+     55603
+    ],
+    [
+     55604,
+     55605
+    ]
+   ]
+  },
+  {
+   "id": "tower-globe",
+   "kit": "bd-dgn-tower-globe",
+   "theme": "tower",
+   "rows": [
+    [
+     55606
+    ],
+    [
+     55607
+    ]
+   ]
+  },
+  {
+   "id": "tower-circle",
+   "kit": "bd-dgn-tower-circle",
+   "theme": "tower",
+   "rows": [
+    [
+     55608,
+     55609,
+     55610
+    ],
+    [
+     55611,
+     55612,
+     55613
+    ],
+    [
+     55614,
+     55615,
+     55616
+    ]
+   ]
+  },
+  {
+   "id": "tower-orrery",
+   "kit": "bd-dgn-tower-orrery",
+   "theme": "tower",
+   "rows": [
+    [
+     55617,
+     55618
+    ],
+    [
+     55619,
+     55620
+    ],
+    [
+     55621,
+     55622
+    ]
+   ]
+  },
+  {
+   "id": "castle-column",
+   "kit": "bd-dgn-castle-column",
+   "theme": "castle",
+   "rows": [
+    [
+     55888
+    ],
+    [
+     55889
+    ],
+    [
+     55890
+    ]
+   ]
+  },
+  {
+   "id": "castle-banner",
+   "kit": "bd-dgn-castle-banner",
+   "theme": "castle",
+   "rows": [
+    [
+     55891
+    ],
+    [
+     55892
+    ]
+   ]
+  },
+  {
+   "id": "castle-armor",
+   "kit": "bd-dgn-castle-armor",
+   "theme": "castle",
+   "rows": [
+    [
+     55893
+    ],
+    [
+     55894
+    ]
+   ]
+  },
+  {
+   "id": "castle-throne",
+   "kit": "bd-dgn-castle-throne",
+   "theme": "castle",
+   "rows": [
+    [
+     55895
+    ],
+    [
+     55896
+    ]
+   ]
+  },
+  {
+   "id": "castle-weapon-rack",
+   "kit": "bd-dgn-castle-weapon-rack",
+   "theme": "castle",
+   "rows": [
+    [
+     55897,
+     55898
+    ],
+    [
+     55899,
+     55900
+    ]
+   ]
+  },
+  {
+   "id": "castle-carpet",
+   "kit": "bd-dgn-castle-carpet",
+   "theme": "castle",
+   "rows": [
+    [
+     55901,
+     55902
+    ],
+    [
+     55903,
+     55904
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-column",
+   "kit": "bd-dgn-pyramid-column",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56170
+    ],
+    [
+     56171
+    ],
+    [
+     56172
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-sarcophagus",
+   "kit": "bd-dgn-pyramid-sarcophagus",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56173
+    ],
+    [
+     56174
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-jars",
+   "kit": "bd-dgn-pyramid-jars",
+   "theme": "pyramid",
+   "rows": [
+    [
+     -1,
+     -1
+    ],
+    [
+     56175,
+     56176
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-obelisk",
+   "kit": "bd-dgn-pyramid-obelisk",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56177
+    ],
+    [
+     56178
+    ],
+    [
+     56179
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-sand",
+   "kit": "bd-dgn-pyramid-sand",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56180
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-gold",
+   "kit": "bd-dgn-pyramid-gold",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56181,
+     56182
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-scarab",
+   "kit": "bd-dgn-pyramid-scarab",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56183
+    ],
+    [
+     56184
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-jackal",
+   "kit": "bd-dgn-pyramid-jackal",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56185
+    ],
+    [
+     56186
+    ]
+   ]
+  },
+  {
+   "id": "pyramid-sphinx",
+   "kit": "bd-dgn-pyramid-sphinx",
+   "theme": "pyramid",
+   "rows": [
+    [
+     56187,
+     56188,
+     56189
+    ],
+    [
+     56190,
+     56191,
+     56192
+    ]
+   ]
+  },
+  {
+   "id": "sunken-column",
+   "kit": "bd-dgn-sunken-column",
+   "theme": "sunken",
+   "rows": [
+    [
+     56501
+    ],
+    [
+     56502
+    ],
+    [
+     56503
+    ]
+   ]
+  },
+  {
+   "id": "sunken-coral",
+   "kit": "bd-dgn-sunken-coral",
+   "theme": "sunken",
+   "rows": [
+    [
+     56504
+    ]
+   ]
+  },
+  {
+   "id": "sunken-shell",
+   "kit": "bd-dgn-sunken-shell",
+   "theme": "sunken",
+   "rows": [
+    [
+     56505
+    ]
+   ]
+  },
+  {
+   "id": "sunken-weed",
+   "kit": "bd-dgn-sunken-weed",
+   "theme": "sunken",
+   "rows": [
+    [
+     56506
+    ]
+   ]
+  },
+  {
+   "id": "sunken-amphora",
+   "kit": "bd-dgn-sunken-amphora",
+   "theme": "sunken",
+   "rows": [
+    [
+     56507
+    ]
+   ]
+  },
+  {
+   "id": "sunken-trident",
+   "kit": "bd-dgn-sunken-trident",
+   "theme": "sunken",
+   "rows": [
+    [
+     56508
+    ],
+    [
+     56509
+    ]
+   ]
+  },
+  {
+   "id": "sunken-statue",
+   "kit": "bd-dgn-sunken-statue",
+   "theme": "sunken",
+   "rows": [
+    [
+     56510,
+     56511
+    ],
+    [
+     56512,
+     56513
+    ],
+    [
+     56514,
+     56515
+    ]
+   ]
+  },
+  {
+   "id": "sunken-fountain",
+   "kit": "bd-dgn-sunken-fountain",
+   "theme": "sunken",
+   "rows": [
+    [
+     56516,
+     56517,
+     56518
+    ],
+    [
+     56519,
+     56520,
+     56521
+    ],
+    [
+     56522,
+     56523,
+     56524
+    ]
+   ]
+  },
+  {
+   "id": "hideout-tent",
+   "kit": "bd-dgn-hideout-tent",
+   "theme": "hideout",
+   "rows": [
+    [
+     56525,
+     56526,
+     56527
+    ],
+    [
+     56528,
+     56529,
+     56530
+    ]
+   ]
+  },
+  {
+   "id": "hideout-hide-rack",
+   "kit": "bd-dgn-hideout-hide-rack",
+   "theme": "hideout",
+   "rows": [
+    [
+     56531,
+     56532
+    ],
+    [
+     56533,
+     56534
+    ]
+   ]
+  },
+  {
+   "id": "hideout-loot",
+   "kit": "bd-dgn-hideout-loot",
+   "theme": "hideout",
+   "rows": [
+    [
+     56535
+    ]
+   ]
+  },
+  {
+   "id": "hideout-bones",
+   "kit": "bd-dgn-hideout-bones",
+   "theme": "hideout",
+   "rows": [
+    [
+     56536
+    ]
+   ]
+  },
+  {
+   "id": "hideout-campfire",
+   "kit": "bd-dgn-hideout-campfire",
+   "theme": "hideout",
+   "rows": [
+    [
+     56537
+    ]
+   ]
+  },
+  {
+   "id": "hideout-weapon-rack",
+   "kit": "bd-dgn-hideout-weapon-rack",
+   "theme": "hideout",
+   "rows": [
+    [
+     56538,
+     56539
+    ],
+    [
+     56540,
+     56541
+    ]
+   ]
+  },
+  {
+   "id": "hideout-table",
+   "kit": "bd-dgn-hideout-table",
+   "theme": "hideout",
+   "rows": [
+    [
+     56542,
+     56543
+    ],
+    [
+     56544,
+     56545
+    ]
+   ]
+  },
+  {
+   "id": "hideout-cage",
+   "kit": "bd-dgn-hideout-cage",
+   "theme": "hideout",
+   "rows": [
+    [
+     56546,
+     56547
+    ],
+    [
+     56548,
+     56549
+    ]
+   ]
+  },
+  {
+   "id": "hideout-platform",
+   "kit": "bd-dgn-hideout-platform",
+   "theme": "hideout",
+   "rows": [
+    [
+     56550,
+     56551,
+     56552
+    ],
+    [
+     56553,
+     56554,
+     56555
+    ]
+   ]
+  },
+  {
+   "id": "hideout-banner",
+   "kit": "bd-dgn-hideout-banner",
+   "theme": "hideout",
+   "rows": [
+    [
+     56556
+    ],
+    [
+     56557
+    ]
+   ]
+  },
+  {
+   "id": "hideout-chief-seat",
+   "kit": "bd-dgn-hideout-chief-seat",
+   "theme": "hideout",
+   "rows": [
+    [
+     56558,
+     56559
+    ],
+    [
+     56560,
+     56561
+    ],
+    [
+     56562,
+     56563
+    ]
+   ]
+  }
+ ]
+}

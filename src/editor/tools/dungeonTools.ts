@@ -14,6 +14,7 @@ import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
+import { auditLeverGates, dropGateBreakers, floodFrom, keepsReach, solidFlood } from "./dungeonGateAudit";
 import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, LEVER_GATE_STYLES, leverGateStyle, placeLever, placeLeverBlock, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
@@ -28,6 +29,8 @@ import { beodeulNatureTileset, planBeodeulCanopy, raiseBeodeulCrowns, writeBeode
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import { relayBeodeulWaterSurface } from "./beodeulWater";
 import { activeTilesetLook } from "@/project/kitLook";
+import { supportSurfaceOf } from "@/project/groundSupport";
+import { dungeonGlow } from "@/assets/dungeonSkins";
 import { tilesetLookReliefStyle } from "@/assets/tilesetLooks";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
@@ -181,6 +184,26 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     }
     // 풀 둑 물(숲 던전의 못·개울)은 마을 물과 같은 둑·깊이 띠로 다시 깐다(beodeulWater.ts) — 늪·용암 둑은 그대로
     if (composed.banks.style === "grass") relayBeodeulWaterSurface(map, tileset, wet.size * 31 + W);
+  }
+  // 겉가죽을 입은 층(assets/dungeonSkins.ts): 벽 윗변 입술·물가 덧칸을 2층에 얹는다(걷지 않는 칸 위라 자리 고르기와 부딪치지 않는다).
+  // 빛 띠(횃불·화로·수정 둘레의 반투명 두 띠)는 걷는 바닥에도 깔리므로 채우기·장치가 자리를 다 고른 뒤에 깐다(floor.finish — 숲 바닥 덧그림과 같은 까닭).
+  if (composed.skin) {
+    for (const [c, t] of composed.skin.overlay) setLayerTileAt(map, 2, c, t);
+    const glows = composed.skin.glows;
+    const layGlows = (): void => {
+      for (const g of glows) {
+        const glow = dungeonGlow(g.name);
+        if (!glow) continue;
+        glow.rows.forEach((row, dy) => row.forEach((t, dx) => {
+          const X = g.x + glow.dx + dx, Y = g.y + glow.dy + dy;
+          if (t < 0 || X < 0 || Y < 0 || X >= map.width || Y >= map.height) return;
+          const c = Y * map.width + X;
+          if ((map.lowerOverlayTiles?.[c] ?? -1) >= 0 || supportSurfaceOf(tileset, map.lowerTiles[c] ?? -1) === "ceiling") return;
+          setLayerTileAt(map, 2, c, t);
+        }));
+      }
+    };
+    if (glows.length) { if (floor.finish) floor.finish.push(layGlows); else layGlows(); }
   }
   // 야외 던전(숲·늪, 2026-10-23 dungeon-themes): 벽 칸을 버들항 수관 숲 오토타일로 덮는다(2·3층, 막힘). 숲 남쪽 끝 줄엔 줄기·뿌리, 그 아래 빈터엔 숲 그늘.
   if (composed.canopy) {
@@ -395,21 +418,42 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   const lock = field(field(data, "population"), "lockedGate");
   const gate = asCell(lock);
   const planKey = asCell(field(lock, "keySpot"));
-  // 레버는 그 방 북쪽 벽 바로 앞 칸으로 옮긴다 — 방 한가운데 바닥에 선 작은 레버가 소품 사이에 묻혀 조수가 「레버가 안 보인다」며 던전을 세 번 다시 지었다(2026-10-23 dg-r2 puzzle).
-  const keyRoom = planKey ? list(data, "rooms").find((v) => { const x = Number(field(v, "x")), y = Number(field(v, "y")), w = Number(field(v, "w")), h = Number(field(v, "h")); return planKey.x >= x && planKey.x < x + w && planKey.y >= y && planKey.y < y + h; }) : undefined;
-  const wallFront = keyRoom ? (asRoom(keyRoom)?.spots ?? []).filter((c) => c.y === Number(field(keyRoom, "y")) && isPassable(draft, map, c.x, c.y) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1)) : [];
-  const key = planKey ? (wallFront.sort((a, b) => Math.abs(a.x - planKey.x) - Math.abs(b.x - planKey.x))[0] ?? planKey) : undefined;
-  if (!gate || !key) { warnings.push(`${map.name}: 레버 퍼즐 자리(잠긴 통로·열쇠 방)가 없는 배치라 레버를 두지 않았다 — 방을 늘리거나 vault 방을 넣는다.`); return ""; }
-  if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
-  const sw = `sw_${map.id}_lever`;
-  ensureNamedSwitch(draft, sw, `${map.name}: 레버 당김(쇠창살 열림)`);
-  const rock = leverGateStyle(String(field(data, "type")), field(data, "gateStyle")) === "rock";
+  if (!gate || !planKey) { warnings.push(`${map.name}: 레버 퍼즐 자리(잠긴 통로·열쇠 방)가 없는 배치라 레버를 두지 않았다 — 방을 늘리거나 vault 방을 넣는다.`); return ""; }
   // 쇠창살은 통로 폭 전체를 막는다 — 3칸 통로 가운데 한 칸에만 두면 레버 없이 옆으로 지나갔다(2026-10-23 dg-r2 VQA).
   const corr = list(data, "corridors").find((v) => { const x = Number(field(v, "x")), y = Number(field(v, "y")), w = Number(field(v, "w")), h = Number(field(v, "h")); return gate.x >= x && gate.x < x + w && gate.y >= y && gate.y < y + h; });
   const across: Pt[] = !corr ? [gate] : (text(corr, "dir") === "N" || text(corr, "dir") === "S")
     ? Array.from({ length: Number(field(corr, "w")) }, (_, k) => ({ x: Number(field(corr, "x")) + k, y: gate.y }))
     : Array.from({ length: Number(field(corr, "h")) }, (_, k) => ({ x: gate.x, y: Number(field(corr, "y")) + k }));
   const barCells = across.filter((c) => (c.x === gate.x && c.y === gate.y) || (isPassable(draft, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y)));
+  // 관문이 말한 대로 갈라놓는가(2026-11-15): 계획 자리(population.lockedGate)를 그대로 믿으면 고리 통로로 돌아가는 관문, 관문 너머 방에 선 레버가 나왔다.
+  // 입구에서 관문을 닫은 채 물을 채워, 닫으면 못 가는 방이 하나는 있어야 하고(없으면 이 목은 관문이 아니다) 레버는 닫힌 쪽에서 닿는 칸에만 선다.
+  const start = asCell(field(field(data, "entryStair"), "front")) ?? asCell(field(data, "entrance"));
+  const W = map.width;
+  const closed = start ? floodFrom(draft, map, start, new Set(barCells.map((c) => c.y * W + c.x))) : null;
+  const near = (c: Pt): boolean => !closed || closed[c.y * W + c.x] === 1;
+  const rooms = list(data, "rooms");
+  const roomBox = (v: unknown) => ({ x: Number(field(v, "x")), y: Number(field(v, "y")), w: Number(field(v, "w")), h: Number(field(v, "h")) });
+  if (closed && start) {
+    const full = floodFrom(draft, map, start, new Set());
+    const cut = rooms.some((v) => { const spots = asRoom(v)?.spots ?? []; return spots.some((c) => full[c.y * W + c.x]) && !spots.some((c) => closed[c.y * W + c.x]); });
+    if (!cut) { warnings.push(`${map.name}: 잠긴 통로를 막아도 그 너머 방에 다른 길로 닿는다 — 다른 좁은 목을 찾는다.`); return ""; }
+  }
+  // 레버는 그 방 북쪽 벽 바로 앞 칸으로 옮긴다 — 방 한가운데 바닥에 선 작은 레버가 소품 사이에 묻혀 조수가 「레버가 안 보인다」며 던전을 세 번 다시 지었다(2026-10-23 dg-r2 puzzle).
+  const inBox = (v: unknown, c: Pt) => { const b = roomBox(v); return c.x >= b.x && c.x < b.x + b.w && c.y >= b.y && c.y < b.y + b.h; };
+  const freeSpot = (c: Pt) => near(c) && isPassable(draft, map, c.x, c.y) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1);
+  // 계획한 열쇠 방이 관문 너머면 닫힌 쪽에서 닿는 가장 깊은 방(입구 방은 마지막)으로 옮긴다.
+  const plannedRoom = rooms.find((v) => inBox(v, planKey));
+  const keyRoom = plannedRoom && (near(planKey) || (asRoom(plannedRoom)?.spots ?? []).some(freeSpot)) ? plannedRoom
+    : [...rooms].reverse().filter((v) => (asRoom(v)?.spots ?? []).some(freeSpot)).sort((a, b) => Number(text(a, "kind") === "entrance") - Number(text(b, "kind") === "entrance"))[0];
+  const keySpots = keyRoom ? (asRoom(keyRoom)?.spots ?? []).filter(freeSpot) : [];
+  const anchor = keyRoom === plannedRoom && near(planKey) ? planKey : keySpots[0];
+  if (!keyRoom || !anchor) { warnings.push(`${map.name}: 관문을 닫은 채 닿는 레버 자리가 없다 — 다른 좁은 목을 찾는다.`); return ""; }
+  const wallFront = keySpots.filter((c) => c.y === Number(field(keyRoom, "y")));
+  const key = wallFront.sort((a, b) => Math.abs(a.x - anchor.x) - Math.abs(b.x - anchor.x))[0] ?? anchor;
+  if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
+  const sw = `sw_${map.id}_lever`;
+  ensureNamedSwitch(draft, sw, `${map.name}: 레버 당김(쇠창살 열림)`);
+  const rock = leverGateStyle(String(field(data, "type")), field(data, "gateStyle")) === "rock";
   // 그림·막기는 공용 도우미가 한다(지은 던전 = 쇠창살문 타일 키트 + 보이지 않는 문 이벤트, 자연 굴 = 바위 이벤트).
   // 키트가 안 들어가는 단면(동서 통로의 세로 단면 등)이면 이 경로를 접고 placeChokeLever 가 다른 목을 찾는다.
   // 쇠창살문 키트가 안 들어가는 단면이면 옛 쇠창살 이벤트로 물러선다 — 접으면 탑 레버가 6/10 → 3/10 으로 줄었다(2026-10-25).
@@ -420,7 +464,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   // 벽 레버 후보: 열쇠 방 상자 안 모든 바닥 칸(북쪽이 벽인 칸 먼저, 계획 자리에 가까운 순)
   const roomCells: Pt[] = [];
   if (keyRoom) { const rx = Number(field(keyRoom, "x")), ry = Number(field(keyRoom, "y")), rw = Number(field(keyRoom, "w")), rh = Number(field(keyRoom, "h"));
-    for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
+    for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (near({ x, y }) && isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
   roomCells.sort((a, b) => Math.hypot(a.x - key.x, a.y - key.y) - Math.hypot(b.x - key.x, b.y - key.y));
   const placedLever = placeLever(draft, map, [...wallFirst(draft, map, roomCells), key], `ev_${map.id}_lever`, "레버", sw,
     [...block.openCommands, { kind: "text", body: rock ? "쿠르릉. 어디선가 바위가 굴러가는 소리가 울린다." : "어디선가 쇠창살이 올라가는 소리가 울린다." } as Command], "녹슨 레버다. 힘껏 당긴다.", "레버는 이미 당겨져 있다.");
@@ -443,6 +487,19 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   const free = (c: Pt): boolean => isPassable(draft, map, c.x, c.y) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1);
   const attempt = (label: string, fn: () => void): boolean => {
     try { fn(); return true; } catch (error) { if (error instanceof ToolError) { warnings.push(`${map.name}: ${label} — ${error.message}`); return false; } throw error; }
+  };
+  // 길을 막는 것(상자 = 늘 막는 이벤트, 쉼터 결정 = 막힌 타일 키트)은 놓은 뒤에도 입구에서 전에 닿던 곳에 다 닿아야 한다 — 아니면 되돌리고 다음 자리.
+  const startCell = asCell(field(field(data, "entryStair"), "front")) ?? asCell(field(data, "entrance"));
+  const guarded = (label: string, fn: () => void): boolean => {
+    const before = startCell ? solidFlood(draft, map, startCell) : null;
+    const snap = { events: [...map.events], lower: map.lowerTiles.slice(), upper: map.upperTiles.slice(), lo2: map.lowerOverlayTiles?.slice(), up2: map.upperOverlayTiles?.slice() };
+    if (!attempt(label, fn)) return false;
+    if (!before || !startCell || keepsReach(draft, map, startCell, before)) return true;
+    map.events = snap.events;
+    for (let i = 0; i < snap.lower.length; i += 1) { map.lowerTiles[i] = snap.lower[i]!; map.upperTiles[i] = snap.upper[i]!; }
+    if (snap.lo2 && map.lowerOverlayTiles) for (let i = 0; i < snap.lo2.length; i += 1) map.lowerOverlayTiles[i] = snap.lo2[i]!;
+    if (snap.up2 && map.upperOverlayTiles) for (let i = 0; i < snap.up2.length; i += 1) map.upperOverlayTiles[i] = snap.up2[i]!;
+    return false;
   };
   const out: string[] = [];
   const foes: string[] = [];
@@ -477,7 +534,7 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
     // 보물 방 상자 하나 다음엔 길 위 상자를 먼저 기다린다(길 위 후보가 있으면 다른 곁방은 건너뛴다).
     if (chests.length === 1 && !routeChest && chestRank(c) !== 1 && chestPlan.some((q) => chestRank(q) === 1 && free(q))) continue;
     if (chestRank(c) === 1) routeChest = true;
-    if (attempt(`상자 (${c.x},${c.y})`, () => nested(draft, "place_chest", { mapId, x: c.x, y: c.y, id: `ev_${mapId}_chest${chests.length + 1}`, name: c.room === vaultId ? "보물상자" : "던전 상자", contents: chestLoot(draft, salt * 5 + chests.length) }))) chests.push(`(${c.x},${c.y})`);
+    if (guarded(`상자 (${c.x},${c.y})`, () => nested(draft, "place_chest", { mapId, x: c.x, y: c.y, id: `ev_${mapId}_chest${chests.length + 1}`, name: c.room === vaultId ? "보물상자" : "던전 상자", contents: chestLoot(draft, salt * 5 + chests.length) }))) chests.push(`(${c.x},${c.y})`);
   }
   if (chests.length) out.push(`상자 ${chests.join(" ")}`);
   const guard = (troopId: string | undefined, id: string, label: string): boolean => {
@@ -497,12 +554,16 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
     const pedestal = saveCrystalKit(draft, map);
     const fitsPedestal = (c: Pt): boolean => !!pedestal && c.y - (pedestal.height - 1) >= 0
       && Array.from({ length: pedestal.height - 1 }, (_, k) => ({ x: c.x, y: c.y - 1 - k })).every((p) => isPassable(draft, map, p.x, p.y) && (map.upperTiles[p.y * map.width + p.x] ?? -1) < 0 && !map.events.some((e) => e.x === p.x && e.y === p.y));
-    const kitAt = pedestal && pedestal.width === 1 ? restRoom.spots.find((c) => free(c) && fitsPedestal(c)) : undefined;
-    const at = kitAt ?? restRoom.spots.find(free);
-    const args = kitAt && pedestal
-      ? { mapId, x: kitAt.x, y: kitAt.y - (pedestal.height - 1), objectId: `kit:${map.tilesetId}/${pedestal.id}`, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }
-      : at ? { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` } : undefined;
-    if (at && args && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", args))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; }
+    // 자리 후보: 받침 키트가 들어가는 자리들 먼저, 그다음 옛 결정 자리 — 길을 끊는 자리(한 칸 목)는 guarded 가 되돌리고 다음 후보로 간다.
+    const kitSpots = pedestal && pedestal.width === 1 ? restRoom.spots.filter((c) => free(c) && fitsPedestal(c)) : [];
+    const tries: { at: Pt; args: Record<string, unknown> }[] = [
+      ...kitSpots.map((c) => ({ at: c, args: { mapId, x: c.x, y: c.y - (pedestal!.height - 1), objectId: `kit:${map.tilesetId}/${pedestal!.id}`, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` } })),
+      ...restRoom.spots.filter(free).map((c) => ({ at: c, args: { mapId, x: c.x, y: c.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` } })),
+    ];
+    for (const { at, args } of tries) {
+      if (!free(at)) continue;
+      if (guarded(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", args))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; break; }
+    }
   }
   return { line: out.join(" · "), placed: { enemies: foes.length, chests: chests.length, boss: role.boss ? bosses : 0, guardian: role.boss ? 0 : bosses, save: saves } };
 }
@@ -775,7 +836,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   let gimmickAfter: (() => void) | null = null;
   // 레버 관문 그림 방식(gateStyle): 생략하면 종류 기본(지은 던전 = 쇠창살문 타일, 자연 굴 = 바위). 레버 경로 둘이 층 자료에서 읽는다.
   if (typeof args.gateStyle === "string" && (LEVER_GATE_STYLES as readonly string[]).includes(args.gateStyle)) for (const d of datas) (d as Record<string, unknown>).gateStyle = args.gateStyle;
-  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : gimmickCue(`${typeof args.name === "string" ? args.name : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`);
+  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : undefined;   // 장치는 인자(닫힌 값)로만 — 없으면 종류·씨앗이 고른다(이름·참고 낱말을 읽지 않는다, 2026-11-15)
   if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
     const i = datas.length - 1;
     const m = draft.maps[mapIds[i]!]!;
@@ -825,6 +886,14 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   // 주제 장치가 채우기 뒤로 미룬 맵 변경(다리 걷기)
   (gimmickAfter as (() => void) | null)?.();
   for (const f of floorAfter) f();
+  // 채우기가 놓은 상자·쉼터 결정(늘 막는 이벤트)이 레버로 가는 길을 끊었으면 걷는다 — 관문은 닫힌 채로 레버에 닿아야 한다(dungeonGateAudit).
+  mapIds.forEach((id, i) => {
+    const m = draft.maps[id]!;
+    const start = asCell(field(field(datas[i], "entryStair"), "front")) ?? asCell(field(datas[i], "entrance")) ?? undefined;
+    const dropped = dropGateBreakers(draft, m, m.events.filter((e) => /_(?:chest\d+|rest)$/u.test(e.id)).map((e) => e.id).reverse(), start);
+    if (dropped.length) warnings.push(`${m.name}: 레버로 가는 길을 막은 ${dropped.join("·")} 을 걷었다.`);
+    for (const issue of auditLeverGates(draft, m, start)) warnings.push(`${issue.message}`);
+  });
   // 게임 겉모습의 나무 머리·숲 바닥(숲·늪 층) — 장치·채우기가 자리를 다 고른 뒤에 깐다(buildFloor 의 floor.finish).
   for (const f of lookFinish) f();
   // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
@@ -878,17 +947,6 @@ function skyAroundTower(draft: Project, map: GameMap): number {
   for (const i of clear) map.lowerTiles[i] = -1;
   map.background = bg;
   return clear.length;
-}
-
-/** 이름·inspiration 낱말 → 장치(인자를 안 줬을 때). 「지하 호수 동굴」은 다리, 「광차」는 광차 — 같은 종류 두 요청이 같은 레버로 끝나던 것(dt r2 cave-a/b). */
-function gimmickCue(text: string): DungeonGimmick | undefined {
-  if (/광차|선로|레일|minecart|mine\s*cart/iu.test(text)) return "minecart";
-  if (/미끄러|빙판|얼어붙은\s*호수|ice\s*slide/iu.test(text)) return "iceslide";
-  if (/마법진|순간\s*이동|워프|차원문|teleport|warp/iu.test(text)) return "teleporter";
-  if (/함정|구덩이|모래\s*늪|trap|pit/iu.test(text)) return "sandpit";
-  if (/레버|쇠창살|lever/iu.test(text)) return "lever";
-  if (/호수|지하\s*강|강물|물줄기|다리|lake|river|bridge/iu.test(text)) return "bridge";
-  return undefined;
 }
 
 const DUNGEON_ROOM_ITEM_SCHEMA: JsonSchema = {
