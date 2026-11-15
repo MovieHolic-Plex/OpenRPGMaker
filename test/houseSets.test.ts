@@ -183,7 +183,8 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const lit = (project: Project, map: GameMap) => {
       const ground = new Set((project.tilesets[TS]!.tileGrafts ?? []).filter((graft) => graft.sourceChipset === "tex_beodeul_ground").map((graft) => graft.targetTile));
       let n = 0;
-      for (let i = 0; i < map.width * map.height; i += 1) if (ground.has(layerTileAt(map, 2, i))) n += 1;
+      // 2층(집 곁 «밟힌 흙»)과 4층(집 그림자)을 함께 센다 — 시골 급 마을은 문 앞이 이미 흙이라 «밟힌 흙» 이 깔리지 않고(바닥은 정착지의 급을 따른다) 그림자만 남는다
+      for (let i = 0; i < map.width * map.height; i += 1) for (const layer of [2, 4] as const) if (ground.has(layerTileAt(map, layer, i))) n += 1;
       return n;
     };
     // 견줄 판은 같은 게임의 벌 없는 마을이다 — 이 칸에는 집 곁 「밟힌 흙」(공용 바닥 꾸밈, 빈 2층 칸에만 깔린다)도 들어 있고,
@@ -193,12 +194,15 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     expect(lit(sameGame.project, sameGame.map)).toBeGreaterThan(0);
     expect(lit(plain.project, plain.map)).toBeGreaterThan(0);
     // 다시 맞춰 보면 벌 집도 원본 킷과 같은 자리의 같은 집으로 잡힌다
-    const anchors = (project: Project, map: GameMap) => {
-      const data = harmonizeBeodeulDaylight(structuredClone(project), map.id, { roads: false, meadow: false }).data as { anchors?: unknown[] };
-      expect(data.anchors?.length).toBeGreaterThan(0);
-      return JSON.stringify(data.anchors);
+    const anchors = (project: Project, map: GameMap, housesOnly = false) => {
+      const data = harmonizeBeodeulDaylight(structuredClone(project), map.id, { roads: false, meadow: false }).data as { anchors?: { kit: string }[] };
+      const list = (data.anchors ?? []).filter((anchor) => !housesOnly || /^bd-(house|farm)-/.test(anchor.kit));
+      expect(list.length).toBeGreaterThan(0);
+      return JSON.stringify(list);
     };
-    expect(anchors(looked.project, looked.map)).toBe(anchors(plain.project, plain.map));
+    // 열쇠 없는 판과는 집만 견준다 — 일광 맞춤은 홀로 선 나무도 잡는데, 나무 자리는 열쇠가 있으면 달라진다(위 통행 견줌과 같은 까닭).
+    // 시골 급 마을은 흙 몸 곁에 나무가 홀로 서서 나무 앵커가 잡힌다. 같은 게임의 벌 없는 마을과는 전부 같다.
+    expect(anchors(looked.project, looked.map, true)).toBe(anchors(plain.project, plain.map, true));
     expect(anchors(looked.project, looked.map)).toBe(anchors(sameGame.project, sameGame.map));
   }, 480_000);
 
