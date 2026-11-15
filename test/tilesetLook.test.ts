@@ -129,7 +129,10 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
       expect(b.relief.style).toBe(tilesetLookReliefStyle(TS, look, "grass-steps"));
       expect(b.relief.style).toBe(reliefStyleForGround(tilesetLookCliff(TS, look)!.style, tilesetLookGround(TS, look)));
       expect(a.relief!.style).toBe(tilesetLookCliff(TS, look)!.style);
-      expect(Array.from(b.relief.levels)).toEqual(Array.from(a.relief!.levels));
+      // 단 높이는 같다. 절벽 줄의 칸은 같지 않을 수 있다 — 굽이는 다 지은 뒤 빈 땅에만 넣으므로(소품·나무 자리를 본다) 기물이 다른 판과 굽이 자리가 다르다
+      // (2026-11-15 CI: 굽이를 땅 만들 때 넣던 판의 «levels 가 같다» 는 두 칸이 달라 깨졌다).
+      const tiers = (levels: ArrayLike<number>) => [...new Set(Array.from(levels))].sort((x, y) => x - y);
+      expect(tiers(b.relief.levels)).toEqual(tiers(a.relief!.levels));
     }
     // 같은 게임의 둘째 맵도 같은 겉모습(타일셋에 적힌 값을 읽는다) — 다른 열쇠가 와도 바뀌지 않는다
     expect(projectTilesetLook(looked.project, TS, GAMES[0])).toEqual(look);
