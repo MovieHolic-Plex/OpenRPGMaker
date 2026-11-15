@@ -125,7 +125,8 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
     for (let n = 0; n < 600; n += 1) {
       const look = chooseTilesetLook(looks, JSON.stringify(["project", `stand-${n}`]));
       seen.add(look?.stand ?? "");
-      if (look?.stand || look?.meadow) expect(look.standKey).toBe(table.texture); else expect(look?.standKey).toBeUndefined();
+      // 풀 결(grain)은 새 게임이 늘 하나 받는다 — 그 그림도 둘째 그림판에 있다
+      if (look?.stand || look?.meadow || look?.grain) expect(look.standKey).toBe(table.texture); else expect(look?.standKey).toBeUndefined();
     }
     expect(seen.size).toBe(Object.keys(table.stands).length + 1);
     const project = createBlankProject() as Project;

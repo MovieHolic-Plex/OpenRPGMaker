@@ -103,7 +103,8 @@ const V2_GAME_TOOLS: readonly string[] = [
  * 어느 묶음에도 없지만 풀에는 두는 도구 — 이름으로 부르면(또는 load_tools 로) 실리고, 작은 일은 주제가 맞을 때 처음부터 싣는다(topics.ts).
  * 작은 일 둘째 묶음(2026-11-11)의 손 풀이가 부르는데 v2 어디에서도 닿지 않던 넷: 시작 소지품·이벤트 복제·컷신 각본·길을 막고 싸우는 적.
  */
-const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event", "script_cutscene", "place_battle_blocker"];
+// lay_beodeul_grass(2026-11-14): 버들항 풀밭의 풀 결(우거진 풀·들꽃 무리 — 꾸미기 카드가 이름을 알려 준다). 처음부터 싣지는 않는다.
+const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event", "script_cutscene", "place_battle_blocker", "lay_beodeul_grass"];
 
 /**
  * JRPG 가 아닌 게임의 장치를 짓는 도구(openwiki/assistant-v2-genre-tools.md 의 재고) — V2_POOL_ONLY 와 같이 풀에만 둔다.
