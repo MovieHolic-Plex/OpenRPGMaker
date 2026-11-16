@@ -1,4 +1,4 @@
-// 기물 묶음(vignette) 배치 전/후 비교 — 조수 v2 가 청사진 장소를 자동으로 지을 때와 같은 길(guessPlaceSpec → builderFor → build)로
+// 기물 묶음(vignette) 배치 전/후 비교 — 조수 v2 가 청사진 장소를 자동으로 지을 때와 같은 길(placeSpecFor → builderFor → build)로
 // 방 몇 개를 옛 길(견본 한 벌 + 빈 바닥 메우기)과 새 길(묶음 배치기)로 지어 1배 PNG 로 그린다.
 //   bun scripts/content/interior-vignettes/compare.mts --out <dir> [--salt 7] [--names 서재,여관,…]
 // 새 길은 hints.furnish:"vignette", 옛 길은 hints.furnish:"template".
@@ -7,7 +7,7 @@ import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
 import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
-import { guessPlaceSpec } from "../../../src/ai/v2/place/placeGuess.ts";
+import { placeSpecFor } from "../../../src/ai/v2/place/placeGuess.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import { isPassable } from "../../../src/project/collision.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
@@ -37,7 +37,7 @@ function walk(project: Project, map: GameMap) {
 const rows: string[] = [];
 for (const mode of modes) for (const name of names) {
   const project = createBlankProject() as Project;
-  const spec0 = guessPlaceSpec(name, project, "RPG", `${name} 하나를 지어 줘`);
+  const spec0 = placeSpecFor(name, project, "RPG", `${name} 하나를 지어 줘`) ?? { type: "interior" as const, name, size: "small" as const };
   const spec = { ...spec0, salt, mapId: undefined, hints: { ...(spec0.hints ?? {}), furnish: mode, newMap: true } };
   const builder = builderFor(spec);
   if (!builder) { rows.push(`${mode}\t${name}\t빌더 없음`); continue; }
