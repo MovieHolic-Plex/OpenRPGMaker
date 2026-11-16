@@ -43,6 +43,8 @@ export interface SheerSurface {
   readonly W: number;
   /** 세로 이동 칸(walk.ts 10 줄사다리 · 11 덩굴) — 맵 전체 좌표, lo·hi 는 이미 faceRows 배 */
   readonly climbs: readonly ReliefSlope[];
+  /** 폭포(relief.falls) — 맵 전체 좌표. 칸 x..x+w-1 · y 의 남쪽 면 한 띠 */
+  readonly falls?: readonly { readonly x: number; readonly y: number; readonly w: number }[];
 }
 
 const h32 = (a: number, b: number, c: number) => { let v = Math.imul(a ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul(b + 0x632be5ab, 0xc2b2ae35) ^ Math.imul(c + 0x165667b1, 0x27d4eb2f); v ^= v >>> 15; v = Math.imul(v, 0x2c1b3c6d); return (v ^ (v >>> 13)) >>> 0; };
@@ -87,6 +89,41 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
   for (let i = 0; i < N; i++) if (isVoid(i) || s.underDeck[i] && lev[i] === 0) { voidPx[i] = 1; rgba[i * 4 + 3] = 0; }
   // 2) 앞면: 열마다 판을 읽는다. 가장자리 화소 줄은 4px 계단으로 묶어(바위 덩이가 열마다 찢기지 않게) 판 세로 원점을 정한다.
   const top = (i: number) => ((i / PW) | 0) - dep[i]!;
+  // 엽 끝 조각: 열마다 윗면(풀)이 끝나고 바위가 시작하는 줄
+  const lobeEdge = (p: ReliefArtPatch | undefined) => p ? Array.from({ length: p.w }, (_, x) => { for (let y = 0; y < p.h; y++) { const v = at(p, x, y); if (v >= 0 && !(((v >> 8) & 255) > (v >> 16) + 12 && ((v >> 8) & 255) > (v & 255))) return y; } return p.h; }) : [];
+  const lobe48 = art.lobe, lobe96 = art.lobe96, e48 = lobeEdge(lobe48), e96 = lobeEdge(lobe96);
+  const faceAt = (j: number, c: number) => kind[j] === 1 && lev[j] === c && !ssl[j] && !s.underDeck[j] && !s.deckUnder[j];
+  const dark = (v: number) => v >= 0 && 0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255) < 46;
+  const lobePx = (col: number, r: number, n: number, rise: number): number => {
+    if (rise >= 2 && lobe96 && col < 32) { const rr = e96[col]! + r; return rr < lobe96.h ? at(lobe96, col, rr) : -1; }
+    if (!lobe48) return -1;
+    const rr = e48[col]! + (r >= n - 12 ? 48 + (r - (n - 12)) : r < 36 ? r : 12 + mod(r - 36, 24));
+    return rr < lobe48.h ? at(lobe48, col, rr) : -1;
+  };
+  const panelPx = (j: number) => { const x = j % PW, yy = (j / PW) | 0, dd = dep[j]!, nn = run[j]!, cc = lev[j]!, ps = Math.max(1, Math.round(nn / levelPx)) === 1 ? art.face48 : art.face96;
+    const pn = ps[h32(Math.floor((x + ox) / 64), cc, 11) % ps.length]!; return at(pn, x + ox, panelRow(dd, nn - 1 - dd, pn.h)); void yy; };
+  /** 면 화소 i 가 엽 끝 32px 안이면 그 조각 화소(아니면 -1). 면이 맵 끝·다른 면에서 끊긴 곳은 엽 끝이 아니다. */
+  const lobeAt = (i: number, sx: number, sy: number, d: number, n: number, c: number, ax: number): number => {
+    if (!lobe48 && !lobe96) return -1;
+    const rise = Math.max(1, Math.round(n / levelPx)), row = sy * PW;
+    for (const dir of [1, -1] as const) {
+      let k = 0; while (k < 32 && faceAt(row + sx + dir * (k + 1), c) && sx + dir * (k + 1) >= 0 && sx + dir * (k + 1) < PW) k++;
+      if (k >= 32) continue;
+      const beyond = sx + dir * (k + 1); if (beyond < 0 || beyond >= PW || kind[row + beyond] === 1) continue;
+      // 반대쪽도 32px 안에서 끝나면(아주 좁은 면) 가까운 쪽만
+      const col = dir > 0 ? 63 - k : k, din = 31 - k;
+      let use = lobePx(col, d, n, rise);
+      if (use < 0) return -1;
+      if (din <= 9) {
+        // 이음: 여기서 조각 안쪽 끝까지 사이에 어두운 틈이 있어야 조각을 쓴다(틈을 따라 이음이 구불거린다)
+        let ok = false;
+        for (let q = 0; q <= din && !ok; q++) { const xx = sx - dir * (din - q); if (xx < 0 || xx >= PW || !faceAt(row + xx, c)) { ok = true; break; } if (dark(panelPx(row + xx)) || dark(lobePx(dir > 0 ? 63 - (k + din - q) : k + din - q, d, n, rise))) ok = true; }
+        if (!ok) return -1;
+      }
+      void ax; return use;
+    }
+    return -1;
+  };
   for (let i = 0; i < N; i++) {
     if (kind[i] !== 1 || ssl[i] || s.underDeck[i] || s.deckUnder[i]) continue;
     const sx = i % PW, sy = (i / PW) | 0, d = dep[i]!, n = run[i]!, c = lev[i]!, ax = sx + ox;
@@ -97,6 +134,9 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
     const ta = same(sx - 2) ? top(sy * PW + sx - 2) : sy - d, tb = same(sx + 2) ? top(sy * PW + sx + 2) : sy - d;
     const q = Math.abs(tb - ta) > 2 ? mod(sy - d + oy, 4) : 0, v = d < 6 ? d : d + q;
     let rgb = at(panel, ax, panelRow(v, n - 1 - d, panel.h));
+    // 엽 끝(면이 동·서로 돌아 끝나는 32px): 엽 끝 조각의 바위를 읽는다. 판과 만나는 이음은 가장 가까운 어두운 틈을 따라 구불거린다.
+    const lobe = lobeAt(i, sx, sy, d, n, c, ax);
+    if (lobe >= 0) rgb = lobe;
     if (rgb < 0) continue;
     // 도는 면: 가장자리가 오른쪽으로 오르면(／ 남동을 봄) 어둡게, 내려가면(＼ 남서) 밝게. 면이 끝나는 쪽(엽 끝)도 그 쪽으로.
     const tl = same(sx - 6) ? top(sy * PW + sx - 6) : null, tr = same(sx + 6) ? top(sy * PW + sx + 6) : null, t0 = sy - d;
@@ -209,6 +249,9 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
       }
     }
   }
+  // 7b) 폭포: 그린 턱(조각 4~15줄)과 물보라(48~63줄)는 조각 그대로, 물기둥은 코드로 짠 흰 줄(주기 32). 양옆은 곧은 세로 금 —
+  //     바위를 따라 깎으면 톱니로 읽혔다(2026-11-16 목표 화면 남은 흠). 물기둥 폭 = 칸 폭 − 양옆 2px.
+  if (art.falls && s.falls?.length) paintFalls(s, art, put);
   // 8) 구름다리: 다리 판 칸(walk.ts 9)의 동서 줄마다 양끝 말뚝 + 가운데 판(되풀이). 걷는 판(조각 18~37줄)의 가운데를 다리 칸 가운데에.
   const b = s.bridge;
   if (b) {
@@ -230,6 +273,55 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
           }
         }
         x = e + 1;
+      }
+    }
+  }
+}
+
+/** 폭포 조각의 물기둥 색 줄(밝기 순) — 조각 몸통(16~47줄)에서 센다. */
+function fallsRamp(p: ReliefArtPatch): number[] {
+  const n = new Map<number, number>();
+  for (let y = 16; y < 48; y++) for (let x = 0; x < 48; x++) { const v = at(p, x, y); if (v >= 0) n.set(v, (n.get(v) ?? 0) + 1); }
+  const lum = (v: number) => 0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255);
+  // 자주 쓰인 색 다섯(물빛 바탕 · 틈 · 옅은 · 밝은 · 흰) — 드문 색(테두리 한두 점)은 뺀다
+  return [...n.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([v]) => v).sort((a, b) => lum(a) - lum(b));
+}
+
+function paintFalls(s: SheerSurface, art: SheerArt, put: (i: number, rgb: number) => void): void {
+  const p = art.falls!, { PW, SH, pad, cx0, cy0, h } = s, ramp = fallsRamp(p);
+  const [DEEP, GAP, BASE, LIGHT, WHITE] = [ramp[0]!, ramp[1] ?? ramp[0]!, ramp[2] ?? ramp[0]!, ramp[3] ?? ramp[0]!, ramp[ramp.length - 1]!];
+  for (const f of s.falls!) {
+    const gy = f.y - cy0, gx0 = f.x - cx0;
+    if (gy < 0 || gy + 1 >= h.length || gx0 < 0 || gx0 + f.w > s.W) continue;
+    const hi = h[gy]![gx0]!, lo = h[gy + 1]![gx0]!; if (hi <= lo) continue;
+    const faceTop = (gy + 1) * T + pad - hi * T, n = (hi - lo) * T, bw = f.w * T - 4, left = gx0 * T + 2;
+    // 물기둥 무늬(폭 bw × 32, 세로로 되풀이): 물빛 바탕 위에 흰 줄 · 옅은 줄 · 틈을 자리 해시로. 오른쪽 3px 은 그늘, 왼쪽 1px 은 밝게.
+    const body = new Int32Array(bw * 32).fill(BASE);
+    const streak = (x: number, w: number, y0: number, len: number, col: number) => {
+      for (let i = 0; i < len; i++) { const ww = i > 1 && i < len - 2 ? w : Math.max(1, w - 1); for (let k = 0; k < ww && x + k < bw; k++) body[mod(y0 + i, 32) * bw + x + k] = col; }
+    };
+    const ax = f.x * T;
+    for (let k = 0; k < Math.round(bw * 0.3); k++) streak(1 + h32(ax + k, 1, 301) % Math.max(1, bw - 4), 1, h32(ax + k, 2, 301) % 32, 5 + h32(ax + k, 3, 301) % 11, GAP);
+    for (let k = 0; k < Math.round(bw * 0.75); k++) {
+      const r = h32(ax + k, 4, 302) % 100, w = r < 14 ? 3 : r < 45 ? 2 : 1, x = 1 + h32(ax + k, 1, 302) % Math.max(1, bw - 5);
+      const len = w === 1 ? 3 + h32(ax + k, 3, 302) % 7 : 8 + h32(ax + k, 3, 302) % 15, light = h32(ax + k, 5, 302) % 10 < 6;
+      streak(x, w, h32(ax + k, 2, 302) % 32, len, x > bw - 6 ? (w === 1 ? BASE : LIGHT) : w > 1 ? (light ? WHITE : LIGHT) : (light ? LIGHT : BASE));
+    }
+    for (let y = 0; y < 32; y++) { for (let k = Math.max(0, bw - 3); k < bw; k++) body[y * bw + k] = k === bw - 1 ? DEEP : GAP; body[y * bw] = LIGHT; }
+    // 조각 열: 물기둥(조각 7~40열)을 칸 폭에 맞춰 늘인다. 물보라는 그 바깥으로 6px 더.
+    const col = (sx: number) => Math.max(0, Math.min(47, 7 + Math.floor(((sx - left) * 34) / bw)));
+    for (let r = -12; r < n + 10; r++) {
+      const sy = faceTop + r; if (sy < 0 || sy >= SH) continue;
+      const crest = r < 0, spray = r >= n - 6;
+      for (let sx = left - (spray ? 6 : 0); sx < left + bw + (spray ? 6 : 0); sx++) {
+        if (sx < 0 || sx >= PW) continue;
+        const j = sy * PW + sx;
+        let rgb: number;
+        if (crest) rgb = at(p, col(sx), 16 + r);
+        else if (spray) rgb = at(p, col(sx), Math.min(63, 48 + (r - (n - 6))));
+        else rgb = body[mod(r, 32) * bw + (sx - left)]!;
+        if (rgb < 0) continue;
+        put(j, rgb); if (s.kind[j] === -1) s.kind[j] = 1;
       }
     }
   }

@@ -17,7 +17,7 @@ export const emptyRelief = (width: number, height: number): ReliefData => ({
 });
 
 /** Planners must not change the source map while computing a preview. */
-export const copyRelief = (r: ReliefData): ReliefData => ({ ...r, levels: r.levels.slice(), ramps: r.ramps?.slice(), wallDecor: r.wallDecor?.map(d => ({ ...d })) });
+export const copyRelief = (r: ReliefData): ReliefData => ({ ...r, levels: r.levels.slice(), ramps: r.ramps?.slice(), wallDecor: r.wallDecor?.map(d => ({ ...d })), ...(r.falls ? { falls: r.falls.map((f) => ({ ...f })) } : {}) });
 
 /** 불러온 값 → 맵 크기에 맞춘 ReliefData. 모양이 틀리거나 전부 0 이면 undefined(필드 없음). */
 export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: number): ReliefData | undefined {
@@ -31,7 +31,10 @@ export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: numbe
     ? r.wallDecor.filter((d) => d && [d.x, d.y, d.row, d.tile].every(Number.isInteger) && d.row >= 1 && d.tile >= 0).map(({ x, y, row, tile }) => ({ x, y, row, tile }))
     : undefined;
   const style = typeof r.style === "string" && r.style ? r.style : undefined;
-  const src: ReliefData = { width: r.width!, height: r.height!, levels: r.levels.map(clampLevel), ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(style ? { style } : {}) };
+  const falls = Array.isArray(r.falls)
+    ? r.falls.filter((f) => f && [f.x, f.y, f.w].every(Number.isInteger) && f.x >= 0 && f.y >= 0 && f.w >= 1).map(({ x, y, w }) => ({ x, y, w }))
+    : undefined;
+  const src: ReliefData = { width: r.width!, height: r.height!, levels: r.levels.map(clampLevel), ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(style ? { style } : {}), ...(falls?.length ? { falls } : {}) };
   const out = src.width === mapWidth && src.height === mapHeight && src.levels.length === mapWidth * mapHeight
     ? src
     : resizeRelief(src, mapWidth, mapHeight);
@@ -52,6 +55,8 @@ export function resizeRelief(r: ReliefData, width: number, height: number): Reli
   const wall = r.wallDecor?.filter((d) => d.x < width && d.y < height);
   if (wall?.length) out.wallDecor = wall.map((d) => ({ ...d }));
   if (r.style) out.style = r.style;
+  const falls = r.falls?.filter((f) => f.x + f.w <= width && f.y + 1 < height);
+  if (falls?.length) out.falls = falls.map((f) => ({ ...f }));
   return out;
 }
 

@@ -1,6 +1,6 @@
 // 깎아지른 지형(relief.style "sheer", 2026-11-16): 단 하나 = 앞면 3칸, 조각에서 읽는 면, 옆으로 도는 면, 빈 곳, 세로 이동 칸(사다리·덩굴).
 // 저장소 안 시험은 코드로 만든 자리 표시 조각(sheerArt.ts placeholderSheerArt)만 쓴다.
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { effectiveHeights, renderRelief, reliefPadPx } from "@/project/relief/render";
 import { cellLift, footLift, reliefLiftField, reliefRenderOptions } from "@/project/relief/screen";
 import { compileReliefStyle, RELIEF_DEFAULT_RIM, RELIEF_STYLES, reliefFaceRows } from "@/project/relief/styles";
@@ -9,7 +9,11 @@ import { RELIEF_LADDER, RELIEF_VINE, reliefAllowsStep, reliefClimbAt, reliefSlop
 import { cropReliefGrid, reliefGrids, reliefWindowFor, SHEER_REACH } from "@/project/relief/window";
 import { checkRelief } from "@/project/relief/check";
 import { normalizeRelief } from "@/project/relief/edit";
-import { placeholderSheerArt } from "@/project/relief/sheerArt";
+import { placeholderSheerArt, setSheerArt } from "@/project/relief/sheerArt";
+
+// 구운 조각(sheerArt.json)이 들어와도 이 시험은 코드로 만든 자리 표시 조각으로 돈다.
+beforeAll(() => setSheerArt(placeholderSheerArt()));
+afterAll(() => setSheerArt(null));
 
 const W = 24, H = 18;
 /** 엽 꼴 고원 둘(2단 · 3단), 남쪽 네 줄은 빈 곳(0 단), 사다리 한 줄. */
@@ -90,6 +94,33 @@ describe("sheer relief style", () => {
       }
       expect(bad, `${x0},${y0}`).toBe(0);
     }
+  });
+
+  it("land that runs off the south edge gets no face band at the map's last row, and a fall (relief.falls) covers one face band with straight sides", () => {
+    // land to the south edge: the last row's level continues off the map — no wall pixels below it
+    const land = scene(); for (let y = 14; y < H; y++) for (let x = 0; x < W; x++) land.levels[y * W + x] = 1;
+    const r = render(land), lastRow = (H - 1) * 16 + r.pad - 3 * 16;
+    let wall = 0; for (let sy = lastRow + 16; sy < r.SH; sy++) for (let sx = 0; sx < r.PW; sx++) if (r.kind[sy * r.PW + sx] === 1) wall++;
+    expect(wall).toBe(0);
+    // a fall on the 2-level lobe's south face (x 6..8): the face band under it is water, not rock; old maps without falls are unchanged
+    const plain = scene(), fall = { ...scene(), falls: [{ x: 6, y: 7, w: 3 }] };
+    const a = render(plain), b = render(fall);
+    expect(reliefRenderOptions(plain).falls).toBeUndefined();
+    let changed = 0, outside = 0;
+    for (let i = 0; i < a.kind.length; i++) {
+      const same = a.rgba[i * 4] === b.rgba[i * 4] && a.rgba[i * 4 + 1] === b.rgba[i * 4 + 1] && a.rgba[i * 4 + 2] === b.rgba[i * 4 + 2];
+      if (same) continue;
+      changed++;
+      const sx = i % a.PW; if (sx < 6 * 16 - 6 || sx >= 9 * 16 + 6) outside++;
+    }
+    expect(changed).toBeGreaterThan(3 * 16 * 30);
+    expect(outside).toBe(0);
+    // straight sides: down the body of the fall the left and right edge columns are the same on every row
+    const art = placeholderSheerArt(); void art;
+    const edgeCols = new Set<number>();
+    const top = 8 * 16 + b.pad - 2 * 48;
+    for (let sy = top + 4; sy < top + 40; sy++) { let l = -1; for (let sx = 6 * 16; sx < 9 * 16; sx++) { const i = sy * b.PW + sx; if (a.rgba[i * 4] !== b.rgba[i * 4] || a.rgba[i * 4 + 1] !== b.rgba[i * 4 + 1]) { l = sx; break; } } if (l >= 0) edgeCols.add(l); }
+    expect(edgeCols.size).toBeLessThanOrEqual(2);
   });
 
   it("the hidden-ground check counts three rows a level behind a sheer face", () => {

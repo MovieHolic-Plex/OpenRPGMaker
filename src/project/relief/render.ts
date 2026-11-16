@@ -63,6 +63,8 @@ export interface ReliefRenderOptions {
    * 없으면 그림이 예전과 같다.
    */
   climbs?: readonly ReliefSlope[];
+  /** 폭포(relief.falls, 깎아지른 양식만, 맵 전체 좌표). 없으면 그림이 예전과 같다. */
+  falls?: readonly { readonly x: number; readonly y: number; readonly w: number }[];
 }
 
 export interface ReliefGroundSurface {
@@ -736,7 +738,8 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       if (kind[f] < 0) { kind[f] = 0; out[f] = fz ? (((px + ox) * 3 + py + oy) % 4 ? shift(g, 1) : g) : (((px + ox) * 3 + py + oy) % 5 ? 4 : 3);   // (r3 QA: a darker dither read as a marsh slab) the lit ground (top ramp 4 — the lawn tone), a sparse speckle
         lev[f] = fz; src[f] = cell; fl[f] = fz; mpy[f] = py; underDeck[f] = 1; }
     }
-    const hs = py + 1 < PH ? hf[m + PW] : 0;
+    // 깎아지른 양식: 맵 남쪽 끝 밖은 같은 높이로 이어진다고 본다 — 아니면 맨 아래 줄마다 3칸 면이 띠로 선다(다른 양식은 그대로)
+    const hs = py + 1 < PH ? hf[m + PW] : S?.sheer && (!win || win.cy * T + PH >= win.SH - win.pad) ? c : 0;
     if (hs >= c) continue;
     if (onBridge) {
       // a deck is planks, not ground: two rows of dark underside instead of a cliff face under its south edge
@@ -780,6 +783,17 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       const k = top0 - 1 - sy, my = k % T < T / 2 ? k % (T / 2) : T / 2 - 1 - k % (T / 2);
       out[i] = lc ? shift(TOP[my * T + px % T], LV[lc]) : GROUND[my * T + px % T];
       kind[i] = 0; lev[i] = lc; src[i] = px >> 4; fl[i] = c; mpy[i] = my; padFill[i] = 1;
+    }
+  }
+  // 깎아지른 양식의 맵 남쪽 끝 아래(2026-11-16): 땅이 맵 밖 남쪽으로 이어진다고 보고(위 hs), 마지막 줄이 들린 만큼 비는 화면 아래 띠를
+  // 마지막 줄 바닥으로 채운다 — 0번 줄 위 여백과 같은 거울 되풀이(mpy = 마지막 칸 아래 절반). 빈 곳(0 단)은 그대로 비운다.
+  if (S?.sheer && (!win || oy + PH >= win.SH - win.pad)) for (let px = 0; px < PW; px++) {
+    const m = (PH - 1) * PW + px, c = hf[m]!, lc = Math.round(c); if (!lc) continue;
+    const sy0 = PH - 1 + pad - Math.round(c * U);
+    for (let sy = sy0 + 1; sy < SH; sy++) {
+      const i = sy * PW + px; if (kind[i] >= 0) continue;
+      const k = sy - sy0 - 1, my = PH - T / 2 + (k % T < T / 2 ? T / 2 - 1 - k % (T / 2) : k % (T / 2));
+      out[i] = shift(TOP[(my % T) * T + px % T], LV[lc]); kind[i] = 0; lev[i] = lc; src[i] = (PH / T - 1) * W + (px >> 4); fl[i] = c; mpy[i] = my;
     }
   }
   // 벽 조각
@@ -1129,7 +1143,10 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     const o = i * 4;
     // 지도 끝의 둑도 주인 윗단의 재질을 쓴다. 빈 여백(src=-1)에 그린 둑은 띠 분리 때 버려졌었다.
     const py = mpy[i] < 0 ? Math.floor(src[i] / W) * T : mpy[i];
-    if (opt.ground.sample(i % PW + ox, py + oy, rgba, o)) {
+    let sampled = opt.ground.sample(i % PW + ox, py + oy, rgba, o);
+    // 깎아지른 양식: 둥근 윤곽이 윗면을 빈 곳 칸(바닥 타일 없음) 위로 조금 넓힌다 — 그 화소는 이웃 땅 칸의 바닥을 읽는다(하늘 구멍 방지)
+    if (!sampled && S?.sheer && kind[i] === 0 && lev[i]! > 0) for (const [dx, dy] of [[0, -16], [-16, 0], [16, 0], [0, 16], [-16, -16], [16, -16]] as const) if ((sampled = opt.ground.sample(i % PW + ox + dx, py + oy + dy, rgba, o))) break;
+    if (sampled) {
       // 무늬는 실제 하층 타일, 외곽선·안쪽 밝은 턱은 지형의 명암을 쓴다.
       // kind=0을 무조건 덮으면 북·동·서 절벽 경계가 같은 잔디색에 묻힌다.
       const edgeTone = rimTone >= 0 ? rimTone : edge[i] ? out[i] : -1;
@@ -1146,7 +1163,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   if (opt.slopeArt?.some(Boolean)) paintSlopePieces(opt.slopeArt, gslopes, { rgba, ssl, PW, SH, ox, oy, pad });
   // 깎아지른 면(styles.ts sheer): 기하는 위에서 faceRows 배 높이로 다 그렸다 — 면·옆면·테·빈 곳·그늘·장치를 조각으로 입힌다
   if (S?.sheer) paintSheer({ rgba, kind, lev, dep, run, src, fl, ssl, edge, mpy, hf, PW, SH, pad, ox, oy, cx0: win?.cx ?? 0, cy0, levelPx: S.faceRows * U,
-    underDeck, deckUnder, bridge, W, h, climbs: opt.climbs ?? [] }, sheerArt());
+    underDeck, deckUnder, bridge, W, h, climbs: opt.climbs ?? [], falls: opt.falls ?? [] }, sheerArt());
   return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(opt.ground ? { nativeGround: true } : {}), ...(overSlope ? { overSlope } : {}) };
 }
 

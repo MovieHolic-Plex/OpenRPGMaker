@@ -108,7 +108,8 @@ export function runMachineChecks(project: Project, mapIds: readonly string[], en
           ? ` — 네가 설계한 방이다: design.w·h 를 줄이거나 그 자리에 묶음을 더해 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다(함수는 채우지 않는다)`
           : ` — dress_room(mapId, at: (${big.x},${big.y}), purpose: 그 방의 쓰임)으로 채운다`) : ""}`, ...(big ? { at: { x: big.x, y: big.y } } : {}) });
       }
-    } else {
+    } else if (!(map.background?.showInEmptyCells && map.relief?.style === "sheer")) {
+      // 깎아지른 지형의 빈 곳(맵 배경이 비치는 하늘 · 낭떠러지 바깥)은 일부러 비운 칸이다 — 그 맵은 세지 않는다
       let empty = 0;
       for (let i = 0; i < map.width * map.height; i++) if ((map.lowerTiles[i] ?? -1) < 0) empty++;
       const pct = Math.round((empty / (map.width * map.height)) * 100);

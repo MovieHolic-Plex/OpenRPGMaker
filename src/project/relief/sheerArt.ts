@@ -2,6 +2,8 @@
 // 규격: assistant-fable-runs/terrain-pilot/PIECES.md(그리는 쪽과 같이 본다). 그린 조각은 오너 면제 절차로만 굽는다 —
 // 굽기 전까지 저장소는 코드로 만든 자리 표시 조각(placeholderSheerArt: 색 줄 몇 개의 단색 덩이)을 쓴다. 조각을 바꿔도 칸·걷기는 같다.
 import type { ReliefArtPatch } from "./render";
+// 구운 조각(scripts/content/sheer-terrain/bake.py — 3/4 관문 미통과 · 오너 면제 묶음 fable-terrain-2026-11-16). 굽기 전에는 빈 표 {} 다.
+import bakedSheerArt from "./sheerArt.json";
 
 export interface SheerArt {
   /** 단 차 1(48px) 앞면 판, 64×48. 윗테 0~15 · 몸통 16~31 · 밑동 32~47. */
@@ -23,6 +25,15 @@ export interface SheerArt {
   readonly bridge: ReliefArtPatch;
   /** 면 명암을 옮길 바위 색 줄(어둠 → 밝음). 이 줄에 든 색만 한두 단 옮긴다 — 풀 테는 옮기지 않는다. */
   readonly rock: readonly (readonly [number, number, number])[];
+  /** 폭포 192×64(48 폭 4 프레임): 0~15 턱 · 16~47 몸통(주기 32) · 48~63 물보라. 구운 조각에만 있다. */
+  readonly falls?: ReliefArtPatch;
+  /** 엽 끝 조각 — 단 차 1 엽(64×96) · 단 차 2 엽(64×128) · 45° 모서리(64×96). 구운 조각에만 있다. */
+  readonly lobe?: ReliefArtPatch;
+  readonly lobe96?: ReliefArtPatch;
+  readonly corner?: ReliefArtPatch;
+  /** 굴 입 아래(32×48) · 위(32×32). 구운 조각에만 있다. */
+  readonly caveLower?: ReliefArtPatch;
+  readonly caveUpper?: ReliefArtPatch;
 }
 
 type Rgb = readonly [number, number, number];
@@ -126,14 +137,63 @@ export function placeholderSheerArt(): SheerArt {
     if (y >= 38 && y <= 40 && x >= 14 && x <= 65) return DARK[2]!;
     return null;
   });
+  // 폭포(4 프레임 × 48 폭): 턱 0~15 줄(흰 띠) · 몸통 16~47 · 물보라 48~63 — 물빛 다섯 단(몸통 무늬는 렌더러가 코드로 짠다)
+  const WATER = ["#1e3a6e", "#4a6cb0", "#6e9fdb", "#a9cbf0", "#f6faff"].map(hex);
+  const falls = patch(192, 64, (x, y) => {
+    const c = x % 48; if (c < 7 || c > 40) return y >= 48 && c > 1 && c < 46 && (x + y) % 3 === 0 ? WATER[4]! : null;
+    if (y < 4) return WATER[0]!;
+    if (y < 16) return y < 10 ? WATER[4]! : WATER[3]!;
+    if (y < 48) return (c + y) % 7 ? WATER[2]! : WATER[3]!;
+    return y < 56 ? WATER[4]! : (c + y) % 4 ? WATER[3]! : WATER[1]!;
+  });
   placeholder = {
+    falls,
     face48: [facePanel(48, 1), facePanel(48, 2)], face96: [base, facePanel(96, 9), facePanel(96, 13)],
     side, rim, drop, ladder, vine, stairs: { 1: stairs(80), 2: stairs(160) }, bridge, rock: ROCK,
   };
   return placeholder;
 }
 
+type RawPatch = { readonly w?: unknown; readonly h?: unknown; readonly b64?: unknown };
+const decodeB64 = (s: string): Uint8Array => {
+  if (typeof atob === "function") { const bin = atob(s), out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+  return new Uint8Array((globalThis as unknown as { Buffer: { from(s: string, e: string): Uint8Array } }).Buffer.from(s, "base64"));
+};
+function decodePatch(raw: unknown): ReliefArtPatch | undefined {
+  const p = raw as RawPatch | undefined;
+  if (!p || typeof p.w !== "number" || typeof p.h !== "number" || typeof p.b64 !== "string") return undefined;
+  const bytes = decodeB64(p.b64);
+  if (bytes.length !== p.w * p.h * 4) return undefined;
+  return { w: p.w, h: p.h, rgba: new Uint8ClampedArray(bytes.buffer, bytes.byteOffset, bytes.length) };
+}
+/**
+ * 구운 표(sheerArt.json) → 조각 한 벌. 꼭 있어야 할 조각(앞면 판 · 옆면 · 테 · 낭떠러지 밑 · 사다리 · 덩굴 · 계단 · 다리 · 바위 색 줄)이 하나라도 없으면 undefined —
+ * 그때는 자리 표시 조각을 쓴다(굽기 전의 빈 표 {} 도 그렇다).
+ */
+export function sheerArtFromJson(raw: unknown): SheerArt | undefined {
+  const r = raw as Record<string, unknown> | null;
+  if (!r || typeof r !== "object") return undefined;
+  const list = (v: unknown) => (Array.isArray(v) ? v.map(decodePatch) : []);
+  const face48 = list(r.face48), face96 = list(r.face96);
+  const one = (k: string) => decodePatch(r[k]);
+  const side = one("side"), rim = one("rim"), drop = one("drop"), ladder = one("ladder"), vine = one("vine"), bridge = one("bridge");
+  const st = (r.stairs ?? {}) as Record<string, unknown>, s1 = decodePatch(st["1"]), s2 = decodePatch(st["2"]);
+  const rock = Array.isArray(r.rock) ? (r.rock as unknown[]).filter((c): c is [number, number, number] => Array.isArray(c) && c.length === 3 && c.every((v) => typeof v === "number")) : [];
+  if (!face48.length || !face96.length || face48.some((p) => !p) || face96.some((p) => !p) || !side || !rim || !drop || !ladder || !vine || !bridge || !s1 || !s2 || rock.length < 2) return undefined;
+  const opt = (k: string) => { const p = one(k); return p ? { [k]: p } : {}; };
+  return {
+    face48: face48 as ReliefArtPatch[], face96: face96 as ReliefArtPatch[], side, rim, drop, ladder, vine, stairs: { 1: s1, 2: s2 }, bridge, rock,
+    ...opt("falls"), ...opt("lobe"), ...opt("lobe96"), ...opt("corner"), ...opt("caveLower"), ...opt("caveUpper"),
+  };
+}
+let baked: SheerArt | null | undefined;
+/** 구운 조각 한 벌(처음 부를 때 한 번 푼다). 굽기 전이면 null. */
+export function bakedSheerArtOrNull(): SheerArt | null {
+  if (baked === undefined) baked = sheerArtFromJson(bakedSheerArt) ?? null;
+  return baked;
+}
+
 let current: SheerArt | null = null;
-/** 그린 조각 한 벌을 건다(굽힌 조각을 싣는 곳 · 확인 쪽 스크립트). null 이면 자리 표시로 돌아간다. */
+/** 그린 조각 한 벌을 건다(확인 쪽 스크립트 · 시험은 자리 표시를 건다). null 이면 구운 조각(없으면 자리 표시)으로 돌아간다. */
 export function setSheerArt(art: SheerArt | null): void { current = art; }
-export function sheerArt(): SheerArt { return current ?? placeholderSheerArt(); }
+export function sheerArt(): SheerArt { return current ?? bakedSheerArtOrNull() ?? placeholderSheerArt(); }

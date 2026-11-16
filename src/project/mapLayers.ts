@@ -111,7 +111,7 @@ export function cloneExtraLayers(map: GameMap): ExtraLayerFields {
     const values = map[key];
     if (values) out[key] = values.slice();
   }
-  if (map.relief) out.relief = { ...map.relief, levels: map.relief.levels.slice(), ...(map.relief.ramps ? { ramps: map.relief.ramps.slice() } : {}), ...(map.relief.wallDecor ? { wallDecor: map.relief.wallDecor.map((d) => ({ ...d })) } : {}) };
+  if (map.relief) out.relief = { ...map.relief, levels: map.relief.levels.slice(), ...(map.relief.ramps ? { ramps: map.relief.ramps.slice() } : {}), ...(map.relief.wallDecor ? { wallDecor: map.relief.wallDecor.map((d) => ({ ...d })) } : {}), ...(map.relief.falls ? { falls: map.relief.falls.map((f) => ({ ...f })) } : {}) };
   return out;
 }
 
@@ -156,7 +156,14 @@ export function remapExtraLayers(map: ExtraLayerFields, width: number, height: n
       for (let target = 0; target < levels.length; target += 1) { const from = sourceIndex(target); if (from >= 0) at.set(from, target); }
       wallDecor = relief.wallDecor.flatMap((d) => { const t = at.get(d.y * relief.width + d.x); return t === undefined ? [] : [{ ...d, x: t % width, y: Math.floor(t / width) }]; });
     }
-    if (levels.some((v) => v > 0) || ramps?.some(v=>v===9)) map.relief = { width, height, levels, ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(relief.style ? { style: relief.style } : {}) };
+    // 폭포는 첫 칸을 따라간다(폭은 그대로, 새 맵 밖으로 나가면 버린다)
+    let falls: typeof relief.falls;
+    if (relief.falls?.length) {
+      const at = new Map<number, number>();
+      for (let target = 0; target < levels.length; target += 1) { const from = sourceIndex(target); if (from >= 0) at.set(from, target); }
+      falls = relief.falls.flatMap((f) => { const t = at.get(f.y * relief.width + f.x); return t === undefined || t % width + f.w > width ? [] : [{ ...f, x: t % width, y: Math.floor(t / width) }]; });
+    }
+    if (levels.some((v) => v > 0) || ramps?.some(v=>v===9)) map.relief = { width, height, levels, ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(relief.style ? { style: relief.style } : {}), ...(falls?.length ? { falls } : {}) };
     else delete map.relief;
   }
 }

@@ -92,7 +92,7 @@ export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOpt
 function sheerRenderOptions(relief: ReliefData, ground: ReliefRenderOptions["ground"], bridges: Uint8Array | undefined): ReliefRenderOptions {
   const all = reliefSlopes(relief), slopes = all.filter((s) => !s.climb), climbs = all.filter((s) => !!s.climb), art = sheerArt();
   const slopeArt = slopes.map((s) => (s.dir === "n" && s.w === 2 && (relief.ramps?.[s.y * relief.width + s.x] ?? 0) > 4 ? art.stairs[s.hi - s.lo] ?? null : null));
-  return { transparentGround: !ground, ground, slopes, style: relief.style, ...(climbs.length ? { climbs } : {}), ...(slopeArt.some(Boolean) ? { slopeArt } : {}), ...(bridges ? { bridges } : {}) };
+  return { transparentGround: !ground, ground, slopes, style: relief.style, ...(climbs.length ? { climbs } : {}), ...(slopeArt.some(Boolean) ? { slopeArt } : {}), ...(bridges ? { bridges } : {}), ...(relief.falls?.length ? { falls: relief.falls } : {}) };
 }
 
 /**
