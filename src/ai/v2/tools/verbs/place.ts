@@ -106,6 +106,8 @@ export function placeVerbs(c: VerbContext) {
       + (bboxPlacesOn() ? " Exception: for a dungeon floor (type dungeon) and a village on code terrain the first call returns a card asking for your exact cell layout (spec.dungeonLayout / spec.villageLayout) — then write it as the card says." : ""),
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
+      // 모델이 이 장소에 적은 종류는 어느 관문에서 돌려보내져도 남긴다 — 끝맺음 자동 짓기가 이름으로 추측하기 전에 읽는다(place/placeGuess.placeSpecFor).
+      { const said = (params as { spec?: Partial<PlaceSpec> })?.spec; if (said?.name && said.type) session.notePlaceFact(said.name, { kind: said.type }); }
       const gate = await blueprintGate();
       if (gate) return text(gate);
       // 구성기 세계의 게임이면 장소는 그 세계의 종류로 짓는다 — 다른 칩셋(버들항 마을·동굴)이 섞이지 않게 make_place 도 세계 짓기로 보낸다.
@@ -183,6 +185,8 @@ export function placeVerbs(c: VerbContext) {
           keptNoteEarly = `"${spec.name}" is an interior place (not a dungeon crawl), so it is built on the interior path — write spec.layout for it.`;
         }
       }
+      // 이 장소로 청한 명세를 적어 둔다(거절돼도 남는다) — 끝맺음이 이 장소를 대신 지을 때 종류를 이름으로 추측하지 않고 이것을 쓴다(place/placeGuess.placeSpecFor).
+      session.notePlaceFact(spec.name ?? "", { asked: spec });
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
       // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
       const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
