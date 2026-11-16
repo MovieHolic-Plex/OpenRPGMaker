@@ -30,7 +30,7 @@ export type JpRegionOp =
   /** 랜드마크 하나 - at 은 키트 가운데(foot:true 면 x 가운데·y 는 맨 아랫줄). */
   | { readonly op: "put"; readonly kit: string; readonly at: readonly [number, number]; readonly foot?: boolean; readonly onPath?: boolean }
   /** 도심 밀집 건물·노점 줄 - 아랫줄(발)을 foot 에 맞춰 왼쪽부터 kits 를 중복 없이 세운다. */
-  | { readonly op: "row"; readonly kits: readonly string[]; readonly foot: number; readonly span: readonly [number, number]; readonly gap?: number }
+  | { readonly op: "row"; readonly kits: readonly string[]; readonly foot: number; readonly span: readonly [number, number]; readonly gap?: number; /** 이 줄 뒤(위)는 사람이 가지 않는 곳(고가 선로) — 줄의 발 줄을 지도 폭 끝까지 막는다 */ readonly seal?: boolean }
   /** 주거·농어촌·온천 택지(lots) - 집마다 여유 대지(집 폭 + 2~3칸), 담장/생울타리, 문 앞 트임·진입로(apron), 마당 소품을 함께 짓는다. */
   | { readonly op: "lots"; readonly kits: readonly string[]; readonly foot: number; readonly span: readonly [number, number]; readonly fence?: "block" | "hedge" | "tsuiji" | "bamboo" | "none"; readonly yard?: "lawn" | "gravel" | "pave" }
   /** 같은 키트를 선 위에 step 칸마다(가로등·도리이 터널·지장 행렬·방파제 블록). at 은 선의 가로(h)·세로(v) 위치 비율 = 키트 가운데. */
@@ -113,7 +113,7 @@ const DEFS: readonly RegionDef[] = [
       { op: "put", kit: "jp-prop-train10-b", at: [0.22, 0.06], onPath: true },
       { op: "put", kit: "jp-prop-train8-y", at: [0.74, 0.08], onPath: true },
       { op: "line", kit: "jp-prop-catenary-pole", dir: "h", at: 0.04, span: [0.06, 0.94], step: 10, onPath: true },
-      { op: "row", kits: ["jp-prop-viaduct6-shops", "jp-bldg-station-small", "jp-prop-viaduct6-pass", "jp-prop-viaduct6-shops", "jp-bldg-koban", "jp-bldg-conbini"], foot: 0.33, span: [0.01, 0.99], gap: 0 },
+      { op: "row", kits: ["jp-prop-viaduct6-shops", "jp-bldg-station-small", "jp-prop-viaduct6-pass", "jp-prop-viaduct6-shops", "jp-bldg-koban", "jp-bldg-conbini"], foot: 0.33, span: [0.01, 0.99], gap: 0, seal: true },
       { op: "band", mat: M.walk, dir: "h", at: 0.38, size: 2 },
       { op: "band", mat: M.lane, dir: "v", at: 0.18, size: 3, span: [0.38, 0.72] },
       { op: "band", mat: M.lane, dir: "v", at: 0.82, size: 3, span: [0.38, 0.72] },

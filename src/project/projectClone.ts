@@ -145,6 +145,77 @@ export function cloneProjectSharingSharedDictionaries(project: Project): Project
 }
 
 /**
+ * 스토어가 들고 있던 것으로 확인된 공유 항목(타일셋·업로드 자산 객체). 위 계약대로 이 객체들은 제자리에서 바뀌지 않는다.
+ * 표지는 `store.ownsSettledEntriesOf` 가 참일 때만 붙는다(`trustStoreOwnedEntries`) — 스토어 밖에서 만든 프로젝트의 항목은
+ * 계약이 없으므로(호출자가 제자리에서 고칠 수 있다) 표지가 없고, 아래 복제는 그런 항목을 예전처럼 깊게 복제한다.
+ */
+const storeOwnedEntries = new WeakSet<object>();
+
+function sharedDictionariesOf(project: Project): readonly (Record<string, unknown> | undefined)[] {
+  const tilesets = project.tilesets as unknown;
+  const uploaded = (project.assets as Project["assets"] | undefined)?.uploaded as unknown;
+  return [isPlainRecord(tilesets) ? tilesets : undefined, isPlainRecord(uploaded) ? uploaded : undefined];
+}
+
+/** 스토어의 지금 프로젝트의 타일셋·업로드 자산 항목에 «제자리에서 바뀌지 않는다» 표지를 붙인다. 부르는 쪽이 스토어 프로젝트임을 확인한다. */
+export function trustStoreOwnedEntries(project: Project): void {
+  for (const dictionary of sharedDictionariesOf(project)) {
+    if (!dictionary) continue;
+    // 값을 읽기만 한다 — 지연 번들 타일셋(bundledTilesetDiff.ts)은 사전 자리의 보통 값이라 되돌리지 않는다.
+    for (const key of Object.keys(dictionary)) {
+      const entry = dictionary[key];
+      if (isObjectLike(entry)) storeOwnedEntries.add(entry);
+    }
+  }
+}
+
+/** 이 객체가 스토어가 들고 있던 것으로 확인된 공유 항목인가. */
+export function isStoreOwnedEntry(value: unknown): boolean {
+  return isObjectLike(value) && storeOwnedEntries.has(value);
+}
+
+/**
+ * `structuredClone(project)` 와 JSON 값·키 순서가 같은 사본. 스토어가 들고 있던 타일셋·업로드 자산 항목(`isStoreOwnedEntry`)만
+ * 원본 객체를 가리키고, 나머지는 — 표지가 없는 타일셋·업로드 자산 항목까지 — 한 번의 structuredClone 으로 깊게 복제한다.
+ * 표지가 붙은 항목이 하나도 없으면 `structuredClone(project)` 그대로다.
+ *
+ * 왜(2026-11-16 실측, 빈 새 프로젝트 7,090만 자 중 번들 타일셋 정의 49개가 6,750만 자 = 95.2%): 조수 세션은 기준·초안·검수 기준·
+ * 적용 대기 사본을 `structuredClone(project)` 로 떴다. 턴 하나(제목 한 줄)에 통째 복제 21번 · 20.5s, 그리고 복제본의 타일셋이
+ * 늘 새 객체라 내용 요약 기억·왕복 검사 기억이 하나도 맞지 않아 요약 16번 · 33.6s, 되읽기 5번 · 2.8s 가 문서 전체를 다시 돌았다.
+ * 적용된 초안이 스토어에 들어가면 스토어의 타일셋까지 모두 새 객체가 되어 저장 diff·차이 보기 기억도 버려졌다.
+ * 타일셋을 뺀 프로젝트는 337만 자, 복제 42ms 다.
+ */
+export function cloneProjectSharingStoreOwnedEntries(project: Project): Project {
+  const kept: Array<[dictionary: number, key: string, entry: unknown]> = [];
+  const shells = sharedDictionariesOf(project).map((dictionary, index) => {
+    if (!dictionary) return undefined;
+    let shell: Record<string, unknown> | undefined;
+    for (const key of Object.keys(dictionary)) {
+      const entry = dictionary[key];
+      if (!isObjectLike(entry) || !storeOwnedEntries.has(entry)) continue;
+      // 자리를 비우지 않고 null 로 지킨다 — 빼고 다시 붙이면 키 순서가 바뀌어 직렬화 바이트가 달라진다.
+      shell ??= { ...dictionary };
+      shell[key] = null;
+      kept.push([index, key, entry]);
+    }
+    return shell;
+  });
+  if (kept.length === 0) return structuredClone(project);
+  const [tilesets, uploaded] = shells;
+  const assets = project.assets as Project["assets"] | undefined;
+  const next = structuredClone({
+    ...project,
+    ...(tilesets ? { tilesets } : {}),
+    ...(uploaded && assets ? { assets: { ...assets, uploaded } } : {}),
+  }) as unknown as Project;
+  const targets = sharedDictionariesOf(next);
+  for (const [index, key, entry] of kept) targets[index]![key] = entry;
+  // 복제된 가지(맵·DB 등)의 요약 기억을 넘긴다 — 기억은 값 대조로만 채택된다(contentDigest.shareContentDigests).
+  shareContentDigests(project, next);
+  return next;
+}
+
+/**
  * `cloneProjectForMutation` 의 사전을 보통 객체로 확정한다. 읽지 않은 타일셋은 원본 객체를, 읽었지만
  * 내용이 같은 타일셋도 원본 객체를 돌려 놓는다(후자가 있어야 `Object.values` 로 훑기만 한 변경기가
  * 모든 타일셋을 새 객체로 만들지 않는다). 바뀐 타일셋의 id 를 돌려준다. 변경기가 사전을 통째로 갈아
