@@ -1,0 +1,31 @@
+{
+"items": [
+{
+"png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-stage-assembled.png",
+"kind": "structure",
+"label": "street_stairs/jp-stage-assembled",
+"chipset": "jp_city"
+},
+{
+"png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-stage-platform.png",
+"kind": "part",
+"label": "street_stairs/jp-stage-platform",
+"chipset": "jp_city",
+"partOf": "street_stairs/jp-stage-assembled"
+},
+{
+"png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-side-stair-l.png",
+"kind": "part",
+"label": "street_stairs/jp-side-stair-l",
+"chipset": "jp_city",
+"partOf": "street_stairs/jp-stage-assembled"
+},
+{
+"png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-side-stair-r.png",
+"kind": "part",
+"label": "street_stairs/jp-side-stair-r",
+"chipset": "jp_city",
+"partOf": "street_stairs/jp-stage-assembled"
+}
+]
+}
