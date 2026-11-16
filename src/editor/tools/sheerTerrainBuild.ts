@@ -339,7 +339,7 @@ function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, 
           // 꽃은 밟고 지나가는 2층 꾸밈(lowerOverlayTiles) — stamp_object 는 이 층을 찍지 않으므로 칸을 직접 쓴다
           let ok = true; for (let jj = 0; jj < kf.height && ok; jj++) for (let q = 0; q < kf.width; q++) { const e = (y + jj) * W + x + q; if (!inMap(x + q, y + jj) || reserved[e] || !open(e) || lv[e] !== lv[y0 * W + x0]) { ok = false; break; } }
           if (!ok) continue;
-          kf.rows.forEach((row, jj) => (row.lowerOverlayTiles ?? []).forEach((tt, q) => { if (tt >= 0) { setLayerTileAt(map, 2, (y + jj) * W + x + q, tt); reserved[(y + jj) * W + x + q] = 1; } }));
+          kf.rows.forEach((row, jj) => ((row as { lowerOverlayTiles?: readonly number[] }).lowerOverlayTiles ?? []).forEach((tt: number, q: number) => { if (tt >= 0) { setLayerTileAt(map, 2, (y + jj) * W + x + q, tt); reserved[(y + jj) * W + x + q] = 1; } }));
           break;
         }
       }
@@ -442,7 +442,7 @@ export const SHEER_TERRAIN_TOOLS: readonly ToolDefinition[] = [{
     return {
       summary: `깎아지른 지형 «${kind.ko}» ${map.width}×${map.height}: 단 ${report.levels} · 면 3칸 · 걷는 땅 ${report.walkablePct}% · 장치 ${report.devices.length}(${devices}) · 닿는 길 ${report.reach.ok ? "모두 닿음" : `못 닿음 ${report.reach.missing.join(", ")}`}${report.reach.sealed ? ` · 막은 칸 ${report.reach.sealed}` : ""}${report.background ? ` · 맵 배경 ${report.background.preset}` : ""}`,
       data: { mapId: map.id, ...report },
-      ...(report.warnings.length ? { warnings: report.warnings } : {}),
+      ...(report.warnings.length ? { warnings: [...report.warnings] } : {}),
     };
   },
 }];

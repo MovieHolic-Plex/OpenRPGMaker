@@ -78,7 +78,7 @@ function panelRow(v: number, fromBottom: number, ph: number): number {
 }
 
 export function paintSheer(s: SheerSurface, art: SheerArt): void {
-  const { rgba, kind, lev, dep, run, src, fl, ssl, edge, mpy, PW, SH, pad, ox, oy, levelPx } = s;
+  const { rgba, kind, lev, dep, run, src, fl, ssl, edge, PW, SH, pad, ox, oy, levelPx } = s;
   const N = PW * SH, shift = rockShifter(art);
   const put = (i: number, rgb: number) => { const o = i * 4; rgba[o] = rgb >> 16; rgba[o + 1] = (rgb >> 8) & 255; rgba[o + 2] = rgb & 255; rgba[o + 3] = 255; };
   const isVoid = (i: number) => kind[i] === -1 || (kind[i] === 0 && lev[i] === 0 && fl[i]! < 1e-6 && !ssl[i]);
@@ -103,7 +103,7 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
   const panelPx = (j: number) => { const x = j % PW, yy = (j / PW) | 0, dd = dep[j]!, nn = run[j]!, cc = lev[j]!, ps = Math.max(1, Math.round(nn / levelPx)) === 1 ? art.face48 : art.face96;
     const pn = ps[h32(Math.floor((x + ox) / 64), cc, 11) % ps.length]!; return at(pn, x + ox, panelRow(dd, nn - 1 - dd, pn.h)); void yy; };
   /** 면 화소 i 가 엽 끝 32px 안이면 그 조각 화소(아니면 -1). 면이 맵 끝·다른 면에서 끊긴 곳은 엽 끝이 아니다. */
-  const lobeAt = (i: number, sx: number, sy: number, d: number, n: number, c: number, ax: number): number => {
+  const lobeAt = (_i: number, sx: number, sy: number, d: number, n: number, c: number, ax: number): number => {
     if (!lobe48 && !lobe96) return -1;
     const rise = Math.max(1, Math.round(n / levelPx)), row = sy * PW;
     for (const dir of [1, -1] as const) {
