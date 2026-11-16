@@ -82,7 +82,9 @@ describe("finish-stage writes are recorded and excluded from the side-effect gat
 
   it("battleDataEmptied skips a recorded initialEquipment strip", () => {
     const { before, after } = pair();
-    before.database.actors[0]!.initialEquipment = { weapon: "equip_sword" } as never;
+    // 공장 기본 장비(equip_sword)는 전투 없는 빈 프로젝트에서 빼도 장르 기본값이라 짚지 않는다(J88, onlyFactoryGearRemoved) —
+    // 기록 여부만 보려면 저작자가 고른 장비여야 한다.
+    before.database.actors[0]!.initialEquipment = { weapon: "equip_iron_sword" } as never;
     const writes: StageWrites = new Map();
     recordStageWrites(after, writes, () => { after.database.actors[0]!.initialEquipment = {} as never; });
     expect(battleDataEmptied(before, after, TASK).length).toBeGreaterThan(0);
