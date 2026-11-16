@@ -5,7 +5,7 @@ import { mapRoute } from "@/player/objectiveTarget";
 import { josa } from "@/util/josa";
 import { objectiveCommand, isObjectiveCommand, objectiveTargetOf, setObjectiveTarget, type ObjectiveTarget } from "./objectiveCommand";
 import { Cell, landmarkWord, bare, withWhere } from "./objectiveWhere";
-import { stepGoal } from "../story/playerLines";
+import { stepGoal, stepGoalAt } from "../story/playerLines";
 
 /**
  * 전투 승리 스위치로 잠긴 이벤트 → 그 스위치를 켜는 전투 이벤트(같은 맵·다른 맵). 잠김 = 그 스위치를 조건으로 단 페이지와 달지 않은
@@ -104,7 +104,9 @@ export function refreshObjectiveRoutes(project: Project): number {
       const advance = stepNext && stepNext.event.id !== event.id && stepIndexes.length <= 1 ? stepNext : undefined;
       // 단계 목표의 글 = 그 단계의 목표 줄(stepGoal). 옛 빌드는 action 을 그대로 걸었다 — 둘 다 알아본다.
       const nextStepOf = k >= 0 ? steps[k + 1] : opening ? steps[0] : undefined;
-      const stepTexts = [nextStepOf ? stepGoal(nextStepOf) : undefined, nextStepOf?.action, opening && k < 0 ? project.gameBlueprint?.playerGoal : undefined]
+      // 다른 맵에 있는 단계의 목표 줄은 그 맵 이름을 싣는다(stepGoalAt — «강지기의 집에서 …») — 두 꼴 다 알아본다.
+      const nextStepMap = nextStepOf ? findStep(nextStepOf)?.map : undefined;
+      const stepTexts = [nextStepOf ? stepGoal(nextStepOf) : undefined, nextStepOf && nextStepMap?.name ? stepGoalAt(nextStepOf, String(nextStepMap.name)) : undefined, nextStepOf?.action, opening && k < 0 ? project.gameBlueprint?.playerGoal : undefined]
         .filter((t): t is string => typeof t === "string").map((t) => t.trim().replace(/[.。!]+$/u, "").slice(0, 60));
       /** 대상이 싸워 이겨야 열리는 이벤트면 그 전투(이름이 없어도)로. */
       const throughBattle = (target: ObjectiveTarget): ObjectiveTarget => {
@@ -164,7 +166,13 @@ export function refreshObjectiveRoutes(project: Project): number {
                 }
                 continue;
               }
-              let updated = withWhere(project, from, base, undefined, origin);
+              // 건 쪽이 대상 이벤트를 적어 둔 목표(set_objective 의 where)는 그 대상으로 「어디」를 붙인다 — 글에 지나가며 나온 다른 맵 이름으로 붙이지 않는다.
+              // 왜(2026-11-16 확인 빌드 r6 P3): 시작 목표 «광장의 어부 마루에게 대성당 밑 종소리 소문을 물어보자» 에 «(대성당 입구: 이 맵 북동쪽 …)» 이 붙었다 —
+              // 어부 마루는 그 맵 광장에 있고(where 로 주었다), 대성당은 소문의 내용일 뿐이다. 대상이 같은 맵이면 꼬리를 붙이지 않는다(문장이 이미 이름을 댄다).
+              const own = objectiveTargetOf(command);
+              const ownMap = own && (project.maps[own.mapId]?.events ?? []).some((e) => e.id === own.eventId) ? own.mapId : undefined;
+              if (ownMap === from && !tail0) continue;
+              let updated = withWhere(project, from, base, ownMap && ownMap !== from ? own!.eventId : undefined, origin);
               // 글에서 어디를 못 찾으면 다음 청사진 단계가 다른 맵에 있을 때 그 맵 입구로 — 이 목표를 거는 단계 다음이 곧 갈 곳이다.
               if (updated === base && next && next.map.id !== from) updated = withWhere(project, from, base, next.event.id, origin);
               if (updated === base && tail0) updated = message;

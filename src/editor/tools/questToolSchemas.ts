@@ -72,7 +72,7 @@ export const QUEST_DEF_SCHEMA: JsonSchema = {
     order: { type: 'string', enum: ['sequence','any'], description: 'sequence는 앞 단계를 완료해야 다음 목표를 수행할 수 있다. 여러 단계 프리셋은 sequence 필수.' },
     repeatable: { type: 'boolean' }, requiresQuestKeys: { type: 'array', items: string }, onAcceptItems: itemList, effects,
     worldChanges: { type: 'array', items: { type: 'object', properties: { target: existingEventRef, lines, passable: { type: 'boolean' } }, required: ['target','lines'] } },
-    dialogue: { type: 'object', description: '이야기와 인물에 맞춘 의뢰인 대사', properties: { accepted: string, declined: string, reminder: string, completed: string, afterComplete: string } },
+    dialogue: { type: 'object', description: '이야기와 인물에 맞춘 의뢰인 대사 — offer 는 의뢰를 꺼내는 말(없으면 summary 가 이름표 없는 서술로 뜬다), accepted 는 수락했을 때의 답', properties: { offer: string, accepted: string, declined: string, reminder: string, completed: string, afterComplete: string } },
     giver: eventRef,
     steps: {
       type: "array", description: "1개 이상. talk → target, collect → itemId/count/sources, kill → troopId/at, reach → mapId/x/y.",
