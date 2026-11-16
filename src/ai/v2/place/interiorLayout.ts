@@ -172,7 +172,7 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
   // 랜드마크를 objects 에 또 적은 것(같은 id·자리, 반복 없음)은 하나로 친다 — 겹침으로 거절하지 않는다(2026-10-31 감독 지적).
   const lmSame = (o: LayoutObject) => !!L.landmark && o?.id === L.landmark.id && o.x === L.landmark.x && o.y === L.landmark.y && !((o.repeat?.count ?? 1) > 1);
   const srcList = [...(L.landmark ? [L.landmark] : []), ...(Array.isArray(L.objects) ? L.objects : []).filter((o) => !lmSame(o))];
-  if (!L.landmark) errors.push(`landmark is missing — name the one big piece the place is built around: "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."}.`);
+  if (!L.landmark) warnings.push(`no landmark — name the one big piece the place is built around next time: "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."}.`);
   // 표에 없는 낱말(벽 · 바닥 · 기물)은 갈래마다 한 줄로 한 번에 알린다 — 가까운 표의 id 와 함께(unknownWords.ts).
   errors.push(...unknownWordLines(S, {
     walls: regions.map((r) => [String(r?.wall), `region ${String(r?.id ?? "?")}`] as const),
@@ -192,13 +192,13 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
     }
   });
   const lines = (Array.isArray(L.carpets) ? L.carpets : []).flatMap((c) => {
-    if (!S.lines[c.id] || S.lines[c.id]!.kind !== "flat") { errors.push(carpetMiss(S, String(c.id))); return []; }
-    if (![c.x, c.y, c.w, c.h].every(int)) { errors.push(`carpet ${c.id}: x,y,w,h must be integers.`); return []; }
+    if (!S.lines[c.id] || S.lines[c.id]!.kind !== "flat") { warnings.push(`left out — ${carpetMiss(S, String(c.id))}`); return []; }
+    if (![c.x, c.y, c.w, c.h].every(int)) { warnings.push(`left out — carpet ${c.id}: x,y,w,h must be integers.`); return []; }
     return [{ id: c.id, rect: { x0: c.x, y0: c.y, x1: c.x + c.w - 1, y1: c.y + c.h - 1 } }];
   });
   const daises = (Array.isArray(L.daises) ? L.daises : []).flatMap((d) => {
-    if (!S.daises[d.id]) { errors.push(`unknown dais id "${d.id}" — use one of: ${Object.keys(S.daises).join(", ")}.`); return []; }
-    if (![d.x, d.y, d.w, d.h].every(int)) { errors.push(`dais ${d.id}: x,y,w,h must be integers.`); return []; }
+    if (!S.daises[d.id]) { warnings.push(`left out — unknown dais id "${d.id}" — use one of: ${Object.keys(S.daises).join(", ") || "(this chipset has no daises)"}.`); return []; }
+    if (![d.x, d.y, d.w, d.h].every(int)) { warnings.push(`left out — dais ${d.id}: x,y,w,h must be integers.`); return []; }
     return [{ id: d.id, x: d.x, y: d.y, w: d.w, h: d.h }];
   });
   for (const r of regions) if (r.landmark && !objs.some((o) => o.id === r.landmark && o.region === r.id)) warnings.push(`region "${r.id}" names landmark "${r.landmark}" but no such object stands in it.`);
@@ -243,7 +243,7 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
     if (floor > 0 && reached === 0) errors.push(`region "${r.id}" cannot be reached from the entrance — carve an opening into it (or move the furniture that closes it off).`);
   }
   const lm = objs.find((o) => o.src === 0 && L.landmark);
-  if (lm && built.issues.some((i) => i.code === "unreachable-piece" && hits(i.x, i.y).some((p) => p.src === 0))) errors.push(`landmark "${lm.id}" at (${lm.x},${lm.y}) has no reachable free side — clear a cell next to it that connects to the entrance.`);
+  if (lm && built.issues.some((i) => i.code === "unreachable-piece" && hits(i.x, i.y).some((p) => p.src === 0))) warnings.push(`landmark "${lm.id}" at (${lm.x},${lm.y}) has no reachable free side — clear a cell next to it that connects to the entrance (review_layout).`);
   const rest = built.unreachedFloor.length;
   if (rest) warnings.push(`${rest} floor cells are not reachable from the entrance (e.g. ${built.unreachedFloor.slice(0, 6).map((c) => `(${c.x},${c.y})`).join(" ")}).`);
   return { errors, warnings, badObjects, input, built, objects: objs, sources: srcList };

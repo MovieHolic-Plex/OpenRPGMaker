@@ -4,6 +4,7 @@
 // 모델이 직접 부르는 make_place 실내는 어느 문 뒤인지 코드에 말할 길이 없어 크기 단(대형·초대형 구성)이 한 번도 붙지 않았다 —
 // 손으로 찍은 초대형 성당의 안이 모델의 방 둘로 섰다. 여기서는 문 앞 칸으로 건물을 찾고(hints.door), 문 목록에 건물 이름과 단을 싣고,
 // 큰 건물 문에 방이 모자란 안이 이어지면 그 사실과 고칠 호출을 알린다.
+import { kitBaseTile } from "@/project/houseSetTiles";
 import { kitTier } from "@/project/kitTier";
 import type { GameMap, Project, StructureKitDef } from "@/project/types";
 import { buildingEntrances } from "./entrances";
@@ -19,14 +20,50 @@ export function kitLabel(def: Pick<StructureKitDef, "id" | "name"> | undefined):
   return String(def?.name ?? def?.id ?? "").replace(/\s*\d+×\d+\s*$/u, "").replace(/^버들항\s+(?:읍 건물|[^·]*건물)\s*·\s*/u, "").replace(/^버들항\s+/u, "").trim();
 }
 
+const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
+
+/**
+ * 손으로 찍은 건물(놓기 기록 없음)의 킷: 그 문 칸의 그림을 입구로 적은 킷들 가운데 맵에 깔린 그림과 가장 많이 맞는 것.
+ * 문 그림 하나를 여러 킷이 같이 쓴다(첨탑 성당 12×13 · 성당 블록 14×17 · 20×17 이 같은 문 칸) — 입구 타일이 알려 주는 이름은 그중 처음 것뿐이라
+ * 성당 블록을 찍어도 «첨탑 성당» 으로 읽혔다. 킷의 칸을 문 자리에 겹쳐 맞는 칸 비율로 고른다(이름·낱말은 보지 않는다).
+ */
+function stampedKit(project: Project, map: GameMap, door: { x: number; y: number }, hinted: StructureKitDef | undefined): StructureKitDef | undefined {
+  const tileset = project.tilesets[map.tilesetId];
+  const kits = tileset?.structureKits ?? [];
+  const base = kitBaseTile(tileset);
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  const at = (x: number, y: number): number[] => (x < 0 || y < 0 || x >= map.width || y >= map.height ? [] : LAYERS.map((l) => m[l]?.[y * map.width + x]).filter((t): t is number => typeof t === "number" && t >= 0).map(base));
+  const doorTiles = new Set(at(door.x, door.y));
+  // 맞는 비율이 같으면 맞은 칸이 많은 것 — 성당 블록은 첨탑 성당을 품고 있어 블록을 찍으면 둘 다 100% 맞는다.
+  let best = hinted, bestScore = -1, bestHit = -1;
+  for (const k of kits) {
+    for (const p of (k.parts ?? []) as { kind?: string; dx?: number; dy?: number; w?: number; h?: number }[]) {
+      if (p.kind !== "entrance" || typeof p.dx !== "number" || typeof p.dy !== "number") continue;
+      for (let ey = p.dy; ey < p.dy + (p.h ?? 1); ey++) for (let ex = p.dx; ex < p.dx + (p.w ?? 1); ex++) {
+        const row = k.rows?.[ey];
+        if (![row?.tiles?.[ex], row?.upperTiles?.[ex]].some((t) => typeof t === "number" && doorTiles.has(base(t)))) continue;
+        const ox = door.x - ex, oy = door.y - ey;
+        let hit = 0, all = 0;
+        (k.rows ?? []).forEach((r, y) => { for (let x = 0; x < k.width; x++) for (const t of [r.tiles?.[x], r.upperTiles?.[x]]) { if (typeof t !== "number" || t < 0) continue; all += 1; if (at(ox + x, oy + y).includes(base(t))) hit += 1; } });
+        const score = all ? hit / all : 0;
+        const same = Math.abs(score - bestScore) <= 1e-9;
+        if (score > bestScore + 1e-9 || (same && hit > bestHit) || (same && hit === bestHit && k.id === hinted?.id)) { best = k; bestScore = score; bestHit = hit; }
+      }
+    }
+  }
+  return best;
+}
+
 /** 이 맵에 선 건물들의 문 — 맵의 타일에서 읽는다(킷이 문이라고 적은 그림 칸, place/entrances.ts): 마을 빌더가 세운 집도 stamp_object 로 손으로 찍은 건물도 같다. */
 export function doorHouses(project: Project, map: GameMap | undefined): DoorHouse[] {
   const tileset = map ? project.tilesets[map.tilesetId] : undefined;
   if (!map || !tileset?.structureKits?.length) return [];
   return buildingEntrances(project, map).map((e) => {
-    // 킷은 그 문 칸을 덮은 놓기 기록(마을 빌더의 집)이 먼저다 — 입구 타일은 킷 이름만 알려 주고, 이름이 같은 킷(«살림집» 여럿)이 있다. 기록이 없는 손 찍기는 이름으로 찾는다.
+    // 킷은 그 문 칸을 덮은 놓기 기록(마을 빌더의 집)이 먼저다 — 입구 타일은 킷 이름만 알려 주고, 이름이 같은 킷(«살림집» 여럿)이 있다.
+    // 기록이 없는 손 찍기는 문 칸의 그림을 입구로 적은 킷들의 칸을 맵에 겹쳐 가장 잘 맞는 것(stampedKit).
     const placed = [...(map.structurePlacements ?? [])].reverse().find((pl) => e.x >= pl.x && e.x < pl.x + pl.w && e.y >= pl.y && e.y < pl.y + pl.h);
-    const def = (placed ? tileset.structureKits!.find((k) => k.id === placed.kitId) : undefined) ?? tileset.structureKits!.find((k) => k.id === e.kit) ?? tileset.structureKits!.find((k) => k.name === e.kit);
+    const named = tileset.structureKits!.find((k) => k.id === e.kit) ?? tileset.structureKits!.find((k) => k.name === e.kit);
+    const def = (placed ? tileset.structureKits!.find((k) => k.id === placed.kitId) : undefined) ?? stampedKit(project, map, e, named);
     const tier = kitTier(def);
     return { kit: def?.id ?? String(e.kit ?? ""), label: kitLabel(def), ...(tier ? { tier } : {}), front: e.front, tileset: tileset.id };
   });

@@ -96,7 +96,8 @@ export const interiorBuilder: PlaceBuilder = {
       const base = layoutTableFor(run.ctx.project, tilesetId, outside, run.ctx.currentMapId);
       const tables = [...new Set([base, ...(outside ? [outside.tileset] : []), HAND_INTERIOR_TILESET_ID])].filter((id) => !!effectiveSpec(run.ctx.project.tilesets[id]));
       const scored = tables.map((id) => ({ id, ...knownWordCount(spec.layout, effectiveSpec(run.ctx.project.tilesets[id])!) }));
-      const best = scored.reduce((a, c) => (c.known > a.known ? c : a), scored[0] ?? { id: base, known: 0, total: 0 });
+      // 깔 수 없는 낱말(표에도 없고 가까운 것도 없다)이 적은 표가 먼저, 같으면 낱말을 더 많이 아는 표 — 같으면 그 게임의 표(base, 맨 앞).
+      const best = scored.reduce((a, c) => (c.lost < a.lost || (c.lost === a.lost && c.known > a.known) ? c : a), scored[0] ?? { id: base, known: 0, total: 0, lost: 0 });
       const lt = best.id;
       const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
       if (ls) {
@@ -217,7 +218,8 @@ export const interiorBuilder: PlaceBuilder = {
         return { ok: false, mapIds: [], summary: `Room graph rejected: ${error.message}${error.fixed ? ` Fixed call: ${error.fixed}` : ""}`, warnings: notes, missingArt: missing, calls: run.calls };
       }
       const copy = copiedReference({ w: graph.width, h: graph.height, rooms: graph.rooms.map((r) => ({ name: r.id, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1 })) });
-      if (copy) return { ok: false, mapIds: [], summary: `Room graph rejected: the plan is a near copy of reference room ${copy.id} (plan similarity ${copy.similarity}: same room count, sizes and positions). Borrow its structure, not its plan — change the room count, sizes or arrangement to fit this request.`, warnings: notes, missingArt: missing, calls: run.calls };
+      // 견본 평면을 거의 그대로 옮긴 것은 게임을 깨지 않는다 — 그대로 짓고 알린다(2026-11-16 오너 «거절은 게임이 깨질 때만»).
+      if (copy) notes.push(`room graph: the plan is a near copy of reference room ${copy.id} (plan similarity ${copy.similarity}: same room count, sizes and positions) — laid as you sent it; next time change the room count, sizes or arrangement to fit this request.`);
       notes.push(...graph.notes.map((n) => `room graph: ${n}`));
     }
     // 그래프 선언(검사 room_graph 가 맵 이름표로 읽는다 — handInteriorTools 가 room-graph 이름표로 남긴다).

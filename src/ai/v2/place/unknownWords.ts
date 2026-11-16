@@ -121,8 +121,10 @@ export function carpetMiss(S: HandInteriorSpec, id: string): string {
 }
 
 /** 표에 없는 낱말을 가장 가까운 표의 id 로 바꾼 것 하나 — 결과 글에 한 줄씩 적는다. */
-export interface WordSwap { readonly what: "wall" | "floor" | "piece"; readonly from: string; readonly to: string; readonly n: number }
-export const swapLine = (w: WordSwap): string => `swapped ${w.what} "${w.from}"${w.n > 1 ? ` ×${w.n}` : ""} → "${w.to}" (not in this chipset's table — its nearest id)`;
+export interface WordSwap { readonly what: "wall" | "floor" | "piece" | "carpet"; readonly from: string; readonly to: string; readonly n: number }
+export const swapLine = (w: WordSwap): string => w.what === "carpet" && / \(this chipset has no rect carpets\)$/u.test(w.to)
+  ? `swapped carpet "${w.from}" → "${w.to.replace(/ \(this chipset has no rect carpets\)$/u, "")}" laid in its rect (this chipset has no rect carpets — its nearest rug piece)`
+  : `swapped ${w.what} "${w.from}"${w.n > 1 ? ` ×${w.n}` : ""} → "${w.to}" (not in this chipset's table — its nearest id)`;
 
 type AnyObj = Record<string, unknown>;
 const arr = (v: unknown): AnyObj[] => (Array.isArray(v) ? (v as AnyObj[]) : []);
@@ -172,6 +174,29 @@ export function swapUnknownWords<T>(raw: T, S: HandInteriorSpec): { layout: T; s
     const twin = [...arr(L.objects).map((o, i) => [o, arr(out.objects)[i]] as const), ...arr(L.wall_items).map((o, i) => [o, arr(out.wall_items)[i]] as const)].find(([o]) => o && o.id === lm0.id && o.x === lm0.x && o.y === lm0.y);
     if (twin?.[1] && twin[1].id !== lm1.id) out.landmark = { ...lm1, id: twin[1].id };
   }
+  // 사각 깔개(carpets): 표에 없는 id 는 가장 가까운 깔개 줄로, 표에 사각 깔개가 아예 없으면(버들항) 가장 가까운 깔개 기물을 그 사각형에 깐다 —
+  // 2026-11-16 r6 「대성당」: «rug red» 깔개 하나로 장소가 거절됐다. 깔개 기물을 넣을 수 없는 칸이면 짓는 쪽이 그 조각만 빼고 알린다.
+  if (Array.isArray(L.carpets)) {
+    const lines = Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat");
+    const rugPieces = Object.keys(S.objects).filter((id) => S.objects[id]!.kind === "flat");
+    const keep: AnyObj[] = [], laid: AnyObj[] = [];
+    for (const c of arr(L.carpets)) {
+      const id = c?.id;
+      if (!c || typeof c !== "object" || typeof id !== "string" || (S.lines[id] && S.lines[id]!.kind === "flat")) { keep.push(c); continue; }
+      const line = nearIds(id, lines, 1)[0];
+      if (line) { note("carpet", id, line); keep.push({ ...c, id: line }); continue; }
+      const rug = nearIds(id, rugPieces, 1)[0] ?? nearIds(`${id} rug`, rugPieces, 1)[0];
+      const x = Number(c.x), y = Number(c.y), w = Number(c.w), h = Number(c.h);
+      if (!rug || ![x, y, w, h].every(Number.isInteger) || w < 1 || h < 1) { keep.push(c); continue; }
+      const f = S.objects[rug]!, fw = Math.max(1, f.w), fh = Math.max(1, f.h);
+      let n = 0;
+      for (let yy = y; yy + fh <= y + h; yy += fh) for (let xx = x; xx + fw <= x + w; xx += fw) { laid.push({ id: rug, x: xx, y: yy, purpose: `carpet ${id}` }); n += 1; }
+      if (!n) laid.push({ id: rug, x, y, purpose: `carpet ${id}` }), n = 1;
+      note("carpet", id, `${rug}${n > 1 ? ` ×${n} pieces` : ""} (this chipset has no rect carpets)`);
+    }
+    out.carpets = keep;
+    if (laid.length) out.objects = [...arr(out.objects ?? L.objects), ...laid];
+  }
   const renamed = (v: unknown) => (typeof v === "string" && pieceTo.has(v) ? pieceTo.get(v)! : v);
   if (Array.isArray(L.rooms)) out.rooms = arr(L.rooms).map((r) => (r && typeof r === "object" ? { ...r, floor: floor(r.floor), ...(r.landmark !== undefined ? { landmark: renamed(r.landmark) } : {}) } : r));
   if (Array.isArray(out.regions)) out.regions = arr(out.regions).map((r) => (r && typeof r === "object" && r.landmark !== undefined ? { ...r, landmark: renamed(r.landmark) } : r));
@@ -179,17 +204,23 @@ export function swapUnknownWords<T>(raw: T, S: HandInteriorSpec): { layout: T; s
   return { layout: (swaps.size ? out : raw) as T, swaps: [...swaps.values()] };
 }
 
-/** 배치가 쓴 벽 · 바닥 · 기물 낱말 가운데 이 표가 아는 수와 전체 수 — 어느 표의 낱말로 쓴 배치인지 가린다. */
-export function knownWordCount(raw: unknown, S: HandInteriorSpec): { known: number; total: number } {
+/**
+ * 배치가 쓴 벽 · 바닥 · 기물 낱말 가운데 이 표가 아는 수(known), 전체 수(total), 이 표로는 깔 수 없는 수(lost — 표에도 없고 가까운 id 도 없다).
+ * 어느 표로 깔지 고를 때 lost 가 적은 표가 먼저다 — 다른 표에 그대로 있는 조각을 «가까운 것 없음» 으로 거절하지 않게(2026-11-16 오너 «에셋을 자유롭게»).
+ */
+export function knownWordCount(raw: unknown, S: HandInteriorSpec): { known: number; total: number; lost: number } {
   const L = (raw && typeof raw === "object" ? raw : {}) as AnyObj;
-  let known = 0, total = 0;
-  const see = (ok: boolean) => { total += 1; if (ok) known += 1; };
+  let known = 0, total = 0, lost = 0;
+  const pieceIds = Object.keys(S.objects).filter((id) => S.objects[id]!.kind !== "door" && S.objects[id]!.kind !== "sidedoor");
+  const see = (ok: boolean, near: () => boolean) => { total += 1; if (ok) known += 1; else if (!near()) lost += 1; };
   const str = (v: unknown): v is string => typeof v === "string" && v !== "";
-  const ow = (L.outer_wall as AnyObj | undefined)?.material; if (str(ow)) see(!!S.walls[ow]);
-  for (const w of arr(L.walls)) if (str(w?.material)) see(!!S.walls[w.material as string]);
-  for (const r of arr(L.rooms)) if (str(r?.floor)) see(!!S.floors[r.floor as string]);
-  for (const r of arr(L.regions)) { if (str(r?.floor)) see(!!S.floors[r.floor as string]); if (str(r?.wall)) see(!!S.walls[r.wall as string]); }
-  for (const z of arr(L.floor_zones)) if (str(z?.floor)) see(!!S.floors[z.floor as string]);
-  for (const o of [L.landmark as AnyObj | undefined, ...arr(L.objects), ...arr(L.wall_items)]) if (o && str(o.id)) see(knownObject(S, o.id));
-  return { known, total };
+  const wall = (v: string) => see(!!S.walls[v], () => nearIds(v, Object.keys(S.walls), 1).length > 0);
+  const floor = (v: string) => see(!!S.floors[v], () => nearIds(v, Object.keys(S.floors), 1).length > 0);
+  const ow = (L.outer_wall as AnyObj | undefined)?.material; if (str(ow)) wall(ow);
+  for (const w of arr(L.walls)) if (str(w?.material)) wall(w.material as string);
+  for (const r of arr(L.rooms)) if (str(r?.floor)) floor(r.floor as string);
+  for (const r of arr(L.regions)) { if (str(r?.floor)) floor(r.floor as string); if (str(r?.wall)) wall(r.wall as string); }
+  for (const z of arr(L.floor_zones)) if (str(z?.floor)) floor(z.floor as string);
+  for (const o of [L.landmark as AnyObj | undefined, ...arr(L.objects), ...arr(L.wall_items)]) if (o && str(o.id)) { const id = o.id; see(knownObject(S, id), () => nearIds(id, pieceIds, 1).length > 0); }
+  return { known, total, lost };
 }

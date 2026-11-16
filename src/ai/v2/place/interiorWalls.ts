@@ -59,10 +59,13 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   // 랜드마크가 걸이·벽붙이면 wall_items 쪽 규칙으로 본다(벽을 안 적었으면 바로 위 벽을 쓴다 — 그 벽이 없으면 거절 글이 자리를 알려 준다).
   const lmKind = lmRaw ? S.objects[lmRaw.id]?.kind : undefined;
   const lmIsItem = lmKind === "hang" || lmKind === "wall";
+  // 목록을 잘못 고른 기물은 옮겨 깐다(거절은 게임이 깨질 때만 — 2026-11-16 r6 「대성당」: 벽붙이 «stairs down» 을 objects 에 적어 두 번 거절됐다).
+  // 벽붙이·걸이를 objects 에 적었으면 wall_items 로, 바닥 기물을 wall_items 에 적었으면 objects 로 — 무엇을 옮겼는지 경고에 적는다.
+  const onWallKind = (id: unknown): boolean | undefined => { const k = typeof id === "string" ? S.objects[id]?.kind : undefined; return k === undefined ? undefined : k === "hang" || k === "wall"; };
   const srcList: { o: WallItem; item: boolean }[] = [
     ...(lmRaw ? [{ o: lmRaw, item: lmIsItem }] : []),
-    ...objList.map((o) => ({ o, item: false })),
-    ...itemList.map((o) => ({ o: o as WallItem, item: true })),
+    ...objList.map((o) => { const w = onWallKind(o?.id) === true; if (w) warnings.push(`fixed — "${o.id}" at (${o.x},${o.y}) is a wall piece: laid from wall_items instead of objects.`); return { o: o as WallItem, item: w }; }),
+    ...itemList.map((o) => { const f = onWallKind(o?.id) === false && !(S.objects[o.id]?.kind === "door" || S.objects[o.id]?.kind === "sidedoor"); if (f) warnings.push(`fixed — "${o.id}" at (${o.x},${o.y}) is a floor piece: laid from objects instead of wall_items.`); return { o: o as WallItem, item: !f }; }),
   ];
   // 표에 없는 낱말(벽 · 바닥 · 기물)은 단계로 내지 않고 여기서 한 번에 알린다 — 갈래마다 한 줄, 가까운 표의 id 와 함께(unknownWords.ts).
   // 자리 검사는 아래에서 그대로 한다(없는 기물은 badObjects 로만 표시하고 글은 여기 한 줄이 맡는다). 이 줄들은 단계 검사(errors)와 따로 들고 가
@@ -102,10 +105,10 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const r0 = raster("outer", ow.path, 1, true);
   if (r0) walls.push({ id: "outer", material: ow.material, outer: true, stub: false, ...r0 });
   for (const w of Array.isArray(L.walls) ? L.walls : []) {
-    const id = String(w?.id ?? `wall${walls.length}`);
-    if (id === "outer" || walls.some((x) => x.id === id)) { errors.push(`wall id "${id}" is used twice.`); continue; }
-    const t = w.thickness ?? 1;
-    if (t !== 1 && t !== 2) { errors.push(`wall "${id}": thickness must be 1 or 2.`); continue; }
+    let id = String(w?.id ?? `wall${walls.length}`);
+    if (id === "outer" || walls.some((x) => x.id === id)) { const to = `${id}_${walls.length}`; warnings.push(`fixed — wall id "${id}" is used twice; the second is laid as "${to}" (its doors and wall_items keep naming the first).`); id = to; }
+    const t0 = w.thickness ?? 1, t = t0 === 2 ? 2 : 1;
+    if (t0 !== 1 && t0 !== 2) warnings.push(`fixed — wall "${id}": thickness ${String(t0)} laid as 1 (only 1 or 2).`);
     const r = raster(id, w.path, t, false);
     if (r) walls.push({ id, material: w.material, outer: false, stub: Boolean(w.stub), ...r });
   }
@@ -131,7 +134,8 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     if (onOuter.length > 2) warnings.push(`wall "${w.id}" lies on the outer wall for ${onOuter.length} cells — partitions should only touch the outer wall at their ends.`);
     if (!w.stub) for (const [ex, ey] of w.ends) {
       const touch = N4.some(([dx, dy]) => { const X = ex + dx, Y = ey + dy; return inMap(X, Y) && wallOf[idx(X, Y)]! >= 0 && !self.has(idx(X, Y)); }) || walls[wallOf[idx(ex, ey)]!]!.id !== w.id;
-      if (!touch) errors.push(`wall "${w.id}" end ${P(ex, ey)} does not touch another wall — a partition must run from wall to wall so rooms are closed (extend the path by one cell until it meets the other wall), or mark it "stub": true for a freestanding wall piece.`);
+      // 벽 끝이 다른 벽에 닿지 않는 칸막이는 선 벽(stub)으로 깐다 — 두 방이 트여 하나로 읽힐 뿐 게임은 깨지지 않는다(그 경우 아래 «한 공간» 알림이 따른다).
+      if (!touch) warnings.push(`fixed — wall "${w.id}" end ${P(ex, ey)} does not touch another wall; laid as a freestanding wall (to close a room, extend the path by one cell until it meets the other wall).`);
     }
   }
   const grid: string[][] = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (_, x) => (outside[idx(x, y)] || wallOf[idx(x, y)]! >= 0 ? "#" : ".")));
@@ -142,33 +146,36 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const doorCell = new Set<number>();
   const doorSoft: string[] = [];
   const isDoorPiece = (id: string) => DOOR_PIECES.has(id) || S.objects[id]?.kind === "door" || S.objects[id]?.kind === "sidedoor";
+  // 문 하나의 흠(모르는 벽 · 바깥 벽 위 · 벽 밖 · 두 방을 잇지 않음)은 그 문만 빼고 깔고 까닭을 적는다 — 그 문이 없어 방이 닿지 않으면 아래 «닿지 않는 방» 이 거절한다.
+  const leftOutDoor = (msg: string) => warnings.push(`left out — ${msg}`);
   for (const d of Array.isArray(L.doors) ? L.doors : []) {
     const k = wallByName.get(d?.wall);
-    if (k === undefined) { errors.push(`door ${P(d?.x, d?.y)}: unknown wall "${d?.wall}" — use the id of a partition wall.`); continue; }
-    if (!num(d.x) || !num(d.y)) { errors.push(`door on "${d.wall}": x,y must be integers.`); continue; }
+    if (k === undefined) { leftOutDoor(`door ${P(d?.x, d?.y)}: unknown wall "${d?.wall}" — use the id of a partition wall.`); continue; }
+    if (!num(d.x) || !num(d.y)) { leftOutDoor(`door on "${d.wall}": x,y must be integers.`); continue; }
     const w = walls[k]!;
-    if (w.outer) { errors.push(`door ${P(d.x, d.y)} is on the outer wall — the only opening in the outer wall is the "entrance" (bottom map row). Interior doors go on partition walls.`); continue; }
+    if (w.outer) { leftOutDoor(`door ${P(d.x, d.y)} is on the outer wall — the only opening in the outer wall is the "entrance" (bottom map row). Interior doors go on partition walls.`); continue; }
     const i0 = idx(d.x, d.y);
-    if (!inMap(d.x, d.y) || !w.cells.includes(i0)) { errors.push(`door ${P(d.x, d.y)} is not on wall "${w.id}" — x,y must be a cell of that wall's path.`); continue; }
+    if (!inMap(d.x, d.y) || !w.cells.includes(i0)) { leftOutDoor(`door ${P(d.x, d.y)} is not on wall "${w.id}" — x,y must be a cell of that wall's path.`); continue; }
     const vertical = w.vert.has(i0) && !w.horiz.has(i0);
     const cells: number[] = [];
     if (!vertical) { const width = d.width ?? 1; for (let s = 0; s < width; s++) for (let t = 0; t < w.thickness; t++) cells.push(idx(d.x + s, d.y + t)); }
     else for (let t = 0; t < w.thickness; t++) for (const dy of [0, -1, -2]) cells.push(idx(d.x + t, d.y + dy));
     const off = cells.filter((i) => !w.cells.includes(i));
     if (off.length) {
-      errors.push(vertical
+      leftOutDoor(vertical
         ? `door ${P(d.x, d.y)} in vertical wall "${w.id}": a vertical-wall doorway is 3 cells tall — (x,y) is the walkable bottom cell, and (x,y-1),(x,y-2) above it (they become wall face) must also be cells of "${w.id}"; ${off.map((i) => P(i % W, Math.floor(i / W))).join(" ")} are not. Move the door down or lengthen the wall.`
         : `door ${P(d.x, d.y)} width ${d.width ?? 1} runs off wall "${w.id}" at ${off.map((i) => P(i % W, Math.floor(i / W))).join(" ")}.`);
       continue;
     }
     const [a, b] = vertical ? [[d.x - 1, d.y], [d.x + w.thickness, d.y]] : [[d.x, d.y - 1], [d.x, d.y + w.thickness]];
     const open = (p: number[]) => inMap(p[0]!, p[1]!) && grid[p[1]!]![p[0]!] === ".";
-    if (!open(a!) || !open(b!)) { errors.push(`door ${P(d.x, d.y)} on "${w.id}" does not join two rooms: ${P(a![0]!, a![1]!)} and ${P(b![0]!, b![1]!)} must both be room cells (not wall).`); continue; }
-    if (d.piece !== undefined && d.piece !== null && d.piece !== "" && !isDoorPiece(d.piece)) errors.push(`door ${P(d.x, d.y)}: piece "${d.piece}" is not a door piece — use ${[...DOOR_PIECES].join(", ")}, or omit it for an open doorway.`);
+    if (!open(a!) || !open(b!)) { leftOutDoor(`door ${P(d.x, d.y)} on "${w.id}" does not join two rooms: ${P(a![0]!, a![1]!)} and ${P(b![0]!, b![1]!)} must both be room cells (not wall).`); continue; }
+    const badLeaf = d.piece !== undefined && d.piece !== null && d.piece !== "" && !isDoorPiece(d.piece);
+    if (badLeaf) warnings.push(`fixed — door ${P(d.x, d.y)}: "${d.piece}" is not a door piece, laid as an open doorway (door pieces: ${[...DOOR_PIECES].join(", ")}).`);
     for (const i of cells) doorCell.add(i);
     // 문짝(잠긴 문·쇠창살 문)은 남쪽을 보고 그려져 가로 벽 틈에만 맞는다 — 세로 벽에선 엉뚱한 타일로 보이고 길을 막았다(bbox-walls-5).
     // 고칠 말로 돌려보내고, 고치기를 다 쓰면 열린 문 틈으로 깐다.
-    let piece = d.piece ?? undefined;
+    let piece = badLeaf ? undefined : d.piece ?? undefined;
     if (vertical && piece) { doorSoft.push(`door ${P(d.x, d.y)} in vertical wall "${w.id}": a "${piece}" leaf is drawn facing south, so it only fits a doorway in a horizontal wall — in a side wall it shows as a stray tile and blocks the way. Leave this doorway open ("piece": null), or move the door to a horizontal wall.`); piece = undefined; }
     doors.push({ wall: w.id, cells, ...(piece ? { piece } : {}), x: d.x, y: d.y, vertical, a: idx(a![0]!, a![1]!), b: idx(b![0]!, b![1]!) });
   }
@@ -190,25 +197,32 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const roomOfComp = new Map<number, WallRoom>();
   for (const r of rooms) {
     const at = r?.at;
-    if (!Array.isArray(at) || !num(at[0]) || !num(at[1]) || !inMap(at[0], at[1])) { errors.push(`room "${r?.id}": "at" must be an [x,y] cell inside the room.`); continue; }
+    if (!Array.isArray(at) || !num(at[0]) || !num(at[1]) || !inMap(at[0], at[1])) { warnings.push(`left out — room label "${r?.id}": "at" must be an [x,y] cell inside the room.`); continue; }
     const c = comp[idx(at[0], at[1])]!;
-    if (c < 0) { errors.push(`room "${r.id}" label ${P(at[0], at[1])} is on a wall or outside the outer wall — put "at" on a cell inside the room.`); continue; }
+    if (c < 0) { warnings.push(`left out — room label "${r.id}" ${P(at[0], at[1])} is on a wall or outside the outer wall — put "at" on a cell inside the room.`); continue; }
     const prev = roomOfComp.get(c);
     if (prev) {
       const xs = comps[c]!.map((i) => i % W), ys = comps[c]!.map((i) => Math.floor(i / W));
-      errors.push(`rooms "${prev.id}" and "${r.id}" are one connected space (cells ${P(Math.min(...xs), Math.min(...ys))}..${P(Math.max(...xs), Math.max(...ys))}) — the wall between them is not closed. Walls must run wall to wall; only a door may make a gap.`);
+      // 두 이름표가 한 공간이면 한 방으로 깐다(앞 이름표) — 칸막이가 닫히지 않아 방이 하나가 됐다는 것을 알린다.
+      warnings.push(`fixed — rooms "${prev.id}" and "${r.id}" are one connected space (cells ${P(Math.min(...xs), Math.min(...ys))}..${P(Math.max(...xs), Math.max(...ys))}), laid as one room "${prev.id}" — the wall between them is not closed (walls run wall to wall; only a door makes a gap).`);
       continue;
     }
     roomOfComp.set(c, r);
   }
+  // 이름표 없는 닫힌 공간은 방으로 깐다(이웃 방의 바닥) — 남은 주머니가 게임을 깨지는 않는다. 입구에서 닿지 않으면 아래 «닿지 않는 방» 이 거절한다.
+  const firstFloor = rooms.find((r) => r && typeof r.floor === "string")?.floor ?? Object.keys(S.floors)[0] ?? "";
+  const autoRooms = new Set<string>();
   comps.forEach((cells, c) => {
     if (roomOfComp.has(c)) return;
     const xs = cells.map((i) => i % W), ys = cells.map((i) => Math.floor(i / W));
-    errors.push(`enclosed space ${P(Math.min(...xs), Math.min(...ys))}..${P(Math.max(...xs), Math.max(...ys))} (${cells.length} cells) has no room label — add it to "rooms" or close it off with wall (no leftover pockets between walls).`);
+    const id = `space_${c}`;
+    autoRooms.add(id);
+    roomOfComp.set(c, { id, at: [xs[0]!, ys[0]!], floor: firstFloor });
+    warnings.push(`fixed — enclosed space ${P(Math.min(...xs), Math.min(...ys))}..${P(Math.max(...xs), Math.max(...ys))} (${cells.length} cells) had no room label; laid as room "${id}" with floor "${firstFloor}" (label it in "rooms" or close it off with wall).`);
   });
   for (const [c, r] of roomOfComp) {
     const floorN = comps[c]!.filter((i) => { const x = i % W, y = (i - x) / W; return !(y >= 1 && grid[y - 1]![x] === "#") && !(y >= 2 && grid[y - 2]![x] === "#"); }).length;
-    if (floorN < 4) errors.push(`room "${r.id}" has only ${floorN} floor cells — the two rows under every north wall are wall face (not floor), so make the room taller.`);
+    if (floorN < 4) warnings.push(`room "${r.id}" has only ${floorN} floor cells — the two rows under every north wall are wall face (not floor), so make the room taller.`);
   }
   if (!roomOfComp.size || errors.length) return out();
 
@@ -223,7 +237,7 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const roomIdAt = (x: number, y: number): string | undefined => { const c = inMap(x, y) ? comp[idx(x, y)]! : -1; return c >= 0 ? roomOfComp.get(c)?.id : undefined; };
   type Pl = { id: string; x: number; y: number; wall?: string; src: number; purpose?: string };
   const objs: Pl[] = [];
-  if (!lmRaw) errors.push(`landmark is missing — name the one big piece the place is built around: "landmark":{"id":"<catalog id>","x":X,"y":Y,"purpose":"..."} (add "wall" if it is a wall piece).`);
+  if (!lmRaw) warnings.push(`no landmark — name the one big piece the place is built around next time: "landmark":{"id":"<catalog id>","x":X,"y":Y,"purpose":"..."} (add "wall" if it is a wall piece).`);
   const expand = (o: WallItem, src: number): Pl[] => {
     const n = Math.max(1, Math.min(40, Number(o.repeat?.count ?? 1) || 1)), dx = Number(o.repeat?.dx ?? 0) || 0, dy = Number(o.repeat?.dy ?? 0) || 0;
     return Array.from({ length: n }, (_, i) => ({ id: o.id, x: o.x + i * dx, y: o.y + i * dy, ...(o.wall ? { wall: o.wall } : {}), src, ...(o.purpose ? { purpose: o.purpose } : {}) }));
@@ -243,7 +257,33 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     if (!d || (d.kind !== "hang" && d.kind !== "wall")) return bad(`"${o.id}" is not a wall piece — put it in "objects".`);
     let wname = o.wall;
     if (!wname) { const k0 = wallAbove(o.x, d.kind === "hang" ? o.y : o.y - 1); if (k0 >= 0) wname = walls[k0]!.id; }
-    const k = wname === undefined ? undefined : wallByName.get(wname);
+    let k = wname === undefined ? undefined : wallByName.get(wname);
+    // 하나짜리 벽 기물이 벽면에 닿지 않으면(벽을 안 적었거나 · 자리가 어긋났다) 가장 가까운 맞는 벽면 자리로 옮겨 깔고 알린다 — 2026-11-16 r6 「대성당」의
+    // «stairs down» 은 벽 이름 없이 방 가운데 적혀 두 번 거절됐다. 같은 방 안의 자리가 먼저, 다른 기물과 겹치지 않는 자리만.
+    if (!(Number(o.repeat?.count ?? 1) > 1)) {
+      const fits = (x: number, y: number, kk: number) => Array.from({ length: Math.max(1, d.w) }, (_, i) => x + i).every((c) => d.kind === "hang" ? A.face[y]?.[c] === 1 && wallOf[idx(c, y - 1)] === kk : A.face[y - 1]?.[c] === 2 && wallOf[idx(c, y - 3)] === kk);
+      if (k === undefined || !fits(o.x, o.y, k)) {
+        const taken = new Set<number>();
+        srcList.forEach(({ o: q }, s2) => { if (s2 === src || opts.dropObjects?.has(s2) || typeof q?.id !== "string" || !num(q.x) || !num(q.y)) return; const f = fp(q.id); const n = Math.max(1, Math.min(40, Number(q.repeat?.count ?? 1) || 1));
+          for (let r = 0; r < n; r++) for (let yy = 0; yy < f.h; yy++) for (let xx = 0; xx < f.w; xx++) taken.add(idx(q.x + r * (Number(q.repeat?.dx ?? 0) || 0) + xx, q.y + r * (Number(q.repeat?.dy ?? 0) || 0) + yy)); });
+        const home = roomIdAt(o.x, o.y) ?? roomIdAt(o.x, o.y + 1) ?? roomIdAt(o.x, o.y + 2);
+        let best: { x: number; y: number; k: number; cost: number } | undefined;
+        for (let y = 1; y < H; y++) for (let x = 0; x + Math.max(1, d.w) <= W; x++) {
+          const kk = wallOf[idx(x, d.kind === "hang" ? y - 1 : y - 3)] ?? -1;
+          const row = (yy: number) => Array.from({ length: Math.max(1, d.w) }, (_, i) => ({ x: x + i, y: yy }));
+          if (kk < 0 || !fits(x, y, kk) || row(y).some((c) => taken.has(idx(c.x, c.y)) || doorCell.has(idx(c.x, c.y)))) continue;
+          // 계단은 남쪽 한 줄로 들어선다 — 그 줄이 비어 있는 바닥이어야 한다
+          if (d.stairs && row(y + Math.max(1, d.h)).some((c) => !inMap(c.x, c.y) || !A.isFloor(c.x, c.y) || taken.has(idx(c.x, c.y)) || doorCell.has(idx(c.x, c.y)))) continue;
+          const cost = Math.abs(x - o.x) + Math.abs(y - o.y) + (home && roomIdAt(x, d.kind === "hang" ? y + 2 : y) !== home ? 100 : 0);
+          if (!best || cost < best.cost) best = { x, y, k: kk, cost };
+        }
+        if (best) {
+          warnings.push(`fixed — "${o.id}" at ${P(o.x, o.y)} did not touch a wall face; laid at ${P(best.x, best.y)} on wall "${walls[best.k]!.id}" (the nearest free face).`);
+          o = { ...o, x: best.x, y: best.y, wall: walls[best.k]!.id }; wname = walls[best.k]!.id; k = best.k;
+          srcList[src] = { o, item: true };
+        }
+      }
+    }
     if (k === undefined) return bad(`wall_item "${o.id}" at ${P(o.x, o.y)}: unknown wall "${o.wall ?? ""}" — name the wall it hangs on / stands against.`);
     if (WINDOW.test(o.id) && !walls[k]!.outer) bad(`"${o.id}" at ${P(o.x, o.y)} is a window on interior wall "${wname}" — windows go on the outer wall only.`);
     for (const p of expand({ ...o, wall: wname }, src)) {
@@ -262,52 +302,55 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   for (const d of doors) if (d.piece) objs.push({ id: d.piece, x: d.x, y: d.y, src: -1 });
   const lines: { id: string; cells?: { x: number; y: number }[]; rect?: { x0: number; y0: number; x1: number; y1: number } }[] = [];
   for (const c of Array.isArray(L.carpets) ? L.carpets : []) {
-    if (!S.lines[c?.id] || S.lines[c.id]!.kind !== "flat") { errors.push(carpetMiss(S, String(c?.id))); continue; }
-    if (![c.x, c.y, c.w, c.h].every(num)) { errors.push(`carpet ${c.id}: x,y,w,h must be integers.`); continue; }
+    if (!S.lines[c?.id] || S.lines[c.id]!.kind !== "flat") { warnings.push(`left out — ${carpetMiss(S, String(c?.id))}`); continue; }
+    if (![c.x, c.y, c.w, c.h].every(num)) { warnings.push(`left out — carpet ${c.id}: x,y,w,h must be integers.`); continue; }
     lines.push({ id: c.id, rect: { x0: c.x, y0: c.y, x1: c.x + c.w - 1, y1: c.y + c.h - 1 } });
   }
   const railCells = new Set<number>();
   for (const r of Array.isArray(L.rails) ? L.rails : []) {
-    if (!S.lines[r?.id] || S.lines[r.id]!.kind !== "floor") { errors.push(`unknown rail id "${r?.id}".`); continue; }
+    if (!S.lines[r?.id] || S.lines[r.id]!.kind !== "floor") { warnings.push(`left out — unknown rail id "${r?.id}"${Object.keys(S.lines).some((k) => S.lines[k]!.kind === "floor") ? ` (rails: ${Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "floor").join(", ")})` : " (this chipset has no rails)"}.`); continue; }
     const pts = Array.isArray(r.path) ? r.path : [];
     const cells: { x: number; y: number }[] = [];
     for (let k = 0; k + 1 < pts.length; k++) {
       const [x0, y0] = pts[k]!, [x1, y1] = pts[k + 1]!;
-      if (x0 !== x1 && y0 !== y1) { errors.push(`rail ${r.id}: segment ${P(x0, y0)}->${P(x1, y1)} is diagonal.`); break; }
+      if (x0 !== x1 && y0 !== y1) { warnings.push(`fixed — rail ${r.id}: segment ${P(x0, y0)}->${P(x1, y1)} is diagonal; the rail is laid up to ${P(x0, y0)}.`); break; }
       const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
       for (let s = 0; s <= n; s++) cells.push({ x: x0 + s * Math.sign(x1 - x0), y: y0 + s * Math.sign(y1 - y0) });
     }
     // 바닥이 아닌 칸은 한 줄로 묶어 알린다 — 쇠창살을 벽 줄 위에 그은 경우(2026-11-04 조수 대조 B1 Argon: 감방 남쪽 벽 y=8 위에
     // bars 를 그어 「cell (x,8) is not floor」 8건만 받고 무엇을 고칠지 몰랐다)는 그 벽을 짚어 「창살이 벽을 대신한다」고 말한다.
     const offFloor = cells.filter((c) => !A.isFloor(c.x, c.y));
+    // 바닥 아닌 칸에 그은 쇠창살은 그 칸만 빼고 깐다(벽 위면 벽이 그대로 막는다) — 어디가 왜 빠졌는지는 아래 글 그대로 알린다.
     if (offFloor.length) {
       const onWalls = [...new Set(offFloor.map((c) => wallOf[idx(c.x, c.y)]!).filter((k) => k >= 0).map((k) => walls[k]!.id))];
       const span = offFloor.length === 1 ? P(offFloor[0]!.x, offFloor[0]!.y) : `${P(offFloor[0]!.x, offFloor[0]!.y)}..${P(offFloor[offFloor.length - 1]!.x, offFloor[offFloor.length - 1]!.y)}`;
-      errors.push(onWalls.length
+      warnings.push(`left out — ` + (onWalls.length
         ? `rail "${r.id}" cells ${span} (${offFloor.length}) lie on wall ${onWalls.map((w) => `"${w}"`).join(", ")} — a rail is a floor line that stands instead of a wall, not on one. Either drop that wall where the rail runs and draw the rail on the floor cells there (a barred cell then shares one room with the corridor: label it once; leave a 1-cell gap in the rail for a gate and put the gate piece, e.g. "iron gate", in "objects" at that gap), or keep the wall with a door and remove the rail.`
-        : `rail "${r.id}" cells ${span} (${offFloor.length}) are not floor — rails go on floor cells (not walls, not the 2 face rows under a north wall).`);
+        : `rail "${r.id}" cells ${span} (${offFloor.length}) are not floor — rails go on floor cells (not walls, not the 2 face rows under a north wall).`));
     }
-    for (const c of cells) railCells.add(idx(c.x, c.y));
-    lines.push({ id: r.id, cells });
+    const onFloor = cells.filter((c) => A.isFloor(c.x, c.y));
+    for (const c of onFloor) railCells.add(idx(c.x, c.y));
+    if (onFloor.length) lines.push({ id: r.id, cells: onFloor });
   }
   const daises: { id: string; x: number; y: number; w: number; h: number }[] = [];
   const daisCell = new Set<number>();
   for (const d of Array.isArray(L.daises) ? L.daises : []) {
-    if (!S.daises?.[d?.id]) { errors.push(`unknown dais id "${d?.id}" — use one of: ${Object.keys(S.daises ?? {}).join(", ") || "(this chipset has no daises)"}.`); continue; }
-    if (![d.x, d.y, d.w, d.h].every(num) || d.w < 1 || d.h < 1) { errors.push(`dais ${d.id}: x,y,w,h must be integers >= 1.`); continue; }
-    const off: string[] = [];
-    for (let y = d.y; y < d.y + d.h; y++) for (let x = d.x; x < d.x + d.w; x++) { if (!inMap(x, y) || !A.isFloor(x, y)) off.push(P(x, y)); else daisCell.add(idx(x, y)); }
-    if (off.length) { errors.push(`dais ${d.id} at ${P(d.x, d.y)} ${d.w}x${d.h} covers cells that are not floor (${off.slice(0, 4).join(" ")}) — a dais lies on floor cells only (not wall or the 2 face rows).`); continue; }
+    if (!S.daises?.[d?.id]) { warnings.push(`left out — unknown dais id "${d?.id}" — use one of: ${Object.keys(S.daises ?? {}).join(", ") || "(this chipset has no daises)"}.`); continue; }
+    if (![d.x, d.y, d.w, d.h].every(num) || d.w < 1 || d.h < 1) { warnings.push(`left out — dais ${d.id}: x,y,w,h must be integers >= 1.`); continue; }
+    const off: string[] = [], mine: number[] = [];
+    for (let y = d.y; y < d.y + d.h; y++) for (let x = d.x; x < d.x + d.w; x++) { if (!inMap(x, y) || !A.isFloor(x, y)) off.push(P(x, y)); else mine.push(idx(x, y)); }
+    if (off.length) { warnings.push(`left out — dais ${d.id} at ${P(d.x, d.y)} ${d.w}x${d.h} covers cells that are not floor (${off.slice(0, 4).join(" ")}) — a dais lies on floor cells only (not wall or the 2 face rows).`); continue; }
+    for (const i of mine) daisCell.add(i);
     daises.push({ id: d.id, x: d.x, y: d.y, w: d.w, h: d.h });
   }
   const floorZones: { x0: number; y0: number; x1: number; y1: number; floor: string }[] = [];
   for (const z of Array.isArray(L.floor_zones) ? L.floor_zones : []) {
     if (!S.floors[z?.floor]) continue;
-    if (![z.x, z.y, z.w, z.h].every(num) || z.w < 1 || z.h < 1) { errors.push(`floor_zone ${z.floor}: x,y,w,h must be integers >= 1.`); continue; }
+    if (![z.x, z.y, z.w, z.h].every(num) || z.w < 1 || z.h < 1) { warnings.push(`left out — floor_zone ${z.floor}: x,y,w,h must be integers >= 1.`); continue; }
     const rs = new Set<string>(); let floorN = 0;
     for (let y = z.y; y < z.y + z.h; y++) for (let x = z.x; x < z.x + z.w; x++) if (inMap(x, y) && A.isFloor(x, y)) { floorN++; const r = roomIdAt(x, y); if (r) rs.add(r); }
-    if (!floorN) { errors.push(`floor_zone ${z.floor} at ${P(z.x, z.y)} ${z.w}x${z.h} covers no floor cell — put it on a room's floor (below the 2 face rows).`); continue; }
-    if (rs.size > 1) { errors.push(`floor_zone ${z.floor} at ${P(z.x, z.y)} ${z.w}x${z.h} spans rooms ${[...rs].map((r) => `"${r}"`).join(", ")} — a floor zone lies inside one room (give each room its own "floor" instead).`); continue; }
+    if (!floorN) { warnings.push(`left out — floor_zone ${z.floor} at ${P(z.x, z.y)} ${z.w}x${z.h} covers no floor cell — put it on a room's floor (below the 2 face rows).`); continue; }
+    if (rs.size > 1) { warnings.push(`left out — floor_zone ${z.floor} at ${P(z.x, z.y)} ${z.w}x${z.h} spans rooms ${[...rs].map((r) => `"${r}"`).join(", ")} — a floor zone lies inside one room (give each room its own "floor" instead).`); continue; }
     floorZones.push({ x0: z.x, y0: z.y, x1: z.x + z.w - 1, y1: z.y + z.h - 1, floor: z.floor });
   }
   for (const p of objs) { const { w, h } = fp(p.id); if (p.x < 0 || p.y < 0 || p.x + w > W || p.y + h > H) { errors.push(`"${p.id}" at ${P(p.x, p.y)} (${w}x${h}) is out of the map.`); if (p.src >= 0) badObjects.add(p.src); } }
@@ -440,6 +483,7 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     for (let i = hit; i >= 0 && !seen[i]; i = from[i]!) {
       if (!block[i]) continue;
       const x = i % W, y = (i - x) / W;
+      for (const p of hits(x, y)) if (p.src >= 0) badObjects.add(p.src);   // 길을 막은 기물은 빼고 깔 수 있다(짓는 쪽이 빼 보고 닿으면 깐다 — 무엇을 뺐는지 알린다)
       const h = hits(x, y).map((p) => `"${p.id}"@${P(p.x, p.y)}`);
       names.push(h.length ? h.join(", ") : railCells.has(i) ? `rail cell ${P(x, y)}` : P(x, y));
     }
@@ -448,13 +492,15 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const roomsOut: WallsRoomOut[] = [];
   for (const [c, r] of roomList) {
     const fl = comps[c]!.filter((i) => A.isFloor(i % W, Math.floor(i / W)));
-    if (!fl.some((i) => seen[i])) errors.push(`room "${r.id}" cannot be reached from the entrance — give it a door, and keep the doorway and the cell on each side of it free of furniture.${blockerHint(fl)}`);
+    // 코드가 이름 붙인 주머니(문 없는 닫힌 공간)는 닿지 않아도 게임을 깨지 않는다 — 알리기만 한다. 모델이 이름 붙인 방이 닿지 않으면 거절한다(문이 안 닿음).
+    if (!fl.some((i) => seen[i]) && autoRooms.has(r.id)) warnings.push(`room "${r.id}" (an unlabelled pocket) has no door — it stays closed off.`);
+    else if (!fl.some((i) => seen[i])) errors.push(`room "${r.id}" cannot be reached from the entrance — give it a door, and keep the doorway and the cell on each side of it free of furniture.${blockerHint(fl)}`);
     const xs = comps[c]!.map((i) => i % W), ys = comps[c]!.map((i) => Math.floor(i / W));
     const x0 = Math.min(...xs), y0 = Math.min(...ys);
     roomsOut.push({ id: r.id, x: x0, y: y0, w: Math.max(...xs) - x0 + 1, h: Math.max(...ys) - y0 + 1, cells: comps[c]!.length, floor: r.floor,
       ...(r.purpose ? { purpose: String(r.purpose).slice(0, 60) } : {}), ...(r.role ? { role: String(r.role) } : {}), ...(r.landmark ? { landmark: r.landmark } : {}), ...(r.stairs ? { stairs: r.stairs } : {}) });
   }
-  if (lmRaw && built.issues.some((i) => i.code === "unreachable-piece" && hits(i.x, i.y).some((p) => p.src === 0))) errors.push(`landmark "${lmRaw.id}" at ${P(lmRaw.x, lmRaw.y)} has no reachable free side — clear a cell next to it that connects to the entrance.`);
+  if (lmRaw && built.issues.some((i) => i.code === "unreachable-piece" && hits(i.x, i.y).some((p) => p.src === 0))) warnings.push(`landmark "${lmRaw.id}" at ${P(lmRaw.x, lmRaw.y)} has no reachable free side — clear a cell next to it that connects to the entrance (review_layout).`);
   // 닿지 않는 바닥 8칸 이상은 고칠 말(bbox-walls-5: 가구·난간이 방 한쪽을 막아 플레이어가 못 들어갔다), 그 아래는 알림.
   // 문짝(잠긴 문·쇠창살 문)은 지나갈 수 있는 문으로 친다 — 위 seen 과 같은 규칙(감방 안을 «닿지 않는다»고 하지 않게).
   const unreachedSoft: string[] = [];

@@ -131,6 +131,8 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   }
   const entrance = Array.isArray(data.entrance) ? (data.entrance as { x: number; y: number }[])[0] : undefined;
   // 뺀 기물은 요약 머리에 적는다 — 무엇이 빠졌고 바닥이 얼마나 비었는지(«19개 중 3개만 깔림, 빈 바닥 61%»)를 모델과 보고가 같이 읽는다.
+  // 검사가 고쳐 깐 것(목록을 잘못 고른 기물 · 벽면에 안 닿은 벽 기물 · 문 · 깔개 · 단 · 이름표 …) — 요약에 «그대로» 라고 쓰지 않는다.
+  const fixes = check.warnings.filter((w) => /^(fixed|left out) — /u.test(w)).length;
   const leftOutCount = new Map<string, number>();
   for (const d of dropped) { const id = /^"([^"]*)"/u.exec(d)?.[1] ?? d; leftOutCount.set(id, (leftOutCount.get(id) ?? 0) + 1); }
   const leftOut = [...leftOutCount].map(([id, n]) => `"${id}"${n > 1 ? ` ×${n}` : ""}`).join(", ");
@@ -138,7 +140,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   const warnings = [...swaps.map(swapLine), ...droppedWhy.map((e) => `left out — ${e}`), ...soft.map((w) => `open — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (laid without them): ${dropped.join(", ")} — add them back with edit_place patch.layoutPatch.add_objects on free floor cells`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
   return {
     ok: true, mapIds: [builtId], ...(entrance ? { entrance: { mapId: builtId, ...entrance } } : {}),
-    summary: `${spec.name}: ${leftOut ? `laid ${sentPieces - dropped.length} of your ${sentPieces} pieces — left out (each with its reason in warnings): ${leftOut}; bare floor ${barePct ?? "?"}%. The rest is laid as written — ` : swaps.length ? `laid your layout with ${swaps.length} id${swaps.length === 1 ? "" : "s"} swapped for this chipset's nearest (listed in warnings) — ` : "laid your layout exactly — "}${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,
+    summary: `${spec.name}: ${leftOut ? `laid ${sentPieces - dropped.length} of your ${sentPieces} pieces — left out (each with its reason in warnings): ${leftOut}; bare floor ${barePct ?? "?"}%. The rest is laid as written — ` : swaps.length ? `laid your layout with ${swaps.length} id${swaps.length === 1 ? "" : "s"} swapped for this chipset's nearest (listed in warnings) — ` : fixes ? `laid your layout with ${fixes} fix${fixes === 1 ? "" : "es"} (each «fixed —» / «left out —» line in warnings) — ` : "laid your layout exactly — "}${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,
     warnings, missingArt: [], calls: run.calls,
     state: { tilesetId, mapId: builtId, args: clean({ ...args, mapId: builtId, replace: true }), placed: [] },
   };

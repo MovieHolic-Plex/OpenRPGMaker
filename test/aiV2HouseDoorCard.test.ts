@@ -13,6 +13,7 @@ import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { doorHouses, thinInsideNote, TIER_MIN_ROOMS } from "@/ai/v2/place/doorHouse";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
+import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 
 const SLOW = 300_000;
 const TASK = "바닷가 포구 마을과 그 마을 성당 실내를 만들어 줘.";
@@ -112,5 +113,32 @@ describe("버들항 마을을 지은 턴의 집 안 — 카드 · 문 목록 · 
     const off = JSON.parse((await t.call("make_place", { type: "interior", name: "헛간", layout: mill("log", "plank", [{ id: "crate", x: 9, y: 9 }]), hints: { door: [0, 0] } }))[0]!) as { ok: boolean; warnings: string[] };
     expect(off.ok).toBe(true);
     expect(off.warnings.join(" ")).toContain("hints.door (0,0) is not a house door");
+  }, SLOW);
+
+  // r6 결함 4: 손으로 찍은 큰 건물(stamp_object — 놓기 기록이 남지 않는다)의 문도 그 킷 · 단으로 읽힌다. 같은 문 그림을 쓰는 킷이 여럿이라
+  // (첨탑 성당 12×13 · 성당 블록 14×17 · 20×17 이 같은 문 칸) 입구 타일 이름만으로는 블록을 찍어도 «첨탑 성당» 이었다 — 맵의 칸과 겹쳐 고른다.
+  it("손으로 찍은 성당 킷의 문: 그 킷과 초대형 단으로 읽히고, 그 문 뒤 실내는 hints.door 로 초대형 구성을 탄다", async () => {
+    const t = turn();
+    const map = t.ctx.project.maps[t.start]!;
+    const W = 40, H = 30, grass = map.lowerTiles[0]!;
+    const m = map as unknown as Record<string, number[]>;
+    for (const k of ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"]) if (Array.isArray(m[k])) m[k] = Array<number>(W * H).fill(k === "lowerTiles" ? grass : -1);
+    map.width = W; map.height = H;
+    for (const [kit, x] of [["bd-house-cathedral", 2], ["bd-block-church-14x17", 20]] as const) {
+      const r = await runToolAsync(t.ctx, "stamp_object", { mapId: t.start, objectId: `kit:beodeul_city/${kit}`, x, y: 1, onOverlap: "replace" });
+      expect(r.ok, r.summary).toBe(true);
+    }
+    expect(t.ctx.project.maps[t.start]!.structurePlacements ?? []).toEqual([]);   // 손 찍기는 놓기 기록을 남기지 않는다 — 맵의 칸으로 읽는다
+    const doors = doorHouses(t.ctx.project, t.ctx.project.maps[t.start]);
+    const spire = doors.find((d) => d.front.x === 9 && d.front.y === 14), block = doors.find((d) => d.front.x === 28 && d.front.y === 14);
+    expect(spire, JSON.stringify(doors)).toMatchObject({ kit: "bd-house-cathedral", label: "첨탑 성당", tier: "xlarge" });
+    expect(block, JSON.stringify(doors)).toMatchObject({ kit: "bd-block-church-14x17", tier: "xlarge" });
+    // 그 문 뒤 실내: 배치 없이 hints.door 로 부르면 초대형 구성(방 8개 이상)
+    await t.call("todo", { op: "init", list: [{ phase: "p", items: [{ content: "성당 실내", id: "c", check: { kind: "none" } }] }] });
+    const plan = JSON.parse((await t.call("make_place", { type: "interior", name: "대성당", hints: { door: [9, 14] } }))[0]!) as { ok: boolean; mapIds: string[]; summary: string; warnings: string[] };
+    expect(plan.ok, plan.summary).toBe(true);
+    expect(plan.warnings.join(" ")).toContain("hints.door (9,14) = «첨탑 성당» (bd-house-cathedral, xlarge)");
+    const rooms = plan.mapIds.flatMap((id) => (t.ctx.project.maps[id]?.locations ?? []).filter((l) => (l.tags ?? []).includes("hand-layout-room")));
+    expect(rooms.length).toBeGreaterThanOrEqual(TIER_MIN_ROOMS.xlarge!);
   }, SLOW);
 });

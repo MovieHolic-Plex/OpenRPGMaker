@@ -421,10 +421,11 @@ export function placeVerbs(c: VerbContext) {
         if (base && (pending || (!record && blank && isPlaceholderMap(blank)))) {
           const ap = lp ? applyLayoutPatch(base, lp) : { layout: base, errors: [] as string[] };
           const name = pending?.name ?? (String(patch.set?.name ?? "").trim() || openPlaceName() || "실내");
-          if (ap.errors.length) return text({ ok: false, summary: `Rejected: the layout patch for "${name}" (not built yet — your last make_place layout was rejected) does not apply:\n- ${ap.errors.join("\n- ")}\nYou sent: ${JSON.stringify(lp).slice(0, 400)}\nFixed call: make_place({"type":"interior","name":${JSON.stringify(name)},"layout":<the full corrected layout>}).` });
+          // 맞지 않는 고침 줄(없는 기물 빼기 · 모르는 replace 칸)은 건너뛰고 나머지를 적용해 깐다 — 건너뛴 것을 결과에 적는다(거절은 게임이 깨질 때만).
+          const skipped = ap.errors.map((e) => `skipped — ${e}`);
           const res = await makePlace.execute(id, { spec: { ...(pending ?? { type: "interior" as const, name, mapId: patch.mapId }), layout: ap.layout } });
           const head = res.content[0];
-          if (head && head.type === "text") { try { const j = JSON.parse(head.text) as Record<string, unknown>; res.content[0] = { type: "text", text: JSON.stringify({ note: `"${name}" was not built yet, so this edit was sent as make_place with ${sent ? "the layout you sent" : "your rejected layout patched"}.`, ...j }) }; } catch { /* 글 그대로 */ } }
+          if (head && head.type === "text") { try { const j = JSON.parse(head.text) as Record<string, unknown>; res.content[0] = { type: "text", text: JSON.stringify({ note: `"${name}" was not built yet, so this edit was sent as make_place with ${sent ? "the layout you sent" : "your rejected layout patched"}.${skipped.length ? ` ${skipped.join(" ")}` : ""}`, ...j }) }; } catch { /* 글 그대로 */ } }
           return res;
         }
         // 칸 배치로 깔지 않은 장소에 온 layoutPatch: 고침의 나머지(앵커·크기·특징)가 있으면 그것만 하고, 없으면 그 맵을 먼저 보게 한다.
@@ -437,7 +438,8 @@ export function placeVerbs(c: VerbContext) {
       } else if (lp) {
         // 칸 배치 고침: 지금 배치에 그대로 적용해 set.layout 으로 다시 짓는다(검증은 짓기가 한다).
         const ap = applyLayoutPatch(cur!, lp);
-        if (ap.errors.length) return text({ ok: false, summary: `Rejected: the layout patch for "${record.spec.name}" does not apply:\n- ${ap.errors.join("\n- ")}\nYou sent: ${JSON.stringify(lp).slice(0, 400)}\nFixed call: edit_place again with layoutPatch entries that match the current layout (exact id and x,y of an entry), or replace the whole field.` });
+        // 지금 배치와 맞지 않는 고침 줄은 건너뛰고 나머지를 적용한다 — 건너뛴 줄과 까닭을 결과에 적는다(거절은 게임이 깨질 때만).
+        for (const e of ap.errors) shellNote.push(`skipped — ${e}`);
         patch = { ...patch, set: { ...(patch.set ?? {}), layout: ap.layout } };
       }
       // 이미 있는 방(이 실행이 짓지 않은 방)의 「아늑하게·물건 더하기·뒷문」은 다시 짓지 않고 덧찍는다 — 다시 지으면 원래 바닥·가구가 바뀐다(2026-10-23 비교).
