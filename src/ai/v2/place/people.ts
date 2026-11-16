@@ -300,7 +300,10 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   if (!byLookOnly || !lookWanted?.label || lookWanted.label === pick.label) return pick;
   // 글의 낱말을 모두 가진 칩이 표에 있는데 선 것은 성별·나이로만 고른 칩이다. 그 칩을 이 게임이 쓸 수 있으면 화풍이 달라도 그 칩이 선다
   // (오너 2026-11-16 «에셋을 자유롭게» — 계열은 기본값이지 벽이 아니다). 못 쓰는 칩(몬스터 수집 전용 · 장르 잠금)이면 고른 칩을 대역으로 두고 바란 칩의 이름을 남긴다(없는 그림 줄).
-  const free = (lookWanted.chips ?? []).filter((e) => usable(e) && !misfitFor(e) && !heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`));
+  // 다른 화풍의 칩으로 바꾸는 것은 글이 그 칩을 이름으로 불렀고(npcGraphicLabelNamedBy) 이 맵의 기본 계열에 그 역할의 맞는 칩이 없을 때만이다 — 위 named() 와 같은 규칙.
+  // 「한 게임 한 화풍」은 구성기가 스스로 고를 때의 기본값이다(2026-11-16 명세 은행: «농부»·«중년 여인 상인» 이 RTP 맵에 인형 화풍 칩으로 섞여 섰다).
+  const free = (lookWanted.chips ?? []).filter((e) => usable(e) && !misfitFor(e) && !heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`)
+    && (familyFits(map, e.textureKey, hostileOk) || named(e)));
   const exact = free.find((e) => !used.has(`${e.textureKey}#${e.characterIndex}`) && !usedElsewhere.has(`${e.textureKey}#${e.characterIndex}`)) ?? free[0];
   if (!exact) return { ...pick, wanted: lookWanted.label };
   const row = sharedCharsetRow(exact.textureKey, exact.characterIndex);

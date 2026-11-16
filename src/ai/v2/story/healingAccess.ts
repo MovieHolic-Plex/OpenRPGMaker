@@ -14,6 +14,7 @@ import type { GameMap, Project } from "@/project/types";
 import { allCommands, battleSites, healingItemIds } from "../judge/combatChecks";
 import { mapRegion } from "../judge/objectiveWhere";
 import { isObjectiveCommand } from "../judge/objectiveCommand";
+import { REST_LINE } from "./restLine";
 import { reachWithout } from "../judge/puzzleChecks";
 import { pickPersonGraphic } from "../place/people";
 import { serviceNeeds, serviceRoom } from "../place/program";
@@ -222,7 +223,8 @@ function bossEvents(project: Project): { map: GameMap; x: number; y: number; id:
 
 /** 그 맵 안에 전원 회복(여관·recoverAll)이 있나. */
 function mapHasFullRecovery(map: GameMap): boolean {
-  return (map.events ?? []).some((ev) => /"kind":"(?:recoverAll|inn)"/u.test(JSON.stringify(ev.pages ?? [])));
+  // 보스 싸움 앞의 회복(restBeforeBoss — REST_LINE)은 쉼터가 아니다: 그것을 쉼터로 치면 다음 바퀴에 쉼터 결정을 걷어 회복의 근거가 사라진다.
+  return (map.events ?? []).some((ev) => { const text = JSON.stringify(ev.pages ?? []); return /"kind":"(?:recoverAll|inn)"/u.test(text) && !text.includes(REST_LINE); });
 }
 
 /**
@@ -287,8 +289,6 @@ export function ensureBossRest(run: BuildRun): string[] {
   return notes;
 }
 
-const REST_LINE = "(결전을 앞두고 숨을 고른다. 쉼터 결정의 빛이 닿아 기운이 모두 돌아왔다.)";
-
 /**
  * 그 맵에 전원 회복(쉼터 결정·여관)이 있는 보스는 싸움 앞에 파티를 쉬게 한다 — 서술 한 줄과 전원 회복을 그 페이지 맨 앞에. 결정적·되풀이 안전.
  * 왜(2026-11-16 확인 빌드 r7a N3): 길 전투 맞추기는 보스를 «쉬고 온 풀 HP» 파티로 잰다(pathBattleBudget · pathBattleTension). 플레이어는 병사를 이긴 뒤
@@ -299,7 +299,7 @@ function restBeforeBoss(project: Project, mapId: string, eventId: string): strin
   const map = project.maps[mapId];
   const ev = map?.events?.find((e) => e.id === eventId);
   // 다른 보스에 우리가 넣은 회복은 쉼터로 치지 않는다 — 쉼터가 없는 맵의 보스 둘이 서로를 근거로 삼지 않게.
-  if (!map || !ev || !mapHasFullRecovery({ ...map, events: map.events.filter((e) => e.id !== ev.id && !JSON.stringify(e.pages ?? []).includes(REST_LINE)) })) return undefined;
+  if (!map || !ev || !mapHasFullRecovery({ ...map, events: map.events.filter((e) => e.id !== ev.id) })) return undefined;
   let rested = 0;
   const pages = (ev.pages ?? []).map((page) => {
     let boss = false;

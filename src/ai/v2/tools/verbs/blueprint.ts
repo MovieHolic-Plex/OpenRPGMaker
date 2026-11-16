@@ -137,7 +137,15 @@ export function blueprintVerbs(c: VerbContext) {
         session.pathTextBounces += 1;
         return text({ ok: false, summary: `Path not built yet — the people on the path have no words. Call build_blueprint_path again with steps:[{id, lines, …}] for: ${lacking.join(" ")} (A line starting with «(» is narration. Calling again without them builds the path with one-line placeholders.)` });
       }
-      return finishContent(id, "build_blueprint_path", params, runBlueprintPath(steps));
+      // 청사진 장소 가운데 아직 맵이 없는 것은 먼저 짓는다(끝맺음 auto-places 와 같은 빌더) — 경로 빌더는 맵이 없는 단계를 앞 단계 맵에 옮겨 세우고
+      // 청사진의 place 를 그 맵 이름으로 바꾼다. 그러면 그 장소는 영영 지어지지 않는다(2026-11-16 명세 은행 r5a-river: «강변 들판» 이 사라지고 열쇠 단계가 선술집에 섰다).
+      let placesNote = "";
+      if (session.buildPlaces && walkBlueprint(env.ctx.project).blockers.some((b) => b.id === "blueprint-place-missing")) {
+        const built = await session.buildPlaces();
+        if (built.length) placesNote = ` Places in the blueprint that had no map were built first: ${built.join(" / ").slice(0, 400)}.`;
+      }
+      const result = runBlueprintPath(steps);
+      return finishContent(id, "build_blueprint_path", params, placesNote ? { ...result, summary: `${result.summary}${placesNote}` } : result);
     },
   };
   return { writeBlueprint, buildBlueprintPathVerb };

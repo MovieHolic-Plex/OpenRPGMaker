@@ -317,11 +317,15 @@ describe("사람 그림이 역할을 따른다 — 확인 빌드 r6", () => {
     expect(cop.wanted).toBe("경찰관 · 남색 제복");
     expect(pick("jp_city_modern", "학생", "학생 소년")).toEqual({ label: "남학생 · 남색 블레이저", family: "modern", wanted: undefined });
   });
-  it("글이 말한 칩이 다른 화풍에 있으면 그 칩이 선다 — 계열은 기본값이지 벽이 아니다", () => {
+  it("글이 이름으로 부른 칩이 다른 화풍에 있으면 그 칩이 선다 — 계열은 기본값이지 벽이 아니다", () => {
     expect(pick(undefined, "어부", "젊은 어부")).toEqual({ label: "어부 · 파란 줄무늬", family: "refmap-doll", wanted: undefined });
+    // 이름으로 부르지 않은 다른 화풍 칩으로는 바꾸지 않는다 — 한 게임 한 화풍은 구성기가 스스로 고를 때의 기본값이다(명세 은행 2026-11-16).
+    // 이 맵 계열의 여자 칩이 서고, 바란 칩(«마을 여인 · 흰 보닛»)은 없는 그림 줄로 남는다.
     const monger = pick(undefined, "어물전 주인", "중년 여인 상인");
-    expect(monger.label).toContain("마을 여인");
-    expect(monger.wanted).toBeUndefined();
+    expect(monger.family).toBe("rtp-people");
+    expect(monger.label).toContain("여성");
+    expect(monger.wanted).toBe("마을 여인 · 흰 보닛");
+    expect(pick(undefined, "농부", "farmer").family).toBe("rtp-people");
     // 제 화풍에 그 역할의 칩이 있으면 그대로다.
     expect(pick(undefined, "신부", "신부 사제")).toEqual({ label: "승려", family: "rtp-people", wanted: undefined });
   });
@@ -370,6 +374,22 @@ describe("보스는 쉬고 온 파티와 싸운다 — 확인 빌드 r7a", () =>
     expect(kinds(run.ctx.project)).toEqual(["text", "recoverAll", "text", "fork"]);
     expect(ensureBossRest(run)).toEqual([]);
   });
+  it("다시 돌아도 보스 앞의 회복을 쉼터로 치지 않는다 — 놓은 쉼터 결정을 걷지 않는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject("굴") };
+    const blank = createBlankProject() as Project;
+    ctx.project.database = blank.database;
+    ctx.project.system = { ...ctx.project.system, startActorIds: blank.system.startActorIds };
+    expect(runTool(ctx, "author_dungeon", { type: "cave", size: "small", name: "굴", seed: 2 }, { dryRun: false }).ok).toBe(true);
+    const cave = Object.values(ctx.project.maps)[0]!;
+    ctx.project.maps.m_start = { ...structuredClone(cave), id: "m_start", name: "시작", events: [] };
+    ctx.project.startMapId = "m_start";
+    const run = createBuildRun({ project: ctx.project, currentMapId: cave.id, assistantRun: true } as never);
+    const rests = () => run.ctx.project.maps[cave.id]!.events.filter((e) => /_rest$/u.test(e.id)).length;
+    expect(ensureBossRest(run).join(" ")).toContain("heals the party before its fight");
+    expect(rests()).toBe(1);
+    expect(ensureBossRest(run)).toEqual([]);
+    expect(rests()).toBe(1);
+  }, 60_000);
   it("쉼터가 없는 맵(시작 맵)의 보스는 공짜로 회복시키지 않는다", () => {
     const project = build(false);
     const run = createBuildRun({ project, currentMapId: project.startMapId, assistantRun: true } as never);
