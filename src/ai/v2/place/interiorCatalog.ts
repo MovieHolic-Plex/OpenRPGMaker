@@ -9,6 +9,7 @@ import { kitHandObjects } from "@/project/roomKit";
 import type { Project, TilesetDef } from "@/project/types";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { layoutCatalog } from "./interiorLayout";
+import { gameColour, paletteFamilies } from "./interiorPalette";
 
 /** 칩셋의 실효 방 사양 — roomKit 역할표(roomSpecOf), 가구 표가 비면 조립 킷 기물(kitHandObjects). 편집기 도구 specFor 와 같은 규칙. */
 export function effectiveSpec(tileset: TilesetDef | undefined): HandInteriorSpec | undefined {
@@ -53,7 +54,26 @@ function suggestedPieces(S: HandInteriorSpec, text: string, max = 70, key = ""):
     const ranked = [...r.hits].sort((a, b) => b[1] - a[1]).map(([id]) => id);
     for (const id of ranked) { if (ids.length >= max) break; if (!ids.includes(id)) ids.push(id); }
   }
-  return { kinds, ids: ids.slice(0, max), sized: [...sized].slice(0, 12) };
+  return { kinds, ids: colourFirst(S, ids, kinds, key).slice(0, max), sized: [...sized].slice(0, 12) };
+}
+
+/**
+ * 이 게임의 천 색(interiorPalette.ts gameColour)을 한 벌마다 맨 앞으로 — 목록에 한 벌의 식구가 있으면 그 자리에 이 게임 색의 식구를 먼저 싣는다
+ * (없으면 넣는다). 모델은 «이 요청에 맞는 기물» 의 앞머리를 옮겨 적는다 — 짓기는 받은 id 를 그대로 깐다. 방 종류가 맞을 때만(평면 줄과 같은 조건).
+ */
+function colourFirst(S: HandInteriorSpec, ids: readonly string[], kinds: readonly string[], key: string): string[] {
+  const game = kinds.length ? gameColour(S, key) : undefined;
+  if (!game) return [...ids];
+  const familyOf = new Map<string, Map<string, string>>();
+  for (const members of paletteFamilies(S).values()) for (const id of members.values()) familyOf.set(id, members);
+  const out: string[] = [];
+  for (const id of ids) {
+    const members = familyOf.get(id);
+    const mine = members?.get(game.colour);
+    if (mine && S.objects[mine] && !out.includes(mine)) out.push(mine);
+    if (!out.includes(id)) out.push(id);
+  }
+  return out;
 }
 
 /**
@@ -62,6 +82,7 @@ function suggestedPieces(S: HandInteriorSpec, text: string, max = 70, key = ""):
  * 낱말은 손으로 적지 않는다: 곁방 쓰임 = 칩셋 예제 표에서 그 방 종류가 든 건물의 다른 방들, 랜드마크 쪽 = 그 예제 방 기물의 facing(E/W 기물이 있을 때만 동·서 끝).
  * 쪽(서·동·북)과 입구 자리(남쪽 벽의 왼·가운데·오른)는 평면의 축이라 표가 아니다. 게임 열쇠가 없으면(사람 편집·옛 호출·지시문 상한 시험의 열쇠 없는 판) 싣지 않는다.
  * 요청이 말한 것이 이긴다 — 줄에 그렇게 적는다. 칸 배치는 여전히 모델이 쓰고, 코드는 받은 그대로 깐다(뒤집지 않는다: 뒤집으면 모델이 적어 둔 좌표 — 잇기·고치기 — 가 어긋난다).
+ * 이 게임의 천 색(깔개·깃발·침대·꽃병 — 칩셋 표의 색 한 벌)도 이 줄에 싣는다: 짓기가 모델의 id 를 바꾸지 않으므로 색은 모델이 적게 한다.
  */
 function planLine(S: HandInteriorSpec, kinds: readonly string[], key: string): string | undefined {
   if (!key.trim() || !kinds.length) return undefined;
@@ -81,8 +102,21 @@ function planLine(S: HandInteriorSpec, kinds: readonly string[], key: string): s
   const end = pick(ends, "end");
   const sides = ["west", "east", "north"].filter((s) => !end.startsWith(s) && !(s === "north" && end === "north wall"));
   const turned = end === "east end" ? [...facing.get("E")!] : end === "west end" ? [...facing.get("W")!] : [];
+  const cloth = gameColour(S, key);
   return `plan for this game (seeded per game so two games' ${kind.replace(/_/gu, " ")} rooms differ; anything the request names wins): landmark at the ${end}${turned.length ? ` (pieces that face it: ${turned.join(", ")})` : ""}`
-    + `${side.length ? `; side rooms: ${side.join(", ")}, on the ${pick(sides, "side")} side` : ""}; entrance ${pick(["left of centre", "at the centre", "right of centre"], "door")} of the south wall.`;
+    + `${side.length ? `; side rooms: ${side.join(", ")}, on the ${pick(sides, "side")} side` : ""}; entrance ${pick(["left of centre", "at the centre", "right of centre"], "door")} of the south wall.${cloth?.ids.length ? ` This game's cloth colour: ${cloth.colour} (${cloth.ids.join(", ")}).` : ""}`;
+}
+
+/** 깔개 줄 목록(«carpets (…): rug red, rug royal, …»)에서 이 게임 색의 깔개를 맨 앞으로 — 깔개 줄은 기물이 아니라 «이 요청에 맞는 기물» 에 실리지 않는다. */
+function carpetsFirst(catalog: string, game: { colour: string; ids: string[] } | undefined): string {
+  if (!game) return catalog;
+  return catalog.split("\n").map((line) => {
+    const m = /^(carpets[^:]*: )(.*)$/u.exec(line);
+    if (!m) return line;
+    const items = m[2]!.split(", ");
+    const mine = items.filter((id) => game.ids.includes(id));
+    return mine.length ? m[1] + [...mine, ...items.filter((id) => !mine.includes(id))].join(", ") : line;
+  }).join("\n");
 }
 
 const cache = new Map<string, string>();
@@ -99,7 +133,7 @@ export function chipsetCatalog(tileset: TilesetDef | undefined, text = "", key =
     `[Interior catalog — chipset ${tileset.id}, 16px cells; exact ids for make_place spec.layout. Generated from the chipset's own room tables and pieces.]`,
     ...(suggested.length ? [`suggested for this request${sug.kinds.length ? ` (room examples: ${sug.kinds.join(", ")})` : ""}: ${suggested.join(", ")}${sug.sized.length ? `; sized pieces used there: ${sug.sized.join(", ")}` : ""}`] : []),
     ...(plan ? [plan] : []),
-    layoutCatalog(S),
+    carpetsFirst(layoutCatalog(S), sug.kinds.length ? gameColour(S, key) : undefined),
   ].join("\n");
   cache.set(cacheKey, out);
   return out;

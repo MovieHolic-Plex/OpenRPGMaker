@@ -1,6 +1,7 @@
 // 조수가 짓는 게임이 매번 비슷하다(2026-11-16 감독·오너 «집·소품이 매번 같은 것, 방이 통째로 같은 것 … 둘 다 문제야») — 구성기의 기본값에서 다양함이 나오게.
 // 잰 것(모델 없음, 같은 인자에 씨앗만 바꿔 여섯 판 — ~/z-project/assistant-fable-runs/av2-variety):
-//   · 실내 칸 배치는 받은 그대로 깔아 같은 뼈대는 화소까지 같은 방이었다(대성당 여섯 판 같은 해시) → 게임 색(깔개·깃발·침대 색 한 벌 · 천장)을 게임마다.
+//   · 실내 칸 배치는 받은 그대로 깔아 같은 뼈대는 화소까지 같은 방이었다(대성당 여섯 판 같은 해시) → 게임마다의 천 색을 목록 카드로 모델에게 건네고
+//     (짓기는 모델의 id 를 그대로 깐다 — 감독 2026-11-16), 모델이 쓰지 않는 천장만 짓기가 게임마다 고른다.
 //   · 마을 카드의 종류 예 첫째(fishing-cove)를 r6·r7a·r7 세 판 모두 그대로 보냈다 → 예 넷을 게임마다(요청에 가까운 것이 앞, 나머지는 열쇠로 섞은 차례).
 //   · 실내 목록 카드의 «이 요청에 맞는 기물» 이 늘 같은 차례였다(r7 대성당이 앞 스물셋 가운데 열하나를 옮겼다) → 차례를 게임 열쇠로.
 //   · 방 구성 그림은 용도마다 늘 같은 두셋이었다 → 갈래 안에서 열쇠로.
@@ -10,7 +11,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { HAND_INTERIOR_SPECS } from "@/editor/handInterior/builder";
-import { applyInteriorPalette, colourNamedIds, interiorPalette, paletteColours, paletteFamilies } from "@/ai/v2/place/interiorPalette";
+import { gameColour, interiorCeiling, paletteColours, paletteFamilies } from "@/ai/v2/place/interiorPalette";
 import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, villageKindById, villageKindExamples, villageKindMenu } from "@/editor/tools/beodeulVillageKinds";
 import { VILLAGE_CARD, villageCard } from "@/ai/v2/place/builders/village";
 import { roomIdeasFor } from "@/ai/v2/place/roomIdeas";
@@ -45,7 +46,7 @@ function layChapel(spec: PlaceSpec, lookKey?: string): { project: Project; mapId
 /** 그려지는 칸 전부(바닥 · 깔개 덧칸 · 윗층 · 윗 덧칸) — 깔개는 바닥 덧칸(lowerOverlayTiles)에 깔린다. */
 const tilesOf = (p: Project, mapId: string) => { const m = p.maps[mapId]!; return JSON.stringify([m.lowerTiles, m.lowerOverlayTiles ?? [], m.upperTiles, m.upperOverlayTiles ?? []]); };
 
-describe("실내 칸 배치의 게임 색", () => {
+describe("실내의 게임 색 — 모델이 적는다, 짓기는 받은 그대로", () => {
   it("색 낱말과 색 한 벌은 칩셋 표에서 온다(손 목록 없음) — 같은 칸 모양·놓는 법에 끝 낱말만 색이 다른 것", () => {
     expect(paletteColours(S)).toEqual(expect.arrayContaining(["red", "blue", "green"]));
     const fam = paletteFamilies(S);
@@ -56,55 +57,59 @@ describe("실내 칸 배치의 게임 색", () => {
     for (const members of fam.values()) for (const id of members.values()) { const o = S.objects[id]; if (o) expect(o.kind).not.toBe("door"); }
   });
 
-  it("열쇠가 없으면(사람 편집·옛 호출) 아무것도 바꾸지 않고, 같은 열쇠면 늘 같은 색이다", () => {
-    expect(interiorPalette(S, undefined).swap.size).toBe(0);
-    expect(interiorPalette(S, "").ceiling).toBeUndefined();
-    const a = interiorPalette(S, "k1"), b = interiorPalette(S, "k1");
-    expect([...a.swap]).toEqual([...b.swap]);
-    expect(a.ceiling).toBe(b.ceiling);
+  it("열쇠가 없으면 색·천장을 고르지 않고, 같은 열쇠면 늘 같다", () => {
+    expect(gameColour(S, undefined)).toBeUndefined();
+    expect(gameColour(S, "")).toBeUndefined();
+    expect(interiorCeiling(S, "")).toBeUndefined();
+    expect(gameColour(S, "k1")).toEqual(gameColour(S, "k1"));
+    expect(interiorCeiling(S, "k1")).toBe(interiorCeiling(S, "k1"));
+    // 한 게임의 색 식구는 모두 그 색이다(깔개 줄이 맨 앞)
+    for (const key of KEYS) { const g = gameColour(S, key)!; expect(g.ids[0]).toBe(`rug ${g.colour}`); for (const id of g.ids) expect(id.endsWith(` ${g.colour}`)).toBe(true); }
   });
 
-  it("같은 뼈대 여섯 판이 같은 방이 아니다 — 융단 색·천장이 게임마다 다르고, 칸 배치(벽·문·기물 자리)는 그대로다", () => {
-    const laid = KEYS.map((key) => layChapel({ ...CHAPEL, variety: `${key}|대성당` }, key));
-    const looks = new Set(laid.map((l) => tilesOf(l.project, l.mapId)));
-    expect(looks.size).toBeGreaterThanOrEqual(5);
-    // 열쇠 없는 실행은 예전 그대로(색을 입히지 않는다)
+  it("같은 요청 · 다른 게임 → 평면 줄의 천 색과 목록 앞머리의 색이 다르다", () => {
+    const ts = createBlankProject().tilesets.atlas_biome_interior!;
+    const card = (key: string) => chipsetCatalog(ts, "바닷가 마을 하나와, 그 마을 성당 안을 지어 줘", key)!.split("\n");
+    const colours = KEYS.map((key) => /This game's cloth colour: ([a-z]+)/u.exec(card(key).find((l) => l.startsWith("plan for this game"))!)![1]!);
+    expect(new Set(colours).size).toBeGreaterThanOrEqual(3);
+    KEYS.forEach((key, i) => {
+      const lines = card(key);
+      // 깔개 줄 목록은 이 게임 색이 맨 앞
+      expect(/^carpets[^:]*: ([^,]+)/u.exec(lines.find((l) => l.startsWith("carpets"))!)![1]).toBe(`rug ${colours[i]}`);
+      // «이 요청에 맞는 기물» 에 한 벌의 식구가 있으면 이 게임 색의 식구가 다른 색보다 앞
+      const sug = lines.find((l) => l.startsWith("suggested for this request"))!.slice(lines.find((l) => l.startsWith("suggested"))!.indexOf("): ") + 3).split(", ").map((e) => e.replace(/ \d+x\d+ .*$/u, ""));
+      for (const members of paletteFamilies(S).values()) {
+        const at = [...members].map(([c, id]) => [c, sug.indexOf(id)] as const).filter(([, n]) => n >= 0);
+        const mine = at.find(([c]) => c === colours[i]);
+        if (at.length && mine) for (const [, n] of at) expect(mine[1]).toBeLessThanOrEqual(n);
+      }
+    });
+    // 열쇠가 없으면 차례도 줄도 예전 그대로
+    expect(card("").find((l) => l.startsWith("plan for this game"))).toBeUndefined();
+    expect(card("").find((l) => l.startsWith("carpets"))).toMatch(/: rug red, rug royal/u);
+  });
+
+  it("모델이 적은 rug red 는 어느 게임이든 rug red 로 깔린다 — 짓기는 id 를 바꾸지 않고 천장만 고른다", () => {
     const plain = layChapel(CHAPEL);
-    expect(plain.warnings.join(" ")).not.toMatch(/this game's colours/u);
-    // 걷는 칸은 같다 — 색만 바뀌었다
+    const rugCells = (p: Project, id: string) => JSON.stringify((p.maps[id]!.lowerOverlayTiles ?? []).slice(7 + 6 * 24, 10 + 6 * 24));
     const walk = (p: Project, id: string) => { const m = p.maps[id]!; let out = ""; for (let y = 0; y < m.height; y += 1) for (let x = 0; x < m.width; x += 1) out += isPassable(p, m, x, y) ? "1" : "0"; return out; };
-    for (const l of laid) expect(walk(l.project, l.mapId)).toBe(walk(plain.project, plain.mapId));
-    // 바뀐 것은 보고에 적힌다
-    expect(laid.some((l) => /this game's colours/u.test(l.warnings.join(" ")))).toBe(true);
-  }, 120_000);
-
-  it("요청·required·purpose 가 말한 색과 랜드마크는 그대로다", () => {
-    expect([...colourNamedIds(S, "붉은 양탄자가 깔린 예배당")]).toContain("rug red");
-    expect([...colourNamedIds(S, "파란 침대 두 개")]).toContain("bed blue");
-    expect(colourNamedIds(S, "대성당 안은 넓은 예배당.").size).toBe(0);
-    const palette = interiorPalette(S, "keep-test");
-    const input = { objects: [{ id: "bed red", x: 1, y: 1 }, { id: "banner red", x: 2, y: 1 }], lines: [{ id: "rug red" }] };
-    const kept = applyInteriorPalette(input, palette, new Set(["bed red", "rug red"]));
-    expect(kept.input.objects![0]!.id).toBe("bed red");
-    expect(kept.input.lines![0]!.id).toBe("rug red");
-    // 요청 글이 «붉은 융단» 을 말한 판은 여섯 열쇠 모두 붉은 융단 그대로다
-    for (const key of KEYS.slice(0, 3)) {
-      const red = layChapel({ ...CHAPEL, variety: `${key}|붉은 융단이 깔린 대성당` }, key);
-      const plain = layChapel(CHAPEL);
-      const rugCells = (p: Project, id: string) => JSON.stringify((p.maps[id]!.lowerOverlayTiles ?? []).slice(7 + 6 * 24, 10 + 6 * 24));
-      expect(rugCells(red.project, red.mapId)).toBe(rugCells(plain.project, plain.mapId));
+    const laid = KEYS.map((key) => layChapel({ ...CHAPEL, variety: `${key}|대성당` }, key));
+    for (const l of laid) {
+      expect(rugCells(l.project, l.mapId)).toBe(rugCells(plain.project, plain.mapId));
+      expect(JSON.stringify(l.project.maps[l.mapId]!.lowerOverlayTiles)).toBe(JSON.stringify(plain.project.maps[plain.mapId]!.lowerOverlayTiles));
+      expect(walk(l.project, l.mapId)).toBe(walk(plain.project, plain.mapId));
+      expect(l.warnings.join(" ")).not.toMatch(/recoloured/u);
     }
+    // 천장(모델이 쓰지 않는 칸)만 게임마다 — 여섯 열쇠면 둘 이상
+    expect(new Set(laid.map((l) => tilesOf(l.project, l.mapId))).size).toBeGreaterThanOrEqual(2);
   }, 120_000);
 
-  it("다시 깔면(review_layout · edit_place) 처음 고른 색 그대로다 — 이 기능 전에 깐 방은 색을 입히지 않는다", () => {
-    const key = KEYS[1]!;
-    const first = layChapel({ ...CHAPEL, variety: `${key}|대성당` }, key);
+  it("다시 깔면(review_layout · edit_place) 처음 고른 천장 그대로다 — 다른 열쇠로 다시 깔아도", () => {
+    const first = layChapel({ ...CHAPEL, variety: `${KEYS[1]}|대성당` }, KEYS[1]);
     const ctx = { project: first.project, currentMapId: first.project.startMapId, assistantRun: true, lookKey: KEYS[4] };
-    // 다른 열쇠·다른 소금으로 다시 깔아도 선언에 적힌 색 열쇠를 쓴다
-    const again = builderFor(CHAPEL)!.build(createBuildRun(ctx as never), { ...CHAPEL, salt: 999, variety: `${KEYS[4]}|x`, mapId: first.mapId, hints: { layoutRepairsLeft: 0 } } as PlaceSpec) as unknown as { ok: boolean; mapIds: string[] };
+    const again = builderFor(CHAPEL)!.build(createBuildRun(ctx as never), { ...CHAPEL, salt: 999, mapId: first.mapId, hints: { layoutRepairsLeft: 0 } } as PlaceSpec) as unknown as { ok: boolean; mapIds: string[] };
     expect(again.ok).toBe(true);
-    const before = tilesOf(first.project, first.mapId);
-    expect(tilesOf((ctx as { project: Project }).project, again.mapIds[0]!)).toBe(before);
+    expect(tilesOf((ctx as { project: Project }).project, again.mapIds[0]!)).toBe(tilesOf(first.project, first.mapId));
   }, 120_000);
 });
 
