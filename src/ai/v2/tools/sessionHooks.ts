@@ -149,8 +149,8 @@ export function installSessionHooks(c: VerbContext) {
         // 종류를 모르는 장소는 짓지 않는다 — 틀리면 마을 한 장이 그 이름으로 선다. 모델이 종류를 적어 짓게 돌려준다(모델이 읽는 글).
         if (!guess) { untyped.push(name); continue; }
         const composed = !!parseWorldStyle(guess.style);
-        // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildings). 마을 크기는 올리지 않는다 — size 는 집 수만 늘리고 땅은 그대로라, 올리면 빈 터가 줄어 던전 갱구가 설 자리가 없어진다(2026-11-16 은행 jrpg-x1).
-        const bigBuildings = (g: PlaceSpec): Partial<PlaceSpec> => { const wanted = g.type === "village" ? wantedBy.get(name) : undefined; return wanted ? { hints: { ...(g.hints ?? {}), buildings: wanted as never } } : {}; };
+        // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildingNeeds — 안쪽 칸, 모델 스키마에 없다). 마을 크기는 올리지 않는다 — size 는 집 수만 늘리고 땅은 그대로라, 올리면 빈 터가 줄어 던전 갱구가 설 자리가 없어진다(2026-11-16 은행 jrpg-x1).
+        const bigBuildings = (g: PlaceSpec): Partial<PlaceSpec> => { const wanted = g.type === "village" ? wantedBy.get(name) : undefined; return wanted ? { hints: { ...(g.hints ?? {}), buildingNeeds: wanted as never } } : {}; };
         const dressed = (g: PlaceSpec): PlaceSpec => ({ ...g, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(g) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
           ...(exitSides.has(name) && !g.exits?.length ? { exits: exitSides.get(name)! } : {}),
           ...bigBuildings(g),

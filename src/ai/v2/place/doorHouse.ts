@@ -15,9 +15,12 @@ export const TIER_MIN_ROOMS: Readonly<Record<string, number>> = { medium: 2, lar
 
 export interface DoorHouse { readonly kit: string; readonly label: string; readonly tier?: string; readonly front: { x: number; y: number }; readonly tileset: string }
 
-/** 킷 이름에서 칩셋 이름 머리와 크기 꼬리를 뗀 건물 이름(«버들항 첨탑 성당 12×13» → «첨탑 성당»). */
+/**
+ * 킷 이름에서 칩셋 이름 머리와 크기 꼬리를 뗀 건물 이름(«버들항 첨탑 성당 12×13» → «첨탑 성당»).
+ * #4752(agent/village-landmark)의 doorBuildingName(place/builders/village.ts)과 같은 규칙이다 — 그 PR 이 main 에 들어오면 하나로 합친다.
+ */
 export function kitLabel(def: Pick<StructureKitDef, "id" | "name"> | undefined): string {
-  return String(def?.name ?? def?.id ?? "").replace(/\s*\d+×\d+\s*$/u, "").replace(/^버들항\s+(?:읍 건물|[^·]*건물)\s*·\s*/u, "").replace(/^버들항\s+/u, "").trim();
+  return String(def?.name ?? def?.id ?? "").replace(/\s*\d+×\d+\s*$/u, "").replace(/^버들항\s+[^·]*건물\s*·\s*/u, "").replace(/^버들항\s+/u, "").trim();
 }
 
 const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;

@@ -268,7 +268,7 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
       const need = world.kinds.find((k) => k.id === kind)!.building!;
       const a = fresh();
       const base = worldPlaceSpec(world, village, "시험 마을");
-      const r = VILLAGE_BUILDER.build(a.run, { ...base, size: need.tiers.includes("medium") ? "medium" : "large", salt: 11, hints: { ...(base.hints ?? {}), buildings: [need] } } as unknown as PlaceSpec);
+      const r = VILLAGE_BUILDER.build(a.run, { ...base, size: need.tiers.includes("medium") ? "medium" : "large", salt: 11, hints: { ...(base.hints ?? {}), buildingNeeds: [need] } } as unknown as PlaceSpec);
       expect(r.ok, r.summary).toBe(true);
       const doors = ((r.state as { doors?: { kit?: string }[] } | undefined)?.doors ?? []).map((d) => a.ts.structureKits!.find((k) => k.id === d.kit));
       expect(doors.some((k) => !!k && kitServesBuilding(k, need)), `${kind}: ${doors.map((k) => k?.id).join(" ")}`).toBe(true);
@@ -281,7 +281,7 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     const seen = new Set<string>();
     for (let i = 0; i < 20; i++) {
       const a = fresh();
-      const r = VILLAGE_BUILDER.build(a.run, { ...base, size: "medium", salt: 11, hints: { ...(base.hints ?? {}), buildings: [need] } } as unknown as PlaceSpec);
+      const r = VILLAGE_BUILDER.build(a.run, { ...base, size: "medium", salt: 11, hints: { ...(base.hints ?? {}), buildingNeeds: [need] } } as unknown as PlaceSpec);
       expect(r.ok, r.summary).toBe(true);
       const m = a.run.ctx.project.maps[r.mapIds[0]!]!;
       seen.add(JSON.stringify([(r.state as { doors?: unknown }).doors, m.width, m.height, [...m.lowerTiles], [...m.upperTiles]]));

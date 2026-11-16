@@ -55,7 +55,7 @@ export function cleanLayoutHint(value: unknown): Record<string, unknown> | null 
   return lay.gather || lay.houses ? lay : null;
 }
 
-const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "buildings", "width", "height", "variant", "harbour", "kind"]);
+const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "buildingNeeds", "width", "height", "variant", "harbour", "kind"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
@@ -211,8 +211,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 집 수 맞추기: 씨앗을 정하지 않았으면 사본 위에서 씨앗 몇 개를 미리 지어 보고 요청한 집 수에 가장 가까운 것을 고른다.
   // 실제 맵에 한 번 지으면 「완성된 집 보호」로 AI 가 다시 지을 수 없어서(2026-10-23 v2), 고르기는 짓기 전에 끝낸다.
   const wantHouses = num(args.houseCount);
-  // 이야기가 청한 큰 건물(hints.buildings): 지형·물에 따라 그 킷이 못 앉는 씨앗이 있다 — 사본 위에서 씨앗 몇 개를 지어 보고 청한 건물이 모두 선 첫 씨앗을 고른다(없으면 가장 많이 선 것).
-  const needs = (Array.isArray(args.buildings) ? args.buildings : []) as BuildingNeed[];
+  // 이야기가 청한 큰 건물(hints.buildingNeeds — 청사진 장소 종류에서 온 안쪽 칸): 지형·물에 따라 그 킷이 못 앉는 씨앗이 있다 — 사본 위에서 씨앗 몇 개를 지어 보고 청한 건물이 모두 선 첫 씨앗을 고른다(없으면 가장 많이 선 것).
+  const needs = (Array.isArray(args.buildingNeeds) ? args.buildingNeeds : []) as BuildingNeed[];
   if (!prev && args.seed === undefined && needs.length && !args.layout) {
     let best: { seed: number; stood: number } | undefined;
     const salt = spec.salt ?? [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);

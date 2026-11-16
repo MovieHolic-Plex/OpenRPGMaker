@@ -162,7 +162,7 @@ export function resolveVillageWater(theme: BeodeulVillageTheme, seed: number, fo
 export const BEODEUL_VILLAGE_WOODS = ["edge", "dense"] as const;
 export interface BeodeulVillageOptions {
   /** 이야기가 청한 큰 건물(여관·회관·성당·성) — 그 쓰임·단의 킷(킷 태그 tier:·interior:·cat:, src/project/kitTier.ts)을 모이는 곳 곁에 먼저 세운다. 요청 낱말이 아니라 청사진 장소 종류가 준다. */
-  buildings?: readonly BuildingNeed[];
+  buildingNeeds?: readonly BuildingNeed[];
   /** 숲 밀도(edge·dense). 생략하면 edge. */
   woods?: string;
   /** 강가 어촌(코드 지형): 물가 길에 어촌 일터 소품 띠와 매어 둔 배. 포구(coast)는 늘. */
@@ -436,7 +436,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const doorAtBottom = (id: string) => { const d = K(id).door; return !!d && d.dy === K(id).h - 1; };
   // 이야기가 청한 건물마다 맞는 킷 하나(같은 주문이면 같은 킷 — seed 로 고른다). 맞는 킷이 없으면 그 주문은 건너뛴다(부른 쪽이 문 목록으로 안다).
   const wantKits: string[] = [];
-  (options.buildings ?? []).forEach((need, i) => {
+  (options.buildingNeeds ?? []).forEach((need, i) => {
     const fit = [...kitIndex.keys()].filter((id) => !wantKits.includes(id) && doorAtBottom(id) && kitServesBuilding(K(id).def, need)).sort();
     if (fit.length) wantKits.push(fit[Math.abs(Math.floor(seed) + i * 7) % fit.length]!);
   });
