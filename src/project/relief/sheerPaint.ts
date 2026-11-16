@@ -147,50 +147,13 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
     rgb = shift(rgb, turn);
     put(i, rgb);
   }
-  // 3) 옆으로 도는 면: 동·서 가장자리 바깥 낮은 땅 위로 최대 16px. 가장자리가 곧게 내려가는 만큼 넓고, 남쪽으로 굽어 들어가면 좁아진다(엽 윤곽을 따름).
-  const sideDir = new Int8Array(N), sideK = new Uint8Array(N), sideW = new Uint8Array(N), sideLev = new Int8Array(N), sideSrc = new Int32Array(N).fill(-1);
-  for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
+  // 3) 동·서 가장자리: 옆면 띠를 세우지 않는다 — 면은 엽 끝 조각(32px)으로만 돌아 끝난다(승인 화면). 가장자리마다 옆면 띠를 세우면 단마다 좁은 기둥이
+  //    계단처럼 쌓이고 둥근 끝 옆에 곧은 띠가 붙어 보였다(2026-11-16 감독 검토). 동쪽 가장자리는 아래 땅에 그늘만 드리운다(6 단계).
+  const eastEdge: number[] = [];
+  for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx + 1 < PW; sx++) {
     const i = sy * PW + sx; if (kind[i] !== 0 || ssl[i] || voidPx[i] || !(fl[i]! > 0.5)) continue;
-    if (s.bridge && (s.bridge[src[i]!] ?? 0) > 0) continue;   // 다리 판은 옆면이 없다
-    const c = fl[i]!;
-    for (const dir of [1, -1] as const) {
-      const nx = sx + dir; if (nx < 0 || nx >= PW || !low(sy * PW + nx, c)) continue;
-      // 이 가장자리가 옆(동·서)을 얼마나 보는가: 6줄 아래 같은 윗면의 가장자리 열을 찾는다. 바깥으로 벌어지며 내려가면(북서 · 북동을 봄) 뒷면이라
-      // 안 보이고, 곧게 내려가면 다 보이고, 안으로 굽어 들어가면 앞면이 그 자리를 그린다. 윗면이 곧 끝나면(엽의 남쪽 끝) 좁아진다.
-      let k = 0; for (let r = 1; r <= 6 && sy + r < SH; r++) { if (isTop((sy + r) * PW + sx, c)) k++; else break; }
-      let out = 0;
-      { const y = sy + 6; if (y < SH) { let x = sx; while (x - dir >= 0 && x - dir < PW && x + dir >= 0 && x + dir < PW && isTop(y * PW + x + dir, c) && Math.abs(x - sx) < 12) x += dir; out = isTop(y * PW + x, c) ? (x - sx) * dir : 0; } }
-      const w = Math.round(16 * Math.min(k / 6, Math.max(0, 1 - out / 4))); if (w < 2) continue;
-      // 낮은 쪽 단은 맵 화소 높이(hf)로 잰다 — 화면 이웃 화소는 창 굽기에서 창 밖 줄의 것일 수 있다
-      const lowLevel = s.hf[mpy[i]! * PW + nx]!, n = Math.round((c - lowLevel) * T);
-      for (let kk = 1; kk <= w; kk++) {
-        const x = sx + dir * kk; if (x < 0 || x >= PW) break;
-        for (let r = 0; r < n && sy + r < SH; r++) {
-          const j = (sy + r) * PW + x;
-          if (!low(j, c) || sideDir[j]) continue;
-          sideDir[j] = dir; sideK[j] = kk; sideW[j] = w; sideLev[j] = c; sideSrc[j] = src[i]!;
-        }
-      }
-    }
-  }
-  // 열마다 옆면 줄기의 위·아래 끝을 찾아 판을 읽는다(윗테 · 몸통 절대 좌표 · 밑동)
-  for (let sx = 0; sx < PW; sx++) {
-    let y = 0;
-    while (y < SH) {
-      const i = y * PW + sx; if (!sideDir[i]) { y++; continue; }
-      let e = y; while (e + 1 < SH && sideDir[(e + 1) * PW + sx] === sideDir[i]) e++;
-      for (let yy = y; yy <= e; yy++) {
-        const j = yy * PW + sx, k = sideK[j]!, w = sideW[j]!, dir = sideDir[j]!;
-        const col = dir > 0 ? 16 + Math.min(15, Math.floor((k - 1) * 16 / w)) : 15 - Math.min(15, Math.floor((k - 1) * 16 / w));
-        const dTop = yy - y, dBot = e - yy;
-        const row = dBot < 16 ? 95 - dBot : dTop < 16 ? dTop : 16 + mod(yy + oy - pad, 64);
-        let rgb = at(art.side, col, row); if (rgb < 0) continue;
-        if (k === w && w < 16) rgb = shift(rgb, -1);
-        put(j, rgb); kind[j] = 1; lev[j] = sideLev[j]!; src[j] = sideSrc[j]!; voidPx[j] = 0;
-        dep[j] = dTop; run[j] = e - y + 1;
-      }
-      y = e + 1;
-    }
+    if (s.bridge && (s.bridge[src[i]!] ?? 0) > 0) continue;
+    if (low(i + 1, fl[i]!)) eastEdge.push(i);
   }
   // 4) 윗면 테: 앞면이 없는 가장자리(북 · 동 · 서) 안쪽 16px 에 테 조각을 얹는다. 둥근 곳은 가장 가까운 가장자리의 거리로 잇는다.
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
@@ -199,8 +162,8 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
     const open = (j: number) => kind[j] !== 1 && !isTop(j, c);
     let dn = 99, dw = 99, de = 99;
     for (let r = 1; r <= 8; r++) { if (sy - r < 0) break; const j = i - r * PW; if (open(j)) { dn = r - 1; break; } if (!isTop(j, c)) break; }
-    for (let r = 1; r <= 8; r++) { if (sx - r < 0) break; const j = i - r; if (open(j) || kind[j] === 1 && sideDir[j]) { dw = r - 1; break; } if (!isTop(j, c)) break; }
-    for (let r = 1; r <= 8; r++) { if (sx + r >= PW) break; const j = i + r; if (open(j) || kind[j] === 1 && sideDir[j]) { de = r - 1; break; } if (!isTop(j, c)) break; }
+    for (let r = 1; r <= 8; r++) { if (sx - r < 0) break; const j = i - r; if (open(j)) { dw = r - 1; break; } if (!isTop(j, c)) break; }
+    for (let r = 1; r <= 8; r++) { if (sx + r >= PW) break; const j = i + r; if (open(j)) { de = r - 1; break; } if (!isTop(j, c)) break; }
     const m = Math.min(dn, dw, de); if (m >= 8) continue;
     const ax = sx + ox, ay = sy + oy;
     const rgb = m === dn ? at(art.rim, mod(ax, 16), dn) : m === dw ? at(art.rim, 16 + dw, mod(ay, 16)) : at(art.rim, 47 - de, mod(ay, 16));
@@ -218,17 +181,16 @@ export function paintSheer(s: SheerSurface, art: SheerArt): void {
       put(j, rgb); kind[j] = 1; lev[j] = lev[i]!; src[j] = src[i]!; dep[j] = dep[i]! + 1 + r; run[j] = run[i]!; voidPx[j] = 0;
     }
   }
-  // 6) 땅에 드리운 그늘: 면 발치 바로 아래 · 동쪽으로 도는 면의 동쪽 — 빛이 북서라 남·동으로. 윤곽을 따라간다(화소마다 잰다).
+  // 6) 땅에 드리운 그늘: 면 발치 바로 아래 · 동쪽 가장자리의 동쪽 — 빛이 북서라 남·동으로. 윤곽을 따라간다(화소마다 잰다).
   const shade = new Float32Array(N).fill(1);
   for (let i = 0; i < N; i++) {
     if (kind[i] !== 1 || dep[i] !== run[i]! - 1) continue;
     for (let r = 1; r <= 10; r++) { const j = i + r * PW; if (j >= N || kind[j] !== 0 || voidPx[j] || ssl[j]) break; shade[j] = Math.min(shade[j]!, 0.6 + 0.04 * r); }
   }
-  for (let i = 0; i < N; i++) {
-    if (sideDir[i] !== 1 || kind[i] !== 1) continue;
-    const sx = i % PW;
-    if (sx + 1 < PW && sideDir[i + 1] === 1) continue;
-    for (let r = 1; r <= 8 && sx + r < PW; r++) { const j = i + r; if (kind[j] !== 0 || voidPx[j] || ssl[j]) break; shade[j] = Math.min(shade[j]!, 0.66 + 0.04 * r); }
+  // 동쪽 가장자리: 아래 땅에 드리운 그늘(빛이 북서) — 최대 10px
+  for (const i of eastEdge) {
+    const sx = i % PW, sy = (i / PW) | 0, c = fl[i]!;
+    for (let r = 1; r <= 10 && sx + r < PW; r++) { const j = sy * PW + sx + r; if (kind[j] !== 0 || voidPx[j] || ssl[j] || fl[j]! > c - 0.5) break; shade[j] = Math.min(shade[j]!, 0.64 + 0.035 * r); }
   }
   for (let i = 0; i < N; i++) if (shade[i]! < 1) { const o = i * 4; rgba[o] *= shade[i]!; rgba[o + 1] *= shade[i]!; rgba[o + 2] *= shade[i]!; }
   // 7) 사다리 · 덩굴: 머리 16줄은 고원 윗면, 몸통은 면(주기 32), 끝 16줄은 면 발치에 닿는다.

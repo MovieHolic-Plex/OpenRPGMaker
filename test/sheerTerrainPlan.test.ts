@@ -71,6 +71,30 @@ describe("sheer terrain generator", () => {
     }
   });
 
+  it("shapes read as wide tiers: south edges step by 0 or a whole face, walk tops are at least three cells deep, no forest on the last row", () => {
+    for (const k of SHEER_KINDS) for (const seed of SEEDS) {
+      const [W, H] = k.size.medium, plan = planSheerTerrain(k, W, H, seed), lv = plan.levels;
+      // south edge of each level run: where the cell south of (x,y) is lower. Between two neighbouring columns of the same level,
+      // the edge row moves by 0 or by at least FACE (3) — a 1–2 cell jog was drawn as slanted strata (2026-11-16 lead review)
+      const edge = (x: number, L: number) => { const out: number[] = []; for (let y = 0; y < H - 1; y++) if (lv[y * W + x] === L && lv[(y + 1) * W + x]! < L) out.push(y); return out; };
+      let jogs = 0;
+      for (let x = 0; x + 1 < W; x++) for (let L = 1; L <= 5; L++) {
+        const a = edge(x, L), b = edge(x + 1, L);
+        if (a.length !== 1 || b.length !== 1) continue;
+        const d = Math.abs(a[0]! - b[0]!); if (d > 0 && d < 3) jogs++;
+      }
+      // (a few stay where the dead-end ledge meets its bank row and where a stream cuts a tier; before the review a map had 16–35)
+      expect(jogs, `${k.id} s${seed}`).toBeLessThanOrEqual(3);
+      // every walk-top column above a face is at least three cells deep (no slivers)
+      for (let x = 0; x < W; x++) for (let y = 1; y < H - 1; y++) {
+        const c = y * W + x, L = lv[c]!; if (!L || lv[c + W]! >= L) continue;
+        let d = 0; while (y - d >= 0 && lv[(y - d) * W + x] === L) d++;
+        if (y - d >= 0 && lv[(y - d) * W + x]! > L) expect(d, `${k.id} s${seed} (${x},${y}) top depth`).toBeGreaterThanOrEqual(3);
+      }
+      for (let x = 0; x < W; x++) expect(plan.forest[(H - 1) * W + x], `${k.id} s${seed} forest on last row`).toBe(0);
+    }
+  });
+
   it("the same kind, size and seed give the same plan", () => {
     const k = SHEER_KINDS[0]!, [W, H] = k.size.medium;
     const a = planSheerTerrain(k, W, H, 7), b = planSheerTerrain(k, W, H, 7);

@@ -85,16 +85,16 @@
    ],
    "size": {
     "small": [
-     34,
+     42,
      26
     ],
     "medium": [
-     36,
-     28
+     48,
+     30
     ],
     "large": [
-     44,
-     32
+     56,
+     34
     ]
    },
    "water": "pond",
@@ -173,7 +173,7 @@
    "dressing": [
     "bd-pick-mountain-pass-boulder-m",
     "bd-obj-berry-bush",
-    "bd-pick-deep-forest-path-fern-a"
+    "bd-pick-deep-forest-path-heath-b"
    ],
    "layout": "terraces",
    "forest": 1.1
@@ -190,16 +190,16 @@
    ],
    "size": {
     "small": [
-     30,
-     26
+     34,
+     28
     ],
     "medium": [
-     36,
-     30
+     40,
+     32
     ],
     "large": [
-     44,
-     34
+     48,
+     36
     ]
    },
    "water": "none",

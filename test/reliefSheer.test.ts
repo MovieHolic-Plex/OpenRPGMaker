@@ -1,4 +1,4 @@
-// 깎아지른 지형(relief.style "sheer", 2026-11-16): 단 하나 = 앞면 3칸, 조각에서 읽는 면, 옆으로 도는 면, 빈 곳, 세로 이동 칸(사다리·덩굴).
+// 깎아지른 지형(relief.style "sheer", 2026-11-16): 단 하나 = 앞면 3칸, 조각에서 읽는 면, 엽 끝에서 도는 면, 빈 곳, 세로 이동 칸(사다리·덩굴).
 // 저장소 안 시험은 코드로 만든 자리 표시 조각(sheerArt.ts placeholderSheerArt)만 쓴다.
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { effectiveHeights, renderRelief, reliefPadPx } from "@/project/relief/render";
@@ -69,16 +69,30 @@ describe("sheer relief style", () => {
     expect(foreign / walls).toBeLessThan(0.02);
   });
 
-  it("turns the face east and west round the lobe ends (up to 16 px), narrowing where the outline curves", () => {
+  it("raises no side-face bands east or west of a top — every wall pixel hangs under its own top; the east edge casts a shadow", () => {
     const r = render(scene());
-    // widest run of side-face pixels on one row beside the 3-level lobe's east edge
-    let widest = 0;
-    for (let sy = 0; sy < r.SH; sy++) {
-      let run = 0;
-      for (let sx = 20 * 16; sx < r.PW; sx++) { const i = sy * r.PW + sx; if (r.kind[i] === 1 && r.lev[i] === 9) run++; else { widest = Math.max(widest, run); run = 0; } }
-      widest = Math.max(widest, run);
+    // side bands stood beside a top over low ground: their column had no top of that level above them
+    let walls = 0, orphan = 0;
+    for (let i = 0; i < r.kind.length; i++) {
+      if (r.kind[i] !== 1 || r.lev[i] !== 9) continue;
+      walls++;
+      let j = i; while (j >= r.PW && r.kind[j] === 1 && r.lev[j] === 9) j -= r.PW;
+      if (!(r.kind[j] === 0 && r.lev[j] === 9)) orphan++;
     }
-    expect(widest).toBeGreaterThanOrEqual(8);
+    expect(walls).toBeGreaterThan(1000);
+    expect(orphan).toBe(0);
+    // east of the 3-level lobe's top, the low ground right beside the edge is darker than 12 px further east
+    let rows = 0, shaded = 0;
+    for (let sy = 0; sy < r.SH; sy++) {
+      let e = -1; for (let sx = 12 * 16; sx < r.PW - 1; sx++) { const i = sy * r.PW + sx; if (r.kind[i] === 0 && r.lev[i] === 9 && !(r.kind[i + 1] === 0 && r.lev[i + 1] === 9)) { e = sx; break; } }
+      if (e < 0 || e + 14 >= r.PW) continue;
+      const j = sy * r.PW + e + 1, far = sy * r.PW + e + 13;
+      if (r.kind[far] !== 0 || r.kind[j] !== 0) continue;
+      rows++;
+      if (r.rgba[j * 4 + 1]! < r.rgba[far * 4 + 1]!) shaded++;
+    }
+    expect(rows).toBeGreaterThan(20);
+    expect(shaded / rows).toBeGreaterThan(0.8);
   });
 
   it("a windowed bake (editor pages) matches the full raster pixel for pixel", () => {
