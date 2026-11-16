@@ -84,10 +84,10 @@ function dropVanishedTargetObjectives(project: Project): string[] {
  * 곁 퀘스트는 본편 「현재 목표」 줄을 바꾸지 않는다: 도착 칸을 밟자 본편 목표가 「「사미라」를 찾아가자」 로 바뀌어 화살표가 온 길을 가리켰다.
  * 모델이 set_objective 로 직접 건 글(「찾아가자」 꼴이 아닌 것)은 그대로 둔다.
  */
-function dropSideQuestObjectives(project: Project): string[] {
+function dropSideQuestObjectives(project: Project, ours: (message: string) => boolean = (message) => /^(?:[^「」()]+에서 )?「[^」]+」[을를] 찾아가자/u.test(message)): string[] {
   const out: string[] = [];
   for (const hit of sideQuestObjectives(project)) {
-    if (!/^(?:[^「」()]+에서 )?「[^」]+」[을를] 찾아가자/u.test(hit.message)) continue;
+    if (!ours(hit.message)) continue;
     const at = hit.list.indexOf(hit.command);
     if (at < 0) continue;
     hit.list.splice(at, 1);
@@ -107,6 +107,7 @@ export function fillStaleObjectives(project: Project): string[] {
   const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;
   out.push(...dropVanishedTargetObjectives(project));
   out.push(...dropSideQuestObjectives(project));
+  const written: string[] = [];
   const stepEventName = (ref: string) => Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === ref || e.name === ref).map((e) => String(e.name ?? e.id))).at(0);
   for (const { event, readers } of staleMilestoneTargets(project)) {
     const k = steps.findIndex((step) => step.event === event.eventId || step.event === event.name);
@@ -136,7 +137,12 @@ export function fillStaleObjectives(project: Project): string[] {
       map.events = map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e);
     }
     out.push(`다음 목표: ${event.name} 뒤 → 「${target}」`);
+    written.push(text);
   }
+  // planObjective 는 그 이벤트의 이정표마다(곁 퀘스트의 수락·완료 페이지까지) 목표를 건다 — 방금 건 글은 곁 퀘스트만 쓰는 페이지에서 바로 뗀다.
+  // 예전 글 꼴(「X」를 찾아가자)은 다음 바퀴의 dropSideQuestObjectives 가 뗐지만, 단계 목표 줄(stepGoalAt — «물레강 마을에서 어부 도윤에게 말을 걸자»)은 그 꼴이 아니라 남았다
+  // (2026-11-16 합친 가지 은행 r5a-river: 한씨의 의뢰 완료·어부 의뢰 페이지가 본편 목표를 바꿨다).
+  if (written.length) out.push(...dropSideQuestObjectives(project, (message) => written.some((t) => message === t || message.startsWith(`${t} (`))));
   out.push(...advanceStepObjectives(project));
   return out;
 }
