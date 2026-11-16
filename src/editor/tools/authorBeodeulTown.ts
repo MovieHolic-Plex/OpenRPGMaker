@@ -105,8 +105,8 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       layout: { type: "object", description: "코드 지형 위 자리(지형 미리보기의 좌표, x 오른쪽·y 아래). 함수는 가장 가까운 놓을 수 있는 자리로 옮기고 길을 잇고 옮김·실패를 보고한다. 생략하면 함수가 대신 고른다.",
         properties: {
           gather: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, plaza: { type: "boolean", description: "true 면 판석 광장을 깐다(장터·교역 마을일 때만). 생략하면 form 이 plaza 일 때만 광장이고, 아니면 우물·좌판만." } }, required: ["x", "y"], description: "모이는 곳(우물·좌판) — 맵 한가운데가 아니라 사람이 모일 까닭이 있는 자리(다리·나루 머리, 계단 어귀, 큰길이 마을로 드는 어귀, 여관 앞)" },
-          landmark: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "높은 곳 건물(망루 집·예배당·사원·사당) — 보통 높은 단" },
-          anchor: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "큰 건물(여관·회관) — 보통 모이는 곳 곁" },
+          landmark: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, kit: { type: "string", description: "Building to stand here: a kit id or a word of its id or name (cathedral · chapel · 성당). Omit for the theme's own landmark." } }, required: ["x", "y"], description: "높은 곳 건물(망루 집·예배당·사원·사당) — 보통 높은 단" },
+          anchor: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, kit: { type: "string", description: "Building to stand here: a kit id or a word of its id or name (inn · town-hall · 시청). Omit for the theme's own inn or hall." } }, required: ["x", "y"], description: "큰 건물(여관·회관) — 보통 모이는 곳 곁" },
           work: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "일터(헛간·곳간과 일터 소품)" },
           houses: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, kind: { type: "string", enum: ["small", "medium", "large"], description: "집 크기(섞으면 다른 집 그림)" } }, required: ["x", "y"] }, description: "살림집 자리(집 가운데), 3~12" },
           orchards: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "과수원(줄지은 나무, 약 14×9) 자리" },
@@ -117,6 +117,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
           exits: { type: "array", items: { type: "string", enum: [...LAYOUT_EDGES] }, description: "큰길이 마을 밖으로 나가는 맵 가장자리(1~2)" },
         } },
       kind: { type: "string", description: "Village kind id (river/coast villages): sets the trade scenes, the work building and the house-side props. Omit to let the game pick one that fits the land." },
+      buildings: { type: "array", items: { type: "string" }, description: "Buildings the request asks for (up to 3): a kit id (kit:beodeul_city/bd-house-cathedral or bd-house-cathedral) or a word of a kit's id or name (cathedral · inn · market-hall · 성당). The builder seats each on the edge of the gather (the square when there is one), door towards it — the first takes the inn's place, the others stand beside it. data.asked reports where each stands or why it could not." },
       fishing: { type: "boolean", description: "강가 어촌(theme river): 물가 길에 그물 말림대·통발·엎어 둔 배·계류 말뚝과 물에 매어 둔 배를 둔다. 사용자가 어촌·어부를 말할 때." },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
@@ -716,11 +717,16 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     layoutNotes.splice(0, layoutNotes.length, ...notes);
     return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed, villageCliffHabit(activeTilesetLook(tileset) ?? projectTilesetLook(draft, BEODEUL_TILESET_ID, activeKitLook()))), layout };
   };
-  // 이야기가 청한 큰 건물(조수 v2 마을 빌더가 청사진 장소 종류에서 넘긴다 — 스키마에 싣지 않는 안쪽 인자). 모양이 맞는 것만 받는다.
+  // 요청 건물(beodeulAskedBuildings.ts): buildings 는 시공기가 모이는 곳 가장자리에 스스로 앉히고, layout.landmark.kit · layout.anchor.kit 은 조수가 준 그 자리에 세운다.
+  const askedBuildings = (Array.isArray(args.buildings) ? args.buildings : typeof args.buildings === "string" ? [args.buildings] : []).map((w) => String(w ?? "").trim()).filter(Boolean).slice(0, 3);
+  const layoutKits: { landmark?: string; anchor?: string } = {};
+  for (const role of ["landmark", "anchor"] as const) { const kit = (args.layout as Record<string, { kit?: unknown } | undefined> | undefined)?.[role]?.kit; if (typeof kit === "string" && kit.trim()) layoutKits[role] = kit.trim(); }
+  // 이야기가 청한 큰 건물(조수 v2 마을 빌더가 청사진 장소 종류에서 넘긴다 — 스키마에 싣지 않는 안쪽 인자, BuildingNeed). 모양이 맞는 것만 받는다. 시공기가 요청 건물과 같은 길로 앉힌다.
   const buildingNeeds = (Array.isArray(args.buildingNeeds) ? args.buildingNeeds : []).filter((b): b is BuildingNeed => !!b && typeof b === "object" && Array.isArray((b as BuildingNeed).kinds) && Array.isArray((b as BuildingNeed).tiers)).slice(0, 4);
   const noFront = new Set<number>(); // 앞 판에서 갇혔던 문 앞 주머니(아래 «문은 모두 닿아야 한다»)
   let sceneYardsOn = true; // 마을 종류의 장면 터를 비워 둘지 — 터가 문 앞·단 건널목을 끊은 마을은 터 없이 짓고, 그 뒤의 다시 짓기도 그대로 간다
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYardsOn ? {} : { sceneYards: false }), ...(noFront.size ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(buildingNeeds.length ? { buildingNeeds } : {}), ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYardsOn ? {} : { sceneYards: false }), ...(noFront.size ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
+    ...(askedBuildings.length ? { buildings: askedBuildings } : {}), ...(buildingNeeds.length ? { buildingNeeds } : {}), ...(Object.keys(layoutKits).length ? { layoutKits } : {}),
     ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();

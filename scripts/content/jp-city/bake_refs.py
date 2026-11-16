@@ -448,7 +448,7 @@ def doc_sheet_map():
 
 ## 번호 → 칸 위치 (0 기준)
 `열 = n % {TPR}`, `행 = n ÷ {TPR}`(내림), 픽셀 `(열×16, 행×16)`. 예: 번호 {ST['sw']}(보도 포석) → 열 {ST['sw'] % TPR}, 행 {ST['sw'] // TPR}, 픽셀 ({ST['sw'] % TPR * T}, {ST['sw'] // TPR * T}).
-시트는 {COUNT}칸 = {COUNT // TPR}줄 × {TPR}칸(높이 {SHEET_PX[1]}px ≤ 4096). 칸 번호는 **덧붙이기 전용**이다 — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다.
+시트는 {COUNT}칸 = {COUNT // TPR}줄 × {TPR}칸(높이 {SHEET_PX[1]}px ≤ 8192). 칸 번호는 **덧붙이기 전용**이다 — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다.
 
 ## 영역 지도 (번호 구간은 정의 JSON 에서 센 값)
 {md_table(['영역', '번호 구간', '칸 수', '내용·쓰는 법'], rows)}
@@ -1685,7 +1685,7 @@ img_shop()
 
 
 # ====================================================================== 분류 5b — 손 도트 건물 키트(jp-bldg-*)
-BLDG = [k for k in KITS if k.startswith('jp-bldg-')]
+BLDG = [k for k in KITS if k.startswith('jp-bldg-') and not k.startswith('jp-bldg-f-')]      # jp-bldg-f-*(새 건물, 탑 3/4)는 refs_fable.py 가 따로 문서로 만든다
 BLDG_EN = {r['id']: r for r in EN['bldgKits']}
 BC = EN['bldgComps']
 _BCAT = collections.OrderedDict((('단독주택', []), ('공동주택', []), ('가게', []), ('음식점', []), ('상업 건물', []), ('공공 건물', []), ('공장·창고', [])))
@@ -3321,6 +3321,12 @@ def finalize():
     if story:
         cats.append(story); doc_ids += [d['id'] for d in story['documents']]; img_ids |= {i['id'] for i in story['images']}
         emitted_kits.update(refs_story.kit_ids(ROOT))
+    # 새 건물 용도(jp-buildings-f)도 같은 길이다 — refs_fable.py 가 따로 만들고(그림은 다른 폴더) 여기서 저장본을 다시 붙인다.
+    import refs_fable
+    fable = refs_fable.references(ROOT)
+    if fable:
+        cats.append(fable); doc_ids += [d['id'] for d in fable['documents']]; img_ids |= {i['id'] for i in fable['images']}
+        emitted_kits.update(refs_fable.kit_ids(ROOT))
     missing = sorted(set(KITS) - emitted_kits)
     assert not missing, missing[:10]
     for k in RECIPES + DOORS + PROPS: assert k in emitted_kits

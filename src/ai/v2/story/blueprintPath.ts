@@ -42,7 +42,7 @@ import { behindBuildingStrip } from "../place/entrances";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
 import { remapGives, settleCarriedSteps } from "./blueprintCarry";
 import { foeTroop, roadFoeSpecies } from "./stepFoeTroop";
-import { stepGoal, wordlessLine } from "./playerLines";
+import { namesNextStep, nextStepLine, stepGoalAt, wordlessLine } from "./playerLines";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -109,7 +109,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
   properties: {
     steps: { type: "array", description: "(optional) per-step dialogue. Empty = the function fills it from the blueprint text.", items: { type: "object", properties: {
       id: { type: "string", description: "blueprint step id (s1…)" },
-      lines: { type: "array", items: { type: "string" }, description: "what is said or shown when the condition is met — for a talk/choice/battle step the person's own words (a line starting with «(» is narration)" },
+      lines: { type: "array", items: { type: "string" }, description: "what is said or shown when the condition is met — for a talk/choice/battle step the person's own words (a line starting with «(» is narration). A talk step's last line says who or where next, and why" },
       lockedLines: { type: "array", items: { type: "string" }, description: "when the condition is not met yet — a hint naming this step's own needs (never another step)" },
       doneLines: { type: "array", items: { type: "string" }, description: "when examined again after it is done" },
       code: { type: "string", description: "puzzle step: its lock's answer (3+ digits). Other steps: the number that person or thing tells — said in their lines" },
@@ -117,7 +117,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
       wrongLines: { type: "array", items: { type: "string" } },
       on: { type: "string", description: "find/puzzle step: the drawn thing of that place the player uses — a name from build_places «things». The event sits on that piece, so write the lines about it" },
       winLines: { type: "array", items: { type: "string" }, description: "puzzle step: 1–2 lines shown when the code is right. battle step: 1–2 lines after the player wins — narration («The beast backs into the reeds.»); the foe's own last words go in double quotes. A foe drawn as a monster leaves the map after the win, so its doneLines are not shown" },
-      goal: { type: "string", description: "objective line the player reads while this step is next, said to the player, within 40 chars: «Ask Captain Varga for a way across»" },
+      goal: { type: "string", description: "objective line the player reads while this step is next, said to the player, within 36 chars — who, where (name the place if it is another map), why: «Ask Captain Varga at the dock for a way across»" },
       item: { type: "string", description: "an object these lines hand over or let the player pick up — it enters the inventory. Not news or an opened way" },
       choices: { type: "array", description: "choice step: the 2–3 options the player picks from", items: { type: "object", properties: {
         text: { type: "string", description: "the option as the player reads it" },
@@ -265,6 +265,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const lastBattle = steps.reduce((hit, st, i) => (st.kind === "battle" ? i : hit), -1);
   /** 테마에 맞는 그림이 없어 대역을 쓴 것(place/placeTheme 의 없는 그림 줄) — 결과의 missingArt 에 싣는다. */
   const artGaps: string[] = [];
+  /** 다음 갈 곳을 잇는 서술 한 줄을 덧붙인 단계(id) — 결과 글에서 알린다. */
+  const bridged: string[] = [];
   const kept: string[] = [];
   // 바로 앞 단계가 모델(또는 앞선 빌드)이 지은 이벤트 그대로면 — 번호 단계의 답을 그 이벤트 대사에 적는다(따로 쪽지를 세우지 않는다).
   let prevKept: { mapId: string; eventId: string; gives: string; event: string } | undefined;
@@ -398,7 +400,17 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // 사람 단계에 대사를 안 줬으면 «살펴보았다» 대신 그 단계의 할 일을 서술 한 줄로.
     const said = t?.lines?.length ? t.lines : personal ? [wordlessLine(step)] : [lookLine(step.event)];
     // 번호를 알려 주는 단계인데 대사에 그 번호가 없으면 한 줄 덧붙인다 — 플레이어가 읽은 글에 번호가 있어야 뒤의 자물쇠를 연다.
-    const lines = tells && !said.some((line) => line.includes(tells)) ? [...said, personal ? `(${who}${josa(who!, "이", "가")} 알려 준 번호는 「${tells}」.)` : `적힌 번호는 「${tells}」.`] : said;
+    const toldLines = tells && !said.some((line) => line.includes(tells)) ? [...said, personal ? `(${who}${josa(who!, "이", "가")} 알려 준 번호는 「${tells}」.)` : `적힌 번호는 「${tells}」.`] : said;
+    // 사람과 말하는 단계의 글이 다음 갈 곳(다음 단계의 사람·장소)을 말하지 않으면 서술 한 줄로 잇는다 — 목표 줄만 바뀌고 대사는 뚝 끊기는 길이 되지 않게.
+    // 왜(2026-11-16 확인 빌드 r6 P3): 강지기는 어물전 이야기를 하지 않고 어물전 주인은 신부 이야기를 하지 않았다 — 왜 거기로 가는지 화면에 없었다.
+    // 다음 사람을 대사에 적은 게임(«서점 할아버지한테 가 보세요»)은 그대로 둔다. 싸움·고르기·자물쇠 단계와 같은 사람이 이어 맡는 단계에는 붙이지 않는다.
+    const nextStep = steps[k + 1];
+    const bridgeMap = nextStep ? mapFor(run.ctx.project, nextStep.place) : undefined;
+    const needsBridge = !!nextStep && step.kind === "talk" && personal && !code && !(nextStep.who?.trim() && nextStep.who.trim() === who && bridgeMap?.id === map.id) && !namesNextStep(toldLines, nextStep, step);
+    if (needsBridge) bridged.push(step.id);
+    // 자물쇠의 번호가 든 goal 은 잇는 줄에 쓰지 않는다(이름으로 지은 줄이 선다).
+    const nextGoal = nextStep ? byId.get(nextStep.id)?.goal : undefined;
+    const lines = needsBridge ? [...toldLines, nextStepLine({ ...nextStep!, text: { goal: nextGoal && !/\d{3,}/u.test(nextGoal) ? nextGoal : undefined } }, bridgeMap && bridgeMap.id !== map.id ? String(bridgeMap.name ?? "").trim() : undefined)] : toldLines;
     // 고르기(choice): 고른 것마다 깃발 — 엔딩 직전에 그 선택의 결과 한 줄(later)이 달라진다.
     const options = step.kind === "choice" ? (t?.choices ?? []).filter((o) => o?.text?.trim()).slice(0, 4) : [];
     const choice = options.length >= 2 ? { options: options.map((o, i) => ({ text: o.text.trim(), ...(o.lines?.length ? { lines: o.lines } : {}), flag: `${step.id} 선택 ${i + 1}` })) } : undefined;
@@ -479,7 +491,13 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   // 자물쇠의 답이 든 goal 은 목표 줄로 쓰지 않는다 — 이름으로 지은 중립 줄이 선다(끝맺음 code-clues 의 codeLeaks 가 남은 것을 마저 고친다).
   const lockCodeList = links.flatMap((l) => (l.code ? [l.code] : []));
   const leaked = steps.filter((st) => { const goal = byId.get(st.id)?.goal; return !!goal && lockCodeList.some((c) => goal.includes(c)); }).map((st) => st.id);
-  const objectiveNotes = stepObjectives(run, steps.map((st) => stepGoal({ ...st, text: { goal: leaked.includes(st.id) ? undefined : byId.get(st.id)?.goal } })), links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
+  // 목표 줄은 «누구를 · 어디서» 를 말한다 — 앞 단계와 다른 맵에 있는 단계는 그 맵 이름을 문장에 싣는다(필드 안내를 끈 게임은 「어디」 꼬리가 보이지 않는다).
+  const placeOf = (i: number): string | undefined => {
+    const here = mapFor(run.ctx.project, steps[i]!.place);
+    const from = i > 0 ? mapFor(run.ctx.project, steps[i - 1]!.place) : run.ctx.project.maps[run.ctx.project.startMapId];
+    return here && here.id !== from?.id ? String(here.name ?? "").trim() || undefined : undefined;
+  };
+  const objectiveNotes = stepObjectives(run, steps.map((st, i) => stepGoalAt({ ...st, text: { goal: leaked.includes(st.id) ? undefined : byId.get(st.id)?.goal } }, placeOf(i))), links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}${leaked.length ? ` The goal of ${leaked.join(", ")} gave away a lock's code — the objective line was written without it (the player reads the code from the clue). Keep codes out of goal and lockedLines.` : ""}` };
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}${bridged.length ? ` The lines of ${bridged.join(", ")} did not say who or where next, so one narration line was added after them («(이제 …)» — the next step's objective). To replace it, send that step's lines again with a last line in the person's own voice that names the next person or place.` : ""}${leaked.length ? ` The goal of ${leaked.join(", ")} gave away a lock's code — the objective line was written without it (the player reads the code from the clue). Keep codes out of goal and lockedLines.` : ""}` };
 }

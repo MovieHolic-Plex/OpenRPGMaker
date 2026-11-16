@@ -2,7 +2,7 @@ import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "
 import { applyAssistantEngine, isLocalCliProviderId, loadAssistantEngine } from "./localCliEngine";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModel, parseRoleModels, type RoleModel, type SpecialistModels, type ThinkingEffort } from "./modelRoles";
-import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
+import { parsePixelModel } from "./pixelModel";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
@@ -16,7 +16,7 @@ import { DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE } from "./piAgent/executionDefaul
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
-import { DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { ANTHROPIC_PROVIDER_ID, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -153,8 +153,9 @@ export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // agent-low 도 3.7 중앙값 5666ms 가 3.8 6883ms 보다 짧았다(조건이 다른 시점 측정이라 지표 수준).
 // 측정으로 확정된 축은 모델 세대가 아니라 **사고 강도**다: 같은 모델에서 high/low 중앙값 1.54×(2k)·
 // 1.55×(30k), 실제 Pi 런은 중앙값 기준 1.28~1.36×.
-// 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
-// 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
+// 저장된 제공자 선택은 존중된다. providerId 가 없는 옛 blob 은 옛 기본 제공자(Antigravity)로 읽히므로
+// 이 상수가 그 blob 의 모델 기본값이다 — **Google 계정의 기본 모델**이다.
+// 새로 설정하는 사용자의 공장 기본은 이 상수가 아니라 Claude Opus 5.5 · medium 이다(defaultAiConfig, 2026-11-16).
 export const DEFAULT_MODEL = "gemini-4-argon";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
 export const DEFAULT_LITE_MODEL = "gemini-4-argon";
@@ -193,12 +194,24 @@ function promoteLegacyFactoryModel(model: string, providerId: string): string {
   return LEGACY_FACTORY_MODELS.has(model) ? DEFAULT_MODEL : model;
 }
 
-function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
+/**
+ * Claude 계정의 옛 기본 워커(Haiku 5.5). 2026-11-16 까지 Claude 계정을 고르면 실행·시공·작문·시각 칸이 이 모델로 채워졌다
+ * (modelPresets 의 anthropic fast 티어). 기본이 Opus 5.5 하나로 바뀌면서 #2535 와 같은 규칙으로 소급한다 —
+ * 제품이 채운 칸(사용자가 직접 고르지 않은 칸)만 읽을 때 새 기본으로 올리고, 디스크에는 쓰지 않는다.
+ * 사용자가 직접 고른 칸(modelSelectionOverrides)의 Haiku 는 그대로다.
+ */
+const LEGACY_CLAUDE_WORKER_MODELS = new Set(["claude-haiku-5-5"]);
+
+function promoteLegacyClaudeWorker(model: string, providerId: string, pinned: boolean): string {
+  return !pinned && providerId === ANTHROPIC_PROVIDER_ID && LEGACY_CLAUDE_WORKER_MODELS.has(model) ? CLAUDE_DEFAULT_MODEL : model;
+}
+
+function promoteLegacyRoleModels(roles: SpecialistModels, pinned: Partial<Record<string, true>> = {}): SpecialistModels {
   const result: SpecialistModels = {};
   for (const role of ["vision", "writer", "deep", "build"] as const) {
     const entry = roles[role];
     if (!entry) continue;
-    result[role] = { ...entry, model: promoteLegacyFactoryModel(entry.model, entry.provider) };
+    result[role] = { ...entry, model: promoteLegacyClaudeWorker(promoteLegacyFactoryModel(entry.model, entry.provider), entry.provider, pinned[role] === true) };
   }
   return result;
 }
@@ -225,36 +238,37 @@ function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
  */
 export function defaultAiConfig(): AiConfig {
   const legacy = legacyStoredAiConfigBase();
-  // 새로 설정하는 사용자의 권장 조합(2026-10-14, 사용자 결정): 계획·실행·시각·작문·시공 모두 Google 의
-  // Gemini 4 Argon medium. 감독(ultrabrain) 검수만 high 로 둔다. ChatGPT 는 사용자가 고를 때만 쓴다 —
-  // 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다.
-  const argonMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: DEFAULT_MODEL, thinkingLevel: "medium" } as const;
+  // 새로 설정하는 사용자의 공장 기본(2026-11-16, 오너 결정): 계획·실행·시각·작문·시공·감독(ultrabrain) 모두
+  // Claude Opus 5.5 · medium 한 모델이다. Haiku 워커·팀장 분리도, 감독만 high 로 두던 것도 기본에서 뺐다.
+  // 지난 기본은 Google 의 Gemini 4 Argon medium(2026-10-14, PR #2535)이었다. Google·ChatGPT 는 사용자가 고를 때만 쓴다 —
+  // 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다(Google·ChatGPT 로 저장된 설정을 Claude 로 옮기지 않는다).
+  const opusMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: CLAUDE_DEFAULT_MODEL, thinkingLevel: CLAUDE_DEFAULT_EFFORT } as const;
   return {
     ...legacy,
     providerId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    model: DEFAULT_MODEL,
-    liteModel: DEFAULT_LITE_MODEL,
-    reasoningEffort: "medium",
-    ultrabrainProviderId: DEFAULT_ULTRABRAIN_PROVIDER,
-    ultrabrainModel: DEFAULT_ULTRABRAIN_MODEL,
-    ultrabrainReasoningEffort: DEFAULT_ULTRABRAIN_EFFORT,
+    model: CLAUDE_DEFAULT_MODEL,
+    liteModel: CLAUDE_DEFAULT_MODEL,
+    reasoningEffort: CLAUDE_DEFAULT_EFFORT,
+    ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
+    ultrabrainModel: CLAUDE_DEFAULT_MODEL,
+    ultrabrainReasoningEffort: CLAUDE_DEFAULT_EFFORT,
     imageProviderId: RECOMMENDED_IMAGE_PROVIDER_ID,
     imageModel: RECOMMENDED_IMAGE_MODEL,
     roleModels: {
-      deep: { ...argonMedium },
-      vision: { ...argonMedium },
-      writer: { ...argonMedium },
-      build: { ...argonMedium },
+      deep: { ...opusMedium },
+      vision: { ...opusMedium },
+      writer: { ...opusMedium },
+      build: { ...opusMedium },
     },
-    // 도트 저작(공방)은 텍스트 모델이 격자 문자열로 찍는다 — 이미지 모델 칸과 별개다(src/ai/pixelModel.ts).
-    pixelModel: { ...DEFAULT_PIXEL_MODEL },
+    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 Opus 5.5 medium)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
+    // 2026-11-16 까지는 Google 의 Argon medium 으로 채웠는데, 이 칸은 계정 선택을 따라 바뀌지 않아 Google 연결이 없는 사용자의 도트 저작이 막혔다.
     roleModelsPolicyVersion: 1,
   };
 }
 
 /**
  * 저장값을 읽을 때의 바탕. 저장된 blob 은 Antigravity 가 기본이던 시절의 값이므로, 빠진 칸을
- * 새 권장 조합(ChatGPT)으로 채우면 Google 만 연결한 기존 사용자의 모델이 말없이 바뀐다.
+ * 새 권장 조합(Claude)으로 채우면 Google 만 연결한 기존 사용자의 모델이 말없이 바뀐다.
  */
 function legacyStoredAiConfigBase(): AiConfig {
   return {
@@ -381,13 +395,29 @@ function loadStoredAiConfig(): AiConfig {
     // authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
     // 모델 승격이 제공자를 알아야 하므로 providerId 를 먼저 푼다.
     const providerId = parseOhMyPiProvider(parsed.providerId);
+    // Old blobs cannot distinguish a user selection from an automatically seeded row.
+    // Preserve every stored slot until the user explicitly chooses to align it.
+    const modelSelectionOverrides: NonNullable<AiConfig["modelSelectionOverrides"]> = Object.fromEntries(
+      (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel", "smol", "advisor"] as const).filter(slot => {
+        if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
+          return parsed.modelSelectionOverrides[slot] === true;
+        }
+        return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
+          : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
+          : slot === "pixel" ? Boolean(parsed.pixelModel)
+          : slot === "smol" || slot === "advisor" ? false
+          : Boolean(parsed.roleModels?.[slot]);
+      }).map(slot => [slot, true as const]),
+    );
+    // 옛 감독·실행 칸(model·liteModel)은 작문·실행 역할의 짝이다 — Claude 계정의 옛 워커(Haiku) 소급도 그 역할을 직접 골랐는지로 가른다.
+    const promote = (stored: string, slot: "writer" | "deep"): string =>
+      promoteLegacyClaudeWorker(promoteLegacyFactoryModel(stored, providerId), providerId, modelSelectionOverrides[slot] === true);
     const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
     // 저장된 모델이 없으면 그 제공자의 기본 모델 — Codex blob 에 Gemini 이름을 채우지 않는다.
     const providerDefault = getOhMyPiProvider(providerId)?.defaultModel || base.model;
-    const model: string = promoteLegacyFactoryModel(storedModel, providerId) || providerDefault;
+    const model: string = promote(storedModel, "writer") || providerDefault;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
-    const liteModel: string = promoteLegacyFactoryModel(storedLiteModel, providerId)
-      || promoteLegacyFactoryModel(storedModel, providerId) || providerDefault;
+    const liteModel: string = promote(storedLiteModel, "deep") || promote(storedModel, "deep") || providerDefault;
     // Preserve explicit selections; the companion rejects unsupported IDs without substitution.
     return {
       authMode,
@@ -404,26 +434,13 @@ function loadStoredAiConfig(): AiConfig {
       model,
       liteModel,
       roleModels: parsed.roleModelsPolicyVersion === 1
-        ? promoteLegacyRoleModels(parseRoleModels(parsed.roleModels))
-        : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels)), providerId, liteModel || model),
+        ? promoteLegacyRoleModels(parseRoleModels(parsed.roleModels), modelSelectionOverrides)
+        : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels), modelSelectionOverrides), providerId, liteModel || model),
       // 도트 저작 칸: 저장된 값만 읽는다. 옛 설정에는 없으므로 비워 두고 기존 동작(계획 모델)을 유지한다.
       ...(parsePixelModel(parsed.pixelModel) ? { pixelModel: parsePixelModel(parsed.pixelModel)! } : {}),
       ...(parseRoleModel(parsed.intentModel) ? { intentModel: parseRoleModel(parsed.intentModel)! } : {}),
       ...(parseAssistantRoleSlots(parsed.assistantRoles) ? { assistantRoles: parseAssistantRoleSlots(parsed.assistantRoles)! } : {}),
-      // Old blobs cannot distinguish a user selection from an automatically seeded row.
-      // Preserve every stored slot until the user explicitly chooses to align it.
-      modelSelectionOverrides: Object.fromEntries(
-        (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel", "smol", "advisor"] as const).filter(slot => {
-          if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
-            return parsed.modelSelectionOverrides[slot] === true;
-          }
-          return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
-            : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
-            : slot === "pixel" ? Boolean(parsed.pixelModel)
-            : slot === "smol" || slot === "advisor" ? false
-            : Boolean(parsed.roleModels?.[slot]);
-        }).map(slot => [slot, true as const]),
-      ),
+      modelSelectionOverrides,
       ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
       ultrabrainModel: promoteLegacyFactoryModel(
         typeof parsed.ultrabrainModel === "string" ? parsed.ultrabrainModel.trim() : "",

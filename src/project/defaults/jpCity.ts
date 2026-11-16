@@ -10,8 +10,52 @@
 import sheet from "@/assets/jpCitySheet.json";
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`jpCitySheet.json`)에서 읽는다. */
-const data = () => bundledJson("jpCityTileset");
+const data = () => {
+  const d = bundledJson("jpCityTileset");
+  markSupersededBuildings(d.structureKits as unknown as StructureKitDef[]);
+  sealRailway(d as unknown as RailwayData);
+  return d;
+};
+/**
+ * 한 게임 안에서 건물 가족은 하나다. 새 건물(`jp-bldg-f-*`, 탑 3/4 시점)이 구워져 있으면 옛 손 도트 건물(`jp-bldg-*`)은 정의에 남기되
+ * 조수에게 권하는 목록에서 뺀다(`ai.supersededBy`). 새 가족에 같은 구실이 없는 것(학교·체육관·유치원·주유소 사무소·시장 건물·공장·창고·마치코바)은 그대로 둔다.
+ */
+const NEW_BUILDING_PREFIX = "jp-bldg-f-";
+const HAND_ONLY_BUILDINGS = new Set(["school", "school-gym", "kindergarten", "gas-office", "market-hall", "factory", "warehouse", "machikoba-home"].map((s) => `jp-bldg-${s}`));
+/**
+ * 선로와 열차는 못 걷는 칸이다(2026-11-16 r6 브라우저 플레이 P1: 게임이 선로 위에서 시작했고 열차 안·역 지붕 밑으로 걸어 들어갔다).
+ * 구운 자료에서는 선로 오토타일이 «걸을 수 있는 길»(role path)이고 열차 그림은 맨 아랫줄까지 지나가는 칸(★/○)이었다 — 정의를 읽을 때 막힌 칸으로 고친다.
+ * 고가 정면 키트(viaduct6-*)의 발 줄 가운데 두 칸(가게 문·통로 그림)도 막는다 — 그 뒤는 선로 바닥뿐이다. 건널목은 선로 위에 깐 길 칸(생활도로)이라 그대로 건넌다.
+ */
+interface RailwayData { passability: (PassFlag | null)[]; priority: ("lower" | "upper")[]; tileGroups: { id: string; tileIds?: number[] }[]; structureKits: { id: string; rows: { tiles?: number[]; upperTiles?: number[] }[] }[] }
+const RAILWAY_GROUPS = new Set(["jp:rail-track", "jp:prop:train"]);
+const sealed = new WeakSet<object>();
+function sealRailway(d: RailwayData): void {
+  if (sealed.has(d)) return;
+  sealed.add(d);
+  const block = (tile: number | undefined) => { if (tile !== undefined && tile >= 0 && tile < d.passability.length) d.passability[tile] = { up: false, down: false, left: false, right: false }; };
+  for (const group of d.tileGroups) if (RAILWAY_GROUPS.has(group.id)) for (const tile of group.tileIds ?? []) block(tile);
+  for (const kit of d.structureKits) {
+    if (!kit.id.startsWith("jp-prop-viaduct6-")) continue;
+    const foot = kit.rows[kit.rows.length - 1];
+    for (const tile of [...(foot?.tiles ?? []), ...(foot?.upperTiles ?? [])]) block(tile);
+  }
+  // 새 건물(탑 3/4 시점)의 지붕은 건물이 선 자리다 — 지붕 칸은 «뒤로 지나가는 칸»(★)이 아니라 막힌 칸이다. 옛 정면 그림 건물과 지나가는 조각(도리이·산몬·대문)은 그대로 둔다.
+  const buildings = new Set((streetCatalog as unknown as { buildings: { id: string }[] }).buildings.map((b) => b.id).filter((id) => id.startsWith(NEW_BUILDING_PREFIX)));
+  for (const kit of d.structureKits) {
+    if (!buildings.has(kit.id)) continue;
+    for (const row of kit.rows) for (const tile of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (tile >= 0 && d.priority[tile] === "upper") block(tile);
+  }
+}
+const marked = new WeakSet<object>();
+function markSupersededBuildings(kits: StructureKitDef[]): void {
+  if (marked.has(kits)) return;
+  marked.add(kits);
+  if (!kits.some((kit) => kit.id.startsWith(NEW_BUILDING_PREFIX))) return;
+  for (const kit of kits) if (kit.id.startsWith("jp-bldg-") && !kit.id.startsWith(NEW_BUILDING_PREFIX) && !HAND_ONLY_BUILDINGS.has(kit.id) && kit.ai) kit.ai.supersededBy = NEW_BUILDING_PREFIX;
+}
 import references from "@/assets/jpCityReferences.json";
+import streetCatalog from "@/assets/jpCityStreetCatalog.json";
 import forestReferences from "@/assets/jpForestReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -26,7 +70,14 @@ export const JP_CITY_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·오토타일 그룹·참고문서 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const JP_CITY_PREFIX = "jp-";
 // 숲 용도(jp-forest)는 따로 굽는다(scripts/content/jp-city/forest/bake_forest_refs.py) — bake_refs.py 가 다른 용도를 다시 구워도 숲 문서가 지워지지 않게.
-const REFERENCES = [...(references as unknown as TilesetReferenceCategory[]), ...(forestReferences as unknown as TilesetReferenceCategory[])];
+const ALL_REFERENCES = [...(references as unknown as TilesetReferenceCategory[]), ...(forestReferences as unknown as TilesetReferenceCategory[])];
+// 새 건물 용도(jp-buildings-f)가 실려 있으면 옛 손 도트 건물 용도(jp-buildings-hand)는 번들 참고문서에서 내린다 — 읽는 순서·시트 지도가 가리키는 용도 이름도 새 것으로 바꾼다.
+const HAND_BUILDING_REFS = "jp-buildings-hand", NEW_BUILDING_REFS = "jp-buildings-f";
+const REFERENCES = !ALL_REFERENCES.some((category) => category.id === NEW_BUILDING_REFS) ? ALL_REFERENCES
+  : ALL_REFERENCES.filter((category) => category.id !== HAND_BUILDING_REFS).map((category) => category.id !== "jp-start" ? category : {
+    ...category,
+    documents: category.documents.map((doc) => ({ ...doc, markdown: doc.markdown.replaceAll("용도 「손 도트 건물」(`jp-bldg-hand-rules`)", "용도 「새 건물」(`jp-bldg-f-rules`)").replaceAll("용도 「손 도트 건물」", "용도 「새 건물」") })),
+  });
 
 const isOwned = (id: string): boolean => id.startsWith(JP_CITY_PREFIX);
 

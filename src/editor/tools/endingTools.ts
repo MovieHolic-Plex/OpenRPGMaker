@@ -159,7 +159,23 @@ const defineEnding: ToolDefinition = {
     // 빈 에필로그([])는 안 보낸 것으로 읽는다(값싼 모델은 스키마 칸을 빈 값으로 채워 보낸다).
     const sentEpilogue = Array.isArray(args.epilogue) && args.epilogue.length === 0 ? undefined : args.epilogue;
     const epilogue = sentEpilogue === undefined ? prior?.epilogue : parseEpilogue(draft, sentEpilogue, epilogueWarnings);
-    let presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
+    // presentation 은 칸마다 합친다 — 보낸 칸만 바뀌고 안 보낸 칸은 그대로다(도구 설명이 약속한 대로). null 로 보낸 칸은 지운다.
+    // 왜(2026-11-16 확인 빌드 r6 P9): 배경 그림 하나만 다시 보내자 통째로 바뀌어 제목·윗글·크레딧·tone 이 지워졌다(엔딩 화면이 «끝» · 크레딧 없음).
+    // 빈 글("")은 안 보낸 것으로 읽는다 — 스키마 칸을 빈 값으로 채워 보내는 모델이 앞서 쓴 글을 지우지 않게.
+    const keptPresentation: string[] = [];
+    let presentation = prior?.presentation;
+    if (args.presentation !== undefined && args.presentation !== null) {
+      if (typeof args.presentation !== "object" || Array.isArray(args.presentation)) throw new ToolError("presentation 은 객체여야 합니다.", { code: "invalid-args" });
+      const sent = args.presentation as Record<string, unknown>;
+      const merged: Record<string, unknown> = { ...(prior?.presentation ?? {}) };
+      for (const [key, value] of Object.entries(sent)) {
+        if (value === null) delete merged[key];
+        else if (value === "" && key in merged) continue;
+        else if (value !== "") merged[key] = value;
+      }
+      for (const key of Object.keys(prior?.presentation ?? {})) if (!(key in sent) || sent[key] === "") keptPresentation.push(key);
+      presentation = merged as EndingPresentation;
+    }
     // 크레딧·엔딩 글에 줄바꿈을 글자 「\n」로 두 번 이스케이프해 보내면 화면에 「\n」이 그대로 찍혔다(2026-10-25 G50·심판 J2).
     if (presentation && typeof presentation.credits === "string" && /(?:\\r)?\\n/u.test(presentation.credits)) presentation = { ...presentation, credits: presentation.credits.replace(/(?:\\r)?\\n/gu, "\n") };
     if (presentation !== undefined) {
@@ -206,7 +222,8 @@ const defineEnding: ToolDefinition = {
       ]),
     ];
     return {
-      summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.`,
+      summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.`
+        + (keptPresentation.length ? ` presentation: kept ${keptPresentation.join(", ")} from before (only the fields you sent changed; send a field as null to clear it).` : ""),
       data: { ending, warnings },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

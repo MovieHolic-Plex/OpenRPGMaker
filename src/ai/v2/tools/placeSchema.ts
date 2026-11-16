@@ -80,6 +80,7 @@ export const HINTS_SCHEMA = {
     houseCount: { type: "number" },
     door: { type: "array", items: { type: "integer" }, description: "(interior) [x,y] of the house door this place is behind (a door cell from the village result) — the inside then follows that building's size" },
     kind: { type: "string", description: "(village, optional) village kind id — the land answer lists them" },
+    buildings: { type: "array", items: { type: "string" }, description: "(village) buildings the request asks for, up to 3 — a kit id or a word of a kit's id or name (cathedral · inn · market-hall); the builder seats them by the gather" },
     roofs: { type: "string" },
     water: { type: "string", description: "(village) water in the land design — river: a river flowing east-west in the south (crossed by plank bridges) · none: no water. Always set it for grassland villages" },
     woods: { type: "string" },
@@ -107,8 +108,8 @@ export const HINTS_SCHEMA = {
     terrainSeed: { type: "number", description: "(village) code terrain seed — change only if you dislike the preview land" },
     layout: { type: "object", description: "(village) spots chosen by land-picture coordinates (x right, y down, in cells). The function moves them to the nearest buildable spot and links roads", properties: {
       gather: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, plaza: { type: "boolean" } }, required: ["x", "y"], description: "gathering place: a well and a stall, put where people have a reason to meet (bridge head, stair foot, where the road enters, in front of the inn) — not the middle of the map. plaza:true lays a paved square; only for a market or trading town" },
-      landmark: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "high-ground building (watchtower, chapel, temple) — usually on the high tier" },
-      anchor: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "big building (inn, hall) — usually beside the gathering place" },
+      landmark: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" }, kit: { type: "string", description: "building to stand here (kit id or word)" } }, required: ["x", "y"] }, description: "high-ground building (watchtower, chapel, temple) — usually on the high tier" },
+      anchor: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" }, kit: { type: "string", description: "building to stand here (kit id or word)" } }, required: ["x", "y"] }, description: "big building (inn, hall) — usually beside the gathering place" },
       work: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "workplace (barn, storehouse)" },
       houses: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, kind: { type: "string", enum: ["small", "medium", "large"], description: "house size — mix them so the same house does not repeat" } }, required: ["x", "y"] }, description: "house spots (house center) 3–12" },
       fields: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "field spots" },
