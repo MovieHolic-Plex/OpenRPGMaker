@@ -22,6 +22,10 @@ import { checkLayout, rejectionText } from "@/ai/v2/place/interiorLayout";
 import { buildFromLayout } from "@/ai/v2/place/builders/interiorLayoutBuild";
 import { nearIds } from "@/ai/v2/place/unknownWords";
 import { tableParts } from "@/ai/v2/place/roomParts";
+import { findPieces } from "@/ai/v2/place/interiorCatalog";
+import { formatV2VerbFailure } from "@/ai/v2/loop/failureText";
+import { LAYOUT_REJECTION_MAX } from "@/ai/v2/place/unknownWords";
+import { kitLabel } from "@/ai/v2/place/doorHouse";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 
 const table = tierTableOf(TID)!;
@@ -284,28 +288,23 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     }
     expect(seen.size).toBe(1);
   }, 900_000);
-  it("모델이 큰 건물로 청한 장소에 방이 모자란 칸 배치가 오면 그 집의 단과 방 수를 말해 거절하고, 고치기를 다 쓰면 구성 표대로 짓는다. 코드가 큰 겉을 골라 준 평범한 집이면 거절하지 않는다", () => {
-    const a = fresh();
-    const one = { map: { w: 9, h: 8 }, entrance: { x: 4, y: 7 }, regions: [{ id: "r", x: 1, y: 1, w: 7, h: 6, floor: "dplank", wall: "plaster" }] };
-    const spec = { type: "interior", name: "물레방아 여관", mapId: "map_inn", exterior: { tileset: a.ts.id, kit: "bd-bld-ref-tavern-b", asked: true }, layout: one } as unknown as PlaceSpec;
-    const no = interiorBuilder.build(a.run, spec);
-    expect(no.ok).toBe(false);
-    expect(no.summary).toMatch(/medium building/u); expect(no.summary).toMatch(/at least 2 rooms/u); expect(no.summary).toContain("bd-bld-ref-tavern-b");
-    const forced = interiorBuilder.build(a.run, { ...spec, hints: { layoutRepairsLeft: 0 } } as PlaceSpec);
-    expect(forced.ok, forced.summary).toBe(true);
-    expect(roomsOf(a.run, forced.mapIds[0]!)).toHaveLength(4);
-    // 작은 집의 한 방 배치는 전처럼 그대로 받는다(거절 글이 단을 말하지 않는다)
+  it("크기 단 때문에 모델의 배치를 거절하지 않는다 — 방이 모자라도 그대로 깔고, 겉의 단과 그 단의 구성을 받는 법을 적는다", () => {
+    const one = { map: { w: 9, h: 8 }, entrance: { x: 4, y: 7 }, landmark: { id: "chest", x: 3, y: 4 }, regions: [{ id: "r", x: 1, y: 1, w: 7, h: 6, floor: "dplank", wall: "plaster" }] };
+    // 모델이 고른 큰 문(asked) · 코드가 골라 준 큰 문 · size 를 크게 적은 장소 — 어느 것도 단을 이유로 거절하지 않는다
+    for (const extra of [{ exterior: { kit: "bd-bld-ref-tavern-b", asked: true } }, { exterior: { kit: "bd-bld-ref-tavern-b" } }, { size: "large", exterior: { kit: "bd-bld-ref-tavern-b" } }] as const) {
+      const a = fresh();
+      const spec = { type: "interior", name: "물레방아 여관", mapId: "map_inn", layout: one, ...extra, exterior: { tileset: a.ts.id, ...extra.exterior } } as unknown as PlaceSpec;
+      const laid = interiorBuilder.build(a.run, spec);
+      expect(laid.ok, laid.summary).toBe(true);
+      expect(roomsOf(a.run, laid.mapIds[0]!).length).toBeLessThanOrEqual(1);
+      expect(laid.warnings.join(" ")).toMatch(/outside is medium \(bd-bld-ref-tavern-b\) — medium buildings have 2 or more rooms; the inside is laid as you designed it, 1 room/u);
+      expect(laid.warnings.join(" ")).toContain("again without layout");
+    }
+    // 작은 집의 한 방 배치에는 단 이야기가 붙지 않는다
     const b = fresh();
-    const small = interiorBuilder.build(b.run, { ...spec, exterior: { tileset: b.ts.id, kit: "bd-bld-ref-rootcellar-a" } } as PlaceSpec);
-    expect(small.summary).not.toMatch(/building has at least/u);
-    // 평범한 집에 코드가 큰 겉을 골라 줬다(asked 없음): 모델의 한 방 배치를 그대로 짓고, 겉이 크다는 것을 사실로 한 줄 적는다
-    const c = fresh();
-    const plain = interiorBuilder.build(c.run, { ...spec, name: "강지기의 집", exterior: { tileset: c.ts.id, kit: "bd-bld-ref-tavern-b" } } as PlaceSpec);
-    expect(plain.summary).not.toMatch(/building has at least/u);   // 배치 자체의 흠으로 돌려보낼 수는 있어도 단을 이유로 거절하지 않는다
-    if (plain.ok) { expect(roomsOf(c.run, plain.mapIds[0]!).length).toBeLessThanOrEqual(1); expect(plain.warnings.join(" ")).toMatch(/outside is medium/u); }
-    // size 를 크게 적은 장소는 모델이 크게 청한 것이다
-    const d = fresh();
-    expect(interiorBuilder.build(d.run, { ...spec, size: "large", exterior: { tileset: d.ts.id, kit: "bd-bld-ref-tavern-b" } } as PlaceSpec).summary).toMatch(/Rejected.*medium building/u);
+    const small = interiorBuilder.build(b.run, { type: "interior", name: "움집", mapId: "map_inn", layout: one, exterior: { tileset: b.ts.id, kit: "bd-bld-ref-rootcellar-a" } } as unknown as PlaceSpec);
+    expect(small.ok, small.summary).toBe(true);
+    expect(small.warnings.join(" ")).not.toMatch(/buildings have/u);
   }, 120_000);
   it("실내 빌더: 중형 킷의 문으로 들어가는 여관은 방 넷, 킷을 모르는 여관은 전처럼 한 방", () => {
     const a = fresh();
@@ -334,7 +333,7 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
 });
 
 // 2026-11-15 r6 묶음 은행: room_parts 만 v5 표로 답했고, 카드는 빈 갈래에 거절될 예를 달았고, 거절 글은 낱말을 단계로·자리마다 내어 900자에서 잘렸다.
-describe("버들항 표로 읽고 거절한다 — room_parts · 목록 카드 · 거절 글", () => {
+describe("버들항 표로 읽는다 — room_parts · 목록 카드 · 없는 낱말 · 거절 글", () => {
   const ts = createBeodeulCityTileset();
   const ES = effectiveSpec(ts)!;
   const ids = Object.keys(ES.objects);
@@ -380,7 +379,7 @@ describe("버들항 표로 읽고 거절한다 — room_parts · 목록 카드 �
     expect(check.errors[0]).not.toContain("→");
   });
 
-  it("없는 벽 · 바닥 · 기물을 한 번에 알리고 같은 낱말은 묶는다 — 장소는 그대로 거절한다(재료를 바꿔 깔지 않는다)", () => {
+  it("검사(checkLayout)는 없는 벽 · 바닥 · 기물을 한 번에 알리고 같은 낱말은 묶는다 — 바꿔 까는 것은 짓는 쪽(buildFromLayout)이다", () => {
     const check = checkLayout(mill("logdark", "boards"), ES, ts);
     expect(check.errors).toHaveLength(3);
     expect(check.input).toBeUndefined();
@@ -396,17 +395,56 @@ describe("버들항 표로 읽고 거절한다 — room_parts · 목록 카드 �
     expect(text).not.toContain("You sent");
   });
 
-  it("고치기를 다 쓰면 걸린 기물만 빼고 깔되, 뺀 기물과 빈 바닥 비율을 요약에 적는다", () => {
+  it("없는 이름은 가장 가까운 것으로 바꿔 깔고 한 줄씩 알린다 — 가까운 것이 없는 낱말만 거절하고, 고치기를 다 쓰면 그것도 빼고 깐다", () => {
     const { run } = fresh();
-    const spec = { type: "interior", name: "방앗간", layout: mill("log", "plank"), hints: { layoutRepairsLeft: 0, newMap: true } } as unknown as PlaceSpec;
-    const built = buildFromLayout(run, spec, ES, ts.id, undefined);
-    expect(built.ok).toBe(true);
-    expect(built.summary).toMatch(/laid only 4 of your 8 pieces — left out after the repairs: "chair N" ×3, "piano"; bare floor \d+%/u);
-    // 없는 벽 낱말은 뺄 기물이 아니다 — 고치기를 다 써도 장소는 서지 않는다.
+    const layout = { ...mill("logdark", "plank"), objects: [{ id: "chair N", x: 3, y: 5, repeat: { count: 2, dx: 1, dy: 0 } }, { id: "bar stool", x: 9, y: 7 }, { id: "crate", x: 9, y: 9 }] };
+    const built = buildFromLayout(run, { type: "interior", name: "방앗간", layout, hints: { newMap: true } } as unknown as PlaceSpec, ES, ts.id, undefined);
+    expect(built.ok, built.summary).toBe(true);
+    expect(built.summary).toContain("3 ids swapped");
+    expect(built.warnings).toContain('swapped wall "logdark" → "log" (not in this chipset\'s table — its nearest id)');
+    expect(built.warnings).toContain('swapped piece "chair N" ×2 → "chair" (not in this chipset\'s table — its nearest id)');
+    expect(built.warnings).toContain('swapped piece "bar stool" → "stool" (not in this chipset\'s table — its nearest id)');
+    // 가까운 것이 없는 낱말(piano): 고치기가 남았으면 거절, 다 쓰면 빼고 깔고 무엇을 뺐는지와 빈 바닥 비율을 적는다
     const { run: run2 } = fresh();
-    const bad = buildFromLayout(run2, { ...spec, layout: mill("logdark", "plank") } as unknown as PlaceSpec, ES, ts.id, undefined);
-    expect(bad.ok).toBe(false);
-    expect(bad.summary).toContain('"logdark" (outer_wall) → log');
+    const none = { type: "interior", name: "방앗간", layout: mill("log", "plank"), hints: { newMap: true } } as unknown as PlaceSpec;
+    const no = buildFromLayout(run2, none, ES, ts.id, undefined);
+    expect(no.ok).toBe(false);
+    expect(no.summary).toMatch(/no near id in this table[^.]*"piano"/iu);
+    expect(no.summary).not.toContain('"chair N"');   // 가까운 것이 있는 낱말은 이미 바뀌었다
+    const last = buildFromLayout(run2, { ...none, hints: { newMap: true, layoutRepairsLeft: 0 } } as unknown as PlaceSpec, ES, ts.id, undefined);
+    expect(last.ok, last.summary).toBe(true);
+    expect(last.summary).toMatch(/laid 7 of your 8 pieces — left out \(each with its reason in warnings\): "piano"; bare floor \d+%/u);
+  });
+
+  it("거절은 게임이 깨질 때만 — 기물 하나의 문제(겹침 · 바닥 아닌 칸)는 그 기물만 빼고 깔고 까닭을 적는다, 닫히지 않은 벽은 거절한다", () => {
+    const { run } = fresh();
+    const layout = { ...mill("log", "plank"), objects: [{ id: "crate", x: 9, y: 9 }, { id: "barrel", x: 9, y: 9 }, { id: "stool", x: 0, y: 0 }, { id: "chest", x: 4, y: 8 }] };
+    const built = buildFromLayout(run, { type: "interior", name: "방앗간", layout, hints: { newMap: true } } as unknown as PlaceSpec, ES, ts.id, undefined);
+    expect(built.ok, built.summary).toBe(true);
+    expect(built.summary).toMatch(/laid 3 of your 6 pieces — left out/u);
+    expect(built.warnings.some((w) => w.startsWith("left out — two pieces overlap on this cell"))).toBe(true);
+    expect(built.warnings.some((w) => w.startsWith("left out — ") && w.includes('"stool"@(0,0)'))).toBe(true);
+    const { run: run2 } = fresh();
+    const open = { ...mill("log", "plank"), objects: [], outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 11]] } };
+    expect(buildFromLayout(run2, { type: "interior", name: "방앗간", layout: open, hints: { newMap: true } } as unknown as PlaceSpec, ES, ts.id, undefined).ok).toBe(false);
+  });
+
+  it("버들항 게임에서 v5 조각 이름으로 쓴 방은 v5 표로 그대로 깔린다 — 버들항 낱말로 쓴 방은 버들항 표로", () => {
+    const town = () => { const f = fresh(); const m = f.run.ctx.project.maps[f.run.ctx.project.startMapId]!; m.tilesetId = f.ts.id; m.upperTiles[0] = 1; return f; };
+    const v5 = { map: { w: 12, h: 10 }, landmark: { id: "counter 4x1", x: 3, y: 5 }, outer_wall: { material: "logdark", path: [[0, 0], [11, 0], [11, 9], [0, 9]] }, entrance: { x: 5, y: 9 },
+      rooms: [{ id: "hall", at: [5, 7], floor: "boards", purpose: "tavern" }], wall_items: [{ id: "keg rack", wall: "outer", x: 1, y: 3 }],
+      objects: [{ id: "roundtable", x: 2, y: 7 }, { id: "chair E", x: 1, y: 7 }, { id: "bar stool", x: 6, y: 7 }, { id: "barrel", x: 9, y: 7 }] };
+    const a = town();
+    const laid = interiorBuilder.build(a.run, { type: "interior", name: "선술집", layout: v5, hints: { newMap: true } } as unknown as PlaceSpec);
+    expect(laid.ok, laid.summary).toBe(true);
+    expect(a.run.ctx.project.maps[laid.mapIds[0]!]!.tilesetId).toBe(HAND_INTERIOR_TILESET_ID);
+    expect(laid.warnings.join(" ")).toMatch(/laid with chipset atlas_biome_interior — \d+ of the \d+ ids in your layout are that chipset's \(this game's houses use beodeul_city\)/u);
+    expect(laid.warnings.join(" ")).not.toContain("swapped");
+    const b = town();
+    const own = { ...mill("log", "plank"), wall_items: [{ id: "ale kegs rack", wall: "outer", x: 8, y: 3 }], objects: [{ id: "bar counter", x: 3, y: 6 }, { id: "stool", x: 4, y: 8 }, { id: "crate", x: 9, y: 9 }] };
+    const home = interiorBuilder.build(b.run, { type: "interior", name: "방앗간", layout: own, hints: { newMap: true } } as unknown as PlaceSpec);
+    expect(home.ok, home.summary).toBe(true);
+    expect(b.run.ctx.project.maps[home.mapIds[0]!]!.tilesetId).toBe(b.ts.id);
   });
 
   it("room_parts 는 장소가 지어질 표로 답한다 — v5 낱말(logdark · boards)이 섞이지 않는다", () => {
@@ -420,5 +458,56 @@ describe("버들항 표로 읽고 거절한다 — room_parts · 목록 카드 �
     expect(text).toContain("ale kegs rack");
     for (const line of parts.items as string[]) expect(ES.objects[line.split(" | ")[0]!], line).toBeTruthy();
     expect(String(parts.how)).toContain("spec.layout");
+  });
+});
+
+// 2026-11-16 r6 실모델(포구 마을 «갈매나루»): find_pieces 가 없는 갈래에 287개 전부를 답했고, 거절 글 한 건이 900자에서 끊겼다.
+describe("r6 실모델에서 본 것 — find_pieces 의 없는 갈래 · 잘리지 않는 거절 글 · 문 목록의 건물 이름", () => {
+  const ts = createBeodeulCityTileset();
+  const ES = effectiveSpec(ts)!;
+
+  it("find_pieces: 표에 없는 갈래는 전부를 돌려주지 않고 갈래 목록 · 가까운 갈래 · 그 낱말이 든 기물만 낸다", () => {
+    const all = Object.keys(ES.objects).length;
+    const r = findPieces(ES, "fish");
+    expect(r.unknownCategory?.asked).toBe("fish");
+    expect(r.unknownCategory?.near).toContain("fisher");
+    expect(r.total).toBeLessThan(all / 4);
+    expect(r.lines.length).toBeGreaterThan(0);
+    expect(r.categories.some((c) => c.startsWith("fisher ("))).toBe(true);
+    // 아무것도 안 걸리는 갈래 낱말: 기물 0개 + 갈래 목록
+    const none = findPieces(ES, "spaceship");
+    expect(none.lines).toEqual([]); expect(none.total).toBe(0); expect(none.categories.length).toBeGreaterThan(5);
+    // 있는 갈래와 빈 갈래는 전과 같다
+    expect(findPieces(ES, "fisher").unknownCategory).toBeUndefined();
+    expect(findPieces(ES, "").total).toBe(all);
+  });
+
+  it("칸 배치 거절 글은 동사 거절 틀에서 잘리지 않는다 — 넘치면 만드는 쪽이 줄인다(가까운 id 는 그대로, 가까운 것 없는 낱말과 뒤 문제는 개수로)", () => {
+    const problems = ['pieces not in this chipset\'s table (→ its nearest ids): "altar E" → altar; "baptismal font" → font; "holy water font" → font; "desk 3x2" → writing desk / clerk desk; "chair S" → chair; "bench 2" → bench / workbench; "tall stained window" ×4 → stained window; "pipe organ" → organ. No near id in this table (leave out, or pick another piece from the card): "candelabra" ×3, "column marble" ×3, "votive stand", "potted fern", "reredos", "choir stall", "bookshelf 3w".',
+      'floors not in this chipset\'s table: "marble" (room nave). The table\'s floors: dplank, plank, flag, ovenf, earth, parquet, grey.',
+      '"stairs down" at (19,5) is a wall piece — move it to "wall_items" with the "wall" it belongs to.',
+      'carpet "rug red": this chipset has no rect carpets — drop "carpets" and place a rug piece in "objects" (red rug).'];
+    const check = { errors: problems, warnings: [], badObjects: new Set<number>(), objects: [] };
+    const text = rejectionText("대성당", check, {}, 2);
+    expect(text.length).toBeGreaterThan(900);   // r6 에서 끊긴 길이
+    const read = formatV2VerbFailure("make_place", { name: "대성당" }, JSON.stringify({ ok: false, summary: text }));
+    expect(read).toContain('move it to "wall_items" with the "wall" it belongs to.');
+    expect(read).toContain("(red rug).");
+    // 상한을 넘는 거절: 가까운 id 줄은 남고, 가까운 것 없는 낱말은 앞 셋 + 개수, 뒤 문제는 개수로 — 문장 가운데서 끊기지 않는다
+    const many = [problems[0]!, ...Array.from({ length: 40 }, (_, i) => `"bench" at (${i},${i + 3}) stands on a wall-face row — floor pieces go on floor cells (row y >= wall row + 3).`.replace("bench", `bench ${i}`))];
+    const long = rejectionText("대성당", { ...check, errors: many }, {}, 2);
+    expect(long.length).toBeLessThanOrEqual(LAYOUT_REJECTION_MAX);
+    expect(long).toContain('"altar E" → altar');
+    expect(long).toMatch(/"candelabra" ×3, "column marble" ×3, "votive stand" and 4 more\./u);
+    expect(long).toMatch(/- and \d+ more problems not shown here — fix the ones above and send again to get the rest\.$/u);
+    expect(formatV2VerbFailure("make_place", { name: "대성당" }, JSON.stringify({ ok: false, summary: long }))).toContain("send again to get the rest.");
+  });
+
+  it("문 목록에 싣는 건물 이름은 킷 이름에서 칩셋 머리와 크기 꼬리를 뗀 것이다", () => {
+    const kit = (id: string) => ts.structureKits!.find((k) => k.id === id);
+    expect(kitLabel(kit("bd-house-cathedral"))).toBe("첨탑 성당");
+    expect(kitLabel(kit("bd-house-rv-r2-06"))).toBe("회벽 화물 창고");
+    expect(kitLabel(kit("bd-house-h111_1"))).toBe("생선 가게 가게집");
+    expect(kitLabel(kit("bd-bld-ref-cathedral-a"))).toBe("마을 대성당");
   });
 });

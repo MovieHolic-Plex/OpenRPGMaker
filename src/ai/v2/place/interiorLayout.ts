@@ -8,7 +8,7 @@
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import type { TilesetDef } from "@/project/types";
 import { checkWallLayout, type WallsLayoutFields, type WallsRoomOut } from "./interiorWalls";
-import { carpetMiss, knownObject, unknownWordLines } from "./unknownWords";
+import { carpetMiss, knownObject, LAYOUT_REJECTION_MAX, unknownWordLines } from "./unknownWords";
 
 interface LayoutRect { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export interface LayoutRegion extends LayoutRect { readonly id: string; readonly floor: string; readonly wall: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string }
@@ -254,12 +254,23 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
  * 고칠 호출이 맨 앞이다 — 동사 거절 틀(failureText)이 한 줄로 접어 뒤를 자르므로, 뒤에 두면 모델은 «3 problems» 중 하나와 엉뚱한 다음 호출만 봤다(2026-11-11 깔기 24판).
  */
 export function rejectionText(name: string, check: LayoutCheck, _sent: unknown, left: number): string {
-  // 짧게: 동사 거절 틀(formatV2VerbFailure)이 이 글을 한 줄로 접어 900자에서 자른다 — 머리말이 440자였을 때 문제 10~15건 중 6건만 모델에 닿았다(2026-11-15 r6 은행).
+  // 짧게: 동사 거절 틀(formatV2VerbFailure)이 이 글을 한 줄로 접는다 — 머리말이 440자였을 때 문제 10~15건 중 6건만 모델에 닿았다(2026-11-15 r6 은행).
   // 보낸 것(You sent)은 그 틀이 따로 붙이므로 여기서 다시 싣지 않는다. 같은 글귀의 문제는 ×n 으로 묶는다.
   const all = groupSame([...check.errors, ...(check.soft ?? [])]);
-  return [`Rejected: the interior layout for "${name}" is not laid — every problem is below. Fix them all and send make_place again (same name, whole layout) or edit_place patch.layoutPatch (only the changes). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left, then failing pieces are left out.` : "Last repair: next time failing pieces are left out."}`,
-    ...all.slice(0, 30).map((e) => `- ${e}`),
-    ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : [])].join("\n");
+  const head = `Rejected: the interior layout for "${name}" is not laid — every problem is below. Fix them all and send make_place again (same name, whole layout) or edit_place patch.layoutPatch (only the changes). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left, then failing pieces are left out.` : "Last repair: next time failing pieces are left out."}`;
+  const warn = check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : [];
+  const size = (lines: readonly string[]) => lines.reduce((n, l) => n + l.length + 1, 0);
+  const whole = [head, ...all.slice(0, 30).map((e) => `- ${e}`), ...warn];
+  if (size(whole) <= LAYOUT_REJECTION_MAX) return whole.join("\n");
+  // 상한을 넘으면 잘리지 않게 스스로 줄인다(틀이 자르면 문장 가운데서 끊긴다): 가까운 id 가 붙은 낱말은 그대로 두고,
+  // 가까운 것이 없는 낱말은 개수와 앞 셋만, 경고는 빼고, 그래도 넘으면 뒤 문제는 개수로 알린다(고쳐 다시 보내면 그때 온다).
+  const NONE = /(o near id in this table \([^)]*\): )(.*)\.$/u;
+  const lines = all.map((e) => { const m = NONE.exec(e); if (!m) return e; const ids = m[2]!.split(/, (?=")/u); return ids.length <= 3 ? e : e.replace(NONE, `$1${ids.slice(0, 3).join(", ")} and ${ids.length - 3} more.`); });
+  const out = [head]; let rest = 0;
+  const TAIL = 110;
+  for (const e of lines) { if (!rest && size(out) + e.length + 3 <= LAYOUT_REJECTION_MAX - TAIL) out.push(`- ${e}`); else rest += 1; }
+  if (rest) out.push(`- and ${rest} more problem${rest === 1 ? "" : "s"} not shown here — fix the ones above and send again to get the rest.`);
+  return out.join("\n");
 }
 /** 자리만 다른 같은 문제는 한 줄로(«… at (3,5)» 넷 → «… at (3,5) (9,5) … ×4»가 아니라 글귀 한 번 + 자리 목록). */
 function groupSame(list: readonly string[]): string[] {

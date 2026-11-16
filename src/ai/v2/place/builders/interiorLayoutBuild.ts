@@ -8,6 +8,7 @@ import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 import { REVIEWS_TAG } from "../layoutReview";
 import { checkLayout, layoutDecl, layoutGiven, rejectionText, LAYOUT_TAG, type InteriorLayout, type LayoutCheck } from "../interiorLayout";
+import { knownObject, swapLine, swapUnknownWords } from "../unknownWords";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 
@@ -24,31 +25,36 @@ function joins(o: { x: number; y: number; w?: number; h?: number }, a: { x: numb
 }
 
 export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined, outside?: ExteriorLook): PlaceBuildResult {
-  const L = spec.layout as InteriorLayout;
   const tileset = run.ctx.project.tilesets[tilesetId];
   if (!tileset) return { ok: false, mapIds: [], summary: `spec.layout needs a chipset with a room table; ${tilesetId} is missing. Drop layout and use zones.`, warnings: [], missingArt: [], calls: run.calls };
+  // 표에 없는 낱말은 가장 가까운 표의 id 로 바꿔 깔고 알린다(가까운 것이 없을 때만 거절한다) — unknownWords.ts swapUnknownWords.
+  const { layout: L, swaps } = swapUnknownWords(spec.layout as InteriorLayout, S);
   const left = Number(spec.hints?.layoutRepairsLeft ?? 2);
   let check: LayoutCheck = checkLayout(L, S, tileset);
-  const dropped: string[] = [];
+  const dropped: string[] = [], droppedWhy: string[] = [];
   let sentPieces = 0;
-  if (check.errors.length && left <= 0 && check.input === undefined && check.badObjects.size === 0) {
-    return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, 0), warnings: [], missingArt: [], calls: run.calls };
-  }
-  if (check.errors.length && left <= 0) {
-    // 고치기를 다 썼다: 걸린 기물만 빼고 다시 본다(두 번까지 — 뺀 뒤 새로 드러난 겹침).
+  // 거절은 게임이 깨질 때만(2026-11-16 오너 방향): 기물 하나의 문제(겹침 · 바닥 아닌 칸 · 벽 기물을 바닥에)는 그 기물만 빼고 깔고 무엇을 왜 뺐는지 알린다.
+  // 빼도 남는 문제(닫히지 않은 벽 · 닿지 않는 방 · 입구 없음 · 맵 밖)와 가까운 것이 없는 낱말은 거절한다 — 고치기를 다 쓰면 낱말도 빼고 깐다.
+  if (check.errors.length && check.badObjects.size) {
+    const first = check.errors, src = check.sources ?? [];
+    const noNear = src.some((o, i) => check.badObjects.has(i) && typeof o?.id === "string" && !knownObject(S, o.id));
     const drop = new Set<number>(check.badObjects);
-    for (let pass = 0; pass < 3 && check.errors.length; pass++) {
-      check = checkLayout(L, S, tileset, { dropObjects: drop });
-      for (const i of check.badObjects) drop.add(i);
+    let trial = check;
+    for (let pass = 0; pass < 3 && (pass === 0 || trial.errors.length); pass++) {
+      trial = checkLayout(L, S, tileset, { dropObjects: drop });
+      for (const i of trial.badObjects) drop.add(i);
     }
-    const src = check.sources ?? [];
-    for (const i of drop) { const o = src[i]; if (o) dropped.push(`"${o.id}"@(${o.x},${o.y})`); }
-    sentPieces = src.length;
+    if (left <= 0 || (!trial.errors.length && !noNear)) {
+      check = trial;
+      const all = trial.sources ?? src;
+      for (const i of drop) { const o = all[i]; if (o) dropped.push(`"${o.id}"@(${o.x},${o.y})`); }
+      sentPieces = all.length;
+      droppedWhy.push(...first.filter((e) => !trial.errors.includes(e)));
+    }
   }
-  if (check.errors.length || !check.input) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
-  // 공간 문제(빈 바닥·깔개 상한 …): 고치기가 남았으면 거절, 다 썼으면 경고로 남기고 깐다.
+  if (check.errors.length || !check.input) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: swaps.map(swapLine), missingArt: [], calls: run.calls };
+  // 공간 문제(빈 바닥 · 깔개 상한 …)는 게임을 깨지 않는다 — 깔고, 자기 비평(review_layout)의 열린 일로 알린다.
   const soft = check.soft ?? [];
-  if (soft.length && left > 0) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
 
   const input = check.input;
   const args: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
@@ -124,15 +130,15 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     run.call("create_map_location", { mapId: builtId, name: String(q.purpose ?? q.id).slice(0, 40), x: q.x, y: q.y, w: q.w, h: q.h, note: `layout region ${q.id}`, tags });
   }
   const entrance = Array.isArray(data.entrance) ? (data.entrance as { x: number; y: number }[])[0] : undefined;
-  // 고치기를 다 쓰고 뺀 기물은 요약 머리에 적는다 — 무엇이 빠졌고 바닥이 얼마나 비었는지(«19개 중 3개만 깔림, 빈 바닥 61%»)를 모델과 보고가 같이 읽는다.
+  // 뺀 기물은 요약 머리에 적는다 — 무엇이 빠졌고 바닥이 얼마나 비었는지(«19개 중 3개만 깔림, 빈 바닥 61%»)를 모델과 보고가 같이 읽는다.
   const leftOutCount = new Map<string, number>();
   for (const d of dropped) { const id = /^"([^"]*)"/u.exec(d)?.[1] ?? d; leftOutCount.set(id, (leftOutCount.get(id) ?? 0) + 1); }
   const leftOut = [...leftOutCount].map(([id, n]) => `"${id}"${n > 1 ? ` ×${n}` : ""}`).join(", ");
   const barePct = leftOut ? check.space?.emptyPct ?? measureInteriorBareFloor(run.ctx.project, map)?.pct : undefined;
-  const warnings = [...soft.map((w) => `still open after the repairs — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (still failing after the repairs): ${dropped.join(", ")}`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
+  const warnings = [...swaps.map(swapLine), ...droppedWhy.map((e) => `left out — ${e}`), ...soft.map((w) => `open — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (laid without them): ${dropped.join(", ")} — add them back with edit_place patch.layoutPatch.add_objects on free floor cells`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
   return {
     ok: true, mapIds: [builtId], ...(entrance ? { entrance: { mapId: builtId, ...entrance } } : {}),
-    summary: `${spec.name}: ${leftOut ? `laid only ${sentPieces - dropped.length} of your ${sentPieces} pieces — left out after the repairs: ${leftOut}; bare floor ${barePct ?? "?"}%. The rest is laid as written — ` : "laid your layout exactly — "}${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,
+    summary: `${spec.name}: ${leftOut ? `laid ${sentPieces - dropped.length} of your ${sentPieces} pieces — left out (each with its reason in warnings): ${leftOut}; bare floor ${barePct ?? "?"}%. The rest is laid as written — ` : swaps.length ? `laid your layout with ${swaps.length} id${swaps.length === 1 ? "" : "s"} swapped for this chipset's nearest (listed in warnings) — ` : "laid your layout exactly — "}${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,
     warnings, missingArt: [], calls: run.calls,
     state: { tilesetId, mapId: builtId, args: clean({ ...args, mapId: builtId, replace: true }), placed: [] },
   };

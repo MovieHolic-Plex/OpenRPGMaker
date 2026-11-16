@@ -136,3 +136,16 @@ bun scripts/content/beodeul-interiors/rooms.mts          # 방 견본(src/assets
 - **고치기를 다 쓰고 기물을 뺀 장소**는 요약 머리에 적는다: `laid only 6 of your 20 pieces — left out after the repairs: "chair N" ×4, …; bare floor 56%`.
 
 **이 표에 없어 은행에서 거절된 것(그리지 않았다 — 다음 그리기 묶음 후보)**: 내용물 붙은 통 · 궤짝 · 자루(`barrel:fish` `barrel:crab` `barrel:squid` `barrel:shell` `crate:fish` `crate:fishr` `crate:crab` `crate:squid` `crate:shell` `sack:grain` `sack:flour` `table:fish+fishr`), 화분(`potted fern`), 화덕(`stove`), 피아노, 벽 횃불(`wall torch`), 크기 탁자(`dining WxH` `desk WxH` `work WxH` `counter WxH`), 사각 깔개, 걸린 냄비(`hanging pans`), 차림판(`menu board`), 물 항아리(`water jar`), 톱니 벽(`gear wall`), 농기구 걸이(`farm tool rack`).
+
+## 자유롭게 쓰는 낱말 · 마을이 주는 카드 · 문이 고르는 크기 단 (2026-11-16, r6 실모델 뒤 · 오너 「에셋들을 되게 자유롭게 쓰는 방향」)
+
+r6 실모델(Sonnet 5.5 high, 포구 마을 «갈매나루»)에서 본 넷과 오너 방향. **원칙: 거절은 게임이 깨질 때만. 있으면 깔고, 없으면 가장 가까운 것으로 깔고 알린다.** 위 절의 «낱말 하나로 장소가 통째로 거절된다» 는 이 절로 바뀌었다.
+
+- **카드**: 지시문의 실내 카드는 턴을 시작할 때의 맵으로 고른다(빈 프로젝트면 v5) — 턴 안에서 지시문은 다시 지어지지 않는다. 그래서 집 안도 짓는 칩셋(버들항)의 마을을 지은 결과가 **그 마을의 실내 카드를 같이 싣는다**(`tools/context.ts` `finishPlace`, 지시문의 카드가 다른 칩셋의 것일 때 · 대화마다 한 번, `session.interiorCards`). 지시문 글자 수는 그대로다.
+- **어느 표로 까는가**(`builders/interior.ts`): 기본은 그 게임의 표(버들항 마을이면 버들항). 다만 배치의 낱말을 **더 많이 아는 표**가 있으면 그 표로 그대로 깐다 — v5 카드의 낱말로 쓴 방은 v5 로 선다(`laid with chipset … — n of m ids …`). 한 맵은 칩셋 하나라 단위는 방이다(조각마다 섞지 못한다). 같으면 그 게임의 표.
+- **없는 이름**(`unknownWords.ts` `swapUnknownWords`): 고른 표에도 없는 벽 · 바닥 · 기물은 `nearIds` 의 가장 가까운 id 로 바꿔 깔고 결과 글에 한 줄씩 적는다(`swapped piece "wooden chair" → "chair" …`). 기물은 놓는 자리에 맞는 것을 먼저 고른다(wall_items 는 벽붙이 · 걸이). 가까운 것이 없는 낱말만 거절하고, 고치기를 다 쓰면 그것도 빼고 깐다.
+- **기물 하나의 문제**(겹침 · 바닥 아닌 칸 · 벽 기물을 바닥에): 거절하지 않고 그 기물만 빼고 깔고, 뺀 것과 까닭을 적는다(`left out — …`). 빼도 남는 문제(닫히지 않은 벽 · 닿지 않는 방 · 입구 · 맵 밖)는 거절한다.
+- **크기 단**: 단을 이유로 모델의 배치를 거절하지 않는다 — 깔고, 겉이 어떤 단인지와 «배치 없이 다시 부르면 그 단의 구성» 을 적는다. 공간 문제(빈 바닥 …)도 깔고 열린 일로 알린다.
+- **문**(`place/doorHouse.ts`): 마을 결과의 문 목록이 건물 이름과 단을 싣는다(`house-rv-r6-02(26,36) «청회색 맨사드 지붕 열쇠점» large`). 모델이 부르는 실내는 `hints.door:[x,y]` 로 문을 고르면 그 건물의 킷을 따른다 — 배치 없이 오면 그 단의 구성으로 선다. 큰 건물(대형 · 초대형)의 문에 방이 모자란 칸 배치 실내를 `create_transfer_pair` 로 이으면 `[Building size] …` 한 줄이 건물 이름 · 단 · 방 수 · 고칠 호출을 알린다. 문은 맵의 타일에서 읽는다(손으로 찍은 킷은 놓기 기록에 남지 않는다).
+- **거절 글 길이**: 동사 거절 틀이 칸 배치 거절을 900자에서 자르지 않는다(`LAYOUT_REJECTION_MAX` 1,500). 만드는 쪽이 그 안에 맞춘다 — 넘치면 가까운 id 줄은 그대로, 가까운 것 없는 낱말은 앞 셋 + 개수, 뒤 문제는 개수로.
+- **`find_pieces`**: 표에 없는 갈래에는 전부를 돌려주지 않는다 — 갈래 목록 · 가까운 갈래 · 그 낱말이 든 기물만.

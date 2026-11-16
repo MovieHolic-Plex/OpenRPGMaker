@@ -1,4 +1,5 @@
 // 장소 동사 — build_places(세계 장소 한 번에) · make_place · edit_place · review_layout · find_pieces.
+import { doorHouseAt } from "../../place/doorHouse";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { interiorCatalogCard, placeSpecKindOf } from "../../prompt/placeSpecs";
 import { INTERIOR_WORDS } from "../../request/place";
@@ -16,13 +17,13 @@ import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villa
 import { codeTerrainFor, usesCodeTerrain, villageCliffHabitFor } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
-import { interiorBuilder } from "../../place/builders/interior";
+import { interiorBuilder, layoutTableOf } from "../../place/builders/interior";
 import { adoptExactInterior, interiorAddAnchors, interiorEditFromArgs } from "../../place/builders/interiorRebuild";
 import { interiorStampEdit, type StampEditState } from "../../place/builders/interiorEdit";
 import type { PlacePatch, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { blueprintMapFor } from "../../story/blueprintPathNames";
 import { isPlaceholderMap } from "../../blankStart";
-import { walkGame } from "../../story/makeGame";
+import { walkGame, isOutdoor } from "../../story/makeGame";
 import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard } from "../../place/builders/placeLayout";
 import { gateFor, innerDungeonParent, innerGateSpot } from "../../place/dungeonGates";
 import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";
@@ -43,7 +44,7 @@ import { keptPlaceResult } from "../../place/keepMapId";
 
 /** createV2Tools 에서 뗀 것 — buildWorldPlaces · buildWorld · makePlace · editPlace · reviewLayout · findPiecesVerb. (placeVerbs) */
 export function placeVerbs(c: VerbContext) {
-  const { env, session, task, run, poolVillage, freshStart, lean, specShown, specGate, outsideBuilt, noteLayoutPlace, finishPlace, blueprintGate } = c;
+  const { env, session, task, run, poolVillage, freshStart, lean, specShown, specGate, outsideBuilt, noteLayoutPlace, finishPlace, blueprintGate, interiorCardShown, showInteriorCard } = c;
   // 세계 짓기(world.ts): 청사진 장소 목록을 그 세계의 구성기로 한 번에 짓고 잇는다 — 모델은 장소 이름·종류만 정한다.
   // add 로 장소를 더할 수 있다(세는 맵이 모자랄 때). 종류를 못 읽으면 아직 덜 쓴 종류를 준다(막다른 길을 만들지 않는다).
   const buildWorldPlaces = async (toolCallId: string, verb: string, args: unknown, add: readonly { name?: unknown; kind?: unknown; from?: unknown; indoor?: boolean; danger?: boolean }[]): Promise<PiToolExecResult> => {
@@ -199,6 +200,18 @@ export function placeVerbs(c: VerbContext) {
         spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
         keptNote = `「${other.spec.name}」(${target}) 는 이번에 지은 다른 장소라 덮지 않고 「${spec.name}」을 새 맵에 지었다 — 두 장소를 create_transfer_pair 로 잇는다(계단·문).`;
       }
+      // 이 실내가 어느 문 뒤인가(hints.door — 마을 결과의 문 앞 칸): 그 문이 달린 건물의 칩셋·킷을 명세에 적는다. 모델이 고른 문이므로 건물의 크기 단을 따른다
+      // (큰 건물이면 구성 표의 방들, 칸 배치가 왔으면 방 수를 본다). 전에는 모델이 직접 부른 실내에 킷이 닿지 않아 크기 단이 한 번도 붙지 않았다(2026-11-16 r6 대성당).
+      let doorNote = "";
+      if (spec.type === "interior" && Array.isArray(spec.hints?.door)) {
+        const [dx, dy] = (spec.hints!.door as unknown[]).map(Number);
+        const { door: _door, ...restHints } = spec.hints as Record<string, unknown>;
+        const hosts = [env.ctx.currentMapId, ...[...session.places.entries()].filter(([, r]) => isOutdoor(r.spec)).map(([id]) => id).reverse()].filter((id): id is string => !!id && !!env.ctx.project.maps[id] && id !== spec.mapId);
+        const hit = Number.isInteger(dx) && Number.isInteger(dy) ? hosts.map((id) => doorHouseAt(env.ctx.project, id, dx!, dy!)).find(Boolean) : undefined;
+        spec = { ...spec, hints: restHints as PlaceSpec["hints"], ...(hit ? { exterior: { tileset: hit.tileset, kit: hit.kit, asked: true } } : {}) };
+        doorNote = hit ? `hints.door (${dx},${dy}) = «${hit.label}» (${hit.kit}${hit.tier ? `, ${hit.tier}` : ""}) — the inside follows that building.`
+          : `hints.door (${String(dx)},${String(dy)}) is not a house door on the outdoor map — ignored (use a door cell from the village result's door list).`;
+      }
       // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 짓기 전에 같은 모델에게 따로 설계를 받는다(designRooms.ts).
       // 손 도트 실내로 지어지는지는 빌더와 같은 함수로 본다 — style:modern 이어도 주인공 물건 때문에 v5 로 짓는 방이 견본 서재로 섰다(2026-10-29 vm8 flash 방탈출).
       // 칸 배치(spec.layout)가 정본 경로다 — zones[].design 을 들고 와도 장소마다 한 번은 칸 배치로 돌려보낸다(2026-10-31 4회차: terra 가 design 으로 10×10 한 칸 서재를 지었다).
@@ -210,8 +223,11 @@ export function placeVerbs(c: VerbContext) {
         session.designBounced.set(spec.name, bounces);
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         // 칩셋 목록 카드가 지시문에 없었으면(실내 낱말 없는 요청) 여기서 한 번 싣는다.
-        const cardShown = lean ? specShown("interior") : INTERIOR_WORDS.test(String(task ?? "")) || env.ctx.project.maps[env.ctx.currentMapId ?? ""]?.tilesetId === HAND_INTERIOR_TILESET_ID;
-        return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell.${bounces > 1 ? ` This is reminder ${bounces}/${LAYOUT_BOUNCES}: hand-pixel interiors are built from spec.layout; zones, design and anchors are not used for them — send the place with spec.layout and nothing in zones.` : ""} Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
+        // 바깥 칩셋의 표(버들항)로 검사될 장소면 그 표의 카드를 준다 — 지시문의 카드가 다른 칩셋의 것일 수 있다(턴을 시작한 뒤 마을이 섰다).
+        const table = layoutTableOf(env.ctx.project, spec, env.ctx.currentMapId);
+        const ownTable = table !== HAND_INTERIOR_TILESET_ID;
+        const cardShown = ownTable ? interiorCardShown(table) : lean ? specShown("interior") : INTERIOR_WORDS.test(String(task ?? "")) || env.ctx.project.maps[env.ctx.currentMapId ?? ""]?.tilesetId === HAND_INTERIOR_TILESET_ID;
+        return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: (ownTable ? showInteriorCard(table) : undefined) ?? interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell.${bounces > 1 ? ` This is reminder ${bounces}/${LAYOUT_BOUNCES}: hand-pixel interiors are built from spec.layout; zones, design and anchors are not used for them — send the place with spec.layout and nothing in zones.` : ""} Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
           });
       }
       const builder = builderFor(spec);
@@ -303,6 +319,7 @@ export function placeVerbs(c: VerbContext) {
         }
       }
       const designed = hasLayout(spec) ? { spec, notes: [] as string[] } : await designMissingRooms(env, spec, "make_place 설계 빈 방");
+      if (doorNote) keptNote = [keptNote, doorNote].filter(Boolean).join(" ");
       spec = designed.spec;
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);
@@ -594,7 +611,12 @@ export function placeVerbs(c: VerbContext) {
       const S = effectiveSpec(t);
       if (!t || !S) return text({ ok: false, summary: "This project has no interior chipset with a room table." });
       const r = findPieces(S, String(p.category ?? ""), Array.isArray(p.tags) ? p.tags : []);
-      return text({ ok: true, chipset: t.id, category: p.category ?? "", matched: r.total, shown: r.lines.length, format: "id | footprint WxH (x,y = top-left) | category | where it goes | art rise | used in example rooms | goes with",
+      const format = "id | footprint WxH (x,y = top-left) | category | where it goes | art rise | used in example rooms | goes with";
+      // 표에 없는 갈래: 전부를 «맞았다» 고 돌려주지 않는다 — 갈래 목록 · 가까운 갈래 · 그 낱말이 든 기물만.
+      if (r.unknownCategory) return text({ ok: true, chipset: t.id, category: r.unknownCategory.asked, matched: r.total, shown: r.lines.length,
+        summary: `No category "${r.unknownCategory.asked}" in this chipset's table.${r.unknownCategory.near.length ? ` Nearest categories: ${r.unknownCategory.near.join(", ")}.` : ""} ${r.lines.length ? `Pieces whose words match "${r.unknownCategory.asked}" are listed` : `No piece matches "${r.unknownCategory.asked}" either`} — call find_pieces again with one of the categories.`,
+        categories: r.categories, ...(r.lines.length ? { format, pieces: r.lines } : {}) });
+      return text({ ok: true, chipset: t.id, category: p.category ?? "", matched: r.total, shown: r.lines.length, format,
         pieces: r.lines, ...(r.lines.length ? {} : { categories: r.categories }) });
     },
   };

@@ -1,5 +1,6 @@
 // 조수 v2 마을 빌더 — PlaceSpec(village) → v1 author_beodeul_town 인자. 모델은 칸·좌표를 쓰지 않는다.
 // 명세의 낱말(size·theme·style·features·hints)만 도구 손잡이로 옮기고, 도구가 못 하는 것은 missingArt 로 정직하게 보고한다.
+import { doorTail } from "../doorHouse";
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, villageKindById, villageKindMenu } from "@/editor/tools/beodeulVillageKinds";
@@ -319,8 +320,9 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const state: VillageState = { args, seed, variant, ...(doors ? { doors } : {}) };
   // 집 문 앞 칸 — 실내를 잇는 create_transfer_pair 는 이 칸을 쓴다(2026-11-03 조수 대조 B8 서리나루 Opus: 결과에 문 자리가 없어
   // 광장 칸(34,27)을 문으로 짐작해 「맨바닥 이동」이 남았고, set_map_door 로 문 그림을 찾다 여섯 번 거절됐다).
-  const doorList = (state.doors ?? []).slice(0, 14).map((d) => `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})`);
-  const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표): ${doorList.join(" ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
+  // 문마다 건물 이름과 크기 단을 같이 싣는다 — 킷 id 만으로는 어느 문이 어떤 건물인지 읽을 수 없었다(2026-11-16 r6: 어물전이 화물 창고 문에 달리고 생선 가게는 빈 채 남았다).
+  const doorList = (state.doors ?? []).slice(0, 14).map((d) => `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})${doorTail(run.ctx.project, builtId, d.kit)}`);
+  const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표; «건물 이름» · medium/large/xlarge = 방이 여럿인 큰 건물 — 그 문 뒤 실내는 make_place hints.door:[x,y] 로 지으면 건물 크기를 따른다): ${doorList.join(" · ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
   // 마을 종류와 선 장면 — 장면 이름은 사람·사건의 where 낱말로 쓸 수 있다(place/where.ts 가 맵의 장면 기록에서 찾는다).
   const vk = data.villageKind as { id?: string } | undefined;
   const sceneList = (Array.isArray(data.scenes) ? data.scenes as { ko: string; en: string; stand: { x: number; y: number } }[] : []).map((sc) => `«${sc.ko}» ${sc.en} (${sc.stand.x},${sc.stand.y})`);

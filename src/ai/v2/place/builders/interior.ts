@@ -4,6 +4,8 @@
 // 2) 주인공 물건(anchors) → 부품 사전에서 찾아 그 방의 빈 자리에 놓는다. 놓을 때마다 다시 지어 도달 검사(unreachedFloor 0)를 통과한 자리만 남긴다.
 // 3) 「계단」 앵커 → 위층을 따로 짓고 계단끼리 이동 이벤트로 잇는다(계단 입구 계약은 도구의 fitStairTransfers 가 맞춘다).
 // 모델은 칸 좌표를 쓰지 않는다 — 비평가가 짚은 칸(near)은 「그 근처의 빈 자리」를 고르는 힌트로만 쓴다.
+import type { Project } from "@/project/types";
+import type { PlaceSpec } from "../../shared/types";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { roomTemplates, templateStyle } from "@/editor/handInterior/templates";
 import { measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
@@ -31,7 +33,8 @@ import { exteriorLook, exteriorWall } from "./interiorExterior";
 const COMPOSED_KINDS: ReadonlySet<string> = new Set(["study"]);
 
 /** 그 단의 집 안에 적어도 있어야 하는 방 수(구성 표의 가장 작은 평면 — 중형 2 · 대형 4 · 초대형 8). */
-const TIER_MIN_ROOMS: Readonly<Record<string, number>> = { medium: 2, large: 4, xlarge: 8 };
+import { TIER_MIN_ROOMS } from "../doorHouse";
+import { knownWordCount } from "../unknownWords";
 
 export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
 - ★ You design every cell: put one cell layout in spec.layout — map size, the landmark, the outer wall ring, partition walls (wall to wall), doors on those walls, the entrance, one label per room (floor, purpose), wall_items bound to a wall (windows, shelves, fireplace, beds, stairs up) and floor objects (catalog ids). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, open walls, unlabelled pockets, wall-face rules, a door that joins nothing, unreachable rooms, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
@@ -49,6 +52,17 @@ ${LAYOUT_GRID_RULES.map((r) => `- ${r}`).join("\n")}
 - style: fantasy (default — also wizard towers, alchemy workshops and observatories; telescope and alchemy parts are in this chipset) · wizarding (Hogwarts-style magic «school» buildings only) · sengoku (Sengoku/Edo) · modern (modern city). Modern Japanese homes use type:"house".
 - A name word (inn, tavern, observatory…) does not lay down a preset room — an inn hall or a study stands as your design says. Put hero objects like a big telescope in anchors and design.groups.
 - Changing a laid layout: review_layout, or edit_place({patch:{mapId, layoutPatch:{remove_objects, add_objects, remove_wall_items, add_wall_items, replace}}}), or edit_place({patch:{mapId, set:{layout:{…the full corrected layout}}}}) — relaid exactly; layout places are not limited to 3 rebuilds. Fixing an existing room built another way: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
+
+/** 칸 배치를 검사하고 까는 표(칩셋 id) — 바깥 칩셋이 집 안도 짓고 지금 맵이 그 표를 들면 그 칩셋, 아니면 손 도트 v5. */
+function layoutTableFor(project: Project, tilesetId: string, outside: { tileset: string } | undefined, currentMapId?: string): string {
+  const shown = interiorTilesetFor(project, currentMapId)?.id;
+  return outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+}
+/** 이 명세의 칸 배치가 어느 표로 검사될지 — 짓기 전에 make_place 가 «모델이 그 표의 카드를 받았나» 를 본다(빌더와 같은 규칙). */
+export function layoutTableOf(project: Project, spec: PlaceSpec, currentMapId?: string): string {
+  const at = currentMapId ?? project.startMapId;
+  return layoutTableFor(project, interiorTilesetOf(project, spec, at).tilesetId, exteriorLook(project, spec, at), currentMapId);
+}
 
 export const interiorBuilder: PlaceBuilder = {
   id: "interior",
@@ -72,24 +86,26 @@ export const interiorBuilder: PlaceBuilder = {
     const prevTier = (prev as { tier?: TierState } | undefined)?.tier;
     const houseTier = prevTier ? tierTableOf(tilesetId)?.programs[prevTier.program]?.tier : outside?.tier;
     const tierRooms = houseTier && tierTableOf(tilesetId) && (prevTier || outside?.tileset === tilesetId) ? TIER_MIN_ROOMS[houseTier] : undefined;
-    const sentRooms = hasLayout(spec) ? Math.max(1, ((spec.layout as { regions?: unknown[] }).regions ?? []).length) : 0;
-    // 거절은 모델이 스스로 큰 건물로 청한 장소에만(큰 건물 종류의 문이거나 size 를 크게 적었다). 평범한 집에 코드가 큰 겉을 골라 준 것이면 어긋남은 코드 몫이다 —
-    // 모델의 배치를 그대로 짓고 «겉은 크고 안은 한 방» 을 사실로 적는다(2026-11-16 은행 jrpg-x1: 모델의 12×10 한 방 «강지기의 집» 이 탑집 킷에 달려 세 번 거절됐다).
-    const askedBig = spec.exterior?.asked === true || spec.size === "large";
+    const sentRooms = hasLayout(spec) ? Math.max(1, ((spec.layout as { regions?: unknown[] }).regions ?? []).length, ((spec.layout as { rooms?: unknown[] }).rooms ?? []).length) : 0;
+    // 크기 단 때문에 모델의 배치를 거절하지 않는다(2026-11-16 오너 방향 — 거절은 게임이 깨질 때만): 방이 모자라도 배치 그대로 깔고,
+    // 겉이 어떤 단의 건물인지와 그 단의 구성을 받는 법(배치 없이 다시 부른다)을 결과에 적는다. 배치 없이 오면 구성 표대로 짓는다(interiorTier.ts).
     const smallForHouse = !!tierRooms && hasLayout(spec) && sentRooms < tierRooms;
-    const thinLayout = smallForHouse && askedBig;
-    if (thinLayout && Number(spec.hints?.layoutRepairsLeft ?? 2) > 0) {
-      return { ok: false, mapIds: [], warnings: [], missingArt: [], calls: run.calls,
-        summary: `Rejected: "${spec.name}" is the inside of a ${houseTier} building${outside?.kit ? ` (house kit ${outside.kit})` : ""} — a ${houseTier} building has at least ${tierRooms} rooms, and this layout has ${sentRooms}. Send it again with layout.regions of ${tierRooms} or more rooms joined by openings (set.layout in edit_place), or send it without layout and the builder lays the ${houseTier} plan (rooms, doors between them, stairs to other floors).` };
-    }
-    if (hasLayout(spec) && !thinLayout) {
-      // 모델은 목록 카드의 id 로 썼다 — 카드가 바깥 칩셋의 것이었을 때만(지금 맵의 칩셋이 역할표를 든다, interiorTilesetFor) 그 칩셋으로 깐다.
-      const shown = interiorTilesetFor(run.ctx.project, run.ctx.currentMapId)?.id;
-      const lt = outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+    if (hasLayout(spec)) {
+      // 어느 표로 까는가: 기본은 그 게임의 표(바깥 칩셋이 집 안도 지으면 그 표) — 다만 배치의 낱말이 다른 표(v5 등)의 것이면 그 표로 그대로 깐다.
+      // 한 맵은 칩셋 하나라 방 하나가 단위다: 낱말을 더 많이 아는 표가 그 방을 깔고, 그 표에도 없는 낱말은 가까운 것으로 바꿔 깔고 알린다(interiorLayoutBuild.ts).
+      const base = layoutTableFor(run.ctx.project, tilesetId, outside, run.ctx.currentMapId);
+      const tables = [...new Set([base, ...(outside ? [outside.tileset] : []), HAND_INTERIOR_TILESET_ID])].filter((id) => !!effectiveSpec(run.ctx.project.tilesets[id]));
+      const scored = tables.map((id) => ({ id, ...knownWordCount(spec.layout, effectiveSpec(run.ctx.project.tilesets[id])!) }));
+      const best = scored.reduce((a, c) => (c.known > a.known ? c : a), scored[0] ?? { id: base, known: 0, total: 0 });
+      const lt = best.id;
       const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
       if (ls) {
         const laid = buildFromLayout(run, spec, ls, lt, mapId, lt === outside?.tileset ? outside : undefined);
-        return smallForHouse && laid.ok ? { ...laid, warnings: [...laid.warnings, `the building outside is ${houseTier}${outside?.kit ? ` (${outside.kit})` : ""}, the inside is laid as you designed it — ${sentRooms} room(s)`] } : laid;
+        const notes = [
+          ...(lt !== base && laid.ok ? [`laid with chipset ${lt} — ${best.known} of the ${best.total} ids in your layout are that chipset's (this game's houses use ${base}).`] : []),
+          ...(smallForHouse && laid.ok ? [`the building outside is ${houseTier}${outside?.kit ? ` (${outside.kit})` : ""} — ${houseTier} buildings have ${tierRooms} or more rooms; the inside is laid as you designed it, ${sentRooms} room(s). For the ${houseTier} plan (rooms, doors between them, stairs to other floors) call make_place for this place again without layout.`] : []),
+        ];
+        return notes.length ? { ...laid, warnings: [...notes, ...laid.warnings] } : laid;
       }
     }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).

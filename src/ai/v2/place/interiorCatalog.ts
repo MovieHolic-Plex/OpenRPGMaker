@@ -10,6 +10,7 @@ import { kitHandObjects } from "@/project/roomKit";
 import type { Project, TilesetDef } from "@/project/types";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { layoutCatalog } from "./interiorLayout";
+import { nearIds } from "./unknownWords";
 
 /** 칩셋의 실효 방 사양 — roomKit 역할표(roomSpecOf), 가구 표가 비면 조립 킷 기물(kitHandObjects). 편집기 도구 specFor 와 같은 규칙. */
 export function effectiveSpec(tileset: TilesetDef | undefined): HandInteriorSpec | undefined {
@@ -84,11 +85,16 @@ export function interiorTilesetFor(project: Project | undefined, mapId?: string)
 
 const PLACE: Record<string, string> = { floor: "floor piece -> objects", wall: "against-wall -> wall_items, y = wall row + 3", hang: "wall-mounted -> wall_items, upper face row y = wall row + 1", flat: "walkable decal -> objects", door: "door leaf -> a door's piece", sidedoor: "side door leaf" };
 /** find_pieces — 한 범주(또는 낱말에 맞는 것)의 기물 전부(영어): id · 크기 · 놓는 자리 · 솟음 · 쓰인 방 종류 · 짝. */
-export function findPieces(S: HandInteriorSpec, category = "", tags: readonly string[] = [], max = 80): { categories: string[]; total: number; lines: string[] } {
+export function findPieces(S: HandInteriorSpec, category = "", tags: readonly string[] = [], max = 80): { categories: string[]; total: number; lines: string[]; unknownCategory?: { asked: string; near: string[] } } {
   const cats = new Map<string, number>(); for (const o of Object.values(S.objects)) cats.set(o.category, (cats.get(o.category) ?? 0) + 1);
-  const cat = cats.has(category) ? category : "";
-  const words = tags.map((t) => String(t).trim()).filter(Boolean).join(" ");
+  const asked = String(category ?? "").trim();
+  const cat = cats.has(asked) ? asked : "";
+  // 표에 없는 갈래(2026-11-16 r6: find_pieces {category:"fish"} 가 287개 전부를 «맞았다» 고 답했다): 전부를 돌려주지 않는다 —
+  // 그 낱말을 찾는 낱말로 써서 맞는 기물만 내고, 갈래 목록과 가까운 갈래(이름이 겹치거나 맞은 기물이 든 갈래)를 알린다.
+  const unknown = !!asked && !cat;
+  const words = [...tags, ...(unknown ? [asked] : [])].map((t) => String(t).trim()).filter(Boolean).join(" ");
   const ids = words ? searchParts(words, cat, S).ids : Object.keys(S.objects).filter((id) => !cat || S.objects[id]!.category === cat);
+  const nearCats = unknown ? [...new Set([...nearIds(asked, [...cats.keys()], 3), ...ids.filter((id) => S.objects[id]!.kind !== "door" && S.objects[id]!.kind !== "sidedoor").map((id) => S.objects[id]!.category)])].slice(0, 4) : [];
   const rooms = new Map<string, Set<string>>();
   for (const [, , room, items] of S.rooms?.examples ?? []) for (const [id] of items) (rooms.get(id) ?? rooms.set(id, new Set()).get(id)!).add(room);
   const lines = ids.filter((id) => S.objects[id]!.kind !== "door" && S.objects[id]!.kind !== "sidedoor").slice(0, max).map((id) => {
@@ -99,5 +105,5 @@ export function findPieces(S: HandInteriorSpec, category = "", tags: readonly st
     const pair = (o.pair ?? []).filter((p) => S.objects[p]).slice(0, 3).join(", ");
     return `${id} | ${o.w}x${Math.max(1, o.h)} | ${o.category} | ${place}${up > 0 ? ` | art +${up} up` : ""}${used ? ` | used in: ${used}` : ""}${pair ? ` | goes with: ${pair}` : ""}`;
   });
-  return { categories: [...cats].sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} (${n})`), total: ids.length, lines };
+  return { categories: [...cats].sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} (${n})`), total: unknown ? lines.length : ids.length, lines, ...(unknown ? { unknownCategory: { asked, near: nearCats } } : {}) };
 }

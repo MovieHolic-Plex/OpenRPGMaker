@@ -61,6 +61,8 @@ export class V2Session {
   readonly dungeonBounced = new Set<string>();
   /** 장소 지식 카드(prompt.ts placeSpecCards)를 기록으로 준 종류 → 그때의 대화 번호(env.contextEpoch). 대화가 비워지면 다시 준다. */
   readonly specsShown = new Map<string, number>();
+  /** 실내 목록 카드를 도구 결과로 준 칩셋 → 그때의 대화 번호. 지시문의 카드가 다른 칩셋의 것일 때(빈 프로젝트에서 버들항 마을을 지은 턴) 그 마을의 카드를 한 번 준다(tools/context.ts). */
+  readonly interiorCards = new Map<string, number>();
   /**
    * generate_art 가 그림 생성을 시도한 기록(오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」): 타이틀·엔딩 → 시도 결과.
    * ok = 만들어 건다 · failed = 생성이 실패(오류 글) · unavailable = 이미지 생성 경로가 이 실행에 없다. 끝맺음 관문은 map-view 그림을 이 기록이 있을 때만 허용한다.
