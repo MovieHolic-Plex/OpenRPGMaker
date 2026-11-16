@@ -123,3 +123,16 @@ bun scripts/content/beodeul-interiors/rooms.mts          # 방 견본(src/assets
 
 - 아직 없는 것: 초대형은 평면이 한 벌씩이다 · 문 앞 발깔개가 안쪽 방(바깥문이 아닌 방)에도 남는다 · 딸린 맵의 계단은 방 견본에 든 것만(계단 없는 견본 방끼리는 못 잇는다) · 종탑에 종 그림이 없다 · 모델이 `layout`(칸 배치)을 직접 준 집은 그 배치가 먼저다.
 - 새 그림은 모두 «3/4 관문 미통과 — 오너 면제»(묶음 `fable-interiors-beodeul-2026-11-15`).
+
+## 표에 없는 낱말 — 읽는 표 하나, 거절은 한 번에 (2026-11-16, r6 묶음 은행 뒤)
+
+버들항 표는 v5 보다 훨씬 작다(기물 643 → 287, 벽 23 → 8, 바닥 33 → 7, 크기 탁자·사각 깔개 없음). 은행에서 드러난 셋을 고쳤다.
+
+- **읽는 표는 하나다.** `room_parts` 가 `interiorTilesetFor`(목록 카드 · `find_pieces` · 칸 배치 빌더와 같은 규칙)로 표를 고른다. v5 가 아닌 표면 `tableParts`(`src/ai/v2/place/roomParts.ts`)가 그 표의 벽 · 바닥 · 단 · 기물 줄(`find_pieces` 와 같은 꼴)만 낸다 — 설계 모양 · 깔개 · 크기 탁자(v5 의 것)는 싣지 않는다. 전에는 `room_parts` 만 `atlas_biome_interior` 로 답해 `logdark` · `boards` 가 다음 `make_place` 에 실려 거절됐다.
+- **카드는 없는 갈래의 줄을 내지 않는다**(`layoutCatalog`). 목록이 빈 `sized tables (… e.g. "dining 3x2" …):` · `carpets …:` 줄 대신 `not in this chipset: sized tables (ids with WxH), rect carpets — …` 한 줄. v5 카드는 한 글자도 바뀌지 않는다.
+- **거절 글**(`src/ai/v2/place/unknownWords.ts`): 없는 벽 · 바닥 · 기물을 단계로 내지 않고 갈래마다 한 줄로 한 번에 알린다. 같은 낱말은 `"chair N" ×4` 로 묶고, 가까운 표의 id 를 붙인다 — `nearIds` 가 표의 id 낱말과 겹치는 정도(드문 낱말일수록 무겁다, 표에서 센 값)로 셈한다. **손으로 쓴 짝 목록은 없다.** 가까운 것이 없으면 `No near id in this table` 로 따로 모은다. 낱말 하나 때문에 장소가 통째로 거절되는 것은 그대로다(재료를 몰래 바꿔 깔지 않는다).
+  - 거절 머리말을 440자 → 약 230자로 줄였고 `You sent` 를 뺐다(동사 거절 틀이 따로 붙인다). 틀은 이 글을 900자에서 자른다 — r6 의 일곱 거절이 모두 그 안에 든다(가장 긴 것 821자).
+  - 벽 우선 검사(`interiorWalls.ts`)는 낱말 줄을 단계 오류와 따로 들고 간다: 없는 기물을 `badObjects` 로 표시하는 데까지 가야, 고치기를 다 쓴 뒤 «되는 것만 깔기»가 된다.
+- **고치기를 다 쓰고 기물을 뺀 장소**는 요약 머리에 적는다: `laid only 6 of your 20 pieces — left out after the repairs: "chair N" ×4, …; bare floor 56%`.
+
+**이 표에 없어 은행에서 거절된 것(그리지 않았다 — 다음 그리기 묶음 후보)**: 내용물 붙은 통 · 궤짝 · 자루(`barrel:fish` `barrel:crab` `barrel:squid` `barrel:shell` `crate:fish` `crate:fishr` `crate:crab` `crate:squid` `crate:shell` `sack:grain` `sack:flour` `table:fish+fishr`), 화분(`potted fern`), 화덕(`stove`), 피아노, 벽 횃불(`wall torch`), 크기 탁자(`dining WxH` `desk WxH` `work WxH` `counter WxH`), 사각 깔개, 걸린 냄비(`hanging pans`), 차림판(`menu board`), 물 항아리(`water jar`), 톱니 벽(`gear wall`), 농기구 걸이(`farm tool rack`).

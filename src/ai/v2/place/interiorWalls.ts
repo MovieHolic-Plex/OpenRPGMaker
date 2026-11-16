@@ -30,6 +30,7 @@ export interface WallsLayoutFields {
 export interface WallsRoomOut { id: string; x: number; y: number; w: number; h: number; cells: number; floor: string; purpose?: string; role?: string; landmark?: string; stairs?: string }
 
 import { spaceChecks } from "./interiorSpace";
+import { carpetMiss, knownObject, unknownWordLines } from "./unknownWords";
 import { cellFrontNote, floorChecks, isPrisonCell, requiredCheck, varietyNotes, type RequiredEntry, type RequiredResult } from "../judge/interiorRoomChecks";
 
 const DOOR_PIECES = new Set(["locked door", "iron gate", "iron gate open"]);
@@ -42,7 +43,8 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const badObjects = new Set<number>();
   const L = (raw ?? {}) as WallsLayoutFields & { map?: { w?: number; h?: number }; entrance?: { x?: number; y?: number }; landmark?: WallItem; objects?: readonly LayoutObject[]; carpets?: readonly { id: string; x: number; y: number; w: number; h: number }[] };
   const num = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v);
-  const out = (extra: Partial<LayoutCheck> = {}): LayoutCheck => ({ errors, warnings, badObjects, objects: [], ...extra });
+  const unknownLines: string[] = [];
+  const out = (extra: Partial<LayoutCheck> = {}): LayoutCheck => ({ errors: [...unknownLines, ...errors], warnings, badObjects, objects: [], ...extra });
   const W = L.map?.w, H = L.map?.h;
   if (!num(W) || !num(H) || W < 8 || H < 8 || W > 60 || H > 60) { errors.push(`map.w/map.h must be integers 8..60 (got ${W}x${H}).`); return out(); }
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
@@ -50,6 +52,27 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const P = (x: number, y: number) => `(${x},${y})`;
   const fp = (id: string) => { const d = S.objects[id]; const s = SIZED.exec(id); return d ? { w: d.w, h: Math.max(1, d.h) } : { w: Number(s?.[2] ?? 1), h: Number(s?.[3] ?? 1) }; };
 
+  const lmRaw = L.landmark;
+  const same = (a: { id?: string; x?: number; y?: number }, b: { id?: string; x?: number; y?: number }) => a.id === b.id && a.x === b.x && a.y === b.y;
+  const objList = (Array.isArray(L.objects) ? L.objects : []).filter((o) => !(lmRaw && o && same(o, lmRaw) && !(o.repeat && (o.repeat.count ?? 1) > 1)));
+  const itemList = (Array.isArray(L.wall_items) ? L.wall_items : []).filter((o) => !(lmRaw && o && same(o, lmRaw) && !(o.repeat && (o.repeat.count ?? 1) > 1)));
+  // 랜드마크가 걸이·벽붙이면 wall_items 쪽 규칙으로 본다(벽을 안 적었으면 바로 위 벽을 쓴다 — 그 벽이 없으면 거절 글이 자리를 알려 준다).
+  const lmKind = lmRaw ? S.objects[lmRaw.id]?.kind : undefined;
+  const lmIsItem = lmKind === "hang" || lmKind === "wall";
+  const srcList: { o: WallItem; item: boolean }[] = [
+    ...(lmRaw ? [{ o: lmRaw, item: lmIsItem }] : []),
+    ...objList.map((o) => ({ o, item: false })),
+    ...itemList.map((o) => ({ o: o as WallItem, item: true })),
+  ];
+  // 표에 없는 낱말(벽 · 바닥 · 기물)은 단계로 내지 않고 여기서 한 번에 알린다 — 갈래마다 한 줄, 가까운 표의 id 와 함께(unknownWords.ts).
+  // 자리 검사는 아래에서 그대로 한다(없는 기물은 badObjects 로만 표시하고 글은 여기 한 줄이 맡는다). 이 줄들은 단계 검사(errors)와 따로 들고 가
+  // 낱말 때문에 뒤 단계가 멈추지 않는다 — 없는 기물을 badObjects 로 표시하는 데까지 가야 고치기를 다 쓴 뒤 «되는 것만 깔기»가 된다.
+  const repeatN = (o: { repeat?: { count?: number } }) => Math.max(1, Math.min(40, Number(o?.repeat?.count ?? 1) || 1));
+  unknownLines.push(...unknownWordLines(S, {
+    walls: [...(L.outer_wall ? [[String(L.outer_wall.material), "outer_wall"] as const] : []), ...(Array.isArray(L.walls) ? L.walls : []).map((w) => [String(w?.material), `wall ${String(w?.id ?? "?")}`] as const)],
+    floors: [...(Array.isArray(L.rooms) ? L.rooms : []).map((r) => [String(r?.floor), `room ${String(r?.id ?? "?")}`] as const), ...(Array.isArray(L.floor_zones) ? L.floor_zones : []).map((z) => [String(z?.floor), "floor_zone"] as const)],
+    objects: srcList.flatMap(({ o }, src) => (opts.dropObjects?.has(src) || typeof o?.id !== "string" ? [] : Array<string>(repeatN(o)).fill(o.id))),
+  }));
   // ---- 벽: 경로를 칸으로 편다 ----
   type Wall = { id: string; material: string; outer: boolean; thickness: number; stub: boolean; cells: number[]; ends: [number, number][]; horiz: Set<number>; vert: Set<number> };
   const wallOf = new Int32Array(W * H).fill(-1);
@@ -76,13 +99,11 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   };
   const ow = L.outer_wall;
   if (!ow) { errors.push(`outer_wall is missing — a closed ring of wall cells around the building: {"material":"<wall id>","path":[[x,y],...]}.`); return out(); }
-  if (!S.walls[ow.material]) errors.push(`outer_wall: unknown wall material "${ow.material}" — use a catalog wall id (${Object.keys(S.walls).slice(0, 10).join(", ")}…).`);
   const r0 = raster("outer", ow.path, 1, true);
   if (r0) walls.push({ id: "outer", material: ow.material, outer: true, stub: false, ...r0 });
   for (const w of Array.isArray(L.walls) ? L.walls : []) {
     const id = String(w?.id ?? `wall${walls.length}`);
     if (id === "outer" || walls.some((x) => x.id === id)) { errors.push(`wall id "${id}" is used twice.`); continue; }
-    if (!S.walls[w.material]) errors.push(`wall "${id}": unknown wall material "${w.material}" — use a catalog wall id.`);
     const t = w.thickness ?? 1;
     if (t !== 1 && t !== 2) { errors.push(`wall "${id}": thickness must be 1 or 2.`); continue; }
     const r = raster(id, w.path, t, false);
@@ -170,7 +191,6 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   for (const r of rooms) {
     const at = r?.at;
     if (!Array.isArray(at) || !num(at[0]) || !num(at[1]) || !inMap(at[0], at[1])) { errors.push(`room "${r?.id}": "at" must be an [x,y] cell inside the room.`); continue; }
-    if (!S.floors[r.floor]) errors.push(`room "${r.id}": unknown floor "${r.floor}" — use a catalog floor id (${Object.keys(S.floors).slice(0, 10).join(", ")}…).`);
     const c = comp[idx(at[0], at[1])]!;
     if (c < 0) { errors.push(`room "${r.id}" label ${P(at[0], at[1])} is on a wall or outside the outer wall — put "at" on a cell inside the room.`); continue; }
     const prev = roomOfComp.get(c);
@@ -203,18 +223,6 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   const roomIdAt = (x: number, y: number): string | undefined => { const c = inMap(x, y) ? comp[idx(x, y)]! : -1; return c >= 0 ? roomOfComp.get(c)?.id : undefined; };
   type Pl = { id: string; x: number; y: number; wall?: string; src: number; purpose?: string };
   const objs: Pl[] = [];
-  const lmRaw = L.landmark;
-  const same = (a: { id?: string; x?: number; y?: number }, b: { id?: string; x?: number; y?: number }) => a.id === b.id && a.x === b.x && a.y === b.y;
-  const objList = (Array.isArray(L.objects) ? L.objects : []).filter((o) => !(lmRaw && o && same(o, lmRaw) && !(o.repeat && (o.repeat.count ?? 1) > 1)));
-  const itemList = (Array.isArray(L.wall_items) ? L.wall_items : []).filter((o) => !(lmRaw && o && same(o, lmRaw) && !(o.repeat && (o.repeat.count ?? 1) > 1)));
-  // 랜드마크가 걸이·벽붙이면 wall_items 쪽 규칙으로 본다(벽을 안 적었으면 바로 위 벽을 쓴다 — 그 벽이 없으면 거절 글이 자리를 알려 준다).
-  const lmKind = lmRaw ? S.objects[lmRaw.id]?.kind : undefined;
-  const lmIsItem = lmKind === "hang" || lmKind === "wall";
-  const srcList: { o: WallItem; item: boolean }[] = [
-    ...(lmRaw ? [{ o: lmRaw, item: lmIsItem }] : []),
-    ...objList.map((o) => ({ o, item: false })),
-    ...itemList.map((o) => ({ o: o as WallItem, item: true })),
-  ];
   if (!lmRaw) errors.push(`landmark is missing — name the one big piece the place is built around: "landmark":{"id":"<catalog id>","x":X,"y":Y,"purpose":"..."} (add "wall" if it is a wall piece).`);
   const expand = (o: WallItem, src: number): Pl[] => {
     const n = Math.max(1, Math.min(40, Number(o.repeat?.count ?? 1) || 1)), dx = Number(o.repeat?.dx ?? 0) || 0, dy = Number(o.repeat?.dy ?? 0) || 0;
@@ -224,8 +232,8 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     if (opts.dropObjects?.has(src)) return;
     const bad = (msg: string) => { errors.push(msg); badObjects.add(src); };
     if (typeof o?.id !== "string" || !num(o.x) || !num(o.y)) return bad(`${item ? "wall_item" : "object"} ${JSON.stringify(o).slice(0, 80)}: needs id and integer x, y.`);
-    const d = S.objects[o.id], s = SIZED.exec(o.id);
-    if (!d && !(s && S.tables[s[1]!])) return bad(`unknown catalog id "${o.id}" at ${P(o.x, o.y)} — use an exact id from the catalog.`);
+    const d = S.objects[o.id];
+    if (!knownObject(S, o.id)) { badObjects.add(src); return; }
     if (!item) {
       if (d && (d.kind === "hang" || d.kind === "wall")) return bad(`"${o.id}" at ${P(o.x, o.y)} is a wall piece — move it to "wall_items" with the "wall" it belongs to.`);
       if (isDoorPiece(o.id) && doors.some((dd) => dd.cells.includes(idx(o.x, o.y)))) return bad(`"${o.id}" at ${P(o.x, o.y)} sits in a wall door — give it as "piece" on that door instead.`);
@@ -254,7 +262,7 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   for (const d of doors) if (d.piece) objs.push({ id: d.piece, x: d.x, y: d.y, src: -1 });
   const lines: { id: string; cells?: { x: number; y: number }[]; rect?: { x0: number; y0: number; x1: number; y1: number } }[] = [];
   for (const c of Array.isArray(L.carpets) ? L.carpets : []) {
-    if (!S.lines[c?.id] || S.lines[c.id]!.kind !== "flat") { errors.push(`unknown carpet id "${c?.id}" — use one of: ${Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat").join(", ")}.`); continue; }
+    if (!S.lines[c?.id] || S.lines[c.id]!.kind !== "flat") { errors.push(carpetMiss(S, String(c?.id))); continue; }
     if (![c.x, c.y, c.w, c.h].every(num)) { errors.push(`carpet ${c.id}: x,y,w,h must be integers.`); continue; }
     lines.push({ id: c.id, rect: { x0: c.x, y0: c.y, x1: c.x + c.w - 1, y1: c.y + c.h - 1 } });
   }
@@ -294,7 +302,7 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   }
   const floorZones: { x0: number; y0: number; x1: number; y1: number; floor: string }[] = [];
   for (const z of Array.isArray(L.floor_zones) ? L.floor_zones : []) {
-    if (!S.floors[z?.floor]) { errors.push(`floor_zone: unknown floor "${z?.floor}" — use a catalog floor id.`); continue; }
+    if (!S.floors[z?.floor]) continue;
     if (![z.x, z.y, z.w, z.h].every(num) || z.w < 1 || z.h < 1) { errors.push(`floor_zone ${z.floor}: x,y,w,h must be integers >= 1.`); continue; }
     const rs = new Set<string>(); let floorN = 0;
     for (let y = z.y; y < z.y + z.h; y++) for (let x = z.x; x < z.x + z.w; x++) if (inMap(x, y) && A.isFloor(x, y)) { floorN++; const r = roomIdAt(x, y); if (r) rs.add(r); }
@@ -357,7 +365,7 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     }
   }
   const objectsOut = objs.map((p) => ({ id: p.id, x: p.x, y: p.y, ...(p.purpose ? { purpose: p.purpose } : {}), region: roomIdAt(p.x, p.y + fp(p.id).h - 1) ?? roomIdAt(p.x, p.y) }));
-  if (errors.length) return out({ objects: objectsOut, sources: srcList.map((x) => x.o) });
+  if (errors.length || unknownLines.length) return out({ objects: objectsOut, sources: srcList.map((x) => x.o) });
 
   // ---- 바닥 구역: 방 바닥, 벽면 재질 = 위 벽의 재질 ----
   const zones: { x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string }[] = [];

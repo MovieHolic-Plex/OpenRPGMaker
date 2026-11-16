@@ -3,6 +3,7 @@
 // 고치기 횟수(hints.layoutRepairsLeft)를 다 쓰면 여전히 걸리는 기물만 빼고 나머지를 깐다(무엇을 뺐는지 알린다).
 import { exteriorWall, type ExteriorLook } from "./interiorExterior";
 import type { HandInteriorSpec } from "@/editor/handInterior/builder";
+import { measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 import { REVIEWS_TAG } from "../layoutReview";
@@ -29,6 +30,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   const left = Number(spec.hints?.layoutRepairsLeft ?? 2);
   let check: LayoutCheck = checkLayout(L, S, tileset);
   const dropped: string[] = [];
+  let sentPieces = 0;
   if (check.errors.length && left <= 0 && check.input === undefined && check.badObjects.size === 0) {
     return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, 0), warnings: [], missingArt: [], calls: run.calls };
   }
@@ -41,6 +43,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     }
     const src = check.sources ?? [];
     for (const i of drop) { const o = src[i]; if (o) dropped.push(`"${o.id}"@(${o.x},${o.y})`); }
+    sentPieces = src.length;
   }
   if (check.errors.length || !check.input) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
   // 공간 문제(빈 바닥·깔개 상한 …): 고치기가 남았으면 거절, 다 썼으면 경고로 남기고 깐다.
@@ -121,10 +124,15 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     run.call("create_map_location", { mapId: builtId, name: String(q.purpose ?? q.id).slice(0, 40), x: q.x, y: q.y, w: q.w, h: q.h, note: `layout region ${q.id}`, tags });
   }
   const entrance = Array.isArray(data.entrance) ? (data.entrance as { x: number; y: number }[])[0] : undefined;
+  // 고치기를 다 쓰고 뺀 기물은 요약 머리에 적는다 — 무엇이 빠졌고 바닥이 얼마나 비었는지(«19개 중 3개만 깔림, 빈 바닥 61%»)를 모델과 보고가 같이 읽는다.
+  const leftOutCount = new Map<string, number>();
+  for (const d of dropped) { const id = /^"([^"]*)"/u.exec(d)?.[1] ?? d; leftOutCount.set(id, (leftOutCount.get(id) ?? 0) + 1); }
+  const leftOut = [...leftOutCount].map(([id, n]) => `"${id}"${n > 1 ? ` ×${n}` : ""}`).join(", ");
+  const barePct = leftOut ? check.space?.emptyPct ?? measureInteriorBareFloor(run.ctx.project, map)?.pct : undefined;
   const warnings = [...soft.map((w) => `still open after the repairs — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (still failing after the repairs): ${dropped.join(", ")}`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
   return {
     ok: true, mapIds: [builtId], ...(entrance ? { entrance: { mapId: builtId, ...entrance } } : {}),
-    summary: `${spec.name}: laid your layout exactly — ${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,
+    summary: `${spec.name}: ${leftOut ? `laid only ${sentPieces - dropped.length} of your ${sentPieces} pieces — left out after the repairs: ${leftOut}; bare floor ${barePct ?? "?"}%. The rest is laid as written — ` : "laid your layout exactly — "}${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,
     warnings, missingArt: [], calls: run.calls,
     state: { tilesetId, mapId: builtId, args: clean({ ...args, mapId: builtId, replace: true }), placed: [] },
   };

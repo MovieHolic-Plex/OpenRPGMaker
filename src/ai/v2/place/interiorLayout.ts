@@ -8,6 +8,7 @@
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import type { TilesetDef } from "@/project/types";
 import { checkWallLayout, type WallsLayoutFields, type WallsRoomOut } from "./interiorWalls";
+import { carpetMiss, knownObject, unknownWordLines } from "./unknownWords";
 
 interface LayoutRect { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export interface LayoutRegion extends LayoutRect { readonly id: string; readonly floor: string; readonly wall: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string }
@@ -45,12 +46,15 @@ export function layoutCatalog(S: HandInteriorSpec, opts: { categories?: readonly
   const groups = [...by.entries()].sort((a, b) => b[1].length - a[1].length);
   const lines = groups.map(([c, ids]) => `${c} (${ids.length}): ${ids.slice(0, opts.limit ?? 999).join(", ")}`);
   const total = groups.reduce((n, [, ids]) => n + ids.length, 0);
+  const sizedKeys = Object.keys(S.tables), carpetKeys = Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat"), daisKeys = Object.keys(S.daises ?? {});
   return [
     `floors: ${Object.keys(S.floors).join(", ")}`,
     `walls: ${Object.keys(S.walls).join(", ")}`,
-    `sized tables (any WxH in the id, e.g. "dining 3x2"; counter/kcounter are 1 row; kind letter as for objects): ${Object.entries(S.tables).map(([k, t]) => `${k}${t.oneRow ? "(1 row)" : ""}${tableKind.has(k) ? ` ${tableKind.get(k)}` : ""}`).join(", ")}`,
-    `carpets (any rect, walkable): ${Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat").join(", ")}`,
-    `daises (any rect, walkable raised platform): ${Object.keys(S.daises).join(", ")}`,
+    // 표에 없는 갈래의 줄은 내지 않는다 — 빈 목록에 붙은 예(«dining 3x2»)를 모델이 그대로 써서 거절됐다(2026-11-15 r6 은행, 버들항 표: 크기 탁자·사각 깔개 없음).
+    ...(sizedKeys.length ? [`sized tables (any WxH in the id, e.g. "dining 3x2"; counter/kcounter are 1 row; kind letter as for objects): ${Object.entries(S.tables).map(([k, t]) => `${k}${t.oneRow ? "(1 row)" : ""}${tableKind.has(k) ? ` ${tableKind.get(k)}` : ""}`).join(", ")}`] : []),
+    ...(carpetKeys.length ? [`carpets (any rect, walkable): ${carpetKeys.join(", ")}`] : []),
+    ...(daisKeys.length ? [`daises (any rect, walkable raised platform): ${daisKeys.join(", ")}`] : []),
+    ...(!sizedKeys.length || !carpetKeys.length ? [`not in this chipset: ${[...(sizedKeys.length ? [] : ["sized tables (ids with WxH)"]), ...(carpetKeys.length ? [] : ["rect carpets"])].join(", ")} — tables and rugs are whole pieces in objects below`] : []),
     `objects — ${total} pieces in ${groups.length} categories, grouped as category (count): id WxH kind (f = stands on floor, blocks walking · w = against the north wall, on the first floor row under a wall face · h = wall-mounted, on the UPPER wall-face row · d = walkable floor decal · su/sd = stairs up/down: su is a 3-wide x 3-tall kit on a north wall with free floor south of it, sd a hole in the floor entered from the south · ^N = art N cells taller, drawn upward). Use the whole list, not only the suggested slice: find_pieces(category, tags) returns every piece of a category (or matching words) with its placement and the rooms it is used in.`,
     ...lines,
   ].join("\n");
@@ -147,8 +151,6 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
     ids.add(r.id);
     if (![r.x, r.y, r.w, r.h].every(int) || r.w < 1 || r.h < 3) { errors.push(`${tag}: x,y,w,h must be integers, w >= 1, h >= 3 (two wall-face rows + floor).`); continue; }
     if (r.x < 1 || r.y < 1 || r.x + r.w > W - 1 || r.y + r.h > H - 1) errors.push(`${tag} rect (${r.x},${r.y},${r.w}x${r.h}) leaves the solid border — keep regions inside x 1..${W - 2}, y 1..${H - 2}.`);
-    if (!S.floors[r.floor]) errors.push(`${tag}: unknown floor id "${r.floor}" — use one of: ${Object.keys(S.floors).slice(0, 12).join(", ")}…`);
-    if (!S.walls[r.wall]) errors.push(`${tag}: unknown wall id "${r.wall}" — use one of: ${Object.keys(S.walls).slice(0, 12).join(", ")}…`);
     for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (inMap(x, y)) grid[y]![x] = ".";
   }
   const openings = Array.isArray(L.openings) ? L.openings : [];
@@ -171,11 +173,16 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
   const lmSame = (o: LayoutObject) => !!L.landmark && o?.id === L.landmark.id && o.x === L.landmark.x && o.y === L.landmark.y && !((o.repeat?.count ?? 1) > 1);
   const srcList = [...(L.landmark ? [L.landmark] : []), ...(Array.isArray(L.objects) ? L.objects : []).filter((o) => !lmSame(o))];
   if (!L.landmark) errors.push(`landmark is missing — name the one big piece the place is built around: "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."}.`);
+  // 표에 없는 낱말(벽 · 바닥 · 기물)은 갈래마다 한 줄로 한 번에 알린다 — 가까운 표의 id 와 함께(unknownWords.ts).
+  errors.push(...unknownWordLines(S, {
+    walls: regions.map((r) => [String(r?.wall), `region ${String(r?.id ?? "?")}`] as const),
+    floors: regions.map((r) => [String(r?.floor), `region ${String(r?.id ?? "?")}`] as const),
+    objects: srcList.flatMap((o, i) => (opts.dropObjects?.has(i) || typeof o?.id !== "string" ? [] : Array<string>(Math.max(1, Math.min(40, Number(o.repeat?.count ?? 1) || 1))).fill(o.id))),
+  }));
   srcList.forEach((o, i) => {
     if (opts.dropObjects?.has(i)) return;
     if (typeof o?.id !== "string" || !int(o.x) || !int(o.y)) { errors.push(`object ${JSON.stringify(o).slice(0, 80)}: needs id and integer x, y.`); badObjects.add(i); return; }
-    const sized = SIZED.exec(o.id);
-    if (!S.objects[o.id] && !(sized && S.tables[sized[1]!])) { errors.push(`unknown catalog id "${o.id}" at (${o.x},${o.y}) — use an exact id from the catalog.`); badObjects.add(i); return; }
+    if (!knownObject(S, o.id)) { badObjects.add(i); return; }
     const n = Math.max(1, Math.min(40, Number(o.repeat?.count ?? 1) || 1)), dx = Number(o.repeat?.dx ?? 0) || 0, dy = Number(o.repeat?.dy ?? 0) || 0;
     for (let k = 0; k < n; k++) {
       const p = { id: o.id, x: o.x + k * dx, y: o.y + k * dy, purpose: o.purpose, src: i };
@@ -185,7 +192,7 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
     }
   });
   const lines = (Array.isArray(L.carpets) ? L.carpets : []).flatMap((c) => {
-    if (!S.lines[c.id] || S.lines[c.id]!.kind !== "flat") { errors.push(`unknown carpet id "${c.id}" — use one of: ${Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat").join(", ")}.`); return []; }
+    if (!S.lines[c.id] || S.lines[c.id]!.kind !== "flat") { errors.push(carpetMiss(S, String(c.id))); return []; }
     if (![c.x, c.y, c.w, c.h].every(int)) { errors.push(`carpet ${c.id}: x,y,w,h must be integers.`); return []; }
     return [{ id: c.id, rect: { x0: c.x, y0: c.y, x1: c.x + c.w - 1, y1: c.y + c.h - 1 } }];
   });
@@ -246,13 +253,24 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
  * 거절 글(영어): 몇 가지가 막았나 → 무엇을 다시 보내나 → 막은 것 전부 → 보낸 것.
  * 고칠 호출이 맨 앞이다 — 동사 거절 틀(failureText)이 한 줄로 접어 뒤를 자르므로, 뒤에 두면 모델은 «3 problems» 중 하나와 엉뚱한 다음 호출만 봤다(2026-11-11 깔기 24판).
  */
-export function rejectionText(name: string, check: LayoutCheck, sent: unknown, left: number): string {
-  const sentText = JSON.stringify(sent ?? {}).slice(0, 300);
-  const all = [...check.errors, ...(check.soft ?? [])];
-  return [`Rejected: the interior layout for "${name}" cannot be laid as written (${all.length} problem${all.length === 1 ? "" : "s"}). Send make_place again with the same name and the whole corrected layout, changing only what the problems name (edit_place with patch.layoutPatch holding just the changes also works — it patches this rejected layout and sends it again). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out and the rest is laid.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`,
+export function rejectionText(name: string, check: LayoutCheck, _sent: unknown, left: number): string {
+  // 짧게: 동사 거절 틀(formatV2VerbFailure)이 이 글을 한 줄로 접어 900자에서 자른다 — 머리말이 440자였을 때 문제 10~15건 중 6건만 모델에 닿았다(2026-11-15 r6 은행).
+  // 보낸 것(You sent)은 그 틀이 따로 붙이므로 여기서 다시 싣지 않는다. 같은 글귀의 문제는 ×n 으로 묶는다.
+  const all = groupSame([...check.errors, ...(check.soft ?? [])]);
+  return [`Rejected: the interior layout for "${name}" is not laid — every problem is below. Fix them all and send make_place again (same name, whole layout) or edit_place patch.layoutPatch (only the changes). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left, then failing pieces are left out.` : "Last repair: next time failing pieces are left out."}`,
     ...all.slice(0, 30).map((e) => `- ${e}`),
-    ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : []),
-    `You sent: ${sentText}${sentText.length >= 300 ? "…" : ""}`].join("\n");
+    ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : [])].join("\n");
+}
+/** 자리만 다른 같은 문제는 한 줄로(«… at (3,5)» 넷 → «… at (3,5) (9,5) … ×4»가 아니라 글귀 한 번 + 자리 목록). */
+function groupSame(list: readonly string[]): string[] {
+  const AT = / at \((\d+),(\d+)\)/u;
+  const by = new Map<string, string[]>(); const order: string[] = [];
+  for (const e of list) {
+    const m = AT.exec(e); const key = m ? e.replace(AT, " at @") : e;
+    if (!by.has(key)) { by.set(key, []); order.push(key); }
+    by.get(key)!.push(m ? `(${m[1]},${m[2]})` : "");
+  }
+  return order.map((key) => { const at = by.get(key)!; return at.length === 1 ? key.replace(" at @", ` at ${at[0]}`) : at[0] ? key.replace(" at @", ` at ${at.slice(0, 8).join(" ")}${at.length > 8 ? " …" : ""}`) + ` ×${at.length}` : `${key} ×${at.length}`; });
 }
 
 /** 지은 뒤 남기는 선언(맵 위치 note) — 할 일 검사 layout_built 가 읽는다. 좌표는 지은 맵 좌표. */
