@@ -17,6 +17,12 @@ import { WORLDS, worldPlaceSpec } from "@/ai/v2/place/world";
 import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
 import type { ToolContext } from "@/editor/tools/types";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
+import { chipsetCatalog, effectiveSpec } from "@/ai/v2/place/interiorCatalog";
+import { checkLayout, rejectionText } from "@/ai/v2/place/interiorLayout";
+import { buildFromLayout } from "@/ai/v2/place/builders/interiorLayoutBuild";
+import { nearIds } from "@/ai/v2/place/unknownWords";
+import { tableParts } from "@/ai/v2/place/roomParts";
+import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 
 const table = tierTableOf(TID)!;
 const tpls = roomTemplates(TID);
@@ -324,5 +330,82 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     const a = fresh(); const m = a.run.ctx.project.maps[a.run.ctx.project.startMapId]!; m.tilesetId = a.ts.id; m.upperTiles[0] = 1;
     const card = interiorCatalogCard(a.run.ctx.project, m.id);
     expect(card).not.toMatch(/t_corridor|t_stair|m-inn|corr-a/u);
+  });
+});
+
+// 2026-11-15 r6 묶음 은행: room_parts 만 v5 표로 답했고, 카드는 빈 갈래에 거절될 예를 달았고, 거절 글은 낱말을 단계로·자리마다 내어 900자에서 잘렸다.
+describe("버들항 표로 읽고 거절한다 — room_parts · 목록 카드 · 거절 글", () => {
+  const ts = createBeodeulCityTileset();
+  const ES = effectiveSpec(ts)!;
+  const ids = Object.keys(ES.objects);
+  const mill = (wall: string, floor: string) => ({ map: { w: 14, h: 12 }, landmark: { id: "barrel stack", x: 1, y: 8 }, outer_wall: { material: wall, path: [[0, 0], [13, 0], [13, 11], [0, 11]] }, entrance: { x: 6, y: 11 },
+    rooms: [{ id: "mill", at: [6, 5], floor, purpose: "mill" }], wall_items: [{ id: "window", wall: "outer", x: 2, y: 1 }],
+    objects: [{ id: "chair N", x: 3, y: 5, repeat: { count: 2, dx: 1, dy: 0 } }, { id: "chair N", x: 3, y: 7 }, { id: "chair N", x: 4, y: 7 }, { id: "piano", x: 9, y: 3 }, { id: "crate", x: 9, y: 6 }, { id: "stool", x: 4, y: 8 }] });
+
+  it("목록 카드는 표에 없는 갈래(크기 탁자 · 사각 깔개)의 줄과 예를 내지 않는다 — v5 카드는 그대로다", () => {
+    const card = chipsetCatalog(ts, "inn")!;
+    expect(card).not.toMatch(/^sized tables/mu);
+    expect(card).not.toMatch(/^carpets \(/mu);
+    expect(card).not.toContain("dining 3x2");
+    expect(card).toMatch(/^daises \(/mu);
+    expect(card).toMatch(/^not in this chipset: sized tables \(ids with WxH\), rect carpets/mu);
+    const project = createBlankProject();
+    const v5 = chipsetCatalog(project.tilesets[HAND_INTERIOR_TILESET_ID], "inn")!;
+    expect(v5).toMatch(/^sized tables \(any WxH in the id, e\.g\. "dining 3x2"/mu);
+    expect(v5).toMatch(/^carpets \(any rect, walkable\): \S/mu);
+    expect(v5).not.toContain("not in this chipset");
+  });
+
+  it("가까운 id 는 표에서 낱말 겹침으로 셈한다(짝 목록 없음) — 가까운 것이 없으면 비어 있다", () => {
+    expect(nearIds("chair N", ids)).toEqual(["chair"]);
+    expect(nearIds("keg rack", ids)).toContain("ale kegs rack");
+    expect(nearIds("broom and bucket", ids)).toEqual(["broom and pail"]);
+    expect(nearIds("dining 2x1", ids)).toEqual(["dining table"]);
+    expect(nearIds("roundtable", ids)[0]).toBe("round table");
+    expect(nearIds("logdark", Object.keys(ES.walls))).toEqual(["log"]);
+    for (const none of ["piano", "potted fern", "stove", "hanging pans"]) expect(nearIds(none, ids), none).toEqual([]);
+    expect(nearIds("boards", Object.keys(ES.floors))).toEqual([]);
+  });
+
+  it("없는 벽 · 바닥 · 기물을 한 번에 알리고 같은 낱말은 묶는다 — 장소는 그대로 거절한다(재료를 바꿔 깔지 않는다)", () => {
+    const check = checkLayout(mill("logdark", "boards"), ES, ts);
+    expect(check.errors).toHaveLength(3);
+    expect(check.input).toBeUndefined();
+    expect(check.errors[0]).toContain('"logdark" (outer_wall) → log');
+    expect(check.errors[0]).toContain("plaster, rubble, log, stablew, stone, grey, slumw, hobbitw");
+    expect(check.errors[1]).toContain('"boards" (room mill)');
+    expect(check.errors[2]).toContain('"chair N" ×4 → chair');
+    expect(check.errors[2]).toMatch(/No near id in this table[^"]*"piano"/u);
+    expect(check.badObjects.size).toBe(4);
+    const text = rejectionText("방앗간", check, {}, 2);
+    expect(text.startsWith('Rejected: the interior layout for "방앗간"')).toBe(true);
+    expect(text.length).toBeLessThan(900);
+    expect(text).not.toContain("You sent");
+  });
+
+  it("고치기를 다 쓰면 걸린 기물만 빼고 깔되, 뺀 기물과 빈 바닥 비율을 요약에 적는다", () => {
+    const { run } = fresh();
+    const spec = { type: "interior", name: "방앗간", layout: mill("log", "plank"), hints: { layoutRepairsLeft: 0, newMap: true } } as unknown as PlaceSpec;
+    const built = buildFromLayout(run, spec, ES, ts.id, undefined);
+    expect(built.ok).toBe(true);
+    expect(built.summary).toMatch(/laid only 4 of your 8 pieces — left out after the repairs: "chair N" ×3, "piano"; bare floor \d+%/u);
+    // 없는 벽 낱말은 뺄 기물이 아니다 — 고치기를 다 써도 장소는 서지 않는다.
+    const { run: run2 } = fresh();
+    const bad = buildFromLayout(run2, { ...spec, layout: mill("logdark", "plank") } as unknown as PlaceSpec, ES, ts.id, undefined);
+    expect(bad.ok).toBe(false);
+    expect(bad.summary).toContain('"logdark" (outer_wall) → log');
+  });
+
+  it("room_parts 는 장소가 지어질 표로 답한다 — v5 낱말(logdark · boards)이 섞이지 않는다", () => {
+    const parts = tableParts(ts, ES, "선술집 tavern");
+    const text = JSON.stringify(parts);
+    expect(parts.tileset).toBe(ts.id);
+    expect(parts.floors).toEqual(Object.keys(ES.floors));
+    expect(parts.walls).toEqual(Object.keys(ES.walls));
+    expect(text).not.toContain("logdark");
+    expect(text).not.toContain("boards");
+    expect(text).toContain("ale kegs rack");
+    for (const line of parts.items as string[]) expect(ES.objects[line.split(" | ")[0]!], line).toBeTruthy();
+    expect(String(parts.how)).toContain("spec.layout");
   });
 });

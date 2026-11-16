@@ -4,6 +4,8 @@ import { roomSpecOf, HAND_INTERIOR_TILESET_ID, type HandInteriorSpec } from "@/e
 import { roomTemplates, type InteriorRoomTemplate } from "@/editor/handInterior/templates";
 import type { Project } from "@/project/types";
 import { SHAPE_GUIDE, type RoomDesign } from "@/editor/handInterior/designRoom";
+import type { TilesetDef } from "@/project/types";
+import { findPieces } from "./interiorCatalog";
 
 /**
  * 모양 예시 — 모델이 모양을 «고를» 재료(2026-10-29 3c: 15판 설계 14개가 rect, 모양 어휘가 한 줄 이름뿐이라 고를 수 없었다).
@@ -130,4 +132,23 @@ function referenceSummary(t: InteriorRoomTemplate, S: HandInteriorSpec): { id: s
     ? `rug ${it.id} ${(it.cells ?? []).length} cells (from ${(it.cells ?? [])[0]?.[0]},${((it.cells ?? [])[0]?.[1] ?? 2) - 2})`
     : `${it.id} (${it.x},${it.y - 2})${S.objects[it.id]?.kind === "hang" ? " hung" : ""}`);
   return { id: t.id, floorSize: `${t.w}×${t.h - 2}`, items };
+}
+
+/**
+ * 손 도트 v5 가 아닌 표(버들항 …)로 지어질 장소의 room_parts 답 — 목록 카드·find_pieces·빌더와 같은 표에서 읽는다.
+ * 왜(2026-11-15 r6 은행 r5b 호출 13→14): room_parts 만 v5 표("atlas_biome_interior", logdark · boards)로 답해, 모델이 그 낱말로 다음 make_place 를 쓰고 거절됐다.
+ * 설계 모양(zones[].design · shapes · rugs · 크기 탁자)은 v5 의 것이라 싣지 않는다 — 이 표의 장소는 칸 배치(spec.layout)로 짓는다.
+ */
+export function tableParts(tileset: TilesetDef, S: HandInteriorSpec, purpose: string, query?: string, limit = 40): Record<string, unknown> {
+  const words = `${purpose} ${query ?? ""}`.split(/[\s,·/]+/u).filter((w) => w.length >= 2);
+  const hit = findPieces(S, "", words, limit);
+  const all = hit.lines.length ? hit : findPieces(S, "", [], limit);
+  const daises = Object.keys(S.daises ?? {});
+  return {
+    tileset: tileset.id,
+    floors: Object.keys(S.floors), walls: Object.keys(S.walls), ...(daises.length ? { daises } : {}),
+    format: "id | footprint WxH (x,y = top-left) | category | where it goes | art rise | used in example rooms | goes with",
+    items: all.lines, matched: hit.lines.length ? hit.total : 0, categories: all.categories,
+    how: `This place is built on chipset ${tileset.id}: design it as make_place spec.layout (cell layout) with exactly these ids — the [Interior catalog] card and find_pieces read this same table (find_pieces({category}) lists one category in full). zones[].design, room shapes, rect rugs and sized tables (an id with WxH) belong to another chipset and are rejected here.`,
+  };
 }
