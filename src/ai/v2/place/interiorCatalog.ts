@@ -36,12 +36,15 @@ function roomKindsFor(S: HandInteriorSpec, text: string): string[] {
 }
 
 /** 이 장소에 맞는 기물 — 맞는 방 종류의 예제 표(많이 쓰인 순) → 낱말 검색. 최대 max 개. */
-function suggestedPieces(S: HandInteriorSpec, text: string, max = 70): { kinds: string[]; ids: string[]; sized: string[] } {
+function suggestedPieces(S: HandInteriorSpec, text: string, max = 70, key = ""): { kinds: string[]; ids: string[]; sized: string[] } {
   const kinds = roomKindsFor(S, text);
   const used = new Map<string, number>(); const sized = new Set<string>();
   for (const [, , room, items] of S.rooms?.examples ?? []) if (kinds.includes(room)) for (const [id, n] of items) used.set(id, (used.get(id) ?? 0) + n);
   const ids: string[] = [];
-  for (const [id] of [...used].sort((a, b) => b[1] - a[1])) {
+  // 게임 열쇠가 있으면 예제 방 기물의 차례를 그 열쇠로 섞는다 — 많이 쓰인 순 그대로면 같은 방 종류의 요청은 늘 같은 기물이 맨 앞이었고,
+  // 모델이 그 앞머리를 그대로 옮겼다(2026-11-16 r7 대성당: 앞 스물셋 가운데 열하나). 실리는 기물의 무리는 같다 — 차례만 다르다.
+  const mix = (id: string) => { let h = 0x811c9dc5; for (const c of `suggest|${key}|${id}`) { h ^= c.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; } h ^= h >>> 15; return Math.imul(h, 0x2c1b3c6d) >>> 0; };
+  for (const [id] of [...used].sort((a, b) => (key.trim() ? mix(a[0]) - mix(b[0]) : 0) || b[1] - a[1])) {
     const m = /^([a-z-]+) (\d+)x(\d+)$/u.exec(id);
     if (S.objects[id]) ids.push(id); else if (m && S.tables[m[1]!]) sized.add(id);
   }
@@ -55,19 +58,19 @@ function suggestedPieces(S: HandInteriorSpec, text: string, max = 70): { kinds: 
 
 const cache = new Map<string, string>();
 /** 목록 카드 글(영어). 같은 칩셋·같은 방 종류면 캐시한다. */
-export function chipsetCatalog(tileset: TilesetDef | undefined, text = ""): string | undefined {
+export function chipsetCatalog(tileset: TilesetDef | undefined, text = "", key = ""): string | undefined {
   const S = effectiveSpec(tileset);
   if (!tileset || !S || !Object.keys(S.objects).length) return undefined;
-  const sug = suggestedPieces(S, text);
-  const key = `${tileset.id}|${Object.keys(S.objects).length}|${sug.kinds.join(",")}|${sug.ids.slice(0, 8).join(",")}`;
-  const hit = cache.get(key); if (hit) return hit;
+  const sug = suggestedPieces(S, text, 70, key);
+  const cacheKey = `${tileset.id}|${Object.keys(S.objects).length}|${sug.kinds.join(",")}|${sug.ids.join(",")}`;
+  const hit = cache.get(cacheKey); if (hit) return hit;
   const suggested = sug.ids.map((id) => entry(S, id)).filter(Boolean);
   const out = [
     `[Interior catalog — chipset ${tileset.id}, 16px cells; exact ids for make_place spec.layout. Generated from the chipset's own room tables and pieces.]`,
     ...(suggested.length ? [`suggested for this request${sug.kinds.length ? ` (room examples: ${sug.kinds.join(", ")})` : ""}: ${suggested.join(", ")}${sug.sized.length ? `; sized pieces used there: ${sug.sized.join(", ")}` : ""}`] : []),
     layoutCatalog(S),
   ].join("\n");
-  cache.set(key, out);
+  cache.set(cacheKey, out);
   return out;
 }
 

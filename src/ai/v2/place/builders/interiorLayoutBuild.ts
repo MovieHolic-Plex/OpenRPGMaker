@@ -6,8 +6,12 @@ import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 import { REVIEWS_TAG } from "../layoutReview";
 import { checkLayout, layoutDecl, layoutGiven, rejectionText, LAYOUT_TAG, type InteriorLayout, type LayoutCheck } from "../interiorLayout";
+import { applyInteriorPalette, colourNamedIds, interiorPalette } from "../interiorPalette";
+import { hashText } from "@/editor/handInterior/vignettes";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
+/** 칸 배치 선언에 적는 게임 색 열쇠(해시) — 다시 깔 때 같은 색을 쓴다. 없는 선언(이 기능 전에 깐 맵)은 색을 입히지 않는다. */
+const PALETTE_TAG = "palette:";
 
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[]})를 채워 보내는 모델이 있다. */
 export function hasLayout(spec: PlaceSpec): boolean {
@@ -46,9 +50,25 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   const soft = check.soft ?? [];
   if (soft.length && left > 0) return { ok: false, mapIds: [], summary: rejectionText(spec.name, check, L, left), warnings: [], missingArt: [], calls: run.calls };
 
-  const input = check.input;
+  // 게임 색(interiorPalette.ts): 조수 실행(게임 열쇠)이면 색 한 벌(깔개·깃발·침대 색)과 천장을 이 장소의 씨앗으로 고른다 — 같은 뼈대가 게임마다 같은 방이 되지 않게.
+  // 씨앗 = 게임 열쇠·요청(variety) + 장소 소금(salt — 은행 재생은 기록된 소금을 돌려준다). 고치기(review_layout·edit_place)는 기록된 명세를 써서 같은 색이다.
+  // 요청이 말한 것(required ids)과 랜드마크는 그대로 둔다. 열쇠 없는 실행(사람 편집·시험)은 예전 그대로.
+  // 다시 까는 맵(review_layout · edit_place · 같은 이름 다시 짓기)은 처음 깔 때 적어 둔 열쇠를 다시 쓴다 — 고칠 때마다 색이 바뀌지 않게.
+  // 이 기능 전에 깐 맵(선언에 palette 칸이 없다)은 색을 입히지 않는다 — 옛 게임의 방을 고쳤더니 융단 색이 바뀌는 일이 없게.
+  const laidBefore = mapId ? (run.ctx.project.maps[mapId]?.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG)) : undefined;
+  const keptKey = laidBefore?.tags?.find((t) => t.startsWith(PALETTE_TAG))?.slice(PALETTE_TAG.length);
+  const paletteKey = laidBefore ? keptKey || undefined
+    : run.ctx.assistantRun && run.ctx.lookKey?.trim() ? String(hashText(`${spec.variety ?? run.ctx.lookKey}|${spec.salt ?? 0}|${spec.name}`)) : undefined;
+  const palette = interiorPalette(S, paletteKey);
+  // 색을 «정한» 것은 그대로: 랜드마크 · required 에 적은 id · 요청 글(variety 에 실린 요청)·이 장소 이름·방과 기물의 purpose·required 의 ask 가 그 색을 말한 기물.
+  const required = (L as { required?: readonly { ask?: string; ids?: readonly string[] }[] }).required ?? [];
+  const said = [spec.variety ?? "", spec.name, ...required.map((r) => String(r?.ask ?? "")), ...JSON.stringify(L).match(/"purpose":"[^"]*"/gu) ?? []].join(" ");
+  const keepIds = new Set<string>([...(L.landmark?.id ? [L.landmark.id] : []), ...required.flatMap((r) => (Array.isArray(r?.ids) ? r.ids.map(String) : [])), ...colourNamedIds(S, said)]);
+  const painted = applyInteriorPalette(check.input, palette, keepIds);
+  const input = painted.input;
   const args: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-    plan: input.plan, floor: input.floor, wall: input.wall, zones: input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages };
+    plan: input.plan, floor: input.floor, wall: input.wall, zones: input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages,
+    ...(palette.ceiling ? { ceiling: palette.ceiling } : {}) };
   const clean = (a: Record<string, unknown>) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== undefined));
   let r = run.call("build_hand_interior_room", clean(args));
   if (!r.ok && mapId) r = run.call("build_hand_interior_room", clean({ ...args, mapId: undefined, replace: undefined }));
@@ -107,7 +127,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     connections, entrance: entranceRegion,
   };
   run.call("create_map_location", { mapId: builtId, name: "room graph", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(graphDecl).slice(0, 4000), tags: [ROOM_GRAPH_TAG, "decl"] });
-  run.call("create_map_location", { mapId: builtId, name: "interior layout", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(decl).slice(0, 8000), tags: [LAYOUT_TAG, "decl", `${REVIEWS_TAG}${reviews}`] });
+  run.call("create_map_location", { mapId: builtId, name: "interior layout", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(decl).slice(0, 8000), tags: [LAYOUT_TAG, "decl", `${REVIEWS_TAG}${reviews}`, ...(paletteKey ? [`${PALETTE_TAG}${paletteKey}`] : [])] });
   for (const q of regions) {
     const lm = lmOf(q.id), st = stairsOf(q.id);
     const box = (o: { x: number; y: number; w: number; h: number }) => `${o.x},${o.y},${o.w},${o.h}`;
@@ -120,7 +140,8 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     run.call("create_map_location", { mapId: builtId, name: String(q.purpose ?? q.id).slice(0, 40), x: q.x, y: q.y, w: q.w, h: q.h, note: `layout region ${q.id}`, tags });
   }
   const entrance = Array.isArray(data.entrance) ? (data.entrance as { x: number; y: number }[])[0] : undefined;
-  const warnings = [...soft.map((w) => `still open after the repairs — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (still failing after the repairs): ${dropped.join(", ")}`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
+  const paletteNote = painted.swapped || palette.ceiling ? [`this game's colours: ${painted.swapped ? `${painted.swapped} piece${painted.swapped === 1 ? "" : "s"} recoloured (${[...palette.colours].map(([a, b]) => `${a}→${b}`).join(", ")}; ids you listed in required and the landmark kept)` : "no recolour"}${palette.ceiling ? `, ceiling ${palette.ceiling}` : ""} — name a colour in required to keep it.`] : [];
+  const warnings = [...paletteNote, ...soft.map((w) => `still open after the repairs — fix it in review_layout: ${w}`), ...check.warnings, ...(dropped.length ? [`left out (still failing after the repairs): ${dropped.join(", ")}`] : []), ...((data.warnings as string[] | undefined) ?? []).filter((w) => !/[\uac00-\ud7a3]/.test(w)).slice(0, 4)];
   return {
     ok: true, mapIds: [builtId], ...(entrance ? { entrance: { mapId: builtId, ...entrance } } : {}),
     summary: `${spec.name}: laid your layout exactly — ${regions.length} region${regions.length === 1 ? "" : "s"} (${regions.map((q) => q.id).join(", ")}), ${decl.objects.length} pieces, landmark ${decl.landmark?.id ?? "none"}, map ${map.width}×${map.height} (${builtId}). Reachable floor ${String(data.reachable ?? "?")} cells.`,

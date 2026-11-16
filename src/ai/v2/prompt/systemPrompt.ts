@@ -23,10 +23,10 @@ import { classifyRequest, type RequestIntent } from "../request/intent";
 import { INTERIOR_WORDS } from "../request/place";
 import { MONSTER_WORDS, CHOICE_SCENE_WORDS } from "../request/genre";
 import { V2_CORE_PROMPT } from "./core";
-import { V2_CARDS, PlaceSpecKind, PLACE_SPEC_INDEX, interiorCatalogCard } from "./placeSpecs";
+import { v2Cards, PlaceSpecKind, PLACE_SPEC_INDEX, interiorCatalogCard } from "./placeSpecs";
 import { projectBrief } from "./projectBrief";
 /** 요청·프로젝트가 맞을 때만 싣는 카드. lean 이면(장소를 짓지 않는 요청·구성기 세계) 실내 칩셋 목록은 싣지 않는다 — read_specs 가 준다. */
-export function conditionalCards(project: Project, currentMapId?: string, task = "", lean = false): string[] {
+export function conditionalCards(project: Project, currentMapId?: string, task = "", lean = false, key = ""): string[] {
   const intent = classifyRequest(task, project);
   const { topic, audio, tools } = intent;
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
@@ -42,7 +42,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
     : tools.game ? [gameCardFor(intent), ...[fallenCard(tools)].filter(Boolean), ...soundCard]
       : [...(audio.music ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...soundCard];
   return [
-    ...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(wizarding ? [WIZARDING_CARD] : []),
+    ...(interior ? [interiorCatalogCard(project, currentMapId, task, key)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(wizarding ? [WIZARDING_CARD] : []),
     ...(contract || CHOICE_SCENE_WORDS.test(topic) ? [SCENE_CARD] : []), ...byRequest,
     ...(tools.terrain && !audio.only ? [TERRAIN_CARD] : []), ...(tools.dress && !audio.only ? [DRESS_CARD] : []), ...(tools.store ? [storeCard(tools)] : []),
     ...(makeGameOn() && intent.makeGame ? [MAKE_GAME_CARD] : []),
@@ -77,8 +77,8 @@ export function buildV2SystemPrompt(project: Project, currentMapId?: string, tas
   // 이 게임의 세계(게임마다 다른 칩셋 한 벌) — 청사진 카드 바로 뒤에 싣는다. 구성기 세계면 장소 설계 카드는 싣지 않는다.
   const world = worldForRequest(project, projectKey, task);
   const composed = isComposedWorld(world);
-  const cards = lean ? smallJobCards(intent) : composed ? WORLD_CARDS : V2_CARDS;
+  const cards = lean ? smallJobCards(intent) : composed ? WORLD_CARDS : v2Cards(projectKey, task);
   // 청사진은 핵심 지시 바로 뒤에 박아 매 모델 차례가 대조하게 한다. 청사진 쓰는 법(카드)은 게임 하나를 짓는 턴과 장소를 짓는 턴에만 싣는다.
   const blueprintCard = intent.wholeGame || (!!project.gameBlueprint && !lean);
-  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(blueprintCard ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed), projectBrief(project, currentMapId)];
+  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(blueprintCard ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed, projectKey ?? ""), projectBrief(project, currentMapId)];
 }

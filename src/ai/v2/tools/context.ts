@@ -66,7 +66,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || inPrompt.has(kind) || session.specsShown.get(kind) === epoch();
   const showSpecs = (kinds: readonly PlaceSpecKind[]): string => {
     for (const kind of kinds) session.specsShown.set(kind, epoch());
-    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""))).join("\n\n");
+    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""), String(env.request.projectKey ?? ""))).join("\n\n");
   };
   /** 판정 JSON 한 덩이 + 카드 원문(JSON 따옴표 없이 — 지시문에 있던 모양 그대로). */
   const withSpecText = (head: Record<string, unknown>, cards: string): PiToolExecResult => ({ content: [{ type: "text", text: JSON.stringify(head) }, { type: "text", text: cards }] } as PiToolExecResult);

@@ -897,7 +897,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     } else if (layout.anchor) { const ks = shuffled(doorKits(anchorIds)).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("anchor", ks, layout.anchor); }
     // 일터 건물은 종류가 정한다(대장간 마을의 대장간·방앗간 마을의 방앗간) — 종류에 일터 건물이 없으면(나루터·빨래터) 세우지 않는다.
     const kindWork = villageKind ? doorKits(villageKind.work) : [];
-    if (layout.work && !(villageKind && !villageKind.work.length)) { const ks = shuffled(kindWork.length ? kindWork : doorKits(LOW_WORKS[theme] ?? [])); if (ks.length) place("work", ks, layout.work); }
+    // 일터 건물: 씨앗이 고른 차례대로 한 킷씩 가까운 자리(4칸)를 먼저 본다 — 고리 거리마다 모든 킷을 시험하면 늘 같은 킷이 먼저 맞아
+    // 포구 마을 여섯 판이 모두 회벽 화물 창고(rv-r2-06)였다(2026-11-16 av2-variety 탐침: ware0 은 한 번도 서지 않았다). 다 안 맞으면 예전처럼 모두 함께.
+    if (layout.work && !(villageKind && !villageKind.work.length)) { const ks = shuffled(kindWork.length ? kindWork : doorKits(LOW_WORKS[theme] ?? [])); if (ks.length && !ks.some((k) => !!place("work", [k], layout.work!, 4))) place("work", ks, layout.work); }
     // 장면 터(마을 종류): 일터 문 곁 마당과 모이는 곳 곁 자리를 집·길보다 먼저 비워 둔다 — 뒤에 찾으면 집·길·밭이 그 곁을 다 차지해
     // 종류의 주 장면(대장간 마당·포도 짜는 마당)이 설 자리가 없다(탐침: 일터 장면 38 가운데 10이 자리 없음). 길은 이 터를 돌아간다.
     // 마당 먼저 배치(beodeulYardLayout)가 일터와 집을 다시 앉히면 이 터도 그 일터 곁에 다시 잡는다(workOnly — 모이는 곳 장면은 그 마당 칸에 선다).
@@ -979,7 +981,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const small = [...housePool, ...have(spec.houses).filter(doorAtBottom).map(K)].filter((k) => !first.includes(k)).sort((a, b) => (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0) || a.w * a.h - b.w * b.h).slice(0, 3);
       // 고리 거리가 바깥 반복이라 거리 0 에 맞는 작은 대체 집이 거리 1 의 보통 집을 이겼다(2026-10-30 실조수 opus: medium·large 요청 6채가 모두 폭 4) —
       // 요청 크기 무리만으로 4칸 안을 먼저 찾고, 없을 때만 작은 집까지 넣어 9칸까지 찾는다
-      let sp = ((want as { kind?: string }).kind ? place("house", first, want, Math.min(4, want.maxR ?? 4)) : null) ?? place("house", [...first, ...small], want, want.maxR);
+      // 씨앗이 앞에 세운 집 셋을 한 채씩 먼저 가까운 자리(4칸)에서 본다 — 고리 거리마다 여섯 채를 다 시험하면 가장 작은 4×6 집(h112_0·h119_0)이 늘 먼저 맞아
+      // 여섯 게임의 «작은 집» 이 모두 같은 두 채였다(2026-11-16 av2-variety 탐침). 안 맞으면 예전 차례 그대로.
+      let sp: CodeSpot | null = null;
+      for (const k of order.slice(0, 3)) { sp = place("house", [k], want, Math.min(4, want.maxR ?? 4)); if (sp) break; }
+      sp = sp ?? ((want as { kind?: string }).kind ? place("house", first, want, Math.min(4, want.maxR ?? 4)) : null) ?? place("house", [...first, ...small], want, want.maxR);
       // 집이 먼저다: 장면 터 때문에 집 한 채가 앉을 한 단 평지를 못 찾았으면 터를 풀고 그 집을 다시 앉힌다 — 장면은 뒤에 남은 빈 땅에서 자리를 찾는다
       // (형태 탐침 54판 · 게임 열쇠: 터를 둔 채로는 집 239 → 229).
       // 터를 풀어도 그 집이 못 앉으면(터 탓이 아니다) 터는 그대로 둔다 — 터만 잃고 길·계단 자리가 달라져 문 앞이 끊겼다(형태 탐침 river-plaza-highland-11).
