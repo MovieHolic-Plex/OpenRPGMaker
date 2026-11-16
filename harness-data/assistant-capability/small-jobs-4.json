@@ -147,6 +147,31 @@
        }
       }
      ]
+    },
+    {
+     "note": "이어 지우기 — 아이템을 지워 안 쓰게 된 효과 스킬까지(실모델 2026-11-16)",
+     "calls": [
+      {
+       "tool": "prune_unused",
+       "args": {
+        "collections": [
+         "skills",
+         "items"
+        ],
+        "apply": true
+       }
+      },
+      {
+       "tool": "prune_unused",
+       "args": {
+        "collections": [
+         "skills",
+         "items"
+        ],
+        "apply": true
+       }
+      }
+     ]
     }
    ],
    "wrong": [

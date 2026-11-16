@@ -21,6 +21,17 @@ function dangling(after: Doc, gone: readonly string[]): string[] {
   const index = referenceIndex(after as unknown as Project, new Set(gone));
   return gone.filter(id => (index.get(id) ?? []).length > 0);
 }
+/** 그 id 를 가리키던 자리가 모두 «지금은 없는 자료집 레코드» 안이었나. */
+function onlyUsedByDeleted(before: Doc, after: Doc, id: string): boolean {
+  const sites = referenceIndex(before as unknown as Project, new Set([id])).get(id) ?? [];
+  return sites.every(site => {
+    const p = site.path;
+    if (p[0] !== 'database' || typeof p[1] !== 'string' || typeof p[2] !== 'number') return false;
+    const owner = before.database?.[p[1]]?.[p[2]];
+    if (owner?.id === id) return true;
+    return !!owner && !rows(after, p[1]).some(row => row.id === owner.id);
+  });
+}
 /** 배수: 바닥·천장·반올림 어느 쪽이든 받는다(1.3배 · 절반에 정수 값). */
 const scaled = (from: number, factor: number, got: unknown): boolean => typeof got === 'number' && [Math.floor(from * factor), Math.ceil(from * factor), Math.round(from * factor)].includes(got);
 
@@ -39,7 +50,8 @@ export const DB_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc)
       const unused = [...count].filter(([id, n]) => n === 0 && !engine.has(id)).map(([id]) => id);
       const now = new Set(rows(after, table).map(row => row.id as string));
       const left = unused.filter(id => now.has(id));
-      const lost = [...count].filter(([id, n]) => n > 0 && !now.has(id)).map(([id]) => id);
+      // 쓰이던 레코드를 지웠어도, 그것을 쓰던 곳이 모두 함께 지워진 레코드면 괜찮다(아이템을 지워 그 아이템만 쓰던 효과 스킬이 안 쓰는 것이 됨 — 이어 지우기).
+      const lost = [...count].filter(([id, n]) => n > 0 && !now.has(id) && !onlyUsedByDeleted(before, after, id)).map(([id]) => id);
       if (!unused.length) return no(`픽스처의 ${table} 에 안 쓰는 레코드가 없다`);
       if (lost.length) return no(`${table}: 쓰이던 레코드 ${lost.length}개를 지웠다(${lost.slice(0, 4).join(', ')})`);
       if (left.length) return no(`${table}: 안 쓰는 ${unused.length}개 중 ${left.length}개가 남았다(${left.slice(0, 4).join(', ')})`);
