@@ -31,12 +31,8 @@ export const DB_UPSERT_TOOLS: Readonly<Record<string, { readonly arg: string; re
 /** 모든 자료집 upsert 에 붙는 목록 고치기 칸 — 스키마에 더한다. */
 export const LIST_OPS_SCHEMA: JsonSchema = {
   type: "object",
-  description: "Add or remove single entries of a list field; the other entries stay. add:{field:[entries…]} · remove:{field:[entries or their ids…]}. Example: {add:{learnedSkills:[{level:5, skillId:\"skill_x\"}]}, remove:{skillIds:[\"skill_y\"]}}",
-  properties: {
-    add: { type: "object", additionalProperties: true },
-    remove: { type: "object", additionalProperties: true },
-  },
-  additionalProperties: false,
+  // 짧게 — 모든 자료집 upsert 에 붙어 작은 일의 처음 싣는 도구 글자(4만 자)를 먹는다.
+  description: "{add|remove:{field:[entries or ids]}}",
 };
 
 const itemKey = (entry: unknown): string => {
@@ -57,7 +53,7 @@ export interface EnvelopeIn { readonly args: Obj; readonly notes: string[]; read
  * 실행 전: 모르는 칸을 빼고(알림), listOps 를 기존 목록 위에서 풀어 그 칸의 전체 목록으로 바꾼다. 거절은 listOps 가 목록이 아닌 칸을 가리킬 때뿐.
  * schema = 도구의 레코드 칸 스키마(properties).
  */
-export function beforeDbUpsert(project: Project, tool: string, rawArgs: Obj, recordSchema: JsonSchema | undefined): EnvelopeIn | undefined {
+export function beforeDbUpsert(project: Project, tool: string, rawArgs: Obj, recordSchema: JsonSchema | undefined, assistant = true): EnvelopeIn | undefined {
   const spec = DB_UPSERT_TOOLS[tool];
   if (!spec) return undefined;
   const notes: string[] = [];
@@ -68,7 +64,8 @@ export function beforeDbUpsert(project: Project, tool: string, rawArgs: Obj, rec
   const existing = id ? list.find((r) => r.id === id) : undefined;
   const known = new Set(Object.keys(recordSchema?.properties ?? {}));
   // 모르는 칸 — 직업·상태의 description 처럼 레코드 종류에 없는 칸. 빼고 알린다(전에는 호출 전체가 거절됐다).
-  if (known.size) {
+  // 편집기·다른 호출자(assistant=false)는 예전처럼 모르는 칸을 도구가 거절한다 — listOps 만 푼다(스키마가 모두에게 listOps 를 내놓는다).
+  if (assistant && known.size) {
     const unknown = Object.keys(patch).filter((k) => !known.has(k));
     if (unknown.length) {
       for (const k of unknown) delete patch[k];

@@ -1044,16 +1044,16 @@ const SETTING_COLLECTIONS = ["system", "terms"] as const;
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을, positions 로 목록 번호(1부터 — 편집기의 0003 = 3)를 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
+  description: "컬렉션 레코드를 반환한다. 기본은 {position, id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을(«#3» = 목록 3번 — 편집기의 0003) 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
-      collection: { type: "string", enum: [...DB_COLLECTIONS, ...SETTING_COLLECTIONS] as unknown as string[] },
+      // 열거를 싣지 않는다 — 스물아홉 이름이 작은 일의 처음 싣는 도구 글자를 먹었다. 모르는 이름은 실행이 전체 목록과 함께 거절한다.
+      collection: { type: "string", description: "actors|classes|skills|items|equipment|enemies|troops|states|commonEvents|elements|… · system · terms" },
       include: { type: "string", enum: ["ids", "full"] },
       ids: { type: "array", items: { type: "string" }, description: "조회할 실제 ID 목록. 생략 또는 빈 배열이면 모든 레코드." },
-      query: { type: "string", description: "이름·id 에 이 글이 든 레코드만" },
-      positions: { type: "array", items: { type: "integer", minimum: 1 }, description: "목록 번호(1부터, 편집기 표시 번호)" },
+      query: { type: "string", description: "이름·id 조각, 또는 «#3» = 목록 3번" },
       limit: { type: "integer", minimum: 1, maximum: 500 },
       offset: { type: "integer", minimum: 0 },
     },
@@ -1072,8 +1072,11 @@ const getDatabaseRecords: ToolDefinition = {
     // 목록 번호는 거르기 전 자리다(편집기와 같다).
     const numbered = (args.include === "full" ? full : entries).map((record, index) => ({ record, position: index + 1 }));
     const ids = Array.isArray(args.ids) && args.ids.length > 0 ? new Set(args.ids) : null;
-    const positions = Array.isArray(args.positions) && args.positions.length > 0 ? new Set(args.positions as number[]) : null;
-    const query = typeof args.query === "string" && args.query.trim() ? args.query.trim().toLowerCase() : null;
+    // «#3»·«#0003» = 목록 3번(편집기가 보이는 번호). 여럿은 «#3,#7».
+    const rawQuery = typeof args.query === "string" ? args.query.trim() : "";
+    const positionList = /^#\d+(\s*,\s*#\d+)*$/u.test(rawQuery) ? rawQuery.split(",").map((part) => Number(part.trim().slice(1))) : [];
+    const positions = positionList.length ? new Set(positionList) : Array.isArray(args.positions) && args.positions.length > 0 ? new Set(args.positions as number[]) : null;
+    const query = rawQuery && !positionList.length ? rawQuery.toLowerCase() : null;
     const matching = numbered.filter(({ record, position }) => (!ids || ids.has(record.id))
       && (!positions || positions.has(position))
       && (!query || String(record.id).toLowerCase().includes(query) || String(record.name ?? "").toLowerCase().includes(query)));

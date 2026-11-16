@@ -1,0 +1,1280 @@
+{
+ "schemaVersion": 1,
+ "kind": "assistant-small-jobs",
+ "title": "자료집 고치기 8가지",
+ "description": "2026-11-16 자료집 적대 리뷰 B 의 오너 문장 여섯(안 쓰는 것 지우기 · 적 일괄 HP/경험치 · 이름+값 · 직업+새 스킬 셋 · 용어 · 전체 테마 다시 쓰기)과 목록 비우기 · 자동 전투 끄기. 픽스처 dbsmall = 기본 자료집을 줄인 것.",
+ "autoAnswer": "네가 판단해서 진행해 줘.",
+ "fixtures": {
+  "dbsmall": "기본 자료집을 줄인 프로젝트(배우 12 · 직업 12 · 스킬 약 130 · 아이템 7 · 장비 11 · 적 6 · 적 그룹 7 · 상태 약 12)"
+ },
+ "families": {
+  "dbtidy": "자료집 정리(지우기)",
+  "dbbulk": "여러 레코드 한꺼번에",
+  "dbclass": "직업·스킬",
+  "dbterms": "용어",
+  "dbtheme": "자료집 전체 다시 쓰기",
+  "dbclear": "목록 비우기",
+  "dbsetting": "전투 설정 끄기"
+ },
+ "jobs": [
+  {
+   "id": "db-delete-unused",
+   "family": "dbtidy",
+   "fixture": "dbsmall",
+   "request": "안 쓰는 스킬이랑 아이템 정리해서 지워 줘",
+   "check": {
+    "kind": "unusedRemoved",
+    "tables": [
+     "skills",
+     "items"
+    ],
+    "engine": [
+     "skill_attack"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "prune_unused",
+     "args": {
+      "collections": [
+       "skills",
+       "items"
+      ],
+      "apply": true
+     }
+    }
+   ],
+   "accept": [
+    {
+     "note": "하나씩 지운다",
+     "calls": [
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_ice"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_stationary"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_walk"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_dash"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_jump"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_blink"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_fire"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_motion_sky"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "items",
+        "id": "item_potion"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "items",
+        "id": "item_capture_orb"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "items",
+        "id": "item_ether"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "items",
+        "id": "item_antidote"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "items",
+        "id": "item_wake_herb"
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "items",
+        "id": "item_poison_dart"
+       }
+      }
+     ]
+    }
+   ],
+   "wrong": [
+    {
+     "note": "스킬만 지웠다",
+     "calls": [
+      {
+       "tool": "prune_unused",
+       "args": {
+        "collections": [
+         "skills"
+        ],
+        "apply": true
+       }
+      }
+     ]
+    },
+    {
+     "note": "쓰이는 스킬까지 참조째 지웠다",
+     "calls": [
+      {
+       "tool": "prune_unused",
+       "args": {
+        "collections": [
+         "skills",
+         "items"
+        ],
+        "apply": true
+       }
+      },
+      {
+       "tool": "delete_database_record",
+       "args": {
+        "collection": "skills",
+        "id": "skill_fire",
+        "clearReferences": true
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-enemy-hp-exp",
+   "family": "dbbulk",
+   "fixture": "dbsmall",
+   "request": "적 전부 HP 를 30% 올리고 경험치는 절반으로 해 줘",
+   "check": {
+    "kind": "scaleAll",
+    "table": "enemies",
+    "fields": [
+     {
+      "path": "stats.maxHp",
+      "factor": 1.3
+     },
+     {
+      "path": "rewards.exp",
+      "factor": 0.5
+     }
+    ]
+   },
+   "reference": [
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_slime",
+       "stats": {
+        "maxHp": 421
+       },
+       "rewards": {
+        "exp": 49
+       }
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_meadow_slime",
+       "stats": {
+        "maxHp": 139
+       },
+       "rewards": {
+        "exp": 20
+       }
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_cave_bat",
+       "stats": {
+        "maxHp": 140
+       },
+       "rewards": {
+        "exp": 20
+       }
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_stone_golem",
+       "stats": {
+        "maxHp": 312
+       },
+       "rewards": {
+        "exp": 50
+       }
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_dragon",
+       "stats": {
+        "maxHp": 1529
+       },
+       "rewards": {
+        "exp": 176
+       }
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_mine_skel_archer",
+       "stats": {
+        "maxHp": 333
+       },
+       "rewards": {
+        "exp": 54
+       }
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "HP 만 올렸다",
+     "calls": [
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_slime",
+         "stats": {
+          "maxHp": 421
+         }
+        }
+       }
+      },
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_meadow_slime",
+         "stats": {
+          "maxHp": 139
+         }
+        }
+       }
+      },
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_cave_bat",
+         "stats": {
+          "maxHp": 140
+         }
+        }
+       }
+      },
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_stone_golem",
+         "stats": {
+          "maxHp": 312
+         }
+        }
+       }
+      },
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_dragon",
+         "stats": {
+          "maxHp": 1529
+         }
+        }
+       }
+      },
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_mine_skel_archer",
+         "stats": {
+          "maxHp": 333
+         }
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "적 하나만",
+     "calls": [
+      {
+       "tool": "upsert_enemy",
+       "args": {
+        "enemy": {
+         "id": "enemy_slime",
+         "stats": {
+          "maxHp": 421
+         },
+         "rewards": {
+          "exp": 49
+         }
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-rename-price",
+   "family": "dbbulk",
+   "fixture": "dbsmall",
+   "request": "'철 검' 이름을 '강철 대검' 으로 바꾸고 값을 두 배로 올려 줘",
+   "check": {
+    "kind": "recordsEdited",
+    "targets": [
+     {
+      "table": "equipment",
+      "name": "철 검",
+      "expect": {
+       "name": "강철 대검"
+      },
+      "scale": {
+       "path": "price",
+       "factor": 2
+      }
+     }
+    ],
+    "untouched": [
+     {
+      "table": "equipment",
+      "name": "강철 검"
+     },
+     {
+      "table": "equipment",
+      "name": "청동 검"
+     }
+    ]
+   },
+   "reference": [
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_iron_sword",
+       "name": "강철 대검",
+       "price": 360
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "글 바꾸기가 강철 검까지 건드렸다",
+     "calls": [
+      {
+       "tool": "upsert_equipment",
+       "args": {
+        "equipment": {
+         "id": "equip_iron_sword",
+         "name": "강철 대검",
+         "price": 360
+        }
+       }
+      },
+      {
+       "tool": "upsert_equipment",
+       "args": {
+        "equipment": {
+         "id": "equip_steel_sword",
+         "name": "강강철 대검"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "값을 그대로 두었다",
+     "calls": [
+      {
+       "tool": "upsert_equipment",
+       "args": {
+        "equipment": {
+         "id": "equip_iron_sword",
+         "name": "강철 대검"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "새 장비를 만들었다",
+     "calls": [
+      {
+       "tool": "upsert_equipment",
+       "args": {
+        "equipment": {
+         "id": "equip_new_greatsword",
+         "name": "강철 대검",
+         "price": 360,
+         "slot": "weapon"
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-class-skills",
+   "family": "dbclass",
+   "fixture": "dbsmall",
+   "request": "주인공 직업을 마법사로 바꾸고, 처음부터 배우는 마법 스킬 3개를 새로 만들어서 넣어 줘",
+   "check": {
+    "kind": "classAndSkills",
+    "className": [
+     "마법사",
+     "마도사"
+    ],
+    "newSkills": 3
+   },
+   "reference": [
+    {
+     "tool": "upsert_skill",
+     "args": {
+      "skill": {
+       "id": "skill_ref_arcane_1",
+       "name": "별빛 화살",
+       "mpCost": 4
+      }
+     }
+    },
+    {
+     "tool": "upsert_skill",
+     "args": {
+      "skill": {
+       "id": "skill_ref_arcane_2",
+       "name": "서리 창",
+       "mpCost": 4
+      }
+     }
+    },
+    {
+     "tool": "upsert_skill",
+     "args": {
+      "skill": {
+       "id": "skill_ref_arcane_3",
+       "name": "번개 그물",
+       "mpCost": 4
+      }
+     }
+    },
+    {
+     "tool": "upsert_actor",
+     "args": {
+      "actor": {
+       "id": "actor_hero",
+       "classId": "class_mage"
+      },
+      "listOps": {
+       "add": {
+        "learnedSkills": [
+         {
+          "level": 1,
+          "skillId": "skill_ref_arcane_1"
+         },
+         {
+          "level": 1,
+          "skillId": "skill_ref_arcane_2"
+         },
+         {
+          "level": 1,
+          "skillId": "skill_ref_arcane_3"
+         }
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "스킬 셋을 직업 배움표에 통째로 넣어 마도사의 배움표를 지웠다",
+     "calls": [
+      {
+       "tool": "upsert_skill",
+       "args": {
+        "skill": {
+         "id": "skill_ref_arcane_1",
+         "name": "별빛 화살",
+         "mpCost": 4
+        }
+       }
+      },
+      {
+       "tool": "upsert_skill",
+       "args": {
+        "skill": {
+         "id": "skill_ref_arcane_2",
+         "name": "서리 창",
+         "mpCost": 4
+        }
+       }
+      },
+      {
+       "tool": "upsert_skill",
+       "args": {
+        "skill": {
+         "id": "skill_ref_arcane_3",
+         "name": "번개 그물",
+         "mpCost": 4
+        }
+       }
+      },
+      {
+       "tool": "upsert_actor",
+       "args": {
+        "actor": {
+         "id": "actor_hero",
+         "classId": "class_mage"
+        }
+       }
+      },
+      {
+       "tool": "upsert_class",
+       "args": {
+        "class": {
+         "id": "class_mage",
+         "learnedSkills": [
+          {
+           "level": 1,
+           "skillId": "skill_ref_arcane_1"
+          },
+          {
+           "level": 1,
+           "skillId": "skill_ref_arcane_2"
+          },
+          {
+           "level": 1,
+           "skillId": "skill_ref_arcane_3"
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "직업은 그대로",
+     "calls": [
+      {
+       "tool": "upsert_skill",
+       "args": {
+        "skill": {
+         "id": "skill_ref_arcane_1",
+         "name": "별빛 화살",
+         "mpCost": 4
+        }
+       }
+      },
+      {
+       "tool": "upsert_skill",
+       "args": {
+        "skill": {
+         "id": "skill_ref_arcane_2",
+         "name": "서리 창",
+         "mpCost": 4
+        }
+       }
+      },
+      {
+       "tool": "upsert_skill",
+       "args": {
+        "skill": {
+         "id": "skill_ref_arcane_3",
+         "name": "번개 그물",
+         "mpCost": 4
+        }
+       }
+      },
+      {
+       "tool": "upsert_actor",
+       "args": {
+        "actor": {
+         "id": "actor_hero"
+        },
+        "listOps": {
+         "add": {
+          "learnedSkills": [
+           {
+            "level": 1,
+            "skillId": "skill_ref_arcane_1"
+           },
+           {
+            "level": 1,
+            "skillId": "skill_ref_arcane_2"
+           },
+           {
+            "level": 1,
+            "skillId": "skill_ref_arcane_3"
+           }
+          ]
+         }
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-terms",
+   "family": "dbterms",
+   "fixture": "dbsmall",
+   "request": "용어에서 MP 를 '기력' 으로, 돈 단위 G 를 '냥' 으로 바꿔 줘",
+   "check": {
+    "kind": "fieldsEqual",
+    "pairs": [
+     [
+      "meta.terms.mp",
+      "기력"
+     ],
+     [
+      "meta.terms.gold",
+      "냥"
+     ]
+    ]
+   },
+   "reference": [
+    {
+     "tool": "set_project_settings",
+     "args": {
+      "terms": {
+       "mp": "기력",
+       "gold": "냥"
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "MP 만",
+     "calls": [
+      {
+       "tool": "set_project_settings",
+       "args": {
+        "terms": {
+         "mp": "기력"
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-theme-rewrite",
+   "family": "dbtheme",
+   "fixture": "dbsmall",
+   "request": "자료집 전체를 사이버펑크 느낌으로 다시 써 줘. 아이템, 장비, 적, 상태 이상 이름이랑 설명을 전부 그 분위기로 바꿔 줘",
+   "check": {
+    "kind": "rewriteAll",
+    "tables": [
+     "items",
+     "equipment",
+     "enemies",
+     "states"
+    ],
+    "share": 0.8
+   },
+   "reference": [
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_potion",
+       "name": "네온 회복약",
+       "description": "사이버 거리의 회복약."
+      }
+     }
+    },
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_capture_orb",
+       "name": "네온 포획 구슬",
+       "description": "사이버 거리의 포획 구슬."
+      }
+     }
+    },
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_ether",
+       "name": "네온 마력약",
+       "description": "사이버 거리의 마력약."
+      }
+     }
+    },
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_antidote",
+       "name": "네온 해독초",
+       "description": "사이버 거리의 해독초."
+      }
+     }
+    },
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_wake_herb",
+       "name": "네온 각성초",
+       "description": "사이버 거리의 각성초."
+      }
+     }
+    },
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_poison_dart",
+       "name": "네온 독침",
+       "description": "사이버 거리의 독침."
+      }
+     }
+    },
+    {
+     "tool": "upsert_item",
+     "args": {
+      "item": {
+       "id": "item_bone",
+       "name": "네온 마수의 뼈",
+       "description": "사이버 거리의 마수의 뼈."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_sword",
+       "name": "크롬 청동 검",
+       "description": "강화 합금 청동 검."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_mage_staff",
+       "name": "크롬 수습 지팡이",
+       "description": "강화 합금 수습 지팡이."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_scout_dagger",
+       "name": "크롬 정찰 단검",
+       "description": "강화 합금 정찰 단검."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_iron_sword",
+       "name": "크롬 철 검",
+       "description": "강화 합금 철 검."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_steel_sword",
+       "name": "크롬 강철 검",
+       "description": "강화 합금 강철 검."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_short_sword",
+       "name": "크롬 단검",
+       "description": "강화 합금 단검."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_oak_shield",
+       "name": "크롬 참나무 방패",
+       "description": "강화 합금 참나무 방패."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_leather_armor",
+       "name": "크롬 가죽 갑옷",
+       "description": "강화 합금 가죽 갑옷."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_mystic_robe",
+       "name": "크롬 견습 로브",
+       "description": "강화 합금 견습 로브."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_traveler_hat",
+       "name": "크롬 여행자 모자",
+       "description": "강화 합금 여행자 모자."
+      }
+     }
+    },
+    {
+     "tool": "upsert_equipment",
+     "args": {
+      "equipment": {
+       "id": "equip_focus_charm",
+       "name": "크롬 집중 부적",
+       "description": "강화 합금 집중 부적."
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_slime",
+       "name": "해킹된 슬라임"
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_meadow_slime",
+       "name": "해킹된 초원 슬라임"
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_cave_bat",
+       "name": "해킹된 동굴 박쥐"
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_stone_golem",
+       "name": "해킹된 돌 골렘"
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_dragon",
+       "name": "해킹된 붉은 드래곤"
+      }
+     }
+    },
+    {
+     "tool": "upsert_enemy",
+     "args": {
+      "enemy": {
+       "id": "enemy_mine_skel_archer",
+       "name": "해킹된 광산 해골 궁수"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_poison",
+       "name": "독 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_sleep",
+       "name": "수면 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_attack_up",
+       "name": "공격 상승 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_defense_up",
+       "name": "방어 상승 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_defense_down",
+       "name": "방어 하락 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_attack_down",
+       "name": "공격 하락 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_agility_up",
+       "name": "민첩 상승 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_agility_down",
+       "name": "민첩 하락 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_paralysis",
+       "name": "마비 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_deep_poison",
+       "name": "맹독 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_regen",
+       "name": "재생 바이러스"
+      }
+     }
+    },
+    {
+     "tool": "upsert_state",
+     "args": {
+      "state": {
+       "id": "state_silence",
+       "name": "침묵 바이러스"
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "아이템만",
+     "calls": [
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_potion",
+         "name": "네온 회복약",
+         "description": "사이버 거리의 회복약."
+        }
+       }
+      },
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_capture_orb",
+         "name": "네온 포획 구슬",
+         "description": "사이버 거리의 포획 구슬."
+        }
+       }
+      },
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_ether",
+         "name": "네온 마력약",
+         "description": "사이버 거리의 마력약."
+        }
+       }
+      },
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_antidote",
+         "name": "네온 해독초",
+         "description": "사이버 거리의 해독초."
+        }
+       }
+      },
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_wake_herb",
+         "name": "네온 각성초",
+         "description": "사이버 거리의 각성초."
+        }
+       }
+      },
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_poison_dart",
+         "name": "네온 독침",
+         "description": "사이버 거리의 독침."
+        }
+       }
+      },
+      {
+       "tool": "upsert_item",
+       "args": {
+        "item": {
+         "id": "item_bone",
+         "name": "네온 마수의 뼈",
+         "description": "사이버 거리의 마수의 뼈."
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-clear-list",
+   "family": "dbclear",
+   "fixture": "dbsmall",
+   "request": "전사 직업이 배우는 스킬 다 빼 줘",
+   "check": {
+    "kind": "recordsEdited",
+    "targets": [
+     {
+      "table": "classes",
+      "name": "전사",
+      "expect": {
+       "learnedSkills": []
+      }
+     }
+    ]
+   },
+   "reference": [
+    {
+     "tool": "upsert_class",
+     "args": {
+      "class": {
+       "id": "class_hero",
+       "learnedSkills": []
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "하나만 뺐다",
+     "calls": [
+      {
+       "tool": "upsert_class",
+       "args": {
+        "class": {
+         "id": "class_hero"
+        },
+        "listOps": {
+         "remove": {
+          "learnedSkills": [
+           "skill_attack"
+          ]
+         }
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "주인공 배움표를 비웠다",
+     "calls": [
+      {
+       "tool": "upsert_actor",
+       "args": {
+        "actor": {
+         "id": "actor_hero",
+         "learnedSkills": []
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-auto-battle-off",
+   "family": "dbsetting",
+   "fixture": "dbsmall",
+   "request": "자동 전투 기능 꺼 줘",
+   "check": {
+    "kind": "fieldsEqual",
+    "pairs": [
+     [
+      "system.allowAutoBattle",
+      false
+     ]
+    ]
+   },
+   "reference": [
+    {
+     "tool": "set_project_settings",
+     "args": {
+      "battle": {
+       "allowAutoBattle": false
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "켜 둔 채",
+     "calls": [
+      {
+       "tool": "set_project_settings",
+       "args": {
+        "battle": {
+         "allowAutoBattle": true
+        }
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

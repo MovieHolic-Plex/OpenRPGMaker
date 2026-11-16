@@ -272,7 +272,7 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
         ? "Load more tools by name. They are left out of your tool list to keep it short. Loading returns their parameters; run them with call_tool{name, args} (your tool list itself never changes)."
         : "Load more tools by name. They are left out of your tool list to keep it short; after loading, their full schemas are in your tool list from your next call. Calling one of them by name also works (it loads on first use).",
       `For this request: ${offered.map((n) => `${n} — ${gloss(lazy.get(n)!)}`).join("; ") || "(none)"}.`,
-      ...(others.length ? [`Also loadable — ${loadableByDomain(others)}.`] : []),
+      ...(others.length ? [`Also loadable: ${loadableByDomain(others)}.`] : []),
     ].join("\n"),
     parameters: { type: "object", properties: { names: { type: "array", items: { type: "string" }, description: "Tool names to load (from the lists above)." } }, required: ["names"], additionalProperties: false } as PiToolShape["parameters"],
     async execute(_id, params) {
@@ -306,14 +306,10 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
  * «Also loadable» 목록을 도구의 레지스트리 도메인(ToolDefinition.domains — 도구가 스스로 적은 자료)으로 묶는다.
  * 왜(2026-11-16 db-review): 이름 170여 개가 한 줄로 이어져 «자료집 레코드를 지우는 도구» 를 찾을 실마리가 없었다. 요청 낱말 표가 아니라 도구 자료로 묶는다.
  */
-const DOMAIN_LABEL: Readonly<Record<string, string>> = { database: "database records", battle: "battle", system: "project settings and systems", event: "events", map: "maps", tile: "tiles", world: "world", quest: "quests", core: "general" };
+/** 묶음 밖 도구 이름 — 자료집 도구를 맨 앞에(이름만, 묶음 이름표는 처음 싣는 글자를 먹어 뺐다). */
 function loadableByDomain(names: readonly string[]): string {
-  const groups = new Map<string, string[]>();
-  for (const name of names) {
-    const domain = getTool(name)?.domains?.find((d) => d !== "core") ?? "other";
-    groups.set(domain, [...(groups.get(domain) ?? []), name]);
-  }
-  return [...groups].sort(([a], [b]) => (a === "database" ? -1 : b === "database" ? 1 : 0)).map(([d, list]) => `${DOMAIN_LABEL[d] ?? d}: ${list.join(", ")}`).join("; ");
+  const db = (name: string) => (getTool(name)?.domains ?? []).includes("database");
+  return [...names.filter(db), ...names.filter((name) => !db(name))].join(", ");
 }
 
 /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글(실행기가 v2 에서 «tool not found» 대신 쓴다). */

@@ -557,9 +557,11 @@ export function runToolDefinition(
     // (2026-11-12 셋째 묶음 Terra `trainer-sight-blank`: 빈 프로젝트의 place_trainer 가 배우 여덟 명의 칩으로 여덟 번 거절됐다).
     if (lockProject === draft) for (const actor of draft.database.actors) if (actor.characterResourceId) noteToolChosenGraphic({ sprite: { type: "bundled", id: actor.characterResourceId }, pattern: charsetFrameIndex({ characterIndex: actor.characterIndex ?? 0, pattern: 0, direction: "down" }) });
     // 자료집 upsert(조수만): 모르는 칸은 빼고 알리고, listOps 를 풀고, 결과 글이 새로 만들었나/고쳤나·줄어든 목록을 말한다(dbUpsertEnvelope.ts).
-    const dbEnvelope = ctx.assistantRun ? beforeDbUpsert(before, name, (guarded?.args ?? normalizedArgs) as Record<string, unknown>, (tool.parameters.properties?.[DB_UPSERT_TOOLS[name]?.arg ?? ""])) : undefined;
+    // listOps 는 모든 호출자에게 푼다(스키마가 모두에게 내놓는다 — 조수 밖에서 보내면 말없이 무시되던 자리).
+    const dbEnvelope = DB_UPSERT_TOOLS[name] && (ctx.assistantRun || (guarded?.args ?? normalizedArgs as Record<string, unknown>)?.listOps !== undefined)
+      ? beforeDbUpsert(before, name, (guarded?.args ?? normalizedArgs) as Record<string, unknown>, (tool.parameters.properties?.[DB_UPSERT_TOOLS[name]?.arg ?? ""]), !!ctx.assistantRun) : undefined;
     exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, dbEnvelope?.args ?? guarded?.args ?? normalizedArgs));
-    if (dbEnvelope) { const told = afterDbUpsert(before, draft, dbEnvelope); exec = { ...exec, summary: `${told.head} ${exec.summary}`, warnings: [...told.warnings, ...(exec.warnings ?? [])] }; }
+    if (dbEnvelope && ctx.assistantRun) { const told = afterDbUpsert(before, draft, dbEnvelope); exec = { ...exec, summary: `${told.head} ${exec.summary}`, warnings: [...told.warnings, ...(exec.warnings ?? [])] }; }
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
     if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
     // 연애: 호감 대화 인물이 둘 이상이 되면 프리셋이 깔아 둔 기한 판정에 인물별 엔딩을 얹는다(rom-c·rom-a: 모델이 set_deadline_ending 을 안 불러 인물 엔딩이 영영 없었다).

@@ -10,8 +10,8 @@ import { FIXTURE_IDS, type FixtureId } from './fixtures';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 export const SUITE_FILE = resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs.json');
-/** `--set <번호>` 로 고르는 묶음. 1 = 처음 30가지(기준선 비교의 기준 — id·순서·판정을 바꾸지 않는다), 2 = 둘째 묶음(새 가족), 3 = 셋째 묶음(JRPG 가 아닌 게임의 장치). */
-const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json'), '3': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-3.json') };
+/** `--set <번호>` 로 고르는 묶음. 1 = 처음 30가지(기준선 비교의 기준 — id·순서·판정을 바꾸지 않는다), 2 = 둘째 묶음(새 가족), 3 = 셋째 묶음(JRPG 가 아닌 게임의 장치), 4 = 넷째 묶음(자료집 고치기 — 2026-11-16). */
+const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json'), '3': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-3.json'), '4': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-4.json') };
 export function suiteFile(set: string | undefined): string {
   const file = SUITE_SETS[set ?? '1'];
   if (!file) throw Error(`--set ${set}: 없는 묶음(있는 것: ${Object.keys(SUITE_SETS).join(', ')})`);

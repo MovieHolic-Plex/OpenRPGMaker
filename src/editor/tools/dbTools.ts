@@ -1007,7 +1007,7 @@ function parametersForRecord(key: string, schema: RecordSchema, example: Record<
   return {
     type: "object",
     // 목록 칸은 보낸 목록이 저장된 목록을 통째로 바꾼다 — 「바꿀 칸만」 이라는 말이 목록 일부만 보내 나머지를 지우게 했다(2026-11-16 db-review B #5).
-    properties: { [key]: { ...schema, description: `${key} record. Existing id: only the sent fields change, the rest stays. A sent list field replaces the whole stored list — to add or remove one entry use listOps.` }, listOps: LIST_OPS_SCHEMA, ...extraProperties },
+    properties: { [key]: { ...schema, description: `A sent list replaces the stored list (one entry: listOps).` }, listOps: LIST_OPS_SCHEMA, ...extraProperties },
     required: [key],
     additionalProperties: false,
     description: `허용 예시: ${JSON.stringify({ [key]: example })}`,

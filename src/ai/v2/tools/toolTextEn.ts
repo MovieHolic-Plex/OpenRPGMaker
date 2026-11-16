@@ -25,8 +25,8 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   get_event: { d: "Read one event in full (position, graphic, pages, commands). Read it before changing it." },
   find_events: { d: "Search events by name, id, dialogue text, command kind or switch reference. Returns ids, page counts and condition kinds." },
   get_database_records: {
-    d: "Read database records. Default {position,id,name}; include:'full' gives every field. Pick with ids, query (part of a name or id) or positions (list numbers as the editor shows them — 0003 = 3). Without limit you get one page that fits the result; read on with offset:nextOffset. collection: actors|classes|skills|items|equipment|enemies|troops|states|commonEvents|switches|variables|elements|terrains|battleCommands|equipmentSlots|battleAnimations|monsterSpecies|schedules|…, plus system (game settings) and terms (battle words, currency, menu words).",
-    p: { ids: "Record ids to read. Empty = all.", query: "Only records whose name or id contains this.", positions: "List numbers (1-based, as the editor numbers them).", limit: "Rows per page (omit = as many as fit).", offset: "Start row (use nextOffset from the last page)." },
+    d: "Read database records ({position,id,name}; include:'full' = all fields). Pick by ids or query (name/id part, or «#3» = list number 3). Page on with offset:nextOffset. collection also takes system (settings) and terms (battle words, currency).",
+    p: { ids: "Empty = all.", collection: "actors|classes|skills|items|equipment|enemies|troops|states|commonEvents|elements|… · system · terms" },
   },
   get_story_state: { d: "One-line summary of every story flag (meaning, current value, read/write counts). Cheaper than reading event JSON." },
   find_switch_usage: { d: "Find every event, common event and troop page that reads or writes a switch." },

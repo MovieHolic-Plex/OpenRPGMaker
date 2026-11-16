@@ -170,6 +170,11 @@ describe("list ops, shrink note, unknown fields, created vs modified", () => {
 
 describe("get_database_records reading", () => {
   const ctx = fresh();
+  it("an unknown collection is refused with the list of collections", () => {
+    const out = run(ctx, "get_database_records", { collection: "skils" });
+    expect(out.ok).toBe(false);
+    expect(out.issues?.[0]?.message).toContain("skills");
+  });
   it("the default page fits the 12,000-char result cap and keeps the cursor first", () => {
     const out = run(ctx, "get_database_records", { collection: "skills" });
     expect(out.ok).toBe(true);
@@ -178,10 +183,10 @@ describe("get_database_records reading", () => {
     expect((out.data as { nextOffset: number | null }).nextOffset).toBeGreaterThan(0);
     expect(HANGUL.test(out.summary)).toBe(false);
   });
-  it("finds by name query and by list position", () => {
+  it("finds by name query and by list number («#2»)", () => {
     const q = run(ctx, "get_database_records", { collection: "items", query: ctx.project.database.items[0]!.name });
     expect((q.data as { records: { id: string }[] }).records.some((r) => r.id === ctx.project.database.items[0]!.id)).toBe(true);
-    const pos = run(ctx, "get_database_records", { collection: "items", positions: [2] });
+    const pos = run(ctx, "get_database_records", { collection: "items", query: "#2" });
     expect((pos.data as { records: { id: string; position: number }[] }).records[0]).toMatchObject({ id: ctx.project.database.items[1]!.id, position: 2 });
   });
   it("system settings and terms are readable", () => {

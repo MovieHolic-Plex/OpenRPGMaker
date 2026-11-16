@@ -7,6 +7,7 @@ import { listAudioResources } from '../../../../assets/audioResourceCatalog';
 import type { Project } from '../../../../project/types';
 import { walkableFrom } from '../matrixNativeSpec';
 import { DATA_KINDS, DATA_SIDE } from './checksData';
+import { DB_KINDS, DB_SIDE } from './checksDb';
 import { GENRE_KINDS, GENRE_SIDE } from './checksGenre';
 import { GENRE_PLAY_KINDS, GENRE_PLAY_SIDE } from './checksGenrePlay';
 import { PLAY_KINDS, PLAY_SIDE } from './checksPlay';
@@ -272,8 +273,8 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     return ok(`바뀐 칸 ${cells.length} · 새 소품 이벤트 ${props.length}`);
   },
 };
-/** 모든 판정 종류: 첫 묶음(이 파일) + 둘째 묶음(자료·설정, 말 걸기·장면) + 셋째 묶음(장르 장치). 이름이 겹치면 안 된다. */
-const KIND_SETS = [KINDS, DATA_KINDS, PLAY_KINDS, GENRE_KINDS, GENRE_PLAY_KINDS];
+/** 모든 판정 종류: 첫 묶음(이 파일) + 둘째 묶음(자료·설정, 말 걸기·장면) + 셋째 묶음(장르 장치) + 넷째 묶음(자료집 고치기). 이름이 겹치면 안 된다. */
+const KIND_SETS = [KINDS, DATA_KINDS, PLAY_KINDS, GENRE_KINDS, GENRE_PLAY_KINDS, DB_KINDS];
 const ALL_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = Object.assign({}, ...KIND_SETS);
 if (Object.keys(ALL_KINDS).length !== KIND_SETS.reduce((sum, kinds) => sum + Object.keys(kinds).length, 0)) throw Error('판정 종류 이름이 겹친다');
 export const CHECK_KINDS = Object.keys(ALL_KINDS);
@@ -314,7 +315,7 @@ const EXPECTED_SIDE: Record<string, RegExp> = {
 
 /** 둘째 묶음의 종류는 요청마다 건드리는 칸이 달라서(자료집 표·설정 칸) 판정 인자에서 만든다. */
 function expectedSide(spec: CheckSpec): RegExp | undefined {
-  return EXPECTED_SIDE[spec.kind] ?? DATA_SIDE[spec.kind]?.(spec) ?? PLAY_SIDE[spec.kind] ?? GENRE_SIDE[spec.kind] ?? GENRE_PLAY_SIDE[spec.kind];
+  return EXPECTED_SIDE[spec.kind] ?? DATA_SIDE[spec.kind]?.(spec) ?? PLAY_SIDE[spec.kind] ?? GENRE_SIDE[spec.kind] ?? GENRE_PLAY_SIDE[spec.kind] ?? DB_SIDE[spec.kind]?.(spec);
 }
 
 function damageOf(before: Doc, after: Doc, allow: Allow, spec: CheckSpec, targets: ReadonlySet<string>): { damage: string[]; sideEdits: string[] } {
