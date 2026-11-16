@@ -12,7 +12,7 @@ import { localizePlaceSpec } from "../../place/builders/modernCity";
 import { localizeCultureSpec } from "../../place/builders/joseon";
 import { isComposedWorld, parseWorldStyle, pickWorld, spareKind, worldKind, worldOf, worldPlaceSpec } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
-import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villageKindsLine, unknownVillageKind, unknownVillageKindText } from "../../place/builders/village";
+import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villageKindsLine, fixUnknownVillageKind, VILLAGE_BUILDINGS_LINE, askedBuildingWords } from "../../place/builders/village";
 import { codeTerrainFor, usesCodeTerrain, villageCliffHabitFor } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
@@ -267,13 +267,20 @@ export function placeVerbs(c: VerbContext) {
           const lay = cleanLayoutHint(h.layout); if (lay) h.layout = lay; else delete h.layout;
           spec = { ...spec, hints: h as typeof spec.hints };
         }
-        // 모르는 마을 종류(hints.kind): 짓기 전에 장소마다 한 번 거절하고 가까운 이름이 앞에 선 전체 목록을 준다 — 집이 선 마을은 다시 지을 수 없어, 버리고 지으면 고칠 길이 없다.
-        // 두 번째에도 모르는 이름이면 빌더가 버리고 터에 맞는 종류를 골라 짓고 같은 목록을 경고로 준다(같은 거절을 되풀이하지 않게).
+        // 모르는 마을 종류(hints.kind) · 모르는 요청 건물: 거절하지 않는다(2026-11-16 오너 «거절은 게임이 깨질 때만»). 종류는 가장 가까운 종류로 고쳐 짓고
+        // (가까운 것이 없으면 게임이 고른다), 건물은 시공기가 가장 가까운 킷으로 세운다 — 무엇으로 지었는지와 전체 목록을 결과 글에 적는다.
+        const firstBuild = !(spec.mapId && session.places.has(spec.mapId));
         const va = villageArgs(spec).args; const vt = String(va.theme ?? "river");
-        const oddKind = vt === "river" || vt === "coast" ? unknownVillageKind(spec) : undefined; // 종류는 강가·포구 마을에만 있다
-        if (oddKind && !(spec.mapId && session.places.has(spec.mapId)) && !layoutSession(session).cards.has(`village-kind:${spec.name}`)) {
-          layoutSession(session).cards.add(`village-kind:${spec.name}`);
-          return text({ ok: false, notFailure: true, summary: `Rejected (nothing was built): ${unknownVillageKindText(oddKind)}` });
+        const kindFix = vt === "river" || vt === "coast" ? fixUnknownVillageKind(spec) : undefined; // 종류는 강가·포구 마을에만 있다
+        if (kindFix) { spec = kindFix.spec; keptNote = [keptNote, kindFix.note].filter(Boolean).join(" "); }
+        // 땅 그림 답이 없는 강가·포구 마을(성벽 마을 · 띠 지형): 첫 호출에 바로 지어져, 모델이 종류 목록도 건물 청하는 법도 보지 못한 채 다시 지을 수 없는 마을이 섰다.
+        // 종류도 건물도 적지 않은 첫 호출은 한 번 되돌려 그 둘을 알려 준다(짓지 않는다) — 같은 호출을 다시 보내면 그대로 짓는다.
+        if (!usesCodeTerrain(va, vt) && (vt === "river" || vt === "coast") && firstBuild && !bboxVillageSpec(spec) && typeof spec.hints?.kind !== "string" && !askedBuildingWords(spec.hints?.buildings).length
+          && !layoutSession(session).cards.has(`village-menu:${spec.name}`)) {
+          layoutSession(session).cards.add(`village-menu:${spec.name}`);
+          return text({ ok: false, notFailure: true,
+            summary: `Not built yet (not a failure) — "${spec.name}" is laid out by the builder on flat land (a walled town or band terrain has no land picture to choose spots on). Before it is built you may add two things to hints; then call make_place again with the same spec and it is built (unchanged is fine too).`,
+            villageKinds: villageKindsLine(vt, va.walls === true ? "none" : va.water), buildings: VILLAGE_BUILDINGS_LINE });
         }
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
@@ -293,7 +300,9 @@ export function placeVerbs(c: VerbContext) {
                 + `마을 자리를 네가 고른다 — 같은 make_place 에 hints.layout 을 넣어 다시 부르면 이 땅 위에 짓는다. ${villageLayoutGuide(vt, va.fishing === true, va.form === "scatter")} 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
               terrain: describeCodeTerrain(terrain),
               // 마을 종류의 전체 목록은 여기서 온다(늘 실리는 카드에는 예 넷뿐) — 모델이 자리를 고르는 그 답에서 종류도 고를 수 있다.
-              ...((kinds) => (kinds ? { villageKinds: kinds } : {}))(villageKindsLine(vt, va.water)) });
+              ...((kinds) => (kinds ? { villageKinds: kinds } : {}))(villageKindsLine(vt, va.water)),
+              // 요청 건물을 청하는 법도 여기서 온다(늘 실리는 카드에는 한 문장뿐) — 자리를 고르는 이 답에서 건물도 청한다.
+              buildings: VILLAGE_BUILDINGS_LINE, ...(kindFix ? { fixed: kindFix.note } : {}) });
             const png = terrainPreviewPng(terrain, 8);
             let bin = ""; for (let k = 0; k < png.length; k += 1) bin += String.fromCharCode(png[k]!);
             res.content.push({ type: "image", mimeType: "image/png", data: btoa(bin) });

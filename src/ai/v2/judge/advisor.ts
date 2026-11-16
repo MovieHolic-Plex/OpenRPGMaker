@@ -7,7 +7,7 @@
 //
 // 순수 모듈: 변경 요약·입력 압축·응답 해석·후속 지시문은 결정적 함수다. 모델 호출은 sideChat 하나로만 한다(워커·재생 하네스가 같이 쓴다).
 import type { Project } from "@/project/types";
-import { placementContentProblems } from "./gameChecks";
+import { placementContentProblems, placementNotices } from "./gameChecks";
 import { battleDataEmptied } from "./sideEffectChecks";
 import { findingLine } from "./finding";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
@@ -283,6 +283,8 @@ export function summarizeProjectDiff(before: Project, after: Project, maxChars: 
   for (const found of battleDataEmptied(before, after, "").slice(0, 4)) out.push(`⚠ 비운 데이터: ${findingLine(found).replace(/^\[[^\]]*\]\s*/u, "").split(" — ")[0]}`);
   // 놓기·방 쓰임(J5·J6·J40·J42·J64, 사용자 규칙): 차도 위 사람, 출구 길막, 카운터 손님 쪽 주인, 물건 밖 조사 이벤트, 다른 방 가구 — 「방을 예배당답게 꾸몄다」 같은 주장에 대어 본다.
   for (const found of placementContentProblems(before, after).slice(0, 5)) out.push(`⚠ 놓기: ${clip(findingLine(found).split(" — ")[0]!, 360)}`);
+  // 알림(결함 아님): 뭍 한가운데의 배 — 관문은 보지 않는다. 「배를 물에 띄웠다」 같은 주장에 대어 볼 사실로만 적는다.
+  for (const line of placementNotices(before, after).slice(0, 2)) out.push(`알림(결함 아님): ${clip(line, 240)}`);
 
   // 추격자(J54·J61): 「순찰하다 보면 쫓는다」는 주장에 대어 볼 사실 — 순찰 길 유무·시야, 그리고 태어나자마자 잡히는 시작·체크포인트.
   for (const map of Object.values(after.maps ?? {})) for (const ev of map.events ?? []) {
