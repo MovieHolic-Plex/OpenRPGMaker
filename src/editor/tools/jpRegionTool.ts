@@ -1,5 +1,8 @@
 // compose_jp_region · list_jp_regions — 일본 지역 30종(japaneseRegionsCatalog.ts)을 jp_city 맵 한 장에 짓는다.
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
+import { activeKitLook } from "@/project/kitLook";
+import { STREET_BAKED } from "@/project/jpCitySceneComposer";
+import { NEW_BUILDING_KITS, SCENE_KIND_FOR_REGION } from "@/project/jpCitySceneKinds";
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { composeJpForestR4, hasJpForestR3, hasJpForestR4, paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
@@ -118,6 +121,13 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
     const info = regionData(region);
     const varied = regionWithLayout(region, seed, args.layout && typeof args.layout === "object" ? args.layout as StationPlazaLayout : undefined);
+    // 새 건물 가족이 구워져 있고 조수 실행(게임 열쇠)이면, 건물이 줄지어 선 지역은 거리 장면 구성기의 종류로 짓는다 — 지역 문법은 옛 손 도트 건물만 세워 한 게임에 두 가족이 섞인다.
+    const sceneKind = activeKitLook() && STREET_BAKED && NEW_BUILDING_KITS.length > 0 ? SCENE_KIND_FOR_REGION[region.id] : undefined;
+    if (sceneKind) {
+      const res = callTool(draft, "compose_jp_city_street", { mapId, seed, style: sceneKind, replace: args.replace === true });
+      const section4 = { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };
+      return { ...res, summary: `${region.ko}(${region.ja}) - ${res.summary}`, data: { ...(res.data as Record<string, unknown> | undefined), region: info, violations: [], section4 } };
+    }
     if (region.engine.kind === "street") {
       const res = callTool(draft, "compose_jp_city_street", { mapId, seed, style: region.engine.style, replace: args.replace === true });
       const section4 = { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };

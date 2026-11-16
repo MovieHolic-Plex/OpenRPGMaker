@@ -74,6 +74,11 @@ def build():
             tier = tier or ('large' if w >= 14 or h >= 13 else 'medium' if w >= 9 or h >= 11 else 'small')
         b = dict(id=kid, w=w, h=h, doors=doors, ml=ml, mr=mr, cat=cat, role=role, tier=tier, ko=k.get('name') or kid)
         if short.startswith('f-') and short[2:] in F_BAY: b['bay'] = F_BAY[short[2:]]
+        if short.startswith('f-'):
+            # 요청 낱말로 이 건물을 부를 수 있게: 키트가 제 이름표에 적어 온 말(한글·영어·간판 글자)과 실내 예제 이름 — 손으로 적은 별칭 표가 아니다.
+            b['words'] = [x for x in tags if not re.match(r'^(Fable 그림|건물|[a-z]+:.*)$', x)]
+            m = re.search(r'실내 program jp_([a-z0-9_]+)', (k.get('ai') or {}).get('description') or '')
+            if m: b['prog'] = m.group(1).replace('_', '-')
         if short.endswith('-shut'): b['look'] = 'jp-bldg-' + short[:-5]
         buildings.append(b)
     # 시타마치·쇼텐가이 일체형 줄 키트(shitamachi_pack — 문 없는 풍경 건물, 처마 칸 없음). 거리 종류의 mix.flavor 가 부른다.

@@ -21,7 +21,7 @@ export interface SceneKind {
   readonly density: { readonly spill: number; readonly kerb: number; readonly south: number };
 }
 
-export interface CatBuilding { readonly id: string; readonly w: number; readonly h: number; readonly doors: readonly number[]; readonly ml: number; readonly mr: number; readonly cat: string; readonly role: string; readonly tier: string; readonly ko: string; readonly look?: string; /** 차가 드나드는 입(차고·구급차 자리): [첫 열, 폭] */ readonly bay?: readonly [number, number] }
+export interface CatBuilding { readonly id: string; readonly w: number; readonly h: number; readonly doors: readonly number[]; readonly ml: number; readonly mr: number; readonly cat: string; readonly role: string; readonly tier: string; readonly ko: string; readonly look?: string; /** 차가 드나드는 입(차고·구급차 자리): [첫 열, 폭] */ readonly bay?: readonly [number, number]; /** 키트 이름표의 말(한글·영어·간판 글자) */ readonly words?: readonly string[]; /** 실내 예제 이름(jp_ 뺀 것) */ readonly prog?: string }
 
 const DATA = kindsJson as unknown as { tones: Record<string, SceneTone>; kinds: SceneKind[]; scenes: Record<string, Record<string, string | string[]>>; roofs: Record<string, number[]> };
 const CATALOG = catalogJson as unknown as { buildings: CatBuilding[]; sizes: Record<string, [number, number]>; lower: string[] };
@@ -66,4 +66,30 @@ export function sceneTone(kind: SceneKind, key: string): SceneTone {
 export function yardGround(kind: SceneKind, tone: SceneTone, n: number): string {
   const list = tone.yard.filter((m) => !(kind.noGreen && m === tone.green));
   return (list.length ? list : ["산길 흙"])[((n % Math.max(1, list.length)) + Math.max(1, list.length)) % Math.max(1, list.length)]!;
+}
+
+/** 새 건물 가족(jp-bldg-f-*)이 사전에 있는가 — 있으면 조수가 짓는 일본 거리는 그것만 세운다. */
+export const NEW_BUILDING_KITS: readonly CatBuilding[] = SCENE_BUILDINGS.filter((b) => b.id.startsWith("jp-bldg-f-"));
+/** 낱말로 불러 줄에 세울 수 있는 것 — 제 자리 규칙이 따로 있는 것(신사 본전·역사 정면·초대형)은 뺀다. */
+const ASKABLE_KITS: readonly CatBuilding[] = NEW_BUILDING_KITS.filter((b) => b.cat !== "sacred" && b.cat !== "landmark" && b.cat !== "xlarge");
+
+/**
+ * 지역(compose_jp_region 의 지역 id) 가운데 «건물이 줄지어 선 동네»는 거리 장면 구성기의 종류로 짓는다 — 지역 문법은 옛 손 도트 건물로만 지어서
+ * 새 건물 가족과 한 맵·한 게임에 섞인다(2026-11-16 r6 실모델: 「역 앞 상점가」가 station_plaza 로 가서 새 건물이 하나도 안 섰다).
+ */
+export const SCENE_KIND_FOR_REGION: Readonly<Record<string, string>> = {
+  station_plaza: "ekimae", business_district: "zakkyo", yokocho_alley: "roji", machiya_quarter: "monzen", quiet_residential: "jutaku", danchi_complex: "jutaku",
+  canal_promenade: "kawazoi", torii_shrine_precinct: "tera-machi", buddhist_temple_pagoda: "tera-machi",
+};
+
+const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+/**
+ * 요청 낱말 하나 → 새 건물 키트. 키트 id(전체·꼬리) · 종류(role) · 이름 · 키트 이름표의 말 · 실내 예제 이름과 온전히 같은 말만 받는다(별칭 표·부분 일치 없음).
+ */
+export function sceneKitForWord(word: string): CatBuilding | undefined {
+  const w = norm(word);
+  if (!w || w === "shop" || w === "house") return undefined;
+  const names = (b: CatBuilding) => [b.id, b.id.slice("jp-bldg-f-".length), b.role, b.ko, ...(b.words ?? [])].map(norm);
+  // 제 이름으로 먼저, 그다음 실내 예제 이름(여러 건물이 같은 예제를 쓴다 — 사전의 앞 건물)
+  return ASKABLE_KITS.find((b) => names(b).includes(w)) ?? ASKABLE_KITS.find((b) => b.prog === w);
 }

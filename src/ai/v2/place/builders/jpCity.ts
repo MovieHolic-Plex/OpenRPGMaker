@@ -8,7 +8,8 @@ import { jpRegionById } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import { JP_CITY_ID } from "@/project/defaults/jpCity";
-import { planJpCityScene } from "@/project/jpCitySceneComposer";
+import { planJpCityScene, STREET_BAKED } from "@/project/jpCitySceneComposer";
+import { NEW_BUILDING_KITS, SCENE_KIND_FOR_REGION, sceneKitForWord } from "@/project/jpCitySceneKinds";
 import { sceneKindById } from "@/project/jpCitySceneKinds";
 import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
 import { planJpCityStreet, type JpStreetStyle } from "@/project/jpCityStreetComposer";
@@ -285,7 +286,10 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
 
   let w: number, h: number;
   const r = region ? jpRegionById(region) : undefined;
-  if (r) {
+  // 새 건물 가족이 구워져 있고 조수 실행(게임 열쇠)이면: 건물이 줄지어 선 지역(역전·오피스 거리·요코초·신사 앞…)은 지역 문법(옛 손 도트 건물) 대신 거리 장면 구성기의 종류로 짓는다 — 한 게임에 건물 가족 하나.
+  const newFamily = !!(run.ctx.assistantRun && run.ctx.lookKey?.trim()) && STREET_BAKED && NEW_BUILDING_KITS.length > 0;
+  const regionKind = r && newFamily ? sceneKindById(SCENE_KIND_FOR_REGION[r.id]) : undefined;
+  if (r && !regionKind) {
     const scale = sizeKey === "small" ? 0.8 : sizeKey === "large" ? 1.25 : 1;
     w = Math.max(40, Math.round(r.size[0] * scale)); h = Math.max(28, Math.round(r.size[1] * scale));
     // 거리 길이(역전): 모델이 고른 길이 → 폭. 안 고르면 씨앗으로 셋 중 하나(늘 같은 폭이면 같은 장면으로 읽힌다).
@@ -304,7 +308,7 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   let seed = baseSeed;
   let kind: JpState["kind"];
   const notRegion = (word: string) => !REGION_RULES.some(([re]) => has(word, re));
-  if (r) {
+  if (r && !regionKind) {
     kind = "region";
     args = { mapId, region: r.id, seed, replace: true, layout: stationLayout(spec) };
     const leftovers = words.filter((wd) => notRegion(wd) && !STYLE_WORDS.test(wd) && !UNSUPPORTED.some(([re]) => has(wd, re)));
@@ -312,20 +316,31 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   } else {
     kind = "street";
     // hints.style 에 거리 종류 id(ekimae·kawazoi …)가 오면 그 종류로 짓는다. 도구가 장면 구성기로 짓는 조건(조수 실행의 게임 열쇠, 또는 이름 붙인 종류)이면 미리 보기도 그 계획으로.
-    const named = typeof spec.hints?.style === "string" ? sceneKindById(spec.hints.style) : undefined;
+    const named = (typeof spec.hints?.style === "string" ? sceneKindById(spec.hints.style) : undefined) ?? regionKind;
     const namedStyle = named?.styles[0];
     const style: JpStreetStyle = namedStyle === "shopping" || namedStyle === "residential" || namedStyle === "shitamachi" || namedStyle === "shotengai" ? namedStyle : pickStyle(spec, text);
     const gameKey = run.ctx.assistantRun && run.ctx.lookKey?.trim() ? run.ctx.lookKey : named ? "default" : undefined;
     const sceneView: SceneView | undefined = gameKey ? { key: gameKey, crosswalkTile: sceneCrosswalkTile(run.ctx.project.tilesets[JP_CITY_ID]), ...(named ? { kind: named.id } : {}) } : undefined;
-    const shops = [...new Set(SHOP_RULES.filter(([re]) => has(text, re)).map(([, s]) => s))];
+    // 요청한 가게: 새 건물 가족이 서는 거리에서는 낱말을 키트로 받는다 — 키트 id·종류·이름·이름표의 말, 그다음 실내 예제 낱말(PROGRAM_RULES)이 가리키는 예제를 쓰는 키트.
+    // hints.shops(«conbini,ramen,books»)도 같은 길로 읽는다. 옛 거리는 가게 종류 낱말(SHOP_RULES) 그대로.
+    const hintShops = typeof spec.hints?.shops === "string" ? spec.hints.shops.split(/[,·]+/u).map((x) => x.trim()).filter(Boolean) : [];
+    const kitOf = (wd: string, own = false) => sceneKitForWord(wd) ?? (own ? undefined : sceneKitForWord(PROGRAM_RULES.find(([re]) => has(wd, re))?.[1] ?? ""));
+    const kitWords = new Map<string, string>();   // 낱말 → 키트 id
+    if (newFamily) for (const wd of [...words, ...hintShops]) {
+      if (!notRegion(wd) || (STYLE_WORDS.test(wd) && !sceneKitForWord(wd))) continue;   // 지역 낱말(역·신사)은 거리 종류를 정할 뿐 가게가 아니다
+      const kit = kitOf(wd, true) ?? (PROP_RULES.some(([re]) => has(wd, re)) ? undefined : kitOf(wd));
+      if (kit) kitWords.set(wd, kit.id);
+    }
+    const shops = newFamily ? [...new Set(kitWords.values())] : [...new Set(SHOP_RULES.filter(([re]) => has(text, re)).map(([, s]) => s))];
     const wantHouses = has(text, /houses?|주택|민가/i);
     const shopsFor = (st: JpStreetStyle): string[] => (st !== "residential" && wantHouses && !shops.includes("house") ? [...shops, "house"] : shops);
     // 요청 낱말 하나하나: 소품 확인 규칙 / 짜임 낱말 / 가게 / 못 함 중 어디에도 안 걸리면 정직하게 못 함.
     const checks = new Map<string, (p: PlanView) => boolean>();
     for (const wd of words) {
+      if (kitWords.has(wd)) continue;
       const prop = PROP_RULES.find(([re]) => has(wd, re));
       if (prop) { checks.set(prop[1], prop[2]); continue; }
-      if (STYLE_WORDS.test(wd) || SHOP_RULES.some(([re]) => has(wd, re)) || UNSUPPORTED.some(([re]) => has(wd, re))) continue;
+      if (STYLE_WORDS.test(wd) || SHOP_RULES.some(([re]) => has(wd, re)) || UNSUPPORTED.some(([re]) => has(wd, re)) || (regionKind && !notRegion(wd))) continue;
       missing.push(`${wd}(거리 조합기가 모르는 낱말)`);
     }
     // 씨앗 고르기: 같은 크기·짜임·가게로 계획을 미리 보고(순수 함수) 요청 소품이 다 들어가는 첫 씨앗. 공원은 주택가 짜임에서 더 잘 나온다.
@@ -340,15 +355,18 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     outer: for (const st of styles) {
       for (let s = baseSeed; s < baseSeed + 40; s++) {
         const view = planView(mapId, w, h, s, st, shopsFor(st), sceneView);
-        const score = [...checks].reduce((n, [what, f]) => n + (f(view) ? (what === "공원" ? 3 : 1) : 0), 0); // 공원은 구획 하나라 소품보다 무겁다
+        // 요청한 가게가 실제로 선 수도 센다(가게 하나 = 소품 둘) — 다 선 씨앗을 고른다.
+        const stood = newFamily ? shops.filter((id) => view.ids.some((v) => v.endsWith(`/${id}`))).length : 0;
+        const score = [...checks].reduce((n, [what, f]) => n + (f(view) ? (what === "공원" ? 3 : 1) : 0), 0) + stood * 2; // 공원은 구획 하나라 소품보다 무겁다
         if (score > bestScore) { bestScore = score; bestSeed = s; bestStyle = st; }
-        if (score === checks.size + (checks.has("공원") ? 2 : 0)) break outer;
+        if (score === checks.size + (checks.has("공원") ? 2 : 0) + (newFamily ? shops.length * 2 : 0)) break outer;
       }
     }
     if (bestStyle !== style) warnings.push(`요청 소품이 ${style} 짜임에는 함께 안 들어가 ${bestStyle} 짜임으로 짰다`);
     const finalShops = shopsFor(bestStyle);
     const finalView = planView(mapId, w, h, bestSeed, bestStyle, finalShops, sceneView);
     for (const [what, f] of checks) if (!f(finalView)) missing.push(`${what}(씨앗 40개 안에서 이 크기·짜임 거리에 함께 못 놓음)`);
+    if (newFamily) for (const id of shops) if (!finalView.ids.some((v) => v.endsWith(`/${id}`))) missing.push(`${NEW_BUILDING_KITS.find((b) => b.id === id)?.ko ?? id}(${id} — 이 크기 거리에 자리가 없어 못 세움. 더 큰 size 로 짓는다)`);
     seed = bestSeed;
     args = { mapId, seed, style: named ? named.id : bestStyle, replace: true, ...(finalShops.length ? { shops: finalShops } : {}), ...(avoidance.avoid.length ? { avoidProps: avoidance.avoid } : {}),
       ...(typeof spec.hints?.parkForest === "string" ? { parkForest: spec.hints.parkForest } : {}) };

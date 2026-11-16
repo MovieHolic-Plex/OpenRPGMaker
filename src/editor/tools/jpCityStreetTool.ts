@@ -88,7 +88,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵). 칩셋이 jp_city 여야 한다" },
       seed: { type: "integer", minimum: 0, description: "거리 씨앗 — 다른 값이면 다른 거리. 생략하면 0" },
       style: { type: "string", enum: ["shopping", "residential", "shitamachi", "shotengai", ...SCENE_KINDS.map((k) => k.id)], description: STREET_KIND_NOTE + "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·콘크리트 판석 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
-      shops: { type: "array", items: { type: "string", enum: ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "apartment", "house", "machiya", "garage", "sento", "bento"] }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정)" },
+      shops: { type: "array", items: { type: "string" }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정) — 가게 종류 또는 건물 키트 id(jp-bldg-f-*)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
       region: { type: "string", enum: JP_REGIONS.map((r) => r.id), description: "일본 지역 30종 id(list_jp_regions) — 주면 style·shops 대신 그 지역 문법으로 짓는다" },
       parkForest: { type: "string", enum: ["grove", "dense", "none"], description: "공원 구획 뒤쪽 잔디에 숲 — grove 덩이 숲(기본) · dense 빽빽한 숲 · none 숲 없음(나무 키트 몇 그루만)" },

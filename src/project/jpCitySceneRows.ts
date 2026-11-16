@@ -41,7 +41,10 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
   // 새 거리의 중형 건물: 블록(줄)에 하나까지, 블록 끝(모퉁이)에만 선다. 편의점·슈퍼·은행·우체국은 가게 거리, 파출소는 큰길 줄의 모퉁이(교차로), 의원·학원은 집이 섞이는 동네.
   let endKit: NonNullable<ReturnType<SceneCtx["nextKit"]>> | undefined;
   const exRow = ex;
-  if (c.fable && ex - sx >= 16 && c.rng() < 0.75) {
+  // 요청한 가게 가운데 블록 끝에만 서는 것(중형·대형): 끝 건물 자리의 맨 앞 후보가 된다 — 요청이 있으면 좁은 블록(10칸부터)에서도, 주사위 없이.
+  const endType = (r: string) => c.buildingPool.some((b) => (b.id === r || b.role === r) && (b.cat === "medium" || b.cat === "large" || b.cat === "xlarge"));
+  const wantedEnd = c.fable ? wanted.filter(endType) : [];
+  if (c.fable && ((ex - sx >= 16 && c.rng() < 0.75) || (wantedEnd.length > 0 && ex - sx >= 10))) {
     const shuffle = (list: readonly string[]) => list.map((r) => ({ r, k: c.rng() })).sort((a, b) => a.k - b.k).map((q) => q.r);
     // 대형 건물(블록 면에 하나): 고층 종류의 큰길 줄에 오피스·호텔·백화점, 큰길 줄에 병원 — 띠가 건물 키보다 얕으면 서지 않는다(nextKit 이 키를 본다).
     const largeRoles = mainRow || big ? shuffle([...(c.kind.tall ? LARGE_DOWNTOWN : []), ...(carFront && c.rng() < 0.6 ? ["hospital"] : [])]) : [];   // 병원은 차도가 있는 큰길에만(구급차 자리가 차도로 열린다)
@@ -51,9 +54,11 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
     const left = freeL && (!freeR || c.rng() < 0.5);
     // 초대형(역 앞 상가 빌딩·구청·타워 맨션): 고층 종류의 큰길 줄 블록 끝에, 지도에 하나까지 — 12칸 폭과 제 키만큼의 띠 깊이가 있을 때만.
     const xl = c.kind.tall && mainRow && carFront ? shuffle(XLARGE) : [];
-    if (freeL || freeR) for (const role of [...xl, ...roles]) {
-      const kit = c.nextKit([], { x: left ? sx : ex - 8, foot }, ex - sx - 9, maxH, { role, big: xl.includes(role) });
+    if (freeL || freeR) for (const role of [...wantedEnd, ...xl, ...roles]) {
+      const asked = wantedEnd.includes(role);
+      const kit = c.nextKit([], { x: left ? sx : ex - 8, foot }, asked ? ex - sx : ex - sx - 9, maxH, { role, big: xl.includes(role) || asked });
       if (!kit || (kit.bay && !carFront)) continue;                                    // 차가 드나드는 입이 있는 건물은 차도 앞에만
+      if (asked) wanted.splice(wanted.indexOf(role), 1);
       if (left) { const p = c.placeKit(kit, sx, foot); row.push(p); prev = p; cursor = sx + kit.w; } else { endKit = kit; ex -= kit.w; }   // 오른쪽 끝: 자리만 잡아 두고, 줄을 다 세운 뒤 마지막 가게에 벽을 맞대 세운다
       break;
     }
@@ -65,7 +70,8 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
     let kit: ReturnType<SceneCtx["nextKit"]>, built: ScenePlaced | undefined;
     for (let i = 0; i < wanted.length && !kit && !built; i++) {
       const role = wanted[i]!;
-      kit = c.nextKit([], at, ex - cursor + (canShare ? 1 : 0), maxH, { role });
+      if (c.fable && endType(role) && !(cursor === sx && c.at(sx - 1, foot) !== Occ.Bldg && c.at(sx - 1, foot) !== Occ.Lot)) continue;   // 블록 끝에만 서는 건물은 줄 한가운데에 세우지 않는다
+      kit = c.nextKit([], at, ex - cursor + (canShare ? 1 : 0), maxH, { role, big: c.fable });
       if (kit) wanted.splice(i, 1);
       else if (!c.buildingPool.some((q) => q.role === role) && ASSEMBLED_KO[role] && ex - cursor >= 5) { wanted.splice(i, 1); built = assembled(c, role, cursor, foot, Math.min(6, ex - cursor), maxH); }
     }
