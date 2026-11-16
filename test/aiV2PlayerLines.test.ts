@@ -2,7 +2,7 @@
 // 왜(2026-11-12 증기의 심장): 목표 줄 «공업지구로 가려면 어떻게 할지 선택한다(파업 노동자 편 / 공장주 편)», 오프닝 자막 «…오르텐 할멈을 찾아가라는»,
 // 잠김 대사 «자동인형 정지가 있어야 할 것 같다», 보상 줄 «『자동인형 정지』를 알아냈다».
 import { describe, expect, it } from "vitest";
-import { lockedHint, stepGoal, wordlessLine } from "@/ai/v2/story/playerLines";
+import { stepGoal, wordlessLine } from "@/ai/v2/story/playerLines";
 import { captionLines } from "@/editor/tools/blueprintOpening";
 import { normalizeStepText } from "@/project/gameBlueprint";
 
@@ -26,17 +26,7 @@ describe("stepGoal — 「현재 목표」 줄", () => {
   });
 });
 
-describe("lockedHint — 잠긴 단계의 안내", () => {
-  it("앞 단계의 사람·물건을 이름으로 가리킨다 — 다른 맵이면 그 맵 이름을 붙인다", () => {
-    expect(lockedHint(step("talk", "오르텐 할멈", "오르텐 할멈", "오르텐의 공방"), "운하 부두")).toBe("먼저 오르텐의 공방의 「오르텐 할멈」에게 말을 걸어 보자.");
-    expect(lockedHint(step("battle", "폭주 자동인형", "폭주 자동인형", "대심장 기관실"), "대심장 기관실")).toBe("먼저 「폭주 자동인형」을 쓰러뜨려야 한다.");
-    expect(lockedHint(step("find", "감시탑 일지", undefined, "굴뚝 공업지구"), "지하 보일러실")).toBe("먼저 굴뚝 공업지구의 「감시탑 일지」를 살펴보자.");
-  });
-
-  it("깃발 이름(gives)을 말하지 않는다", () => {
-    for (const kind of ["talk", "find", "battle", "puzzle", "choice"] as const) expect(lockedHint(step(kind, "선장 바르가", "선장 바르가"), "굴뚝 공업지구")).not.toContain("통행증");
-  });
-});
+// 잠긴 단계의 안내(lockedHint)는 2026-11-15 에 걷었다 — 잠긴 글은 «왜 아직인가» 만 말하고 갈 곳은 「현재 목표」 줄이 말한다(test/aiV2PlayFixes3 «잠긴 글»).
 
 describe("wordlessLine — 대사를 받지 못한 사람 단계", () => {
   it("이름으로만 지은 서술 한 줄이다", () => {

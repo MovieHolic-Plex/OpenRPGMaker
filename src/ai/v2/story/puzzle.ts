@@ -18,7 +18,7 @@ import { joinPersonPages } from "./samePerson";
 import { afterWinLines, sayAs } from "./playerLines";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 import { settleStepThing } from "./stepThings";
-import { codeSpreadOver } from "./codeClues";
+import { codeInClues } from "./codeClues";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -55,8 +55,8 @@ export interface ChainLink {
   readonly needsAny?: readonly string[];
   /** 이 고리 전부가 있어야 시도할 수 있다(페이지 조건 AND) — 없으면 lockedLines. */
   readonly needsAll?: readonly string[];
-  /** 이 고리는 사람이다 — 이름(역할)으로 캐릭터 칩을 고른다(이름에 직함이 없어도). 적 이름이면 적 칩. */
-  readonly person?: string;
+  /** 이 고리는 사람이다 — 이름(역할)으로 캐릭터 칩을 고른다(이름에 직함이 없어도). 적 이름이면 적 칩. looks = 모델이 말한 그 사람의 성별·나이. */
+  readonly person?: string; readonly looks?: string;
   /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle; 조사 단계는 "find" — 이름에 「문」이 있어도 문이 아니다) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
   readonly thing?: boolean | "find";
   /** 이 이벤트는 앞 경로의 다른 사람이었다(청사진 다시 쓰기로 이름이 바뀜) — 그림을 새 이름으로 다시 고른다. */
@@ -480,7 +480,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     // 싸우는 고리는 다시 지을 때도 상대의 그림을 다시 맞춘다(앞선 빌드가 세운 다른 그림이 남지 않게).
     if (link.graphic && (invisible || link.battle)) { look.graphic = { ...link.graphic }; invisible = false; }
     if (invisible && (link.person || isPersonName(personName))) {
-      const person = personGraphicFor(run.ctx.project, map, link.person ?? personName!);
+      const person = personGraphicFor(run.ctx.project, map, link.person ?? personName!, link.looks);
       if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }
     }
     const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? (link.thing && invisible ? { transparent: true } : {}), ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible && !link.onArt ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
@@ -621,7 +621,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     if (lit) reachNotes.push(lit);
   }
   // 답이 단서에 실제로 적혀 있는가.
-  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !codeSpreadOver(link.code, args.links.filter((l) => l !== link).flatMap((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !codeInClues(link.code, args.links.filter((l) => l !== link).map((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;

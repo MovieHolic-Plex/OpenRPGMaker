@@ -62,16 +62,20 @@ export function snapshotFitState(project: Project): FitState {
   return { enemies: structuredClone(project.database.enemies), troops: structuredClone(project.database.troops), species: structuredClone(project.database.monsterSpecies), maps };
 }
 
-/** snapshotFitState 로 돌린다 — 값을 제자리에서 다시 대입한다(프로젝트 객체의 정체성은 그대로). */
+/**
+ * snapshotFitState 로 돌린다 — 값을 제자리에서 다시 대입한다(프로젝트 객체의 정체성은 그대로).
+ * 스냅숏의 사본을 넣는다: 스냅숏 자체를 넣으면 그 뒤의 시도가 스냅숏을 고쳐 써서, 같은 스냅숏으로 두 번째 되돌릴 때(정밀 모드가 끊기고
+ * 빠른 모드도 끊긴 경우) 빠른 모드의 시험값이 그대로 남았다.
+ */
 export function restoreFitState(project: Project, state: FitState): void {
-  project.database.enemies = state.enemies as typeof project.database.enemies;
-  project.database.troops = state.troops as typeof project.database.troops;
-  if (state.species !== undefined) project.database.monsterSpecies = state.species as NonNullable<typeof project.database.monsterSpecies>;
+  project.database.enemies = structuredClone(state.enemies) as typeof project.database.enemies;
+  project.database.troops = structuredClone(state.troops) as typeof project.database.troops;
+  if (state.species !== undefined) project.database.monsterSpecies = structuredClone(state.species) as NonNullable<typeof project.database.monsterSpecies>;
   for (const [id, saved] of state.maps) {
     const map = project.maps[id];
     if (!map) continue;
-    map.encounterTable = saved.encounterTable as typeof map.encounterTable;
-    map.events = saved.events as typeof map.events;
+    map.encounterTable = structuredClone(saved.encounterTable) as typeof map.encounterTable;
+    map.events = structuredClone(saved.events) as typeof map.events;
   }
 }
 

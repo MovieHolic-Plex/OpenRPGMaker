@@ -112,7 +112,9 @@ export function stepObjectives(run: BuildRun, goals: readonly string[], made: re
   const start = project.maps[project.startMapId];
   const bp = project.gameBlueprint;
   if (bp && start && !(start.events ?? []).some((e) => has(e.pages, true))) {
-    const plan = planObjective(project, { at: "start", text: bp.playerGoal.trim().replace(/[.。!]+$/u, "") });
+    // 첫 단계의 할 일 한 줄(«장로에게 말을 걸자») — 게임의 목표 문장 전체는 목표 칸에 다 들어가지 않아 잘렸다. 첫 단계가 없을 때만 그 문장.
+    const first = made[0] && made[0].step >= 0 ? goals[made[0].step]?.trim() : undefined;
+    const plan = planObjective(project, { at: "start", text: first || bp.playerGoal.trim().replace(/[.。!]+$/u, "") });
     if (write(plan)) notes.push("시작 목표");
   }
   for (let i = 0; i + 1 < made.length; i += 1) {

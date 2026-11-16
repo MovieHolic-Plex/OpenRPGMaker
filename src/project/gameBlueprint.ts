@@ -59,6 +59,8 @@ export interface GameBlueprintStep {
   kind?: GameBlueprintStepKind;
   /** talk·choice·battle: 그 사람(상대)의 이름 — 말하는 사람 이름과 캐릭터 그림이 된다. */
   who?: string;
+  /** 그 사람의 성별·나이 낱말(«old woman» · «젊은 남자») — 캐릭터 그림을 고를 때 꼭 지킨다. */
+  looks?: string;
   /** 맵 이름(지을 이름 그대로). */
   place: string;
   /** 그 맵 위 이벤트 이름 — 플레이어가 말을 걸거나 조사하는 대상. */
@@ -190,10 +192,12 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     const givesRaw = blueprintListText(s.gives) ?? s.gives;
     const kind = typeof s.kind === "string" ? STEP_KINDS.find((k) => k === String(s.kind).trim().toLowerCase()) : undefined;
     const who = typeof s.who === "string" ? s.who.trim().slice(0, 40) : "";
+    const looks = typeof s.looks === "string" ? s.looks.trim().slice(0, 40) : "";
     return {
       id,
       ...(kind ? { kind } : {}),
       ...(who ? { who } : {}),
+      ...(looks ? { looks } : {}),
       place: bounded(`steps[${i}].place`, s.place, 60),
       event: bounded(`steps[${i}].event`, s.event, 60),
       action: bounded(`steps[${i}].action`, s.action, BLUEPRINT_LIMITS.text),

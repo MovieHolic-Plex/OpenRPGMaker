@@ -96,6 +96,8 @@ export interface WorldSetting {
     readonly rooms?: Readonly<Record<string, readonly [number, number]>>;
   };
   readonly kinds: readonly WorldKind[];
+  /** 이 세계 사람들의 옷을 가리키는 칩 꼬리표 — 그 꼬리표의 칩은 이 세계에서 그냥 주민으로 선다(place/people). */
+  readonly dress?: string;
 }
 
 const out = (id: string, ko: string, about: string, size: readonly [number, number], flags: { danger?: true; value?: string } = {}): WorldKind =>
@@ -145,7 +147,7 @@ export const WORLDS: readonly WorldSetting[] = [
     ],
   },
   {
-    id: "desert_east", tilesetId: "desert_east", name: "Desert of the East", ko: "사막 동방", pool: "fantasy", named: (t) => describesDesertEast(t),
+    id: "desert_east", tilesetId: "desert_east", name: "Desert of the East", ko: "사막 동방", pool: "fantasy", named: (t) => describesDesertEast(t), dress: "이국적",
     pitch: "Oasis towns, bazaars and a sultan's palace on the sand, with pyramids and sealed tombs beyond; caravans, bargains, curses.",
     composer: { tool: "compose_desert_east_map", param: "kind", exits: true },
     program: { decl: DESERT_SETTLEMENT, size: (kind, program) => desertProgramSize(kind as DesertKind, program), roomTool: "compose_desert_east_room", rooms: { shop: [10, 8] } },

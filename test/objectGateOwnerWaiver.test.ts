@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { objectGateRefusal, ownerWaiverApplies, type ObjectGateFinal, type ObjectGateHoldDecision, type ObjectGateOwnerWaiver } from "@/harnesses/_core/objectGate";
+import { objectGateRefusal, ownerWaiverApplies, ownerWaiverReaches, type ObjectGateFinal, type ObjectGateHoldDecision, type ObjectGateOwnerWaiver } from "@/harnesses/_core/objectGate";
 
 // 오너 면제(2026-11-12): 오너가 «Fable 이 그린 것은 기계 불합격이어도 그냥 배치» 로 결정한 그림 묶음(waivers/<id>.json).
-// 면제는 통과가 아니다 — 스토어 출구에는 닿지 않고, 서명된 사람 거절과 보정된 Opus 최종 판정이 그 위에 있다.
+// 면제는 통과가 아니다 — 서명된 사람 거절과 보정된 Opus 최종 판정이 그 위에 있다.
+// 스토어 출구(2026-11-15): 기본값이 아니다. 그 출구를 적은 오너의 말이 기록된 묶음에만 열린다 — 묶음 머리의 contexts 에 store 가 있거나,
+// `owner-waive-extend` 가 더한 넓힘 기록(extensions — 제 오너 문장·날짜·기록한 쪽을 든다)이 store 를 적은 경우다.
 // Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py (owner_waiver_applies · refusal). 문서 openwiki/harnesses/object-gate.md 「오너 면제」.
 
 const SHA = "a".repeat(64);
@@ -18,10 +20,34 @@ describe("오너 면제 — 출구 규칙", () => {
     for (const context of ["bundle", "shared", "workshop-local"] as const) expect(ask({ context, kind: "container" })).toBeNull();
   });
 
-  it("스토어 출구는 면제를 받지 않는다 — 묶음이 store 를 적어도", () => {
+  it("스토어 출구는 기본값이 아니다 — store 를 적지 않은 묶음의 면제는 스토어에 닿지 않는다", () => {
     expect(ask({ context: "store" })).toContain("영수증이 없다");
-    expect(ask({ context: "store", waiver: waiver({ contexts: ["bundle", "store"] as never }) })).toContain("영수증이 없다");
-    expect(ownerWaiverApplies(waiver({ contexts: ["store"] as never }), SHA, undefined, "store")).toBe(false);
+    expect(ownerWaiverApplies(waiver(), SHA, undefined, "store")).toBe(false);
+    expect(ownerWaiverApplies(waiver({ contexts: ["bundle", "shared"] }), SHA, "container", "store")).toBe(false);
+  });
+
+  it("store 를 적은 묶음의 면제는 스토어 출구도 지난다 — 묶음 머리에 적었든 넓힘 기록으로 더했든", () => {
+    expect(ask({ context: "store", waiver: waiver({ contexts: ["bundle", "store"] }) })).toBeNull();
+    const extended = waiver({ contexts: ["bundle", "shared"], extensions: [{ contexts: ["store"], owner: "Fable 이 만든거는 좀 쉽게 통과시키고싶음", decidedAt: "2026-11-15", recordedBy: "supervisor" }] });
+    expect(ask({ context: "store", waiver: extended })).toBeNull();
+    expect(ownerWaiverReaches(extended.batch, "store")).toBe(true);
+    // 넓힌 출구만 열린다 — 넓힘이 적지 않은 출구는 그대로다.
+    expect(ask({ context: "workshop-local", waiver: extended })).toContain("영수증이 없다");
+  });
+
+  it("오너 문장 · 날짜 · 기록한 쪽이 빈 넓힘 기록은 출구를 열지 않는다", () => {
+    for (const blank of [{ owner: " " }, { decidedAt: "" }, { recordedBy: "" }]) {
+      const extension = { contexts: ["store" as const], owner: "쉽게 통과시키고싶음", decidedAt: "2026-11-15", recordedBy: "supervisor", ...blank };
+      expect(ask({ context: "store", waiver: waiver({ contexts: ["bundle"], extensions: [extension] }) })).toContain("영수증이 없다");
+    }
+  });
+
+  it("스토어 출구가 열려도 서명된 사람 거절과 보정된 Opus 불합격은 그 위에서 막는다", () => {
+    const open = waiver({ contexts: ["bundle", "store"] });
+    const hold = { schema: "oprn-object-gate-hold-decision/1", by: "human", via: "review-page", decision: "reject", pixelSha256: SHA, kind: "low_furniture", decidedBy: "owner", decidedAt: "2026-11-12T00:00:00Z", profileHash: "p" } as unknown as ObjectGateHoldDecision;
+    expect(ask({ context: "store", waiver: open, hold })).toContain("거절했다");
+    const final = { schema: "oprn-object-gate-final/1", pixelSha256: SHA, kind: "container", profileHash: "f1", verdict: "fail", reasons: ["정면 입면도"] } as unknown as ObjectGateFinal;
+    expect(ask({ context: "store", waiver: open, final, calibratedFinalProfiles: new Set(["f1"]) })).toContain("Opus 최종 판정 불합격");
   });
 
   it("그림 해시·종류·출구가 묶음과 다르면 면제가 없다", () => {
@@ -56,7 +82,7 @@ describe("오너 면제 — 조립 그림에 실린 부품(part)", () => {
     expect(ownerWaiverApplies(part(), SHA, undefined, "bundle")).toBe(false);
     expect(ownerWaiverApplies(part(), SHA, "structure", "bundle")).toBe(false);
   });
-  it("해시가 다르거나 스토어 출구면 부품 면제도 없다", () => {
+  it("해시가 다르거나 묶음이 적지 않은 스토어 출구면 부품 면제도 없다", () => {
     expect(ownerWaiverApplies(part(), "b".repeat(64), "part", "bundle")).toBe(false);
     expect(ownerWaiverApplies(part(), SHA, "part", "store")).toBe(false);
   });

@@ -22,6 +22,7 @@ function swapFaces(node: unknown, old: ReadonlySet<string>, next: string): void 
 /**
  * 시작 파티와 같은 칩이거나 같은 모습(성별·나이·머리 — 시트만 다른 같은 사람)으로 선 사람을 사람 고르기로 다시 입힌다.
  * 이름이 파티의 것인 이벤트(장면에 선 주인공)는 그대로 둔다. 그 사람에게 맞는 다른 칩이 없으면 그대로 둔다. 바꾼 것마다 한 줄.
+ * 다시 입힌 칩이 이 게임의 다른 사람과 같은 얼굴이면(남는 맞는 칩이 없다) 입히지 않는다 — 쌍둥이 하나를 지우려고 다른 쌍둥이를 만들지 않는다.
  */
 export function redressHeroTwins(project: Project): string[] {
   const party = (project.system.startActorIds ?? []).map((id) => project.database.actors.find((a) => a.id === id)).filter((a): a is NonNullable<typeof a> => !!a);
@@ -39,13 +40,14 @@ export function redressHeroTwins(project: Project): string[] {
     const name = (event.name ?? "").trim();
     const pages = event.pages ?? [];
     if (!name || partyNames.has(name) || !pages.some((page) => twin(page.graphic as Graphic | undefined))) continue;
-    const step = project.gameBlueprint?.steps.find((s) => s.built?.eventId === event.id && s.built.mapId === map.id) as { who?: string; looks?: string } | undefined;
+    const step = project.gameBlueprint?.steps.find((s) => s.built?.eventId === event.id && s.built.mapId === map.id);
     // 모습을 말한 글이 없으면 지금 칩의 성별·나이를 지킨다 — 머리만 다른 같은 부류의 사람으로 바뀐다(청년 남성 대장장이가 젊은 여성이 되지 않게).
     const first = pages.map((page) => page.graphic as Graphic | undefined).find(twin)!;
     const kept = lookOfChip(first.sprite!.id, decodeCharsetFrameIndex(first.pattern!).characterIndex)?.split("|").slice(0, 2).join(" ");
     const pick = pickPersonGraphic(project, map, step?.who ?? name, step?.looks ?? kept, true);
     const asset = pick ? findCharsetAsset(pick.textureKey) : undefined;
     if (!pick || !asset || twin({ sprite: { id: pick.textureKey }, pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) })) continue;
+    if (pick.shared) { out.push(`「${name}」(${map.name ?? map.id}) 은 주인공과 같은 사람으로 보이지만 그대로 둔다 — 이 게임에 안 선 맞는 칩이 없다`); continue; }
     // 대화창의 얼굴도 그 사람의 것으로 — 옛 칩의 흉상·낱장 얼굴을 건 얼굴 명령을 새 칩의 흉상(없으면 낱장 얼굴, 그것도 없으면 이름표만)으로 바꾼다.
     const face = bustOfChip(pick.textureKey, pick.characterIndex) ?? pick.faceResourceId ?? "";
     for (const page of pages) {

@@ -18,6 +18,8 @@ export const FOE_WORDS: readonly [RegExp, string][] = [
   [/악마|demon|임프|imp\b|devil/, "enemy_imp_mischief"], [/골렘|golem/, "enemy_golem_stone"], [/쥐|\brats?\b/, "enemy_rat_giant"],
   [/오크|\borcs?\b/, "enemy_orc_warrior"], [/가고일|gargoyle/, "enemy_gargoyle_stone"], [/식충|carnivor|plant/, "enemy_plant_carnivore"],
   [/화염\s*지네|centipede/, "enemy_centipede_fire"], [/사냥개|hellhound|hound/, "enemy_hound_hell"], [/도깨비불|wisp/, "enemy_wisp_blue"],
+  // 사람인 적(2026-11-15 확인 빌드 r5: «밀수꾼 두목» 이 낱말 표에 없어 돌려 고른 «어둠 망령» 그림으로 섰다 — 복면 산적 그림은 있었다).
+  [/산적|도적|도둑|강도|밀수|해적|bandit|thief|thieves|robber|smuggler|pirate|outlaw/, "enemy_bandit_mask"],
 ];
 
 /** 보스 낱말 → [적 id, 보스 이름]. 잡몹 낱말과 겹치지 않는 보스급만. 그림은 맵에서 잡몹과 구별되는 것으로 골랐다(1배 그림 대조, 2026-10-23). */

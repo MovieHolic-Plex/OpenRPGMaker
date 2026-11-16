@@ -15,7 +15,7 @@ import { recordArtGaps } from "@/project/artGap";
 import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
-import { guessPlaceSpec } from "../place/placeGuess";
+import { isIndoorMap, placeFactKey, placeSpecFor, type PlaceFacts } from "../place/placeGuess";
 import { edgeCell, isInside, isOutdoor, oppositeSide, villageDoors, walkGame } from "../story/makeGame";
 import { designMissingRooms } from "../place/designRooms";
 import { yieldToLoop } from "../shared/yieldLoop";
@@ -44,8 +44,9 @@ export function installSessionHooks(c: VerbContext) {
     }
     return notes;
   };
-  // 끝맺음 자동 짓기(2026-10-28 스위트): 청사진 장소가 없으면 이름·장르로 명세를 추정해 make_place 와 같은 빌더로 짓고 앞 단계 장소와 잇는다.
-  // 있는데 시작에서 걸어 닿지 않으면 잇기만 한다. 칩셋 계열은 placeGuess 가 같은 종류 기존 맵에서 물려받는다.
+  // 끝맺음 자동 짓기(2026-10-28 스위트): 청사진 장소가 없으면 make_place 와 같은 빌더로 짓고 앞 단계 장소와 잇는다.
+  // 종류는 모델이 이 실행에서 그 장소에 대해 말한 것(make_place 로 청한 명세 · 청사진·할 일에 적은 종류)이 먼저고, 없을 때만 이름 낱말이다 —
+  // 그래도 모르는 장소는 짓지 않고 모델에게 돌려준다(place/placeGuess.placeSpecFor). 있는데 시작에서 걸어 닿지 않으면 잇기만 한다. 칩셋 계열은 같은 종류 기존 맵에서 물려받는다.
   session.buildPlaces = async () => {
     const bp = env.ctx.project.gameBlueprint;
     if (!bp) return [];
@@ -63,6 +64,12 @@ export function installSessionHooks(c: VerbContext) {
     const sameKey = (name: string) => name.normalize("NFC").replace(/\s+/gu, "");
     const mapOf = (name: string, exact: boolean) => exact ? Object.values(env.ctx.project.maps).find((m) => m.id === name || sameKey(m.name ?? "") === sameKey(name)) : blueprintMapFor(env.ctx.project, name);
     const kindOf = (place: GameBlueprintPlace | undefined) => (world && place ? worldKind(world, place.kind) : undefined);
+    // 이 장소에 대해 모델이 말한 것 — make_place·청사진의 기록에, 할 일 목록의 장소 항목에 적은 종류를 더한다.
+    const factsOf = (name: string): PlaceFacts => {
+      const known = session.placeFacts.get(placeFactKey(name)) ?? {};
+      const todo = session.todo.items.map((i) => i.check).find((c) => c?.kind === "place" && placeFactKey(c.name) === placeFactKey(name));
+      return known.kind || todo?.kind !== "place" || !todo.placeKind ? known : { ...known, kind: todo.placeKind };
+    };
     const entries = [...listed.map((place) => ({ name: place.name, place: place as GameBlueprintPlace | undefined })),
       ...[...new Set(bp.steps.map((st) => st.place))].filter((name) => !listed.some((pl) => pl.name === name)).map((name) => ({ name, place: undefined as GameBlueprintPlace | undefined }))];
     // 바깥 장소를 먼저 짓는다 — 실내는 바깥 장소의 집 문에 달린다(얼음 동굴 방은 얼음 절벽의 동굴 입구에).
@@ -107,12 +114,14 @@ export function installSessionHooks(c: VerbContext) {
     }
     const kitOf = (mapId: string, id: string | undefined) => { const m = env.ctx.project.maps[mapId]; return id && m ? env.ctx.project.tilesets[m.tilesetId]?.structureKits?.find((k) => k.id === id) : undefined; };
     const outdoors: Built[] = [];
+    const untyped: string[] = [];
     let prev: Built = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
     for (const { name, place } of plan) {
       // 장소 하나를 짓고 잇는 일은 동기다 — 장소와 장소 사이에 루프에 차례를 준다(shared/yieldLoop.ts: 여섯 곳을 내리 지으면 40~70초 워커가 말이 없다).
       await yieldToLoop();
       const kind = kindOf(place);
-      const fromMap = place?.from ? mapOf(place.from, true) : undefined;
+      const facts = place ? {} : factsOf(name);
+      const fromMap = place?.from ? mapOf(place.from, true) : facts.from ? mapOf(facts.from, false) : undefined;
       // 들어오는 앞 장소: 청사진이 정했으면 그곳. 아니면 실내는 그 종류의 문이 남은 바깥 장소(없으면 마지막 바깥 장소), 바깥은 마지막 바깥 장소.
       // 문 낱말이 없는 실내 종류(버들항의 집·여관·가게)는 집 문이 남은 바깥 장소(마을)에 단다 — 마지막 바깥 장소가 동굴이어도 그 안에 여관을 달지 않는다.
       const doorHost = !kind?.indoor ? undefined
@@ -136,28 +145,42 @@ export function installSessionHooks(c: VerbContext) {
       const door = roleDoor ? { x: roleDoor.front.x, y: roleDoor.front.y, kit: roleDoor.kit } : own ?? (world && kind?.indoor ? pickWorldDoor(world, kind, spare.length ? spare : free) : undefined);
       let map = mapOf(name, !!place);
       if (!map) {
-        const guess = world && kind ? worldPlaceSpec(world, kind, name) : guessPlaceSpec(name, env.ctx.project, bp.genre, String(task ?? ""));
+        const guess = world && kind ? worldPlaceSpec(world, kind, name) : placeSpecFor(name, env.ctx.project, bp.genre, String(task ?? ""), facts);
+        // 종류를 모르는 장소는 짓지 않는다 — 틀리면 마을 한 장이 그 이름으로 선다. 모델이 종류를 적어 짓게 돌려준다(모델이 읽는 글).
+        if (!guess) { untyped.push(name); continue; }
         const composed = !!parseWorldStyle(guess.style);
-        const wanted = guess.type === "village" ? wantedBy.get(name) : undefined;
-        const bigBuildings: Partial<PlaceSpec> = wanted ? { hints: { ...(guess.hints ?? {}), buildings: wanted as never } } : {};
-        const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
-          ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}),
-          // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildings). 마을 크기는 올리지 않는다 — size 는 집 수만 늘리고 땅은 그대로라, 올리면 빈 터가 줄어 던전 갱구가 설 자리가 없어진다(2026-11-16 은행 jrpg-x1).
-          ...bigBuildings,
+        // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildings). 마을 크기는 올리지 않는다 — size 는 집 수만 늘리고 땅은 그대로라, 올리면 빈 터가 줄어 던전 갱구가 설 자리가 없어진다(2026-11-16 은행 jrpg-x1).
+        const bigBuildings = (g: PlaceSpec): Partial<PlaceSpec> => { const wanted = g.type === "village" ? wantedBy.get(name) : undefined; return wanted ? { hints: { ...(g.hints ?? {}), buildings: wanted as never } } : {}; };
+        const dressed = (g: PlaceSpec): PlaceSpec => ({ ...g, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(g) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
+          ...(exitSides.has(name) && !g.exits?.length ? { exits: exitSides.get(name)! } : {}),
+          ...bigBuildings(g),
           // 집 안은 그 집의 바깥을 따른다 — 문이 달린 맵의 칩셋과 그 문의 집 킷을 명세에 적는다(실내 빌더가 칩셋·벽면을 고른다, interiorExterior.ts).
-          ...(isInside(guess) && !composed && env.ctx.project.maps[parent.mapId] ? { exterior: { tileset: env.ctx.project.maps[parent.mapId]!.tilesetId, ...(door?.kit ? { kit: door.kit } : {}), ...(kind?.building && own ? { asked: true } : {}) } } : {}),
-          ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) };
-        const builder = builderFor(spec0);
+          ...(isInside(g) && !composed && env.ctx.project.maps[parent.mapId] ? { exterior: { tileset: env.ctx.project.maps[parent.mapId]!.tilesetId, ...(door?.kit ? { kit: door.kit } : {}), ...(kind?.building && own ? { asked: true } : {}) } } : {}),
+          ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) });
+        const spec0 = dressed(guess);
+        let builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
         // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다. 세계 구성기 방은 구성기가 짠다.
         const designedAuto = composed ? { spec: spec0, notes: [] as string[] } : await designMissingRooms(env, spec0, `청사진 장소 「${name}」 자동 짓기`);
-        const spec = designedAuto.spec;
+        let spec = designedAuto.spec;
         notes.push(...designedAuto.notes);
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${name}」 자동으로 짓는 중(${builder.id})` });
-        await builder.prepare?.(spec);
-        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: parent.mapId || env.ctx.project.startMapId };
-        const subRun = createBuildRun(sub);
-        const result = builder.build(subRun, spec);
+        const attempt = async (b: NonNullable<typeof builder>, sp: PlaceSpec) => {
+          await b.prepare?.(sp);
+          const sub = { ...env.ctx, project: env.ctx.project, currentMapId: parent.mapId || env.ctx.project.startMapId };
+          const subRun = createBuildRun(sub);
+          return { sub, subRun, result: b.build(subRun, sp) };
+        };
+        let tried = await attempt(builder, spec);
+        // 모델이 보낸 명세가 지어지지 않으면 같은 종류의 기본 명세로 짓는다 — 종류는 그대로다.
+        const plain = !tried.result.ok && facts.asked ? placeSpecFor(name, env.ctx.project, bp.genre, String(task ?? ""), { kind: guess.type }) : undefined;
+        const plainBuilder = plain ? builderFor(dressed(plain)) : undefined;
+        if (plain && plainBuilder) {
+          const again = await designMissingRooms(env, dressed(plain), `청사진 장소 「${name}」 자동 짓기(보낸 명세가 지어지지 않음)`);
+          builder = plainBuilder; spec = again.spec; notes.push(...again.notes);
+          tried = await attempt(builder, spec);
+        }
+        const { sub, subRun, result } = tried;
         env.ctx.project = sub.project;
         recordWrite(env, subRun, `auto-place-${name}`, "make_place", { spec, auto: true }, result.ok, result.summary, { mapIds: result.mapIds });
         for (const m of result.missingArt) session.missingArt.add(m);
@@ -183,7 +206,10 @@ export function installSessionHooks(c: VerbContext) {
       }
       const known = session.places.get(map.id);
       if (parent.mapId !== map.id && env.ctx.project.maps[parent.mapId] && walkGame(env.ctx.project, [map.id]).unreached.includes(map.id)) {
-        const spec = known?.spec ?? guessPlaceSpec(map.name ?? name, env.ctx.project, bp.genre, String(task ?? ""));
+        // 이미 선 맵은 맵이 사실이다 — 실내 맵은 실내로, 바깥 맵은 바깥 종류로 잇는다(이름으로 추측한 종류가 맵과 어긋나면 맵을 따른다).
+        const byName = placeSpecFor(map.name ?? name, env.ctx.project, bp.genre, String(task ?? ""), facts);
+        const indoor = isIndoorMap(map);
+        const spec = known?.spec ?? (byName && isInside(byName) === indoor ? byName : { type: indoor ? "interior" as const : "village" as const, name: map.name ?? name, size: "small" as const });
         const result: PlaceBuildResult = known?.result ?? { ok: true, mapIds: [map.id], summary: "", warnings: [], missingArt: [], calls: [] };
         notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideTo.get(name) ?? sideFrom(parent.mapId), door)}`);
       }
@@ -205,6 +231,8 @@ export function installSessionHooks(c: VerbContext) {
       if (rest.length) env.emit({ type: "execution_status", name: "v2.program-gap", ok: false, summary: `목적표 빈칸 ${rest.length}건: ${rest.map((g) => g.detail).join(" / ").slice(0, 600)}`, data: { gaps: rest } });
       if (gaps.length) notes.push(`목적표 빈칸 ${gaps.length}건 — ${gaps.map((g) => g.detail).join(" / ").slice(0, 400)}`);
     }
+    // 맨 앞에 한 줄로 — 끝맺음이 이 목록을 700자에서 자른다.
+    if (untyped.length) notes.unshift(`NOT built, place type unknown: ${untyped.map((n) => `"${n}"`).join(", ")}. Build each with make_place and a type (interior, village, dungeon, cave).`);
     await yieldToLoop();
     for (const n of retireBlankStart(run, env.request.project)) notes.push(n);
     // 게임은 목록의 첫 장소에서 시작한다 — 바깥 장소를 먼저 지어 시작이 다른 장소에 가 있으면 첫 장소로 옮긴다(이번에 지은 세계 장소일 때만).

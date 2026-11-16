@@ -14,6 +14,7 @@
 
 import { canMove } from "@/project/collision";
 import { eventSight, thingWord } from "@/project/eventSight";
+import { codeReadable } from "@/project/codeReading";
 import type { PlaySession } from "@/project/session";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import type { RawCommand } from "./walk";
@@ -63,21 +64,9 @@ function named(texts: readonly string[], name: string | undefined): boolean {
   return texts.some((text) => { const t = squash(text); return t.includes(full) || (word !== undefined && t.includes(word)); });
 }
 
-/** 번호가 읽은 글에 있는가 — 통째로 · 홀로 선 숫자 조각들을 이어서 · 「7 _ 9 _」 처럼 자리별로 겹쳐서. */
+/** 번호가 읽은 글에 있는가 — 통째로 · 조각을 이어서 · 자리별로 겹쳐서 · 한 줄에 차례로 나오는 수 낱말로(project/codeReading). */
 export function codeShown(code: string, texts: readonly string[]): boolean {
-  if (!code) return true;
-  if (texts.some((text) => text.replace(/(?<=\d)[\s·\-.,](?=\d)/gu, "").includes(code))) return true;
-  const pieces = new Set(texts.flatMap((text) => text.match(/(?<!\d)\d+(?!\d)/gu) ?? []));
-  const built = (rest: string, parts: number): boolean => rest === "" ? parts >= 2
-    : [...pieces].some((piece) => piece.length < code.length && rest.startsWith(piece) && built(rest.slice(piece.length), parts + 1));
-  if (built(code, 0)) return true;
-  const got: (string | undefined)[] = new Array(code.length).fill(undefined);
-  for (const text of texts) for (const hit of text.matchAll(/[0-9_＿?○□*](?:[\s·-]*[0-9_＿?○□*])*/gu)) {
-    const marks = [...hit[0].replace(/[\s·-]/gu, "")];
-    if (marks.length !== code.length) continue;
-    marks.forEach((mark, i) => { if (/\d/u.test(mark)) got[i] ??= mark; });
-  }
-  return got.join("") === code;
+  return codeReadable(code, texts.map((text) => [text]));
 }
 
 /** 이 페이지가 숫자 입력 앞에 스스로 띄우는 글(자물쇠 앞의 「문에 4821 이라 적혀 있다」). */

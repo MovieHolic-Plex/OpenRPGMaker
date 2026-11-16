@@ -1,10 +1,12 @@
 import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
-import { OBJECT_GATE_KINDS, OBJECT_GATE_PROFILE, OBJECT_GATE_WAIVER_CONTEXTS, finalApplies, objectGateRefusal, type ObjectGateContext, type ObjectGateKind, type ObjectGateOwnerWaiverItem } from '../../_core/objectGate';
+import { OBJECT_GATE_KINDS, OBJECT_GATE_PROFILE, OBJECT_GATE_WAIVER_ALLOWED_CONTEXTS, OBJECT_GATE_WAIVER_CONTEXTS, finalApplies, objectGateRefusal, type ObjectGateContext, type ObjectGateKind, type ObjectGateOwnerWaiverItem } from '../../_core/objectGate';
 import { createInterface } from 'node:readline/promises';
 import { humanDecision, validFrontPropApproval } from '../../_core/objectGate';
 import { existsSync, readFileSync } from 'node:fs';
+import { BASELINE_COMMIT, BASELINE_COMMIT_DATE, writeBaseline } from './baseline';
 import { receiptCells } from './cells';
+import { extendOwnerWaiver } from './waiverExtend';
 import { calibratedFinalProfiles, listOwnerWaiverBatches, readFinal, readPng, writeOwnerWaiverBatch } from './store';
 import { exitInputs, calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeHoldDecision, writeQueueBatch } from './store';
 
@@ -35,15 +37,22 @@ export async function run(argv: string[]): Promise<number> {
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
   }
+  // 시트 칸 관문의 기준선(2026-11-15): 기준선 커밋의 번들 시트에 이미 실려 있던 칸(오너 면제 묶음의 칸은 빼고)을 baseline-cells.txt 로 적는다. 커밋·시트는 baseline.ts 에 고정이다.
+  if (stage === 'baseline') {
+    const built = writeBaseline();
+    for (const sheet of built.sheets) console.log('missing' in sheet ? `  ${sheet.path}: 그 커밋에 없다(건너뜀)` : `  ${sheet.path}: 비지 않은 칸 ${sheet.cells} · 면제 묶음의 칸이라 뺀 것 ${sheet.waived} · 새로 더한 해시 ${sheet.fresh}`);
+    console.log(`기준선 ${built.hashes}칸 → ${built.path}\n  기준선 커밋 ${BASELINE_COMMIT.slice(0, 9)}(main, ${BASELINE_COMMIT_DATE})의 시트에서 읽었다. 오너 면제 묶음 ${built.waivers.batches}개의 칸(해시 ${built.waivers.hashes}개)은 뺐다 — 면제 규칙으로 간다.\n  그 뒤로 번들에 들어오는 칸은 기준선이 아니다. 사람 거절·Opus 불합격이 붙은 그림의 칸은 기준선에 있어도 출구에서 막는다.`);
+    return 0;
+  }
   // 오너 면제 묶음(2026-11-12): 오너가 «판정 없이 넣어라» 고 결정한 그림들을 화소 해시·종류에 묶어 적는다. 모델을 부르지 않는다.
-  // 면제는 통과가 아니다 — 스토어 출구에는 닿지 않고, 서명된 사람 거절·Opus 최종 기록이 있는 그림은 묶음에 넣지 않는다.
+  // 면제는 통과가 아니다 — 스토어 출구는 --contexts 에 store 를 적은 묶음에만 열리고, 서명된 사람 거절·Opus 최종 기록이 있는 그림은 묶음에 넣지 않는다.
   if (stage === 'owner-waive') {
     const manifest = option('manifest'), id = option('batch'), owner = option('owner')?.trim(), decidedAt = option('decided-at')?.trim(), recordedBy = option('recorded-by')?.trim();
-    if (!manifest || !id || !owner || !decidedAt || !recordedBy) throw Error('owner-waive --manifest <json: items[{png, kind, id|label}]> --batch <id> --owner "<오너가 한 말 원문>" --decided-at <YYYY-MM-DD> --recorded-by "<기록한 쪽·위임 근거>" [--contexts bundle,shared,workshop-local] [--note 메모]');
+    if (!manifest || !id || !owner || !decidedAt || !recordedBy) throw Error('owner-waive --manifest <json: items[{png, kind, id|label}]> --batch <id> --owner "<오너가 한 말 원문>" --decided-at <YYYY-MM-DD> --recorded-by "<기록한 쪽·위임 근거>" [--contexts bundle,shared,workshop-local,store] [--note 메모]');
     if (!/^\d{4}-\d{2}-\d{2}$/.test(decidedAt)) throw Error(`--decided-at 은 YYYY-MM-DD: ${decidedAt}`);
     const contexts = (option('contexts') ?? OBJECT_GATE_WAIVER_CONTEXTS.join(',')).split(',').map(c => c.trim()).filter(Boolean) as ObjectGateContext[];
-    const badContext = contexts.filter(c => !(OBJECT_GATE_WAIVER_CONTEXTS as readonly string[]).includes(c));
-    if (badContext.length) { console.error(`거절: 오너 면제가 닿을 수 없는 출구 ${badContext.join(', ')} — 스토어 출구는 면제를 받지 않는다(허용: ${OBJECT_GATE_WAIVER_CONTEXTS.join(', ')})`); return 3; }
+    const badContext = contexts.filter(c => !(OBJECT_GATE_WAIVER_ALLOWED_CONTEXTS as readonly string[]).includes(c));
+    if (badContext.length) { console.error(`거절: 오너 면제가 닿을 수 없는 출구 ${badContext.join(', ')} (허용: ${OBJECT_GATE_WAIVER_ALLOWED_CONTEXTS.join(', ')} — store 는 기본값이 아니라 --contexts 에 적어야 한다)`); return 3; }
     if (listOwnerWaiverBatches().some(b => b.id === id) && !argv.includes('--replace')) { console.error(`거절: 면제 묶음 ${id} 가 이미 있다 — 같은 묶음을 다시 쓰려면 --replace`); return 3; }
     const doc = JSON.parse(readFileSync(resolve(manifest), 'utf8')) as { items?: Array<{ png?: string; kind?: string; id?: string; label?: string; chipset?: string; partOf?: string }> };
     const calibratedFinal = calibratedFinalProfiles();
@@ -75,13 +84,20 @@ export async function run(argv: string[]): Promise<number> {
     if (problems.length) { console.error(`거절: ${problems.length}장을 묶음에 넣을 수 없다\n${problems.join('\n')}`); return 3; }
     if (!items.length) { console.error('거절: 묶음에 넣을 그림이 없다'); return 3; }
     const path = writeOwnerWaiverBatch({ schema: 'oprn-object-gate-owner-waiver/1', id, owner, decidedAt, recordedBy, contexts, ...(option('note') ? { note: option('note') } : {}), items });
-    console.log(`오너 면제 묶음 ${id}: ${items.length}장 · 출구 ${contexts.join(', ')} → ${path}\n  면제는 통과가 아니다 — 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다. 스토어 출구는 여전히 막힌다.`);
+    console.log(`오너 면제 묶음 ${id}: ${items.length}장 · 출구 ${contexts.join(', ')} → ${path}\n  면제는 통과가 아니다 — 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다. ${contexts.includes('store') ? '이 묶음은 스토어 출구도 지난다(오너의 말에 스토어가 있어야 한다).' : '스토어 출구는 여전히 막힌다.'}`);
     return 0;
+  }
+  // 이미 있는 묶음의 출구만 넓힌다(2026-11-15) — 그림을 다시 읽지 않고, 그 출구를 연 오너의 말·날짜·기록한 쪽을 넓힘 기록(extensions)으로 더한다.
+  // 스토어 출구로 넓히는 것은 Fable 묶음(이름이 fable- 로 시작)뿐이다. 서명된 사람 거절·Opus 최종 기록은 출구에서 그대로 막는다.
+  if (stage === 'owner-waive-extend') {
+    const result = extendOwnerWaiver({ batch: option('batch'), contexts: option('contexts'), owner: option('owner'), decidedAt: option('decided-at'), recordedBy: option('recorded-by'), note: option('note') });
+    if (result.code) console.error(result.message); else console.log(result.message);
+    return result.code;
   }
   if (stage === 'waivers') {
     const batches = listOwnerWaiverBatches();
     if (!batches.length) { console.log('오너 면제 묶음 없음'); return 0; }
-    for (const b of batches) console.log(`${b.id}: ${b.items.length}장 · ${b.decidedAt} · 출구 ${b.contexts.join(', ')} · 기록 ${b.recordedBy}\n  오너: ${b.owner}`);
+    for (const b of batches) console.log(`${b.id}: ${b.items.length}장 · ${b.decidedAt} · 출구 ${b.contexts.join(', ')} · 기록 ${b.recordedBy}\n  오너: ${b.owner}${(b.extensions ?? []).map(e => `\n  넓힘 ${e.decidedAt} · 출구 ${e.contexts.join(', ')} · 기록 ${e.recordedBy}\n    오너: ${e.owner}`).join('')}`);
     return 0;
   }
   // 정면형 소품(front_prop) 종류 선언의 사람 승인. 감독·에이전트는 승인하지 않는다 — 터미널(대화형)에서 사람이 그림 해시 앞 8자를 직접 쳐야 기록된다(파이프·백그라운드·--yes 는 거절).
@@ -208,5 +224,5 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
-  throw Error('단계: review | calibrate | rereview | check | owner-waive | waivers | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds | redelegate-holds | supersede-holds');
+  throw Error('단계: review | calibrate | rereview | check | baseline | owner-waive | owner-waive-extend | waivers | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds | redelegate-holds | supersede-holds');
 }

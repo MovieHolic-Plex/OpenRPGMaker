@@ -10,6 +10,8 @@
  *
  * 운영은 되돌리기 어려워서 plan 이 알려 준 contentHash 를 --confirm 으로 되돌려 줘야 올린다.
  * 같은 내용이 이미 그 대상에 올라가 있으면(DATA/store-uploads.json) 건너뛰고, 내용이 바뀌면 판본을 더한다.
+ * 올리기 전 검사에는 스토어 출구의 칸 검사(storeExitGate.mts — 에이전트 제출과 같은 3/4 관문)가 든다: 시트에 스토어 출구를 통과하지 못한 칸
+ * (오너 면제 칸 포함)이 하나라도 있으면 plan 도 게시도 거절한다(걸린 칸은 gate 에 시트별·면제 묶음별로).
  * 마지막 줄은 항상 한 줄 JSON 결과다(mount.py 가 읽는다).
  */
 import { createHash } from "node:crypto";
@@ -21,6 +23,7 @@ import type { TilesetDef } from "../../src/project/types";
 import { STORE_LOCALES } from "../../src/assetStore/format";
 import { z } from "zod";
 import { bundlePack, type BundleSeed } from "./seedBundles.mts";
+import { storeExitProblems, storeExitSheetReports } from "./storeExitGate.mts";
 import { PublishError, addVersion, closeSession, createItem, findOwnItem, findPublicItem, openSession, publishProblems, requireTargetBase, targetBase, type PublishTarget } from "./storePublish.mts";
 
 /** 프로필 id → 호스트 없이 쓰는 타일셋 생성기. 새 프로필은 여기에 한 줄 더한다. */
@@ -67,8 +70,10 @@ const pack = bundlePack(seed, join(root, "public"));
 const contentHash = createHash("sha256").update(JSON.stringify(pack.manifest)).digest("hex");
 const catalog = z.object({ buildings: z.array(z.unknown()), count: z.number() }).parse(JSON.parse(readFileSync(join(root, profile.bundle.catalog), "utf8")));
 const bytes = [...pack.blobs.values()].reduce((sum, blob) => sum + blob.byteLength, 0);
-const problems = publishProblems(pack.manifest);
-const summary = { profile: profile.id, title: seed.title, buildings: catalog.buildings.length, tiles: catalog.count, blobs: pack.blobs.size, megabytes: +(bytes / 1048576).toFixed(2), contentHash, valid: problems.length === 0, errors: problems };
+// 스토어 출구의 칸 검사 — 에이전트 제출(agentStore.mts)과 같은 관문. plan 에서도 같은 거절이 보인다. 푸는 깃발은 없다.
+const gate = storeExitSheetReports(pack);
+const problems = [...publishProblems(pack.manifest), ...storeExitProblems(gate)];
+const summary = { profile: profile.id, title: seed.title, buildings: catalog.buildings.length, tiles: catalog.count, blobs: pack.blobs.size, megabytes: +(bytes / 1048576).toFixed(2), contentHash, valid: problems.length === 0, errors: problems, gate };
 if (problems.length > 0) out({ ...summary, ok: false, error: "올리기 전 검사 실패" }, 1);
 
 const records: Record<string, UploadRecord> = existsSync(recordFile) ? UploadRecords.parse(JSON.parse(readFileSync(recordFile, "utf8"))) : {};

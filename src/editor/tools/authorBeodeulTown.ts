@@ -116,6 +116,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
           pastures: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "울타리 친 목초지(양·짚가리) 자리 — 풀밭 마을(river·coast)" },
           exits: { type: "array", items: { type: "string", enum: [...LAYOUT_EDGES] }, description: "큰길이 마을 밖으로 나가는 맵 가장자리(1~2)" },
         } },
+      kind: { type: "string", description: "Village kind id (river/coast villages): sets the trade scenes, the work building and the house-side props. Omit to let the game pick one that fits the land." },
       fishing: { type: "boolean", description: "강가 어촌(theme river): 물가 길에 그물 말림대·통발·엎어 둔 배·계류 말뚝과 물에 매어 둔 배를 둔다. 사용자가 어촌·어부를 말할 때." },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
@@ -136,7 +137,9 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     const onStart=typeof args.mapId==='string'&&args.mapId===startMap;
     if(onStart) draft.startMapId='';
     let result:ToolExecResult;
-    try{ result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,args); }
+    // 시작 맵 위에 지으면 시작 칸 둘레를 비워 둔다(덤불·기물·장면) — 주인공이 덤불 그림 위에서 시작하지 않게(2026-11-14 은행 lay-main-harbor).
+    const townArgs=onStart&&draft.startPos?{...args,_startCell:{x:draft.startPos.x,y:draft.startPos.y}}:args;
+    try{ result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,townArgs); }
     finally{ if(onStart) draft.startMapId=startMap; }
     const theme=String(args.theme??(args.harbour===true?'coast':'river'));
     const mapId=(result.data as {mapId?:string}|undefined)?.mapId;
@@ -146,7 +149,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       result.summary+=' 석조 교회와 마당을 연결했습니다.';
     }
     if(mapId&&['river','coast','city'].includes(theme)) {
-      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed));
+      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed),!!(result.data as {villageKind?:unknown}|undefined)?.villageKind);
       result.data={...(result.data as Record<string,unknown>),groundDressing:dressing.data};
       result.summary+=` ${dressing.summary}`;
     }
@@ -716,7 +719,9 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   // 이야기가 청한 큰 건물(조수 v2 마을 빌더가 청사진 장소 종류에서 넘긴다 — 스키마에 싣지 않는 안쪽 인자). 모양이 맞는 것만 받는다.
   const buildings = (Array.isArray(args.buildings) ? args.buildings : []).filter((b): b is BuildingNeed => !!b && typeof b === "object" && Array.isArray((b as BuildingNeed).kinds) && Array.isArray((b as BuildingNeed).tiers)).slice(0, 4);
   const noFront = new Set<number>(); // 앞 판에서 갇혔던 문 앞 주머니(아래 «문은 모두 닿아야 한다»)
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(noFront.size ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(buildings.length ? { buildings } : {}), ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  let sceneYardsOn = true; // 마을 종류의 장면 터를 비워 둘지 — 터가 문 앞·단 건널목을 끊은 마을은 터 없이 짓고, 그 뒤의 다시 짓기도 그대로 간다
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYardsOn ? {} : { sceneYards: false }), ...(noFront.size ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(buildings.length ? { buildings } : {}), ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
+    ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).
@@ -745,6 +750,23 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     const now = tried[tried.length - 1]!;
     if (best !== now) r = rebuildAt(best.w, best.h);
     if (tried.length > 1) grown.push(`${walls ? "성벽 띠" : "지형 단 띠"} 때문에 ${tried[0]!.w}×${tried[0]!.h} 에는 집이 ${tried[0]!.houses}채만 앉아 ${best.w}×${best.h} 로 넓혀 다시 지었다(집 ${best.houses}채).`);
+  }
+  // 마을 종류의 장면 터(미리 비워 둔 마당)가 집·길 자리를 바꿔 문 앞이나 단 건널목이 끊기면 터 없이 다시 짓는다 — 장면은 남은 빈 땅에서 자리를 찾는다.
+  // 터 없이도 나아지지 않으면(터 탓이 아니다) 터를 둔 마을로 되돌린다. 같은 seed·같은 크기라 같은 마을이다.
+  {
+    // 문 앞 길을 못 낸 집(배치가 그 집을 뺀다)도 끊긴 것으로 센다 — 터가 그 길을 막았으면 터 없이 지은 마을에 집이 한 채 더 선다.
+    const cutOff = (x: typeof r) => { const d = x.data as { doors?: { reached: boolean }[]; relief?: { fails?: number }; layout?: { roadsFailed?: unknown[] } }; return (d.doors ?? []).filter((q) => !q.reached).length * 100 + (d.relief?.fails ?? 0) * 10 + (d.layout?.roadsFailed?.length ?? 0); };
+    if ((r.data as { villageKind?: unknown }).villageKind && cutOff(r) > 0) {
+      const again = (sceneYards: boolean) => {
+        const old = draft.maps[mapId]!;
+        if (rebuilt) old.structurePlacements = [];
+        else { requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId }); createMapTool.run(draft, { id: mapId, name: old.name, width: old.width, height: old.height, tilesetId: BEODEUL_TILESET_ID, border: "none" }); }
+        sceneYardsOn = sceneYards;
+        return build();
+      };
+      const plain = again(false);
+      r = cutOff(plain) < cutOff(r) ? plain : again(true);
+    }
   }
   // 문은 모두 입구에서 걸어 닿아야 한다(2026-11-15 실모델 확인 빌드 r5: 언덕 위 탑집의 문 앞이 절벽 끝과 건물 사이 주머니에 갇혀 아무도 그 문에 갈 수 없었다).
   // 시공기가 기물을 걷어 내고도 못 닿는 문이 남으면, 그 문 앞 주머니를 문 앞 자리로 쓰지 않고 같은 크기로 다시 짓는다 — 그 건물은 옆으로 옮겨 앉거나

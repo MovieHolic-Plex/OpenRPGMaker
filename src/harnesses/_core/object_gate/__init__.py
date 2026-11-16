@@ -13,7 +13,7 @@
      pass 면 통과, fail 이면 차단(사람 허용도 뒤집지 않는다. 공방 로컬만 사람 「그래도 넣기」).
   ③ Opus 기록이 없을 때만 옛 규칙: 서명된 사람 허용(선택) 또는 보정된 옛 프로필의 pass.
   ④ 오너 면제(2026-11-12, waivers/<묶음>.json — `object-gate owner-waive` 단계만 쓴다): 오너가 «판정 없이 넣어라» 고 결정한 그림 묶음.
-     Opus 최종 기록이 없는 그림에만 효력이 있고, 서명된 사람 거절이 그 위에서 막는다. bundle·shared·workshop-local 만 — store 출구는 받지 않는다.
+     Opus 최종 기록이 없는 그림에만 효력이 있고, 서명된 사람 거절이 그 위에서 막는다. 기본 출구는 bundle·shared·workshop-local — store 출구는 그 출구를 적은 묶음(넓힘 기록 포함, 2026-11-15)에만 열린다.
      면제는 통과가 아니다: 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다.
 서명이 안 맞는 기록(손으로 쓴 것)은 없는 것과 같다.
 front_prop 은 사람 승인 기록(approvals/front_prop/<해시>.json)이 있어야만 3/4 반쪽을 면제한다(승인은 CLI approve-front-prop, 터미널에서 사람이 직접).
@@ -159,7 +159,9 @@ def final_applies(final: dict | None, sha: str) -> bool:
         and final.get("verdict") in ("pass", "fail") and final.get("profileHash") in calibrated_final_profiles()
 
 
-WAIVER_CONTEXTS = ("bundle", "shared", "workshop-local")  # 스토어 출구는 오너 면제를 받지 않는다(TS OBJECT_GATE_WAIVER_CONTEXTS 와 같다)
+WAIVER_CONTEXTS = ("bundle", "shared", "workshop-local")  # 오너 면제의 기본 출구(TS OBJECT_GATE_WAIVER_CONTEXTS 와 같다)
+# 오너 면제가 닿을 수 있는 출구 전부. store 는 그 출구를 적은 오너의 말이 있는 묶음(또는 넓힘 기록 extensions)에만 걸린다(TS OBJECT_GATE_WAIVER_ALLOWED_CONTEXTS).
+WAIVER_ALLOWED_CONTEXTS = (*WAIVER_CONTEXTS, "store")
 
 
 def read_owner_waiver(sha: str) -> dict | None:
@@ -173,8 +175,18 @@ def read_owner_waiver(sha: str) -> dict | None:
             continue
         for item in batch["items"]:
             if item.get("pixelSha256") == sha:
-                return {"batch": {k: batch.get(k) for k in ("schema", "id", "owner", "decidedAt", "recordedBy", "contexts")}, "item": item}
+                return {"batch": {k: batch.get(k) for k in ("schema", "id", "owner", "decidedAt", "recordedBy", "contexts", "extensions")}, "item": item}
     return None
+
+
+def owner_waiver_reaches(batch: dict, context: str) -> bool:
+    """이 묶음이 이 출구를 적었는가 — 묶음 머리의 contexts, 또는 오너 문장·날짜·기록한 쪽이 다 있는 넓힘 기록(TS ownerWaiverReaches 와 같다)."""
+    if context in (batch.get("contexts") or []):
+        return True
+    for ext in batch.get("extensions") or []:
+        if isinstance(ext, dict) and context in (ext.get("contexts") or []) and all(str(ext.get(k) or "").strip() for k in ("owner", "decidedAt", "recordedBy")):
+            return True
+    return False
 
 
 def owner_waiver_applies(waiver: dict | None, sha: str, kind: str | None, context: str) -> bool:
@@ -182,9 +194,11 @@ def owner_waiver_applies(waiver: dict | None, sha: str, kind: str | None, contex
     if not waiver or (waiver.get("batch") or {}).get("schema") != "oprn-object-gate-owner-waiver/1":
         return False
     batch, item = waiver["batch"], waiver.get("item") or {}
-    if context == "store" or context not in WAIVER_CONTEXTS or context not in (batch.get("contexts") or []):
+    if context not in WAIVER_ALLOWED_CONTEXTS:
         return False
     if not all(str(batch.get(k) or "").strip() for k in ("owner", "decidedAt", "recordedBy")):
+        return False
+    if not owner_waiver_reaches(batch, context):
         return False
     if item.get("pixelSha256") != sha:
         return False
@@ -215,7 +229,7 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
             return None
         why = " · ".join(final.get("reasons") or []) or "fail"
         return f"Opus 최종 판정 불합격({why}) — 다시 그려 새 해시로 다시 받아라"
-    # 오너 면제(2026-11-12): Opus 최종 기록이 없는 그림만. 서명된 사람 거절(어느 종류로 했든)이 있으면 면제도 막힌다. 스토어 출구는 받지 않는다(TS 와 같다).
+    # 오너 면제(2026-11-12): Opus 최종 기록이 없는 그림만. 서명된 사람 거절(어느 종류로 했든)이 있으면 면제도 막힌다. 스토어 출구는 그 출구를 적은 묶음만 받는다(TS 와 같다).
     if owner_waiver_applies(read_owner_waiver(sha), sha, kind, context):
         held = read_hold_decision(sha)
         if held and human_decision(held, {"pixelSha256": sha, "kind": held.get("kind")}) == "reject":

@@ -45,7 +45,8 @@ export function clearBeodeulGroundDressing(project:Project,mapId:string):void {
   compactMapLayers(map);
 }
 
-export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|'living'='living',seed=1004){
+/** keepOpen = 막는 꾸밈(장작·통)이 걷는 땅 한쪽을 가두지 않게 한다 — 마을 종류의 장면이 선 마을에서 켠다(장면과 꾸밈이 함께 풀밭 목을 막았다). 끄면 전과 같다. */
+export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|'living'='living',seed=1004,keepOpen=false){
   const map=project.maps[mapId],target=map&&project.tilesets[map.tilesetId];
   if(!map||!target) throw new ToolError('맵 또는 타일셋이 없습니다.');
   if(target.image.type!=='bundled'||target.image.id!=='tex_beodeul_city'||target.tileSize!==16)
@@ -106,6 +107,7 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
   };
   const start=points.find(p=>isPassable(project,map,p.x,p.y))??{x:0,y:0};
   const before=reachable(project,map,start);
+  let open=before;
   const source=project.tilesets[BEODEUL_GROUND_ID]??createBeodeulGroundTileset();
   project.tilesets[BEODEUL_GROUND_ID]??=source;
   const translated=translateTiles(source,target,BEODEUL_GROUND_RECIPES.flatMap(r=>r.rows.flat()));
@@ -134,11 +136,12 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
     // Physical props may not cut off previously reachable entrances/landings.
     if(r.blocked){
       const after=reachable(project,map,start);
-      if(points.some(p=>before.has(p.y*map.width+p.x)&&!after.has(p.y*map.width+p.x))){
+      if(points.some(p=>before.has(p.y*map.width+p.x)&&!after.has(p.y*map.width+p.x))||keepOpen&&open.size-after.size>changed.filter(i=>open.has(i)).length){
         for(const i of changed) setLayerTileAt(map,r.layer as TileLayerNo,i,-1);
         return false;
       }
     }
+    if(r.blocked&&keepOpen) open=reachable(project,map,start);
     placements.push({recipe:id,x,y,layer:r.layer,width:r.width,height:r.height});return true;
   };
   const trees=anchors.filter(a=>a.kit.id.startsWith('bd-tree-'));

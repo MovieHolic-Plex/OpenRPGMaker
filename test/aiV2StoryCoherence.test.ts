@@ -75,9 +75,9 @@ describe("잠김 글은 실제 조건에서 나온다", () => {
     expect(eventOf("번호 쪽지")).toBeDefined();
     expect(bodies(eventOf("별의 봉인"), 0).join(" ")).not.toContain("문지기");
     expect(bodies(eventOf("별의 봉인"), 0)[0]).toContain("번호");
-    // 쪽지의 잠김 글은 앞 단계의 상대를 이름으로 가리킨다 — 깃발 이름(«문지기 격파»)은 화면에 내지 않는다.
-    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).toContain("「얼음 문지기」를 쓰러뜨려야 한다.");
-    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).not.toContain("문지기 격파");
+    // 쪽지의 잠김 글은 앞 단계의 상대를 가리키지 않는다(어디로 갈지는 목표 줄의 일) — 깃발 이름(«문지기 격파»)도 화면에 내지 않는다.
+    expect(bodies(eventOf("번호 쪽지"), 0).length).toBeGreaterThan(0);
+    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).not.toContain("문지기");
 
   }, SLOW);
 

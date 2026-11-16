@@ -105,6 +105,7 @@ export function requireTargetBase(target: PublishTarget, env: NodeJS.ProcessEnv 
 /**
  * 올리기 전 검사: 매니페스트 형식과, 제3자 팩 이름(Rasak·REFMAP·RPG Maker MV/MZ·PAW)이 id·이름·제목·태그에 없는지.
  * 공식 팩도 편집기 buildPack 과 같은 규칙을 지난다(스토어 서버도 같은 storeThirdPartyName 으로 거절한다).
+ * 시트 칸의 3/4 관문(스토어 출구)은 여기가 아니라 storeExitGate.mts 가 본다 — 번들 게시기는 둘 다 부른다.
  */
 export function publishProblems(manifest: StorePackManifest): string[] {
   const checked = validateManifest(manifest);
