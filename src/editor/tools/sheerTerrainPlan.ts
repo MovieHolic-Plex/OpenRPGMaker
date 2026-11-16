@@ -3,6 +3,7 @@
 // 무엇을 정하나(terrain-pilot DESIGN.md §2·§5, 2026-11-16):
 //   · 높이: 고원은 「타원 여럿의 합」(엽) — 맵을 가로지르는 곧은 띠는 내지 않는다. 단은 3~5. 갈래마다 짜임이 다르다(layout):
 //       islands 빈 곳 위 엽 섬 둘(구름다리로 잇는다) · terraces 땅 위 계단단(북쪽일수록 높다, 물길이 단마다 떨어진다) · stack 한가운데로 쌓아 오른 봉우리.
+//       glade 정령 숲 빈터(목표 화면 4): 단 하나 — 맵 둘레를 겹 수관 숲 벽이 두르고, 가운데 빈터에 고목(볼거리) · 숲 벽 속 막다른 길(상자).
 //   · 빈 곳(islands·stack): 0 단 = 하늘(통행 불가, 렌더러가 투명하게 둔다 — 맵 배경이 비친다).
 //   · 장치: 단 덩이(같은 단의 이어진 칸)를 마디로, 닿는 마디 쌍(남쪽 면이 아래 덩이에 서는 곳)을 간선으로 보고 들어오는 덩이에서 뻗은 나무의 간선마다 하나.
 //     닫힌 목록(sheerTerrainKinds.json devices)에서 갈래의 표가 고른다. 같은 장치를 잇달아 쓰지 않는다. 빈 곳을 건너는 간선은 구름다리.
@@ -23,7 +24,7 @@ export interface SheerKind {
   readonly id: string; readonly ko: string; readonly en: string; readonly hint: string;
   readonly void: boolean; readonly levels: readonly [number, number];
   readonly size: Readonly<Record<"small" | "medium" | "large", readonly [number, number]>>;
-  readonly water: "pond" | "stream" | "none"; readonly layout: "islands" | "terraces" | "stack";
+  readonly water: "pond" | "stream" | "none"; readonly layout: "islands" | "terraces" | "stack" | "glade";
   readonly step1: readonly SheerDeviceId[]; readonly step2: readonly SheerDeviceId[]; readonly gap: readonly SheerDeviceId[];
   readonly landmark: readonly string[]; readonly ledge: SheerDeviceId; readonly chest: string;
   readonly backdrop?: { readonly preset: string; readonly view: "horizon" | "surface"; readonly prompt: string };
@@ -68,6 +69,8 @@ export interface SheerPlan {
   readonly hidden: Uint8Array;
   /** 숲 후보 칸(시공 쪽이 같은 단끼리 수관 오토타일로 덮는다 — 2×2 에 안 드는 칸은 거기서 빠진다). 길 뼈대(들어오는 칸 → 목표마다 최단 길 둘레 두 칸)는 비운다. */
   readonly forest: Uint8Array;
+  /** 큰 나무 자리(glade — 숲 벽 앞에 숲을 비워 둔 7×8 칸 상자의 왼쪽 위). 시공 쪽이 큰 활엽수를 먼저 여기 심는다. */
+  readonly trees?: readonly Cell[];
   readonly levelCount: number;
   readonly warnings: readonly string[];
 }
@@ -75,7 +78,7 @@ export interface SheerPlan {
 const FACE = 3;   // 단 하나 = 면 3칸(styles.ts sheer.faceRows)
 /** 엽 하나: 중심 · 반지름 · 모양 지수 p(2 = 타원, 4~6 = 둥근 모서리 덩이 — 남쪽 가장자리가 곧은 줄이고 끝만 둥글다). */
 /** 엽: 타원(p 2) · 초타원(p) · 둥근 모서리 네모(r — 모서리 반지름 r 칸, 변은 곧다). */
-type Lobe = { cx: number; cy: number; rx: number; ry: number; p?: number; r?: number };
+type Lobe = { cx: number; cy: number; rx: number; ry: number; p?: number; r?: number; rn?: number };
 
 /**
  * 계획을 세운다. W·H 는 맵 크기(칸), seed 는 게임 열쇠·요청에서 온 씨앗. exitSides 는 길이 닿을 변(첫째가 들어오는 변).
@@ -83,7 +86,7 @@ type Lobe = { cx: number; cy: number; rx: number; ry: number; p?: number; r?: nu
 export function planSheerTerrain(kind: SheerKind, W: number, H: number, seed: number, exitSides: readonly SheerSide[] = ["south", "north"]): SheerPlan {
   // 같은 씨앗에서 이어지는 씨앗 몇 번(결정적): 단 수가 갈래의 범위(3~5 안)에 들고 목표(출구 · 볼거리 · 막다른 턱)가 모두 닿는 첫 계획.
   // 작은 맵에서 엽 덩이가 단을 다 못 쌓거나, 장치 자리가 없는 경우가 있다 — 그때 다음 배치를 본다. 끝까지 없으면 문제가 가장 적은 계획.
-  const lo = Math.max(3, kind.levels[0]), hi = Math.min(5, kind.levels[1] + 1);
+  const lo = kind.layout === "glade" ? 1 : Math.max(3, kind.levels[0]), hi = Math.min(5, kind.levels[1] + 1);
   let best: { plan: SheerPlan; bad: number } | undefined;
   for (let attempt = 0; attempt < 8; attempt++) {
     const plan = planOnce(kind, W, H, attempt ? (seed + attempt * 7919) >>> 0 : seed, seed, exitSides);
@@ -103,15 +106,17 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
   const lv = new Uint8Array(N);
   const blob = (ls: readonly Lobe[], x: number, y: number, grow = 0) => ls.some((l) => {
     if (l.r !== undefined) {
-      const dx = Math.abs(x + 0.5 - l.cx) - (l.rx + grow - l.r), dy = Math.abs(y + 0.5 - l.cy) - (l.ry + grow - l.r);
-      if (dx > l.r || dy > l.r) return false;
-      return dx <= 0 || dy <= 0 || dx * dx + dy * dy <= l.r * l.r;
+      // 북쪽 모서리는 rn(넓게 둥글다 — 윗면 테만 돈다), 남쪽 모서리는 r(좁다 — 앞면이 비스듬히 깎이지 않게)
+      const r = y + 0.5 < l.cy ? l.rn ?? l.r : l.r;
+      const dx = Math.abs(x + 0.5 - l.cx) - (l.rx + grow - r), dy = Math.abs(y + 0.5 - l.cy) - (l.ry + grow - r);
+      if (dx > r || dy > r) return false;
+      return dx <= 0 || dy <= 0 || dx * dx + dy * dy <= r * r;
     }
     const p = l.p ?? 2; return Math.abs((x + 0.5 - l.cx) / (l.rx + grow)) ** p + Math.abs((y + 0.5 - l.cy) / (l.ry + grow)) ** p <= 1; });
   /** 둥근 모서리 덩이(칸 상자 [x0,x1]×[y0,y1]) — 곧은 변 + 반지름 두 칸 남짓의 둥근 모서리(엽 끝 조각 32px 와 맞는다 · 면이 비스듬히 깎이지 않는다). */
   const slab = (x0: number, x1: number, y0: number, y1: number): Lobe => {
     const rx = (x1 - x0 + 1) / 2, ry = (y1 - y0 + 1) / 2;
-    return { cx: x0 + rx, cy: y0 + ry, rx, ry, r: 0.5 };
+    return { cx: x0 + rx, cy: y0 + ry, rx, ry, r: 0.5, rn: Math.max(0.5, Math.min(2.5, rx - 1, ry - 0.5)) };
   };
   /** 칸 (x,y) 가 남쪽의 더 높은 단 앞면(단 차 × 3칸) 뒤에 가려지는가. */
   const hiddenAt = (x: number, y: number) => { const L = lv[idx(x, y)]!; for (let k = 1; k <= FACE * 5 && y + k < H; k++) { const M = lv[idx(x, y + k)]!; if (M > L && k <= FACE * (M - L)) return true; } return false; };
@@ -139,25 +144,43 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
    *   · 단마다 양옆으로 두세 칸 안으로 든다(옆 날개 = 걷는 턱). 맨 위 단은 깊이 4~5칸.
    * 높이 지도로는 위 단이 아래 단 없이 빈 곳(0) 위에 서는 칸이 생긴다 — 북·동·서로는 면을 그리지 않으므로(렌더러) 그림이 맞다.
    */
-  const mass = (x0: number, x1: number, yTop: number, yBot: number, n: number) => {
-    // 단 사이 남쪽 가장자리 거리 = 위 단 앞면(FACE) + 그 앞 걷는 턱(3칸 이상, 높이가 남으면 더 넓게)
-    const Dt = 4 + ri(0, 1), S = Math.max(FACE + 2, Math.min(FACE + 4, Math.floor((yBot - yTop - Dt) / Math.max(1, n - 1))));
-    const w0 = x1 - x0 + 1, inset = Math.max(2, Math.min(4, Math.floor((w0 - 6) / Math.max(1, 2 * (n - 1)))));
-    const souths = Array.from({ length: n }, (_, i) => yBot - i * S);
+  const mass = (x0: number, x1: number, yTop: number, yBot: number, n: number, topSmall = false) => {
+    // 단 사이 남쪽 가장자리 거리 S = 위 단 앞면(FACE) + 그 앞 걷는 턱. 높이가 남으면 S 를 2·FACE+3 까지 키워 가운데 단도 엽을 낸다.
+    const Dt = 4 + ri(0, 1), base = yBot - FACE;   // 맨 아래 단은 FACE 칸 남쪽으로 엽이 나온다
+    const S = Math.max(FACE + 2, Math.min(2 * FACE + 3, Math.floor((base - yTop - Dt) / Math.max(1, n - 1))));
+    const souths = Array.from({ length: n }, (_, i) => base - i * S);
+    const w0 = x1 - x0 + 1, inset = Math.max(2, Math.min(5, Math.floor((w0 - 6) / Math.max(1, 2 * (n - 1)))));
     let l = x0, r = x1;
     const tiers: { l: number; r: number; north: number; south: number }[] = [];
     for (let i = 0; i < n; i++) {
-      // 북쪽 가장자리: 위 단의 남쪽 가장자리 FACE 칸 북쪽까지(위 단 앞면 뒤쪽은 위 단이 덮는다)
       const south = souths[i]!, north = i === n - 1 ? Math.max(yTop, south - Dt) : Math.max(yTop, souths[i + 1]! - FACE);
       if (south - north < 2 || r - l < 3) break;
+      if (i === n - 1 && topSmall && r - l > 8) { const c = Math.round((l + r) / 2 + ri(-2, 2)), half = 3 + ri(0, 1); l = Math.max(l, c - half); r = Math.min(r, c + half); }
       tiers.push({ l, r, north, south });
-      const shift = ri(-1, 1);
-      l += inset + shift; r -= inset - shift;
+      // 위 단: 한쪽 가장자리에 붙거나(그 쪽 면이 아래 단 면으로 이어진다) 한쪽으로 비킨다 — 동심 상자를 쌓지 않는다
+      const hug = rnd(), extra = 2 * inset;
+      if (hug < 0.3) r -= extra;                       // 서쪽에 붙는다
+      else if (hug < 0.6) l += extra;                  // 동쪽에 붙는다
+      else { const k = ri(1, extra - 1); l += k; r -= extra - k; }
     }
     tiers.forEach((t, i) => {
-      // 덩이 둘: 넓은 것(남쪽 끝 한 칸 덜) + 한쪽으로 비킨 것(남쪽 끝까지) — 앞면이 곧은 토막 둘과 둥근 끝으로 이어진다
-      // 단마다 덩이 하나: 앞면은 곧은 한 줄 + 양끝 둥근 모서리(승인 화면). 남쪽 가장자리에 한 칸 턱을 두면 렌더러가 비스듬한 지층으로 이었다(2026-11-16 감독 검토).
+      // 단 = 둥근 모서리 덩이 몇(엽): 큰 덩이 하나 + 남쪽으로 FACE 칸 나온 엽 하나~둘(맨 아래 단은 늘, 가운데 단은 아래 단 턱이 3칸 넘게 남을 때만).
+      // 엽 사이 턱은 늘 면 한 장(FACE 칸)이라 렌더러가 엽 끝 조각으로 둥글게 돌린다(1~2칸 턱은 비스듬한 지층으로 읽혔다).
       const ls = [slab(t.l, t.r, t.north, t.south)];
+      const room = i === 0 ? true : t.south + FACE <= souths[i - 1]! - FACE - 3;
+      const w = t.r - t.l + 1;
+      if (room && w >= 9) {
+        // 엽 둘이면 사이는 4칸 이상 비운다(한 칸 홈은 하늘이 비치는 틈으로 읽혔다)
+        const k = w >= 20 && rnd() < 0.6 ? 2 : 1;
+        if (k === 1) {
+          const lw = Math.max(5, Math.round(w * (0.4 + rnd() * 0.3))), a = t.l + ri(0, w - lw);
+          ls.push(slab(a, a + lw - 1, t.north + 1, t.south + FACE));
+        } else {
+          const gapW = 4 + ri(0, 2), lw1 = Math.max(5, Math.round((w - gapW) * (0.35 + rnd() * 0.2))), lw2 = Math.max(5, w - gapW - lw1 - ri(0, 3));
+          ls.push(slab(t.l, t.l + lw1 - 1, t.north + 1, t.south + FACE));
+          ls.push(slab(t.r - lw2 + 1, t.r, t.north + 1, t.south + FACE));
+        }
+      }
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (blob(ls, x, y)) lv[idx(x, y)] = Math.max(lv[idx(x, y)]!, i + 1);
     });
   };
@@ -222,11 +245,16 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
     tidy(lv, W, H);
     // 턱은 턱 쪽 섬(낮은 섬)에만 붙인다
     if (ledgeSide > 0) voidLedge(lw, gap, lo + wA + mid, W - 1); else voidLedge(lw, gap, 0, lo + wA - 1);
+  } else if (kind.layout === "glade") {
+    // 정령 숲 빈터: 땅은 한 단. 막다른 곳은 숲 벽(9 단계) 속으로 파고든 막다른 길 끝 — 숲 뼈대가 들어오는 칸에서 그 칸까지 길을 남긴다.
+    lv.fill(1);
+    const wall = Math.round((kind.forest ?? 0) * Math.min(W, H) * 0.42);
+    deadEnd = { x: ledgeSide > 0 ? W - 3 : 2, y: Math.max(wall + 1, Math.min(H - wall - 3, Math.round(H * 0.42) + ri(-3, 3))) };
   } else {
     // 봉우리: 한가운데로 쌓아 오른다(단마다 좁아지고 남쪽 가장자리가 물러난다). 바깥은 하늘. 턱은 동·서 바깥 하늘 위 외딴 턱(다리).
     const lw = 4 + ri(0, 1), gap = 3, strip = lw + gap + 1;
     const lo = ledgeSide < 0 ? 1 + strip : 2, hi = ledgeSide > 0 ? W - 2 - strip : W - 3;
-    mass(lo, hi, 2, H - 3, levels);
+    mass(lo, hi, 2, H - 3, levels, true);
     tidy(lv, W, H);
     voidLedge(lw, gap);
   }
@@ -434,7 +462,7 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
     if (!did) break;
   }
   // 막다른 턱: 그 갈래의 장치 하나
-  if (ledgeComp >= 0) {
+  if (ledgeComp >= 0 && !joined.has(ledgeComp)) {
     let dev: SheerDevice | undefined;
     if (kind.ledge === "bridge") {
       for (const c of [...joined]) if (compLv[c] === compLv[ledgeComp] && (dev = placeBridge(c, ledgeComp))) break;
@@ -462,7 +490,11 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
       for (let y = 1; y + kh + 1 < H; y++) for (let x = 1; x + kw < W - 1; x++) {
         let ok = true;
         for (let j = -1; j <= kh && ok; j++) for (let i = -1; i <= kw; i++) { const c = idx(x + i, y + j); if (!inMap(x + i, y + j) || lv[c] !== T || water[c] || ramps[c] || taken[c] || ledge.has(c) || (j >= 0 && hidden[c])) { ok = false; break; } }
-        if (ok) spots.push({ x, y, d: Math.abs(x + kw / 2 - W / 2) * 0.3 + y });
+        if (ok && kind.layout === "glade") {
+          // 빈터 안쪽(숲 벽 깊이의 반 남짓 안)에만 — 자리마다 씨앗으로 섞어 고른다(빈터 한가운데만 고르지 않는다)
+          const m = Math.round((kind.forest ?? 0) * Math.min(W, H) * 0.42 * 0.55);
+          if (x >= m && x + kw <= W - m && y >= m - 2 && y + kh <= H - m) spots.push({ x, y, d: rnd() });
+        } else if (ok) spots.push({ x, y, d: Math.abs(x + kw / 2 - W / 2) * 0.3 + y });
       }
       if (!spots.length) continue;
       spots.sort((a, b) => a.d - b.d);
@@ -476,7 +508,7 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
   // ---------- 8. 통행 보증(높이 규칙만 — 그림 칸은 시공 쪽이 한 번 더 본다) ----------
   const fords: number[] = [];
   const relief: ReliefData = { width: W, height: H, levels: Array.from(lv), ramps: Array.from(ramps), style: "sheer" };
-  const sealed: number[] = [], forest = new Uint8Array(N);
+  const sealed: number[] = [], forest = new Uint8Array(N), trees: Cell[] = [];
   {
     const goals = [...exits, ...(landmark ? [landmark.front] : []), ...(deadEnd ? [deadEnd] : [])];
     const dry = () => { const w = new Uint8Array(N); for (let c = 0; c < N; c++) w[c] = water[c] && !fords.includes(c) ? 1 : 0; return w; };
@@ -557,26 +589,54 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
         const hv = (a: number, b: number) => { let v = Math.imul(a * 73856093 ^ b * 19349663 ^ sd * 83492791, 0x27d4eb2d); v ^= v >>> 15; v = Math.imul(v, 0x85ebca6b); v ^= v >>> 13; return (v >>> 0) / 4294967296; };
         return hv(x0, y0) * (1 - tx) * (1 - ty) + hv(x0 + 1, y0) * tx * (1 - ty) + hv(x0, y0 + 1) * (1 - tx) * ty + hv(x0 + 1, y0 + 1) * tx * ty; };
       const deep = kind.forest * Math.min(W, H) * 0.42;
+      // 빈터(glade): 네 변의 숲 깊이가 씨앗마다 다르다 — 한 변은 깊은 숲 벽(목표 화면 4 의 서쪽 벽), 맞은편은 얕다
+      const wide = kind.layout === "glade" ? Math.floor(rnd() * 4) : -1, sideK = [0, 1, 2, 3].map((i) => kind.layout !== "glade" ? 1 : i === wide ? 1.9 : i === (wide + 2) % 4 ? 0.45 : 0.6 + rnd() * 0.35);
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         // 맨 아랫줄은 숲이 아니다: 렌더러가 맵 남쪽 끝 아래 띠를 마지막 줄 바닥으로 거울 되풀이해 채우는데(render.ts), 그 줄이 수관이면
         // 나무가 세로 줄무늬로 늘어져 보였다(2026-11-16 감독 검토). 숲은 한 줄 위 밑동 줄에서 온전한 수관으로 끝난다.
         const c = idx(x, y); if (!lv[c] || keep[c] || y >= H - 1) continue;
-        const d = Math.min(x, W - 1 - x, H - 2 - y, y + 2);
-        if (d < deep * (0.35 + 0.9 * noise(x, y, 5, seed + 17)) + 1.5 * (noise(x, y, 2, seed + 19) - 0.5)) forest[c] = 1;
+        const d = Math.min(x / sideK[0]!, (W - 1 - x) / sideK[1]!, (H - 2 - y) / sideK[2]!, (y + 2) / sideK[3]!);
+        const k = kind.layout === "glade" ? 0.7 + 0.45 * noise(x, y, 6, seed + 17) : 0.35 + 0.9 * noise(x, y, 5, seed + 17);
+        if (d < deep * k + 1.5 * (noise(x, y, 2, seed + 19) - 0.5)) forest[c] = 1;
       }
       // 숲이 가둔 풀밭(뼈대에서 닿지 않는 걷는 칸)도 숲으로
       const open = floodRelief(relief, entry, new Uint8Array(N).map((_, c) => (w[c] || forest[c] ? 1 : 0)));
       for (let c = 0; c < N; c++) if (lv[c] && !w[c] && !open.has(c) && !ramps[c] && !ledge.has(c) && !keep[c] && c < N - W) forest[c] = 1;
+      if (kind.layout === "glade") {
+        // 큰 나무 자리 둘~셋(숲을 깐 뒤에): 숲이 없는 7×8 칸 상자(둘레 한 칸도 숲 없음 — 숲 수관이 들려 드리운다) 가운데 숲 벽에 가까운 것부터.
+        // 숲은 건드리지 않는다(자리를 비우려고 숲을 지우면 작은 맵의 숲 벽이 사라졌다). 볼거리 · 장치 · 막다른 길 둘레는 뺀다.
+        const want = W * H > 1400 ? 3 : 2, cands: { x: number; y: number; cut: number; d: number }[] = [];
+        const box = (x: number, y: number, f: (c: number, inner: boolean) => void) => { for (let j2 = -1; j2 <= 8; j2++) for (let i2 = -1; i2 <= 7; i2++) if (inMap(x + i2, y + j2)) f(idx(x + i2, y + j2), j2 >= 0 && j2 < 8 && i2 >= 0 && i2 < 7); };
+        for (let y = 1; y + 8 < H - 1; y++) for (let x = 1; x + 7 < W - 1; x++) {
+          let ok = true, cut = 0, near = 99;
+          box(x, y, (c, inner) => { if (inner && (taken[c] || ramps[c] || ledge.has(c))) ok = false; if (forest[c]) cut++; });
+          if (!ok || cut > 22) continue;
+          if (deadEnd && Math.abs(x + 3.5 - deadEnd.x) < 7 && Math.abs(y + 4 - deadEnd.y) < 9) continue;
+          for (let j2 = -3; j2 <= 10; j2++) for (let i2 = -3; i2 <= 9; i2++) if (inMap(x + i2, y + j2) && forest[idx(x + i2, y + j2)]) near = Math.min(near, Math.max(i2 < 0 ? -i2 : i2 > 6 ? i2 - 6 : 0, j2 < 0 ? -j2 : j2 > 7 ? j2 - 7 : 0));
+          cands.push({ x, y, cut, d: near + rnd() * 1.5 });
+        }
+        // 숲이 없는 자리부터(숲 벽에 가까운 것 먼저), 모자라면 숲을 가장 적게 깎는 자리 — 깎는 칸은 숲 벽 앞 귀퉁이 몇뿐이라 벽은 남는다
+        cands.sort((p, q) => (p.cut > 0 ? 1 : 0) - (q.cut > 0 ? 1 : 0) || (p.cut > 0 ? p.cut - q.cut : 0) || p.d - q.d);
+        for (const [gx, gy] of [[10, 9], [8, 10]] as const) {
+          for (const c of cands) {
+            if (trees.length >= want) break;
+            if (trees.some((t) => Math.abs(t.x - c.x) < gx && Math.abs(t.y - c.y) < gy)) continue;
+            trees.push({ x: c.x, y: c.y });
+            box(c.x, c.y, (cc) => { forest[cc] = 0; });
+          }
+          if (trees.length >= want) break;
+        }
+      }
     }
     const seen = floodRelief(relief, entry, dry());
     for (let c = 0; c < N; c++) if (lv[c]! >= 1 && !water[c] && !seen.has(c) && !ramps[c]) sealed.push(c);
   }
-  return { W, H, kind, seed, levels: lv, ramps, water, falls, fords, devices, entry, exits, ...(landmark ? { landmark } : {}), ...(deadEnd ? { deadEnd } : {}), sealed, hidden, forest, levelCount: new Set([...lv].filter((v) => v > 0)).size, warnings };
+  return { W, H, kind, seed, levels: lv, ramps, water, falls, fords, devices, entry, exits, ...(landmark ? { landmark } : {}), ...(deadEnd ? { deadEnd } : {}), sealed, hidden, forest, ...(trees.length ? { trees } : {}), levelCount: new Set([...lv].filter((v) => v > 0)).size, warnings };
 }
 
 /** 볼거리 킷 크기(칸) — 표에 오른 것만. 시공 쪽이 칩셋에서 실제 크기를 다시 본다. */
 const KIT_SIZE: Readonly<Record<string, readonly [number, number]>> = {
-  "bd-obj-seal-altar": [2, 2], "bd-pick-mountain-pass-shrine": [2, 3], "bd-obj-rock-outcrop": [3, 3], "bd-org-shrine-stone": [2, 3], "bd-pick-coast-cliff-road-shrine": [2, 3],
+  "bd-sp-tree-elder": [12, 9], "bd-obj-seal-altar": [2, 2], "bd-pick-mountain-pass-shrine": [2, 3], "bd-obj-rock-outcrop": [3, 3], "bd-org-shrine-stone": [2, 3], "bd-pick-coast-cliff-road-shrine": [2, 3],
 };
 
 function maxIn(a: Uint8Array): number { let m = 0; for (const v of a) if (v > m) m = v; return m; }

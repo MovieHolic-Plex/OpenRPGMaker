@@ -8,7 +8,7 @@ import type { SheerBuildReport } from "@/editor/tools/sheerTerrainBuild";
 import { createBlankProject } from "@/project/defaults";
 import { layerTileAt } from "@/project/mapLayers";
 import { placeholderSheerArt, setSheerArt } from "@/project/relief/sheerArt";
-import type { Project } from "@/project/types";
+import type { Project, TilesetDef } from "@/project/types";
 
 beforeAll(() => setSheerArt(placeholderSheerArt()));
 afterAll(() => setSheerArt(null));
@@ -16,6 +16,7 @@ afterAll(() => setSheerArt(null));
 const SEEDS = [1, 2, 3] as const;
 const DEVICE_IDS = new Set(Object.keys(SHEER_DEVICES));
 
+let lastTileset: TilesetDef | undefined;
 function build(kindId: string, seed: number) {
   const kind = SHEER_KINDS.find((k) => k.id === kindId)!;
   const [W, H] = kind.size.medium;
@@ -25,16 +26,17 @@ function build(kindId: string, seed: number) {
   const mapId = (made.data as { mapId: string }).mapId;
   const res = runTool(ctx, "build_sheer_terrain", { mapId, kind: kindId, seed });
   expect(res.ok, res.summary).toBe(true);
+  lastTileset = ctx.project.tilesets.beodeul_city;
   return { kind, W, H, plan: planSheerTerrain(kind, W, H, seed), report: res.data as SheerBuildReport, map: ctx.project.maps[mapId]! };
 }
 
 describe("sheer terrain generator", () => {
   it("the kinds table names only devices from the closed list", () => {
-    expect(SHEER_KINDS.map((k) => k.id).sort()).toEqual(["sky-plateau", "summit", "waterfall-terraces"]);
+    expect(SHEER_KINDS.map((k) => k.id).sort()).toEqual(["sky-plateau", "spirit-forest", "summit", "waterfall-terraces"]);
     for (const k of SHEER_KINDS) for (const d of [...k.step1, ...k.step2, ...k.gap, k.ledge]) expect(DEVICE_IDS.has(d), `${k.id}: ${d}`).toBe(true);
   });
 
-  for (const k of SHEER_KINDS) {
+  for (const k of SHEER_KINDS.filter((kind) => kind.layout !== "glade")) {
     it.each(SEEDS)(`${k.id} seed %i: 3–5 levels, closed-list devices, every goal reachable, nothing on hidden ground`, (seed) => {
       const { W, plan, report, map } = build(k.id, seed);
       expect(report.levels).toBeGreaterThanOrEqual(3);
@@ -58,6 +60,36 @@ describe("sheer terrain generator", () => {
       if (k.water === "stream") expect(report.falls).toBeGreaterThan(0);
     });
   }
+
+  it.each(SEEDS)("spirit-forest seed %i: a one-level glade ringed by forest, an elder tree and big broadleaf trees, a dirt path, flowers and mushrooms, every goal reachable", (seed) => {
+    const { W, H, report, map } = build("spirit-forest", seed);
+    expect(report.levels).toBe(1);
+    expect(report.reach.missing, JSON.stringify(report.reach)).toEqual([]);
+    expect(report.landmark).toMatchObject({ kit: "bd-sp-tree-elder", placed: true });
+    expect(report.deadEnd?.chest).toBe(true);
+    // the forest wall rings the clearing: every map edge is mostly forest canopy
+    expect(report.forestCells).toBeGreaterThan(W * H * 0.25);
+    const kitCells = (ids: readonly string[], layer: "upperTiles" | "lowerOverlayTiles") => {
+      const own = new Set<number>();
+      for (const k of lastTileset!.structureKits ?? []) if (ids.includes(k.id)) for (const r of k.rows) for (const t of (r[layer] ?? []) as number[]) if (t >= 0) own.add(t);
+      return (map[layer] ?? []).filter((t) => own.has(t)).length;
+    };
+    // big trees: the elder (landmark) plus big broadleaf trees — at least one broadleaf, two where the clearing has room (target scene 4 has the elder and one)
+    expect(report.bigTrees, "big broadleaf trees").toBeGreaterThanOrEqual(1);
+    expect(1 + report.bigTrees, "elder + broadleaf").toBeGreaterThanOrEqual(2);
+    expect(kitCells(["bd-sp-mushroom-tall", "bd-sp-mushroom-small"], "upperTiles")).toBeGreaterThan(0);
+    expect(kitCells(["bd-sp-flower-violet", "bd-sp-flower-star", "bd-sp-flower-gold"], "lowerOverlayTiles")).toBeGreaterThan(0);
+    expect(map.background).toBeUndefined();
+  });
+
+  it("spirit-forest: seeds differ (forest wall and elder spot), and only a sheer build grafts the spirit pack", () => {
+    const a = build("spirit-forest", 1), b = build("spirit-forest", 2);
+    expect(a.plan.landmark).not.toEqual(b.plan.landmark);
+    expect(Array.from(a.plan.forest)).not.toEqual(Array.from(b.plan.forest));
+    const fresh = createBlankProject() as Project;
+    expect(fresh.tilesets.beodeul_city!.structureKits!.some((k) => k.id.startsWith("bd-sp-"))).toBe(false);
+    expect(lastTileset!.structureKits!.filter((k) => k.id.startsWith("bd-sp-")).length).toBe(12);
+  });
 
   it("void kinds hang the preset map background and leave the void's lower tiles empty so it shows through", () => {
     for (const k of SHEER_KINDS) {

@@ -10,6 +10,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { autotileVariantForMask, canonicalAutotileMask8 } from "@/project/defaults/autotileEngine";
 import { activeTilesetLook } from "@/project/kitLook";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
+import { ensureBeodeulSpirit } from "@/project/defaults/beodeulSpirit";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { layBeodeulGrassGrain } from "./beodeulGrassGrain";
@@ -34,6 +35,8 @@ export interface SheerBuildReport {
   readonly landmark?: { kit: string; x: number; y: number; front: { x: number; y: number }; placed: boolean };
   readonly deadEnd?: { x: number; y: number; chest: boolean };
   readonly falls: number; readonly fords: number; readonly forestCells: number;
+  /** 심은 큰 활엽수(정령 숲 기물 bd-sp-tree-big-*) 수 */
+  readonly bigTrees: number;
   readonly background?: { preset: string; view: "horizon" | "surface"; prompt: string };
   readonly warnings: readonly string[];
 }
@@ -41,6 +44,8 @@ export interface SheerBuildReport {
 /** 계획을 맵에 싣는다. map 은 버들항 칩셋의 맵(크기는 계획과 같다). */
 export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPlan): SheerBuildReport {
   const tileset = project.tilesets[map.tilesetId]!;
+  // 정령 숲 기물(큰 활엽수 · 고목 · 정령 버섯 · 꽃)을 이 칩셋에 이식한다 — 깎아지른 지형을 지을 때만(옛 맵 · 다른 프로젝트는 그대로)
+  ensureBeodeulSpirit(tileset);
   const { W, H, kind } = plan, N = W * H, warnings = [...plan.warnings];
   const stamp = SHARED_OBJECT_TOOLS.find((t) => t.name === "stamp_object")!;
   const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, k] as const));
@@ -88,7 +93,7 @@ export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPla
   }
   // 꾸밈(목표 화면 a·b·c, 2026-11-16 감독 검토): 장치 사이 흙길 · 짙은 풀 무리 · 풀포기 무리 · 못가 부들과 돌 · 맨 위 단 나무 · 덤불 · 면의 덩굴과 돌.
   // 막는 킷은 놓을 때마다 닿는 길을 다시 재고, 목표나 다른 걷는 칸을 끊으면 되돌린다.
-  dressSheerTerrain(project, map, tileset, plan, put, kits);
+  const { bigTrees } = dressSheerTerrain(project, map, tileset, plan, put, kits);
   // ---------- 5. 풀 결(버들항 풀 변형 섞기) ----------
   const look = activeTilesetLook(tileset);
   // 겉모습이 없는 게임(조수 첫 맵 · 오프라인)은 풀포기 무리 결 — 목표 화면처럼 짙은 풀 무리가 섞여 깔린다
@@ -106,7 +111,8 @@ export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPla
   let sealed = 0;
   for (let c = 0; c < N; c++) {
     const x = c % W, y = (c - x) / W;
-    if (seen.has(c) || !isPassable(project, map, x, y)) continue;
+    // 그림이 있는 윗층 칸(나무 수관 · 숲 수관이 닿지 않는 땅 위로 드리운 칸)은 덮어쓰지 않는다 — 막는 빈 칸이 수관을 지웠다
+    if (seen.has(c) || !isPassable(project, map, x, y) || layerTileAt(map, 3, c) >= 0) continue;
     setLayerTileAt(map, 3, c, SOLID_BLANK); sealed++;
   }
   seen = flood();
@@ -122,7 +128,7 @@ export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPla
     kind: kind.id, seed: plan.seed, width: W, height: H, faceCells: 3, levels: plan.levelCount,
     walkablePct: Math.round((walk / N) * 100),
     devices: plan.devices.map((d) => { const c = d.cells[0] ?? 0; return { kind: d.kind, lo: d.lo, hi: d.hi, at: { x: c % W, y: Math.floor(c / W) }, ...(d.extra ? { extra: true } : {}) }; }),
-    forestCells,
+    forestCells, bigTrees,
     reach: { ok: missing.length === 0, missing, sealed },
     entry: plan.entry, exits: plan.exits,
     ...(plan.landmark ? { landmark: { kit: plan.landmark.kit, x: plan.landmark.x, y: plan.landmark.y, front: plan.landmark.front, placed: landmarkPlaced } } : {}),
@@ -141,12 +147,17 @@ const DRESS = {
   bushes: ["bd-org-bush-m", "bd-obj-berry-bush"],
   wall: ["bd-out-ivy", "bd-mpart-ivy-wall-a", "bd-mpart-ivy-wall-b"],
   wallBits: ["bd-obj-boulder-s"],
-  tree: { "sky-plateau": ["bd-tree-3e8732", "bd-tree-a80c85"], summit: ["bd-pick-coast-cliff-road-fir-m", "bd-pick-coast-cliff-road-fir-l"], "waterfall-terraces": ["bd-tree-f4f319", "bd-tree-3e8732"] } as Record<string, string[]>,
+  // 맨 위 단 나무: 자리가 넓으면 큰 활엽수(정령 숲 기물 — 줄기 + 겹 수관 조립), 좁으면 중간 활엽수 · 버들항 3×3 수관
+  bigTree: ["bd-sp-tree-big-a", "bd-sp-tree-big-b", "bd-sp-tree-big-c", "bd-sp-tree-big-d"],
+  tree: { "sky-plateau": ["bd-sp-tree-mid-a", "bd-sp-tree-mid-b", "bd-tree-3e8732"], summit: ["bd-pick-coast-cliff-road-fir-m", "bd-pick-coast-cliff-road-fir-l"], "waterfall-terraces": ["bd-sp-tree-mid-a", "bd-sp-tree-mid-b", "bd-tree-3e8732"], "spirit-forest": [] } as Record<string, string[]>,
+  flowers: ["bd-sp-flower-violet", "bd-sp-flower-star", "bd-sp-flower-gold"],
+  shrooms: ["bd-sp-mushroom-tall", "bd-sp-mushroom-small", "bd-sp-mushroom-small"],
 };
 
 /** 깎아지른 지형 꾸밈 — 목표 화면의 땅 꾸밈을 버들항 킷 · 오토타일로. 그림을 새로 그리지 않는다. */
 function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, plan: SheerPlan,
-  put: (kit: string, x: number, y: number) => boolean, kits: ReadonlyMap<string, NonNullable<TilesetDef["structureKits"]>[number]>): void {
+  put: (kit: string, x: number, y: number) => boolean, kits: ReadonlyMap<string, NonNullable<TilesetDef["structureKits"]>[number]>): { bigTrees: number } {
+  let bigTrees = 0;
   const { W, H, kind } = plan, N = W * H, lv = plan.levels;
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
   const R = (i: number, salt: number) => hash01(i, plan.seed, salt);
@@ -179,6 +190,7 @@ function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, 
   /** 킷을 놓고, 막는 칸이 있으면 닿는 길을 다시 잰다 — 목표나 그 밖의 걷는 칸을 끊으면 되돌린다. */
   const place = (id: string, x: number, y: number): boolean => {
     const k = kits.get(id); if (!k) return false;
+    if (y + k.height > H - 1) return false;   // 맨 아랫줄에는 두지 않는다(렌더러의 거울 채움이 세로로 늘인다)
     for (let j = 0; j < k.height; j++) for (let i = 0; i < k.width; i++) { const X = x + i, Y = y + j; if (!inMap(X, Y)) return false; const e = Y * W + X; if (reserved[e] || !open(e) || lv[e] !== lv[y * W + x]) return false; }
     const blocks = k.rows.some((r) => (r.upperTiles ?? []).some((t) => t >= 0 && ((p) => !!p && !p.up && !p.down && !p.left && !p.right)(tileset.passability[t])));
     const snap = blocks ? layers() : undefined;
@@ -206,26 +218,40 @@ function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, 
       for (const [px, py] of pts) if (inMap(px!, py!)) ends.push(py! * W + px!);
     }
     if (plan.landmark) ends.push(plan.landmark.front.y * W + plan.landmark.front.x);
-    const walk = (c: number) => lv[c]! > 0 && !plan.water[c] && !plan.ramps[c] && !plan.forest[c] && !plan.hidden[c];
-    const pending = ends.filter(walk);
-    const done = new Set<number>();
+    // 정령 숲: 숲 벽 속 막다른 길 끝(상자)까지도 흙길 — 빈터에서 숲으로 파고드는 오솔길
+    if (plan.deadEnd && kind.layout === "glade") ends.push(plan.deadEnd.y * W + plan.deadEnd.x);
+    for (const e of [plan.entry, ...plan.exits]) if (inMap(e.x, e.y)) ends.push(e.y * W + e.x);
+    const devCell = new Set<number>(); for (const d of plan.devices) for (const c of d.cells) devCell.add(c);
+    // 길 둘째 줄은 가장자리(다른 단 · 빈 곳과 맞닿은 칸)에 깔지 않는다 — 테 위로 흙이 넘쳐 보였다
+    const hiddenNear = (c: number) => { const x = c % W, y = (c - x) / W; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { if (!inMap(x + dx, y + dy) || lv[(y + dy) * W + x + dx] !== lv[c]) return true; } return false; };
+    // 정령 숲: 계획이 비워 둔 큰 나무 자리의 밑동 줄(아래 세 줄)로는 길을 내지 않는다 — 길이 지나가면 나무가 설 데가 없었다(작은 맵)
+    const trunkRows = new Set<number>();
+    for (const t of plan.trees ?? []) for (let j = 4; j < 8; j++) for (let i = 0; i < 7; i++) if (inMap(t.x + i, t.y + j)) trunkRows.add((t.y + j) * W + t.x + i);
+    const walk = (c: number) => lv[c]! > 0 && !plan.water[c] && !plan.ramps[c] && !plan.forest[c] && !plan.hidden[c] && !devCell.has(c) && !trunkRows.has(c);
+    // 같은 단 덩이마다: 끝 하나에서 시작해, 아직 잇지 않은 끝 가운데 이어진 길(또는 시작 끝)에서 가장 가까운 것을 차례로 잇는다(나무 모양 길) —
+    // 길 토막이 떠 있지 않고 장치 · 볼거리 · 들어오는/나가는 칸을 모두 지난다
+    const pending = [...new Set(ends.filter(walk))];
+    const joined = new Set<number>();
     for (const s0 of pending) {
-      if (done.has(s0)) continue;
-      // s0 에서 같은 단의 가장 가까운 다른 끝(또는 이미 깐 길)까지 — 너무 멀면 잇지 않는다
-      const prev = new Map<number, number>([[s0, -1]]), q = [s0]; let hit = -1;
-      for (let h = 0; h < q.length && hit < 0; h++) {
-        const c = q[h]!, x = c % W, y = (c - x) / W;
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-          const nx = x + dx, ny = y + dy, n = ny * W + nx; if (!inMap(nx, ny) || prev.has(n) || !walk(n) || lv[n] !== lv[s0]) continue;
-          prev.set(n, c); q.push(n);
-          if ((pending.includes(n) && n !== s0) || path.has(n)) { hit = n; break; }
+      if (joined.has(s0)) continue;
+      const tree = new Set<number>([s0]); joined.add(s0);
+      for (;;) {
+        const prev = new Map<number, number>(); const q = [...tree]; for (const c of q) prev.set(c, -1);
+        let hit = -1;
+        for (let h = 0; h < q.length && hit < 0; h++) {
+          const c = q[h]!, x = c % W, y = (c - x) / W;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+            const nx = x + dx, ny = y + dy, n = ny * W + nx; if (!inMap(nx, ny) || prev.has(n) || !walk(n) || lv[n] !== lv[s0]) continue;
+            prev.set(n, c); q.push(n);
+            if (pending.includes(n) && !joined.has(n)) { hit = n; break; }
+          }
         }
+        if (hit < 0) break;
+        for (let c = hit; c >= 0; c = prev.get(c)!) tree.add(c);
+        joined.add(hit);
       }
-      if (hit < 0 || q.length > W * H) continue;
-      const cells: number[] = []; for (let c = hit; c >= 0; c = prev.get(c)!) cells.push(c);
-      if (cells.length > (W + H) * 0.7 || cells.length < 5) continue;
-      for (const c of cells) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]] as const) { const n = (y + dy) * W + x + dx; if (inMap(x + dx, y + dy) && walk(n) && lv[n] === lv[c] && inner(n, 1)) path.add(n); } }
-      done.add(s0); done.add(hit);
+      if (tree.size < 4) continue;
+      for (const c of tree) { path.add(c); const x = c % W, y = (c - x) / W; for (const [dx, dy] of [[1, 0], [0, 1], [1, 1]] as const) { const n = (y + dy) * W + x + dx; if (inMap(x + dx, y + dy) && walk(n) && lv[n] === lv[c] && !hiddenNear(n)) path.add(n); } }
     }
     const isPath = (x: number, y: number) => !inMap(x, y) || path.has(y * W + x);
     for (const c of path) {
@@ -233,6 +259,90 @@ function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, 
       for (const [dx, dy, bit] of [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]] as const) if (isPath(x + dx, y + dy)) m |= bit;
       const t = autotileVariantForMask(sand, m, x, y) ?? sand.variantMap[String(canonicalAutotileMask8(m))] ?? sand.variantMap["255"];
       if (typeof t === "number") { map.lowerTiles[c] = t; reserved[c] = 1; }
+    }
+  }
+  // ---- 5) 나무: 맨 위 단에 큰 활엽수 하나(자리가 있으면 — 목표 a 의 꼭대기 나무), 안 되면 중간 나무. 정상은 전나무(목표 c).
+  //      정령 숲은 빈터 둘레(숲 벽 앞)에 큰 활엽수 둘 이상 · 중간 나무 몇.
+  // 나무 자리: 밑동 쪽 세 줄은 비어 있는 걷는 땅(가장자리에서 한 칸 안), 수관 줄은 같은 단의 걷는 땅이면 된다(흙길 위로 수관이 드리운다)
+  const fits = (k: NonNullable<ReturnType<typeof kits.get>>, x: number, y: number, L: number) => {
+    for (let j = 0; j < k.height; j++) for (let q = 0; q < k.width; q++) {
+      const e = (y + j) * W + x + q, foot = j >= k.height - 3;
+      if (!inMap(x + q, y + j) || plan.ramps[e] || layerTileAt(map, 3, e) >= 0) return false;
+      // 밑동 세 줄의 그림 칸은 같은 단의 빈 걷는 땅, 막힌 밑동 칸은 길 · 가장자리에서 한 칸 안. 수관 줄은 윗층이라 빈 곳 · 낮은 땅 위로도 드리운다 —
+      // 다만 더 높은 단 위로는 넘지 않는다(앞에 선 나무가 뒤 절벽 위에 얹혀 보인다). 숲 · 물 칸은 수관도 피한다.
+      const drawn = (k.rows[j]?.upperTiles?.[q] ?? -1) >= 0, shut = drawn && ((p) => !!p && !p.up && !p.down && !p.left && !p.right)(tileset.passability[k.rows[j]!.upperTiles![q]!]);
+      if (foot && drawn && (lv[e] !== L || !open(e) || (shut && (reserved[e] || !inner(e, 1))))) return false;
+      if (!foot && (lv[e]! > L || plan.forest[e] || plan.water[e])) return false;
+    }
+    return true;
+  };
+  const plantOn = (ids: readonly string[], L: number, salt: number, want: number, where: (x: number, y: number, w: number, h: number) => boolean = () => true) => {
+    let n = 0;
+    // 모든 칸을 씨앗 순서로 훑는다(무작위 몇 번이 아니라) — 자리가 있으면 반드시 찾는다
+    const order = Array.from({ length: N }, (_, c) => c).sort((p, q) => R(p, salt + 1) - R(q, salt + 1));
+    for (let i = 0; i < order.length && n < want; i++) {
+      const id = ids[(Math.floor(R(i, salt) * ids.length) + n) % ids.length]!, k = kits.get(id); if (!k) continue;
+      const c = order[i]!, x = c % W, y = (c - x) / W;
+      if (!where(x, y, k.width, k.height)) continue;
+      if (!fits(k, x, y, L)) continue;
+      if (placeTree(id, x, y)) { n++; if (DRESS.bigTree.includes(id)) bigTrees++; for (let j = -1; j <= k.height; j++) for (let q = -1; q <= k.width; q++) if (inMap(x + q, y + j)) reserved[(y + j) * W + x + q] = 1; }
+    }
+    return n;
+  };
+  /** 나무 찍기: place 와 같은 닿는 길 검사 · 되돌리기, 다만 수관 칸이 흙길(reserved) 위에 와도 된다. */
+  const placeTree = (id: string, x: number, y: number): boolean => {
+    const k = kits.get(id)!, snap = layers();
+    if (!put(id, x, y)) return false;
+    const seen = flood(); let lost = 0; for (const c of reach) if (!seen.has(c)) lost++;
+    if (!goalsOk(seen) || lost > k.width * k.height) { map.lowerTiles = snap[0]; map.upperTiles = snap[1]; if (snap[2]) map.lowerOverlayTiles = snap[2]; if (snap[3]) map.upperOverlayTiles = snap[3]; return false; }
+    reach = seen; return true;
+  };
+  if (kind.layout === "glade") {
+    const m = Math.round((kind.forest ?? 0) * Math.min(W, H) * 0.42);
+    const ring = (x: number, y: number, w: number, h: number) => { const cx = x + w / 2, cy = y + h; return Math.min(cx, W - cx, cy, H - cy) < m + 5; };
+    // 계획이 숲 벽 앞에 비워 둔 큰 나무 자리(plan.trees — 7×8 칸 상자의 왼쪽 위)부터, 상자 안에서 한두 칸 비켜 가며
+    let big = 0;
+    for (const [i, t] of (plan.trees ?? []).entries()) {
+      const id = DRESS.bigTree[(i + Math.floor(R(i, 110) * 4)) % 4]!;
+      // 상자 안에서, 안 맞으면 다른 큰 나무(폭이 다르다)로
+      let got = 0;
+      for (let v = 0; v < 4 && !got; v++) got = plantOn([DRESS.bigTree[(DRESS.bigTree.indexOf(id) + v) % 4]!], 1, 117 + i + v * 5, 1, (x, y, w) => x >= t.x - 1 && x + w <= t.x + 8 && y >= t.y - 1 && y <= t.y + 1);
+      big += got;
+    }
+    big += plantOn(DRESS.bigTree, 1, 111, Math.max(0, 2 + (N > 1400 ? 1 : 0) - big), ring);
+    if (big < 2) big += plantOn(DRESS.bigTree, 1, 119, 2 - big);   // 숲 벽 앞이 비좁으면 빈터 어디든
+    plantOn(["bd-sp-tree-mid-a", "bd-sp-tree-mid-b"], 1, 115, 2 + Math.floor(R(1, 116) * 2), ring);
+  } else {
+    const trees = DRESS.tree[kind.id] ?? [];
+    // 큰 활엽수는 맨 위 단부터, 자리가 없으면 한 단씩 내려가며(6×8 칸 — 맨 위 단이 얕은 고원이 많다). 정상은 전나무(목표 c).
+    let bigOk = false;
+    if (kind.id !== "summit") for (let L = top; L >= 1 && !bigOk; L--) bigOk = plantOn(DRESS.bigTree, L, 81 + L, 1) > 0;
+    if (trees.length) plantOn(trees, top, 83, bigOk ? (N > 1400 ? 1 : 0) : N > 1400 ? 2 : 1);
+  }
+  // ---- 5b) 정령 숲: 버섯 무리 · 꽃 무리(나무 둘레와 길섶) ----
+  if (kind.layout === "glade") {
+    // 무리 수: 버섯 무리 몇 · 꽃 무리 더 많이(목표 화면 4 — 꽃 무리가 빈터 곳곳, 버섯은 나무 곁 몇)
+    const clumps = Math.max(6, Math.round(N / 80));
+    for (let i = 0, made = 0; i < clumps * 12 && made < clumps; i++) {
+      const c = Math.floor(R(i, 121) * N); if (!open(c) || reserved[c]) continue;
+      made++;
+      const x0 = c % W, y0 = (c - x0) / W, many = 2 + Math.floor(R(i, 122) * 3), sh = made % 3 === 0;
+      for (let k = 0; k < many; k++) {
+        const list = sh ? DRESS.shrooms : DRESS.flowers, id = list[Math.floor(R(i * 7 + k, 124) * list.length)]!;
+        const kf = kits.get(id); if (!kf) continue;
+        // 무리 가운데 둘레에서 빈 자리를 몇 번 찾는다(흙길 · 나무 둘레에 걸리면 비켜 놓는다)
+        for (let t = 0; t < 6; t++) {
+          const x = x0 + Math.floor(R(i * 7 + k, 125 + t * 2) * 7) - 3, y = y0 + Math.floor(R(i * 7 + k, 126 + t * 2) * 5) - 2;
+          // 맨 아래 두 줄은 비운다 — 렌더러가 맵 남쪽 끝 아래를 마지막 줄 거울로 채워 꽃 · 버섯이 세로 줄무늬로 늘어졌다(숲 벽과 같은 까닭)
+          if (y + kf.height > H - 1) continue;
+          if (sh) { if (place(id, x, y)) break; continue; }
+          // 꽃은 밟고 지나가는 2층 꾸밈(lowerOverlayTiles) — stamp_object 는 이 층을 찍지 않으므로 칸을 직접 쓴다
+          let ok = true; for (let jj = 0; jj < kf.height && ok; jj++) for (let q = 0; q < kf.width; q++) { const e = (y + jj) * W + x + q; if (!inMap(x + q, y + jj) || reserved[e] || !open(e) || lv[e] !== lv[y0 * W + x0]) { ok = false; break; } }
+          if (!ok) continue;
+          kf.rows.forEach((row, jj) => (row.lowerOverlayTiles ?? []).forEach((tt, q) => { if (tt >= 0) { setLayerTileAt(map, 2, (y + jj) * W + x + q, tt); reserved[(y + jj) * W + x + q] = 1; } }));
+          break;
+        }
+      }
     }
   }
   // (짙은 풀 무리는 깔지 않는다 — 짙은 풀 오토타일이 이 크기에서는 각진 네모로 읽혔다. 짙은 결은 풀 결 섞기(5 단계)의 무리가 맡는다.)
@@ -261,17 +371,6 @@ function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, 
       const id = DRESS.rim[Math.floor(R(Y * W + X, 74) * DRESS.rim.length)]!, k = kits.get(id); if (!k) continue;
       place(id, X, Y - (k.height - 1));
     }
-  }
-  // ---- 5) 맨 위 단에 나무 하나(넓은 맵은 둘) — 가장자리에서 한 칸 들어와 ----
-  const trees = DRESS.tree[kind.id] ?? [];
-  let planted = 0;
-  for (let i = 0; i < 300 && trees.length && planted < (N > 1400 ? 2 : 1); i++) {
-    const id = trees[Math.floor(R(i, 81) * trees.length)]!, k = kits.get(id); if (!k) continue;
-    const cands: number[] = []; for (let c = 0; c < N; c++) if (lv[c] === top && inner(c, 1)) cands.push(c);
-    if (!cands.length) break;
-    const c = cands[Math.floor(R(i, 82) * cands.length)]!, x = c % W, y = (c - x) / W;
-    let ok = true; for (let j = 0; j < k.height && ok; j++) for (let q = 0; q < k.width; q++) { const e = (y + j) * W + x + q; if (!inMap(x + q, y + j) || lv[e] !== top || !inner(e, 1)) { ok = false; break; } }
-    if (ok && place(id, x, y)) planted++;
   }
   // ---- 6) 덤불: 윗면 북쪽 가장자리 · 면 발치 곁에 드문드문 ----
   for (let i = 0, n = Math.round(N / 120); i < n * 3; i++) {
@@ -304,6 +403,7 @@ function dressSheerTerrain(project: Project, map: GameMap, tileset: TilesetDef, 
     }
   }
   if (decor.length) relief.wallDecor = decor;
+  return { bigTrees };
 }
 
 const hash01 = (a: number, b: number, c: number): number => {

@@ -117,8 +117,8 @@
    "ledge": "bridge",
    "chest": "bd-pick-shipwreck-reef-sea-chest",
    "backdrop": {
-    "preset": "oprn-clouds",
-    "view": "surface",
+    "preset": "oprn-cloud-sea",
+    "view": "horizon",
     "prompt": "a sea of soft white clouds seen from high above, bright daylight, pale blue gaps"
    },
    "dressing": [
@@ -222,7 +222,7 @@
    "ledge": "bridge",
    "chest": "bd-pick-shipwreck-reef-sea-chest",
    "backdrop": {
-    "preset": "oprn-sky-day",
+    "preset": "oprn-far-mountains",
     "view": "horizon",
     "prompt": "clear blue sky with soft clouds over a range of far snowy mountains, seen from a high summit"
    },
@@ -233,6 +233,47 @@
    ],
    "layout": "stack",
    "forest": 0
+  },
+  {
+   "id": "spirit-forest",
+   "ko": "정령 숲 빈터",
+   "en": "spirit forest glade",
+   "hint": "a sunlit clearing ringed by a deep layered forest wall, an elder tree with a glowing hollow, big broadleaf trees, glowing mushrooms and flowers along a dirt path",
+   "void": false,
+   "levels": [
+    1,
+    1
+   ],
+   "size": {
+    "small": [
+     32,
+     24
+    ],
+    "medium": [
+     40,
+     30
+    ],
+    "large": [
+     48,
+     34
+    ]
+   },
+   "water": "none",
+   "step1": [],
+   "step2": [],
+   "gap": [],
+   "landmark": [
+    "bd-sp-tree-elder"
+   ],
+   "ledge": "stairs",
+   "chest": "bd-pick-shipwreck-reef-sea-chest",
+   "dressing": [
+    "bd-sp-mushroom-tall",
+    "bd-sp-mushroom-small",
+    "bd-org-bush-m"
+   ],
+   "layout": "glade",
+   "forest": 0.6
   }
  ]
 }

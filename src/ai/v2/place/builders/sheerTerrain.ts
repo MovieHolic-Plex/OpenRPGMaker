@@ -113,10 +113,12 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (project().startMapId === mapId) run.call("set_start_position", { mapId, x: report.entry.x, y: report.entry.y });
   const devices = report.devices.map((d) => `${d.kind} ${d.lo}→${d.hi}`).join(", ");
   const backdrop = sheerBackdropLine(report.background);
-  const summary = `${spec.name}: sheer terrain ${kind.id} ${report.width}×${report.height} (seed ${seed}) — ${report.levels} levels, face 3 cells a level, walkable ${report.walkablePct}%, `
-    + `${report.devices.length} devices (${devices}), reach ${report.reach.ok ? "ok" : "MISSING"}`
+  const glade = kind.layout === "glade";
+  const summary = `${spec.name}: sheer terrain ${kind.id} ${report.width}×${report.height} (seed ${seed}) — `
+    + (glade ? `one level, a clearing ringed by forest, ${report.bigTrees} big trees, walkable ${report.walkablePct}%, reach ${report.reach.ok ? "ok" : "MISSING"}`
+      : `${report.levels} levels, face 3 cells a level, walkable ${report.walkablePct}%, ${report.devices.length} devices (${devices}), reach ${report.reach.ok ? "ok" : "MISSING"}`)
     + `${report.landmark?.placed ? `, landmark ${report.landmark.kit.replace(/^bd-(?:obj-|pick-)?/u, "")} (${report.landmark.x},${report.landmark.y})` : ""}`
-    + `${report.deadEnd ? `, dead-end ledge (${report.deadEnd.x},${report.deadEnd.y})${report.deadEnd.chest ? " with a chest" : ""}` : ""}`
+    + `${report.deadEnd ? `, ${glade ? "dead-end path" : "dead-end ledge"} (${report.deadEnd.x},${report.deadEnd.y})${report.deadEnd.chest ? " with a chest" : ""}` : ""}`
     + `${report.falls ? `, ${report.falls} waterfall(s)` : ""}, entry (${report.entry.x},${report.entry.y}) ${report.entry.side}`
     + `${report.exits.length ? `, exits ${report.exits.map((e) => `${e.side} (${e.x},${e.y})`).join(" ")}` : ""}.${backdrop ? ` ${backdrop}` : ""}`;
   return {

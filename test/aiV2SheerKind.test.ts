@@ -40,7 +40,7 @@ describe("assistant sheer terrain kind", () => {
     for (const k of SHEER_KINDS) expect(r.warnings.join(" ")).toContain(`${k.id} (`);
   });
 
-  it.each(SHEER_KINDS.map((k) => k.id))("%s: builds a sheer map of 3–5 levels on the blank start map, every goal reachable", (kindId) => {
+  it.each(SHEER_KINDS.map((k) => k.id))("%s: builds a sheer map (3–5 levels; the glade one) on the blank start map, every goal reachable", (kindId) => {
     const kind = SHEER_KINDS.find((k) => k.id === kindId)!;
     const p = createBlankProject() as Project, ctx = { project: p, currentMapId: p.startMapId, lookKey: "sheer-kind" };
     const s = spec(kindId, { salt: 1 });
@@ -51,8 +51,9 @@ describe("assistant sheer terrain kind", () => {
     expect([map.width, map.height]).toEqual([...kind.size.medium]);
     expect(map.relief?.style).toBe("sheer");
     const levels = new Set(map.relief!.levels.filter((v) => v > 0)).size;
-    expect(levels).toBeGreaterThanOrEqual(3);
-    expect(levels).toBeLessThanOrEqual(5);
+    // the spirit-forest glade is one level (target scene 4 is flat ground ringed by forest); the cliff kinds are 3–5
+    expect(levels).toBeGreaterThanOrEqual(kind.layout === "glade" ? 1 : 3);
+    expect(levels).toBeLessThanOrEqual(kind.layout === "glade" ? 1 : 5);
     expect(r.summary).toMatch(/reach ok/u);
     expect(r.entrance).toMatchObject({ mapId: map.id });
     expect(ctx.project.startPos).toMatchObject({ x: r.entrance!.x, y: r.entrance!.y });
