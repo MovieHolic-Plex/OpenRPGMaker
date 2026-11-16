@@ -119,7 +119,7 @@ describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는�
     const wrong = { type: "interior", name: "모험가의 선술집", mapId: "", layout: { ...TAVERN, objects: [...TAVERN.objects, { id: "golden unicorn", x: 6, y: 5 }] } };
     const refused = await t.call("make_place", wrong);
     expect(refused.ok).toBe(false);
-    expect(refused.body).toContain("Send make_place again with the same name");
+    expect(refused.body).toContain("send make_place again (same name, whole layout)");
     expect(refused.body).toContain("golden unicorn");
     expect(refused.body).not.toContain('"mapId":""');
     expect(refused.body).not.toContain("another type or style");
