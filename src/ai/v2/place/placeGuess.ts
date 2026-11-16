@@ -62,7 +62,7 @@ export const isIndoorMap = (m: { readonly tilesetId: string }): boolean =>
 
 /**
  * 청사진 장소 하나를 짓는 명세 — 아는 사실이 추측보다 먼저다:
- * ① 모델이 그 장소로 make_place 를 부른 적이 있으면 그 명세(종류·화풍·방·칸 배치 — 거절됐어도) ② 청사진·할 일에 적은 종류
+ * ① 모델이 그 장소로 make_place 를 부른 적이 있으면 그 명세(종류·화풍·방 목록 — 거절됐어도. 거절된 칸 배치는 쓰지 않는다) ② 청사진·할 일에 적은 종류
  * ③ 이름이 말하는 종류 ④ 건물 안이 기본인 장르(방탈출·추리·공포·연애·일상)면 실내. 넷 다 없으면 undefined — 짓지 않고 모델에게 종류를 묻는다.
  * 왜(2026-11-15 확인 빌드 r6, r5a 재생): 모델이 실내로 청했다 칸 배치가 거절된 「방앗간 안」 을 끝맺음이 이름·장르로 추측해(모험 = 마을) 42×45 강마을 한 장으로 세웠다.
  * 「바닷가 등대」 · 「물때 어물전」 · 「포구 회관」 · 「말순네 농가」 도 같은 추측이었다 — 틀렸을 때 가장 비싼 쪽(마을 한 장)으로 조용히 떨어졌다.
@@ -83,7 +83,8 @@ export function placeSpecFor(name: string, project: Project, genre: string, task
   const fromTask = /마법\s*학교|호그와트|wizard/iu.test(`${genre} ${task}`) ? "wizarding" : /전국|에도|사무라이|sengoku/iu.test(`${genre} ${task}`) ? "sengoku" : undefined;
   const style = asked?.style ?? (sameKind ? styleOfTileset(sameKind.tilesetId) : fromTask);
   const theme = asked?.theme ?? (!asked ? fromKind?.theme : undefined) ?? (type === "dungeon" && FIELD.test(name) ? "forest" : undefined);
-  // 모델이 보낸 명세는 그대로 짓는다(방 목록·칸 배치·던전 설계) — 맵 id 와 씨앗만 뺀다(짓는 쪽이 새로 정한다).
-  const { mapId: _mapId, salt: _salt, variety: _variety, gate: _gate, ...rest } = (asked ?? {}) as PlaceSpec;
+  // 모델이 보낸 명세의 종류·화풍·방 목록·던전 설계는 그대로 쓴다 — 맵 id·씨앗(짓는 쪽이 새로 정한다)과 실내 칸 배치는 뺀다.
+  // 칸 배치는 거절된 것이다: 걸리는 기물을 빼고 깔면 방이 휑하다(r5a 재생 선술집: 기물 26개짜리 배치에 문제 15건) — 방은 종전대로 설계를 따로 받는다(designMissingRooms).
+  const { mapId: _mapId, salt: _salt, variety: _variety, gate: _gate, layout: _layout, ...rest } = (asked ?? {}) as PlaceSpec;
   return { ...(asked ? rest : {}), type, name, ...(style ? { style } : {}), ...(theme ? { theme } : {}), size: asked?.size ?? "small" };
 }

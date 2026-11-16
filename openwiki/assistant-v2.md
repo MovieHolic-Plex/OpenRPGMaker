@@ -24,7 +24,7 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 
 | 차례 | 사실 | 어디서 적나 |
 |---|---|---|
-| ① | 모델이 그 장소로 보낸 `make_place` 명세(종류·화풍·방·칸 배치) — 거절됐어도 | `verbs/place.ts` (관문 앞에서 종류, 명세를 다듬은 뒤 명세 전체) |
+| ① | 모델이 그 장소로 보낸 `make_place` 명세(종류·화풍·방 목록) — 거절됐어도 | `verbs/place.ts` (관문 앞에서 종류, 명세를 다듬은 뒤 명세 전체) |
 | ② | 청사진 `places` 의 `kind` · `from`, 할 일 목록 장소 항목의 `placeKind` | `verbs/blueprint.ts`, `sessionHooks.ts` `factsOf` |
 | ③ | 이름이 말하는 종류 — 마을은 **끝 낱말** 이 마을 낱말일 때만(「갈매기 포구」 = 마을, 「포구 회관」 = 모름), 「○○ 안」 · 「○○ 내부」 = 실내 | `placeTypeFromName` |
 | ④ | 건물 안이 기본인 장르(방탈출·추리·공포·연애·일상)면 실내 | `placeSpecFor` |
@@ -33,7 +33,8 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 `NOT built, place type unknown: "물때 어물전", "포구 회관". Build each with make_place and a type (interior, village, dungeon, cave).`
 맵이 없다는 출하 막힘(`blueprint-place-missing`)은 그대로 남는다.
 
-- 거절된 칸 배치가 있으면 그것을 깐다 — 고치기를 다 쓴 것으로 보아(`hints.layoutRepairsLeft: 0`) 걸리는 기물만 빼고 나머지를 깐다. 보낸 명세가 그래도 지어지지 않으면(방 모양 자체가 걸린다) 같은 종류의 기본 명세로 짓는다 — 종류는 그대로다.
+- 거절된 칸 배치는 쓰지 않는다 — 방은 종전대로 설계를 따로 받는다(`designMissingRooms`). 걸리는 기물을 빼고 그 배치를 깔아 보니 방이 휑했다(r5a 재생 선술집: 기물 26개짜리 배치에 문제 15건).
+- 모델이 보낸 명세가 지어지지 않으면 같은 종류의 기본 명세로 짓는다 — 종류는 그대로다.
 - `from` 이 적힌 실내는 그 장소(마을)의 집 문에 달린다.
 - 이미 선 맵을 잇기만 할 때는 맵이 사실이다(`isIndoorMap`) — 실내 맵은 실내로, 바깥 맵은 바깥으로 잇는다.
 - 낱말 목록은 늘리지 않았다. `guessPlaceType` · `guessPlaceSpec` 는 없어졌다.

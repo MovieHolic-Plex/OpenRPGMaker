@@ -27,14 +27,15 @@ describe("장소 종류 — 아는 사실이 추측보다 먼저다(placeSpecFor
     for (const name of FIVE.slice(1)) expect(spec(name), name).toBeUndefined();
   });
 
-  it("모델이 make_place 로 청한 명세가 가장 먼저다 — 종류·방·칸 배치를 그대로, 맵 id 와 씨앗은 뺀다", () => {
-    const asked = { type: "interior", name: "바닷가 등대", zones: [{ kind: "study", purpose: "등대지기 방" }], mapId: "map_x", salt: 7, variety: "v" } as unknown as PlaceSpec;
+  it("모델이 make_place 로 청한 명세가 가장 먼저다 — 종류·방 목록을 그대로, 맵 id·씨앗·거절된 칸 배치는 뺀다", () => {
+    const asked = { type: "interior", name: "바닷가 등대", zones: [{ kind: "study", purpose: "등대지기 방" }], mapId: "map_x", salt: 7, variety: "v", layout: { map: { w: 14, h: 12 } } } as unknown as PlaceSpec;
     const got = spec("바닷가 등대", { asked, kind: "village" })!;
     expect(got.type).toBe("interior");
     expect(got.zones).toEqual(asked.zones);
     expect(got).not.toHaveProperty("mapId");
     expect(got).not.toHaveProperty("salt");
     expect(got).not.toHaveProperty("variety");
+    expect(got).not.toHaveProperty("layout");
   });
 
   it("청사진·할 일에 적은 종류가 이름보다 먼저다", () => {
@@ -97,7 +98,7 @@ async function writeBlueprint(t: ReturnType<typeof turn>, bp: unknown) {
   expect(r.ok, r.summary).toBe(true);
 }
 
-/** r5a 재생에서 거절된 「방앗간 안」 호출의 칸 배치(14×12) — 맵 밖 기물 하나를 더해 이 가지에서도 거절되게 한다. */
+/** r5a 재생에서 거절된 「방앗간 안」 호출의 칸 배치(14×12) — 맵 밖 기물 하나를 더해 여기서도 거절되게 한다. */
 const MILL: Record<string, unknown> = { type: "interior", name: "방앗간 안", layout: { map: { w: 14, h: 12 }, landmark: { id: "work 3x1", x: 5, y: 6, purpose: "밀을 빻는 방앗간 작업대" },
   outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 11], [0, 11]] }, entrance: { x: 6, y: 11 },
   rooms: [{ id: "mill", at: [6, 5], floor: "plank", purpose: "물레방아와 이어진 방앗간 작업장", role: "main" }],
@@ -117,28 +118,17 @@ describe("끝맺음 자동 짓기 — 종류를 모르는 장소는 마을로 �
     for (const name of ["말순네 농가", "바닷가 등대", "물때 어물전", "포구 회관"]) expect(t.mapNamed(name), name).toBeUndefined();
   }, SLOW);
 
-  it("실내로 청했다 거절된 장소는 그 칸 배치의 실내로 선다 — 마을이 아니다", async () => {
+  it("실내로 청했다 칸 배치가 거절된 장소는 실내로 선다 — 마을이 아니다", async () => {
     const t = turn();
     await writeBlueprint(t, blueprint());
-    const asked = await t.call("make_place", { spec: MILL });
+    // 이름이 종류를 말하지 않는 장소로 청한다 — 종류는 청한 명세에서만 온다.
+    const asked = await t.call("make_place", { spec: { ...MILL, name: "말순네 농가" } });
     expect(asked.ok, asked.summary).toBe(false);
-    expect(t.mapNamed("방앗간 안")).toBeUndefined();
-    expect(t.session.placeFacts.get("방앗간안")?.asked?.type).toBe("interior");
-    await t.session.buildPlaces!();
-    const mill = t.mapNamed("방앗간 안")!;
-    expect(isIndoorMap(mill)).toBe(true);
-    // 모델이 그린 방 크기 그대로다(걸리는 기물만 빠진다).
-    expect([mill.width, mill.height]).toEqual([14, 12]);
-  }, SLOW);
-
-  it("방 모양 자체가 깔리지 않는 칸 배치여도 종류는 그대로다 — 기본 실내로 선다", async () => {
-    const t = turn();
-    await writeBlueprint(t, blueprint());
-    const layout = MILL.layout as { outer_wall: { path: number[][] } };
-    const asked = await t.call("make_place", { spec: { ...MILL, layout: { ...layout, outer_wall: { ...layout.outer_wall, path: [[0, 0], [13, 0]] } } } });
-    expect(asked.ok, asked.summary).toBe(false);
-    await t.session.buildPlaces!();
-    expect(isIndoorMap(t.mapNamed("방앗간 안")!)).toBe(true);
+    expect(t.mapNamed("말순네 농가")).toBeUndefined();
+    expect(t.session.placeFacts.get("말순네농가")?.asked?.type).toBe("interior");
+    const notes = await t.session.buildPlaces!();
+    expect(notes[0]).toBe(NOTE(["바닷가 등대", "물때 어물전", "포구 회관"]));
+    expect(isIndoorMap(t.mapNamed("말순네 농가")!)).toBe(true);
     expect(t.maps().filter((m) => !isIndoorMap(m)).map((m) => m.name)).toEqual(["물레강 마을"]);
   }, SLOW);
 

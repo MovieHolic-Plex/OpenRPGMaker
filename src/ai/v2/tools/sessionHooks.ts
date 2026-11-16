@@ -15,7 +15,6 @@ import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
 import { isIndoorMap, placeFactKey, placeSpecFor, type PlaceFacts } from "../place/placeGuess";
-import { hasLayout } from "../place/builders/interiorLayoutBuild";
 import { edgeCell, isInside, isOutdoor, oppositeSide, villageDoors, walkGame } from "../story/makeGame";
 import { designMissingRooms } from "../place/designRooms";
 import { yieldToLoop } from "../shared/yieldLoop";
@@ -136,9 +135,7 @@ export function installSessionHooks(c: VerbContext) {
         let builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
         // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다. 세계 구성기 방은 구성기가 짠다.
-        // 모델이 보낸 칸 배치가 있으면 그것을 깐다 — 고치기를 다 쓴 것으로 보아, 여전히 걸리는 기물만 빼고 나머지를 깐다(interiorLayoutBuild).
-        const laid = hasLayout(spec0);
-        const designedAuto = composed || laid ? { spec: laid ? { ...spec0, hints: { ...(spec0.hints ?? {}), layoutRepairsLeft: 0 } } : spec0, notes: [] as string[] } : await designMissingRooms(env, spec0, `청사진 장소 「${name}」 자동 짓기`);
+        const designedAuto = composed ? { spec: spec0, notes: [] as string[] } : await designMissingRooms(env, spec0, `청사진 장소 「${name}」 자동 짓기`);
         let spec = designedAuto.spec;
         notes.push(...designedAuto.notes);
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${name}」 자동으로 짓는 중(${builder.id})` });
@@ -149,7 +146,7 @@ export function installSessionHooks(c: VerbContext) {
           return { sub, subRun, result: b.build(subRun, sp) };
         };
         let tried = await attempt(builder, spec);
-        // 모델이 보낸 명세가 (기물을 빼도) 지어지지 않으면 같은 종류의 기본 명세로 짓는다 — 종류는 그대로다.
+        // 모델이 보낸 명세가 지어지지 않으면 같은 종류의 기본 명세로 짓는다 — 종류는 그대로다.
         const plain = !tried.result.ok && facts.asked ? placeSpecFor(name, env.ctx.project, bp.genre, String(task ?? ""), { kind: guess.type }) : undefined;
         const plainBuilder = plain ? builderFor(dressed(plain)) : undefined;
         if (plain && plainBuilder) {
