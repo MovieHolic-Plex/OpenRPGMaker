@@ -448,7 +448,7 @@ export function clearBuildingSite(project: Project, map: GameMap, b: BuildingSta
   return { notes, cleared, opened };
 }
 
-/** 찍은 뒤: 치워서 연 문 앞 길에 그 맵의 길 재료로 길을 깐다(길이 있는 맵 · 경사로 칸은 빼고). 깐 칸 수. */
+/** 찍은 뒤: 치워서 연 문 앞 길에 그 맵의 길 재료로 길을 깔고, 여덟 걸음 안에 길이 있으면 거기까지 잇는다(길이 있는 맵 · 경사로 칸은 빼고). 깐 칸 수. */
 export function paveBuildingWays(project: Project, map: GameMap, site: BuildingSite, opened: readonly number[]): { paved: number; note?: string } {
   if (!opened.length) return { paved: 0 };
   const W = map.width, ts = project.tilesets[map.tilesetId];
@@ -462,13 +462,39 @@ export function paveBuildingWays(project: Project, map: GameMap, site: BuildingS
   const count = lay.map((l) => { let n = 0; for (let i = 0; i < map.lowerTiles.length; i += 1) if (l.tiles.has(map.lowerTiles[i] ?? -1)) n += 1; return n; });
   const top = count.indexOf(Math.max(...count));
   if (top < 0 || !count[top]) return plain;
-  const ramps = map.relief?.ramps;
+  const ramps = map.relief?.ramps, H = map.height;
+  const onRoad = (c: number): boolean => lay.some((l) => l.tiles.has(map.lowerTiles[c] ?? -1));
+  /** 연 길의 끝(걷는 그물 칸)에서 가까운 길 칸까지(여덟 걸음 안) 걷는 칸 줄 — 풀밭 한가운데 두 칸짜리 길 토막으로 남지 않게 길에 잇는다. 길이 멀면 빈 줄. */
+  const toRoad = (from: number): number[] => {
+    if (onRoad(from)) return [];
+    const prev = new Map<number, number>([[from, -1]]); let ring = [from];
+    for (let step = 0; step < 8 && ring.length; step += 1) {
+      const next: number[] = [];
+      for (const c of ring) {
+        const x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of STEPS) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+          const n = ny * W + nx;
+          if (prev.has(n) || !isPassable(project, map, nx, ny) || (map.relief && !reliefAllowsStep(map.relief, x, y, nx, ny))) continue;
+          prev.set(n, c);
+          if (onRoad(n)) { const path: number[] = []; for (let at = c; at >= 0; at = prev.get(at)!) path.push(at); return path; }
+          next.push(n);
+        }
+      }
+      ring = next;
+    }
+    return [];
+  };
   const cells = new Set<number>();
-  for (const way of site.ways) { if (!way.some((c) => opened.includes(c))) continue; for (const c of way.slice(0, -1)) if (!(ramps?.[c] ?? 0) && !lay.some((l) => l.tiles.has(map.lowerTiles[c] ?? -1))) cells.add(c); }
+  for (const way of site.ways) {
+    if (!way.some((c) => opened.includes(c))) continue;
+    for (const c of [...way.slice(0, -1), ...toRoad(way[way.length - 1]!)]) if (!(ramps?.[c] ?? 0) && !onRoad(c)) cells.add(c);
+  }
   let paved = 0;
   for (const c of cells) {
     try { fill.run(project, { mapId: map.id, material: lay[top]!.material, rect: { x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, _exactCells: true }); paved += 1; } catch { /* 길을 못 깔아도 치운 칸은 걷는다 */ }
   }
   if (!paved) return plain;
-  return { paved, note: `Door way opened and paved: ${paved} road cell(s) (${lay[top]!.material}) now run from the door front ${from} to the walkable ground.` };
+  return { paved, note: `Door way opened and paved: ${paved} road cell(s) (${lay[top]!.material}) now run from the door front ${from} to the walkable ground (joined to the road when one is within eight steps).` };
 }

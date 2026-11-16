@@ -11,6 +11,8 @@ import { askedBuildingKits, askedBuildingMenu, isSeatableBuilding, nearestBuildi
 import { buildingSiteReasons, isBuildingKit } from "@/editor/tools/buildingSite";
 import { protectedHouseCells } from "@/editor/tools/houseProtection";
 import { SHARED_OBJECT_TOOLS } from "@/editor/tools/sharedObjectTools";
+import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
+import { tilesetSurface } from "@/project/tilesetSurface";
 import { nearestVillageKind } from "@/editor/tools/beodeulVillageKinds";
 import { builderFor } from "@/ai/v2/place/builders";
 import { askedVillageBuildings, VILLAGE_CARD } from "@/ai/v2/place/builders/village";
@@ -269,10 +271,16 @@ describe("손으로 찍는 건물 — 어긋난 터는 고쳐 놓고 알린다",
     }
   }, 240_000);
 
-  it("빈 풀밭 맵: 문 앞을 나무가 에워싸면 옮기지 않고 나무를 통째로 걷어 길을 낸다 — 발자국에 걸친 나무도 반 토막을 남기지 않는다", () => {
+  it("빈 풀밭 맵: 문 앞을 나무가 에워싸면 옮기지 않고 나무를 통째로 걷어 길 타일을 깐다 — 발자국에 걸친 나무도 반 토막을 남기지 않는다", () => {
     const project = createBlankProject() as Project, map = project.maps[project.startMapId]!, W = map.width;
     map.events = [];
     project.startPos = { ...project.startPos, x: 1, y: map.height - 2 };
+    // 맵 아래쪽에 길 한 줄(그 칩셋의 길 재료) — 문 앞에서 네 칸 아래
+    const lay = tilesetSurface(project.tilesets[map.tilesetId]).lay;
+    const roadY = map.height - 3;
+    CONSTRUCTION_TOOLS_V3.find((tool) => tool.name === "fill_region")!.run(project, { mapId: map.id, material: lay[0]!.material, rect: { x: 0, y: roadY, w: W, h: 1 }, _exactCells: true });
+    const onRoad = (x: number, y: number): boolean => lay.some((l) => l.tiles.has(map.lowerTiles[y * W + x]!));
+    expect(onRoad(8, roadY)).toBe(true);
     const house = kitsOf(project).find((k) => k.id === "bd-house-h109_0")!, tree = kitsOf(project).find((k) => k.id === "bd-tree-f4f319")!;
     expect(isBuildingKit(house)).toBe(true);
     expect([tree.width, tree.height]).toEqual([2, 2]);
@@ -292,7 +300,10 @@ describe("손으로 찍는 건물 — 어긋난 터는 고쳐 놓고 알린다",
     expect(out.data.site).toMatchObject({ x: X, y: Y, moved: false });
     expect(out.data.site.opened).toBeGreaterThan(0);
     expect((out.warnings ?? []).join(" ")).toMatch(/Site cleared for .* removed whole/u);
-    expect((out.warnings ?? []).join(" ")).toMatch(/Door way opened/u);
+    // 연 길에 길 타일을 깔고 가까운 길까지 잇는다: 문 앞 줄부터 길 바로 윗줄까지
+    expect(out.data.site.paved).toBeGreaterThan(0);
+    expect((out.warnings ?? []).join(" ")).toMatch(/Door way opened and paved: \d+ road cell/u);
+    for (let y = fy; y < roadY; y += 1) expect(onRoad(doorX, y), `(${doorX},${y}) 길 타일`).toBe(true);
     expectSound(project, map, house, out, new Set());
     // 발자국에 걸친 나무는 통째로 사라졌다(발자국 밖 윗줄에 수관만 남지 않는다)
     for (let i = 0; i < 2; i += 1) expect(map.upperTiles[(Y + top - 1) * W + X + col + i], "걸친 나무의 윗줄").toBe(-1);
