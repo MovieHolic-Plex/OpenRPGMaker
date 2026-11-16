@@ -202,7 +202,7 @@ export function markRoundtripPassed(project: Project): void {
   for (const entry of Object.values(project.tilesets ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   // Owned-reference wire views have their own immutable identity. They passed
   // the same boundary and must not disable reuse solely because of that wrapper.
-  for (const entry of Object.values(projectWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
+  for (const entry of Object.values(roundtripWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   for (const entry of Object.values(project.assets?.uploaded ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
 }
 
@@ -271,8 +271,17 @@ function roundtripTilesetPiece(entry: unknown): string | undefined {
  * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): 글 재사용 뒤에도 되읽기(`JSON.parse` + 검사)가 AI 체크포인트마다 약 0.8s,
  * 버려지는 수십 MB 트리의 GC 가 그만큼 더 들었다. 체크포인트 사이에 바뀌는 타일셋·업로드 자산은 거의 없다.
  */
+/**
+ * 왕복 검사가 되읽을 저장 보기. 번들 타일셋은 차이 보기를 만들지 않는다(`inlineBundledTilesets`) — 아래에서 차이 보기는 어차피 온전한
+ * 항목으로 바꿔 넣으므로, 차이를 만드느라 번들 정의를 다시 짓는 일(타일셋 49개 약 1.4s, 2026-11-16 실측 — 정의 기억은 15초 뒤 버려진다)이
+ * 버려졌다. 참고문서 소유 표지로 뺀 보기·버려진 필드 정리는 저장 보기와 같다.
+ */
+function roundtripWireView(project: Project): Record<string, unknown> & { tilesets: Record<string, unknown> } {
+  return projectWireView(project, { inlineBundledTilesets: true }) as Record<string, unknown> & { tilesets: Record<string, unknown> };
+}
+
 export function serializeForRoundtripCheck(project: Project): string {
-  const view = projectWireView(project) as Record<string, unknown>;
+  const view = roundtripWireView(project);
   if (hasToJson(view)) return JSON.stringify(view);
   const parts: string[] = [];
   for (const key of Object.keys(view)) {

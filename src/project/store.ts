@@ -961,7 +961,8 @@ class ProjectStore {
       this.current = project;
       syncEventDraftVaultFromProject(this.current);
     } else {
-      this.current = preserveEventDraftsOnProject(project, this.current);
+      // 아직 아무 프로젝트도 쥐지 않았으면 맞출 편집 초안이 없다 — 자리표시 빈 프로젝트를 지어서(번들 타일셋 49개, 약 1.2s) 바로 버리지 않는다.
+      this.current = preserveEventDraftsOnProject(project, this.currentValue ?? emptyLiveProject);
       syncEventDraftVaultFromProject(this.current);
     }
     const applied = this.current;
@@ -2014,6 +2015,9 @@ class ProjectStore {
     });
   }
 }
+
+/** `preserveEventDraftsOnProject` 의 «지금 프로젝트» 자리 — 맵이 없어 살아 있는 편집 초안도 없다(그 함수는 live.maps 만 읽는다). */
+const emptyLiveProject = { maps: {} } as unknown as Project;
 
 export const store = new ProjectStore();
 // 프로젝트 저작 적 도트 시트(도트 몬스터 공방)를 미리보기·전투가 번들 시트처럼 찾게 한다.

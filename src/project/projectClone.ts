@@ -146,7 +146,7 @@ export function cloneProjectSharingSharedDictionaries(project: Project): Project
 
 /**
  * 스토어가 들고 있던 것으로 확인된 공유 항목(타일셋·업로드 자산 객체). 위 계약대로 이 객체들은 제자리에서 바뀌지 않는다.
- * 표지는 `store.ownsSettledEntriesOf` 가 참일 때만 붙는다(`trustStoreOwnedEntries`) — 스토어 밖에서 만든 프로젝트의 항목은
+ * 표지는 정규화가 끝난 스토어 프로젝트가 지금 그 객체를 들고 있을 때만 붙는다(`trustStoreOwnedEntries`) — 스토어 밖에서 만든 항목은
  * 계약이 없으므로(호출자가 제자리에서 고칠 수 있다) 표지가 없고, 아래 복제는 그런 항목을 예전처럼 깊게 복제한다.
  */
 const storeOwnedEntries = new WeakSet<object>();
@@ -157,16 +157,26 @@ function sharedDictionariesOf(project: Project): readonly (Record<string, unknow
   return [isPlainRecord(tilesets) ? tilesets : undefined, isPlainRecord(uploaded) ? uploaded : undefined];
 }
 
-/** 스토어의 지금 프로젝트의 타일셋·업로드 자산 항목에 «제자리에서 바뀌지 않는다» 표지를 붙인다. 부르는 쪽이 스토어 프로젝트임을 확인한다. */
-export function trustStoreOwnedEntries(project: Project): void {
-  for (const dictionary of sharedDictionariesOf(project)) {
-    if (!dictionary) continue;
+/**
+ * 타일셋·업로드 자산 항목 중 스토어가 지금 들고 있는 객체에 «제자리에서 바뀌지 않는다» 표지를 붙인다. `live` 는 부르는 쪽이 확인한
+ * 스토어의 지금 프로젝트다(정규화가 끝난 것). `project` 가 그 프로젝트 자신이면 항목 전부가, 다른 프로젝트 객체(스토어에 넘긴 원본,
+ * 스토어 사본에서 뜬 사본)면 같은 키에 **같은 객체**가 스토어에 있는 항목만 표지를 받는다 — 그 객체는 스토어의 것이라 같은 계약을 진다.
+ *
+ * 왜(2026-11-16 실측, test/aiAppliedBudgetStop.test.ts 한 건 32.6s): 스토어는 `replace(project)` 에서 최상위를 새로 뜨고 항목은 그대로
+ * 가리킨다. 그 원본으로 세션을 열면 `project === store.getCurrent()` 가 아니라서 공유가 하나도 켜지지 않아, 세션 사본마다 번들 타일셋
+ * 49개를 통째 복제(14번 · 약 19s)하고 새 객체라 적용 권위 요약이 문서 전체를 두 번(약 9s) 다시 돌았다.
+ */
+export function trustStoreOwnedEntries(project: Project, live: Project = project): void {
+  const liveDictionaries = sharedDictionariesOf(live);
+  sharedDictionariesOf(project).forEach((dictionary, index) => {
+    const owned = liveDictionaries[index];
+    if (!dictionary || !owned) return;
     // 값을 읽기만 한다 — 지연 번들 타일셋(bundledTilesetDiff.ts)은 사전 자리의 보통 값이라 되돌리지 않는다.
     for (const key of Object.keys(dictionary)) {
       const entry = dictionary[key];
-      if (isObjectLike(entry)) storeOwnedEntries.add(entry);
+      if (isObjectLike(entry) && (dictionary === owned || owned[key] === entry)) storeOwnedEntries.add(entry);
     }
-  }
+  });
 }
 
 /** 이 객체가 스토어가 들고 있던 것으로 확인된 공유 항목인가. */
