@@ -365,6 +365,19 @@ describe("버들항 표로 읽고 거절한다 — room_parts · 목록 카드 �
     expect(nearIds("logdark", Object.keys(ES.walls))).toEqual(["log"]);
     for (const none of ["piano", "potted fern", "stove", "hanging pans"]) expect(nearIds(none, ids), none).toEqual([]);
     expect(nearIds("boards", Object.keys(ES.floors))).toEqual([]);
+    expect(nearIds("sack", ids)).toContain("grain sack");
+    expect(nearIds("fireplace", ids)).toEqual(["great fireplace", "brick fireplace"]);
+    expect(nearIds("bar stool", ids)).toEqual(["stool"]);
+    expect(nearIds("desk 2x1", ids)).toContain("writing desk");
+  });
+
+  it("틀린 권유는 내지 않는다 — 흔한 낱말 하나(wall · board)나 꾸밈말만 겹친 것은 가깝지 않다", () => {
+    // wall torch 의 wall 은 꾸밈말이다(횃불 자리에 무기 벽을 권하지 않는다). gear wall 은 갈래 낱말 wall 하나만 겹친다.
+    for (const word of ["wall torch", "gear wall", "dart board", "menu board", "water jar", "book pile", "farm tool rack", "ledger stand"]) expect(nearIds(word, ids), word).toEqual([]);
+    const check = checkLayout({ ...mill("log", "plank"), objects: [{ id: "wall torch", x: 3, y: 5 }, { id: "gear wall", x: 5, y: 5 }] }, ES, ts);
+    expect(check.errors).toHaveLength(1);
+    expect(check.errors[0]).toMatch(/no near id in this table[^.]*"wall torch", "gear wall"/iu);
+    expect(check.errors[0]).not.toContain("→");
   });
 
   it("없는 벽 · 바닥 · 기물을 한 번에 알리고 같은 낱말은 묶는다 — 장소는 그대로 거절한다(재료를 바꿔 깔지 않는다)", () => {
