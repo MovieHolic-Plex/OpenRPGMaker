@@ -148,6 +148,21 @@ describe("실내 설계 예", () => {
     expect(new Set(lines).size).toBeGreaterThanOrEqual(4);
     for (const l of lines) expect(sorted(l)).toBe(sorted(lines[0]!));
   });
+
+  it("목록 카드의 «이 게임의 평면»: 열쇠마다 랜드마크 쪽·곁방 쓰임·입구 자리가 갈린다 — 표에서 온 낱말뿐, 열쇠가 없으면 없다", () => {
+    const ts = createBlankProject().tilesets.atlas_biome_interior!;
+    const plan = (key: string, text = "바닷가 마을 하나와, 그 마을 성당 안을 지어 줘") => chipsetCatalog(ts, text, key)!.split("\n").find((l) => l.startsWith("plan for this game"));
+    expect(plan("")).toBeUndefined();
+    expect(chipsetCatalog(ts, "방탈출 게임 만들어 줘.", KEYS[0]!)!).not.toContain("plan for this game");
+    const lines = KEYS.map((key) => plan(key)!);
+    expect(new Set(lines).size).toBeGreaterThanOrEqual(4);
+    expect(plan(KEYS[0]!)).toBe(lines[0]);
+    // 동·서 끝은 그 예제 방에 그쪽을 보는 기물이 둘 이상일 때만(예배당: 회중석·제단) — 여관 방에는 없다
+    expect(lines.some((l) => l.includes("east end (pieces that face it: pew E2, altar E)"))).toBe(true);
+    for (const key of KEYS) expect(plan(key, "여관 1층 하나 지어 줘")!).toContain("landmark at the north wall");
+    // 곁방 쓰임은 같은 예제 건물(예배당)의 다른 방이다
+    for (const l of lines) for (const room of (/side rooms: ([^;]*), on the/u.exec(l)?.[1] ?? "").split(", ").filter(Boolean)) expect(["bell tower", "vestry"]).toContain(room);
+  });
 });
 
 describe("포구 마을의 일터·작은 집", () => {

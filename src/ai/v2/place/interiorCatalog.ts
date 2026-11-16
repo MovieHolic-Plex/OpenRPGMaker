@@ -56,18 +56,49 @@ function suggestedPieces(S: HandInteriorSpec, text: string, max = 70, key = ""):
   return { kinds, ids: ids.slice(0, max), sized: [...sized].slice(0, 12) };
 }
 
+/**
+ * 이 게임의 평면 한 줄 — 같은 방 종류의 요청이 게임마다 같은 뼈대가 되지 않게(2026-11-16 실모델 탐침: «바닷가 마을과 성당» 세 판의 성당이 모두
+ * 신랑 + 동쪽 2/3 자리 세로 칸막이 + 곁방 둘 위아래 + 북쪽 벽 가운데 제단이었다 — 모델은 room_parts 를 부르지 않고 목록 카드만 읽는다).
+ * 낱말은 손으로 적지 않는다: 곁방 쓰임 = 칩셋 예제 표에서 그 방 종류가 든 건물의 다른 방들, 랜드마크 쪽 = 그 예제 방 기물의 facing(E/W 기물이 있을 때만 동·서 끝).
+ * 쪽(서·동·북)과 입구 자리(남쪽 벽의 왼·가운데·오른)는 평면의 축이라 표가 아니다. 게임 열쇠가 없으면(사람 편집·옛 호출·지시문 상한 시험의 열쇠 없는 판) 싣지 않는다.
+ * 요청이 말한 것이 이긴다 — 줄에 그렇게 적는다. 칸 배치는 여전히 모델이 쓰고, 코드는 받은 그대로 깐다(뒤집지 않는다: 뒤집으면 모델이 적어 둔 좌표 — 잇기·고치기 — 가 어긋난다).
+ */
+function planLine(S: HandInteriorSpec, kinds: readonly string[], key: string): string | undefined {
+  if (!key.trim() || !kinds.length) return undefined;
+  const ex = S.rooms?.examples ?? [];
+  const h = (s: string) => { let x = 0x811c9dc5; for (const c of `plan|${key}|${s}`) { x ^= c.charCodeAt(0); x = Math.imul(x, 0x01000193) >>> 0; } x ^= x >>> 15; return Math.imul(x, 0x2c1b3c6d) >>> 0; };
+  const pick = <T,>(xs: readonly T[], what: string): T => xs[h(what) % xs.length]!;
+  // 이 방 종류 하나(첫째)만 본다. 곁방 쓰임 = 그 종류가 든 예제 건물(같은 건물 이름)의 다른 방 — 길목(entrance·corridor)은 쓰임이 아니라 뺀다.
+  const kind = kinds[0]!;
+  const own = ex.filter(([, , room]) => room === kind);
+  const buildings = new Set(own.map(([b]) => b));
+  const side = [...new Set(ex.filter(([b, , room]) => buildings.has(b) && room !== kind && room !== "entrance" && room !== "corridor").map(([, , room]) => room))]
+    .sort((a, b) => h(`side|${a}`) - h(`side|${b}`) || a.localeCompare(b)).slice(0, 1 + (h("count") % 2)).map((r) => r.replace(/_/gu, " "));
+  // 랜드마크가 동·서 끝에 설 수 있는 방 = 그 예제 방에 그 쪽을 보는 기물이 둘 이상(제단과 회중석처럼 방 전체가 그쪽을 본다). 의자 하나로는 방의 축이 아니다.
+  const facing = new Map<string, Set<string>>();
+  for (const [, , , items] of own) for (const [id] of items) { const f = S.objects[id]?.facing; if (f === "E" || f === "W") (facing.get(f) ?? facing.set(f, new Set()).get(f)!).add(id); }
+  const ends = ["north wall", ...(["E", "W"] as const).filter((f) => (facing.get(f)?.size ?? 0) >= 2).map((f) => (f === "E" ? "east end" : "west end"))];
+  const end = pick(ends, "end");
+  const sides = ["west", "east", "north"].filter((s) => !end.startsWith(s) && !(s === "north" && end === "north wall"));
+  const turned = end === "east end" ? [...facing.get("E")!] : end === "west end" ? [...facing.get("W")!] : [];
+  return `plan for this game (seeded per game so two games' ${kind.replace(/_/gu, " ")} rooms differ; anything the request names wins): landmark at the ${end}${turned.length ? ` (pieces that face it: ${turned.join(", ")})` : ""}`
+    + `${side.length ? `; side rooms: ${side.join(", ")}, on the ${pick(sides, "side")} side` : ""}; entrance ${pick(["left of centre", "at the centre", "right of centre"], "door")} of the south wall.`;
+}
+
 const cache = new Map<string, string>();
 /** 목록 카드 글(영어). 같은 칩셋·같은 방 종류면 캐시한다. */
 export function chipsetCatalog(tileset: TilesetDef | undefined, text = "", key = ""): string | undefined {
   const S = effectiveSpec(tileset);
   if (!tileset || !S || !Object.keys(S.objects).length) return undefined;
   const sug = suggestedPieces(S, text, 70, key);
-  const cacheKey = `${tileset.id}|${Object.keys(S.objects).length}|${sug.kinds.join(",")}|${sug.ids.join(",")}`;
+  const plan = planLine(S, sug.kinds, key);
+  const cacheKey = `${tileset.id}|${Object.keys(S.objects).length}|${sug.kinds.join(",")}|${sug.ids.join(",")}|${plan ?? ""}`;
   const hit = cache.get(cacheKey); if (hit) return hit;
   const suggested = sug.ids.map((id) => entry(S, id)).filter(Boolean);
   const out = [
     `[Interior catalog — chipset ${tileset.id}, 16px cells; exact ids for make_place spec.layout. Generated from the chipset's own room tables and pieces.]`,
     ...(suggested.length ? [`suggested for this request${sug.kinds.length ? ` (room examples: ${sug.kinds.join(", ")})` : ""}: ${suggested.join(", ")}${sug.sized.length ? `; sized pieces used there: ${sug.sized.join(", ")}` : ""}`] : []),
+    ...(plan ? [plan] : []),
     layoutCatalog(S),
   ].join("\n");
   cache.set(cacheKey, out);
