@@ -21,36 +21,46 @@ function alike(a: string, b: string): number {
   return 0;
 }
 
+/** 표에서 «흔한 낱말» — 이만큼의 id 에 나오는 낱말(table · shelf · rack · board · wall …) 하나만 겹친 것은 가깝다고 치지 않는다. */
+const COMMON_DF = 5;
+
 /**
- * 표의 id 가운데 word 와 낱말이 가장 많이 겹치는 것(최대 max 개, 가장 가까운 것의 90% 에 못 미치면 뺀다 — 거절 글이 900자 안에 다 들어가야 한다).
- * 드문 낱말일수록 무겁다(표에서 센 idf). 겹친 낱말이 꾸밈말끼리 하나뿐이면(wall torch ~ wall map) 가깝다고 치지 않는다 —
- * 영어 겹낱말은 끝 낱말이 갈래이므로, 묻는 쪽이나 표 쪽의 끝 낱말이 걸리거나 두 낱말 이상이 겹쳐야 한다.
- * 낱말이 둘 이상인 물음에서 머리·꼬리만 걸린 것 하나(potted ~ pot)로는 가깝다고 치지 않는다.
- * 크기 붙은 탁자 id(«dining 2x1»)는 탁자다 — 낱말 table 을 갈래로 더한다.
+ * 표의 id 가운데 word 와 낱말이 겹쳐 가까운 것(최대 max 개). 틀린 권유보다 «없다»가 낫다 — 아래 셋 중 하나일 때만 가깝다:
+ *  (가) 표의 id 낱말이 모두 물음에 들어 있다(표의 것이 더 넓은 이름이다): chair N → chair · crate:fish → crate · great stone brazier → brazier.
+ *  (나) 표의 id 낱말 둘 이상이 물음과 겹친다: keg rack → ale kegs rack · broom and bucket → broom and pail · roundtable → round table.
+ *  (다) 하나만 겹치되 그것이 양쪽의 끝 낱말(갈래)이다 — 영어 겹낱말은 끝 낱말이 갈래다: desk 2x1 → writing desk · fireplace → great fireplace.
+ *       물음이 한 낱말이거나 크기 붙은 탁자일 때만이고, 크기 탁자는 그 낱말이 표에서 흔하지 않아야 한다(df < COMMON_DF — «X table» 전부를 권하지 않는다).
+ *       여러 낱말 물음에서 갈래 낱말 하나만 겹친 것은 가깝다고 치지 않는다: gear wall ≁ weapon wall · dart board ≁ key board · book pile ≁ sack pile · water jar ≁ umbrella jar.
+ *       머리·꼬리만 걸린 것(logdark ~ log, armchair ~ chair)은 물음도 표의 id 도 한 낱말일 때만.
+ * 꾸밈말끼리(wall torch ~ wall map), 물음의 꾸밈말과 표의 갈래(wall torch ~ weapon wall), 물음의 갈래와 표의 꾸밈말(water jar ~ jar shelf)은 가깝지 않다.
+ * 크기 붙은 탁자 id(«dining 2x1»)는 탁자다 — 낱말 table 을 갈래로 더한다. 순서는 겹친 낱말 수 → 드문 낱말일수록 무거운 점수(표에서 센 idf).
  */
 export function nearIds(word: string, ids: readonly string[], max = 2): string[] {
-  const q = [...new Set([...wordsOf(word), ...(SIZED.test(word) ? ["table"] : [])])];
+  const own = wordsOf(word), sized = SIZED.test(word);
+  const q = [...new Set([...own, ...(SIZED.test(word) ? ["table"] : [])])];
   if (!q.length || !ids.length) return [];
+  const heads = new Set([own[own.length - 1], ...(SIZED.test(word) ? ["table"] : [])].filter((w): w is string => !!w));
   const toks = ids.map(wordsOf);
   const df = new Map<string, number>();
   for (const t of toks) for (const w of new Set(t)) df.set(w, (df.get(w) ?? 0) + 1);
   const idf = (w: string) => Math.log(1 + ids.length / (df.get(w) ?? 1));
-  const scored: [number, number][] = [];
+  const scored: [number, number, number][] = [];
   toks.forEach((ct, i) => {
     if (!ct.length) return;
-    let sum = 0, matched = 0, exact = 0, head = false;
-    q.forEach((qt, qi) => {
-      let best = 0, at = -1, whole = false;
-      ct.forEach((c, ci) => { const a = alike(qt, c), m = a * idf(c); if (m > best) { best = m; at = ci; whole = a === 1; } });
-      if (at < 0) return;
-      sum += best; matched++; if (whole) exact++;
-      if (qi === q.length - 1 || at === ct.length - 1) head = true;
-    });
-    if (matched && (head || matched >= 2) && (exact > 0 || q.length === 1)) scored.push([sum / Math.sqrt(ct.length), i]);
+    const hit = ct.map((c) => Math.max(...q.map((qt) => alike(qt, c))));
+    const covered = hit.filter((h) => h > 0).length, exact = hit.filter((h) => h === 1).length;
+    if (!covered) return;
+    const last = ct[ct.length - 1]!;
+    const whole = exact === ct.length;
+    const two = covered >= 2 && (exact >= 1 || own.length === 1);
+    const headExact = hit[ct.length - 1] === 1 && heads.has(last) && (own.length === 1 || (sized && (df.get(last) ?? 0) < COMMON_DF));
+    const headPart = own.length === 1 && !sized && ct.length === 1 && hit[0]! > 0;
+    if (!(whole || two || headExact || headPart)) return;
+    scored.push([covered, ct.reduce((sum, c, k) => sum + hit[k]! * idf(c), 0) / Math.sqrt(ct.length), i]);
   });
-  scored.sort((a, b) => b[0] - a[0] || a[1] - b[1]);
-  const top = scored[0]?.[0] ?? 0;
-  return scored.filter(([s]) => s >= top * 0.9).slice(0, max).map(([, i]) => ids[i]!);
+  scored.sort((a, b) => b[0] - a[0] || b[1] - a[1] || a[2] - b[2]);
+  const top = scored[0];
+  return top ? scored.filter(([, sc]) => sc >= top[1] * 0.9).slice(0, max).map(([, , i]) => ids[i]!) : [];
 }
 
 /** 기물 id 가 표에 있나(크기 붙은 탁자 «dining 3x2» 는 표에 그 탁자 갈래가 있을 때만). */
