@@ -150,33 +150,59 @@ describe("요청 건물 — 마을 시공기가 세운다", () => {
   }, 180_000);
 });
 
-describe("make_place — 담 두른 마을도 종류와 건물 청하는 법을 한 번 본다", () => {
-  it("땅 그림 답이 없는 성벽 강가 마을: 종류도 건물도 안 적은 첫 호출은 짓지 않고 둘을 알려 주고, 같은 호출을 다시 보내면 짓는다", async () => {
+describe("make_place — 담 두른 마을도 종류와 건물 청하는 법을 한 번 본다(짓는 것을 미루지 않는다)", () => {
+  const makePlace = (task: string) => {
     const p = createBlankProject() as Project;
-    const task = "성벽을 두른 강가 읍 하나 만들어 줘";
     const env = { ctx: { project: p, currentMapId: p.startMapId, assistantRun: true }, request: { task, provider: "local-cli:claude", mapIds: [], project: p, projectKey: "golden-key" },
       emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} } as never;
     const tool = createV2Tools(env, new V2Session()).find((t) => t.name === "make_place")!;
     const call = async (spec: Record<string, unknown>) => {
       const res = await tool.execute("t", { spec }) as { content: { type: string; text?: string }[] };
-      return JSON.parse(res.content.filter((c) => c.type === "text").map((c) => c.text).join("\n")) as { ok?: boolean; notFailure?: boolean; summary?: string; villageKinds?: string; buildings?: string; mapIds?: string[] };
+      return JSON.parse(res.content.filter((c) => c.type === "text").map((c) => c.text).join("\n")) as { ok?: boolean; notFailure?: boolean; summary?: string; warnings?: string[]; mapIds?: string[] };
     };
-    const mapsOf = () => Object.keys((env as { ctx: { project: Project } }).ctx.project.maps).length;
-    const before = mapsOf();
-    const spec = { type: "village", name: "성읍", theme: "river", features: ["walls"], hints: { walls: true } };
-    const first = await call(spec);
-    expect(first.ok).toBe(false);
-    expect(first.notFailure).toBe(true);
-    expect(first.summary).toMatch(/^Not built yet \(not a failure\)/);
-    expect(first.villageKinds).toContain("smithy-village (");
-    expect(first.buildings).toMatch(/hints\.buildings/);
-    expect(mapsOf()).toBe(before);
-    // 같은 호출을 그대로 다시 보내면 짓는다(되풀이해 돌려보내지 않는다)
-    const second = await call(spec);
-    expect(second.summary).not.toMatch(/^Not built yet/);
-    expect(second.ok, second.summary).toBe(true);
-    expect(second.summary).toMatch(/성읍: .*성벽/u);
+    return { call, project: () => (env as { ctx: { project: Project } }).ctx.project };
+  };
+
+  it("땅 그림 답이 없는 성벽 강가 마을: 첫 호출에 바로 짓고, 종류 목록과 건물 청하는 법은 결과 글 끝에 한 번 싣는다", async () => {
+    const { call, project } = makePlace("성벽을 두른 강가 읍 하나 만들어 줘");
+    const first = await call({ type: "village", name: "성읍", theme: "river", features: ["walls"], hints: { walls: true } });
+    expect(first.ok, first.summary).toBe(true);
+    expect(first.summary).toMatch(/성읍: .*성벽/u);
+    const notes = (first.warnings ?? []).join(" ");
+    expect(notes).toContain("smithy-village (");
+    expect(notes).toMatch(/hints\.buildings/);
+    expect(project().maps[first.mapIds![0]!]?.name).toBe("성읍");
+    // 같은 이름을 다시 지어도(다른 맵) 목록을 되풀이하지 않는다
+    const again = await call({ type: "village", name: "성읍", theme: "river", features: ["walls"], hints: { walls: true } });
+    expect((again.warnings ?? []).join(" ")).not.toContain("smithy-village (");
   }, 180_000);
+
+  it("명세 은행 lay-main-castle: 녹화된 «성벽 왕궁» 호출(종류·건물 없음, 스키마 칸을 0·빈 값으로 다 채움) 한 번으로 왕궁 맵이 선다 — «빈 맵» 으로 남지 않는다", async () => {
+    // 2026-11-16 은행: 첫 호출을 «Not built yet» 으로 돌려보냈더니 모델(녹화)은 다시 부르지 않고 다음 할 일로 넘어가 맵이 «빈 맵» 으로 남았다.
+    const { call, project } = makePlace("성벽으로 둘러싸인 왕궁 맵을 만들어 줘. 성문으로 들어가서 궁전까지 길이 이어지게 해 줘.");
+    const zero = { x: 0, y: 0 };
+    const res = await call({ type: "village", name: "왕궁", style: "fantasy", theme: "river", size: "large", features: ["walls", "plaza"], exits: ["south"], salt: 519010,
+      zones: [{ kind: "palace", purpose: "성문에서 길을 따라 도달하는 왕궁", anchors: ["궁전"] }],
+      hints: { variant: 0, dressing: 0, houseCount: 3, roofs: "", water: "none", woods: "", form: "", terrain: "", landform: "flat", settle: "low", tiers: 1, high: "north", forestType: "", walls: true, wallGate: "S", width: 0, height: 0, terrainSeed: 0,
+        layout: { gather: { ...zero, plaza: true }, landmark: zero, anchor: zero, work: zero, houses: [], fields: [], orchards: [], pastures: [], forests: [], props: [], exits: ["south"] } } });
+    expect(res.ok, res.summary).toBe(true);
+    expect(res.summary).not.toMatch(/^Not built yet/);
+    expect(res.summary).toMatch(/왕궁: .*성벽/u);
+    const map = project().maps[res.mapIds![0]!]!;
+    expect(map.name).toBe("왕궁");
+    expect((map.structurePlacements ?? []).length).toBeGreaterThan(0);
+  }, 180_000);
+
+  it("성 · 성채 · 궁처럼 마을 종류가 아닌 낱말은 종류를 버리고(게임이 고른다) 짓는다 — 목록은 한 번만", async () => {
+    for (const kind of ["castle", "성채", "궁"]) {
+      const { call } = makePlace("성벽 왕궁 만들어 줘");
+      const res = await call({ type: "village", name: "왕성", theme: "river", features: ["walls"], salt: 519010, hints: { walls: true, kind } });
+      expect(res.ok, `${kind}: ${res.summary}`).toBe(true);
+      const notes = (res.warnings ?? []).join(" ");
+      expect(notes, kind).toMatch(new RegExp(`hints\\.kind "${kind}" is not a village kind — the game picks one that fits the land`, "u"));
+      expect(notes.split("smithy-village (").length - 1, kind).toBe(1);
+    }
+  }, 240_000);
 });
 
 describe("손으로 찍는 건물 — 어긋난 터는 고쳐 놓고 알린다", () => {

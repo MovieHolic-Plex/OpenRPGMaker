@@ -12,7 +12,7 @@ import { localizePlaceSpec } from "../../place/builders/modernCity";
 import { localizeCultureSpec } from "../../place/builders/joseon";
 import { isComposedWorld, parseWorldStyle, pickWorld, spareKind, worldKind, worldOf, worldPlaceSpec } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
-import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villageKindsLine, fixUnknownVillageKind, VILLAGE_BUILDINGS_LINE, askedBuildingWords } from "../../place/builders/village";
+import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villageKindsLine, fixUnknownVillageKind, WALLED_BUILDINGS_LINE, VILLAGE_BUILDINGS_LINE, askedBuildingWords } from "../../place/builders/village";
 import { codeTerrainFor, usesCodeTerrain, villageCliffHabitFor } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
@@ -194,6 +194,8 @@ export function placeVerbs(c: VerbContext) {
       const norm = (s: string) => s.replace(/\s+/gu, "");
       const samePlace = (a: string, b: string) => { const [x, y] = norm(a).length <= norm(b).length ? [norm(a), norm(b)] : [norm(b), norm(a)]; return !!x && (y === x || y.startsWith(x) || y.endsWith(x)); };
       let keptNote = keptNoteEarly;
+      /** 땅 그림 답이 없는 마을의 첫 결과 끝에 붙는 종류 목록 · 건물 청하는 법(지은 뒤에 붙는다). */
+      let menuNote = "";
       if (other && !samePlace(other.spec.name, spec.name)) {
         const { mapId: _drop, ...rest } = spec;
         spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
@@ -273,14 +275,14 @@ export function placeVerbs(c: VerbContext) {
         const va = villageArgs(spec).args; const vt = String(va.theme ?? "river");
         const kindFix = vt === "river" || vt === "coast" ? fixUnknownVillageKind(spec) : undefined; // 종류는 강가·포구 마을에만 있다
         if (kindFix) { spec = kindFix.spec; keptNote = [keptNote, kindFix.note].filter(Boolean).join(" "); }
-        // 땅 그림 답이 없는 강가·포구 마을(성벽 마을 · 띠 지형): 첫 호출에 바로 지어져, 모델이 종류 목록도 건물 청하는 법도 보지 못한 채 다시 지을 수 없는 마을이 섰다.
-        // 종류도 건물도 적지 않은 첫 호출은 한 번 되돌려 그 둘을 알려 준다(짓지 않는다) — 같은 호출을 다시 보내면 그대로 짓는다.
+        // 땅 그림 답이 없는 강가·포구 마을(성벽 마을 · 띠 지형): 종류 목록도 건물 청하는 법도 볼 자리가 없었다. 첫 호출은 그대로 짓고(되돌리지 않는다),
+        // 결과 글 끝에 그 둘을 한 번 싣는다 — 성벽 마을에 이어 짓는 다음 마을과 손으로 찍는 건물에 쓴다.
+        // 왜 되돌리지 않나(2026-11-16 명세 은행 lay-main-castle): 한 번 «Not built yet» 으로 돌려보냈더니 모델이 다시 부르지 않고 다음 할 일로 넘어가
+        // 성벽 왕궁 맵이 «빈 맵» 으로 남았다. 거절은 게임이 깨질 때만이고, 짓지 않은 채 돌려보내는 것도 같은 값을 치른다.
         if (!usesCodeTerrain(va, vt) && (vt === "river" || vt === "coast") && firstBuild && !bboxVillageSpec(spec) && typeof spec.hints?.kind !== "string" && !askedBuildingWords(spec.hints?.buildings).length
-          && !layoutSession(session).cards.has(`village-menu:${spec.name}`)) {
+          && !kindFix && !layoutSession(session).cards.has(`village-menu:${spec.name}`)) {
           layoutSession(session).cards.add(`village-menu:${spec.name}`);
-          return text({ ok: false, notFailure: true,
-            summary: `Not built yet (not a failure) — "${spec.name}" is laid out by the builder on flat land (a walled town or band terrain has no land picture to choose spots on). Before it is built you may add two things to hints; then call make_place again with the same spec and it is built (unchanged is fine too).`,
-            villageKinds: villageKindsLine(vt, va.walls === true ? "none" : va.water), buildings: VILLAGE_BUILDINGS_LINE });
+          menuNote = `${villageKindsLine(vt, va.walls === true ? "none" : va.water) ?? ""} ${WALLED_BUILDINGS_LINE}`.trim();
         }
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
@@ -340,6 +342,7 @@ export function placeVerbs(c: VerbContext) {
       }
       result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart, session.stageWrites);
       if (keptNote || designed.notes.length) result = { ...result, warnings: [...(keptNote ? [keptNote] : []), ...designed.notes, ...result.warnings] };
+      if (menuNote && result.ok) result = { ...result, warnings: [...result.warnings, menuNote] };
       // 요청에 주민이 있는데 마을만 짓고 끝냈다(2026-10-30 씬 벤치 「강가 마을」: 「주민 몇 명」 요청 → NPC 0명) — 마을 결과에 다음 할 일로 붙인다
       if (result.ok && builder.id === "village" && /주민|마을\s*사람|사람\s*몇|npc|villager|resident/i.test(String(task ?? ""))) {
         const mapId = result.mapIds[0]; const npcs = mapId ? (run.ctx.project.maps[mapId]?.events ?? []).length : 0;

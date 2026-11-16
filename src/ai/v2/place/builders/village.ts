@@ -77,6 +77,9 @@ export function askedVillageBuildings(project: Project, spec: PlaceSpec): { buil
 export const VILLAGE_BUILDINGS_LINE = "A building the request asks for (a cathedral by the square, an inn, a market hall): put it in hints.buildings as a kit id (kit:beodeul_city/bd-house-cathedral — list_spatial_designs{kind:\"object\", query} finds ids) or a word of a kit's id or name (cathedral · inn · market-hall · 성당), up to 3. "
   + "The builder seats each on the edge of the gather (the square when gather.plaza is true), door towards it, and reports its door front. To choose the spot yourself, add kit to layout.landmark or layout.anchor instead ({x, y, kit}). Do not stamp such a building by hand afterwards — a village with houses is not rebuilt.";
 
+/** 땅 그림 답이 없는 마을(성벽 · 띠 지형)의 첫 결과 끝에 붙는 한 줄 — 이미 섰으니 손으로 찍는 길과 다음 마을에서 청하는 길을 말한다. */
+export const WALLED_BUILDINGS_LINE = "A building the request asks for (a cathedral, an inn, a market hall) that this village lacks: stamp_object it by the gather — the tool moves it to the nearest spot whose door can be walked to and clears trees under it. For another village, put it in make_place hints.buildings (kit id or a word of it) and the builder seats it by the gather.";
+
 /** 가까운 건물조차 없는 이름을 알리는 글(거절이 아니다 — 마을은 제 큰 건물로 선다) — 이 칩셋에서 청할 수 있는 큰 건물 목록과 찾는 법. */
 export function unknownVillageBuildingText(project: Project, unknown: readonly string[]): string {
   return `hints.buildings ${unknown.map((w) => `"${w}"`).join(", ")}: no building kit of this village chipset is close to that id or word, so the village's own big building stands instead. Buildings that can be asked for (kit id or a word of it): ${askedBuildingMenu(beodeulKits(project))}. `
