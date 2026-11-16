@@ -691,7 +691,8 @@ export function renderAiSettingsForm(options: {
       thinkingLevel: effort.value as RoleModel["thinkingLevel"],
     }]))),
     ultrabrainProviderId: brainProvider.value,
-    ultrabrainModel: brainModel.input.value.trim() || DEFAULT_ULTRABRAIN_MODEL,
+    // 빈 칸은 그 칸 제공자의 기본 모델로 채운다 — 공장 기본이 Claude 가 된 뒤(2026-11-16) Google 의 기본 모델 이름을 다른 계정 칸에 적지 않게.
+    ultrabrainModel: brainModel.input.value.trim() || getOhMyPiProvider(brainProvider.value)?.defaultModel || DEFAULT_ULTRABRAIN_MODEL,
     ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
     imageProviderId: imageProvider.value,
     imageModel: imageModel.value,
@@ -703,8 +704,8 @@ export function renderAiSettingsForm(options: {
     // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
     // 들고 있다. 여기서 빈 값으로 고정해 브라우저 저장소에 비밀·죽은 주소가 남지 않게 한다.
     baseUrl: DEFAULT_BASE_URL,
-    model: model.input.value.trim() || DEFAULT_MODEL,
-    liteModel: liteModel.input.value.trim() || DEFAULT_LITE_MODEL,
+    model: model.input.value.trim() || getOhMyPiProvider(providerId)?.defaultModel || DEFAULT_MODEL,
+    liteModel: liteModel.input.value.trim() || getOhMyPiProvider(providerId)?.defaultModel || DEFAULT_LITE_MODEL,
     apiKey: "",
     maxToolCalls: defaultAiConfig().maxToolCalls,
     maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
