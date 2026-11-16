@@ -54,3 +54,38 @@ describe("페이지를 다시 쓸 때 다른 이벤트가 기다리는 상태 �
     expect((result.data as { carriedWrites?: string[] }).carriedWrites).toEqual(["sw:sw_path_taken"]);
   });
 });
+
+// 2026-11-16 #4751 실모델 확인 2번: 「열쇠를 주는 대신 옆 상자에서 얻게」 를 주는 사람부터 다시 쓰면 열쇠 주기가 되붙고, 뒤에 놓은 상자와 두 군데서 열쇠가 나왔다.
+describe("되붙인 쓰기를 뒤의 호출이 다른 곳에 만들면 되붙인 사본을 걷는다", () => {
+  function keySetup(): { ctx: ToolContext; mapId: string } {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    project.database.items.push({ id: "item_gate_key", name: "열쇠", kind: "key" } as never);
+    map.events.push({ id: "ev_keeper", name: "문지기", x: 2, y: 2, trigger: { kind: "action" }, commands: [], pages: [page([{ kind: "text", body: "열쇠 받게" }, { kind: "changeItem", itemId: "item_gate_key", op: "+=", amount: 1 }])] } as never);
+    map.events.push({ id: "ev_gate", name: "문", x: 6, y: 6, trigger: { kind: "action" }, commands: [], pages: [page([{ kind: "text", body: "잠겼다" }]), page([{ kind: "text", body: "열렸다" }], [{ kind: "item", itemId: "item_gate_key" }])] } as never);
+    return { ctx: { project, assistantRun: true }, mapId: map.id };
+  }
+  const keeper = (ctx: ToolContext, mapId: string) => JSON.stringify(ctx.project.maps[mapId]!.events.find((e) => e.id === "ev_keeper")!.pages![0]!.commands);
+
+  it("주는 사람을 먼저 다시 쓰고 상자를 놓으면 열쇠는 상자 하나에서만 나오고 결과가 알린다", () => {
+    const { ctx, mapId } = keySetup();
+    const first = runTool(ctx, "patch_event_page", { mapId, eventId: "ev_keeper", pageIndex: 0, set: { commands: [{ kind: "text", body: "옆 상자를 열어 보게" }] } });
+    expect(first.summary).toContain("Carried over 1 state write");
+    expect(keeper(ctx, mapId)).toContain("item_gate_key");
+    const chest = runTool(ctx, "place_chest", { mapId, x: 3, y: 2, contents: { itemId: "item_gate_key" } });
+    expect(chest.ok).toBe(true);
+    expect(chest.summary).toContain("Withdrew the item item_gate_key write");
+    expect(keeper(ctx, mapId)).not.toContain("item_gate_key");
+    const givers = ctx.project.maps[mapId]!.events.filter((e) => JSON.stringify(e.pages).includes('"changeItem","itemId":"item_gate_key"') || JSON.stringify(e.pages).includes('"itemId":"item_gate_key","op":"+="'));
+    expect(givers.map((e) => e.id).filter((id) => id !== "ev_gate")).toHaveLength(1);
+  });
+
+  it("모델이 되붙은 쓰기를 직접 다시 적었으면(받아들임) 걷지 않는다", () => {
+    const { ctx, mapId } = keySetup();
+    runTool(ctx, "patch_event_page", { mapId, eventId: "ev_keeper", pageIndex: 0, set: { commands: [{ kind: "text", body: "옆 상자" }] } });
+    runTool(ctx, "patch_event_page", { mapId, eventId: "ev_keeper", pageIndex: 0, set: { commands: [{ kind: "text", body: "이것도 받게" }, { kind: "changeItem", itemId: "item_gate_key", op: "+=", amount: 1 }] } });
+    const chest = runTool(ctx, "place_chest", { mapId, x: 3, y: 2, contents: { itemId: "item_gate_key" } });
+    expect(chest.summary).not.toContain("Withdrew");
+    expect(keeper(ctx, mapId)).toContain("item_gate_key");
+  });
+});

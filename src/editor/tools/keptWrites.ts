@@ -118,3 +118,83 @@ export function keptWritesNote(kept: readonly KeptWrite[]): string {
 export function droppedWritesNote(kept: readonly KeptWrite[]): string {
   return `Removed as asked (dropWrites:true) — these now have no writer anywhere, so what reads them can never open: ${kept.map(label).join("; ")}.`;
 }
+
+// ── 지킨 쓰기 물리기 ─────────────────────────────────────────────────────────────
+// 왜(2026-11-16 #4751 실모델 확인): 「열쇠를 주는 대신 옆 상자에서 얻게」 는 정당한 옮기기다. 모델이 주는 사람을 먼저 다시 쓰면
+// 위 droppedNeededWrites 가 열쇠 주기를 지켜 되붙이고, 그 뒤 같은 세션에서 상자를 놓으면 열쇠가 두 군데서 나온다.
+// 그래서 되붙인 쓰기를 세션(도구 ctx)마다 적어 두고, 뒤의 쓰기 호출이 그 상태를 쓰는 곳을 새로 만들면 되붙인 사본을 걷고 알린다.
+// 모델이 그 이벤트를 다시 쓰면(되붙인 것을 보고 받아들인 것) 기록을 지운다 — 그때부터는 모델의 명령이다.
+
+export interface CarriedRecord { readonly mapId: string; readonly eventId: string; readonly key: Key; readonly eventJson: string }
+const carriedBySession = new WeakMap<object, CarriedRecord[]>();
+
+function eventIn(project: Project, mapId: string, eventId: string): GameEvent | undefined {
+  return project.maps[mapId]?.events?.find((e) => e.id === eventId);
+}
+
+/** 이 상태를 이 이벤트 밖에서 쓰는 곳 하나(알림 글용) — 없으면 undefined. */
+function otherWriter(project: Project, mapId: string, eventId: string, key: Key): string | undefined {
+  for (const [field, value] of Object.entries(project as unknown as Node)) if (field !== "maps" && writesIn(value).has(key)) return field;
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    if (map.id === mapId && event.id === eventId) continue;
+    for (const [i, page] of (event.pages ?? []).entries()) if (writesIn(page.commands ?? []).has(key)) {
+      const name = (event as GameEvent & { name?: string }).name;
+      return `${name ? `«${name}» ` : ""}${event.id} page ${i}`;
+    }
+    if (writesIn(event.commands ?? []).has(key)) return event.id;
+  }
+  return undefined;
+}
+
+/** 명령 목록(가지 안 포함)에서 이 상태를 쓰는 첫 명령을 빼낸다. 뺐으면 true. */
+function removeFirstWrite(list: unknown[], key: Key): boolean {
+  for (let i = 0; i < list.length; i += 1) {
+    const node = list[i] as Node | undefined;
+    if (!node || typeof node !== "object") continue;
+    if (writeKey(node) === key) { list.splice(i, 1); return true; }
+    for (const value of Object.values(node)) {
+      if (Array.isArray(value) && removeFirstWrite(value, key)) return true;
+      if (value && typeof value === "object" && !Array.isArray(value)) for (const inner of Object.values(value as Node)) if (Array.isArray(inner) && removeFirstWrite(inner, key)) return true;
+    }
+  }
+  return false;
+}
+
+const keyLabel = (key: Key) => `${key.startsWith("sw:") ? "switch" : key.startsWith("item:") ? "item" : "variable"} ${key.slice(key.indexOf(":") + 1)}`;
+
+/**
+ * 쓰기 호출 하나가 끝난 draft 에서: 앞서 되붙인 쓰기의 상태를 이제 다른 곳이 쓰면 되붙인 사본을 걷는다(draft 를 고친다).
+ * 돌려주는 next 는 커밋이 성공했을 때만 commitCarried 로 적는다. notes 는 모델에게 가는 영어 글.
+ */
+export function settleCarriedWrites(session: object, before: Project, draft: Project): { notes: string[]; next: CarriedRecord[] } {
+  const records = carriedBySession.get(session) ?? [];
+  const notes: string[] = [];
+  const next: CarriedRecord[] = [];
+  for (const record of records) {
+    const was = eventIn(before, record.mapId, record.eventId);
+    const now = eventIn(draft, record.mapId, record.eventId);
+    // 그 이벤트가 없어졌거나 이번 호출이 그 이벤트를 다시 썼으면 모델이 정한 것이다 — 기록을 놓는다.
+    if (!was || !now || JSON.stringify(was) !== JSON.stringify(now) || JSON.stringify(now) !== record.eventJson) continue;
+    const writer = otherWriter(draft, record.mapId, record.eventId, record.key);
+    if (!writer) { next.push(record); continue; }
+    const pages = now.pages ?? [];
+    const removed = pages.some((page) => removeFirstWrite((page.commands ?? []) as unknown[], record.key)) || removeFirstWrite((now.commands ?? []) as unknown[], record.key);
+    if (!removed) continue;
+    const name = (now as GameEvent & { name?: string }).name;
+    notes.push(`Withdrew the ${keyLabel(record.key)} write that an earlier call carried over on ${name ? `«${name}» ` : ""}${record.eventId} — ${writer} now sets it, so keeping both would set/give it twice. If the old place should still do it too, add it back there.`);
+  }
+  return { notes, next };
+}
+
+/** 커밋이 성공한 뒤: 남은 기록 + 이번 호출이 새로 되붙인 쓰기를 적는다. */
+export function commitCarried(session: object, next: CarriedRecord[], added: { project: Project; mapId?: unknown; data?: unknown }): void {
+  const data = added.data as { eventId?: unknown; carriedWrites?: unknown } | undefined;
+  const keys = Array.isArray(data?.carriedWrites) ? (data!.carriedWrites as unknown[]).filter((k): k is Key => typeof k === "string") : [];
+  const mapId = typeof added.mapId === "string" ? added.mapId : undefined;
+  const eventId = typeof data?.eventId === "string" ? data.eventId : undefined;
+  const event = mapId && eventId ? eventIn(added.project, mapId, eventId) : undefined;
+  const fresh = event && mapId && eventId ? keys.map((key) => ({ mapId, eventId, key, eventJson: JSON.stringify(event) })) : [];
+  // 같은 이벤트의 옛 기록은 새 것으로 바뀐다(이벤트가 다시 쓰였다).
+  const kept = next.filter((r) => !(r.mapId === mapId && r.eventId === eventId));
+  if (kept.length || fresh.length) carriedBySession.set(session, [...kept, ...fresh]); else carriedBySession.delete(session);
+}
