@@ -9,13 +9,19 @@ import { vnUiText } from "@/player/vnExtrasStrings";
  * 한 번 또렷이 알린다. 처음에는 화면 가운데 카드였는데 320×240 화면의 5분의 1 을 덮어 방이 안 보였다(2026-11-13 오너 «HUD 가 개판»).
  * 지금은 목표 줄이 앉는 오른쪽 위 모서리에서 한두 줄짜리 띠로 뜨고, 닫히면 그 자리에 목표 줄이 남는다. 어떤 게임에서도 가운데를 덮지 않는다.
  *
- * - 세션의 첫 조작 가능 순간: 목표(있으면, 한 줄) + 조작 안내 한 줄, FIRST_MS 동안.
- * - 그 뒤 목표 글이 바뀌면: 「새 목표」 + 글(두 줄까지), CHANGE_MS 동안(대사·메뉴 중에 바뀌면 다시 조작할 수 있을 때).
+ * - 세션의 첫 조작 가능 순간: 목표(있으면, 세 줄까지) + 조작 안내 한 줄, FIRST_MS 동안.
+ * - 그 뒤 목표 글이 바뀌면: 「새 목표」 + 글(네 줄까지), CHANGE_MS 동안(대사·메뉴 중에 바뀌면 다시 조작할 수 있을 때).
+ * - 띠는 목표 글 전체를 보인다 — 구석의 목표 줄은 두 줄 뒤를 줄이므로(zoneFeedback.css), 긴 목표의 뒷부분(«먼저 역 앞 전단지 아주머니에게.»)을
+ *   읽을 곳은 이 띠와 메뉴뿐이다(2026-11-16 확인 빌드 r6 P10: 첫 띠가 한 줄에서 끊겨 목표 줄보다 먼저 잘렸다). 긴 글은 읽을 시간만큼 더 떠 있다(readingMs).
  * - 아무 키·클릭이나 닫는다. 키는 삼키지 않는다 — 띠가 떠 있어도 이동·조사는 그대로 된다.
  * - 같은 세션 안에서는 장면을 다시 만들어도(맵 이동) 첫 띠를 되풀이하지 않는다(세션 키 WeakMap).
  */
 const FIRST_MS = 2800;
 const CHANGE_MS = 2200;
+/** 긴 목표 글을 읽을 시간 — 20자를 넘는 글자마다 55ms, 많아야 4초 더. */
+export function readingMs(text: string | null): number {
+  return Math.min(4000, Math.max(0, Array.from(text ?? "").length - 20) * 55);
+}
 
 type CardMemory = { introDone: boolean; lastObjective: string | null };
 const memory = new WeakMap<object, CardMemory>();
@@ -105,7 +111,7 @@ function show(card: ObjectiveCard, host: HTMLElement, label: string | null, obje
   // 글이 바뀔 때마다 등장 애니메이션을 다시 건다.
   element.style.animation = "none"; void element.offsetWidth; element.style.animation = "";
   if (element.parentElement !== host) host.append(element);
-  card.hideAtMs = nowMs + durationMs;
+  card.hideAtMs = nowMs + durationMs + readingMs(objective);
   if (!card.detach) {
     const close = (event: Event): void => { if (!(event instanceof KeyboardEvent && event.repeat)) hide(card); };
     // 캡처로 듣되 막지 않는다 — 그 키는 원래대로 이동·조사·메뉴로 간다.

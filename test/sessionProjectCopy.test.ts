@@ -144,6 +144,24 @@ describe("세션 사본 — structuredClone 과 같은 값, 스토어 항목은 
     expect(same(JSON.stringify(copy), liveJson)).toBe(true);
   });
 
+  it("스토어 프로젝트가 아닌 객체도 스토어가 지금 들고 있는 항목(같은 객체)은 공유하고, 같은 키의 다른 객체는 복제한다", () => {
+    // store.replace 에 넘긴 원본처럼: 최상위는 다른 객체, 항목은 스토어의 것. 그중 하나만 스토어 밖 객체로 바꿔 둔다.
+    const sibling = { ...live, tilesets: { ...live.tilesets, [EDITED_TILESET]: structuredClone(live.tilesets[EDITED_TILESET]!) } } as Project;
+    expect(sibling).not.toBe(store.getCurrent());
+    const copy = sessionProjectCopy(sibling);
+    expect(same(JSON.stringify(copy), liveJson)).toBe(true);
+    for (const id of Object.keys(live.tilesets)) {
+      if (id === EDITED_TILESET) {
+        expect(copy.tilesets[id]).not.toBe(sibling.tilesets[id]);
+        expect(isStoreOwnedEntry(copy.tilesets[id])).toBe(false);
+      } else expect(copy.tilesets[id]).toBe(live.tilesets[id]);
+    }
+    for (const id of Object.keys(live.assets.uploaded)) expect(copy.assets.uploaded[id]).toBe(live.assets.uploaded[id]);
+    // 스토어 밖 객체는 표지를 받지 않았다 — 제자리에서 고쳐도 사본은 그대로다.
+    sibling.tilesets[EDITED_TILESET]!.passability[6] = { up: true, down: true, left: true, right: true };
+    expect(same(JSON.stringify(copy), liveJson)).toBe(true);
+  });
+
   it("도구가 새로 만든 타일셋(스토어가 들고 있던 적이 없는 객체)만 다시 복제하고 나머지는 공유한다", () => {
     const draft = sessionProjectCopy(live);
     const edited = structuredClone(draft.tilesets[EDITED_TILESET]!);

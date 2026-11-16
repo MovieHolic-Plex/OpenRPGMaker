@@ -17,7 +17,7 @@ import {
   saveAiConfig,
 } from "@/ai/llmClient";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
-import { DEFAULT_OH_MY_PI_PROVIDER, OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
+import { DEFAULT_OH_MY_PI_PROVIDER, OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 let storage: Map<string, string>;
 
@@ -45,20 +45,25 @@ function storedProviderId(): string | undefined {
 }
 
 describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
-  it("옛 저장값은 Antigravity 로 읽고, 새 설정도 Google(Gemini 4 Argon medium)을 권한다", () => {
+  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 Claude(Opus 5.5 medium)를 권한다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
-    expect(defaultAiConfig().providerId).toBe(ANTIGRAVITY_PROVIDER_ID);
+    // 오너 결정 2026-11-16: 공장 기본은 Claude 다. 옛 저장값을 읽는 기본 제공자는 그대로 Antigravity 다.
+    expect(defaultAiConfig().providerId).toBe("anthropic");
   });
 
-  it("처음 두 제공자는 순서가 고정이고, 나머지는 뒤에 덧붙기만 한다", () => {
-    // 2026-11-02: 예전에는 「둘뿐」 이었다. 이제 OMP 가 로그인해 둔 제공자를 그대로 쓰므로 목록이 늘었지만,
-    // **앞의 둘 순서는 그대로여야 한다** — 첫 항목이 기본값이라 순서가 바뀌면 기존 사용자가 말없이 넘어간다.
+  it("처음 세 제공자는 순서가 고정이고, 나머지는 뒤에 덧붙기만 한다 — 순서가 바뀌어도 기존 사용자는 넘어가지 않는다", () => {
+    // 2026-11-02: 예전에는 「둘뿐」 이었다. 이제 OMP 가 로그인해 둔 제공자를 그대로 쓰므로 목록이 늘었다.
+    // 2026-11-16: 권장 제공자가 Claude 가 되어 맨 앞에 섰다(오너 결정 — 조수 기본은 Opus 5.5 medium).
+    // 첫 항목은 권장값일 뿐이다 — 옛 저장값·모르는 id 의 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER(Antigravity)가 정한다.
     const ids = OH_MY_PI_PROVIDERS.map((provider) => provider.id);
-    expect(ids.slice(0, 2)).toEqual([
+    expect(ids.slice(0, 3)).toEqual([
+      "anthropic",
       ANTIGRAVITY_PROVIDER_ID,
       CODEX_PROVIDER_ID,
     ]);
-    expect(ids.length).toBeGreaterThan(2);
+    expect(ids.length).toBeGreaterThan(3);
+    expect(parseOhMyPiProvider(undefined)).toBe(ANTIGRAVITY_PROVIDER_ID);
+    expect(parseOhMyPiProvider("no-such-provider")).toBe(ANTIGRAVITY_PROVIDER_ID);
     // 중복이 없고 id·모델이 비지 않는다(비면 고르는 순간 호출이 400 이 된다).
     expect(new Set(ids).size).toBe(ids.length);
     for (const provider of OH_MY_PI_PROVIDERS) {

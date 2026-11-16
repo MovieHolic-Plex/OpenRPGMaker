@@ -16,6 +16,7 @@ import { isPassable } from "@/project/collision";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { protectedHouseCells } from "@/editor/tools/houseProtection";
 import { resolveObject } from "@/editor/tools/sharedObjectTools";
+import { isBuildingKit } from "@/editor/tools/buildingSite";
 import { SEED_START_MAP_ID } from "@/editor/tools/startOnBuiltMap";
 import { nameScore } from "../todo/names";
 
@@ -143,11 +144,11 @@ function fixTransferEnd(project: Project, end: unknown, label: string): { end?: 
 }
 
 /** 기물 하나의 칸 상자와 입구(있으면). 못 풀면 undefined. */
-function objectBox(project: Project, objectId: unknown): { w: number; h: number; entrances: Cell[] } | undefined {
+function objectBox(project: Project, objectId: unknown): { w: number; h: number; entrances: Cell[]; building: boolean } | undefined {
   if (typeof objectId !== "string") return undefined;
   try {
     const r = resolveObject(project, objectId);
-    return { w: r.pattern.width, h: r.pattern.height, entrances: (r.entrances ?? []).map((p) => ({ x: Number((p as { x?: number }).x ?? 0), y: Number((p as { y?: number }).y ?? 0) })) };
+    return { w: r.pattern.width, h: r.pattern.height, building: isBuildingKit(r.kit), entrances: (r.entrances ?? []).map((p) => ({ x: Number((p as { x?: number }).x ?? 0), y: Number((p as { y?: number }).y ?? 0) })) };
   } catch { return undefined; }
 }
 const rectHas = (x: number, y: number, w: number, h: number, c: Cell) => c.x >= x && c.y >= y && c.x < x + w && c.y < y + h;
@@ -313,7 +314,7 @@ const PRE_RULES: readonly PreRule[] = [
       if (!map || x === undefined || y === undefined || !box) return undefined;
       const { w, h } = box;
       const notes: string[] = [];
-      let nx = x, ny = y;
+      let nx = x, ny = y, aligned = false;
       // 입구 하나짜리 기물(굴·문 입구)을 출입구 이벤트 2칸 안에 찍으면 입구 칸을 그 이벤트 칸에 맞춘다 — 그림과 이동 칸이 어긋나지 않게.
       if (box.entrances.length === 1) {
         const ent = box.entrances[0]!;
@@ -321,7 +322,7 @@ const PRE_RULES: readonly PreRule[] = [
         const near = gates.map((e) => ({ e, d: Math.max(Math.abs(e.x - (x + ent.x)), Math.abs(e.y - (y + ent.y))) })).filter((g) => g.d > 0 && g.d <= 2).sort((a, b) => a.d - b.d);
         if (near.length && (near.length === 1 || near[0]!.d < near[1]!.d)) {
           const g = near[0]!.e;
-          nx = g.x - ent.x; ny = g.y - ent.y;
+          nx = g.x - ent.x; ny = g.y - ent.y; aligned = true;
           notes.push(`aligned the entrance cell with the transfer event ${g.name ?? g.id} (${g.x},${g.y}): (${x},${y})→(${nx},${ny})`);
         }
       }
@@ -330,6 +331,10 @@ const PRE_RULES: readonly PreRule[] = [
         notes.push(`${w}x${h} at (${nx},${ny}) is outside the ${map.width}x${map.height} map — moved to (${cx},${cy})`);
         nx = cx; ny = cy;
       }
+      // 건물(입구가 있는 건물 킷): 자리가 어긋나도 거절하지 않는다 — 도구가 가장 가까운 맞는 자리로 옮기고 발자국·문 앞을 치운 뒤 무엇을 고쳤는지 알린다
+      // (editor/tools/buildingSite.ts). 왜(2026-11-16 r6 «갈매나루»): 여기서 집을 피해 네 칸 안으로 옮긴 자리가 벼랑에 걸쳐 높이 규칙이 거절하고,
+      // 높이 규칙이 알려 준 자리는 다시 집을 덮어 여기서 같은 곳으로 되돌려 보냈다 — 성당이 네 번 거절됐다. 출입구 이벤트에 맞춘 입구 기물은 그 자리를 지킨다.
+      if (box.building && !aligned && args.site === undefined) return { args: { ...args, x: nx, y: ny, site: "fix" }, ...(notes.length ? { note: notes.join(" · ") } : {}) };
       // 이동 도착 칸: 입구 기물의 입구 칸 바로 아래(길이 끝나는 칸)는 기물이 비워 두므로 그 칸 하나는 덮어도 된다.
       const keep = box.entrances.map((e) => ({ x: nx + e.x, y: ny + e.y + 1 }));
       const landings = transferLandings(project, map.id).filter((c) => !keep.some((k) => k.x === c.x && k.y === c.y));

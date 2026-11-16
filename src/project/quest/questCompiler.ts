@@ -537,10 +537,23 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
 
   const accept: Command[] = [{ kind: 'setSwitch', switchId: flags.started, value: true },
     ...(def.onAcceptItems ?? []).map(item => ({ kind: 'changeItem' as const, itemId: item.itemId, op: '+=' as const, amount: item.count })),
-    text(def.dialogue?.accepted ?? '고맙네! 잘 부탁하지.', giverName)];
+    // 수락 답을 받지 못했으면 서술 한 줄이다 — 정해진 말투(«고맙네! 잘 부탁하지.»)를 그 사람의 이름표 밑에 띄우지 않는다.
+    // 장 구성기가 통째로 맡긴 옛 배치(takeOver)는 기본 문구 그대로다(폴른 스타 다듬기가 그 문구에 기댄다).
+    def.dialogue?.accepted?.trim() ? text(def.dialogue.accepted, giverName)
+      : sink.takeOver ? text('고맙네! 잘 부탁하지.', giverName) : text(`의뢰 '${def.title}'${josa(def.title, "을/를")} 받았다.`)];
   const prerequisites = (def.requiresQuestKeys ?? []).map(key => switchCond(questFlagIds(key, 0).done));
+  // 의뢰를 꺼내는 말(dialogue.offer)은 그 사람의 대사, 없으면 요약문을 이름표 없는 서술로 띄운다.
+  // 왜(2026-11-16 확인 빌드 r6 P7): 수녀가 제 이름표 밑에서 «수녀가 부두 사람들에게 촛불 나눔을 부탁한다.» 고 말했다(요약문은 3인칭 설명이다).
+  const offerLine = def.dialogue?.offer?.trim();
+  if (!sink.takeOver) {
+    const stock = [...(offerLine ? [] : ["offer"]), ...(["accepted", "declined", "reminder", "afterComplete"] as const).filter((key) => !def.dialogue?.[key]?.trim())];
+    if (!offerLine || !def.dialogue?.accepted?.trim()) sink.warnings.push(
+      `Quest '${def.title}': giver «${giverName}» has no words of their own for ${stock.join(", ")}.`
+      + `${offerLine ? "" : " The summary is shown as narration (no name plate), not as their line."}`
+      + " Send def.dialogue{offer, accepted, declined, reminder, afterComplete} in that person's voice — offer = how they ask for help, accepted = what they say when the player agrees (declined, reminder and afterComplete fall back to stock lines).");
+  }
   const proposal = page(`${id}_offer`, giverName, prerequisites, [
-    text(def.summary, giverName),
+    offerLine ? text(offerLine, giverName) : sink.takeOver ? text(def.summary, giverName) : text(def.summary),
     {
       kind: "choices",
       prompt: `의뢰 '${def.title}'${josa(def.title, "을/를")} 수락할까요?`,

@@ -39,6 +39,7 @@ export const WRITE_BLUEPRINT_SCHEMA = {
     scale: { type: "string", enum: ["small"], description: "only if the request asks for a short or small game — the gates then count this blueprint's own places and steps" },
     battles: { type: "boolean", description: "false only if the request says fights are not needed" },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
+    opening: { type: "array", items: { type: "string" }, description: "2–4 lines the player reads in the opening, before the first map — narration that sets the scene: who they are, what is wrong here. Not the goal restated, no answer to what must be found, no game words (boss, quest, level)." },
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },
       kind: { type: "string", enum: [...STEP_KINDS], description: "talk (a named person) · find (examine or pick up) · battle (win a fight) · puzzle (number lock) · choice (options with different results)" },

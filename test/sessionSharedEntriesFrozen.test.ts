@@ -12,12 +12,14 @@
 //    `env.ctx.project`(세션 초안)를 직접 읽고 갈아 끼운다. 장소를 하나 지은 뒤 동사 전부를 한 번씩 부른다.
 //  · «map» 영역 쓰기 도구 — 마을 하나를 지은 뒤 40개를 본문까지 가는 인자로 이어 부른다(다른 칩셋 물건 찍기 = 이식 포함). 부르지 못하는 것은
 //    까닭과 함께 MAP_TOOLS_NOT_CALLED 에 남긴다 — 새 «map» 쓰기 도구가 둘 중 어디에도 없으면 시험이 떨어진다.
+//  · `store.replace` 에 넘긴 원본으로 연 세션의 계획 턴(수락 원장 기준 포함) — 원본과 스토어 프로젝트는 다른 객체지만 같은 항목을 쥔다.
 //  · 세션 한 턴(타일 이름 붙이기 + 타일 이식) → 적용 — 세션의 정규화·검수·적용 경로.
 import { Session } from "node:inspector";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
+import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { AssistantSession, type AssistantSessionOptions, type SessionTurnOptions, type TurnResult } from "@/ai/assistantSession";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
@@ -203,6 +205,8 @@ const MAP_TOOLS_NOT_CALLED: Readonly<Record<string, string>> = {
 };
 
 let frozen: { tilesets: Record<string, unknown>; uploaded: Record<string, unknown> };
+/** `store.replace` 에 넘긴 원본(스토어의 지금 프로젝트와 다른 객체, 같은 항목). */
+let replacedOriginal: Project;
 let watch: { readonly seen: string[]; stop(): void };
 
 beforeAll(() => {
@@ -212,6 +216,8 @@ beforeAll(() => {
   const project = createBlankProject();
   project.assets.uploaded["upload-a"] = { id: "upload-a", name: "Uploaded A", kind: "charset", dataUrl: "data:image/png;base64,AA==", meta: {} };
   store.replace(project);
+  // 스토어는 최상위를 새로 뜨고 항목은 그대로 가리킨다 — 넘긴 원본으로 여는 세션(편집기 밖 진입·시험)도 같은 객체를 공유한다.
+  replacedOriginal = project;
   resetMapEditHistory();
   frozen = freezeStoreEntries();
   watch = watchFrozenWrites();
@@ -420,6 +426,41 @@ describe("스토어와 공유하는 타일셋·업로드 자산 항목을 얼린
     expect(replaced).toContain("jp_city");
     expect(replaced).toContain("beodeul_city");
     for (const id of Object.keys(frozen.tilesets)) if (!replaced.includes(id)) expect(ctx.project.tilesets[id]).toBe(frozen.tilesets[id]);
+    expectStoreEntriesUntouched();
+  });
+
+  it("넘긴 원본으로 연 세션(계획 + 제목 두 번, 예산 소진 승인)도 스토어 항목을 공유하고 얼린 항목에 쓰지 않는다", async () => {
+    expect(replacedOriginal).not.toBe(store.getCurrent());
+    for (const id of Object.keys(frozen.tilesets)) expect(replacedOriginal.tilesets[id]).toBe(frozen.tilesets[id]);
+    const call = (id: string, name: string, args: unknown): ChatResult => ({
+      message: { role: "assistant", content: null, tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }] },
+      finishReason: "tool_calls",
+    });
+    const plan = { goal: "타이틀을 두 번 고쳐 확정", layers: [{ title: "타이틀", items: [
+      { title: "초안", instruction: "set_title_screen으로 초안", successTools: ["set_title_screen"] },
+      { title: "확정", instruction: "set_title_screen으로 확정", successTools: ["set_title_screen"] },
+    ] }] };
+    const script: ChatResult[] = [call("plan", "set_work_plan", plan), call("draft", "set_title_screen", { title: "초안" }), call("final", "set_title_screen", { title: "확정" })];
+    const session = new AssistantSession(replacedOriginal, {
+      config: { ...defaultAiConfig(), maxToolCalls: 3, maxTokens: 1024 },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
+      chat: async (_config, request) => {
+        if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "new_plan", ...plan }) }, finishReason: "stop" };
+        return script.shift() ?? { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" };
+      },
+    });
+    // 세션의 사본(초안·기준)은 스토어가 들고 있는 항목을 객체째 가리킨다 — 통째로 복제하지 않는다.
+    for (const id of Object.keys(frozen.tilesets)) expect(session.getProposedProject().tilesets[id]).toBe(frozen.tilesets[id]);
+    const result = await session.sendUserMessage(plan.goal, () => {}, undefined, { autonomous: true });
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(session.getProposedProject().meta.title).toBe("확정");
+    expect(watch.seen).toEqual([]);
+    for (const id of Object.keys(frozen.tilesets)) expect(session.getProposedProject().tilesets[id]).toBe(frozen.tilesets[id]);
+    // 수락 원장의 기준(계획마다 새로 연다)도 같은 객체다.
+    const ledger = new AssistantAcceptanceLedger("acceptance-frozen", plan.goal, replacedOriginal);
+    const baseline = (ledger as unknown as { baseline: Project }).baseline;
+    expect(baseline).not.toBe(replacedOriginal);
+    for (const id of Object.keys(frozen.tilesets)) expect(baseline.tilesets[id]).toBe(frozen.tilesets[id]);
     expectStoreEntriesUntouched();
   });
 

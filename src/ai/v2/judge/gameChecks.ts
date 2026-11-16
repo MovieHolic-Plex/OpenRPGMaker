@@ -4,7 +4,7 @@
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, GameMap, Project } from "@/project/types";
-import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "../place/placementRules";
+import { inlandBoats, dryBridges, placementProblems, type PlacementProblem } from "../place/placementRules";
 import { offPurposeProps } from "../place/roomPurpose";
 import { tagged, type Finding } from "./finding";
 import { gameCheck } from "./gameCheckReads";
@@ -32,13 +32,30 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   ];
 }
 
+const tilesKey = (m: GameMap | undefined): string => (m ? `${m.width}x${m.height}:${(m.lowerTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.upperTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.lowerOverlayTiles as readonly number[] | undefined)?.join(",") ?? ""}` : "");
+
+/**
+ * 놓기 알림 — 결함이 아니라 사실이다(관문에 넣지 않는다, 조언자가 주장에 대어 볼 때만 읽는다).
+ * 물가가 아닌 뭍 한가운데의 배: 전에는 게임 검사가 «물이 아닌 바닥 위의 배» 로 막았다 — 마을 시공기가 모래턱에 끌어올린 배까지 잡혀 모델이 배를 지웠다
+ * (2026-11-16 r6 «갈매나루»). 오너 방향(2026-11-16): 시공기·모델의 선택을 결함이라고 부르는 검사는 알림으로 낮춘다 — 게임이 깨지는 것만 결함이다.
+ */
+export function placementNotices(before: Project, after: Project): string[] {
+  const out: string[] = [];
+  for (const map of Object.values(after.maps ?? {})) {
+    const prev = before.maps?.[map.id];
+    if (prev && tilesKey(prev) === tilesKey(map)) continue; // 이번에 타일이 바뀐 맵만
+    const boats = inlandBoats(after, map);
+    if (boats.length) out.push(`${map.name ?? map.id}: 물가도 모래도 아닌 뭍에 배 ${boats.length}척 ${boats.slice(0, 4).map((c) => `(${c.x},${c.y})`).join(" ")} — 결함이 아니다(뭍에 올려 둔 배). 고치라고 하지 않는다.`);
+  }
+  return out;
+}
+
 /**
  * 놓기 검사(2026-10-25 판정 J5·J6·J40·J42·J31·J64, 사용자 규칙 «차도 한가운데 사람 금지»):
  * 이번에 바뀐 맵의 사람·조사 이벤트 자리, 방 쓰임에 안 맞는 가구. 바뀐 이벤트(자리·페이지)만, 새로 지은 맵·타일이 바뀐 맵은 전부 본다.
  */
 export function placementContentProblems(before: Project, after: Project): Finding[] {
   const out: Finding[] = [];
-  const tilesKey = (m: GameMap | undefined): string => (m ? `${m.width}x${m.height}:${(m.lowerTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.upperTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.lowerOverlayTiles as readonly number[] | undefined)?.join(",") ?? ""}` : "");
   for (const map of Object.values(after.maps)) {
     const prev = before.maps[map.id];
     const rebuilt = !prev || tilesKey(prev) !== tilesKey(map);
@@ -64,8 +81,6 @@ export function placementContentProblems(before: Project, after: Project): Findi
     if (rebuilt) {
       const dry = dryBridges(after, map);
       if (dry.length) out.push(tagged("game", "다리", `${map.name ?? map.id}: 물에 닿지 않는 다리 ${dry.length}곳 ${dry.slice(0, 4).map((c) => `(${c.x},${c.y})`).join(" ")} — 마른 바닥 위 다리로 보인다. tile_erase 로 그 다리 칸을 바닥으로 되돌리거나, 물을 건너는 자리로 옮긴다.`, { variant: "dry-bridge" }));
-      const boats = dryBoats(after, map);
-      if (boats.length) out.push(tagged("game", "다리", `${map.name ?? map.id}: 물이 아닌 바닥 위의 배 ${boats.length}척 ${boats.slice(0, 4).map((c) => `(${c.x},${c.y})`).join(" ")} — 뭍에 오른 배·마른 바닥 위 나무다리로 보인다. tile_erase 로 걷고 물 칸 위(배 전체가 물)로 다시 찍거나 edit_place 로 다시 짓는다.`, { variant: "dry-boat" }));
       const off = offPurposeProps(after, map);
       if (off.length) out.push(tagged("game", "방 쓰임", `${map.name ?? map.id}: ${off.slice(0, 3).map((r) => `${r.room}(${r.purpose}) 에 ${r.props.slice(0, 4).map((p) => `${p.label}(${p.at.x},${p.at.y})`).join("·")}`).join(" / ")} — 그 방의 쓰임에 안 맞는 다른 방 가구다(거실 한 벌). tile_erase 로 걷어 내고 그 쓰임의 가구(예배당: 장의자·촛대, 가게: 진열대·카운터, 교실: 책상·의자, 병원: 침상·진료 책상)를 stamp_object 로 그 가구 자리에 찍거나(쓰임에 안 맞는 가구는 찍을 때 저절로 걷힌다, 다른 가구와 겹치면 onOverlap:'replace'|'nearest') edit_place 로 그 방을 다시 꾸민다.`));
     }

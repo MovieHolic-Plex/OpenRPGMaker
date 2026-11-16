@@ -2,7 +2,7 @@
 import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "../../story/puzzle";
-import { planObjective } from "../../judge/objectivePlan";
+import { objectivePlaceNote, planObjective } from "../../judge/objectivePlan";
 import { text } from "../support";
 import type { VerbContext } from "../context";
 
@@ -45,7 +45,7 @@ export function puzzleVerbs(c: VerbContext) {
     name: "set_objective", label: "현재 목표 걸기", concurrency: "exclusive",
     description: SET_OBJECTIVE_DESCRIPTION,
     parameters: { type: "object", properties: {
-      text: { type: "string", description: "one line of what to do now (within 80 chars)" },
+      text: { type: "string", description: "one line of what to do now: who, where, why — the corner line shows about 36 Korean chars, the rest only on the banner (max 80)" },
       at: { type: "string", enum: ["start"], description: "start = the game-start objective" },
       eventId: { type: "string", description: "the objective after this event (id or name) advances the story" },
       mapId: { type: "string" },
@@ -53,7 +53,9 @@ export function puzzleVerbs(c: VerbContext) {
     }, required: ["text"] },
     async execute(_id, params) {
       const p = params as { text?: string; at?: string; eventId?: string; mapId?: string; where?: string };
-      const plan = planObjective(env.ctx.project, { text: String(p.text ?? ""), ...(p.at ? { at: p.at } : {}), ...(p.eventId ? { eventId: String(p.eventId) } : {}), ...(p.mapId ? { mapId: String(p.mapId) } : {}), ...(p.where ? { where: String(p.where) } : {}) });
+      // where 가 가리키는 이벤트는 목표가 대상으로 들고 다닌다 — 끝맺음의 꼬리 다시 쓰기가 글에 지나가며 나온 다른 맵 이름을 대상으로 잡지 않게(judge/objectiveRoutes).
+      const whereEvent = p.where ? Object.values(env.ctx.project.maps).flatMap((map) => (map.events ?? []).filter((event) => event.id === p.where || event.name === p.where).map((event) => ({ mapId: map.id, eventId: event.id })))[0] : undefined;
+      const plan = planObjective(env.ctx.project, { text: String(p.text ?? ""), ...(p.at ? { at: p.at } : {}), ...(p.eventId ? { eventId: String(p.eventId) } : {}), ...(p.mapId ? { mapId: String(p.mapId) } : {}), ...(p.where ? { where: String(p.where) } : {}), ...(whereEvent ? { target: whereEvent } : {}) });
       if (!plan.ok) return text({ ok: false, summary: plan.summary });
       for (const entry of plan.events) {
         // 목표 명령만 넣은 같은 페이지 묶음을 다시 쓴다 — 조수 「통째 다시 보내기」 거부(assistantRewriteGuard)가 이 동사의 쓰기까지 막아
@@ -64,7 +66,11 @@ export function puzzleVerbs(c: VerbContext) {
       // 목표 줄을 숨기는 HUD(이야기·공포 기본값은 objective:false 였다)면 켠다.
       if (env.ctx.project.system.fieldHud?.objective === false) run.call("set_field_hud", { objective: true });
       await env.checkpoint("set_objective");
-      return text({ ok: true, summary: plan.summary });
+      // 걸기는 그대로 하고, 화면에서 잘리는 글·갈 곳을 말하지 않는 글은 알린다(거절하지 않는다).
+      const hungOn = p.at === "start" || (!p.eventId && !p.mapId) ? env.ctx.project.startMapId
+        : Object.values(env.ctx.project.maps).find((map) => (!p.mapId || map.id === p.mapId) && (map.events ?? []).some((event) => event.id === p.eventId || event.name === p.eventId))?.id;
+      const notes = [...(plan.notes ?? []), ...objectivePlaceNote(env.ctx.project, String(p.text ?? ""), hungOn, whereEvent)];
+      return text({ ok: true, summary: `${plan.summary}${notes.length ? ` ${notes.join(" ")}` : ""}` });
     },
   };
   const sealLockedRoomVerb: PiToolShape = {

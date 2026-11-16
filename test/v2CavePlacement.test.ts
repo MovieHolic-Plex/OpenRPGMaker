@@ -2,10 +2,11 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { dryBoats, dryBridges, placementProblems } from "@/ai/v2/place/placementRules";
+import { inlandBoats, dryBridges, placementProblems } from "@/ai/v2/place/placementRules";
+import { placementContentProblems, placementNotices } from "@/ai/v2/judge/gameChecks";
 import { composeDungeon } from "@/editor/dungeonKit/beodeul/compose";
 
-const BOAT = 31001, BRIDGE = 31002, WATER = 31003, MOSS = 31004;
+const BOAT = 31001, BRIDGE = 31002, WATER = 31003, MOSS = 31004, SAND = 31005;
 
 function fixture(): { project: Project; map: GameMap } {
   const project = createBlankProject();
@@ -18,6 +19,7 @@ function fixture(): { project: Project; map: GameMap } {
   meta[BRIDGE] = { label: "버들항 장소 · 돌다리 남북 방향 한 칸" }; pass[BRIDGE] = open;
   meta[WATER] = { label: "버들항 던전 · 물 A" }; pass[WATER] = { up: false, down: false, left: false, right: false };
   meta[MOSS] = { label: "버들항 장소 · 발광 이끼" }; pass[MOSS] = open;
+  meta[SAND] = { label: "버들항 · 모래톱" }; pass[SAND] = open;
   map.events = [];
   return { project, map };
 }
@@ -27,15 +29,32 @@ function gate(id: string, x: number, y: number, mapId: string): GameEvent {
 }
 
 describe("J25 동굴 놓기", () => {
-  it("물이 아닌 바닥 위 배와 물에 닿지 않는 다리를 짚고, 물 위·물을 건너는 것은 통과한다", () => {
+  it("물에 닿지 않는 다리를 짚고, 뭍 한가운데의 배는 알림으로만 센다 — 물 위·물가·모래 위의 배는 세지 않는다", () => {
     const { project, map } = fixture();
     map.upperTiles[at(map, 3, 3)] = BOAT;
     map.lowerTiles[at(map, 8, 8)] = BRIDGE;
-    expect(dryBoats(project, map)).toEqual([{ x: 3, y: 3 }]);
+    expect(inlandBoats(project, map)).toEqual([{ x: 3, y: 3 }]);
     expect(dryBridges(project, map)).toEqual([{ x: 8, y: 8 }]);
+    // 배는 결함이 아니다(2026-11-16 r6: 시공기가 모래턱에 올린 배를 모델이 두 번 지웠다) — 게임 검사는 배를 말하지 않고, 조언자 알림 한 줄만 남는다
+    const before = structuredClone(project);
+    before.maps[map.id]!.upperTiles[at(map, 3, 3)] = -1;
+    expect(placementContentProblems(before, project).filter((f) => /배 \d+척|boat/iu.test(f.ko))).toEqual([]);
+    expect(placementNotices(before, project)).toEqual([expect.stringMatching(/뭍에 배 1척 \(3,3\).*결함이 아니다/u)]);
+    // 물가(세 칸 안에 물)에 끌어올린 배
+    map.lowerTiles[at(map, 5, 3)] = WATER;
+    expect(inlandBoats(project, map)).toEqual([]);
+    expect(placementNotices(before, project)).toEqual([]);
+    map.lowerTiles[at(map, 5, 3)] = map.lowerTiles[at(map, 0, 0)]!;
+    // 모래 위의 배
+    const keep = map.lowerTiles[at(map, 3, 3)]!;
+    map.lowerTiles[at(map, 3, 3)] = SAND;
+    expect(inlandBoats(project, map)).toEqual([]);
+    map.lowerTiles[at(map, 3, 3)] = keep;
+    expect(inlandBoats(project, map)).toEqual([{ x: 3, y: 3 }]);
+    // 물 위의 배 · 물을 건너는 다리
     map.lowerTiles[at(map, 3, 3)] = WATER;
     map.lowerTiles[at(map, 7, 8)] = WATER;
-    expect(dryBoats(project, map)).toEqual([]);
+    expect(inlandBoats(project, map)).toEqual([]);
     expect(dryBridges(project, map)).toEqual([]);
   });
 

@@ -6,12 +6,67 @@ import { OBJECTIVE_SURFACE, objectiveCommand, isObjectiveCommand, type Objective
 import { Cell, bare, whereHint, withWhere } from "./objectiveWhere";
 import { rawChild, insertAfterMilestones } from "./objectiveRoutes";
 import { stepGoal } from "../story/playerLines";
+import { HUD_BUDGET, HUD_LINE } from "@/project/fieldHud";
 
 interface ObjectivePlan {
   readonly ok: boolean;
   readonly summary: string;
   /** upsert_event 로 쓸 이벤트들(맵별). */
   readonly events: { readonly mapId: string; readonly event: Record<string, unknown> }[];
+  /** 모델에게 알릴 것(영어) — 목표 줄에 다 안 들어가는 글, 잘린 글, 갈 곳을 말하지 않는 글. 걸기는 그대로 한다. */
+  readonly notes?: readonly string[];
+}
+
+/** set_objective 가 받는 목표 글의 길이 상한(글자). 넘는 뒷부분은 자른다 — 잘랐으면 알린다(objectiveTextNotes). */
+export const OBJECTIVE_TEXT_MAX = 80;
+
+/**
+ * 글의 화면 폭(한글 한 글자 = 1) — 한글·한자·가나·전각 문장부호는 1, 빈칸은 0.3, 그 밖(영문·숫자·반각 부호)은 0.55.
+ * 실측(2026-11-16 r6 a1: 논리 320×240, 글자 7px): «「강지기 할아버지」를 찾아가자» 가 102px(한글·낫표 14자 × 7px + 빈칸 둘 × 2px).
+ */
+export function objectiveTextWidth(text: string): number {
+  let units = 0;
+  for (const ch of text) {
+    const c = ch.codePointAt(0)!;
+    units += /\s/u.test(ch) ? 0.3 : (c >= 0x1100 && c <= 0x11ff) || (c >= 0x2e80 && c <= 0xa4cf) || (c >= 0xac00 && c <= 0xd7a3) || (c >= 0xf900 && c <= 0xfaff) || (c >= 0xfe30 && c <= 0xfe4f) || (c >= 0xff00 && c <= 0xff60) || (c >= 0xffe0 && c <= 0xffe6) ? 1 : 0.55;
+  }
+  return units;
+}
+
+/**
+ * 구석의 목표 줄 두 줄에 들어가는 글의 폭(한글 글자 수) — 줄 폭은 화면의 45%(HUD_BUDGET.objectiveWidth)에서 양쪽 여백을 뺀 것, 글자는 HUD_LINE.font px.
+ * 두 줄 38.8자에서 줄바꿈 자투리와 말줄임표 몫 두 자를 뺀다(36). 실측: 52자 목표가 «… 먼저 역 앞 전단지…» 에서 끊겼다(보인 폭 35.6).
+ */
+export const OBJECTIVE_LINE_WIDTH = Math.floor(2 * ((320 * HUD_BUDGET.objectiveWidth - 2 * HUD_LINE.padX) / HUD_LINE.font) - 2);
+
+/**
+ * 목표 글을 걸면서 모델에게 알릴 것(영어, 걸기는 막지 않는다).
+ * - 80자를 넘어 자른 글. · 목표 줄 두 줄에 다 안 들어가는 글(뒷부분은 알림 띠와 메뉴에서만 보인다 — 보이지 않는 뒷부분을 적어 준다).
+ * 왜(2026-11-16 확인 빌드 r6 P10): 52자 시작 목표의 뒷부분 «먼저 역 앞 전단지 아주머니에게.» 가 화면에서 끊겼고, 도구는 아무 말 없이 받았다.
+ */
+export function objectiveTextNotes(full: string, shown: string): string[] {
+  const notes: string[] = [];
+  if (Array.from(full).length > Array.from(shown).length) notes.push(`The text was longer than ${OBJECTIVE_TEXT_MAX} characters and was cut to «${shown}».`);
+  const width = objectiveTextWidth(shown);
+  if (width > OBJECTIVE_LINE_WIDTH) {
+    let used = 0, at = 0;
+    const chars = Array.from(shown);
+    while (at < chars.length && used + objectiveTextWidth(chars[at]!) <= OBJECTIVE_LINE_WIDTH) { used += objectiveTextWidth(chars[at]!); at += 1; }
+    notes.push(`The objective line in the corner holds two lines — about ${OBJECTIVE_LINE_WIDTH} Korean characters; this text is about ${Math.ceil(width)} wide, so «${chars.slice(at).join("").trim()}» is cut off there (the whole text shows only on the banner when the objective appears, and in the menu). Say who and where first, or shorten it to fit.`);
+  }
+  return notes;
+}
+
+/**
+ * 목표의 대상이 다른 맵에 있는데 글이 그 장소 이름을 말하지 않으면 알린다(영어) — 필드 안내를 끈 게임(조수가 지은 게임의 기본)은 「어디」 꼬리를 보이지 않아
+ * 화면에는 문장만 남는다. fromMapId = 목표가 걸리는 맵(시작 목표면 시작 맵, 이정표 목표면 그 이벤트의 맵).
+ * 왜(2026-11-16 확인 빌드 r6 P3): «「강지기 할아버지」를 찾아가자» 만 떠서 어디로 가야 하는지 화면에 없었다(꼬리 «(강지기의 집 입구: …)» 는 숨는다).
+ */
+export function objectivePlaceNote(project: Project, text: string, fromMapId: string | undefined, target: ObjectiveTarget | undefined): string[] {
+  if (!target || !fromMapId || target.mapId === fromMapId || project.system.fieldGuides === "on") return [];
+  const place = String(project.maps[target.mapId]?.name ?? "").trim();
+  if (bare(place).length < 2 || bare(text).includes(bare(place))) return [];
+  return [`The target is on another map, «${place}», and the text does not name it — the player sees only this sentence (the «where» tail and arrows are hidden unless fieldGuides is on). Name the place in the text: «${place}에서 …».`];
 }
 
 /**
@@ -96,7 +151,15 @@ export function runsOnce(event: GameEvent, page: { readonly commands?: unknown; 
  * eventId = 그 이벤트의 이정표(스위치 켜기·아이템 얻기) 바로 뒤에 — 이정표가 없으면 그 이벤트 첫 페이지 끝에.
  */
 export function planObjective(project: Project, input: { readonly text: string; readonly at?: string; readonly eventId?: string; readonly mapId?: string; readonly where?: string; readonly target?: ObjectiveTarget }): ObjectivePlan {
-  const raw = input.text.trim().slice(0, 80);
+  const plan = planObjectiveText(project, input);
+  if (!plan.ok) return plan;
+  const full = input.text.trim();
+  const notes = objectiveTextNotes(full, Array.from(full).slice(0, OBJECTIVE_TEXT_MAX).join("").trim());
+  return notes.length ? { ...plan, notes } : plan;
+}
+
+function planObjectiveText(project: Project, input: { readonly text: string; readonly at?: string; readonly eventId?: string; readonly mapId?: string; readonly where?: string; readonly target?: ObjectiveTarget }): ObjectivePlan {
+  const raw = Array.from(input.text.trim()).slice(0, OBJECTIVE_TEXT_MAX).join("").trim();
   let text = raw;
   if (!text) return { ok: false, summary: "text 에 지금 할 일 한 줄을 준다(예: 「창고 상자에서 태엽 열쇠를 찾자」)", events: [] };
   // where 만 준 다음 목표(2026-10-28 mt3 argon escape): set_objective{text:'책장 주변에서 두 번째 단서를 찾자', where:'책상'} ·
@@ -112,7 +175,7 @@ export function planObjective(project: Project, input: { readonly text: string; 
     const fromMap = trigger ? Object.values(project.maps).find((map) => (map.events ?? []).includes(trigger)) : undefined;
     const namesTrigger = Boolean(trigger?.name) && bare(raw).includes(bare(String(trigger!.name)));
     if (hasStart && trigger && milestone && fromMap && !namesTrigger) {
-      return planObjective(project, { text: raw, eventId: trigger.id, mapId: fromMap.id, ...(input.target ? { target: input.target } : {}) });
+      return planObjectiveText(project, { text: raw, eventId: trigger.id, mapId: fromMap.id, ...(input.target ? { target: input.target } : {}) });
     }
   }
   if (input.at === "start" || (!input.eventId && !input.mapId)) {
@@ -151,7 +214,7 @@ export function planObjective(project: Project, input: { readonly text: string; 
       let replaced = 0;
       const swap = (list: RawCommand[]): void => {
         list.forEach((command, index) => {
-          if (isObjectiveCommand(command)) { list[index] = objectiveCommand(text); replaced += 1; return; }
+          if (isObjectiveCommand(command)) { list[index] = objectiveCommand(text, input.target); replaced += 1; return; }
           for (const child of childLists(command)) { const rawList = rawChild(command, child.key); if (rawList) swap(rawList); }
         });
       };
@@ -165,12 +228,12 @@ export function planObjective(project: Project, input: { readonly text: string; 
       const page = event.pages[hostPage(host)]!;
       const commands = (page.commands as RawCommand[]) ?? [];
       const existing = commands.findIndex((c) => isObjectiveCommand(c));
-      if (existing >= 0) commands[existing] = objectiveCommand(text);
+      if (existing >= 0) commands[existing] = objectiveCommand(text, input.target);
       else {
         // 끝에서 자기 지우기·자기 스위치 앞에 넣는다(그 뒤 명령이 안 돌 수 있다).
         let at = commands.length;
         while (at > 0 && ["eraseEvent", "setSelfSwitch"].includes(String(commands[at - 1]?.kind))) at -= 1;
-        commands.splice(at, 0, objectiveCommand(text));
+        commands.splice(at, 0, objectiveCommand(text, input.target));
       }
       page.commands = commands;
       return { ok: true, summary: `시작 목표 「${text}」 — ${map.name ?? map.id} 의 ${host.name ?? host.id} 시작 컷신 끝에 걸었다${stripped.length ? `(맵에 들어올 때마다 도는 ${stripped.map((s) => String(s.event.name ?? s.event.id)).join("·")} 에서 목표를 뺌)` : ""}`, events: [...stripped.filter((s) => s.event.id !== host.id), { mapId: map.id, event }] };
@@ -189,7 +252,7 @@ export function planObjective(project: Project, input: { readonly text: string; 
     const event = {
       id: "ev_objective_start", name: "시작 목표", x: cell.x, y: cell.y,
       pages: [
-        { id: "ev_objective_start_p0", name: "목표 걸기", trigger: { kind: "auto" }, priority: "below", graphic: { transparent: true }, conditions: [], commands: [objectiveCommand(text), { kind: "setSelfSwitch", key: "A", value: true }], movement: { type: "fixed", speed: 3, frequency: 3 } },
+        { id: "ev_objective_start_p0", name: "목표 걸기", trigger: { kind: "auto" }, priority: "below", graphic: { transparent: true }, conditions: [], commands: [objectiveCommand(text, input.target), { kind: "setSelfSwitch", key: "A", value: true }], movement: { type: "fixed", speed: 3, frequency: 3 } },
         { id: "ev_objective_start_p1", name: "끝", trigger: { kind: "action" }, priority: "below", graphic: { transparent: true }, conditions: [{ kind: "selfSwitch", key: "A", value: true }], commands: [], movement: { type: "fixed", speed: 3, frequency: 3 } },
       ],
       // upsert_event 를 거치지 않고 바로 맵에 넣는 쪽(출하 기본값)도 저장 모양이 맞게 — 이벤트 수준 trigger·commands 가 없으면 불러오기 검사가 거절했다.
