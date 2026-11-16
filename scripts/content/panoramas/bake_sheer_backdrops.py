@@ -13,8 +13,8 @@ textures. Colours come from tiledata/sheer-terrain/ramps.json. The layout follow
 - Deterministic: same pieces -> same bytes. Set ids and layer ids must match src/assets/oprnPanoramas.ts.
 
 Sets
-- oprn-cloud-sea:      sky band + horizon haze + far cloud rows (base) / mid clouds / near clouds.
-- oprn-far-mountains:  high sky + clouds (base) / two mountain ridges (far faded, near full) / far forest with haze.
+- oprn-cloud-sea:      sky band + horizon haze + far cloud rows + the cloud sea, densest at the bottom (base) / mid clouds / near clouds.
+- oprn-far-mountains:  high sky + clouds + far forest (base) / two mountain ridges (far faded, near full) / far forest with haze.
 - oprn-far-forest:     same sky base / far forest band reaching higher, no mountains.
 """
 from __future__ import annotations
@@ -32,6 +32,9 @@ PIECES = ROOT / "tiledata/sheer-terrain/pieces/backdrop"
 RAMPS = json.loads((ROOT / "tiledata/sheer-terrain/ramps.json").read_text())["ramps"]
 W, H = 640, 240
 TAU = 2 * math.pi
+# The bottom BAND rows of every base layer repeat seamlessly downward: the base layer is pinned to the screen in play, so its
+# lower part is what fills the view under the islands; a map overview taller than one picture repeats these rows.
+BAND_TOP = 176
 
 
 def hexes(name: str) -> list[tuple[int, int, int]]:
@@ -101,6 +104,21 @@ def cloud_sea() -> dict[str, np.ndarray]:
             if band == 0:
                 im = fade(im, sky[5], 0.5)
             stamp(base, im, x - 10, y)
+    # the cloud sea itself, in the base so it always fills the lower view (the base layer stays on screen while the upper
+    # layers move with the map): mid puffs, then near puffs, then a dense bank in the bottom BAND rows. Puffs above the band end
+    # before it, and the bank wraps in x and y, so the band rows repeat seamlessly downward (the overview render does that).
+    for i, (x, y) in enumerate(sorted(spots(18, (0, 70, W, 112), 25), key=lambda q: q[1])):
+        stamp(base, mid[:, (i % 4) * 40:(i % 4) * 40 + 40], x - 20, y)
+    for i, (x, y) in enumerate(sorted(spots(8, (0, 96, W, BAND_TOP - 48), 27), key=lambda q: q[1])):
+        stamp(base, near[:, (i % 3) * 80:(i % 3) * 80 + 80], x - 40, y)
+    # the bank: three rows of near puffs with period P = H - BAND_TOP in y. Every puff is drawn whole at y and y - P, so inside
+    # the band the pattern wraps (band rows repeat seamlessly) and above BAND_TOP the top puffs rise out of it with a ragged edge.
+    period = H - BAND_TOP
+    for row, (y0, n) in enumerate(((0, 6), (21, 7), (42, 6))):
+        for i, (x, y) in enumerate(spots(n, (0, y0, W, y0 + 6), 61 + row)):
+            im = near[:, ((i + row) % 3) * 80:((i + row) % 3) * 80 + 80]
+            for oy in (y - period, y):
+                stamp(base, im, x - 40, BAND_TOP + oy)
     mid_l = blank()
     for i, (x, y) in enumerate(sorted(spots(24, (0, 64, W, 132), 21), key=lambda q: q[1])):
         stamp(mid_l, mid[:, (i % 4) * 40:(i % 4) * 40 + 40], x - 20, y)
@@ -157,8 +175,11 @@ def forest(top: int) -> np.ndarray:
             if t < edge:
                 out[y, x] = (*haze[1 if (y + int(3 * wave(x, 11))) % 6 < 4 else 2], 255)
             else:
+                # the fine texture meets the coarse one on a wavy seam above BAND_TOP; from there down only the coarse one, whose 64-row
+                # period lines up with the band (176..239), so the band repeats downward without a seam
+                u = (y - top) / max(1, BAND_TOP - top)
                 mix = 0.5 + 0.10 * wave(x, 4) + 0.06 * math.sin(TAU * 14 * x / W + y / 9.0)
-                px = (f2[y % 32, (x + (y // 32) * 13) % 32] if t < mix else f1[y % 64, (x + (y // 64) * 23) % 64]).copy()
+                px = (f2[y % 32, (x + (y // 32) * 13) % 32] if u < mix else f1[y % 64, (x + ((y - BAND_TOP) // 64) * 23) % 64]).copy()
                 k = max(0.0, 0.5 - t * 1.2)
                 px[:3] = (px[:3] * (1 - k) + np.array(haze[1]) * k).astype(np.uint8)
                 out[y, x] = px
@@ -170,7 +191,9 @@ def main() -> None:
     ap.add_argument("--out", default=str(ROOT / "public/assets/panoramas"))
     out = Path(ap.parse_args().out)
     out.mkdir(parents=True, exist_ok=True)
-    layers = {**cloud_sea(), "oprn-pano-far-mountains": high_sky(), "oprn-pano-far-mountains-ridges": ridges(),
+    sky_forest = high_sky()
+    f = forest(122); m = f[:, :, 3] > 127; sky_forest[m] = f[m]   # the far forest also in the base: the pinned base fills the lower view with canopy
+    layers = {**cloud_sea(), "oprn-pano-far-mountains": sky_forest, "oprn-pano-far-mountains-ridges": ridges(),
               "oprn-pano-far-mountains-forest": forest(122), "oprn-pano-far-forest-trees": forest(96)}
     for name, arr in layers.items():
         assert arr.shape == (H, W, 4)

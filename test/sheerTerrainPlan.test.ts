@@ -127,6 +127,35 @@ describe("sheer terrain generator", () => {
     }
   });
 
+  it("void-kind tiers are lobed: the lowest tier has two or more south bulges at least 4 cells wide, a tier's north outline curves, the summit top is small", () => {
+    for (const k of SHEER_KINDS.filter((kind) => kind.void)) for (const seed of SEEDS) {
+      const [W, H] = k.size.medium, lv = planSheerTerrain(k, W, H, seed).levels;
+      const southRow = (x: number, L: number) => { let y = H - 1; while (y >= 0 && lv[y * W + x]! < L) y--; return y; };
+      const northRow = (x: number, L: number) => { let y = 0; while (y < H && lv[y * W + x]! < L) y++; return y < H ? y : -1; };
+      // a bulge = a run of 4+ columns on one south row with both neighbouring columns at least two rows further north (a tuck or the void)
+      let bulges = 0;
+      for (let x = 0; x < W; x++) {
+        const r = southRow(x, 1); if (r < 0) continue;
+        let e = x; while (e + 1 < W && southRow(e + 1, 1) === r) e++;
+        const l = x > 0 ? southRow(x - 1, 1) : -1, rr = e + 1 < W ? southRow(e + 1, 1) : -1;
+        if (e - x + 1 >= 4 && l < r - 1 && rr < r - 1) bulges++;
+        x = e;
+      }
+      expect(bulges, `${k.id} s${seed} south bulges`).toBeGreaterThanOrEqual(2);
+      // the north outline of level 2 bends over at least 4 columns somewhere (no rounded box joined at right angles only)
+      let curve = false;
+      for (let x = 0; x + 4 < W && !curve; x++) {
+        const n = [0, 1, 2, 3, 4].map((j) => northRow(x + j, 2));
+        if (n.every((v) => v >= 0) && n.every((v, j) => j === 0 || Math.abs(v - n[j - 1]!) <= 2) && n[0] !== n[4]) curve = true;
+      }
+      expect(curve, `${k.id} s${seed} north curve`).toBe(true);
+      if (k.id === "summit") {
+        const top = Math.max(...Array.from(lv)), xs = Array.from({ length: W }, (_, x) => x).filter((x) => northRow(x, top) >= 0);
+        expect(Math.max(...xs) - Math.min(...xs) + 1, `${k.id} s${seed} top width`).toBeLessThanOrEqual(10);
+      }
+    }
+  });
+
   it("the same kind, size and seed give the same plan", () => {
     const k = SHEER_KINDS[0]!, [W, H] = k.size.medium;
     const a = planSheerTerrain(k, W, H, 7), b = planSheerTerrain(k, W, H, 7);

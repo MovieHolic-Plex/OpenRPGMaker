@@ -240,28 +240,21 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
   const bgFiles = bgLayers.map((layer) => resolveOprnPanoramaAssetUrl(layer.imageId ?? "")).filter((u): u is string => !!u)
     .map((u) => path.join("public", u.replace(/^\//u, ""))).filter((f) => fs.existsSync(f));
   if (bgFiles.length) {
-    // 층을 아래→위로 겹친다. loopY:false(지평선 그림)는 게임처럼 한 장만 위에서부터(가로로만 되풀이, 화면 배율 = size/16),
-    // 그 아래는 그림 맨 아래 줄의 가장 흔한 색으로 채운다 — 세로로 되풀이하면 줄무늬로 보였다. 사방 반복 그림은 그대로 바둑판으로.
-    const k = Math.max(1, Math.round(size / 16)), horizon = bgLayers[0]!.loopY === false;
-    for (const file of bgFiles) {
+    // 층을 아래→위로 겹친다. loopY:false(지평선 그림)는 게임처럼 한 장만 위에서부터(가로로만 되풀이, 화면 배율 = size/16).
+    // 그림보다 긴 맵: 첫 장(바탕 — 게임에서는 화면에 고정돼 늘 화면 아래쪽을 덮는다)의 맨 아래 64줄을 아래로 되풀이한다
+    // (견본 바탕은 그 띠가 세로로 이어지게 구웠다 — 구름바다 · 먼 숲). 위 층은 한 장만. 사방 반복 그림은 그대로 바둑판으로.
+    const k = Math.max(1, Math.round(size / 16)), horizon = bgLayers[0]!.loopY === false, BAND = 64;
+    bgFiles.forEach((file, li) => {
       const bg = PNG.sync.read(fs.readFileSync(file));
       for (let y = 0; y < target.height; y += 1) for (let x = 0; x < target.width; x += 1) {
-        const sy = horizon ? Math.floor(y / k) : y % bg.height, sx = horizon ? Math.floor(x / k) % bg.width : x % bg.width;
-        if (sy >= bg.height) continue;
+        let sy = horizon ? Math.floor(y / k) : y % bg.height;
+        const sx = horizon ? Math.floor(x / k) % bg.width : x % bg.width;
+        if (sy >= bg.height) { if (li > 0) continue; sy = bg.height - BAND + ((sy - bg.height) % BAND); }
         const s = (sy * bg.width + sx) * 4, d = (y * target.width + x) * 4;
         if (bg.data[s + 3]! < 128) continue;
         target.data[d] = bg.data[s]!; target.data[d + 1] = bg.data[s + 1]!; target.data[d + 2] = bg.data[s + 2]!; target.data[d + 3] = 255;
       }
-    }
-    if (horizon) {
-      const top = 240 * k;
-      if (top < target.height) {
-        const count = new Map<number, number>();
-        for (let x = 0; x < target.width; x += 1) { const d = ((top - 1) * target.width + x) * 4; const c = (target.data[d]! << 16) | (target.data[d + 1]! << 8) | target.data[d + 2]!; count.set(c, (count.get(c) ?? 0) + 1); }
-        const c = [...count.entries()].sort((p, q) => q[1] - p[1])[0]![0];
-        for (let y = top; y < target.height; y += 1) for (let x = 0; x < target.width; x += 1) { const d = (y * target.width + x) * 4; target.data[d] = c >> 16; target.data[d + 1] = (c >> 8) & 255; target.data[d + 2] = c & 255; target.data[d + 3] = 255; }
-      }
-    }
+    });
   }
   let note: string | undefined;
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;

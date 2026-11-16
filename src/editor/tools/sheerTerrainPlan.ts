@@ -77,8 +77,8 @@ export interface SheerPlan {
 
 const FACE = 3;   // 단 하나 = 면 3칸(styles.ts sheer.faceRows)
 /** 엽 하나: 중심 · 반지름 · 모양 지수 p(2 = 타원, 4~6 = 둥근 모서리 덩이 — 남쪽 가장자리가 곧은 줄이고 끝만 둥글다). */
-/** 엽: 타원(p 2) · 초타원(p) · 둥근 모서리 네모(r — 모서리 반지름 r 칸, 변은 곧다). */
-type Lobe = { cx: number; cy: number; rx: number; ry: number; p?: number; r?: number; rn?: number };
+/** 엽: 타원(p 2) · 초타원(p) · 둥근 모서리 네모(r — 모서리 반지름 r 칸, 변은 곧다; rn 북쪽 모서리) · 북쪽 모서리 타원(ex × ey 칸). */
+type Lobe = { cx: number; cy: number; rx: number; ry: number; p?: number; r?: number; rn?: number; ex?: number; ey?: number };
 
 /**
  * 계획을 세운다. W·H 는 맵 크기(칸), seed 는 게임 열쇠·요청에서 온 씨앗. exitSides 는 길이 닿을 변(첫째가 들어오는 변).
@@ -105,6 +105,13 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
   const warnings: string[] = [];
   const lv = new Uint8Array(N);
   const blob = (ls: readonly Lobe[], x: number, y: number, grow = 0) => ls.some((l) => {
+    if (l.ex !== undefined && l.ey !== undefined && y + 0.5 < l.cy) {
+      // 북쪽 모서리가 타원(가로 ex · 세로 ey 칸) — 3/4 시점의 넓고 납작한 곡선. 렌더러의 매끈하게 펴기(B-스플라인)가 대각선으로 펴지 않는 크기.
+      const ex = Math.min(l.ex, l.rx + grow), ey = Math.min(l.ey, l.ry + grow - 0.5);
+      const dx = Math.abs(x + 0.5 - l.cx) - (l.rx + grow - ex), dy = Math.abs(y + 0.5 - l.cy) - (l.ry + grow - ey);
+      if (dx > ex || dy > ey) return false;
+      return dx <= 0 || dy <= 0 || (dx / ex) ** 2 + (dy / ey) ** 2 <= 1;
+    }
     if (l.r !== undefined) {
       // 북쪽 모서리는 rn(넓게 둥글다 — 윗면 테만 돈다), 남쪽 모서리는 r(좁다 — 앞면이 비스듬히 깎이지 않게)
       const r = y + 0.5 < l.cy ? l.rn ?? l.r : l.r;
@@ -164,21 +171,33 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
       else { const k = ri(1, extra - 1); l += k; r -= extra - k; }
     }
     tiers.forEach((t, i) => {
-      // 단 = 둥근 모서리 덩이 몇(엽): 큰 덩이 하나 + 남쪽으로 FACE 칸 나온 엽 하나~둘(맨 아래 단은 늘, 가운데 단은 아래 단 턱이 3칸 넘게 남을 때만).
-      // 엽 사이 턱은 늘 면 한 장(FACE 칸)이라 렌더러가 엽 끝 조각으로 둥글게 돌린다(1~2칸 턱은 비스듬한 지층으로 읽혔다).
-      const ls = [slab(t.l, t.r, t.north, t.south)];
-      const room = i === 0 ? true : t.south + FACE <= souths[i - 1]! - FACE - 3;
+      // 단 = 엽 몇의 합(2026-11-16 감독 검토 둘째: 둥근 네모가 직각으로 붙은 모양 → 둥근 혹 · 오목한 홈).
+      //   · 몸통: 북쪽 모서리가 가로 7 · 세로 4칸 타원(보이는 곳은 위 단 양옆 날개의 북쪽 모서리와 맨 위 단) — 네 칸 넘게 도는 곡선.
+      //   · 넓은 날개(5칸 이상)는 몸통을 두세 칸 들이고 그 자리에 북쪽이 둥근 혹 엽을 몇 칸 낮게 세운다 — 날개에 혹 하나 + 오목한 홈 하나.
+      //   · 맨 위 단(정상)은 북쪽이 반 타원인 작은 둥근 덩이.
+      // 남쪽 모서리는 늘 좁다(r 0.5 — 앞면이 비스듬히 깎이지 않는다; 렌더러가 엽 끝 조각으로 둥글게 돌린다).
+      const up = tiers[i + 1], h = t.south - t.north + 1;
+      const round = (l: Lobe, ex: number, ey: number): Lobe => ({ ...l, ex, ey });
+      const wl = up ? up.l - t.l : 0, wr = up ? t.r - up.r : 0, side = wr > wl || (wr === wl && rnd() < 0.5) ? 1 : -1, ww = side > 0 ? wr : wl;
+      let bl = t.l, br = t.r;
+      const ls: Lobe[] = [];
+      if (up && ww >= 5 && h >= 8) {
+        const d = Math.min(3, ww - 3), k = ri(2, Math.min(5, h - 6)), lw = d + 4 + ri(0, Math.max(0, ww - d - 5));
+        if (side > 0) { br = t.r - d; ls.push(round(slab(t.r - lw + 1, t.r, t.north + k, t.south), lw / 2, 4)); }
+        else { bl = t.l + d; ls.push(round(slab(t.l, t.l + lw - 1, t.north + k, t.south), lw / 2, 4)); }
+      }
+      ls.unshift(round(slab(bl, br, t.north, t.south), !up && topSmall ? (br - bl + 1) / 2 : 7, !up && topSmall ? Math.min(4, (t.south - t.north) / 2) : 4));
       const w = t.r - t.l + 1;
+      const room = i === 0 ? true : t.south + FACE <= souths[i - 1]! - FACE - 3;
       if (room && w >= 9) {
-        // 엽 둘이면 사이는 4칸 이상 비운다(한 칸 홈은 하늘이 비치는 틈으로 읽혔다)
-        const k = w >= 20 && rnd() < 0.6 ? 2 : 1;
-        if (k === 1) {
-          const lw = Math.max(5, Math.round(w * (0.4 + rnd() * 0.3))), a = t.l + ri(0, w - lw);
-          ls.push(slab(a, a + lw - 1, t.north + 1, t.south + FACE));
-        } else {
-          const gapW = 4 + ri(0, 2), lw1 = Math.max(5, Math.round((w - gapW) * (0.35 + rnd() * 0.2))), lw2 = Math.max(5, w - gapW - lw1 - ri(0, 3));
-          ls.push(slab(t.l, t.l + lw1 - 1, t.north + 1, t.south + FACE));
-          ls.push(slab(t.r - lw2 + 1, t.r, t.north + 1, t.south + FACE));
+        // 남쪽 혹: 폭 4~6칸 엽 둘 이상이 FACE 칸 남쪽으로 나온다 — 렌더러가 엽 양끝을 엽 조각(밑이 둥근 64px 면)으로 그려 혹 하나가 한 곡선으로 돈다.
+        // 혹 사이는 3칸 이상 들어간 홈(아래 단 턱이 보이는 오목한 곳). 남쪽 엽은 몸통 남쪽 세 줄에서 내려온다.
+        const y0 = Math.max(t.north + 1, t.south - 2);
+        const n = w >= 11 ? Math.max(2, Math.min(4, Math.floor(w / 8))) : 1, slot = w / n;
+        for (let j = 0; j < n; j++) {
+          const room2 = Math.floor(slot) - (j < n - 1 ? 3 : 0), lw = Math.max(4, Math.min(room2, 4 + ri(0, 2)));
+          const a = t.l + Math.round(j * slot) + ri(0, Math.max(0, room2 - lw));
+          if (a + lw - 1 <= t.r) ls.push(slab(a, a + lw - 1, y0, t.south + FACE));
         }
       }
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (blob(ls, x, y)) lv[idx(x, y)] = Math.max(lv[idx(x, y)]!, i + 1);
