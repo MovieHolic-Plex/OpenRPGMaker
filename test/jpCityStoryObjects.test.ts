@@ -40,7 +40,8 @@ describe("jp_city 이야기 기물", () => {
         expect(ts.priority[tile]).toBe(item.place === "decal" ? "lower" : "upper");
       }));
     }
-    expect(next).toBe(ts.count);
+    expect(next).toBe(20463); // 이 묶음의 끝. 그 뒤(20463~)는 새 건물·거리의 예약 구간이라(2026-11-14, bake_lib.RESERVE) 이제 시트 끝이 아니다
+    expect(ts.count).toBeGreaterThan(next);
     expect((ts.referenceDocuments ?? []).some((category) => category.documents.some((doc) => doc.id === "jp-story-objects"))).toBe(true);
   });
 
