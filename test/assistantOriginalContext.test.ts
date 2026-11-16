@@ -211,9 +211,9 @@ describe("session original snapshot lifecycle", () => {
     let calls = 0;
     const project = createBlankProject();
     const session = new AssistantSession(project, {
-      // The writer runs on the default role models / liteModel (gemini-4-argon, 1M window); pin every role to the
-      // 16k-window model so the catalog really cannot fit.
-      config: { ...defaultAiConfig(), model: "tab_flash_lite_preview", liteModel: "tab_flash_lite_preview", roleModels: undefined, agentMode: "chat" },
+      // The writer runs on the default role models / liteModel (claude-opus-5-5, 1M window); pin every role to the
+      // 16k-window Google model (its window is listed under google-antigravity) so the catalog really cannot fit.
+      config: { ...defaultAiConfig(), providerId: "google-antigravity", model: "tab_flash_lite_preview", liteModel: "tab_flash_lite_preview", roleModels: undefined, agentMode: "chat" },
       chat: async () => { calls++; return { message: { role: "assistant", content: "unexpected" }, finishReason: "stop" }; },
     });
     const result = await session.sendUserMessage("현재 데이터 확인");

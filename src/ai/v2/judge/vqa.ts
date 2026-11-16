@@ -319,19 +319,19 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
 /**
  * 검수자 모델 고르기 — 그림을 받는 모델 중 주 모델과 다른 계열을 먼저(역할표 src/ai/assistantRoles.ts 의 규칙과 같다).
  * 순서: 사용자가 정한 «눈» 칸(그 계정 키가 있을 때) → 검토자 칸(그림을 받는 계열일 때) → 키가 있는 다른 계열 계정의 기본 눈 모델
- * → 로컬 Claude CLI Sonnet(주 모델이 Claude 가 아닐 때) → 주 모델(같은 눈, 표시). Argon 은 어느 자리든 그림을 보는 high 별칭으로 부른다(vqaVisionModel).
+ * → 로컬 Claude CLI Opus 5.5 medium(주 모델이 Claude 가 아닐 때) → 주 모델(같은 눈, 표시). Argon 은 어느 자리든 그림을 보는 high 별칭으로 부른다(vqaVisionModel).
  * keyed = 이 실행에 키가 실린 계정(호스트가 역할·그림 칸 계정의 키를 싣는다) + 로컬 CLI.
  */
-export interface VqaReviewerPick { readonly provider: string; readonly model: string; readonly sameAsMain: boolean; readonly effort?: "high" }
+export interface VqaReviewerPick { readonly provider: string; readonly model: string; readonly sameAsMain: boolean; readonly effort?: "medium" | "high" }
 
 /**
  * 그림을 실제로 보는 별칭으로 바꾼다. 2026-10-25 실측(8318, 16×16 PNG): gemini-4-argon·gemini-3.8-flash 는 빈 답, -medium 은 400,
  * gemini-4-argon-high 만 그림을 봤다. 그래서 Argon 검수자는 늘 high 로 부른다 — google-antigravity 는 강도 라우팅(effort high →
  * gemini-4-argon-high), 이름에 강도가 박힌 사용자 지정 엔드포인트(openai-compat:*)는 모델 ID 자체를 -high 로.
  */
-function vqaVisionModel(pick: { readonly provider: string; readonly model: string }): { provider: string; model: string; effort?: "high" } {
+function vqaVisionModel(pick: { readonly provider: string; readonly model: string; readonly effort?: "medium" | "high" }): { provider: string; model: string; effort?: "medium" | "high" } {
   const argon = /^gemini-4-argon(?:-(?:low|medium|high))?$/u.exec(pick.model);
-  if (!argon) return { provider: pick.provider, model: pick.model };
+  if (!argon) return { provider: pick.provider, model: pick.model, ...(pick.effort ? { effort: pick.effort } : {}) };
   if (pick.provider.startsWith("openai-compat:")) return { provider: pick.provider, model: "gemini-4-argon-high" };
   return { provider: pick.provider, model: "gemini-4-argon", effort: "high" };
 }
@@ -339,9 +339,13 @@ function vqaVisionModel(pick: { readonly provider: string; readonly model: strin
 export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
   `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " 「같은 계열 검수」(다른 계열 검수자가 답하지 못함 — 약한 증거)" : ""}`;
 
-/** 로컬 CLI 의 검수용 모델 — 계열마다 하나. 다른 계열이면 독립 검수자로, 같은 계열이면 «자기 자신» 앞의 마지막 후보로 쓴다. */
-const LOCAL_CLI_REVIEWERS: readonly { readonly provider: string; readonly model: string }[] = [
-  { provider: "local-cli:claude", model: "claude-sonnet-5-5" }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" },
+/**
+ * 로컬 CLI 의 검수용 모델 — 계열마다 하나. 다른 계열이면 독립 검수자로, 같은 계열이면 «자기 자신» 앞의 마지막 후보로 쓴다.
+ * Claude 는 Opus 5.5 · medium 이다(오너 결정 2026-11-16 「조수는 Opus 5.5 medium」 — 조수 안의 보조 호출도 같다). 2026-11-16 실모델 확인 r7a 에서
+ * Opus 로 지은 게임의 화면 검수 7번이 Sonnet 으로 갔다(N6). 조수가 Claude 로 돌면 지은 모델과 검수 모델이 같아진다 — «같은 계열 검수»(약한 증거) 표시 그대로.
+ */
+const LOCAL_CLI_REVIEWERS: readonly { readonly provider: string; readonly model: string; readonly effort?: "medium" }[] = [
+  { provider: "local-cli:claude", model: "claude-opus-5-5", effort: "medium" }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" },
 ];
 
 interface VqaReviewerInput {
@@ -354,7 +358,7 @@ interface VqaReviewerInput {
 
 /**
  * 검수자 후보 차례(2026-10-26 결정): 다른 계열을 모두 먼저, 그다음에만 같은 계열(«같은 계열 검수» 표시, 약한 증거).
- * 다른 계열: «눈» 칸 → 검토자 칸 → 키 있는 기본 계정 → 로컬 CLI(Claude Sonnet·Codex GPT·Gemini).
+ * 다른 계열: «눈» 칸 → 검토자 칸 → 키 있는 기본 계정 → 로컬 CLI(Claude Opus 5.5 medium·Codex GPT·Gemini).
  * 같은 계열: 명시한 «눈» 칸(예: argon-high) → 검토자 칸 → 주 모델. 실행기는 앞 후보가 답하지 못하면(호출 실패·빈 답·JSON 없음) 다음 후보로 같은 그림을 다시 보낸다.
  */
 export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[] {
@@ -363,10 +367,11 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
   const seesImages = (provider: string) => !/deepseek/iu.test(provider) && input.familyOf(provider) !== "deepseek";
   const usable = (provider: string) => input.keyed.has(provider) || provider.startsWith("local-cli:");
   const out: VqaReviewerPick[] = [];
-  const add = (slot: { provider: string; model: string } | undefined, sameAsMain: boolean) => {
+  const add = (slot: { provider: string; model: string; effort?: "medium" | "high" } | undefined, sameAsMain: boolean) => {
     if (!slot) return;
     const pick = { ...vqaVisionModel(slot), sameAsMain };
-    if (!out.some((p) => p.provider === pick.provider && p.model === pick.model && p.effort === pick.effort)) out.push(pick);
+    // 같은 계정·모델은 한 번만 — 강도만 다른 둘(검수용 Opus medium 과 주 모델 Opus)을 두 번 부르지 않는다.
+    if (!out.some((p) => p.provider === pick.provider && p.model === pick.model)) out.push(pick);
   };
   if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) add(input.vision, false);
   if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) add(input.advisor, false);
@@ -382,8 +387,9 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
   // 같은 계열이라도 «자기 자신» 보다는 그 계열의 검수용 모델이 먼저다 — 지은 모델이 제 화면을 보는 것은 맨 마지막이다.
   // 2026-11-12 측정(Haiku 5.5 실행, GPT 할당량 없음·Gemini CLI 는 그림을 못 봄): 다른 계열이 모두 답하지 못하자 Haiku 가 제 화면을 검수했다 —
   // 같은 계열의 Sonnet 은 후보에 없었다(로컬 CLI 목록은 «다른 계열» 일 때만 들어갔다). 표시는 그대로 «같은 계열 검수»(약한 증거)다.
+  // 검수용 모델이 주 모델과 같으면(Opus 로 지은 Claude 실행) 그 자리에서 강도(medium)를 붙여 한 번만 넣는다 — 아래 주 모델은 중복으로 빠진다.
   for (const d of LOCAL_CLI_REVIEWERS) {
-    if (!differs(d.provider) && input.familyOf(d.provider) === mainFamily && d.model !== input.main.model) add(d, true);
+    if (!differs(d.provider) && input.familyOf(d.provider) === mainFamily) add(d, true);
   }
   add(input.main, true);
   return out;

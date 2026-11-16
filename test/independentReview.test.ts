@@ -45,7 +45,7 @@ describe("independent review protocol", () => {
     expect(request.tools).toEqual([]);
     expect(request.tool_choice).toBe("none");
     expect(request.messages[1]?.content).toContainEqual({ type: "image_url", image_url: { url: input.images[0]!.dataUrl } });
-    expect(() => buildIndependentReviewRequest({ ...config, model: "tab_flash_lite_preview" },
+    expect(() => buildIndependentReviewRequest({ ...config, providerId: "google-antigravity", model: "tab_flash_lite_preview" },
       { ...input, originalRequest: "large ".repeat(200000) })).toThrow("independent-review-window-exceeded");
   });
   it("retains exact changed database records rather than whole unchanged collections", () => {

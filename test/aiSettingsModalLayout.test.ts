@@ -138,10 +138,11 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     // 「최고 품질」을 고르면 역할 모델이 상위 티어로 채워지고 저장된다.
     findByTestId(modal, "ai-model-preset-quality")?.click();
     const modelInput = findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement | null;
-    expect(modelInput?.value).toBe("gemini-4-argon");
+    // 공장 기본 제공자는 Claude 다(2026-11-16) — Claude 의 상위 티어도 Opus 5.5 하나다(modelPresets).
+    expect(modelInput?.value).toBe("claude-opus-5-5");
     const stored = JSON.parse(storage.get("oprn:ai-config") ?? "{}");
-    expect(stored.model).toBe("gemini-4-argon");
-    expect(stored.ultrabrainModel).toBe("gemini-4-argon");
+    expect(stored.model).toBe("claude-opus-5-5");
+    expect(stored.ultrabrainModel).toBe("claude-opus-5-5");
     expect(stored.roleModels?.writer?.thinkingLevel).toBe("high");
   });
 
@@ -179,14 +180,15 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
       expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("로그인 필요");
     });
     const summary = findByTestId(modal, "ai-settings-connection-summary");
-    expect(summary?.textContent).toBe("Google · 로그인 필요");
+    // 공장 기본 제공자 = Claude(2026-11-16).
+    expect(summary?.textContent).toBe("Claude · 로그인 필요");
     expect(summary?.dataset.tone).toBe("warning");
 
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "oauth" });
     findByTestId(modal, "ai-settings-connection-check")?.click();
     await vi.waitFor(() => {
       // 「연결 확인」 뒤에는 확인 시각이 붙는다(C-67, 92a6aba61e) — 시각 문자열은 로케일·시계에 따라 달라 형식만 본다.
-      expect(summary?.textContent).toMatch(/^Google · 사용 준비됨 · .+ 확인함$/u);
+      expect(summary?.textContent).toMatch(/^Claude · 사용 준비됨 · .+ 확인함$/u);
     });
     expect(summary?.dataset.tone).toBe("ready");
     expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("연결됨");

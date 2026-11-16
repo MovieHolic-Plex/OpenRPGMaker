@@ -153,7 +153,7 @@ function localCliPromptText(messages: readonly unknown[]): string {
 }
 
 /** 로컬 CLI 제공자(`local-cli:claude|codex|gemini`)의 한 번짜리 글 생성 — 내부 보조 호출(event_command_assist·도트 글)용. */
-function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined, onUsage?: (usage: { input: number; output: number; cacheRead: number; cacheWrite: number; calls: number }, costUsd?: number) => void) {
+function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined, onUsage?: (usage: { input: number; output: number; cacheRead: number; cacheWrite: number; calls: number }, costUsd?: number) => void, effort?: "low" | "medium" | "high") {
   return async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
     const images: { mimeType: string; data: string }[] = [];
     const text = messages.map((message) => {
@@ -167,7 +167,7 @@ function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: 
       }).join("\n") : "";
       return `[${m.role ?? "user"}]\n${body}`;
     }).join("\n\n");
-    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}), ...(onUsage ? { onUsage } : {}) });
+    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(effort ? { effort } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}), ...(onUsage ? { onUsage } : {}) });
   };
 }
 
@@ -1157,7 +1157,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       sideUsage.calls += 1;
       try {
         const cli = localCliIdOf(role.provider);
-        if (cli) return await localCliChat(cli, role.model, addSideUsage)(messages, signal ?? options.signal);
+        // 강도도 넘긴다 — 화면 검수의 Claude 검수자는 Opus 5.5 · medium 이다(src/ai/v2/judge/vqa.ts LOCAL_CLI_REVIEWERS).
+        if (cli) return await localCliChat(cli, role.model, addSideUsage, role.effort)(messages, signal ?? options.signal);
         const key = options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
         if (!key) throw new Error(`${role.provider} 계정 키가 이 실행에 없음`);
         const result = await completeProvider(role.provider, { model: role.model, max_tokens: 8192, messages, ...(role.effort ? { reasoning: { effort: role.effort } } : {}) }, { apiKey: key, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
