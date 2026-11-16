@@ -1143,6 +1143,26 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (!path) {
         report.roadsFailed.push(`${sp.role}(${sp.front.x},${sp.front.y}) 문 앞 길`);
         if (sp.role !== "landmark") { for (let j = 0; j < sp.k.h; j += 1) for (let i = 0; i < sp.k.w; i += 1) occ[idx(sp.x + i, sp.y + j)] = FREE; occ[f] = FREE; spots.splice(spots.indexOf(sp), 1); }
+        // 종류의 일터는 늘 선다 — 어느 킷이 서는지만 씨앗이 고른다(2026-11-16 감독, 은행 lay-base-harbor: 씨앗이 먼저 앉힌 창고 문에 길이 닿지 않아
+        // 일터가 통째로 빠지고 부두 포석만 빈자리를 둘렀다). 길이 닿는 자리로 다시 앉힌다: 같은 킷 먼저, 그다음 그 종류의 다른 일터 킷, 9칸 안.
+        if (sp.role === "work" && kindWork.length) {
+          const got: { path: number[] | null } = { path: null };
+          seatAlso = (k, x, y) => {
+            const fc = idx(x + k.door!.dx, y + k.door!.dy + 1), keep: [number, number][] = [];
+            for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) { const c = idx(x + i, y + j); keep.push([c, occ[c]!]); occ[c] = RESV; }
+            const p = routePath(grid(false), [fc], (c) => network.has(c) || (yardNet.has(c) && lv[c] === lv[fc]), opts(false));
+            for (const [c, v] of keep) occ[c] = v;
+            got.path = p; return !!p;
+          };
+          const pool = [sp.k, ...kindWork.filter((k) => k.id !== sp.k.id)];
+          let again: CodeSpot | null = null;
+          for (const k of pool) { again = place("work", [k], { ...sp.want, maxR: 9 }, 9); if (again) break; }
+          seatAlso = null;
+          if (again && got.path) {
+            paths.push({ name: "오름길", cells: got.path, width: 1 }); for (const c of got.path) network.add(c);
+            report.roadsFailed.pop(); report.moved.push(`work ${sp.k.id}(${sp.x},${sp.y}) → ${again.k.id}(${again.x},${again.y}) — 문 앞에 길이 닿는 자리로`);
+          }
+        }
         continue;
       }
       paths.push({ name: sp.role === "house" ? "골목" : "오름길", cells: path, width: 1 }); for (const c of path) network.add(c);

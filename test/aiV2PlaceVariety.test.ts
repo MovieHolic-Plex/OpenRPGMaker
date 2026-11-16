@@ -186,4 +186,30 @@ describe("포구 마을의 일터·작은 집", () => {
     }
     expect([...works].sort()).toEqual(["bd-house-rv-r2-06", "bd-house-ware0"]);
   }, 240_000);
+
+  /** 은행 lay-base-harbor «항구 마을» 이 실제로 지은 인자(게임 기억의 spec: 땅 씨앗 55069 · 84×38 · 자리 · 부두) — kind 는 짓기가 고른다(harbour-town). */
+  const HARBOUR: PlaceSpec = { type: "village", name: "항구 마을", style: "fantasy", theme: "coast", size: "large", features: ["harbour", "부두", "창고", "배", "화물 상자", "부두 끝에 배", "부두 가까운 창고와 화물 상자"],
+    hints: { houseCount: 4, landform: "flat", settle: "low", tiers: 1, high: "north", width: 84, height: 38, terrainSeed: 55069, layout: { gather: { x: 31, y: 23, plaza: true }, landmark: { x: 58, y: 5 }, anchor: { x: 22, y: 22 }, work: { x: 39, y: 24 },
+      houses: [{ x: 8, y: 23, kind: "small" }, { x: 15, y: 16, kind: "medium" }, { x: 32, y: 14, kind: "large" }, { x: 45, y: 15, kind: "small" }, { x: 58, y: 17, kind: "medium" }],
+      fields: [{ x: 8, y: 13 }], forests: [{ x: 70, y: 12 }], props: [{ x: 29, y: 27 }, { x: 38, y: 20 }, { x: 18, y: 26 }], exits: ["west"] } } } as unknown as PlaceSpec;
+  it("종류의 일터 건물은 늘 선다 — 어느 킷인지만 씨앗이 고른다(은행 lay-base-harbor: 씨앗이 먼저 앉힌 창고 문에 길이 닿지 않아 일터가 통째로 빠졌다)", () => {
+    const missing: string[] = [];
+    const runs: [string, PlaceSpec, number][] = [
+      ...["5edcfff2-b0b2-4bf3-8612-a7381bc62de3", "k1", "k2", "k3"].flatMap((g) => [55069, 1, 2].map((salt) => [g, HARBOUR, salt] as [string, PlaceSpec, number])),
+      ...[707, 808].map((salt) => ["work-kits", R7, salt] as [string, PlaceSpec, number]),
+    ];
+    for (const [game, spec, salt] of runs) {
+      const project = createBlankProject() as Project;
+      const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: JSON.stringify(["project", game]) };
+      const variety = spec === HARBOUR ? `${ctx.lookKey}|배가 드나드는 항구 마을 맵을 만들어 줘. 부두랑 창고가 있게 해 줘.` : undefined;
+      const res = builderFor(spec)!.build(createBuildRun(ctx as never), { ...spec, salt, ...(variety ? { variety } : {}) }) as unknown as { ok: boolean; summary: string; mapIds: string[] };
+      expect(res.ok, res.summary).toBe(true);
+      const kindId = /kind ([a-z-]+)/u.exec(res.summary)?.[1];
+      const work = villageKindById(kindId ?? "")?.work ?? [];
+      expect(work.length, `${game}/${salt} kind ${kindId}`).toBeGreaterThan(0);
+      const kits = (ctx as { project: Project }).project.maps[res.mapIds[0]!]!.structurePlacements?.map((p) => p.kitId) ?? [];
+      if (!kits.some((k) => work.includes(k))) missing.push(`${game}/${salt} ${kindId}`);
+    }
+    expect(missing).toEqual([]);
+  }, 400_000);
 });
