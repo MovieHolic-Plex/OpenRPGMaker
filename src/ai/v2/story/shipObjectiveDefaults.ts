@@ -3,8 +3,9 @@ import type { Project } from "@/project/types";
 import { doorCellBlocked, offArtEntrances, sideQuestObjectives, staleMilestoneTargets } from "../judge/discoverability";
 import { lateStartObjective, planObjective, repeatingStartObjectives } from "../judge/objectivePlan";
 import { withWhere } from "../judge/objectiveWhere";
-import { objectiveCommand } from "../judge/objectiveCommand";
+import { OBJECTIVE_SURFACE, objectiveCommand } from "../judge/objectiveCommand";
 import { Obj } from "./shipLookDefaults";
+import { stepGoalAt } from "./playerLines";
 
 /**
  * 그려진 입구(계단·문짝) 옆 맨바닥에 선 문·이야기 이벤트를 그림 칸으로 옮긴다(offArtEntrances — 출하 검사와 같은 판정). 그 칸이 막힌 칸이면
@@ -66,7 +67,7 @@ function dropVanishedTargetObjectives(project: Project): string[] {
     if (!written.size) continue;
     const keep = (cmds as unknown as Record<string, unknown>[]).filter((c) => {
       if (c.kind !== "m2Command" || c.commandId !== "m2-214-ui-command") return true;
-      const name = /^「([^」]+)」[을를] 찾아가자/u.exec(String((c.fields as Record<string, unknown> | undefined)?.message ?? ""))?.[1];
+      const name = /^(?:[^「」()]+에서 )?「([^」]+)」[을를] 찾아가자/u.exec(String((c.fields as Record<string, unknown> | undefined)?.message ?? ""))?.[1];
       if (!name) return true;
       const hits = (map.events ?? []).filter((o) => o.id !== ev.id && String(o.name ?? "") === name);
       const gone = hits.length > 0 && hits.every((o) => vanishesWhenRead(project, map.id, o.id) && (o.pages ?? []).some((p) => (p.conditions ?? []).some((cond) => { const r = cond as { kind?: string; switchId?: string; value?: boolean }; return r.kind === "switch" && r.value !== false && written.has(`sw:${r.switchId}`); })));
@@ -86,7 +87,7 @@ function dropVanishedTargetObjectives(project: Project): string[] {
 function dropSideQuestObjectives(project: Project): string[] {
   const out: string[] = [];
   for (const hit of sideQuestObjectives(project)) {
-    if (!/^「[^」]+」[을를] 찾아가자/u.test(hit.message)) continue;
+    if (!/^(?:[^「」()]+에서 )?「[^」]+」[을를] 찾아가자/u.test(hit.message)) continue;
     const at = hit.list.indexOf(hit.command);
     if (at < 0) continue;
     hit.list.splice(at, 1);
@@ -122,7 +123,12 @@ export function fillStaleObjectives(project: Project): string[] {
     const builtNext = nextStep?.built && (project.maps[nextStep.built.mapId]?.events ?? []).some((e) => e.id === nextStep.built!.eventId) ? { mapId: nextStep.built.mapId, eventId: nextStep.built.eventId } : undefined;
     const stepEvent = builtNext ?? (nextStep ? Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === nextStep.event || e.name === nextStep.event).map((e) => ({ mapId: m.id, eventId: e.id }))).at(0) : undefined);
     const aim = stepTarget ? stepEvent : liveNamed ? { mapId: liveNamed.mapId, eventId: liveNamed.eventId } : sameMapStep ? { mapId: event.mapId, eventId: sameMapStep.id } : undefined;
-    const plan = planObjective(project, { text: `${object(`「${target}」`)} 찾아가자`, eventId: event.eventId, mapId: event.mapId, ...(aim ? { target: aim } : {}) });
+    // 목표 줄은 «누구를 · 어디서» 를 문장 안에서 말한다 — 필드 안내(「어디」 꼬리·화살표)는 끈 채로 나가므로 꼬리에 실은 길은 화면에 없다.
+    // 다음 청사진 단계면 그 단계의 목표 줄(모델이 쓴 goal, 없으면 종류와 이름: «대성당에서 신부 안셀름에게 말을 걸자»), 청사진 밖 대상이면 «<맵>에서 「X」를 찾아가자».
+    // 왜(2026-11-16 확인 빌드 r6 P3): «「강지기 할아버지」를 찾아가자» 처럼 사람 이름뿐이라 어디로 가야 하는지 화면에 없었다.
+    const aimPlace = aim && aim.mapId !== event.mapId ? String(project.maps[aim.mapId]?.name ?? "").trim() : "";
+    const text = stepTarget && nextStep ? stepGoalAt(nextStep, aimPlace || undefined) : `${aimPlace ? `${aimPlace}에서 ` : ""}${object(`「${target}」`)} 찾아가자`;
+    const plan = planObjective(project, { text, eventId: event.eventId, mapId: event.mapId, ...(aim ? { target: aim } : {}) });
     if (!plan.ok) continue;
     for (const { mapId, event: next } of plan.events) {
       const map = project.maps[mapId];
@@ -130,6 +136,58 @@ export function fillStaleObjectives(project: Project): string[] {
       map.events = map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e);
     }
     out.push(`다음 목표: ${event.name} 뒤 → 「${target}」`);
+  }
+  out.push(...advanceStepObjectives(project));
+  return out;
+}
+
+/**
+ * 스위치·아이템을 남기지 않는 청사진 단계(말만 하는 사람 · 싸움)를 넘긴 뒤에도 목표가 다음 단계로 넘어가게 한다 — 그 단계 이벤트의 «단계가 열렸을 때 도는 쪽» 끝에 다음 단계의 목표 줄을 건다.
+ * 위 fillStaleObjectives 는 이정표(스위치 켜기·아이템 얻기)가 있는 이벤트만 본다. 이정표가 없는 단계는 앞 목표가 그대로 남았다.
+ * 왜(2026-11-16 확인 빌드 r6 P3): 신부와 말한 뒤에도 «「신부 안셀름」을 찾아가자» 가 지하 묘지 · 병사 전투 · 보스 방까지 떠 있었다(신부의 쪽은 제 스위치만 켰다).
+ * 이미 목표를 거는 이벤트 · 엔딩을 부르는 이벤트 · 다음 단계와 같은 이벤트는 건드리지 않는다. 두 번 불러도 결과가 같다.
+ */
+function advanceStepObjectives(project: Project): string[] {
+  const out: string[] = [];
+  const steps = project.gameBlueprint?.steps ?? [];
+  const find = (step: (typeof steps)[number] | undefined) => {
+    if (!step) return undefined;
+    const builtMap = step.built ? project.maps[step.built.mapId] : undefined;
+    const built = builtMap?.events.find((e) => e.id === step.built!.eventId);
+    if (builtMap && built) return { map: builtMap, event: built };
+    for (const map of Object.values(project.maps)) { const event = (map.events ?? []).find((e) => e.id === step.event || e.name === step.event); if (event) return { map, event }; }
+    return undefined;
+  };
+  for (let k = 0; k + 1 < steps.length; k += 1) {
+    const cur = find(steps[k]), next = find(steps[k + 1]);
+    if (!cur || !next || cur.event.id === next.event.id) continue;
+    const pages = cur.event.pages ?? [];
+    const body = JSON.stringify(pages);
+    if (body.includes(OBJECTIVE_SURFACE) || body.includes('"kind":"triggerEnding"')) continue;
+    // 단계가 열렸을 때 도는 쪽 = 제 스위치(끝난 뒤의 쪽)를 조건으로 삼지 않는 쪽 가운데 맨 뒤. 조건 붙은 쪽이 있으면 조건 없는 첫 쪽(잠긴 말)은 그쪽이 아니다.
+    const turnsOn = new Set<string>();
+    const walk = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(walk); return; }
+      if (!node || typeof node !== "object") return;
+      const c = node as Obj;
+      if (c.kind === "setSwitch" && c.value === true && typeof c.switchId === "string") turnsOn.add(c.switchId);
+      for (const value of Object.values(c)) if (value && typeof value === "object") walk(value);
+    };
+    walk(pages.map((page) => page.commands ?? []));
+    const after = (page: (typeof pages)[number]) => ((page.conditions ?? []) as unknown as Obj[]).some((c) => (c.kind === "selfSwitch" && c.value !== false) || (c.kind === "switch" && c.value !== false && turnsOn.has(String(c.switchId))));
+    const open = pages.map((page, index) => ({ page, index })).filter(({ page }) => !after(page) && (page.commands ?? []).length > 0);
+    const at = open.at(-1);
+    if (!at) continue;
+    const place = next.map.id !== cur.map.id ? String(next.map.name ?? "").trim() : "";
+    const sentence = stepGoalAt(steps[k + 1]!, place || undefined);
+    const message = withWhere(project, cur.map.id, sentence, next.event.id, { x: cur.event.x, y: cur.event.y });
+    const commands = [...(at.page.commands ?? [])] as unknown as Obj[];
+    // 자기 지우기 뒤의 명령은 돌지 않는다 — 그 앞에 넣는다.
+    let insertAt = commands.length;
+    while (insertAt > 0 && commands[insertAt - 1]?.kind === "eraseEvent") insertAt -= 1;
+    commands.splice(insertAt, 0, objectiveCommand(message, { mapId: next.map.id, eventId: next.event.id }) as unknown as Obj);
+    at.page.commands = commands as unknown as typeof at.page.commands;
+    out.push(`다음 목표: ${cur.event.name ?? cur.event.id} 뒤(이정표 없는 단계) → 「${sentence}」`);
   }
   return out;
 }

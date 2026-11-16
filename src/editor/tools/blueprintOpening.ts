@@ -2,7 +2,9 @@
 //
 // 장부·턴 기록: 장르와 무관한 프리셋 그림(왕국·마왕성·벽난로 노인), 회화풍 스틸과 도트 게임의 화풍 불일치, 오프닝이 아예 없거나 꺼짐.
 // 청사진이 있으면 결정적으로 짓는다: 시작 장소 전경 → 청사진 다음 장소 1~2곳 → 시작 장소의 주인공 시작 위치. 글은 플레이어에게 쓴 줄
-// (playerGoal — 구절 단위로 나눈다)과 장소 이름뿐이다 — 단계의 action · feeling 은 설계 메모라 싣지 않는다. 새 모델 호출 없음, 숫자·암호·정답 낱말이 든 문장은 뺀다.
+// (청사진의 opening — 모델이 쓴 오프닝 글. 없으면 playerGoal 에서 답·게임 낱말이 없는 문장만, 구절 단위로 나눈다)과 장소 이름뿐이다 —
+// 단계의 action · feeling 은 설계 메모라 싣지 않는다. 새 모델 호출 없음, 숫자·암호·정답 낱말이 든 문장은 뺀다.
+// 2026-11-16 확인 빌드 r6 P8: 오프닝이 목표 문장을 둘로 자른 것 + 맵 이름 카드였다 — 찾는 게임이 시작 전에 «라멘집에서 고양이를 찾자.» 고 답을 말했고, «보스» 라는 게임 낱말이 그대로 나왔다.
 // 모델이 직접 만든 오프닝(생성·업로드 그림, 맵 화면, 글 장면)은 건드리지 않는다. 기본값·꺼짐·없음·장르가 안 맞는 번들 스틸·캐릭터 시트일 때만.
 // 2026-11-11 Terra 네 판 장부(오프닝 15줄): «인물이 한 명도 없고 대사도 없이 맵 조각만», «첫 프레임이 붉은 점무늬». 장면마다 그 맵에 처음부터 서 있는 사람을
 // 제 칸에 그대로 세우고(걷는 연기는 붙이지 않는다 — 움직이는 오프닝은 author_opening_stage 몫), 자막을 장면 끝까지 두고, 전환은 cut 으로 둔다.
@@ -86,6 +88,11 @@ export function captionLines(text: string | undefined): string[] {
   const sentences = cleaned.split(/(?<=[.!?。…])\s+|\s*\n\s*/u)
     .map((s) => s.replace(/^(?:게임이\s*시작되면|게임\s*시작\s*시|시작하면)\s*,?\s*/u, "").replace(/\s+/gu, " ").trim())
     .filter((s) => s && !/\d|숫자|힌트|정답|답은|(?:암호|비밀\s*번호|코드|조합)\s*(?:는|은|가|이)(?![가-힣])|패스워드|password|컷신|스위치|이벤트|플레이어|튜토리얼/iu.test(s));
+  return wrapCaptions(sentences);
+}
+
+/** 문장들을 자막 줄로 — 구절(쉼표 뒤)마다 이어 붙이다 한 줄을 넘으면 줄을 바꾼다. */
+function wrapCaptions(sentences: readonly string[]): string[] {
   const out: string[] = [];
   for (const sentence of sentences) {
     let line = "";
@@ -97,6 +104,33 @@ export function captionLines(text: string | undefined): string[] {
     if (line) out.push(line);
   }
   return out;
+}
+
+/** 모델이 쓴 오프닝 글(청사진 opening)을 자막 줄로 — 글은 그대로 두고 한 줄을 넘는 것만 구절에서 나눈다(걸러 내지 않는다: 플레이어에게 쓴 글이다). */
+export function openingCaptionLines(lines: readonly string[] | undefined): string[] {
+  return wrapCaptions((lines ?? []).map((line) => line.replace(/\s+/gu, " ").trim()).filter(Boolean));
+}
+
+/** 게임을 가리키는 낱말 — 이야기 속 말이 아니다(«맨 안쪽의 보스를 쓰러뜨려»). 이 낱말이 든 목표 문장은 오프닝에서 읽지 않는다. */
+const GAME_WORDS = /보스|퀘스트|레벨|엔딩|스테이지|미션|클리어|게임|세이브|경험치|아이템|NPC|\bboss\b|\bquest\b|\blevel\b|\bending\b/iu;
+
+/**
+ * 기본 오프닝에서 읽어도 되는 목표 문장 — playerGoal 에서 게임 낱말이 든 문장과 «답» 을 말하는 문장을 뺀다.
+ * 답 = 마지막 단계가 찾기·맞히기(find · puzzle)일 때 그 단계의 장소 이름(«라멘집에서 고양이를 찾자» — 찾는 게임은 어디 있는지가 답이다. 찾는 것의 이름 «고양이» 는 답이 아니다).
+ * 문장의 한 구절만 빼면 남은 구절이 «…단서를 모으고,» 로 끊기므로 문장째 뺀다.
+ */
+export function openingGoalText(blueprint: GameBlueprint): string {
+  const last = blueprint.steps[blueprint.steps.length - 1];
+  const stem = (word: string) => word.replace(/(?:에게서|에게|에서|으로|이|가|을|를|의|은|는|와|과|로|에|도)$/u, "");
+  const words = (name: string) => name.split(/[\s:·,.「」『』()'"]+/u).map(stem).filter((word) => Array.from(word).length >= 2);
+  const hidden = last && (last.kind === "find" || last.kind === "puzzle") ? [...new Set(words(last.place))] : [];
+  const first = blueprint.steps[0];
+  // 첫 단계의 장소에도 나오는 낱말(시작 장소 이름 «상점가»)은 답이 아니다.
+  const open = new Set(first && first !== last ? words(first.place) : []);
+  const answer = hidden.filter((word) => !open.has(word));
+  return blueprint.playerGoal.split(/(?<=[.!?。…])\s+|\s*\n\s*/u)
+    .filter((sentence) => sentence.trim() && !GAME_WORDS.test(sentence) && !answer.some((word) => sentence.includes(word)))
+    .join(" ");
 }
 
 function mapForPlace(project: Project, place: string | undefined): GameMap | undefined {
@@ -202,9 +236,12 @@ export function applyBlueprintOpening(project: Project): string[] {
   if (!verdict.replace) return [];
   // 장소: 시작 맵 전경 → 청사진 다음 장소 1~2곳(시작 맵과 다른 맵) → 시작 맵의 주인공 시작 위치.
   const others: GameMap[] = [];
+  // 찾기·맞히기로 끝나는 게임은 마지막 단계의 장소가 답이다 — 오프닝이 그 장소를 미리 보여 주지 않는다(«라멘집 다이키» 장면이 고양이가 어디 있는지 말했다).
+  const lastStep = blueprint.steps[blueprint.steps.length - 1];
+  const answerMap = lastStep && (lastStep.kind === "find" || lastStep.kind === "puzzle") ? mapForPlace(project, lastStep.place) : undefined;
   for (const step of blueprint.steps) {
     const map = mapForPlace(project, step.place);
-    if (!drawable(project, map) || map.id === start.id || others.some((o) => o.id === map.id)) continue;
+    if (!drawable(project, map) || map.id === start.id || map.id === answerMap?.id || others.some((o) => o.id === map.id)) continue;
     // 같은 장소의 층(「마왕의 동굴 지하 1층」·「…2층」)은 하나만 — 장면이 거의 같다.
     const stem = (name: string) => name.replace(/\s*(?:지하\s*)?\d+\s*층.*$|\s*[·:-].*$/u, "").trim();
     if (others.some((o) => stem(o.name ?? "") && stem(o.name ?? "") === stem(map.name ?? ""))) continue;
@@ -239,7 +276,9 @@ export function applyBlueprintOpening(project: Project): string[] {
   if (shots.length > 1 && shots.slice(0, -1).some((s) => cropKey(s) === cropKey(finalShot))) shots.splice(0, 1);
   // 글: 플레이어에게 쓴 줄만 — 새 플레이어 안내(playerGoal)를 구절 단위로 앞 장면부터 싣고, 남는 장면에는 그 장소 이름을 싣는다.
   // 단계의 action · feeling 은 설계 메모라 싣지 않는다.
-  const goal = captionLines(blueprint.playerGoal);
+  // 모델이 쓴 오프닝 글(opening)이 있으면 그 글이 오프닝이다. 없으면 목표 문장에서 읽어도 되는 문장만(답·게임 낱말이 든 문장은 뺀다) — 남는 것이 없으면 장소 이름만 선다.
+  const authored = openingCaptionLines(blueprint.opening);
+  const goal = authored.length ? authored : captionLines(openingGoalText(blueprint));
   const captions = new Map<number, string[]>();
   // 줄이 장면보다 많으면 차례대로 고르게 나눠 한 장면에 여러 줄을 잇는다.
   const per = Math.max(1, Math.ceil(goal.length / shots.length));
@@ -282,5 +321,6 @@ export function applyBlueprintOpening(project: Project): string[] {
   }); } catch (error) { project.system.opening = saved; throw error; } // 반쯤 지은 오프닝을 남기지 않는다
   if (project.system.opening) project.system.opening = { ...project.system.opening, enabled: true, skippable: true };
   const cast = (project.system.opening?.scenes ?? []).reduce((sum, scene) => sum + ((scene as { composition?: { layers?: { role?: string }[] } }).composition?.layers?.filter((l) => l.role === "actor").length ?? 0), 0);
-  return [`청사진 기본 오프닝(${verdict.why}): ${shots.map((s) => s.map.name || s.map.id).join(" → ")} 장면 ${shots.length}개, 내레이션 ${captions.size}줄, 선 사람 ${cast}명`];
+  const words = authored.length ? `글: 청사진 opening ${blueprint.opening!.length}줄` : goal.length ? "글: 목표 문장(opening 없음)" : "글: 장소 이름뿐(opening 없음 — 목표 문장은 답·게임 낱말이 들어 읽지 않는다)";
+  return [`청사진 기본 오프닝(${verdict.why}): ${shots.map((s) => s.map.name || s.map.id).join(" → ")} 장면 ${shots.length}개, 내레이션 ${captions.size}줄, 선 사람 ${cast}명 · ${words}`];
 }

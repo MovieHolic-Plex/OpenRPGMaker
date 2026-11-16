@@ -115,10 +115,21 @@ describe("필드 HUD 예산 — 목표 줄 · 조작 안내 · 알림 띠", () =
     expect(card).toContain("right: calc(4px * var(--play-ui-scale, 1))");
     expect(card).not.toMatch(/top:\s*\d+%/u);
     expect(card).not.toContain("translate(-50%, -50%)");
-    expect(block(".objective-card-text")).toContain("-webkit-line-clamp: 2");
-    // 두 줄 글 + 여백 = 22px — 화면 높이의 10% 를 넘지 않고, 가운데 띠(세로 20%~80%)에 닿지 않는다.
-    const strip = 2 * 9 + 2 * 2;
-    expect((4 + strip) / DEFAULT_VIEW.height).toBeLessThan((1 - HUD_BUDGET.centre) / 2);
+    // 띠는 목표 글 전체를 보인다(구석의 목표 줄은 두 줄 뒤를 줄인다) — 「새 목표」 띠는 네 줄까지, 첫 조작 띠는 세 줄 + 조작 안내 한 줄.
+    // 2026-11-16 확인 빌드 r6 P10: 두 줄·한 줄이던 띠가 51자 목표의 뒷부분(«먼저 역 앞 전단지 아주머니에게.»)을 목표 줄보다 먼저 끊었다.
+    const lines = (rule: string) => Number(/-webkit-line-clamp: (\d+)/u.exec(rule)?.[1]);
+    const changeLines = lines(block(".objective-card-text"));
+    const introLines = lines(/\.objective-card\[data-kind="intro"\] \.objective-card-text \{[^}]*\}/u.exec(css)?.[0] ?? "");
+    expect(changeLines).toBe(4);
+    expect(introLines).toBe(3);
+    // 잠깐 뜨는 띠라도 가운데 띠(세로 20%~80%)에는 닿지 않는다: 네 줄 글 + 여백 = 40px, 첫 띠는 세 줄 + 줄 사이 1px + 조작 안내 8px + 여백 = 40px.
+    const strip = changeLines * 9 + 2 * 2;
+    const intro = introLines * 9 + 1 + 8 + 2 * 2;
+    expect((4 + Math.max(strip, intro)) / DEFAULT_VIEW.height).toBeLessThan((1 - HUD_BUDGET.centre) / 2);
+    // 한 줄에 한글 27자(띠 폭 72% − 여백 10px − 이름표 「현재 목표」 30px, 글자 7px) — set_objective 가 받는 가장 긴 글(80자)이 첫 띠 세 줄에 든다.
+    const perLine = Math.floor((DEFAULT_VIEW.width * 0.72 - 10 - 30) / 7);
+    expect(card).toContain("max-width: 72%");
+    expect(perLine * introLines).toBeGreaterThanOrEqual(80);
     // 지역 알림·체크포인트 알림도 위쪽 끝 띠 안에서 끝난다.
     const toastTop = Number(/top: calc\((\d+)px/u.exec(block(".zone-feedback-toast"))?.[1]);
     expect(toastTop + HUD_LINE.line + 2 * HUD_LINE.padY).toBeLessThan(DEFAULT_VIEW.height * (1 - HUD_BUDGET.centre) / 2);

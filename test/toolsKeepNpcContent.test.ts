@@ -57,7 +57,10 @@ describe("create_quest — 이미 있는 NPC 가 하던 일은 남는다", () =>
 
     const session = freshSession();
     const offer = talk(ctx.project, session, "ev_ember_child");
-    expect(new Set(speakersOf(offer))).toEqual(new Set(["꼬마 미루"]));
+    // 그 사람의 말은 제 이름으로, 요약문(3인칭 설명)은 이름표 없는 서술로 뜬다 — dialogue.offer 를 주지 않았다(2026-11-16 확인 빌드 r6 P7).
+    expect(new Set(speakersOf(offer).filter((speaker) => speaker !== undefined))).toEqual(new Set(["꼬마 미루"]));
+    expect(offer.ran.find((command) => command.kind === "text" && command.body === "미루의 약초를 여관 주인 마사에게 전한다.")).toMatchObject({ kind: "text" });
+    expect(offer.ran.find((command) => command.kind === "text" && command.body === "미루의 약초를 여관 주인 마사에게 전한다.")).not.toHaveProperty("speaker");
     const step = talk(ctx.project, session, "ev_ember_inn");
     expect(speakersOf(step)).toEqual(["여관 주인 마사"]);
     expect(kindsOf(step)).toContain("inn");
