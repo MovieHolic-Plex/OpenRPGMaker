@@ -3,6 +3,7 @@
 // 네 번 거절당하고 윗단 숲 위에 세웠다 — 문 앞은 벼랑 아래, 지붕 위에 숲 머리 세 그루. 오너 방향: 있는 에셋이면 깔고, 어긋나면 고쳐 놓고 알리고, 거절은 게임이 깨질 때만.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { runTool } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
 import { reliefAllowsStep } from "@/project/relief/walk";
 import type { GameMap, Project, StructureKitDef } from "@/project/types";
@@ -104,6 +105,8 @@ describe("요청 건물 — 낱말에서 킷으로", () => {
     expect(askedVillageBuildings(project, spec({ hints: { buildings: ["cathedral", "inn"] } as never }))).toEqual({ buildings: ["cathedral", "inn"], unknown: [] });
     expect(askedVillageBuildings(project, spec({ hints: { buildings: "cathedral" } as never })).buildings).toEqual(["cathedral"]);
     expect(askedVillageBuildings(project, spec({ features: ["plaza", "market-hall", "port"] })).buildings).toEqual(["market-hall"]);
+    // r6 의 모델은 특징 낱말을 hints 안에 적었다(hints.features ["plaza","harbour"]) — 거기 적힌 킷 낱말도 받는다
+    expect(askedVillageBuildings(project, spec({ hints: { features: ["plaza", "harbour", "cathedral"] } as never })).buildings).toEqual(["cathedral"]);
     expect(askedVillageBuildings(project, spec({ hints: { buildings: ["church", "zeppelin dock"] } as never }))).toEqual({ buildings: ["church"], unknown: ["zeppelin dock"] });
     // 늘 실리는 마을 카드에는 한 문장만(전체 목록·청하는 법은 땅 그림 답에 실린다) — 지시문 상한(test/aiV2PromptBudget.test.ts)
     expect(VILLAGE_CARD).toContain("Asked buildings (cathedral, inn…): hints.buildings [kit id or word].");
@@ -133,6 +136,10 @@ describe("요청 건물 — 마을 시공기가 세운다", () => {
     const plain = build(R6);
     expect((plain.map.structurePlacements ?? []).some((p) => p.kitId === "bd-house-cathedral")).toBe(false);
     expect(plain.summary).not.toMatch(/asked buildings/);
+    // 결함 5: 집 문 목록이 킷 id 뿐이라 어느 문이 어느 건물인지 못 읽었다(어물전이 화물 창고 문에 달렸다) — 문마다 건물 이름(쓰임)을 같이 싣는다
+    expect(plain.summary).toMatch(/house-rv-r2-06\(\d+,\d+\) «회벽 화물 창고»/u);
+    expect(plain.summary).toMatch(/house-h111_1\(\d+,\d+\) «생선 가게 가게집»/u);
+    for (const m of plain.summary.slice(plain.summary.indexOf("집 문 앞 칸")).matchAll(/house-[\w-]+\(\d+,\d+\)( «[^»]+»)?/gu)) expect(m[1], m[0]).toBeTruthy();
   }, 180_000);
 
   it("가까운 건물도 없는 이름은 거절하지 않는다 — 마을은 서고, 무엇을 청할 수 있는지 알린다", () => {
@@ -237,6 +244,15 @@ describe("손으로 찍는 건물 — 어긋난 터는 고쳐 놓고 알린다",
     expect(out.data.site.moved).toBe(true);
     expect((out.warnings ?? []).join(" ")).toMatch(new RegExp(`Building moved: .* was asked at \\(20,11\\) but there its? .*\\. It stands at \\(${out.data.rect.x},${out.data.rect.y}\\) instead`, "u"));
     expectSound(project, map, chapel, out, houses);
+    // 이동 칸은 문 칸에 선다(r6 은 벼랑 아래 (28,13) 이었다): 결과의 입구 아래 칸으로 실내를 이으면 트리거가 그 입구 칸이다
+    const ctx = { project, currentMapId: map.id, assistantRun: true };
+    const parts = runTool(ctx, "list_hand_interior_parts", {}).data as { floors?: ({ id: string } | string)[]; walls?: ({ id: string } | string)[] };
+    const pick = (x: { id: string } | string | undefined) => (typeof x === "string" ? x : x?.id);
+    expect(runTool(ctx, "build_hand_interior_room", { tileset: "atlas_biome_interior", mapId: "chapel_in", name: "예배당", plan: ["########", "#......#", "#......#", "#......#", "###.####"], floor: pick(parts.floors?.[0]), wall: pick(parts.walls?.[0]) }).ok).toBe(true);
+    const door = out.data.entrances[0]!;
+    const pair = runTool(ctx, "create_transfer_pair", { a: { mapId: map.id, x: door.x, y: door.y + 1 }, b: { mapId: "chapel_in", x: 3, y: 4 } });
+    expect(pair.ok, pair.summary).toBe(true);
+    expect(pair.summary).toContain(`갈매나루(${door.x},${door.y})`);
   }, 240_000);
 
   it("완성된 집 위 · 벼랑에 걸친 자리 · 물 위: 거절하지 않고 가장 가까운 맞는 자리로 옮긴다", () => {

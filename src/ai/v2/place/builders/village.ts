@@ -49,6 +49,14 @@ export function askedBuildingWords(value: unknown): string[] {
 
 const beodeulKits = (project: Project) => project.tilesets[BEODEUL_TILESET]?.structureKits ?? [];
 
+/** 문 목록에 싣는 건물 이름 — 킷 이름에서 칩셋 머리(«버들항 », «버들항 읍 건물 · »)와 크기 꼬리(« 5×8»)를 뗀 것. 쓰임은 이름에 들어 있다(«생선 가게 가게집» · «여관» · «첨탑 성당»). */
+export function doorBuildingName(kit: { id: string; name?: string }): string {
+  return String(kit.name ?? "").replace(/\s*\d+×\d+\s*$/u, "").replace(/^버들항\s+[^·]*건물\s*·\s*/u, "").replace(/^버들항\s+/u, "").trim();
+}
+
+/** 명세의 특징 낱말 — spec.features 와 hints.features(모델이 hints 안에 적기도 한다: r6 «갈매나루» hints.features ["plaza","harbour"]). */
+const specFeatures = (spec: PlaceSpec): string[] => [...(spec.features ?? []), ...(Array.isArray((spec.hints as { features?: unknown } | undefined)?.features) ? ((spec.hints as { features: unknown[] }).features) : [])].map((f) => String(f).trim()).filter(Boolean);
+
 /**
  * 명세가 청한 건물: hints.buildings · hints.layout.landmark.kit · hints.layout.anchor.kit, 그리고 요청 특징 낱말(spec.features) 가운데 건물 킷의 id 인 것
  * (features ["plaza", "cathedral"] 의 cathedral — id 그대로이거나 id 의 끝 토막일 때만 건물로 읽는다).
@@ -60,7 +68,7 @@ export function askedVillageBuildings(project: Project, spec: PlaceSpec): { buil
   const named = askedBuildingWords(hints.buildings);
   const lay = (hints.layout && typeof hints.layout === "object" ? hints.layout : {}) as Record<string, { kit?: unknown } | undefined>;
   const spotKits = (["landmark", "anchor"] as const).map((role) => lay[role]?.kit).filter((k): k is string => typeof k === "string" && !!k.trim()).map((k) => k.trim());
-  const fromFeatures = (spec.features ?? []).map((f) => String(f).trim()).filter((f) => f && askedBuildingKits(kits, f, FEATURE_WORD_STRENGTH).length);
+  const fromFeatures = specFeatures(spec).filter((f) => askedBuildingKits(kits, f, FEATURE_WORD_STRENGTH).length);
   const unknown = [...named, ...spotKits].filter((w) => !nearestBuildingKits(kits, w).kits.length); // 가장 가까운 건물도 없는 낱말만 — 가까운 것이 있으면 그것으로 세운다
   return { buildings: [...new Set([...named.filter((w) => !unknown.includes(w)), ...fromFeatures])].slice(0, 3), unknown };
 }
@@ -361,8 +369,11 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const state: VillageState = { args, seed, variant, ...(doors ? { doors } : {}) };
   // 집 문 앞 칸 — 실내를 잇는 create_transfer_pair 는 이 칸을 쓴다(2026-11-03 조수 대조 B8 서리나루 Opus: 결과에 문 자리가 없어
   // 광장 칸(34,27)을 문으로 짐작해 「맨바닥 이동」이 남았고, set_map_door 로 문 그림을 찾다 여섯 번 거절됐다).
-  const doorList = (state.doors ?? []).slice(0, 14).map((d) => `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})`);
-  const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표): ${doorList.join(" ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
+  // 문마다 건물 이름(쓰임이 든 킷 이름 — «생선 가게 가게집» · «회벽 화물 창고»)을 같이 싣는다. 킷 id 만으로는 어느 문이 어떤 건물인지 읽을 수 없었다
+  // (2026-11-16 r6 «갈매나루»: 어물전이 화물 창고 문에 달리고 바로 옆 생선 가게는 들어갈 수 없는 입구로 남았다).
+  const kitName = new Map(beodeulKits(run.ctx.project).map((k) => [k.id, doorBuildingName(k)] as const));
+  const doorList = (state.doors ?? []).slice(0, 14).map((d) => { const name = d.kit ? kitName.get(d.kit) : undefined; return `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})${name ? ` «${name}»` : ""}`; });
+  const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표 «건물 이름»): ${doorList.join(" · ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
   // 마을 종류와 선 장면 — 장면 이름은 사람·사건의 where 낱말로 쓸 수 있다(place/where.ts 가 맵의 장면 기록에서 찾는다).
   const vk = data.villageKind as { id?: string } | undefined;
   const sceneList = (Array.isArray(data.scenes) ? data.scenes as { ko: string; en: string; stand: { x: number; y: number } }[] : []).map((sc) => `«${sc.ko}» ${sc.en} (${sc.stand.x},${sc.stand.y})`);
