@@ -3,12 +3,14 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
-import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_LIST, chooseVillageKind, villageKindById, villageKindFits, type VillageFacts } from "@/editor/tools/beodeulVillageKinds";
+import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, chooseVillageKind, villageKindById, villageKindFits, villageKindsNearestFirst, type VillageFacts } from "@/editor/tools/beodeulVillageKinds";
 import { brokenVillageScenes, sceneSlot, type PlacedScene } from "@/editor/tools/beodeulVillageScenes";
 import { beodeulRouteGuard } from "@/editor/tools/beodeulObjectSets";
 import { clearVillageKindPlan, recordVillageKind, villageKindOfMap, villageSceneByWord, villageScenesOfMap } from "@/project/villageKindPlan";
-import { VILLAGE_CARD, villageArgs } from "@/ai/v2/place/builders/village";
+import { VILLAGE_CARD, unknownVillageKind, unknownVillageKindText, villageArgs, villageKindsLine } from "@/ai/v2/place/builders/village";
 import { resolveWhere } from "@/ai/v2/place/where";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
@@ -193,14 +195,84 @@ describe("버들항 마을 종류 — 기록과 조수 글", () => {
     const bare = {} as GameMap; clearVillageKindPlan(bare); expect(bare.layoutPlan).toBeUndefined();
   });
 
-  it("마을 카드가 종류 id 를 모두 싣고, kind 힌트는 표에 있는 id 만 도구로 간다", () => {
-    for (const kind of BEODEUL_VILLAGE_KINDS) expect(VILLAGE_CARD).toContain(`${kind.id} (`);
-    expect(VILLAGE_CARD.endsWith(`${VILLAGE_KIND_LIST}.`)).toBe(true);
+  it("늘 실리는 마을 카드는 종류의 예 넷과 한 문장만 싣고(+200자 안), 전체 목록은 땅 그림 답과 모르는 kind 의 거절 글에 실린다", () => {
+    // 2026-11-16 감독: 서른여덟 종류를 카드에 다 실어(+1,170자) 방탈출 지시문이 상한 66,700 을 넘었다. 종류는 코드가 고르는 것이 기본이라 늘 실리는 글은 한 문장이다.
+    const sentence = VILLAGE_CARD.slice(VILLAGE_CARD.indexOf("hints.kind"));
+    expect(sentence.length + 1).toBeLessThanOrEqual(200);
+    expect(VILLAGE_KIND_EXAMPLES).toHaveLength(4);
+    for (const id of VILLAGE_KIND_EXAMPLES) { expect(villageKindById(id), id).toBeDefined(); expect(sentence).toContain(id); }
+    expect(BEODEUL_VILLAGE_KINDS.filter((kind) => VILLAGE_CARD.includes(kind.id)).map((kind) => kind.id).sort()).toEqual([...VILLAGE_KIND_EXAMPLES].sort());
+    expect(sentence).toMatch(/Omitted, the game picks one/);
+    expect(sentence).toMatch(/unknown id/);
+    // 땅 그림 답의 한 줄: 강가·포구 마을에만, 서른여덟 id 가 다 있고 그 물에 맞는 종류가 앞에 선다
+    const coast = villageKindsLine("coast")!, river = villageKindsLine("river", "river")!;
+    for (const kind of BEODEUL_VILLAGE_KINDS) { expect(coast).toContain(`${kind.id} (`); expect(river).toContain(`${kind.id} (`); }
+    expect(coast.indexOf("fishing-cove")).toBeLessThan(coast.indexOf("For other water"));
+    expect(coast.indexOf("mill-hamlet")).toBeGreaterThan(coast.indexOf("For other water"));
+    expect(river.indexOf("mill-hamlet")).toBeLessThan(river.indexOf("For other water"));
+    expect(river.indexOf("fishing-cove")).toBeGreaterThan(river.indexOf("For other water"));
+    expect(villageKindsLine("desert")).toBeUndefined();
+    // 모르는 kind 의 거절 글: 서른여덟 id 가 다 있고 가까운 이름이 맨 앞이다(한글 이름 · 영어 낱말 · 오타)
+    const first = (word: string) => villageKindsNearestFirst(word)[0]!.id;
+    expect(first("대장간")).toBe("smithy-village");
+    expect(first("fishing village")).toBe("fishing-cove");
+    expect(first("smithy-vilage")).toBe("smithy-village");
+    expect(first("등대")).toBe("lighthouse-cape");
+    const reject = unknownVillageKindText("대장간");
+    for (const kind of BEODEUL_VILLAGE_KINDS) expect(reject).toContain(`${kind.id} (`);
+    expect(reject.indexOf("smithy-village")).toBeLessThan(reject.indexOf("fishing-cove"));
+    // 아무 데도 안 걸리는 낱말이면 표의 차례 그대로다(짧은 id 가 «가까운 것» 으로 앞서지 않는다)
+    expect(villageKindsNearestFirst("zzz").map((kind) => kind.id)).toEqual(BEODEUL_VILLAGE_KINDS.map((kind) => kind.id));
     const spec = (hints: Record<string, unknown>) => ({ type: "village", name: "버들 마을", hints } as PlaceSpec);
     expect(villageArgs(spec({ kind: "smithy-village" })).args.kind).toBe("smithy-village");
     const odd = villageArgs(spec({ kind: "대장간" }));
     expect(odd.args.kind).toBeUndefined();
     expect(odd.warnings.join(" ")).toMatch(/not a village kind id/);
+    expect(odd.warnings.join(" ")).toMatch(/nearest first: smithy-village \(/);
+    expect(unknownVillageKind(spec({ kind: "대장간" }))).toBe("대장간");
+    expect(unknownVillageKind(spec({ kind: "smithy-village" }))).toBeUndefined();
+    expect(unknownVillageKind(spec({ kind: "" }))).toBeUndefined();
+    expect(unknownVillageKind(spec({}))).toBeUndefined();
     expect(villageArgs(spec({})).args.kind).toBeUndefined();
   });
+
+  it("make_place: 강가·포구 마을의 땅 그림 답이 종류를 모두 싣고, 모르는 kind 는 짓기 전에 장소마다 한 번 거절된다", async () => {
+    // 모델이 마을을 짓기 전에 목록을 한 번은 본다 — 첫 make_place 는 짓지 않고 땅 그림을 돌려주는데, 그 답에 목록이 같이 온다.
+    const makePlace = (task: string) => {
+      const p = createBlankProject() as Project;
+      const env = { ctx: { project: p, currentMapId: p.startMapId, assistantRun: true }, request: { task, provider: "local-cli:claude", mapIds: [], project: p, projectKey: "golden-key" },
+        emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} } as never;
+      const tool = createV2Tools(env, new V2Session()).find((t) => t.name === "make_place")!;
+      const mapsBefore = Object.keys(p.maps).length;
+      return async (spec: Record<string, unknown>) => {
+        const res = await tool.execute("t", { spec }) as { content: { type: string; text?: string }[] };
+        const body = res.content.filter((c) => c.type === "text").map((c) => c.text).join("\n");
+        return { body, json: JSON.parse(body) as { ok?: boolean; notFailure?: boolean; summary?: string; villageKinds?: string; mapIds?: string[] }, maps: Object.keys((env as { ctx: { project: Project } }).ctx.project.maps).length - mapsBefore };
+      };
+    };
+    const ids = BEODEUL_VILLAGE_KINDS.map((kind) => kind.id);
+    const river = await makePlace("강가 마을 하나 만들어 줘")({ type: "village", name: "버들 마을", theme: "river" });
+    expect(river.json.ok).toBe(false);
+    expect(river.json.notFailure).toBe(true);
+    for (const id of ids) expect(river.json.villageKinds, id).toContain(`${id} (`);
+    expect(river.json.villageKinds!.indexOf("mill-hamlet")).toBeLessThan(river.json.villageKinds!.indexOf("fishing-cove"));
+    const coast = await makePlace("바닷가 어촌 마을 하나 만들어 줘")({ type: "village", name: "갯마을", theme: "coast" });
+    for (const id of ids) expect(coast.json.villageKinds, id).toContain(`${id} (`);
+    expect(coast.json.villageKinds!.indexOf("fishing-cove")).toBeLessThan(coast.json.villageKinds!.indexOf("mill-hamlet"));
+    // 종류가 없는 테마(사막)의 답에는 목록이 없다
+    const desert = await makePlace("사막 오아시스 마을 하나 만들어 줘")({ type: "village", name: "모래 마을", theme: "desert" });
+    expect(desert.json.villageKinds).toBeUndefined();
+    // 모르는 kind: 아무것도 짓지 않고 거절한다 — 가까운 이름이 맨 앞에 선 전체 목록. 같은 장소에 또 오면 거절을 되풀이하지 않고 땅 그림 답으로 간다.
+    const call = makePlace("강가 마을 하나 만들어 줘");
+    const odd = { type: "village", name: "쇠불 마을", theme: "river", hints: { kind: "대장간" } };
+    const rejected = await call(odd);
+    expect(rejected.json.ok).toBe(false);
+    expect(rejected.json.summary).toMatch(/^Rejected \(nothing was built\): hints\.kind "대장간" is not a village kind/);
+    expect(rejected.json.summary).toMatch(/nearest first: smithy-village \(/);
+    for (const id of ids) expect(rejected.json.summary, id).toContain(`${id} (`);
+    expect(rejected.maps).toBe(0);
+    const again = await call(odd);
+    expect(again.json.summary).not.toMatch(/^Rejected/);
+    expect(again.json.villageKinds).toContain("smithy-village (");
+  }, 120_000);
 });
