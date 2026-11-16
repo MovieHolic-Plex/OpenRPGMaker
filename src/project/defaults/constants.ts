@@ -134,3 +134,16 @@ export const RETRO_WORLD_CLIFF_WALKABLE_TILES: readonly number[] = [78, 79, 80, 
 export function bundledAssetRef(id: string): AssetRef {
   return { type: "bundled", id };
 }
+
+/**
+ * 공장 직업의 전투 명령(기본 자료집·레트로 명단이 함께 쓴다). 이름은 공장 꼬리표다 — 전투 메뉴는 이 꼬리표 그대로인 명령을
+ * 지금 용어(meta.terms)로 보인다(battle/battleCommands). 「공격」을 「해킹」으로 바꾸면 메뉴도 바뀐다(2026-11-16 리뷰: 엔진 꼬리표가 용어를 따른다).
+ */
+export const STANDARD_BATTLE_COMMANDS = [
+  { id: "cmd_attack", name: "공격", kind: "attack" },
+  { id: "cmd_skill", name: "기술", kind: "skill" },
+  { id: "cmd_defend", name: "방어", kind: "defend" },
+  { id: "cmd_item", name: "아이템", kind: "item" },
+  { id: "cmd_escape", name: "도주", kind: "escape" },
+  { id: "cmd_change", name: "교체", kind: "switch" },
+] as const;

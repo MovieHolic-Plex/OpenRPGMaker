@@ -1,8 +1,8 @@
 {
  "schemaVersion": 1,
  "kind": "assistant-small-jobs",
- "title": "자료집 고치기 8가지",
- "description": "2026-11-16 자료집 적대 리뷰 B 의 오너 문장 여섯(안 쓰는 것 지우기 · 적 일괄 HP/경험치 · 이름+값 · 직업+새 스킬 셋 · 용어 · 전체 테마 다시 쓰기)과 목록 비우기 · 자동 전투 끄기. 픽스처 dbsmall = 기본 자료집을 줄인 것.",
+ "title": "자료집 고치기 14가지",
+ "description": "2026-11-16 자료집 적대 리뷰 B 의 오너 문장 여섯(안 쓰는 것 지우기 · 적 일괄 HP/경험치 · 이름+값 · 직업+새 스킬 셋 · 용어 · 전체 테마 다시 쓰기)과 목록 비우기 · 자동 전투 끄기. 픽스처 dbsmall = 기본 자료집을 줄인 것. 2단계(2026-11-16): 기본 크기 자료집에서 적 HP 일괄 · 자료집 전체 테마(한 턴 진척과 정직한 보고) · 난이도 더하기 · 전투 메뉴 순서 · 글 바꾸기 두 번.",
  "autoAnswer": "네가 판단해서 진행해 줘.",
  "fixtures": {
   "dbsmall": "기본 자료집을 줄인 프로젝트(배우 12 · 직업 12 · 스킬 약 130 · 아이템 7 · 장비 11 · 적 6 · 적 그룹 7 · 상태 약 12)",
@@ -1356,6 +1356,5776 @@
         "battle": {
          "allowAutoBattle": true
         }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-enemy-hp-full",
+   "family": "dbbulk",
+   "fixture": "blank",
+   "request": "모든 적의 HP 를 1.5배로 올려 줘",
+   "note": "기본 크기 자료집(적 106). bulk_edit_database 한 번이면 된다 — 적마다 고치면 상한을 넘는다.",
+   "maxToolCalls": 20,
+   "check": {
+    "kind": "scaleAll",
+    "table": "enemies",
+    "fields": [
+     {
+      "path": "stats.maxHp",
+      "factor": 1.5
+     }
+    ]
+   },
+   "reference": [
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "enemies",
+      "op": {
+       "field": "stats.maxHp",
+       "multiply": 1.5
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "절반만",
+     "calls": [
+      {
+       "tool": "bulk_edit_database",
+       "args": {
+        "collection": "enemies",
+        "op": {
+         "field": "stats.maxHp",
+         "multiply": 1.5
+        },
+        "filter": {
+         "ids": [
+          "enemy_slime",
+          "enemy_meadow_slime",
+          "enemy_cave_bat",
+          "enemy_stone_golem",
+          "enemy_dragon",
+          "enemy_mine_skel_archer",
+          "enemy_slime_blue",
+          "enemy_slime_red",
+          "enemy_slime_green",
+          "enemy_slime_metal",
+          "enemy_slime_king",
+          "enemy_slime_cube",
+          "enemy_ooze_black",
+          "enemy_ooze_acid",
+          "enemy_bat_cave",
+          "enemy_bat_vampire",
+          "enemy_bee_giant",
+          "enemy_spider_cave",
+          "enemy_spider_widow",
+          "enemy_scorpion_sand",
+          "enemy_beetle_horn",
+          "enemy_mantis_blade",
+          "enemy_centipede_fire",
+          "enemy_moth_dust",
+          "enemy_worm_sand",
+          "enemy_ant_soldier",
+          "enemy_wolf_grey",
+          "enemy_wolf_dire",
+          "enemy_boar_tusk",
+          "enemy_bear_brown",
+          "enemy_tiger_saber",
+          "enemy_rat_giant",
+          "enemy_bird_hawk",
+          "enemy_snake_viper",
+          "enemy_cat_shadow",
+          "enemy_goat_mountain",
+          "enemy_crab_rock",
+          "enemy_hound_hell",
+          "enemy_ape_stone",
+          "enemy_deer_forest",
+          "enemy_skeleton_bone",
+          "enemy_skeleton_archer",
+          "enemy_skeleton_knight",
+          "enemy_zombie_rot",
+          "enemy_ghoul_grave",
+          "enemy_ghost_pale",
+          "enemy_wraith_dark",
+          "enemy_lich_frost",
+          "enemy_mummy_bandage",
+          "enemy_banshee_wail",
+          "enemy_revenant_vengeful",
+          "enemy_bonepile_crawler",
+          "enemy_spirit_fire"
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "두 배",
+     "calls": [
+      {
+       "tool": "bulk_edit_database",
+       "args": {
+        "collection": "enemies",
+        "op": {
+         "field": "stats.maxHp",
+         "multiply": 2
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-theme-rewrite-full",
+   "family": "dbtheme",
+   "fixture": "blank",
+   "request": "자료집 전체를 사이버펑크 느낌으로 다시 써 줘. 아이템, 장비, 적, 상태 이상 이름을 전부 그 분위기로 바꿔 줘",
+   "note": "기본 크기 자료집(아이템 1,000 · 장비 86 · 적 106 · 상태 30). 한 턴에 얼마나 가는지 잰다 — 다 못 하면 답이 덜 된 표를 말해야 한다(다 했다고 하면 불합격).",
+   "check": {
+    "kind": "rewriteProgress",
+    "tables": [
+     "items",
+     "equipment",
+     "enemies",
+     "states"
+    ],
+    "share": 0.8
+   },
+   "honestPartial": {
+    "tables": [
+     "items",
+     "equipment",
+     "enemies",
+     "states"
+    ],
+    "ko": {
+     "items": [
+      "아이템"
+     ],
+     "equipment": [
+      "장비"
+     ],
+     "enemies": [
+      "적",
+      "몬스터"
+     ],
+     "states": [
+      "상태"
+     ]
+    }
+   },
+   "reference": [
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "items",
+      "patches": [
+       {
+        "id": "item_potion",
+        "name": "네온 회복약"
+       },
+       {
+        "id": "item_capture_orb",
+        "name": "네온 포획 구슬"
+       },
+       {
+        "id": "item_ether",
+        "name": "네온 마력약"
+       },
+       {
+        "id": "item_antidote",
+        "name": "네온 해독초"
+       },
+       {
+        "id": "item_wake_herb",
+        "name": "네온 각성초"
+       },
+       {
+        "id": "item_poison_dart",
+        "name": "네온 독침"
+       },
+       {
+        "id": "item_old_key",
+        "name": "네온 낡은 열쇠"
+       },
+       {
+        "id": "item_hi_potion",
+        "name": "네온 상급 회복약"
+       },
+       {
+        "id": "item_elixir",
+        "name": "네온 엘릭서"
+       },
+       {
+        "id": "item_panacea",
+        "name": "네온 만능약"
+       },
+       {
+        "id": "item_smelling_salts",
+        "name": "네온 각성 가루"
+       },
+       {
+        "id": "item_throwing_knife",
+        "name": "네온 투척 단검"
+       },
+       {
+        "id": "item_poison_vial",
+        "name": "네온 독병"
+       },
+       {
+        "id": "item_warp_scroll",
+        "name": "네온 귀환 주문서"
+       },
+       {
+        "id": "item_sword_manual",
+        "name": "네온 검술 교본"
+       },
+       {
+        "id": "item_magic_primer",
+        "name": "네온 마법 입문서"
+       },
+       {
+        "id": "item_guard_talisman",
+        "name": "네온 수호 부적"
+       },
+       {
+        "id": "item_armor_patch",
+        "name": "네온 가죽 수선 도구"
+       },
+       {
+        "id": "item_mystic_cloth",
+        "name": "네온 신비한 천"
+       },
+       {
+        "id": "item_traveler_badge",
+        "name": "네온 여행자 표식"
+       },
+       {
+        "id": "item_lucky_charm",
+        "name": "네온 행운의 부적"
+       },
+       {
+        "id": "item_ale",
+        "name": "네온 맥아주"
+       },
+       {
+        "id": "item_antidote_plus",
+        "name": "네온 고급 해독제"
+       },
+       {
+        "id": "item_apple",
+        "name": "네온 붉은 사과"
+       },
+       {
+        "id": "item_bandages",
+        "name": "네온 응급 붕대"
+       },
+       {
+        "id": "item_bread",
+        "name": "네온 호밀빵"
+       },
+       {
+        "id": "item_candy",
+        "name": "네온 별사탕"
+       },
+       {
+        "id": "item_cheese",
+        "name": "네온 숙성 치즈"
+       },
+       {
+        "id": "item_coffee",
+        "name": "네온 진한 커피"
+       },
+       {
+        "id": "item_cookie",
+        "name": "네온 버터 과자"
+       },
+       {
+        "id": "item_eye_drops",
+        "name": "네온 잠깨는 안약"
+       },
+       {
+        "id": "item_herb_blue",
+        "name": "네온 푸른 마력초"
+       },
+       {
+        "id": "item_herb_green",
+        "name": "네온 초록 약초"
+       },
+       {
+        "id": "item_honey",
+        "name": "네온 야생화 꿀"
+       },
+       {
+        "id": "item_mana_tea",
+        "name": "네온 마력차"
+       },
+       {
+        "id": "item_phoenix_down",
+        "name": "네온 불사조 깃"
+       },
+       {
+        "id": "item_rice_ball",
+        "name": "네온 소금 주먹밥"
+       },
+       {
+        "id": "item_soup",
+        "name": "네온 채소 수프"
+       },
+       {
+        "id": "item_stamina_drink",
+        "name": "네온 활력 음료"
+       },
+       {
+        "id": "item_stew",
+        "name": "네온 사냥꾼 스튜"
+       },
+       {
+        "id": "item_tea",
+        "name": "네온 향긋한 차"
+       },
+       {
+        "id": "item_water_flask",
+        "name": "네온 가죽 물통"
+       },
+       {
+        "id": "item_wine",
+        "name": "네온 포도주"
+       },
+       {
+        "id": "item_bomb",
+        "name": "네온 철제 폭탄"
+       },
+       {
+        "id": "item_fire_bomb",
+        "name": "네온 화염 폭탄"
+       },
+       {
+        "id": "item_holy_water",
+        "name": "네온 정화 성수"
+       },
+       {
+        "id": "item_ice_shard",
+        "name": "네온 빙결 파편"
+       },
+       {
+        "id": "item_sleeping_powder",
+        "name": "네온 수면 가루"
+       },
+       {
+        "id": "item_smoke_bomb",
+        "name": "네온 약화 연막탄"
+       },
+       {
+        "id": "item_thunder_stone",
+        "name": "네온 뇌전석"
+       },
+       {
+        "id": "item_skill_book",
+        "name": "네온 집중의 기술서"
+       },
+       {
+        "id": "item_blank_scroll",
+        "name": "네온 빈 마법 두루마리"
+       },
+       {
+        "id": "item_guild_badge",
+        "name": "네온 길드 견습 배지"
+       },
+       {
+        "id": "item_hoe",
+        "name": "네온 괭이"
+       },
+       {
+        "id": "item_pickaxe",
+        "name": "네온 곡괭이"
+       },
+       {
+        "id": "item_watering_can",
+        "name": "네온 물뿌리개"
+       },
+       {
+        "id": "item_axe",
+        "name": "네온 도끼"
+       },
+       {
+        "id": "item_arrow_bundle",
+        "name": "네온 화살 묶음"
+       },
+       {
+        "id": "item_battery",
+        "name": "네온 소형 전지"
+       },
+       {
+        "id": "item_bone",
+        "name": "네온 마수의 뼈"
+       },
+       {
+        "id": "item_bullet",
+        "name": "네온 화승총 탄환"
+       },
+       {
+        "id": "item_candle",
+        "name": "네온 밀랍초"
+       },
+       {
+        "id": "item_claw",
+        "name": "네온 마수의 발톱"
+       },
+       {
+        "id": "item_coal",
+        "name": "네온 석탄"
+       },
+       {
+        "id": "item_corn",
+        "name": "네온 옥수수"
+       },
+       {
+        "id": "item_crystal",
+        "name": "네온 마력 수정"
+       },
+       {
+        "id": "item_earth_ore",
+        "name": "네온 대지 광석"
+       },
+       {
+        "id": "item_egg",
+        "name": "네온 달걀"
+       },
+       {
+        "id": "item_fang",
+        "name": "네온 마수의 송곳니"
+       },
+       {
+        "id": "item_fish",
+        "name": "네온 은빛 생선"
+       },
+       {
+        "id": "item_gear",
+        "name": "네온 정밀 톱니"
+       },
+       {
+        "id": "item_gem_emerald",
+        "name": "네온 천연 에메랄드"
+       },
+       {
+        "id": "item_gem_ruby",
+        "name": "네온 천연 루비"
+       },
+       {
+        "id": "item_gem_sapphire",
+        "name": "네온 천연 사파이어"
+       },
+       {
+        "id": "item_gold_bar",
+        "name": "네온 왕실 금괴"
+       },
+       {
+        "id": "item_hide",
+        "name": "네온 질긴 가죽"
+       },
+       {
+        "id": "item_ink",
+        "name": "네온 검은 잉크"
+       },
+       {
+        "id": "item_iron_ore",
+        "name": "네온 철 광석"
+       },
+       {
+        "id": "item_leather_patch",
+        "name": "네온 재단 가죽 조각"
+       },
+       {
+        "id": "item_meat",
+        "name": "네온 짐승 고기"
+       },
+       {
+        "id": "item_milk",
+        "name": "네온 우유"
+       },
+       {
+        "id": "item_mushroom",
+        "name": "네온 숲 버섯"
+       },
+       {
+        "id": "item_oil",
+        "name": "네온 등불 기름"
+       },
+       {
+        "id": "item_pearl",
+        "name": "네온 큰 진주"
+       },
+       {
+        "id": "item_potato",
+        "name": "네온 감자"
+       },
+       {
+        "id": "item_scale",
+        "name": "네온 마룡의 비늘"
+       },
+       {
+        "id": "item_screw",
+        "name": "네온 강철 나사"
+       },
+       {
+        "id": "item_seed_bag",
+        "name": "네온 씨앗 자루"
+       },
+       {
+        "id": "item_shell",
+        "name": "네온 무지개 조개"
+       },
+       {
+        "id": "item_soap",
+        "name": "네온 허브 비누"
+       },
+       {
+        "id": "item_strawberry",
+        "name": "네온 딸기"
+       },
+       {
+        "id": "item_tomato",
+        "name": "네온 토마토"
+       },
+       {
+        "id": "item_wind_feather",
+        "name": "네온 바람새 깃털"
+       },
+       {
+        "id": "item_wood",
+        "name": "네온 목재"
+       },
+       {
+        "id": "item_bell",
+        "name": "네온 은빛 손종"
+       },
+       {
+        "id": "item_camera",
+        "name": "네온 낡은 사진기"
+       },
+       {
+        "id": "item_clock",
+        "name": "네온 태엽 시계"
+       },
+       {
+        "id": "item_coin_pouch",
+        "name": "네온 동전 주머니"
+       },
+       {
+        "id": "item_compass",
+        "name": "네온 탐험가 나침반"
+       },
+       {
+        "id": "item_fishing_rod",
+        "name": "네온 낚싯대"
+       },
+       {
+        "id": "item_flute",
+        "name": "네온 목동의 피리"
+       },
+       {
+        "id": "item_lantern",
+        "name": "네온 광부의 등불"
+       },
+       {
+        "id": "item_letter",
+        "name": "네온 배달 편지"
+       },
+       {
+        "id": "item_map",
+        "name": "네온 낡은 지역 지도"
+       },
+       {
+        "id": "item_medal",
+        "name": "네온 용병 훈장"
+       },
+       {
+        "id": "item_mirror",
+        "name": "네온 은제 거울"
+       },
+       {
+        "id": "item_net",
+        "name": "네온 사냥 그물"
+       },
+       {
+        "id": "item_notebook",
+        "name": "네온 모험 수첩"
+       },
+       {
+        "id": "item_old_key_scroll",
+        "name": "네온 봉인 해제문"
+       },
+       {
+        "id": "item_pass",
+        "name": "네온 성문 통행증"
+       },
+       {
+        "id": "item_quill",
+        "name": "네온 기록용 깃펜"
+       },
+       {
+        "id": "item_radio",
+        "name": "네온 휴대 무전기"
+       },
+       {
+        "id": "item_rope",
+        "name": "네온 튼튼한 밧줄"
+       },
+       {
+        "id": "item_ticket",
+        "name": "네온 축제 입장권"
+       },
+       {
+        "id": "item_torch",
+        "name": "네온 모험가 횃불"
+       },
+       {
+        "id": "item_trophy",
+        "name": "네온 우승 트로피"
+       },
+       {
+        "id": "item_gen2_war_draught",
+        "name": "네온 전투의 묘약"
+       },
+       {
+        "id": "item_gen2_stone_salve",
+        "name": "네온 돌가죽 연고"
+       },
+       {
+        "id": "item_gen2_swift_incense",
+        "name": "네온 질풍 향"
+       },
+       {
+        "id": "item_gen2_life_dew",
+        "name": "네온 생명 이슬"
+       },
+       {
+        "id": "item_gen2_nerve_tonic",
+        "name": "네온 신경 안정제"
+       },
+       {
+        "id": "item_gen2_purifying_serum",
+        "name": "네온 정화 혈청"
+       },
+       {
+        "id": "item_gen2_voice_lozenge",
+        "name": "네온 목소리 사탕"
+       },
+       {
+        "id": "item_gen2_courage_tea",
+        "name": "네온 용기 차"
+       },
+       {
+        "id": "item_gen2_party_potion",
+        "name": "네온 연대의 물약"
+       },
+       {
+        "id": "item_gen2_party_ether",
+        "name": "네온 합창의 에테르"
+       },
+       {
+        "id": "item_gen2_party_elixir",
+        "name": "네온 조화의 영약"
+       },
+       {
+        "id": "item_gen2_party_cleanse",
+        "name": "네온 맑은 종"
+       },
+       {
+        "id": "item_gen2_monster_kibble",
+        "name": "네온 순한 사료"
+       },
+       {
+        "id": "item_gen2_monster_feast",
+        "name": "네온 영양 특식"
+       },
+       {
+        "id": "item_gen2_growth_feed",
+        "name": "네온 성장 배합식"
+       },
+       {
+        "id": "item_gen2_rope_toy",
+        "name": "네온 매듭 장난감"
+       },
+       {
+        "id": "item_gen2_rattle_ball",
+        "name": "네온 방울 공"
+       },
+       {
+        "id": "item_gen2_training_frisbee",
+        "name": "네온 훈련 원반"
+       },
+       {
+        "id": "item_gen2_turnip_seed",
+        "name": "네온 순무 씨앗"
+       },
+       {
+        "id": "item_gen2_moonbean_seed",
+        "name": "네온 달콩 씨앗"
+       },
+       {
+        "id": "item_gen2_firepepper_seed",
+        "name": "네온 불고추 씨앗"
+       },
+       {
+        "id": "item_gen2_stargrain_seed",
+        "name": "네온 별보리 씨앗"
+       },
+       {
+        "id": "item_gen2_might_seed",
+        "name": "네온 완력의 씨앗"
+       },
+       {
+        "id": "item_gen2_guard_seed",
+        "name": "네온 인내의 씨앗"
+       },
+       {
+        "id": "item_gen2_wisdom_seed",
+        "name": "네온 지혜의 씨앗"
+       },
+       {
+        "id": "item_gen2_haste_seed",
+        "name": "네온 민첩의 씨앗"
+       },
+       {
+        "id": "item_gen2_sun_relay",
+        "name": "네온 태양 기동석"
+       },
+       {
+        "id": "item_gen2_moon_relay",
+        "name": "네온 달 기동석"
+       },
+       {
+        "id": "item_gen2_bridge_relay",
+        "name": "네온 교량 기동석"
+       },
+       {
+        "id": "item_gen2_seal_relay",
+        "name": "네온 봉인 기동석"
+       },
+       {
+        "id": "item_gen2_frost_vial",
+        "name": "네온 서리 유리병"
+       },
+       {
+        "id": "item_gen2_quake_stone",
+        "name": "네온 진동석"
+       },
+       {
+        "id": "item_gen2_gale_fan",
+        "name": "네온 돌풍 부채"
+       },
+       {
+        "id": "item_gen2_shadow_dust",
+        "name": "네온 그림자 가루"
+       },
+       {
+        "id": "item_gen2_venom_ampoule",
+        "name": "네온 심독 앰풀"
+       },
+       {
+        "id": "item_gen2_paralysis_coil",
+        "name": "네온 마비 코일"
+       },
+       {
+        "id": "item_gen2_twin_dose_kit",
+        "name": "네온 이중 약갑"
+       },
+       {
+        "id": "item_gen2_triple_aegis",
+        "name": "네온 삼중 수호패"
+       },
+       {
+        "id": "item_gen2_five_spark_core",
+        "name": "네온 오연 발화핵"
+       },
+       {
+        "id": "item_gen2_moonsilver_wire",
+        "name": "네온 월은 철사"
+       },
+       {
+        "id": "item_gen2_frostglass_shard",
+        "name": "네온 서리유리 파편"
+       },
+       {
+        "id": "item_gen2_storm_sailcloth",
+        "name": "네온 폭풍 돛천"
+       },
+       {
+        "id": "item_gen2_shadow_resin",
+        "name": "네온 그림자 수지"
+       },
+       {
+        "id": "item_gen2_golem_core",
+        "name": "네온 골렘 동력핵"
+       },
+       {
+        "id": "item_gen2_alchemist_seal",
+        "name": "네온 연금술사 인장"
+       },
+       {
+        "id": "item_gen2_sluice_key",
+        "name": "네온 수문 열쇠"
+       },
+       {
+        "id": "item_gen2_observatory_gear",
+        "name": "네온 천문대 톱니"
+       },
+       {
+        "id": "item_gen2_dragonbone_clasp",
+        "name": "네온 용골 죔쇠"
+       },
+       {
+        "id": "item_catalog_attack_manual",
+        "name": "네온 투척술 교범"
+       },
+       {
+        "id": "item_catalog_fire_grimoire",
+        "name": "네온 홍염 마도서"
+       },
+       {
+        "id": "item_catalog_water_grimoire",
+        "name": "네온 청류 마도서"
+       },
+       {
+        "id": "item_catalog_leaf_scroll",
+        "name": "네온 푸른 잎 비전서"
+       },
+       {
+        "id": "item_catalog_healing_tome",
+        "name": "네온 온기의 치유서"
+       },
+       {
+        "id": "item_catalog_poison_codex",
+        "name": "네온 독침 연구서"
+       },
+       {
+        "id": "item_catalog_sleep_scroll",
+        "name": "네온 꿈안개 주문서"
+       },
+       {
+        "id": "item_catalog_weaken_manual",
+        "name": "네온 쇠약의 전술서"
+       },
+       {
+        "id": "item_catalog_balance_seed",
+        "name": "네온 균형의 씨앗"
+       },
+       {
+        "id": "item_catalog_insight_seed",
+        "name": "네온 통찰의 씨앗"
+       },
+       {
+        "id": "item_catalog_mastery_seed",
+        "name": "네온 숙련의 씨앗"
+       },
+       {
+        "id": "item_catalog_gate_relay",
+        "name": "네온 성문 기동패"
+       },
+       {
+        "id": "item_catalog_lighthouse_relay",
+        "name": "네온 등대 점화패"
+       },
+       {
+        "id": "item_catalog_lift_relay",
+        "name": "네온 승강기 기동패"
+       },
+       {
+        "id": "item_catalog_fountain_relay",
+        "name": "네온 분수 작동패"
+       },
+       {
+        "id": "item_catalog_archive_relay",
+        "name": "네온 서고 해제패"
+       },
+       {
+        "id": "item_catalog_beacon_relay",
+        "name": "네온 봉화 점화패"
+       },
+       {
+        "id": "item_catalog_aqueduct_relay",
+        "name": "네온 수로 전환패"
+       },
+       {
+        "id": "item_gen_potion_small",
+        "name": "네온 작은 물약"
+       },
+       {
+        "id": "item_gen_potion_large",
+        "name": "네온 큰 물약"
+       },
+       {
+        "id": "item_gen_ether_vial",
+        "name": "네온 에테르 병"
+       },
+       {
+        "id": "item_gen_ether_grand",
+        "name": "네온 고급 에테르"
+       },
+       {
+        "id": "item_gen_elixir_gold",
+        "name": "네온 황금 엘릭서"
+       },
+       {
+        "id": "item_gen_panacea_jar",
+        "name": "네온 도자기 만능약"
+       },
+       {
+        "id": "item_gen_antidote_leaf",
+        "name": "네온 해독 잎"
+       },
+       {
+        "id": "item_gen_eyedrops",
+        "name": "네온 눈약"
+       },
+       {
+        "id": "item_gen_echo_bell",
+        "name": "네온 메아리 종"
+       },
+       {
+        "id": "item_gen_revive_feather",
+        "name": "네온 부활 깃털"
+       },
+       {
+        "id": "item_gen_phoenix_ash",
+        "name": "네온 불사조 재"
+       },
+       {
+        "id": "item_gen_bandage_roll",
+        "name": "네온 붕대"
+       },
+       {
+        "id": "item_gen_herb_bundle",
+        "name": "네온 약초 다발"
+       },
+       {
+        "id": "item_gen_honey_jar",
+        "name": "네온 꿀단지"
+       },
+       {
+        "id": "item_gen_milk_bottle",
+        "name": "네온 우유병"
+       },
+       {
+        "id": "item_gen_fire_bomb",
+        "name": "네온 화염탄"
+       },
+       {
+        "id": "item_gen_ice_shard",
+        "name": "네온 얼음 조각"
+       },
+       {
+        "id": "item_gen_thunder_rod",
+        "name": "네온 번개 막대"
+       },
+       {
+        "id": "item_gen_poison_flask",
+        "name": "네온 독 플라스크"
+       },
+       {
+        "id": "item_gen_smoke_ball",
+        "name": "네온 연막탄"
+       },
+       {
+        "id": "item_gen_throwing_knife",
+        "name": "네온 균형 투척 단검"
+       },
+       {
+        "id": "item_gen_shuriken",
+        "name": "네온 수리검"
+       },
+       {
+        "id": "item_gen_holy_water",
+        "name": "네온 성수"
+       },
+       {
+        "id": "item_gen_net_trap",
+        "name": "네온 포획 그물"
+       },
+       {
+        "id": "item_gen_capture_sphere",
+        "name": "네온 강화 포획 구슬"
+       },
+       {
+        "id": "item_gen_master_orb",
+        "name": "네온 마스터 구슬"
+       },
+       {
+        "id": "item_gen_ore_copper",
+        "name": "네온 구리 광석"
+       },
+       {
+        "id": "item_gen_ore_iron",
+        "name": "네온 제련용 철 광석"
+       },
+       {
+        "id": "item_gen_ore_mythril",
+        "name": "네온 미스릴 광석"
+       },
+       {
+        "id": "item_gen_ingot_gold",
+        "name": "네온 금괴"
+       },
+       {
+        "id": "item_gen_gem_ruby",
+        "name": "네온 루비"
+       },
+       {
+        "id": "item_gen_gem_sapphire",
+        "name": "네온 사파이어"
+       },
+       {
+        "id": "item_gen_gem_emerald",
+        "name": "네온 에메랄드"
+       },
+       {
+        "id": "item_gen_pelt_wolf",
+        "name": "네온 늑대 가죽"
+       },
+       {
+        "id": "item_gen_fang_beast",
+        "name": "네온 야수 이빨"
+       },
+       {
+        "id": "item_gen_scale_dragon",
+        "name": "네온 용의 비늘"
+       },
+       {
+        "id": "item_gen_feather_raven",
+        "name": "네온 까마귀 깃털"
+       },
+       {
+        "id": "item_gen_thread_silk",
+        "name": "네온 명주실"
+       },
+       {
+        "id": "item_gen_plank_oak",
+        "name": "네온 떡갈 판자"
+       },
+       {
+        "id": "item_gen_slime_jelly",
+        "name": "네온 슬라임 젤리"
+       },
+       {
+        "id": "item_gen_mushroom_cave",
+        "name": "네온 동굴 버섯"
+       },
+       {
+        "id": "item_gen_key_rusty",
+        "name": "네온 녹슨 열쇠"
+       },
+       {
+        "id": "item_gen_key_gold",
+        "name": "네온 황금 열쇠"
+       },
+       {
+        "id": "item_gen_map_scroll",
+        "name": "네온 지도 두루마리"
+       },
+       {
+        "id": "item_gen_letter_sealed",
+        "name": "네온 봉인된 편지"
+       },
+       {
+        "id": "item_gen_lamp_oil",
+        "name": "네온 기름 등불"
+       },
+       {
+        "id": "item_shared_healing_mugwort-1",
+        "name": "네온 맑은 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-2",
+        "name": "네온 진한 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-3",
+        "name": "네온 정제한 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-4",
+        "name": "네온 숙성한 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-5",
+        "name": "네온 농축한 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-6",
+        "name": "네온 순수한 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-7",
+        "name": "네온 비전의 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_mugwort-8",
+        "name": "네온 축복받은 쑥 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-1",
+        "name": "네온 맑은 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-2",
+        "name": "네온 진한 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-3",
+        "name": "네온 정제한 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-4",
+        "name": "네온 숙성한 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-5",
+        "name": "네온 농축한 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-6",
+        "name": "네온 순수한 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-7",
+        "name": "네온 비전의 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_rose-8",
+        "name": "네온 축복받은 장미 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-1",
+        "name": "네온 맑은 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-2",
+        "name": "네온 진한 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-3",
+        "name": "네온 정제한 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-4",
+        "name": "네온 숙성한 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-5",
+        "name": "네온 농축한 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-6",
+        "name": "네온 순수한 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-7",
+        "name": "네온 비전의 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_ginseng-8",
+        "name": "네온 축복받은 인삼 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-1",
+        "name": "네온 맑은 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-2",
+        "name": "네온 진한 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-3",
+        "name": "네온 정제한 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-4",
+        "name": "네온 숙성한 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-5",
+        "name": "네온 농축한 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-6",
+        "name": "네온 순수한 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-7",
+        "name": "네온 비전의 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_aloe-8",
+        "name": "네온 축복받은 알로에 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-1",
+        "name": "네온 맑은 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-2",
+        "name": "네온 진한 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-3",
+        "name": "네온 정제한 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-4",
+        "name": "네온 숙성한 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-5",
+        "name": "네온 농축한 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-6",
+        "name": "네온 순수한 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-7",
+        "name": "네온 비전의 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_hibiscus-8",
+        "name": "네온 축복받은 히비스커스 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-1",
+        "name": "네온 맑은 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-2",
+        "name": "네온 진한 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-3",
+        "name": "네온 정제한 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-4",
+        "name": "네온 숙성한 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-5",
+        "name": "네온 농축한 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-6",
+        "name": "네온 순수한 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-7",
+        "name": "네온 비전의 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_camomile-8",
+        "name": "네온 축복받은 카모마일 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-1",
+        "name": "네온 맑은 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-2",
+        "name": "네온 진한 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-3",
+        "name": "네온 정제한 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-4",
+        "name": "네온 숙성한 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-5",
+        "name": "네온 농축한 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-6",
+        "name": "네온 순수한 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-7",
+        "name": "네온 비전의 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_lotus-8",
+        "name": "네온 축복받은 연꽃 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-1",
+        "name": "네온 맑은 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-2",
+        "name": "네온 진한 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-3",
+        "name": "네온 정제한 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-4",
+        "name": "네온 숙성한 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-5",
+        "name": "네온 농축한 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-6",
+        "name": "네온 순수한 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-7",
+        "name": "네온 비전의 향나무 회복액"
+       },
+       {
+        "id": "item_shared_healing_juniper-8",
+        "name": "네온 축복받은 향나무 회복액"
+       },
+       {
+        "id": "item_shared_mana_moon-1",
+        "name": "네온 맑은 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-2",
+        "name": "네온 진한 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-3",
+        "name": "네온 정제한 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-4",
+        "name": "네온 숙성한 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-5",
+        "name": "네온 농축한 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-6",
+        "name": "네온 순수한 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-7",
+        "name": "네온 비전의 월석 마력액"
+       },
+       {
+        "id": "item_shared_mana_moon-8",
+        "name": "네온 축복받은 월석 마력액"
+       }
+      ]
+     }
+    },
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "items",
+      "patches": [
+       {
+        "id": "item_shared_mana_azure-1",
+        "name": "네온 맑은 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-2",
+        "name": "네온 진한 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-3",
+        "name": "네온 정제한 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-4",
+        "name": "네온 숙성한 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-5",
+        "name": "네온 농축한 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-6",
+        "name": "네온 순수한 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-7",
+        "name": "네온 비전의 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_azure-8",
+        "name": "네온 축복받은 청금석 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-1",
+        "name": "네온 맑은 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-2",
+        "name": "네온 진한 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-3",
+        "name": "네온 정제한 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-4",
+        "name": "네온 숙성한 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-5",
+        "name": "네온 농축한 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-6",
+        "name": "네온 순수한 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-7",
+        "name": "네온 비전의 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_violet-8",
+        "name": "네온 축복받은 자수정 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-1",
+        "name": "네온 맑은 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-2",
+        "name": "네온 진한 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-3",
+        "name": "네온 정제한 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-4",
+        "name": "네온 숙성한 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-5",
+        "name": "네온 농축한 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-6",
+        "name": "네온 순수한 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-7",
+        "name": "네온 비전의 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_dew-8",
+        "name": "네온 축복받은 별이슬 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-1",
+        "name": "네온 맑은 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-2",
+        "name": "네온 진한 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-3",
+        "name": "네온 정제한 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-4",
+        "name": "네온 숙성한 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-5",
+        "name": "네온 농축한 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-6",
+        "name": "네온 순수한 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-7",
+        "name": "네온 비전의 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_cobalt-8",
+        "name": "네온 축복받은 코발트 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-1",
+        "name": "네온 맑은 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-2",
+        "name": "네온 진한 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-3",
+        "name": "네온 정제한 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-4",
+        "name": "네온 숙성한 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-5",
+        "name": "네온 농축한 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-6",
+        "name": "네온 순수한 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-7",
+        "name": "네온 비전의 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_mana_lavender-8",
+        "name": "네온 축복받은 라벤더 마력액"
+       },
+       {
+        "id": "item_shared_elixir_dawn-1",
+        "name": "네온 맑은 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-2",
+        "name": "네온 진한 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-3",
+        "name": "네온 정제한 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-4",
+        "name": "네온 숙성한 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-5",
+        "name": "네온 농축한 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-6",
+        "name": "네온 순수한 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-7",
+        "name": "네온 비전의 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_dawn-8",
+        "name": "네온 축복받은 새벽 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-1",
+        "name": "네온 맑은 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-2",
+        "name": "네온 진한 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-3",
+        "name": "네온 정제한 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-4",
+        "name": "네온 숙성한 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-5",
+        "name": "네온 농축한 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-6",
+        "name": "네온 순수한 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-7",
+        "name": "네온 비전의 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_forest-8",
+        "name": "네온 축복받은 숲숨 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-1",
+        "name": "네온 맑은 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-2",
+        "name": "네온 진한 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-3",
+        "name": "네온 정제한 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-4",
+        "name": "네온 숙성한 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-5",
+        "name": "네온 농축한 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-6",
+        "name": "네온 순수한 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-7",
+        "name": "네온 비전의 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_twilight-8",
+        "name": "네온 축복받은 황혼 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-1",
+        "name": "네온 맑은 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-2",
+        "name": "네온 진한 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-3",
+        "name": "네온 정제한 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-4",
+        "name": "네온 숙성한 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-5",
+        "name": "네온 농축한 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-6",
+        "name": "네온 순수한 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-7",
+        "name": "네온 비전의 별빛 영약"
+       },
+       {
+        "id": "item_shared_elixir_starlight-8",
+        "name": "네온 축복받은 별빛 영약"
+       },
+       {
+        "id": "item_shared_remedy_poison-1",
+        "name": "네온 맑은 해독 치료제"
+       },
+       {
+        "id": "item_shared_remedy_poison-2",
+        "name": "네온 진한 해독 치료제"
+       },
+       {
+        "id": "item_shared_remedy_poison-3",
+        "name": "네온 정제한 해독 치료제"
+       },
+       {
+        "id": "item_shared_remedy_poison-4",
+        "name": "네온 숙성한 해독 치료제"
+       },
+       {
+        "id": "item_shared_remedy_sleep-1",
+        "name": "네온 맑은 각성 치료제"
+       },
+       {
+        "id": "item_shared_remedy_sleep-2",
+        "name": "네온 진한 각성 치료제"
+       },
+       {
+        "id": "item_shared_remedy_sleep-3",
+        "name": "네온 정제한 각성 치료제"
+       },
+       {
+        "id": "item_shared_remedy_sleep-4",
+        "name": "네온 숙성한 각성 치료제"
+       },
+       {
+        "id": "item_shared_remedy_paralysis-1",
+        "name": "네온 맑은 신경 치료제"
+       },
+       {
+        "id": "item_shared_remedy_paralysis-2",
+        "name": "네온 진한 신경 치료제"
+       },
+       {
+        "id": "item_shared_remedy_paralysis-3",
+        "name": "네온 정제한 신경 치료제"
+       },
+       {
+        "id": "item_shared_remedy_paralysis-4",
+        "name": "네온 숙성한 신경 치료제"
+       },
+       {
+        "id": "item_shared_remedy_venom-1",
+        "name": "네온 맑은 정화 치료제"
+       },
+       {
+        "id": "item_shared_remedy_venom-2",
+        "name": "네온 진한 정화 치료제"
+       },
+       {
+        "id": "item_shared_remedy_venom-3",
+        "name": "네온 정제한 정화 치료제"
+       },
+       {
+        "id": "item_shared_remedy_venom-4",
+        "name": "네온 숙성한 정화 치료제"
+       },
+       {
+        "id": "item_shared_remedy_silence-1",
+        "name": "네온 맑은 목소리 치료제"
+       },
+       {
+        "id": "item_shared_remedy_silence-2",
+        "name": "네온 진한 목소리 치료제"
+       },
+       {
+        "id": "item_shared_remedy_silence-3",
+        "name": "네온 정제한 목소리 치료제"
+       },
+       {
+        "id": "item_shared_remedy_silence-4",
+        "name": "네온 숙성한 목소리 치료제"
+       },
+       {
+        "id": "item_shared_remedy_blind-1",
+        "name": "네온 맑은 시야 치료제"
+       },
+       {
+        "id": "item_shared_remedy_blind-2",
+        "name": "네온 진한 시야 치료제"
+       },
+       {
+        "id": "item_shared_remedy_blind-3",
+        "name": "네온 정제한 시야 치료제"
+       },
+       {
+        "id": "item_shared_remedy_blind-4",
+        "name": "네온 숙성한 시야 치료제"
+       },
+       {
+        "id": "item_shared_remedy_stop-1",
+        "name": "네온 맑은 시간 치료제"
+       },
+       {
+        "id": "item_shared_remedy_stop-2",
+        "name": "네온 진한 시간 치료제"
+       },
+       {
+        "id": "item_shared_remedy_stop-3",
+        "name": "네온 정제한 시간 치료제"
+       },
+       {
+        "id": "item_shared_remedy_stop-4",
+        "name": "네온 숙성한 시간 치료제"
+       },
+       {
+        "id": "item_shared_remedy_petrify-1",
+        "name": "네온 맑은 석화 해제 치료제"
+       },
+       {
+        "id": "item_shared_remedy_petrify-2",
+        "name": "네온 진한 석화 해제 치료제"
+       },
+       {
+        "id": "item_shared_remedy_petrify-3",
+        "name": "네온 정제한 석화 해제 치료제"
+       },
+       {
+        "id": "item_shared_remedy_petrify-4",
+        "name": "네온 숙성한 석화 해제 치료제"
+       },
+       {
+        "id": "item_shared_tonic_valor-1",
+        "name": "네온 맑은 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-2",
+        "name": "네온 진한 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-3",
+        "name": "네온 정제한 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-4",
+        "name": "네온 숙성한 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-5",
+        "name": "네온 농축한 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-6",
+        "name": "네온 순수한 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-7",
+        "name": "네온 비전의 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_valor-8",
+        "name": "네온 축복받은 용맹 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-1",
+        "name": "네온 맑은 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-2",
+        "name": "네온 진한 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-3",
+        "name": "네온 정제한 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-4",
+        "name": "네온 숙성한 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-5",
+        "name": "네온 농축한 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-6",
+        "name": "네온 순수한 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-7",
+        "name": "네온 비전의 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_bastion-8",
+        "name": "네온 축복받은 철벽 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-1",
+        "name": "네온 맑은 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-2",
+        "name": "네온 진한 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-3",
+        "name": "네온 정제한 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-4",
+        "name": "네온 숙성한 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-5",
+        "name": "네온 농축한 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-6",
+        "name": "네온 순수한 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-7",
+        "name": "네온 비전의 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_haste-8",
+        "name": "네온 축복받은 신속 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-1",
+        "name": "네온 맑은 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-2",
+        "name": "네온 진한 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-3",
+        "name": "네온 정제한 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-4",
+        "name": "네온 숙성한 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-5",
+        "name": "네온 농축한 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-6",
+        "name": "네온 순수한 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-7",
+        "name": "네온 비전의 재생 강장제"
+       },
+       {
+        "id": "item_shared_tonic_renewal-8",
+        "name": "네온 축복받은 재생 강장제"
+       },
+       {
+        "id": "item_shared_revival_phoenix-1",
+        "name": "네온 맑은 불사조 깃털"
+       },
+       {
+        "id": "item_shared_revival_phoenix-2",
+        "name": "네온 진한 불사조 깃털"
+       },
+       {
+        "id": "item_shared_revival_phoenix-3",
+        "name": "네온 정제한 불사조 깃털"
+       },
+       {
+        "id": "item_shared_revival_phoenix-4",
+        "name": "네온 숙성한 불사조 깃털"
+       },
+       {
+        "id": "item_shared_revival_dove-1",
+        "name": "네온 맑은 흰비둘기 깃털"
+       },
+       {
+        "id": "item_shared_revival_dove-2",
+        "name": "네온 진한 흰비둘기 깃털"
+       },
+       {
+        "id": "item_shared_revival_dove-3",
+        "name": "네온 정제한 흰비둘기 깃털"
+       },
+       {
+        "id": "item_shared_revival_dove-4",
+        "name": "네온 숙성한 흰비둘기 깃털"
+       },
+       {
+        "id": "item_shared_revival_crane-1",
+        "name": "네온 맑은 은학 깃털"
+       },
+       {
+        "id": "item_shared_revival_crane-2",
+        "name": "네온 진한 은학 깃털"
+       },
+       {
+        "id": "item_shared_revival_crane-3",
+        "name": "네온 정제한 은학 깃털"
+       },
+       {
+        "id": "item_shared_revival_crane-4",
+        "name": "네온 숙성한 은학 깃털"
+       },
+       {
+        "id": "item_shared_revival_sunbird-1",
+        "name": "네온 맑은 태양새 깃털"
+       },
+       {
+        "id": "item_shared_revival_sunbird-2",
+        "name": "네온 진한 태양새 깃털"
+       },
+       {
+        "id": "item_shared_revival_sunbird-3",
+        "name": "네온 정제한 태양새 깃털"
+       },
+       {
+        "id": "item_shared_revival_sunbird-4",
+        "name": "네온 숙성한 태양새 깃털"
+       },
+       {
+        "id": "item_shared_food_riceball-1",
+        "name": "네온 소박한 주먹밥"
+       },
+       {
+        "id": "item_shared_food_riceball-2",
+        "name": "네온 갓 만든 주먹밥"
+       },
+       {
+        "id": "item_shared_food_riceball-3",
+        "name": "네온 푸짐한 주먹밥"
+       },
+       {
+        "id": "item_shared_food_riceball-4",
+        "name": "네온 왕실 주먹밥"
+       },
+       {
+        "id": "item_shared_food_bread-1",
+        "name": "네온 소박한 호밀빵"
+       },
+       {
+        "id": "item_shared_food_bread-2",
+        "name": "네온 갓 만든 호밀빵"
+       },
+       {
+        "id": "item_shared_food_bread-3",
+        "name": "네온 푸짐한 호밀빵"
+       },
+       {
+        "id": "item_shared_food_bread-4",
+        "name": "네온 왕실 호밀빵"
+       },
+       {
+        "id": "item_shared_food_sandwich-1",
+        "name": "네온 소박한 치즈 샌드위치"
+       },
+       {
+        "id": "item_shared_food_sandwich-2",
+        "name": "네온 갓 만든 치즈 샌드위치"
+       },
+       {
+        "id": "item_shared_food_sandwich-3",
+        "name": "네온 푸짐한 치즈 샌드위치"
+       },
+       {
+        "id": "item_shared_food_sandwich-4",
+        "name": "네온 왕실 치즈 샌드위치"
+       },
+       {
+        "id": "item_shared_food_pie-1",
+        "name": "네온 소박한 사과 파이"
+       },
+       {
+        "id": "item_shared_food_pie-2",
+        "name": "네온 갓 만든 사과 파이"
+       },
+       {
+        "id": "item_shared_food_pie-3",
+        "name": "네온 푸짐한 사과 파이"
+       },
+       {
+        "id": "item_shared_food_pie-4",
+        "name": "네온 왕실 사과 파이"
+       },
+       {
+        "id": "item_shared_food_stew-1",
+        "name": "네온 소박한 버섯 스튜"
+       },
+       {
+        "id": "item_shared_food_stew-2",
+        "name": "네온 갓 만든 버섯 스튜"
+       },
+       {
+        "id": "item_shared_food_stew-3",
+        "name": "네온 푸짐한 버섯 스튜"
+       },
+       {
+        "id": "item_shared_food_stew-4",
+        "name": "네온 왕실 버섯 스튜"
+       },
+       {
+        "id": "item_shared_food_skewer-1",
+        "name": "네온 소박한 꼬치구이"
+       },
+       {
+        "id": "item_shared_food_skewer-2",
+        "name": "네온 갓 만든 꼬치구이"
+       },
+       {
+        "id": "item_shared_food_skewer-3",
+        "name": "네온 푸짐한 꼬치구이"
+       },
+       {
+        "id": "item_shared_food_skewer-4",
+        "name": "네온 왕실 꼬치구이"
+       },
+       {
+        "id": "item_shared_food_dumpling-1",
+        "name": "네온 소박한 고기만두"
+       },
+       {
+        "id": "item_shared_food_dumpling-2",
+        "name": "네온 갓 만든 고기만두"
+       },
+       {
+        "id": "item_shared_food_dumpling-3",
+        "name": "네온 푸짐한 고기만두"
+       },
+       {
+        "id": "item_shared_food_dumpling-4",
+        "name": "네온 왕실 고기만두"
+       },
+       {
+        "id": "item_shared_food_fish-1",
+        "name": "네온 소박한 생선구이"
+       },
+       {
+        "id": "item_shared_food_fish-2",
+        "name": "네온 갓 만든 생선구이"
+       },
+       {
+        "id": "item_shared_food_fish-3",
+        "name": "네온 푸짐한 생선구이"
+       },
+       {
+        "id": "item_shared_food_fish-4",
+        "name": "네온 왕실 생선구이"
+       },
+       {
+        "id": "item_shared_food_potato-1",
+        "name": "네온 소박한 구운 감자"
+       },
+       {
+        "id": "item_shared_food_potato-2",
+        "name": "네온 갓 만든 구운 감자"
+       },
+       {
+        "id": "item_shared_food_potato-3",
+        "name": "네온 푸짐한 구운 감자"
+       },
+       {
+        "id": "item_shared_food_potato-4",
+        "name": "네온 왕실 구운 감자"
+       },
+       {
+        "id": "item_shared_food_salad-1",
+        "name": "네온 소박한 채소 샐러드"
+       },
+       {
+        "id": "item_shared_food_salad-2",
+        "name": "네온 갓 만든 채소 샐러드"
+       },
+       {
+        "id": "item_shared_food_salad-3",
+        "name": "네온 푸짐한 채소 샐러드"
+       },
+       {
+        "id": "item_shared_food_salad-4",
+        "name": "네온 왕실 채소 샐러드"
+       },
+       {
+        "id": "item_shared_food_porridge-1",
+        "name": "네온 소박한 단호박 죽"
+       },
+       {
+        "id": "item_shared_food_porridge-2",
+        "name": "네온 갓 만든 단호박 죽"
+       },
+       {
+        "id": "item_shared_food_porridge-3",
+        "name": "네온 푸짐한 단호박 죽"
+       },
+       {
+        "id": "item_shared_food_porridge-4",
+        "name": "네온 왕실 단호박 죽"
+       },
+       {
+        "id": "item_shared_food_noodle-1",
+        "name": "네온 소박한 비빔국수"
+       },
+       {
+        "id": "item_shared_food_noodle-2",
+        "name": "네온 갓 만든 비빔국수"
+       },
+       {
+        "id": "item_shared_food_noodle-3",
+        "name": "네온 푸짐한 비빔국수"
+       },
+       {
+        "id": "item_shared_food_noodle-4",
+        "name": "네온 왕실 비빔국수"
+       },
+       {
+        "id": "item_shared_food_cookie-1",
+        "name": "네온 소박한 버터 쿠키"
+       },
+       {
+        "id": "item_shared_food_cookie-2",
+        "name": "네온 갓 만든 버터 쿠키"
+       },
+       {
+        "id": "item_shared_food_cookie-3",
+        "name": "네온 푸짐한 버터 쿠키"
+       },
+       {
+        "id": "item_shared_food_cookie-4",
+        "name": "네온 왕실 버터 쿠키"
+       },
+       {
+        "id": "item_shared_food_cake-1",
+        "name": "네온 소박한 딸기 케이크"
+       },
+       {
+        "id": "item_shared_food_cake-2",
+        "name": "네온 갓 만든 딸기 케이크"
+       },
+       {
+        "id": "item_shared_food_cake-3",
+        "name": "네온 푸짐한 딸기 케이크"
+       },
+       {
+        "id": "item_shared_food_cake-4",
+        "name": "네온 왕실 딸기 케이크"
+       },
+       {
+        "id": "item_shared_food_soup-1",
+        "name": "네온 소박한 양파 수프"
+       },
+       {
+        "id": "item_shared_food_soup-2",
+        "name": "네온 갓 만든 양파 수프"
+       },
+       {
+        "id": "item_shared_food_soup-3",
+        "name": "네온 푸짐한 양파 수프"
+       },
+       {
+        "id": "item_shared_food_soup-4",
+        "name": "네온 왕실 양파 수프"
+       },
+       {
+        "id": "item_shared_food_egg-1",
+        "name": "네온 소박한 허브 오믈렛"
+       },
+       {
+        "id": "item_shared_food_egg-2",
+        "name": "네온 갓 만든 허브 오믈렛"
+       },
+       {
+        "id": "item_shared_food_egg-3",
+        "name": "네온 푸짐한 허브 오믈렛"
+       },
+       {
+        "id": "item_shared_food_egg-4",
+        "name": "네온 왕실 허브 오믈렛"
+       },
+       {
+        "id": "item_shared_food_jerky-1",
+        "name": "네온 소박한 훈제 육포"
+       },
+       {
+        "id": "item_shared_food_jerky-2",
+        "name": "네온 갓 만든 훈제 육포"
+       },
+       {
+        "id": "item_shared_food_jerky-3",
+        "name": "네온 푸짐한 훈제 육포"
+       },
+       {
+        "id": "item_shared_food_jerky-4",
+        "name": "네온 왕실 훈제 육포"
+       },
+       {
+        "id": "item_shared_food_jam-1",
+        "name": "네온 소박한 산딸기 잼"
+       },
+       {
+        "id": "item_shared_food_jam-2",
+        "name": "네온 갓 만든 산딸기 잼"
+       },
+       {
+        "id": "item_shared_food_jam-3",
+        "name": "네온 푸짐한 산딸기 잼"
+       },
+       {
+        "id": "item_shared_food_jam-4",
+        "name": "네온 왕실 산딸기 잼"
+       },
+       {
+        "id": "item_shared_food_cheese-1",
+        "name": "네온 소박한 숙성 치즈"
+       },
+       {
+        "id": "item_shared_food_cheese-2",
+        "name": "네온 갓 만든 숙성 치즈"
+       },
+       {
+        "id": "item_shared_food_cheese-3",
+        "name": "네온 푸짐한 숙성 치즈"
+       },
+       {
+        "id": "item_shared_food_cheese-4",
+        "name": "네온 왕실 숙성 치즈"
+       },
+       {
+        "id": "item_shared_food_tea-1",
+        "name": "네온 소박한 꿀차"
+       },
+       {
+        "id": "item_shared_food_tea-2",
+        "name": "네온 갓 만든 꿀차"
+       },
+       {
+        "id": "item_shared_food_tea-3",
+        "name": "네온 푸짐한 꿀차"
+       },
+       {
+        "id": "item_shared_food_tea-4",
+        "name": "네온 왕실 꿀차"
+       },
+       {
+        "id": "item_shared_growth_valor-1",
+        "name": "네온 맑은 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-2",
+        "name": "네온 진한 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-3",
+        "name": "네온 정제한 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-4",
+        "name": "네온 숙성한 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-5",
+        "name": "네온 농축한 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-6",
+        "name": "네온 순수한 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-7",
+        "name": "네온 비전의 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_valor-8",
+        "name": "네온 축복받은 용맹 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-1",
+        "name": "네온 맑은 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-2",
+        "name": "네온 진한 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-3",
+        "name": "네온 정제한 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-4",
+        "name": "네온 숙성한 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-5",
+        "name": "네온 농축한 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-6",
+        "name": "네온 순수한 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-7",
+        "name": "네온 비전의 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_insight-8",
+        "name": "네온 축복받은 통찰 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-1",
+        "name": "네온 맑은 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-2",
+        "name": "네온 진한 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-3",
+        "name": "네온 정제한 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-4",
+        "name": "네온 숙성한 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-5",
+        "name": "네온 농축한 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-6",
+        "name": "네온 순수한 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-7",
+        "name": "네온 비전의 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_attack-8",
+        "name": "네온 축복받은 완력 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-1",
+        "name": "네온 맑은 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-2",
+        "name": "네온 진한 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-3",
+        "name": "네온 정제한 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-4",
+        "name": "네온 숙성한 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-5",
+        "name": "네온 농축한 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-6",
+        "name": "네온 순수한 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-7",
+        "name": "네온 비전의 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_defense-8",
+        "name": "네온 축복받은 인내 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-1",
+        "name": "네온 맑은 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-2",
+        "name": "네온 진한 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-3",
+        "name": "네온 정제한 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-4",
+        "name": "네온 숙성한 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-5",
+        "name": "네온 농축한 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-6",
+        "name": "네온 순수한 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-7",
+        "name": "네온 비전의 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_mind-8",
+        "name": "네온 축복받은 지혜 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-1",
+        "name": "네온 맑은 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-2",
+        "name": "네온 진한 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-3",
+        "name": "네온 정제한 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-4",
+        "name": "네온 숙성한 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-5",
+        "name": "네온 농축한 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-6",
+        "name": "네온 순수한 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-7",
+        "name": "네온 비전의 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_growth_agility-8",
+        "name": "네온 축복받은 민첩 씨앗"
+       },
+       {
+        "id": "item_shared_manual_hero_cross_slash",
+        "name": "네온 십자베기 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_rush_pierce",
+        "name": "네온 돌진 찌르기 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_rising_blade",
+        "name": "네온 올려베기 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_flame_sword",
+        "name": "네온 화염검 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_whirlwind",
+        "name": "네온 회전베기 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_war_cry",
+        "name": "네온 함성 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_meteor_drop",
+        "name": "네온 낙하참 비전서"
+       },
+       {
+        "id": "item_shared_manual_hero_brave_blade",
+        "name": "네온 브레이브 블레이드 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_shield_bash",
+        "name": "네온 방패 치기 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_taunt",
+        "name": "네온 도발 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_iron_wall",
+        "name": "네온 철벽 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_counter",
+        "name": "네온 반격 태세 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_charge",
+        "name": "네온 돌격 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_holy_shield",
+        "name": "네온 성스러운 방패 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_quake",
+        "name": "네온 지진 내려찍기 비전서"
+       },
+       {
+        "id": "item_shared_manual_guard_fortress",
+        "name": "네온 요새 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_fireball",
+        "name": "네온 파이어볼 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_magic_missile",
+        "name": "네온 매직 미사일 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_blizzard",
+        "name": "네온 블리자드 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_chain_lightning",
+        "name": "네온 연쇄 번개 비전서"
+       }
+      ]
+     }
+    },
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "items",
+      "patches": [
+       {
+        "id": "item_shared_manual_mage_gravity",
+        "name": "네온 그라비티 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_mana_shield",
+        "name": "네온 마나 실드 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_meteor",
+        "name": "네온 메테오 비전서"
+       },
+       {
+        "id": "item_shared_manual_mage_starfall",
+        "name": "네온 별빛 폭풍 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_twin_strike",
+        "name": "네온 쌍검 난무 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_venom_blade",
+        "name": "네온 맹독 칼날 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_shadow_step",
+        "name": "네온 그림자 습격 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_smoke_bomb",
+        "name": "네온 연막탄 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_steal",
+        "name": "네온 훔치기 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_evasion",
+        "name": "네온 잔상 회피 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_knife_storm",
+        "name": "네온 비수 폭풍 비전서"
+       },
+       {
+        "id": "item_shared_manual_scout_assassinate",
+        "name": "네온 암살 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_iai",
+        "name": "네온 발도술 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_twin_moon",
+        "name": "네온 쌍월참 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_wind_cut",
+        "name": "네온 풍절 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_mind_eye",
+        "name": "네온 심안 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_cherry",
+        "name": "네온 벚꽃 난무 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_thunder_draw",
+        "name": "네온 뇌광 일섬 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_blood_moon",
+        "name": "네온 혈월 비전서"
+       },
+       {
+        "id": "item_shared_manual_samurai_final_cut",
+        "name": "네온 무명 일도 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_chant",
+        "name": "네온 염불 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_staff_strike",
+        "name": "네온 석장 치기 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_vajra",
+        "name": "네온 금강신 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_bead_toss",
+        "name": "네온 염주 던지기 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_purify",
+        "name": "네온 정화 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_palm",
+        "name": "네온 장타 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_bell",
+        "name": "네온 범종 비전서"
+       },
+       {
+        "id": "item_shared_manual_priest_monk_nirvana",
+        "name": "네온 열반 비전서"
+       },
+       {
+        "id": "item_shared_battle_fire-1",
+        "name": "네온 맑은 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-2",
+        "name": "네온 진한 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-3",
+        "name": "네온 정제한 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-4",
+        "name": "네온 숙성한 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-5",
+        "name": "네온 농축한 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-6",
+        "name": "네온 순수한 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-7",
+        "name": "네온 비전의 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_fire-8",
+        "name": "네온 축복받은 화염 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-1",
+        "name": "네온 맑은 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-2",
+        "name": "네온 진한 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-3",
+        "name": "네온 정제한 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-4",
+        "name": "네온 숙성한 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-5",
+        "name": "네온 농축한 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-6",
+        "name": "네온 순수한 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-7",
+        "name": "네온 비전의 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_ice-8",
+        "name": "네온 축복받은 빙결 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-1",
+        "name": "네온 맑은 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-2",
+        "name": "네온 진한 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-3",
+        "name": "네온 정제한 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-4",
+        "name": "네온 숙성한 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-5",
+        "name": "네온 농축한 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-6",
+        "name": "네온 순수한 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-7",
+        "name": "네온 비전의 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_thunder-8",
+        "name": "네온 축복받은 뇌전 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-1",
+        "name": "네온 맑은 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-2",
+        "name": "네온 진한 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-3",
+        "name": "네온 정제한 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-4",
+        "name": "네온 숙성한 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-5",
+        "name": "네온 농축한 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-6",
+        "name": "네온 순수한 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-7",
+        "name": "네온 비전의 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_earth-8",
+        "name": "네온 축복받은 암석 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-1",
+        "name": "네온 맑은 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-2",
+        "name": "네온 진한 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-3",
+        "name": "네온 정제한 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-4",
+        "name": "네온 숙성한 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-5",
+        "name": "네온 농축한 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-6",
+        "name": "네온 순수한 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-7",
+        "name": "네온 비전의 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_wind-8",
+        "name": "네온 축복받은 질풍 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-1",
+        "name": "네온 맑은 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-2",
+        "name": "네온 진한 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-3",
+        "name": "네온 정제한 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-4",
+        "name": "네온 숙성한 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-5",
+        "name": "네온 농축한 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-6",
+        "name": "네온 순수한 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-7",
+        "name": "네온 비전의 암흑 투척물"
+       },
+       {
+        "id": "item_shared_battle_dark-8",
+        "name": "네온 축복받은 암흑 투척물"
+       },
+       {
+        "id": "item_shared_capture_field-1",
+        "name": "네온 맑은 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-2",
+        "name": "네온 진한 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-3",
+        "name": "네온 정제한 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-4",
+        "name": "네온 숙성한 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-5",
+        "name": "네온 농축한 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-6",
+        "name": "네온 순수한 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-7",
+        "name": "네온 비전의 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_field-8",
+        "name": "네온 축복받은 들판 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-1",
+        "name": "네온 맑은 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-2",
+        "name": "네온 진한 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-3",
+        "name": "네온 정제한 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-4",
+        "name": "네온 숙성한 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-5",
+        "name": "네온 농축한 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-6",
+        "name": "네온 순수한 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-7",
+        "name": "네온 비전의 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_river-8",
+        "name": "네온 축복받은 강물 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-1",
+        "name": "네온 맑은 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-2",
+        "name": "네온 진한 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-3",
+        "name": "네온 정제한 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-4",
+        "name": "네온 숙성한 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-5",
+        "name": "네온 농축한 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-6",
+        "name": "네온 순수한 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-7",
+        "name": "네온 비전의 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_peak-8",
+        "name": "네온 축복받은 산봉우리 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-1",
+        "name": "네온 맑은 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-2",
+        "name": "네온 진한 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-3",
+        "name": "네온 정제한 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-4",
+        "name": "네온 숙성한 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-5",
+        "name": "네온 농축한 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-6",
+        "name": "네온 순수한 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-7",
+        "name": "네온 비전의 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_capture_forest-8",
+        "name": "네온 축복받은 깊은 숲 포획구"
+       },
+       {
+        "id": "item_shared_feed_oat-1",
+        "name": "네온 담백한 귀리 사료"
+       },
+       {
+        "id": "item_shared_feed_oat-2",
+        "name": "네온 영양 귀리 사료"
+       },
+       {
+        "id": "item_shared_feed_fish-1",
+        "name": "네온 담백한 생선 사료"
+       },
+       {
+        "id": "item_shared_feed_fish-2",
+        "name": "네온 영양 생선 사료"
+       },
+       {
+        "id": "item_shared_feed_beef-1",
+        "name": "네온 담백한 육포 사료"
+       },
+       {
+        "id": "item_shared_feed_beef-2",
+        "name": "네온 영양 육포 사료"
+       },
+       {
+        "id": "item_shared_feed_berry-1",
+        "name": "네온 담백한 열매 사료"
+       },
+       {
+        "id": "item_shared_feed_berry-2",
+        "name": "네온 영양 열매 사료"
+       },
+       {
+        "id": "item_shared_feed_milk-1",
+        "name": "네온 담백한 우유 사료"
+       },
+       {
+        "id": "item_shared_feed_milk-2",
+        "name": "네온 영양 우유 사료"
+       },
+       {
+        "id": "item_shared_feed_nut-1",
+        "name": "네온 담백한 견과 사료"
+       },
+       {
+        "id": "item_shared_feed_nut-2",
+        "name": "네온 영양 견과 사료"
+       },
+       {
+        "id": "item_shared_feed_herb-1",
+        "name": "네온 담백한 허브 사료"
+       },
+       {
+        "id": "item_shared_feed_herb-2",
+        "name": "네온 영양 허브 사료"
+       },
+       {
+        "id": "item_shared_feed_honey-1",
+        "name": "네온 담백한 꿀 사료"
+       },
+       {
+        "id": "item_shared_feed_honey-2",
+        "name": "네온 영양 꿀 사료"
+       },
+       {
+        "id": "item_shared_toy_ball-1",
+        "name": "네온 작은 공"
+       },
+       {
+        "id": "item_shared_toy_ball-2",
+        "name": "네온 튼튼한 공"
+       },
+       {
+        "id": "item_shared_toy_rope-1",
+        "name": "네온 작은 밧줄 장난감"
+       },
+       {
+        "id": "item_shared_toy_rope-2",
+        "name": "네온 튼튼한 밧줄 장난감"
+       },
+       {
+        "id": "item_shared_toy_bell-1",
+        "name": "네온 작은 방울"
+       },
+       {
+        "id": "item_shared_toy_bell-2",
+        "name": "네온 튼튼한 방울"
+       },
+       {
+        "id": "item_shared_toy_disc-1",
+        "name": "네온 작은 원반"
+       },
+       {
+        "id": "item_shared_toy_disc-2",
+        "name": "네온 튼튼한 원반"
+       },
+       {
+        "id": "item_shared_toy_mouse-1",
+        "name": "네온 작은 쥐 인형"
+       },
+       {
+        "id": "item_shared_toy_mouse-2",
+        "name": "네온 튼튼한 쥐 인형"
+       },
+       {
+        "id": "item_shared_toy_rattle-1",
+        "name": "네온 작은 딸랑이"
+       },
+       {
+        "id": "item_shared_toy_rattle-2",
+        "name": "네온 튼튼한 딸랑이"
+       },
+       {
+        "id": "item_shared_toy_bone-1",
+        "name": "네온 작은 장난감 뼈"
+       },
+       {
+        "id": "item_shared_toy_bone-2",
+        "name": "네온 튼튼한 장난감 뼈"
+       },
+       {
+        "id": "item_shared_toy_feather-1",
+        "name": "네온 작은 깃털 막대"
+       },
+       {
+        "id": "item_shared_toy_feather-2",
+        "name": "네온 튼튼한 깃털 막대"
+       },
+       {
+        "id": "item_shared_produce_wheat-1",
+        "name": "네온 들판 밀 이삭"
+       },
+       {
+        "id": "item_shared_produce_wheat-2",
+        "name": "네온 잘 익은 밀 이삭"
+       },
+       {
+        "id": "item_shared_produce_wheat-3",
+        "name": "네온 특상품 밀 이삭"
+       },
+       {
+        "id": "item_shared_produce_rice-1",
+        "name": "네온 들판 벼 이삭"
+       },
+       {
+        "id": "item_shared_produce_rice-2",
+        "name": "네온 잘 익은 벼 이삭"
+       },
+       {
+        "id": "item_shared_produce_rice-3",
+        "name": "네온 특상품 벼 이삭"
+       },
+       {
+        "id": "item_shared_produce_corn-1",
+        "name": "네온 들판 옥수수"
+       },
+       {
+        "id": "item_shared_produce_corn-2",
+        "name": "네온 잘 익은 옥수수"
+       },
+       {
+        "id": "item_shared_produce_corn-3",
+        "name": "네온 특상품 옥수수"
+       },
+       {
+        "id": "item_shared_produce_bean-1",
+        "name": "네온 들판 완두콩"
+       },
+       {
+        "id": "item_shared_produce_bean-2",
+        "name": "네온 잘 익은 완두콩"
+       },
+       {
+        "id": "item_shared_produce_bean-3",
+        "name": "네온 특상품 완두콩"
+       },
+       {
+        "id": "item_shared_produce_carrot-1",
+        "name": "네온 들판 당근"
+       },
+       {
+        "id": "item_shared_produce_carrot-2",
+        "name": "네온 잘 익은 당근"
+       },
+       {
+        "id": "item_shared_produce_carrot-3",
+        "name": "네온 특상품 당근"
+       },
+       {
+        "id": "item_shared_produce_onion-1",
+        "name": "네온 들판 양파"
+       },
+       {
+        "id": "item_shared_produce_onion-2",
+        "name": "네온 잘 익은 양파"
+       },
+       {
+        "id": "item_shared_produce_onion-3",
+        "name": "네온 특상품 양파"
+       },
+       {
+        "id": "item_shared_produce_turnip-1",
+        "name": "네온 들판 순무"
+       },
+       {
+        "id": "item_shared_produce_turnip-2",
+        "name": "네온 잘 익은 순무"
+       },
+       {
+        "id": "item_shared_produce_turnip-3",
+        "name": "네온 특상품 순무"
+       },
+       {
+        "id": "item_shared_produce_pumpkin-1",
+        "name": "네온 들판 호박"
+       },
+       {
+        "id": "item_shared_produce_pumpkin-2",
+        "name": "네온 잘 익은 호박"
+       },
+       {
+        "id": "item_shared_produce_pumpkin-3",
+        "name": "네온 특상품 호박"
+       },
+       {
+        "id": "item_shared_produce_tomato-1",
+        "name": "네온 들판 토마토"
+       },
+       {
+        "id": "item_shared_produce_tomato-2",
+        "name": "네온 잘 익은 토마토"
+       },
+       {
+        "id": "item_shared_produce_tomato-3",
+        "name": "네온 특상품 토마토"
+       },
+       {
+        "id": "item_shared_produce_pepper-1",
+        "name": "네온 들판 고추"
+       },
+       {
+        "id": "item_shared_produce_pepper-2",
+        "name": "네온 잘 익은 고추"
+       },
+       {
+        "id": "item_shared_produce_pepper-3",
+        "name": "네온 특상품 고추"
+       },
+       {
+        "id": "item_shared_produce_eggplant-1",
+        "name": "네온 들판 가지"
+       },
+       {
+        "id": "item_shared_produce_eggplant-2",
+        "name": "네온 잘 익은 가지"
+       },
+       {
+        "id": "item_shared_produce_eggplant-3",
+        "name": "네온 특상품 가지"
+       },
+       {
+        "id": "item_shared_produce_cabbage-1",
+        "name": "네온 들판 양배추"
+       },
+       {
+        "id": "item_shared_produce_cabbage-2",
+        "name": "네온 잘 익은 양배추"
+       },
+       {
+        "id": "item_shared_produce_cabbage-3",
+        "name": "네온 특상품 양배추"
+       },
+       {
+        "id": "item_shared_produce_grape-1",
+        "name": "네온 들판 포도"
+       },
+       {
+        "id": "item_shared_produce_grape-2",
+        "name": "네온 잘 익은 포도"
+       },
+       {
+        "id": "item_shared_produce_grape-3",
+        "name": "네온 특상품 포도"
+       },
+       {
+        "id": "item_shared_produce_pear-1",
+        "name": "네온 들판 배"
+       },
+       {
+        "id": "item_shared_produce_pear-2",
+        "name": "네온 잘 익은 배"
+       },
+       {
+        "id": "item_shared_produce_pear-3",
+        "name": "네온 특상품 배"
+       },
+       {
+        "id": "item_shared_produce_peach-1",
+        "name": "네온 들판 복숭아"
+       },
+       {
+        "id": "item_shared_produce_peach-2",
+        "name": "네온 잘 익은 복숭아"
+       },
+       {
+        "id": "item_shared_produce_peach-3",
+        "name": "네온 특상품 복숭아"
+       },
+       {
+        "id": "item_shared_produce_radish-1",
+        "name": "네온 들판 무"
+       },
+       {
+        "id": "item_shared_produce_radish-2",
+        "name": "네온 잘 익은 무"
+       },
+       {
+        "id": "item_shared_produce_radish-3",
+        "name": "네온 특상품 무"
+       },
+       {
+        "id": "item_shared_material_copper-1",
+        "name": "네온 거친 구리"
+       },
+       {
+        "id": "item_shared_material_copper-2",
+        "name": "네온 선별한 구리"
+       },
+       {
+        "id": "item_shared_material_copper-3",
+        "name": "네온 정제한 구리"
+       },
+       {
+        "id": "item_shared_material_copper-4",
+        "name": "네온 장인의 구리"
+       },
+       {
+        "id": "item_shared_material_silver-1",
+        "name": "네온 거친 은"
+       },
+       {
+        "id": "item_shared_material_silver-2",
+        "name": "네온 선별한 은"
+       },
+       {
+        "id": "item_shared_material_silver-3",
+        "name": "네온 정제한 은"
+       },
+       {
+        "id": "item_shared_material_silver-4",
+        "name": "네온 장인의 은"
+       },
+       {
+        "id": "item_shared_material_gold-1",
+        "name": "네온 거친 금"
+       },
+       {
+        "id": "item_shared_material_gold-2",
+        "name": "네온 선별한 금"
+       },
+       {
+        "id": "item_shared_material_gold-3",
+        "name": "네온 정제한 금"
+       },
+       {
+        "id": "item_shared_material_gold-4",
+        "name": "네온 장인의 금"
+       },
+       {
+        "id": "item_shared_material_iron-1",
+        "name": "네온 거친 철"
+       },
+       {
+        "id": "item_shared_material_iron-2",
+        "name": "네온 선별한 철"
+       },
+       {
+        "id": "item_shared_material_iron-3",
+        "name": "네온 정제한 철"
+       },
+       {
+        "id": "item_shared_material_iron-4",
+        "name": "네온 장인의 철"
+       },
+       {
+        "id": "item_shared_material_mithril-1",
+        "name": "네온 거친 미스릴"
+       },
+       {
+        "id": "item_shared_material_mithril-2",
+        "name": "네온 선별한 미스릴"
+       },
+       {
+        "id": "item_shared_material_mithril-3",
+        "name": "네온 정제한 미스릴"
+       },
+       {
+        "id": "item_shared_material_mithril-4",
+        "name": "네온 장인의 미스릴"
+       },
+       {
+        "id": "item_shared_material_oak-1",
+        "name": "네온 거친 참나무"
+       },
+       {
+        "id": "item_shared_material_oak-2",
+        "name": "네온 선별한 참나무"
+       },
+       {
+        "id": "item_shared_material_oak-3",
+        "name": "네온 정제한 참나무"
+       },
+       {
+        "id": "item_shared_material_oak-4",
+        "name": "네온 장인의 참나무"
+       },
+       {
+        "id": "item_shared_material_pine-1",
+        "name": "네온 거친 소나무"
+       },
+       {
+        "id": "item_shared_material_pine-2",
+        "name": "네온 선별한 소나무"
+       },
+       {
+        "id": "item_shared_material_pine-3",
+        "name": "네온 정제한 소나무"
+       },
+       {
+        "id": "item_shared_material_pine-4",
+        "name": "네온 장인의 소나무"
+       },
+       {
+        "id": "item_shared_material_cloth-1",
+        "name": "네온 거친 면직물"
+       },
+       {
+        "id": "item_shared_material_cloth-2",
+        "name": "네온 선별한 면직물"
+       },
+       {
+        "id": "item_shared_material_cloth-3",
+        "name": "네온 정제한 면직물"
+       },
+       {
+        "id": "item_shared_material_cloth-4",
+        "name": "네온 장인의 면직물"
+       },
+       {
+        "id": "item_shared_material_silk-1",
+        "name": "네온 거친 비단"
+       },
+       {
+        "id": "item_shared_material_silk-2",
+        "name": "네온 선별한 비단"
+       },
+       {
+        "id": "item_shared_material_silk-3",
+        "name": "네온 정제한 비단"
+       },
+       {
+        "id": "item_shared_material_silk-4",
+        "name": "네온 장인의 비단"
+       },
+       {
+        "id": "item_shared_material_leather-1",
+        "name": "네온 거친 가죽"
+       },
+       {
+        "id": "item_shared_material_leather-2",
+        "name": "네온 선별한 가죽"
+       },
+       {
+        "id": "item_shared_material_leather-3",
+        "name": "네온 정제한 가죽"
+       },
+       {
+        "id": "item_shared_material_leather-4",
+        "name": "네온 장인의 가죽"
+       },
+       {
+        "id": "item_shared_material_bone-1",
+        "name": "네온 거친 단단한 뼈"
+       },
+       {
+        "id": "item_shared_material_bone-2",
+        "name": "네온 선별한 단단한 뼈"
+       },
+       {
+        "id": "item_shared_material_bone-3",
+        "name": "네온 정제한 단단한 뼈"
+       },
+       {
+        "id": "item_shared_material_bone-4",
+        "name": "네온 장인의 단단한 뼈"
+       },
+       {
+        "id": "item_shared_material_fang-1",
+        "name": "네온 거친 송곳니"
+       },
+       {
+        "id": "item_shared_material_fang-2",
+        "name": "네온 선별한 송곳니"
+       },
+       {
+        "id": "item_shared_material_fang-3",
+        "name": "네온 정제한 송곳니"
+       },
+       {
+        "id": "item_shared_material_fang-4",
+        "name": "네온 장인의 송곳니"
+       },
+       {
+        "id": "item_shared_material_claw-1",
+        "name": "네온 거친 발톱"
+       },
+       {
+        "id": "item_shared_material_claw-2",
+        "name": "네온 선별한 발톱"
+       },
+       {
+        "id": "item_shared_material_claw-3",
+        "name": "네온 정제한 발톱"
+       },
+       {
+        "id": "item_shared_material_claw-4",
+        "name": "네온 장인의 발톱"
+       },
+       {
+        "id": "item_shared_material_scale-1",
+        "name": "네온 거친 비늘"
+       },
+       {
+        "id": "item_shared_material_scale-2",
+        "name": "네온 선별한 비늘"
+       },
+       {
+        "id": "item_shared_material_scale-3",
+        "name": "네온 정제한 비늘"
+       },
+       {
+        "id": "item_shared_material_scale-4",
+        "name": "네온 장인의 비늘"
+       },
+       {
+        "id": "item_shared_material_resin-1",
+        "name": "네온 거친 수지"
+       },
+       {
+        "id": "item_shared_material_resin-2",
+        "name": "네온 선별한 수지"
+       },
+       {
+        "id": "item_shared_material_resin-3",
+        "name": "네온 정제한 수지"
+       },
+       {
+        "id": "item_shared_material_resin-4",
+        "name": "네온 장인의 수지"
+       },
+       {
+        "id": "item_shared_material_coal-1",
+        "name": "네온 거친 석탄"
+       },
+       {
+        "id": "item_shared_material_coal-2",
+        "name": "네온 선별한 석탄"
+       },
+       {
+        "id": "item_shared_material_coal-3",
+        "name": "네온 정제한 석탄"
+       },
+       {
+        "id": "item_shared_material_coal-4",
+        "name": "네온 장인의 석탄"
+       },
+       {
+        "id": "item_shared_material_salt-1",
+        "name": "네온 거친 암염"
+       },
+       {
+        "id": "item_shared_material_salt-2",
+        "name": "네온 선별한 암염"
+       },
+       {
+        "id": "item_shared_material_salt-3",
+        "name": "네온 정제한 암염"
+       },
+       {
+        "id": "item_shared_material_salt-4",
+        "name": "네온 장인의 암염"
+       },
+       {
+        "id": "item_shared_material_clay-1",
+        "name": "네온 거친 점토"
+       },
+       {
+        "id": "item_shared_material_clay-2",
+        "name": "네온 선별한 점토"
+       },
+       {
+        "id": "item_shared_material_clay-3",
+        "name": "네온 정제한 점토"
+       },
+       {
+        "id": "item_shared_material_clay-4",
+        "name": "네온 장인의 점토"
+       },
+       {
+        "id": "item_shared_material_obsidian-1",
+        "name": "네온 거친 흑요석"
+       },
+       {
+        "id": "item_shared_material_obsidian-2",
+        "name": "네온 선별한 흑요석"
+       },
+       {
+        "id": "item_shared_material_obsidian-3",
+        "name": "네온 정제한 흑요석"
+       },
+       {
+        "id": "item_shared_material_obsidian-4",
+        "name": "네온 장인의 흑요석"
+       },
+       {
+        "id": "item_shared_material_quartz-1",
+        "name": "네온 거친 수정"
+       },
+       {
+        "id": "item_shared_material_quartz-2",
+        "name": "네온 선별한 수정"
+       },
+       {
+        "id": "item_shared_material_quartz-3",
+        "name": "네온 정제한 수정"
+       },
+       {
+        "id": "item_shared_material_quartz-4",
+        "name": "네온 장인의 수정"
+       },
+       {
+        "id": "item_shared_key_harbor-1",
+        "name": "네온 낡은 항구 열쇠"
+       },
+       {
+        "id": "item_shared_key_harbor-2",
+        "name": "네온 봉인된 항구 열쇠"
+       },
+       {
+        "id": "item_shared_key_tower-1",
+        "name": "네온 낡은 탑 열쇠"
+       },
+       {
+        "id": "item_shared_key_tower-2",
+        "name": "네온 봉인된 탑 열쇠"
+       },
+       {
+        "id": "item_shared_key_mine-1",
+        "name": "네온 낡은 광산 열쇠"
+       },
+       {
+        "id": "item_shared_key_mine-2",
+        "name": "네온 봉인된 광산 열쇠"
+       },
+       {
+        "id": "item_shared_key_garden-1",
+        "name": "네온 낡은 정원 열쇠"
+       },
+       {
+        "id": "item_shared_key_garden-2",
+        "name": "네온 봉인된 정원 열쇠"
+       },
+       {
+        "id": "item_shared_key_library-1",
+        "name": "네온 낡은 서고 열쇠"
+       },
+       {
+        "id": "item_shared_key_library-2",
+        "name": "네온 봉인된 서고 열쇠"
+       },
+       {
+        "id": "item_shared_key_cellar-1",
+        "name": "네온 낡은 지하실 열쇠"
+       },
+       {
+        "id": "item_shared_key_cellar-2",
+        "name": "네온 봉인된 지하실 열쇠"
+       },
+       {
+        "id": "item_shared_key_castle-1",
+        "name": "네온 낡은 성문 열쇠"
+       },
+       {
+        "id": "item_shared_key_castle-2",
+        "name": "네온 봉인된 성문 열쇠"
+       },
+       {
+        "id": "item_shared_key_shrine-1",
+        "name": "네온 낡은 사당 열쇠"
+       },
+       {
+        "id": "item_shared_key_shrine-2",
+        "name": "네온 봉인된 사당 열쇠"
+       },
+       {
+        "id": "item_shared_key_vault-1",
+        "name": "네온 낡은 금고 열쇠"
+       },
+       {
+        "id": "item_shared_key_vault-2",
+        "name": "네온 봉인된 금고 열쇠"
+       },
+       {
+        "id": "item_shared_key_observatory-1",
+        "name": "네온 낡은 관측소 열쇠"
+       },
+       {
+        "id": "item_shared_key_observatory-2",
+        "name": "네온 봉인된 관측소 열쇠"
+       },
+       {
+        "id": "item_shared_key_mill-1",
+        "name": "네온 낡은 방앗간 열쇠"
+       },
+       {
+        "id": "item_shared_key_mill-2",
+        "name": "네온 봉인된 방앗간 열쇠"
+       },
+       {
+        "id": "item_shared_key_workshop-1",
+        "name": "네온 낡은 공방 열쇠"
+       },
+       {
+        "id": "item_shared_key_workshop-2",
+        "name": "네온 봉인된 공방 열쇠"
+       },
+       {
+        "id": "item_shared_key_canal-1",
+        "name": "네온 낡은 수로 열쇠"
+       },
+       {
+        "id": "item_shared_key_canal-2",
+        "name": "네온 봉인된 수로 열쇠"
+       },
+       {
+        "id": "item_shared_key_crypt-1",
+        "name": "네온 낡은 묘실 열쇠"
+       },
+       {
+        "id": "item_shared_key_crypt-2",
+        "name": "네온 봉인된 묘실 열쇠"
+       },
+       {
+        "id": "item_shared_key_sanctum-1",
+        "name": "네온 낡은 성소 열쇠"
+       },
+       {
+        "id": "item_shared_key_sanctum-2",
+        "name": "네온 봉인된 성소 열쇠"
+       },
+       {
+        "id": "item_shared_key_treasury-1",
+        "name": "네온 낡은 보물고 열쇠"
+       },
+       {
+        "id": "item_shared_key_treasury-2",
+        "name": "네온 봉인된 보물고 열쇠"
+       }
+      ]
+     }
+    },
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "items",
+      "patches": [
+       {
+        "id": "item_shared_tool_hoe-1",
+        "name": "네온 나무 괭이"
+       },
+       {
+        "id": "item_shared_tool_hoe-2",
+        "name": "네온 구리 괭이"
+       },
+       {
+        "id": "item_shared_tool_hoe-3",
+        "name": "네온 철 괭이"
+       },
+       {
+        "id": "item_shared_tool_hoe-4",
+        "name": "네온 강철 괭이"
+       },
+       {
+        "id": "item_shared_tool_wateringCan-1",
+        "name": "네온 나무 물뿌리개"
+       },
+       {
+        "id": "item_shared_tool_wateringCan-2",
+        "name": "네온 구리 물뿌리개"
+       },
+       {
+        "id": "item_shared_tool_wateringCan-3",
+        "name": "네온 철 물뿌리개"
+       },
+       {
+        "id": "item_shared_tool_wateringCan-4",
+        "name": "네온 강철 물뿌리개"
+       },
+       {
+        "id": "item_shared_tool_axe-1",
+        "name": "네온 나무 도끼"
+       },
+       {
+        "id": "item_shared_tool_axe-2",
+        "name": "네온 구리 도끼"
+       },
+       {
+        "id": "item_shared_tool_axe-3",
+        "name": "네온 철 도끼"
+       },
+       {
+        "id": "item_shared_tool_axe-4",
+        "name": "네온 강철 도끼"
+       },
+       {
+        "id": "item_shared_tool_pickaxe-1",
+        "name": "네온 나무 곡괭이"
+       },
+       {
+        "id": "item_shared_tool_pickaxe-2",
+        "name": "네온 구리 곡괭이"
+       },
+       {
+        "id": "item_shared_tool_pickaxe-3",
+        "name": "네온 철 곡괭이"
+       },
+       {
+        "id": "item_shared_tool_pickaxe-4",
+        "name": "네온 강철 곡괭이"
+       },
+       {
+        "id": "item_shared_fishing_worm-1",
+        "name": "네온 기본 지렁이"
+       },
+       {
+        "id": "item_shared_fishing_worm-2",
+        "name": "네온 정교한 지렁이"
+       },
+       {
+        "id": "item_shared_fishing_worm-3",
+        "name": "네온 명인의 지렁이"
+       },
+       {
+        "id": "item_shared_fishing_shrimp-1",
+        "name": "네온 기본 새우"
+       },
+       {
+        "id": "item_shared_fishing_shrimp-2",
+        "name": "네온 정교한 새우"
+       },
+       {
+        "id": "item_shared_fishing_shrimp-3",
+        "name": "네온 명인의 새우"
+       },
+       {
+        "id": "item_shared_fishing_dough-1",
+        "name": "네온 기본 떡밥"
+       },
+       {
+        "id": "item_shared_fishing_dough-2",
+        "name": "네온 정교한 떡밥"
+       },
+       {
+        "id": "item_shared_fishing_dough-3",
+        "name": "네온 명인의 떡밥"
+       },
+       {
+        "id": "item_shared_fishing_fly-1",
+        "name": "네온 기본 깃털 미끼"
+       },
+       {
+        "id": "item_shared_fishing_fly-2",
+        "name": "네온 정교한 깃털 미끼"
+       },
+       {
+        "id": "item_shared_fishing_fly-3",
+        "name": "네온 명인의 깃털 미끼"
+       },
+       {
+        "id": "item_shared_fishing_spinner-1",
+        "name": "네온 기본 회전 미끼"
+       },
+       {
+        "id": "item_shared_fishing_spinner-2",
+        "name": "네온 정교한 회전 미끼"
+       },
+       {
+        "id": "item_shared_fishing_spinner-3",
+        "name": "네온 명인의 회전 미끼"
+       },
+       {
+        "id": "item_shared_fishing_frog-1",
+        "name": "네온 기본 개구리 미끼"
+       },
+       {
+        "id": "item_shared_fishing_frog-2",
+        "name": "네온 정교한 개구리 미끼"
+       },
+       {
+        "id": "item_shared_fishing_frog-3",
+        "name": "네온 명인의 개구리 미끼"
+       },
+       {
+        "id": "item_shared_fishing_minnow-1",
+        "name": "네온 기본 작은 물고기"
+       },
+       {
+        "id": "item_shared_fishing_minnow-2",
+        "name": "네온 정교한 작은 물고기"
+       },
+       {
+        "id": "item_shared_fishing_minnow-3",
+        "name": "네온 명인의 작은 물고기"
+       },
+       {
+        "id": "item_shared_fishing_spoon-1",
+        "name": "네온 기본 금속 미끼"
+       },
+       {
+        "id": "item_shared_fishing_spoon-2",
+        "name": "네온 정교한 금속 미끼"
+       },
+       {
+        "id": "item_shared_fishing_spoon-3",
+        "name": "네온 명인의 금속 미끼"
+       },
+       {
+        "id": "item_shared_treasure_ruby-1",
+        "name": "네온 원석 루비"
+       },
+       {
+        "id": "item_shared_treasure_ruby-2",
+        "name": "네온 연마한 루비"
+       },
+       {
+        "id": "item_shared_treasure_ruby-3",
+        "name": "네온 세공한 루비"
+       },
+       {
+        "id": "item_shared_treasure_ruby-4",
+        "name": "네온 왕관급 루비"
+       },
+       {
+        "id": "item_shared_treasure_sapphire-1",
+        "name": "네온 원석 사파이어"
+       },
+       {
+        "id": "item_shared_treasure_sapphire-2",
+        "name": "네온 연마한 사파이어"
+       },
+       {
+        "id": "item_shared_treasure_sapphire-3",
+        "name": "네온 세공한 사파이어"
+       },
+       {
+        "id": "item_shared_treasure_sapphire-4",
+        "name": "네온 왕관급 사파이어"
+       },
+       {
+        "id": "item_shared_treasure_emerald-1",
+        "name": "네온 원석 에메랄드"
+       },
+       {
+        "id": "item_shared_treasure_emerald-2",
+        "name": "네온 연마한 에메랄드"
+       },
+       {
+        "id": "item_shared_treasure_emerald-3",
+        "name": "네온 세공한 에메랄드"
+       },
+       {
+        "id": "item_shared_treasure_emerald-4",
+        "name": "네온 왕관급 에메랄드"
+       },
+       {
+        "id": "item_shared_treasure_topaz-1",
+        "name": "네온 원석 토파즈"
+       },
+       {
+        "id": "item_shared_treasure_topaz-2",
+        "name": "네온 연마한 토파즈"
+       },
+       {
+        "id": "item_shared_treasure_topaz-3",
+        "name": "네온 세공한 토파즈"
+       },
+       {
+        "id": "item_shared_treasure_topaz-4",
+        "name": "네온 왕관급 토파즈"
+       },
+       {
+        "id": "item_shared_treasure_amethyst-1",
+        "name": "네온 원석 자수정"
+       },
+       {
+        "id": "item_shared_treasure_amethyst-2",
+        "name": "네온 연마한 자수정"
+       },
+       {
+        "id": "item_shared_treasure_amethyst-3",
+        "name": "네온 세공한 자수정"
+       },
+       {
+        "id": "item_shared_treasure_amethyst-4",
+        "name": "네온 왕관급 자수정"
+       },
+       {
+        "id": "item_shared_treasure_opal-1",
+        "name": "네온 원석 오팔"
+       },
+       {
+        "id": "item_shared_treasure_opal-2",
+        "name": "네온 연마한 오팔"
+       },
+       {
+        "id": "item_shared_treasure_opal-3",
+        "name": "네온 세공한 오팔"
+       },
+       {
+        "id": "item_shared_treasure_opal-4",
+        "name": "네온 왕관급 오팔"
+       },
+       {
+        "id": "item_shared_treasure_garnet-1",
+        "name": "네온 원석 석류석"
+       },
+       {
+        "id": "item_shared_treasure_garnet-2",
+        "name": "네온 연마한 석류석"
+       },
+       {
+        "id": "item_shared_treasure_garnet-3",
+        "name": "네온 세공한 석류석"
+       },
+       {
+        "id": "item_shared_treasure_garnet-4",
+        "name": "네온 왕관급 석류석"
+       },
+       {
+        "id": "item_shared_treasure_aquamarine-1",
+        "name": "네온 원석 청옥"
+       },
+       {
+        "id": "item_shared_treasure_aquamarine-2",
+        "name": "네온 연마한 청옥"
+       },
+       {
+        "id": "item_shared_treasure_aquamarine-3",
+        "name": "네온 세공한 청옥"
+       },
+       {
+        "id": "item_shared_treasure_aquamarine-4",
+        "name": "네온 왕관급 청옥"
+       },
+       {
+        "id": "item_shared_component_wire-1",
+        "name": "네온 견습 금속 철사"
+       },
+       {
+        "id": "item_shared_component_wire-2",
+        "name": "네온 숙련 금속 철사"
+       },
+       {
+        "id": "item_shared_component_wire-3",
+        "name": "네온 정밀 금속 철사"
+       },
+       {
+        "id": "item_shared_component_buckle-1",
+        "name": "네온 견습 버클"
+       },
+       {
+        "id": "item_shared_component_buckle-2",
+        "name": "네온 숙련 버클"
+       },
+       {
+        "id": "item_shared_component_buckle-3",
+        "name": "네온 정밀 버클"
+       },
+       {
+        "id": "item_shared_component_thread-1",
+        "name": "네온 견습 실타래"
+       },
+       {
+        "id": "item_shared_component_thread-2",
+        "name": "네온 숙련 실타래"
+       },
+       {
+        "id": "item_shared_component_thread-3",
+        "name": "네온 정밀 실타래"
+       },
+       {
+        "id": "item_shared_component_glue-1",
+        "name": "네온 견습 접착제"
+       },
+       {
+        "id": "item_shared_component_glue-2",
+        "name": "네온 숙련 접착제"
+       },
+       {
+        "id": "item_shared_component_glue-3",
+        "name": "네온 정밀 접착제"
+       },
+       {
+        "id": "item_shared_component_oil-1",
+        "name": "네온 견습 윤활유"
+       },
+       {
+        "id": "item_shared_component_oil-2",
+        "name": "네온 숙련 윤활유"
+       },
+       {
+        "id": "item_shared_component_oil-3",
+        "name": "네온 정밀 윤활유"
+       },
+       {
+        "id": "item_shared_component_hinge-1",
+        "name": "네온 견습 경첩"
+       },
+       {
+        "id": "item_shared_component_hinge-2",
+        "name": "네온 숙련 경첩"
+       },
+       {
+        "id": "item_shared_component_hinge-3",
+        "name": "네온 정밀 경첩"
+       },
+       {
+        "id": "item_shared_component_spring-1",
+        "name": "네온 견습 용수철"
+       },
+       {
+        "id": "item_shared_component_spring-2",
+        "name": "네온 숙련 용수철"
+       },
+       {
+        "id": "item_shared_component_spring-3",
+        "name": "네온 정밀 용수철"
+       },
+       {
+        "id": "item_shared_component_gear-1",
+        "name": "네온 견습 공방 톱니"
+       },
+       {
+        "id": "item_shared_component_gear-2",
+        "name": "네온 숙련 공방 톱니"
+       },
+       {
+        "id": "item_shared_component_gear-3",
+        "name": "네온 정밀 공방 톱니"
+       },
+       {
+        "id": "item_shared_relay_sun",
+        "name": "네온 태양 신호석"
+       },
+       {
+        "id": "item_shared_relay_moon",
+        "name": "네온 달 신호석"
+       },
+       {
+        "id": "item_shared_relay_tide",
+        "name": "네온 조수 신호석"
+       },
+       {
+        "id": "item_shared_relay_earth",
+        "name": "네온 대지 신호석"
+       }
+      ]
+     }
+    },
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "equipment",
+      "patches": [
+       {
+        "id": "equip_sword",
+        "name": "크롬 청동 검"
+       },
+       {
+        "id": "equip_mage_staff",
+        "name": "크롬 수습 지팡이"
+       },
+       {
+        "id": "equip_scout_dagger",
+        "name": "크롬 정찰 단검"
+       },
+       {
+        "id": "equip_iron_sword",
+        "name": "크롬 철 검"
+       },
+       {
+        "id": "equip_steel_sword",
+        "name": "크롬 강철 검"
+       },
+       {
+        "id": "equip_short_sword",
+        "name": "크롬 단검"
+       },
+       {
+        "id": "equip_oak_shield",
+        "name": "크롬 참나무 방패"
+       },
+       {
+        "id": "equip_leather_armor",
+        "name": "크롬 가죽 갑옷"
+       },
+       {
+        "id": "equip_mystic_robe",
+        "name": "크롬 견습 로브"
+       },
+       {
+        "id": "equip_traveler_hat",
+        "name": "크롬 여행자 모자"
+       },
+       {
+        "id": "equip_focus_charm",
+        "name": "크롬 집중 부적"
+       },
+       {
+        "id": "equip_iron_shield",
+        "name": "크롬 용병 철갑 방패"
+       },
+       {
+        "id": "equip_steel_armor",
+        "name": "크롬 용병대 강철 흉갑"
+       },
+       {
+        "id": "equip_mage_hat",
+        "name": "크롬 별무늬 수습모"
+       },
+       {
+        "id": "equip_gloves",
+        "name": "크롬 검객 손보호대"
+       },
+       {
+        "id": "equip_boots",
+        "name": "크롬 바람길 가죽 장화"
+       },
+       {
+        "id": "equip_cloak",
+        "name": "크롬 순례자 방풍 망토"
+       },
+       {
+        "id": "equip_ring",
+        "name": "크롬 마력 각인 반지"
+       },
+       {
+        "id": "equip_necklace",
+        "name": "크롬 청옥 수호 목걸이"
+       },
+       {
+        "id": "equip_focus_ring",
+        "name": "크롬 푸른별 집중 반지"
+       },
+       {
+        "id": "equip_gen_sword_bronze",
+        "name": "크롬 보급형 청동 검"
+       },
+       {
+        "id": "equip_gen_sword_iron",
+        "name": "크롬 제련소 철 검"
+       },
+       {
+        "id": "equip_gen_sword_steel",
+        "name": "크롬 기사단 강철 검"
+       },
+       {
+        "id": "equip_gen_sword_flame",
+        "name": "크롬 화염 검"
+       },
+       {
+        "id": "equip_gen_sword_frost",
+        "name": "크롬 서릿 검"
+       },
+       {
+        "id": "equip_gen_dagger_scout",
+        "name": "크롬 경량 정찰 단검"
+       },
+       {
+        "id": "equip_gen_rapier_noble",
+        "name": "크롬 귀족 레이피어"
+       },
+       {
+        "id": "equip_gen_axe_battle",
+        "name": "크롬 전투 도끼"
+       },
+       {
+        "id": "equip_gen_axe_great",
+        "name": "크롬 대형 도끼"
+       },
+       {
+        "id": "equip_gen_spear_iron",
+        "name": "크롬 철 창"
+       },
+       {
+        "id": "equip_gen_halberd_guard",
+        "name": "크롬 경비 할버드"
+       },
+       {
+        "id": "equip_gen_mace_heavy",
+        "name": "크롬 중형 철퇴"
+       },
+       {
+        "id": "equip_gen_hammer_war",
+        "name": "크롬 전쟁 망치"
+       },
+       {
+        "id": "equip_gen_bow_short",
+        "name": "크롬 단궁"
+       },
+       {
+        "id": "equip_gen_bow_long",
+        "name": "크롬 장궁"
+       },
+       {
+        "id": "equip_gen_crossbow_hand",
+        "name": "크롬 손 석궁"
+       },
+       {
+        "id": "equip_gen_staff_oak",
+        "name": "크롬 떡갈나무 지팡이"
+       },
+       {
+        "id": "equip_gen_staff_crystal",
+        "name": "크롬 수정 지팡이"
+       },
+       {
+        "id": "equip_gen_wand_spark",
+        "name": "크롬 불꽃 마법봉"
+       },
+       {
+        "id": "equip_gen_katana_east",
+        "name": "크롬 동방 도"
+       },
+       {
+        "id": "equip_gen_claw_beast",
+        "name": "크롬 야수 발톱"
+       },
+       {
+        "id": "equip_gen_whip_leather",
+        "name": "크롬 가죽 채찍"
+       },
+       {
+        "id": "equip_gen_scythe_reaper",
+        "name": "크롬 사신 낫"
+       },
+       {
+        "id": "equip_gen_gun_flint",
+        "name": "크롬 화승총"
+       },
+       {
+        "id": "equip_gen_boomerang_wood",
+        "name": "크롬 부메랑"
+       },
+       {
+        "id": "equip_gen_shield_wood",
+        "name": "크롬 나무 방패"
+       },
+       {
+        "id": "equip_gen_shield_iron",
+        "name": "크롬 철 방패"
+       },
+       {
+        "id": "equip_gen_shield_tower",
+        "name": "크롬 타워 실드"
+       },
+       {
+        "id": "equip_gen_shield_mirror",
+        "name": "크롬 거울 방패"
+       },
+       {
+        "id": "equip_gen_armor_leather",
+        "name": "크롬 사냥꾼 가죽 갑옷"
+       },
+       {
+        "id": "equip_gen_armor_chain",
+        "name": "크롬 사슬 갑옷"
+       },
+       {
+        "id": "equip_gen_armor_plate",
+        "name": "크롬 판금 갑옷"
+       },
+       {
+        "id": "equip_gen_armor_mythril",
+        "name": "크롬 미스릴 갑옷"
+       },
+       {
+        "id": "equip_gen_robe_cloth",
+        "name": "크롬 천 로브"
+       },
+       {
+        "id": "equip_gen_robe_mage",
+        "name": "크롬 마법사 로브"
+       },
+       {
+        "id": "equip_gen_helm_leather",
+        "name": "크롬 가죽 투구"
+       },
+       {
+        "id": "equip_gen_helm_iron",
+        "name": "크롬 철 투구"
+       },
+       {
+        "id": "equip_gen_helm_horned",
+        "name": "크롬 뿔 투구"
+       },
+       {
+        "id": "equip_gen_hat_traveler",
+        "name": "크롬 개척자 여행 모자"
+       },
+       {
+        "id": "equip_gen_hat_witch",
+        "name": "크롬 마녀 모자"
+       },
+       {
+        "id": "equip_gen_boots_leather",
+        "name": "크롬 가죽 장화"
+       },
+       {
+        "id": "equip_gen_boots_swift",
+        "name": "크롬 신속 장화"
+       },
+       {
+        "id": "equip_gen_gloves_iron",
+        "name": "크롬 철 장갑"
+       },
+       {
+        "id": "equip_gen_cloak_shadow",
+        "name": "크롬 그림자 망토"
+       },
+       {
+        "id": "equip_gen_belt_champion",
+        "name": "크롬 챔피언 벨트"
+       },
+       {
+        "id": "equip_gen_ring_silver",
+        "name": "크롬 은 반지"
+       },
+       {
+        "id": "equip_gen_ring_power",
+        "name": "크롬 힘의 반지"
+       },
+       {
+        "id": "equip_gen_amulet_moon",
+        "name": "크롬 달 부적"
+       },
+       {
+        "id": "equip_gen_amulet_sun",
+        "name": "크롬 태양 부적"
+       },
+       {
+        "id": "equip_gen_brooch_rose",
+        "name": "크롬 장미 브로치"
+       },
+       {
+        "id": "equip_gen_earring_jade",
+        "name": "크롬 옥 귀걸이"
+       },
+       {
+        "id": "equip_gen_charm_luck",
+        "name": "크롬 행운 부적"
+       },
+       {
+        "id": "equip_gen_orb_mana",
+        "name": "크롬 마나 구슬"
+       },
+       {
+        "id": "equip_gen_badge_guard",
+        "name": "크롬 경비 배지"
+       },
+       {
+        "id": "equip_gen_mask_fox",
+        "name": "크롬 여우 가면"
+       },
+       {
+        "id": "equip_fill_shield_buckler",
+        "name": "크롬 매사냥꾼 원형 방패"
+       },
+       {
+        "id": "equip_fill_shield_ember_ward",
+        "name": "크롬 잿불 수호 방패"
+       },
+       {
+        "id": "equip_fill_shield_fortress",
+        "name": "크롬 요새문 대방패"
+       },
+       {
+        "id": "equip_fill_shield_hymn",
+        "name": "크롬 성가대 은방패"
+       },
+       {
+        "id": "equip_fill_shield_moon_mirror",
+        "name": "크롬 월광 거울 방패"
+       },
+       {
+        "id": "equip_fill_armor_storm_chain",
+        "name": "크롬 폭풍고리 사슬갑옷"
+       },
+       {
+        "id": "equip_fill_armor_oath_plate",
+        "name": "크롬 불퇴서약 판금갑옷"
+       },
+       {
+        "id": "equip_fill_helmet_falcon",
+        "name": "크롬 매눈 정찰 투구"
+       },
+       {
+        "id": "equip_fill_helmet_frost_hood",
+        "name": "크롬 설원 현자 두건"
+       },
+       {
+        "id": "equip_fill_helmet_rune",
+        "name": "크롬 침묵파쇄 룬투구"
+       },
+       {
+        "id": "equip_fill_helmet_vanguard",
+        "name": "크롬 선봉대 뿔투구"
+       }
+      ]
+     }
+    },
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "enemies",
+      "patches": [
+       {
+        "id": "enemy_slime",
+        "name": "사이버 슬라임"
+       },
+       {
+        "id": "enemy_meadow_slime",
+        "name": "사이버 초원 슬라임"
+       },
+       {
+        "id": "enemy_cave_bat",
+        "name": "사이버 동굴 박쥐"
+       },
+       {
+        "id": "enemy_stone_golem",
+        "name": "사이버 돌 골렘"
+       },
+       {
+        "id": "enemy_dragon",
+        "name": "사이버 붉은 드래곤"
+       },
+       {
+        "id": "enemy_mine_skel_archer",
+        "name": "사이버 광산 해골 궁수"
+       },
+       {
+        "id": "enemy_slime_blue",
+        "name": "사이버 푸른 슬라임"
+       },
+       {
+        "id": "enemy_slime_red",
+        "name": "사이버 붉은 슬라임"
+       },
+       {
+        "id": "enemy_slime_green",
+        "name": "사이버 초록 슬라임"
+       },
+       {
+        "id": "enemy_slime_metal",
+        "name": "사이버 금속 슬라임"
+       },
+       {
+        "id": "enemy_slime_king",
+        "name": "사이버 슬라임 왕"
+       },
+       {
+        "id": "enemy_slime_cube",
+        "name": "사이버 젤리 큐브"
+       },
+       {
+        "id": "enemy_ooze_black",
+        "name": "사이버 검은 점액"
+       },
+       {
+        "id": "enemy_ooze_acid",
+        "name": "사이버 산성 점액"
+       },
+       {
+        "id": "enemy_bat_cave",
+        "name": "사이버 동굴 박쥐"
+       },
+       {
+        "id": "enemy_bat_vampire",
+        "name": "사이버 흡혈 박쥐"
+       },
+       {
+        "id": "enemy_bee_giant",
+        "name": "사이버 거대 벌"
+       },
+       {
+        "id": "enemy_spider_cave",
+        "name": "사이버 동굴 거미"
+       },
+       {
+        "id": "enemy_spider_widow",
+        "name": "사이버 과부 거미"
+       },
+       {
+        "id": "enemy_scorpion_sand",
+        "name": "사이버 모래 전갈"
+       },
+       {
+        "id": "enemy_beetle_horn",
+        "name": "사이버 뿔 딱정벌레"
+       },
+       {
+        "id": "enemy_mantis_blade",
+        "name": "사이버 칼날 사마귀"
+       },
+       {
+        "id": "enemy_centipede_fire",
+        "name": "사이버 화염 지네"
+       },
+       {
+        "id": "enemy_moth_dust",
+        "name": "사이버 가루 나방"
+       },
+       {
+        "id": "enemy_worm_sand",
+        "name": "사이버 모래 지렁이"
+       },
+       {
+        "id": "enemy_ant_soldier",
+        "name": "사이버 병정 개미"
+       },
+       {
+        "id": "enemy_wolf_grey",
+        "name": "사이버 회색 늑대"
+       },
+       {
+        "id": "enemy_wolf_dire",
+        "name": "사이버 다이어 울프"
+       },
+       {
+        "id": "enemy_boar_tusk",
+        "name": "사이버 송곳니 멧돼지"
+       },
+       {
+        "id": "enemy_bear_brown",
+        "name": "사이버 갈색 곰"
+       },
+       {
+        "id": "enemy_tiger_saber",
+        "name": "사이버 검치호"
+       },
+       {
+        "id": "enemy_rat_giant",
+        "name": "사이버 거대 쥐"
+       },
+       {
+        "id": "enemy_bird_hawk",
+        "name": "사이버 매"
+       },
+       {
+        "id": "enemy_snake_viper",
+        "name": "사이버 독사"
+       },
+       {
+        "id": "enemy_cat_shadow",
+        "name": "사이버 그림자 고양이"
+       },
+       {
+        "id": "enemy_goat_mountain",
+        "name": "사이버 산양"
+       },
+       {
+        "id": "enemy_crab_rock",
+        "name": "사이버 바위 게"
+       },
+       {
+        "id": "enemy_hound_hell",
+        "name": "사이버 지옥 사냥개"
+       },
+       {
+        "id": "enemy_ape_stone",
+        "name": "사이버 석상 유인원"
+       },
+       {
+        "id": "enemy_deer_forest",
+        "name": "사이버 숲 사슴"
+       },
+       {
+        "id": "enemy_skeleton_bone",
+        "name": "사이버 해골"
+       },
+       {
+        "id": "enemy_skeleton_archer",
+        "name": "사이버 해골 궁수"
+       },
+       {
+        "id": "enemy_skeleton_knight",
+        "name": "사이버 해골 기사"
+       },
+       {
+        "id": "enemy_zombie_rot",
+        "name": "사이버 썩은 좀비"
+       },
+       {
+        "id": "enemy_ghoul_grave",
+        "name": "사이버 무덤 구울"
+       },
+       {
+        "id": "enemy_ghost_pale",
+        "name": "사이버 창백한 유령"
+       },
+       {
+        "id": "enemy_wraith_dark",
+        "name": "사이버 어둠 망령"
+       },
+       {
+        "id": "enemy_lich_frost",
+        "name": "사이버 서릿 리치"
+       },
+       {
+        "id": "enemy_mummy_bandage",
+        "name": "사이버 미라"
+       },
+       {
+        "id": "enemy_banshee_wail",
+        "name": "사이버 밴시"
+       },
+       {
+        "id": "enemy_revenant_vengeful",
+        "name": "사이버 복수의 사령"
+       },
+       {
+        "id": "enemy_bonepile_crawler",
+        "name": "사이버 뼈 무더기"
+       },
+       {
+        "id": "enemy_spirit_fire",
+        "name": "사이버 불의 정령"
+       },
+       {
+        "id": "enemy_spirit_water",
+        "name": "사이버 물의 정령"
+       },
+       {
+        "id": "enemy_spirit_earth",
+        "name": "사이버 땅의 정령"
+       },
+       {
+        "id": "enemy_spirit_wind",
+        "name": "사이버 바람의 정령"
+       },
+       {
+        "id": "enemy_spirit_light",
+        "name": "사이버 빛의 정령"
+       },
+       {
+        "id": "enemy_spirit_dark",
+        "name": "사이버 어둠의 정령"
+       },
+       {
+        "id": "enemy_wisp_blue",
+        "name": "사이버 푸른 도깨비불"
+       },
+       {
+        "id": "enemy_sylph_air",
+        "name": "사이버 실프"
+       },
+       {
+        "id": "enemy_undine_sea",
+        "name": "사이버 운디네"
+       },
+       {
+        "id": "enemy_salamander_flame",
+        "name": "사이버 샐러맨더"
+       },
+       {
+        "id": "enemy_golem_stone",
+        "name": "사이버 돌 골렘"
+       },
+       {
+        "id": "enemy_golem_iron",
+        "name": "사이버 철 골렘"
+       },
+       {
+        "id": "enemy_golem_clay",
+        "name": "사이버 점토 골렘"
+       },
+       {
+        "id": "enemy_golem_crystal",
+        "name": "사이버 수정 골렘"
+       },
+       {
+        "id": "enemy_armor_living",
+        "name": "사이버 살아있는 갑옷"
+       },
+       {
+        "id": "enemy_sword_flying",
+        "name": "사이버 부유하는 검"
+       },
+       {
+        "id": "enemy_mimic_chest",
+        "name": "사이버 미믹 상자"
+       },
+       {
+        "id": "enemy_scarecrow_field",
+        "name": "사이버 허수아비"
+       },
+       {
+        "id": "enemy_puppet_string",
+        "name": "사이버 실 인형"
+       },
+       {
+        "id": "enemy_totem_cursed",
+        "name": "사이버 저주받은 토템"
+       },
+       {
+        "id": "enemy_goblin_scout",
+        "name": "사이버 고블린 정찰병"
+       },
+       {
+        "id": "enemy_goblin_brute",
+        "name": "사이버 고블린 폭력배"
+       },
+       {
+        "id": "enemy_orc_warrior",
+        "name": "사이버 오크 전사"
+       },
+       {
+        "id": "enemy_orc_shaman",
+        "name": "사이버 오크 주술사"
+       },
+       {
+        "id": "enemy_kobold_digger",
+        "name": "사이버 코볼트 광부"
+       },
+       {
+        "id": "enemy_bandit_mask",
+        "name": "사이버 복면 산적"
+       },
+       {
+        "id": "enemy_mage_rogue",
+        "name": "사이버 이단 마법사"
+       },
+       {
+        "id": "enemy_knight_fallen",
+        "name": "사이버 타락한 기사"
+       },
+       {
+        "id": "enemy_lizardman_spear",
+        "name": "사이버 리자드맨"
+       },
+       {
+        "id": "enemy_harpy_cliff",
+        "name": "사이버 하피"
+       },
+       {
+        "id": "enemy_minotaur_maze",
+        "name": "사이버 미노타우로스"
+       },
+       {
+        "id": "enemy_centaur_plains",
+        "name": "사이버 켄타우로스"
+       },
+       {
+        "id": "enemy_troll_cave",
+        "name": "사이버 동굴 트롤"
+       },
+       {
+        "id": "enemy_ogre_club",
+        "name": "사이버 오거"
+       },
+       {
+        "id": "enemy_imp_mischief",
+        "name": "사이버 임프"
+       },
+       {
+        "id": "enemy_fish_piranha",
+        "name": "사이버 피라냐"
+       },
+       {
+        "id": "enemy_squid_deep",
+        "name": "사이버 심해 오징어"
+       },
+       {
+        "id": "enemy_shark_land",
+        "name": "사이버 육상 상어"
+       },
+       {
+        "id": "enemy_eel_electric",
+        "name": "사이버 전기 뱀장어"
+       },
+       {
+        "id": "enemy_griffin_sky",
+        "name": "사이버 그리핀"
+       },
+       {
+        "id": "enemy_wyvern_cliff",
+        "name": "사이버 와이번"
+       },
+       {
+        "id": "enemy_roc_giant",
+        "name": "사이버 거대 로크"
+       },
+       {
+        "id": "enemy_gargoyle_stone",
+        "name": "사이버 가고일"
+       },
+       {
+        "id": "enemy_phoenix_rebirth",
+        "name": "사이버 불사조"
+       },
+       {
+        "id": "enemy_dragon_whelp",
+        "name": "사이버 새끼 용"
+       },
+       {
+        "id": "enemy_dragon_red",
+        "name": "사이버 붉은 용"
+       },
+       {
+        "id": "enemy_dragon_blue",
+        "name": "사이버 청룡"
+       },
+       {
+        "id": "enemy_dragon_bone",
+        "name": "사이버 본 드래곤"
+       },
+       {
+        "id": "enemy_hydra_three",
+        "name": "사이버 히드라"
+       },
+       {
+        "id": "enemy_behemoth_horn",
+        "name": "사이버 베히모스"
+       },
+       {
+        "id": "enemy_demon_lord",
+        "name": "사이버 마왕"
+       },
+       {
+        "id": "enemy_angel_fallen",
+        "name": "사이버 타락 천사"
+       },
+       {
+        "id": "enemy_eye_floating",
+        "name": "사이버 부유하는 눈"
+       },
+       {
+        "id": "enemy_plant_carnivore",
+        "name": "사이버 식충 식물"
+       }
+      ]
+     }
+    },
+    {
+     "tool": "bulk_edit_database",
+     "args": {
+      "collection": "states",
+      "patches": [
+       {
+        "id": "state_poison",
+        "name": "글리치 독"
+       },
+       {
+        "id": "state_sleep",
+        "name": "글리치 수면"
+       },
+       {
+        "id": "state_attack_up",
+        "name": "글리치 공격 상승"
+       },
+       {
+        "id": "state_defense_up",
+        "name": "글리치 방어 상승"
+       },
+       {
+        "id": "state_defense_down",
+        "name": "글리치 방어 하락"
+       },
+       {
+        "id": "state_attack_down",
+        "name": "글리치 공격 하락"
+       },
+       {
+        "id": "state_agility_up",
+        "name": "글리치 민첩 상승"
+       },
+       {
+        "id": "state_agility_down",
+        "name": "글리치 민첩 하락"
+       },
+       {
+        "id": "state_paralysis",
+        "name": "글리치 마비"
+       },
+       {
+        "id": "state_deep_poison",
+        "name": "글리치 맹독"
+       },
+       {
+        "id": "state_regen",
+        "name": "글리치 재생"
+       },
+       {
+        "id": "state_silence",
+        "name": "글리치 침묵"
+       },
+       {
+        "id": "state_blind",
+        "name": "글리치 암흑"
+       },
+       {
+        "id": "state_stop",
+        "name": "글리치 스톱"
+       },
+       {
+        "id": "state_protect",
+        "name": "글리치 프로텍트"
+       },
+       {
+        "id": "state_shell",
+        "name": "글리치 실드"
+       },
+       {
+        "id": "state_berserk",
+        "name": "글리치 버서크"
+       },
+       {
+        "id": "state_petrify",
+        "name": "글리치 석화"
+       },
+       {
+        "id": "state_wet",
+        "name": "글리치 젖음"
+       },
+       {
+        "id": "state_oiled",
+        "name": "글리치 기름"
+       },
+       {
+        "id": "state_counter",
+        "name": "글리치 반격"
+       },
+       {
+        "id": "state_taunt",
+        "name": "글리치 도발"
+       },
+       {
+        "id": "state_cover",
+        "name": "글리치 감싸기"
+       },
+       {
+        "id": "state_evade",
+        "name": "글리치 회피"
+       },
+       {
+        "id": "state_reflect",
+        "name": "글리치 리플렉"
+       },
+       {
+        "id": "state_rage",
+        "name": "글리치 폭주"
+       },
+       {
+        "id": "state_zombie",
+        "name": "글리치 좀비"
+       },
+       {
+        "id": "state_reraise",
+        "name": "글리치 리레이즈"
+       },
+       {
+        "id": "state_form_stone",
+        "name": "글리치 바위 둔갑"
+       },
+       {
+        "id": "state_doom",
+        "name": "글리치 선고"
+       }
+      ]
+     }
+    }
+   ],
+   "accept": [],
+   "wrong": [
+    {
+     "note": "적만",
+     "calls": [
+      {
+       "tool": "bulk_edit_database",
+       "args": {
+        "collection": "enemies",
+        "patches": [
+         {
+          "id": "enemy_slime",
+          "name": "사이버 슬라임"
+         },
+         {
+          "id": "enemy_meadow_slime",
+          "name": "사이버 초원 슬라임"
+         },
+         {
+          "id": "enemy_cave_bat",
+          "name": "사이버 동굴 박쥐"
+         },
+         {
+          "id": "enemy_stone_golem",
+          "name": "사이버 돌 골렘"
+         },
+         {
+          "id": "enemy_dragon",
+          "name": "사이버 붉은 드래곤"
+         },
+         {
+          "id": "enemy_mine_skel_archer",
+          "name": "사이버 광산 해골 궁수"
+         },
+         {
+          "id": "enemy_slime_blue",
+          "name": "사이버 푸른 슬라임"
+         },
+         {
+          "id": "enemy_slime_red",
+          "name": "사이버 붉은 슬라임"
+         },
+         {
+          "id": "enemy_slime_green",
+          "name": "사이버 초록 슬라임"
+         },
+         {
+          "id": "enemy_slime_metal",
+          "name": "사이버 금속 슬라임"
+         },
+         {
+          "id": "enemy_slime_king",
+          "name": "사이버 슬라임 왕"
+         },
+         {
+          "id": "enemy_slime_cube",
+          "name": "사이버 젤리 큐브"
+         },
+         {
+          "id": "enemy_ooze_black",
+          "name": "사이버 검은 점액"
+         },
+         {
+          "id": "enemy_ooze_acid",
+          "name": "사이버 산성 점액"
+         },
+         {
+          "id": "enemy_bat_cave",
+          "name": "사이버 동굴 박쥐"
+         },
+         {
+          "id": "enemy_bat_vampire",
+          "name": "사이버 흡혈 박쥐"
+         },
+         {
+          "id": "enemy_bee_giant",
+          "name": "사이버 거대 벌"
+         },
+         {
+          "id": "enemy_spider_cave",
+          "name": "사이버 동굴 거미"
+         },
+         {
+          "id": "enemy_spider_widow",
+          "name": "사이버 과부 거미"
+         },
+         {
+          "id": "enemy_scorpion_sand",
+          "name": "사이버 모래 전갈"
+         },
+         {
+          "id": "enemy_beetle_horn",
+          "name": "사이버 뿔 딱정벌레"
+         },
+         {
+          "id": "enemy_mantis_blade",
+          "name": "사이버 칼날 사마귀"
+         },
+         {
+          "id": "enemy_centipede_fire",
+          "name": "사이버 화염 지네"
+         },
+         {
+          "id": "enemy_moth_dust",
+          "name": "사이버 가루 나방"
+         },
+         {
+          "id": "enemy_worm_sand",
+          "name": "사이버 모래 지렁이"
+         },
+         {
+          "id": "enemy_ant_soldier",
+          "name": "사이버 병정 개미"
+         },
+         {
+          "id": "enemy_wolf_grey",
+          "name": "사이버 회색 늑대"
+         },
+         {
+          "id": "enemy_wolf_dire",
+          "name": "사이버 다이어 울프"
+         },
+         {
+          "id": "enemy_boar_tusk",
+          "name": "사이버 송곳니 멧돼지"
+         },
+         {
+          "id": "enemy_bear_brown",
+          "name": "사이버 갈색 곰"
+         },
+         {
+          "id": "enemy_tiger_saber",
+          "name": "사이버 검치호"
+         },
+         {
+          "id": "enemy_rat_giant",
+          "name": "사이버 거대 쥐"
+         },
+         {
+          "id": "enemy_bird_hawk",
+          "name": "사이버 매"
+         },
+         {
+          "id": "enemy_snake_viper",
+          "name": "사이버 독사"
+         },
+         {
+          "id": "enemy_cat_shadow",
+          "name": "사이버 그림자 고양이"
+         },
+         {
+          "id": "enemy_goat_mountain",
+          "name": "사이버 산양"
+         },
+         {
+          "id": "enemy_crab_rock",
+          "name": "사이버 바위 게"
+         },
+         {
+          "id": "enemy_hound_hell",
+          "name": "사이버 지옥 사냥개"
+         },
+         {
+          "id": "enemy_ape_stone",
+          "name": "사이버 석상 유인원"
+         },
+         {
+          "id": "enemy_deer_forest",
+          "name": "사이버 숲 사슴"
+         },
+         {
+          "id": "enemy_skeleton_bone",
+          "name": "사이버 해골"
+         },
+         {
+          "id": "enemy_skeleton_archer",
+          "name": "사이버 해골 궁수"
+         },
+         {
+          "id": "enemy_skeleton_knight",
+          "name": "사이버 해골 기사"
+         },
+         {
+          "id": "enemy_zombie_rot",
+          "name": "사이버 썩은 좀비"
+         },
+         {
+          "id": "enemy_ghoul_grave",
+          "name": "사이버 무덤 구울"
+         },
+         {
+          "id": "enemy_ghost_pale",
+          "name": "사이버 창백한 유령"
+         },
+         {
+          "id": "enemy_wraith_dark",
+          "name": "사이버 어둠 망령"
+         },
+         {
+          "id": "enemy_lich_frost",
+          "name": "사이버 서릿 리치"
+         },
+         {
+          "id": "enemy_mummy_bandage",
+          "name": "사이버 미라"
+         },
+         {
+          "id": "enemy_banshee_wail",
+          "name": "사이버 밴시"
+         },
+         {
+          "id": "enemy_revenant_vengeful",
+          "name": "사이버 복수의 사령"
+         },
+         {
+          "id": "enemy_bonepile_crawler",
+          "name": "사이버 뼈 무더기"
+         },
+         {
+          "id": "enemy_spirit_fire",
+          "name": "사이버 불의 정령"
+         },
+         {
+          "id": "enemy_spirit_water",
+          "name": "사이버 물의 정령"
+         },
+         {
+          "id": "enemy_spirit_earth",
+          "name": "사이버 땅의 정령"
+         },
+         {
+          "id": "enemy_spirit_wind",
+          "name": "사이버 바람의 정령"
+         },
+         {
+          "id": "enemy_spirit_light",
+          "name": "사이버 빛의 정령"
+         },
+         {
+          "id": "enemy_spirit_dark",
+          "name": "사이버 어둠의 정령"
+         },
+         {
+          "id": "enemy_wisp_blue",
+          "name": "사이버 푸른 도깨비불"
+         },
+         {
+          "id": "enemy_sylph_air",
+          "name": "사이버 실프"
+         },
+         {
+          "id": "enemy_undine_sea",
+          "name": "사이버 운디네"
+         },
+         {
+          "id": "enemy_salamander_flame",
+          "name": "사이버 샐러맨더"
+         },
+         {
+          "id": "enemy_golem_stone",
+          "name": "사이버 돌 골렘"
+         },
+         {
+          "id": "enemy_golem_iron",
+          "name": "사이버 철 골렘"
+         },
+         {
+          "id": "enemy_golem_clay",
+          "name": "사이버 점토 골렘"
+         },
+         {
+          "id": "enemy_golem_crystal",
+          "name": "사이버 수정 골렘"
+         },
+         {
+          "id": "enemy_armor_living",
+          "name": "사이버 살아있는 갑옷"
+         },
+         {
+          "id": "enemy_sword_flying",
+          "name": "사이버 부유하는 검"
+         },
+         {
+          "id": "enemy_mimic_chest",
+          "name": "사이버 미믹 상자"
+         },
+         {
+          "id": "enemy_scarecrow_field",
+          "name": "사이버 허수아비"
+         },
+         {
+          "id": "enemy_puppet_string",
+          "name": "사이버 실 인형"
+         },
+         {
+          "id": "enemy_totem_cursed",
+          "name": "사이버 저주받은 토템"
+         },
+         {
+          "id": "enemy_goblin_scout",
+          "name": "사이버 고블린 정찰병"
+         },
+         {
+          "id": "enemy_goblin_brute",
+          "name": "사이버 고블린 폭력배"
+         },
+         {
+          "id": "enemy_orc_warrior",
+          "name": "사이버 오크 전사"
+         },
+         {
+          "id": "enemy_orc_shaman",
+          "name": "사이버 오크 주술사"
+         },
+         {
+          "id": "enemy_kobold_digger",
+          "name": "사이버 코볼트 광부"
+         },
+         {
+          "id": "enemy_bandit_mask",
+          "name": "사이버 복면 산적"
+         },
+         {
+          "id": "enemy_mage_rogue",
+          "name": "사이버 이단 마법사"
+         },
+         {
+          "id": "enemy_knight_fallen",
+          "name": "사이버 타락한 기사"
+         },
+         {
+          "id": "enemy_lizardman_spear",
+          "name": "사이버 리자드맨"
+         },
+         {
+          "id": "enemy_harpy_cliff",
+          "name": "사이버 하피"
+         },
+         {
+          "id": "enemy_minotaur_maze",
+          "name": "사이버 미노타우로스"
+         },
+         {
+          "id": "enemy_centaur_plains",
+          "name": "사이버 켄타우로스"
+         },
+         {
+          "id": "enemy_troll_cave",
+          "name": "사이버 동굴 트롤"
+         },
+         {
+          "id": "enemy_ogre_club",
+          "name": "사이버 오거"
+         },
+         {
+          "id": "enemy_imp_mischief",
+          "name": "사이버 임프"
+         },
+         {
+          "id": "enemy_fish_piranha",
+          "name": "사이버 피라냐"
+         },
+         {
+          "id": "enemy_squid_deep",
+          "name": "사이버 심해 오징어"
+         },
+         {
+          "id": "enemy_shark_land",
+          "name": "사이버 육상 상어"
+         },
+         {
+          "id": "enemy_eel_electric",
+          "name": "사이버 전기 뱀장어"
+         },
+         {
+          "id": "enemy_griffin_sky",
+          "name": "사이버 그리핀"
+         },
+         {
+          "id": "enemy_wyvern_cliff",
+          "name": "사이버 와이번"
+         },
+         {
+          "id": "enemy_roc_giant",
+          "name": "사이버 거대 로크"
+         },
+         {
+          "id": "enemy_gargoyle_stone",
+          "name": "사이버 가고일"
+         },
+         {
+          "id": "enemy_phoenix_rebirth",
+          "name": "사이버 불사조"
+         },
+         {
+          "id": "enemy_dragon_whelp",
+          "name": "사이버 새끼 용"
+         },
+         {
+          "id": "enemy_dragon_red",
+          "name": "사이버 붉은 용"
+         },
+         {
+          "id": "enemy_dragon_blue",
+          "name": "사이버 청룡"
+         },
+         {
+          "id": "enemy_dragon_bone",
+          "name": "사이버 본 드래곤"
+         },
+         {
+          "id": "enemy_hydra_three",
+          "name": "사이버 히드라"
+         },
+         {
+          "id": "enemy_behemoth_horn",
+          "name": "사이버 베히모스"
+         },
+         {
+          "id": "enemy_demon_lord",
+          "name": "사이버 마왕"
+         },
+         {
+          "id": "enemy_angel_fallen",
+          "name": "사이버 타락 천사"
+         },
+         {
+          "id": "enemy_eye_floating",
+          "name": "사이버 부유하는 눈"
+         },
+         {
+          "id": "enemy_plant_carnivore",
+          "name": "사이버 식충 식물"
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "note": "아무것도 안 함",
+     "calls": [
+      {
+       "tool": "get_database_records",
+       "args": {
+        "collection": "items"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-add-difficulty",
+   "family": "dbsetting",
+   "fixture": "dbsmall",
+   "request": "난이도를 보통이랑 어려움 두 개로 만들어 줘. 어려움은 적 HP 가 1.5배야",
+   "check": {
+    "kind": "difficultyAdded",
+    "rows": 2,
+    "hpRate": 1.5
+   },
+   "reference": [
+    {
+     "tool": "set_difficulties",
+     "args": {
+      "difficulties": [
+       {
+        "id": "normal",
+        "name": "보통"
+       },
+       {
+        "id": "hard",
+        "name": "어려움",
+        "enemyHpRate": 1.5
+       }
+      ]
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "하나만",
+     "calls": [
+      {
+       "tool": "set_difficulties",
+       "args": {
+        "difficulties": [
+         {
+          "id": "hard",
+          "name": "어려움",
+          "enemyHpRate": 1.5
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "note": "배율 없음",
+     "calls": [
+      {
+       "tool": "set_difficulties",
+       "args": {
+        "difficulties": [
+         {
+          "id": "normal",
+          "name": "보통"
+         },
+         {
+          "id": "hard",
+          "name": "어려움"
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-reorder-commands",
+   "family": "dbsetting",
+   "fixture": "dbsmall",
+   "request": "주인공 전투 메뉴에서 아이템을 맨 위로 올려 줘",
+   "check": {
+    "kind": "commandMenuOrder",
+    "menuKind": "item",
+    "position": 1
+   },
+   "reference": [
+    {
+     "tool": "reorder_database_records",
+     "args": {
+      "collection": "classes",
+      "recordId": "class_hero",
+      "field": "battleCommands",
+      "order": [
+       "cmd_item"
+      ]
+     }
+    }
+   ],
+   "accept": [
+    {
+     "note": "주인공 고유 명령 목록",
+     "calls": [
+      {
+       "tool": "upsert_actor",
+       "args": {
+        "actor": {
+         "id": "actor_hero",
+         "battleCommandIds": [
+          "cmd_item",
+          "cmd_attack",
+          "cmd_skill",
+          "cmd_defend",
+          "cmd_escape"
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "wrong": [
+    {
+     "note": "자료집 전투 명령 목록 순서만(메뉴는 그대로)",
+     "calls": [
+      {
+       "tool": "reorder_database_records",
+       "args": {
+        "collection": "battleCommands",
+        "order": [
+         "cmd_item"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "note": "맨 아래로",
+     "calls": [
+      {
+       "tool": "reorder_database_records",
+       "args": {
+        "collection": "classes",
+        "recordId": "class_hero",
+        "field": "battleCommands",
+        "move": {
+         "id": "cmd_item",
+         "to": 6
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-replace-twice",
+   "family": "dbterms",
+   "fixture": "dbsmall",
+   "request": "자료집에서 '슬라임'을 전부 '젤리 슬라임'으로 바꿔 줘",
+   "followUps": [
+    "방금 그거 한 번 더 확실하게 적용해 줘. 빠진 데 없게"
+   ],
+   "note": "두 번째 요청에 다시 바꾸면 「젤리 젤리 슬라임」이 된다.",
+   "check": {
+    "kind": "replacedOnce",
+    "find": "슬라임",
+    "to": "젤리 슬라임",
+    "tables": [
+     "items",
+     "enemies",
+     "skills",
+     "troops"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "replace_text_in_project",
+     "args": {
+      "find": "슬라임",
+      "replace": "젤리 슬라임"
+     }
+    },
+    {
+     "tool": "replace_text_in_project",
+     "args": {
+      "find": "슬라임",
+      "replace": "젤리 슬라임"
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "두 번 겹침",
+     "calls": [
+      {
+       "tool": "bulk_edit_database",
+       "args": {
+        "collection": "enemies",
+        "patches": [
+         {
+          "id": "enemy_slime",
+          "name": "젤리 젤리 슬라임"
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "note": "안 바꿈",
+     "calls": [
+      {
+       "tool": "get_database_records",
+       "args": {
+        "collection": "enemies"
        }
       }
      ]

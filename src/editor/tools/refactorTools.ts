@@ -730,7 +730,9 @@ const pruneUnused: ToolDefinition = {
 };
 
 /** 묶음별 안 쓰는 레코드(전체 참조 색인 — dbRecordDelete.unusedRecords). 지우면 남은 것이 새로 고아가 될 수 있어(적 → 그 적만 쓰던 기술) 결과에 다시 부르라고 적는다. */
-function pruneCollections(draft: Project, collections: readonly DeletableCollection[], apply: boolean): ToolExecResult {
+/** apply 가 되풀이하는 상한 — 기본 자료집은 2번이면 끝난다. 넘으면 남은 수를 결과에 적는다. */
+export const PRUNE_MAX_PASSES = 8;
+export function pruneCollections(draft: Project, collections: readonly DeletableCollection[], apply: boolean, maxPasses = PRUNE_MAX_PASSES): ToolExecResult {
   // apply 는 «안 쓰게 된 것» 이 없을 때까지 되풀이한다 — 아이템을 지우면 그 아이템만 쓰던 효과 스킬이 안 쓰는 것이 된다(실모델이 두 번 불렀다, 2026-11-16).
   const counts = new Map<DeletableCollection, number>(collections.map((c) => [c, 0]));
   const sample = new Map<DeletableCollection, { id: string; name: string }[]>(collections.map((c) => [c, []]));
@@ -750,13 +752,16 @@ function pruneCollections(draft: Project, collections: readonly DeletableCollect
       const list = collectionRows(draft, c);
       if (list) list.splice(0, list.length, ...list.filter((r) => !gone.has(r.id)));
     }
-    if (rounds >= 8) break;
+    if (rounds >= maxPasses) break;
   }
+  // 상한에 닿아 멈췄으면 아직 남은 것을 센다 — «다 지웠다» 로 읽히지 않게.
+  const left = apply && rounds >= maxPasses ? [...unusedRecords(draft, collections)].filter(([, rows]) => rows.length).map(([c, rows]) => `${c} ${rows.length}`) : [];
   const total = [...counts.values()].reduce((n, k) => n + k, 0);
   const lines = [...counts].map(([c, n]) => `${c} ${n}`);
   return {
-    summary: `${apply ? "Deleted" : "Found"} ${total} unused record(s) — ${lines.join(", ")}${apply ? (rounds > 1 ? ` (in ${rounds} passes: deleting some left others unused)` : "") : " (report only — call again with apply:true to delete them)"}. Unused = no other record, map, event, common event or setting points at it.`,
-    data: { unused: [...sample].map(([collection, records]) => ({ collection, count: counts.get(collection) ?? 0, records })), applied: apply },
+    summary: `${apply ? "Deleted" : "Found"} ${total} unused record(s) — ${lines.join(", ")}${apply ? (rounds > 1 ? ` (in ${rounds} passes: deleting some left others unused)` : "") : " (report only — call again with apply:true to delete them)"}. Unused = no other record, map, event, common event or setting points at it.`
+      + (left.length ? ` NOT FINISHED: stopped after ${maxPasses} passes and these are still unused — ${left.join(", ")}. Call prune_unused{apply:true} again to continue.` : ""),
+    data: { unused: [...sample].map(([collection, records]) => ({ collection, count: counts.get(collection) ?? 0, records })), applied: apply, ...(left.length ? { stillUnused: left } : {}) },
   };
 }
 
@@ -782,12 +787,25 @@ function replaceKeepingJosa(text: string, find: string, to: string): string {
     return acc + to + rest;
   }, "");
 }
+/**
+ * 글 하나에서 find 를 바꾼다. 이미 to 인 자리는 건드리지 않는다 — to 가 find 를 품을 때(「숲」→「속삭이는 숲」) 두 번 불러도
+ * 「속삭이는 속삭이는 숲」이 되지 않는다(2026-11-16 리뷰: replace_text_in_project 두 번 적용).
+ */
+function replaceOnce(text: string, find: string, to: string): { text: string; hits: number } {
+  const guard = to.includes(find) && to !== find;
+  const pieces = guard ? text.split(to) : [text];
+  let hits = 0;
+  const out = pieces.map((piece) => { if (!piece.includes(find)) return piece; hits += piece.split(find).length - 1; return replaceKeepingJosa(piece, find, to); });
+  return { text: guard ? out.join(to) : out[0]!, hits };
+}
+
 const replaceTextInProject: ToolDefinition = {
   name: "replace_text_in_project",
   description:
     "프로젝트 전체의 글자를 한 번에 바꾼다 — 대사·선택지·화자 이름·이벤트 이름·맵 이름·퀘스트·공통 이벤트·아이템/장비/적/스킬 이름과 설명. "
     + "「대사에 나오는 '북쪽 숲'을 전부 '속삭이는 숲'으로」·「대장장이 이름을 볼칸으로(이름표+대사)」 같은 일괄 이름 바꾸기의 정본. "
-    + "id·그림·타일·조건은 건드리지 않고, 바꾼 낱말 뒤 조사(은/는·이/가·을/를·와/과·으로/로)를 받침에 맞춘다. dryRun:true 면 바꿀 곳만 센다.",
+    + "id·그림·타일·조건은 건드리지 않고, 바꾼 낱말 뒤 조사(은/는·이/가·을/를·와/과·으로/로)를 받침에 맞춘다. dryRun:true 면 바꿀 곳만 센다. "
+    + "match:'exact' 면 글 전체가 find 와 같은 칸(이름표·레코드 이름)만 바꾼다 — 「포션」을 바꿔도 「하이포션」은 그대로. 이미 바뀐 자리는 다시 바꾸지 않는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -795,6 +813,7 @@ const replaceTextInProject: ToolDefinition = {
       find: { type: "string", description: "찾을 글자(정확히 일치)" },
       replace: { type: "string", description: "바꿀 글자" },
       scope: { type: "string", enum: ["all", "dialogue"], description: "dialogue = 이벤트·공통 이벤트 명령 글만, all(기본) = 이름·DB 포함" },
+      match: { type: "string", enum: ["contains", "exact"], description: "contains(기본) = 글 안의 모든 자리 · exact = 글 전체가 find 와 같은 칸만(이름 하나 바꾸기)" },
       mapIds: { type: "array", items: { type: "string" }, description: "이 맵들만(생략 = 전부)" },
       dryRun: { type: "boolean" },
     },
@@ -804,16 +823,25 @@ const replaceTextInProject: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const find = typeof args.find === "string" ? args.find : "";
     const to = typeof args.replace === "string" ? args.replace : "";
-    if (!find.trim()) throw new ToolError("find 가 비었습니다.");
-    if (find === to) throw new ToolError("find 와 replace 가 같습니다.");
+    if (!find.trim()) throw new ToolError("find is empty.");
+    if (find === to) throw new ToolError("find and replace are the same.");
     const dry = args.dryRun === true;
     const dialogueOnly = args.scope === "dialogue";
+    const exact = args.match === "exact";
     const only = Array.isArray(args.mapIds) && args.mapIds.length ? new Set(args.mapIds.map(String)) : null;
+    // 자리마다 센다(맵·이벤트, 자료집 묶음·레코드) — 결과가 «어디를 바꿨나» 를 적는다.
     const hits = new Map<string, number>();
     const fix = (value: string, where: string): string => {
+      if (exact) {
+        if (value.trim() !== find) return value;
+        hits.set(where, (hits.get(where) ?? 0) + 1);
+        return dry ? value : value.replace(find, to);
+      }
       if (!value.includes(find)) return value;
-      hits.set(where, (hits.get(where) ?? 0) + value.split(find).length - 1);
-      return dry ? value : replaceKeepingJosa(value, find, to);
+      const done = replaceOnce(value, find, to);
+      if (!done.hits) return value;
+      hits.set(where, (hits.get(where) ?? 0) + done.hits);
+      return dry ? value : done.text;
     };
     const walk = (node: unknown, where: string): unknown => {
       if (typeof node === "string") return fix(node, where);
@@ -827,23 +855,35 @@ const replaceTextInProject: ToolDefinition = {
       }
       return node;
     };
+    const rec = (r: unknown): string => { const o = r as { id?: unknown } | null; return typeof o?.id === "string" ? o.id : "?"; };
     for (const [id, map] of Object.entries(draft.maps)) {
       if (only && !only.has(id)) continue;
-      for (const event of map.events) walk(event, `맵 ${map.name ?? id}`);
-      if (!dialogueOnly) map.name = fix(map.name, `맵 이름`);
+      for (const event of map.events) walk(event, `map ${id} event ${event.id}`);
+      if (!dialogueOnly) map.name = fix(map.name, `map ${id} name`);
     }
     if (!only) {
-      walk(draft.commonEvents, "공통 이벤트");
+      for (const ce of draft.commonEvents ?? []) walk(ce, `commonEvents ${rec(ce)}`);
       if (!dialogueOnly) {
-        walk((draft as unknown as { quests?: unknown }).quests, "퀘스트");
+        for (const q of ((draft as unknown as { quests?: unknown[] }).quests ?? [])) walk(q, `quests ${rec(q)}`);
         const db = draft.database as unknown as Record<string, unknown>;
-        for (const key of ["items", "equipment", "enemies", "skills", "states", "actors", "classes", "troops"]) walk(db[key], `DB ${key}`);
+        for (const key of ["items", "equipment", "enemies", "skills", "states", "actors", "classes", "troops"]) for (const r of (db[key] as unknown[] | undefined) ?? []) walk(r, `${key} ${rec(r)}`);
       }
     }
     const total = [...hits.values()].reduce((a, b) => a + b, 0);
-    if (!total) return { summary: `'${find}' 를 찾지 못했다 — 바꾼 곳 없음.`, warnings: [`'${find}' 0곳 — 띄어쓰기·조사 붙은 꼴을 get_event 로 확인하라.`] };
-    const detail = [...hits.entries()].map(([w, n]) => `${w} ${n}`).join(", ");
-    return { summary: `${dry ? "(미리보기) " : ""}'${find}' → '${to}' ${total}곳: ${detail}` };
+    // 이미 바꾼 뒤 다시 부른 것인지 알린다 — «못 찾았다» 가 «안 바뀌었다» 로 읽혀 다른 방법으로 또 바꾸지 않게.
+    if (!total && !exact && to.includes(find)) {
+      let already = 0;
+      const count = (node: unknown): void => { if (typeof node === "string") { if (node.includes(to)) already += 1; } else if (Array.isArray(node)) node.forEach(count); else if (node && typeof node === "object") for (const [k, v] of Object.entries(node as Record<string, unknown>)) if (!NON_TEXT_KEY.test(k)) count(v); };
+      count(draft.maps); count(draft.commonEvents); count(draft.database);
+      if (already) return { summary: `'${find}' appears only inside '${to}' now (${already} field(s)) — it was already replaced; nothing changed.`, data: { total: 0, alreadyReplaced: already, places: [] } };
+    }
+    if (!total) return { summary: `'${find}' not found${exact ? " as a whole field" : ""} — nothing changed.`, warnings: [`'${find}' 0 places — check spacing and attached particles with get_event, or use match:'contains'.`], data: { total: 0, places: [] } };
+    const places = [...hits.entries()].map(([where, count]) => ({ where, count }));
+    const shown = places.slice(0, 15).map((p) => `${p.where} ×${p.count}`).join("; ");
+    return {
+      summary: `${dry ? "(dry run — nothing saved) " : ""}'${find}' → '${to}': ${total} hit(s) in ${places.length} place(s)${exact ? " (whole-field matches only)" : ""}: ${shown}${places.length > 15 ? `; +${places.length - 15} more` : ""}.`,
+      data: { total, places },
+    };
   },
 };
 

@@ -1,7 +1,7 @@
 ﻿import { ACTOR_LEVEL_MAX } from "../actorModel";
 import type { ActorParameterCurves, ActorParameterKey, ClassBattleCommand, ClassRecord } from "../types";
 import { normalizeClassRecord } from "../databaseRecordModel";
-import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_SKILL_ID } from "./constants";
+import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_SKILL_ID, STANDARD_BATTLE_COMMANDS } from "./constants";
 import {
   BARD_EQUIPMENT_IDS,
   CLASS_BARD_ID,
@@ -31,14 +31,6 @@ import { applyGeneratedBattleEffectClassBindings } from "./generatedBattleEffect
 import { retroClassLearnedSkills } from "./retroClassSkillRecords";
 import { retroRosterClassRecords } from "./retroRosterRecords";
 
-const STANDARD_BATTLE_COMMANDS = [
-  { id: "cmd_attack", name: "공격", kind: "attack" },
-  { id: "cmd_skill", name: "기술", kind: "skill" },
-  { id: "cmd_defend", name: "방어", kind: "defend" },
-  { id: "cmd_item", name: "아이템", kind: "item" },
-  { id: "cmd_escape", name: "도주", kind: "escape" },
-  { id: "cmd_change", name: "교체", kind: "switch" },
-] as const satisfies readonly ClassBattleCommand[];
 
 type ClassGrowthRole = "striker" | "guardian" | "caster" | "agile";
 

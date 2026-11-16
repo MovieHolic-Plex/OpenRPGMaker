@@ -43,6 +43,13 @@ export type SmallJob = {
   note?: string;
   /** 도구 호출 상한 — 넘으면 판정이 통과여도 불합격(자료집 묶음: 기본 크기 자료집에서 «한 번에» 해야 하는 일). */
   maxToolCalls?: number;
+  /**
+   * 한 턴에 다 못 할 수 있는 일(기본 크기 자료집 전체 다시 쓰기): 판정이 «부분» 이면 조수의 마지막 말이 남은 것을 말해야 한다.
+   * tables = 판정이 보는 표. 판정 불합격 + 답이 그 표 가운데 덜 된 표의 이름(영어 id 또는 ko 낱말)을 하나도 말하지 않으면 «정직하지 않은 보고» 로 적는다.
+   */
+  honestPartial?: { tables: string[]; ko: Record<string, string[]> };
+  /** 같은 대화에서 이어 보내는 요청(앞 턴이 끝난 뒤 하나씩). 판정은 마지막 턴 뒤 문서를 본다. 자기검사의 reference 는 모든 턴을 합친 호출이다. */
+  followUps?: string[];
 };
 export type SmallJobSuite = { schemaVersion: 1; kind: 'assistant-small-jobs'; /** 보고서 머리글. 없으면 「작은 일 30가지」. */ title?: string; description: string; autoAnswer: string; fixtures: Record<string, string>; families: Record<string, string>; jobs: SmallJob[] };
 

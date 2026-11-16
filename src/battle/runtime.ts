@@ -100,6 +100,7 @@ import {
   stateBehavior,
   stateAttackElementId,
   stateElementRateOverride,
+  RAGE_STATE_ID,
 } from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import { resolveSkinId } from "@/battle/skins/registry";
@@ -309,7 +310,6 @@ type StrictQueuedAction =
   | ({ readonly side: "actor"; readonly index: number; readonly actor: MutableBattler; readonly command: ActorCommand } & Gen1TurnOrderEntry)
   | ({ readonly side: "enemy"; readonly index: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice } & Gen1TurnOrderEntry);
 
-const RAGE_STATE_ID = "state_rage";
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const admissionError = battleTroopError(options.project, options.troopId);

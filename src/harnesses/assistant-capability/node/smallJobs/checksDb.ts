@@ -2,6 +2,7 @@
 // 첫 묶음과 같은 규칙: 저장 문서 전/후만 본다. 어느 도구로 했는지는 보지 않는다.
 import { isDeepStrictEqual } from 'node:util';
 import { referenceIndex, outsideRecord } from '../../../../editor/tools/dbReferenceIndex';
+import { battleCommandsForActor } from '../../../../battle/battleCommands';
 import type { Project } from '../../../../project/types';
 import { no, ok, squash, valueAt, type CheckSpec, type Doc, type Result } from './checkSupport';
 
@@ -142,6 +143,58 @@ export const DB_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc)
     }
     return ok(`이름 바뀜 ${notes.join(', ')}`);
   },
+  /**
+   * 자료집 전체 다시 쓰기의 진척(2026-11-16 2단계 — 기본 크기 자료집): 표마다 이름이 바뀐 비율. 모두 share 이상이면 합격.
+   * 못 미치면 불합격이지만 이유에 표마다 «바뀐 수/전체» 를 적는다 — 한 턴에 얼마나 갔는지 재는 일이다(정직한 보고는 decide 가 본다).
+   */
+  rewriteProgress(spec, before, after) {
+    const parts: string[] = [], short: string[] = [];
+    for (const table of spec.tables as string[]) {
+      const was = rows(before, table), now = new Map(rows(after, table).map(row => [row.id, row]));
+      const gone = was.filter(row => !now.has(row.id)).length;
+      if (gone) return no(`${table}: ${gone}개가 사라졌다`);
+      const renamed = was.filter(row => now.get(row.id)!.name !== row.name).length;
+      parts.push(`${table} ${renamed}/${was.length}`);
+      if (renamed / Math.max(1, was.length) < spec.share) short.push(table);
+    }
+    return short.length ? no(`부분 — 이름 바뀜 ${parts.join(', ')} · 덜 된 표: ${short.join(', ')}`) : ok(`이름 바뀜 ${parts.join(', ')}`);
+  },
+  /** 난이도: rows 개 이상, 그 가운데 enemyHpRate 가 hpRate 인 줄이 있다. */
+  difficultyAdded(spec, _before, after) {
+    const list = (after.system?.difficulties ?? []) as any[];
+    if (list.length < spec.rows) return no(`난이도 ${list.length}줄 — ${spec.rows}줄이어야 한다`);
+    const hard = list.find(row => Math.abs(Number(row.enemyHpRate ?? 1) - spec.hpRate) < 1e-6);
+    if (!hard) return no(`적 HP ×${spec.hpRate} 인 난이도가 없다(${list.map(row => `${row.name} ${row.enemyHpRate ?? 1}`).join(', ')})`);
+    return ok(`난이도 ${list.map(row => row.name).join(' · ')} · 「${hard.name}」 적 HP ×${spec.hpRate}`);
+  },
+  /** 주인공이 전투에서 보는 메뉴: menuKind 가 position 번째(1부터)이고, 명령 종류 묶음은 그대로다. */
+  commandMenuOrder(spec, before, after) {
+    const hero = before.system?.startActorIds?.[0];
+    const menu = (doc: Doc) => battleCommandsForActor(doc as unknown as Project, hero).map(command => command.kind);
+    const was = menu(before), now = menu(after);
+    if ([...was].sort().join() !== [...now].sort().join()) return no(`메뉴 명령이 바뀌었다: ${was.join(',')} → ${now.join(',')}`);
+    if (now[spec.position - 1] !== spec.menuKind) return no(`주인공 전투 메뉴: ${now.join(' · ')} — ${spec.menuKind} 가 ${spec.position}번째여야 한다`);
+    return ok(`주인공 전투 메뉴: ${now.join(' · ')}`);
+  },
+  /**
+   * 글 바꾸기를 한 번만: tables 의 이름·설명에서 find 를 품던 글은 모두 to 를 품고(find 만 남은 자리 없음), to 가 두 번 겹친 글(doubled)이 없다.
+   */
+  replacedOnce(spec, before, after) {
+    const fields = ['name', 'description'];
+    const doubled = String(spec.to).replace(spec.find, spec.to);
+    let changed = 0;
+    for (const table of spec.tables as string[]) {
+      const now = new Map(rows(after, table).map(row => [row.id, row]));
+      for (const row of rows(before, table)) for (const field of fields) {
+        const was = row[field], got = now.get(row.id)?.[field];
+        if (typeof got === 'string' && got.includes(doubled)) return no(`${table} ${row.id}.${field} = 「${got}」 — 두 번 바꿨다`);
+        if (typeof was !== 'string' || !was.includes(spec.find) || was.includes(spec.to)) continue;
+        if (typeof got !== 'string' || got.split(spec.to).join('').includes(spec.find)) return no(`${table} ${row.id}.${field} = 「${got}」 — 「${spec.find}」가 그대로 남았다`);
+        changed += 1;
+      }
+    }
+    return changed ? ok(`「${spec.find}」→「${spec.to}」 ${changed}칸, 겹침 없음`) : no(`바뀐 칸이 없다`);
+  },
 };
 
 /** 요청 자체가 건드리는 맵 밖 칸(부수 변경으로 세지 않는다). */
@@ -152,4 +205,8 @@ export const DB_SIDE: Record<string, (spec: CheckSpec) => RegExp> = {
   classAndSkills: () => /^database\.(actors|classes|skills)$/u,
   fieldsEqual: spec => new RegExp(`^(${[...new Set((spec.pairs as Array<[string]>).map(([path]) => path.split('.').slice(0, 2).join('\\.')))].join('|')})$`, 'u'),
   rewriteAll: () => /^database\./u,
+  rewriteProgress: () => /^database\./u,
+  difficultyAdded: () => /^system\.(difficulties|defaultDifficultyId)$/u,
+  commandMenuOrder: () => /^database\.(classes|actors|battleCommands)$/u,
+  replacedOnce: () => /^(database\.|commonEvents|maps|quests)/u,
 };
