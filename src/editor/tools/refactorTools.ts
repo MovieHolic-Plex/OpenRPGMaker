@@ -866,7 +866,8 @@ const replaceTextInProject: ToolDefinition = {
       if (!dialogueOnly) {
         for (const q of ((draft as unknown as { quests?: unknown[] }).quests ?? [])) walk(q, `quests ${rec(q)}`);
         const db = draft.database as unknown as Record<string, unknown>;
-        for (const key of ["items", "equipment", "enemies", "skills", "states", "actors", "classes", "troops"]) for (const r of (db[key] as unknown[] | undefined) ?? []) walk(r, `${key} ${rec(r)}`);
+        // Every record list in the database (monsterSpecies, elements, crops, …), not a fixed few — a rename must reach every name the player sees.
+        for (const [key, rows] of Object.entries(db)) if (Array.isArray(rows)) for (const r of rows) walk(r, `${key} ${rec(r)}`);
       }
     }
     const total = [...hits.values()].reduce((a, b) => a + b, 0);

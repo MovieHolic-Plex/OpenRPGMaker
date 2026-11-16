@@ -138,6 +138,8 @@ describe("replace_text_in_project", () => {
     const second = run(ctx, "replace_text_in_project", { find: "슬라임", replace: "젤리 슬라임" });
     expect(second.summary).toMatch(/already replaced/u);
     expect(ctx.project.database.enemies.find((e) => e.id === "enemy_slime")!.name).toBe("젤리 슬라임");
+    // Every database list is reached — monster species too (VM 2026-11-16: «초원 슬라임» species stayed and the model found no tool).
+    expect((ctx.project.database.monsterSpecies ?? []).filter((s) => s.name.includes("슬라임")).every((s) => s.name.includes("젤리 슬라임"))).toBe(true);
   });
   it("match:'exact' renames only fields that are exactly the name", () => {
     const ctx = fresh();
