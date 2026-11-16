@@ -143,7 +143,7 @@ describe("실내 설계 예", () => {
   it("목록 카드의 «이 요청에 맞는 기물»: 무리는 같고 차례가 게임마다 다르다", () => {
     const ts = createBlankProject().tilesets.atlas_biome_interior!;
     const line = (key: string) => chipsetCatalog(ts, "대성당 안은 넓은 예배당", key)!.split("\n").find((l) => l.startsWith("suggested for this request"))!;
-    const sorted = (l: string) => l.slice(l.indexOf(":") + 1).split(", ").sort().join(",");
+    const sorted = (l: string) => l.slice(l.indexOf("): ") + 3).split(", ").sort().join(",");
     const lines = KEYS.map(line);
     expect(new Set(lines).size).toBeGreaterThanOrEqual(4);
     for (const l of lines) expect(sorted(l)).toBe(sorted(lines[0]!));
