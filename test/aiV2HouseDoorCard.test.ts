@@ -54,7 +54,7 @@ describe("버들항 마을을 지은 턴의 집 안 — 카드 · 문 목록 · 
     // 문 목록: 킷 id(좌표) «건물 이름» [단]
     const doors = /건물 크기를 따른다\): ([^"]*)"/u.exec(built[0]!)?.[1] ?? "";
     expect(doors).toMatch(/house-[\w-]+\(\d+,\d+\) «[^»]+»/u);
-    expect(built[0]).toContain("hints.door:[x,y]");
+    expect(built[0]).toContain("hints.door [x,y]");
     // 문 목록의 좌표와 건물은 맵에서 읽은 문과 같다
     const houses = doorHouses(t.ctx.project, t.ctx.project.maps[t.start]);
     for (const m of doors.matchAll(/(house-[\w-]+)\((\d+),(\d+)\)/gu)) expect(houses.some((h) => h.kit === `bd-${m[1]}` && h.front.x === Number(m[2]) && h.front.y === Number(m[3])), m[0]).toBe(true);
