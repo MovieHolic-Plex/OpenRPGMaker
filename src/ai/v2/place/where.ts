@@ -7,8 +7,10 @@ import { labelHasWord } from "@/project/labelWords";
 import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, groundBlocks, tileLabel, layers, objectAt } from "./cells";
 import { behindBuildingStrip, declaredDoorCells, placeMarks } from "./entrances";
 import { roadCells } from "./surface";
+import { standableYard } from "@/editor/tools/beodeulSettlementRank";
 import { personSpotContext, personSpotCost } from "./personSpot";
 import { coveredCell } from "./underRoof";
+import { villageSceneByWord } from "@/project/villageKindPlan";
 
 export interface WhereResolution {
   /** 사람이 설 칸 — 물건(footprint)이면 발밑 맨 아래 줄의 왼쪽 칸(generate_missing_object·stamp_tileset_object 의 base). */
@@ -289,6 +291,8 @@ export function resolveWhere(
   };
   const cells: Cell[] = [];
   for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) if (fits({ x, y })) cells.push({ x, y });
+  // 바깥 맵의 사람은 맵 끝 칸에 서지 않는다 — 한쪽에서만 말을 걸 수 있고 화면 끝에 숨는다(2026-11-15 r5 «물레강 마을»: 입구 곁 주민이 (41,13) 끝 칸에 섰다). 안쪽에 설 칸이 하나도 없을 때만 남긴다.
+  if (!fp && !indoor) { const inner = cells.filter((c) => c.x > 0 && c.y > 0 && c.x < w - 1 && c.y < map.height - 1); if (inner.length) cells.splice(0, cells.length, ...inner); }
 
   const before = walkReach(project, map, start, blockers);
   const connectedWithout = (block: readonly Cell[]): boolean => {
@@ -302,7 +306,9 @@ export function resolveWhere(
   };
   // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
   const outdoorRoads = !fp && !indoor ? roadCells(project, map) : undefined;
-  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
+  // 넓은 흙 마당의 속은 길 한가운데가 아니다(beodeulSettlementRank.standableYard) — 시골 마을의 사람은 마당·문 앞 닳은 자리에 선다. 길 줄기와 문 바로 앞 칸은 여전히 피한다.
+  const yardOk = outdoorRoads?.size ? standableYard(map, project.tilesets[map.tilesetId], outdoorRoads) : undefined;
+  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) && !yardOk?.has(c.y * w + c.x) ? 8 : 0);
   // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
   const spotCtx = !fp && indoor ? personSpotContext(project, map, opts.exceptId) : undefined;
   const spotCost = (c: Cell): number => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
@@ -330,6 +336,16 @@ export function resolveWhere(
       const moved = c.x !== at.x || c.y !== at.y;
       return done(c, { ...(moved ? { note: `at (${at.x},${at.y}) 은 ${fp ? `${fp.w}×${fp.foot + fp.over} 물건을 놓을 수 없는` : "못 서는"} 칸이라 (${c.x},${c.y}) 로 옮겼다.` } : {}), how: `칸 (${c.x},${c.y})` });
     }
+  }
+
+  // 마을 종류의 장면 이름(«대장간 마당»·«그물 말리는 터» — 빌더가 맵에 적어 둔 것): 그 무더기 곁의 설 칸에서 가장 가까운 쓸 수 있는 칸.
+  const sceneHit = fp ? undefined : villageSceneByWord(map, word);
+  if (sceneHit) {
+    const stand = sceneHit.front ?? { x: sceneHit.x + Math.floor(sceneHit.w / 2), y: sceneHit.y + sceneHit.h };
+    const box = { x0: sceneHit.x, y0: sceneHit.y, x1: sceneHit.x + sceneHit.w - 1, y1: sceneHit.y + sceneHit.h - 1 };
+    const off = (q: Cell) => Math.max(q.x < box.x0 ? box.x0 - q.x : q.x > box.x1 ? q.x - box.x1 : 0, q.y < box.y0 ? box.y0 - q.y : q.y > box.y1 ? q.y - box.y1 : 0);
+    const c = pick((q) => (off(q) >= 1 && off(q) <= 3 ? dist(q, stand) : Infinity));
+    if (c) return done(c, { anchor: { x: sceneHit.x, y: sceneHit.y }, how: `${sceneHit.label}(${sceneHit.x},${sceneHit.y}) 곁`, face: dirTowardCell(c, { x: Math.round((box.x0 + box.x1) / 2), y: Math.round((box.y0 + box.y1) / 2) }) });
   }
 
   // 도움 함수: 방 안 칸의 벽 쪽(이웃이 방 밖이거나, 가구 아닌 못 가는 칸·벽 그림).

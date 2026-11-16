@@ -391,6 +391,24 @@ function barsFitDoorway(draft: Project, map: GameMap, cells: readonly Pt[]): boo
   const y = cells[0]!.y, xs = cells.map((p) => p.x);
   return !isPassable(draft, map, Math.min(...xs) - 1, y) && !isPassable(draft, map, Math.max(...xs) + 1, y);
 }
+/**
+ * 이 칸들을 막으면 길이 끊기나 — 막은 칸의 걸을 수 있는 이웃들이 (막은 칸을 지나지 않고는) 서로 닿지 않는가.
+ * 왜(2026-11-15 확인 빌드 r5): 통로 상자가 없는 자연 굴에서 계획 자리 한 칸에만 바위가 서, 레버 없이 옆으로 돌아 상자·쉼터·보스에 닿았다.
+ */
+export function blockCutsPath(draft: Project, map: GameMap, cells: readonly Pt[]): boolean {
+  const W = map.width, H = map.height, blocked = new Set(cells.map((p) => p.y * W + p.x));
+  const open = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H && !blocked.has(y * W + x) && isPassable(draft, map, x, y);
+  const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+  const around = [...new Set(cells.flatMap((p) => STEPS.filter(([dx, dy]) => open(p.x + dx, p.y + dy)).map(([dx, dy]) => (p.y + dy) * W + p.x + dx)))];
+  if (around.length < 2) return false;
+  const seen = new Uint8Array(W * H), queue = [around[0]!];
+  seen[queue[0]!] = 1;
+  while (queue.length) {
+    const i = queue.pop()!, x = i % W, y = (i - x) / W;
+    for (const [dx, dy] of STEPS) { const ni = (y + dy) * W + x + dx; if (open(x + dx, y + dy) && !seen[ni]) { seen[ni] = 1; queue.push(ni); } }
+  }
+  return around.some((i) => !seen[i]);
+}
 function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
   const lock = field(field(data, "population"), "lockedGate");
   const gate = asCell(lock);
@@ -410,6 +428,8 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     ? Array.from({ length: Number(field(corr, "w")) }, (_, k) => ({ x: Number(field(corr, "x")) + k, y: gate.y }))
     : Array.from({ length: Number(field(corr, "h")) }, (_, k) => ({ x: gate.x, y: Number(field(corr, "y")) + k }));
   const barCells = across.filter((c) => (c.x === gate.x && c.y === gate.y) || (isPassable(draft, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y)));
+  // 막이가 길을 끊지 못하는 자리(넓은 바닥)는 이 경로를 접는다 — placeChokeLever 가 실제로 끊기는 좁은 목을 찾는다.
+  if (!blockCutsPath(draft, map, barCells)) { warnings.push(`${map.name}: 잠긴 통로 자리의 막이가 길을 끊지 못한다(옆으로 돌아간다) — 다른 좁은 목을 찾는다.`); return ""; }
   // 그림·막기는 공용 도우미가 한다(지은 던전 = 쇠창살문 타일 키트 + 보이지 않는 문 이벤트, 자연 굴 = 바위 이벤트).
   // 키트가 안 들어가는 단면(동서 통로의 세로 단면 등)이면 이 경로를 접고 placeChokeLever 가 다른 목을 찾는다.
   // 쇠창살문 키트가 안 들어가는 단면이면 옛 쇠창살 이벤트로 물러선다 — 접으면 탑 레버가 6/10 → 3/10 으로 줄었다(2026-10-25).

@@ -153,8 +153,13 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
   });
 
   it("마을 짓기: 숲 구성을 고른 게임은 여러 수종·여러 크기의 나무가 서고, 숲 바닥·얼룩은 2층에만 깔려 걷는 칸이 그대로다", () => {
-    for (const theme of [undefined, "coast"]) {
-      const { project, map } = village({ stand: "oakwood", meadow: "flowers", woods: "clumps", standKey: table.texture }, JSON.stringify(["project", "stand-village"]), 250118, theme);
+    // 씨앗 하나가 아니라 여덟 씨앗 × 강가·포구 열여섯 판을 모두 본다(2026-11-15 감독). 전에는 씨앗 하나였고 그날 두 번 바뀌었다(250118 → 250121 → 250123):
+    // 마을 배치가 바뀌거나 마을 종류의 장면이 빈 땅을 먼저 쓰면 나무 무리가 몇 그루뿐이라 덤불 킷이 0 이거나 나무 크기가 둘인 판이 나왔다
+    // (신기루 VM: 열여섯 판 가운데 채우는 판이 종류 없는 main 열다섯, 종류가 서면 열둘). 이제 시공기가 다 지은 뒤 세어 모자란 것을 바꿔 심거나 더 심는다
+    // (editor/tools/beodeulVillage.ts «숲 구성 채우기», data.standMix) — 보장은 씨앗과 무관하다: 주·곁 수종, 덤불 킷 둘 이상, 크기 셋 이상, 덧그림 두 가지.
+    for (const salt of [250118, 250120, 250121, 250122, 250123, 250124, 250125, 250126]) for (const theme of [undefined, "coast"]) {
+      const { project, map } = village({ stand: "oakwood", meadow: "flowers", woods: "clumps", standKey: table.texture }, JSON.stringify(["project", "stand-village"]), salt, theme);
+      const board = `씨앗 ${salt} ${theme ?? "강가"}`;
       const tileset = project.tilesets[TS]!;
       const stand = tilesetStand(TS, "oakwood")!;
       // 놓인 나무 칸이 주 수종·곁 수종·덤불 킷에 고루 걸친다
@@ -164,16 +169,16 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
       const placed = new Set<number>();
       for (let i = 0; i < map.width * map.height; i += 1) { const t = layerTileAt(map, 3, i); if (t >= 0) placed.add(base(t)); }
       const usedKits = (role: "dominant" | "companion" | "shrub"): string[] => (stand.kits[role] ?? []).filter((id) => (kits.get(id)!.rows[0]!.upperTiles ?? []).some((t) => placed.has(t)));
-      expect(usedKits("dominant").length).toBeGreaterThan(0);
-      expect(usedKits("companion").length).toBeGreaterThan(0);
-      expect(usedKits("shrub").length).toBeGreaterThan(1);
+      expect(usedKits("dominant").length, `${board} 주 수종`).toBeGreaterThan(0);
+      expect(usedKits("companion").length, `${board} 곁 수종`).toBeGreaterThan(0);
+      expect(usedKits("shrub").length, `${board} 덤불 킷`).toBeGreaterThan(1);
       const sizes = new Set([...usedKits("dominant"), ...usedKits("companion"), ...usedKits("shrub")].map((id) => `${kits.get(id)!.width}x${kits.get(id)!.height}`));
-      expect(sizes.size).toBeGreaterThanOrEqual(3);
+      expect(sizes.size, `${board} 나무 크기`).toBeGreaterThanOrEqual(3);
       // 덧그림: 2층에만, 숲 바닥과 얼룩이 둘 다 깔린다
       const cells = standCells(project, map);
-      expect(cells.length).toBeGreaterThan(40);
+      expect(cells.length, `${board} 덧그림 칸`).toBeGreaterThan(40);
       const labels = new Set(cells.map((i) => (tileset.tileMeta as unknown as { label: string }[])[layerTileAt(map, 2, i)]!.label.split("(")[0]));
-      expect([...labels].sort()).toEqual(["숲 바닥 덧그림", "풀밭 바닥 덧그림"]);
+      expect([...labels].sort(), board).toEqual(["숲 바닥 덧그림", "풀밭 바닥 덧그림"]);
       for (const i of cells) expect(tileset.priority[layerTileAt(map, 2, i)]).toBe("upper");
       // 덧그림과 숲 수관 위의 나무 머리(4층)를 걷어 내도 걷는 칸은 한 칸도 달라지지 않는다 — 나무 머리는 막힌 숲 칸 위에만 선다
       const before = walkGrid(project, map);
@@ -185,12 +190,12 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
         expect(isPassable(project, map, i % map.width, Math.floor(i / map.width)), `4층 숲 그림판 칸 ${i}`).toBe(false);
         setLayerTileAt(bare, 4, i, -1);
       }
-      expect(walkGrid(project, bare)).toBe(before);
+      expect(walkGrid(project, bare), board).toBe(before);
       // 이벤트 칸·경사로에는 깔지 않는다
       const on = new Set(cells);
       for (const event of map.events) expect(on.has(event.y * map.width + event.x)).toBe(false);
     }
-  }, 240_000);
+  }, 900_000);
 
   it("다른 개체 그림: 변형 킷은 원본 킷의 통행·위아래·킷 id 를 그대로 갖고, 도구가 그 칸을 원본 킷의 칸으로 되읽는다", () => {
     const tileset = (createBlankProject() as Project).tilesets[TS]!;

@@ -34,9 +34,16 @@ export function tilesetHasHidingFurniture(project: Project, tilesetId: string): 
 
 const STEP: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 
-/** 닿으면 여느 전투(이겨서 치우는 싸움 — 져도 되는 벌 전투가 아닌 것)가 열리는 페이지 — 보이는 적(place_field_enemy)이다. */
+/**
+ * 닿으면 여느 전투(이겨서 치우는 싸움 — 져도 되는 벌 전투가 아닌 것)가 열리는 페이지 — 보이는 적(place_field_enemy)이다.
+ * 지면 게임 오버인 전투가 그것이다: 패배를 허용하지 않거나, 패배 갈래가 게임 오버로 간다(«지면 그 장소 입구에서 다시» — 조수의 길 적).
+ */
 const fightsOnTouch = (page: EventPage): boolean =>
-  (page.commands ?? []).some((cmd) => cmd.kind === "battleProcessing" && (cmd as { canLose?: boolean }).canLose !== true);
+  (page.commands ?? []).some((cmd) => {
+    if (cmd.kind !== "battleProcessing") return false;
+    const fight = cmd as { canLose?: boolean; defeatBranch?: readonly { kind?: string }[] };
+    return fight.canLose !== true || (fight.defeatBranch ?? []).some((step) => step.kind === "gameOver");
+  });
 
 /**
  * 숨어서 피해야 하는 추격자 — 추격 페이지(movement.type chase)가 있는 이벤트들. 주인공을 알아채고 다가와 싸움을 거는 보이는 적은 뺀다

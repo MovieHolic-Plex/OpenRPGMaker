@@ -153,6 +153,9 @@ export function pointLockedPagesIn(project: Project): string[] {
   type Ev = GameMap["events"][number];
   type Cmd = { kind?: string; body?: string; switchId?: string; itemId?: string; value?: unknown; op?: string; amount?: number };
   const notes: string[] = [];
+  // 청사진으로 지은 게임은 단계마다 「현재 목표」 줄이 다음 할 일과 자리를 말한다 — 잠긴 글에 «먼저 …» 를 덧붙이지 않는다.
+  // 왜(2026-11-15 확인 빌드 r5): 이름 없이 뜬 등대 문에서 플레이어는 목표 줄로 길을 찾았고, «먼저 쉼터 결정 서쪽의 「창고 자물쇠」를 살펴보자» 는 쉼터 수정을 길잡이로 삼았다.
+  if (project.gameBlueprint?.steps?.length) return notes;
   const all: { map: GameMap; ev: Ev }[] = Object.values(project.maps).flatMap((map) => (map.events ?? []).map((ev) => ({ map, ev })));
   const cmdsOf = (ev: Ev): Cmd[] => {
     const out: Cmd[] = [];
@@ -188,6 +191,9 @@ export function pointLockedPagesIn(project: Project): string[] {
     const by = setters(need[0]!.kind, need[0]!.id).filter((r) => r.ev.id !== ev.id);
     if (by.length !== 1) continue;
     const src = by[0]!;
+    // 싸워서 얻는 것이면 그 상대를 가리키지 않는다 — 아직 못 본 보스의 이름과 방을 길목이 미리 알리지 않는다(어디로 갈지는 목표 줄이 말한다).
+    // 왜(2026-11-15 은행): 순서 잠금(lockStepOrderDoorsIn)이 싸움 단계의 문에서 뺀 «먼저 잠든 왕의 묘실의 「미라 수호자」에게 말을 걸어 보자» 를 이 단계가 둘째 줄로 다시 붙였다.
+    if (cmdsOf(src.ev).some((c) => c.kind === "battleProcessing")) continue;
     const name = named(src.ev);
     if (!name || /^ev_/u.test(name)) continue;
     const texts = ((pages[lockedAt]!.commands ?? []) as Cmd[]).filter((c) => c.kind === "text");
@@ -315,10 +321,6 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
     const readItem = reads.find((c) => c.kind === "item" && c.present !== false && c.itemId && gives.items.includes(c.itemId));
     const cond: Cond | undefined = readSwitch ? { kind: "switch", switchId: readSwitch.switchId, value: true } : readItem ? { kind: "item", itemId: readItem.itemId, present: true } : undefined;
     if (!cond) return;
-    const stepName = named(cur.ev) || step.event;
-    // 단계 이벤트가 사람이면 말하는 이름으로(「촌장의 부탁」 → 「촌장 노인」에게 말을 걸어 보자).
-    const speakers = JSON.stringify(cur.ev.pages ?? []).match(/"speaker":"([^"]+)"/gu)?.map((m) => m.slice(11, -1).trim()).filter(Boolean) ?? [];
-    const speaker = speakers.sort((a, b) => speakers.filter((x) => x === b).length - speakers.filter((x) => x === a).length)[0];
     const itemName = cond.kind === "item" ? String(project.database.items.find((i) => i.id === cond.itemId)?.name ?? "").trim() : "";
     // 단계 k 맵의 문뿐 아니라 B 로 가는 모든 맵의 문을 잠근다 — 2026-10-29 vm3 argon jrpg: 단계 1(결계 해제)은 동굴, 단계 2(최후의 결전)는 옥좌인데
     // 마을 서쪽 가장자리 (0,20)이 조건 없이 옥좌로 옮겨 동굴·결계를 건너뛰었다(동굴 문만 잠갔다).
@@ -326,11 +328,9 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
       if (doorMap.id === target.id || door.id === cur.ev.id || (others && !others.has(doorMap.id))) continue;
       const pages = (door.pages ?? []) as unknown as RawPage[];
       if (!pages.some((p) => transfersTo(p.commands ?? [], new Set()).has(target.id) && !condHas(p, cond))) continue;
-      const bearing = doorMap.id === cur.map.id ? bearingWord({ x: door.x, y: door.y }, { x: cur.ev.x, y: cur.ev.y }) : "";
-      const where = doorMap.id !== cur.map.id ? `${cur.map.name ?? cur.map.id}의` : bearing === "바로 옆" ? "바로 옆" : `${bearing}의`;
       const place = String(target.name ?? "").trim();
-      const first = itemName ? `${itemName}${josa(itemName, "이", "가")} 있어야 이 길로 갈 수 있을 것 같다.` : place ? `아직 ${place}${towardJosa(place)} 갈 때가 아니다.` : "아직 이 길로 갈 때가 아니다.";
-      const body = `${first} ${speaker ? `먼저 ${where} 「${speaker}」에게 말을 걸어 보자.` : `먼저 ${where} 「${stepName}」${josa(stepName, "을", "를")} 찾아보자.`}`;
+      // 길목은 «왜 아직인가» 만 말한다 — 누구를 만나고 무엇을 찾을지는 목표 줄이 말한다(앞 단계가 싸움이든 사람이든).
+      const body = itemName ? `${itemName}${josa(itemName, "이", "가")} 있어야 이 길로 갈 수 있을 것 같다.` : place ? `아직 ${place}${towardJosa(place)} 갈 때가 아니다.` : "아직 이 길로 갈 때가 아니다.";
       const next: RawPage[] = [];
       pages.forEach((p, i) => {
         if (!transfersTo(p.commands ?? [], new Set()).has(target.id) || condHas(p, cond)) { next.push(structuredClone(p)); return; }
@@ -338,7 +338,7 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
         next.push({ ...structuredClone(p), conditions: [...(p.conditions ?? []), cond] });
       });
       doorMap.events = doorMap.events.map((e) => e.id === door.id ? { ...e, pages: next as unknown as typeof e.pages } : e);
-      notes.push(`${doorMap.name ?? doorMap.id} → ${target.name ?? target.id} (${door.x},${door.y})를 「${stepName}」 뒤에만 열리게`);
+      notes.push(`${doorMap.name ?? doorMap.id} → ${target.name ?? target.id} (${door.x},${door.y})를 「${named(cur.ev) || step.event}」 뒤에만 열리게`);
     }
   });
   return notes;

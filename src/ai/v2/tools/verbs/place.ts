@@ -12,7 +12,7 @@ import { localizePlaceSpec } from "../../place/builders/modernCity";
 import { localizeCultureSpec } from "../../place/builders/joseon";
 import { isComposedWorld, parseWorldStyle, pickWorld, spareKind, worldKind, worldOf, worldPlaceSpec } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
-import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "../../place/builders/village";
+import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villageKindsLine, unknownVillageKind, unknownVillageKindText } from "../../place/builders/village";
 import { codeTerrainFor, usesCodeTerrain, villageCliffHabitFor } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
@@ -106,6 +106,8 @@ export function placeVerbs(c: VerbContext) {
       + (bboxPlacesOn() ? " Exception: for a dungeon floor (type dungeon) and a village on code terrain the first call returns a card asking for your exact cell layout (spec.dungeonLayout / spec.villageLayout) — then write it as the card says." : ""),
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
+      // 모델이 이 장소에 적은 종류는 어느 관문에서 돌려보내져도 남긴다 — 끝맺음 자동 짓기가 이름으로 추측하기 전에 읽는다(place/placeGuess.placeSpecFor).
+      { const said = (params as { spec?: Partial<PlaceSpec> })?.spec; if (said?.name && said.type) session.notePlaceFact(said.name, { kind: said.type }); }
       const gate = await blueprintGate();
       if (gate) return text(gate);
       // 구성기 세계의 게임이면 장소는 그 세계의 종류로 짓는다 — 다른 칩셋(버들항 마을·동굴)이 섞이지 않게 make_place 도 세계 짓기로 보낸다.
@@ -169,7 +171,7 @@ export function placeVerbs(c: VerbContext) {
       // 던전·동굴은 세션 덧값도 섞는다 — 같은 시작 저장본의 같은 요청을 다른 세션에서 받아도 같은 굴이 되지 않게(2026-10-31 씬 벤치 보스 방 opus 3판).
       const varietyKey = placeVariety(env, task) + (raw.type === "dungeon" || raw.type === "cave" ? `|${session.nonce}` : "");
       let keptNoteEarly = "";
-      let spec: PlaceSpec = poolVillage(localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true), String(task ?? "")), String(task ?? "")));
+      let spec: PlaceSpec = poolVillage(localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true), String(task ?? "")), String(task ?? ""), run.ctx.project));
       // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
       // 빈 mapId("" — 엄격 스키마가 채운 칸)도 «안 줬다» 다: 그대로 두면 같은 방을 다시 보낼 때마다 같은 이름의 새 맵이 생겼다(2026-11-11 map-vqa 깔기 재생: 「무기 가게」 5장).
       if (spec.mapId !== undefined && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
@@ -183,6 +185,8 @@ export function placeVerbs(c: VerbContext) {
           keptNoteEarly = `"${spec.name}" is an interior place (not a dungeon crawl), so it is built on the interior path — write spec.layout for it.`;
         }
       }
+      // 이 장소로 청한 명세를 적어 둔다(거절돼도 남는다) — 끝맺음이 이 장소를 대신 지을 때 종류를 이름으로 추측하지 않고 이것을 쓴다(place/placeGuess.placeSpecFor).
+      session.notePlaceFact(spec.name ?? "", { asked: spec });
       // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
       // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
       const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
@@ -263,7 +267,14 @@ export function placeVerbs(c: VerbContext) {
           const lay = cleanLayoutHint(h.layout); if (lay) h.layout = lay; else delete h.layout;
           spec = { ...spec, hints: h as typeof spec.hints };
         }
+        // 모르는 마을 종류(hints.kind): 짓기 전에 장소마다 한 번 거절하고 가까운 이름이 앞에 선 전체 목록을 준다 — 집이 선 마을은 다시 지을 수 없어, 버리고 지으면 고칠 길이 없다.
+        // 두 번째에도 모르는 이름이면 빌더가 버리고 터에 맞는 종류를 골라 짓고 같은 목록을 경고로 준다(같은 거절을 되풀이하지 않게).
         const va = villageArgs(spec).args; const vt = String(va.theme ?? "river");
+        const oddKind = vt === "river" || vt === "coast" ? unknownVillageKind(spec) : undefined; // 종류는 강가·포구 마을에만 있다
+        if (oddKind && !(spec.mapId && session.places.has(spec.mapId)) && !layoutSession(session).cards.has(`village-kind:${spec.name}`)) {
+          layoutSession(session).cards.add(`village-kind:${spec.name}`);
+          return text({ ok: false, notFailure: true, summary: `Rejected (nothing was built): ${unknownVillageKindText(oddKind)}` });
+        }
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
           const kept = session.villageTerrain.get(spec.name);
@@ -280,7 +291,9 @@ export function placeVerbs(c: VerbContext) {
             const res = text({ ok: false, notFailure: true,
               summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅을 코드가 만들었다(${width}×${height}, terrainSeed ${terrainSeed}). 아래 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위)과 요약을 보고 `
                 + `마을 자리를 네가 고른다 — 같은 make_place 에 hints.layout 을 넣어 다시 부르면 이 땅 위에 짓는다. ${villageLayoutGuide(vt, va.fishing === true, va.form === "scatter")} 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
-              terrain: describeCodeTerrain(terrain) });
+              terrain: describeCodeTerrain(terrain),
+              // 마을 종류의 전체 목록은 여기서 온다(늘 실리는 카드에는 예 넷뿐) — 모델이 자리를 고르는 그 답에서 종류도 고를 수 있다.
+              ...((kinds) => (kinds ? { villageKinds: kinds } : {}))(villageKindsLine(vt, va.water)) });
             const png = terrainPreviewPng(terrain, 8);
             let bin = ""; for (let k = 0; k < png.length; k += 1) bin += String.fromCharCode(png[k]!);
             res.content.push({ type: "image", mimeType: "image/png", data: btoa(bin) });

@@ -2,15 +2,18 @@
  * 공식 번들 팩 하나(seedBundles.mts SEED_BUNDLES)를 스토어에 올린다. 주소·토큰은 환경 변수로만 받는다(storePublish.mts).
  *
  *   npm run -s store:publish-bundle -- --list
- *   npm run -s store:publish-bundle -- --title "<제목>" --dry                       # 팩만 만들어 검사, contentHash 출력
+ *   npm run -s store:publish-bundle -- --title "<제목>" --dry                       # 팩만 만들어 검사, contentHash 출력(아무것도 보내지 않는다)
  *   npm run -s store:publish-bundle -- --title "<제목>" --target staging
  *   STORE_LINK_TOKEN=… npm run -s store:publish-bundle -- --title "<제목>" --target production --confirm <contentHash>
  *   (이미 있는 상품에 고친 팩을 판본으로 더할 때는 --new-version. 없으면 같은 제목은 건너뛴다.)
- * 마지막 줄은 한 줄 JSON 결과다.
+ * 올리기 전 검사는 둘이다: 매니페스트 형식·제3자 이름(storePublish.mts publishProblems)과 스토어 출구의 칸 검사(storeExitGate.mts —
+ * 에이전트 제출과 같은 3/4 관문). 시트에 스토어 출구를 통과하지 못한 칸(오너 면제 칸 포함)이 하나라도 있으면 --dry 도 게시도 거절한다.
+ * 마지막 줄은 한 줄 JSON 결과다(걸린 칸은 gate 에 시트별·면제 묶음별로).
  */
 import { createHash } from "node:crypto";
 import { join, resolve } from "node:path";
 import { SEED_BUNDLES, bundlePack } from "./seedBundles.mts";
+import { storeExitProblems, storeExitSheetReports } from "./storeExitGate.mts";
 import { PublishError, addVersion, closeSession, createItem, findOwnItem, openSession, publishProblems, requireTargetBase } from "./storePublish.mts";
 
 const root = resolve(import.meta.dirname, "..", "..");
@@ -29,8 +32,10 @@ if (!seed) out({ ok: false, error: `--title 이 SEED_BUNDLES 에 없습니다: $
 const pack = bundlePack(seed, join(root, "public"));
 const contentHash = createHash("sha256").update(JSON.stringify(pack.manifest)).digest("hex");
 const bytes = [...pack.blobs.values()].reduce((sum, blob) => sum + blob.byteLength, 0);
-const problems = publishProblems(pack.manifest);
-const summary = { title: seed.title, assets: Object.keys(pack.manifest.content.assets).length, blobs: pack.blobs.size, megabytes: +(bytes / 1048576).toFixed(2), contentHash, valid: problems.length === 0, errors: problems };
+// 스토어 출구의 칸 검사 — 에이전트 제출(agentStore.mts)과 같은 관문. --dry 에서도 같은 거절이 보인다. 푸는 깃발은 없다.
+const gate = storeExitSheetReports(pack);
+const problems = [...publishProblems(pack.manifest), ...storeExitProblems(gate)];
+const summary = { title: seed.title, assets: Object.keys(pack.manifest.content.assets).length, blobs: pack.blobs.size, megabytes: +(bytes / 1048576).toFixed(2), contentHash, valid: problems.length === 0, errors: problems, gate };
 if (problems.length > 0) out({ ...summary, ok: false, error: "올리기 전 검사 실패" }, 1);
 if (process.argv.includes("--dry")) out({ ...summary, ok: true, dry: true });
 

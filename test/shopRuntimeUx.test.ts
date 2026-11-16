@@ -183,7 +183,8 @@ describe("상점 수량 입력", () => {
 describe("상점 사이드 패널", () => {
   it("파티 칸이 에디터 밝은 회색 빈 박스가 아니다", () => {
     const actorIds = createBlankProject().database.actors.slice(0, 2).map(actor => actor.id);
-    const overlay = render({ scene: scene({ partyActorIds: actorIds }) });
+    // 얼굴을 쓰는 프리셋(도트 상점이 아닌 것) — 파티원마다 얼굴 칸 하나.
+    const overlay = render({ scene: scene({ partyActorIds: actorIds }), step: { allowSell: true, shopUiPreset: "compare" } as ShopStep });
     const sprites = overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-sprite");
     expect(sprites.length).toBe(2);
     for (const sprite of sprites) {
@@ -192,6 +193,22 @@ describe("상점 사이드 패널", () => {
       const hasFace = sprite.style.backgroundImage.length > 0;
       expect(hasFace || (sprite.textContent ?? "").length > 0).toBe(true);
       expect(sprite.getAttribute("aria-label")).toBeTruthy();
+    }
+  });
+
+  it("기본(도트) 상점의 파티 카드는 필드의 걷기 그림으로 선다 — 빈 칸이 아니다", () => {
+    // 프리셋 없는 상점의 기본은 도트 상점이고, 그 카드는 걷기 그림이 있으면 얼굴 대신 걷기 그림을 세운다(playSceneShopParts.partyPreview).
+    const actorIds = createBlankProject().database.actors.slice(0, 2).map(actor => actor.id);
+    const overlay = render({ scene: scene({ partyActorIds: actorIds }) });
+    const cards = overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-card");
+    expect(cards.length).toBe(2);
+    for (const [index, card] of Array.from(cards).entries()) {
+      const figure = card.querySelector<HTMLElement>(`[data-testid='shop-party-sprite-${actorIds[index]}']`);
+      expect(figure).not.toBeNull();
+      expect(figure!.style.background).not.toContain("--bg-inset");
+      const drawn = figure!.classList.contains("runtime-shop-party-walker") ? Boolean(figure!.dataset.characterResourceId) : figure!.style.backgroundImage.length > 0;
+      expect(drawn || (figure!.textContent ?? "").length > 0).toBe(true);
+      expect(figure!.getAttribute("aria-label")).toBeTruthy();
     }
   });
 

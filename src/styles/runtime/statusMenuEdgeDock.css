@@ -225,6 +225,9 @@
 .oprn-status-menu .status-menu-detail-hint,
 .oprn-status-menu .status-menu-detail-empty,
 .oprn-status-menu .status-menu-detail-description { color: var(--status-edge-muted); font: 500 6.5px/1.45 var(--runtime-ui-font); }
+/* 설명이 붙은 줄의 설명은 그 메뉴 스킨의 글자색이다 — database/tabs-b-status-menu-main.css 의 같은 선택자(유리 창의 흰 글자)를 같은 무게로 뒤에서 이긴다
+   (그 시트는 database 표면이라 이 토큰을 못 쓴다 — check-css-surfaces R4). 밝은 스킨(여행 창 · 수첩)에서 크림 바탕 위 흰 글자가 되던 줄. */
+.status-menu-detail-row.has-description .status-menu-detail-description { color: var(--status-edge-ivory, var(--runtime-glass-text)); }
 .oprn-status-menu .status-menu-detail-empty { align-self: start; padding: 8px 0; white-space: normal; }
 .oprn-status-menu .status-menu-detail.has-showcase {
   column-gap: 8px;

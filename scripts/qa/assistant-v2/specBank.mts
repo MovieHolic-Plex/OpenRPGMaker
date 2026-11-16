@@ -72,7 +72,7 @@ function summarize(out: string, meta: Record<string, unknown>): void {
     "(수치는 그림을 보지 않은 것이다 — 화면 미검증)",
   ].join("\n");
   fs.writeFileSync(path.join(out, "bank.txt"), `${text}\n`);
-  fs.writeFileSync(path.join(out, "bank.json"), JSON.stringify({ ...meta, games: games.map((g) => g.id), total, perGame: Object.fromEntries(games.map((g) => [g.id, g.values])), replay: Object.fromEntries(replays.filter(Boolean).map((r) => [r!.id, { ms: r!.ms, calls: { ...r!.calls, okToFail: r!.calls.okToFail.length }, forced: r!.turns.reduce((n, t) => n + t.forced, 0), salts: r!.salts, pictures: r!.pictures.length }])) }, null, 1));
+  fs.writeFileSync(path.join(out, "bank.json"), JSON.stringify({ ...meta, games: games.map((g) => g.id), total, perGame: Object.fromEntries(games.map((g) => [g.id, g.values])), arrowWalk: Object.fromEntries(games.filter((g) => g.lines?.arrowWalk?.length).map((g) => [g.id, g.lines.arrowWalk])), replay: Object.fromEntries(replays.filter(Boolean).map((r) => [r!.id, { ms: r!.ms, calls: { ...r!.calls, okToFail: r!.calls.okToFail.length }, forced: r!.turns.reduce((n, t) => n + t.forced, 0), salts: r!.salts, pictures: r!.pictures.length }])) }, null, 1));
 }
 
 async function measureAll(out: string, ids: readonly string[], jobs: number): Promise<void> {

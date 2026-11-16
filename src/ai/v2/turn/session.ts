@@ -9,6 +9,7 @@ import { TodoStore } from "../loop/todoStore";
 import type { StageWrites } from "../shared/stageWrites";
 import type { ContentBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
 import { layoutGiven } from "../place/interiorLayout";
+import { placeFactKey, type PlaceFacts } from "../place/placeGuess";
 
 /** 한 맵의 마지막 검사 결과(기계 검사·비평·그림). */
 export interface Seen {
@@ -49,6 +50,9 @@ export class V2Session {
   readonly layoutRejects = new Map<string, number>();
   /** 거절된(아직 짓지 않은) 칸 배치 장소 — 맵 id·장소 이름으로. edit_place layoutPatch 가 이것을 고쳐 make_place 로 다시 보낸다. */
   readonly pendingLayouts = new Map<string, PlaceSpec>();
+  /** 모델이 이 실행에서 장소마다 말한 것(이름 열쇠 placeFactKey) — make_place 로 보낸 명세(거절됐어도)와 세계 없는 청사진에 적은 종류·앞 장소. 끝맺음 자동 짓기가 종류를 추측하기 전에 읽는다. */
+  readonly placeFacts = new Map<string, PlaceFacts>();
+  notePlaceFact(name: string, fact: PlaceFacts): void { const key = placeFactKey(name); if (key) this.placeFacts.set(key, { ...this.placeFacts.get(key), ...fact }); }
   /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
   readonly terrainBounced = new Set<string>();
   /** 코드 지형 마을: 미리보기로 보여 준 땅(장소 이름 → 씨앗·크기·성격 힌트). 자리(hints.layout)를 받아 지을 때 같은 땅을 쓴다. */

@@ -7,6 +7,7 @@
 //      (분기 값과 함수가 쓴 쪽지 대사의 번호를 바꾼다). 정답이 모델 대사에 있으면 다른 같은 자릿수 «번호» 대사를 정답으로 고쳐 쓴다.
 //   2) 입력창 앞에 놓인 «열렸다/입력하자» 같은 결과 대사는 정답 분기 맨 앞으로 옮긴다 — 입력하기 전에 결과를 말하지 않는다.
 // 대사 문구는 바꾸지 않고 번호만 맞춘다(프롬프트로 고치지 않는다 — 결정적 후처리).
+import { codeReadable } from "@/project/codeReading";
 import type { GameEvent, Project } from "@/project/types";
 
 type Cmd = Record<string, unknown> & { kind?: string };
@@ -117,7 +118,8 @@ export function alignCodeClues(project0: Project): { project: Project; notes: st
     // 다시 적혀도 이 자물쇠 답으로 고쳐 쓰지 않는다(2026-10-31 meb1 terra 방탈출: 서랍 7392 가 그 줄을 «7392»로 바꿀 뻔했다).
     const revealed = new Set([...own].flatMap((c) => String(c.body).match(re) ?? ([] as string[])));
     const others = [...new Set(model.filter((c) => CODE_TALK.test(String(c.body)) || RESULT_TALK.test(String(c.body))).flatMap((c) => String(c.body).match(re) ?? ([] as string[])).filter((n) => n !== code && !otherCodes.has(n) && !choiceNums.has(n) && !revealed.has(n)))];
-    if (!mentioned && others.length === 1) {
+    // 모델의 글이 그 번호를 다른 꼴로(조각 · 노래의 수 낱말) 알려 주고 있으면 다른 번호로 바꾸지 않는다.
+    if (!mentioned && others.length === 1 && !codeReadable(code, model.map((c) => [String(c.body)]))) {
       const adopt = others[0]!;
       (lock.fork.condition as { value: number }).value = Number(adopt);
       // 함수 쪽지는 «어딘가의 번호»가 아니라 모델 단서를 확인하는 글로 — 번호가 하나라는 것이 읽히게.
@@ -189,7 +191,7 @@ export function humanizeBlueprintTokens(project0: Project): { project: Project; 
  * 조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)를 자리별로 겹치면 답이 되는가 — 되면 답이 단서에 적힌 것으로 본다(사슬 빌더의 «정답이 어느 단서에도 없다» 경고).
  * 전에는 경고가 떠 모델이 맞는 단서를 고쳐 썼다.
  */
-export function codeSpreadOver(code: string, lines: readonly string[]): boolean {
+function codeSpreadOver(code: string, lines: readonly string[]): boolean {
   const n = [...code].length; const got: (string | undefined)[] = new Array(n).fill(undefined);
   for (const line of lines) for (const m of line.matchAll(/[0-9A-Za-z_＿?○□*](?:[\s·-]*[0-9A-Za-z_＿?○□*])*/gu)) {
     const toks = [...m[0].replace(/[\s·-]/gu, "")];
@@ -197,4 +199,9 @@ export function codeSpreadOver(code: string, lines: readonly string[]): boolean 
     toks.forEach((t, i) => { if (/[0-9A-Za-z]/u.test(t)) got[i] = got[i] ?? t; });
   }
   return got.join("") === code;
+}
+
+/** 답이 단서들에서 나오는가 — 조각을 자리별로 겹쳐서(글자 답 포함), 또는 읽는 법대로(project/codeReading — 조각 잇기 · 한 사람의 말에 차례로 나오는 수 낱말). groups = 고리마다의 줄. */
+export function codeInClues(code: string, groups: readonly (readonly string[])[]): boolean {
+  return codeSpreadOver(code, groups.flat()) || codeReadable(code, groups);
 }

@@ -4,7 +4,14 @@
 //   A 첫 걸음 불일치: 화살표 쪽(8방, 대각선이면 두 축 중 하나)으로 한 칸 못 걷거나, 걸으면 대상에서 멀어진다.
 //   B 벽을 본다: 화살표가 «곧게 걸어 닿는 가장 먼 길목»과 45° 넘게 어긋난다(벽면을 향하다 꺾이는 안내).
 //   C 막힌 칸 가로지름: 가리킨 칸까지의 직선 위에 설 수 없는 칸이 있다(모서리를 가로지르는 안내).
-//   눌러 걷기: 화살표를 읽고 그 방향키를 N칸(기본 4) 누른 뒤 다시 읽는 플레이어 — 눈가림 판정자처럼 걷는다.
+//   따라 걷기(은행의 «화살표대로 걸어 못 닿음»): 화살표를 칸마다 다시 읽으며 걷는 플레이어 — 사람은 걷는 동안 화살표가 꺾이는 것을 본다.
+//     화살표가 가리키는 쪽 방향키(대각선이면 더 기운 축)로 한 칸. 그 칸이 막혔으면 다른 축으로 한 칸. 걷는 이가 쓰는 것은 화살표와 «막혔다» 뿐이다 — 길을 미리 알지 못한다.
+//     못 닿음 = 두 쪽 다 막힘(막힘), 이미 밟은 칸으로 되돌아왔는데 그 칸에서 더 눌러 볼 키가 없음(맴돎 — 대각선 화살표였던 칸은 다른 축을 한 번 더 눌러 본다), 대상에 못 가는 칸에 들어섬(길 없는 칸).
+//     못 닿은 출발마다 «처음 어긋난 칸»(대상에 가까워지지 않은 첫 걸음)의 화살표로 까닭을 가른다: 화살표 쪽에 가까워지는 걸음이 없었으면 안내 틀림,
+//     대각선 화살표의 한 축은 맞았으면 걷는 이 한계, 화살표가 없는 칸(대상이 화면 안)이었으면 화살표 없음. 걷는 이는 scripts/qa/assistant-v2/arrowFollowWalk.mts.
+//   눌러 걷기(옛 자, 견줌용 — --hold N, 기본 4): 화살표를 읽고 그 방향키를 N칸 누른 뒤 다시 읽는 플레이어. 2026-11-15 까지 은행의 그 칸이 이것이었다 —
+//     한 칸 폭 문간·모퉁이를 지나쳤다 되돌아오기를 되풀이해(「강지기의 집」 (18,7)→ (22,7)↖ (18,7)→ … 120번) 안내가 멀쩡한 자리도 못 닿음으로 셌다.
+//     방향키를 길게 누르고 화면을 가끔 보는 플레이어(눈가림 판정자)의 수로는 여전히 뜻이 있어 한 줄로 같이 찍는다.
 // 실제 걷기 규칙 = 타일 통행(canMove) + 막는 이벤트(같은 층·겹침 금지) 칸에는 못 선다. 이벤트 페이지는 스위치를 모두 켠 세션으로 고른다(부가 퀘스트 sw_q_ 제외).
 // 왜: 2026-11-11 fun-x1 눈가림 플레이 «화살표가 벽 쪽을 가리킴» — openwiki/assistant-v2.md 「목표 화살표는 길목을 가리킨다」.
 import { readFileSync } from "node:fs";
@@ -14,6 +21,7 @@ import { canMove, isPassable } from "../../../src/project/collision.ts";
 import { runtimeEventViewsForMap } from "../../../src/project/runtimeEventState.ts";
 import { objectiveTargetViews } from "../../../src/player/objectiveTarget.ts";
 import { objectiveArrowAim, objectiveRoute } from "../../../src/player/objectiveRoute.ts";
+import { DIR8, dir8, followArrowWalk, holdArrowWalk, type ArrowWorld } from "./arrowFollowWalk.mts";
 
 type Cell = { x: number; y: number };
 const STEPS: Cell[] = [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }];
@@ -78,9 +86,7 @@ function viewRect(map: any, here: Cell): { x0: number; y0: number; x1: number; y
   const y0 = map.height <= VIEW.h ? (map.height - VIEW.h) / 2 : Math.min(map.height - VIEW.h, Math.max(0, cy - VIEW.h / 2));
   return { x0, y0, x1: x0 + VIEW.w, y1: y0 + VIEW.h };
 }
-const DIR8 = ["→", "↘", "↓", "↙", "←", "↖", "↑", "↗"];
 const DIR8_VEC: Cell[] = [{ x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 }];
-const dir8 = (angle: number): number => (((Math.round(angle / (Math.PI / 4))) % 8) + 8) % 8;
 
 /** 2026-11-11 이전 길: 타일 통행만 본 걸음 수 지도(막는 이벤트는 모른다). */
 function oldField(map: any, targets: Cell[]): Int32Array { return trueField(map, targets, new Set()); }
@@ -121,6 +127,8 @@ function arrowAfter(map: any, tiles: Cell[], route: any, here: Cell): Arrow {
 }
 
 let rows = 0, wrongA = 0, wrongB = 0, wrongC = 0, hiddenOff = 0, holdRuns = 0, holdFail = 0, holdCount = 0, holdOver = 0, holdBump = 0, holdTurns = 0;
+/** 따라 걷기의 합: 출발 · 못 닿음 · 걸음 · 되돌아와 다른 축으로 바꿈 · 못 닿은 까닭(안내 틀림|걷는 이 한계|화살표 없음) · 끝난 꼴(막힘|맴돎|길 없는 칸). */
+const follow = { runs: 0, fail: 0, steps: 0, swaps: 0, cause: new Map<string, number>(), end: new Map<string, number>() };
 const seenKey = new Set<string>();
 const extra = new Map<string, Cell[]>();
 for (const part of extraArg.split(";").filter(Boolean)) { const [name, xy] = part.split(":"); const [x, y] = xy!.split(",").map(Number); extra.set(name!, [...(extra.get(name!) ?? []), { x: x!, y: y! }]); }
@@ -149,8 +157,16 @@ for (const obj of objectives()) {
     if (process.argv.includes("--all")) cand.push(...reach); else for (let k = 0; k < 10 && reach.length; k++) cand.push(reach[Math.floor(((k + 0.5) / 10) * reach.length)]!);
     const uniq = [...new Map(cand.filter((c) => truth[c.y * map.width + c.x]! > 0).map((c) => [`${c.x},${c.y}`, c])).values()];
     console.log(`\n## 「${map.name}」 대상 ${targets.map((t) => `${t.event.name ?? t.event.id.slice(0, 22)}(${t.x},${t.y})`).join(" ")} ← 목표 「${obj.message.slice(0, 46)}」`);
-    for (const start of uniq) { const h = holdPlayer(map, tiles, field, truth, blocked, start); holdRuns++; if (!h.reached) holdFail++; holdCount += h.holds; holdOver += h.overshoots; holdBump += h.bumps; holdTurns += h.turns;
-      if (verbose || !h.reached) console.log(`  걷기 (${start.x},${start.y}) ${h.reached ? "닿음" : "못 닿음"} · 누르기 ${h.holds} · 지나침 ${h.overshoots} · 제자리 막힘 ${h.bumps} · ${h.trace}`); }
+    const world = walkWorld(map, tiles, field, truth, blocked);
+    for (const start of uniq) {
+      const f = followArrowWalk(world, start); follow.runs++; follow.steps += f.steps; follow.swaps += f.swaps;
+      if (!f.reached) { follow.fail++; follow.cause.set(f.cause!, (follow.cause.get(f.cause!) ?? 0) + 1); follow.end.set(f.end!, (follow.end.get(f.end!) ?? 0) + 1); }
+      const bad = f.firstBad;
+      if (verbose || !f.reached) console.log(`  걷기 (${start.x},${start.y}) ${f.reached ? "닿음" : `못 닿음[${f.cause} · ${f.end}] 멈춘 칸 (${f.at.x},${f.at.y}) 남은 걸음 ${f.left}${bad ? ` · 처음 어긋난 칸 (${bad.cell.x},${bad.cell.y}) 화살표 ${bad.arrow}${bad.kind ? `[${bad.kind}]` : ""} ${bad.pressed} 남은 걸음 ${bad.left}` : ""}`} · 걸음 ${f.steps} · ${shortTrace(f.trace)}`);
+      // 옛 자(견줌용): 같은 출발에서 N칸씩 눌러 걷기.
+      const h = holdArrowWalk(world, start, HOLD); holdRuns++; if (!h.reached) holdFail++; holdCount += h.holds; holdOver += h.overshoots; holdBump += h.bumps; holdTurns += h.turns;
+      if (verbose) console.log(`  눌러 걷기 (${start.x},${start.y}) ${h.reached ? "닿음" : "못 닿음"} · 누르기 ${h.holds} · 지나침 ${h.overshoots} · 제자리 막힘 ${h.bumps} · ${h.trace.slice(0, 14).join(" ")}`);
+    }
     for (const here of uniq) {
       const d = truth[here.y * map.width + here.x]!;
       const arrow = mode === "before" ? arrowBefore(map, tiles, field, here) : arrowAfter(map, tiles, field, here);
@@ -179,7 +195,9 @@ for (const obj of objectives()) {
     }
   }
 }
-console.log(`\n== ${mode} 눌러 걷기(화살표를 읽고 그 쪽 방향키를 최대 ${HOLD}칸 누른 뒤 다시 읽는 플레이어, 출발 ${holdRuns}곳): 못 닿음 ${holdFail} · 누르기 평균 ${(holdCount / Math.max(1, holdRuns)).toFixed(1)} · 지나쳐 되돌아옴 ${holdOver} · 제자리에서 막힘 ${holdBump} · 화살표 방향 바뀜 ${holdTurns}`);
+const count = (m: Map<string, number>, k: string): number => m.get(k) ?? 0;
+console.log(`\n== ${mode} 따라 걷기(화살표를 칸마다 다시 읽는 플레이어, 출발 ${follow.runs}곳): 못 닿음 ${follow.fail} · 까닭: 안내 틀림 ${count(follow.cause, "안내 틀림")} · 걷는 이 한계 ${count(follow.cause, "걷는 이 한계")} · 화살표 없음 ${count(follow.cause, "화살표 없음")} · 끝난 꼴: 막힘 ${count(follow.end, "막힘")} · 맴돎 ${count(follow.end, "맴돎")} · 길 없는 칸 ${count(follow.end, "길 없는 칸")} · 걸음 평균 ${(follow.steps / Math.max(1, follow.runs)).toFixed(1)} · 되돌아와 다른 축으로 바꿈 ${follow.swaps}`);
+console.log(`== ${mode} 눌러 걷기(옛 자 — 화살표를 읽고 그 쪽 방향키를 최대 ${HOLD}칸 누른 뒤 다시 읽는 플레이어, 출발 ${holdRuns}곳): 못 닿음 ${holdFail} · 누르기 평균 ${(holdCount / Math.max(1, holdRuns)).toFixed(1)} · 지나쳐 되돌아옴 ${holdOver} · 제자리에서 막힘 ${holdBump} · 화살표 방향 바뀜 ${holdTurns}`);
 console.log(`== ${mode}: 자리 ${rows} · A 첫 걸음 불일치 ${wrongA} · B 벽을 본다 ${wrongB} · C 막힌 칸 가로지름 ${wrongC} · 대상 화면 밖인데 화살표 없음 ${hiddenOff}`);
 
 /** here→to 를 계단(4방) 직선으로 걸을 수 있나: 걸음마다 실제 규칙으로 걸리고 대상에 한 걸음씩 가까워진다. */
@@ -219,31 +237,18 @@ function straightClear(map: any, blocked: Set<string>, truth: Int32Array, here: 
   return true;
 }
 
-/**
- * 눈가림 판정자처럼 걷는 플레이어: 화살표를 읽고(8방 → 크게 기운 축의 방향키) 막힐 때까지(최대 15칸) 누른 뒤 다시 읽는다.
- * 화살표가 없으면(대상이 화면 안) 대상 쪽으로 곧장 누른다. 지나침 = 누르는 동안 대상에 가장 가까웠던 칸을 지나 더 멀어진 채 멈춤.
- */
-function holdPlayer(map: any, tiles: Cell[], field: any, truth: Int32Array, blocked: Set<string>, start: Cell): { reached: boolean; holds: number; overshoots: number; bumps: number; turns: number; trace: string } {
-  let here = start, holds = 0, overshoots = 0, bumps = 0, turns = 0, prev = -1; const trace: string[] = [];
-  const dOf = (c: Cell) => truth[c.y * map.width + c.x]!;
-  const walk = (c: Cell, v: Cell): Cell | null => { const n = { x: c.x + v.x, y: c.y + v.y }; return n.x >= 0 && n.y >= 0 && n.x < map.width && n.y < map.height && canMove(project, map, c.x, c.y, n.x, n.y) && !blocked.has(`${n.x},${n.y}`) ? n : null; };
-  while (holds < 120 && dOf(here) > 1) {
-    const arrow = mode === "before" ? arrowBefore(map, tiles, field, here) : arrowAfter(map, tiles, field, here);
-    let angle = arrow.angle;
-    if (!arrow.visible) { const t = tiles.reduce((b, c) => Math.abs(c.x - here.x) + Math.abs(c.y - here.y) < Math.abs(b.x - here.x) + Math.abs(b.y - here.y) ? c : b); angle = Math.atan2(t.y - here.y, t.x - here.x); }
-    const k = dir8(angle); if (arrow.visible) { if (prev >= 0 && prev !== k) turns++; prev = k; }
-    const ax = Math.abs(Math.cos(angle)), ay = Math.abs(Math.sin(angle));
-    const v: Cell = ax >= ay ? { x: Math.sign(Math.cos(angle)), y: 0 } : { x: 0, y: Math.sign(Math.sin(angle)) };
-    let cur = here, best = dOf(here), moved = 0;
-    for (let i = 0; i < HOLD; i++) { const n = walk(cur, v); if (!n) break; cur = n; moved++; if (dOf(cur) >= 0 && dOf(cur) < best) best = dOf(cur); if (dOf(cur) <= 1) break; }
-    holds++;
-    if (!moved) { bumps++; // 막힌 쪽이면 다른 축을 누른다(사람도 그렇게 한다)
-      const alt: Cell = ax >= ay ? { x: 0, y: Math.sign(Math.sin(angle)) || 1 } : { x: Math.sign(Math.cos(angle)) || 1, y: 0 };
-      for (let i = 0; i < HOLD; i++) { const n = walk(cur, alt); if (!n) break; cur = n; moved++; if (dOf(cur) >= 0 && dOf(cur) < best) best = dOf(cur); if (dOf(cur) <= 1) break; }
-      if (!moved) { trace.push(`(${here.x},${here.y})${DIR8[k]}✗`); break; } }
-    if (dOf(cur) > best + 1) overshoots++;
-    trace.push(`(${here.x},${here.y})${arrow.visible ? DIR8[k] : "·"}`);
-    here = cur;
-  }
-  return { reached: dOf(here) <= 1, holds, overshoots, bumps, turns, trace: trace.slice(0, 14).join(" ") };
+/** 두 걷는 이(arrowFollowWalk.mts)가 보는 세계: 실제 걷기 규칙의 한 걸음 · 그 칸의 화살표(없으면 가장 가까운 대상 칸 쪽) · 실제 남은 걸음. */
+function walkWorld(map: any, tiles: Cell[], field: any, truth: Int32Array, blocked: Set<string>): ArrowWorld {
+  return {
+    canStep: (c, n) => n.x >= 0 && n.y >= 0 && n.x < map.width && n.y < map.height && canMove(project, map, c.x, c.y, n.x, n.y) && !blocked.has(`${n.x},${n.y}`),
+    arrowAt: (here) => {
+      const arrow = mode === "before" ? arrowBefore(map, tiles, field, here) : arrowAfter(map, tiles, field, here);
+      if (arrow.visible) return { visible: true, angle: arrow.angle, kind: arrow.kind };
+      const t = tiles.reduce((b, c) => Math.abs(c.x - here.x) + Math.abs(c.y - here.y) < Math.abs(b.x - here.x) + Math.abs(b.y - here.y) ? c : b);
+      return { visible: false, angle: Math.atan2(t.y - here.y, t.x - here.x) };
+    },
+    left: (c) => truth[c.y * map.width + c.x]!,
+  };
 }
+/** 걸은 자취: 앞 8 … 뒤 8. */
+function shortTrace(trace: string[]): string { return [...trace.slice(0, 8), ...(trace.length > 16 ? ["…"] : []), ...trace.slice(Math.max(8, trace.length - 8))].join(" "); }

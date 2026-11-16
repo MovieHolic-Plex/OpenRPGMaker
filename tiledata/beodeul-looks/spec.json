@@ -295,12 +295,12 @@
  ],
  "surfaces": {
   "steppe": {
-   "label": "마른 풀 들판 · 다진 흙길 · 자갈 광장",
-   "en": "dry grass, packed dirt streets, cobble square",
+   "label": "마른 풀 들판 · 붉은 벽돌 길 · 점판암 광장",
+   "en": "dry grass, red brick streets, slate square",
    "ground": "ground-dry",
-   "road": "road-dirt",
-   "roadEdge": "soft",
-   "plaza": "plaza-cobble",
+   "road": "road-brick",
+   "roadEdge": "kerb",
+   "plaza": "plaza-slate",
    "track": null
   },
   "mosswood": {
@@ -313,13 +313,13 @@
    "track": "road-dirt"
   },
   "frontier": {
-   "label": "맨흙 바닥 · 널길 · 자갈 광장",
-   "en": "bare earth, plank boardwalk streets, cobble square",
+   "label": "맨흙 바닥 · 옅은 판석 길 · 점판암 광장",
+   "en": "bare earth, pale flagstone streets, slate square",
    "ground": "ground-earth",
-   "road": "road-plank",
-   "roadEdge": "plank",
-   "plaza": "plaza-cobble",
-   "track": "road-gravel"
+   "road": "road-flag",
+   "roadEdge": "kerb",
+   "plaza": "plaza-slate",
+   "track": "road-dirt"
   },
   "coast": {
    "label": "모래 바닥 · 붉은 벽돌 길 · 엇갈린 벽돌 광장",
@@ -331,11 +331,11 @@
    "track": "road-dirt"
   },
   "heath": {
-   "label": "마른 풀 들판 · 자갈길 · 점판암 광장",
-   "en": "dry grass, gravel streets, slate square",
+   "label": "마른 풀 들판 · 옅은 판석 길 · 점판암 광장",
+   "en": "dry grass, pale flagstone streets, slate square",
    "ground": "ground-dry",
-   "road": "road-gravel",
-   "roadEdge": "soft",
+   "road": "road-flag",
+   "roadEdge": "kerb",
    "plaza": "plaza-slate",
    "track": "road-dirt"
   },
@@ -349,13 +349,13 @@
    "track": null
   },
   "terra": {
-   "label": "붉은 흙 바닥 · 옅은 판석 길 · 자갈 광장",
-   "en": "red earth, pale flagstone streets, cobble square",
+   "label": "붉은 흙 바닥 · 옅은 판석 길 · 엇갈린 벽돌 광장",
+   "en": "red earth, pale flagstone streets, herringbone brick square",
    "ground": "ground-terra",
    "road": "road-flag",
    "roadEdge": "kerb",
-   "plaza": "plaza-cobble",
-   "track": "road-gravel"
+   "plaza": "plaza-herring",
+   "track": "road-dirt"
   }
  },
  "species": {
