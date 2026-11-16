@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -85,6 +86,41 @@ describe("delete / duplicate / prune", () => {
     expect(out.ok).toBe(false);
     expect(JSON.stringify(ctx.project.database)).toBe(before);
   });
+  it("game-breaking references block with the fix named; plain list entries are cleared", () => {
+    const solo = fresh();
+    const only = run(solo, "delete_database_record", { collection: "actors", id: "actor_hero", clearReferences: true });
+    expect(only.ok).toBe(false);
+    expect(only.issues?.[0]?.message).toContain("only actor in the start party");
+    const two = fresh();
+    two.project.system.startActorIds = ["actor_hero", "actor_mage"];
+    expect(run(two, "delete_database_record", { collection: "actors", id: "actor_hero", clearReferences: true }).ok).toBe(true);
+    expect(two.project.system.startActorIds).toEqual(["actor_mage"]);
+    const cmd = fresh();
+    cmd.project.database.battleCommands = [...(cmd.project.database.battleCommands ?? []), { id: "cmd_ice", name: "Ice", kind: "skill", skillId: "skill_ice" }];
+    const blocked = run(cmd, "delete_database_record", { collection: "skills", id: "skill_ice", clearReferences: true });
+    expect(blocked.ok).toBe(false);
+    expect(blocked.issues?.[0]?.message).toContain("battleCommands");
+    const shop = fresh();
+    shop.project.maps[shop.project.startMapId]!.events.push({ id: "ev_shop", name: "Shop", x: 3, y: 3, pages: [{ id: "p", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "shop", items: [{ itemId: "item_ether" }] }] }] } as never);
+    expect(run(shop, "delete_database_record", { collection: "items", id: "item_ether", clearReferences: true }).ok).toBe(false);
+  });
+  it("an item in a quest reward and equipment in initialEquipment are cleared and reported", () => {
+    const q = fresh();
+    (q.project as unknown as { quests: unknown[] }).quests = [{ key: "q_t", title: "t", summary: "s", giver: { create: { name: "n" } }, steps: [], rewards: { items: [{ itemId: "item_ether", count: 1 }] } }];
+    const out = run(q, "delete_database_record", { collection: "items", id: "item_ether", clearReferences: true });
+    expect(out.ok, out.summary).toBe(true);
+    expect(warningsOf(out).join(" ")).toContain("quests");
+    expect(JSON.stringify((q.project as unknown as { quests: unknown[] }).quests)).not.toContain("item_ether");
+    const e = fresh();
+    expect(run(e, "delete_database_record", { collection: "equipment", id: "equip_sword", clearReferences: true }).ok).toBe(true);
+    expect(JSON.stringify(e.project.database.actors.map((a) => a.initialEquipment))).not.toContain("equip_sword");
+  });
+  it("prune_unused apply repeats until nothing more is unused (one call on the default database)", () => {
+    const ctx = fresh();
+    const out = run(ctx, "prune_unused", { collections: ["skills", "items"], apply: true });
+    expect(out.ok).toBe(true);
+    expect(run(ctx, "prune_unused", { collections: ["skills", "items"] }).summary).toMatch(/^Found 0 unused/u);
+  });
   it("prune_unused reports unused records per collection and deletes them on apply", () => {
     const ctx = fresh();
     const report = run(ctx, "prune_unused", { collections: ["skills"] });
@@ -118,6 +154,51 @@ describe("argument guard: real clears on existing records are applied, filler is
     const filler = preCheck("upsert_actor", getTool("upsert_actor")!.parameters, { actor: { id: actor.id, name: "a", nickname: "", learnedSkills: [], battleCommandIds: [] } }, p) as { args: { actor: Record<string, unknown> }; notes: string[] };
     expect(filler.args.actor.learnedSkills).toBeUndefined();
     expect(filler.notes.join(" ")).toContain("send it alone");
+  });
+  it("a 4–6 field real edit with one clearing value is applied (「이름 바꾸고 드랍은 없애 줘」)", () => {
+    const q = createBlankProject() as Project;
+    const slime = q.database.enemies.find((e) => e.id === "enemy_slime")!;
+    slime.rewards = { ...slime.rewards, drops: [{ itemId: "item_potion", ratePercent: 50, quantity: 1, condition: { kind: "always" } }] } as never;
+    const out = preCheck("upsert_enemy", getTool("upsert_enemy")!.parameters, { enemy: { id: "enemy_slime", name: "젤리", level: 3, flying: true, rewards: { gold: 45, drops: [] } } }, q) as { args: { enemy: { rewards: Record<string, unknown> } }; notes: string[] };
+    expect(out.args.enemy.rewards.drops).toEqual([]);
+    expect(out.notes.join(" ")).toContain("applied as sent");
+    expect(out.notes.join(" ")).not.toContain("NOT APPLIED");
+  });
+  it("a terra-style schema fill (most sent fields empty/zero/false) is still pruned even with real values among them", () => {
+    const q = createBlankProject() as Project;
+    const potion = q.database.items.find((i) => i.id === "item_potion")!;
+    const fill = { id: potion.id, name: "큰 회복약", description: "", usableActorIds: [], usableClassIds: [], healStateIds: [], stateEffects: [], onlyUsableInMenu: false, mpRecovery: { flat: 0, percentMax: 0 }, seedParameterBonuses: { attack: 0, defense: 0, mind: 0, agility: 0 } };
+    const out = preCheck("upsert_item", getTool("upsert_item")!.parameters, { item: fill }, q) as { args: { item: Record<string, unknown> }; notes: string[] };
+    expect(out.args.item.description).toBeUndefined();
+    expect(out.args.item.name).toBe("큰 회복약");
+    expect(out.notes.join(" ")).toMatch(/^NOT APPLIED/mu);
+    expect(out.notes.join(" ")).not.toContain("applied as sent");
+  });
+});
+
+describe("provider strict-schema modes accept the open record (additionalProperties:true)", () => {
+  it("openai strict mode sends the record tools (as non-strict, so no «fill every field»); Google/CCA keep every top-level field", () => {
+    const ctx = fresh();
+    const names = ["upsert_item", "upsert_enemy", "upsert_actor", "upsert_skill", "upsert_troop"];
+    const tools = names.map((n) => englishToolCopy(createPiToolset(ctx, { toolNames: [n] }).find((t) => t.name === n)!, true));
+    for (const t of tools) expect((Object.values((t.parameters as { properties: Record<string, { properties?: { id?: unknown }; additionalProperties?: unknown }> }).properties).find((v) => v.properties?.id))?.additionalProperties).toBe(true);
+    const result = spawnSync("bun", ["-e", `
+      import { convertTools } from "./node_modules/@oh-my-pi/pi-ai/src/providers/openai-responses.ts";
+      import { normalizeSchemaForGoogle, normalizeSchemaForCCA } from "./node_modules/@oh-my-pi/pi-ai/src/utils/schema/normalize.ts";
+      const tools = await Bun.stdin.json();
+      const quarantined = [];
+      const wire = convertTools(tools, true, { id: "gpt-strict", api: "openai-responses", provider: "openai", compat: {} }, (n) => quarantined.push(n));
+      console.log(JSON.stringify(tools.map((t) => { const w = wire.find((x) => x.name === t.name); return { name: t.name, sent: !!w, strict: w?.strict === true, keys: Object.keys(w?.parameters?.properties ?? {}), google: Object.keys(normalizeSchemaForCCA(normalizeSchemaForGoogle(t.parameters)).properties ?? {}), quarantined: quarantined.includes(t.name) }; })));
+    `], { cwd: process.cwd(), input: JSON.stringify(tools.map((t) => ({ name: t.name, description: t.description, parameters: t.parameters }))), encoding: "utf8", timeout: 30000 });
+    expect(result.error).toBeUndefined();
+    expect(result.status, result.stderr).toBe(0);
+    const rows = JSON.parse(result.stdout) as { name: string; sent: boolean; strict: boolean; keys: string[]; google: string[]; quarantined: boolean }[];
+    for (const [i, row] of rows.entries()) {
+      const top = Object.keys((tools[i]!.parameters as { properties: object }).properties);
+      expect(row, row.name).toMatchObject({ sent: true, strict: false, quarantined: false });
+      expect(row.keys).toEqual(top);
+      expect(row.google).toEqual(top);
+    }
   });
 });
 

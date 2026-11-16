@@ -41,6 +41,8 @@ export type SmallJob = {
   /** 그럴듯한 오답들. 자기검사에서 모두 불합격해야 한다. */
   wrong: Array<{ note: string; calls: ToolCall[] }>;
   note?: string;
+  /** 도구 호출 상한 — 넘으면 판정이 통과여도 불합격(자료집 묶음: 기본 크기 자료집에서 «한 번에» 해야 하는 일). */
+  maxToolCalls?: number;
 };
 export type SmallJobSuite = { schemaVersion: 1; kind: 'assistant-small-jobs'; /** 보고서 머리글. 없으면 「작은 일 30가지」. */ title?: string; description: string; autoAnswer: string; fixtures: Record<string, string>; families: Record<string, string>; jobs: SmallJob[] };
 

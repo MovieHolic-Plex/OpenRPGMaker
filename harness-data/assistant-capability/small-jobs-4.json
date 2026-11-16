@@ -5,7 +5,8 @@
  "description": "2026-11-16 자료집 적대 리뷰 B 의 오너 문장 여섯(안 쓰는 것 지우기 · 적 일괄 HP/경험치 · 이름+값 · 직업+새 스킬 셋 · 용어 · 전체 테마 다시 쓰기)과 목록 비우기 · 자동 전투 끄기. 픽스처 dbsmall = 기본 자료집을 줄인 것.",
  "autoAnswer": "네가 판단해서 진행해 줘.",
  "fixtures": {
-  "dbsmall": "기본 자료집을 줄인 프로젝트(배우 12 · 직업 12 · 스킬 약 130 · 아이템 7 · 장비 11 · 적 6 · 적 그룹 7 · 상태 약 12)"
+  "dbsmall": "기본 자료집을 줄인 프로젝트(배우 12 · 직업 12 · 스킬 약 130 · 아이템 7 · 장비 11 · 적 6 · 적 그룹 7 · 상태 약 12)",
+  "blank": "빈 프로젝트(기본 크기 자료집 — 스킬 약 1,200 · 아이템 1,000)"
  },
  "families": {
   "dbtidy": "자료집 정리(지우기)",
@@ -208,6 +209,66 @@
         "collection": "skills",
         "id": "skill_fire",
         "clearReferences": true
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "db-delete-unused-full",
+   "family": "dbtidy",
+   "fixture": "blank",
+   "request": "안 쓰는 스킬이랑 아이템 정리해서 지워 줘",
+   "note": "기본 크기 자료집(스킬 약 1,200 · 아이템 1,000). 읽기 몇 번 + 지우기 한 번이면 된다 — 레코드마다 지우면 상한을 넘는다.",
+   "maxToolCalls": 20,
+   "check": {
+    "kind": "unusedRemoved",
+    "tables": [
+     "skills",
+     "items"
+    ],
+    "engine": [
+     "skill_attack"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "prune_unused",
+     "args": {
+      "collections": [
+       "skills",
+       "items"
+      ],
+      "apply": true
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "스킬만 지웠다",
+     "calls": [
+      {
+       "tool": "prune_unused",
+       "args": {
+        "collections": [
+         "skills"
+        ],
+        "apply": true
+       }
+      }
+     ]
+    },
+    {
+     "note": "아이템만 지웠다",
+     "calls": [
+      {
+       "tool": "prune_unused",
+       "args": {
+        "collections": [
+         "items"
+        ],
+        "apply": true
        }
       }
      ]

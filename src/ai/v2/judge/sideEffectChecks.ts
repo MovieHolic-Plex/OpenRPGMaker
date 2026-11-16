@@ -50,7 +50,7 @@ export function battleDataEmptied(before: Project, after: Project, _task: string
 }
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
-export function unaskedChanges(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
+export function unaskedChanges(before: Project, after: Project, task: string, _writes?: StageWrites): Finding[] {
   const artAsk = asksLookChange(task);
   const out: Finding[] = [];
   if (!artAsk) for (const map of Object.values(before.maps)) {
@@ -120,7 +120,7 @@ export function databaseChangeReport(before: Project, after: Project, writes?: S
       changed.length ? `고침 ${changed.length}(${changed.slice(0, 5).join(", ")}${changed.length > 5 ? " …" : ""})` : "",
     ].filter(Boolean).join(" · ")}${shrank.length ? ` · 줄어든 목록 ${shrank.slice(0, 4).join(", ")}${shrank.length > 4 ? " …" : ""}` : ""}`);
   }
-  const t0 = (before.meta as { terms?: Record<string, unknown> } | undefined)?.terms ?? {}, t1 = (after.meta as { terms?: Record<string, unknown> } | undefined)?.terms ?? {};
+  const t0 = (before.meta?.terms ?? {}) as unknown as Record<string, unknown>, t1 = (after.meta?.terms ?? {}) as unknown as Record<string, unknown>;
   const terms = Object.keys({ ...t0, ...t1 }).filter((k) => JSON.stringify(t0[k]) !== JSON.stringify(t1[k]));
   if (terms.length) out.push(`용어: ${terms.slice(0, 8).map((k) => `${k} «${String(t0[k] ?? "")}»→«${String(t1[k] ?? "")}»`).join(", ")}`);
   // 배우·직업의 전투 데이터를 비운 것은 따로 한 줄(메뉴에서 숨기라는 요청을 데이터 지우기로 흉내 낸 2026-10-25 T4 — 이제 막지 않고 보이게 적는다).

@@ -25,9 +25,16 @@ describe("넷째 묶음 — 자료집 고치기", () => {
     expect(fixture.database.skills.length).toBeLessThan(200);
   });
   it("오너 문장 여섯과 목록 비우기 · 자동 전투 끄기가 있다", () => {
-    expect(fourth.jobs.map((job) => job.id)).toEqual(["db-delete-unused", "db-enemy-hp-exp", "db-rename-price", "db-class-skills", "db-terms", "db-theme-rewrite", "db-clear-list", "db-auto-battle-off"]);
-    expect(fourth.jobs.every((job) => job.fixture === "dbsmall")).toBe(true);
+    expect(fourth.jobs.map((job) => job.id)).toEqual(["db-delete-unused", "db-delete-unused-full", "db-enemy-hp-exp", "db-rename-price", "db-class-skills", "db-terms", "db-theme-rewrite", "db-clear-list", "db-auto-battle-off"]);
+    expect(fourth.jobs.filter((job) => job.fixture !== "dbsmall").map((job) => job.id)).toEqual(["db-delete-unused-full"]);
   });
+  it("기본 크기 자료집에서 안 쓰는 것 지우기는 호출 상한이 있고, 손 정답은 한 번이다", () => {
+    const job = fourth.jobs.find((entry) => entry.id === "db-delete-unused-full")!;
+    expect(job.maxToolCalls).toBeLessThanOrEqual(20);
+    expect(job.reference).toHaveLength(1);
+    const blank = buildFixture("blank");
+    expect(runCheck(job.check, job.allow, blank, applyCalls(blank, job.reference)).pass).toBe(true);
+  }, 300_000);
   const problemsOf = (job: SmallJob, base: Project): string[] => {
     const problems: string[] = [];
     const verdict = (calls: SmallJob["reference"]) => runCheck(job.check, job.allow, base, applyCalls(base, calls));
@@ -39,7 +46,7 @@ describe("넷째 묶음 — 자료집 고치기", () => {
     return problems;
   };
   it("손대지 않으면 불합격, 손 정답·다른 모양의 정답은 합격, 오답은 불합격", () => {
-    expect(fourth.jobs.flatMap((job) => problemsOf(job, fixture))).toEqual([]);
+    expect(fourth.jobs.filter((job) => job.fixture === "dbsmall").flatMap((job) => problemsOf(job, fixture))).toEqual([]);
   }, 600_000);
   it("직업 배움표를 통째로 덮어 줄인 것은 불합격이다(B #5)", () => {
     const job = fourth.jobs.find((entry) => entry.id === "db-class-skills")!;

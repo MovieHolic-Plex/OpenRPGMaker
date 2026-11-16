@@ -122,9 +122,11 @@ export function englishToolCopy(tool: PiToolShape, upFront: boolean): PiToolShap
  */
 function openRecordFields(name: string, parameters: PiToolShape["parameters"]): PiToolShape["parameters"] {
   const arg = DB_UPSERT_TOOLS[name]?.arg;
-  const props = isObj(parameters) && isObj(parameters.properties) ? parameters.properties : undefined;
-  if (!arg || !props || !isObj(props[arg])) return parameters;
-  return { ...parameters, properties: { ...props, [arg]: { ...(props[arg] as Obj), additionalProperties: true } } } as PiToolShape["parameters"];
+  const root = parameters as unknown as Json;
+  const props = isObj(root) && isObj(root.properties) ? root.properties : undefined;
+  const record = arg && props ? props[arg] : undefined;
+  if (!isObj(root) || !props || !isObj(record)) return parameters;
+  return { ...root, properties: { ...props, [arg!]: { ...record, additionalProperties: true } } } as unknown as PiToolShape["parameters"];
 }
 
 /** 앞서 본 큰 하위 스키마 → 처음 나온 자리(«도구 경로»). collapseRepeats 가 채운다. */

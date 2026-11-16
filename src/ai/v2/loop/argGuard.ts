@@ -57,7 +57,7 @@ const unsetWord = (real: Schema | undefined, v: unknown): boolean => v === "none
  * 그것은 채움이 아니라 「비워 줘」「꺼 줘」「0 으로」다 — 걷지 않고(kept) 도구에 보낸다. 저장값도 비어 있으면 바뀌는 것이 없으니 걷는다.
  * set_project_settings 는 지금 설정(system·meta)과 견준다. 새 레코드·그 밖의 도구는 전처럼 걷는다.
  */
-function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema, stored?: (path: string) => unknown, focused = false): { value: unknown; removed: string[]; kept: string[] } {
+function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema, stored?: (path: string) => unknown, fill = true): { value: unknown; removed: string[]; kept: string[] } {
   const removed: string[] = [];
   const kept: string[] = [];
   const walk = (s: Schema | undefined, r: Schema | undefined, v: unknown, p: string): unknown => {
@@ -69,7 +69,7 @@ function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema
       const cs = s.properties[k];
       const at = p ? `${p}.${k}` : k;
       if (cs && !required.has(k) && (emptyish(child) || allDefault(child) || unsetWord(r?.properties?.[k], child))) {
-        if (meantAsChange(child, stored ? stored(at) : NOT_IN_RECORD, unsetWord(r?.properties?.[k], child), focused)) { kept.push(at); out[k] = child; continue; }
+        if (meantAsChange(child, stored ? stored(at) : NOT_IN_RECORD, unsetWord(r?.properties?.[k], child), fill)) { kept.push(at); out[k] = child; continue; }
         removed.push(at); continue;
       }
       const next = cs ? walk(cs, r?.properties?.[k], child, at) : child;
@@ -82,25 +82,38 @@ function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema
   return { value: walk(schema, real, value, ""), removed, kept };
 }
 
-/** 몇 칸만 보낸 호출인가(레코드 id 밖 칸 3개 이하) — 스키마를 한꺼번에 채운 호출과 가른다. */
-function focusedCall(args: Obj): boolean {
+/** 칸 값이 «아무것도 안 정한» 모양인가 — 빈 글·빈 목록·null·0·false·"none"·잎이 모두 그런 객체. */
+const defaultLooking = (v: unknown): boolean => v === 0 || v === false || v === "none" || emptyish(v) || allDefault(v);
+
+/** 잎 값들 — 객체는 펼치고(좌표 {x,y} 와 목록은 잎 하나). */
+const leavesOf = (v: unknown): unknown[] => isObj(v) && !("x" in v && "y" in v) && Object.keys(v).length ? Object.values(v).flatMap(leavesOf) : [v];
+
+/**
+ * 이 호출이 스키마를 기본값으로 «채운» 호출인가(2026-11-16 리뷰 2c — 칸 수 상한 대신 채움 신호).
+ * 채움의 표: 보낸 잎(레코드 id·todoId 밖, 객체는 펼쳐 센다) 셋 이상 가운데 절반 넘게가 기본값 모양이다
+ * (terra: 칸 수십 개, 거의 모두 ""·[]·0 · battle:{…false 다섯} 같은 설정 채움).
+ * 진짜 고침은 바꿀 값을 보내고 비울 칸만 비운다 — {name, price, description, drops:[]} 는 넷 중 하나만 비어 채움이 아니다.
+ */
+function fillCall(args: Obj): boolean {
   const nested = Object.values(args).find((v) => isObj(v) && typeof (v as Obj).id === "string") as Obj | undefined;
   const body = nested ?? args;
-  return Object.keys(body).filter((k) => k !== "id" && k !== "todoId").length <= 3;
+  const leaves = Object.entries(body).filter(([k]) => k !== "id" && k !== "todoId").flatMap(([, v]) => leavesOf(v));
+  const blank = leaves.filter(defaultLooking).length;
+  return leaves.length >= 3 && blank * 2 > leaves.length;
 }
 
 /**
- * 빈 값·기본값 묶음이 «채움» 이 아니라 저장값을 바꾸라는 뜻인가. 채움은 스키마의 칸을 한꺼번에 채운 호출에서 나온다(terra: 칸 수십 개) —
- * 그래서 뜻으로 보는 것은 몇 칸만 보낸 호출(focused: id 밖 칸 3개 이하)에서, 저장값을 실제로 바꾸는 값뿐이다.
+ * 빈 값·기본값 묶음이 «채움» 이 아니라 저장값을 바꾸라는 뜻인가. 채움은 스키마의 칸을 한꺼번에 기본값으로 채운 호출에서 나온다(fillCall) —
+ * 그래서 뜻으로 보는 것은 채움이 아닌 호출에서, 저장값을 실제로 바꾸는 값뿐이다.
  *  - "none"(비워 둔다)·null, 레코드 밖 칸(새 레코드·저장값을 모르는 도구): 늘 채움(전의 동작).
  *  - 빈 목록·빈 글: 저장된 목록·글이 비어 있지 않을 때(「드랍 빼 줘」·「행동 제한 없애」).
- *  - 잎이 0/false 인 객체: 잎 셋 이하이고 저장값과 다를 때(저장값이 없는 칸 — 엔진 기본값이 도는 독의 턴당 피해 — 도 포함).
- * 많은 칸을 보낸 호출의 빈 값은 걷고, 결과 글이 «하나만 따로 보내라» 고 적는다(조용히 버리지 않는다).
+ *  - 잎이 0/false 인 객체: 저장값과 다를 때(저장값이 없는 칸 — 엔진 기본값이 도는 독의 턴당 피해 — 도 포함).
+ * 채움 호출의 빈 값은 걷고, 결과 글이 «하나만 따로 보내라» 고 적는다(조용히 버리지 않는다).
  */
-function meantAsChange(child: unknown, was: unknown, unset: boolean, focused: boolean): boolean {
-  if (!focused || unset || child === null || was === NOT_IN_RECORD) return false;
+function meantAsChange(child: unknown, was: unknown, unset: boolean, fill: boolean): boolean {
+  if (fill || unset || child === null || was === NOT_IN_RECORD) return false;
   if (Array.isArray(child) || child === "") return (Array.isArray(child) ? Array.isArray(was) : typeof was === "string") && !emptyish(was);
-  if (!isObj(child) || Object.keys(child).length > 3) return false;
+  if (!isObj(child)) return false;
   return was === undefined || changesStored(child, was);
 }
 
@@ -409,10 +422,10 @@ export function preCheck(toolName: string, schema: unknown, rawArgs: unknown, pr
   const notes: string[] = [];
   let args: Obj = clone(rawArgs);
   if (isRegistryTool(toolName)) {
-    const pruned = pruneDefaults(schema as Schema, args, getTool(toolName)?.parameters as Schema | undefined, storedReader(toolName, args, project), focusedCall(args));
+    const pruned = pruneDefaults(schema as Schema, args, getTool(toolName)?.parameters as Schema | undefined, storedReader(toolName, args, project), fillCall(args));
     if (pruned.removed.length || pruned.kept.length) args = pruned.value as Obj;
     // 걷은 칸은 이 레코드에서 바뀌는 것이 없다(새 레코드이거나 저장값도 비어 있다) — 그 뜻을 그대로 적는다. 지운 칸이 성공처럼 읽히지 않게.
-    if (pruned.removed.length) notes.push(`NOT APPLIED — empty/zero/false optional fields read as unfilled defaults: ${pruned.removed.slice(0, 8).join(", ")}${pruned.removed.length > 8 ? ` +${pruned.removed.length - 8} more` : ""} (a new record, a stored value that is already the same, or a call that sends many fields). If one of them is a real change, send it alone: {id, <that field>}`);
+    if (pruned.removed.length) notes.push(`NOT APPLIED — empty/zero/false optional fields read as unfilled defaults: ${pruned.removed.slice(0, 8).join(", ")}${pruned.removed.length > 8 ? ` +${pruned.removed.length - 8} more` : ""} (a new record, a stored value that is already the same, or a call where most sent fields are empty/zero — a schema fill). If one of them is a real change, send it alone: {id, <that field>}`);
     if (pruned.kept.length) notes.push(`applied as sent — these empty/zero/false values clear or switch off what is stored: ${pruned.kept.slice(0, 8).join(", ")}`);
   }
   // 치워진 빈 시작 맵(blankStart.ts retireSeedStart)의 id 를 아직 쓰는 호출은 지금 시작 맵으로 보낸다 — 조수는 첫 지시문에서 본 그 id 를 계속 쓴다.

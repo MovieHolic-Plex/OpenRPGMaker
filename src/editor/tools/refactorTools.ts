@@ -731,19 +731,32 @@ const pruneUnused: ToolDefinition = {
 
 /** 묶음별 안 쓰는 레코드(전체 참조 색인 — dbRecordDelete.unusedRecords). 지우면 남은 것이 새로 고아가 될 수 있어(적 → 그 적만 쓰던 기술) 결과에 다시 부르라고 적는다. */
 function pruneCollections(draft: Project, collections: readonly DeletableCollection[], apply: boolean): ToolExecResult {
-  const found = unusedRecords(draft, collections);
-  const lines = [...found].map(([c, rows]) => `${c} ${rows.length}`);
-  const total = [...found.values()].reduce((n, rows) => n + rows.length, 0);
-  const sample = [...found].map(([c, rows]) => ({ collection: c, count: rows.length, records: rows.slice(0, 40).map((r) => ({ id: r.id, name: r.name ?? "" })) }));
-  if (apply) for (const [c, rows] of found) {
-    const gone = new Set(rows.map((r) => r.id));
-    const list = collectionRows(draft, c);
-    if (list) list.splice(0, list.length, ...list.filter((r) => !gone.has(r.id)));
+  // apply 는 «안 쓰게 된 것» 이 없을 때까지 되풀이한다 — 아이템을 지우면 그 아이템만 쓰던 효과 스킬이 안 쓰는 것이 된다(실모델이 두 번 불렀다, 2026-11-16).
+  const counts = new Map<DeletableCollection, number>(collections.map((c) => [c, 0]));
+  const sample = new Map<DeletableCollection, { id: string; name: string }[]>(collections.map((c) => [c, []]));
+  let rounds = 0;
+  for (;;) {
+    const found = unusedRecords(draft, collections);
+    let round = 0;
+    for (const [c, rows] of found) {
+      round += rows.length;
+      counts.set(c, (counts.get(c) ?? 0) + rows.length);
+      sample.get(c)!.push(...rows.slice(0, Math.max(0, 40 - sample.get(c)!.length)).map((r) => ({ id: r.id, name: r.name ?? "" })));
+    }
+    if (!apply || round === 0) break;
+    rounds += 1;
+    for (const [c, rows] of found) {
+      const gone = new Set(rows.map((r) => r.id));
+      const list = collectionRows(draft, c);
+      if (list) list.splice(0, list.length, ...list.filter((r) => !gone.has(r.id)));
+    }
+    if (rounds >= 8) break;
   }
+  const total = [...counts.values()].reduce((n, k) => n + k, 0);
+  const lines = [...counts].map(([c, n]) => `${c} ${n}`);
   return {
-    summary: `${apply ? "Deleted" : "Found"} ${total} unused record(s) — ${lines.join(", ")}${apply ? "" : " (report only — call again with apply:true to delete them)"}. Unused = no other record, map, event, common event or setting points at it.`,
-    data: { unused: sample, applied: apply },
-    ...(apply && total ? { warnings: ["Deleting records can leave others unused (an enemy's own skills) — call prune_unused again with the same collections to see what is left."] } : {}),
+    summary: `${apply ? "Deleted" : "Found"} ${total} unused record(s) — ${lines.join(", ")}${apply ? (rounds > 1 ? ` (in ${rounds} passes: deleting some left others unused)` : "") : " (report only — call again with apply:true to delete them)"}. Unused = no other record, map, event, common event or setting points at it.`,
+    data: { unused: [...sample].map(([collection, records]) => ({ collection, count: counts.get(collection) ?? 0, records })), applied: apply },
   };
 }
 

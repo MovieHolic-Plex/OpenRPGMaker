@@ -2,7 +2,7 @@
 // 왜(2026-11-16 자료집 적대 리뷰 A F1 · B #1): 삭제 거절이 «몬스터 종족 '리프링'이 이 스킬을 배웁니다 (외 9건)» 한 줄뿐이라 조수가 나머지 9곳을
 // 찾을 길이 없었고, 거절 검사(databaseRecordReferences.ts)는 고전 아홉 묶음만 봤다. 이 색인은 프로젝트 전체(맵·이벤트·시스템·자료집)의
 // 문자열 값과 사전 열쇠를 한 번 훑는다 — 묶음마다 손으로 적은 목록이 아니라 실제 데이터에서 찾는다(기본 프로젝트 약 90ms).
-// 타일셋·업로드 자산·리소스 프로필은 레코드 id 를 담지 않으므로 건너뛴다(그 셋이 프로젝트 글자의 97% 다).
+// 타일셋·업로드 자산·리소스 프로필은 레코드 id 를 담지 않으므로 건너뛴다(그 셋이 프로젝트 글자의 97% 다). meta(용어·오프닝 책 등)는 본다 — 2026-11-16 리드 검토.
 import type { Project } from "@/project/types";
 
 export type RefPath = readonly (string | number)[];
@@ -13,7 +13,7 @@ export interface RefSite {
   readonly asKey: boolean;
 }
 
-const SKIP_ROOT = new Set(["tilesets", "assets", "resourceProfiles", "version", "meta"]);
+const SKIP_ROOT = new Set(["tilesets", "assets", "resourceProfiles", "version"]);
 /** 값이 같아도 id 참조가 아닌 칸 — 이름·글·종류 낱말. */
 const TEXT_KEYS = new Set(["name", "nickname", "description", "message", "text", "body", "title", "label", "kind", "type", "note", "summary", "prompt", "caption"]);
 

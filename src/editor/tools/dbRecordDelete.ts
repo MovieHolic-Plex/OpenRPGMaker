@@ -75,6 +75,10 @@ interface Plan { readonly site: RefSite; readonly how: "remove-entry" | "remove-
 function planClear(project: Project, site: RefSite): Plan | undefined {
   if (isScriptSite(site)) return undefined;
   const p = site.path;
+  // meta(오프닝 책·게임별 기록)는 모양이 제각각이다 — 자동으로 걷지 않는다.
+  if (p[0] === "meta") return undefined;
+  // 자료집 전투 명령(kind:"skill"+skillId)의 skillId 를 빼면 그 명령이 말없이 «기술 메뉴» 로 바뀐다 — 걷지 않는다.
+  if (p[0] === "database" && p[1] === "battleCommands" && typeof p[2] === "number" && p.length === 4) return undefined;
   if (site.asKey) return { site, how: "remove-key", holder: p.slice(0, -1) as (string | number)[], key: p[p.length - 1]! };
   // 목록 안의 문자열 값: [..., list, i]
   const last = p[p.length - 1]!;
@@ -121,7 +125,7 @@ export function deleteDatabaseRecord(project: Project, collectionArg: unknown, r
   const list = (xs: readonly { site: RefSite }[], n = 12) => `${xs.slice(0, n).map((x) => `- ${describeSite(project, x.site)}`).join("\n")}${xs.length > n ? `\n- … +${xs.length - n} more` : ""}`;
   if (blocked.length) {
     throw new ToolError(
-      `Not deleted: ${label} is used in ${sites.length} place(s); ${blocked.length} cannot be cleared automatically (a required field, or an event command/condition — removing it would change the story):\n${list(blocked)}\n`
+      `Not deleted: ${label} is used in ${sites.length} place(s); ${blocked.length} cannot be cleared automatically (a required field, an event command/condition, a battle command's skill, or a meta record — removing it would break the game or change the story):\n${list(blocked)}\n`
       + `Change those first (point them at another record), then call delete_database_record again${clearable.length ? ` with clearReferences:true (it also removes the other ${clearable.length} list/optional reference(s))` : ""}.`,
       { code: "database-record-in-use" },
     );
@@ -139,6 +143,8 @@ export function deleteDatabaseRecord(project: Project, collectionArg: unknown, r
   const now = ensureRows(project, collection);
   const at = now.findIndex((r) => r.id === row.id);
   if (at >= 0) now.splice(at, 1);
+  // 시작 파티가 비면 새 게임을 시작할 수 없다 — 거절한다(초안은 버려진다).
+  if (collection === "actors" && (project.system.startActorIds?.length ?? 0) === 0) throw new ToolError(`Not deleted: ${label} is the only actor in the start party, and a game with no party cannot start. Put another actor in the start party first (set_party{actorIds:[…]}), then delete it.`, { code: "database-record-in-use" });
   // 적 그룹에 적이 하나도 안 남으면 그 전투는 열리지 않는다 — 게임이 깨지는 경우라 거절한다(초안은 버려진다).
   const emptied = project.database.troops.filter((t) => (t.members?.length ?? 0) === 0 && t.enemyIds.length === 0);
   if (emptied.length) throw new ToolError(`Not deleted: removing ${label} would leave troop(s) ${emptied.map((t) => `${t.id} «${t.name}»`).join(", ")} with no enemies, and that battle could not start. Give those troops another enemy with upsert_troop (or delete the troops) first.`, { code: "database-record-in-use" });
