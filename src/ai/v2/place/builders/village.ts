@@ -55,7 +55,10 @@ export function doorBuildingName(kit: { id: string; name?: string }): string {
 }
 
 /** 명세의 특징 낱말 — spec.features 와 hints.features(모델이 hints 안에 적기도 한다: r6 «갈매나루» hints.features ["plaza","harbour"]). */
-const specFeatures = (spec: PlaceSpec): string[] => [...(spec.features ?? []), ...(Array.isArray((spec.hints as { features?: unknown } | undefined)?.features) ? ((spec.hints as { features: unknown[] }).features) : [])].map((f) => String(f).trim()).filter(Boolean);
+const specFeatures = (spec: PlaceSpec): string[] => {
+  const hinted: unknown = (spec.hints as { features?: unknown } | undefined)?.features;
+  return [...(spec.features ?? []), ...(Array.isArray(hinted) ? (hinted as unknown[]) : [])].map((f) => String(f).trim()).filter(Boolean);
+};
 
 /**
  * 명세가 청한 건물: hints.buildings · hints.layout.landmark.kit · hints.layout.anchor.kit, 그리고 요청 특징 낱말(spec.features) 가운데 건물 킷의 id 인 것
