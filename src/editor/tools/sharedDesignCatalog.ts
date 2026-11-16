@@ -115,7 +115,7 @@ const coveredKit = (kitId: string) => kitId.startsWith("dewbank:");
 const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || groupId.startsWith("climate-terrain:") || groupId.startsWith("atlas-vehicles:");
 
 function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
-  return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id)).map(kit => {
+  return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id) && !kit.ai?.supersededBy).map(kit => {
     const label = `${kit.id} ${kit.name}`;
     const extra = [
       ...(/분수|우물|수반|fountain|well/iu.test(label) ? ["분수", "분수대", "우물", "fountain"] : []),

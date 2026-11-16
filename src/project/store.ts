@@ -590,6 +590,15 @@ class ProjectStore {
     return this.readOnlyProjectSnapshot ?? this.current;
   }
 
+  /**
+   * 이 프로젝트가 지금 스토어의 프로젝트이고, 그 타일셋·업로드 자산 항목이 더는 제자리에서 바뀌지 않는가(projectClone 계약).
+   * 미룬 부팅 정규화가 남아 있으면 아니다 — 정규화기(ensure*)는 타일셋 항목을 제자리에서 고친다(normalizeCurrentProject).
+   * 참일 때만 그 항목을 객체째 공유하는 사본을 만들 수 있다(projectClone.trustStoreOwnedEntries).
+   */
+  ownsSettledEntriesOf(project: Project): boolean {
+    return project === this.getCurrent() && this.deferredBootNormalization === null;
+  }
+
   /** Client-local authored revision, not a save receipt or a remote writer lease. */
   getVersionToken(): Readonly<{ lineage: number; generation: number }> {
     return Object.freeze({ lineage: this.contentLineage, generation: this.mutationGeneration });

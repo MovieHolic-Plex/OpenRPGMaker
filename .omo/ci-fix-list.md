@@ -76,7 +76,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **23** — `(no message)`
   - [ ] `test/e2ePaletteTileVisibility.test.ts`
   - [ ] `test/eventPreviewPaintCssom.test.ts`
-  - [ ] `test/placementMatchingAudit.test.ts`
+  - [x] `test/placementMatchingAudit.test.ts`
   - [ ] `test/playerBodyProjectPersistence.test.ts`
   - [ ] `test/pr687VerificationIntegration.test.ts`
   - [x] `test/qaGameCheck.test.ts`
@@ -196,7 +196,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/scarloxyPeopleGallery4.test.ts`
   - [ ] `test/sharedPortraitAssets.test.ts`
 - **2** — `AssertionError: expected +N to be N // Object.is equality`
-  - [ ] `test/shopRuntimeUx.test.ts`
+  - [x] `test/shopRuntimeUx.test.ts`
   - [x] `test/starterVillage.test.ts`
 - **2** — `AssertionError: expected '당신은 브라우저 기반 ND RPG 에디터의 개발 어시스턴트입니다.\…' to contain 'author_house'`
   - [ ] `test/structureKitPlacementConditions.test.ts`
