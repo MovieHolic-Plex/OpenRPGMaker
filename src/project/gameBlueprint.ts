@@ -99,6 +99,11 @@ export interface GameBlueprint {
   places?: GameBlueprintPlace[];
   /** 판정자가 받는 유일한 글 — 새 플레이어에게 «무엇을 하면 되는지» 한 줄. */
   playerGoal: string;
+  /**
+   * 오프닝에서 플레이어가 읽는 글(2~4줄) — 첫 맵에 서기 전에 듣는 이야기: 누구이고, 여기에 무슨 일이 있는가. 답(찾을 것이 어디 있는지)과 게임 낱말은 쓰지 않는다.
+   * 없으면 기본 오프닝은 playerGoal 에서 답·게임 낱말이 없는 문장만 싣는다(src/editor/tools/blueprintOpening.ts). 옛 청사진은 없다.
+   */
+  opening?: string[];
   /** 핵심 경로(시작 → 엔딩) 2~12단계. */
   steps: GameBlueprintStep[];
   /**
@@ -115,7 +120,7 @@ export interface GameBlueprint {
   updatedAt?: string;
 }
 
-export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12, closing: 6 } as const;
+export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12, closing: 6, opening: 6 } as const;
 
 /** 엔딩 화면에서 플레이어가 읽는 맺음 글. 없으면 빈 배열 — `ending.how` 는 설계 메모라 대신 쓰지 않는다. */
 export const endingClosing = (blueprint: Pick<GameBlueprint, "ending">): string[] => blueprint.ending.closing ?? [];
@@ -218,6 +223,10 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(places.length ? { places } : {}),
     ...(uiLookById(data.look) ? { look: uiLookById(data.look)!.id } : {}),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
+    ...(() => {
+      const opening = (Array.isArray(data.opening) ? data.opening : []).flatMap((line) => (typeof line === "string" && line.trim() ? [line.trim().slice(0, BLUEPRINT_LIMITS.text)] : [])).slice(0, BLUEPRINT_LIMITS.opening);
+      return opening.length ? { opening } : {};
+    })(),
     steps,
     ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60), ...(() => {
       const closing = (Array.isArray(ending.closing) ? ending.closing : []).flatMap((line) => (typeof line === "string" && line.trim() ? [line.trim().slice(0, BLUEPRINT_LIMITS.text)] : [])).slice(0, BLUEPRINT_LIMITS.closing);

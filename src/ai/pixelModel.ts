@@ -10,8 +10,9 @@ import { DEFAULT_ULTRABRAIN_EFFORT, DEFAULT_ULTRABRAIN_MODEL, DEFAULT_ULTRABRAIN
  * 만든다(`assistant-skills/pixel-dot-authoring`, 공방 `workshop-draw`). 생성형 이미지 모델은 도트 격자를
  * 지키지 못하므로(눈금·팔레트·3/4 시점) 이 용도에는 호출하지 않는다 — src/ai/imageRoute.ts 가 막는다.
  *
- * 저장값이 없으면(옛 설정) 기존 동작을 그대로 둔다: 공방 그리기는 계획·최종 판단(ultrabrain) 모델을 썼다.
- * 새 설정(defaultAiConfig)만 Argon 보통으로 시작한다. 이 칸은 계정 선택을 따라 바뀌지 않는다 — 고른 값이 유지된다.
+ * 저장값이 없으면 계획·최종 판단(ultrabrain) 모델을 따른다(resolvePixelModel follows). 옛 설정도, 2026-11-16 부터의 새 설정(defaultAiConfig)도 그렇다 —
+ * 공장 기본에서는 Claude Opus 5.5 · medium 이 도트도 찍는다. 이 칸은 계정 선택을 따라 바뀌지 않는다 — 고른 값이 유지된다.
+ * DEFAULT_PIXEL_MODEL 은 2026-10-16 ~ 2026-11-16 의 새 설정 기본(Google Argon 보통)이다. 그때 저장된 설정에는 이 값이 그대로 남아 있다.
  */
 export const DEFAULT_PIXEL_MODEL: RoleModel = { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-4-argon", thinkingLevel: "medium" };
 

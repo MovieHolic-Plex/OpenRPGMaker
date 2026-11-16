@@ -82,6 +82,20 @@ export function rankKindsByWord<K extends { readonly id: string; readonly ko: st
 }
 
 /**
+ * 모르는 이름에 가장 가까운 종류 하나 — 낱말이 id·뜻·한글 이름에 걸리거나 id 의 오타일 때만(아무 데도 안 걸리면 undefined: 게임이 터에 맞는 종류를 고른다).
+ * 모르는 kind 를 거절하지 않고 가까운 종류로 짓고 알린다(2026-11-16 오너 «거절은 게임이 깨질 때만»).
+ */
+export function nearestVillageKind(word: string): VillageKind | undefined {
+  const first = villageKindsNearestFirst(word)[0];
+  if (!first) return undefined;
+  // 표의 첫 종류가 그대로 맨 앞이면 걸린 것이 없다는 뜻일 수 있다 — 그 종류를 빼고 세워도 맨 앞이 같은지로 가린다
+  const w = word.trim().toLowerCase();
+  const touches = (k: VillageKind) => { const hay = `${k.id} ${k.hint} ${k.en} ${k.ko}`.toLowerCase(); return w.split(/[^a-z0-9가-힣]+/u).some((t) => t.length >= 2 && !COMMON_KIND_WORDS.has(t) && hay.includes(t)) || [...k.id.split("-"), ...k.ko.split(/\s+/u)].some((p) => p.length >= 2 && !COMMON_KIND_WORDS.has(p) && w.includes(p.toLowerCase())); };
+  const close = (k: VillageKind) => { let row = Array.from({ length: k.id.length + 1 }, (_, i) => i); for (let i = 1; i <= w.length; i += 1) { const next = [i]; for (let j = 1; j <= k.id.length; j += 1) next.push(Math.min(row[j]! + 1, next[j - 1]! + 1, row[j - 1]! + (w[i - 1] === k.id[j - 1] ? 0 : 1))); row = next; } return row[k.id.length]! <= Math.max(2, Math.floor(k.id.length / 3)); };
+  return touches(first) || close(first) ? first : undefined;
+}
+
+/**
  * 조수가 마을을 짓기 전에 읽는 종류 목록 한 줄. water 를 주면 그 물에 맞는 종류를 앞에(땅 그림 답), near 를 주면 그 낱말에 가까운 종류를 앞에(모르는 kind 의 거절 글).
  */
 export function villageKindMenu(by: { water?: VillageWater; near?: string } = {}): string {

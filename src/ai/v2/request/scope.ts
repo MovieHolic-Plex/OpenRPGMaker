@@ -68,11 +68,15 @@ const SEALED_ROOM = new RegExp(ROOM_GAME.sealed, "iu");
 export const ONE_ROOM_GAME = new RegExp(`${ROOM_GAME.sealed}|${ROOM_GAME.single}`, "iu");
 
 // 단독 «탈출» 은 «숲에서 탈출»·«성에서 탈출» 같은 열린 맵 게임도 잡는다 — 갇힌 곳 낱말과 함께일 때만 센다.
-const ENCLOSURE_NOUN = /(?:^|[^가-힣])(?:방|교실|감옥|지하실|저택|별장|병실|창고|엘리베이터|갇힌|갇혀)(?![가-힣]*[법향식])(?=[을를이가은는에서의으로와과\s]|$)/u;
+const ENCLOSURES = "방|교실|감옥|지하실|저택|별장|병실|창고|엘리베이터";
+const ENCLOSURE_NOUN = new RegExp(String.raw`(?:^|[^가-힣])(?:${ENCLOSURES}|갇힌|갇혀)(?![가-힣]*[법향식])(?=[을를이가은는에서의으로와과\s]|$)`, "u");
+// «갇힌 저택»·«갇힌 방» — 갇힌 이 닫힌 곳을 바로 꾸미면 그 자체로 갇힌 곳이다(«탈출» 없이 «나가자» 여도). «마왕성에 갇힌 공주» 처럼 사람을
+// 꾸미는 갇힌 은 여기 들지 않는다. 한 방 판정(ONE_ROOM_GAME)에는 넣지 않는다 — 갇힌 저택은 방이 여럿일 수 있다.
+const TRAPPED_IN = new RegExp(String.raw`(?:^|[^가-힣])갇힌\s*(?:${ENCLOSURES})(?![가-힣]*[법향식])(?=[을를이가은는에서의으로와과\s]|$)`, "u");
 /** 청사진이 갇힌 방을 빠져나가는 게임인가(엔딩 = 잠긴 문 열기). */
 export function isEscapeBlueprint(bp: GameBlueprint): boolean {
   const text = [bp.playerGoal, bp.ending.name, bp.ending.how, bp.request ?? ""].join(" ");
-  return SEALED_ROOM.test(text) || (/탈출|escape/iu.test(text) && ENCLOSURE_NOUN.test(text));
+  return SEALED_ROOM.test(text) || TRAPPED_IN.test(text) || (/탈출|escape/iu.test(text) && ENCLOSURE_NOUN.test(text));
 }
 
 /** 맵 여러 장과 이야기를 한 번에 맡기는 말(make_game 동사를 싣는 낱말). */

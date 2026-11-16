@@ -121,19 +121,23 @@ describe("연결 방식은 제공자 카드다", () => {
 
     const group = findByTestId(root, "ai-auth-quick");
     expect(group?.getAttribute("role")).toBe("radiogroup");
+    const claude = findByTestId(root, "ai-auth-quick-anthropic");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const codex = findByTestId(root, "ai-auth-quick-openai-codex");
+    expect(claude?.getAttribute("role")).toBe("radio");
     expect(gemini?.getAttribute("role")).toBe("radio");
     expect(codex?.getAttribute("role")).toBe("radio");
-    // 기본은 Antigravity — 선택된 것만 탭 순서에 들어간다(roving tabindex).
-    expect(gemini?.getAttribute("aria-checked")).toBe("true");
-    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    // 공장 기본은 Claude(2026-11-16, 조수 기본 = Opus 5.5 medium) — 선택된 것만 탭 순서에 들어간다(roving tabindex).
+    expect(claude?.getAttribute("aria-checked")).toBe("true");
+    expect(claude?.getAttribute("tabindex")).toBe("0");
+    expect(gemini?.getAttribute("aria-checked")).toBe("false");
+    expect(gemini?.getAttribute("tabindex")).toBe("-1");
     expect(codex?.getAttribute("aria-checked")).toBe("false");
     expect(codex?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
-  it("제공자 목록은 레지스트리 전체이고 앞의 둘은 Google·ChatGPT 다", async () => {
+  it("제공자 목록은 레지스트리 전체이고 앞의 셋은 Claude·Google·ChatGPT 다", async () => {
     // 예전 계약은 "Antigravity 하나뿐", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐다.
     // select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
     const { providers } = await loadDeps();
@@ -141,7 +145,7 @@ describe("연결 방식은 제공자 카드다", () => {
     const select = findByTestId(root, "ai-oh-my-pi-provider");
 
     expect(optionValues(select)).toEqual(providers.OH_MY_PI_PROVIDERS.map((provider) => provider.id));
-    expect(optionValues(select).slice(0, 2)).toEqual(["google-antigravity", "openai-codex"]);
+    expect(optionValues(select).slice(0, 3)).toEqual(["anthropic", "google-antigravity", "openai-codex"]);
     expect(select?.disabled).toBe(false);
     // fakeDom 은 hidden 속성을 속성 필드로 동기화하지 않으므로 attribute 로 본다.
     expect(select?.getAttribute("hidden")).toBe("");
@@ -319,12 +323,14 @@ describe("환경 변수 키", () => {
 });
 
 describe("기기 로그인", () => {
+  // 이 묶음은 Google 계정의 로그인 흐름을 본다 — 공장 기본이 Claude 가 된 뒤(2026-11-16)로는 Google 로 저장된 설정으로 연다.
+  const GOOGLE = "google-antigravity";
   it("코드와 주소를 링크로 보여 주고 취소를 제공한다", async () => {
     startChatGptLogin.mockResolvedValue({
       verificationUrl: "https://example.invalid/device",
       userCode: "ABCD-EFGH",
     });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
 
     findByTestId(root, "ai-oauth-login")?.click();
@@ -367,7 +373,7 @@ describe("기기 로그인", () => {
     fetchChatGptAuthStatus
       .mockResolvedValueOnce({ connected: false })
       .mockResolvedValue({ connected: true, env: false });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
 
     findByTestId(root, "ai-oauth-login")?.click();
@@ -397,7 +403,7 @@ describe("기기 로그인", () => {
       userCode: "",
       pasteCallback: true,
     });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -430,7 +436,7 @@ describe("기기 로그인", () => {
     fetchChatGptAuthStatus
       .mockResolvedValueOnce({ connected: false })
       .mockResolvedValue({ connected: true, env: false });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -462,7 +468,7 @@ describe("기기 로그인", () => {
       .mockResolvedValue({ connected: true, env: false });
     const readText = vi.fn(async () => "http://127.0.0.1:34099/oauth-callback?code=clip");
     vi.stubGlobal("navigator", { clipboard: { readText } });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -479,7 +485,7 @@ describe("기기 로그인", () => {
     startChatGptLogin.mockResolvedValue({ verificationUrl: longUrl, userCode: "" });
     const writeText = vi.fn(async () => undefined);
     vi.stubGlobal("navigator", { clipboard: { writeText } });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -509,7 +515,7 @@ describe("기기 로그인", () => {
     try {
       startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/d", userCode: "" });
       fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-      const { root, dispose } = await render();
+      const { root, dispose } = await render(GOOGLE);
       await vi.advanceTimersByTimeAsync(0);
       findByTestId(root, "ai-oauth-login")?.click();
       await vi.advanceTimersByTimeAsync(0);
@@ -541,7 +547,7 @@ describe("기기 로그인", () => {
 
   it("취소하면 폴링을 멈추고 그렇게 말한다", async () => {
     startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/d", userCode: "X" });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -562,7 +568,7 @@ describe("기기 로그인", () => {
       verificationUrl: "https://example.invalid/existing", userCode: "RESUME",
       expiresAt: Date.now() + 600000,
     } });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
     await Promise.resolve();
     expect(findByTestId(root, "ai-oauth-device-usercode")?.textContent).toBe("RESUME");
@@ -577,7 +583,7 @@ describe("기기 로그인", () => {
   it("승인 거부를 다음 폴링에서 즉시 알리고 대기를 끝낸다", async () => {
     vi.useFakeTimers();
     try {
-      const { root, dispose } = await render();
+      const { root, dispose } = await render(GOOGLE);
       await Promise.resolve();
       startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/login", userCode: "CODE" });
       findByTestId(root, "ai-oauth-login")?.click();
@@ -601,7 +607,7 @@ describe("기기 로그인", () => {
       .mockResolvedValueOnce({ verificationUrl: "https://example.invalid/first", userCode: "FIRST" })
       .mockImplementationOnce(() => new Promise((resolve) => { resolveSecond = resolve; }));
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render(GOOGLE);
     await Promise.resolve();
 
     // ① 첫 로그인 → 기기 블록이 보인다.
@@ -674,19 +680,32 @@ describe("OAuth 빠른 선택", () => {
     return event as KeyboardEvent;
   }
 
-  it("퀵 그룹은 Gemini 와 Codex 두 카드를 보여 준다", async () => {
-    // 감독 요구 변경: Codex 도 1급 선택지다. 두 카드 모두 실재하고, 선택된 것만 체크·탭 가능이다
-    // (roving tabindex — 라디오 그룹 표준).
+  it("퀵 그룹은 Claude·Gemini·Codex 카드를 보여 주고, 새 설정은 Claude 카드가 선택돼 있다", async () => {
+    // 감독 요구 변경: Codex 도 1급 선택지다. 카드가 모두 실재하고, 선택된 것만 체크·탭 가능이다
+    // (roving tabindex — 라디오 그룹 표준). 공장 기본은 Claude 다(2026-11-16).
     const { root, dispose } = await render();
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
+    const claude = findByTestId(root, "ai-auth-quick-anthropic");
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const codex = findByTestId(root, "ai-auth-quick-openai-codex");
+    expect(claude).not.toBeNull();
     expect(gemini).not.toBeNull();
     expect(codex).not.toBeNull();
-    expect(gemini?.getAttribute("aria-checked")).toBe("true");
-    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    expect(claude?.getAttribute("aria-checked")).toBe("true");
+    expect(claude?.getAttribute("tabindex")).toBe("0");
+    expect(gemini?.getAttribute("aria-checked")).toBe("false");
+    expect(gemini?.getAttribute("tabindex")).toBe("-1");
     expect(codex?.getAttribute("aria-checked")).toBe("false");
     expect(codex?.getAttribute("tabindex")).toBe("-1");
+    dispose();
+  });
+
+  it("Google 로 저장돼 있으면 Google 카드가 선택돼 있다", async () => {
+    const { root, dispose } = await render("google-antigravity");
+    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
+    expect(gemini?.getAttribute("aria-checked")).toBe("true");
+    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    expect(findByTestId(root, "ai-auth-quick-anthropic")?.getAttribute("aria-checked")).toBe("false");
     dispose();
   });
 
@@ -713,26 +732,27 @@ describe("OAuth 빠른 선택", () => {
   });
 
   it("화살표가 카드 사이를 순환한다 (앞의 둘 사이 이동 + 끝에서 처음으로)", async () => {
+    // 카드 순서는 레지스트리 순서다 — 맨 앞이 Claude(공장 기본), 둘째가 Google.
     const { root, dispose } = await render();
-    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-    const codex = findByTestId(root, "ai-auth-quick-openai-codex");
+    const first = findByTestId(root, "ai-auth-quick-anthropic");
+    const second = findByTestId(root, "ai-auth-quick-google-antigravity");
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
-    expect(codex?.getAttribute("aria-checked")).toBe("true");
-    expect(codex?.getAttribute("tabindex")).toBe("0");
-    expect(gemini?.getAttribute("aria-checked")).toBe("false");
+    expect(second?.getAttribute("aria-checked")).toBe("true");
+    expect(second?.getAttribute("tabindex")).toBe("0");
+    expect(first?.getAttribute("aria-checked")).toBe("false");
 
     // 카드가 17장이 된 뒤(abaa03e78f)로는 둘째에서 ArrowDown 이 셋째로 간다 — 되돌아오기는 ArrowUp 으로 본다.
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowUp"));
-    expect(gemini?.getAttribute("aria-checked")).toBe("true");
-    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    expect(first?.getAttribute("aria-checked")).toBe("true");
+    expect(first?.getAttribute("tabindex")).toBe("0");
 
     // 첫 카드에서 ArrowUp 은 마지막 카드로 감싼다.
     const { providers } = await loadDeps();
     const last = providers.OH_MY_PI_PROVIDERS.at(-1)!.id;
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowUp"));
     expect(findByTestId(root, `ai-auth-quick-${last}`)?.getAttribute("aria-checked")).toBe("true");
-    expect(gemini?.getAttribute("aria-checked")).toBe("false");
+    expect(first?.getAttribute("aria-checked")).toBe("false");
     dispose();
   });
 
@@ -874,7 +894,8 @@ describe("OAuth 빠른 선택", () => {
     // 2026-09-23 실측: 카드 「Google Gemini」, 패널 「Google Antigravity 계정으로…」, 칩
     // 「Google Antigravity 로그인 필요」 — 이름이 셋이었다. 계정 이름 하나로 묶는다.
     const { providers } = await loadDeps();
-    const { root, dispose } = await render();
+    // Google 로 저장된 설정으로 연다 — 패널 안내 글이 고른 계정의 이름을 쓰는지 본다.
+    const { root, dispose } = await render("google-antigravity");
     const google = providers.getOhMyPiProvider("google-antigravity")?.label;
     const chatgpt = providers.getOhMyPiProvider("openai-codex")?.label;
     expect(google).toBe("Google");

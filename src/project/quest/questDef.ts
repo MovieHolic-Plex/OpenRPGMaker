@@ -137,6 +137,8 @@ export interface QuestDef {
   /** Deterministic post-report changes to existing NPC/object pages, across maps. */
   readonly worldChanges?: readonly { readonly target: EventRef; readonly lines: readonly string[]; readonly passable?: boolean }[];
   readonly dialogue?: {
+    /** 의뢰를 꺼내는 말(의뢰인의 목소리). 없으면 summary 가 이름표 없는 서술로 뜬다 — 요약문을 그 사람의 대사로 쓰지 않는다. */
+    readonly offer?: string;
     readonly accepted?: string;
     readonly declined?: string;
     readonly reminder?: string;

@@ -43,11 +43,11 @@ const useV2 = argv.includes('--v2');
 // --store-url <스토어>: 브라우저 편집기에 읽기 전용 스토어 다리를 붙인다(storeBridgeShim.mjs). --store-ask-first: 「넣기 전에 먼저 묻기」를 켠 사용자(기본은 조수가 묻지 않고 넣고 「넣었어요 (바꾸기)」 쪽지를 띄운다).
 const storeUrl = option('store-url');
 const storeAutoInstall = !argv.includes('--store-ask-first');
-// --engine claude:claude-opus-5-5:medium → 조수 엔진을 로컬 CLI 로(제품 설정 「조수 엔진」 칸과 같은 저장값, src/ai/localCliEngine.ts). 비우면 계정 기본(Argon).
+// --engine claude:claude-opus-5-5:medium → 조수 엔진을 로컬 CLI 로(제품 설정 「조수 엔진」 칸과 같은 저장값, src/ai/localCliEngine.ts). 비우면 제품 기본(2026-11-16 부터 Claude 계정의 Opus 5.5 medium — 그 전에는 Google 계정의 Argon).
 const engineSpec = option('engine');
 const assistantEngine = engineSpec ? (() => { const [cli, model, effort] = engineSpec.split(':'); return { kind: 'local-cli', cli, ...(model ? { routineModel: model, deepModel: model } : {}), effort: effort || 'medium' }; })() : undefined;
 // --ai-config <json file>: AI 설정 칸(oprn:ai-config)을 이 값으로 시작한다 — 예: 모든 역할을 사용자 지정(OpenAI 호환) 엔드포인트의 한 모델로 고정.
-// 없으면 제품 기본(계정 Argon). 이 줄이 빠지면 스위트의 모델별 비교가 전부 기본 모델로 조용히 돈다(2026-10-28 실측).
+// 없으면 제품 기본(2026-11-16 부터 Claude 계정의 Opus 5.5 medium — 그 전에는 계정 Argon). 이 줄이 빠지면 스위트의 모델별 비교가 전부 기본 모델로 조용히 돈다(2026-10-28 실측).
 const aiConfigOverride = option('ai-config') ? JSON.parse(readFileSync(resolve(option('ai-config')), 'utf8')) : {};
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 // --deadline-ms <epoch ms>: 판 전체 상한(시험 묶음용). 그 시각을 넘기면 도는 턴을 턴 상한처럼 끊고(abort) 기록한다.

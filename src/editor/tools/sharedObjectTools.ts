@@ -15,6 +15,7 @@ import { roadCutAt } from "./roadCutGuard";
 import { squareSpot } from "./beodeulSquareGuard";
 import { isRoadCell } from "@/ai/v2/place/surface";
 import { protectedHouseCells } from "./houseProtection";
+import { chooseBuildingSite, clearBuildingSite, isBuildingKit, paveBuildingWays, type BuildingSite } from "./buildingSite";
 import { lookKit, withKitSite } from "@/project/kitLook";
 import { rejectOnSceneStage } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition } from "./types";
@@ -152,6 +153,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       mapId: { type: "string" },
       x: { type: "integer", description: "왼쪽 위 칸 x" }, y: { type: "integer", description: "왼쪽 위 칸 y" },
       layers: { type: "string", enum: ["both", "lower", "upper"], description: "찍을 층. 생략하면 오브젝트 기본값" },
+      site: { type: "string", enum: ["fix", "exact"], description: "Buildings (kits with an entrance) only. fix: if (x,y) does not hold the building (covers a house, straddles a cliff, door front unreachable) it is stamped on the nearest spot that does, trees/props under it and across its door way are cleared, and the result says what changed. exact (default): keep (x,y) or refuse" },
       onOverlap: { type: "string", enum: ["refuse", "nearest", "replace"], description: "서는 소품이 다른 가구와 겹칠 때: refuse(기본 — 가까운 빈 자리를 알려 준다) · nearest(그 가까운 빈 자리에 바로 찍는다 — 사람이 선 칸도 비켜 찍는다) · replace(겹친 가구를 걷어 내고 그 자리에 찍는다). 방 쓰임에 안 맞는 가구(교실의 소파·냉장고, 예배당의 안락의자)와 겹치면 기본값에서도 걷어 낸다" },
     }, required: ["objectId", "mapId", "x", "y"], additionalProperties: false },
     prepare: args => prepareSharedObject(args.objectId),
@@ -171,6 +173,19 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       // 놓기 규칙(물레방아는 물가에 걸쳐, 배는 물 위에, 건물은 뭍에 …) — 어기면 찍지 않는다(project/kitPlacementRules.ts).
       const kitDef = "kit" in resolved ? resolved.kit : undefined;
       const mapTileset = project.tilesets[map.tilesetId];
+      // 건물 터 고치기(buildingSite.ts, 2026-11-16 r6): site:'fix' 면 어긋난 자리를 거절하지 않고 가장 가까운 맞는 자리로 옮기고, 발자국 아래와 문 앞 길을 치운다.
+      const building = args.site === "fix" && isBuildingKit(kitDef) && layers !== "lower"
+        ? { name: resolved.name, objectId, source: resolved.source, pattern, kit: kitDef } : undefined;
+      let site: BuildingSite | undefined;
+      const siteNotes: string[] = [];
+      if (building) {
+        const askedAt = { x: Number(args.x), y: Number(args.y) };
+        site = chooseBuildingSite(project, map, building, askedAt.x, askedAt.y);
+        if (site.movedWhy) {
+          siteNotes.push(`Building moved: 「${resolved.name}」 was asked at (${askedAt.x},${askedAt.y}) but there ${site.movedWhy}. It stands at (${site.x},${site.y}) instead — the nearest spot on one height level whose door front can be walked to. Use the entrance cells of this result; do not stamp it again.`);
+          args = { ...args, x: site.x, y: site.y };
+        }
+      }
       if (kitDef && mapTileset) {
         const broken = checkKitPlacement(map, mapTileset, kitDef.id, kitDef, Number(args.x), Number(args.y));
         if (broken) throw new ToolError(broken, { code: "kit-placement-rule", mapId: map.id });
@@ -266,9 +281,13 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       const reliefBroken = checkReliefPlacement(map, resolved.source, objectId, resolved.name, pattern, Number(args.x), Number(args.y));
       if (reliefBroken) throw new ToolError(reliefBroken, { code: "relief-placement-rule", mapId: map.id });
       installStampAssets(project, resolved.assets);
+      const siteCleared = building && site ? clearBuildingSite(project, map, building, site) : undefined;
+      if (siteCleared) siteNotes.push(...siteCleared.notes);
       let result;
       try { result = stampPattern(project, map, resolved.source, pattern, Number(args.x), Number(args.y)); }
       catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
+      const sitePaved = site && siteCleared ? paveBuildingWays(project, map, site, siteCleared.opened) : undefined;
+      if (sitePaved?.note) siteNotes.push(sitePaved.note);
       let startNote: string | null = null;
       if (project.startMapId === map.id && project.startPos && !isPassable(project, map, project.startPos.x, project.startPos.y)) {
         const s = project.startPos;
@@ -284,13 +303,14 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         }
       }
       const warnings = [
+        ...siteNotes,
         ...overlapNotes,
         ...(startNote ? [startNote] : []),
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
         // 2026-10-07 적대적 검토: 모델이 꽃 상자를 가로수 수관 위에 찍어 소품이 나무 잎에 얹혀 보였다. 덮인 칸을 되돌려 알린다.
         // 발자국 검사를 통과한 소품이 덮은 위층 칸은 바닥 덧그림(접지 그림자·노면 표시)뿐이다 — 물체 겹침이 아니다.
         ...(result.coveredUpper.length && footprintChecked ? [`바닥 덧그림(그림자·노면 표시) ${result.coveredUpper.length}칸 위에 세웠다 — 그 칸의 덧그림은 소품 그림으로 바뀌었다`] : []),
-        ...(result.coveredUpper.length && !footprintChecked ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),
+        ...(result.coveredUpper.length && !footprintChecked && !site ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),
         ...(result.slotsAdded > 0 ? [`${map.tilesetId} 에 그림 ${result.slotsAdded}칸을 이식해 붙였다(${resolved.source.id} 그림)`] : []),
       ];
       // 입구 부위가 있는 킷(특수 건물 등)은 맵 좌표 입구를 돌려준다 — 길을 입구 바로 아래 칸에서 끝내고 이벤트를 입구 칸에 둔다.
@@ -299,7 +319,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         ? ` · 입구 ${entrances.map(e => `(${e.x},${e.y})`).join(" ")} — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 ${entrances.map(e => `(${e.x},${e.y + 1})`).join(" ")} 에서 끝낸다`
         : "";
       return { summary: `「${resolved.name}」 → ${map.id} (${result.rect.x},${result.rect.y}) ${result.rect.width}×${result.rect.height} · ${result.cells}칸${entranceText}`,
-        data: { objectId, mapId: map.id, layers, ...result, ...(entrances.length ? { entrances } : {}) }, ...(warnings.length ? { warnings } : {}) };
+        data: { objectId, mapId: map.id, layers, ...result, ...(entrances.length ? { entrances } : {}),
+          ...(site ? { site: { x: site.x, y: site.y, moved: !!site.movedWhy, cleared: siteCleared?.cleared ?? 0, opened: siteCleared?.opened.length ?? 0, paved: sitePaved?.paved ?? 0 } } : {}) }, ...(warnings.length ? { warnings } : {}) };
     },
   },
 ];

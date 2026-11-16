@@ -1,4 +1,5 @@
 import type { AiConfig } from "./llmClient";
+import { getOhMyPiProvider } from "./ohMyPiProviders.ts";
 
 /**
  * build = 공간 시공(타일·맵·장소 짓기, 게임 전체 짓기). 지정하지 않으면 deep 과 같다.
@@ -21,12 +22,14 @@ export type SpecialistModels = Partial<Record<SpecialistRole, RoleModel>>;
 /** Old settings remain a migration source, never override an explicit role selection. */
 export function modelForRole(config: AiConfig, role: SpecialistRole): RoleModel {
   if (role === "build") return config.roleModels?.build ?? modelForRole(config, "deep");
+  const provider = config.providerId || "google-antigravity";
   return config.roleModels?.[role] ?? {
-    provider: config.providerId || "google-antigravity",
-    // 이 리터럴은 llmClient 의 DEFAULT_MODEL 과 같은 값이어야 한다 — 갈라지면 config 가 빈 옛 blob 만
+    provider,
+    // 모델이 빈 설정은 그 제공자의 기본 모델로 돈다 — 제공자도 비면 옛 blob 이므로 옛 기본 제공자(Google)의 기본 모델이다.
+    // 끝의 리터럴은 llmClient 의 DEFAULT_MODEL 과 같은 값이어야 한다 — 갈라지면 config 가 빈 옛 blob 만
     // 조용히 옛 모델로 돈다(실측 2026-09-26: 3.8 이동에서 여기가 3.7 로 남아 있었다).
-    // test/aiDefaultModelForced.test.ts 가 이 폴백을 강제 기본값에 고정한다.
-    model: (role === "deep" ? config.liteModel || config.model : config.model)?.trim() || "gemini-4-argon",
+    // test/aiDefaultModelForced.test.ts 가 이 폴백을 고정한다.
+    model: (role === "deep" ? config.liteModel || config.model : config.model)?.trim() || getOhMyPiProvider(provider)?.defaultModel || "gemini-4-argon",
     // deep 기본값이 high 여서 실행 루프가 매 턴 보이는 만큼 늘어졌다 — 실측(2026-09-26, 3턴 도구 사용 실행):
     // thinking high 는 턴당 약 2.9s, low 는 약 2.1s(전제가 1k→30k 토큰으로 커지는 데는 0.5s 밖에 안 밀리므로
     // 지연은 사고 강도가 지배한다). 사용자가 역할로 지정해 저장한 값은 이 반환에 닿지 않고 그대로 이긴다.

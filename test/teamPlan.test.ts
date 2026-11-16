@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { applyTeamPlan, type TeamApplyDeps } from "../src/ai/teamApply";
-import { buildTeamPlan, modelRoutes, type DetectedKey, type TeamInputs, type TeamPlan } from "../src/ai/teamPlan";
+import { buildTeamPlan, modelRoutes, type DetectedKey, type TeamInputs, type TeamPlan, type TeamRoute, type TeamSlot } from "../src/ai/teamPlan";
 import { planEvidence, planSentence, planTitle } from "../src/ai/teamPlanText";
-import { FAMILY_MODEL_KEYS, NEAR_BEST_POINTS, SCORE_ROWS, TEAM_MODELS, chooseTeam, type ModelFamily } from "../src/ai/teamScoreboard";
+import { FAMILY_MODEL_KEYS, NEAR_BEST_POINTS, SCORE_ROWS, TEAM_MODELS, chooseTeam, type ModelFamily, type TeamModelKey } from "../src/ai/teamScoreboard";
 import { wizardScreen } from "../src/ai/setupWizardModel";
 
 const cli = (id: "claude" | "codex" | "gemini", state = "ready", billing = "subscription") => ({ id, state, billing });
@@ -10,10 +10,16 @@ const oauth = (providerId: string, extra: Record<string, unknown> = {}) => ({ pr
 const key = (id: string, family: ModelFamily, models: DetectedKey["models"]): DetectedKey => ({ id, family, label: id, models });
 const inputs = (partial: Partial<TeamInputs>): TeamInputs => ({ clis: [], accounts: [], keys: [], ...partial });
 const shape = (plan: TeamPlan | undefined) => plan && { lead: plan.lead?.model.key, worker: plan.worker.model.key, route: plan.worker.route.kind };
+// 나눈 팀(팀장 + 워커)은 기본이 아니다(2026-11-16) — 설정에서 고른 사람의 계획을 손으로 만든다.
+const CLAUDE_CLI: TeamRoute = { kind: "cli", cli: "claude" };
+const slot = (model: TeamModelKey, route: TeamRoute): TeamSlot => ({ model: TEAM_MODELS[model], route, modelId: TEAM_MODELS[model].id });
+const splitPlan = (lead: TeamSlot, worker: TeamSlot): TeamPlan => ({ lead, worker, routes: lead.route === worker.route ? [worker.route] : [worker.route, lead.route] });
 
 describe("first-run team defaults from what the user has", () => {
-  it("gives each single service the team the scoreboard rates best within one point, cheapest first", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")] })))).toEqual({ lead: "opus", worker: "haiku", route: "cli" });
+  it("gives a Claude subscription Opus alone, and every other single service the team the scoreboard rates best within one point, cheapest first", () => {
+    // 오너 결정 2026-11-16: Claude 를 쓸 수 있으면 Opus 5.5 하나가 계획부터 만들기까지 — Opus 팀장 + Haiku 워커(62.7점·$0.30)가 1점 이내로 더 싸도 고르지 않는다.
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" })] })))).toEqual({ lead: undefined, worker: "opus", route: "key" });
     expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
     expect(shape(buildTeamPlan(inputs({ keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "deepseek", route: "key" });
   });
@@ -24,10 +30,16 @@ describe("first-run team defaults from what the user has", () => {
     expect(plan?.choice).toBeUndefined();
   });
 
-  it("prefers the best-rated mix when several services are present", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: "opus", worker: "terra", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] })))).toEqual({ lead: "opus", worker: "terra", route: "key" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: "opus", worker: "haiku", route: "cli" });
+  it("keeps Opus alone when other services are present too — no mixed team by default", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+  });
+
+  it("leaves the paths without Claude as they were — ChatGPT gets Terra alone, with or without Google", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
   });
 
   it("returns nothing when nothing usable is found", () => {
@@ -69,11 +81,28 @@ describe("score table", () => {
     }
   });
 
-  it("picks the cheapest combination within NEAR_BEST_POINTS of the best of the table it uses", () => {
+  it("picks Opus alone whenever Opus is usable, with that row's measured score and cost", () => {
     const choice = chooseTeam(new Set(["opus", "haiku"]));
-    expect(choice).toMatchObject({ lead: "opus", worker: "haiku", table: "full" });
-    expect(choice!.bestQuality - choice!.quality).toBeLessThanOrEqual(NEAR_BEST_POINTS);
-    expect(choice!.costUsd).toBeLessThan(1);
+    expect(choice?.lead).toBeUndefined();
+    expect(choice).toMatchObject({ worker: "opus", table: "full", quality: 63.5, costUsd: 1.832, n: 33 });
+    const everything = chooseTeam(new Set(Object.keys(TEAM_MODELS) as TeamModelKey[]));
+    expect(everything?.lead).toBeUndefined();
+    expect(everything).toMatchObject({ worker: "opus", table: "pick3", quality: 72.9 });
+    // 그 표의 최고 점수(Opus 팀장 + Terra 워커 74.9)는 그대로 적는다 — 점수를 고쳐 쓰지 않는다.
+    expect(everything!.bestQuality).toBe(74.9);
+  });
+
+  it("without Opus, picks the cheapest combination within NEAR_BEST_POINTS of the best of the table it uses", () => {
+    for (const set of [["haiku", "argon"], ["terra", "sol", "astra"], ["haiku", "deepseek", "astra", "terra"]] as const) {
+      const available = new Set<TeamModelKey>(set);
+      const choice = chooseTeam(available)!;
+      const rows = SCORE_ROWS.filter((row) => row.table === choice.table && available.has(row.worker) && (!row.lead || available.has(row.lead)));
+      const near = rows.filter((row) => choice.bestQuality - row.quality <= NEAR_BEST_POINTS + 1e-9);
+      expect(choice.bestQuality, set.join("+")).toBe(Math.max(...rows.map((row) => row.quality)));
+      expect(choice.bestQuality - choice.quality, set.join("+")).toBeLessThanOrEqual(NEAR_BEST_POINTS + 1e-9);
+      expect(choice.costUsd, set.join("+")).toBe(Math.min(...near.map((row) => row.costUsd)));
+    }
+    expect(chooseTeam(new Set(["haiku", "argon"]))).toMatchObject({ worker: "haiku", table: "full" });
   });
 
   it("returns undefined for a set the scoreboard never rated", () => {
@@ -83,12 +112,18 @@ describe("score table", () => {
 });
 
 describe("plain-language text", () => {
-  it("names the services, the split and the evidence without jargon", () => {
+  it("names the service, the one model that does everything and the evidence without jargon", () => {
     const plan = buildTeamPlan(inputs({ clis: [cli("claude")] }))!;
     expect(planTitle(plan)).toBe("Claude 구독");
+    expect(planSentence(plan)).toBe("계획부터 만들기까지 Opus 5.5 하나가 맡아요.");
+    expect(planSentence(plan)).not.toContain("Haiku");
+    expect(planEvidence(plan)).toContain("63.5");
+  });
+
+  it("names both roles for a split team", () => {
+    const plan = splitPlan(slot("opus", CLAUDE_CLI), slot("haiku", CLAUDE_CLI));
     expect(planSentence(plan)).toContain("Opus 5.5");
     expect(planSentence(plan)).toContain("Haiku 5.5");
-    expect(planEvidence(plan)).toContain("62.7");
   });
 
   it("marks the product-default team as unmeasured", () => {
@@ -109,17 +144,35 @@ describe("applying a plan", () => {
     return { calls, deps };
   };
 
-  it("turns a Claude subscription into an engine choice with the lead on the same CLI", async () => {
+  it("turns a Claude subscription into an engine choice with Opus 5.5 medium in every slot and no lead", async () => {
     const { calls, deps } = recorder();
     const plan = buildTeamPlan(inputs({ clis: [cli("claude")] }))!;
     expect(await applyTeamPlan(plan, deps)).toEqual({ ok: true });
+    expect(calls.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium" });
+    expect(calls.lead).toBeUndefined();
+    expect(calls.provider).toBeUndefined();
+  });
+
+  it("adopts an Anthropic key with Opus 5.5 as the one model", async () => {
+    const { calls, deps } = recorder();
+    const plan = buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" })] }))!;
+    expect(await applyTeamPlan(plan, deps)).toEqual({ ok: true });
+    expect(calls.adopted).toEqual(["ANTHROPIC_API_KEY"]);
+    expect(calls.provider).toEqual(["openai-compat:anthropic_api_key", "claude-opus-5-5"]);
+    expect(calls.lead).toBeUndefined();
+    expect(calls.engine).toBeUndefined();
+  });
+
+  it("still applies a split team on one CLI as an engine choice with the lead on the same CLI", async () => {
+    const { calls, deps } = recorder();
+    expect(await applyTeamPlan(splitPlan(slot("opus", CLAUDE_CLI), slot("haiku", CLAUDE_CLI)), deps)).toEqual({ ok: true });
     expect(calls.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-haiku-5-5", deepModel: "claude-opus-5-5", effort: "medium", teamLead: true });
     expect(calls.lead).toBeUndefined();
   });
 
   it("keeps the lead as its own role when the lead and worker run on different routes", async () => {
     const { calls, deps } = recorder();
-    const plan = buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] }))!;
+    const plan = splitPlan(slot("opus", CLAUDE_CLI), slot("terra", { kind: "key", sourceId: "OPENAI_API_KEY", label: "OPENAI_API_KEY" }));
     expect(await applyTeamPlan(plan, deps)).toEqual({ ok: true });
     expect(calls.adopted).toEqual(["OPENAI_API_KEY"]);
     expect(calls.lead).toEqual({ provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" });
@@ -151,7 +204,14 @@ describe("setup wizard screens", () => {
     expect(`${ready.title} ${ready.body}`).not.toMatch(MODEL_NAME);
     expect(ready.details?.rows.map((row) => row.value).join(" ")).toMatch(/Opus/u);
 
-    const both = wizardScreen({ ...base, plan: buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex")] })) });
+    expect(ready.details?.rows.map((row) => `${row.label}: ${row.value}`)).toContain("맡는 AI: Opus 5.5");
+    expect(ready.details?.rows.map((row) => row.value).join(" ")).not.toMatch(/Haiku/u);
+
+    // Claude 가 있으면 ChatGPT 가 같이 있어도 Claude 하나로 시작한다.
+    const withChatGpt = wizardScreen({ ...base, plan: buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex")] })) });
+    expect(withChatGpt.title).toBe("Claude로 연결돼 있어요");
+
+    const both = wizardScreen({ ...base, plan: splitPlan(slot("opus", CLAUDE_CLI), slot("terra", { kind: "account", providerId: "openai-codex" })) });
     expect(both.title).toBe("AI가 연결돼 있어요");
     expect(both.body).not.toMatch(MODEL_NAME);
   });

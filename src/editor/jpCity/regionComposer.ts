@@ -25,6 +25,8 @@ export interface JpRegionPlan {
   /** 자리가 없어 놓지 못한 키트(id·횟수). */
   readonly unplaced: Readonly<Record<string, number>>;
   readonly placed: number;
+  /** 막을 줄(y) — 그 줄 뒤(위)는 사람이 가지 않는 곳(고가 선로). 도구가 다 지은 뒤 그 줄의 걷는 칸을 막는다. */
+  readonly sealRows: readonly number[];
   /** V1~V6 및 §4 검증 위반 항목(0개여야 정상). */
   readonly violations: readonly string[];
   /** §4 6대 정량 검수 지표. */
@@ -283,6 +285,7 @@ export function planJpRegionScene(input: {
 
   const surface = new Uint8Array(W * H);   // 최종 표면 구획 ID(단일 진실 공급원)
   const clearMask = new Uint8Array(W * H); // 1 = clear 영역 또는 band/street 경로
+  const sealRows: number[] = [];
   const path = new Uint8Array(W * H);      // 1 = 길·보도·광장·선로·물·논(onPath 키트만)
   const wet = new Uint8Array(W * H);       // 1 = 물·논(최종 surface 에서만 도출)
   const used = new Uint8Array(W * H);      // 1 = 키트가 점유한 칸
@@ -580,7 +583,7 @@ export function planJpRegionScene(input: {
   // 4) V1~V6 및 §4 검증
   const { violations, section4 } = validatePlan();
 
-  return { steps: [...fillSteps, ...stampSteps], unplaced, placed, violations, section4 };
+  return { steps: [...fillSteps, ...stampSteps], unplaced, placed, sealRows, violations, section4 };
 
   function placeOp(op: JpRegionOp): void {
     switch (op.op) {
@@ -641,6 +644,7 @@ export function planJpRegionScene(input: {
           if (!isKitAllowedInRegion(region, rawId)) catalogWhitelistViolations++;
         }
         const x0 = X(op.span[0]), x1 = X(op.span[1]), foot = Y(op.foot), gap = op.gap ?? 1;
+        if (op.seal) sealRows.push(foot);
         const hasBuildings = op.kits.some((k) => isBuildingKit(k));
         const fallbackPool = region.category === "urban"
           ? ["jp-bldg-shop-flower", "jp-bldg-shop-bakery", "jp-bldg-shop-pharmacy", "jp-bldg-shop-cleaning", "jp-bldg-shop-barber", "jp-bldg-shop-cafe", "jp-bldg-shop-soba", "jp-bldg-shop-teishoku"]

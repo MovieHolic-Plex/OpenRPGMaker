@@ -37,8 +37,9 @@ describe("independent review map deltas", () => {
     after.maps[target.id] = renamed;
     const input = reviewInput(before, after);
     const config = defaultAiConfig();
-    // 공장 기본 모델은 2026-10-14 에 gemini-4-argon 으로 바뀌었다(#2535, 조수 기본 = Argon medium).
-    expect(config.model).toBe("gemini-4-argon");
+    // 공장 기본 모델은 2026-11-16 에 Claude Opus 5.5 medium 으로 바뀌었다(오너 결정 — 그 전 #2535 는 gemini-4-argon). 창은 둘 다 1M 급이다.
+    expect(config.providerId).toBe("anthropic");
+    expect(config.model).toBe("claude-opus-5-5");
 
     // Both whole-collection deltas and unconditional preset map closure overflow here.
     const request = buildIndependentReviewRequest(config, input);

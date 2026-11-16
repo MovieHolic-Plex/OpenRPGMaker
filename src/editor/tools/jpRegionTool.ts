@@ -1,5 +1,8 @@
 // compose_jp_region · list_jp_regions — 일본 지역 30종(japaneseRegionsCatalog.ts)을 jp_city 맵 한 장에 짓는다.
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
+import { activeKitLook } from "@/project/kitLook";
+import { STREET_BAKED } from "@/project/jpCitySceneComposer";
+import { NEW_BUILDING_KITS, SCENE_KIND_FOR_REGION } from "@/project/jpCitySceneKinds";
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { composeJpForestR4, hasJpForestR3, hasJpForestR4, paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
@@ -118,6 +121,13 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
     const info = regionData(region);
     const varied = regionWithLayout(region, seed, args.layout && typeof args.layout === "object" ? args.layout as StationPlazaLayout : undefined);
+    // 새 건물 가족이 구워져 있고 조수 실행(게임 열쇠)이면, 건물이 줄지어 선 지역은 거리 장면 구성기의 종류로 짓는다 — 지역 문법은 옛 손 도트 건물만 세워 한 게임에 두 가족이 섞인다.
+    const sceneKind = activeKitLook() && STREET_BAKED && NEW_BUILDING_KITS.length > 0 ? SCENE_KIND_FOR_REGION[region.id] : undefined;
+    if (sceneKind) {
+      const res = callTool(draft, "compose_jp_city_street", { mapId, seed, style: sceneKind, replace: args.replace === true });
+      const section4 = { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };
+      return { ...res, summary: `${region.ko}(${region.ja}) - ${res.summary}`, data: { ...(res.data as Record<string, unknown> | undefined), region: info, violations: [], section4 } };
+    }
     if (region.engine.kind === "street") {
       const res = callTool(draft, "compose_jp_city_street", { mapId, seed, style: region.engine.style, replace: args.replace === true });
       const section4 = { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };
@@ -198,6 +208,16 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     }
     // r4 나무 composer: 숲 바닥만 칠해 두었다가 집·소품을 다 찍은 뒤 한 번에 나무를 세운다(수관이 집·길·물 위로 넘치지 않게).
     if (forest && hasJpForestR4(next.tilesets[map.tilesetId]!)) composeJpForestR4(target, next.tilesets[map.tilesetId]!, 0, grounding);   // 씨앗 0: 편집기 붓과 같은 배치(붓질 한 번에 둘레 나무가 바뀌지 않게)
+    // 막을 줄(고가 선로 앞 건물 줄의 발 줄): 건물 사이 틈·처마 밑처럼 아직 걸어지는 칸을 블록 담 칸으로 막는다 — 그 뒤 선로 바닥과 지붕 밑으로 걸어 들어가지 못하게(r6 P1).
+    if (plan.sealRows.length) {
+      const wallRow = next.tilesets[map.tilesetId]!.structureKits?.find((k) => k.id === "jp-prop-wall-block")?.rows[0];
+      const wall = wallRow?.upperTiles?.[0] ?? wallRow?.tiles?.[0] ?? -1;
+      if (wall >= 0) for (const y of plan.sealRows) for (let x = 0; x < target.width; x++) {
+        if (y < 0 || y >= target.height || !isPassable(next, target, x, y)) continue;
+        setLayerTileAt(target, 2, y * target.width + x, wall);
+        if (isPassable(next, target, x, y)) setLayerTileAt(target, 4, y * target.width + x, wall);   // 위층에 지나가는 그림이 있는 칸
+      }
+    }
     if (stamped === 0) throw new ToolError(`${region.id} 키트를 하나도 세우지 못했다 — 맵을 ${region.size[0]}×${region.size[1]} 로 키우거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     draft.maps[mapId] = next.maps[mapId]!;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;

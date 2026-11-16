@@ -46,6 +46,8 @@ export function blueprintVerbs(c: VerbContext) {
       }) };
       // 앞 청사진의 맺음 글도 물려받는다 — 이름 맞추기 다시 쓰기가 엔딩 화면의 글을 지우지 않게.
       if (prior?.ending.closing?.length && !parsed.blueprint.ending.closing?.length) parsed.blueprint = { ...parsed.blueprint, ending: { ...parsed.blueprint.ending, closing: prior.ending.closing } };
+      // 앞 청사진의 오프닝 글도 물려받는다 — 이름 맞추기 다시 쓰기가 오프닝의 글을 지우지 않게.
+      if (prior?.opening?.length && !parsed.blueprint.opening?.length) parsed.blueprint = { ...parsed.blueprint, opening: prior.opening };
       // 앞 청사진이 고른 UI 모습도 물려받는다 — 이름 맞추기 다시 쓰기가 look 을 빼도 게임의 얼굴이 바뀌지 않게. 목록에 없는 id 는 읽을 때 버려진다.
       if (prior?.look && !parsed.blueprint.look) parsed.blueprint = { ...parsed.blueprint, look: prior.look };
       const unknownLook = typeof raw.look === "string" && raw.look.trim() && !uiLookById(raw.look) ? ` look «${raw.look.trim().slice(0, 24)}» is not a look id — ignored.` : "";
@@ -80,7 +82,7 @@ export function blueprintVerbs(c: VerbContext) {
         if (thin || mix.length) { session.blueprintThinRejects += 1; return text({ ok: false, summary: [thin, mix.length ? `Blueprint not saved yet — fix the step kinds and call write_blueprint again: ${mix.join(" ")}` : ""].filter(Boolean).join(" ") }); }
       }
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
-      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look }) : "";
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, o: b.opening, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look }) : "";
       if (prior && core(prior) === core(parsed.blueprint)) {
         session.blueprintRewrites += 1;
         const walked = walkBlueprint(env.ctx.project);
@@ -103,7 +105,9 @@ export function blueprintVerbs(c: VerbContext) {
       const noClosingBase = parsed.blueprint.ending.closing?.length ? "" : " ending.closing is empty — the ending screen has no text of yours. Call write_blueprint again with ending.closing (2–4 lines the player reads: what happened and what became of the people, by name); ending.how is a design note and is never shown.";
       // 모습을 안 골랐으면 이 세계에 맞는 세트 두셋을 한 줄로 — 고르고 싶은 모델은 다음 청사진 고치기에 look 을 적는다(안 적으면 첫 것을 함수가 고른다).
       const lookHint = parsed.blueprint.look ? "" : uiLookHint(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : parsed.blueprint.title, world?.tilesetId);
-      const noClosing = `${noClosingBase}${unknownLook}${lookHint}`;
+      // 오프닝 글이 없으면 기본 오프닝에는 장소 이름과 목표 문장의 안전한 부분만 선다 — 목표 문장을 둘로 자른 것은 오프닝이 아니고, 찾는 게임의 답이나 «보스» 같은 게임 낱말이 그대로 나갔다(2026-11-16 확인 빌드 r6 P8).
+      const noOpening = parsed.blueprint.opening?.length ? "" : " opening is empty — the opening will show place names and at most the safe part of playerGoal (a goal sentence that names the answer or uses a game word is not read out). Call write_blueprint again with opening (2–4 lines the player reads before the first map: who they are and what is wrong here — narration, no answer, no game words like boss or quest).";
+      const noClosing = `${noClosingBase}${noOpening}${unknownLook}${lookHint}`;
       if (world) {
         const unbuilt = (parsed.blueprint.places ?? []).filter((pl) => !blueprintMapFor(env.ctx.project, pl.name));
         return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });

@@ -117,7 +117,7 @@ export function mockLocalAgentsApi(): LocalAgentsApi {
   const base = { models: [] as LocalCliModel[], install: { command: "", help: "", url: "" }, login: { command: "", help: "" } };
   const clis: LocalCliStatus[] = [
     { ...base, id: "claude", label: "Claude Code", state: "ready", stateLabel: "연결됨", found: true, version: "2.1.284", loggedIn: true, authMethod: "구독", billing: "subscription",
-      models: [{ id: "sonnet", label: "Sonnet" }, { id: "opus", label: "Opus" }, { id: "haiku", label: "Haiku" }], defaults: { routine: "sonnet", deep: "opus" } },
+      models: [{ id: "claude-opus-5-5", label: "Opus 5.5" }, { id: "sonnet", label: "Sonnet" }, { id: "haiku", label: "Haiku" }], defaults: { routine: "claude-opus-5-5", deep: "claude-opus-5-5" } },
     { ...base, id: "codex", label: "Codex", state: "login-required", stateLabel: "로그인 필요", found: true, version: "0.98.0", billing: "unknown",
       defaults: { routine: "", deep: "" }, login: { command: "codex login", help: "터미널에서 이 명령을 실행해 로그인해 주세요." } },
     { ...base, id: "gemini", label: "Gemini CLI", state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown",

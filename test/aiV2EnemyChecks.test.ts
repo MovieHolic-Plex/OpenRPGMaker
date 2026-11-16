@@ -72,10 +72,13 @@ describe("v2 enemy identity check (fs-use-tools E1)", () => {
 
   it("tells the model to fix it with upsert_enemy and names unused skills as candidates", () => {
     const p = battleProject({ 해골: ["맹독 이빨"], 갑옷: ["맹독 이빨"] });
-    p.database.skills.push({ ...structuredClone(p.database.skills[0]!), id: "skill_spare_bolt", name: "여분 마법탄", scope: "enemy", power: 40 } as never);
+    // 후보는 자료집 차례로 셋까지다 — 기본 자료집에도 안 쓰인 피해 기술(마법탄·빙결·잎날…)이 있어, 끝에 붙인 기술은 셋 안에 들지 못한다.
+    // 그래서 맨 앞에 넣고, 이미 적이 쓰는 기술(맹독 이빨)은 후보에 없는지도 본다.
+    p.database.skills.unshift({ ...structuredClone(p.database.skills[0]!), id: "skill_spare_bolt", name: "여분 마법탄", scope: "enemy", power: 40 } as never);
     const msg = enemyLines(p)[0] ?? "";
     expect(msg).toContain("upsert_enemy");
     expect(msg).toContain("skill_spare_bolt");
+    expect(msg.split("기존 기술 후보:")[1] ?? "").not.toContain("맹독 이빨");
   });
 
   it("reaches the finish gate only for a whole-game request", () => {

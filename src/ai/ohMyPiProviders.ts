@@ -10,8 +10,9 @@
 // 모델 정책이 없는 제공자(zai-coding-plan·perplexity·stencil)나, 자격을 네트워크로 받아와야만
 // 모델이 생기는 곳(factory-droid)은 올리지 않는다 — 올려도 고르는 순간 실패한다.
 //
-// 앞의 둘(Google·ChatGPT)은 **순서를 바꾸지 않는다** — 첫 항목이 기본값이라서, 순서를 건드리면
-// 기존 사용자가 말없이 다른 제공자로 넘어간다.
+// 순서는 화면 순서일 뿐이다 — 첫 항목은 권장 제공자(RECOMMENDED_OH_MY_PI_PROVIDER)이고, 옛 저장값을 읽을 때의
+// 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER 상수가 정한다. 그래서 순서를 바꿔도 기존 사용자가 다른 제공자로 넘어가지 않는다.
+// 2026-11-16(오너 결정): Claude 를 맨 앞으로 올렸다 — 조수 기본이 Claude Opus 5.5 · medium 이다.
 //
 // 모든 제공자의 자격은 동반 서비스(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
 
@@ -28,6 +29,7 @@ import {
   openAiCompatSlug,
 } from "./openAiCompat.ts";
 import { isLocalCliProviderId, LOCAL_CLI_DEFAULT_MODELS, LOCAL_CLI_LABELS, localCliOfProvider } from "./localCliEngine.ts";
+import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
 
 /**
  * 자격 증명 종류. 레지스트리에는 oauth 만 남았지만 세 값을 유지한다 — 동반 서비스의
@@ -44,8 +46,15 @@ export type OhMyPiProvider = {
   readonly authKind: OhMyPiAuthKind;
 };
 
+/** Claude 계정(편집기 안 로그인 · ANTHROPIC_API_KEY). id 는 pi 의 제공자 이름이자 저장값이다. */
+export const ANTHROPIC_PROVIDER_ID = "anthropic";
+/** 조수 기본 모델(오너 결정 2026-11-16): Claude Opus 5.5. Claude 로 도는 모든 길(구독 CLI · 키 · 편집기 안 계정)의 모든 역할이 이 한 모델이다. */
+export const CLAUDE_DEFAULT_MODEL = ASSISTANT_CLAUDE_MODEL;
+/** 조수 기본 추론 강도(오너 결정 2026-11-16): medium. */
+export const CLAUDE_DEFAULT_EFFORT = ASSISTANT_CLAUDE_EFFORT;
+
 /**
- * 두 제공자. 순서가 곧 UI 순서이고 **첫 항목이 기본값**이다.
+ * 제공자 목록. 순서가 곧 UI 순서이고 **첫 항목이 권장값**이다(옛 저장값의 기본 제공자는 DEFAULT_OH_MY_PI_PROVIDER).
  *
  * label 은 **사용자가 보는 유일한 이름**이다 — 제공자 카드·연결 패널·상단 칩(`${label} 연결됨`)이
  * 모두 이 값을 쓴다. 2026-09-23 실측: 카드는 "Google Gemini", 패널은 "Google Antigravity",
@@ -58,6 +67,8 @@ export type OhMyPiProvider = {
  * modelCatalog 가 이 모듈을 import 하기 때문 — 순환을 만들지 않고 테스트로 묶는다.
  */
 export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
+  // defaultModel 은 @oh-my-pi/pi-catalog DEFAULT_MODEL_PER_PROVIDER 실측값(2026-11-02)이자 조수 기본 모델이다.
+  { id: ANTHROPIC_PROVIDER_ID, label: "Claude", defaultModel: CLAUDE_DEFAULT_MODEL, envVars: ["ANTHROPIC_API_KEY"], authKind: "oauth" },
   {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google",
@@ -75,7 +86,6 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   // ── 이하 2026-11-02 추가: pi 가 로그인을 구현했고 모델 정책도 있는 제공자 ─────────────
   // defaultModel 은 @oh-my-pi/pi-catalog DEFAULT_MODEL_PER_PROVIDER 실측값이다(2026-11-02).
   // resolveOhMyPiModel 이 이 id/모델 쌍을 카탈로그에서 찾으므로, 값을 바꾸면 실제 호출이 400 이 된다.
-  { id: "anthropic", label: "Claude", defaultModel: "claude-opus-5-5", envVars: ["ANTHROPIC_API_KEY"], authKind: "oauth" },
   { id: "openrouter", label: "OpenRouter", defaultModel: "openai/gpt-5.5", envVars: ["OPENROUTER_API_KEY"], authKind: "oauth" },
   { id: "google-gemini-cli", label: "Gemini CLI", defaultModel: "gemini-3.1-pro-preview", envVars: [], authKind: "oauth" },
   { id: "github-copilot", label: "GitHub Copilot", defaultModel: "gpt-5.5", envVars: ["GITHUB_TOKEN"], authKind: "oauth" },
@@ -99,13 +109,14 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
 export const DEFAULT_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
 
 /**
- * 새로 설정하는 사용자에게 권하는 제공자 = Google 계정의 Gemini 4 Argon(사고 강도 medium).
- * 사용자 결정(2026-10-14): 조수 기본은 Argon medium 이다. 2026-10-07 에는 12과제 시험(gpt-6.1-sol 11/12,
- * gemini-3.8-flash 7/12)을 근거로 ChatGPT 를 권했으나, 그 뒤 타일 시공은 Gemini 가 훨씬 빠르다는 판단과
- * Argon 도입으로 기본을 Google 로 되돌렸다. 이미 ChatGPT 를 고른 저장값은 그대로 둔다.
+ * 새로 설정하는 사용자에게 권하는 제공자 = Claude 의 Opus 5.5(추론 강도 medium).
+ * 오너 결정(2026-11-16): 「출시를 빠르게 하기 위해서라도, 조수의 기본 model 을 opus 5.5 medium 으로」 — Haiku 워커·팀장 분리를 기본에서 뺐다.
+ * 지난 기본: 2026-10-07 ChatGPT(gpt-6.1-sol) → 2026-10-14 Google(Gemini 4 Argon medium, PR #2535) → 2026-11-16 Claude.
+ * 이미 Google·ChatGPT 를 고른 저장값은 그대로 둔다. Claude 를 쓸 수 없는 사용자(ChatGPT 구독만 · Google 로그인만)는
+ * 첫 실행 마법사가 그 계정의 지금 기본(Terra · Argon)으로 맞춘다.
  * 제공자 목록 순서도 이 값을 첫 항목으로 둔다(첫 항목 = 권장값).
  */
-export const RECOMMENDED_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
+export const RECOMMENDED_OH_MY_PI_PROVIDER = ANTHROPIC_PROVIDER_ID;
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 

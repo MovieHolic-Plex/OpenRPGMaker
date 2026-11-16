@@ -132,7 +132,7 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
   const entries: StampObjectEntry[] = [];
   const seenKitIds = new Set<string>();
   for (const kit of tileset.structureKits ?? []) {
-    if (!isObjectKit(kit) || seenKitIds.has(kit.id)) continue;
+    if (!isObjectKit(kit) || seenKitIds.has(kit.id) || kit.ai?.supersededBy) continue;
     const placement = kitPlacementOf(kit);
     if (!placement) continue;
     seenKitIds.add(kit.id);

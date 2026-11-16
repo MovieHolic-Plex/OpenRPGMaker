@@ -6,7 +6,7 @@ import { configForRole, modelForRole, parseRoleModels } from "@/ai/modelRoles";
 
 describe("independent specialist selections", () => {
   it("migrates old writer/executor selections without changing explicit model ids", () => {
-    // An old save has no per-role slots; since #2535 the factory default seeds every role slot with gemini-4-argon.
+    // An old save has no per-role slots; the factory default seeds every role slot (gemini-4-argon since #2535, claude-opus-5-5 since 2026-11-16).
     const { roleModels: _factoryRoleSlots, ...factory } = defaultAiConfig();
     const config = { ...factory, model: "custom-writer", liteModel: "custom-deep" };
     expect(modelForRole(config, "writer").model).toBe("custom-writer");
@@ -19,10 +19,11 @@ describe("independent specialist selections", () => {
       .toMatchObject({ providerId: "openai-codex", model: "future-vision", reasoningEffort: "high", apiKey: "" });
     const config = { ...defaultAiConfig(), roleModels: { ...roleModels, deep: { provider: "openai-codex", model: "deep-selected", thinkingLevel: "high" as const } } };
     expect(resolveSurfaceAiConfig("tileset-analysis", config)).toMatchObject({ model: "future-vision", providerId: "openai-codex", reasoningEffort: "high" });
-    expect(resolveSurfaceAiConfig("structure-kit", config)).toMatchObject({ model: "gemini-4-argon", providerId: "google-antigravity" });
+    // 고르지 않은 칸은 공장 기본(Claude Opus 5.5 · medium, 2026-11-16) 그대로다 — 고른 칸(vision·deep)의 계정을 따라가지 않는다.
+    expect(resolveSurfaceAiConfig("structure-kit", config)).toMatchObject({ model: "claude-opus-5-5", providerId: "anthropic" });
     expect(resolveSurfaceAiConfig("region", config)).toMatchObject({ model: "deep-selected", reasoningEffort: "high" });
     expect(configForLiteModel(config)).toMatchObject({ providerId: "openai-codex", model: "deep-selected", reasoningEffort: "high" });
-    expect(configForLegacySupervisor(config)).toMatchObject({ providerId: "google-antigravity", model: "gemini-4-argon", reasoningEffort: "high", maxTokens: config.maxTokens });
+    expect(configForLegacySupervisor(config)).toMatchObject({ providerId: "anthropic", model: "claude-opus-5-5", reasoningEffort: "medium", maxTokens: config.maxTokens });
     expect(parseRoleModels({ deep: { model: "", provider: 4 }, writer: null })).toEqual({});
   });
 });
