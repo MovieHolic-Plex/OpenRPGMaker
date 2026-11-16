@@ -317,7 +317,9 @@ export class SceneCtx {
    */
   nextKit(cats: readonly string[], at: { x: number; foot: number }, maxW: number, maxH: number, o: { minH?: number; notH?: number; role?: string; minW?: number; /** 아직 안 세운 그림만 */ fresh?: boolean; /** 초대형·랜드마크를 세워도 되는 자리(맨 뒤 띠의 앞줄) */ big?: boolean } = {}): CatBuilding | undefined {
     const pick = (cat: string | undefined, fresh: boolean): CatBuilding | undefined => {
-      const cands = this.buildingPool.filter((b) => (o.role ? b.role === o.role || b.id === o.role : b.cat === cat) && b.w <= maxW && b.h <= maxH && b.h >= (o.minH ?? 0) && b.w >= (o.minW ?? 0)
+      // 키트 id 로 직접 청한 건물은 가족을 가리지 않는다(옛 건물 · 다른 양식도 사전에 있으면 세운다) — 구성기가 스스로 고를 때만 새 가족으로 좁힌다.
+      const pool = o.role && !this.buildingPool.some((b) => b.id === o.role) ? [...this.buildingPool, ...SCENE_BUILDINGS.filter((b) => b.id === o.role)] : this.buildingPool;
+      const cands = pool.filter((b) => (o.role ? b.role === o.role || b.id === o.role : b.cat === cat) && b.w <= maxW && b.h <= maxH && b.h >= (o.minH ?? 0) && b.w >= (o.minW ?? 0)
         && (!(b.tier === "xlarge" || b.tier === "landmark") || (o.big === true && !this.bigPlaced)));
       const scored = cands.map((b) => {
         const prev = this.usedLooks.get(this.lookOf(b)) ?? [];

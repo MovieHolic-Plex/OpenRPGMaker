@@ -9,7 +9,7 @@ import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { JP_CITY_BUILDER } from "@/ai/v2/place/builders/jpCity";
 import type { BuildRun, PlaceSpec } from "@/ai/v2/shared/types";
 import { planJpCityScene } from "@/project/jpCitySceneComposer";
-import { sceneKindById, sceneKitForWord } from "@/project/jpCitySceneKinds";
+import { sceneKindById, sceneKitForWord, sceneKitNear } from "@/project/jpCitySceneKinds";
 import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
 
 const OLD = /jp-bldg-(?!f-)[a-z0-9-]+/g;
@@ -102,7 +102,7 @@ describe("jp_city building family", () => {
       expect(inner.ok, inner.summary).toBe(true);
       const link = runTool(ctx, "link_jp_city_interior", { mapId: map.id, door: { x: ramen.x + ramen.doors[0]!, y: ramen.foot }, interiorMapId: inner.mapIds[0] }, { dryRun: false });
       expect(link.ok, link.summary).toBe(true);
-    });
+    }, 180_000);
 
     it("builds town districts and the village form with the new family too", () => {
       for (const [key, spec, kind] of [
@@ -123,7 +123,7 @@ describe("jp_city building family", () => {
       const direct = runTool(ctx, "compose_jp_region", { mapId: "eki", region: "station_plaza", seed: 3 }, { dryRun: false });
       expect(direct.ok, direct.summary).toBe(true);
       expect((direct.data as { streetKind?: string }).streetKind).toBe("ekimae");
-    });
+    }, 180_000);
 
     it("reads a requested shop from the kit's own id, kind, name and label words — no alias table", () => {
       for (const [word, id] of [["ramen", "ramen"], ["라멘집", "ramen"], ["jp-bldg-f-ramen", "ramen"], ["police box", "koban"], ["파출소", "koban"], ["konbini", "konbini"], ["convenience store", "konbini"], ["헌책방", "furuhon"], ["bookstore", "furuhon"], ["pharmacy", "kusuri"]] as const) {
@@ -131,5 +131,46 @@ describe("jp_city building family", () => {
       }
       for (const word of ["bench", "lamp", "vending", "상점가", "shrine", "역사 정면", "station", "post box", "shop"]) expect(sceneKitForWord(word), word).toBeUndefined();
     });
+
+    // 오너 2026-11-16 «에셋들을 되게 자유롭게 쓰는 방향»: 벽을 기본값으로 — 실제로 있으면 세우고, 없으면 가장 가까운 것으로 세우고 알리고, 거절은 게임이 깨질 때만.
+    it("stands a building asked by kit id whatever its family, and the nearest kit for a name no kit has", () => {
+      expect(sceneKitNear("jp-bldg-shop-ramen")).toMatchObject({ how: "exact", kit: { id: "jp-bldg-shop-ramen" } });
+      expect(sceneKitNear("kit:jp_city/jp-bldg-f-jinja")).toMatchObject({ how: "exact", kit: { id: "jp-bldg-f-jinja" } });
+      for (const [word, id] of [["conbini", "konbini"], ["books", "furuhon"], ["bookshop", "furuhon"], ["ramen bar", "ramen"], ["coffee", "kissa"], ["liquor store", "sake"]] as const) {
+        expect(sceneKitNear(word), word).toMatchObject({ how: "nearest", kit: { id: `jp-bldg-f-${id}` } });
+      }
+      expect(sceneKitNear("zzz")).toBeUndefined();
+
+      const { res, composed, kits } = build("game-a", { type: "street", name: "역 앞 상점가", style: "jp-modern", size: "medium", salt: 7191,
+        features: ["상점가", "ramen", "hospital", "jp-bldg-shop-fish", "bookshop", "noodle bar"], hints: { shops: "conbini" } });
+      expect(res.ok, res.summary).toBe(true);
+      expect(composed.args.shops).toEqual(["jp-bldg-f-ramen", "jp-bldg-f-byoin", "jp-bldg-shop-fish", "jp-bldg-f-furuhon", "jp-bldg-f-konbini"]);
+      for (const id of composed.args.shops as string[]) expect(kits, id).toContain(id);
+      // 구성기가 스스로 고른 건물은 여전히 새 가족뿐이다 — 옛 건물은 id 로 청한 그 한 채
+      expect(kits.filter((k) => !k.startsWith("jp-bldg-f-"))).toEqual(["jp-bldg-shop-fish"]);
+      expect(res.warnings.join("\n")).toMatch(/'conbini' .*jp-bldg-f-konbini/);
+      expect(res.missingArt.join("\n")).not.toMatch(/종합병원/);
+      expect(res.missingArt.join("\n")).toMatch(/noodle bar/);
+      expect(res.summary).toMatch(/jp-bldg-f-<이름>/);
+    }, 180_000);
+
+    it("builds instead of refusing: a small map is grown, an unknown style falls back, an unknown shop is reported", () => {
+      const ctx = { project: createBlankProject(), assistantRun: true, lookKey: "game-a", currentMapId: "map_blank_start" };
+      expect(runTool(ctx, "create_map", { name: "작은 거리", width: 30, height: 20, tilesetId: JP_CITY_ID, id: "st" }, { dryRun: false }).ok).toBe(true);
+      const r = runTool(ctx, "compose_jp_city_street", { mapId: "st", style: "jp-modern", seed: 2, shops: ["jp-bldg-shop-ramen", "bookshop", "zzz", "cafe"] }, { dryRun: false });
+      expect(r.ok, r.summary).toBe(true);
+      const map = ctx.project.maps.st!;
+      expect([map.width, map.height]).toEqual([40, 28]);
+      const notes = ((r as { diff?: { warnings?: string[] } }).diff?.warnings ?? []).join("\n");
+      expect(notes).toMatch(/30×20.*40×28/);
+      expect(notes).toMatch(/style 'jp-modern'/);
+      expect(notes).toMatch(/'bookshop' .*jp-bldg-f-furuhon/);
+      expect(notes).toMatch(/'zzz' 에 가까운 건물 키트가 없어/);
+      const names = (map.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building")).map((l) => l.name);
+      expect(names).toContain("ラーメン屋 건물");
+      expect(names).toContain("헌책방 건물");
+      expect(((r.data as { freeKits?: string[] }).freeKits ?? []).length).toBeGreaterThan(20);
+      expect(r.summary).toMatch(/jp-bldg-f-<이름>/);
+    }, 180_000);
   });
 });

@@ -6,7 +6,7 @@ import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, type JpStreetStyle } from "@/project/jpCityStreetComposer";
 import { planJpCityScene } from "@/project/jpCitySceneComposer";
-import { SCENE_KINDS, sceneEn, sceneKindById } from "@/project/jpCitySceneKinds";
+import { NEW_BUILDING_KITS, SCENE_BUILDINGS, SCENE_KINDS, sceneEn, sceneKindById, sceneKitNear } from "@/project/jpCitySceneKinds";
 import { labelSceneBuildings, runJpScenePlan, sceneCrosswalkTile, type SceneBuilt } from "@/project/jpCitySceneRun";
 import { flavorAvailable } from "@/project/jpShitamachiStreet";
 import { activeKitLook } from "@/project/kitLook";
@@ -71,7 +71,7 @@ function avoidedProp(patterns: readonly string[], tool: string, args: Record<str
 }
 
 /** style 에 거리 종류 id 를 주면 그 종류로 짓는다(id 목록은 enum — 종류 자료 src/assets/jpCityStreetKinds.json). 모델이 읽는 글이라 영어, 짧게. */
-const STREET_KIND_NOTE = "Or a street kind id (the Japanese ids in the enum) to fix the layout family. ";
+const STREET_KIND_NOTE = "Or a street kind id to fix the layout family ";
 
 export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
   name: "compose_jp_city_street",
@@ -80,15 +80,15 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
   fillsCurrentMapId: true,
   description: "일본 도시(jp_city) 맵 한 장을 거리째 짠다 — 뒷줄 건물·보도·도로(횡단보도·차)·앞줄 건물·가로등·자판기·자전거·노보리를 규칙으로 배치한다. 견본을 붙이는 게 아니라 씨앗마다 다른 거리가 나온다. "
     + "shops 에 기획의 가게를 넣으면 그 가게가 먼저 건물이 된다(konbini·izakaya·ramen·cafe·shop·office·apartment·house·machiya·garage·sento·bento). style: shopping(상가 거리) | residential(주택가). "
-    + "맵은 40×28 이상이어야 한다. 손댄 맵은 replace:true 여야 다시 짠다(땅·건물·소품을 지우고, 이벤트는 그대로 둔다 — 건물이 막는 칸 위 이벤트는 옮긴다). 짠 뒤 build_jp_city_building 으로 건물을 고치거나 link_jp_city_interior 로 문마다 실내를 잇는다. "
+    + "40×28 보다 작은 맵은 그 크기로 키운다. 손댄 맵은 replace:true 여야 다시 짠다(땅·건물·소품을 지우고, 이벤트는 그대로 둔다 — 건물이 막는 칸 위 이벤트는 옮긴다). 짠 뒤 build_jp_city_building 으로 건물을 고치거나 link_jp_city_interior 로 문마다 실내를 잇는다. "
     + "상가가 아닌 일본 장소(학교·단치·건널목·신사·사찰·성·등산로·계곡·온천 마을·다랑논·항구·해변·무인역 등 30종)는 region 에 list_jp_regions 의 id 를 준다(compose_jp_region 과 같다).",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵). 칩셋이 jp_city 여야 한다" },
       seed: { type: "integer", minimum: 0, description: "거리 씨앗 — 다른 값이면 다른 거리. 생략하면 0" },
-      style: { type: "string", enum: ["shopping", "residential", "shitamachi", "shotengai", ...SCENE_KINDS.map((k) => k.id)], description: STREET_KIND_NOTE + "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·콘크리트 판석 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
-      shops: { type: "array", items: { type: "string" }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정) — 가게 종류 또는 건물 키트 id(jp-bldg-f-*)" },
+      style: { type: "string", description: STREET_KIND_NOTE + `(${SCENE_KINDS.map((k) => k.id).join(" ")}) ` + "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·콘크리트 판석 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
+      shops: { type: "array", items: { type: "string" }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정) — 가게 종류 또는 건물 키트 id. 이름이 없으면 가장 가까운 키트로 세우고 알린다" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
       region: { type: "string", enum: JP_REGIONS.map((r) => r.id), description: "일본 지역 30종 id(list_jp_regions) — 주면 style·shops 대신 그 지역 문법으로 짓는다" },
       parkForest: { type: "string", enum: ["grove", "dense", "none"], description: "공원 구획 뒤쪽 잔디에 숲 — grove 덩이 숲(기본) · dense 빽빽한 숲 · none 숲 없음(나무 키트 몇 그루만)" },
@@ -107,7 +107,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     }
     const mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
     if (!mapId) throw new ToolError("mapId 가 없고 지금 보는 맵도 없다 — 거리를 짤 jp_city 맵 id 를 준다", { code: "map-not-found" });
-    const map = requireMap(draft, mapId);
+    let map = requireMap(draft, mapId);
     const tileset = draft.tilesets[map.tilesetId];
     if (!tileset || !isJpCityTileset(tileset)) {
       throw new ToolError(`맵 '${map.name}'(${mapId}) 의 칩셋 '${map.tilesetId}' 은 일본 도시(${JP_CITY_ID}, 계열 ${JP_CITY_FAMILY})가 아니다 — 이 도구는 jp_city 맵에서만 동작한다.`, { code: "wrong-tileset", mapId });
@@ -132,7 +132,6 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
         data: { mapId, uses: lot.uses, props: lot.props, emptyBefore: lot.emptyBefore, emptyAfter: lot.emptyAfter },
       };
     }
-    if (map.width < 40 || map.height < 28) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — 40×28 이상으로 resize_map 한 뒤 부른다`, { code: "map-too-small", mapId });
     if (!isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 짜려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
     // style 에 거리 종류 id(ekimae·kawazoi …)가 오면 그 종류로 — 그 종류가 속한 꼴로 읽고, 열쇠 없는 호출이어도 장면 구성기로 짓는다.
     const namedKind = typeof args.style === "string" ? sceneKindById(args.style) : undefined;
@@ -140,7 +139,29 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const asked: JpStreetStyle = askedStyle === "residential" || askedStyle === "shitamachi" || askedStyle === "shotengai" ? askedStyle : "shopping";
     const style: JpStreetStyle = (asked === "shitamachi" || asked === "shotengai") && !flavorAvailable(tileset, asked) ? "shopping" : asked;
     const warnings = style !== asked && !activeKitLook() && !namedKind ? [`이 칩셋에 ${asked} 키트가 아직 구워지지 않아 기본 상가 거리(shopping)로 짰다`] : [];
-    const shops = Array.isArray(args.shops) ? args.shops.filter((s): s is string => typeof s === "string") : [];
+    // 모르는 style 은 거절하지 않는다 — 기본 상가 거리로 짓고 알린다.
+    if (typeof args.style === "string" && args.style && !namedKind && askedStyle !== asked) warnings.push(`style '${args.style}' 은 없는 종류라 기본 상가 거리(shopping)로 짰다 — 종류: shopping · residential · shitamachi · shotengai · ${SCENE_KINDS.map((k) => k.id).join(" · ")}`);
+    // 작은 맵은 거절하지 않는다 — 거리가 서는 가장 작은 크기(40×28)로 키우고 알린다.
+    if (map.width < 40 || map.height < 28) {
+      const was = `${map.width}×${map.height}`;
+      const resize = lookup("resize_map");
+      if (!resize) throw new ToolError("도구 resize_map 이 없다", { code: "unknown-tool" });
+      resize.run(draft, { mapId, width: Math.max(40, map.width), height: Math.max(28, map.height) });
+      map = requireMap(draft, mapId);
+      warnings.push(`맵이 작아(${was}) ${map.width}×${map.height} 로 키워 지었다`);
+    }
+    const sceneKey = activeKitLook() ?? (namedKind ? "default" : undefined);
+    // 요청한 건물: 키트 id(가족을 가리지 않는다) · 가게 종류는 그대로, 그 밖의 이름은 가장 가까운 새 건물 키트로 세우고 무엇으로 세웠는지 알린다.
+    const askedShops = Array.isArray(args.shops) ? args.shops.filter((s): s is string => typeof s === "string" && !!s.trim()) : [];
+    const shopNotes: string[] = [];
+    const shops = !sceneKey ? askedShops : [...new Set(askedShops.map((s) => {
+      const name = s.trim();
+      if (SCENE_BUILDINGS.some((b) => b.role === name)) return name;
+      const near = sceneKitNear(name);
+      if (!near) { shopNotes.push(`'${name}' 에 가까운 건물 키트가 없어 세우지 않았다`); return name; }
+      if (near.how === "nearest") shopNotes.push(`'${name}' 은(는) 가장 가까운 ${near.kit.ko}(${near.kit.id})로 세웠다`);
+      return near.kit.id;
+    }))];
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
 
     // 복제본에서 짠 뒤 성공하면 반영한다 — 중간 실패로 반쯤 지운 맵이 남지 않게.
@@ -150,7 +171,6 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const crosswalkTile = sceneCrosswalkTile(tileset);
     // 조수가 짓는 거리(게임 열쇠가 켜진 호출)는 거리 장면 구성기로 — 게임마다 종류·톤·건물 순서가 다르다. 열쇠 없는 호출은 옛 배치 그대로(대표작·손 호출).
-    const sceneKey = activeKitLook() ?? (namedKind ? "default" : undefined);
     const scene = sceneKey ? planJpCityScene({ mapId, width: target.width, height: target.height, seed, style: asked, shops, key: sceneKey, crosswalkTile, ...(namedKind ? { kind: namedKind.id } : {}) }) : undefined;
     const plan = scene ?? planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile, ...(avoid.length ? { avoidProps: avoid } : {}) });
     const callStep = (name: string, a: Record<string, unknown>) => {
@@ -164,7 +184,15 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const outcome = scene
       ? runJpScenePlan(scene, callStep, viewNow, avoid.length ? (id) => { if (!avoidedProp(avoid, "stamp_object", { objectId: `kit:jp_city/${id}` })) return false; avoided++; return true; } : undefined)
       : runJpStreetPlan(plan, callStep, viewNow);
-    if (outcome.built < 4) throw new ToolError(`거리를 짜지 못했다 — 건물 ${outcome.built}채만 지어졌다. 맵을 더 크게 하거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
+    // 건물이 한 채도 안 선 거리만 실패다(빈 맵이 남는다). 적게 선 거리는 그대로 두고 알린다.
+    if (outcome.built < 1) throw new ToolError("거리를 짜지 못했다 — 건물이 한 채도 서지 않았다. 맵을 더 크게 하거나 다른 seed 를 준다", { code: "compose-failed", mapId });
+    if (outcome.built < 4) warnings.push(`건물이 ${outcome.built}채만 섰다 — 더 채우려면 맵을 키우거나 다른 seed 로 다시 짠다`);
+    // 요청한 건물 가운데 자리가 없어 못 선 것, 그리고 이 거리와 같은 화풍으로 손으로 더 세울 수 있는 건물 키트(아직 안 선 것).
+    const stoodIds = new Set((scene?.placed ?? []).flatMap((p) => (p.kit ? [p.kit.id, p.role] : [p.role])));
+    if (scene) for (const s of shops) if (!stoodIds.has(s) && !shopNotes.some((n) => n.startsWith(`'${s}'`))) shopNotes.push(`${SCENE_BUILDINGS.find((b) => b.id === s)?.ko ?? s}(${s})은(는) 이 크기 거리에 자리가 없어 못 세웠다 — 더 큰 맵에 짓거나 stamp_object 로 직접 세운다`);
+    warnings.push(...shopNotes);
+    const freeKits = scene?.fable ? NEW_BUILDING_KITS.filter((b) => !stoodIds.has(b.id)).map((b) => b.id.slice("jp-bldg-f-".length)) : [];
+    const kitNote = freeKits.length ? ` 같은 화풍으로 더 세울 수 있는 건물 키트(jp-bldg-f-<이름>, 아직 안 선 것): ${freeKits.join(" ")}.` : "";
     const built = next.maps[mapId]!;
     // 공원 숲: 공원 구획 뒤쪽(북쪽) 절반 남짓 잔디에 나무 composer 숲(입구 판석·연못·벤치·나무 키트 칸은 건너뛴다).
     let parkForestCells = 0;
@@ -194,8 +222,8 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
     const startNote = claimStartIfBlank(draft, mapId, pickStreetStartPos(draft, built, plan.walkRows)).note;
     return {
-      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"})${parkForestCells ? `, 공원 숲 ${parkForestCells}칸` : ""}. 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${avoidNote()}${startNote}`,
-      data: { mapId, seed, style: scene ? asked : style, ...(scene ? { streetKind: scene.kind.id, streetKindName: scene.kind.en, scenes: scene.scenes.map(sceneEn), blockUses: scene.pieces } : {}), parkForestCells, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props - avoided, walkRows: plan.walkRows, ...(avoid.length ? { avoidedProps: avoided } : {}) },
+      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"})${parkForestCells ? `, 공원 숲 ${parkForestCells}칸` : ""}. 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${kitNote}${avoidNote()}${startNote}`,
+      data: { mapId, seed, style: scene ? asked : style, ...(scene ? { streetKind: scene.kind.id, streetKindName: scene.kind.en, scenes: scene.scenes.map(sceneEn), blockUses: scene.pieces } : {}), parkForestCells, shopsBuilt: labels, ...(shopNotes.length ? { shopNotes } : {}), ...(freeKits.length ? { freeKits } : {}), built: outcome.built, skipped: outcome.skipped, props: outcome.props - avoided, walkRows: plan.walkRows, ...(avoid.length ? { avoidedProps: avoided } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },

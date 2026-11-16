@@ -3,7 +3,7 @@
 // 키가 큰 띠는 뒷골목을 사이에 두고 뒷줄을 한 줄 더 세운다. 건물은 SceneCtx.nextKit 이 골라 한 지도에 같은 그림이 두 번 서지 않는다.
 import { randomBuildingArgs } from "@/project/jpCityStreetComposer";
 import { Occ, type SceneBlock, type SceneCtx, type SceneLayout, type ScenePlaced } from "@/project/jpCitySceneCtx";
-import { SCENE_ROOFS, SCENE_SIZES, sceneList, yardGround } from "@/project/jpCitySceneKinds";
+import { SCENE_BUILDINGS, SCENE_ROOFS, SCENE_SIZES, sceneList, yardGround } from "@/project/jpCitySceneKinds";
 import { PIECES } from "@/project/jpCityScenePieces";
 import { streetTagged } from "@/project/jpCityStreetPieces";
 
@@ -42,7 +42,7 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
   let endKit: NonNullable<ReturnType<SceneCtx["nextKit"]>> | undefined;
   const exRow = ex;
   // 요청한 가게 가운데 블록 끝에만 서는 것(중형·대형): 끝 건물 자리의 맨 앞 후보가 된다 — 요청이 있으면 좁은 블록(10칸부터)에서도, 주사위 없이.
-  const endType = (r: string) => c.buildingPool.some((b) => (b.id === r || b.role === r) && (b.cat === "medium" || b.cat === "large" || b.cat === "xlarge"));
+  const endType = (r: string) => [...c.buildingPool, ...SCENE_BUILDINGS.filter((b) => b.id === r)].some((b) => (b.id === r || b.role === r) && b.id.startsWith("jp-bldg-f-") && (b.cat === "medium" || b.cat === "large" || b.cat === "xlarge"));
   const wantedEnd = c.fable ? wanted.filter(endType) : [];
   if (c.fable && ((ex - sx >= 16 && c.rng() < 0.75) || (wantedEnd.length > 0 && ex - sx >= 10))) {
     const shuffle = (list: readonly string[]) => list.map((r) => ({ r, k: c.rng() })).sort((a, b) => a.k - b.k).map((q) => q.r);

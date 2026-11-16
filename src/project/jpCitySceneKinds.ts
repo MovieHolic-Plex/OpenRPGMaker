@@ -93,3 +93,52 @@ export function sceneKitForWord(word: string): CatBuilding | undefined {
   // 제 이름으로 먼저, 그다음 실내 예제 이름(여러 건물이 같은 예제를 쓴다 — 사전의 앞 건물)
   return ASKABLE_KITS.find((b) => names(b).includes(w)) ?? ASKABLE_KITS.find((b) => b.prog === w);
 }
+
+/** 낱말을 마디로(띄어쓰기·붙임표·밑줄·빗금). */
+const tokens = (s: string): string[] => norm(s).split(/[\s\-_/]+/u).filter((t) => t.length >= 2);
+const kitTokens = (b: CatBuilding): string[] => [...new Set([b.id.slice("jp-bldg-f-".length), b.role, b.ko, ...(b.words ?? []), b.prog ?? ""].flatMap(tokens))];
+/** 여러 건물에 두루 붙는 마디(shop·house·가게 …)는 가리는 힘이 없다 — 사전에서 센다(손으로 적은 목록이 아니다). */
+const COMMON_TOKENS: ReadonlySet<string> = (() => {
+  const n = new Map<string, number>();
+  for (const b of ASKABLE_KITS) for (const t of kitTokens(b)) n.set(t, (n.get(t) ?? 0) + 1);
+  return new Set([...n].filter(([, c]) => c >= 4).map(([t]) => t));
+})();
+const ascii = (t: string) => /^[\x20-\x7e]+$/.test(t);
+/** 글자 하나 다름(바꿈·빠짐·더함)까지 같은 말로 본다 — 라틴 글자 5자 이상에서만(conbini ≈ konbini). */
+function oneOff(a: string, b: string): boolean {
+  if (Math.abs(a.length - b.length) > 1 || Math.min(a.length, b.length) < 5 || !ascii(a) || !ascii(b)) return false;
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return a.slice(i + 1) === b.slice(i + 1) || a.slice(i) === b.slice(i + 1) || a.slice(i + 1) === b.slice(i);
+}
+
+export interface SceneKitMatch { readonly kit: CatBuilding; /** exact 이름이 온전히 같다 · nearest 가장 가까운 키트로 대신했다 */ readonly how: "exact" | "nearest" }
+/**
+ * 요청한 건물 하나 → 세울 키트. 사전에 있는 키트 id(옛 가족 · 신사 본전 · 초대형 포함 — 모델이 id 로 직접 청한 것은 실제로 있으면 세운다) → 이름이 온전히 같은 새 건물 →
+ * 가장 가까운 새 건물(마디가 같거나, 한쪽이 다른 쪽을 품거나, 글자 하나 차이 — 두루 붙는 마디는 세지 않는다). 가까운 것도 없으면 undefined.
+ */
+export function sceneKitNear(word: string): SceneKitMatch | undefined {
+  const w = norm(word).replace(/^kit:jp_city\//, "");
+  const byId = SCENE_BUILDINGS.find((b) => b.id === w);
+  if (byId) return { kit: byId, how: "exact" };
+  const exact = sceneKitForWord(w);
+  if (exact) return { kit: exact, how: "exact" };
+  const wt = tokens(w).filter((t) => !COMMON_TOKENS.has(t));
+  let best: CatBuilding | undefined, top = 0;
+  for (const b of ASKABLE_KITS) {
+    let score = 0;
+    const own = new Set([b.id.slice("jp-bldg-f-".length), b.role, b.ko, ...(b.words ?? [])].flatMap(tokens));
+    for (const t of kitTokens(b)) {
+      if (COMMON_TOKENS.has(t)) continue;
+      const k = own.has(t) ? 2 : 1;                                       // 제 이름의 마디가 실내 예제 이름의 마디보다 앞선다
+      const min = ascii(t) ? 4 : 2;
+      for (const q of wt) {
+        if (q === t) score = Math.max(score, t.length * 6 * k);
+        else if (oneOff(q, t)) score = Math.max(score, t.length * 4 * k);
+        else if (Math.min(q.length, t.length) >= min && (q.includes(t) || t.includes(q))) score = Math.max(score, Math.min(q.length, t.length) * k);
+      }
+    }
+    if (score > top) { top = score; best = b; }
+  }
+  return best ? { kit: best, how: "nearest" } : undefined;
+}

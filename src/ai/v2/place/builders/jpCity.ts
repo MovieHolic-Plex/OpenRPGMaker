@@ -9,7 +9,7 @@ import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import { JP_CITY_ID } from "@/project/defaults/jpCity";
 import { planJpCityScene, STREET_BAKED } from "@/project/jpCitySceneComposer";
-import { NEW_BUILDING_KITS, SCENE_KIND_FOR_REGION, sceneKitForWord } from "@/project/jpCitySceneKinds";
+import { NEW_BUILDING_KITS, SCENE_KIND_FOR_REGION, sceneKitForWord, sceneKitNear } from "@/project/jpCitySceneKinds";
 import { sceneKindById } from "@/project/jpCitySceneKinds";
 import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
 import { planJpCityStreet, type JpStreetStyle } from "@/project/jpCityStreetComposer";
@@ -275,6 +275,7 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const text = textOf(spec);
   for (const key of Object.keys(spec.hints ?? {})) if (!KNOWN_HINTS.has(key)) warnings.push(`알 수 없는 hints.${key} 는 무시했다`);
   for (const [re, what] of UNSUPPORTED) if (has(text, re)) missing.push(what);
+  const unsupportedCount = missing.length;
   const { region, others } = pickRegion(spec, text);
   for (const id of others) missing.push(`${jpRegionById(id)?.ko ?? id}(한 맵에 지역 하나 — 따로 make_place 로 짓는다)`);
   const variant = num(spec.hints?.variant) ?? 0;
@@ -327,9 +328,30 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     const kitOf = (wd: string, own = false) => sceneKitForWord(wd) ?? (own ? undefined : sceneKitForWord(PROGRAM_RULES.find(([re]) => has(wd, re))?.[1] ?? ""));
     const kitWords = new Map<string, string>();   // 낱말 → 키트 id
     if (newFamily) for (const wd of [...words, ...hintShops]) {
-      if (!notRegion(wd) || (STYLE_WORDS.test(wd) && !sceneKitForWord(wd))) continue;   // 지역 낱말(역·신사)은 거리 종류를 정할 뿐 가게가 아니다
-      const kit = kitOf(wd, true) ?? (PROP_RULES.some(([re]) => has(wd, re)) ? undefined : kitOf(wd));
+      // 키트 id 로 직접 청한 건물은 가족·분류를 가리지 않고 받는다(옛 건물 · 신사 본전 · 초대형도 사전에 있으면 세운다).
+      const byId = sceneKitNear(wd);
+      if (byId && byId.kit.id === wd.trim().toLowerCase().replace(/^kit:jp_city\//, "")) { kitWords.set(wd, byId.kit.id); continue; }
+      if (!notRegion(wd)) continue;                                           // 지역 낱말(역·신사)은 거리 종류를 정할 뿐 가게가 아니다
+      if (STYLE_WORDS.test(wd) && !kitOf(wd)) {
+        // 짜임 낱말이 섞인 가게 이름(«flower shop»): 짜임 마디를 뺀 나머지로 가장 가까운 키트를 찾는다. 짜임 낱말뿐이면 가게가 아니다.
+        const rest = wd.split(/[\s\-_/]+/u).filter((t) => t && !STYLE_WORDS.test(t)).join(" ");
+        const near = rest ? sceneKitNear(rest) : undefined;
+        if (near) { kitWords.set(wd, near.kit.id); if (near.how === "nearest") warnings.push(`'${wd}' 은(는) 가장 가까운 ${near.kit.ko}(${near.kit.id})로 세웠다`); }
+        continue;
+      }
+      const isProp = PROP_RULES.some(([re]) => has(wd, re));
+      let kit = kitOf(wd, true) ?? (isProp ? undefined : kitOf(wd));
+      // 이름이 키트에 없는 가게: 가장 가까운 키트로 세우고 무엇으로 세웠는지 알린다 — 소품·사람처럼 다른 규칙이 받는 낱말은 빼고, hints.shops 는 가게 목록이라 늘 본다.
+      if (!kit && !isProp && (hintShops.includes(wd) || !(STYLE_WORDS.test(wd) || UNSUPPORTED.some(([re]) => has(wd, re))))) {
+        const near = sceneKitNear(wd);
+        if (near) { kit = near.kit; warnings.push(`'${wd}' 은(는) 가장 가까운 ${near.kit.ko}(${near.kit.id})로 세웠다`); }
+      }
       if (kit) kitWords.set(wd, kit.id);
+    }
+    // 예전에 «못 짓는다»던 것(병원·백화점 …) 가운데 이제 건물 키트로 선 낱말은 못 함 목록에서 뺀다.
+    if (kitWords.size) for (let i = unsupportedCount - 1; i >= 0; i--) {
+      const rule = UNSUPPORTED.find(([, what]) => what === missing[i]);
+      if (rule && [...kitWords.keys()].some((wd) => has(wd, rule[0])) && !words.some((wd) => has(wd, rule[0]) && !kitWords.has(wd))) missing.splice(i, 1);
     }
     const shops = newFamily ? [...new Set(kitWords.values())] : [...new Set(SHOP_RULES.filter(([re]) => has(text, re)).map(([, s]) => s))];
     const wantHouses = has(text, /houses?|주택|민가/i);
@@ -374,8 +396,12 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const res = run.call(kind === "region" ? "compose_jp_region" : "compose_jp_city_street", args);
   const calls = run.calls.slice(first);
   if (!res.ok) return { ok: false, mapIds: [mapId], summary: `일본 거리 짓기 실패: ${res.summary}`, warnings: [...warnings, ...(res.issues ?? []).map((i) => i.message)], missingArt: missing, calls, state: prev };
-  warnings.push(...(res.warnings ?? []));
+  // 도구의 «자리가 없어 못 세웠다»는 위에서 missingArt 로 이미 적었다.
+  // 쓰기 도구의 경고는 diff.warnings 로 온다(«무엇으로 세웠다» · 닿지 않는 문 · 키운 맵).
+  const toolWarnings = [...(res.warnings ?? []), ...((res as { diff?: { warnings?: string[] } }).diff?.warnings ?? [])];
+  warnings.push(...toolWarnings.filter((m, i) => toolWarnings.indexOf(m) === i && !warnings.includes(m) && !(newFamily && m.includes("자리가 없어 못 세웠다"))));
   const data = (res.data ?? {}) as Record<string, unknown>;
+  const freeKits = Array.isArray(data.freeKits) ? (data.freeKits as string[]) : [];
   const rows = Array.isArray(data.walkRows) ? (data.walkRows as number[]) : [];
   const entrance = settleEntrance(run, mapId, rows, warnings);
   const shopsBuilt = Array.isArray(data.shopsBuilt) ? (data.shopsBuilt as string[]) : [];
@@ -385,7 +411,7 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const state: JpState = { kind, baseSeed: baseSeed - variant * 101, seed, args };
   return {
     ok: true, mapIds: [mapId], ...(entrance ? { entrance } : {}),
-    summary: `${spec.name}: ${what} (${w}×${h}, seed ${seed})${shopsBuilt.length ? ` — 문: ${shopsBuilt.slice(0, 6).join(" · ")}` : ""}`,
+    summary: `${spec.name}: ${what} (${w}×${h}, seed ${seed})${shopsBuilt.length ? ` — 문: ${shopsBuilt.slice(0, 6).join(" · ")}` : ""}${freeKits.length ? ` — 같은 화풍으로 더 세울 수 있는 건물 키트(jp-bldg-f-<이름>, 아직 안 선 것): ${freeKits.join(" ")}` : ""}`,
     warnings, missingArt: missing, calls: run.calls.slice(first), state,
   };
 }
