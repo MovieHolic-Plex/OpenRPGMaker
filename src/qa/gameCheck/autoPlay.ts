@@ -2004,6 +2004,14 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
   return { label, ok: !firstFailure, ...(firstFailure ? { failure: firstFailure } : {}), ...(reached ? { endingReached: reached } : {}), steps, sceneSteps: driver.committed + driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
 }
 
+/** 엔딩이 아닌 목표 하나(스위치 켜기)까지 처음부터 걸어 본다 — 곁 퀘스트의 완료(questPlay.ts). 계획과 실행은 엔딩 자동 플레이와 같다. */
+export function runSwitchPlay(project: Project, label: string, visit: CommandVisit, switchId: string, budgetMs: number): AutoPlayRun {
+  pageProject = project;
+  honestMode = false;
+  const plan = planCriticalPath(project, visit, switchOnGoal(visit, switchId));
+  return runPlan(project, label, plan.goals, Date.now() + budgetMs, plan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다 (${u.for.mapId ?? ""} ${u.for.eventId ?? ""})`));
+}
+
 /** 엔딩별 자동 플레이 상한(첫 엔딩 포함). */
 const MAX_ENDING_RUNS = 5;
 

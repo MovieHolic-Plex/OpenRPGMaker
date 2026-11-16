@@ -10,7 +10,7 @@
 // "0~3 패턴"이 아니라 시트 프레임 인덱스이고, 원시 숫자를 넣으면 캐릭터가 0번으로 고정된다.
 
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
-import { pickNpcGraphic } from "@/assets/charsetQuery";
+import { npcGraphicMissNote, pickNpcGraphic } from "@/assets/charsetQuery";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { pageAtStart } from "@/project/eventPageNow";
 import {
@@ -73,7 +73,7 @@ function resolveWho(project: Project, value: unknown): CompanionWho {
     const entry = pickNpcGraphic(query, { overrides: project.charsetLabels });
     if (!entry) {
       throw new ToolError(
-        `동료 그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". list_npc_graphics 또는 list_resources(kind:"charset")로 후보를 조회하거나 who 를 {textureKey, characterIndex}로 지정하세요.`,
+        `동료 그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}".${npcGraphicMissNote(query, project.charsetLabels)} list_npc_graphics 또는 list_resources(kind:"charset")로 후보를 조회하거나 who 를 {textureKey, characterIndex}로 지정하세요.`,
         { code: "graphic-not-found" }
       );
     }

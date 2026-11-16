@@ -4,7 +4,7 @@
 // 「여관」은 장소 낱말이다 — 「여관 장부」가 사람 칩(보라 옷 손님)으로 지어져 시작 문 바로 위에 섰다(2026-10-29 vm4 terra mystery major). 여관 주인·여관지기만 사람.
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { GameMap, Project } from "@/project/types";
-import { pickPersonGraphic } from "../place/people";
+import { personKey, pickPersonGraphic } from "../place/people";
 
 const PERSON = /교수|선생|스승|사서|교장|학장|촌장|이장|주모|주인장?$|상인|점원|직원|포졸|포교|종사관|사또|대감|도령|아씨|나리|소녀|소년|노인|할머니|할아버지|아이$|박사|형사|경찰|기사$|병사|경비|문지기|파수꾼|왕$|여왕|공주|왕자|마법사|마녀|사제|신부|수녀|의사|간호|선원|선장|어부|농부|대장장이|여관 ?주인|여관지기|학생|친구|엄마|아빠|어머니|아버지|누나|언니|오빠|동생|부인|관장|라이벌|챔피언|트레이너|탐정|집사|하녀|시녀|하인|청년|아가씨|아저씨|아주머니|님$|씨$|professor|librarian|teacher|guard|merchant|priest|doctor|captain|innkeeper|villager|girl|boy|man$|woman$/iu;
 const NOT_PERSON = /석상|동상|조각|초상|그림|액자|인형|유령|해골|시체|무덤|비석|흔적|편지|일지|일기|쪽지|장부|기록|수첩|명부|금고|열쇠|발자국|책상|상자|궤짝|문$|statue|portrait|ghost/iu;
@@ -12,15 +12,15 @@ const NOT_PERSON = /석상|동상|조각|초상|그림|액자|인형|유령|해�
 export const isPersonName = (name: string | undefined): boolean => !!name && PERSON.test(name.trim()) && !NOT_PERSON.test(name);
 
 /** 사람 이름 이벤트에 붙일 칩 그림(아래를 본 서 있는 자세). 못 고르면 undefined. */
-export function personGraphicFor(project: Project, map: GameMap, name: string): { graphic: Record<string, unknown>; label: string } | undefined {
+export function personGraphicFor(project: Project, map: GameMap, name: string, looks?: string): { graphic: Record<string, unknown>; label: string } | undefined {
   // 같은 이름의 사람이 게임 어디엔가 이미 서 있으면 그 모습 그대로(한 사람이 장소마다 다른 얼굴이 되지 않게).
   const wanted = name.trim();
   for (const other of Object.values(project.maps)) for (const ev of other.events ?? []) {
-    if ((ev.name ?? "").trim() !== wanted) continue;
+    if (personKey(ev.name) !== personKey(wanted)) continue;
     const graphic = (ev.pages ?? []).map((pg) => pg.graphic as Record<string, unknown> | undefined).find((g) => g?.sprite && g.transparent !== true);
     if (graphic) return { graphic: structuredClone(graphic), label: `${wanted} 의 앞선 모습` };
   }
-  const pick = pickPersonGraphic(project, map, name, undefined, true);
+  const pick = pickPersonGraphic(project, map, name, looks, true);
   if (!pick) return undefined;
   return {
     graphic: { sprite: { type: "bundled", id: pick.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) },

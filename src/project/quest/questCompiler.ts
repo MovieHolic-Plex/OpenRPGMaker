@@ -8,9 +8,10 @@ import { resolveEventPlacement, upsertEventIntoMap } from "@/editor/tools/eventT
 import { ensureNamedSwitch, ensureNamedVariable } from "@/editor/tools/flagHelpers";
 import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
 import { isPassable } from "@/project/collision";
+import { josa } from "@/util/josa";
 import { questPresetIssue } from './questPresets';
 import { validateQuestReferences } from './questValidation';
-import { GENERIC_GIVER, hostCommands, hostPage, prepareQuestHost, questHost, type QuestHost } from './questHost';
+import { GENERIC_GIVER, hostCommands, hostPage, prepareQuestHost, questHost, settleQuestStepPages, type QuestHost } from './questHost';
 import { settleStepPages } from '../blueprintStepPages';
 import { resolveAnchorPoint } from "@/project/locationAnchors";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
@@ -518,7 +519,8 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
   for (const reward of def.rewards?.items ?? []) rewardCommands.push({ kind: "changeItem", itemId: reward.itemId, op: "+=", amount: reward.count });
   rewardCommands.push({ kind: "setSwitch", switchId: flags.done, value: true });
   rewardCommands.push(...effects(project, def.effects));
-  rewardCommands.push(text(def.dialogue?.completed ?? `의뢰 '${def.title}'을 완수했다!`, giverName));
+  // 기본 완료 글은 서술이다 — 의뢰인의 이름표 밑에 띄우지 않는다(작성자가 쓴 completed 는 그 사람의 말). 조사는 제목의 받침을 따른다.
+  rewardCommands.push(def.dialogue?.completed ? text(def.dialogue.completed, giverName) : text(`의뢰 '${def.title}'${josa(def.title, "을/를")} 완수했다!`));
 
   // 모든 단계 완료 여부를 중첩 fork로 검사.
   const allDone: Command = flags.stepSwitches.reduceRight<Command>(
@@ -541,7 +543,7 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
     text(def.summary, giverName),
     {
       kind: "choices",
-      prompt: `의뢰 '${def.title}'을 수락할까요?`,
+      prompt: `의뢰 '${def.title}'${josa(def.title, "을/를")} 수락할까요?`,
       options: [
         { text: "수락한다", branch: accept },
         { text: "다음에", branch: [text(def.dialogue?.declined ?? "마음이 바뀌면 다시 오게.", giverName)] },
@@ -695,6 +697,8 @@ export function compileQuest(project: Project, def: QuestDef, options: QuestComp
 
   // 5) 메타 보존.
   project.quests = [...(project.quests ?? []).filter((quest) => questDefId(quest) !== def.key), def];
+  // 한 사람이 제 의뢰의 주인이면서 다른 의뢰의 들를 곳일 때 — 들를 곳 페이지가 열려 있는 동안 뒤에 선 페이지가 가리지 않게(questHost.settleQuestStepPages).
+  settleQuestStepPages(project);
 
   // drop 소스가 만든 클리어 스위치까지 대략 반영(정확 카운트는 중요치 않음).
   switchesRegistered += def.steps.filter((step) => step.kind === "collect").reduce((sum, step) => sum + (step.kind === "collect" ? step.sources.filter((s) => s.kind === "drop").length : 0), 0);

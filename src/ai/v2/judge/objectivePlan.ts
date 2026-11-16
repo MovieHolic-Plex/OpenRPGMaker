@@ -52,6 +52,19 @@ export function repeatingStartObjectives(project: Project): { readonly eventId: 
   return out;
 }
 
+/** 시작 맵의 자동·병렬 페이지에 걸린 「현재 목표」 글들 — 게임이 시작할 때 뜨는 목표. */
+function startObjectiveMessages(project: Project): string[] {
+  const out: string[] = [];
+  const visit = (list: RawCommand[]): void => {
+    for (const command of list) {
+      if (isObjectiveCommand(command)) out.push(String((command as { fields?: { message?: unknown } }).fields?.message ?? "").trim());
+      for (const child of childLists(command)) { const inner = rawChild(command, child.key); if (inner) visit(inner); }
+    }
+  };
+  for (const event of project.maps[project.startMapId]?.events ?? []) for (const page of event.pages ?? []) if (["auto", "parallel"].includes(String((page.trigger as { kind?: string }).kind))) visit((page.commands as RawCommand[]) ?? []);
+  return out.filter(Boolean);
+}
+
 /**
  * 자동·병렬 페이지가 한 번만 도나 — 자기 지우기, 또는 켜는 자기 스위치·스위치가 같은 이벤트의 다른 페이지 조건이거나 이 페이지의 «꺼져 있어야» 조건이다.
  * 아니면 맵에 들어올 때마다(불러오기 포함) 다시 돈다(장면 분위기 페이지).
@@ -188,6 +201,11 @@ export function planObjective(project: Project, input: { readonly text: string; 
   for (const map of maps) {
     const found = (map.events ?? []).find((event) => event.id === input.eventId || event.name === input.eventId);
     if (!found) continue;
+    // 시작 목표와 같은 글을 이정표 뒤에 걸면 목표가 맨 처음으로 되돌아간다 — 걸지 않고 돌려보낸다(그 이벤트가 시작 목표의 자리면 그대로 고친다).
+    // 왜(2026-11-15 확인 빌드 r5): 모델이 «한씨에게 말을 걸어 사정을 듣자» 를 한씨의 이정표 다섯 곳 뒤에 걸어, 한씨의 곁 의뢰를 끝내자 메뉴의 「현재 목표」가 처음 글로 돌아갔다.
+    const startTexts = startObjectiveMessages(project).filter((message) => message === raw || message.startsWith(`${raw} (`));
+    if (startTexts.length && !startTexts.some((message) => JSON.stringify(found.pages ?? []).includes(JSON.stringify(message))))
+      return { ok: false, summary: `«${raw}» is the start objective — give what the player does after ${found.name ?? found.id}.`, events: [] };
     const eventOrigin = { x: found.x, y: found.y };
     text = withWhere(project, map.id, raw, input.where, eventOrigin);
     // 「어디」가 안 붙었고 이 이벤트가 청사진 단계면 다음 단계 이벤트 자리를 붙인다(「…문을 열고 탈출하자」 → 「(잠긴 문)」).

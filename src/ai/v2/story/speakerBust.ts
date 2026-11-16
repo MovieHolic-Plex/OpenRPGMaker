@@ -113,7 +113,8 @@ function placeBusts(list: readonly Command[], bustFor: (speaker: string | undefi
       out.push(want && i < fightAt && !command.emotion ? { ...command, emotion: "angry" } : command);
       return;
     }
-    const inner = nested(command, (branch) => placeBusts(branch, bustFor, current ?? "", false, count));
+    // 갈래 뒤에는 걸린 얼굴을 모른다 — 모르는 채로 넘긴다(다음 갈래의 첫 줄이 얼굴을 다시 정한다. "" 로 넘기면 둘째 갈래부터 서술 줄 앞의 얼굴 지우기가 빠진다).
+    const inner = nested(command, (branch) => placeBusts(branch, bustFor, current, false, count));
     if (inner !== command) current = undefined;
     out.push(inner);
   });
