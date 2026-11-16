@@ -671,6 +671,42 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 새 경로를 추가할 때: 전체 프로젝트를 `JSON.stringify`/`acceptanceFingerprint`/`structuredClone` 하는 비교·복제를 스토어 통지나 체크포인트마다 부르지 마라.
 내용 비교는 `sameAcceptanceContent` 또는 `jsonContentDigest`, 읽기 전용 사본은 `cloneProjectSharingSharedDictionaries` 를 쓴다.
 
+### 조수 세션의 사본·정체 (2026-11-16)
+
+위 일은 스토어·적용 경로까지였다. `AssistantSession`(조수 세션 — 영역 작업·DB 검토·이벤트 명령 범위·클러스터 조수·브리지 전송·복구가 쓰는
+렌더러 안 루프. 입력창의 보통 전송은 Pi 경로 `runPiCommand` 다) 자신은 기준·초안·검수 기준·적용 대기 사본을 `structuredClone(project)` 로 뜨고
+«검수한 초안과 글자까지 같은가» 를 `JSON.stringify(project)` 끼리 비교했다. 사본의 타일셋이 늘 새 객체라 위의 기억(요약·왕복·차이 보기)이
+세션 경계에서 전부 빗나갔고, 적용된 초안이 스토어로 돌아가면 스토어의 타일셋까지 새 객체가 됐다.
+
+실측(bun 1.4.2, `createBlankProject` 7,090만 자 중 번들 타일셋 정의 49개가 6,750만 자 = 95.2%, 타일셋을 뺀 프로젝트 337만 자;
+`test/aiRunEpoch.test.ts` 의 «취소된 턴 A 뒤의 턴 B» 경로를 시험기 없이 돈 것, 세 번씩):
+
+| | 고치기 전 | 고친 뒤 |
+|---|---|---|
+| 경로 전체 | 77.6 · 76.3 · 76.4 s | 15.2 · 15.0 · 14.5 s |
+| 100ms 넘는 `structuredClone` | 21번 · 20.5 s | 2번 · 0.2 s |
+| 100ms 넘는 내용 요약(`jsonContentDigest`) | 16번 · 33.6 s | 3번 · 4.3 s(그중 3.9 s 는 스토어 프로젝트의 첫 요약 한 번) |
+| 100ms 넘는 `JSON.stringify` | 15번 · 10.0 s | 2번 · 0.4 s(항목 글 조각을 처음 만드는 한 번) |
+| 100ms 넘는 `JSON.parse`(왕복 검사) | 5번 · 2.8 s | 5번 · 0.9 s |
+
+- **사본**(`src/ai/sessionProjectCopy.ts` `sessionProjectCopy`·`sessionDraftCopy` → `projectClone.cloneProjectSharingStoreOwnedEntries`):
+  **스토어가 들고 있던** 타일셋·업로드 자산 항목만 객체째 공유하고 나머지는 한 번의 structuredClone 으로 깊게 복제한다. 표지는
+  `store.ownsSettledEntriesOf(project)` 가 참일 때만 붙는다(지금 스토어의 프로젝트이고 미룬 부팅 정규화가 남지 않았다).
+  스토어 밖 프로젝트(영역 작업의 작업본·평가·시험 픽스처)와 도구가 막 새로 만든 타일셋은 표지가 없어 예전처럼 통째로 복제된다 —
+  그 프로젝트는 «항목을 제자리에서 고치지 않는다» 는 계약이 없다(`runRegionTask` 는 작업본 타일셋을 제자리에서 고친다).
+  `cloneDetachedDraft` 는 그대로다(영역 작업이 쓴다).
+- **정체**(`SessionProjectJson` → `sharedDictionaryJson.projectJsonChunks`·`sameJsonChunks`): `JSON.stringify(project)` 를 한 덩어리로 만들지 않고
+  조각 목록으로 쥔다. 스토어 항목은 기억한 필드 글 조각을 가리키고 나머지는 그 자리에서 직렬화한다. 조각을 이으면 `JSON.stringify` 와 글자까지 같고,
+  비교는 이어 붙인 글끼리의 `===` 와 같은 판정이다. **`SessionProjectJson` 끼리 `===` 로 비교하면 안 된다** — `equals`·`sameSessionProjectJson` 을 쓴다.
+- **내용 비교**(`sameAcceptanceContent`): 두 쪽을 한 구간에서 요약하고(`withContentDigestEpoch`), 적용 권위 요약이 이미 믿은 공유 항목은 다시
+  대조하지 않는다(`withTrustedSharedEntries`). 맵·DB·시스템은 예전처럼 부를 때마다 끝까지 대조한다.
+- **승인된 저작 정체성**(`approvedAuthoredIdentity`): 정체성 글(`authoredIdentity` — 타일셋까지 정렬 직렬화한 7천만 자, 한 번 2.3 s) 대신
+  그 요약(`projectIdentityDigest(project, "authored")`)을 쥔다. 요약이 같다 ⇔ 글이 같다.
+- 값이 같다는 고정: `test/sessionProjectCopy.test.ts`(번들 칩셋 전부 + 겉모습·이식 목록·고친 칸 + 업로드 자산 — 사본·요약·`serialize`·되읽기·정체 글).
+- 남은 것: 세션이 처음 만들어질 때 스토어 프로젝트의 첫 요약 3.9 s, 첫 왕복 검사의 글 조각·되읽기 약 3 s 는 그대로다(편집기는 한가할 때
+  `warmApplyCaches` 로 미리 한다). 복구 체크포인트(`captureCheckpoint` — 적용 대기 초안을 통째로 싣는다)와 Pi 레인의 출발 사본
+  (`aiLaneManager` 의 `structuredClone(store.getCurrent())`)은 손대지 않았다.
+
 
 ## store.update copy-on-write 와 자동저장 요약 (2026-09-30)
 

@@ -9,7 +9,7 @@ import type { GameMap, Project } from "@/project/types";
 import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget, type ProjectAcceptanceCriterion, type AcceptanceSource } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { collectionRecords, type DbCollection } from "@/editor/tools/queryTools";
-import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { jsonContentDigest, withContentDigestEpoch, withTrustedSharedEntries } from "@/project/persistence/core/contentDigest";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -27,7 +27,11 @@ export function acceptanceFingerprint(value: unknown): string {
  */
 export function sameAcceptanceContent(left: unknown, right: unknown): boolean {
   if (left === right) return true;
-  return jsonContentDigest(left) === jsonContentDigest(right);
+  // 두 쪽을 한 구간에서 요약한다 — 둘이 함께 가리키는 노드(세션 사본이 스토어와 객체째 공유하는 타일셋)는 한 번만 대조한다.
+  // 적용 권위 요약이 이미 믿은 타일셋·업로드 자산 항목은 다시 대조하지 않는다(projectIdentityDigest 와 같은 전제: 그 항목은 제자리에서
+  // 고치지 않는다). 맵·DB·시스템 가지는 예전처럼 부를 때마다 끝까지 대조한다. 요약 값은 그대로다.
+  // 왜(2026-11-16 실측, 타일셋 노드 62만 개): 기억이 있어도 대조가 노드를 전부 훑어 비교 한 번에 0.45~0.65s, 턴 하나에 9번이었다.
+  return withContentDigestEpoch(() => withTrustedSharedEntries(() => jsonContentDigest(left) === jsonContentDigest(right)));
 }
 export function resolveAcceptanceMap(project: Project, target: AcceptanceTarget, bindings: ReadonlyMap<string, string>): GameMap | undefined {
   const id = "mapId" in target ? target.mapId : bindings.get(target.newMapName) ?? "";

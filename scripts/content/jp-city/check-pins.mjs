@@ -14,6 +14,8 @@ const now = JSON.parse(fs.readFileSync(PATH, "utf8")).cells;
 const owner = new Map(Object.entries(now).map(([k, v]) => [v, k]));
 const bad = [];
 for (const [k, v] of Object.entries(old)) {
+  // 예약 블록의 빈 칸 키(<블록>/_pad/<n>)는 같은 블록의 새 칸이 번호를 넘겨받으면 사라진다(bake_lib.RESERVE).
+  if (k.includes("/_pad/") && !(k in now) && (owner.get(v) ?? "").startsWith(k.split("/")[0] + "/")) continue;
   if (now[k] !== v) bad.push(`${k}: ${v} → ${now[k] ?? "없음"}`);
   else if (owner.get(v) !== k) bad.push(`${v}번: ${k} → ${owner.get(v)}`);
 }

@@ -1,0 +1,2027 @@
+{
+"_doc": "jp_city Fable 5.2 건물 — 부품(지붕 윗면·정면 벽)은 Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작), 코드는 쌓기와 간판 글자만(fable_city_build.py). 탑 3/4 시점. 3/4 관문 미통과 — 오너 면제 묶음 fable-jpbuildings-2026-11-14. pieces/<id>.png 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 막는다). 굽기 블록 scripts/content/jp-city/blocks/fable_city.py — 새 항목은 items 끝에만(칸 번호 핀 fable_city/<id>/<x>.<y>).",
+"waiver": "fable-jpbuildings-2026-11-14",
+"license": "drawn by Claude Fable 5.2 for this project (own work)",
+"items": [
+{
+"id": "jp-bldg-f-yaoya",
+"type": "building",
+"name": "채소 가게",
+"en": "greengrocer",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"채소 가게",
+"greengrocer",
+"青果"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_yaoya"
+},
+{
+"id": "jp-bldg-f-furuhon",
+"type": "building",
+"name": "헌책방",
+"en": "second-hand bookshop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"헌책방",
+"second-hand bookshop",
+"古本"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bookstore"
+},
+{
+"id": "jp-bldg-f-kissa",
+"type": "building",
+"name": "찻집",
+"en": "old coffee shop",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"찻집",
+"old coffee shop",
+"珈琲"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_kissaten"
+},
+{
+"id": "jp-bldg-f-house-eave",
+"type": "building",
+"name": "기와 2층집",
+"en": "two-storey family house",
+"kind": "structure",
+"w": 5,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"기와 2층집",
+"two-storey family house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-machiya-gable",
+"type": "building",
+"name": "박공 마치야",
+"en": "gable-front machiya sweet shop",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:gable"
+],
+"words": [
+"박공 마치야",
+"gable-front machiya sweet shop",
+"菓子"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bakery"
+},
+{
+"id": "jp-bldg-f-zakkyo",
+"type": "building",
+"name": "잡거 빌딩",
+"en": "mixed-tenant building",
+"kind": "structure",
+"w": 6,
+"h": 9,
+"tier": "medium",
+"floors": 3,
+"doors": [
+1,
+4
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"잡거 빌딩",
+"mixed-tenant building",
+"中華"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_ramen"
+},
+{
+"id": "jp-bldg-f-sakana",
+"type": "building",
+"name": "생선 가게",
+"en": "fishmonger",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"생선 가게",
+"fishmonger",
+"鮮魚"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_yaoya"
+},
+{
+"id": "jp-bldg-f-niku",
+"type": "building",
+"name": "정육점",
+"en": "butcher",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+0
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"정육점",
+"butcher",
+"精肉"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_yaoya"
+},
+{
+"id": "jp-bldg-f-pan",
+"type": "building",
+"name": "빵집",
+"en": "bakery",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"빵집",
+"bakery",
+"パン"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bakery"
+},
+{
+"id": "jp-bldg-f-hana",
+"type": "building",
+"name": "꽃집",
+"en": "florist",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"꽃집",
+"florist"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_florist"
+},
+{
+"id": "jp-bldg-f-tofu",
+"type": "building",
+"name": "두부 가게",
+"en": "tofu shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"두부 가게",
+"tofu shop",
+"豆腐"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_yaoya"
+},
+{
+"id": "jp-bldg-f-sake",
+"type": "building",
+"name": "술 가게",
+"en": "sake and liquor shop",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:gable"
+],
+"words": [
+"술 가게",
+"sake and liquor shop",
+"酒"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_izakaya"
+},
+{
+"id": "jp-bldg-f-kome",
+"type": "building",
+"name": "쌀가게",
+"en": "rice shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"쌀가게",
+"rice shop",
+"米"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_yaoya"
+},
+{
+"id": "jp-bldg-f-kusuri",
+"type": "building",
+"name": "약국",
+"en": "pharmacy",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"약국",
+"pharmacy",
+"薬"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_pharmacy"
+},
+{
+"id": "jp-bldg-f-tokoya",
+"type": "building",
+"name": "이발소",
+"en": "barber shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"이발소",
+"barber shop"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_barber"
+},
+{
+"id": "jp-bldg-f-ocha",
+"type": "building",
+"name": "찻잎 가게",
+"en": "tea merchant",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:gable"
+],
+"words": [
+"찻잎 가게",
+"tea merchant",
+"茶"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_kissaten"
+},
+{
+"id": "jp-bldg-f-denki",
+"type": "building",
+"name": "전파상",
+"en": "electrical appliance shop",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"전파상",
+"electrical appliance shop",
+"でんき"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bookstore"
+},
+{
+"id": "jp-bldg-f-jitensha",
+"type": "building",
+"name": "자전거포",
+"en": "bicycle shop",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"자전거포",
+"bicycle shop",
+"自転車"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bookstore"
+},
+{
+"id": "jp-bldg-f-kanamono",
+"type": "building",
+"name": "철물점",
+"en": "hardware shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"철물점",
+"hardware shop",
+"金物"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bookstore"
+},
+{
+"id": "jp-bldg-f-dagashi",
+"type": "building",
+"name": "막과자 가게",
+"en": "penny-candy shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"막과자 가게",
+"penny-candy shop"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bakery"
+},
+{
+"id": "jp-bldg-f-sentaku",
+"type": "building",
+"name": "세탁소",
+"en": "dry cleaner",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"세탁소",
+"dry cleaner",
+"洗濯"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_laundry"
+},
+{
+"id": "jp-bldg-f-ramen",
+"type": "building",
+"name": "라멘집",
+"en": "ramen shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"라멘집",
+"ramen shop",
+"麺"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_ramen"
+},
+{
+"id": "jp-bldg-f-sushi",
+"type": "building",
+"name": "초밥집",
+"en": "sushi restaurant",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"초밥집",
+"sushi restaurant",
+"寿司"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_sushi"
+},
+{
+"id": "jp-bldg-f-izakaya",
+"type": "building",
+"name": "선술집",
+"en": "izakaya pub",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"선술집",
+"izakaya pub",
+"居酒屋"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_izakaya"
+},
+{
+"id": "jp-bldg-f-yakitori",
+"type": "building",
+"name": "꼬치구이집",
+"en": "yakitori grill",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:tile"
+],
+"words": [
+"꼬치구이집",
+"yakitori grill",
+"やきとり"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_izakaya"
+},
+{
+"id": "jp-bldg-f-bungu",
+"type": "building",
+"name": "문방구",
+"en": "stationery shop",
+"kind": "structure",
+"w": 3,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:shop-row",
+"roof:flat"
+],
+"words": [
+"문방구",
+"stationery shop",
+"文具"
+],
+"rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+"program": "jp_bookstore"
+},
+{
+"id": "jp-bldg-f-machiya-hira-a",
+"type": "building",
+"name": "마치야",
+"en": "eave-front machiya town house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"마치야",
+"eave-front machiya town house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house"
+},
+{
+"id": "jp-bldg-f-machiya-hira-b",
+"type": "building",
+"name": "마치야",
+"en": "plastered town house",
+"kind": "structure",
+"w": 5,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"마치야",
+"plastered town house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house"
+},
+{
+"id": "jp-bldg-f-house-tile-b",
+"type": "building",
+"name": "기와 2층집",
+"en": "two-storey family house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"기와 2층집",
+"two-storey family house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-tile-c",
+"type": "building",
+"name": "기와 2층집",
+"en": "two-storey family house",
+"kind": "structure",
+"w": 5,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"기와 2층집",
+"two-storey family house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-tile-d",
+"type": "building",
+"name": "차고 달린 좁은 2층집",
+"en": "narrow house with a garage",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"차고 달린 좁은 2층집",
+"narrow house with a garage"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-old-a",
+"type": "building",
+"name": "툇마루 있는 옛 목조집",
+"en": "old one-storey wooden house",
+"kind": "structure",
+"w": 4,
+"h": 5,
+"tier": "small",
+"floors": 1,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"툇마루 있는 옛 목조집",
+"old one-storey wooden house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-old-b",
+"type": "building",
+"name": "덧문 닫은 옛 목조집",
+"en": "old one-storey wooden house",
+"kind": "structure",
+"w": 5,
+"h": 5,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"덧문 닫은 옛 목조집",
+"old one-storey wooden house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-box-a",
+"type": "building",
+"name": "흰 상자형 현대 주택",
+"en": "modern box house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:flat"
+],
+"words": [
+"흰 상자형 현대 주택",
+"modern box house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-box-b",
+"type": "building",
+"name": "검은 금속판 상자형 주택",
+"en": "modern box house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+0
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:flat"
+],
+"words": [
+"검은 금속판 상자형 주택",
+"modern box house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-apart-a",
+"type": "building",
+"name": "바깥 계단 목조 연립",
+"en": "two-storey wooden apartment block",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+0,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"바깥 계단 목조 연립",
+"two-storey wooden apartment block"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_mokuchin",
+"touch": false
+},
+{
+"id": "jp-bldg-f-apart-b",
+"type": "building",
+"name": "바깥 계단 철골 연립",
+"en": "two-storey apartment block",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+1,
+4
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"바깥 계단 철골 연립",
+"two-storey apartment block"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_mokuchin",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-gable-a",
+"type": "building",
+"name": "박공 2층집",
+"en": "gable-front house",
+"kind": "structure",
+"w": 4,
+"h": 7,
+"tier": "small",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:gable"
+],
+"words": [
+"박공 2층집",
+"gable-front house"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-l",
+"type": "building",
+"name": "두 덩이 집",
+"en": "two-volume house with a low wing",
+"kind": "structure",
+"w": 7,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"두 덩이 집",
+"two-volume house with a low wing"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-house-porch",
+"type": "building",
+"name": "현관 지붕이 나온 2층집",
+"en": "two-storey house with a projecting entrance porch",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+4
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:residential",
+"roof:tile"
+],
+"words": [
+"현관 지붕이 나온 2층집",
+"two-storey house with a projecting entrance porch"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"program": "jp_house",
+"touch": false
+},
+{
+"id": "jp-bldg-f-kaki-plaster",
+"type": "building",
+"name": "기와 얹은 흰 회벽 담",
+"en": "tile-capped plaster garden wall",
+"kind": "structure",
+"w": 2,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"기와 얹은 흰 회벽 담",
+"tile-capped plaster garden wall"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다."
+},
+{
+"id": "jp-bldg-f-kaki-block",
+"type": "building",
+"name": "블록 담",
+"en": "concrete block garden wall",
+"kind": "structure",
+"w": 2,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"블록 담",
+"concrete block garden wall"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다."
+},
+{
+"id": "jp-bldg-f-kaki-wood",
+"type": "building",
+"name": "검은 널 판자 담",
+"en": "dark wooden board fence",
+"kind": "structure",
+"w": 2,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"검은 널 판자 담",
+"dark wooden board fence"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다."
+},
+{
+"id": "jp-bldg-f-kaki-gate-roofed",
+"type": "building",
+"name": "지붕 얹은 나무 대문",
+"en": "roofed wooden garden gate",
+"kind": "structure",
+"w": 3,
+"h": 3,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"지붕 얹은 나무 대문",
+"roofed wooden garden gate"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"pass": [
+1
+]
+},
+{
+"id": "jp-bldg-f-kaki-gate-modern",
+"type": "building",
+"name": "기둥 대문",
+"en": "modern gate posts with a low iron gate",
+"kind": "structure",
+"w": 3,
+"h": 2,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:residential",
+"roof:none"
+],
+"words": [
+"기둥 대문",
+"modern gate posts with a low iron gate"
+],
+"rule": "주택가 생활도로 쪽에 정면을 두고, 앞에 마당 1~2칸과 담·대문을 둔다. 문 앞 한 칸은 걷는 바닥(디딤돌·현관 앞)으로 비운다.",
+"pass": [
+1
+]
+},
+{
+"id": "jp-bldg-f-juku",
+"type": "building",
+"name": "학원",
+"en": "cram school",
+"kind": "structure",
+"w": 6,
+"h": 9,
+"tier": "medium",
+"floors": 3,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"학원",
+"cram school",
+"じゅく"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_school_annex"
+},
+{
+"id": "jp-bldg-f-sento",
+"type": "building",
+"name": "대중목욕탕",
+"en": "public bath house",
+"kind": "structure",
+"w": 7,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:tile"
+],
+"words": [
+"대중목욕탕",
+"public bath house",
+"女"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_sento"
+},
+{
+"id": "jp-bldg-f-super",
+"type": "building",
+"name": "슈퍼마켓",
+"en": "supermarket",
+"kind": "structure",
+"w": 8,
+"h": 6,
+"tier": "medium",
+"floors": 1,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"슈퍼마켓",
+"supermarket",
+"スーパー"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_supermarket"
+},
+{
+"id": "jp-bldg-f-clinic",
+"type": "building",
+"name": "의원",
+"en": "small clinic",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"의원",
+"small clinic",
+"ないか"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_clinic"
+},
+{
+"id": "jp-bldg-f-yubin",
+"type": "building",
+"name": "우체국",
+"en": "post office",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"우체국",
+"post office",
+"ゆうびん"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_post_office"
+},
+{
+"id": "jp-bldg-f-koban",
+"type": "building",
+"name": "파출소",
+"en": "police box",
+"kind": "structure",
+"w": 4,
+"h": 5,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"파출소",
+"police box",
+"こうばん"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_koban"
+},
+{
+"id": "jp-bldg-f-jinja",
+"type": "building",
+"name": "신사 본전",
+"en": "shrine hall",
+"kind": "structure",
+"w": 7,
+"h": 6,
+"tier": "medium",
+"floors": 1,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:landmark",
+"roof:tile"
+],
+"words": [
+"신사 본전",
+"shrine hall"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-sanmon",
+"type": "building",
+"name": "절 산문",
+"en": "temple gate",
+"kind": "structure",
+"w": 6,
+"h": 6,
+"tier": "medium",
+"floors": 1,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:landmark",
+"roof:tile"
+],
+"words": [
+"절 산문",
+"temple gate"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"pass": [
+2,
+3
+],
+"touch": false
+},
+{
+"id": "jp-bldg-f-konbini",
+"type": "building",
+"name": "편의점",
+"en": "convenience store",
+"kind": "structure",
+"w": 6,
+"h": 5,
+"tier": "medium",
+"floors": 1,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"편의점",
+"convenience store",
+"コンビニ"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_konbini"
+},
+{
+"id": "jp-bldg-f-ginko",
+"type": "building",
+"name": "신용금고",
+"en": "credit bank",
+"kind": "structure",
+"w": 7,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"신용금고",
+"credit bank",
+"ぎんこう"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_office"
+},
+{
+"id": "jp-bldg-f-mansion",
+"type": "building",
+"name": "맨션",
+"en": "apartment block",
+"kind": "structure",
+"w": 8,
+"h": 16,
+"tier": "large",
+"floors": 6,
+"doors": [
+1,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"맨션",
+"apartment block"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-office",
+"type": "building",
+"name": "오피스 빌딩",
+"en": "office building",
+"kind": "structure",
+"w": 8,
+"h": 14,
+"tier": "large",
+"floors": 5,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"오피스 빌딩",
+"office building",
+"オフィス"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"program": "jp_office",
+"touch": false
+},
+{
+"id": "jp-bldg-f-depato",
+"type": "building",
+"name": "백화점",
+"en": "department store",
+"kind": "structure",
+"w": 8,
+"h": 12,
+"tier": "large",
+"floors": 4,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"백화점",
+"department store",
+"デパート"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-hotel",
+"type": "building",
+"name": "비즈니스 호텔",
+"en": "business hotel",
+"kind": "structure",
+"w": 6,
+"h": 16,
+"tier": "large",
+"floors": 6,
+"doors": [
+1,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"비즈니스 호텔",
+"business hotel",
+"ホテル"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-byoin",
+"type": "building",
+"name": "병원",
+"en": "hospital",
+"kind": "structure",
+"w": 8,
+"h": 12,
+"tier": "large",
+"floors": 4,
+"doors": [
+1,
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"병원",
+"hospital",
+"びょういん"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"program": "jp_clinic",
+"touch": false
+},
+{
+"id": "jp-bldg-f-danchi",
+"type": "building",
+"name": "단지 아파트",
+"en": "public housing block",
+"kind": "structure",
+"w": 7,
+"h": 14,
+"tier": "large",
+"floors": 5,
+"doors": [
+5,
+6
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:large",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"단지 아파트",
+"public housing block"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-ekimae",
+"type": "building",
+"name": "역 앞 상가 빌딩",
+"en": "station-front shopping building",
+"kind": "structure",
+"w": 12,
+"h": 16,
+"tier": "xlarge",
+"floors": 6,
+"doors": [
+4,
+5
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:xlarge",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"역 앞 상가 빌딩",
+"station-front shopping building",
+"ショッピング"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-shiyakusho",
+"type": "building",
+"name": "구청",
+"en": "ward office",
+"kind": "structure",
+"w": 12,
+"h": 14,
+"tier": "xlarge",
+"floors": 5,
+"doors": [
+5,
+6
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:xlarge",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"구청",
+"ward office",
+"くやくしょ"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"program": "jp_office",
+"touch": false
+},
+{
+"id": "jp-bldg-f-tower",
+"type": "building",
+"name": "타워 맨션",
+"en": "tower apartment block",
+"kind": "structure",
+"w": 12,
+"h": 18,
+"tier": "xlarge",
+"floors": 7,
+"doors": [
+4,
+5
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:xlarge",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"타워 맨션",
+"tower apartment block",
+"ランドリー"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-torii",
+"type": "building",
+"name": "도리이",
+"en": "shrine torii gate",
+"kind": "structure",
+"w": 4,
+"h": 4,
+"tier": "landmark",
+"floors": 1,
+"doors": [
+1,
+2
+],
+"depth": 1,
+"tags": [
+"건물",
+"country:jp",
+"tier:landmark",
+"setting:city",
+"street:landmark",
+"roof:none"
+],
+"words": [
+"도리이",
+"shrine torii gate"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"pass": [
+1,
+2
+],
+"touch": false
+},
+{
+"id": "jp-bldg-f-eki",
+"type": "building",
+"name": "역사 정면",
+"en": "railway station front",
+"kind": "structure",
+"w": 10,
+"h": 8,
+"tier": "landmark",
+"floors": 2,
+"doors": [
+4,
+5
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:landmark",
+"setting:city",
+"street:landmark",
+"roof:tile"
+],
+"words": [
+"역사 정면",
+"railway station front",
+"えき"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-osento",
+"type": "building",
+"name": "큰 목욕탕",
+"en": "big public bath house with a tall chimney",
+"kind": "structure",
+"w": 7,
+"h": 10,
+"tier": "landmark",
+"floors": 2,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:landmark",
+"setting:city",
+"street:landmark",
+"roof:tile"
+],
+"words": [
+"큰 목욕탕",
+"big public bath house with a tall chimney",
+"ゆ"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"program": "jp_sento",
+"touch": false
+}
+]
+}
