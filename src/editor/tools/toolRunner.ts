@@ -424,6 +424,14 @@ function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, 
   return out;
 }
 
+function withoutListPosition(name: string, args: Record<string, unknown>): Record<string, unknown> {
+  const key = DB_UPSERT_TOOLS[name]?.arg;
+  const rec = key ? args[key] : undefined;
+  if (!rec || typeof rec !== "object" || Array.isArray(rec) || typeof (rec as Record<string, unknown>).position !== "number") return args;
+  const { position: _position, ...rest } = rec as Record<string, unknown>;
+  return { ...args, [key!]: rest };
+}
+
 function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string, unknown>, cause: unknown): LintIssue {
   const issue = issueFromError(cause);
   // 이미 교정본을 실어 보내는 문구는 그대로 둔다. 모델도 테스트도 그 메시지의 JSON 을 끝까지 읽어 그대로
@@ -484,7 +492,8 @@ export function runToolDefinition(
     normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(
       ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, aliased.args, "", prunedPaths, storedRecordReader(ctx.project, aliased.args)) as Record<string, unknown> : aliased.args))) as Record<string, unknown>);
   const lockedDefault = genreLockedDefaultTileset(ctx, tool, aliased.args, filledArgs);
-  const normalizedArgs = lockedDefault.args;
+  // get_database_records 가 붙인 목록 번호(position)는 레코드 칸이 아니다 — 읽은 레코드를 그대로 돌려보내도 말없이 뺀다(2026-11-16).
+  const normalizedArgs = withoutListPosition(tool.name, lockedDefault.args);
   const prunedNote = [
     ...aliased.notes,
     ...(lockedDefault.note ? [lockedDefault.note] : []),

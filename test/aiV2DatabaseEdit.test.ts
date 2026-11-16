@@ -189,6 +189,15 @@ describe("get_database_records reading", () => {
     const pos = run(ctx, "get_database_records", { collection: "items", query: "#2" });
     expect((pos.data as { records: { id: string; position: number }[] }).records[0]).toMatchObject({ id: ctx.project.database.items[1]!.id, position: 2 });
   });
+  it("a full record read back with its list number is saved without a position field", () => {
+    const own = fresh();
+    const rec = (run(own, "get_database_records", { collection: "items", ids: ["item_potion"], include: "full" }).data as { records: Record<string, unknown>[] }).records[0]!;
+    expect(rec.position).toBe(1);
+    const out = run(own, "upsert_item", { item: { ...rec, price: 99 } });
+    expect(out.ok, out.summary).toBe(true);
+    expect("position" in own.project.database.items.find((i) => i.id === "item_potion")!).toBe(false);
+    expect(warningsOf(out).join(" ")).not.toContain("position");
+  });
   it("system settings and terms are readable", () => {
     expect(run(ctx, "get_database_records", { collection: "terms" }).ok).toBe(true);
     expect(run(ctx, "get_database_records", { collection: "system" }).ok).toBe(true);
