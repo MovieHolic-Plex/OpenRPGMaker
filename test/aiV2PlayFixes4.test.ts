@@ -28,6 +28,9 @@ import { charsetFamilyOf } from "@/project/charsetFamily";
 import { hideLockCodes } from "@/ai/v2/story/codeLeaks";
 import { ensureBossRest } from "@/ai/v2/story/healingAccess";
 import { namedFoeArt } from "@/ai/v2/story/currentFoes";
+import { unaskedChanges } from "@/ai/v2/judge/sideEffectChecks";
+import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
+import { REST_LINE } from "@/ai/v2/story/restLine";
 
 type Obj = Record<string, unknown>;
 const HARBOUR = "포구 마을 «갈매나루»에서 시작하는 짧은 JRPG 를 만들어 줘. 대성당 지하에서 옛 지하 묘지로 내려가는데, 내려가는 길목을 해골 병사가 막고 서 있어서 싸워 이겨야 지나갈 수 있어. 묘지 맨 안쪽에서 마지막 보스와 싸우면 끝나.";
@@ -405,5 +408,29 @@ describe("글이 짚은 적 그림은 어느 묶음에 있든 그대로 — 확�
     expect(namedFoeArt(project, "해골 병사 녹슨 갑옷과 방패를 든 해골 병사")).toBe("enemy_skeleton_knight");
     expect(namedFoeArt(project, "해골 병사")).toBeUndefined();
     expect(namedFoeArt(project, "강의 주인 두꺼비")).toBeUndefined();
+  });
+});
+
+// 명세 은행(2026-11-16, #4751 ce3c94330)이 짚은 것: 이 PR 의 새 글·새 사본이 끝맺음 관문 항목으로 세어졌다.
+describe("함수가 지은 것은 관문 항목이 아니다 — 명세 은행", () => {
+  it("길 맞춤 사본 적의 능력치가 바뀐 것은 요청에 없는 변경이 아니다 — 원본은 그대로 짚는다", () => {
+    const before = createBlankProject() as Project;
+    const e0 = before.database.enemies[0]!;
+    before.database.enemies.push({ ...structuredClone(e0), id: "enemy_path_x_ghost", name: "창백한 유령" } as never);
+    const after = structuredClone(before);
+    after.database.enemies.find((e) => e.id === "enemy_path_x_ghost")!.stats.attack += 7;
+    expect(unaskedChanges(before, after, "재밌는 게임 만들어 줘").filter((f) => f.ko.includes("창백한 유령"))).toEqual([]);
+    after.database.enemies[0]!.stats.attack += 7;
+    expect(unaskedChanges(before, after, "재밌는 게임 만들어 줘").some((f) => f.ko.includes(String(e0.name)))).toBe(true);
+  });
+  it("보스마다 같은 글인 보스 앞 회복 줄은 반복으로 세지 않는다", () => {
+    const before = createBlankProject() as Project;
+    const after = structuredClone(before);
+    const troopId = after.database.troops[0]!.id;
+    const fight = (id: string, x: number) => event(id, id, x, 4, [page([], [{ kind: "text", body: REST_LINE }, { kind: "recoverAll" }, { kind: "text", body: "물러서라, 이 문은 아무도 지나갈 수 없다!" }, { kind: "battleProcessing", troopSource: "fixed", troopId, canEscape: false }])]);
+    after.maps[after.startMapId]!.events = [fight("ev_a_boss", 3), fight("ev_b_boss", 9)];
+    const lines = sceneCraftFindings(before, after, "게임 만들어 줘").map((f) => f.ko).filter((m) => m.includes("written twice"));
+    expect(lines.some((m) => m.includes("결전을 앞두고"))).toBe(false);
+    expect(lines.some((m) => m.includes("물러서라, 이 문은 아무도 지나갈 수 없다!"))).toBe(true);
   });
 });
