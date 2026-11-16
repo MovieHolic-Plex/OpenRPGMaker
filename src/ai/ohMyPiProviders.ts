@@ -29,6 +29,7 @@ import {
   openAiCompatSlug,
 } from "./openAiCompat.ts";
 import { isLocalCliProviderId, LOCAL_CLI_DEFAULT_MODELS, LOCAL_CLI_LABELS, localCliOfProvider } from "./localCliEngine.ts";
+import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
 
 /**
  * 자격 증명 종류. 레지스트리에는 oauth 만 남았지만 세 값을 유지한다 — 동반 서비스의
@@ -48,9 +49,9 @@ export type OhMyPiProvider = {
 /** Claude 계정(편집기 안 로그인 · ANTHROPIC_API_KEY). id 는 pi 의 제공자 이름이자 저장값이다. */
 export const ANTHROPIC_PROVIDER_ID = "anthropic";
 /** 조수 기본 모델(오너 결정 2026-11-16): Claude Opus 5.5. Claude 로 도는 모든 길(구독 CLI · 키 · 편집기 안 계정)의 모든 역할이 이 한 모델이다. */
-export const CLAUDE_DEFAULT_MODEL = "claude-opus-5-5";
+export const CLAUDE_DEFAULT_MODEL = ASSISTANT_CLAUDE_MODEL;
 /** 조수 기본 추론 강도(오너 결정 2026-11-16): medium. */
-export const CLAUDE_DEFAULT_EFFORT = "medium";
+export const CLAUDE_DEFAULT_EFFORT = ASSISTANT_CLAUDE_EFFORT;
 
 /**
  * 제공자 목록. 순서가 곧 UI 순서이고 **첫 항목이 권장값**이다(옛 저장값의 기본 제공자는 DEFAULT_OH_MY_PI_PROVIDER).

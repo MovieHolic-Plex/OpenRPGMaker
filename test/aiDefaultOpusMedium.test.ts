@@ -197,3 +197,48 @@ describe("옛 Claude 기본과 똑같은 저장값만 읽을 때 새 기본으�
     expect(loadAiConfig().model).toBe(HAIKU);
   });
 });
+
+describe("곁 호출도 조수 기본 모델 — 기본값은 한 곳(src/ai/claudeDefault.ts) (N6, 2026-11-16)", () => {
+  // r7a(조수 Opus 5.5 medium)에서 화면 검수 곁 호출 7번이 따로 박혀 있던 claude-sonnet-5-5 로 갔다.
+  // 기본값을 적는 모든 자리가 같은 상수를 보는지, 곁 호출(화면 검수 · 검토자)이 Claude 로 갈 때 Opus 5.5 · medium 인지 묶는다.
+  it("기본값을 적는 자리가 모두 같은 상수다", async () => {
+    const { ASSISTANT_CLAUDE_MODEL, ASSISTANT_CLAUDE_EFFORT } = await import("@/ai/claudeDefault");
+    const { CLAUDE_DEFAULT_MODEL, CLAUDE_DEFAULT_EFFORT } = await import("@/ai/ohMyPiProviders");
+    const { LOCAL_CLI_DEFAULT_MODELS } = await import("@/ai/localCliEngine");
+    const { CLAUDE_SUBSCRIPTION_ENGINE } = await import("@/ai/planDefaults");
+    expect([ASSISTANT_CLAUDE_MODEL, ASSISTANT_CLAUDE_EFFORT]).toEqual([OPUS, "medium"]);
+    expect([CLAUDE_DEFAULT_MODEL, CLAUDE_DEFAULT_EFFORT]).toEqual([ASSISTANT_CLAUDE_MODEL, ASSISTANT_CLAUDE_EFFORT]);
+    expect(LOCAL_CLI_DEFAULT_MODELS.claude).toEqual({ routine: ASSISTANT_CLAUDE_MODEL, deep: ASSISTANT_CLAUDE_MODEL });
+    expect(CLAUDE_SUBSCRIPTION_ENGINE).toMatchObject({ routineModel: ASSISTANT_CLAUDE_MODEL, deepModel: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT });
+    expect(CLAUDE_SUBSCRIPTION_ENGINE.teamLead).toBeUndefined();
+  });
+
+  it("역할 표(JSON)의 Claude 칸 — 주·검토자·눈·도트의 첫 후보가 그 상수 · medium 이고, 어느 칸에도 Sonnet·Haiku 가 먼저 서지 않는다", async () => {
+    const matrix = (await import("@/ai/assistantRoleMatrix.json")).default as { families: Record<string, { routes: { providerId: string; roles: Record<string, { model: string; thinkingLevel: string }[]> }[] }> };
+    const route = matrix.families.claude!.routes.find((r) => r.providerId === "local-cli:claude")!;
+    for (const role of ["main", "advisor", "vision", "pixel"]) {
+      expect(route.roles[role]?.[0], role).toEqual({ model: OPUS, thinkingLevel: "medium" });
+    }
+    expect(route.roles.smol).toBeUndefined();
+  });
+
+  it("화면 검수(VQA) — 다른 계열이 답하지 못해 Claude 로 넘어가면 Opus 5.5 · medium 이다(Sonnet 아님)", async () => {
+    const { vqaReviewerCandidates } = await import("@/ai/v2/judge/vqa");
+    const { familyOfProviderId } = await import("@/ai/assistantRoles");
+    const claudeOf = (main: { provider: string; model: string }) => vqaReviewerCandidates({ main, keyed: new Set([main.provider]), familyOf: (id) => familyOfProviderId(id, [main.model]) })
+      .filter((p) => p.provider === "local-cli:claude");
+    // 조수가 Claude(Opus)로 돌 때: Claude 검수자는 Opus · medium 하나(주 모델과 합쳐짐 — 지은 모델과 검수 모델이 같다).
+    expect(claudeOf({ provider: "local-cli:claude", model: OPUS })).toEqual([{ provider: "local-cli:claude", model: OPUS, effort: "medium", sameAsMain: true }]);
+    // 조수가 다른 계열로 돌 때: 다른 계열 검수자로 서는 Claude 도 Opus · medium.
+    expect(claudeOf({ provider: "openai-codex", model: "gpt-6.1-terra" })).toEqual([{ provider: "local-cli:claude", model: OPUS, effort: "medium", sameAsMain: false }]);
+    expect(claudeOf({ provider: "google-antigravity", model: "gemini-4-argon" })[0]).toMatchObject({ model: OPUS, effort: "medium" });
+  });
+
+  it("검토자(advisor) 자동 배정 — Claude 만 연결되면 Opus 5.5 · medium", async () => {
+    const { resolveAssistantRoles } = await import("@/ai/assistantRoles");
+    const { mockConnectedRoutes } = await import("@/editor/panels/aiRoleMatrixSettings");
+    const roles = resolveAssistantRoles(mockConnectedRoutes("claude"));
+    expect(roles.advisor).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: OPUS, thinkingLevel: "medium" } });
+    expect(roles.vision).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: OPUS, thinkingLevel: "medium" } });
+  });
+});

@@ -12,6 +12,7 @@
 
 import type { AssistantEngineChoice, LocalCliEngineId } from "./localCliEngine";
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
+import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
 
 /** LocalCliStatus(src/start/settings/localAgents.ts)의 부분. */
 export interface DetectedCli {
@@ -38,7 +39,7 @@ export const GOOGLE_ACCOUNT_PROVIDER_ID = "google-antigravity";
 
 /** Claude 구독 기본: Opus 5.5 · medium 하나가 계획부터 짓기까지 한다(같은 CLI, 키 없음, 팀장·워커로 나누지 않는다). */
 export const CLAUDE_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
-  kind: "local-cli", cli: "claude", routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium",
+  kind: "local-cli", cli: "claude", routineModel: ASSISTANT_CLAUDE_MODEL, deepModel: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT,
 };
 
 /** ChatGPT 구독 기본: Terra 하나가 계획부터 짓기까지 한다. */

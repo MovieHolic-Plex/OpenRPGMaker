@@ -9,7 +9,7 @@
     "pixel": { "label": "도트", "desc": "타일·캐릭터·기물을 격자 문자열로 찍음(텍스트 모델)", "needs": ["text"], "missing": "주 모델이 찍음" }
   },
   "$mainOrder": "주 작업은 Claude 가 연결돼 있으면 Opus 5.5 medium(사용자 결정 2026-10-25), 없으면 Gemini Argon medium.",
-  "$claude": "Claude 경로는 주 작업·눈·도트가 모두 Opus 5.5 medium 한 모델이다(오너 결정 2026-11-16 — 조수 기본은 Claude Opus 5.5 · medium, Haiku 로는 게임을 못 만든다고 봄). 그래서 잔일 칸(Haiku)을 뺐다 — 잔일은 주 모델이 대신한다. 검토자 칸은 그대로다(주 모델과 다른 눈).",
+  "$claude": "Claude 경로는 주 작업·눈·도트가 모두 Opus 5.5 medium 한 모델이다(오너 결정 2026-11-16 — 조수 기본은 Claude Opus 5.5 · medium, Haiku 로는 게임을 못 만든다고 봄). 그래서 잔일 칸(Haiku)을 뺐다 — 잔일은 주 모델이 대신한다. 검토자 칸도 Opus 5.5 medium 이다(2026-11-16 N6 — 곁 호출도 조수 기본 모델. Claude 만 있으면 주 모델과 같은 모델이 문맥만 따로 본다. 다른 계열이 연결돼 있으면 그쪽이 먼저다). 값은 src/ai/claudeDefault.ts 와 같아야 한다(test/aiDefaultOpusMedium.test.ts).",
   "familyOrder": ["gemini", "gpt", "claude", "deepseek"],
   "mainFamilyOrder": ["claude", "gemini", "gpt", "deepseek"],
   "families": {
@@ -64,7 +64,7 @@
       "routes": [
         { "providerId": "local-cli:claude", "roles": {
           "main": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
-          "advisor": [{ "model": "sonnet", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }],
+          "advisor": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }],
           "vision": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
           "pixel": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }]
         } }

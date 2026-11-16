@@ -28,7 +28,8 @@ describe("resolveAssistantRoles — 연결 조합", () => {
     // 오너 결정 2026-11-16: Claude 경로는 주·눈·도트가 Opus 5.5 한 모델이다. 잔일 칸(Haiku)은 없다 — 주 모델이 대신한다.
     expect(t.main).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.smol).toMatch(/^missing: 주 모델이 대신함/u);
-    expect(t.advisor).toBe("local-cli:claude/sonnet");
+    // 검토자도 Opus 5.5 medium(N6, 2026-11-16) — Claude 만 있으면 주 모델과 같은 모델이 문맥만 따로 본다.
+    expect(t.advisor).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.vision).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.pixel).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.image).toMatch(/^missing: 새 그림 생성 없음/u);

@@ -8,6 +8,7 @@
 // 화면이 오기 전에는 개발 콘솔에서: `localStorage.setItem("oprn:assistant-engine", JSON.stringify({ kind: "local-cli", cli: "claude" }))`.
 
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
+import { ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
 
 export type LocalCliEngineId = "claude" | "codex" | "gemini";
 export const LOCAL_CLI_ENGINE_IDS: readonly LocalCliEngineId[] = ["claude", "codex", "gemini"];
@@ -43,7 +44,7 @@ export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
  * 별칭이 가리키는 세대는 CLI 판마다 다르다(scripts/lib/localCliAgent/claude.ts MODELS 머리말).
  */
 export const LOCAL_CLI_DEFAULT_MODELS: Readonly<Record<LocalCliEngineId, { routine: string; deep: string }>> = {
-  claude: { routine: "claude-opus-5-5", deep: "claude-opus-5-5" },
+  claude: { routine: ASSISTANT_CLAUDE_MODEL, deep: ASSISTANT_CLAUDE_MODEL },
   codex: { routine: "gpt-6-luna", deep: "gpt-6.1-sol" },
   gemini: { routine: "auto", deep: "auto" },
 };
