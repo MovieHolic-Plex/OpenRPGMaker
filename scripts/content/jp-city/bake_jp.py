@@ -260,6 +260,12 @@ class Src:
         return dict(pc=pc, label=label, role=role, cat=kind, tags=['jp-city'] + tags, desc=desc)
 
 
+# 제자리 다시 그리기(오너 2026-11-16 «일본 계단은 다시 그려 걍»): 이 자리 키의 칸은 «옛 번호는 옛 그림» 규칙에서 빠져 같은 번호에 새 그림을 받는다.
+# 옛 거리 계단 20칸(단상·옆 계단 한 쌍)은 Fable 이 아닌 마지막 칸이라 시트에 남아 있는 동안 일본 도시 팩이 스토어 출구에서 거절됐다 — 옛 그림을 남기지 않고 바꾼다.
+# 크기·이름·칸 번호·통행이 같아 이미 깔린 맵은 같은 자리에 새 돌계단이 보인다. 여기에 키를 더하는 것은 오너가 그 그림을 다시 그리라고 했을 때뿐이다.
+REDRAW_IN_PLACE = ('street_stairs/side-stair-l/', 'street_stairs/side-stair-r/', 'street_stairs/stage-platform/')
+
+
 # ====================================================================== 칸 사전
 class Cells:
     def __init__(self, pins, old_png=None, old_count=0, cmap=None):
@@ -274,7 +280,7 @@ class Cells:
         self.rekeyed = []
 
     def _frozen_key(self, key, img, info):
-        if self.old_png is None or key.startswith('jp16/') or key in self.pins.used: return key
+        if self.old_png is None or key.startswith('jp16/') or key in self.pins.used or key.startswith(REDRAW_IN_PLACE): return key
         t0 = self.pins.map.get(key)
         if t0 is None or t0 >= self.old_count or (t0 // self.old_tpr + 1) * 16 > self.old_png.height: return key
         fin = contract_remap(img, self.cmap) if self.cmap and is_outdoor_cat(info.get('cat', '')) else img
@@ -706,11 +712,13 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     sheet_img = BL.render_sheet(cells.img, count)
     # 옛 번호 그림 불변 확인: 옛 시트에 있던 번호는 화소가 같아야 한다(바뀐 그림은 Cells._frozen_key 가 새 번호로 보냈다)
     old_changed = []
+    redrawn = {v for k, v in pins.map.items() if k.startswith(REDRAW_IN_PLACE) and k in pins.used}
     if old_png is not None and old_def:
         otpr = old_png.width // 16
         for t in range(min(old_def['count'], count)):
             if (t // otpr + 1) * 16 > old_png.height: break
             if t in prev_pad: continue                                    # 지난 굽기의 예약 빈 칸(bake_lib.RESERVE): 그 블록의 새 칸이 그림을 채우는 자리 — 옛 그림이 아니다
+            if t in redrawn: continue                                     # 제자리 다시 그리기(REDRAW_IN_PLACE)
             if not BL.same_image(BL.read_cell(sheet_img, t), BL.read_cell(old_png, t, otpr)): old_changed.append(t)
 
     # ---- 8) 정의 JSON
@@ -723,7 +731,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
             if old_def and tid < old_def['count']:
                 passability.append(old_def['passability'][tid]); priority.append(old_def['priority'][tid]); terrain.append(0)
                 m = dict(old_def['tileMeta'][tid])
-                if not m.get('description', '').startswith('옛 굽기 칸'): m['description'] = '옛 굽기 칸(번호 고정용) — 지금은 쓰지 않는다. ' + m.get('description', '')
+                if not m.get('description', '').startswith('옛 굽기 칸') and tid not in reserved_pad: m['description'] = '옛 굽기 칸(번호 고정용) — 지금은 쓰지 않는다. ' + m.get('description', '')
                 tile_meta.append(m)
             else:
                 passability.append(dict(SOLID)); priority.append('lower'); terrain.append(0)
@@ -761,7 +769,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     n_var = sum(1 for k in pins.used if re.search(r'^jp16/\d+@', k)); n_comp = sum(1 for k in pins.used if k.startswith('jp16c/'))
     n_block = sum(1 for k in pins.used if not k.startswith('jp16'))
     res['tiles'] = dict(count=count, tilesPerRow=TPR, rows=math.ceil(count / TPR), sheetPx=[TPR * 16, math.ceil(count / TPR) * 16], height_ok=math.ceil(count / TPR) * 16 <= BL.MAX_H,
-                        original=N_ORIG, pc_variant_copies=n_var, composite_cells=n_comp, block_cells=n_block, legacy=len(legacy), legacy_ids=legacy[:20], rekeyed_art=len(cells.rekeyed), rekeyed_sample=[list(r) for r in cells.rekeyed[:12]], old_cells_changed=len(old_changed), old_cells_changed_ids=old_changed[:20],
+                        original=N_ORIG, pc_variant_copies=n_var, composite_cells=n_comp, block_cells=n_block, legacy=len(legacy), legacy_ids=legacy[:20], redrawn_in_place=len(redrawn), rekeyed_art=len(cells.rekeyed), rekeyed_sample=[list(r) for r in cells.rekeyed[:12]], old_cells_changed=len(old_changed), old_cells_changed_ids=old_changed[:20],
                         unused_source=sum(1 for t, i in cells.info.items() if i['cat'] == 'unused-source'), people_reserved=sum(1 for t, i in cells.info.items() if i['cat'] == 'people-reserve'),
                         by_category=dict(cat_counts))
     res['pc_counts'] = dict(collections.Counter(i['pc'] for i in cells.info.values()))
