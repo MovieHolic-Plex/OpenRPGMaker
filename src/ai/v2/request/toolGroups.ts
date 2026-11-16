@@ -122,7 +122,7 @@ const V2_GENRE_TOOLS: readonly string[] = [
  */
 const V2_DATABASE_TOOLS: readonly string[] = [
   "delete_database_record", "duplicate_database_record", "prune_unused", "bulk_edit_database", "reorder_database_records", "set_difficulties", "set_monster_fusions",
-  "set_game_over_library", "set_play_settings", "upsert_skill_tree", "upsert_troop", "replace_text_in_project", "delete_troop_battle_page", "upsert_database_utility", "upsert_battle_animation",
+  "set_game_over_library", "set_play_settings", "upsert_skill_tree", "replace_text_in_project", "delete_troop_battle_page", "upsert_database_utility", "upsert_battle_animation",
   "upsert_equipment_slot", "define_promotion", "set_type_chart", "configure_game_systems", "define_monster_species", "rename_monster_species", "define_monster_families",
   "set_world_canon", "upsert_world_codex", "define_bestiary_entry", "list_bestiary", "upsert_schedule", "list_schedules", "upsert_character_profile", "delete_character_profile",
   "upsert_life_system", "upsert_life_skill", "upsert_item_upgrade", "upsert_tool_action", "delete_craft_recipe", "delete_fish_species", "upsert_farm_building_type",

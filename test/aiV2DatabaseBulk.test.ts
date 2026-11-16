@@ -97,10 +97,11 @@ describe("writers that had no tool", () => {
     expect(run(ctx, "upsert_skill_tree", { tree: { id: "tree_war" }, delete: true }).ok).toBe(true);
     expect(ctx.project.growth?.skillTrees).toEqual([]);
   });
-  it("record fields: enemy graphicHue/flying, equipment actionWeapon, skill moveMotion, troop afterBattle (validated commands)", () => {
+  it("record fields: enemy flying, equipment actionWeapon, skill moveMotion, troop afterBattle (validated commands); graphicHue stays dropped (battle does not read it)", () => {
     const ctx = fresh();
-    expect(run(ctx, "upsert_enemy", { enemy: { id: "enemy_slime", graphicHue: 120, flying: true } }).ok).toBe(true);
-    expect(ctx.project.database.enemies.find((e) => e.id === "enemy_slime")).toMatchObject({ graphicHue: 120, flying: true });
+    const out = run(ctx, "upsert_enemy", { enemy: { id: "enemy_slime", graphicHue: 120, flying: true } });
+    expect(out.ok).toBe(true);
+    expect(ctx.project.database.enemies.find((e) => e.id === "enemy_slime")).toMatchObject({ graphicHue: 0, flying: true });
     const eq = ctx.project.database.equipment[0]!.id;
     expect(run(ctx, "upsert_equipment", { equipment: { id: eq, actionWeapon: { swingRange: 2 } } }).ok).toBe(true);
     expect(ctx.project.database.equipment[0]!.actionWeapon).toEqual({ swingRange: 2 });
@@ -150,16 +151,14 @@ describe("replace_text_in_project", () => {
 });
 
 describe("engine labels follow terms", () => {
-  it("a stock battle-command label shows the project's term; a hand-named command keeps its name; untouched terms keep the stored label", () => {
+  it("battle menu commands use the project's terms; the battle HUD's HP/MP labels too", async () => {
+    const { battleCommandKindLabel } = await import("@/player/battleCommandDom");
+    const { resolveTerms } = await import("@/project/terms");
     const p = createBlankProject();
-    const actor = p.database.actors[0]!.id;
-    const names = () => battleCommandsForActor(p, actor).map((c) => c.name);
-    const untouched = names();
-    p.meta.terms = { ...(p.meta.terms ?? {}), attack: "해킹" };
-    expect(names()[0]).toBe("해킹");
-    expect(names().slice(1)).toEqual(untouched.slice(1));
-    p.database.classes.find((c) => c.id === p.database.actors[0]!.classId)!.battleCommands[0]!.name = "베기";
-    expect(names()[0]).toBe("베기");
+    p.meta.terms = { ...(p.meta.terms ?? {}), attack: "해킹", mp: "기력" };
+    const labels = battleCommandsForActor(p, p.database.actors[0]!.id).map((c) => battleCommandKindLabel(c, resolveTerms(p)));
+    expect(labels[0]).toBe("해킹");
+    expect(resolveTerms(p).mp).toBe("기력");
   });
 });
 

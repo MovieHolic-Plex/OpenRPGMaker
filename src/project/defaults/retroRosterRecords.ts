@@ -14,7 +14,6 @@ import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { generatedEffectDatabaseAnimationId as anim } from "@/assets/generatedEffectSheets";
 import { ACTOR_LEVEL_MAX, createActorRecord } from "../actorModel";
 import { normalizeClassRecord, normalizeSkillRecord } from "../databaseRecordModel";
-import { STANDARD_BATTLE_COMMANDS } from "./constants";
 import { RETRO_MECHANIC_AREA_RADIUS, type RetroSkillMechanic } from "@/assets/retroSkillMechanics";
 import { DEFAULT_ANIMATION_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_SKILL_ID } from "./constants";
 import {
@@ -55,6 +54,14 @@ export function rosterParameterCurves(role: string): ClassRecord["parameterCurve
   return { maxHp: curve(row.hp), maxMp: curve(row.mp), attack: curve(row.atk), defense: curve(row.def), mind: curve(row.mind), agility: curve(row.agi) };
 }
 
+const STANDARD_BATTLE_COMMANDS = [
+  { id: "cmd_attack", name: "공격", kind: "attack" },
+  { id: "cmd_skill", name: "기술", kind: "skill" },
+  { id: "cmd_defend", name: "방어", kind: "defend" },
+  { id: "cmd_item", name: "아이템", kind: "item" },
+  { id: "cmd_escape", name: "도주", kind: "escape" },
+  { id: "cmd_change", name: "교체", kind: "switch" },
+] as const;
 
 const ROLE_EQUIPMENT: Readonly<Record<string, readonly string[]>> = {
   물리: HERO_EQUIPMENT_IDS, 탱커: GUARDIAN_EQUIPMENT_IDS, 마법: MAGE_EQUIPMENT_IDS, 회복: CLERIC_EQUIPMENT_IDS, 지원: CLERIC_EQUIPMENT_IDS,

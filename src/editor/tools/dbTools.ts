@@ -529,8 +529,7 @@ const enemyRecordSchema = objectSchema({
   monsterResourceId: stringSchema(),
   // Enemy.transparent 를 런타임·ensureMonsterGraphic 이 지킨다 — 스키마만 막고 있었다.
   transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장). false 로 되돌리면 그림이 다시 필요하다."),
-  graphicHue: integerSchema("그림 색조 회전 0~360(0 = 원래 색). 같은 그림으로 색만 다른 적(붉은 슬라임)을 만든다"),
-  flying: booleanSchema("true = 전투에서 떠서 위아래로 흔들린다(새·유령)"),
+  flying: booleanSchema("true = 나는 적(새·유령·박쥐) — 전투 몸짓이 그에 맞게 작아진다. graphicHue(색조)는 전투가 읽지 않아 쓰지 않는다"),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
   walkChip: objectSchema({
     characterResourceId: stringSchema("걷기 칩(CharSet 288×256) 리소스 id. 예: easyrpg-charset-actor1. search_resources kind:charset 으로 찾는다."),
@@ -565,11 +564,8 @@ const troopRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
   enemyIds: stringArraySchema(),
-  afterBattle: objectSchema({
-    victory: { type: "array", items: COMMAND_SCHEMA, description: "이겼을 때 필드로 돌아와 실행할 명령" },
-    defeat: { type: "array", items: COMMAND_SCHEMA, description: "졌을 때(canLose 전투) 실행할 명령" },
-    escape: { type: "array", items: COMMAND_SCHEMA, description: "도망쳤을 때 실행할 명령" },
-  }, "전투 뒤 이벤트 — 결과 화면이 닫히고 필드로 돌아온 다음 결과별로 한 번 실행한다(이 적 그룹이면 어떤 길로 열린 전투든). 빈 목록 = 그 결과는 없음"),
+  // 명령 스키마(COMMAND_SCHEMA)를 통째로 달면 이 도구 글이 3k → 45k 자가 된다 — 항목은 객체로만 두고, 실행이 공용 이벤트와 같은 명령 검사를 한다.
+  afterBattle: objectSchema({ victory: { type: "array", items: { type: "object" } }, defeat: { type: "array", items: { type: "object" } }, escape: { type: "array", items: { type: "object" } } }, "전투 뒤 명령(결과별, 필드로 돌아온 뒤 한 번)"),
   members: arrayOf(troopMemberSchema),
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),

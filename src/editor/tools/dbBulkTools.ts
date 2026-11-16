@@ -231,7 +231,7 @@ const reorderDatabaseRecords: ToolDefinition = {
     /** list 를 새 순서로. key = 항목 열쇠. 없는 id 는 거절. */
     const reorder = <T>(list: T[], key: (x: T) => string, label: string): T[] => {
       if (order.length) {
-        const front = order.map((id) => { const hit = list.find((x) => key(x) === id); if (!hit) throw new ToolError(`${label}: no entry ${id}. Entries: ${list.map(key).slice(0, 20).join(", ")}.`, { code: "invalid-args" }); return hit; });
+        const front = order.map((id): T => { const at = list.findIndex((x) => key(x) === id); if (at < 0) throw new ToolError(`${label}: no entry ${id}. Entries: ${list.map(key).slice(0, 20).join(", ")}.`, { code: "invalid-args" }); return list[at]!; });
         if (new Set(front).size !== front.length) throw new ToolError("order lists the same entry twice.", { code: "invalid-args" });
         return [...front, ...list.filter((x) => !front.includes(x))];
       }
@@ -320,7 +320,7 @@ const setMonsterFusions: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const raw = Array.isArray(args.fusions) ? args.fusions : [];
-    const known = new Set(draft.database.monsterSpecies.map((s) => s.id));
+    const known = new Set((draft.database.monsterSpecies ?? []).map((s) => s.id));
     const unknown = [...new Set((raw as Obj[]).flatMap((r) => [r.speciesA, r.speciesB, r.resultSpeciesId].map(String)).filter((id) => !known.has(id)))];
     if (unknown.length) throw new ToolError(`Unknown monster species: ${unknown.slice(0, 8).join(", ")}. Known: ${[...known].slice(0, 12).join(", ")}.`, { code: "invalid-args" });
     const rows = normalizeMonsterFusions(raw as never);

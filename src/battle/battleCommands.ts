@@ -1,6 +1,5 @@
 import type { ClassBattleCommand, ClassBattleCommandKind, Project, SkillId } from "@/project/types";
-import { resolveTermOverrides, resolveTerms } from "@/project/terms";
-import { STANDARD_BATTLE_COMMANDS } from "@/project/defaults/constants";
+import { resolveTerms } from "@/project/terms";
 
 export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "capture" | "defend" | "escape" | "switch" | "commonEvent";
 
@@ -83,29 +82,6 @@ export function battleCommandsForActor(
   return [...base, switchCommand()];
 }
 
-/**
- * 명령 이름이 아직 공장 꼬리표인가 — 공장 직업 명령·기본 메뉴·기본 용어 가운데 그 종류의 이름. 그렇다면 메뉴는 지금 용어를 보인다
- * (저자가 손으로 지은 이름은 그대로). 꼬리표 목록은 코드 한 곳(STANDARD_BATTLE_COMMANDS·DEFAULT_RUNTIME_BATTLE_COMMANDS·기본 용어)에서 나온다.
- */
-const DEFAULT_TERMS = resolveTermOverrides(undefined);
-const STOCK_LABELS: ReadonlyMap<RuntimeBattleCommandKind, ReadonlySet<string>> = (() => {
-  const out = new Map<RuntimeBattleCommandKind, Set<string>>();
-  const add = (kind: RuntimeBattleCommandKind, name: string) => { if (!out.has(kind)) out.set(kind, new Set()); out.get(kind)!.add(name); };
-  for (const c of STANDARD_BATTLE_COMMANDS) { const kind = runtimeKind(c.kind, undefined); if (kind) add(kind, c.name); }
-  for (const c of DEFAULT_RUNTIME_BATTLE_COMMANDS) add(c.kind, c.name);
-  const terms = DEFAULT_TERMS;
-  for (const kind of ["attack", "skill", "item", "capture", "defend", "escape"] as const) add(kind, terms[kind]);
-  return out;
-})();
-function labelFor(project: Project, kind: RuntimeBattleCommandKind, name: string | undefined): string {
-  if (!name) return fallbackCommandName(project, kind);
-  // 프로젝트가 그 용어를 정했을 때만 따른다 — 용어를 안 건드린 프로젝트는 지금 보이는 이름(「기술」) 그대로.
-  // 새 프로젝트는 기본 용어를 그대로 들고 있다 — 기본값과 다를 때만 «정했다» 로 본다.
-  const set = (project.meta?.terms as Record<string, unknown> | undefined)?.[kind];
-  const stock = (DEFAULT_TERMS as Record<string, string>)[kind];
-  return typeof set === "string" && set.trim() && set.trim() !== stock && STOCK_LABELS.get(kind)?.has(name) ? set.trim() : name;
-}
-
 function resolveClassBattleCommand(project: Project, command: ClassBattleCommand): RuntimeBattleCommand | undefined {
   const global = project.database.battleCommands?.find((record) => record.id === command.id);
   const kind = runtimeKind(command.kind, global?.kind);
@@ -115,7 +91,7 @@ function resolveClassBattleCommand(project: Project, command: ClassBattleCommand
   if (kind === "commonEvent" && !(commonEventId && project.commonEvents.some((entry) => entry.id === commonEventId))) return undefined;
   return {
     id: command.id,
-    name: labelFor(project, kind, command.name || global?.name),
+    name: command.name || global?.name || fallbackCommandName(project, kind),
     kind,
     skillSubsetName: command.skillSubsetName ?? global?.skillSubsetName,
     skillId: command.skillId ?? global?.skillId,
