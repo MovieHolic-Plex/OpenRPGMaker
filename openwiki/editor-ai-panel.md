@@ -1436,10 +1436,29 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
-**조수 기본 = Google · Gemini 4 Argon · medium (사용자 결정 2026-10-14).** 새로 설정하는 사용자의 `defaultAiConfig()` 는 계획·실행(deep)·시각·작문·시공(build) 다섯 슬롯을
-전부 `google-antigravity` / `gemini-4-argon` / `medium` 으로 둔다(감독 ultrabrain 검수만 `high`). `RECOMMENDED_OH_MY_PI_PROVIDER` 는 Google 이고 제공자 목록도 Google 이 맨 앞이다.
-설정 모달 「역할별 모델 직접 지정」에서 모델(Argon 은 카탈로그 첫 항목)과 추론 강도를 슬롯마다 바꿀 수 있다. **이미 저장된 설정은 그대로 읽는다** — 옛 공장 기본(3.7/3.8-flash)만 Argon 으로 소급되고,
-사용자가 고른 ChatGPT(gpt-6.1-sol)와 직접 지정한 슬롯은 건드리지 않는다. ChatGPT 로 바꾸면 시공·작문은 여전히 Argon medium 이다. 실조수 시험(스크립트 `scripts/qa/*live*`·`assistant-*`)도 이 기본을 쓴다.
+**조수 출하 기본 = Claude · Opus 5.5 · medium (오너 결정 2026-11-16).** 「이 openrpgmaker 의 출시를 빠르게 하기 위해서라도, 조수의 기본 model 을 opus 5.5 medium 으로 해라.」
+Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)이 **`claude-opus-5-5` · `medium` 한 모델**이다. Haiku 워커·팀장 나누기와 감독만 `high` 로 두던 것을 기본에서 뺐다(오너: Haiku 로는 게임을 못 만든다). 나누기·다른 모델은 설정에서 고른다.
+
+| 들어가는 길 | 기본이 풀리는 값 | 정하는 곳 |
+|---|---|---|
+| 새 설치(저장 없음) | `anthropic` / `claude-opus-5-5` / medium — 모든 역할·감독. 도트 칸은 비어 계획 모델을 따른다 | `defaultAiConfig()`, `RECOMMENDED_OH_MY_PI_PROVIDER = anthropic`(제공자 목록 맨 앞) |
+| 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-opus-5-5` 하나 · medium, 팀장 없음 | 첫 실행 마법사 `teamScoreboard.ts chooseTeam`(Opus 를 쓸 수 있으면 Opus 혼자) → `applyTeamPlan`. `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
+| Anthropic 키(`ANTHROPIC_API_KEY`) | 입양한 엔드포인트 `openai-compat:…` / `claude-opus-5-5` / medium — 모든 역할·감독 | `keyRouteAdoptModel("claude")` = opus, `providerSelection.ts`. 이 길은 추론 강도를 보내지 않는다(`KEY_ROUTES.claude.reasoningMode = none`) — Opus 5.5 의 API 기본이 medium 이다 |
+| 편집기 안 Claude 계정(설정에서 Claude 를 고름) | `anthropic` / `claude-opus-5-5` / medium — 모든 역할·감독 | `modelPresets.ts`(anthropic 두 티어 모두 Opus) + `providerSelection.ts`(감독도 medium) |
+| ChatGPT 만 | 지난 기본 그대로: Codex CLI 는 `gpt-6.1-terra` 혼자 medium, 편집기 안 로그인은 Terra medium · 감독 high | 마법사 → `configForPlanAccount` |
+| Google 만 | 지난 기본 그대로: `gemini-4-argon` medium · 감독 high | 마법사 → `configForProviderSelection` |
+| 저장된 설정이 있음 | 그대로(Google·ChatGPT 로 저장된 설정을 Claude 로 옮기지 않는다) | `loadAiConfig` |
+
+**소급(PR #2535 와 같은 규칙 — 저장값이 옛 기본과 똑같을 때만, 읽을 때 올리고 디스크에는 쓰지 않는다):** ① 표식 없는 엔진 선택이 옛 Claude 구독 기본(Haiku 워커 + Opus 팀장 · medium · `teamLead`)과 똑같으면 Opus 하나로 읽는다
+(`localCliEngine.ts promoteLegacyEngineDefault`. 저장은 `policyVersion: 2` 를 찍으므로 그 뒤에 사람이 다시 고른 나누기는 그대로다) ② Claude 계정을 골랐을 때 제품이 채운 Haiku 칸(직접 고른 표시가 없는 칸)은 Opus 로 읽는다
+(`llmClient.ts promoteLegacyClaudeWorker`). 강도는 저장된 대로 둔다. 사람이 고른 Haiku·Sonnet, 한 칸이라도 고친 엔진 선택, Google·ChatGPT 설정은 건드리지 않는다. 계약 `test/aiDefaultOpusMedium.test.ts` · `test/aiDefaultModelForced.test.ts`.
+옛 저장값(제공자 없는 blob)을 읽는 기본 제공자는 여전히 Google 이다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL = gemini-4-argon`) — 제공자 목록 순서가 아니라 이 상수가 정한다.
+저장된 설정이 없는 Google·ChatGPT 사용자는 공장 기본(Claude)이 연결돼 있지 않으므로 첫 실행 마법사를 한 번 거쳐 그 계정의 기본으로 맞춰진다.
+
+**지난 기본(이력) = Google · Gemini 4 Argon · medium (사용자 결정 2026-10-14, PR #2535).** 그때 새로 설정하는 사용자의 `defaultAiConfig()` 는 계획·실행(deep)·시각·작문·시공(build) 다섯 슬롯을
+전부 `google-antigravity` / `gemini-4-argon` / `medium` 으로 두었다(감독 ultrabrain 검수만 `high`). `RECOMMENDED_OH_MY_PI_PROVIDER` 는 Google 이었고 제공자 목록도 Google 이 맨 앞이었다.
+설정 모달 「역할별 모델 직접 지정」에서 모델과 추론 강도를 슬롯마다 바꿀 수 있다. **이미 저장된 설정은 그대로 읽는다** — Google 계정의 옛 공장 기본(3.7/3.8-flash)만 Argon 으로 소급되고,
+사용자가 고른 ChatGPT(gpt-6.1-sol)와 직접 지정한 슬롯은 건드리지 않는다. ChatGPT 로 바꾸면 시공·작문은 여전히 Argon medium 이다. Argon 을 직접 심는 실조수 시험 스크립트(`scripts/qa/*live*`·`assistant-*`)는 그대로 Argon 으로 돈다.
 옛 근거(2026-10-07 12과제: gpt-6.1-sol 11/12, gemini-3.8-flash 7/12)는 이력이다.
 
 **Build(시공) 역할 (2026-10-08).** 실행 모델을 일의 종류로 나눈다. `src/ai/buildRole.ts` 의 `executionRoleFor(task, initialToolNames)` 가
@@ -4519,7 +4538,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 
 **첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 설정 마법사가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 환경 변수 키(OPENAI/ANTHROPIC/GEMINI·GOOGLE/DEEPSEEK `_API_KEY`)는 `GET /auth/key-sources` 가 이름만 알려 주고 값은 화면·로그에 나오지 않는다 — 한 번 확인한 뒤에만 `POST /auth/key-adopt` 로 서버 안에서 쓴다. 윈도에서는 `scripts/lib/localCliAgent/resolveBinary.ts` 가 `.cmd` 래퍼·PATHEXT·`%APPDATA%\npm` 을 해석하고, 앱이 Claude/Codex 를 대신 설치하는 길은 `POST /v1/local-agents/install`(허용 목록만)이다. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
 
-### 자동 감지 — 이미 로그인된 구독으로 한 번에 시작 (2026-11-03)
+### 자동 감지 — 이미 로그인된 구독으로 한 번에 시작 (2026-11-03, Claude 기본은 2026-11-16 에 바뀜)
 
 관문이 열리면 `findSignedInPlans()` 가 `GET /v1/local-agents?fresh=1` 과 `/auth/status`(openai-codex·google-antigravity)를 동시에 묻는다(관문은 기다리지 않는다 — 열리자마자 OpenRouter 카드가 보이고, 찾으면 그때 카드가 올라온다. 기다림 상한 `PLAN_DETECT_TIMEOUT_MS` 10초: 앱을 켜고 첫 감지는 동반 워커를 띄우느라 3.1초가 걸렸다).
 찾으면 `연결됨: <이름> · 이걸로 시작` 버튼 하나와 구성 한 줄을 위에 두고 키 카드는 「API 키로 연결」 뒤로 접는다. 여럿이면 Claude → ChatGPT → 나머지 순, 「다른 로그인으로」 로 바꾼다.
@@ -4527,7 +4546,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 
 | 로그인 | 고르면 | 비고 |
 |---|---|---|
-| Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · 워커 `claude-haiku-5-5` · 팀장 `claude-opus-5-5`(`teamLead: true`) | v2 실행에서 `request.lead` 로 실려 리드가 된다. v1 은 계획 차례(ultrabrain)가 Opus 다 |
+| Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · `claude-opus-5-5` 하나 · medium(팀장 없음) | 오너 결정 2026-11-16. 그 전에는 워커 `claude-haiku-5-5` + 팀장 `claude-opus-5-5`(`teamLead: true`)였다 — 지금은 설정에서 모델을 나눈 사람만 `request.lead` 가 실린다 |
 | Codex CLI ChatGPT 로그인 | 엔진 `codex` · `gpt-6.1-terra` 혼자 | |
 | 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로 + 모든 역할·계획을 `gpt-6.1-terra` 로(`configForPlanAccount`, 직접 고른 칸은 그대로) | 앱 경로 확장(`scripts/lib/ohMyPiModel.ts` CODEX_GPT6_EXTENSION)·카탈로그에 Terra 를 넣었다. 2026-11-03 앱 경로 실제 호출 OK |
 | Gemini CLI 구글 로그인 / 편집기 안 Google 로그인 | 그 엔진·계정의 지금 기본값 | |
@@ -4668,7 +4687,8 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
   **조수 채팅 본체(`chat` 표면)는 이 칸을 읽지 않는다** — 채팅이 부르는 «도트 찍는 도구» 가 `pixel-draw` 로 이 칸을 읽는다.
 - **옛 설정 호환**: 저장값에 `pixelModel` 이 없으면 만들지 않는다(`loadAiConfig` 가 비워 둠) → 공방 그리기는 예전처럼 계획·최종 판단(ultrabrain) 모델.
   모달은 「계획·최종 판단 모델을 따라가기」로 보여 주고, 도트 칸을 만지지 않은 채 다른 칸을 바꿔 저장해도 `pixelModel` 이 몰래 생기지 않는다(`scripts/qa/image-model-split.mjs` 의 legacy 시나리오).
-  새 설정(`defaultAiConfig`)만 Google Gemini 4 Argon · 보통으로 시작한다. 이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않는다(`providerSelection.ts`).
+  새 설정(`defaultAiConfig`)도 이 칸을 비워 둔다(2026-11-16) — 계획 모델(공장 기본에서는 Claude Opus 5.5 · medium)을 따른다. 그 전에는 새 설정만 Google Gemini 4 Argon · 보통으로 채웠는데,
+  이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않아서(`providerSelection.ts`) Google 연결이 없는 사용자의 도트 저작이 막혔다.
 - **선택지**: `PIXEL_MODEL_CHOICES` — Argon, Claude(Opus/Sonnet 4.5·4.6 = Antigravity 카탈로그에 실제 있는 id), GPT-6.1 Sol. 계정에서 실제로 쓸 수 있는지는 요청 때 오류로 알려 주며 자동 대체하지 않는다.
 - **화면**: 모델 탭의 「이미지」 절이 두 묶음이다 — 「배경·대형 이미지 — 생성형 이미지 모델」(기존 제공자·모델·추천·상태 그대로, 추천 문구에서 «픽셀 타일·캐릭터가 안정적» 문장을 뺐다) /
   「도트 저작 — 텍스트 모델이 격자로 찍기」(모델·추론 강도·상태). 문구는 4개 언어 카탈로그(en/ja/zh 각 +16). `aiChatPanel.ts` 는 건드리지 않았다.
@@ -4715,7 +4735,7 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
    도트 저작 모델이 찍는다(생략하면 종전처럼 이미지 모델). 컷신 도트 소품(1)도 조수 채팅 도구라 같은 경로다. 채팅 본체(`chat` 표면, 감독 모델)는 그대로이고 도구 안에서만 도트 저작 모델을 부른다.
    코드 손 도트 도구(`author_actor_charset`·`build_hand_interior_room` 등)는 모델 호출이 없는 결정적 도구라 이 설정과 무관하다.
 5. **레거시 설정은 일괄 변환하지 않는다.** `pixelModel` 이 저장돼 있지 않으면(옛 설정) 새 라우팅도 `follows`(계획·최종 판단 모델)로 간다 — `loadAiConfig` 는 칸을 만들지 않는다.
-   Argon 보통 기본값은 `defaultAiConfig()`(새 설정)와 사용자가 모델 탭에서 명시 선택한 값에만 적용된다. 워커 요청에는 클라이언트가 **해석한 값**(`resolvePixelModel`)을 싣는다(저장은 하지 않는다).
+   2026-11-16 부터 `defaultAiConfig()`(새 설정)도 칸을 비워 `follows` 로 간다 — Argon 보통은 사용자가 모델 탭에서 명시 선택한 값(과 그 전에 저장된 설정)에만 남는다. 워커 요청에는 클라이언트가 **해석한 값**(`resolvePixelModel`)을 싣는다(저장은 하지 않는다).
 
 #### 낱장 도트 입구 (`src/ai/dotTextImage.ts` · `dotTextArt.ts` · `dotTextBrowserChat.ts`)
 

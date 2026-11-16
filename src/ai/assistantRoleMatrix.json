@@ -1,7 +1,7 @@
 {
   "$comment": "조수 역할 × 계정 표 (src/ai/assistantRoles.ts 가 읽는다). 각 칸 = 권장 모델 먼저, 그다음 대체 순서. 칸이 없으면 그 계정은 그 역할을 못 한다(예: 그림 생성이 없는 계정). 경로(routes)는 같은 계정에 닿는 길이 여럿일 때 앞에 있는 것부터 쓴다. 모델 id 는 modelCatalog·localCliEngine·openwiki 의 실측 목록에 있는 것만 적는다.",
   "roles": {
-    "main": { "label": "주 작업", "desc": "계획·시공·편집 루프(Argon 급)", "needs": ["text", "tools"], "missing": "조수를 쓸 수 없음 — 계정을 하나 연결하세요" },
+    "main": { "label": "주 작업", "desc": "계획·시공·편집 루프(Opus 급)", "needs": ["text", "tools"], "missing": "조수를 쓸 수 없음 — 계정을 하나 연결하세요" },
     "smol": { "label": "잔일", "desc": "짧은 확인·요약·반복 보조(싼 모델)", "needs": ["text"], "missing": "주 모델이 대신함" },
     "advisor": { "label": "검토자", "desc": "턴 끝 보고를 실제 변경에 대어 봄(주 모델과 다른 눈)", "needs": ["text"], "missing": "검토자 꺼짐" },
     "vision": { "label": "눈", "desc": "맵·컷신 그림을 보고 판정", "needs": ["text", "images"], "missing": "그림 검사 없음" },
@@ -9,6 +9,7 @@
     "pixel": { "label": "도트", "desc": "타일·캐릭터·기물을 격자 문자열로 찍음(텍스트 모델)", "needs": ["text"], "missing": "주 모델이 찍음" }
   },
   "$mainOrder": "주 작업은 Claude 가 연결돼 있으면 Opus 5.5 medium(사용자 결정 2026-10-25), 없으면 Gemini Argon medium.",
+  "$claude": "Claude 경로는 주 작업·눈·도트가 모두 Opus 5.5 medium 한 모델이다(오너 결정 2026-11-16 — 조수 기본은 Claude Opus 5.5 · medium, Haiku 로는 게임을 못 만든다고 봄). 그래서 잔일 칸(Haiku)을 뺐다 — 잔일은 주 모델이 대신한다. 검토자 칸은 그대로다(주 모델과 다른 눈).",
   "familyOrder": ["gemini", "gpt", "claude", "deepseek"],
   "mainFamilyOrder": ["claude", "gemini", "gpt", "deepseek"],
   "families": {
@@ -63,9 +64,8 @@
       "routes": [
         { "providerId": "local-cli:claude", "roles": {
           "main": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
-          "smol": [{ "model": "haiku", "thinkingLevel": "low" }],
           "advisor": [{ "model": "sonnet", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }],
-          "vision": [{ "model": "sonnet", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
           "pixel": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }]
         } }
       ]

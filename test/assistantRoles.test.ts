@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { assistantRoleModel, configWithAutoAssistantRoles, resolveAssistantRoles, type AssistantRole, type RoleAssignment } from "@/ai/assistantRoles";
 import { mockConnectedRoutes } from "@/editor/panels/aiRoleMatrixSettings";
 import { defaultAiConfig } from "@/ai/llmClient";
+import { configForProviderSelection } from "@/ai/providerSelection";
 
 const ok = (a: RoleAssignment) => (a.status === "ok" ? `${a.model.provider}/${a.model.model}` : `missing: ${a.degrade}`);
 const table = (spec: string) => {
@@ -24,10 +25,11 @@ describe("resolveAssistantRoles — 연결 조합", () => {
 
   it("Claude 만: 그림 생성은 없다고 말하고, 나머지는 로컬 Claude Code 로 채운다", () => {
     const t = table("claude");
+    // 오너 결정 2026-11-16: Claude 경로는 주·눈·도트가 Opus 5.5 한 모델이다. 잔일 칸(Haiku)은 없다 — 주 모델이 대신한다.
     expect(t.main).toBe("local-cli:claude/claude-opus-5-5");
-    expect(t.smol).toBe("local-cli:claude/haiku");
+    expect(t.smol).toMatch(/^missing: 주 모델이 대신함/u);
     expect(t.advisor).toBe("local-cli:claude/sonnet");
-    expect(t.vision).toBe("local-cli:claude/sonnet");
+    expect(t.vision).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.pixel).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.image).toMatch(/^missing: 새 그림 생성 없음/u);
   });
@@ -42,14 +44,14 @@ describe("resolveAssistantRoles — 연결 조합", () => {
     expect(t.pixel).toBe("openai-codex/gpt-6.1-sol");
   });
 
-  it("넷 다: 주는 Claude Opus 5.5 medium, 검토자는 다른 계열(Gemini Argon), 잔일은 같은 계정의 Haiku, 그림은 GPT Image", () => {
+  it("넷 다: 주는 Claude Opus 5.5 medium, 검토자는 다른 계열(Gemini Argon), 잔일은 다른 계정의 싼 모델(Claude 에는 잔일 칸이 없다), 그림은 GPT Image", () => {
     const roles = resolveAssistantRoles(mockConnectedRoutes("gemini,gpt,claude,deepseek"));
     expect(roles.main).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" } });
     const t = table("gemini,gpt,claude,deepseek");
     expect(t.advisor).toBe("google-antigravity/gemini-4-argon");
-    expect(t.smol).toBe("local-cli:claude/haiku");
+    expect(t.smol).toBe("google-antigravity/gemini-3.8-flash");
     expect(t.image).toBe("openai-codex/codex-image-default");
-    expect(t.vision).toBe("local-cli:claude/sonnet");
+    expect(roles.vision).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" } });
   });
 
   it("Claude 가 없으면 주 작업은 Argon medium 으로 물러난다", () => {
@@ -97,7 +99,8 @@ describe("resolveAssistantRoles — 규칙", () => {
 
 describe("assistantRoleModel / configWithAutoAssistantRoles", () => {
   it("자동 배정이 잔일·검토자 칸을 채우고, 직접 고른 칸은 건드리지 않는다", () => {
-    const base = defaultAiConfig();
+    // 주 모델이 Google(Argon)인 설정 — 공장 기본은 Claude 라(2026-11-16) Google 계정을 고른 설정으로 만든다.
+    const base = configForProviderSelection(defaultAiConfig(), "google-antigravity");
     const auto = configWithAutoAssistantRoles(base, mockConnectedRoutes("gemini,gpt"));
     expect(assistantRoleModel(auto, "advisor")?.provider).toBe("openai-codex");
     expect(assistantRoleModel(auto, "smol")?.model).toBe("gemini-3.8-flash");
@@ -108,8 +111,10 @@ describe("assistantRoleModel / configWithAutoAssistantRoles", () => {
 
   it("주·눈·도트·그림은 기존 칸을 읽는다", () => {
     const base = defaultAiConfig();
-    expect(assistantRoleModel(base, "main")?.model).toBe("gemini-4-argon");
-    expect(assistantRoleModel(base, "pixel")?.model).toBe("gemini-4-argon");
+    expect(assistantRoleModel(base, "main")).toEqual({ provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" });
+    expect(assistantRoleModel(base, "vision")).toEqual({ provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" });
+    // 도트 칸은 비어 있어 계획 모델을 따른다.
+    expect(assistantRoleModel(base, "pixel")).toEqual({ provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" });
     expect(assistantRoleModel(base, "image")?.model).toBe(base.imageModel);
   });
 });
