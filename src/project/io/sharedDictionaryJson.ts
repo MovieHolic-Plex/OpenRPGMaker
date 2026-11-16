@@ -202,7 +202,7 @@ export function markRoundtripPassed(project: Project): void {
   for (const entry of Object.values(project.tilesets ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   // Owned-reference wire views have their own immutable identity. They passed
   // the same boundary and must not disable reuse solely because of that wrapper.
-  for (const entry of Object.values(projectWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
+  for (const entry of Object.values(roundtripWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   for (const entry of Object.values(project.assets?.uploaded ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
 }
 
@@ -265,6 +265,15 @@ function roundtripTilesetPiece(entry: unknown): string | undefined {
 }
 
 /**
+ * 왕복 검사가 되읽을 저장 보기. 번들 타일셋은 차이 보기를 만들지 않는다(`inlineBundledTilesets`) — 아래에서 차이 보기는 어차피 온전한
+ * 항목으로 바꿔 넣으므로, 차이를 만드느라 번들 정의를 다시 짓는 일(타일셋 49개 약 1.4s, 2026-11-16 실측 — 정의 기억은 15초 뒤 버려진다)이
+ * 버려졌다. 참고문서 소유 표지로 뺀 보기·버려진 필드 정리는 저장 보기와 같다.
+ */
+function roundtripWireView(project: Project): Record<string, unknown> & { tilesets: Record<string, unknown> } {
+  return projectWireView(project, { inlineBundledTilesets: true }) as Record<string, unknown> & { tilesets: Record<string, unknown> };
+}
+
+/**
  * 저장 왕복 검사(`projectLint.checkRoundtrip`)의 입력 글. 이미 통과한 타일셋·업로드 자산 항목만 그 자리에 투영본을 넣는다 —
  * 공유 사전 밖(맵·DB·시스템·세션…)은 글자까지 `serialize` 와 같아 그 부분의 되읽기 검사는 그대로 돈다. 새 항목은 `serialize` 와 같은 글이다. 공간 저작 유무와 무관하게 교차 참조 필드는 보존한다.
  *
@@ -272,7 +281,7 @@ function roundtripTilesetPiece(entry: unknown): string | undefined {
  * 버려지는 수십 MB 트리의 GC 가 그만큼 더 들었다. 체크포인트 사이에 바뀌는 타일셋·업로드 자산은 거의 없다.
  */
 export function serializeForRoundtripCheck(project: Project): string {
-  const view = projectWireView(project) as Record<string, unknown>;
+  const view = roundtripWireView(project);
   if (hasToJson(view)) return JSON.stringify(view);
   const parts: string[] = [];
   for (const key of Object.keys(view)) {

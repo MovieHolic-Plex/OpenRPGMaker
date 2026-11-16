@@ -13,6 +13,7 @@ import {
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { verificationInput, verificationInitialState, type ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { sessionProjectCopy } from "./sessionProjectCopy";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
 
 export interface AcceptanceToolResult {
@@ -61,7 +62,9 @@ export class AssistantAcceptanceLedger {
 
   constructor(readonly id: string, readonly goal: string, baseline: Project, private readonly images = new AssistantImageEvidence(),
     private readonly npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]) {
-    this.baseline = structuredClone(baseline);
+    // 기준은 읽기만 한다 — 세션 사본과 같이 스토어가 들고 있는 타일셋·업로드 자산 항목은 객체째 공유한다(값은 structuredClone 과 같다).
+    // 왜(2026-11-16 실측): 계획 하나마다 원장을 새로 열어 번들 타일셋 49개를 통째 복제했다(test/aiAppliedBudgetStop 한 건에 2번 · 약 2.4s).
+    this.baseline = sessionProjectCopy(baseline);
     this.snapshot = Object.freeze({ id, goal, status: "pending", items: Object.freeze([]) });
   }
 
@@ -96,7 +99,7 @@ export class AssistantAcceptanceLedger {
     // 같은 원본이면 원장이 이미 가진 사본을 그대로 쓴다. 채택마다 새 사본을 만들면 한 행에
     // 서로 다른 프로젝트가 여러 벌 실려 쓰기마다 그만큼 복제·검증한다 — 실측(2026-09-09):
     // 공유 참조 3개는 복제 50ms, 서로 다른 사본 3개는 222ms.
-    const baseline = requestBaseline === this.baseline ? this.baseline : structuredClone(requestBaseline);
+    const baseline = requestBaseline === this.baseline ? this.baseline : sessionProjectCopy(requestBaseline);
     const provenance = Object.freeze({ requestId: source.requestId, text: source.text,
       scope: source.scope ? Object.freeze({ mapId: source.scope.mapId, region: Object.freeze({ ...source.scope.region }) }) : null });
     for (const promise of additions) {
@@ -159,7 +162,7 @@ export class AssistantAcceptanceLedger {
       const id = `action-combat:${acceptanceFingerprint(target)}`;
       if (!this.actionRequirements.has(id)) this.actionRequirements.set(id, {
         id, title: "Action combat", criteria: [{ kind: "actionCombat", target: structuredClone(target) }],
-        baseline: structuredClone(requestBaseline),
+        baseline: requestBaseline === this.baseline ? this.baseline : sessionProjectCopy(requestBaseline),
       });
     }
   }
