@@ -65,7 +65,7 @@ export function stationPlazaOps(seed: number, layout: StationPlazaLayout = {}): 
   ops.push({ op: "line", kit: "jp-prop-catenary-pole", dir: "h", at: 0.04, span: [0.06, 0.94], step: 8 + Math.floor(r() * 5), onPath: true });
   const under = shuffle(r, ["jp-prop-viaduct6-shops", "jp-prop-viaduct6-pass", pick(r, ["jp-prop-viaduct6-shops", "jp-bldg-koban", "jp-bldg-conbini"]), pick(r, ["jp-bldg-koban", "jp-bldg-office6", "jp-prop-viaduct6-shops"])]);
   under.splice(1 + Math.floor(r() * (under.length - 1)), 0, "jp-bldg-station-small");
-  ops.push({ op: "row", kits: [...new Set(under)], foot: 0.33, span: [0.01, 0.99], gap: r() < 0.5 ? 0 : 1 });
+  ops.push({ op: "row", kits: [...new Set(under)], foot: 0.33, span: [0.01, 0.99], gap: r() < 0.5 ? 0 : 1, seal: true });
   ops.push({ op: "band", mat: M.walk, dir: "h", at: 0.38, size: 2 });
 
   const roadY = j(r, 0.66, 0.02);
