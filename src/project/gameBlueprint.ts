@@ -97,6 +97,13 @@ export interface GameBlueprint {
   setting?: string;
   /** 이 게임의 장소 전부(시작 장소가 맨 앞). 옛 청사진은 없음 = steps 의 장소. */
   places?: GameBlueprintPlace[];
+  /**
+   * 요청이 짧은·작은 게임을 청했다고 모델이 적은 값 — 관문 하한(세는 맵·퀘스트·진행 깊이·단계 수)이 이 청사진의 장소·단계 수를 따른다
+   * (src/ai/v2/judge/blueprintScale.ts). 없으면 보통 크기의 게임이다.
+   */
+  scale?: "small";
+  /** 요청이 싸움이 없어도 된다고 했다고 모델이 적은 값(false) — 청사진 검사가 전투 단계를 요구하지 않는다. 없으면 장르가 정한다. */
+  battles?: false;
   /** 판정자가 받는 유일한 글 — 새 플레이어에게 «무엇을 하면 되는지» 한 줄. */
   playerGoal: string;
   /** 핵심 경로(시작 → 엔딩) 2~12단계. */
@@ -217,6 +224,8 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(typeof data.setting === "string" && data.setting.trim() ? { setting: data.setting.trim().slice(0, 40) } : {}),
     ...(places.length ? { places } : {}),
     ...(uiLookById(data.look) ? { look: uiLookById(data.look)!.id } : {}),
+    ...(data.scale === "small" ? { scale: "small" as const } : {}),
+    ...(data.battles === false ? { battles: false as const } : {}),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
     steps,
     ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60), ...(() => {

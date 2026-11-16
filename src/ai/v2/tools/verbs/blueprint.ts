@@ -48,6 +48,12 @@ export function blueprintVerbs(c: VerbContext) {
       if (prior?.ending.closing?.length && !parsed.blueprint.ending.closing?.length) parsed.blueprint = { ...parsed.blueprint, ending: { ...parsed.blueprint.ending, closing: prior.ending.closing } };
       // 앞 청사진이 고른 UI 모습도 물려받는다 — 이름 맞추기 다시 쓰기가 look 을 빼도 게임의 얼굴이 바뀌지 않게. 목록에 없는 id 는 읽을 때 버려진다.
       if (prior?.look && !parsed.blueprint.look) parsed.blueprint = { ...parsed.blueprint, look: prior.look };
+      // 앞 청사진에 적은 크기·싸움 없음도 물려받는다 — 이름 맞추기 다시 쓰기가 그 칸을 빼도 관문 하한이 도로 커지지 않게. 다시 적으면 적은 값이 이긴다.
+      if (prior?.scale && raw.scale === undefined) parsed.blueprint = { ...parsed.blueprint, scale: prior.scale };
+      if (prior?.battles === false && raw.battles === undefined) parsed.blueprint = { ...parsed.blueprint, battles: false };
+      // 싸움이 없어도 된다고 적은 게임에는 전투 단계를 요구하지 않는다(요청 글의 «전투» 낱말은 «전투는 없어도 돼» 에도 있다).
+      const needBattle = (genre: string): boolean => parsed.blueprint.battles !== false && wantsBattle(genre);
+      const small = parsed.blueprint.scale === "small";
       const unknownLook = typeof raw.look === "string" && raw.look.trim() && !uiLookById(raw.look) ? ` look «${raw.look.trim().slice(0, 24)}» is not a look id — ignored.` : "";
       // 앞 청사진의 단계가 지어 둔 이벤트·스위치도 물려받는다 — 이름만 바꾼 다시 쓰기가 사람을 한 명 더 세우지 않게(story/blueprintCarry.ts).
       parsed.blueprint = carryBuilt(prior, parsed.blueprint);
@@ -61,26 +67,31 @@ export function blueprintVerbs(c: VerbContext) {
         const { places: _places, ...rest } = parsed.blueprint; parsed.blueprint = rest;
       }
       const worldNotes: string[] = [];
+      // 크기·섞임 알림(2026-11-16 오너: 벽을 기본값으로) — 단계·장소 수, 싸움 단계, 종류 섞임이 모자라도 청사진은 건다. 돌려보내는 것은 지을 수 없는 것
+      // (세계에 없는 장소 종류 · 장소 목록에 없는 단계 장소)뿐이다. 알림은 처음 쓰는 청사진에 한 번, 모델이 읽는다(영어).
+      const advice: string[] = [];
       if (world) {
         let draft = !parsed.blueprint.places?.length && prior?.places?.length ? { ...parsed.blueprint, places: prior.places } : parsed.blueprint;
         const oneRoom = oneRoomGame;
-        const problems = [...worldPlaceProblems(draft, world, oneRoom), ...(!oneRoom && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — write ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : []), ...(oneRoom ? [] : stepMixProblems(draft, wantsBattle(draft.genre)))];
-        if (problems.length && session.worldBounces < WORLD_BOUNCES) {
+        const broken = worldPlaceProblems(draft, world, true);
+        if (broken.length && session.worldBounces < WORLD_BOUNCES) {
           session.worldBounces += 1;
-          return text({ ok: false, summary: `Blueprint not saved yet (${session.worldBounces}/${WORLD_BOUNCES}) — this game's world is ${world.name}. Fix and call write_blueprint again: ${problems.join(" ")}` });
+          return text({ ok: false, summary: `Blueprint not saved yet (${session.worldBounces}/${WORLD_BOUNCES}) — this game's world is ${world.name}. Fix and call write_blueprint again: ${broken.join(" ")}` });
         }
-        const fixed = repairWorldPlaces(draft, world);
+        if (!prior) advice.push(...worldPlaceProblems(draft, world, oneRoom || small).filter((p) => !broken.includes(p)), ...(!oneRoom && !small && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — a full-size game has ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : []), ...(oneRoom ? [] : stepMixProblems(draft, needBattle(draft.genre))));
+        // 지을 수 없는 장소만 함수가 메운다 — 장소 수와 같은 종류를 거듭 쓴 것은 모델이 정한 것이다(알림만).
+        const fixed = repairWorldPlaces(draft, world, broken.length > 0);
         draft = { ...draft, setting: world.id, places: fixed.places };
         worldNotes.push(...fixed.notes);
         parsed.blueprint = draft;
-      } else if (!prior && !designed && session.blueprintThinRejects < 1 && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
+      } else if (!prior && !designed && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
         const thin = thinBlueprintReason(parsed.blueprint);
-        // 단계 종류(사람·싸움·퍼즐·고르기)가 섞였는지도 같은 한 번에 돌려준다 — 전부 «살펴본다» 인 청사진은 걷기만 하는 게임이 된다.
-        const mix = stepMixProblems(parsed.blueprint, wantsBattle(parsed.blueprint.genre));
-        if (thin || mix.length) { session.blueprintThinRejects += 1; return text({ ok: false, summary: [thin, mix.length ? `Blueprint not saved yet — fix the step kinds and call write_blueprint again: ${mix.join(" ")}` : ""].filter(Boolean).join(" ") }); }
+        // 단계 종류(사람·싸움·퍼즐·고르기)가 섞였는지도 같이 알린다 — 전부 «살펴본다» 인 청사진은 걷기만 하는 게임이 된다.
+        advice.push(...(thin ? [thin] : []), ...stepMixProblems(parsed.blueprint, needBattle(parsed.blueprint.genre)));
       }
+      const adviceNote = advice.length ? ` Notice — saved as written, nothing is rejected. Change these only if the request asks for it: ${advice.join(" ")}` : "";
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
-      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look }) : "";
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look, sc: b.scale, ba: b.battles }) : "";
       if (prior && core(prior) === core(parsed.blueprint)) {
         session.blueprintRewrites += 1;
         const walked = walkBlueprint(env.ctx.project);
@@ -103,7 +114,7 @@ export function blueprintVerbs(c: VerbContext) {
       const noClosingBase = parsed.blueprint.ending.closing?.length ? "" : " ending.closing is empty — the ending screen has no text of yours. Call write_blueprint again with ending.closing (2–4 lines the player reads: what happened and what became of the people, by name); ending.how is a design note and is never shown.";
       // 모습을 안 골랐으면 이 세계에 맞는 세트 두셋을 한 줄로 — 고르고 싶은 모델은 다음 청사진 고치기에 look 을 적는다(안 적으면 첫 것을 함수가 고른다).
       const lookHint = parsed.blueprint.look ? "" : uiLookHint(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : parsed.blueprint.title, world?.tilesetId);
-      const noClosing = `${noClosingBase}${unknownLook}${lookHint}`;
+      const noClosing = `${noClosingBase}${unknownLook}${lookHint}${adviceNote}`;
       if (world) {
         const unbuilt = (parsed.blueprint.places ?? []).filter((pl) => !blueprintMapFor(env.ctx.project, pl.name));
         return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });

@@ -18,14 +18,38 @@ export type Cell = { x: number; y: number };
 export const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
 const TOUCH = new Set(["playerTouch", "touch", "eventTouch"]);
 
-/** 길을 막는 이벤트인가 — 어느 페이지든 같은 높이·겹침 금지거나 접촉 발동이면 막는 것으로 본다(보수적으로). */
+const pageBlocks = (p: NonNullable<GameEvent["pages"]>[number]): boolean => {
+  const trig = typeof p.trigger === "string" ? p.trigger : p.trigger?.kind;
+  return TOUCH.has(String(trig ?? "")) || ((p.priority ?? "same") === "same" && (p as { overlapForbidden?: boolean }).overlapForbidden !== false);
+};
+
+/**
+ * 이기면 비켜서는 이벤트인가 — 싸움이 든 이벤트가 제 승리 갈래에서 켜는 스위치를 조건으로 건, 막지 않는 페이지를 가졌다(길을 막고 선 적).
+ * 걸어 닿는 칸을 셀 때 이런 적은 지나갈 수 있는 것으로 본다: 그 너머는 이긴 뒤에 닿는 곳이지 못 가는 곳이 아니다.
+ * 왜(2026-11-16 r6a): 「길목을 막은 해골 병사」 를 정말 길목에 세우면 그 너머의 보스·상자가 모두 «걸어 닿지 못함» 으로 잡혀, 길 고치기가 그것들을 병사 앞으로 옮기려 했다.
+ */
+function stepsAsideAfterWin(ev: GameEvent): boolean {
+  const pages = ev.pages ?? [];
+  const won = new Set<string>();
+  // 승리 갈래(battleProcessing.victoryBranch · fork battleResult victory 의 then) 안에서 켜는 스위치.
+  const walk = (node: unknown, inWin: boolean): void => {
+    if (Array.isArray(node)) { for (const n of node) walk(n, inWin); return; }
+    if (!node || typeof node !== "object") return;
+    const cmd = node as Record<string, unknown>;
+    if (inWin && cmd.kind === "setSwitch" && cmd.value !== false && typeof cmd.switchId === "string") won.add(cmd.switchId);
+    const cond = cmd.condition as { kind?: string; result?: string } | undefined;
+    for (const [key, value] of Object.entries(cmd)) if (value && typeof value === "object") walk(value, inWin || (cmd.kind === "battleProcessing" && key === "victoryBranch") || (cmd.kind === "fork" && key === "then" && cond?.kind === "battleResult" && cond.result === "victory"));
+  };
+  for (const p of pages) walk(p.commands, false);
+  if (!won.size) return false;
+  return pages.some((p) => !pageBlocks(p) && ((p.conditions ?? []) as { kind?: string; switchId?: string; value?: unknown }[]).some((c) => c.kind === "switch" && c.value !== false && !!c.switchId && won.has(c.switchId)));
+}
+
+/** 길을 막는 이벤트인가 — 어느 페이지든 같은 높이·겹침 금지거나 접촉 발동이면 막는 것으로 본다(보수적으로). 이기면 비켜서는 적은 막지 않는 것으로 센다. */
 export function eventBlocks(ev: GameEvent): boolean {
   const pages = ev.pages ?? [];
   if (!pages.length) return false;
-  return pages.some((p) => {
-    const trig = typeof p.trigger === "string" ? p.trigger : p.trigger?.kind;
-    return TOUCH.has(String(trig ?? "")) || ((p.priority ?? "same") === "same" && (p as { overlapForbidden?: boolean }).overlapForbidden !== false);
-  });
+  return pages.some(pageBlocks) && !stepsAsideAfterWin(ev);
 }
 
 /** 시작 맵은 시작점 하나(다른 맵에서 돌아오는 착지점은 잠긴 문 너머일 수 있다), 그 밖의 맵은 들어오는 착지점들. */

@@ -213,6 +213,38 @@ export function npcGraphicIsPlain(entry: CharsetSemanticEntry): boolean {
   return entry.tags.includes("주민") || costumeTags(entry).length === 0;
 }
 
+/** 글에서 성별·나이 낱말을 뺀 낱말 — 그 사람의 일·차림을 말하는 낱말(«젊은 어부» → 어부). */
+function describingTerms(text: string): string[] {
+  return normalizeQuery(text).split(" ").filter((term) => !!term && !PERSON_ONLY_WORDS.has(term));
+}
+
+/**
+ * 글이 이 칩을 이름으로 불렀는가 — 일·차림을 말하는 낱말이 모두 칩 이름에 있다(«젊은 어부» ↔ «어부 · 파란 줄무늬», «경찰관 제복» ↔ «경찰관 · 남색 제복»).
+ * 꼬리표로만 걸린 칩(«점원» ↔ «상인 · 분홍 앞치마»)은 이름으로 부른 것이 아니다. 고르는 쪽은 이름으로 부른 칩을 다른 화풍이어도 그대로 쓴다.
+ */
+export function npcGraphicLabelNamedBy(text: string, entry: CharsetSemanticEntry): boolean {
+  const terms = describingTerms(text), label = normalizeQuery(entry.label);
+  return terms.length > 0 && terms.every((term) => label.includes(term));
+}
+
+/**
+ * 이 글이 가리키는 사람의 모습 — 지금 걸린 잠금(장르·사람 칩 계열)과 상관없이 표 전체에서 읽는다. 이 게임이 그 칩을 못 써도 «어떤 사람인가» 는 표가 안다
+ * («순경» = 남자 경찰관 칩, «어부» = 남자). label = 글의 낱말을 모두 가진 칩이 있을 때 그 칩의 이름. 성별·나이는 앞선 칩 다섯이 한목소리일 때만.
+ * 일·차림 낱말이 없는 글(«노인»)은 undefined — 성별·나이는 글이 이미 말했다.
+ */
+export function npcGraphicWantedLook(text: string, overrides?: readonly CharsetLabelOverride[]): { readonly label?: string; readonly chips?: readonly CharsetSemanticEntry[]; readonly gender?: Exclude<CharsetGender, "none">; readonly age?: CharsetAge } | undefined {
+  if (!describingTerms(text).length) return undefined;
+  return withNpcGraphicCatalogFilter(undefined, () => {
+    const whole = findNpcGraphicMatches(text, overrides, true).filter((m) => { const c = categoryOf(m.entry); return c === "people" || c === "actor"; });
+    const near = (whole.length ? whole : findNpcGraphicMatches(text, overrides).filter((m) => { const c = categoryOf(m.entry); return c === "people" || c === "actor"; })).slice(0, 5);
+    if (!near.length) return undefined;
+    const same = <T,>(values: readonly (T | undefined)[]): T | undefined => (values.every((v) => v !== undefined && v === values[0]) ? values[0] : undefined);
+    const gender = same(near.map((m) => (m.entry.gender === "none" ? undefined : m.entry.gender)));
+    const age = same(near.map((m) => m.entry.age));
+    return { ...(whole.length ? { label: whole[0]!.entry.label, chips: whole.slice(0, 12).map((m) => m.entry) } : {}), ...(gender ? { gender } : {}), ...(age ? { age } : {}) };
+  });
+}
+
 /**
  * 글이 이 칩의 차림을 짚었는가 — 낱말 표의 역할 줄(«사제» → 성직자)로 읽혔거나, 성별·나이 낱말이 아닌 낱말이 차림 꼬리표에 걸린다.
  * «상인 여자» 는 토끼 귀 여성을 짚지 않는다(«여자» 는 성별일 뿐) — 고르는 쪽이 말하지 않은 차림의 칩을 뒤로 미는 데 쓴다. 한 글자 낱말은 꼬리표와 같을 때만(«왕» ≠ «여왕»).

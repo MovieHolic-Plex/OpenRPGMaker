@@ -40,6 +40,7 @@ import { settleDungeonGates } from "../place/dungeonGates";
 import { requestedDungeonSide } from "../request/place";
 import { type Seen } from "../turn/session";
 import { zoneStatusLines } from "../loop/roomZones";
+import { withoutDeclinedFights } from "../loop/requestSkeleton";
 import { stageOpensBattle } from "../story/stageBattle";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { hasRoomKit } from "../judge/placeFix";
@@ -288,7 +289,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   };
   // 청사진 경로 짓기(2026-10-28 mt2): 단계(place·event·needs·gives)와 엔딩에서 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다.
   /** 싸움이 있어야 하는 게임인가 — 장르나 요청이 모험·RPG·액션 쪽일 때만(경영·일상·추리·연애·퍼즐 게임에 싸움을 밀어 넣지 않는다). */
-  const wantsBattle = (genre: string): boolean => /RPG|알피지|롤플레잉|모험|어드벤처|판타지|액션|용사|마왕|전투|던전|adventure|action|fantasy|dungeon|quest/iu.test(`${genre} ${withoutIntentNote(String(task ?? ""))}`);
+  const wantsBattle = (genre: string): boolean => /RPG|알피지|롤플레잉|모험|어드벤처|판타지|액션|용사|마왕|전투|던전|adventure|action|fantasy|dungeon|quest/iu.test(`${genre} ${withoutDeclinedFights(withoutIntentNote(String(task ?? "")))}`);
   const runBlueprintPath = (steps: readonly PathStepText[]) => {
     const result = buildBlueprintPath(run, steps);
     return result;

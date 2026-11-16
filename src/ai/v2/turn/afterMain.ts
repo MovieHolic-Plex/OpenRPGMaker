@@ -2,6 +2,7 @@
 import { relookChangedPlaces } from "./relook";
 import { loadedSchema } from "../tools/toolExposure";
 import { v2BaselineGameKeys, v2GateProblems } from "../judge/finishGate";
+import { sizeNoticeOnce } from "../judge/sizeNotice";
 import { alignCodeClues } from "../story/codeClues";
 import { realignEvidencePlaces } from "../story/mysteryEvidencePlaces";
 import { reviewKey } from "./carryOver";
@@ -139,7 +140,7 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
       if (synced.opened.length) {
         env.emit({ type: "execution_status", name: "v2.gate.items", ok: false, summary: `끝맺음 관문이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙임`, data: { items: synced.opened.map((i) => ({ id: i.id, source: i.source, content: i.content })) } });
         const toolNote = repairToolNote(env, synced.loaded);
-        const prompt = newBatch(env, synced.opened, `[Finish gate — added ${synced.opened.length} problem(s) found by function checks and critics to the todo list. Fix each and call done, or block(reason) if you cannot.]${toolNote}`);
+        const prompt = newBatch(env, synced.opened, `[Finish gate — added ${synced.opened.length} problem(s) found by function checks and critics to the todo list. Fix each and call done, or block(reason) if you cannot.]${toolNote}${sizeNoticeOnce(store, env.ctx.project, env.request.task)}`);
         if (prompt) return prompt;
         return undefined;
       }
