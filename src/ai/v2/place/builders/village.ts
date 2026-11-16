@@ -2,7 +2,9 @@
 // 명세의 낱말(size·theme·style·features·hints)만 도구 손잡이로 옮기고, 도구가 못 하는 것은 missingArt 로 정직하게 보고한다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
-import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, villageKindById, villageKindMenu } from "@/editor/tools/beodeulVillageKinds";
+import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, nearestVillageKind, villageKindById, villageKindMenu } from "@/editor/tools/beodeulVillageKinds";
+import { FEATURE_WORD_STRENGTH, askedBuildingKits, askedBuildingLabel, askedBuildingMenu, nearestBuildingKits } from "@/editor/tools/beodeulAskedBuildings";
+import type { Project } from "@/project/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
 import { isPassable } from "@/project/collision";
@@ -24,7 +26,7 @@ export const VILLAGE_CARD =
   "Land hints: landform (terraces|hill|slope|plateau|flat) · water (river|none, grassland villages) · high (north|south|west|east|center) · tiers (1–4). " +
   "features: plaza · scatter (scattered farms) · harbour (port, big map) · walls (town walls; river·desert·snow, flat land) · forest · dense forest · conifer. " +
   "Other hints: houseCount (3–5) · roofs (red|slate|moss|log) · woods (edge|dense) · forestType · wallGate (S|N|NS) · width · height · variant (another layout of the same spec). " +
-  "Church and market buildings cannot be requested (reported). A village with houses cannot be rebuilt — put everything in the first make_place. " +
+  "Asked buildings (cathedral, inn…): hints.buildings [kit id or word]. A village with houses cannot be rebuilt — put everything in the first make_place. " +
   `hints.kind (optional, river·coast): village kind id, e.g. ${VILLAGE_KIND_EXAMPLES.join(" · ")}. Omitted, the game picks one. The land answer and any unknown id list all ${BEODEUL_VILLAGE_KINDS.length}.`;
 
 /** 마을 종류를 고를 수 있는 마을(강가·포구)의 땅 그림 답에 붙는 한 줄 — 전체 목록, 이 땅의 물에 맞는 종류가 앞. 다른 테마는 종류가 없다(undefined). */
@@ -38,9 +40,73 @@ export function unknownVillageKind(spec: PlaceSpec): string | undefined {
   const value = (spec.hints as Record<string, unknown> | undefined)?.kind;
   return typeof value === "string" && value.trim() && !villageKindById(value.trim()) ? value.trim() : undefined;
 }
-/** 모르는 kind 의 거절 글 — 가까운 이름이 앞에 선 전체 목록. */
-export const unknownVillageKindText = (name: string): string =>
-  `hints.kind "${name}" is not a village kind. Call make_place again with one of the ids below in hints.kind, or without hints.kind (the game then picks one that fits the land). ${villageKindMenu({ near: name })}`;
+
+/** hints.buildings 의 값(글자 배열 · 글자 하나 · 쉼표로 이은 글자)을 낱말 셋까지로. */
+export function askedBuildingWords(value: unknown): string[] {
+  const raw = Array.isArray(value) ? value : typeof value === "string" ? value.split(",") : [];
+  return [...new Set(raw.map((w) => (typeof w === "string" ? w.trim() : "")).filter(Boolean))].slice(0, 3);
+}
+
+const beodeulKits = (project: Project) => project.tilesets[BEODEUL_TILESET]?.structureKits ?? [];
+
+/** 문 목록에 싣는 건물 이름 — 킷 이름에서 칩셋 머리(«버들항 », «버들항 읍 건물 · »)와 크기 꼬리(« 5×8»)를 뗀 것. 쓰임은 이름에 들어 있다(«생선 가게 가게집» · «여관» · «첨탑 성당»). */
+export function doorBuildingName(kit: { id: string; name?: string }): string {
+  return String(kit.name ?? "").replace(/\s*\d+×\d+\s*$/u, "").replace(/^버들항\s+[^·]*건물\s*·\s*/u, "").replace(/^버들항\s+/u, "").trim();
+}
+
+/** 명세의 특징 낱말 — spec.features 와 hints.features(모델이 hints 안에 적기도 한다: r6 «갈매나루» hints.features ["plaza","harbour"]). */
+const specFeatures = (spec: PlaceSpec): string[] => {
+  const hinted: unknown = (spec.hints as { features?: unknown } | undefined)?.features;
+  return [...(spec.features ?? []), ...(Array.isArray(hinted) ? (hinted as unknown[]) : [])].map((f) => String(f).trim()).filter(Boolean);
+};
+
+/**
+ * 명세가 청한 건물: hints.buildings · hints.layout.landmark.kit · hints.layout.anchor.kit, 그리고 요청 특징 낱말(spec.features) 가운데 건물 킷의 id 인 것
+ * (features ["plaza", "cathedral"] 의 cathedral — id 그대로이거나 id 의 끝 토막일 때만 건물로 읽는다).
+ * unknown = 이 칩셋의 어느 건물 킷에도 맞지 않는 낱말(모델이 적은 것만 — 특징 낱말은 건물이 아니면 그냥 특징이다).
+ */
+export function askedVillageBuildings(project: Project, spec: PlaceSpec): { buildings: string[]; unknown: string[] } {
+  const kits = beodeulKits(project);
+  const hints = (spec.hints ?? {}) as Record<string, unknown>;
+  const named = askedBuildingWords(hints.buildings);
+  const lay = (hints.layout && typeof hints.layout === "object" ? hints.layout : {}) as Record<string, { kit?: unknown } | undefined>;
+  const spotKits = (["landmark", "anchor"] as const).map((role) => lay[role]?.kit).filter((k): k is string => typeof k === "string" && !!k.trim()).map((k) => k.trim());
+  const fromFeatures = specFeatures(spec).filter((f) => askedBuildingKits(kits, f, FEATURE_WORD_STRENGTH).length);
+  const unknown = [...named, ...spotKits].filter((w) => !nearestBuildingKits(kits, w).kits.length); // 가장 가까운 건물도 없는 낱말만 — 가까운 것이 있으면 그것으로 세운다
+  return { buildings: [...new Set([...named.filter((w) => !unknown.includes(w)), ...fromFeatures])].slice(0, 3), unknown };
+}
+
+/** 땅 그림 답(첫 make_place)에 붙는 한 줄 — 건물을 어떻게 청하는가. 늘 실리는 카드에는 한 문장뿐이다. */
+export const VILLAGE_BUILDINGS_LINE = "A building the request asks for (a cathedral by the square, an inn, a market hall): put it in hints.buildings as a kit id (kit:beodeul_city/bd-house-cathedral — list_spatial_designs{kind:\"object\", query} finds ids) or a word of a kit's id or name (cathedral · inn · market-hall · 성당), up to 3. "
+  + "The builder seats each on the edge of the gather (the square when gather.plaza is true), door towards it, and reports its door front. To choose the spot yourself, add kit to layout.landmark or layout.anchor instead ({x, y, kit}). Do not stamp such a building by hand afterwards — a village with houses is not rebuilt.";
+
+/** 땅 그림 답이 없는 마을(성벽 · 띠 지형)의 첫 결과 끝에 붙는 한 줄 — 이미 섰으니 손으로 찍는 길과 다음 마을에서 청하는 길을 말한다. */
+export const WALLED_BUILDINGS_LINE = "A building the request asks for (a cathedral, an inn, a market hall) that this village lacks: stamp_object it by the gather — the tool moves it to the nearest spot whose door can be walked to and clears trees under it. For another village, put it in make_place hints.buildings (kit id or a word of it) and the builder seats it by the gather.";
+
+/** 가까운 건물조차 없는 이름을 알리는 글(거절이 아니다 — 마을은 제 큰 건물로 선다) — 이 칩셋에서 청할 수 있는 큰 건물 목록과 찾는 법. */
+export function unknownVillageBuildingText(project: Project, unknown: readonly string[]): string {
+  return `hints.buildings ${unknown.map((w) => `"${w}"`).join(", ")}: no building kit of this village chipset is close to that id or word, so the village's own big building stands instead. Buildings that can be asked for (kit id or a word of it): ${askedBuildingMenu(beodeulKits(project))}. `
+    + "Smaller buildings and shops: list_spatial_designs{kind:\"object\", query:\"<word>\"} — use the id of a row that has an entrance; stamp_object puts one on a spot where its door can be walked to.";
+}
+
+/**
+ * 모르는 마을 종류(hints.kind)를 가장 가까운 종류로 고친 명세와 알림 글. 가까운 것이 없으면 kind 를 빼고(게임이 고른다) 알린다. 아는 종류면 undefined.
+ * 거절하지 않는다 — 고쳐 짓고 무엇으로 지었는지 적는다(전체 목록을 같이 준다).
+ */
+export function fixUnknownVillageKind(spec: PlaceSpec): { spec: PlaceSpec; note: string } | undefined {
+  const name = unknownVillageKind(spec);
+  if (!name) return undefined;
+  const near = nearestVillageKind(name);
+  const { kind: _dropped, ...rest } = (spec.hints ?? {}) as Record<string, unknown>; void _dropped;
+  const hints = (near ? { ...rest, kind: near.id } : rest) as PlaceSpec["hints"];
+  return { spec: { ...spec, hints }, note: `hints.kind "${name}" is not a village kind — ${near ? `the nearest one, ${near.id} (${near.hint}), is used` : "the game picks one that fits the land"}. ${villageKindMenu({ near: name })}` };
+}
+
+/** 선 요청 건물을 적는 글(빌더 결과 요약 — 어느 문이 그 건물인지 조수가 알게). */
+export function askedBuildingsNote(project: Project, asked: readonly { asked: string; kit?: string; door?: { x: number; y: number }; failed?: string }[]): string {
+  const kits = new Map(beodeulKits(project).map((k) => [k.id, k] as const));
+  return asked.map((a) => (a.kit && a.door ? `«${a.asked}» stands as ${(a as { nearest?: boolean }).nearest ? "the nearest kit " : ""}${kits.get(a.kit) ? askedBuildingLabel(kits.get(a.kit)!) : a.kit}, door front (${a.door.x},${a.door.y})` : `«${a.asked}» was NOT built (${a.failed ?? "no spot"})`)).join(" · ");
+}
 
 /** 스키마 칸을 0·빈 값으로 다 채우는 모델(terra)이 보낸 layout 에서 {x:0,y:0} 자리·빈 배열을 버린다. 모이는 곳도 집도 없으면 「안 줬다」(null). */
 export function cleanLayoutHint(value: unknown): Record<string, unknown> | null {
@@ -53,7 +119,7 @@ export function cleanLayoutHint(value: unknown): Record<string, unknown> | null 
   return lay.gather || lay.houses ? lay : null;
 }
 
-const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour", "kind"]);
+const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour", "kind", "buildings"]);
 const BEODEUL_TILESET = "beodeul_city";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
@@ -104,7 +170,6 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
   if (count) args.houseCount = count;
   // 무협(중국 무림)은 전용 칩셋이 아직 번들에 없다(murim-chipset 하네스는 후보 단계) — 지어낸 대체 대신 버들항으로 지었다고 알린다.
   if (has(text, /murim|wuxia|무협|무림|강호|객잔|문파|협객/)) missing.push("무협 마을(무림 전용 칩셋 murim_wuxia 가 번들에 없어 버들항 판타지 마을로 지었다)");
-  if (has(text, /church|교회|chapel|성당/)) missing.push("교회(새 마을은 교회를 짓지 못함 — 고정 예제 작은 마을에만 있음)");
   if (has(text, /inn\b|여관|tavern|주점/) && args.form !== "plaza") warnings.push("여관은 광장 마을의 북쪽 앵커로만 앉는다(form plaza 아님 — 앵커 건물이 따로 놓임)");
   for (const [key, value] of Object.entries(spec.hints ?? {})) {
     // 씨앗은 모델이 정하지 않는다 — 스키마 칸을 다 채우는 모델(terra)이 seed 0·1 을 보내 무작위가 꺼졌다(같은 요청 = 같은 마을). make_place 의 salt(요청마다 새로)가 정한다
@@ -113,9 +178,16 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
     // 스키마 칸을 다 채워 보내는 모델(gpt-6.1-terra)은 안 정한 칸을 ""·0 으로 보낸다 — width·height 0 이 최소 크기(36×30)로 잘려 지형 먼저의 위 단이 설 자리가 없었다(2026-10-29 실조수)
     if (value === "" || value === null || (["width", "height", "tiers", "houseCount", "terrainSeed"].includes(key) && typeof value === "number" && value <= 0)) continue;
     if (key === "layout") { const lay = cleanLayoutHint(value); if (lay) args.layout = lay; continue; }
-    // 종류는 표에 있는 id 만 — 모르는 낱말이면 버리고 알린다(빌더가 터에 맞는 종류를 고른다). make_place 는 여기 오기 전에 장소마다 한 번 거절한다(verbs/place.ts) —
-    // 이 줄은 그 뒤에도 모르는 이름이 온 판과 다른 길(고치기 · 스크립트)의 것이고, 가까운 이름이 앞에 선 전체 목록을 같이 준다.
-    if (key === "kind") { if (typeof value === "string" && villageKindById(value.trim())) args.kind = value.trim(); else warnings.push(`hints.kind '${String(value)}' is not a village kind id — ignored; one that fits the land was picked. ${villageKindMenu({ near: String(value) })}`); continue; }
+    // 종류는 표에 있는 id 만 — 모르는 낱말이면 가장 가까운 종류로 고쳐 짓고 알린다(가까운 것이 없으면 빌더가 터에 맞는 종류를 고른다). 거절하지 않는다.
+    // 전체 목록(가까운 이름이 앞)을 같이 준다 — make_place 도 같은 고침을 먼저 한다(verbs/place.ts fixUnknownVillageKind), 이 줄은 다른 길(고치기 · 스크립트)의 것이다.
+    if (key === "kind") {
+      const name = typeof value === "string" ? value.trim() : "";
+      if (name && villageKindById(name)) args.kind = name;
+      else { const near = name ? nearestVillageKind(name) : undefined; if (near) args.kind = near.id; warnings.push(`hints.kind '${String(value)}' is not a village kind id — ${near ? `the nearest one, ${near.id}, is used` : "ignored; one that fits the land was picked"}. ${villageKindMenu({ near: String(value) })}`); }
+      continue;
+    }
+    // 요청 건물(hints.buildings): 킷 id 나 종류 낱말 셋까지 — 시공기가 모이는 곳 가장자리에 앉힌다. 낱말 하나만 글자로 와도 받는다.
+    if (key === "buildings") { const list = askedBuildingWords(value); if (list.length) args.buildings = list; continue; }
     if (key !== "variant") args[key] = value;
   }
   // 요청의 방향 출구(spec.exits — 「마을 서쪽 길 끝에 동굴」)는 큰길이 그 가장자리까지 가야 한다(강이면 널다리로 건너서). 마을 빌더는 spec.exits 를 읽지 않아
@@ -186,6 +258,12 @@ const num = (v: unknown): number | undefined => (typeof v === "number" && Number
 
 function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const { args, missing, warnings } = villageArgs(spec);
+  // 요청 건물: hints.buildings 와, 건물 킷의 id 인 특징 낱말(features ["plaza", "cathedral"]) — 시공기가 모이는 곳 가장자리에 앉힌다.
+  // 모르는 이름은 빼고 알린다(make_place 는 여기 오기 전에 장소마다 한 번 거절하고 목록을 준다 — 이 줄은 그 뒤에도 모르는 이름이 온 판과 다른 길의 것이다).
+  const wanted = askedVillageBuildings(run.ctx.project, spec);
+  if (wanted.buildings.length) args.buildings = wanted.buildings; else delete args.buildings;
+  const unknownNamed = wanted.unknown.filter((w) => askedBuildingWords(spec.hints?.buildings).includes(w));
+  if (unknownNamed.length) warnings.push(unknownVillageBuildingText(run.ctx.project, unknownNamed));
   // 같은 요청 세 번이 같은 마을이 되지 않게(2026-10-23 다양성 검수: 강가 마을 세 판이 같은 강·다리·방앗간 자리 8/10).
   // 요청이 정하지 않은 땅 모양·숲 종류는 make_place 의 salt 로 고른다. 고치기는 명세에 남은 salt 로 같은 값을 다시 고른다.
   if (spec.salt !== undefined && (args.theme === undefined || args.theme === "river" || args.theme === "coast")) {
@@ -297,13 +375,19 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const state: VillageState = { args, seed, variant, ...(doors ? { doors } : {}) };
   // 집 문 앞 칸 — 실내를 잇는 create_transfer_pair 는 이 칸을 쓴다(2026-11-03 조수 대조 B8 서리나루 Opus: 결과에 문 자리가 없어
   // 광장 칸(34,27)을 문으로 짐작해 「맨바닥 이동」이 남았고, set_map_door 로 문 그림을 찾다 여섯 번 거절됐다).
-  const doorList = (state.doors ?? []).slice(0, 14).map((d) => `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})`);
-  const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표): ${doorList.join(" ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
+  // 문마다 건물 이름(쓰임이 든 킷 이름 — «생선 가게 가게집» · «회벽 화물 창고»)을 같이 싣는다. 킷 id 만으로는 어느 문이 어떤 건물인지 읽을 수 없었다
+  // (2026-11-16 r6 «갈매나루»: 어물전이 화물 창고 문에 달리고 바로 옆 생선 가게는 들어갈 수 없는 입구로 남았다).
+  const kitName = new Map(beodeulKits(run.ctx.project).map((k) => [k.id, doorBuildingName(k)] as const));
+  const doorList = (state.doors ?? []).slice(0, 14).map((d) => { const name = d.kit ? kitName.get(d.kit) : undefined; return `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})${name ? ` «${name}»` : ""}`; });
+  const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표 «건물 이름»): ${doorList.join(" · ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
   // 마을 종류와 선 장면 — 장면 이름은 사람·사건의 where 낱말로 쓸 수 있다(place/where.ts 가 맵의 장면 기록에서 찾는다).
   const vk = data.villageKind as { id?: string } | undefined;
   const sceneList = (Array.isArray(data.scenes) ? data.scenes as { ko: string; en: string; stand: { x: number; y: number } }[] : []).map((sc) => `«${sc.ko}» ${sc.en} (${sc.stand.x},${sc.stand.y})`);
   const kindNote = vk?.id ? ` · kind ${vk.id}${sceneList.length ? ` — scenes, usable as where: ${sceneList.join(" · ")}` : ""}` : "";
-  return { ok: true, mapIds: [builtId], entrance, summary: `${spec.name}: ${parts.join(" · ")} (${num(data.width)}×${num(data.height)}, seed ${seed})${kindNote}${doorNote}`, warnings, missingArt: missing, calls, state, ...(replacedFrom ? { relaidFrom: replacedFrom } : {}) };
+  // 요청 건물이 어디에 섰는지(또는 서지 못했는지) — 그 건물의 문 앞 칸을 조수가 바로 쓴다(실내 잇기). 서지 못한 것은 조용히 넘어가지 않는다.
+  const askedList = Array.isArray(data.asked) ? data.asked as { asked: string; kit?: string; door?: { x: number; y: number }; failed?: string }[] : [];
+  const askedNote = askedList.length ? ` · asked buildings: ${askedBuildingsNote(run.ctx.project, askedList)}` : "";
+  return { ok: true, mapIds: [builtId], entrance, summary: `${spec.name}: ${parts.join(" · ")} (${num(data.width)}×${num(data.height)}, seed ${seed})${askedNote}${kindNote}${doorNote}`, warnings, missingArt: missing, calls, state, ...(replacedFrom ? { relaidFrom: replacedFrom } : {}) };
 }
 
 /**
