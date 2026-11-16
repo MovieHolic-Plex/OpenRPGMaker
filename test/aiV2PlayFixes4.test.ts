@@ -25,6 +25,9 @@ import { settleFoughtCopy } from "@/ai/v2/story/foughtCopy";
 import { buildBossEncounter } from "@/ai/v2/story/sceneVerbs";
 import { pickPersonGraphic } from "@/ai/v2/place/people";
 import { charsetFamilyOf } from "@/project/charsetFamily";
+import { hideLockCodes } from "@/ai/v2/story/codeLeaks";
+import { ensureBossRest } from "@/ai/v2/story/healingAccess";
+import { namedFoeArt } from "@/ai/v2/story/currentFoes";
 
 type Obj = Record<string, unknown>;
 const HARBOUR = "포구 마을 «갈매나루»에서 시작하는 짧은 JRPG 를 만들어 줘. 대성당 지하에서 옛 지하 묘지로 내려가는데, 내려가는 길목을 해골 병사가 막고 서 있어서 싸워 이겨야 지나갈 수 있어. 묘지 맨 안쪽에서 마지막 보스와 싸우면 끝나.";
@@ -195,7 +198,7 @@ describe("길을 막는 적의 자리 — 확인 빌드 r6", () => {
   }, 60_000);
 
   // P6: 병사가 필드에서는 붉은 머리 기사, 전투에서는 유령이었다.
-  it("맵에 선 모습은 싸울 때의 그 모습이고, 바란 그림이 없으면 무엇으로 넣었는지 적는다", () => {
+  it("맵에 선 모습은 싸울 때의 그 모습이고, 글이 짚은 그림이 옛 묶음에만 있어도 그 그림으로 선다", () => {
     const { project, map } = cave();
     const run = createBuildRun({ project, currentMapId: map.id, assistantRun: true } as never);
     const res = buildBossEncounter(run, { mapId: map.id, boss: { name: "문지기 해골", at: { x: 20, y: 20 }, enemy: "해골" }, lines: ["멈춰라."] } as never);
@@ -205,8 +208,10 @@ describe("길을 막는 적의 자리 — 확인 빌드 r6", () => {
     const lead = run.ctx.project.database.enemies.find((e) => e.id === (troop.members?.[0]?.enemyId ?? troop.enemyIds?.[0]))! as unknown as { monsterResourceId?: string };
     expect((foe.pages![0]!.graphic as unknown as { sprite: { id: string } }).sprite.id).toBe(lead.monsterResourceId);
     expect(JSON.stringify(foe.pages)).not.toContain("changeFace");
-    expect(res.missingArt.join("\n")).toContain("want=boss wanted=«skeleton-bone» where=«문지기 해골»");
+    // 해골 그림은 현행 세트에 없고 옛 묶음에 있다 — 대역(창백한 유령)이 아니라 그 그림이다(끝맺음 step-foes 가 «old-set picture» 로 알린다).
+    expect(lead.monsterResourceId).toBe("generated-enemy-skeleton-bone");
     expect(res.missingArt.join("\n")).not.toContain("want=person");
+    expect(res.missingArt.join("\n")).not.toContain("want=boss");
   }, 60_000);
 });
 
@@ -319,5 +324,66 @@ describe("사람 그림이 역할을 따른다 — 확인 빌드 r6", () => {
     expect(monger.wanted).toBeUndefined();
     // 제 화풍에 그 역할의 칩이 있으면 그대로다.
     expect(pick(undefined, "신부", "신부 사제")).toEqual({ label: "승려", family: "rtp-people", wanted: undefined });
+  });
+});
+
+// r7a N2: 강지기(s2)가 번호를 알려 주며 건 «수녀에게 축복을 받자 (석문 숫자: 3817)» 를 번호 숨기기가 자물쇠 단계(s5)의 줄로 바꿔 수녀 단계를 건너뛰었다.
+describe("번호를 뺀 목표 줄은 그 줄이 가리키는 단계를 말한다 — 확인 빌드 r7a", () => {
+  it("대상 이벤트의 단계 · 없으면 줄을 건 이벤트의 다음 단계 — 자물쇠 단계의 줄이 아니다", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    map.name = "포구";
+    const chip = (message: string, target?: string) => ({ kind: "m2Command", commandId: "m2-214-ui-command", fields: { surface: "objectiveChip", message, durationMs: 0, ...(target ? { targetMapId: map.id, targetEventId: target } : {}) } });
+    map.events = [
+      event("ev_keeper", "강지기", 2, 2, [page([], [{ kind: "text", speaker: "강지기", body: "사리 물때, 3817." }, chip("수녀에게 축복을 받자 (석문 숫자: 3817)", "ev_nun")])]),
+      event("ev_nun", "마르타 수녀", 4, 2, [page([], [{ kind: "text", body: "축복을." }, chip("석문에 3817 을 넣자")])]),
+      event("ev_door", "봉인된 석문", 8, 2, [page([], [{ kind: "inputNumber", variableId: "var_door", digits: 4 }, { kind: "fork", condition: { kind: "variable", variableId: "var_door", op: "==", value: 3817 }, then: [{ kind: "text", body: "열렸다." }] }])]),
+    ];
+    const st = (id: string, kind: string, who: string | undefined, ev: string, more: Obj = {}) => ({ id, kind, ...(who ? { who } : {}), place: "포구", event: who ?? "봉인된 석문", action: "a", gives: `${id} 끝`, feeling: "f", built: { mapId: map.id, eventId: ev }, ...more });
+    project.gameBlueprint = normalizeGameBlueprint({ title: "종", genre: "JRPG", playerGoal: "x", request: "x", steps: [st("s1", "talk", "강지기", "ev_keeper"), st("s2", "talk", "마르타 수녀", "ev_nun"), st("s3", "puzzle", undefined, "ev_door", { text: { code: "3817" } })], ending: { name: "끝", how: "연다", feeling: "f" } });
+    const fixed = hideLockCodes(project);
+    const said = (id: string) => /"message":"([^"]+)"/u.exec(JSON.stringify(fixed.project.maps[map.id]!.events.find((e) => e.id === id)!.pages))![1];
+    expect(said("ev_keeper")).toBe("마르타 수녀에게 말을 걸자");
+    expect(said("ev_nun")).toBe("봉인된 석문의 번호를 맞히자");
+    expect(fixed.notes.join(" ")).toContain("«마르타 수녀에게 말을 걸자» · «봉인된 석문의 번호를 맞히자»");
+    expect(JSON.stringify(fixed.project.maps)).toContain("사리 물때, 3817.");
+    expect(hideLockCodes(fixed.project).notes).toEqual([]);
+  });
+});
+
+// r7a N3: 길 전투는 쉬고 온 파티로 맞췄는데, 플레이어는 병사를 이긴 뒤 HP 302/514 로 곧장 보스에게 가서 졌다(쉼터 결정은 같은 맵에 있었다).
+describe("보스는 쉬고 온 파티와 싸운다 — 확인 빌드 r7a", () => {
+  const build = (crystal: boolean): Project => {
+    const project = createBlankProject() as Project;
+    const troopId = project.database.troops[0]!.id;
+    const fight = { kind: "fork", condition: { kind: "switch", switchId: "sw_x", value: true }, then: [{ kind: "battleProcessing", troopSource: "fixed", troopId, canEscape: false, canLose: false, branchOnResult: true, victoryBranch: [], defeatBranch: [], escapeBranch: [] }] };
+    project.maps[project.startMapId]!.events = [event("ev_lord_boss", "종지기", 10, 4, [page([], [{ kind: "text", body: "덤벼라" }, fight])]),
+      ...(crystal ? [event("ev_crystal", "쉼터 결정", 3, 3, [page([], [{ kind: "recoverAll" }])])] : [])];
+    return project;
+  };
+  const kinds = (project: Project) => (project.maps[project.startMapId]!.events.find((e) => e.id === "ev_lord_boss")!.pages![0]!.commands as unknown as Obj[]).map((c) => c.kind);
+
+  it("같은 맵에 쉼터가 있으면 싸움 앞에서 회복하고 그렇다고 적는다 — 싸움 명령의 자리는 그대로, 되풀이 안전", () => {
+    const project = build(true);
+    const run = createBuildRun({ project, currentMapId: project.startMapId, assistantRun: true } as never);
+    expect(ensureBossRest(run)).toEqual(["「종지기」 heals the party before its fight (this map has a rest crystal; the path battles are fitted to a rested party)"]);
+    expect(kinds(run.ctx.project)).toEqual(["text", "recoverAll", "text", "fork"]);
+    expect(ensureBossRest(run)).toEqual([]);
+  });
+  it("쉼터가 없는 맵(시작 맵)의 보스는 공짜로 회복시키지 않는다", () => {
+    const project = build(false);
+    const run = createBuildRun({ project, currentMapId: project.startMapId, assistantRun: true } as never);
+    expect(ensureBossRest(run)).toEqual([]);
+    expect(kinds(run.ctx.project)).toEqual(["text", "fork"]);
+  });
+});
+
+// P6: «녹슨 갑옷과 방패를 든 해골 병사» 가 창백한 유령으로, «거대한 해골 종지기» 가 던전의 푸른 용으로 섰다 — 해골 그림은 옛 묶음에 있었다.
+describe("글이 짚은 적 그림은 어느 묶음에 있든 그대로 — 확인 빌드 r6 · r7a", () => {
+  it("이름과 그림 설계 글이 둘 이상 겹치는 적 하나 — 한 낱말만 겹치거나 여럿이 겨루면 고르지 않는다", () => {
+    const project = createBlankProject() as Project;
+    expect(namedFoeArt(project, "해골 병사 녹슨 갑옷과 방패를 든 해골 병사")).toBe("enemy_skeleton_knight");
+    expect(namedFoeArt(project, "해골 병사")).toBeUndefined();
+    expect(namedFoeArt(project, "강의 주인 두꺼비")).toBeUndefined();
   });
 });

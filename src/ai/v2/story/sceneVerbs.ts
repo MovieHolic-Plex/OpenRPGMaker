@@ -17,7 +17,7 @@ import { buildEvent } from "./events";
 import { buildPeople } from "../place/people";
 import { eventsOf } from "../place/cells";
 import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeonFoes";
-import { currentFoe, leadEnemyId, wantedArtName } from "./currentFoes";
+import { currentFoe, leadEnemyId, namedFoe, namedFoeArt, wantedArtName } from "./currentFoes";
 import { foeGraphic } from "./stepFoes";
 import { artGapLine, parseArtGap } from "@/project/artGap";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
@@ -75,13 +75,18 @@ function bossTroop(run: BuildRun, spec: BossEncounterSpec["boss"], warnings: str
     const own = project.database.troops.find((t) => { const ids = [...(t.enemyIds ?? []), ...(t.members ?? []).map((m) => m.enemyId)]; return ids.length === 1 && ids[0] === named.id; });
     if (own) return own.id;
   }
+  // 이름·생김새가 그림 하나를 짚었고 그 그림이 어느 묶음에든 있으면 그 그림 그대로(story/currentFoes.namedFoeArt) — 대역을 세우지 않는다.
+  const said = named ? undefined : namedFoeArt(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`);
+  if (said) return ensureFoeTroop(run, said, "boss", pickTroops(project, undefined).boss, spec.name);
   const wanted = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) ?? ["enemy_knight_fallen", "enemy_demon_lord"].find((id) => project.database.enemies.some((e) => e.id === id));
   if (!wanted) return undefined;
-  // 서는 것은 현행 그림이 있는 종(story/currentFoes) — 그림이 없는 종은 가장 가까운 현행 종이 그 이름으로 서고, 바란 그림은 없는 그림 줄로 남는다.
-  const drawn = currentFoe(project, wanted);
+  // 글이 짚은 적(named · enemyArtFor)은 그림이 어느 묶음에든 있으면 그대로, 없으면 가장 가까운 현행 종이 그 이름으로 서고 바란 그림은 없는 그림 줄로 남는다.
+  // 스스로 고른 기본값(낱말이 없을 때의 타락한 기사·마왕)은 현행 세트에서만.
+  const told = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`);
+  const drawn = told ? namedFoe(project, wanted) : currentFoe(project, wanted);
   const art = drawn?.enemyId ?? wanted;
   if (drawn?.wanted) warnings.push(artGapLine({ want: "boss", wanted: drawn.wanted, where: spec.name, standIn: project.database.enemies.find((e) => e.id === art)?.name ?? art, by: "add_boss_encounter" }));
-  if (!enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) && !named) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
+  if (!told) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
   return ensureFoeTroop(run, art, "boss", pickTroops(project, undefined).boss, spec.name);
 }
 
@@ -205,14 +210,16 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
   const had = run.ctx.project.database.troops.find((t) => t.id === hadTroop);
   const hadLead = leadEnemyId(run.ctx.project, had?.id);
   const hadName = run.ctx.project.database.enemies.find((e) => e.id === hadLead)?.name ?? had?.name ?? "the dungeon's boss";
-  const wanted = spec.boss.troopId ? undefined : enemyArtFor(run.ctx.project, `${spec.boss.enemy ?? ""} ${name} ${spec.boss.looks ?? ""}`);
-  const drawn = wanted ? currentFoe(run.ctx.project, wanted) : undefined;
+  const told = `${spec.boss.enemy ?? ""} ${name} ${spec.boss.looks ?? ""}`;
+  // 이름·생김새가 짚은 그림이 어느 묶음에든 있으면 그 그림(대역 없이) — 모델이 그렇게 적은 것이라 boss.enemy 가 없어도 바꾼다.
+  const namedArt = spec.boss.troopId ? undefined : namedFoeArt(run.ctx.project, told);
+  const wanted = spec.boss.troopId ? undefined : namedArt ?? enemyArtFor(run.ctx.project, told);
+  const drawn = namedArt ? { enemyId: namedArt } : wanted ? namedFoe(run.ctx.project, wanted) : undefined;
   const differs = !!wanted && artOf(drawn?.enemyId ?? wanted) !== artOf(hadLead);
   let figure = "";
   let swapTo: string | undefined;
   if (differs && (!drawn || drawn.wanted)) warnings.push(artGapLine({ want: "boss", wanted: drawn?.wanted ?? wantedArtName(run.ctx.project, wanted!), where: name, standIn: hadName, by: "add_boss_encounter" }));
-  else if (differs && spec.boss.enemy) swapTo = ensureFoeTroop(run, drawn!.enemyId, "boss", had?.id ?? pickTroops(run.ctx.project, undefined).boss, name);
-  else if (differs) figure = ` It keeps that fight's figure «${hadName}»; to fight another figure send boss.enemy.`;
+  else if (differs) swapTo = ensureFoeTroop(run, drawn!.enemyId, "boss", had?.id ?? pickTroops(run.ctx.project, undefined).boss, name);
   const said = (list: unknown[]) => list.filter((c) => !((c as Obj).kind === "text" && (c as Obj).speaker === name));
   const talk = lines.map((body) => ({ kind: "text", speaker: name, body }));
   const won = clean(spec.afterWin).map((body) => ({ kind: "text", speaker: name, body }));
@@ -238,7 +245,7 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
   };
   // 이름으로 고른 적으로 바꿨으면 맵에 선 그림도 그 적이다.
   const look = swapTo ? foeGraphic(run.ctx.project, swapTo) : undefined;
-  if (swapTo) figure = ` It now fights and stands as «${run.ctx.project.database.enemies.find((e) => e.id === leadEnemyId(run.ctx.project, swapTo))?.name ?? swapTo}» (boss.enemy) instead of «${hadName}».`;
+  if (swapTo) figure = ` It now fights and stands as «${run.ctx.project.database.enemies.find((e) => e.id === leadEnemyId(run.ctx.project, swapTo))?.name ?? swapTo}» (the figure its name and looks describe) instead of «${hadName}»; send boss.troopId to keep a fight as it is.`;
   const pages = (ev.pages ?? []).map((p) => JSON.stringify(p.commands ?? []).includes('"battleProcessing"') ? { ...p, ...(look ? { graphic: look } : {}), commands: dress((p.commands ?? []) as unknown[]) as typeof p.commands } : p);
   run.ctx.project = nameFightAfter(replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent), fightTroop, name, ev.id).project;
   const map = run.ctx.project.maps[mapId]!;

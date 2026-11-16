@@ -232,8 +232,17 @@ export function npcGraphicLabelNamedBy(text: string, entry: CharsetSemanticEntry
  * («순경» = 남자 경찰관 칩, «어부» = 남자). label = 글의 낱말을 모두 가진 칩이 있을 때 그 칩의 이름. 성별·나이는 앞선 칩 다섯이 한목소리일 때만.
  * 일·차림 낱말이 없는 글(«노인»)은 undefined — 성별·나이는 글이 이미 말했다.
  */
-export function npcGraphicWantedLook(text: string, overrides?: readonly CharsetLabelOverride[]): { readonly label?: string; readonly chips?: readonly CharsetSemanticEntry[]; readonly gender?: Exclude<CharsetGender, "none">; readonly age?: CharsetAge } | undefined {
+type WantedLook = { readonly label?: string; readonly chips?: readonly CharsetSemanticEntry[]; readonly gender?: Exclude<CharsetGender, "none">; readonly age?: CharsetAge };
+/** 표 전체를 두 번 훑는 값이라(낱말 하나에 수십 ms) 같은 글은 다시 재지 않는다 — 덮어쓴 이름표가 없을 때만. */
+const wantedLookMemo = new Map<string, WantedLook | undefined>();
+export function npcGraphicWantedLook(text: string, overrides?: readonly CharsetLabelOverride[]): WantedLook | undefined {
   if (!describingTerms(text).length) return undefined;
+  if (!overrides?.length && wantedLookMemo.has(text)) return wantedLookMemo.get(text);
+  const look = readWantedLook(text, overrides);
+  if (!overrides?.length) { if (wantedLookMemo.size > 500) wantedLookMemo.clear(); wantedLookMemo.set(text, look); }
+  return look;
+}
+function readWantedLook(text: string, overrides?: readonly CharsetLabelOverride[]): WantedLook | undefined {
   return withNpcGraphicCatalogFilter(undefined, () => {
     const whole = findNpcGraphicMatches(text, overrides, true).filter((m) => { const c = categoryOf(m.entry); return c === "people" || c === "actor"; });
     const near = (whole.length ? whole : findNpcGraphicMatches(text, overrides).filter((m) => { const c = categoryOf(m.entry); return c === "people" || c === "actor"; })).slice(0, 5);

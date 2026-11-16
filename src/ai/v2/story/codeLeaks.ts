@@ -37,13 +37,26 @@ export function hideLockCodes(project0: Project): { project: Project; notes: str
     const step = stepOf(lock.event.id);
     const name = String((lock.event as { name?: string }).name ?? lock.event.id);
     const neutral = step ? stepGoal({ kind: step.kind, who: step.who, event: step.event, place: step.place }) : `${name}의 번호를 맞히자`;
+    // 목표 줄은 그 줄이 가리키는 단계의 할 일로 바꾼다 — 자물쇠 단계의 줄이 아니다. 가리키는 단계 = 줄의 대상 이벤트(targetEventId)의 단계,
+    // 없으면 줄을 건 이벤트의 다음 단계. 둘 다 없거나 그게 자물쇠 단계면 자물쇠의 중립 줄.
+    // 왜(2026-11-16 확인 빌드 r7a N2): 강지기(s2)가 번호를 알려 주며 건 «수녀에게 축복을 받자 (석문 숫자: 3817)» 가 «봉인된 석문의 번호를 맞히자 (… → 대성당 · 마르타 수녀)» 로 바뀌어 수녀 단계를 건너뛰었다.
+    const goalFor = (owner: { id: string; name?: string }, target: string | undefined): string => {
+      const at = target ? stepOf(target) : undefined;
+      const k = steps.findIndex((st) => st.built?.eventId === owner.id || st.event === owner.id || (!st.built && !!owner.name && st.event === owner.name));
+      const aim = at ?? (k >= 0 ? steps[k + 1] : undefined);
+      // 이름으로 지은 줄 — 모델이 쓴 goal 은 한 칸 밀려 쓰인 판이 있었다(r7a: s2 의 goal 이 s3 수녀의 할 일).
+      return !aim || aim === step ? neutral : stepGoal({ kind: aim.kind, who: aim.who, event: aim.event, place: aim.place });
+    };
     // 1) 목표 줄 — 게임 어디서 걸었든.
     let chips = 0;
-    for (const map of Object.values(project.maps)) each(map.events, (cmd) => {
-      const fields = cmd.fields as { surface?: string; message?: string } | undefined;
+    const lines = new Set<string>();
+    for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) each(ev.pages, (cmd) => {
+      const fields = cmd.fields as { surface?: string; message?: string; targetEventId?: string } | undefined;
       if (cmd.kind !== "m2Command" || fields?.surface !== OBJECTIVE_SURFACE || !holds(fields.message, lock.text)) return;
       const tail = / \([^()]*(?:입구|→|·)[^()]*\)$/u.exec(fields.message!)?.[0] ?? "";
-      fields.message = `${neutral}${holds(tail, lock.text) ? "" : tail}`;
+      const line = goalFor(ev, fields.targetEventId);
+      lines.add(line);
+      fields.message = `${line}${holds(tail, lock.text) ? "" : tail}`;
       chips += 1;
     });
     // 2) 청사진에 남긴 goal.
@@ -56,7 +69,7 @@ export function hideLockCodes(project0: Project): { project: Project; notes: str
       if ((page.conditions ?? []).length || commands.some((c) => c.kind === "inputNumber")) continue;
       for (const cmd of commands) if (cmd.kind === "text" && holds(cmd.body, lock.text)) { cmd.body = LOCKED_LINE; locked += 1; }
     }
-    if (chips + goals + locked) notes.push(`「${name}」 의 답이 든 ${[chips ? `목표 줄 ${chips}곳` : "", goals ? `청사진 goal ${goals}곳` : "", locked ? `잠긴 안내 ${locked}줄` : ""].filter(Boolean).join("·")}을 번호 없는 줄로 바꿨다(«${neutral}»)`);
+    if (chips + goals + locked) notes.push(`「${name}」 의 답이 든 ${[chips ? `목표 줄 ${chips}곳` : "", goals ? `청사진 goal ${goals}곳` : "", locked ? `잠긴 안내 ${locked}줄` : ""].filter(Boolean).join("·")}을 번호 없는 줄로 바꿨다(«${[...(lines.size ? lines : [neutral])].join("» · «")}»)`);
   }
   return notes.length ? { project, notes } : { project: project0, notes };
 }
