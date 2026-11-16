@@ -308,7 +308,7 @@ function clampReliefLevel(value: number): number {
 }
 
 function clampReliefRamp(value: number): number {
-  if (!Number.isInteger(value) || value < 0 || value > 9) return 0;
+  if (!Number.isInteger(value) || value < 0 || value > 11) return 0;
   return value;
 }
 

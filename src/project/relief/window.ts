@@ -17,12 +17,15 @@
 import { effectiveHeights, prune, reliefPadPx, renderRelief, type ReliefRender, type ReliefRenderOptions, type ReliefSlope } from "./render";
 import { gridFromRelief, RELIEF_TILE as T, type HeightGrid, type ReliefData } from "./types";
 import { reliefState } from "./revision";
+import { reliefFaceRows } from "./styles";
 
 /**
  * 뒤 패스가 화면에서 기대는 이웃 거리(px). 서쪽 긴 그늘 12·북쪽 벽 발치 10 이 가장 멀고, 둑(옆면 6px)은 가장자리 화소(±2)에서 뻗는다.
  * 여유를 두어 24(확인 스크립트로 4 는 틀리고 12 는 맞는 것을 봤다). 줄이면 scripts/check-relief-window.mts 로 다시 확인할 것.
  */
 const REACH = 24;
+/** 깎아지른 양식(sheer)의 뒤 패스 이웃 거리 — 옆면 16px · 낭떠러지 밑 48px · 다리 말뚝까지. */
+export const SHEER_REACH = 64;
 /** 창 넓이 합이 맵의 이 비율을 넘으면 전체를 굽는다 — 창 굽기와 전체 굽기의 비용이 비슷해진다. */
 const FULL_RATIO = 0.6;
 
@@ -109,12 +112,12 @@ export interface ReliefPatchPlan {
 type Box = [number, number, number, number];
 
 /** 화면 사각형을 정확히 굽는 데 필요한 맵 칸 창. */
-export function reliefWindowFor(x0: number, y0: number, x1: number, y1: number, W: number, H: number, pad: number): ReliefWindowPlan {
+export function reliefWindowFor(x0: number, y0: number, x1: number, y1: number, W: number, H: number, pad: number, reach = REACH): ReliefWindowPlan {
   // 사각형 ± REACH(뒤 패스가 읽는 이웃)의 첫 패스가 정확해야 한다. 화면 줄 sy 는 맵 줄 sy-pad..sy 가 칠하고, 잘린 가장자리 반 칸(8px)은
   // 마칭 스퀘어가 둘레 칸을 못 봐 틀린다. 맨 위 칸 줄 위쪽 맵 줄이 없어 틀리는 화면은 그 줄 + pad 까지, 맨 아래 칸 줄 밑을 0 단으로
   // 보는 벽은 그 줄 아래로만 내려간다.
-  let cx = Math.floor((x0 - REACH - 8) / T), cr = Math.ceil((x1 + REACH + 8) / T);
-  const cy = Math.max(0, Math.floor((y0 - REACH - pad - 8) / T)), cb = Math.min(H, Math.ceil((y1 + REACH - 8) / T) + 1);
+  let cx = Math.floor((x0 - reach - 8) / T), cr = Math.ceil((x1 + reach + 8) / T);
+  const cy = Math.max(0, Math.floor((y0 - reach - pad - 8) / T)), cb = Math.min(H, Math.ceil((y1 + reach - 8) / T) + 1);
   if (cx <= 0 || cr >= W) { cx = 0; cr = W; }
   return { cx, cy, w: cr - cx, h: cb - cy, x0, y0, x1, y1 };
 }
@@ -130,6 +133,8 @@ export function planReliefPatch(prev: ReliefScene | null, next: ReliefScene, ima
   if (next.grids.eff.length !== H || (next.grids.eff[0]?.length ?? 0) !== W) return null;
   if (prev && (prev.grids.eff.length !== H || (prev.opts.style ?? "") !== (next.opts.style ?? ""))) return null;
   if (!!prev?.opts.ground !== !!next.opts.ground) return null;
+  // 깎아지른 양식은 뒤 패스(옆면·낭떠러지 밑·장치)가 창 가장자리 밖을 읽는다 — 늘 쪽 단위로 굽는다
+  if (reliefFaceRows(next.opts.style) > 1) return null;
   // 평지에서 시작하면 양식은 빈 그림에 영향이 없다. 경사로 도트(rampArt)는 양식을 따른다.
   // 바뀐 칸 상자 [x0, y0, x1, y1](끝 포함). x1 < 0 이면 없음.
   const box: Box = [W, H, -1, -1];

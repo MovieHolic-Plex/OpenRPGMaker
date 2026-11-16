@@ -7,12 +7,15 @@
 import palette from "./reliefPalette.json";
 import { copyGrid, RELIEF_MAX_LEVEL, RELIEF_TILE as T, RELIEF_UNIT as U, type HeightGrid } from "./types";
 import { compileReliefStyle, RELIEF_DEFAULT_RIM, type ReliefWallStyle } from "./styles";
+import { paintSheer } from "./sheerPaint";
+import { sheerArt } from "./sheerArt";
 
 type Rgb = [number, number, number];
 const D = palette as { G: Rgb[]; B: Rgb[]; TOP: number[]; GROUND: number[]; LIP: Record<"L" | "M" | "R", number[]>; TILES: number[][] };
 const RAMPS = [D.G, D.B];
 const { TOP, GROUND, LIP, TILES } = D;
-const LV = Array.from({ length: RELIEF_MAX_LEVEL + 1 }, (_, i) => Math.min(3, Math.floor(i / 3)));
+// 깎아지른 양식은 단 × faceRows 높이로 그린다(최대 14 × 3) — 0~14 값은 그대로다
+const LV = Array.from({ length: RELIEF_MAX_LEVEL * 3 + 1 }, (_, i) => Math.min(3, Math.floor(i / 3)));
 const OUT_G = 0, OUT_B = 6, DRIP = 6, CW = 14, CH = 8;
 const NATIVE_EDGE_LIGHT = [.45, .65, .8, 1, 1.1, 1.2] as const;
 const shift = (p: number, s: number) => { const r = (p / 6) | 0, i = p % 6; return r * 6 + Math.max(1, Math.min(5, i + s)); };
@@ -55,6 +58,11 @@ export interface ReliefRenderOptions {
    * 전체 렌더와 화소 하나 다르지 않다. 반환 그림의 좌표·src 는 창 기준이다.
    */
   window?: ReliefRenderWindow;
+  /**
+   * 세로 이동 칸(relief.ramps 10 줄사다리 · 11 덩굴, 깎아지른 양식만, 맵 전체 좌표 · 그리는 높이 단위). 비탈 면을 그리지 않고 절벽 면에 장치 조각을 건다.
+   * 없으면 그림이 예전과 같다.
+   */
+  climbs?: readonly ReliefSlope[];
 }
 
 export interface ReliefGroundSurface {
@@ -102,6 +110,8 @@ export interface ReliefSlope {
   lo: number;
   hi: number;
   steps?: number;
+  /** 세로 이동 칸(walk.ts RELIEF_LADDER 10 · RELIEF_VINE 11). 걷기는 북쪽 오르막과 같고 그림은 절벽 면에 건 장치다. */
+  climb?: number;
 }
 
 export interface ReliefRender {
@@ -310,11 +320,35 @@ export function samplePixelHeight(h: HeightGrid, px: number, py: number, square?
   return lo;
 }
 
-/** 화소 단위 높이. 대각선 절벽: 칸 중심을 꼭짓점으로 한 마칭 스퀘어. */
-export function buildPixelHeights(h0: HeightGrid, diag = true, square?: (x: number, y: number) => boolean, pruned?: HeightGrid) {
+// 둥근 윤곽(깎아지른 양식): 칸 중심 지시값(이 단 이상인가)의 3차 B-스플라인을 0.5 에서 자른다. 곧은 가장자리는 칸 경계 그대로이고,
+// 한 칸 계단은 매끈한 S 자로, 볼록 모서리는 반지름 약 한 칸으로 둥글어진다(마칭 스퀘어 45° 깎기의 톱니가 없다).
+const BSPLINE = (t: number): [number, number, number, number] => { const s = 1 - t; return [s * s * s / 6, (3 * t * t * t - 6 * t * t + 4) / 6, (-3 * t * t * t + 3 * t * t + 3 * t + 1) / 6, t * t * t / 6]; };
+
+/** 화소 단위 높이. 대각선 절벽: 칸 중심을 꼭짓점으로 한 마칭 스퀘어(round 면 B-스플라인 둥근 윤곽). */
+export function buildPixelHeights(h0: HeightGrid, diag = true, square?: (x: number, y: number) => boolean, pruned?: HeightGrid, round = false) {
   const h = pruned ?? prune(h0), H = h.length, W = h[0].length, PW = W * T, PH = H * T;
   const hp = new Int8Array(PW * PH);
   const gc = (x: number, y: number) => h[Math.max(0, Math.min(H - 1, y))][Math.max(0, Math.min(W - 1, x))];
+  if (round) {
+    const wy = new Float64Array(4), lv = new Float64Array(16);
+    for (let py = 0; py < PH; py++) {
+      const gy = (py + 0.5) / T - 0.5, iy = Math.floor(gy); wy.set(BSPLINE(gy - iy));
+      for (let px = 0; px < PW; px++) {
+        if (square?.(px >> 4, py >> 4)) { hp[py * PW + px] = gc(px >> 4, py >> 4); continue; }
+        const gx = (px + 0.5) / T - 0.5, ix = Math.floor(gx), wx = BSPLINE(gx - ix);
+        let lo = 99, hi = -1;
+        for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) { const v = gc(ix - 1 + b, iy - 1 + a); lv[a * 4 + b] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
+        let v = lo;
+        for (let c = hi; c > lo; c--) {
+          let sum = 0;
+          for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) if (lv[a * 4 + b]! >= c) sum += wy[a]! * wx[b]!;
+          if (sum >= 0.5) { v = c; break; }
+        }
+        hp[py * PW + px] = v;
+      }
+    }
+    return { hp, PW, PH };
+  }
   if (diag) {
     for (let py = 0; py < PH; py++) {
       const y0 = Math.floor((py - 8) / T), j = (py - 8) - y0 * T;
@@ -597,7 +631,8 @@ const PATTERN_BIAS = RELIEF_MAX_LEVEL * U;
  * 경사로가 덮지 않은 칸의 화소 높이는 그 칸·이웃 칸 단 중 하나라 최고값은 칸 최고 단과 같다(경사로 둘레 칸은 네모 절벽이라 이웃
  * 경사로 단을 받지 않는다). 경사로 칸은 slopeHeights 와 같은 식으로 칸 끝 화소에서 잰다(높이는 오르막 쪽으로 단조).
  */
-export function reliefPadPx(pruned: HeightGrid, slopes: readonly ReliefSlope[] = []): number {
+export function reliefPadPx(pruned: HeightGrid, slopes: readonly ReliefSlope[] = [], faceRows = 1): number {
+  if (faceRows > 1) return reliefPadPx(scaleGrid(pruned, faceRows), slopes.map((s) => scaleSlope(s, faceRows)));
   const H = pruned.length, W = pruned[0]?.length ?? 0;
   // 그 칸을 마지막으로 덮는 경사로 번호 + 1 — slopeHeights 가 뒤 경사로로 덮어쓰는 순서와 같다
   const owner = slopes.length ? new Int32Array(W * H) : null;
@@ -624,8 +659,20 @@ export function reliefPadPx(pruned: HeightGrid, slopes: readonly ReliefSlope[] =
   return Math.ceil(mx) * U;
 }
 
+/** 단 × k (깎아지른 양식의 그리는 높이). */
+const scaleGrid = (g: HeightGrid, k: number): HeightGrid => g.map((row) => row.map((v) => v * k));
+const scaleSlope = (s: ReliefSlope, k: number): ReliefSlope => ({ ...s, lo: s.lo * k, hi: s.hi * k });
+
 export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): ReliefRender {
   const S = compileReliefStyle(opt.style);
+  // 깎아지른 양식(styles.ts sheer): 단 하나를 앞면 faceRows 칸으로 — 높이를 그만큼 들어 그린다. 걷기·저장은 단 그대로(walk.ts · screen.ts 들림도 같은 배).
+  const K = S?.sheer ? S.faceRows : 1;
+  if (K > 1) {
+    h = scaleGrid(h, K);
+    opt = { ...opt, ...(opt.slopes ? { slopes: opt.slopes.map((s) => scaleSlope(s, K)) } : {}), ...(opt.climbs ? { climbs: opt.climbs.map((s) => scaleSlope(s, K)) } : {}),
+      ...(opt.bridges ? { bridges: Array.from(opt.bridges, (v) => (v > 0 ? (v - 1) * K + 1 : 0)) } : {}),
+      ...(opt.window ? { window: { ...opt.window, pruned: scaleGrid(opt.window.pruned, K) } } : {}) };
+  }
   // 부분 굽기: ox·oy = 창 원점의 화면 px. 무늬를 읽는 곳은 (화소 + 원점) 절대 좌표를 쓴다. 칸 주기(16)·짝홀만 보는 곳은 그대로 둔다.
   const win = opt.window, ox = win ? win.cx * T : 0, oy = win ? win.cy * T : 0, cy0 = win ? win.cy : 0;
   // gslopes 는 맵 전체 좌표(절대 좌표 패스용), slopes 는 h 기준 좌표(높이·네모 절벽용). 번호는 같다.
@@ -645,7 +692,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const isBridge = (x: number, y: number) => !!bridge && x >= 0 && y >= 0 && x < BW && y < h.length && bridge[y * BW + x]! > 0;
   const nearBridge = bridge ? (x: number, y: number) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (isBridge(x + dx, y + dy)) return true; return false; } : undefined;
   const square = nearRamp || nearBridge ? (x: number, y: number) => !!(nearRamp?.(x, y) || nearBridge?.(x, y)) : undefined;
-  const { hp, PW, PH } = buildPixelHeights(h, opt.diag !== false, square, win?.pruned);
+  const { hp, PW, PH } = buildPixelHeights(h, opt.diag !== false, square, win?.pruned, !!S?.sheer && opt.diag !== false);
   const { hf, sid, st } = slopeHeights(hp, PW, PH, slopes);
   let mx = 0; for (let i = 0; i < hp.length; i++) if (hf[i] > mx) mx = hf[i];
   mx = Math.ceil(mx);
@@ -1097,6 +1144,9 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     }
   }
   if (opt.slopeArt?.some(Boolean)) paintSlopePieces(opt.slopeArt, gslopes, { rgba, ssl, PW, SH, ox, oy, pad });
+  // 깎아지른 면(styles.ts sheer): 기하는 위에서 faceRows 배 높이로 다 그렸다 — 면·옆면·테·빈 곳·그늘·장치를 조각으로 입힌다
+  if (S?.sheer) paintSheer({ rgba, kind, lev, dep, run, src, fl, ssl, edge, mpy, hf, PW, SH, pad, ox, oy, cx0: win?.cx ?? 0, cy0, levelPx: S.faceRows * U,
+    underDeck, deckUnder, bridge, W, h, climbs: opt.climbs ?? [] }, sheerArt());
   return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(opt.ground ? { nativeGround: true } : {}), ...(overSlope ? { overSlope } : {}) };
 }
 

@@ -7,7 +7,8 @@ import { renderRelief, type ReliefRender, type ReliefRenderOptions, type ReliefS
 import { RELIEF_TILE, type ReliefData } from "./types";
 import { reliefGrids } from "./window";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
-import { reliefRampArt } from "./styles";
+import { reliefFaceRows, reliefRampArt } from "./styles";
+import { sheerArt } from "./sheerArt";
 import { cutPieceFor } from "./cutPieces";
 import { reliefState } from "./revision";
 
@@ -28,11 +29,13 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
   const signature = reliefState(relief).signature;
   const cached = fields.get(relief);
   if (cached?.signature === signature) return cached.field;
-  const slopes = reliefSlopes(relief);
+  // 깎아지른 양식(styles.ts sheer)은 단 하나를 앞면 faceRows 칸으로 그린다 — 들림도 같은 배(걷기·저장 단은 그대로)
+  const K = reliefFaceRows(relief.style);
+  const slopes = K > 1 ? reliefSlopes(relief).map((s) => ({ ...s, lo: s.lo * K, hi: s.hi * K })) : reliefSlopes(relief);
   const { width, height } = relief;
   const drawn = reliefGrids(relief).pruned;
   const elevation = new Float32Array(width * height);
-  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) elevation[y * width + x] = drawn[y]?.[x] ?? 0;
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) elevation[y * width + x] = (drawn[y]?.[x] ?? 0) * K;
   const slopeOwners = new Int32Array(width * height).fill(-1);
   let maxLift = 0;
   for (const [id, s] of slopes.entries()) {
@@ -43,7 +46,8 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
       let t = along / len;
       // 계단은 칸 중심이 딛는 디딤판 단. 칸 중심이 디딤판 경계에 딱 걸리므로 부동소수 오차로 한 단 아래로 떨어지지 않게 한다.
       if (s.steps) t = Math.floor(t * s.steps + 1e-6) / s.steps;
-      elevation[y * width + x] = s.lo + t * (s.hi - s.lo);
+      // 세로 이동 칸(사다리·덩굴): 바닥 타일·물건은 제 단(낮은 끝)에 둔다 — 캐릭터만 footLift 로 면을 따라 오른다
+      elevation[y * width + x] = s.climb ? s.lo : s.lo + t * (s.hi - s.lo);
       slopeOwners[y * width + x] = id;
     }
   }
@@ -71,6 +75,7 @@ export const DEFAULT_RAMP_ART_STYLE = "grass-steps";
 /** relief → renderRelief 옵션(편집기·플레이어·오프라인 렌더가 같은 값을 쓴다): 경사로·양식·경사로 도트·다리 판. */
 export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOptions["ground"]): ReliefRenderOptions {
   const bridges = reliefBridgeMask(relief);
+  if (reliefFaceRows(relief.style) > 1) return sheerRenderOptions(relief, ground, bridges);
   const slopes = reliefSlopes(relief), rampArt = reliefRampArt(relief.style ?? DEFAULT_RAMP_ART_STYLE);
   // 통째 조각(rampArt.pieces): 경사로마다 종류(코드 1~4 경사로·5~8 계단)·방향·크기·단 차로 고른다(겹친 계단은 정본 나눔으로 이어 붙임, cutPieces.ts)
   const slopeArt = rampArt?.pieces ? slopes.map((s) => {
@@ -78,6 +83,16 @@ export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOpt
     return cutPieceFor(rampArt.pieces!, code > 4 ? "stairs" : "ramp", s.dir, s.w, s.h, s.hi - s.lo);
   }) : undefined;
   return { transparentGround: !ground, ground, slopes, style: relief.style, rampArt, ...(slopeArt?.some(Boolean) ? { slopeArt } : {}), ...(bridges ? { bridges } : {}) };
+}
+
+/**
+ * 깎아지른 양식의 렌더 옵션: 세로 이동 칸(사다리·덩굴)은 비탈로 그리지 않고 면에 건 장치로(climbs), 북향 2칸 폭 계단은 깎은 돌계단 조각으로.
+ * 경사로 번호(slopes 순서)는 climbs 를 뺀 목록 기준이다.
+ */
+function sheerRenderOptions(relief: ReliefData, ground: ReliefRenderOptions["ground"], bridges: Uint8Array | undefined): ReliefRenderOptions {
+  const all = reliefSlopes(relief), slopes = all.filter((s) => !s.climb), climbs = all.filter((s) => !!s.climb), art = sheerArt();
+  const slopeArt = slopes.map((s) => (s.dir === "n" && s.w === 2 && (relief.ramps?.[s.y * relief.width + s.x] ?? 0) > 4 ? art.stairs[s.hi - s.lo] ?? null : null));
+  return { transparentGround: !ground, ground, slopes, style: relief.style, ...(climbs.length ? { climbs } : {}), ...(slopeArt.some(Boolean) ? { slopeArt } : {}), ...(bridges ? { bridges } : {}) };
 }
 
 /**

@@ -25,7 +25,7 @@ export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: numbe
   const r = raw as Partial<ReliefData>;
   if (!Array.isArray(r.levels) || !Number.isInteger(r.width) || !Number.isInteger(r.height)) return undefined;
   const ramps = Array.isArray(r.ramps) && r.ramps.length === r.levels.length
-    ? r.ramps.map((v) => (Number.isInteger(v) && v >= 0 && v <= 9 ? v : 0))
+    ? r.ramps.map((v) => (Number.isInteger(v) && v >= 0 && v <= 11 ? v : 0))
     : undefined;
   const wallDecor = Array.isArray(r.wallDecor)
     ? r.wallDecor.filter((d) => d && [d.x, d.y, d.row, d.tile].every(Number.isInteger) && d.row >= 1 && d.tile >= 0).map(({ x, y, row, tile }) => ({ x, y, row, tile }))
