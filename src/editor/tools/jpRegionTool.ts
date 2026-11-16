@@ -208,6 +208,16 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     }
     // r4 나무 composer: 숲 바닥만 칠해 두었다가 집·소품을 다 찍은 뒤 한 번에 나무를 세운다(수관이 집·길·물 위로 넘치지 않게).
     if (forest && hasJpForestR4(next.tilesets[map.tilesetId]!)) composeJpForestR4(target, next.tilesets[map.tilesetId]!, 0, grounding);   // 씨앗 0: 편집기 붓과 같은 배치(붓질 한 번에 둘레 나무가 바뀌지 않게)
+    // 막을 줄(고가 선로 앞 건물 줄의 발 줄): 건물 사이 틈·처마 밑처럼 아직 걸어지는 칸을 블록 담 칸으로 막는다 — 그 뒤 선로 바닥과 지붕 밑으로 걸어 들어가지 못하게(r6 P1).
+    if (plan.sealRows.length) {
+      const wallRow = next.tilesets[map.tilesetId]!.structureKits?.find((k) => k.id === "jp-prop-wall-block")?.rows[0];
+      const wall = wallRow?.upperTiles?.[0] ?? wallRow?.tiles?.[0] ?? -1;
+      if (wall >= 0) for (const y of plan.sealRows) for (let x = 0; x < target.width; x++) {
+        if (y < 0 || y >= target.height || !isPassable(next, target, x, y)) continue;
+        setLayerTileAt(target, 2, y * target.width + x, wall);
+        if (isPassable(next, target, x, y)) setLayerTileAt(target, 4, y * target.width + x, wall);   // 위층에 지나가는 그림이 있는 칸
+      }
+    }
     if (stamped === 0) throw new ToolError(`${region.id} 키트를 하나도 세우지 못했다 — 맵을 ${region.size[0]}×${region.size[1]} 로 키우거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     draft.maps[mapId] = next.maps[mapId]!;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;

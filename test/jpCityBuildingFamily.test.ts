@@ -11,6 +11,10 @@ import type { BuildRun, PlaceSpec } from "@/ai/v2/shared/types";
 import { planJpCityScene } from "@/project/jpCitySceneComposer";
 import { sceneKindById, sceneKitForWord, sceneKitNear } from "@/project/jpCitySceneKinds";
 import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
+import { isPassable } from "@/project/collision";
+import { roadEntranceStart } from "@/ai/v2/place/startSpot";
+import { isRoadGround } from "@/ai/v2/place/surface";
+import { largestWalkArea } from "@/editor/tools/startOnBuiltMap";
 
 const OLD = /jp-bldg-(?!f-)[a-z0-9-]+/g;
 /** 새 가족에 같은 구실이 없어 남겨 둔 옛 건물 */
@@ -123,6 +127,45 @@ describe("jp_city building family", () => {
       const direct = runTool(ctx, "compose_jp_region", { mapId: "eki", region: "station_plaza", seed: 3 }, { dryRun: false });
       expect(direct.ok, direct.summary).toBe(true);
       expect((direct.data as { streetKind?: string }).streetKind).toBe("ekimae");
+    }, 180_000);
+
+    // 2026-11-16 r6 브라우저 플레이 P1: 게임이 선로 위 (3,2) 에서 시작했고 열차 안·역 건물 벽·역 지붕으로 걸어 들어갔다.
+    it("never lets the player walk on rails, trains or roofs, and starts on a walked street cell (r6 P1)", () => {
+      const ts = createJpCityTileset();
+      const blocked = (tile: number) => { const p = ts.passability[tile]; return !p || (!p.up && !p.down && !p.left && !p.right); };
+      for (const id of ["jp:rail-track", "jp:prop:train"]) {
+        const tiles = (ts.tileGroups ?? []).find((g) => g.id === id)?.tileIds ?? [];
+        expect(tiles.length, id).toBeGreaterThan(0);
+        expect(tiles.filter((t) => !blocked(t)), id).toEqual([]);
+      }
+      // 실제 호출 길(새 거리): 새 건물의 지붕 칸은 모두 막힌 칸이고, 시작 칸은 큰 걷는 덩이의 길 칸이다
+      const { ctx, map, plan } = build("game-a", { type: "street", name: "역 앞 상점가", style: "jp-modern", size: "small", salt: 7191,
+        features: ["상점가", "konbini", "ramen", "서점", "police box", "vending", "bench", "lamp", "post box"], hints: { length: "short", shops: "conbini,ramen,books" } });
+      const roofs: string[] = [];
+      for (const p of plan.placed) {
+        if (!p.kit?.id.startsWith("jp-bldg-f-")) continue;
+        for (let y = p.y; y < p.foot - 1; y++) for (let x = p.x; x < p.x + p.w; x++) if (isPassable(ctx.project, map, x, y)) roofs.push(`${p.kit.id}@${x},${y}`);
+      }
+      expect(roofs).toEqual([]);
+      const area = new Set(largestWalkArea(ctx.project, map));
+      const start = roadEntranceStart(ctx.project, map) ?? ctx.project.startPos;
+      expect(area.has(start.y * map.width + start.x)).toBe(true);
+      expect(isRoadGround(ctx.project, map, start.x, start.y)).toBe(true);
+      expect(plan.placed.some((p) => start.x >= p.x && start.x < p.x + p.w && start.y >= p.y && start.y <= p.foot)).toBe(false);
+
+      // 옛 지역 문법(열쇠 없는 호출)의 역전: 고가 선로 띠와 역 건물 줄 뒤는 걸어서 닿지 않는다
+      const old = { project: createBlankProject(), currentMapId: "map_blank_start" };
+      expect(runTool(old, "create_map", { name: "역전", width: 40, height: 30, tilesetId: JP_CITY_ID, id: "eki" }, { dryRun: false }).ok).toBe(true);
+      for (const seed of [7191, 1, 2]) {
+        const r = runTool(old, "compose_jp_region", { mapId: "eki", region: "station_plaza", seed, replace: true }, { dryRun: false });
+        expect(r.ok, r.summary).toBe(true);
+        const m = old.project.maps.eki!;
+        const main = largestWalkArea(old.project, m);
+        const foot = Math.round(0.33 * (m.height - 1));
+        expect(Math.min(...main.map((i) => Math.floor(i / m.width))), `seed ${seed}`).toBeGreaterThan(foot - 2);
+        const at = roadEntranceStart(old.project, m) ?? old.project.startPos;
+        expect(at.y, `seed ${seed}`).toBeGreaterThan(foot);
+      }
     }, 180_000);
 
     it("reads a requested shop from the kit's own id, kind, name and label words — no alias table", () => {
