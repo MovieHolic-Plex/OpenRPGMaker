@@ -7,7 +7,7 @@
 // 스토어는 타일셋·업로드 자산 항목을 객체째 공유한다(projectClone 머리말: 그 항목은 제자리에서 고치지 않는다). 세션 경계에서만
 // 그 공유가 끊겨, 적용된 초안이 스토어로 돌아가면 스토어의 타일셋까지 모두 새 객체가 됐다.
 //
-// 여기서는 스토어가 들고 있는 항목만 객체째 공유한다. 스토어 밖 프로젝트(영역 작업의 작업본·평가·시험 픽스처)는 그 계약이 없으므로
+// 여기서는 스토어가 지금 들고 있는 항목(같은 객체)만 객체째 공유한다. 스토어 밖 항목(영역 작업의 작업본·평가·시험 픽스처)은 그 계약이 없으므로
 // 예전처럼 통째로 복제하고 통째로 직렬화한다. 결과 값은 어느 쪽이든 같다: 사본의 JSON 값·키 순서는 `structuredClone` 과,
 // 글은 `JSON.stringify` 와 글자까지 같다(test/sessionProjectCopy.test.ts).
 import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
@@ -16,14 +16,20 @@ import { cloneProjectSharingStoreOwnedEntries, trustStoreOwnedEntries } from "@/
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 
-function storeOwnsSettledEntriesOf(project: Project): boolean {
-  // 스토어를 부분 흉내로 갈아 끼운 시험에는 이 메서드가 없다 — 그때는 공유하지 않는다(예전 동작).
-  return typeof store.ownsSettledEntriesOf === "function" && store.ownsSettledEntriesOf(project);
+/** 정규화가 끝난 스토어의 지금 프로젝트. 스토어를 부분 흉내로 갈아 끼운 시험에는 이 메서드가 없다 — 그때는 공유하지 않는다(예전 동작). */
+function settledStoreProject(): Project | null {
+  if (typeof store.ownsSettledEntriesOf !== "function") return null;
+  const live = store.getCurrent();
+  return store.ownsSettledEntriesOf(live) ? live : null;
 }
 
-/** `structuredClone(project)` 와 값이 같은 세션 사본. 스토어가 들고 있는 타일셋·업로드 자산 항목은 객체째 공유한다. */
+/**
+ * `structuredClone(project)` 와 값이 같은 세션 사본. 스토어가 지금 들고 있는 타일셋·업로드 자산 항목(같은 객체)은 객체째 공유한다 —
+ * 스토어 프로젝트 자신이든, 스토어에 넘긴 원본이나 그 사본이든 같다(projectClone.trustStoreOwnedEntries).
+ */
 export function sessionProjectCopy(project: Project): Project {
-  if (storeOwnsSettledEntriesOf(project)) trustStoreOwnedEntries(project);
+  const live = settledStoreProject();
+  if (live) trustStoreOwnedEntries(project, live);
   return cloneProjectSharingStoreOwnedEntries(project);
 }
 
