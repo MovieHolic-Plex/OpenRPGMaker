@@ -277,3 +277,11 @@ export function gameBlueprintText(blueprint: GameBlueprint): string {
     `엔딩 「${blueprint.ending.name}」: ${blueprint.ending.how} · 느낌: ${blueprint.ending.feeling}`,
   ].join("\n");
 }
+
+/**
+ * 청사진 경로 빌더가 청사진 ending 에서 지어 정의하는 엔딩의 id — 모델이 아직 define_ending 을 부르지 않았을 때만 생긴다.
+ * define_ending 이 같은 이름의 새 엔딩을 만들면 이 엔딩을 그 자리에서 고쳐 쓴다(같은 맺음의 엔딩 둘이 생기지 않게 — endingTools).
+ */
+export function blueprintEndingId(name: string): string {
+  return `ending_${Math.abs([...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`;
+}

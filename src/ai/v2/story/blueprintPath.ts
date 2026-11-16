@@ -14,7 +14,7 @@ import { alignCodeClues, digitWord } from "./codeClues";
 import { isPassable } from "@/project/collision";
 import { codeReadable } from "@/project/codeReading";
 import type { GameMap } from "@/project/types";
-import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
+import { blueprintEndingId, endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { choiceAtThing, samePersonStep } from "./samePerson";
 import { bigFigureCell, bigFigureCells } from "./bigFigure";
@@ -218,7 +218,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const endings = (project0.endings ?? []) as { id: string; name?: string }[];
   let ending = endings.find((e) => sameName(e.name ?? "", bp.ending.name)) ?? (endings.length === 1 ? endings[0] : undefined);
   if (!ending) {
-    const id = `ending_${Math.abs([...bp.ending.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`;
+    const id = blueprintEndingId(bp.ending.name);
     const res = run.call("define_ending", { id, name: bp.ending.name, conditions: [], epilogue: closing.map((line) => ({ kind: "say", text: line })), presentation: { finalTitle: bp.ending.name, credits: bp.title } });
     if (!res.ok) return fail(`엔딩 「${bp.ending.name}」을 정의하지 못했다: ${String(res.summary).slice(0, 200)}`);
     ending = { id, name: bp.ending.name };
