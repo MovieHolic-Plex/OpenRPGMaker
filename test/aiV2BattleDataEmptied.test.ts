@@ -25,16 +25,20 @@ function emptied() {
   return { before, after };
 }
 
-describe("menu requests never empty actor/class battle data", () => {
-  it("flags the T4 case even though the request says 파티·스킬", () => {
+// 2026-11-16 db-review B #9: 비운 전투 데이터는 이제 완료를 막지 않는다(요청 낱말로 «지우라고 했나» 를 가르던 검사가 정당한 비우기도 막았다).
+// 대신 최종 보고의 «자료집에서 바뀐 것» 에 ⚠ 줄로 실리고, 목록을 줄인 쓰기는 도구 결과가 그 자리에서 «LIST SHRANK» 로 알린다.
+describe("emptied actor/class battle data is reported, not blocked", () => {
+  it("finds both emptied records in the T4 case", () => {
     const { before, after } = emptied();
-    const out = unaskedLines(before, after, T4);
-    expect(out.some((l) => l.includes("전투 데이터") && l.includes("configure_field_menu"))).toBe(true);
     expect(battleDataEmptied(before, after, T4).length).toBe(2);
+    expect(unaskedLines(before, after, T4).some((l) => l.includes("전투 데이터"))).toBe(false);
   });
-  it("allows it when the request asks to delete the data itself", () => {
+  it("puts them in the database change report whatever the request says", async () => {
+    const { databaseChangeReport } = await import("@/ai/v2/judge/sideEffectChecks");
     const { before, after } = emptied();
-    expect(battleDataEmptied(before, after, "주인공 스킬을 전부 지워 줘")).toEqual([]);
+    const lines = databaseChangeReport(before, after);
+    expect(lines.some((l) => l.startsWith("⚠ 비운 전투 데이터"))).toBe(true);
+    expect(lines.some((l) => l.startsWith("classes:") && l.includes("줄어든 목록"))).toBe(true);
   });
   it("is quiet when nothing shrank", () => {
     const before = createBlankProject() as Project;

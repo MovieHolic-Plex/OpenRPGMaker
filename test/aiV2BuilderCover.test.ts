@@ -230,18 +230,21 @@ describe("끝맺음 관문이 고치는 법으로 이른 도구는 고치기 차
     expect(store.items[0]!.status).not.toBe("dropped");
   });
 
-  it("실제 턴: 장소만 짓는 요청에서 이름으로 부른 create_transfer_pair 를 그 자리에서 지어 싣는다 — 읽기 요청·없는 이름은 싣지 않는다", () => {
+  // 2026-11-16 db-review B #2: 막는 것은 읽기 전용 요청(readOnly)뿐이다 — 질문으로 갈린 글(「…정리해서 지워 줘」)도 쓰기 도구에 닿는다.
+  it("실제 턴: 장소만 짓는 요청에서 이름으로 부른 create_transfer_pair 를 그 자리에서 지어 싣는다 — 읽기 전용 요청·없는 이름은 싣지 않는다", () => {
     const t = turn("촌장 집 맵을 만들어 줘.");
     const exposure = { tools: [], lazy: new Map(), offered: [] };
     const toolNames = new Set<string>();
-    const { lateTool } = turnLateTools({ session: t.session, state: { exposure }, toolNames, writeRequest: true } as never);
+    const { lateTool } = turnLateTools({ session: t.session, state: { exposure }, toolNames, request: { readOnly: false } } as never);
     expect(lateTool("create_transfer_pair")?.name).toBe("create_transfer_pair");
     expect(exposure.lazy.has("create_transfer_pair")).toBe(true);
     expect(toolNames.has("create_transfer_pair")).toBe(true);
     expect(lateTool("create_transfer_pair")).toBe(exposure.lazy.get("create_transfer_pair"));
     expect(lateTool("no_such_tool")).toBeUndefined();
-    const readOnly = turnLateTools({ session: t.session, state: { exposure: { tools: [], lazy: new Map(), offered: [] } }, toolNames: new Set(), writeRequest: false } as never);
+    const readOnly = turnLateTools({ session: t.session, state: { exposure: { tools: [], lazy: new Map(), offered: [] } }, toolNames: new Set(), request: { readOnly: true } } as never);
     expect(readOnly.lateTool("create_transfer_pair")).toBeUndefined();
+    const guessedQuestion = turnLateTools({ session: t.session, state: { exposure: { tools: [], lazy: new Map(), offered: [] } }, toolNames: new Set(), request: { task: "안 쓰는 스킬이랑 아이템 정리해서 지워 줘" } } as never);
+    expect(guessedQuestion.lateTool("create_transfer_pair")?.name).toBe("create_transfer_pair");
   }, SLOW);
 
   it("턴 조립: 장소만 까는 요청의 목록에는 create_transfer_pair·load_tools 가 없고, 이름으로 부르면 실리며, 없는 이름의 거절 글은 load_tools 를 권하지 않는다", () => {

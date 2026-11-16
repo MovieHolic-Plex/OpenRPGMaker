@@ -19,6 +19,7 @@ import { resolveObject } from "@/editor/tools/sharedObjectTools";
 import { isBuildingKit } from "@/editor/tools/buildingSite";
 import { SEED_START_MAP_ID } from "@/editor/tools/startOnBuiltMap";
 import { nameScore } from "../todo/names";
+import { NOT_IN_RECORD, changesStored, storedAt, storedRecordFor } from "@/editor/tools/dbRecordStored";
 
 type Obj = Record<string, unknown>;
 type Schema = { type?: string | string[]; properties?: Record<string, Schema>; required?: readonly string[]; items?: Schema; enum?: readonly unknown[] };
@@ -51,9 +52,14 @@ const unsetWord = (real: Schema | undefined, v: unknown): boolean => v === "none
  * 스키마 기준으로 선택 칸의 «기본값 채움»을 걷어 낸다: 빈 글·빈 배열·null, 잎이 모두 기본값인 선택 객체, 그리고 «비워 둔다» 는 뜻의 "none".
  * 필수 칸은 그대로 둔다. 돌려주는 값: 고친 인자와 걷어 낸 칸 경로. real = 도구의 진짜 스키마(모델이 본 것과 enum 이 다를 수 있다).
  * terra 는 스키마의 모든 칸을 기본값으로 채웠다(place_field_enemy patrol.directions:[]·graphic{…""}, upsert_troop members:[], referencePurpose:"").
+ *
+ * 저장값과 견준다(2026-11-16 db-review A F3 · B #6): 이미 있는 자료집 레코드를 고치는 호출에서 빈 목록·0·false·빈 글이 저장값을 바꾸면
+ * 그것은 채움이 아니라 「비워 줘」「꺼 줘」「0 으로」다 — 걷지 않고(kept) 도구에 보낸다. 저장값도 비어 있으면 바뀌는 것이 없으니 걷는다.
+ * set_project_settings 는 지금 설정(system·meta)과 견준다. 새 레코드·그 밖의 도구는 전처럼 걷는다.
  */
-function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema): { value: unknown; removed: string[] } {
+function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema, stored?: (path: string) => unknown, focused = false): { value: unknown; removed: string[]; kept: string[] } {
   const removed: string[] = [];
+  const kept: string[] = [];
   const walk = (s: Schema | undefined, r: Schema | undefined, v: unknown, p: string): unknown => {
     if (Array.isArray(v)) return s?.items ? v.map((x, i) => walk(s.items, r?.items, x, `${p}[${i}]`)) : v;
     if (!isObj(v) || !s?.properties) return v;
@@ -62,7 +68,10 @@ function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema
     for (const [k, child] of Object.entries(v)) {
       const cs = s.properties[k];
       const at = p ? `${p}.${k}` : k;
-      if (cs && !required.has(k) && (emptyish(child) || allDefault(child) || unsetWord(r?.properties?.[k], child))) { removed.push(at); continue; }
+      if (cs && !required.has(k) && (emptyish(child) || allDefault(child) || unsetWord(r?.properties?.[k], child))) {
+        if (meantAsChange(child, stored ? stored(at) : NOT_IN_RECORD, unsetWord(r?.properties?.[k], child), focused)) { kept.push(at); out[k] = child; continue; }
+        removed.push(at); continue;
+      }
       const next = cs ? walk(cs, r?.properties?.[k], child, at) : child;
       // 안을 걷어 내 비게 된 선택 객체도 뺀다(patrol:{directions:[]} → patrol:{}).
       if (cs && !required.has(k) && isObj(next) && !Object.keys(next).length && isObj(child) && Object.keys(child).length) { removed.push(at); continue; }
@@ -70,7 +79,46 @@ function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema
     }
     return out;
   };
-  return { value: walk(schema, real, value, ""), removed };
+  return { value: walk(schema, real, value, ""), removed, kept };
+}
+
+/** 몇 칸만 보낸 호출인가(레코드 id 밖 칸 3개 이하) — 스키마를 한꺼번에 채운 호출과 가른다. */
+function focusedCall(args: Obj): boolean {
+  const nested = Object.values(args).find((v) => isObj(v) && typeof (v as Obj).id === "string") as Obj | undefined;
+  const body = nested ?? args;
+  return Object.keys(body).filter((k) => k !== "id" && k !== "todoId").length <= 3;
+}
+
+/**
+ * 빈 값·기본값 묶음이 «채움» 이 아니라 저장값을 바꾸라는 뜻인가. 채움은 스키마의 칸을 한꺼번에 채운 호출에서 나온다(terra: 칸 수십 개) —
+ * 그래서 뜻으로 보는 것은 몇 칸만 보낸 호출(focused: id 밖 칸 3개 이하)에서, 저장값을 실제로 바꾸는 값뿐이다.
+ *  - "none"(비워 둔다)·null, 레코드 밖 칸(새 레코드·저장값을 모르는 도구): 늘 채움(전의 동작).
+ *  - 빈 목록·빈 글: 저장된 목록·글이 비어 있지 않을 때(「드랍 빼 줘」·「행동 제한 없애」).
+ *  - 잎이 0/false 인 객체: 잎 셋 이하이고 저장값과 다를 때(저장값이 없는 칸 — 엔진 기본값이 도는 독의 턴당 피해 — 도 포함).
+ * 많은 칸을 보낸 호출의 빈 값은 걷고, 결과 글이 «하나만 따로 보내라» 고 적는다(조용히 버리지 않는다).
+ */
+function meantAsChange(child: unknown, was: unknown, unset: boolean, focused: boolean): boolean {
+  if (!focused || unset || child === null || was === NOT_IN_RECORD) return false;
+  if (Array.isArray(child) || child === "") return (Array.isArray(child) ? Array.isArray(was) : typeof was === "string") && !emptyish(was);
+  if (!isObj(child) || Object.keys(child).length > 3) return false;
+  return was === undefined || changesStored(child, was);
+}
+
+/** 이 호출이 고치는 저장값을 읽는 함수 — 자료집 레코드(upsert_*{x:{id}} · upsert_common_event{id})나 프로젝트 설정. 없으면 undefined. */
+function storedReader(toolName: string, args: Obj, project: Project): ((path: string) => unknown) | undefined {
+  if (toolName === "set_project_settings") {
+    const sys = (project.system ?? {}) as unknown as Obj;
+    const battleKey: Readonly<Record<string, string>> = { allowAutoBattle: "allowAutoBattle", clearStatesAfterBattle: "clearStatesAfterBattle", weaknessExtraAction: "weaknessExtraAction", rollingHp: "battleRollingHp", emotionCycle: "emotionCycle" };
+    return (path) => {
+      const [head, key] = path.split(".");
+      if (head === "battle" && !key) return Object.fromEntries(Object.entries(battleKey).map(([k, sk]) => [k, k === "allowAutoBattle" ? sys.allowAutoBattle ?? true : sys[sk]]));
+      if (head === "battle" && key && battleKey[key]) return key === "allowAutoBattle" ? sys.allowAutoBattle ?? true : sys[battleKey[key]!];
+      if (head === "smallMapFill") return sys.smallMapFill;
+      return NOT_IN_RECORD;
+    };
+  }
+  const target = storedRecordFor(project, args);
+  return target ? (path) => storedAt(target, path) : undefined;
 }
 
 // ───────────── 프로젝트 조회 ─────────────
@@ -361,8 +409,11 @@ export function preCheck(toolName: string, schema: unknown, rawArgs: unknown, pr
   const notes: string[] = [];
   let args: Obj = clone(rawArgs);
   if (isRegistryTool(toolName)) {
-    const pruned = pruneDefaults(schema as Schema, args, getTool(toolName)?.parameters as Schema | undefined);
-    if (pruned.removed.length) { args = pruned.value as Obj; notes.push(`dropped empty/default optional fields: ${pruned.removed.slice(0, 8).join(", ")}${pruned.removed.length > 8 ? ` +${pruned.removed.length - 8} more` : ""}`); }
+    const pruned = pruneDefaults(schema as Schema, args, getTool(toolName)?.parameters as Schema | undefined, storedReader(toolName, args, project), focusedCall(args));
+    if (pruned.removed.length || pruned.kept.length) args = pruned.value as Obj;
+    // 걷은 칸은 이 레코드에서 바뀌는 것이 없다(새 레코드이거나 저장값도 비어 있다) — 그 뜻을 그대로 적는다. 지운 칸이 성공처럼 읽히지 않게.
+    if (pruned.removed.length) notes.push(`NOT APPLIED — empty/zero/false optional fields read as unfilled defaults: ${pruned.removed.slice(0, 8).join(", ")}${pruned.removed.length > 8 ? ` +${pruned.removed.length - 8} more` : ""} (a new record, a stored value that is already the same, or a call that sends many fields). If one of them is a real change, send it alone: {id, <that field>}`);
+    if (pruned.kept.length) notes.push(`applied as sent — these empty/zero/false values clear or switch off what is stored: ${pruned.kept.slice(0, 8).join(", ")}`);
   }
   // 치워진 빈 시작 맵(blankStart.ts retireSeedStart)의 id 를 아직 쓰는 호출은 지금 시작 맵으로 보낸다 — 조수는 첫 지시문에서 본 그 id 를 계속 쓴다.
   if (!project.maps[SEED_START_MAP_ID] && project.maps[project.startMapId]) {

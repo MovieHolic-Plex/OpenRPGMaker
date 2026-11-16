@@ -416,6 +416,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
     execute: async (id: string, rawParams: unknown, signal?: AbortSignal): Promise<PiToolExecResult> => {
       state.callNo += 1;
       const write = !isReadVerb(tool.name);
+      if (write && tool.name !== "load_tools") loop.writeCalls += 1;
       // todoId 는 감싸개 몫이다 — 동사에는 넘기지 않는다.
       const { params, todoId } = splitTodoId(rawParams);
       if (write && writeRequest && !store.initialized) {
@@ -540,7 +541,13 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           if (shown !== r0.text) { const at = result.content.findIndex((c) => c.type === "text"); result = { ...result, content: result.content.map((c, k) => k === at ? { type: "text" as const, text: shown } : c) }; }
         }
       }
-      if (fixNotes.length) result = withNote(result, `Fixed: ${fixNotes.join(" · ")}`);
+      {
+        // 걷은 칸(NOT APPLIED)은 «고침» 이 아니다 — 따로 한 줄로 실어 성공으로 읽히지 않게 한다(2026-11-16 db-review B #6).
+        const dropped = fixNotes.filter((n) => n.startsWith("NOT APPLIED"));
+        const fixed = fixNotes.filter((n) => !n.startsWith("NOT APPLIED"));
+        if (fixed.length) result = withNote(result, `Fixed: ${fixed.join(" · ")}`);
+        if (dropped.length) result = withNote(result, dropped.join("\n"));
+      }
       const read = readResult(outcome.result);
       const notes: string[] = [];
       if (write) {

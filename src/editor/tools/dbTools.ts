@@ -19,9 +19,10 @@ import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
 import { actionSkillClearProperties, authoredSkillProperties, combatConditionSchema, conditionalDropsSchema } from "./combatAuthoringSchemas";
 import { equipmentSlots, equipmentSlotRemovalBlocker, hasEquipmentSlot, removeEquipmentSlot, upsertEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
-import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
+import { DELETABLE_DB_COLLECTIONS, deleteDatabaseRecord, duplicateDatabaseRecord } from "./dbRecordDelete";
+import { LIST_OPS_SCHEMA } from "./dbUpsertEnvelope";
 import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
-import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyKind } from "@/assets/retroSkillCatalog";
 import { BATTLE_AURA_IDS, normalizeBattleAura } from "@/assets/battleStateAuras";
 import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
 import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
@@ -113,25 +114,6 @@ import { projectStoreIcons, rankStoreIcons, stateIconWant, STORE_ICON_CONFIDENT_
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
 import { itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 
-const DATABASE_RECORD_COLLECTIONS = [
-  "actors",
-  "classes",
-  "skills",
-  "items",
-  "equipment",
-  "enemies",
-  "troops",
-  "states",
-  "battleAnimations",
-  "monsterSpecies",
-  "crops",
-  "lifeSkills",
-  "farmAnimalSpecies",
-  "fishSpecies",
-  "farmBuildingTypes",
-  "homeDecorationTypes",
-] as const;
-type DatabaseRecordCollection = (typeof DATABASE_RECORD_COLLECTIONS)[number];
 const DATABASE_UTILITY_COLLECTIONS = ["elements", "terrains", "battleCommands"] as const;
 
 // id 기준으로 배열에 upsert.
@@ -153,141 +135,49 @@ function upsertById<T extends { id: string }>(list: T[], record: T): "added" | "
   return "added";
 }
 
-function parseDatabaseRecordCollection(value: unknown): DatabaseRecordCollection {
-  switch (value) {
-    case "actors":
-    case "classes":
-    case "skills":
-    case "items":
-    case "equipment":
-    case "enemies":
-    case "troops":
-    case "states":
-    case "battleAnimations":
-    case "monsterSpecies":
-    case "crops":
-    case "lifeSkills":
-    case "farmAnimalSpecies":
-    case "fishSpecies":
-    case "farmBuildingTypes":
-    case "homeDecorationTypes":
-      return value;
-    default:
-      throw new ToolError(
-        `지원하지 않는 DB collection입니다: ${String(value)}. 사용 가능한 값: ${DATABASE_RECORD_COLLECTIONS.join(", ")}`,
-        { code: "invalid-args" },
-      );
-  }
-}
 
-function duplicateRecord<T extends { id: string; name: string }>(records: T[], id: string, newId: string, requestedName?: string): T {
-  const source = records.find((record) => record.id === id);
-  if (!source) throw new ToolError(`복제할 DB 레코드를 찾을 수 없습니다: ${id}`, { code: "database-record-not-found" });
-  if (records.some((record) => record.id === newId)) throw new ToolError(`이미 존재하는 DB 레코드 id입니다: ${newId}`, { code: "database-record-exists" });
-  const copy = structuredClone(source);
-  copy.id = newId;
-  copy.name = requestedName?.trim() || `${source.name} 사본`;
-  records.push(copy);
-  return copy;
-}
 
-function deleteRecord<T extends { id: string; name: string }>(records: T[], id: string): T {
-  const index = records.findIndex((record) => record.id === id);
-  const record = records[index];
-  if (!record) throw new ToolError(`삭제할 DB 레코드를 찾을 수 없습니다: ${id}`, { code: "database-record-not-found" });
-  records.splice(index, 1);
-  return record;
-}
 
-function duplicateFromCollection(draft: Project, collection: DatabaseRecordCollection, id: string, newId: string, name?: string): { id: string; name: string } {
-  switch (collection) {
-    case "actors": return duplicateRecord(draft.database.actors, id, newId, name);
-    case "classes": return duplicateRecord(draft.database.classes, id, newId, name);
-    case "skills": {
-      const source = draft.database.skills.find((record) => record.id === id);
-      const borrowed = source ? retroChoreographyIdForClone(source) : undefined;
-      const copy = duplicateRecord(draft.database.skills, id, newId, name);
-      if (borrowed) copy.retroChoreographyId = borrowed;
-      return copy;
-    }
-    case "items": return duplicateRecord(draft.database.items, id, newId, name);
-    case "equipment": return duplicateRecord(draft.database.equipment, id, newId, name);
-    case "enemies": return duplicateRecord(draft.database.enemies, id, newId, name);
-    case "troops": return duplicateRecord(draft.database.troops, id, newId, name);
-    case "states": return duplicateRecord(draft.database.states, id, newId, name);
-    case "battleAnimations": return duplicateRecord(draft.database.battleAnimations, id, newId, name);
-    case "monsterSpecies": return duplicateRecord(draft.database.monsterSpecies ??= [], id, newId, name);
-    case "crops": return duplicateRecord(draft.database.crops ??= [], id, newId, name);
-    case "lifeSkills": return duplicateRecord(draft.database.lifeSkills ??= [], id, newId, name);
-    case "farmAnimalSpecies": return duplicateRecord(draft.database.farmAnimalSpecies ??= [], id, newId, name);
-    case "fishSpecies": return duplicateRecord(draft.database.fishSpecies ??= [], id, newId, name);
-    case "farmBuildingTypes": return duplicateRecord(draft.database.farmBuildingTypes ??= [], id, newId, name);
-    case "homeDecorationTypes": return duplicateRecord(draft.database.homeDecorationTypes ??= [], id, newId, name);
-  }
-}
 
-function deleteFromCollection(draft: Project, collection: DatabaseRecordCollection, id: string): { id: string; name: string } {
-  if (collection === "actors" || collection === "classes" || collection === "skills" || collection === "items"
-    || collection === "equipment" || collection === "enemies" || collection === "troops" || collection === "states" || collection === "battleAnimations") {
-    const reference = projectDatabaseReferenceMessage(draft, collection, id);
-    if (reference) throw new ToolError(reference, { code: "database-record-in-use" });
-  }
-  switch (collection) {
-    case "actors": return deleteRecord(draft.database.actors, id);
-    case "classes": return deleteRecord(draft.database.classes, id);
-    case "skills": return deleteRecord(draft.database.skills, id);
-    case "items": return deleteRecord(draft.database.items, id);
-    case "equipment": return deleteRecord(draft.database.equipment, id);
-    case "enemies": return deleteRecord(draft.database.enemies, id);
-    case "troops": return deleteRecord(draft.database.troops, id);
-    case "states": return deleteRecord(draft.database.states, id);
-    case "battleAnimations": return deleteRecord(draft.database.battleAnimations, id);
-    case "monsterSpecies": return deleteRecord(draft.database.monsterSpecies ??= [], id);
-    case "crops": return deleteRecord(draft.database.crops ??= [], id);
-    case "lifeSkills": return deleteRecord(draft.database.lifeSkills ??= [], id);
-    case "farmAnimalSpecies": return deleteRecord(draft.database.farmAnimalSpecies ??= [], id);
-    case "fishSpecies": return deleteRecord(draft.database.fishSpecies ??= [], id);
-    case "farmBuildingTypes": return deleteRecord(draft.database.farmBuildingTypes ??= [], id);
-    case "homeDecorationTypes": return deleteRecord(draft.database.homeDecorationTypes ??= [], id);
-  }
-}
 
 const duplicateDatabaseRecordTool: ToolDefinition = {
   name: "duplicate_database_record",
-  description: "에디터 DB 레코드를 모든 필드와 함께 복제한다. 참조를 보존하기 위해 새 id를 명시한다.",
+  description: "자료집 레코드(공용 이벤트 포함)를 모든 칸과 함께 복제한다. id 는 id·이름·목록 번호(«3» = 3번) 중 하나. newId 를 비우면 빈 id 를 만든다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
-      collection: { type: "string", enum: DATABASE_RECORD_COLLECTIONS },
-      id: { type: "string" },
+      collection: { type: "string", enum: [...DELETABLE_DB_COLLECTIONS] },
+      id: { type: "string", description: "복제할 레코드 — id, 이름, 또는 목록 번호" },
       newId: { type: "string" },
       name: { type: "string" },
     },
-    required: ["collection", "id", "newId"],
+    required: ["collection", "id"],
     additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
-    const collection = parseDatabaseRecordCollection(args.collection);
-    const copy = duplicateFromCollection(draft, collection, args.id as string, args.newId as string, typeof args.name === "string" ? args.name : undefined);
-    return { summary: `${collection} '${copy.name}' 복제 — id ${copy.id}`, data: { collection, record: copy } };
+    const out = duplicateDatabaseRecord(draft, args.collection, args.id, args.newId, args.name);
+    return { summary: out.summary, data: out.data, ...(out.warnings.length ? { warnings: out.warnings } : {}) };
   },
 };
 
 const deleteDatabaseRecordTool: ToolDefinition = {
   name: "delete_database_record",
-  description: "에디터 DB 레코드를 삭제한다(파괴적). 참조가 남아 프로젝트 무결성이 깨지면 커밋 게이트가 거부한다.",
+  description: "자료집 레코드(공용 이벤트 포함)를 지운다. 다른 곳이 가리키면 그 자리를 모두 적어 거절한다 — clearReferences:true 면 목록·선택 칸의 참조를 함께 걷고 하나씩 보고한다(필수 칸·이벤트 명령 안의 참조는 걷지 않는다).",
   mode: "write",
   parameters: {
     type: "object",
-    properties: { collection: { type: "string", enum: DATABASE_RECORD_COLLECTIONS }, id: { type: "string" } },
+    properties: {
+      collection: { type: "string", enum: [...DELETABLE_DB_COLLECTIONS] },
+      id: { type: "string", description: "지울 레코드 — id, 이름, 또는 목록 번호" },
+      clearReferences: { type: "boolean", description: "true 면 이 레코드를 가리키는 목록 항목·선택 칸도 함께 지운다" },
+    },
     required: ["collection", "id"],
     additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
-    const collection = parseDatabaseRecordCollection(args.collection);
-    const removed = deleteFromCollection(draft, collection, args.id as string);
-    return { summary: `${collection} '${removed.name}'(${removed.id}) 삭제`, data: { collection, id: removed.id } };
+    const out = deleteDatabaseRecord(draft, args.collection, args.id, args.clearReferences === true);
+    return { summary: out.summary, data: out.data, ...(out.warnings.length ? { warnings: out.warnings } : {}) };
   },
 };
 
@@ -330,22 +220,27 @@ const upsertDatabaseUtility: ToolDefinition = {
     const collection = args.collection;
     const record = structuredClone(args.record) as Record<string, unknown>;
     const base = requireRecordId(record, "record");
+    // 기존 id 면 보내지 않은 칸은 저장값을 쓴다 — 전에는 이름 하나 바꾸는 호출도 kind·damageMultipliers·vehiclePassage 를 다 보내야 했다(2026-11-16 db-review: 첫 호출 실패).
+    const stored = ((draft.database as unknown as Record<string, unknown>)[String(collection)] as Record<string, unknown>[] | undefined)?.find((entry) => entry.id === base.id);
+    if (stored) for (const [key, value] of Object.entries(stored)) if (record[key] === undefined) record[key] = value;
+    const name = base.name ?? (typeof stored?.name === "string" ? stored.name : base.id);
     if (collection === "elements") {
-      if (record.kind !== "physical" && record.kind !== "magical") throw new ToolError("elements.record.kind는 physical 또는 magical이어야 합니다.", { code: "invalid-args" });
+      record.kind ??= "magical";
+      if (record.kind !== "physical" && record.kind !== "magical") throw new ToolError(`elements record.kind must be "physical" or "magical" (got ${JSON.stringify(record.kind)}).`, { code: "invalid-args" });
       const labels = Array.isArray(record.rateLabels) ? record.rateLabels : ["A", "B", "C", "D", "E"];
-      const multipliers = record.damageMultipliers;
-      if (typeof multipliers !== "object" || multipliers === null || Array.isArray(multipliers)) throw new ToolError("elements.record.damageMultipliers가 필요합니다.", { code: "invalid-args" });
-      const next = { id: base.id, name: base.name ?? base.id, kind: record.kind, rateLabels: labels, damageMultipliers: multipliers } as NonNullable<Project["database"]["elements"]>[number];
+      const multipliers = record.damageMultipliers ?? { A: 200, B: 150, C: 100, D: 50, E: 0 };
+      if (typeof multipliers !== "object" || multipliers === null || Array.isArray(multipliers)) throw new ToolError("elements record.damageMultipliers must be an object {rateLabel: percent}, e.g. {A:200,B:150,C:100,D:50,E:0}.", { code: "invalid-args" });
+      const next = { id: base.id, name, kind: record.kind, rateLabels: labels, damageMultipliers: multipliers } as NonNullable<Project["database"]["elements"]>[number];
       draft.database.elements ??= [];
       const outcome = upsertById(draft.database.elements, next);
       return { summary: `속성 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
     }
     if (collection === "terrains") {
-      const passage = record.vehiclePassage;
-      if (typeof passage !== "object" || passage === null || Array.isArray(passage)) throw new ToolError("terrains.record.vehiclePassage가 필요합니다.", { code: "invalid-args" });
+      const passage = record.vehiclePassage ?? { boat: false, ship: false, airshipLand: true };
+      if (typeof passage !== "object" || passage === null || Array.isArray(passage)) throw new ToolError("terrains record.vehiclePassage must be an object {boat, ship, airshipLand}.", { code: "invalid-args" });
       const next = {
         id: base.id,
-        name: base.name ?? base.id,
+        name,
         damage: typeof record.damage === "number" ? Math.trunc(record.damage) : 0,
         encounterRatePercent: typeof record.encounterRatePercent === "number" ? Math.trunc(record.encounterRatePercent) : 100,
         ...(typeof record.battleBackgroundResourceId === "string" ? { battleBackgroundResourceId: record.battleBackgroundResourceId } : {}),
@@ -368,23 +263,23 @@ const upsertDatabaseUtility: ToolDefinition = {
     }
     if (collection === "battleCommands") {
       const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent"]);
-      if (typeof record.kind !== "string" || !allowed.has(record.kind)) throw new ToolError("battleCommands.record.kind가 올바르지 않습니다.", { code: "invalid-args" });
+      if (typeof record.kind !== "string" || !allowed.has(record.kind)) throw new ToolError(`battleCommands record.kind must be one of ${[...allowed].join(", ")} (got ${JSON.stringify(record.kind)}).`, { code: "invalid-args" });
       const next = {
         id: base.id,
-        name: base.name ?? base.id,
+        name,
         kind: record.kind,
         ...(typeof record.skillSubsetName === "string" ? { skillSubsetName: record.skillSubsetName } : {}),
         ...(typeof record.skillId === "string" ? { skillId: record.skillId } : {}),
         ...(typeof record.commonEventId === "string" ? { commonEventId: record.commonEventId } : {}),
       } as NonNullable<Project["database"]["battleCommands"]>[number];
       if (next.kind === "commonEvent" && !draft.commonEvents.some((entry) => entry.id === next.commonEventId)) {
-        throw new ToolError("battleCommands kind:commonEvent 는 있는 공통 이벤트 id(commonEventId)가 필요합니다.", { code: "invalid-args" });
+        throw new ToolError("battleCommands kind:commonEvent needs commonEventId of an existing common event (create it first with upsert_common_event).", { code: "invalid-args" });
       }
       draft.database.battleCommands ??= [];
       const outcome = upsertById(draft.database.battleCommands, next);
       return { summary: `전투 명령 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
     }
-    throw new ToolError(`지원하지 않는 utility collection입니다: ${String(collection)}`, { code: "invalid-args" });
+    throw new ToolError(`Unknown utility collection ${String(collection)} — use elements, terrains or battleCommands.`, { code: "invalid-args" });
   },
 };
 
@@ -1111,7 +1006,8 @@ const stateRecordSchema = objectSchema({
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
   return {
     type: "object",
-    properties: { [key]: { ...schema, description: `${key} 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.` }, ...extraProperties },
+    // 목록 칸은 보낸 목록이 저장된 목록을 통째로 바꾼다 — 「바꿀 칸만」 이라는 말이 목록 일부만 보내 나머지를 지우게 했다(2026-11-16 db-review B #5).
+    properties: { [key]: { ...schema, description: `${key} record. Existing id: only the sent fields change, the rest stays. A sent list field replaces the whole stored list — to add or remove one entry use listOps.` }, listOps: LIST_OPS_SCHEMA, ...extraProperties },
     required: [key],
     additionalProperties: false,
     description: `허용 예시: ${JSON.stringify({ [key]: example })}`,
@@ -1385,7 +1281,7 @@ const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
-  parameters: parametersForRecord("item", itemRecordSchema, { id: "item_potion", name: "회복약", price: 120, hpRecovery: { flat: 80, percentMax: 0 } }),
+  parameters: parametersForRecord("item", itemRecordSchema, { id: "item_new_tonic", name: "새 회복약", price: 120, hpRecovery: { flat: 80, percentMax: 0 } }),
   run(draft, args): ToolExecResult {
     const itemPatch: Record<string, unknown> | undefined = args.item && typeof args.item === "object" && !Array.isArray(args.item)
       ? args.item as Record<string, unknown>
@@ -1402,7 +1298,7 @@ const upsertItem: ToolDefinition = {
     const nestedPatch = existing?.captureProfile && capturePatch && typeof capturePatch === "object" && !Array.isArray(capturePatch)
       ? { ...itemPatch, captureProfile: { ...existing.captureProfile, ...capturePatch as Record<string, unknown> } }
       : args.item;
-    const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
+    const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_new_tonic", name: "새 회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const warnings: string[] = [];
     validateItemCaptureCondition(draft, (merged as { captureProfile?: { condition?: unknown } }).captureProfile?.condition, record);
@@ -1913,7 +1809,7 @@ const upsertEnemy: ToolDefinition = {
     "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다. " +
     "사람 적·결투 상대는 walkChip:{characterResourceId, characterIndex} 로 걷기 칩 캐릭터가 전투에 서게 한다(몬스터 그림 대신).",
   mode: "write",
-  parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
+  parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_new_blob", name: "새 슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 stats 에 주지 않은 능력치에 시작 파티 기준 위협 하한(기본값)을 채운다(직접 준 값은 그대로). 생략 시 id·이름의 boss/보스로 판정." },
     clearFields: {
       type: "array",
@@ -1932,7 +1828,7 @@ const upsertEnemy: ToolDefinition = {
     validateEnemyReactions(draft, args.enemy);
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     requirePositiveAp((args.enemy as { rewards?: { ap?: unknown } } | undefined)?.rewards?.ap, "enemy.rewards.ap");
-    const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
+    const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_new_blob", name: "새 슬라임" });
     const cleared = clearEnemyFields(merged as Record<string, unknown>, args.enemy, args.clearFields);
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
@@ -2012,7 +1908,8 @@ function withEnemyIdsFromMembers(troop: unknown): unknown {
   if (!troop || typeof troop !== "object" || Array.isArray(troop)) return troop;
   let record = troop as Record<string, unknown>;
   // 빈 members 는 안 준 것이다 — enemyIds 와 같이 온 빈 배열이 «적 0마리»로 읽혀 거절되지 않게.
-  if (Array.isArray(record.members) && record.members.length === 0) { const { members: _empty, ...rest } = record; record = rest; }
+  // members:[] 만 오면(enemyIds 없이) 「적을 다 빼라」 는 말이다 — 걷지 않고 두어 아래 «적 0마리» 거절이 그 뜻을 그대로 알리게 한다.
+  if (Array.isArray(record.members) && record.members.length === 0 && record.enemyIds !== undefined) { const { members: _empty, ...rest } = record; record = rest; }
   if (record.enemyIds !== undefined || !Array.isArray(record.members)) return record;
   const enemyIds = record.members
     .map((member) => (member && typeof member === "object" ? (member as { enemyId?: unknown }).enemyId : undefined))
@@ -2036,7 +1933,7 @@ const upsertTroop: ToolDefinition = {
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
     "죽지 않는 결투·대련은 troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems} 로 규칙을 준다(simulate_battle 도 같은 규칙으로 돈다).",
   mode: "write",
-  parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, {
+  parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_new_pack", name: "새 무리", enemyIds: ["<existing enemy id>"] }, {
     clearFields: {
       type: "array",
       items: { type: "string", enum: [...TROOP_CLEARABLE_FIELDS] },
@@ -2057,7 +1954,7 @@ const upsertTroop: ToolDefinition = {
     const badScenery = unknownSceneryIdMessage((args.troop as Record<string, unknown> | undefined)?.previewBackgroundResourceId);
     if (badScenery) throw new ToolError(badScenery, { code: "unknown-battle-backdrop" });
     const troopArg = withEnemyIdsFromMembers(args.troop);
-    const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
+    const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_new_pack", name: "새 무리", enemyIds: ["<existing enemy id>"] }, ["name", "enemyIds"]);
     const patch = troopArg as Partial<TroopRecord>;
     // An explicit legacy roster replaces the roster. Do not let inherited members
     // silently override it; unrelated patches still preserve authored placements.
@@ -2065,7 +1962,7 @@ const upsertTroop: ToolDefinition = {
     const clearedTroop = clearTroopFields(merged as Record<string, unknown>, args.troop, args.clearFields);
     const record = normalizeTroopRecord(merged as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;
-    if (memberCount === 0) throw new ToolError("트룹에는 최소 1마리의 적(enemyIds/members)이 필요합니다.", { code: "troop-empty" });
+    if (memberCount === 0) throw new ToolError("A troop needs at least one enemy (enemyIds/members) — an empty troop cannot start its battle. To remove the troop itself use delete_database_record{collection:\"troops\", id}.", { code: "troop-empty" });
     const enemyIds = new Set(draft.database.enemies.map((enemy) => enemy.id));
     const missing = [...new Set(record.enemyIds.filter((enemyId) => !enemyIds.has(enemyId)))];
     if (missing.length > 0) {
@@ -2342,13 +2239,13 @@ const upsertActor: ToolDefinition = {
   name: "upsert_actor",
   description: "아군 액터 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
-  parameters: parametersForRecord("actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero", maxLevel: 99 }),
+  parameters: parametersForRecord("actor", actorRecordSchema, { id: "actor_new_ally", name: "새 동료", classId: "<existing class id>", maxLevel: 99 }),
   run(draft, rawArgs): ToolExecResult {
     const repaired = repairRecordArgs("actor", "actor", rawArgs, actorRecordSchema, upsertActor.parameters);
     const args = repaired.args;
     const warnings: string[] = [...repaired.notes];
     expandShortParameterCurves(args.actor, "actor", warnings);
-    const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"],
+    const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_new_ally", name: "새 동료", classId: "<existing class id>" }, ["name", "classId"],
       (key) => key === "classId"
         ? `classId 는 직업 id 입니다 — 지금 있는 직업: ${knownIds(draft.database.classes, 12)}. 새 직업이 필요하면 upsert_class 로 먼저 만드세요(직업이 곧 능력치 곡선·전투 명령).`
         : undefined);
@@ -2442,14 +2339,14 @@ const upsertSkill: ToolDefinition = {
   name: "upsert_skill",
   description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. retro2003 전투에서는 새·복제 스킬에 retroChoreographyId 로 도트 연출을 빌려야 기본 베기로 안 보인다(list_retro_choreographies). 기믹 어휘·직업 설계 규칙은 read_retro_skill_guide.",
   mode: "write",
-  parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
+  parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_new_flare", name: "새 화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
     validateSkillRetroPatch(draft, args.skill);
     const weatherPatch = (args.skill as { weather?: unknown } | undefined)?.weather;
     if (weatherPatch !== undefined) validateSkillWeather(weatherPatch);
-    const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
+    const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_new_flare", name: "새 화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const warnings: string[] = [];
@@ -2518,11 +2415,11 @@ const upsertEquipment: ToolDefinition = {
   name: "upsert_equipment",
   description: "장비(무기/방어구) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
-  parameters: parametersForRecord("equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon", statBonuses: { attack: 8 } }),
+  parameters: parametersForRecord("equipment", equipmentRecordSchema, { id: "equip_new_blade", name: "새 검", slot: "weapon", statBonuses: { attack: 8 } }),
   run(draft, args): ToolExecResult {
     validateAutoRevive(args.equipment);
     validateEquipmentEsperPatch(draft, args.equipment);
-    const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon" });
+    const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_new_blade", name: "새 검", slot: "weapon" });
     const record = normalizeEquipmentRecord(merged as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
     if (!hasEquipmentSlot(draft, record.slot)) {
       const slots = equipmentSlots(draft).map((slot) => slot.id).join("·");
@@ -2609,11 +2506,11 @@ const upsertClass: ToolDefinition = {
   name: "upsert_class",
   description: "직업(클래스) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
-  parameters: parametersForRecord("class", classRecordSchema, { id: "class_mage", name: "마법사", learnedSkills: [{ level: 1, skillId: "skill_fire" }] }),
+  parameters: parametersForRecord("class", classRecordSchema, { id: "class_new_sage", name: "새 직업", learnedSkills: [{ level: 1, skillId: "<existing skill id>" }] }),
   run(draft, args): ToolExecResult {
     const warnings: string[] = [];
     expandShortParameterCurves(args.class, "class", warnings);
-    const merged = mergeRecord(draft.database.classes, args.class, "class", classRecordSchema, { id: "class_mage", name: "마법사" });
+    const merged = mergeRecord(draft.database.classes, args.class, "class", classRecordSchema, { id: "class_new_sage", name: "새 직업" });
     const record = normalizeClassRecord(merged as Partial<ClassRecord> & Pick<ClassRecord, "id" | "name">);
     const classCurvesPatched = Boolean((args.class as { parameterCurves?: unknown } | undefined)?.parameterCurves);
     if (classCurvesPatched) {
@@ -2686,13 +2583,13 @@ const upsertState: ToolDefinition = {
   name: "upsert_state",
   description: "상태이상(State) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 임의 필드는 거부한다.",
   mode: "write",
-  parameters: parametersForRecord("state", stateRecordSchema, { id: "state_poison", name: "독", runtimeEffects: { hpDamagePercentPerTurn: 5 } }),
+  parameters: parametersForRecord("state", stateRecordSchema, { id: "state_new_blight", name: "새 독", runtimeEffects: { hpDamagePercentPerTurn: 5 } }),
   run(draft, args): ToolExecResult {
     const rawAura = (args.state as { battleAura?: unknown } | undefined)?.battleAura;
     if (rawAura !== undefined && rawAura !== "" && !normalizeBattleAura(rawAura)) {
       throw new ToolError(`state.battleAura '${String(rawAura)}' 는 없는 오라입니다. 가능: ${BATTLE_AURA_IDS.join(", ")}, none`);
     }
-    const record = normalizeStateRecord(mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_poison", name: "독" }) as Partial<StateRecord> & Pick<StateRecord, "id" | "name">);
+    const record = normalizeStateRecord(mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_new_blight", name: "새 독" }) as Partial<StateRecord> & Pick<StateRecord, "id" | "name">);
     const warnings: string[] = [];
     for (const skillId of record.runtimeEffects?.grantSkillIds ?? []) {
       if (!draft.database.skills.some((skill) => skill.id === skillId)) {

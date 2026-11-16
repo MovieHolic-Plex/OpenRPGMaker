@@ -1013,7 +1013,8 @@ export const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
   "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
   "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
-  "characterAppearances",
+  "characterAppearances", "terrains", "battleCommands", "equipmentSlots", "fishSpecies", "schedules",
+  "farmBuildingTypes", "homeDecorationTypes",
 ] as const;
 export type DbCollection = (typeof DB_COLLECTIONS)[number];
 
@@ -1036,16 +1037,23 @@ function collectionEntries(project: Project, collection: DbCollection): { id: st
   }));
 }
 
+/** 한 쪽의 글자 예산 — 조수 결과 상한(toolAdapter DEFAULT_MAX_DATA_CHARS 12,000)에서 감싸개·요약 몫을 뺐다. limit 을 안 주면 이 안에 드는 만큼만 싣는다. */
+const RECORD_PAGE_CHARS = 10_500;
+/** 자료집 묶음이 아닌 «읽을 수 있는 칸» — 프로젝트 설정·용어(2026-11-16 db-review A F6: 바꾸기 전에 지금 값을 볼 수 없었다). */
+const SETTING_COLLECTIONS = ["system", "terms"] as const;
+
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/characterAppearances.",
+  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을, positions 로 목록 번호(1부터 — 편집기의 0003 = 3)를 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
-      collection: { type: "string", enum: DB_COLLECTIONS as unknown as string[] },
+      collection: { type: "string", enum: [...DB_COLLECTIONS, ...SETTING_COLLECTIONS] as unknown as string[] },
       include: { type: "string", enum: ["ids", "full"] },
       ids: { type: "array", items: { type: "string" }, description: "조회할 실제 ID 목록. 생략 또는 빈 배열이면 모든 레코드." },
+      query: { type: "string", description: "이름·id 에 이 글이 든 레코드만" },
+      positions: { type: "array", items: { type: "integer", minimum: 1 }, description: "목록 번호(1부터, 편집기 표시 번호)" },
       limit: { type: "integer", minimum: 1, maximum: 500 },
       offset: { type: "integer", minimum: 0 },
     },
@@ -1053,20 +1061,59 @@ const getDatabaseRecords: ToolDefinition = {
     additionalProperties: false,
   },
   run(project, args): ToolExecResult {
-    const collection = args.collection as DbCollection;
+    const collection = args.collection as DbCollection | (typeof SETTING_COLLECTIONS)[number];
+    if (collection === "system") return { summary: "system settings (project.system)", data: { collection, settings: project.system } };
+    if (collection === "terms") return { summary: "terms (project.meta.terms) — change them with set_project_settings{terms:{…}}", data: { collection, terms: project.meta.terms, title: project.meta.title } };
     if (!DB_COLLECTIONS.includes(collection)) {
-      throw new ToolError(`알 수 없는 컬렉션: ${String(args.collection)}`, { code: "invalid-collection" });
+      throw new ToolError(`Unknown collection: ${String(args.collection)}. Use one of: ${[...DB_COLLECTIONS, ...SETTING_COLLECTIONS].join(", ")}.`, { code: "invalid-collection" });
     }
-    const all = args.include === "full" ? collectionRecords(project, collection) : collectionEntries(project, collection);
+    const full = collectionRecords(project, collection);
+    const entries = collectionEntries(project, collection);
+    // 목록 번호는 거르기 전 자리다(편집기와 같다).
+    const numbered = (args.include === "full" ? full : entries).map((record, index) => ({ record, position: index + 1 }));
     const ids = Array.isArray(args.ids) && args.ids.length > 0 ? new Set(args.ids) : null;
-    const matching = ids ? all.filter((record) => ids.has(record.id)) : all;
+    const positions = Array.isArray(args.positions) && args.positions.length > 0 ? new Set(args.positions as number[]) : null;
+    const query = typeof args.query === "string" && args.query.trim() ? args.query.trim().toLowerCase() : null;
+    const matching = numbered.filter(({ record, position }) => (!ids || ids.has(record.id))
+      && (!positions || positions.has(position))
+      && (!query || String(record.id).toLowerCase().includes(query) || String(record.name ?? "").toLowerCase().includes(query)));
     const offset = typeof args.offset === "number" ? args.offset : 0;
-    const limit = typeof args.limit === "number" ? args.limit : matching.length;
-    const records = matching.slice(offset, offset + limit);
+    let records: Record<string, unknown>[];
+    if (typeof args.limit === "number") records = matching.slice(offset, offset + args.limit).map(({ record, position }) => ({ position, ...record }));
+    else {
+      // 한도에 드는 만큼만 — 잘린 결과는 커서(nextOffset)를 잃는다(2026-11-16 db-review A F7 · B #4: 기본 프로젝트 스킬 id 목록만 59k 자).
+      records = [];
+      let used = 0;
+      for (const { record, position } of matching.slice(offset)) {
+        const row = { position, ...record };
+        const size = JSON.stringify(row).length + 1;
+        if (records.length > 0 && used + size > RECORD_PAGE_CHARS) break;
+        records.push(row); used += size;
+      }
+    }
     const nextOffset = offset + records.length < matching.length ? offset + records.length : null;
-    return { summary: `${collection} ${records.length}건 / ${matching.length}건`, data: { collection, records, total: matching.length, nextOffset, ...(matching.length === 0 && all.length > 0 ? { availableIds: all.slice(0, 12).map(record => ({ id: record.id, name: record.name })), totalAvailable: all.length, hint: "일치하는 ID가 없습니다. 위 실제 ID를 사용하거나 ids:[]로 목록을 조회하세요. ID를 추측하지 마세요." } : {}) } };
+    const empty = matching.length === 0 && entries.length > 0;
+    // 커서(total·nextOffset)를 records 앞에 둔다 — 결과가 잘려도 다음 쪽을 읽을 수 있게.
+    return {
+      summary: `${collection} ${records.length} of ${matching.length}${nextOffset !== null ? ` — more: call again with offset:${nextOffset}` : ""}`,
+      data: {
+        collection, total: matching.length, offset, nextOffset,
+        ...(empty ? { availableIds: entries.slice(0, 12).map((record) => ({ id: record.id, name: record.name })), totalAvailable: entries.length, hint: `No record matched. Use an id above, query:"<part of a name>", or omit ids to list. Do not guess ids.${nearestHint(entries, [...(ids ?? []), ...(query ? [query] : [])])}` } : {}),
+        records,
+      },
+    };
   },
 };
+
+/** 못 찾은 id·글에 가까운 레코드(낱말 조각) — 오타 알림. */
+function nearestHint(entries: readonly { id: string; name: string }[], wanted: readonly string[]): string {
+  const hits = new Map<string, string>();
+  for (const w of wanted) for (const part of String(w).toLowerCase().split(/[_\s-]+/u).filter((p) => p.length >= 3)) {
+    for (const e of entries) if (e.id.toLowerCase().includes(part) || e.name.toLowerCase().includes(part)) hits.set(e.id, e.name);
+    if (hits.size >= 6) break;
+  }
+  return hits.size ? ` Near: ${[...hits].slice(0, 6).map(([id, name]) => `${id} «${name}»`).join(", ")}.` : "";
+}
 
 export const QUERY_TOOLS: readonly ToolDefinition[] = [
   getProjectSummary,

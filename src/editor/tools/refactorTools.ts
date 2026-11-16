@@ -1,3 +1,4 @@
+import { DELETABLE_DB_COLLECTIONS, collectionRows, parseDeletableCollection, unusedRecords, type DeletableCollection } from "./dbRecordDelete";
 import { hasBatchim } from "@/util/josa";
 import { enemyCombatConditions } from "@/project/combatReferences";
 // editor/tools/refactorTools.ts
@@ -690,15 +691,17 @@ export function findUnused(project: Project): PruneReport {
 
 const pruneUnused: ToolDefinition = {
   name: "prune_unused",
-  description: "미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행.",
+  description: "미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. collections 를 주면 그 자료집 묶음(skills·states·equipment·classes·actors 등)에서 어디에서도 가리키지 않는 레코드를 찾는다(전체 참조 색인).",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       apply: { type: "boolean", description: "true면 실제 제거(기본 false, 보고만)" },
+      collections: { type: "array", items: { type: "string", enum: [...DELETABLE_DB_COLLECTIONS] }, description: "이 묶음들에서 안 쓰는 레코드를 찾는다(주면 스위치/변수는 보지 않는다)" },
     },
   },
   run(draft, args): ToolExecResult {
+    if (Array.isArray(args.collections) && args.collections.length > 0) return pruneCollections(draft, args.collections.map(parseDeletableCollection), args.apply === true);
     const report = findUnused(draft);
     const total = report.switches.length + report.variables.length + report.items.length + report.troops.length;
     const apply = args.apply === true;
@@ -726,6 +729,23 @@ const pruneUnused: ToolDefinition = {
   },
 };
 
+/** 묶음별 안 쓰는 레코드(전체 참조 색인 — dbRecordDelete.unusedRecords). 지우면 남은 것이 새로 고아가 될 수 있어(적 → 그 적만 쓰던 기술) 결과에 다시 부르라고 적는다. */
+function pruneCollections(draft: Project, collections: readonly DeletableCollection[], apply: boolean): ToolExecResult {
+  const found = unusedRecords(draft, collections);
+  const lines = [...found].map(([c, rows]) => `${c} ${rows.length}`);
+  const total = [...found.values()].reduce((n, rows) => n + rows.length, 0);
+  const sample = [...found].map(([c, rows]) => ({ collection: c, count: rows.length, records: rows.slice(0, 40).map((r) => ({ id: r.id, name: r.name ?? "" })) }));
+  if (apply) for (const [c, rows] of found) {
+    const gone = new Set(rows.map((r) => r.id));
+    const list = collectionRows(draft, c);
+    if (list) list.splice(0, list.length, ...list.filter((r) => !gone.has(r.id)));
+  }
+  return {
+    summary: `${apply ? "Deleted" : "Found"} ${total} unused record(s) — ${lines.join(", ")}${apply ? "" : " (report only — call again with apply:true to delete them)"}. Unused = no other record, map, event, common event or setting points at it.`,
+    data: { unused: sample, applied: apply },
+    ...(apply && total ? { warnings: ["Deleting records can leave others unused (an enemy's own skills) — call prune_unused again with the same collections to see what is left."] } : {}),
+  };
+}
 
 // ── 프로젝트 전체 글 바꾸기(폴른 스타 applyNorthForest 를 일반화) ──────────────────────────
 // 대사·선택지·이벤트/맵 이름·퀘스트·공통 이벤트·아이템/장비/적/스킬 이름과 설명의 글자만 바꾼다. id·리소스 키·타일은 건드리지 않는다.

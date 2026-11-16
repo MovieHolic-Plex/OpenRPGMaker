@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { unaskedChanges, battleDataEmptied } from "@/ai/v2/judge/sideEffectChecks";
+import { unaskedChanges, battleDataEmptied, databaseChangeReport } from "@/ai/v2/judge/sideEffectChecks";
 import { isStageWrite, recordStageWrites, stageWriteKey, type StageWrites } from "@/ai/v2/shared/stageWrites";
 import { fitFirstLevelUp } from "@/ai/v2/story/pathBattleBudget";
 import type { Project } from "@/project/types";
@@ -21,18 +21,20 @@ function pair(): { before: Project; after: Project } {
 }
 
 describe("finish-stage writes are recorded and excluded from the side-effect gate", () => {
-  it("flags an unrecorded change to an existing actor (the old behaviour)", () => {
+  // 2026-11-16 db-review B #9: 자료집 레코드 변경은 완료를 막지 않고 «자료집에서 바뀐 것» 보고에 실린다 — 단계가 쓴 칸은 그 보고에서도 빠진다.
+  it("reports an unrecorded change to an existing actor, and does not block on it", () => {
     const { before, after } = pair();
     after.database.actors[0]!.expCurve = { base: 0, extra: 229, acceleration: 13 };
-    expect(unaskedLines(before, after, TASK).some((line) => line.includes("[게임 검사 부작용]") && line.includes("expCurve"))).toBe(true);
+    expect(unaskedLines(before, after, TASK)).toEqual([]);
+    expect(databaseChangeReport(before, after).some((line) => line.startsWith("actors:") && line.includes("expCurve"))).toBe(true);
   });
 
-  it("does not flag a change that a recorded stage wrote", () => {
+  it("leaves out a change that a recorded stage wrote", () => {
     const { before, after } = pair();
     const writes: StageWrites = new Map();
     recordStageWrites(after, writes, () => { after.database.actors[0]!.expCurve = { base: 0, extra: 229, acceleration: 13 }; });
     expect(writes.has(stageWriteKey("actors", after.database.actors[0]!.id, "expCurve"))).toBe(true);
-    expect(unaskedLines(before, after, TASK, writes)).toEqual([]);
+    expect(databaseChangeReport(before, after, writes)).toEqual([]);
   });
 
   it("flags the key again when the model changes it to another value after the stage", () => {
@@ -42,7 +44,7 @@ describe("finish-stage writes are recorded and excluded from the side-effect gat
     recordStageWrites(after, writes, () => { hero.name = "도윤"; });
     hero.name = "다른 이름";
     expect(isStageWrite(writes, "actors", hero as never, "name")).toBe(false);
-    expect(unaskedLines(before, after, TASK, writes).some((line) => line.includes("name"))).toBe(true);
+    expect(databaseChangeReport(before, after, writes).some((line) => line.includes("name"))).toBe(true);
   });
 
   it("keeps the last value when a stage writes the same key twice", () => {

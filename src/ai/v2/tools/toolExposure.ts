@@ -11,6 +11,7 @@
 // 실행기(scripts/lib/piAgentRuntime.ts)는 env.declareTool 로 실은 도구를 다음 모델 호출부터 선언하고, 이름만 부른 호출은 options.v2.lazyTool 로 이 사본을 찾는다.
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { DB_UPSERT_TOOLS } from "@/editor/tools/dbUpsertEnvelope";
 import { stripDeep } from "@/ai/piAgent/cliContextBudget";
 import type { Project } from "@/project/types";
 import type { PiAssistantV2Env } from "../shared/env";
@@ -111,7 +112,19 @@ export function englishToolCopy(tool: PiToolShape, upFront: boolean): PiToolShap
   // 감싸개가 덧붙인 세션별 꼬리(예: forestBrief 의 설계 지시서)는 영어 설명으로 바꿔도 남긴다.
   const tail = (tool as PiToolShape & { readonly descriptionTail?: string }).descriptionTail ?? "";
   const description = en?.d ? `${en.d}${tail}` : tool.description;
-  return { ...tool, description, parameters: translateParams(tool.parameters, en, !upFront) as PiToolShape["parameters"] };
+  const parameters = translateParams(tool.parameters, en, !upFront && !en?.en) as PiToolShape["parameters"];
+  return { ...tool, description, parameters: openRecordFields(tool.name, parameters) };
+}
+
+/**
+ * 자료집 upsert 의 레코드 칸은 모르는 칸을 받는다(광고 스키마만) — 실행기의 인자 검사(pi validateToolArguments)가 모르는 칸을 말없이 걷어
+ * 「직업 설명」 같은 칸이 사라져도 아무도 몰랐다(2026-11-16 db-review B #7). 받아 두면 실행기(dbUpsertEnvelope)가 빼고 «NOT SAVED» 로 알린다.
+ */
+function openRecordFields(name: string, parameters: PiToolShape["parameters"]): PiToolShape["parameters"] {
+  const arg = DB_UPSERT_TOOLS[name]?.arg;
+  const props = isObj(parameters) && isObj(parameters.properties) ? parameters.properties : undefined;
+  if (!arg || !props || !isObj(props[arg])) return parameters;
+  return { ...parameters, properties: { ...props, [arg]: { ...(props[arg] as Obj), additionalProperties: true } } } as PiToolShape["parameters"];
 }
 
 /** 앞서 본 큰 하위 스키마 → 처음 나온 자리(«도구 경로»). collapseRepeats 가 채운다. */
@@ -259,7 +272,7 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
         ? "Load more tools by name. They are left out of your tool list to keep it short. Loading returns their parameters; run them with call_tool{name, args} (your tool list itself never changes)."
         : "Load more tools by name. They are left out of your tool list to keep it short; after loading, their full schemas are in your tool list from your next call. Calling one of them by name also works (it loads on first use).",
       `For this request: ${offered.map((n) => `${n} — ${gloss(lazy.get(n)!)}`).join("; ") || "(none)"}.`,
-      ...(others.length ? [`Also loadable: ${others.join(", ")}.`] : []),
+      ...(others.length ? [`Also loadable — ${loadableByDomain(others)}.`] : []),
     ].join("\n"),
     parameters: { type: "object", properties: { names: { type: "array", items: { type: "string" }, description: "Tool names to load (from the lists above)." } }, required: ["names"], additionalProperties: false } as PiToolShape["parameters"],
     async execute(_id, params) {
@@ -287,6 +300,20 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
     },
   } as PiToolShape;
   return { tools: [...upFront, loadTools], lazy, offered, callSchema };
+}
+
+/**
+ * «Also loadable» 목록을 도구의 레지스트리 도메인(ToolDefinition.domains — 도구가 스스로 적은 자료)으로 묶는다.
+ * 왜(2026-11-16 db-review): 이름 170여 개가 한 줄로 이어져 «자료집 레코드를 지우는 도구» 를 찾을 실마리가 없었다. 요청 낱말 표가 아니라 도구 자료로 묶는다.
+ */
+const DOMAIN_LABEL: Readonly<Record<string, string>> = { database: "database records", battle: "battle", system: "project settings and systems", event: "events", map: "maps", tile: "tiles", world: "world", quest: "quests", core: "general" };
+function loadableByDomain(names: readonly string[]): string {
+  const groups = new Map<string, string[]>();
+  for (const name of names) {
+    const domain = getTool(name)?.domains?.find((d) => d !== "core") ?? "other";
+    groups.set(domain, [...(groups.get(domain) ?? []), name]);
+  }
+  return [...groups].sort(([a], [b]) => (a === "database" ? -1 : b === "database" ? 1 : 0)).map(([d, list]) => `${DOMAIN_LABEL[d] ?? d}: ${list.join(", ")}`).join("; ");
 }
 
 /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글(실행기가 v2 에서 «tool not found» 대신 쓴다). */

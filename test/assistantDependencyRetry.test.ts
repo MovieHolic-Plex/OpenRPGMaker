@@ -152,12 +152,13 @@ describe("batch prerequisites through AssistantSession", () => {
     expectResponses(session);
   });
 
+  // 2026-11-16 db-review B #11: 레코드 맨 위의 모르는 칸은 이제 빼고 저장한다(알림 붙임) — 이 시험들은 실패를 만들려고 하위 칸 오타(stats.attackPower)를 쓴다.
   it.each([false, true])("failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=%s)", async (references) => {
     const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_dependency", name: "Dependency troop", enemyIds: ["enemy_dependency"] } });
     const { session, events, collect, requests } = setup([
       [readSlime],
-      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01", invalidField: true }, appearanceTags: ["slime"] }), troop, title(1), call("get_project_summary"), enemy, troop],
+      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01", stats: { attackPower: 99 } }, appearanceTags: ["slime"] }), troop, title(1), call("get_project_summary"), enemy, troop],
       [call("get_database_records", { collection: "enemies", ids: ["enemy_dependency"] })],
       [troop],
     ], { references });
@@ -219,7 +220,7 @@ describe("batch prerequisites through AssistantSession", () => {
     const resourceId = existing.monsterResourceId === "generated-enemy-slime-01" ? "generated-enemy-goblin-scout" : "generated-enemy-slime-01";
     rounds.push(
       [call("get_database_records", { collection: "enemies", ids: [existing.id], include: "full" })],
-      [call("upsert_enemy", { enemy: { id: existing.id, ...(outcome === "deferred" ? { monsterResourceId: resourceId, transparent: false } : { invalidField: true }) } }),
+      [call("upsert_enemy", { enemy: { id: existing.id, ...(outcome === "deferred" ? { monsterResourceId: resourceId, transparent: false } : { stats: { attackPower: 99 } }) } }),
         call("upsert_troop", { troop: { id: "troop_existing", name: "Existing enemy", enemyIds: [existing.id] } }), title(2)],
     );
     await session.sendUserMessage("기존 적의 수정 실패는 참조를 없애지 않는다", collect);
@@ -268,7 +269,7 @@ describe("stable target retry budgets through AssistantSession", () => {
   });
 
   it("does not charge downstream same-batch refusals against their independent retry target", async () => {
-    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01", invalidField: true }, appearanceTags: ["slime"] });
+    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01", stats: { attackPower: 99 } }, appearanceTags: ["slime"] });
     const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_budget", name: "Budget troop", enemyIds: ["enemy_budget"] } });
     const { session, events, collect, requests } = setup([
