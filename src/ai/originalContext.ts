@@ -1,4 +1,5 @@
 import { getTool, runTool } from "@/editor/tools";
+import { DB_COLLECTIONS } from "@/editor/tools/queryTools";
 import type { ToolResult } from "@/editor/tools";
 import type { Project } from "@/project/types";
 import { aiVisibleWorld } from "@/project/world/visibility";
@@ -212,8 +213,8 @@ export function extractOriginalContext(project: Project, options: OriginalContex
     add("/quests", project.quests);
     add("/endings", project.endings);
   }
-  const collections = getTool("get_database_records")!.parameters.properties!.collection as { enum: string[] };
-  const supported = new Set(collections.enum);
+  // The tool schema no longer lists collections as an enum (it cost up-front tool chars), so read the list itself.
+  const supported = new Set<string>(DB_COLLECTIONS);
   const requiredCollections = new Set(intent?.readBeforeWrite?.collections ?? []);
   // Index actual record identities, then follow references to a fixed point (including cycles).
   // Any matching string/key is conservatively relevant; no invented ID or reference validity claim.
