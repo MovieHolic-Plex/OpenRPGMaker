@@ -1195,7 +1195,7 @@ const upsertEvent: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       replacePages: { type: "boolean", description: "기존 이벤트의 pages 배열 전체를 교체한다는 표시. 페이지를 추가·삭제·순서 변경할 때만 true. 한 페이지의 칸만 바꿀 때는 patch_event_page." },
-      dropWrites: { type: "boolean", description: "true = really remove left-out switch/item/variable writes the game still reads (by default they are kept and listed)." },
+      dropWrites: { type: "boolean" },
       event: {
         type: "object",
         description: "GameEvent 추가 또는 부분 수정. id는 항상 필요하고 x/y는 새 이벤트일 때만 필요. 기존 이벤트에서 생략한 최상위 필드는 보존된다. 새 이벤트 좌표가 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지하고, 기존 이벤트 부분 수정은 좌표를 건드리지 않는다.",
@@ -5094,7 +5094,7 @@ const patchEventPage: ToolDefinition = {
       pageIndex: { type: "integer", minimum: 0, description: "0부터. pageId 가 있으면 무시한다. 둘 다 없으면 0." },
       pageId: { type: "string" },
       set: { type: "object", description: "바꿀 페이지 필드만. 예: {graphic:{sprite:{type:'bundled',id:'…'},pattern:73,direction:'down'}}", additionalProperties: true },
-      dropWrites: { type: "boolean", description: "true = really remove left-out switch/item/variable writes the game still reads (by default they are kept and listed)." },
+      dropWrites: { type: "boolean" },
     },
     required: ["mapId", "eventId", "set"],
   },

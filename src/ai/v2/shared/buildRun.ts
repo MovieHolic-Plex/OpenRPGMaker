@@ -17,7 +17,9 @@ export function createBuildRun(ctx: ToolContext): RecordingBuildRun {
   return {
     ctx,
     calls,
-    call(tool: string, args: Record<string, unknown>): ToolResult {
+    call(tool: string, argsIn: Record<string, unknown>): ToolResult {
+      // 빌더(코드)가 페이지를 다시 쓰는 것은 일부러 옮기는 것이다(추리 증거를 바닥 칸으로 · 경로 고리 다시 짓기) — 빠진 쓰기 되붙이기(keptWrites)는 모델 호출에만 건다.
+      const args = (tool === "upsert_event" || tool === "patch_event_page") && argsIn.dropWrites === undefined ? { ...argsIn, dropWrites: true } : argsIn;
       const definition = getTool(tool);
       const before = ctx.project;
       const started = Date.now();
@@ -38,7 +40,7 @@ export function createBuildRun(ctx: ToolContext): RecordingBuildRun {
         logs = [...logs, ...toolLogs, ...synthesizeToolConstructionLogs(tool, before, ctx.project, toolLogs, Date.now() - started)];
       }
       const issueText = (result.issues ?? []).filter((i) => i.severity === "error").map((i) => i.message).join(" / ");
-      calls.push({ tool, args, ok: result.ok, summary: `${String(result.summary ?? "").slice(0, 400)}${issueText ? ` — ${issueText.slice(0, 400)}` : ""}` });
+      calls.push({ tool, args: argsIn, ok: result.ok, summary: `${String(result.summary ?? "").slice(0, 400)}${issueText ? ` — ${issueText.slice(0, 400)}` : ""}` });
       return result;
     },
     takeConstructionLogs() {

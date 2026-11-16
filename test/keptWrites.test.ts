@@ -9,7 +9,8 @@ const page = (commands: unknown[], conditions: unknown[] = []) => ({ id: `p${Mat
 function setup(readSwitch = true): { ctx: ToolContext; mapId: string } {
   const project = createBlankProject();
   const map = project.maps[project.startMapId]!;
-  (project.database as unknown as { switches: { id: string; name: string }[] }).switches.push({ id: "sw_path_taken", name: "길" }, { id: "sw_plain", name: "그냥" });
+  const db = project.database as unknown as { switches?: { id: string; name: string }[] };
+  db.switches = [...(db.switches ?? []), { id: "sw_path_taken", name: "길" }, { id: "sw_plain", name: "그냥" }];
   map.events.push({ id: "ev_han", name: "한씨", x: 2, y: 2, trigger: { kind: "action" }, commands: [], pages: [page([{ kind: "text", body: "부탁하네" }, { kind: "setSwitch", switchId: "sw_path_taken", value: true }, { kind: "setSwitch", switchId: "sw_plain", value: true }])] } as never);
   map.events.push({ id: "ev_fisher", name: "어부", x: 6, y: 6, trigger: { kind: "action" }, commands: [], pages: [page([{ kind: "text", body: "안녕" }]), ...(readSwitch ? [page([{ kind: "text", body: "그래 들었네" }], [{ kind: "switch", switchId: "sw_path_taken", value: true }])] : [])] } as never);
   return { ctx: { project }, mapId: map.id };
