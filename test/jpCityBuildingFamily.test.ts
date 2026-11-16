@@ -144,7 +144,10 @@ describe("jp_city building family", () => {
       const roofs: string[] = [];
       for (const p of plan.placed) {
         if (!p.kit?.id.startsWith("jp-bldg-f-")) continue;
-        for (let y = p.y; y < p.foot - 1; y++) for (let x = p.x; x < p.x + p.w; x++) if (isPassable(ctx.project, map, x, y)) roofs.push(`${p.kit.id}@${x},${y}`);
+        const rows = ts.structureKits!.find((k) => k.id === p.kit!.id)!.rows;
+        // 그림이 없는 칸(박공 꼭대기 양옆 · ㄱ자 집의 빈 모서리)은 건물이 아니다
+        const drawn = (dx: number, dy: number) => (rows[dy]?.upperTiles?.[dx] ?? -1) >= 0 || (rows[dy]?.tiles?.[dx] ?? -1) >= 0;
+        for (let y = p.y; y < p.foot - 1; y++) for (let x = p.x; x < p.x + p.w; x++) if (drawn(x - p.x, y - p.y) && isPassable(ctx.project, map, x, y)) roofs.push(`${p.kit.id}@${x},${y}`);
       }
       expect(roofs).toEqual([]);
       const area = new Set(largestWalkArea(ctx.project, map));
