@@ -30,7 +30,7 @@ export function paletteFamilies(S: HandInteriorSpec): Map<string, Map<string, st
   if (!colours.size) return out;
   const shape = (id: string): string | undefined => {
     const o = S.objects[id] as (typeof S.objects)[string] | undefined;
-    if (!o || o.kind === "door" || o.kind === "sidedoor" || o.stairs || o.states?.length) return undefined;
+    if (!o || o.kind === "door" || o.kind === "sidedoor" || o.stairs || o.states) return undefined; // 상태가 있는 기물(열림·닫힘 — states.others 가 다른 id)은 한 벌이 아니다
     // 칸 모양은 자리(dx,dy)·층만 견준다 — 칸 번호는 색마다 다르다.
     const cells = (o.cells ?? []).map((c) => `${c[0]},${c[1]},${c[3]}`).sort().join(";");
     return JSON.stringify([o.category, o.kind, o.w, o.h, o.up ?? 0, o.facing ?? "", !!o.animated, !!o.surface, [...(o.use ?? [])].sort(), cells]);
