@@ -9,7 +9,7 @@
 // 모델에게 가는 글(설명·결과)은 영어다.
 import type { Project } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
-import { getTool } from "./toolRegistry";
+import { DB_TOOLS } from "./dbTools";
 import { DB_UPSERT_TOOLS } from "./dbUpsertEnvelope";
 import { collectionRows, findRow, parseDeletableCollection, DELETABLE_DB_COLLECTIONS } from "./dbRecordDelete";
 import { normalizeDifficulties, DIFFICULTY_LIMIT } from "@/project/difficulty";
@@ -65,7 +65,7 @@ interface Outcome { readonly id: string; readonly ok: boolean; readonly why?: st
 /** 레코드 하나를 그 묶음의 upsert 도구로 고친다(같은 draft 위에서). 실패는 이유를 돌려준다 — 다른 레코드는 계속한다. */
 function applyOne(draft: Project, collection: string, patch: Obj): Outcome {
   const toolName = COLLECTION_TOOL[collection]!;
-  const tool = getTool(toolName)!;
+  const tool = DB_TOOLS.find((candidate) => candidate.name === toolName)!;
   const arg = DB_UPSERT_TOOLS[toolName]!.arg;
   const id = String(patch.id ?? "");
   // 없는 id 에 이름이 없으면 도구는 «새 레코드에 이름이 필요하다» 고 한국어로 거절한다 — 모델에게는 영어로 뜻을 적는다.

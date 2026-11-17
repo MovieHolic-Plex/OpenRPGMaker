@@ -7,7 +7,6 @@ import { enemyCombatConditions } from "@/project/combatReferences";
 
 import type { Command, Condition, GameEvent, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import { allTools } from "./toolRegistry";
 import { collectProjectItemReferenceIds } from "@/project/io/references";
 import { projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
@@ -788,15 +787,9 @@ function replaceKeepingJosa(text: string, find: string, to: string): string {
     return acc + to + rest;
   }, "");
 }
-/**
- * 글 하나에서 find 를 바꾼다. 이미 to 인 자리는 건드리지 않는다 — to 가 find 를 품을 때(「숲」→「속삭이는 숲」) 두 번 불러도
- * 「속삭이는 속삭이는 숲」이 되지 않는다(2026-11-16 리뷰: replace_text_in_project 두 번 적용).
- */
-let schemaEnums: Map<string, Set<string>> | undefined;
 /** Field name → the enum values the registered tool schemas declare for it (skill scope «enemy», item occasion «always», …).
  * A field holding one of those values is a setting, not text — rewriting it breaks the record. Derived from the schemas, not a word list. */
-function enumValuesByField(): Map<string, Set<string>> {
-  if (schemaEnums) return schemaEnums;
+function enumValuesByField(tools: readonly ToolDefinition[]): Map<string, Set<string>> {
   const out = new Map<string, Set<string>>();
   const visit = (schema: unknown, field: string, seen: Set<unknown>): void => {
     if (!schema || typeof schema !== "object" || seen.has(schema)) return;
@@ -808,11 +801,11 @@ function enumValuesByField(): Map<string, Set<string>> {
     if (node.additionalProperties && typeof node.additionalProperties === "object") visit(node.additionalProperties, field, seen);
     for (const child of [...(node.anyOf ?? []), ...(node.oneOf ?? [])]) visit(child, field, seen);
   };
-  for (const tool of allTools()) visit(tool.parameters, "", new Set());
-  schemaEnums = out;
+  for (const tool of tools) visit(tool.parameters, "", new Set());
   return out;
 }
 
+/** Keep existing replacements intact when the replacement itself contains the search text. */
 function replaceOnce(text: string, find: string, to: string): { text: string; hits: number } {
   const guard = to.includes(find) && to !== find;
   const pieces = guard ? text.split(to) : [text];
@@ -821,7 +814,7 @@ function replaceOnce(text: string, find: string, to: string): { text: string; hi
   return { text: guard ? out.join(to) : out[0]!, hits };
 }
 
-const replaceTextInProject: ToolDefinition = {
+const createReplaceTextInProject = (readEnums: () => Map<string, Set<string>>): ToolDefinition => ({
   name: "replace_text_in_project",
   description:
     "프로젝트 전체의 글자를 한 번에 바꾼다 — 대사·선택지·화자 이름·이벤트 이름·맵 이름·퀘스트·공통 이벤트·아이템/장비/적/스킬 이름과 설명. "
@@ -865,7 +858,7 @@ const replaceTextInProject: ToolDefinition = {
       hits.set(where, (hits.get(where) ?? 0) + done.hits);
       return dry ? value : done.text;
     };
-    const enums = enumValuesByField();
+    const enums = readEnums();
     const walk = (node: unknown, where: string, field = ""): unknown => {
       if (typeof node === "string") return enums.get(field)?.has(node) ? node : fix(node, where);
       if (Array.isArray(node)) { for (let i = 0; i < node.length; i += 1) node[i] = walk(node[i], where, field); return node; }
@@ -909,6 +902,11 @@ const replaceTextInProject: ToolDefinition = {
       data: { total, places },
     };
   },
-};
+});
 
-export const REFACTOR_TOOLS: readonly ToolDefinition[] = [renameSwitch, renameVariable, pruneUnused, replaceTextInProject];
+export function createRefactorTools(readTools: () => readonly ToolDefinition[]): readonly ToolDefinition[] {
+  // Read the registry after initialization, when the replacement tool first runs.
+  let schemaEnums: Map<string, Set<string>> | undefined;
+  const replaceTextInProject = createReplaceTextInProject(() => schemaEnums ??= enumValuesByField(readTools()));
+  return [renameSwitch, renameVariable, pruneUnused, replaceTextInProject];
+}
