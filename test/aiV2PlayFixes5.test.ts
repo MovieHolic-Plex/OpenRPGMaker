@@ -213,3 +213,14 @@ describe("없는 todo id 의 거절 글은 열린 항목만 싣는다 — r7a N7
     expect(short.viewOpenEn()).toBe(short.view(40, true));
   });
 });
+
+// R5(r7-jpcity `003.22`): 현대 칩 넷 사이에 라멘집 «단골손님» 만 공유 배우 칩(«별담 · 천문 기록관», 판타지 · 짝 얼굴 없음)으로 섰다.
+describe("현대 맵의 사람 칩은 한 화풍 — r7 R5", () => {
+  it("공유 배우 칩은 현대 맵의 기본 계열이 아니다 — 현대 칩은 그대로", async () => {
+    const { familyFits } = await import("@/ai/v2/place/people");
+    const street = { id: "m", tilesetId: "jp_city" } as unknown as GameMap;
+    expect(familyFits(street, "shared_charset_actor_0e6e611b752feb5ea9f3fe96")).toBe(false);
+    expect(familyFits(street, "tex_oprn_charset_modern3")).toBe(true);
+    expect(familyFits(street, "tex_easyrpg_charset_people1")).toBe(false);
+  });
+});
