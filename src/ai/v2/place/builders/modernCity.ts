@@ -127,7 +127,7 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   const selected = cityInteriorSeed(spec, prev?.baseSeed ?? prev?.seed);
   // 예전 한국 실내는 variant를 기록만 했다. 이름·가구만 고칠 때는 실제로 지은 씨앗을 유지한다.
   const sameSelection = previous?.spec.hints?.seed === spec.hints?.seed && previous?.spec.hints?.variant === spec.hints?.variant;
-  const seed = prev && sameSelection ? prev.seed : selected.seed;
+  const seed = prev && sameSelection ? prev.seed : Math.floor(selected.seed);
   const baseSeed = selected.baseSeed;
   for (const z of spec.zones ?? []) for (const a of z.anchors ?? []) missing.push(`${a}(주인공 물건 지정은 예제 구성에서 못 함 — 견본 가구 한 벌)`);
   if ((spec.floors ?? 1) >= 2) missing.push("위층(한국 도시 실내는 한 층씩 — 위층은 따로 지어 잇는다)");

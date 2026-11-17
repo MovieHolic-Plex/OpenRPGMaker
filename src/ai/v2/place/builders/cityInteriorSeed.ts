@@ -8,6 +8,6 @@ export function cityInteriorSeed(spec: PlaceSpec, previousBase?: number) {
   const key = spec.variety === undefined ? spec.salt ?? 0 : lookHash(`${spec.variety}|${spec.name}|${spec.style ?? ""}`);
   const baseSeed = typeof requested === "number" && Number.isFinite(requested)
     ? requested : previousBase ?? 1 + key % 9973;
-  const offset = typeof variant === "number" && Number.isFinite(variant) ? Math.floor(variant) * 101 : 0;
-  return { baseSeed, seed: Math.max(1, Math.floor(baseSeed + offset)) };
+  const offset = typeof variant === "number" && Number.isFinite(variant) ? variant * 101 : 0;
+  return { baseSeed, seed: Math.max(1, baseSeed + offset) };
 }

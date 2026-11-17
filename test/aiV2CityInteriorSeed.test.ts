@@ -37,4 +37,9 @@ describe("modern interior seeds", () => {
     const changed = build(run(), { ...renamed, hints: { variant: 3 } }, { ...saved, spec: renamed, result: rebuilt });
     expect(changed.state).toMatchObject({ seed: 1800, baseSeed: 1497 });
   });
+
+  it("retains fractional layout selectors accepted by saved Japanese houses", () => {
+    const spec = { ...house, style: "jp-modern", hints: { variant: 0.5 } };
+    expect(cityInteriorSeed(spec, 1497)).toEqual({ baseSeed: 1497, seed: 1547.5 });
+  });
 });
