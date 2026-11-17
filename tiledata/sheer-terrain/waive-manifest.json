@@ -1,0 +1,118 @@
+{
+"items": [
+{
+"png": "tiledata/sheer-terrain/pieces/face-48-a.png",
+"kind": "terrain",
+"label": "sheer_terrain/face-48-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/face-48-b.png",
+"kind": "terrain",
+"label": "sheer_terrain/face-48-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/face-96-a.png",
+"kind": "terrain",
+"label": "sheer_terrain/face-96-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/face-96-b.png",
+"kind": "terrain",
+"label": "sheer_terrain/face-96-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/face-96-c.png",
+"kind": "terrain",
+"label": "sheer_terrain/face-96-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/side.png",
+"kind": "terrain",
+"label": "sheer_terrain/side",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/rim.png",
+"kind": "terrain",
+"label": "sheer_terrain/rim",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/drop.png",
+"kind": "terrain",
+"label": "sheer_terrain/drop",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/ladder.png",
+"kind": "other",
+"label": "sheer_terrain/ladder",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/vine.png",
+"kind": "organic",
+"label": "sheer_terrain/vine",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/stairs-1.png",
+"kind": "terrain",
+"label": "sheer_terrain/stairs-1",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/stairs-2.png",
+"kind": "terrain",
+"label": "sheer_terrain/stairs-2",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/cave-lower.png",
+"kind": "terrain",
+"label": "sheer_terrain/cave-lower",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/cave-upper.png",
+"kind": "terrain",
+"label": "sheer_terrain/cave-upper",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/bridge.png",
+"kind": "terrain",
+"label": "sheer_terrain/bridge",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/falls.png",
+"kind": "terrain",
+"label": "sheer_terrain/falls",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/lobe.png",
+"kind": "terrain",
+"label": "sheer_terrain/lobe",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/lobe-96.png",
+"kind": "terrain",
+"label": "sheer_terrain/lobe-96",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/sheer-terrain/pieces/corner.png",
+"kind": "terrain",
+"label": "sheer_terrain/corner",
+"chipset": "beodeul_city"
+}
+]
+}

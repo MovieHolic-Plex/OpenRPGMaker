@@ -116,6 +116,43 @@ export const OPRN_PANORAMA_SETS: readonly OprnPanoramaSet[] = [
       surface("oprn-pano-clouds-near", "구름 바다 — 떠가는 구름", 320, 256, { cameraFollow: 0.8, scrollX: 0.3 }),
     ],
   },
+  // 아래 셋: 깎아지른 지형 목표 화면의 배경 층을 지평선 파노라마로 다시 자른 것(scripts/content/panoramas/bake_sheer_backdrops.py,
+  // 조각은 tiledata/sheer-terrain/pieces/backdrop — 새로 그린 것 없음).
+  {
+    id: "oprn-cloud-sea",
+    name: "구름바다 지평선",
+    summary: "Side view: sea of clouds under a pale horizon, puffs growing nearer — behind sky islands and floating plateaus (leave void cells).",
+    view: "horizon",
+    tags: ["구름", "구름바다", "하늘섬", "고원", "cloud sea", "sky island", "plateau"],
+    layers: [
+      horizon("oprn-pano-cloud-sea", "구름바다 — 하늘과 먼 구름"),
+      horizon("oprn-pano-cloud-sea-mid", "구름바다 — 중간 구름", { scrollX: 0.08, cameraFollow: 0.15 }),
+      horizon("oprn-pano-cloud-sea-near", "구름바다 — 가까운 구름", { scrollX: 0.2, cameraFollow: 0.35 }),
+    ],
+  },
+  {
+    id: "oprn-far-mountains",
+    name: "먼 산맥",
+    summary: "Side view: blue sky, two snowy mountain ridges, far forest below a haze line — behind summits and high passes.",
+    view: "horizon",
+    tags: ["산", "산맥", "정상", "봉우리", "mountains", "summit", "peak"],
+    layers: [
+      horizon("oprn-pano-far-mountains", "먼 산맥 — 하늘"),
+      horizon("oprn-pano-far-mountains-ridges", "먼 산맥 — 능선", { cameraFollow: 0.12 }),
+      horizon("oprn-pano-far-mountains-forest", "먼 산맥 — 먼 숲", { cameraFollow: 0.25 }),
+    ],
+  },
+  {
+    id: "oprn-far-forest",
+    name: "먼 숲",
+    summary: "Side view: blue sky over a wide far forest below a haze line — behind hilltops and terraces.",
+    view: "horizon",
+    tags: ["숲", "먼 숲", "언덕", "forest", "hill", "terraces"],
+    layers: [
+      horizon("oprn-pano-far-mountains", "먼 산맥 — 하늘"),
+      horizon("oprn-pano-far-forest-trees", "먼 숲 — 숲", { cameraFollow: 0.25 }),
+    ],
+  },
 ];
 
 export const OPRN_PANORAMA_ASSETS: readonly OprnPanoramaLayerAsset[] = OPRN_PANORAMA_SETS.flatMap((set) => set.layers);

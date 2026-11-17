@@ -2,6 +2,7 @@
 import type { PlaceType } from "../shared/types";
 import { DUNGEON_LAYOUT_SCHEMA, VILLAGE_LAYOUT_SCHEMA, bboxPlacesOn } from "../place/builders/placeLayout";
 import { DUNGEON_DESIGN_SCHEMA } from "../place/dungeonParts";
+import { SHEER_KIND_IDS } from "../place/sheerKindLines";
 
 const PLACE_TYPES: PlaceType[] = ["interior", "village", "dungeon", "cave", "street", "house"];
 
@@ -78,7 +79,7 @@ export const HINTS_SCHEMA = {
     variant: { type: "number", description: "another layout of the same spec (0,1,2…)" },
     dressing: { type: "number", description: "amount of dressing 0 normal · 1 more · 2 packed (cozy)" },
     houseCount: { type: "number" },
-    kind: { type: "string", description: "(village, optional) village kind id — the land answer lists them" },
+    kind: { type: "string", description: `(village, optional) village kind id — the land answer lists them; or a sheer cliff terrain (no houses): ${SHEER_KIND_IDS}` },
     buildings: { type: "array", items: { type: "string" }, description: "(village) buildings the request asks for, up to 3 — a kit id or a word of a kit's id or name (cathedral · inn · market-hall); the builder seats them by the gather" },
     roofs: { type: "string" },
     water: { type: "string", description: "(village) water in the land design — river: a river flowing east-west in the south (crossed by plank bridges) · none: no water. Always set it for grassland villages" },

@@ -1,0 +1,279 @@
+{
+ "devices": {
+  "ladder": {
+   "code": 10,
+   "rise": [
+    1,
+    1
+   ],
+   "run": [
+    2,
+    2
+   ],
+   "width": 1,
+   "en": "rope ladder",
+   "ko": "줄사다리"
+  },
+  "vine": {
+   "code": 11,
+   "rise": [
+    1,
+    1
+   ],
+   "run": [
+    2,
+    2
+   ],
+   "width": 1,
+   "en": "climbing vine",
+   "ko": "오르는 덩굴"
+  },
+  "stairs": {
+   "code": 5,
+   "rise": [
+    1,
+    2
+   ],
+   "run": [
+    2,
+    4
+   ],
+   "width": 2,
+   "en": "carved stone stairs",
+   "ko": "깎은 돌계단"
+  },
+  "cave": {
+   "code": 0,
+   "rise": [
+    2,
+    9
+   ],
+   "run": [
+    0,
+    0
+   ],
+   "width": 2,
+   "en": "cave passage (two mouths)",
+   "ko": "굴",
+   "note": "planned: two mouths joined by an in-map transfer (pieces cave-lower/upper baked; not generated yet)"
+  },
+  "bridge": {
+   "code": 9,
+   "rise": [
+    0,
+    0
+   ],
+   "run": [
+    0,
+    0
+   ],
+   "width": 1,
+   "en": "rope bridge",
+   "ko": "구름다리"
+  }
+ },
+ "kinds": [
+  {
+   "id": "sky-plateau",
+   "ko": "하늘 고원",
+   "en": "sky plateau",
+   "hint": "lobed islands above a sea of clouds, joined by rope bridges",
+   "void": true,
+   "levels": [
+    3,
+    4
+   ],
+   "size": {
+    "small": [
+     42,
+     26
+    ],
+    "medium": [
+     48,
+     30
+    ],
+    "large": [
+     56,
+     34
+    ]
+   },
+   "water": "pond",
+   "step1": [
+    "ladder",
+    "vine",
+    "stairs"
+   ],
+   "step2": [
+    "stairs"
+   ],
+   "gap": [
+    "bridge"
+   ],
+   "landmark": [
+    "bd-obj-seal-altar",
+    "bd-pick-mountain-pass-shrine",
+    "bd-obj-rock-outcrop"
+   ],
+   "ledge": "bridge",
+   "chest": "bd-pick-shipwreck-reef-sea-chest",
+   "backdrop": {
+    "preset": "oprn-cloud-sea",
+    "view": "horizon",
+    "prompt": "a sea of soft white clouds seen from high above, bright daylight, pale blue gaps"
+   },
+   "dressing": [
+    "bd-pick-mountain-pass-boulder-m",
+    "bd-pick-deep-forest-path-cairn",
+    "bd-obj-boulder-s"
+   ],
+   "layout": "islands",
+   "forest": 0
+  },
+  {
+   "id": "waterfall-terraces",
+   "ko": "폭포 계단단",
+   "en": "waterfall terraces",
+   "hint": "stacked grass terraces, a stream falling from pool to pool",
+   "void": false,
+   "levels": [
+    3,
+    4
+   ],
+   "size": {
+    "small": [
+     30,
+     26
+    ],
+    "medium": [
+     36,
+     30
+    ],
+    "large": [
+     44,
+     34
+    ]
+   },
+   "water": "stream",
+   "step1": [
+    "stairs",
+    "ladder",
+    "vine"
+   ],
+   "step2": [
+    "stairs"
+   ],
+   "gap": [],
+   "landmark": [
+    "bd-obj-rock-outcrop",
+    "bd-obj-seal-altar",
+    "bd-pick-mountain-pass-shrine"
+   ],
+   "ledge": "ladder",
+   "chest": "bd-pick-shipwreck-reef-sea-chest",
+   "dressing": [
+    "bd-pick-mountain-pass-boulder-m",
+    "bd-obj-berry-bush",
+    "bd-pick-deep-forest-path-heath-b"
+   ],
+   "layout": "terraces",
+   "forest": 1.1
+  },
+  {
+   "id": "summit",
+   "ko": "정상",
+   "en": "summit",
+   "hint": "a stepped peak, a shrine on top, sky and far mountains behind",
+   "void": true,
+   "levels": [
+    4,
+    5
+   ],
+   "size": {
+    "small": [
+     34,
+     28
+    ],
+    "medium": [
+     40,
+     32
+    ],
+    "large": [
+     48,
+     36
+    ]
+   },
+   "water": "none",
+   "step1": [
+    "stairs",
+    "ladder",
+    "vine"
+   ],
+   "step2": [
+    "stairs"
+   ],
+   "gap": [
+    "bridge"
+   ],
+   "landmark": [
+    "bd-pick-mountain-pass-shrine",
+    "bd-org-shrine-stone",
+    "bd-obj-seal-altar"
+   ],
+   "ledge": "bridge",
+   "chest": "bd-pick-shipwreck-reef-sea-chest",
+   "backdrop": {
+    "preset": "oprn-far-mountains",
+    "view": "horizon",
+    "prompt": "clear blue sky with soft clouds over a range of far snowy mountains, seen from a high summit"
+   },
+   "dressing": [
+    "bd-pick-mountain-pass-boulder-l",
+    "bd-pick-coast-cliff-road-fir-m",
+    "bd-pick-deep-forest-path-cairn"
+   ],
+   "layout": "stack",
+   "forest": 0
+  },
+  {
+   "id": "spirit-forest",
+   "ko": "정령 숲 빈터",
+   "en": "spirit forest glade",
+   "hint": "a sunlit clearing ringed by a deep layered forest wall, an elder tree with a glowing hollow, big broadleaf trees, glowing mushrooms and flowers along a dirt path",
+   "void": false,
+   "levels": [
+    1,
+    1
+   ],
+   "size": {
+    "small": [
+     32,
+     24
+    ],
+    "medium": [
+     40,
+     30
+    ],
+    "large": [
+     48,
+     34
+    ]
+   },
+   "water": "none",
+   "step1": [],
+   "step2": [],
+   "gap": [],
+   "landmark": [
+    "bd-sp-tree-elder"
+   ],
+   "ledge": "stairs",
+   "chest": "bd-pick-shipwreck-reef-sea-chest",
+   "dressing": [
+    "bd-sp-mushroom-tall",
+    "bd-sp-mushroom-small",
+    "bd-org-bush-m"
+   ],
+   "layout": "glade",
+   "forest": 0.6
+  }
+ ]
+}
