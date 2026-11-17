@@ -15,6 +15,21 @@ const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 /** 칸 배치 선언에 적는 이 방의 천장(짓기가 고른 것) — 다시 깔 때 같은 천장을 쓴다. */
 const CEILING_TAG = "ceiling:";
 
+/**
+ * 칸 배치 선언을 맵 위치 메모로 — 늘 온전한 JSON. 전에는 8,000자에서 잘라(2026-11-17 r9t: 크기 단으로 키운 대성당 방 12 · 기물 170 이 넘었다)
+ * 선언이 깨져 딸린 맵 계단 · 할 일 검사(«칸 배치 선언이 없다») · 빈 바닥 판정이 모두 선언을 못 읽었다. 넘으면 덜 쓰이는 것부터 덜어 낸다.
+ */
+export function layoutDeclNote(decl: Record<string, unknown>, max = 24_000): string {
+  let d: Record<string, unknown> = decl, text = JSON.stringify(d);
+  const steps: ((x: Record<string, unknown>) => Record<string, unknown>)[] = [
+    (x) => { const { reviewNotes: _r, ...rest } = x; return rest; },
+    (x) => { const sp = x.space as Record<string, unknown> | undefined; if (!sp) return x; const { rooms: _r, ...rest } = sp; return { ...x, space: rest }; },
+    (x) => ({ ...x, regions: ((x.regions ?? []) as Record<string, unknown>[]).map(({ purpose: _p, ...r }) => r) }),
+  ];
+  for (const step of steps) { if (text.length <= max) break; d = step(d); text = JSON.stringify(d); }
+  return text;
+}
+
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[]})를 채워 보내는 모델이 있다. */
 export function hasLayout(spec: PlaceSpec): boolean {
   return layoutGiven(spec.layout);
@@ -127,7 +142,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     connections, entrance: entranceRegion,
   };
   run.call("create_map_location", { mapId: builtId, name: "room graph", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(graphDecl).slice(0, 4000), tags: [ROOM_GRAPH_TAG, "decl"] });
-  run.call("create_map_location", { mapId: builtId, name: "interior layout", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(decl).slice(0, 8000), tags: [LAYOUT_TAG, "decl", `${REVIEWS_TAG}${reviews}`, ...(ceiling ? [`${CEILING_TAG}${ceiling}`] : [])] });
+  run.call("create_map_location", { mapId: builtId, name: "interior layout", x: 0, y: 0, w: map.width, h: map.height, note: layoutDeclNote(decl), tags: [LAYOUT_TAG, "decl", `${REVIEWS_TAG}${reviews}`, ...(ceiling ? [`${CEILING_TAG}${ceiling}`] : [])] });
   for (const q of regions) {
     const lm = lmOf(q.id), st = stairsOf(q.id);
     const box = (o: { x: number; y: number; w: number; h: number }) => `${o.x},${o.y},${o.w},${o.h}`;

@@ -5,7 +5,7 @@ import { adoptGrownLayout } from "../../place/builders/interiorTierLayout";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { interiorCatalogCard, placeSpecKindOf } from "../../prompt/placeSpecs";
 import { INTERIOR_WORDS } from "../../request/place";
-import { hasLayout } from "../../place/builders/interiorLayoutBuild";
+import { hasLayout, layoutDeclNote } from "../../place/builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, patchedWholeLayout, type InteriorLayout, type LayoutPatch } from "../../place/interiorLayout";
 import { layoutReviewRounds, REVIEWS_TAG } from "../../place/layoutReview";
 import { effectiveSpec, findPieces, gameInteriorTable, interiorTilesetFor } from "../../place/interiorCatalog";
@@ -623,7 +623,7 @@ export function placeVerbs(c: VerbContext) {
         try { note0 = JSON.parse(String((decl as { note?: string }).note ?? "{}")) as Record<string, unknown>; } catch { /* 읽지 못한 기록은 바퀴만 센다 */ }
         run.call("delete_map_location", { mapId, locationId: decl.id });
         run.call("create_map_location", { mapId, name: decl.name, x: decl.x, y: decl.y, w: decl.w, h: decl.h,
-          note: JSON.stringify({ ...note0, reviews: round, reviewNotes: notes.split(" || ").filter(Boolean) }).slice(0, 8000),
+          note: layoutDeclNote({ ...note0, reviews: round, reviewNotes: notes.split(" || ").filter(Boolean) }),
           tags: [...(decl.tags ?? []).filter((x) => !x.startsWith(REVIEWS_TAG)), `${REVIEWS_TAG}${round}`] });
         const spent = { ...record, spec: { ...record.spec, hints: { ...(record.spec.hints ?? {}), layoutReviews: round, layoutReviewNotes: notes } } };
         for (const m of record.result.mapIds) session.places.set(m, spent);

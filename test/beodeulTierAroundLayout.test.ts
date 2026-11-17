@@ -103,6 +103,25 @@ describe("r8 대성당 — 모델의 배치가 큰 건물의 본당이 되고 �
   }, SLOW);
 });
 
+describe("r9t 실모델 대성당(같은 요청 다시 짓기) — 계단 방 문이 계단을 빼지 않고, 큰 배치의 선언도 온전한 JSON 이다", () => {
+  it("모델의 배치에 계단이 없어도 붙인 계단 방의 «stairs down» · «spiral stairs» 로 지하 묘 · 종탑 맵을 잇는다", async () => {
+    const t = turn();
+    await t.start(false);
+    // r9t-b 마을의 성당 문(32,24) 대신 이 녹화 마을의 성당 문(8,27) — 배치는 모델이 보낸 그대로
+    const r = await t.make({ ...F.calls["r9t-b.cathedral"], hints: { door: [8, 27] } });
+    expect(r.ok, r.summary).toBe(true);
+    expect(r.mapIds.map((id) => t.ctx.project.maps[id]!.name).sort()).toEqual(["대성당", "대성당 · 종탑", "대성당 · 지하 묘"]);
+    expect(r.summary).not.toContain("Not added");
+    const loc = (t.ctx.project.maps[r.mapIds[0]!]!.locations ?? []).find((l) => (l.tags ?? []).includes("interior-layout") && (l.tags ?? []).includes("decl"))!;
+    expect(loc.note!.length).toBeGreaterThan(8000);   // 전에는 8,000자에서 잘려 JSON 이 깨졌다
+    const decl = JSON.parse(loc.note!) as { regions: unknown[]; objects: { id: string }[] };
+    expect(decl.regions.length).toBeGreaterThanOrEqual(12);
+    expect(decl.objects.some((o) => o.id === "stairs down")).toBe(true);
+    const rooms = r.mapIds.reduce((n, id) => n + roomsOn(t.ctx.project, id), 0);
+    expect(rooms).toBeGreaterThanOrEqual(8);
+  }, SLOW);
+});
+
 describe("r8 여관 — 한 게임 한 실내 칩셋, 다음 턴에도 고칠 수 있다", () => {
   it("hints.door 없이 v5 낱말로 쓴 여관은 그 게임의 표(버들항)로 깔고 바꾼 조각을 한 줄씩 알린다 — 거절하지 않는다", async () => {
     const t = turn();

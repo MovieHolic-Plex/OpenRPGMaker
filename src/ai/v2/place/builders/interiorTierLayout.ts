@@ -131,7 +131,8 @@ export function buildTierAroundLayout(run: BuildRun, spec: PlaceSpec, ask: TierA
   // 문은 모델 쪽 그 줄이 바닥이고 칸막이 · 기물이 막지 않는 줄에(세로 벽 문은 세 줄 — 위 두 줄은 벽면).
   const W0 = L0.map.w, H0 = L0.map.h;
   const occ = new Set<string>();
-  for (const q2 of [...list(L0.objects), ...(L0.landmark ? [L0.landmark as unknown as AnyObj] : [])]) {
+  // 바닥에 서는 벽붙이(고해소 · 책장 — kind wall)도 칸을 차지한다(2026-11-17 r9t: 고해소 앞에 문을 내어 붙인 방이 닿지 않았다). 걸이(hang)는 벽면에만 걸린다.
+  for (const q2 of [...list(L0.objects), ...list(L0.wall_items).filter((w) => S.objects[String(w.id)]?.kind === "wall"), ...(L0.landmark ? [L0.landmark as unknown as AnyObj] : [])]) {
     const d = S.objects[String(q2.id)]; if (!d || d.kind === "flat") continue;
     const rep = q2.repeat as AnyObj | undefined; const n = Math.max(1, Number(rep?.count ?? 1) || 1);
     for (let k = 0; k < n; k++) for (let yy = 0; yy < Math.max(1, d.h); yy++) for (let xx = 0; xx < Math.max(1, d.w); xx++) occ.add(`${Number(q2.x) + xx + k * (Number(rep?.dx ?? 0) || 0)},${Number(q2.y) + yy + k * (Number(rep?.dy ?? 0) || 0)}`);
@@ -143,6 +144,15 @@ export function buildTierAroundLayout(run: BuildRun, spec: PlaceSpec, ask: TierA
   }
   // 모델 안쪽 칸이 바닥인가(벽면 두 줄 · 칸막이가 아니다) — 칸막이 바로 아래 두 줄은 벽면이다.
   const floorAt = (x: number, y: number) => x > 0 && y > 0 && x < W0 - 1 && y < H0 - 1 && !partitionCells.has(`${x},${y}`) && y >= 3 && !partitionCells.has(`${x},${y - 1}`) && !partitionCells.has(`${x},${y - 2}`);
+  // 견본 기물(문 · 깔개 빼고)이 서는 칸 — 붙인 방의 문 바로 안쪽 칸이 거기면 그 줄에 문을 내지 않는다(계단을 막거나 빼지 않게).
+  const itemCells = (t: { id: string }, x0: number, y0: number) => {
+    const out = new Set<string>();
+    for (const it of tpl.get(t.id)?.items ?? []) {
+      const d = it.t === "o" ? S.objects[it.id] : undefined; if (!d || d.kind === "door" || d.kind === "sidedoor" || d.kind === "flat") continue;
+      for (let yy = 0; yy < Math.max(1, d.h); yy++) for (let xx = 0; xx < Math.max(1, d.w); xx++) out.add(`${x0 + it.x + xx},${y0 + it.y + yy}`);
+    }
+    return out;
+  };
   const stack = { E: 1, W: 1 };
   const placedRooms: { room: TierRoom; side: "E" | "W"; x0: number; y0: number; x1: number; y1: number; door: Pt; t: NonNullable<ReturnType<typeof pick>> }[] = [];
   // 다른 맵으로 잇는 계단 방이 먼저(딸린 맵이 그 계단으로 이어진다), 그다음 구성 순서.
@@ -157,8 +167,9 @@ export function buildTierAroundLayout(run: BuildRun, spec: PlaceSpec, ask: TierA
       const sideW = (sd: "E" | "W") => Math.max(0, ...placedRooms.filter((p2) => p2.side === sd).map((p2) => p2.t.w + 1), ...(sd === side ? [t.w + 1] : []));
       if (W0 + sideW("E") + sideW("W") > 60) continue;
       const x = side === "E" ? W0 - 1 : 0, inner = side === "E" ? x - 1 : x + 1, inner2 = side === "E" ? x - 2 : x + 2;
+      const ax0 = side === "E" ? W0 : -t.w, own = itemCells(t, ax0, y0), annexIn = side === "E" ? W0 : -1;
       let door: Pt | undefined;
-      for (let y = y1; y >= y0 + 2 && !door; y--) if (floorAt(inner, y) && !occ.has(`${inner},${y}`) && !occ.has(`${inner2},${y}`) && [1, 2].every((k) => !partitionCells.has(`${inner},${y - k}`))) door = [x, y];
+      for (let y = y1; y >= y0 + 2 && !door; y--) if (floorAt(inner, y) && !occ.has(`${inner},${y}`) && !occ.has(`${inner2},${y}`) && !own.has(`${annexIn},${y}`) && [1, 2].every((k) => !partitionCells.has(`${inner},${y - k}`))) door = [x, y];
       if (!door) continue;
       stack[side] = y1 + 2;
       placedRooms.push({ room: r, side, x0: side === "E" ? W0 : -t.w, y0, x1: side === "E" ? W0 + t.w - 1 : -1, y1, door, t });
@@ -166,14 +177,6 @@ export function buildTierAroundLayout(run: BuildRun, spec: PlaceSpec, ask: TierA
     }
   }
   // 둘째 줄: 첫 줄에 못 선 방은 붙인 방 바깥(동쪽 방의 동쪽 · 서쪽 방의 서쪽)에 붙이고 그 방과 문으로 잇는다 — 방끼리는 벽 한 칸을 사이에 둔다.
-  const itemCells = (t: { id: string }, x0: number, y0: number) => {
-    const out = new Set<string>();
-    for (const it of tpl.get(t.id)?.items ?? []) {
-      const d = it.t === "o" ? S.objects[it.id] : undefined; if (!d || d.kind === "door" || d.kind === "sidedoor" || d.kind === "flat") continue;
-      for (let yy = 0; yy < Math.max(1, d.h); yy++) for (let xx = 0; xx < Math.max(1, d.w); xx++) out.add(`${x0 + it.x + xx},${y0 + it.y + yy}`);
-    }
-    return out;
-  };
   const clear = (x0: number, y0: number, x1: number, y1: number) => y0 >= 1 && y1 <= H0 - 2 && x0 >= -60 && x1 <= 120
     && !(x1 >= -1 && x0 <= W0) && placedRooms.every((q2) => x1 + 2 <= q2.x0 || q2.x1 + 2 <= x0 || y1 + 2 <= q2.y0 || q2.y1 + 2 <= y0);
   const spanW = (extra: { x0: number; x1: number }[]) => { const xs = [...placedRooms, ...extra]; const lo = Math.min(0, ...xs.map((q2) => q2.x0 - 1)), hi = Math.max(W0 - 1, ...xs.map((q2) => q2.x1 + 1)); return hi - lo + 1; };
@@ -208,7 +211,7 @@ export function buildTierAroundLayout(run: BuildRun, spec: PlaceSpec, ask: TierA
     // 견본의 문 · 문 깔개는 뺀다(문은 모델 벽 쪽에 낸다). 창은 방 윗벽이 맵 맨 윗줄(바깥 고리)일 때만 — 쌓인 방 사이 벽은 안벽이다.
     // 새 문 바로 안쪽 칸(드나드는 칸)을 덮는 견본 기물도 뺀다.
     const doorIn: Pt = [p2.side === "E" ? p2.door[0] + 1 : p2.door[0] - 1, p2.door[1]];   // 이 방 쪽 문 앞 칸(첫 줄이면 모델 벽 밖 · 둘째 줄이면 앞 방과의 벽 밖)
-    const blocksDoor = (it: { id: string; x: number; y: number }) => { const d = S.objects[it.id]!; const ax = p2.x0 + it.x, ay = p2.y0 + it.y; return doorIn[0] >= ax && doorIn[0] < ax + Math.max(1, d.w) && doorIn[1] >= ay && doorIn[1] < ay + Math.max(1, d.h); };
+    const blocksDoor = (it: { id: string; x: number; y: number }) => { const d = S.objects[it.id]!; if (d.stairs) return false; const ax = p2.x0 + it.x, ay = p2.y0 + it.y; return doorIn[0] >= ax && doorIn[0] < ax + Math.max(1, d.w) && doorIn[1] >= ay && doorIn[1] < ay + Math.max(1, d.h); };
     const items = full.items.filter((it) => it.t === "o" && S.objects[it.id] && !["door", "sidedoor"].includes(S.objects[it.id]!.kind) && it.id !== "door mat"
       && !(/window|stained glass/u.test(it.id) && p2.y0 > 1) && !blocksDoor(it));
     const ko = en(p2.t.kind ?? p2.room.kind);
