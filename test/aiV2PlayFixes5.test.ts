@@ -10,6 +10,10 @@ import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { anchorsOf, blockersOf, bodyReached, reachFrom } from "@/ai/v2/judge/eventReach";
 import { buildBossEncounter } from "@/ai/v2/story/sceneVerbs";
 import { eventPassageRect } from "@/project/eventFootprintQuery";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
+import { readFileSync } from "node:fs";
 
 type Obj = Record<string, unknown>;
 const page = (conditions: unknown[], commands: unknown[], more: Obj = {}) =>
@@ -111,4 +115,29 @@ describe("상점만 든 청사진 단계도 짓고 상점은 그 사람에게 �
     const s2Built = ctx.project.gameBlueprint!.steps[1]!.built;
     expect(s2Built?.eventId).toBe("ev_fishwife");
   }, 60_000);
+});
+
+// D4(r8 `001.10/18/26/157/168`): 생선 바구니 더하기 · 소금통 빼기 · 계단 빼기 · 침대 더하기가 «The rebuild had more problems … restored» 로 다섯 번 되돌려졌다.
+// 늘어난 것이 꾸밈 비평(major)뿐이면 고친 것을 남기고 알린다 — 걸어 닿지 못함 같은 게임을 깨는 실패가 늘 때만 되돌린다.
+describe("고치기 되돌림은 게임이 깨질 때만 — r8 D4", () => {
+  const PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAEElEQVR4nGNgGAWjYBTAAAADEAABPywr7AAAAABJRU5ErkJggg==";
+  it("비평 major 만 늘어난 꾸밈 고치기는 남기고 그렇다고 알린다", async () => {
+    const THRONE = JSON.parse(/const THRONE_ROOM = (\{.*\});/u.exec(readFileSync("test/aiV2InteriorSpaceAdvisory.test.ts", "utf8"))![1]!);
+    const project = createBlankProject();
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    let majors = 0;
+    const env = { ctx, render: async () => PNG, request: { task: "왕의 알현실을 만들어 줘.", provider: "local-cli:claude", mapIds: [], project } as never, emit: () => {}, record: () => {}, checkpoint: async () => {},
+      sideChat: async () => JSON.stringify({ score: 7, imagesSeen: 1, axes: { composition: 7, view: 7, doors: 7 }, majors: Array.from({ length: majors }, (_, i) => ({ axis: 1, x: 2 + i, y: 2, w: 1, h: 1, what: "빈 바닥", fix: "채운다" })) }) } as unknown as PiAssistantV2Env;
+    const tools = createV2Tools(env, new V2Session());
+    const call = async (name: string, args: unknown) => JSON.parse(((await tools.find((t) => t.name === name)!.execute(`c-${name}`, args)).content as { type: string; text?: string }[]).find((c) => c.type === "text")!.text!) as { ok: boolean; reverted?: boolean; mapIds?: string[]; warnings?: string[] };
+    const made = await call("make_place", THRONE);
+    expect(made.ok).toBe(true);
+    const mapId = made.mapIds![0]!;
+    majors = 2;
+    const edit = await call("edit_place", { mapId, patch: { mapId, layoutPatch: { add_objects: [{ id: "candle", x: 3, y: 8, purpose: "촛불" }] } } });
+    expect(edit.reverted ?? false).toBe(false);
+    expect(edit.ok).toBe(true);
+    expect((edit.warnings ?? []).join(" ")).toContain("Kept this change: the review now lists 2 problem(s) (was 0), but none of the new ones breaks the game");
+    expect(JSON.stringify(ctx.project.maps[mapId])).toContain("candle");
+  }, 120_000);
 });
