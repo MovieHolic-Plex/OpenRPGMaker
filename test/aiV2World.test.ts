@@ -233,14 +233,16 @@ describe("build_places — 한 세계의 장소를 짓고 잇는다", () => {
     expect(total()).toBe(before);
   }, SLOW);
 
-  it("전부 «살펴본다» 인 청사진은 종류를 섞으라고 돌려보낸다", async () => {
+  // 2026-11-16(오너 「벽을 기본값으로」): 종류가 안 섞인 것은 돌려보내지 않고 건 뒤 알린다 — 돌려보내는 것은 지을 수 없는 장소뿐이다.
+  it("전부 «살펴본다» 인 청사진은 걸고, 종류를 섞으라고 알린다", async () => {
     const { ctx, call } = harness(task, key(1));
     const flat = { ...blueprint, steps: steps(["눈마을", "촌장 회관", "겨울 장터", "얼어붙은 호수", "얼음 절벽", "얼음 동굴"]) };
     const res = await call("write_blueprint", flat);
-    expect(res.ok).toBe(false);
+    expect(res.ok).toBe(true);
+    expect(res.summary).toContain("Notice — saved as written, nothing is rejected");
     expect(res.summary).toContain("no battle step");
     expect(res.summary).toContain("no puzzle and no choice step");
-    expect(ctx.project.gameBlueprint).toBeUndefined();
+    expect(ctx.project.gameBlueprint?.steps).toHaveLength(6);
     expect(stepMixProblems({ steps: mixed(["가", "나", "다", "라", "마", "바"]) }, true)).toEqual([]);
     expect(stepMixProblems({ steps: mixed(["가", "나", "다", "라", "마", "바"]).map((st) => (st.kind === "talk" ? { ...st, who: "" } : st)) }, true).join(" ")).toContain("needs who");
   });

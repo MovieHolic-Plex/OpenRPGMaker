@@ -68,6 +68,27 @@ export function fillUnsetStepConditions(project: Project): string[] {
 }
 
 /**
+ * 대화만 하고 아무것도 켜지 않는 단계 이벤트가 그 단계의 「마침」 스위치(sw_bp_<단계>_done)를 켜게 한다 — 그 스위치 조건을 돌려준다.
+ * 앞앞 단계 뒤에만 열리는 이벤트면(조건 있는 페이지가 있으면) 그 열린 페이지들만 켠다 — 「아직」 페이지가 켜면 잠금이 풀린다.
+ */
+export function markStepDone(project: Project, map: GameMap, ev: GameEvent, step: { readonly id: string; readonly gives: string }): { ev: GameEvent; cond: Obj; name: string } {
+  const id = `sw_bp_${String(step.id).replace(/[^A-Za-z0-9_]/gu, "_")}_done`;
+  const switches = ((project as unknown as { switches?: { id: string; name: string }[] }).switches ??= []);
+  const name = /«([^»]+)»/u.exec(step.gives)?.[1] ?? step.gives;
+  if (!switches.some((s) => s.id === id)) switches.push({ id, name: name.slice(0, 40) });
+  const stop = (commands: Obj[]) => { const i = commands.findIndex((c) => /^(transfer|gameOver|returnToTitle|triggerEnding|battleProcessing)$/u.test(String(c.kind ?? ""))); return i < 0 ? commands.length : i; };
+  const anyGated = pagesOf(ev).some((pg) => pageNeeds(pg).length > 0);
+  const pages = pagesOf(ev).map((pg) => {
+    if (!Array.isArray(pg.commands) || !(pg.commands as unknown[]).length || (anyGated ? !pageNeeds(pg).length : false)) return pg;
+    const commands = [...(pg.commands as Obj[])];
+    commands.splice(stop(commands), 0, { kind: "setSwitch", switchId: id, value: true });
+    return { ...pg, commands };
+  });
+  map.events = map.events.map((e) => (e.id === ev.id ? ({ ...e, pages } as unknown as GameEvent) : e));
+  return { ev: map.events.find((e) => e.id === ev.id)!, cond: { kind: "switch", switchId: id, value: true }, name };
+}
+
+/**
  * 앞 단계 없이 열리는 단계를 앞 단계 뒤에만 열리게 한다(결정적, 출하 전 끝맺음).
  * 왜(2026-10-29 vm3 deepseek 추리 재짓기, 같은 맵 지름길 검사 `stepSkipSetters`): 모델이 지은 대화 단계(여관 주인 덕수·노파 말순)를
  * 경로 빌더가 그대로 두었는데, 그 이벤트는 자기 스위치만 켜고 청사진 gives(「사건접수」「증언확보」)를 아무것도 켜지 않았다 —
@@ -93,7 +114,6 @@ export function gateOpenSteps(project: Project): string[] {
     map.events = map.events.map((e) => e.id === ev.id ? ({ ...e, pages } as unknown as GameEvent) : e);
     return map.events.find((e) => e.id === ev.id)!;
   };
-  const stopAt = (commands: Obj[]) => { const i = commands.findIndex((c) => /^(transfer|gameOver|returnToTitle|triggerEnding|battleProcessing)$/u.test(String(c.kind ?? ""))); return i < 0 ? commands.length : i; };
   for (let k = 1; k < resolved.length; k += 1) {
     const cur = resolved[k]!;
     if (!cur.ev || !cur.map || special(cur.ev)) continue;
@@ -118,21 +138,10 @@ export function gateOpenSteps(project: Project): string[] {
     let cond: Obj | undefined = sw ? { kind: "switch", switchId: sw, value: true } : g.items.size ? { kind: "item", itemId: [...g.items][0], present: true } : undefined;
     if (!cond) {
       if (special(prevEv)) continue;
-      const id = `sw_bp_${String(prev.step.id).replace(/[^A-Za-z0-9_]/gu, "_")}_done`;
-      const switches = ((project as unknown as { switches?: { id: string; name: string }[] }).switches ??= []);
-      const givesName = /«([^»]+)»/u.exec(prev.step.gives)?.[1] ?? prev.step.gives;
-      if (!switches.some((s) => s.id === id)) switches.push({ id, name: givesName.slice(0, 40) });
-      // 앞 단계가 이미 앞앞 단계 뒤에만 열리면(조건 있는 페이지가 있으면) 그 열린 페이지들만 켠다 — 「아직」 페이지가 켜면 잠금이 풀린다.
-      const anyGated = pagesOf(prevEv).some((pg) => pageNeeds(pg).length > 0);
-      const prevPages = pagesOf(prevEv).map((pg) => {
-        if (!Array.isArray(pg.commands) || !(pg.commands as unknown[]).length || (anyGated ? !pageNeeds(pg).length : false)) return pg;
-        const commands = [...(pg.commands as Obj[])];
-        commands.splice(stopAt(commands), 0, { kind: "setSwitch", switchId: id, value: true });
-        return { ...pg, commands };
-      });
-      prevEv = writeEvent(prev.map!, prevEv, prevPages);
-      cond = { kind: "switch", switchId: id, value: true };
-      notes.push(`청사진 ${prev.step.id} 「${label(prevEv)}」 대화가 「${givesName}」(${id}) 스위치를 켜게`);
+      const done = markStepDone(project, prev.map!, prevEv, prev.step);
+      prevEv = done.ev;
+      cond = done.cond;
+      notes.push(`청사진 ${prev.step.id} 「${label(prevEv)}」 대화가 「${done.name}」(${String(done.cond.switchId)}) 스위치를 켜게`);
     }
     const key = JSON.stringify(cond);
     const first = curPages[0] ?? {};

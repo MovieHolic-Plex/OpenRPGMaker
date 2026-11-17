@@ -27,6 +27,7 @@ import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding"
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { doorLine, recordDoorForGate } from "./mapDoorTools";
 import { strandedByRemoval, strandedRefusal } from "./strandedSwitches";
+import { droppedNeededWrites, droppedWritesNote, keptWritesNote, restoreKeptWrites } from "./keptWrites";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -1194,6 +1195,7 @@ const upsertEvent: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       replacePages: { type: "boolean", description: "기존 이벤트의 pages 배열 전체를 교체한다는 표시. 페이지를 추가·삭제·순서 변경할 때만 true. 한 페이지의 칸만 바꿀 때는 patch_event_page." },
+      dropWrites: { type: "boolean" },
       event: {
         type: "object",
         description: "GameEvent 추가 또는 부분 수정. id는 항상 필요하고 x/y는 새 이벤트일 때만 필요. 기존 이벤트에서 생략한 최상위 필드는 보존된다. 새 이벤트 좌표가 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지하고, 기존 이벤트 부분 수정은 좌표를 건드리지 않는다.",
@@ -1218,9 +1220,10 @@ const upsertEvent: ToolDefinition = {
     // replacePages 는 인자 표시이지 이벤트 필드가 아니다 — 모델이 event 안에 넣어 보내면(2026-10-07 gemini reward-once)
     // additionalProperties 로 그대로 저장돼 저장본에 남았다. 저장 전에 떼어 낸다.
     const rawPatch = args.event as (Partial<GameEvent> & { replacePages?: unknown }) | undefined;
-    const patch: Partial<GameEvent> | undefined = rawPatch && typeof rawPatch === "object" && "replacePages" in rawPatch
-      ? (({ replacePages: _replacePages, ...rest }) => rest)(rawPatch)
+    const patch: Partial<GameEvent> | undefined = rawPatch && typeof rawPatch === "object" && ("replacePages" in rawPatch || "dropWrites" in rawPatch)
+      ? (({ replacePages: _replacePages, dropWrites: _dropWrites, ...rest }) => rest)(rawPatch as Partial<GameEvent> & { replacePages?: unknown; dropWrites?: unknown })
       : rawPatch;
+    const dropWrites = args.dropWrites === true || (rawPatch as { dropWrites?: unknown } | undefined)?.dropWrites === true;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
     // transfer 는 m2Command 가 아니다 — direction·fade 는 명령 바로 아래에 둔다. `fields` 에 넣으면 조용히 무시돼 변경이 사라진다
@@ -1324,6 +1327,10 @@ const upsertEvent: ToolDefinition = {
       }
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
+    // 페이지·명령을 통째로 다시 쓰며 빠진 상태 쓰기 가운데 다른 어디서도 쓰지 않는데 무엇이 읽는 것은 지킨다(keptWrites.ts).
+    const keptWrites = existing && ("pages" in patch || "commands" in patch) ? droppedNeededWrites(draft, map.id, existing, event) : [];
+    if (keptWrites.length && !dropWrites) { restoreKeptWrites(event, keptWrites); warnings.push(keptWritesNote(keptWrites)); }
+    else if (keptWrites.length) warnings.push(droppedWritesNote(keptWrites));
     applyEventLevelGraphic(draft, map, event, patch, warnings);
     if ((event.placementRole === "npc" || Boolean(event.characterId?.trim()))
       && (event.pages ?? []).some((page) => !page.graphic?.transparent && page.graphic?.sprite !== undefined)
@@ -1365,7 +1372,7 @@ const upsertEvent: ToolDefinition = {
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 런타임 제한 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
-      data: { eventId: event.id, unsupportedCommands, x: event.x, y: event.y, adjusted },
+      data: { eventId: event.id, unsupportedCommands, x: event.x, y: event.y, adjusted, ...(keptWrites.length ? { [dropWrites ? "droppedWrites" : "carriedWrites"]: keptWrites.map((k) => k.key) } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -5087,6 +5094,7 @@ const patchEventPage: ToolDefinition = {
       pageIndex: { type: "integer", minimum: 0, description: "0부터. pageId 가 있으면 무시한다. 둘 다 없으면 0." },
       pageId: { type: "string" },
       set: { type: "object", description: "바꿀 페이지 필드만. 예: {graphic:{sprite:{type:'bundled',id:'…'},pattern:73,direction:'down'}}", additionalProperties: true },
+      dropWrites: { type: "boolean" },
     },
     required: ["mapId", "eventId", "set"],
   },
@@ -5114,18 +5122,24 @@ const patchEventPage: ToolDefinition = {
     if (setKeyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(setKeyFindings.reject), { code: "invalid-args" });
     if (setKeyFindings.warn.length > 0) throw new ToolError(`set 에 알 수 없는 페이지 키가 있다: ${setKeyFindings.warn.join(", ")}. ${pageKeyWarning(setKeyFindings.warn.map((key) => key.replace(/^set\./u, "")))}`, { code: "invalid-args" });
     const nextPages = pages.map((page, i) => i === index ? { ...structuredClone(page), ...structuredClone(fields), id: page.id } : structuredClone(page));
-    const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
+    const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages }, ...(args.dropWrites === true ? { dropWrites: true } : {}) });
+    const carried = ((result.data as { carriedWrites?: string[] } | undefined)?.carriedWrites ?? []);
+    const carriedNote = (result.warnings ?? []).find((w) => w.startsWith("Carried over ") || w.startsWith("Removed as asked"));
     // commands 는 배열 통째 교체라 유지할 명령을 빠뜨리기 쉽다. 사라진 원래 명령을 결과에 적어 모델이 바로 되살리게 한다
     // (실측 2026-10-13: 「화면 흔들림 추가」가 기존 화면 숨기기·대기·표시 명령을 지웠다).
     const dropped: string[] = [];
     if (Array.isArray(fields.commands)) {
       const kept = fields.commands as unknown[];
       for (const old of pages[index]!.commands ?? []) {
+        // 지킨 쓰기(keptWrites)는 빠진 것이 아니다 — 되붙인 자리를 결과 글이 따로 알린다.
+        const write = old as { kind?: string; switchId?: string; itemId?: string; variableId?: string };
+        const writeKey = write.kind === "setSwitch" ? `sw:${write.switchId}` : write.kind === "changeItem" ? `item:${write.itemId}` : write.kind === "setVariable" ? `var:${write.variableId}` : "";
+        if (writeKey && carried.includes(writeKey)) continue;
         if (!kept.some((next) => jsonEqual(stripCommandIds(next), stripCommandIds(old)))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
       }
     }
     const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;
-    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ 원래 명령 ${dropped.length}개 빠짐(${dropped.join(", ")}) — 지우라는 요청이 아니면 되살릴 것` : ""}`,
+    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ 원래 명령 ${dropped.length}개 빠짐(${dropped.join(", ")}) — 지우라는 요청이 아니면 되살릴 것` : ""}${carriedNote ? ` ${carriedNote}` : ""}`,
       data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
   },
 };

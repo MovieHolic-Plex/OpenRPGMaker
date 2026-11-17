@@ -21,6 +21,7 @@ import { BLUEPRINT_PATH_IDS, strayStepCopies, walkBlueprint } from "../story/blu
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
 import { MAX_SAME_KIND, worldOf } from "../place/world";
 import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
+import { depthNeed, mapsNeed, smallGame } from "./blueprintScale";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches } from "@/project/blueprintAssembly";
 import { battleSites, healingSources } from "./combatChecks";
@@ -270,7 +271,8 @@ export function titleSpoilers(project: Project): ShipBlocker[] {
  * 한 장소 게임(방탈출·「방 하나」)은 최소 1장. 3번 되풀이되면 할 일 고리가 막힘으로 닫고 최종 보고에 남긴다(42분 상한).
  */
 export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
-  const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_MAPS;
+  // 작은 게임(청사진 scale)은 청사진이 말한 장소 수만큼만 센다 — 요청에 없는 맵을 채우게 하지 않는다(judge/blueprintScale.ts).
+  const need = oneProjectGame(project, task) ? 1 : mapsNeed(project, MIN_COUNTED_MAPS);
   const { counted, uncounted } = countMaps(project);
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 5).map((m) => `「${m.name}」(${m.id}) ${m.detail}`).join(" · ");
@@ -306,6 +308,8 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
  * 한 장소 요청은 최소 1개(mapsMinBlocker 와 같은 낱말 판정). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 목록은 뒤로.
  */
 export function questsMinBlocker(project: Project, task: string): ShipBlocker[] {
+  // 작은 게임(청사진 scale)에는 곁 퀘스트를 요구하지 않는다 — 요청이 청하지 않은 일이다(judge/blueprintScale.ts).
+  if (smallGame(project)) return [];
   const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_QUESTS;
   const { counted, uncounted } = countQuests(project);
   if (counted.length >= need) return [];
@@ -325,18 +329,30 @@ export function questsMinBlocker(project: Project, task: string): ShipBlocker[] 
 export function actDepthMinBlocker(project: Project, task: string): ShipBlocker[] {
   if (oneProjectGame(project, task)) return [];
   const depth = progressionDepth(project);
-  if (depth >= MIN_ACT_DEPTH) return [];
+  // 작은 게임(청사진 scale)은 제 청사진 단계가 이어진 만큼만 깊으면 된다 — 단계를 늘려 다시 쓰라고 하지 않는다.
+  const needDepth = depthNeed(project, MIN_ACT_DEPTH);
+  if (depth >= needDepth) return [];
   // 처방이 «청사진 단계를 늘려 다시 써라» 인 관문이다 — 청사진이 이미 그만큼 길고(서로 다른 단계 이벤트 MIN+1 개 이상) 그 경로가 엔딩까지 이어져 있으면 올리지 않는다.
   // 깊이는 스위치·변수로 이어진 사슬만 센다: 가운데 단계 하나가 물건으로 넘기면(고르기 단계의 gives 가 아이템) 7단계 경로가 깊이 3 으로 재어진다.
   // 2026-11-12 Terra 측정 r1-fun: 7단계·7장소 경로를 다 지은 뒤 이 관문이 서서 모델이 사람 이름만 바꿔 청사진을 다시 썼고, 이야기 줄이 두 벌이 돼 첫 마을에서 막혔다(눈가림 재미 2).
   const bp = project.gameBlueprint;
-  if (bp && new Set(bp.steps.map((step) => `${step.place}\u0000${step.event}`)).size > MIN_ACT_DEPTH
+  if (bp && new Set(bp.steps.map((step) => `${step.place}\u0000${step.event}`)).size > needDepth
     && !walkBlueprint(project).blockers.some((b) => BLUEPRINT_PATH_IDS.has(b.id) || b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable")) return [];
   return [{
     id: "act-depth-min",
-    message: `이야기가 이어지는 단계(진행 깊이)가 ${depth}/${MIN_ACT_DEPTH} 이다 — 청사진 단계를 늘린다. write_blueprint 로 핵심 경로를 6~8단계로 다시 쓰고(장소를 2곳 이상 나눠 둔다) build_blueprint_path 를 한 번 부른다. 새 단계의 event 는 아직 없는 새 이름으로 — 이미 있는 이벤트 이름을 쓰면 사슬이 늘지 않는다. 전투·상점이 든 단계 이벤트는 다시 지어지지 않으니 patch_event_page 로 앞 단계가 켠 스위치를 조건으로 잇는다.`,
-    evidence: `depth=${depth} need=${MIN_ACT_DEPTH}`,
+    message: needDepth < MIN_ACT_DEPTH
+      ? `이야기가 이어지는 단계(진행 깊이)가 ${depth}/${needDepth} 이다 — 청사진 단계가 서로 이어지지 않았다. build_blueprint_path 를 한 번 불러 단계마다 앞 단계가 켠 스위치를 조건으로 읽게 한다. 전투·상점이 든 단계 이벤트는 다시 지어지지 않으니 patch_event_page 로 앞 단계가 켠 스위치를 조건으로 잇는다.`
+      : `이야기가 이어지는 단계(진행 깊이)가 ${depth}/${MIN_ACT_DEPTH} 이다 — 청사진 단계를 늘린다. write_blueprint 로 핵심 경로를 6~8단계로 다시 쓰고(장소를 2곳 이상 나눠 둔다) build_blueprint_path 를 한 번 부른다. 새 단계의 event 는 아직 없는 새 이름으로 — 이미 있는 이벤트 이름을 쓰면 사슬이 늘지 않는다. 전투·상점이 든 단계 이벤트는 다시 지어지지 않으니 patch_event_page 로 앞 단계가 켠 스위치를 조건으로 잇는다.`,
+    evidence: `${needDepth < MIN_ACT_DEPTH ? "small " : ""}depth=${depth} need=${needDepth}`,
   }];
+}
+
+/**
+ * 크기 알림 — 세는 맵·세는 퀘스트·진행 깊이가 요청 크기에 못 미친다. 출하 차단이 아니다(2026-11-16 오너: 벽을 기본값으로 — 게임이 깨지는 것이 아니면
+ * 거절하지 않고 알린다). 할 일 항목이 되지 않고, 모델에게 한 번 알린다(judge/sizeNotice.ts). 게임을 만드는 요청에만.
+ */
+export function sizeNotices(project: Project, task: string): ShipBlocker[] {
+  return buildsWholeGame(project, task) ? [...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...actDepthMinBlocker(project, task)] : [];
 }
 
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
@@ -401,5 +417,5 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...actDepthMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }

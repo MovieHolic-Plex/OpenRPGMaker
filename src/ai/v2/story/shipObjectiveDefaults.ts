@@ -84,14 +84,48 @@ function dropVanishedTargetObjectives(project: Project): string[] {
  * 곁 퀘스트는 본편 「현재 목표」 줄을 바꾸지 않는다: 도착 칸을 밟자 본편 목표가 「「사미라」를 찾아가자」 로 바뀌어 화살표가 온 길을 가리켰다.
  * 모델이 set_objective 로 직접 건 글(「찾아가자」 꼴이 아닌 것)은 그대로 둔다.
  */
-function dropSideQuestObjectives(project: Project): string[] {
+function dropSideQuestObjectives(project: Project, ours: (message: string) => boolean = (message) => /^(?:[^「」()]+에서 )?「[^」]+」[을를] 찾아가자/u.test(message)): string[] {
   const out: string[] = [];
   for (const hit of sideQuestObjectives(project)) {
-    if (!/^(?:[^「」()]+에서 )?「[^」]+」[을를] 찾아가자/u.test(hit.message)) continue;
+    if (!ours(hit.message)) continue;
     const at = hit.list.indexOf(hit.command);
     if (at < 0) continue;
     hit.list.splice(at, 1);
     out.push(`곁 퀘스트 페이지(${hit.eventId})의 목표 「${hit.message.slice(0, 30)}」 뗌 — 본편 목표 줄을 덮어쓰지 않게`);
+  }
+  return out;
+}
+
+/**
+ * 본편 이정표와 곁 의뢰 수락을 한 페이지에 둔 사람(의뢰를 거는 단계 인물)에서, 방금 건 목표가 곁 의뢰 스위치만 켜는 갈래(«수락한다»)에도 들어갔으면 그 갈래 것만 뗀다.
+ * 본편 이정표 바로 뒤의 목표는 남긴다 — 그 페이지가 처음 말 걸 때 도는 본편 단계라서다. 갈래 안의 같은 글은 곁 의뢰를 받을 때 본편 목표 줄을 다시 쓰는 것뿐이다.
+ * 왜(2026-11-16 pf4 은행 r5a-river): 한씨의 의뢰 페이지 «수락한다» 갈래 안 sw_q_mill_water_started 뒤에 «물레강 마을에서 어부 도윤에게 말을 걸자» 가 한 번 더 걸렸다.
+ */
+function dropSideOnlyBranchObjectives(project: Project, ours: (message: string) => boolean): string[] {
+  const keys = ((project as unknown as { quests?: { key?: string }[] }).quests ?? []).map((q) => q.key).filter((k): k is string => !!k);
+  if (!keys.length) return [];
+  const sideSwitch = (c: Obj | undefined) => c?.kind === "setSwitch" && keys.some((k) => String(c.switchId ?? "").startsWith(`sw_${k}_`));
+  const mainWrite = (c: Obj) => (c.kind === "setSwitch" && c.value === true && !sideSwitch(c)) || (c.kind === "changeItem" && c.op !== "-=");
+  const out: string[] = [];
+  const walk = (list: Obj[], top: boolean, eventId: string): void => {
+    for (const c of list) {
+      for (const key of ["then", "else", "branch", "commands"]) if (Array.isArray(c[key])) walk(c[key] as Obj[], false, eventId);
+      if (Array.isArray(c.options)) for (const o of c.options as Obj[]) if (Array.isArray(o.branch)) walk(o.branch as Obj[], false, eventId);
+    }
+    if (top || list.some(mainWrite)) return;
+    for (let i = list.length - 1; i > 0; i -= 1) {
+      const c = list[i]!;
+      if (c.kind !== "m2Command" || (c.fields as Obj | undefined)?.surface !== OBJECTIVE_SURFACE || !sideSwitch(list[i - 1])) continue;
+      const message = String((c.fields as Obj).message ?? "");
+      if (!ours(message)) continue;
+      list.splice(i, 1);
+      out.push(`곁 의뢰 갈래(${eventId})의 목표 「${message.slice(0, 30)}」 뗌 — 본편 이정표 뒤의 같은 목표만 남긴다`);
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) for (const page of event.pages ?? []) {
+    const top = (page.commands ?? []) as unknown as Obj[];
+    if (!top.some(mainWrite)) continue;
+    walk(top, true, event.id);
   }
   return out;
 }
@@ -107,6 +141,7 @@ export function fillStaleObjectives(project: Project): string[] {
   const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;
   out.push(...dropVanishedTargetObjectives(project));
   out.push(...dropSideQuestObjectives(project));
+  const written: string[] = [];
   const stepEventName = (ref: string) => Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === ref || e.name === ref).map((e) => String(e.name ?? e.id))).at(0);
   for (const { event, readers } of staleMilestoneTargets(project)) {
     const k = steps.findIndex((step) => step.event === event.eventId || step.event === event.name);
@@ -136,6 +171,15 @@ export function fillStaleObjectives(project: Project): string[] {
       map.events = map.events.map((e) => e.id === next.id ? next as unknown as typeof e : e);
     }
     out.push(`다음 목표: ${event.name} 뒤 → 「${target}」`);
+    written.push(text);
+  }
+  // planObjective 는 그 이벤트의 이정표마다(곁 퀘스트의 수락·완료 페이지까지) 목표를 건다 — 방금 건 글은 곁 퀘스트만 쓰는 페이지에서 바로 뗀다.
+  // 예전 글 꼴(「X」를 찾아가자)은 다음 바퀴의 dropSideQuestObjectives 가 뗐지만, 단계 목표 줄(stepGoalAt — «물레강 마을에서 어부 도윤에게 말을 걸자»)은 그 꼴이 아니라 남았다
+  // (2026-11-16 합친 가지 은행 r5a-river: 한씨의 의뢰 완료·어부 의뢰 페이지가 본편 목표를 바꿨다).
+  if (written.length) {
+    const ours = (message: string) => written.some((t) => message === t || message.startsWith(`${t} (`));
+    out.push(...dropSideQuestObjectives(project, ours));
+    out.push(...dropSideOnlyBranchObjectives(project, ours));
   }
   out.push(...advanceStepObjectives(project));
   return out;

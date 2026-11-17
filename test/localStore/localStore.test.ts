@@ -32,6 +32,29 @@ function renamedMap(project: Project, mapId: string, name: string): Project {
 }
 
 describe("local project store", () => {
+  it("새 저장소는 판마다 새 id 다 · projectId 를 주면 그 id 로 만든다(시험 묶음의 재생용 고정) · 이미 있는 저장소의 id 는 바꾸지 않는다", async () => {
+    const pin = "0d1e2f30-4a5b-4c6d-8e7f-90a1b2c3d4e5";
+    const other = await mkdtemp(join(tmpdir(), "oprn-local-store-"));
+    try {
+      const a = await initLocalProjectStore({ projectDir });
+      const b = await initLocalProjectStore({ projectDir: other });
+      expect(a.projectId).not.toBe(b.projectId);
+      a.close(); b.close();
+      const again = await initLocalProjectStore({ projectDir, projectId: pin });
+      expect(again.projectId).toBe(a.projectId);
+      again.close();
+    } finally { await rm(other, { force: true, recursive: true }); }
+    const pinnedDir = await mkdtemp(join(tmpdir(), "oprn-local-store-"));
+    try {
+      const pinned = await initLocalProjectStore({ projectDir: pinnedDir, projectId: pin });
+      expect(pinned.projectId).toBe(pin);
+      pinned.close();
+      const reopened = await openLocalProjectStore({ projectDir: pinnedDir });
+      expect(reopened.projectId).toBe(pin);
+      reopened.close();
+    } finally { await rm(pinnedDir, { force: true, recursive: true }); }
+  });
+
   it("init 이 project.sqlite·assets/·meta 행을 만들고 WAL·synchronous·foreign_keys 를 켠다", async () => {
     const store = await initLocalProjectStore({ projectDir });
 

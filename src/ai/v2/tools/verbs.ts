@@ -32,6 +32,7 @@ import { artVerbs } from "./verbs/art";
 import { objectVerbs } from "./verbs/objects";
 import { makeGameVerbs } from "./verbs/makeGame";
 import { readVerbs } from "./verbs/read";
+import { settleFoughtCopy } from "../story/foughtCopy";
 
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const c = makeVerbContext(env, session);
@@ -77,7 +78,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     await env.checkpoint("retire_seed_start");
     return { ...result, content: [...result.content, { type: "text", text: `[Start map] ${settled.notes.join("; ")}.` }] };
   };
-  const afterWrite = (tool: PiToolShape): PiToolShape => ({ ...tool, async execute(id, params, signal) { return settleSeedStart(await tool.execute(id, params, signal)); } });
+  // 모델이 고친 적·무리가 실제 싸움에 쓰이게(story/foughtCopy.ts) — 길 맞춤 사본이 있는 원본을 고치면 사본을 걷고, 모의전에는 어느 무리가 싸우는지 알린다.
+  const settleFought = async (name: string, params: unknown, result: PiToolExecResult): Promise<PiToolExecResult> => {
+    if (!FOUGHT_COPY_TOOLS.has(name) || /^\{"ok":false/u.test(String((result.content[0] as { text?: string } | undefined)?.text ?? ""))) return result;
+    let settled: ReturnType<typeof settleFoughtCopy>;
+    try { settled = settleFoughtCopy(env.ctx.project, name, params); } catch { return result; }
+    if (!settled) return result;
+    if (settled.project !== env.ctx.project) { env.ctx.project = settled.project; await env.checkpoint("fought_copy"); }
+    return { ...result, content: [...result.content, { type: "text", text: settled.note }] };
+  };
+  const afterWrite = (tool: PiToolShape): PiToolShape => ({ ...tool, async execute(id, params, signal) { return settleSeedStart(await settleFought(tool.name, params, await tool.execute(id, params, signal))); } });
   const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) || readRequest(String(task ?? "")).art ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
@@ -105,6 +115,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   session.repairTool = (name) => (poolTools ??= new Map(createGameTools(gameEnv, t, { pool: true }).map((tool) => [tool.name, afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record)))] as const))).get(name);
   return gameTools || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record))))] : verbs;
 }
+
+const FOUGHT_COPY_TOOLS: ReadonlySet<string> = new Set(["upsert_enemy", "tune_enemy", "upsert_troop", "simulate_battle"]);
 
 /** 음악만 바라는 요청에 남기는 v2 동사 — 맵 보기·사용자에게 묻기. 곡 걸기는 음악 묶음(set_game_audio)이 한다. */
 const MUSIC_ONLY_VERBS: ReadonlySet<string> = new Set(["inspect", "ask_user"]);

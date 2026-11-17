@@ -7,6 +7,8 @@ import { hasCurrentMonsterArt, installCurrentMonsterArt, isCurrentMonsterArt } f
 import { fieldGraphicForBattler } from "@/editor/tools/fieldEnemyGraphics";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Project } from "@/project/types";
+import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
+import { RETRO_MONSTER_PLAN } from "@/assets/retroMonsterPlan";
 
 type Obj = Record<string, unknown>;
 
@@ -72,6 +74,18 @@ export function currentFoe(project: Project, enemyId: string | undefined): Curre
   if (!hasCurrentArt(project, standIn)) return undefined;
   useCurrentArt(project, standIn);
   return { enemyId: standIn, wanted: wantedArtName(project, enemyId) };
+}
+
+/**
+ * 모델이 글로 짚은 적 — 그 적의 그림이 어느 묶음에든 있으면(현행 세트가 아닌 옛 묶음이어도) 그 적 그대로, 없으면 currentFoe(가장 가까운 현행 종 + 바란 그림).
+ * 한 화풍(현행 세트)은 구성기가 스스로 고를 때의 기본값이다 — 모델이 고른 것이 실제로 있으면 쓴다(오너 2026-11-16 «에셋을 자유롭게»).
+ * 옛 묶음 그림으로 선 적은 끝맺음 step-foes 가 «old-set picture» 없는 그림 줄로 알린다.
+ * 왜(2026-11-16 확인 빌드 r6a P6 · r7a): «거대한 해골 종지기» 가 던전의 푸른 용으로 서고 싸웠다 — 해골 그림은 옛 묶음에 있었다.
+ */
+export function namedFoe(project: Project, enemyId: string | undefined): CurrentFoe | undefined {
+  const art = artOf(project, enemyId);
+  if (enemyId && art && !isCurrentMonsterArt(art) && isGeneratedMonsterSprite(art)) return { enemyId };
+  return currentFoe(project, enemyId);
 }
 
 /** 그 적의 현행 그림을 프로젝트에 넣는다(그림 데이터를 읽어 둔 뒤에만 — 아니면 끝맺음 단계가 넣는다). */
@@ -145,4 +159,23 @@ export function settleCurrentArtIn(project: Project): { readonly notes: string[]
   }
   if (restood) notes.push(`맵 위 적 ${restood}곳을 옛 걷기 칩에서 전투 그림으로`);
   return { notes, missing: [...missing.values()] };
+}
+
+/**
+ * 글(모델이 적은 이름·생김새)이 이름과 그림 설계 글로 짚은 적 — 그 적의 그림이 어느 묶음에든 있으면(현행 세트가 아니어도) 그 적. 겹치는 낱말이 둘 이상이고
+ * 그런 적이 하나로 갈릴 때만(«해골» 한 낱말은 해골·해골 궁수·해골 기사를 가르지 못한다). 낱말 표가 아니라 적 이름과 그림 설계 글(retroMonsterPlan)을 읽는다.
+ * 왜(2026-11-16 확인 빌드 r6a P6 · 오너 «에셋을 자유롭게»): «녹슨 갑옷과 방패를 든 해골 병사» 의 그림(해골 기사 — 설계 글 «녹슨 갑옷·방패·장검의 해골»)이
+ * 옛 세트에 있는데 현행 세트에 없다고 «창백한 유령» 이 대신 섰다. 한 화풍은 구성기가 스스로 고를 때의 기본값이다 — 모델이 짚은 그림은 그대로 쓴다.
+ */
+export function namedFoeArt(project: Project, text: string): string | undefined {
+  const said = text.normalize("NFC");
+  const design = new Map(RETRO_MONSTER_PLAN.map((plan) => [`generated-enemy-${plan.slug}`, plan.design]));
+  const scored = project.database.enemies.flatMap((enemy) => {
+    const art = (enemy as { monsterResourceId?: string }).monsterResourceId;
+    if (!art || /^enemy_(?:v2|path|fit)_/u.test(enemy.id) || !(isCurrentMonsterArt(art) || isGeneratedMonsterSprite(art))) return [];
+    const words = new Set(`${enemy.name ?? ""} ${design.get(art) ?? ""}`.split(/[\s·,()]+/u).filter((w) => w.length >= 2 && said.includes(w)));
+    return words.size >= 2 ? [{ id: enemy.id, art, hits: words.size }] : [];
+  }).sort((a, b) => b.hits - a.hits);
+  const [best, next] = scored;
+  return best && (!next || next.hits < best.hits || next.art === best.art) ? best.id : undefined;
 }
