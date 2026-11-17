@@ -15,6 +15,7 @@
 import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { isRereadMarker } from "../story/rereadPage";
+import { REST_LINE } from "../story/restLine";
 import { SCENE_WORDS, TALK_WORDS } from "../request/asks";
 import { tagged, type Finding } from "./finding";
 
@@ -186,7 +187,8 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
   for (const p of pages) for (const line of p.lines) {
     // 함수가 일부러 같은 글로 지은 것은 반복으로 세지 않는다 — 모델에게 «고쳐라» 로 돌려보내면 함수가 다시 같은 글로 짓는다:
     // 다시 읽기 쪽(rereadPage.ts), 길목·잠긴 문·막힌 길 표지(같은 관문의 여러 칸), 남은 단서 목록 줄(«· 아직 …»), 길 안내 줄(«「X」은 … 에 있다.»).
-    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim())) continue;
+    // 보스 앞 회복 줄(story/restLine)도 함수가 보스마다 같은 글로 짓는다.
+    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim()) || line.body.trim() === REST_LINE) continue;
     const k = norm(line.body);
     if (k.length < 8 || oldLines.has(k)) continue;
     const first = seen.get(k);

@@ -432,6 +432,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   apply_beodeul_door_animation: build("버들항 문 움직임 넣기", "door"),
   dress_beodeul_ground: build("버들항 땅 꾸미기", "tree"),
   lay_beodeul_grass: build("버들항 풀 결 깔기", "tree"),
+  build_sheer_terrain: build("깎아지른 지형 짓기", "map"),
   harmonize_beodeul_daylight: build("버들항 그림자 맞추기", "brush"),
   naturalize_beodeul_hamlet: build("버들항 마을 길 보정", "road"),
   compose_beodeul_courtyard_village: build("버들항 우물 마당 마을", "house"),

@@ -1,0 +1,214 @@
+{
+ "style": "tp",
+ "ramps": {
+  "rock": [
+   "#1b1524",
+   "#2e202e",
+   "#3d3028",
+   "#58493c",
+   "#6e5b49",
+   "#816a56",
+   "#8a745c",
+   "#9e8b64",
+   "#b8a07a",
+   "#d2c09a"
+  ],
+  "stone": [
+   "#111719",
+   "#1c2626",
+   "#2b3934",
+   "#3e403d",
+   "#595b58",
+   "#797a84",
+   "#929491",
+   "#c4c6c3",
+   "#dee0dd"
+  ],
+  "earth": [
+   "#2a1d1b",
+   "#3b2d23",
+   "#57402d",
+   "#6f553e",
+   "#86694d",
+   "#9d815b",
+   "#b8986c",
+   "#ccb68e"
+  ],
+  "grass": [
+   "#133120",
+   "#264d2c",
+   "#2e5022",
+   "#366324",
+   "#4b8232",
+   "#618c3b",
+   "#6e9943",
+   "#8bb14e",
+   "#afda5e"
+  ],
+  "dark": [
+   "#0e0a12",
+   "#14101c",
+   "#1b1724",
+   "#2e202e",
+   "#372734",
+   "#443445"
+  ],
+  "timber": [
+   "#1e150a",
+   "#312210",
+   "#452a17",
+   "#5e3a1c",
+   "#744c2a",
+   "#885a26",
+   "#a26e36",
+   "#c69250",
+   "#eca660",
+   "#ffe4ae"
+  ],
+  "hide": [
+   "#2c2017",
+   "#4a3626",
+   "#6b4f38",
+   "#8b6d4d",
+   "#b38f64",
+   "#ccb68e"
+  ],
+  "glow": [
+   "#143c36",
+   "#21584e",
+   "#176d78",
+   "#2e9c9a",
+   "#3cc8b4",
+   "#84c3bc",
+   "#c8ece0",
+   "#f7fdff"
+  ],
+  "petal": [
+   "#4a2a5c",
+   "#7a4a96",
+   "#b07ac8",
+   "#e0a8dc",
+   "#f8d8ee"
+  ],
+  "gold": [
+   "#583a1a",
+   "#885a26",
+   "#c69250",
+   "#fbc10d",
+   "#fff0c0"
+  ],
+  "snow": [
+   "#6e82ac",
+   "#96aacc",
+   "#a6bcdc",
+   "#c0cee6",
+   "#cadaee",
+   "#e0e8f6",
+   "#f6faff"
+  ],
+  "moon": [
+   "#141a3a",
+   "#1d2d61",
+   "#2a4580",
+   "#4a6cb0",
+   "#6e9fdb",
+   "#a9cbf0",
+   "#e3f0ff"
+  ],
+  "water": [
+   "#08212e",
+   "#0e2b39",
+   "#0f2f3d",
+   "#1c4a55",
+   "#1d4e5f",
+   "#3a6263",
+   "#658b8f",
+   "#a9d1d7"
+  ],
+  "birch": [
+   "#3a3040",
+   "#5e5b62",
+   "#898a96",
+   "#b8babd",
+   "#dcddd7",
+   "#f4f2ea"
+  ],
+  "leaf": [
+   "#03080b",
+   "#060f10",
+   "#091f19",
+   "#0c2c1d",
+   "#063328",
+   "#123423",
+   "#113b27",
+   "#1e3420",
+   "#104c2f",
+   "#0a5134",
+   "#204b2c",
+   "#254d2c",
+   "#2a5036",
+   "#296535",
+   "#226b39",
+   "#306430",
+   "#3b6330",
+   "#406c3e",
+   "#418640",
+   "#497f3c",
+   "#587937",
+   "#4c8250",
+   "#648647",
+   "#618c3b",
+   "#6e9943",
+   "#7aa34b",
+   "#80a864",
+   "#8cbf5f",
+   "#99c465"
+  ],
+  "aura": [
+   "#0a3a3c",
+   "#12564e",
+   "#1c7462",
+   "#37967a",
+   "#63b894",
+   "#9cdcb6",
+   "#d6f4d8"
+  ],
+  "sky": [
+   "#27408a",
+   "#3559a6",
+   "#4a76c2",
+   "#6c98d8",
+   "#94b8e8",
+   "#bcd6f4",
+   "#e2eefb"
+  ],
+  "haze": [
+   "#3c4c78",
+   "#50648e",
+   "#6a7ea6",
+   "#8a9cbe",
+   "#aabad2",
+   "#cad6e6"
+  ]
+ },
+ "use": {
+  "rock": "weathered grey-brown cliff rock, the colours of the ORIGINAL Beodeul cliff and earth (0-1 violet-black cracks and deep clefts, 2-3 shaded facets and undersides, 4-6 body, 7-8 lit facets, 9 rare edge glints)",
+  "stone": "grey mountain rock and dressed stone, the Beodeul boulder ramp (0-1 crevices and outlines, 2-3 shaded planes, 4-5 body, 6-8 lit planes and edges)",
+  "earth": "packed bare earth of a trodden path (0-1 cracks and deep shade, 2 seams, 3-4 body, 5 lit, 6-7 lit edges)",
+  "grass": "grass, leaves, moss, herbs, the Beodeul meadow ramp (0-1 deep shade, 2-4 body, 5-8 lit blades and tips)",
+  "dark": "neutral violet-black: contact shadows on the ground, deep hollows (0 darkest, 5 faintest)",
+  "timber": "logs, planks, posts, the Beodeul log-cabin ramp (0-1 gaps and outlines, 2-4 shaded wood, 5-6 body, 7-9 lit wood and cut ends)",
+  "hide": "leather, hides, canvas and rope (0-1 shade, 2-3 body, 4-5 lit)",
+  "glow": "spirit glow: luminous teal of glowing caps, runes, wisps, enchanted water (0-1 dark teal rim, 2-3 body, 4-5 bright, 6-7 white-hot core)",
+  "petal": "violet-pink petals, fairy flowers, faint violet magic (0-1 shade, 2-3 body, 4 pale tip)",
+  "gold": "gold and brass: lock plates, bowls, inlay (0-1 shade, 2 body, 3-4 shine)",
+  "snow": "snow, the Beodeul snowfield ramp (0-1 blue shade, 2-4 body, 5-6 lit snow)",
+  "moon": "moonlit blue: moon water, night stone tint, cold light (0-1 deep, 2-3 body, 4-5 light, 6 glint)",
+  "water": "dark calm water, the Beodeul river ramp (0-2 depth, 3-4 body, 5-6 ripple dashes, 7 a rare glint)",
+  "birch": "pale silver-white bark and pale stone (0-1 violet shade and bark marks, 2-3 body, 4-5 lit)",
+  "leaf": "the foliage of the ORIGINAL Beodeul forest, sampled from it: 29 tones from the near-black teal gaps between crowns (0-3) through deep shaded leaf masses (4-12), body greens (13-21) to lit yellow-green leaf tips (22-28). Use MANY of these tones (25 or more): neighbouring tones are deliberately close",
+  "aura": "the spirit twist: leaves touched by spirit light, a slightly cooler luminous green (0-1 shade, 2-4 body, 5-6 glowing tips) - a minority accent on top of the leaf ramp, never the main foliage colour",
+  "sky": "clear daytime sky (0 zenith blue ... 6 pale horizon)",
+  "haze": "far mountains seen through air: blue-grey silhouettes (0 nearest and darkest ... 5 farthest and palest)"
+ }
+}

@@ -79,6 +79,11 @@ export function villageKindExamples(key = "", request = ""): string[] {
 const COMMON_KIND_WORDS = new Set(["village", "town", "hamlet", "마을", "읍"]);
 /** 모르는 낱말에 가까운 종류부터 세운 전체 목록 — id·뜻·한글 이름에 낱말이 걸리는 종류가 먼저, 그다음 id 의 오타로 읽히는 것, 나머지는 표의 차례. */
 export function villageKindsNearestFirst(word: string): VillageKind[] {
+  return rankKindsByWord(word, BEODEUL_VILLAGE_KINDS).map((e) => e.kind);
+}
+
+/** 이름표(id · ko · en · hint)를 가진 종류 목록을 모르는 낱말에 가까운 차례로 — 마을 종류와 깎아지른 지형 종류가 같은 잣대를 쓴다. score 0 · typo 99 면 아무 데도 안 걸린 것. */
+export function rankKindsByWord<K extends { readonly id: string; readonly ko: string; readonly en: string; readonly hint: string }>(word: string, kinds: readonly K[]): { kind: K; score: number; typo: number }[] {
   const w = word.trim().toLowerCase();
   const tokens = w.split(/[^a-z0-9가-힣]+/u).filter((t) => t.length >= 2 && !COMMON_KIND_WORDS.has(t));
   const distance = (a: string, b: string): number => {
@@ -86,7 +91,7 @@ export function villageKindsNearestFirst(word: string): VillageKind[] {
     for (let i = 1; i <= a.length; i += 1) { const next = [i]; for (let j = 1; j <= b.length; j += 1) next.push(Math.min(row[j]! + 1, next[j - 1]! + 1, row[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1))); row = next; }
     return row[b.length]!;
   };
-  const score = (k: VillageKind): number => {
+  const score = (k: K): number => {
     const rest = `${k.hint} ${k.en} ${k.ko}`.toLowerCase();
     let n = 0;
     for (const t of tokens) n += k.id.includes(t) ? 4 : rest.includes(t) ? 2 : 0;
@@ -94,8 +99,8 @@ export function villageKindsNearestFirst(word: string): VillageKind[] {
     return n;
   };
   // 글자 거리는 오타(id 길이의 삼분의 일 안)일 때만 센다 — 아무 데도 안 걸리는 낱말에 짧은 id 가 «가까운 것» 으로 앞서지 않게, 그때는 표의 차례 그대로다.
-  const typo = (k: VillageKind): number => { const d = distance(w, k.id); return d <= Math.max(2, Math.floor(k.id.length / 3)) ? d : 99; };
-  return BEODEUL_VILLAGE_KINDS.map((k, i) => ({ k, i, s: score(k), d: typo(k) })).sort((a, b) => b.s - a.s || a.d - b.d || a.i - b.i).map((e) => e.k);
+  const typo = (k: K): number => { const d = distance(w, k.id); return d <= Math.max(2, Math.floor(k.id.length / 3)) ? d : 99; };
+  return kinds.map((k, i) => ({ k, i, s: score(k), d: typo(k) })).sort((a, b) => b.s - a.s || a.d - b.d || a.i - b.i).map((e) => ({ kind: e.k, score: e.s, typo: e.d }));
 }
 
 /**

@@ -15,7 +15,7 @@ const combatLines = (...args: Parameters<typeof combatProblems>): string[] => co
 const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 type TextReader = "asksChaseNotBattleMusic" | "asksWorkingShop" | "asksTimedWhereabouts" | "asksOpenField" | "namesRandomEncounters" | "asksCure" | "asksClueForLock"
-  | "asksAfterStep" | "asksShownFlashback" | "asksActEnd" | "asksLetterbox" | "saysNewGame" | "asksOpening" | "asksComboSkill" | "asksPerDay" | "asksBattleDataRemoval"
+  | "asksAfterStep" | "asksShownFlashback" | "asksActEnd" | "asksLetterbox" | "saysNewGame" | "asksOpening" | "asksComboSkill" | "asksPerDay"
   | "asksSettingOnly" | "asksStoreOnly" | "asksToBeTold";
 
 describe("readers moved out of the judge files keep their words", () => {
@@ -39,8 +39,6 @@ describe("readers moved out of the judge files keep their words", () => {
     ["asksOpening", "오프닝을 바꿔", true],
     ["asksComboSkill", "둘이 같이 쓰는 필살기를 만들어", true],
     ["asksPerDay", "날마다 대사가 달라지게", true],
-    ["asksBattleDataRemoval", "주인공 스킬을 전부 지워 줘", true],
-    ["asksBattleDataRemoval", "메뉴에서 스킬 탭을 지워 줘", false],
     ["asksSettingOnly", "휴대폰에서 탭하면 걷게 해 줘", true],
     ["asksSettingOnly", "도움말 표지판을 세워 줘", false],
     ["asksStoreOnly", "내 게임 평가에 답글 달아 줘", true],
@@ -51,12 +49,10 @@ describe("readers moved out of the judge files keep their words", () => {
     expect(readers[reader](task)).toBe(want);
   });
 
-  it("asksDataChange reads the kind of data the request points at; weapons and armors share the item words", () => {
-    expect(readers.asksDataChange("enemies", "보스는 얼음에 약하게")).toBe(true);
-    expect(readers.asksDataChange("weapons", "검 가격을 올려")).toBe(true);
-    expect(readers.asksDataChange("armors", "검 가격을 올려")).toBe(true);
-    expect(readers.asksDataChange("actors", "촌장 대사를 바꿔")).toBe(false);
-    expect(readers.asksDataChange("maps", "주인공 이름을 바꿔")).toBe(false);
+  // asksDataChange·asksBattleDataRemoval 은 2026-11-16 에 지웠다(db-review B #9): 자료집 변경은 낱말로 막지 않고 보고한다(databaseChangeReport).
+  it("the request-word exemptions for database edits are gone", () => {
+    expect("asksDataChange" in readers).toBe(false);
+    expect("asksBattleDataRemoval" in readers).toBe(false);
   });
 
   it("requestedFeatureWord returns the matched word, and nothing when the feature is refused", () => {

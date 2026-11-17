@@ -14,7 +14,7 @@ import { alignCodeClues, digitWord } from "./codeClues";
 import { isPassable } from "@/project/collision";
 import { codeReadable } from "@/project/codeReading";
 import type { GameMap } from "@/project/types";
-import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
+import { blueprintEndingId, endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { choiceAtThing, samePersonStep } from "./samePerson";
 import { bigFigureCell, bigFigureCells } from "./bigFigure";
@@ -23,7 +23,8 @@ import { incomingLandings, resolveWhere } from "../place/where";
 import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
 import { walkStart } from "../place/cells";
 import type { BuildRun, ContentBuildResult } from "../shared/types";
-import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, victoryGatedSwitches, walkBlueprint } from "./blueprint";
+import { chainFightStepsIn, endAfterFinalFightIn } from "./fightStepChain";
 import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "../place/reachRepairs";
@@ -170,6 +171,7 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   const gaps: string[] = [];
   try { extra.push(...gateBattleSteps(run, gaps)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...orderStepBattles(run)); } catch { /* 순서 보호 실패는 경로를 깨지 않는다 */ }
+  if (result.ok) try { extra.push(...chainFightStepsIn(run.ctx.project), ...endAfterFinalFightIn(run.ctx.project)); } catch { /* 싸움 단계 잇기 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...settleStepFoesIn(run.ctx.project)); const bg = themeBattleBackdropsIn(run.ctx.project); extra.push(...bg.notes); gaps.push(...bg.gaps); } catch { /* 상대 그림·배경 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
@@ -201,21 +203,22 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     }
   }
 
-  // 모델이 지은 전투·상점·몬스터 같은 복잡한 단계 이벤트는 줍기 고리로 덮어쓰지 않는다(2026-10-28: 몬스터 리그 챔피언 이벤트).
-  const rich = bp.steps.flatMap((step) => {
+  // 모델이 지은 전투·상점·몬스터 같은 복잡한 단계 이벤트는 줍기 고리로 덮어쓰지 않는다(2026-10-28: 몬스터 리그 챔피언 이벤트) — 그 단계는 그대로 두고
+  // 나머지 단계를 짓는다. 호출을 통째로 거절하던 자리다(2026-11-16 r6a: 싸움 단계 둘 때문에 대화·고르기 단계 넷이 지어지지 않아 사슬이 끊겼다).
+  // 그대로 둔 싸움 단계는 fightStepChain 이 앞뒤 단계와 잇는다.
+  const rich = new Set(bp.steps.flatMap((step) => {
     const map = mapFor(project0, step.place);
     const ev = map?.events.find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event));
     const kinds = JSON.stringify(ev?.pages ?? []).match(/"kind":"([A-Za-z_]+)"/gu) ?? [];
     // 이 함수가 지은 싸우는 단계(kind battle 의 사슬 고리)는 다시 짓는다 — 대사만 바꿔 다시 부를 수 있게.
     if (step.kind === "battle" && ev?.id.startsWith("ev_chain_")) return [];
-    return kinds.some((k) => RICH_KIND.test(k)) ? [`${step.id} ${step.event}`] : [];
-  });
-  if (rich.length) return fail(`청사진 단계 이벤트 ${rich.join("·")} 에 전투·상점·몬스터 같은 명령이 있어 다시 짓지 않았다 — 그 이벤트의 조건·결과(스위치)를 patch_event_page 로 앞뒤 단계와 맞춘다.`);
+    return kinds.some((k) => RICH_KIND.test(k)) ? [step.id] : [];
+  }));
   // 1) 엔딩 — 청사진 ending 이름과 같은 엔딩이 있으면 그것, 없으면 하나뿐인 엔딩, 그래도 없으면 새로 정의한다.
   const endings = (project0.endings ?? []) as { id: string; name?: string }[];
   let ending = endings.find((e) => sameName(e.name ?? "", bp.ending.name)) ?? (endings.length === 1 ? endings[0] : undefined);
   if (!ending) {
-    const id = `ending_${Math.abs([...bp.ending.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`;
+    const id = blueprintEndingId(bp.ending.name);
     const res = run.call("define_ending", { id, name: bp.ending.name, conditions: [], epilogue: closing.map((line) => ({ kind: "say", text: line })), presentation: { finalTitle: bp.ending.name, credits: bp.title } });
     if (!res.ok) return fail(`엔딩 「${bp.ending.name}」을 정의하지 못했다: ${String(res.summary).slice(0, 200)}`);
     ending = { id, name: bp.ending.name };
@@ -268,6 +271,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   /** 다음 갈 곳을 잇는 서술 한 줄을 덧붙인 단계(id) — 결과 글에서 알린다. */
   const bridged: string[] = [];
   const kept: string[] = [];
+  /** 그대로 둔 싸움·상점 단계 가운데 모델이 이번에 글을 보낸 것 — 그 글은 쓰이지 않았다고 알린다. */
+  const ownText: string[] = [];
   // 바로 앞 단계가 모델(또는 앞선 빌드)이 지은 이벤트 그대로면 — 번호 단계의 답을 그 이벤트 대사에 적는다(따로 쪽지를 세우지 않는다).
   let prevKept: { mapId: string; eventId: string; gives: string; event: string } | undefined;
   // 그대로 둔 단계 이벤트를 gives 로 — 번호 단계 needs 가 단서 여럿(「일기장 단서, 그림 뒤 단서」)이면 번호를 나눠 적는다.
@@ -324,10 +329,16 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // (standin magic: 마지막 장소 하나가 없을 뿐인데 교장·사서 대화까지 줍기로 덮을 뻔했다).
     // 번호·암호 단계인데 입력 없이 넘어가는 이벤트는 그대로 두지 않는다(mt3 flash: 「비밀번호 입력」이 조사만으로 엔딩).
     const bypass = existing && isCodeStep(step) ? codeStepBypass(run.ctx.project, existing) : undefined;
-    if (!text.length && existing && !bypass && !carried.renamed.has(existing.id) && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)) {
+    const own = !!existing && rich.has(step.id);
+    if (existing && (own || (!text.length && !bypass && !carried.renamed.has(existing.id) && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)))) {
       const g = eventGives(run.ctx.project, existing);
-      prevCondition = g.switches[0] ? [{ kind: "switch", switchId: g.switches[0], value: true }] : g.items[0] ? [{ kind: "item", itemId: g.items[0], present: true }] : undefined;
-      prevGives = undefined;
+      // 싸움이면 이겨야 켜지는 스위치가 이 단계의 결과다(말만 걸어도 켜지는 스위치가 아니라).
+      const won = own ? victoryGatedSwitches(run.ctx.project) : undefined;
+      const sw = g.switches.find((id) => won?.has(id)) ?? g.switches[0];
+      const gave = sw ? [{ kind: "switch", switchId: sw, value: true }] : g.items[0] ? [{ kind: "item", itemId: g.items[0], present: true }] : undefined;
+      // 아무것도 넘기지 않는 그대로 둔 단계(상점)는 앞 단계의 결과를 다음 단계로 그대로 넘긴다 — 사슬이 거기서 끊기지 않게.
+      if (gave || !own) { prevCondition = gave; prevGives = undefined; }
+      if (own && t) ownText.push(step.id);
       kept.push(`${step.id} ${step.event}`);
       ids.push(existing.id);
       prevKept = { mapId: map.id, eventId: existing.id, gives: step.gives, event: step.event };
@@ -459,7 +470,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   });
 
   if (!links.length && sealed.length) for (const mapId of Object.keys(run.ctx.project.maps)) for (const n of dressInteriorExits(run, mapId).notes) sealed.push(n);
-  if (!links.length) return { ok: true, mapIds: [], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 단계 이벤트가 모두 이미 있다(${kept.join(", ")}) — 다시 짓지 않았다.`, warnings, missingArt: [], calls: [] };
+  const ownNote = ownText.length ? ` Kept as built (their own fight or shop): ${ownText.join(", ")} — the lines sent for them were not applied; change those with the verb that made them.` : "";
+  if (!links.length) return { ok: true, mapIds: [], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 단계 이벤트가 모두 이미 있다(${kept.join(", ")}) — 다시 짓지 않았다.${ownNote}`, warnings, missingArt: [], calls: [] };
   const built = buildPuzzleChain(run, { mapId: fallbackMap.id, name: bp.title, links });
   if (!built.ok) return { ...built, warnings: [...warnings, ...built.warnings] };
 
@@ -499,5 +511,5 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   };
   const objectiveNotes = stepObjectives(run, steps.map((st, i) => stepGoalAt({ ...st, text: { goal: leaked.includes(st.id) ? undefined : byId.get(st.id)?.goal } }, placeOf(i))), links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}${bridged.length ? ` The lines of ${bridged.join(", ")} did not say who or where next, so one narration line was added after them («(이제 …)» — the next step's objective). To replace it, send that step's lines again with a last line in the person's own voice that names the next person or place.` : ""}${leaked.length ? ` The goal of ${leaked.join(", ")} gave away a lock's code — the objective line was written without it (the player reads the code from the clue). Keep codes out of goal and lockedLines.` : ""}` };
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}${bridged.length ? ` The lines of ${bridged.join(", ")} did not say who or where next, so one narration line was added after them («(이제 …)» — the next step's objective). To replace it, send that step's lines again with a last line in the person's own voice that names the next person or place.` : ""}${leaked.length ? ` The goal of ${leaked.join(", ")} gave away a lock's code — the objective line was written without it (the player reads the code from the clue). Keep codes out of goal and lockedLines.` : ""}${ownNote}` };
 }

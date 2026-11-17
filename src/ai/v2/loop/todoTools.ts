@@ -7,6 +7,7 @@
 //       · 성공한 쓰기의 결과 지문을 고리(TodoLoop)에 넘긴다(진척 판정)
 //       · 성공한 쓰기 전후 차이(맵·이벤트·아이템·적 그룹 id)를 진행 중 항목(또는 인자 todoId 의 항목) refs 에 묶는다(refs.ts)
 import { thinInsideNote } from "../place/doorHouse";
+import { sizeNoticeOnce } from "../judge/sizeNotice";
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiAssistantV2Env } from "../shared/env";
 import { modelText, modelTextCut, parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
@@ -251,7 +252,7 @@ function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoTool
             state.callNoAtDone = state.callNo;
             const next = store.current();
             env.emit({ type: "execution_status", name: "v2.todo.done", ok: true, summary: `할 일 ${item.id} ✓${check ? ` — ${check.detail.slice(0, 120)}` : ""}${bound ? ` · ${bound}` : ""}` });
-            result = done(`${item.id} ✓${check ? ` machine check: ${ce}` : ""}${bound ? ` (${bound})` : ""}. ${next ? `Next: ${next.id} «${modelText(next)}» — continue now.` : store.openCount() ? "" : "No open items."}`);
+            result = done(`${item.id} ✓${check ? ` machine check: ${ce}` : ""}${bound ? ` (${bound})` : ""}. ${next ? `Next: ${next.id} «${modelText(next)}» — continue now.` : store.openCount() ? "" : `No open items.${sizeNoticeOnce(store, env.ctx.project, env.request.task)}`}`);
           } else {
             const why = attributeFailure(env, store, `check:${maskVolatile(check!.detail).slice(0, 160)}`, `기계 확인 ✗ ${check!.detail}`, undefined, `machine check ✗ ${ce}`);
             env.emit({ type: "execution_status", name: "v2.todo.false_done", ok: false, summary: `할 일 ${item.id} done 요청 — 기계 확인 ✗: ${check!.detail.slice(0, 160)}` });
@@ -417,6 +418,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
     execute: async (id: string, rawParams: unknown, signal?: AbortSignal): Promise<PiToolExecResult> => {
       state.callNo += 1;
       const write = !isReadVerb(tool.name);
+      if (write && tool.name !== "load_tools") loop.writeCalls += 1;
       // todoId 는 감싸개 몫이다 — 동사에는 넘기지 않는다.
       const { params, todoId } = splitTodoId(rawParams);
       if (write && writeRequest && !store.initialized) {
@@ -541,7 +543,13 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           if (shown !== r0.text) { const at = result.content.findIndex((c) => c.type === "text"); result = { ...result, content: result.content.map((c, k) => k === at ? { type: "text" as const, text: shown } : c) }; }
         }
       }
-      if (fixNotes.length) result = withNote(result, `Fixed: ${fixNotes.join(" · ")}`);
+      {
+        // 걷은 칸(NOT APPLIED)은 «고침» 이 아니다 — 따로 한 줄로 실어 성공으로 읽히지 않게 한다(2026-11-16 db-review B #6).
+        const dropped = fixNotes.filter((n) => n.startsWith("NOT APPLIED"));
+        const fixed = fixNotes.filter((n) => !n.startsWith("NOT APPLIED"));
+        if (fixed.length) result = withNote(result, `Fixed: ${fixed.join(" · ")}`);
+        if (dropped.length) result = withNote(result, dropped.join("\n"));
+      }
       const read = readResult(outcome.result);
       const notes: string[] = [];
       if (write) {

@@ -1,3 +1,4 @@
+import { reliefClimbAt } from "@/project/relief/walk";
 import { updateFieldEnemyClashes } from "@/player/playSceneFieldEnemyClash";
 import { cancelPointerRoute, consumePendingTapAction } from "@/player/playScenePointerMove";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
@@ -501,6 +502,8 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.facing = facingForStep(dx, dy);
   const nx = scene.tileX + dx;
   const ny = scene.tileY + dy;
+  // 줄사다리·덩굴(relief 세로 이동 칸): 오를 때도 내려갈 때도 벽을 보고 매달린다
+  if (dx === 0 && (reliefClimbAt(scene.map.relief, scene.tileX, scene.tileY) || reliefClimbAt(scene.map.relief, nx, ny))) scene.facing = "up";
   if (tryStartLedgeHop(scene, body, dx, dy)) return;
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {

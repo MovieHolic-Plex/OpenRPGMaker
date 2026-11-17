@@ -59,12 +59,29 @@ export const QUEST_PRESETS: readonly QuestPreset[] = [
 
 export function questPreset(id: string): QuestPreset | undefined { return QUEST_PRESETS.find(preset => preset.id === id); }
 
+/**
+ * 단계 구조가 프리셋과 다를 때의 글 — 프리셋이 바라는 단계와 보낸 단계를 나란히 적고, 고치는 길을 둘 다 적는다.
+ * 왜(2026-11-16 확인 빌드 r6a): 「심부름: 목표 구조가 프리셋과 다릅니다 (talk).」 · 「직접 조합: … ().」 만 돌아와 같은 꼴로 여섯 번 거절됐다 —
+ * 심부름은 단계가 하나인데 둘을 보냈다는 것, 직접 조합은 def.blueprint 가 빠졌다는 것을 글이 말하지 않았다.
+ */
+function presetShapeIssue(preset: QuestPreset, def: QuestDef, expected: readonly QuestStepKind[] | undefined): string {
+  const sent = def.steps.map(step => step.kind);
+  const list = (kinds: readonly QuestStepKind[]) => `${kinds.length} step(s) (${kinds.join(' → ')})`;
+  // 도구를 부른 쪽(조수)이 읽고 다음 호출을 고치는 글이다 — 영어로, 고칠 인자를 그대로 적는다.
+  if (def.presetId === 'custom') {
+    if (!expected?.length) return `preset "custom" needs def.blueprint — list the kinds of steps in order: blueprint:${JSON.stringify(sent)}. Or send the quest without presetId.`;
+    if (expected.length > 12) return `preset "custom": def.blueprint holds at most 12 steps (sent ${expected.length}).`;
+    return `preset "custom": def.blueprint is ${list(expected)} but steps is ${list(sent)} — make them the same, in the same order.`;
+  }
+  return `preset "${def.presetId}" (${preset.title}) is ${list(expected ?? [])} but steps is ${list(sent)} — match steps to the preset, or to keep these steps send presetId:"custom" with blueprint:${JSON.stringify(sent)} (or drop presetId).`;
+}
+
 export function questPresetIssue(project: Project, def: QuestDef): string | null {
   if (!def.presetId) return null;
   const preset = questPreset(def.presetId);
   if (!preset) return '알 수 없는 퀘스트 프리셋입니다.';
   const expected = def.presetId === 'custom' ? def.blueprint : preset.pattern;
-  if (!expected?.length || expected.length > 12 || def.steps.length !== expected.length || def.steps.some((step, i) => step.kind !== expected[i])) return `${preset.title}: 목표 구조가 프리셋과 다릅니다 (${(expected ?? []).join(' → ')}).`;
+  if (!expected?.length || expected.length > 12 || def.steps.length !== expected.length || def.steps.some((step, i) => step.kind !== expected[i])) return presetShapeIssue(preset, def, expected);
   if (def.steps.length > 1 && def.order !== 'sequence') return '여러 단계 프리셋은 order:"sequence"로 저작하세요.';
   const collect = def.steps.find(step => step.kind === 'collect');
   const choices = def.steps.filter(step => step.kind === 'choice');

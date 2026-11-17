@@ -15,6 +15,7 @@ import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
 import beodeulOrganicCatalog from './beodeulOrganicCatalog.json';
+import beodeulSpiritCatalog from './beodeulSpiritCatalog.json';
 import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
 import beodeulMassingCatalog from './beodeulMassingCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
@@ -148,6 +149,9 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS: readonly BundledImageAsset[] = [
   // 버들항 물 그림판(2026-11-14) — 물가 둑·깊은 물 띠·폭포 덧그림 칸이 이식 원본으로 가리키고, 물빛을 고른 게임의 물 칸이 겹쳐 그린다
   // (assets/tilesetWater.ts, 굽기 scripts/content/beodeul-water/bake.py). 쓰는 프로젝트만 싣는다(이식 원본 이름·tileset.look.waterKey 문자열로 찾는다).
   {textureKey:"tex_beodeul_water",path:"assets/beodeul-water/chipset.png",name:"버들항 · 물가 둑·깊은 물·폭포와 게임마다 다른 물빛"},
+  // 버들항 정령 숲 기물(2026-11-16) — 깎아지른 지형의 정령 숲 갈래가 beodeul_city 에 이식할 때 이식 원본으로 가리킨다
+  // (project/defaults/beodeulSpirit.ts, 굽기 scripts/content/sheer-terrain/bake_spirit.py). 이식한 프로젝트만 싣는다.
+  {textureKey:"tex_beodeul_spirit",path:"assets/beodeul-spirit/chipset.png",name:"버들항 · 정령 숲 기물(큰 활엽수·고목·정령 버섯·꽃)"},
 ];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
@@ -249,6 +253,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;
   if (key === 'tex_beodeul_massing') return beodeulMassingCatalog.count;
   if (key === 'tex_beodeul_organic') return beodeulOrganicCatalog.count;
+  if (key === 'tex_beodeul_spirit') return beodeulSpiritCatalog.count;
   if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;

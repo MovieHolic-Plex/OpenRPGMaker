@@ -4,8 +4,9 @@
 // rectangle in the pages it crosses (2026-10-07: whole-page rebakes made one
 // brush sample ~5x slower than the #1978 window patch).
 import { renderRelief, reliefPadPx, type ReliefRender } from "./render";
-import { cropReliefGrid, reliefPartAt, reliefWindowFor, type ReliefScene, type ReliefWindowPlan } from "./window";
+import { cropReliefGrid, reliefPartAt, reliefWindowFor as windowFor, SHEER_REACH, type ReliefScene, type ReliefWindowPlan } from "./window";
 import { RELIEF_TILE as T } from "./types";
+import { reliefFaceRows } from "./styles";
 
 export const RELIEF_PAGE = 256;
 interface Page {
@@ -18,6 +19,10 @@ interface Page {
 }
 export interface ReliefPixelRect { readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number }
 export interface ReliefPageView { readonly x: number; readonly y: number; readonly width: number; readonly height: number }
+
+/** 깎아지른 양식은 뒤 패스가 더 멀리 읽는다 — 쪽 굽기 창을 넓힌다. */
+let sheerScene = false;
+const reliefWindowFor = (x0: number, y0: number, x1: number, y1: number, W: number, H: number, pad: number) => windowFor(x0, y0, x1, y1, W, H, pad, sheerScene ? SHEER_REACH : undefined);
 
 export class ReliefPagedImage {
   readonly PW: number;
@@ -53,7 +58,8 @@ export class ReliefPagedImage {
    */
   sync(scene: ReliefScene, revision: string, view?: ReliefPageView, reference?: ReliefRender, dirtyRects?: readonly ReliefWindowPlan[]): { shift: number; rows: Set<number>; rects: ReliefPixelRect[] } {
     const oldPad = this.pad;
-    if (revision !== this.revision || reference) this.pad = reference?.pad ?? reliefPadPx(scene.grids.pruned, scene.opts.slopes);
+    sheerScene = reliefFaceRows(scene.opts.style) > 1;
+    if (revision !== this.revision || reference) this.pad = reference?.pad ?? reliefPadPx(scene.grids.pruned, scene.opts.slopes, reliefFaceRows(scene.opts.style));
     this.revision = revision;
     this.SH = this.H * T + this.pad;
     const left = Math.max(0, (view?.x ?? 0) - RELIEF_PAGE), right = Math.min(this.PW, (view ? view.x + view.width : this.PW) + RELIEF_PAGE);
@@ -173,7 +179,7 @@ export class ReliefPagedImage {
       for (const s of scene.opts.slopes ?? []) {
         if (s.x + s.w < win.cx || s.x > win.cx + win.w || s.y + s.h < win.cy || s.y > win.cy + win.h) continue;
         const dep = reliefWindowFor(
-          Math.max(0, (s.x - 1) * T - 24), Math.max(0, (s.y - Math.ceil(s.hi) - 1) * T + this.pad - 24),
+          Math.max(0, (s.x - 1) * T - 24), Math.max(0, (s.y - Math.ceil(s.hi) * reliefFaceRows(scene.opts.style) - 1) * T + this.pad - 24),
           Math.min(this.PW, (s.x + s.w + 1) * T + 24), Math.min(this.SH, (s.y + s.h + 1) * T + this.pad + 24),
           this.W, this.H, this.pad,
         );

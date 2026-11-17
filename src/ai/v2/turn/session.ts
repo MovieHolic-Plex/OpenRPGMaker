@@ -70,8 +70,6 @@ export class V2Session {
   readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
-  /** 첫 청사진이 장소·단계가 모자라 거절된 횟수(세션당 1회만 거절하고 다음부터는 걸어 준다 — 막다른 길 방지). */
-  blueprintThinRejects = 0;
   /** 청사진 장소가 이 게임 세계(world.ts)와 안 맞아 돌려보낸 횟수 — 상한 뒤에는 함수가 메워서 건다(막다른 길 방지). */
   worldBounces = 0;
   /** 보이는 적·보물상자를 이미 둔 세계 장소(맵 id) — 한 실행에 한 번만 채운다(못 둔 자리를 다음 호출이 다시 채우지 않게). */

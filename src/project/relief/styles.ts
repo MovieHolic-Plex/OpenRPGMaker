@@ -397,6 +397,13 @@ export interface ReliefStyleSpec {
   readonly castShadow?: boolean;
   /** 계단·경사로 도트를 빌려 쓸 양식(선택, rampArt.json 의 키) — 절벽 모습 양식은 버들항 칩셋 돌계단 조각(grass-steps)을 쓴다. */
   readonly rampArtOf?: string;
+  /**
+   * 깎아지른 면(선택, 2026-11-16 오너 「그래 저렇게 해바」 — 허공 위 고원 · 폭포 계단단 · 정상). faceRows: 단 차 1 을 앞면 몇 칸으로 그리나
+   * (3 = 48px). 렌더러가 높이를 그 배로 들어 그리고(render.ts renderRelief — 걷기·저장은 단 그대로), 면 무늬는 조각(sheerArt.ts)에서 열마다 읽는다:
+   * 윗테 · 몸통 변형 · 밑동, 동·서로 16px 돌아 감기는 옆면, 둥근 모서리, 고원 밝은 테, 0 단은 빈 곳(투명 — 맵 배경이 비친다)과 그 위로 떨어지는 그늘.
+   * 없으면 그림이 예전과 한 바이트도 다르지 않다.
+   */
+  readonly sheer?: { readonly faceRows: number };
 }
 export type ReliefNaturalFace = "boulders" | "strata" | "ledges" | "ribs" | "rock";
 
@@ -485,6 +492,8 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   "cliff-ledge": cliffLook("ledges", 10, 0.04, ["#2b2620", "#463d32", "#665a48", "#877a62", "#a89b80", "#c9bda2"], MOSS),
   "cliff-crag": cliffLook("ribs", 12, 0.03, ["#231a12", "#3b2c1f", "#57422f", "#735a41", "#907556", "#ad926f"], EARTH_ACCENT),
   "cliff-rock": cliffLook("rock", 12, 0.03, ["#2a200e", "#42331a", "#5a4826", "#84693e", "#ac8e5a", "#c8ac78"], MOSS),
+  // 깎아지른 지형(2026-11-16): 단 하나 = 앞면 3칸, 면은 조각에서 읽는다(sheerArt.ts). 계단은 sheer 계단 조각, 0 단은 빈 곳.
+  sheer: { sheer: { faceRows: 3 }, smoothStairs: true, rim: false, castShadow: true, topTone: 0.012, family: "earth", top: CLIFF_TOP, wall: ["#1b1524", "#3d3028", "#58493c", "#6e5b49", "#8a745c", "#b8a07a"], accent: MOSS },
   "snow-steps": { smoothStairs: true, family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#6a7f9e", "#93a9c6", "#b9cce0", "#d6e3ef", "#e9f1f8", "#ffffff"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
   "sand-steps": { smoothStairs: true, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
   // 던전 높이 단(2026-10-30 「던전 설계에 높이 단 — 마을과 같은 버들항 계단 조각」): 버들항 동굴 바위 앞면 색(칩셋에서 뽑은 6색)의 흙벽 절벽 + 같은 bd-mpart-stairs 돌계단.
@@ -542,6 +551,9 @@ export interface ReliefWallStyle {
   readonly natural: ReliefNaturalFace | null;
   readonly topTone: number;
   readonly castShadow: boolean;
+  /** 단 차 1 의 앞면 칸 수(ReliefStyleSpec.sheer, 없으면 1). */
+  readonly faceRows: number;
+  readonly sheer: boolean;
 }
 
 const code = (ch: string): number => {
@@ -573,6 +585,7 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
     cornice: !!spec.cornice,
     topShade: spec.tundraTopShade ?? null,
     natural: spec.natural ?? null, topTone: spec.topTone ?? 0, castShadow: !!spec.castShadow,
+    faceRows: Math.max(1, Math.floor(spec.sheer?.faceRows ?? 1)), sheer: !!spec.sheer,
     smoothStairs: !!spec.smoothStairs,
     carvedStairs: spec.carvedStairs ? { log: !!spec.carvedStairs.log, tread: spec.carvedStairs.tread ?? "top" } : null,
   };
@@ -595,6 +608,9 @@ export function reliefStyleForGround(style: string, ground: string | undefined):
   const name = ground ? `${style}@${ground}` : style;
   return reliefStyleSpec(name) ? name : style;
 }
+
+/** 단 차 1 을 앞면 몇 칸으로 그리는 양식인가(ReliefStyleSpec.sheer.faceRows, 없으면 1). 걷기·저장 단은 그대로이고 그림·들림만 이 배다. */
+export const reliefFaceRows = (style: string | undefined): number => compileReliefStyle(style)?.faceRows ?? 1;
 
 /** 자동 계단 경사로를 비탈로 그리는 양식인가(ReliefStyleSpec.smoothStairs). */
 // 양식 없는 맵(기본 흙벽)과 벽면에 판 계단이 없는 양식은 모두 비탈로 잇는다 — 렌더러가 디딤판을 회색 벽돌로 칠하던 길을 없앴다

@@ -115,6 +115,21 @@ const V2_GENRE_TOOLS: readonly string[] = [
   "set_dialogue_system", "set_action_combat", "make_action_enemy", "configure_monster_system", "give_starter_monsters", "place_trainer", "manage_flag_slot",
 ];
 
+/**
+ * 자료집 전체를 고치는 도구(2026-11-16 오너 「조수가 자료집을 전체적으로 수정할 수 있나」 · 적대 리뷰 db-review A F1·F2·F5·F6·F9·F11).
+ * 지우기·복제·안 쓰는 것 정리·속성/지형/전투 명령·전투 애니메이션·장비 칸·승급·상성표·게임 시스템·몬스터 종족·세계 설정·도감·일정표·주민 관계·생활 시스템,
+ * 그리고 지금 값을 읽는 도구. 풀에만 둔다 — 처음부터 싣지 않고 load_tools 목록(«Also loadable»)에 이름이 뜬다.
+ */
+const V2_DATABASE_TOOLS: readonly string[] = [
+  "delete_database_record", "duplicate_database_record", "prune_unused", "delete_troop_battle_page", "upsert_database_utility", "upsert_battle_animation",
+  "upsert_equipment_slot", "define_promotion", "set_type_chart", "configure_game_systems", "define_monster_species", "rename_monster_species", "define_monster_families",
+  "set_world_canon", "upsert_world_codex", "define_bestiary_entry", "list_bestiary", "upsert_schedule", "list_schedules", "upsert_character_profile", "delete_character_profile",
+  "upsert_life_system", "upsert_life_skill", "upsert_item_upgrade", "upsert_tool_action", "delete_craft_recipe", "delete_fish_species", "upsert_farm_building_type",
+  "upsert_home_decoration_type", "upsert_farm_animal_building", "configure_life_economy", "configure_museum", "configure_collections", "configure_seasonal_forage",
+  "get_game_over", "read_game_systems", "get_title_screen", "get_project_summary",
+  "upsert_skill", "upsert_class", "upsert_state", "upsert_item", "upsert_enemy", "upsert_equipment", "upsert_common_event", "set_project_settings",
+];
+
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
 
@@ -211,6 +226,6 @@ export function storeCard(groups: ToolGroups): string {
 export function v2ToolPool(): string[] {
   return [...new Set([
     ...V2_GAME_TOOLS, ...GAME_TOOL_GROUPS.flatMap((g) => g.tools), ...FALLEN_TIERS.flatMap((t) => t.tools), ...MUSIC_TIER.tools,
-    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object", ...V2_POOL_ONLY, ...V2_GENRE_TOOLS,
+    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object", ...V2_POOL_ONLY, ...V2_GENRE_TOOLS, ...V2_DATABASE_TOOLS,
   ])].filter((name) => getTool(name));
 }

@@ -3,8 +3,8 @@ import type { Project } from "@/project/types";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "../genreDefaults";
 import { isStageWrite, type StageWrites } from "../shared/stageWrites";
-import { Obj } from "./gameCheckReads";
-import { asksBattleDataRemoval, asksDataChange, asksLookChange, asksRemoval } from "../request/readers";
+import type { Obj } from "./gameCheckReads";
+import { asksLookChange, asksRemoval } from "../request/readers";
 import { tagged, type Finding } from "./finding";
 
 /** 장비 칸에서 사라진 것이 모두 공장 기본 장비인가. */
@@ -26,9 +26,12 @@ const BATTLE_DATA: Record<"actors" | "classes", readonly string[]> = {
   classes: ["skillIds", "learnedSkills", "battleCommands", "equipmentPermissions"],
 };
 
-/** 배우·직업의 전투 데이터가 줄었다(요청이 메뉴·화면이 아니라 그 데이터를 지우라고 했을 때만 정상). */
-export function battleDataEmptied(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
-  if (asksBattleDataRemoval(task)) return [];
+/**
+ * 배우·직업의 전투 데이터가 줄었다. 완료를 막지 않는다 — 보고(databaseChangeReport)와 검토(advisor)에 싣는다.
+ * 전에는 요청 낱말(asksBattleDataRemoval)로 «지우라고 했나» 를 갈라 막았다(2026-11-16 db-review B #9: 낱말이 빗나가면 정당한 「배움표 비워 줘」가 막혔다).
+ * _task 는 옛 호출 모양을 위해 남긴다.
+ */
+export function battleDataEmptied(before: Project, after: Project, _task: string, writes?: StageWrites): Finding[] {
   const out: Finding[] = [];
   for (const section of ["actors", "classes"] as const) {
     const old = new Map(((before.database as unknown as Obj)[section] as Obj[] | undefined ?? []).map((r) => [String(r.id), r]));
@@ -47,7 +50,7 @@ export function battleDataEmptied(before: Project, after: Project, task: string,
 }
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
-export function unaskedChanges(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
+export function unaskedChanges(before: Project, after: Project, task: string, _writes?: StageWrites): Finding[] {
   const artAsk = asksLookChange(task);
   const out: Finding[] = [];
   if (!artAsk) for (const map of Object.values(before.maps)) {
@@ -77,27 +80,53 @@ export function unaskedChanges(before: Project, after: Project, task: string, wr
       }
     }
   }
-  // 배우·직업의 전투 데이터(배울 기술·처음 장비·전투 명령·장비 허용)를 비웠다 — 「메뉴의 스킬·장비 빼 줘」를 데이터 지우기로 흉내 냈다
-  // (2026-10-25 장난감 가게 고치기 4턴: 메뉴 도구가 안 실려 upsert_actor·upsert_class 로 주인공 기술·직업을 비웠다. 요청에 「파티」「스킬」이 있어
-  // 아래 일반 검사의 낱말 면제에 걸려 못 잡았다). 메뉴·화면에서 숨기는 요청이면 데이터는 그대로 둔다 — 낱말 면제 없이 본다.
-  out.push(...battleDataEmptied(before, after, task, writes));
-  // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
-  const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
-  if (!artAsk) for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {
-    const old = new Map(((bdb[section] as Obj[] | undefined) ?? []).map((r) => [String(r.id), r]));
-    for (const r of (adb[section] as Obj[] | undefined) ?? []) {
-      const prev = old.get(String(r.id));
-      if (!prev || JSON.stringify(prev) === JSON.stringify(r)) continue;
-      const name = String(r.name ?? prev.name ?? "");
-      if (name && task.includes(name)) continue;
-      // 주인공·동료 요청은 배우 고치기가 정상이다.
-      // 요청이 그 종류를 가리키면(이름을 안 불러도) 고치기가 정상이다 — 「보스는 얼음에 약하게」·「난이도를 맞춰」에서 보스 적을 고친 것을
-      // 부작용이라 해서 조수가 되돌렸고, 힌트 NPC 가 거짓말을 하게 됐다(2026-10-25 조수 단독 게임 G6).
-      if (asksDataChange(section, task)) continue;
-      const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]) && !isStageWrite(writes, section, r, k));
-      if (!keys.length) continue;
-      out.push(tagged("game", "부작용", `요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`, { variant: "record", target: { ref: String(r.id) } }));
-    }
-  }
+  // 자료집 레코드 변경(이름·값·목록)은 여기서 막지 않는다 — 요청 낱말로 «물어본 종류인가» 를 가르던 검사가 넓은 고치기(「자료집 전부 다시 써 줘」)를 막고,
+  // 「옷·모습·목적지」 같은 낱말 하나에 통째로 꺼졌다(2026-11-16 db-review B #9). 무엇이 바뀌었는지는 databaseChangeReport 가 보고에 적고,
+  // 목록이 줄어든 쓰기는 도구 결과가 그 자리에서 «LIST SHRANK» 로 알린다(dbUpsertEnvelope.ts).
   return out.slice(0, 6);
+}
+
+/** 자료집 묶음 — 보고에 싣는 순서. 공용 이벤트는 프로젝트 뿌리에 있다. */
+const REPORT_SECTIONS = ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "elements", "battleCommands", "battleAnimations", "equipmentSlots", "monsterSpecies", "schedules"] as const;
+
+/**
+ * 이번 요청이 자료집에서 바꾼 것 — 묶음마다 만든 것·지운 것·고친 것(칸 이름), 줄어든 목록, 비운 전투 데이터, 용어. 완료를 막지 않는다(보고와 실행 기록에만).
+ * writes = 끝맺음 단계가 스스로 쓴 칸(stageWrites) — «조수가 고침» 과 «끝맺음이 맞춤» 을 가른다.
+ */
+export function databaseChangeReport(before: Project, after: Project, writes?: StageWrites): string[] {
+  const out: string[] = [];
+  const rows = (p: Project, section: string): Obj[] => (section === "commonEvents" ? (p.commonEvents as unknown as Obj[]) : (((p.database as unknown as Record<string, unknown>)[section] as Obj[] | undefined) ?? []));
+  for (const section of [...REPORT_SECTIONS, "commonEvents"]) {
+    const was = new Map(rows(before, section).map((r) => [String(r.id), r]));
+    const now = new Map(rows(after, section).map((r) => [String(r.id), r]));
+    const created = [...now.keys()].filter((id) => !was.has(id));
+    const deleted = [...was.keys()].filter((id) => !now.has(id));
+    const changed: string[] = [];
+    const shrank: string[] = [];
+    for (const [id, r] of now) {
+      const prev = was.get(id);
+      if (!prev || JSON.stringify(prev) === JSON.stringify(r)) continue;
+      // 길 맞춤 사본(enemy_path_* · skill_path_*)은 끝맺음이 만들고 맞추는 행이다 — 모델이 원본을 고치면 걷었다가 다시 만든다(story/foughtCopy).
+      // 다시 만든 행은 단계 쓰기 기록에 «새 행» 으로 빠져 모델이 바꾼 것으로 짚혔다(2026-11-16 명세 은행 r3b-fun, main #4751 — 여기로 옮겼다).
+      if (/^(?:enemy|skill)_path_/u.test(id)) continue;
+      const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
+      const own = keys.filter((k) => !isStageWrite(writes, section, r, k));
+      if (!own.length) continue;
+      changed.push(`${String(r.name ?? id)}(${own.slice(0, 4).join(",")}${own.length > 4 ? "…" : ""})`);
+      for (const k of own) if (Array.isArray(prev[k]) && Array.isArray(r[k]) && (r[k] as unknown[]).length < (prev[k] as unknown[]).length) shrank.push(`${String(r.name ?? id)}.${k} ${(prev[k] as unknown[]).length}→${(r[k] as unknown[]).length}`);
+    }
+    if (!created.length && !deleted.length && !changed.length) continue;
+    const name = (id: string, m: Map<string, Obj>) => String(m.get(id)?.name ?? id);
+    out.push(`${section}: ${[
+      created.length ? `만듦 ${created.length}(${created.slice(0, 5).map((id) => name(id, now)).join(", ")}${created.length > 5 ? " …" : ""})` : "",
+      deleted.length ? `지움 ${deleted.length}(${deleted.slice(0, 5).map((id) => name(id, was)).join(", ")}${deleted.length > 5 ? " …" : ""})` : "",
+      changed.length ? `고침 ${changed.length}(${changed.slice(0, 5).join(", ")}${changed.length > 5 ? " …" : ""})` : "",
+    ].filter(Boolean).join(" · ")}${shrank.length ? ` · 줄어든 목록 ${shrank.slice(0, 4).join(", ")}${shrank.length > 4 ? " …" : ""}` : ""}`);
+  }
+  const t0 = (before.meta?.terms ?? {}) as unknown as Record<string, unknown>, t1 = (after.meta?.terms ?? {}) as unknown as Record<string, unknown>;
+  const terms = Object.keys({ ...t0, ...t1 }).filter((k) => JSON.stringify(t0[k]) !== JSON.stringify(t1[k]));
+  if (terms.length) out.push(`용어: ${terms.slice(0, 8).map((k) => `${k} «${String(t0[k] ?? "")}»→«${String(t1[k] ?? "")}»`).join(", ")}`);
+  // 배우·직업의 전투 데이터를 비운 것은 따로 한 줄(메뉴에서 숨기라는 요청을 데이터 지우기로 흉내 낸 2026-10-25 T4 — 이제 막지 않고 보이게 적는다).
+  for (const f of battleDataEmptied(before, after, "", writes).slice(0, 4)) out.push(`⚠ 비운 전투 데이터: ${f.ko.replace(/^\[[^\]]*\]\s*/u, "").split(" — ")[0]}`);
+  return out;
 }

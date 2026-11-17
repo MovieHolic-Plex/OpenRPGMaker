@@ -1,0 +1,76 @@
+{
+"items": [
+{
+"png": "tiledata/sheer-terrain/spirit/tree-big-a.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-big-a",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/tree-big-b.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-big-b",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/tree-big-c.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-big-c",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/tree-big-d.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-big-d",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/tree-mid-a.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-mid-a",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/tree-mid-b.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-mid-b",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/tree-elder.png",
+"kind": "organic",
+"label": "beodeul_spirit/tree-elder",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/mushroom-tall.png",
+"kind": "organic",
+"label": "beodeul_spirit/mushroom-tall",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/mushroom-small.png",
+"kind": "organic",
+"label": "beodeul_spirit/mushroom-small",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/flower-violet.png",
+"kind": "organic",
+"label": "beodeul_spirit/flower-violet",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/flower-star.png",
+"kind": "organic",
+"label": "beodeul_spirit/flower-star",
+"chipset": "beodeul_spirit"
+},
+{
+"png": "tiledata/sheer-terrain/spirit/flower-gold.png",
+"kind": "organic",
+"label": "beodeul_spirit/flower-gold",
+"chipset": "beodeul_spirit"
+}
+]
+}

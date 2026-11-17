@@ -52,6 +52,8 @@ export class TodoLoop {
   noProgress = 0;
   /** 이 실행 전체의 재주입 수(기록용). */
   total = 0;
+  /** 모델이 부른 쓰기 도구 수(성공·실패 모두) — 끝맺음의 «아무것도 안 바뀜» 판정이 요청 낱말 대신 읽는다. */
+  writeCalls = 0;
   private lastSig: string | undefined;
   private openAtLast: number | undefined;
   private readonly effects: string[] = [];

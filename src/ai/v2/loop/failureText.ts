@@ -296,7 +296,7 @@ export function formatV2Failure(input: V2FailureInput): string {
     if (body.length <= FULL_CALL_MAX) lines.push(`Fixed call: ${input.tool}(${body})`);
     else lines.push(`Fixed call: ${input.tool}(…same arguments you sent, with the changes below…)`);
     // 빈 기본값 걷기 목록은 «drop N …»으로 이미 셌다 — 이유 글에서 뺀다.
-    const why = c.why.split(" · ").filter((w) => !w.startsWith("dropped empty/default optional fields")).join(" · ");
+    const why = c.why.split(" · ").filter((w) => !w.startsWith("NOT APPLIED — empty/zero/false optional fields") && !w.startsWith("applied as sent — these empty")).join(" · ");
     lines.push(`Changes: ${clip(parts.join(" · ") || "none", 260)}${why ? ` — ${clip(oneLine(why), 220)}` : ""}`);
   } else if (c) {
     lines.push(`How to fix: ${clip(oneLine(c.why), 360)}`);

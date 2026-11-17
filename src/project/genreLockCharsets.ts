@@ -156,9 +156,9 @@ function forwardCharsetFilter(project: Project): ((entry: Pick<CharsetSemanticEn
  * 허용 칩만 보이게 하는 카탈로그 필터(조수 실행 중 list_npc_graphics·그림 질의·기본 선택이 쓴다). 강제 중인 캐릭터 잠금도 사람 칩 잠금(peopleChipLock.ts)도 없으면 undefined.
  * 두 잠금을 한 필터로 묶는다 — 기본 선택 경로가 이 필터로 withNpcGraphicCatalogFilter 를 다시 걸면 바깥 필터를 덮기 때문이다.
  */
-export function genreLockCharsetCatalogFilter(project: Project): ((entry: Pick<CharsetSemanticEntry, "textureKey">) => boolean) | undefined {
+export function genreLockCharsetCatalogFilter(project: Project, userPeopleLockOnly = false): ((entry: Pick<CharsetSemanticEntry, "textureKey">) => boolean) | undefined {
   const forward = forwardCharsetFilter(project);
-  const people = peopleChipCatalogFilter(project);
+  const people = peopleChipCatalogFilter(project, userPeopleLockOnly);
   return forward && people ? (entry) => forward(entry) && people(entry) : forward ?? people;
 }
 

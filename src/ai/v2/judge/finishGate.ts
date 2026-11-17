@@ -111,8 +111,12 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   // 스토어 평가 읽기·답글·소식 카드는 프로젝트를 바꾸지 않는 것이 맞다(2026-10-25).
   // «내 게임 평가에 답글 달아 줘»처럼 «게임» 낱말이 섞여도 만들기·고치기 동사가 없으면 스토어 일로 본다.
   const storeOnly = asksStoreOnly(env?.request.task ?? "");
-  if (env && !settingOnly && !storeOnly && !asksToBeTold(env.request.task)) {
-    const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
+  // «아무것도 안 바꿨다» 는 이 턴이 한 일로 잰다 — 요청 낱말(「정리해서」「보여 줘」)이 아니라(2026-11-16 db-review B #2 #10: 「…정리해서 지워 줘」가 질문으로 갈려
+  // 아무것도 안 하고 끝나도 판정이 없었다). 쓰기 도구를 하나라도 불렀는데 프로젝트가 그대로면 짚고, 묻기만 한 턴(쓰기 호출 0)은 짚지 않는다.
+  // 용어(meta.terms)·제목(meta)도 바뀐 것으로 센다 — 용어만 고친 턴이 «하나도 안 바뀜» 으로 막혔다.
+  const triedWrite = session.loop.writeCalls > 0;
+  if (env && !settingOnly && !storeOnly && (!asksToBeTold(env.request.task) || triedWrite)) {
+    const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null, p.meta ?? null, p.session ?? null, p.quests ?? null, (p as { characters?: unknown }).characters ?? null, (p as { worldCanon?: unknown }).worldCanon ?? null]);
     try {
       if (pick(env.request.project) === pick(env.ctx.project)) game.push(tagged("game", "실행", "이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다)."));
     } catch { /* 비교 실패는 무시 */ }

@@ -114,6 +114,7 @@ const SHIP: Readonly<Record<string, string>> = {
   "maps-min": "[ship maps-min] Too few counted maps. Build new places with make_place{spec:{type:\"village\"|\"dungeon\"|\"interior\", name}} (in a world-blueprint game: build_places{add:[{name, kind, from}]}), link each by a door with create_transfer_pair and give it a person or an examine event. A map counts when doors reach it from the start, it is large enough (interior 10x10 or more) and it has its own layout. After adding doors do not call build_blueprint_path again.",
   "quests-min": "[ship quests-min] Too few counted quests. A quest counts with 2 or more steps, each with its own label, and a unique title: create_quest{def:{key:\"q_<ascii>\", title, order:\"sequence\", giver:{create:{mapId,x,y,name}}, steps:[{kind:\"talk\", label, target:{create:{mapId,x,y,name}}, lines:[...]}, {kind:\"talk\", label, target:{create:{mapId,x,y,name}}, lines:[...]}]}}. A quest about carrying a thing: onAcceptItems + a {kind:\"deliver\", itemId, count:1} step; talk steps carry nothing.",
   "act-depth-min": "[ship act-depth-min] The story chain (an event turns on a switch that the next event reads) is shorter than required. Rewrite the core path as 6-8 steps over 2 or more places with write_blueprint and call build_blueprint_path once; each new step needs a new event name. Steps with a battle or shop are not rebuilt: chain them with patch_event_page (condition = the previous step's switch).",
+  "act-depth-min/small": "[ship act-depth-min] The blueprint steps are not chained (each step's event must read the switch the step before it turned on). Call build_blueprint_path once. Steps with a battle or shop are not rebuilt: chain them with patch_event_page (condition = the previous step's switch).",
   "exit-hidden": "[ship exit-hidden] A stair exit cannot be taken by walking toward the stairs. Call create_transfer_pair again on the stair art cell; the whole stair width becomes the exit.",
   "dark-unlit": "[ship dark-unlit] A map is dark but no light follows the hero, so walkable floor outside the light sources is black on screen. Add {at:'player', radius:3-4} to sources with set_lighting_volume.",
   "critical-invisible": "[ship critical-invisible] An event that advances the story or calls the ending shows nothing on screen (transparent, or one cell of a building wall), so a new player does not know where to press. Add a sparkle with patch_event_page{mapId, eventId, pageIndex, set:{nearSparkle:{radius:2}}}, or move it onto a visible person or small object.",
@@ -250,7 +251,8 @@ function textOf(f: Finding): string | undefined {
   // 출하 차단은 갈래를 증거 머리에서 읽는다(ShipBlocker 에는 갈래 칸이 없다): 요청 기능 = 「chaser: …」, 번들 그림 = 「titleScreen.…」 · 「endings[…]…」.
   const variant = f.variant
     ?? (f.id === "requested-feature-missing" ? /^[a-z]+/u.exec(f.evidence ?? "")?.[0] : undefined)
-    ?? (f.id === "bundled-picture" ? ((f.evidence ?? "").startsWith("titleScreen") ? "title" : "ending") : undefined);
+    ?? (f.id === "bundled-picture" ? ((f.evidence ?? "").startsWith("titleScreen") ? "title" : "ending") : undefined)
+    ?? (f.id === "act-depth-min" && (f.evidence ?? "").startsWith("small") ? "small" : undefined);
   return (variant ? table[`${f.id}/${variant}`] : undefined) ?? table[f.id];
 }
 
