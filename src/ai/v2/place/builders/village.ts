@@ -2,7 +2,7 @@
 // 명세의 낱말(size·theme·style·features·hints)만 도구 손잡이로 옮기고, 도구가 못 하는 것은 missingArt 로 정직하게 보고한다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
-import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, nearestVillageKind, villageKindById, villageKindMenu } from "@/editor/tools/beodeulVillageKinds";
+import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, nearestVillageKind, villageKindById, villageKindExamples, villageKindMenu } from "@/editor/tools/beodeulVillageKinds";
 import { FEATURE_WORD_STRENGTH, askedBuildingKits, askedBuildingLabel, askedBuildingMenu, nearestBuildingKits } from "@/editor/tools/beodeulAskedBuildings";
 import type { Project } from "@/project/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
@@ -30,10 +30,23 @@ export const VILLAGE_CARD =
   `${SHEER_KINDS_CARD_LINE} ` +
   `hints.kind (optional, river·coast): village kind id, e.g. ${VILLAGE_KIND_EXAMPLES.join(" · ")}. Omitted, the game picks one. The land answer and any unknown id list all ${BEODEUL_VILLAGE_KINDS.length}.`;
 
-/** 마을 종류를 고를 수 있는 마을(강가·포구)의 땅 그림 답에 붙는 한 줄 — 전체 목록, 이 땅의 물에 맞는 종류가 앞. 다른 테마는 종류가 없다(undefined). */
-export function villageKindsLine(theme: string, water?: unknown): string | undefined {
+/**
+ * 이 게임의 마을 카드 — 종류의 예 넷만 게임마다 다르다(요청에 가까운 종류가 앞, 나머지는 게임 열쇠로 섞은 차례 — villageKindExamples).
+ * 고정 카드(VILLAGE_CARD)는 r6·r7a·r7 세 판 모두 첫 예 fishing-cove 를 그대로 hints.kind 로 받아 적게 했다. 글자 수는 고정 카드를 넘지 않는다.
+ */
+export function villageCard(key = "", request = ""): string {
+  const fixed = VILLAGE_KIND_EXAMPLES.join(" · ");
+  return VILLAGE_CARD.replace(fixed, villageKindExamples(key, request).join(" · "));
+}
+
+/**
+ * 2026-11-16 실모델 탐침: 예를 섞은 뒤에도 «바닷가 마을» 요청 세 판 모두 모델이 fishing-cove 를 직접 적었다(목록 맨 앞이 saltern 이어도) —
+ * 요청이 종류를 말하지 않으면 비워 두라고 적는다(그러면 게임 열쇠가 터에 맞는 종류를 고른다 — chooseVillageKind). 모델이 적은 종류는 그대로 짓는다.
+ */
+/** 마을 종류를 고를 수 있는 마을(강가·포구)의 땅 그림 답에 붙는 한 줄 — 전체 목록, 이 땅의 물에 맞는 종류가 앞(그 무리 안은 게임 열쇠로 섞은 차례). 다른 테마는 종류가 없다(undefined). */
+export function villageKindsLine(theme: string, water?: unknown, key?: string): string | undefined {
   if (theme !== "river" && theme !== "coast") return undefined;
-  return `hints.kind is optional: leave it out and the game picks a kind for this land; to choose one, put its id in hints.kind of the building call. ${villageKindMenu({ water: theme === "coast" ? "sea" : water === "none" ? "none" : "river" })} ${SHEER_KINDS_CARD_LINE}`;
+  return `hints.kind: set it only when the request names what the village lives on («a salt-pan village» does; «a seaside village» does not). Left out, the game picks a kind that fits this land, different per game. To set it, put its id in hints.kind of the building call. ${villageKindMenu({ water: theme === "coast" ? "sea" : water === "none" ? "none" : "river", key })} ${SHEER_KINDS_CARD_LINE}`;
 }
 
 /** 명세가 적은 kind 가 표에 없는 이름이면 그 이름(빈 값·글자가 아닌 값은 안 준 것). */

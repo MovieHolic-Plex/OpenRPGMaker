@@ -50,8 +50,30 @@ export const villageKindById = (id: string): VillageKind | undefined => BY_ID.ge
 /** 조수가 읽는 전체 목록(id 와 두세 낱말). 늘 실리는 마을 카드에는 싣지 않는다 — 마을의 땅 그림 답과 모르는 kind 의 거절 글에만 실린다(villageKindMenu). */
 const kindWords = (ks: readonly VillageKind[]): string => ks.map((k) => `${k.id} (${k.hint})`).join(" · ");
 export const VILLAGE_KIND_LIST = kindWords(BEODEUL_VILLAGE_KINDS);
-/** 늘 실리는 마을 카드의 예 넷 — 바닷가 · 강가 · 들 · 읍에서 하나씩. */
+/** 늘 실리는 마을 카드의 예 넷 — 바닷가 · 강가 · 들 · 읍에서 하나씩. 게임 열쇠가 없는 지시문(사람 편집·시험)의 예이고, 조수 실행은 villageKindExamples 가 게임마다 고른다. */
 export const VILLAGE_KIND_EXAMPLES: readonly string[] = ["fishing-cove", "mill-hamlet", "smithy-village", "harbour-town"];
+/** 예 넷의 id 글자 수 상한 — 고른 예가 늘 실리는 지시문(방탈출 상한 66,700)을 늘리지 않게 위 넷과 같은 글자 수 안에서 고른다. */
+const EXAMPLE_ID_CHARS = VILLAGE_KIND_EXAMPLES.reduce((n, id) => n + id.length, 0);
+
+/**
+ * 마을 카드에 싣는 종류의 예 넷(2026-11-16 감독 «조수가 짓는 게임이 매번 비슷하다»): r6·r7a·r7 세 판이 모두 카드의 첫 예 fishing-cove 를 hints.kind 로 보냈다.
+ * 요청에 가까운 종류 하나가 있으면 그것이 맨 앞(nearestVillageKind — 표의 id·뜻·한글 이름으로 잰다), 나머지는 게임 열쇠로 섞은 차례 — 게임마다 다른 예가 다른 순서로 선다.
+ * 같은 열쇠·같은 요청이면 늘 같은 넷이다. 열쇠도 요청도 없으면 고정 예 넷.
+ */
+export function villageKindExamples(key = "", request = ""): string[] {
+  const near = request.trim() ? nearestVillageKind(request) : undefined;
+  // 열쇠가 없으면(사람 편집·시험) 고정 예 넷의 차례 — 요청에 가까운 종류만 앞에 선다.
+  const fixed = VILLAGE_KIND_EXAMPLES.map((id) => villageKindById(id)).filter((k): k is VillageKind => !!k);
+  const seeded = key.trim() ? [...BEODEUL_VILLAGE_KINDS].sort((a, b) => lookHash(`kind-example|${key}|${a.id}`) - lookHash(`kind-example|${key}|${b.id}`) || a.id.localeCompare(b.id)) : fixed;
+  const out: string[] = [];
+  let chars = 0;
+  for (const k of [...(near ? [near] : []), ...seeded]) {
+    if (out.length >= VILLAGE_KIND_EXAMPLES.length) break;
+    if (out.includes(k.id) || chars + k.id.length > EXAMPLE_ID_CHARS) continue;
+    out.push(k.id); chars += k.id.length;
+  }
+  return out;
+}
 
 /** 종류를 가르지 못하는 낱말 — 가까운 이름을 찾을 때 세지 않는다. */
 const COMMON_KIND_WORDS = new Set(["village", "town", "hamlet", "마을", "읍"]);
@@ -98,10 +120,12 @@ export function nearestVillageKind(word: string): VillageKind | undefined {
 /**
  * 조수가 마을을 짓기 전에 읽는 종류 목록 한 줄. water 를 주면 그 물에 맞는 종류를 앞에(땅 그림 답), near 를 주면 그 낱말에 가까운 종류를 앞에(모르는 kind 의 거절 글).
  */
-export function villageKindMenu(by: { water?: VillageWater; near?: string } = {}): string {
+export function villageKindMenu(by: { water?: VillageWater; near?: string; key?: string } = {}): string {
   if (by.near !== undefined) return `Village kinds, nearest first: ${kindWords(villageKindsNearestFirst(by.near))}.`;
   if (by.water === undefined) return `Village kinds: ${VILLAGE_KIND_LIST}.`;
-  const fit = BEODEUL_VILLAGE_KINDS.filter((k) => k.fit.water.includes(by.water!)), other = BEODEUL_VILLAGE_KINDS.filter((k) => !k.fit.water.includes(by.water!));
+  // 그 물에 맞는 무리 안은 게임 열쇠로 섞는다 — 표의 차례 그대로면 바닷가 마을마다 fishing-cove 가 맨 앞에 섰다. 열쇠가 없으면 표의 차례.
+  const order = (ks: VillageKind[]) => (by.key?.trim() ? ks.sort((a, b) => lookHash(`kind-menu|${by.key}|${a.id}`) - lookHash(`kind-menu|${by.key}|${b.id}`) || a.id.localeCompare(b.id)) : ks);
+  const fit = order(BEODEUL_VILLAGE_KINDS.filter((k) => k.fit.water.includes(by.water!))), other = BEODEUL_VILLAGE_KINDS.filter((k) => !k.fit.water.includes(by.water!));
   return `Village kinds for this water: ${kindWords(fit)}. For other water (built anyway if named; scenes with no room are left out): ${kindWords(other)}.`;
 }
 
