@@ -124,7 +124,11 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   // 이름 낱말이 먼저: 「카페 온기」에 방 종류 ldk 가 붙어 와도 카페다(G9).
   const program = typeof spec.hints?.program === "string" ? spec.hints.program
     : PROGRAM_RULES.find(([re]) => has(spec.name, re))?.[1] ?? PROGRAM_RULES.find(([re]) => has(textOf(spec), re))?.[1] ?? "apartment";
-  const { seed, baseSeed } = cityInteriorSeed(spec, prev?.baseSeed ?? prev?.seed);
+  const selected = cityInteriorSeed(spec, prev?.baseSeed ?? prev?.seed);
+  // 예전 한국 실내는 variant를 기록만 했다. 이름·가구만 고칠 때는 실제로 지은 씨앗을 유지한다.
+  const sameSelection = previous?.spec.hints?.seed === spec.hints?.seed && previous?.spec.hints?.variant === spec.hints?.variant;
+  const seed = prev && sameSelection ? prev.seed : selected.seed;
+  const baseSeed = selected.baseSeed;
   for (const z of spec.zones ?? []) for (const a of z.anchors ?? []) missing.push(`${a}(주인공 물건 지정은 예제 구성에서 못 함 — 견본 가구 한 벌)`);
   if ((spec.floors ?? 1) >= 2) missing.push("위층(한국 도시 실내는 한 층씩 — 위층은 따로 지어 잇는다)");
   const target = targetMap(run, spec, previous);
