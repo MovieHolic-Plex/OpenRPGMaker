@@ -74,11 +74,17 @@ function applyOne(draft: Project, collection: string, patch: Obj): Outcome {
   // 실패한 레코드가 반쯤 바뀐 채 남지 않게 — 도구는 draft 를 고치다 던질 수 있다. 그 묶음 목록만 되돌린다.
   const rows = collectionRows(draft, collection);
   const keep = rows ? structuredClone(rows) : undefined;
+  // Upserts also write outside their list: upsert_skill creates the combo switch (comboSwitchId) before later checks can throw,
+  // and item/skill/equipment/state upserts mark stand-in icons in meta. Roll those back too.
+  const keepSwitches = structuredClone(draft.switches);
+  const keepIcons = draft.meta.oprnPlaceholderIcons ? structuredClone(draft.meta.oprnPlaceholderIcons) : undefined;
   try {
     tool.run(draft, { [arg]: patch });
     return { id, ok: true };
   } catch (error) {
     if (rows && keep) rows.splice(0, rows.length, ...keep);
+    draft.switches = keepSwitches;
+    if (keepIcons) draft.meta.oprnPlaceholderIcons = keepIcons; else delete draft.meta.oprnPlaceholderIcons;
     return { id, ok: false, why: (error instanceof Error ? error.message : String(error)).split("\n")[0]!.slice(0, 160) };
   }
 }

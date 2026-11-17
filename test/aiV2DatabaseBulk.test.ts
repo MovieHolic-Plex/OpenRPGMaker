@@ -80,6 +80,16 @@ describe("bulk_edit_database", () => {
   });
 });
 
+describe("bulk_edit_database rollback", () => {
+  it("a patch that fails after its upsert made the combo switch leaves no switch behind", () => {
+    const ctx = fresh();
+    const switches = ctx.project.switches.length;
+    const out = run(ctx, "bulk_edit_database", { collection: "skills", patches: [{ id: ctx.project.database.skills[0]!.id, comboSwitchId: "sw_combo_test", area: { shape: "square" } }] });
+    expect(out.ok).toBe(false);
+    expect(ctx.project.switches).toHaveLength(switches);
+  });
+});
+
 describe("writers that had no tool", () => {
   it("difficulty, fusions, game-over list, play settings, skill tree", () => {
     const ctx = fresh();
