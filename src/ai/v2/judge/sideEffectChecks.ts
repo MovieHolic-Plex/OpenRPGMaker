@@ -88,6 +88,9 @@ export function unaskedChanges(before: Project, after: Project, task: string, wr
     for (const r of (adb[section] as Obj[] | undefined) ?? []) {
       const prev = old.get(String(r.id));
       if (!prev || JSON.stringify(prev) === JSON.stringify(r)) continue;
+      // 길 맞춤 사본(enemy_path_* · skill_path_*)은 끝맺음이 만들고 맞추는 행이다 — 모델이 원본을 고치면 걷었다가 다시 만든다(story/foughtCopy).
+      // 다시 만든 행은 단계 쓰기 기록에 «새 행» 으로 빠져 모델이 바꾼 것으로 짚혔다(2026-11-16 명세 은행 r3b-fun).
+      if (/^(?:enemy|skill)_path_/u.test(String(r.id))) continue;
       const name = String(r.name ?? prev.name ?? "");
       if (name && task.includes(name)) continue;
       // 주인공·동료 요청은 배우 고치기가 정상이다.

@@ -5,7 +5,7 @@
 //     기계 확인이 이름에 덜 흔들리는 것(전투·대사·인물·엔딩·지급)만 «요청 뼈대» 단계로 덧붙인다(source gate).
 //     장소·이동·합류·증거처럼 이름을 모델이 정하거나 확인 종류가 없는 요소는 덧붙이지 않고 카드의 «잊지 말 것» 줄로만 둔다.
 import type { TodoCheck, TodoItem } from "../todo/types";
-import { nameScore } from "../todo/names";
+import { bossRoleOnly, nameScore } from "../todo/names";
 
 export interface SkeletonElement {
   /** 사람이 읽는 항목 글. */
@@ -29,6 +29,9 @@ function nameFrom(words: string): string | undefined {
   if (/^(?:뒤|밑|위|안|속|옆|아래|앞)(?:에서|에|쪽)?(?:는|은|도)?$/u.test(name)) return undefined;
   return name;
 }
+
+/** 「전투는 없어도 돼」·「싸움 없이」 처럼 싸움을 빼 달라는 말을 뗀 글 — 그 말의 «전투» 를 싸움을 청한 것으로 읽지 않는다. */
+export const withoutDeclinedFights = (text: string): string => text.replace(/(?:전투|싸움|보스전)(?:은|는|이|가|도)? ?(?:없어도|없이|없는|없게|필요 없)\S*/gu, "");
 
 const W = "[가-힣A-Za-z0-9]+";
 /** 「X가 말을 걸/나타나/경고/맞이」 — 말하는 인물. */
@@ -109,11 +112,15 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
     }
   }
   // 「마왕을 쓰러뜨린 뒤 …」·「이긴 뒤」 처럼 지난 일을 말하는 전투 낱말은 떼고 본다.
-  const tb = t.replace(/\S+ (?:쓰러뜨린|이긴|물리친) 뒤|(?:쓰러뜨린|이긴|물리친) 뒤/gu, "");
+  // 「전투는 없어도 돼」·「싸움 없이」 는 전투를 빼 달라는 말이다(2026-11-16 r6b: 전투 항목이 덧붙어 모델이 첫 호출에 떨궜다).
+  const tb = withoutDeclinedFights(t.replace(/\S+ (?:쓰러뜨린|이긴|물리친) 뒤|(?:쓰러뜨린|이긴|물리친) 뒤/gu, ""));
   const battle = /싸우|싸움|전투|몬스터|관장전|결투|덤벼|보스전/u.exec(tb);
   if (battle) {
-    const foes = [...tb.matchAll(FIGHTS)].map((m) => nameFrom(m[1] ?? "")).filter((n): n is string => !!n);
-    const boss = /보스|관장전/u.test(tb) || foes.some((n) => /마왕|보스|관장/u.test(n));
+    // 「마지막 보스와 싸우면」 의 «마지막 보스» 는 이름이 아니라 역할이다 — 이름으로 찾으면 실제 보스(「검은 종지기」)가 서도 끝까지 ✗ 로 남는다
+    // (2026-11-16 r6a: 사람 두기·보스 전투 두 항목이 «no battle opponent "마지막 보스"» 로 남았다). 역할만 적은 상대는 «보스전» 으로만 확인한다.
+    const fought = [...tb.matchAll(FIGHTS)].map((m) => nameFrom(m[1] ?? "")).filter((n): n is string => !!n);
+    const foes = fought.filter((n) => !bossRoleOnly(n));
+    const boss = /보스|관장전/u.test(tb) || fought.some((n) => /마왕|보스|관장/u.test(n));
     const who = foes[0] ?? talkers[0] ?? (boss ? meets[0] : undefined);
     if (foes[0] && !talkers.concat(meets).some((x) => nameScore(x, foes[0]!) > 0)) els.push({ content: `${foes[0]} 두기`, check: { kind: "person", name: foes[0], ...f }, from: foes[0] });
     els.push({ content: `${boss ? "보스 " : ""}전투${who ? ` — ${who}` : ""}`, check: { kind: "battle", ...(who ? { who } : {}), ...(boss ? { boss: true } : {}), ...f }, from: battle[0] });

@@ -1986,8 +1986,8 @@ const upsertEnemy: ToolDefinition = {
     const outcome = upsertById(draft.database.enemies, record);
     // 보스 하한은 액터 파티 척도라 몬스터 파티 게임에서는 쓰지 않는다 — 관장 강도는 level 로 정한다.
     // 하한은 기본값이다: 저자가 이번 호출에 준 능력치는 그대로 둔다(2026-10-30 이세계 고딩: maxHp 400 이 590 으로 덮였다).
-    // 이미 있는 적을 고칠 때는 role:"boss" 를 이번에 다시 준 경우에만 빠진 값에 하한을 건다 — 예전 호출의 명시값을 덮지 않는다.
-    const bossScaling = isBossEnemy(record, args.role) && !species && (!existed || args.role === "boss")
+    // 이미 있는 적을 고칠 때는 role:"boss" 를 이번에 다시 준 경우에만 빠진 값에 하한을 건다 — 예전 호출의 명시값을 덮지 않는다. 길 맞춤 사본(enemy_path_*)에는 걸지 않는다 — 끝맺음이 시작 파티에 맞춰 내린 값이다(2026-11-16 r6a: 사본의 기술만 고쳤는데 HP 493 이 580 으로 올라 승률 30%).
+    const bossScaling = isBossEnemy(record, args.role) && !species && !record.id.startsWith("enemy_path_") && (!existed || args.role === "boss")
       ? scaleBossToStartParty(draft, record, explicitBossStats(args.enemy))
       : undefined;
     const bossNote = bossScaling?.note;

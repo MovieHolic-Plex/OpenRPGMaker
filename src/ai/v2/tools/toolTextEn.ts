@@ -76,7 +76,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   remove_event: { d: "Delete an event from a map (destructive)." },
   patch_event_page: {
-    d: "Change only the given fields of one page of an existing event (graphic, commands, conditions, trigger, movement, animationType, priority, name). Other fields and pages stay. Sending commands replaces that page's whole command list — include the commands to keep. To add, delete or reorder pages use upsert_event with replacePages:true, or add_event_page.",
+    d: "Change only the given fields of one page of an existing event (graphic, commands, conditions, trigger, movement, animationType, priority, name). Other fields and pages stay. Sending commands replaces that page's whole command list — include the commands to keep. To add, delete or reorder pages use upsert_event replacePages:true or add_event_page.",
     p: { pageIndex: "0-based. Ignored if pageId is given. Default 0.", set: "Page fields to change only, e.g. {graphic:{sprite:{type:'bundled',id:'…'},pattern:73,direction:'down'}} or {commands:[…]}." },
   },
   add_event_page: {
@@ -86,7 +86,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   upsert_event: {
     d: "Create an event, or partly update one (only the top-level fields you send change; omitted pages, graphic, coordinates stay). Prefer higher tools (add_people/add_event/place_chest/create_transfer_pair). pages replaces the whole page array — on an existing event send replacePages:true with it; to change one page use patch_event_page. Lines, choices and effects live only in commands, e.g. {kind:'choices',options:[{text:'Yes',branch:[…]}]}. Show/give an item = {kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume}. Boss result = {kind:'battleProcessing',troopId,branchOnResult:true,victoryBranch,defeatBranch,escapeBranch}.",
     p: {
-      replacePages: "true = replace the whole pages array (add, delete or reorder pages). To change one page use patch_event_page.",
+      replacePages: "true = replace the whole pages array (add, delete, reorder).",
       "commands[]": "Event command. kind picks the command; e.g. {kind:'text',speaker,body}, {kind:'setSwitch',switchId,value}, {kind:'changeItem',itemId,amount}, {kind:'transfer',mapId,x,y}, {kind:'triggerEnding',endingId}.",
       "pages[]": "EventPage. Lines, choices and effects go in commands only (no page.lines/text/face).",
       "pages[].conditions": "All must hold. The last page whose conditions hold runs — put the default page first, conditional pages after.",

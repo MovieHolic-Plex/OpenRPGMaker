@@ -2,6 +2,7 @@ import { validateEndingContinueTo, validateEndingPresentation } from "@/project/
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { BEAT_KIND_INFERRED_WARNING, canonicalizeSayBeatAliases, compileCutscene, CutsceneValidationError, SAY_BEAT_ALIAS_WARNING, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { collectEndingWarnings } from "@/project/endings";
+import { blueprintEndingId } from "@/project/gameBlueprint";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EndingCondition, EndingContinueTo, EndingDef, Project } from "@/project/types";
@@ -150,6 +151,11 @@ const defineEnding: ToolDefinition = {
     const id = cleanId(args.id);
     const name = cleanName(args.name);
     const flagWarnings: string[] = [];
+    // 청사진 경로가 먼저 지어 둔 같은 맺음의 엔딩(blueprintEndingId)이 있으면 새로 만들지 않고 그 엔딩을 이 id 로 고쳐 쓴다 —
+    // 이미 그 엔딩을 부르던 triggerEnding·endingSeen 은 새 id 로 옮긴다(옛 id 를 부르던 곳도 그대로 이 엔딩을 연다).
+    // 왜(2026-11-16 pf4 은행 r5a-river): build_blueprint_path 가 define_ending 보다 먼저 돌아 ending_xbbs3u 를 만들고, 모델의 define_ending 이
+    // 같은 이름의 ending_mill 을 따로 더해 보스의 두 페이지가 서로 다른 엔딩을 불렀다.
+    const adopted = adoptBlueprintEnding(draft, id, name);
     const prior = draft.endings?.find(entry => entry.id === id);
     // 이미 있는 엔딩을 다시 부르면 안 보낸 칸은 그대로 둔다 — 그림 하나 걸려고 다시 불렀다가 에필로그·조건·우선순위가 지워졌다
     // (generate_art{target:"ending"} 는 conditions 를 안 보내 인자 검증에서 매번 거절됐다, 2026-11-11 작은 일 기준선).
@@ -223,6 +229,7 @@ const defineEnding: ToolDefinition = {
     ];
     return {
       summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.`
+        + (adopted ? ` This replaced the ending ${adopted.from} that build_blueprint_path had made for the same closing — it is now ${id}; ${adopted.repointed} call(s) to it were moved to ${id}.` : "")
         + (keptPresentation.length ? ` presentation: kept ${keptPresentation.join(", ")} from before (only the fields you sent changed; send a field as null to clear it).` : ""),
       data: { ending, warnings },
       ...(warnings.length > 0 ? { warnings } : {}),
@@ -231,6 +238,35 @@ const defineEnding: ToolDefinition = {
 };
 
 export { DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID };
+
+const endingNameKey = (s: string) => s.normalize("NFC").replace(/[\s·・,.!?'"「」『』()[\]~\-_/]+/gu, "").toLowerCase();
+
+/**
+ * define_ending 이 새 id 로 부를 때, 청사진 경로가 같은 이름으로 먼저 만든 엔딩(id = blueprintEndingId(이름))이 있으면 그 엔딩의 id 를 새 id 로 바꾸고
+ * 그 엔딩을 가리키던 endingId(triggerEnding · endingSeen 조건)를 모두 옮긴다. 보낸 칸은 뒤의 define_ending 이 덮어쓰고, 안 보낸 칸은 그 엔딩의 것을 물려받는다.
+ */
+function adoptBlueprintEnding(draft: Project, id: string, name: string): { from: string; repointed: number } | undefined {
+  const endings = draft.endings ?? [];
+  if (endings.some((entry) => entry.id === id)) return undefined;
+  const fromId = blueprintEndingId(name);
+  if (fromId === id) return undefined;
+  const made = endings.find((entry) => entry.id === fromId && endingNameKey(entry.name) === endingNameKey(name));
+  if (!made) return undefined;
+  made.id = id;
+  let repointed = 0;
+  const visit = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(visit); return; }
+    if (!node || typeof node !== "object") return;
+    const record = node as Record<string, unknown>;
+    if (record.endingId === fromId) { record.endingId = id; repointed += 1; }
+    for (const value of Object.values(record)) if (value && typeof value === "object") visit(value);
+  };
+  visit(draft.maps);
+  visit(draft.commonEvents ?? []);
+  visit((draft.database as unknown as { troops?: unknown }).troops ?? []);
+  visit(draft.endings);
+  return { from: fromId, repointed };
+}
 
 /**
  * 「N일 뒤 결말」 한 줄 경로(2026-10-16 연애 감사). 지금까지는 시간 시스템 → 변수 → 공통 이벤트 → fork → triggerEnding 을

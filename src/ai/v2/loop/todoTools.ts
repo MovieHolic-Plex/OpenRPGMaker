@@ -6,6 +6,7 @@
 //       · 쓰기 실패는 진행 중 항목의 실패로 센다 — 3번째 또는 같은 실패 서명 연속이면 막힘으로 닫고 기대는 항목도 닫는다
 //       · 성공한 쓰기의 결과 지문을 고리(TodoLoop)에 넘긴다(진척 판정)
 //       · 성공한 쓰기 전후 차이(맵·이벤트·아이템·적 그룹 id)를 진행 중 항목(또는 인자 todoId 의 항목) refs 에 묶는다(refs.ts)
+import { sizeNoticeOnce } from "../judge/sizeNotice";
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiAssistantV2Env } from "../shared/env";
 import { modelText, modelTextCut, parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
@@ -250,7 +251,7 @@ function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoTool
             state.callNoAtDone = state.callNo;
             const next = store.current();
             env.emit({ type: "execution_status", name: "v2.todo.done", ok: true, summary: `할 일 ${item.id} ✓${check ? ` — ${check.detail.slice(0, 120)}` : ""}${bound ? ` · ${bound}` : ""}` });
-            result = done(`${item.id} ✓${check ? ` machine check: ${ce}` : ""}${bound ? ` (${bound})` : ""}. ${next ? `Next: ${next.id} «${modelText(next)}» — continue now.` : store.openCount() ? "" : "No open items."}`);
+            result = done(`${item.id} ✓${check ? ` machine check: ${ce}` : ""}${bound ? ` (${bound})` : ""}. ${next ? `Next: ${next.id} «${modelText(next)}» — continue now.` : store.openCount() ? "" : `No open items.${sizeNoticeOnce(store, env.ctx.project, env.request.task)}`}`);
           } else {
             const why = attributeFailure(env, store, `check:${maskVolatile(check!.detail).slice(0, 160)}`, `기계 확인 ✗ ${check!.detail}`, undefined, `machine check ✗ ${ce}`);
             env.emit({ type: "execution_status", name: "v2.todo.false_done", ok: false, summary: `할 일 ${item.id} done 요청 — 기계 확인 ✗: ${check!.detail.slice(0, 160)}` });
