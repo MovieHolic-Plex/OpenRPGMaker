@@ -5,6 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { offPurposeProps } from "@/ai/v2/place/roomPurpose";
+import { canMove, isPassable } from "@/project/collision";
 
 const DESK = "kit:modern_city/mc-in-mci-desk-pc-back";
 
@@ -40,4 +41,23 @@ describe("stamp_object 겹침", () => {
     const left = offPurposeProps(ctx.project, ctx.project.maps[mapId]!).flatMap((r) => r.props.map((p) => p.label));
     expect(left.filter((l) => /소파/u.test(l)).length).toBeLessThan(off[0]!.props.filter((p) => /소파/u.test(p.label)).length);
   });
+});
+
+it("stamps a desk and warns only when it cuts off nearby walkable floor", () => {
+  const { ctx, mapId } = room("창고", "storage");
+  const map = ctx.project.maps[mapId]!;
+  // Extend the north wall by a tile. The corner can now be approached only from the south.
+  map.lowerTiles[3 * map.width + 3] = map.lowerTiles[2 * map.width + 3]!;
+  expect(canMove(ctx.project, map, 1, 4, 1, 3)).toBe(true);
+
+  const closing = runTool(ctx, "stamp_object", { objectId: DESK, mapId, x: 1, y: 3 });
+  expect(closing.ok).toBe(true);
+  expect(closing.diff?.warnings).toEqual(expect.arrayContaining([expect.stringMatching(/Boxed in:.*\(1,3\).*\(2,3\)/u)]));
+  const stamped = ctx.project.maps[mapId]!;
+  expect(isPassable(ctx.project, stamped, 1, 3)).toBe(true);
+  expect(canMove(ctx.project, stamped, 1, 4, 1, 3)).toBe(false);
+
+  const open = runTool(ctx, "stamp_object", { objectId: DESK, mapId, x: 4, y: 5 });
+  expect(open.ok).toBe(true);
+  expect(open.diff?.warnings ?? []).not.toEqual(expect.arrayContaining([expect.stringContaining("Boxed in:")]));
 });
