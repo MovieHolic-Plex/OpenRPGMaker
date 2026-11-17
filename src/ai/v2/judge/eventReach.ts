@@ -52,6 +52,29 @@ export function eventBlocks(ev: GameEvent): boolean {
   return pages.some(pageBlocks) && !stepsAsideAfterWin(ev);
 }
 
+/**
+ * 지금 켜진 스위치로 실제로 도는 페이지(런타임처럼 조건이 맞는 마지막 페이지)가 막을 때만 막는 칸 — 퍼즐·사슬을 풀어 가며 걷는 쪽(puzzleFlow)이 쓴다.
+ * holds 는 페이지 조건이 맞는가(스위치만 보고, 나머지 조건은 맞을 수 있다고 본다). 맞는 페이지가 없으면 그 이벤트는 없는 것과 같다.
+ * 왜(2026-11-16 r7 R1 · pf4-live c3): 「지하 문」 은 번호를 풀면 마지막 페이지가 «below»(지나감)로 바뀌는데, 어느 페이지든 막으면 막는다고 세어
+ * 풀린 문 너머의 계단·묘지가 «시작 맵에서 가는 길이 없다» 로 잡혔다. 자동 플레이·브라우저 플레이는 그 문을 지나 엔딩에 닿았다.
+ */
+export function blockersWhen(map: GameMap, holds: (page: NonNullable<GameEvent["pages"]>[number], ev: GameEvent) => boolean, except?: string): Set<number> {
+  const out = new Set<number>();
+  for (const ev of map.events ?? []) {
+    if (ev.id === except || !eventBlocks(ev)) continue;
+    const pages = ev.pages ?? [];
+    let active: (typeof pages)[number] | undefined;
+    for (let i = pages.length - 1; i >= 0; i--) if (holds(pages[i]!, ev)) { active = pages[i]; break; }
+    if (!active || !pageBlocks(active)) continue;
+    out.add(ev.y * map.width + ev.x);
+    const rect = eventPassageRect(ev);
+    for (let y = Math.max(0, rect.top); y <= Math.min(map.height - 1, rect.bottom); y++) {
+      for (let x = Math.max(0, rect.left); x <= Math.min(map.width - 1, rect.right); x++) out.add(y * map.width + x);
+    }
+  }
+  return out;
+}
+
 /** 시작 맵은 시작점 하나(다른 맵에서 돌아오는 착지점은 잠긴 문 너머일 수 있다), 그 밖의 맵은 들어오는 착지점들. */
 export function anchorsOf(project: Project, map: GameMap): Cell[] {
   const start = project.startMapId === map.id && project.startPos && isPassable(project, map, project.startPos.x, project.startPos.y) ? [{ x: project.startPos.x, y: project.startPos.y }] : [];
