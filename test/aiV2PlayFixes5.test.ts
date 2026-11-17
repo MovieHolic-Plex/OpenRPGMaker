@@ -68,3 +68,47 @@ describe("청사진의 중간 싸움 단계는 blocks 를 말하지 않아도 �
     }
   }, 60_000);
 });
+
+// R3 · R2(r7-harbour `001.44` «Kept as built (their own fight or shop): s2»): 청사진 s2 고르기 단계의 어물전 주인이 상점을 갖고 있어 단계가 지어지지 않았다 —
+// 고르기 · 번호 대사가 빠졌고, 사슬이 s1 → 단서로 건너뛰어 강지기의 «어물전에 가 보게» 와 목표 줄이 다른 곳을 가리켰다.
+describe("상점만 든 청사진 단계도 짓고 상점은 그 사람에게 남긴다 — r7 R3 · R2", () => {
+  async function harbour() {
+    const { buildBlueprintPath } = await import("@/ai/v2/story/blueprintPath");
+    const project = createBlankProject() as Project;
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    const map = project.maps[project.startMapId]!;
+    const place = map.name || map.id;
+    map.events.push(event("ev_fishwife", "어물전 주인", 6, 6, [page([], [{ kind: "text", body: "오늘 잡은 생선이야!" }, { kind: "shop", itemIds: ["item_potion"] }])]));
+    project.gameBlueprint = normalizeGameBlueprint({
+      title: "갈매나루", genre: "JRPG", playerGoal: "지하 문을 열자.", ending: { name: "다시 열린 바다", how: "문을 연다.", feeling: "안도", closing: ["바다가 열렸다."] },
+      steps: [
+        { id: "s1", kind: "talk", who: "강지기", place, event: "강지기", action: "강지기 이야기를 듣는다", gives: "강지기의 부탁", feeling: "불길", text: { lines: ["어물전 아낙이 밤바다에서 뭘 봤다더군. 가서 물어보게나."] } },
+        { id: "s2", kind: "choice", who: "어물전 주인", place, event: "어물전 주인", action: "소문을 듣고 챙길 것을 고른다", needs: "강지기의 부탁", gives: "어물전 소문", feeling: "응원",
+          text: { lines: ["지하 문 번호는 7474야. 잊지 마!"], choices: [{ text: "회복약을 챙겨 간다", lines: ["옳지."] }, { text: "성수를 챙겨 간다", lines: ["망자한텐 성수지."] }] } },
+        { id: "s3", kind: "puzzle", place, event: "지하 문", action: "지하 문을 연다", needs: "어물전 소문", gives: "ending", feeling: "긴장", text: { lines: ["녹슨 숫자 자물쇠."], code: "7474" } },
+      ],
+    });
+    const result = buildBlueprintPath(createBuildRun(ctx));
+    return { result, ctx };
+  }
+
+  it("고르기 · 번호 대사가 지어지고 상점은 그 사람의 페이지에 남는다", async () => {
+    const { result, ctx } = await harbour();
+    expect(result.ok).toBe(true);
+    expect(result.summary).not.toContain("Kept as built (their own fight or shop): s2");
+    const fishwife = ctx.project.maps[ctx.project.startMapId]!.events.find((e) => e.id === "ev_fishwife")!;
+    const json = JSON.stringify(fishwife.pages);
+    expect(json).toContain("회복약을 챙겨 간다");
+    expect(json).toContain("7474");
+    expect(json).toContain('"kind":"shop"');
+    expect((result.warnings ?? []).join(" ")).toContain("Built the step and kept the shop on it: s2 어물전 주인");
+    // 단계를 넘기는 페이지(고르기)에는 가게가 없다 — 이야기 중에 가게 창이 열리지 않는다. 자동 플레이가 엔딩까지 간다.
+    expect(fishwife.pages!.filter((p) => JSON.stringify(p.commands).includes("choices")).every((p) => !JSON.stringify(p.commands).includes('"kind":"shop"'))).toBe(true);
+    const { runAutoPlay } = await import("@/qa/gameCheck/autoPlay");
+    const run = runAutoPlay(ctx.project, { budgetMs: 30_000, honest: true }).runs[0]!;
+    expect(run.ok, run.failure?.detail).toBe(true);
+    // s3 자물쇠는 s2 다음에만 열린다 — 강지기 뒤로 곧장 건너뛰지 않는다.
+    const s2Built = ctx.project.gameBlueprint!.steps[1]!.built;
+    expect(s2Built?.eventId).toBe("ev_fishwife");
+  }, 60_000);
+});

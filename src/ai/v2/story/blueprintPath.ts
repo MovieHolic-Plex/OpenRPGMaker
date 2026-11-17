@@ -13,7 +13,7 @@
 import { alignCodeClues, digitWord } from "./codeClues";
 import { isPassable } from "@/project/collision";
 import { codeReadable } from "@/project/codeReading";
-import type { GameMap } from "@/project/types";
+import type { GameEvent, GameMap } from "@/project/types";
 import { blueprintEndingId, endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { choiceAtThing, samePersonStep } from "./samePerson";
@@ -23,7 +23,7 @@ import { incomingLandings, resolveWhere } from "../place/where";
 import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
 import { walkStart } from "../place/cells";
 import type { BuildRun, ContentBuildResult } from "../shared/types";
-import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, victoryGatedSwitches, walkBlueprint } from "./blueprint";
+import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, victoryGatedSwitches, walk, walkBlueprint } from "./blueprint";
 import { chainFightStepsIn, endAfterFinalFightIn } from "./fightStepChain";
 import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { trivialCode } from "./puzzle";
@@ -38,12 +38,15 @@ import { gateBattleSteps, orderStepBattles, fitUnwinnableStepBattles } from "./b
 import { storedStepText, modelCode, fixLookLines, tellCode, stepObjectives } from "./blueprintPathText";
 import { hostStepThing } from "./stepThings";
 import { wayOutSpot } from "./stepWayOut";
+
 import { shownLines, stepHandover } from "./stepHandover";
 import { behindBuildingStrip } from "../place/entrances";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
 import { remapGives, settleCarriedSteps } from "./blueprintCarry";
 import { foeTroop, roadFoeSpecies } from "./stepFoeTroop";
 import { namesNextStep, nextStepLine, stepGoalAt, wordlessLine } from "./playerLines";
+
+type Obj = Record<string, unknown>;
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -206,13 +209,21 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   // 모델이 지은 전투·상점·몬스터 같은 복잡한 단계 이벤트는 줍기 고리로 덮어쓰지 않는다(2026-10-28: 몬스터 리그 챔피언 이벤트) — 그 단계는 그대로 두고
   // 나머지 단계를 짓는다. 호출을 통째로 거절하던 자리다(2026-11-16 r6a: 싸움 단계 둘 때문에 대화·고르기 단계 넷이 지어지지 않아 사슬이 끊겼다).
   // 그대로 둔 싸움 단계는 fightStepChain 이 앞뒤 단계와 잇는다.
+  // 상점만 든 단계 이벤트 → 그 상점 명령들(단계를 지은 뒤 새 페이지에 다시 단다).
+  // 왜(2026-11-16 r7 R3 · R2): 청사진 s2(어물전 주인의 고르기 · 번호 대사)가 상점 때문에 «그대로 둔 단계» 가 되어 지어지지 않았고,
+  // 사슬이 s1 → 단서로 건너뛰어 강지기의 «어물전에 가 보게» 와 목표 줄 «번호 쪽지를 살펴보자» 가 다른 곳을 가리켰다.
+  const shopOnly = new Map<string, Obj[]>();
   const rich = new Set(bp.steps.flatMap((step) => {
     const map = mapFor(project0, step.place);
     const ev = map?.events.find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event));
     const kinds = JSON.stringify(ev?.pages ?? []).match(/"kind":"([A-Za-z_]+)"/gu) ?? [];
     // 이 함수가 지은 싸우는 단계(kind battle 의 사슬 고리)는 다시 짓는다 — 대사만 바꿔 다시 부를 수 있게.
     if (step.kind === "battle" && ev?.id.startsWith("ev_chain_")) return [];
-    return kinds.some((k) => RICH_KIND.test(k)) ? [step.id] : [];
+    const rich = kinds.filter((k) => RICH_KIND.test(k));
+    // 상점만 든 사람(어물전 주인)은 그 단계의 대사·고르기를 짓고 상점은 새 페이지에 옮겨 단다(아래 shopKept) — 상점 때문에 단계를 통째로 건너뛰지 않는다.
+    // 경로가 이미 이 이벤트에 지은 단계(step.built)는 다시 짓지 않는다 — 대사를 바꾸려면 lines 를 보낸다.
+    if (rich.length && rich.every((k) => k === '"kind":"shop"') && step.kind !== "battle" && step.built?.eventId !== ev!.id) { shopOnly.set(step.id, shopCommandsOf(ev!)); return []; }
+    return rich.length ? [step.id] : [];
   }));
   // 1) 엔딩 — 청사진 ending 이름과 같은 엔딩이 있으면 그것, 없으면 하나뿐인 엔딩, 그래도 없으면 새로 정의한다.
   const endings = (project0.endings ?? []) as { id: string; name?: string }[];
@@ -330,7 +341,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // 번호·암호 단계인데 입력 없이 넘어가는 이벤트는 그대로 두지 않는다(mt3 flash: 「비밀번호 입력」이 조사만으로 엔딩).
     const bypass = existing && isCodeStep(step) ? codeStepBypass(run.ctx.project, existing) : undefined;
     const own = !!existing && rich.has(step.id);
-    if (existing && (own || (!text.length && !bypass && !carried.renamed.has(existing.id) && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)))) {
+    if (existing && !shopOnly.has(step.id) && (own || (!text.length && !bypass && !carried.renamed.has(existing.id) && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)))) {
       const g = eventGives(run.ctx.project, existing);
       // 싸움이면 이겨야 켜지는 스위치가 이 단계의 결과다(말만 걸어도 켜지는 스위치가 아니라).
       const won = own ? victoryGatedSwitches(run.ctx.project) : undefined;
@@ -477,6 +488,22 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
 
   // 3) 청사진 이름을 실제로 지은 맵·이벤트에 맞춘다(출하 검사가 같은 이름으로 걷는다).
   const eventIds = built.eventIds ?? [];
+  // 상점만 들었던 단계 이벤트: 사슬이 다시 쓴 페이지마다 그 상점을 끝에 다시 단다(앞 단계 전의 «아직» 페이지도 — 가게는 처음부터 연다).
+  const shopKept: string[] = [];
+  links.forEach((_, li) => {
+    const k = linkStep[li]!;
+    const shop = k >= 0 ? shopOnly.get(steps[k]!.id) : undefined;
+    const made = eventIds[li];
+    if (!shop?.length || !made) return;
+    const ev = run.ctx.project.maps[made.mapId]?.events.find((e) => e.id === made.eventId);
+    if (!ev || JSON.stringify(ev.pages ?? []).includes('"kind":"shop"')) return;
+    // 단계를 넘기는 페이지(그 단계의 결과를 켜는 페이지)에는 달지 않는다 — 단계 대사 · 고르기 중에 가게 창이 열려 이야기가 멈추지 않게. 그 앞(«아직»)과 뒤(마친 뒤) 페이지에서 판다.
+    const gave = built.gives?.[li];
+    const advances = (pg: { commands?: unknown[] }) => { const j = JSON.stringify(pg.commands ?? []); return (!!gave?.switchId && j.includes(`"switchId":"${gave.switchId}"`)) || (!!gave?.itemId && j.includes(`"itemId":"${gave.itemId}"`)); };
+    const pages = (ev.pages ?? []).map((pg) => (advances(pg) ? pg : { ...pg, commands: [...(pg.commands ?? []), ...(structuredClone(shop) as unknown as NonNullable<typeof pg.commands>)] }));
+    if (run.call("upsert_event", { mapId: made.mapId, replacePages: true, event: { id: ev.id, pages } }).ok) shopKept.push(`${steps[k]!.id} ${steps[k]!.event}`);
+  });
+  if (shopKept.length) warnings.push(`Built the step and kept the shop on it: ${shopKept.join(", ")} — the person sells before and after the step's own talk (not during it).`);
   links.forEach((_, li) => {
     const k = linkStep[li]!;
     if (k < 0) return; // 함수가 덧붙인 단서 고리 — 청사진 단계가 아니다.
@@ -512,4 +539,11 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const objectiveNotes = stepObjectives(run, steps.map((st, i) => stepGoalAt({ ...st, text: { goal: leaked.includes(st.id) ? undefined : byId.get(st.id)?.goal } }, placeOf(i))), links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
   return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}${bridged.length ? ` The lines of ${bridged.join(", ")} did not say who or where next, so one narration line was added after them («(이제 …)» — the next step's objective). To replace it, send that step's lines again with a last line in the person's own voice that names the next person or place.` : ""}${leaked.length ? ` The goal of ${leaked.join(", ")} gave away a lock's code — the objective line was written without it (the player reads the code from the clue). Keep codes out of goal and lockedLines.` : ""}${ownNote}` };
+}
+
+/** 이벤트 페이지들에 든 상점 명령(같은 것은 한 번). */
+function shopCommandsOf(ev: GameEvent): Obj[] {
+  const out: Obj[] = [];
+  for (const page of ev.pages ?? []) walk(page.commands, (c) => { if (c.kind === "shop" && !out.some((o) => JSON.stringify(o) === JSON.stringify(c))) out.push(structuredClone(c)); });
+  return out.slice(0, 1);
 }
