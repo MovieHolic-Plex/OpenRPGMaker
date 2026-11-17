@@ -172,21 +172,23 @@ function planOnce(kind: SheerKind, W: number, H: number, layoutSeed: number, see
     }
     tiers.forEach((t, i) => {
       // 단 = 엽 몇의 합(2026-11-16 감독 검토 둘째: 둥근 네모가 직각으로 붙은 모양 → 둥근 혹 · 오목한 홈).
-      //   · 몸통: 북쪽 모서리가 가로 7 · 세로 4칸 타원(보이는 곳은 위 단 양옆 날개의 북쪽 모서리와 맨 위 단) — 네 칸 넘게 도는 곡선.
+      //   · 몸통: 북쪽 모서리가 짧은 호(가로·세로 2.5칸 — 보이는 곳은 위 단 양옆 날개의 북쪽 모서리와 맨 위 단).
       //   · 넓은 날개(5칸 이상)는 몸통을 두세 칸 들이고 그 자리에 북쪽이 둥근 혹 엽을 몇 칸 낮게 세운다 — 날개에 혹 하나 + 오목한 홈 하나.
       //   · 맨 위 단(정상)은 북쪽이 반 타원인 작은 둥근 덩이.
       // 남쪽 모서리는 늘 좁다(r 0.5 — 앞면이 비스듬히 깎이지 않는다; 렌더러가 엽 끝 조각으로 둥글게 돌린다).
       const up = tiers[i + 1], h = t.south - t.north + 1;
       const round = (l: Lobe, ex: number, ey: number): Lobe => ({ ...l, ex, ey });
+      // 북쪽 모서리 = 짧은 호(두세 칸). 7×4 타원은 렌더러의 B-스플라인이 한 칸 계단 일곱을 곧은 45° 사선 하나로 이어 팔각형처럼 읽혔다(2026-11-17 감독, 4배).
+      const ARC = 2.5;
       const wl = up ? up.l - t.l : 0, wr = up ? t.r - up.r : 0, side = wr > wl || (wr === wl && rnd() < 0.5) ? 1 : -1, ww = side > 0 ? wr : wl;
       let bl = t.l, br = t.r;
       const ls: Lobe[] = [];
       if (up && ww >= 5 && h >= 8) {
         const d = Math.min(3, ww - 3), k = ri(2, Math.min(5, h - 6)), lw = d + 4 + ri(0, Math.max(0, ww - d - 5));
-        if (side > 0) { br = t.r - d; ls.push(round(slab(t.r - lw + 1, t.r, t.north + k, t.south), lw / 2, 4)); }
-        else { bl = t.l + d; ls.push(round(slab(t.l, t.l + lw - 1, t.north + k, t.south), lw / 2, 4)); }
+        if (side > 0) { br = t.r - d; ls.push(round(slab(t.r - lw + 1, t.r, t.north + k, t.south), ARC, ARC)); }
+        else { bl = t.l + d; ls.push(round(slab(t.l, t.l + lw - 1, t.north + k, t.south), ARC, ARC)); }
       }
-      ls.unshift(round(slab(bl, br, t.north, t.south), !up && topSmall ? (br - bl + 1) / 2 : 7, !up && topSmall ? Math.min(4, (t.south - t.north) / 2) : 4));
+      ls.unshift(round(slab(bl, br, t.north, t.south), !up && topSmall ? (br - bl + 1) / 2 : ARC, !up && topSmall ? Math.min(4, (t.south - t.north) / 2) : ARC));
       const w = t.r - t.l + 1;
       const room = i === 0 ? true : t.south + FACE <= souths[i - 1]! - FACE - 3;
       if (room && w >= 9) {
