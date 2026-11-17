@@ -1,12 +1,13 @@
 // 높이 지형(map.relief)의 걷기 규칙과 경사로 표기. 권위: 런타임 이동(collision.ts canMove)·도달성 검사·렌더가 같은 함수를 쓴다.
 //
-// 경사로(ramp)는 칸 표기다: relief.ramps[i] = 0(없음) | 1~4 매끈한 경사로(오르막 n·s·e·w) | 5~8 계단(같은 방향 + 4) | 9 다리 판(r3, 걷기는 보통 칸).
+// 경사로(ramp)는 칸 표기다: relief.ramps[i] = 0(없음) | 1~4 매끈한 경사로(오르막 n·s·e·w) | 5~8 계단(같은 방향 + 4) | 9 다리 판(r3, 걷기는 보통 칸)
+// | 10 줄사다리 · 11 오르는 덩굴(세로 이동 칸, 2026-11-16 깎아지른 지형): 걷기는 북쪽 오르막 경사로와 같고, 렌더는 비탈 면을 그리지 않고 절벽 면에 장치를 건다.
 // 경사로 칸의 levels 값은 그 경사로의 낮은 끝 단(lo)이다. 단이 다른 이웃 칸으로는 못 간다 —
 // 유효한 통로의 양 끝은 같은 높이의 층계참과 축 방향으로만 연결된다. 옆구리와 끊긴 표기는 못 건넌다.
 // 경사로 사각형(렌더용 ReliefSlope)은 양 끝이 완전한 축 방향 줄끼리만 병합한다(reliefSlopes).
 import { gridFromRelief, type ReliefData } from "./types";
 import type { ReliefSlope } from "./render";
-import { reliefCarvedStairs, reliefSmoothStairs } from "./styles";
+import { reliefCarvedStairs, reliefFaceRows, reliefSmoothStairs } from "./styles";
 import { invalidateReliefRevision, reliefState } from "./revision";
 
 export type RampDir = "n" | "s" | "e" | "w";
@@ -14,10 +15,19 @@ const DIRS: RampDir[] = ["n", "s", "e", "w"];
 const DV: Record<RampDir, [number, number]> = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] };
 
 export const rampCode = (dir: RampDir, stairs = false): number => DIRS.indexOf(dir) + 1 + (stairs ? 4 : 0);
+/** 세로 이동 칸(줄사다리 10 · 오르는 덩굴 11). 걷기는 북쪽 오르막(낮은 끝 남쪽)과 같다. */
+export const RELIEF_LADDER = 10, RELIEF_VINE = 11;
+const isClimb = (v: number) => v === RELIEF_LADDER || v === RELIEF_VINE;
+/** 걷기 규칙을 가진 경사로 표기(1~8 · 10 · 11)인가. */
+export const isRampCode = (v: number): boolean => (v >= 1 && v <= 8) || isClimb(v);
+const rampDirOf = (v: number): RampDir => (isClimb(v) ? "n" : DIRS[(v - 1) % 4]!);
+/** 칸 (x, y) 가 세로 이동 칸(줄사다리·덩굴)인가 — 엔진이 그 칸을 오르내리는 동안 캐릭터를 벽 쪽(북)으로 돌린다. */
+export const reliefClimbAt = (r: ReliefData | undefined, x: number, y: number): boolean =>
+  !!r && x >= 0 && y >= 0 && x < r.width && y < r.height && isClimb(r.ramps?.[y * r.width + x] ?? 0);
 export function rampAt(r: ReliefData, x: number, y: number): { dir: RampDir; stairs: boolean } | null {
   const v = r.ramps?.[y * r.width + x] ?? 0;
-  if (v < 1 || v > 8) return null;
-  return { dir: DIRS[(v - 1) % 4]!, stairs: v > 4 };
+  if (!isRampCode(v)) return null;
+  return { dir: rampDirOf(v), stairs: v > 4 && v <= 8 };
 }
 export const reliefLevel = (r: ReliefData, x: number, y: number): number =>
   x < 0 || y < 0 || x >= r.width || y >= r.height ? 0 : (r.levels[y * r.width + x] ?? 0);
@@ -31,7 +41,7 @@ export function reliefSlopes(r: ReliefData): ReliefSlope[] {
   const signature = reliefState(r).signature;
   const cached = slopeCache.get(r);
   if (cached?.signature === signature) return cached.slopes;
-  if (!r.ramps?.some((v) => v >= 1 && v <= 8)) {
+  if (!r.ramps?.some(isRampCode)) {
     const slopes: ReliefSlope[] = [];
     slopeCache.set(r, { signature, levels: r.levels, ramps: r.ramps, style: r.style, slopes, owners: new Int32Array(0) });
     return slopes;
@@ -41,8 +51,8 @@ export function reliefSlopes(r: ReliefData): ReliefSlope[] {
   const seen = new Uint8Array(r.width * r.height), out: ReliefSlope[] = [];
   for (let s = 0; s < seen.length; s++) {
     const v: number = r.ramps[s] ?? 0;
-    if (!v || v > 8 || seen[s]) continue;
-    const dir = DIRS[(v - 1) % 4]!, [dx, dy] = DV[dir];
+    if (!isRampCode(v) || seen[s]) continue;
+    const dir = rampDirOf(v), [dx, dy] = DV[dir];
     const lo = r.levels[s] ?? 0, cells: number[] = [];
     const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < r.width && y < r.height;
     const matches = (x: number, y: number) => inside(x, y) && r.ramps![y * r.width + x] === v && r.levels[y * r.width + x] === lo;
@@ -60,10 +70,11 @@ export function reliefSlopes(r: ReliefData): ReliefSlope[] {
     // (log styles, four cells or more across) one log a level plus one; everything else two steps a cell as before
     const across = dir === "n" || dir === "s" ? x1 - x0 + 1 : y1 - y0 + 1;
     const steps = carved ? Math.max(2, hi - lo + (carved.log && across >= 4 ? 1 : 0)) : Math.max(2, len * 2);
-    const previous = out.find(p => p.dir === dir && p.lo === lo && p.hi === hi && !!p.steps === (v > 4 && !smooth)
+    const stepped = v > 4 && v <= 8 && !smooth, climb = isClimb(v) ? v : 0;
+    const previous = out.find(p => p.dir === dir && p.lo === lo && p.hi === hi && !!p.steps === stepped && (p.climb ?? 0) === climb
       && (dx === 0 ? p.y === y0 && p.h === len && p.x + p.w === x0 : p.x === x0 && p.w === len && p.y + p.h === y0));
     if (previous) { if (dx === 0) previous.w++; else previous.h++; }
-    else out.push({ x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, dir, lo, hi, ...(v > 4 && !smooth ? { steps } : {}) });
+    else out.push({ x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, dir, lo, hi, ...(stepped ? { steps } : {}), ...(climb ? { climb } : {}) });
   }
   const owners = new Int32Array(r.width * r.height).fill(-1);
   if (carved) for (const s of out) if (s.steps) { const across = s.dir === "n" || s.dir === "s" ? s.w : s.h; s.steps = Math.max(2, s.hi - s.lo + (carved.log && across >= 4 ? 1 : 0)); }
@@ -81,6 +92,8 @@ export function reliefAllowsStep(r: ReliefData | undefined, fx: number, fy: numb
   const dx = tx - fx, dy = ty - fy;
   if (Math.abs(dx) + Math.abs(dy) !== 1 || fx < 0 || fy < 0 || tx < 0 || ty < 0 || fx >= r.width || tx >= r.width || fy >= r.height || ty >= r.height) return false;
   const a = reliefLevel(r, fx, fy), b = reliefLevel(r, tx, ty);
+  // 깎아지른 양식(styles.ts sheer)의 0 단은 빈 곳(낭떠러지 바깥 하늘) — 다리 판 말고는 들어설 수 없다
+  if (b === 0 && r.ramps?.[ty * r.width + tx] !== RELIEF_BRIDGE && reliefFaceRows(r.style) > 1) return false;
   const ra = rampAt(r, fx, fy), rb = rampAt(r, tx, ty);
   if (!ra && !rb) return a === b;
   reliefSlopes(r);

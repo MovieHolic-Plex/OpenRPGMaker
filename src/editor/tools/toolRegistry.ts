@@ -53,6 +53,7 @@ import { BEODEUL_VEGETATION_TOOLS } from './beodeulVegetationTools';
 import { BEODEUL_LIGHT_TOOLS } from './beodeulLightTools';
 import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
 import { BEODEUL_GRASS_TOOLS } from './beodeulGrassGrain';
+import { SHEER_TERRAIN_TOOLS } from './sheerTerrainBuild';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
@@ -367,6 +368,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...BEODEUL_DOOR_TOOLS,
   ...BEODEUL_GROUND_TOOLS,
   ...BEODEUL_GRASS_TOOLS,
+  // 깎아지른 지형(2026-11-16) — 조수 v2 route 갈래 빌더만 부른다(조수 도구 목록에는 싣지 않는다: request/toolGroups 밖).
+  ...SHEER_TERRAIN_TOOLS,
   ...BEODEUL_LIGHT_TOOLS,
   ...BEODEUL_HAMLET_TOOLS,
   ...BEODEUL_COURTYARD_TOOLS,
