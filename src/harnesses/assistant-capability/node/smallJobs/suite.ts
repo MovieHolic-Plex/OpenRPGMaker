@@ -10,8 +10,8 @@ import { FIXTURE_IDS, type FixtureId } from './fixtures';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 export const SUITE_FILE = resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs.json');
-/** `--set <번호>` 로 고르는 묶음. 1 = 처음 30가지(기준선 비교의 기준 — id·순서·판정을 바꾸지 않는다), 2 = 둘째 묶음(새 가족), 3 = 셋째 묶음(JRPG 가 아닌 게임의 장치). */
-const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json'), '3': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-3.json') };
+/** `--set <번호>` 로 고르는 묶음. 1 = 처음 30가지(기준선 비교의 기준 — id·순서·판정을 바꾸지 않는다), 2 = 둘째 묶음(새 가족), 3 = 셋째 묶음(JRPG 가 아닌 게임의 장치), 4 = 넷째 묶음(자료집 고치기 — 2026-11-16). */
+const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json'), '3': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-3.json'), '4': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-4.json') };
 export function suiteFile(set: string | undefined): string {
   const file = SUITE_SETS[set ?? '1'];
   if (!file) throw Error(`--set ${set}: 없는 묶음(있는 것: ${Object.keys(SUITE_SETS).join(', ')})`);
@@ -41,6 +41,8 @@ export type SmallJob = {
   /** 그럴듯한 오답들. 자기검사에서 모두 불합격해야 한다. */
   wrong: Array<{ note: string; calls: ToolCall[] }>;
   note?: string;
+  /** 도구 호출 상한 — 넘으면 판정이 통과여도 불합격(자료집 묶음: 기본 크기 자료집에서 «한 번에» 해야 하는 일). */
+  maxToolCalls?: number;
 };
 export type SmallJobSuite = { schemaVersion: 1; kind: 'assistant-small-jobs'; /** 보고서 머리글. 없으면 「작은 일 30가지」. */ title?: string; description: string; autoAnswer: string; fixtures: Record<string, string>; families: Record<string, string>; jobs: SmallJob[] };
 

@@ -32,6 +32,32 @@ interface NodeMemo {
  * 토큰은 그대로라 요약 값도 그대로다.
  */
 const NO_SLOTS: readonly never[] = Object.freeze([]);
+
+/**
+ * 같은 키 목록(같은 모양의 타일 속성 수만 개)의 정렬 순서와 따옴표 친 키를 한 번만 만든다. 요약 글은 그대로다 —
+ * 순서는 `<` 비교(코드 단위) 정렬, 키 글은 `JSON.stringify(key)` 와 같다.
+ * 왜(2026-11-16 실측, 빈 새 프로젝트 요약 한 번 약 4.4s): 노드마다 키 순서를 새로 정렬하고 키를 다시 따옴표 쳤다.
+ */
+const keyOrders = new Map<string, readonly number[]>();
+const quotedKeys = new Map<string, string>();
+const KEY_CACHE_LIMIT = 50_000;
+function sortedKeyOrder(keys: readonly string[]): readonly number[] {
+  if (keys.length < 2) return keys.length === 1 ? ONE_KEY : NO_SLOTS;
+  const id = keys.join("\u0000");
+  const hit = keyOrders.get(id);
+  if (hit) return hit;
+  const order = keys.map((_, index) => index).sort((a, b) => (keys[a]! < keys[b]! ? -1 : keys[a]! > keys[b]! ? 1 : 0));
+  if (keyOrders.size < KEY_CACHE_LIMIT) keyOrders.set(id, order);
+  return order;
+}
+const ONE_KEY: readonly number[] = Object.freeze([0]);
+function quotedKey(key: string): string {
+  const hit = quotedKeys.get(key);
+  if (hit !== undefined) return hit;
+  const quoted = JSON.stringify(key);
+  if (quotedKeys.size < KEY_CACHE_LIMIT) quotedKeys.set(key, quoted);
+  return quoted;
+}
 const internedKeys = new Map<string, readonly string[]>();
 const INTERN_KEYS_LIMIT = 50_000;
 function internKeys(keys: string[]): readonly string[] {
@@ -176,23 +202,27 @@ function nodeToken(node: Record<string, unknown>): string {
   const pieces = new Array<string | undefined>(length);
   let objects = 0;
   for (let index = 0; index < length; index++) {
-    const key = keys ? keys[index]! : String(index);
-    const value = keys ? node[key] : items![index];
-    const token = tokenOf(value, key);
+    // 배열 자리의 키(String(index))는 객체 자식이 toJSON 을 가질 때만 쓰인다(tokenOf) — 그때만 만든다.
+    const value = keys ? node[keys[index]!] : items![index];
+    const token = tokenOf(value, keys ? keys[index]! : isObject(value) ? String(index) : "");
     pieces[index] = token;
     if (isObject(value)) { tokens[index] = token; objects += 1; }
     else values[index] = value;
   }
   let text: string;
   if (keys) {
-    const order = keys.map((_, index) => index).sort((a, b) => (keys[a]! < keys[b]! ? -1 : keys[a]! > keys[b]! ? 1 : 0));
-    const parts: string[] = [];
-    for (const index of order) {
-      if (pieces[index] !== undefined) parts.push(`${JSON.stringify(keys[index])}:${pieces[index]}`);
+    const order = sortedKeyOrder(keys);
+    let body = "";
+    for (let at = 0; at < order.length; at++) {
+      const index = order[at]!;
+      if (pieces[index] === undefined) continue;
+      body += `${body ? "," : ""}${quotedKey(keys[index]!)}:${pieces[index]}`;
     }
-    text = `{${parts.join(",")}}`;
+    text = `{${body}}`;
   } else {
-    text = `[${pieces.map(piece => piece ?? "null").join(",")}]`;
+    let body = "";
+    for (let index = 0; index < length; index++) body += `${index ? "," : ""}${pieces[index] ?? "null"}`;
+    text = `[${body}]`;
   }
   const token = text.length <= INLINE_TEXT ? text : `#${sha256HexTextSync(text)}`;
   memos.set(node, {

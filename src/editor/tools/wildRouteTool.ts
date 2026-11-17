@@ -503,7 +503,7 @@ function runThemedRoute(draft: Parameters<ToolDefinition["run"]>[0], map: GameMa
   const shape = asked && fitsSides(asked) ? asked : pickRouteShape(theme, { edges: sides.length, dungeon: !!dungeon, village: !!villageSide }, activeKitLook() ?? "", seed, usedShapes);
   const variant = routeVariantFor(theme, shape, sides.length, activeKitLook() ?? "", seed, feature, used, usedLayouts);
   // 단의 꼴(산길): 그 게임이 덜 쓴 것부터 — 띠 · 기운 비탈 · 분지 · 중간에서 끝나는 턱(막다른 길의 봉우리는 시공기가 따로 고른다)
-  const reliefs = (["tilt", "basin", "shelf", "bands"] as const).map((r, i, all) => all[(i + seed) % all.length]!).sort((p, q) => (usedReliefs.get(p) ?? 0) - (usedReliefs.get(q) ?? 0));
+  const reliefs = (["tilt", "basin", "shelf", "bands"] as const).map((_, i, all) => all[(i + seed) % all.length]!).sort((p, q) => (usedReliefs.get(p) ?? 0) - (usedReliefs.get(q) ?? 0));
   map.mapRole ??= "field";
   const size = map.width * map.height;
   map.lowerTiles = Array.from({ length: size }, () => ground);

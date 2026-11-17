@@ -524,7 +524,9 @@ function fitTitleTextNodes(nodes: readonly HTMLElement[], settings: TitleScreenS
   node.style.whiteSpace = fit.lines > 1 ? "normal" : "nowrap";
   node.style.maxWidth = `${fit.availablePx}px`;
   node.style.width = "max-content";
-  node.style.textWrap = "balance";
+  // 한 줄로 어림한 제목은 줄을 바꾸지 않는다 — textWrap 은 줄바꿈 여부까지 정하는 단축 속성이라 «balance» 를 주면 바로 위의 nowrap 이 풀린다.
+  // 왜(2026-11-15 확인 빌드 r5): 어림 폭에 딱 맞던 «갈매기 포구의 꺼진 등대» 가 화면에서 두 줄로 접혔고, 한 줄 높이로 놓은 부제가 둘째 줄과 겹쳤다.
+  node.style.textWrap = fit.lines > 1 ? "balance" : "nowrap";
   node.dataset.titleLines = String(fit.lines);
   // 「제목 — 부제」가 두 줄로 접히면 둘째 줄이 「—」로 시작했다(2026-10-25 J28). 줄을 대시 자리에서 끊고 대시는 뺀다.
   const dash = /\s+[—–―-]\s+/u;

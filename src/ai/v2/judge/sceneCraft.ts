@@ -15,6 +15,7 @@
 import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { isRereadMarker } from "../story/rereadPage";
+import { REST_LINE } from "../story/restLine";
 import { SCENE_WORDS, TALK_WORDS } from "../request/asks";
 import { tagged, type Finding } from "./finding";
 
@@ -164,8 +165,9 @@ function strayAfterScene(project: Project, p: ScenePage, id: string): number | u
 /**
  * 함수가 지은 표지 이벤트 — 같은 관문·같은 종류의 문은 칸마다 같은 글이다(gateKeyedEntrances·gateEntrySteps·잠긴 집 문·막힌 길).
  * 보스 앞 쉼터 결정(ensureBossRest `ev_<맵>_rest`)도 맵마다 같은 글이다 — 보스가 둘인 게임에서 «같은 줄이 두 번» 으로 모델에게 돌아갔다(2026-11-13 r2s-fun).
+ * 레버로 치우는 막이(`ev_<맵>_lever_gate[_x_y]`)도 길 폭만큼의 칸이 한 막이다 — 세 칸짜리 «막힌 바위» 가 «같은 줄이 두 번» 으로 돌아갔다(2026-11-15 r5a 재생).
  */
-const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_|^ev_.+_rest$/u;
+const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_|^ev_.+_rest$|^ev_.+_lever_gate(?:_\d+_\d+)?$/u;
 /** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
 const BUILT_HINT_LINE = /^·\s|^「[^」]{1,40}」[은는이가]\s.{1,60}에 있다[.。]?$/u;
 
@@ -185,7 +187,8 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
   for (const p of pages) for (const line of p.lines) {
     // 함수가 일부러 같은 글로 지은 것은 반복으로 세지 않는다 — 모델에게 «고쳐라» 로 돌려보내면 함수가 다시 같은 글로 짓는다:
     // 다시 읽기 쪽(rereadPage.ts), 길목·잠긴 문·막힌 길 표지(같은 관문의 여러 칸), 남은 단서 목록 줄(«· 아직 …»), 길 안내 줄(«「X」은 … 에 있다.»).
-    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim())) continue;
+    // 보스 앞 회복 줄(story/restLine)도 함수가 보스마다 같은 글로 짓는다.
+    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim()) || line.body.trim() === REST_LINE) continue;
     const k = norm(line.body);
     if (k.length < 8 || oldLines.has(k)) continue;
     const first = seen.get(k);

@@ -14,6 +14,9 @@ import { isModelValidForAuthMode } from "@/ai/modelCatalog";
 const purposes = Object.keys(IMAGE_PURPOSES) as ImagePurpose[];
 const kindOf = (kind: string): ImagePurpose[] => purposes.filter((p) => IMAGE_PURPOSES[p].kind === kind);
 
+/** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-16: 조수 기본은 Claude Opus 5.5 · medium). */
+const OPUS_MEDIUM = { provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" } as const;
+
 describe("그림 용도 라우터", () => {
   it("세 갈래가 모두 있다", () => {
     expect(kindOf("generative").length).toBeGreaterThan(0);
@@ -30,16 +33,20 @@ describe("그림 용도 라우터", () => {
     expect(resolveImageRoute("title-art", config, { providerId: "google-antigravity", model: "gemini-3.1-flash-image" }))
       .toMatchObject({ providerId: "google-antigravity", model: "gemini-3.1-flash-image" });
   });
-  it("도트 용도는 이미지 모델이 아니라 텍스트 모델(기본 Argon 보통)로 간다", () => {
+  it("도트 용도는 이미지 모델이 아니라 텍스트 모델로 간다 — 새 설정은 계획 모델(Claude Opus 5.5 medium)을 따르고, 고른 칸이 있으면 그 모델이다", () => {
+    // 공장 기본(2026-11-16): 도트 칸이 비어 계획 모델을 따른다 — Google 연결을 요구하지 않는다.
     const route = resolveImageRoute("tileset", defaultAiConfig());
-    expect(route).toMatchObject({ kind: "dot-text", surface: "workshop-draw", follows: false, model: DEFAULT_PIXEL_MODEL });
+    expect(route).toMatchObject({ kind: "dot-text", surface: "workshop-draw", follows: true, model: OPUS_MEDIUM });
+    // 도트 칸을 고른 설정(2026-10-16 ~ 2026-11-16 의 새 설정 기본 = Google Argon 보통)은 그 모델 그대로다.
     expect(DEFAULT_PIXEL_MODEL).toEqual({ provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" });
+    expect(resolveImageRoute("tileset", { ...defaultAiConfig(), pixelModel: DEFAULT_PIXEL_MODEL })).toMatchObject({ kind: "dot-text", surface: "workshop-draw", follows: false, model: DEFAULT_PIXEL_MODEL });
     expect(imageRouteRefusal(route as Exclude<typeof route, { kind: "generative" }>)).toContain("도트");
   });
   it("결정(2026-10-16): 컷신 도트 소품·아이템 아이콘·조수 도트는 낱장 도트 표면, 배경·인터뷰·썸네일·일러스트는 생성형 그대로", () => {
     for (const purpose of ["cutscene-sprite", "item-icon", "chat-pixel-art"] as const) {
       expect(isPixelDrawPurpose(purpose)).toBe(true);
-      expect(resolveImageRoute(purpose, defaultAiConfig())).toMatchObject({ kind: "dot-text", surface: "pixel-draw", follows: false, model: DEFAULT_PIXEL_MODEL });
+      expect(resolveImageRoute(purpose, defaultAiConfig())).toMatchObject({ kind: "dot-text", surface: "pixel-draw", follows: true, model: OPUS_MEDIUM });
+      expect(resolveImageRoute(purpose, { ...defaultAiConfig(), pixelModel: DEFAULT_PIXEL_MODEL })).toMatchObject({ kind: "dot-text", surface: "pixel-draw", follows: false, model: DEFAULT_PIXEL_MODEL });
     }
     for (const purpose of ["tileset", "charset", "map-object", "interior-prop"] as const) {
       expect(isPixelDrawPurpose(purpose)).toBe(false);

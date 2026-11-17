@@ -37,11 +37,12 @@ export function validateQuestReferences(project: Project, def: QuestDef): void {
     const required = project.quests?.find(quest => questDefId(quest) === key);
     if (!required || !('steps' in required) || key === def.key) fail(`완료를 요구할 단계 퀘스트가 없습니다: ${key}`);
   }
-  for (const step of def.steps) {
+  for (const [index, step] of def.steps.entries()) {
     if (step.timePhase && !['morning','day','evening','night'].includes(step.timePhase)) fail('올바르지 않은 시간대입니다.');
     if ('target' in step) {
       target(step.target);
-      if (!('create' in def.giver) && !('create' in step.target) && def.giver.mapId === step.target.mapId && def.giver.eventId === step.target.eventId) fail('목표 인물은 보고를 받는 의뢰인과 다른 이벤트를 사용하세요.');
+      // 어느 단계가 걸렸는지와 까닭(보고는 저절로 의뢰인에게 한다)을 적는다 — 「의뢰인에게 돌아가 전하기」 를 마지막 단계로 쓴 호출이 까닭을 모른 채 거절됐다(2026-11-16 r6a).
+      if (!('create' in def.giver) && !('create' in step.target) && def.giver.mapId === step.target.mapId && def.giver.eventId === step.target.eventId) fail(`steps[${index}] (${step.kind}${step.label ? ` «${step.label}»` : ''}) targets the giver's own event (${def.giver.eventId}) — reporting back to the giver is added by itself at the end, so drop that step or point target at another event.`);
     }
     if (step.kind === 'collect') {
       item(step.itemId);

@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { runGameCheck } from "../../../../src/qa/gameCheck/index.ts";
 import { runAutoPlay } from "../../../../src/qa/gameCheck/autoPlay.ts";
+import { questPlays } from "../../../../src/qa/gameCheck/questPlay.ts";
 import { walkBlueprint } from "../../../../src/ai/v2/story/blueprint.ts";
 import { shipBlockers } from "../../../../src/ai/v2/judge/shipChecks.ts";
 import { buildingEntrances } from "../../../../src/ai/v2/place/entrances.ts";
@@ -75,6 +76,11 @@ try {
     if (honest) { values.honestEnding = [honest.ok && honest.endingReached ? 1 : 0, 1]; if (!honest.ok) lines.honestEnding = [`${honest.failure?.goal ?? ""}: ${honest.failure?.detail.slice(0, 240) ?? ""}`]; }
   }
 } catch (error) { probeErrors.push(`runGameCheck: ${(error as Error).message.slice(0, 200)}`); }
+// 곁 퀘스트마다 완료까지 걸어 본다(qa/gameCheck/questPlay.ts) — 엔딩까지의 자동 플레이는 곁 퀘스트를 밟지 않는다.
+if (autoplay) try {
+  const plays = questPlays(project);
+  if (plays.length) { values.questsCompletable = [plays.filter((p) => p.ok).length, plays.length]; lines.questsCompletable = plays.filter((p) => !p.ok).map((p) => `«${p.title}» ${p.detail.slice(0, 200)}`); }
+} catch (error) { probeErrors.push(`questPlays: ${(error as Error).message.slice(0, 200)}`); }
 try { const bp = walkBlueprint(project).blockers; values.blueprintBlockers = bp.length; lines.blueprintBlockers = bp.map((b) => `${b.id}`); } catch (error) { probeErrors.push(`walkBlueprint: ${(error as Error).message.slice(0, 200)}`); }
 try { const ship = shipBlockers(project, task); values.shipBlockers = ship.length; lines.shipBlockers = ship.map((b) => `${b.id} — ${String(b.message ?? "").replace(/\s+/gu, " ").slice(0, 200)}${(b as { evidence?: string }).evidence ? ` [${(b as { evidence?: string }).evidence}]` : ""}`); } catch (error) { probeErrors.push(`shipBlockers: ${(error as Error).message.slice(0, 200)}`); }
 
@@ -162,13 +168,20 @@ try { const ship = shipBlockers(project, task); values.shipBlockers = ship.lengt
 {
   const out = probe("objectiveArrowProbe.mts", ["after", projectFile]);
   const facts = out.split("\n").find((l) => /^== after: 자리/u.test(l)) ?? "";
-  const walk = out.split("\n").find((l) => /^== after 눌러 걷기/u.test(l)) ?? "";
+  // 따라 걷기 = 화살표를 칸마다 다시 읽는 플레이어(2026-11-15 부터 «화살표대로 걸어 못 닿음» 은 이것이다). 눌러 걷기 = 옛 자(4칸씩 누르고 다시 읽기) — 견줌용으로 값만 남긴다(표에는 없다).
+  const walk = out.split("\n").find((l) => /^== after 따라 걷기/u.test(l)) ?? "";
+  const held = out.split("\n").find((l) => /^== after 눌러 걷기/u.test(l)) ?? "";
   if (facts) {
     const spots = num(facts, /자리 (\d+)/u);
     values.arrowFirstStepWrong = [num(facts, /A 첫 걸음 불일치 (\d+)/u), spots];
     values.arrowIntoWall = [num(facts, /B 벽을 본다 (\d+)/u), spots];
     values.arrowAcrossBlocked = [num(facts, /C 막힌 칸 가로지름 (\d+)/u), spots];
     values.arrowWalkUnreached = [num(walk, /못 닿음 (\d+)/u), num(walk, /출발 (\d+)곳/u)];
+    if (held) values.arrowWalkUnreachedHold4 = [num(held, /못 닿음 (\d+)/u), num(held, /출발 (\d+)곳/u)];
+    // 못 닿은 까닭(처음 어긋난 칸의 화살표) — 표에는 없고 게임별 기록(metrics.json)과 bank.json 의 값으로 남는다.
+    if (walk) { values.arrowWalkGuideWrong = num(walk, /안내 틀림 (\d+)/u); values.arrowWalkWalkerLimit = num(walk, /걷는 이 한계 (\d+)/u); values.arrowWalkNoArrow = num(walk, /화살표 없음 (\d+)/u); }
+    lines.arrowWalk = out.split("\n").reduce<string[]>((acc, l) => { if (l.startsWith("## ")) acc.push(l.slice(0, 200)); else if (/^  걷기 .*못 닿음/u.test(l)) acc.push(l.slice(0, 300)); return acc; }, [])
+      .filter((l, i, all) => !l.startsWith("## ") || (all[i + 1] !== undefined && !all[i + 1]!.startsWith("## "))).slice(0, 120);
   }
 }
 

@@ -78,7 +78,8 @@ describe("연결 해제", () => {
     await vi.waitFor(() => {
       expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("disconnected");
     });
-    expect(disconnectCompanionAuth).toHaveBeenCalledWith("google-antigravity");
+    // 공장 기본 제공자(Claude, 2026-11-16)의 자격을 지운다.
+    expect(disconnectCompanionAuth).toHaveBeenCalledWith("anthropic");
     // 해제 후에는 다시 뜨지 않는다 — 남은 자격이 없다.
     expect(button?.hidden).toBe(true);
     expect(findByTestId(root, "ai-oauth-login")?.textContent).toBe("로그인");

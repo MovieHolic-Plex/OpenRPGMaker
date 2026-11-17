@@ -82,12 +82,12 @@ const PAGE_SCHEMA: JsonSchema = {
 
 function requireTroop(project: Project, troopId: unknown): TroopRecord {
   if (typeof troopId !== "string" || troopId.trim().length === 0) {
-    throw new ToolError("troopId(문자열)가 필요합니다.", { code: "invalid-args" });
+    throw new ToolError("troopId (string) is required.", { code: "invalid-args" });
   }
   const troop = project.database.troops.find((entry) => entry.id === troopId);
   if (!troop) {
-    const known = project.database.troops.map((entry) => entry.id).slice(0, 12).join(", ") || "없음";
-    throw new ToolError(`트룹을 찾을 수 없습니다: ${troopId} — 보유 트룹: ${known}`, { code: "troop-not-found" });
+    const known = project.database.troops.map((entry) => entry.id).slice(0, 12).join(", ") || "none";
+    throw new ToolError(`No troop ${troopId}. Troops: ${known}${project.database.troops.length > 12 ? " …" : ""}.`, { code: "troop-not-found" });
   }
   return troop;
 }

@@ -22,6 +22,17 @@ export interface ReliefData {
   wallDecor?: ReliefWallTile[];
   /** 바이옴 절벽 모양(선택, relief/styles.ts RELIEF_STYLES 의 키). 없으면 기본 흙벽 그림. */
   style?: string;
+  /**
+   * 폭포(선택, 깎아지른 양식만 그린다, 2026-11-16): 칸 x..x+w-1 · y 의 남쪽 면 한 띠를 덮어 떨어지는 물(턱 · 물기둥 · 물보라).
+   * 그림일 뿐이다 — 물 칸·통행은 타일이 정한다. 다른 양식은 이 필드를 읽지 않는다.
+   */
+  falls?: ReliefFall[];
+}
+
+export interface ReliefFall {
+  x: number;
+  y: number;
+  w: number;
 }
 
 export interface ReliefWallTile {

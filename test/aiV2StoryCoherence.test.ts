@@ -75,9 +75,9 @@ describe("잠김 글은 실제 조건에서 나온다", () => {
     expect(eventOf("번호 쪽지")).toBeDefined();
     expect(bodies(eventOf("별의 봉인"), 0).join(" ")).not.toContain("문지기");
     expect(bodies(eventOf("별의 봉인"), 0)[0]).toContain("번호");
-    // 쪽지의 잠김 글은 앞 단계의 상대를 이름으로 가리킨다 — 깃발 이름(«문지기 격파»)은 화면에 내지 않는다.
-    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).toContain("「얼음 문지기」를 쓰러뜨려야 한다.");
-    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).not.toContain("문지기 격파");
+    // 쪽지의 잠김 글은 앞 단계의 상대를 가리키지 않는다(어디로 갈지는 목표 줄의 일) — 깃발 이름(«문지기 격파»)도 화면에 내지 않는다.
+    expect(bodies(eventOf("번호 쪽지"), 0).length).toBeGreaterThan(0);
+    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).not.toContain("문지기");
 
   }, SLOW);
 
@@ -174,5 +174,50 @@ describe("목표의 대상은 글이 이름을 댄 것이다", () => {
     expect(JSON.stringify(map.events.find((e) => e.id === "ev_giver"))).not.toContain("objectiveChip");
     // 본편 시작 목표는 그대로.
     expect(JSON.stringify(map.events.find((e) => e.id === "ev_start"))).toContain("나지라에게 묻자");
+  });
+
+  it("단계 목표 줄을 걸 때 같은 사람의 곁 의뢰 수락·완료 페이지에는 남기지 않는다 — 명세 은행 r5a-river", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    (project as unknown as { quests: unknown[] }).quests = [{ key: "q_mill", title: "멈춘 물레방아", giver: { mapId: map.id, eventId: "ev_han" }, steps: [{ kind: "talk", label: "어부에게", target: { mapId: map.id, eventId: "ev_fisher" } }] }];
+    map.events.push({ id: "ev_start", name: "시작", x: 1, y: 1, pages: [{ ...page([chip("한씨에게 말을 걸자"), { kind: "setSelfSwitch", key: "A", value: true }]), trigger: { kind: "auto" } }, page([], { conditions: [{ kind: "selfSwitch", key: "A", value: true }] })] } as never);
+    map.events.push({ id: "ev_han", name: "한씨", x: 2, y: 2, pages: [
+      page([{ kind: "text", body: "어부에게 물어보게" }, { kind: "setSwitch", switchId: "sw_heard", value: true }]),
+      page([{ kind: "choices", options: [{ text: "수락", branch: [{ kind: "setSwitch", switchId: "sw_q_mill_started", value: true }] }, { text: "거절", branch: [] }] }], { conditions: [{ kind: "switch", switchId: "sw_q_mill_started", value: false }] }),
+      page([{ kind: "setSwitch", switchId: "sw_q_mill_done", value: true }], { conditions: [{ kind: "switch", switchId: "sw_q_mill_started", value: true }, { kind: "switch", switchId: "sw_q_mill_step0", value: true }] }),
+    ] } as never);
+    map.events.push({ id: "ev_fisher", name: "어부 도윤", x: 6, y: 6, pages: [page([{ kind: "text", body: "강물이 줄었어" }], { conditions: [{ kind: "switch", switchId: "sw_heard", value: true }] }), page([{ kind: "setSwitch", switchId: "sw_q_mill_step0", value: true }], { conditions: [{ kind: "switch", switchId: "sw_q_mill_started", value: true }] })] } as never);
+    project.gameBlueprint = normalizeGameBlueprint({ title: "t", genre: "모험", playerGoal: "g", ending: { name: "끝", how: "끝", feeling: "f" }, steps: [
+      { id: "s1", place: map.name, event: "한씨", action: "듣는다", gives: "부탁", feeling: "f" },
+      { id: "s2", place: map.name, event: "어부 도윤", action: "묻는다", needs: "부탁", gives: "엔딩", feeling: "f" },
+    ] });
+    fillStaleObjectives(project);
+    const han = map.events.find((e) => e.id === "ev_han")!;
+    expect(JSON.stringify(han.pages![0])).toContain("objectiveChip");
+    expect(JSON.stringify(han.pages![1])).not.toContain("objectiveChip");
+    expect(JSON.stringify(han.pages![2])).not.toContain("objectiveChip");
+    // 두 번째 바퀴에도 그대로.
+    fillStaleObjectives(project);
+    expect(JSON.stringify(han.pages!.slice(1))).not.toContain("objectiveChip");
+  });
+
+  it("본편 이정표와 의뢰 수락을 한 페이지에 둔 사람 — 이정표 뒤 목표는 남기고 «수락한다» 갈래 안의 같은 목표는 뗀다", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    (project as unknown as { quests: unknown[] }).quests = [{ key: "q_mill", title: "멈춘 물레방아", giver: { mapId: map.id, eventId: "ev_han" }, steps: [{ kind: "talk", label: "어부에게", target: { mapId: map.id, eventId: "ev_fisher" } }] }];
+    map.events.push({ id: "ev_start", name: "시작", x: 1, y: 1, pages: [{ ...page([chip("한씨에게 말을 걸자"), { kind: "setSelfSwitch", key: "A", value: true }]), trigger: { kind: "auto" } }, page([], { conditions: [{ kind: "selfSwitch", key: "A", value: true }] })] } as never);
+    map.events.push({ id: "ev_han", name: "한씨", x: 2, y: 2, pages: [
+      page([{ kind: "text", body: "어부에게 물어보게" }, { kind: "setSwitch", switchId: "sw_heard", value: true },
+        { kind: "choices", options: [{ text: "수락한다", branch: [{ kind: "setSwitch", switchId: "sw_q_mill_started", value: true }, { kind: "text", body: "믿겠네" }] }, { text: "다음에", branch: [] }] }]),
+    ] } as never);
+    map.events.push({ id: "ev_fisher", name: "어부 도윤", x: 6, y: 6, pages: [page([{ kind: "text", body: "강물이 줄었어" }], { conditions: [{ kind: "switch", switchId: "sw_heard", value: true }] })] } as never);
+    project.gameBlueprint = normalizeGameBlueprint({ title: "t", genre: "모험", playerGoal: "g", ending: { name: "끝", how: "끝", feeling: "f" }, steps: [
+      { id: "s1", place: map.name, event: "한씨", action: "듣는다", gives: "부탁", feeling: "f" },
+      { id: "s2", place: map.name, event: "어부 도윤", action: "묻는다", needs: "부탁", gives: "엔딩", feeling: "f" },
+    ] });
+    fillStaleObjectives(project);
+    const top = map.events.find((e) => e.id === "ev_han")!.pages![0]!.commands as unknown as { kind: string; options?: { branch: unknown[] }[] }[];
+    expect(top.filter((c) => c.kind === "m2Command")).toHaveLength(1);
+    expect(JSON.stringify(top.find((c) => c.kind === "choices"))).not.toContain("objectiveChip");
   });
 });

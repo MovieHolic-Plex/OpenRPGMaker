@@ -2,9 +2,11 @@
 import type { PiAgentDoneEvent } from "../../piAgent/protocol";
 import { buildsWholeGame } from "../request/readers";
 import { todoReport } from "../judge/finalReport";
+import { databaseChangeReport } from "../judge/sideEffectChecks";
 import { vqaSummary } from "../judge/vqa";
 import { vqaLedgerLines, vqaUnofferedBlockers } from "./vqaItems";
 import { countMaps, RECOMMENDED_MAPS } from "../judge/mapCount";
+import { smallGame } from "../judge/blueprintScale";
 import { countQuests, RECOMMENDED_QUESTS } from "../judge/questCount";
 import type { TurnContext } from "./context";
 import type { turnRecheck } from "./recheck";
@@ -21,12 +23,16 @@ export function turnFinish(turn: TurnContext & Pick<ReturnType<typeof turnRechec
       if (env) stamp(env);
       const left = session.unresolved().filter((o) => o.rounds >= o.cap || !store.items.length);
       const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
-      try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const { counted } = countMaps(env.ctx.project); if (counted.length < RECOMMENDED_MAPS) autoNotes.push(`세는 맵 ${counted.length}/${RECOMMENDED_MAPS}장(권장) — ${RECOMMENDED_MAPS - counted.length}장 부족(차단 아님)`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
-      try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const n = countQuests(env.ctx.project).counted.length; autoNotes.push(`세는 퀘스트 ${n}/${RECOMMENDED_QUESTS}개${n < RECOMMENDED_QUESTS ? ` — ${RECOMMENDED_QUESTS - n}개 부족` : ""}`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
+      // 작은 게임(청사진 scale)에는 권장 수 줄을 적지 않는다 — 요청이 청한 크기다(judge/blueprintScale.ts).
+      try { if (env && buildsWholeGame(env.ctx.project, env.request.task) && !smallGame(env.ctx.project)) { const { counted } = countMaps(env.ctx.project); if (counted.length < RECOMMENDED_MAPS) autoNotes.push(`세는 맵 ${counted.length}/${RECOMMENDED_MAPS}장(권장) — ${RECOMMENDED_MAPS - counted.length}장 부족(차단 아님)`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
+      try { if (env && buildsWholeGame(env.ctx.project, env.request.task) && !smallGame(env.ctx.project)) { const n = countQuests(env.ctx.project).counted.length; autoNotes.push(`세는 퀘스트 ${n}/${RECOMMENDED_QUESTS}개${n < RECOMMENDED_QUESTS ? ` — ${RECOMMENDED_QUESTS - n}개 부족` : ""}`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
       if (session.fitIncomplete) autoNotes.push(`${session.fitIncomplete} — 게임은 열리지만 첫 관문 승률은 이 요청에서 보정되지 않았다`);
       const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
+      let dataChanges: string[] = [];
+      try { if (env) dataChanges = databaseChangeReport(env.request.project, env.ctx.project, session.stageWrites); } catch { dataChanges = []; }
+      if (dataChanges.length) options.onEvent?.({ type: "execution_status", name: "v2.data.changes", ok: true, at: Date.now(), summary: `자료집에서 바뀐 것 ${dataChanges.length}줄`, data: { lines: dataChanges } });
       if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length || session.fitIncomplete)) {
-        const report = todoReport({ store, draft: state.draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(state.loopStop ? { loopStop: state.loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}), vqaLedger: vqaLedgerLines(vqaBook, store), vqaUnoffered: vqaUnofferedBlockers(vqaBook, store) });
+        const report = todoReport({ store, draft: state.draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], dataChanges, ...(state.loopStop ? { loopStop: state.loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}), vqaLedger: vqaLedgerLines(vqaBook, store), vqaUnoffered: vqaUnofferedBlockers(vqaBook, store) });
         options.onEvent?.({ type: "execution_status", name: "v2.todo.final", ok: report.complete, at: Date.now(), summary: `할 일 최종 — ${report.complete ? "완료" : "아직 완료 아님"} · ${store.view(0).split("\n")[0]}${report.receipts.length ? ` · 보고와 다른 것 ${report.receipts.length}` : ""}`, data: { complete: report.complete, receipts: report.receipts, list: store.view(), items: store.items, reinjections: state.reinjections, loopStop: state.loopStop } });
         if (store.items.length || /통과|없음|다\s*됐|완료/u.test(state.draft) || !state.draft) options.onEvent?.({ type: "assistant", text: report.text });
       }

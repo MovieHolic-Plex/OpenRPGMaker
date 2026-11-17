@@ -154,9 +154,11 @@
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-header { display: contents; }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-heading { left: 15px; position: absolute; top: 12px; }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-location { left: 46px; max-width: 190px; position: absolute; top: 16px; }
-.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-primary-dock { bottom: auto; gap: 1px; height: 128px; }
-.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-primary-dock { bottom: auto; gap: 1px; height: 128px; }
-.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-command { flex-basis: 19px; }
+/* 명령 창 높이: 일곱 명령까지는 128px 그대로, 여덟부터 한 줄 16px 씩 는다 — 128px 고정에서는 여덟째·아홉째 명령이 창 밖으로 나가 돈·시간 칸 위에 겹쳤다. */
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] { --legacy-dock-h: max(128px, calc(var(--status-menu-command-count, 6) * 16px + 8px)); }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-primary-dock { bottom: auto; gap: 1px; height: var(--legacy-dock-h); }
+.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-primary-dock { bottom: auto; gap: 1px; height: var(--legacy-dock-h); }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-command { flex: 0 1 19px; }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-gold,
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-time {
   background: rgba(13, 18, 48, 0.7);
@@ -167,13 +169,13 @@
   padding: 3px 5px;
   position: absolute;
   text-align: right;
-  top: 175px;
+  top: max(175px, calc(40px + var(--legacy-dock-h) + 3px));
   width: 69px;
 }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-gold { right: 12px; }
-.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-time { right: 12px; top: 199px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-time { right: 12px; top: max(199px, calc(40px + var(--legacy-dock-h) + 23px)); }
 .oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-gold { left: 10px; width: 75px; }
-.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-time { left: 10px; top: 199px; width: 75px; }
+.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-time { left: 10px; top: max(199px, calc(40px + var(--legacy-dock-h) + 23px)); width: 75px; }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-footer { bottom: 7px; }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-message { display: none; }
 .oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-controls { border: 0; padding: 0; }

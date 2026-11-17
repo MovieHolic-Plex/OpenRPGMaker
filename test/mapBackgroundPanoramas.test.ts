@@ -18,8 +18,8 @@ import { collectWebExportAssets } from "@/project/webExportAssets";
 
 describe("OPRN 파노라마 견본", () => {
   it("다섯 세트(하늘·노을·밤하늘·바다·구름)가 있고 그림 파일이 저장소에 있다", () => {
-    // + oprn-sky-day-city (rooftop street view, #3375).
-    expect(OPRN_PANORAMA_SETS.map((set) => set.id)).toEqual(["oprn-sky-day", "oprn-sky-day-city", "oprn-sunset", "oprn-night-stars", "oprn-sea", "oprn-clouds"]);
+    // + oprn-sky-day-city (rooftop street view, #3375); + cloud sea / far mountains / far forest (sheer terrain backdrops, #4757).
+    expect(OPRN_PANORAMA_SETS.map((set) => set.id)).toEqual(["oprn-sky-day", "oprn-sky-day-city", "oprn-sunset", "oprn-night-stars", "oprn-sea", "oprn-clouds", "oprn-cloud-sea", "oprn-far-mountains", "oprn-far-forest"]);
     for (const asset of OPRN_PANORAMA_ASSETS) expect(existsSync(resolve("public", asset.path)), asset.path).toBe(true);
   });
 
@@ -44,6 +44,26 @@ describe("OPRN 파노라마 견본", () => {
   it("지평선 세트는 320×240 화면에 배율 1 로 깔린다(도트가 뭉개지지 않는다)", () => {
     const sky = OPRN_PANORAMA_SETS.find((set) => set.view === "horizon")!.layers[0]!;
     expect(mapBackgroundCoverScale(sky.fit, { width: 320, height: 240 }, sky)).toBe(1);
+  });
+
+  it("sheer-terrain backdrops are 640x240 horizon layers that wrap without a seam", async () => {
+    const { PNG } = await import("pngjs");
+    const { readFileSync } = await import("node:fs");
+    for (const id of ["oprn-cloud-sea", "oprn-far-mountains", "oprn-far-forest"]) {
+      const set = OPRN_PANORAMA_SETS.find((entry) => entry.id === id)!;
+      expect(set.view).toBe("horizon");
+      for (const layer of set.layers) {
+        const png = PNG.sync.read(readFileSync(resolve("public", layer.path)));
+        expect([png.width, png.height, layer.fit, layer.loopY], layer.id).toEqual([640, 240, "cover", false]);
+        // seam: the last column and the first column differ no more than neighbouring columns do on average
+        const px = (x: number, y: number) => png.data.readUInt32BE((y * png.width + x) * 4);
+        const diff = (a: number, b: number) => { let n = 0; for (let y = 0; y < png.height; y++) if (px(a, y) !== px(b, y)) n++; return n; };
+        let mean = 0;
+        for (let x = 0; x + 1 < png.width; x++) mean += diff(x, x + 1);
+        mean /= png.width - 1;
+        expect(diff(png.width - 1, 0), layer.id).toBeLessThanOrEqual(Math.max(4, mean * 3));
+      }
+    }
   });
 });
 

@@ -1138,7 +1138,7 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 조수가 `web_search({query})` 로 인터넷을 검색한다. 레지스트리 등록은 `src/editor/tools/webSearchTool.ts`,
 업스트림 계약은 `scripts/lib/codexWebSearchRuntime.ts`, Pi 배선은 `scripts/lib/piAgentRuntime.ts` 다.
 
-- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini, 공장 기본)여도 검색은
+- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini) · Claude(공장 기본, 2026-11-16)여도 검색은
   ChatGPT 구독 자격으로 나간다 — `tools:[{type:"web_search"}]` + `stream:true` 계약을 실측으로 고정했다
   (`stream:false` 는 업스트림이 400 "Stream must be set to true" 로 거절한다. 비스트리밍은 존재하지 않는다).
 - **자격은 서버 경계에만 있다.** `resolveRequestApiKey("openai-codex")` 가 동반 서비스에서 해결해

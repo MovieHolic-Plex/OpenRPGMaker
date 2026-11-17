@@ -1665,7 +1665,8 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "gameOver":
-        state.gameOver = true;
+        // 돌아오기(recover)로 정한 게임 오버는 실제 플레이어처럼 그 자리에서 회복해 이어 간다 — 판 끝으로 세면 «지면 입구에서 다시» 를 건 전투가 막다른 길로 읽힌다.
+        if (!recoverFromDefeatForRunner(state, step.gameOverId)) state.gameOver = true;
         step = interp.resume(undefined);
         break;
       case "returnToTitle":
@@ -2858,8 +2859,8 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
  * 「회복 센터에서 깨어난다」 게임 오버(outcome recover)는 실제 플레이어(PlayScene.recoverFromDefeat)처럼 같은 판을
  * 회복 지점에서 이어 간다. 몬스터 게임의 야생 패배가 러너에서는 판 끝으로 처리돼 자동 플레이가 멈췄다(2026-10-06).
  */
-function recoverFromDefeatForRunner(state: RunnerState): boolean {
-  const settings = resolveGameOverSettings(state.project.system);
+function recoverFromDefeatForRunner(state: RunnerState, gameOverId?: string): boolean {
+  const settings = resolveGameOverSettings(state.project.system, gameOverId);
   if (gameOverOutcome(settings) !== "recover") return false;
   const recovered = createDefeatRecovery(state.project, state.session, settings);
   if (!recovered) return false;

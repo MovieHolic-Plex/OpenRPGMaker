@@ -34,6 +34,8 @@
 .runtime-shop-overlay[data-window-skin="classic"] {
   --shop-ink: rgb(255, 255, 255);
   --shop-ink-dim: rgba(226, 232, 255, 0.92);
+  /* 못 사는 값의 붉은 글자 — 도트 창의 붉은색(255,96,96)은 윈도스킨의 밝은 청색 위에서 2.9:1 이었다. */
+  --shop-loss: rgba(255, 150, 150, 1);
 }
 .runtime-shop-overlay[data-window-skin="classic"] :is(.runtime-shop-greeting-panel, .runtime-shop-list-panel, .runtime-shop-detail-panel,
   .runtime-shop-party-panel, .runtime-shop-desc-panel, .runtime-shop-purse-panel, .runtime-shop-comparison, .runtime-shop-haggle-shell,

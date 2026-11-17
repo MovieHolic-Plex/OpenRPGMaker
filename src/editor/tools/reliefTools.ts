@@ -56,7 +56,7 @@ const readRelief: ToolDefinition = {
     const h = reliefGrid(map);
     return {
       summary: `${map.name} 높이 ${map.relief ? "있음" : "없음(전부 0단)"} — ${map.width}×${map.height}`,
-      data: { width: map.width, height: map.height, hasRelief: !!map.relief, matrix: reliefMatrixText(h), check: checkRelief(h).text },
+      data: { width: map.width, height: map.height, hasRelief: !!map.relief, matrix: reliefMatrixText(h), check: checkRelief(h, map.relief?.style).text },
     };
   },
 };
@@ -99,7 +99,7 @@ const sculptRelief: ToolDefinition = {
     // reset 이면 경사로·벽면 장식은 버리고 양식만 잇는다. 아니면 단이 안 바뀐 칸의 경사로·장식도 잇는다.
     map.relief = carryReliefExtras(args.reset === true ? (map.relief?.style ? { ...emptyRelief(map.width, map.height), style: map.relief.style } : undefined) : map.relief, reliefFromGrid(h));
     if (reliefIsFlat(map.relief)) delete map.relief;
-    const check = checkRelief(h);
+    const check = checkRelief(h, map.relief?.style);
     const warnings = log.length ? log : undefined;
     return {
       summary: `${map.name} 높이 ${ops.length}개 op 적용 — 가려진 칸 ${check.hidden}, 규칙에 깎인 칸 ${check.cut}`,
@@ -120,7 +120,7 @@ const checkReliefTool: ToolDefinition = {
   parameters: { type: "object", properties: { mapId: { type: "string" } }, required: ["mapId"] },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const check = checkRelief(reliefGrid(map));
+    const check = checkRelief(reliefGrid(map), map.relief?.style);
     return {
       summary: `${map.name} 높이 검사 — 가려진 칸 ${check.hidden}, 깎인 칸 ${check.cut}`,
       data: { text: check.text, hidden: check.hidden, cut: check.cut, hiddenRegions: check.hiddenRegions },

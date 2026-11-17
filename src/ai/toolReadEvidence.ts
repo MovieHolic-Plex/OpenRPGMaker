@@ -118,7 +118,8 @@ export class ToolReadEvidence {
       const entry = record(value);
       if (typeof entry?.id !== "string") continue;
       seen.add(entry.id);
-      if (args.include === "full") this.fullRecords.set(`${collection}:${entry.id}`, fingerprint(entry));
+      // get_database_records 는 레코드 앞에 목록 번호(position)를 붙인다(2026-11-16) — 저장된 레코드에는 없는 칸이라 지문에서 뺀다.
+      if (args.include === "full") { const { position: _position, ...stored } = entry; this.fullRecords.set(`${collection}:${entry.id}`, fingerprint(stored)); }
     }
     this.ids.set(collection, seen);
   }

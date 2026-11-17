@@ -7,13 +7,10 @@ import type { FinishStage } from "../types";
 import type { PlaceRecord } from "../../shared/types";
 import { walkBlueprint } from "../../story/blueprint";
 import { blueprintMapFor } from "../../story/blueprintPathNames";
-import { placeTypeFromName } from "../../place/placeGuess";
+import { isIndoorMap, placeTypeFromName } from "../../place/placeGuess";
 import { isBareTileMap, isPlaceholderMap, moveBareEvents } from "../../blankStart";
-import type { GameMap } from "@/project/types";
 
 const inside = (t: string | undefined) => t === "interior" || t === "house";
-/** 실내 맵인가 — placeGuess 의 같은 종류 판정과 같은 기준(실내 기후 또는 실내 칩셋). */
-const indoorMap = (m: GameMap) => (m as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor" || /interior|wizard|sengoku|modern_city|campus|gothic/u.test(m.tilesetId);
 
 export const stage: FinishStage = {
   id: "adopt-model-places", phase: "blueprint", order: 25,
@@ -31,7 +28,7 @@ export const stage: FinishStage = {
     const add = (mapId: string | undefined) => {
       const m = mapId ? project0.maps[mapId] : undefined;
       if (!m || claimed.has(m.id) || cands.some((c) => c.mapId === m.id) || isPlaceholderMap(m) || isBareTileMap(m)) return;
-      cands.push({ mapId: m.id, indoor: indoorMap(m) });
+      cands.push({ mapId: m.id, indoor: isIndoorMap(m) });
     };
     const seen = new Set<PlaceRecord>();
     for (const rec of session.places.values()) { if (seen.has(rec)) continue; seen.add(rec); add(rec.result.mapIds[0]); }

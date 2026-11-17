@@ -90,6 +90,8 @@ export interface WorldSetting {
     readonly rooms?: Readonly<Record<string, readonly [number, number]>>;
   };
   readonly kinds: readonly WorldKind[];
+  /** 이 세계 사람들의 옷을 가리키는 칩 꼬리표 — 그 꼬리표의 칩은 이 세계에서 그냥 주민으로 선다(place/people). */
+  readonly dress?: string;
 }
 
 const out = (id: string, ko: string, about: string, size: readonly [number, number], flags: { danger?: true; value?: string } = {}): WorldKind =>
@@ -138,7 +140,7 @@ export const WORLDS: readonly WorldSetting[] = [
     ],
   },
   {
-    id: "desert_east", tilesetId: "desert_east", name: "Desert of the East", ko: "사막 동방", pool: "fantasy", named: (t) => describesDesertEast(t),
+    id: "desert_east", tilesetId: "desert_east", name: "Desert of the East", ko: "사막 동방", pool: "fantasy", named: (t) => describesDesertEast(t), dress: "이국적",
     pitch: "Oasis towns, bazaars and a sultan's palace on the sand, with pyramids and sealed tombs beyond; caravans, bargains, curses.",
     composer: { tool: "compose_desert_east_map", param: "kind", exits: true },
     program: { decl: DESERT_SETTLEMENT, size: (kind, program) => desertProgramSize(kind as DesertKind, program), roomTool: "compose_desert_east_room", rooms: { shop: [10, 8] } },
@@ -374,13 +376,14 @@ const indoorHint = (name: string, kindWord = ""): { indoor?: boolean } => (INDOO
  * 돌려보낸 뒤에도 남은 문제를 함수가 메운다(막다른 길을 만들지 않는다): 모르는 종류는 남는 종류로, 단계가 가리키는 없는 장소는 장소로 더한다.
  * 고친 것 한 줄씩과 고친 장소 목록.
  */
-export function repairWorldPlaces(bp: Pick<GameBlueprint, "places" | "steps">, world: WorldSetting): { places: GameBlueprintPlace[]; notes: string[] } {
+export function repairWorldPlaces(bp: Pick<GameBlueprint, "places" | "steps">, world: WorldSetting, spread = true): { places: GameBlueprintPlace[]; notes: string[] } {
   const notes: string[] = [];
   const places: GameBlueprintPlace[] = [];
   const used = (): string[] => places.map((p) => p.kind);
   for (const p of bp.places ?? []) {
     const kind = worldKind(world, p.kind);
-    const over = kind && used().filter((k) => k === kind.id).length >= MAX_SAME_KIND;
+    // spread=false: 같은 종류를 여러 번 쓴 것은 모델이 고른 것이다 — 바꾸지 않는다(알림만, write_blueprint).
+    const over = spread && kind && used().filter((k) => k === kind.id).length >= MAX_SAME_KIND;
     const fixed = kind && !over ? kind : spareKind(world, used(), kind ? { indoor: !!kind.indoor } : indoorHint(p.name, p.kind));
     if (fixed.id !== p.kind) notes.push(`place «${p.name}» kind ${p.kind} → ${fixed.id}`);
     places.push({ ...p, kind: fixed.id });

@@ -3,6 +3,8 @@
 // 모델은 «무엇» 만 적는다: 갈래(theme — 닫힌 목록), 크기, 있어야 할 볼거리(features — 닫힌 낱말), 드나드는 변(exits). 칸은 코드가 깐다.
 // 갈래 안의 가짓수(짜임·주인공 볼거리)는 게임 열쇠(variety)와 그 씨앗으로 고른다 — 이름·요청 글의 낱말을 읽지 않는다.
 // 결과 state 에 들어오는 칸·나가는 칸·볼거리 앞 칸·곁가지 끝·길 위 빈 칸을 싣는다(사람·사건·적을 놓는 쪽이 읽는다).
+import { SHEER_TERRAIN_BUILDER, sheerKindFor } from "./sheerTerrain";
+import { SHEER_KIND_IDS } from "../sheerKindLines";
 import { lookHash } from "@/project/kitLook";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import { parseRouteFeature, parseRouteTheme, ROUTE_FEATURES, ROUTE_THEME_GLOSS, ROUTE_THEMES, type RouteTheme } from "@/editor/tools/routeThemes";
@@ -13,15 +15,12 @@ import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec, 
  * 갈래가 열다섯으로 늘어도 카드는 갈래마다 그 한 토막만 자란다(갈래마다 낱말 목록을 싣지 않는다).
  */
 export const ROUTE_CARD =
-  "[Route type:route] A passage map between places. Code lays every cell; the shape follows the links: one way out = the road ends at a landmark, a dungeon placed from it = the road ends at its entrance, 3-4 linked sides = a junction, two = a pass, crossing, climb, loop, meadow or hidden fork (per game). "
-  + `theme (omit = per game): ${ROUTE_THEMES.map((t) => `${t} (${ROUTE_THEME_GLOSS[t]})`).join(" · ")}. `
-  + "size small|medium|large. exits = sides with a way out, 1-4. "
-  + `features = one optional word: ${ROUTE_FEATURES.join(" · ")}. `
-  + "Result: heroFront, sideAt, enemySpots.";
+  `[Route type:route] Passage. theme: ${ROUTE_THEMES.map((t) => `${t} (${ROUTE_THEME_GLOSS[t]})`).join(" · ")}. `
+  + `features: ${ROUTE_FEATURES.join(" · ")}. For cliff or glade paths, hints.kind: ${SHEER_KIND_IDS}. `
+  + "exits: 1–4 sides. Links shape dead ends, junctions and dungeon mouths.";
 
 type Cell = { readonly x: number; readonly y: number };
 const SIDES: readonly Side[] = ["north", "south", "east", "west"];
-const OPPOSITE: Record<Side, Side> = { north: "south", south: "north", east: "west", west: "east" };
 const SIZES: Record<NonNullable<PlaceSpec["size"]>, readonly [number, number]> = { small: [28, 34], medium: [32, 42], large: [40, 50] };
 
 const INSIDE_KINDS = new Set(["dungeon", "cave", "interior", "house"]);
@@ -67,6 +66,9 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const project0 = run.ctx.project;
   if (!project0.tilesets.beodeul_city) return fail("this project has no beodeul_city chipset — a route map cannot be built here.");
   const args = routeArgs(spec);
+  if (sheerKindFor(spec)) {
+    return SHEER_TERRAIN_BUILDER.build(run, { ...spec, exits: args.sides }, previous);
+  }
   let mapId = spec.mapId && project0.maps[spec.mapId] ? spec.mapId : previous?.result.mapIds[0];
   const again = !!mapId && !!project0.maps[mapId];
   if (!again) {

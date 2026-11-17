@@ -305,18 +305,31 @@ export function dryBridges(project: Project, map: GameMap): Cell[] {
   return out;
 }
 
-/** 물 위가 아닌 배(덮개 층 이름표 「배」 — 바닥 층이 물이 아님). 덩이마다 칸 하나(J25: 동굴 젖은 모래 위 작은 배가 «마른 바위 위 나무다리»로 읽혔다). */
+/**
+ * 물가가 아닌 뭍 한가운데의 배(덮개 층 이름표 「배」). 덩이마다 칸 하나.
+ * 물 위의 배, 물가(세 칸 안에 물)의 배, 모래·선착장 위의 배는 세지 않는다 — 어촌은 배를 뭍에 끌어올려 둔다.
+ * 왜(2026-11-16 r6 «갈매나루»): 마을 종류의 장면 «배 끌어올린 모래턱» 이 세운 배를 게임 검사가 «물이 아닌 바닥 위의 배» 로 잡아 모델이 배 둘레를 두 번 지웠다.
+ * 이 목록은 결함이 아니다 — 조언자에게 알림으로만 간다(gameChecks.ts placementNotices). 게임 검사(관문)는 배를 보지 않는다.
+ */
 const BOAT_WORD = /작은 배|조각배|나룻배|보트|카누|뗏목|\bboat\b|rowboat|raft|canoe/iu;
-export function dryBoats(project: Project, map: GameMap): Cell[] {
-  const w = map.width;
+const SHORE_WORD = /모래|sand|해변|beach|갯벌|선착장|부두|잔교|나루|pier|quay|dock|jetty|wharf/iu;
+export function inlandBoats(project: Project, map: GameMap): Cell[] {
+  const w = map.width, h = map.height;
   const m = map as unknown as { lowerTiles?: ArrayLike<number>; lowerOverlayTiles?: ArrayLike<number>; upperTiles?: ArrayLike<number> };
+  const depth = (map as unknown as { terrainDesign?: { waterDepth?: ArrayLike<number> } }).terrainDesign?.waterDepth;
+  const ground = (i: number): string[] => [m.lowerTiles?.[i], m.lowerOverlayTiles?.[i]].map((t) => metaOf(project, map, t)?.label ?? "");
+  const wet = (i: number): boolean => ground(i).some((l) => WET_WORD.test(l)) || (depth?.[i] ?? 0) > 0;
   const out: Cell[] = [];
   const taken = new Set<number>();
-  for (let i = 0; i < w * map.height; i++) {
+  for (let i = 0; i < w * h; i++) {
     if (taken.has(i) || !BOAT_WORD.test(metaOf(project, map, m.upperTiles?.[i])?.label ?? "")) continue;
-    const wet = [m.lowerTiles?.[i], m.lowerOverlayTiles?.[i]].some((t) => WET_WORD.test(metaOf(project, map, t)?.label ?? "")) || ((map as unknown as { terrainDesign?: { waterDepth?: ArrayLike<number> } }).terrainDesign?.waterDepth?.[i] ?? 0) > 0;
-    if (wet) continue;
     const x = i % w, y = Math.floor(i / w);
+    let shore = ground(i).some((l) => SHORE_WORD.test(l));
+    for (let dy = -3; dy <= 3 && !shore; dy++) for (let dx = -3; dx <= 3; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx >= 0 && ny >= 0 && nx < w && ny < h && wet(ny * w + nx)) { shore = true; break; }
+    }
+    if (shore) continue;
     for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) taken.add((y + dy) * w + x + dx);
     out.push({ x, y });
   }

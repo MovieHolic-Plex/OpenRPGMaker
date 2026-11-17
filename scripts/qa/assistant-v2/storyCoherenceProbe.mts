@@ -53,7 +53,9 @@ function facts(p: Project): { lines: string[]; counts: Record<string, number> } 
     const setterHead = bare(named(setter.ev).split(/\s+/u).at(-1) ?? "");
     const body = texts(pages[lockedAt]!.commands).filter((l) => !/^먼저\s/u.test(l)).map(bare).join(" ");
     const other = heads.find((h) => h.head !== setterHead && !bare(named(setter.ev)).includes(h.head) && !bare(named(ev)).includes(h.head) && body.includes(h.head));
-    if (other && !(setterHead.length >= 2 && body.includes(setterHead))) {
+    // 열림 조건인 물건의 이름을 대는 글은 맞는 선행 조건을 말한 것이다 — 물건 이름에 다른 단계의 낱말이 들어 있어도(«기관실 통행증» 의 «기관») 틀린 글이 아니다.
+    const needName = cond.itemId ? bare(String((p.database?.items ?? []).find((i: { id?: string }) => i.id === cond.itemId)?.name ?? "")) : "";
+    if (other && !(setterHead.length >= 2 && body.includes(setterHead)) && !(needName.length >= 2 && body.includes(needName))) {
       bump("G wrong-prerequisite");
       lines.push(`G  「${named(ev) || ev.id}」(${map.name}) 잠김 글 «${texts(pages[lockedAt]!.commands).join(" / ").slice(0, 110)}» — 실제 조건은 「${named(setter.ev)}」, 글은 ${other.id} «${other.head}» 를 말한다`);
     }
@@ -64,6 +66,26 @@ function facts(p: Project): { lines: string[]; counts: Record<string, number> } 
   const evNames = all(p).filter((r) => bare(named(r.ev)).length >= 2 && !r.ev.id.startsWith("ev_objective") && !r.ev.id.startsWith("ev_gate_"));
   for (const { map, ev } of all(p)) for (const page of ev.pages ?? []) {
     const sideSwitch = quests.some((q) => JSON.stringify(page.commands ?? []).includes(`"sw_${q.key}_`) || JSON.stringify(page.conditions ?? []).includes(`"sw_${q.key}_`));
+    // 목표 바로 앞(같은 명령 목록)의 상태 쓰기가 본편 이정표(곁 의뢰 스위치가 아닌 켜기·주기)면 그 목표는 본편 단계의 것이다 —
+    // 의뢰인이 본편 이정표와 의뢰 수락을 한 페이지에 두면(r5a-river 한씨: sw_0001 뒤 목표 → «수락한다» 갈래) 이정표 뒤의 목표는 곁 퀘스트가 바꾸는 것이 아니다.
+    const mainAfter = new Set<Obj>();
+    const sideKey = (c: Obj | undefined) => !!c && c.kind === "setSwitch" && quests.some((q) => String(c.switchId ?? "").startsWith(`sw_${q.key}_`));
+    const lists = (node: unknown): void => {
+      if (Array.isArray(node)) {
+        let last: Obj | undefined;
+        for (const n of node as Obj[]) {
+          if (n && typeof n === "object") {
+            if ((n.kind === "setSwitch" && n.value !== false) || (n.kind === "changeItem" && n.op !== "-=")) last = n;
+            if (n.kind === "m2Command" && (n.fields as Obj | undefined)?.surface === "objectiveChip" && last && !sideKey(last)) mainAfter.add(n);
+          }
+          lists(n);
+        }
+        return;
+      }
+      if (!node || typeof node !== "object") return;
+      for (const v of Object.values(node as Obj)) if (v && typeof v === "object") lists(v);
+    };
+    lists(page.commands ?? []);
     walk(page.commands, (c) => {
       if (c.kind !== "m2Command" || (c.fields as Obj | undefined)?.surface !== "objectiveChip") return;
       const message = String((c.fields as Obj).message ?? "");
@@ -77,7 +99,7 @@ function facts(p: Project): { lines: string[]; counts: Record<string, number> } 
         bump("O text≠tail target");
         lines.push(`O  「${named(ev) || ev.id}」(${map.name}) 목표 «${message.slice(0, 80)}» — 글은 «${textNamed[0]}», 표시는 «${label}»`);
       }
-      if (sideSwitch && quests.some((q) => ev.id.startsWith(`ev_${q.key}_`) || ev.id === q.giver?.eventId)) {
+      if (sideSwitch && !mainAfter.has(c) && quests.some((q) => ev.id.startsWith(`ev_${q.key}_`) || ev.id === q.giver?.eventId)) {
         bump("O side-quest objective");
         lines.push(`O  곁 퀘스트 페이지 ${ev.id}(${map.name}) 가 본편 목표를 바꾼다: «${message.slice(0, 60)}»`);
       }

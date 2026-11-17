@@ -185,3 +185,43 @@ export function hostPage(host: QuestHost, id: string, conditions: EventPageCondi
 export function hostCommands(host: QuestHost, commands: readonly Command[], withService = true): Command[] {
   return [...structuredClone(host.face), ...commands, ...(withService ? structuredClone(host.service) : [])];
 }
+
+/** 그 의뢰의 «단계가 열려 있는 동안만» 도는 페이지인가 — 조건이 `시작됨` 과 `그 단계 아직` 을 함께 기다린다(questCompiler.stepConditions). */
+function openStepPage(project: Project, page: EventPage): boolean {
+  const on = new Set<string>(), off = new Set<string>();
+  for (const condition of page.conditions) if (condition.kind === "switch") (condition.value ? on : off).add(condition.switchId);
+  return (project.quests ?? []).some((quest) => { const key = questDefId(quest); return on.has(`sw_${key}_started`) && [...off].some((id) => id.startsWith(`sw_${key}_step`)); });
+}
+
+/**
+ * 한 사람에게 얹힌 의뢰 페이지끼리의 차례 — 단계 페이지(남의 의뢰의 들를 곳 · 제 의뢰의 다시 들르기)는 그 단계가 열려 있는 동안 그 뒤에 선 페이지보다 먼저다.
+ * 왜(2026-11-14 r4d-fun «누르의 물동이»): 엔진은 조건이 맞는 마지막 페이지를 돌린다. 들를 곳인 사람이 제 의뢰의 주인이기도 하면 뒤에 붙은 제안(아직 안 받음)·진행·완료 뒤 페이지가
+ * 늘 이겨 들를 곳 페이지는 어떤 상태에서도 열리지 않았다 — 그 의뢰는 영영 0/2 였다.
+ * 페이지를 옮기지 않는다(모델이 pageIndex 로 부른다 — blueprintStepPages 와 같은 까닭): 뒤 페이지에 «그 단계가 열려 있지 않을 때만» 조건을 더한다.
+ * 이미 함께 열릴 수 없는 페이지(같은 스위치를 반대로 기다린다)와 다른 단계 페이지는 그대로 둔다(단계 페이지끼리는 하나를 마치면 다음이 열린다). 다시 불러도 같다. 바꾼 페이지 수.
+ */
+export function settleQuestStepPages(project: Project): number {
+  let changed = 0;
+  const key = (condition: EventPageCondition): string => JSON.stringify(condition);
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
+    const pages = event.pages ?? [];
+    // 다시 컴파일해 조건이 바뀐(또는 사라진) 단계 페이지를 가리키던 옛 «열려 있지 않을 때만» 조건은 걷는다 — 남으면 그 뒤 페이지가 까닭 없이 숨는다.
+    const live = new Set<string>();
+    for (const page of pages) {
+      const stale = page.conditions.filter((c) => c.kind === "not" && c.condition.kind === "all" && openStepPage(project, { ...page, conditions: c.condition.conditions }) && !live.has(key(c)));
+      if (stale.length) { page.conditions = page.conditions.filter((c) => !stale.includes(c)); changed += stale.length; }
+      if (openStepPage(project, page)) live.add(key({ kind: "not", condition: { kind: "all", conditions: page.conditions } }));
+    }
+    pages.forEach((step, at) => {
+      if (!openStepPage(project, step) || !step.conditions.length) return;
+      const closed: EventPageCondition = { kind: "not", condition: { kind: "all", conditions: structuredClone(step.conditions) } };
+      const opposite = new Set(step.conditions.flatMap((c) => (c.kind === "switch" ? [`${c.switchId}=${!c.value}`] : [])));
+      for (const later of pages.slice(at + 1)) {
+        if (openStepPage(project, later) || later.conditions.some((c) => (c.kind === "switch" && opposite.has(`${c.switchId}=${c.value}`)) || key(c) === key(closed))) continue;
+        later.conditions = [...later.conditions, structuredClone(closed)];
+        changed += 1;
+      }
+    });
+  }
+  return changed;
+}

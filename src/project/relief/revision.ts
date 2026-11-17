@@ -44,6 +44,8 @@ export function reliefState(relief: ReliefData, verifyContent = false): State {
   mix(relief.wallDecor?.length ?? 0);
   for (const d of relief.wallDecor ?? []) { mix(d.x); mix(d.y); mix(d.row); mix(d.tile); }
   for (const ch of relief.style ?? "") mix(ch.charCodeAt(0));
+  // 폭포(깎아지른 양식)는 있을 때만 섞는다 — 없는 맵의 서명은 예전과 같다
+  if (relief.falls?.length) { mix(0xfa11); for (const f of relief.falls) { mix(f.x); mix(f.y); mix(f.w); } }
   const state = { signature: hash >>> 0, elevated, bridge };
   if (revision !== undefined) states.set(relief, { revision, state });
   return state;

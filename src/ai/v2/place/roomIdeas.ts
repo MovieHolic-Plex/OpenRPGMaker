@@ -54,17 +54,24 @@ export const ROOM_IDEAS: readonly RoomIdea[] = [
     plan: { w: 13, h: 9, rooms: [{ name: "shop", x: 1, y: 2, w: 5, h: 6 }, { name: "forge", x: 7, y: 1, w: 5, h: 6 }] } },
 ];
 
-/** 방 용도 낱말 → 아이디어 그림 n 개(같은 갈래 먼저, 모자라면 «other»). */
-export function roomIdeasFor(purpose: string, n = 2): RoomIdea[] {
+/**
+ * 방 용도 낱말 → 아이디어 그림 n 개(같은 갈래 먼저, 모자라면 «other»).
+ * key(게임 열쇠·세션)를 주면 갈래 안의 차례를 그 열쇠로 섞는다 — 표의 차례 그대로면 같은 용도의 방은 늘 같은 그림 두셋을 받았다(2026-11-16 감독
+ * «설계 예는 하나가 아니라 여럿에서 씨앗으로»). 같은 열쇠면 늘 같은 그림이다. 없으면 표의 차례.
+ */
+export function roomIdeasFor(purpose: string, n = 2, key = ""): RoomIdea[] {
   const p = purpose.toLowerCase();
   const kind: RoomIdeaKind = /침실|객실|숙소|위층 방|inn_room|guest|bed|dorm/u.test(p) && !/서재|study/u.test(p) ? "bed"
     : /여관|선술|주점|홀|식당|inn|tavern|hall|bar|pub/u.test(p) ? "hall"
     : /서재|도서|서고|책|연구|study|library|archive/u.test(p) ? "study"
     : "other";
-  const same = ROOM_IDEAS.filter((r) => r.kind === kind);
-  const rest = ROOM_IDEAS.filter((r) => r.kind !== kind && r.kind === "other");
+  const order = (xs: RoomIdea[]) => (key.trim() ? xs.sort((a, b) => ideaHash(`${key}|${a.id}`) - ideaHash(`${key}|${b.id}`) || a.id.localeCompare(b.id)) : xs);
+  const same = order(ROOM_IDEAS.filter((r) => r.kind === kind));
+  const rest = order(ROOM_IDEAS.filter((r) => r.kind !== kind && r.kind === "other"));
   return [...same, ...rest].slice(0, n);
 }
+
+const ideaHash = (text: string): number => { let h = 0x811c9dc5; for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d) >>> 0; return (h ^ (h >>> 12)) >>> 0; };
 
 export const ROOM_IDEA_RULE = "Reference rooms (the ones players liked): look at their structure — how many rooms, how they connect (doors, open arches, a corridor), the stairs and side rooms, the one big landmark each room is built around, and why a player walks from one room to the next. Borrow structure, not the plan: do not reproduce a reference's room count, sizes and positions — a plan that matches one is sent back. Build your own plan from this request and story.";
 

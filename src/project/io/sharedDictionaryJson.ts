@@ -1,6 +1,7 @@
 import type { Project } from "../types";
 import { projectWireView } from "./serialize";
 import { isBundledTilesetDiffView, materializeLazyBundledTileset } from "../bundledTilesetDiff";
+import { isStoreOwnedEntry } from "../projectClone";
 
 /**
  * 타일셋·업로드 자산 사전의 JSON 을 항목별로 기억해 조립한다. 결과는 `JSON.stringify` 와 글자까지 같다.
@@ -80,6 +81,101 @@ export function stringifyAssets(assets: unknown): string | undefined {
   return `{${parts.join(",")}}`;
 }
 
+/**
+ * `JSON.stringify(project)` 를 이어 붙이면 되는 조각 목록(저장 보기가 아니라 프로젝트 객체 그대로) — `chunks.join("")` 이 그 글과 글자까지 같다.
+ * 스토어가 들고 있던 타일셋·업로드 자산 항목(`isStoreOwnedEntry`)은 기억한 필드 조각을 그대로 가리킨다 — 그 항목은 제자리에서 바뀌지
+ * 않는다(projectClone 계약). 표지가 없는 항목(스토어 밖 프로젝트, 도구가 막 새로 만든 타일셋)은 예전처럼 그 자리에서 직렬화한다.
+ * 글 하나로 잇지 않는 까닭: 이어 붙이는 것만으로 7천만 자를 다시 복사하고(실측 한 번 약 0.4s) 비교가 그 글을 또 훑는다.
+ * 비교는 `sameJsonChunks` 로 한다(이어 붙인 글끼리의 `===` 와 같은 판정).
+ *
+ * 왜(2026-11-16 실측, 빈 새 프로젝트 7,090만 자 · 그중 번들 타일셋 6,750만 자): 조수 세션이 «검수한 초안과 글자까지 같은가» 를
+ * `JSON.stringify(project)` 끼리 비교한다. 턴 하나에 15번 · 10.0s 가 같은 타일셋 글을 다시 만들었다.
+ */
+export function projectJsonChunks(project: Project): string[] {
+  const record = project as unknown as Record<string, unknown>;
+  if (!isPlainRecord(record)) {
+    const text = JSON.stringify(project) as string | undefined;
+    return text === undefined ? [] : [text];
+  }
+  const chunks: string[] = [];
+  /** 값의 글을 `"키":글` 로 싣는다. 값에 JSON 글이 없으면(undefined·함수) 키째 건너뛴다 — JSON.stringify 와 같다. */
+  const member = (first: boolean, key: string, text: string | undefined): boolean => {
+    if (text === undefined) return first;
+    chunks.push(`${first ? "" : ","}${JSON.stringify(key)}:${text}`);
+    return false;
+  };
+  const dictionary = (first: boolean, key: string, value: unknown): boolean => {
+    if (!isPlainRecord(value)) return member(first, key, JSON.stringify(value));
+    chunks.push(`${first ? "" : ","}${JSON.stringify(key)}:{`);
+    let firstEntry = true;
+    for (const id of Object.keys(value)) {
+      const entry = value[id];
+      if (!isStoreOwnedEntry(entry) || !isPlainRecord(entry)) {
+        firstEntry = member(firstEntry, id, JSON.stringify(entry));
+        continue;
+      }
+      chunks.push(`${firstEntry ? "" : ","}${JSON.stringify(id)}:{`);
+      firstEntry = false;
+      const fields = fieldsOf(entry);
+      for (let index = 0; index < fields.length; index += 1) {
+        if (index > 0) chunks.push(",");
+        chunks.push(fields[index]!);
+      }
+      chunks.push("}");
+    }
+    chunks.push("}");
+    return false;
+  };
+  chunks.push("{");
+  let first = true;
+  for (const key of Object.keys(record)) {
+    const value = record[key];
+    if (key === "tilesets") first = dictionary(first, key, value);
+    else if (key === "assets" && isPlainRecord(value)) {
+      chunks.push(`${first ? "" : ","}${JSON.stringify(key)}:{`);
+      first = false;
+      let firstAsset = true;
+      for (const assetKey of Object.keys(value)) {
+        firstAsset = assetKey === "uploaded" ? dictionary(firstAsset, assetKey, value[assetKey]) : member(firstAsset, assetKey, JSON.stringify(value[assetKey]));
+      }
+      chunks.push("}");
+    } else first = member(first, key, JSON.stringify(value));
+  }
+  chunks.push("}");
+  return chunks;
+}
+
+/** 두 조각 목록을 이어 붙인 글이 글자까지 같은가 — `a.join("") === b.join("")` 와 같은 판정. 조각 경계가 달라도 된다. */
+export function sameJsonChunks(a: readonly string[], b: readonly string[]): boolean {
+  if (a === b) return true;
+  let total = 0;
+  for (const chunk of a) total += chunk.length;
+  for (const chunk of b) total -= chunk.length;
+  if (total !== 0) return false;
+  let i = 0;
+  let j = 0;
+  let x = 0;
+  let y = 0;
+  for (;;) {
+    while (i < a.length && x === a[i]!.length) { i += 1; x = 0; }
+    while (j < b.length && y === b[j]!.length) { j += 1; y = 0; }
+    if (i === a.length || j === b.length) return i === a.length && j === b.length;
+    const left = a[i]!;
+    const right = b[j]!;
+    if (x === 0 && y === 0 && left.length === right.length) {
+      // 같은 경계의 조각 — 기억한 조각이면 같은 문자열 객체라 바로 지난다.
+      if (left !== right) return false;
+      i += 1;
+      j += 1;
+      continue;
+    }
+    const length = Math.min(left.length - x, right.length - y);
+    if (!left.startsWith(right.slice(y, y + length), x)) return false;
+    x += length;
+    y += length;
+  }
+}
+
 /** `serialize(project)` 와 글자까지 같은 직렬화. 타일셋·업로드 자산 항목의 글을 재사용한다. */
 export function serializeReusingSharedDictionaries(project: Project): string {
   const view = projectWireView(project) as Record<string, unknown>;
@@ -106,7 +202,7 @@ export function markRoundtripPassed(project: Project): void {
   for (const entry of Object.values(project.tilesets ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   // Owned-reference wire views have their own immutable identity. They passed
   // the same boundary and must not disable reuse solely because of that wrapper.
-  for (const entry of Object.values(projectWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
+  for (const entry of Object.values(roundtripWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   for (const entry of Object.values(project.assets?.uploaded ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
 }
 
@@ -169,6 +265,15 @@ function roundtripTilesetPiece(entry: unknown): string | undefined {
 }
 
 /**
+ * 왕복 검사가 되읽을 저장 보기. 번들 타일셋은 차이 보기를 만들지 않는다(`inlineBundledTilesets`) — 아래에서 차이 보기는 어차피 온전한
+ * 항목으로 바꿔 넣으므로, 차이를 만드느라 번들 정의를 다시 짓는 일(타일셋 49개 약 1.4s, 2026-11-16 실측 — 정의 기억은 15초 뒤 버려진다)이
+ * 버려졌다. 참고문서 소유 표지로 뺀 보기·버려진 필드 정리는 저장 보기와 같다.
+ */
+function roundtripWireView(project: Project): Record<string, unknown> & { tilesets: Record<string, unknown> } {
+  return projectWireView(project, { inlineBundledTilesets: true }) as Record<string, unknown> & { tilesets: Record<string, unknown> };
+}
+
+/**
  * 저장 왕복 검사(`projectLint.checkRoundtrip`)의 입력 글. 이미 통과한 타일셋·업로드 자산 항목만 그 자리에 투영본을 넣는다 —
  * 공유 사전 밖(맵·DB·시스템·세션…)은 글자까지 `serialize` 와 같아 그 부분의 되읽기 검사는 그대로 돈다. 새 항목은 `serialize` 와 같은 글이다. 공간 저작 유무와 무관하게 교차 참조 필드는 보존한다.
  *
@@ -176,7 +281,7 @@ function roundtripTilesetPiece(entry: unknown): string | undefined {
  * 버려지는 수십 MB 트리의 GC 가 그만큼 더 들었다. 체크포인트 사이에 바뀌는 타일셋·업로드 자산은 거의 없다.
  */
 export function serializeForRoundtripCheck(project: Project): string {
-  const view = projectWireView(project) as Record<string, unknown>;
+  const view = roundtripWireView(project);
   if (hasToJson(view)) return JSON.stringify(view);
   const parts: string[] = [];
   for (const key of Object.keys(view)) {

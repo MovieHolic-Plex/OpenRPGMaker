@@ -6,7 +6,9 @@
 //  - 놓은 칸을 막힌 칸으로 두고 길찾기를 다시 돌려 «전에 닿던 칸에 아직 다 닿는지» 확인한다.
 // 놓기는 v1 place_npc, 그림은 graphic.query, 대사는 페이지(첫 만남 / 두 번째부터).
 import type { Dir, GameEvent, GameMap, Project } from "@/project/types";
-import { npcGraphicIntent, npcGraphicIsPlain, npcGraphicNamedBy, npcGraphicPersonQuery, queryNpcGraphics } from "@/assets/charsetQuery";
+import { findNpcGraphicMatches, npcGraphicIntent, npcGraphicIsPlain, npcGraphicLabelNamedBy, npcGraphicNamedBy, npcGraphicPersonQuery, npcGraphicWantedLook, queryNpcGraphics } from "@/assets/charsetQuery";
+import { charsetFamilyOf } from "@/project/charsetFamily";
+import { artGapLine, parseArtGap } from "@/project/artGap";
 import { sharedCharsetRow } from "@/project/sharedCharacterFaceResolver";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { activeMonsterTurn } from "@/project/genreLockMonsterAssets";
@@ -16,7 +18,9 @@ import type { BuildRun, ContentBuildResult, PersonSpec } from "../shared/types";
 import { exitThroats, laneCells, wanderReach } from "./placementRules";
 import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } from "./cells";
 import { resolveWhere } from "./where";
+import { worldOf } from "./world";
 import { bustOfChip, lookOfChip } from "../story/speakerBust";
+import { faceLookOf } from "@/assets/faceLooks";
 
 export const PEOPLE_CARD =
   "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,sells?,mapId?}. " +
@@ -38,9 +42,10 @@ export const PEOPLE_CARD =
 const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "female")?]> = [
   [/경비|문지기|수문장|파수|위병|보초|병사|군인|초병|guard|sentry|gatekeeper|soldier|watchman/i, ["병사", "guard"], "male"],
   [/촌장|이장|장로|원로|마을 ?어른|elder|chief|headman|mayor/i, ["할아버지", "노인", "대머리"], "male"],
+  [/우두머리|두목|단장|대장|leader|captain|blacksmith/i, ["아저씨"], "male"],
   // 청사진 단계 이름의 직함(2026-10-28 standin joseon·magic: 포졸·주모·종사관·교수·사서가 전부 「중년 남성 주민」이 됐다).
   [/포졸|포교|나졸|군졸|순라/i, ["병사", "guard"], "male"],
-  [/종사관|사또|대감|양반|관원|나리|선비|영주|귀족|noble|lord/i, ["귀족", "노학자"], "male"],
+  [/종사관|사또|대감|양반|관원|나리|선비|영주|귀족|(?:^|\s)대신(?:\s|$)|재상|noble|lord|vizier|minister/i, ["귀족", "노학자"], "male"],
   [/주모|여주인|안주인|주인댁/i, ["아줌마", "여관 주인"], "female"],
   [/교장|학장|headmaster|principal/i, ["교수", "노학자"]],
   [/교수|박사|학자|연구원|professor|scholar|researcher/i, ["교수", "노학자", "박사"]],
@@ -49,15 +54,16 @@ const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "
   [/의사|doctor|medic/i, ["박사", "연구원"]],
   [/할머니|노파|old woman|grandma/i, ["할머니", "노인"], "female"],
   [/할아버지|노인|영감|old man|grandpa/i, ["할아버지", "노인", "대머리"], "male"],
-  [/여관|바텐더|술집 ?주인|주점 ?주인|innkeeper|bartender|barkeep/i, ["여관 주인", "상인"]],
+  [/여관|찻집 ?주인|주막 ?주인|바텐더|술집 ?주인|주점 ?주인|innkeeper|bartender|barkeep/i, ["여관 주인", "상인"]],
   [/상인|장사|점원|가게|행상|merchant|shopkeeper|vendor|clerk|peddler/i, ["상인", "여관 주인"]],
   [/소녀|여자아이|girl/i, ["소녀", "아이"], "female"],
   [/소년|남자아이|boy/i, ["소년", "아이"], "male"],
+  [/청년/u, ["청년"], "male"],
   [/아이|꼬마|어린이|child|kid/i, ["아이"]],
   [/기사|knight|paladin/i, ["기사", "병사"]],
   [/마법사|마녀|wizard|mage|witch/i, ["마법사"]],
   [/신부|사제|수녀|성직자|priest|monk|nun|cleric/i, ["사제", "priest"]],
-  [/왕|king/i, ["king"], "male"],
+  [/(?<!여)왕(?![비녀])|술탄|황제|king|sultan|emperor/i, ["king"], "male"],
   [/농부|농사|farmer/i, ["아저씨", "주민"]],
   [/아주머니|아줌마|부인|여성|woman/i, ["아줌마", "여성"], "female"],
   [/아저씨|남성|man\b/i, ["아저씨", "남성"], "male"],
@@ -73,10 +79,14 @@ interface PersonGraphic {
   readonly label: string;
   readonly faceResourceId?: string;
   readonly query: string;
+  /** 이 게임의 다른 사람이 이미 그 칩(또는 같은 모습·같은 흉상)으로 서 있다 — 남는 맞는 칩이 없어 나눠 쓰게 된 것. */
+  readonly shared?: true;
+  /** 글이 가리킨 칩(이름)이 표에는 있는데 이 게임이 쓸 수 없어 성별·나이가 가장 가까운 칩이 대신 섰다 — 그 바란 칩의 이름. 없는 그림 줄로 적는다. */
+  readonly wanted?: string;
 }
 
 /** 역할·외형 낱말 → v1 이 알아듣는 질의 순서(중복 제거, 마지막은 주민). */
-function graphicQueries(looks: string | undefined, role: string | undefined): string[] {
+function graphicQueries(looks: string | undefined, role: string | undefined, generic?: { from: number }): string[] {
   const out: string[] = [];
   const add = (q: string | undefined): void => {
     const t = (q ?? "").trim();
@@ -87,6 +97,8 @@ function graphicQueries(looks: string | undefined, role: string | undefined): st
     for (const [re, alts] of ROLE_LOOKS) if (word && re.test(word)) for (const a of alts) add(a);
   }
   // 이름이 섞인 글(«오르텐 할멈»)은 통째로는 0건이다 — 그 글에서 성별·나이로 읽힌 낱말만으로 한 번 더 묻는다(칩 검색의 낱말 표).
+  // 여기서부터는 그 사람의 일·차림을 말하지 않는 검색어다(성별·나이 낱말뿐, 그리고 «villager») — 고르는 쪽이 역할 검색어의 칩 뒤에 둔다.
+  if (generic) generic.from = out.length;
   for (const word of [looks, role]) add(word ? npcGraphicPersonQuery(word) : undefined);
   add("villager");
   return out;
@@ -97,18 +109,16 @@ function wantedGender(looks: string | undefined, role: string | undefined): "mal
   return undefined;
 }
 
-/** 그 사람에게 맞지 않는 칩(글이 말한 성별과 다르다 · 아이가 아닌데 아이 칩)의 벌점 — 흉상 유무(250)와 검색어 단 차이를 합친 것보다 크고, 이름으로 돌려 고르는 마지막 단(1000)보다 작다. */
-const MISFIT = 600;
-/** 이름 있는 사람(ownFace)을 고를 때, 이 게임의 다른 사람이 이미 쓴 칩 — 흉상 없는 칩(250)보다 무겁고 어긋난 칩(MISFIT)보다 가볍다. 이름 없는 무리(농부 여섯)는 전처럼 주민 칩을 고르게 다시 쓴다. */
-const REUSED = 260;
-/** 주인공과 같은 모습의 칩 — 다른 칩이 하나라도 있으면 고르지 않는다. */
-const HERO_TWIN = 5000;
 /**
- * 말하지 않은 차림(왕관·메이드복·갑옷·토끼 귀·승복…)의 칩에 주는 벌점 — 이름으로 돌려 고르는 마지막 단(1000)보다 크다. 그냥 주민 칩이 있는 화풍에서만 건다.
- * 왜(2026-11-12 명세 은행): 검색어 단 안의 순위는 «성별만 맞은 칩» 까지 이어지고, 같은 맵에서 쓴 칩은 뒤로 밀려서(15) 주민 둘을 세우고 나면
- * «상인 여자» 가 토끼 귀 여성, «농부» 가 귀족 남성, «마을 주민 남자» 가 승려로 섰다. 주민을 한 번 더 쓰는 것이 다른 사람 옷을 입히는 것보다 낫다.
+ * 벌점 단(작을수록 먼저). 이름 없는 무리: 어긋난 칩(misfit)은 흉상 유무(250)와 검색어 단 차이를 합친 것보다 크고 이름으로 돌려 고르는 마지막 단(1000)보다 작다,
+ * 말하지 않은 차림(unasked: 왕관·메이드복·갑옷·토끼 귀·승복…)은 그 마지막 단보다 크다 — 주민을 한 번 더 쓰는 것이 다른 사람 옷을 입히는 것보다 낫다. 쓴 칩은 조금씩만 밀어 고르게 다시 쓴다.
+ * 이름 있는 사람(ownFace)은 단이 서로 섞이지 않는다(아랫단을 다 더해도 윗단보다 작다): 이 게임에 안 선 맞는 칩 → 이미 선 칩(reused) → 다른 화풍(offFamily) →
+ * 말하지 않은 차림 → 글이 말한 성별·나이와 어긋난 칩 → 주인공과 같은 모습. 남는 맞는 칩이 있는 한 이름 있는 두 사람이 한 얼굴로 서지 않는다.
+ * lean: 역할 표의 기본 성별(장로·문지기 = 남성)과 다른 칩 — 이름 있는 사람은 이름으로 돌려 고르는 마지막 단(1000 + 검색어 단)보다 무겁다(둘째 촌장이 노파로 서지 않고 다른 남자 주민으로), 이미 선 칩보다는 가볍다.
+ * ageNear: 글이 말한 나이의 이웃 나이(청년 ↔ 중년) — 이름 있는 사람은 말한 나이의 안 선 칩이 어느 검색어에든 있으면 그 칩이 먼저다(역할 낱말의 «아저씨» 가 «농부 청년» 을 이기지 않게).
  */
-const UNASKED = 1100;
+const CROWD = { misfit: 600, lean: 25, ageNear: 0, reused: 0, offFamily: 0, unasked: 1100, heroTwin: 5000 } as const;
+const NAMED = { misfit: 48000, lean: 1600, ageNear: 1200, reused: 6000, offFamily: 12000, unasked: 24000, heroTwin: 96000 } as const;
 const AGES = ["child", "youth", "middle", "elder"] as const;
 
 /**
@@ -118,22 +128,35 @@ const AGES = ["child", "youth", "middle", "elder"] as const;
  * 왕·공주·메이드·기사·수녀 칩은 그 역할을 말했을 때 검색어 단에서만 나온다. 안 맞는 칩(아이·특이한 차림)을 돌리기 전에 빼야 이름마다 고르게 갈린다
  * (넣고 돌리면 그 자리에 걸린 이름이 모두 다음 칩 하나로 몰린다). 맞는 주민이 둘뿐이면(여자 주민) 그 둘만 돈다 — 모자란다고 여왕·토끼 귀를 끼우지 않는다.
  */
-function plainPeople<T extends { readonly entry: { readonly textureKey: string; readonly tags: readonly string[] } }>(map: GameMap, people: readonly T[], fit: (m: T) => boolean): { readonly pool: readonly T[]; readonly plainFamily: boolean } {
+function plainPeople<T extends { readonly entry: { readonly textureKey: string; readonly tags: readonly string[] } }>(map: GameMap, people: readonly T[], fit: (m: T) => boolean, own: (m: T) => boolean): { readonly pool: readonly T[]; readonly plainFamily: boolean } {
   const family = people.filter((m) => familyFits(map, m.entry.textureKey));
-  const plainAll = family.filter((m) => m.entry.tags.includes("주민"));
+  const plainAll = family.filter((m) => m.entry.tags.includes("주민") || own(m));
   if (plainAll.length >= 3) {
     const plain = plainAll.filter(fit);
-    return { pool: plain.length ? plain : plainAll, plainFamily: true };
+    // 맞는 그냥 사람이 없으면(현대 칩의 사복은 모두 청년 — 노인을 청했다) 이 화풍의 맞는 칩 전부에서 고른다. 그것도 없을 때만 안 맞는 그냥 사람.
+    const fitting = plain.length ? plain : family.filter(fit);
+    return { pool: fitting.length ? fitting : plainAll, plainFamily: true };
   }
   const fitting = family.filter(fit);
-  return { pool: fitting.length ? fitting : family.length ? family : people, plainFamily: false };
+  // 주민 꼬리표가 없는 화풍(현대 칩)에서는 맞는 칩 가운데 사복 칩이 그냥 사람이다 — 역할을 못 알아들은 사람이 교복·앞치마로 서지 않게(순경 = 여학생).
+  const everyday = fitting.filter((m) => m.entry.tags.includes("사복"));
+  return { pool: everyday.length ? everyday : fitting.length ? fitting : family.length ? family : people, plainFamily: false };
 }
 
-/** 이 맵 화풍에 맞는 칩 계열인가 — 판타지(버들항·손 도트 실내) 맵에는 EasyRPG 사람 칩, 현대 맵에는 현대 칩. */
-function familyFits(map: GameMap, textureKey: string): boolean {
+/**
+ * 이 맵 화풍의 기본 칩 계열인가 — 판타지(버들항·손 도트 실내) 맵에는 EasyRPG 사람 칩, 현대 맵에는 현대 칩. 벽이 아니라 기본값이다:
+ * 글이 이름으로 부른 칩은 다른 계열이어도 선다(pickPersonGraphic 의 named).
+ * 현대 맵에서 «판타지 RTP 가 아닌 것은 다 현대» 로 보던 탓에 마법 학교 칩·REFMAP 변형 인물(중세 마을 사람)이 현대 거리의 기본 칩으로 섰다
+ * (2026-11-16 확인 빌드 r6b: 편의점 점원 = «마법 상점 직원», 서점 주인 = «노년 지팡이 장인», 하교하는 학생 = «부엉이 우편 담당 학생»).
+ * hostile = 적으로 청한 사람(해골 병사) — 판타지 맵에서는 몬스터 칩이 제 계열이다(사람 병사 칩으로 서지 않게).
+ */
+function familyFits(map: GameMap, textureKey: string, hostile = false): boolean {
   const modern = /jp_|modern|city_modern|campus|school|office/i.test(map.tilesetId);
+  const family = charsetFamilyOf(undefined, textureKey);
   const fantasyChip = /^tex_easyrpg_charset_(people|actor)|^tex_(oprn_charset_)?scarloxy_(charset_)?people/i.test(textureKey);
-  return modern ? !fantasyChip : fantasyChip;
+  if (!modern) return fantasyChip || (hostile && (family === "rtp-creature" || family === "oprn-creature"));
+  if (family === "wizarding") return /wizard/i.test(map.tilesetId);
+  return !fantasyChip && family !== "refmap-doll" && family !== "heroes";
 }
 
 /**
@@ -145,8 +168,16 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   const hostileOk = HOSTILE.test(asked);
   // 성별: 글에서 읽힌 것(칩 검색과 같은 낱말 표 — «오르텐 할멈» = 여성, «여성 촌장» = 여성)은 꼭 지킨다(어긋나면 MISFIT).
   // 역할 표의 기본(촌장·문지기 = 남성)은 글이 말하지 않았을 때의 가벼운 기울기일 뿐이다 — 표의 낱말은 느슨해서(«왕» 이 «여왕» 에도 걸린다) 꼭 지키면 여왕이 왕으로 선다.
-  const { gender: said, age: saidAge } = npcGraphicIntent(asked);
-  const leaning = said ? undefined : wantedGender(looks, role);
+  const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
+  const text = npcGraphicIntent(asked);
+  // 글이 성별·나이를 말하지 않았으면 그 낱말이 가리키는 칩이 말한다 — 이 게임이 그 칩을 못 써도(다른 계열·잠금) «어떤 사람인가» 는 칩 표가 안다.
+  // 왜(2026-11-16 확인 빌드 r6): «순경»(경찰관 칩은 몬스터 수집 전용)이 이름으로 돌려 고른 «여학생 · 양갈래» 로, «젊은 어부» 가 «젊은 여성» 으로,
+  // «중년 여인 상인» 이 남자 «여관 주인» 으로 섰다 — 낱말에 맞는 칩이 표에 있는데 그 모습을 읽지 않고 아무 사람이나 세웠다.
+  // 칩을 이름으로 부르는 것은 looks(그림 낱말)다 — role 은 직함이라(«선원» · «사냥꾼») 그 사람의 성별만 읽고 칩을 고르지는 않는다(역할을 못 알아들은 이름은 주민 칩).
+  const lookWanted = hostileOk || !looks?.trim() ? undefined : npcGraphicWantedLook(looks, overrides);
+  const wantedLook = lookWanted ?? (hostileOk || !role?.trim() ? undefined : npcGraphicWantedLook(role, overrides));
+  const leaning = text.gender ? undefined : wantedGender(looks, role);
+  const said = text.gender ?? (leaning ? undefined : wantedLook?.gender), saidAge = text.age;
   // 이 맵에서 그 칩을 쓴 사람 수 — 쓴 만큼 뒤로 민다(15씩 네 번까지 = 60, 특이한 차림 80보다 작게). 한 번만 밀면 주민 칩을 다 쓴 뒤의 사람이 모두 첫 칩 하나로 몰린다.
   const used = new Map<string, number>();
   for (const e of eventsOf(map)) {
@@ -164,44 +195,74 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   // 왜(2026-11-13 r3b-fun): 대장장이가 people1 의 «푸른 머리 청년» 으로 섰다 — 주인공(actor4 «파란 머리 청년»)과 시트만 다른 같은 모습이라 둘이 쌍둥이로 보였다.
   const heroLooks = new Set(partyChips.map((chip) => lookOfChip(chip.id, chip.index)).filter((look): look is string => !!look));
   const heroBusts = new Set(partyChips.map((chip) => bustOfChip(chip.id, chip.index)).filter((bust): bust is string => !!bust));
-  const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
-  let best: (PersonGraphic & { score: number }) | undefined;
+  let best: (PersonGraphic & { score: number; generic: boolean }) | undefined;
   // 장르 잠금(몬스터 수집·현대 연애)이 강제 중이면 허용 칩만 — 막힌 칩을 골라 place_npc 가 거부하던 길을 미리 막는다.
-  const allowed = genreLockCharsetCatalogFilter(project);
+  // 저절로 정해진 사람 칩 계열은 벽이 아니라 기본값이다 — 맵 화풍에 맞는 계열을 아래에서 먼저 고르고, 다른 계열의 꼭 맞는 칩(«어부»)도 본다. 장르 잠금과 사용자가 고른 계열만 거른다.
+  const allowed = genreLockCharsetCatalogFilter(project, true);
   // 몬스터 수집 전용 칩(Scarloxy 트레이너·주민)은 몬스터 수집 게임이 아니면 고르지 않는다 — 도구 실행 구간 밖에서 부르면 카탈로그 필터가 없어
   // 그 칩이 뽑혔고, 뒤이은 upsert_event 가 «몬스터 수집 잠금»으로 거절돼 청사진 경로가 통째로 안 지어졌다(2026-11-10 worldProbe «촌장 하르»).
   const monsterOk = monsterAssetCatalogFilters(project, activeMonsterTurn())?.charset;
-  const queries = graphicQueries(looks, role);
+  const genericTier = { from: Number.POSITIVE_INFINITY };
+  const queries = graphicQueries(looks, role, genericTier);
+  // 글이 이름으로 부른 칩(«젊은 어부» ↔ «어부 · 파란 줄무늬»)은 이 맵의 기본 계열이 아니어도 그대로 선다 — 계열은 기본값이지 벽이 아니다.
+  const namedBy = (e: { readonly label: string }): boolean => !!looks?.trim() && npcGraphicLabelNamedBy(looks, e as never);
   type Entry = ReturnType<typeof queryNpcGraphics>[number]["entry"];
   // 그 사람에게 안 맞는 칩: 글이 말한 성별과 다르다 · 아이가 아닌데 아이 칩.
   // 나이는 두 단 넘게 어긋날 때만(«할배» 에 청년 칩 · «소녀» 에 중년 칩) — 이웃 나이(노인 ↔ 중년)는 맞는 것으로 친다.
+  // 칩이 데려오는 흉상의 나이도 같은 자로 잰다 — 칩은 «중년» 인데 그 흉상은 «젊은 여성» 인 칸이 있다(2026-11-15 은행 r2t-fun: «노인» 요른이 그 칩으로 서서 게임 검사가 «나이 든 인물인데 젊은 얼굴» 을 짚었다).
+  const far = (age: string | undefined): boolean => !!saidAge && !!age && Math.abs(AGES.indexOf(saidAge) - AGES.indexOf(age as (typeof AGES)[number])) >= 2;
   const misfitFor = (e: Entry): boolean => (!!said && !!e.gender && e.gender !== "none" && e.gender !== said) || ((e.age === "child" || CHILD_LOOK.test(e.label)) && !CHILD_LOOK.test(asked))
-    || (!!saidAge && !!e.age && Math.abs(AGES.indexOf(saidAge) - AGES.indexOf(e.age)) >= 2);
+    || far(e.age) || far(faceLookOf(bustOfChip(e.textureKey, e.characterIndex) ?? "")?.age);
   // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
-  const oddFor = (e: Entry): boolean => ODD_LOOK.test(`${e.label} ${e.tags.join(" ")} ${e.textureKey}`) && !ODD_LOOK.test(asked);
+  // 이 세계 사람들의 옷(사막의 터번·전통옷)은 이 게임에서 그냥 주민의 옷이다 — 특이한 차림도 말하지 않은 차림도 아니다.
+  const dress = worldOf(project)?.dress;
+  const native = (e: Entry): boolean => !!dress && e.tags.includes(dress);
+  const plainFor = (e: Entry): boolean => npcGraphicIsPlain(e) || native(e);
+  const oddFor = (e: Entry): boolean => !native(e) && ODD_LOOK.test(`${e.label} ${e.tags.join(" ")} ${e.textureKey}`) && !ODD_LOOK.test(asked);
   // 다른 맵에서 이미 쓴 칩(게임 전체) — 같은 맵만큼은 아니어도 뒤로 민다(게임의 사람들이 서로 달라 보이게).
-  const usedElsewhere = new Set<string>();
-  for (const other of Object.values(project.maps)) {
-    if (other.id === map.id) continue;
-    for (const e of eventsOf(other)) {
-      const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
-      if (g?.sprite?.id && typeof g.pattern === "number" && g.pattern >= 3) usedElsewhere.add(`${g.sprite.id}#${decodeCharsetFrameIndex(g.pattern).characterIndex}`);
-    }
+  // heldBusts: 이 게임에 선 사람들의 흉상 — 칩이 달라도 흉상이 같으면 대화창에서 같은 얼굴이다.
+  const usedElsewhere = new Set<string>(), heldBusts = new Set<string>();
+  for (const other of Object.values(project.maps)) for (const e of eventsOf(other)) {
+    const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+    if (!g?.sprite?.id || typeof g.pattern !== "number" || g.pattern < 3) continue;
+    const index = decodeCharsetFrameIndex(g.pattern).characterIndex, bust = bustOfChip(g.sprite.id, index);
+    if (other.id !== map.id) usedElsewhere.add(`${g.sprite.id}#${index}`);
+    if (bust) heldBusts.add(bust);
   }
+  const T = ownFace ? NAMED : CROWD;
   // 마지막 질의(«villager» — 역할 낱말을 못 알아들었거나 알아들은 칩이 이 맵에 안 맞을 때의 기본)는 이름으로 사람 칩을 돌려 고른다 — 순위 1등 고정이면 «족장 바라»·«무당 누리»·«동굴 지기 아루»가
   // 모두 같은 「중년 남성 주민」으로 섰다(2026-11-10 Terra fun-w2: 사람 다섯이 한 얼굴).
   const nameHash = [...asked.trim()].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 7);
   // 이름으로 돌려 고를 때는 주민 한 줄(«villager» 4명)이 아니라 사람 칩 전체(«마을 사람»)에서 고른다.
   // 돌리기 전에 이 게임이 못 쓰는 칩(장르 잠금·몬스터 수집 전용)도 뺀다 — 넣고 돌리면 그 자리에 걸린 이름이 다음 칩으로 몰린다.
   // hasPlain: 이 화풍에 그냥 주민 칩이 있는가 — 있을 때만 말하지 않은 차림의 칩을 뒤로 민다(현대 칩처럼 주민 꼬리표가 없는 화풍은 순위 그대로).
-  const { pool: wide, plainFamily: hasPlain } = plainPeople(map, queryNpcGraphics("마을 사람", 60, overrides).filter((m) => (!allowed || allowed(m.entry)) && (!monsterOk || monsterOk(m.entry))),
-    (m) => !misfitFor(m.entry) && !oddFor(m.entry));
+  // 표 전체에서 고른다(자르지 않는다) — 사람 칩 계열이 검색을 좁히지 않게 된 뒤로는 앞쪽 예순 칸이 다른 화풍(REFMAP 변형 인물 2,567명)으로 찬다.
+  const townsfolk = findNpcGraphicMatches("마을 사람", overrides).filter((m) => (!allowed || allowed(m.entry)) && (!monsterOk || monsterOk(m.entry)));
+  const fitsPerson = (m: (typeof townsfolk)[number]): boolean => !misfitFor(m.entry) && !oddFor(m.entry);
+  const { pool: wide, plainFamily: hasPlain } = plainPeople(map, townsfolk, fitsPerson, (m) => native(m.entry));
+  // 이름 있는 사람: 주민 꼬리표 칩 뒤에 꼬리표 없는 그냥 사람 칩(차림 꼬리표가 없는 «노파»)을 잇는다 — 주민 칩이 모두 선 뒤 같은 얼굴 둘이 되기 전에 그 칩이 선다.
+  // 왜(2026-11-15 확인 빌드 r5): 역할을 못 알아들은 «회관 서기» 가 주민 넷이 다 선 뒤 «등대지기» 와 같은 콧수염 칩으로 섰다 — 안 선 노파 칩은 후보에도 없었다.
+  // 이름으로 부른 다른 화풍의 칩은 이 맵의 기본 계열에 그 역할의 맞는 칩이 없을 때만 선다(«학생» 은 현대 칩에 남학생이 있다 — 중세 인형 학생을 세우지 않는다).
+  const usable = (e: Entry): boolean => (!allowed || allowed(e)) && (!monsterOk || monsterOk(e));
+  // 이름으로 부른 칩이 있을 때만 잰다(검색 한 번씩이 든다).
+  let homeHasRole: boolean | undefined;
+  const named = (e: Entry): boolean => namedBy(e) && !(homeHasRole ??= queries.slice(0, genericTier.from).some((q) => queryNpcGraphics(q, 120, overrides).some((m) => familyFits(map, m.entry.textureKey, hostileOk) && usable(m.entry) && !misfitFor(m.entry))));
+  // 노인을 말했는데 이 맵의 기본 계열에 노인 칩이 하나도 없으면(현대 칩) 다른 계열의 노인 칩도 제 칩으로 친다 — 계열은 기본값이지 벽이 아니다.
+  // 왜(2026-11-16 확인 빌드 r6b): 「산책하는 할머니」 가 중년 «정장 여» 로 섰다(노인 칩은 REFMAP 변형 인물에만 있다).
+  let homeHasElder: boolean | undefined;
+  const elderAway = (e: Entry): boolean => saidAge === "elder" && e.age === "elder" && usable(e)
+    && !(homeHasElder ??= findNpcGraphicMatches("노인", overrides).some((m) => familyFits(map, m.entry.textureKey, hostileOk) && m.entry.age === "elder" && usable(m.entry)));
+  const spare = ownFace && hasPlain ? townsfolk.filter((m) => familyFits(map, m.entry.textureKey) && plainFor(m.entry) && fitsPerson(m) && !wide.includes(m)) : [];
   queries.forEach((q, qi) => {
-    const spin = qi === queries.length - 1;
-    const matches = spin && wide.length >= (hasPlain ? 1 : 3) ? wide : queryNpcGraphics(q, 30, overrides);
+    const spin = qi === queries.length - 1, generic = qi >= genericTier.from;
+    // 이름 있는 사람은 이 맵 화풍의 칩을 앞에 세워 서른을 자른다 — 다른 화풍 칩이 많은 낱말(«상인»)에서 이 화풍의 둘째 칩이 잘려 나가면 이름 있는 두 상인이 한 칩으로 선다.
+    // 이 맵의 기본 계열 칩을 앞에 세워 서른을 자른다 — 다른 화풍 칩이 많은 낱말(«상인» · «학생»)에서 이 화풍의 칩이 잘려 나가지 않게.
+    const found = spin && wide.length >= (hasPlain ? 1 : 3) ? wide : queryNpcGraphics(q, ownFace ? 120 : 30, overrides);
+    const mine = (m: (typeof found)[number]): boolean => familyFits(map, m.entry.textureKey, hostileOk) || (!generic && named(m.entry)) || elderAway(m.entry);
+    const matches = found === wide || !ownFace ? found : [...found.filter(mine), ...found.filter((m) => !mine(m))].slice(0, 30);
     const rotate = spin && matches.length > 1 ? nameHash % matches.length : 0;
-    matches.forEach((m, rank0) => {
-      const rank = rotate ? (rank0 - rotate + matches.length) % matches.length : rank0;
+    [...matches, ...(found === wide ? spare : [])].forEach((m, rank0) => {
+      const rank = rotate && rank0 < matches.length ? (rank0 - rotate + matches.length) % matches.length : rank0;
       const e = m.entry;
       const text = `${e.label} ${e.tags.join(" ")} ${e.textureKey}`;
       // 「몬스터 수집」 장르 꼬리표가 붙은 사람 칩(Scarloxy 트레이너·주민)은 적이 아니다 — 그 낱말을 빼고 적 낱말을 본다.
@@ -217,24 +278,56 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       // 대화창에 그 사람의 흉상이 뜨는 칩이 먼저다(story/speakerBust): 흉상 없는 칩은 검색어 두 단 반(250, 얼굴 낱장만 있으면 150)만큼 밀린다 —
       // 역할 검색어 어디든 흉상 있는 칩이 있으면 그 칩(촌장 = 얼굴 없는 터번 노인 → 흰 수염 노인).
       // 이 맵 화풍의 역할 칩이 하나라도 있으면 이름으로 돌려 고르는 마지막 단·다른 화풍 칩보다 늘 앞이다(1000) — 흉상이 없다고 여관 주인이 아무 주민으로 바뀌지 않는다.
-      const fits = familyFits(map, e.textureKey);
-      // 흉상은 «맞는 칩» 안에서만 앞선다: 성별이 어긋나거나 아이가 아닌데 아이 칩이면(MISFIT) 흉상 유무(250)·검색어 단(100씩)보다 무겁다 —
+      const fits = familyFits(map, e.textureKey, hostileOk) || (!generic && named(e)) || elderAway(e);
+      // 흉상은 «맞는 칩» 안에서만 앞선다: 성별이 어긋나거나 아이가 아닌데 아이 칩이면(misfit) 흉상 유무(250)·검색어 단(100씩)보다 무겁다 —
       // 맞는 칩에 흉상이 없으면 흉상 없는 그 칩이 서고, 대화창에는 이름표만 뜬다(다른 사람 얼굴을 띄우지 않는다).
-      const score = qi * 100 + rank + (bustOfChip(e.textureKey, e.characterIndex) ? 0 : face ? 150 : 250) + (fits ? 0 : 120) + (spin || !fits ? 1000 : 0)
-        + (misfitFor(e) ? MISFIT : 0) + (leaning && e.gender && e.gender !== "none" && e.gender !== leaning ? 25 : 0)
-        // 이름 있는 사람(ownFace): 이 게임에서 이미 쓴 얼굴은 흉상 없는 맞는 칩보다도 뒤다(REUSED) — 이름 있는 두 사람이 같은 얼굴로 서지 않게. 같은 맵에서 쓴 만큼 더 민다.
-        // 이름 없는 무리는 전과 같다 — 쓴 만큼 조금씩 밀어 주민 칩을 고르게 다시 쓴다(성별이 다른 칩·다른 검색어 단으로 넘어가지 않는다).
-        + (ownFace ? (used.has(key) ? REUSED + 15 * Math.min((used.get(key) ?? 1) - 1, 3) : usedElsewhere.has(key) ? REUSED : 0)
-          : used.has(key) ? 15 * Math.min(used.get(key) ?? 1, 4) : usedElsewhere.has(key) ? 8 : 0)
-        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) || heroLooks.has(lookOfChip(e.textureKey, e.characterIndex) ?? "") || heroBusts.has(bustOfChip(e.textureKey, e.characterIndex) ?? "") ? HERO_TWIN : 0)
-        + (oddFor(e) ? 80 : 0)
-        + (hasPlain && !npcGraphicIsPlain(e) && !npcGraphicNamedBy(`${asked} ${q}`, e) ? UNASKED : 0);
-      if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, ...(face ? { faceResourceId: face } : {}) };
+      const bust = bustOfChip(e.textureKey, e.characterIndex), mine = used.get(key) ?? 0;
+      // 이름 있는 사람: 이 게임의 누가 이미 그 칩(또는 같은 흉상)으로 서 있으면 안 선 맞는 칩 뒤로(같은 맵에서 쓴 만큼 더).
+      // 이름 없는 무리는 쓴 만큼 조금씩만 밀어 주민 칩을 고르게 다시 쓴다(성별이 다른 칩·다른 검색어 단으로 넘어가지 않는다).
+      const held = mine > 0 || usedElsewhere.has(key) || (!!bust && heldBusts.has(bust));
+      const reuse = ownFace ? (held ? T.reused + 15 * Math.min(mine, 3) : 0) : mine ? 15 * Math.min(mine, 4) : usedElsewhere.has(key) ? 8 : 0;
+      const heroTwin = heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) || heroLooks.has(lookOfChip(e.textureKey, e.characterIndex) ?? "") || heroBusts.has(bust ?? "");
+      const score = qi * 100 + rank + (bust ? 0 : face ? 150 : 250) + (fits ? 0 : 120 + T.offFamily) + (spin || !fits ? 1000 : 0)
+        // 성별·나이를 적지 않은 칩(마법 학교 칩)은 말한 성별·나이에 «맞는 칩» 이 아니다 — 맞는지 모르는 칩이다. 적힌 칩의 이웃 나이·기운 성별과 같은 단으로 뒤에 둔다.
+        + (misfitFor(e) ? T.misfit : saidAge && e.age && e.age !== saidAge ? T.ageNear : 0) + (leaning && e.gender && e.gender !== "none" && e.gender !== leaning ? T.lean : 0) + reuse + (heroTwin ? T.heroTwin : 0)
+        // 이름 있는 사람에게는 특이한 차림(이 세계의 옷이 아닌 터번·닌자·요정)도 말하지 않은 차림이다 — 이미 선 칩을 다시 쓰는 것보다 뒤.
+        + (ownFace ? 0 : oddFor(e) ? 80 : 0) + ((ownFace && oddFor(e)) || (hasPlain && !plainFor(e) && !npcGraphicNamedBy(`${asked} ${q}`, e)) ? T.unasked : 0);
+      if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, generic, ...(face ? { faceResourceId: face } : {}), ...(ownFace && held ? { shared: true as const } : {}) };
     });
   });
   if (!best) return undefined;
-  const { score: _score, ...pick } = best;
-  return pick;
+  const { score: _score, generic: byLookOnly, ...pick } = best;
+  if (!byLookOnly || !lookWanted?.label || lookWanted.label === pick.label) return pick;
+  // 글의 낱말을 모두 가진 칩이 표에 있는데 선 것은 성별·나이로만 고른 칩이다. 그 칩을 이 게임이 쓸 수 있으면 화풍이 달라도 그 칩이 선다
+  // (오너 2026-11-16 «에셋을 자유롭게» — 계열은 기본값이지 벽이 아니다). 못 쓰는 칩(몬스터 수집 전용 · 장르 잠금)이면 고른 칩을 대역으로 두고 바란 칩의 이름을 남긴다(없는 그림 줄).
+  // 다른 화풍의 칩으로 바꾸는 것은 글이 그 칩을 이름으로 불렀고(npcGraphicLabelNamedBy) 이 맵의 기본 계열에 그 역할의 맞는 칩이 없을 때만이다 — 위 named() 와 같은 규칙.
+  // 「한 게임 한 화풍」은 구성기가 스스로 고를 때의 기본값이다(2026-11-16 명세 은행: «농부»·«중년 여인 상인» 이 RTP 맵에 인형 화풍 칩으로 섞여 섰다).
+  const free = (lookWanted.chips ?? []).filter((e) => usable(e) && !misfitFor(e) && !heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`)
+    && (familyFits(map, e.textureKey, hostileOk) || named(e)));
+  const exact = free.find((e) => !used.has(`${e.textureKey}#${e.characterIndex}`) && !usedElsewhere.has(`${e.textureKey}#${e.characterIndex}`)) ?? free[0];
+  if (!exact) return { ...pick, wanted: lookWanted.label };
+  const row = sharedCharsetRow(exact.textureKey, exact.characterIndex);
+  return { textureKey: exact.textureKey, characterIndex: exact.characterIndex, label: exact.label, query: pick.query, ...(row?.status === "mapped" && row.faceResourceId ? { faceResourceId: row.faceResourceId } : {}) };
+}
+
+/** 같은 사람인지 견주는 이름 — 끝의 괄호는 그 사람이 선 자리일 뿐이다(«농부 말순 (집)» = «농부 말순»). */
+export const personKey = (name: string | undefined): string => (name ?? "").replace(/\s*[(（][^()（）]*[)）]\s*$/u, "").trim().toLowerCase();
+
+/**
+ * 이 게임 어디엔가 같은 이름으로 이미 선 사람의 칩 — 한 사람이 장소마다 다른 얼굴이 되지 않게(청사진 단계의 사람은 story/personName 이 같은 일을 한다).
+ * 왜(2026-11-15 확인 빌드 r5): 밭의 «농부 말순» 은 중년 여성, 집 안의 «농부 말순 (집)» 은 금발 젊은 여성으로 섰다 — 이름 있는 두 사람이 한 칩을 나눠 쓰지 않게 하는 단이 같은 사람에게도 걸렸다.
+ */
+function standingChipOf(project: Project, name: string): PersonGraphic | undefined {
+  const key = personKey(name);
+  if (!key) return undefined;
+  for (const map of Object.values(project.maps)) for (const e of eventsOf(map)) {
+    if (personKey(e.name) !== key) continue;
+    const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+    if (!g?.sprite?.id || typeof g.pattern !== "number" || g.pattern < 3 || !/charset/iu.test(g.sprite.id) || /object/iu.test(g.sprite.id)) continue;
+    const characterIndex = decodeCharsetFrameIndex(g.pattern).characterIndex, row = sharedCharsetRow(g.sprite.id, characterIndex);
+    return { textureKey: g.sprite.id, characterIndex, label: `${(e.name ?? "").trim()} 의 앞선 모습`, query: "", ...(row?.status === "mapped" && row.faceResourceId ? { faceResourceId: row.faceResourceId } : {}) };
+  }
+  return undefined;
 }
 
 /** 놓은 NPC 의 모든 페이지 그림을 그 방향으로 돌려 세운다(문지기는 길 쪽을 본다). */
@@ -260,11 +353,12 @@ function cleanLines(lines: readonly string[] | undefined): string[] {
  * place_npc 가 그 칩의 검토된 짝 얼굴을 대사 앞에 붙인다. 고른 칩으로 실패하면 질의 낱말 → 도구 기본 그림 순서로 물러난다.
  */
 export function placeNpcWithGraphic(run: BuildRun, map: GameMap, baseArgs: Record<string, unknown>, role: string | undefined, looks: string | undefined, label: string, warnings: string[], ownFace = false): { result: ReturnType<BuildRun["call"]>; graphic?: PersonGraphic } {
-  const graphic = pickPersonGraphic(run.ctx.project, map, role, looks, ownFace);
+  const graphic = (ownFace ? standingChipOf(run.ctx.project, label) : undefined) ?? pickPersonGraphic(run.ctx.project, map, role, looks, ownFace);
   if (graphic) {
     const result = run.call("place_npc", { ...baseArgs, graphic: { textureKey: graphic.textureKey, characterIndex: graphic.characterIndex } });
     if (result.ok) {
       if (!graphic.faceResourceId) warnings.push(`${label}: 고른 그림 '${graphic.label}' 에 검토된 짝 얼굴이 없어 대화창에 얼굴이 안 나온다.`);
+      if (graphic.wanted) warnings.push(artGapLine({ want: "person", wanted: graphic.wanted, where: label, standIn: graphic.label, by: "add_people" }));
       return { result, graphic };
     }
   } else warnings.push(`${label}: 역할·외형(${[role, looks].filter(Boolean).join("·")})에 맞는 사람 그림을 못 찾았다.`);
@@ -417,8 +511,8 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
     summary: ok
       ? `사람 ${eventIds.length}명 놓음: ${notes.join(" / ")}`
       : `사람 ${people.length}명 중 ${failed}명 실패`,
-    warnings,
-    missingArt: [],
+    warnings: warnings.filter((w) => !parseArtGap(w)),
+    missingArt: warnings.filter((w) => !!parseArtGap(w)),
     calls: run.calls.slice(firstCall),
     eventIds,
   };

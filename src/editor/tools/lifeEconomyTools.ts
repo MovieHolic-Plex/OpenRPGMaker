@@ -298,7 +298,7 @@ const upsertToolAction: ToolDefinition = {
 function parseEnergy(value: unknown): EnergySystemConfig {
   const record = asRecord(value, "energy");
   const max = optionalCount(record, "max", "energy", 1);
-  if (max === undefined) throw new ToolError("energy.max(1 이상 정수)가 필요합니다.", { code: "invalid-args" });
+  if (max === undefined) throw new ToolError("energy.max (an integer ≥ 1) is required when the project has no energy system yet, e.g. energy:{max:100, initial:100, restorePerDay:100}.", { code: "invalid-args" });
   const initial = optionalCount(record, "initial", "energy");
   const restorePerDay = optionalCount(record, "restorePerDay", "energy");
   return {
@@ -419,7 +419,9 @@ const configureLifeEconomy: ToolDefinition = {
   run(draft: Project, args): ToolExecResult {
     const changed: string[] = [];
     if (args.energy !== undefined && args.energy !== null) {
-      draft.system.energy = parseEnergy(args.energy);
+      // 보낸 칸만 바꾼다 — 「에너지 회복량만 50」에 max 를 다시 보내지 않으면 호출 전체가 거절됐다(2026-11-16 db-review 첫 호출 실패).
+      const stored = draft.system.energy as unknown as Record<string, unknown> | undefined;
+      draft.system.energy = parseEnergy(stored && typeof args.energy === "object" && !Array.isArray(args.energy) ? { ...stored, ...(args.energy as Record<string, unknown>) } : args.energy);
       changed.push(`에너지 max=${draft.system.energy.max}`);
     }
     if (args.shipping !== undefined && args.shipping !== null) {

@@ -55,6 +55,7 @@ describe("fit budget", () => {
     expect(FIT_BUDGET_MS).toBe(60_000);
     expect(() => checkFitBudget(p)).not.toThrow(); // 시작 안 한 프로젝트는 예산이 없다
     beginFitBudget(p, -1);
+    guardFitBudget(p, true); // 예산은 필수전투 단계 안에서만 검사한다(#4478) — 단계 밖 면제는 아래 «budget guard» 경우가 본다
     expect(() => checkFitBudget(p)).toThrow(FitBudgetExceeded);
     expect(fitBudgetExceeded(p)).toBeGreaterThanOrEqual(0);
     expect(() => checkFitBudget(p)).toThrow(FitBudgetExceeded);
@@ -78,6 +79,12 @@ describe("snapshot / restore of what the fit touches", () => {
     const identity = p;
     restoreFitState(p, snap);
     expect(p).toBe(identity);
+    expect(JSON.stringify([p.database.enemies, p.database.troops, p.database.monsterSpecies, p.maps[mapId]!.encounterTable, p.maps[mapId]!.events])).toBe(before);
+    // 같은 스냅숏으로 한 번 더 되돌려도 처음 상태다 — 되돌린 뒤의 시도(빠른 모드 재시도)가 스냅숏을 고쳐 쓰면 안 된다.
+    p.database.enemies[0]!.level = 99;
+    p.database.troops[0]!.name = "시험 중 이름";
+    p.maps[mapId]!.events = [...(p.maps[mapId]!.events ?? []), { id: "ev_trial_again" } as never];
+    restoreFitState(p, snap);
     expect(JSON.stringify([p.database.enemies, p.database.troops, p.database.monsterSpecies, p.maps[mapId]!.encounterTable, p.maps[mapId]!.events])).toBe(before);
   });
 });

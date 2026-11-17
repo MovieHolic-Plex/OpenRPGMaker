@@ -17,19 +17,22 @@ import { buildEvent } from "./events";
 import { buildPeople } from "../place/people";
 import { eventsOf } from "../place/cells";
 import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeonFoes";
-import { currentFoe } from "./currentFoes";
+import { currentFoe, leadEnemyId, namedFoe, namedFoeArt, wantedArtName } from "./currentFoes";
+import { foeGraphic } from "./stepFoes";
 import { artGapLine, parseArtGap } from "@/project/artGap";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { reachableCells } from "../judge/eventReach";
 import { findMapId } from "../loop/argGuard";
 import { nameScore } from "../todo/names";
+import { findBarSpot } from "../place/barSpot";
 
 type Obj = Record<string, unknown>;
 type Pt = { x: number; y: number };
 
 export interface BossEncounterSpec {
   readonly mapId?: string;
-  readonly boss: { readonly name: string; readonly where?: string; readonly at?: Pt; readonly looks?: string; readonly enemy?: string; readonly troopId?: string };
+  readonly boss: { readonly name: string; readonly where?: string; readonly at?: Pt; readonly looks?: string; readonly enemy?: string; readonly troopId?: string;
+    /** 길을 막고 선 적 — 돌아갈 길이 없는 가장 가까운 길목으로 옮겨 세운다(place/barSpot.ts). */ readonly blocks?: boolean };
   readonly lines: readonly string[];
   readonly afterWin?: readonly string[];
   readonly laterTalk?: readonly string[];
@@ -72,13 +75,18 @@ function bossTroop(run: BuildRun, spec: BossEncounterSpec["boss"], warnings: str
     const own = project.database.troops.find((t) => { const ids = [...(t.enemyIds ?? []), ...(t.members ?? []).map((m) => m.enemyId)]; return ids.length === 1 && ids[0] === named.id; });
     if (own) return own.id;
   }
+  // 이름·생김새가 그림 하나를 짚었고 그 그림이 어느 묶음에든 있으면 그 그림 그대로(story/currentFoes.namedFoeArt) — 대역을 세우지 않는다.
+  const said = named ? undefined : namedFoeArt(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`);
+  if (said) return ensureFoeTroop(run, said, "boss", pickTroops(project, undefined).boss, spec.name);
   const wanted = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) ?? ["enemy_knight_fallen", "enemy_demon_lord"].find((id) => project.database.enemies.some((e) => e.id === id));
   if (!wanted) return undefined;
-  // 서는 것은 현행 그림이 있는 종(story/currentFoes) — 그림이 없는 종은 가장 가까운 현행 종이 그 이름으로 서고, 바란 그림은 없는 그림 줄로 남는다.
-  const drawn = currentFoe(project, wanted);
+  // 글이 짚은 적(named · enemyArtFor)은 그림이 어느 묶음에든 있으면 그대로, 없으면 가장 가까운 현행 종이 그 이름으로 서고 바란 그림은 없는 그림 줄로 남는다.
+  // 스스로 고른 기본값(낱말이 없을 때의 타락한 기사·마왕)은 현행 세트에서만.
+  const told = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`);
+  const drawn = told ? namedFoe(project, wanted) : currentFoe(project, wanted);
   const art = drawn?.enemyId ?? wanted;
   if (drawn?.wanted) warnings.push(artGapLine({ want: "boss", wanted: drawn.wanted, where: spec.name, standIn: project.database.enemies.find((e) => e.id === art)?.name ?? art, by: "add_boss_encounter" }));
-  if (!enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) && !named) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
+  if (!told) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
   return ensureFoeTroop(run, art, "boss", pickTroops(project, undefined).boss, spec.name);
 }
 
@@ -93,7 +101,7 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   if (!mapId || !run.ctx.project.maps[mapId]) return result(false, run, first, `맵 「${spec.mapId ?? ""}」 을 찾지 못했다 — mapId(또는 맵 이름)를 준다`, warnings, []);
   // 이 맵에 이미 보스전(던전 빌더의 보스·청사진 단계 전투)이 있으면 그것을 보스로 꾸민다 — 옆에 두 번째 보스를 세우지 않는다.
   // 그 싸움의 적 그룹은 그대로 두고, 모델이 boss.troopId 를 줄 때만 바꾼다.
-  const adopted = adoptExistingBoss(run, mapId, spec, name, lines);
+  const adopted = adoptExistingBoss(run, mapId, spec, name, lines, warnings);
   if (adopted) return result(true, run, first, adopted.summary, warnings, [mapId], [{ mapId, eventId: adopted.eventId }]);
   const troopId = bossTroop(run, spec.boss, warnings);
   if (!troopId) return result(false, run, first, `「${name}」 보스 적 그룹을 만들지 못했다 — boss.troopId 를 주거나 boss.enemy 에 적 낱말을 준다`, warnings, [mapId]);
@@ -101,31 +109,60 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   const people = buildPeople(run, [{ role: name, name, ...(spec.boss.where ? { where: spec.boss.where } : {}), ...(spec.boss.at ? { at: spec.boss.at } : {}), ...(spec.boss.looks ? { looks: spec.boss.looks } : {}), firstTalk: lines, movement: "still" } as never], mapId);
   warnings.push(...people.warnings);
   const map = run.ctx.project.maps[mapId]!;
-  const ev = (people.eventIds ?? []).map((r) => run.ctx.project.maps[r.mapId]?.events?.find((e) => e.id === r.eventId)).find((e): e is GameEvent => !!e)
+  let ev = (people.eventIds ?? []).map((r) => run.ctx.project.maps[r.mapId]?.events?.find((e) => e.id === r.eventId)).find((e): e is GameEvent => !!e)
     ?? eventsOf(map).filter((e) => nameScore(name, String(e.name ?? "")) >= 3).at(-1);
   if (!ev) return result(false, run, first, `「${name}」 인물을 세우지 못했다: ${people.summary}`, warnings, [mapId]);
+  // 길을 막고 선 적: 선 칸이 길을 끊지 않으면 가장 가까운 길목으로 옮긴다 — 거절하지 않고 고쳐 놓고 알린다(모델이 읽는 글이라 영어).
+  let bars = "";
+  let body: { width: number; height: number } | undefined;
+  if (spec.boss.blocks) {
+    const stood = { x: ev.x, y: ev.y };
+    const spot = findBarSpot(run.ctx.project, map, stood, ev.id);
+    if (!spot) warnings.push(`"${name}" does NOT bar the way: within 14 steps of (${stood.x},${stood.y}) no passage is 3 cells wide or less, so the player walks around it. Give boss.at on a narrower passage, or narrow the passage first.`);
+    else {
+      const moved = spot.at.x !== stood.x || spot.at.y !== stood.y ? run.call("move_event", { mapId, eventId: ev.id, x: spot.at.x, y: spot.at.y }) : undefined;
+      const now = run.ctx.project.maps[mapId]?.events?.find((e) => e.id === ev!.id);
+      if (now && now.x === spot.at.x && now.y === spot.at.y) {
+        ev = now;
+        if (spot.cells.length > 1) body = spot.footprint;
+        bars = ` It bars the way at (${ev.x},${ev.y})${moved ? ` — moved from (${stood.x},${stood.y}), the nearest spot with no way around` : ""}${body ? `; its body covers the ${spot.cells.length}-cell-wide passage (${spot.cells[0]!.x},${spot.cells[0]!.y})–(${spot.cells.at(-1)!.x},${spot.cells.at(-1)!.y})` : ""}: what lies beyond is reached only after winning.`;
+      } else warnings.push(`"${name}" does NOT bar the way: it could not be moved to the passage at (${spot.at.x},${spot.at.y})${moved ? ` (${String(moved.summary).slice(0, 120)})` : ""}. Move it there with move_event.`);
+    }
+  }
+  // 막으라고 하지 않은 적: 곁에 지킬 길목이 있는데 비켜 서 있으면 그것만 알린다(옮기지 않는다).
+  if (!spec.boss.blocks) {
+    const spot = findBarSpot(run.ctx.project, map, { x: ev.x, y: ev.y }, ev.id);
+    if (spot?.guards && !spot.cells.some((c) => c.x === ev!.x && c.y === ev!.y)) bars = ` It does not bar the way (the player can walk around it); boss.blocks:true stands it on the passage at (${spot.at.x},${spot.at.y}).`;
+  }
   const sw = `sw_${ev.id}_beaten`;
   const win: Obj = { kind: "setSwitch", switchId: sw, value: true };
-  const battle: Obj = { kind: "battleProcessing", troopSource: "fixed", troopId, canEscape: false, canLose: false, branchOnResult: true,
+  // 전투 화면의 이름은 이 보스의 이름이다 — 같은 그림의 무리가 다른 이름으로 이미 있으면(동굴 빌더의 보스) 이 보스의 사본으로 싸운다.
+  const own = nameFightAfter(run.ctx.project, troopId, name, ev.id, true);
+  run.ctx.project = own.project;
+  const battle: Obj = { kind: "battleProcessing", troopSource: "fixed", troopId: own.troopId, canEscape: false, canLose: false, branchOnResult: true,
     victoryBranch: [...clean(spec.afterWin).map((body) => ({ kind: "text", speaker: name, body })), win], defeatBranch: [], escapeBranch: [] };
   const pages = (ev.pages ?? []).filter((p) => p.id !== `${ev.id}_beaten`);
+  // 맵에 선 모습은 싸울 때의 그 모습이다 — 사람 칩(붉은 머리 기사)으로 서서 유령으로 싸우지 않는다(2026-11-16 r6a P6). 그 적에 맵 그림이 없으면 고른 사람 칩 그대로.
+  const look = foeGraphic(run.ctx.project, own.troopId ?? "");
   let attached = 0;
   const fought = pages.map((p) => {
     if (triggerOf(ev, p) !== "action") return p;
-    const cmds = ((p.commands ?? []) as unknown as Obj[]).filter((c) => c.kind !== "battleProcessing");
+    const cmds = ((p.commands ?? []) as unknown as Obj[]).filter((c) => c.kind !== "battleProcessing" && !(look && c.kind === "changeFace"));
     attached += 1;
-    return { ...p, commands: [...cmds, structuredClone(battle)] as unknown as typeof p.commands };
+    return { ...p, ...(look ? { graphic: look } : {}), ...(body ? { footprint: body } : {}), commands: [...cmds, structuredClone(battle)] as unknown as typeof p.commands };
   });
+  // 사람 칩을 쓰지 않으니 그 칩의 «없는 그림» 줄은 뺀다(전투 그림의 빈자리는 bossTroop 가 이미 적었다).
+  if (look) for (let i = warnings.length - 1; i >= 0; i -= 1) if (parseArtGap(warnings[i]!)?.want === "person") warnings.splice(i, 1);
   if (!attached) return result(false, run, first, `「${name}」(${ev.id}) 에 말 거는 페이지가 없다`, warnings, [mapId]);
   const later = clean(spec.laterTalk);
   const gone = { ...structuredClone(fought[0]!), id: `${ev.id}_beaten`, name: "격파 뒤", conditions: [{ kind: "switch", switchId: sw, value: true }],
-    ...(later.length ? {} : { graphic: { transparent: true }, priority: "below" }), trigger: { kind: "action" },
+    ...(later.length ? {} : { graphic: { transparent: true }, priority: "below" }), ...(body ? { footprint: { width: 1, height: 1 } } : {}), trigger: { kind: "action" },
     commands: later.map((body) => ({ kind: "text", speaker: name, body })) } as unknown as (typeof fought)[number];
   let next = replaceEvent(run.ctx.project, mapId, { ...ev, pages: [...fought, gone] } as GameEvent);
   next = ensureSwitch(next, sw, `${name} 격파`);
   run.ctx.project = next;
-  const troop = next.database.troops.find((t) => t.id === troopId);
-  return result(true, run, first, `보스 「${name}」 ${map.name}(${ev.x},${ev.y}) [${ev.id}] — 말을 걸면 대사 ${lines.length}줄 뒤 보스전(${troop?.name ?? troopId} [${troopId}], 도망 불가), 이기면 ${sw} 켜고 ${later.length ? "다시 말 걸면 뒤 대사" : "사라진다"}. 지면 보스 방 앞에서 다시(끝맺음).`, warnings, [mapId], [{ mapId, eventId: ev.id }]);
+  const troop = next.database.troops.find((t) => t.id === own.troopId);
+  return result(true, run, first, `보스 「${name}」 ${map.name}(${ev.x},${ev.y}) [${ev.id}] — 말을 걸면 대사 ${lines.length}줄 뒤 보스전(${troop?.name ?? own.troopId} [${own.troopId}], 도망 불가), 이기면 ${sw} 켜고 ${later.length ? "다시 말 걸면 뒤 대사" : "사라진다"}. 지면 보스 방 앞에서 다시(끝맺음).${bars}`, warnings, [mapId], [{ mapId, eventId: ev.id }]);
 }
 
 /**
@@ -156,9 +193,33 @@ function existingBossEvent(project: Project, mapId: string, at?: Pt): GameEvent 
 }
 
 /** existingBossEvent 를 보스로 꾸민다: 이름, 싸우기 전 대사(보스 이름 화자), 고른 그룹, 이긴 뒤 대사. 되풀이 안전(전에 단 이 화자 대사는 바꾼다). */
-function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec, name: string, lines: string[]): { summary: string; eventId: string } | undefined {
+function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec, name: string, lines: string[], warnings: string[]): { summary: string; eventId: string } | undefined {
   const ev = existingBossEvent(run.ctx.project, mapId, spec.boss.at);
   if (!ev) return undefined;
+  // 모델이 바란 모습(enemy · 이름 · looks 의 적 낱말)이 이 싸움의 그림과 다른가 — r6a P6: «해골 종지기» 가 던전의 푸른 용으로 서고 싸웠는데 알리지 않았다.
+  const artOf = (id: string | undefined) => (run.ctx.project.database.enemies.find((e) => e.id === id) as { monsterResourceId?: string } | undefined)?.monsterResourceId;
+  let hadTroop: string | undefined;
+  const seek = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(seek); return; }
+    if (!node || typeof node !== "object") return;
+    const cmd = node as Obj;
+    if (cmd.kind === "battleProcessing" && cmd.canEscape === false && typeof cmd.troopId === "string") hadTroop ??= cmd.troopId;
+    for (const v of Object.values(cmd)) if (v && typeof v === "object") seek(v);
+  };
+  seek(ev.pages ?? []);
+  const had = run.ctx.project.database.troops.find((t) => t.id === hadTroop);
+  const hadLead = leadEnemyId(run.ctx.project, had?.id);
+  const hadName = run.ctx.project.database.enemies.find((e) => e.id === hadLead)?.name ?? had?.name ?? "the dungeon's boss";
+  const told = `${spec.boss.enemy ?? ""} ${name} ${spec.boss.looks ?? ""}`;
+  // 이름·생김새가 짚은 그림이 어느 묶음에든 있으면 그 그림(대역 없이) — 모델이 그렇게 적은 것이라 boss.enemy 가 없어도 바꾼다.
+  const namedArt = spec.boss.troopId ? undefined : namedFoeArt(run.ctx.project, told);
+  const wanted = spec.boss.troopId ? undefined : namedArt ?? enemyArtFor(run.ctx.project, told);
+  const drawn = namedArt ? { enemyId: namedArt } : wanted ? namedFoe(run.ctx.project, wanted) : undefined;
+  const differs = !!wanted && artOf(drawn?.enemyId ?? wanted) !== artOf(hadLead);
+  let figure = "";
+  let swapTo: string | undefined;
+  if (differs && (!drawn || drawn.wanted)) warnings.push(artGapLine({ want: "boss", wanted: drawn?.wanted ?? wantedArtName(run.ctx.project, wanted!), where: name, standIn: hadName, by: "add_boss_encounter" }));
+  else if (differs) swapTo = ensureFoeTroop(run, drawn!.enemyId, "boss", had?.id ?? pickTroops(run.ctx.project, undefined).boss, name);
   const said = (list: unknown[]) => list.filter((c) => !((c as Obj).kind === "text" && (c as Obj).speaker === name));
   const talk = lines.map((body) => ({ kind: "text", speaker: name, body }));
   const won = clean(spec.afterWin).map((body) => ({ kind: "text", speaker: name, body }));
@@ -170,7 +231,7 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
       const cmd = { ...(raw as Obj) };
       if (cmd.kind === "battleProcessing" && cmd.canEscape === false) {
         out.push(...structuredClone(talk));
-        const pick = spec.boss.troopId && run.ctx.project.database.troops.some((t) => t.id === spec.boss.troopId) ? spec.boss.troopId : undefined;
+        const pick = spec.boss.troopId && run.ctx.project.database.troops.some((t) => t.id === spec.boss.troopId) ? spec.boss.troopId : swapTo;
         if (pick) cmd.troopId = pick;
         fightTroop ??= String(cmd.troopId ?? "");
         if (Array.isArray(cmd.victoryBranch)) { cmd.victoryBranch = [...structuredClone(won), ...said(cmd.victoryBranch)]; sw ??= (cmd.victoryBranch as Obj[]).find((c) => c.kind === "setSwitch")?.switchId as string | undefined; }
@@ -182,14 +243,42 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
     }
     return out;
   };
-  const pages = (ev.pages ?? []).map((p) => JSON.stringify(p.commands ?? []).includes('"battleProcessing"') ? { ...p, commands: dress((p.commands ?? []) as unknown[]) as typeof p.commands } : p);
-  run.ctx.project = replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent);
+  // 이름으로 고른 적으로 바꿨으면 맵에 선 그림도 그 적이다.
+  const look = swapTo ? foeGraphic(run.ctx.project, swapTo) : undefined;
+  if (swapTo) figure = ` It now fights and stands as «${run.ctx.project.database.enemies.find((e) => e.id === leadEnemyId(run.ctx.project, swapTo))?.name ?? swapTo}» (the figure its name and looks describe) instead of «${hadName}»; send boss.troopId to keep a fight as it is.`;
+  const pages = (ev.pages ?? []).map((p) => JSON.stringify(p.commands ?? []).includes('"battleProcessing"') ? { ...p, ...(look ? { graphic: look } : {}), commands: dress((p.commands ?? []) as unknown[]) as typeof p.commands } : p);
+  run.ctx.project = nameFightAfter(replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent), fightTroop, name, ev.id).project;
   const map = run.ctx.project.maps[mapId]!;
   const troop = run.ctx.project.database.troops.find((t) => t.id === fightTroop);
   return {
     eventId: ev.id,
-    summary: `Boss «${name}» is the boss fight that was already on ${map.name ?? mapId} at (${ev.x},${ev.y}) [${ev.id}] — no second boss was placed. It now says ${lines.length} line(s) before the battle${troop ? ` (troop ${troop.name ?? troop.id} [${troop.id}])` : ""}${won.length ? ` and ${won.length} line(s) after winning` : ""}. Winning turns on ${sw ?? "its victory switch"}${sw ? ` — for an ending after this boss call add_ending_scene{afterSwitchId:"${sw}"}` : ""}.`,
+    summary: `Boss «${name}» is the boss fight that was already on ${map.name ?? mapId} at (${ev.x},${ev.y}) [${ev.id}] — no second boss was placed. It now says ${lines.length} line(s) before the battle${troop ? ` (troop ${troop.name ?? troop.id} [${troop.id}])` : ""}${won.length ? ` and ${won.length} line(s) after winning` : ""}. Winning turns on ${sw ?? "its victory switch"}${sw ? ` — for an ending after this boss call add_ending_scene{afterSwitchId:"${sw}"}` : ""}.${figure}`,
   };
+}
+
+/**
+ * 보스전의 무리와 앞장선 적을 이 보스의 이름으로 부른다 — 이 싸움만 쓰는 무리면 그 자리에서 이름을 바꾸고,
+ * 다른 이벤트·조우표가 같이 쓰면 copy 일 때만 이 보스의 사본(무리 + 앞장선 적)을 만들어 그 id 를 돌려준다(아니면 그대로).
+ * 왜(2026-11-15 확인 빌드 r5): 동굴 빌더의 보스를 «강의 주인 두꺼비» 로 꾸몄는데 전투 화면의 이름은 빌더의 «깊은 곳의 마왕» 이었다.
+ * 새로 세운 보스도 같은 그림의 무리가 이미 있으면 그 무리(다른 이름)를 그대로 썼다.
+ */
+function nameFightAfter(project: Project, troopId: string | undefined, name: string, eventId: string, copy = false): { project: Project; troopId: string | undefined } {
+  const troop = project.database.troops.find((t) => t.id === troopId);
+  const leadId = troop?.members?.length ? troop.members[0]!.enemyId : troop?.enemyIds?.[0];
+  const lead = project.database.enemies.find((e) => e.id === leadId);
+  if (!troop || !lead || troop.name === name) return { project, troopId };
+  const mark = `"troopId":${JSON.stringify(troop.id)}`;
+  const shared = Object.values(project.maps).some((m) => (m.events ?? []).some((e) => e.id !== eventId && JSON.stringify(e.pages ?? []).includes(mark))
+    || JSON.stringify([m.encounterTable ?? [], m.troopIds ?? [], m.fieldSpawns ?? []]).includes(JSON.stringify(troop.id)))
+    || project.database.troops.some((t) => t.id !== troop.id && [...(t.enemyIds ?? []), ...(t.members ?? []).map((mm) => mm.enemyId)].includes(lead.id));
+  const db = project.database;
+  if (!shared) return { project: { ...project, database: { ...db, troops: db.troops.map((t) => (t.id === troop.id ? { ...t, name } : t)), enemies: db.enemies.map((e) => (e.id === lead.id ? { ...e, name } : e)) } } as Project, troopId };
+  if (!copy) return { project, troopId };
+  const tail = ([...name].reduce((h, ch) => (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0, 7) % 46656).toString(36);
+  const ownTroop = `${troop.id}_${tail}`, ownEnemy = `${lead.id}_${tail}`;
+  const swap = (id: string): string => (id === lead.id ? ownEnemy : id);
+  const troopCopy = { ...structuredClone(troop), id: ownTroop, name, enemyIds: (troop.enemyIds ?? []).map(swap), ...(troop.members ? { members: troop.members.map((m) => ({ ...m, enemyId: swap(m.enemyId) })) } : {}) } as typeof troop;
+  return { project: { ...project, database: { ...db, troops: [...db.troops.filter((t) => t.id !== ownTroop), troopCopy], enemies: [...db.enemies.filter((e) => e.id !== ownEnemy), { ...structuredClone(lead), id: ownEnemy, name }] } } as Project, troopId: ownTroop };
 }
 
 /** after 낱말·격파 스위치로 엔딩이 열릴 스위치 고르기. */

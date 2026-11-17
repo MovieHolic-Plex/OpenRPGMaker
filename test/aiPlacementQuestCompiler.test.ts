@@ -59,6 +59,8 @@ function questDef(project: Project, mapId: string): QuestDef {
     key: QUEST_KEY,
     title: "강 건너 심부름",
     summary: "강가 사람들의 부탁을 처리한다.",
+    // 의뢰인 제 말 — 없으면 create_quest 가 «요약문을 서술로 띄웠다» 고 알린다(r6 P7). 이 파일은 좌표만 본다.
+    dialogue: { offer: "강 건너 일 좀 맡아 주겠나?", accepted: "고맙네, 조심해서 다녀오게." },
     giver: {
       create: {
         mapId,

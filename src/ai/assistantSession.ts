@@ -59,7 +59,7 @@ import {
 } from "@/ai/npcCast";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, captureProposalBase, type ProposalBase, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
-import { AuthoredProjectBaseline, authoredIdentity } from "@/project/authoredProjectBaseline";
+import { AuthoredProjectBaseline, projectIdentityDigest } from "@/project/authoredProjectBaseline";
 import { withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { isDestructiveOutcome, isMapDestruction } from "@/ai/approvalPolicy";
@@ -92,7 +92,7 @@ import {
   type VerificationCallRecord,
 } from "./agentVerification";
 import { beginAssistantToolDomainTurn, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
-import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
+import { sameSessionProjectJson, sessionDraftCopy, sessionProjectCopy, sessionProjectJson, type SessionProjectJson } from "./sessionProjectCopy";
 import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { syncDraftWikiWithLive } from "@/project/world";
 import type { Project } from "@/project/types";
@@ -576,7 +576,7 @@ export class AssistantSession {
       this.currentTurnRequestText = text;
       if (options.goalAction !== "resume" && !isContinuationText(instruction)) {
         this.checkpointApplied = null;
-        this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+        this.acceptanceRequestBaseline = sessionProjectCopy(this.baselineProject);
         this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: stripContextFooter(instruction), scope: options.scope ?? null };
       }
     }
@@ -910,7 +910,8 @@ export class AssistantSession {
   private acceptanceSequence = 0;
   private acceptanceRepairAttempts = 0;
   private resultReview: ResultReview | null = null;
-  private approvedReviewIdentity: string | null = null;
+  /** 승인된 초안의 `JSON.stringify` 정체(조각으로 쥔다 — sessionProjectCopy.ts). 비교는 equals/sameSessionProjectJson 으로만 한다. */
+  private approvedReviewIdentity: SessionProjectJson | null = null;
   /**
    * Revision whose approval was consumed by a successful apply (subscribed
    * autonomous milestone path and panel proposal path). Reporting only: the
@@ -993,7 +994,9 @@ export class AssistantSession {
   private draftBaseline: AuthoredProjectBaseline;
   private draftBaselineCurrent = true;
   /** Authored partition of the approved candidate. Wiki-only drift (coordinator
-   * receipts, manual notes) adopts into the approval instead of voiding it. */
+   * receipts, manual notes) adopts into the approval instead of voiding it.
+   * 정체성 글(authoredIdentity)이 아니라 그 요약(projectIdentityDigest "authored")을 쥔다 — 요약이 같다 ⇔ 글이 같다.
+   * 글은 타일셋까지 정렬 직렬화한 7천만 자라 승인 한 번에 2.3s 였다(2026-11-16 실측). */
   private approvedAuthoredIdentity: string | null = null;
   /** Latest live world observed via refreshAcceptance. Pre-review wiki sync adopts
    * newer coordinator/manual documents from here; authored drift stays R1's gate. */
@@ -1024,11 +1027,11 @@ export class AssistantSession {
     this.prepareProjectWiki = options.prepareProjectWiki;
     this.draftBaseline = new AuthoredProjectBaseline(project);
     this.observedLiveWorld = structuredClone(project.world);
-    this.baselineProject = structuredClone(project);
-    this.ctx = this.toolContext(cloneDetachedDraft(project));
+    this.baselineProject = sessionProjectCopy(project);
+    this.ctx = this.toolContext(sessionDraftCopy(project));
     this.proposalBase = captureProposalBase(project);
-    this.acceptanceRequestBaseline = structuredClone(project);
-    this.reviewBaseline = structuredClone(project);
+    this.acceptanceRequestBaseline = sessionProjectCopy(project);
+    this.reviewBaseline = sessionProjectCopy(project);
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
     // 문자 예산을 재척도한다. 관측이 없으면 DEFAULT_BUDGET_CHARS 그대로(현행 동작).
     this.appliedBudgetChars = this.contextOptions.budgetChars
@@ -1128,7 +1131,7 @@ export class AssistantSession {
    * 로그)는 건드리지 않고 시스템 프롬프트만 최신 프로젝트로 재조립한다.
    */
   refreshProjectContext(project: Project): void {
-    this.baselineProject = structuredClone(project);
+    this.baselineProject = sessionProjectCopy(project);
     this.rebuildSystemPrompt();
   }
 
@@ -1153,7 +1156,7 @@ export class AssistantSession {
     // with a current base. Both identities retire together.
     return this.turnComposerMode !== "ask" && this.draftBaselineCurrent && this.reviewTurn !== null && !this.reviewTurn.signal?.aborted
       && this.resultReview?.status === "approved"
-      && this.approvedReviewIdentity === JSON.stringify(project);
+      && this.approvedReviewIdentity !== null && this.approvedReviewIdentity.equals(sessionProjectJson(project));
   }
 
   getDraftBaseline(): AuthoredProjectBaseline {
@@ -1170,7 +1173,7 @@ export class AssistantSession {
   }
 
   getProposedProject(): Project {
-    return cloneDetachedDraft(this.ctx.project);
+    return sessionDraftCopy(this.ctx.project);
   }
 
   getProposalBase(): ProposalBase { return this.proposalBase; }
@@ -1178,12 +1181,13 @@ export class AssistantSession {
   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
-    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
-    if (this.approvedReviewIdentity !== JSON.stringify(project)) {
+    const projectJson = sessionProjectJson(project);
+    if (!sessionProjectJson(this.ctx.project).equals(projectJson)) this.invalidateVerificationAfterWrite();
+    if (!sameSessionProjectJson(this.approvedReviewIdentity, projectJson)) {
       // Coordinator receipts and manual wiki notes arrive outside the authored
       // candidate: adopt wiki-only drift into the approval, void anything else.
-      if (this.approvedAuthoredIdentity !== null && this.approvedAuthoredIdentity === authoredIdentity(project)) {
-        this.approvedReviewIdentity = JSON.stringify(project);
+      if (this.approvedAuthoredIdentity !== null && this.approvedAuthoredIdentity === projectIdentityDigest(project, "authored")) {
+        this.approvedReviewIdentity = projectJson;
       } else {
         this.approvedReviewIdentity = null;
         this.approvedAuthoredIdentity = null;
@@ -1192,8 +1196,8 @@ export class AssistantSession {
     this.draftBaseline = new AuthoredProjectBaseline(project);
     this.draftBaselineCurrent = true;
     this.pruneRemovedMapSpecs(this.ctx.project, project);
-    this.baselineProject = structuredClone(project);
-    this.ctx = this.toolContext(cloneDetachedDraft(project));
+    this.baselineProject = sessionProjectCopy(project);
+    this.ctx = this.toolContext(sessionDraftCopy(project));
     this.proposalBase = captureProposalBase(project);
     // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
     this.milestoneApplyFailed = false;
@@ -1874,7 +1878,7 @@ export class AssistantSession {
       // Retire both pending apply authority and its detached payload before preparation.
       // Applied store content survives; detached sessions keep their own accepted baseline.
       this.rebaseProject(this.storeBacked ? store.getCurrent() : this.baselineProject);
-      this.reviewBaseline = structuredClone(this.ctx.project);
+      this.reviewBaseline = sessionProjectCopy(this.ctx.project);
       this.originalContext = null;
       this.readEvidence.begin(undefined);
       this.rebuildSystemPrompt();
@@ -1928,7 +1932,7 @@ export class AssistantSession {
           proposedCalls: [], stoppedReason: "final" }), startedAt, usageBefore, auditFrom, subscriber);
       }
       if (startsGoal) {
-        this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+        this.acceptanceRequestBaseline = sessionProjectCopy(this.baselineProject);
         this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: entryInstruction,
           scope: turnOptions.scope ? structuredClone(turnOptions.scope) : null };
         // This is the new host-owned goal retirement, not late authoring publication.
@@ -2075,7 +2079,7 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
     options: SessionTurnOptions = {},
-    reviewedDraftAtEntry: string | null = null,
+    reviewedDraftAtEntry: SessionProjectJson | null = null,
   ): Promise<TurnResult> {
     const operation = this.runOperation;
     operation.assertCurrent();
@@ -2184,7 +2188,7 @@ export class AssistantSession {
       this.rebaseProject(store.getCurrent());
       // The new review compares AI work with the latest human-authored base,
       // never mistakes those human edits for unreviewed AI changes.
-      this.reviewBaseline = structuredClone(this.ctx.project);
+      this.reviewBaseline = sessionProjectCopy(this.ctx.project);
       this.reviewToolResults = [];
       this.originalContext = null;
       this.readEvidence.begin(undefined);
@@ -2198,7 +2202,7 @@ export class AssistantSession {
     if (!this.turnIsDriverContinue && (!resumesGoal || startsGoal)) this.clearAppliedDelivery();
     if (newRequest && !startsGoal) {
       // New-goal entry captured before awaits; continuations and questions retain their baseline.
-      this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+      this.acceptanceRequestBaseline = sessionProjectCopy(this.baselineProject);
       this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
         scope: this.turnScope ? structuredClone(this.turnScope) : null };
     }
@@ -2292,8 +2296,8 @@ export class AssistantSession {
     if (!continuesGoal) {
       // Retain an unchanged previously reviewed draft as content, not apply authority.
       // The entry already retired that authority; unreviewed unrelated drafts still drop.
-      if (this.turnProposals.size > 0 && reviewedDraftAtEntry !== JSON.stringify(this.ctx.project)) this.ctx = this.toolContext(cloneDetachedDraft(this.baselineProject));
-      this.reviewBaseline = structuredClone(this.ctx.project);
+      if (this.turnProposals.size > 0 && !sameSessionProjectJson(reviewedDraftAtEntry, sessionProjectJson(this.ctx.project))) this.ctx = this.toolContext(sessionDraftCopy(this.baselineProject));
+      this.reviewBaseline = sessionProjectCopy(this.ctx.project);
       this.reviewToolResults = [];
       this.resultReview = null;
       this.approvedReviewIdentity = null;
@@ -3596,7 +3600,7 @@ export class AssistantSession {
     // The approval consumed by this successful apply keeps its recorded verdict
     // (revision included). This never grants authority: it is only read back by
     // getResultReview, while every apply path requires isDraftReviewApproved().
-    if (this.isDraftReviewApproved(applied.applied)) this.acceptanceAppliedProject = structuredClone(applied.applied);
+    if (this.isDraftReviewApproved(applied.applied)) this.acceptanceAppliedProject = sessionProjectCopy(applied.applied);
     if (this.resultReview?.status === "approved") this.consumedApprovedRevision = this.resultReview.revision;
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
@@ -4646,7 +4650,7 @@ export class AssistantSession {
     this.approvedAuthoredIdentity = null;
     this.consumedApprovedRevision = null;
     const owner = this.reviewTurn;
-    let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
+    let candidate: { identity: SessionProjectJson; acceptance: AcceptanceSnapshot | null } | null = null;
     let review: ResultReview;
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
@@ -4660,14 +4664,14 @@ export class AssistantSession {
       }
       if (this.reviewDraftTransform) {
         const prepared = this.reviewDraftTransform(this.getProposedProject());
-        if (JSON.stringify(prepared) !== JSON.stringify(this.ctx.project)) {
+        if (!sessionProjectJson(prepared).equals(sessionProjectJson(this.ctx.project))) {
           this.ctx.project = prepared;
           revision = ++this.reviewRevision;
           this.invalidateVerificationAfterWrite();
           this.imageEvidence.current(prepared);
         }
       }
-      const identity = JSON.stringify(this.ctx.project);
+      const identity = sessionProjectJson(this.ctx.project);
       this.emitPhase(onEvent, "review");
       const draftAcceptance = this.acceptance?.evaluateForReview(this.ctx.project, this.verificationEvidence) ?? null;
       const changedMapIds = [...new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)])]
@@ -4687,9 +4691,9 @@ export class AssistantSession {
     this.resultReview = review;
     this.pushAudit({ kind: "status", text: `deterministic-review ${JSON.stringify(review)}` });
     onEvent({ type: "result_review", review });
-    if (candidate && owner === this.reviewTurn && !signal?.aborted && candidate.identity === JSON.stringify(this.ctx.project)) {
+    if (candidate && owner === this.reviewTurn && !signal?.aborted && candidate.identity.equals(sessionProjectJson(this.ctx.project))) {
       this.approvedReviewIdentity = candidate.identity;
-      this.approvedAuthoredIdentity = authoredIdentity(this.ctx.project);
+      this.approvedAuthoredIdentity = projectIdentityDigest(this.ctx.project, "authored");
       for (const item of candidate.acceptance?.items ?? []) this.acceptance?.review(item.id, review.summary, this.ctx.project, "pass");
     }
     return review;

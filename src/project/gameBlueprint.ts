@@ -59,6 +59,8 @@ export interface GameBlueprintStep {
   kind?: GameBlueprintStepKind;
   /** talk·choice·battle: 그 사람(상대)의 이름 — 말하는 사람 이름과 캐릭터 그림이 된다. */
   who?: string;
+  /** 그 사람의 성별·나이 낱말(«old woman» · «젊은 남자») — 캐릭터 그림을 고를 때 꼭 지킨다. */
+  looks?: string;
   /** 맵 이름(지을 이름 그대로). */
   place: string;
   /** 그 맵 위 이벤트 이름 — 플레이어가 말을 걸거나 조사하는 대상. */
@@ -95,8 +97,20 @@ export interface GameBlueprint {
   setting?: string;
   /** 이 게임의 장소 전부(시작 장소가 맨 앞). 옛 청사진은 없음 = steps 의 장소. */
   places?: GameBlueprintPlace[];
+  /**
+   * 요청이 짧은·작은 게임을 청했다고 모델이 적은 값 — 관문 하한(세는 맵·퀘스트·진행 깊이·단계 수)이 이 청사진의 장소·단계 수를 따른다
+   * (src/ai/v2/judge/blueprintScale.ts). 없으면 보통 크기의 게임이다.
+   */
+  scale?: "small";
+  /** 요청이 싸움이 없어도 된다고 했다고 모델이 적은 값(false) — 청사진 검사가 전투 단계를 요구하지 않는다. 없으면 장르가 정한다. */
+  battles?: false;
   /** 판정자가 받는 유일한 글 — 새 플레이어에게 «무엇을 하면 되는지» 한 줄. */
   playerGoal: string;
+  /**
+   * 오프닝에서 플레이어가 읽는 글(2~4줄) — 첫 맵에 서기 전에 듣는 이야기: 누구이고, 여기에 무슨 일이 있는가. 답(찾을 것이 어디 있는지)과 게임 낱말은 쓰지 않는다.
+   * 없으면 기본 오프닝은 playerGoal 에서 답·게임 낱말이 없는 문장만 싣는다(src/editor/tools/blueprintOpening.ts). 옛 청사진은 없다.
+   */
+  opening?: string[];
   /** 핵심 경로(시작 → 엔딩) 2~12단계. */
   steps: GameBlueprintStep[];
   /**
@@ -113,7 +127,7 @@ export interface GameBlueprint {
   updatedAt?: string;
 }
 
-export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12, closing: 6 } as const;
+export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12, closing: 6, opening: 6 } as const;
 
 /** 엔딩 화면에서 플레이어가 읽는 맺음 글. 없으면 빈 배열 — `ending.how` 는 설계 메모라 대신 쓰지 않는다. */
 export const endingClosing = (blueprint: Pick<GameBlueprint, "ending">): string[] => blueprint.ending.closing ?? [];
@@ -190,10 +204,12 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     const givesRaw = blueprintListText(s.gives) ?? s.gives;
     const kind = typeof s.kind === "string" ? STEP_KINDS.find((k) => k === String(s.kind).trim().toLowerCase()) : undefined;
     const who = typeof s.who === "string" ? s.who.trim().slice(0, 40) : "";
+    const looks = typeof s.looks === "string" ? s.looks.trim().slice(0, 40) : "";
     return {
       id,
       ...(kind ? { kind } : {}),
       ...(who ? { who } : {}),
+      ...(looks ? { looks } : {}),
       place: bounded(`steps[${i}].place`, s.place, 60),
       event: bounded(`steps[${i}].event`, s.event, 60),
       action: bounded(`steps[${i}].action`, s.action, BLUEPRINT_LIMITS.text),
@@ -213,7 +229,13 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(typeof data.setting === "string" && data.setting.trim() ? { setting: data.setting.trim().slice(0, 40) } : {}),
     ...(places.length ? { places } : {}),
     ...(uiLookById(data.look) ? { look: uiLookById(data.look)!.id } : {}),
+    ...(data.scale === "small" ? { scale: "small" as const } : {}),
+    ...(data.battles === false ? { battles: false as const } : {}),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
+    ...(() => {
+      const opening = (Array.isArray(data.opening) ? data.opening : []).flatMap((line) => (typeof line === "string" && line.trim() ? [line.trim().slice(0, BLUEPRINT_LIMITS.text)] : [])).slice(0, BLUEPRINT_LIMITS.opening);
+      return opening.length ? { opening } : {};
+    })(),
     steps,
     ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60), ...(() => {
       const closing = (Array.isArray(ending.closing) ? ending.closing : []).flatMap((line) => (typeof line === "string" && line.trim() ? [line.trim().slice(0, BLUEPRINT_LIMITS.text)] : [])).slice(0, BLUEPRINT_LIMITS.closing);
@@ -254,4 +276,12 @@ export function gameBlueprintText(blueprint: GameBlueprint): string {
     ...blueprint.steps.map((s) => `- ${s.id}${s.kind ? `[${s.kind}${s.who ? ` ${s.who}` : ""}]` : ""} 「${s.place}」 이벤트 「${s.event}」: ${s.action}${s.needs ? ` (조건: ${s.needs})` : ""} → ${s.gives} · 느낌: ${s.feeling}`),
     `엔딩 「${blueprint.ending.name}」: ${blueprint.ending.how} · 느낌: ${blueprint.ending.feeling}`,
   ].join("\n");
+}
+
+/**
+ * 청사진 경로 빌더가 청사진 ending 에서 지어 정의하는 엔딩의 id — 모델이 아직 define_ending 을 부르지 않았을 때만 생긴다.
+ * define_ending 이 같은 이름의 새 엔딩을 만들면 이 엔딩을 그 자리에서 고쳐 쓴다(같은 맺음의 엔딩 둘이 생기지 않게 — endingTools).
+ */
+export function blueprintEndingId(name: string): string {
+  return `ending_${Math.abs([...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`;
 }

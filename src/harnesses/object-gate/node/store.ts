@@ -280,7 +280,7 @@ export function listOwnerWaiverBatches(): ObjectGateOwnerWaiverBatch[] {
 export function readOwnerWaiver(sha: string, batches: ObjectGateOwnerWaiverBatch[] = listOwnerWaiverBatches()): ObjectGateOwnerWaiver | null {
   for (const batch of batches) {
     const item = batch.items.find(i => i.pixelSha256 === sha);
-    if (item) return { batch: { schema: batch.schema, id: batch.id, owner: batch.owner, decidedAt: batch.decidedAt, recordedBy: batch.recordedBy, contexts: batch.contexts }, item };
+    if (item) return { batch: { schema: batch.schema, id: batch.id, owner: batch.owner, decidedAt: batch.decidedAt, recordedBy: batch.recordedBy, contexts: batch.contexts, ...(batch.extensions ? { extensions: batch.extensions } : {}) }, item };
   }
   return null;
 }

@@ -9,6 +9,7 @@ import { TodoStore } from "../loop/todoStore";
 import type { StageWrites } from "../shared/stageWrites";
 import type { ContentBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
 import { layoutGiven } from "../place/interiorLayout";
+import { placeFactKey, type PlaceFacts } from "../place/placeGuess";
 
 /** 한 맵의 마지막 검사 결과(기계 검사·비평·그림). */
 export interface Seen {
@@ -49,6 +50,9 @@ export class V2Session {
   readonly layoutRejects = new Map<string, number>();
   /** 거절된(아직 짓지 않은) 칸 배치 장소 — 맵 id·장소 이름으로. edit_place layoutPatch 가 이것을 고쳐 make_place 로 다시 보낸다. */
   readonly pendingLayouts = new Map<string, PlaceSpec>();
+  /** 모델이 이 실행에서 장소마다 말한 것(이름 열쇠 placeFactKey) — make_place 로 보낸 명세(거절됐어도)와 세계 없는 청사진에 적은 종류·앞 장소. 끝맺음 자동 짓기가 종류를 추측하기 전에 읽는다. */
+  readonly placeFacts = new Map<string, PlaceFacts>();
+  notePlaceFact(name: string, fact: PlaceFacts): void { const key = placeFactKey(name); if (key) this.placeFacts.set(key, { ...this.placeFacts.get(key), ...fact }); }
   /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
   readonly terrainBounced = new Set<string>();
   /** 코드 지형 마을: 미리보기로 보여 준 땅(장소 이름 → 씨앗·크기·성격 힌트). 자리(hints.layout)를 받아 지을 때 같은 땅을 쓴다. */
@@ -64,8 +68,6 @@ export class V2Session {
   readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
-  /** 첫 청사진이 장소·단계가 모자라 거절된 횟수(세션당 1회만 거절하고 다음부터는 걸어 준다 — 막다른 길 방지). */
-  blueprintThinRejects = 0;
   /** 청사진 장소가 이 게임 세계(world.ts)와 안 맞아 돌려보낸 횟수 — 상한 뒤에는 함수가 메워서 건다(막다른 길 방지). */
   worldBounces = 0;
   /** 보이는 적·보물상자를 이미 둔 세계 장소(맵 id) — 한 실행에 한 번만 채운다(못 둔 자리를 다음 호출이 다시 채우지 않게). */

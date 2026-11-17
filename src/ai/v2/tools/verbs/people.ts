@@ -37,12 +37,13 @@ export function peopleVerbs(c: VerbContext) {
   // 상위 동사 둘(sceneVerbs.ts) — 「말 걸고 → 보스전」·「대사 → 엔딩」을 한 번에. 모델은 누가·무슨 말·어디만 준다.
   const addBossEncounter: PiToolShape = {
     name: "add_boss_encounter", label: "보스 만남", concurrency: "exclusive",
-    description: "Build a talking boss and the boss battle in one go — the boss person (if already present only the lines change), lines before the fight, the boss troop (if missing, made with art from the name/appearance words at a strength matched to the starting party), lines after winning, and vanishing after the win (or laterTalk). If the map already has a boss fight (the dungeon builder's boss, within 4 cells of boss.at), that one becomes this boss — renamed, given the lines, keeping its troop unless troopId is given — instead of a second boss. Do not assemble it from lower tools (upsert_enemy, upsert_troop, patch_event_page).",
+    description: "Build a talking boss and the boss battle in one go — the boss person (if already present only the lines change), lines before the fight, the boss troop (if missing, made with art from the name/appearance words at a strength matched to the starting party), lines after winning, and vanishing after the win (or laterTalk). If the map already has a boss fight (the dungeon builder's boss, within 4 cells of boss.at), that one becomes this boss — renamed, given the lines, drawn as named unless troopId is given — instead of a second boss. Do not assemble it from lower tools (upsert_enemy, upsert_troop, patch_event_page).",
     parameters: { type: "object", properties: {
       mapId: { type: "string", description: "map id (or map name) where the boss stands" },
       boss: { type: "object", properties: {
         name: { type: "string" }, where: { type: "string", description: "spot word (방 안쪽 back of the room · 제단 앞 in front of the altar…)" }, at: POINT, looks: { type: "string", description: "appearance words (해골 기사 skeleton knight · 검은 갑옷 black armor…)" },
         enemy: { type: "string", description: "enemy art word (해골 skeleton · 늑대 wolf · 용 dragon · 마왕 demon king…) — empty = from the name/appearance" }, troopId: { type: "string", description: "only to use an existing troop" },
+        blocks: { type: "boolean", description: "true = it bars the way: the tool stands it on the nearest passage with no way around and says where" },
       }, required: ["name"] },
       lines: { type: "array", items: { type: "string" }, description: "boss lines before the fight (1–6 lines)" },
       afterWin: { type: "array", items: { type: "string" }, description: "boss lines right after winning (optional)" },

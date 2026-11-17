@@ -220,14 +220,16 @@ DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_conten
 - 묶음(데이터): `harness-data/assistant-capability/small-jobs.json` — 일마다 `id · family · fixture · request(비개발자가 치는 한국어) ·
   check(판정 종류 + 인자) · allow(요청이 요구하는 이동·이름 변경) · reference(손 정답 = 실제 도구 호출 순서) · wrong(그럴듯한 오답)`.
 - 코드: `src/harnesses/assistant-capability/node/smallJobs/` — `fixtures.ts`(시작 상태 셋) · `checks.ts`(첫 묶음의 판정 + damage + `runCheck`) ·
-  `checkSupport.ts`(문서 읽기·말 걸기 따라가기 `interact`·자리 판정) · `checksData.ts`/`checksPlay.ts`(둘째 묶음의 판정) · `checksGenre.ts`/`checksGenrePlay.ts`(셋째 묶음의 판정) · `suite.ts`(읽기·정답 적용) ·
+  `checkSupport.ts`(문서 읽기·말 걸기 따라가기 `interact`·자리 판정) · `checksData.ts`/`checksPlay.ts`(둘째 묶음의 판정) · `checksGenre.ts`/`checksGenrePlay.ts`(셋째 묶음의 판정) · `checksDb.ts`(넷째 묶음의 판정) · `suite.ts`(읽기·정답 적용) ·
   `selfcheck.ts` · `run.ts`(실행기) · `report.ts`(HTML) · `freezeFixture.ts`(픽스처 얼리기). 입구 `smallJobsEntry.ts`(bun).
-- **묶음은 셋이다.** `--set 1`(생략과 같다) = 이 절의 30가지(`small-jobs.json`), `--set 2` = 아래 「둘째 묶음」(`small-jobs-2.json`, 새 가족 35가지),
-  `--set 3` = 「셋째 묶음」(`small-jobs-3.json`, JRPG 가 아닌 게임의 장치 36가지).
+- **묶음은 넷이다.** `--set 1`(생략과 같다) = 이 절의 30가지(`small-jobs.json`), `--set 2` = 아래 「둘째 묶음」(`small-jobs-2.json`, 새 가족 35가지),
+  `--set 3` = 「셋째 묶음」(`small-jobs-3.json`, JRPG 가 아닌 게임의 장치 36가지), `--set 4` = 「넷째 묶음」(`small-jobs-4.json`, 자료집 고치기 8가지 — 아래).
   첫 묶음의 id·순서·판정은 기준선 비교의 기준이라 바꾸지 않는다. 실행 요약(`summary.json`)이 묶음 파일을 적어 두므로 보고서·재판정은 `--set` 없이 그 묶음을 읽는다.
 - 모델 고정: `--model terra-high` = `harness-data/assistant-capability/ai-configs/terra-high.json`(모든 역할을 `openai-compat:opencodex` 의
   `gpt-6.1-terra` high 로). 엔드포인트 주소·키는 저장소 밖 `OPRN_OPENAI_COMPAT_PATH`(없으면 `~/.oprn-suite/openai-compat-endpoints.json`)에서만
   읽는다. 다른 모델은 `ai-configs/` 에 파일을 더하고 그 이름을 준다.
+- 조수 출하 기본(2026-11-16 오너 결정: Claude Opus 5.5 · medium)으로 잴 때는 `--model local-claude-opus-medium`(`ai-configs/local-claude-opus-medium.json` — v2, 로컬 Claude CLI,
+  `claude-opus-5-5` 하나 · effort medium, 팀장·워커로 나누지 않는다). `--model` 을 비우면 지금도 `terra-high` 다(앞선 판과의 비교 기준). 모델이 다른 판의 숫자를 한 표에 섞지 않는다.
 
 ```bash
 npm run -s build:fast && node scripts/build-electron.mjs                  # 편집기·호스트 빌드(워크트리면 VITE_CACHE_DIR 를 준다)
@@ -604,6 +606,14 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 자기검사 2026-11-11: 셋째 묶음 **36/36 sound**. 앞 묶음의 판정이 그대로인 근거 — 따라가기를 고치기 전(`7c5f3b7b62`)과 뒤의 자기검사가 첫 묶음 30/30 · 둘째 35/35 로 같고
 일마다 판정 글이 같다(다른 것은 새로 만든 이벤트 id 의 난수뿐 — 10행). 실모델 실행 셋(`baseline-46274bc35f` 23 · `after2-d4a4ae29f4` 29 · `set2-base-e298f686e5` 28)의 전/후 문서를
 지금 코드로 재판정해 상태가 바뀐 일 0건 · 까닭 글이 바뀐 일 0건. CI 는 `test/smallJobsThirdSet.test.ts` 가 같은 것을 일마다 보고, 따라가기의 새 명령 다섯을 따로 본다.
+
+### 넷째 묶음 — 자료집 고치기 (`small-jobs-4.json`, 2026-11-16)
+
+오너 「조수가 '자료집' 을 좀 전체적으로 수정할 수 있는건가 ?」 뒤 적대 리뷰(`assistant-fable-runs/db-review/B-edit-path.md`)의 오너 문장 여섯 + 목록 비우기 + 자동 전투 끄기.
+- 픽스처 `dbsmall`(`fixtures.ts`) = 빈 프로젝트의 자료집을 줄인 것. 기본 자료집 약 2,700건은 «전부 다시 써 줘» 한 턴에 들지 않는다. 배우 · 직업 · 스킬 · 아이템 · 장비 · 적 · 적 그룹 · 상태만 줄이고,
+  남긴 레코드와 다른 표(몬스터 종족 따위) · 프로젝트가 가리키는 id 는 모두 남긴다(끊긴 참조 0 — `test/smallJobsFourthSet.test.ts`). 안 쓰는 스킬 8 · 아이템 6 이 «지우기» 의 대상이다.
+- 판정(`checksDb.ts`): `unusedRemoved`(안 쓰던 것은 모두 지우고 쓰이던 것은 남기고 끊긴 참조 0) · `scaleAll`(표 전체 배수, 내림·올림·반올림 모두 받음) · `recordsEdited`(이름·값 + 건드리면 안 되는 비슷한 이름) ·
+  `classAndSkills`(주인공 직업이 바뀌고 새 스킬 n 개를 레벨 1 에 배우며, 있던 직업을 썼다면 그 배움표가 줄지 않음) · `fieldsEqual` · `rewriteAll`(표마다 이름이 바뀐 몫 — 주제가 맞는지는 사람이 본다).
 
 ## 조수가 깐 맵의 적대적 그림 검수 (`map-vqa`, 2026-11-11)
 

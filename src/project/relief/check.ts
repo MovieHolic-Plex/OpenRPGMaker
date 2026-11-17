@@ -6,8 +6,9 @@ type Box = [number, number, number, number];
 export interface ReliefHiddenRegion { rect: Box; cells: number; floor: number; southWall: number }
 export interface ReliefCheck { text: string; cut: number; hidden: number; hiddenRegions: ReliefHiddenRegion[] }
 
-export function checkRelief(h: HeightGrid): ReliefCheck {
-  const e = effectiveHeights(h), r = renderRelief(e), H = h.length, W = h[0].length;
+/** style: 그 맵의 절벽 양식 — 깎아지른 양식(sheer)은 단 하나가 앞면 faceRows 칸이라 뒤(북쪽) 땅을 그만큼 더 가린다. 생략하면 예전 그대로. */
+export function checkRelief(h: HeightGrid, style?: string): ReliefCheck {
+  const e = effectiveHeights(h), r = renderRelief(e, style ? { style } : {}), H = h.length, W = h[0].length;
   const regions = (cells: [number, number][]) => {
     const set = new Set(cells.map(([x, y]) => y * W + x)), out: { rect: Box; cells: number }[] = [];
     for (const k of set) {

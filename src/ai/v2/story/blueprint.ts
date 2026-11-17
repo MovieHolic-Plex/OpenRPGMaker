@@ -36,11 +36,15 @@ export const WRITE_BLUEPRINT_SCHEMA = {
       from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
     }, required: ["name", "kind"] } },
     look: { type: "string", description: "UI look id offered in the result" },
+    scale: { type: "string", enum: ["small"], description: "only if the request asks for a short or small game — the gates then count this blueprint's own places and steps" },
+    battles: { type: "boolean", description: "false only if the request says fights are not needed" },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
+    opening: { type: "array", items: { type: "string" }, description: "2–4 lines the player reads in the opening, before the first map — narration that sets the scene: who they are, what is wrong here. Not the goal restated, no answer to what must be found, no game words (boss, quest, level)." },
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },
       kind: { type: "string", enum: [...STEP_KINDS], description: "talk (a named person) · find (examine or pick up) · battle (win a fight) · puzzle (number lock) · choice (options with different results)" },
       who: { type: "string", description: "talk · choice · battle: that person's or foe's name (speaker name and character art). Same who again in the same place = the same one character. A choice at a thing (console, altar): the thing's name — its lines show as narration" },
+      looks: { type: "string", description: "who's sex and age (old woman · young man) — picks the art" },
       place: { type: "string", description: "map name (exactly the name you will build)" },
       event: { type: "string", description: "event name on that map (exactly the name you will build)" },
       action: { type: "string", description: "design note: what the player does (never shown)" },
@@ -68,10 +72,12 @@ export function parseBlueprintArgs(args: unknown, request: string, now = new Dat
 export const MIN_BLUEPRINT_PLACES = 2;
 export const MIN_BLUEPRINT_STEPS = 6;
 export function thinBlueprintReason(bp: GameBlueprint): string | undefined {
+  // 요청이 작은 게임을 청했다고 모델이 적었으면(scale) 얇다고 알리지 않는다 — 관문도 이 청사진의 크기를 센다(judge/blueprintScale.ts). 돌려주는 글은 알림이다(거절이 아니다).
+  if (bp.scale === "small") return undefined;
   const places = [...new Set(bp.steps.map((step) => norm(step.place)))].filter(Boolean);
   if (places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MIN_BLUEPRINT_STEPS) return undefined;
   const first = bp.steps[0]?.place ?? "장소";
-  return `청사진이 ${bp.steps.length}단계·장소 ${places.length}곳이다 — 끝맺음 관문은 문으로 닿는 맵 6장과 이야기 사슬 깊이 5(청사진 6단계)를 센다. 청사진을 걸지 않았다. write_blueprint 를 한 번 더 부르되 steps 는 6~8개, place 는 서로 다른 장소 3곳 이상(예: 「${first} 앞」·「${first} 안쪽」·「지하 통로」처럼 나눈다), 단계마다 event 는 아직 없는 새 이름으로 쓴다.`;
+  return `the blueprint has ${bp.steps.length} step(s) over ${places.length} place(s) — a full-size game has 6 to 8 steps over 3 or more places (split one place like «${first} 앞», «${first} 안쪽», «지하 통로»), each step with a new event name; for a deliberately short game send scale:"small".`;
 }
 
 /**
@@ -87,7 +93,7 @@ export function stepMixProblems(bp: Pick<GameBlueprint, "steps">, needBattle: bo
   if (unnamed.length) problems.push(`step ${unnamed.map((st) => st.id).join(", ")} needs who (the person's or foe's name).`);
   const people = new Set(bp.steps.filter((st) => st.kind === "talk" || st.kind === "choice").map((st) => st.who?.trim()).filter(Boolean));
   if (count("talk") + count("choice") < 2 || people.size < 2) problems.push(`only ${people.size} named ${people.size === 1 ? "person" : "people"} to talk to — make at least 2 steps talk (or choice) with different people (who).`);
-  if (needBattle && !count("battle")) problems.push("no battle step — an adventure needs at least one fight the player must win (kind battle, who = the foe).");
+  if (needBattle && !count("battle")) problems.push("no battle step — an adventure needs at least one fight the player must win (kind battle, who = the foe); if the request says fights are not needed, send battles:false instead.");
   if (!count("puzzle") && !count("choice")) problems.push("no puzzle and no choice step — add one (puzzle = number lock with its answer in an earlier step's lines; choice = options with different results).");
   let run = 0;
   for (const k of kinds) { run = k === "find" ? run + 1 : 0; if (run >= 3) { problems.push("3 find steps in a row — break them up with a talk, battle, puzzle or choice step."); break; } }

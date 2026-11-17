@@ -3,6 +3,7 @@ import { renderRelief, samplePixelHeight } from "./relief/render";
 import { RELIEF_TILE, type HeightGrid } from "./relief/types";
 import { reliefLiftField, reliefRenderOptions, type ReliefLiftField } from "./relief/screen";
 import { reliefGrids } from "./relief/window";
+import { reliefFaceRows } from "./relief/styles";
 import { reliefBridgeMask } from "./relief/walk";
 import { structureSunlightArt, SUN_ART_RESOLUTION, type SunlightArt, type SunlightArtSource, type SunlightVolume } from "./sunlightArt";
 import { kitBaseTile } from "./houseSetTiles";
@@ -82,7 +83,9 @@ export class SunlightField {
   constructor(readonly map: GameMap, tileset?: TilesetDef, artSource?: SunlightArtSource) {
     this.params = normalizeSunlight(map.sunlight);
     this.lift = map.relief ? reliefLiftField(map.relief) : null;
-    this.terrain = map.relief ? reliefGrids(map.relief).pruned : null;
+    // 깎아지른 양식은 단 하나가 앞면 faceRows 칸이다 — 들림(lift)과 같은 단위로
+    const faceRows = reliefFaceRows(map.relief?.style);
+    this.terrain = map.relief ? (faceRows > 1 ? reliefGrids(map.relief).pruned.map((row) => row.map((v) => v * faceRows)) : reliefGrids(map.relief).pruned) : null;
     this.bridges = map.relief ? reliefBridgeMask(map.relief) : undefined;
     this.maxTerrain = this.lift?.maxLift ?? 0;
     const casters: Caster[] = [];

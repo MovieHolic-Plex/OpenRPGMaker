@@ -91,23 +91,10 @@ export const asksComboSkill = says(/연계|합체기|협동 기술|콤보 기술
 /** 날마다 달라지는 것을 바랐다. */
 export const asksPerDay = says(/날마다|매일|하루하루|하루마다|일차마다|날짜마다|요일마다|날이 바뀔 때마다|\d+\s*일차|each day|every day|per day/iu);
 
-/** 전투 데이터(기술·장비·직업)를 지우라고 했다 — 메뉴·화면에서 빼라는 말은 아니다. */
-export const asksBattleDataRemoval = saysButNot(/(스킬|기술|장비|직업|전투\s*명령|skill|equip)[^.!?\n]{0,10}(지워|지우|없애|삭제|비워|빼앗|못\s*쓰게|배우지)/iu, /메뉴|탭|ESC|화면|창에서|창의|HUD|menu/iu);
 /** 그림·외형을 바꾸라고 했다. */
 export const asksLookChange = says(/그림|외형|모습|얼굴|옷|칩|graphic|sprite|face/iu);
 /** 무엇을 지우라고 했다. */
 export const asksRemoval = says(/지워|지우|삭제|없애|빼\s*줘|빼고|치워|remove|delete/iu);
-/** 자료집 묶음마다 «그 종류를 고쳐도 되는» 요청 낱말 — 이름을 안 불러도 그 종류를 가리키면 고치기가 정상이다. */
-const DATA_CHANGE_WORDS: Readonly<Record<string, RegExp>> = {
-  actors: /주인공|동료|파티|합류|이름|직업|레벨|능력치|hero|party/iu,
-  classes: /직업|레벨|스킬|기술|배우|class|skill|level/iu,
-  enemies: /보스|적|몬스터|약점|약하|약해|내성|강하게|속성|난이도|어렵|쉽|밸런스|이기|체력|공격력|boss|enemy|weak/iu,
-  skills: /기술|스킬|마법|위력|MP|마나|공격|회복|skill|spell/iu,
-  items: /가격|값|상점|가게|아이템|장비|무기|방어구|갑옷|회복약|포션|price|item|weapon|armor/iu,
-};
-/** 요청이 자료집의 그 묶음(actors·classes·enemies·skills·items·weapons·armors)을 고치라고 가리켰나. */
-export const asksDataChange = (section: string, task: string): boolean => !!DATA_CHANGE_WORDS[section === "weapons" || section === "armors" ? "items" : section]?.test(task);
-
 /** 설정만 바꾸는 요청(휴대폰 조작·팡파레…) — 프로젝트의 맵·데이터가 안 바뀌어도 정상이다. */
 export const asksSettingOnly = saysButNot(/휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u, /만들|두고|세워|놓아|놔|추가/u);
 /** 스토어 일만 바라는 요청(평가 읽기·답글·소식) — 만들기·고치기 동사가 없다. */

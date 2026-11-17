@@ -368,7 +368,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
     return big >= atLeast ? off : undefined;
   };
   const reliefWish: RouteRelief[] = flat || !cliffCuts.length ? [] : [...(terminal && !high && hash01(3, 1, seed + 443) < 0.7 ? ["peak" as const] : []), ...(input.relief && input.relief !== "bands" ? [input.relief] : []),
-    ...(input.relief === "bands" ? [] : (["tilt", "basin", "shelf"] as const).map((r, i, all) => all[(i + (seed % 3)) % 3]!))];
+    ...(input.relief === "bands" ? [] : (["tilt", "basin", "shelf"] as const).map((_, i, all) => all[(i + (seed % 3)) % 3]!))];
   let relief: RouteRelief = flat || !cliffCuts.length ? "flat" : "bands";
   { let level = 0;
     cuts.forEach((c, k) => {
