@@ -3,6 +3,7 @@
 //         요청한 소품(자판기·공원·횡단보도…)은 거리 계획(순수 함수 — 게임 열쇠가 있으면 도구가 실제로 쓰는 planJpCityScene, 없으면 planJpCityStreet)을 씨앗별로 미리 보고 다 들어가는 씨앗을 고른다.
 //   집:   build_hand_interior_room({tileset:"jp_city", layout:{program}}) — 일본 집·가게 실내 예제 구성. 2층이면 위층을 짓고 계단을 잇는다.
 // 모델은 칸·좌표를 쓰지 않는다. 도구가 못 하는 것은 missingArt 로 정직하게 보고한다(대체물을 지어내지 않는다).
+import { cityInteriorSeed } from "./cityInteriorSeed";
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { jpRegionById } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { isPassable } from "@/project/collision";
@@ -442,8 +443,7 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   const prev = previous?.result.state as JpState | undefined;
   for (const key of Object.keys(spec.hints ?? {})) if (!KNOWN_HINTS.has(key)) warnings.push(`알 수 없는 hints.${key} 는 무시했다`);
   const text = textOf(spec);
-  const variant = num(spec.hints?.variant) ?? 0;
-  const baseSeed = Math.max(1, (num(spec.hints?.seed) ?? prev?.baseSeed ?? 1 + (spec.salt ?? 0) % 9973) + variant * 101);
+  const { seed, baseSeed } = cityInteriorSeed(spec, prev?.baseSeed);
   // 방 직접 지정(zones.kind 가 일본 집 방 종류) — 아니면 낱말로 예제 구성을 고른다.
   const roomZones = (spec.zones ?? []).filter((z) => z.floor === undefined || z.floor === 1).map((z) => ROOM_ALIASES[z.kind.toLowerCase()] ?? z.kind.toLowerCase());
   // 이름이 가게·시설이면(「카페 온기」) 방 종류(ldk…)가 붙어 와도 그 예제 구성으로 짓는다 — 집 거실로 지으면 카운터가 없다(2026-10-25 G9).
@@ -458,8 +458,8 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
 
   const target = targetMap(run, spec, previous);
   const layout: Record<string, unknown> = customRooms
-    ? { rooms: roomZones.map((kind, i) => ({ id: `${kind}${i + 1}`, kind })), seed: baseSeed }
-    : { program, seed: baseSeed };
+    ? { rooms: roomZones.map((kind, i) => ({ id: `${kind}${i + 1}`, kind })), seed }
+    : { program, seed };
   const base: Record<string, unknown> = { tileset: JP_CITY_ID, name: spec.name, layout, ...(target ? { mapId: target, replace: true } : {}) };
   let res = run.call("build_hand_interior_room", base);
   if (!res.ok && target) res = run.call("build_hand_interior_room", { ...base, mapId: undefined, replace: undefined });
@@ -475,7 +475,7 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   if (wantUpper && upper && !customRooms) {
     const stair = (Array.isArray(data.travel) ? data.travel as { x: number; y: number }[] : [])[0];
     const prevUp = prev?.upperMapId && run.ctx.project.maps[prev.upperMapId] ? prev.upperMapId : undefined;
-    const upBase: Record<string, unknown> = { tileset: JP_CITY_ID, name: `${spec.name} 2층`, layout: { program: upper, seed: baseSeed }, ...(prevUp ? { mapId: prevUp, replace: true } : {}) };
+    const upBase: Record<string, unknown> = { tileset: JP_CITY_ID, name: `${spec.name} 2층`, layout: { program: upper, seed }, ...(prevUp ? { mapId: prevUp, replace: true } : {}) };
     const up = stair ? run.call("build_hand_interior_room", upBase) : undefined;
     const ud = (up?.data ?? {}) as Record<string, unknown>;
     const upStair = (Array.isArray(ud.travel) ? ud.travel as { x: number; y: number }[] : [])[0];
@@ -509,11 +509,11 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
     const sp = run.ctx.project.startPos;
     if (run.ctx.project.startMapId === mapId && (!sp || sp.x !== inside.x || sp.y !== inside.y)) run.call("set_start_position", { mapId, x: inside.x, y: inside.y });
   }
-  const state: JpState = { kind: "house", baseSeed: baseSeed - variant * 101, seed: baseSeed, args: base, ...(upperMapId ? { upperMapId } : {}) };
+  const state: JpState = { kind: "house", baseSeed, seed, args: base, ...(upperMapId ? { upperMapId } : {}) };
   const label = customRooms ? `방 ${roomZones.join("·")}` : `예제 구성 ${program}`;
   return {
     ok: true, mapIds, ...(entrance ? { entrance } : {}),
-    summary: `${spec.name}: 일본 실내 ${label} (${num(data.width)}×${num(data.height)}, seed ${baseSeed})${mapIds.length > 1 ? ` + 위층 ${mapIds[1]}(계단 이음)` : ""}`,
+    summary: `${spec.name}: 일본 실내 ${label} (${num(data.width)}×${num(data.height)}, seed ${seed})${mapIds.length > 1 ? ` + 위층 ${mapIds[1]}(계단 이음)` : ""}`,
     warnings, missingArt: missing, calls: run.calls.slice(first), state,
   };
 }

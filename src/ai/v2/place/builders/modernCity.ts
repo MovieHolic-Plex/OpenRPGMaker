@@ -4,6 +4,7 @@
 //   실내: build_hand_interior_room({tileset:"modern_city", layout:{program}}) — 카페(바 카운터·좌석)·편의점·지하철역·사무실…
 //         (G9: 카페 「온기」가 일본 집 거실 ldk 10×7 로 지어졌다).
 // 모델은 칸·좌표를 쓰지 않는다. 못 하는 것은 missingArt 로 정직하게 보고한다.
+import { cityInteriorSeed } from "./cityInteriorSeed";
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { isPassable } from "@/project/collision";
 import type { Project } from "@/project/types";
@@ -78,7 +79,7 @@ const SHOP_WORDS: readonly Rule[] = [
   [/주택|house/i, "주택"], [/빵집|베이커리|bakery/i, "빵집"], [/우체국|post office/i, "우체국"], [/경찰|파출소|police/i, "경찰서"], [/창고|warehouse/i, "창고"],
 ];
 
-interface KrState { readonly seed: number; readonly program?: string }
+interface KrState { readonly seed: number; readonly baseSeed?: number; readonly program?: string }
 
 function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const first = run.calls.length;
@@ -123,7 +124,7 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   // 이름 낱말이 먼저: 「카페 온기」에 방 종류 ldk 가 붙어 와도 카페다(G9).
   const program = typeof spec.hints?.program === "string" ? spec.hints.program
     : PROGRAM_RULES.find(([re]) => has(spec.name, re))?.[1] ?? PROGRAM_RULES.find(([re]) => has(textOf(spec), re))?.[1] ?? "apartment";
-  const seed = Math.max(1, Math.floor(num(spec.hints?.seed) ?? prev?.seed ?? 1 + (spec.salt ?? 0) % 9973));
+  const { seed, baseSeed } = cityInteriorSeed(spec, prev?.baseSeed ?? prev?.seed);
   for (const z of spec.zones ?? []) for (const a of z.anchors ?? []) missing.push(`${a}(주인공 물건 지정은 예제 구성에서 못 함 — 견본 가구 한 벌)`);
   if ((spec.floors ?? 1) >= 2) missing.push("위층(한국 도시 실내는 한 층씩 — 위층은 따로 지어 잇는다)");
   const target = targetMap(run, spec, previous);
@@ -146,7 +147,7 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   return {
     ok: true, mapIds: [mapId], ...(entrance ? { entrance } : {}),
     summary: `${spec.name}: 한국 도시 실내 ${program} (${num(data.width)}×${num(data.height)}, seed ${seed})`,
-    warnings, missingArt: missing, calls: run.calls.slice(first), state: { seed, program } satisfies KrState,
+    warnings, missingArt: missing, calls: run.calls.slice(first), state: { seed, baseSeed, program } satisfies KrState,
   };
 }
 
