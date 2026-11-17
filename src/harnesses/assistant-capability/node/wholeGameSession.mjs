@@ -175,10 +175,12 @@ try {
   writeState({ phase: 'baseline' });
   const baseKind = await save();
   const base = stored(projectDir);
-  json(resolve(out, 'baseline.json'), { projectId: base.projectId, revision: base.revision, sha256: base.sha256, saveKind: baseKind });
+  // 이 판의 게임 열쇠(프로젝트 id)가 고정된 것인지 — wholeGamePrepare --project-id 로만 고정한다(기본은 판마다 새 id). 고정한 판끼리는 마을 겉모습·종류가 같다.
+  const pinnedProjectId = (() => { try { return JSON.parse(readFileSync(resolve(dirname(projectDir), 'fixture.json'), 'utf8')).pinnedProjectId === true; } catch { return null; } })();
+  json(resolve(out, 'baseline.json'), { projectId: base.projectId, pinnedProjectId, revision: base.revision, sha256: base.sha256, saveKind: baseKind });
   await page.screenshot({ path: resolve(out, 'baseline.png') });
   writeState({ phase: 'idle', projectId: base.projectId, hostUrl: host.url });
-  log(`baseline: projectId ${base.projectId}, revision ${base.revision}\n`);
+  log(`baseline: projectId ${base.projectId}${pinnedProjectId ? ' (PINNED — same game key as every run with this id)' : ''}, revision ${base.revision}\n`);
   for (;;) {
     const next = readdirSync(resolve(out, 'inbox')).filter(n => /\.(txt|click|reload|stop|wait)$/.test(n)).sort()[0];
     if (!next) { await sleep(2000); continue; }

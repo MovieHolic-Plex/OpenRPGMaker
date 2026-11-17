@@ -202,6 +202,11 @@ export type OpenLocalProjectStoreOptions = {
   readonly projectDir: string;
   readonly now?: () => string;
   readonly appVersion?: string;
+  /**
+   * 새 저장소에만 쓰는 프로젝트 id(시험 묶음이 같은 게임을 다시 짓는 «재생용 고정»). 비우면 새 id(randomUUID) — 게임 열쇠가 판마다 다르다.
+   * 이미 id 가 있는 저장소에서는 무시한다.
+   */
+  readonly projectId?: string;
 };
 
 const MAP_PATCH_MAX_ATTEMPTS = 4;
@@ -1000,7 +1005,7 @@ export async function initLocalProjectStore(options: OpenLocalProjectStoreOption
   applyStorePragmas(driver);
   driver.exec(STORE_DDL);
   const existing = readMeta(driver, META_KEYS.projectId);
-  const projectId = existing ?? randomUUID();
+  const projectId = existing ?? (options.projectId?.trim() || randomUUID());
   if (!existing) {
     writeMeta(driver, META_KEYS.projectId, projectId);
     writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_VERSION));

@@ -122,7 +122,7 @@ export async function designMissingRooms(env: PiAssistantV2Env, spec: PlaceSpec,
   // 구성 아이디어 그림(사용자가 고른 실내 기준) — 글과 함께 싣는다. 못 읽으면 글만.
   const purposes = need.map((i) => `${zones[i]!.kind} ${zones[i]!.purpose ?? ""}`).join(" ");
   const ideas: { text: string; url: string }[] = [];
-  if (env.readPublicAsset) for (const idea of roomIdeasFor(`${purposes} ${spec.name}`)) {
+  if (env.readPublicAsset) for (const idea of roomIdeasFor(`${purposes} ${spec.name}`, 2, `${String(env.request.projectKey ?? "")}|${spec.salt ?? 0}`)) {
     const url = await env.readPublicAsset(idea.file).catch(() => undefined);
     if (url) ideas.push({ text: `구성 아이디어 ${idea.id}: ${idea.idea}`, url });
   }

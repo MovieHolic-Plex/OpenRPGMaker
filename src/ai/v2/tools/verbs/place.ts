@@ -213,7 +213,7 @@ export function placeVerbs(c: VerbContext) {
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         // 칩셋 목록 카드가 지시문에 없었으면(실내 낱말 없는 요청) 여기서 한 번 싣는다.
         const cardShown = lean ? specShown("interior") : INTERIOR_WORDS.test(String(task ?? "")) || env.ctx.project.maps[env.ctx.currentMapId ?? ""]?.tilesetId === HAND_INTERIOR_TILESET_ID;
-        return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell.${bounces > 1 ? ` This is reminder ${bounces}/${LAYOUT_BOUNCES}: hand-pixel interiors are built from spec.layout; zones, design and anchors are not used for them — send the place with spec.layout and nothing in zones.` : ""} Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
+        return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? ""), String(env.request.projectKey ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell.${bounces > 1 ? ` This is reminder ${bounces}/${LAYOUT_BOUNCES}: hand-pixel interiors are built from spec.layout; zones, design and anchors are not used for them — send the place with spec.layout and nothing in zones.` : ""} Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
           });
       }
       const builder = builderFor(spec);
@@ -282,7 +282,7 @@ export function placeVerbs(c: VerbContext) {
         if (!usesCodeTerrain(va, vt) && (vt === "river" || vt === "coast") && firstBuild && !bboxVillageSpec(spec) && typeof spec.hints?.kind !== "string" && !askedBuildingWords(spec.hints?.buildings).length
           && !kindFix && !layoutSession(session).cards.has(`village-menu:${spec.name}`)) {
           layoutSession(session).cards.add(`village-menu:${spec.name}`);
-          menuNote = `${villageKindsLine(vt, va.walls === true ? "none" : va.water) ?? ""} ${WALLED_BUILDINGS_LINE}`.trim();
+          menuNote = `${villageKindsLine(vt, va.walls === true ? "none" : va.water, String(env.request.projectKey ?? "")) ?? ""} ${WALLED_BUILDINGS_LINE}`.trim();
         }
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
@@ -302,7 +302,7 @@ export function placeVerbs(c: VerbContext) {
                 + `마을 자리를 네가 고른다 — 같은 make_place 에 hints.layout 을 넣어 다시 부르면 이 땅 위에 짓는다. ${villageLayoutGuide(vt, va.fishing === true, va.form === "scatter")} 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
               terrain: describeCodeTerrain(terrain),
               // 마을 종류의 전체 목록은 여기서 온다(늘 실리는 카드에는 예 넷뿐) — 모델이 자리를 고르는 그 답에서 종류도 고를 수 있다.
-              ...((kinds) => (kinds ? { villageKinds: kinds } : {}))(villageKindsLine(vt, va.water)),
+              ...((kinds) => (kinds ? { villageKinds: kinds } : {}))(villageKindsLine(vt, va.water, String(env.request.projectKey ?? ""))),
               // 요청 건물을 청하는 법도 여기서 온다(늘 실리는 카드에는 한 문장뿐) — 자리를 고르는 이 답에서 건물도 청한다.
               buildings: VILLAGE_BUILDINGS_LINE, ...(kindFix ? { fixed: kindFix.note } : {}) });
             const png = terrainPreviewPng(terrain, 8);
