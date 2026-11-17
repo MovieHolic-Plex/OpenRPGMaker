@@ -5,6 +5,7 @@ import { DAILY_VENUE_PROGRAMS, DAILY_VENUE_TEMPLATES, DAILY_VENUE_VARIATION } fr
 import { MODERN_VENUE_PROGRAMS, MODERN_VENUE_TEMPLATES, MODERN_VENUE_VARIATION } from "./modernVenues";
 import { FACILITY_PROGRAMS, FACILITY_TEMPLATES, FACILITY_VARIATION } from "./facilityVenues";
 import { JP_CITY_PROGRAMS, JP_CITY_TEMPLATES, JP_CITY_VARIATION } from "./jpCityPresets";
+import { NEIGHBORHOOD_KONBINI, neighborhoodKonbiniProgram, neighborhoodKonbiniTemplates, neighborhoodKonbiniVariation } from "./neighborhoodKonbini";
 
 export interface ModernPresetData {
   readonly templates: Readonly<Record<string, readonly InteriorRoomTemplate[]>>;
@@ -83,6 +84,7 @@ export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<s
       { konbini: ["mci-tile-concourse", "mci-wall-store"], backroom: ["mci-concrete", "mci-wall-metal"] },
       { konbini: ["mci-vinyl-store", "mci-wall-tile"], backroom: ["mci-vinyl-store", "mci-wall-office"] },
     ] },
+    [NEIGHBORHOOD_KONBINI]: neighborhoodKonbiniVariation,
     mc_warehouse: { palettes: [{ warehouse: ["mci-tile-concourse", "mci-wall-brick"] }, { warehouse: ["mci-vinyl-store", "mci-wall-office"] }] },
     mc_lobby: { palettes: [
       { elevatorhall: ["mci-wood-dark", "mci-wall-brick"], lounge: ["mci-carpet-office", "mci-wall-office"], lobby: ["mci-wood-dark", "mci-wall-lobby"] },
@@ -187,6 +189,7 @@ export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<s
 export const MODERN_PRESET_DATA: ModernPresetData = {
   programs: {
     modern_city: {
+      [NEIGHBORHOOD_KONBINI]: [neighborhoodKonbiniProgram],
       mc_lobby: [
         { map: "lobby", kinds: ["elevatorhall", "lounge", "lobby"] },
         { map: "office-1f", kinds: ["elevatorhall", "lounge", "lobby"] },
@@ -243,6 +246,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
   },
   templates: {
     modern_city: [
+      ...neighborhoodKonbiniTemplates,
       {
         id: "lobby:elevatorhall#0",
         map: "lobby",

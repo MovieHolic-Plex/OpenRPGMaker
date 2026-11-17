@@ -192,3 +192,9 @@ lower→mixed 갱신을 저장·재로드했다. 개별 칸의 통행/우선순�
 - **내보내기·스토어 게시에 차 그림을 싣는다 (2026-10-30):** 차 그림은 경로 자산(`/assets/modern-city/vehicles/<id>.png`·`/assets/jp-city/vehicles/*.png`)이라 `webExportAssets.collectWebExportAssets` 가 모르고 빠뜨렸다 — 출하본(첫사랑 1.16)에서 전부 404 라 거리에 차·지하철이 한 대도 안 보였다(시뮬레이션은 돌았다). 이제 `transitVehicleImagePaths(project)` 가 켜진 노선의 `vehicles[].image` 를 모아 public 자산으로 싣는다.
 - 차량 그림은 `scripts/content/modern-city/vehicles/`의 도트 생성기 하나가 네 방향(동 `right`·서 `left`·북 `up`·남 `down`)을 같은 색 램프·같은 1px 외곽선·같은 차체 구획(트렁크·뒷유리·지붕·앞유리·보닛·얼굴)으로 **1:1 원본 해상도**로 그려 `public/assets/modern-city/vehicles/<id>.png`에 굽는다(늘이거나 줄이지 않는다). 크기는 동서 `L·16×32` ↔ 남북 `32×L·16`(승용·밴 L=3, 트럭·구급차·소방차 L=4, 버스 L=5)이라 90° 회전해도 크기가 그대로다. 시트 열은 기본·바퀴 `_0.._3`·브레이크등 `_brake`·방향지시등 `_sigL`/`_sigR`·버스 문 열림 `_open`이고, `src/player/playSceneTransit.ts`가 `blinker`(0.4초 점멸)·정지(브레이크)·주행 바퀴 단계에 따라 고른다.
 - AI 조수와 「바로 깔기」(`stampPlanner.ts`, `stampEffect.ts`)는 `set_street_traffic({ mapId, density, includeTurns: true, includeBus: true })`(`src/editor/tools/transitTools.ts`) 한 번으로 `modern_city`·`jp_city` 맵의 차도와 교차로를 자동 감지해 주행·회전 차량을 배치한다.
+
+### 게임별 현대 실내 평면
+
+조수의 한국·일본 도시 집 빌더가 게임·요청 열쇠와 장소 이름, 양식으로 실내 구성 씨앗을 정한다. 같은 장소를 새로 지어도 재현되며, 다른 게임이나 다른 장소는 해당 프로그램의 평면·가구 변주를 고를 수 있다. 일본 단독주택은 두 층에 같은 씨앗을 써서 계단 위치를 맞춘다. 기존 기록을 다시 짓는 경우에는 저장한 씨앗을 우선하고, 명시한 씨앗과 변주 번호도 적용한다.
+
+프로그램을 따로 고르지 않은 새 한국 편의점은 작은 매장과 창고 사이에 출입구와 통로를 두고, 기존 음료 냉장고·진열대·계산대로 매장을 채운다. 씨앗은 창고의 방향과 바닥·벽 재질을 고른다. 다시 지을 때는 기록한 프로그램을 쓰고, 명시한 `hints.program`이나 기존 `konbini` 판을 고칠 때는 그 구성을 따른다.
