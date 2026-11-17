@@ -202,8 +202,11 @@ export function formatPiToolSuccess(result: ToolResult, maxDataChars = DEFAULT_M
     const { text, truncated } = truncateJson(result.data, maxDataChars);
     if (truncated) {
       body.dataTruncated = true;
+      // 쪽 커서(total·offset·nextOffset)는 잘려도 남긴다 — 다음 쪽을 읽을 길이 끊기지 않게(2026-11-16 db-review A F7).
+      const data = result.data as Record<string, unknown> | null;
+      if (data && typeof data === "object" && !Array.isArray(data)) for (const key of ["collection", "total", "offset", "nextOffset"]) if (key in data) body[key] = data[key];
       body.dataPreview = text;
-      body.hint = "data 가 길어 잘렸습니다. 더 좁은 영역이나 필터로 다시 읽으세요.";
+      body.hint = "data was cut at the result limit (잘렸습니다). Read less at once: pass limit/offset (nextOffset is above when there is more), ids, or a narrower area/filter.";
     } else {
       body.data = result.data;
     }

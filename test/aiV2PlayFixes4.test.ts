@@ -28,7 +28,7 @@ import { charsetFamilyOf } from "@/project/charsetFamily";
 import { hideLockCodes } from "@/ai/v2/story/codeLeaks";
 import { ensureBossRest } from "@/ai/v2/story/healingAccess";
 import { namedFoeArt } from "@/ai/v2/story/currentFoes";
-import { unaskedChanges } from "@/ai/v2/judge/sideEffectChecks";
+import { databaseChangeReport, unaskedChanges } from "@/ai/v2/judge/sideEffectChecks";
 import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { REST_LINE } from "@/ai/v2/story/restLine";
 
@@ -420,8 +420,10 @@ describe("함수가 지은 것은 관문 항목이 아니다 — 명세 은행",
     const after = structuredClone(before);
     after.database.enemies.find((e) => e.id === "enemy_path_x_ghost")!.stats.attack += 7;
     expect(unaskedChanges(before, after, "재밌는 게임 만들어 줘").filter((f) => f.ko.includes("창백한 유령"))).toEqual([]);
+    expect(databaseChangeReport(before, after).join("\n")).not.toContain("창백한 유령");
+    // Database record edits are reported, not blocked (#4762 databaseChangeReport) — an edited original shows in the report.
     after.database.enemies[0]!.stats.attack += 7;
-    expect(unaskedChanges(before, after, "재밌는 게임 만들어 줘").some((f) => f.ko.includes(String(e0.name)))).toBe(true);
+    expect(databaseChangeReport(before, after).join("\n")).toContain(String(e0.name));
   });
   it("보스마다 같은 글인 보스 앞 회복 줄은 반복으로 세지 않는다", () => {
     const before = createBlankProject() as Project;

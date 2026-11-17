@@ -9,14 +9,15 @@ import { mergeRecordPatch } from "./mergeRecordPatch";
 const LIFE_SKILL_TYPES = ["farming", "mining", "foraging", "fishing", "combat"] as const;
 type LifeSkillType = (typeof LIFE_SKILL_TYPES)[number];
 
-function requireIdName(value: unknown, label: string): { id: string; name: string } {
+// existingName: 기존 레코드를 고치는 호출은 이름을 다시 보내지 않아도 된다(2026-11-16 db-review: 첫 호출 실패).
+function requireIdName(value: unknown, label: string, existingName?: (id: string) => string | undefined): { id: string; name: string } {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new ToolError(`${label}는 객체여야 합니다.`, { code: "invalid-args" });
+    throw new ToolError(`${label} must be an object.`, { code: "invalid-args" });
   }
   const record = value as Record<string, unknown>;
   const id = typeof record.id === "string" ? record.id.trim() : "";
-  const name = typeof record.name === "string" ? record.name.trim() : "";
-  if (!id || !name) throw new ToolError(`${label}에 id와 name이 필요합니다.`, { code: "invalid-args" });
+  const name = typeof record.name === "string" && record.name.trim() ? record.name.trim() : (id ? existingName?.(id) ?? "" : "");
+  if (!id || !name) throw new ToolError(`${label} needs id and name (name may be left out only when id is an existing record).`, { code: "invalid-args" });
   return { id, name };
 }
 
@@ -27,11 +28,11 @@ function upsertById<T extends { id: string }>(list: T[], record: T): T[] {
 }
 
 function parseLifeSkill(value: unknown, existing?: LifeSkillRecord): LifeSkillRecord {
-  const identity = requireIdName(value, "skill");
+  const identity = requireIdName(value, "skill", () => existing?.name);
   const record = mergeRecordPatch(existing, value as Record<string, unknown>);
   const skillType = record.skillType;
   if (typeof skillType !== "string" || !LIFE_SKILL_TYPES.includes(skillType as LifeSkillType)) {
-    throw new ToolError(`skill.skillType은 ${LIFE_SKILL_TYPES.join("/")} 중 하나여야 합니다.`, { code: "invalid-args" });
+    throw new ToolError(`skill.skillType must be one of ${LIFE_SKILL_TYPES.join(", ")} (got ${JSON.stringify(skillType)}) — a new life skill needs it; an existing one keeps its stored type.`, { code: "invalid-args" });
   }
   const maxLevel = typeof record.maxLevel === "number" ? record.maxLevel : 10;
   return normalizeLifeSkillRecord({
@@ -44,7 +45,7 @@ function parseLifeSkill(value: unknown, existing?: LifeSkillRecord): LifeSkillRe
 }
 
 function parseAnimalSpecies(value: unknown, existing?: FarmAnimalSpeciesRecord): FarmAnimalSpeciesRecord {
-  const identity = requireIdName(value, "farmAnimalSpecies");
+  const identity = requireIdName(value, "farmAnimalSpecies", () => existing?.name);
   const record = mergeRecordPatch(existing, value as Record<string, unknown>);
   const feedItemId = typeof record.feedItemId === "string" ? record.feedItemId : "";
   const productItemId = typeof record.productItemId === "string" ? record.productItemId : "";
@@ -82,7 +83,8 @@ const upsertLifeSkill: ToolDefinition = {
           maxLevel: { type: "integer" },
           description: { type: "string" },
         },
-        required: ["id", "name", "skillType"],
+        // 새 생활 스킬은 name·skillType 이 필요하다(실행이 검사) — 기존 id 는 바꿀 칸만 보낸다.
+        required: ["id"],
         additionalProperties: false,
       },
     },
@@ -90,7 +92,7 @@ const upsertLifeSkill: ToolDefinition = {
     additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
-    const identity = requireIdName(args.skill, "skill");
+    const identity = requireIdName(args.skill, "skill", (id) => draft.database.lifeSkills?.find((entry) => entry.id === id)?.name);
     const skill = parseLifeSkill(args.skill, draft.database.lifeSkills?.find((entry) => entry.id === identity.id));
     draft.database.lifeSkills = upsertById(draft.database.lifeSkills ?? [], skill);
     return { summary: `생활 스킬 ${skill.name}`, data: { skill } };
@@ -146,12 +148,12 @@ const upsertLifeSystem: ToolDefinition = {
       changed.push("날씨");
     }
     if (args.farmAnimalSpecies) {
-      const identity = requireIdName(args.farmAnimalSpecies, "farmAnimalSpecies");
+      const identity = requireIdName(args.farmAnimalSpecies, "farmAnimalSpecies", (id) => draft.database.farmAnimalSpecies?.find((entry) => entry.id === id)?.name);
       const species = parseAnimalSpecies(args.farmAnimalSpecies, draft.database.farmAnimalSpecies?.find((entry) => entry.id === identity.id));
       draft.database.farmAnimalSpecies = upsertById(draft.database.farmAnimalSpecies ?? [], species);
       changed.push(`가축=${species.id}`);
     }
-    if (changed.length === 0) throw new ToolError("바꿀 생활 시스템 필드가 없습니다.", { code: "invalid-args" });
+    if (changed.length === 0) throw new ToolError("Nothing to change — send dailyWeather or farmAnimalSpecies.", { code: "invalid-args" });
     return { summary: `생활 시스템 ${changed.join(", ")}`, data: { changed } };
   },
 };

@@ -82,6 +82,8 @@ interface TodoReportInput {
   readonly vqaUnoffered?: readonly string[];
   /** 시작 저장본에 이미 있던 결함(관문이 짚었지만 이번 요청의 완료를 막지 않는다). */
   readonly preexisting?: readonly string[];
+  /** 이번 요청이 자료집에서 바꾼 것(sideEffectChecks.databaseChangeReport) — 완료를 막지 않는다. */
+  readonly dataChanges?: readonly string[];
 }
 
 /** 끝맺음 자동 짓기 글(조수에게 주던 «[자동으로 지음] … 그대로 적는다» 머리 포함)을 사람이 읽을 줄로 — 머리를 빼고 같은 줄은 한 번만. */
@@ -135,6 +137,7 @@ export function todoReport(input: TodoReportInput): { text: string; complete: bo
     ...(input.vqaLedger?.length ? ["화면 검수 장부(할 일로 올리지 않은 남은 결함 — 완료를 막지 않음):", ...input.vqaLedger.map((l) => `- ${l.slice(0, 260)}`)] : []),
     ...(input.preexisting?.length ? ["기존 결함(시작 저장본에 이미 있던 것·요청 밖 — 이번 요청의 완료를 막지 않음):", ...input.preexisting.map((l) => `- ${l.slice(0, 220)}`)] : []),
     ...(autoLines(input.autoNotes).length ? ["자동으로 지음(함수):", ...autoLines(input.autoNotes).map((n) => `- ${n.slice(0, 300)}`)] : []),
+    ...(input.dataChanges?.length ? ["자료집에서 바뀐 것(요청 시작과 비교 — 완료를 막지 않음):", ...input.dataChanges.map((l) => `- ${l.slice(0, 400)}`)] : []),
   ];
   if (complete) {
     return { complete, receipts, text: [draft.trim(), "", `[할 일 ${c.done}/${c.total} ✓${soft ? ` · 다듬기 남음 ${soft}(완료를 막지 않음)` : ""} — 기계 확인]`, ...table, ...(tail.length ? ["", ...tail] : [])].join("\n") };

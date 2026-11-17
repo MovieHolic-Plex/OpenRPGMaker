@@ -1,4 +1,6 @@
 import { stripResourceSearchIdPrefixes } from "./resourceSearchIdArgs";
+import { DB_UPSERT_TOOLS, afterDbUpsert, beforeDbUpsert } from "./dbUpsertEnvelope";
+import { NOT_IN_RECORD, changesStored, storedAt, storedRecordFor } from "./dbRecordStored";
 import { adoptBuiltMapAsStart, seedMapPlacementNote } from "./startOnBuiltMap";
 import { syncHeroineDeadline } from "@/project/deadlineEnding";
 import { normalizePlaceToolArgs } from "./spatialPlaceContract";
@@ -393,7 +395,13 @@ function unknownArgKeysMessage(toolName: string, keys: readonly string[]): strin
   return `${toolName} 은 선언되지 않은 인자 ${keys.map((key) => `'${key}'`).join(", ")} 를 받지 않는다 — 말없이 버리면 저작한 내용이 사라진 채 성공처럼 보이므로 거부했다.${hint}`;
 }
 
-function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, path: string, dropped: string[]): unknown {
+/** 이 호출이 고치는 기존 자료집 레코드의 저장값 읽기(dbRecordStored.ts) — 없으면 undefined. */
+function storedRecordReader(project: Project, args: Record<string, unknown>): ((path: string) => unknown) | undefined {
+  const target = storedRecordFor(project, args);
+  return target ? (path) => storedAt(target, path) : undefined;
+}
+
+function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, path: string, dropped: string[], stored?: (path: string) => unknown): unknown {
   if (!schema || value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) {
     const items = schema.items;
@@ -405,14 +413,24 @@ function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, 
   for (const [key, inner] of Object.entries(value as Record<string, unknown>)) {
     const here = path ? `${path}.${key}` : key;
     const emptyObject = !!inner && typeof inner === "object" && !Array.isArray(inner) && Object.keys(inner).length === 0;
+    // 이미 있는 자료집 레코드의 저장값을 비우는 빈 글("")은 채움이 아니라 「지워 줘」다(2026-11-16 db-review) — 저장값이 있으면 그대로 보낸다.
+    if (!required.has(key) && inner === "" && key in properties) { const was = stored?.(here); if (was !== NOT_IN_RECORD && was !== undefined && changesStored(inner, was)) { out[key] = inner; continue; } }
     if (!required.has(key) && (inner === "" || inner === null || emptyObject) && key in properties) { dropped.push(here); continue; }
     // 선택 객체인데 그 객체의 필수 칸이 비었으면 객체째 뺀다 — itemCost:{itemId:"",amount:1} 같은 「쓸 생각 없는」 칸.
     const innerSchema = properties[key];
     if (!required.has(key) && innerSchema?.required?.length && inner && typeof inner === "object" && !Array.isArray(inner)
       && innerSchema.required.some((name) => { const v = (inner as Record<string, unknown>)[name]; return v === "" || v === null; })) { dropped.push(here); continue; }
-    out[key] = pruneEmptyOptionalArgs(innerSchema, inner, here, dropped);
+    out[key] = pruneEmptyOptionalArgs(innerSchema, inner, here, dropped, stored);
   }
   return out;
+}
+
+function withoutListPosition(name: string, args: Record<string, unknown>): Record<string, unknown> {
+  const key = DB_UPSERT_TOOLS[name]?.arg;
+  const rec = key ? args[key] : undefined;
+  if (!rec || typeof rec !== "object" || Array.isArray(rec) || typeof (rec as Record<string, unknown>).position !== "number") return args;
+  const { position: _position, ...rest } = rec as Record<string, unknown>;
+  return { ...args, [key!]: rest };
 }
 
 function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string, unknown>, cause: unknown): LintIssue {
@@ -473,14 +491,15 @@ export function runToolDefinition(
   const aliased = applyArgAliases(name, tool.parameters, args);
   const filledArgs = argsWithCurrentMapTileset(ctx, tool,
     normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(
-      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, aliased.args, "", prunedPaths) as Record<string, unknown> : aliased.args))) as Record<string, unknown>);
+      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, aliased.args, "", prunedPaths, storedRecordReader(ctx.project, aliased.args)) as Record<string, unknown> : aliased.args))) as Record<string, unknown>);
   const lockedDefault = genreLockedDefaultTileset(ctx, tool, aliased.args, filledArgs);
-  const normalizedArgs = lockedDefault.args;
+  // get_database_records 가 붙인 목록 번호(position)는 레코드 칸이 아니다 — 읽은 레코드를 그대로 돌려보내도 말없이 뺀다(2026-11-16).
+  const normalizedArgs = withoutListPosition(tool.name, lockedDefault.args);
   const prunedNote = [
     ...aliased.notes,
     ...(lockedDefault.note ? [lockedDefault.note] : []),
     ...(prunedPaths.length
-      ? [`빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`]
+      ? [`Not applied: optional fields sent empty ("" · null · {}) were treated as not sent — ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""}. To clear a stored value send the empty value only for a record that has one (or use the tool's clear option).`]
       : []),
   ].join("\n") || null;
   const unknownKeys = ctx.assistantRun ? unknownTopLevelArgKeys(tool, normalizedArgs) : [];
@@ -548,7 +567,12 @@ export function runToolDefinition(
     // 이 호출 안에서 잠금이 갈아 끼운 출연진 걷기 칩은 모델이 고른 것이 아니다 — 칩 관문(모델이 본 칩만)이 배우마다 되돌리지 않게 도구 선택으로 적는다
     // (2026-11-12 셋째 묶음 Terra `trainer-sight-blank`: 빈 프로젝트의 place_trainer 가 배우 여덟 명의 칩으로 여덟 번 거절됐다).
     if (lockProject === draft) for (const actor of draft.database.actors) if (actor.characterResourceId) noteToolChosenGraphic({ sprite: { type: "bundled", id: actor.characterResourceId }, pattern: charsetFrameIndex({ characterIndex: actor.characterIndex ?? 0, pattern: 0, direction: "down" }) });
-    exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, guarded?.args ?? normalizedArgs));
+    // 자료집 upsert(조수만): 모르는 칸은 빼고 알리고, listOps 를 풀고, 결과 글이 새로 만들었나/고쳤나·줄어든 목록을 말한다(dbUpsertEnvelope.ts).
+    // listOps 는 모든 호출자에게 푼다(스키마가 모두에게 내놓는다 — 조수 밖에서 보내면 말없이 무시되던 자리).
+    const dbEnvelope = DB_UPSERT_TOOLS[name] && (ctx.assistantRun || (guarded?.args ?? normalizedArgs as Record<string, unknown>)?.listOps !== undefined)
+      ? beforeDbUpsert(before, name, (guarded?.args ?? normalizedArgs) as Record<string, unknown>, (tool.parameters.properties?.[DB_UPSERT_TOOLS[name]?.arg ?? ""]), !!ctx.assistantRun) : undefined;
+    exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, dbEnvelope?.args ?? guarded?.args ?? normalizedArgs));
+    if (dbEnvelope && ctx.assistantRun) { const told = afterDbUpsert(before, draft, dbEnvelope); exec = { ...exec, summary: `${told.head} ${exec.summary}`, warnings: [...told.warnings, ...(exec.warnings ?? [])] }; }
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
     if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
     // 연애: 호감 대화 인물이 둘 이상이 되면 프리셋이 깔아 둔 기한 판정에 인물별 엔딩을 얹는다(rom-c·rom-a: 모델이 set_deadline_ending 을 안 불러 인물 엔딩이 영영 없었다).

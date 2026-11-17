@@ -34,6 +34,7 @@ function checkJob(job: SmallJob, fixture: Project): Row {
     referenceDoc = applyCalls(fixture, job.reference);
     reference = runCheck(job.check, job.allow, fixture, referenceDoc);
     if (!reference.pass) problems.push(`손 정답이 불합격했다: ${reference.reason}`);
+    if (job.maxToolCalls !== undefined && job.reference.length > job.maxToolCalls) problems.push(`손 정답의 호출 ${job.reference.length}번이 상한 ${job.maxToolCalls}번을 넘는다`);
   } catch (error) { problems.push(`손 정답을 적용하지 못했다: ${error instanceof Error ? error.message : String(error)}`); }
   for (const other of job.accept ?? []) {
     try {

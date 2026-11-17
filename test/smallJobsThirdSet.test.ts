@@ -14,7 +14,8 @@ describe("셋째 묶음 고르기", () => {
     const earlier = new Set([...loadSuite(suiteFile("1")).jobs, ...loadSuite(suiteFile("2")).jobs].map((job) => job.id));
     expect(third.jobs.length).toBeGreaterThanOrEqual(35);
     expect(third.jobs.filter((job) => earlier.has(job.id))).toEqual([]);
-    expect(new Set(third.jobs.map((job) => job.fixture))).toEqual(new Set(FIXTURE_IDS));
+    // dbsmall 은 넷째 묶음(자료집 고치기) 전용 픽스처다.
+    expect(new Set(third.jobs.map((job) => job.fixture))).toEqual(new Set(FIXTURE_IDS.filter((id) => id !== "dbsmall")));
     expect(Object.keys(third.families).filter((family) => !third.jobs.some((job) => job.family === family))).toEqual([]);
   });
   it("일마다 오답이 둘 이상이다(판정이 걸러야 할 것을 적어 둔다)", () => {
@@ -37,7 +38,7 @@ function problemsOf(job: SmallJob, fixture: Project): string[] {
 
 describe("셋째 묶음 판정 — 손대지 않으면 불합격, 손 정답은 합격, 오답은 불합격", () => {
   const third = loadSuite(suiteFile("3"));
-  for (const id of FIXTURE_IDS) {
+  for (const id of FIXTURE_IDS.filter((id) => id !== "dbsmall")) {
     it(`${id} 픽스처의 일 ${third.jobs.filter((job) => job.fixture === id).length}개`, () => {
       const fixture = buildFixture(id as FixtureId);
       expect(third.jobs.filter((job) => job.fixture === id).flatMap((job) => problemsOf(job, fixture))).toEqual([]);
