@@ -164,3 +164,34 @@ describe("«<건물> 문 앞» 은 그 건물의 문 앞이다 — r7 R6 · N4",
     expect(post.how).toContain("「우체국」 건물이 없어 가장 가까운 문");
   });
 });
+
+// R7(r7-jpcity `001.21`): 비평이 «주차장 공터가 비었다» 해 모델이 edit_place{addAnchors:[{what:"주차장 (승합차·자전거 거치대)", near:{27,1}}]} 를 보내자
+// «A jp-city place is re-laid only by variant … not for single props» 로 거절하고 고치기 한 번을 셌다. 물건만 더하는 고침은 선 맵에 그 이름의 칩셋 물건을 놓고 알린다.
+describe("거리에 물건 하나 더하는 고침은 놓고 알린다 — r7 R7", () => {
+  it("jp-city 거리의 addAnchors 고침이 다시 깔지 않고 물건을 놓으며 고치기 바퀴를 쓰지 않는다", async () => {
+    const project = createBlankProject();
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    const env = { ctx, request: { task: "역 앞 상점가를 지어 줘.", provider: "local-cli:claude", mapIds: [], project } as never, emit: () => {}, record: () => {}, checkpoint: async () => {},
+      sideChat: async () => JSON.stringify({ score: 7, imagesSeen: 0, majors: [] }) } as unknown as PiAssistantV2Env;
+    const session = new V2Session();
+    const tools = createV2Tools(env, session);
+    const call = async (name: string, args: unknown) => JSON.parse(((await tools.find((t) => t.name === name)!.execute(`c-${name}`, args)).content as { type: string; text?: string }[]).find((c) => c.type === "text")!.text!) as { ok: boolean; summary: string; mapIds?: string[] };
+    // r6b-jpcity calls.json #6 의 인자 그대로
+    const made = await call("make_place", { type: "street", name: "역 앞 상점가", style: "jp-modern", size: "small", salt: 7191,
+      features: ["상점가", "konbini", "ramen", "서점", "police box", "vending", "bench", "lamp", "post box"], hints: { length: "short", shops: "conbini,ramen,books" } });
+    expect(made.ok, made.summary).toBe(true);
+    const mapId = made.mapIds![0]!;
+    const rounds0 = session.placeOf(mapId)!.rounds;
+    const before = JSON.stringify(ctx.project.maps[mapId]!.upperTiles);
+    const edit = await call("edit_place", { patch: { mapId, addAnchors: [{ what: "주차장 (승합차·자전거 거치대)", near: { x: 27, y: 1 } }] } });
+    expect(edit.ok, edit.summary).toBe(true);
+    expect(edit.summary).toContain("Placed on the standing map (not re-laid, no repair round used): «주차장 (승합차·자전거 거치대)» →");
+    expect(edit.summary).not.toContain("re-laid only by variant");
+    expect(session.placeOf(mapId)!.rounds).toBe(rounds0);
+    expect(JSON.stringify(ctx.project.maps[mapId]!.upperTiles)).not.toBe(before);
+    // 칩셋에 없는 이름만 오면 예전처럼 draw_object 를 이른다.
+    const none = await call("edit_place", { patch: { mapId, addAnchors: [{ what: "zzqx 없는 물건", near: { x: 27, y: 1 } }] } });
+    expect(none.ok).toBe(false);
+    expect(none.summary).toContain("draw_object");
+  }, 180_000);
+});

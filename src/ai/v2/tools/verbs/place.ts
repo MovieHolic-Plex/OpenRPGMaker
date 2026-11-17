@@ -35,13 +35,15 @@ import { runTodoItemCheck } from "../../judge/todoChecks";
 import { COVERABLE } from "../../loop/builderCover";
 import { linkWorldRoom } from "../worldRoomLink";
 import { recordArtGaps } from "@/project/artGap";
-import { drawnThingNames } from "../../place/fixtures";
+import { drawnThingNames, stampNamedThing } from "../../place/fixtures";
+import { walkStart } from "../../place/cells";
+import { reachableCells } from "../../judge/eventReach";
 import type { VerbContext } from "../context";
 import { keptPlaceResult } from "../../place/keepMapId";
 
 /** createV2Tools 에서 뗀 것 — buildWorldPlaces · buildWorld · makePlace · editPlace · reviewLayout · findPiecesVerb. (placeVerbs) */
 export function placeVerbs(c: VerbContext) {
-  const { env, session, task, run, localizeNewPlace, freshStart, lean, specShown, specGate, outsideBuilt, noteLayoutPlace, finishPlace, blueprintGate } = c;
+  const { env, session, task, run, localizeNewPlace, freshStart, lean, specShown, specGate, outsideBuilt, noteLayoutPlace, finishPlace, finishContent, blueprintGate } = c;
   // 세계 짓기(world.ts): 청사진 장소 목록을 그 세계의 구성기로 한 번에 짓고 잇는다 — 모델은 장소 이름·종류만 정한다.
   // add 로 장소를 더할 수 있다(세는 맵이 모자랄 때). 종류를 못 읽으면 아직 덜 쓴 종류를 준다(막다른 길을 만들지 않는다).
   const buildWorldPlaces = async (toolCallId: string, verb: string, args: unknown, add: readonly { name?: unknown; kind?: unknown; from?: unknown; indoor?: boolean; danger?: boolean }[]): Promise<PiToolExecResult> => {
@@ -509,6 +511,34 @@ export function placeVerbs(c: VerbContext) {
         const effective = !!(patch.set || patch.variant !== undefined || patch.seed !== undefined || patch.addFeatures?.length || patch.removeFeatures?.length || patch.addZones?.length || patch.removeZones?.length
           || (patch.addAnchors ?? []).some((a) => /적|몬스터|박쥐|해골|거미|고블린|슬라임|늑대|좀비|유령|enem|monster|bat|skeleton|spider|goblin|slime|wolf|zombie|ghost|상자|chest|보스|boss|레버|lever|광장|plaza|우물|well|밭|field|자판기|vending|공원|park/iu.test(a.what)));
         if (!effective) {
+          // 물건 몇 개만 더하는 고침(addAnchors 뿐)은 다시 깔지 않고 선 맵에 그 이름의 칩셋 물건을 놓는다 — 걸어 닿던 칸을 끊는 자리는 건너뛴다.
+          // 거절은 게임이 깨질 때만(2026-11-17 r7-jpcity 001.21: «주차장 (승합차·자전거 거치대)» 고침이 «다시 깔기만 된다» 로 거절되고 바퀴를 썼다).
+          const anchorsOnly = !!patch.addAnchors?.length && Object.entries(patch).every(([k, v]) => k === "mapId" || k === "addAnchors" || v === undefined);
+          const map = env.ctx.project.maps[patch.mapId];
+          if (anchorsOnly && map) {
+            const from = run.calls.length;
+            const placed: string[] = [], missed: string[] = [];
+            for (const a of (patch.addAnchors ?? []).slice(0, 6)) {
+              const what = typeof a?.what === "string" ? a.what.trim() : "";
+              if (!what) continue;
+              const asked = a.near && (a.near.x || a.near.y) ? a.near : undefined;
+              // 준 칸 곁(7칸)에 빈 바닥이 없으면 걸어 닿는 칸 중 그 칸에 가장 가까운 곳, 그다음 걷기 시작점 곁 — 놓은 자리를 결과에 적는다.
+              const now = env.ctx.project.maps[patch.mapId] ?? map;
+              const reach = reachableCells(env.ctx.project, now);
+              let closest: { x: number; y: number } | undefined;
+              if (asked && reach) { let best = Infinity; for (let i = 0; i < reach.length; i++) if (reach[i]) { const q = { x: i % now.width, y: Math.floor(i / now.width) }; const d = Math.abs(q.x - asked.x) + Math.abs(q.y - asked.y); if (d < best) { best = d; closest = q; } } }
+              const tries = [asked, closest, walkStart(env.ctx.project, now)].filter((q): q is { x: number; y: number } => !!q);
+              let made: ReturnType<typeof stampNamedThing> = undefined;
+              for (const near of tries) { made = stampNamedThing(run, patch.mapId, what, near); if (made) break; }
+              if (made) { const c = made.cells.reduce((m, q) => (q.y > m.y || (q.y === m.y && q.x < m.x) ? q : m), made.cells[0]!); placed.push(`«${what}» → ${made.kitName ?? made.label} at (${c.x},${c.y})${asked && Math.abs(c.x - asked.x) + Math.abs(c.y - asked.y) > 8 ? ` (no free ground near (${asked.x},${asked.y}), so the nearest open spot)` : ""}`); }
+              else missed.push(what);
+            }
+            if (placed.length) {
+              const summary = `Placed on the standing map (not re-laid, no repair round used): ${placed.join(" · ")}. Each stands on free ground without cutting a walking path.`
+                + (missed.length ? ` Not placed — no chipset object with that name, or no free ground for it: ${missed.map((w) => `«${w}»`).join(", ")}; draw_object({"object":{"what":<name>,"mapId":"${patch.mapId}"}}) asks the workshop for it.` : "");
+              return finishContent(id, "edit_place", params, { ok: true, mapIds: [patch.mapId], summary, warnings: [], missingArt: [], calls: run.calls.slice(from) });
+            }
+          }
           // 거절도 한 바퀴로 센다 — 바퀴를 안 쓰면 모델이 같은 거절을 열 번 넘게 되풀이했다(2026-10-23 3차 피라미드: edit_place 13번 중 12번 거절).
           const spent = { ...record, rounds: record.rounds + 1 };
           keepRecord(spent);
