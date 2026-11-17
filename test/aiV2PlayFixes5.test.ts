@@ -195,3 +195,21 @@ describe("거리에 물건 하나 더하는 고침은 놓고 알린다 — r7 R7
     expect(none.summary).toContain("draw_object");
   }, 180_000);
 });
+
+// N7(r7a-harbour `003.1` ~ `003.5`): 없는 id 로 todo start 를 하면 목록 전문을 붙여 4,000자에서 끊었다 — 모델은 다른 id 를 다섯 번 넣어 보았다.
+describe("없는 todo id 의 거절 글은 열린 항목만 싣는다 — r7a N7", () => {
+  it("긴 목록에서 열린 id 를 요약에 적고, 목록은 열린 줄만", async () => {
+    const { TodoStore } = await import("@/ai/v2/loop/todoStore");
+    const store = new TodoStore();
+    store.init([{ phase: "짓기", items: Array.from({ length: 45 }, (_, i) => ({ content: `할 일 ${i + 1} — 장소 하나를 짓고 사람을 세우고 문을 잇는다 (${"긴 설명 ".repeat(8)})` })) }]);
+    for (const item of store.items.slice(0, 41)) store.done(item, undefined);
+    const brief = store.viewOpenEn();
+    expect(brief.length).toBeLessThan(store.view(40, true).length / 3);
+    for (const item of store.items.slice(41)) expect(brief).toContain(` ${item.id} `);
+    expect(brief).not.toContain(` ${store.items[0]!.id} `);
+    // 짧은 목록은 그대로 전체.
+    const short = new TodoStore();
+    short.init([{ phase: "p", items: [{ content: "하나" }, { content: "둘" }] }]);
+    expect(short.viewOpenEn()).toBe(short.view(40, true));
+  });
+});

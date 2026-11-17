@@ -179,7 +179,10 @@ function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoTool
       let result: PiToolExecResult;
       shown = { full: !(op === "start" || op === "done" || op === "block" || op === "drop" || op === "bind") };
       const target = (): TodoItem | undefined => { const item = store.resolve(p.task) ?? (op === "done" || op === "block" || op === "bind" ? store.current() : undefined); if (item) shown.id = item.id; return item; };
-      const notFound = () => done(`Item «${p.task ?? ""}» not found — pass its id (t1…) or its exact content`, false);
+      const notFound = () => {
+        const open = store.open();
+        return text({ ok: false, summary: `Item «${p.task ?? ""}» not found — pass the id of an item that is still open${open.length ? ` (open now: ${open.slice(0, 12).map((i) => i.id).join(", ")}${open.length > 12 ? ", …" : ""})` : " (none is open — the list is finished)"} or its exact content.`, list: store.viewOpenEn() });
+      };
       switch (op) {
         case "init": {
           const raw = Array.isArray(p.list) ? p.list : Array.isArray(p.items) ? [{ phase: p.phase ?? "할 일", items: p.items }] : [];
