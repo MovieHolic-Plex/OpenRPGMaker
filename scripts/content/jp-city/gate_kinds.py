@@ -126,6 +126,9 @@ def state(png_path: str, kind: str, context: str = 'bundle'):
     import object_gate as OG
     sha = OG.pixel_sha256(png_path)
     rc = OG.read_receipt(sha)
+    # 판정 영수증이 아예 없는 새 그림도 오너 면제 기록이 닿으면 받는다(2026-11-16, 다시 그린 거리 계단) — 다른 굽기가 쓰는 object_gate.refusal 과 같은 순서다:
+    # owner_waived 가 보정된 Opus 최종 판정과 서명된 사람 거절을 먼저 본다. 면제 기록이 없으면 전과 똑같이 «영수증이 없다» 로 거절한다.
+    if not rc and owner_waived(sha, kind, context): return 'waived', None
     if not rc: return None, '3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라'
     # 서명된 사람 결정이 최종이다(2026-10-20): 허용이면 통과, 거절이면 막는다(read_hold_decision 이 서명을 확인한다).
     human = OG.human_decision(OG.read_hold_decision(sha), rc)

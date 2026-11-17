@@ -9,8 +9,11 @@ import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 import { REVIEWS_TAG } from "../layoutReview";
 import { checkLayout, layoutDecl, layoutGiven, rejectionText, LAYOUT_TAG, type InteriorLayout, type LayoutCheck } from "../interiorLayout";
 import { swapLine, swapUnknownWords } from "../unknownWords";
+import { interiorCeiling } from "../interiorPalette";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
+/** 칸 배치 선언에 적는 이 방의 천장(짓기가 고른 것) — 다시 깔 때 같은 천장을 쓴다. */
+const CEILING_TAG = "ceiling:";
 
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[]})를 채워 보내는 모델이 있다. */
 export function hasLayout(spec: PlaceSpec): boolean {
@@ -56,9 +59,16 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
   // 공간 문제(빈 바닥 · 깔개 상한 …)는 게임을 깨지 않는다 — 깔고, 자기 비평(review_layout)의 열린 일로 알린다.
   const soft = check.soft ?? [];
 
+  // 짓기는 모델이 적은 id 를 그대로 깐다 — 게임마다의 천 색은 목록 카드가 모델에게 건넨다(interiorCatalog.ts «이 게임의 평면»).
+  // 모델이 쓰지 않는 칸인 천장만 게임마다 고른다(interiorPalette.ts interiorCeiling, 씨앗 = 게임 열쇠 + 장소 이름). 고른 천장은 칸 배치 선언에 적고(ceiling:<id>),
+  // 다시 까는 맵(review_layout · edit_place · 같은 이름 다시 짓기)은 그것을 그대로 쓴다. 적힌 것이 없는 옛 방은 기본 천장 그대로다. 열쇠 없는 실행도 기본 천장.
+  const laidBefore = mapId ? (run.ctx.project.maps[mapId]?.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG)) : undefined;
+  const ceiling = laidBefore ? laidBefore.tags?.find((t) => t.startsWith(CEILING_TAG))?.slice(CEILING_TAG.length) || undefined
+    : run.ctx.assistantRun ? interiorCeiling(S, run.ctx.lookKey?.trim() ? `${run.ctx.lookKey}|${spec.name}` : undefined) : undefined;
   const input = check.input;
   const args: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-    plan: input.plan, floor: input.floor, wall: exteriorWall(S, outside, input.wall), zones: outside ? input.zones?.map((z) => (z.wall ? { ...z, wall: exteriorWall(S, outside, z.wall) } : z)) : input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages };
+    plan: input.plan, floor: input.floor, wall: exteriorWall(S, outside, input.wall), zones: outside ? input.zones?.map((z) => (z.wall ? { ...z, wall: exteriorWall(S, outside, z.wall) } : z)) : input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages,
+    ...(ceiling ? { ceiling } : {}) };
   const clean = (a: Record<string, unknown>) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== undefined));
   let r = run.call("build_hand_interior_room", clean(args));
   if (!r.ok && mapId) r = run.call("build_hand_interior_room", clean({ ...args, mapId: undefined, replace: undefined }));
@@ -117,7 +127,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
     connections, entrance: entranceRegion,
   };
   run.call("create_map_location", { mapId: builtId, name: "room graph", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(graphDecl).slice(0, 4000), tags: [ROOM_GRAPH_TAG, "decl"] });
-  run.call("create_map_location", { mapId: builtId, name: "interior layout", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(decl).slice(0, 8000), tags: [LAYOUT_TAG, "decl", `${REVIEWS_TAG}${reviews}`] });
+  run.call("create_map_location", { mapId: builtId, name: "interior layout", x: 0, y: 0, w: map.width, h: map.height, note: JSON.stringify(decl).slice(0, 8000), tags: [LAYOUT_TAG, "decl", `${REVIEWS_TAG}${reviews}`, ...(ceiling ? [`${CEILING_TAG}${ceiling}`] : [])] });
   for (const q of regions) {
     const lm = lmOf(q.id), st = stairsOf(q.id);
     const box = (o: { x: number; y: number; w: number; h: number }) => `${o.x},${o.y},${o.w},${o.h}`;

@@ -45,7 +45,7 @@ export function readVerbs(c: VerbContext) {
       if (table && tableSpec) return text({ ok: true, ...tableParts(table, tableSpec, String(p.purpose ?? ""), p.query, slim ? 40 : 90) });
       const full = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query, undefined, slim ? 40 : 90);
       if (!full) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
-      const plans = roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3).map((x) => ({ id: x.id, structure: x.idea }));
+      const plans = roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3, `${String(env.request.projectKey ?? "")}|${session.nonce}`).map((x) => ({ id: x.id, structure: x.idea }));
       const out = slim ? { ...full, references: full.references.slice(0, 2), referenceIds: full.referenceIds.slice(0, 2), shapeExamples: full.shapeExamples.slice(0, 1), more: "Only the 40 part lines that fit this use are shown — call again with words in query to look up more. One shape example as text; the other shapes are in the picture." } : full;
       const result = text({ ok: true, ...out, referenceRooms: plans, how: "One room: zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, areas?:[{name, purpose, focal, visit}], groups:[{name, area?, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. Several rooms (what the reference rooms players liked do — see referenceRooms and the picture): one zone per room, each with id, x, y (rough top-left cell), design (w, h, groups), landmark (one part id from its groups that the room is built around — big multi-cell parts are welcome), optional stairs:\"up\"|\"down\" and role (main · side · corridor); plus connections:[{a, b, type:\"door\"|\"open\"}] and entrance (the southernmost room; the exit is in its south wall). One map can hold several rooms even when the request asks for one place. You choose how many rooms, their sizes, rough positions and connections; the function only snaps neighbours to a one-cell wall, carves the doors and checks reachability, and rejects impossible geometry with a fixed call. Groups are everything placed (the function adds nothing; it fixes only name matching, overlap, chair facing, the aisle in front of doors and reachability). Part coordinates: the floor's top-left is 0,0; hangings use y -2. Wall furniture and hangings stand under the north wall (also under a lowered north wall)." });
       // 그림: 구성 아이디어(사용자가 실내 기준으로 고른 assistant-rooms-2 방 — 동선·초점·묶음만 보고 베끼지 않는다) + 모양 예시(shapeExamples 를 지금 빌더로 지은 것).
@@ -53,7 +53,7 @@ export function readVerbs(c: VerbContext) {
       // 기본은 한 장으로 합쳐 싣는다(env.roomPartsPictures): 2026-10-30 서재 3d 에서 그림 8장·글 1.3만 자 결과 뒤 Gemini 계열이 짓지 못한 판이 늘었다(인계 handoff-study.md).
       const mode = env.roomPartsPictures ?? "one";
       const panels: { label: string; url: string }[] = [];
-      if (mode !== "none" && env.readPublicAsset) for (const idea of roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3)) {
+      if (mode !== "none" && env.readPublicAsset) for (const idea of roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3, `${String(env.request.projectKey ?? "")}|${session.nonce}`)) {
         const key = `idea:${idea.id}`;
         let url = refPictures.get(key);
         if (!url) { try { url = await env.readPublicAsset(idea.file); } catch { url = undefined; } if (url) refPictures.set(key, url); }

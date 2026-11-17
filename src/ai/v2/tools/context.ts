@@ -69,7 +69,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || inPrompt.has(kind) || session.specsShown.get(kind) === epoch();
   const showSpecs = (kinds: readonly PlaceSpecKind[]): string => {
     for (const kind of kinds) session.specsShown.set(kind, epoch());
-    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""))).join("\n\n");
+    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""), String(env.request.projectKey ?? ""))).join("\n\n");
   };
   // 실내 목록 카드: 지시문은 턴을 시작할 때의 맵으로 카드를 고른다(빈 프로젝트면 v5) — 그 턴에 버들항 마을을 지으면 그 문 뒤 집 안은 버들항 표로 검사된다.
   // 모델이 실제로 받은 카드의 칩셋을 적어 두고, 다른 표로 검사될 장소에는 그 표의 카드를 먼저 준다(2026-11-16 r6: 첫 두 장소가 v5 낱말로 세 번 거절됐다).
@@ -78,7 +78,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const interiorCardShown = (tilesetId: string): boolean => tilesetId === promptCardTileset || session.interiorCards.get(tilesetId) === epoch();
   /** 그 칩셋의 목록 카드 글 — 준 것으로 적는다. 방 표가 없는 칩셋이면 undefined. */
   const showInteriorCard = (tilesetId: string): string | undefined => {
-    const card = chipsetCatalog(env.ctx.project.tilesets[tilesetId], String(task ?? ""));
+    const card = chipsetCatalog(env.ctx.project.tilesets[tilesetId], String(task ?? ""), String(env.request.projectKey ?? ""));
     if (card) session.interiorCards.set(tilesetId, epoch());
     return card;
   };

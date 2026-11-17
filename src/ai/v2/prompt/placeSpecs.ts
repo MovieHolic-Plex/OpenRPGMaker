@@ -3,7 +3,7 @@ import type { Project } from "@/project/types";
 import { INTERIOR_CARD } from "../place/builders/interior";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { chipsetCatalog, interiorTilesetFor } from "../place/interiorCatalog";
-import { VILLAGE_CARD } from "../place/builders/village";
+import { VILLAGE_CARD, villageCard } from "../place/builders/village";
 import { DUNGEON_CARD } from "../place/builders/dungeon";
 import { JP_CITY_CARD } from "../place/builders/jpCity";
 import { MODERN_KR_CARD } from "../place/builders/modernCity";
@@ -12,6 +12,10 @@ import { EVENT_CARD } from "../story/events";
 import { DRAW_OBJECT_CARD } from "../place/drawObject";
 
 export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
+/** 이 게임의 장소 카드 — 마을 카드의 종류 예 넷만 게임 열쇠·요청으로 다르다(villageCard). 열쇠도 요청도 없으면 V2_CARDS 그대로. */
+export function v2Cards(key = "", task = ""): readonly string[] {
+  return V2_CARDS.map((card) => (card === VILLAGE_CARD ? villageCard(key, task) : card));
+}
 
 /** 가벼운 지시문에서 처음부터 싣지 않는 장소 짓기 동사(toolExposure.ts 가 load_tools 로 돌린다). add_people·move_object 같은 작은 동사는 남긴다. */
 export const PLACE_BUILD_VERBS: ReadonlySet<string> = new Set(["make_place", "edit_place", "review_layout", "dress_room", "room_parts", "dungeon_parts", "find_pieces", "draw_object"]);
@@ -32,10 +36,10 @@ export function placeSpecKindOf(type: string | undefined): PlaceSpecKind | undef
 }
 
 /** 한 종류의 카드 글(실내는 칩셋 목록까지). */
-export function placeSpecCards(kind: PlaceSpecKind, project?: Project, currentMapId?: string, task = ""): string[] {
+export function placeSpecCards(kind: PlaceSpecKind, project?: Project, currentMapId?: string, task = "", key = ""): string[] {
   switch (kind) {
-    case "interior": return [INTERIOR_CARD, interiorCatalogCard(project, currentMapId, task)];
-    case "village": return [VILLAGE_CARD];
+    case "interior": return [INTERIOR_CARD, interiorCatalogCard(project, currentMapId, task, key)];
+    case "village": return [villageCard(key, task)];
     case "dungeon": return [DUNGEON_CARD];
     case "street": return [JP_CITY_CARD, MODERN_KR_CARD];
     case "people": return [PEOPLE_CARD];
@@ -46,13 +50,13 @@ export function placeSpecCards(kind: PlaceSpecKind, project?: Project, currentMa
 let catalogCard: string | undefined;
 
 /** 칸 배치 목록 카드 — 칩셋 메타데이터에서 생성(interiorCatalog.ts). 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. */
-export function interiorCatalogCard(project?: Project, currentMapId?: string, task = ""): string {
+export function interiorCatalogCard(project?: Project, currentMapId?: string, task = "", key = ""): string {
   // 어느 칩셋의 목록인가는 한 규칙(interiorTilesetFor) — 칸 배치를 까는 쪽·find_pieces 와 같다(잔디 한 장뿐인 빈 맵은 바깥 칩셋을 따르지 않는다).
   const cur = interiorTilesetFor(project, currentMapId);
   const v5 = project?.tilesets[HAND_INTERIOR_TILESET_ID];
-  const fromCur = cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit ? chipsetCatalog(cur, task) : undefined;
+  const fromCur = cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit ? chipsetCatalog(cur, task, key) : undefined;
   if (fromCur) return fromCur;
-  if (v5) { const c = chipsetCatalog(v5, task); if (c) return c; }
-  catalogCard ??= chipsetCatalog({ id: HAND_INTERIOR_TILESET_ID } as never, task) ?? `[Interior catalog — chipset ${HAND_INTERIOR_TILESET_ID}] (no spec)`;
+  if (v5) { const c = chipsetCatalog(v5, task, key); if (c) return c; }
+  catalogCard ??= chipsetCatalog({ id: HAND_INTERIOR_TILESET_ID } as never, task, key) ?? `[Interior catalog — chipset ${HAND_INTERIOR_TILESET_ID}] (no spec)`;
   return catalogCard;
 }
