@@ -80,7 +80,24 @@ export function interiorTilesetFor(project: Project | undefined, mapId?: string)
   // 바깥 칩셋이 방 표를 같이 든 것(모습 표 looks — 버들항)은 그 맵에 무엇이 지어져 있을 때만 따른다: 빈 프로젝트의 잔디 한 장(시작 맵)은 버들항 마을이 아니다 —
   // 거기서 「독서실」「알현실」을 청하면 종전대로 v5(화풍 낱말이 고르는 칩셋)다.
   if (cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit && effectiveSpec(cur) && !(effectiveSpec(cur)?.looks && map && isBareTileMap(map))) return cur;
+  // 지금 맵이 실내(v5)이거나 빈 맵이어도, 이 게임에 집 안도 짓는 바깥 칩셋의 마을이 서 있으면 그 표다 — 실내 빌더가 늘 그 표로 깐다(2026-11-17 r8 D2).
+  const game = gameInteriorTable(project, mapId);
+  if (game && project?.tilesets[game]) return project.tilesets[game];
   return project?.tilesets[HAND_INTERIOR_TILESET_ID];
+}
+
+/**
+ * 그 게임의 집 안 표 — 이 프로젝트에 «집 안도 짓는 바깥 칩셋»(방 표 + 모습 표 looks — 버들항)으로 지은 바깥 맵이 있으면 그 칩셋 id.
+ * 지금 맵이 그런 맵이면 그것, 아니면 그런 칩셋의 맵 가운데 가장 큰 것(시작 맵의 잔디 한 장은 치지 않는다). 없으면 undefined.
+ * 왜(2026-11-17 r8 «갈매나루»): 문 뒤가 아닌(hints.door 없는) 여관이 지시문 카드의 v5 로 깔려 한 게임에 실내 칩셋이 둘이었다.
+ */
+export function gameInteriorTable(project: Project | undefined, mapId?: string): string | undefined {
+  if (!project) return undefined;
+  const builds = (m: Project["maps"][string] | undefined): boolean => { const t = m ? project.tilesets[m.tilesetId] : undefined; return !!t && t.id !== HAND_INTERIOR_TILESET_ID && !!effectiveSpec(t)?.looks && !isBareTileMap(m!); };
+  const cur = project.maps[mapId ?? ""];
+  if (builds(cur)) return cur!.tilesetId;
+  const outdoor = Object.values(project.maps).filter(builds).sort((a, b) => b.width * b.height - a.width * a.height || a.id.localeCompare(b.id));
+  return outdoor[0]?.tilesetId;
 }
 
 const PLACE: Record<string, string> = { floor: "floor piece -> objects", wall: "against-wall -> wall_items, y = wall row + 3", hang: "wall-mounted -> wall_items, upper face row y = wall row + 1", flat: "walkable decal -> objects", door: "door leaf -> a door's piece", sidedoor: "side door leaf" };

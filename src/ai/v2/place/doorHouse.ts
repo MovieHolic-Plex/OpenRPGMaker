@@ -8,6 +8,7 @@ import { kitBaseTile } from "@/project/houseSetTiles";
 import { kitTier } from "@/project/kitTier";
 import type { GameMap, Project, StructureKitDef } from "@/project/types";
 import { buildingEntrances } from "./entrances";
+import { nearestBuildingKits } from "@/editor/tools/beodeulAskedBuildings";
 import { LAYOUT_TAG } from "./interiorLayout";
 
 /** 크기 단마다 안에 있어야 하는 방 수(실내 빌더의 거절 기준과 같은 표). */
@@ -109,6 +110,35 @@ export function thinInsideNote(project: Project, args: unknown): string | undefi
     const name = project.maps[inn.mapId]?.name ?? inn.mapId;
     return `[Building size] The door at (${house.front.x},${house.front.y}) belongs to «${house.label}» (${house.kit}), a ${house.tier} building — a ${house.tier} building has ${need} or more rooms inside, and «${name}» has ${rooms}. `
       + `To make the inside match the building: make_place({"type":"interior","name":${JSON.stringify(name)},"mapId":${JSON.stringify(inn.mapId)},"hints":{"door":[${house.front.x},${house.front.y}]}}) without layout lays the ${house.tier} plan (rooms, doors between them, stairs), or send a layout with ${need}+ rooms the same way. Leave it if a small inside is what you want.`;
+  }
+  return undefined;
+}
+
+/** 문 앞 칸(또는 그 위 문 칸)에 다른 맵으로 가는 이동 이벤트가 있나 — 이미 어느 실내로 이어진 문. */
+function doorLinked(map: GameMap, front: { x: number; y: number }): boolean {
+  return (map.events ?? []).some((e) => e.x === front.x && (e.y === front.y || e.y === front.y - 1)
+    && (e.pages ?? []).some((p) => (p.commands ?? []).some((c) => { const r = c as unknown as { kind?: string; mapId?: string }; return r.kind === "transfer" && !!r.mapId && r.mapId !== map.id; })));
+}
+
+/**
+ * hints.door 없이 온 실내의 건물 — 바깥 맵(들)의 아직 이어지지 않은 문 가운데, 장소 이름이 가리키는 건물(nearestBuildingKits — 칩셋의 킷 id · 이름)의 문.
+ * 이름이 아무 건물도 가리키지 않거나 그 건물의 빈 문이 없으면 undefined(바깥 칩셋만 따른다). 낱말 목록을 두지 않는다: 킷 이름이 정한다.
+ * 왜(2026-11-17 r8 D2): hints.door 없이 온 «갈매나루 여관» 이 문 뒤 건물을 몰라 지시문 카드의 v5 로 깔렸다.
+ */
+export function doorHouseForName(project: Project, hostMapIds: readonly string[], placeName: string): (DoorHouse & { mapId: string }) | undefined {
+  for (const mapId of hostMapIds) {
+    const map = project.maps[mapId];
+    const kits = map ? project.tilesets[map.tilesetId]?.structureKits ?? [] : [];
+    if (!map || !kits.length) continue;
+    const free = doorHouses(project, map).filter((d) => !doorLinked(map, d.front));
+    if (!free.length) continue;
+    // 이름 전체, 그다음 이름의 낱말마다(«갈매나루 여관» → «여관») — 마을 이름 낱말은 어느 건물도 가리키지 않는다.
+    const words = [placeName, ...placeName.split(/\s+/u).filter((w) => w.length >= 2).reverse()];
+    for (const w of words) {
+      const want = new Set(nearestBuildingKits(kits, w).kits.map((k) => k.id));
+      const hit = want.size ? free.find((d) => want.has(d.kit)) : undefined;
+      if (hit) return { ...hit, mapId };
+    }
   }
   return undefined;
 }

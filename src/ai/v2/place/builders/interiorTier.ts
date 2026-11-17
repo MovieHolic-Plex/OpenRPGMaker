@@ -11,7 +11,6 @@ import { argsFromRebuild, build, reachOk } from "./interiorFill";
 import type { InteriorState, Rebuild } from "./interiorKind";
 
 export interface TierState { readonly program: string; readonly shape: number; readonly maps: Readonly<Record<string, string>> }
-interface BuiltMap { mapId: string; rb: Rebuild; base: Record<string, unknown>; entrance?: { x: number; y: number } }
 export interface TierAsk {
   readonly tilesetId: string; readonly roomSpec: HandInteriorSpec; readonly outside: ExteriorLook | undefined;
   /** 그 장소의 방 종류(resolveKind) — 이름이 방 종류를 못 가리켰으면(named = false) 킷의 interior 태그가 먼저다. */
@@ -35,42 +34,61 @@ export function tierProgramOf(project: BuildRun["ctx"]["project"], ask: Pick<Tie
   return got ? { ...got, table } : undefined;
 }
 
+/** 크기 단 맵 한 장을 짓는 데 드는 것 — 구성 표 · 견본(그 집 양식의 벽면) · 그 장소의 방 종류 · 게임 열쇠. */
+export interface TierMapCtx {
+  readonly tid: string; readonly roomSpec: HandInteriorSpec; readonly table: TierTable;
+  readonly templates: readonly ReturnType<typeof roomTemplates>[number][];
+  readonly mainKind: string; readonly varietyKey: string; readonly spec: PlaceSpec; readonly outside: ExteriorLook | undefined;
+}
+export interface BuiltTierMap { mapId: string; rb: Rebuild; base: Record<string, unknown>; entrance?: { x: number; y: number } }
+
+/** 이 구성으로 짓는 맵들의 공통 재료 — 견본은 그 집 양식의 벽면으로 바꾼다. 방 종류가 구성이 맡는 종류가 아니면 구성의 첫 종류. */
+export function tierMapCtx(ask: Pick<TierAsk, "tilesetId" | "roomSpec" | "outside" | "mainKind" | "varietyKey">, spec: PlaceSpec, program: TierProgram, table: TierTable): TierMapCtx {
+  const S = ask.roomSpec, tid = ask.tilesetId;
+  const templates = roomTemplates(tid).map((t) => ({ ...t, wall: exteriorWall(S, ask.outside?.tileset === tid ? ask.outside : undefined, t.wall) ?? t.wall }));
+  const mainKind = templates.some((t) => t.kind === ask.mainKind) && program.serves.includes(ask.mainKind) ? ask.mainKind : program.serves[0]!;
+  return { tid, roomSpec: S, table, templates, mainKind, varietyKey: ask.varietyKey, spec, outside: ask.outside };
+}
+
+/** 평면 한 장을 짓는다(build_hand_interior_room layout.placed). 닿지 못하는 바닥이 남거나 도구가 거절하면 그 까닭 글. */
+export function buildTierMap(run: BuildRun, c: TierMapCtx, plan: TierMapPlan, mapId: string | undefined, name: string): BuiltTierMap | string {
+  const S = c.roomSpec, spec = c.spec;
+  const personal = (rooms: readonly { id: string; kind: string }[], mapKey: string) => (S.personal
+    ? { personal: Object.fromEntries(rooms.map((r) => [r.id, { key: `${c.varietyKey}|${mapKey}|${r.id}`, text: `${spec.name} ${spec.theme ?? ""}`, ...(c.outside?.cat ? { cat: c.outside.cat } : {}) }])) } : {});
+  let placed;
+  try { placed = placeTierMap(plan, tierTemplatePicker(c.templates, c.mainKind, `${c.varietyKey}|${plan.id}`), c.table.doors); }
+  catch (e) { if (e instanceof TierPlanError) return e.message; throw e; }
+  const base: Record<string, unknown> = { tileset: c.tid, mapId, name, replace: mapId && run.ctx.project.maps[mapId] ? true : undefined };
+  const layout = { rooms: placed.rooms.map((r) => ({ id: r.id, kind: r.kind, template: r.template, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, floor: r.floor, wall: r.wall })),
+    placed: { rooms: placed.rooms, connect: placed.connect, exit: placed.exit }, ...personal(placed.rooms, plan.id) };
+  let a = build(run, { ...base, layout });
+  if (!a.ok && mapId) a = build(run, { ...base, mapId: undefined, replace: undefined, layout });
+  if (!a.ok) return a.summary.slice(0, 240);
+  if (!reachOk(a)) return `닿지 못하는 바닥 ${(a.data?.unreachedFloor as unknown[] | undefined)?.length ?? "?"}칸`;
+  // 문 앞 발깔개는 바깥문 방에만 — 안쪽 방(칸막이 문으로 드나드는 방)의 남쪽 벽 앞 깔개는 걷는다.
+  const rb0 = a.data?.rebuild as Rebuild;
+  const exitRoom = placed.exit.width === 0 ? undefined : rb0.rooms.find((r) => r.id === placed.exit.room);
+  const inExit = (o: { x: number; y: number }) => !!exitRoom && o.x >= exitRoom.x0 && o.x <= exitRoom.x1 && o.y >= exitRoom.y0 && o.y <= exitRoom.y1;
+  const kept = rb0.objects.filter((o) => o.id !== "door mat" || inExit(o));
+  let rb = rb0;
+  if (kept.length < rb0.objects.length) {
+    const again = build(run, argsFromRebuild({ ...base, mapId: String(a.data?.mapId), replace: true }, { ...rb0, objects: kept }));
+    if (again.ok && reachOk(again)) rb = { ...rb0, objects: kept };
+    else build(run, argsFromRebuild({ ...base, mapId: String(a.data?.mapId), replace: true }, rb0));
+  }
+  const entrance = Array.isArray(a.data?.entrance) ? (a.data!.entrance as { x: number; y: number }[])[0] : undefined;
+  return { mapId: String(a.data?.mapId), rb, base: { ...base, mapId: String(a.data?.mapId), replace: true }, ...(entrance ? { entrance } : {}) };
+}
+
 /** 구성대로 짓는다. 못 지으면(견본이 안 맞음·도구 거절) undefined — 부르는 쪽이 한 방짜리 길로 짓는다. */
 export function buildTier(run: BuildRun, spec: PlaceSpec, ask: TierAsk, notes: string[]): PlaceBuildResult | undefined {
   const found = tierProgramOf(run.ctx.project, ask);
   if (!found) return undefined;
   const { id: programId, program, table } = found;
   const S = ask.roomSpec, tid = ask.tilesetId;
-  const templates = roomTemplates(tid).map((t) => ({ ...t, wall: exteriorWall(S, ask.outside?.tileset === tid ? ask.outside : undefined, t.wall) ?? t.wall }));
-  const mainKind = templates.some((t) => t.kind === ask.mainKind) && program.serves.includes(ask.mainKind) ? ask.mainKind : program.serves[0]!;
-  const personal = (rooms: readonly { id: string; kind: string }[], mapKey: string) => (S.personal
-    ? { personal: Object.fromEntries(rooms.map((r) => [r.id, { key: `${ask.varietyKey}|${mapKey}|${r.id}`, text: `${spec.name} ${spec.theme ?? ""}`, ...(ask.outside?.cat ? { cat: ask.outside.cat } : {}) }])) } : {});
-  /** 평면 한 장을 짓는다. 닿지 못하는 바닥이 남으면 실패. */
-  const buildMap = (plan: TierMapPlan, mapId: string | undefined, name: string): BuiltMap | string => {
-    let placed;
-    try { placed = placeTierMap(plan, tierTemplatePicker(templates, mainKind, `${ask.varietyKey}|${plan.id}`), table.doors); }
-    catch (e) { if (e instanceof TierPlanError) return e.message; throw e; }
-    const base: Record<string, unknown> = { tileset: tid, mapId, name, replace: mapId && run.ctx.project.maps[mapId] ? true : undefined };
-    const layout = { rooms: placed.rooms.map((r) => ({ id: r.id, kind: r.kind, template: r.template, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, floor: r.floor, wall: r.wall })),
-      placed: { rooms: placed.rooms, connect: placed.connect, exit: placed.exit }, ...personal(placed.rooms, plan.id) };
-    let a = build(run, { ...base, layout });
-    if (!a.ok && mapId) a = build(run, { ...base, mapId: undefined, replace: undefined, layout });
-    if (!a.ok) return a.summary.slice(0, 240);
-    if (!reachOk(a)) return `닿지 못하는 바닥 ${(a.data?.unreachedFloor as unknown[] | undefined)?.length ?? "?"}칸`;
-    // 문 앞 발깔개는 바깥문 방에만 — 안쪽 방(칸막이 문으로 드나드는 방)의 남쪽 벽 앞 깔개는 걷는다.
-    const rb0 = a.data?.rebuild as Rebuild;
-    const exitRoom = placed.exit.width === 0 ? undefined : rb0.rooms.find((r) => r.id === placed.exit.room);
-    const inExit = (o: { x: number; y: number }) => !!exitRoom && o.x >= exitRoom.x0 && o.x <= exitRoom.x1 && o.y >= exitRoom.y0 && o.y <= exitRoom.y1;
-    const kept = rb0.objects.filter((o) => o.id !== "door mat" || inExit(o));
-    let rb = rb0;
-    if (kept.length < rb0.objects.length) {
-      const again = build(run, argsFromRebuild({ ...base, mapId: String(a.data?.mapId), replace: true }, { ...rb0, objects: kept }));
-      if (again.ok && reachOk(again)) rb = { ...rb0, objects: kept };
-      else build(run, argsFromRebuild({ ...base, mapId: String(a.data?.mapId), replace: true }, rb0));
-    }
-    const entrance = Array.isArray(a.data?.entrance) ? (a.data!.entrance as { x: number; y: number }[])[0] : undefined;
-    return { mapId: String(a.data?.mapId), rb, base: { ...base, mapId: String(a.data?.mapId), replace: true }, ...(entrance ? { entrance } : {}) };
-  };
+  const mc = tierMapCtx(ask, spec, program, table);
+  type BuiltMap = BuiltTierMap;
+  const buildMap = (plan: TierMapPlan, mapId: string | undefined, name: string): BuiltMap | string => buildTierMap(run, mc, plan, mapId, name);
   const n = program.shapes.length;
   const first = ask.force?.shape ?? ask.prev?.shape ?? mixHash(hashText(`${ask.varietyKey}|shape|${programId}`)) % n;
   const order = ask.force?.shape !== undefined ? [first] : Array.from({ length: n }, (_, i) => (first + i) % n);

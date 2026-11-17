@@ -43,7 +43,7 @@ export function placeTypeFromName(name: string): PlaceType | undefined {
  * 모델이 이 실행에서 그 장소에 대해 말한 것 — 끝맺음 자동 짓기는 이름 낱말로 추측하기 전에 이것을 읽는다(V2Session.placeFacts).
  * asked = make_place 로 보낸 마지막 명세(거절됐어도 남는다) · kind = 세계 없는 청사진의 places 나 할 일 목록에 적은 종류 · from = 청사진에 적은 앞 장소.
  */
-export interface PlaceFacts { readonly asked?: PlaceSpec; readonly kind?: string; readonly from?: string }
+export interface PlaceFacts { readonly asked?: PlaceSpec; readonly kind?: string; readonly from?: string; /** 청사진에 적힌 이름 그대로(열쇠는 공백을 뺀 이름). */ readonly name?: string }
 
 /** 장소 사실의 열쇠 — 공백을 뺀 이름(청사진의 place 와 make_place 의 name 은 같은 이름을 쓴다). */
 export const placeFactKey = (name: string): string => name.normalize("NFC").replace(/\s+/gu, "").toLowerCase();

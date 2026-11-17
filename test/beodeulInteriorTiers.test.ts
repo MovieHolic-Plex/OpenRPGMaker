@@ -404,16 +404,17 @@ describe("버들항 표로 읽는다 — room_parts · 목록 카드 · 없는 �
     expect(built.warnings).toContain('swapped wall "logdark" → "log" (not in this chipset\'s table — its nearest id)');
     expect(built.warnings).toContain('swapped piece "chair N" ×2 → "chair" (not in this chipset\'s table — its nearest id)');
     expect(built.warnings).toContain('swapped piece "bar stool" → "stool" (not in this chipset\'s table — its nearest id)');
-    // 가까운 것이 없는 낱말(piano): 고치기가 남았으면 거절, 다 쓰면 빼고 깔고 무엇을 뺐는지와 빈 바닥 비율을 적는다
+    // 가까운 것이 없는 낱말(piano): 거절하지 않는다 — 그 조각만 빼고 깔고 무엇을 뺐는지와 빈 바닥 비율을 적는다(2026-11-17 r8: «table:fish+fishr» 하나로 고침 전체가 거절됐다)
     const { run: run2 } = fresh();
     const none = { type: "interior", name: "방앗간", layout: mill("log", "plank"), hints: { newMap: true } } as unknown as PlaceSpec;
     const no = buildFromLayout(run2, none, ES, ts.id, undefined);
-    expect(no.ok).toBe(false);
-    expect(no.summary).toMatch(/no near id in this table[^.]*"piano"/iu);
-    expect(no.summary).not.toContain('"chair N"');   // 가까운 것이 있는 낱말은 이미 바뀌었다
-    const last = buildFromLayout(run2, { ...none, hints: { newMap: true, layoutRepairsLeft: 0 } } as unknown as PlaceSpec, ES, ts.id, undefined);
-    expect(last.ok, last.summary).toBe(true);
-    expect(last.summary).toMatch(/laid 7 of your 8 pieces — left out \(each with its reason in warnings\): "piano"; bare floor \d+%/u);
+    expect(no.ok, no.summary).toBe(true);
+    expect(no.summary).toMatch(/laid 7 of your 8 pieces — left out \(each with its reason in warnings\): "piano"; bare floor \d+%/u);
+    // «바탕:변형» 이름은 바탕 낱말로 바꿔 깐다 — r8 어물전의 «table:fish+fishr»
+    const { run: run3 } = fresh();
+    const fish = buildFromLayout(run3, { ...none, layout: { ...mill("log", "plank"), objects: [{ id: "table:fish+fishr", x: 3, y: 7 }, { id: "crate", x: 9, y: 9 }] } } as unknown as PlaceSpec, ES, ts.id, undefined);
+    expect(fish.ok, fish.summary).toBe(true);
+    expect(fish.warnings.find((w) => w.startsWith('swapped piece "table:fish+fishr" → '))).toMatch(/→ "[^"]*table"/u);
   });
 
   it("거절은 게임이 깨질 때만 — 기물 하나의 문제(겹침 · 바닥 아닌 칸)는 그 기물만 빼고 깔고 까닭을 적는다, 닫히지 않은 벽은 거절한다", () => {
@@ -429,7 +430,7 @@ describe("버들항 표로 읽는다 — room_parts · 목록 카드 · 없는 �
     expect(buildFromLayout(run2, { type: "interior", name: "방앗간", layout: open, hints: { newMap: true } } as unknown as PlaceSpec, ES, ts.id, undefined).ok).toBe(false);
   });
 
-  it("버들항 게임에서 v5 조각 이름으로 쓴 방은 v5 표로 그대로 깔린다 — 버들항 낱말로 쓴 방은 버들항 표로", () => {
+  it("버들항 게임에서는 v5 조각 이름으로 쓴 방도 버들항 표로 깔고 바꾼 것을 한 줄씩 알린다 — 버들항 낱말로 쓴 방은 그대로", () => {
     const town = () => { const f = fresh(); const m = f.run.ctx.project.maps[f.run.ctx.project.startMapId]!; m.tilesetId = f.ts.id; m.upperTiles[0] = 1; return f; };
     const v5 = { map: { w: 12, h: 10 }, landmark: { id: "counter 4x1", x: 3, y: 5 }, outer_wall: { material: "logdark", path: [[0, 0], [11, 0], [11, 9], [0, 9]] }, entrance: { x: 5, y: 9 },
       rooms: [{ id: "hall", at: [5, 7], floor: "boards", purpose: "tavern" }], wall_items: [{ id: "keg rack", wall: "outer", x: 1, y: 3 }],
@@ -437,9 +438,9 @@ describe("버들항 표로 읽는다 — room_parts · 목록 카드 · 없는 �
     const a = town();
     const laid = interiorBuilder.build(a.run, { type: "interior", name: "선술집", layout: v5, hints: { newMap: true } } as unknown as PlaceSpec);
     expect(laid.ok, laid.summary).toBe(true);
-    expect(a.run.ctx.project.maps[laid.mapIds[0]!]!.tilesetId).toBe(HAND_INTERIOR_TILESET_ID);
-    expect(laid.warnings.join(" ")).toMatch(/laid with chipset atlas_biome_interior — \d+ of the \d+ ids in your layout are that chipset's \(this game's houses use beodeul_city\)/u);
-    expect(laid.warnings.join(" ")).not.toContain("swapped");
+    expect(a.run.ctx.project.maps[laid.mapIds[0]!]!.tilesetId).toBe(a.ts.id);
+    expect(laid.warnings.join(" ")).toContain(`laid with this game's interior chipset ${a.ts.id}`);
+    expect(laid.warnings).toContain('swapped piece "bar stool" → "stool" (not in this chipset\'s table — its nearest id)');
     const b = town();
     const own = { ...mill("log", "plank"), wall_items: [{ id: "ale kegs rack", wall: "outer", x: 8, y: 3 }], objects: [{ id: "bar counter", x: 3, y: 6 }, { id: "stool", x: 4, y: 8 }, { id: "crate", x: 9, y: 9 }] };
     const home = interiorBuilder.build(b.run, { type: "interior", name: "방앗간", layout: own, hints: { newMap: true } } as unknown as PlaceSpec);

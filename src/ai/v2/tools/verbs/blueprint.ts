@@ -59,7 +59,7 @@ export function blueprintVerbs(c: VerbContext) {
       // 세계 없는 게임의 청사진에는 장소 목록을 남기지 않는다 — 남으면 끝맺음 장소 짓기가 이름이 똑같은 맵만 «이미 지었다»로 보아 같은 장소를 한 번 더 짓는다.
       // 모델이 적은 종류·앞 장소는 이 실행의 사실로 남긴다 — 끝맺음이 그 장소를 대신 지을 때 이름으로 추측하지 않는다(place/placeGuess.placeSpecFor).
       if (!world && parsed.blueprint.places) {
-        for (const pl of parsed.blueprint.places) session.notePlaceFact(pl.name, { kind: pl.kind, ...(pl.from ? { from: pl.from } : {}) });
+        for (const pl of parsed.blueprint.places) session.notePlaceFact(pl.name, { name: pl.name, kind: pl.kind, ...(pl.from ? { from: pl.from } : {}) });
         const { places: _places, ...rest } = parsed.blueprint; parsed.blueprint = rest;
       }
       const worldNotes: string[] = [];

@@ -8,7 +8,7 @@ import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 import { REVIEWS_TAG } from "../layoutReview";
 import { checkLayout, layoutDecl, layoutGiven, rejectionText, LAYOUT_TAG, type InteriorLayout, type LayoutCheck } from "../interiorLayout";
-import { knownObject, swapLine, swapUnknownWords } from "../unknownWords";
+import { swapLine, swapUnknownWords } from "../unknownWords";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 
@@ -24,29 +24,29 @@ function joins(o: { x: number; y: number; w?: number; h?: number }, a: { x: numb
   return near(a) && near(b);
 }
 
-export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined, outside?: ExteriorLook): PlaceBuildResult {
+export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined, outside?: ExteriorLook, others: readonly HandInteriorSpec[] = []): PlaceBuildResult {
   const tileset = run.ctx.project.tilesets[tilesetId];
   if (!tileset) return { ok: false, mapIds: [], summary: `spec.layout needs a chipset with a room table; ${tilesetId} is missing. Drop layout and use zones.`, warnings: [], missingArt: [], calls: run.calls };
   // 표에 없는 낱말은 가장 가까운 표의 id 로 바꿔 깔고 알린다(가까운 것이 없을 때만 거절한다) — unknownWords.ts swapUnknownWords.
-  const { layout: L, swaps } = swapUnknownWords(spec.layout as InteriorLayout, S);
+  // others = 다른 표(지시문 카드의 v5 등) — 그 표의 id 로 쓴 조각은 그 조각의 갈래·자리·크기로 이 표의 가장 가까운 것을 고른다(칩셋을 바꾸지 않는다).
+  const { layout: L, swaps } = swapUnknownWords(spec.layout as InteriorLayout, S, others);
   const left = Number(spec.hints?.layoutRepairsLeft ?? 2);
   let check: LayoutCheck = checkLayout(L, S, tileset);
   const dropped: string[] = [], droppedWhy: string[] = [];
   let sentPieces = 0;
-  // 거절은 게임이 깨질 때만(2026-11-16 오너 방향): 기물 하나의 문제(겹침 · 바닥 아닌 칸 · 벽 기물을 바닥에)는 그 기물만 빼고 깔고 무엇을 왜 뺐는지 알린다.
-  // 빼도 남는 문제(닫히지 않은 벽 · 닿지 않는 방 · 입구 없음 · 맵 밖)와 가까운 것이 없는 낱말은 거절한다 — 고치기를 다 쓰면 낱말도 빼고 깐다.
+  // 거절은 게임이 깨질 때만(2026-11-16 오너 방향): 기물 하나의 문제(겹침 · 바닥 아닌 칸 · 벽 기물을 바닥에 · 표에 없고 가까운 것도 없는 낱말)는 그 기물만 빼고 깔고
+  // 무엇을 왜 뺐는지 알린다(2026-11-17 r8: «table:fish+fishr» 하나로 고침 전체가 거절됐다). 빼도 남는 문제(닫히지 않은 벽 · 닿지 않는 방 · 입구 없음 · 맵 밖)만 거절한다.
   if (check.errors.length && check.badObjects.size) {
-    const first = check.errors, src = check.sources ?? [];
-    const noNear = src.some((o, i) => check.badObjects.has(i) && typeof o?.id === "string" && !knownObject(S, o.id));
+    const first = check.errors;
     const drop = new Set<number>(check.badObjects);
     let trial = check;
     for (let pass = 0; pass < 3 && (pass === 0 || trial.errors.length); pass++) {
       trial = checkLayout(L, S, tileset, { dropObjects: drop });
       for (const i of trial.badObjects) drop.add(i);
     }
-    if (left <= 0 || (!trial.errors.length && !noNear)) {
+    if (left <= 0 || !trial.errors.length) {
+      const all = trial.sources ?? check.sources ?? [];
       check = trial;
-      const all = trial.sources ?? src;
       for (const i of drop) { const o = all[i]; if (o) dropped.push(`"${o.id}"@(${o.x},${o.y})`); }
       sentPieces = all.length;
       droppedWhy.push(...first.filter((e) => !trial.errors.includes(e)));

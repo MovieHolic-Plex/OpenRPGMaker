@@ -134,16 +134,44 @@ const arr = (v: unknown): AnyObj[] => (Array.isArray(v) ? (v as AnyObj[]) : []);
  * 없는 이름은 거절하지 않고 가까운 것으로 깔고 알린다. 가까운 것이 없는 낱말은 그대로 둔다(검사가 «no near id» 로 알린다).
  * 기물은 놓는 자리에 맞는 것을 먼저 고른다 — wall_items 의 것은 벽붙이·걸이, objects 의 것은 바닥 기물.
  */
-export function swapUnknownWords<T>(raw: T, S: HandInteriorSpec): { layout: T; swaps: WordSwap[] } {
+/**
+ * 이름이 닮은 것이 없는 조각의 가장 가까운 것 — 다른 표(others: 그 낱말을 아는 표, 예: 지시문 카드의 v5)가 그 조각의 갈래(category)·놓는 자리(kind)·크기를 알려 주면,
+ * 이 표에서 같은 갈래 · 같은 자리 가운데 크기가 가장 가까운 것, 같은 갈래가 없으면 같은 자리 가운데 크기가 가장 가까운 것. 다른 표도 모르는 낱말이면 undefined.
+ * 왜(2026-11-17 r8 «갈매나루 여관»): 지시문 카드(v5)의 id 로 쓴 여관이 그 표로 깔려 한 게임에 실내 칩셋이 둘이 됐다 — 그 게임의 표로 깔고 바꾼 것을 알린다.
+ */
+export function nearestByShape(id: string, S: HandInteriorSpec, others: readonly HandInteriorSpec[], ids: readonly string[]): string | undefined {
+  const src = others.map((o) => o.objects[id]).find((d) => !!d);
+  if (!src) return undefined;
+  const kindOf = (d: { kind: string; stairs?: string }) => (d.stairs ? `stairs-${d.stairs}` : d.kind);
+  const same = ids.filter((c) => kindOf(S.objects[c]!) === kindOf(src));
+  // 이름 낱말을 같이 가진 것(«bed blue» → bed …, «potted fern» → potted …)이 먼저, 그다음 같은 갈래, 그다음 크기가 가까운 것 — 낱말은 두 표의 id 에서 온다.
+  const words = (x: string) => x.toLowerCase().split(/[^a-z]+/u).filter((w) => w.length >= 3);
+  const mine = new Set(words(id));
+  const shared = (c: string) => words(c).filter((w) => mine.has(w)).length;
+  const cat = (c: string) => (S.objects[c]!.category === src.category ? 1 : 0);
+  const size = (c: string) => Math.abs(S.objects[c]!.w - src.w) + Math.abs(Math.max(1, S.objects[c]!.h) - Math.max(1, src.h));
+  const rank = (list: readonly string[]) => [...list].sort((a, b) => shared(b) - shared(a) || cat(b) - cat(a) || size(a) - size(b) || a.localeCompare(b))[0];
+  // 같은 자리 갈래에 이름 낱말을 같이 가진 것이 없으면, 낱말을 같이 가진 바닥 · 벽 붙이 사이(벽에 붙이는 침대 → 바닥 침대 — 놓는 목록은 검사가 바로잡는다). 걸이 · 계단 · 문은 갈래를 넘지 않는다.
+  const standing = (k: string) => k === "floor" || k === "wall";
+  if (!same.some((c) => shared(c) > 0) && !src.stairs && standing(src.kind)) {
+    const across = ids.filter((c) => shared(c) > 0 && !S.objects[c]!.stairs && standing(S.objects[c]!.kind));
+    if (across.length) return rank(across);
+  }
+  return rank(same);
+}
+
+export function swapUnknownWords<T>(raw: T, S: HandInteriorSpec, others: readonly HandInteriorSpec[] = []): { layout: T; swaps: WordSwap[] } {
   if (!raw || typeof raw !== "object") return { layout: raw, swaps: [] };
   const L = raw as unknown as AnyObj;
   const swaps = new Map<string, WordSwap>();
   const note = (what: WordSwap["what"], from: string, to: string, n = 1) => { const k = `${what}|${from}|${to}`; const p = swaps.get(k); swaps.set(k, { what, from, to, n: (p?.n ?? 0) + n }); };
   const wallIds = Object.keys(S.walls), floorIds = Object.keys(S.floors);
   const pieceIds = Object.keys(S.objects).filter((id) => S.objects[id]!.kind !== "door" && S.objects[id]!.kind !== "sidedoor");
+  // 벽 · 바닥: 이름이 닮은 것, 없으면 다른 표가 아는 낱말일 때만 이 표의 첫 것(재질 표는 작다 — 바닥 일곱 · 벽 여덟).
   const material = (what: "wall" | "floor", table: Record<string, unknown>, ids: readonly string[]) => (v: unknown): unknown => {
     if (typeof v !== "string" || table[v]) return v;
-    const to = nearIds(v, ids, 1)[0]; if (!to) return v;
+    // 닮은 이름이 없으면 이 표의 첫 재질로 깐다 — 재질 하나 때문에 장소를 거절하지 않는다(무엇으로 바꿨는지는 결과에 적힌다).
+    const to = nearIds(v, ids, 1)[0] ?? ids[0]; if (!to) return v;
     note(what, v, to); return to;
   };
   const wall = material("wall", S.walls, wallIds), floor = material("floor", S.floors, floorIds);
@@ -152,8 +180,14 @@ export function swapUnknownWords<T>(raw: T, S: HandInteriorSpec): { layout: T; s
   const piece = (o: AnyObj, cls: "wall" | "floor" | "any"): AnyObj => {
     const id = o?.id;
     if (typeof id !== "string" || knownObject(S, id)) return o;
+    // 이름이 닮은 것 → 다른 표가 아는 조각이면 같은 갈래·자리·크기 → «바탕:변형» 이름(crate:fish · table:fish+fishr)이면 바탕 낱말로.
+    const base = /^([^:+]+)[:+]/u.exec(id)?.[1]?.trim();
     const near = nearIds(id, pieceIds, 4);
-    const to = (cls === "any" ? undefined : near.find((c) => onWall(c) === (cls === "wall"))) ?? near[0];
+    // «바탕:변형» 이름은 바탕 낱말이 갈래·크기보다 먼저다(«table:fish+fishr» → 탁자 — 갈래·크기만 보면 술병 선반이 골라졌다). 변형 낱말이 이름에 든 것이 앞.
+    const variant = base ? id.slice(base.length).split(/[:+]/u).map((w) => w.trim().toLowerCase()).filter((w) => w.length >= 3) : [];
+    const nearBase = near.length || !base ? [] : [...nearIds(base, pieceIds, 8)].sort((a, b) => Number(variant.some((w) => b.includes(w))) - Number(variant.some((w) => a.includes(w))));
+    const pick = (list: readonly string[]) => (cls === "any" ? undefined : list.find((c) => onWall(c) === (cls === "wall"))) ?? list[0];
+    const to = pick(near) ?? pick(nearBase) ?? nearestByShape(id, S, others, pieceIds);
     if (!to) return o;
     const rep = o.repeat as { count?: number } | undefined;
     note("piece", id, to, Math.max(1, Math.min(40, Number(rep?.count ?? 1) || 1)));

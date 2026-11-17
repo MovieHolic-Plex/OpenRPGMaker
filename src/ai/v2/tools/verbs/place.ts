@@ -1,12 +1,14 @@
 // 장소 동사 — build_places(세계 장소 한 번에) · make_place · edit_place · review_layout · find_pieces.
-import { doorHouseAt } from "../../place/doorHouse";
+import { doorHouseAt, doorHouseForName } from "../../place/doorHouse";
+import { placeFactKey } from "../../place/placeGuess";
+import { adoptGrownLayout } from "../../place/builders/interiorTierLayout";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { interiorCatalogCard, placeSpecKindOf } from "../../prompt/placeSpecs";
 import { INTERIOR_WORDS } from "../../request/place";
 import { hasLayout } from "../../place/builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, patchedWholeLayout, type InteriorLayout, type LayoutPatch } from "../../place/interiorLayout";
 import { layoutReviewRounds, REVIEWS_TAG } from "../../place/layoutReview";
-import { effectiveSpec, findPieces, interiorTilesetFor } from "../../place/interiorCatalog";
+import { effectiveSpec, findPieces, gameInteriorTable, interiorTilesetFor } from "../../place/interiorCatalog";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { builderFor } from "../../place/builders";
 import { localizePlaceSpec } from "../../place/builders/modernCity";
@@ -213,6 +215,23 @@ export function placeVerbs(c: VerbContext) {
         spec = { ...spec, hints: restHints as PlaceSpec["hints"], ...(hit ? { exterior: { tileset: hit.tileset, kit: hit.kit, asked: true } } : {}) };
         doorNote = hit ? `hints.door (${dx},${dy}) = «${hit.label}» (${hit.kit}${hit.tier ? `, ${hit.tier}` : ""}) — the inside follows that building.`
           : `hints.door (${String(dx)},${String(dy)}) is not a house door on the outdoor map — ignored (use a door cell from the village result's door list).`;
+      } else if (spec.type === "interior" && !spec.exterior && !spec.mapId && spec.name) {
+        // hints.door 없이 온 실내: 바깥 맵의 아직 이어지지 않은 문 가운데 장소 이름이 가리키는 건물(칩셋 킷 이름)의 문이 있으면 그 건물의 안으로 짓는다(2026-11-17 r8 D2).
+        const hosts = [env.ctx.currentMapId, ...[...session.places.entries()].filter(([, r]) => isOutdoor(r.spec)).map(([id]) => id).reverse(), env.ctx.project.startMapId].filter((id): id is string => !!id && !!env.ctx.project.maps[id]);
+        const hit = doorHouseForName(env.ctx.project, [...new Set(hosts)], spec.name);
+        if (hit) {
+          spec = { ...spec, exterior: { tileset: hit.tileset, kit: hit.kit } };
+          doorNote = `«${spec.name}» is laid as the inside of «${hit.label}» (${hit.kit}${hit.tier ? `, ${hit.tier}` : ""}) — its door at (${hit.front.x},${hit.front.y}) on ${hit.mapId} is not linked yet; link it with create_transfer_pair (or send hints.door to pick another door).`;
+        }
+      }
+      // 이 실내에서 내려가는 장소(청사진 places 의 던전 · 굴, from = 이 장소)가 있으면 빌더에 알린다 — 큰 건물 구성이 지하 맵을 따로 짓지 않고
+      // 모델의 계단을 그 장소로 남긴다(내려가는 길이 둘이 되지 않게, 2026-11-17 r8 D1). 낱말이 아니라 청사진의 사실로 정한다.
+      if (spec.type === "interior" && spec.name) {
+        const here = placeFactKey(spec.name);
+        const fromFacts = [...session.placeFacts.entries()].filter(([, f]) => f.from && placeFactKey(f.from) === here && (f.kind === "dungeon" || f.kind === "cave")).map(([k, f]) => f.name ?? k);
+        const fromBp = (env.ctx.project.gameBlueprint?.places ?? []).filter((pl) => pl.from && placeFactKey(pl.from) === here && (pl.kind === "dungeon" || pl.kind === "cave")).map((pl) => pl.name);
+        const below = [...fromBp, ...fromFacts.filter((k) => !fromBp.some((n) => placeFactKey(n) === placeFactKey(k)))][0];
+        if (below) spec = { ...spec, hints: { ...(spec.hints ?? {}), placeBelow: below } };
       }
       // 손 도트 실내 방은 조수가 설계한다: 설계(zones[].design) 없이 오면 장소마다 한 번 되돌려 보낸다. 다시 설계 없이 오면 짓기 전에 같은 모델에게 따로 설계를 받는다(designRooms.ts).
       // 손 도트 실내로 지어지는지는 빌더와 같은 함수로 본다 — style:modern 이어도 주인공 물건 때문에 v5 로 짓는 방이 견본 서재로 섰다(2026-10-29 vm8 flash 방탈출).
@@ -372,7 +391,14 @@ export function placeVerbs(c: VerbContext) {
         const KO = { north: "북", south: "남", east: "동", west: "서" } as const;
         if (mapId) result = { ...result, warnings: [...result.warnings, `요청에 들어가는 장소(동굴·던전)가 있다 — 그림 한 장(draw_object)이나 마을 앵커가 아니라 make_place type "cave"(또는 "dungeon")로 짓는다. 이 마을(${mapId})을 지은 뒤 바로 부르면 짓기가 마을${side ? ` ${KO[side]}쪽 가장자리 길 끝` : "의 그 방향 가장자리 길"} 칸에 바깥 문을 잇는다${side ? `(던전 설계 entrance 는 마을에서 들어오는 쪽 = ${OPP_SIDE[side]})` : ""}.`] };
       }
-      const placed = await finishPlace(id, "make_place", params, spec, builder.id, result, 0);
+      // 크기 단 겉의 문 뒤에서 모델의 배치를 본채로 두고 방을 붙여 키웠으면 기록의 명세는 키운 배치다 — 다음 고침이 그림의 좌표로 닿는다(interiorTierLayout.ts).
+      const placed = await finishPlace(id, "make_place", params, adoptGrownLayout(spec, result), builder.id, result, 0);
+      // 그 게임의 집 안 표(버들항) 카드를 이 대화에서 아직 못 받았으면 첫 실내 결과에 싣는다 — 다음 실내부터 그 표의 id 로 쓴다(이번 것은 바꿔 깔았다, 2026-11-17 r8 D2).
+      if (spec.type === "interior" && result.ok) {
+        const game = gameInteriorTable(env.ctx.project, env.ctx.currentMapId);
+        const card = game && !interiorCardShown(game) ? showInteriorCard(game) : undefined;
+        if (card) placed.content.push({ type: "text", text: `Every interior in this game is laid with chipset ${game} (the chipset of its village); ids from another table are swapped for its nearest pieces. Write the next spec.layout with the ids of this card:\n${card}` });
+      }
       // 다시 지으며 새 id 가 됐다가 옛 id 로 되돌려진 맵이면(place/keepMapId.ts) 끝난 뒤의 id 로 읽는다.
       result = keptPlaceResult(session, result);
       noteLayoutPlace(spec, result);
@@ -558,7 +584,7 @@ export function placeVerbs(c: VerbContext) {
       }
       const notes = [...shellNote, ...(redesigned?.notes ?? []), ...(fromPast ? [PAST_DESIGN_NOTE] : [])];
       const result = notes.length ? { ...built, warnings: [...notes, ...built.warnings] } : built;
-      const fixed = await finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
+      const fixed = await finishPlace(id, "edit_place", params, adoptGrownLayout(spec, result), builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
       // 다시 지으며 새 id 가 됐다가 옛 id 로 되돌려진 맵이면(place/keepMapId.ts) 끝난 뒤의 id 로 읽는다.
       const laid = keptPlaceResult(session, result);
       noteLayoutPlace(spec, laid);

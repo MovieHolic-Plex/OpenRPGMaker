@@ -67,15 +67,16 @@ describe("버들항 마을을 지은 턴의 집 안 — 카드 · 문 목록 · 
   it("v5 조각 이름으로 쓴 방과 없는 이름을 쓴 방이 거절 없이 지어지고, 바꾼 것은 결과 글에 한 줄씩 적힌다", async () => {
     const t = turn();
     await t.village();
-    // v5 카드의 낱말로 쓴 선술집 — v5 표로 그대로 깔린다(바꾼 것 없음)
+    // v5 카드의 낱말로 쓴 선술집 — 이 게임의 집 안 표(버들항)로 깔고, v5 낱말은 버들항의 가장 가까운 조각으로 바꿔 한 줄씩 알린다(한 게임 한 실내 칩셋, 2026-11-17 r8 D2)
     const v5 = { map: { w: 12, h: 10 }, landmark: { id: "counter 4x1", x: 3, y: 5 }, outer_wall: { material: "logdark", path: [[0, 0], [11, 0], [11, 9], [0, 9]] }, entrance: { x: 5, y: 9 },
       rooms: [{ id: "hall", at: [5, 7], floor: "boards", purpose: "tavern" }], wall_items: [{ id: "keg rack", wall: "outer", x: 1, y: 3 }],
       objects: [{ id: "roundtable", x: 2, y: 7 }, { id: "chair E", x: 1, y: 7 }, { id: "bar stool", x: 6, y: 7 }, { id: "barrel", x: 9, y: 7 }] };
     const a = JSON.parse((await t.call("make_place", { type: "interior", name: "선술집", layout: v5 }))[0]!) as { ok: boolean; mapIds: string[]; summary: string; warnings: string[] };
     expect(a.ok, a.summary).toBe(true);
-    expect(t.ctx.project.maps[a.mapIds[0]!]!.tilesetId).toBe(HAND_INTERIOR_TILESET_ID);
-    expect(a.warnings.join(" ")).toContain("laid with chipset atlas_biome_interior");
-    expect(a.warnings.join(" ")).not.toContain("swapped");
+    expect(t.ctx.project.maps[a.mapIds[0]!]!.tilesetId).toBe("beodeul_city");
+    expect(a.warnings.join(" ")).toContain("laid with this game's interior chipset beodeul_city");
+    expect(a.warnings).toContain('swapped piece "roundtable" → "round table" (not in this chipset\'s table — its nearest id)');
+    expect(a.warnings).toContain('swapped piece "keg rack" → "ale kegs rack" (not in this chipset\'s table — its nearest id)');
     // 버들항 낱말에 없는 이름이 섞인 방 — 버들항 표로 깔고, 없는 이름은 가장 가까운 것으로 바꿔 알린다
     const mixed = mill("logdark", "plank", [{ id: "bar counter", x: 3, y: 6 }, { id: "milking stool", x: 4, y: 8 }, { id: "wooden chair", x: 8, y: 8 }, { id: "crate", x: 9, y: 9 }], [{ id: "ale kegs rack", wall: "outer", x: 8, y: 3 }]);
     const b = JSON.parse((await t.call("make_place", { type: "interior", name: "방앗간", layout: mixed }))[0]!) as { ok: boolean; mapIds: string[]; summary: string; warnings: string[] };
