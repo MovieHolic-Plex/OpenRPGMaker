@@ -15,6 +15,37 @@ import { V2Session } from "@/ai/v2/turn/session";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { readFileSync } from "node:fs";
 
+it("reports the coast builder's river mouth limitation before and after building r8's harbor", async () => {
+  const project = createBlankProject();
+  const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+  const env = {
+    ctx,
+    request: { task: "강이 바다로 흘러드는 강어귀에 포구 마을을 만들어 줘.", provider: "local-cli:claude", mapIds: [], project },
+    emit: () => {},
+    record: () => {},
+    checkpoint: async () => {},
+  } as unknown as PiAssistantV2Env;
+  const make = createV2Tools(env, new V2Session()).find((t) => t.name === "make_place")!;
+  const makePlace = async (spec: object) => {
+    const result = await make.execute("coast-place", { spec });
+    return JSON.parse((result.content.find((part) => part.type === "text") as { text: string }).text);
+  };
+  const spec = { type: "village", name: "갈매나루", theme: "coast", features: ["plaza"] };
+  const hints = { kind: "fishing-cove", terrainSeed: 85206, width: 42, height: 42 };
+
+  const preview = await makePlace({ ...spec, hints });
+  expect(preview.notFailure).toBe(true);
+  expect(preview.terrainLimitation).toContain("cannot lay a river flowing into the sea");
+
+  const built = await makePlace({ ...spec, hints: { ...hints, layout: {
+    gather: { x: 18, y: 21, plaza: true }, work: { x: 23, y: 30 },
+    houses: [{ x: 8, y: 18, kind: "medium" }, { x: 9, y: 27, kind: "small" }, { x: 28, y: 15, kind: "medium" }],
+    exits: ["west"],
+  } } });
+  expect(built.ok, built.summary).toBe(true);
+  expect(built.warnings).toEqual(expect.arrayContaining([preview.terrainLimitation]));
+}, 60_000);
+
 type Obj = Record<string, unknown>;
 const page = (conditions: unknown[], commands: unknown[], more: Obj = {}) =>
   ({ id: `p${Math.random().toString(36).slice(2, 7)}`, trigger: { kind: "action" }, priority: "same", graphic: {}, movement: { type: "fixed", speed: 3, frequency: 3 }, conditions, commands, ...more });
