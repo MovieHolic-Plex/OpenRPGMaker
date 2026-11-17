@@ -47,6 +47,8 @@ interface WhereIntent {
   readonly object?: string;
   readonly relation?: "side" | "front" | "back" | "near";
   readonly wall?: Side;
+  /** «<건물> 문 앞» 의 건물 낱말(「편의점」) — 맵에 그 이름으로 적힌 건물의 문을 쓴다. */
+  readonly building?: string;
 }
 
 /** 방 낱말 → 손 도트 실내 방 이름(layout kind). */
@@ -95,6 +97,25 @@ function roomsOf(map: GameMap): RoomRect[] {
     .map((l) => ({ name: String(l.name ?? ""), x: l.x!, y: l.y!, w: l.w!, h: l.h! }));
 }
 
+/** 맵의 장소 기록에서 이 이름의 건물 문 칸 — 기록의 이름이 그 낱말로 시작하고(「편의점 건물」) 메모에 「문 (x,y)」 가 있는 것. */
+function namedBuildingDoor(map: GameMap, word: string): Cell | undefined {
+  const want = word.replace(/\s+/gu, "").toLowerCase();
+  if (!want) return undefined;
+  const locs = (map.locations ?? []) as unknown as { name?: string; note?: string; x?: number; y?: number; w?: number; h?: number }[];
+  for (const l of locs) {
+    const name = String(l.name ?? "").replace(/\s+/gu, "").toLowerCase();
+    if (!name || !(name === want || name.startsWith(want) || want.startsWith(name.replace(/건물$/u, "")))) continue;
+    const m = /문 \((\d+),(\d+)\)/u.exec(String(l.note ?? ""));
+    if (m) return { x: Number(m[1]), y: Number(m[2]) };
+  }
+  return undefined;
+}
+
+function buildingDoorsOf(map: GameMap): Cell[] {
+  const locs = (map.locations ?? []) as unknown as { note?: string }[];
+  return locs.flatMap((l) => { const m = /문 \((\d+),(\d+)\)/u.exec(String(l.note ?? "")); return m ? [{ x: Number(m[1]), y: Number(m[2]) }] : []; });
+}
+
 function inRoom(room: RoomRect, c: Cell, pad = 0): boolean {
   return c.x >= room.x - pad && c.y >= room.y - pad && c.x < room.x + room.w + pad && c.y < room.y + room.h + pad;
 }
@@ -115,7 +136,10 @@ function parseWhere(map: GameMap, word: string | undefined): WhereIntent {
     break;
   }
   const base = { ...(room ? { room } : {}), ...(roomWord ? { roomWord } : {}) };
-  if (/문 ?앞|문앞|현관|doorway|front door/.test(w)) return { kind: "door", ...base };
+  if (/문 ?앞|문앞|현관|doorway|front door/.test(w)) {
+    const building = /^(.*?)\s*(?:의\s*)?(?:문 ?앞|문앞|현관|doorway|front door)/u.exec(w)?.[1]?.trim().replace(/^(그|저|이)\s+/u, "");
+    return { kind: "door", ...base, ...(building ? { building } : {}) };
+  }
   const rel = /^(.*?)\s*(?:의\s*)?(옆|곁|근처|가까이|주변|앞|뒤|beside|next to|near|in front of|behind)/u.exec(w);
   if (rel) {
     let obj = rel[1]!.trim();
@@ -483,7 +507,13 @@ export function resolveWhere(
     const c = pick((q) => -openness(reach, map, q, 2) + dist(q, centre) * 0.4);
     if (c) return done(c, { anchor: centre, how: "광장(트인 한가운데)" });
   } else if (intent.kind === "door") {
-    const doorList = (indoor ? doors : transferList).filter((d) => reach[d.y * w + d.x]).sort((a, b) => dist(a, start) - dist(b, start));
+    // «편의점 문 앞»: 맵이 그 이름으로 적어 둔 건물(거리·마을 빌더의 장소 기록 — 「편의점 건물」, 「문 (27,9)」)의 문 — 그 건물이 없을 때만 가까운 문.
+    // 왜(2026-11-16 r7 R6 · N4): 거리 빌더가 «편의점 문 (27,9)» 를 결과에 적은 바로 뒤 add_people 이 같은 낱말을 못 찾아 넷을 시작 근처에 두었다.
+    const named = intent.building ? namedBuildingDoor(map, intent.building) : undefined;
+    const linked = (indoor ? doors : transferList).filter((d) => reach[d.y * w + d.x]);
+    // 이어진 문(이동 이벤트)이 없는 바깥 맵이면 장소 기록의 건물 문들 가운데 가까운 것.
+    const recorded = !indoor && !linked.length ? buildingDoorsOf(map) : [];
+    const doorList = named ? [named] : (linked.length ? linked : recorded).sort((a, b) => dist(a, start) - dist(b, start));
     const door = doorList[0];
     if (door) {
       const c = pick((q) => {
@@ -491,7 +521,8 @@ export function resolveWhere(
         const inFront = q.x === door.x && (q.y === door.y + 1 || q.y === door.y - 1);
         return Math.abs(d - 2) + (inFront ? 5 : 0) + (d > 4 ? 20 : 0);
       });
-      if (c) return done(c, { anchor: door, how: `문 (${door.x},${door.y}) 앞` });
+      const unnamed = intent.building && !named ? ` — 이 맵에 「${intent.building}」 건물이 없어 가장 가까운 문` : "";
+      if (c) return done(c, { anchor: door, how: `문 (${door.x},${door.y}) 앞${unnamed}` });
     }
   } else if (intent.kind === "side" || intent.kind === "wall" || intent.kind === "corner" || intent.kind === "window") {
     const want = intent.wall;

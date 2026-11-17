@@ -141,3 +141,26 @@ describe("고치기 되돌림은 게임이 깨질 때만 — r8 D4", () => {
     expect(JSON.stringify(ctx.project.maps[mapId])).toContain("candle");
   }, 120_000);
 });
+
+// R6 · N4(r7-jpcity `001.5` → `001.8`): 거리 빌더가 «편의점 문 (27,9) · 헌책방 문 (35,9) · 파출소 문 (1,25)» 를 결과에 적은 바로 뒤 add_people 이
+// «편의점 문 앞» 을 못 찾아 넷을 시작 근처에 두었다. 거리·마을 빌더는 건물마다 장소 기록(「편의점 건물」, 메모 «문 (27,9)»)을 남긴다.
+describe("«<건물> 문 앞» 은 그 건물의 문 앞이다 — r7 R6 · N4", () => {
+  it("장소 기록의 이름으로 그 건물 문을 찾고, 없는 건물이면 가장 가까운 문이라고 적는다", async () => {
+    const { resolveWhere } = await import("@/ai/v2/place/where");
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    (map as unknown as { locations: unknown[] }).locations = [
+      { id: "loc_a", name: "편의점 건물", x: 2, y: 1, w: 3, h: 3, tags: ["jp-building"], note: "종류 konbini · 문 (3,3) · 문 앞 접근칸 (3,4)" },
+      { id: "loc_b", name: "파출소 건물", x: 14, y: 1, w: 3, h: 3, tags: ["jp-building"], note: "종류 koban · 문 (15,3) · 문 앞 접근칸 (15,4)" },
+    ];
+    const konbini = resolveWhere(project, map, "편의점 문 앞");
+    expect(konbini.fallback).toBeUndefined();
+    expect(konbini.anchor).toEqual({ x: 3, y: 3 });
+    const koban = resolveWhere(project, map, "파출소 문 앞");
+    expect(koban.anchor).toEqual({ x: 15, y: 3 });
+    expect(Math.abs(koban.cell.x - 15) + Math.abs(koban.cell.y - 3)).toBeLessThanOrEqual(4);
+    const post = resolveWhere(project, map, "우체국 문 앞");
+    expect(post.fallback).toBeUndefined();
+    expect(post.how).toContain("「우체국」 건물이 없어 가장 가까운 문");
+  });
+});
