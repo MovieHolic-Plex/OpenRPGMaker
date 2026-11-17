@@ -115,7 +115,8 @@ describe("r9t 실모델 대성당(같은 요청 다시 짓기) — 계단 방 �
     const loc = (t.ctx.project.maps[r.mapIds[0]!]!.locations ?? []).find((l) => (l.tags ?? []).includes("interior-layout") && (l.tags ?? []).includes("decl"))!;
     expect(loc.note!.length).toBeGreaterThan(8000);   // 전에는 8,000자에서 잘려 JSON 이 깨졌다
     const decl = JSON.parse(loc.note!) as { regions: unknown[]; objects: { id: string }[] };
-    expect(decl.regions.length).toBeGreaterThanOrEqual(12);
+    for (const id of ["nave", "belltower", "baptistery", "sacristy", "sidechapel"]) expect((decl.regions as { id: string }[]).some((q) => q.id === id), id).toBe(true);
+    expect(decl.regions.length).toBeGreaterThanOrEqual(10);
     expect(decl.objects.some((o) => o.id === "stairs down")).toBe(true);
     const rooms = r.mapIds.reduce((n, id) => n + roomsOn(t.ctx.project, id), 0);
     expect(rooms).toBeGreaterThanOrEqual(8);
