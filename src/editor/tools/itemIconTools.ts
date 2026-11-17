@@ -99,7 +99,8 @@ function targetOf(project: Project, collection: IconCollection, id: string): Ite
   return { collection, id, name: record.name, description: (record.description ?? "").replace(/\s+/gu, " ").trim().slice(0, 240), kind };
 }
 
-export function prepareItemIconTargets(project: Project, args: Record<string, unknown>): ItemIconTarget[] {
+/** limit = how many one call may draw: the model-facing tool allows PER_CALL_LIMIT; the end-of-run pass passes its own run budget. */
+export function prepareItemIconTargets(project: Project, args: Record<string, unknown>, limit = PER_CALL_LIMIT): ItemIconTarget[] {
   const raw = args.targets;
   if (raw !== undefined && !Array.isArray(raw)) throw new ToolError("targets 는 [{collection, id}] 배열입니다.", { code: "invalid-args" });
   const wanted = raw === undefined
@@ -112,7 +113,7 @@ export function prepareItemIconTargets(project: Project, args: Record<string, un
       return { collection: ref.collection as IconCollection, id: ref.id };
     });
   if (wanted.length === 0) throw new ToolError("그릴 아이콘이 없습니다 — 대신 쓴 그림인 레코드가 없습니다. targets:[{collection,id}] 로 직접 고르세요.", { code: "nothing-to-draw" });
-  if (wanted.length > PER_CALL_LIMIT) throw new ToolError(`한 번에 ${PER_CALL_LIMIT}개까지 그립니다(받은 ${wanted.length}개) — 나눠서 부르세요.`, { code: "invalid-args" });
+  if (wanted.length > limit) throw new ToolError(`한 번에 ${limit}개까지 그립니다(받은 ${wanted.length}개) — 나눠서 부르세요.`, { code: "invalid-args" });
   const seen = new Set<string>();
   return wanted.filter(({ collection, id }) => !seen.has(placeholderKey(collection, id)) && seen.add(placeholderKey(collection, id))).map(({ collection, id }) => targetOf(project, collection, id));
 }

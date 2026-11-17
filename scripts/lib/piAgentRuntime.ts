@@ -2203,7 +2203,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (pending.length) {
         const say = (summary: string) => emit({ type: 'execution_status', name: 'item.icon.progress', ok: true, summary });
         say(`이름에 맞는 아이콘이 없어 대신 쓴 그림 ${pending.length}개를 새로 그립니다: ${pending.map(entry => iconRecordOf(ctx.project, entry.collection, entry.id)?.name ?? entry.id).join(', ')}`);
-        const targets = prepareItemIconTargets(ctx.project, { targets: pending.map(({ collection, id }) => ({ collection, id })) });
+        // The run budget (12) is larger than one model call's limit (8) — passing the default threw here and the run ended with no done event (2026-11-16 VM theme rewrite: 12 renamed states).
+        const targets = prepareItemIconTargets(ctx.project, { targets: pending.map(({ collection, id }) => ({ collection, id })) }, ITEM_ICON_RUN_BUDGET);
         const outcomes = await drawItemIcons(targets, { ctx, generate: options.generateOpeningImage, runTool: (c, n, a) => runTool(c, n, a), progress: say, ...(options.signal ? { signal: options.signal } : {}), deadline: Date.now() + ITEM_ICON_AUTO_WALL_MS });
         emit({ type: 'execution_status', name: 'item.icon.auto', ok: outcomes.every(o => o.ok), summary: itemIconSummary(outcomes), data: { made: outcomes.filter(o => o.ok).length, failed: outcomes.filter(o => !o.ok).length } });
       }

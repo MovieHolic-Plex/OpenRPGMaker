@@ -141,6 +141,17 @@ describe("replace_text_in_project", () => {
     // Every database list is reached — monster species too (VM 2026-11-16: «초원 슬라임» species stayed and the model found no tool).
     expect((ctx.project.database.monsterSpecies ?? []).filter((s) => s.name.includes("슬라임")).every((s) => s.name.includes("젤리 슬라임"))).toBe(true);
   });
+  it("leaves setting fields alone when find equals a schema enum value (skill scope «enemy», item occasion «always»)", () => {
+    const ctx = fresh();
+    const scopes = ctx.project.database.skills.map((s) => s.scope);
+    const occasions = ctx.project.database.items.map((i) => i.occasion);
+    expect(scopes).toContain("enemy");
+    expect(occasions).toContain("always");
+    run(ctx, "replace_text_in_project", { find: "enemy", replace: "foe" });
+    run(ctx, "replace_text_in_project", { find: "always", replace: "forever" });
+    expect(ctx.project.database.skills.map((s) => s.scope)).toEqual(scopes);
+    expect(ctx.project.database.items.map((i) => i.occasion)).toEqual(occasions);
+  });
   it("match:'exact' renames only fields that are exactly the name", () => {
     const ctx = fresh();
     const potion = ctx.project.database.items.find((i) => i.id === "item_potion")!;

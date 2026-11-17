@@ -3,7 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { pickDefaultItemIcon } from "@/editor/tools/defaultItemIcon";
-import { isPlaceholderIcon, livePlaceholderIcons, prepareItemIconTargets } from "@/editor/tools/itemIconTools";
+import { ITEM_ICON_RUN_BUDGET, isPlaceholderIcon, livePlaceholderIcons, prepareItemIconTargets } from "@/editor/tools/itemIconTools";
 import { drawItemIcons } from "../scripts/lib/piItemIcons";
 import type { CinematicStillResult } from "@/editor/openingImageGeneration";
 
@@ -55,6 +55,15 @@ describe("이름에 맞는 아이콘이 없으면 「대신 쓴 그림」으로 
     const ctx: ToolContext = { project: createBlankProject() };
     runTool(ctx, "upsert_state", { state: { id: "state_homesick", name: "향수병" } }, { dryRun: false });
     expect(isPlaceholderIcon(ctx.project, "states", "state_homesick")).toBe(true);
+  });
+});
+
+describe("prepareItemIconTargets limit", () => {
+  it("the end-of-run pass may take its whole run budget (12); one model call stays at 8", () => {
+    const project = createBlankProject();
+    const targets = project.database.items.slice(0, ITEM_ICON_RUN_BUDGET).map((item) => ({ collection: "items", id: item.id }));
+    expect(() => prepareItemIconTargets(project, { targets })).toThrow(/8/u);
+    expect(prepareItemIconTargets(project, { targets }, ITEM_ICON_RUN_BUDGET)).toHaveLength(ITEM_ICON_RUN_BUDGET);
   });
 });
 

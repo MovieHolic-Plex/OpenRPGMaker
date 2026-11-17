@@ -7,6 +7,7 @@ import { enemyCombatConditions } from "@/project/combatReferences";
 
 import type { Command, Condition, GameEvent, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { allTools } from "./toolRegistry";
 import { collectProjectItemReferenceIds } from "@/project/io/references";
 import { projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
@@ -791,6 +792,27 @@ function replaceKeepingJosa(text: string, find: string, to: string): string {
  * 글 하나에서 find 를 바꾼다. 이미 to 인 자리는 건드리지 않는다 — to 가 find 를 품을 때(「숲」→「속삭이는 숲」) 두 번 불러도
  * 「속삭이는 속삭이는 숲」이 되지 않는다(2026-11-16 리뷰: replace_text_in_project 두 번 적용).
  */
+let schemaEnums: Map<string, Set<string>> | undefined;
+/** Field name → the enum values the registered tool schemas declare for it (skill scope «enemy», item occasion «always», …).
+ * A field holding one of those values is a setting, not text — rewriting it breaks the record. Derived from the schemas, not a word list. */
+function enumValuesByField(): Map<string, Set<string>> {
+  if (schemaEnums) return schemaEnums;
+  const out = new Map<string, Set<string>>();
+  const visit = (schema: unknown, field: string, seen: Set<unknown>): void => {
+    if (!schema || typeof schema !== "object" || seen.has(schema)) return;
+    seen.add(schema);
+    const node = schema as { enum?: unknown; properties?: Record<string, unknown>; items?: unknown; anyOf?: unknown[]; oneOf?: unknown[]; additionalProperties?: unknown };
+    if (field && Array.isArray(node.enum)) for (const value of node.enum) if (typeof value === "string") (out.get(field) ?? out.set(field, new Set()).get(field)!).add(value);
+    for (const [key, child] of Object.entries(node.properties ?? {})) visit(child, key, seen);
+    if (node.items) visit(node.items, field, seen);
+    if (node.additionalProperties && typeof node.additionalProperties === "object") visit(node.additionalProperties, field, seen);
+    for (const child of [...(node.anyOf ?? []), ...(node.oneOf ?? [])]) visit(child, field, seen);
+  };
+  for (const tool of allTools()) visit(tool.parameters, "", new Set());
+  schemaEnums = out;
+  return out;
+}
+
 function replaceOnce(text: string, find: string, to: string): { text: string; hits: number } {
   const guard = to.includes(find) && to !== find;
   const pieces = guard ? text.split(to) : [text];
@@ -843,14 +865,15 @@ const replaceTextInProject: ToolDefinition = {
       hits.set(where, (hits.get(where) ?? 0) + done.hits);
       return dry ? value : done.text;
     };
-    const walk = (node: unknown, where: string): unknown => {
-      if (typeof node === "string") return fix(node, where);
-      if (Array.isArray(node)) { for (let i = 0; i < node.length; i += 1) node[i] = walk(node[i], where); return node; }
+    const enums = enumValuesByField();
+    const walk = (node: unknown, where: string, field = ""): unknown => {
+      if (typeof node === "string") return enums.get(field)?.has(node) ? node : fix(node, where);
+      if (Array.isArray(node)) { for (let i = 0; i < node.length; i += 1) node[i] = walk(node[i], where, field); return node; }
       if (node && typeof node === "object") {
         for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
           if (NON_TEXT_KEY.test(k)) continue;
           if (dialogueOnly && k === "name") continue;
-          (node as Record<string, unknown>)[k] = walk(v, where);
+          (node as Record<string, unknown>)[k] = walk(v, where, k);
         }
       }
       return node;
