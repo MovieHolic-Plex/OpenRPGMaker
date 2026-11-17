@@ -7,6 +7,7 @@ import { FEATURE_WORD_STRENGTH, askedBuildingKits, askedBuildingLabel, askedBuil
 import type { Project } from "@/project/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
+import { SHEER_KINDS_CARD_LINE } from "../sheerKindLines";
 import { isPassable } from "@/project/collision";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { eventsOf, tileLabel } from "../cells";
@@ -19,20 +20,20 @@ import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord
  * 전체 목록은 마을을 지을 때만 온다: 첫 make_place 의 땅 그림 답(villageKindsLine)과 모르는 kind 의 거절 글(unknownVillageKind).
  */
 export const VILLAGE_CARD =
-  "[Village type:village] Beodeul fantasy village. Code makes the land — the first make_place does not build; it returns a land picture (coordinate grid) and a summary. " +
-  "Look at the picture, choose spots in hints.layout and call again to build: gather{x,y} (well; plaza:true only for a market town) · landmark (building on the high tier) · anchor (inn) · work (workplace) · houses[{x,y}] (3–12) · fields[{x,y}] · exits (west|east|north|south). " +
-  "The function moves each to the nearest buildable spot, links roads, stairs and bridges, and reports moves and failures. Change hints.terrainSeed for different land. " +
-    "theme/style: river (grassland farm village — whether there is a river is set separately by water) · coast (fishing port) · desert (desert oasis) · snow (snowfield) · swamp (swamp stilt village). " +
-  "Land hints: landform (terraces|hill|slope|plateau|flat) · water (river|none, grassland villages) · high (north|south|west|east|center) · tiers (1–4). " +
-  "features: plaza · scatter (scattered farms) · harbour (port, big map) · walls (town walls; river·desert·snow, flat land) · forest · dense forest · conifer. " +
-  "Other hints: houseCount (3–5) · roofs (red|slate|moss|log) · woods (edge|dense) · forestType · wallGate (S|N|NS) · width · height · variant (another layout of the same spec). " +
-  "Asked buildings (cathedral, inn…): hints.buildings [kit id or word]. A village with houses cannot be rebuilt — put everything in the first make_place. " +
+  "[Village type:village] Beodeul fantasy village. The first make_place does not build: it returns a land picture (coordinate grid) and a summary. " +
+  "Choose spots on it in hints.layout and call again to build: gather{x,y} (well) · landmark (high tier) · anchor (inn) · work · houses[{x,y}] (3–12) · fields[{x,y}] · exits (west|east|north|south). " +
+  "theme: river (grassland; a river or not is set by water) · coast (fishing port) · desert (oasis) · snow · swamp (stilt village). " +
+  "Land hints: landform · water · high (north|south|west|east|center) · tiers. " +
+  "features: plaza · scatter (scattered farms) · harbour (port, big map) · walls (river·desert·snow, flat land) · forest · dense forest · conifer. " +
+  "Other hints: houseCount (3–5) · roofs (red|slate|moss|log) · woods (edge|dense) · forestType · wallGate (S|N|NS) · width · height · variant. " +
+  "Asked buildings (cathedral, inn…): hints.buildings [kit id or word]. A village with houses cannot be rebuilt — put everything in the building call. " +
+  `${SHEER_KINDS_CARD_LINE} ` +
   `hints.kind (optional, river·coast): village kind id, e.g. ${VILLAGE_KIND_EXAMPLES.join(" · ")}. Omitted, the game picks one. The land answer and any unknown id list all ${BEODEUL_VILLAGE_KINDS.length}.`;
 
 /** 마을 종류를 고를 수 있는 마을(강가·포구)의 땅 그림 답에 붙는 한 줄 — 전체 목록, 이 땅의 물에 맞는 종류가 앞. 다른 테마는 종류가 없다(undefined). */
 export function villageKindsLine(theme: string, water?: unknown): string | undefined {
   if (theme !== "river" && theme !== "coast") return undefined;
-  return `hints.kind is optional: leave it out and the game picks a kind for this land; to choose one, put its id in hints.kind of the building call. ${villageKindMenu({ water: theme === "coast" ? "sea" : water === "none" ? "none" : "river" })}`;
+  return `hints.kind is optional: leave it out and the game picks a kind for this land; to choose one, put its id in hints.kind of the building call. ${villageKindMenu({ water: theme === "coast" ? "sea" : water === "none" ? "none" : "river" })} ${SHEER_KINDS_CARD_LINE}`;
 }
 
 /** 명세가 적은 kind 가 표에 없는 이름이면 그 이름(빈 값·글자가 아닌 값은 안 준 것). */

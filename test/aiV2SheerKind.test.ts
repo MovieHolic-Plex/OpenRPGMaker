@@ -1,12 +1,15 @@
 // 조수 v2 깎아지른 지형 갈래(place/builders/sheerTerrain.ts): 바깥 장소 명세의 hints.kind 가 깎아지른 지형 종류면 마을 빌더 앞에서 이 빌더가 받는다.
 // 모르는 kind 는 마을 종류와 같은 잣대로 깎아지른 지형 종류에 더 가까울 때 가장 가까운 종류로 짓고 알린다. 맵 배경은 견본이고, 그림 생성 도구는 v2 경로에 없다고 한 줄로 알린다.
-// 지시문은 늘지 않는다 — 종류 id 는 make_place 스키마의 hints.kind 설명에만 있다.
+// 종류(id 와 hint)는 모델이 바깥 장소를 고르는 마을 카드 · 땅 그림 답과 숲길 줄에 실린다 — 표(json)에서 만들고, 게임 지시문 상한은 그 카드의 말을 줄여 지킨다.
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { builderFor } from "@/ai/v2/place/builders";
 import { mapBackgroundGenerationReachable, sheerBackdropLine, sheerKindFor, sheerKindsNearestFirst } from "@/ai/v2/place/builders/sheerTerrain";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
 import { V2_CARDS } from "@/ai/v2/prompt/placeSpecs";
+import { gameCard } from "@/ai/v2/prompt/gameCard";
+import { VILLAGE_CARD, villageKindsLine } from "@/ai/v2/place/builders/village";
+import { SHEER_KINDS_CARD_LINE } from "@/ai/v2/place/sheerKindLines";
 import { PLACE_SPEC_SCHEMA } from "@/ai/v2/tools/placeSchema";
 import { SHEER_KINDS } from "@/editor/tools/sheerTerrainPlan";
 import { createBlankProject } from "@/project/defaults";
@@ -74,10 +77,20 @@ describe("assistant sheer terrain kind", () => {
     expect(sheerBackdropLine(undefined)).toBeUndefined();
   });
 
-  it("the always-on cards do not grow: sheer kind ids live only in the make_place hints.kind schema", () => {
+  it("the model reads the kinds where it picks an outdoor place: the village card, the land answer and the forest-route line, all made from sheerTerrainKinds.json", () => {
+    // 2026-11-17 감독: 실제 조수 네 번(구름 위 고원 · 절벽 숲 · 산 정상 · 정령의 숲 빈터)이 한 번도 깎아지른 지형 종류를 고르지 않았다 —
+    // 종류는 make_place 스키마의 hints.kind 설명에만 있었고, 지시문의 마을 카드와 «숲» 이 싣는 숲길 줄에는 없었다.
     const cards = V2_CARDS.join("\n");
-    for (const k of SHEER_KINDS) expect(cards).not.toContain(k.id);
+    for (const k of SHEER_KINDS) expect(cards).toContain(`${k.id} (${k.hint})`);
+    expect(VILLAGE_CARD).toContain(SHEER_KINDS_CARD_LINE);
+    for (const theme of ["river", "coast"]) for (const k of SHEER_KINDS) expect(villageKindsLine(theme)!).toContain(`${k.id} (${k.hint})`);
+    const forest = gameCard(["forest"]);
+    expect(forest).toContain("author_forest_route{");
+    expect(forest).toContain("make_place kinds");
+    for (const k of SHEER_KINDS) expect(forest).toContain(k.id);
     const kindDesc = (PLACE_SPEC_SCHEMA.properties.hints as { properties: { kind: { description: string } } }).properties.kind.description;
     for (const k of SHEER_KINDS) expect(kindDesc).toContain(k.id);
+    // 손으로 쓴 낱말 목록이 아니다: 줄은 표의 id 와 hint 를 그대로 잇는다
+    expect(SHEER_KINDS_CARD_LINE).toContain(SHEER_KINDS.map((k) => `${k.id} (${k.hint})`).join(" · "));
   });
 });
