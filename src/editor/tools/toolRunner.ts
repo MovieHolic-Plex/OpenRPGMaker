@@ -47,6 +47,7 @@ import { rejectUnavailablePackStills } from "./stillPackGuard";
 import { formatTerrainFrameViolations, terrainFrameViolations } from "@/project/terrainFrame";
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 import { settleStepPages } from "@/project/blueprintStepPages";
+import { commitCarried, settleCarriedWrites } from "./keptWrites";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
 export interface RunToolOptions {
@@ -552,6 +553,7 @@ export function runToolDefinition(
   const draft = createDraft(before);
   let exec;
   let protectedHouses: HouseSnapshot[];
+  let carried: ReturnType<typeof settleCarriedWrites> = { notes: [], next: [] };
   try {
     protectedHouses = captureHouseProtection(before);
     // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 바뀐 commands 만(페이지 수가 같을 때, 아니면 거부), DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
@@ -605,6 +607,9 @@ export function runToolDefinition(
       rejectRetiredEasyRpgMaps(ctx, before, draft, name);
       rejectTilesetFamilyChange(ctx, before, draft, name);
     }
+    // 앞 호출이 지켜 되붙인 쓰기(keptWrites)를 이번 호출이 다른 곳에 새로 만들었으면 되붙인 사본을 걷는다 — 옮기기가 두 번 주기가 되지 않게.
+    carried = settleCarriedWrites(ctx, before, draft);
+    if (carried.notes.length) exec = { ...exec, summary: `${exec.summary} ${carried.notes.join(" ")}`, warnings: [...(exec.warnings ?? []), ...carried.notes] };
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
     return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };
@@ -670,6 +675,7 @@ export function runToolDefinition(
     if (!options.dryRun) {
       shareUnchangedTilesets(before, draft);
       ctx.project = draft;
+      commitCarried(ctx, carried.next, { project: draft, mapId: normalizedArgs.mapId, data: exec.data });
     }
     const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
     if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));

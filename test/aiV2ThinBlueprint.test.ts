@@ -36,50 +36,52 @@ describe("thinBlueprintReason", () => {
   });
 });
 
+// 2026-11-16(오너 「벽을 기본값으로」): 얇은 초안·종류가 안 섞인 초안을 돌려보내지 않는다 — 건 뒤 알림으로 적는다(거절은 게임이 깨질 때만).
 describe("write_blueprint thin first draft", () => {
-  it("rejects a one-place three-step first blueprint once and does not hang it", async () => {
+  it("hangs a one-place three-step first blueprint and says so as a notice, not a rejection", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();
-    const res = await write(project, session, args(["그림자 성"], 3));
-    expect(summaryOf(res)).toContain("걸지 않았다");
-    expect(project.gameBlueprint).toBeUndefined();
-    expect(session.blueprintThinRejects).toBe(1);
-  });
-  it("hangs the same draft on the second call so the model is never stuck", async () => {
-    const project = createBlankProject() as Project; const session = new V2Session();
-    await write(project, session, args(["그림자 성"], 3));
-    await write(project, session, args(["그림자 성"], 3));
+    const res = summaryOf(await write(project, session, args(["그림자 성"], 3)));
     expect(project.gameBlueprint?.steps.length).toBe(3);
-    expect(session.blueprintThinRejects).toBe(1);
+    expect(res).toContain("Notice — saved as written, nothing is rejected");
+    expect(res).toContain("3 step(s) over 1 place(s)");
+    expect(res).toContain("scale:");
   });
-  it("hangs a six-step three-place first blueprint on the first call", async () => {
+  it("gives no notice for a six-step three-place first blueprint", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();
-    await write(project, session, args(["성 앞", "지하 통로", "천수각"], 6));
+    const res = summaryOf(await write(project, session, args(["성 앞", "지하 통로", "천수각"], 6)));
     expect(project.gameBlueprint?.steps.length).toBe(6);
-    expect(session.blueprintThinRejects).toBe(0);
+    expect(res).not.toContain("Notice — saved as written");
   });
-  it("bounces a six-step draft whose steps are all examine once, naming the missing kinds, then hangs it", async () => {
+  it("hangs a six-step draft whose steps are all examine and names the missing kinds in the notice", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();
     const flat = args(["성 앞", "지하 통로", "천수각"], 6, false);
     const res = summaryOf(await write(project, session, flat));
+    expect(project.gameBlueprint?.steps.length).toBe(6);
     expect(res).toContain("named");
     expect(res).toContain("no battle step");
     expect(res).toContain("3 find steps in a row");
-    expect(project.gameBlueprint).toBeUndefined();
-    await write(project, session, flat);
-    expect(project.gameBlueprint?.steps.length).toBe(6);
   });
-  it("does not reject a rewrite of an existing blueprint", async () => {
+  it("a model-written scale:small and battles:false take the size and fight lines out of the notice", async () => {
+    const project = createBlankProject() as Project; const session = new V2Session();
+    const small = { ...args(["역 앞 상점가", "라멘집"], 4, false), scale: "small", battles: false };
+    const res = summaryOf(await write(project, session, small, "짧은 이야기 게임을 만들어 줘. 전투는 없어도 돼."));
+    expect(project.gameBlueprint?.scale).toBe("small");
+    expect(project.gameBlueprint?.battles).toBe(false);
+    expect(res).not.toContain("step(s) over");
+    expect(res).not.toContain("no battle step");
+  });
+  it("gives no notice on a rewrite of an existing blueprint", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();
     await write(project, session, args(["성 앞", "지하 통로", "천수각"], 6));
-    session.blueprintThinRejects = 0;
-    await write(project, session, args(["성 앞"], 3));
+    const res = summaryOf(await write(project, session, args(["성 앞"], 3)));
     expect(project.gameBlueprint?.steps.length).toBe(3);
+    expect(res).not.toContain("Notice — saved as written");
   });
-  it("does not reject when only the request sentence says escape room", async () => {
+  it("gives no notice when only the request sentence says escape room", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();
-    await write(project, session, args(["작은 방"], 3), "밀실 탈출 게임 만들어 줘");
+    const res = summaryOf(await write(project, session, args(["작은 방"], 3), "밀실 탈출 게임 만들어 줘"));
     expect(project.gameBlueprint?.steps.length).toBe(3);
-    expect(session.blueprintThinRejects).toBe(0);
+    expect(res).not.toContain("Notice — saved as written");
   });
   it("does not reject a locked-room escape game", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();

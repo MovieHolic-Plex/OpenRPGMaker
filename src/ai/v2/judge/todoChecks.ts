@@ -16,7 +16,7 @@ import { isPlaceholderMap } from "../blankStart";
 import { endingConditionsUnset } from "./shipChecks";
 import { isObjectiveCommand } from "./objectiveCommand";
 import { isPersonEvent } from "../place/placementRules";
-import { nameScore, normName } from "../todo/names";
+import { bossRoleOnly, nameScore, normName } from "../todo/names";
 import type { CheckResult, TodoCheck, TodoCheckContext, TodoItem, TodoPlaceKind } from "../todo/types";
 import { Obj, Cmd, setEnglish, t, walk, deepCmds, liveFacts, liveCmds, scanLive, deadNote, mapLabel, evLabel, at, mapAt, q, evKey, evEvidence, eventNameTiers, Named, scoreNamed, choose, Scope, scopeOf, has, refEvent, freshOnly, eventInScope, eventBound, mapInScope, itemInScope, scopeNote, missingRefs, mapNamed, allMapNames, resolveMaps, isResult, scopeMaps, EvRef, evNamed, eventNameList, mapReach, eventReached, transfersOut, walkWorld, startOf, GROUP, mapKinds, troopOf, troopNames, isBossBattle } from "./todoCheckFacts";
 import { checkRoomZones, checkLayoutBuilt, checkLayoutReview, checkRoomGraph } from "./todoRoomChecks";
@@ -235,8 +235,9 @@ function checkBattle(project: Project, sc: Scope, who?: string, map?: string, bo
   let matched = "";
   if (who) {
     const r = choose(who, named, "전투 상대", eventBound(sc) || has(sc.refs?.troopIds), () => named.map((n) => n.label));
-    if (!r.ok) return { pass: false, detail: `${r.result.detail}${scopeNote(sc, "이벤트")}` };
-    cands = r.picked; matched = r.matched;
+    // 역할만 적은 상대(「마지막 보스」)는 이름으로 찾지 않는다 — 보스전이 하나라도 있으면 그것이다(todo/names.bossRoleOnly).
+    if (!r.ok && !(boss && bossRoleOnly(who))) return { pass: false, detail: `${r.result.detail}${scopeNote(sc, "이벤트")}` };
+    if (r.ok) { cands = r.picked; matched = r.matched; }
   }
   const desc = (b: B) => t(`${at(b.map, b.ev)} 적 그룹 「${troopName(b.c)}」 [${String(b.c.troopId)}]${b.c.canEscape === false ? " 도망 불가" : ""}`, `${at(b.map, b.ev)} troop "${troopName(b.c)}" [${String(b.c.troopId)}]${b.c.canEscape === false ? " no escape" : ""}`);
   if (boss) {

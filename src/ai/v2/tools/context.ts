@@ -40,6 +40,7 @@ import { settleDungeonGates } from "../place/dungeonGates";
 import { requestedDungeonSide } from "../request/place";
 import { type Seen } from "../turn/session";
 import { zoneStatusLines } from "../loop/roomZones";
+import { withoutDeclinedFights } from "../loop/requestSkeleton";
 import { stageOpensBattle } from "../story/stageBattle";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { hasRoomKit } from "../judge/placeFix";
@@ -66,7 +67,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || inPrompt.has(kind) || session.specsShown.get(kind) === epoch();
   const showSpecs = (kinds: readonly PlaceSpecKind[]): string => {
     for (const kind of kinds) session.specsShown.set(kind, epoch());
-    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""))).join("\n\n");
+    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""), String(env.request.projectKey ?? ""))).join("\n\n");
   };
   /** 판정 JSON 한 덩이 + 카드 원문(JSON 따옴표 없이 — 지시문에 있던 모양 그대로). */
   const withSpecText = (head: Record<string, unknown>, cards: string): PiToolExecResult => ({ content: [{ type: "text", text: JSON.stringify(head) }, { type: "text", text: cards }] } as PiToolExecResult);
@@ -288,7 +289,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   };
   // 청사진 경로 짓기(2026-10-28 mt2): 단계(place·event·needs·gives)와 엔딩에서 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다.
   /** 싸움이 있어야 하는 게임인가 — 장르나 요청이 모험·RPG·액션 쪽일 때만(경영·일상·추리·연애·퍼즐 게임에 싸움을 밀어 넣지 않는다). */
-  const wantsBattle = (genre: string): boolean => /RPG|알피지|롤플레잉|모험|어드벤처|판타지|액션|용사|마왕|전투|던전|adventure|action|fantasy|dungeon|quest/iu.test(`${genre} ${withoutIntentNote(String(task ?? ""))}`);
+  const wantsBattle = (genre: string): boolean => /RPG|알피지|롤플레잉|모험|어드벤처|판타지|액션|용사|마왕|전투|던전|adventure|action|fantasy|dungeon|quest/iu.test(`${genre} ${withoutDeclinedFights(withoutIntentNote(String(task ?? "")))}`);
   const runBlueprintPath = (steps: readonly PathStepText[]) => {
     const result = buildBlueprintPath(run, steps);
     return result;

@@ -121,7 +121,7 @@ export function settlePeopleChipLock(before: Project, draft: Project, args: { to
   if (!family) {
     family = majorityFamily(uses);
     draft.system.peopleChipLock = { family, by: "auto" };
-    notes.push(`사람 칩 잠금: 이 프로젝트에 처음 놓인 사람 칩의 계열(${peopleChipFamilyLabel(family)})로 사람 칩을 잠갔다 — 앞으로 주인공·NPC·동료는 이 계열만 쓰고, list_npc_graphics 도 이 계열 사람 칩만 보여 준다.`);
+    notes.push(`People chip set: ${peopleChipFamilyLabel(family)} is now this game's default set for people (from the first people chip placed). A chip of another set can still be used by naming it.`);
   }
   const outside = uses.filter((use) => use.family !== family);
   if (!outside.length) return notes;
@@ -129,16 +129,22 @@ export function settlePeopleChipLock(before: Project, draft: Project, args: { to
     return [...notes, `사람 칩 잠금(${peopleChipFamilyLabel(family)}): ${args.toolName} 이 다른 계열 사람 칩 ${outside.length}곳을 들여왔다(예: ${outside[0]!.where} ${outside[0]!.resourceId}#${outside[0]!.characterIndex}, ${peopleChipFamilyLabel(outside[0]!.family)}) — 통째로 들이는 도구라 막지 않았다. 그 인물은 ${peopleChipFamilyLabel(family)}로 바꾸는 편이 맞다.`];
   }
   const first = outside[0]!;
+  // 저절로 정해진 계열은 벽이 아니라 기본값이다(오너 2026-11-16 「에셋을 자유롭게」) — 조수가 다른 계열의 칩을 골라 놓으면 그대로 두고 알리기만 한다.
+  // 사용자가 자료집에서 직접 고른 계열(by user)만 거부한다. 모델이 읽는 글이라 영어.
+  if ((had ?? normalizePeopleChipLock(draft.system.peopleChipLock))?.by !== "user") {
+    return [...notes, `People chip set: this game's people are mostly ${peopleChipFamilyLabel(family)}; ${args.toolName} put ${outside.length} chip(s) of another set (first: ${first.where} ${first.resourceId}#${first.characterIndex}, ${peopleChipFamilyLabel(first.family)}). Kept as chosen.`];
+  }
   throw new PeopleChipLockError(
     `사람 칩 잠금(${peopleChipFamilyLabel(family)}): ${args.toolName} 이 ${first.where} 에 「${first.resourceId}#${first.characterIndex}」(${peopleChipFamilyLabel(first.family)})를 쓰려 해 거부했다 — `
     + `이 게임의 사람은 ${peopleChipFamilyLabel(family)}만 쓴다(그림체를 섞지 않는다). list_npc_graphics 가 이 계열 사람 칩만 보여 주니 그 안에서 고르거나 graphic 을 생략해 다시 불러라. ${HOW_TO_CHANGE}`,
   );
 }
 
-/** 조수 실행 중 그림 검색·기본 선택을 잠금 계열 사람 칩(+ 사람이 아닌 칩)으로 좁히는 필터. 잠금이 없으면 undefined. */
-export function peopleChipCatalogFilter(project: LockProject): ((entry: { readonly textureKey: string }) => boolean) | undefined {
+/** 조수 실행 중 그림 검색·기본 선택을 그 계열 사람 칩(+ 사람이 아닌 칩)으로 좁히는 필터 — 검색어로 고르면 기본 계열에서 나온다. 계열이 없으면 undefined. */
+export function peopleChipCatalogFilter(project: LockProject, userOnly = false): ((entry: { readonly textureKey: string }) => boolean) | undefined {
   const family = peopleChipLockFamily(project);
-  if (!family) return undefined;
+  // userOnly: 사용자가 고른 계열만 좁힌다 — 저절로 정해진 계열은 기본값이라, 제 손으로 계열을 가려 고르는 쪽(조수 v2 의 사람 고르기)은 다른 계열의 꼭 맞는 칩도 본다.
+  if (!family || (userOnly && normalizePeopleChipLock(project.system.peopleChipLock)?.by !== "user")) return undefined;
   return (entry) => { const of = charsetFamilyOf(project, entry.textureKey); return !isPeopleChipFamily(of) || of === family; };
 }
 
@@ -146,10 +152,12 @@ export function peopleChipCatalogFilter(project: LockProject): ((entry: { readon
 export function peopleChipPromptNote(project: Pick<Project, "system">): string | null {
   if (genreLockOwnsCharsets(project)) return null;
   const family = peopleChipLockFamily(project);
-  if (family) {
-    return `[사람 칩 잠금 — ${peopleChipFamilyLabel(family)}] 이 게임의 사람 캐릭터 칩(주인공·NPC·동료)은 ${peopleChipFamilyLabel(family)}만 쓴다. list_npc_graphics 는 이 계열 사람 칩만 보여 주고, 다른 계열 사람 칩은 거부된다. 몬스터·동물·기물 칩은 상관없다.`;
+  const byUser = normalizePeopleChipLock(project.system.peopleChipLock)?.by === "user";
+  if (family && byUser) {
+    return `[사람 칩 잠금 — ${peopleChipFamilyLabel(family)}] 사용자가 이 게임의 사람 캐릭터 칩(주인공·NPC·동료)을 ${peopleChipFamilyLabel(family)}로 정했다. list_npc_graphics 는 이 계열 사람 칩만 보여 주고, 다른 계열 사람 칩은 거부된다. 몬스터·동물·기물 칩은 상관없다.`;
   }
-  return "[사람 칩 잠금] 사람 캐릭터 칩은 한 게임에 한 계열만 쓴다 — 처음 새로 놓는 사람 칩(주인공 포함)의 계열(RTP 사람 칩·REFMAP 변형 인물 칩·CT·FF6풍 영웅 칩·현대 인물 칩)로 잠기고, 그 뒤로는 그 계열만 쓸 수 있다. "
+  if (family) return `[사람 칩 기본 계열 — ${peopleChipFamilyLabel(family)}] 이 게임의 사람 칩은 ${peopleChipFamilyLabel(family)}가 기본이다 — 검색어로 고르면 이 계열에서 나온다. 다른 계열 칩도 이름으로 골라 쓸 수 있다. 몬스터·동물·기물 칩은 상관없다.`;
+  return "[사람 칩 기본 계열] 처음 새로 놓는 사람 칩(주인공 포함)의 계열(RTP 사람 칩·REFMAP 변형 인물 칩·CT·FF6풍 영웅 칩·현대 인물 칩)이 이 게임의 기본이 된다 — 검색어로 고르면 그 계열에서 나오고, 다른 계열 칩도 이름으로 골라 쓸 수 있다. "
     + "마을 사람이 여럿 나오는 판타지 게임은 칩이 많은 REFMAP 변형 인물 칩(약 2,500명)이나 RTP 사람 칩에서 고른다 — 칩이 적은 영웅 칩으로 시작하면 NPC 가 모자란다.";
 }
 

@@ -90,3 +90,6 @@ export const hint = (want: string, names: Iterable<string>, en = false): string 
   if (en) return near.length ? ` Closest: ${near.map((x) => `"${x}"`).join(", ")}` : " There are no candidates at all.";
   return near.length ? ` 가까운 후보: ${near.map((x) => `「${x}」`).join(", ")}` : " 후보가 하나도 없다";
 };
+
+/** 이름 없이 역할만 말한 싸울 상대인가 — 끝 낱말이 «보스» 다(「보스」·「마지막 보스」·「최종 보스」). 요청 뼈대와 전투 확인이 같이 쓴다. */
+export const bossRoleOnly = (name: string): boolean => /(?:^|\s)보스$/u.test(name.trim());
