@@ -104,7 +104,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   }
   const seed = seedOf(spec);
   const sides = (spec.exits ?? []).length ? spec.exits : undefined;
-  const res = run.call("build_sheer_terrain", { mapId, kind: kind.id, seed, ...(sides ? { sides } : {}) });
+  const dungeonLink = spec.type === "route" && spec.routeLinks?.some(link => link.kind === "dungeon" || link.kind === "cave");
+  const res = run.call("build_sheer_terrain", { mapId, kind: kind.id, seed, ...(dungeonLink ? { reserveDungeonGate: true } : {}), ...(sides ? { sides } : {}) });
   if (!res.ok) return fail(`${spec.name}: sheer terrain failed — ${res.summary}`);
   const report = res.data as SheerBuildReport & { mapId: string };
   warnings.push(...(res.warnings ?? []));
@@ -123,7 +124,13 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     + `${report.exits.length ? `, exits ${report.exits.map((e) => `${e.side} (${e.x},${e.y})`).join(" ")}` : ""}.${backdrop ? ` ${backdrop}` : ""}`;
   return {
     ok: true, mapIds: [mapId], entrance: { mapId, x: report.entry.x, y: report.entry.y }, summary, warnings, missingArt: [], calls: run.calls.slice(first),
-    state: { sheer: kind.id, seed, ...(spec.type === "route" ? { entry: report.entry, routeExits: [report.entry, ...report.exits], heroFront: report.landmark?.front, sideAt: report.deadEnd } : {}), ...(picked.asked ? { asked: picked.asked } : {}) },
+    state: {
+      sheer: kind.id, seed, ...(picked.asked ? { asked: picked.asked } : {}),
+      ...(spec.type === "route" ? {
+        entry: report.entry, routeExits: [report.entry, ...report.exits], heroFront: report.landmark?.front, sideAt: report.deadEnd,
+        ...(dungeonLink && report.deadEnd ? { dungeonGate: { x: report.deadEnd.x, y: report.deadEnd.y } } : {}),
+      } : {}),
+    },
   };
 }
 

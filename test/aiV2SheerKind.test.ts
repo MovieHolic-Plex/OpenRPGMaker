@@ -35,7 +35,7 @@ describe("assistant sheer terrain kind", () => {
     const p = createBlankProject() as Project;
     const ctx = { project: p, currentMapId: p.startMapId };
     const route = spec("spirit-forest", { type: "route", routeLinks: [
-      { side: "west", kind: "village" }, { side: "east", kind: "route" },
+      { side: "west", kind: "village" }, { side: "east", kind: "route" }, { kind: "dungeon" },
     ] });
     const builder = builderFor(route)!;
     expect(builder.id).toBe("route");
@@ -44,6 +44,7 @@ describe("assistant sheer terrain kind", () => {
     expect(result.state).toMatchObject({ sheer: "spirit-forest", routeExits: [
       { side: "west" }, { side: "east" },
     ] });
+    expect(result.state).toMatchObject({ dungeonGate: expect.objectContaining({ x: expect.any(Number) }), sideAt: { chest: false } });
     expect(result.summary).toContain("reach ok");
   });
 

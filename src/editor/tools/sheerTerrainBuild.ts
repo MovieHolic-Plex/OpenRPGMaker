@@ -42,7 +42,7 @@ export interface SheerBuildReport {
 }
 
 /** 계획을 맵에 싣는다. map 은 버들항 칩셋의 맵(크기는 계획과 같다). */
-export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPlan): SheerBuildReport {
+export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPlan, reserveDungeonGate = false): SheerBuildReport {
   const tileset = project.tilesets[map.tilesetId]!;
   // 정령 숲 기물(큰 활엽수 · 고목 · 정령 버섯 · 꽃)을 이 칩셋에 이식한다 — 깎아지른 지형을 지을 때만(옛 맵 · 다른 프로젝트는 그대로)
   ensureBeodeulSpirit(tileset);
@@ -78,7 +78,7 @@ export function buildSheerTerrain(project: Project, map: GameMap, plan: SheerPla
   };
   const landmarkPlaced = plan.landmark ? put(plan.landmark.kit, plan.landmark.x, plan.landmark.y) : false;
   if (plan.landmark && !landmarkPlaced) warnings.push(`landmark kit ${plan.landmark.kit} could not be stamped`);
-  const chest = plan.deadEnd ? put(kind.chest, plan.deadEnd.x, plan.deadEnd.y - 1) || put(kind.chest, plan.deadEnd.x, plan.deadEnd.y) : false;
+  const chest = plan.deadEnd && !reserveDungeonGate ? put(kind.chest, plan.deadEnd.x, plan.deadEnd.y - 1) || put(kind.chest, plan.deadEnd.x, plan.deadEnd.y) : false;
   // 바깥 숲: 버들항 숲 수관 오토타일(마을 숲과 같은 그림 · 같은 밝기)로 같은 단끼리 덮는다 — 단 끝 너머로 이으면 두 높이에서 칸 선으로 썰린다
   let forestCells = 0;
   if (plan.forest.some(Boolean)) {
@@ -423,6 +423,7 @@ export const SHEER_TERRAIN_TOOLS: readonly ToolDefinition[] = [{
       mapId: { type: "string" },
       kind: { type: "string", enum: SHEER_KINDS.map((k) => k.id) },
       seed: { type: "integer" },
+      reserveDungeonGate: { type: "boolean", description: "Leave the dead end clear for a linked dungeon entrance." },
       sides: { type: "array", items: { type: "string", enum: [...SIDES] }, description: "길이 닿을 변(첫째가 들어오는 변). 기본 south · north" },
     },
     required: ["mapId", "kind"], additionalProperties: false,
@@ -437,7 +438,7 @@ export const SHEER_TERRAIN_TOOLS: readonly ToolDefinition[] = [{
     const seed = Number.isFinite(Number(args.seed)) ? Math.floor(Number(args.seed)) : 1;
     const sides = (Array.isArray(args.sides) ? args.sides : []).map(String).filter((s): s is SheerSide => (SIDES as readonly string[]).includes(s));
     const plan = planSheerTerrain(kind, map.width, map.height, seed, sides.length ? sides : ["south", "north"]);
-    const report = buildSheerTerrain(project, map, plan);
+    const report = buildSheerTerrain(project, map, plan, args.reserveDungeonGate === true);
     const devices = report.devices.map((d) => `${SHEER_DEVICES[d.kind as keyof typeof SHEER_DEVICES]?.ko ?? d.kind}(${d.lo}→${d.hi})`).join(" · ");
     return {
       summary: `깎아지른 지형 «${kind.ko}» ${map.width}×${map.height}: 단 ${report.levels} · 면 3칸 · 걷는 땅 ${report.walkablePct}% · 장치 ${report.devices.length}(${devices}) · 닿는 길 ${report.reach.ok ? "모두 닿음" : `못 닿음 ${report.reach.missing.join(", ")}`}${report.reach.sealed ? ` · 막은 칸 ${report.reach.sealed}` : ""}${report.background ? ` · 맵 배경 ${report.background.preset}` : ""}`,
