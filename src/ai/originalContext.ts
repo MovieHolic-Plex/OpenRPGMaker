@@ -133,6 +133,17 @@ function closureProjection(id: string, value: unknown): unknown {
     variables: authored(value.variables, entry => entry === 0) };
 }
 
+/** get_database_records puts the list number (position) in front of each record; an original is the stored record, which has no such field. */
+function withoutListPositions(name: string, result: ToolResult): ToolResult {
+  if (name !== "get_database_records" || !result.ok || !object(result.data) || !Array.isArray(result.data.records)) return result;
+  const records = result.data.records.map((row) => {
+    if (!object(row)) return row;
+    const { position: _position, ...stored } = row;
+    return stored;
+  });
+  return { ...result, data: { ...result.data, records } };
+}
+
 /** Pure, detached authored-state projection shared by writer grounding and before/after review.
  * No store, configuration, environment, runtime session, resource URLs or binary assets are read.
  * Relevance uses actual identities in authored values, never natural-language keyword routing.
@@ -147,7 +158,7 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   const add = (id: string, value: unknown, reads: OriginalRead[] = []): void => {
     if (value !== undefined) entries.push({ id, value, reads });
   };
-  const read = (name: string, args: Record<string, unknown>): OriginalRead => ({ name, args, result: runTool({ project }, name, args) });
+  const read = (name: string, args: Record<string, unknown>): OriginalRead => ({ name, args, result: withoutListPositions(name, runTool({ project }, name, args)) });
   const addRead = (id: string, name: string, args: Record<string, unknown>): void => {
     const receipt = read(name, args);
     if (receipt.result.ok) add(id, receipt.result.data, [receipt]);
