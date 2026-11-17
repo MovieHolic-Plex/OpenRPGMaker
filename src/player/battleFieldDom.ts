@@ -55,6 +55,7 @@ import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSh
 import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFieldAnchors } from "@/player/battleOnField";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
+import { resolveTerms } from "@/project/terms";
 import { playMonsterSfxNow } from "@/player/monsterSfx";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
@@ -1902,13 +1903,19 @@ function vitalValue(text: string): HTMLElement {
  *  vxace 스킨은 참조처럼 라벨을 작은 배지로, 현재값을 큰 숫자로 그리고 최대값은 숨긴다
  *  (비율은 게이지가 말해준다). 세 조각을 합친 textContent 는 한 노드였을 때와 **글자 단위로 동일**해서
  *  `.battle-actor-hp` 의 텍스트를 읽는 기존 테스트·측정이 그대로 통한다. */
+/** HP·MP 꼬리표는 프로젝트 용어(meta.terms.hp/mp)를 따른다 — 「MP 를 기력으로」 바꾸면 전투 HUD 도 바뀐다(2026-11-16 자료집 리뷰: 엔진 꼬리표가 용어를 따른다). */
+function vitalTerm(kind: "hp" | "mp"): string {
+  const terms = resolveTerms(store.getCurrent());
+  return (kind === "hp" ? terms.hp : terms.mp).trim() || (kind === "hp" ? "HP" : "MP");
+}
+
 function vitalNode(kind: "hp" | "mp", value: number, max: number): HTMLElement {
   const node = document.createElement("span");
   node.className = `battle-actor-${kind}`;
   const rest = document.createElement("span");
   rest.className = "battle-vital-max";
   rest.textContent = `/${max}`;
-  node.append(vitalLabel(kind === "hp" ? "HP" : "MP"), vitalValue(` ${value}`), rest);
+  node.append(vitalLabel(vitalTerm(kind)), vitalValue(` ${value}`), rest);
   return node;
 }
 
@@ -1917,7 +1924,7 @@ function setVitalNode(node: Element, kind: "hp" | "mp", value: number, max: numb
   const valueNode = node.querySelector(".battle-vital-value");
   const maxNode = node.querySelector(".battle-vital-max");
   if (!valueNode || !maxNode) {
-    node.textContent = `${kind === "hp" ? "HP" : "MP"} ${value}/${max}`;
+    node.textContent = `${vitalTerm(kind)} ${value}/${max}`;
     return;
   }
   maxNode.textContent = `/${max}`;

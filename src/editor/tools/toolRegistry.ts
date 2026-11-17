@@ -105,7 +105,8 @@ import { PLACEMENT_TOOLS } from "./placementTools";
 import { QUERY_TOOLS } from "./queryTools";
 import { QUEST_TOOLS } from "./questTools";
 import { RANGE_CLASSIFY_TOOLS } from "./rangeClassifyTools";
-import { REFACTOR_TOOLS } from "./refactorTools";
+import { createRefactorTools } from "./refactorTools";
+import { DB_BULK_TOOLS } from "./dbBulkTools";
 import { STORY_TOOLS } from "./storyTools";
 import { EVENT_RUN_LOG_TOOLS } from "./eventRunLogTools";
 import { STORY_ARC_TOOLS } from "./storyArcTools";
@@ -457,7 +458,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(SCHEDULE_TOOLS, "database"),
   ...withDomain(PARTY_BOND_TOOLS, "event"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
-  ...withDomain(REFACTOR_TOOLS, "system"),
+  ...withDomain(createRefactorTools(allTools), "system"),
+  ...withDomain(DB_BULK_TOOLS, "database"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),

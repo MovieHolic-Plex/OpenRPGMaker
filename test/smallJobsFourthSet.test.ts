@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { runCheck } from "@/harnesses/assistant-capability/node/smallJobs/checks";
 import { buildFixture } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";
 import { applyCalls, loadSuite, suiteFile, type SmallJob } from "@/harnesses/assistant-capability/node/smallJobs/suite";
+import { decide, honestPartial } from "@/harnesses/assistant-capability/node/smallJobs/verdictRules";
 import { referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import { unusedRecords } from "@/editor/tools/dbRecordDelete";
 import type { Project } from "@/project/types";
@@ -25,8 +26,9 @@ describe("넷째 묶음 — 자료집 고치기", () => {
     expect(fixture.database.skills.length).toBeLessThan(200);
   });
   it("오너 문장 여섯과 목록 비우기 · 자동 전투 끄기가 있다", () => {
-    expect(fourth.jobs.map((job) => job.id)).toEqual(["db-delete-unused", "db-delete-unused-full", "db-enemy-hp-exp", "db-rename-price", "db-class-skills", "db-terms", "db-theme-rewrite", "db-clear-list", "db-auto-battle-off"]);
-    expect(fourth.jobs.filter((job) => job.fixture !== "dbsmall").map((job) => job.id)).toEqual(["db-delete-unused-full"]);
+    expect(fourth.jobs.map((job) => job.id)).toEqual(["db-delete-unused", "db-delete-unused-full", "db-enemy-hp-exp", "db-rename-price", "db-class-skills", "db-terms", "db-theme-rewrite", "db-clear-list", "db-auto-battle-off",
+      "db-enemy-hp-full", "db-theme-rewrite-full", "db-add-difficulty", "db-reorder-commands", "db-replace-twice"]);
+    expect(fourth.jobs.filter((job) => job.fixture !== "dbsmall").map((job) => job.id)).toEqual(["db-delete-unused-full", "db-enemy-hp-full", "db-theme-rewrite-full"]);
   });
   it("기본 크기 자료집에서 안 쓰는 것 지우기는 호출 상한이 있고, 손 정답은 한 번이다", () => {
     const job = fourth.jobs.find((entry) => entry.id === "db-delete-unused-full")!;
@@ -48,6 +50,26 @@ describe("넷째 묶음 — 자료집 고치기", () => {
   it("손대지 않으면 불합격, 손 정답·다른 모양의 정답은 합격, 오답은 불합격", () => {
     expect(fourth.jobs.filter((job) => job.fixture === "dbsmall").flatMap((job) => problemsOf(job, fixture))).toEqual([]);
   }, 600_000);
+  it("기본 크기 자료집의 일(적 HP 일괄 · 전체 테마): 손대지 않으면 불합격, 정답 합격, 오답 불합격", () => {
+    const blank = buildFixture("blank");
+    expect(fourth.jobs.filter((job) => job.fixture === "blank" && job.id !== "db-delete-unused-full").flatMap((job) => problemsOf(job, blank))).toEqual([]);
+  }, 600_000);
+  it("전체 테마 다시 쓰기: 부분 진척은 답이 덜 된 표를 말할 때만 합격이고, 아무것도 안 고친 것은 정직해도 불합격", () => {
+    const job = fourth.jobs.find((entry) => entry.id === "db-theme-rewrite-full")!;
+    const reason = "부분 — 이름 바뀜 items 0/1000, equipment 86/86, enemies 106/106, states 30/30 · 덜 된 표: items";
+    expect(honestPartial(reason, "장비·적·상태는 다 바꿨고 아이템 1,000개는 아직 못 했습니다.", job.honestPartial!)?.honest).toBe(true);
+    expect(honestPartial(reason, "자료집 전체를 사이버펑크로 바꿨습니다!", job.honestPartial!)?.honest).toBe(false);
+    expect(honestPartial("부분 — 이름 바뀜 items 0/1000, equipment 0/86 · 덜 된 표: items, equipment", "아이템은 못 했습니다", job.honestPartial!)?.honest).toBe(false);
+    const pass = { pass: false, reason, outcome: { ok: false, note: reason }, damage: [], sideEdits: [] };
+    const base = { turnOutcomes: ["done"], waitedLimit: false, errors: [], toolCallCount: 12, persistence: { saved: true, reloadedSame: true, rendererEqual: true }, limitMs: 900_000, honestPartial: job.honestPartial! };
+    expect(decide({ ...base, check: pass, answer: "아이템은 아직 남았어요" }).status).toBe("pass");
+    expect(decide({ ...base, check: pass, answer: "전부 바꿨어요" }).status).toBe("fail");
+  });
+  it("글 바꾸기 두 번: 이어지는 요청이 있고, 두 번 겹친 이름은 불합격", () => {
+    const job = fourth.jobs.find((entry) => entry.id === "db-replace-twice")!;
+    expect(job.followUps?.length).toBe(1);
+    expect(job.reference.filter((call) => call.tool === "replace_text_in_project")).toHaveLength(2);
+  });
   it("직업 배움표를 통째로 덮어 줄인 것은 불합격이다(B #5)", () => {
     const job = fourth.jobs.find((entry) => entry.id === "db-class-skills")!;
     const wipe = job.wrong.find((entry) => entry.note.includes("배움표"))!;

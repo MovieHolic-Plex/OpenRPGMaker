@@ -127,32 +127,48 @@ function clampPercent(value: number | undefined): number {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0;
 }
 
+/**
+ * 엔진이 레코드 id 로 직접 행동을 붙이는 상태 — 아래 판정 함수와 전투 진행(runtime 의 분노)이 이 표의 id 를 쓴다.
+ * 자료집 삭제·복제(editor/tools/dbRecordDelete)가 이 표를 읽어 «새 id 로 다시 만들면 이 규칙이 없다» 고 알린다. 글은 모델이 읽는다(영어).
+ */
+export const ENGINE_STATE_RULES = {
+  state_sleep: "can't act (restriction)",
+  state_silence: "can't use skills (restriction)",
+  state_attack_up: "attack x2",
+  state_defense_up: "defense x2",
+  state_defense_down: "defense x0.5",
+  state_poison: "stays after battle",
+  state_rage: "rage skills add it and its holder attacks on its own",
+} as const satisfies Readonly<Record<string, string>>;
+const STATE = Object.fromEntries(Object.keys(ENGINE_STATE_RULES).map((k) => [k, k])) as { readonly [K in keyof typeof ENGINE_STATE_RULES]: K };
+export const RAGE_STATE_ID = STATE.state_rage;
+
 function restrictsActionFrom(stateId: string, value: string): boolean {
-  if (stateId === "state_sleep") return true;
+  if (stateId === STATE.state_sleep) return true;
   // 자료집 「제한」 드롭다운의 한국어 값도 읽는다.
   return /행동 불가/.test(value) || /\b(cannot act|stun|sleep|paraly[sz]ed|immobilized)\b/i.test(value);
 }
 
 function blocksSkillUseFrom(stateId: string, value: string): boolean {
-  if (stateId === "state_silence") return true;
+  if (stateId === STATE.state_silence) return true;
   return /스킬 사용 불가/.test(value) || /\b(cannot use skills?|silence[dn]?)\b/i.test(value);
 }
 
 function attackMultiplierFrom(stateId: string, value: string): number {
-  if (stateId === "state_attack_up") return 2;
+  if (stateId === STATE.state_attack_up) return 2;
   const match = /\battack\s*(?:x|×)\s*(\d+(?:\.\d+)?)\b/i.exec(value);
   return match ? Math.max(0, Number(match[1])) : 1;
 }
 
 function defenseMultiplierFrom(stateId: string, value: string): number {
-  if (stateId === "state_defense_up") return 2;
-  if (stateId === "state_defense_down") return 0.5;
+  if (stateId === STATE.state_defense_up) return 2;
+  if (stateId === STATE.state_defense_down) return 0.5;
   const match = /\bdefen[cs]e\s*(?:x|×)\s*(\d+(?:\.\d+)?)\b/i.exec(value);
   return match ? Math.max(0, Number(match[1])) : 1;
 }
 
 function removeOnBattleEndFrom(stateId: string, value: string): boolean {
-  if (stateId === "state_poison") return false;
+  if (stateId === STATE.state_poison) return false;
   // 「해제 조건」 드롭다운의 「전투 종료 후 유지」.
   return !(/유지/.test(value) || /\b(persist|keep|remain)\b/i.test(value));
 }

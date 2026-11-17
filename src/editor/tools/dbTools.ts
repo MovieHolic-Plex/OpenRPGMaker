@@ -106,6 +106,7 @@ import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT, unknownSceneryIdMessage } from "@/assets/battleSceneryCatalog";
 import { BOSS_FLOOR_STATS, type BossFloorStat, isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
+import { POKEMON_MOVE_MOTIONS } from "@/battle/pokemonMoveMotion";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { heroCharacterResourceId } from "./cutsceneCharacterLock";
@@ -528,6 +529,7 @@ const enemyRecordSchema = objectSchema({
   monsterResourceId: stringSchema(),
   // Enemy.transparent 를 런타임·ensureMonsterGraphic 이 지킨다 — 스키마만 막고 있었다.
   transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장). false 로 되돌리면 그림이 다시 필요하다."),
+  flying: booleanSchema("true = 나는 적(새·유령·박쥐) — 전투 몸짓이 그에 맞게 작아진다. graphicHue(색조)는 전투가 읽지 않아 쓰지 않는다"),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
   walkChip: objectSchema({
     characterResourceId: stringSchema("걷기 칩(CharSet 288×256) 리소스 id. 예: easyrpg-charset-actor1. search_resources kind:charset 으로 찾는다."),
@@ -562,6 +564,8 @@ const troopRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
   enemyIds: stringArraySchema(),
+  // 명령 스키마(COMMAND_SCHEMA)를 통째로 달면 이 도구 글이 3k → 45k 자가 된다 — 항목은 객체로만 두고, 실행이 공용 이벤트와 같은 명령 검사를 한다.
+  afterBattle: objectSchema({ victory: { type: "array", items: { type: "object" } }, defeat: { type: "array", items: { type: "object" } }, escape: { type: "array", items: { type: "object" } } }, "전투 뒤 명령(결과별, 필드로 돌아온 뒤 한 번)"),
   members: arrayOf(troopMemberSchema),
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),
@@ -706,6 +710,7 @@ const actorRecordSchema = objectSchema({
 
 const skillRecordSchema = objectSchema({
   ...authoredSkillProperties,
+  moveMotion: { type: "string", enum: [...POKEMON_MOVE_MOTIONS], description: "몬스터 대치 전투에서 기술을 쓸 때 몸짓: contact 돌진 · projectile 발사 · strike 제자리 타격 · area 광역 · boost 강화 · status 상태 · heal 회복. 생략 = 효과로 고른다" },
   id: stringSchema(),
   name: stringSchema(),
   scope: {
@@ -893,6 +898,11 @@ const skillRecordSchema = objectSchema({
 
 const equipmentRecordSchema = objectSchema({
   battleMotionStyle: {type:"string",enum:[...CHARACTER_MOTION_STYLES]},
+  actionWeapon: objectSchema({
+    swingRange: integerSchema("스윙 부채꼴 거리(타일, 생략 = 시스템 기본 1)"),
+    swingCooldownMs: integerSchema("스윙 쿨다운 ms(생략 = 시스템 기본)"),
+    swingDamageBonus: integerSchema("스윙 피해 가산(생략 = 0)"),
+  }, "실시간 액션 전투에서 이 무기로 휘두를 때의 값. 턴제 전투에는 쓰이지 않는다"),
   id: stringSchema(),
   name: stringSchema(),
   imageResourceId: stringSchema(),
@@ -1754,7 +1764,7 @@ const ENEMY_CLEARABLE_FIELDS = [
 ] as const;
 
 /** upsert_troop.clearFields 로 지울 수 있는 선택 필드. */
-const TROOP_CLEARABLE_FIELDS = ["duel", "victoryBanner"] as const;
+const TROOP_CLEARABLE_FIELDS = ["duel", "victoryBanner", "afterBattle"] as const;
 
 /** 병합된 트룹에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다. */
 function clearTroopFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
@@ -1954,6 +1964,18 @@ const upsertTroop: ToolDefinition = {
     const badScenery = unknownSceneryIdMessage((args.troop as Record<string, unknown> | undefined)?.previewBackgroundResourceId);
     if (badScenery) throw new ToolError(badScenery, { code: "unknown-battle-backdrop" });
     const troopArg = withEnemyIdsFromMembers(args.troop);
+    // 전투 뒤 명령은 공용 이벤트와 같은 검사를 지난다 — 모르는 명령이 저장된 뒤 실행기 후처리에서 터지지 않게.
+    const afterBattleArg = (troopArg as { afterBattle?: unknown } | undefined)?.afterBattle;
+    const afterBattleWarnings: string[] = [];
+    if (afterBattleArg && typeof afterBattleArg === "object" && !Array.isArray(afterBattleArg)) {
+      for (const [outcome, list] of Object.entries(afterBattleArg as Record<string, unknown>)) {
+        if (!["victory", "defeat", "escape"].includes(outcome)) throw new ToolError(`troop.afterBattle.${outcome}: outcome must be victory, defeat or escape.`, { code: "invalid-args" });
+        const commands = normalizeLowLevelCommandArray(list, `troop.afterBattle.${outcome}`, afterBattleWarnings);
+        validateLowLevelCommandArray(`troop.afterBattle.${outcome}`, commands);
+        assertPartyActorReferences(draft, commands, `troop.afterBattle.${outcome}`);
+        (afterBattleArg as Record<string, unknown>)[outcome] = [...commands];
+      }
+    }
     const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_new_pack", name: "새 무리", enemyIds: ["<existing enemy id>"] }, ["name", "enemyIds"]);
     const patch = troopArg as Partial<TroopRecord>;
     // An explicit legacy roster replaces the roster. Do not let inherited members
@@ -1969,7 +1991,7 @@ const upsertTroop: ToolDefinition = {
       throw new ToolError(`존재하지 않는 enemyId: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.enemies)}. 없는 적은 upsert_enemy 로 먼저 만든 뒤(성공 결과를 확인) 트룹에 넣으세요.`, { code: "enemy-not-found" });
     }
     const outcome = upsertById(draft.database.troops, record);
-    const warnings = troopBalanceWarnings(draft, record.id);
+    const warnings = [...afterBattleWarnings, ...troopBalanceWarnings(draft, record.id)];
     return {
       summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${clearedTroop.length ? ` (지운 필드: ${clearedTroop.join(", ")})` : ""}${troopWarningSummary(warnings)}`,
       data: record,

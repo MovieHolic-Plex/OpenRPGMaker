@@ -95,6 +95,8 @@ const REPORT_SECTIONS = ["actors", "classes", "skills", "items", "equipment", "e
  */
 export function databaseChangeReport(before: Project, after: Project, writes?: StageWrites): string[] {
   const out: string[] = [];
+  const untouched: string[] = [];
+  let touchedRecords = 0;
   const rows = (p: Project, section: string): Obj[] => (section === "commonEvents" ? (p.commonEvents as unknown as Obj[]) : (((p.database as unknown as Record<string, unknown>)[section] as Obj[] | undefined) ?? []));
   for (const section of [...REPORT_SECTIONS, "commonEvents"]) {
     const was = new Map(rows(before, section).map((r) => [String(r.id), r]));
@@ -115,14 +117,18 @@ export function databaseChangeReport(before: Project, after: Project, writes?: S
       changed.push(`${String(r.name ?? id)}(${own.slice(0, 4).join(",")}${own.length > 4 ? "…" : ""})`);
       for (const k of own) if (Array.isArray(prev[k]) && Array.isArray(r[k]) && (r[k] as unknown[]).length < (prev[k] as unknown[]).length) shrank.push(`${String(r.name ?? id)}.${k} ${(prev[k] as unknown[]).length}→${(r[k] as unknown[]).length}`);
     }
-    if (!created.length && !deleted.length && !changed.length) continue;
+    if (!created.length && !deleted.length && !changed.length) { untouched.push(`${section} ${now.size}`); continue; }
+    touchedRecords += created.length + deleted.length + changed.length;
     const name = (id: string, m: Map<string, Obj>) => String(m.get(id)?.name ?? id);
     out.push(`${section}: ${[
       created.length ? `만듦 ${created.length}(${created.slice(0, 5).map((id) => name(id, now)).join(", ")}${created.length > 5 ? " …" : ""})` : "",
       deleted.length ? `지움 ${deleted.length}(${deleted.slice(0, 5).map((id) => name(id, was)).join(", ")}${deleted.length > 5 ? " …" : ""})` : "",
-      changed.length ? `고침 ${changed.length}(${changed.slice(0, 5).join(", ")}${changed.length > 5 ? " …" : ""})` : "",
+      changed.length ? `고침 ${changed.length}/${now.size}(${changed.slice(0, 5).join(", ")}${changed.length > 5 ? " …" : ""})` : "",
     ].filter(Boolean).join(" · ")}${shrank.length ? ` · 줄어든 목록 ${shrank.slice(0, 4).join(", ")}${shrank.length > 4 ? " …" : ""}` : ""}`);
   }
+  // 넓게 고친 요청(레코드 20개 이상)이면 손대지 않은 묶음과 그 크기를 적는다 — 「자료집 전부 ○○로」 가 한 턴에 다 끝나지 않았을 때
+  // 보고가 «무엇이 남았나» 를 말한다(2026-11-16 리뷰 D). 묶음 크기 0 은 뺀다.
+  if (touchedRecords >= 20) { const left = untouched.filter((u) => !u.endsWith(" 0")); if (left.length) out.push(`손대지 않은 묶음(레코드 수): ${left.join(", ")}`); }
   const t0 = (before.meta?.terms ?? {}) as unknown as Record<string, unknown>, t1 = (after.meta?.terms ?? {}) as unknown as Record<string, unknown>;
   const terms = Object.keys({ ...t0, ...t1 }).filter((k) => JSON.stringify(t0[k]) !== JSON.stringify(t1[k]));
   if (terms.length) out.push(`용어: ${terms.slice(0, 8).map((k) => `${k} «${String(t0[k] ?? "")}»→«${String(t1[k] ?? "")}»`).join(", ")}`);

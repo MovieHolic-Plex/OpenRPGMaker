@@ -7,6 +7,7 @@ import type { Project } from "@/project/types";
 import { ToolError } from "./types";
 import { describeSite, isScriptSite, outsideRecord, referenceIndex, type RefSite } from "./dbReferenceIndex";
 import { retroChoreographyIdForClone } from "@/assets/retroSkillCatalog";
+import { ENGINE_STATE_RULES } from "@/battle/battleStates";
 
 /** 조수가 지우고 복제할 수 있는 자료집 묶음 — database 의 레코드 배열 전부와 공용 이벤트. */
 export const DELETABLE_DB_COLLECTIONS = [
@@ -24,6 +25,15 @@ const ENGINE_RECORDS: Readonly<Record<string, string>> = {
 };
 
 type Row = { id: string; name?: string };
+
+/** 엔진이 id 로 규칙을 붙이는 상태(battle/battleStates ENGINE_STATE_RULES) — 지우거나 새 id 로 복제하면 그 규칙이 따라가지 않는다. 막지는 않고 알린다. */
+function engineRuleNotice(collection: string, id: string, act: "deleted" | "copied"): string | undefined {
+  if (collection !== "states" || !(id in ENGINE_STATE_RULES)) return undefined;
+  const rule = ENGINE_STATE_RULES[id as keyof typeof ENGINE_STATE_RULES];
+  return act === "deleted"
+    ? `Note: the engine gives ${id} its rule («${rule}») by id. A state re-created under another id will not have that rule unless its restriction / runtimeEffects fields say so.`
+    : `Note: the engine gives ${id} its rule («${rule}») by id; this copy has a new id and will not have it unless its restriction / runtimeEffects fields say so.`;
+}
 
 export function collectionRows(project: Project, collection: string): Row[] | undefined {
   if (collection === "commonEvents") return project.commonEvents as unknown as Row[];
@@ -150,7 +160,7 @@ export function deleteDatabaseRecord(project: Project, collectionArg: unknown, r
   if (emptied.length) throw new ToolError(`Not deleted: removing ${label} would leave troop(s) ${emptied.map((t) => `${t.id} «${t.name}»`).join(", ")} with no enemies, and that battle could not start. Give those troops another enemy with upsert_troop (or delete the troops) first.`, { code: "database-record-in-use" });
   return {
     summary: `Deleted ${label}${clearable.length ? ` and removed ${clearable.length} reference(s) to it` : ""}.`,
-    warnings: [...(how ? [how] : []), ...(removed.length ? [`Removed references: ${removed.slice(0, 20).join(" · ")}${removed.length > 20 ? ` · +${removed.length - 20} more` : ""}`] : [])],
+    warnings: [...(how ? [how] : []), ...[engineRuleNotice(collection, row.id, "deleted")].filter((x): x is string => !!x), ...(removed.length ? [`Removed references: ${removed.slice(0, 20).join(" · ")}${removed.length > 20 ? ` · +${removed.length - 20} more` : ""}`] : [])],
     data: { collection, id: row.id, removedReferences: removed },
   };
 }
@@ -169,7 +179,7 @@ export function duplicateDatabaseRecord(project: Project, collectionArg: unknown
   if (collection === "skills") { const borrowed = retroChoreographyIdForClone(row as never); if (borrowed) (copy as { retroChoreographyId?: string }).retroChoreographyId = borrowed; }
   if ("name" in row) copy.name = typeof name === "string" && name.trim() ? name.trim() : `${row.name ?? row.id} copy`;
   rows.push(copy);
-  return { summary: `Duplicated ${collection} ${row.id} as ${newId}${copy.name ? ` «${copy.name}»` : ""} (#${rows.length} in the list).`, warnings: how ? [how] : [], data: { collection, record: copy } };
+  return { summary: `Duplicated ${collection} ${row.id} as ${newId}${copy.name ? ` «${copy.name}»` : ""} (#${rows.length} in the list).`, warnings: [...(how ? [how] : []), ...[engineRuleNotice(collection, row.id, "copied")].filter((x): x is string => !!x)], data: { collection, record: copy } };
 }
 
 /** 어디에서도 가리키지 않는 레코드(자기 자리 밖 참조 0) — 묶음마다. 엔진이 쓰는 레코드·시작 파티는 뺀다. */

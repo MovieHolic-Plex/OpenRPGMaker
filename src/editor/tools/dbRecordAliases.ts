@@ -54,7 +54,6 @@ const MOVES: Readonly<Record<string, Readonly<Record<string, Move>>>> = {
 const FOREIGN_RECORD_KEYS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   enemy: {
     graphicHue: "옛 RM 색조 칸이라 전투 그림에 쓰이지 않는다",
-    flying: "옛 RM 칸이라 이 도구는 쓰지 않는다",
     actionProfile: "액션 전투 프로필은 make_action_enemy 가 쓴다",
     factionId: "진영은 make_action_enemy factionId · set_factions 가 쓴다",
   },
