@@ -56,12 +56,18 @@ describe("칸 배치 실내 — 고쳐 깔고 알린다", () => {
     expect(r.summary).toMatch(/laid \d+ of your \d+ pieces — left out/u);
   });
 
-  it("게임이 깨지는 것만 거절한다 — 방 사이 문이 없음 · 바깥 벽이 열림 · 입구가 바닥 줄에 없음 · 어디에도 가까운 것이 없는 낱말", () => {
-    for (const patch of [{ doors: [] }, { outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 13]] } }, { entrance: { x: 6, y: 5 } }, { objects: [{ id: "golden unicorn", x: 10, y: 10 }] }]) {
+  it("게임이 깨지는 것만 거절한다 — 방 사이 문이 없음 · 바깥 벽이 열림 · 입구가 바닥 줄에 없음", () => {
+    for (const patch of [{ doors: [] }, { outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 13]] } }, { entrance: { x: 6, y: 5 } }]) {
       const r = lay(house(patch));
       expect(r.ok, JSON.stringify(patch)).toBe(false);
       expect(r.summary).toMatch(/^Rejected: the interior layout for "가게"/u);
     }
+  });
+
+  it("어디에도 가까운 것이 없는 낱말 하나는 거절하지 않는다 — 그 조각만 빼고 깔고 무엇을 뺐는지 적는다(2026-11-17 r8 «table:fish+fishr»)", () => {
+    const r = lay(house({ objects: [{ id: "golden unicorn", x: 10, y: 10 }] }));
+    expect(r.ok, r.summary).toBe(true);
+    expect(r.summary).toMatch(/left out \(each with its reason in warnings\): "golden unicorn"/u);
   });
 
   it("r6 「대성당」 두 번째 거절(벽붙이 계단을 objects 에 · 표에 없는 사각 깔개)이 이제 거절 없이 깔리고, 계단은 가장 가까운 빈 벽면에 선다", () => {

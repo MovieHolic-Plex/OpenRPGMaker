@@ -113,20 +113,15 @@ describe("거절 뒤 다음 호출 — 값이 찬 호출만, 없는 맵 id 는 �
 });
 
 describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는다", () => {
-  it("없는 기물 하나로 거절된 배치는 무엇을 다시 보낼지 먼저 말하고, 빈 mapId 의 edit_place 로 고쳐 보내면 깔린다", async () => {
+  it("없는 기물 하나로는 거절하지 않고(그 조각만 빼고 깔고 알린다), 같은 방을 빈 mapId 로 다시 보내면 그 맵에서 다시 짓는다", async () => {
     const t = turn("모험가의 선술집 실내 맵을 만들어 줘.");
     await t.todo("모험가의 선술집", "interior");
-    const wrong = { type: "interior", name: "모험가의 선술집", mapId: "", layout: { ...TAVERN, objects: [...TAVERN.objects, { id: "golden unicorn", x: 6, y: 5 }] } };
-    const refused = await t.call("make_place", wrong);
-    expect(refused.ok).toBe(false);
-    expect(refused.body).toContain("send make_place again (same name, whole layout)");
-    expect(refused.body).toContain("golden unicorn");
-    expect(refused.body).not.toContain('"mapId":""');
-    expect(refused.body).not.toContain("another type or style");
-    expect(refused.body).not.toMatch(/\[Next call\] (?!make_place)/u);
+    const odd = { type: "interior", name: "모험가의 선술집", mapId: "", layout: { ...TAVERN, objects: [...TAVERN.objects, { id: "golden unicorn", x: 6, y: 5 }] } };
+    const laid = await t.call("make_place", odd);
+    expect(laid.ok, laid.body.slice(0, 600)).toBe(true);
+    expect(laid.body).toContain("golden unicorn");
+    expect(laid.body).toContain("left out");
     expect(t.forced).toEqual([]);
-    const fixed = await t.call("edit_place", { patch: { mapId: "", layoutPatch: { remove_objects: [{ id: "golden unicorn", x: 6, y: 5 }] } } });
-    expect(fixed.ok, fixed.body.slice(0, 600)).toBe(true);
     expect(t.ctx.project.maps[t.ctx.project.startMapId]!.name).toBe("모험가의 선술집");
     // 같은 방을 빈 mapId 로 다시 보내면 그 맵에서 다시 짓는다 — 맵이 늘지 않는다.
     const again = await t.call("make_place", { type: "interior", name: "모험가의 선술집", mapId: "", layout: TAVERN });
