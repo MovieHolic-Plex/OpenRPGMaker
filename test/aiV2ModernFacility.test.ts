@@ -22,14 +22,14 @@ function turn(project = createBlankProject(), session = new V2Session()) {
     return result.mapIds[0]!;
   }
   return {
-    ctx, session, call,
-    make: (spec: Omit<PlaceSpec, "type" | "style">) => call("make_place", { spec: { type: "house", style: "kr-modern", ...spec } }),
+    ctx, session, call, tools,
+    make: (spec: Omit<PlaceSpec, "type" | "style">) => call("make_place", { type: "house", style: "kr-modern", ...spec }),
     program: (mapId: string) => (session.placeOf(mapId)?.result.state as { program?: string } | undefined)?.program,
   };
 }
 
 it.each([
-  [{ name: "오래된 아파트" }, "mc_old_apartment", "oa-corridor"],
+  [{ name: "오래된 아파트", hints: { program: "" } }, "mc_old_apartment", "oa-corridor"],
   [{ name: "Riverside Old Apartment" }, "mc_old_apartment", "oa-room-a"],
   [{ name: "은하 아파트", theme: "낡은 아파트" }, "mc_old_apartment", "oa-stair"],
   [{ name: "서울 만화 카페" }, "mc_manga_cafe", "mg-booths"],
@@ -50,6 +50,18 @@ it.each([
     expect(map.locations?.some((location) => location.name === room && location.tags?.includes("hand-layout-room"))).toBe(true);
   },
 );
+
+it("exposes the program hint and accepts an empty selection on the Japanese house path", async () => {
+  const host = turn();
+  const make = host.tools.find((tool) => tool.name === "make_place")!;
+  const edit = host.tools.find((tool) => tool.name === "edit_place")!;
+  const hints = { properties: { program: { type: "string" } } };
+  expect(make.parameters).toMatchObject({ properties: { hints } });
+  expect(edit.parameters).toMatchObject({ properties: { patch: { properties: { set: { properties: { hints } } } } } });
+  const mapId = await host.call("make_place", { type: "house", style: "jp-modern", name: "일본 원룸", hints: { program: "" } });
+  expect(host.ctx.project.maps[mapId]!.tilesetId).toBe("jp_city");
+  expect(host.session.placeOf(mapId)?.result.state).toMatchObject({ args: { layout: { program: "apartment-1k" } } });
+});
 
 it("keeps the actual program of a pre-change saved place on an unrelated edit", async () => {
   const source = turn();

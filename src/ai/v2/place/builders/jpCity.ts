@@ -451,7 +451,8 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   const namedVenue = shopByName !== undefined && shopByName !== "house-1f" && shopByName !== "hiraya";
   const customRooms = !namedVenue && roomZones.length > 0 && roomZones.every((k) => ROOM_KINDS.has(k));
   if (roomZones.length && !customRooms) for (const k of roomZones) if (!ROOM_KINDS.has(k)) missing.push(`${k} 방(일본 집 방 종류에 없음 — 예제 구성으로 지었다)`);
-  const program = typeof spec.hints?.program === "string" ? spec.hints.program : (namedVenue ? shopByName : undefined) ?? PROGRAM_RULES.find(([re]) => has(text, re))?.[1] ?? "house-1f";
+  const explicitProgram = typeof spec.hints?.program === "string" ? spec.hints.program.trim() : "";
+  const program = explicitProgram || ((namedVenue ? shopByName : undefined) ?? PROGRAM_RULES.find(([re]) => has(text, re))?.[1] ?? "house-1f");
   for (const z of spec.zones ?? []) for (const a of z.anchors ?? []) missing.push(`${a}(주인공 물건 지정은 일본 실내 예제 구성에서 못 함 — 견본 가구 한 벌)`);
   for (const f of spec.features ?? []) if (!PROGRAM_RULES.some(([re]) => has(f, re))) missing.push(`${f}(일본 실내 예제 구성이 모르는 낱말)`);
   if (spec.exits?.some((e) => e !== "south")) missing.push("남쪽 말고 다른 출구(손 도트 실내는 남쪽 출구만)");
