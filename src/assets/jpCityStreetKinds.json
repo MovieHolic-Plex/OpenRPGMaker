@@ -5,6 +5,7 @@
     "hai": {
       "ko": "잿빛 포장 동네",
       "en": "grey paving",
+      "pavingShade": "grey",
       "lot": ["노면전차 軌道敷 포장", "콘크리트 판석 보도"],
       "sidewalk": "보도 연석",
       "road": "생활도로",
@@ -16,6 +17,7 @@
     "kinari": {
       "ko": "따뜻한 판석 동네",
       "en": "warm flagstone",
+      "pavingShade": "warm",
       "lot": ["거리 · 땅·잔디·판석·참배길", "산길 흙"],
       "sidewalk": "콘크리트 판석 보도",
       "road": "따뜻한 아스팔트 골목",
@@ -27,6 +29,7 @@
     "ishi": {
       "ko": "흰 판석 동네",
       "en": "pale flagstone",
+      "pavingShade": "pale",
       "lot": ["자갈 참배길", "노면전차 軌道敷 포장"],
       "sidewalk": "판석 광장",
       "road": "생활도로",
@@ -38,6 +41,7 @@
     "tsuchi": {
       "ko": "흙길 낀 옛 동네",
       "en": "old quarter with dirt lanes",
+      "pavingShade": "warm",
       "lot": ["거리 · 땅·잔디·판석·참배길", "노면전차 軌道敷 포장"],
       "sidewalk": "보도 연석",
       "road": "따뜻한 아스팔트 골목",

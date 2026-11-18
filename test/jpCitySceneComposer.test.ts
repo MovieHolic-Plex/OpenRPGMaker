@@ -95,6 +95,24 @@ describe("jp_city street scene composer", () => {
     expect((named.res.data as { streetKind?: string; style?: string })).toMatchObject({ streetKind: "monzen", style: "shitamachi" });
   });
 
+  it("uses each game's paving shade across the street and one asphalt sheet across the road", () => {
+    for (const [key, shadeCells] of [["game-b", [1, 7]], ["game-f", [3]]] as const) {
+      const { res, ctx } = compose("ekimae", 2, key, 48, 36);
+      expect(res.ok, res.summary).toBe(true);
+      const map = ctx.project.maps.hub!;
+      const tiles = (id: string) => ctx.project.tilesets[JP_CITY_ID]!.structureKits!.find((kit) => kit.id === id)!.rows.flatMap((row) => row.tiles);
+      const paving = tiles("jp-st-gnd-pave");
+      const asphalt = tiles("jp-st-gnd-tarmac");
+      const asphalt2 = tiles("jp-st-gnd-tarmac-2");
+      const paved = map.lowerTiles.filter((tile) => paving.includes(tile));
+      expect(paved.length).toBeGreaterThan(20);
+      expect(new Set(paved)).toEqual(new Set(shadeCells.map((cell) => paving[cell])));
+      const onRoad = (sheet: number[]) => map.lowerTiles.filter((tile) => sheet.includes(tile)).length;
+      expect(onRoad(asphalt) + onRoad(asphalt2)).toBeGreaterThan(20);
+      expect(Math.min(onRoad(asphalt), onRoad(asphalt2))).toBe(0);
+    }
+  });
+
   it("gives the strip behind shop rows a use (back lane, bounded lots) and lets quiet lanes have a narrow crosswalk", () => {
     for (let seed = 1; seed <= 3; seed++) {
       const plan = planJpCityScene({ mapId: "m", width: 60, height: 48, seed, style: "shopping", key: "game-a" });

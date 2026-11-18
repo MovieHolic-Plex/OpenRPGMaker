@@ -5,10 +5,19 @@ import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations
 import { fillLotUses, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
 import type { JpStreetBuiltBuilding } from "@/project/jpCityStreetComposer";
 import type { ScenePlan } from "@/project/jpCitySceneComposer";
+import type { SceneTone } from "@/project/jpCitySceneKinds";
 import type { GameMap } from "@/project/types";
 
 type Call = (tool: string, args: Record<string, unknown>) => { rect?: { x0: number; y0: number; w: number; h: number }; doors?: readonly { x: number; y: number }[] } | void;
 const EDGE_AUTOTILE: Readonly<Record<string, string>> = { "생울타리": "jp-hedge", "블록담": "jp-wall-block", "철망 울타리": "jp-fence-mesh", "가드레일": "jp-guardrail" };
+// Cell indices in the bundled ground kits. Each paving set shares a slab colour and the same joints.
+const PAVING_CELLS: Readonly<Record<SceneTone["pavingShade"], readonly number[]>> = {
+  grey: [1, 7],
+  warm: [0, 4, 6, 8],
+  pale: [3],
+};
+// Quiet parts of the shared-lane sheet, weighted toward the plainest cell.
+const LANE_CELLS = [5, 5, 5, 5, 4, 8, 14, 15] as const;
 
 /** 횡단보도 줄무늬 칸 — 도구와 미리 보기(v2 빌더)가 같은 값으로 계획을 세운다(이 값에 따라 길 표시 자리가 달라진다). */
 export function sceneCrosswalkTile(tileset: { structureKits?: readonly { id: string; rows: readonly { upperTiles?: readonly number[] }[] }[] } | undefined): number | undefined {
@@ -49,22 +58,36 @@ export function runJpScenePlan(plan: ScenePlan, call: Call, view: () => LotUseVi
     call("stamp_layer_block", { mapId, x: x0, y: y0, layers: { "3": grid }, reshape: false });
   };
   /**
-   * 새 거리의 바닥: 가족의 무늬 키트(jp-st-gnd-<가족>)를 1층에 찍는다. 무늬 키트의 칸 수가 16 이상이면 이음매 없는 결(지도 좌표로 이어 붙인다 —
-   * 아스팔트는 4×4 칸 덩이마다 두 결 가운데 하나), 그보다 작으면 낱칸을 섞어 깐다(민무늬 칸을 더 자주).
+   * Paint each family with its bundled ground kit. Keep the same paving shade throughout the street
+   * and the same seamless asphalt pattern across road sections and intersections.
    */
   const groundCells = (family: string, rects: readonly { x: number; y: number; w: number; h: number }[]): void => {
     const lower = (id: string): number[][] | undefined => { const k = kitOf(id); return k ? k.rows.map((r) => [...(r.tiles ?? [])]) : undefined; };
     const a = lower(`jp-st-gnd-${family}`), b = lower(`jp-st-gnd-${family}-2`);
     if (!a || !a.length) return;
-    const ph = a.length, pw = a[0]!.length, wrap = family !== "pave" && family !== "forecourt" && family !== "water";   // 무늬가 이어지는 바닥은 자리대로, 낱장 바닥(보도 블록·앞마당 판·물)은 섞어 깐다
+    const ph = a.length, pw = a[0]!.length;
+    const wrap = family !== "pave" && family !== "forecourt" && family !== "water";
+    const pool = family === "pave" && pw === 3 && ph === 3 ? PAVING_CELLS[plan.tone.pavingShade]
+      : family === "lane" && pw === 4 && ph === 4 ? LANE_CELLS : undefined;
     const hash = (x: number, y: number) => { let h = Math.imul(x + 374761393, 668265263) ^ Math.imul(y + plan.seed * 31 + 1274126177, 2246822519); h = Math.imul(h ^ (h >>> 13), 1274126177); return (h ^ (h >>> 16)) >>> 0; };
+    const asphalt = b?.length === ph && b[0]?.length === pw && hash(0, 0) % 2 ? b : a;
     for (const r of rects) {
       const grid: number[][] = [];
       for (let y = r.y; y < r.y + r.h; y++) {
         const row: number[] = [];
         for (let x = r.x; x < r.x + r.w; x++) {
-          if (wrap) { const src = b && hash(Math.floor(x / pw), Math.floor(y / ph)) % 2 ? b : a; row.push(src[y % ph]![x % pw]!); }
-          else { const k = hash(x, y) % (pw * ph + 3 * Math.ceil((pw * ph) / 2)); const i = k < pw * ph ? k : (k - pw * ph) % Math.ceil((pw * ph) / 2); row.push(a[Math.floor(i / pw)]![i % pw]!); }
+          if (pool) {
+            const i = pool[hash(x, y) % pool.length]!;
+            row.push(a[Math.floor(i / pw)]![i % pw]!);
+          } else if (wrap) {
+            const pattern = family === "tarmac" ? asphalt : a;
+            row.push(pattern[y % ph]![x % pw]!);
+          } else {
+            const plainCount = Math.ceil((pw * ph) / 2);
+            const k = hash(x, y) % (pw * ph + 3 * plainCount);
+            const i = k < pw * ph ? k : (k - pw * ph) % plainCount;
+            row.push(a[Math.floor(i / pw)]![i % pw]!);
+          }
         }
         grid.push(row);
       }
