@@ -9,6 +9,7 @@ import { beodeulRouteGuard } from "@/editor/tools/beodeulObjectSets";
 import { clearVillageKindPlan, recordVillageKind, villageKindOfMap, villageSceneByWord, villageScenesOfMap } from "@/project/villageKindPlan";
 import { VILLAGE_CARD, fixUnknownVillageKind, namedVillageSpec, unknownVillageKind, villageArgs, villageKindsLine } from "@/ai/v2/place/builders/village";
 import { resolveWhere } from "@/ai/v2/place/where";
+import { makeVerbContext } from "@/ai/v2/tools/context";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { isPassable } from "@/project/collision";
@@ -310,6 +311,15 @@ describe("버들항 마을 종류 — 기록과 조수 글", () => {
     expect(villageKindOfMap(ctx.project.maps[mapId])).toBe("lighthouse-cape");
     expect(session.placeOf(mapId)?.spec.hints?.kind).toBe("lighthouse-cape");
   }, 120_000);
+
+  it("leaves a Korean city style outside the Beodeul name rules", () => {
+    const project = fresh();
+    const ctx = { project, currentMapId: project.startMapId, assistantRun: true };
+    const env = { ctx, request: { task: "현대 한국의 Lighthouse Cape 마을을 지어 줘.", provider: "local-cli:claude", mapIds: [], project },
+      emit() {}, record() {}, sideChat: async () => "{}", checkpoint: async () => {} } as never;
+    const { localizeNewPlace } = makeVerbContext(env, new V2Session());
+    expect(localizeNewPlace({ type: "village", name: "Lighthouse Cape", style: "kr-modern" }).hints?.kind).toBeUndefined();
+  });
 
   it("keeps an explicit kind and site, with a varied default for a general coastal name", () => {
     const coastal = { type: "village", name: "별빛 바닷가 마을", theme: "coast" } as const;

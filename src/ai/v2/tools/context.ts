@@ -17,7 +17,7 @@ import { createBuildRun } from "../shared/buildRun";
 import { localizeVillagePoolSpec } from "../../villageChipsetPool";
 import { builderFor } from "../place/builders";
 import { localizeCultureSpec } from "../place/builders/joseon";
-import { localizePlaceSpec } from "../place/builders/modernCity";
+import { localizePlaceSpec, MODERN_KR_BUILDER } from "../place/builders/modernCity";
 import { namedVillageSpec } from "../place/builders/village";
 import { layoutGiven } from "../place/interiorLayout";
 import { parseWorldStyle, type WorldSetting } from "../place/world";
@@ -59,7 +59,10 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const localizeNewPlace = (spec: PlaceSpec): PlaceSpec => {
     const taskText = String(task ?? "");
     const localized = localizeCultureSpec(localizePlaceSpec(spec, taskText), taskText, run.ctx.project);
-    const named = localized.type === "village" && builderFor(localized)?.id === "village" ? namedVillageSpec(localized) : undefined;
+    if (localized.type !== "village") return localized;
+    // A village spec with a Korean city style can fall through to the village builder, which only knows the Beodeul catalog.
+    const beodeul = builderFor(localized)?.id === "village" && !MODERN_KR_BUILDER.accepts({ ...localized, type: "street" });
+    const named = beodeul ? namedVillageSpec(localized) : undefined;
     return named ?? localizeVillagePoolSpec(localized, run.ctx.project, String(env.request.projectKey ?? env.ctx.project.meta.title ?? ""), taskText);
   };
   // 이 게임의 세계(world.ts) — 청사진이 있으면 청사진이 정한 것, 없으면 요청·프로젝트 열쇠로 고른 것. 지시문(prompt.ts)의 세계 카드와 같은 답이다.
