@@ -13,6 +13,7 @@ export interface FacilityEntry {
   readonly program: string;
   readonly map: string;
   readonly shape: string;
+  readonly aliases?: readonly string[];
 }
 
 /** 기존 program 을 쓰는 23곳 - 외곽 태그는 그 견본의 줄 배치(dailyVenues·modernVenues)가 만드는 모양. */
@@ -44,7 +45,7 @@ const EXISTING: readonly FacilityEntry[] = [
 
 /** 84곳 전체(분류 11 · 이름 · program · 맵 · 외곽 모양). */
 export const FACILITY_CATALOG: readonly FacilityEntry[] = [
-  ...NEW_FACILITIES.map((v) => ({ cat: v.cat, ko: v.ko, program: v.program, map: v.map, shape: v.shape })),
+  ...NEW_FACILITIES.map((v) => ({ cat: v.cat, ko: v.ko, program: v.program, map: v.map, shape: v.shape, aliases: v.aliases })),
   ...EXISTING,
 ];
 

@@ -5,9 +5,11 @@
 //         (G9: 카페 「온기」가 일본 집 거실 ldk 10×7 로 지어졌다).
 // 모델은 칸·좌표를 쓰지 않는다. 못 하는 것은 missingArt 로 정직하게 보고한다.
 import { cityInteriorSeed } from "./cityInteriorSeed";
+import { FACILITY_CATALOG } from "@/editor/handInterior/facilityVenues";
 import { NEIGHBORHOOD_KONBINI } from "@/editor/handInterior/neighborhoodKonbini";
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { isPassable } from "@/project/collision";
+import { labelHasWord, labelWithoutNotes } from "@/project/labelWords";
 import type { Project } from "@/project/types";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
@@ -27,7 +29,7 @@ export function localizePlaceSpec<T extends PlaceSpec>(spec: T, task: string): T
 export const MODERN_KR_CARD =
   "[Modern Korea type:street|house, style kr-modern] For Seoul or modern Korea put kr-modern in style (do not build a Japanese street or Japanese house). " +
   "street = one Korean city street (60×48: roads, intersection, crosswalks, Hangul signboards, bus shelter, park, building doors). features shop words: 편의점 (convenience store) · 카페 · 은행 (bank) · 병원 (hospital) · 사무실 (office) · 호텔 · 백화점 (department store) · 아파트 · 주택 (house) · 빵집 (bakery) · 우체국 (post office) · 경찰서 (police station). " +
-  "house = one interior in that city: 카페 (bar counter, seats) · 편의점 · 지하철역 (subway station) · 사무실 · 아파트 · 빌딩 로비 (lobby) · 은행 · 병원 · 마트 · 백화점 · 영화관 (cinema) · 식당 (restaurant) · 미술관 (gallery) · 도서관 (library) · 시청 (city hall) · 의원 (clinic) · 빵집 카페 · 창고 (warehouse). You can also pick directly with hints.program.";
+  "house = one interior in that city: 카페 (bar counter, seats) · 편의점 · 지하철역 (subway station) · 사무실 · 아파트 · 빌딩 로비 (lobby) · 은행 · 병원 · 마트 · 백화점 · 영화관 (cinema) · 식당 (restaurant) · 미술관 (gallery) · 도서관 (library) · 시청 (city hall) · 의원 (clinic) · 빵집 카페 · 창고 (warehouse). Use the full venue name or hints.program.";
 
 type Rule = readonly [RegExp, string];
 const has = (text: string, re: RegExp): boolean => re.test(text);
@@ -43,6 +45,40 @@ const PROGRAM_RULES: readonly Rule[] = [
   [/library|도서관/i, "library"], [/city hall|시청|구청|주민센터/i, "city-hall"], [/bank|은행/i, "bank"], [/office|사무실|오피스|회사/i, "office-floor"],
   [/lobby|로비/i, "lobby"], [/warehouse|창고/i, "warehouse"], [/apartment|아파트|원룸|오피스텔|집|자취|방|home|house/i, "apartment"],
 ];
+
+// A general request for these venues keeps the existing floor plan. A more specific catalog name can select a larger facility.
+const DEFAULT_VENUES = new Set(["cafe", "konbini", "cinema-arcade", "warehouse"]);
+const venueNameSize = (name: string) => name.replace(/[^\p{L}\p{N}]/gu, "").length;
+const flexibleSpacing = (name: string): RegExp | undefined => {
+  if (!/^[가-힣\s]+$/u.test(name)) return undefined;
+  const syllables = [...name.replace(/\s+/gu, "")].join("\\s*");
+  return new RegExp(`(?<![\\p{L}\\p{N}])${syllables}(?![\\p{L}\\p{N}])`, "gu");
+};
+const FACILITY_NAMES = FACILITY_CATALOG.flatMap((entry) =>
+  [...new Set([labelWithoutNotes(entry.ko).trim(), entry.map, entry.program, ...(entry.aliases ?? [])])]
+    .map((name) => ({ name, spacing: flexibleSpacing(name), size: venueNameSize(name), program: entry.program })))
+  .filter(({ size }) => size > 0)
+  .sort((a, b) => b.size - a.size);
+
+function matchProgram(text: string): { program: string; fallback?: string } | undefined {
+  const facility = FACILITY_NAMES.find(({ name, spacing }) => labelHasWord(spacing ? text.replace(spacing, name) : text, name));
+  for (const [rule, program] of PROGRAM_RULES) {
+    const match = rule.exec(text);
+    if (!match) continue;
+    const precise = facility && (!DEFAULT_VENUES.has(program) || facility.size > venueNameSize(match[0]));
+    return { program: precise ? facility.program : program, fallback: program };
+  }
+  return facility ? { program: facility.program } : undefined;
+}
+
+function inferProgram(spec: PlaceSpec): string | undefined {
+  const named = matchProgram(spec.name);
+  if (!named) return matchProgram(textOf(spec))?.program;
+  if (named.program !== named.fallback || !spec.theme) return named.program;
+  const theme = matchProgram(spec.theme);
+  // A more specific theme can refine a generic name when both refer to the same kind of venue.
+  return theme?.fallback === named.program ? theme.program : named.program;
+}
 
 function targetMap(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): string | undefined {
   if (previous?.result.mapIds[0] && run.ctx.project.maps[previous.result.mapIds[0]]) return previous.result.mapIds[0];
@@ -122,15 +158,14 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   const warnings: string[] = [];
   const missing: string[] = [];
   const prev = previous?.result.state as KrState | undefined;
-  // 이름 낱말이 먼저: 「카페 온기」에 방 종류 ldk 가 붙어 와도 카페다(G9).
-  const inferredProgram = PROGRAM_RULES.find(([re]) => has(spec.name, re))?.[1]
-    ?? PROGRAM_RULES.find(([re]) => has(textOf(spec), re))?.[1] ?? "apartment";
+  const inferredProgram = inferProgram(spec);
   const target = targetMap(run, spec, previous);
   const existing = target ? run.ctx.project.maps[target] : undefined;
-  // Use the stocked preset for new default builds and keep the preset saved with a rebuild.
+  // Keep the saved program when the place still asks for the same kind of venue.
+  const savedProgram = previous && (!inferredProgram || inferredProgram === inferProgram(previous.spec)) ? prev?.program : undefined;
   const newStore = inferredProgram === "konbini" && spec.hints?.seed === undefined && !previous && (!existing || isBlankMap(existing));
-  const defaultProgram = newStore || prev?.program === NEIGHBORHOOD_KONBINI ? NEIGHBORHOOD_KONBINI : inferredProgram;
-  const program = typeof spec.hints?.program === "string" ? spec.hints.program : defaultProgram;
+  const explicitProgram = typeof spec.hints?.program === "string" ? spec.hints.program.trim() : "";
+  const program = explicitProgram || (savedProgram ?? (newStore ? NEIGHBORHOOD_KONBINI : inferredProgram ?? "apartment"));
   const selected = cityInteriorSeed(spec, prev?.baseSeed ?? prev?.seed);
   // 예전 한국 실내는 variant를 기록만 했다. 이름·가구만 고칠 때는 실제로 지은 씨앗을 유지한다.
   const sameSelection = previous?.spec.hints?.seed === spec.hints?.seed && previous?.spec.hints?.variant === spec.hints?.variant;

@@ -77,6 +77,7 @@ export const HINTS_SCHEMA = {
   description: "only builder knobs the card told you about. Leave out anything you do not know.",
   properties: {
     variant: { type: "number", description: "another layout of the same spec (0,1,2…)" },
+    program: { type: "string", description: "(modern house) a registered interior program id. Leave empty to infer it from the venue name." },
     dressing: { type: "number", description: "amount of dressing 0 normal · 1 more · 2 packed (cozy)" },
     houseCount: { type: "number" },
     kind: { type: "string", description: `(village, optional) village kind id — the land answer lists them; or a sheer cliff terrain (no houses): ${SHEER_KIND_IDS}` },
