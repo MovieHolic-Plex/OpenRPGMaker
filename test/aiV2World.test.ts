@@ -12,6 +12,7 @@ import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { isMysteryBlueprint } from "@/ai/v2/story/mysteryCaseRead";
 import { parseAdvisorReply } from "@/ai/v2/judge/advisor";
 import { builderFor } from "@/ai/v2/place/builders";
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/place/world";
 import { fitsAnyWorld } from "@/ai/v2/request/genre";
 import { worldForRequest } from "@/ai/v2/request/world";
@@ -221,6 +222,7 @@ describe("build_places — 한 세계의 장소를 짓고 잇는다", () => {
     const toCave = routeMap!.events.filter((event) => JSON.stringify(event.pages).includes(`"mapId":"${caveMap!.id}"`));
     expect(toCave).toHaveLength(1);
     expect(toCave[0]).toMatchObject(gate!);
+    expect(isEntranceArt(project, routeMap!, gate!.x, gate!.y - 1)).toBe(true);
     expect(walkGame(project, maps.map((map) => map.id))).toMatchObject({ unreached: [], noWayBack: [] });
   }, SLOW);
 

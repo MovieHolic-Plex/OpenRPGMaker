@@ -420,7 +420,10 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   // 던전 어귀: 입구 칸(gate) 북쪽에 입구 구조물(주어졌을 때 — 발치 줄이 gate 바로 위), 양옆에 화로·표지·수레·상자. 구조물이 없으면 자리만 비워 둔다(던전 잇기가 갱구를 찍는다).
   const mouthAt = (gx: number, gy: number): Cell => {
     const kd = input.dungeon?.kit ? kitOf(input.dungeon.kit) : undefined;
-    if (kd) want(kd.id, gx + 1 - Math.ceil(kd.width / 2), gy - kd.height);
+    if (kd) {
+      const door = kd.parts?.find((part) => part.kind === "entrance");
+      want(kd.id, gx - (door?.dx ?? Math.ceil(kd.width / 2) - 1), gy - (door ? door.dy + door.h : kd.height));
+    }
     const dress: [string, number, number][] = [["bd-pick-mountain-pass-brazier", gx - 4, gy - 1], ["bd-pick-mountain-pass-brazier", gx + 5, gy - 1], ["bd-out-signpost", gx + 4, gy], ["bd-obj-broken-cart", gx - 6, gy], ["bd-pick-mining-valley-crates", gx + 6, gy - 2]];
     for (const [id, x, y] of dress) { const k = kitOf(id); if (k && x >= 2 && y >= 2 && x + k.width <= W - 2 && y + k.height <= H - 2) placements.push({ kit: id, x, y }); }
     clearings.push({ x: gx - 7, y: gy - 6, w: 15, h: 9 });

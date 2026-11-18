@@ -19,6 +19,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { activeKitLook } from "@/project/kitLook";
 import { addMapLocation } from "@/project/mapNamedLocations";
 import { buildThemedRoute, type RouteSideName } from "./routeThemeBuild";
+import { BEODEUL_CAVE_MOUTH_KIT_ID } from "./dungeonLinkTools";
 import { parseRouteFeature, parseRouteShape, parseRouteTheme, pickRouteShape, ROUTE_FEATURES, ROUTE_SHAPE_LABEL, ROUTE_SHAPES, ROUTE_THEMES, ROUTE_THEME_LABEL, routeVariantFor } from "./routeThemes";
 
 type Point = { x: number; y: number };
@@ -467,8 +468,9 @@ const SIDE_NAMES: readonly RouteSideName[] = ["north", "south", "east", "west"];
 const ROUTE_SHAPE_TAG = "route-shape:";
 const ROUTE_LAYOUT_TAG = "route-layout:";
 const ROUTE_RELIEF_TAG = "route-relief:";
-/** 던전 종류(dungeonKit DUNGEON_TYPES) → 길목에 세우는 입구 구조물(버들항 원본 킷). 없는 종류(동굴·광산·하수도·화산·얼음·숲·늪)는 자리만 비워 두고 던전 잇기가 갱구를 찍는다. */
+/** 던전 종류(dungeonKit DUNGEON_TYPES) → 길목에 세우는 입구 구조물(버들항 원본 킷). 없는 종류는 자리만 비워 두고 던전 잇기가 갱구를 찍는다. */
 const DUNGEON_MOUTH_KIT: Record<string, string> = {
+  cave: BEODEUL_CAVE_MOUTH_KIT_ID, mine: BEODEUL_CAVE_MOUTH_KIT_ID,
   temple: "bd-pick-deep-forest-path-ruin-gate", labyrinth: "bd-pick-deep-forest-path-ruin-gate", pyramid: "bd-pick-deep-forest-path-ruin-gate", catacomb: "bd-pick-deep-forest-path-ruin-gate",
   castle: "bd-wall-gatehouse", tower: "bd-wall-gatehouse", otherworld: "bd-pick-dungeon-theme-portal-gate-open",
 };
