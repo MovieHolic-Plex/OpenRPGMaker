@@ -250,7 +250,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         ],
       }),
     ] }),
-  facility({ cat: "주거시설", p: "mc_old_apartment", map: "old-apartment", ko: "낡은 아파트", shape: "L자형", entrance: "oa-corridor",
+  facility({ cat: "주거시설", p: "mc_old_apartment", map: "old-apartment", ko: "낡은 아파트", aliases: ["오래된 아파트"], shape: "L자형", entrance: "oa-corridor",
     rows: [["oa-room-a", "oa-room-b", "~"], ["oa-stair", "oa-corridor"]],
     open: [["oa-stair", "oa-corridor"]],
     rooms: [
