@@ -15,6 +15,10 @@ import { placeSpecCards, type PlaceSpecKind } from "../prompt/placeSpecs";
 import { leanPromptFor } from "../request/readers";
 import { createBuildRun } from "../shared/buildRun";
 import { localizeVillagePoolSpec } from "../../villageChipsetPool";
+import { builderFor } from "../place/builders";
+import { localizeCultureSpec } from "../place/builders/joseon";
+import { localizePlaceSpec } from "../place/builders/modernCity";
+import { namedVillageSpec } from "../place/builders/village";
 import { layoutGiven } from "../place/interiorLayout";
 import { parseWorldStyle, type WorldSetting } from "../place/world";
 import { worldForRequest } from "../request/world";
@@ -48,11 +52,16 @@ import { linkAtRoadMouths } from "../place/roadMouths";
 import { LINK_SIDES, repairCap, text, see, seenPayload, withImages, recordWrite, nextStep } from "./support";
 import { keepRelaidMapId, renameIdIn } from "../place/keepMapId";
 
-/** createV2Tools 에서 뗀 것 — task · run · poolVillage · requestWorld · freshStart · lean · epoch · specShown …. (makeVerbContext) */
+/** createV2Tools 에서 뗀 것 — task · run · localizeNewPlace · requestWorld · freshStart · lean · epoch · specShown …. (makeVerbContext) */
 export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
-  const poolVillage = <T extends PlaceSpec>(spec: T): T => localizeVillagePoolSpec(spec, run.ctx.project, String(env.request.projectKey ?? env.ctx.project.meta.title ?? ""), String(task ?? ""));
+  const localizeNewPlace = (spec: PlaceSpec): PlaceSpec => {
+    const taskText = String(task ?? "");
+    const localized = localizeCultureSpec(localizePlaceSpec(spec, taskText), taskText, run.ctx.project);
+    const named = localized.type === "village" && builderFor(localized)?.id === "village" ? namedVillageSpec(localized) : undefined;
+    return named ?? localizeVillagePoolSpec(localized, run.ctx.project, String(env.request.projectKey ?? env.ctx.project.meta.title ?? ""), taskText);
+  };
   // 이 게임의 세계(world.ts) — 청사진이 있으면 청사진이 정한 것, 없으면 요청·프로젝트 열쇠로 고른 것. 지시문(prompt.ts)의 세계 카드와 같은 답이다.
   const requestWorld = (): WorldSetting | undefined => worldForRequest(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, String(task ?? ""));
   // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
@@ -395,7 +404,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
         }
     return notes.join(" / ");
   };
-  return { env, session, task, run, poolVillage, requestWorld, freshStart, lean, specShown, showSpecs, withSpecText, specGate, outsideBuilt, noteLayoutPlace, finishPlace, finishContent, designed, noteAssembly, blueprintGate, wantsBattle, runBlueprintPath, linkChild };
+  return { env, session, task, run, localizeNewPlace, requestWorld, freshStart, lean, specShown, showSpecs, withSpecText, specGate, outsideBuilt, noteLayoutPlace, finishPlace, finishContent, designed, noteAssembly, blueprintGate, wantsBattle, runBlueprintPath, linkChild };
 }
 
 export type VerbContext = ReturnType<typeof makeVerbContext>;

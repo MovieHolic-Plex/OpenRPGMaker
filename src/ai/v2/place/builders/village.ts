@@ -9,6 +9,7 @@ import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
 import { SHEER_KINDS_CARD_LINE } from "../sheerKindLines";
 import { isPassable } from "@/project/collision";
+import { labelHasWord } from "@/project/labelWords";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { eventsOf, tileLabel } from "../cells";
 import { roadCells } from "../surface";
@@ -47,6 +48,21 @@ export function villageCard(key = "", request = ""): string {
 export function villageKindsLine(theme: string, water?: unknown, key?: string): string | undefined {
   if (theme !== "river" && theme !== "coast") return undefined;
   return `hints.kind: set it only when the request names what the village lives on («a salt-pan village» does; «a seaside village» does not). Left out, the game picks a kind that fits this land, different per game. To set it, put its id in hints.kind of the building call. ${villageKindMenu({ water: theme === "coast" ? "sea" : water === "none" ? "none" : "river", key })} ${SHEER_KINDS_CARD_LINE}`;
+}
+
+/** Keep a registered kind that was named for this place, even if the planner omitted its dedicated hint. */
+export function namedVillageSpec(spec: PlaceSpec): PlaceSpec | undefined {
+  const hint = typeof spec.hints?.kind === "string" ? spec.hints.kind.trim() : "";
+  const matches = (text: string) => BEODEUL_VILLAGE_KINDS.filter((kind) => [kind.id, kind.ko, kind.en].some((name) => labelHasWord(text, name)));
+  const named = hint ? [] : matches(spec.name);
+  const found = !hint && named.length === 0 && spec.theme ? matches(spec.theme) : named;
+  const kind = hint ? villageKindById(hint) : found.length === 1 ? found[0] : undefined;
+  if (!kind) return undefined;
+  const { args: site } = villageArgs(spec);
+  if (site.theme !== undefined && site.theme !== "river" && site.theme !== "coast") return undefined;
+  const coast = site.theme === undefined && site.water === undefined && kind.fit.water.length === 1 && kind.fit.water[0] === "sea";
+  if (hint && !coast) return spec;
+  return { ...spec, ...(coast ? { theme: "coast" } : {}), hints: { ...spec.hints, kind: kind.id } };
 }
 
 /** 명세가 적은 kind 가 표에 없는 이름이면 그 이름(빈 값·글자가 아닌 값은 안 준 것). */

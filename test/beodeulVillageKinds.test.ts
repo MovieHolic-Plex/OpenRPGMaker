@@ -7,7 +7,7 @@ import { BEODEUL_VILLAGE_KINDS, VILLAGE_KIND_EXAMPLES, chooseVillageKind, villag
 import { brokenVillageScenes, sceneSlot, type PlacedScene } from "@/editor/tools/beodeulVillageScenes";
 import { beodeulRouteGuard } from "@/editor/tools/beodeulObjectSets";
 import { clearVillageKindPlan, recordVillageKind, villageKindOfMap, villageSceneByWord, villageScenesOfMap } from "@/project/villageKindPlan";
-import { VILLAGE_CARD, fixUnknownVillageKind, unknownVillageKind, villageArgs, villageKindsLine } from "@/ai/v2/place/builders/village";
+import { VILLAGE_CARD, fixUnknownVillageKind, namedVillageSpec, unknownVillageKind, villageArgs, villageKindsLine } from "@/ai/v2/place/builders/village";
 import { resolveWhere } from "@/ai/v2/place/where";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
@@ -287,4 +287,36 @@ describe("버들항 마을 종류 — 기록과 조수 글", () => {
     expect(river.json.buildings).toBe(first.json.buildings);
     expect(desert.json.buildings).toBe(first.json.buildings); // 건물은 어느 테마의 마을에서나 청할 수 있다
   }, 120_000);
+
+  it("uses a registered village name on the public make_place path before choosing the land", async () => {
+    const p = fresh();
+    const key = '["project","jrpg-village-1"]';
+    const ctx = { project: p, currentMapId: p.startMapId, assistantRun: true, lookKey: key };
+    const env = { ctx, request: { task: "JRPG 시작점에 Lighthouse Cape 마을을 지어 줘.", provider: "local-cli:claude", mapIds: [], project: p, projectKey: key },
+      emit() {}, record() {}, sideChat: async () => "{}", checkpoint: async () => {} } as never;
+    const session = new V2Session();
+    const make = createV2Tools(env, session).find((tool) => tool.name === "make_place")!;
+    const call = async (id: string) => {
+      const response = await make.execute(id, { type: "village", name: "Lighthouse Cape", hints: { kind: "" } });
+      return JSON.parse(response.content.find((part) => part.type === "text")!.text) as { ok: boolean; notFailure?: boolean; terrain?: string; mapIds?: string[]; summary: string };
+    };
+    const preview = await call("preview");
+    expect(preview.notFailure, preview.summary).toBe(true);
+    expect(preview.terrain).toContain("바다");
+    const built = await call("build");
+    expect(built.ok, built.summary).toBe(true);
+    const mapId = built.mapIds![0]!;
+    expect(ctx.project.maps[mapId]!.tilesetId).toBe("beodeul_city");
+    expect(villageKindOfMap(ctx.project.maps[mapId])).toBe("lighthouse-cape");
+    expect(session.placeOf(mapId)?.spec.hints?.kind).toBe("lighthouse-cape");
+  }, 120_000);
+
+  it("keeps an explicit kind and site, with a varied default for a general coastal name", () => {
+    const coastal = { type: "village", name: "별빛 바닷가 마을", theme: "coast" } as const;
+    expect(namedVillageSpec(coastal)).toBeUndefined();
+    const pinned = { ...coastal, name: "등대 곶", hints: { kind: "shipwrights", water: "none" } } as const;
+    expect(namedVillageSpec(pinned)).toBe(pinned);
+    const named = namedVillageSpec({ ...coastal, name: "등대 곶" });
+    expect(named?.hints?.kind).toBe("lighthouse-cape");
+  });
 });
