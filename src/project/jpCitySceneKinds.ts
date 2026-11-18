@@ -8,7 +8,14 @@ import { lookHash } from "@/project/kitLook";
 
 export type SceneStyle = "shopping" | "residential" | "shitamachi" | "shotengai";
 
-export interface SceneTone { readonly ko: string; readonly en: string; readonly lot: readonly string[]; readonly sidewalk: string; readonly road: string; readonly plaza: string; readonly alley: string; /** 주택 필지 바닥(필지마다 돌린다) */ readonly yard: readonly string[]; readonly green: string }
+export interface SceneTone {
+  readonly ko: string; readonly en: string;
+  readonly pavingShade: "grey" | "warm" | "pale";
+  readonly lot: readonly string[]; readonly sidewalk: string; readonly road: string;
+  readonly plaza: string; readonly alley: string;
+  /** 주택 필지 바닥(필지마다 돌린다) */ readonly yard: readonly string[];
+  readonly green: string;
+}
 
 export interface SceneKind {
   readonly id: string; readonly ko: string; readonly en: string; readonly styles: readonly string[];

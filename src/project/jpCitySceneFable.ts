@@ -443,15 +443,20 @@ export function fableFill(c: SceneCtx): void {
   }
 }
 
-/** 바닥 덧조각(드문드문): 잔디·흙·아스팔트의 한 칸 무늬, 맨홀, 큰길 가운데 줄의 바퀴 띠. 다른 바닥 조각이 있는 칸은 건너뛴다. */
+/** Keep road accents sparse. Repairs in the general pool read as dark squares when scattered across a road. */
 export function fableAccents(c: SceneCtx, taken: ReadonlySet<string>): void {
   const { W, H, rng } = c;
-  const pools: Partial<Record<GroundFamily, string[]>> = { lawn: streetTagged("accent-lawn"), earth: streetTagged("accent-earth"), tarmac: streetTagged("accent-tarmac"), lane: streetTagged("accent-lane") };
+  const pools: Partial<Record<GroundFamily, string[]>> = {
+    lawn: streetTagged("accent-lawn"),
+    earth: streetTagged("accent-earth"),
+    tarmac: streetTagged("accent-tarmac").filter((name) => !name.startsWith("tarmac-patch")),
+    lane: streetTagged("accent-lane").filter((name) => name !== "lane-patch"),
+  };
   const used = new Set<string>();
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const f = c.famAt(x, y), pool = pools[f];
     if (!pool?.length || taken.has(key(x, y)) || c.drawn[y * W + x] || (f !== "tarmac" && f !== "lane" && c.at(x, y) !== Occ.Lot && c.at(x, y) !== Occ.Walk)) continue;
-    if (rng() >= (f === "tarmac" ? 0.07 : f === "lane" ? 0.04 : 0.1) || used.has(key(x - 1, y)) || used.has(key(x, y - 1)) || used.has(key(x + 1, y - 1)) || used.has(key(x - 1, y - 1))) continue;
+    if (rng() >= (f === "tarmac" || f === "lane" ? 0.025 : 0.1) || used.has(key(x - 1, y)) || used.has(key(x, y - 1)) || used.has(key(x + 1, y - 1)) || used.has(key(x - 1, y - 1))) continue;
     const fits = pool.filter((n) => c.stFits(n, x, y));
     if (!fits.length) continue;
     const name = fits[Math.floor(rng() * fits.length)]!;
