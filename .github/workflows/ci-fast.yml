@@ -38,22 +38,21 @@ concurrency:
   group: ci-fast-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
-# 잡이 둘인 이유 (2026-11-08 실측): 성공 51회의 단계 합은 중앙 440초인데 벽시계도 448초였다 —
-# 즉 **전부 직렬**이었다. 가장 긴 사슬(parity 200초)과 그 뒤의 앱 빌드만 한 러너에 남기고
-# 서로 독립인 정적 검사(핀·타입체크·배럴·CSS 래칫·openwiki·런타임 에셋)를 다른 러너로 옮기면
-# 임계 경로가 약 338초가 되어 100초 남짓(약 24%) 줄어든다. 두 잡은 서로를 기다리지 않는다.
+# 2026-11-08 실측에서 직렬 실행의 단계 합은 중앙 440초, 벽시계는 448초였다.
+# 독립적인 정적 검사를 fast-static 으로 떼어 병렬로 돌려 임계 경로를 약 100초 줄이는 구성이었다.
 #
-# **필수 체크 이름 `fast` 는 그대로 둔다** — 저장소의 브랜치 보호와 `scripts/merge-pr.mjs` 가
-# 그 이름을 본다. 두 번째 잡 `fast-static` 도 머지 조건에 넣었으므로(merge-pr.mjs 의
-# REQUIRED_CHECKS) 게이트는 약해지지 않고 넓어진다.
+# 2026-11-19 실측(run 44483882406)에서 fast 는 6분 28초 걸렸고, parity 230초(가져오기 40%)·
+# 타입체크 44초·체크아웃 46초가 직렬이었다. parity 를 4샤드로 나누고 컴파일·하네스·타입체크·
+# 앱 빌드는 fast-build 로 떼어 병렬로 돌린다. `fast` 는 둘을 기다리는 집계 잡으로 남긴다.
 jobs:
-  fast:
+  fast-build:
+    name: fast-build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2   # jp_city 핀 검사가 바로 앞 커밋(HEAD~1)의 pins.json 과 비교한다
+          fetch-depth: 1   # 이 잡은 git 이력을 안 쓴다 — HEAD~1 이 필요한 핀 검사는 fast-static 에 있다
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -114,16 +113,61 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=10240
         run: npm run typecheck:app
 
-      # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
-      # 잡은 러너마다 격리되므로 호스트 락은 없다.
-      - name: parity 스위트
-        run: npm run test:parity
-
       # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
       - name: 앱 빌드
         run: npm run build:app
 
-  # 정적 검사 묶음. `fast` 와 **동시에** 돌고 서로를 기다리지 않는다 — 위 주석의 100초 절감이 여기서 나온다.
+  fast-parity:
+    name: fast-parity (${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
+      # 잡은 러너마다 격리되므로 호스트 락은 없다.
+      # vitest 내장 --shard 는 파일 경로의 SHA-1 해시로 정렬해 연속 구간으로 자른다.
+      # 분할은 결정적이고 네 샤드의 합집합이 test/parity 전체다(누락·중복 없음).
+      # 2026-11-19 기준 9파일은 3/2/2/2로 나뉜다. 샤드 수가 파일 수보다 많으면
+      # vitest 가 에러로 멈추므로 파일이 4개 미만이 되면 샤드 수를 줄인다.
+      - name: parity 스위트 (샤드 ${{ matrix.shard }}/4)
+        run: npm run test:parity -- --shard=${{ matrix.shard }}/4
+
+  # 필수 체크 이름 `fast` 를 유지해 merge-pr.mjs 게이트가 그대로 동작한다.
+  # 빌드나 parity 중 하나라도 실패하거나 건너뛰면 이 체크가 빨강이다.
+  fast:
+    needs: [fast-build, fast-parity]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 게이트 판정
+        shell: bash
+        env:
+          BUILD_RESULT: ${{ needs.fast-build.result }}
+          PARITY_RESULT: ${{ needs.fast-parity.result }}
+        run: |
+          set -euo pipefail
+          printf 'fast-build: %s\nfast-parity: %s\n' "$BUILD_RESULT" "$PARITY_RESULT"
+          if [[ "$BUILD_RESULT" != success || "$PARITY_RESULT" != success ]]; then
+            echo '::error::fast-build 와 fast-parity 가 모두 성공해야 한다.'
+            exit 1
+          fi
+
+  # 정적 검사 묶음. `fast-build`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
   # 각 항목은 순수 함수/정적 분석이라 다른 단계의 산출물을 쓰지 않는다(러너도 따로다).
   fast-static:
     runs-on: ubuntu-latest
