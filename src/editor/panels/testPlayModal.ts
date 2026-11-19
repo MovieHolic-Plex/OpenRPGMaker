@@ -115,10 +115,14 @@ export async function openTestPlayModal(
   const startProject = store.getCurrent();
   const startMapName = startProject.maps[startOverride?.mapId ?? startProject.startMapId]?.name;
   const body = openTestPlayShell(title, { runControls: true, mapName: startMapName });
-  const loading = mountPlayLoadingOverlay(body, "saving");
+  const loading = mountPlayLoadingOverlay(body, "preparing");
   try {
-    await store.flush();
-    loading.setStage("preparing");
+    await store.whenBootNormalized();
+    if (store.hasUnsavedChanges()) {
+      loading.setStage("saving");
+      await store.flush();
+      loading.setStage("preparing");
+    }
     const project = projectWithoutEventDrafts(store.getCurrent());
     const projectFingerprint = authoringProjectFingerprint(project);
     releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(project);

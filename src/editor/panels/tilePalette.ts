@@ -270,12 +270,15 @@ export function renderTilePalette(container: HTMLElement): void {
     }
   }
   // 시트가 제자리에 남으면 스크롤도 그대로다 — 스크롤 읽기(강제 레이아웃 ~65ms)와 복원을 건너뛴다.
-  const previousPaletteScroll = inPlace ? null : readPaletteScroll(container);
-
   if (state.layer === "event") {
     // 레이어 전환은 캔버스가 소유한다. 여기서는 공통 셸 안의 내용을 이벤트 목록으로 바꾼다.
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId;
+    const previousList = container.querySelector<HTMLElement>('[data-testid="event-list"]');
+    const eventScrollTop = previousList?.dataset.mapId === mapId
+      && previousList.dataset.projectLineage === String(store.getVersionToken().lineage)
+      ? previousList.scrollTop
+      : 0;
     const map = project.maps[mapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
     const shell = el("div", {
@@ -294,11 +297,14 @@ export function renderTilePalette(container: HTMLElement): void {
     // 검사 컨트롤(⋯ 오버플로·핀)은 도구막대 행 끝에 있다(tileToolbar.ts) — 사이드바 아래 줄은 비웠다.
     shell.append(root);
     mountPaletteShell(container, shell);
+    const list = root.querySelector<HTMLElement>('[data-testid="event-list"]');
+    if (list && eventScrollTop) list.scrollTop = eventScrollTop;
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;
   }
 
+  const previousPaletteScroll = inPlace ? null : readPaletteScroll(container);
   // event 분기 이후 타일 레이어로 좁힌다 (시트/클러스터 API가 lower|upper만 받음).
   const tileLayer: Exclude<Layer, "event"> = state.layer;
 

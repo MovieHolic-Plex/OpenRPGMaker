@@ -19,6 +19,9 @@ import { join } from "node:path";
 import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } from "@/project/flagship";
 import { serialize } from "@/project/io";
 import { validateShippedPlayJson } from "@/project/flagship/ipCleanliness";
+import { visitProjectCommands } from "@/editor/tools/commandTraversal";
+import { collectProjectItemReferenceIds } from "@/project/io/references";
+import type { Project } from "@/project/types";
 import { demoLoreCounts, demoLoreProblems } from "@/project/flagship/loreKit";
 import { prepareWebExport } from "@/project/webExport";
 
@@ -38,6 +41,17 @@ const only = argOf("only")?.split(",");
 const dir = join(out, "demos");
 mkdirSync(dir, { recursive: true });
 const mb = (n: number) => (n / 1048576).toFixed(1);
+
+/** 데이터베이스에 없는 아이템·장비를 가리키는 참조. 폴른 스타가 편집기에서 「Error 2」로 보였다(2026-11-19 QA). */
+function danglingInventoryRefs(project: Project): string[] {
+  const equipment = new Set(project.database.equipment.map((record) => record.id));
+  const inventory = new Set([...project.database.items.map((record) => record.id), ...equipment]);
+  const missing = new Set([...collectProjectItemReferenceIds(project)].filter((ref) => !inventory.has(ref)));
+  visitProjectCommands(project, ({ command }) => {
+    if (command.kind === "changeEquipment" && command.equipmentId && !equipment.has(command.equipmentId)) missing.add(command.equipmentId);
+  });
+  return [...missing];
+}
 for (const id of FLAGSHIP_DEMO_IDS) {
   if (only && !only.includes(id)) continue;
   const started = performance.now();
@@ -52,6 +66,11 @@ for (const id of FLAGSHIP_DEMO_IDS) {
   if (ipHits.length > 0) {
     for (const hit of ipHits) console.error(`[ip-clean] ${id}.play.json ${hit.path}: 「${hit.noun}」`);
     console.error(`[ip-clean] ${id}: 원작 고유명 ${ipHits.length}건 — 굽기 실패`);
+    process.exit(1);
+  }
+  const dangling = danglingInventoryRefs(project);
+  if (dangling.length > 0) {
+    console.error(`[item-refs] ${id}: 데이터베이스에 없는 아이템·장비 참조 ${dangling.length}건 — 굽기 실패: ${dangling.join(", ")}`);
     process.exit(1);
   }
   console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);

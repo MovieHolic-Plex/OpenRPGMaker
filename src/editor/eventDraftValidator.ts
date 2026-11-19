@@ -207,6 +207,8 @@ function validationFromIssues(issues: readonly EventDraftIssue[]): EventDraftVal
 
 function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
   const map = project.maps[mapId];
+  const items = new Set(project.database.items.map((entry) => entry.id));
+  const equipment = new Set(project.database.equipment.map((entry) => entry.id));
   return {
     actors: new Set(project.database.actors.map((entry) => entry.id)),
     animations: new Set(project.database.battleAnimations.map((entry) => entry.id)),
@@ -214,7 +216,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     commonEvents: new Set((project.commonEvents ?? []).map((entry) => entry.id)),
     endings: new Set((project.endings ?? []).map((entry) => entry.id)),
     gameOvers: new Set((project.system.gameOvers ?? []).map(entry => entry.id)),
-    equipment: new Set(project.database.equipment.map((entry) => entry.id)),
+    equipment,
     factions: new Set([
       PLAYER_FACTION_ID,
       DEFAULT_ENEMY_FACTION_ID,
@@ -225,7 +227,8 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     eventTemplates: new Set(
       Object.values(project.maps).flatMap((projectMap) => projectMap.events.map((entry) => entry.id)),
     ),
-    items: new Set(project.database.items.map((entry) => entry.id)),
+    items,
+    inventoryItems: new Set([...items, ...equipment]),
     schedules: new Set((project.database.schedules ?? []).map((entry) => entry.id)),
     lifeSkills: new Set((project.database.lifeSkills ?? []).map((entry) => entry.id)),
     maps: new Set(Object.keys(project.maps)),
@@ -1102,7 +1105,7 @@ function validateCommand(
     case "recoverAll": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
     case "enterHeroName": if (!command.stringVariableId) require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
     case "changeGold": variableOperand(command.amount, "골드 변수"); return;
-    case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.items); variableOperand(command.amount, "아이템 수량 변수"); return;
+    case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.inventoryItems); variableOperand(command.amount, "아이템 수량 변수"); return;
     case "planSchedule":
     case "runSchedule":
       require("reference.schedule.missing", "일정표", command.scheduleId, refs.schedules);
@@ -1230,9 +1233,8 @@ function validateCommand(
         });
       }
       // 상점 카탈로그·로드 검증과 같이 아이템+장비를 판다. items만 보면 무기점이 전부 «찾을 수 없음»이다.
-      const sellable = new Set([...refs.items, ...refs.equipment]);
-      command.itemIds.forEach((id) => require("reference.item.missing", "상점 아이템", id, sellable));
-      command.stock?.forEach((entry) => require("reference.item.missing", "상점 재고 아이템", entry.itemId, sellable));
+      command.itemIds.forEach((id) => require("reference.item.missing", "상점 아이템", id, refs.inventoryItems));
+      command.stock?.forEach((entry) => require("reference.item.missing", "상점 재고 아이템", entry.itemId, refs.inventoryItems));
       if (command.stock) {
         const idSet = new Set(command.itemIds);
         for (const entry of command.stock) {

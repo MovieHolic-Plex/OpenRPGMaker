@@ -349,6 +349,27 @@ describe("event draft aggregate validator", () => {
     expect(result.issues.some((issue) => issue.commandPath?.[0] === 0 && issue.code === "reference.item.missing")).toBe(false);
   });
 
+  it("accepts changeItem rewards that exist as equipment and still rejects unknown ids", () => {
+    // 폴른 스타 컷신(28,37)이 장비 「바람결 검」·「푸른 불꽃 창」을 changeItem 으로 준다. 런타임 인벤토리는
+    // 아이템+장비를 함께 받는데 편집기만 items 를 보아 「Error 2」를 띄웠다(2026-11-19 QA).
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const equipmentId = project.database.equipment[0]?.id;
+    if (!equipmentId) throw new Error("blank project has no equipment");
+    const event = gameEvent(page({
+      commands: [
+        { kind: "changeItem", itemId: equipmentId, op: "+=", amount: 1 },
+        { kind: "changeItem", itemId: "item_does_not_exist", op: "+=", amount: 1 },
+      ],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const missing = result.issues.filter((issue) => issue.code === "reference.item.missing");
+
+    expect(missing).toEqual([expect.objectContaining({ code: "reference.item.missing", commandPath: [1] })]);
+  });
+
   it("accepts numeric M2 values and requires a variable reference only in variable mode", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
