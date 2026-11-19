@@ -50,8 +50,10 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--danger` | `#B5302E` |
 | `--danger-muted` | `rgba(198, 64, 61, 0.13)` |
 | `--danger-strong` | `#9A2E2B` |
+| `--window-close-fill` | `#FF5F57` |
 | `--success` | `#18764F` |
 | `--success-muted` | `rgba(24, 118, 79, 0.13)` |
+| `--success-indicator` | `#34C759` |
 | `--warning` | `#7A5300` |
 | `--warning-muted` | `rgba(138, 94, 0, 0.13)` |
 | `--black-soft` | `#0F172A` |
@@ -92,6 +94,7 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--space-6` | `32px` |
 | `--shadow-pop` | `0 4px 12px rgba(15, 15, 15, 0.08), 0 12px 32px rgba(15, 15, 15, 0.10)` |
 | `--shadow-modal` | `0 8px 24px rgba(15, 15, 15, 0.10), 0 24px 64px rgba(15, 15, 15, 0.14)` |
+| `--shadow-control` | `0 0.5px 1px color-mix(in srgb, var(--black-soft) 8%, transparent), 0 2px 4px color-mix(in srgb, var(--black-soft) 6%, transparent)` |
 | `--focus-color` | `var(--accent)` |
 | `--focus-ring` | `0 0 0 2px var(--focus-color)` |
 | `--focus-outline` | `2px solid var(--focus-color)` |

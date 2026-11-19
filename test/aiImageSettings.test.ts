@@ -74,7 +74,7 @@ describe("ChatGPT image settings", () => {
     const view = form();
     expect(view.get("ai-settings-model-image-provider").textContent).toContain("ChatGPT");
     expect(view.get("ai-settings-model-image").textContent).toContain("ChatGPT");
-    expect(view.get("ai-config-image-provider").hasAttribute("disabled")).toBe(true);
+    expect(view.get("ai-config-image-provider").getAttribute("disabled")).not.toBeNull();
     expect(view.get("ai-config-image-provider").options.map((option) => option.value)).toEqual(["openai-codex"]);
     expect(view.get("ai-config-image-model").options.map((option) => option.value)).toEqual(["codex-image-default"]);
     expect(view.get("ai-config-image-model").value).toBe("codex-image-default");

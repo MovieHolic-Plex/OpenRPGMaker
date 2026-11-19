@@ -100,7 +100,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     expect(findByTestId(modal, "ai-settings-pane-behavior")?.hidden).toBe(true);
     expect(findByTestId(modal, "ai-settings-chatgpt-hero")?.hidden).toBe(false);
     expect(findByTestId(modal, "ai-settings-chatgpt-account")?.hidden).toBe(true);
-    expect(findByTestId(modal, "ai-settings-other-ways")?.parentElement?.hasAttribute("open")).toBe(false);
+    expect(findByTestId(modal, "ai-settings-other-ways")?.parentElement?.getAttribute("open")).toBeNull();
 
     const sheet = findByTestId(modal, "ai-settings-advanced");
     expect(sheet?.hidden).toBe(true);

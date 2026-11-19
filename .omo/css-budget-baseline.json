@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-19T12:13:21.885Z",
+  "generatedAt": "2026-11-19T14:45:20.836Z",
   "metrics": {
-    "hexLiterals": 2757,
+    "hexLiterals": 2759,
     "important": 385,
     "undefinedVars": 56,
     "globalRootFiles": 11,
@@ -182,7 +182,7 @@
       "src/styles/shell/from-map-resource-system-part-1.css": 1,
       "src/styles/shell/shell-density.part-1.css": 1,
       "src/styles/shell/window-controls.css": 5,
-      "src/styles/tokens.css": 31,
+      "src/styles/tokens.css": 33,
       "src/player/player.css": 1
     },
     "importantByFile": {

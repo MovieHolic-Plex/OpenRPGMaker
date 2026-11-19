@@ -75,8 +75,11 @@
   --danger-muted: rgba(198, 64, 61, 0.13);
   /* 옅은 위험 바탕(--danger-muted) 위 작은 칩 글자 — --danger 보다 한 단계 어둡다(왼쪽 연결 패널의 경고 칩). */
   --danger-strong: #9A2E2B;
+  /* The macOS-style close dot and the green on-state use brighter fills than status text. */
+  --window-close-fill: #FF5F57;
   --success: #18764F;
   --success-muted: rgba(24, 118, 79, 0.13);
+  --success-indicator: #34C759;
   --warning: #7A5300;
   --warning-muted: rgba(138, 94, 0, 0.13);
 
@@ -131,6 +134,7 @@
 
   --shadow-pop: 0 4px 12px rgba(15, 15, 15, 0.08), 0 12px 32px rgba(15, 15, 15, 0.10);
   --shadow-modal: 0 8px 24px rgba(15, 15, 15, 0.10), 0 24px 64px rgba(15, 15, 15, 0.14);
+  --shadow-control: 0 0.5px 1px color-mix(in srgb, var(--black-soft) 8%, transparent), 0 2px 4px color-mix(in srgb, var(--black-soft) 6%, transparent);
 
   /* 포커스 표시(HIG C-01·C-108) — 불투명 accent 2px. 45% 알파였을 때 툴바 바탕 위 대비가 1.97:1 이라
      호버와 구별되지 않았다. accent 는 --bg-base 위 5.44:1 이다. 링(box-shadow)을 쓰는 규칙과
