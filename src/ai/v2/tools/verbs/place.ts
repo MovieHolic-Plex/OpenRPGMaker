@@ -289,7 +289,7 @@ export function placeVerbs(c: VerbContext) {
           const bboxCardDue = bboxVillageSpec(spec) && !hasVillageLayout(spec) && !layoutSession(session).cards.has(`village:${spec.name}`);
           const hasLayout = !bboxCardDue && ((!!spec.hints?.layout && typeof spec.hints.layout === "object") || hasVillageLayout(spec));
           if (!hasLayout && (!kept || (kept.shape !== shape && kept.previews < 3))) {
-            const [width, height] = villageMapSize(spec, va);
+            const [width, height] = villageMapSize(spec, va, env.ctx.project);
             const terrainSeed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
             const terrain = codeTerrainFor(vt, va, width, height, terrainSeed, villageCliffHabitFor(env.ctx));
             session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });

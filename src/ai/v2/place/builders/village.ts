@@ -261,13 +261,21 @@ export function villageLayoutGuide(theme: string, fishing = false, scatter = fal
 }
 
 /** 마을이 지어질 맵 크기(build·authorBeodeulTown 기본값과 같은 계산) — 코드 지형 미리보기가 같은 크기로 땅을 만든다. */
-export function villageMapSize(spec: PlaceSpec, args: Record<string, unknown>): [number, number] {
+export function villageMapSize(spec: PlaceSpec, args: Record<string, unknown>, project?: Project): [number, number] {
   const w = num(args.width), h = num(args.height);
   const flat = args.walls === true || args.landform === "flat" || args.terrain === "flat";
   if (w !== undefined && h !== undefined) return [w, h];
   const theme = args.theme as string | undefined;
   if (spec.salt !== undefined && (theme === undefined || theme === "river" || theme === "coast") && w === undefined && h === undefined) {
-    const [a, b] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!; return [a, b + (flat ? 0 : 8)];
+    const [a, b] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!;
+    const height = b + (flat ? 0 : 8);
+    if (!flat && project && !spec.hints?.layout && !spec.villageLayout) {
+      const kits = beodeulKits(project);
+      const footprints = askedBuildingWords(spec.hints?.buildings).flatMap(word => askedBuildingKits(kits, word).slice(0, 1));
+      // Coast and river terrains share their height between water, banks and terraces.
+      return [Math.max(a, ...footprints.map(k => 4 * k.width)), Math.max(height, ...footprints.map(k => 4 * k.height))];
+    }
+    return [a, height];
   }
   const hc = num(args.houseCount);
   const base: [number, number] = hc === undefined ? ({ river: [56, 44], coast: [56, 40], desert: [58, 44], snow: [56, 44], swamp: [56, 44] } as Record<string, [number, number]>)[theme ?? "river"] ?? [56, 44]
