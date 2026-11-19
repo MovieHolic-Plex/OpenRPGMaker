@@ -147,6 +147,27 @@ describe("playSceneCamera camera control", () => {
     expect(scene.session.camera).toMatchObject({ mode: "follow", target: { kind: "player" } });
   });
 
+  it("a return without an explicit zoom restores the map zoom without carrying it to the next map", async () => {
+    const scene = cameraScene();
+    scene.map.cameraZoom = 0.72;
+    await applyCameraControl(scene, {
+      mode: "pan", target: { kind: "position", x: 2, y: 3 }, zoom: 1,
+      durationMs: 0, wait: true, returnToPlayer: false,
+    });
+    expect(scene.camera.zoom).toBe(1);
+
+    await applyCameraControl(scene, {
+      mode: "return", target: { kind: "player" },
+      durationMs: 0, wait: true, returnToPlayer: true,
+    });
+    expect(scene.camera.zoom).toBeCloseTo(0.72);
+    expect(scene.session.camera?.zoom).toBeUndefined();
+
+    delete scene.map.cameraZoom;
+    applyStoredCameraState(scene);
+    expect(scene.camera.zoom).toBe(1);
+  });
+
   it("applies and saves fixed camera state across a save round trip", () => {
     const scene = cameraScene();
     scene.session.camera = {

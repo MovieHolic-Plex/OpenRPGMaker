@@ -18,6 +18,7 @@
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { openingMapViewCrop } from "@/project/openingMapView";
 import type { AnimaticLayer } from "@/project/openingAnimatic";
+import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import type { Command, GameMap, Project } from "@/project/types";
 import {
   type Cell, emote, event, execTool, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
@@ -294,13 +295,19 @@ function setupThroneBattle(project: Project): void {
   const T = "troop_mk_castle";
   const pageOf = (pid: string, name: string, round: number, commands: Command[]) =>
     execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: pid, name, span: "battle", runOnce: true, conditions: [{ kind: "onRound", round }], commands } });
+  const throneText: Command = {
+    kind: "displayTextSettings", format: "transparent", position: "top",
+    preventObscuringPlayer: false, allowEventMovementDuringWait: false,
+  };
   // 「세계의 절반 제안」 기술을 쓴 직후에만 오는 대꾸(성공·실패 어느 쪽이어도 맞는 말).
   execTool(project, "upsert_troop_battle_page", { troopId: T, page: { id: "mk_castle_half_world", name: "절반 제안에 대꾸", span: "battle", runOnce: true,
     conditions: [{ kind: "actorCommand", actorId: MAOU_TRUE, commandId: "skill", skillId: "skill_mk_half_world" }], commands: [
+      throneText,
       ...say("leonF", "base", "또 절반 타령이냐! 안 넘어간다!"),
     ] } });
   // 첫 합 한 번(마왕의 명령 하나)으로 끝낸다 — 2합이면 새 게임 → 첫 자유 이동이 실측 74~79초로 75초 목표를 넘나들었다.
   pageOf("mk_castle_r1", "1합 사천왕 · 동귀어진", 1, [
+    throneText,
     ...say("leonF", "base", "네 사천왕은 어디 갔지!"),
     ...say("maouF", "base", "사천왕? 걔들 오늘 칼퇴했다."),
     ...say("leonF", "base", "…끝이 안 나겠군. 이 목숨을 걸겠다. 『동귀어진』!"),
@@ -331,6 +338,7 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
     m2("Screen Effect", { effect: "fadeIn", value: "", durationMs: 300 }), wait(300),
     playSe(SFX.sword),
     { kind: "battleProcessing", troopId: "troop_mk_castle", canEscape: false, canLose: true, branchOnResult: false } as Command,
+    { kind: "displayTextSettings", ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
     // 『동귀어진』 대사와 흰빛은 전투 1합 끝에서 이미 났다 — 전투가 끝나면 흰 화면 위에서 곧장 내레이션.
     fieldTint("255,255,255,1", 0), shake(700, "10"),
     stopBgm(),
@@ -388,7 +396,7 @@ export function stageMaouRoomWake(project: Project): void {
     // 환경음(bgs) 고리로 깔고, 전단지를 읽고 방 음악이 들어올 때 거둔다.
     { kind: "playAudio", resourceId: SFX.room, loop: true, channel: "bgs", fadeInMs: 800 } as Command,
     // 눈뜨기 대사는 한 창 — r4 녹화에서 두 창이 첫 자유 이동을 3초 늦췄다.
-    ...zs("surprised", "낯선 천장…. 뿔이 없다?! 망토도! 이 올리브색 겉옷은 또 뭐냐!"),
+    ...zs("surprised", "낯선 천장…. 뿔이 없다?! 망토도! 이 올리브색 겉옷은 또 뭐냐! 현관은 방 오른쪽 아래 복도 끝인가."),
     setSw("sw_mk_woke"),
   ];
   // 탁자 위 안내문·통장 — 들르지 않아도 진행된다.

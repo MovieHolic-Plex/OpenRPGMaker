@@ -28,7 +28,7 @@ import type { ActorRecord as Actor, Command, EnemyRecord as Enemy, GameMap, Proj
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   approach, bgm, CAST, caption, type Cell, choices, clearTint, emote, event, execTool, exitVia, face, faceHero, fadeIn, fadeOut, flash,
-  gone, ifCond, mustBlock, mustReach, mustWalk, nearestFree, note, page, panBack, panTo, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
+  gone, ifCond, m2, mustBlock, mustReach, mustWalk, nearestFree, note, page, panBack, panTo, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
   timedChoice, tint, transfer, varAtLeast, varIs, voice, wait, walk, walkTo, type Who,
 } from "./maouKonbiniKit";
 import throneBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_throne_212b9127.json";
@@ -93,6 +93,7 @@ const SE_BELL = "cc0-se-osx-bell-01";
 // 전투 배경 자원 = battle-backdrop 하네스 `build <판> --emit` 이 낸 upsert_resource 인자(감독이 그림 해시에 묶어 고름 — 옥좌 A · 밤 편의점 B).
 const KONBINI_BATTLE_BG = konbiniBackdrop.resource.id;
 const THRONE_BATTLE_BG = throneBackdrop.resource.id;
+const SHOP_WALK_ZOOM = 0.72;
 const SFX_ROOM_TONE = "cc0-sound-mk-op-room"; // 냉장고 웅웅·먼 차 소리 12초 고리(opening-sfx.py room)
 
 // ── 배우 ──
@@ -182,12 +183,12 @@ function setupDatabase(project: Project): void {
   hero.name = "마오";
   hero.nickname = "전 마왕, 현 신입 알바";
   hero.classId = CLASS_CLERK;
-  hero.characterResourceId = CAST.maou.resource;
-  hero.characterIndex = CAST.maou.index;
+  hero.characterResourceId = CAST.zervas.resource;
+  hero.characterIndex = CAST.zervas.index;
   hero.battleCharacterResourceId = "charset-battler-actor3-1";
   hero.initialLevel = 12;
   hero.learnedSkills = [];
-  const face = reviewedFaceIdForCharset(CAST.maou.tex, CAST.maou.index);
+  const face = reviewedFaceIdForCharset(CAST.zervas.tex, CAST.zervas.index);
   if (face) hero.faceResourceId = face; else delete hero.faceResourceId;
 
   const maou = { ...clone(darkKnight), id: MAOU_TRUE, name: "마왕 제르바스", nickname: "암흑 마왕", classId: CLASS_MAOU,
@@ -355,11 +356,6 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
     gone("ev_mk_room_slot_off", []),
     page("ev_mk_room_slot_p", [varIs(V_STAGE, 1), swOn("sw_mk_woke"), swOff("sw_mk_slot")], [], { trigger: "parallel" }),
   ]));
-  // 전단지 그림이 칩셋에 없다 — 문틈의 전단지 자리 위에 「!」 말풍선을 되풀이해 띄워 줍는 곳을 보인다.
-  map.events.push(event("ev_mk_room_flyer_cue", "전단지 표시", { x: 1, y: 0 }, [
-    gone("ev_mk_room_flyer_cue_off", []),
-    page("ev_mk_room_flyer_cue_p", [varIs(V_STAGE, 1), swOn("sw_mk_slot")], [emote("ev_mk_room_flyer", "exclamation", 1100), wait(1500)], { trigger: "parallel" }),
-  ]));
   // 침대 — 하루를 마치는 곳.
   const sleep = (next: number, day: string, extra: Command[]): Command[] => [
     ...think("…오늘도 살아남았다. 마왕은 내일을 위해 잔다."),
@@ -411,6 +407,8 @@ function buildKonbini(project: Project, links: Links): Cell {
     mustBlock(project, m, { x: 19, y: 13 }, "백룸 아래 바깥");
   }
   const map = project.maps[M.konbini]!;
+  // 걷는 동안 선반과 출입문을 한 화면에 담는다. 계산·결전 연출은 기존 1배 구도를 쓴다.
+  map.cameraZoom = SHOP_WALK_ZOOM;
   const door = links.konbini.exit; // 자동문 칸
   const arrive = links.konbini.entry;
   // 계산대 이벤트는 카운터 칸 위에 둔다 — 그림 없는 이벤트는 「같은 층」이어도 막지 않아서, 빈 칸에 두면 플레이어가 올라서고
@@ -466,12 +464,16 @@ function buildKonbini(project: Project, links: Links): Cell {
     ]),
     ...say("manager", "happy", "합격! 명찰은 「마오」로 뽑았어요. 제르바스는 안 들어가서."),
     ...zs("surprised", "마오…? 감히 이 몸의 존함을 멋대로 줄이다니…!"),
+    ...caption("마오는 청록색 앞치마를 두르고 명찰을 달았다."),
+    m2("Change Actor Graphic", { target: DEFAULT_ACTOR_ID, value: CAST.maou.resource, characterIndex: CAST.maou.index }),
+    m2("Change Actor Faceset", { target: DEFAULT_ACTOR_ID, value: "" }),
+    wait(400),
     faceHero(HINA_ID),
     ...say("hina", "happy", "신입? 나 히나, 2년 차. …말투 뭐야. 연극부?"),
     ...say("maou", "base", "품격이라 하오. 히나라 했나. 자네를 이 몸의 첫 번째 부하로 임명하…"),
     ...say("hina", "base", "선배라고 불러."),
     ...say("maou", "embarrassed", "…히나 선배."),
-    ...say("manager", "base", "오늘은 계산대, 진열, 분리수거. 막히면 히나한테요."),
+    ...say("manager", "base", "오늘은 계산대, 진열, 분리수거. 줄 선 손님을 다 응대하면 계산대 업무가 끝나요."),
     // 맵 이벤트는 「장소 이동」에서 끝난다 — 이동은 맨 끝에 두고(이동 자체가 암전한다), 근무 시작 자막은 근무 시작 자동 장면이 잇는다.
     setVar(V_STAGE, "=", 3), setVar(V_TASKS, "=", 0), setSw(SW_SHIFT),
     transfer(M.konbini, CLERK, "down"),
@@ -670,7 +672,7 @@ function buildKonbini(project: Project, links: Links): Cell {
     ...next("ev_mk_c3b"),
   ];
   // 흉상 대화창이 화면 아래 ⅓을 덮는다 — 계산하는 동안 카메라를 손님 줄 쪽으로 내려 계산대·손님이 창 위에 오게 한다.
-  const atRegister = (body: Command[]): Command[] => [...clerkPos, panTo(Q1.x, Q2.y), ...body, panBack()];
+  const atRegister = (body: Command[]): Command[] => [...clerkPos, panTo(Q1.x, Q2.y, 600, 1), ...body, panBack()];
   const regIdle: Command[] = [...think("계산대. 지금은 손님이 없다.")];
   ev(event("ev_mk_register", "계산대", REG, [
     page("ev_mk_register_p0", [swOn(SW_SHIFT)], regIdle, { priority: "same" }),
@@ -909,7 +911,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("maou", "base", "세계를 차지하는 길은 여럿이오. 우선은 이 동네부터."),
   ]);
   const okScene = endingScene(END_ART.ok, END_OK, [
-    ...caption("다음 날 아침. 마오는 평소처럼 줄무늬 조끼를 입었다."),
+    ...caption("다음 날 아침. 마오는 평소처럼 청록색 앞치마를 입었다."),
     ifCond(swOn(SW_LOST), [...say("hina", "base", "어제 그렇게 맞고도 웃더라. …미소는 맞으면서 짓는 거 아니야.")],
       [...say("hina", "happy", "어제 「데워 드릴까요」 또 까먹었지. 그래도 늘었어.")]),
     ...say("maou", "base", "…매뉴얼은 마왕군 군율만큼 어렵군. 허나 이 몸은 물러서지 않네."),
@@ -924,7 +926,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("maouF", "base", "…이 몸은 마왕이다. 마왕은 변상 따위…"),
     ...say("manager", "base", "시급 1,150엔으로 계산하면… 마오 군, 약 3,300시간."),
     ...say("hina", "happy", "…마오, 평생 여기서 일하겠네."),
-    ...caption("마왕은 힘을 되찾았다. 그 힘으로 얻은 것은,", "줄무늬 조끼와 갚아야 할 380만 엔이었다."),
+    ...caption("마왕은 힘을 되찾았다. 그 힘으로 얻은 것은,", "청록색 앞치마와 갚아야 할 380만 엔이었다."),
     ...say("leon", "sad", "…나도 반은 낼게. 같이 부쉈으니까."),
     ...say("maouF", "base", "…용사여. 세계의 절반 대신, 빚의 절반이라니."),
   ]);
@@ -996,7 +998,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("hina", "happy", "일 다 끝났네. 아침까지 버티기만 하면 돼."),
     walkTo("@player", at.clerk), face("@player", "down"),
     // 레온·리리가 서는 계산대 앞(11~13줄)이 흉상 대화창 위에 오도록 카메라를 내린다.
-    panTo(at.clerk.x - 1, at.clerk.y + 3, 700),
+    panTo(at.clerk.x - 1, at.clerk.y + 3, 700, 1),
     { kind: "setLighting", ambient: 0.6, color: "#0a0820", transitionMs: 500 } as Command,
     playSe(SE_DARK), wait(500),
     { kind: "setLighting", ambient: 0.5, color: "#18204a", transitionMs: 200 } as Command,
@@ -1017,7 +1019,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     emote(at.hinaId, "sweat"),
     ...say("hina", "sad", "…마오. 무슨 일인진 몰라도, 가게에서 싸우면 안 돼. 알지?"),
     ...think("(마력이… 손끝에서 끓어오른다. 지금이면 돌아갈 수 있겠다. 마왕으로.)"),
-    ...think("(…그런데 이 몸은 지금, 줄무늬 조끼를 입고 있다.)"),
+    ...think("(…그런데 이 몸은 지금, 청록색 앞치마를 입고 있다.)"),
     choices([
       { text: "마왕의 힘을 해방한다", then: powerBattle },
       { text: "알바 매뉴얼을 따른다", then: manualBattle },
@@ -1045,7 +1047,7 @@ function buildStreet(project: Project, links: Links, parkArrive: Cell, shrineArr
     gone("ev_mk_st_morning_off", []),
     page("ev_mk_st_morning_p", [varIs(V_STAGE, 2), swOff("sw_mk_st_morning")], [
       wait(300),
-      ...thinkAs(CAST.zervas.name, "…이것이 인간의 거리인가. 성벽도 망루도 없이 가게들이 줄지어 있군.", "전단지의 「해피 마트」는 바로 왼쪽 건물이다."),
+      ...thinkAs(CAST.zervas.name, "…이것이 인간의 거리인가. 성벽도 망루도 없이 가게들이 줄지어 있군.", "바로 왼쪽, 초록색과 주황색 띠가 있는 자동문이 해피 마트다."),
       setSw("sw_mk_st_morning"),
     ], { trigger: "auto" }),
   ]));
@@ -1267,6 +1269,7 @@ function defineEndings(project: Project): void {
     "이야기와 연출   OPRN Flagship Studio",
     "거리와 가게 그림   OPRN 일본 도시 타일, 현대 도시 타일, 손 도트 실내 타일",
     "인물   OPRN 현대 걷기 캐릭터, 공용 흉상, EasyRPG RTP",
+    "점원 걷기 칩 원본   Scarloxy · MPWSP01 (CC BY 4.0)",
     "음악과 효과음   CC0 음원, EasyRPG RTP",
     "",
     "만든 도구   OPRN Studio",
@@ -1296,7 +1299,7 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   const ensureVar = (id: string, name: string): void => { if (!project.variables.some((v) => v.id === id)) project.variables.push({ id, name }); };
   const ensureSw = (id: string, name: string): void => { if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name }); };
   for (const [id, name] of [[V_STAGE, "마왕 진행 단계"], [V_TASKS, "오늘 마친 업무"], [V_SERVICE, "근무 평가"], [V_MAOU, "마왕력"], [V_PICK, "고른 번호(잠깐)"]] as const) ensureVar(id, name);
-  for (const [id, name] of [[SW_SHIFT, "근무 중"], [SW_TANAKA, "다나카 씨 주문을 외움"], [SW_LILY, "리리와 재회"], [SW_MEETING, "사천왕 재결성 회의"], [SW_LOST, "매뉴얼 결전에서 짐"]] as const) ensureSw(id, name);
+  for (const [id, name] of [[SW_SHIFT, "근무 중"], [SW_TANAKA, "다나카 씨 주문을 외움"], [SW_LILY, "리리와 재회"], [SW_MEETING, "사천왕 재결성 회의"], [SW_LOST, "매뉴얼 결전에서 짐"], ["sw_mk_slot", "원룸 우편함 소리"]] as const) ensureSw(id, name);
 
   for (const bd of [throneBackdrop, konbiniBackdrop]) execTool(project, "upsert_resource", { resource: bd.resource });
   execTool(project, "set_project_settings", { battle: { backdrop: "default" } });
@@ -1337,13 +1340,13 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   project.startPos = throneStart;
   project.mapTree = { mapId: M.street, children: [M.throne, M.room, M.konbini, M.park, M.shrine].map((mapId) => ({ mapId, children: [] })) };
 
-  // HUD — 근무 중에만 「오늘 업무 n/3」.
+  // HUD — 근무 중에만 「오늘 마친 업무 n/3」.
   execTool(project, "set_project_settings", { fieldHud: { widgets: [
-    { id: "tasks", kind: "gauge", source: "variable", variableId: V_TASKS, max: 3, shape: "number", label: "오늘 업무", anchor: "top-left", x: 8, y: 14, width: 104, height: 30, panel: "paper", color: "#3aa860", condition: "switch", switchId: SW_SHIFT },
+    { id: "tasks", kind: "gauge", source: "variable", variableId: V_TASKS, max: 3, shape: "number", label: "오늘 마친 업무", anchor: "top-left", x: 8, y: 14, width: 104, height: 30, panel: "paper", color: "#3aa860", condition: "switch", switchId: SW_SHIFT },
   ] } });
   execTool(project, "set_project_settings", { resources: { titleResourceId: "oprn-maou-konbini-title", defaultBgmResourceId: BGM_SHOP } });
   // 자동 안내(인물 위 ▼·출구 「→ 목적지」 이름·목표 화살표)는 끈다 — 사용자 2026-10-30 「너무 친절함 … 화살표도 짜증남」.
-  // 갈 곳은 장면이 보여 준다: 전단지는 우편 투입구 소리와 ! 로, 가게는 전단지 「이 건물 바로 왼쪽」과 바로 옆 간판으로.
+  // 원룸 현관은 기상 대사로, 해피 마트는 첫 출근길 독백에 나오는 자동문 색으로 안내한다.
   execTool(project, "set_project_settings", { fieldGuides: "off" });
 
   // 장면 스위치(작업 완료·손님 퇴장·브리핑 등)를 모두 등록한다 — 등록하지 않은 스위치 조건은 프로젝트 검사가 거절한다.

@@ -9,7 +9,7 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
-// 오디오 배너("지금 흐르는 곡")는 루프 채널 전용이다.
+// 오디오 배너("지금 흐르는 곡")는 루프 BGM 전용이다.
 // 문 열림처럼 수시로 울리는 원샷 SE 까지 배너를 띄우면, clear 경로가 stopAudio 뿐이라
 // 리소스 id 가 게임 화면에 박혀 남는다 (2026-08-30 브라우저 QA 실측).
 function mkScene() {
@@ -67,7 +67,7 @@ afterEach(() => {
   restoreDom = null;
 });
 
-describe("오디오 배너는 루프 채널 전용", () => {
+describe("오디오 배너는 루프 BGM 전용", () => {
   it("인터프리터: 루프 오디오는 배너를 띄우고 원샷 SE 는 띄우지 않는다", async () => {
     const loopScene = mkScene();
     await runCommands(loopScene.scene, [{ kind: "playAudio", resourceId: "bgm_town", loop: true }]);
@@ -90,5 +90,15 @@ describe("오디오 배너는 루프 채널 전용", () => {
     expect(applyNonBlockingStep(seScene.scene, { kind: "playAudio", resourceId: HOUSE_DOOR_OPEN_SE, loop: false })).toBe(true);
     expect(overlayIds(seScene.showRuntimeOverlay)).not.toContain("audio-indicator");
     expect(seScene.session.audio.se).toEqual({ resourceId: HOUSE_DOOR_OPEN_SE, loop: false });
+  });
+  it.each(["인터프리터", "병렬 스케줄러"])("%s: 이름이 붙은 BGS는 배너 없이 재생한다", async (path) => {
+    const { scene, session, showRuntimeOverlay } = mkScene();
+    const bgs = { kind: "playAudio", resourceId: "bgm_town", channel: "bgs", loop: true } as const;
+
+    if (path === "인터프리터") await runCommands(scene, [bgs]);
+    else expect(applyNonBlockingStep(scene, bgs)).toBe(true);
+
+    expect(showRuntimeOverlay).not.toHaveBeenCalled();
+    expect(session.audio.bgs).toEqual({ resourceId: "bgm_town", loop: true });
   });
 });

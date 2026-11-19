@@ -1350,6 +1350,18 @@
     "the best ending places Mao and Lily outside the cafe and does not call Mao a cafe regular",
     "the cafe door shows a closed sign and has no transfer to an interior"
    ]
+  },
+  {
+   "id": "playable-wake-with-room-tone",
+   "label": "환경음만 남는 기상 장면과 보이는 현관",
+   "port": 19579,
+   "lessons": ["free-movement-with-ambient-audio"],
+   "prompt": "주인공이 원룸에서 눈을 뜨고 한마디 한 뒤 바로 움직일 수 있게 해 줘. 냉장고 소리는 현관의 전단지를 읽을 때까지 나고, 복도 끝이 현관이라는 건 대사로만 알려 줘.",
+   "requirements": [
+    "free movement starts before examining the flyer and while room tone loops on the BGS channel",
+    "the wake effect is gone and neither the ambient resource label nor a waypoint overlay covers the map",
+    "the wake dialogue names the hallway exit and the flyer can be read on the way out"
+   ]
   }
  ]
 }

@@ -229,7 +229,9 @@ export function applyStoredCameraState(scene: PlaySceneContext): void {
 }
 
 export function applyCameraControl(scene: PlaySceneContext, step: CameraControlStep): Promise<void> {
-  applyCameraZoom(scene, step.zoom);
+  const returning = step.mode === "return" || step.returnToPlayer;
+  const zoom = step.zoom ?? (returning ? resolveMapCameraZoom(store.getCurrent().system, scene.map) : undefined);
+  applyCameraZoom(scene, zoom);
   const generation = skipGeneration(scene.cameras.main);
   const skipped = (): boolean => skipGeneration(scene.cameras.main) !== generation;
   const run = async (): Promise<void> => {
@@ -239,7 +241,7 @@ export function applyCameraControl(scene: PlaySceneContext, step: CameraControlS
       scene.syncRuntimeState();
       return;
     }
-    if (step.mode === "return" || step.returnToPlayer) {
+    if (returning) {
       scene.cameras.main.stopFollow();
       await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY, step.easing);
       if (skipped()) return;
