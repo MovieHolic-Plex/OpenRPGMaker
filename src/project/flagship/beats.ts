@@ -91,7 +91,7 @@ export const MAOU_KONBINI_STYLE_LOCK: FlagshipStyleLock = {
   cameraZoom: 1,
   dialogueStyle: "glass",
   allowedTilesetIds: ["jp_city", "modern_city", "atlas_biome_interior"],
-  allowedCharsetPrefixes: ["oprn-charset-modern", "tex_oprn_charset_modern", "easyrpg-charset-", "tex_easyrpg_charset_"],
+  allowedCharsetPrefixes: ["oprn-charset-modern", "tex_oprn_charset_modern", "easyrpg-charset-", "tex_easyrpg_charset_", "oprn-charset-scarloxy-people5", "tex_oprn_charset_scarloxy_people5"],
   allowedPortraitPrefixes: ["shared-modern-", "easyrpg-faceset-"],
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
@@ -234,7 +234,7 @@ const MAOU_KONBINI_BEATS: readonly FlagshipBeat[] = [
   { id: "mk-00", atMinute: 0, act: "오프닝", mapKey: "opening_stage_384x216", sceneTitle: "마왕과 사천왕 → 용사 일행 → 결전 → 「편의점에서 일하게 되는 이야기다」", playerFeel: "게임 맵 그대로의 도트 애니메틱 네 컷, 마지막 컷에서 계산대에 선 마왕", mechanics: ["place_opening_background(mapId)", "place_opening_charset_actor", "upsert_opening_emote"], sharedAssets: ["easyrpg-charset-monster2", "oprn-charset-modern2"] },
   { id: "mk-01", atMinute: 1, act: "프롤로그", mapKey: "map_mk_throne", sceneTitle: "세계의 절반", playerFeel: "마왕으로 용사와 흥정하다 싸운다 — 이겨도 져도 『동귀어진』", mechanics: ["battleProcessing", "flash", "changeParty"], sharedAssets: ["easyrpg-faceset-monster-15"] },
   { id: "mk-02", atMinute: 3, act: "전생", mapKey: "map_mk_room", sceneTitle: "잔고 0엔", playerFeel: "원룸에서 눈뜨고 통장과 전단지를 읽는다", mechanics: ["autorun", "playerTouch", "letter"], sharedAssets: ["shared-modern-casual-boy-olive-expressions-bust-base"] },
-  { id: "mk-03", atMinute: 5, act: "면접", mapKey: "map_mk_konbini", sceneTitle: "명찰 이름은 「마오」", playerFeel: "이력서 개그와 선택지, 갸루 선배 히나 등장", mechanics: ["choices", "bust-expression"], sharedAssets: ["shared-modern-teacher-cardigan-expressions-bust-base", "shared-modern-casual-girl-pink-expressions-bust-base"] },
+  { id: "mk-03", atMinute: 5, act: "면접", mapKey: "map_mk_konbini", sceneTitle: "명찰 이름은 「마오」", playerFeel: "이력서 개그와 선택지, 갸루 선배 히나 등장, 채용 뒤 점원 앞치마로 갈아입는다", mechanics: ["choices", "bust-expression", "m2-024-change-actor-graphic"], sharedAssets: ["shared-modern-teacher-cardigan-expressions-bust-base", "shared-modern-casual-girl-pink-expressions-bust-base", "oprn-charset-scarloxy-people5"] },
   { id: "mk-04", atMinute: 7, act: "근무 사흘", mapKey: "map_mk_konbini", sceneTitle: "계산대 · 진열 · 분리수거 · 핫스낵 · 발주 · 폐기", playerFeel: "손님마다 매뉴얼과 마왕식 답 중 고른다. 상자는 changeTile 로 치운다", mechanics: ["choices", "changeTile", "fieldHud", "variable"], sharedAssets: ["shared-modern-suit-boy-charcoal-expressions-bust-base"] },
   { id: "mk-05", atMinute: 12, act: "저녁", mapKey: "map_mk_street", sceneTitle: "사천왕 리리스 · 고양이 가르곤 · 신사의 용사", playerFeel: "노을 상점가를 걸어 다니며 옛 부하와 원수를 만난다", mechanics: ["setLighting", "add_street_walkers", "link_jp_city_interior"], sharedAssets: ["shared-modern-apron-navy-expressions-bust-base"] },
   { id: "mk-06", atMinute: 18, act: "사흘째 밤", mapKey: "map_mk_konbini", sceneTitle: "마왕의 힘인가, 알바 매뉴얼인가", playerFeel: "기억을 되찾은 용사가 쳐들어온다. 고른 길로 싸우고 결말이 갈린다", mechanics: ["battleProcessing", "changeParty", "triggerEnding"], sharedAssets: ["shared-modern-uni-boy-grey-expressions-bust-base"] },

@@ -379,14 +379,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "playAudio":
       setAudioState(scene.session, step);
       playAudioCommand(step, store.getCurrent());
-      // 인터프리터 경로와 같은 규칙 — 루프만 배너를 띄운다(원샷 SE 는 화면에 남는다).
-      if (step.loop) showAudioIndicator(scene, step.resourceId);
+      if (step.loop && (step.channel ?? "bgm") === "bgm") showAudioIndicator(scene, step.resourceId);
       return true;
     case "stopAudio":
       clearAudioState(scene.session, step.channel);
       if (step.channel === undefined) stopAudioCommand();
       else stopAudioChannel(step.channel);
-      if (step.channel === undefined || step.channel === "bgm" || step.channel === "bgs") scene.clearRuntimeOverlay("audio-indicator");
+      if (step.channel === undefined || step.channel === "bgm") scene.clearRuntimeOverlay("audio-indicator");
       return true;
     case "scrollMap":
       void scene.panScreen({ ...step, wait: false });

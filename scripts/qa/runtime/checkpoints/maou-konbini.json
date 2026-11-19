@@ -86,6 +86,7 @@
     "sw_mk_on_shift": true,
     "sw_mk_brief1": true
    },
+   "sessionPatch": { "actorCharacterResourceIds": { "actor_hero": "oprn-charset-scarloxy-people5" }, "actorFaceResourceIds": { "actor_hero": "" } },
    "party": [
     {
      "actorId": "actor_hero",
@@ -104,6 +105,7 @@
     "var_mk_stage": 4,
     "var_mk_service": 5
    },
+   "sessionPatch": { "actorCharacterResourceIds": { "actor_hero": "oprn-charset-scarloxy-people5" }, "actorFaceResourceIds": { "actor_hero": "" } },
    "party": [
     {
      "actorId": "actor_hero",
@@ -126,6 +128,7 @@
    "switches": {
     "sw_mk_lily_met": true
    },
+   "sessionPatch": { "actorCharacterResourceIds": { "actor_hero": "oprn-charset-scarloxy-people5" }, "actorFaceResourceIds": { "actor_hero": "" } },
    "party": [
     {
      "actorId": "actor_hero",
@@ -148,6 +151,7 @@
     "sw_mk_lily_met": true,
     "sw_mk_tanaka_order": true
    },
+   "sessionPatch": { "actorCharacterResourceIds": { "actor_hero": "oprn-charset-scarloxy-people5" }, "actorFaceResourceIds": { "actor_hero": "" } },
    "party": [
     {
      "actorId": "actor_hero",
@@ -172,6 +176,7 @@
     "sw_mk_tanaka_order": true,
     "sw_mk_meeting_done": true
    },
+   "sessionPatch": { "actorCharacterResourceIds": { "actor_hero": "oprn-charset-scarloxy-people5" }, "actorFaceResourceIds": { "actor_hero": "" } },
    "party": [
     {
      "actorId": "actor_hero",
@@ -202,6 +207,7 @@
     "sw_ev_mk_c3a_out": true,
     "sw_ev_mk_c3b_out": true
    },
+   "sessionPatch": { "actorCharacterResourceIds": { "actor_hero": "oprn-charset-scarloxy-people5" }, "actorFaceResourceIds": { "actor_hero": "" } },
    "party": [
     {
      "actorId": "actor_hero",

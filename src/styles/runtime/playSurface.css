@@ -143,9 +143,25 @@
 .player-layout .play-stage > .dialogue-overlay[data-dialogue-stage].choices-active.choices-framed.position-bottom {
   min-height: 0;
 }
-.player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]):not([data-testid="runtime-safety-stop"]):not([data-testid="cutscene-skip-hint"]) {
+.player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]):not([data-testid="runtime-safety-stop"]):not([data-testid="cutscene-skip-hint"]):not([data-testid="audio-indicator"]) {
   inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
     calc(var(--play-crop-bottom) + 12px) calc(var(--play-crop-left) + 12px);
+}
+.player-layout .play-stage > .runtime-overlay[data-testid="audio-indicator"] {
+  position: absolute;
+  inset: auto calc(var(--play-crop-right, 0px) + 16px) calc(var(--play-crop-bottom, 0px) + 16px) auto;
+  display: grid;
+  min-width: 160px;
+  max-width: min(340px, calc(100% - 32px));
+  padding: 8px 12px;
+  place-items: center;
+  background: var(--bg-glass);
+  border: 1px solid var(--accent-border);
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.25;
+  pointer-events: none;
+  z-index: 28;
 }
 /* Errors must ship with the player, not depend on editor/core.part-1.css.
    Inverse-scale the nonmodal notice so long diagnostics remain readable in play. */

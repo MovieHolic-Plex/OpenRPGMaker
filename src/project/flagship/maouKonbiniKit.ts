@@ -27,11 +27,11 @@ interface CastMember {
 }
 
 export const CAST: Readonly<Record<Who, CastMember>> = {
-  // 주인공 — 면접 전에는 「제르바스」, 명찰을 받은 뒤로는 「마오」. 몸은 같은 올리브 재킷 청년.
-  maou: { name: "마오", stem: "casual-boy-olive", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 3, side: "left" },
+  // 주인공 — 면접 전의 올리브 재킷과 채용 뒤의 청록 앞치마.
+  maou: { name: "마오", tex: "tex_oprn_charset_scarloxy_people5", resource: "oprn-charset-scarloxy-people5", index: 0, side: "left" },
   zervas: { name: "제르바스", stem: "casual-boy-olive", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 3, side: "left" },
   maouF: { name: "마왕 제르바스", face: "easyrpg-faceset-monster-15", tex: "tex_easyrpg_charset_monster2", resource: "easyrpg-charset-monster2", index: 7, side: "left" },
-  hina: { name: "히나", stem: "apron-olive", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 5, side: "right" },
+  hina: { name: "히나", stem: "casual-girl-pink", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 5, side: "right" },
   manager: { name: "사토미 점장", stem: "teacher-cardigan", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 7, side: "right" },
   tanaka: { name: "다나카", stem: "suit-boy-charcoal", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 1, side: "right" },
   leon: { name: "레온", stem: "uni-boy-grey", tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 1, side: "right" },
@@ -125,7 +125,7 @@ export const faceToward = (eventId: string, target: string): Command => routeOf(
 export const emote = (target: "player" | string, kind: string, durationMs = 1000): Command =>
   ({ kind: "showEmote", target: target === "player" ? "player" : { eventId: target }, emote: kind, durationMs } as Command);
 /** 카메라를 칸으로 옮긴다(흉상 대화창이 화면 아래 ⅓을 덮으니, 보여야 할 인물을 화면 위쪽으로 올린다). */
-export const panTo = (x: number, y: number, ms = 600): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, durationMs: ms, wait: true, easing: "easeInOut" });
+export const panTo = (x: number, y: number, ms = 600, zoom?: number): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, durationMs: ms, wait: true, easing: "easeInOut", ...(zoom === undefined ? {} : { zoom }) });
 export const panBack = (ms = 600): Command => m2("Camera Control", { mode: "return", target: "player", x: 0, y: 0, durationMs: ms, wait: true, easing: "easeInOut" });
 /** 제한시간 선택지 — 고른 번호(1부터, 시간 초과 0)를 변수에 쓴다. */
 export const timedChoice = (prompt: string, options: string[], timeLimitMs: number, resultVariableId: string): Command =>

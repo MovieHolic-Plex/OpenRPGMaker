@@ -775,16 +775,15 @@ async function consumeBlockingStep(
     case "playAudio":
       setAudioState(scene.session, step);
       playAudioCommand(step, store.getCurrent());
-      // 배너는 "지금 흐르는 곡"을 알리는 장치라 루프(BGM/BGS)만 띄운다. 원샷 SE 까지 띄우면
-      // clear 경로가 stopAudio 뿐이라 문 열림 효과음 하나에 리소스 id 가 화면에 박혀 남는다.
-      if (step.loop) showAudioIndicator(scene, step.resourceId);
+      // 곡 이름 배너는 BGM용이다. BGS(환경음)는 장면 위에 이름을 띄우지 않는다.
+      if (step.loop && (step.channel ?? "bgm") === "bgm") showAudioIndicator(scene, step.resourceId);
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":
       clearAudioState(scene.session, step.channel);
       if (step.channel === undefined) stopAudioCommand();
       else stopAudioChannel(step.channel);
-      if (step.channel === undefined || step.channel === "bgm" || step.channel === "bgs") scene.clearRuntimeOverlay("audio-indicator");
+      if (step.channel === undefined || step.channel === "bgm") scene.clearRuntimeOverlay("audio-indicator");
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "flashScreen":

@@ -2,6 +2,7 @@
 //   MK_FIXTURE=dist/demos/maou-konbini.play.json node scripts/qa/runtime/maou-konbini.play.mjs [full,power,lost | opening,interview,day1,evening1,day2,meeting,night]
 // 결과: verify-shots/runtime-qa/maou-konbini/{facts.json, <구간>.webm, native-*.png}
 // 대사는 사람 속도로 넘기고(한 줄 ~1.4초), 선택지는 구간마다 정한 번호를 고른다. 걷기는 길 찾기(playerRoute)로 실제로 걷는다.
+import assert from "node:assert/strict";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
@@ -33,14 +34,21 @@ const roomExit = doorEvents("map_mk_room", "map_mk_street")[0];
 log("doors", konDoorOnStreet && [konDoorOnStreet.x, konDoorOnStreet.y], roomDoorOnStreet && [roomDoorOnStreet.x, roomDoorOnStreet.y], roomExit && [roomExit.x, roomExit.y]);
 
 const HERO = [{ actorId: "actor_hero", level: 12 }];
+const HIRED = {
+  party: HERO,
+  sessionPatch: {
+    actorCharacterResourceIds: { actor_hero: "oprn-charset-scarloxy-people5" },
+    actorFaceResourceIds: { actor_hero: "" },
+  },
+};
 const CP = {
   interview: { id: "mk-interview", mapId: "map_mk_street", x: roomDoorOnStreet.x + 1, y: roomDoorOnStreet.y + 1, facing: "left", variables: { var_mk_stage: 2 }, party: HERO },
-  day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true, sw_mk_brief1: true }, party: HERO },
-  evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y + 1, facing: "right", variables: { var_mk_stage: 4, var_mk_service: 5 }, party: HERO },
-  day2: { id: "mk-day2", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 5, var_mk_tasks: 0, var_mk_service: 5 }, switches: { sw_mk_lily_met: true }, party: HERO },
-  meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y + 1, facing: "right", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, party: HERO },
-  night: { id: "mk-night", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 7, var_mk_tasks: 0, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true }, party: HERO },
-  power: { id: "mk-power", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 7, var_mk_tasks: 3, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true, sw_mk_brief3: true, sw_mk_t_reg3: true, sw_mk_t_box3: true, sw_mk_t_waste3: true, "sw_ev_mk_c3a_out": true, "sw_ev_mk_c3b_out": true }, party: HERO },
+  day1: { id: "mk-day1", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 3, var_mk_tasks: 0, var_mk_service: 2 }, switches: { sw_mk_on_shift: true, sw_mk_brief1: true }, ...HIRED },
+  evening1: { id: "mk-evening1", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y + 1, facing: "right", variables: { var_mk_stage: 4, var_mk_service: 5 }, ...HIRED },
+  day2: { id: "mk-day2", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 5, var_mk_tasks: 0, var_mk_service: 5 }, switches: { sw_mk_lily_met: true }, ...HIRED },
+  meeting: { id: "mk-meeting", mapId: "map_mk_street", x: konDoorOnStreet.x + 1, y: konDoorOnStreet.y + 1, facing: "right", variables: { var_mk_stage: 6, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true }, ...HIRED },
+  night: { id: "mk-night", mapId: "map_mk_konbini", x: 8, y: 14, facing: "up", variables: { var_mk_stage: 7, var_mk_tasks: 0, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true }, ...HIRED },
+  power: { id: "mk-power", mapId: "map_mk_konbini", x: 12, y: 11, facing: "down", variables: { var_mk_stage: 7, var_mk_tasks: 3, var_mk_service: 8 }, switches: { sw_mk_lily_met: true, sw_mk_tanaka_order: true, sw_mk_meeting_done: true, sw_mk_brief3: true, sw_mk_t_reg3: true, sw_mk_t_box3: true, sw_mk_t_waste3: true, "sw_ev_mk_c3a_out": true, "sw_ev_mk_c3b_out": true }, ...HIRED },
 };
 
 const ui = (page) => page.evaluate(() => ({
@@ -71,7 +79,7 @@ async function read(page, seg, until = async () => false, { maxMs = 300_000, sho
       const full = ((await ui(page)).box ?? clean).replace(/\s+/g, " ").trim();
       seg.texts.push(full); last = full;
       if (shotOn && shotOn.test(full)) shot(page, `${seg.key}-${seg.texts.length}`);
-      await page.waitForTimeout(Math.min(4200, PACE + full.length * 22));
+      await page.waitForTimeout(Math.max(0, Math.min(4200, PACE + full.length * 22)));
     } else {
       await page.waitForTimeout(250);
     }
@@ -181,7 +189,16 @@ async function battle(page, seg, plan) {
     const s = await ui(page);
     if (!s.battle) return turns;
     // 전투 중 대사(적 그룹 전투 페이지의 흥정·대꾸)는 사람처럼 읽고 넘긴다 — 안 넘기면 전투가 멈춘 채 10분을 기다렸다(rec7).
-    if (s.box !== null && !s.choices.length) { await page.waitForTimeout(PACE); await page.keyboard.press("Enter", { delay: 90 }); await page.waitForTimeout(300); continue; }
+    if (s.box !== null && !s.choices.length) {
+      if (!seg.throneDialogue && /사천왕|목숨을 걸겠다/.test(s.box)) {
+        seg.throneDialogue = true;
+        await page.screenshot({ path: resolve(out, "native-throne-dialogue.png") });
+      }
+      await page.waitForTimeout(Math.max(0, PACE));
+      await page.keyboard.press("Enter", { delay: 90 });
+      await page.waitForTimeout(300);
+      continue;
+    }
     const done = await page.evaluate((plan) => {
       const live = [...document.querySelectorAll("button")].filter((n) => !n.disabled && n.offsetParent !== null && n.dataset.previewOnly !== "true");
       const by = (t) => live.find((n) => n.dataset.testid === t);
@@ -278,7 +295,22 @@ const B = {
     await play(page, seg, [], async (s) => s.battle, { shotOn: /엉덩이|8분의 1|흔들리지/ }); mark("battle");
     shot(page, "battle-start", 2500);
     await battle(page, seg, ["skill_mk_hellfire", "skill_mk_half_world", "skill_mk_dark_wave"]); mark("battle-end");
-    await play(page, seg, [], quietAnd(async () => (await st(page))?.map === "map_mk_room"), { shotOn: /칼퇴|동귀어진|낯선 천장|뿔이 없다/ }); mark("woke");
+    await play(page, seg, [], quietAnd(() => page.evaluate(() => {
+      const state = window.__oprnDebug.readState();
+      return state.currentMapId === "map_mk_room" && state.switches.sw_mk_woke;
+    })), { shotOn: /칼퇴|동귀어진|낯선 천장|뿔이 없다/ });
+    const wake = await page.evaluate(() => ({
+      bgs: JSON.parse(document.querySelector('[data-testid="audio-state-json"]').textContent).bgs?.resourceId,
+      audioIndicator: document.querySelector('[data-testid="audio-indicator"]')?.textContent,
+      sprite: window.__oprnPlayerSprite()?.textureKey,
+      messageFormat: window.__oprnDebug.captureSave().session.messageWindowSettings?.format ?? "normal",
+    }));
+    assert.equal(wake.bgs, "cc0-sound-mk-op-room");
+    assert.equal(wake.audioIndicator, undefined, "원룸 환경음 이름이 화면을 덮는다.");
+    assert.equal(wake.sprite, "tex_oprn_charset_modern2");
+    assert.equal(wake.messageFormat, "normal", "옥좌 전투의 투명 대화창이 필드까지 이어진다.");
+    mark("woke");
+    await page.screenshot({ path: resolve(out, "native-room-free-movement.png") });
     await walkTo(page, roomExit.x, roomExit.y - 1);
     await play(page, seg, [], idle, { shotOn: /폐기 도시락/ }); mark("flyer");
     shot(page, "room-after-flyer", 400);
@@ -293,17 +325,29 @@ const B = {
     await streetWalk(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await streetWalk(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
     await streetWalk(page, konDoorOnStreet.x + 1, konDoorOnStreet.y + 1); await enterDoor(page, konDoorOnStreet); await page.waitForTimeout(2000); mark("enter");
     await play(page, seg, [2, 1], quietAnd(async () => (await st(page))?.v?.var_mk_stage === 3), { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
+    await page.waitForFunction(() => window.__oprnPlayerSprite()?.textureKey === "tex_oprn_charset_scarloxy_people5");
     shot(page, "shift-start", 600);
   },
   async day1(page, seg, mark) {
     await play(page, seg, [], idle, { shotOn: /첫째 날 · 오전/ }); mark("brief");
+    const shop = project.maps.map_mk_konbini;
+    const visibleHeight = () => page.evaluate(() => {
+      const camera = window.__oprnCamera();
+      return camera.height / camera.zoom;
+    });
+    assert.ok(await visibleHeight() >= shop.height * (shop.tileSize ?? 16), "보행 화면에서 편의점이 잘린다.");
     await faceAndAct(page, "down"); mark("register");
+    assert.equal((await st(page)).v.var_mk_tasks ?? 0, 0);
     await play(page, seg, [0, 0, 1], idle, { shotOn: /업화|에코백|버스|영혼의 나이|열일곱/ }); mark("register-done");
+    assert.equal((await st(page)).v.var_mk_tasks, 1);
+    assert.ok(await visibleHeight() >= shop.height * (shop.tileSize ?? 16), "계산 후 보행 배율이 돌아오지 않는다.");
+    shot(page, "register-complete");
     await walkTo(page, 8, 8); await faceAndAct(page, "up");
     await play(page, seg, [1], idle, { shotOn: /무너졌어|중력/ }); mark("box-done");
     shot(page, "box-cleared", 300);
     await walkTo(page, 6, 12); await faceAndAct(page, "down");
     await play(page, seg, [0], quietAnd(async () => { const x = await st(page); return x?.v?.var_mk_stage === 4 && x.map === "map_mk_street"; }), { shotOn: /분리수거|시련|근무 평가/ }); mark("day-end");
+    assert.equal(await visibleHeight(), project.system.playResolution.height, "계산대 배율이 거리까지 이어진다.");
   },
   async evening1(page, seg, mark) {
     await play(page, seg, [], quietAnd(() => page.evaluate(() => !!window.__oprnDebug.readState().switches.sw_mk_lily_met)), { shotOn: /리리스|블랙 기업|재결성/ }); mark("lily");
@@ -347,14 +391,14 @@ const B = {
     await B.manual(page, seg, mark, { lose, waste: true });
   },
   async manual(page, seg, mark, { lose = false, waste = false } = {}) {
-    await play(page, seg, waste ? [1] : [], async (s) => s.choices.length >= 2 && s.choices.some((c) => /매뉴얼/.test(c)), { shotOn: /CCTV|찾았다|보름달|줄무늬/ }); mark("crisis");
+    await play(page, seg, waste ? [1] : [], async (s) => s.choices.length >= 2 && s.choices.some((c) => /매뉴얼/.test(c)), { shotOn: /CCTV|찾았다|보름달|앞치마/ }); mark("crisis");
     await play(page, seg, [1], async (s) => s.battle); mark("battle");
     shot(page, "manual-battle", 2500);
     await battle(page, seg, lose ? ["attack"] : ["skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_point_card", "skill_mk_nikuman", "skill_mk_irasshai", "skill_mk_nikuman", "skill_mk_smile", "skill_mk_irasshai"]); mark("battle-end");
     await play(page, seg, [], async (s) => s.ending, { shotOn: /따뜻하다|일하면 된다|근무 평가|액자|평생|맞으라는/ }); mark("ending");
     shot(page, "ending", 2500);
     await page.waitForTimeout(4000);
-    await play(page, seg, [], undefined, { maxMs: 60_000 });
+    await play(page, seg, [], idle, { maxMs: 60_000 });
     shot(page, "ending-after", 300);
     // 카드 다음 장(크레딧)까지 넘겨 본다.
     for (let i = 0; i < 3; i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(3500); shot(page, `${seg.key}-ending-next-${i}`, 200); }
@@ -366,7 +410,7 @@ const B = {
     await play(page, seg, [], async (s) => s.ending, { shotOn: /전자레인지|CCTV|380만|빚의 절반/ }); mark("ending");
     shot(page, "power-ending", 2500);
     await page.waitForTimeout(4000);
-    await play(page, seg, [], undefined, { maxMs: 60_000 });
+    await play(page, seg, [], idle, { maxMs: 60_000 });
     for (let i = 0; i < 3; i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(3500); shot(page, `${seg.key}-ending-next-${i}`, 200); }
   },
 };

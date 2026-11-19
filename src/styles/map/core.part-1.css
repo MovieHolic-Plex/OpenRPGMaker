@@ -246,19 +246,6 @@ body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:activ
   white-space: pre-line;
   z-index: 20;
 }
-.runtime-overlay[data-testid="audio-indicator"] {
-  inset: auto 16px 16px auto;
-  min-width: 160px;
-  max-width: min(340px, calc(100% - 32px));
-  padding: 8px 12px;
-  place-items: center;
-  background: var(--bg-glass);
-  border: 1px solid var(--accent-border);
-  color: var(--text-1);
-  font-size: 14px;
-  line-height: 1.25;
-  z-index: 28;
-}
 /* 이벤트 마커는 클릭으로 이벤트를 실행하는 히트박스라 pointer-events 는 살려두되,
    화면에는 보이지 않아야 한다. opacity 0.08 + 배경색이면 게임 화면과 대사창 위에
    흐린 초록 사각형으로 그대로 드러난다(실측: 대사창 안에 32x32 초록 패치).
