@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const openDatabaseModalLazy = vi.fn();
+const openDatabaseModalLazy = vi.hoisted(() => vi.fn());
 
 vi.mock("@/editor/panels/databaseModalLazy", () => ({ openDatabaseModalLazy }));
 

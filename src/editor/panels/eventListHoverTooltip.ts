@@ -35,8 +35,10 @@ export function hideEventListTooltip(): void {
   clearHideTimer();
   sizeObserver?.disconnect();
   sizeObserver = null;
-  window.removeEventListener("scroll", hideOnScroll, true);
-  window.removeEventListener("resize", positionActiveTooltip);
+  if (typeof window !== "undefined") {
+    window.removeEventListener("scroll", hideOnScroll, true);
+    window.removeEventListener("resize", positionActiveTooltip);
+  }
   activeTooltip?.remove();
   activeTooltip = null;
   activeRow = null;
@@ -51,8 +53,10 @@ function showEventListTooltip(row: HTMLElement, event: GameEvent): void {
     activeTooltip = renderEventListTooltipElement(model);
     document.body.append(activeTooltip);
     activeRow = row;
-    window.addEventListener("scroll", hideOnScroll, true);
-    window.addEventListener("resize", positionActiveTooltip);
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", hideOnScroll, true);
+      window.addEventListener("resize", positionActiveTooltip);
+    }
     if (typeof ResizeObserver !== "undefined") {
       sizeObserver = new ResizeObserver(positionActiveTooltip);
       sizeObserver.observe(activeTooltip);
