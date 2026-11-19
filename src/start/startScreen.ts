@@ -305,8 +305,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         if (!checkConnection && status.kind === "checking") return;
         if (status.kind === "ready") {
           const model = (await import("@/ai/llmClient")).loadAiConfig().model?.trim();
-          const label = t(status.label);
-          publish({ tone: "ok", text: model && !label.includes(model) ? `${label} · ${model}` : label });
+          publish({ tone: "ok", text: status.label, model: model && !status.label.includes(model) ? model : undefined });
           return;
         }
       }

@@ -2,11 +2,19 @@
 // 첫 화면 「예제 열어 보기」 — 기본 게임 행은 편집기에서 연다. 바로 플레이하는 입구로 돌아가면 안 된다
 // (Studio/런타임 분리 B안, http://mdc-server:18301/studio-runtime-split.html).
 import { describe, expect, it, vi } from "vitest";
+import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { LOCALE_CHANGED_EVENT, setLocale } from "@/i18n";
 import { createPromptHome, PROMPT_HOME_TESTIDS } from "@/start/firstRun/promptHome";
 import { BUILTIN_GAMES, type BuiltinGameId } from "@/start/home/builtinGames";
 import { coverArt, fillCover, isDefaultProjectTitle } from "@/start/home/homeView";
+import { LOCAL_AGENTS_FLAG_KEY, saveEngineChoice } from "@/start/settings/localAgents";
 import { mountStartScreen } from "@/start/startScreen";
+
+const { getAiConnectionStatus, refreshAiConnectionStatus } = vi.hoisted(() => ({
+  getAiConnectionStatus: vi.fn<() => { kind: string; label: string }>(() => ({ kind: "disconnected", label: "ChatGPT 로그인 필요" })),
+  refreshAiConnectionStatus: vi.fn(async () => {}),
+}));
+vi.mock("@/editor/panels/aiConnectionStatus", () => ({ getAiConnectionStatus, refreshAiConnectionStatus }));
 
 describe("첫 화면 예제 행", () => {
   it("행을 누르면 그 게임을 편집기에서 연다", () => {
@@ -97,6 +105,44 @@ describe("첫 화면 예제 행", () => {
     } finally {
       document.removeEventListener(LOCALE_CHANGED_EVENT, home.syncLocale);
       home.element.remove();
+      await setLocale("ko");
+      localStorage.clear();
+    }
+  });
+
+  it.each([
+    { mode: "ChatGPT", tone: "ok", ja: "ChatGPT接続済み · gpt-6.2-sol", en: "ChatGPT connected · gpt-6.2-sol", zh: "ChatGPT 已连接 · gpt-6.2-sol", ko: "ChatGPT 연결됨 · gpt-6.2-sol" },
+    { mode: "Claude Code", tone: "ok", ja: "Claude Code · 接続済み", en: "Claude Code · Connected", zh: "Claude Code · 已连接", ko: "Claude Code · 연결됨" },
+    { mode: "disconnected", tone: "off", ja: "AI 接続", en: "AI connection", zh: "AI 连接", ko: "AI 연결" },
+  ])("updates the $mode badge when the locale changes", async ({ mode, tone, ja, en, zh, ko }) => {
+    const initialUrl = location.href;
+    const initialHistoryState = history.state;
+    const host = document.createElement("div");
+    document.body.append(host);
+    try {
+      history.replaceState(null, "", "#home");
+      localStorage.setItem(LOCAL_AGENTS_FLAG_KEY, "0");
+      if (mode === "ChatGPT") {
+        getAiConnectionStatus.mockReturnValueOnce({ kind: "ready", label: "ChatGPT 연결됨" });
+        localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "openai-codex", model: "gpt-6.2-sol" }));
+      } else if (mode === "Claude Code") {
+        saveEngineChoice({ kind: "local-cli", cli: "claude" });
+      }
+      await setLocale("ja");
+      mountStartScreen(host, undefined);
+      const badge = host.querySelector<HTMLButtonElement>(`[data-testid="${PROMPT_HOME_TESTIDS.aiStatus}"]`)!;
+      await vi.waitFor(() => expect(badge.textContent).toBe(ja), { timeout: 2_000 });
+      expect(badge.hidden).toBe(false);
+      expect(badge.dataset.tone).toBe(tone);
+      const checks = refreshAiConnectionStatus.mock.calls.length;
+      for (const [locale, text] of [["en", en], ["zh", zh], ["ko", ko], ["ja", ja]] as const) {
+        await setLocale(locale);
+        expect(badge.textContent).toBe(text);
+      }
+      expect(refreshAiConnectionStatus).toHaveBeenCalledTimes(checks);
+    } finally {
+      host.remove();
+      history.replaceState(initialHistoryState, "", initialUrl);
       await setLocale("ko");
       localStorage.clear();
     }

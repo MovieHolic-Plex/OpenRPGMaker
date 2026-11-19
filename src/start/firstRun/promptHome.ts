@@ -9,6 +9,7 @@ import { startIcon } from "../icons";
 import { BRAND_MARK_SVG } from "../brandMark";
 import { FIRST_RUN_TEXT_LIMIT } from "./firstRunBrief";
 import { BUILTIN_GAMES, type BuiltinGameId } from "../home/builtinGames";
+import type { AiStatusSummary } from "../settings/localAgents";
 import { MAX_USER_IMAGES } from "@/ai/piAgent/userImages";
 import { shrinkReferenceImage } from "./referenceImage";
 
@@ -79,7 +80,7 @@ export type PromptHome = {
   syncLocale(): void;
   /** 내 게임 줄을 다시 그린다. 빈 배열이면 줄을 감추고 처음 온 사람의 화면이 된다. */
   setGames(games: readonly PromptHomeGame[], total: number): void;
-  setAiStatus(status: { readonly tone: "ok" | "warn" | "off"; readonly text: string }): void;
+  setAiStatus(status: AiStatusSummary): void;
 };
 
 const SUBMIT_LABEL = "만들기 시작";
@@ -304,10 +305,14 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     })), ...(has ? [blankCard()] : []));
     renderLinks(has);
   };
-  const setAiStatus = (status: { readonly tone: "ok" | "warn" | "off"; readonly text: string }): void => {
+  const setAiStatus = (status: AiStatusSummary): void => {
     aiStatus.hidden = false;
     aiStatus.dataset.tone = status.tone;
-    aiStatus.replaceChildren(el("span", { class: "fr-ai-dot", attrs: { "aria-hidden": "true" } }), el("span", { text: status.tone === "ok" ? status.text : "AI 연결" }));
+    const label = el("span", { text: status.tone === "ok" ? status.text : "AI 연결" });
+    if (status.tone === "ok" && status.model) {
+      label.append(" · ", el("bdi", { attrs: { "data-i18n-skip": "" }, text: status.model }));
+    }
+    aiStatus.replaceChildren(el("span", { class: "fr-ai-dot", attrs: { "aria-hidden": "true" } }), label);
   };
 
   return { element: root, focus: () => input.focus(), syncLocale, setGames, setAiStatus };
