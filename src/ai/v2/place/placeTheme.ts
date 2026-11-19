@@ -7,7 +7,7 @@ import { artGapLine } from "@/project/artGap";
 import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { battleSceneryStill } from "@/assets/battleSceneryCatalog";
 import { WORLDS, worldOf, worldKind, type WorldKind, type WorldSetting } from "./world";
-import { currentFoe, hasCurrentArt, leadEnemyId, useCurrentArt, wantedArtName } from "../story/currentFoes";
+import { hasCurrentArt, leadEnemyId, namedFoe, useCurrentArt, wantedArtName } from "../story/currentFoes";
 import { foeSkillNames } from "../judge/enemyChecks";
 import { enemyArtFor } from "./builders/dungeonFoes";
 
@@ -295,7 +295,9 @@ export function themeBossTroop(project: Project, mapId: string, who: string | un
   const words = (who ?? "").split(/[\s의]+/u).filter((w) => w.length >= 2);
   // 이름 겹침: 보스 후보는 어느 낱말이든, 길 적은 머리 명사(마지막 낱말)만 — 「모래 수호자」 가 모래 전갈이 되지 않게.
   const akin = want.ids.find((id) => words.some((w) => nameOf(project, id).includes(w))) ?? road.ids.find((id) => !!words.at(-1) && nameOf(project, id).includes(words.at(-1)!));
-  const worded = akin ? undefined : currentFoe(project, enemyArtFor(project, who ?? ""));
+  // 이름이 짚은 종의 그림이 어느 묶음에든 있으면 그 종 그대로(story/currentFoes.namedFoe — 오너 «에셋을 자유롭게»). 현행 세트 대역만 보면
+  // 대역(창백한 유령)이 길 적에 이미 쓰여 다른 종(다이어 울프)으로 돌았다(2026-11-17 r7-harbour R4 · P6: «해골 병사» 전투 그림이 늑대).
+  const worded = akin ? undefined : namedFoe(project, enemyArtFor(project, who ?? ""));
   const natural = akin ?? worded?.enemyId ?? want.ids[Math.abs(salt) % Math.max(1, want.ids.length)];
   const named = !!akin || (!!worded && !worded.wanted);
   const kin = (id: string) => { const head = id.replace(/^enemy_/u, "").split("_")[0]; return project.database.enemies.map((e) => e.id).filter((e) => e.startsWith(`enemy_${head}_`) && hasCurrentArt(project, e)); };

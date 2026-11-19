@@ -422,6 +422,16 @@ export class TodoStore {
    */
   viewFocusEn(focusId: string | undefined, maxOpen = 8): string {
     if (this.items.length <= TodoStore.SHORT_LIST || !focusId) return this.viewEn(40);
+    return this.briefEn(focusId, maxOpen);
+  }
+  /**
+   * 열린 항목만(머리 줄 + 열린 줄 maxOpen 개) — 없는 id 로 부른 todo 의 거절 글에 싣는다. 전체 목록을 실으면 4,000자에서 잘려
+   * 모델이 다른 id 를 다섯 번 넣어 보았다(r7a-harbour 003.1~003.5, N7).
+   */
+  viewOpenEn(maxOpen = 12): string {
+    return this.items.length <= TodoStore.SHORT_LIST ? this.viewEn(40) : this.briefEn(undefined, maxOpen);
+  }
+  private briefEn(focusId: string | undefined, maxOpen: number): string {
     const c = this.counts();
     const lines = [`Todo ${c.done}/${c.total} done · ${c.open} open${c.blocked ? ` · ${c.blocked} blocked` : ""}${c.dropped ? ` · ${c.dropped} dropped` : ""}`];
     const focus = this.items.find((i) => i.id === focusId);

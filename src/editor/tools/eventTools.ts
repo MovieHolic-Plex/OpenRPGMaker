@@ -5146,8 +5146,8 @@ const patchEventPage: ToolDefinition = {
         if (!kept.some((next) => jsonEqual(stripCommandIds(next), stripCommandIds(old)))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
       }
     }
-    const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;
-    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ 원래 명령 ${dropped.length}개 빠짐(${dropped.join(", ")}) — 지우라는 요청이 아니면 되살릴 것` : ""}${carriedNote ? ` ${carriedNote}` : ""}`,
+    const warnings = dropped.length ? [...(result.warnings ?? []), `${dropped.length} original command(s) were dropped: ${dropped.join(", ")}. If removing them was not asked for, read the original with get_event and call patch_event_page once more with them included.`] : result.warnings;
+    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ ${dropped.length} original command(s) dropped (${dropped.join(", ")}) — put them back unless removing them was asked` : ""}${carriedNote ? ` ${carriedNote}` : ""}`,
       data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
   },
 };

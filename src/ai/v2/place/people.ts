@@ -150,13 +150,15 @@ function plainPeople<T extends { readonly entry: { readonly textureKey: string; 
  * (2026-11-16 확인 빌드 r6b: 편의점 점원 = «마법 상점 직원», 서점 주인 = «노년 지팡이 장인», 하교하는 학생 = «부엉이 우편 담당 학생»).
  * hostile = 적으로 청한 사람(해골 병사) — 판타지 맵에서는 몬스터 칩이 제 계열이다(사람 병사 칩으로 서지 않게).
  */
-function familyFits(map: GameMap, textureKey: string, hostile = false): boolean {
+export function familyFits(map: GameMap, textureKey: string, hostile = false): boolean {
   const modern = /jp_|modern|city_modern|campus|school|office/i.test(map.tilesetId);
   const family = charsetFamilyOf(undefined, textureKey);
   const fantasyChip = /^tex_easyrpg_charset_(people|actor)|^tex_(oprn_charset_)?scarloxy_(charset_)?people/i.test(textureKey);
   if (!modern) return fantasyChip || (hostile && (family === "rtp-creature" || family === "oprn-creature"));
   if (family === "wizarding") return /wizard/i.test(map.tilesetId);
-  return !fantasyChip && family !== "refmap-doll" && family !== "heroes";
+  // 공유 배우 칩(shared-actor)은 화풍이 섞인 묶음이다 — 현대 맵의 기본 계열로 치지 않는다(글이 이름으로 부르면 named 로 선다).
+  // 왜(2026-11-17 r7-jpcity R5): 라멘집 «단골손님» 이 현대 칩 넷 사이에 «별담 · 천문 기록관»(판타지 공유 칩, 짝 얼굴 없음)으로 섰다.
+  return !fantasyChip && family !== "refmap-doll" && family !== "heroes" && family !== "shared-actor";
 }
 
 /**
