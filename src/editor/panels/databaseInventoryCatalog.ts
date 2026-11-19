@@ -245,8 +245,8 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
       }
       const previous = cached.projection;
       if (!sameProjection(previous, next) || cached.gallery !== gallery) {
-        const name = row.querySelector(".db-list-name");
-        if (name) name.textContent = next[0] || "(이름 없음)";
+        const name = row.querySelector<HTMLElement>(".db-list-name");
+        if (name) name.textContent = name.title = next[0] || "(이름 없음)";
         const sub = row.querySelector<HTMLElement>(".db-list-sub");
         if (sub) sub.textContent = sub.title = `${LABELS[entry.collection]} · ${next[2]}`;
         row.title = `${next[0]} (${entry.record.id})`;

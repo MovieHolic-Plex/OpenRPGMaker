@@ -1153,7 +1153,7 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 | 왼쪽 | 브랜드 점 `editor-product-brand` · 프로젝트 메뉴 `menu-project`(title 「프로젝트 메뉴 — 이름」) · `/ 맵` `topbar-crumb-map`(말줄임) | 그대로 |
 | 가운데 | `studio-layer-segment` 한 분절 = `layer-relief`(지형) + `left-layer-switcher`(`layer-lower`·`layer-upper`·`layer-event`) | 옮김 |
 | 오른쪽 | `toolbar-database` 자료집 · `toolbar-resource-manager` 소재 · **`topbar-assistant` 조수**(`openAiAssistantPanel()`) | 고스트 단추 |
-| 오른쪽 | `toolbar-save` = 연한 글자 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」(`autosaveStripText`), 누르면 저장, 실패는 `.is-failing` 위험색, title 「프로젝트 저장 (Ctrl+S)」, `data-autosave-kind` 유지, 라이브 리전 `toolbar-save-autosave` | 그대로(모양만) |
+| 오른쪽 | `toolbar-save` = 연한 글자 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」(`autosaveStripText`). 평소 누르면 저장하며 title 은 「프로젝트 저장 (Ctrl+S)」이다. 실패하면 경고 아이콘과 「저장 실패」를 표시하고, 누르면 오류 원문과 「다시 저장」 또는 「복구」를 연다. `data-autosave-kind` 와 라이브 리전 `toolbar-save-autosave` 를 유지한다. | 저장 상태와 상세 |
 | 오른쪽 | `topbar-test-play`/`mode-play` 「▷ 테스트 실행」 | 그대로 |
 | 오른쪽 끝 | `menu-more-tools` ⋯ 32×32, 늘 보임. 항목 = `menu-help` ▸ · `menu-language` ▸ · `topbar-ai-settings`(이름에 연결 상태: 「AI 설정 · … 로그인 필요」) | ⋯ |
 | ⌘K 만 | 세계관 `open-world` · 음악 `open-audio` · 찾기 `open-map-event-search` · 랜덤 전투 `topbar-battle-test` · AI 스튜디오 `topbar-ai-studio` · 패널 보기 `workspace-panels-button-<pane>` · 저장 기록 `commit-history-toggle` · 편집 이름 `topbar-identity` · 전체화면 `window-fullscreen` · 명령 팔레트 칩(Ctrl+K 자체) | 팔레트 행 testid `command-palette-item-command-<id>` |

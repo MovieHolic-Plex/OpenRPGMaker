@@ -8,6 +8,7 @@ import type { GameEvent } from "@/project/types";
 let activeTooltip: HTMLElement | null = null;
 let activeRow: HTMLElement | null = null;
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
+let sizeObserver: ResizeObserver | null = null;
 
 const HIDE_DELAY_MS = 80;
 
@@ -32,6 +33,10 @@ export function bindEventListRowHoverTooltip(row: HTMLElement, event: GameEvent)
 
 export function hideEventListTooltip(): void {
   clearHideTimer();
+  sizeObserver?.disconnect();
+  sizeObserver = null;
+  window.removeEventListener("scroll", hideOnScroll, true);
+  window.removeEventListener("resize", positionActiveTooltip);
   activeTooltip?.remove();
   activeTooltip = null;
   activeRow = null;
@@ -42,13 +47,19 @@ function showEventListTooltip(row: HTMLElement, event: GameEvent): void {
   const model = buildEventListTooltipModel(store.getCurrent(), event);
 
   if (!activeTooltip || !activeTooltip.isConnected || activeRow !== row) {
-    activeTooltip?.remove();
+    hideEventListTooltip();
     activeTooltip = renderEventListTooltipElement(model);
     document.body.append(activeTooltip);
     activeRow = row;
+    window.addEventListener("scroll", hideOnScroll, true);
+    window.addEventListener("resize", positionActiveTooltip);
+    if (typeof ResizeObserver !== "undefined") {
+      sizeObserver = new ResizeObserver(positionActiveTooltip);
+      sizeObserver.observe(activeTooltip);
+    }
   }
 
-  positionTooltip(row, activeTooltip);
+  positionActiveTooltip();
 
   activeTooltip.onpointerenter = () => clearHideTimer();
   activeTooltip.onpointerleave = () => {
@@ -57,8 +68,15 @@ function showEventListTooltip(row: HTMLElement, event: GameEvent): void {
   };
 }
 
-function positionTooltip(row: HTMLElement, tip: HTMLElement): void {
-  const rowRect = row.getBoundingClientRect();
+function hideOnScroll(event: Event): void {
+  if (event.target instanceof Node && activeTooltip?.contains(event.target)) return;
+  hideEventListTooltip();
+}
+
+function positionActiveTooltip(): void {
+  if (!activeRow || !activeTooltip) return;
+  const tip = activeTooltip;
+  const rowRect = activeRow.getBoundingClientRect();
   const tipRect = tip.getBoundingClientRect();
   const tipWidth = Math.max(1, tipRect.width || tip.offsetWidth || 300);
   const tipHeight = Math.max(1, tipRect.height || tip.offsetHeight || 160);
@@ -71,7 +89,7 @@ function positionTooltip(row: HTMLElement, tip: HTMLElement): void {
   if (left + tipWidth > viewport.width - 8) {
     left = rowRect.left - tipWidth - 10;
   }
-  if (left < 8) left = 8;
+  left = Math.max(8, Math.min(left, viewport.width - tipWidth - 8));
 
   if (top + tipHeight > viewport.height - 8) {
     top = viewport.height - tipHeight - 8;

@@ -157,11 +157,9 @@
   font: 400 13px/20px var(--font-ui);
   gap: 6px;
   min-height: var(--rm-resource-row-height);
-  overflow: hidden;
-  padding: 0 6px 0 4px;
+  padding: 4px 6px 4px 4px;
   text-align: left;
   transition: background var(--transition-fast), color var(--transition-fast);
-  white-space: nowrap;
 }
 
 .resource-modal-window .rm-category-row::before {
@@ -422,12 +420,6 @@
   margin-right: auto;
 }
 
-.resource-footer-actions {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 10px;
-}
-
 .resource-footer-button {
   min-height: 36px;
   min-width: var(--rm-resource-footer-button-width);
@@ -663,9 +655,8 @@
 }
 
 .asset-source-viewport {
-  background: #1c1a17;
-  color: #ece8df;
-  color-scheme: dark;
+  background: var(--bg-inset);
+  color: var(--text-1);
   min-height: 420px;
   position: relative;
 }

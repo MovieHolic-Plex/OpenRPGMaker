@@ -4,6 +4,7 @@
 // 공유하지만, 이벤트 에디터만의 구조(페이지 · 조건 · 명령 · 그래픽 · 이동경로 · 분기 · AI 보조)를
 // 자세히 다룬다. 이벤트 에디터 모달 위에 겹쳐 뜨므로 modalStack 에 등록해 Esc 가 도움말부터 닫는다.
 // 스타일은 기존 .help-modal-* 클래스를 재사용한다(z-index 290 > 이벤트 에디터 120).
+import { modalCloseButton } from "@/editor/ui/modal";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
@@ -353,19 +354,7 @@ const HELP_TEST_ID = "event-editor-help-modal";
 export function openEventEditorHelp(): void {
   document.querySelector(`[data-testid='${HELP_TEST_ID}']`)?.remove();
 
-  const closeButton = el("button", {
-    class: "help-modal-close",
-    text: "×",
-    attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
-    dataset: { testid: "event-editor-help-close" },
-  });
-  const closeAction = el("button", {
-    class: "help-modal-button",
-    text: "닫기",
-    attrs: { type: "button" },
-    dataset: { testid: "event-editor-help-dismiss" },
-    on: { click: () => close() },
-  });
+  const closeButton = modalCloseButton("help-modal-close", () => close(), { testid: "event-editor-help-close" });
 
   const body = el("div", { class: "help-modal-body" });
   const nav = el("nav", {
@@ -400,7 +389,6 @@ export function openEventEditorHelp(): void {
             ],
           }),
           el("div", { class: "help-modal-layout", children: [nav, body] }),
-          el("footer", { class: "help-modal-footer", children: [closeAction] }),
         ],
       }),
     ],
@@ -459,12 +447,11 @@ export function openEventEditorHelp(): void {
   }
   registerModal(backdrop, () => close());
 
-  closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
   document.body.append(backdrop);
-  closeAction.focus();
+  closeButton.focus();
 }
 
 function renderSection(section: GuideSection): HTMLElement {

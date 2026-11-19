@@ -23,8 +23,20 @@
 .editor-layout .map-sidebar-section .map-tree-panel .map-item { min-height: 28px; color: var(--text-2); padding: 0 8px; column-gap: 0; font-weight: 400; }
 /* 목업 행은 갈매기와 이름 사이가 8px 하나다 — 접어 둔 손잡이·썸네일 칸이 간격을 더하지 않게 간격은 이름 쪽에서 준다. */
 .editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-copy { margin-left: 8px; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-name { font-weight: 400; color: inherit; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item:not(.map-root) { margin-left: calc(var(--map-depth, 1) * 18px - 10px); width: calc(100% - var(--map-depth, 1) * 18px + 10px); }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  font-weight: 400;
+  color: inherit;
+}
+.editor-layout .map-sidebar-section .map-tree-panel .map-item:not(.map-root) {
+  --map-row-indent: clamp(0px, calc(var(--map-depth, 1) * 12px - 4px), 64px);
+  margin-left: var(--map-row-indent);
+  width: calc(100% - var(--map-row-indent));
+}
 .editor-layout .map-sidebar-section .map-tree-panel .map-item:hover { background: var(--bg-hover); }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item.active { background: var(--accent-muted); color: var(--text-1); }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item.active .map-tree-meta { display: none; }
@@ -76,6 +88,12 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
 }
 .tile-section-tileset:hover { color: var(--text-1); }
+.palette-work-pane.is-event > .tile-section-head .tile-section-title { align-items: baseline; }
+.palette-work-pane.is-event > .tile-section-head .tile-section-tileset {
+  overflow-wrap: anywhere;
+  text-align: start;
+  white-space: normal;
+}
 .tile-section-settings {
   display: inline-flex; align-items: center; gap: 3px; flex: none; height: 22px; padding: 0 6px; border: 0; border-radius: 5px;
   background: transparent; color: var(--text-3); font: 500 11.5px var(--font-ui); cursor: pointer;

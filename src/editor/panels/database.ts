@@ -1141,8 +1141,7 @@ function appendTabButton(
       // 아이콘은 `children` 으로만 넣는다 — el() 은 `text` 를 먼저 배정하고 children 을
       // 나중에 append 하므로 둘을 섞으면 라벨이 아이콘 앞으로 온다. <path> 는 텍스트
       // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
-      // 라벨은 span 에 담는다 — 플렉스 버튼의 맨 텍스트에는 말줄임이 걸리지 않아, 영어처럼 긴 이름이
-      // 「Equipmer」로 글자째 잘렸다(V-database-17). textContent 는 그대로 라벨이다(G006 계약).
+      // 라벨은 별도 flex 항목으로 줄바꿈한다. textContent 는 그대로 라벨이다(G006 계약).
       children: [makeDatabaseTabIcon(tab.id), el("span", { class: "db-tab-label", text: tab.label })],
       // 카운트 배지(CSS `content: attr(data-count)`)는 보조기술이 못 읽는다. 다만 이 버튼은
       // `aria-label === title === 라벨` 을 계약으로 쓰고 있어(databaseTabIcons·databaseSidebarNav

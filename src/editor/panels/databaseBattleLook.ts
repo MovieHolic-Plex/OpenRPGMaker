@@ -103,7 +103,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
         ? [
             el("em", { class: "db-battle-look-custom", text: "사용자 설정" }),
             el("button", {
-              class: "btn",
+              class: "db-ws-btn",
               text: "프리셋 값으로 되돌리기",
               attrs: { type: "button" },
               dataset: { testid: "db-battle-look-reset" },
@@ -112,7 +112,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
           ]
         : []),
       el("button", {
-        class: "btn",
+        class: "db-ws-btn db-ws-btn-primary",
         text: "전투 테스트",
         attrs: { type: "button", title: "지금 설정으로 시작 적 그룹(없으면 아무 적 그룹)과 전투를 엽니다" },
         dataset: { testid: "db-battle-look-test" },
@@ -145,7 +145,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
     const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
     input.checked = look[key];
     input.addEventListener("change", () => patch({ [key]: input.checked } as Partial<BattleLookSettings>));
-    return el("label", { class: "db-battle-look-toggle", children: [input, el("span", { text: label })] });
+    return el("label", { class: "db-checkbox-field", children: [input, el("span", { text: label })] });
   };
   const level = (label: string, testid: string, key: "light" | "dust" | "vignette" | "blur"): HTMLElement =>
     choice(label, testid, BATTLE_LOOK_LEVELS, BATTLE_LOOK_LEVEL_LABELS, look[key], presetAxes[key], (value) => patch({ [key]: value } as Partial<BattleLookSettings>));
@@ -160,11 +160,11 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
   fontSelect.value = saved.font && isFontFamilyId(saved.font) ? saved.font : "";
   fontSelect.addEventListener("change", () => patch({ font: isFontFamilyId(fontSelect.value) ? fontSelect.value : undefined }));
 
-  // 강조색: 색 입력은 빈 값을 못 가지므로 「꾸밈 기본」 체크와 둘로 나눈다. field() 라벨은 첫 컨트롤을 누르므로 색을 앞에 둔다.
+  // 색 입력은 빈 값을 못 가지므로 기본 강조색 사용 여부를 별도로 받는다.
   const accentSaved = isBattleAccentColor(look.accent) ? look.accent : undefined;
   const usesDefault = el("input", { attrs: { type: "checkbox", "aria-label": "꾸밈 기본 강조색" }, dataset: { testid: "db-battle-look-accent-default" } }) as HTMLInputElement;
   usesDefault.checked = !accentSaved;
-  const color = el("input", { attrs: { type: "color", "aria-label": "전투 강조색" }, dataset: { testid: "db-battle-look-accent" } }) as HTMLInputElement;
+  const color = el("input", { attrs: { type: "color", id: "db-battle-look-accent-color" }, dataset: { testid: "db-battle-look-accent" } }) as HTMLInputElement;
   color.value = accentSaved ?? "#d9b86c";
   color.disabled = !accentSaved;
   const applyAccent = (): void => {
@@ -183,7 +183,13 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
       choice("전장 크기", "db-battle-look-field", BATTLE_LOOK_FIELD_IDS, BATTLE_LOOK_FIELD_LABELS, look.field, presetAxes.field, (value) => patch({ field: value })),
       choice("창 꾸밈", "db-battle-look-window", BATTLE_LOOK_WINDOW_IDS, BATTLE_LOOK_WINDOW_LABELS, look.window, presetAxes.window, (value) => patch({ window: value })),
       field("전투 글꼴", fontSelect),
-      field("강조색", el("span", { class: "db-battle-look-accent-row", children: [color, el("label", { children: [usesDefault, " 꾸밈 기본"] })] })),
+      el("div", { class: "db-field", children: [
+        el("span", { children: [el("label", { text: "강조색", attrs: { for: color.id } })] }),
+        el("div", { class: "db-battle-look-accent-row", children: [
+          color,
+          el("label", { class: "db-checkbox-field", children: [usesDefault, "꾸밈 기본"] }),
+        ] }),
+      ] }),
       level("빛내림", "db-battle-look-light", "light"),
       level("떠다니는 먼지", "db-battle-look-dust", "dust"),
       level("가장자리 어둡게", "db-battle-look-vignette", "vignette"),

@@ -2,7 +2,6 @@ import type { AutoSaveState } from "@/project/store";
 
 export const DATABASE_FOOTER_ACTION_TEST_IDS = {
   apply: "database-footer-apply",
-  ok: "database-footer-ok",
 } as const;
 
 export type DatabaseFooterStatusKind = "ok" | "pending" | "error" | "info";
@@ -18,11 +17,11 @@ export function databaseFooterStatus(state: AutoSaveState): DatabaseFooterStatus
   // 자동 저장이 아예 없는 세션(shared-demo·임시 세션)은 실패가 아니라 "원래 안 됨"이다.
   // 빨간 오류 필로 칠하면 다시 시도하면 될 줄 알게 된다 — 중립 안내로 말한다.
   if (state.kind === "error" && state.code === "session-not-persisted") return { text: state.message, kind: "info" };
-  if (state.kind === "error") return { text: `자동 저장 실패 — ${state.message}`, kind: "error" };
+  if (state.kind === "error") return { text: state.message, kind: "error" };
   // pending·saving 은 접는다 — 톱바 칩이 같은 이유로 이미 접고 있다(menu.ts 의 paintSaveStatus:
   // 타일 한 칸마다 상태가 떴다 사라지며 옆 버튼이 튀는 것이 오조작을 만든다). 거짓말이었던 건
   // 진행 상태가 아니라 **실패를 성공으로 말하던 것**이므로, 실패만 드러내면 결함이 닫힌다.
-  // 명시적 저장("지금 저장")의 진행 문구는 writeDatabaseFooterPending 이 따로 쓴다.
+  // 명시적 저장("지금 저장")은 자료집 모달이 별도 문구를 쓴다.
   // v2(2026-09-03): 체크 글리프는 뺐다 — 푸터 필이 앞에 상태 점을 그린다.
   return { text: "자동 저장됨", kind: "ok" };
 }

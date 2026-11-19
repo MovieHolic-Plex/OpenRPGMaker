@@ -39,34 +39,26 @@ describe("database modal footer — honest auto-save UI", () => {
   });
 
   // 되돌리기(Ctrl+Z)는 예전부터 동작했지만 모달 어디에도 노출이 없었다 — 푸터로 올렸다.
-  it("only offers 닫기/지금 저장/되돌리기/도움말 in the footer — no duplicate 취소 button", () => {
+  it("keeps dismissal in the header and only actions in the footer", () => {
     openDatabaseModal("actors");
 
     const labels = footerButtons().map((button) => button.textContent);
-    // 1255da55cc: DOM 순서는 도움말(왼쪽 끝 보조 링크) · 되돌리기 · 닫기 · 주 버튼 「지금 저장」이다.
-    expect(labels).toEqual(["도움말", "되돌리기", "닫기", "지금 저장"]);
+    expect(labels).toEqual(["도움말", "되돌리기", "지금 저장"]);
     expect(document.querySelector("[data-testid='database-footer-cancel']")).toBeNull();
 
     const applyButton = document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.apply}']`);
     expect(applyButton?.textContent).toBe("지금 저장");
   });
 
-  it("closes and keeps store edits from the footer 닫기 button and the header X", () => {
+  it("closes and keeps store edits from the header X", () => {
     openDatabaseModal("actors");
     const actorId = store.getCurrent().database.actors[0]?.id ?? "";
     updateDatabaseRecord("actors", actorId, { name: "Dirty Actor" });
 
-    document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.ok}']`)?.click();
-
-    expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
-    expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor");
-
-    openDatabaseModal("actors");
-    updateDatabaseRecord("actors", actorId, { name: "Dirty Actor X" });
     document.querySelector<HTMLElement>("[data-testid='database-modal-close']")?.click();
 
     expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
-    expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor X");
+    expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor");
   });
 
   // 1255da55cc: 레코드 편집은 자동 저장이 이어받으므로 Escape 도 X·「닫기」처럼 바로 닫고 편집을 남긴다.

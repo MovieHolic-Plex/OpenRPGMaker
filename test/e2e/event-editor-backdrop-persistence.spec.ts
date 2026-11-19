@@ -121,7 +121,7 @@ test("all event-editor button families keep visible background context", async (
   await modal.getByTestId("event-editor-help").click();
   const help = page.getByTestId("event-editor-help-modal");
   await expectTranslucentScrim(help);
-  await page.getByTestId("event-editor-help-dismiss").click();
+  await page.getByTestId("event-editor-help-close").click();
   await expectOriginalEditorBackdrop(modal);
 
   const fullscreen = modal.getByTestId("event-editor-window-fullscreen");

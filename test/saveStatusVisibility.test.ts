@@ -169,8 +169,11 @@ describe("톱바 저장 글자", () => {
     expect(button.className).toContain("is-failing");
     expect(button.textContent).toBe("저장 실패");
     expect(status.textContent ?? "").toContain("3회");
-    // 오류 원문 노출 금지 계약(결함 ⑫)은 그대로 유지된다.
-    expect(fake(topbar).textContent).not.toContain("provider 401 secret detail");
+    expect(button.textContent).not.toContain("provider 401 secret detail");
+    const detail = topbar.querySelector('[id="toolbar-save-error-details"]');
+    expect(button.getAttribute("popovertarget")).toBe("toolbar-save-error-details");
+    expect(detail?.getAttribute("popover")).toBe("auto");
+    expect(detail?.textContent).toContain("provider 401 secret detail");
     expect(findByTestId(fake(topbar), "topbar-save-status"), "따로 뜨던 실패 칩은 걷었다").toBeNull();
   });
 
@@ -221,13 +224,15 @@ describe("톱바 저장 글자", () => {
     expect(saveButton(first).className, "떼어낸 톱바는 더 이상 갱신되지 않는다").not.toContain("is-failing");
   });
 
-  it("실패 뒤 저장 글자를 누르면 실제 저장을 다시 시도한다", async () => {
+  it("실패 상세의 다시 저장을 누르면 실제 저장을 다시 시도한다", async () => {
     // Break: 실패는 보이는데 그 자리에서 되돌릴 방법이 없다.
     const flush = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved" });
     const topbar = renderFreshTopbar();
     emitAutoSave({ kind: "error", message: "network down", retryCount: 1 });
 
     saveButton(topbar).click();
+    expect(flush).not.toHaveBeenCalled();
+    findByTestId(fake(topbar), "toolbar-save-retry")?.click();
 
     await vi.waitFor(() => expect(flush).toHaveBeenCalledTimes(1));
     await Promise.resolve();

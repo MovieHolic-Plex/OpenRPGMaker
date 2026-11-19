@@ -231,7 +231,7 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
       class: "db-state-runtime-hint",
       dataset: { testid: "db-state-runtime-hint" },
       // 위 "HP > 전투 중(턴당%)" 필드는 정수 파서를 타서 6.25 가 0 으로 뭉개진다. 소수는 여기로.
-      text: "Gen1 화상 = 공격 배율 0.5 + 턴당 HP 6.25%(=1/16). 독도 6.25%. 배율은 런타임에서 0.4~2.5 로 clamp 된다.",
+      text: "Gen1에서 화상은 공격력을 절반으로 낮추고 턴마다 최대 HP의 6.25%를 깎습니다. 독도 같은 피해를 줍니다. 전투 중 적용되는 배율의 범위는 0.4~2.5입니다.",
     }),
   ], "db-state-runtime-panel");
 }

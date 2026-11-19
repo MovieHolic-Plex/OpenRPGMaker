@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const openDatabaseModal = vi.fn();
+const openDatabaseModalLazy = vi.fn();
 
-vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal }));
+vi.mock("@/editor/panels/databaseModalLazy", () => ({ openDatabaseModalLazy }));
 
 import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldEntries";
 import { createBlankProject } from "@/project/defaults";
@@ -15,19 +15,19 @@ describe("worldEntries", () => {
   beforeEach(() => {
     cleanupDom = installFakeDom();
     store.replace(createBlankProject());
-    openDatabaseModal.mockClear();
+    openDatabaseModalLazy.mockClear();
   });
 
   afterEach(() => cleanupDom?.());
 
-  it("opens the canon tab for the world entry", async () => {
-    await openWorldPanel();
-    expect(openDatabaseModal).toHaveBeenCalledWith("worldCanon");
+  it("opens the canon tab for the world entry", () => {
+    openWorldPanel();
+    expect(openDatabaseModalLazy).toHaveBeenCalledWith("worldCanon");
   });
 
-  it("opens the codex tab for the codex entry", async () => {
-    await openWorldCodexPanel();
-    expect(openDatabaseModal).toHaveBeenCalledWith("worldCodex");
+  it("opens the codex tab for the codex entry", () => {
+    openWorldCodexPanel();
+    expect(openDatabaseModalLazy).toHaveBeenCalledWith("worldCodex");
   });
 
   it("exposes the entry tab ids as constants", async () => {

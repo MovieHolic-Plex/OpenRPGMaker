@@ -1,6 +1,7 @@
 import { serialize } from "@/project/io";
 import { ensureSharedContent, loadSharedContent } from "@/project/sharedContent";
 import type { Project } from "@/project/types";
+import { loadWithOpeningDialog } from "@/editor/ui/loadWithOpeningDialog";
 
 function startBridge(): NonNullable<Window["oprn"]>["start"] | undefined {
   return typeof window === "undefined" ? undefined : window.oprn?.start;
@@ -43,7 +44,8 @@ export async function openProjectFolder(): Promise<boolean> {
     store.replaceProject(project);
     return true;
   }
-  const projects = await bridge.recentProjects();
+  const projects = await loadWithOpeningDialog("프로젝트 열기", () => bridge.recentProjects());
+  if (!projects) return false;
   if (projects.length === 0) throw new Error("이 서버에 열 수 있는 프로젝트 폴더가 없습니다. 먼저 새 프로젝트를 만드세요.");
   const selected = await chooseHostedProject(projects);
   if (!selected) return false;

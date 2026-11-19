@@ -4,13 +4,17 @@ import { editorState } from "@/editor/editorState";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
+import en from "@/i18n/catalogs/en.json";
+import { installDomTranslator } from "@/i18n/domTranslator";
+import { createTranslator } from "@/i18n/translator";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import type { Command } from "@/project/types";
 
 const EVENT_ID = "ev_page_preview";
 let pageSequence = 0;
 
-function seedProject(): string {
+function seedProject(firstCommand: Command = { kind: "text", body: "어서 오세요." }): string {
   const project = createBlankProject();
   const mapId = project.startMapId;
   const pageId = `preview-${++pageSequence}`;
@@ -31,7 +35,7 @@ function seedProject(): string {
           priority: "same",
           movement: { type: "fixed", speed: 3, frequency: 3 },
           commands: [
-            { kind: "text", body: "어서 오세요." },
+            firstCommand,
             { kind: "setSwitch", switchId: "sw_met", value: true },
           ],
         },
@@ -102,6 +106,23 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
     click(host, "event-script-live-prev");
     expect(position()).toBe("1/2");
     expect(caption()).toBe(first);
+  });
+
+  it("uses the same locale for cutscene labels in the list and preview", () => {
+    const mapId = seedProject({ kind: "cutsceneControl", mode: "begin", skippable: true });
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    const translator = createTranslator(en, { locale: "en" });
+    const dom = installDomTranslator(host, translator);
+    try {
+      const expected = "Cutscene control: Start / Skippable";
+      expect(host.querySelector(".cmd-kind")?.textContent).toBe(expected);
+      click(host, "event-view-toggle-preview");
+      dom.retranslate(translator);
+      expect(host.querySelector('[data-testid="event-script-live-stage"] .ecp-summary-line')?.textContent).toBe(expected);
+      expect(host.querySelector('[data-testid="event-script-live-caption"]')?.textContent).toBe(expected);
+    } finally {
+      dom.stop();
+    }
   });
 
   it("keeps the selected tab focused through actual parent view replacement", () => {

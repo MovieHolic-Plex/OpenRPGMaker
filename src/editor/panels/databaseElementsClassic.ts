@@ -105,7 +105,8 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
     const visible = rows.filter((row, index) => {
       const element = current[index];
       const name = element.name.trim() ? element.name : "(이름 없음)";
-      row.querySelector<HTMLElement>(".db-list-name")!.textContent = name;
+      const label = row.querySelector<HTMLElement>(".db-list-name")!;
+      label.textContent = label.title = name;
       row.title = `${name} #${index + 1} · ${element.id}`;
       return matchesNameOrId(name, element.id, elementQuery);
     });

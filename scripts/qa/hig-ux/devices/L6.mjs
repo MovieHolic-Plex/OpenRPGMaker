@@ -166,14 +166,14 @@ async function footerWeight({ page }) {
     const filled = btns.filter((b) => { const c = parseC(getComputedStyle(b).backgroundColor); return c && c.a > 0.8 && sat(c) > 0.35; });
     const undo = btns.find((b) => b.dataset.testid === 'database-footer-undo');
     const help = btns.find((b) => b.dataset.testid === 'database-footer-help');
-    const close = btns.find((b) => b.dataset.testid === 'database-footer-ok') || btns.find((b) => /닫기/.test(textOf(b)));
+    const save = btns.find((b) => b.dataset.testid === 'database-footer-apply');
     const ratio = (b) => { const s = getComputedStyle(b); const fg = parseC(s.color); const bg = bgOf(b); const op = Number(s.opacity); const mix = { r: fg.r * op + bg.r * (1 - op), g: fg.g * op + bg.g * (1 - op), b: fg.b * op + bg.b * (1 - op) }; return contrast(mix, bg); };
     return { primaryFilled: filled.length, primaryText: filled.map(textOf).join('/'), undoDisabled: undo && undo.disabled ? 1 : 0,
-      undoOpacity: undo ? Number(getComputedStyle(undo).opacity) : 1, undoContrast: undo ? +ratio(undo).toFixed(2) : 0, enabledContrast: close ? +ratio(close).toFixed(2) : 0,
-      helpLeftOfClose: help && close && help.getBoundingClientRect().left < close.getBoundingClientRect().left ? 1 : 0 };`);
+      undoOpacity: undo ? Number(getComputedStyle(undo).opacity) : 1, undoContrast: undo ? +ratio(undo).toFixed(2) : 0, enabledContrast: save ? +ratio(save).toFixed(2) : 0,
+      helpLeftOfSave: help && save && help.getBoundingClientRect().left < save.getBoundingClientRect().left ? 1 : 0 };`);
   const dimmed = m.undoDisabled === 1 && (m.undoOpacity <= 0.5 || m.undoContrast < m.enabledContrast);
   m.undoDimmed = dimmed ? 1 : 0;
-  return { pass: m.primaryFilled === 1 && dimmed && m.helpLeftOfClose === 1, measured: m };
+  return { pass: m.primaryFilled === 1 && dimmed && m.helpLeftOfSave === 1, measured: m };
 }
 
 // ---------------------------------------------------------------- C-83 focus restore + Ctrl+K

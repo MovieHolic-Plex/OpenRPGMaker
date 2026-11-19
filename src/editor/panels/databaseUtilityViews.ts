@@ -856,7 +856,7 @@ function storyFlagList(): HTMLElement {
           class: "db-row db-story-flag-row",
           children: [
             el("span", { class: "db-id", text: storyFlagListLabel(project, flag) }),
-            el("span", { class: "db-list-name", text: flag.description }),
+            el("span", { class: "db-list-name", text: flag.description, attrs: { title: flag.description } }),
           ],
         }))
         : [el("div", { class: "empty-hint", text: "등록된 스토리 플래그 없음" })]),

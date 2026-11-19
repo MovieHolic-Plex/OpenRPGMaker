@@ -71,6 +71,7 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
     renderEventIdReadout(event.id, { scope: "event-summary" }),
     el("button", {
       class: "btn primary",
+      attrs: { type: "button" },
       text: "이벤트 편집 열기",
       dataset: { testid: "event-editor-open" },
       on: { click: () => openEventEditorModal(mapId, event.id) },
@@ -80,11 +81,15 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
 }
 
 function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selectedEventId: string | null): HTMLElement {
-  const list = el("div", { class: "event-list", dataset: { testid: "event-list" } });
-  list.append(el("div", { class: "event-list-title", text: "맵 이벤트 목록" }));
+  const rows = el("div", { class: "event-list-rows" });
+  const list = el("div", {
+    class: "event-list",
+    dataset: { testid: "event-list", mapId },
+    children: [el("div", { class: "event-list-title", text: "맵 이벤트 목록" }), rows],
+  });
   if (events.length === 0) {
     // 다음 행동을 말한다 — 「없습니다」 만으로는 어떻게 놓는지 알 수 없었다(2026-09-24 visual QA).
-    list.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다. 맵의 빈 칸을 더블클릭하면 새 이벤트를 만듭니다." }));
+    rows.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다. 맵의 빈 칸을 더블클릭하면 새 이벤트를 만듭니다." }));
     return list;
   }
   for (const event of events) {
@@ -102,11 +107,11 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
     });
     row.append(
       el("span", { class: "event-list-icon", children: [icon] }),
-      el("span", { class: "event-list-name", text: displayName }),
+      el("span", { class: "event-list-name", text: displayName, attrs: { translate: "no" } }),
       el("span", { class: "event-list-meta", text: `${event.x},${event.y} · ${event.pages?.length ?? 0}p` })
     );
     bindEventListRowHoverTooltip(row, event);
-    list.append(row);
+    rows.append(row);
   }
   return list;
 }

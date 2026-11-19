@@ -68,7 +68,7 @@ for (const skin of ACTIVE_BATTLE_SKIN_IDS) {
     await page.getByTestId(`db-battle-method-${methodForSkin(skin)}`).click();
     await expect(page.getByTestId(`db-battle-method-${methodForSkin(skin)}`)).toHaveAttribute("aria-checked", "true");
     await applyDatabaseChanges(page);
-    await page.getByTestId("database-footer-ok").click();
+    await page.getByTestId("database-modal-close").click();
     await expect(page.getByTestId("database-modal")).toBeHidden();
 
     await startBattle(page);

@@ -497,7 +497,7 @@ function footerRightChildren(
   const children: HTMLElement[] = [];
   if (step === "questions" && !busy) {
     children.push(el("button", {
-      class: "database-footer-button",
+      class: "database-footer-button primary",
       text: "3단계로 →",
       attrs: { type: "button" },
       dataset: { testid: "tileset-ai-workspace-to-summary" },
