@@ -59,7 +59,7 @@ import { localCliOfProvider } from "@/ai/localCliEngine";
 import { loadEngineChoice, saveEngineChoice } from "@/start/settings/localAgents";
 import { deckIcon } from "./aiDeckIcons";
 import { aiProviderIcon } from "./aiProviderIcons";
-import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "@/ai/chatgptDefault";
+import { ASSISTANT_CHATGPT_MODEL, isLegacyTerraModel } from "@/ai/chatgptDefault";
 import { hasStoredCompanionCredential, hasUsableCompanionCredential } from "@/ai/chatgptOAuthClient";
 import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
@@ -251,8 +251,9 @@ export function renderAiSettingsForm(options: {
 
   // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
   const effortLabels = { off: "끔", low: "낮음", medium: "보통", high: "높음", xhigh: "매우 높음", max: "최대" } as const;
-  const effortOptions = (minimum: "off" | "medium") => Object.entries(effortLabels)
-    .filter(([value]) => minimum === "off" || atLeastMediumEffort(value) === value)
+  const effortEntries = Object.entries(effortLabels);
+  const effortOptions = (minimum: "off" | "low" | "medium") => effortEntries
+    .slice(effortEntries.findIndex(([value]) => value === minimum))
     .map(([value, text]) => el("option", { attrs: { value }, text }));
   // ── 도트 저작 모델(텍스트 모델) ───────────────────────────────────────────────
   // 도트는 이미지 모델이 아니라 텍스트 모델이 격자 문자열·좌표로 직접 찍는다. 그래서 이 칸은 이미지 모델 목록이 아니라
@@ -325,9 +326,7 @@ export function renderAiSettingsForm(options: {
   const brainEffort = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-reasoning" },
     attrs: { "aria-label": "계획 추론 강도" },
-    children: effortOptions("medium"),
   }) as HTMLSelectElement;
-  brainEffort.value = atLeastMediumEffort(brainConfig.reasoningEffort);
   const specialistLabels = { vision: "시각 관찰", writer: "작문", deep: "실행 · 검증", build: "시공" };
   const specialistControls = (["vision", "writer", "deep", "build"] as const).map(role => {
     const selected = modelForRole(config, role);
@@ -340,14 +339,50 @@ export function renderAiSettingsForm(options: {
       : role === "build" ? modelField("시공 모델", selected.model, "ai-config-build-model", "ai-config-build-model-preset", authMode, selected.model, selected.provider)
       : modelField("시각 관찰 모델", selected.model, "ai-config-vision-model", "ai-config-vision-model-preset", authMode, selected.model, selected.provider);
     field.refresh(authMode, selected.provider);
-    const building = role === "deep" || role === "build";
     const effort = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-reasoning` },
       attrs: { "aria-label": `${specialistLabels[role]} 추론 강도` },
-      children: effortOptions(building ? "medium" : "off"),
     }) as HTMLSelectElement;
-    effort.value = building ? atLeastMediumEffort(selected.thinkingLevel) : selected.thinkingLevel;
     return { role, provider, field, effort };
   });
+  const brainControl = { role: "ultrabrain", provider: brainProvider, field: brainModel, effort: brainEffort } as const;
+  const mainRoles = [brainControl, ...specialistControls] as const;
+  type RoleControl = typeof mainRoles[number];
+  const roleModelValue = ({ role, provider, field }: RoleControl): string => field.input.value.trim() || (
+    role === "ultrabrain" ? getOhMyPiProvider(provider.value)?.defaultModel || DEFAULT_ULTRABRAIN_MODEL
+      : modelForRole(config, role).model
+  );
+  const syncSelect = (select: HTMLSelectElement): void => {
+    select.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  const setRoleEffort = (control: RoleControl, value = control.effort.value): void => {
+    const { role, effort } = control;
+    const requiresMedium = (role === "ultrabrain" || role === "deep" || role === "build")
+      && roleModelValue(control) === ASSISTANT_CHATGPT_MODEL;
+    const minimum = requiresMedium ? "medium" : role === "ultrabrain" ? "low" : "off";
+    const optionsChanged = effort.options[0]?.value !== minimum;
+    if (optionsChanged) effort.replaceChildren(...effortOptions(minimum));
+    const next = Array.from(effort.options).some(option => option.value === value) ? value : minimum;
+    if (optionsChanged || effort.value !== next) {
+      effort.value = next;
+      syncSelect(effort);
+    }
+  };
+  const setRoleModel = (control: RoleControl, provider: string, model: string, effort?: RoleModel["thinkingLevel"]): void => {
+    fillProviderOptions(control.provider, provider);
+    control.field.refresh(authMode, provider);
+    control.field.setValue(model, authMode, provider);
+    setRoleEffort(control, effort);
+    syncSelect(control.provider);
+    syncSelect(control.field.preset);
+  };
+  const validateRoleModel = (control: RoleControl): boolean => {
+    const valid = control.field.validate(authMode, control.provider.value);
+    setRoleEffort(control);
+    return valid;
+  };
+  const validateRoleModels = (): boolean => mainRoles.map(validateRoleModel).every(Boolean);
+  setRoleEffort(brainControl, brainConfig.reasoningEffort);
+  for (const control of specialistControls) setRoleEffort(control, modelForRole(config, control.role).thinkingLevel);
   // 엔드포인트(ai-config-baseurl)와 API 키(ai-config-apikey) 입력은 **의도적으로 없다.**
   //
   // 두 필드는 브라우저가 직접 게이트웨이를 치던 시절의 것이고, 입력한 키는 saveAiConfig 를 통해
@@ -626,13 +661,13 @@ export function renderAiSettingsForm(options: {
     authMode,
     providerId,
     modelSelectionOverrides,
-    roleModels: withoutBuildEqualToDeep(Object.fromEntries(specialistControls.map(({ role, provider, field, effort }) => [role, {
-      provider: provider.value, model: field.input.value.trim() || modelForRole(config, role).model,
-      thinkingLevel: effort.value as RoleModel["thinkingLevel"],
+    roleModels: withoutBuildEqualToDeep(Object.fromEntries(specialistControls.map(control => [control.role, {
+      provider: control.provider.value, model: roleModelValue(control),
+      thinkingLevel: control.effort.value as RoleModel["thinkingLevel"],
     }]))),
     ultrabrainProviderId: brainProvider.value,
     // 빈 칸은 그 칸 제공자의 기본 모델로 채운다 — 공장 기본이 Claude 가 된 뒤(2026-11-16) Google 의 기본 모델 이름을 다른 계정 칸에 적지 않게.
-    ultrabrainModel: brainModel.input.value.trim() || getOhMyPiProvider(brainProvider.value)?.defaultModel || DEFAULT_ULTRABRAIN_MODEL,
+    ultrabrainModel: roleModelValue(brainControl),
     ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
     imageProviderId: DEFAULT_IMAGE_PROVIDER_ID,
     imageModel: DEFAULT_IMAGE_MODEL,
@@ -672,24 +707,10 @@ export function renderAiSettingsForm(options: {
 
   /** 연결 카드의 「이 역할에 쓰기」 — 그 역할 칸만 이 엔드포인트·모델로 바꾸고 직접 지정으로 표시한다(다른 칸·기본 제공자는 그대로). */
   const assignCompatRole = (slot: AiCompatRoleSlot, endpointId: string, endpointModel: string): void => {
-    if (slot === "ultrabrain") {
-      fillProviderOptions(brainProvider, endpointId);
-      brainProvider.value = endpointId;
-      brainModel.refresh(authMode, endpointId);
-      brainModel.setValue(endpointModel, authMode, endpointId);
-      brainProvider.dispatchEvent(new Event("input", { bubbles: true }));
-      modelSelectionOverrides.ultrabrain = true;
-    } else {
-      const control = specialistControls.find((entry) => entry.role === slot);
-      if (!control) return;
-      fillProviderOptions(control.provider, endpointId);
-      control.provider.value = endpointId;
-      control.field.refresh(authMode, endpointId);
-      control.field.setValue(endpointModel, authMode, endpointId);
-      control.provider.dispatchEvent(new Event("input", { bubbles: true }));
-      control.field.preset.dispatchEvent(new Event("input", { bubbles: true }));
-      modelSelectionOverrides[slot] = true;
-    }
+    const control = mainRoles.find(entry => entry.role === slot);
+    if (!control) return;
+    setRoleModel(control, endpointId, endpointModel);
+    modelSelectionOverrides[slot] = true;
     persist(false);
     updateReadiness();
     void refreshAiConnectionStatus(updateReadiness);
@@ -706,15 +727,14 @@ export function renderAiSettingsForm(options: {
   let autoSaveTimer: number | null = null;
   const persist = (showToast: boolean): void => {
     // Keep the selection; unsupported models are shown here and rejected by the companion.
-    const modelValid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean);
-    const brainValid = brainModel.validate(authMode, brainProvider.value);
+    const modelsValid = validateRoleModels();
     saveAiConfig(collect());
     onSaved(loadAiConfig());
     savedHint.textContent = savedAtText();
     syncModelDisplay();
     // 자동 저장마다 같은 경고가 쌓이지 않도록 이전 경고를 걷고 하나만 남긴다.
     dismissToastsByKey(INVALID_MODEL_TOAST_KEY);
-    if (!modelValid || !brainValid) {
+    if (!modelsValid) {
       toast(t("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요."), {
         kind: "error",
         key: INVALID_MODEL_TOAST_KEY,
@@ -727,23 +747,12 @@ export function renderAiSettingsForm(options: {
   applyAccountSelection = (force = false) => {
     const next = configForProviderSelection(collect(), providerId, force);
     modelSelectionOverrides = { ...next.modelSelectionOverrides };
-    for (const c of specialistControls) {
-      const selected = modelForRole(next, c.role);
-      c.provider.value = selected.provider;
-      c.field.refresh(authMode, selected.provider);
-      c.field.setValue(selected.model, authMode, selected.provider);
-      c.effort.value = c.role === "deep" || c.role === "build" ? atLeastMediumEffort(selected.thinkingLevel) : selected.thinkingLevel;
-      c.effort.dispatchEvent(new Event("input", { bubbles: true }));
-      c.provider.dispatchEvent(new Event("input", { bubbles: true }));
-      c.field.preset.dispatchEvent(new Event("input", { bubbles: true }));
+    for (const control of specialistControls) {
+      const selected = modelForRole(next, control.role);
+      setRoleModel(control, selected.provider, selected.model, selected.thinkingLevel);
     }
-    brainProvider.value = next.ultrabrainProviderId!;
-    brainModel.refresh(authMode, brainProvider.value);
-    brainModel.setValue(next.ultrabrainModel!, authMode, brainProvider.value);
-    brainEffort.value = atLeastMediumEffort(next.ultrabrainReasoningEffort);
-    brainEffort.dispatchEvent(new Event("input", { bubbles: true }));
-    brainProvider.dispatchEvent(new Event("input", { bubbles: true }));
-    brainModel.preset.dispatchEvent(new Event("input", { bubbles: true }));
+    const brain = configForUltrabrain(next);
+    setRoleModel(brainControl, brain.providerId!, brain.model, brain.reasoningEffort);
   };
   pixelModelSelect.addEventListener("change", () => {
     if (pixelModelSelect.value === PIXEL_FOLLOW) delete modelSelectionOverrides.pixel;
@@ -763,14 +772,8 @@ export function renderAiSettingsForm(options: {
       persist(false);
     }, 350);
   };
-  for (const { role, field } of specialistControls) {
-    for (const event of ["input", "change"]) field.input.addEventListener(event, () => { modelSelectionOverrides[role] = true; });
-  }
-  for (const event of ["input", "change"]) brainModel.input.addEventListener(event, () => { modelSelectionOverrides.ultrabrain = true; });
-  for (const field of [...specialistControls.map(c => c.field), brainModel, maxTokens]) {
-    field.input.addEventListener("input", scheduleAutoSave);
-    field.input.addEventListener("change", () => persist(false));
-  }
+  maxTokens.input.addEventListener("input", scheduleAutoSave);
+  maxTokens.input.addEventListener("change", () => persist(false));
   // 사용자가 제공자를 **직접** 바꾸면 이전 제공자의 모델 ID(예: gemini-3.8-flash)는 새 제공자에서
   // 무효다. 그대로 두면 모든 행이 빨간 경고·오류 토스트로 덮여 "연결이 고장났다"처럼 보인다.
   // 그때만 새 제공자의 추천 모델로 맞춘다. 저장돼 있던 카탈로그 밖 ID 를 열 때 조용히 바꾸지
@@ -790,13 +793,22 @@ export function renderAiSettingsForm(options: {
     const next = tierModelFor(providerId, tier);
     if (next) field.setValue(next, authMode, providerId);
   };
-  for (const { role, provider, field, effort } of specialistControls) {
+  for (const control of mainRoles) {
+    const { role, provider, field, effort } = control;
     provider.addEventListener("change", () => {
       modelSelectionOverrides[role] = true;
-      alignModelToProvider(field, provider.value, "fast");
+      alignModelToProvider(field, provider.value, role === "ultrabrain" ? "strong" : "fast");
       persist(false);
     });
-    field.input.addEventListener("input", () => field.validate(authMode, provider.value));
+    field.input.addEventListener("input", () => {
+      modelSelectionOverrides[role] = true;
+      validateRoleModel(control);
+      scheduleAutoSave();
+    });
+    field.input.addEventListener("change", () => {
+      modelSelectionOverrides[role] = true;
+      persist(false);
+    });
     field.preset.addEventListener("change", () => {
       modelSelectionOverrides[role] = true;
       if (field.preset.value) field.setValue(field.preset.value, authMode, provider.value);
@@ -804,18 +816,6 @@ export function renderAiSettingsForm(options: {
     });
     effort.addEventListener("change", () => { modelSelectionOverrides[role] = true; persist(false); });
   }
-  brainProvider.addEventListener("change", () => {
-    modelSelectionOverrides.ultrabrain = true;
-    alignModelToProvider(brainModel, brainProvider.value, "strong");
-    persist(false);
-  });
-  brainModel.input.addEventListener("input", () => brainModel.validate(authMode, brainProvider.value));
-  brainModel.preset.addEventListener("change", () => {
-    modelSelectionOverrides.ultrabrain = true;
-    if (brainModel.preset.value) brainModel.setValue(brainModel.preset.value, authMode, brainProvider.value);
-    persist(false);
-  });
-  brainEffort.addEventListener("change", () => { modelSelectionOverrides.ultrabrain = true; persist(false); });
   reasoningSelect.addEventListener("change", () => persist(false));
   autonomySelect.addEventListener("change", () => {
     const level: AutonomyLevel = isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced";
@@ -864,6 +864,7 @@ export function renderAiSettingsForm(options: {
   const updateReadiness = (): void => {
     const next = lastAuthStatus;
     if (!next) return;
+    const valid = validateRoleModels();
     const current = collect();
     const workAccounts = workProviderIds(current);
     const mixed = workAccounts.some(id => id !== providerId);
@@ -872,8 +873,6 @@ export function renderAiSettingsForm(options: {
       ? "직접 지정한 작업 모델은 유지됩니다. 다른 계정을 쓰는 모델이 있으면 그 계정도 연결하세요."
       : "연결되면 이 계정으로 바로 시작해요.";
     const status = getAiConnectionStatus(current);
-    const valid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean)
-      && brainModel.validate(authMode, brainProvider.value);
     const usable = next.tone === "connected" && status.kind === "ready" && !status.limited && valid;
     continueButton.classList.toggle("is-primary", usable);
     connectionSummary.dataset.tone = SUMMARY_TONE[next.tone];
@@ -906,12 +905,7 @@ export function renderAiSettingsForm(options: {
     } else {
       saveEngineChoice(null);
       for (const c of specialistControls.filter((entry) => entry.role === "deep" || entry.role === "build")) {
-        fillProviderOptions(c.provider, recommended.provider);
-        c.provider.value = recommended.provider;
-        c.field.refresh(authMode, recommended.provider);
-        c.field.setValue(recommended.model, authMode, recommended.provider);
-        c.effort.value = atLeastMediumEffort(recommended.thinkingLevel);
-        c.effort.dispatchEvent(new Event("input", { bubbles: true }));
+        setRoleModel(c, recommended.provider, recommended.model, recommended.thinkingLevel);
         modelSelectionOverrides[c.role] = true;
       }
       persist(false);
@@ -1003,21 +997,6 @@ export function renderAiSettingsForm(options: {
     qualityButtons[next].focus();
   });
 
-  const syncSelect = (select: HTMLSelectElement): void => {
-    select.dispatchEvent(new Event("input", { bubbles: true }));
-  };
-  const mainRoles = [
-    { role: "ultrabrain", provider: brainProvider, field: brainModel, effort: brainEffort },
-    ...specialistControls,
-  ] as const;
-  const setRoleModel = (control: typeof mainRoles[number], provider: string, model: string, effort: RoleModel["thinkingLevel"]): void => {
-    fillProviderOptions(control.provider, provider);
-    control.field.refresh(authMode, provider);
-    control.field.setValue(model, authMode, provider);
-    control.effort.value = effort;
-    for (const select of [control.provider, control.field.preset, control.effort]) syncSelect(select);
-  };
-
   function applyQuality(effort: "medium" | "high"): void {
     saveEngineChoice(null);
     providerId = CODEX_PROVIDER_ID;
@@ -1033,9 +1012,8 @@ export function renderAiSettingsForm(options: {
   function applyProviderPreset(preset: ModelPreset): void {
     for (const control of mainRoles) {
       const spec = control.role === "ultrabrain" ? preset.ultrabrain : preset.roles[control.role];
-      const effort = control.role === "vision" || control.role === "writer" ? spec.thinking : atLeastMediumEffort(spec.thinking);
       const provider = control.provider.value;
-      setRoleModel(control, provider, tierModelFor(provider, spec.tier) ?? control.field.input.value, effort);
+      setRoleModel(control, provider, tierModelFor(provider, spec.tier) ?? control.field.input.value, spec.thinking);
     }
     persist(false);
   }
