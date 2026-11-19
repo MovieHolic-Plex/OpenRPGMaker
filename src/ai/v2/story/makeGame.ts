@@ -40,7 +40,7 @@ export function makeGameOn(): boolean {
 }
 
 /** 바깥 맵(문·가장자리로 잇는 쪽)인가. */
-export const isOutdoor = (spec: PlaceSpec): boolean => spec.type === "village" || spec.type === "street";
+export const isOutdoor = (spec: PlaceSpec): boolean => spec.type === "village" || spec.type === "street" || spec.type === "route";
 export const isInside = (spec: PlaceSpec): boolean => spec.type === "interior" || spec.type === "house";
 
 type Door = { x: number; y: number; kit?: string };

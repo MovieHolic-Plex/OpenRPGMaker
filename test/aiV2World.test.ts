@@ -12,6 +12,7 @@ import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { isMysteryBlueprint } from "@/ai/v2/story/mysteryCaseRead";
 import { parseAdvisorReply } from "@/ai/v2/judge/advisor";
 import { builderFor } from "@/ai/v2/place/builders";
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/place/world";
 import { fitsAnyWorld } from "@/ai/v2/request/genre";
 import { worldForRequest } from "@/ai/v2/request/world";
@@ -159,12 +160,13 @@ describe("build_places — 한 세계의 장소를 짓고 잇는다", () => {
       sideChat: async () => JSON.stringify({ imagesSeen: 0, axes: {}, score: 7, majors: [] }),
       render: async () => "", checkpoint: async () => {},
     };
-    const tools = createV2Tools(env, new V2Session());
+    const session = new V2Session();
+    const tools = createV2Tools(env, session);
     const call = async (name: string, args: unknown): Promise<{ ok?: boolean; summary?: string }> => {
       const res = await tools.find((t) => t.name === name)!.execute(`c-${name}`, args);
       return JSON.parse((res.content as { type: string; text?: string }[]).find((c) => c.type === "text")!.text!) as { ok?: boolean; summary?: string };
     };
-    return { ctx, env, tools, call };
+    return { ctx, env, session, tools, call };
   }
   const task = "북방 설원에서 벌어지는 게임 하나 만들어 줘.";
   const places = [{ name: "눈마을", kind: "village" }, { name: "겨울 장터", kind: "market" }, { name: "얼어붙은 호수", kind: "lake" }, { name: "얼음 절벽", kind: "ice-cliff" }, { name: "촌장 회관", kind: "longhall" }, { name: "얼음 동굴", kind: "ice-cave" }];
@@ -200,6 +202,29 @@ describe("build_places — 한 세계의 장소를 짓고 잇는다", () => {
 
   // 세계 한 벌을 짓는 시험은 구성기 여섯 번 + 잇기라 느리다(부하가 있는 기계에서 25초 안팎) — 한 번 지어 여러 가지를 본다.
   const SLOW = 240_000;
+
+  it("build_places keeps a named cave at the mountain trail's reserved road end", async () => {
+    const { ctx, session, call } = harness("버들항 마을에서 산길로 옛 굴을 다녀오는 작은 게임을 만들어 줘.", key(3));
+    const names = ["버들 마을", "돌계단 산길", "옛 굴"];
+    const start = { name: names[0], kind: "village" };
+    const trail = { name: names[1], kind: "mountain-trail", from: start.name };
+    const cave = { name: names[2], kind: "cave", from: trail.name };
+    expect((await call("write_blueprint", { ...blueprint, scale: "small", places: [start, trail, cave], steps: mixed(names) })).ok).toBe(true);
+    expect((await call("build_places", {})).ok).toBe(true);
+
+    const project = ctx.project;
+    const maps = names.map((name) => Object.values(project.maps).find((map) => map.name === name)!);
+    const [, routeMap, caveMap] = maps;
+    const route = session.placeOf(routeMap!.id);
+    const gate = route?.result.state?.dungeonGate as { x: number; y: number } | undefined;
+    expect(route?.result.state).toMatchObject({ theme: "mountain", shape: "dungeon-mouth", dungeonGate: { x: expect.any(Number), y: expect.any(Number) } });
+    expect(session.placeOf(caveMap!.id)?.spec.gate).toEqual({ fromMapId: routeMap!.id, ...gate });
+    const toCave = routeMap!.events.filter((event) => JSON.stringify(event.pages).includes(`"mapId":"${caveMap!.id}"`));
+    expect(toCave).toHaveLength(1);
+    expect(toCave[0]).toMatchObject(gate!);
+    expect(isEntranceArt(project, routeMap!, gate!.x, gate!.y - 1)).toBe(true);
+    expect(walkGame(project, maps.map((map) => map.id))).toMatchObject({ unreached: [], noWayBack: [] });
+  }, SLOW);
 
   it("build_places 한 번으로 모든 장소가 서고, 한 칩셋이고, 시작에서 왕복으로 닿고, 다 세고, 위험한 곳에 적과 상자가 선다", async () => {
     const { ctx, tools, call } = harness(task, key(1));

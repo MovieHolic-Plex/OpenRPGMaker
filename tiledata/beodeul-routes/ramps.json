@@ -1,0 +1,279 @@
+{
+ "ramps": {
+  "stone": [
+   "#111719",
+   "#1c2626",
+   "#2b3934",
+   "#3e403d",
+   "#595b58",
+   "#797a84",
+   "#929491",
+   "#c4c6c3",
+   "#dee0dd"
+  ],
+  "timber": [
+   "#1e150a",
+   "#312210",
+   "#452a17",
+   "#5e3a1c",
+   "#744c2a",
+   "#885a26",
+   "#a26e36",
+   "#c69250",
+   "#eca660",
+   "#ffe4ae"
+  ],
+  "fir": [
+   "#040d1b",
+   "#071528",
+   "#0a1e24",
+   "#123232",
+   "#1e4a3c",
+   "#2e6446",
+   "#4c8250",
+   "#80a864"
+  ],
+  "grass": [
+   "#133120",
+   "#264d2c",
+   "#2e5022",
+   "#366324",
+   "#4b8232",
+   "#618c3b",
+   "#6e9943",
+   "#8bb14e",
+   "#afda5e"
+  ],
+  "snow": [
+   "#6e82ac",
+   "#96aacc",
+   "#a6bcdc",
+   "#c0cee6",
+   "#cadaee",
+   "#e0e8f6",
+   "#f6faff"
+  ],
+  "red": [
+   "#650000",
+   "#a40100",
+   "#dd2912",
+   "#e0482a"
+  ],
+  "glow": [
+   "#143c36",
+   "#21584e",
+   "#176d78",
+   "#2e9c9a",
+   "#3cc8b4",
+   "#84c3bc",
+   "#c8ece0",
+   "#f7fdff"
+  ],
+  "moon": [
+   "#141a3a",
+   "#1d2d61",
+   "#2a4580",
+   "#4a6cb0",
+   "#6e9fdb",
+   "#a9cbf0",
+   "#e3f0ff"
+  ],
+  "sage": [
+   "#0e2c34",
+   "#164240",
+   "#245e4e",
+   "#3c7c5c",
+   "#68a074",
+   "#a7cca2",
+   "#d3edc2"
+  ],
+  "birch": [
+   "#3a3040",
+   "#5e5b62",
+   "#898a96",
+   "#b8babd",
+   "#dcddd7",
+   "#f4f2ea"
+  ],
+  "petal": [
+   "#4a2a5c",
+   "#7a4a96",
+   "#b07ac8",
+   "#e0a8dc",
+   "#f8d8ee"
+  ],
+  "glade": [
+   "#0d2420",
+   "#12312b",
+   "#1a4035",
+   "#275239",
+   "#2e6446",
+   "#43794b",
+   "#5f925f"
+  ],
+  "pale": [
+   "#2b3934",
+   "#4b5c52",
+   "#6b7c72",
+   "#8b9c8b",
+   "#a5b89c",
+   "#c2d3ba",
+   "#dee9d5"
+  ],
+  "amber": [
+   "#5a3011",
+   "#8a4a12",
+   "#b66d32",
+   "#d88a1c",
+   "#ecc04a",
+   "#f8dc7a"
+  ],
+  "rock": [
+   "#1b1524",
+   "#2e202e",
+   "#442c16",
+   "#614223",
+   "#81582e",
+   "#a47339",
+   "#c69250",
+   "#dcb680"
+  ],
+  "hide": [
+   "#2c2017",
+   "#4a3626",
+   "#6b4f38",
+   "#8b6d4d",
+   "#b38f64",
+   "#ccb68e"
+  ],
+  "cloth": [
+   "#3b1514",
+   "#662020",
+   "#a42028",
+   "#cd4b40",
+   "#e08a5c"
+  ],
+  "iron": [
+   "#262729",
+   "#37383c",
+   "#4b4b52",
+   "#5a5b62",
+   "#797a84",
+   "#929391",
+   "#aaaba9",
+   "#c4c6c3"
+  ],
+  "gold": [
+   "#583a1a",
+   "#885a26",
+   "#c69250",
+   "#fbc10d",
+   "#fff0c0"
+  ],
+  "fire": [
+   "#6b2c2b",
+   "#a40100",
+   "#dd2912",
+   "#f08a10",
+   "#fbc10d",
+   "#fff0c0"
+  ],
+  "crystal": [
+   "#201e45",
+   "#2e2b66",
+   "#524cb1",
+   "#3fa2ae",
+   "#7fd6d8",
+   "#c8f4e8",
+   "#f7fdff"
+  ],
+  "water": [
+   "#08212e",
+   "#0e2b39",
+   "#0f2f3d",
+   "#1c4a55",
+   "#1d4e5f",
+   "#3a6263",
+   "#658b8f",
+   "#a9d1d7"
+  ],
+  "terra": [
+   "#3a1815",
+   "#572520",
+   "#7a351e",
+   "#93443a",
+   "#b85530",
+   "#cf7444",
+   "#e08a5c"
+  ],
+  "dark": [
+   "#0e0a12",
+   "#14101c",
+   "#1b1724",
+   "#2e202e",
+   "#372734",
+   "#443445"
+  ],
+  "bone": [
+   "#584a52",
+   "#776b6d",
+   "#928484",
+   "#c8b5a8",
+   "#e5d4c3",
+   "#f4ddcc"
+  ],
+  "earth": [
+   "#2a1d1b",
+   "#3b2d23",
+   "#57402d",
+   "#6f553e",
+   "#86694d",
+   "#9d815b",
+   "#b8986c",
+   "#ccb68e"
+  ]
+ },
+ "use": {
+  "stone": "grey mountain rock and dressed stone, the Beodeul boulder ramp (0-1 crevices and outlines, 2-3 shaded planes, 4-5 body, 6-8 lit planes and edges)",
+  "timber": "logs, planks, posts, the Beodeul log-cabin ramp (0-1 gaps and outlines, 2-4 shaded wood, 5-6 body, 7-9 lit wood and cut ends)",
+  "fir": "dark conifer needles, the Beodeul fir ramp (0-2 deep shade between boughs, 3-4 shaded boughs, 5-6 lit boughs, 7 tips)",
+  "grass": "grass, leaves, moss, herbs, the Beodeul meadow ramp (0-1 deep shade, 2-4 body, 5-8 lit blades and tips)",
+  "snow": "snow, the Beodeul snowfield ramp (0-1 blue shade, 2-4 body, 5-6 lit snow)",
+  "red": "red paint and berries (0 shade, 1-2 body, 3 lit)",
+  "glow": "spirit glow: luminous teal of glowing caps, runes, wisps, enchanted water (0-1 dark teal rim, 2-3 body, 4-5 bright, 6-7 white-hot core)",
+  "moon": "moonlit blue: moon water, night stone tint, cold light (0-1 deep, 2-3 body, 4-5 light, 6 glint)",
+  "sage": "silver-green foliage of the spirit trees (0-1 shade between leaf masses, 2-3 shaded masses, 4 body, 5-6 pale lit leaves)",
+  "birch": "pale silver-white bark and pale stone (0-1 violet shade and bark marks, 2-3 body, 4-5 lit)",
+  "petal": "violet-pink petals, fairy flowers, faint violet magic (0-1 shade, 2-3 body, 4 pale tip)",
+  "glade": "the dim blue-green moss floor of the spirit forest (0-1 deep shade, 2-4 body, 5-6 lit moss)",
+  "pale": "the pale silver-green trodden path of the spirit forest: worn moss and flat pale stones (0-1 joints and shade, 2-4 body, 5-6 lit)",
+  "amber": "autumn leaves, lamp light, amber (0-1 shade, 2-3 body, 4-5 lit)",
+  "rock": "warm brown cliff rock and bare earth, the Beodeul cliff ramp (0-1 violet-black crevices and outlines, 2-3 shaded forms, 4-5 body, 6-7 lit edges)",
+  "hide": "leather, hides, canvas and rope (0-1 shade, 2-3 body, 4-5 lit)",
+  "cloth": "red cloth: banners, carpets, tents (0-1 folds in shade, 2 body, 3-4 lit folds)",
+  "iron": "wrought iron: brackets, bands, rings",
+  "gold": "gold and brass: lock plates, bowls, inlay (0-1 shade, 2 body, 3-4 shine)",
+  "fire": "flame and embers (0-2 red base, 3 orange, 4 yellow, 5 white-yellow core)",
+  "crystal": "glowing crystal (0-1 violet shade, 2 violet body, 3-4 cyan faces, 5-6 lit facets and glints)",
+  "water": "dark calm water, the Beodeul river ramp (0-2 depth, 3-4 body, 5-6 ripple dashes, 7 a rare glint)",
+  "terra": "terracotta: mosaic tesserae, clay urns",
+  "dark": "neutral violet-black: contact shadows on the ground, deep hollows (0 darkest, 5 faintest)",
+  "bone": "old bone, pale plaster-like (0-1 violet shade and eye sockets, 2-3 body, 4-5 lit)",
+  "earth": "packed bare earth of a trodden path (0-1 cracks and deep shade, 2 seams, 3-4 body, 5 lit, 6-7 lit edges)"
+ },
+ "new": [
+  "#afda5e",
+  "#c8ece0",
+  "#4a6cb0",
+  "#4a2a5c",
+  "#7a4a96",
+  "#b07ac8",
+  "#e0a8dc",
+  "#f8d8ee",
+  "#8a4a12",
+  "#d88a1c",
+  "#f8dc7a"
+ ],
+ "filled": {},
+ "note": "Claude Fable 5.2 medium 한 방 그림의 잠긴 색 줄. filled = 불투명 판에서 줄 길이가 틀려 빈 화소를 왼쪽 이웃 색으로 메운 수."
+}

@@ -64,7 +64,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   // 실행기(대화 번호를 주는 env)에서만 막는다 — 모델 없는 시험·덤프 도구는 예전처럼 바로 짓는다.
   // 지시문이 이미 실은 카드(작은 일의 사람 카드)는 준 것으로 센다 — 전에는 «상점 주인 세워 줘» 의 첫 add_people 이 같은 카드를 돌려주느라 한 번을 버렸다.
   const inPrompt = new Set<PlaceSpecKind>(lean ? smallJobCardKinds(env.ctx.project, String(task ?? "")) : []);
-  const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || inPrompt.has(kind) || session.specsShown.get(kind) === epoch();
+  const specShown = (kind: PlaceSpecKind) => (!lean && kind !== "route") || !env.contextEpoch || inPrompt.has(kind) || session.specsShown.get(kind) === epoch();
   const showSpecs = (kinds: readonly PlaceSpecKind[]): string => {
     for (const kind of kinds) session.specsShown.set(kind, epoch());
     return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""), String(env.request.projectKey ?? ""))).join("\n\n");
@@ -370,6 +370,20 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
             parentDoors: parentResult ? villageDoors(parentResult) : [], childDoors: villageDoors(result),
           });
           if (viaRoads?.ok) { linked = true; notes.push(viaRoads.note); }
+          // 길목은 제 길이 닿은 가장자리 칸이 출구다 — 길 어귀끼리 못 맞췄으면 그 칸과 상대 맵의 그 변 칸을 바로 잇는다(가장자리 아무 칸에 문을 내지 않는다).
+          const routeCell = (res: PlaceBuildResult | undefined, want: string): { x: number; y: number } | undefined => {
+            const ex = (res?.state as { routeExits?: { side: string; x: number; y: number }[] } | undefined)?.routeExits ?? [];
+            const hit = ex.find((e) => e.side === want); return hit ? { x: hit.x, y: hit.y } : undefined;
+          };
+          if (!linked && (spec.type === "route" || parentSpec.type === "route")) {
+            const a0 = parentSpec.type === "route" ? routeCell(parentResult, first) : undefined, b0 = spec.type === "route" ? routeCell(result, oppositeSide(first)) : undefined;
+            const spotA = a0 ? undefined : pickTransferSpot(run, parentMap, { side: first, outdoor: true, otherName: cName, buildingDoor: false });
+            const spotB = b0 ? undefined : pickTransferSpot(run, childMap, { side: oppositeSide(first), outdoor: true, otherName: pName, buildingDoor: false });
+            const a = a0 ?? (spotA ? { x: spotA.x, y: spotA.y } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, first));
+            const b = b0 ?? (spotB ? { x: spotB.x, y: spotB.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(first)));
+            const r = a && b && (a0 || b0) ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
+            if (r?.ok) { linked = true; notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 길목의 길 끝으로 이었다`); }
+          }
           for (const dir of linked ? [] : [first, ...LINK_SIDES.filter((d) => d !== first)]) {
             const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
             if (!r.ok) continue;

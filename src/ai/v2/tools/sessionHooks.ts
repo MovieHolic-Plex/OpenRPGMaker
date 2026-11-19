@@ -15,6 +15,7 @@ import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
 import { isIndoorMap, placeFactKey, placeSpecFor, type PlaceFacts } from "../place/placeGuess";
+import { roadMaterial } from "../place/surface";
 import { edgeCell, isInside, isOutdoor, oppositeSide, villageDoors, walkGame } from "../story/makeGame";
 import { designMissingRooms } from "../place/designRooms";
 import { yieldToLoop } from "../shared/yieldLoop";
@@ -77,11 +78,19 @@ export function installSessionHooks(c: VerbContext) {
     const sideFrom = (parentId: string) => { const n = exitsFrom.get(parentId) ?? 0; exitsFrom.set(parentId, n + 1); return listed.length ? LINK_SIDES[n % LINK_SIDES.length] : undefined; };
     // 바깥 장소 사이의 출구 변은 짓기 전에 정한다 — 빌더가 그 변까지 길을 내고(spec.exits) 잇기가 그 길 끝에 출구를 둔다.
     const exitSides = new Map<string, Side[]>(), sideTo = new Map<string, Side>();
+    const routeDungeons = new Map<string, { name: string; dungeonType: string }>();
     {
-      let lastOutdoor: string | undefined;
+      let lastOutdoor: string | undefined, lastParent: string | undefined;
       for (const { name, place } of plan) {
         const kind = kindOf(place);
-        if (!world || !kind || !isOutdoor(worldPlaceSpec(world, kind, name))) continue;
+        if (!world || !kind) continue;
+        const spec = worldPlaceSpec(world, kind, name);
+        const parent = place?.from ?? lastParent;
+        if ((spec.type === "dungeon" || spec.type === "cave") && parent && parent !== name && !routeDungeons.has(parent)) {
+          routeDungeons.set(parent, { name, dungeonType: spec.theme ?? "cave" });
+        }
+        if (!isInside(spec)) lastParent = name;
+        if (!isOutdoor(spec)) continue;
         const from = place?.from && plan.some((e) => e.name === place.from) ? place.from : lastOutdoor;
         lastOutdoor = name;
         if (!from || from === name) continue;
@@ -128,9 +137,22 @@ export function installSessionHooks(c: VerbContext) {
         // 종류를 모르는 장소는 짓지 않는다 — 틀리면 마을 한 장이 그 이름으로 선다. 모델이 종류를 적어 짓게 돌려준다(모델이 읽는 글).
         if (!guess) { untyped.push(name); continue; }
         const composed = !!parseWorldStyle(guess.style);
-        const dressed = (g: PlaceSpec): PlaceSpec => ({ ...g, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(g) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
-          ...(exitSides.has(name) && !g.exits?.length ? { exits: exitSides.get(name)! } : {}),
-          ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) });
+        const dressed = (g: PlaceSpec): PlaceSpec => {
+          const exits = g.exits?.length ? g.exits : exitSides.get(name);
+          const dungeon = g.type === "route" ? routeDungeons.get(name) : undefined;
+          const gate = (g.type === "dungeon" || g.type === "cave") && parent.spec?.type === "route" && routeDungeons.get(parent.spec.name)?.name === name
+            ? (parent.result?.state as { dungeonGate?: { x: number; y: number } } | undefined)?.dungeonGate : undefined;
+          const village = dungeon && parent.spec?.type === "village" ? env.ctx.project.maps[parent.mapId] : undefined;
+          const paved = !!village && /포석/u.test(roadMaterial(env.ctx.project, village) ?? "");
+          const routeLinks = dungeon ? [
+            ...(exits ?? []).map((side, i) => i === 0 && village ? { side, kind: "village", paved } : { side, kind: "route" }),
+            { kind: "dungeon", dungeonType: dungeon.dungeonType },
+          ] : undefined;
+          return { ...g, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task),
+            ...(isInside(g) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
+            ...(exits?.length ? { exits } : {}), ...(routeLinks ? { routeLinks } : {}), ...(gate ? { gate: { fromMapId: parent.mapId, ...gate } } : {}),
+            ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) };
+        };
         const spec0 = dressed(guess);
         let builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }

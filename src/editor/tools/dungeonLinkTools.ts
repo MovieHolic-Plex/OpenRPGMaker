@@ -269,7 +269,8 @@ const linkWorldEntrance: ToolDefinition = {
 
 export const DUNGEON_LINK_TOOLS: readonly ToolDefinition[] = [linkWorldEntrance];
 
-const CAVE_MOUTH_KIT = "kit:beodeul_city/bd-pick-mining-valley-adit";
+export const BEODEUL_CAVE_MOUTH_KIT_ID = "bd-pick-mining-valley-adit";
+const CAVE_MOUTH_KIT = `kit:beodeul_city/${BEODEUL_CAVE_MOUTH_KIT_ID}`;
 
 /**
  * 출입구 칸 위에 갱구(3×4, 왼쪽 위 = 출입구 −2,−4)를 찍어도 되는 자리인가. 갱구를 안 찍는 맵(버들항 바깥이 아님)은 늘 참.

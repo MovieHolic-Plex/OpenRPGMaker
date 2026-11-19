@@ -1,6 +1,6 @@
 // 조수 v2 깎아지른 지형 빌더 — 바깥 장소(type village) 명세의 hints.kind 가 깎아지른 지형 종류(sheerTerrainKinds.json)일 때 맡는다.
 //
-// 왜 village 갈래인가(2026-11-16): route 장소 종류는 아직 main 에 없다(#4742 초안). 모델이 이미 쓰는 바깥 장소 명세와 hints.kind 손잡이를 그대로 쓰고,
+// 바깥 장소 명세와 길목(route)이 hints.kind와 같은 지형 시공기를 쓴다.
 // 종류 id 가 마을 종류가 아니라 깎아지른 지형 종류면 이 빌더가 받는다(PLACE_BUILDERS 에서 마을 빌더보다 앞).
 // 모르는 kind: 마을 종류와 같은 잣대(rankKindsByWord)로 깎아지른 지형 종류에 더 가까우면 가장 가까운 종류로 짓고 경고로 알린다(목록 포함).
 // 마을 종류에 더 가깝거나 어디에도 안 걸리면 마을 빌더가 받는다(강가·포구 마을의 한 번 거절). type route(#4742)는 늘 이 빌더가 가장 가까운 종류로.
@@ -42,7 +42,7 @@ export function sheerKindFor(spec: PlaceSpec): { kind: SheerKind; asked?: string
   if (exact) return { kind: exact };
   const best = rankKindsByWord(word, SHEER_KINDS)[0]!;
   // 「route」 장소 종류가 들어오면(#4742) 그 갈래의 kind 는 늘 깎아지른 지형 — 모르는 이름은 가장 가까운 종류로 짓고 알린다.
-  if ((spec.type as string) === "route") return { kind: best.kind, asked: word };
+  if (spec.type === "route") return { kind: best.kind, asked: word };
   // 바깥 장소(village)의 모르는 kind: 마을 종류보다 깎아지른 지형 종류에 더 가까우면(같은 잣대의 점수 · 오타 거리) 그 종류로 짓고 알린다.
   // 어느 쪽에도 안 걸리거나 마을 종류에 더 가까우면 마을 빌더가 받는다(강가·포구 마을은 한 번 거절하고 목록을 준다).
   const village = rankKindsByWord(word, BEODEUL_VILLAGE_KINDS)[0];
@@ -104,7 +104,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   }
   const seed = seedOf(spec);
   const sides = (spec.exits ?? []).length ? spec.exits : undefined;
-  const res = run.call("build_sheer_terrain", { mapId, kind: kind.id, seed, ...(sides ? { sides } : {}) });
+  const dungeonLink = spec.type === "route" && spec.routeLinks?.some(link => link.kind === "dungeon" || link.kind === "cave");
+  const res = run.call("build_sheer_terrain", { mapId, kind: kind.id, seed, ...(dungeonLink ? { reserveDungeonGate: true } : {}), ...(sides ? { sides } : {}) });
   if (!res.ok) return fail(`${spec.name}: sheer terrain failed — ${res.summary}`);
   const report = res.data as SheerBuildReport & { mapId: string };
   warnings.push(...(res.warnings ?? []));
@@ -123,12 +124,18 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     + `${report.exits.length ? `, exits ${report.exits.map((e) => `${e.side} (${e.x},${e.y})`).join(" ")}` : ""}.${backdrop ? ` ${backdrop}` : ""}`;
   return {
     ok: true, mapIds: [mapId], entrance: { mapId, x: report.entry.x, y: report.entry.y }, summary, warnings, missingArt: [], calls: run.calls.slice(first),
-    state: { sheer: kind.id, seed, ...(picked.asked ? { asked: picked.asked } : {}) },
+    state: {
+      sheer: kind.id, seed, ...(picked.asked ? { asked: picked.asked } : {}),
+      ...(spec.type === "route" ? {
+        entry: report.entry, routeExits: [report.entry, ...report.exits], heroFront: report.landmark?.front, sideAt: report.deadEnd,
+        ...(dungeonLink && report.deadEnd ? { dungeonGate: { x: report.deadEnd.x, y: report.deadEnd.y } } : {}),
+      } : {}),
+    },
   };
 }
 
 export const SHEER_TERRAIN_BUILDER: PlaceBuilder = {
   id: "sheer-terrain",
-  accepts: (spec) => (spec.type === "village" || (spec.type as string) === "route") && !!sheerKindFor(spec),
+  accepts: (spec) => spec.type === "village" && !!sheerKindFor(spec),
   build,
 };

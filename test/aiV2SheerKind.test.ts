@@ -31,6 +31,23 @@ describe("assistant sheer terrain kind", () => {
     expect(builderFor(spec("zzz"))?.id).toBe("village");
   });
 
+  it("a cliff route reports walkable endpoints on the sides that link its neighbors", () => {
+    const p = createBlankProject() as Project;
+    const ctx = { project: p, currentMapId: p.startMapId };
+    const route = spec("spirit-forest", { type: "route", routeLinks: [
+      { side: "west", kind: "village" }, { side: "east", kind: "route" }, { kind: "dungeon" },
+    ] });
+    const builder = builderFor(route)!;
+    expect(builder.id).toBe("route");
+    const result = builder.build(createBuildRun(ctx), route);
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.state).toMatchObject({ sheer: "spirit-forest", routeExits: [
+      { side: "west" }, { side: "east" },
+    ] });
+    expect(result.state).toMatchObject({ dungeonGate: expect.objectContaining({ x: expect.any(Number) }), sideAt: { chest: false } });
+    expect(result.summary).toContain("reach ok");
+  });
+
   it("an unknown kind closer to a sheer kind is built as the nearest one and reported (same ranking as village kinds)", () => {
     expect(sheerKindFor(spec("skyplateau"))).toMatchObject({ kind: { id: "sky-plateau" }, asked: "skyplateau" });
     expect(sheerKindFor(spec("waterfall"))).toMatchObject({ kind: { id: "waterfall-terraces" }, asked: "waterfall" });

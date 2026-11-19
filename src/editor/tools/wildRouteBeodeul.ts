@@ -210,7 +210,7 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
 }
 
 /** 길섶 꾸미기 — 깊은 숲길 세트의 작은 소품(고사리·들꽃·돌·그루터기·버섯)을 길 둘레 빈 풀밭에 드문드문. */
-function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, road: ReadonlySet<number>, reserved: ReadonlySet<number>,
+export function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, road: ReadonlySet<number>, reserved: ReadonlySet<number>,
   rng: Rng, stampObject: ToolDefinition): number {
   const w = map.width;
   const decor = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1

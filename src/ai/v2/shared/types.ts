@@ -13,7 +13,8 @@ export type PlaceType =
   | "dungeon" // 던전·탑·지하 묘지·신전(층 여럿 가능)
   | "cave" // 동굴(작은 던전)
   | "street" // 현대 일본 거리·골목(jp_city)
-  | "house"; // 현대 일본 집 실내(jp_city 실내) — 판타지 집 안은 interior
+  | "house" // 현대 일본 집 실내(jp_city 실내) — 판타지 집 안은 interior
+  | "route"; // 길목(지나가는 곳: 산길·정령 숲 …) — 가장자리에서 가장자리로 길이 이어지고 주인공 볼거리 하나가 있다(버들항)
 
 type PlaceSize = "small" | "medium" | "large";
 
@@ -62,7 +63,7 @@ export interface PlaceSpec {
   readonly gate?: { readonly fromMapId: string; readonly x: number; readonly y: number };
   /** 화풍·문화권 낱말: fantasy(기본) · jp-modern · wizarding · sengoku · modern-city … 카드가 고를 수 있는 값을 준다. */
   readonly style?: string;
-  /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … */
+  /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … 길목(route)은 갈래: mountain · spirit. */
   readonly theme?: string;
   readonly size?: PlaceSize;
   readonly zones?: readonly ZoneSpec[];
@@ -78,6 +79,8 @@ export interface PlaceSpec {
   readonly entrance?: string;
   /** 나가는 쪽. 실내는 기본 south. */
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
+  /** 길목(route)의 이웃 — make_game 이 연결 자료에서 채운다(모델이 적지 않는다): 그 변으로 이어지는 장소의 종류(village·route·dungeon …)와, 던전이면 그 종류. */
+  readonly routeLinks?: readonly { readonly side?: "south" | "north" | "east" | "west"; readonly kind: string; readonly dungeonType?: string; readonly paved?: boolean }[];
   /** (세계 장소) 목적표 — build_places 가 청사진에서 정해 넣는다(place/program.ts), 모델은 쓰지 않는다. 구성기가 이 역할 건물과 채움 집만 놓고 맵 크기도 여기서 나온다. */
   readonly program?: import("@/project/settlementProgram").SettlementProgram;
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */

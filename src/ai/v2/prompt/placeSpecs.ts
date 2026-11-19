@@ -5,6 +5,7 @@ import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { chipsetCatalog } from "../place/interiorCatalog";
 import { VILLAGE_CARD, villageCard } from "../place/builders/village";
 import { DUNGEON_CARD } from "../place/builders/dungeon";
+import { ROUTE_CARD } from "../place/builders/route";
 import { JP_CITY_CARD } from "../place/builders/jpCity";
 import { MODERN_KR_CARD } from "../place/builders/modernCity";
 import { PEOPLE_CARD } from "../place/people";
@@ -20,17 +21,18 @@ export function v2Cards(key = "", task = ""): readonly string[] {
 /** 가벼운 지시문에서 처음부터 싣지 않는 장소 짓기 동사(toolExposure.ts 가 load_tools 로 돌린다). add_people·move_object 같은 작은 동사는 남긴다. */
 export const PLACE_BUILD_VERBS: ReadonlySet<string> = new Set(["make_place", "edit_place", "review_layout", "dress_room", "room_parts", "dungeon_parts", "find_pieces", "draw_object"]);
 
-export const PLACE_SPEC_KINDS = ["interior", "village", "dungeon", "street", "people", "draw_object"] as const;
+export const PLACE_SPEC_KINDS = ["interior", "village", "dungeon", "route", "street", "people", "draw_object"] as const;
 
 export type PlaceSpecKind = (typeof PLACE_SPEC_KINDS)[number];
 
-export const PLACE_SPEC_INDEX = "[Place specs — not loaded] This request works on maps that already exist (events, logic, dialogue, database), so the place-building tools (make_place, edit_place, review_layout, dress_room, room_parts, dungeon_parts, find_pieces, draw_object) and their specs are left out. If you really must build or rebuild a place, load the tool with load_tools and read its spec first with read_specs{names:[…]} — interior (inns, shops, studies, jails, houses inside; with the interior chipset catalog), village, dungeon (also caves), street (modern Japan/Korea streets and houses), people (NPCs, for add_people), draw_object. A build call whose spec you have not read returns the spec instead of building (not a failure) — then call it again following the spec.";
+export const PLACE_SPEC_INDEX = "[Place specs — not loaded] This request works on maps that already exist (events, logic, dialogue, database), so the place-building tools (make_place, edit_place, review_layout, dress_room, room_parts, dungeon_parts, find_pieces, draw_object) and their specs are left out. If you really must build or rebuild a place, load the tool with load_tools and read its spec first with read_specs{names:[…]} — interior (inns, shops, studies, jails, houses inside; with the interior chipset catalog), village, dungeon (also caves), route (passage maps: mountain trail, spirit forest), street (modern Japan/Korea streets and houses), people (NPCs, for add_people), draw_object. A build call whose spec you have not read returns the spec instead of building (not a failure) — then call it again following the spec.";
 
 /** 장소 종류(make_place type) → 지식 카드 종류. */
 export function placeSpecKindOf(type: string | undefined): PlaceSpecKind | undefined {
   if (type === "interior") return "interior";
   if (type === "village") return "village";
   if (type === "dungeon" || type === "cave") return "dungeon";
+  if (type === "route") return "route";
   if (type === "street" || type === "house") return "street";
   return undefined;
 }
@@ -41,6 +43,7 @@ export function placeSpecCards(kind: PlaceSpecKind, project?: Project, currentMa
     case "interior": return [INTERIOR_CARD, interiorCatalogCard(project, currentMapId, task, key)];
     case "village": return [villageCard(key, task)];
     case "dungeon": return [DUNGEON_CARD];
+    case "route": return [ROUTE_CARD];
     case "street": return [JP_CITY_CARD, MODERN_KR_CARD];
     case "people": return [PEOPLE_CARD];
     case "draw_object": return [DRAW_OBJECT_CARD];

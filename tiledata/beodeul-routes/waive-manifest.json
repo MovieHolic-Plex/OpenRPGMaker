@@ -1,0 +1,334 @@
+{
+"items": [
+{
+"png": "tiledata/beodeul-routes/pieces/mt-bridge.png",
+"kind": "terrain",
+"label": "beodeul_routes/mt-bridge",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-lodge.png",
+"kind": "structure",
+"label": "beodeul_routes/mt-lodge",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-watchtower.png",
+"kind": "structure",
+"label": "beodeul_routes/mt-watchtower",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-shelter.png",
+"kind": "structure",
+"label": "beodeul_routes/mt-shelter",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-rest-rock.png",
+"kind": "other",
+"label": "beodeul_routes/mt-rest-rock",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-rail.png",
+"kind": "other",
+"label": "beodeul_routes/mt-rail",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-summit-stone.png",
+"kind": "other",
+"label": "beodeul_routes/mt-summit-stone",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-log-pile.png",
+"kind": "other",
+"label": "beodeul_routes/mt-log-pile",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-sawhorse.png",
+"kind": "other",
+"label": "beodeul_routes/mt-sawhorse",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-spring-trough.png",
+"kind": "other",
+"label": "beodeul_routes/mt-spring-trough",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-pine-a.png",
+"kind": "organic",
+"label": "beodeul_routes/mt-pine-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-pine-b.png",
+"kind": "organic",
+"label": "beodeul_routes/mt-pine-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-snow-rock.png",
+"kind": "other",
+"label": "beodeul_routes/mt-snow-rock",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-snow-patch.png",
+"kind": "flat",
+"label": "beodeul_routes/mt-snow-patch",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-herb-a.png",
+"kind": "organic",
+"label": "beodeul_routes/mt-herb-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-herb-b.png",
+"kind": "organic",
+"label": "beodeul_routes/mt-herb-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-herb-basket.png",
+"kind": "other",
+"label": "beodeul_routes/mt-herb-basket",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-leaves.png",
+"kind": "flat",
+"label": "beodeul_routes/mt-leaves",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-rockfall.png",
+"kind": "debris",
+"label": "beodeul_routes/mt-rockfall",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-trail-gate.png",
+"kind": "structure",
+"label": "beodeul_routes/mt-trail-gate",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/mt-tent.png",
+"kind": "other",
+"label": "beodeul_routes/mt-tent",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-crown-a.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-crown-b.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-crown-e.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-e",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-crown-f.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-f",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-light.png",
+"kind": "flat",
+"label": "beodeul_routes/sp-light",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-glow-moss.png",
+"kind": "flat",
+"label": "beodeul_routes/sp-glow-moss",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-falls.png",
+"kind": "terrain",
+"label": "beodeul_routes/sp-falls",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-falls-veil.png",
+"kind": "terrain",
+"label": "beodeul_routes/sp-falls-veil",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-bridge.png",
+"kind": "terrain",
+"label": "beodeul_routes/sp-bridge",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-tree-gate.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-tree-gate",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-root-gate.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-root-gate",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-mist-stones.png",
+"kind": "structure",
+"label": "beodeul_routes/sp-mist-stones",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-moon-spring.png",
+"kind": "other",
+"label": "beodeul_routes/sp-moon-spring",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-fairy-ring.png",
+"kind": "flat",
+"label": "beodeul_routes/sp-fairy-ring",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-shroom-s.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-shroom-s",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-shroom-m.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-shroom-m",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-shroom-l.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-shroom-l",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-stone-a.png",
+"kind": "other",
+"label": "beodeul_routes/sp-stone-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-stone-b.png",
+"kind": "other",
+"label": "beodeul_routes/sp-stone-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-guardian.png",
+"kind": "figure",
+"label": "beodeul_routes/sp-guardian",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-tree-a.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-tree-a",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-tree-b.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-tree-b",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-tree-c.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-tree-c",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-crystal-tree.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crystal-tree",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-crystal.png",
+"kind": "other",
+"label": "beodeul_routes/sp-crystal",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-wisp.png",
+"kind": "other",
+"label": "beodeul_routes/sp-wisp",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-petals.png",
+"kind": "flat",
+"label": "beodeul_routes/sp-petals",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-sleeper.png",
+"kind": "figure",
+"label": "beodeul_routes/sp-sleeper",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-star-shard.png",
+"kind": "other",
+"label": "beodeul_routes/sp-star-shard",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-market.png",
+"kind": "structure",
+"label": "beodeul_routes/sp-market",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-lantern.png",
+"kind": "other",
+"label": "beodeul_routes/sp-lantern",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-stag.png",
+"kind": "figure",
+"label": "beodeul_routes/sp-stag",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-world-root.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-world-root",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-flower.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-flower",
+"chipset": "beodeul_city"
+}
+]
+}
