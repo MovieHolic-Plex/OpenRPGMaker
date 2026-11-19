@@ -15,7 +15,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
-import { decideAfterCloseFlush, decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
+import { decideAfterCloseFlush, decideCloseResponse, type CloseSaveMode } from "./closeFlow";
 import { planWindowReload } from "../shared/reloadFlow";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
@@ -107,8 +107,13 @@ const windowIcon = windowIconPath(rendererDir);
 const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9849];
 
 const closing = new Set<number>();
-const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
-/** 편집기가 새로고침 저장 리스너를 붙인 창. 그 전에는 메모리 편집이 없다. */
+const closeFlushWaiters = new Map<number, { requestId: number; finish: (ok: boolean) => void }>();
+let nextCloseRequestId = 0;
+let closeInProgress = false;
+/** 자동 저장은 4초 안에 끝나면 묻지 않고 닫는다. 사용자가 「저장」을 고른 뒤에는 큰 프로젝트의 첫 저장(실측 16초)도 끝나게 더 기다린다. */
+const CLOSE_FLUSH_TIMEOUT_MS = { auto: 4_000, save: 30_000 } as const;
+const NAVIGATION_FLUSH_TIMEOUT_MS = 60_000;
+/** 편집기가 닫기·새로고침 저장 리스너를 붙인 창. 그 전에는 메모리 편집이 없다. */
 const flushReady = new Set<number>();
 /** 보기 메뉴·개발자 도구 새로고침을 위해 저장 중인 창. 값은 캐시를 무시할지. */
 const reloadFlushing = new Map<number, "soft" | "hard">();
@@ -119,50 +124,6 @@ const reloadArmed = new Set<number>();
 const unsavedReloadBlock = new Set<number>();
 /** 이번 새로고침이 캐시를 무시하는지. 저장이 끝난 뒤의 reload() 까지 유지한다. */
 const reloadHard = new Set<number>();
-/**
- * 사용자가 Quit 을 요청했다. 프로젝트 창이 저장 때문에 close 를 막으면 Electron 이 종료를 취소하므로
- * (app.quit 문서), 그 저장이 끝난 뒤에 다시 건다. 마지막 창을 그냥 닫는 것과는 다르다 — macOS 는 그때 앱이 남는다.
- */
-let quitRequested = false;
-/** 열린 프로젝트의 저장이 Quit 을 한 번 막았다. 막을 일이 없었으면(시작 화면) 다시 종료하지 않는다. */
-let quitHeld = false;
-
-function destroyWindow(window: BrowserWindow): void {
-  if (window.isDestroyed()) return;
-  const id = window.webContents.id;
-  const timer = closeTimers.get(id);
-  if (timer) clearTimeout(timer);
-  closeTimers.delete(id);
-  window.destroy();
-}
-
-/**
- * 닫기 전 저장이 실패했다(디스크 오류·충돌·남은 편집). 창을 없애면 그 편집이 사라지므로 닫기를 취소하고 창을 다시 보인다.
- * 저장 때문에 막아 둔 Quit 도 취소한다 — 다시 걸면 같은 실패로 돌 뿐이다. 사용자가 고르면 저장 없이 닫는다.
- */
-function keepWindowAfterFailedCloseFlush(window: BrowserWindow): void {
-  const id = window.webContents.id;
-  closing.delete(id);
-  const timer = closeTimers.get(id);
-  if (timer) clearTimeout(timer);
-  closeTimers.delete(id);
-  quitRequested = false;
-  quitHeld = false;
-  if (!window.isDestroyed()) window.show();
-  void dialog.showMessageBox(window, {
-    type: "warning",
-    message: "저장하지 못해 창을 닫지 않았습니다.",
-    detail: "방금 한 편집이 아직 디스크에 없습니다. 저장 상태를 확인한 뒤 다시 닫아 주세요.",
-    buttons: ["창 유지", "저장하지 않고 닫기"],
-    defaultId: 0,
-    cancelId: 0,
-  }).then(({ response }) => {
-    if (response === 1 && !window.isDestroyed()) destroyWindow(window);
-  }, (error: unknown) => {
-    console.warn("[project] 닫기 저장 실패 안내를 띄우지 못했습니다:", error);
-  });
-}
-
 function abandonReloadFlush(id: number): void {
   reloadFlushing.delete(id);
   const timer = reloadTimers.get(id);
@@ -221,22 +182,8 @@ function beginReloadFlush(window: BrowserWindow, hard: boolean, becauseDirty = f
     void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
       console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
     });
-  }, CLOSE_FLUSH_TIMEOUT_MS));
+  }, NAVIGATION_FLUSH_TIMEOUT_MS));
 }
-
-function retryQuitIfFlushHeldIt(): void {
-  const pending = (): boolean => shouldRetryQuit({ quitRequested, quitHeld, windowsStillFlushing: closing.size });
-  if (!pending()) return;
-  // 같은 종료에서 다른 창의 close 가 이 핸들러보다 늦게 올 수 있다. 한 틱 뒤에, 아직 저장 중인 창이 없을 때만 다시 건다.
-  setTimeout(() => { if (pending()) app.quit(); }, 0);
-}
-
-/**
- * 닫기 저장을 기다리는 상한. 큰 프로젝트를 새 빌드로 처음 연 직후의 자동 저장(부팅 정규화 결과 + 표식)은 렌더러 준비만 10초를 넘는다
- * (2026-10-20 실측, 71MB: 정착 뒤 저장 완료까지 16초). 예전 상한 10초는 그 저장을 끊어 버려 — 다음 실행이 또 «첫 부팅»(+10~15초)이
- * 되고 저장 중이던 변경도 잃었다. 창은 닫는 즉시 숨기므로 사용자는 기다리지 않는다.
- */
-const CLOSE_FLUSH_TIMEOUT_MS = 60_000;
 
 /** 편집기가 파일 메뉴의 폴더 교체 저장을 받을 수 있다. 문서를 떠나면 지운다. createWindow 보다 위에 둔다. */
 const replaceFlushReady = new Set<number>();
@@ -246,40 +193,122 @@ const replaceFlushWaiters = new Map<number, (payload: unknown) => void>();
 const folderSwitching = new Set<number>();
 const recentFolderChanges = new Set<string>();
 
-// 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
-// 저장을 기다리는 동안의 두 번째 close 는 막는다(closeFlow.ts). 막지 않으면 연타·Quit 이 저장을 끊는다.
+function destroyAuxiliaryChildren(): void {
+  const children = BrowserWindow.getAllWindows().filter((window) => window.getParentWindow() && !appWindows.has(window));
+  for (const child of children) {
+    if (!child.isDestroyed()) child.destroy();
+  }
+}
+
+function requestCloseFlush(window: BrowserWindow, mode: CloseSaveMode): Promise<boolean> {
+  if (window.isDestroyed()) return Promise.resolve(true);
+  const id = window.webContents.id;
+  if (!flushReady.has(id)) return Promise.resolve(true); // 시작 화면 또는 편집기 부팅 전
+  const requestId = ++nextCloseRequestId;
+  return new Promise((resolve) => {
+    const finish = (ok: boolean): void => {
+      clearTimeout(timer);
+      closeFlushWaiters.delete(id);
+      resolve(ok);
+    };
+    const timer = setTimeout(() => finish(false), CLOSE_FLUSH_TIMEOUT_MS[mode]);
+    closeFlushWaiters.set(id, { requestId, finish });
+    try {
+      window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose, requestId, mode);
+    } catch {
+      finish(window.isDestroyed());
+    }
+  });
+}
+
+async function closeWindows(windows: readonly BrowserWindow[], owner: BrowserWindow, quit: boolean): Promise<void> {
+  closeInProgress = true;
+  const ids = windows.map((window) => window.webContents.id);
+  let approved = false;
+  try {
+    const prepare = async (mode: CloseSaveMode): Promise<boolean> => {
+      // During a multi-window Quit, an editor can finish saving before its peers.
+      const enabled = windows.filter((window) => !window.isDestroyed() && window.isEnabled());
+      try {
+        for (const window of enabled) window.setEnabled(false);
+        return (await Promise.all(windows.map((window) => requestCloseFlush(window, mode)))).every(Boolean);
+      } finally {
+        for (const window of enabled) {
+          if (!window.isDestroyed()) window.setEnabled(true);
+        }
+      }
+    };
+
+    for (const id of ids) {
+      closing.add(id);
+      abandonReloadFlush(id);
+    }
+    // 마지막 화면 캡처는 저장과 함께 시도한다. 닫기를 기다리게 하거나 창을 숨기지 않는다.
+    for (const [index, window] of windows.entries()) {
+      const session = sessions.get(ids[index]);
+      if (session && window.isVisible()) void captureLastViewBeforeClose(window, session.projectDir);
+    }
+
+    if (decideAfterCloseFlush("auto", await prepare("auto")) === "confirm") {
+      const parent = owner.isDestroyed() ? windows.find((window) => !window.isDestroyed()) : owner;
+      if (!parent) return;
+      if (parent.isMinimized()) parent.restore();
+      parent.show();
+      const { response } = await dialog.showMessageBox(parent, {
+        type: "warning",
+        message: "변경 사항을 저장할까요?",
+        detail: quit
+          ? "열린 편집기에 자동으로 저장하지 못한 변경 사항이 있습니다. 저장하지 않고 종료하면 저장되지 않은 변경 사항이 사라질 수 있습니다."
+          : "자동으로 저장하지 못한 변경 사항이 있습니다. 저장하지 않고 닫으면 저장되지 않은 변경 사항이 사라질 수 있습니다.",
+        buttons: ["저장", "저장 안 함", "취소"],
+        defaultId: 0,
+        cancelId: 2,
+        noLink: true,
+      });
+      const decision = decideCloseResponse(response);
+      if (decision === "cancel") return;
+      if (decision === "save" && decideAfterCloseFlush("save", await prepare("save")) === "report-failure") {
+        if (!parent.isDestroyed()) await dialog.showMessageBox(parent, {
+          type: "error",
+          message: "변경 사항을 저장하지 못했습니다.",
+          detail: "편집 내용을 유지했습니다. 호스트 연결과 저장 상태를 확인하거나 열린 편집기의 변경 사항을 확인해 주세요.",
+          buttons: ["확인"],
+        });
+        return;
+      }
+    }
+
+    // 닫히는 부모 아래의 보조 창은 Quit을 막지 않는다.
+    if (quit) destroyAuxiliaryChildren();
+    // 확인을 마친 창은 렌더러의 beforeunload를 다시 거치지 않는다.
+    for (const window of windows) {
+      if (!window.isDestroyed()) window.destroy();
+    }
+    approved = true;
+  } catch (error) {
+    console.warn("[project] 창 닫기에 실패했습니다:", error);
+  } finally {
+    for (const id of ids) closing.delete(id);
+    closeInProgress = false;
+    if ((approved && quit) || (process.platform !== "darwin" && BrowserWindow.getAllWindows().length === 0)) app.quit();
+  }
+}
+
 function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
-    const session = sessions.get(id);
-    const decision = decideWindowClose(closing.has(id), session !== null);
-    if (decision === "allow") return;
+    if (closeInProgress) { event.preventDefault(); return; }
+    if (!flushReady.has(id)) return;
     event.preventDefault();
-    quitHeld = nextQuitHeld(quitHeld, quitRequested, decision);
-    if (decision === "hold") return;
-    // 새로고침 저장이 진행 중이면 그 저장은 닫기로 넘긴다. 끝나자마자 페이지를 다시 열지 않는다.
-    abandonReloadFlush(id);
-    // flush 는 세션이 있을 때만 나온다. 없으면 닫기를 막아 둔 채 두면 창이 남지 않게 바로 없앤다.
-    if (session === null) { destroyWindow(window); return; }
-    closing.add(id);
-    window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
-    closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
-    // 저장이 끝날 때까지 창을 잡아 두되 화면에서는 곧 치운다 — 숨기기 전에 마지막 편집 화면을 찍는다(상한 250ms, lastView.ts).
-    // 다음 실행에서 이 프로젝트를 열면 편집기가 부팅하는 동안 이 그림이 바로 보인다.
-    // 저장이 먼저 실패해 창을 다시 보였으면(keepWindowAfterFailedCloseFlush) 늦게 끝난 캡처가 숨기지 않는다.
-    void captureLastViewBeforeClose(window, session.projectDir).finally(() => { if (!window.isDestroyed() && closing.has(id)) window.hide(); });
+    void closeWindows([window], window, false);
   });
   window.on("closed", () => {
     forgetLastViewWindow(id);
     abandonReloadFlush(id);
     flushReady.delete(id);
     reloadHard.delete(id);
-    closing.delete(id);
-    const timer = closeTimers.get(id);
-    if (timer) clearTimeout(timer);
-    closeTimers.delete(id);
+    closeFlushWaiters.get(id)?.finish(true);
     sessions.close(id);
-    retryQuitIfFlushHeldIt();
   });
 }
 
@@ -452,15 +481,19 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.webContents.on("did-start-navigation", (details) => {
     if (!details.isMainFrame || details.isSameDocument) return;
     markEditorLeft(id);
-    // 새 문서는 리스너를 다시 붙일 때까지 메모리 편집이 없다.
-    flushReady.delete(id);
     reloadArmed.delete(id);
     reloadHard.delete(id);
   });
+  // beforeunload로 이동이 취소되면 기존 문서의 저장 리스너는 계속 살아 있다.
+  window.webContents.on("did-navigate", () => { flushReady.delete(id); });
   // 개발자 도구의 새로고침은 메뉴를 타지 않는다. 렌더러가 미저장으로 막으면 저장한 뒤 다시 연다.
   // 저장을 마친 reload() 가 다른 beforeunload(미적용 초안)에 막히면 그 새로고침은 그대로 진행한다.
   window.webContents.on("will-prevent-unload", (event) => {
     const webContentsId = window.webContents.id;
+    if (closing.has(webContentsId)) {
+      unsavedReloadBlock.delete(webContentsId);
+      return;
+    }
     if (unsavedReloadBlock.has(webContentsId)) {
       const hard = reloadHard.has(webContentsId);
       unsavedReloadBlock.delete(webContentsId);
@@ -675,7 +708,7 @@ function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFl
     };
     const onDone = (payload: unknown): void => finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
     const onClosed = (): void => finish("closed");
-    timer = setTimeout(() => finish("timeout"), CLOSE_FLUSH_TIMEOUT_MS);
+    timer = setTimeout(() => finish("timeout"), NAVIGATION_FLUSH_TIMEOUT_MS);
     replaceFlushWaiters.set(id, onDone);
     window.once("closed", onClosed);
     if (window.webContents.isDestroyed()) finish("closed");
@@ -856,7 +889,7 @@ function buildMenu(): void {
       title: entry.title && entry.title !== entry.projectDir ? entry.title : basename(entry.projectDir),
     }));
   Menu.setApplicationMenu(Menu.buildFromTemplate([
-    { role: "appMenu" },
+    ...(process.platform === "darwin" ? [{ role: "appMenu" as const }] : []),
     {
       label: "파일",
       submenu: [
@@ -946,6 +979,7 @@ function buildMenu(): void {
         },
         { type: "separator" },
         { role: "close" },
+        ...(process.platform === "darwin" ? [] : [{ label: "종료", role: "quit" as const, accelerator: "CmdOrCtrl+Q" }]),
       ],
     },
     { role: "editMenu" },
@@ -1026,19 +1060,16 @@ export async function startApp(boot: BootContext): Promise<void> {
   // 렌더러는 이 동기 블록이 끝나기 전에는 IPC 를 보낼 수 없다 — 문서를 먼저 걸고 아래 처리기를 같은 틱에 붙인다(약 50ms 앞당김).
   if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow);
   mainMark("windowLoading");
-  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event, ok: unknown) => {
-    const window = BrowserWindow.fromWebContents(event.sender);
-    // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
-    if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
-    if (decideAfterCloseFlush(ok) === "destroy") {
-      destroyWindow(window);
-      return true;
-    }
-    keepWindowAfterFailedCloseFlush(window);
-    return false;
+  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event, requestId: unknown, ok: unknown) => {
+    if (event.senderFrame?.parent != null) return false;
+    const waiter = closeFlushWaiters.get(event.sender.id);
+    if (!waiter || waiter.requestId !== requestId) return false;
+    waiter.finish(ok === true);
+    return true;
   });
   ipcMain.on(OPRN_CHANNELS.lifecycleFlushReady, (event) => {
-    if (event.senderFrame?.parent == null) flushReady.add(event.sender.id);
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (window && appWindows.has(window) && event.senderFrame?.parent == null) flushReady.add(event.sender.id);
     event.returnValue = true;
   });
   ipcMain.on(OPRN_CHANNELS.lifecycleReloadBlocked, (event) => {
@@ -1071,7 +1102,7 @@ export async function startApp(boot: BootContext): Promise<void> {
   });
   ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
     const window = BrowserWindow.fromWebContents(event.sender);
-    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    if (!window || !appWindows.has(window) || !trustedRendererSender(event)) return false;
     if (!isWindowControlAction(action)) return false;
     if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
     if (action === "minimize") { window.minimize(); return true; }
@@ -1356,10 +1387,21 @@ export async function startApp(boot: BootContext): Promise<void> {
   });
 }
 
-app.on("before-quit", () => { quitRequested = true; });
+app.on("before-quit", (event) => {
+  if (closeInProgress) { event.preventDefault(); return; }
+  const windows = [...appWindows].filter((window) => !window.isDestroyed());
+  const owner = windows.find((window) => window.isFocused() && flushReady.has(window.webContents.id))
+    ?? windows.find((window) => flushReady.has(window.webContents.id));
+  if (owner) {
+    event.preventDefault();
+    void closeWindows(windows, owner, true);
+    return;
+  }
+  destroyAuxiliaryChildren();
+});
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin" && !closeInProgress) app.quit();
 });
 
 app.on("will-quit", () => {

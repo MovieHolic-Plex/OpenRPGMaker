@@ -11,6 +11,17 @@ import { ProjectFormatError } from "@/project/io";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
+const openEditors = new Set<MonsterResourceEditor>();
+
+/** 앱을 닫을 때 명시적으로 저장을 선택한 경우에만 소재 초안을 적용한다. */
+export function settleMonsterResourceDraftsForClose(save: boolean): boolean {
+  let settled = true;
+  for (const editor of openEditors) {
+    if (!editor.settleForClose(save)) settled = false;
+  }
+  return settled;
+}
+
 export function openMonsterResourceEditor(): void {
   new MonsterResourceEditor().open();
 }
@@ -79,6 +90,7 @@ class MonsterResourceEditor {
 
   open(): void {
     document.body.append(this.overlay);
+    openEditors.add(this);
     this.register();
     this.select(listMonsterResources(store.getCurrent())[0]);
     this.unsubscribe = store.subscribe((_project, change) => {
@@ -161,6 +173,11 @@ class MonsterResourceEditor {
     applyRovingTabindex(this.rows);
   }
 
+  settleForClose(save: boolean): boolean {
+    if (save && this.dirty()) this.commit(false);
+    return !this.dirty();
+  }
+
   private commit(reset: boolean): void {
     if (!this.active || this.disposed || !this.selected) return;
     const project = store.getCurrent();
@@ -190,6 +207,7 @@ class MonsterResourceEditor {
   private dispose(): void {
     if (this.disposed) return;
     this.disposed = true; this.active = false;
+    openEditors.delete(this);
     this.unsubscribe();
     window.removeEventListener("beforeunload", this.unload);
     unregisterModal(this.overlay); this.overlay.remove();

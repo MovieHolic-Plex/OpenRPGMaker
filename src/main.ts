@@ -22,6 +22,9 @@ import { bootApp, isModeShellMounted as modeShellMountedForBootFailure } from "@
 import { dismissBootLoader, failBootLoader, reportBootStage } from "@/app/bootLoader";
 import { afterBootSettled, expectBootSettle } from "@/util/bootSettled";
 import { preloadBundledJsonForProject } from "@/project/defaults/bundledJson";
+import { abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
+import { settleMonsterResourceDraftsForClose } from "@/editor/panels/databaseMonsterResourceEditor";
+import { hasEventDraftVaultEntries, persistEventDraftVaultNow } from "@/project/eventDraftVault";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { reloadFlushAllowsReload } from "../electron/shared/reloadFlow";
@@ -66,16 +69,26 @@ if (typeof window !== "undefined" && window.location) {
   }
   mountWindowControls();
   if (window.oprn?.closeIsHostDriven === true) {
-    // 닫기는 주 프로세스가 flush-before-close 로 연다 — 브라우저 beforeunload 경고와 겹치지 않게 한다.
-    window.oprn.lifecycle.onFlushBeforeClose(() => {
-      // 저장이 끝나 메모리와 디스크가 같을 때만 닫아도 된다고 알린다(새로고침과 같은 판정). 실패면 메인이 창을 남긴다.
-      void store.flush().then(
-        (result) => { void window.oprn?.lifecycle.flushDone(reloadFlushAllowsReload(result.kind, store.hasUnsavedChanges())); },
-        (error: unknown) => {
-          console.error("[store] 닫기 전 저장 실패:", error);
-          void window.oprn?.lifecycle.flushDone(false);
-        },
-      );
+    const { lifecycle } = window.oprn;
+    lifecycle.onFlushBeforeClose((requestId, mode) => {
+      const flush = async (): Promise<boolean> => {
+        // 입력 중인 필드의 change를 반영하고 조수가 새 편집을 시작하지 않도록 중지한다.
+        const focused = document.activeElement;
+        if (focused instanceof HTMLElement && focused.matches("input, textarea, select, [contenteditable]")) focused.blur();
+        abortAiAssistantTurn();
+        const monsterDraftsSaved = settleMonsterResourceDraftsForClose(mode === "save");
+        // 이벤트 초안은 적용 버튼을 누르기 전까지 기존 금고에만 저장한다.
+        const projectSaved = !store.hasUnsavedChanges()
+          || reloadFlushAllowsReload((await store.flush()).kind, store.hasUnsavedChanges());
+        const eventDraftsSaved = !hasEventDraftVaultEntries() || persistEventDraftVaultNow();
+        return projectSaved && monsterDraftsSaved && eventDraftsSaved && !store.hasUnsavedChanges();
+      };
+      void flush().catch((error: unknown) => {
+        console.error("[store] 닫기 전 저장 실패:", error);
+        return false;
+      }).then((ok) => lifecycle.flushDone(requestId, ok)).catch((error: unknown) => {
+        console.error("[store] 닫기 전 저장 결과를 보내지 못했습니다:", error);
+      });
     });
     // 파일 → 저장(CmdOrCtrl+S). 저장은 store 가 소유하므로 메뉴는 요청만 보내고 여기서 flush 한다.
     window.oprn?.lifecycle.onSaveRequest(() => {
@@ -84,7 +97,6 @@ if (typeof window !== "undefined" && window.location) {
       });
     });
     // 보기 → 새로고침·개발자 도구의 새로고침. 리스너가 붙기 전에는 메인이 바로 새로고침한다.
-    window.oprn.lifecycle.markFlushReady?.();
     window.oprn.lifecycle.onFlushBeforeReload?.(() => {
       void store.flush().then(
         (result) => {
@@ -109,7 +121,9 @@ if (typeof window !== "undefined" && window.location) {
         },
       );
     });
-    window.oprn.lifecycle.flushReplaceReady?.();  }
+    window.oprn.lifecycle.flushReplaceReady?.();
+    lifecycle.markFlushReady?.();
+  }
 
   window.addEventListener("beforeunload", (event) => {
     if (window.oprn?.closeIsHostDriven === true) {

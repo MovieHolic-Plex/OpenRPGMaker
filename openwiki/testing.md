@@ -53,11 +53,10 @@
 ## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
 
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
-- **잡이 둘이다 (2026-11-08):** `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크:app·parity·앱 빌드)와
-  `fast-static`(jp_city 핀·타입체크:electron-store·배럴·호스티드 계약·런타임 에셋·CSS 래칫·openwiki 인덱스).
-  둘은 서로를 기다리지 않고 다른 러너에서 동시에 돈다. 왜: 성공 10판 실측에서 단계 합(중앙 440초)과
-  벽시계(중앙 448초)가 거의 같았다 — 전부 직렬이었고, 가장 긴 사슬은 parity(200초)+앱 빌드였다.
-  정적 검사를 떼면 임계 경로가 약 338초가 된다.
+- `fast-build`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
+  `fast-static`(jp_city 핀·타입체크:electron-store·배럴·호스티드 계약·런타임 에셋·CSS 래칫·openwiki 인덱스)이
+  병렬로 돈다. 집계 잡 `fast` 는 `fast-build` 와 `fast-parity` 가 둘 다 초록이어야 초록이다.
+  왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
 - 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 **`fast` 와 `fast-static` 이 모두**
   초록이어야 `--match-head-commit` 으로 머지한다. `fast` 이름은 브랜치 보호가 보는 이름이라 그대로 둔다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가

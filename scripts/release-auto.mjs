@@ -25,8 +25,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildReleaseSections, bumpVersion, collectReleaseItems, decideReleaseKind, renderReleaseNotes } from "./lib/releaseNotes.mjs";
-import { bumpManifestVersion, changelogEntryFor, localDate, writeChangelog } from "./lib/releaseFiles.mjs";
+import { buildReleaseSections, bumpVersion, collectReleaseItems, decideReleaseKind, enrichReleaseItems, renderReleaseNotes } from "./lib/releaseNotes.mjs";
+import { bumpManifestVersion, changelogEntryFor, ghReleaseCreateArgs, gitAnnotateTagArgs, localDate, writeChangelog, writeReleaseNotesFile } from "./lib/releaseFiles.mjs";
 import { highestReleaseTag } from "./lib/releaseAssets.mjs";
 
 const PROPOSE_BRANCH = "release/next";
@@ -58,6 +58,18 @@ function parseArgs(argv) {
     else throw new Error(`모르는 인자입니다: ${arg}`);
   }
   return args;
+}
+
+
+/** 머지된 PR 본문. --no-gh 이거나 gh 실패면 null — 커밋 제목으로 폴백한다. */
+function fetchPrBody(number) {
+  const raw = gh(["pr", "view", String(number), "--json", "body"], { allowFailure: true });
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw).body ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function commitsSince(base, tag) {
@@ -103,7 +115,7 @@ function nextReleaseVersion(packageVersion, tag, kind) {
 
 /**
  * ① 발행 — main 의 package.json 버전과 마지막 태그가 어긋나면 그 버전이 머지된 것이므로
- * 그 커밋에 주석 태그를 만들고 GitHub Release 를 낸다. 태그 본문은 CHANGELOG 의 그 절이다.
+ * 그 커밋에 주석 태그를 만들고 GitHub Release 를 낸다. 본문은 CHANGELOG 의 그 절을 --notes-file 로 올린다.
  *
  * 릴리스는 **초안(draft)** 으로만 만든다(2026-11-07). 데스크톱 산출물을 올리는
  * desktop-release 가 이름·크기 검증을 마친 뒤에 발행한다. 이 순서를 뒤집었을 때
@@ -124,10 +136,12 @@ function publish(args) {
 
   const changelog = git(["show", `${commit}:CHANGELOG.md`], { allowFailure: true }) ?? "";
   const body = changelogEntryFor(changelog, version) ?? `${tag} 릴리스`;
-  git(["tag", "-a", tag, "-m", body, commit]);
+  const notesFile = writeReleaseNotesFile(join(tmpdir(), `oprn-release-notes-${tag}.md`), body);
+  git(gitAnnotateTagArgs(tag, notesFile, commit));
   git(["push", "origin", tag]);
   // --draft: 자산이 0개인 동안 latest 를 가리키지 않게 한다. desktop-release 가 검증 뒤 발행한다.
-  if (args.useGh) gh(["release", "create", tag, "--title", tag, "--notes-from-tag", "--draft"]);
+  // 본문은 태그에서 읽지 않고 CHANGELOG 절을 --notes-file 로 올린다(# 제목 유지).
+  if (args.useGh) gh(ghReleaseCreateArgs(tag, notesFile, { draft: true }));
   return { step: "publish", result: `${tag} 초안 생성(자산 검증 뒤 desktop-release 가 발행)`, commit: commit.slice(0, 9) };
 }
 
@@ -167,7 +181,8 @@ function propose(args) {
   const nextTag = `v${next}`;
   if (hasTag(nextTag)) return { step: "propose", result: `${nextTag} 이미 있음` };
 
-  const sections = buildReleaseSections(collectReleaseItems(commits));
+  const items = args.useGh ? enrichReleaseItems(collectReleaseItems(commits), fetchPrBody) : collectReleaseItems(commits);
+  const sections = buildReleaseSections(items);
   const notes = renderReleaseNotes({ version: next, date: localDate(), sections });
   if (args.dryRun) {
     return { step: "propose", result: `${nextTag} 제안(커밋 ${commits.length}건)`, dryRun: true, notes };
