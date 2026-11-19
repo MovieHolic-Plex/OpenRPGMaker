@@ -1,6 +1,7 @@
 import { authoredVolumePercent } from "@/player/audio/fade";
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
+import { audioName } from "./commandSummary";
 
 // 오디오 명령(재생/정지) 프리뷰. 자동 재생은 하지 않는다(누수·의도치 않은 소리 방지) —
 // 파일명·반복 배지 + 정적 파형 장식만 시각 요약으로 보여준다.
@@ -17,7 +18,7 @@ export function previewAudio(cmd: Extract<Command, { kind: "playAudio" | "stopAu
     return root;
   }
   root.append(el("div", { class: "ecp-audio-icon play", text: "▶" }));
-  root.append(el("div", { class: "ecp-audio-name", text: cmd.resourceId || "(소리 선택 없음)" }));
+  root.append(el("div", { class: "ecp-audio-name", text: audioName(cmd.resourceId) }));
   root.append(renderWaveform());
   const badges = [el("span", { class: `ecp-audio-badge ${cmd.loop ? "on" : "off"}`, text: cmd.loop ? "반복 재생" : "1회 재생" })];
   if (cmd.channel === "bgs") badges.push(el("span", { class: "ecp-audio-badge on", text: "환경음" }));

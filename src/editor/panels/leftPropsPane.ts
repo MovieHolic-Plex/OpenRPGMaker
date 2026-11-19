@@ -4,6 +4,7 @@ import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { filterProps, PROP_CATEGORIES, propRecommendationContext, recommendProps, type PropCategoryId, type PropChoice, type PropRecommendation } from "@/editor/propRecommendations";
 import { resolveCurrentMapId } from "@/editor/mapSelection";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
+import { sourceTextOf } from "@/i18n";
 import { isTileCellChange, store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
@@ -110,11 +111,11 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     preview.setAttribute("aria-hidden", "true");
     return el("button", {
       class: "left-props-card",
-      attrs: { type: "button", "aria-pressed": String(selected(choice)), title: `${choice.name} · ${stamp.width}×${stamp.height}` },
+      attrs: { type: "button", "aria-pressed": String(selected(choice)) },
       dataset: { testid: "left-props-card", propId: choice.id },
       children: [
         el("span", { class: "left-props-preview", children: [preview] }),
-        el("span", { class: "left-props-name", attrs: { translate: "no" }, text: displayName(choice.name, stamp.width, stamp.height, prefix) }),
+        el("span", { class: "left-props-name", attrs: { translate: "no", title: choice.name }, text: displayName(choice.name, stamp.width, stamp.height, prefix) }),
         el("span", { class: "left-props-size", text: `${stamp.width}×${stamp.height}` }),
         // 모든 카드가 같은 「이 칩셋에서 사용」을 달던 줄은 뺀다 — 장소에 맞는 것만 따로 알린다.
         ...(entry.matchesPlace ? [el("span", { class: "left-props-reason", text: "장소에 어울림" })] : []),
@@ -139,9 +140,15 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     grid?.replaceChildren(...shown.map((entry) => card(entry, prefix)));
     if (prefixNote) {
       prefixNote.hidden = !prefix;
-      prefixNote.textContent = prefix ? `모두 「${prefix}」` : "";
+      prefixNote.replaceChildren(...(prefix ? [
+        el("span", { text: "공통 이름 앞부분" }), " ",
+        el("span", { attrs: { translate: "no" }, text: prefix }),
+      ] : []));
     }
-    if (categorySelect) categorySelect.value = category;
+    if (categorySelect) {
+      categorySelect.value = category;
+      categorySelect.title = sourceTextOf(categorySelect.selectedOptions[0]);
+    }
     if (listTitle) listTitle.textContent = category === "recommended" ? "이 맵에 어울리는 기물"
       : PROP_CATEGORIES.find(kind => kind.id === category)?.label ?? "기물 목록";
     if (resultCount) resultCount.textContent = `(${filtered.length})`;
@@ -171,8 +178,8 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     if (category !== "recommended" && category !== "all" && !available.some(kind => kind.id === category)) category = "all";
     categorySelect = el("select", {
       attrs: { "aria-label": "기물 종류" }, dataset: { testid: "left-props-category" },
-      children: [el("option", { value: "recommended", text: "맵 추천" }), el("option", { value: "all", text: "전체 종류" }),
-        ...available.map(kind => el("option", { value: kind.id, text: kind.label }))],
+      children: [{ id: "recommended", label: "맵 추천" }, { id: "all", label: "전체 종류" }, ...available]
+        .map(({ id, label }) => el("option", { value: id, attrs: { title: label }, text: label })),
       on: { change: () => {
         category = categorySelect!.value as typeof category;
         visibleCount = pageSizeFor(root);
@@ -193,7 +200,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     });
     listTitle = el("h3", { class: "left-props-title" });
     resultCount = el("span", { class: "left-props-result-count", attrs: { translate: "no" } });
-    prefixNote = el("p", { class: "left-props-prefix", attrs: { translate: "no" }, dataset: { testid: "left-props-prefix" } });
+    prefixNote = el("p", { class: "left-props-prefix", dataset: { testid: "left-props-prefix" } });
     noResults = el("p", { class: "left-props-empty", text: "검색 결과가 없습니다.", dataset: { testid: "left-props-no-results" } });
     grid = el("div", { class: "left-props-grid", attrs: { role: "group", "aria-label": "기물 목록" } });
     status = el("div", { class: "left-props-selection", attrs: { "aria-live": "polite" }, dataset: { testid: "left-props-selection" } });
@@ -203,7 +210,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
       ...(choices.length ? [
         el("div", { class: "left-props-browser", children: [
           el("label", { children: [el("span", { text: "기물 검색" }), search] }),
-          el("label", { class: "left-props-category-row", children: [el("span", { text: "종류별로 보기" }), categorySelect] }),
+          el("label", { children: [el("span", { text: "종류별로 보기" }), categorySelect] }),
         ] }),
         el("div", { class: "left-props-results-head", children: [listTitle, resultCount] }), prefixNote, noResults, grid, el("button", {
         class: "btn left-props-more", attrs: { type: "button" }, text: "다른 기물 더 보기", dataset: { testid: "left-props-more" },

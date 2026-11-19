@@ -353,7 +353,7 @@ body:has(.oprn-team-session-bar) .relief-bar-dock {
 .relief-pop-tab.is-active { background: var(--bg-raised); color: var(--text-1); font-weight: 600; box-shadow: 0 0 0 1px var(--border-default); }
 .relief-pop-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   padding: 10px;
   overflow-y: auto;
@@ -367,15 +367,17 @@ body:has(.oprn-team-session-bar) .relief-bar-dock {
   border: 1px solid var(--border-default, #dfe2ea);
   border-radius: 9px;
   background: var(--bg-raised);
+  color: var(--text-1);
   font: inherit;
   cursor: pointer;
   min-width: 0;
 }
-.relief-pop-item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.relief-pop-item span { max-width: 100%; overflow-wrap: anywhere; white-space: normal; }
 .relief-pop-item:hover { border-color: var(--accent-border); }
 .relief-pop-item.is-active { border-color: var(--accent); box-shadow: var(--focus-ring); }
 .relief-pop-thumb {
   width: 64px;
+  max-width: 100%;
   height: 52px;
   object-fit: contain;
   image-rendering: pixelated;

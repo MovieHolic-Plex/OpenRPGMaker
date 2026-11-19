@@ -11,7 +11,10 @@ import {
   timerIdLabel,
 } from "./options";
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
-import { BGM_CATALOG } from "@/assets/bgmCatalog";
+import { findBgmTrack } from "@/assets/bgmCatalog";
+import { SE_CATALOG } from "@/assets/seCatalog";
+import { parseFieldFxId, type ContainerStyle } from "@/project/containerFx";
+import { pixelFxEntry } from "@/pixelfx/catalog";
 import { authoredVolumePercent } from "@/player/audio/fade";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
@@ -588,7 +591,7 @@ function lightAnchorSummary(anchor: Extract<Command, { kind: "addLight" }>["sour
 
 function animationTargetSummary(target: Extract<Command, { kind: "showAnimation" }>["target"]): string {
   if (target === "player") return "주인공";
-  if ("eventId" in target) return `이벤트 ${target.eventId || "현재"}`;
+  if ("eventId" in target) return target.eventId ? `이벤트 ${target.eventId}` : "이 이벤트";
   return `(${target.x},${target.y})`;
 }
 
@@ -1524,12 +1527,12 @@ function playAudioMixParts(cmd: Extract<Command, { kind: "playAudio" }>): Comman
   return parts;
 }
 
-function audioName(id: string): string {
+export function audioName(id: string): string {
   const trimmed = id.trim();
   if (!trimmed) return "(선택 없음)";
-  const track = BGM_CATALOG.find((entry) => entry.id === trimmed);
-  if (track) return track.title;
-  return humanizeAuthorId(trimmed);
+  return findBgmTrack(trimmed)?.title
+    ?? SE_CATALOG.find((entry) => entry.id === trimmed)?.title
+    ?? humanizeAuthorId(trimmed);
 }
 
 function itemName(id: string): string {
@@ -1592,11 +1595,33 @@ function endingName(id: string | undefined): string {
   return named || humanizeAuthorId(trimmed);
 }
 
-function animationName(id: string | undefined): string {
+const CONTAINER_FX_LABELS: Readonly<Record<ContainerStyle, string>> = {
+  chest: "보물 상자 열기",
+  crate: "나무 상자 열기",
+  barrel: "통 열기",
+  sack: "자루 뒤지기",
+  straw: "짚더미 뒤지기",
+  drawer: "서랍 열기",
+  jar: "항아리 열기",
+  wardrobe: "옷장 열기",
+};
+
+export function animationName(id: string | undefined): string {
   const trimmed = id?.trim() ?? "";
   if (!trimmed) return "(연출 선택)";
-  const named = store.getCurrent().database.battleAnimations.find((entry) => entry.id === trimmed)?.name.trim();
-  return named || humanizeAuthorId(trimmed);
+  const database = store.getCurrent().database;
+  const fieldFx = parseFieldFxId(trimmed);
+  switch (fieldFx?.kind) {
+    case "container": return CONTAINER_FX_LABELS[fieldFx.style];
+    case "popupItem": {
+      const item = database.items.find((entry) => entry.id === fieldFx.itemId);
+      return `아이템 팝업: ${item?.name.trim() || fieldFx.itemId}`;
+    }
+    case "popupGold": return `골드 팝업: ${fieldFx.amount}G`;
+    case "doorOpen": return "문 열기";
+  }
+  const record = database.battleAnimations.find((entry) => entry.id === trimmed);
+  return record?.name.trim() || pixelFxEntry(record?.pixelFx?.effectId ?? trimmed)?.name || trimmed;
 }
 
 // 동영상은 아직 리소스 목록(ResourceKind)에 없어 id 를 사람이 읽는 모양으로만 다듬는다.

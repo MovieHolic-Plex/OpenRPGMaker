@@ -141,7 +141,7 @@
 
 .ecp-stage.ecp-stage-runtime {
   aspect-ratio: 4 / 3;
-  /* 게임 화면 자리. 맵은 그리지 않지만 유리창이 게임에서처럼 읽히도록 중간 밝기 무대를 깐다. */
+  /* 맵은 그리지 않지만 유리창이 게임에서처럼 읽히도록 중간 밝기 무대를 깐다. */
   background:
     repeating-linear-gradient(0deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px),
     repeating-linear-gradient(90deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px),
@@ -155,6 +155,13 @@
   place-items: initial;
   position: relative;
   width: 100%;
+}
+
+:is(.event-editor-modal-window, .event-subdialog-window) .ecp-stage.ecp-stage-runtime {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 15px, var(--border-subtle) 15px 16px),
+    repeating-linear-gradient(90deg, transparent 0 15px, var(--border-subtle) 15px 16px),
+    var(--bg-inset);
 }
 
 .ecp-runtime-viewport {

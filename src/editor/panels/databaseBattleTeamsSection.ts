@@ -1,5 +1,5 @@
 // 시스템 탭 「팀 교대 전투」 — FF6 식 교대 묶음(system.battleTeams · teamSwapCost). 도구 battle.teams 와 같은 규칙.
-import { selectField, textField } from "@/editor/panels/databaseControls";
+import { selectField, textField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { DEFAULT_TEAM_SWAP_COST } from "@/battle/battleTeams";
 import { MAX_BATTLE_TEAMS, TEAM_SWAP_COST_LABELS, isTeamSwapCost } from "@/project/battleTeamModel";
@@ -7,17 +7,6 @@ import { el } from "@/util/dom";
 import type { BattleTeamRecord, Project, TeamSwapCost } from "@/project/types";
 
 const COST_OPTIONS = ["free", "gauge", "turn"] as const satisfies readonly TeamSwapCost[];
-
-/** 시스템 탭의 다른 켜기 칸과 같은 34×18 알약 스위치(R3) — 맨 체크박스는 카드 오른쪽 끝으로 밀려 났다(2026-10-21 감사). */
-function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
-  const input = el("input", { class: "db-toggle-input", attrs: { type: "checkbox", role: "switch" }, dataset: { testid } }) as HTMLInputElement;
-  input.checked = checked;
-  input.addEventListener("change", () => onChange(input.checked));
-  return el("label", {
-    class: "db-field",
-    children: [el("span", { text: label }), el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] })],
-  });
-}
 
 type Update = (mutator: (draft: Project) => void, snapshotKey?: string) => void;
 
@@ -38,7 +27,7 @@ export function battleTeamsSection(project: Project, updateSystem: Update, reren
   const enabled = teams.length >= 2;
   const children: HTMLElement[] = [
     el("p", { class: "db-system-help", text: "팀 = 교대 묶음입니다. 한 번에 한 팀만 싸우고, 전투 명령에 「○○ 교대」가 생깁니다(동시 행동 없음). 팀을 끄면 기존처럼 한 파티로 싸웁니다." }),
-    checkboxField("팀 교대 전투 사용", "db-field-system-battle-teams-enabled", enabled, (checked) => {
+    toggleSwitch("팀 교대 전투 사용", "db-field-system-battle-teams-enabled", enabled, (checked) => {
       updateSystem((draft) => {
         if (checked) draft.system.battleTeams = draftTeams(draft);
         else {
@@ -71,7 +60,7 @@ export function battleTeamsSection(project: Project, updateSystem: Update, reren
   const teamOptions = [{ id: "", name: "(소속 없음 — 첫 팀)" }, ...teams.map((team) => ({ id: team.id, name: team.name }))];
   for (const actor of project.database.actors.slice(0, 24)) {
     const current = teams.find((team) => team.actorIds.includes(actor.id))?.id ?? "";
-    children.push(selectField(`${actor.name} 소속`, `db-field-system-team-of-${actor.id}`, current, teamOptions, (value) => {
+    children.push(selectField(`소속 팀 (${actor.name})`, `db-field-system-team-of-${actor.id}`, current, teamOptions, (value) => {
       updateSystem((draft) => {
         for (const team of draft.system.battleTeams ?? []) team.actorIds = team.actorIds.filter((id) => id !== actor.id);
         const target = draft.system.battleTeams?.find((team) => team.id === value);
@@ -81,7 +70,7 @@ export function battleTeamsSection(project: Project, updateSystem: Update, reren
   }
   if (teams.length < MAX_BATTLE_TEAMS) {
     children.push(el("button", {
-      class: "btn small",
+      class: "db-ws-btn",
       text: "팀 추가",
       attrs: { type: "button" },
       dataset: { testid: "db-system-team-add" },

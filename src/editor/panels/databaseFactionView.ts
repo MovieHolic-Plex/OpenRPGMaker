@@ -753,7 +753,7 @@ function removeSelected(id: string, rerender: () => void): void {
 
 function updateVisibleFactionName(id: string, name: string): void {
   const row = document.querySelector<HTMLElement>(`[data-testid='db-faction-row-${id}'] .db-list-name`);
-  if (row) row.textContent = name || id;
+  if (row) row.textContent = row.title = name || id;
   const hero = document.querySelector<HTMLElement>("[data-testid='db-faction-hero'] .db-ws-hero-title");
   if (hero) hero.textContent = name || id;
 }

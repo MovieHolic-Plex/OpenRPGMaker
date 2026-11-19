@@ -332,6 +332,7 @@ describe("RPG Maker style event editor entry points", () => {
     const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
     if (!nameInput) throw new Error("Expected the header name input");
     expect(nameInput.value).toBe("촌장 할아버지");
+    expect(nameInput.title).toBe("촌장 할아버지");
     expect(nameInput.getAttribute("aria-label")).toBe("이벤트 이름");
     // 지은 이름이 있으면 「표시 이름」 안내 칩은 그리지 않는다.
     expect(document.querySelector('[data-testid="event-editor-identity"]')).toBeNull();
@@ -341,6 +342,8 @@ describe("RPG Maker style event editor entry points", () => {
     expect(nameInput.value).toBe("촌장 할아버지");
 
     nameInput.value = "촌장";
+    nameInput.dispatchEvent(new Event("input"));
+    expect(nameInput.title).toBe("촌장");
     nameInput.dispatchEvent(new Event("change"));
 
     const saved = store.getCurrent().maps[project.startMapId].events[0];
@@ -517,7 +520,9 @@ describe("RPG Maker style event editor entry points", () => {
     // name 필드가 없던 시절 저작물: 페이지 이름을 빌려 표시하고, 헤더가 그 사실을 말한다.
     expect(modal?.querySelector('[data-testid="event-editor-identity"]')?.textContent).toBe("표시 이름: 단골 창구 (페이지 이름에서)");
     // 좌표 앞에 맵 이름 — 어느 맵의 (77, 17) 인지 헤더가 말한다(2026-09-03 제안서 §6).
-    expect(modal?.querySelector('[data-testid="event-editor-map-name"]')?.textContent).toBe(project.maps[project.startMapId]!.name);
+    const mapName = modal?.querySelector<HTMLElement>('[data-testid="event-editor-map-name"]');
+    expect(mapName?.textContent).toBe(project.maps[project.startMapId]!.name);
+    expect(mapName?.title).toBe(project.maps[project.startMapId]!.name);
     expect(modal?.querySelector('[data-testid="event-editor-coords"]')?.textContent).toBe("77, 17");
     // NPC 가 연결되지 않은 이벤트는 「NPC 없음」 칩을 그리지 않는다.
     expect(modal?.querySelector('[data-testid="event-editor-npc-chip"]')).toBeNull();

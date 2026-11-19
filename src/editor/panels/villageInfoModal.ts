@@ -47,17 +47,11 @@ export function openLegacyVillageInfoModal(): void {
             children: [
               status,
               el("button", {
-                class: "database-footer-button",
+                class: "database-footer-button primary",
                 text: "온라인 저장",
                 attrs: { type: "button" },
                 dataset: { testid: "village-info-save-remote" },
                 on: { click: () => void flushVillageInfo(status) },
-              }),
-              el("button", {
-                class: "database-footer-button primary",
-                text: "닫기",
-                attrs: { type: "button" },
-                on: { click: () => close() },
               }),
             ],
           }),

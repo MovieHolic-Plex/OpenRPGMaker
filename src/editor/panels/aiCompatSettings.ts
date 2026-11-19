@@ -37,12 +37,12 @@ import { el } from "@/util/dom";
 /** 연결 카드에서 모델을 꽂을 수 있는 역할 칸. 설정 모달의 역할 표와 같은 다섯이다. */
 export type AiCompatRoleSlot = "ultrabrain" | "deep" | "vision" | "writer" | "build";
 
-export const AI_COMPAT_ROLE_SLOTS: ReadonlyArray<{ readonly id: AiCompatRoleSlot; readonly label: string; readonly eng: string }> = [
-  { id: "ultrabrain", label: "계획 · 최종 판단", eng: "Ultrabrain" },
-  { id: "deep", label: "실행 · 검증", eng: "Deep" },
-  { id: "vision", label: "시각 관찰", eng: "Vision" },
-  { id: "writer", label: "작문", eng: "Writer" },
-  { id: "build", label: "시공", eng: "Build" },
+export const AI_COMPAT_ROLE_SLOTS: ReadonlyArray<{ readonly id: AiCompatRoleSlot; readonly label: string }> = [
+  { id: "ultrabrain", label: "계획 · 최종 판단" },
+  { id: "deep", label: "실행 · 검증" },
+  { id: "vision", label: "시각 관찰" },
+  { id: "writer", label: "작문" },
+  { id: "build", label: "시공" },
 ];
 
 export interface AiCompatSettingsOptions {
@@ -180,7 +180,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       ...(endpoint.supportsImages && endpoint.imageBlindModels?.length ? [`그림 못 봄 ${endpoint.imageBlindModels.join(", ")}`] : []),
     ];
     const deleting = confirmingDelete === endpoint.id;
-    const testButton = el("button", { class: "ai-assistant-action", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: `ai-compat-card-test-${endpoint.id}` } }) as HTMLButtonElement;
+    const needsTest = !endpoint.lastTest?.ok;
+    const testButton = el("button", { class: needsTest ? "ai-assistant-action is-primary" : "ai-assistant-action", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: `ai-compat-card-test-${endpoint.id}` } }) as HTMLButtonElement;
     const cardResult = el("div", { class: "ai-compat-result", attrs: { role: "status", hidden: "" }, dataset: { testid: `ai-compat-card-result-${endpoint.id}` } });
     testButton.addEventListener("click", () => {
       testButton.disabled = true;
@@ -195,7 +196,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     const isMain = options.getMainProvider() === endpoint.id;
     const hasModel = Boolean(endpoint.defaultModel || endpoint.models[0]);
     const mainButton = el("button", {
-      class: `ai-assistant-action${isMain ? " is-primary" : ""}`,
+      class: !needsTest && !isMain && hasModel ? "ai-assistant-action is-primary" : "ai-assistant-action",
       text: isMain ? "기본 연결로 사용 중" : "기본 연결로 사용",
       attrs: { type: "button", "aria-pressed": String(isMain), ...(isMain || !hasModel ? { disabled: "" } : {}), title: hasModel ? "이 엔드포인트를 기본 연결로 씁니다. 직접 지정하지 않은 역할이 이 서버의 모델로 바뀌어요." : "먼저 연결 시험으로 모델을 받거나 모델 ID 를 입력해 저장하세요." },
       dataset: { testid: `ai-compat-main-${endpoint.id}` },
@@ -263,7 +264,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       const modelListId = `ai-compat-models-${endpoint.id.replace(/[^a-z0-9-]/gu, "-")}-${slot.id}`;
       const input = el("input", {
         class: "ai-config-input",
-        attrs: { type: "text", list: modelListId, placeholder: "모델 ID", spellcheck: "false", autocomplete: "off", "aria-label": `${slot.eng} 모델 ID` },
+        attrs: { type: "text", list: modelListId, placeholder: "모델 ID", spellcheck: "false", autocomplete: "off", "aria-label": `${slot.label} 모델 ID` },
         value: usingThis ? current.model : (endpoint.defaultModel || endpoint.models[0] || ""),
         dataset: { testid: `ai-compat-role-model-${endpoint.id}-${slot.id}` },
       }) as HTMLInputElement;
@@ -309,7 +310,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         class: "ai-compat-role-row",
         dataset: { testid: `ai-compat-role-${endpoint.id}-${slot.id}` },
         children: [
-          el("span", { class: "ai-compat-role-name", children: [el("strong", { text: slot.label }), el("small", { text: slot.eng })] }),
+          el("strong", { class: "ai-compat-role-name", text: slot.label }),
           el("span", { class: "ai-compat-role-model", children: [input, datalist] }),
           apply,
           el("span", { class: "ai-compat-role-extra", children: [note, ...(imageWarning ? [imageWarning] : [])] }),
@@ -427,7 +428,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     };
     allowModels.addEventListener("input", refreshPatternNote);
     blockModels.addEventListener("input", refreshPatternNote);
-    const images = toggle("이미지 입력 (Vision)", "이 서버의 모델이 이미지를 받을 때 켜세요. 시각 관찰 역할에 필요해요.", "ai-compat-images", source?.supportsImages ?? false);
+    const images = toggle("이미지 입력", "이 서버의 모델이 이미지를 받을 때 켜세요. 시각 관찰 역할에 필요해요.", "ai-compat-images", source?.supportsImages ?? false);
     const insecure = toggle("그래도 사용 (암호화 없는 http)", "공개 인터넷 주소에 http 로 연결합니다. 키와 대화가 그대로 전송돼요.", "ai-compat-insecure", source?.allowInsecurePublic ?? false);
     insecure.row.hidden = true;
     const maxTokens = el("input", { class: "ai-config-input", attrs: { type: "number", min: "256", max: "1000000" }, value: source?.maxOutputTokens ?? OPENAI_COMPAT_DEFAULT_MAX_OUTPUT_TOKENS, dataset: { testid: "ai-compat-maxtokens" } }) as HTMLInputElement;
@@ -476,7 +477,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       const check = text ? checkOpenAiCompatBaseUrl(text) : null;
       insecure.row.hidden = !(check?.insecurePublic);
       const lines = !check ? [] : check.ok ? [...check.warnings] : [check.error ?? ""];
-      urlNote.textContent = lines.join(" ");
+      setParts(urlNote, lines, " ");
       urlNote.dataset.tone = !check ? "idle" : !check.ok ? "bad" : check.insecurePublic ? "warn" : "idle";
     };
     // 프리셋이 아는 «그림을 실제로 보는 모델» — 폼에 칸은 없고 저장할 때 같이 보낸다(연결 시험의 그림 시험이 나머지를 채운다).

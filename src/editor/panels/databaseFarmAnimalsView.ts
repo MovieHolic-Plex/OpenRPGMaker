@@ -714,7 +714,11 @@ function bindLiveNames(root: HTMLElement, targets: Map<string, HTMLElement[]>): 
     const nodes = targets.get(key);
     if (!nodes || nodes.length === 0) continue;
     input.addEventListener("input", () => {
-      for (const node of nodes) node.textContent = input.value || "(이름 없음)";
+      const name = input.value || "(이름 없음)";
+      for (const node of nodes) {
+        node.textContent = name;
+        if (node.classList.contains("db-list-name")) node.title = name;
+      }
     });
   }
 }

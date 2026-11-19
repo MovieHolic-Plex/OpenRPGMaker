@@ -385,7 +385,7 @@ function visibleCheckbox(cell: BattleAnimationCell, onToggle: (visible: boolean)
 function timingTablePanel(context: AnimationEditorContext): HTMLElement {
   const panel = panelWrap("SE 및 플래시 타이밍", "db-animation-timing-table", "db-animation-timing-panel");
   if (context.timings.length === 0) {
-    panel.append(el("div", { class: "empty-hint", text: "SE, 플래시, 화면 흔들림 타이밍이 없습니다." }));
+    panel.append(el("div", { class: "empty-hint", text: "효과음, 플래시, 화면 흔들림 타이밍이 없습니다." }));
   } else {
     const table = dataTable(["번호", "사운드", "플래시", "흔들림", "삭제"]);
     const body = table.querySelector("tbody");

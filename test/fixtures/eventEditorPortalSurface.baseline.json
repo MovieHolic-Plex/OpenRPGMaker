@@ -5023,7 +5023,6 @@
  "transferPlayer": {
   "testids": [
    "event-transfer-player-dialog",
-   "transfer-player-cancel",
    "transfer-player-direction-down",
    "transfer-player-direction-left",
    "transfer-player-direction-retain",
@@ -5062,7 +5061,7 @@
    "wide"
   ],
   "tags": {
-   "button": 6,
+   "button": 5,
    "canvas": 1,
    "div": 13,
    "fieldset": 2,
@@ -5077,7 +5076,6 @@
   },
   "tagByTestid": {
    "event-transfer-player-dialog": "div",
-   "transfer-player-cancel": "button",
    "transfer-player-direction-down": "input",
    "transfer-player-direction-left": "input",
    "transfer-player-direction-retain": "input",
@@ -5096,7 +5094,6 @@
    "event-transfer-player-dialog>button#1": "button[button]{}",
    "event-transfer-player-dialog>button#2": "button[button]{}",
    "event-transfer-player-dialog>button#3": "button[button]{}",
-   "transfer-player-cancel": "button[button]{}",
    "transfer-player-direction-down": "input[radio]{checked}",
    "transfer-player-direction-left": "input[radio]{}",
    "transfer-player-direction-retain": "input[radio]{}",
@@ -5122,8 +5119,8 @@
    "페이드",
    "흰색"
   ],
-  "testidCount": 14,
-  "controlCount": 14,
+  "testidCount": 13,
+  "controlCount": 13,
   "classCount": 22,
   "rootCount": 1
  },
@@ -5326,7 +5323,7 @@
    "unused"
   ],
   "tags": {
-   "button": 40,
+   "button": 39,
    "div": 13,
    "h3": 1,
    "input": 1,
@@ -5419,8 +5416,7 @@
    "event-record-picker-row-8": "button[button]{}",
    "event-record-picker-row-9": "button[button]{}",
    "event-record-picker-search": "input[search]{}",
-   "event-record-picker>button#0": "button[button]{}",
-   "event-record-picker>button#1": "button[button]{}"
+   "event-record-picker>button#0": "button[button]{}"
   },
   "selectOptions": {},
   "labels": [
@@ -5435,7 +5431,7 @@
    "이름 없음 이름 바꾸기"
   ],
   "testidCount": 42,
-  "controlCount": 41,
+  "controlCount": 40,
   "classCount": 33,
   "rootCount": 1
  },
@@ -5477,7 +5473,7 @@
    "unused"
   ],
   "tags": {
-   "button": 6,
+   "button": 5,
    "div": 10,
    "h3": 1,
    "img": 3,
@@ -5501,8 +5497,7 @@
    "event-record-picker-row-2": "button[button]{}",
    "event-record-picker-row-3": "button[button]{}",
    "event-record-picker-search": "input[search]{}",
-   "event-record-picker>button#0": "button[button]{}",
-   "event-record-picker>button#1": "button[button]{}"
+   "event-record-picker>button#0": "button[button]{}"
   },
   "selectOptions": {},
   "labels": [
@@ -5516,7 +5511,7 @@
    "회복약"
   ],
   "testidCount": 6,
-  "controlCount": 7,
+  "controlCount": 6,
   "classCount": 26,
   "rootCount": 1
  },
@@ -6081,7 +6076,6 @@
  "eventEditorHelp": {
   "testids": [
    "event-editor-help-close",
-   "event-editor-help-dismiss",
    "event-editor-help-modal",
    "event-editor-help-nav",
    "event-editor-help-nav-ai-assist",
@@ -6112,12 +6106,10 @@
    "help-modal-backdrop",
    "help-modal-body",
    "help-modal-bullets",
-   "help-modal-button",
    "help-modal-close",
    "help-modal-figure",
    "help-modal-figure-caption",
    "help-modal-figure-img",
-   "help-modal-footer",
    "help-modal-key",
    "help-modal-layout",
    "help-modal-nav",
@@ -6135,14 +6127,13 @@
    "help-modal-window"
   ],
   "tags": {
-   "button": 13,
+   "button": 12,
    "dd": 10,
    "div": 7,
    "dl": 2,
    "dt": 10,
    "figcaption": 6,
    "figure": 6,
-   "footer": 1,
    "h2": 1,
    "h3": 11,
    "h4": 2,
@@ -6158,7 +6149,6 @@
   },
   "tagByTestid": {
    "event-editor-help-close": "button",
-   "event-editor-help-dismiss": "button",
    "event-editor-help-modal": "div",
    "event-editor-help-nav": "nav",
    "event-editor-help-nav-ai-assist": "button",
@@ -6186,7 +6176,6 @@
   },
   "controls": {
    "event-editor-help-close": "button[button]{}",
-   "event-editor-help-dismiss": "button[button]{}",
    "event-editor-help-nav-ai-assist": "button[button]{}",
    "event-editor-help-nav-battle-shop": "button[button]{}",
    "event-editor-help-nav-branches": "button[button]{}",
@@ -6218,9 +6207,9 @@
    "📓개요",
    "🖼그래픽과 외형"
   ],
-  "testidCount": 26,
-  "controlCount": 13,
-  "classCount": 25,
+  "testidCount": 25,
+  "controlCount": 12,
+  "classCount": 23,
   "rootCount": 1
  },
  "characterIdAutocomplete": {

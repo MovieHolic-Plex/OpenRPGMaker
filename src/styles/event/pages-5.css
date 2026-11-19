@@ -127,6 +127,12 @@
 }
 
 .event-editor-modal-window .event-editor-modal-header .event-name {
-  flex: 0 1 240px;
+  field-sizing: content;
+  flex: 0 1 auto;
   min-width: 80px;
+  text-overflow: ellipsis;
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-name:focus {
+  text-overflow: clip;
 }

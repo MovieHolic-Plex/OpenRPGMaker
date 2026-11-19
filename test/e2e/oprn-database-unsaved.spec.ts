@@ -9,7 +9,7 @@ test("database 닫기 keeps store edits; Escape and the backdrop still ask", asy
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
 
   await page.getByTestId("toolbar-database").click();
@@ -35,21 +35,15 @@ test("database 닫기 keeps store edits; Escape and the backdrop still ask", asy
 
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-field-name").fill("Kept Prompt Actor");
-  await page.getByTestId("database-footer-ok").click();
-  await expect(page.getByTestId("database-modal")).toBeHidden();
-  expect((await exportedProject(page)).database.actors.some((record) => record.name === "Kept Prompt Actor")).toBe(true);
-
-  await page.getByTestId("toolbar-database").click();
-  await page.getByTestId("db-field-name").fill("Kept Header Actor");
   await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
-  expect((await exportedProject(page)).database.actors.some((record) => record.name === "Kept Header Actor")).toBe(true);
+  expect((await exportedProject(page)).database.actors.some((record) => record.name === "Kept Prompt Actor")).toBe(true);
 
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-field-name").fill("Applied Prompt Actor");
   await page.getByTestId("database-footer-apply").click();
   await expect(page.getByTestId("db-footer-status")).toContainText("적용했습니다");
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   expect((await exportedProject(page)).database.actors.some((record) => record.name === "Applied Prompt Actor")).toBe(true);
 });

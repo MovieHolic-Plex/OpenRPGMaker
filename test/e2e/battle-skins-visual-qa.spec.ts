@@ -45,7 +45,7 @@ async function applySkinViaDatabase(page: Page, skin: string): Promise<void> {
   await switchDatabaseTab(page, BATTLE_SCREEN_TAB);
   await page.getByTestId(skin === "pokemon" ? "db-battle-method-monster" : "db-battle-method-side").click();
   await applyDatabaseChanges(page);
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
 }
 

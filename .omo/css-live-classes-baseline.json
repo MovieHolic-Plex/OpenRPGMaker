@@ -1,9 +1,9 @@
 {
- "ranAt": "2026-10-28T16:41:57.402Z",
+ "ranAt": "2026-11-19T11:59:55.813Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
-   "added": 525
+   "added": 546
   },
   {
    "path": "test/fixtures/eventEditorM2Surface.baseline.json",
@@ -11,7 +11,7 @@
   },
   {
    "path": "test/fixtures/eventEditorShellSurface.baseline.json",
-   "added": 300
+   "added": 302
   },
   {
    "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
@@ -19,7 +19,7 @@
   },
   {
    "path": "test/fixtures/eventEditorPortalSurface.baseline.json",
-   "added": 207
+   "added": 205
   },
   {
    "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
@@ -107,6 +107,7 @@
     "background:var(--accent-soft)",
     "background:var(--accent-subtle, #eef0fd)",
     "background:var(--accent-subtle, var(--control-bg))",
+    "background:var(--bg-active)",
     "background:var(--bg-panel-2)",
     "background:var(--bg-raised)",
     "background:var(--control-bg)",
@@ -114,9 +115,8 @@
     "background:var(--db-light-accent-hover)",
     "background:var(--db-studio-accent)",
     "background:var(--db-studio-accent-soft)",
-    "background:var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08))",
-    "background:var(--db-studio-accent-soft, rgba(74, 87, 214, 0.12))",
-    "background:var(--db-studio-accent-soft, rgba(74,87,214,.08))",
+    "background:var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 12%, transparent))",
+    "background:var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent))",
     "background:var(--db-studio-surface)",
     "background:var(--db-studio-surface, var(--db-studio-surface))",
     "background:var(--db-studio-text-1)",
@@ -129,7 +129,6 @@
     "background:var(--mk-surface)",
     "background:var(--runtime-window-selected-bg)",
     "background:var(--success-muted)",
-    "background:var(--surface-1,#fff)",
     "background:var(--surface-panel)",
     "background:var(--surface-selected)",
     "border-bottom-color:var(--accent)",
@@ -166,8 +165,7 @@
     "border-color:var(--db-studio-accent)",
     "border-color:var(--db-studio-accent, var(--db-studio-accent))",
     "border-color:var(--db-studio-accent-border)",
-    "border-color:var(--db-studio-accent-border, rgba(74, 87, 214, 0.16))",
-    "border-color:var(--db-studio-accent-border, rgba(74,87,214,.16))",
+    "border-color:var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent))",
     "border-color:var(--db-studio-border-strong)",
     "border-color:var(--editor-blue)",
     "border-color:var(--editor-line)",
@@ -183,8 +181,8 @@
     "box-shadow:0 0 0 1px var(--accent), inset 0 0 0 1px var(--bg-raised)",
     "box-shadow:0 0 0 1px var(--accent), inset 0 1px 0 rgba(42, 37, 33, 0.12)",
     "box-shadow:0 0 0 1px var(--accent-muted) inset, 0 8px 22px rgba(42, 37, 33, 0.08)",
-    "box-shadow:0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2))",
-    "box-shadow:0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2)), 0 1px 2px rgba(20, 26, 45, 0.06)",
+    "box-shadow:0 0 0 1px var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent))",
+    "box-shadow:0 0 0 1px var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent)), 0 1px 2px rgba(20, 26, 45, 0.06)",
     "box-shadow:0 0 0 1px var(--bg-surface), inset 0 0 0 4px var(--bg-surface)",
     "box-shadow:0 0 0 1px var(--border-default)",
     "box-shadow:0 0 0 1px var(--db-studio-accent)",
@@ -270,6 +268,7 @@
     "margin:0",
     "min-height:0",
     "min-height:30px",
+    "opacity:0",
     "opacity:0.25",
     "opacity:0.62",
     "opacity:1",
@@ -364,6 +363,7 @@
     "src/styles/event/subdialogs/dialogs-5.css",
     "src/styles/event/subdialogs/dialogs.css",
     "src/styles/map/build-palette.css",
+    "src/styles/map/canvas-tool-pill.css",
     "src/styles/map/core.part-2.css",
     "src/styles/map/from-shell-figma-editor-02-menus-toolbar-tools.css",
     "src/styles/map/from-shell-figma-editor-03-layout-left-palette.css",
@@ -374,6 +374,7 @@
     "src/styles/map/harness-suggestion.css",
     "src/styles/map/harness-suggestion.part-2.css",
     "src/styles/map/harness-suggestion.part-3.css",
+    "src/styles/map/left-column.css",
     "src/styles/map/left-sidebar.modern.part-4.css",
     "src/styles/map/left-sidebar.modern.part-5.css",
     "src/styles/map/left-sidebar.modern.part-6.css",
@@ -2200,6 +2201,7 @@
     "box-shadow",
     "box-sizing",
     "color",
+    "column-gap",
     "content",
     "cursor",
     "display",
@@ -2211,6 +2213,7 @@
     "font-weight",
     "gap",
     "grid-area",
+    "grid-template-columns",
     "height",
     "justify-content",
     "justify-self",
@@ -2229,6 +2232,7 @@
     "padding-inline",
     "position",
     "right",
+    "row-gap",
     "text-align",
     "text-overflow",
     "text-shadow",
@@ -2356,6 +2360,7 @@
     "color:var(--text-inverse, #fff)",
     "color:var(--text-inverse, var(--text-1))",
     "color:var(--text-primary)",
+    "column-gap:6px",
     "content:\"\"",
     "content:\"✓ \"",
     "cursor:default",
@@ -2407,6 +2412,7 @@
     "gap:7px",
     "gap:var(--space-1)",
     "grid-area:1 / 2",
+    "grid-template-columns:auto minmax(0, 1fr) auto",
     "height:100%",
     "height:22px",
     "height:23px",
@@ -2429,6 +2435,7 @@
     "margin-left:12px",
     "margin-left:auto",
     "max-width:100%",
+    "max-width:280px",
     "min-height:0",
     "min-height:20px",
     "min-height:23px",
@@ -2488,6 +2495,7 @@
     "padding:1px 6px",
     "padding:2px 4px",
     "padding:3px 6px",
+    "padding:4px 8px",
     "padding:5px 12px",
     "padding:6px 10px",
     "padding:6px 12px",
@@ -2497,8 +2505,10 @@
     "position:absolute",
     "position:relative",
     "right:12px",
+    "row-gap:2px",
     "text-align:center",
     "text-align:left",
+    "text-align:start",
     "text-overflow:ellipsis",
     "text-shadow:1px 1px 0 var(--event-rm-light)",
     "text-shadow:1px 1px 0 var(--shadow-pop)",
@@ -2516,6 +2526,7 @@
     "width:32px",
     "width:34px",
     "width:auto",
+    "width:max-content",
     "writing-mode:horizontal-tb"
    ],
    "sheets": [
@@ -3312,11 +3323,17 @@
     "outline",
     "outline-offset",
     "padding",
-    "transition"
+    "position",
+    "right",
+    "top",
+    "transition",
+    "z-index"
    ],
    "decls": [
     "background:var(--bg-panel-2, unset)",
+    "background:var(--bg-raised)",
     "border-radius:2px",
+    "border-radius:4px",
     "border:1px solid var(--border)",
     "color:var(--text, unset)",
     "cursor:pointer",
@@ -3329,11 +3346,16 @@
     "outline-offset:2px",
     "outline:2px solid var(--accent)",
     "padding:1px 5px",
+    "position:absolute",
+    "right:6px",
+    "top:6px",
     "transition:none",
-    "transition:opacity 0.12s"
+    "transition:opacity 0.12s",
+    "z-index:1"
    ],
    "sheets": [
     "src/styles/event/command-list-2.css",
+    "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css"
    ]
   },
@@ -3341,13 +3363,19 @@
    "props": [
     "color",
     "font-size",
-    "min-height"
+    "min-height",
+    "opacity",
+    "transition"
    ],
    "decls": [
     "color:var(--accent)",
     "color:var(--text-3)",
     "font-size:11.5px",
-    "min-height:22px"
+    "min-height:22px",
+    "opacity:0",
+    "opacity:0.7",
+    "opacity:1",
+    "transition:opacity 0.12s"
    ],
    "sheets": [
     "src/styles/event/command-list-4.css"
@@ -3441,6 +3469,7 @@
     "line-height:1",
     "line-height:16px",
     "min-width:0",
+    "min-width:16px",
     "min-width:50px",
     "min-width:52px",
     "opacity:0.9",
@@ -3450,6 +3479,7 @@
     "text-align:center",
     "white-space:nowrap",
     "width:13px",
+    "width:16px",
     "width:auto"
    ],
    "sheets": [
@@ -3706,6 +3736,7 @@
     "color:var(--text-2)",
     "color:var(--text-3)",
     "content:attr(data-label)",
+    "content:none",
     "cursor:default",
     "cursor:grab",
     "cursor:grabbing",
@@ -3753,6 +3784,7 @@
     "min-height:34px",
     "min-width:0",
     "min-width:14px",
+    "min-width:16px",
     "min-width:18px",
     "min-width:22px",
     "min-width:3px",
@@ -3788,6 +3820,7 @@
     "white-space:normal",
     "white-space:nowrap",
     "width:100%",
+    "width:16px",
     "width:3px",
     "width:auto"
    ],
@@ -3854,13 +3887,15 @@
     "place-items",
     "pointer-events",
     "position",
+    "right",
     "text-align",
     "text-overflow",
     "top",
     "transition",
     "user-select",
     "white-space",
-    "width"
+    "width",
+    "z-index"
    ],
    "decls": [
     "--blk-cat:var(--cmdcat-actor)",
@@ -3908,6 +3943,7 @@
     "background:color-mix(in srgb, var(--blk-cat) 12%, var(--bg-raised))",
     "background:color-mix(in srgb, var(--blk-cat) 5%, var(--bg-surface))",
     "background:color-mix(in srgb, var(--blk-cat) 9%, var(--bg-raised))",
+    "background:color-mix(in srgb, var(--border-default) 80%, transparent)",
     "background:transparent",
     "background:var(--accent-muted)",
     "background:var(--accent-muted, color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 14%, var(--bg-raised, var(--mk-raised, #fffdf8))))",
@@ -3916,6 +3952,7 @@
     "background:var(--bg-hover)",
     "background:var(--bg-overlay)",
     "background:var(--bg-panel-2, unset)",
+    "background:var(--bg-raised)",
     "border-color:color-mix(in srgb, var(--blk-cat) 38%, var(--border-default))",
     "border-color:transparent",
     "border-color:var(--accent-border)",
@@ -3956,6 +3993,7 @@
     "color:var(--text-muted, unset)",
     "content:\"\"",
     "content:attr(data-label)",
+    "content:none",
     "cursor:grab",
     "cursor:grabbing",
     "cursor:not-allowed",
@@ -4013,6 +4051,7 @@
     "min-height:34px",
     "min-width:0",
     "min-width:14px",
+    "min-width:16px",
     "min-width:18px",
     "min-width:22px",
     "min-width:3px",
@@ -4043,20 +4082,25 @@
     "pointer-events:none",
     "position:absolute",
     "position:relative",
+    "right:6px",
     "text-align:center",
     "text-align:right",
     "text-overflow:ellipsis",
     "top:-1px",
     "top:2px",
+    "top:6px",
     "transition:border-color 0.12s, background 0.12s, box-shadow 0.12s",
     "transition:none",
     "transition:opacity 0.12s",
     "user-select:none",
     "white-space:normal",
     "white-space:nowrap",
+    "width:16px",
+    "width:1px",
     "width:2px",
     "width:3px",
-    "width:auto"
+    "width:auto",
+    "z-index:1"
    ],
    "sheets": [
     "src/styles/event/command-forms/forms-6.css",
@@ -4171,6 +4215,7 @@
     "margin",
     "min-height",
     "min-width",
+    "opacity",
     "overflow",
     "padding",
     "padding-left",
@@ -4178,6 +4223,7 @@
     "text-align",
     "text-overflow",
     "top",
+    "transition",
     "white-space",
     "width"
    ],
@@ -4239,6 +4285,9 @@
     "min-height:22px",
     "min-height:24px",
     "min-width:0",
+    "opacity:0",
+    "opacity:0.7",
+    "opacity:1",
     "overflow:hidden",
     "overflow:visible",
     "padding-left:calc(8px + var(--cmd-depth, 0) * var(--blk-indent))",
@@ -4251,6 +4300,7 @@
     "text-align:left",
     "text-overflow:ellipsis",
     "top:8px",
+    "transition:opacity 0.12s",
     "white-space:nowrap",
     "width:100%",
     "width:2px"
@@ -4339,13 +4389,15 @@
     "place-items",
     "pointer-events",
     "position",
+    "right",
     "scrollbar-width",
     "text-align",
     "text-overflow",
     "top",
     "transition",
     "white-space",
-    "width"
+    "width",
+    "z-index"
    ],
    "decls": [
     "--balanced-inspector-width:324px",
@@ -4357,9 +4409,9 @@
     "--cmd-indent-base:0px",
     "--cmd-indent-step:18px",
     "--cmd-rail-choices:color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default))",
-    "--cmd-rail-fork:color-mix(in srgb, var(--accent, #4a57d6) 70%, var(--border-default))",
+    "--cmd-rail-fork:color-mix(in srgb, var(--accent, #1f6fc5) 70%, var(--border-default))",
     "--cmd-rail-shop:color-mix(in srgb, var(--success, #18764f) 70%, var(--border-default))",
-    "--cmd-rail:color-mix(in srgb, var(--accent, #4a57d6) 55%, var(--border-default))",
+    "--cmd-rail:color-mix(in srgb, var(--accent, #1f6fc5) 55%, var(--border-default))",
     "--event-editor-settings-track:288px",
     "--event-inspector-reserved-track:0px",
     "--event-inspector-reserved-track:var(--balanced-inspector-width)",
@@ -4385,6 +4437,7 @@
     "background:color-mix(in srgb, var(--blk-cat) 12%, var(--bg-raised))",
     "background:color-mix(in srgb, var(--blk-cat) 5%, var(--bg-surface))",
     "background:color-mix(in srgb, var(--blk-cat) 9%, var(--bg-raised))",
+    "background:color-mix(in srgb, var(--border-default) 80%, transparent)",
     "background:transparent",
     "background:var(--accent)",
     "background:var(--accent-muted)",
@@ -4437,6 +4490,7 @@
     "content:\"\"",
     "content:\"명령을 선택하면 여기에서 편집합니다\"",
     "content:attr(data-label)",
+    "content:none",
     "counter-reset:command-row",
     "cursor:grab",
     "cursor:grabbing",
@@ -4529,12 +4583,14 @@
     "min-height:auto",
     "min-width:0",
     "min-width:14px",
+    "min-width:16px",
     "min-width:18px",
     "min-width:22px",
     "min-width:3px",
     "min-width:50px",
     "min-width:52px",
     "opacity:0",
+    "opacity:0.7",
     "opacity:1",
     "outline-color:var(--mk-accent)",
     "outline-offset:1px",
@@ -4566,22 +4622,27 @@
     "pointer-events:none",
     "position:absolute",
     "position:relative",
+    "right:6px",
     "scrollbar-width:thin",
     "text-align:center",
     "text-align:right",
     "text-overflow:ellipsis",
     "top:-1px",
     "top:2px",
+    "top:6px",
     "top:8px",
     "transition:border-color 0.12s, background 0.12s, box-shadow 0.12s",
     "transition:none",
     "transition:opacity 0.12s",
     "white-space:normal",
     "white-space:nowrap",
+    "width:16px",
+    "width:1px",
     "width:2px",
     "width:3px",
     "width:auto",
-    "width:min(100%, 620px)"
+    "width:min(100%, 620px)",
+    "z-index:1"
    ],
    "sheets": [
     "src/styles/database/desktop-record-shell/05-dense-workbenches.css",
@@ -5401,6 +5462,7 @@
    "decls": [
     "background:rgba(220, 38, 38, 0.08)",
     "background:transparent !important",
+    "background:var(--bg-surface)",
     "background:var(--danger-muted)",
     "background:var(--db-studio-surface)",
     "background:var(--db2-danger-tint)",
@@ -5428,6 +5490,7 @@
     "src/styles/database/studio-theme.css",
     "src/styles/database/studio-v2.css",
     "src/styles/database/tilesets-autotile.css",
+    "src/styles/editor/agent-mode.css",
     "src/styles/event/command-forms/forms-6.css",
     "src/styles/event/subdialogs/dialogs-5.css",
     "src/styles/map/core.part-1.css",
@@ -5683,6 +5746,7 @@
     "max-width:100%",
     "max-width:180px",
     "max-width:248px",
+    "max-width:340px",
     "max-width:480px",
     "min-height:0",
     "min-height:28px",
@@ -5888,7 +5952,8 @@
     "white-space",
     "width",
     "word-break",
-    "z-index"
+    "z-index",
+    "zoom"
    ],
    "decls": [
     "align-items:center",
@@ -6106,6 +6171,7 @@
     "max-width:720px",
     "max-width:88%",
     "max-width:96%",
+    "max-width:calc(100% - 2 * (var(--runtime-dialogue-bust-width) + 26px))",
     "max-width:calc(100% - 20px)",
     "max-width:calc(150px + 22px)",
     "max-width:min(280px, calc(100vw - 16px))",
@@ -6113,17 +6179,20 @@
     "min-height:0",
     "min-height:100%",
     "min-height:120px",
+    "min-height:44px",
     "min-height:72px",
     "min-height:max(100%, 63px)",
     "min-width:168px",
     "min-width:min(168px, 60%)",
     "opacity:0",
     "opacity:0.25",
+    "opacity:0.35",
     "opacity:0.6",
     "opacity:0.66",
     "opacity:0.7",
     "opacity:0.8",
     "opacity:0.92",
+    "opacity:0.999",
     "opacity:1",
     "overflow-wrap:anywhere",
     "overflow-y:auto",
@@ -6205,7 +6274,8 @@
     "z-index:2",
     "z-index:3",
     "z-index:4",
-    "z-index:5"
+    "z-index:5",
+    "zoom:var(--hires-ui-zoom, 1)"
    ],
    "sheets": [
     "src/styles/dialogue.css",
@@ -6354,6 +6424,7 @@
     "margin-bottom",
     "margin-inline",
     "margin-left",
+    "margin-top",
     "max-height",
     "max-width",
     "min-height",
@@ -6385,7 +6456,8 @@
     "visibility",
     "width",
     "word-break",
-    "z-index"
+    "z-index",
+    "zoom"
    ],
    "decls": [
     "--dlg-accent:rgb(110, 255, 150)",
@@ -6544,7 +6616,7 @@
     "--runtime-dialogue-font-size:12px",
     "--runtime-dialogue-font-size:calc(10px * var(--dialogue-ui-scale, 1) * var(--vn-font-scale, 1))",
     "--runtime-dialogue-font-size:calc(10px * var(--dialogue-ui-scale, 1))",
-    "--runtime-dialogue-font-size:calc(var(--runtime-font-size-9) * var(--vn-font-scale, 1))",
+    "--runtime-dialogue-font-size:calc(var(--runtime-font-size-9) * var(--dialogue-ui-scale, 1) * var(--vn-font-scale, 1))",
     "--runtime-dialogue-font-size:var(--runtime-font-size-9)",
     "--runtime-dialogue-font:var(--font-mono)",
     "--runtime-dialogue-font:var(--font-pixel-small)",
@@ -6809,6 +6881,7 @@
     "margin-bottom:calc(3px * var(--dialogue-ui-scale, 1))",
     "margin-inline:auto",
     "margin-left:auto",
+    "margin-top:1px",
     "margin:0",
     "max-height:100%",
     "max-height:160px",
@@ -6823,6 +6896,7 @@
     "max-height:var(--dock-height) !important",
     "max-height:var(--play-visible-height)",
     "max-width:88%",
+    "max-width:calc(100% - 2 * (var(--runtime-dialogue-bust-width) + 26px))",
     "max-width:calc(100% - 20px)",
     "max-width:calc(150px + 22px)",
     "max-width:none",
@@ -6831,6 +6905,7 @@
     "min-height:100%",
     "min-height:12px",
     "min-height:28px",
+    "min-height:44px",
     "min-height:63px",
     "min-height:9px",
     "min-height:calc(14px * var(--dialogue-ui-scale, 1))",
@@ -6839,9 +6914,12 @@
     "min-height:var(--runtime-dialogue-panel-height)",
     "min-width:min(168px, 60%)",
     "opacity:0",
+    "opacity:0.35",
+    "opacity:0.62",
     "opacity:0.66",
     "opacity:0.8",
     "opacity:0.92",
+    "opacity:0.999",
     "opacity:1",
     "outline:0",
     "overflow-wrap:anywhere",
@@ -6960,7 +7038,8 @@
     "z-index:2",
     "z-index:3",
     "z-index:39",
-    "z-index:5"
+    "z-index:5",
+    "zoom:var(--hires-ui-zoom, 1)"
    ],
    "sheets": [
     "src/styles/dialogue.css",
@@ -7462,7 +7541,7 @@
     "padding"
    ],
    "decls": [
-    "background:var(--accent-muted, rgba(74, 87, 214, 0.16))",
+    "background:var(--accent-muted, color-mix(in srgb, var(--accent) 16%, transparent))",
     "background:var(--bg-inset, #efe9dc)",
     "border-color:var(--border-default, rgba(42,37,33,.20))",
     "border-radius:999px",
@@ -7813,6 +7892,7 @@
     "aspect-ratio:auto",
     "background:linear-gradient(180deg, var(--bg-surface), var(--bg-surface))",
     "background:repeating-linear-gradient(0deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px), repeating-linear-gradient(90deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px), linear-gradient(180deg, #3d4655, #2f3642)",
+    "background:repeating-linear-gradient(0deg, transparent 0 15px, var(--border-subtle) 15px 16px), repeating-linear-gradient(90deg, transparent 0 15px, var(--border-subtle) 15px 16px), var(--bg-inset)",
     "border-radius:6px",
     "container-type:inline-size",
     "display:block",
@@ -7868,6 +7948,7 @@
     "aspect-ratio:320 / 92",
     "aspect-ratio:4 / 3",
     "background:repeating-linear-gradient(0deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px), repeating-linear-gradient(90deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px), linear-gradient(180deg, #3d4655, #2f3642)",
+    "background:repeating-linear-gradient(0deg, transparent 0 15px, var(--border-subtle) 15px 16px), repeating-linear-gradient(90deg, transparent 0 15px, var(--border-subtle) 15px 16px), var(--bg-inset)",
     "border-radius:6px",
     "container-type:inline-size",
     "display:block",
@@ -8101,6 +8182,7 @@
     "padding",
     "place-items",
     "text-align",
+    "text-shadow",
     "width"
    ],
    "decls": [
@@ -8120,6 +8202,7 @@
     "border:0",
     "box-shadow:none",
     "box-sizing:border-box",
+    "color:color-mix(in srgb, var(--runtime-dialogue-text) 35%, transparent)",
     "color:transparent",
     "color:var(--db-light-text-2)",
     "color:var(--editor-text-muted)",
@@ -8159,6 +8242,7 @@
     "padding:var(--space-6)",
     "place-items:center",
     "text-align:center",
+    "text-shadow:none",
     "width:24px",
     "width:32px"
    ],
@@ -9675,6 +9759,89 @@
     "src/styles/event/command-forms/forms.css"
    ]
   },
+  "event-command-choice-condition-head": {
+   "props": [
+    "align-items",
+    "display",
+    "gap"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "gap:6px"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms.css"
+   ]
+  },
+  "event-command-choice-condition-slot": {
+   "props": [
+    "display",
+    "gap",
+    "margin",
+    "min-width"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:4px",
+    "margin:0",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms.css"
+   ]
+  },
+  "event-command-choice-condition-toggle": {
+   "props": [
+    "font-weight",
+    "white-space"
+   ],
+   "decls": [
+    "font-weight:700",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms.css"
+   ]
+  },
+  "event-command-choice-conditions": {
+   "props": [
+    "border-left",
+    "display",
+    "gap",
+    "margin-left",
+    "min-width",
+    "padding"
+   ],
+   "decls": [
+    "border-left:2px solid var(--event-rm-mid)",
+    "display:grid",
+    "gap:6px",
+    "margin-left:28px",
+    "min-width:0",
+    "padding:2px 0 4px 8px"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms.css"
+   ]
+  },
+  "event-command-choice-item": {
+   "props": [
+    "display",
+    "gap",
+    "grid-template-columns",
+    "min-width"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:4px",
+    "grid-template-columns:28px minmax(0, 1fr) auto auto",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms.css"
+   ]
+  },
   "event-command-choice-remove": {
    "props": [
     "flex",
@@ -9706,6 +9873,7 @@
     "font:700 12px/16px \"malgun gothic\", sans-serif",
     "gap:8px",
     "grid-template-columns:28px minmax(0, 1fr) auto",
+    "grid-template-columns:28px minmax(0, 1fr) auto auto",
     "min-width:0",
     "min-width:8ch",
     "width:100%"
@@ -12401,6 +12569,7 @@
     "border-radius",
     "display",
     "gap",
+    "grid-template-columns",
     "min-width",
     "padding"
    ],
@@ -12410,6 +12579,7 @@
     "border:1px solid var(--border-subtle, rgba(42,37,33,.16))",
     "display:grid",
     "gap:12px",
+    "grid-template-columns:minmax(0, 1fr)",
     "min-width:0",
     "padding:12px"
    ],
@@ -12981,6 +13151,41 @@
     "src/styles/event/command-forms/forms-3.css",
     "src/styles/event/command-forms/forms-6.css",
     "src/styles/event/command-list-4.css"
+   ]
+  },
+  "event-command-text-speaker-row": {
+   "props": [
+    "align-items",
+    "display",
+    "flex",
+    "gap",
+    "min-width",
+    "width"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "flex:1",
+    "flex:none",
+    "gap:6px",
+    "min-width:0",
+    "width:auto"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms-3.css"
+   ]
+  },
+  "event-command-text-staging-field": {
+   "props": [
+    "max-width",
+    "min-width"
+   ],
+   "decls": [
+    "max-width:100%",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms-3.css"
    ]
   },
   "event-command-text-tag": {
@@ -14306,9 +14511,9 @@
     "--cmd-indent-base:0px",
     "--cmd-indent-step:18px",
     "--cmd-rail-choices:color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default))",
-    "--cmd-rail-fork:color-mix(in srgb, var(--accent, #4a57d6) 70%, var(--border-default))",
+    "--cmd-rail-fork:color-mix(in srgb, var(--accent, #1f6fc5) 70%, var(--border-default))",
     "--cmd-rail-shop:color-mix(in srgb, var(--success, #18764f) 70%, var(--border-default))",
-    "--cmd-rail:color-mix(in srgb, var(--accent, #4a57d6) 55%, var(--border-default))",
+    "--cmd-rail:color-mix(in srgb, var(--accent, #1f6fc5) 55%, var(--border-default))",
     "--event-editor-settings-track:288px",
     "--event-inspector-reserved-track:0px",
     "--event-inspector-reserved-track:var(--balanced-inspector-width)",
@@ -14785,7 +14990,8 @@
    ],
    "sheets": [
     "src/styles/event/command-forms/forms-4.css",
-    "src/styles/event/settings-rail.css"
+    "src/styles/event/settings-rail.css",
+    "src/styles/event/subdialogs/dialogs-4.css"
    ]
   },
   "event-editor": {
@@ -14930,8 +15136,8 @@
     "--mk-accent:var(--accent)",
     "--mk-cat-flow:#d95926",
     "--mk-inset:var(--bg-inset)",
-    "--mk-line-soft:rgba(42,37,33,.06)",
-    "--mk-line:rgba(42,37,33,.12)",
+    "--mk-line-soft:var(--border-subtle)",
+    "--mk-line:var(--border-default)",
     "--mk-mono:var(--font-mono)",
     "--mk-radius:6px",
     "--mk-raised:var(--bg-raised)",
@@ -14965,14 +15171,13 @@
     "background:#d7b07a",
     "background:color-mix(in srgb, var(--accent) 30%, var(--border-default))",
     "background:color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised))",
+    "background:color-mix(in srgb, var(--border-default) 80%, transparent)",
     "background:color-mix(in srgb, var(--mk-accent) 5%, var(--mk-raised))",
     "background:color-mix(in srgb, var(--mk-raised) 70%, var(--mk-surface))",
     "background:color-mix(in srgb, var(--mk-surface) 96%, transparent)",
     "background:currentcolor",
     "background:linear-gradient(#2a3a58, #1b2438)",
-    "background:linear-gradient(180deg, var(--mk-raised), var(--mk-surface))",
-    "background:linear-gradient(90deg, transparent 0 4px, var(--mk-accent, var(--accent)) 4px 8px, transparent 8px), var(--mk-accent-wash, var(--accent-muted))",
-    "background:linear-gradient(90deg, transparent 0 5px, var(--mk-line, var(--border-default)) 5px 7px, transparent 7px), var(--mk-surface, var(--bg-surface))",
+    "background:linear-gradient(var(--mk-line, var(--border-default)), var(--mk-line, var(--border-default))) center / 1px 100% no-repeat, var(--mk-surface, var(--bg-surface))",
     "background:none",
     "background:repeating-linear-gradient( to bottom, var(--mk-t3, var(--text-2)) 0 3px, transparent 3px 6px )",
     "background:transparent",
@@ -14993,6 +15198,7 @@
     "background:var(--lg-cat, var(--mk-t2))",
     "background:var(--mk-accent)",
     "background:var(--mk-accent-wash)",
+    "background:var(--mk-accent-wash, var(--accent-muted))",
     "background:var(--mk-inset)",
     "background:var(--mk-line)",
     "background:var(--mk-raised)",
@@ -15077,6 +15283,7 @@
     "box-shadow:inset -2px 0 0 0 var(--accent)",
     "box-shadow:inset 0 0 0 2px var(--mk-accent, var(--accent))",
     "box-shadow:inset 2px 0 0 0 var(--accent)",
+    "box-shadow:inset 6px 0 0 -5px var(--mk-accent, var(--accent)), inset -6px 0 0 -5px var(--mk-accent, var(--accent))",
     "box-shadow:none",
     "box-sizing:border-box",
     "clear:both",
@@ -15105,6 +15312,7 @@
     "color:var(--warning)",
     "column-gap:10px",
     "column-gap:4px",
+    "column-gap:6px",
     "column-gap:8px",
     "container-name:evt-settings-rail",
     "container-type:inline-size",
@@ -15281,7 +15489,6 @@
     "grid-template-rows:auto minmax(0, 1fr) auto",
     "grid-template-rows:minmax(0, 1fr)",
     "grid-template-rows:minmax(32px, auto) auto",
-    "grid-template-rows:var(--hierarchy-pages-height) minmax(0, 1fr)",
     "height:0",
     "height:100%",
     "height:10px",
@@ -15396,6 +15603,7 @@
     "max-width:116px",
     "max-width:22ch",
     "max-width:240px",
+    "max-width:280px",
     "max-width:320px",
     "max-width:84px",
     "max-width:92px",
@@ -15444,6 +15652,7 @@
     "opacity:0.45",
     "opacity:0.55",
     "opacity:0.58",
+    "opacity:0.7",
     "opacity:1",
     "order:0",
     "order:1",
@@ -15468,6 +15677,7 @@
     "overflow:clip",
     "overflow:hidden",
     "overflow:visible",
+    "padding-block:2px",
     "padding-block:4px",
     "padding-block:6px",
     "padding-inline:5px",
@@ -15564,6 +15774,7 @@
     "right:12px",
     "right:24px",
     "right:3px",
+    "right:6px",
     "right:auto",
     "row-gap:0",
     "row-gap:1px",
@@ -15584,6 +15795,7 @@
     "top:12px",
     "top:30px",
     "top:3px",
+    "top:6px",
     "top:8px",
     "top:9px",
     "top:calc(100% + 5px)",
@@ -15608,6 +15820,7 @@
     "width:100%",
     "width:10ch",
     "width:16px",
+    "width:1px",
     "width:200px",
     "width:20px",
     "width:224px",
@@ -15625,6 +15838,7 @@
     "width:6px",
     "width:7px",
     "width:auto",
+    "width:max-content",
     "width:min(620px, 100%)",
     "width:min(var(--balanced-inspector-width), 62%)",
     "z-index:1",
@@ -15815,15 +16029,16 @@
     "align-self:stretch",
     "background:linear-gradient(90deg, transparent 0 3px, var(--event-modern-accent) 3px 7px, transparent 7px 10px), var(--event-modern-accent-soft)",
     "background:linear-gradient(90deg, transparent 0 4px, var(--event-modern-line) 4px 6px, transparent 6px 10px), linear-gradient(90deg, transparent 0 1px, var(--bg-surface) 1px 9px, transparent 9px)",
-    "background:linear-gradient(90deg, transparent 0 4px, var(--mk-accent, var(--accent)) 4px 8px, transparent 8px), var(--mk-accent-wash, var(--accent-muted))",
-    "background:linear-gradient(90deg, transparent 0 5px, var(--mk-line, var(--border-default)) 5px 7px, transparent 7px), var(--mk-surface, var(--bg-surface))",
     "background:linear-gradient(90deg, var(--event-rm-light) 0 1px, transparent 1px 3px, var(--accent) 3px 4px), var(--event-rm-chrome)",
+    "background:linear-gradient(var(--mk-line, var(--border-default)), var(--mk-line, var(--border-default))) center / 1px 100% no-repeat, var(--mk-surface, var(--bg-surface))",
     "background:radial-gradient(circle, var(--event-modern-text-soft) 0 1px, transparent 1.5px) center 42% / 4px 8px repeat-y",
     "background:repeating-linear-gradient( to bottom, var(--mk-t3, var(--text-2)) 0 3px, transparent 3px 6px )",
+    "background:var(--mk-accent-wash, var(--accent-muted))",
     "border-radius:0",
     "border-radius:5px",
     "border-radius:999px",
     "box-shadow:inset 0 0 0 2px var(--mk-accent, var(--accent))",
+    "box-shadow:inset 6px 0 0 -5px var(--mk-accent, var(--accent)), inset -6px 0 0 -5px var(--mk-accent, var(--accent))",
     "content:\"\"",
     "cursor:col-resize",
     "display:block",
@@ -17070,6 +17285,7 @@
     "overflow",
     "overflow-x",
     "padding",
+    "padding-block",
     "padding-inline",
     "padding-left",
     "position",
@@ -17094,10 +17310,12 @@
     "gap:3px",
     "gap:4px",
     "gap:6px",
+    "height:auto",
     "height:var(--hierarchy-pages-height)",
     "justify-content:flex-end",
     "margin-left:10px",
     "margin-left:2px",
+    "max-height:none",
     "max-height:var(--hierarchy-pages-height)",
     "max-width:100%",
     "min-height:0",
@@ -17106,6 +17324,7 @@
     "min-width:238px",
     "overflow-x:auto",
     "overflow:hidden",
+    "padding-block:2px",
     "padding-inline:6px",
     "padding-left:10px",
     "padding-left:5px",
@@ -18482,6 +18701,7 @@
     "padding-inline",
     "pointer-events",
     "position",
+    "text-transform",
     "width"
    ],
    "decls": [
@@ -18514,6 +18734,7 @@
     "padding-inline:12px",
     "pointer-events:none",
     "position:absolute",
+    "text-transform:none",
     "width:1px",
     "width:48px"
    ],
@@ -22612,6 +22833,7 @@
     "--walk-weight-width:64px",
     "align-items:center",
     "align-items:stretch",
+    "background:repeating-linear-gradient(0deg, transparent 0 15px, var(--border-subtle) 15px 16px), repeating-linear-gradient(90deg, transparent 0 15px, var(--border-subtle) 15px 16px), var(--bg-inset)",
     "background:var(--bg-surface)",
     "background:var(--event-popup-surface)",
     "border-color:var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light)",
@@ -22704,6 +22926,7 @@
    ],
    "sheets": [
     "src/styles/event/command-forms/forms-4.css",
+    "src/styles/event/previews/command-preview-4.css",
     "src/styles/event/subdialogs/dialogs-2.css",
     "src/styles/event/subdialogs/dialogs-3.css",
     "src/styles/event/subdialogs/dialogs-4.css",
@@ -22852,18 +23075,26 @@
     "border-color",
     "box-shadow",
     "color",
+    "column-gap",
     "cursor",
     "display",
     "flex",
     "font-weight",
     "gap",
+    "grid-column",
+    "grid-row",
+    "grid-template-columns",
     "height",
+    "line-height",
     "max-width",
     "min-height",
     "opacity",
     "padding",
+    "row-gap",
+    "text-align",
     "user-select",
-    "white-space"
+    "white-space",
+    "width"
    ],
    "decls": [
     "align-items:center",
@@ -22874,20 +23105,32 @@
     "box-shadow:inset -2px 0 0 0 var(--accent)",
     "box-shadow:inset 2px 0 0 0 var(--accent)",
     "color:var(--text-1)",
+    "column-gap:6px",
     "cursor:grab",
     "cursor:grabbing",
+    "display:grid",
     "display:inline-flex",
     "flex:0 0 auto",
     "font-weight:500",
     "gap:6px",
+    "grid-column:3",
+    "grid-row:1",
+    "grid-template-columns:auto minmax(0, 1fr) auto",
     "height:28px",
     "height:30px",
+    "height:auto",
+    "line-height:1.2",
     "max-width:240px",
+    "max-width:280px",
     "min-height:30px",
     "opacity:0.55",
     "padding:0 10px",
+    "padding:4px 8px",
+    "row-gap:2px",
+    "text-align:start",
     "user-select:none",
-    "white-space:nowrap"
+    "white-space:nowrap",
+    "width:max-content"
    ],
    "sheets": [
     "src/styles/event/pages-4.css",
@@ -22938,6 +23181,8 @@
    "props": [
     "color",
     "font-size",
+    "grid-column",
+    "grid-row",
     "overflow",
     "text-overflow"
    ],
@@ -22946,6 +23191,8 @@
     "color:var(--text-3)",
     "font-size:11px",
     "font-size:12px",
+    "grid-column:2 / -1",
+    "grid-row:2",
     "overflow:hidden",
     "text-overflow:ellipsis"
    ],
@@ -22955,12 +23202,31 @@
     "src/styles/event/pages-4.css"
    ]
   },
+  "evt-page-segment-number": {
+   "props": [
+    "font-variant-numeric",
+    "grid-column",
+    "grid-row"
+   ],
+   "decls": [
+    "font-variant-numeric:tabular-nums",
+    "grid-column:1",
+    "grid-row:1"
+   ],
+   "sheets": [
+    "src/styles/event/pages-4.css"
+   ]
+  },
   "evt-page-segment-title": {
    "props": [
+    "grid-column",
+    "grid-row",
     "overflow",
     "text-overflow"
    ],
    "decls": [
+    "grid-column:2",
+    "grid-row:1",
     "overflow:hidden",
     "text-overflow:ellipsis"
    ],
@@ -22972,41 +23238,58 @@
    "props": [
     "align-items",
     "box-shadow",
+    "column-gap",
     "cursor",
     "display",
     "flex",
     "gap",
+    "grid-template-columns",
     "height",
+    "line-height",
     "max-width",
     "min-width",
     "opacity",
     "overflow-x",
     "overflow-y",
+    "padding",
+    "row-gap",
     "scrollbar-width",
+    "text-align",
     "user-select",
-    "white-space"
+    "white-space",
+    "width"
    ],
    "decls": [
     "align-items:center",
     "box-shadow:inset -2px 0 0 0 var(--accent)",
     "box-shadow:inset 2px 0 0 0 var(--accent)",
+    "column-gap:6px",
     "cursor:grab",
     "cursor:grabbing",
     "display:flex",
+    "display:grid",
     "display:inline-flex",
     "flex:0 0 auto",
     "flex:1 1 auto",
     "gap:4px",
     "gap:6px",
+    "grid-template-columns:auto minmax(0, 1fr) auto",
     "height:28px",
+    "height:auto",
+    "line-height:1.2",
     "max-width:240px",
+    "max-width:280px",
     "min-width:0",
     "opacity:0.55",
     "overflow-x:auto",
     "overflow-y:hidden",
+    "padding:4px 8px",
+    "row-gap:2px",
     "scrollbar-width:thin",
+    "text-align:start",
     "user-select:none",
-    "white-space:nowrap"
+    "white-space:nowrap",
+    "width:max-content"
    ],
    "sheets": [
     "src/styles/event/narrow.css",
@@ -23706,40 +23989,6 @@
     "src/styles/shell/dialogs/help-modal.css"
    ]
   },
-  "help-modal-button": {
-   "props": [
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "box-shadow",
-    "color",
-    "cursor",
-    "font",
-    "outline",
-    "padding",
-    "transform",
-    "transition"
-   ],
-   "decls": [
-    "background:var(--control-bg, rgba(42, 37, 33, 0.05))",
-    "background:var(--control-bg-hover, rgba(42, 37, 33, 0.06))",
-    "border-color:var(--border-strong, rgba(42, 37, 33, 0.20))",
-    "border-radius:var(--radius-s, 6px)",
-    "border:1px solid var(--border-default, rgba(42, 37, 33, 0.12))",
-    "box-shadow:var(--focus-ring, 0 0 0 2px var(--accent-border))",
-    "color:var(--text-1, #2a2521)",
-    "cursor:pointer",
-    "font:600 13px/1.2 var(--font-ui, system-ui, \"malgun gothic\", sans-serif)",
-    "outline:none",
-    "padding:8px 20px",
-    "transform:translatey(1px)",
-    "transition:background var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease), transform var(--transition-fast, 120ms ease)"
-   ],
-   "sheets": [
-    "src/styles/shell/dialogs/help-modal.css"
-   ]
-  },
   "help-modal-close": {
    "props": [
     "background",
@@ -23839,29 +24088,6 @@
     "width:100%"
    ],
    "sheets": [
-    "src/styles/shell/dialogs/help-modal.css"
-   ]
-  },
-  "help-modal-footer": {
-   "props": [
-    "background",
-    "border-top",
-    "display",
-    "gap",
-    "justify-content",
-    "padding"
-   ],
-   "decls": [
-    "background:color-mix(in srgb, var(--bg-raised, #fffdf8) 86%, #000)",
-    "border-top:1px solid var(--border-subtle, rgba(42, 37, 33, 0.12))",
-    "display:flex",
-    "gap:16px",
-    "justify-content:flex-end",
-    "justify-content:space-between",
-    "padding:10px 16px"
-   ],
-   "sheets": [
-    "src/styles/editor/terrain-help.css",
     "src/styles/shell/dialogs/help-modal.css"
    ]
   },
@@ -24217,7 +24443,8 @@
     "width"
    ],
    "decls": [
-    "animation:help-modal-pop var(--transition-med, 160ms ease)",
+    "animation:help-modal-pop 120ms ease-out",
+    "animation:none",
     "background:var(--bg-raised, #fffdf8)",
     "border-radius:var(--radius-l, 14px)",
     "border:1px solid var(--border-default, rgba(42, 37, 33, 0.12))",
@@ -24895,6 +25122,7 @@
    "decls": [
     "animation:none !important",
     "animation:wq-spin 0.9s linear infinite",
+    "background:color-mix(in srgb, var(--accent) 12%, var(--bg-raised))",
     "background:color-mix(in srgb, var(--accent) 15%, var(--bg-surface))",
     "background:color-mix(in srgb, var(--db-faction-stance-color) 22%, var(--db-studio-surface))",
     "background:color-mix(in srgb, var(--editor-blue, var(--accent)) 24%, transparent)",
@@ -24902,6 +25130,7 @@
     "background:var(--accent)",
     "background:var(--accent-active)",
     "background:var(--accent-muted)",
+    "background:var(--bg-active)",
     "background:var(--bg-hover)",
     "background:var(--bg-inset)",
     "background:var(--bg-raised)",
@@ -24909,7 +25138,7 @@
     "background:var(--craft-brass)",
     "background:var(--db-studio-accent)",
     "background:var(--db-studio-accent-soft)",
-    "background:var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08))",
+    "background:var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent))",
     "background:var(--db-studio-surface)",
     "background:var(--db-studio-text-1)",
     "background:var(--growth-tint)",
@@ -24935,24 +25164,24 @@
     "border:2px solid var(--craft-ember)",
     "box-shadow:-10px 0 0 -7px var(--db-studio-accent)",
     "box-shadow:0 0 0 1px var(--border-default)",
-    "box-shadow:0 0 0 1px var(--border-strong), var(--shadow-pop)",
+    "box-shadow:0 0 0 1px var(--border-subtle), var(--shadow-pop)",
     "box-shadow:0 0 0 1px var(--db-studio-accent)",
     "box-shadow:0 0 0 2px var(--db-studio-accent-soft)",
     "box-shadow:0 0 0 3px rgb(212 162 63 / 0.3)",
+    "box-shadow:0 1px 2px color-mix(in srgb, var(--text-1) 10%, transparent)",
     "box-shadow:0 1px 2px rgb(0 0 0 / .18)",
     "box-shadow:0 1px 2px rgba(15, 23, 42, 0.08)",
     "box-shadow:inset 0 -3px 0 var(--db-faction-stance-color)",
     "box-shadow:inset 0 0 0 1.5px var(--accent)",
     "box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent)",
     "box-shadow:inset 0 0 0 1px var(--accent)",
-    "box-shadow:inset 0 0 0 1px var(--db-studio-accent-border, rgba(74, 87, 214, 0.16))",
+    "box-shadow:inset 0 0 0 1px var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent))",
     "box-shadow:inset var(--stroke-2) 0 0 var(--accent)",
     "box-shadow:none",
     "box-shadow:var(--focus-ring)",
     "box-shadow:var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.08))",
     "color:color-mix(in srgb, var(--on-accent) 80%, transparent)",
     "color:rgba(26, 20, 48, 0.72)",
-    "color:rgba(26, 20, 48, 1)",
     "color:var(--accent)",
     "color:var(--accent-active)",
     "color:var(--db-studio-accent)",
@@ -24966,6 +25195,8 @@
     "color:var(--runtime-window-text)",
     "color:var(--s-text)",
     "color:var(--shop-ink)",
+    "color:var(--shop-on-accent)",
+    "color:var(--shop-on-accent, rgba(26, 20, 48, 1))",
     "color:var(--success)",
     "color:var(--text-1)",
     "color:var(--text-1, #2a2521)",
@@ -25014,8 +25245,10 @@
     "src/styles/editor/relief-toolbar.css",
     "src/styles/event/command-forms/forms-4.css",
     "src/styles/event/command-forms/forms-5.css",
+    "src/styles/event/command-forms/forms.css",
     "src/styles/event/pages-5.css",
     "src/styles/event/subdialogs/dialogs-4.css",
+    "src/styles/map/canvas-tool-pill.css",
     "src/styles/map/inline-assist.css",
     "src/styles/map/left-sidebar.modern.part-4.css",
     "src/styles/map/left-sidebar.modern.part-8.css",
@@ -25316,9 +25549,11 @@
     "border-style:dashed",
     "border:1px dashed var(--border-default, #c9bfae)",
     "color:var(--danger)",
+    "color:var(--db-studio-danger)",
     "color:var(--db-studio-on-accent, #fff)",
     "color:var(--db-studio-warning-strong)",
     "color:var(--text-2)",
+    "color:var(--warning)",
     "display:grid",
     "display:inline",
     "font-size:11px",
@@ -25334,8 +25569,10 @@
    "sheets": [
     "src/styles/components/full-portrait-stage.css",
     "src/styles/database/modern/enemies.css",
+    "src/styles/database/overview-dashboard.css",
     "src/styles/database/skill-item-visuals.css",
     "src/styles/database/spatial-shell.css",
+    "src/styles/editor/agent-mode.css",
     "src/styles/event/pages.css",
     "src/styles/event/previews/command-preview-3.css",
     "src/styles/runtime/pixelWindows.css"
@@ -25383,6 +25620,7 @@
     "max-height:min(56vh, 520px)",
     "overflow:auto",
     "padding:0 var(--space-2) var(--space-2)",
+    "transform:rotate(-135deg) translatey(-1px)",
     "transform:rotate(0deg)",
     "transform:rotate(180deg)",
     "width:var(--ai-work-card-open-width)"
@@ -25392,6 +25630,7 @@
     "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css",
     "src/styles/database/tabs-b-assistant-panel/11-autonomous-run-surface.css",
     "src/styles/database/tabs-b-assistant-panel/24-assistant-work-strip.css",
+    "src/styles/database/tabs-b-assistant-panel/35-ai-live-status.css",
     "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css",
     "src/styles/event/command-forms/forms-3.css",
     "src/styles/event/pages-4.part-2.css",
@@ -25445,13 +25684,13 @@
     "background:color-mix(in srgb, var(--accent) 22%, transparent)",
     "background:color-mix(in srgb, var(--accent) 22%, var(--bg-surface))",
     "background:color-mix(in srgb, var(--accent-muted) 35%, var(--bg-surface))",
-    "background:color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent)",
+    "background:color-mix(in srgb, var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent)) 90%, transparent)",
     "background:color-mix(in srgb, var(--map-location-color, var(--accent)) 22%, transparent)",
     "background:transparent",
     "background:var(--accent)",
     "background:var(--accent-muted)",
     "background:var(--db-studio-accent-soft)",
-    "background:var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08))",
+    "background:var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent))",
     "background:var(--db-studio-surface)",
     "background:var(--db-studio-surface, #fff)",
     "background:var(--growth-tint)",
@@ -25472,7 +25711,7 @@
     "box-shadow:0 0 0 var(--stroke-2) var(--bg-overlay), 0 0 0 4px var(--accent)",
     "box-shadow:inset 0 0 0 1px var(--accent)",
     "box-shadow:inset 0 0 0 1px var(--db-studio-accent)",
-    "box-shadow:inset 0 0 0 1px var(--db-studio-accent-border, rgba(74, 87, 214, 0.16))",
+    "box-shadow:inset 0 0 0 1px var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent))",
     "box-shadow:none",
     "box-shadow:var(--shadow-pop)",
     "color:color-mix(in srgb, var(--text-1) 90%, var(--accent))",
@@ -27571,7 +27810,7 @@
     "background:color-mix(in srgb, var(--accent, #6c79f2) 72%, transparent)",
     "background:color-mix(in srgb, var(--db-studio-accent) 16%, transparent)",
     "background:var(--accent-muted)",
-    "background:var(--accent-muted, rgba(74, 87, 214, 0.16))",
+    "background:var(--accent-muted, color-mix(in srgb, var(--accent) 16%, transparent))",
     "background:var(--event-modern-success, #18764f)",
     "background:var(--ok)",
     "background:var(--success-muted)",
@@ -28726,6 +28965,49 @@
     "src/styles/event/command-forms/forms-2.css"
    ]
   },
+  "play-audio-mix-hint": {
+   "props": [
+    "color",
+    "display",
+    "font",
+    "margin"
+   ],
+   "decls": [
+    "color:var(--text-dim, var(--text-2))",
+    "display:none",
+    "font:600 11px/1.45 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
+    "margin:0"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms-2.css"
+   ]
+  },
+  "play-audio-mix-row": {
+   "props": [
+    "color",
+    "display",
+    "font",
+    "gap",
+    "grid-template-columns",
+    "min-height",
+    "min-width",
+    "width"
+   ],
+   "decls": [
+    "color:var(--text-2, var(--text-1))",
+    "display:grid",
+    "font:600 12px/1.3 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
+    "gap:4px",
+    "gap:8px",
+    "grid-template-columns:repeat(2, minmax(0, 1fr))",
+    "min-height:34px",
+    "min-width:0",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms-2.css"
+   ]
+  },
   "play-audio-resource-select": {
    "props": [
     "min-height",
@@ -28790,6 +29072,7 @@
     "bottom",
     "box-sizing",
     "height",
+    "justify-content",
     "left",
     "max-height",
     "min-height",
@@ -28815,8 +29098,10 @@
     "height:auto !important",
     "height:min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height))",
     "height:var(--runtime-dialogue-panel-height)",
+    "justify-content:flex-end",
     "left:0",
     "left:var(--dock-left) !important",
+    "max-height:100%",
     "max-height:calc(100% - 8px)",
     "max-height:calc(var(--play-visible-height) - 8px)",
     "max-height:none",
@@ -28838,6 +29123,7 @@
     "top:14px",
     "top:48px",
     "top:auto",
+    "top:calc(100% + 4px)",
     "top:var(--dock-top) !important",
     "transform-origin:0 0",
     "transform:none",
@@ -28943,7 +29229,6 @@
    "decls": [
     "background:color-mix(in srgb, var(--event-modern-accent) 18%, var(--bg-raised))",
     "background:linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%)",
-    "background:transparent !important",
     "background:var(--accent)",
     "background:var(--accent-active)",
     "background:var(--accent-hover)",
@@ -28954,7 +29239,6 @@
     "background:var(--db-studio-accent, #5b6cf0)",
     "background:var(--db-studio-accent-hover)",
     "background:var(--db-studio-inset)",
-    "background:var(--db-studio-inset) !important",
     "background:var(--db-studio-surface)",
     "background:var(--mk-accent)",
     "background:var(--runtime-window-selected-bg)",
@@ -28972,7 +29256,6 @@
     "border-color:var(--db-studio-accent, #5b6cf0)",
     "border-color:var(--db-studio-accent-hover)",
     "border-color:var(--db-studio-border-default)",
-    "border-color:var(--db-studio-border-default) !important",
     "border-color:var(--mk-accent)",
     "border-color:var(--runtime-window-focus)",
     "border-radius:6px",
@@ -28981,9 +29264,7 @@
     "box-shadow:var(--shadow-pop)",
     "color:#fff",
     "color:var(--db-studio-on-accent)",
-    "color:var(--db-studio-text-1) !important",
     "color:var(--db-studio-text-2)",
-    "color:var(--db-studio-text-2) !important",
     "color:var(--event-modern-accent)",
     "color:var(--mk-accent-ink)",
     "color:var(--on-accent)",
@@ -28999,7 +29280,6 @@
     "filter:brightness(1.07)",
     "filter:brightness(1.08)",
     "font-weight:500",
-    "font-weight:500 !important",
     "font-weight:600",
     "font-weight:650",
     "font-weight:700",
@@ -29019,13 +29299,13 @@
     "src/styles/database/desktop-record-shell/17-database-footer-final.css",
     "src/styles/database/enemies.part-3.css",
     "src/styles/database/light-theme.css",
-    "src/styles/database/studio-theme.css",
     "src/styles/database/studio-v2.css",
     "src/styles/database/tabs-a.part-2.css",
     "src/styles/database/tabs-b-title-screen.css",
     "src/styles/database/tilesets.css",
     "src/styles/database/tilesets.part-2.css",
     "src/styles/database/title-workbench.css",
+    "src/styles/editor/agent-mode.css",
     "src/styles/event/command-forms/forms-6.css",
     "src/styles/event/command-list-2.css",
     "src/styles/event/command-list-3.css",
@@ -30263,6 +30543,7 @@
     "background:rgba(124, 156, 255, 0.08)",
     "background:rgba(126, 58, 39, 0.93)",
     "background:rgba(190, 55, 50, 0.18)",
+    "background:rgba(255, 255, 255, 0.16)",
     "background:rgba(65, 92, 182, 0.9)",
     "background:transparent",
     "background:var(--accent)",
@@ -30292,6 +30573,7 @@
     "border-color:var(--runtime-dialogue-glass-border)",
     "border-color:var(--runtime-glass-hairline-strong)",
     "border-color:var(--runtime-window-focus)",
+    "border-color:var(--runtime-window-highlight)",
     "border-color:var(--shop-accent)",
     "border-color:var(--status-edge-amber)",
     "border-color:var(--vn-accent)",
@@ -30315,6 +30597,7 @@
     "border:6px solid transparent",
     "bottom:auto",
     "box-shadow:0 0 0 1px var(--accent, #6aa0ff) inset",
+    "box-shadow:0 0 0 1px var(--shop-accent), 0 0 14px var(--shop-accent-soft)",
     "box-shadow:0 0 0 2px var(--accent-subtle, #eef0fd)",
     "box-shadow:0 0 1.5cqw rgb(255 214 130 / 90%)",
     "box-shadow:0 0 5px rgb(255 214 130 / 90%)",
@@ -30326,6 +30609,7 @@
     "box-shadow:inset 0 0 0 2px var(--accent-primary)",
     "box-shadow:inset 0 0 0 var(--shop-line-width) var(--shop-accent)",
     "box-shadow:inset 0 0 0 var(--shop-line-width) var(--shop-line-strong)",
+    "box-shadow:inset 2px 0 0 rgb(255, 230, 140)",
     "box-shadow:inset 2px 0 0 var(--status-edge-amber)",
     "box-shadow:inset 3px 0 #b95350",
     "box-shadow:inset 3px 0 0 var(--runtime-window-focus)",
@@ -30342,12 +30626,14 @@
     "color:#fff8e6",
     "color:#ffffff",
     "color:rgb(255, 230, 0)",
+    "color:rgb(255, 255, 255)",
     "color:rgba(255, 245, 221, 1)",
     "color:var(--accent)",
     "color:var(--blk-cat)",
     "color:var(--dlg-accent)",
     "color:var(--oprn-status-highlight, #ffd75a)",
     "color:var(--px-ink)",
+    "color:var(--px-loss)",
     "color:var(--runtime-dialogue-glass-accent)",
     "color:var(--runtime-window-text)",
     "color:var(--shop-ink)",
@@ -30423,6 +30709,7 @@
     "top:var(--shop-space-2)",
     "transform:none",
     "transform:rotate(45deg)",
+    "transform:translatex(2px)",
     "transform:translatey(-50%)",
     "width:0",
     "width:1.25cqw",
@@ -30461,11 +30748,13 @@
     "src/styles/runtime/nameEntry.css",
     "src/styles/runtime/pixelWindows.css",
     "src/styles/runtime/playSurface.css",
+    "src/styles/runtime/schedule.css",
     "src/styles/runtime/shop.css",
     "src/styles/runtime/statusMenuEdgeDock.css",
     "src/styles/runtime/statusMenuLegacySkins.css",
     "src/styles/runtime/statusMenuSkins.css",
     "src/styles/runtime/title.css",
+    "src/styles/runtime/windowSkinSurfaces.css",
     "src/styles/shell/dialogs/audio-test-dialog.css",
     "src/styles/vnLook.css"
    ]
@@ -32956,6 +33245,8 @@
     "background",
     "border-radius",
     "display",
+    "grid-column",
+    "grid-row",
     "height",
     "width"
    ],
@@ -32966,11 +33257,14 @@
     "background:var(--px-xp)",
     "border-radius:50%",
     "display:inline-block",
+    "grid-column:3",
+    "grid-row:1",
     "height:6px",
     "width:6px"
    ],
    "sheets": [
     "src/styles/database/tabs-b-status-menu-main.css",
+    "src/styles/event/pages-4.css",
     "src/styles/event/subdialogs/dialogs-5.css",
     "src/styles/runtime/pixelWindows.css",
     "src/styles/runtime/statusMenuSkins.css"
@@ -33460,7 +33754,6 @@
   "event-command-picker-alternate-route",
   "event-command-portrait-bottom-notice",
   "event-command-switch-form",
-  "event-command-text-staging-field",
   "event-command-text-style-label",
   "event-command-text-voice-field",
   "event-command-text-voice-name",
@@ -33489,9 +33782,9 @@
   "event-page-flow-body",
   "event-page-move-route-frequency",
   "event-page-move-route-help-panel",
+  "event-page-pixel-fx",
   "event-record-picker-add",
   "event-trigger-body",
-  "evt-page-segment-number",
   "face-mode-chip",
   "gold",
   "inn-not-enough-branch-controls",
@@ -33513,6 +33806,8 @@
   "page3-movie-stage-host",
   "page3-movie-surface",
   "page3-movie-video",
+  "pixel-fx-page-current",
+  "pixel-fx-pick-button",
   "play-audio-badge",
   "play-audio-label",
   "relationship",
@@ -33522,6 +33817,18 @@
   "schema-field-hint",
   "schema-operand",
   "schema-present-options",
+  "script-api-group",
+  "script-api-list",
+  "script-api-reference",
+  "script-card-header",
+  "script-card-panel",
+  "script-card-status",
+  "script-card-tabs",
+  "script-card-unwrap",
+  "script-command-form",
+  "script-compile-status",
+  "script-diagnostics",
+  "script-editor-source",
   "shop-editor-rows",
   "shop-editor-stock",
   "storage-chest-allowed-types",

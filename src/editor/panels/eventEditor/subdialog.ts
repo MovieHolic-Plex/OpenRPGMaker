@@ -1,6 +1,7 @@
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
+import { modalCloseButton } from "@/editor/ui/modal";
 import { installEventEditorCustomSelects } from "./customSelect";
 
 type EventSubdialogOptions = {
@@ -105,12 +106,7 @@ function renderHeader(options: EventSubdialogOptions, close: () => void): HTMLEl
   if (options.subtitle) copy.append(el("p", { text: options.subtitle }));
   header.append(
     copy,
-    el("button", {
-      class: "btn event-subdialog-close",
-      children: [renderEditorIcon("close")],
-      attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
-      on: { click: close },
-    })
+    modalCloseButton("btn event-subdialog-close", close, { icon: renderEditorIcon("close") }),
   );
   return header;
 }

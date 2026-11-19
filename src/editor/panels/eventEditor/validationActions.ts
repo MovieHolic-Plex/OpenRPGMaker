@@ -6,7 +6,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 export function renderEventValidationActions(close: () => void): HTMLElement {
-  const format = el("select", { attrs: { "aria-label": "진단 복사 형식" }, dataset: { testid: "event-validation-format" }, children: [
+  const format = el("select", { class: "event-validation-format", attrs: { "aria-label": "진단 복사 형식" }, dataset: { testid: "event-validation-format" }, children: [
     el("option", { attrs: { value: "markdown" }, text: "Markdown" }),
     el("option", { attrs: { value: "json" }, text: "JSON" }),
   ] });
@@ -40,5 +40,9 @@ export function renderEventValidationActions(close: () => void): HTMLElement {
       }
       toast("진단을 미전송 초안에 추가했습니다. 지시를 더 적고 직접 전송하세요.", "info");
     } } });
-  return el("div", { class: "event-draft-validation-head", children: [format, copy, ask] });
+  return el("div", { class: "event-draft-validation-actions", children: [
+    el("label", { children: [el("span", { text: "복사 형식" }), format] }),
+    copy,
+    ask,
+  ] });
 }

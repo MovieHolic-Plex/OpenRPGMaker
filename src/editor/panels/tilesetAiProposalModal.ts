@@ -895,7 +895,6 @@ function renderActions(
   return el("div", {
     class: "tileset-ai-modal-actions",
     children: [
-      el("button", { class: "tileset-db-small-button", text: "닫기", attrs: { type: "button" }, on: { click: model.onClose } }),
       el("button", {
         class: "tileset-db-small-button",
         text: "선택대로 초안",

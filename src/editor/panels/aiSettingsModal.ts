@@ -59,6 +59,14 @@ import { saveEngineChoice } from "@/start/settings/localAgents";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
+const ROLE_TABLE_COPY = {
+  ultrabrain: { label: "계획 · 최종 판단", desc: "작업 계획·팀 지휘·맵 검수 최종 판단" },
+  vision: { label: "시각 관찰", desc: "맵 이미지의 배치·색감·경계·겹침 관찰" },
+  writer: { label: "작문", desc: "이야기·세계관·NPC 대사·퀘스트 문장" },
+  deep: { label: "실행 · 검증", desc: "복잡한 편집·도구 실행·수정·검증" },
+  build: { label: "시공", desc: "타일·맵·장소 짓기와 게임 전체 짓기(비우면 실행 모델)" },
+} as const;
+
 export type AiSettingsFocus = "first" | "apiKey";
 
 /** 패널이 소유하는 컨트롤을 설정 모달의 한 절로 싣는다(예: 대기 화면 3분기 — 제안서 D6). */
@@ -309,9 +317,9 @@ export function renderAiSettingsForm(options: {
   };
   refreshPixelModels(initialPixel.follows ? PIXEL_FOLLOW : pixelKey(initialPixel.model.provider, initialPixel.model.model));
   pixelEffort.value = initialPixel.model.thinkingLevel;
-  const model = modelField("Writer 모델", modelForRole(config, "writer").model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
+  const model = modelField("작문 모델", modelForRole(config, "writer").model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
-    "Deep 모델",
+    "실행 모델",
     modelForRole(config, "deep").model,
     "ai-config-lite-model",
     "ai-config-lite-model-preset",
@@ -322,31 +330,31 @@ export function renderAiSettingsForm(options: {
   const brainConfig = configForUltrabrain(config);
   const brainProvider = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-provider" },
-    attrs: { "aria-label": "Ultrabrain 제공자" },
+    attrs: { "aria-label": "계획 모델 제공자" },
   }) as HTMLSelectElement;
   fillProviderOptions(brainProvider, brainConfig.providerId!);
   brainProvider.value = brainConfig.providerId!;
-  const brainModel = modelField("Ultrabrain 모델", brainConfig.model,
+  const brainModel = modelField("계획 모델", brainConfig.model,
     "ai-config-ultrabrain-model", "ai-config-ultrabrain-model-preset", authMode, DEFAULT_ULTRABRAIN_MODEL, brainProvider.value);
   const brainEffort = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-reasoning" },
-    attrs: { "aria-label": "Ultrabrain 추론" },
+    attrs: { "aria-label": "계획 모델 추론 강도" },
     children: ["low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
   }) as HTMLSelectElement;
   brainEffort.value = brainConfig.reasoningEffort!;
   const specialistControls = (["vision", "writer", "deep", "build"] as const).map(role => {
     const selected = modelForRole(config, role);
     const provider = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-provider` },
-      attrs: { "aria-label": `${role} 제공자` },
+      attrs: { "aria-label": `${ROLE_TABLE_COPY[role].label} 제공자` },
     }) as HTMLSelectElement;
     fillProviderOptions(provider, selected.provider);
     provider.value = selected.provider;
     const field = role === "writer" ? model : role === "deep" ? liteModel
       : role === "build" ? modelField("시공 모델", selected.model, "ai-config-build-model", "ai-config-build-model-preset", authMode, selected.model, selected.provider)
-      : modelField("Vision 모델", selected.model, "ai-config-vision-model", "ai-config-vision-model-preset", authMode, selected.model, selected.provider);
+      : modelField("시각 관찰 모델", selected.model, "ai-config-vision-model", "ai-config-vision-model-preset", authMode, selected.model, selected.provider);
     field.refresh(authMode, selected.provider);
     const effort = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-reasoning` },
-      attrs: { "aria-label": `${role} 추론 강도` },
+      attrs: { "aria-label": `${ROLE_TABLE_COPY[role].label} 추론 강도` },
       children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
     }) as HTMLSelectElement;
     effort.value = selected.thinkingLevel;
@@ -408,7 +416,7 @@ export function renderAiSettingsForm(options: {
     ),
   }) as HTMLSelectElement;
   autonomySelect.value = initialAutonomyLevel;
-  const autonomyDescription = "계획만 제안할지 직접 작업할지와 작업 예산을 조정합니다. 대화 조수의 실행 단계는 이 다이얼의 추론 강도를 쓰고, 아래 역할 표에서 Deep 추론을 기본값(낮음)과 다르게 저장했으면 그 값이 이깁니다.";
+  const autonomyDescription = "계획만 제안할지 직접 작업할지와 작업 예산을 조정합니다. 역할 표에서 실행 모델의 추론 강도를 낮음 이외의 값으로 지정하면 그 값이 우선합니다.";
   // 다이얼이 덮어쓰는 파생값(추론 강도·작업 모드·플랜 게이트)을 셀렉트 아래 한 줄로 노출한다 —
   // 예전에는 세 컨트롤이 나란히 놓여 "누가 누구를 덮는지"가 보이지 않았다.
   const autonomyDerived = el("span", {
@@ -446,7 +454,7 @@ export function renderAiSettingsForm(options: {
     ],
   }) as HTMLSelectElement;
   reasoningSelect.value = config.reasoningEffort ?? "medium";
-  const reasoningDescription = "기존 영역 작업 경로의 추론 설정입니다. 대화 조수의 실행 단계는 위 다이얼(자율성)의 추론 강도를 쓰므로, 아래 역할 표에서 Deep 추론을 기본값(낮음)과 다르게 저장한 경우에만 그 값이 우선합니다.";
+  const reasoningDescription = "기존 영역 작업 경로의 추론 강도를 설정합니다. 대화 조수는 위의 일하는 방식 설정을 따르며, 역할 표에서 실행 모델의 추론 강도를 낮음 이외의 값으로 지정하면 그 값이 우선합니다.";
   const reasoningRow = settingsRow("영역 작업 추론", reasoningDescription, reasoningSelect);
   reasoningRow.setAttribute("title", reasoningDescription);
 
@@ -887,7 +895,9 @@ export function renderAiSettingsForm(options: {
     }
     // 「연결 확인」을 누른 뒤에는 결과를 같은 상태 줄(aria-live)에 시각과 함께 말한다(C-67).
     if (checkRequestedAt !== null) {
-      connectionSummaryCopy.textContent = `${connectionSummaryCopy.textContent} · ${formatEditorDate(checkRequestedAt, { hour: "2-digit", minute: "2-digit" })} 확인함`;
+      connectionSummaryCopy.append(" · ", el("span", {
+        text: `${formatEditorDate(checkRequestedAt, { hour: "2-digit", minute: "2-digit" })} 확인함`,
+      }));
     }
   };
   continueButton.addEventListener("click", () => {
@@ -1059,13 +1069,6 @@ export function renderAiSettingsForm(options: {
   }
 
   // ── 역할별 직접 지정(고급 표) ─────────────────────────────────────────────
-  const ROLE_TABLE_COPY = {
-    ultrabrain: { label: "계획 · 최종 판단", eng: "Ultrabrain", desc: "작업 계획·팀 지휘·맵 검수 최종 판단" },
-    vision: { label: "시각 관찰", eng: "Vision", desc: "맵 이미지의 배치·색감·경계·겹침 관찰" },
-    writer: { label: "작문", eng: "Writer", desc: "이야기·세계관·NPC 대사·퀘스트 문장" },
-    deep: { label: "실행 · 검증", eng: "Deep", desc: "복잡한 편집·도구 실행·수정·검증" },
-    build: { label: "시공", eng: "Build", desc: "타일·맵·장소 짓기와 게임 전체 짓기(비우면 실행 모델)" },
-  } as const;
   const roleTableRow = (
     key: keyof typeof ROLE_TABLE_COPY,
     provider: HTMLSelectElement,
@@ -1079,7 +1082,7 @@ export function renderAiSettingsForm(options: {
       children: [
         el("div", { class: "ai-role-name", children: [
           el("strong", { text: copy.label }),
-          el("small", { text: `${copy.eng} — ${copy.desc}` }),
+          el("small", { text: copy.desc }),
         ] }),
         el("div", { class: "ai-role-cell", children: [provider] }),
         el("div", { class: "ai-role-cell ai-role-model", children: [field.control, field.warning] }),
@@ -1423,9 +1426,11 @@ function modelField(
     // 시작하는데도 거부되는 ID 에 "gpt- 는 괜찮다"고 안내하는 모순이 있었다. 게다가 remedy 로
     // 제시한 "연결 방식을 API/게이트웨이로 바꾸세요" 는 이제 존재하지 않는 경로다.
     const blockReason = providerId ? openAiCompatModelBlockReason(providerId, value) : null;
-    warning.textContent = blockReason
-      ? `${blockReason} 다른 모델로 자동 대체하지 않습니다.`
-      : "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
+    if (blockReason) {
+      warning.replaceChildren(document.createTextNode(blockReason), " ", el("span", { text: "다른 모델로 자동 대체하지 않습니다." }));
+    } else {
+      warning.textContent = "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
+    }
     return false;
   };
   // 값을 바꾸는 공개 수단. input.value 직접 대입은 드롭다운 하이라이트와 경고 표시가 어긋난다.

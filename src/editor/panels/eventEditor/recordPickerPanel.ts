@@ -134,7 +134,7 @@ function renderPanel(options: {
     renderList(hosts, request, state, commit);
   });
 
-  const shell = panelShell({ close: options.close, hosts, request, state, commit });
+  const shell = panelShell({ hosts, request, state, commit });
   // 핸들러는 패널 루트에 둔다. 검색창에만 달면 행을 한 번 클릭한 뒤로는 ↑↓ 가 죽는다
   // (재렌더가 그 행을 파괴해 포커스가 body 로 떨어진다).
   shell.addEventListener("keydown", (event) => {
@@ -159,7 +159,6 @@ function renderPanel(options: {
 }
 
 function panelShell(options: {
-  readonly close: () => void;
   readonly hosts: PanelHosts;
   readonly request: RecordPickerPanelRequest;
   readonly state: PanelState;
@@ -194,12 +193,6 @@ function panelShell(options: {
 
   footerChildren.push(
     el("div", { class: "event-record-picker-footer-spacer" }),
-    el("button", {
-      class: "btn",
-      text: "닫기",
-      attrs: { type: "button" },
-      on: { click: options.close },
-    }),
     hosts.confirm,
   );
 

@@ -124,17 +124,17 @@ describe("sidebar painting workflow", () => {
       selectSidebarLayer("event");
       editorState.set({ selectedEventId: event.id });
       const unsubscribeStore = store.subscribe(() => renderTilePalette(host));
-      const list = () => find("event-list")!;
-      list().scrollTop = 64;
+      const rows = () => find("event-list")!.querySelector<HTMLElement>(".event-list-rows")!;
+      rows().scrollTop = 64;
       try {
         control("event-editor-open").click();
         const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
         expect(modal?.dataset.eventId).toBe(event.id);
-        expect(list().scrollTop).toBe(64);
+        expect(rows().scrollTop).toBe(64);
 
         modal?.querySelector<HTMLButtonElement>(`[data-testid="${closeTestId}"]`)?.click();
         expect(modal?.isConnected).toBe(false);
-        expect(list().scrollTop).toBe(64);
+        expect(rows().scrollTop).toBe(64);
       } finally {
         unsubscribeStore();
         document.querySelector<HTMLButtonElement>('[data-testid="event-editor-cancel"]')?.click();

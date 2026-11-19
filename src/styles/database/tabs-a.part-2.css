@@ -210,13 +210,13 @@
    타일·시스템 탭 버튼도 같이 각져서 픽셀이 0.292% 움직였다. `:not()` 의 특정도는
    인자 중 가장 센 것이고 `:where()` 는 0 이므로, 감싸면 목록만 늘고 특정도는 그대로다. */
 .database-modal-body .btn,
-.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(:where(.db-overview-pulse-card)) {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(:where(.db-overview-pulse-card, .ai-auth-quick-card)) {
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
 }
 
 .database-modal-body .btn:active,
-.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(:where(.db-overview-pulse-card)):active {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(:where(.db-overview-pulse-card, .ai-auth-quick-card)):active {
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 

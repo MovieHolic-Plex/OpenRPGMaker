@@ -205,6 +205,8 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     const topbar = render();
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
+    expect(document.querySelector(".app-modal-overlay")).not.toBeNull();
+    expect(mocks.openConceptFeedOverlay).not.toHaveBeenCalled();
     await vi.waitFor(() => expect(mocks.openConceptFeedOverlay).toHaveBeenCalledWith("menu"));
     expect(mocks.createProjectFolderWithSeed).not.toHaveBeenCalled();
     expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();

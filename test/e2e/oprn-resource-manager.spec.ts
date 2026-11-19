@@ -23,7 +23,7 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await expect(page.getByTestId("resource-command-panel")).toContainText("삭제");
   await expect(page.getByTestId("resource-import-format")).toContainText("WebP·GIF (PNG 첫 프레임으로 자동 변환)");
   const modal = page.getByTestId("resource-modal");
-  await expect(modal.getByRole("button", { name: "닫기", exact: true })).toBeVisible();
+  await expect(modal.getByRole("button", { name: "리소스 관리자 닫기", exact: true })).toBeVisible();
   await expect(modal.getByRole("button", { name: "도움말", exact: true })).toBeVisible();
   await expect.poll(async () => modal.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("resource-manager-classic-layout.png"), fullPage: true });

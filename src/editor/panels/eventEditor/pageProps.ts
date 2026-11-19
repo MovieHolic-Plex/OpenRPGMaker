@@ -332,7 +332,7 @@ export function renderClassicPageTabStrip(
         el("span", { class: "evt-page-segment-title", text: (page.name ?? "").trim() || `페이지 ${index + 1}` }),
         el("span", {
           class: "evt-page-segment-cond",
-          text: pageTabConditionText(page),
+          children: pageTabConditionLabels(page).map((text) => el("span", { text })),
           dataset: { testid: `evt-page-cond-${index + 1}` },
         }),
         ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
@@ -468,20 +468,27 @@ function focusRenderedPageTab(pageId: string): void {
   for (const tab of document.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]")) {
     if (tab.dataset.pageId !== pageId) continue;
     tab.focus({ preventScroll: true });
-    try {
-      tab.scrollIntoView({ block: "nearest", inline: "nearest" });
-    } catch {
-      // Test DOMs may not implement scrollIntoView.
+    const strip = tab.parentElement;
+    if (strip) {
+      const bounds = strip.getBoundingClientRect();
+      const rect = tab.getBoundingClientRect();
+      if (rect.left < bounds.left || rect.width > bounds.width) {
+        strip.scrollLeft += rect.left - bounds.left;
+      } else if (rect.right > bounds.right) {
+        strip.scrollLeft += rect.right - bounds.right;
+      }
     }
     return;
   }
 }
 
-function pageTabConditionText(page: EventPage): string {
+function pageTabConditionLabels(page: EventPage): string[] {
   const conditions = page.conditions ?? [];
-  if (conditions.length === 0) return "조건 없음";
-  const first = pageConditionCompactSummary(conditions[0]!);
-  return conditions.length === 1 ? first : `${first} 외 ${conditions.length - 1}`;
+  const first = conditions[0];
+  if (!first) return ["조건 없음"];
+  const labels = [pageConditionCompactSummary(first)];
+  if (conditions.length > 1) labels.push(" · ", `외 ${conditions.length - 1}개`);
+  return labels;
 }
 
 /** 저장된 이름이 자동 이름(`페이지 N`)이면 그 이름, 아니면 빈 문자열. */
@@ -506,7 +513,7 @@ function pageTabTooltip(page: EventPage, index: number, canDrag: boolean): strin
 function pageConditionSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch":
-      return `${switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "")} ${condition.value ? "켜짐" : "꺼짐"}`;
+      return switchConditionLabel(condition);
     case "variable":
       return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
@@ -567,12 +574,15 @@ function pageConditionSummary(condition: EventPageCondition): string {
   }
 }
 
+function switchConditionLabel(condition: Extract<EventPageCondition, { kind: "switch" }>): string {
+  const name = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
+  return `${name || "스위치"} · ${condition.value ? "켜짐" : "꺼짐"}`;
+}
+
 function pageConditionCompactSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
-    case "switch": {
-      const named = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
-      return `${named || "스위치"} ${condition.value ? "켜짐" : "꺼짐"}`;
-    }
+    case "switch":
+      return switchConditionLabel(condition);
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable": {

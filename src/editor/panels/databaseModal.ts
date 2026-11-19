@@ -6,6 +6,8 @@ import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots"
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import { hasOpenModalLayer, isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { createSaveErrorPopover, saveErrorIcon } from "@/editor/ui/saveErrorPopover";
+import { afterOpeningPaint } from "@/editor/ui/afterOpeningPaint";
 import {
   databaseTabGroupLabel,
   databaseTabLabel,
@@ -21,14 +23,14 @@ import {
 import { createDatabaseAiBar, type DatabaseAiRecordRef } from "@/editor/panels/databaseAiBar";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
 import { worldCodexSessionFor } from "./worldCodexSession";
-import { applyDatabaseChanges, writeDatabaseFooterError, writeDatabaseFooterPending } from "@/editor/panels/databaseModalPersistence";
+import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { disposeDatabaseCinematicsIn } from "@/editor/panels/databaseCinematicView";
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { invalidateFarmSpatialConfirmationContext } from "@/editor/panels/databaseFarmSpatialView";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
-import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatus } from "@/editor/panels/databaseWorkbench";
+import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatus, type DatabaseFooterStatus } from "@/editor/panels/databaseWorkbench";
 import {
   createEditorModalDirtyCloseController,
   EDITOR_MODAL_DIRTY_DECISION,
@@ -131,7 +133,7 @@ export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "bat
 }
 
 type ParkedDatabaseModal = {
-  readonly show: (options?: { readonly onClose: () => void }) => void;
+  readonly show: (options?: DatabaseModalOpenOptions) => void;
   readonly discard: () => void;
 };
 
@@ -152,7 +154,12 @@ export function prewarmDatabaseModal(): void {
   }
 }
 
-export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly onClose: () => void }): void {
+type DatabaseModalOpenOptions = {
+  readonly onClose?: () => void;
+  readonly deferInitialBody?: boolean;
+};
+
+export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseModalOpenOptions): void {
   // 제목 화면·상태 메뉴·전투 명령·시네마틱 미리보기가 런타임 시트를 쓴다.
   // 부팅 때 숨겨 만드는 창(prewarm)은 싣지 않는다 — 그러면 편집기 첫 화면이 다시 런타임 시트를 읽는다.
   if (!parkingModal) void preloadRuntimeStyles();
@@ -167,7 +174,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   }
   // Reuse the open session for cross-tab links; rebuilding it would discard staged cards.
   if (activeModal && document.querySelector("[data-testid='database-modal']")) {
-    if (options) activeModal.onClose.add(options.onClose);
+    if (options?.onClose) activeModal.onClose.add(options.onClose);
     if (initialTab) activeModal.navigate(initialTab);
     return;
   }
@@ -414,7 +421,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     }
     scheduleModalRefresh();
   });
-  const onClose = new Set(options ? [options.onClose] : []);
+  const onClose = new Set(options?.onClose ? [options.onClose] : []);
   const close = (): void => {
     if (modalClosed) return;
     modalClosed = true;
@@ -424,6 +431,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     invalidateFarmSpatialConfirmationContext();
     unsubscribeCodex();
     unsubscribeAutoSave();
+    saveErrorDetails.dispose();
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     unsubscribeActiveTab();
     unsubscribeSubLocation();
@@ -456,13 +464,13 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       switchDatabaseActiveTab("worldCodex", body);
       refreshDatabasePanel(body);
       manualStatusShown = true;
-      writeDatabaseFooterError(footerStatus, codexSession.state.editError || "설정집 문서 내용을 확인하세요.");
+      writeFooterStatus({ text: codexSession.state.editError || "설정집 문서 내용을 확인하세요.", kind: "error" });
       return false;
     }
     refreshDatabasePanel(body);
     manualStatusShown = true;
-    writeDatabaseFooterPending(footerStatus, "변경 내용을 저장하는 중입니다.");
-    const saved = await applyDatabaseChanges(footerStatus);
+    writeFooterStatus({ text: "변경 내용을 저장하는 중입니다.", kind: "pending" });
+    const saved = await applyDatabaseChanges(writeFooterStatus);
     if (saved) dirtySession.markClean();
     return saved;
   };
@@ -509,7 +517,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   };
   const controller = createEditorModalDirtyCloseController({
     // 레코드 편집은 키 입력 순간 스토어에 반영되고 자동 저장이 이어받는다. 닫기를 붙잡는 것은 스토어
-    // 밖에 있는 설정집 카드 초안뿐이다 — Escape·바깥 클릭·X·「닫기」가 모두 같은 규칙으로 닫는다
+    // 밖에 있는 설정집 카드 초안뿐이다 — Escape·바깥 클릭·X가 모두 같은 규칙으로 닫는다
     // (J-p2-power-user-02·07: Escape 만 결정 띠를 강요하고 X 는 바로 닫았다).
     isDirty: () => codexSession.isDirty(),
     promptUnsavedChanges: showDirtyPrompt,
@@ -561,11 +569,27 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   };
   document.addEventListener("keydown", handleModalKeyDown);
   document.addEventListener("keydown", handleHistoryKeyDown);
+  const footerStatusText = el("span");
+  const saveErrorButton = el("button", {
+    class: "database-save-error-button",
+    attrs: { type: "button", title: "저장 실패 상세", "aria-label": "저장 실패 상세", hidden: "" },
+    dataset: { testid: "database-save-error" },
+    children: [saveErrorIcon(), el("span", { text: "저장 실패" })],
+  });
+  const saveErrorDetails = createSaveErrorPopover(saveErrorButton);
   const footerStatus = el("div", {
     class: "database-footer-status",
     attrs: { "aria-live": "polite" },
     dataset: { testid: "db-footer-status" },
+    children: [footerStatusText, saveErrorButton],
   });
+  const writeFooterStatus = (status: DatabaseFooterStatus): void => {
+    const failed = status.kind === "error";
+    footerStatusText.textContent = failed ? "" : status.text;
+    footerStatus.dataset.statusKind = status.kind;
+    saveErrorButton.hidden = !failed;
+    saveErrorDetails.setMessage(failed ? status.text : null);
+  };
   // 설정집 카드 초안이 우선, 그다음이 store 의 autosave 상태. 둘 다 여기 한 곳에서만 칠한다
   // — 예전처럼 두 구독자가 textContent 를 각자 덮으면 비동기 저장 결과가 지워진다.
   //
@@ -580,16 +604,12 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     const status = codexSession.isDirty()
       ? ({ text: "설정집 문서 저장 전", kind: "pending" } as const)
       : databaseFooterStatus(store.getAutoSaveState());
-    footerStatus.textContent = status.text;
-    footerStatus.dataset.statusKind = status.kind;
+    writeFooterStatus(status);
     // 저장하지 않는 세션에서 파란 「지금 저장」 은 옆의 「저장되지 않습니다」 와 모순이다(2026-09-24 visual QA).
     // 버튼은 남기되(편집 확정은 여전히 한다) 주 버튼 무게를 내린다.
-    // 주 버튼은 언제나 하나다 — 저장하지 않는 세션에서는 「닫기」가 그 자리를 받는다.
     applyButton?.classList.toggle("primary", status.kind !== "info");
-    closeFooterButton?.classList.toggle("primary", status.kind === "info");
   };
   let applyButton: HTMLElement | null = null;
-  let closeFooterButton: HTMLElement | null = null;
   paintFooterStatus();
   // 설정집 초안이 움직이면 사용자가 이미 다음 작업으로 넘어간 것 — 붙잡아 둔 문구를 놓는다.
   const unsubscribeCodex = codexSession.subscribe(() => {
@@ -628,10 +648,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   };
   syncUndoButton();
   // 레코드 편집은 키 입력 순간에 이미 스토어에 들어간다. 자동 저장이 그 값을 남기므로
-  // 닫기·헤더 X 가 「세션이 더럽다」는 이유만으로 멈추면, 선택지가 52px 푸터에 묻힌 채
+  // 헤더 X 가 「세션이 더럽다」는 이유만으로 멈추면, 선택지가 52px 푸터에 묻힌 채
   // 창이 안 닫힌다. 스토어 밖인 설정집 카드 초안만 묻고, 그 상태에서 한 번 더 누르면
   // 초안을 커밋하고 닫는다(커밋이 거절되면 오류를 남기고 연 채로 둔다).
-  const dismissKeepingEdits = (attempt: "cancel" | "x"): void => {
+  const dismissKeepingEdits = (): void => {
     if (!codexSession.isDirty()) {
       close();
       return;
@@ -642,18 +662,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       });
       return;
     }
-    controller.requestClose(attempt);
+    controller.requestClose("x");
   };
-  closeButton.addEventListener("click", () => dismissKeepingEdits("x"));
-  // 바닥 막대: 도움말은 왼쪽 끝의 보조 링크, 오른쪽은 되돌리기 · 닫기 · 주 버튼 하나 순서다. 예전에는 네
-  // 단추가 같은 변형이라 주 버튼이 없고 도움말이 주 버튼 자리(오른쪽 끝)에 굵게 있었다(V-database-14).
-  closeFooterButton = el("button", {
-    class: "database-footer-button",
-    text: "닫기",
-    attrs: { type: "button" },
-    dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
-    on: { click: () => dismissKeepingEdits("cancel") },
-  });
+  closeButton.addEventListener("click", dismissKeepingEdits);
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
@@ -670,7 +681,6 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       // Ctrl+Z 는 예전부터 동작했지만 모달 어디에도 노출이 없어 아무도 몰랐다.
       // 같은 DB 안 전투 명령 스튜디오가 이미 가시 되돌리기를 갖고 있다 — 그 규약을 셸로 올린다.
       undoButton,
-      closeFooterButton,
       applyButton = el("button", {
         class: "database-footer-button primary",
         text: "지금 저장",
@@ -695,8 +705,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   windowEl?.append(footer);
   // 개선안(2026-09-27): 저장 상태는 헤더 오른쪽(AI 단추 앞)에 작은 표시로 선다 — 목업의 「자동 저장됨」.
   // 같은 요소를 옮길 뿐이라 db-footer-status testid·aria-live·문구 계약은 그대로다.
-  // 발 단추 줄은 닫기·지금 저장·되돌리기·도움말만 남는 얇은 줄이 된다.
   header.insertBefore(footerStatus, aiToggleButton);
+  header.insertBefore(saveErrorDetails.panel, aiToggleButton);
   paintFooterStatus(); // 주 버튼 무게는 버튼이 생긴 뒤에야 칠할 수 있다.
   // ── 사이드 도킹(M8): 백드롭 투명·포인터 통과 + 창 우측 고정. 맵 캔버스는 그대로 조작 가능. ──
   const applyDockMode = (next: boolean): void => {
@@ -773,10 +783,14 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   }
   setDatabasePreviewSurfaceActive(backdrop, !parkingModal);
   document.body.append(backdrop);
-  renderDatabasePanel(body);
   // 연결 칸은 본문(.db-body) 옆 형제다. 목록 선택은 구독 없이 부분 렌더로 끝나므로 본문 클릭 뒤에 다시 칠한다.
   connections.host = body;
-  connections.paint(getDatabaseActiveTab());
+  const renderInitialBody = (): void => {
+    if (modalClosed || !backdrop.isConnected) return;
+    renderDatabasePanel(body);
+    connections.paint(getDatabaseActiveTab());
+  };
+  if (!options?.deferInitialBody || parkingModal) renderInitialBody();
   body.addEventListener("click", (event) => {
     if (event.target instanceof Node && connections.element.contains(event.target)) return;
     // 선택 핸들러가 먼저 돈 뒤에 읽는다.
@@ -804,7 +818,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         backdrop.classList.remove("is-parked");
         setDatabasePreviewSurfaceActive(backdrop, true);
         activeModal = handle;
-        if (showOptions && handle) handle.onClose.add(showOptions.onClose);
+        if (showOptions?.onClose && handle) handle.onClose.add(showOptions.onClose);
         document.addEventListener("keydown", handleModalKeyDown);
         document.addEventListener("keydown", handleHistoryKeyDown);
         syncModalLayer(false);
@@ -824,6 +838,18 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // 지난 세션의 도크 상태 복원 — 렌더 후 적용해도 클래스/aria 만 바꾸므로 안전하다.
   if (readStoredDockMode()) applyDockMode(true);
   closeButton.focus();
+  if (!options?.deferInitialBody) return;
+  const loading = el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } });
+  body.append(loading);
+  afterOpeningPaint(backdrop, () => {
+    loading.remove();
+    try {
+      renderInitialBody();
+    } catch {
+      loading.textContent = "자료집을 열지 못했습니다. 다시 시도해 주세요.";
+      body.prepend(loading);
+    }
+  });
 }
 
 type PendingDetailEdit = {

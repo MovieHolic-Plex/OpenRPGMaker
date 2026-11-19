@@ -19,14 +19,6 @@
   min-width: 0;
 }
 
-/* 헤더: 이름 상자는 줄어들되 읽히는 폭은 지키고, 메타(맵·좌표·ID)는 말줄임, 액션은 안 줄인다. */
-.event-editor-modal-header > .meta {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* 페이지 탭 줄: 탭이 많으면 가로 스크롤, 관리 버튼 묶음은 줄바꿈 대신 아이콘만 남긴다(≤1100). */
 .event-editor-pagebar > .evt-page-segments {
   min-width: 0;
@@ -37,11 +29,6 @@
 @media (max-width: 1100px) {
   .event-editor-modal-header {
     column-gap: 8px;
-  }
-
-  .event-editor-modal-header > .event-name {
-    flex: 1 1 160px;
-    min-width: 120px;
   }
 
   /* 이벤트 ID 칩은 좁은 화면에서 접는다 — 복사가 필요하면 왼쪽 인스펙터에 같은 칩이 있다. */
