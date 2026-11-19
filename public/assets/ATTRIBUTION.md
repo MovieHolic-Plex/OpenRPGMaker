@@ -184,6 +184,8 @@ source expands mechanically to a complete grid, with no shape generation or twee
 - EasyRPG RTP SE 96개는 **유지한다.** 피커에서 CC0 카탈로그가 앞에 오고 RTP 가 뒤에 온다
   (BGM 과 같은 서열) — 기존 프로젝트의 `easyrpg-sound-*` 참조가 깨지지 않는다.
 
+- 『마왕 편의점』 오프닝 효과음 8개(`cc0/audio/maou/mk-op-*.ogg`)는 OPRN이 `scripts/content/maou-konbini/opening-sfx.py`로 합성한 CC0 1.0 음원이다.
+
 ## Shared blue-haired traveler expressions (2026-09-15)
 
 - User-provided 16-expression image, derived from the existing EasyRPG Actor1 portrait, explicitly supplied for the app common resource library.

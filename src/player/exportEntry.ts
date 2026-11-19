@@ -17,6 +17,7 @@ import { deserialize, deserializeParsed } from "@/project/io";
 import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
 import { setBundledJsonReader, type BundledJsonProgress } from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
+import { isFlagshipDemoId, type FlagshipDemoId } from "@/project/flagship/types";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
@@ -131,7 +132,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   rebaseRuntimeCssAssetUrls(assetBase);
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
-  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
+  if (isFlagshipDemoId(demoParam)) {
     const loader = mountBootLoader(root, { title: document.title });
     const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes), devQaDemoUrl(boot), (done, total, bytes) => loader.definitionsProgress(done, total, bytes));
     if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
@@ -302,10 +303,10 @@ async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => v
  * dev 서버(QA 하네스)에는 구운 파일이 없으므로 그때만 예전처럼 짓는다. 출하 빌드에서는 import.meta.env.DEV 가
  * 거짓이라 빌더 import 가 통째로 빠지고, 내보낸 게임 zip 에도 데모 빌더 청크가 실리지 않는다.
  */
-async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void, devBakedUrl?: URL, onDefinitions?: BundledJsonProgress): Promise<BundledProjectLoad> {
+async function loadFlagshipDemo(id: FlagshipDemoId, assetBase: URL, onBytes: (bytes: number) => void, devBakedUrl?: URL, onDefinitions?: BundledJsonProgress): Promise<BundledProjectLoad> {
   if (import.meta.env.DEV && !devBakedUrl) {
     const { createFlagshipDemoProject } = await import("@/project/flagship");
-    return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
+    return { ok: true, project: createFlagshipDemoProject(id).project };
   }
   try {
     const response = await fetchTextWithProgress(devBakedUrl ?? new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);

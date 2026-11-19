@@ -6,9 +6,14 @@ export const FLAGSHIP_DEMO_IDS = [
   "emerald-crown",
   "shitamachi-fourth-season",
   "first-love",
+  "maou-konbini",
 ] as const;
 
 export type FlagshipDemoId = (typeof FLAGSHIP_DEMO_IDS)[number];
+
+export function isFlagshipDemoId(id: string | null): id is FlagshipDemoId {
+  return FLAGSHIP_DEMO_IDS.some((demoId) => demoId === id);
+}
 
 export interface FlagshipBeat {
   readonly id: string;
@@ -53,8 +58,8 @@ export interface FlagshipBeatManifest {
   readonly targetMinutes: number;
   readonly mapCount: number;
   readonly endingCount: number;
-  readonly releaseOrder: 1 | 2 | 3 | 4;
-  readonly priorityRank: 1 | 2 | 3 | 4;
+  readonly releaseOrder: 1 | 2 | 3 | 4 | 5;
+  readonly priorityRank: 1 | 2 | 3 | 4 | 5;
   readonly summary: string;
   readonly thumb: string;
   readonly cast: readonly FlagshipCastMember[];

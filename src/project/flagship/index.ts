@@ -12,6 +12,7 @@ import {
 import { createChronoBellFlagshipDemo } from "./chronoBell";
 import { createEmeraldCrownFlagshipDemo } from "./emeraldCrown";
 import { createFirstLoveFlagshipDemo } from "./firstLove";
+import { createMaouKonbiniFlagshipDemo } from "./maouKonbini";
 import { createShitamachiFourthSeasonFlagshipDemo } from "./shitamachiFourthSeason";
 import {
   FLAGSHIP_DEMO_IDS,
@@ -31,6 +32,7 @@ export {
   createChronoBellFlagshipDemo,
   createEmeraldCrownFlagshipDemo,
   createFirstLoveFlagshipDemo,
+  createMaouKonbiniFlagshipDemo,
   createShitamachiFourthSeasonFlagshipDemo,
   flagshipBeatManifestForChoice,
   formatFlagshipExemplarPrompt,
@@ -68,6 +70,12 @@ export const FLAGSHIP_DEMO_SPECS: Readonly<Record<FlagshipDemoId, FlagshipDemoSp
     choiceId: "story-cutscene",
     manifest: FLAGSHIP_BEAT_MANIFESTS["first-love"],
     build: createFirstLoveFlagshipDemo,
+  },
+  "maou-konbini": {
+    id: "maou-konbini",
+    choiceId: "story-cutscene",
+    manifest: FLAGSHIP_BEAT_MANIFESTS["maou-konbini"],
+    build: createMaouKonbiniFlagshipDemo,
   },
 };
 
@@ -130,8 +138,9 @@ export function validateFlagshipStyleLock(id: FlagshipDemoId, project: Project):
   }
 
   const openingShotCount = project.system.opening?.scenes.length ?? 0;
-  if (openingShotCount < 5) {
-    violations.push(`오프닝 샷 수 부족: ${openingShotCount} < 5`);
+  const minimumShots = id === "maou-konbini" ? 4 : 5;
+  if (openingShotCount < minimumShots) {
+    violations.push(`오프닝 샷 수 부족: ${openingShotCount} < ${minimumShots}`);
   }
 
   const ipBad = validateFlagshipIpCleanliness(JSON.stringify(project.maps));

@@ -104,6 +104,10 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-first-love-cg-end-a": "/assets/generated/title/first-love-cg-end-a.jpg",
   "oprn-first-love-cg-end-b": "/assets/generated/title/first-love-cg-end-b.jpg",
   "oprn-first-love-cg-end-c": "/assets/generated/title/first-love-cg-end-c.jpg",
+  "oprn-maou-konbini-title": "/assets/generated/title/maou-konbini-title.png",
+  "oprn-maou-konbini-end-best": "/assets/generated/title/maou-konbini-end-best.png",
+  "oprn-maou-konbini-end-ok": "/assets/generated/title/maou-konbini-end-ok.png",
+  "oprn-maou-konbini-end-power": "/assets/generated/title/maou-konbini-end-power.png",
   // 『시타마치의 네 번째 계절』 타이틀·오프닝 5컷·엔딩 4장(2026-10-25, 같은 모델·같은 화풍, 공용 전신 초상 참조 시트로 인물 일치). 후보 2~3장 중 감독 선택 —
   // 출처·프롬프트: public/assets/generated/title/shitamachi-keyart-provenance.json.
   "oprn-shitamachi-title": "/assets/generated/title/shitamachi-title.jpg",
