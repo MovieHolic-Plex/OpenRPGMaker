@@ -370,7 +370,8 @@ dirty 는 `wip:` 커밋 또는 파일 사본으로 다룬다.
 ## PR 은 ci-fast 초록 뒤에만, 도우미로 머지한다 (hard rule, 2026-10-25)
 
 **`gh pr merge` 를 직접 부르지 마라. `node scripts/merge-pr.mjs <PR 번호>`(= `npm run merge-pr -- <번호>`)로만 머지한다.**
-도우미는 그 PR 의 현재 머리 커밋에서 ci-fast 잡(`fast`)이 초록이 될 때까지 기다리고, 초록이면 그 커밋만
+도우미는 그 PR 의 현재 머리 커밋에서 ci-fast 잡(`fast`·`fast-static`·`fast-parity (k/N)` 전 N개 샤드)이
+모두 초록이 될 때까지 기다리고, 초록이면 그 커밋만
 (`--match-head-commit`) 머지한다. 빨강·취소·시간 초과면 머지하지 않고 로그 명령을 찍는다 — 고쳐서 푸시하고 다시 부른다.
 
 - 왜: main 에 브랜치 보호가 없고, 전에는 ci-fast 가 PR 에서 돌지도 않았다. 에이전트가 바로 머지해 빨간 코드가 main 에 쌓였다
