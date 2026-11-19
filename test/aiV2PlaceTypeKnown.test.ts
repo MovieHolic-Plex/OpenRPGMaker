@@ -122,7 +122,9 @@ describe("끝맺음 자동 짓기 — 종류를 모르는 장소는 마을로 �
     const t = turn();
     await writeBlueprint(t, blueprint());
     // 이름이 종류를 말하지 않는 장소로 청한다 — 종류는 청한 명세에서만 온다.
-    const asked = await t.call("make_place", { spec: { ...MILL, name: "말순네 농가" } });
+    // 닫히지 않은 바깥 벽 — 기물 하나의 문제는 이제 그 기물만 빼고 깔리므로(2026-11-16 «거절은 게임이 깨질 때만»), 거절되는 배치는 구조가 깨진 것이다.
+    const open = { ...(MILL.layout as Record<string, unknown>), outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 11]] } };
+    const asked = await t.call("make_place", { spec: { ...MILL, name: "말순네 농가", layout: open } });
     expect(asked.ok, asked.summary).toBe(false);
     expect(t.mapNamed("말순네 농가")).toBeUndefined();
     expect(t.session.placeFacts.get("말순네농가")?.asked?.type).toBe("interior");

@@ -6,6 +6,7 @@
 //       · 쓰기 실패는 진행 중 항목의 실패로 센다 — 3번째 또는 같은 실패 서명 연속이면 막힘으로 닫고 기대는 항목도 닫는다
 //       · 성공한 쓰기의 결과 지문을 고리(TodoLoop)에 넘긴다(진척 판정)
 //       · 성공한 쓰기 전후 차이(맵·이벤트·아이템·적 그룹 id)를 진행 중 항목(또는 인자 todoId 의 항목) refs 에 묶는다(refs.ts)
+import { thinInsideNote } from "../place/doorHouse";
 import { sizeNoticeOnce } from "../judge/sizeNotice";
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiAssistantV2Env } from "../shared/env";
@@ -573,6 +574,8 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
             const added = add ? bindRefs(bindTo, add, env.ctx.project) : [];
             if (added.length) env.emit({ type: "execution_status", name: "v2.todo.autobind", ok: true, summary: `할 일 ${bindTo.id} ← ${tool.name}: ${refsLabel(bindTo.refs)}`, data: { id: bindTo.id, verb: tool.name, refs: bindTo.refs } });
           }
+          // 큰 건물의 문에 방이 모자란 실내를 이었으면 그 사실과 고칠 호출을 알린다(place/doorHouse.ts) — 실패로 세지 않는다.
+          if (tool.name === "create_transfer_pair") { const note = thinInsideNote(env.ctx.project, params); if (note) notes.push(note); }
           // 빌더가 덮은 방 검사는 모델의 done 을 기다리지 않고 닫는다(builderCover.ts).
           { const note = closeBuilderCovered(env, store, hooks); if (note) notes.push(note); }
           // H4 쓰기 성공 직후 즉시 검사: 묶인 항목의 기계 확인을 바로 돌린다 — ✓ 면 자동으로 끝내고 다음 항목을 올리고(todo done 호출 낭비를 줄인다),

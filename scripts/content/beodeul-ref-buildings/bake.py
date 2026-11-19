@@ -34,6 +34,8 @@ STORE = ROOT / "tiledata/beodeul-ref-buildings"
 CATALOG = STORE / "catalog.json"
 TABLE = ROOT / "src/assets/beodeulRefBuildings.json"
 T, COLS, BASE = 16, 128, 46464
+BIG = 60800      # 둘째 토막 60,800~61,823(1,024칸, 감독 배정 2026-11-16): 첫 토막(46,464~48,511)은 44채로 찼다. 그 뒤는 실내(48,512~52,607) · 던전(52,608~56,703) · 길목(56,704~60,799)의 토막이다 — 초대형 건물(types 의 block="big")은 그 뒤에 굽는다
+BIG_END = 61824
 PREFIX = "bd-bld-ref-"
 LABEL = "버들항 참고 건물"
 OPEN = {k: True for k in ("up", "down", "left", "right")}
@@ -99,9 +101,12 @@ def main():
     ts = json.loads(TS_PATH.read_text())
     sheet = Image.open(SHEET_PATH).convert("RGBA")
     assert ts["count"] == json.loads(SHEET_JSON.read_text())["count"] == (sheet.height // T) * COLS and ts["count"] % COLS == 0
-    n = BASE; cells = []; kits = []; cat = []
+    n = BASE; cells = []; kits = []; cat = []; first_end = None
     for it, digest in zip(items, got):
-        t = it["t"]; arr = np.array(it["im"]); passage = {tuple(c) for c in (t.get("passage") or [])}; rows, lower = [], []
+        t = it["t"]
+        if t.get("block") == "big" and n < BIG: first_end = -(-n // COLS) * COLS; n = BIG
+        else: assert n < BASE + 2048 or n >= BIG, "첫 토막이 넘친다 — 새 유형은 block=big 로"
+        arr = np.array(it["im"]); passage = {tuple(c) for c in (t.get("passage") or [])}; rows, lower = [], []
         for y in range(t["h"]):
             up, lo = [], []
             for x in range(t["w"]):
@@ -118,26 +123,29 @@ def main():
         cat.append(dict(id=t["id"], name=t["name"], ko=t["ko"], width=t["w"], height=t["h"], door=t["door"], doorw=t.get("doorw", 1), passage=t.get("passage") or [], rows=rows, lowerRows=lower,
                         blocked=sorted([list(b) for b in it["blocked"]]), roof=it["rep"]["roof"], roofVolumes=it["rep"]["roofVolumes"], roofSideDeviationPx=it["rep"]["roofSideDeviationPx"],
                         flatPercent=it["rep"]["flatPercent"], colours=it["rep"]["colours"], sha256=digest, waiver=waiver))
-    end = -(-n // COLS) * COLS; total = max(end, ts["count"])
+    big_end = -(-n // COLS) * COLS if first_end is not None else None
+    assert big_end is None or big_end <= BIG_END, f"둘째 토막이 넘친다: {n} > {BIG_END}"
+    end = first_end if first_end is not None else -(-n // COLS) * COLS; total = max(big_end or end, ts["count"])
+    spans = [(BASE, end)] + ([(BIG, big_end)] if big_end else [])
     print(f"건물 {len(items)}채 · 칸 {n - BASE}개 → 내 토막 {BASE}..{end - 1} ({(end - BASE) // COLS}줄) · 시트 {ts['count']} → {total} ({total // COLS * T}px)")
-    foreign = [i for i in range(BASE, min(end, ts["count"])) if (ts["tileMeta"][i].get("label") or "") and not ts["tileMeta"][i]["label"].startswith(LABEL)]
+    foreign = [i for s0, s1 in spans for i in range(s0, min(s1, ts["count"])) if (ts["tileMeta"][i].get("label") or "") and not ts["tileMeta"][i]["label"].startswith(LABEL)]
     if foreign: sys.exit(f"내 토막 끝 {end} 이 뒤 꼬리의 칸 {foreign[0]}(「{ts['tileMeta'][foreign[0]]['label']}」)을 넘는다 — 뒤 꼬리는 출하된 번호라 밀 수 없다. 그 뒤에 새 토막을 연다")
     if a.dry: return
     canvas = Image.new("RGBA", (COLS * T, total // COLS * T), (0, 0, 0, 0))
     canvas.paste(sheet, (0, 0))
-    canvas.paste(Image.new("RGBA", (COLS * T, (end - BASE) // COLS * T), (0, 0, 0, 0)), (0, BASE // COLS * T))      # 내 토막을 비우고 다시 쓴다
+    for s0, s1 in spans: canvas.paste(Image.new("RGBA", (COLS * T, (s1 - s0) // COLS * T), (0, 0, 0, 0)), (0, s0 // COLS * T))      # 내 토막을 비우고 다시 쓴다
     for k in ("passability", "priority", "terrain", "tileMeta"):
         assert len(ts[k]) == ts["count"], k
     blank = lambda: (dict(OPEN), "lower", 0, dict(label="", description="", source="bundled-default"))
     for i in range(ts["count"], total):
         p, pr, te, m = blank(); ts["passability"].append(p); ts["priority"].append(pr); ts["terrain"].append(te); ts["tileMeta"].append(m)
-    for i in range(BASE, end):
+    for i in [i for s0, s1 in spans for i in range(s0, s1)]:
         p, pr, te, m = blank(); ts["passability"][i] = p; ts["priority"][i] = pr; ts["terrain"][i] = te; ts["tileMeta"][i] = m
     for i, px, m in cells:
         canvas.paste(Image.fromarray(px, "RGBA"), ((i % COLS) * T, (i // COLS) * T))
         ts["passability"][i] = dict(m["pass_"]); ts["priority"][i] = "lower" if m["lower"] else "upper"
         ts["tileMeta"][i] = dict(label=m["label"], description=m["description"], tags=m["tags"], defaultLayer="lower" if m["lower"] else "upper", passage=m["passage"], source="bundled-default")
-    ts["animationStrips"] = [s for s in ts.get("animationStrips", []) if not (BASE <= s["baseTile"] < end)]
+    ts["animationStrips"] = [s for s in ts.get("animationStrips", []) if not any(s0 <= s["baseTile"] < s1 for s0, s1 in spans)]
     at = next((i for i, k in enumerate(ts["structureKits"]) if k["id"].startswith(PREFIX)), len(ts["structureKits"]))      # 내 킷은 목록의 제자리에서 바뀐다(처음이면 끝에)
     ts["structureKits"] = [k for k in ts["structureKits"][:at] if not k["id"].startswith(PREFIX)] + kits + [k for k in ts["structureKits"][at:] if not k["id"].startswith(PREFIX)]
     ts["count"] = total
@@ -147,7 +155,7 @@ def main():
                  version=1, tilesetId="beodeul_city", gate=gate, kitPrefix=PREFIX, base=BASE,
                  buildings=[dict(id=t["id"], ko=t["ko"], en=t["en"], cat=t["cat"], setting=t["setting"], tier=t["tier"], style=t["style"], kinds=t["kinds"], w=t["w"], h=t["h"], door=t["door"], doorw=t.get("doorw", 1),
                                  passage=t.get("passage") or [], interior=t.get("interior"), included=t.get("included") or [], props=t.get("props") or []) for t in (it["t"] for it in items)])
-    catalog = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, kitPrefix=PREFIX, base=BASE, end=end,
+    catalog = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, kitPrefix=PREFIX, base=BASE, end=end, **(dict(bigBase=BIG, bigEnd=big_end) if big_end else {}),
                    source="scripts/content/beodeul-ref-buildings/bake.py (parts by Claude Fable 5.2 medium one-shot + code-made material tiles after original Beodeul patterns, assembled by code — see parts.json)",
                    gate=gate, buildings=cat)
     outputs = [(TS_PATH, json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n"), (SHEET_JSON, json.dumps(dict(count=total, tilesPerRow=COLS)) + "\n"),
