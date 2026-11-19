@@ -109,10 +109,11 @@ jobs:
           "$RUNNER_TEMP/charset-harness-venv/bin/python" src/harnesses/charset-actor/verify.py
 
       # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 죽었다.
-      # 호스티드 러너 메모리는 16GB 다. 힙은 10GB 만 연다.
+      # 호스티드 16GB 에서는 힙 10GB 를 썼다. mdc2 러너는 MemoryMax=12G 이라
+      # 10GB 힙은 RSS 가 상한에 붙는다(2026-11-20 실측, 러너 피크 12.00G). 8GB 로 줄인다.
       - name: 타입체크 (src 만)
         env:
-          NODE_OPTIONS: --max-old-space-size=10240
+          NODE_OPTIONS: --max-old-space-size=8192
         run: npm run typecheck:app
 
       # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
@@ -193,7 +194,11 @@ jobs:
 
       # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
       # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
+      # vite-node 기본 힙은 약 2GB 다. 12G 러너에서 여러 잡이 겹치면
+      # 그 한도에 먼저 죽는다(2026-11-20, fast-static exit 134).
       - name: 런타임 에셋 존재
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run check:runtime-assets
 
       # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes). 몇 초면 끝난다.
