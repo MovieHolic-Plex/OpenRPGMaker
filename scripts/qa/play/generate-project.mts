@@ -9,6 +9,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { serialize } from "../../../src/project/io";
+import type { FlagshipDemoId } from "../../../src/project/flagship/types";
 import type { Project } from "../../../src/project/types";
 
 const [gameId, outDir] = process.argv.slice(2);
@@ -16,7 +17,7 @@ if (!gameId || !outDir) throw new Error("사용: generate-project.mts <gameId> <
 
 type Built = { project: Project; serialized?: string };
 
-async function flagship(id: "chrono-bell" | "emerald-crown" | "first-love" | "shitamachi-fourth-season"): Promise<Built> {
+async function flagship(id: FlagshipDemoId): Promise<Built> {
   const { createFlagshipDemoProject } = await import("../../../src/project/flagship/index");
   const built = createFlagshipDemoProject(id);
   return { project: built.project, serialized: built.serialized };
@@ -35,6 +36,7 @@ const builders: Record<string, () => Promise<Built>> = {
   "fallen-star": () => flagship("chrono-bell"),
   "astra-horizon": () => flagship("emerald-crown"),
   "first-love": () => flagship("first-love"),
+  "maou-konbini": () => flagship("maou-konbini"),
   "shitamachi-fourth-season": () => flagship("shitamachi-fourth-season"),
   "scarloxy-demo": async () => {
     const { createScarloxyDemoProject } = await import("../../../src/project/defaults/defaultProject");

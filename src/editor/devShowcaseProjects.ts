@@ -1,7 +1,7 @@
 import { loadFlagshipDemoProject } from "@/editor/flagshipDemoLoader";
 import { createBlankProject } from "@/project/defaults";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
-import type { FlagshipDemoId } from "@/project/flagship/types";
+import { isFlagshipDemoId, type FlagshipDemoId } from "@/project/flagship/types";
 import type { Project } from "@/project/types";
 
 // 2026-10-07 저작권 정리: 지운 칩셋(EasyRPG·숲마을·기후 마을 등) 위에 그려진 데모·쇼케이스 프로젝트
@@ -17,7 +17,7 @@ export function flagshipDemoIdForLocation(): FlagshipDemoId | null {
   if (typeof window === "undefined") return null;
   const rawDemo = new URLSearchParams(window.location.search).get("demo");
   const demo = rawDemo === "fallen-star" ? "chrono-bell" : rawDemo === "astra-horizon" ? "emerald-crown" : rawDemo;
-  return demo === "chrono-bell" || demo === "emerald-crown" || demo === "shitamachi-fourth-season" || demo === "first-love" ? demo : null;
+  return isFlagshipDemoId(demo) ? demo : null;
 }
 
 /**

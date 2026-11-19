@@ -1339,6 +1339,17 @@
     "adjacent action still works and the tile-backed action pages do not report page.invisible-collision",
     "the first drawer interaction grants two existing herb items and the next interaction yields no further items"
    ]
+  },
+  {
+   "id": "ending-respects-closed-cafe",
+   "label": "닫힌 찻집 앞에서 만나는 사이로 후일담을 맞춘다",
+   "port": 19578,
+   "lessons": ["ending-reflects-playable-events"],
+   "prompt": "마오가 퇴근길에 리리와 마주치는 짧은 후일담을 만들어 줘. 찻집은 영업이 끝나 들어갈 수 없어. 좋은 엔딩에서 두 사람이 어디서 인사를 나누는지 보여 줘.",
+   "requirements": [
+    "the best ending places Mao and Lily outside the cafe and does not call Mao a cafe regular",
+    "the cafe door shows a closed sign and has no transfer to an interior"
+   ]
   }
  ]
 }
