@@ -102,7 +102,10 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
       type: "button",
     },
     children: [
-      // 다른 메뉴처럼 글자 메뉴다 — 이 메뉴만 쓰던 다색 픽셀 아이콘(래스터)은 그리지 않는다.
+      // map-context-menu-item 그리드: 16px 아이콘 | 라벨 | 단축키.
+      // 라벨만 넣으면 첫 칸(16px)에 들어가 한두 글자만 보인다. 타일셋 메뉴와 같이 빈 아이콘 칸을 둔다.
+      // 이 메뉴는 글자 메뉴라 다색 픽셀 아이콘(래스터)은 그리지 않는다.
+      el("span", { class: "map-context-menu-icon", attrs: { "aria-hidden": "true" } }),
       el("span", { class: "map-context-menu-label", text: item.label }),
       el("span", { class: "map-context-menu-shortcut", text: item.shortcut ?? "" }),
     ],
