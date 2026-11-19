@@ -300,16 +300,20 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
   });
 }
 
-/**
- * chatgpt OAuth 모드일 때 동반 서비스에서 상태를 조회해 캐시를 갱신한다.
- * apiKey 모드는 동기 평가만으로 충분하므로 조회하지 않는다.
- * onChange 는 캐시가 바뀐 뒤(상태바 재렌더링 용) 호출된다.
- */
 /** 연결돼 있던 칩을 「꺼짐」 으로 바꾸기 전에 참는 연속 시간 초과 횟수. */
 const TIMEOUTS_BEFORE_OFFLINE = 3;
 let consecutiveTimeouts = 0;
 
-export async function refreshAiConnectionStatus(onChange?: () => void): Promise<void> {
+/**
+ * chatgpt OAuth 모드일 때 동반 서비스에서 상태를 조회해 캐시를 갱신한다.
+ * apiKey 모드는 동기 평가만으로 충분하므로 조회하지 않는다.
+ * onChange 는 캐시가 바뀐 뒤(상태바 재렌더링 용) 호출된다.
+ * 설정에서 인증 상태를 관측하면 이미 일치하는 연결은 유지하고, 그 외에는 이전 조회를 무효화한다.
+ */
+export async function refreshAiConnectionStatus(
+  onChange?: () => void,
+  observedAuth?: { readonly providerId: string; readonly account: ChatGptAuthStatus },
+): Promise<void> {
   const config = loadAiConfig();
   if (config.authMode !== "chatgpt") {
     // apiKey 모드는 동기 평가만으로 충분 — 캐시를 비워두지 않아도 되지만,
@@ -323,6 +327,15 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
   }
   const providerId = parseOhMyPiProvider(config.providerId);
   const key = connectionKey(config);
+  if (observedAuth) {
+    const auth = observedAuth.account;
+    const cached = aiOAuthCachedStatus?.account;
+    if (observedAuth.providerId === providerId && aiOAuthCachedStatus?.workKey === key
+      && !aiOAuthCachedStatus.checkTimedOut && cached && auth.connected && !auth.expired
+      && cached.connected === auth.connected && cached.expired === auth.expired && cached.env === auth.env
+      && cached.planType === auth.planType && cached.accountEmail === auth.accountEmail && cached.accountLabel === auth.accountLabel) return;
+    resetAiConnectionStatusCache();
+  }
   if (refreshInFlightKey === key && refreshInFlight) {
     // 합류: 곧바로 돌아가면 호출부가 낡은 캐시로 다시 칠하고 결과를 영영 못 받는다.
     const before = cacheVersion;
@@ -340,14 +353,16 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
 async function runRefresh(providerId: string, key: string, config: AiConfig, onChange?: () => void): Promise<void> {
   const generation = refreshGeneration;
   try {
+    const workProviders = workProviderIds(config);
+    const authRequest = fetchChatGptAuthStatus(providerId);
     // 역할이 사용자 지정 엔드포인트를 쓰면 그 이름·모델 사본을 먼저 받아 둔다(칩 라벨·역할 표가 슬러그 대신 이름을 보이게).
-    const [auth] = await Promise.all([
-      fetchChatGptAuthStatus(providerId),
-      workProviderIds(config).some(isOpenAiCompatProviderId) ? ensureOpenAiCompatEndpointsKnown() : undefined,
-    ]);
+    const auth = workProviders.some(isOpenAiCompatProviderId)
+      ? (await Promise.all([authRequest, ensureOpenAiCompatEndpointsKnown()]))[0]
+      : await authRequest;
     if (generation !== refreshGeneration || connectionKey(loadAiConfig()) !== key) return;
-    const otherStatuses = auth.connected && !auth.expired
-      ? await Promise.all(workProviderIds(config).filter(id => id !== providerId).map(async id => {
+    const otherProviders = workProviders.filter(id => id !== providerId);
+    const otherStatuses = auth.connected && !auth.expired && otherProviders.length > 0
+      ? await Promise.all(otherProviders.map(async id => {
         try {
           const status = await fetchChatGptAuthStatus(id);
           return { id, ready: status.connected && !status.expired, error: undefined as string | undefined };

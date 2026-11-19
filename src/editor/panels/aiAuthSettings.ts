@@ -49,7 +49,6 @@ export function isWorkerStartFailure(detail: string): boolean {
   return /oh-my-pi worker (exited|start timed out)/u.test(detail);
 }
 import {
-  getAiConnectionStatus,
   refreshAiConnectionStatus,
   resetAiConnectionStatusCache,
 } from "@/editor/panels/aiConnectionStatus";
@@ -670,18 +669,8 @@ export function renderAiAuthSettings(
   };
 
   const applyStatus = (auth: ChatGptAuthStatus): void => {
-    // 로그인 완료(직접/폴링/붙여넣기), 재확인, 연결 해제가 모두 성공한 인증 상태를 이 한 경로로
-    // 적용한다. 여기서 공유 게이트 캐시도 무효화·재조회해야 버튼별 배선 누락 없이 같은 제공자의
-    // in-session 인증 변경이 모든 AI 표면에 전파된다. 공유 조회는 이 함수를 호출하지 않으므로
-    // 재귀 루프가 없고, aiConnectionStatus 자체가 같은 제공자의 동시 조회를 de-dup 한다.
-    const connection = getAiConnectionStatus();
-    const cached = connection.providerId === providerId ? connection.account : undefined;
-    if (!hasUsableCompanionCredential(auth) || !cached || connection.checkTimedOut || cached.connected !== auth.connected || cached.expired !== auth.expired
-      || cached.env !== auth.env || cached.planType !== auth.planType || cached.accountEmail !== auth.accountEmail
-      || cached.accountLabel !== auth.accountLabel) {
-      resetAiConnectionStatusCache();
-      void refreshAiConnectionStatus();
-    }
+    // 로그인·재확인·연결 해제에서 관측한 상태를 같은 경로로 공유 캐시에 전달한다.
+    void refreshAiConnectionStatus(undefined, { providerId, account: auth });
     stored = hasStoredCompanionCredential(auth);
     const usable = hasUsableCompanionCredential(auth);
     cardAuth.set(providerId, auth);

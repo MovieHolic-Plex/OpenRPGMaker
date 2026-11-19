@@ -39,8 +39,8 @@
   (`src/ai/localCliEngine.ts`), `loadAiConfig` 가 `applyAssistantEngine` 으로 덮는다. 개발 중 강제 선택: 그 키에 `{"kind":"local-cli","cli":"claude"}`.
 - 첫 화면 설정의 Codex 카드·현재 모델·로그인 상태와 편집기 설정의 ChatGPT 계정은 상단 칩의
   `getAiConnectionStatus()`를 읽는다. ChatGPT OAuth로 연결하면 CLI 설치 없이 Codex 카드에 연결 상태와
-  현재 모델이 표시된다. `/auth/status`와 CLI 감지는 응답 본문을 포함해 8초까지 기다리며, 확인에 실패하면
-  「다시 시도」로 같은 요청을 보낸다. 설정을 닫으면 그 창의 상태 조회와 로그인 폴링을 정리한다.
+  현재 모델이 표시된다. 응답 본문을 포함해 `/auth/status`는 동반 서비스 공통 한도인 6초, CLI 감지는 8초까지 기다린다.
+  확인에 실패하면 「다시 시도」로 같은 요청을 보낸다. 설정을 닫으면 그 창의 상태 조회와 로그인 폴링을 정리한다.
 - 검증: 헤드리스 `bun scripts/spike/claude-cli-turn.mts --cli claude|codex`(SQLite 저장·재로드, `verify-shots/assistant-claude-p/<cli>/`),
   gemini 는 미로그인이라 녹화 스트림 재생 `scripts/spike/gemini-replay.mts`. 실제 입력창 경로는 하네스에 엔진 설정 파일을 준다:
   `--ai-config harness-data/assistant-capability/ai-configs/local-claude.json`(space-craft·assistant-capability 공용, editorDriver 가 엔진 칸을 심는다).

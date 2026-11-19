@@ -1,5 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { COMPANION_TIMEOUT_MS } from "@/ai/chatgptOAuthClient";
+import { LOCAL_AGENTS_STATUS_TIMEOUT_MS } from "@/start/settings/localAgents";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 vi.mock("@/editor/panels/aiRoleMatrixSettings", async (importOriginal) => ({
@@ -117,14 +119,17 @@ describe("AI settings connection status", () => {
     authResponse = never;
     cliResponse = never;
     closeStart = start.openSettingsDialog().close;
-    await vi.advanceTimersByTimeAsync(7_999);
+    await vi.advanceTimersByTimeAsync(COMPANION_TIMEOUT_MS - 1);
     expect(byId("start-settings-oauth-state").textContent).toContain("확인 중");
     expect(byId("start-settings-detect").textContent).toBe("다시 확인");
 
     await vi.advanceTimersByTimeAsync(1);
     expect(byId("start-settings-oauth-state").textContent).toContain("연결 서비스 응답 없음");
-    expect(byId("start-settings").textContent).toContain("AI 프로그램 목록을 확인하지 못했어요.");
     expect(byId("start-settings-oauth-retry").textContent).toBe("다시 시도");
+    expect(byId("start-settings-detect").textContent).toBe("다시 확인");
+
+    await vi.advanceTimersByTimeAsync(LOCAL_AGENTS_STATUS_TIMEOUT_MS - COMPANION_TIMEOUT_MS);
+    expect(byId("start-settings").textContent).toContain("AI 프로그램 목록을 확인하지 못했어요.");
     expect(byId("start-settings-detect").textContent).toBe("다시 시도");
     expect(codexRequests).toHaveLength(1);
     expect(cliRequests).toEqual(["/v1/local-agents"]);
@@ -143,7 +148,7 @@ describe("AI settings connection status", () => {
   it("retries a stalled auth response body and cancels the editor's status request on close", async () => {
     authResponse = () => new Response(new ReadableStream(), { headers: { "Content-Type": "application/json" } });
     editor.openAiSettingsModal({ nativeSelects: true });
-    await vi.advanceTimersByTimeAsync(8_000);
+    await vi.advanceTimersByTimeAsync(COMPANION_TIMEOUT_MS);
     expect(byId("ai-oauth-status").textContent).toBe("연결 서비스 응답 없음");
     expect(byId("ai-settings-chatgpt-check-error").hidden).toBe(false);
     expect(byId("ai-settings-chatgpt-check-retry").textContent).toBe("다시 시도");
@@ -156,7 +161,7 @@ describe("AI settings connection status", () => {
     expect(codexRequests[1]?.signal?.aborted).toBe(false);
     editor.closeAiSettingsModal();
     expect(codexRequests[1]?.signal?.aborted).toBe(true);
-    await vi.advanceTimersByTimeAsync(8_000);
+    await vi.advanceTimersByTimeAsync(COMPANION_TIMEOUT_MS);
     expect(codexRequests).toHaveLength(2);
   });
 });

@@ -149,22 +149,24 @@ function objectValue(value: unknown): Record<string, unknown> | null {
 export const COMPANION_TIMEOUT_MS = 6000;
 
 /**
- * fetch 를 감싸 "서버에 닿지 못함" (A) 을 별도 오류로 변환한다. 응답이 도착한 경우는 그대로 반환.
- * 타임아웃을 직접 건다 — 예전에는 AbortController 가 없어 소켓만 잡히면 영원히 매달렸다.
+ * fetch 를 감싸 "서버에 닿지 못함" (A) 을 별도 오류로 변환한다.
+ * 응답을 읽는 콜백을 주면 본문 읽기까지 같은 타임아웃에 포함한다.
  */
-async function companionFetch(url: string, init?: RequestInit): Promise<Response> {
-  const controller = typeof AbortController === "function" ? new AbortController() : undefined;
-  const timer = controller && typeof setTimeout === "function"
-    ? setTimeout(() => controller.abort(), COMPANION_TIMEOUT_MS)
-    : undefined;
+function companionFetch(url: string, init?: RequestInit): Promise<Response>;
+function companionFetch<T>(url: string, init: RequestInit | undefined, read: (response: Response) => Promise<T>): Promise<T>;
+async function companionFetch<T>(url: string, init?: RequestInit, read?: (response: Response) => Promise<T>): Promise<Response | T> {
+  const parent = init?.signal ?? undefined;
+  let requestSignal: AbortSignal | undefined;
   try {
-    // 토큰·서버 재시작 뒤 다시 맺기·연결 알림은 한 입구(fetchCompanion)가 맡는다.
-    return await fetchCompanion(url, controller ? { ...init, signal: controller.signal } : init);
+    return await withRequestTimeout(async (signal) => {
+      requestSignal = signal;
+      // 토큰·서버 재시작 뒤 다시 맺기·연결 알림은 한 입구(fetchCompanion)가 맡는다.
+      const response = await fetchCompanion(url, { ...init, signal });
+      return read ? read(response) : response;
+    }, COMPANION_TIMEOUT_MS, parent);
   } catch (error) {
-    // 우리가 건 abort 는 네트워크 단절과 원인이 다르다 — 진단 문구를 갈라 쓸 수 있게 표시한다.
-    throw new ChatGptCompanionUnreachableError(error, controller?.signal.aborted ? "timeout" : "network");
-  } finally {
-    if (timer !== undefined) clearTimeout(timer);
+    if (parent?.aborted || error instanceof ChatGptCompanionResponseError || error instanceof ChatGptCompanionUnreachableError) throw error;
+    throw new ChatGptCompanionUnreachableError(error, requestSignal?.aborted ? "timeout" : "network");
   }
 }
 
@@ -293,24 +295,14 @@ export async function fetchCompanionProviders(): Promise<readonly CompanionProvi
   });
 }
 
-export const AUTH_STATUS_TIMEOUT_MS = 8_000;
-
-async function companionStatusJson(url: string, signal?: AbortSignal, init?: RequestInit): Promise<Record<string, unknown> | null> {
-  try {
-    return await withRequestTimeout(async (requestSignal) => {
-      const response = await fetchCompanion(url, { ...init, signal: requestSignal });
-      if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
-      return readJsonBody(response);
-    }, AUTH_STATUS_TIMEOUT_MS, signal);
-  } catch (error) {
-    if (signal?.aborted) throw error;
-    if (error instanceof ChatGptCompanionResponseError || error instanceof ChatGptCompanionUnreachableError) throw error;
-    throw new ChatGptCompanionUnreachableError(error, error instanceof Error && error.name === "TimeoutError" ? "timeout" : "network");
-  }
+async function readCompanionJson(response: Response): Promise<Record<string, unknown> | null> {
+  if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  return readJsonBody(response);
 }
 
 export async function fetchChatGptAuthStatus(providerId?: string, signal?: AbortSignal): Promise<ChatGptAuthStatus> {
-  return readAuthStatus(await companionStatusJson(companionAuthUrl("/auth/status", providerId), signal));
+  const status = await companionFetch(companionAuthUrl("/auth/status", providerId), { signal }, readCompanionJson);
+  return readAuthStatus(status);
 }
 
 export async function startChatGptLogin(providerId?: string, apiKey?: string): Promise<CompanionLoginStart> {
@@ -354,11 +346,12 @@ export async function completeOAuthPaste(callbackUrl: string): Promise<void> {
 
 export async function refreshCompanionAuth(providerId?: string, signal?: AbortSignal): Promise<ChatGptAuthStatus> {
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
-  const status = await companionStatusJson(companionAuthUrl("/auth/refresh", provider), signal, {
+  const status = await companionFetch(companionAuthUrl("/auth/refresh", provider), {
+    signal,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ provider }),
-  });
+  }, readCompanionJson);
   return readAuthStatus(status);
 }
 
@@ -505,7 +498,7 @@ export function ensureOpenAiCompatEndpointsKnown(): Promise<void> {
 
 /** 저장된 엔드포인트 목록을 받아 알려진 사본(provider 선택 UI 가 읽는다)도 갱신한다. */
 export async function fetchOpenAiCompatEndpoints(signal?: AbortSignal): Promise<readonly OpenAiCompatEndpointPublic[]> {
-  const payload = await companionStatusJson(`${companionOrigin()}/auth/openai-compat`, signal);
+  const payload = await companionFetch(`${companionOrigin()}/auth/openai-compat`, { signal }, readCompanionJson);
   const list = readCompatEndpoints(payload);
   setKnownOpenAiCompatEndpoints(list);
   return list;
