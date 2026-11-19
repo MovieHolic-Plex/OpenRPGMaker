@@ -3,15 +3,29 @@
 import { describe, expect, it } from "vitest";
 import { appVersionLabel, parseDescribe } from "../scripts/lib/appVersion.mjs";
 import {
+  DEV_GROUP_TITLE,
+  HIGHLIGHTS_TITLE,
   SECTION_TITLES,
   buildReleaseSections,
   bumpVersion,
   collectReleaseItems,
   decideReleaseKind,
+  enrichReleaseItems,
+  extractPrNumber,
+  extractReleaseNotesFromPrBody,
   parseCommitSubject,
+  pickHighlights,
   renderReleaseNotes,
 } from "../scripts/lib/releaseNotes.mjs";
-import { changelogEntryFor } from "../scripts/lib/releaseFiles.mjs";
+import {
+  changelogEntryFor,
+  ghReleaseCreateArgs,
+  gitAnnotateTagArgs,
+  writeReleaseNotesFile,
+} from "../scripts/lib/releaseFiles.mjs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 describe("parseDescribe", () => {
   it("태그·커밋 수·sha 를 분해한다", () => {
@@ -173,9 +187,12 @@ describe("renderReleaseNotes", () => {
     expect(notes).toContain("`1111111`");
   });
 
-  it("사람이 쓴 표제가 있으면 본문 위에 붙는다", () => {
+  it("사람이 쓴 표제가 있으면 주요 변경을 덮어쓰고 기능 절보다 앞에 둔다", () => {
     const notes = renderReleaseNotes({ version: "0.2.0", date: "2026-09-16", summary: "로컬 저장 첫 배포", sections });
-    expect(notes.split("\n")[2]).toBe("로컬 저장 첫 배포");
+    expect(notes).toContain(`### ${HIGHLIGHTS_TITLE}`);
+    expect(notes).toContain("로컬 저장 첫 배포");
+    expect(notes.indexOf("로컬 저장 첫 배포")).toBeLessThan(notes.indexOf("### 기능"));
+    expect(notes).not.toMatch(/### 주요 변경\n\n- /);
   });
 
   it("변경이 없으면 빈 문서 대신 그렇다고 말한다", () => {
@@ -243,5 +260,154 @@ describe("changelogEntryFor", () => {
 
   it("없는 버전이면 null", () => {
     expect(changelogEntryFor(text, "9.9.9")).toBeNull();
+  });
+});
+
+describe("pickHighlights and richer notes layout", () => {
+  const commits = (subjects: readonly string[]) =>
+    subjects.map((subject, index) => ({ sha: `${String(index + 1).padStart(7, "0")}`, subject }));
+
+  it("feat/fix/perf 만 고르고 깨지는 변경·feat 를 앞에, 최대 5개를 남긴다", () => {
+    const items = collectReleaseItems(
+      commits([
+        "fix: 오래된 수정 (#10)",
+        "feat: 다섯째 기능",
+        "feat: 넷째 기능",
+        "chore: 잡무는 빼기",
+        "docs: 문서도 빼기",
+        "feat!: 깨지는 기능 (#7)",
+        "perf: 성능",
+        "feat: 둘째 기능",
+        "fix: 첫째 수정 (#11)",
+        "feat: 첫째 기능 (#9)",
+      ]),
+    );
+    const picked = pickHighlights(items);
+    expect(picked).toHaveLength(5);
+    expect(picked[0]).toMatchObject({ breaking: true, summary: "깨지는 기능 (#7)" });
+    expect(picked.slice(1).map((item) => item.type)).toEqual(["feat", "feat", "feat", "feat"]);
+    expect(picked.map((item) => item.summary)).toContain("첫째 기능 (#9)");
+    expect(picked.some((item) => item.type === "fix" || item.section === "잡무")).toBe(false);
+  });
+
+  it("사용자 섹션을 앞에 두고 내부 섹션은 개발 안에 접는다", () => {
+    const sections = buildReleaseSections(
+      collectReleaseItems(
+        commits(["feat: 기능 하나", "fix: 수정 하나", "chore: 잡무 하나", "test: 테스트 하나", "docs: 문서 하나"]),
+      ),
+    );
+    const notes = renderReleaseNotes({ version: "0.3.0", date: "2026-11-19", sections });
+    expect(notes.startsWith("## 0.3.0 — 2026-11-19")).toBe(true);
+    expect(notes).toContain(`### ${HIGHLIGHTS_TITLE}`);
+    expect(notes.indexOf("### 기능")).toBeLessThan(notes.indexOf("### 수정"));
+    expect(notes.indexOf("### 수정")).toBeLessThan(notes.indexOf("<details>"));
+    expect(notes).toContain(`<summary>${DEV_GROUP_TITLE}</summary>`);
+    expect(notes).toContain("### 잡무");
+    expect(notes).toContain("### 테스트");
+    expect(notes).toContain("### 문서");
+    expect(notes.indexOf("<details>")).toBeLessThan(notes.indexOf("### 잡무"));
+    expect(notes).toContain("</details>");
+    expect(notes).not.toContain("### 잡무\n\n- 잡무 하나\n\n### 기능");
+  });
+
+  it("내부 항목이 없으면 개발 접기를 만들지 않는다", () => {
+    const sections = buildReleaseSections(collectReleaseItems(commits(["feat: 기능만"])));
+    const notes = renderReleaseNotes({ version: "0.3.1", date: "2026-11-19", sections });
+    expect(notes).not.toContain("<details>");
+    expect(notes).not.toContain(`<summary>${DEV_GROUP_TITLE}</summary>`);
+  });
+});
+
+describe("extractPrNumber and PR release notes", () => {
+  it("스쿼시 머지의 (#123) 를 읽고 맨 끝 #123 도 허용한다", () => {
+    expect(extractPrNumber("feat(editor): 메뉴를 고친다 (#4772)")).toBe(4772);
+    expect(extractPrNumber("메뉴를 고친다 #90")).toBe(90);
+    expect(extractPrNumber("feat: 번호 없음")).toBeNull();
+  });
+
+  it("PR 본문의 릴리스 노트 절에서 첫 줄을 꺼낸다", () => {
+    expect(
+      extractReleaseNotesFromPrBody(
+        ["## 요약", "내부 설명", "", "## 릴리스 노트", "", "- 맵 우클릭 메뉴 글자가 잘리지 않습니다.", "", "## 테스트", "생략"].join("\n"),
+      ),
+    ).toBe("맵 우클릭 메뉴 글자가 잘리지 않습니다.");
+    expect(extractReleaseNotesFromPrBody("### Release notes\n\n이벤트 생성이 영어에서 Create event 로 바뀝니다.")).toBe(
+      "이벤트 생성이 영어에서 Create event 로 바뀝니다.",
+    );
+    expect(extractReleaseNotesFromPrBody("**Release notes:** 한 줄로 적는다.")).toBe("한 줄로 적는다.");
+    expect(extractReleaseNotesFromPrBody("## 설명\n본문만 있음")).toBeNull();
+    expect(extractReleaseNotesFromPrBody("## 릴리스 노트\n\n")).toBeNull();
+  });
+
+  it("enrich 는 노트가 있으면 쓰고, gh 실패·빈 절은 제목으로 남긴다", () => {
+    const items = collectReleaseItems([
+      { sha: "1111111aaaaaaaa", subject: "feat: 메뉴 수정 (#12)" },
+      { sha: "2222222bbbbbbbb", subject: "fix: 다른 수정 (#13)" },
+      { sha: "3333333cccccccc", subject: "feat: 번호 없는 기능" },
+    ]);
+    const bodies: Record<number, string | Error> = {
+      12: "## 릴리스 노트\n\n우클릭 메뉴 글자가 전부 보입니다.",
+      13: new Error("API down"),
+    };
+    const enriched = enrichReleaseItems(items, (number) => {
+      const value = bodies[number];
+      if (value instanceof Error) throw value;
+      return value ?? null;
+    });
+    expect(enriched[0]?.note).toBe("우클릭 메뉴 글자가 전부 보입니다.");
+    expect(enriched[1]?.note).toBeUndefined();
+    expect(enriched[2]?.note).toBeUndefined();
+    const notes = renderReleaseNotes({
+      version: "0.4.0",
+      date: "2026-11-19",
+      sections: buildReleaseSections(enriched),
+    });
+    expect(notes).toContain("우클릭 메뉴 글자가 전부 보입니다. (#12)");
+    expect(notes).toContain("다른 수정 (#13)");
+    expect(notes).toContain("번호 없는 기능");
+  });
+
+  it("fetchPrBody 가 없으면 항목을 그대로 둔다", () => {
+    const items = collectReleaseItems([{ sha: "1111111aaaaaaaa", subject: "feat: 메뉴 수정 (#12)" }]);
+    const enriched = enrichReleaseItems(items);
+    expect(enriched[0]?.note).toBeUndefined();
+    expect(enriched[0]?.prNumber).toBe(12);
+  });
+});
+
+describe("git tag and gh release note files", () => {
+  it("주석 글자를 # 가 아닌 값으로 두고 --notes-file 을 쓴다", () => {
+    expect(gitAnnotateTagArgs("v0.4.0", "/tmp/notes.md", "abc")).toEqual([
+      "-c",
+      "core.commentChar=;",
+      "tag",
+      "-a",
+      "v0.4.0",
+      "-F",
+      "/tmp/notes.md",
+      "abc",
+    ]);
+    expect(ghReleaseCreateArgs("v0.4.0", "/tmp/notes.md", { draft: true })).toEqual([
+      "release",
+      "create",
+      "v0.4.0",
+      "--title",
+      "v0.4.0",
+      "--notes-file",
+      "/tmp/notes.md",
+      "--draft",
+    ]);
+  });
+
+  it("노트 파일은 ##/### 제목 줄을 그대로 두고 끝 줄바꿈을 붙인다", () => {
+    const dir = mkdtempSync(join(tmpdir(), "oprn-notes-"));
+    try {
+      const path = join(dir, "notes.md");
+      const body = "## 0.4.0 — 2026-11-19\n\n### 기능\n\n- 항목\n";
+      writeReleaseNotesFile(path, body.trimEnd());
+      expect(readFileSync(path, "utf8")).toBe(body);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
