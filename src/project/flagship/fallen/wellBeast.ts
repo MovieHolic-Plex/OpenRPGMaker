@@ -185,8 +185,8 @@ export function wellData(project: Project, exec: Exec): void {
     // 2026-11-10 fs-boss-hide: 약점을 글·꼬리표로 알려 주지 않게 되면서(처음 하는 사람은 피해 숫자로 알아낸다) HP 7280 → 2184(0.30배).
     //   리드 기준 = 아이템을 들고 처음 싸우며 숫자로 배우는 사람 25~40%(200판 33%), 지고 다시 3번 100% 미만(95%).
     //   관통상 무효(아래 stateRates)와 함께 잰 값이다 — 관통상이 걸리면 찌르기 뒤 마법 3배로 훨씬 쉽다.
-    // 물 머금기 추가와 함께 최대 HP를 2184 → 10920으로 올린다.
-    stats: { maxHp: 10920, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
+    // 물 머금기(칼로 끊으면 한 차례 휘청) 추가와 함께 HP 2184 → 3276(1.5배 — #4508 이 옛 7280 위에서 잰 7280→10920 과 같은 비율).
+    stats: { maxHp: 3276, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
     skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD, SKILL_GULP],
     actions: [
       // 물 머금기는 두 페이즈에서 모두 순환과 비늘보다 우선한다. 순환 스위치는 그대로 두어 다음 행동 때 이어간다.
