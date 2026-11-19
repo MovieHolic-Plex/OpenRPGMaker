@@ -90,6 +90,11 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   };
   const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
     : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
+  // 게임을 깨는 실패만 — 걸어 닿지 못함 · 갈 곳 없는 출구 · 갇히는 도착 칸 · 말을 걸 수 없는 사람 · 맵이 없음 · 청한 물건을 못 놓음.
+  // 비평 major 나 맨바닥·빈칸 같은 꾸밈 문제는 늘어도 되돌리지 않는다(오너 원칙: 거절은 게임이 깨질 때만 — 2026-11-17 r8 D4: 생선 바구니 더하기 · 소금통 빼기 ·
+  // 계단 빼기 · 침대 더하기가 «문제 수가 늘었다» 로 다섯 번 되돌려졌다).
+  const BREAKING = new Set(["exists", "reach", "exit-target", "exit-landing", "exit-reachable", "npc-reachable", "anchor-missing"]);
+  const breakingCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId) && BREAKING.has(c.id)).length;
   const outsideBuilt = (mapId: string): boolean => { const r = session.places.get(mapId); return !!r && isOutdoor(r.spec); };
   /** 칸 배치로 지은 장소를 자기 비평·할 일 확인 목록에 올린다(placeLayout.ts). */
   const noteLayoutPlace = (spec: PlaceSpec, result: PlaceBuildResult): void => {
@@ -164,7 +169,12 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     if (before) {
       const oldIds = before.record.result.mapIds;
       const was = problemCount(before.seen.get(oldIds[0]!), oldIds), now = problemCount(seen, result.mapIds);
-      if (now > was) {
+      const brokeWas = breakingCount(before.seen.get(oldIds[0]!), oldIds), brokeNow = breakingCount(seen, result.mapIds);
+      if (now > was && brokeNow <= brokeWas) {
+        // 꾸밈 문제만 늘었다 — 고친 것을 남기고 알린다(되돌리지 않는다).
+        result = { ...result, warnings: [...result.warnings, `Kept this change: the review now lists ${now} problem(s) (was ${was}), but none of the new ones breaks the game (nothing became unreachable). Fix what you think matters with one more small patch, or report it.`] };
+      }
+      if (now > was && brokeNow > brokeWas) {
         env.ctx.project = before.project;
         for (const mapId of result.mapIds) { session.places.delete(mapId); session.seen.delete(mapId); }
         // 첫 되돌림은 한 번 더 기회를 준다 — 큰 패치가 바닥 무늬를 더 어지럽혀 되돌렸고, 비평 메모(바닥 무늬·복도 나무 타일·벽 밖 러그)는
@@ -269,7 +279,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds, ...(zones.length ? { zones } : {}),
       ...(seen ? { machineChecks: npcProblems.length ? npcProblems.map((c) => c.detail) : "사람·출입 검사 통과" } : {}),
       next: result.ok ? (npcProblems.length ? "where 낱말이나 at 칸을 바꿔 다시 부른다." : "통과.")
-        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이름이 비슷한 물건이 있다 — inspect 그림이나 이름으로 보아 요청과 같은 물건이면 그 id 를 place_object 로 놓고, 요청과 다른 물건(재질·장치가 다름)이면 draw_object 에 notThese:[그 id 들] 을 넣어 다시 부른다(새로 그린다). 이름만 바꿔 다시 부르지 않는다."
+        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이름이 같은 물건이 있다 — inspect 그림이나 이름으로 보아 요청과 같은 물건이면 그 id 를 place_object 로 놓고, 요청과 다른 물건(재질·장치가 다름)이면 draw_object 에 notThese:[그 id 들] 을 넣어 다시 부른다(새로 그린다). 이름만 바꿔 다시 부르지 않는다."
         : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
   };
   // 청사진 먼저(2026-10-28): 게임 하나를 만드는 요청이면 짓기 전에 write_blueprint 로 목표·핵심 경로·엔딩을 쓴다.

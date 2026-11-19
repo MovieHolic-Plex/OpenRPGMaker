@@ -264,7 +264,7 @@ export interface ObjectSpec {
   /** 놓을 자리 낱말 또는 칸. */
   readonly where?: string;
   readonly at?: { readonly x: number; readonly y: number };
-  /** 칩셋에 이름이 비슷한 기물이 있다고 거부됐지만 봤더니 다른 물건일 때 — 그 id 들(거부 메시지에 나온 id). */
+  /** 칩셋에 이름이 정확히 같은 기물이 있다고 거부됐지만 봤더니 다른 물건일 때 — 그 id 들(거부 메시지에 나온 id). */
   readonly notThese?: readonly string[];
 }
 

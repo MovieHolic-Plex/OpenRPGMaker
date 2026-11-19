@@ -151,6 +151,7 @@ export function cleanLayoutHint(value: unknown): Record<string, unknown> | null 
 
 const KNOWN_HINTS = new Set(["fishing", "layout", "terrainSeed", "terrainGen", "landform", "settle", "tiers", "high", "houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "variant", "harbour", "kind", "buildings"]);
 const BEODEUL_TILESET = "beodeul_city";
+export const COAST_TERRAIN_NOTE = "Coast terrain makes a seashore or bay. This builder cannot lay a river flowing into the sea, and it cannot reshape the coast after the village is built.";
 
 interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
 
@@ -405,6 +406,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     : { mapId: builtId, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 32) / 2) };
   const farm = farmAddons(run, builtId, words(spec), warnings, missing);
   calls.push(...run.calls.slice(firstCall + calls.length));
+  if (data.theme === "coast") warnings.unshift(COAST_TERRAIN_NOTE);
   const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, farm.length ? `농가 ${farm.join("·")}` : "", `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : ""].filter(Boolean);
   // 시작에서 걸어 닿지 않는 집(강 건너·막힌 터)의 문은 목록에서 뺀다 — 그 문앞으로 이으면 출입구가 닿는 맨바닥으로 옮겨 붙는다(2026-11-11 문 앞 칸 탐침 seed 202).
   const allDoors = Array.isArray(data.doors) ? data.doors as (NonNullable<VillageState["doors"]>[number] & { reached?: boolean })[] : undefined;

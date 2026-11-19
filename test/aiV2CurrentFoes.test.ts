@@ -162,11 +162,15 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
     expect(whelp.gaps).toEqual([]);
   });
 
-  it("테마 표에 없는 세계(버들항)의 싸우는 단계도 현행 그림 — 낱말이 가리키는 종에 그림이 없으면 대역 + 그릴 목록", () => {
+  it("테마 표에 없는 세계(버들항)의 싸우는 단계 — 낱말이 가리키는 종의 그림이 어느 묶음에든 있으면 그 종, 대역은 쓰인 종을 피해 돌지 않는다", () => {
     const project = createBlankProject() as Project;
+    // 오너 «에셋을 자유롭게»(2026-11-16, story/currentFoes.namedFoe): 옛 묶음의 마왕 그림이 있으면 마왕 — 끝맺음 step-foes 가 «old-set picture» 로 알린다.
     const lord = themeBossTroop(project, project.startMapId, "동굴 속 마왕", true, 0);
-    expect(leadArt(project, lord.troopId)).toBe("generated-enemy-wraith-dark");
-    expect(lord.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["demon-lord"]);
+    expect(leadArt(project, lord.troopId)).toBe("generated-enemy-demon-lord");
+    expect(lord.gaps).toEqual([]);
+    // r7-harbour R4 · P6: 대역(창백한 유령)이 이미 길 적이어도 «해골 병사» 는 다이어 울프로 돌지 않고 제 해골 그림.
+    const soldier = themeBossTroop(project, project.startMapId, "해골 병사", false, 0, new Set(["enemy_ghost_pale"]));
+    expect(leadArt(project, soldier.troopId)).toBe("generated-enemy-skeleton-bone");
     const wolf = themeBossTroop(project, project.startMapId, "늑대 우두머리", false, 1);
     expect(leadArt(project, wolf.troopId)).toBe("generated-enemy-wolf-grey");
     expect(wolf.gaps).toEqual([]);
