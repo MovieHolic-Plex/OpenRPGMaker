@@ -242,18 +242,22 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(findByTestId(topbar, "menu-project")?.textContent).toContain("제목 없는 프로젝트");
   });
 
-  it("프로젝트 메뉴에 저장 항목은 없고, 새 프로젝트·열기·저장본·가져오기·내보내기·배포가 있다", () => {
-    // Break: 저장이 버튼과 메뉴 항목 두 자리에 놓인다.
+  it("프로젝트 메뉴는 저장 단축키를 표시하고, 내보내기·배포는 하위 메뉴에 모은다", () => {
     const topbar = render();
-    const popup = openMenu(topbar, "menu-project");
-    const ids = (popup?.children ?? []).map((child) => child.dataset.testid ?? "").filter(Boolean);
+    const popup = openMenu(topbar, "menu-project")!;
+    const ids = popup.children.map((child) => child.dataset.testid).filter(Boolean);
     expect(ids).toEqual([
-      "menu-project-new", "menu-project-load", "menu-project-reload-db",
+      "menu-project-new", "menu-project-load", "menu-project-save", "menu-project-reload-db",
       "menu-project-samples",
-      "menu-project-import", "menu-project-export", "menu-project-publication",
-      "menu-project-export-web", "menu-project-export-standalone",
+      "menu-project-import", "menu-project-backup", "menu-project-restore-backup", "menu-project-export-group",
     ]);
-    expect(ids).not.toContain("menu-project-save");
+    expect(findByTestId(popup, "menu-project-save")?.querySelector("kbd")?.textContent).toBe("Ctrl+S");
+
+    findByTestId(popup, "menu-project-export-group")?.click();
+    const exportPopup = findByTestId(fake(document.body), "menu-popup-project-export");
+    expect(exportPopup?.children.map((child) => child.dataset.testid)).toEqual([
+      "menu-project-export", "menu-project-export-web", "menu-project-publication", "menu-project-export-standalone",
+    ]);
   });
 
   it("새 프로젝트는 런처와 같은 컨셉 피드 창을 연다 — 닫으면 폴더도 AI 요청도 만들지 않는다", async () => {
@@ -303,12 +307,12 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(autosaveStatusText({ kind: "pending" })).toBe("저장 중");
   });
 
-  it("자료집·소재 버튼이 모달을 연다", () => {
+  it("자료집·소재 버튼이 모달을 연다", async () => {
     // Break: 자료집 버튼이 사라져 메뉴 두 번 클릭만 남는다.
     const topbar = render();
     findByTestId(topbar, "toolbar-database")?.click();
     findByTestId(topbar, "toolbar-resource-manager")?.click();
-    expect(mocks.openDatabaseModal).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => expect(mocks.openDatabaseModal).toHaveBeenCalledTimes(1));
     expect(mocks.openResourceModal).toHaveBeenCalledTimes(1);
   });
 
