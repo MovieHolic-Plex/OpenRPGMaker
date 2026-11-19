@@ -55,9 +55,9 @@
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
 - `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
-  서로 의존하지 않는다. 한 판에 잡 6개가 돌고, 푸시와 같은 저장소의 PR 은 mdc2 두 대를 쓴다.
+  서로 의존하지 않는다. 한 판에 잡 6개가 돌고, 전부 GitHub 호스티드(`ubuntu-latest`)에서 돈다. mdc2 는 ci-vitest-files 만 쓴다.
   포크 PR 과 pull_request_target 은 `runs-on` 식에서 `ubuntu-latest` 로 간다. 수동 `ci-vitest-files` 는
-  같은 선택식에 `mdc2-heavy` 라벨을 더해 48GB 러너를 쓴다.
+  같은 선택식에 `mdc2-heavy` 라벨을 더해 mdc2 러너(4대, 각 MemoryMax=22G·CPUQuota=500%)를 쓴다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
   같은 날 실측(run 44531254883, 44533700673, 44536145289)에서 ci-full 과 여러 PR 이 겹치자
   4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
