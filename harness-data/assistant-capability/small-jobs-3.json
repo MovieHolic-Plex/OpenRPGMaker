@@ -156,6 +156,29 @@
        }
       }
      ]
+    },
+    {
+     "note": "좁은 도구 한 호출(set_present_reactions — 아이템은 이름으로)",
+     "calls": [
+      {
+       "tool": "set_present_reactions",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_guard",
+        "reactions": [
+         {
+          "itemId": "낡은 열쇠",
+          "lines": [
+           "그 열쇠… 내가 숨긴 게 맞다."
+          ]
+         }
+        ],
+        "otherLines": [
+         "그건 나와 상관없는 물건이야."
+        ]
+       }
+      }
+     ]
     }
    ],
    "wrong": [
@@ -1307,6 +1330,27 @@
        }
       }
      ]
+    },
+    {
+     "note": "좁은 도구 한 호출(set_npc_affection)",
+     "calls": [
+      {
+       "tool": "set_npc_affection",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "talkGain": 1,
+        "milestones": [
+         {
+          "atLeast": 3,
+          "lines": [
+           "오늘은 특별히 따뜻한 차를 내올게요."
+          ]
+         }
+        ]
+       }
+      }
+     ]
     }
    ],
    "wrong": [
@@ -1715,6 +1759,27 @@
           }
          ]
         }
+       }
+      }
+     ]
+    },
+    {
+     "note": "좁은 도구 한 호출(set_npc_affection gifts — 아이템은 이름으로)",
+     "calls": [
+      {
+       "tool": "set_npc_affection",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "gifts": [
+         {
+          "itemId": "회복약",
+          "gain": 2,
+          "lines": [
+           "어머, 고마워요! 잘 쓸게요."
+          ]
+         }
+        ]
        }
       }
      ]
@@ -2241,6 +2306,33 @@
        }
       }
      ]
+    },
+    {
+     "note": "좁은 도구 한 호출(set_npc_affection confess) — 숙박도 남는다",
+     "calls": [
+      {
+       "tool": "define_ending",
+       "args": {
+        "id": "ending_inn_together",
+        "name": "함께 여는 여관"
+       }
+      },
+      {
+       "tool": "set_npc_affection",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "talkGain": 1,
+        "confess": {
+         "atLeast": 3,
+         "endingId": "ending_inn_together",
+         "refuseLines": [
+          "아직은 마음의 준비가 안 됐어요."
+         ]
+        }
+       }
+      }
+     ]
     }
    ],
    "wrong": [
@@ -2589,6 +2681,29 @@
        ]
       }
      }
+    }
+   ],
+   "accept": [
+    {
+     "note": "좁은 도구 한 호출(set_npc_affection) — 말을 걸어 도는 페이지 전부에 끼운다",
+     "calls": [
+      {
+       "tool": "set_npc_affection",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+        "talkGain": 1,
+        "milestones": [
+         {
+          "atLeast": 3,
+          "lines": [
+           "자네에게는 이 목도리를 그냥 주고 싶군."
+          ]
+         }
+        ]
+       }
+      }
+     ]
     }
    ],
    "wrong": [
@@ -8959,6 +9074,20 @@
      }
     }
    ],
+   "accept": [
+    {
+     "note": "좁은 도구 한 호출(set_time_limit)",
+     "calls": [
+      {
+       "tool": "set_time_limit",
+       "args": {
+        "mapId": "map_blank_start",
+        "seconds": 30
+       }
+      }
+     ]
+    }
+   ],
    "wrong": [
     {
      "note": "타이머만 돌고 시간이 다 돼도 아무 일이 없다",
@@ -11197,6 +11326,21 @@
        ]
       }
      }
+    }
+   ],
+   "accept": [
+    {
+     "note": "좁은 도구 한 호출(add_hud_gauge)",
+     "calls": [
+      {
+       "tool": "add_hud_gauge",
+       "args": {
+        "label": "배고픔",
+        "initial": 100,
+        "max": 100
+       }
+      }
+     ]
     }
    ],
    "wrong": [

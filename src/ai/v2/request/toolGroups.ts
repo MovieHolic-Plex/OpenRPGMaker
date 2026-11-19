@@ -113,6 +113,8 @@ const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event",
 const V2_GENRE_TOOLS: readonly string[] = [
   "place_trap", "lock_door", "place_storage_chest", "create_farm_plot", "define_crop", "upsert_fish_species", "configure_fishing", "set_deadline_ending",
   "set_dialogue_system", "set_action_combat", "make_action_enemy", "configure_monster_system", "give_starter_monsters", "place_trainer", "manage_flag_slot",
+  // 이벤트 명령을 손으로 조립하던 장치 넷(셋째 묶음 Terra 기준선: 선물 36호출 · 고백 32 · 내밀기 27) — src/editor/tools/genreDeviceTools.ts.
+  "set_npc_affection", "set_present_reactions", "set_time_limit", "add_hud_gauge",
 ];
 
 /**
