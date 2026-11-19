@@ -1,0 +1,75 @@
+{
+ "game": "ref_shitamachi-fourth-season",
+ "quests": [
+  {
+   "id": "wish_lanterns",
+   "title": "소원 등롱 세 개",
+   "giver": {
+    "mapId": "map_shitamachi_arcade",
+    "eventId": "ev_shitamachi_seoyeon"
+   },
+   "turnIn": [
+    {
+     "mapId": "map_shitamachi_arcade",
+     "eventId": "ev_sm_keeper"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "map_venue_bakery",
+     "eventId": "ev_sm_jiho"
+    },
+    {
+     "mapId": "map_venue_sento",
+     "eventId": "ev_sm_yuna"
+    },
+    {
+     "mapId": "map_venue_council",
+     "eventId": "ev_sm_seoyeon_office"
+    }
+   ],
+   "completionFlag": "var_sm_lanterns",
+   "reason": "서연이 등롱 셋을 모아 등롱지기에게 가져가라 부탁 → 세 곳에서 변수 증가 → 등롱지기가 3이면 점등·엔딩"
+  }
+ ],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "map_venue_rooftop",
+     "eventId": "ev_sm_roof_scene"
+    }
+   ],
+   "kind": "affection",
+   "reason": "호감 변수로 가르는 고백 장면"
+  },
+  {
+   "events": [
+    {
+     "mapId": "map_venue_house",
+     "eventId": "ev_sm_house_note"
+    },
+    {
+     "mapId": "map_venue_house",
+     "eventId": "ev_sm_house_photo"
+    },
+    {
+     "mapId": "map_venue_bakery",
+     "eventId": "ev_sm_jiho"
+    }
+   ],
+   "kind": "dialogue-branch",
+   "reason": "쪽지·사진 스위치는 지호 대사 한 줄만 바꾼다"
+  },
+  {
+   "events": [
+    {
+     "mapId": "map_venue_train",
+     "eventId": "ev_sm_train_scene"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "오프닝 전철 장면"
+  }
+ ]
+}

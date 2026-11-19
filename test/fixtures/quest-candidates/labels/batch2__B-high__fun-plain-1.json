@@ -1,0 +1,28 @@
+{
+ "game": "batch2__B-high__fun-plain-1",
+ "quests": [],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "clock_room",
+     "eventId": "ev_clock_gears_seq_1"
+    },
+    {
+     "mapId": "clock_room",
+     "eventId": "ev_clock_gears_seq_2"
+    },
+    {
+     "mapId": "clock_room",
+     "eventId": "ev_clock_gears_seq_3"
+    },
+    {
+     "mapId": "clock_room",
+     "eventId": "bell"
+    }
+   ],
+   "kind": "puzzle",
+   "reason": "오프닝 자동 실행의 한 줄 지시와 레버 퍼즐, 보고할 인물이 없고 종은 스위치를 보지도 않는다"
+  }
+ ]
+}

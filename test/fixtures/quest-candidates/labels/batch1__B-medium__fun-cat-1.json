@@ -1,0 +1,28 @@
+{
+ "game": "batch1__B-medium__fun-cat-1",
+ "quests": [
+  {
+   "id": "cat_star",
+   "title": "별 조각 찾아 주기",
+   "giver": {
+    "mapId": "cat_meadow",
+    "eventId": "friend"
+   },
+   "turnIn": [
+    {
+     "mapId": "cat_meadow",
+     "eventId": "friend"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "cat_meadow",
+     "eventId": "star"
+    }
+   ],
+   "completionFlag": "sw_cat_star",
+   "reason": "친구가 별 조각을 찾게 함 → 조각 스위치 → 친구에게 돌려주면 엔딩"
+  }
+ ],
+ "notQuests": []
+}

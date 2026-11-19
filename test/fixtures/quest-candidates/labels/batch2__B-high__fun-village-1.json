@@ -1,0 +1,32 @@
+{
+ "game": "batch2__B-high__fun-village-1",
+ "quests": [
+  {
+   "id": "wind_lights",
+   "title": "길등 켜기",
+   "giver": {
+    "mapId": "map_beodeul_river_35113",
+    "eventId": "village_guide"
+   },
+   "turnIn": [
+    {
+     "mapId": "map_beodeul_river_35113",
+     "eventId": "village_guide"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "map_beodeul_river_35113",
+     "eventId": "ev_wind_lights_seq_1"
+    },
+    {
+     "mapId": "map_beodeul_river_35113",
+     "eventId": "ev_wind_lights_seq_2"
+    }
+   ],
+   "completionFlag": "sw_wind_lights",
+   "reason": "마을지기가 길등 순서 조사를 맡김 → 스위치 → 마을지기에게 알리면 엔딩"
+  }
+ ],
+ "notQuests": []
+}
