@@ -1,7 +1,8 @@
 # 변경 기록
 
 이 파일은 `npm run release` 가 커밋 메시지에서 생성한다. 손으로 고치지 말 것 —
-고칠 것은 커밋 메시지다(`feat:` `fix:` `refactor:` … 규약은 openwiki/release-and-version.md).
+고칠 것은 커밋 메시지, PR 본문의 「릴리스 노트」/「Release notes」 절, 또는 `--summary` 다
+(규약은 openwiki/release-and-version.md).
 
 <!-- releases -->
 

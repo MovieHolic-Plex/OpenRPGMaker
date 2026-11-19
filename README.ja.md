@@ -195,6 +195,7 @@ npm test                 # ユニットテスト（GitHub CI。ローカルは O
 | 名称とロゴ | [TRADEMARKS.md](TRADEMARKS.md) |
 
 **作ったゲームはあなたのもの** —— 販売も配布も自由、ロイヤリティは不要です。
+[OPRN PLAY](https://play.openrpgmaker.com/?lang=ja) に公開できるのは無料・非営利のゲームだけです。ほかの場所で販売・収益化しているゲームを OPRN PLAY にも公開することはできません。
 コントリビュートは [CLA](CLA.md) のもとで歓迎します。
 
 OPRN Studio は RPG ツクール（RPG Maker）、Gotcha Gotcha Games、KADOKAWA とは関係ありません。

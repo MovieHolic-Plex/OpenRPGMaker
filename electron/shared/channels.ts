@@ -18,6 +18,7 @@ export const OPRN_CHANNELS = {
   teamLock: "oprn:team.lock",
   companionOrigin: "oprn:companion.origin",
   companionToken: "oprn:companion.token",
+  startManageRecent: "oprn:start.manageRecent",
   startOpenRecent: "oprn:start.openRecent",
   /** 시작 화면 「이름 바꾸기」 — 프로젝트 폴더의 제목만 바꾼다. */
   startRenameProject: "oprn:start.renameProject",
@@ -59,7 +60,7 @@ export const OPRN_CHANNELS = {
   /** 보기 → 새로고침. 렌더러가 store.flush() 를 끝내고 flush-reload-done 으로 결과를 알린다. */
   lifecycleFlushBeforeReload: "oprn:lifecycle.flush-before-reload",
   lifecycleFlushReloadDone: "oprn:lifecycle.flush-reload-done",
-  /** 편집기가 새로고침 저장 리스너를 붙였다. 그 전에는 메모리 편집이 없다. */
+  /** 편집기가 닫기·새로고침 저장 리스너를 붙였다. 그 전에는 메모리 편집이 없다. */
   lifecycleFlushReady: "oprn:lifecycle.flush-ready",
   /** beforeunload 가 미저장 때문에 새로고침을 막았다(동기). 메인이 저장한 뒤 다시 연다. */
   lifecycleReloadBlocked: "oprn:lifecycle.reload-blocked",
@@ -112,6 +113,7 @@ export const OPRN_CHANNELS = {
   /** 「바로 플레이」 게임: 이 프로젝트의 게임·다음 판본, 판본 올리기, 지금 판본 바꾸기(되돌리기). */
   storeGameMine: "oprn:store.gameMine",
   storeGamePublish: "oprn:store.gamePublish",
+  storeGameDeclaration: "oprn:store.gameDeclaration",
   storeGameCurrent: "oprn:store.gameCurrent",
   storeGamePost: "oprn:store.gamePost",
   /** 플레이어 평가: 내 게임 평가 읽기·제작자 답글(답글은 작가만 — 서버가 판단). */

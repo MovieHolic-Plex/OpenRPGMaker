@@ -81,6 +81,15 @@ afterEach(() => {
 });
 
 describe("test play window run controls", () => {
+  it.each([false, true])("flushes before play only when there are unsaved changes (%s)", async (dirty) => {
+    vi.spyOn(store, "hasUnsavedChanges").mockReturnValue(dirty);
+
+    await openTestPlayModal();
+
+    expect(store.flush).toHaveBeenCalledTimes(dirty ? 1 : 0);
+    expect(playerMocks.renderPlayer).toHaveBeenCalledTimes(1);
+  });
+
   it("unlocks audio synchronously before the opening gesture yields to persistence", async () => {
     const unlock = vi.spyOn(AudioEngine.prototype, "unlock");
     const opening = openTestPlayModal();

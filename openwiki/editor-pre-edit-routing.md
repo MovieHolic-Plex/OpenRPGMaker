@@ -195,6 +195,8 @@ identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가
 - **패치 값만 와이어 JSON 으로 맞춘다.** `withWirePatchValues` 가 실제로 실려 나가는 항목만 왕복시킨다.
   호스트는 패치를 기준 문서에 얹어 저장문을 만들므로(`applyProjectDocumentPatch`) 값이 `serialize` 바이트와 동등해야 한다.
   비용은 프로젝트가 아니라 변경량(칠하기 한 번 = 맵 하나)에 붙는다.
+- **빈 Electron 문서 패치는 호스트 쓰기를 건너뛴다.** 자동저장 표시는 직전 저장 시각을 유지하고, 수동 저장은 「이미 최신 상태입니다」를 표시한다.
+  테스트 플레이는 부팅 정규화를 기다린 뒤 미저장 변경이 있을 때만 `flush()`를 호출한다.
 - **3초 팀 폴링의 동일성 비교는 `jsonEqual` 이다.** `store.refreshFromHost` 가 쓰던
   `serializeForComparison` ×2(각 2,486ms)를 값 비교로 바꿨다. 같은 객체를 만나면 지나가고 첫 차이에서 멈춘다.
 - **저장 영수증(`receipt.contentIdentity`)과 `verifyPersistedRevision` 은 건드리지 않았다.** 그 둘은 반드시

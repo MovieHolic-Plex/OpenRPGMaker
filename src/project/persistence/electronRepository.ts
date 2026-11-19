@@ -1,3 +1,4 @@
+import type { CloseSaveMode } from "../../../electron/main/closeFlow";
 import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";
 import { afterBootSettled } from "@/util/bootSettled";
@@ -95,15 +96,15 @@ export type OprnBridgeAssets = {
   pruneUnused(payload: { readonly projectDir: string; readonly referenced: readonly string[] }): Promise<readonly string[]>;
 };
 export type OprnBridgeLifecycle = {
-  readonly onFlushBeforeClose: (callback: () => void) => void;
-  /** 닫기 저장 보고. ok=false 면 메인이 창을 닫지 않는다. */
-  readonly flushDone: (ok: boolean) => Promise<unknown>;
+  readonly onFlushBeforeClose: (callback: (requestId: number, mode: CloseSaveMode) => void) => void;
+  /** 요청 번호로 늦게 도착한 저장 결과를 구분한다. */
+  readonly flushDone: (requestId: number, ok: boolean) => Promise<unknown>;
   /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
   readonly onSaveRequest: (callback: () => void) => void;
   /** 보기 → 새로고침. 데스크톱만. 저장이 안전할 때만 flushReloadDone(true). */
   readonly onFlushBeforeReload?: (callback: () => void) => void;
   readonly flushReloadDone?: (ok: boolean) => Promise<unknown>;
-  /** 위 리스너를 붙인 뒤 한 번. 그 전에는 메인이 바로 새로고침한다. */
+  /** 닫기·새로고침 리스너를 붙인 뒤 한 번. 그 전에는 메인이 바로 새로고침한다. */
   readonly markFlushReady?: () => void;
   /** beforeunload 가 미저장 때문에 새로고침을 막았음(동기). 메인이 저장 후 다시 연다. */
   readonly noteUnsavedReloadBlock?: () => void;
@@ -114,7 +115,8 @@ export type OprnBridgeLifecycle = {
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
   readonly openFolder: (payload?: { readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
-  readonly openRecent?: (payload: { readonly projectDir: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+  readonly openRecent?: (payload: { readonly projectDir: string }) => Promise<{ readonly projectDir: string; readonly projectId: string | null; readonly focusedExisting?: boolean } | null>;
+  readonly manageRecent?: (payload: { readonly projectDir: string; readonly action: import("../../../electron/shared/start").RecentFolderAction }) => Promise<boolean>;
   /** 데스크톱 전용 — 최근 목록 프로젝트의 제목(문서 meta.title)을 바꾼다. 목록에 없는 경로·빈 제목이면 null. */
   readonly renameProject?: (payload: { readonly projectDir: string; readonly title: string }) => Promise<{ readonly projectDir: string; readonly title: string } | null>;
   /** 데스크톱 전용 — 최근 목록에서만 뺀다(폴더·파일은 그대로). 목록에 없던 경로면 false. */
@@ -497,6 +499,7 @@ export function createElectronRepository(): ElectronRepository {
       // 비교는 잘게 나눠 돈다(수십 칸 타일셋 대조가 한 번에 약 1s). 쉬는 동안 스토어는 가지를 교체만 하므로
       // 입력 보기가 가리키는 내용은 제출 때 그대로다.
       const patch = await withWirePatchValuesSliced(await diffProjectDocumentsSliced(projectWireView(baseProject), projectWireView(persisted), yieldToTask), yieldToTask);
+      if (Object.keys(patch).length === 0) return { kind: "saved", written: false };
       // 호스트가 이 패치를 기준본 위에 얹어 저장하므로, 같은 연산이 곧 저장될 내용의 사적 사본이다.
       // 패치 값은 이미 JSON 왕복 사본이고, 나머지 가지는 기준본(사적·불변)을 공유한다 — 복제가 변경량에 비례한다.
       // 실측(2026-09-26, 81MB 새 프로젝트): 저장마다 전체 복제 1.2s 를 없앤다. serialize(submitted) 는 호스트 행과 같다.

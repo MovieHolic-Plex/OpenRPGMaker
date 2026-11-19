@@ -22,6 +22,8 @@ export type SaveResult =
   | { readonly kind: "conflict"; readonly conflicts: readonly MapSaveConflict[] }
   | {
       readonly kind: "saved";
+      /** An empty patch was already up to date. No host revision was written. */
+      readonly written?: false;
       readonly project?: Project;
       readonly sha256?: string;
       readonly commitId?: string;

@@ -195,6 +195,7 @@ npm test                 # unit tests (GitHub CI; locally exits unless OPRN_LOCA
 | Names and logos | [TRADEMARKS.md](TRADEMARKS.md) |
 
 **The games you make are yours** — sell them, share them, no royalties.
+[OPRN PLAY](https://play.openrpgmaker.com/) hosts free, non-commercial games only: a game you sell or monetise elsewhere cannot also be hosted there.
 Contributions are welcome under the [CLA](CLA.md).
 
 OPRN Studio is not affiliated with RPG Maker, Gotcha Gotcha Games or KADOKAWA.

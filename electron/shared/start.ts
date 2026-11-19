@@ -1,4 +1,4 @@
-/** 시작 화면이 최근 목록에서 기본으로 숨기는 이유. */
+/** 최근 폴더가 임시 위치에 있거나 열 수 없는 상태. */
 export type RecentProjectHiddenReason = "temporary" | "missing";
 
 /** 시작 화면 카드 그림 크기(cover.jpg). 편집기와 시작 화면이 같은 크기로 굽는다. */
@@ -23,6 +23,7 @@ export type RecentProjectEntry = {
   readonly coverStale?: boolean;
   /** 지금 판의 시작 맵이 빈 맵(풀밭 한 장)이라 그림을 내지 않기로 했다 — 자리표를 보이고 다시 굽지 않는다. */
   readonly coverEmpty?: boolean;
+  readonly protectedFolder?: boolean;
   readonly hiddenReason?: RecentProjectHiddenReason | null;
 };
 
@@ -54,3 +55,5 @@ export type RecentTeamEntry = {
 
 /** @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
 export type JoinTeamResult = { readonly ok: true; readonly url: string } | { readonly ok: false; readonly error: string };
+
+export type RecentFolderAction = "open-window" | "reveal" | "duplicate" | "trash";

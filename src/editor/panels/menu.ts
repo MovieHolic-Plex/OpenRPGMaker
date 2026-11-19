@@ -1307,6 +1307,7 @@ async function doLoad(): Promise<void> {
     return;
   }
   if (!opened) {
+    // 호스트·데스크톱 열기나 브라우저 폴더 선택을 취소하면 조용히 끝낸다.
     if (window.oprn?.start || "showDirectoryPicker" in window) return;
     toast("프로젝트 서버에 연결되지 않았습니다. 내부 IP의 프로젝트 호스트 주소로 다시 접속하세요.", "error");
     return;

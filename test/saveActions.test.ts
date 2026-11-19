@@ -8,7 +8,7 @@ type MockFlushResult =
   | { readonly kind: "disabled" }
   | { readonly kind: "not-configured" }
   | { readonly kind: "not-loaded" }
-  | { readonly kind: "saved" }
+  | { readonly kind: "saved"; readonly written?: false }
   | { readonly kind: "saved-local" };
 
 const mocks = vi.hoisted(() => ({
@@ -112,6 +112,14 @@ describe("saveProjectNow", () => {
     pendingSave.resolve({ kind: "saved" });
     await expect(first).resolves.toBe(true);
     expect(mocks.toast.mock.calls.filter(([message]) => message === "저장 완료")).toHaveLength(1);
+  });
+
+  it("reports an empty patch as already up to date", async () => {
+    mocks.flush.mockResolvedValueOnce({ kind: "saved", written: false });
+
+    await expect(saveProjectNow()).resolves.toBe(true);
+
+    expect(mocks.toast).toHaveBeenLastCalledWith("이미 최신 상태입니다", { kind: "ok", key: expect.any(Symbol) });
   });
 });
 

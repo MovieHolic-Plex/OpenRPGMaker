@@ -1,7 +1,7 @@
-// 제공자 레지스트리: 앞의 셋은 Claude · Antigravity(Gemini) · Codex 이고, 나머지는 뒤에 덧붙는다.
+// 제공자 레지스트리: 앞의 셋은 Codex(ChatGPT) · Claude · Antigravity(Gemini) 이고, 나머지는 뒤에 덧붙는다.
 //
 // 2026-11-02 abaa03e78f 로 레지스트리가 2종 → 17종(OMP 가 로그인해 둔 제공자)으로 늘었다. 첫 항목이 권장 제공자이고
-// (2026-11-16 오너 결정: Claude — 조수 기본은 Opus 5.5 medium), 옛 저장값의 기본 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER 다.
+// (2026-11-19 오너 결정: ChatGPT — 조수 기본은 GPT-6.1 Terra medium. 2026-11-16 에는 Claude 였다), 옛 저장값의 기본 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER 다.
 // 모든 제공자는 구독 로그인(oauth)이다 — API 키 제공자는 없다.
 import { describe, expect, it } from "vitest";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -17,14 +17,14 @@ import {
 } from "@/ai/ohMyPiProviders";
 
 describe("oh-my-pi provider catalog", () => {
-  it("앞의 셋은 고정이고 권장 제공자(Claude)가 맨 앞이다", () => {
+  it("앞의 셋은 고정이고 권장 제공자(ChatGPT)가 맨 앞이다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id).slice(0, 3)).toEqual([
+      CODEX_PROVIDER_ID,
       "anthropic",
       ANTIGRAVITY_PROVIDER_ID,
-      CODEX_PROVIDER_ID,
     ]);
     expect(OH_MY_PI_PROVIDERS.length).toBeGreaterThan(3);
-    expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe("anthropic");
+    expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe(CODEX_PROVIDER_ID);
     expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
   });
 
@@ -64,7 +64,7 @@ describe("oh-my-pi provider catalog", () => {
     expect(claude?.defaultModel).toBe("claude-opus-5-5");
   });
 
-  it("옛 저장값을 읽을 때의 제공자는 Antigravity OAuth 다 — 권장 제공자가 Claude 로 바뀌어도 그대로다", () => {
+  it("옛 저장값을 읽을 때의 제공자는 Antigravity OAuth 다 — 권장 제공자가 ChatGPT 로 바뀌어도 그대로다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
     expect(getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER)?.authKind).toBe("oauth");
   });

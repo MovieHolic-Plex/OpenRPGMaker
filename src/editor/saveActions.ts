@@ -78,6 +78,10 @@ async function saveProjectOnce(): Promise<boolean> {
     dismissToastsByKey(saveProgressToastKey);
     switch (result.kind) {
       case "saved": {
+        if (result.written === false) {
+          saveToast("이미 최신 상태입니다", "ok");
+          return true;
+        }
         const recovery = store.getPersistenceRecovery();
         if (recovery.kind === "ready" && recovery.mirror?.status === "warning") {
           saveToast("저장 완료. 미리보기 동기화는 경고입니다.", "info");

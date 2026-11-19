@@ -127,17 +127,17 @@ describe("연결 방식은 제공자 카드다", () => {
     expect(claude?.getAttribute("role")).toBe("radio");
     expect(gemini?.getAttribute("role")).toBe("radio");
     expect(codex?.getAttribute("role")).toBe("radio");
-    // 공장 기본은 Claude(2026-11-16, 조수 기본 = Opus 5.5 medium) — 선택된 것만 탭 순서에 들어간다(roving tabindex).
-    expect(claude?.getAttribute("aria-checked")).toBe("true");
-    expect(claude?.getAttribute("tabindex")).toBe("0");
+    // 공장 기본은 ChatGPT(2026-11-19 오너 결정, 조수 기본 = GPT-6.1 Terra medium) — 선택된 것만 탭 순서에 들어간다(roving tabindex).
+    expect(codex?.getAttribute("aria-checked")).toBe("true");
+    expect(codex?.getAttribute("tabindex")).toBe("0");
     expect(gemini?.getAttribute("aria-checked")).toBe("false");
     expect(gemini?.getAttribute("tabindex")).toBe("-1");
-    expect(codex?.getAttribute("aria-checked")).toBe("false");
-    expect(codex?.getAttribute("tabindex")).toBe("-1");
+    expect(claude?.getAttribute("aria-checked")).toBe("false");
+    expect(claude?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
-  it("제공자 목록은 레지스트리 전체이고 앞의 셋은 Claude·Google·ChatGPT 다", async () => {
+  it("제공자 목록은 레지스트리 전체이고 앞의 셋은 ChatGPT·Claude·Google 이다", async () => {
     // 예전 계약은 "Antigravity 하나뿐", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐다.
     // select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
     const { providers } = await loadDeps();
@@ -145,7 +145,7 @@ describe("연결 방식은 제공자 카드다", () => {
     const select = findByTestId(root, "ai-oh-my-pi-provider");
 
     expect(optionValues(select)).toEqual(providers.OH_MY_PI_PROVIDERS.map((provider) => provider.id));
-    expect(optionValues(select).slice(0, 3)).toEqual(["anthropic", "google-antigravity", "openai-codex"]);
+    expect(optionValues(select).slice(0, 3)).toEqual(["openai-codex", "anthropic", "google-antigravity"]);
     expect(select?.disabled).toBe(false);
     // fakeDom 은 hidden 속성을 속성 필드로 동기화하지 않으므로 attribute 로 본다.
     expect(select?.getAttribute("hidden")).toBe("");
@@ -323,7 +323,7 @@ describe("환경 변수 키", () => {
 });
 
 describe("기기 로그인", () => {
-  // 이 묶음은 Google 계정의 로그인 흐름을 본다 — 공장 기본이 Claude 가 된 뒤(2026-11-16)로는 Google 로 저장된 설정으로 연다.
+  // 이 묶음은 Google 계정의 로그인 흐름을 본다 — 공장 기본이 Claude(2026-11-16)·ChatGPT(2026-11-19)가 된 뒤로는 Google 로 저장된 설정으로 연다.
   const GOOGLE = "google-antigravity";
   it("코드와 주소를 링크로 보여 주고 취소를 제공한다", async () => {
     startChatGptLogin.mockResolvedValue({
@@ -680,9 +680,9 @@ describe("OAuth 빠른 선택", () => {
     return event as KeyboardEvent;
   }
 
-  it("퀵 그룹은 Claude·Gemini·Codex 카드를 보여 주고, 새 설정은 Claude 카드가 선택돼 있다", async () => {
+  it("퀵 그룹은 Codex·Claude·Gemini 카드를 보여 주고, 새 설정은 Codex(ChatGPT) 카드가 선택돼 있다", async () => {
     // 감독 요구 변경: Codex 도 1급 선택지다. 카드가 모두 실재하고, 선택된 것만 체크·탭 가능이다
-    // (roving tabindex — 라디오 그룹 표준). 공장 기본은 Claude 다(2026-11-16).
+    // (roving tabindex — 라디오 그룹 표준). 공장 기본은 ChatGPT 다(2026-11-19, 그 전 2026-11-16 은 Claude).
     const { root, dispose } = await render();
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     const claude = findByTestId(root, "ai-auth-quick-anthropic");
@@ -691,12 +691,12 @@ describe("OAuth 빠른 선택", () => {
     expect(claude).not.toBeNull();
     expect(gemini).not.toBeNull();
     expect(codex).not.toBeNull();
-    expect(claude?.getAttribute("aria-checked")).toBe("true");
-    expect(claude?.getAttribute("tabindex")).toBe("0");
+    expect(codex?.getAttribute("aria-checked")).toBe("true");
+    expect(codex?.getAttribute("tabindex")).toBe("0");
     expect(gemini?.getAttribute("aria-checked")).toBe("false");
     expect(gemini?.getAttribute("tabindex")).toBe("-1");
-    expect(codex?.getAttribute("aria-checked")).toBe("false");
-    expect(codex?.getAttribute("tabindex")).toBe("-1");
+    expect(claude?.getAttribute("aria-checked")).toBe("false");
+    expect(claude?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
@@ -732,10 +732,10 @@ describe("OAuth 빠른 선택", () => {
   });
 
   it("화살표가 카드 사이를 순환한다 (앞의 둘 사이 이동 + 끝에서 처음으로)", async () => {
-    // 카드 순서는 레지스트리 순서다 — 맨 앞이 Claude(공장 기본), 둘째가 Google.
+    // 카드 순서는 레지스트리 순서다 — 맨 앞이 ChatGPT(공장 기본, 2026-11-19), 둘째가 Claude.
     const { root, dispose } = await render();
-    const first = findByTestId(root, "ai-auth-quick-anthropic");
-    const second = findByTestId(root, "ai-auth-quick-google-antigravity");
+    const first = findByTestId(root, "ai-auth-quick-openai-codex");
+    const second = findByTestId(root, "ai-auth-quick-anthropic");
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
     expect(second?.getAttribute("aria-checked")).toBe("true");

@@ -1,3 +1,8 @@
+import { filterRecentProjects, withoutRecentProject, type RecentProjectSort } from "../../electron/shared/recentProjects";
+import type { RecentProjectEntry } from "../../electron/shared/start";
+import { formatLastOpenedTime } from "@/project/recentProjectTime";
+import { getLocale } from "@/i18n";
+import { el } from "@/util/dom";
 import { serialize } from "@/project/io";
 import { ensureSharedContent, loadSharedContent } from "@/project/sharedContent";
 import type { Project } from "@/project/types";
@@ -46,35 +51,107 @@ export async function openProjectFolder(): Promise<boolean> {
   }
   const projects = await loadWithOpeningDialog("프로젝트 열기", () => bridge.recentProjects());
   if (!projects) return false;
-  if (projects.length === 0) throw new Error("이 서버에 열 수 있는 프로젝트 폴더가 없습니다. 먼저 새 프로젝트를 만드세요.");
-  const selected = await chooseHostedProject(projects);
-  if (!selected) return false;
-  const opened = await bridge.openFolder({ projectDir: selected });
+  const forgetRecent = bridge.forgetRecent;
+  if (!forgetRecent && projects.length === 0) throw new Error("이 서버에 열 수 있는 프로젝트 폴더가 없습니다. 먼저 새 프로젝트를 만드세요.");
+  const selection = await chooseProject(forgetRecent ? projects.filter((entry) => entry.hiddenReason !== "temporary") : projects, forgetRecent);
+  if (!selection) return false;
+  const opened = await bridge.openFolder(selection === "browse" ? undefined : { projectDir: selection.projectDir });
   return opened !== null;
 }
 
-function chooseHostedProject(projects: readonly { projectDir: string; title: string }[]): Promise<string | null> {
+function chooseProject(
+  entries: readonly RecentProjectEntry[],
+  forget?: (entry: { projectDir: string }) => Promise<boolean>,
+): Promise<RecentProjectEntry | "browse" | null> {
   return new Promise((resolve) => {
-    const backdrop = document.createElement("div"); backdrop.className = "project-folder-picker-backdrop";
-    const modal = document.createElement("section"); modal.className = "project-folder-picker-modal";
-    modal.innerHTML = `<header class="project-folder-picker-header"><div><div class="project-folder-picker-heading"><span class="project-folder-picker-heading-mark">✦</span><h1>프로젝트 열기</h1></div><p class="project-folder-picker-description">이 서버에서 작업할 프로젝트를 선택하세요.</p></div><button class="project-folder-picker-close" data-close aria-label="닫기">×</button></header>`;
-    const body = document.createElement("div"); body.className = "project-folder-picker-body";
-    const toolbar = document.createElement("div"); toolbar.className = "project-folder-picker-toolbar";
-    const search = document.createElement("input"); search.className = "project-folder-picker-search"; search.placeholder = "프로젝트 이름 또는 폴더 경로 검색"; search.setAttribute("aria-label", "프로젝트 검색");
-    const count = document.createElement("span"); count.className = "project-folder-picker-count";
-    const grid = document.createElement("div"); grid.className = "project-folder-picker-grid";
-    const close = (value: string | null) => { backdrop.remove(); resolve(value); };
-    const render = () => { const visible = projects.filter((p) => `${p.title} ${p.projectDir}`.toLowerCase().includes(search.value.toLowerCase())); count.textContent = `${visible.length}개`; grid.replaceChildren(...visible.map((project) => {
-      const card = document.createElement("article"); card.className = "project-folder-picker-card";
-      const hue = Math.abs([...project.projectDir].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 360;
-      card.style.setProperty("--project-card-hue", String(hue));
-      card.style.setProperty("--project-card-hue-alt", String((hue + 48) % 360));
-      card.innerHTML = `<div class="project-folder-picker-card-mark" aria-hidden="true">${escapeHtml(project.title.slice(0, 1) || "?")}</div><div class="project-folder-picker-card-content"><div class="project-folder-picker-card-title-row"><div class="project-folder-picker-card-title">${escapeHtml(project.title)}</div><span class="project-folder-picker-card-status">사용 가능</span></div><div class="project-folder-picker-card-path">${escapeHtml(project.projectDir)}</div><div class="project-folder-picker-card-meta"><span>서버 프로젝트</span><span>SQLite 정본</span></div></div><button class="project-folder-picker-open">열기 <span aria-hidden="true">→</span></button>`;
-      card.querySelector("button")?.addEventListener("click", () => close(project.projectDir)); return card;
-    }) as Element[]); };
-    search.addEventListener("input", render); modal.querySelector("[data-close]")?.addEventListener("click", () => close(null)); backdrop.addEventListener("click", (event) => { if (event.target === backdrop) close(null); });
-    toolbar.append(search, count); body.append(toolbar, grid); modal.append(body); backdrop.append(modal); document.body.append(backdrop); search.focus(); render();
+    let projects = entries;
+    const opener = document.activeElement;
+    const close = (value: RecentProjectEntry | "browse" | null): void => {
+      backdrop.remove();
+      if (opener instanceof HTMLElement) opener.focus();
+      resolve(value);
+    };
+    const search = el("input", { class: "project-folder-picker-search", attrs: {
+      type: "search", placeholder: "프로젝트 이름 또는 폴더 경로 검색", "aria-label": "프로젝트 검색",
+    } });
+    const sort = el("select", { class: "project-folder-picker-search project-folder-picker-sort", attrs: { "aria-label": "프로젝트 정렬" }, children: [
+      el("option", { attrs: { value: "opened" }, text: "최근 연 순" }),
+      el("option", { attrs: { value: "name" }, text: "이름 순" }),
+    ] });
+    const count = el("span", { class: "project-folder-picker-count" });
+    const grid = el("div", { class: "project-folder-picker-grid" });
+    const error = el("p", { attrs: { role: "alert", hidden: "" } });
+    const render = (): void => {
+      const order: RecentProjectSort = sort.value === "name" ? "name" : "opened";
+      const visible = filterRecentProjects(projects, search.value, order, getLocale());
+      count.textContent = `${visible.length}개`;
+      grid.replaceChildren(...visible.map((project) => {
+        const missing = project.hiddenReason === "missing";
+        const activity = formatLastOpenedTime(project.lastOpenedAt, getLocale());
+        const action = el("button", { class: "project-folder-picker-open", attrs: { type: "button" }, text: missing ? "목록에서 제거" : "열기" });
+        action.addEventListener("click", () => {
+          if (!missing) { close(project); return; }
+          if (!forget) return;
+          action.disabled = true;
+          error.hidden = true;
+          void forget({ projectDir: project.projectDir }).then((forgotten) => {
+            if (!forgotten) throw new Error("목록에서 지우지 못했습니다.");
+            projects = withoutRecentProject(projects, project.projectDir);
+            render();
+            search.focus();
+          }).catch(() => {
+            error.textContent = "목록에서 지우지 못했습니다.";
+            error.hidden = false;
+            action.disabled = false;
+          });
+        });
+        const card = el("article", { class: "project-folder-picker-card" + (missing ? " is-missing" : ""), children: [
+          el("div", { class: "project-folder-picker-card-mark", attrs: { "aria-hidden": "true", translate: "no" }, text: [...project.title][0] || "?" }),
+          el("div", { class: "project-folder-picker-card-content", children: [
+            el("div", { class: "project-folder-picker-card-title-row", children: [
+              el("div", { class: "project-folder-picker-card-title", attrs: { translate: "no" }, text: project.title }),
+              ...(forget ? [] : [el("span", { class: "project-folder-picker-card-status", text: "사용 가능" })]),
+            ] }),
+            el("div", { class: "project-folder-picker-card-path", attrs: { title: project.projectDir, translate: "no" }, text: project.projectDir }),
+            el("div", { class: "project-folder-picker-card-meta", text: missing ? "찾을 수 없음" : forget
+              ? activity || "열기 기록 없음" : "서버 프로젝트 · SQLite 정본" }),
+          ] }),
+          action,
+        ] });
+        const hue = Math.abs([...project.projectDir].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 360;
+        card.style.setProperty("--project-card-hue", String(hue));
+        card.style.setProperty("--project-card-hue-alt", String((hue + 48) % 360));
+        return card;
+      }));
+      if (!visible.length) grid.append(el("p", { text: search.value.trim() ? "검색 결과가 없습니다." : "최근 프로젝트가 없습니다." }));
+    };
+    const modal = el("section", { class: "project-folder-picker-modal", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "프로젝트 열기" }, children: [
+      el("header", { class: "project-folder-picker-header", children: [
+        el("div", { children: [
+          el("div", { class: "project-folder-picker-heading", children: [
+            ...(forget ? [] : [el("span", { class: "project-folder-picker-heading-mark", attrs: { "aria-hidden": "true" }, text: "✦" })]),
+            el("h1", { text: "프로젝트 열기" }),
+          ] }),
+          ...(forget ? [] : [el("p", { class: "project-folder-picker-description", text: "이 서버에서 작업할 프로젝트를 선택하세요." })]),
+        ] }),
+        el("button", { class: "project-folder-picker-close", attrs: { type: "button", "aria-label": "닫기" }, text: "×", on: { click: () => close(null) } }),
+      ] }),
+      el("div", { class: "project-folder-picker-body", children: [
+        el("div", { class: "project-folder-picker-toolbar", children: [
+          search, ...(forget ? [sort] : []), count,
+          ...(forget ? [el("button", { class: "project-folder-picker-open", attrs: { type: "button" }, text: "폴더 열기…", on: { click: () => close("browse") } })] : []),
+        ] }),
+        error, grid,
+      ] }),
+    ] });
+    const backdrop = el("div", { class: "project-folder-picker-backdrop", children: [modal], on: {
+      click: (event) => { if (event.target === backdrop) close(null); },
+      keydown: (event) => { if ((event as KeyboardEvent).key === "Escape") { event.stopPropagation(); close(null); } },
+    } });
+    search.addEventListener("input", render);
+    sort.addEventListener("change", render);
+    document.body.append(backdrop);
+    render();
+    search.focus();
   });
 }
-
-function escapeHtml(value: string): string { return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char); }

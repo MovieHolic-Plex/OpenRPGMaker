@@ -8,6 +8,8 @@ name: desktop-release
 #   ① scripts/release-auto.mjs 가 릴리스를 **초안(draft)** 으로 만든다.
 #   ② 이 워크플로가 산출물을 만들어 올리고 이름·크기를 **검증**한다.
 #   ③ 검증을 통과한 뒤에만 발행한다(그리고 그 태그가 가장 높은 버전일 때만 latest 로 표시한다).
+#   초안을 발행할 때는 CHANGELOG 의 그 절을 본문으로 다시 쓴다(--notes-from-tag 로 # 제목이
+#   빠진 초안을 고친다). 이미 발행된 릴리스의 본문은 건드리지 않는다.
 #   업로드가 실패하면 초안으로 남는다 → releases/latest 는 이전 정상 릴리스를 계속 준다.
 #   실측 사고: 2026-11-06 22:05Z v0.408.0 이 자산 0개로 발행돼 latest 가 됐고, 빌드는
 #   scripts/lib/piAgentRuntime.ts 의 깨진 import(`../src/...`)로 매번 실패해 README 의
@@ -260,6 +262,24 @@ jobs:
           latest_flag="false"
           if [[ "$highest" == "$TAG" ]]; then latest_flag="true"; fi
           id="$(printf '%s' "$json" | jq -r '.id')"
+          draft="$(printf '%s' "$json" | jq -r '.draft')"
+          # 초안만 CHANGELOG 절로 본문을 맞춘다. 이미 발행된 릴리스는 패치 노트를 덮지 않는다.
+          if [[ "$draft" == "true" ]]; then
+            notes_file="$(mktemp)"
+            if node --input-type=module -e '
+              import { readFileSync, writeFileSync } from "node:fs";
+              import { changelogEntryFor } from "./scripts/lib/releaseFiles.mjs";
+              const version = process.argv[1];
+              const out = process.argv[2];
+              const entry = changelogEntryFor(readFileSync("CHANGELOG.md", "utf8"), version);
+              if (!entry) process.exit(2);
+              writeFileSync(out, entry.endsWith("\n") ? entry : `${entry}\n`);
+            ' "$version" "$notes_file"; then
+              gh release edit "$TAG" --notes-file "$notes_file"
+            else
+              echo "CHANGELOG 에서 $version 절을 못 읽음 — 기존 본문을 유지하고 발행한다."
+            fi
+          fi
           gh api -X PATCH "repos/$GITHUB_REPOSITORY/releases/$id" \
             -F draft=false -F make_latest="$latest_flag" > /dev/null
           echo "$TAG 발행 완료 (latest=$latest_flag, 가장 높은 태그=$highest)"

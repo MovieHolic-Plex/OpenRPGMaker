@@ -1,6 +1,6 @@
 /** 렌더러가 보는 데스크톱 스토어 다리(preload `window.oprn.store`). 구현: electron/main/assetStore.ts. */
 import type { GameConcept } from "../concepts/format";
-import type { StoreGameMeta, StoreGameMine, StoreGamePublishResult } from "./gamePublish";
+import type { StoreGameDeclaration, StoreGameDeclarationDoc, StoreGameMeta, StoreGameMine, StoreGamePublishResult } from "./gamePublish";
 import type { StoreCatalogPage, StoreItemDetail, StoreItemSummary, StoreItemStatus, StoreLocale, StorePackManifest } from "./format";
 
 export interface StoreUser { readonly id: number; readonly email: string; readonly displayName: string; readonly role: string }
@@ -69,7 +69,11 @@ export interface OprnStoreBridge {
     projectKey: string; meta: StoreGameMeta; files: Record<string, Uint8Array>; entry: string; cover: string | null; art: string[];
     changelog: string; changes: Record<string, { added: string[]; changed: string[]; removed: string[] }>; bump: "minor" | "major"; version?: string | null;
     comment?: string; post?: { title: string; body: string; pinned?: boolean } | null;
+    /** 게임 공개 선언(올릴 때마다). gameDeclaration 이 null 을 준 옛 스토어에만 비운다. */
+    declaration?: StoreGameDeclaration | null;
   }): Promise<StoreGamePublishResult>;
+  /** 스토어의 게임 공개 선언 문구(무료·비영리, 직접 만든 게임, 내용 확인, 사는 곳). 선언을 모르는 옛 스토어면 null. 옛 편집기 다리에는 없다. */
+  gameDeclaration?(input?: { lang?: StoreLocale }): Promise<StoreGameDeclarationDoc | null>;
   /** 소식 글 올리기(그 게임 작가만 — 서버가 판단). comment 를 주면 commentVersion(없으면 version, 그것도 없으면 지금 판본) 판본 코멘트도 고친다. */
   gamePost?(input: { slug: string; title: string; body: string; version?: string | null; pinned?: boolean; comment?: string; commentVersion?: string | null }): Promise<{ id: number; status: string; url: string; held: string[]; comment?: { status: string | null; held: string[] } }>;
   /** 내 게임 플레이어 평가 한 쪽(요약 라벨 + 평가). 평가 글은 플레이어가 쓴 것이다. */

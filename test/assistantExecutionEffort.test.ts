@@ -11,7 +11,7 @@ describe("explicit autonomous execution effort", () => {
   ] as const)("keeps configured $reasoningEffort effort in $autonomyLevel execution", ({ autonomyLevel, reasoningEffort }) => {
     // Given an explicitly selected autonomous preset and its saved effort.
     const session = new AssistantSession(createBlankProject(), {
-      // defaultAiConfig() 는 실행(deep) 역할을 Claude Opus 5.5 medium 으로 고정한다(2026-11-16, 그 전 #2535 는 Argon) — 역할 칸이 없을 때의 정책을 잰다.
+      // defaultAiConfig() 는 실행(deep) 역할을 ChatGPT Terra medium 으로 고정한다(2026-11-19, 그 전 2026-11-16 은 Opus, #2535 는 Argon) — 역할 칸이 없을 때의 정책을 잰다.
       config: { ...defaultAiConfig(), roleModels: {}, model: "supervisor", liteModel: "executor", autonomyLevel, reasoningEffort },
     });
     // When constructing the actual executor transport configuration.
@@ -27,10 +27,10 @@ describe("explicit autonomous execution effort", () => {
     expect(session["phaseConfig"]("execute").reasoningEffort).toBe("off");
   });
 
-  it("uses the pinned execution role when the config has one (default Claude Opus 5.5 medium, 2026-11-16)", () => {
+  it("uses the pinned execution role when the config has one (default ChatGPT GPT-6.1 Terra medium, 2026-11-19)", () => {
     const session = new AssistantSession(createBlankProject(), { config: defaultAiConfig() });
     const execution = session["phaseConfig"]("execute");
-    expect(execution.model).toBe("claude-opus-5-5");
+    expect(execution.model).toBe("gpt-6.1-terra");
     expect(execution.reasoningEffort).toBe("medium");
   });
 });

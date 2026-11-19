@@ -78,7 +78,7 @@ import {
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
 import { retainEventLayerClickFeedback } from "@/editor/transientEditorChrome";
-import { EVENT_EDITOR_CLOSED_WINDOW_EVENT } from "@/editor/eventEditorLifecycleEvents";
+import { EVENT_EDITOR_CLOSED_WINDOW_EVENT, EVENT_EDITOR_OPENED_WINDOW_EVENT } from "@/editor/eventEditorLifecycleEvents";
 import {
   buildEventMarkerTooltipModel,
   collectCallTargetWarnings,
@@ -479,6 +479,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private readonly handleEventEditorClosed = (): void => {
     this.clearEventLayerClickFeedback();
   };
+  private readonly handleEventEditorOpened = (event: Event): void => {
+    if ((event as CustomEvent<{ mapId: MapId }>).detail?.mapId !== this.mapId()) return;
+    // A sidebar selection can still be panning when the user opens its editor.
+    this.deferredCameraFocus = null;
+    this.cancelCameraFocus(false);
+  };
 
   private readonly handleRegionTaskStatus = (event: Event): void => {
     const detail = regionTaskStatusDetail(event);
@@ -677,6 +683,7 @@ export class EditScene extends PhaserRuntime.Scene {
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     // 편집기가 닫히면 「편집 위치 x,y」 배너를 거둔다 — 결과물이 아니라 편집 중 크롬이다(2026-09-17 리뷰 P0-4).
     window.addEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
+    window.addEventListener(EVENT_EDITOR_OPENED_WINDOW_EVENT, this.handleEventEditorOpened);
     // 영역 작업 창이 닫히면 선택 칩 오버레이를 되살린다(열릴 때는 숨긴다).
     window.addEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
@@ -821,6 +828,7 @@ export class EditScene extends PhaserRuntime.Scene {
     window.removeEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     window.removeEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
+    window.removeEventListener(EVENT_EDITOR_OPENED_WINDOW_EVENT, this.handleEventEditorOpened);
     window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
@@ -1206,6 +1214,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
+    if (change.scope === "map" && change.eventDraftStarted) return;
     // 자료 보관함에서 방금 가져온 캐릭셋은 preload 가 끝난 뒤에 생긴다 — 텍스처를 뒤늦게
     // 실어 주지 않으면 그 캐릭셋을 쓴 이벤트가 새로고침 전까지 빈 칸으로 보인다.
     // 타일 칠하기(scope: "map")마다 업로드 목록을 훑지 않도록 자산/프로젝트 변경에서만 돈다.
@@ -2500,7 +2509,8 @@ export class EditScene extends PhaserRuntime.Scene {
     // 같은 타일을 500ms 안에 두 번 누르면 더블클릭으로 본다(eventLayerClickCount 와 동일 규칙).
     const mapId = this.mapId();
     const { x, y } = this.pointerToTile(ptr);
-    const now = Date.now();
+    // Use input time so a slow first-selection render cannot split a double-click.
+    const now = event?.timeStamp ?? performance.now();
     const previous = this.lastPointerClick;
     this.lastPointerClick = mapId ? { at: now, mapId, x, y } : null;
     if (!previous || !mapId) return 1;
@@ -2510,7 +2520,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private eventLayerClickCount(target: EventLayerClickTarget): number {
     const nativeClickCount = this.pointerClickCount(target.ptr);
-    const now = Date.now();
+    const now = target.ptr.event?.timeStamp ?? performance.now();
     const previous = this.lastEventLayerClick;
     this.lastEventLayerClick = { at: now, mapId: target.mapId, x: target.x, y: target.y };
     if (nativeClickCount >= 2) return nativeClickCount;

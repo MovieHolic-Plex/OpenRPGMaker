@@ -1324,6 +1324,20 @@
     "the boss body drawn on the field covers about its blocked footprint (3x2 tiles), not a small 2x1 picture inside a larger blocked area that reads like a fallen animal",
     "the size comes from the event graphic scale or footprint data on the existing art; no new art is drawn just to enlarge it"
    ]
+  },
+  {
+   "id": "solid-tiles-with-inspection-events",
+   "label": "잠긴 문과 약재 서랍장의 타일 통행·조사",
+   "port": 19577,
+   "lessons": [
+    "tile-backed-action-event-collision"
+   ],
+   "prompt": "작은 약방을 만들고, 안에서 열 수 없는 창고 문과 한 번 뒤지면 약초 두 개가 나오는 약재 서랍장을 놓아 줘. 문을 조사하면 잠겼다고 하고, 서랍장을 다시 조사하면 이미 뒤졌다고 해 줘. 둘 다 옆 칸에서 조사할 수 있게 해 줘.",
+   "requirements": [
+    "the closed door and drawer are visible and their tiles prevent movement into their cells",
+    "adjacent action still works and the tile-backed action pages do not report page.invisible-collision",
+    "the first drawer interaction grants two existing herb items and the next interaction yields no further items"
+   ]
   }
  ]
 }

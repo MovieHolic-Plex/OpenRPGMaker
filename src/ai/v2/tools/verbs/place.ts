@@ -8,8 +8,6 @@ import { layoutReviewRounds, REVIEWS_TAG } from "../../place/layoutReview";
 import { effectiveSpec, findPieces, interiorTilesetFor } from "../../place/interiorCatalog";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { builderFor } from "../../place/builders";
-import { localizePlaceSpec } from "../../place/builders/modernCity";
-import { localizeCultureSpec } from "../../place/builders/joseon";
 import { isComposedWorld, parseWorldStyle, pickWorld, spareKind, worldKind, worldOf, worldPlaceSpec } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize, villageKindsLine, fixUnknownVillageKind, WALLED_BUILDINGS_LINE, VILLAGE_BUILDINGS_LINE, askedBuildingWords } from "../../place/builders/village";
@@ -43,7 +41,7 @@ import { keptPlaceResult } from "../../place/keepMapId";
 
 /** createV2Tools 에서 뗀 것 — buildWorldPlaces · buildWorld · makePlace · editPlace · reviewLayout · findPiecesVerb. (placeVerbs) */
 export function placeVerbs(c: VerbContext) {
-  const { env, session, task, run, poolVillage, freshStart, lean, specShown, specGate, outsideBuilt, noteLayoutPlace, finishPlace, blueprintGate } = c;
+  const { env, session, task, run, localizeNewPlace, freshStart, lean, specShown, specGate, outsideBuilt, noteLayoutPlace, finishPlace, blueprintGate } = c;
   // 세계 짓기(world.ts): 청사진 장소 목록을 그 세계의 구성기로 한 번에 짓고 잇는다 — 모델은 장소 이름·종류만 정한다.
   // add 로 장소를 더할 수 있다(세는 맵이 모자랄 때). 종류를 못 읽으면 아직 덜 쓴 종류를 준다(막다른 길을 만들지 않는다).
   const buildWorldPlaces = async (toolCallId: string, verb: string, args: unknown, add: readonly { name?: unknown; kind?: unknown; from?: unknown; indoor?: boolean; danger?: boolean }[]): Promise<PiToolExecResult> => {
@@ -171,7 +169,7 @@ export function placeVerbs(c: VerbContext) {
       // 던전·동굴은 세션 덧값도 섞는다 — 같은 시작 저장본의 같은 요청을 다른 세션에서 받아도 같은 굴이 되지 않게(2026-10-31 씬 벤치 보스 방 opus 3판).
       const varietyKey = placeVariety(env, task) + (raw.type === "dungeon" || raw.type === "cave" ? `|${session.nonce}` : "");
       let keptNoteEarly = "";
-      let spec: PlaceSpec = poolVillage(localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true), String(task ?? "")), String(task ?? ""), run.ctx.project));
+      let spec = localizeNewPlace(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true));
       // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
       // 빈 mapId("" — 엄격 스키마가 채운 칸)도 «안 줬다» 다: 그대로 두면 같은 방을 다시 보낼 때마다 같은 이름의 새 맵이 생겼다(2026-11-11 map-vqa 깔기 재생: 「무기 가게」 5장).
       if (spec.mapId !== undefined && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
@@ -291,7 +289,7 @@ export function placeVerbs(c: VerbContext) {
           const bboxCardDue = bboxVillageSpec(spec) && !hasVillageLayout(spec) && !layoutSession(session).cards.has(`village:${spec.name}`);
           const hasLayout = !bboxCardDue && ((!!spec.hints?.layout && typeof spec.hints.layout === "object") || hasVillageLayout(spec));
           if (!hasLayout && (!kept || (kept.shape !== shape && kept.previews < 3))) {
-            const [width, height] = villageMapSize(spec, va);
+            const [width, height] = villageMapSize(spec, va, env.ctx.project);
             const terrainSeed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
             const terrain = codeTerrainFor(vt, va, width, height, terrainSeed, villageCliffHabitFor(env.ctx));
             session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });
