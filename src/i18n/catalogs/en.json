@@ -16977,6 +16977,8 @@
 "AI 엔진·모델":"AI engine & models",
 "AI 엔진이 아직 없어요":"No AI engine yet",
 "AI 프로그램 목록을 읽지 못했어요. 앱을 다시 켜 보세요.":"Couldn't read the list of AI programs. Try restarting the app.",
+"AI 프로그램 목록을 확인하지 못했어요.":"Couldn't check which AI programs are installed.",
+"ChatGPT 연결 상태를 확인하지 못했어요.":"Couldn't check the ChatGPT connection.",
 "AI 프로그램 없이 Anthropic · OpenAI · Google AI Studio · OpenRouter 키를 쓸 수 있어요. 키는 이 PC 의 보안 저장소에만 남고 프로젝트 파일·팀·스토어로 나가지 않아요. 편집기의 「AI 연결 → API 키」에서 넣어요.":"Without an AI program you can use an Anthropic, OpenAI, Google AI Studio or OpenRouter key. Keys stay only in this PC's secure storage and never go into project files, teams or the store. Enter them in the editor under “AI connection → API keys”.",
 "API 키로 쓰기":"Use an API key",
 "{0} · 연결됨":"{0} · Connected",

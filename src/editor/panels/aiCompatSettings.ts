@@ -103,6 +103,7 @@ function lastTestSummary(endpoint: OpenAiCompatEndpointPublic): { parts: string[
 
 export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiCompatSettingsView {
   let disposed = false;
+  const listRequests = new AbortController();
   let endpoints: readonly OpenAiCompatEndpointPublic[] = [];
   let editing: { readonly id: string | null; readonly source?: OpenAiCompatEndpointPublic } | null = null;
   let loadError = "";
@@ -608,7 +609,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
           if (id && (!source || testedModels.length === 0)) {
             const keepModel = modelInput.value.trim();
             await testOpenAiCompatEndpoint({ id, ...(keepModel ? { model: keepModel, probeTools: probeTools.input.checked } : {}) }).catch(() => undefined);
-            endpoints = await fetchOpenAiCompatEndpoints();
+            endpoints = await fetchOpenAiCompatEndpoints(listRequests.signal);
           }
           closeForm();
           renderList();
@@ -654,7 +655,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
   // ── 데이터 ────────────────────────────────────────────────────────────────
   async function reload(showErrors = true): Promise<void> {
     try {
-      endpoints = await fetchOpenAiCompatEndpoints();
+      endpoints = await fetchOpenAiCompatEndpoints(listRequests.signal);
       loadError = "";
       loadErrorDetail = "";
     } catch (error) {
@@ -672,6 +673,6 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
   return {
     element: root,
     refresh: () => { if (!disposed) renderList(); },
-    dispose: () => { disposed = true; },
+    dispose: () => { disposed = true; listRequests.abort(); },
   };
 }

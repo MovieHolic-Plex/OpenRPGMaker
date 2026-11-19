@@ -244,7 +244,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
  * 지금 연결된 경로 — 동반 서비스의 계정 로그인 둘(Google·ChatGPT), 연결 시험을 통과한 사용자 지정 엔드포인트, 준비된 로컬 CLI.
  * 조회가 실패한 경로는 연결 안 됨으로 센다(표는 «없다» 고 말하고 물러난다). 시험용 `?roleMatrixMock=gemini,gpt,...` 는 요청 없이 그 조합을 쓴다.
  */
-export async function fetchConnectedRoutes(): Promise<AvailableRoute[]> {
+export async function fetchConnectedRoutes(signal?: AbortSignal): Promise<AvailableRoute[]> {
   const mock = (() => { try { return typeof location === "undefined" ? null : new URLSearchParams(location.search).get("roleMatrixMock"); } catch { return null; } })();
   if (mock !== null) return mockConnectedRoutes(mock);
   const [{ fetchChatGptAuthStatus, hasUsableCompanionCredential, fetchOpenAiCompatEndpoints }, { createLocalAgentsApi, localAgentsEnabled }, { OH_MY_PI_PROVIDERS }] = await Promise.all([
@@ -253,11 +253,11 @@ export async function fetchConnectedRoutes(): Promise<AvailableRoute[]> {
   const rows: { providerId: string; models?: readonly string[]; supportsImages?: boolean; imageModels?: readonly string[]; imageBlindModels?: readonly string[] }[] = [];
   await Promise.all([
     ...OH_MY_PI_PROVIDERS.map(async (provider) => {
-      try { if (hasUsableCompanionCredential(await fetchChatGptAuthStatus(provider.id))) rows.push({ providerId: provider.id }); } catch { /* 닿지 못함 = 연결 안 됨 */ }
+      try { if (hasUsableCompanionCredential(await fetchChatGptAuthStatus(provider.id, signal))) rows.push({ providerId: provider.id }); } catch { /* 닿지 못함 = 연결 안 됨 */ }
     }),
     (async () => {
       try {
-        for (const endpoint of await fetchOpenAiCompatEndpoints()) {
+        for (const endpoint of await fetchOpenAiCompatEndpoints(signal)) {
           if (endpoint.lastTest?.ok) rows.push({ providerId: endpoint.id, models: endpoint.models, supportsImages: endpoint.supportsImages,
             ...(endpoint.imageModels ? { imageModels: endpoint.imageModels } : {}), ...(endpoint.imageBlindModels ? { imageBlindModels: endpoint.imageBlindModels } : {}) });
         }
@@ -266,7 +266,7 @@ export async function fetchConnectedRoutes(): Promise<AvailableRoute[]> {
     (async () => {
       if (!localAgentsEnabled()) return;
       try {
-        for (const cli of (await createLocalAgentsApi().detect()).clis) if (cli.state === "ready") rows.push({ providerId: `local-cli:${cli.id}` });
+        for (const cli of (await createLocalAgentsApi().detect(false, signal)).clis) if (cli.state === "ready") rows.push({ providerId: `local-cli:${cli.id}` });
       } catch { /* 감지 실패 */ }
     })(),
   ]);

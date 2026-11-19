@@ -5,6 +5,10 @@
 // 엔진은 자동으로 찾아 기본값을 고른다(연결된 첫 프로그램). OPRN 은 로그인 정보를 읽거나 저장하지 않는다 —
 // 각 프로그램이 스스로 로그인한 상태를 쓴다. 감지·연결 시험은 ./localAgents(PR #3072 백엔드의 얼굴)가 맡는다.
 import { isLegacyTerraModel } from "@/ai/chatgptDefault";
+import { loadAiConfig } from "@/ai/llmClient";
+import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus, refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import { AI_SETTINGS_CLOSED_EVENT } from "@/editor/panels/aiSettingsEvents";
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import "./settings.css";
 import { el } from "@/util/dom";
@@ -55,6 +59,10 @@ export function openSettingsDialog(options: {
   let report: LocalAgentsReport | null = null;
   let detecting = false;
   let detectFailed = false;
+  let detectFresh = false;
+  let connectionCheck: Promise<void> | undefined;
+  let connection = getAiConnectionStatus();
+  const lifetime = new AbortController();
   let choice: AssistantEngineChoice | null = loadEngineChoice();
   let split = Boolean(choice?.deepModel && choice.deepModel !== choice.routineModel);
   const health = new Map<string, HealthResult | "running">();
@@ -70,7 +78,7 @@ export function openSettingsDialog(options: {
     ...TABS.map(([id, label]) => {
       const button = el("button", {
         class: "st-tab", attrs: { type: "button", role: "tab" }, dataset: { testid: `${SETTINGS_TESTIDS.tab}-${id}` }, text: label,
-        on: { click: () => { tab = id; render(); } },
+        on: { click: () => { tab = id; render(); if (id === "ai") void checkConnection(); } },
       });
       tabButtons.set(id, button);
       return button;
@@ -87,7 +95,38 @@ export function openSettingsDialog(options: {
   const selected = (): LocalCliId | null => choice?.cli ?? null;
   const readySelected = (): LocalCliStatus | null => { const id = selected(); const row = id ? rowFor(id) : null; return row?.state === "ready" ? row : null; };
 
-  const notify = (): void => options.onEngineChange?.(summarizeAiStatus(choice, report));
+  const connectedModelLabel = (): string => {
+    const model = loadAiConfig().model?.trim();
+    return model && !connection.label.includes(model) ? `${connection.label} · ${model}` : connection.label;
+  };
+  const notify = (): void => {
+    options.onEngineChange?.(!choice && connection.kind === "ready"
+      ? { tone: "ok", text: connectedModelLabel() }
+      : summarizeAiStatus(choice, report));
+  };
+
+  const syncConnection = (): void => {
+    if (lifetime.signal.aborted) return;
+    connection = getAiConnectionStatus();
+    if (tab === "ai") render();
+    notify();
+  };
+
+  const checkConnection = async (): Promise<void> => {
+    if (lifetime.signal.aborted) return;
+    connection = getAiConnectionStatus();
+    const request = refreshAiConnectionStatus();
+    connectionCheck = request;
+    if (tab === "ai") render();
+    try {
+      await request;
+    } finally {
+      if (connectionCheck === request) {
+        connectionCheck = undefined;
+        syncConnection();
+      }
+    }
+  };
 
   const choose = (id: LocalCliId): void => {
     const row = rowFor(id);
@@ -112,19 +151,22 @@ export function openSettingsDialog(options: {
   };
 
   const detect = async (fresh: boolean): Promise<void> => {
-    if (!api || detecting) return;
+    if (!api || detecting || lifetime.signal.aborted) return;
+    detectFresh = fresh;
     detecting = true;
     detectFailed = false;
     render();
     try {
-      report = await api.detect(fresh);
+      report = await api.detect(fresh, lifetime.signal);
       // 고르는 건 사용자다(#3072 D1: 동등성 입증 전에는 opt-in — 기본은 지금 엔진). 백엔드 추천은 카드에 「추천」으로만 보인다.
     } catch {
       detectFailed = true;
     } finally {
       detecting = false;
-      notify();
-      render();
+      if (!lifetime.signal.aborted) {
+        notify();
+        if (tab === "ai") render();
+      }
     }
   };
 
@@ -138,6 +180,7 @@ export function openSettingsDialog(options: {
     let result: HealthResult;
     try { result = await api.health(row.id); }
     catch (error) { result = { ok: false, ms: 0, problem: error instanceof Error ? error.message : String(error) }; }
+    if (lifetime.signal.aborted) return;
     for (const model of models) health.set(model ?? "", result);
     lastTestAt = Date.now();
     render();
@@ -146,26 +189,32 @@ export function openSettingsDialog(options: {
   // ── AI 엔진·모델 ────────────────────────────────────────────────────
   const engineCard = (id: LocalCliId): HTMLElement => {
     const row = rowFor(id);
-    const on = selected() === id && row?.state === "ready";
+    const localReady = row?.state === "ready";
+    const throughChatGpt = !localReady && id === "codex" && connection.kind === "ready"
+      && connection.authMode === "chatgpt" && connection.providerId === CODEX_PROVIDER_ID;
+    const on = (selected() === id && localReady) || (throughChatGpt && !choice);
     const recommended = !choice && report?.recommended === id && row?.state === "ready";
-    const state = row?.state ?? "unknown";
-    const lines: (HTMLElement | string)[] = [el("span", { class: "st-eng-state", text: engineStateText(row) })];
-    if (row?.state === "ready") {
+    const state = throughChatGpt ? "ready" : row?.state ?? "unknown";
+    const lines: (HTMLElement | string)[] = [el("span", { class: "st-eng-state", text: throughChatGpt ? connection.label : engineStateText(row) })];
+    if (localReady) {
       if (row.version) lines.push(el("code", { text: row.version, attrs: { translate: "no" } }));
       if (row.authMethod) lines.push(el("span", { class: "st-eng-sub", text: t("로그인 방식: {0}").replace("{0}", row.authMethod) }));
-    } else if (row?.state === "login-required") {
+    } else if (!throughChatGpt && row?.state === "login-required") {
       lines.push(el("span", { class: "st-eng-sub", text: "터미널에서 아래 명령으로 로그인한 뒤 「다시 확인」을 눌러 주세요." }));
       if (row.login.command) lines.push(copyCommand(row.login.command));
-    } else if (row?.state === "not-installed") {
+    } else if (!throughChatGpt && row?.state === "not-installed") {
       if (row.install.url) lines.push(el("a", { class: "st-link", attrs: { href: row.install.url, target: "_blank", rel: "noopener" }, text: "설치 방법 보기 ↗" }));
-    } else if (row?.state === "error") {
+    } else if (!throughChatGpt && row?.state === "error") {
       lines.push(el("span", { class: "st-eng-sub", text: row.problem ?? "" , attrs: { translate: "no" } }));
     }
     return el("button", {
-      class: "st-eng" + (on ? " is-on" : "") + (row?.state === "ready" ? "" : " is-idle"),
-      attrs: { type: "button", "aria-pressed": String(on), ...(row?.state === "ready" ? {} : { "aria-disabled": "true" }) },
+      class: "st-eng" + (on ? " is-on" : "") + (state === "ready" ? "" : " is-idle"),
+      attrs: { type: "button", "aria-pressed": String(on), ...(state === "ready" ? {} : { "aria-disabled": "true" }) },
       dataset: { testid: `${SETTINGS_TESTIDS.engine}-${id}`, state },
-      on: { click: () => choose(id) },
+      on: { click: () => {
+        if (localReady) choose(id);
+        else if (throughChatGpt) void openEditorAiSettings();
+      } },
       children: [
         el("span", { class: "st-eng-name", children: [stateDot(state), el("b", { text: row?.label ?? ENGINE_LABEL[id], attrs: { translate: "no" } })] }),
         ...lines,
@@ -205,7 +254,12 @@ export function openSettingsDialog(options: {
   const rolesTable = (): HTMLElement => {
     const row = readySelected();
     if (!row || !choice) {
+      if (connection.kind === "ready") return el("p", { class: "st-empty", text: connectedModelLabel() });
       const anyReady = Boolean(report?.clis.some((item) => item.state === "ready"));
+      if (detecting || (connection.kind === "checking" && connectionCheck)) {
+        return el("p", { class: "st-empty", text: "연결을 확인하는 중…" });
+      }
+      if (detectFailed && !anyReady) return el("p", { class: "st-empty", text: "AI 프로그램 목록을 확인하지 못했어요." });
       return el("p", { class: "st-empty", text: enabled
         ? (anyReady ? "위에서 조수가 쓸 프로그램을 고르면 여기서 모델을 정할 수 있어요. 고르기 전에는 지금 쓰던 AI 연결 그대로예요." : "연결된 AI 프로그램이 없어요. 위에서 하나를 설치·로그인하면 여기서 모델을 고를 수 있어요.")
         : "이 PC 의 AI 프로그램을 찾는 기능은 곧 켜져요. 지금은 편집기 안 「AI 연결」을 써요." });
@@ -240,39 +294,45 @@ export function openSettingsDialog(options: {
    * 첫 화면 설정창은 로컬 CLI 만 다루므로, 로그인·외부 서버는 그 막으로 넘긴다(2026-11-01).
    * aiModalStyles 를 같이 받아야 막이 문서 끝에 맨몸으로 붙지 않는다(실측: 예약 없이 열면 뒤로 숨었다).
    */
+  let onEditorAiSettingsClosed: (() => void) | undefined;
   const openEditorAiSettings = async (): Promise<void> => {
-    const opener = document.activeElement;
-    const [modal, , status] = await Promise.all([
+    const opener = (document.activeElement as HTMLElement | null)?.dataset.testid;
+    const [modal] = await Promise.all([
       import("@/editor/panels/aiSettingsModal"),
       import("../aiModalStyles"),
-      import("@/editor/panels/aiConnectionStatus"),
     ]);
+    if (lifetime.signal.aborted) return;
     modal.openAiSettingsModal({ nativeSelects: true });
-    const onClosed = (): void => {
-      void status.refreshAiConnectionStatus().catch(() => {});
+    onEditorAiSettingsClosed = (): void => {
+      onEditorAiSettingsClosed = undefined;
       const active = document.activeElement;
       choice = loadEngineChoice();
       split = Boolean(choice?.deepModel && choice.deepModel !== choice.routineModel);
-      render();
-      if (active === opener || active === document.body) {
-        pane.querySelector<HTMLElement>('[data-testid="start-settings-oauth-open"]')?.focus();
+      void checkConnection();
+      if (opener && (active === document.body || !active?.isConnected)) {
+        pane.querySelector<HTMLElement>(`[data-testid="${opener}"]`)?.focus();
       }
-      options.onEngineChange?.(summarizeAiStatus(choice, report));
     };
-    window.addEventListener(modal.AI_SETTINGS_CLOSED_EVENT, onClosed, { once: true });
+    window.addEventListener(AI_SETTINGS_CLOSED_EVENT, onEditorAiSettingsClosed, { once: true });
   };
 
   const renderAi = (): HTMLElement[] => {
     const row = readySelected();
     const status = !enabled ? null
       : detecting ? "찾는 중…"
-      : detectFailed ? "AI 프로그램 목록을 읽지 못했어요. 앱을 다시 켜 보세요."
+      : detectFailed ? "AI 프로그램 목록을 확인하지 못했어요."
       : null;
+    const connectionFailed = connection.kind === "offline" || connection.kind === "error" || connection.checkTimedOut;
     return [
       el("section", { class: "st-sec", children: [
         el("div", { class: "st-sec-head", children: [
           el("h3", { text: "AI 엔진" }),
-          ...(enabled ? [el("button", { class: "st-link", attrs: { type: "button" }, text: "다시 확인", on: { click: () => void detect(true) } })] : []),
+          ...(enabled ? [el("button", {
+            class: "st-link", attrs: { type: "button", ...(detecting ? { disabled: "" } : {}) },
+            dataset: { testid: "start-settings-detect" },
+            text: detectFailed ? "다시 시도" : "다시 확인",
+            on: { click: () => void detect(detectFailed ? detectFresh : true) },
+          })] : []),
         ] }),
         el("p", { class: "st-sub", text: "이 PC 의 Claude Code · Codex · Gemini CLI 로 일해요. 로그인은 그 프로그램에서 해요." }),
         ...(status ? [el("p", { class: "st-status", attrs: { role: "status" }, text: status })] : []),
@@ -292,7 +352,16 @@ export function openSettingsDialog(options: {
         el("h3", { text: "구글·ChatGPT 로그인" }),
         el("p", { class: "st-sub", text: "프로그램 없이 로그인만으로 돼요." }),
         el("div", { class: "st-oauth-row", children: [
-          el("p", { class: "st-oauth-state", attrs: { role: "status" }, dataset: { testid: "start-settings-oauth-state" }, text: "확인 중…" }),
+          el("p", {
+            class: "st-oauth-state", attrs: { role: "status" },
+            dataset: { testid: "start-settings-oauth-state", tone: connection.kind === "ready" && !connectionFailed ? "ok" : "off" },
+            text: connectionCheck && connectionFailed ? "연결을 확인하는 중…"
+              : connection.checkTimedOut ? `${connection.label} — 연결 서비스 응답 없음` : connection.label,
+          }),
+          ...(connectionFailed && !connectionCheck ? [el("button", {
+            class: "st-btn st-btn-ghost", attrs: { type: "button" }, dataset: { testid: "start-settings-oauth-retry" },
+            text: "다시 시도", on: { click: () => void checkConnection() },
+          })] : []),
           el("button", {
             class: "st-btn st-btn-ghost", attrs: { type: "button" }, dataset: { testid: "start-settings-oauth-open" },
             text: "로그인·연결 관리",
@@ -319,7 +388,7 @@ export function openSettingsDialog(options: {
         el("span", { class: "st-faint", text: lastTestAt ? "방금 시험했어요" : "짧은 요청 하나를 실제로 보내 봐요" }),
         ...(choice ? [el("button", {
           class: "st-link", attrs: { type: "button" }, dataset: { testid: "settings-engine-reset" }, text: "원래 AI 연결로 되돌리기",
-          on: { click: () => { choice = null; split = false; health.clear(); saveEngineChoice(null); notify(); render(); } },
+          on: { click: () => { choice = null; split = false; health.clear(); saveEngineChoice(null); void checkConnection(); } },
         })] : []),
         closeButton,
       ] }),
@@ -374,36 +443,18 @@ export function openSettingsDialog(options: {
 
   document.body.append(backdrop);
   const close = registerModal(backdrop, () => {
+    lifetime.abort();
+    window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, syncConnection);
+    if (onEditorAiSettingsClosed) window.removeEventListener(AI_SETTINGS_CLOSED_EVENT, onEditorAiSettingsClosed);
     backdrop.remove();
     previousFocus?.focus?.();
   });
   render();
   tabButtons.get(tab)?.focus();
+  window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, syncConnection);
   if (enabled) void detect(false);
-  void fillOAuthState();
+  if (tab === "ai") void checkConnection();
   return { close };
-}
-
-/**
- * 「구글·ChatGPT 로그인으로 쓰기」 칸의 현재 상태를 채운다.
- * 이 칸을 만들 때 동반 서비스에 묻지 않으면 영원히 「확인 중…」 이 남아,
- * 첫 화면이 다시 모호해진다(2026-11-01). 안 되면 그 사실을 그대로 적는다.
- */
-async function fillOAuthState(): Promise<void> {
-  const target = document.querySelector<HTMLElement>("[data-testid='start-settings-oauth-state']");
-  if (!target) return;
-  try {
-    const { refreshAiConnectionStatus, getAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
-    await refreshAiConnectionStatus();
-    const status = getAiConnectionStatus();
-    target.textContent = status.kind === "ready"
-      ? `${status.label} — 조수가 이 연결로 일해요.`
-      : `${status.label} — 「로그인·연결 관리」에서 로그인하거나 외부 서버를 등록하세요.`;
-    target.dataset.tone = status.kind === "ready" ? "ok" : "off";
-  } catch {
-    target.textContent = "연결 상태를 읽지 못했어요. 「로그인·연결 관리」에서 직접 확인하세요.";
-    target.dataset.tone = "off";
-  }
 }
 
 function copyCommand(command: string): HTMLElement {

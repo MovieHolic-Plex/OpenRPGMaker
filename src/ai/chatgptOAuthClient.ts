@@ -13,6 +13,7 @@ import {
   type OhMyPiAuthKind,
 } from "@/ai/ohMyPiProviders";
 import type { KeySourcePublic } from "@/ai/keyRoutes";
+import { withRequestTimeout } from "@/util/requestTimeout";
 import { TEAM_MODELS, type ModelFamily, type TeamModelKey } from "@/ai/teamScoreboard";
 
 const DEFAULT_ORIGINLESS_COMPANION = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
@@ -292,12 +293,24 @@ export async function fetchCompanionProviders(): Promise<readonly CompanionProvi
   });
 }
 
-export async function fetchChatGptAuthStatus(providerId?: string): Promise<ChatGptAuthStatus> {
-  const response = await companionFetch(companionAuthUrl("/auth/status", providerId));
-  if (!response.ok) {
-    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+export const AUTH_STATUS_TIMEOUT_MS = 8_000;
+
+async function companionStatusJson(url: string, signal?: AbortSignal, init?: RequestInit): Promise<Record<string, unknown> | null> {
+  try {
+    return await withRequestTimeout(async (requestSignal) => {
+      const response = await fetchCompanion(url, { ...init, signal: requestSignal });
+      if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+      return readJsonBody(response);
+    }, AUTH_STATUS_TIMEOUT_MS, signal);
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    if (error instanceof ChatGptCompanionResponseError || error instanceof ChatGptCompanionUnreachableError) throw error;
+    throw new ChatGptCompanionUnreachableError(error, error instanceof Error && error.name === "TimeoutError" ? "timeout" : "network");
   }
-  return readAuthStatus(await readJsonBody(response));
+}
+
+export async function fetchChatGptAuthStatus(providerId?: string, signal?: AbortSignal): Promise<ChatGptAuthStatus> {
+  return readAuthStatus(await companionStatusJson(companionAuthUrl("/auth/status", providerId), signal));
 }
 
 export async function startChatGptLogin(providerId?: string, apiKey?: string): Promise<CompanionLoginStart> {
@@ -339,17 +352,14 @@ export async function completeOAuthPaste(callbackUrl: string): Promise<void> {
   }
 }
 
-export async function refreshCompanionAuth(providerId?: string): Promise<ChatGptAuthStatus> {
+export async function refreshCompanionAuth(providerId?: string, signal?: AbortSignal): Promise<ChatGptAuthStatus> {
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
-  const response = await companionFetch(companionAuthUrl("/auth/refresh", provider), {
+  const status = await companionStatusJson(companionAuthUrl("/auth/refresh", provider), signal, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ provider }),
   });
-  if (!response.ok) {
-    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
-  }
-  return readAuthStatus(await readJsonBody(response));
+  return readAuthStatus(status);
 }
 
 export async function saveCompanionApiKey(providerId: string, apiKey: string): Promise<ChatGptAuthStatus> {
@@ -494,8 +504,9 @@ export function ensureOpenAiCompatEndpointsKnown(): Promise<void> {
 }
 
 /** 저장된 엔드포인트 목록을 받아 알려진 사본(provider 선택 UI 가 읽는다)도 갱신한다. */
-export async function fetchOpenAiCompatEndpoints(): Promise<readonly OpenAiCompatEndpointPublic[]> {
-  const list = readCompatEndpoints(await compatJson("/auth/openai-compat"));
+export async function fetchOpenAiCompatEndpoints(signal?: AbortSignal): Promise<readonly OpenAiCompatEndpointPublic[]> {
+  const payload = await companionStatusJson(`${companionOrigin()}/auth/openai-compat`, signal);
+  const list = readCompatEndpoints(payload);
   setKnownOpenAiCompatEndpoints(list);
   return list;
 }

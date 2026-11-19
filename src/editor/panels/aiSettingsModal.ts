@@ -402,6 +402,7 @@ export function renderAiSettingsForm(options: {
   const primaryFeedback = el("div", { class: "ai-settings-primary-feedback", attrs: { hidden: "" } });
   const disconnectError = el("p", { class: "ai-auth-error", attrs: { hidden: "", role: "alert" } });
   let chatGptAccount: Parameters<typeof hasUsableCompanionCredential>[0] | undefined;
+  let chatGptCheckFailed = false;
   const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
     providerId = next;
     applyAccountSelection();
@@ -412,8 +413,9 @@ export function renderAiSettingsForm(options: {
   }, {
     feedback: primaryFeedback,
     disconnectError,
-    onAccount: (status) => {
+    onAccount: (status, failed) => {
       chatGptAccount = status;
+      chatGptCheckFailed = failed;
       syncChatGptAccount();
     },
   });
@@ -865,6 +867,7 @@ export function renderAiSettingsForm(options: {
     dataset: { testid: "ai-settings-align-account" },
   }) as HTMLButtonElement;
   const updateReadiness = (): void => {
+    if (disposed) return;
     const next = lastAuthStatus;
     if (!next) return;
     const valid = validateRoleModels();
@@ -879,6 +882,7 @@ export function renderAiSettingsForm(options: {
     const usable = next.tone === "connected" && status.kind === "ready" && !status.limited && valid;
     continueButton.classList.toggle("is-primary", usable);
     connectionSummary.dataset.tone = SUMMARY_TONE[next.tone];
+    connectionCheckButton.textContent = next.tone === "offline" ? "다시 시도" : "연결 확인";
     connectionSummaryCopy.textContent = `${next.providerLabel} · ${next.text}`;
     if (next.tone === "connected") {
       connectionSummary.dataset.tone = usable ? "ready" : "warning";
@@ -918,13 +922,14 @@ export function renderAiSettingsForm(options: {
     refreshRoleMatrix();
   });
   let connectedRoutes: Awaited<ReturnType<typeof fetchConnectedRoutes>> = [];
+  const routeStatusRequests = new AbortController();
   const refreshRoleMatrix = (): void => {
     roleMatrix.refresh(collect(), connectedRoutes);
     syncModelDisplay();
   };
   const reloadConnectedRoutes = (): void => {
     // 응답이 문서가 걷힌 뒤(모달 닫힘·테스트 정리) 오면 다시 그리지 않는다.
-    void fetchConnectedRoutes().then((routes) => {
+    void fetchConnectedRoutes(routeStatusRequests.signal).then((routes) => {
       if (disposed) return;
       connectedRoutes = routes;
       refreshRoleMatrix();
@@ -954,7 +959,6 @@ export function renderAiSettingsForm(options: {
     lastAuthStatus = next;
     updateReadiness();
   };
-  if (lastAuthStatus) pendingAuthStatus(lastAuthStatus);
   const connectionCheckButton = el("button", {
     class: "ai-assistant-action ai-settings-check",
     text: "연결 확인",
@@ -970,6 +974,7 @@ export function renderAiSettingsForm(options: {
       },
     },
   });
+  if (lastAuthStatus) pendingAuthStatus(lastAuthStatus);
 
   const qualityCaption = el("p", {
     class: "ai-settings-caption",
@@ -1133,18 +1138,37 @@ export function renderAiSettingsForm(options: {
       logout,
     ],
   });
+  const accountCheckError = el("div", {
+    class: "ai-auth-error ai-auth-actions", attrs: { role: "status" }, dataset: { testid: "ai-settings-chatgpt-check-error" },
+    children: [
+      el("span", { text: "ChatGPT 연결 상태를 확인하지 못했어요." }),
+      el("button", {
+        class: "ai-settings-link", text: "다시 시도", attrs: { type: "button" },
+        dataset: { testid: "ai-settings-chatgpt-check-retry" },
+        on: { click: () => {
+          chatGptCheckFailed = false;
+          syncChatGptAccount();
+          authSettings.recheckChatGpt();
+        } },
+      }),
+    ],
+  });
   const qualitySection = settingsSection("presets", "품질", "", [presetGroup]);
   qualitySection.append(qualityCaption);
   function syncChatGptAccount(): void {
-    const connected = !!chatGptAccount && hasUsableCompanionCredential(chatGptAccount);
+    const status = getAiConnectionStatus();
+    const sharesAccount = status.providerId === CODEX_PROVIDER_ID && status.authMode === "chatgpt";
+    const account = (sharesAccount ? status.account : undefined) ?? chatGptAccount;
+    const connected = (sharesAccount && status.kind === "ready") || (!!account && hasUsableCompanionCredential(account));
     const active = document.activeElement;
     const focusedFeedback = primaryFeedback.contains(active);
-    const label = chatGptAccount?.accountEmail || chatGptAccount?.accountLabel || chatGptAccount?.planType?.toUpperCase();
+    const label = account?.accountEmail || account?.accountLabel || account?.planType?.toUpperCase();
     accountLabel.textContent = label ? ` · ${label}` : "";
     hero.hidden = connected;
     accountRow.hidden = !connected;
+    accountCheckError.hidden = !chatGptCheckFailed;
     qualitySection.hidden = !connected;
-    logout.hidden = !chatGptAccount || !hasStoredCompanionCredential(chatGptAccount);
+    logout.hidden = !account || !hasStoredCompanionCredential(account);
     if (connected && (active === loginButton || focusedFeedback)) {
       (logout.hidden ? qualityButtons.find(button => button.tabIndex === 0) : logout)?.focus();
     } else if (!connected && (active === logout
@@ -1230,7 +1254,7 @@ export function renderAiSettingsForm(options: {
 
   const panes = {
     connection: settingsPane("connection", [
-      hero, accountRow, qualitySection, primaryFeedback, disconnectError, alternatives,
+      hero, accountRow, accountCheckError, qualitySection, primaryFeedback, disconnectError, alternatives,
     ]),
     behavior: settingsPane("behavior", [
       el("div", { class: "ai-settings-inset", dataset: { testid: "ai-settings-section-behavior" },
@@ -1290,6 +1314,7 @@ export function renderAiSettingsForm(options: {
   activatePane("connection");
   syncModelDisplay();
   syncChatGptAccount();
+  win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, syncChatGptAccount);
 
   return {
     element: form,
@@ -1297,10 +1322,12 @@ export function renderAiSettingsForm(options: {
       disposed = true;
       closeSheet?.();
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
+      win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, syncChatGptAccount);
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, reloadConnectedRoutes);
       win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
       window.removeEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
       compatSettings.dispose();
+      routeStatusRequests.abort();
       if (autoSaveTimer !== null) {
         win?.clearTimeout(autoSaveTimer);
         autoSaveTimer = null;

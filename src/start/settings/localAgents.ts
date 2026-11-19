@@ -10,6 +10,7 @@
 
 import { fetchCompanion } from "@/ai/companionConnection";
 import { ASSISTANT_ENGINE_STORAGE_KEY, LOCAL_CLI_ENGINE_IDS, loadAssistantEngine, saveAssistantEngine, type AssistantEngineChoice, type LocalCliEngineId } from "@/ai/localCliEngine";
+import { withRequestTimeout } from "@/util/requestTimeout";
 
 export { ASSISTANT_ENGINE_STORAGE_KEY, type AssistantEngineChoice };
 
@@ -58,11 +59,12 @@ export type InstallResult = { readonly ok: boolean; readonly code: string; reado
 
 export type LocalAgentsApi = {
   install(id: "claude" | "codex"): Promise<InstallResult>;
-  detect(fresh?: boolean): Promise<LocalAgentsReport>;
+  detect(fresh?: boolean, signal?: AbortSignal): Promise<LocalAgentsReport>;
   health(id: LocalCliId): Promise<HealthResult>;
 };
 
 export const LOCAL_AGENTS_FLAG_KEY = "oprn:flag:local-agents";
+export const LOCAL_AGENTS_STATUS_TIMEOUT_MS = 8_000;
 
 function storage(): Storage | null {
   try { return typeof localStorage === "undefined" ? null : localStorage; } catch { return null; }
@@ -96,9 +98,9 @@ function companionBase(): string {
   return (typeof window !== "undefined" ? (window as { oprn?: { companionOrigin?: string } }).oprn?.companionOrigin : undefined) ?? "";
 }
 
-async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
+async function call<T>(method: "GET" | "POST", path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   // 토큰·서버 재시작 뒤 다시 맺기는 한 입구(fetchCompanion)가 맡는다.
-  const response = await fetchCompanion(`${companionBase()}/v1${path}`, { method, headers: { "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  const response = await fetchCompanion(`${companionBase()}/v1${path}`, { method, signal, headers: { "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return await response.json() as T;
 }
@@ -106,7 +108,10 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
 export function createLocalAgentsApi(): LocalAgentsApi {
   if (query("localAgentsMock") === "1") return mockLocalAgentsApi();
   return {
-    detect: (fresh = false) => call<LocalAgentsReport>("GET", fresh ? "/local-agents?fresh=1" : "/local-agents"),
+    detect: (fresh = false, signal) => withRequestTimeout(
+      (requestSignal) => call<LocalAgentsReport>("GET", fresh ? "/local-agents?fresh=1" : "/local-agents", undefined, requestSignal),
+      LOCAL_AGENTS_STATUS_TIMEOUT_MS, signal,
+    ),
     health: (id) => call<HealthResult>("POST", "/local-agents/health", { cli: id }),
     install: (id) => call<InstallResult>("POST", "/local-agents/install", { cli: id }),
   };

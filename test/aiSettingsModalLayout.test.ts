@@ -212,7 +212,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     check?.click();
     await Promise.resolve();
     await Promise.resolve();
-    expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("openai-codex");
+    expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("openai-codex", expect.any(AbortSignal));
   });
 
   it("다른 연결의 요약은 인증 패널 상태를 공유한다", async () => {
