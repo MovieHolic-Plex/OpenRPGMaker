@@ -30,7 +30,6 @@ const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
   "gpt-6.2-astra": { name: "GPT-6.2 Astra", contextWindow: 272000, useResponsesLite: true },
 };
 
-
 /** Exact selection only. Missing catalog entries must never change the user's model. */
 export function resolveOhMyPiModel(provider: string, requested?: string) {
   // 사용자 지정(OpenAI 호환) 엔드포인트는 번들 카탈로그에 없다 — 호스트가 실어 보낸 정의로 모델을 만든다.
