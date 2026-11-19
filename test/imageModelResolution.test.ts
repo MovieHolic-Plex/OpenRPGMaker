@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compareImageModelVersions, pickNewestImageModel, reportedImageModel } from "@/ai/imageModelResolution";
-import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG, IMAGE_MODEL_ROWS } from "@/ai/imageModelCatalog";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 
 describe("image model resolution", () => {
   it("orders revisions by each numeric part", () => {
@@ -30,12 +30,11 @@ describe("image model resolution", () => {
     expect(pickNewestImageModel([{ id: "chat", kind: "chat" }])).toBeNull();
   });
 
-  it("computes the newest Google image model from the catalog for the explicit-Google case", () => {
-    const newestGoogle = pickNewestImageModel(IMAGE_MODEL_ROWS.filter((row) => row.providerId === "google-antigravity" && row.supported));
-    expect(newestGoogle).toBe("gemini-3.1-flash-image");
+  it("lists only the ChatGPT image route in the editor catalog", () => {
     expect(DEFAULT_IMAGE_PROVIDER_ID).toBe("openai-codex");
     expect(DEFAULT_IMAGE_MODEL).toBe("codex-image-default");
-    expect(IMAGE_MODEL_CATALOG.some((entry) => entry.model === newestGoogle)).toBe(true);
+    expect(IMAGE_MODEL_CATALOG.map(({ providerId, model }) => ({ providerId, model })))
+      .toEqual([{ providerId: "openai-codex", model: "codex-image-default" }]);
   });
 
   it("accepts only non-empty strings as a reported model", () => {

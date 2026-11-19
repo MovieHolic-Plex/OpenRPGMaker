@@ -37,7 +37,7 @@ describe("independent review map deltas", () => {
     const renamed = { ...structuredClone(target), name: "Renamed target" };
     after.maps[target.id] = renamed;
     const input = reviewInput(before, after);
-    // 이 경우는 1M 급 창의 검토자에서 잰다 — 공장 기본은 2026-11-19 에 ChatGPT(GPT-6.1 Terra, 272k 창)로 바뀌었으므로
+    // 이 경우는 1M 급 창의 검토자에서 잰다 — 공장 기본은 2026-11-19 에 ChatGPT(GPT-6.2 Sol, 500k 창)로 바뀌었으므로
     // 지난 공장 기본(Claude Opus 5.5 medium, 1M 창)을 고른 설정으로 고정한다.
     const config = configForProviderSelection(defaultAiConfig(), "anthropic");
     expect(config.providerId).toBe("anthropic");

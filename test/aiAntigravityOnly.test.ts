@@ -45,7 +45,7 @@ function storedProviderId(): string | undefined {
 }
 
 describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
-  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 ChatGPT(GPT-6.1 Terra medium)를 권한다", () => {
+  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 ChatGPT(GPT-6.2 Sol medium)를 권한다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
     // 오너 결정 2026-11-19: 공장 기본은 ChatGPT 다(2026-11-16 Claude 에서 바뀜). 옛 저장값을 읽는 기본 제공자는 그대로 Antigravity 다.
     expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
@@ -71,12 +71,12 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
     }
   });
 
-  it("Codex 의 옛 공장 기본 gpt-5.6-sol 은 gpt-6.1-sol 로 올리고, 모델 없는 Codex blob 에 Gemini 를 채우지 않는다", () => {
+  it("Codex 의 옛 공장 기본 gpt-5.6-sol 은 gpt-6.2-sol 로 올리고, 모델 없는 Codex blob 에 Gemini 를 채우지 않는다", () => {
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: CODEX_PROVIDER_ID, model: "gpt-5.6-sol" }));
-    expect(loadAiConfig().model).toBe("gpt-6.1-sol");
+    expect(loadAiConfig().model).toBe("gpt-6.2-sol");
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: CODEX_PROVIDER_ID }));
-    expect(loadAiConfig().model).toBe("gpt-6.1-sol");
-    expect(loadAiConfig().liteModel).toBe("gpt-6.1-sol");
+    expect(loadAiConfig().model).toBe("gpt-6.2-sol");
+    expect(loadAiConfig().liteModel).toBe("gpt-6.2-sol");
   });
 
   it("저장된 openai-codex 는 load/save 왕복을 살아남는다", () => {

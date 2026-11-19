@@ -4,6 +4,7 @@
 // 한 판 = 찍기(맵마다 1배 전체 · 타이틀 그림 · 오프닝 그림/애니메틱 틀) → 검수자(역할표의 «눈» 또는 «검토자», 주 모델과 다른 계열을 먼저)
 // → 결함 목록(어디·무엇·왜) → 조수가 고침 → 다음 판. 결함 판정은 모델이 하되, 판 수·끝내기·보고 문구는 코드가 정한다.
 // 이 파일은 순수하다(찍기·호출은 넘겨받는다). 실행기 연결은 scripts/lib/assistantV2Runtime.ts.
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL } from "../../chatgptDefault";
 import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "../../claudeDefault";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { BLUEPRINT_OPENING_SHOT_PREFIX } from "@/editor/tools/blueprintOpening";
@@ -346,7 +347,7 @@ export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
  * Opus 로 지은 게임의 화면 검수 7번이 Sonnet 으로 갔다(N6). 조수가 Claude 로 돌면 지은 모델과 검수 모델이 같아진다 — «같은 계열 검수»(약한 증거) 표시 그대로.
  */
 const LOCAL_CLI_REVIEWERS: readonly { readonly provider: string; readonly model: string; readonly effort?: "medium" }[] = [
-  { provider: "local-cli:claude", model: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" },
+  { provider: "local-cli:claude", model: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT }, { provider: "local-cli:codex", model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT }, { provider: "local-cli:gemini", model: "gemini-4-argon" },
 ];
 
 interface VqaReviewerInput {
@@ -376,7 +377,7 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
   };
   if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) add(input.vision, false);
   if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) add(input.advisor, false);
-  for (const d of [{ provider: "google-antigravity", model: "gemini-4-argon" }, { provider: "openai-codex", model: "gpt-6.1-sol" }]) {
+  for (const d of [{ provider: "google-antigravity", model: "gemini-4-argon" }, { provider: "openai-codex", model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT }]) {
     if (input.keyed.has(d.provider) && differs(d.provider)) add(d, false);
   }
   // 키 있는 다른 계열 계정이 없거나 답하지 못하면 로컬 CLI. 설치돼 있지 않으면 호출이 실패해 다음 후보로 넘어간다.

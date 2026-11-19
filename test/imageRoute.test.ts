@@ -14,8 +14,8 @@ import { isModelValidForAuthMode } from "@/ai/modelCatalog";
 const purposes = Object.keys(IMAGE_PURPOSES) as ImagePurpose[];
 const kindOf = (kind: string): ImagePurpose[] => purposes.filter((p) => IMAGE_PURPOSES[p].kind === kind);
 
-/** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-19: 조수 기본은 ChatGPT GPT-6.1 Terra · medium). */
-const FACTORY_PLAN = { provider: "openai-codex", model: "gpt-6.1-terra", thinkingLevel: "medium" } as const;
+/** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-19: 조수 기본은 ChatGPT GPT-6.2 Sol · medium). */
+const FACTORY_PLAN = { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" } as const;
 
 describe("그림 용도 라우터", () => {
   it("세 갈래가 모두 있다", () => {
@@ -25,13 +25,11 @@ describe("그림 용도 라우터", () => {
     expect(isImagePurpose("tileset")).toBe(true);
     expect(isImagePurpose("nope")).toBe(false);
   });
-  it("생성형 용도는 설정의 이미지 모델 칸으로 간다(호출별 지정이 이긴다)", () => {
-    const config = { ...defaultAiConfig(), imageProviderId: "openai-codex", imageModel: "codex-image-default" };
+  it("생성형 용도는 대화 제공자나 옛 그림 설정과 무관하게 ChatGPT 로 간다", () => {
+    const config = { ...defaultAiConfig(), providerId: "google-antigravity", imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" };
     for (const purpose of kindOf("generative")) {
       expect(resolveImageRoute(purpose, config)).toMatchObject({ kind: "generative", providerId: "openai-codex", model: "codex-image-default" });
     }
-    expect(resolveImageRoute("title-art", config, { providerId: "google-antigravity", model: "gemini-3.1-flash-image" }))
-      .toMatchObject({ providerId: "google-antigravity", model: "gemini-3.1-flash-image" });
   });
   it("도트 용도는 이미지 모델이 아니라 텍스트 모델로 간다 — 새 설정은 계획 모델(ChatGPT Terra medium)을 따르고, 고른 칸이 있으면 그 모델이다", () => {
     // 공장 기본(2026-11-19): 도트 칸이 비어 계획 모델을 따른다 — Google 연결을 요구하지 않는다.

@@ -14,7 +14,7 @@ describe("first-run plan defaults", () => {
     expect(plans.map((plan) => plan.key)).toEqual(["codex-cli", "claude-cli", "gemini-cli"]);
   });
 
-  it("gives a Claude subscription Opus 5.5 medium alone (no lead, no Haiku worker), and ChatGPT Terra alone", () => {
+  it("gives a Claude subscription Opus 5.5 medium alone (no lead, no Haiku worker), and ChatGPT Sol alone", () => {
     const [codex, claude] = planCandidates([cli("claude", "ready", "subscription"), cli("codex", "ready", "subscription")], []);
     // 오너 결정 2026-11-16: 조수 기본은 Claude Opus 5.5 · medium 한 모델 — Haiku 워커·팀장 나누기를 기본에서 뺐다.
     expect(claude?.kind === "local-cli" && claude.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium" });
@@ -26,7 +26,7 @@ describe("first-run plan defaults", () => {
       roleModels: Object.fromEntries(["deep", "build", "writer", "vision"].map((role) => [role, { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" }])),
       pixelModel: { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" },
     });
-    expect(codex?.kind === "local-cli" && codex.engine).toMatchObject({ cli: "codex", routineModel: "gpt-6.1-terra", deepModel: "gpt-6.1-terra" });
+    expect(codex?.kind === "local-cli" && codex.engine).toMatchObject({ cli: "codex", routineModel: "gpt-6.2-sol", deepModel: "gpt-6.2-sol", effort: "medium" });
     expect(codex?.kind === "local-cli" && assistantEngineLead(codex.engine)).toBeUndefined();
   });
 
@@ -39,10 +39,11 @@ describe("first-run plan defaults", () => {
 
   it("falls back to an in-app ChatGPT login when the Codex CLI is not signed in", () => {
     expect(planCandidates([], [oauth("openai-codex")]).map((plan) => plan.key)).toEqual(["codex-account"]);
-    const next = configForPlanAccount({ providerId: "openai-codex", model: "gpt-6.1-sol", roleModels: { writer: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" } }, modelSelectionOverrides: { vision: true } }, "openai-codex");
-    expect(next.model).toBe("gpt-6.1-terra");
-    expect(next.ultrabrainModel).toBe("gpt-6.1-terra");
-    expect(next.roleModels?.writer?.model).toBe("gpt-6.1-terra");
+    const next = configForPlanAccount<Parameters<typeof configForPlanAccount>[0]>({ providerId: "openai-codex", model: "gpt-6.1-sol", roleModels: { writer: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" } }, modelSelectionOverrides: { vision: true } }, "openai-codex");
+    expect(next.model).toBe("gpt-6.2-sol");
+    expect(next.ultrabrainModel).toBe("gpt-6.2-sol");
+    expect(next.ultrabrainReasoningEffort).toBe("medium");
+    expect(next.roleModels?.writer?.model).toBe("gpt-6.2-sol");
     expect(next.roleModels?.vision).toBeUndefined();
   });
 

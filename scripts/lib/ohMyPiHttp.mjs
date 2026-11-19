@@ -1,6 +1,7 @@
 // Shared companion router for vite middleware and the standalone OAuth process.
 // Missing provider falls back to Antigravity (same factory default as src/ai/ohMyPiProviders.ts).
 
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "../../src/ai/imageModelCatalog.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { cancelRelayedRun, resumeRelayedRun, startRelayedRun } from "./piRunRelay.mjs";
 // 정적 import — vite 설정 로드 뒤 모듈 러너가 닫혀 요청 처리 중 동적 import 가 「Vite module runner has been closed」 로 죽었다.
@@ -294,7 +295,8 @@ export async function handleCompanionRequest(req, adapters) {
     if (typeof adapters.generateImage !== "function") {
       return json(501, { error: "이 동반 서비스는 이미지 생성을 지원하지 않습니다." });
     }
-    const image = await adapters.generateImage(provider, body);
+    // 그림 생성은 요청에 실린 대화 계정이나 옛 그림 모델 선택과 무관하다.
+    const image = await adapters.generateImage(DEFAULT_IMAGE_PROVIDER_ID, { ...body, model: DEFAULT_IMAGE_MODEL });
     return json(200, {
       image: {
         provider: image.provider,

@@ -93,13 +93,11 @@ async function referenceImage(prompt: string, signal: AbortSignal, options?: { r
       return dataUrl ? { dataUrl, source: "dev-hook" } : null;
     }
   }
-  const [{ generateAiImage }, { loadAiConfig }, { resolveImageRoute }, { companionCredentialMissing }, { loadAssistantEngine }] = await Promise.all([
-    import("@/ai/imageGenerationClient"), import("@/ai/llmClient"), import("@/ai/imageRoute"), import("@/ai/chatgptOAuthClient"), import("@/ai/localCliEngine"),
+  const [{ generateAiImage, IMAGE_GENERATION_PROVIDER_ID }, { companionCredentialMissing }] = await Promise.all([
+    import("@/ai/imageGenerationClient"), import("@/ai/chatgptOAuthClient"),
   ]);
-  // 조수 엔진이 내 PC 의 에이전트 CLI 면 그림 계정 경로가 없다 — 부르면 401 「AI 연결이 끊겼습니다」 알림만 뜬다(2026-10-23 실화면). 참고 없이 그린다.
-  if (loadAssistantEngine()) return null;
-  const route = resolveImageRoute("object-form-reference", loadAiConfig());
-  if (route.kind !== "generative" || await companionCredentialMissing(route.providerId)) return null;
+  // 기물의 참고 그림은 선택이다. 조수의 텍스트 엔진과 별도로 ChatGPT 연결을 본다.
+  if (await companionCredentialMissing(IMAGE_GENERATION_PROVIDER_ID)) return null;
   // 견본(시점·화풍, 물체 비율 캔버스)을 붙인다 — 그림 경로는 붙인 그림의 비율·시점을 따른다(2026-10-22 A/B).
   const attached = options?.image?.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/u);
   const referenceImages = attached ? [{ mimeType: attached[1] as "image/png" | "image/jpeg" | "image/webp", data: attached[2]! }] : undefined;

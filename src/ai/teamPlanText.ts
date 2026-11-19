@@ -9,7 +9,7 @@ export function routeName(route: TeamRoute): string {
 }
 
 export function slotName(slot: TeamSlot): string {
-  return `${SERVICE_NAME[slot.model.family]} ${slot.model.label.replace(/^(Claude|GPT-6\.1|GPT-6|Gemini 4|Gemini 3\.8|DeepSeek)\s*/u, "")}`.trim();
+  return `${SERVICE_NAME[slot.model.family]} ${slot.model.label.replace(/^(Claude|GPT-6(?:\.\d+)?|Gemini 4|Gemini 3\.8|DeepSeek)\s*/u, "")}`.trim();
 }
 
 export function planTitle(plan: TeamPlan): string {

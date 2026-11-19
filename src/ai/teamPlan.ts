@@ -1,5 +1,6 @@
 import { CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID, type DetectedAccount, type DetectedCli } from "./planDefaults.ts";
-import { FAMILY_MODEL_KEYS, SOLO_DEFAULT_WORKERS, TEAM_MODELS, UNRATED_DEFAULT_WORKER, chooseTeam, type ModelFamily, type TeamChoice, type TeamModel, type TeamModelKey } from "./teamScoreboard.ts";
+import { FAMILY_MODEL_KEYS, TEAM_MODELS, UNRATED_DEFAULT_WORKER, chooseTeam, type ModelFamily, type TeamChoice, type TeamModel, type TeamModelKey } from "./teamScoreboard.ts";
+import { isLegacyTerraModel } from "./chatgptDefault.ts";
 
 export interface DetectedKey {
   readonly id: string;
@@ -42,7 +43,9 @@ const accountReady = (accounts: readonly DetectedAccount[], providerId: string):
 export function modelRoutes(inputs: TeamInputs): Map<TeamModelKey, { route: TeamRoute; modelId: string }> {
   const out = new Map<TeamModelKey, { route: TeamRoute; modelId: string }>();
   const own = (family: ModelFamily, route: TeamRoute): void => {
-    for (const key of FAMILY_MODEL_KEYS[family]) if (!out.has(key)) out.set(key, { route, modelId: TEAM_MODELS[key].id });
+    for (const key of FAMILY_MODEL_KEYS[family]) {
+      if (key !== "terra" && !out.has(key)) out.set(key, { route, modelId: TEAM_MODELS[key].id });
+    }
   };
   if (cliReady(inputs.clis, "claude")) own("claude", { kind: "cli", cli: "claude" });
   if (cliReady(inputs.clis, "codex")) own("openai", { kind: "cli", cli: "codex" });
@@ -52,7 +55,7 @@ export function modelRoutes(inputs: TeamInputs): Map<TeamModelKey, { route: Team
     const route: TeamRoute = { kind: "key", sourceId: key.id, label: key.label };
     for (const model of FAMILY_MODEL_KEYS[key.family]) {
       const modelId = key.models[model];
-      if (modelId && !out.has(model)) out.set(model, { route, modelId });
+      if (model !== "terra" && modelId && !isLegacyTerraModel(modelId) && !out.has(model)) out.set(model, { route, modelId });
     }
   }
   return out;
@@ -61,14 +64,14 @@ export function modelRoutes(inputs: TeamInputs): Map<TeamModelKey, { route: Team
 /** 가진 것 전부로 만들 수 있는 가장 좋은 팀. 점수표가 채점한 조합이 없으면 점수 없는 제품 기본값, 그것도 없으면 undefined. */
 export function buildTeamPlan(inputs: TeamInputs): TeamPlan | undefined {
   const routes = modelRoutes(inputs);
-  // ChatGPT 기본(Terra 혼자, 오너 결정 2026-11-19)은 ChatGPT 구독·로그인으로 쓸 수 있을 때만이다 — OpenAI API 키(쓴 만큼 청구)만 있으면
-  // Claude 구독 사용자를 키 청구 쪽으로 옮기지 않는다(그때는 Opus 혼자가 기본이다).
-  const soloDefaults = SOLO_DEFAULT_WORKERS.filter((key) => key !== "terra" || routes.get(key)?.route.kind !== "key");
-  const choice = chooseTeam(new Set(routes.keys()), soloDefaults);
   const slot = (key: TeamModelKey): TeamSlot | undefined => {
     const found = routes.get(key);
     return found ? { model: TEAM_MODELS[key], route: found.route, modelId: found.modelId } : undefined;
   };
+  // ChatGPT 구독·로그인이 있으면 Sol 6.2 혼자 쓴다. 옛 점수표의 비용·품질은 이 모델에 붙이지 않는다.
+  const chatgpt = slot("sol62");
+  if (chatgpt && chatgpt.route.kind !== "key") return { worker: chatgpt, routes: [chatgpt.route] };
+  const choice = chooseTeam(new Set(routes.keys()));
   if (choice) {
     const worker = slot(choice.worker)!;
     const lead = choice.lead ? slot(choice.lead) : undefined;

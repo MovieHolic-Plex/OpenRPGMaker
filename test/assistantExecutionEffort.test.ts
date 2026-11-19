@@ -27,10 +27,10 @@ describe("explicit autonomous execution effort", () => {
     expect(session["phaseConfig"]("execute").reasoningEffort).toBe("off");
   });
 
-  it("uses the pinned execution role when the config has one (default ChatGPT GPT-6.1 Terra medium, 2026-11-19)", () => {
+  it("uses the pinned execution role when the config has one (default ChatGPT GPT-6.2 Sol medium, 2026-11-19)", () => {
     const session = new AssistantSession(createBlankProject(), { config: defaultAiConfig() });
     const execution = session["phaseConfig"]("execute");
-    expect(execution.model).toBe("gpt-6.1-terra");
+    expect(execution.model).toBe("gpt-6.2-sol");
     expect(execution.reasoningEffort).toBe("medium");
   });
 });

@@ -90,7 +90,10 @@ export function openSettingsDialog(options: {
   const choose = (id: LocalCliId): void => {
     const row = rowFor(id);
     if (!row || row.state !== "ready") return;
-    choice = { kind: "local-cli", cli: id, ...(row.defaults.routine ? { routineModel: row.defaults.routine } : {}), ...(row.defaults.deep ? { deepModel: row.defaults.deep } : {}), effort: choice?.effort ?? "medium" };
+    // 한 모델로 시작할 때 Codex 의 제작 역할은 Sol 로 맞춘다. 잔일용 모델은 나누기를 켜고 고를 수 있다.
+    const routineModel = id === "codex" ? row.defaults.deep : row.defaults.routine;
+    const effort = id === "codex" && choice?.cli !== id ? "medium" : choice?.effort ?? "medium";
+    choice = { kind: "local-cli", cli: id, ...(routineModel ? { routineModel } : {}), ...(row.defaults.deep ? { deepModel: row.defaults.deep } : {}), effort };
     split = false;
     saveEngineChoice(choice);
     notify();

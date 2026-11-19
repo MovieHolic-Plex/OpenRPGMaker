@@ -4,12 +4,13 @@
  * - `/backend-api/codex/models?client_version=0.144.1` → gpt-5.6 계열까지만
  * - `0.155.1` → gpt-6-astra·gpt-6-sol·gpt-6-luna 가 더해진다
  * - `0.160.0` → gpt-6.1-sol 까지 (minimal_client_version 은 0.153.0 이라고 적혀 있지만 0.158 까지는 목록에 없다)
+ * - `0.170.0` → gpt-6.2-sol·gpt-6.2-astra (2026-11-19 Codex 모델 캐시)
  * 그래서 카탈로그에 있던 gpt-6-* 도 실제로는 전부 400(「requires a newer version of Codex」)이었다.
  *
  * HTTP(SSE) 요청의 `version` 헤더만 여기서 올린다. 웹소켓 핸드셰이크 헤더는 fetch 를 거치지 않으므로
  * 새 모델은 ohMyPiModel 에서 preferWebsockets:false 로 SSE 를 쓰게 한다.
  */
-export const OPRN_CODEX_CLIENT_VERSION = "0.160.0";
+export const OPRN_CODEX_CLIENT_VERSION = "0.170.0";
 
 function isCodexBackend(input: Parameters<typeof fetch>[0]): boolean {
   const raw = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;

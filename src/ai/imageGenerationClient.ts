@@ -1,5 +1,5 @@
 import { companionRequestBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_CHATGPT_LOGIN_REQUIRED } from "@/ai/imageModelCatalog";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 import { imageRouteRefusal, resolveImageRoute, type ImagePurpose } from "@/ai/imageRoute";
@@ -19,13 +19,14 @@ export interface GeneratedImageAsset {
 
 export interface GenerateAiImageRequest {
   readonly prompt: string;
+  /** 옛 호출과의 호환을 위해 받는다. 생성 요청은 항상 ChatGPT 로 보낸다. */
   readonly model?: string;
   readonly providerId?: string;
   readonly signal?: AbortSignal;
   readonly referenceImages?: readonly ImageReference[];
   /**
    * 그림 용도(src/ai/imageRoute.ts). 주면 라우터가 모델을 정하고, 도트·업로드 전용 용도는 요청을 보내기 전에 거절한다.
-   * 이 값은 서버로 보내지 않는다. 없으면 종전처럼 설정의 이미지 모델 칸을 그대로 쓴다.
+   * 이 값은 서버로 보내지 않는다. 생략해도 ChatGPT 로 그림을 생성한다.
    */
   readonly purpose?: ImagePurpose;
 }
@@ -76,22 +77,13 @@ export async function generateAiImage(
   const prompt = request.prompt.trim();
   if (!prompt) throw new ImageGenerationError("그림 설명(prompt)이 비어 있습니다.");
   const referenceImages = parseImageReferences(request.referenceImages);
-  const config = loadAiConfig();
-  let providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
-  let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
+  const providerId = IMAGE_GENERATION_PROVIDER_ID;
+  const model = IMAGE_GENERATION_MODEL;
   if (request.purpose) {
     // 도트 용도에 이미지 모델이 불리면 네트워크로 나가기 전에 막는다(눈금·팔레트·3/4 시점을 지키지 못한다).
-    const route = resolveImageRoute(request.purpose, config, {
-      ...(request.providerId ? { providerId: request.providerId } : {}),
-      ...(request.model ? { model: request.model } : {}),
-    });
+    const route = resolveImageRoute(request.purpose, loadAiConfig());
     if (route.kind !== "generative") throw new ImageGenerationError(imageRouteRefusal(route));
-    providerId = route.providerId;
-    model = route.model;
   }
-  // ChatGPT 가 기본이다 — 오너 규칙(2026-11-07): 「이미지는 chatgpt 로 그려」. 예전에는 ChatGPT 자격이 없으면
-  // 조용히 Google 로 갈아탔는데, 그것이 바로 오너가 거절한 행동이다(그림이 Google 화풍으로 나오는데 사용자는 모른다).
-  // 지금은 바꾸지 않고 그대로 보내, 제공자가 401 을 돌려주면 사용자가 그 문구를 보고 연결한다.
 
   const doFetch = deps.fetch ?? fetch;
   const timeout = AbortSignal.timeout(IMAGE_REQUEST_TIMEOUT_MS);
@@ -132,6 +124,7 @@ export async function generateAiImage(
   }
 
   if (!response.ok) {
+    if (response.status === 401) throw new ImageGenerationError(IMAGE_CHATGPT_LOGIN_REQUIRED, 401);
     const detail = (payload as { error?: unknown })?.error;
     const message = typeof detail === "string" && detail ? detail : `이미지 생성 실패 (HTTP ${response.status})`;
     throw new ImageGenerationError(message, response.status);

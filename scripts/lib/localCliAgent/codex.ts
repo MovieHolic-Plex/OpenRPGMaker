@@ -10,6 +10,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL, isLegacyTerraModel } from "../../../src/ai/chatgptDefault.ts";
 import { emptyWorkDir, isTransientCliError, runShort, sleep, spawnJsonLines } from "./process.ts";
 import { MCP_TOKEN_ENV } from "./claude.ts";
 import { resolveBinary } from "./resolveBinary.ts";
@@ -22,10 +23,10 @@ const DISABLED_FEATURES = [
 ];
 
 const FALLBACK_MODELS: LocalCliModel[] = [
-  { id: "gpt-6.1-sol", label: "GPT-6.1 Sol (권장)", roles: ["deep"] },
+  { id: ASSISTANT_CHATGPT_MODEL, label: "GPT-6.2 Sol (권장)", roles: ["deep"] },
+  { id: "gpt-6.2-astra", label: "GPT-6.2 Astra" },
+  { id: "gpt-6.1-sol", label: "GPT-6.1 Sol" },
   { id: "gpt-6-luna", label: "GPT-6 Luna (빠름·가벼움)", roles: ["routine"] },
-  // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). 2026-11-03 codex 0.164 로 실제 호출 통과.
-  { id: "gpt-6.1-terra", label: "GPT-6.1 Terra" },
 ];
 
 export function buildCodexArgs(work: string, instructionsPath: string, mcpUrl: string | undefined, options: { model?: string; effort?: string; resume?: string; images?: readonly string[] }): string[] {
@@ -76,10 +77,10 @@ function codexModels(): LocalCliModel[] {
   // CLI 가 받아 둔 모델 목록(공개 정보, 비밀 아님). 없으면 고정 목록.
   try {
     const cache = JSON.parse(readFileSync(join(process.env.CODEX_HOME ?? join(homedir(), ".codex"), "models_cache.json"), "utf8")) as { models?: { slug?: string; display_name?: string; visibility?: string }[] };
-    const rows = (cache.models ?? []).filter((m) => typeof m.slug === "string" && m.visibility !== "hide" && !/review/u.test(m.slug!));
-    // 캐시에 없는 고정 목록 모델(기본값이 쓰는 gpt-6.1-sol·gpt-6.1-terra)은 뒤에 붙인다 — 없으면 설정 목록이 기본값을 못 보여 준다.
+    const rows = (cache.models ?? []).filter((m) => typeof m.slug === "string" && m.visibility !== "hide" && !/review/u.test(m.slug) && !isLegacyTerraModel(m.slug));
+    // 캐시에 없는 고정 목록 모델은 뒤에 붙인다 — 캐시 갱신 전에도 설정에서 기본값을 볼 수 있다.
     if (rows.length) return [
-      ...rows.map((m) => ({ id: m.slug!, label: m.display_name ?? m.slug!, ...(FALLBACK_MODELS.find((f) => f.id === m.slug)?.roles ? { roles: FALLBACK_MODELS.find((f) => f.id === m.slug)!.roles! } : {}) })),
+      ...rows.map((m) => FALLBACK_MODELS.find((f) => f.id === m.slug) ?? { id: m.slug!, label: m.display_name ?? m.slug! }),
       ...FALLBACK_MODELS.filter((f) => !rows.some((m) => m.slug === f.id)),
     ];
   } catch { /* 목록이 없다 */ }
@@ -118,7 +119,10 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
     };
     current = spawnJsonLines({
       binary: options.binary ?? "codex",
-      args: buildCodexArgs(work.dir, instructionsPath, toolsEnabled ? options.mcpUrl : undefined, { ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}), ...(thread ? { resume: thread } : {}), ...(imageFiles.length ? { images: imageFiles } : {}) }),
+      args: buildCodexArgs(work.dir, instructionsPath, toolsEnabled ? options.mcpUrl : undefined, {
+        model: options.model || ASSISTANT_CHATGPT_MODEL, effort: options.effort ?? ASSISTANT_CHATGPT_EFFORT,
+        ...(thread ? { resume: thread } : {}), ...(imageFiles.length ? { images: imageFiles } : {}),
+      }),
       cwd: work.dir,
       env: { ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
       stdin: text,
@@ -207,7 +211,7 @@ export const codexAdapter: LocalCliAdapter = {
     const has = (id: string) => models.some((m) => m.id === id);
     const base = {
       id: "codex" as const, label: "Codex (ChatGPT)", models,
-      defaults: { routine: has("gpt-6-luna") ? "gpt-6-luna" : models[0]!.id, deep: has("gpt-6.1-sol") ? "gpt-6.1-sol" : models[0]!.id },
+      defaults: { routine: has("gpt-6-luna") ? "gpt-6-luna" : models[0]!.id, deep: has(ASSISTANT_CHATGPT_MODEL) ? ASSISTANT_CHATGPT_MODEL : models[0]!.id },
       ...installFields(CODEX_INSTALL_BY_OS, "https://developers.openai.com/codex/cli"),
       login: { command: "codex login", help: "터미널에서 codex login 을 실행해 ChatGPT 계정으로 로그인하세요." },
     };

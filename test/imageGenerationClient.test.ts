@@ -7,7 +7,7 @@ import {
   imageGenerationEndpoint,
   imageGenerationUsesOtherProvider,
 } from "@/ai/imageGenerationClient";
-import { RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { IMAGE_CHATGPT_LOGIN_REQUIRED, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { defaultAiConfig } from "@/ai/llmClient";
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -50,7 +50,6 @@ describe("imageGenerationClient", () => {
 
     expect(seen).toHaveLength(1);
     expect(seen[0]!.url).toBe("/v1/images/generations");
-    // 새 설정의 그림 기본은 ChatGPT(GPT Image) — da29a9f402. Google 대체는 주입 fetch 가 없을 때만 일어난다.
     expect(seen[0]!.provider).toBe(RECOMMENDED_IMAGE_PROVIDER_ID);
     expect(seen[0]!.body).toEqual({ prompt: "슬라임", model: RECOMMENDED_IMAGE_MODEL });
     expect(image.dataUrl).toBe("data:image/png;base64,AAA");
@@ -83,18 +82,18 @@ describe("imageGenerationClient", () => {
     ).rejects.toThrow("이미지 생성은 …만 지원합니다.");
   });
 
-  it("인증 안내를 상태와 함께 그대로 올린다", async () => {
-    const message = "이미지를 만들려면 AI 설정 → Google Antigravity 로그인에서 연결해 주세요.";
-    let failure: unknown;
-    try {
-      await generateAiImage({ prompt: "슬라임" }, { fetch: async () => jsonResponse({ error: message }, 401) });
-    } catch (error) {
-      failure = error;
-    }
-
-    expect(failure).toBeInstanceOf(ImageGenerationError);
-    expect((failure as ImageGenerationError).message).toBe(message);
-    expect((failure as ImageGenerationError).status).toBe(401);
+  it("ChatGPT 인증에 실패하면 다른 제공자를 부르지 않고 로그인 안내를 올린다", async () => {
+    const seen: [string | null, string][] = [];
+    const result = generateAiImage(
+      { prompt: "슬라임", model: "gemini-3.1-flash-image", providerId: "google-antigravity" },
+      { fetch: async (_input, init) => {
+        seen.push([new Headers(init?.headers).get("X-Oprn-Provider"), JSON.parse(String(init?.body)).model]);
+        return jsonResponse({ error: "Unauthorized" }, 401);
+      } },
+    );
+    await expect(result).rejects.toBeInstanceOf(ImageGenerationError);
+    await expect(result).rejects.toMatchObject({ message: IMAGE_CHATGPT_LOGIN_REQUIRED, status: 401 });
+    expect(seen).toEqual([["openai-codex", "codex-image-default"]]);
   });
 
   it("dataUrl 이 없는 200 응답도 실패로 본다", async () => {
@@ -104,11 +103,9 @@ describe("imageGenerationClient", () => {
   });
 
   it("대화 제공자와 그림 제공자가 같을 때만 다른 제공자 안내가 필요 없다", () => {
-    // 기본 대화는 Google(#2535), 기본 그림은 ChatGPT(da29a9f402)라 새 설정은 안내가 뜬다.
-    const config = defaultAiConfig();
-    expect(config.providerId).not.toBe(IMAGE_GENERATION_PROVIDER_ID);
+    const config = { ...defaultAiConfig(), providerId: "google-antigravity" };
     expect(config.imageProviderId).toBe(IMAGE_GENERATION_PROVIDER_ID);
     expect(imageGenerationUsesOtherProvider(config)).toBe(true);
-    expect(imageGenerationUsesOtherProvider({ ...config, imageProviderId: config.providerId })).toBe(false);
+    expect(imageGenerationUsesOtherProvider({ ...config, providerId: "openai-codex" })).toBe(false);
   });
 });

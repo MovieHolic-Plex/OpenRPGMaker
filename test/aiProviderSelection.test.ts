@@ -8,20 +8,18 @@ const google = "google-antigravity";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("account selection and persisted work models", () => {
-  it("a first ChatGPT selection routes work to gpt-6.1-sol and keeps Writer on optional Gemini", () => {
+  it("a first ChatGPT selection routes work to gpt-6.2-sol medium for every work role", () => {
     const next = configForProviderSelection(defaultAiConfig(), codex);
-    // Writer 는 다른 계정이어도 작업 시작을 막지 않는다(없으면 실행기가 실행 모델로 대신한다).
+    // 직접 고른 역할이 없으면 계획·시공·작문·실행·시각 모두 ChatGPT 로 간다.
     expect(workProviderIds(next)).toEqual([codex]);
-    for (const role of ["vision", "deep"] as const) {
+    for (const role of ["vision", "deep", "build", "writer"] as const) {
       expect(configForRole(next, role).providerId).toBe(codex);
-      expect(configForRole(next, role).model).toBe("gpt-6.1-sol");
+      expect(configForRole(next, role).model).toBe("gpt-6.2-sol");
       expect(configForRole(next, role).reasoningEffort).toBe("medium");
     }
-    expect(configForRole(next, "writer").providerId).toBe(google);
-    expect(configForRole(next, "writer").model).toBe("gemini-4-argon");
     expect(next.ultrabrainProviderId).toBe(codex);
-    expect(next.ultrabrainModel).toBe("gpt-6.1-sol");
-    expect(next.ultrabrainReasoningEffort).toBe("high");
+    expect(next.ultrabrainModel).toBe("gpt-6.2-sol");
+    expect(next.ultrabrainReasoningEffort).toBe("medium");
     expect(next.imageProviderId).toBe(codex);
   });
 
@@ -33,19 +31,19 @@ describe("account selection and persisted work models", () => {
     });
     const config = defaultAiConfig();
     config.roleModels = { vision: { provider: google, model: "gemini-3-pro", thinkingLevel: "high" } };
-    // The default image route is ChatGPT now (da29a9f402), so the user's direct Google image choice is made explicitly here.
     config.imageProviderId = google;
     config.modelSelectionOverrides = { vision: true, image: true };
     saveAiConfig(config);
     const next = configForProviderSelection(loadAiConfig(), codex);
     expect(next.roleModels?.vision).toEqual(config.roleModels.vision);
-    expect(next.imageProviderId).toBe(google);
+    expect(next.imageProviderId).toBe(codex);
     expect(new Set(workProviderIds(next))).toEqual(new Set([codex, google]));
     const aligned = configForProviderSelection(next, codex, true);
     expect(workProviderIds(aligned)).toEqual([codex]);
-    expect(aligned.roleModels?.vision?.model).toBe("gpt-6.1-sol");
-    expect(aligned.modelSelectionOverrides).toEqual({ image: true });
-    expect(aligned.imageProviderId).toBe(google);
+    expect(aligned.roleModels?.vision?.model).toBe("gpt-6.2-sol");
+    expect(aligned.modelSelectionOverrides).toEqual({});
+    expect(aligned.imageProviderId).toBe(codex);
+    expect(aligned.imageModel).toBe("codex-image-default");
   });
 
   it("treats stored legacy choices as explicit until the user aligns them", () => {
