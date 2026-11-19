@@ -499,6 +499,7 @@ export function createElectronRepository(): ElectronRepository {
       // 비교는 잘게 나눠 돈다(수십 칸 타일셋 대조가 한 번에 약 1s). 쉬는 동안 스토어는 가지를 교체만 하므로
       // 입력 보기가 가리키는 내용은 제출 때 그대로다.
       const patch = await withWirePatchValuesSliced(await diffProjectDocumentsSliced(projectWireView(baseProject), projectWireView(persisted), yieldToTask), yieldToTask);
+      if (Object.keys(patch).length === 0) return { kind: "saved", written: false };
       // 호스트가 이 패치를 기준본 위에 얹어 저장하므로, 같은 연산이 곧 저장될 내용의 사적 사본이다.
       // 패치 값은 이미 JSON 왕복 사본이고, 나머지 가지는 기준본(사적·불변)을 공유한다 — 복제가 변경량에 비례한다.
       // 실측(2026-09-26, 81MB 새 프로젝트): 저장마다 전체 복제 1.2s 를 없앤다. serialize(submitted) 는 호스트 행과 같다.

@@ -585,7 +585,7 @@ export function changeGoldBody(context: CommandEditContext, cmd: Extract<Command
 
 export function changeItemBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeItem" }>): HTMLElement {
   const project = store.getCurrent();
-  const items = project.database.items;
+  const items = [...project.database.items, ...project.database.equipment];
   const startInventory = startStateOf(project).inventory;
   // 아이템 픽커: 카드에 아이콘 + 이름 + 시작 보유 수량.
   const item = recordPickerWithPreview({

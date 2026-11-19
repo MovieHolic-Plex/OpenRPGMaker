@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createStarterBlankProject } from "@/project/defaults";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { deserialize, serialize } from "@/project/io";
 import { createElectronRepository, hasElectronBridge, type OprnBridge } from "@/project/persistence/electronRepository";
-import { adoptElectronOpenProject, projectRepository } from "@/project/persistence/repository";
+import { adoptElectronOpenProject, projectRepository, setProjectRepositoryForTest } from "@/project/persistence/repository";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 
 const PROJECT = projectWithoutEventDrafts(createScarloxyDemoProject());
@@ -62,6 +63,49 @@ afterEach(() => {
 });
 
 describe("electron repository", () => {
+  it("skips an empty document patch and keeps the last successful save time", async () => {
+    const bridge = fakeBridge();
+    const save = vi.spyOn(bridge.project, "save").mockResolvedValue({ kind: "saved", sha256: SHA, revision: 1 });
+    const savePatch = vi.spyOn(bridge.project, "saveMapPatch");
+    const now = vi.spyOn(Date, "now");
+    const { store } = await import("@/project/store");
+    vi.stubGlobal("window", { oprn: bridge });
+    const repository = createElectronRepository();
+    setProjectRepositoryForTest(repository);
+
+    try {
+      await repository.open(DIR);
+      store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: true, disabledReason: null });
+      store.replaceProject(createStarterBlankProject());
+      store.update(() => {}); // Normalize the fixture before taking the first baseline.
+      store._setPersistenceStateForTest({ loaded: true });
+
+      now.mockReturnValue(10_000);
+      await expect(store.flush()).resolves.toMatchObject({ kind: "saved", receipt: expect.anything() });
+      expect(store.getAutoSaveState()).toEqual({ kind: "saved", at: 10_000 });
+
+      now.mockReturnValue(20_000);
+      store.update(() => {});
+      expect(store.hasUnsavedChanges()).toBe(true);
+      await expect(store.flush()).resolves.toEqual({ kind: "saved", written: false });
+      expect(save).toHaveBeenCalledTimes(1);
+      expect(savePatch).not.toHaveBeenCalled();
+      expect(store.hasUnsavedChanges()).toBe(false);
+      expect(store.getAutoSaveState()).toEqual({ kind: "saved", at: 10_000 });
+      expect(store.isOwnSavedHostRevision(1)).toBe(true);
+
+      store.update(project => { project.meta.title = "실제 편집"; });
+      await expect(store.flush()).resolves.toMatchObject({ kind: "saved" });
+      expect(savePatch).toHaveBeenCalledTimes(1);
+      expect(store.getAutoSaveState()).toEqual({ kind: "saved", at: 20_000 });
+    } finally {
+      now.mockRestore();
+      store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+      await store.flush();
+      setProjectRepositoryForTest(null);
+    }
+  }, 60_000);
+
   it("분리된 사본 저장은 전송 중 원본의 다음 변경과 섞이지 않는다", async () => {
     const live = { ...PROJECT, meta: { ...PROJECT.meta, title: "제출 당시" } };
     const bridge = fakeBridge();

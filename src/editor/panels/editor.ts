@@ -79,7 +79,7 @@ import {
 } from "@/editor/authoringJourney";
 import { OPEN_AUTHORING_JOURNEY_EVENT, renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
 import { mountCanvasStatus } from "@/editor/panels/canvasToolPill";
-import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
+import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 import { mountFirstRunGuide } from "./firstRunGuide";
 
@@ -359,6 +359,7 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
   window.addEventListener(OPEN_AUTHORING_JOURNEY_EVENT, onOpenAuthoringJourney);
   bindMapSurfaceFocusHandoff(phaserContainer);
+  installPointerStrokeGate();
   // 맵 판이 그려지기 전(Phaser 기동·텍스처·팔레트 준비, 약 1~2s)에는 셸이 먼저 보인다 — 그동안 맵 칸에 작은 도는 표시를 둔다.
   // EditScene.create 가 걷는다. 글자는 넣지 않는다(DOM 번역 카탈로그 밖) — 상태는 aria-busy 로 알린다.
   bootEditCanvas(phaserContainer);
@@ -544,6 +545,7 @@ export function teardownEditor(): void {
   pendingStoreChange = undefined;
   fullPanelRefreshQueued = false;
   fullPanelRefreshNeedsProject = false;
+  paletteRefreshQueued = false;
   pendingPanelChange = undefined;
   aiSidebarWorkspace?.dispose();
   aiSidebarWorkspace = null;
@@ -994,7 +996,9 @@ function schedulePaletteOnlyRefresh(): void {
   if (fullPanelRefreshQueued) { pendingPanelChange = undefined; return; }
   if (paletteRefreshQueued) return;
   paletteRefreshQueued = true;
+  const epoch = panelRefreshEpoch;
   const run = (): void => {
+    if (epoch !== panelRefreshEpoch) return;
     paletteRefreshQueued = false;
     if (fullPanelRefreshQueued) return;
     if (leftDock) {
@@ -1004,8 +1008,12 @@ function schedulePaletteOnlyRefresh(): void {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
     if (mapLockBannerRoot) renderMapEditLockBanner(mapLockBannerRoot);
   };
-  if (typeof queueMicrotask === "function") queueMicrotask(run);
-  else setTimeout(run, 0);
+  const refresh = (): void => {
+    if (editorState.get().layer === "event") runWhenPointerReleased(run);
+    else run();
+  };
+  if (typeof queueMicrotask === "function") queueMicrotask(refresh);
+  else setTimeout(refresh, 0);
 }
 
 function scheduleStorePanelRefresh(change: ProjectChangeDescriptor): void {
@@ -1021,7 +1029,8 @@ function scheduleStorePanelRefresh(change: ProjectChangeDescriptor): void {
   if (!fullPanelRefreshQueued) pendingPanelChange = change;
   else if (!pendingPanelChange || pendingPanelChange.scope !== change.scope
     || change.projectSwitch || pendingPanelChange.projectSwitch
-    || change.scope === "map" && (!change.cells?.length && !change.relief)) pendingPanelChange = undefined;
+    || change.scope === "map" && ((!change.cells?.length && !change.relief)
+      || (pendingPanelChange.scope === "map" && pendingPanelChange.eventDraftStarted))) pendingPanelChange = undefined;
   if (paletteRefreshQueued) pendingPanelChange = undefined;
   scheduleFullPanelRefresh(false, true);
 }
@@ -1054,14 +1063,20 @@ function scheduleFullPanelRefresh(editorStateOnly = false, fromStore = false): v
       });
     }
   };
-  if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
-  else setTimeout(run, 0);
+  const refresh = (): void => {
+    // A blur/store refresh must keep the event opener mounted through pointerup and click.
+    if (editorState.get().layer === "event") runWhenPointerReleased(run);
+    else run();
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(refresh);
+  else setTimeout(refresh, 0);
 }
 
 function refreshPanels(change?: ProjectChangeDescriptor, editorStateOnly = false): void {
   if (!editorStateOnly) refreshAuthoringJourney(change);
   // 프로젝트 단위 변화(포크 커밋·재연결·복구)는 persistence 상태를 바꾼다 — 배너를 다시 그린다.
   if (!editorStateOnly && (!change || change.scope === "project" || change.projectSwitch)) paintPersistenceBanner();
+  if (change?.scope === "map" && change.eventDraftStarted) return;
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && (change.cells?.length || change.relief)) {

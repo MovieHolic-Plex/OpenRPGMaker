@@ -5,9 +5,8 @@ import { describeEventDiff, eventDiffFields } from "@/editor/eventDiffLabel";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
-  beginEventEditDraft,
   commitEventDraft,
-  discardEventDraft as discardProjectEventDraft,
+  committedEventView,
   eventDraftDiffById,
   eventWithoutDraft,
   type EventDiff,
@@ -18,6 +17,7 @@ import {
   rememberEventDraftVaultEntry,
 } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
+import { canWriteTeamProject } from "@/project/teamAccess";
 import type { GameEvent, MapId, Trigger } from "@/project/types";
 
 export function createEventDraft(
@@ -65,18 +65,18 @@ export function beginExistingEventDraft(mapId: MapId, eventId: string): boolean 
     selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
     return true;
   }
-  let opened = false;
-  store.update(
-    (project) => {
-      opened = beginEventEditDraft(project, mapId, eventId);
-      if (opened) {
-        const draftEvent = project.maps[mapId]?.events.find((item) => item.id === eventId);
-        if (draftEvent) rememberEventDraftVaultEntry(mapId, draftEvent);
-      }
+  store.updateEvent(
+    mapId,
+    eventId,
+    (event) => {
+      event.draft = { kind: "edit", original: eventWithoutDraft(event) };
     },
-    { scope: "map", mapId, label: `이벤트 편집 시작: ${eventDisplayName(event)}`, origin: "system", eventId },
+    { scope: "map", mapId, label: `이벤트 편집 시작: ${eventDisplayName(event)}`, origin: "system", eventId, eventDraftStarted: true },
   );
+  const draftEvent = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
+  const opened = draftEvent?.draft?.kind === "edit";
   if (opened) {
+    rememberEventDraftVaultEntry(mapId, draftEvent);
     selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
     persistEventDraftVaultNow();
   }
@@ -121,28 +121,29 @@ export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null 
 }
 
 export function discardEventDraft(mapId: MapId, eventId: string): boolean {
-  const draftKind = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId)?.draft?.kind;
-  if (!draftKind) {
+  const event = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId);
+  if (!event?.draft) {
     forgetEventDraftVaultEntry(mapId, eventId);
     persistEventDraftVaultNow();
     return false;
   }
-  // Forget vault first so store.update's vault sync cannot resurrect a discarded draft.
+  const draftKind = event.draft.kind;
+  const committed = committedEventView(event);
+  const discarded = canWriteTeamProject()
+    && (committed !== null || draftKind === "new" || event.draft.conflict?.kind === "remote-delete");
+  // Forget vault first so store sync cannot resurrect a discarded draft.
   forgetEventDraftVaultEntry(mapId, eventId);
-  let discarded = false;
-  store.update(
-    (project) => {
-      discarded = discardProjectEventDraft(project, mapId, eventId);
-    },
-    {
+  if (discarded) {
+    store.replaceEvent(mapId, eventId, committed, {
       scope: "map",
       mapId,
       // 폐기는 "아무 일도 없었다" 가 아니다 — 사용자가 편집을 버렸다는 사실 자체가
       // "내가 고친 게 왜 없지?" 를 추적할 때 필요한 정보다.
       label: draftKind === "new" ? "이벤트 생성 취소" : "이벤트 편집 취소",
       eventId,
-    },
-  );
+      eventDraftDiscarded: true,
+    });
+  }
   persistEventDraftVaultNow();
   if (draftKind === "new") {
     editorState.set({ selectedEventId: null, selectedEventPageId: null });

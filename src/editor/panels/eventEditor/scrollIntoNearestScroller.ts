@@ -15,6 +15,10 @@ export function scrollIntoNearestScroller(target: HTMLElement, block: "center" |
     scroller = scroller.parentElement;
   }
   if (!scroller) return;
+  scrollWithinScroller(target, scroller, block);
+}
+
+export function scrollWithinScroller(target: HTMLElement, scroller: HTMLElement, block: "center" | "nearest"): void {
   const targetRect = target.getBoundingClientRect();
   const hostRect = scroller.getBoundingClientRect();
   if (block === "nearest" && targetRect.top >= hostRect.top && targetRect.bottom <= hostRect.bottom) return;

@@ -319,16 +319,18 @@ function ownerSeesFork(owner: Owner, then: Command[], otherwise: Command[]): Com
 }
 
 function containerEvent(
-  project: Project, mapId: string, c: Cell, label: string, loot: Loot, owner: Owner | null, expel: Command[] | null,
+  project: Project, map: GameMap, c: Cell, label: string, loot: Loot, owner: Owner | null, expel: Command[] | null,
 ): GameMap["events"][number] {
-  const id = `ev_fs_box_${mapId}_${c.x}_${c.y}`;
+  const id = `ev_fs_box_${map.id}_${c.x}_${c.y}`;
+  // 가구 타일이 이미 막는 칸에서는 조사 이벤트의 충돌을 끈다.
+  const overlapForbidden = isPassable(project, map, c.x, c.y);
   if (loot.kind === "flavor") {
     // 살림 한 줄 — 챙길 것이 없으니 주인 시야·꾸지람도 없다. 몇 번을 봐도 같은 줄.
     return {
       id, name: `수납 · ${label}`, x: c.x, y: c.y, trigger: { kind: "action" }, commands: [],
       pages: [{
         id: `${id}_p0`, name: "살펴보기", conditions: [], graphic: { transparent: true },
-        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", trigger: { kind: "action" }, commands: lootCommands(project, loot, label),
+        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", overlapForbidden, trigger: { kind: "action" }, commands: lootCommands(project, loot, label),
       }],
     } as unknown as GameMap["events"][number];
   }
@@ -361,11 +363,11 @@ function containerEvent(
     pages: [
       {
         id: `${id}_p0`, name: "뒤지기", conditions: [], graphic: { transparent: true },
-        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", trigger: { kind: "action" }, commands: first,
+        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", overlapForbidden, trigger: { kind: "action" }, commands: first,
       },
       {
         id: `${id}_p1`, name: "이미 뒤짐", conditions: [{ kind: "selfSwitch", key: "A", value: true }], graphic: { transparent: true },
-        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", trigger: { kind: "action" },
+        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", overlapForbidden, trigger: { kind: "action" },
         commands: [narrate(`${label}${josa(label, "은", "는")} 이미 뒤져 봤다. 더 나올 게 없다.`)],
       },
     ],
@@ -470,7 +472,7 @@ function placeStreetContainers(project: Project, hubId: string): number {
       hub.upperTiles[at(c.x, c.y)] = tile;
       // 보상이 정해진 칸만 뒤지는 수납이다 — 나머지 거리 통·상자는 부두 살림 그림일 뿐(사용자 2026-10-24 「상자가 너무 많다」).
       const find = streetFinds.findIndex((f) => f.label.test(name) && (f.loot.kind !== "item" || knownIds(project).has(f.loot.itemId)));
-      if (find >= 0) hub.events.push(containerEvent(project, hubId, c, name, streetFinds.splice(find, 1)[0]!.loot, null, null));
+      if (find >= 0) hub.events.push(containerEvent(project, hub, c, name, streetFinds.splice(find, 1)[0]!.loot, null, null));
       n++;
     }
     return n;
@@ -516,7 +518,7 @@ export function buildFallenTownLife(project: Project, hubId: string): TownLifeRe
     const finds = assignFinds(project, spots, HOUSE_FINDS[mapId] ?? []);
     for (const { cell, label } of spots) {
       const loot: Loot = finds.get(`${cell.x},${cell.y}`) ?? { kind: "flavor" };
-      map.events.push(containerEvent(project, mapId, cell, label, loot, owner, owner && exit ? expelCommands(owner, exit) : null));
+      map.events.push(containerEvent(project, map, cell, label, loot, owner, owner && exit ? expelCommands(owner, exit) : null));
       n++;
     }
     containers[mapId] = n;

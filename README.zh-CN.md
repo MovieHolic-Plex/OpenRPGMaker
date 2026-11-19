@@ -195,6 +195,7 @@ npm test                 # 单元测试（在 GitHub CI 上运行。本地未设
 | 名称与标志 | [TRADEMARKS.md](TRADEMARKS.md) |
 
 **你做出的游戏属于你** —— 可以出售、分享，无需支付版税。
+[OPRN PLAY](https://play.openrpgmaker.com/?lang=zh) 只收录免费、非营利的游戏：在其他地方销售或盈利的游戏不能同时发布到 OPRN PLAY。
 欢迎依据 [CLA](CLA.md) 贡献代码。
 
 OPRN Studio 与 RPG Maker、Gotcha Gotcha Games 及 KADOKAWA 无关。
