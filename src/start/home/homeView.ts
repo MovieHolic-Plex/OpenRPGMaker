@@ -6,7 +6,7 @@
 import { el } from "@/util/dom";
 import type { RecentFolderAction, RecentProjectEntry } from "../../../electron/shared/start";
 import { filterRecentProjects, type RecentProjectSort } from "../../../electron/shared/recentProjects";
-import { getLocale } from "@/i18n";
+import { getLocale, t } from "@/i18n";
 import { startIcon } from "../icons";
 import { BUILTIN_GAMES, type BuiltinGame, type BuiltinGameId } from "./builtinGames";
 
@@ -90,9 +90,10 @@ export function fillCover(art: HTMLElement, cover: string | null, title: string)
     art.replaceChildren(el("img", { attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
     return;
   }
+  const displayTitle = isDefaultProjectTitle(title) ? t(title) : title;
   art.classList.add("is-empty");
   art.replaceChildren(el("span", { class: "hm-ph", children: [
-    el("b", { text: Array.from(title.trim())[0] ?? "?", attrs: { translate: "no" } }),
+    el("b", { text: Array.from(displayTitle.trim())[0] ?? "?", attrs: { translate: "no" } }),
   ] }));
 }
 
