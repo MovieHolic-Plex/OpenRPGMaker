@@ -45,21 +45,21 @@ function storedProviderId(): string | undefined {
 }
 
 describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
-  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 Claude(Opus 5.5 medium)를 권한다", () => {
+  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 ChatGPT(GPT-6.1 Terra medium)를 권한다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
-    // 오너 결정 2026-11-16: 공장 기본은 Claude 다. 옛 저장값을 읽는 기본 제공자는 그대로 Antigravity 다.
-    expect(defaultAiConfig().providerId).toBe("anthropic");
+    // 오너 결정 2026-11-19: 공장 기본은 ChatGPT 다(2026-11-16 Claude 에서 바뀜). 옛 저장값을 읽는 기본 제공자는 그대로 Antigravity 다.
+    expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
   });
 
   it("처음 세 제공자는 순서가 고정이고, 나머지는 뒤에 덧붙기만 한다 — 순서가 바뀌어도 기존 사용자는 넘어가지 않는다", () => {
     // 2026-11-02: 예전에는 「둘뿐」 이었다. 이제 OMP 가 로그인해 둔 제공자를 그대로 쓰므로 목록이 늘었다.
-    // 2026-11-16: 권장 제공자가 Claude 가 되어 맨 앞에 섰다(오너 결정 — 조수 기본은 Opus 5.5 medium).
+    // 2026-11-16: 권장 제공자가 Claude 가 되어 맨 앞에 섰다. 2026-11-19: 권장 제공자가 ChatGPT 가 되어 맨 앞에 섰다(오너 결정 — 기본 AI 는 ChatGPT).
     // 첫 항목은 권장값일 뿐이다 — 옛 저장값·모르는 id 의 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER(Antigravity)가 정한다.
     const ids = OH_MY_PI_PROVIDERS.map((provider) => provider.id);
     expect(ids.slice(0, 3)).toEqual([
+      CODEX_PROVIDER_ID,
       "anthropic",
       ANTIGRAVITY_PROVIDER_ID,
-      CODEX_PROVIDER_ID,
     ]);
     expect(ids.length).toBeGreaterThan(3);
     expect(parseOhMyPiProvider(undefined)).toBe(ANTIGRAVITY_PROVIDER_ID);

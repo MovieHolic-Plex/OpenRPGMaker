@@ -1,5 +1,5 @@
 import { CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID, type DetectedAccount, type DetectedCli } from "./planDefaults.ts";
-import { FAMILY_MODEL_KEYS, TEAM_MODELS, UNRATED_DEFAULT_WORKER, chooseTeam, type ModelFamily, type TeamChoice, type TeamModel, type TeamModelKey } from "./teamScoreboard.ts";
+import { FAMILY_MODEL_KEYS, SOLO_DEFAULT_WORKERS, TEAM_MODELS, UNRATED_DEFAULT_WORKER, chooseTeam, type ModelFamily, type TeamChoice, type TeamModel, type TeamModelKey } from "./teamScoreboard.ts";
 
 export interface DetectedKey {
   readonly id: string;
@@ -61,7 +61,10 @@ export function modelRoutes(inputs: TeamInputs): Map<TeamModelKey, { route: Team
 /** 가진 것 전부로 만들 수 있는 가장 좋은 팀. 점수표가 채점한 조합이 없으면 점수 없는 제품 기본값, 그것도 없으면 undefined. */
 export function buildTeamPlan(inputs: TeamInputs): TeamPlan | undefined {
   const routes = modelRoutes(inputs);
-  const choice = chooseTeam(new Set(routes.keys()));
+  // ChatGPT 기본(Terra 혼자, 오너 결정 2026-11-19)은 ChatGPT 구독·로그인으로 쓸 수 있을 때만이다 — OpenAI API 키(쓴 만큼 청구)만 있으면
+  // Claude 구독 사용자를 키 청구 쪽으로 옮기지 않는다(그때는 Opus 혼자가 기본이다).
+  const soloDefaults = SOLO_DEFAULT_WORKERS.filter((key) => key !== "terra" || routes.get(key)?.route.kind !== "key");
+  const choice = chooseTeam(new Set(routes.keys()), soloDefaults);
   const slot = (key: TeamModelKey): TeamSlot | undefined => {
     const found = routes.get(key);
     return found ? { model: TEAM_MODELS[key], route: found.route, modelId: found.modelId } : undefined;

@@ -1,10 +1,12 @@
-// 조수 출하 기본 = Claude Opus 5.5 · medium (오너 결정 2026-11-16).
+// Claude 로 도는 길의 기본 = Claude Opus 5.5 · medium (오너 결정 2026-11-16).
 // 「이 openrpgmaker 의 출시를 빠르게 하기 위해서라도, 조수의 기본 model 을 opus 5.5 medium 으로 해라.」
+// 2026-11-19(오너 결정): 공장 기본(저장 없음)과 첫 실행의 우선 계정은 ChatGPT(GPT-6.1 Terra · medium)로 바뀌었다 — test/aiDefaultChatgpt.test.ts.
+// 이 파일은 Claude 를 고른·Claude 만 가진 길이 여전히 Opus 5.5 · medium 한 모델인지 묶는다.
 //
 // 이 파일은 «들어가는 길마다 기본이 무엇으로 풀리는가» 를 한 자리에 고정한다:
 //   Claude 로 도는 길(구독 CLI · Anthropic 키 · 편집기 안 계정) — 계획·실행·시각·작문·시공·감독이 모두 claude-opus-5-5 · medium 한 모델.
 //     Haiku 워커·팀장 나누기는 기본이 아니다(설정에서 고를 수는 있다).
-//   Claude 를 쓸 수 없는 길(ChatGPT 만 · Google 만) — 지난 기본 그대로(Terra · Argon).
+//   Claude 를 쓸 수 없는 길(ChatGPT 만 · Google 만) — 그 계정의 기본(Terra · Argon).
 //   이미 저장된 설정 — 그대로. 저장값이 옛 Claude 기본과 똑같을 때만 읽을 때 새 기본으로 올린다(PR #2535 와 같은 규칙, 디스크에는 쓰지 않는다).
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
@@ -75,9 +77,9 @@ async function firstRun(partial: Partial<TeamInputs>): Promise<AiConfig> {
 }
 
 describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 Opus 5.5 · medium 한 모델", () => {
-  it("새 설치(저장 없음): 공장 기본이 Claude 계정의 Opus 5.5 · medium 이다", () => {
-    expect(resolved(loadAiConfig())).toEqual(every(`anthropic/${OPUS}@medium`));
-    expect(resolved(defaultAiConfig())).toEqual(every(`anthropic/${OPUS}@medium`));
+  it("새 설치(저장 없음): 공장 기본은 ChatGPT 의 Terra · medium 이다(2026-11-19) — Claude 로 시작하지 않는다", () => {
+    expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.1-terra@medium"));
+    expect(resolved(defaultAiConfig())).toEqual(every("openai-codex/gpt-6.1-terra@medium"));
   });
 
   it("새 설치 + Claude CLI 구독: 같은 CLI 로 Opus 5.5 · medium 하나 — 팀장도 Haiku 워커도 없다", async () => {
@@ -88,9 +90,14 @@ describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 O
     expect(JSON.stringify(resolved(config))).not.toContain("haiku");
   });
 
-  it("새 설치 + Claude CLI 와 다른 계정이 같이 있어도 Claude 하나로 시작한다", async () => {
-    const config = await firstRun({ clis: [cli("claude"), cli("codex")], accounts: [oauth("google-antigravity")] });
+  it("새 설치 + Claude CLI 와 Google 계정이 같이 있으면(ChatGPT 없음) Claude 하나로 시작한다", async () => {
+    const config = await firstRun({ clis: [cli("claude")], accounts: [oauth("google-antigravity")] });
     expect(resolved(config)).toEqual(every(`local-cli:claude/${OPUS}@medium`));
+  });
+
+  it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 ChatGPT(Terra) 하나로 시작한다(2026-11-19 오너 결정: 기본 AI 는 ChatGPT)", async () => {
+    const config = await firstRun({ clis: [cli("claude"), cli("codex")], accounts: [oauth("google-antigravity")] });
+    expect(resolved(config)).toEqual(every("local-cli:codex/gpt-6.1-terra@medium"));
   });
 
   it("Anthropic 키: 입양한 엔드포인트의 모든 역할이 Opus 5.5 · medium 이다", async () => {
@@ -109,13 +116,13 @@ describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 O
   });
 });
 
-describe("들어가는 길마다 — Claude 를 쓸 수 없는 길은 지난 기본 그대로", () => {
+describe("들어가는 길마다 — Claude 를 쓸 수 없는 길은 그 계정의 기본", () => {
   it("ChatGPT 구독(Codex CLI)만: Terra 하나", async () => {
     expect(resolved(await firstRun({ clis: [cli("codex")] }))).toEqual(every("local-cli:codex/gpt-6.1-terra@medium"));
   });
 
-  it("편집기 안 ChatGPT 로그인만: Terra, 계획·감독은 high", async () => {
-    expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.1-terra@medium", "openai-codex/gpt-6.1-terra@high"));
+  it("편집기 안 ChatGPT 로그인만: 공장 기본 그대로 Terra · medium 하나(계획·감독도 medium)", async () => {
+    expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.1-terra@medium"));
   });
 
   it("Google 로그인만: Gemini 4 Argon medium, 계획·감독은 high", async () => {
@@ -127,7 +134,7 @@ describe("이미 저장된 설정 — 건드리지 않는다", () => {
   const stored = (blob: Record<string, unknown>): void => { storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(blob)); };
   const slots = (provider: string, model: string) => Object.fromEntries(ROLES.map((role) => [role, { provider, model, thinkingLevel: "medium" }]));
 
-  it("옛 공장 기본(Google · Argon medium · 감독 high)으로 저장된 설정은 Claude 로 옮기지 않는다", () => {
+  it("옛 공장 기본(Google · Argon medium · 감독 high)으로 저장된 설정은 Claude·ChatGPT 로 옮기지 않는다", () => {
     stored({ providerId: "google-antigravity", model: "gemini-4-argon", liteModel: "gemini-4-argon", reasoningEffort: "medium",
       ultrabrainProviderId: "google-antigravity", ultrabrainModel: "gemini-4-argon", ultrabrainReasoningEffort: "high",
       roleModels: slots("google-antigravity", "gemini-4-argon"), modelSelectionOverrides: {}, roleModelsPolicyVersion: 1 });
@@ -138,6 +145,13 @@ describe("이미 저장된 설정 — 건드리지 않는다", () => {
     stored({ providerId: "openai-codex", model: "gpt-6.1-sol", liteModel: "gpt-6.1-sol", ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-6.1-sol",
       ultrabrainReasoningEffort: "high", roleModels: slots("openai-codex", "gpt-6.1-sol"), modelSelectionOverrides: {}, roleModelsPolicyVersion: 1 });
     expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.1-sol@medium", "openai-codex/gpt-6.1-sol@high"));
+  });
+
+  it("옛 공장 기본(Claude · Opus 5.5 medium)으로 저장된 설정은 ChatGPT 로 옮기지 않는다(2026-11-19)", () => {
+    stored({ providerId: "anthropic", model: OPUS, liteModel: OPUS, reasoningEffort: "medium",
+      ultrabrainProviderId: "anthropic", ultrabrainModel: OPUS, ultrabrainReasoningEffort: "medium",
+      roleModels: slots("anthropic", OPUS), modelSelectionOverrides: {}, roleModelsPolicyVersion: 1 });
+    expect(resolved(loadAiConfig())).toEqual(every(`anthropic/${OPUS}@medium`));
   });
 
   it("사람이 Sonnet·Haiku 를 직접 고른 Claude 설정은 그대로다", () => {

@@ -16,7 +16,7 @@ import { DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE } from "./piAgent/executionDefaul
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
-import { ANTHROPIC_PROVIDER_ID, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { ANTHROPIC_PROVIDER_ID, CHATGPT_DEFAULT_EFFORT, CHATGPT_DEFAULT_MODEL, CLAUDE_DEFAULT_MODEL, DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -238,29 +238,29 @@ function promoteLegacyRoleModels(roles: SpecialistModels, pinned: Partial<Record
  */
 export function defaultAiConfig(): AiConfig {
   const legacy = legacyStoredAiConfigBase();
-  // 새로 설정하는 사용자의 공장 기본(2026-11-16, 오너 결정): 계획·실행·시각·작문·시공·감독(ultrabrain) 모두
-  // Claude Opus 5.5 · medium 한 모델이다. Haiku 워커·팀장 분리도, 감독만 high 로 두던 것도 기본에서 뺐다.
-  // 지난 기본은 Google 의 Gemini 4 Argon medium(2026-10-14, PR #2535)이었다. Google·ChatGPT 는 사용자가 고를 때만 쓴다 —
-  // 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다(Google·ChatGPT 로 저장된 설정을 Claude 로 옮기지 않는다).
-  const opusMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: CLAUDE_DEFAULT_MODEL, thinkingLevel: CLAUDE_DEFAULT_EFFORT } as const;
+  // 새로 설정하는 사용자의 공장 기본(2026-11-19, 오너 결정: 「기본 AI 를 ChatGPT 로」): 계획·실행·시각·작문·시공·감독(ultrabrain) 모두
+  // ChatGPT(Codex 계정 로그인)의 GPT-6.1 Terra · medium 한 모델이다 — 첫 실행 마법사가 ChatGPT 로그인에 맞추는 팀(planDefaults)과 같다.
+  // 지난 기본은 Claude Opus 5.5 medium(2026-11-16), 그 전은 Google 의 Gemini 4 Argon medium(2026-10-14, PR #2535)이었다.
+  // Google·Claude 는 사용자가 고를 때만 쓴다 — 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다(Google·Claude 로 저장된 설정을 ChatGPT 로 옮기지 않는다).
+  const chatgptMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: CHATGPT_DEFAULT_MODEL, thinkingLevel: CHATGPT_DEFAULT_EFFORT } as const;
   return {
     ...legacy,
     providerId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    model: CLAUDE_DEFAULT_MODEL,
-    liteModel: CLAUDE_DEFAULT_MODEL,
-    reasoningEffort: CLAUDE_DEFAULT_EFFORT,
+    model: CHATGPT_DEFAULT_MODEL,
+    liteModel: CHATGPT_DEFAULT_MODEL,
+    reasoningEffort: CHATGPT_DEFAULT_EFFORT,
     ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    ultrabrainModel: CLAUDE_DEFAULT_MODEL,
-    ultrabrainReasoningEffort: CLAUDE_DEFAULT_EFFORT,
+    ultrabrainModel: CHATGPT_DEFAULT_MODEL,
+    ultrabrainReasoningEffort: CHATGPT_DEFAULT_EFFORT,
     imageProviderId: RECOMMENDED_IMAGE_PROVIDER_ID,
     imageModel: RECOMMENDED_IMAGE_MODEL,
     roleModels: {
-      deep: { ...opusMedium },
-      vision: { ...opusMedium },
-      writer: { ...opusMedium },
-      build: { ...opusMedium },
+      deep: { ...chatgptMedium },
+      vision: { ...chatgptMedium },
+      writer: { ...chatgptMedium },
+      build: { ...chatgptMedium },
     },
-    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 Opus 5.5 medium)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
+    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 GPT-6.1 Terra medium)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
     // 2026-11-16 까지는 Google 의 Argon medium 으로 채웠는데, 이 칸은 계정 선택을 따라 바뀌지 않아 Google 연결이 없는 사용자의 도트 저작이 막혔다.
     roleModelsPolicyVersion: 1,
   };
@@ -268,7 +268,7 @@ export function defaultAiConfig(): AiConfig {
 
 /**
  * 저장값을 읽을 때의 바탕. 저장된 blob 은 Antigravity 가 기본이던 시절의 값이므로, 빠진 칸을
- * 새 권장 조합(Claude)으로 채우면 Google 만 연결한 기존 사용자의 모델이 말없이 바뀐다.
+ * 새 권장 조합(ChatGPT)으로 채우면 Google 만 연결한 기존 사용자의 모델이 말없이 바뀐다.
  */
 function legacyStoredAiConfigBase(): AiConfig {
   return {

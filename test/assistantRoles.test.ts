@@ -100,7 +100,7 @@ describe("resolveAssistantRoles — 규칙", () => {
 
 describe("assistantRoleModel / configWithAutoAssistantRoles", () => {
   it("자동 배정이 잔일·검토자 칸을 채우고, 직접 고른 칸은 건드리지 않는다", () => {
-    // 주 모델이 Google(Argon)인 설정 — 공장 기본은 Claude 라(2026-11-16) Google 계정을 고른 설정으로 만든다.
+    // 주 모델이 Google(Argon)인 설정 — 공장 기본은 ChatGPT 라(2026-11-19) Google 계정을 고른 설정으로 만든다.
     const base = configForProviderSelection(defaultAiConfig(), "google-antigravity");
     const auto = configWithAutoAssistantRoles(base, mockConnectedRoutes("gemini,gpt"));
     expect(assistantRoleModel(auto, "advisor")?.provider).toBe("openai-codex");
@@ -112,10 +112,10 @@ describe("assistantRoleModel / configWithAutoAssistantRoles", () => {
 
   it("주·눈·도트·그림은 기존 칸을 읽는다", () => {
     const base = defaultAiConfig();
-    expect(assistantRoleModel(base, "main")).toEqual({ provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" });
-    expect(assistantRoleModel(base, "vision")).toEqual({ provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" });
+    expect(assistantRoleModel(base, "main")).toEqual({ provider: "openai-codex", model: "gpt-6.1-terra", thinkingLevel: "medium" });
+    expect(assistantRoleModel(base, "vision")).toEqual({ provider: "openai-codex", model: "gpt-6.1-terra", thinkingLevel: "medium" });
     // 도트 칸은 비어 있어 계획 모델을 따른다.
-    expect(assistantRoleModel(base, "pixel")).toEqual({ provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" });
+    expect(assistantRoleModel(base, "pixel")).toEqual({ provider: "openai-codex", model: "gpt-6.1-terra", thinkingLevel: "medium" });
     expect(assistantRoleModel(base, "image")?.model).toBe(base.imageModel);
   });
 });
