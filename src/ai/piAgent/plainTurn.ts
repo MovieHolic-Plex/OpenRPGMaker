@@ -29,6 +29,7 @@ import type { PiTeamSpec } from "./teamSpec";
 // 기존 호출자·테스트가 이 모듈에서 쓰던 이름을 그대로 쓰도록 다시 내보낸다.
 export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
+import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort } from "@/ai/chatgptDefault";
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { OPENING_ANIMATIC_AUTHORING_TOOLS, requestsFullGameOpeningProduction, requestsOpeningProduction } from "./openingProduction";
 import { isRomanceGameRequest } from "@/qa/gameCheck/romance";
@@ -510,6 +511,7 @@ export function buildPiRunRequest(input: {
 }): PiAgentRequest {
   const brainRun = input.planOnly || input.team;
   const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
+  const effectiveModel = brainRun ? input.brain.model : input.deep.model;
   // 다이얼을 안 실은 턴은 여전히 역할 값이다 — 계획·팀 턴은 Ultrabrain 강도로 돌아서 계획을 몰래 낮추지 않는다.
   const roleLevel = (brainRun ? input.brain.reasoningEffort : input.deep.thinkingLevel) as PiAgentThinkingLevel;
   // 다이얼은 **실행 턴만** 움직인다 — brainRun(계획 턴·팀 턴)은 다이얼을 실어도 Ultrabrain 강도를 지킨다.
@@ -521,8 +523,8 @@ export function buildPiRunRequest(input: {
     mode: input.team ? "team" : "single",
     projectKey: input.projectKey,
     applyMode: input.applyMode,
-    provider: brainRun ? input.brain.providerId! : input.deep.provider,
-    model: brainRun ? input.brain.model : input.deep.model,
+    provider: effectiveProvider,
+    model: effectiveModel,
     ...(!input.planOnly ? { roleModels: { deep: input.deep, writer: input.writer } } : {}),
     task: input.planOnly ? `${PLAN_ONLY_PREFIX}${input.modelTask}` : input.executionTask,
     mapIds: input.mapIds,
@@ -536,7 +538,8 @@ export function buildPiRunRequest(input: {
     ...(input.mapBundleMerge ? { mapBundleMerge: true } : {}),
     ...(input.readOnly ? { readOnly: true } : {}),
     ...(input.maxTurns === undefined ? {} : { maxTurns: input.maxTurns }),
-    thinkingLevel: normalizePiThinkingLevel(effectiveProvider, level),
+    thinkingLevel: normalizePiThinkingLevel(effectiveProvider,
+      !input.readOnly && !input.planOnly && effectiveModel === ASSISTANT_CHATGPT_MODEL ? atLeastMediumEffort(level) : level),
     ...(input.toolDomains && input.toolDomains.length > 0 ? { toolDomains: input.toolDomains } : {}),
     ...(input.initialToolNames ? { initialToolNames: input.initialToolNames } : {}),
     ...(input.teamSpec ? { team: input.teamSpec } : {}),

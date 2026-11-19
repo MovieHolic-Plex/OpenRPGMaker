@@ -1,238 +1,647 @@
-/* AI 설정 모달 — 레일 + 페인 구조의 전용 레이아웃.
- * 2026-09 리디자인: 긴 단일 스크롤(섹션 7개+)을 연결|모델|동작|표시 페인으로 나누고,
- * 제공자 카드가 선택과 상태 표시를 겸한다. */
+/* AI settings is shared by the editor and start screen. The dialog owns its
+ * chrome so opening the database cannot change its dimensions or typography. */
+.ai-settings-modal-backdrop {
+  background: rgba(10, 12, 16, 0.52);
+}
 
-.ai-settings-body {
-  max-height: none;
+.ai-settings-window {
+  --ai-settings-bg: #f2f2f7;
+  --ai-settings-sidebar: #ebebf0;
+  --ai-settings-row-bg: #fff;
+  --ai-settings-fg: #1d1d1f;
+  --ai-settings-secondary: #6e6e73;
+  --ai-settings-blue: #007aff;
+  --ai-settings-blue-pressed: #0063d1;
+  --ai-settings-on-blue: #fff;
+  --ai-settings-green: #34c759;
+  --ai-settings-connected: #248a3d;
+  --ai-settings-toggle-off: #e5e5ea;
+  --ai-settings-hairline: rgba(0, 0, 0, 0.08);
+  --ai-settings-separator: rgba(60, 60, 67, 0.12);
+  --ai-settings-segment-bg: rgba(118, 118, 128, 0.12);
+  --ai-settings-segment-selected: var(--ai-settings-row-bg);
+  --ai-settings-nav-selected: rgba(0, 0, 0, 0.08);
+  --ai-settings-title-bg: linear-gradient(180deg, #f6f6f8, #efeff4);
+  --ai-settings-sheet-bar-bg: linear-gradient(180deg, #fafafa, #f4f4f7);
+
+  background: var(--ai-settings-bg);
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+  color: var(--ai-settings-fg);
+  display: grid;
+  font: 14px/1.3 var(--font-ui, system-ui, sans-serif);
+  grid-template-rows: 52px minmax(0, 1fr);
+  height: min(580px, calc(100dvh - 24px));
+  max-height: calc(100dvh - 24px);
   min-height: 0;
   overflow: hidden;
+  width: min(720px, calc(100vw - 24px));
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ai-settings-window {
+    --ai-settings-bg: var(--bg-base, #1c1c1e);
+    --ai-settings-sidebar: var(--bg-inset, #2a2a2c);
+    --ai-settings-row-bg: var(--bg-raised, #262628);
+    --ai-settings-fg: var(--text-1, #ececea);
+    --ai-settings-secondary: var(--text-2, #ababa7);
+    --ai-settings-blue: var(--accent, #409cff);
+    --ai-settings-blue-pressed: var(--accent-hover, #6cb2ff);
+    --ai-settings-on-blue: var(--on-accent, #111113);
+    --ai-settings-green: var(--success, #4cc38a);
+    --ai-settings-connected: var(--success, #4cc38a);
+    --ai-settings-toggle-off: var(--bg-active, #454548);
+    --ai-settings-hairline: var(--border-subtle, #404042);
+    --ai-settings-separator: var(--border-default, #48484a);
+    --ai-settings-segment-bg: var(--bg-base, #1c1c1e);
+    --ai-settings-segment-selected: var(--bg-overlay, #2c2c2e);
+    --ai-settings-nav-selected: var(--bg-active, #454548);
+    --ai-settings-title-bg: var(--bg-raised, #262628);
+    --ai-settings-sheet-bar-bg: var(--bg-overlay, #2c2c2e);
+  }
+}
+
+.ai-settings-titlebar,
+.ai-settings-sheet-bar {
+  align-items: center;
+  background: var(--ai-settings-title-bg);
+  border-bottom: 1px solid var(--ai-settings-hairline);
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.ai-settings-titlebar h2,
+.ai-settings-sheet-bar h3 {
+  color: inherit;
+  font: 600 13px/1.25 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.ai-settings-close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #5c1613;
+  cursor: pointer;
+  display: grid;
+  height: 32px;
+  inset-inline-start: 6px;
+  justify-items: center;
   padding: 0;
+  position: absolute;
+  width: 32px;
 }
 
-/* 폼이 곧 레일 + 본문 + 푸터의 그리드다 — 모달 바디는 스크롤하지 않고 본문 페인만 스크롤한다. */
+.ai-settings-close::before {
+  background: #ff5f57;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.15);
+  content: "";
+  grid-area: 1 / 1;
+  height: 12px;
+  width: 12px;
+}
+
+.ai-settings-close svg {
+  grid-area: 1 / 1;
+  height: 10px;
+  visibility: hidden;
+  width: 10px;
+}
+
+.ai-settings-close:is(:hover, :focus-visible) svg {
+  visibility: visible;
+}
+
+.ai-settings-body,
 .ai-settings-form {
-  display: grid;
-  grid-template-columns: 156px minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;
-  height: 100%;
   min-height: 0;
+  min-width: 0;
 }
 
-/* ── 헤더 부제(연결 상태 요약) ─────────────────────────────────────────── */
+.ai-settings-body { overflow: hidden; }
 
-/* 닫기 버튼은 DOM 순서상 첫 번째다(Tab 경계 계약) — order 로 화면상 오른쪽 끝에 둔다. */
-.ai-settings-window .database-modal-close {
-  order: 1;
-}
-
-.ai-settings-titleblock {
+.ai-config-form.ai-settings-form {
+  border: 0;
+  color: inherit;
   display: grid;
-  gap: 2px;
-  min-width: 0;
+  font-size: inherit;
+  gap: 0;
+  grid-template-columns: 172px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
 }
 
-.ai-settings-subtitle {
-  align-items: center;
-  display: flex;
-  gap: var(--space-3);
-  min-width: 0;
+.ai-settings-window [hidden] {
+  display: none;
 }
-
-.ai-settings-connection-summary {
-  align-items: center;
-  color: var(--text-2);
-  display: flex;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  gap: var(--space-2);
-  line-height: 1.4;
-  min-width: 0;
-}
-
-.ai-settings-status-mark {
-  background: currentColor;
-  border-radius: var(--radius-pill);
-  flex: 0 0 auto;
-  height: var(--space-2);
-  width: var(--space-2);
-}
-
-.ai-settings-connection-summary[data-tone="ready"] {
-  color: var(--success);
-}
-
-.ai-settings-connection-summary[data-tone="warning"] {
-  color: var(--warning);
-}
-
-.ai-settings-connection-summary[data-tone="error"] {
-  color: var(--danger);
-}
-
-.ai-settings-check {
-  font-size: 11px;
-  padding-block: 3px;
-  padding-inline: var(--space-2);
-  white-space: nowrap;
-}
-
-.ai-settings-save-now {
-  white-space: nowrap;
-}
-
-/* ── 왼쪽 레일(tablist) ────────────────────────────────────────────────── */
 
 .ai-settings-rail {
-  background: var(--bg-inset);
-  border-right: var(--stroke-1) solid var(--border-subtle);
+  background: var(--ai-settings-sidebar);
+  border-inline-end: 1px solid var(--ai-settings-hairline);
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-height: 0;
-  overflow-y: auto;
-  padding: var(--space-3) var(--space-2);
+  padding: 10px 8px 16px;
 }
 
 .ai-settings-tab {
   align-items: center;
   background: transparent;
   border: 0;
-  border-left: 2px solid transparent;
-  border-radius: var(--radius-s);
-  color: var(--text-2);
+  border-radius: 7px;
+  color: inherit;
   cursor: pointer;
   display: flex;
-  font: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  text-align: left;
-  white-space: nowrap;
+  font: 500 13px/1.25 var(--font-ui, system-ui, sans-serif);
+  gap: 9px;
+  letter-spacing: -0.02em;
+  min-height: 32px;
+  padding: 4px 8px;
+  text-align: start;
 }
 
-.ai-settings-tab:hover {
-  background: var(--bg-raised);
-  color: var(--text-1);
+.ai-settings-tab:is([aria-current="page"], :hover) {
+  background: var(--ai-settings-nav-selected);
 }
 
-.ai-settings-tab:focus-visible {
-  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
-  outline: none;
+.ai-settings-nav-icon {
+  align-items: center;
+  background: #8e8e93;
+  border-radius: 6px;
+  color: #fff;
+  display: inline-flex;
+  flex: 0 0 22px;
+  height: 22px;
+  justify-content: center;
 }
 
-.ai-settings-tab[aria-selected="true"] {
-  background: var(--bg-raised);
-  border-left-color: var(--accent);
-  color: var(--text-1);
+.ai-settings-tab[aria-current="page"] .ai-settings-nav-icon {
+  background: var(--ai-settings-blue);
+  color: var(--ai-settings-on-blue);
 }
 
-/* ── 본문 페인 ─────────────────────────────────────────────────────────── */
-
-.ai-settings-content {
+.ai-settings-content,
+.ai-settings-sheet-body {
   min-height: 0;
   min-width: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: auto;
   overscroll-behavior: contain;
-  padding: var(--space-4);
-  scrollbar-gutter: stable;
+  overflow-wrap: anywhere;
+  padding: 22px 24px 24px;
 }
 
 .ai-settings-pane {
   display: grid;
-  gap: var(--space-4);
+  gap: 16px;
 }
 
-.ai-settings-pane[hidden] {
-  display: none;
-}
-
-/* 데크(2026-09-03): 3단 중첩 상자 → 헤어라인 절. 테두리가 정보보다 많던 설정 모달을 정리한다. */
-.ai-settings-section {
-  background: transparent;
-  border: 0;
-  border-top: var(--stroke-1) solid var(--border-subtle);
-  border-radius: 0;
-  overflow: visible;
-  padding-top: var(--space-3);
-}
-
-/* 페인 첫 절은 위 헤어라인이 없다 — 탭 경계가 이미 나누고 있다. */
-.ai-settings-pane > .ai-settings-section:first-child {
-  border-top: 0;
-  padding-top: 0;
+.ai-settings-inset,
+.ai-settings-section-body,
+.ai-settings-alternatives > summary {
+  background: var(--ai-settings-row-bg);
+  border-radius: 10px;
+  box-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.04);
+  min-width: 0;
 }
 
 .ai-settings-section-header {
-  background: transparent;
-  border-bottom: 0;
-  display: grid;
-  gap: 2px;
-  padding: 0 var(--space-2) var(--space-2);
+  padding: 0 4px 6px;
 }
 
 .ai-settings-section-header h3,
-.ai-settings-section-header p {
+.ai-settings-section-header p,
+.ai-settings-caption {
+  color: var(--ai-settings-secondary);
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
   margin: 0;
 }
 
 .ai-settings-section-header h3 {
-  color: var(--text-1);
-  font-family: var(--font-ui);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+  font-weight: 500;
 }
 
 .ai-settings-section-header p {
-  color: var(--text-2);
-  font-family: var(--font-ui);
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
+  margin-top: 4px;
 }
 
-.ai-settings-section-body {
-  display: grid;
-  padding: 0 var(--space-2);
-}
-
-.ai-settings-form .ai-config-row {
+.ai-settings-row {
   align-items: center;
-  border-bottom: var(--stroke-1) solid var(--border-subtle);
+  display: flex;
+  gap: 12px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px 14px;
+}
+
+.ai-settings-row-copy {
   display: grid;
-  gap: var(--space-4);
-  grid-template-columns: minmax(180px, 0.8fr) minmax(220px, 1.2fr);
-  margin: 0;
-  padding-block: var(--space-3);
+  flex: 1 1 auto;
+  gap: 2px;
+  letter-spacing: -0.02em;
+  min-width: 0;
 }
 
-.ai-settings-form .ai-config-row:last-child {
-  border-bottom: 0;
+.ai-settings-row-copy small {
+  color: var(--ai-settings-secondary);
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
 }
 
-.ai-settings-form .ai-config-row[hidden] {
+.ai-settings-row-button,
+.ai-settings-form summary.ai-settings-row {
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  list-style: none;
+  padding: 10px 14px;
+  text-align: start;
+  width: 100%;
+}
+
+.ai-settings-row-button:not(.ai-settings-inset) {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.ai-settings-row-button:hover,
+.ai-settings-form summary.ai-settings-row:hover {
+  background: color-mix(in srgb, var(--ai-settings-row-bg) 96%, var(--ai-settings-fg));
+  border-radius: 10px;
+}
+
+.ai-settings-row-button:focus-visible,
+.ai-settings-tab:focus-visible,
+.ai-settings-form summary:focus-visible,
+.ai-settings-link:focus-visible,
+.ai-settings-login:focus-visible,
+.ai-settings-close:focus-visible,
+.ai-model-preset-card:focus-visible {
+  outline: 2px solid var(--ai-settings-blue);
+  outline-offset: -2px;
+}
+
+.ai-settings-form summary.ai-settings-row::-webkit-details-marker {
   display: none;
 }
 
-.ai-config-row-copy {
+.ai-settings-chevron {
+  border-block-end: 2px solid #b0b0b5;
+  border-inline-end: 2px solid #b0b0b5;
+  flex: 0 0 8px;
+  height: 8px;
+  margin-inline-end: 3px;
+  transform: rotate(-45deg);
+}
+
+.ai-settings-alternatives > summary .ai-settings-chevron,
+.ai-settings-role-details[open] > summary .ai-settings-chevron {
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.ai-settings-alternatives[open] > summary .ai-settings-chevron {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.ai-settings-alternative-body {
   display: grid;
-  gap: var(--space-1);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.ai-settings-hero {
+  align-items: center;
+  background: var(--ai-settings-row-bg);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 36px 32px 32px;
+  text-align: center;
+}
+
+.ai-settings-hero-mark,
+.ai-settings-avatar {
+  align-items: center;
+  background: #1d1d1f;
+  border-radius: 14px;
+  color: #fff;
+  display: flex;
+  flex: none;
+  height: 56px;
+  justify-content: center;
+  width: 56px;
+}
+
+.ai-settings-avatar {
+  border-radius: 9px;
+  height: 36px;
+  width: 36px;
+}
+
+.ai-settings-hero h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin: 16px 0 0;
+}
+
+.ai-settings-hero p {
+  color: var(--ai-settings-secondary);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  margin: 8px 0 0;
+  max-width: 380px;
+}
+
+.ai-settings-login {
+  background: var(--ai-settings-blue);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 0.5px 1px rgba(0, 80, 200, 0.25);
+  color: var(--ai-settings-on-blue);
+  cursor: pointer;
+  font: 500 15px/1.3 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -0.02em;
+  margin-top: 22px;
+  min-height: 36px;
+  min-width: min(196px, 100%);
+  padding: 6px 22px;
+}
+
+.ai-settings-login:is(:hover, :active) {
+  background: var(--ai-settings-blue-pressed);
+}
+
+.ai-settings-login:focus-visible {
+  outline-offset: 2px;
+}
+
+.ai-settings-primary-feedback {
+  background: var(--ai-settings-row-bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.ai-settings-primary-feedback > .ai-auth-feedback {
+  margin-top: 6px;
+}
+
+.ai-settings-account {
+  min-height: 60px;
+}
+
+.ai-settings-link {
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ai-settings-blue);
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: -0.02em;
+  padding: 4px;
+  white-space: nowrap;
+}
+
+.ai-settings-link:hover {
+  text-decoration: underline;
+}
+
+.ai-settings-account-status {
+  color: var(--ai-settings-secondary);
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.ai-settings-connected {
+  color: var(--ai-settings-connected);
+  font-weight: 500;
+}
+
+.ai-settings-connected::before {
+  background: var(--ai-settings-green);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ai-settings-green) 18%, transparent);
+  content: "";
+  display: inline-block;
+  height: 7px;
+  margin: 0 6px 1px 0;
+  width: 7px;
+}
+
+.ai-settings-section-presets {
+  margin-top: 4px;
+}
+
+.ai-settings-section-presets .ai-settings-section-body {
+  padding: 14px;
+}
+
+.ai-model-presets {
+  background: var(--ai-settings-segment-bg);
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 32px;
+  padding: 2px;
+}
+
+.ai-model-preset-card {
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: inherit;
+  cursor: pointer;
+  font: 500 13px/1.25 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -0.02em;
+  padding: 4px;
+}
+
+.ai-model-preset-card[aria-checked="true"] {
+  background: var(--ai-settings-segment-selected);
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.ai-settings-caption {
+  margin: 7px 4px 0;
+}
+
+.ai-settings-switch-row {
+  min-height: 62px;
+}
+
+.ai-settings-switch-row + .ai-settings-switch-row,
+.ai-settings-role-details + .ai-settings-role-details {
+  background-image: linear-gradient(var(--ai-settings-separator), var(--ai-settings-separator));
+  background-position: 14px top;
+  background-repeat: no-repeat;
+  background-size: calc(100% - 14px) 0.5px;
+}
+
+.ai-settings-switch {
+  background: var(--ai-settings-toggle-off);
+  border-radius: 11px;
+  flex: 0 0 38px;
+  height: 22px;
+  position: relative;
+}
+
+.ai-settings-switch::after {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 0.5px 1px rgba(0, 0, 0, 0.12);
+  content: "";
+  height: 18px;
+  inset: 2px auto auto 2px;
+  position: absolute;
+  width: 18px;
+}
+
+.ai-settings-switch-row[aria-checked="true"] .ai-settings-switch {
+  background: var(--ai-settings-green);
+}
+
+.ai-settings-switch-row[aria-checked="true"] .ai-settings-switch::after {
+  inset-inline: auto 2px;
+}
+
+.ai-settings-sheet {
+  background: var(--ai-settings-bg);
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr);
+  inset: 0;
+  position: absolute;
+}
+
+.ai-settings-sheet-bar {
+  background: var(--ai-settings-sheet-bar-bg);
+}
+
+.ai-settings-sheet-done {
+  font-weight: 500;
+  inset-inline-end: 12px;
+  position: absolute;
+}
+
+.ai-settings-sheet-body {
+  padding: 14px 20px 16px;
+}
+
+.ai-settings-sheet-body .ai-settings-section + .ai-settings-section {
+  margin-top: 14px;
+}
+
+.ai-settings-sheet .ai-settings-role-details > .ai-settings-row {
+  min-height: 48px;
+  padding-block: 8px;
+}
+
+.ai-settings-sheet .ai-settings-section-roles .ai-settings-role-details > .ai-settings-row {
+  min-height: 52px;
+}
+
+.ai-settings-role-value {
+  color: var(--ai-settings-secondary);
+  flex: 0 0 auto;
+  max-width: 45%;
+  text-align: end;
+}
+
+.ai-settings-role-detail-body,
+.ai-settings-section-role-matrix .ai-settings-section-body,
+.ai-settings-section-usage .ai-settings-section-body,
+.ai-settings-alternative-body .ai-settings-section-body {
+  padding: 10px 14px;
+}
+
+.ai-settings-role-controls h4 {
+  color: var(--ai-settings-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+  padding: 10px 14px 0;
+}
+
+.ai-settings-preset-actions,
+.ai-settings-connection-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ai-settings-connection-actions {
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.ai-settings-connection-summary {
+  align-items: center;
+  color: var(--ai-settings-secondary);
+  display: flex;
+  font-size: 12px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ai-settings-status-mark {
+  background: currentColor;
+  border-radius: 50%;
+  flex: 0 0 8px;
+  height: 8px;
+}
+
+.ai-settings-connection-summary[data-tone="ready"] { color: var(--ai-settings-connected); }
+.ai-settings-connection-summary[data-tone="warning"] { color: var(--warning); }
+.ai-settings-connection-summary[data-tone="error"] { color: var(--danger); }
+
+.ai-settings-form .ai-config-row {
+  align-items: center;
+  border-bottom: 1px solid var(--ai-settings-separator);
+  display: grid;
+  gap: 8px 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  margin: 0;
+  padding: 10px 14px;
+}
+
+.ai-settings-form .ai-config-row:last-child { border: 0; }
+.ai-settings-form .ai-config-row[hidden] { display: none; }
+
+.ai-config-row-copy,
+.ai-config-stack {
+  display: grid;
+  gap: 4px;
   min-width: 0;
 }
 
 .ai-settings-form .ai-config-label {
-  color: var(--text-1);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
+  color: var(--ai-settings-fg);
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .ai-settings-form .ai-config-help,
-.ai-settings-form .ai-model-help {
-  color: var(--text-2);
-  font-size: var(--font-size-sm);
-  line-height: 1.45;
+.ai-config-derived {
+  color: var(--ai-settings-secondary);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .ai-config-control {
@@ -240,97 +649,104 @@
   min-width: 0;
 }
 
-.ai-config-control > .ai-config-input,
-.ai-config-control > .ai-config-select {
+.ai-config-control :is(.ai-config-input, .ai-config-select, .event-custom-select) {
+  max-width: 100%;
   width: 100%;
 }
 
-/* 셀렉트 + 파생값 캡션(자율성) 같은 수직 컨트롤 묶음. */
-.ai-config-stack {
-  display: grid;
-  gap: var(--space-1);
+.ai-settings-window .event-custom-select-value {
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
-.ai-config-stack > .ai-config-select {
-  width: 100%;
-}
-
-.ai-config-derived {
-  color: var(--text-3);
-  font-size: 11px;
-}
-
-/* ── 모델 품질 프리셋(radiogroup) ──────────────────────────────────────── */
-
-.ai-model-presets {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  padding-block: var(--space-2);
-}
-
-.ai-model-preset-card {
-  align-items: flex-start;
-  background: var(--control-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
-  color: var(--text-2);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3);
-  position: relative;
-  text-align: left;
-}
-
-.ai-model-preset-card > strong {
+.ai-settings-window :is(.ai-config-input, .ai-config-select:not(.event-custom-select-native)) {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
   color: var(--text-1);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
+  font: inherit;
+  min-width: 0;
+  padding: 5px 8px;
 }
 
-.ai-model-preset-card > small {
-  color: var(--text-3);
-  font-size: 11px;
-  line-height: 1.4;
+.ai-config-saved-hint {
+  color: var(--ai-settings-secondary);
+  display: block;
+  font-size: 12px;
+  margin: 14px 4px 0;
 }
 
-.ai-model-preset-card:hover {
-  border-color: var(--accent-border);
+.ai-settings-alternative-body .ai-auth-quick {
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.ai-model-preset-card:focus-visible {
-  border-color: var(--accent-border);
-  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
-  outline: none;
+.ai-settings-alternative-body .ai-auth-quick-card {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ai-settings-separator);
+  border-radius: 0;
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 10px 8px;
 }
 
-.ai-model-preset-card[aria-checked="true"] {
+.ai-settings-alternative-body .ai-auth-quick-card[aria-checked="true"] {
   background: var(--accent-muted);
-  border-color: var(--accent-border);
+  border-radius: 7px;
 }
 
-/* ●/○ 텍스트 불릿 대신 진짜 체크 아이콘 — 선택된 카드에서만 보인다. */
-.ai-model-preset-check {
-  color: var(--accent);
-  display: none;
-  position: absolute;
-  right: var(--space-2);
-  top: var(--space-2);
+.ai-settings-alternative-body .ai-auth-card-head { grid-column: 1; }
+.ai-settings-alternative-body .ai-auth-card-pill { grid-column: 2; grid-row: 1 / 3; }
+.ai-settings-alternative-body .ai-auth-quick-card > small { grid-column: 1; padding-inline-start: 26px; }
+
+.ai-settings-section-quick-connect .ai-quick-connect {
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
-.ai-model-preset-card[aria-checked="true"] .ai-model-preset-check {
-  display: inline-flex;
+@media (max-width: 575px) {
+  .ai-config-form.ai-settings-form {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .ai-settings-rail {
+    border-block-end: 1px solid var(--ai-settings-hairline);
+    border-inline-end: 0;
+    flex-direction: row;
+    padding: 8px;
+  }
+
+  .ai-settings-tab { flex: 1; }
+  .ai-settings-content,
+  .ai-settings-sheet-body { padding: 14px 12px; }
+  .ai-settings-hero { padding-inline: 14px; }
+
+  .ai-settings-form .ai-config-row,
+  .ai-settings-alternative-body .ai-compat-field {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-/* ── 역할별 직접 지정(고급 표) ─────────────────────────────────────────── */
+@media (forced-colors: active) {
+  .ai-settings-tab[aria-current="page"],
+  .ai-model-preset-card[aria-checked="true"],
+  .ai-settings-switch-row[aria-checked="true"] .ai-settings-switch {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
 
-.ai-settings-roles {
-  border-top: var(--stroke-1) solid var(--border-subtle);
+  .ai-settings-switch,
+  .ai-settings-switch::after,
+  .ai-settings-close::before {
+    border: 1px solid ButtonText;
+  }
 }
 
-.ai-settings-roles > summary,
 .ai-settings-subdetails > summary {
   align-items: center;
   border-radius: var(--radius-s);
@@ -342,13 +758,11 @@
   padding: var(--space-3) var(--space-2);
 }
 
-.ai-settings-roles > summary::-webkit-details-marker,
 .ai-settings-subdetails > summary::-webkit-details-marker {
   display: none;
 }
 
 /* 텍스트 화살표(▸/▾) 대신 테두리 셰브론 — 글리프는 폰트마다 달라 보인다. */
-.ai-settings-roles > summary::before,
 .ai-settings-subdetails > summary::before {
   border-bottom: 1.5px solid var(--text-3);
   border-right: 1.5px solid var(--text-3);
@@ -359,31 +773,13 @@
   width: 6px;
 }
 
-.ai-settings-roles[open] > summary::before,
 .ai-settings-subdetails[open] > summary::before {
   transform: rotate(45deg);
 }
 
-.ai-settings-roles > summary:focus-visible,
 .ai-settings-subdetails > summary:focus-visible {
   box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
   outline: none;
-}
-
-.ai-settings-roles-summary {
-  display: grid;
-  gap: 1px;
-}
-
-.ai-settings-roles-summary strong {
-  color: var(--text-1);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-}
-
-.ai-settings-roles-summary small {
-  color: var(--text-3);
-  font-size: 11px;
 }
 
 .ai-roles-table {
@@ -446,17 +842,10 @@
   width: 100%;
 }
 
-/* 표 셀 안의 모델 컨트롤은 좁다 — 프리셋과 입력을 세로로 쌓아 각자 전폭을 쓰게 한다. */
-.ai-role-model .ai-model-control {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 .ai-roles-help {
   margin: 0;
   padding: 0 var(--space-2) var(--space-2);
 }
-
-/* ── 동작 페인의 고급(파생 컨트롤) ─────────────────────────────────────── */
 
 .ai-settings-subdetails {
   border-top: var(--stroke-1) solid var(--border-subtle);
@@ -465,17 +854,6 @@
 .ai-settings-subdetails > summary {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-}
-
-.ai-settings-subdetails-body {
-  display: grid;
-  padding: 0 var(--space-2);
-}
-
-/* ── 연결 페인: 제공자 카드 ────────────────────────────────────────────── */
-
-.ai-settings-section-connection .ai-settings-section-body {
-  padding-block: var(--space-4);
 }
 
 .ai-settings-section-connection .ai-auth-settings {
@@ -540,7 +918,7 @@
 .ai-model-control {
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: minmax(180px, 1.15fr) minmax(150px, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
 
@@ -555,8 +933,6 @@
   margin-top: 4px;
 }
 
-/* ── 푸터(자동 저장 상태) ──────────────────────────────────────────────── */
-
 .ai-config-actions {
   align-items: center;
   background: var(--bg-raised);
@@ -566,12 +942,6 @@
   grid-column: 1 / -1;
   justify-content: flex-end;
   padding: var(--space-2) var(--space-4);
-}
-
-.ai-config-saved-hint {
-  color: var(--text-2);
-  font-size: var(--font-size-sm);
-  margin-right: auto;
 }
 
 /* [hidden] 이 항상 이긴다.
@@ -704,51 +1074,6 @@
   line-height: 1.4;
 }
 
-/* 이미지 절의 용도 카드(그림 / 도트) — 품질 프리셋 카드와 같은 상자 언어(control-bg · subtle 테두리 · radius-m).
- * 카드 = 용도 제목 한 줄 + 설명 한 줄 + 모델 선택. 로그인·제공 방식 문단은 카드 안 「자세히」 로 접힌다. */
-.ai-settings-card {
-  background: var(--control-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
-  display: grid;
-  margin-top: var(--space-2);
-  padding: var(--space-3);
-}
-
-.ai-settings-card-head {
-  display: grid;
-  gap: 2px;
-  padding-bottom: var(--space-1);
-}
-
-.ai-settings-card-head h4,
-.ai-settings-card-head p {
-  margin: 0;
-}
-
-.ai-settings-card-head h4 {
-  color: var(--text-1);
-  font-family: var(--font-ui);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-}
-
-.ai-settings-card-head p {
-  color: var(--text-2);
-  font-family: var(--font-ui);
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
-}
-
-/* 카드 안 행은 설명이 없어 낮다 — 라벨 | 셀렉트 한 줄. */
-.ai-settings-card .ai-config-row {
-  gap: var(--space-3);
-  grid-template-columns: minmax(64px, 96px) minmax(0, 1fr);
-  padding-block: var(--space-2);
-}
-
-/* 한 줄 상태(로그인 필요 · 따라가는 모델). 문제가 있을 때(지원 미확인)만 경고 색. */
 .ai-settings-form .ai-card-status {
   margin: 0;
   padding-block: var(--space-1);
@@ -1275,89 +1600,6 @@
   width: 100%;
 }
 
-@media (max-width: 640px) {
-  /* 좁은 창: 레일을 위 가로 스트립으로 내리고 페인만 남긴다. */
-  .ai-settings-form {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto;
-  }
-
-  .ai-settings-rail {
-    border-bottom: var(--stroke-1) solid var(--border-subtle);
-    border-right: 0;
-    flex-direction: row;
-    gap: var(--space-1);
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: var(--space-2);
-  }
-
-  .ai-settings-tab {
-    border-bottom: 2px solid transparent;
-    border-left: 0;
-    flex: 0 0 auto;
-  }
-
-  .ai-settings-tab[aria-selected="true"] {
-    border-bottom-color: var(--accent);
-  }
-
-  .ai-settings-content {
-    padding: var(--space-3);
-  }
-
-  .ai-settings-form .ai-config-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ai-model-presets,
-  .ai-auth-quick {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ai-model-control {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  /* 역할 표는 2열로 접는다 — 역할명이 한 줄을 통째로 쓰고 나머지 세 컨트롤이 둘씩 나뉜다. */
-  .ai-roles-head {
-    display: none;
-  }
-
-  .ai-role-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .ai-role-name,
-  .ai-role-model {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 520px) {
-  /* 폰 폭(390): 가로 탭 다섯 개가 한 줄에 다 들어가지 않아 "사용량" 이 잘려 보였다 —
-     아이콘 위·라벨 아래로 쌓고 폭을 균등 분배해 스크롤 없이 모두 보이게 한다. */
-  .ai-settings-rail {
-    gap: 2px;
-    overflow-x: visible;
-    padding: var(--space-1) var(--space-2);
-  }
-
-  .ai-settings-tab {
-    flex: 1 1 0;
-    flex-direction: column;
-    gap: 2px;
-    justify-content: center;
-    min-width: 0;
-    padding: var(--space-1) 2px;
-    text-align: center;
-  }
-
-  .ai-oauth-device-foot {
-    flex-direction: column;
-  }
-}
-
 .ai-tool-usage-stats {
   display: grid;
   gap: var(--space-2);
@@ -1425,9 +1667,7 @@
 
 .ai-tool-usage-name strong,
 .ai-tool-usage-name small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .ai-tool-usage-count {
@@ -1506,4 +1746,13 @@
   display: grid;
   gap: var(--space-1);
   justify-items: start;
+}
+
+@media (max-width: 575px) {
+  .ai-role-matrix .ai-roles-head { display: none; }
+  .ai-role-matrix .ai-role-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-role-matrix .ai-role-name { grid-column: 1 / -1; }
+  .ai-compat-role-row { grid-template-columns: minmax(0, 1fr); }
+  .ai-compat-role-extra { grid-column: 1; }
+  .ai-oauth-device-foot { flex-wrap: wrap; }
 }

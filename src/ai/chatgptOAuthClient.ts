@@ -48,6 +48,8 @@ export function companionAuthUrl(path: string, providerId?: string): string {
 export interface ChatGptAuthStatus {
   readonly connected: boolean;
   readonly planType?: string;
+  readonly accountEmail?: string;
+  readonly accountLabel?: string;
   /** 저장된 자격의 종류. 제공자 레지스트리의 authKind 와 다를 수 있다(oauth 제공자에 키가 저장된 경우). */
   readonly authKind?: OhMyPiAuthKind;
   /** OAuth 토큰이 만료됐는가. */
@@ -187,6 +189,8 @@ function readAuthStatus(payload: Record<string, unknown> | null): ChatGptAuthSta
   return {
     connected: payload?.connected === true,
     planType: typeof payload?.planType === "string" ? payload.planType : undefined,
+    ...(typeof payload?.accountEmail === "string" ? { accountEmail: payload.accountEmail } : {}),
+    ...(typeof payload?.accountLabel === "string" ? { accountLabel: payload.accountLabel } : {}),
     authKind: authKind === "oauth" || authKind === "apiKey" || authKind === "local" ? authKind : undefined,
     expired: typeof payload?.expired === "boolean" ? payload.expired : undefined,
     env: typeof payload?.env === "boolean" ? payload.env : undefined,

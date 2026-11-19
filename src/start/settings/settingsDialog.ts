@@ -4,6 +4,8 @@
 // 쓰는 사람은 개발자가 아니다: 낱말은 「이 PC 의 AI 프로그램」「로그인」「연결 시험」. 「API 키」는 「고급」 안에만 둔다.
 // 엔진은 자동으로 찾아 기본값을 고른다(연결된 첫 프로그램). OPRN 은 로그인 정보를 읽거나 저장하지 않는다 —
 // 각 프로그램이 스스로 로그인한 상태를 쓴다. 감지·연결 시험은 ./localAgents(PR #3072 백엔드의 얼굴)가 맡는다.
+import { isLegacyTerraModel } from "@/ai/chatgptDefault";
+import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import "./settings.css";
 import { el } from "@/util/dom";
 import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
@@ -79,7 +81,7 @@ export function openSettingsDialog(options: {
     class: "st-dialog", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "설정" }, dataset: { testid: SETTINGS_TESTIDS.dialog },
     children: [tabs, pane],
   });
-  const backdrop = el("div", { class: "st-backdrop", children: [dialog], on: { mousedown: (event) => { if (event.target === backdrop) close(); } } });
+  const backdrop = el("div", { class: "st-backdrop", children: [dialog], on: { mousedown: (event) => { if (event.target === backdrop && isTopModal(backdrop)) close(); } } });
 
   const rowFor = (id: LocalCliId): LocalCliStatus | null => report?.clis.find((row) => row.id === id) ?? null;
   const selected = (): LocalCliId | null => choice?.cli ?? null;
@@ -176,8 +178,9 @@ export function openSettingsDialog(options: {
   const modelSelect = (row: LocalCliStatus, value: string | undefined, onPick: (model: string) => void): HTMLElement => {
     const select = el("select", { class: "st-select", attrs: { "aria-label": "모델" } });
     select.append(el("option", { text: "프로그램 기본값", attrs: { value: "" } }));
-    for (const model of row.models) select.append(el("option", { text: model.label, attrs: { value: model.id, translate: "no" } }));
-    select.value = value && row.models.some((model) => model.id === value) ? value : "";
+    const models = row.models.filter(model => !isLegacyTerraModel(model.id));
+    for (const model of models) select.append(el("option", { text: model.label, attrs: { value: model.id, translate: "no" } }));
+    select.value = value && models.some((model) => model.id === value) ? value : "";
     select.addEventListener("change", () => onPick(select.value));
     return select;
   };
@@ -238,15 +241,22 @@ export function openSettingsDialog(options: {
    * aiModalStyles 를 같이 받아야 막이 문서 끝에 맨몸으로 붙지 않는다(실측: 예약 없이 열면 뒤로 숨었다).
    */
   const openEditorAiSettings = async (): Promise<void> => {
+    const opener = document.activeElement;
     const [modal, , status] = await Promise.all([
       import("@/editor/panels/aiSettingsModal"),
       import("../aiModalStyles"),
       import("@/editor/panels/aiConnectionStatus"),
     ]);
-    modal.openAiSettingsModal();
+    modal.openAiSettingsModal({ nativeSelects: true });
     const onClosed = (): void => {
       void status.refreshAiConnectionStatus().catch(() => {});
+      const active = document.activeElement;
+      choice = loadEngineChoice();
+      split = Boolean(choice?.deepModel && choice.deepModel !== choice.routineModel);
       render();
+      if (active === opener || active === document.body) {
+        pane.querySelector<HTMLElement>('[data-testid="start-settings-oauth-open"]')?.focus();
+      }
       options.onEngineChange?.(summarizeAiStatus(choice, report));
     };
     window.addEventListener(modal.AI_SETTINGS_CLOSED_EVENT, onClosed, { once: true });
@@ -362,17 +372,11 @@ export function openSettingsDialog(options: {
     pane.replaceChildren(...(tab === "ai" ? renderAi() : tab === "general" ? renderGeneral() : renderAbout()));
   }
 
-  const onKey = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") { event.preventDefault(); close(); }
-  };
-  function close(): void {
-    document.removeEventListener("keydown", onKey, true);
+  document.body.append(backdrop);
+  const close = registerModal(backdrop, () => {
     backdrop.remove();
     previousFocus?.focus?.();
-  }
-
-  document.addEventListener("keydown", onKey, true);
-  document.body.append(backdrop);
+  });
   render();
   tabButtons.get(tab)?.focus();
   if (enabled) void detect(false);

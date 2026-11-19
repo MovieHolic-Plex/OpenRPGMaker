@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { clearConversations } from "@/ai/conversationStore";
+import { listEditorCommands } from "@/editor/commandRegistry";
 import { loadAiConfig } from "@/ai/llmClient";
 import { resolveAutonomy } from "@/ai/autonomyLevels";
 import { editorState } from "@/editor/editorState";
@@ -37,11 +38,21 @@ async function boot(): Promise<HTMLElement> {
   return panel;
 }
 
-function open(entry: "topbar" | "panel"): void {
-  if (entry === "panel") control("ai-command-menu-toggle").click();
-  // 톱바 진입점은 ⋯ 더 보기 안의 「AI 설정」 항목이다(2026-11 개편).
-  if (entry === "topbar") control("menu-more-tools").click();
-  control(entry === "topbar" ? "topbar-ai-settings" : "ai-command-menu-settings").click();
+function openAdvanced(): void {
+  control("ai-settings-tab-behavior").click();
+  control("ai-settings-open-advanced").click();
+}
+
+async function open(entry: "topbar" | "panel"): Promise<void> {
+  if (entry === "panel") {
+    control("ai-command-menu-toggle").click();
+    control("ai-command-menu-settings").click();
+  } else {
+    const command = listEditorCommands().find(candidate => candidate.id === "topbar-ai-settings");
+    if (!command) throw new Error("Missing settings command");
+    command.run();
+    await vi.waitFor(() => expect(control("ai-settings-modal")).toBeTruthy());
+  }
 }
 
 beforeEach(async () => {
@@ -66,7 +77,8 @@ describe.each(["topbar", "panel"] as const)("%s settings entry", (entry) => {
   it("updates mounted font and opacity immediately when display preferences change", async () => {
     // Given the same mounted panel and either public settings entry.
     const panel = await boot();
-    open(entry);
+    await open(entry);
+    openAdvanced();
     // When the real form's change handlers save display settings.
     change("ai-font-size", "large");
     change("ai-background-opacity", "100");
@@ -90,7 +102,8 @@ describe.each(["topbar", "panel"] as const)("%s settings entry", (entry) => {
     await whenAiChatPanelSettled();
     expect(send).toHaveBeenCalledOnce();
     update.mockClear();
-    open(entry);
+    await open(entry);
+    openAdvanced();
     // When settings persist a new autonomy preset and model — 자동 저장이라 별도 저장 클릭은 없다.
     change("ai-config-autonomy", "max");
     change("ai-config-model", "gemini-2.5-pro");
@@ -114,6 +127,7 @@ it("preserves explicit callbacks, fontRoot and extra sections without a panel", 
   openAiSettingsModal({ fontRoot: root, onSaved, onFontSizeChange,
     extraSections: [{ id: "caller", title: "Caller", description: "", content: extra }],
   });
+  openAdvanced();
   // When that caller saves preferences — 글자·배경은 전용 저장 경로를 타고, persist/onSaved 는
   // 어느 설정 변경이든 한 번 탄다(수동 저장 버튼은 없다).
   change("ai-font-size", "small");

@@ -1,4 +1,4 @@
-// AI 설정 「모델」 탭의 역할 배정 표 — 연결된 계정으로 역할 여섯(주 작업·잔일·검토자·눈·그림 생성·도트)을 자동으로 채우고,
+// AI 설정 고급 시트의 역할 배정 표 — 연결된 계정으로 역할 여섯(주 작업·잔일·검토자·눈·그림 생성·도트)을 자동으로 채우고,
 // 채울 수 없는 역할은 «무엇으로 물러나는지»를 그대로 보인다. 잔일·검토자 줄은 여기서 직접 고를 수 있다
 // (나머지 넷은 위 「역할별 모델 직접 지정」·「그림·도트 모델」 칸이 정본이라, 이 표는 그 값을 읽어 보여 준다).
 // 배정 규칙은 src/ai/assistantRoles.ts, 표 자료는 src/ai/assistantRoleMatrix.json.
@@ -10,6 +10,7 @@ import type { AiConfig } from "@/ai/llmClient";
 import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 import { resolvePixelModel } from "@/ai/pixelModel";
 import { el } from "@/util/dom";
+import { isLegacyTerraModel } from "@/ai/chatgptDefault";
 
 /** 이 표가 직접 고르게 하는 줄. 나머지는 기존 칸을 읽기만 한다. */
 const EDITABLE: readonly AssistantRole[] = ["smol", "advisor"];
@@ -19,6 +20,8 @@ const key = (model: RoleModel): string => `${model.provider}::${model.model}::${
 
 export interface AiRoleMatrixView {
   readonly element: HTMLElement;
+  readonly advisorControls: HTMLElement;
+  readonly advisorModel: () => RoleModel | "off" | undefined;
   /** 연결 상태나 다른 칸이 바뀌었을 때 다시 그린다. */
   readonly refresh: (config: AiConfig, available: readonly AvailableRoute[]) => void;
   /** 지금 표가 정한 잔일·검토자 칸과, 직접 고른 줄. */
@@ -73,6 +76,21 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
   const noteCells = new Map<AssistantRole, HTMLElement>();
   const rows = new Map<AssistantRole, HTMLElement>();
   let resolved: Record<AssistantRole, RoleAssignment> | undefined;
+  const advisorControls = el("div");
+  const advisorEffort = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "검토 추론 강도" },
+    dataset: { testid: "ai-role-matrix-advisor-effort" },
+    children: Object.entries({ off: "끔", low: "낮음", medium: "보통", high: "높음", xhigh: "매우 높음", max: "최대" })
+      .map(([value, text]) => el("option", { attrs: { value }, text })),
+  });
+  advisorEffort.addEventListener("change", () => {
+    const model = chosen.advisor;
+    if (!model || model === "off") return;
+    chosen.advisor = { ...model, thinkingLevel: advisorEffort.value as RoleModel["thinkingLevel"] };
+    redraw();
+    onChange();
+  });
   const summary = el("p", { class: "ai-config-help ai-role-matrix-summary", dataset: { testid: "ai-role-matrix-summary" } });
 
   const optionsFor = (role: AssistantRole): HTMLOptionElement[] => {
@@ -81,7 +99,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
     // 연결된 경로마다 그 역할 후보를 다시 구해 고를 수 있게 한다(다른 줄의 선택과 무관하게 후보만).
     for (const route of available) {
       const one = resolveAssistantRoles([route])[role];
-      if (one.status === "ok" && !seen.has(key(one.model))) { seen.add(key(one.model)); candidates.push(one.model); }
+      if (one.status === "ok" && !isLegacyTerraModel(one.model.model) && !seen.has(key(one.model))) { seen.add(key(one.model)); candidates.push(one.model); }
     }
     return [
       el("option", { attrs: { value: AUTO }, text: "자동" }) as HTMLOptionElement,
@@ -114,10 +132,23 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
       }
       const select = selects.get(role);
       if (select) {
-        const value = pinned[role as "smol" | "advisor"] ? (chosen[role as "smol" | "advisor"] === "off" ? OFF : key(chosen[role as "smol" | "advisor"] as RoleModel)) : AUTO;
-        select.replaceChildren(...optionsFor(role));
-        if (![...select.options].some((option) => option.value === value)) select.append(el("option", { attrs: { value }, text: `${value.split("::")[1] ?? value} · 연결 안 됨` }));
+        const current = chosen[role as "smol" | "advisor"];
+        const value = current === "off" ? OFF : current ? key(current) : AUTO;
+        const options = optionsFor(role);
+        if (current && current !== "off" && !options.some((option) => option.value === value)) {
+          const availableModel = options.some((option) => option.value.startsWith(`${current.provider}::${current.model}::`));
+          options.push(el("option", {
+            attrs: { value }, text: availableModel ? `${current.model} · ${current.provider}` : `${current.model} · 연결 안 됨`,
+          }) as HTMLOptionElement);
+        }
+        select.replaceChildren(...options);
         select.value = value;
+        if (role === "advisor") {
+          advisorEffort.disabled = !current || current === "off";
+          advisorEffort.value = current && current !== "off" ? current.thinkingLevel
+            : resolved.advisor.status === "ok" ? resolved.advisor.model.thinkingLevel : "medium";
+          advisorEffort.dispatchEvent(new Event("input", { bubbles: true }));
+        }
       }
     }
     const families = [...new Set(available.map((route) => FAMILY_LABEL[route.provider]))];
@@ -142,7 +173,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
         const noteCell = el("small", { class: "ai-role-matrix-note" });
         modelCells.set(role, modelCell);
         noteCells.set(role, noteCell);
-        let control: HTMLElement = el("small", { class: "ai-role-matrix-elsewhere", text: role === "image" || role === "pixel" ? "아래 「그림·도트 모델」" : "위 「역할별 모델」" });
+        let control: HTMLElement = el("small", { class: "ai-role-matrix-elsewhere", text: "위 「역할별 모델」" });
         if (role === "main") control = el("div", { class: "ai-role-matrix-main-control", children: [mainApply, control] });
         if (EDITABLE.includes(role)) {
           const select = el("select", { class: "ai-config-select", attrs: { "aria-label": `${copy.label} 모델` }, dataset: { testid: `ai-role-matrix-${role}-select` } }) as HTMLSelectElement;
@@ -159,7 +190,15 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
             onChange();
           });
           selects.set(role, select);
-          control = select;
+          if (role === "advisor") {
+            for (const [label, field] of [["모델", select], ["추론 강도", advisorEffort]] as const) {
+              advisorControls.append(el("label", { class: "ai-config-row", children: [
+                el("span", { class: "ai-config-label", text: label }),
+                field,
+              ] }));
+            }
+            control = el("small", { class: "ai-role-matrix-elsewhere", text: "위 「검토」" });
+          } else control = select;
         }
         const row = el("div", {
           class: "ai-role-row",
@@ -179,6 +218,8 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
 
   return {
     element: el("div", { class: "ai-role-matrix-wrap", children: [summary, table] }),
+    advisorControls,
+    advisorModel: () => chosen.advisor ?? (resolved?.advisor.status === "ok" ? resolved.advisor.model : undefined),
     refresh: (next, nextAvailable) => {
       config = next;
       available = nextAvailable;

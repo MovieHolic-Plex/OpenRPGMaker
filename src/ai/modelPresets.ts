@@ -7,6 +7,7 @@
 // 티어 → 실제 모델 ID 매핑은 제공자 카탈로그(modelCatalog)에 있는 ID 여야 한다 — 프리셋이
 // 카탈로그 밖 ID 를 채우면 무효 모델 경고가 뜬다.
 
+import { isLegacyTerraModel } from "./chatgptDefault";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials";
 import type { RoleModel, SpecialistRole } from "./modelRoles";
 import { ANTHROPIC_PROVIDER_ID, CHATGPT_DEFAULT_MODEL, CLAUDE_DEFAULT_MODEL } from "./ohMyPiProviders";
@@ -50,7 +51,7 @@ export function tierModelFor(providerId: string, tier: ModelTier): string | null
   if (isOpenAiCompatProviderId(providerId)) {
     // 사용자 지정 엔드포인트에는 「빠른/강한」 구분이 없다 — 사용자가 고른 기본 모델(없으면 시험에서 받은 첫 모델)을 쓴다.
     const known = getKnownOpenAiCompatEndpoint(providerId);
-    return known?.defaultModel || known?.models[0] || null;
+    return [known?.defaultModel, ...(known?.models ?? [])].find(model => model && !isLegacyTerraModel(model)) ?? null;
   }
   return PROVIDER_TIER_MODELS[providerId]?.[tier] ?? null;
 }

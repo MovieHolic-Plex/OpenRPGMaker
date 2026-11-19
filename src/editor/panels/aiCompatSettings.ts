@@ -6,6 +6,7 @@
 // 두지도 않는다(응답에는 hasKey·headerNames 만 있다). 입력칸은 password 이고, 저장된 키는 「저장됨 ••••••••」 마스크로만 보인다.
 // 서버 쪽 정본은 scripts/lib/openAiCompatStore.ts(0600 파일). 로그인(OAuth) 두 카드는 건드리지 않는다.
 
+import { isLegacyTerraModel } from "@/ai/chatgptDefault";
 import {
   ChatGptCompanionResponseError,
   deleteOpenAiCompatEndpoint,
@@ -261,13 +262,15 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       const current = options.getAssignment(slot.id);
       const usingThis = current.provider === endpoint.id;
       const modelListId = `ai-compat-models-${endpoint.id.replace(/[^a-z0-9-]/gu, "-")}-${slot.id}`;
+      const choices = endpoint.models.filter(model => !isLegacyTerraModel(model));
+      const defaultModel = usingThis ? current.model : endpoint.defaultModel;
       const input = el("input", {
         class: "ai-config-input",
         attrs: { type: "text", list: modelListId, placeholder: "모델 ID", spellcheck: "false", autocomplete: "off", "aria-label": `${slot.eng} 모델 ID` },
-        value: usingThis ? current.model : (endpoint.defaultModel || endpoint.models[0] || ""),
+        value: defaultModel && !isLegacyTerraModel(defaultModel) ? defaultModel : choices[0] ?? "",
         dataset: { testid: `ai-compat-role-model-${endpoint.id}-${slot.id}` },
       }) as HTMLInputElement;
-      const datalist = el("datalist", { attrs: { id: modelListId }, children: endpoint.models.map((model) => el("option", { attrs: { value: model } })) });
+      const datalist = el("datalist", { attrs: { id: modelListId }, children: choices.map((model) => el("option", { attrs: { value: model } })) });
       const apply = el("button", {
         class: "ai-assistant-action",
         text: usingThis ? "다시 적용" : "이 역할에 쓰기",
@@ -288,6 +291,10 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         const model = input.value.trim();
         if (!model) {
           note.textContent = "모델 ID를 먼저 입력하거나 목록에서 고르세요.";
+          return;
+        }
+        if (isLegacyTerraModel(model)) {
+          note.textContent = "지원되는 다른 모델 ID를 골라 주세요.";
           return;
         }
         const verdict = openAiCompatModelVerdict(endpoint, model);
@@ -438,11 +445,12 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     const result = el("div", { class: "ai-compat-result", attrs: { role: "status", hidden: "" }, dataset: { testid: "ai-compat-result" } });
     const warnings = el("ul", { class: "ai-compat-warnings", attrs: { hidden: "" }, dataset: { testid: "ai-compat-warnings" } });
     const modelSelect = el("select", { class: "ai-config-select", attrs: { "aria-label": "받은 모델 목록" }, dataset: { testid: "ai-compat-model-select" } }) as HTMLSelectElement;
-    const modelInput = el("input", { class: "ai-config-input", attrs: { type: "text", placeholder: "모델 ID 직접 입력", spellcheck: "false", autocomplete: "off" }, value: source?.defaultModel ?? "", dataset: { testid: "ai-compat-model-input" } }) as HTMLInputElement;
+    const modelInput = el("input", { class: "ai-config-input", attrs: { type: "text", placeholder: "모델 ID 직접 입력", spellcheck: "false", autocomplete: "off" }, value: isLegacyTerraModel(source?.defaultModel) ? "" : source?.defaultModel ?? "", dataset: { testid: "ai-compat-model-input" } }) as HTMLInputElement;
     // 직접 입력한 모델 ID 가 지금 폼의 허용/차단 패턴에 걸리면 바로 이유를 보여 주고 시험·저장을 막는다(대체 모델로 바꾸지 않는다).
     const modelNote = el("small", { class: "ai-compat-url-note", attrs: { role: "status" }, dataset: { testid: "ai-compat-model-note" } });
     const modelVerdict = () => {
       const id = modelInput.value.trim();
+      if (isLegacyTerraModel(id)) return { allowed: false as const, reason: "지원되는 다른 모델 ID를 골라 주세요." };
       return id ? openAiCompatModelVerdict({ allowModels: patternList(allowModels), blockModels: patternList(blockModels) }, id) : { allowed: true as const };
     };
     const refreshModelNote = (): void => {
@@ -456,7 +464,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       probeTools.row,
     ] });
     let testedModels: readonly string[] = source?.models ?? [];
-    const fillModels = (models: readonly string[]): void => {
+    const fillModels = (catalog: readonly string[]): void => {
+      const models = catalog.filter(model => !isLegacyTerraModel(model));
       testedModels = models;
       modelSelect.replaceChildren(
         el("option", { attrs: { value: "" }, text: models.length ? `목록에서 고르기 (${models.length}개)` : "받은 목록 없음" }),
@@ -534,8 +543,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       if (response.ok || response.models.length || response.code === "not-found" || response.code === "not-json" || response.code === "server") {
         modelBox.hidden = false;
         fillModels(response.models);
-        if (!modelInput.value && response.models.length) modelInput.value = response.models[0] ?? "";
-        modelSelect.value = response.models.includes(modelInput.value) ? modelInput.value : "";
+        if (!modelInput.value && testedModels.length) modelInput.value = testedModels[0] ?? "";
+        modelSelect.value = testedModels.includes(modelInput.value) ? modelInput.value : "";
       }
     };
 

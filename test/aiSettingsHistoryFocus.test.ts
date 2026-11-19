@@ -130,8 +130,12 @@ it("excludes hidden, inert, disabled and negative-tabindex controls from setting
   expect(document.activeElement).toBe(tail.querySelector("summary"));
 });
 
-it("closes only the nested settings select on the first Escape, then restores the opener", () => {
+it("escapes the select, then Advanced, then settings and restores each opener", () => {
   const modal = openAiSettingsModal();
+  control("ai-settings-tab-behavior").click();
+  const advanced = control("ai-settings-open-advanced");
+  advanced.click();
+  expect(document.activeElement).toBe(control("ai-settings-advanced-done"));
   const trigger = modal.querySelector<HTMLButtonElement>('[data-custom-select-for="ai-font-size"]');
   if (!trigger) throw new Error("Missing font select trigger");
   trigger.click();
@@ -140,6 +144,9 @@ it("closes only the nested settings select on the first Escape, then restores th
   expect(trigger.getAttribute("aria-expanded")).toBe("false");
   expect(document.activeElement).toBe(trigger);
   key(trigger, "Escape");
+  expect(control("ai-settings-advanced").hidden).toBe(true);
+  expect(document.activeElement).toBe(advanced);
+  key(advanced, "Escape");
   expect(modal.isConnected).toBe(false);
   expect(document.activeElement).toBe(opener);
 });

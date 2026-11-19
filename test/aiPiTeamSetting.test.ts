@@ -1,7 +1,4 @@
 /** @vitest-environment happy-dom */
-// 설정 모달의 「Pi 팀 실행」은 당분간 사용자 UI에서 숨긴다. 저장된 값과 실행 경로는 호환성을 위해 유지한다.
-//
-// 여기서 고정하는 것 둘: 팀 선택 컨트롤이 보이지 않고, 기존 설정의 팀 비트는 읽을 수 있다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadAiConfig } from "@/ai/llmClient";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
@@ -55,10 +52,18 @@ async function openModal(): Promise<FakeElement> {
 }
 
 describe("Pi 팀 실행 설정", () => {
-  it("팀 선택 컨트롤을 사용자 설정에서 숨긴다", async () => {
+  it("고급 작업 방식에서 기존 팀 비트만 전환한다", async () => {
+    storage.set("oprn:ai-config", JSON.stringify({ piTeam: true }));
     const modal = await openModal();
     expect(findByTestId(modal, "ai-config-route")).toBeNull();
-    expect(findByTestId(modal, "ai-config-pi-team")).toBeNull();
+    expect(findByTestId(findByTestId(modal, "ai-settings-pane-behavior")!, "ai-config-pi-team")).toBeNull();
+    findByTestId(modal, "ai-settings-tab-behavior")?.click();
+    findByTestId(modal, "ai-settings-open-advanced")?.click();
+    const team = findByTestId(findByTestId(modal, "ai-settings-advanced")!, "ai-config-pi-team");
+    expect(team?.getAttribute("role")).toBe("switch");
+    expect(team?.getAttribute("aria-checked")).toBe("true");
+    team?.click();
+    expect(loadAiConfig().piTeam).toBe(false);
   });
 
   it("기존 팀 비트는 실행 호환성을 위해 읽을 수 있다", () => {

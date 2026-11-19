@@ -456,7 +456,7 @@ CDN 설정이 있으면 기존 카탈로그 규칙을 따른다. 사용자가 �
 
 ## 도구 사용량 (2026-09-25)
 
-AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화 기록, 활동 로그에서 조수가 부른 도구를 센다.
+AI 설정의 고급 시트 「도구 사용량」은 이 브라우저의 실행 영수증, 대화 기록, 활동 로그에서 조수가 부른 도구를 센다.
 같은 호출이 여러 기록에 있으면 한 번만 센다. `pi:시공` 같은 역할 이름은 도구가 아니라서 빼며, 개별 도구
 (예: `web_search`)는 영수증과 대화 항목에 있을 때만 보인다. 「JSON으로 보내기」는 그 표를
 `ai-tool-usage-YYYY-MM-DD.json` 으로 내려받는다. 집계는 `src/ai/toolUsageReport.ts`, 화면은
@@ -1140,7 +1140,7 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 | 팀 | boolean | `AiConfig.piTeam` — 실행 계약은 유지하되, 2026-10-12부터 컴포저 팀 토글(`ai-composer-team`)과 설정 `ai-config-pi-team`은 사용자 UI에서 숨긴다 |
 | 명시 입력 | `/pi …` · `/team …`(= `/pi team …`) | `parsePiCommand` — 언제나 최우선. 다이얼의 읽기 전용·계획보다 **세다** |
 
-- 팀 모드는 당분간 일반 작업 설정과 AI 설정 모달에 노출하지 않는다. 예전에 저장된 `piTeam` 값과
+- 팀 모드는 일반 동작 항목에서 숨기며 고급 시트에서 고른다. 예전에 저장된 `piTeam` 값과
   명시적인 `/team` 입력은 실행 호환성을 위해 유지한다. 실표면 회귀는 `test/e2e/ai-route-team.spec.ts`에서
   UI 부재와 `mode: "team"`·`mode: "single"` 요청을 함께 확인한다.
 - 질문(다이얼 「읽기 전용」)·계획(「확인」)은 세션이 아니라 Pi 가 맡는다: `readOnly` 는 요청에 실려
@@ -3080,7 +3080,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **지시줄 effort 셀렉트 — 자율성·추론 강도를 설정 모달 없이 바로 고른다 (2026-09-04):** 컴포저 액션 행 lead 에 네이티브 `<select>` 2개(`ai-composer-autonomy`·`ai-composer-reasoning`, `aiComposer.ts` `effortChips`)를 모드 세그먼트 옆에 둔다. 값 어휘는 설정 모달과 공유한다(`AUTONOMY_LEVELS`·`COMPOSER_REASONING_OPTIONS`). 자율성을 고르면 `resolveAutonomy` 프리셋을 추론·작업모드까지 함께 저장하고 추론 셀렉트도 `syncEffort` 로 맞춘다(설정 모달 다이얼과 같은 동작). 추론 강도는 수동값 그대로 저장한다. **세션은 저장된 reasoningEffort 를 그대로 쓴다** — 예전 `phaseConfig` 의 다이얼 effort 덮개는 걷었다(다이얼 선택 시 호출자가 이미 저장에 반영하므로). 다이얼이 정하는 것은 agentMode·예산·planOnly 다. 설정 모달에서 저장하면 컴포저 표시도 `syncEffort` 로 맞춘다. Tests: `test/aiComposerEffort.test.ts`(어휘·콜백·동기화) `test/aiComposerEffortPanel.test.ts`(저장 배선) `test/aiComposerEffortSession.test.ts`(수동값 우선).
 
-- **자율성 다이얼은 설정 동작 절에 산다 (2026-09-04):** 레벨 정의와 세션 노브 해석은 `src/ai/autonomyLevels.ts`(`AUTONOMY_LEVELS`, `resolveAutonomy`)가 소유하고, 설정 모달(`src/editor/panels/aiSettingsModal.ts`)의 동작(behavior) 섹션이 `자율성` 셀렉트(`data-testid="ai-config-autonomy"`)로 노출한다. 다이얼을 움직이면 해당 레벨의 추론·작업 모드로 `ai-config-reasoning`·`ai-config-agentmode` 셀렉트를 함께 고친 뒤 두 셀렉트에 `input` 이벤트를 쏴 커스텀 셀렉트 라벨을 동기화하고 `persist` 는 한 번만 돌린다(`change` 가 아니라 `input` 만 쏘므로 저장 리스너가 중복으로 타지 않는다). 저장은 `AiConfig.autonomyLevel`(`src/ai/llmClient.ts`)이며, 로더가 옛 blob·이상한 값을 `"balanced"` 로 백필한다. 런 표면 예산(`aiChatPanel.ts` `runBudgetTotal`)은 `min(레벨 cap, 48)` 표시용 클램프다. 실제 루프 상한은 세션(`assistantSession.ts`)이 자기 cap 으로 별도 강제한다. 컴포저 모델 칩(`modelChipLabel`)은 초보 모드에서 숨고, 표준·전문가에서는 모델 id 뒤에 `· 레벨 라벨`을 덧붙인다(읽기 전용 표시).
+- **자율성 다이얼은 동작의 고급 시트에 산다 (2026-11-19):** 레벨 정의와 세션 노브 해석은 `src/ai/autonomyLevels.ts`(`AUTONOMY_LEVELS`, `resolveAutonomy`)가 소유하고, 설정 모달(`src/editor/panels/aiSettingsModal.ts`)의 고급 「작업 방식」 섹션이 자율성 셀렉트(`data-testid="ai-config-autonomy"`)로 노출한다. 다이얼을 움직이면 해당 레벨의 추론·작업 모드로 `ai-config-reasoning`·`ai-config-agentmode` 셀렉트를 함께 고친 뒤 두 셀렉트에 `input` 이벤트를 쏴 커스텀 셀렉트 라벨을 동기화하고 `persist` 는 한 번만 돌린다(`change` 가 아니라 `input` 만 쏘므로 저장 리스너가 중복으로 타지 않는다). 저장은 `AiConfig.autonomyLevel`(`src/ai/llmClient.ts`)이며, 로더가 옛 blob·이상한 값을 `"balanced"` 로 백필한다. 런 표면 예산(`aiChatPanel.ts` `runBudgetTotal`)은 `min(레벨 cap, 48)` 표시용 클램프다. 실제 루프 상한은 세션(`assistantSession.ts`)이 자기 cap 으로 별도 강제한다. 컴포저 모델 칩(`modelChipLabel`)은 초보 모드에서 숨고, 표준·전문가에서는 모델 id 뒤에 `· 레벨 라벨`을 덧붙인다(읽기 전용 표시).
 
   | level | reasoning | agentMode | budgetCap | planOnly |
   | --- | --- | --- | --- | --- |
@@ -3370,7 +3370,11 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `OPRN_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. Antigravity·Codex 브라우저 로그인은 `/launch` 가 아니라 Google/OpenAI 인가 URL을 바로 연다. 그 URL의 `redirect_uri`가 루프백 콜백이면 원격 origin에서 `pasteCallback`을 켠다. 편집기는 이 화면으로 돌아오면 클립보드의 localhost 주소를 읽어 버튼 없이 연결하고, 붙여넣기만 해도 바로 넘긴다. env 키는 `.env.local` 의 `OPRN_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
 
-- **AI 설정 모달은 레일+페인 구조다 (2026-09-16 리디자인):** 단일 스크롤 덤프를 `연결 | 모델 | 동작 | 표시` 좌측 레일(`ai-settings-rail` / `ai-settings-tab-*` / `ai-settings-pane-*`)과 우측 페인으로 나눴고, `extraSections`(대기 화면 등)은 레일의 자체 탭(`ai-settings-tab-extra-<id>`)으로 뜬다. 헤더 아래 `ai-settings-connection-summary` 한 줄이 현재 제공자·연결 상태를 말하고 `ai-settings-connection-check` 가 재조회다. **제공자 카드가 곧 선택+상태다** — 죽은 「연결 방식」(apiKey 카드)와 「빠른 선택+제공자 드롭다운」 3중 중복을 걷고, 카드 안에 브랜드 SVG(`src/editor/panels/aiProviderIcons.ts`, Google·OpenAI 마크 — `deckIcon` 선형 아이콘과 다른 fill 마크라 별도 모듈)·상태 필·로그인/연결 해제를 넣는다. `ai-oh-my-pi-provider` select 는 `hidden` 으로 남아 저장·change 소스 구실만 한다(fakeDom 은 `.hidden` 프로퍼티를 attribute 와 동기화하지 않으므로 테스트는 `getAttribute("hidden")` 로 본다). **모델 절**은 품질 프리셋 3장(`src/ai/modelPresets.ts`, `ai-model-preset-fast|balanced|quality`)이 역할 모델·추론을 한 번에 맞추고, 「역할별 모델 직접 지정」(`ai-settings-advanced`) disclosure 안 4행 표(`ai-settings-role-ultrabrain|vision|writer|deep`)가 개별 지정이다 — 모델 칸은 프리셋 셀렉트와 직접 입력을 **세로로 쌓는다**(나란히 두면 180px 칸에서 잘린다 — 실측 스크린샷 회귀). **동작 절**의 자율성 셀렉트는 파생값(`→ 추론 보통 · 자율 모드`)을 아래에 보여 덮어쓰기 관계를 노출하고, 역할 추론 옵션은 `끔/낮음/보통/높음` 한국어 라벨이다. **저장은 자동뿐이다** — `지금 저장`(`ai-config-save`)는 없고 푸터는 `ai-config-saved-hint`(`자동 저장됨 · HH:MM`)와 작업 준비 후 활성화되는 `ai-settings-continue`(`연결하고 계속`)를 띄운다. 닫기 버튼은 **DOM 순서상 첫 포커스 대상**이어야 한다(헤더 상태 줄이 앞서면 첫 탭 정지가 틀어진다 — 시각 배치는 flex `order` 로 맞춘다). e2e 는 페인 안 컨트롤을 만지기 전에 해당 레일 탭을 먼저 눌러야 한다(표시→`ai-settings-tab-display`, 대기 화면→`ai-settings-tab-extra-temperature`, 동작→`ai-settings-tab-behavior`). Tests: `test/aiSettingsModalLayout.test.ts`, `test/aiSettingsModalNoBrowserKey.test.ts`, `test/aiAuthSettingsSeparation.test.ts`, `test/aiSettingsHistoryFocus.test.ts`, 갱신된 `test/e2e/ai-ui-audit-fixes.spec.ts`·`assistant-single-dock.spec.ts`·`assistant-clean-glass.spec.ts`·`assistant-glass-settings.spec.ts`. 증거: `verify-shots/ai-settings-redesign/real-*.png`.
+- **AI 설정은 연결·동작 레일과 고급 시트를 쓴다 (2026-11-19).** 연결 첫 화면은 ChatGPT 로그인이나 계정 행을 보여 준다. 로그인·해제·대기 안내는 `aiAuthSettings.ts`의 기존 OAuth 경로를 공유한다. 「다른 방법으로 연결」(`ai-settings-other-ways`)에는 제공자 선택, 빠른 키 연결, 사용자 지정 서버, 상태 재확인을 모았다.
+  - 로그인 후 「품질」의 균형과 최고 품질은 계획·실행·시공·작문·시각 역할을 GPT-6.2 Sol의 medium 또는 high로 맞춘다. 역할별 조합이 다르면 선택 표시를 해제한다. 명시한 실행·시공 강도는 자율성 다이얼의 강도보다 우선하며, Sol 제작 요청은 medium 이상을 쓴다.
+  - 「동작」의 스위치는 기존 `piApply`, `dialoguePolishAfterBuild`, `imagePlanBuild`에 바로 저장한다. 고급 시트의 적용 모드 선택기에는 다섯 모드가 모두 있다. 스위치를 켜고 끌 때는 같은 창에서 마지막으로 고른 즉시·검토 모드를 기억한다.
+  - 「고급…」(`ai-settings-open-advanced`)에는 역할 모델과 ChatGPT 그림 제공자, 작업 방식, 역할 배정, 표시, 도구 사용량, 호출자가 넣은 추가 섹션이 있다.
+  - 닫기는 바깥 창의 첫 탭 정지다. 고급 시트는 완료에 초점을 두고 독립 계층으로 등록한다. 완료나 Escape는 동작으로 돌아가고 「고급…」에 초점을 복원한다. 셀렉트 목록이 열려 있으면 첫 Escape는 목록을 닫는다. 편집기와 시작 화면은 같은 폼을 열고 시작 화면의 셀렉트는 브라우저 기본 컨트롤을 쓴다.
 
 - **OAuth 빠른 선택 (2026-08-24 / 기본 2026-08-25):** `aiAuthSettings.ts` 는 OAuth 모드에서 **ChatGPT(`openai-codex`) ↔ Google Gemini(`google-antigravity`) 두 카드**를 `role="radiogroup"` 퀵 선택으로 노출한다(테스트 `test/aiAuthSettingsSeparation.test.ts`). 공장 기본 제공자는 **`google-antigravity` + `gemini-3.7-flash`** 다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL`). 저장된 providerId·모델은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절 암시 기본이므로 `openai-codex` 로 남긴다. Gemini 퀵 카드는 Antigravity 로그인으로 라우팅한다(`google-gemini-cli` 는 레지스트리에서 사라졌다). 모델 목록에는 제공자와 무관한 GPT/Claude 항목을 섞지 않고 `gemini-3.7-flash`(빠른 기본)와 `gemini-3.1-pro`(품질 우선)만 먼저 보여준다. 이미 저장된 제공자·모델은 설정을 다시 열 때 덮어쓰지 않는다. 선택하면 providerId·select 값·aria 체크·onChange·상태 조회·기존 로그인 라우팅(`startChatGptLogin`) 을 전부 동기화한다. Gemini 카드는 구독·CLI를 암시하지 않고 `Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.`라고 안내한다. 드롭다운으로 다른 OAuth 제공자를 고르면 어느 카드도 체크되지 않되 첫 카드는 `tabindex=0` 을 유지해 키보드 사용자가 돌아올 수 있다. 제공자/종류 변경·취소는 내부 인증 연산 세대 카운터를 올려, 늦게 도착한 버전·상태·로그인 결과가 새 선택의 화면(연결 해제 크롬 포함)을 덮어쓰지 못하게 한다. API 키 제공자, 키 저장·연결 해제·폴링 최대 시도·오류(A/B) 의미는 그대로다. OAuth 는 언제나 로컬 oh-my-pi pi-ai 워커(`startChatGptLogin`)가 처리한다 — 비밀은 브라우저에 남지 않는다.
 
@@ -3726,7 +3730,7 @@ companion은 `bun:sqlite`를 직접 로드하지 않으므로 `scripts/lib/omp-a
 모델, 팀 설정과 별개이며 `AiConfig.piApply`에 저장한다. 미설정·잘못된 값은 `default`,
 `piApplyPolicyVersion: 1`이 없는 옛 `review` 공장값도 `default`로 전환한다.
 새 선택은 저장할 때 정책 버전을 함께 기록해 명시 `review`를 보존한다. `auto` 등 다른 값은 유지한다.
-Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 모드를 기록한다. 입력창 선택기와 AI 설정 → 동작에서 선택하며 실행
+Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 모드를 기록한다. 입력창 선택기와 AI 설정 → 동작에서 전환하고 고급 시트에서 적용 모드를 직접 선택하며 실행
 시점 값을 고정한다(실행 도중 바꾼 설정은 다음 요청에 적용).
 
 - `yolo` / YOLO: 실제 편집을 도구 완료 경계마다 반영. 별도 계획·조화 검수·삭제 확인 생략.
@@ -4533,7 +4537,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | 동반 서비스 | `scripts/lib/openAiCompatRuntime.ts` `connectOpenAiCompat` | `POST /auth/openai-compat/connect`. `testOpenAiCompat({ model, probeTools: true })` 로 **도구 달린 채팅 한 번**을 보내 통과(채팅 2xx + toolsOk)할 때만 저장한다. 같은 주소가 있으면 그 행을 고친다 |
 | 클라이언트 | `src/ai/chatgptOAuthClient.ts` `connectOpenAiCompatEndpoint` | 키는 요청 본문으로만 한 번 간다. 실패도 200 + `ok:false` + 사람 말 |
 | 카드 | `src/editor/panels/aiQuickConnect.ts` | OpenRouter 키 / 다른 OpenAI 호환(주소·키·모델) 두 가지. 성공하면 키 칸을 비운다 |
-| 설정 창 | `aiSettingsModal.ts` | 연결 탭 맨 위 「빠른 연결」. 연결 상태가 connected 면 숨긴다. 성공 시 `authSettings.selectProvider(id)` 로 기본 연결이 된다 |
+| 설정 창 | `aiSettingsModal.ts` | 연결의 「다른 방법으로 연결」 안 「빠른 연결」. 성공 시 `authSettings.selectProvider(id)` 로 기본 연결이 된다 |
 | 관문 | `src/editor/ui/aiConnectGate.ts` | 첫 실행 설정 마법사(`aiSetupWizard.ts`)를 띄운다. 무엇이 감지됐는지 보여 주고, 없는 것은 OS 별 설치 안내·로그인·「다시 확인」·키 붙여 넣기로 한 단계씩 안내한다. 모델 선택 표는 `src/ai/teamScoreboard.ts`(점수판 출처 주석), 감지→팀 계산은 `src/ai/teamPlan.ts`, 화면 문구는 `src/ai/setupWizardModel.ts` |
 
 **첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 설정 마법사가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 환경 변수 키(OPENAI/ANTHROPIC/GEMINI·GOOGLE/DEEPSEEK `_API_KEY`)는 `GET /auth/key-sources` 가 이름만 알려 주고 값은 화면·로그에 나오지 않는다 — 한 번 확인한 뒤에만 `POST /auth/key-adopt` 로 서버 안에서 쓴다. 윈도에서는 `scripts/lib/localCliAgent/resolveBinary.ts` 가 `.cmd` 래퍼·PATHEXT·`%APPDATA%\npm` 을 해석하고, 앱이 Claude/Codex 를 대신 설치하는 길은 `POST /v1/local-agents/install`(허용 목록만)이다. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
