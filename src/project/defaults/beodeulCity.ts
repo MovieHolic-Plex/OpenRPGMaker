@@ -146,6 +146,8 @@ export function createBeodeulCityTileset(): TilesetDef {
     structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
     autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
     referenceDocuments: baseReferenceDocuments(),
+    // 방 짓기 역할표: 버들항 집 안(실내 토막)은 이 칩셋으로 짓는다 — 사양 src/assets/beodeulInteriorSpec.json.
+    roomKit: { builtin: BEODEUL_CITY_ID },
   };
   ensureBeodeulFacilityKits(tileset);
   ensureBeodeulForms(tileset);
@@ -202,8 +204,10 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
 export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: RelocationProject): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE) return false;
   // 옛 사본은 계열이 "easyrpg" 로 들어 있다 — 생성 칩셋 계열로 고친다.
-  const familyFixed = tileset.family !== BEODEUL_CITY_FAMILY;
-  if (familyFixed) tileset.family = BEODEUL_CITY_FAMILY;
+  const kitFixed = !tileset.roomKit;
+  if (kitFixed) tileset.roomKit = { builtin: BEODEUL_CITY_ID };
+  const familyFixed = tileset.family !== BEODEUL_CITY_FAMILY || kitFixed;
+  if (tileset.family !== BEODEUL_CITY_FAMILY) tileset.family = BEODEUL_CITY_FAMILY;
   const citySheet = tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile") ?? false;
   if (citySheet && tileset.count >= BEODEUL_CITY_BASE_COUNT) {
     // 사본의 번들 끝 = 바탕 이후 첫 이식 칸(없으면 칸 수). 더 새 번들에서 저장된 사본(번들 끝이 지금보다 뒤)은 칸 표를 줄이지 않는다.
@@ -294,12 +298,18 @@ export const BEODEUL_OBJECTS_BASE = 34944;
  * 3/4 관문 미통과 — 오너 면제 묶음 fable-refbuildings-beodeul-2026-11-15 로 구웠다. 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다. 이야기 기물 꼬리 뒤라 같은 막힘(theme2)을 따른다.
  */
 export const BEODEUL_REF_BUILDING_KIT_PREFIX = "bd-bld-ref-";
+/**
+ * 실내 토막 `fable_interior`(48,512~52,607 고정 예약, scripts/content/beodeul-interiors/bake.py)의 킷 접두사 — 버들항 집 안의 벽면·바닥·벽 윗면 테두리·가구.
+ * 방은 방 짓기 역할표(roomKit builtin beodeul_city, 사양 src/assets/beodeulInteriorSpec.json)로 짓는다. 3/4 관문 미통과 — 오너 면제 묶음 fable-interiors-beodeul-2026-11-15.
+ * 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다. 참고 건물 토막 뒤라 같은 막힘(theme2)을 따른다.
+ */
+export const BEODEUL_INTERIOR_KIT_PREFIX = "bd-in:";
 
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {
   const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX))
     && (withGap || (!kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_THEME_KIT_PREFIX)))
     // 주제 2 꼬리를 못 받는 사본(그 자리에 이식 칸, 옮길 프로젝트 없이 부름)은 그 뒤 꼬리(동굴 기물·이야기 기물)의 칸도 없다 — 그 킷도 받지 않는다.
-    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_REF_BUILDING_KIT_PREFIX)))
+    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_REF_BUILDING_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_INTERIOR_KIT_PREFIX)))
     && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) && (withCapital || !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
@@ -307,7 +317,7 @@ function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, 
   const kept = current.filter(kit => {
     if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)
       && !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)
-      && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_REF_BUILDING_KIT_PREFIX)) return true;
+      && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_REF_BUILDING_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_INTERIOR_KIT_PREFIX)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }

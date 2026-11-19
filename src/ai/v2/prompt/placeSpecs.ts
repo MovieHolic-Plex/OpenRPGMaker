@@ -2,7 +2,7 @@
 import type { Project } from "@/project/types";
 import { INTERIOR_CARD } from "../place/builders/interior";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
-import { chipsetCatalog } from "../place/interiorCatalog";
+import { chipsetCatalog, interiorTilesetFor } from "../place/interiorCatalog";
 import { VILLAGE_CARD, villageCard } from "../place/builders/village";
 import { DUNGEON_CARD } from "../place/builders/dungeon";
 import { JP_CITY_CARD } from "../place/builders/jpCity";
@@ -51,7 +51,8 @@ let catalogCard: string | undefined;
 
 /** 칸 배치 목록 카드 — 칩셋 메타데이터에서 생성(interiorCatalog.ts). 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. */
 export function interiorCatalogCard(project?: Project, currentMapId?: string, task = "", key = ""): string {
-  const cur = project?.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
+  // 칸 배치를 까는 쪽·find_pieces 와 같은 칩셋 선택 규칙을 쓴다.
+  const cur = interiorTilesetFor(project, currentMapId);
   const v5 = project?.tilesets[HAND_INTERIOR_TILESET_ID];
   const fromCur = cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit ? chipsetCatalog(cur, task, key) : undefined;
   if (fromCur) return fromCur;

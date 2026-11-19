@@ -3,13 +3,15 @@
 // 바닥이 늘거나, 문 앞 칸·다른 덩이를 덮는 가구는 빠진다. 덩이 안에서는 몸통(가장 큰 가구)부터 넣고 넣은 가구에 붙은 것만 이어 넣어
 // 식탁 없는 의자 같은 반쪽 세트를 남기지 않는다(2026-10-09). 몸통이 빠지면 다음으로 큰 가구에서 다시 잇는다.
 // 후보 자리 여섯 곳까지 보고 가장 많이 들어간 자리를 쓴다.
-import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorSpec } from "./builder";
+import { buildHandInteriorLayers, surfaceRowOf, type HandInteriorInput, type HandInteriorSpec } from "./builder";
 import type { ComposedRooms } from "./rooms";
 import type { LayoutRoom } from "./layout";
 import { clusterShifts, fittingTemplate, itemArea, itemBox as itemBoxOf, roomTemplates, shiftItems, templateClusters, type InteriorStyleVariant, type InteriorTemplateItem } from "./templates";
 import { notchRect } from "./rooms";
 import { HALL_KIND, hallItems } from "./archHall";
 import type { TilesetDef } from "@/project/types";
+import { personalPlan, type PersonalAsk } from "./personal";
+import { hashText } from "./vignettes";
 
 /** 탁자에 딸린 앉을 것 — 혼자서는 놓지 않는다. */
 const SEAT = /chair|stool|bench|seat|cushion|zabuton|sofa-single/u;
@@ -17,7 +19,7 @@ const SEAT = /chair|stool|bench|seat|cushion|zabuton|sofa-single/u;
 export interface FurnishResult {
   readonly input: HandInteriorInput;
   /** 방 id → [견본 id, 심은 수, 뺀 수] */
-  readonly perRoom: Record<string, { template: string; placed: number; dropped: number; missing?: string[] }>;
+  readonly perRoom: Record<string, { template: string; placed: number; dropped: number; missing?: string[]; personal?: string[] }>;
 }
 
 function withItems(base: HandInteriorInput, items: readonly InteriorTemplateItem[]): HandInteriorInput {
@@ -60,7 +62,7 @@ function flatCells(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
   return Array.from({ length: w * h }, (_, i) => `${it.x + (i % w)},${it.y + Math.floor(i / w)}`);
 }
 
-export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom[], composed: ComposedRooms, tilesetId: string, tileset: TilesetDef, S: HandInteriorSpec, styleVariant: InteriorStyleVariant = "A"): FurnishResult {
+export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom[], composed: ComposedRooms, tilesetId: string, tileset: TilesetDef, S: HandInteriorSpec, styleVariant: InteriorStyleVariant = "A", personal?: Readonly<Record<string, PersonalAsk>>): FurnishResult {
   const byId = new Map(roomTemplates(tilesetId).map((t) => [t.id, t]));
   const keep = doorwayCells(composed);
   let input = base;
@@ -241,7 +243,33 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
       // 빠진 견본 가구(어떤 것이 왜 안 들어갔는지 견본 저작·검수에서 본다)
       for (const k of c.members) if (!best?.put.has(k)) { const it = t.items[k]!; missing.push(`${it.id}@${it.x},${it.y}`); }
     }
-    perRoom[room.id] = { template: t.id, placed, dropped, ...(missing.length ? { missing } : {}) };
+    // 사는 사람의 물건(personal.ts) — 견본이 다 앉은 뒤 벽 쪽 빈 칸·빈 벽면·빈 탁자 위에. 견본 가구 앞 칸(쓰러 다가서는 자리)은 비워 둔다.
+    const ask = personal?.[room.id];
+    const plan = ask ? personalPlan(S, room.kind, ask) : undefined;
+    const own: string[] = [];
+    if (plan && ask) {
+      const mine = (input.objects ?? []).filter((o) => o.x >= room.x0 && o.x <= room.x1 && o.y >= room.y0 && o.y <= room.y1);
+      const fronts = new Set<string>();
+      for (const o of mine) { const d = S.objects[o.id]; if (d && (d.kind === "floor" || d.kind === "wall")) for (let dx = 0; dx < Math.max(1, d.w); dx++) fronts.add(`${o.x + dx},${o.y + Math.max(1, d.h)}`); }
+      const order = <T,>(list: T[], salt: string): T[] => list.map((v, i) => [hashText(`${ask.key}|${salt}|${i}`), v] as const).sort((a, b) => a[0] - b[0]).map(([, v]) => v);
+      const fy = room.y0 + 2;
+      const wallSide: [number, number][] = [];
+      for (let x = room.x0; x <= room.x1; x++) wallSide.push([x, fy]);
+      for (let y = fy + 1; y <= room.y1; y++) wallSide.push([room.x0, y], [room.x1, y]);
+      for (const id of plan.pieces) {
+        if (own.length >= plan.count) break;
+        const d = S.objects[id];
+        let spots: [number, number][];
+        if (d?.kind === "hang") spots = order(Array.from({ length: Math.max(0, w - Math.max(1, d.w) + 1) }, (_, i) => [room.x0 + i, room.y0] as [number, number]), id);
+        else if (d) spots = order(wallSide.filter(([x, y]) => !fronts.has(`${x},${y}`) && x + Math.max(1, d.w) - 1 <= room.x1), id);
+        else {
+          const has = new Set((input.goods ?? []).map((g) => `${g.x},${g.y}`));
+          spots = order(mine.filter((o) => S.personal!.surfaces.includes(o.id)).flatMap((o) => { const od = S.objects[o.id]!; const row = surfaceRowOf(o.id, od) ?? 0; return Array.from({ length: Math.max(1, od.w) }, (_, i) => [o.x + i, o.y + row] as [number, number]); }).filter(([x, y]) => !has.has(`${x},${y}`)), id);
+        }
+        for (const [x, y] of spots.slice(0, 8)) if (tryPutIn({ t: d ? "o" : "g", id, x, y }, taken, d ? inside : () => true)) { own.push(id); break; }
+      }
+    }
+    perRoom[room.id] = { template: t.id, placed, dropped, ...(missing.length ? { missing } : {}), ...(own.length ? { personal: own } : {}) };
   }
   return { input, perRoom };
 }
