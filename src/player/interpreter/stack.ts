@@ -1,12 +1,18 @@
 import type { Command } from "@/project/types";
 import type { Frame, InterpreterState, ResumeAdvance } from "@/player/interpreter/types";
+import { createSafetyStop } from "@/player/runtimeSafetyStop";
+
+function reportStackBudget(state: InterpreterState): void {
+  state.onUnverified?.("Interpreter stack budget exhausted");
+  state.onSafetyStop?.(createSafetyStop({ kind: "stack-budget", limit: state.maxStackDepth, eventId: state.currentEventId }));
+}
 
 export function topFrame(stack: Frame[]): Frame | null {
   return stack.length > 0 ? stack[stack.length - 1] ?? null : null;
 }
 
 export function pushFrame(state: InterpreterState, commands: Command[]): boolean {
-  if (commands.length && state.stack.length >= state.maxStackDepth) state.onUnverified?.("Interpreter stack budget exhausted");
+  if (commands.length && state.stack.length >= state.maxStackDepth) reportStackBudget(state);
   if (commands.length === 0 || state.stack.length >= state.maxStackDepth) return false;
   state.stack.push({ commands, pc: 0 });
   return true;
@@ -22,7 +28,7 @@ export function pushLoopFrame(
   ownerPc: number,
   iterations = 0
 ): boolean {
-  if (body.length && state.stack.length >= state.maxStackDepth) state.onUnverified?.("Interpreter stack budget exhausted");
+  if (body.length && state.stack.length >= state.maxStackDepth) reportStackBudget(state);
   if (body.length === 0 || state.stack.length >= state.maxStackDepth) return false;
   state.stack.push({ commands: body, pc: 0, loopOwner: { commands: ownerCommands, pc: ownerPc, iterations } });
   return true;
@@ -35,6 +41,7 @@ export function advanceCompletedFrame(state: InterpreterState): ResumeAdvance {
     const iterations = completed.loopOwner.iterations + 1;
     if (iterations >= state.maxLoopIterations) {
       state.onUnverified?.("Interpreter loop budget exhausted");
+      state.onSafetyStop?.(createSafetyStop({ kind: "loop-budget", limit: state.maxLoopIterations, eventId: state.currentEventId }));
       // 가드 도달: 루프를 종료한다. 부모 프레임의 pc 는 loop 명령 실행 시
       // 이미 loop 다음 명령으로 옮겨져 있으므로(see commandCatalog case "loop"),
       // 여기서 pc 를 더 건드리지 않고 그대로 진행한다.
