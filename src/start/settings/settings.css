@@ -57,7 +57,7 @@
   min-width: 170px; min-height: 32px; padding: 0 10px; border: 1px solid var(--st-line); border-radius: 5px;
   background: var(--st-side); color: var(--st-fg); font: inherit; font-size: 13px;
 }
-.st-select option { color: #111; }
+.st-select option { background: Canvas; color: CanvasText; }
 .st-locale { width: 260px; }
 .st-seg { display: inline-flex; overflow: hidden; border: 1px solid var(--st-line); border-radius: 5px; }
 .st-seg-btn { padding: 5px 12px; border: 0; background: none; color: var(--st-sub); font: inherit; font-size: 12.5px; cursor: pointer; }

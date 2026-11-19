@@ -494,7 +494,7 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
         class: `rm-category-row rm-expression-category${active ? " active" : ""}`,
         attrs: { type: "button", role: "option", "aria-label": "표정 관리", "aria-selected": String(!!active), title: "표정 관리" },
         dataset: { testid: "resource-category-expressions" },
-        children: [el("span", { class: "rm-category-label", text: "↳ 표정 관리" }), el("span", { class: "rm-category-badge", text: String(FACE_EXPRESSION_SETS.length) })],
+        children: [el("span", { class: "rm-category-label", text: "표정 관리" }), el("span", { class: "rm-category-badge", text: String(FACE_EXPRESSION_SETS.length) })],
         on: { click: options.onSelectExpressions },
       }));
     }

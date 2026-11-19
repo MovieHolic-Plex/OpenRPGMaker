@@ -7,6 +7,7 @@
 //     떴다. 전부 줄 밀림이고 픽셀 변화는 0이었다. 양치기 소년 게이트는 꺼진 게이트다.
 // 그래서 읽기용 직렬화(formatWinners, 줄 포함)와 래칫용(ratchetOf, 줄 없음)이 따로 있다.
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   computeWinners,
   decodeBaseline,
@@ -18,6 +19,13 @@ import {
 
 const sheet = (name: string, css: string, layer: string | null = null) => ({ name, css, layer });
 const where = (w: Record<string, { where: string }>, key: string) => w[key]?.where;
+
+it("pairs the settings option popup's system background and text colors", () => {
+  const css = readFileSync(new URL("../src/start/settings/settings.css", import.meta.url), "utf8");
+  const winners = computeWinners({ sheets: [sheet("settings.css", css)] });
+  expect(winners[".st-select option|background"]?.value).toBe("Canvas");
+  expect(winners[".st-select option|color"]?.value).toBe("CanvasText");
+});
 
 describe("computeWinners — 캐스케이드 우선순위", () => {
   it("레이어 순서가 특이도를 이긴다", () => {

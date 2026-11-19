@@ -257,7 +257,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
               el("div", {
                 class: "cf-builtin-body",
                 children: [
-                  el("h3", { class: "cf-builtin-card-title", text: demo.title, attrs: { translate: "no" } }),
+                  el("h3", { class: "cf-builtin-card-title", text: demo.title }),
                   el("p", { class: "cf-builtin-card-sub", text: demo.genre }),
                   el("p", { class: "cf-builtin-card-desc", text: demo.description }),
                   el("div", {

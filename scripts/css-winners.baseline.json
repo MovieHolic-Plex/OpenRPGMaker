@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-19T15:12:08.984Z",
+ "generatedAt": "2026-11-19T15:50:56.636Z",
  "note": "키는 sha1(선택자|속성|조건) 앞 12자리. 값은 `files layers values` 색인 3개. 줄 번호는 일부러 뺐다 — 줄이 밀리는 것만으로 대량 오보가 난다. 갱신: node scripts/check-css-winners.mjs --save-baseline",
  "discovery": "scan",
  "files": [
@@ -10612,7 +10612,8 @@
   "calc(12px + var(--window-inset-left, 0px))",
   "calc(8px + var(--window-inset-left, 0px))",
   "calc(12px + var(--window-inset-right, 0px))",
-  "calc(8px + var(--window-inset-right, 0px))"
+  "calc(8px + var(--window-inset-right, 0px))",
+  "CanvasText"
  ],
  "entries": {
   "src/editor/panels/aiAuthoring/style.css": {
@@ -31552,7 +31553,8 @@
     "c497c3fbc5fb": "88 1 90",
     "1147ad78e1e9": "88 1 214",
     "13fa0ceb6700": "88 1 81",
-    "ce4362f812af": "88 1 1323",
+    "cdf79e09985d": "88 1 4304",
+    "ce4362f812af": "88 1 10161",
     "4a4a2c93a130": "88 1 4429",
     "06e4363c0e2f": "88 1 4406",
     "84411d5d02ff": "88 1 90",
@@ -102472,9 +102474,15 @@
     "6330ae228ccd": "393 11 60",
     "af52e6198218": "393 11 240",
     "0e3c1ac4e335": "393 11 241",
+    "e99227dec2cf": "393 11 33",
+    "af41d0d06038": "393 11 35",
+    "d8f3a675ffa3": "393 11 33",
+    "5f7bcd965209": "393 11 35",
     "6af23f8aa3a1": "393 11 85",
+    "052b42fe822e": "393 11 5",
     "64bfc38d2ba6": "393 11 193",
     "4dfa44e47ea2": "393 11 46",
+    "cbdc33bc0183": "393 11 58",
     "00c5a57b94a1": "393 11 5683",
     "b331dee01a0a": "393 11 2317",
     "b7e11dc8e4d8": "393 11 241",
