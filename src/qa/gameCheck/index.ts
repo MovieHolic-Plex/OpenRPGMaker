@@ -25,6 +25,7 @@ import { checkStory } from "./story";
 import { checkRomance } from "./romance";
 import { checkDefaultLeak } from "./defaultLeak";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
+import { pendingQuestCandidates, unregisteredQuestWarning } from "@/project/quest/questCandidates";
 import { whereText, type AutoPlayRun, type Finding, type FindingSeverity, type GameCheckOptions, type GameCheckReport } from "./types";
 
 export * from "./types";
@@ -65,6 +66,13 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
       severity: "warning", code: "page-setter-shadowed", message: hit.message,
       where: { mapId: hit.mapId, mapName: project.maps[hit.mapId]?.name, eventId: hit.eventId },
     })),
+    // 경고로만 낸다 — 탐지기 정밀도가 100% 가 아니다(openwiki/quest-register.md 측정표).
+    ...(() => {
+      const message = unregisteredQuestWarning(project);
+      if (!message) return [];
+      const first = pendingQuestCandidates(project)[0]!;
+      return [{ severity: "warning" as const, code: "quest-unregistered", message, where: { mapId: first.giver.mapId, mapName: project.maps[first.giver.mapId]?.name, eventId: first.giver.eventId, eventName: first.giver.name } }];
+    })(),
     ...(options.rawProject !== undefined ? diffLoadNormalization(options.rawProject, project) : []),
     ...(options.extraFindings ?? []),
   ];

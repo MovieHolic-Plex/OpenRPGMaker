@@ -1,0 +1,23 @@
+{
+ "tune": [
+  "batch1__B-medium__fun-village-1",
+  "batch1__B-high__fun-village-1",
+  "batch1__B-medium__fun-cat-1",
+  "batch1__B-high__fun-cat-1",
+  "batch1__B-medium__fun-plain-1",
+  "batch1__B-high__fun-plain-1",
+  "ref_shitamachi-fourth-season",
+  "ref_emerald-crown"
+ ],
+ "report": [
+  "batch2__B-medium__fun-village-1",
+  "batch2__B-high__fun-village-1",
+  "batch2__B-medium__fun-cat-1",
+  "batch2__B-high__fun-cat-1",
+  "batch2__B-medium__fun-plain-1",
+  "batch2__B-high__fun-plain-1",
+  "L6__L__fun-cat-1",
+  "ref_first-love",
+  "ref_chrono-bell"
+ ]
+}

@@ -4,7 +4,7 @@ import { roomTemplates, templateStyle, type InteriorRoomTemplate } from "@/edito
 import { measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import type { BuildRun } from "../../shared/types";
 import { purposeOf } from "../roomPurpose";
-import { hashText, itemCharacters, itemsFitWords, roomCharacters } from "@/editor/handInterior/vignettes";
+import { hashText, mixHash, itemCharacters, itemsFitWords, roomCharacters } from "@/editor/handInterior/vignettes";
 import { Obj, Room, Rebuild, findPart, GENERIC_HOME } from "./interiorKind";
 
 /** 깔린 카펫 줄(lines: 사각 rect 또는 칸 목록)과 깔개(flat 물건)가 덮는 칸. */
@@ -348,7 +348,8 @@ export function pickTemplate(tilesetId: string, kind: string, size: string | und
   const area = (t: InteriorRoomTemplate) => t.w * t.h;
   const median = area(pool[Math.floor((pool.length - 1) / 2)]!);
   const half = Math.ceil(pool.length / 2);
-  const band = size === "small" ? pool.slice(0, half) : size === "large" ? pool.slice(pool.length - half) : pool.filter((t) => area(t) >= median * 0.5 && area(t) <= median * 1.8);
+  // 띠의 끝과 넓이가 같은 견본은 같이 든다 — 넓이가 같은 두 벌짜리 종류(대장간·잡화점)에서 «작게»가 늘 이름순 첫 벌만 골라 게임마다 같은 방이었다(2026-11-15 버들항 실내).
+  const band = size === "small" ? pool.filter((t) => area(t) <= area(pool[half - 1]!)) : size === "large" ? pool.filter((t) => area(t) >= area(pool[pool.length - half]!)) : pool.filter((t) => area(t) >= median * 0.5 && area(t) <= median * 1.8);
   // 성격이 다른 설계는 빼고(평범한 서재·귀족 서재에 엘프 잎 벽·마법진 견본이 오지 않게), 그다음 앞 방 화풍.
   const ids = (t: InteriorRoomTemplate) => [...t.items.map((it) => it.id), t.floor, t.wall];
   // 마법·엘프처럼 드문 성격 낱말이면 그 성격 견본을 크기 띠 밖에서라도 먼저(마법사의 서재 → 탑 서재).
@@ -359,7 +360,8 @@ export function pickTemplate(tilesetId: string, kind: string, size: string | und
   const styled = pick.style ? fit.filter((t) => templateStyle(t) === pick.style || templateStyle(t) === "any") : fit;
   const cands = styled.length ? styled : fit.length ? fit : pool;
   const designs = [...new Set(cands.map(templateDesign))].sort();
-  const design = designs[hashText(`${pick.key}|${kind}`) % designs.length]!;
+  // 섞은 뒤 나눈다 — 두 벌짜리 종류에서 `% 2` 가 글머리(게임 제목)만 다른 열쇠에 늘 같은 벌을 냈다(2026-11-15 버들항 실내: 세 게임의 주점·잡화점·대장간이 같은 방).
+  const design = designs[mixHash(hashText(`${pick.key}|${kind}`)) % designs.length]!;
   const target = median * (size === "small" ? 0.75 : size === "large" ? 1.4 : 1);
   return cands.filter((t) => templateDesign(t) === design).sort((a, b) => Math.abs(area(a) - target) - Math.abs(area(b) - target) || a.id.localeCompare(b.id))[0]!;
 }

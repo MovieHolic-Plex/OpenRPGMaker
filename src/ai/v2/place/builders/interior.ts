@@ -17,12 +17,13 @@ import { harmonizeRoomGraph, RoomGraphError, type GraphOut } from "@/editor/hand
 import { copiedReference } from "../roomIdeas";
 import { buildFromLayout, hasLayout } from "./interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_FORMAT_REGIONS, LAYOUT_GRID_RULES } from "../interiorLayout";
-import { effectiveSpec } from "../interiorCatalog";
+import { effectiveSpec, interiorTilesetFor } from "../interiorCatalog";
 import { Obj, Room, Rebuild, InteriorState, interiorTilesetOf, resolveKind, SHRINK_BARE_PCT, FILL_BARE_PCT, SCALE, findPart } from "./interiorKind";
 import { argsFromRebuild, clean, Attempt, build, reachOk, crashesOf, openingColumns, placeAnchor, fillBare, usedTemplates, rotateTemplate, TemplatePick, pickTemplate } from "./interiorFill";
 import { RoomShape, composeShape } from "./interiorShape";
 import { swapForPurpose, cosyFor, coverZones, designedRoom, dressEmptyRooms } from "./interiorCosy";
 import { buildVenue, addBackDoor, buildUpperFloor } from "./interiorFloors";
+import { exteriorLook, exteriorWall } from "./interiorExterior";
 
 /** 조합 길로 짓는 방 종류(2026-10-29 서재부터 — 다른 종류는 서재 결과를 본 뒤). */
 const COMPOSED_KINDS: ReadonlySet<string> = new Set(["study"]);
@@ -51,7 +52,9 @@ export const interiorBuilder: PlaceBuilder = {
     const notes: string[] = [];
     const missing: string[] = [];
     const prev = previous?.result.state as InteriorState | undefined;
-    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec);
+    // 바깥(문이 달린 맵)의 칩셋이 집 안도 지으면 그 칩셋·그 집 양식의 벽면으로 짓는다 — 지금 맵이 그 바깥이다(자동 짓기는 부모 맵에서 부른다).
+    const outside = exteriorLook(run.ctx.project, spec, run.ctx.currentMapId ?? run.ctx.project.startMapId);
+    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec, run.ctx.currentMapId ?? run.ctx.project.startMapId);
     const tilesetId = sheet.tilesetId;
     if ("note" in sheet && sheet.note) notes.push(sheet.note);
     if (/murim|wuxia|무협|무림|강호|객잔|문파|협객/iu.test(`${spec.name} ${spec.style ?? ""} ${spec.theme ?? ""}`)) missing.push(`${spec.name} — 무협 실내(무림 전용 칩셋 murim_wuxia 가 번들에 없어 ${tilesetId} 로 지었다)`);
@@ -61,9 +64,11 @@ export const interiorBuilder: PlaceBuilder = {
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
     if (hasLayout(spec)) {
-      const lt = run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+      // 모델은 목록 카드의 id 로 썼다 — 카드가 바깥 칩셋의 것이었을 때만(지금 맵의 칩셋이 역할표를 든다, interiorTilesetFor) 그 칩셋으로 깐다.
+      const shown = interiorTilesetFor(run.ctx.project, run.ctx.currentMapId)?.id;
+      const lt = outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
       const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
-      if (ls) return buildFromLayout(run, spec, ls, lt, mapId);
+      if (ls) return buildFromLayout(run, spec, ls, lt, mapId, lt === outside?.tileset ? outside : undefined);
     }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
@@ -186,11 +191,20 @@ export const interiorBuilder: PlaceBuilder = {
     // 빈 바닥은 메우지 않고 방을 줄인다). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
     const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
     const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
+    // 집 벽: 견본의 «집 벽» 자리를 바깥 양식의 벽면으로(같은 칩셋일 때만). 견본이 쓰임으로 정한 벽(부엌·대장간의 돌)은 그대로.
+    const houseWall = (r: (typeof rooms)[number]): string | undefined => {
+      const own = (r as { wall?: string }).wall;
+      if (!outside || outside.tileset !== tilesetId) return own;
+      const tplWall = roomTemplates(tilesetId).find((t) => t.id === (r as { template?: string }).template)?.wall;
+      return exteriorWall(roomSpec, outside, own ?? tplWall);
+    };
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: houseWall(r), notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
         ...(graph ? { placed: { rooms: graph.rooms, connect: graph.connect, exit: graph.exit }, graph: graphDecl } : {}),
         ...(shapeOut ? { exitAt: shapeOut.exitAt, composeSeed: hashText(`${varietyKey}|furnish`) % 1_000_000 } : designExit !== undefined ? { exitAt: designExit } : {}),
         ...(designed ? { designs } : {}),
+        // 사는 사람의 물건(칩셋 사양의 personal 표가 있을 때만) — 열쇠에 집 이름이 들어 있어 한 마을의 두 집이 같은 방이 아니다.
+        ...(roomSpec?.personal ? { personal: Object.fromEntries(rooms.filter((r) => !r.vig).map((r) => [r.id, { key: `${varietyKey}|${r.id}`, text: `${spec.name} ${r.zone.purpose ?? ""} ${spec.theme ?? ""}`, ...(outside?.cat ? { cat: outside.cat } : {}) }])) } : {}),
         ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {

@@ -1,0 +1,32 @@
+{
+ "game": "batch2__B-medium__fun-plain-1",
+ "quests": [
+  {
+   "id": "star_machine",
+   "title": "별빛 기계 깨우기",
+   "giver": {
+    "mapId": "observatory",
+    "eventId": "keeper"
+   },
+   "turnIn": [
+    {
+     "mapId": "observatory",
+     "eventId": "keeper"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "observatory",
+     "eventId": "ev_star_sequence_seq_1"
+    },
+    {
+     "mapId": "observatory",
+     "eventId": "ev_star_sequence_seq_2"
+    }
+   ],
+   "completionFlag": "sw_star_ready",
+   "reason": "관리인이 장치를 눌러 달라 부탁 → 스위치 → 관리인에게 돌아가 엔딩"
+  }
+ ],
+ "notQuests": []
+}

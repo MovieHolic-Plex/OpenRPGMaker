@@ -1,0 +1,551 @@
+{
+  "game": "ref_chrono-bell",
+  "quests": [
+    {
+      "id": "fs_main",
+      "registeredAs": "fs_main",
+      "title": "Fallen Star: find and protect the fallen child",
+      "giver": {"mapId": "fs_observatory", "eventId": "ev_fs_hanel"},
+      "turnIn": [
+        {"mapId": "fs_observatory", "eventId": "ev_fs_hanel"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_panel_0"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_panel_1"},
+        {"mapId": "fs_observatory", "eventId": "ev_fs_lift_arrival"},
+        {"mapId": "fs_hub", "eventId": "ev_fs_siege_director"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs_forest", "eventId": "ev_fs_bram"},
+        {"mapId": "fs_forest", "eventId": "ev_fs_main_inspect1"},
+        {"mapId": "fs_forest", "eventId": "ev_fs_valen_crash"},
+        {"mapId": "fs_observatory", "eventId": "ev_world_gate_190i5k8"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_0"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_1"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_2"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_3"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_vault_lens"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_lever_west"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_lever_sun"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_lever_moon"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_wake_0"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_wake_1"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_dragon"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_lift_00"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_lift_10"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_lift_01"},
+        {"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_lift_11"}
+      ],
+      "completionFlag": "sw_fs_main_done",
+      "reason": "Hanel explicitly asks the player to reach and help any survivor before the Church; the forest rescue, circuit report, underground investigation and reply advance sw_fs_main_step0 through step3, Hanel reacts to the returned child and circuit, and the return/siege sets sw_fs_main_done and triggers end_fs_act1. Door and puzzle components are steps, not additional quests."
+    },
+    {
+      "id": "fs_q_bread",
+      "registeredAs": "fs_q_bread",
+      "title": "Toma's flatbread deliveries",
+      "giver": {"mapId": "fs_bakery_home", "eventId": "ev_fs_baker_husband"},
+      "turnIn": [
+        {"mapId": "fs_bakery_home", "eventId": "ev_fs_baker_husband"},
+        {"mapId": "fs_bakery_home", "eventId": "ev_fs_baker_husband_counter"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs_bakery_home", "eventId": "ev_fs_baker_husband_counter"},
+        {"mapId": "fs_hub", "eventId": "ev_fs_gate"},
+        {"mapId": "fs_hub", "eventId": "ev_fs_rino"},
+        {"mapId": "fs_stargazer_home", "eventId": "ev_fs_old_stargazer"},
+        {"mapId": "fs_forest", "eventId": "ev_fs_bram"}
+      ],
+      "completionFlag": "sw_fs_q_bread_done",
+      "reason": "Toma requests four deliveries to named people elsewhere; recipient switches and var_fs_q_bread_given record them, and returning with four delivered awards starlight bread, reveals his connection to Kael and unlocks its sale."
+    },
+    {
+      "id": "fs_q_spoon",
+      "registeredAs": "fs_q_spoon",
+      "title": "Marta's missing silver spoons",
+      "giver": {"mapId": "fs_inn", "eventId": "ev_fs_inn_keeper"},
+      "turnIn": [
+        {"mapId": "fs_inn", "eventId": "ev_fs_inn_keeper"},
+        {"mapId": "fs_inn", "eventId": "ev_fs_inn_keeper_counter"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs_inn", "eventId": "ev_fs_inn_keeper_counter"},
+        {"mapId": "fs_inn", "eventId": "ev_fs_box_fs_inn_14_5"},
+        {"mapId": "fs_apothecary", "eventId": "ev_fs_box_fs_apothecary_1_3"},
+        {"mapId": "fs_bakery_home", "eventId": "ev_fs_box_fs_bakery_home_3_4"},
+        {"mapId": "fs_hub", "eventId": "ev_fs_kid_bridge"},
+        {"mapId": "fs_hub", "eventId": "ev_fs_box_fs_hub_17_34"}
+      ],
+      "completionFlag": "sw_fs_q_spoon_done",
+      "reason": "Marta asks for six missing spoons; clues lead to two in the flour sack and four from Toby at the bridge, setting sw_fs_q_spoon_found; Marta removes six spoons and awards a free-night voucher. The separate inn service is not the quest."
+    },
+    {
+      "id": "fs_q_spear",
+      "registeredAs": "fs_q_spear",
+      "title": "Rohan's spear",
+      "giver": {"mapId": "fs_smithy", "eventId": "ev_fs_smith"},
+      "turnIn": [
+        {"mapId": "fs_smithy", "eventId": "ev_fs_smith"},
+        {"mapId": "fs_smithy", "eventId": "ev_fs_smith_counter"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs_smithy", "eventId": "ev_fs_smith_counter"},
+        {"mapId": "fs_forest_edge", "eventId": "ev_fs_forest_edge_foe1"},
+        {"mapId": "fs_forest_edge", "eventId": "ev_field_enemy_2c24b4b4-77fd-44ac-96e1-2d8577445417"},
+        {"mapId": "fs_forest", "eventId": "ev_fs_forest_foe1"},
+        {"mapId": "fs_forest", "eventId": "ev_field_enemy_453d85c5-8654-411a-a257-9c87b65b3e65"}
+      ],
+      "completionFlag": "sw_fs_q_spear_done",
+      "reason": "Rohan explicitly requests three wolf fangs and one wisp ember from the forest, then consumes materials and awards a spear or, with an additional stariron shard, a sword. The cited wolf/wisp battles match his stated sources; troop loot tables and a stariron pickup event are not shown in this dump."
+    },
+    {
+      "id": "fs2_main",
+      "registeredAs": "fs2_main",
+      "title": "Borrowed Fire: recover Iris and reach the sky-tower lens",
+      "giver": {"mapId": "fs2_obs_night", "eventId": "ev_fs2_obs_hanel"},
+      "turnIn": [
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_coffin"},
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_coffin_r"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_enter_0"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_enter_1"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_enter_2"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_collector"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_director"},
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_bed_0"},
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_gate"},
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_gear_0"},
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_ladder"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_night_mire"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_night_marta"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_well_0"},
+        {"mapId": "fs2_well_shaft", "eventId": "ev_lift_fs2_well_shaft_6_4_00"},
+        {"mapId": "fs2_smithy_night", "eventId": "ev_fs2_smithy_rohan"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_hub_bram"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_hub_hole"},
+        {"mapId": "map_field_north_1", "eventId": "ev_fs2_edge_0"},
+        {"mapId": "fs2_fortress_f2", "eventId": "ev_fs2_fortress_f2_lever"},
+        {"mapId": "fs2_fortress_f2", "eventId": "ev_fs2_fort_wall_door"},
+        {"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_sarah"},
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_harma"},
+        {"mapId": "fs2_frostford_inn", "eventId": "ev_fs2_frost_innkeeper"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_fs2_lake_valen"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_escape_fs2_frostford_night_fs2_ice_exit_19_9"},
+        {"mapId": "fs2_sky_tower", "eventId": "ev_fs2_t1_log"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_lever_1"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_lever_2"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_rejoin"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m1"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m2"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m3"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m4"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m5"}
+      ],
+      "completionFlag": "sw_fs2_release_stop_b13",
+      "reason": "Included as the required registered main quest: Hanel gives his seal and explicitly sends the party to the tower where he promises the rest of the story; rescue and travel happen elsewhere, Iris rejoins, Hanel fulfills that promise at the summit, and the collector aftermath records the Act 2 endpoint. This is the visible release-ending flag, not an invented fs2_main_done; troop/common-event internals are absent."
+    },
+    {
+      "id": "fs_q_venom",
+      "registeredAs": "fs_q_venom",
+      "title": "Oden's antidote",
+      "giver": {"mapId": "fs_apothecary", "eventId": "ev_fs_apothecary"},
+      "turnIn": [
+        {"mapId": "fs_apothecary", "eventId": "ev_fs_apothecary"},
+        {"mapId": "fs_apothecary", "eventId": "ev_fs_apothecary_counter"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs_hub", "eventId": "ev_fs_notice_board"},
+        {"mapId": "fs_apothecary", "eventId": "ev_fs_apothecary_counter"},
+        {"mapId": "fs_forest_thicket", "eventId": "ev_fs_forest_thicket_foe1"},
+        {"mapId": "fs_forest_thicket", "eventId": "ev_field_enemy_e2351ef7-abf6-49c2-a115-d15ddcde03b8"}
+      ],
+      "completionFlag": "sw_fs_q_venom_done",
+      "reason": "Oden requests two forest-spider venom sacs; returning consumes two item_fs_venom_sac, awards three potions and sets the completion switch. Spider encounter events are visible, but their troop loot definitions are outside this dump."
+    },
+    {
+      "id": "fs_q_kite",
+      "registeredAs": "fs_q_kite",
+      "title": "Toby's lost red kite",
+      "giver": {"mapId": "fs_hub", "eventId": "ev_fs_notice_board"},
+      "turnIn": [{"mapId": "fs_hub", "eventId": "ev_fs_kid"}],
+      "stepEvents": [{"mapId": "fs_forest_edge", "eventId": "ev_fs_q_kite_spot"}],
+      "completionFlag": "sw_fs_q_kite_done",
+      "reason": "Toby's written request on the board starts the quest; a separate forest event yields the kite and found flag, and Toby removes it and gives 100G plus a star-scent pouch. The board is the actual request event, not Toby's unrelated initial spoken dialogue."
+    },
+    {
+      "id": "unregistered_mire_lamps",
+      "registeredAs": null,
+      "title": "Mire's three unlit lamps",
+      "giver": {"mapId": "fs2_hub_night", "eventId": "ev_fs2_night_mire"},
+      "turnIn": [{"mapId": "fs2_hub_night", "eventId": "ev_fs2_night_mire"}],
+      "stepEvents": [
+        {"mapId": "fs2_hub_night", "eventId": "ev_5ce005cb-cf9f-46d1-bfe3-c3e56d1fc58d"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_72d48187-bd81-4ef9-aa55-8d9acc7ed995"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_1b6538cf-54a6-43e0-a6a3-d79352b568b5"}
+      ],
+      "completionFlag": "sw_fs2_q4_lamps_done",
+      "reason": "Mire explicitly asks for lamps to be hung on three other households' doors and asks the player to return; three separate lamp flags unlock her acknowledgement and two starlight breads."
+    },
+    {
+      "id": "unregistered_harma_trout",
+      "registeredAs": null,
+      "title": "The first child's fish",
+      "giver": {"mapId": "fs2_frostford", "eventId": "ev_fs2_harma"},
+      "turnIn": [{"mapId": "fs2_frostford", "eventId": "ev_fs2_harma"}],
+      "stepEvents": [
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_frost_hole_0"},
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_frost_hole_1"},
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_frost_hole_2"}
+      ],
+      "completionFlag": "sw_fs2_q5_trout_done",
+      "reason": "Harma asks for one trout at the eastern ice holes; any of three fishing events supplies the trout and caught flag, and returning consumes it and awards Harma's silver oar."
+    },
+    {
+      "id": "unregistered_confiscated_gear",
+      "registeredAs": null,
+      "title": "Recover the confiscated belongings",
+      "giver": {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_ladder"},
+      "turnIn": [{"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_ladder"}],
+      "stepEvents": [
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_enter"},
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_gear_0"},
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_gear_1"}
+      ],
+      "completionFlag": "sw_fs2_gear_meds",
+      "reason": "Borderline included: Elena at the ladder tells the player to retrieve their belongings from the adjacent chest before leaving; a different chest event records the bundle and sw_fs2_barracks_cleared, and returning to the ladder explicitly acknowledges the recovered medicine pouch and awards supplies once. This has a request, external action and rewarded return, beyond a bare exit lock."
+    },
+    {
+      "id": "unregistered_rohan_message",
+      "registeredAs": null,
+      "title": "Tell Sarah to hold her head high",
+      "giver": {"mapId": "fs2_smithy_night", "eventId": "ev_fs2_smithy_rohan"},
+      "turnIn": [{"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_sarah"}],
+      "stepEvents": [{"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_sarah"}],
+      "completionFlag": "sw_fs2_sarah_joined",
+      "reason": "Borderline included as a message-delivery task: Rohan explicitly asks Kael to tell his daughter 'hold your head high'; at the distant fortress Kael delivers the exact message and Sarah recognizes its origin before her battle/recruitment. sw_fs2_sarah_joined is the enclosing encounter's persistent outcome, not a dedicated message-delivered flag; its consumers are visible, while the battle-side setter is outside this event dump."
+    },
+    {
+      "id": "unregistered_iris_journal",
+      "registeredAs": null,
+      "title": "Read Iris's scattered memories back to her",
+      "giver": {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_coffin"},
+      "turnIn": [
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_page_star"},
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_page_hand"}
+      ],
+      "stepEvents": [
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_coffin_r"},
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_page_star"},
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_page_hand"}
+      ],
+      "completionFlag": "sw_fs2_iris_be_well",
+      "reason": "Borderline included: Iris explicitly asks Kael to read again and identifies her fallen journal pages; the player reads two separate floor-page events to the accompanying Iris, recording sw_fs2_page_star_read and sw_fs2_page_hand_read, restoring skills and finally granting 'Be well' with her acknowledgement. The companion receives the task at the page locations, so no return walk is necessary."
+    }
+  ],
+  "notQuests": [
+    {
+      "events": [
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_hint_tablet"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_0"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_1"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_2"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_braziers_brazier_3"},
+        {"mapId": "fs_vault_gate", "eventId": "ev_fs_vault_gate_bars0"}
+      ],
+      "kind": "puzzle",
+      "reason": "Four-brazier order puzzle gives treasure and sets sw_puzzle_fs_braziers_solved for the bars, but its instructions come from a tablet, not a character's commission; it is not a separate quest from fs_main."
+    },
+    {
+      "events": [
+        {"mapId": "fs_observatory", "eventId": "ev_world_gate_190i5k8"},
+        {"mapId": "fs_observatory", "eventId": "ev_world_gate_190i5k8_s1"},
+        {"mapId": "fs_observatory", "eventId": "ev_world_gate_190i5k8_s2"},
+        {"mapId": "fs_observatory", "eventId": "ev_world_gate_190i5k8_s3"}
+      ],
+      "kind": "key-door",
+      "reason": "These copies only test the star key obtained during the rescue, set sw_fs_vault_open and transfer downstairs; the lock is not a new quest."
+    },
+    {
+      "events": [
+        {"mapId": "fs_vault", "eventId": "ev_fs_vault_lens"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_vault_seal_0"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_vault_seal_1"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_vault_seal_2"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_vault_seal_3"}
+      ],
+      "kind": "key-door",
+      "reason": "Iris's presence activates the lens, which sets sw_fs_vault_seal_open for the four stair tiles; this is a main-quest access mechanism, with no separate requester and turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_lever_west"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_lever_sun"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_lever_moon"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_lore_b3_orders"}
+      ],
+      "kind": "puzzle",
+      "reason": "West/sun/moon switches open routes in sequence and a wrong order triggers an alarm fight; the written orders address Church soldiers, not a player commission."
+    },
+    {
+      "events": [
+        {"mapId": "fs_vault", "eventId": "ev_fs_b2_prisoner"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_b2_prisoner_foe1"},
+        {"mapId": "fs_vault", "eventId": "ev_fs_b2_prisoner_foe2"}
+      ],
+      "kind": "other",
+      "reason": "Borderline rejected: the prisoner asks to be freed, but both answers immediately reveal a trap and fight at the same event; no task at another event and no rescue turn-in exist."
+    },
+    {
+      "events": [
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_patrol_trip_0"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_patrol_trip_1"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_patrol_trip_2"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_patrol_trip_3"}
+      ],
+      "kind": "other",
+      "reason": "The west lever enables a patrol ambush with sw_fs_b3_patrol_done, but nobody asks the player to defeat this patrol or receives a report."
+    },
+    {
+      "events": [
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_ledge_trip_0"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_ledge_trip_1"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_ledge_trip_2"},
+        {"mapId": "fs_vault_b3", "eventId": "ev_fs_b3_ledge_trip_3"}
+      ],
+      "kind": "other",
+      "reason": "The moon-lever flag enables an enemy ambush; sw_fs_b3_ledge_done records winning an unsolicited encounter, not a commissioned hunt."
+    },
+    {
+      "events": [{"mapId": "fs_vault_b4", "eventId": "ev_fs_b4_wounded"}],
+      "kind": "tutorial",
+      "reason": "Borderline rejected: the wounded fanatic gives dragon tactics and reacts to sw_fs_dragon_down, but never asks for the kill; Elena's offer of water has no implemented water fetch/turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs_lisa_home", "eventId": "ev_fs_box_fs_lisa_home_7_7"},
+        {"mapId": "fs_hub", "eventId": "ev_gate_de57920f-c43c-4a02-90fd-2ac1baa50c03"}
+      ],
+      "kind": "key-door",
+      "reason": "Taking Lisa's belongings can set sw_fs_lisa_banned and block her door; this is theft punishment, not a requested task with a turn-in."
+    },
+    {
+      "events": [{"mapId": "fs_hub", "eventId": "ev_gate_a91f8f93-6804-40ee-bda0-8f80439f75e2"}],
+      "kind": "key-door",
+      "reason": "The entrance checks sw_fs_osborn_banned and rejects a thief; the dump supplies no request or restorative task behind this access flag."
+    },
+    {
+      "events": [{"mapId": "fs_observatory", "eventId": "ev_fs_scope"}],
+      "kind": "cutscene",
+      "reason": "Iris joining and bread completion select a telescope vignette; writing the first journal line happens immediately in this one event and only sets sw_fs_scope_journal_played, with no external task."
+    },
+    {
+      "events": [{"mapId": "fs_hub", "eventId": "ev_fs_baker"}],
+      "kind": "dialogue-branch",
+      "reason": "Mire changes her lines after sw_fs_iris_joined and suggests visiting Toma; she assigns no task whose completion she receives."
+    },
+    {
+      "events": [{"mapId": "fs_hub", "eventId": "ev_fs_elder"}],
+      "kind": "dialogue-branch",
+      "reason": "Valen's departure enables lantern lore; the grandmother does not request an investigation or reward a later report."
+    },
+    {
+      "events": [
+        {"mapId": "fs_inn", "eventId": "ev_fs_inn_bard"},
+        {"mapId": "fs_inn", "eventId": "ev_fs_inn_guest"}
+      ],
+      "kind": "dialogue-branch",
+      "reason": "Both react to sw_fs_iris_joined with songs/rumors and secrecy, not an assigned external objective."
+    },
+    {
+      "events": [{"mapId": "fs_smithy", "eventId": "ev_fs_drawer_anvil"}],
+      "kind": "dialogue-branch",
+      "reason": "The spear-quest condition enables Rohan's response to reading Sarah's letter; permission to read a drawer is optional backstory, not a second delivery or repair quest."
+    },
+    {
+      "events": [{"mapId": "fs_hub", "eventId": "ev_fs_cache_knight_post"}],
+      "kind": "other",
+      "reason": "sw_fs_knight_marched changes the visibility-dependent theft punishment for looting potions; no one commissioned the looting."
+    },
+    {
+      "events": [{"mapId": "fs_hub", "eventId": "ev_fs_cache_inquisition"}],
+      "kind": "other",
+      "reason": "sw_fs_valen_marched unlocks the confiscation-list chest and a potion, possibly with a fine; finding lore and loot without a requester is not a quest."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_director"},
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_bed_0"},
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_bed_1"},
+        {"mapId": "fs2_cell", "eventId": "ev_fs2_cell_gate"}
+      ],
+      "kind": "key-door",
+      "reason": "Rino's cryptic bread hint leads to a hidden key and sw_fs2_cell_open; it is an escape/key puzzle, not an explicit fetch request and turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_mid_0"},
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_watch_n"},
+        {"mapId": "fs2_barracks", "eventId": "ev_fs2_barracks_watch_s"}
+      ],
+      "kind": "other",
+      "reason": "sw_fs2_barracks_mid changes where capture returns the player; sneaking past patrols and a checkpoint are mechanics, not another quest beyond the separately labeled belongings request."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_night_mire"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_well_0"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_well_1"}
+      ],
+      "kind": "key-door",
+      "reason": "Mire's initial well directions set sw_fs2_mire_well to expose a route to Hanel; this navigation hint has no separate turn-in. Her later three-lamp commission is a real quest and is labeled separately."
+    },
+    {
+      "events": [{"mapId": "fs2_hub_night", "eventId": "ev_181ef6cd-49ed-4595-b717-a61874fe71eb"}],
+      "kind": "key-door",
+      "reason": "sw_fs2_hanel_told merely unlocks the smithy entrance; a door reacting to the main-story conversation is not a quest."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_hub_bram"},
+        {"mapId": "fs2_hub_night", "eventId": "ev_fs2_hub_hole"},
+        {"mapId": "map_field_north_1", "eventId": "ev_fs2_edge_spotted"},
+        {"mapId": "map_field_north_1", "eventId": "ev_fs2_edge_0"}
+      ],
+      "kind": "cutscene",
+      "reason": "Rohan's flag exposes Bram, the hole starts pursuit, and crossing into his forest ends it; Bram helps the party escape rather than commissioning work for a later turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_dawnwell", "eventId": "ev_fs2_dawn_mem_0"},
+        {"mapId": "fs2_dawnwell", "eventId": "ev_fs2_dawn_mem_1"},
+        {"mapId": "fs2_dawnwell", "eventId": "ev_fs2_dawn_mem_2"},
+        {"mapId": "fs2_dawnwell", "eventId": "ev_fs2_dawn_door"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_fs2_lake_valen"}
+      ],
+      "kind": "puzzle",
+      "reason": "Borderline rejected: three clues unlock Serin's form and Valen later reacts to it, but no character asks the player to investigate Dawnwell or recover that document; Kael initiates exploration himself."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_fortress_f2", "eventId": "ev_fs2_fortress_f2_lever"},
+        {"mapId": "fs2_fortress_f2", "eventId": "ev_fs2_fortress_f2_lever_gate"},
+        {"mapId": "fs2_fortress_f2", "eventId": "ev_fs2_fortress_f2_lever_gate_6_15"}
+      ],
+      "kind": "key-door",
+      "reason": "Pulling the lever opens remote bars via sw_fs2_fortress_f2_lever; there is no requesting character or turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_north_gate_0"},
+        {"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_north_gate_1"},
+        {"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_to_snow_0"},
+        {"mapId": "fs2_fort_court", "eventId": "ev_fs2_fort_to_snow_1"}
+      ],
+      "kind": "key-door",
+      "reason": "These north-gate tiles only react to Sarah joining and permit passage; they are not an additional quest."
+    },
+    {
+      "events": [
+        {"mapId": "map_snow_north_1", "eventId": "ev_fs2_snow_arrive"},
+        {"mapId": "map_snow_north_1", "eventId": "ev_fs2_snow_ice"},
+        {"mapId": "map_snow_north_1", "eventId": "ev_fs2_snow_ice_c2"},
+        {"mapId": "map_snow_north_1", "eventId": "ev_fs2_snow_ice_c3"}
+      ],
+      "kind": "tutorial",
+      "reason": "The arrival scene grants Ember Melt and using it clears shared ice tiles through sw_ev_fs2_snow_ice_open; this teaches a traversal skill without a commission or turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_harma"},
+        {"mapId": "fs2_frostford_inn", "eventId": "ev_fs2_frost_innkeeper"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_fs2_night_arrive"}
+      ],
+      "kind": "cutscene",
+      "reason": "Harma's advice to wait at the inn sets up a sw_fs2_harma_told-gated transition to night, not a commissioned task; her distinct trout request is a quest."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_frost_requisition"},
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_frost_well"},
+        {"mapId": "fs2_frostford", "eventId": "ev_fs2_frost_wood"},
+        {"mapId": "fs2_frostford_inn", "eventId": "ev_fs2_frost_innkeeper"}
+      ],
+      "kind": "other",
+      "reason": "Borderline rejected despite the text calling it 'Requisitioned Firewood' completed: villagers describe shortages but never ask the player to retrieve the sled; Sarah orders the soldier directly in one conversation, setting sw_fs2_q6_sled_back and free lodging without a player-accepted external task."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_frostford_night", "eventId": "ev_fs2_lake_valen"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_world_gate_96aj4j"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_world_gate_96aj4j_b"}
+      ],
+      "kind": "dialogue-branch",
+      "reason": "Sword/lantern choices and the optional Serin-form reaction culminate in sw_fs2_valen_lake_met and opened tower access; Valen never commissions a separate task here."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_frostford_night", "eventId": "ev_escape_fs2_frostford_night_fs2_ice_ctrl"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_escape_fs2_frostford_night_fs2_ice_exit_18_9"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_escape_fs2_frostford_night_fs2_ice_exit_19_9"},
+        {"mapId": "fs2_frostford_night", "eventId": "ev_fs2_lake_crossed"}
+      ],
+      "kind": "other",
+      "reason": "Borderline rejected: companions shout to run during an immediate hazard; timer completion and sw_fs2_ice_crossed acknowledge surviving, not turning in a commissioned errand."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_split"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_after_split"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_lever_1"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_lever_2"},
+        {"mapId": "fs2_sky_tower_f2", "eventId": "fs2t2_rejoin"}
+      ],
+      "kind": "puzzle",
+      "reason": "Borderline rejected: the party falls into a split-wing trap and coordinates two mechanisms to reunite; Elena reports being blocked rather than assigning an errand, and fs2t2_done marks puzzle recovery rather than a quest turn-in."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m1"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m2"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m3"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m4"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_t3_m5"},
+        {"mapId": "fs2_sky_tower_f3", "eventId": "ev_fs2_sky_tower_f3_stair_next"}
+      ],
+      "kind": "puzzle",
+      "reason": "Rotating mirrors calls the beam common event and opens a stair barrier with sw_fs2_t3_mirror_solved; nobody asks the player to solve it as a separate task."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_dark_block_1"},
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_fs2_t4_dark_block_2"},
+        {"mapId": "fs2_sky_tower_f4", "eventId": "ev_world_gate_iout4u"}
+      ],
+      "kind": "key-door",
+      "reason": "Iris's recovered skill/presence and sw_fs2_iris_back remove darkness and stair restrictions; these are rescue-dependent traversal gates, not new quests."
+    },
+    {
+      "events": [{"mapId": "fs2_sky_tower", "eventId": "ev_fs2_t1_knight"}],
+      "kind": "tutorial",
+      "reason": "sw_fs2_t1_arrive enables a knight who immediately gives supplies and advises avoiding the machine; the items reward no prior requested task."
+    },
+    {
+      "events": [
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_enter_0"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_hanel"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_bram"},
+        {"mapId": "fs2_sky_tower_top", "eventId": "ev_fs2_top_valen"}
+      ],
+      "kind": "cutscene",
+      "reason": "The confession and sw_fs2_top_hanel_come/release-stop dialogue are the payoff of fs2_main, not an additional quest to make Hanel confess; character dialogue changes alone do not establish another commission."
+    },
+    {
+      "events": [{"mapId": "fs2_hub_night", "eventId": "ev_fs2_night_toby"}],
+      "kind": "other",
+      "reason": "Borderline rejected as an incomplete delivery arc: Toby explicitly gives a spoon for the star and sets sw_fs2_toby_spoon, but the complete dump contains no later spoon delivery, consumption, acknowledgement or turn-in."
+    },
+    {
+      "events": [{"mapId": "fs_workshop", "eventId": "ev_fs_workshop_nina"}],
+      "kind": "shop",
+      "reason": "Borderline rejected: 'bring forest materials' advertises a repeatable paid crafting service; recipe success in var_fs_craft_ok is a transaction result, not completion of an assigned quest."
+    }
+  ]
+}

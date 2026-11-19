@@ -146,6 +146,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 사막·동양풍 번들 desert_east(계열 oprn-desert-east) · 오아시스 마을·바자르·궁전·피라미드 유적·대상 숙소 + 찻집·가게·알현실·묘실·함맘·여관 실내를 코드 손 도트로 그려 object-gate 영수증 통과분만 굽고(모서리 왕 타일 5벌), 순수 구성기 `compose_desert_east_map`·`compose_desert_east_room`(발 밑 재질·문 접근칸·BFS)로 깐다. 2026-11-13 첫 판 늘리기: 같은 종류의 다른 그림 100·새 집 2·새 기물 7·바닥 재질 7(Fable 한 방 — 3/4 관문 미통과·오너 면제)을 덧붙였고 구성기 사전이 게임 열쇠로 그림·재질·방 배치를 고른다(테마 세계 재고·그리기 도구 `scripts/content/world-kits/`): `openwiki/desert-east.md`
    - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
+   - 퀘스트 등록 (이벤트로만 지은 부탁 흐름 탐지 `questCandidates.ts`, 조수 `find_quest_candidates`·`register_quest_candidate`, 자료집 개요 「퀘스트 제안」, `qa:game` 경고 `quest-unregistered`, 정답표·정밀도/재현율): `openwiki/quest-register.md`
    - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
    - **조수 v2 리팩토링 진행 중 (2026-11-11~)** — `src/ai/v2` 를 고치기 전에 읽는다. 목표 폴더 구조, 규칙 일곱(요청 낱말 목록·새 관문·감싸개를 더하지 않는다 등), 진행표, 옮기는 PR 검증법(`golden.mts`): `openwiki/assistant-v2-refactor.md`
    - 조수 v2 · JRPG 가 아닌 게임의 장치 (추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 — 장치마다 런타임·도구·v2 노출·작은 일 판정 재고 표, 빈틈 U/W/N/R, 셋째 묶음 `--set 3`, 청사진 고리 설계 제안): `openwiki/assistant-v2-genre-tools.md`
@@ -246,6 +247,25 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
 - **부품 예외:** 건물의 일부라 윗면을 혼자 보일 수 없는 부품(예: 1층 상가 띠 `jp-sf-*`)은 윗면 면제가 아니라, 그 부품을 화소 그대로 품은 **조립 건물** 그림의 영수증(kind `structure`, 같은 판정자·기준)으로 관문을 거친다. 부품을 한 화소라도 다시 그리면 덮임이 풀린다(`scripts/content/jp-city/gate_assembled.py`).
+
+## QA 빠른 빌드(오버레이)
+
+- 기존 Linux AppImage에서 코드 변경을 빠르게 볼 때 `npm run qa:bundle`을 쓴다.
+  배포 형태·패키징·Electron 버전·`public/` 파일 삭제를 검증할 때는 `npm run package:dir` 또는 새 AppImage를 쓴다.
+- 기본 산출물은 `release/qa-bundle.tgz`다. `--out <파일>`로 바꾸고 `--skip-build`로 기존 산출물을 묶는다.
+- `--base <git-ref>`로 QA AppImage의 기준을 지정하면 그 기준에서 바뀐 `public/` 사본을 포함한다. 기본값은 `v<package.json 버전>` 태그이며, 없으면 `git describe --tags --abbrev=0`을 쓴다.
+- `--with-demos`는 데모와 필요한 BGM을 굽고 포함한다. `--with-worker`는 워커·npm·네이티브 애드온을 빌드하고 포함한다.
+  `--skip-build`와 함께 쓰면 해당 옵션으로 이미 만든 QA 산출물이 필요하다. 워커 코드가 바뀌면 `--with-worker`를 준다.
+- AppImage를 풀고 QA 앱을 종료한 뒤 직접 만든 번들과 `scripts/qa/overlay-qa-bundle.mjs`만 QA 머신에 복사한다.
+  `node overlay-qa-bundle.mjs qa-bundle.tgz squashfs-root`를 실행하고 출력된 `AppRun` 또는 `oprn` 경로로 연다.
+- 처음 한 번 ASAR를 `resources/app`에 풀고 원본을 `app.asar.qa-orig`로 보관한다. 오버레이는 번들에 포함된 unpacked 파일을
+  `app.asar.unpacked`에도 복사해 출하 앱의 탐색 순서를 유지하고, 경로를 `resources/.oprn-qa-mirrored.json`에 기록한다.
+  1 GB 미만인 원본 `app.asar.unpacked`는 하드링크 없이 `app.asar.unpacked.qa-orig`에 복사한다.
+  `--restore`와 `--reset`은 이 원본을 복원한다. 백업이 없으면 QA 사본이 남을 수 있다고 경고한다.
+- 같은 폴더에 거듭 덮어쓰므로 생략된 데모·워커·정적 파일은 기본 AppImage 또는 이전 오버레이에서 온다.
+  기본 상태에서 다시 적용하려면 `--reset`, 원본으로 돌아가려면 `node overlay-qa-bundle.mjs --restore squashfs-root`를 쓴다.
+- `bake:demos`는 입력 해시가 같으면 데모 JSON을 복원하고 BGM만 채운다. 캐시는 최근 3개를 보관한다.
+  `--only`·CI에서는 항상 굽는다. 강제로 다시 구우려면 `--no-cache`·`--force` 또는 `OPRN_BAKE_DEMOS_NO_CACHE=1`을 쓴다.
 
 ## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
 

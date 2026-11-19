@@ -17,6 +17,7 @@ import sengokuSpec from "@/assets/sengokuEdoRoomSpec.json";
 import campusSpec from "@/assets/modernCampusRoomSpec.json";
 import gothicSpec from "@/assets/gothicManorRoomSpec.json";
 import modernCitySpec from "@/assets/modernCityRoomSpec.json";
+import beodeulSpec from "@/assets/beodeulInteriorSpec.json";
 import { passabilityOf } from "@/project/collision";
 import { stairArrivalFacing, stairContractForKit, stairContractForSpecObject, type StairContract } from "@/project/stairs/contract";
 import type { TilesetDef } from "@/project/types";
@@ -91,6 +92,14 @@ export interface HandInteriorSpec {
    * 대각선은 낀 두 직교 이웃이 모두 1일 때만) → tiles[i]. 47가지 정규 마스크.
    */
   readonly pits?: Readonly<Record<string, { readonly ko: string; readonly masks: readonly number[]; readonly tiles: readonly number[] }>>;
+  /**
+   * 모습 표(선택, 버들항 실내): edge = 벽면 → 천장 띠(벽 윗면 테두리) — 천장을 따로 주지 않으면 방의 벽면이 테두리를 정한다.
+   * style = 바깥 집 양식 → { 견본이 쓴 «집 벽»: 그 양식의 집 안에 설 벽면 }. 조수 v2 실내 빌더가 문이 달린 집의 양식으로 벽면을 바꾼다(표에 없는 벽면은 그대로).
+   */
+  readonly looks?: { readonly edge?: Readonly<Record<string, string>>; readonly style?: Readonly<Record<string, Readonly<Record<string, string>>>> };
+  /** 사는 사람의 물건 표 — 견본을 심은 방에 그 집 열쇠·집 이름의 직업으로 몇 점 더 놓는다(personal.ts). kinds = 살림 묶음까지 받는 방 종류(집), byKind = 일하는 방 종류 → 그 주인의 직업 묶음(살림 묶음 없이 workCount 점), surfaces = 탁상 물건을 올려도 되는 가구,
+   *  count = [적게, 많이] 점 수, sets = 묶음(cats·alias 가 있으면 직업 묶음 — 그 집 킷의 갈래(cats)가 먼저, 다음이 집 이름의 별칭(alias)). */
+  readonly personal?: { readonly kinds: readonly string[]; readonly byKind?: Readonly<Record<string, string>>; readonly workCount?: readonly [number, number]; readonly surfaces: readonly string[]; readonly count: readonly [number, number]; readonly sets: Readonly<Record<string, { readonly ko: string; readonly alias?: readonly string[]; readonly cats?: readonly string[]; readonly pieces: readonly string[] }>> };
 }
 export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
 /** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */
@@ -111,11 +120,15 @@ export const GOTHIC_INTERIOR_SPEC = gothicSpec as unknown as HandInteriorSpec;
 /** 도쿄풍 현대 도시(modern_city) — 사무실·편의점·아파트·병동·로비·카페·은행·대합실·창고 사양을 scripts/content/modern-city-int/bake_interior.py 가 굽는다. 조립 규칙은 같다. */
 export const MODERN_CITY_INTERIOR_TILESET_ID = "modern_city";
 export const MODERN_CITY_INTERIOR_SPEC = modernCitySpec as unknown as HandInteriorSpec;
+/** 버들항 집 안(beodeul_city 번들의 실내 토막) — scripts/content/beodeul-interiors/bake.py 가 굽는다. 벽면이 바깥 집 재질을 따른다(looks). 조립 규칙은 같다. */
+export const BEODEUL_INTERIOR_TILESET_ID = "beodeul_city";
+export const BEODEUL_INTERIOR_SPEC = beodeulSpec as unknown as HandInteriorSpec;
 /** 실내를 지을 수 있는 칩셋 → 사양. */
 export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = {
   [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC, [WIZARDING_INTERIOR_TILESET_ID]: WIZARDING_INTERIOR_SPEC,
   [SENGOKU_INTERIOR_TILESET_ID]: SENGOKU_INTERIOR_SPEC, [CAMPUS_INTERIOR_TILESET_ID]: CAMPUS_INTERIOR_SPEC,
   [GOTHIC_INTERIOR_TILESET_ID]: GOTHIC_INTERIOR_SPEC, [MODERN_CITY_INTERIOR_TILESET_ID]: MODERN_CITY_INTERIOR_SPEC,
+  [BEODEUL_INTERIOR_TILESET_ID]: BEODEUL_INTERIOR_SPEC,
 };
 
 /**
@@ -230,7 +243,8 @@ export function floorLayX(fd: { readonly cols: number; readonly lay?: string }, 
 /** 1층(구조) — build_tileset.py structure() 와 같다. */
 export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling" | "passages">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
   const { W, H, g, face, top, inn } = analyseHandInteriorPlan(input.plan);
-  const ceiling = input.ceiling ?? "default";
+  // 천장을 주지 않으면 벽면이 정한다(모습 표 looks.edge — 돌벽 방에 나무 벽 윗면이 서지 않게), 없으면 default.
+  const ceiling = input.ceiling ?? (S.looks?.edge?.[input.wall] && S.ceilings[S.looks.edge[input.wall]!] ? S.looks.edge[input.wall]! : "default");
   const ceil = S.ceilings[ceiling];
   if (!ceil) throw new HandInteriorError(`천장 "${ceiling}" 이 없다 — ${Object.keys(S.ceilings).join(", ")}`, "unknown-ceiling");
   const corners = S.ceilingCorners?.[ceiling];

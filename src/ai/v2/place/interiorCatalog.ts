@@ -4,6 +4,7 @@
 // 같은 칸 배치 길로 지을 수 있게. 요청 낱말이 맞는 방 종류(spec.rooms.kinds 의 이름·별칭)의 예제 표 기물을 «이 장소에 맞는 것»으로 먼저,
 // 그다음 낱말 검색(searchParts) 결과를, 그다음 칩셋 전체 목록(종류별)을 싣는다. 목록 글은 영어 id·크기·놓는 규칙뿐이다.
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { isBareTileMap } from "../blankStart";
 import { searchParts } from "@/editor/handInterior/parts";
 import { kitHandObjects } from "@/project/roomKit";
 import type { Project, TilesetDef } from "@/project/types";
@@ -141,8 +142,11 @@ export function chipsetCatalog(tileset: TilesetDef | undefined, text = "", key =
 
 /** 실내 칸 배치에 쓰는 칩셋 — 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. 목록 카드·find_pieces 가 같은 규칙을 쓴다. */
 export function interiorTilesetFor(project: Project | undefined, mapId?: string): TilesetDef | undefined {
-  const cur = project?.tilesets[project.maps[mapId ?? project.startMapId]?.tilesetId ?? ""];
-  if (cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit && effectiveSpec(cur)) return cur;
+  const map = project?.maps[mapId ?? project.startMapId];
+  const cur = project?.tilesets[map?.tilesetId ?? ""];
+  // 바깥 칩셋이 방 표를 같이 든 것(모습 표 looks — 버들항)은 그 맵에 무엇이 지어져 있을 때만 따른다: 빈 프로젝트의 잔디 한 장(시작 맵)은 버들항 마을이 아니다 —
+  // 거기서 「독서실」「알현실」을 청하면 종전대로 v5(화풍 낱말이 고르는 칩셋)다.
+  if (cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit && effectiveSpec(cur) && !(effectiveSpec(cur)?.looks && map && isBareTileMap(map))) return cur;
   return project?.tilesets[HAND_INTERIOR_TILESET_ID];
 }
 

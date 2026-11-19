@@ -1,0 +1,47 @@
+{
+ "game": "batch2__B-medium__fun-village-1",
+ "quests": [
+  {
+   "id": "star_lights",
+   "title": "별샘의 빛 되찾기",
+   "giver": {
+    "mapId": "village_star",
+    "eventId": "star_keeper"
+   },
+   "turnIn": [
+    {
+     "mapId": "village_star",
+     "eventId": "star_keeper"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "village_star",
+     "eventId": "ev_star_lights_seq_1"
+    },
+    {
+     "mapId": "village_star",
+     "eventId": "ev_star_lights_seq_2"
+    },
+    {
+     "mapId": "village_star",
+     "eventId": "ev_star_lights_seq_3"
+    }
+   ],
+   "completionFlag": "sw_star_solved",
+   "reason": "마을지기 부탁 수락 → 돌 세 개 순서 → 마을지기에게 알리면 열쇠 보상"
+  }
+ ],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "village_star",
+     "eventId": "ev_lantern_gate_gate"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "열쇠 아이템을 확인하는 문, 퀘스트의 연장일 뿐 따로 부탁이 없다"
+  }
+ ]
+}

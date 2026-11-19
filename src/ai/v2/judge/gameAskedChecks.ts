@@ -5,6 +5,7 @@ import { splitScriptSpeaker } from "@/project/endingSummary";
 import { asksChaseNotBattleMusic, asksComboSkill, asksCure, asksOpenField, asksTimedWhereabouts, asksWorkingShop, buildsWholeGame, namesRandomEncounters } from "../request/readers";
 import { enemyIdentityProblems } from "./enemyChecks";
 import { hudTitleChoiceProblems } from "./hudTitleChecks";
+import { mapMusicVarietyProblems } from "./mapMusicChecks";
 import { musicAsked, musicOnly, soundOnly } from "../request/readers";
 import { FOE_ASK, STATE_WORDS } from "../request/combat";
 import { WEATHER_WORDS, SHAKE_WORDS, FLASH_WORDS, ENDING_WORDS } from "../request/asks";
@@ -124,6 +125,8 @@ export function worldChecks({ before, after, task, changed, kinds }: GameCheck):
   }
   // 1j) 적 개성(2026-11-09 fs-use-tools E1): 게임을 만드는 요청에서 보스가 기본 공격뿐이거나 일반 적 기술이 전부 같다.
   if (buildsWholeGame(after, task)) problems.push(...enemyIdentityProblems(after));
+  // 1k) 맵 음악 다양성: 음악을 직접 요청했으면 위 효과 검사가 맡는다.
+  if (buildsWholeGame(after, task) && !musicAsked(task)) problems.push(...mapMusicVarietyProblems(after));
   // 1l) HUD·타이틀 선택(2026-11-09 fs-use-tools): 게임을 만드는 요청에서 HUD 가 이야기 기본 템플릿 그대로이거나 타이틀 모양을 아무도 고르지 않았다.
   if (buildsWholeGame(after, task)) problems.push(...hudTitleChoiceProblems(after));
   return problems;

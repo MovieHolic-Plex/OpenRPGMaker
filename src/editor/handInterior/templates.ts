@@ -11,6 +11,8 @@ import plusData from "@/assets/interiorPlusRoomTemplates.json";
 // 손으로 짠 방 견본 — 예제 맵에 없거나 약한 용도(교실·잡화점·연구실·감옥·작은 예배당·작은 서재·방탈출 작은 방)를 칩셋에 있는 기물로 짠 것.
 // scripts/content/interior-authored/build.mts 가 rooms.mts 에서 굽는다(적대 검수·도달 검사를 통과한 것만).
 import authoredData from "@/assets/interiorAuthoredRoomTemplates.json";
+// 버들항 집 안(beodeul_city 실내 토막) 방 견본 — scripts/content/beodeul-interiors/rooms.mts 가 굽는다. 방 종류마다 여러 벌(게임 열쇠가 고른다).
+import beodeulData from "@/assets/beodeulInteriorRoomTemplates.json";
 import type { HandInteriorSpec } from "./builder";
 import { MODERN_PRESET_DATA } from "./modernPresets";
 export interface InteriorTemplateItem {
@@ -38,6 +40,7 @@ const DS = sengokuData as unknown as TemplateData;
 const DP = plusData as unknown as TemplateData;
 const DA = authoredData as unknown as TemplateData;
 const DM = MODERN_PRESET_DATA as unknown as TemplateData;
+const DB = beodeulData as unknown as TemplateData;
 const OVERRIDE_MODERN_MAPS: Readonly<Record<string, true>> = {
   "office-floor": true,
   lobby: true,
@@ -95,7 +98,7 @@ function mergeTemplateData(base: TemplateData, ...all: TemplateData[]): Template
   }
   return { templates, programs };
 }
-const D: TemplateData = mergeTemplateData(D0, DS, DP, DA, DM);
+const D: TemplateData = mergeTemplateData(D0, DS, DP, DA, DM, DB);
 export function roomTemplates(tilesetId: string): readonly InteriorRoomTemplate[] { return D.templates[tilesetId] ?? []; }
 export function roomPrograms(tilesetId: string) { return D.programs[tilesetId] ?? {}; }
 

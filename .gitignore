@@ -297,3 +297,6 @@ harness-data/object-gate/calibration/answers/eye-*/
 # 실측(2026-11-11): 문서를 건드리는 PR 이 저마다 이 파일을 다시 써서, main 에 문서 PR 하나가 들어갈 때마다
 # 열려 있는 문서 PR 전부가 「충돌」이 됐다(그날 머지한 PR 20여 건 모두 이 파일 하나 때문에 다시 맞췄다).
 /openwiki/INDEX.md
+
+# electron-builder 산출물과 npm run qa:bundle 의 release/qa-bundle.tgz. 추적하면 qa:bundle 매니페스트가 늘 dirty 가 되고 실수로 커밋된다.
+/release/

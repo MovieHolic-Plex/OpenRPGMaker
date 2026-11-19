@@ -77,6 +77,7 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
 - 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
 - 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
 - 전투·저장·필드 규칙(같은 날, 사용자 7건):
+  - `set_project_settings battle.enemyStillMotion:"all"|"stillOnly"|"off"` → `system.enemyStillMotion`(기본 all, 저장 안 함) — 엔진이 적 그림을 움직인다: 그림 한 장 적은 전체 몸짓, 칸 있는 도트 시트·걷기 칩은 정수 이동·기울기만 더한다. `runtime-battle.md` 「적 몸짓 엔진」.
   - `set_project_settings battle.allowAutoBattle:false` → `system.allowAutoBattle` — F 키 토글·「자동」 표시가 사라진다(`battleDom.ts`). 배우별 `ActorOptions.autoBattle` 과 별개.
   - `battle.clearStatesAfterBattle:true` → 전투가 끝나면 파티 상태 이상이 풀린다. 상태 하나는 `upsert_state clearOnBattleEnd:true|false` 가 이긴다.
     둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
@@ -4112,6 +4113,16 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 검증(2026-10-28): mt2 flash·argon 방탈출 저장본 사본에 돌려 `scripts/qa-game/check.mts` 자동 플레이가 엔딩까지 갔다(증거 `~/z-project/assistant-whole-game/suite/ledger/evidence/gamepath/`).
 - 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.
 - `upsert_troop.duel` — 결투 규칙 `{yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, 모두 선택). `clearFields:["duel"]` 로 지운다. 의미는 `runtime-battle.md` 「결투 규칙」.
+
+## 장치 도구 넷 — 호감 · 내밀기 · 제한 시간 · 게이지 (2026-11-12)
+
+`src/editor/tools/genreDeviceTools.ts`. 이벤트 명령을 손으로 조립하던 장치를 한 호출로 짓는다(런타임은 그대로 — `changeFriendship` · `friendshipAtLeast` · `presentItem` · `timer` · `fieldHud` 변수 위젯).
+실패 · 알림 글은 영어다(조수 v2 가 읽는다). 자세한 계약 · 측정은 `openwiki/assistant-v2-genre-tools.md` 「둘째 수리」.
+
+- `set_npc_affection{mapId, eventId, talkGain?, gifts?, milestones?, confess?, npcKey?, pageIndex?}` — 있는 NPC 의 말 거는 페이지 전부(또는 `pageIndex` 하나)의 **앞**에 호감 토막을 끼운다. 다시 부르면 그 토막만 갈아 끼운다(`label affection:begin/end`). 없는 아이템 · 엔딩은 거절(목록을 알려 준다).
+- `set_present_reactions{mapId, eventId, reactions, otherLines?, onlyListed?, position?}` — 평소 말 **뒤**(기본)에 `presentItem` 하나. `label present:begin/end`.
+- `set_time_limit{mapId, seconds, endingId?, expireLines?, startLines?, stopSwitchId?, timerId?}` — 이벤트 `ev_timelimit_<맵>_start`(자동, 한 번) · `_end`(병렬: 남은 시간 0 → 게임 오버/엔딩, 멈춤 스위치 → 타이머 정지), 스위치 `sw_timelimit_<맵>`.
+- `add_hud_gauge{label, initial?, max?, variableId?, shape?, anchor?, color?}` — 변수 + 위젯 `gauge-<변수 id>`. 화면에 뜨던 HUD(`resolvedHudWidgets(effectiveFieldHud)`)를 풀어 적고 그 뒤에 더한다.
 
 ## 일정표 도구 (upsert_schedule)
 
