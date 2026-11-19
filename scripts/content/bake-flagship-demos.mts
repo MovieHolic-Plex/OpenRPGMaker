@@ -16,11 +16,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
-import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } from "@/project/flagship";
-import { serialize } from "@/project/io";
-import { validateShippedPlayJson } from "@/project/flagship/ipCleanliness";
-import { demoLoreCounts, demoLoreProblems } from "@/project/flagship/loreKit";
-import { prepareWebExport } from "@/project/webExport";
+import { FLAGSHIP_DEMO_IDS } from "@/project/flagship/types";
 
 function argOf(name: string): string | undefined {
   const index = process.argv.indexOf(`--${name}`);
@@ -36,31 +32,41 @@ if (process.env.OPRN_ASSUME_ALL_BGM_INSTALLED !== "1") {
 const out = argOf("out") ?? "dist";
 const only = argOf("only")?.split(",");
 const dir = join(out, "demos");
-mkdirSync(dir, { recursive: true });
-const mb = (n: number) => (n / 1048576).toFixed(1);
-for (const id of FLAGSHIP_DEMO_IDS) {
-  if (only && !only.includes(id)) continue;
-  const started = performance.now();
-  const { project } = createFlagshipDemoProject(id);
-  const built = performance.now();
-  const player = prepareWebExport(project).projectJson;
-  const editor = serialize(project);
-  writeFileSync(join(dir, `${id}.play.json`), player);
-  writeFileSync(join(dir, `${id}.project.json`), editor);
-  // 출하 play.json 의 플레이어 글에 원작 IP 고유명이 있으면 굽기를 실패시킨다(styleLock.bannedProperNouns + 전역 + 마법 학교 원작 이름).
-  const ipHits = validateShippedPlayJson(id, player);
-  if (ipHits.length > 0) {
-    for (const hit of ipHits) console.error(`[ip-clean] ${id}.play.json ${hit.path}: 「${hit.noun}」`);
-    console.error(`[ip-clean] ${id}: 원작 고유명 ${ipHits.length}건 — 굽기 실패`);
-    process.exit(1);
+// 캐시에서 JSON 을 복원한 경우 BGM 만 채운다. 데모 생성 모듈도 그때는 읽지 않는다.
+async function bakeDemos(): Promise<void> {
+  const { createFlagshipDemoProject } = await import("@/project/flagship");
+  const { serialize } = await import("@/project/io");
+  const { validateShippedPlayJson } = await import("@/project/flagship/ipCleanliness");
+  const { demoLoreCounts, demoLoreProblems } = await import("@/project/flagship/loreKit");
+  const { prepareWebExport } = await import("@/project/webExport");
+  mkdirSync(dir, { recursive: true });
+  const mb = (n: number) => (n / 1048576).toFixed(1);
+  for (const id of FLAGSHIP_DEMO_IDS) {
+    if (only && !only.includes(id)) continue;
+    const started = performance.now();
+    const { project } = createFlagshipDemoProject(id);
+    const built = performance.now();
+    const player = prepareWebExport(project).projectJson;
+    const editor = serialize(project);
+    writeFileSync(join(dir, `${id}.play.json`), player);
+    writeFileSync(join(dir, `${id}.project.json`), editor);
+    // 출하 play.json 의 플레이어 글에 원작 IP 고유명이 있으면 굽기를 실패시킨다(styleLock.bannedProperNouns + 전역 + 마법 학교 원작 이름).
+    const ipHits = validateShippedPlayJson(id, player);
+    if (ipHits.length > 0) {
+      for (const hit of ipHits) console.error(`[ip-clean] ${id}.play.json ${hit.path}: 「${hit.noun}」`);
+      console.error(`[ip-clean] ${id}: 원작 고유명 ${ipHits.length}건 — 굽기 실패`);
+      process.exit(1);
+    }
+    console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);
+    // 자료집 「이야기」(세계 개요·설정집·인물)가 비면 판매용 데모를 연 사람이 이 게임을 읽을 수 없다(2026-10-29 전 데모 0개였다).
+    // 데모마다 *Lore.ts 를 빌더 끝에서 부른다. 빠지거나 하한 아래로 줄면 여기서 크게 경고한다.
+    const loreProblems = demoLoreProblems(project);
+    if (loreProblems.length > 0) console.warn(`[demo-lore] ${id}: 「이야기」 탭이 비었다: ${loreProblems.join(" / ")}`);
+    else console.log(`  lore ${JSON.stringify(demoLoreCounts(project))}`);
   }
-  console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);
-  // 자료집 「이야기」(세계 개요·설정집·인물)가 비면 판매용 데모를 연 사람이 이 게임을 읽을 수 없다(2026-10-29 전 데모 0개였다).
-  // 데모마다 *Lore.ts 를 빌더 끝에서 부른다. 빠지거나 하한 아래로 줄면 여기서 크게 경고한다.
-  const loreProblems = demoLoreProblems(project);
-  if (loreProblems.length > 0) console.warn(`[demo-lore] ${id}: 「이야기」 탭이 비었다: ${loreProblems.join(" / ")}`);
-  else console.log(`  lore ${JSON.stringify(demoLoreCounts(project))}`);
 }
+
+if (!process.argv.includes("--bgm-only")) await bakeDemos();
 
 // 데모가 쓰는 카탈로그 BGM 을 산출물에 함께 싣는다. 데스크톱 앱은 BGM 팩 없이 나가서 폴른 스타가 27곡 중 3곡만 울렸다(2026-10-27).
 // 이미 있으면(웹 빌드가 public 의 팩을 복사) 그대로, 체크아웃에 받아 둔 곡이면 복사, 없으면 공개 CDN 에서 받아 SHA-256 을 확인한다.

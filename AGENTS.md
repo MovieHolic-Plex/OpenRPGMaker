@@ -247,6 +247,25 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
 - **부품 예외:** 건물의 일부라 윗면을 혼자 보일 수 없는 부품(예: 1층 상가 띠 `jp-sf-*`)은 윗면 면제가 아니라, 그 부품을 화소 그대로 품은 **조립 건물** 그림의 영수증(kind `structure`, 같은 판정자·기준)으로 관문을 거친다. 부품을 한 화소라도 다시 그리면 덮임이 풀린다(`scripts/content/jp-city/gate_assembled.py`).
 
+## QA 빠른 빌드(오버레이)
+
+- 기존 Linux AppImage에서 코드 변경을 빠르게 볼 때 `npm run qa:bundle`을 쓴다.
+  배포 형태·패키징·Electron 버전·`public/` 파일 삭제를 검증할 때는 `npm run package:dir` 또는 새 AppImage를 쓴다.
+- 기본 산출물은 `release/qa-bundle.tgz`다. `--out <파일>`로 바꾸고 `--skip-build`로 기존 산출물을 묶는다.
+- `--base <git-ref>`로 QA AppImage의 기준을 지정하면 그 기준에서 바뀐 `public/` 사본을 포함한다. 기본값은 `v<package.json 버전>` 태그이며, 없으면 `git describe --tags --abbrev=0`을 쓴다.
+- `--with-demos`는 데모와 필요한 BGM을 굽고 포함한다. `--with-worker`는 워커·npm·네이티브 애드온을 빌드하고 포함한다.
+  `--skip-build`와 함께 쓰면 해당 옵션으로 이미 만든 QA 산출물이 필요하다. 워커 코드가 바뀌면 `--with-worker`를 준다.
+- AppImage를 풀고 QA 앱을 종료한 뒤 직접 만든 번들과 `scripts/qa/overlay-qa-bundle.mjs`만 QA 머신에 복사한다.
+  `node overlay-qa-bundle.mjs qa-bundle.tgz squashfs-root`를 실행하고 출력된 `AppRun` 또는 `oprn` 경로로 연다.
+- 처음 한 번 ASAR를 `resources/app`에 풀고 원본을 `app.asar.qa-orig`로 보관한다. 오버레이는 번들에 포함된 unpacked 파일을
+  `app.asar.unpacked`에도 복사해 출하 앱의 탐색 순서를 유지하고, 경로를 `resources/.oprn-qa-mirrored.json`에 기록한다.
+  1 GB 미만인 원본 `app.asar.unpacked`는 하드링크 없이 `app.asar.unpacked.qa-orig`에 복사한다.
+  `--restore`와 `--reset`은 이 원본을 복원한다. 백업이 없으면 QA 사본이 남을 수 있다고 경고한다.
+- 같은 폴더에 거듭 덮어쓰므로 생략된 데모·워커·정적 파일은 기본 AppImage 또는 이전 오버레이에서 온다.
+  기본 상태에서 다시 적용하려면 `--reset`, 원본으로 돌아가려면 `node overlay-qa-bundle.mjs --restore squashfs-root`를 쓴다.
+- `bake:demos`는 입력 해시가 같으면 데모 JSON을 복원하고 BGM만 채운다. 캐시는 최근 3개를 보관한다.
+  `--only`·CI에서는 항상 굽는다. 강제로 다시 구우려면 `--no-cache`·`--force` 또는 `OPRN_BAKE_DEMOS_NO_CACHE=1`을 쓴다.
+
 ## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
 
 **게임(런타임)을 브라우저로 QA 할 때 편집기 셸을 통과하지 마라. 전용 하네스가 있다.**
