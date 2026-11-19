@@ -125,15 +125,15 @@ describe("설정 자동 저장", () => {
     // 고르는 것은 제공자다. 종류 카드는 사라졌고, 제공자 카드를 골라도 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    expect(loadAiConfig().authMode).toBe("chatgpt");
+    expect(loadAiConfig()).toMatchObject({ authMode: "chatgpt", providerId: "openai-codex" });
 
-    const codexCard = findByTestId(modal, "ai-auth-quick-openai-codex");
-    if (!codexCard) throw new Error("Codex provider card missing");
-    codexCard.click();
+    const googleCard = findByTestId(modal, "ai-auth-quick-google-antigravity");
+    if (!googleCard) throw new Error("Google provider card missing");
+    googleCard.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.authMode).toBe("chatgpt");
-    expect(stored.providerId).toBe("openai-codex");
+    expect(stored.providerId).toBe("google-antigravity");
     expect(ohMyPiAuthKind(stored.providerId)).toBe("oauth");
     // 브라우저에는 비밀이 남지 않는다.
     expect(stored.apiKey ?? "").toBe("");
@@ -159,6 +159,7 @@ describe("설정 자동 저장", () => {
   it("Codex 를 고르면 저장·재로드를 살아남는다 (제공자 선택이 실제로 반영된다)", () => {
     // 옛 계약은 "무엇을 골라도 Antigravity 로 되돌린다" 였다. 감독 요구가 바뀌어 Codex 도
     // 1급 선택지이므로, 고른 값이 blob 에 적히고 재로드에서도 유지되는지가 새 회귀선이다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "google-antigravity" }));
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
