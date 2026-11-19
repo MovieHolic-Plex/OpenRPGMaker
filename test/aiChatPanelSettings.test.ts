@@ -157,9 +157,21 @@ describe("설정 자동 저장", () => {
   });
 
   it("Codex 를 고르면 저장·재로드를 살아남는다 (제공자 선택이 실제로 반영된다)", () => {
-    // 옛 계약은 "무엇을 골라도 Antigravity 로 되돌린다" 였다. 감독 요구가 바뀌어 Codex 도
-    // 1급 선택지이므로, 고른 값이 blob 에 적히고 재로드에서도 유지되는지가 새 회귀선이다.
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "google-antigravity" }));
+    const defaults = defaultAiConfig();
+    const model = "gpt-6-astra";
+    // 연결 제공자 변경 뒤에도 명시적으로 고른 모델과 역할별 설정을 유지한다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaults,
+      providerId: "google-antigravity",
+      model,
+      roleModels: {
+        ...defaults.roleModels,
+        writer: { provider: "openai-codex", model, thinkingLevel: "medium" },
+        build: { provider: "google-antigravity", model: DEFAULT_MODEL, thinkingLevel: "low" },
+      },
+      modelSelectionOverrides: { writer: true, deep: true, vision: true, build: true },
+    }));
+    const before = loadAiConfig();
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
@@ -170,12 +182,12 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.providerId).toBe("openai-codex");
-    // 연결 제공자를 바꿔도 역할별 선택은 유지한다.
-    expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(stored.roleModels.writer.provider).toBe("google-antigravity");
+    expect(stored.model).toBe(before.model);
+    expect(stored.roleModels).toEqual(before.roleModels);
     const reloaded = loadAiConfig();
     expect(reloaded.providerId).toBe("openai-codex");
-    expect(reloaded.model).toBe(DEFAULT_MODEL);
+    expect(reloaded.model).toBe(before.model);
+    expect(reloaded.roleModels).toEqual(before.roleModels);
 
     // 되돌리기도 된다 — 잠긴 축이 아니라 진짜 선택이다.
     select.value = "google-antigravity";
