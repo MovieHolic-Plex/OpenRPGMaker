@@ -6,7 +6,8 @@ import type Phaser from "phaser";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { DbConnectionRequiredError, setDevProjectFactory, store } from "@/project/store";
-import { prepareDevShowcaseProjectFactory } from "@/editor/devShowcaseProjects";
+import { flagshipDemoIdForLocation, prepareDevShowcaseProjectFactory } from "@/editor/devShowcaseProjects";
+import { FLAGSHIP_DEMO_LOAD_FAILURE } from "@/editor/flagshipDemoLoader";
 import { setAiConfigProvider } from "@/project/editorIdentity";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
@@ -72,7 +73,7 @@ export function getMode(): Mode {
 }
 
 // 부트스트랩: 최초 한 번 DOM 골격 생성 + store 로드 + 에디터 렌더.
-export async function bootApp(root: HTMLElement): Promise<void> {
+export async function bootApp(root: HTMLElement, demoId = flagshipDemoIdForLocation()): Promise<void> {
   const startedAt = performance.now();
   const topbar = document.createElement("div");
   topbar.className = "topbar";
@@ -115,7 +116,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   }
 
   try {
-    setDevProjectFactory(await prepareDevShowcaseProjectFactory());
+    setDevProjectFactory(await prepareDevShowcaseProjectFactory(demoId));
     setAiConfigProvider(loadAiConfig);
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
     // AI 표면의 프론트 액션 수집. 수집기는 순수하게 모으고, «어디로 보낼지» 는 여기서 정한다
@@ -129,7 +130,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     // Electron 에서는 시작 화면이 고른 폴더가 주 프로세스 세션에만 있다. 편집기 문서는 별개
     // 문서라 모듈 상태가 안 넘어오므로 여기서 다시 붙는다 — 안 붙으면 store.load() 가 대상을
     // 못 찾아 DB 연결 설정 화면으로 떨어진다(로컬 폴더 정본인데도).
-    await attachElectronFolderAtBoot();
+    if (demoId === null) await attachElectronFolderAtBoot();
     // P6: 온라인 저장이 없다 — 첫 방문에 열 원격 데모 행도, 발급할 행도 없다. 항상 기존 로드 경로다.
     // 새 빌드 첫 실행의 부팅 정규화는 첫 화면 뒤로 미룬다 — 저장·조수 실행은 끝날 때까지 기다린다(store.whenBootNormalized).
     await store.load({ deferBootNormalization: true });
@@ -141,7 +142,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     if (error instanceof DbConnectionRequiredError) {
       renderDbRequiredScreen(error);
     } else {
-      renderLoadFailureScreen(error);
+      renderLoadFailureScreen(error, demoId !== null);
       console.error("[app] Project load failed before editor boot:", error);
     }
     return;
@@ -426,7 +427,7 @@ function openRequiredDbSettings(): void {
 
 // 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
-function renderLoadFailureScreen(_error: unknown): void {
+function renderLoadFailureScreen(_error: unknown, demo = false): void {
   bootMark("failed-project");
   dismissBootLoader();
   if (!elements) return;
@@ -459,6 +460,17 @@ function renderLoadFailureScreen(_error: unknown): void {
   kicker.className = "db-required-kicker";
   kicker.textContent = PRODUCT_BRAND;
   const title = document.createElement("h1");
+  if (demo) {
+    title.textContent = FLAGSHIP_DEMO_LOAD_FAILURE;
+    const back = document.createElement("a");
+    back.className = "btn primary";
+    back.href = "/start-screen.html#builtin";
+    back.textContent = "예제 목록으로 돌아가기";
+    copy.append(kicker, title, back);
+    panel.append(hero, copy);
+    elements.main.append(panel);
+    return;
+  }
   title.textContent = "저장된 작업을 바로 열 수 없습니다";
   const body = document.createElement("p");
   body.textContent = "기존 저장본은 그대로 두고 새 작업으로 임시 시작할 수 있습니다.";

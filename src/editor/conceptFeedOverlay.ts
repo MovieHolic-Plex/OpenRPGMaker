@@ -4,7 +4,7 @@ import { createConceptFeed } from "@/start/conceptFeed/conceptFeed";
 import { createConceptSource } from "@/concepts/source";
 import { menuBriefHandler, menuMakeHandler, welcomeBriefHandler, welcomeMakeHandler } from "./conceptMake";
 import { registerModal, unregisterModal } from "./ui/modalStack";
-import { toast } from "@/util/toast";
+import { openFlagshipDemo } from "./flagshipDemoLoader";
 
 export type ConceptFeedOverlayResult = "made" | "closed" | "blank";
 
@@ -74,10 +74,7 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
     beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
     onBuiltinDemo: (demoId, action) => {
       if (blankBusy || feed.busy()) return;
-      void openBuiltinDemoFromOverlay(demoId, action, () => finish("closed")).catch((error: unknown) => {
-        console.error("[welcome] 기본 데모를 열지 못했습니다:", error);
-        toast("데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.", "error");
-      });
+      void openFlagshipDemo(demoId, { action, closeOverlay: () => finish("closed") });
     },
     onBlank: mode === "menu"
       ? () => {
@@ -102,15 +99,6 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
   feed.element.querySelector<HTMLInputElement>("input[type=search]")?.focus();
 }
 
-
-async function openBuiltinDemoFromOverlay(
-  demoId: "chrono-bell" | "emerald-crown" | "first-love",
-  action: "play" | "open",
-  closeOverlay: () => void,
-): Promise<void> {
-  const { openFlagshipDemo } = await import("@/editor/flagshipDemoLoader");
-  await openFlagshipDemo(demoId, { action, closeOverlay });
-}
 /** 메뉴의 「빈 프로젝트로 시작」 — 장르 없이 새 폴더. 예전 다이얼로그의 빈 프로젝트와 같다. */
 async function createBlankFromMenu(): Promise<boolean> {
   const { toast } = await import("@/util/toast");

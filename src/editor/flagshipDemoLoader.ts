@@ -1,6 +1,7 @@
 import type { FlagshipDemoId } from "@/project/flagship/types";
 import type { Project } from "@/project/types";
 import { dismissToastsByKey, toast } from "@/util/toast";
+import { createLogger } from "@/util/logger";
 
 /**
  * 대표 데모(폴른 스타 등)를 편집기에서 여는 모든 경로의 공용 입구.
@@ -19,18 +20,25 @@ export interface LoadedFlagshipDemo {
   readonly elapsedMs: number;
 }
 
+export const FLAGSHIP_DEMO_LOAD_FAILURE = "앱에 포함된 예제 데이터를 불러오지 못했습니다.";
+const log = createLogger("demo");
+
 /** 구운 편집용 프로젝트를 읽는다. dev 서버·파일 없음·SPA HTML 폴백이면 null. */
-export async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project | null> {
+async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project | null> {
   if (import.meta.env.DEV) return null;
   try {
     const response = await fetch(new URL(`demos/${id}.project.json`, document.baseURI));
     // 정적 호스트의 SPA 폴백(HTML 200)은 구운 파일이 아니다. 데스크톱 app:// 은 file: 로 흘려 content-type 이
-    // 비어 올 수 있어 «json 일 때만»이 아니라 «HTML 이 아닐 때»로 본다(JSON 이 아니면 아래 deserialize 가 던진다).
+    // 비어 올 수 있어 «HTML 이 아닐 때» JSON 파싱을 시도한다.
     if (!response.ok || (response.headers.get("content-type") ?? "").includes("html")) return null;
-    const { deserialize } = await import("@/project/io");
-    return deserialize(await response.text());
+    const { preloadBundledTilesetDefinitions } = await import("@/project/defaults/defaultAssets");
+    const { deserializeParsed } = await import("@/project/io");
+    const data: unknown = await response.json();
+    const tilesets = (data as { tilesets?: unknown } | null)?.tilesets;
+    if (tilesets && typeof tilesets === "object") await preloadBundledTilesetDefinitions(Object.keys(tilesets));
+    return deserializeParsed(data);
   } catch (error) {
-    console.warn("[demo] 구운 데모를 읽지 못해 직접 짓습니다:", error);
+    log.warn("구운 데모를 읽지 못해 직접 짓습니다.", error);
     return null;
   }
 }
@@ -69,7 +77,34 @@ export async function openFlagshipDemo(id: FlagshipDemoId, options: OpenFlagship
   try {
     const { store } = await import("@/project/store");
     const demo = await loadFlagshipDemoProject(id);
-    if (options.action === "open" && (await createEditableCopy(demo))) return true;
+    if (options.action === "open" && window.oprn?.start) {
+      try {
+        return await createEditableCopy(demo);
+      } catch (error) {
+        log.error(`데모 복사 실패 (${id})`, error);
+        toast("예제를 새 프로젝트 폴더로 복사하지 못했습니다. 현재 작업의 저장 상태와 새 폴더의 쓰기 권한을 확인해 주세요.", {
+          kind: "error",
+          durationMs: 10_000,
+          action: {
+            label: "저장 없이 예제 열기",
+            onClick: () => {
+              if (store.hasUnsavedChanges()) {
+                toast("현재 작업을 저장한 뒤 예제를 열어 주세요.", "error");
+                return;
+              }
+              const url = new URL(window.location.href);
+              const lang = url.searchParams.get("lang");
+              url.search = "";
+              url.hash = "";
+              url.searchParams.set("demo", id);
+              if (lang) url.searchParams.set("lang", lang);
+              window.location.assign(url.href);
+            },
+          },
+        });
+        return false;
+      }
+    }
     store.replaceProject(demo.project, { label: `${demo.title} 데모 ${options.action === "play" ? "플레이" : "열기"}`, origin: "human" });
     const { focusProjectStartMap } = await import("@/editor/mapSelection");
     focusProjectStartMap();
@@ -82,8 +117,8 @@ export async function openFlagshipDemo(id: FlagshipDemoId, options: OpenFlagship
     }
     return true;
   } catch (error) {
-    console.error("[demo] 데모를 열지 못했습니다:", error);
-    toast("데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.", "error");
+    log.error(`데모 열기 실패 (${id})`, error);
+    toast(FLAGSHIP_DEMO_LOAD_FAILURE, "error");
     return false;
   } finally {
     dismissToastsByKey(progressKey);
@@ -106,6 +141,14 @@ async function createEditableCopy(demo: Pick<LoadedFlagshipDemo, "project" | "ti
   const suggested = await window.oprn?.start?.suggestProjectDir?.({ title: demo.title }).catch(() => null);
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
   if (!(await createProjectFolderWithSeed(demo.title, demo.project, suggested?.projectDir))) return false;
+  // 데스크톱 IPC는 현재 URL을 유지한다. 리로드는 방금 만든 SQLite 사본을 열어야 한다.
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("demo")) {
+    url.searchParams.delete("demo");
+    url.searchParams.delete("play");
+    url.searchParams.delete("map");
+    window.history.replaceState(window.history.state, "", url);
+  }
   window.location.reload();
   return true;
 }
