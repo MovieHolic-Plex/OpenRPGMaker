@@ -127,7 +127,7 @@ describe("연결 방식은 제공자 카드다", () => {
     expect(claude?.getAttribute("role")).toBe("radio");
     expect(gemini?.getAttribute("role")).toBe("radio");
     expect(codex?.getAttribute("role")).toBe("radio");
-    // 공장 기본은 ChatGPT(2026-11-19 오너 결정, 조수 기본 = GPT-6.1 Terra medium) — 선택된 것만 탭 순서에 들어간다(roving tabindex).
+    // 공장 기본은 ChatGPT(2026-11-19 오너 결정, 조수 기본 = GPT-6.2 Sol medium) — 선택된 것만 탭 순서에 들어간다(roving tabindex).
     expect(codex?.getAttribute("aria-checked")).toBe("true");
     expect(codex?.getAttribute("tabindex")).toBe("0");
     expect(gemini?.getAttribute("aria-checked")).toBe("false");

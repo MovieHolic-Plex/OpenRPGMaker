@@ -157,9 +157,21 @@ describe("설정 자동 저장", () => {
   });
 
   it("Codex 를 고르면 저장·재로드를 살아남는다 (제공자 선택이 실제로 반영된다)", () => {
-    // 옛 계약은 "무엇을 골라도 Antigravity 로 되돌린다" 였다. 감독 요구가 바뀌어 Codex 도
-    // 1급 선택지이므로, 고른 값이 blob 에 적히고 재로드에서도 유지되는지가 새 회귀선이다.
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "google-antigravity" }));
+    const defaults = defaultAiConfig();
+    const model = "gpt-6-astra";
+    // 연결 제공자 변경 뒤에도 명시적으로 고른 모델과 역할별 설정을 유지한다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaults,
+      providerId: "google-antigravity",
+      model,
+      roleModels: {
+        ...defaults.roleModels,
+        writer: { provider: "openai-codex", model, thinkingLevel: "medium" },
+        build: { provider: "google-antigravity", model: DEFAULT_MODEL, thinkingLevel: "low" },
+      },
+      modelSelectionOverrides: { writer: true, deep: true, vision: true, build: true },
+    }));
+    const before = loadAiConfig();
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
@@ -170,12 +182,12 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.providerId).toBe("openai-codex");
-    // 연결 제공자를 바꿔도 역할별 선택은 유지한다.
-    expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(stored.roleModels.writer.provider).toBe("google-antigravity");
+    expect(stored.model).toBe(before.model);
+    expect(stored.roleModels).toEqual(before.roleModels);
     const reloaded = loadAiConfig();
     expect(reloaded.providerId).toBe("openai-codex");
-    expect(reloaded.model).toBe(DEFAULT_MODEL);
+    expect(reloaded.model).toBe(before.model);
+    expect(reloaded.roleModels).toEqual(before.roleModels);
 
     // 되돌리기도 된다 — 잠긴 축이 아니라 진짜 선택이다.
     select.value = "google-antigravity";
@@ -217,18 +229,18 @@ describe("설정 자동 저장", () => {
     model.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    // 빈 칸은 그 설정 제공자의 기본 모델로 저장된다 — 공장 기본 제공자는 ChatGPT 다(2026-11-19), 그래서 Codex 카탈로그 첫 항목 gpt-6.1-sol.
+    // 빈 칸은 그 설정 제공자의 기본 모델로 저장된다 — 공장 기본 제공자는 ChatGPT 다(2026-11-19), 그래서 Codex 카탈로그 첫 항목 gpt-6.2-sol.
     // 기본 모델은 제공자 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
     // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
     // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
     expect(stored.providerId).toBe("openai-codex");
-    expect(stored.model).toBe("gpt-6.1-sol");
+    expect(stored.model).toBe("gpt-6.2-sol");
     expect(isModelValidForAuthMode("chatgpt", stored.model, stored.providerId)).toBe(true);
     // Google 계정의 기본 모델 상수는 그대로다(옛 저장값의 모델 기본).
     expect(DEFAULT_MODEL).toBe("gemini-4-argon");
-    expect(loadAiConfig().model).toBe("gpt-6.1-sol");
-    // 실행(lite) 칸은 건드리지 않았으므로 공장 기본(Terra) 그대로다.
-    expect(loadAiConfig().liteModel).toBe("gpt-6.1-terra");
+    expect(loadAiConfig().model).toBe("gpt-6.2-sol");
+    // 실행(lite) 칸은 건드리지 않았으므로 공장 기본(Sol) 그대로다.
+    expect(loadAiConfig().liteModel).toBe("gpt-6.2-sol");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", async () => {
@@ -257,7 +269,7 @@ describe("설정 자동 저장", () => {
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     // 공장 기본 제공자는 ChatGPT 다(2026-11-19) — 빈 칸에 Google 의 기본 모델 이름(gemini-4-argon)을 적지 않는다.
     expect(stored.providerId).toBe("openai-codex");
-    expect(stored.liteModel).toBe("gpt-6.1-sol");
+    expect(stored.liteModel).toBe("gpt-6.2-sol");
     expect(isModelValidForAuthMode("chatgpt", stored.liteModel, stored.providerId)).toBe(true);
     // Google 계정의 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
     expect(DEFAULT_LITE_MODEL).toBe("gemini-4-argon");
@@ -304,7 +316,7 @@ describe("설정 자동 저장", () => {
     if (!preset || !select) throw new Error("model preset or provider select missing");
 
     // 공장 기본 제공자(ChatGPT, 2026-11-19): Codex 카탈로그만 보이고 Google·Claude 모델은 없다.
-    expect(preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean)).toEqual(["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-5.6-sol"]);
+    expect(preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean)).toEqual(["gpt-6.2-sol", "gpt-6.2-astra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-5.6-sol"]);
     for (const foreign of ["gemini-", "claude-opus", "claude-haiku", "glm-", "grok-"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }
@@ -321,9 +333,9 @@ describe("설정 자동 저장", () => {
     select.value = "openai-codex";
     select.dispatchEvent(new Event("change"));
 
-    // Codex 는 최신 우선(2026-11-04, src/ai/modelCatalog.ts): 기본 gpt-6.1-sol 이 맨 앞, 옛 gpt-6-sol·gpt-5.6-sol 은 끝에 남는다.
+    // Codex 는 최신 우선(2026-11-19, src/ai/modelCatalog.ts): 기본 gpt-6.2-sol 이 맨 앞, 옛 gpt-6-sol·gpt-5.6-sol 은 끝에 남는다.
     const codexOptions = preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean);
-    expect(codexOptions).toEqual(["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-5.6-sol"]);
+    expect(codexOptions).toEqual(["gpt-6.2-sol", "gpt-6.2-astra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-5.6-sol"]);
     for (const foreign of ["gemini-3.7-flash", "claude-opus", "glm-", "grok-", "gpt-5.4-mini", "gpt-5.6-terra"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }
@@ -347,9 +359,9 @@ describe("설정 자동 저장", () => {
     brain.value = "openai-codex";
     brain.dispatchEvent(new Event("change"));
 
-    // Codex 는 빠른/강한 두 티어 모두 gpt-6.1-sol 이다(2026-10-07, src/ai/modelPresets.ts PROVIDER_TIER_MODELS).
-    expect((findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement).value).toBe("gpt-6.1-sol");
-    expect((findByTestId(modal, "ai-config-ultrabrain-model") as unknown as HTMLInputElement).value).toBe("gpt-6.1-sol");
+    // Codex 는 빠른/강한 두 티어 모두 gpt-6.2-sol 이다(2026-11-19, src/ai/modelPresets.ts PROVIDER_TIER_MODELS).
+    expect((findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement).value).toBe("gpt-6.2-sol");
+    expect((findByTestId(modal, "ai-config-ultrabrain-model") as unknown as HTMLInputElement).value).toBe("gpt-6.2-sol");
   });
 
   it("카탈로그 밖 모델도 명시적 선택을 보존하고 목록에는 추가하지 않는다", () => {

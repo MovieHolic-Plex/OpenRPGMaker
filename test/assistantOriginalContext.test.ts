@@ -215,7 +215,7 @@ describe("session original snapshot lifecycle", () => {
     let calls = 0;
     const project = createBlankProject();
     const session = new AssistantSession(project, {
-      // The writer runs on the default role models / liteModel (gpt-6.1-terra since 2026-11-19, 272k window); pin every role to the
+      // The writer runs on the default role models / liteModel (gpt-6.2-sol since 2026-11-19, 500k window); pin every role to the
       // 16k-window Google model (its window is listed under google-antigravity) so the catalog really cannot fit.
       config: { ...defaultAiConfig(), providerId: "google-antigravity", model: "tab_flash_lite_preview", liteModel: "tab_flash_lite_preview", roleModels: undefined, agentMode: "chat" },
       chat: async () => { calls++; return { message: { role: "assistant", content: "unexpected" }, finishReason: "stop" }; },

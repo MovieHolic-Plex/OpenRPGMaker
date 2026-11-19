@@ -52,7 +52,7 @@ describe("NPC 시간표와 배치 동기화", () => {
     const result = runTool(ctx, "configure_time_system", { enabled: true });
     assert(result.ok, result.summary);
     const system = ctx.project.system.timeSystem;
-    const target = npcScheduleTargetForEvent(map.id, event, initialGameTime(system));
+    const target = npcScheduleTargetForEvent(map.id, event, initialGameTime(system), undefined);
     expect(target).toMatchObject({ x: 5, y: 5, matched: true });
     const warnings = result.diff?.warnings.join("\n") ?? "";
     expect(warnings).toMatch(/경찰/);

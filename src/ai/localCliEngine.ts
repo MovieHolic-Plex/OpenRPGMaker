@@ -9,6 +9,7 @@
 
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 import { ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
+import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault.ts";
 
 export type LocalCliEngineId = "claude" | "codex" | "gemini";
 export const LOCAL_CLI_ENGINE_IDS: readonly LocalCliEngineId[] = ["claude", "codex", "gemini"];
@@ -45,7 +46,7 @@ export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
  */
 export const LOCAL_CLI_DEFAULT_MODELS: Readonly<Record<LocalCliEngineId, { routine: string; deep: string }>> = {
   claude: { routine: ASSISTANT_CLAUDE_MODEL, deep: ASSISTANT_CLAUDE_MODEL },
-  codex: { routine: "gpt-6-luna", deep: "gpt-6.1-sol" },
+  codex: { routine: "gpt-6-luna", deep: ASSISTANT_CHATGPT_MODEL },
   gemini: { routine: "auto", deep: "auto" },
 };
 
@@ -67,10 +68,23 @@ export function parseAssistantEngine(raw: unknown): AssistantEngineChoice | unde
   const text = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
   const routineModel = text(value.routineModel);
   const deepModel = text(value.deepModel);
-  return {
+  return migrateCodexEngine({
     kind: "local-cli", cli: value.cli as LocalCliEngineId,
     ...(routineModel ? { routineModel } : {}), ...(deepModel ? { deepModel } : {}), ...(value.teamLead === true ? { teamLead: true } : {}),
     ...(value.effort === "low" || value.effort === "medium" || value.effort === "high" ? { effort: value.effort } : {}),
+  });
+}
+
+// Claude 정책 표식과 별개로, 직접 고른 Codex Terra 도 읽을 때 Sol 로 옮긴다.
+function migrateCodexEngine(choice: AssistantEngineChoice): AssistantEngineChoice {
+  const routineWasTerra = isLegacyTerraModel(choice.routineModel);
+  const deepWasTerra = isLegacyTerraModel(choice.deepModel);
+  if (choice.cli !== "codex" || (!routineWasTerra && !deepWasTerra)) return choice;
+  return {
+    ...choice,
+    routineModel: routineWasTerra ? ASSISTANT_CHATGPT_MODEL : choice.routineModel,
+    deepModel: deepWasTerra ? ASSISTANT_CHATGPT_MODEL : choice.deepModel,
+    effort: atLeastMediumEffort(choice.effort),
   };
 }
 
@@ -112,7 +126,7 @@ export function loadAssistantEngine(): AssistantEngineChoice | undefined {
 
 export function saveAssistantEngine(choice: AssistantEngineChoice | undefined): void {
   if (typeof localStorage === "undefined") return;
-  if (choice) localStorage.setItem(ASSISTANT_ENGINE_STORAGE_KEY, JSON.stringify({ ...choice, policyVersion: ASSISTANT_ENGINE_POLICY_VERSION }));
+  if (choice) localStorage.setItem(ASSISTANT_ENGINE_STORAGE_KEY, JSON.stringify({ ...migrateCodexEngine(choice), policyVersion: ASSISTANT_ENGINE_POLICY_VERSION }));
   else localStorage.removeItem(ASSISTANT_ENGINE_STORAGE_KEY);
 }
 
@@ -120,16 +134,18 @@ export function saveAssistantEngine(choice: AssistantEngineChoice | undefined): 
  * 엔진 선택을 설정에 입힌다 — 실행·시공·작문·시각 역할과 계획(ultrabrain)이 모두 같은 CLI 로 간다.
  * 키가 필요한 계정 역할을 섞지 않는다(우리는 키를 쥐지 않는다). 이미지 생성 칸은 건드리지 않는다(CLI 는 그림을 만들지 않는다).
  */
-export function applyAssistantEngine<T extends { providerId?: string; model: string; liteModel?: string; roleModels?: SpecialistModels; pixelModel?: RoleModel; ultrabrainProviderId?: string; ultrabrainModel?: string; ultrabrainReasoningEffort?: ThinkingEffort }>(config: T, choice: AssistantEngineChoice | undefined): T {
+export function applyAssistantEngine<T extends { providerId?: string; model: string; liteModel?: string; reasoningEffort?: ThinkingEffort; roleModels?: SpecialistModels; pixelModel?: RoleModel; ultrabrainProviderId?: string; ultrabrainModel?: string; ultrabrainReasoningEffort?: ThinkingEffort }>(config: T, choice: AssistantEngineChoice | undefined): T {
   if (!choice) return config;
+  choice = migrateCodexEngine(choice);
   const provider = localCliProviderId(choice.cli);
-  const routine = choice.routineModel ?? LOCAL_CLI_DEFAULT_MODELS[choice.cli].routine;
-  const deep = choice.deepModel ?? choice.routineModel ?? LOCAL_CLI_DEFAULT_MODELS[choice.cli].deep;
+  const defaults = LOCAL_CLI_DEFAULT_MODELS[choice.cli];
+  const routine = choice.routineModel ?? (choice.cli === "codex" ? defaults.deep : defaults.routine);
+  const deep = choice.deepModel ?? (choice.cli === "codex" ? defaults.deep : choice.routineModel ?? defaults.deep);
   const effort = choice.effort ?? "medium";
   const row = (model: string): RoleModel => ({ provider, model, thinkingLevel: effort });
   return {
     ...config,
-    providerId: provider, model: routine, liteModel: routine,
+    providerId: provider, model: routine, liteModel: routine, reasoningEffort: effort,
     roleModels: { deep: row(routine), build: row(routine), writer: row(routine), vision: row(routine) },
     pixelModel: row(deep),
     ultrabrainProviderId: provider, ultrabrainModel: deep, ultrabrainReasoningEffort: effort,
@@ -142,6 +158,7 @@ export function applyAssistantEngine<T extends { providerId?: string; model: str
  * 강도는 측정한 조합(2026-11-03 lead-worker-split, `lead:claude:claude-opus-5-5:medium`)을 따라 medium 으로 둔다.
  */
 export function assistantEngineLead(choice: AssistantEngineChoice | undefined): RoleModel | undefined {
+  if (choice) choice = migrateCodexEngine(choice);
   if (!choice?.teamLead || !choice.deepModel || choice.deepModel === (choice.routineModel ?? LOCAL_CLI_DEFAULT_MODELS[choice.cli].routine)) return undefined;
   return { provider: localCliProviderId(choice.cli), model: choice.deepModel, thinkingLevel: "medium" };
 }

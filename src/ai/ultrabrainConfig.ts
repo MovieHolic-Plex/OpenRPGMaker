@@ -1,4 +1,5 @@
 import type { AiConfig } from "./llmClient";
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL } from "./chatgptDefault";
 
 export const DEFAULT_ULTRABRAIN_PROVIDER = "google-antigravity";
 export const DEFAULT_ULTRABRAIN_MODEL = "gemini-4-argon";
@@ -16,10 +17,12 @@ export const ULTRABRAIN_REVIEW_MAX_TOKENS = 16_384;
 
 /** Independent of the writer's model, provider, and autonomy dial. */
 export function configForUltrabrain(config: AiConfig): AiConfig {
+  const providerId = config.ultrabrainProviderId ?? DEFAULT_ULTRABRAIN_PROVIDER;
+  const codex = providerId === "openai-codex" || providerId === "local-cli:codex";
   return { ...config, authMode: "chatgpt", apiKey: "",
-    providerId: config.ultrabrainProviderId ?? DEFAULT_ULTRABRAIN_PROVIDER,
-    model: config.ultrabrainModel?.trim() || DEFAULT_ULTRABRAIN_MODEL,
-    reasoningEffort: config.ultrabrainReasoningEffort ?? DEFAULT_ULTRABRAIN_EFFORT,
+    providerId,
+    model: config.ultrabrainModel?.trim() || (codex ? ASSISTANT_CHATGPT_MODEL : DEFAULT_ULTRABRAIN_MODEL),
+    reasoningEffort: config.ultrabrainReasoningEffort ?? (codex ? ASSISTANT_CHATGPT_EFFORT : DEFAULT_ULTRABRAIN_EFFORT),
     maxTokens: Math.min(config.maxTokens, ULTRABRAIN_REVIEW_MAX_TOKENS),
   };
 }

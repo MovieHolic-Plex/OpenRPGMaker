@@ -15,14 +15,14 @@ const picks = (main: { provider: string; model: string }) =>
 describe("화면 검수자 차례 — 자기 자신은 맨 마지막", () => {
   it("Haiku 가 지으면: 다른 계열(Codex · Gemini) → 같은 계열의 Opus 5.5 → Haiku 자신", () => {
     expect(order({ provider: "local-cli:claude", model: "claude-haiku-5-5" })).toEqual([
-      "local-cli:codex/gpt-6.1-sol", "local-cli:gemini/gemini-4-argon",
+      "local-cli:codex/gpt-6.2-sol", "local-cli:gemini/gemini-4-argon",
       "local-cli:claude/claude-opus-5-5 (같은 계열)", "local-cli:claude/claude-haiku-5-5 (같은 계열)",
     ]);
   });
 
   it("Opus 5.5 가 지으면(출하 기본): 다른 계열 → Opus 5.5 · medium 한 번 — Sonnet 으로 가지 않고, 같은 모델을 두 번 넣지 않는다", () => {
     expect(order({ provider: "local-cli:claude", model: "claude-opus-5-5" })).toEqual([
-      "local-cli:codex/gpt-6.1-sol", "local-cli:gemini/gemini-4-argon", "local-cli:claude/claude-opus-5-5 (같은 계열)",
+      "local-cli:codex/gpt-6.2-sol", "local-cli:gemini/gemini-4-argon", "local-cli:claude/claude-opus-5-5 (같은 계열)",
     ]);
     const claude = picks({ provider: "local-cli:claude", model: "claude-opus-5-5" }).filter((p) => p.provider === "local-cli:claude");
     expect(claude).toEqual([{ provider: "local-cli:claude", model: "claude-opus-5-5", effort: "medium", sameAsMain: true }]);
@@ -34,10 +34,10 @@ describe("화면 검수자 차례 — 자기 자신은 맨 마지막", () => {
   });
 
   it("GPT 가 지으면(Terra): 다른 계열(Claude Opus 5.5 · Gemini)이 먼저, 같은 계열의 검수용 모델이 자기 자신 앞", () => {
-    const got = order({ provider: "openai-codex", model: "gpt-6.1-terra" });
+    const got = order({ provider: "openai-codex", model: "gpt-6.2-sol" });
     expect(got.slice(0, 2)).toEqual(["local-cli:claude/claude-opus-5-5", "local-cli:gemini/gemini-4-argon"]);
-    expect(got.slice(-2)).toEqual(["local-cli:codex/gpt-6.1-sol (같은 계열)", "openai-codex/gpt-6.1-terra (같은 계열)"]);
-    expect(picks({ provider: "openai-codex", model: "gpt-6.1-terra" })[0]).toMatchObject({ model: "claude-opus-5-5", effort: "medium", sameAsMain: false });
+    expect(got.slice(-2)).toEqual(["local-cli:codex/gpt-6.2-sol (같은 계열)", "openai-codex/gpt-6.2-sol (같은 계열)"]);
+    expect(picks({ provider: "openai-codex", model: "gpt-6.2-sol" })[0]).toMatchObject({ model: "claude-opus-5-5", effort: "medium", sameAsMain: false });
   });
 
   it("다른 계열 후보에는 «같은 계열» 표시가 붙지 않고, 같은 계열 후보에는 늘 붙는다", () => {

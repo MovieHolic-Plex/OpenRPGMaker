@@ -35,9 +35,6 @@ function overridesFromConfig(config: AiConfig, available: readonly AvailableRout
   if (vision && config.modelSelectionOverrides?.vision) out.vision = vision;
   const pixel = resolvePixelModel(config);
   if (!pixel.follows && pick(pixel.model)) out.pixel = pixel.model;
-  if (config.modelSelectionOverrides?.image && config.imageProviderId && config.imageModel && connected.has(config.imageProviderId)) {
-    out.image = { provider: config.imageProviderId, model: config.imageModel, thinkingLevel: "off" };
-  }
   for (const role of ["smol", "advisor"] as const) {
     const slot = config.assistantRoles?.[role];
     if (config.modelSelectionOverrides?.[role] && slot) out[role] = slot;

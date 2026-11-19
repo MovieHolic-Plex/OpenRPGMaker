@@ -1,7 +1,7 @@
 import { updateEvent } from "@/editor/eventActions";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { Dir, GameEvent, MapId, NpcScheduleEntry } from "@/project/types";
+import type { Dir, GameEvent, MapId, NpcScheduleEntry, WeatherKind } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { mapSelectElement } from "./sharedPickers";
 
@@ -77,6 +77,11 @@ function renderScheduleRow(
     SEASONS.map((value) => ({ value, label: seasonLabel(value) })),
     `event-schedule-season-${index}`,
   );
+  const weather = optionalSelect(
+    entry.when.weather,
+    WEATHER_KINDS.map((value) => ({ value, label: weatherLabel(value) })),
+    `event-schedule-weather-${index}`,
+  );
   const dayStart = numberInput(entry.when.dayRange?.[0] ?? 1, `event-schedule-day-start-${index}`, 1, 99);
   const dayEnd = numberInput(entry.when.dayRange?.[1] ?? 28, `event-schedule-day-end-${index}`, 1, 99);
   const dayEnabled = checkboxInput(entry.when.dayRange !== undefined, `event-schedule-day-enabled-${index}`, "날짜 범위 사용");
@@ -130,6 +135,9 @@ function renderScheduleRow(
   season.addEventListener("change", () => updateWhen(mapId, eventId, index, {
     season: season.value ? season.value as Season : undefined,
   }));
+  weather.addEventListener("change", () => updateWhen(mapId, eventId, index, {
+    weather: weather.value ? weather.value as WeatherKind : undefined,
+  }));
   dayEnabled.addEventListener("change", () => {
     dayStart.disabled = !dayEnabled.checked;
     dayEnd.disabled = !dayEnabled.checked;
@@ -176,6 +184,7 @@ function renderScheduleRow(
           compactLabel("정확 시각", el("span", { class: "event-schedule-range", children: [hourEnabled, hourStart, el("span", { text: "–" }), hourEnd] })),
           compactLabel("계절", season),
           compactLabel("날짜", el("span", { class: "event-schedule-range", children: [dayEnabled, dayStart, el("span", { text: "–" }), dayEnd] })),
+          compactLabel("날씨", weather),
         ],
       }),
       el("div", {
@@ -227,6 +236,7 @@ function compactWhen(when: NpcScheduleEntry["when"]): NpcScheduleEntry["when"] {
     ...(when.hourRange ? { hourRange: when.hourRange } : {}),
     ...(when.season ? { season: when.season } : {}),
     ...(when.dayRange ? { dayRange: when.dayRange } : {}),
+    ...(when.weather ? { weather: when.weather } : {}),
   };
 }
 
@@ -323,11 +333,17 @@ function clampCoordinate(mapId: MapId, axis: "x" | "y", value: number): number {
 }
 
 function isUnconditionalWhen(when: NpcScheduleEntry["when"]): boolean {
-  return !when.timePhase && !when.hourRange && !when.season && !when.dayRange;
+  return !when.timePhase && !when.hourRange && !when.season && !when.dayRange && !when.weather;
 }
 
 function phaseLabel(value: TimePhase): string {
   return ({ morning: "아침", day: "낮", evening: "저녁", night: "밤" })[value];
+}
+
+const WEATHER_KINDS: readonly WeatherKind[] = ["none", "rain", "storm", "snow", "fog"];
+
+function weatherLabel(value: WeatherKind): string {
+  return ({ none: "맑음", rain: "비", storm: "폭풍", snow: "눈", fog: "안개" })[value];
 }
 
 function seasonLabel(value: Season): string {

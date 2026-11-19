@@ -1,3 +1,4 @@
+import { ASSISTANT_CHATGPT_MODEL } from "./chatgptDefault";
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId, openAiCompatModelBlockReason } from "@/ai/openAiCompat";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -7,15 +8,15 @@ export interface AiModelCatalogGroup {
   readonly models: readonly string[];
 }
 
-/** ChatGPT(Codex) 구독으로 고를 수 있는 모델 — 감독 지시(2026-09-27)의 넷에 gpt-6.1-sol 을 더했고 기본으로 올렸다(2026-10-07).
+/** ChatGPT(Codex) 구독으로 고를 수 있는 모델 — 2026-11-19 부터 GPT-6.2 Sol 을 권장한다.
  * 예전엔 pi-catalog 번들 8종(gpt-5.4-mini·codex-spark·daybreak …)을 다 떠서 보여 줘 고를 이유가 없는
  * 선택지가 목록을 덮었다. 순서가 공장 기본 우선순위다(첫 항목 = 기본, ohMyPiProviders 와 일치).
  * gpt-6-* 는 설치 번들(17.4.0) 밖이라 동반 서비스가 scripts/lib/ohMyPiModel.ts 의 로컬 확장으로 풀어 준다.
  * 2026-11-04: 최신 우선으로 줄 세웠다. 끝의 둘(gpt-6-sol·gpt-5.6-sol)은 옛 모델이라 LEGACY_MODEL_IDS 에 있다. */
 const CODEX_MODELS: readonly string[] = [
+  ASSISTANT_CHATGPT_MODEL,
+  "gpt-6.2-astra",
   "gpt-6.1-sol",
-  // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). 2026-11-03 앱 경로(openai-codex) 실제 호출 통과.
-  "gpt-6.1-terra",
   "gpt-6-astra",
   "gpt-6-luna",
   "gpt-6-sol",
@@ -84,7 +85,7 @@ const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
 /** 각 제공자에서 최신으로 치는 모델(2026-11-04 기준). 그 밖의 카탈로그 항목은 옛 모델이다. */
 const LATEST_MODEL_IDS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ["gemini-4-argon", "gemini-3.8-flash"],
-  [CODEX_PROVIDER_ID]: ["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna"],
+  [CODEX_PROVIDER_ID]: [ASSISTANT_CHATGPT_MODEL, "gpt-6.2-astra", "gpt-6-astra", "gpt-6-luna"],
   anthropic: ANTHROPIC_MODELS,
 };
 
@@ -125,10 +126,10 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 제공자의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * 공장 기본은 Claude 의 claude-opus-5-5 — 새 설정의 모든 모델 슬롯이 이 값 · medium 으로 시작한다(오너 결정 2026-11-16).
+ * 공장 기본은 ChatGPT 의 GPT-6.2 Sol — 새 설정의 모든 모델 슬롯이 이 값 · medium 으로 시작한다(오너 결정 2026-11-16).
  * Antigravity 의 첫 항목 gemini-4-argon 은 Google 계정의 기본이자 옛 저장값의 기본이다(감독 지시 2026-08-26, 기본 모델 이동 2026-10-14).
  * 계약은 test/aiDefaultModelForced.test.ts 가 고정한다.
- * Codex 카탈로그 첫 항목은 gpt-6.1-sol(2026-10-07).
+ * Codex 카탈로그 첫 항목은 gpt-6.2-sol(2026-11-19).
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */
 export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {

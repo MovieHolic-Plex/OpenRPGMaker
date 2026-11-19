@@ -4,6 +4,7 @@
 //   실내: build_hand_interior_room({tileset:"modern_city", layout:{program}}) — 카페(바 카운터·좌석)·편의점·지하철역·사무실…
 //         (G9: 카페 「온기」가 일본 집 거실 ldk 10×7 로 지어졌다).
 // 모델은 칸·좌표를 쓰지 않는다. 못 하는 것은 missingArt 로 정직하게 보고한다.
+import { districtKindFromTitle } from "@/project/modernCityDistrictKinds";
 import { cityInteriorSeed } from "./cityInteriorSeed";
 import { FACILITY_CATALOG } from "@/editor/handInterior/facilityVenues";
 import { NEIGHBORHOOD_KONBINI } from "@/editor/handInterior/neighborhoodKonbini";
@@ -27,8 +28,9 @@ export function localizePlaceSpec<T extends PlaceSpec>(spec: T, task: string): T
 }
 
 export const MODERN_KR_CARD =
-  "[Modern Korea type:street|house, style kr-modern] For Seoul or modern Korea put kr-modern in style (do not build a Japanese street or Japanese house). " +
-  "street = one Korean city street (60×48: roads, intersection, crosswalks, Hangul signboards, bus shelter, park, building doors). features shop words: 편의점 (convenience store) · 카페 · 은행 (bank) · 병원 (hospital) · 사무실 (office) · 호텔 · 백화점 (department store) · 아파트 · 주택 (house) · 빵집 (bakery) · 우체국 (post office) · 경찰서 (police station). " +
+  "[Modern Korea type:street|house, style kr-modern] Use for Seoul or modern Korea. " +
+  "street = Korean district, sized to the requested shops. For a specific setting use hints.district: sangga-alley, villa-town, apt-complex, blvd-office, market, campus-town, riverside, station-front. " +
+  "features can request shops: 편의점, 카페, 은행, 병원, 사무실, 호텔, 백화점, 아파트, 주택, 빵집, 우체국, 경찰서. " +
   "house = one interior in that city: 카페 (bar counter, seats) · 편의점 · 지하철역 (subway station) · 사무실 · 아파트 · 빌딩 로비 (lobby) · 은행 · 병원 · 마트 · 백화점 · 영화관 (cinema) · 식당 (restaurant) · 미술관 (gallery) · 도서관 (library) · 시청 (city hall) · 의원 (clinic) · 빵집 카페 · 창고 (warehouse). Use the full venue name or hints.program.";
 
 type Rule = readonly [RegExp, string];
@@ -116,7 +118,7 @@ const SHOP_WORDS: readonly Rule[] = [
   [/주택|house/i, "주택"], [/빵집|베이커리|bakery/i, "빵집"], [/우체국|post office/i, "우체국"], [/경찰|파출소|police/i, "경찰서"], [/창고|warehouse/i, "창고"],
 ];
 
-interface KrState { readonly seed: number; readonly baseSeed?: number; readonly program?: string }
+interface KrState { readonly seed: number; readonly baseSeed?: number; readonly program?: string; readonly district?: string }
 
 function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const first = run.calls.length;
@@ -134,12 +136,18 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const shops = [...new Set(SHOP_WORDS.filter(([re]) => has(text, re)).map(([, s]) => s))];
   if (/subway|지하철|전철|역/iu.test(text)) warnings.push("지하철 입구 계단은 거리에 서지만 승강장은 house(지하철역)로 따로 지어 잇는다");
   const baseSeed = Math.max(0, Math.floor(num(spec.hints?.seed) ?? prev?.seed ?? (spec.salt ?? 0) % 9973));
-  let res = run.call("compose_modern_city_street", { mapId, seed: baseSeed, korean: true, replace: true, ...(shops.length ? { shops } : {}) });
+  // 지구 종류: 명세가 이름을 주면 그 종류, 아니면 구성기가 게임 열쇠·씨앗·요청 사실(크기·가게 수)로 고른다. 고쳐 지을 때는 처음 고른 종류를 지킨다.
+  const hint = typeof spec.hints?.district === "string" ? spec.hints.district.trim() : "";
+  // A saved pre-district street has a seed but no district. Keep its original street plan on rebuild.
+  const district = hint || (prev ? prev.district : districtKindFromTitle(spec.name)?.id ?? "auto");
+  const args = { mapId, korean: true, ...(district ? { district } : {}), replace: true, ...(shops.length ? { shops } : {}) };
+  let res = run.call("compose_modern_city_street", { ...args, seed: baseSeed });
   let seed = baseSeed;
-  for (let k = 1; !res.ok && k <= 6; k++) { seed = baseSeed + k; res = run.call("compose_modern_city_street", { mapId, seed, korean: true, replace: true, ...(shops.length ? { shops } : {}) }); }
+  for (let k = 1; !res.ok && k <= 6; k++) { seed = baseSeed + k; res = run.call("compose_modern_city_street", { ...args, seed }); }
   if (!res.ok) return { ok: false, mapIds: [mapId], summary: `한국 거리 짓기 실패: ${res.summary}`, warnings: [...warnings, ...(res.issues ?? []).map((i) => i.message)], missingArt: missing, calls: run.calls.slice(first), state: prev };
   warnings.push(...(res.warnings ?? []));
-  const data = (res.data ?? {}) as { start?: { x: number; y: number }; buildings?: { name: string; program: string | null }[] };
+  const data = (res.data ?? {}) as { start?: { x: number; y: number }; buildings?: { name: string; program: string | null }[]; district?: { id: string } | null };
+  const kind = data.district ?? undefined;
   const start = data.start;
   const built = (data.buildings ?? []).map((b) => b.name);
   for (const s of shops) if (!built.some((b) => b.includes(s.slice(0, 2)))) missing.push(`${s}(거리 구성기가 이 크기 거리에 못 세움)`);
@@ -148,8 +156,8 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   if (twins.length) warnings.push(`같은 종류 가게가 여럿이다(${twins.join(" · ")}) — 이야기에 나오는 가게 하나만 실내와 잇고, 나머지는 들어갈 수 없다는 안내가 뜨는지 확인한다. 새 플레이어가 간판만 보고 엉뚱한 가게로 간다.`);
   return {
     ok: true, mapIds: [mapId], ...(start ? { entrance: { mapId, ...start } } : {}),
-    summary: `${spec.name}: 한국 도시 거리 ${w}×${h}(seed ${seed}) — 건물 ${built.length}채${built.length ? `: ${built.slice(0, 8).join(" · ")}` : ""}. 건물 문은 그 실내(house kr-modern)와 link_modern_city_interior 로 잇는다`,
-    warnings, missingArt: missing, calls: run.calls.slice(first), state: { seed } satisfies KrState,
+    summary: `${spec.name}: 한국 도시 거리 ${w}×${h}(seed ${seed}${kind ? `, district ${kind.id}` : ""}) — 건물 ${built.length}채${built.length ? `: ${built.slice(0, 8).join(" · ")}` : ""}. 건물 문은 그 실내(house kr-modern)와 link_modern_city_interior 로 잇는다`,
+    warnings, missingArt: missing, calls: run.calls.slice(first), state: { seed, ...(kind ? { district: kind.id } : {}) } satisfies KrState,
   };
 }
 

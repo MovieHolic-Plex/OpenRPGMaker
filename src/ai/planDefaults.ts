@@ -5,8 +5,7 @@
 // 이 PC 에서 이미 로그인된 구독을 찾아 「연결됨: <이름> · 이걸로 시작」 한 장으로 보이고, 고르면 그 요금제에 맞는 팀을 고른다.
 //   - Claude 구독(Claude Code CLI, authMethod oauth_token): Opus 5.5 · medium 하나가 계획부터 짓기까지(오너 결정 2026-11-16 —
 //     Haiku 워커로는 게임을 못 만든다고 보아 Opus 팀장 + Haiku 워커 나누기를 기본에서 뺐다. 나누기는 설정에서 고를 수 있다).
-//   - ChatGPT 구독(Codex CLI ChatGPT 로그인): Terra 혼자(gpt-6.1-terra, 3판 24/25, $0.74/요청).
-//   - 편집기 안 ChatGPT 로그인: 앱 경로 카탈로그에 gpt-6.1-terra 가 없어(scripts/lib/ohMyPiModel.ts 가 400 으로 거절) 그 계정의 지금 기본값.
+//   - ChatGPT 구독(Codex CLI)·편집기 안 ChatGPT 로그인: GPT-6.2 Sol · medium 하나가 계획부터 짓기까지.
 //   - 그 밖(Gemini CLI 구글 로그인, 편집기 안 Google 로그인): 지금 기본값 그대로.
 // API 키 로그인·환경 변수 키·이미 엔진을 고른 사용자는 후보가 아니다(기본값을 바꾸지 않는다).
 // 순수 모듈 — 감지 결과를 받아 후보만 만든다. 저장·호출은 관문이 한다.
@@ -14,7 +13,7 @@
 import type { AssistantEngineChoice, LocalCliEngineId } from "./localCliEngine";
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
-import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL } from "./chatgptDefault.ts";
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort } from "./chatgptDefault.ts";
 
 /** LocalCliStatus(src/start/settings/localAgents.ts)의 부분. */
 export interface DetectedCli {
@@ -44,7 +43,7 @@ export const CLAUDE_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
   kind: "local-cli", cli: "claude", routineModel: ASSISTANT_CLAUDE_MODEL, deepModel: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT,
 };
 
-/** ChatGPT 구독 기본: Terra 하나가 계획부터 짓기까지 한다. */
+/** ChatGPT 구독 기본: Sol 하나가 계획부터 짓기까지 한다. */
 export const CHATGPT_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
   kind: "local-cli", cli: "codex", routineModel: ASSISTANT_CHATGPT_MODEL, deepModel: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT,
 };
@@ -60,9 +59,9 @@ const signedIn = (accounts: readonly DetectedAccount[], providerId: string): boo
 export function planCandidates(rows: readonly DetectedCli[], accounts: readonly DetectedAccount[]): PlanCandidate[] {
   const out: PlanCandidate[] = [];
   if (ready(rows, "codex")) {
-    out.push({ key: "codex-cli", kind: "local-cli", name: "ChatGPT 구독", setup: "GPT-6.1 Terra 하나가 계획부터 만들기까지 해요.", engine: CHATGPT_SUBSCRIPTION_ENGINE });
+    out.push({ key: "codex-cli", kind: "local-cli", name: "ChatGPT 구독", setup: "GPT-6.2 Sol 하나가 계획부터 만들기까지 해요.", engine: CHATGPT_SUBSCRIPTION_ENGINE });
   } else if (signedIn(accounts, CODEX_ACCOUNT_PROVIDER_ID)) {
-    out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "GPT-6.1 Terra 하나가 계획부터 만들기까지 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
+    out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "GPT-6.2 Sol 하나가 계획부터 만들기까지 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
   }
   if (ready(rows, "claude")) {
     out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Opus 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
@@ -75,28 +74,30 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
   return out;
 }
 
-/** 편집기 안 ChatGPT 로그인도 Terra 혼자 — 실행·시공·작문·시각·계획이 모두 같은 모델. */
+/** 편집기 안 ChatGPT 로그인도 Sol 혼자 — 실행·시공·작문·시각·계획이 모두 같은 모델. */
 export const CHATGPT_ACCOUNT_MODEL = ASSISTANT_CHATGPT_MODEL;
 
 type PlanAccountConfig = {
   providerId?: string; model: string; liteModel?: string; roleModels?: SpecialistModels;
+  reasoningEffort?: ThinkingEffort;
   ultrabrainProviderId?: string; ultrabrainModel?: string; ultrabrainReasoningEffort?: ThinkingEffort;
   modelSelectionOverrides?: Partial<Record<string, true>>;
 };
 
 /**
  * 계정 후보를 골랐을 때 역할 모델. 제공자 선택(configForProviderSelection)을 이미 거친 설정을 받는다.
- * ChatGPT 만 Terra 로 바꾼다(사람이 직접 고른 칸은 그대로). 다른 계정은 받은 그대로.
+ * ChatGPT 만 Sol 로 바꾼다(사람이 직접 고른 칸은 그대로). 다른 계정은 받은 그대로.
  */
 export function configForPlanAccount<T extends PlanAccountConfig>(config: T, providerId: string): T {
   if (providerId !== CODEX_ACCOUNT_PROVIDER_ID) return config;
   const pinned = config.modelSelectionOverrides ?? {};
-  const row = (old: RoleModel | undefined): RoleModel => ({ provider: providerId, model: CHATGPT_ACCOUNT_MODEL, thinkingLevel: old?.provider === providerId ? old.thinkingLevel : "medium" });
+  const row = (old: RoleModel | undefined): RoleModel => ({ provider: providerId, model: CHATGPT_ACCOUNT_MODEL, thinkingLevel: atLeastMediumEffort(old?.provider === providerId ? old.thinkingLevel : undefined) });
   const roleModels: SpecialistModels = { ...config.roleModels };
   for (const role of ["deep", "build", "writer", "vision"] as const) if (!pinned[role]) roleModels[role] = row(roleModels[role]);
   return {
     ...config,
     providerId, model: CHATGPT_ACCOUNT_MODEL, liteModel: CHATGPT_ACCOUNT_MODEL, roleModels,
-    ...(pinned.ultrabrain ? {} : { ultrabrainProviderId: providerId, ultrabrainModel: CHATGPT_ACCOUNT_MODEL }),
+    reasoningEffort: atLeastMediumEffort(config.providerId === providerId ? config.reasoningEffort : undefined),
+    ...(pinned.ultrabrain ? {} : { ultrabrainProviderId: providerId, ultrabrainModel: CHATGPT_ACCOUNT_MODEL, ultrabrainReasoningEffort: atLeastMediumEffort(config.ultrabrainProviderId === providerId ? config.ultrabrainReasoningEffort : undefined) }),
   };
 }

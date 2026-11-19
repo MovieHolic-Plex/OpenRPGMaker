@@ -3,6 +3,7 @@ import { applyAssistantEngine, isLocalCliProviderId, loadAssistantEngine } from 
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModel, parseRoleModels, type RoleModel, type SpecialistModels, type ThinkingEffort } from "./modelRoles";
 import { parsePixelModel } from "./pixelModel";
+import { atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
@@ -185,7 +186,7 @@ const LEGACY_FACTORY_MODELS = new Set(["gemini-3.7-flash", "gemini-3.7-flash-tie
  * 6.1-sol 이 낫게 나왔고, 그 전까지 카탈로그의 gpt-6-* 는 클라이언트 버전 헤더 때문에 전부 400 이었다.
  */
 const LEGACY_CODEX_FACTORY_MODELS = new Set(["gpt-5.6-sol"]);
-const RECOMMENDED_CODEX_MODEL = "gpt-6.1-sol";
+const RECOMMENDED_CODEX_MODEL = CHATGPT_DEFAULT_MODEL;
 
 /** 각 제공자의 옛 공장 기본만 새 기본으로 승격한다. 그 밖의 저장값은 그대로 보존한다. */
 function promoteLegacyFactoryModel(model: string, providerId: string): string {
@@ -239,7 +240,7 @@ function promoteLegacyRoleModels(roles: SpecialistModels, pinned: Partial<Record
 export function defaultAiConfig(): AiConfig {
   const legacy = legacyStoredAiConfigBase();
   // 새로 설정하는 사용자의 공장 기본(2026-11-19, 오너 결정: 「기본 AI 를 ChatGPT 로」): 계획·실행·시각·작문·시공·감독(ultrabrain) 모두
-  // ChatGPT(Codex 계정 로그인)의 GPT-6.1 Terra · medium 한 모델이다 — 첫 실행 마법사가 ChatGPT 로그인에 맞추는 팀(planDefaults)과 같다.
+  // ChatGPT(Codex 계정 로그인)의 GPT-6.2 Sol · medium 한 모델이다 — 첫 실행 마법사가 ChatGPT 로그인에 맞추는 팀(planDefaults)과 같다.
   // 지난 기본은 Claude Opus 5.5 medium(2026-11-16), 그 전은 Google 의 Gemini 4 Argon medium(2026-10-14, PR #2535)이었다.
   // Google·Claude 는 사용자가 고를 때만 쓴다 — 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다(Google·Claude 로 저장된 설정을 ChatGPT 로 옮기지 않는다).
   const chatgptMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: CHATGPT_DEFAULT_MODEL, thinkingLevel: CHATGPT_DEFAULT_EFFORT } as const;
@@ -260,7 +261,7 @@ export function defaultAiConfig(): AiConfig {
       writer: { ...chatgptMedium },
       build: { ...chatgptMedium },
     },
-    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 GPT-6.1 Terra medium)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
+    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 GPT-6.2 Sol medium)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
     // 2026-11-16 까지는 Google 의 Argon medium 으로 채웠는데, 이 칸은 계정 선택을 따라 바뀌지 않아 Google 연결이 없는 사용자의 도트 저작이 막혔다.
     roleModelsPolicyVersion: 1,
   };
@@ -394,16 +395,22 @@ function loadStoredAiConfig(): AiConfig {
     // providerId 가 없는 옛 blob 도 같은 경로로 기본 제공자가 된다.
     // authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
     // 모델 승격이 제공자를 알아야 하므로 providerId 를 먼저 푼다.
-    const providerId = parseOhMyPiProvider(parsed.providerId);
+    const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
+    const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
+    const storedUltrabrainModel = typeof parsed.ultrabrainModel === "string" ? parsed.ultrabrainModel.trim() : "";
+    const mainWasTerra = isLegacyTerraModel(storedModel) || isLegacyTerraModel(storedLiteModel);
+    const ultrabrainWasTerra = isLegacyTerraModel(storedUltrabrainModel);
+    const providerId = parseOhMyPiProvider(parsed.providerId, mainWasTerra ? CODEX_PROVIDER_ID : DEFAULT_OH_MY_PI_PROVIDER);
+    const codexBrainDefault = ultrabrainWasTerra || (!storedUltrabrainModel && providerId === CODEX_PROVIDER_ID);
+    const ultrabrainProviderId = parseOhMyPiProvider(parsed.ultrabrainProviderId, codexBrainDefault ? CODEX_PROVIDER_ID : DEFAULT_ULTRABRAIN_PROVIDER);
     // Old blobs cannot distinguish a user selection from an automatically seeded row.
     // Preserve every stored slot until the user explicitly chooses to align it.
     const modelSelectionOverrides: NonNullable<AiConfig["modelSelectionOverrides"]> = Object.fromEntries(
-      (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel", "smol", "advisor"] as const).filter(slot => {
+      (["ultrabrain", "vision", "writer", "deep", "build", "pixel", "smol", "advisor"] as const).filter(slot => {
         if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
           return parsed.modelSelectionOverrides[slot] === true;
         }
         return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
-          : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
           : slot === "pixel" ? Boolean(parsed.pixelModel)
           : slot === "smol" || slot === "advisor" ? false
           : Boolean(parsed.roleModels?.[slot]);
@@ -411,44 +418,44 @@ function loadStoredAiConfig(): AiConfig {
     );
     // 옛 감독·실행 칸(model·liteModel)은 작문·실행 역할의 짝이다 — Claude 계정의 옛 워커(Haiku) 소급도 그 역할을 직접 골랐는지로 가른다.
     const promote = (stored: string, slot: "writer" | "deep"): string =>
-      promoteLegacyClaudeWorker(promoteLegacyFactoryModel(stored, providerId), providerId, modelSelectionOverrides[slot] === true);
-    const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
+      isLegacyTerraModel(stored) ? RECOMMENDED_CODEX_MODEL
+        : promoteLegacyClaudeWorker(promoteLegacyFactoryModel(stored, providerId), providerId, modelSelectionOverrides[slot] === true);
     // 저장된 모델이 없으면 그 제공자의 기본 모델 — Codex blob 에 Gemini 이름을 채우지 않는다.
     const providerDefault = getOhMyPiProvider(providerId)?.defaultModel || base.model;
     const model: string = promote(storedModel, "writer") || providerDefault;
-    const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     const liteModel: string = promote(storedLiteModel, "deep") || promote(storedModel, "deep") || providerDefault;
+    const roles = promoteLegacyRoleModels(parseRoleModels(parsed.roleModels), modelSelectionOverrides);
+    const pixelModel = parsePixelModel(parsed.pixelModel);
+    const assistantRoles = parseAssistantRoleSlots(parsed.assistantRoles);
+    const reasoningEffort = parsed.reasoningEffort;
+    const ultrabrainEffort = parsed.ultrabrainReasoningEffort;
     // Preserve explicit selections; the companion rejects unsupported IDs without substitution.
     return {
       authMode,
       providerId,
-      // Preserve explicit image choices, even unsupported ones; never silently demote them.
-      imageProviderId: typeof parsed.imageProviderId === "string" && parsed.imageProviderId.trim()
-        ? parsed.imageProviderId.trim() : DEFAULT_IMAGE_PROVIDER_ID,
-      imageModel: typeof parsed.imageModel === "string" && parsed.imageModel.trim()
-        ? parsed.imageModel.trim() : DEFAULT_IMAGE_MODEL,
+      // 옛 그림 설정은 읽을 때 ChatGPT 로 맞춘다. 디스크에는 다음 저장 때 반영한다.
+      imageProviderId: DEFAULT_IMAGE_PROVIDER_ID,
+      imageModel: DEFAULT_IMAGE_MODEL,
       // 저장된 baseUrl 은 버린다. OAuth 는 동반 서비스 경로가 고정이고(endpoint() 가
       // usesOhMyPiCompanion 이면 DEFAULT_CHATGPT_BASE_URL 을 쓴다), 죽은 게이트웨이 URL 을
       // 남겨 두면 설정 화면·가용성 검지가 그것을 계속 진실처럼 보여 준다.
       baseUrl: base.baseUrl,
       model,
       liteModel,
-      roleModels: parsed.roleModelsPolicyVersion === 1
-        ? promoteLegacyRoleModels(parseRoleModels(parsed.roleModels), modelSelectionOverrides)
-        : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels), modelSelectionOverrides), providerId, liteModel || model),
+      roleModels: parsed.roleModelsPolicyVersion === 1 || isLegacyTerraModel(parsed.roleModels?.deep?.model)
+        ? roles : withoutLegacySeededDeepRole(roles, providerId, liteModel),
       // 도트 저작 칸: 저장된 값만 읽는다. 옛 설정에는 없으므로 비워 두고 기존 동작(계획 모델)을 유지한다.
-      ...(parsePixelModel(parsed.pixelModel) ? { pixelModel: parsePixelModel(parsed.pixelModel)! } : {}),
+      ...(pixelModel ? { pixelModel } : {}),
       ...(parseRoleModel(parsed.intentModel) ? { intentModel: parseRoleModel(parsed.intentModel)! } : {}),
-      ...(parseAssistantRoleSlots(parsed.assistantRoles) ? { assistantRoles: parseAssistantRoleSlots(parsed.assistantRoles)! } : {}),
+      ...(assistantRoles ? { assistantRoles } : {}),
       modelSelectionOverrides,
-      ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
-      ultrabrainModel: promoteLegacyFactoryModel(
-        typeof parsed.ultrabrainModel === "string" ? parsed.ultrabrainModel.trim() : "",
-        parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
-      ) || DEFAULT_ULTRABRAIN_MODEL,
-      ultrabrainReasoningEffort: parsed.ultrabrainReasoningEffort === "low" || parsed.ultrabrainReasoningEffort === "medium"
-        || parsed.ultrabrainReasoningEffort === "xhigh" || parsed.ultrabrainReasoningEffort === "max"
-        ? parsed.ultrabrainReasoningEffort : DEFAULT_ULTRABRAIN_EFFORT,
+      ultrabrainProviderId,
+      ultrabrainModel: ultrabrainWasTerra ? RECOMMENDED_CODEX_MODEL
+        : promoteLegacyFactoryModel(storedUltrabrainModel, ultrabrainProviderId)
+          || (ultrabrainProviderId === CODEX_PROVIDER_ID ? RECOMMENDED_CODEX_MODEL : DEFAULT_ULTRABRAIN_MODEL),
+      ultrabrainReasoningEffort: ultrabrainWasTerra ? atLeastMediumEffort(ultrabrainEffort)
+        : ultrabrainEffort === "low" || ultrabrainEffort === "medium" || ultrabrainEffort === "xhigh" || ultrabrainEffort === "max"
+          ? ultrabrainEffort : ultrabrainProviderId === CODEX_PROVIDER_ID && ultrabrainEffort !== "high" ? CHATGPT_DEFAULT_EFFORT : DEFAULT_ULTRABRAIN_EFFORT,
       // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.
       apiKey: "",
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
@@ -460,11 +467,10 @@ function loadStoredAiConfig(): AiConfig {
       maxTokens: Number.isFinite(parsed.maxTokens) && !LEGACY_DEFAULT_MAX_TOKENS.has(Number(parsed.maxTokens))
         ? Number(parsed.maxTokens)
         : base.maxTokens,
-      reasoningEffort:
-        parsed.reasoningEffort === "off" || parsed.reasoningEffort === "low" || parsed.reasoningEffort === "medium" || parsed.reasoningEffort === "high"
-          || parsed.reasoningEffort === "xhigh" || parsed.reasoningEffort === "max"
-          ? parsed.reasoningEffort
-          : base.reasoningEffort,
+      reasoningEffort: mainWasTerra ? atLeastMediumEffort(reasoningEffort)
+        : reasoningEffort === "off" || reasoningEffort === "low" || reasoningEffort === "medium" || reasoningEffort === "high"
+          || reasoningEffort === "xhigh" || reasoningEffort === "max"
+          ? reasoningEffort : providerId === CODEX_PROVIDER_ID ? CHATGPT_DEFAULT_EFFORT : base.reasoningEffort,
       // agentMode 백필(위 liteModel 패턴과 동일): 필드가 없는 옛 blob과 이상한 값은
       // 기본값 "auto"로 정규화한다. "chat"만 명시적으로 유지된다.
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
@@ -495,7 +501,10 @@ function parseAssistantRoleSlots(raw: unknown): AiConfig["assistantRoles"] | und
   for (const role of ["smol", "advisor"] as const) {
     const value = (raw as Record<string, unknown>)[role];
     if (value === "off") out[role] = "off";
-    else { const parsed = parseRoleModel(value); if (parsed) out[role] = parsed; }
+    else {
+      const parsed = parseRoleModel(value);
+      if (parsed) out[role] = parsed;
+    }
   }
   return Object.keys(out).length ? out : undefined;
 }
@@ -508,11 +517,15 @@ export function saveAiConfig(config: AiConfig): void {
   // 로컬 CLI 엔진을 고른 동안 loadAiConfig 가 입힌 역할·제공자 칸은 저장하지 않는다 — 엔진을 끄면 원래 계정 설정으로 돌아가야 한다.
   const stored = loadAssistantEngine() ? loadStoredAiConfig() : undefined;
   const owned = stored ? {
-    providerId: stored.providerId, model: stored.model, liteModel: stored.liteModel, roleModels: stored.roleModels, pixelModel: stored.pixelModel,
+    providerId: stored.providerId, model: stored.model, liteModel: stored.liteModel, reasoningEffort: stored.reasoningEffort,
+    roleModels: stored.roleModels, pixelModel: stored.pixelModel,
     ultrabrainProviderId: stored.ultrabrainProviderId, ultrabrainModel: stored.ultrabrainModel, ultrabrainReasoningEffort: stored.ultrabrainReasoningEffort,
   } : {};
   const merged: AiConfig = { ...config, ...owned };
-  const normalized: AiConfig = { ...merged, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(merged.providerId) };
+  const normalized: AiConfig = {
+    ...merged, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(merged.providerId),
+    imageProviderId: DEFAULT_IMAGE_PROVIDER_ID, imageModel: DEFAULT_IMAGE_MODEL,
+  };
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
   if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
     window.dispatchEvent(new CustomEvent(AI_CONFIG_CHANGED_EVENT));
@@ -521,6 +534,10 @@ export function saveAiConfig(config: AiConfig): void {
 
 export function configForLiteModel(config: AiConfig): AiConfig {
   if (config.roleModels?.deep) return configForRole(config, "deep");
+  if (config.authMode === "chatgpt" && (config.providerId === CODEX_PROVIDER_ID || config.providerId === "local-cli:codex")) {
+    const next = configForRole(config, "deep");
+    return { ...next, liteModel: next.model };
+  }
   // liteModel 미설정 시 감독 model을 따라간다(일원화). 감독을 바꾸면 영역 작업 실행도 함께 바뀌고,
   // 각 authMode(chatgpt OAuth / apiKey)의 baseUrl·게이트웨이 경로가 일관되게 유지된다.
   // DEFAULT_LITE_MODEL은 defaultAiConfig() 초기값으로만 의미를 가진다.

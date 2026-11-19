@@ -1,5 +1,6 @@
 // 인게임 컷신을 만든 모델과 다른 계열의 독립 판정자가 «맵 그림 + 핵심 장면 시트 + 객관 측정치»를 보고 합격 여부를 가린다.
 // 판정자를 호출하지 못하면 막지 않고 'unjudged' 로 남긴다 — 판정 불가를 합격으로 보고하지 않는다.
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL } from '../../src/ai/chatgptDefault.ts';
 import { completeProvider } from './ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from './aiAuthRuntime.ts';
 import { jpegDataUrl } from './jpegShrink.ts';
@@ -13,7 +14,7 @@ export type CutsceneCritique = {
 
 const JUDGES = [
   { id: 'gemini', provider: 'google-antigravity', model: 'gemini-3.8-flash', effort: 'medium' },
-  { id: 'gpt', provider: 'openai-codex', model: 'gpt-6.1-sol', effort: 'medium' },
+  { id: 'gpt', provider: 'openai-codex', model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT },
 ] as const;
 
 const RUBRIC = `You are a strict director reviewing an in-game opening cutscene for a 2D game, judging ONLY from the evidence given: (1) a render of the real start map, (2) a contact sheet of key frames of the scripted cutscene (pictures drawn over a plain backdrop; built-in pictures may appear as grey boxes), (3) measured numbers from a deterministic probe (visible seconds, size relative to the screen, travel, overlap, tint/weather/sound counts).

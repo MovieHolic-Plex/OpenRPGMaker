@@ -33,6 +33,7 @@ import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import type { ChoiceCancelBehavior, Command, Dir, GameMap, MoveCommand, Project } from "@/project/types";
 import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
+import { AUTORUN_REPEAT_LIMIT, createSafetyStop, type RuntimeSafetyStop } from "@/player/runtimeSafetyStop";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { machineSkillOf, previewMonsterMachine, useItemFromMenu } from "@/player/playerItemUse";
 import { grantEscapeGrace, recordDungeonEntrance, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
@@ -71,6 +72,7 @@ import { terrainRecordAt } from "@/project/terrainAt";
 import { scaledEncounterRate } from "@/project/terrainStep";
 import { monsterBattlePartyOf, monsterSpeciesForEnemy } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { weatherKindFromSession } from "@/player/playSceneWeather";
 import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
@@ -381,6 +383,8 @@ export interface SceneTestResult {
   };
   readonly log: readonly string[];
   readonly session: PlaySession;
+  /** 끝나지 않는 실행을 멈춘 기록. 있으면 ok 는 false 이고 failureReason 이 첫 기록의 문장이다. */
+  readonly safetyStops?: readonly RuntimeSafetyStop[];
 }
 
 type PumpStop =
@@ -450,6 +454,10 @@ interface RunnerState {
     | { mode: "animation" } | { mode: "shop"; step: ShopStep }
   )) | null;
   runtimeFailure: string | null;
+  /** 테스트 안전 레일 기록(runtimeSafetyStop.ts). 결과 safetyStops 로 도구에 그대로 넘긴다. */
+  readonly safetyStops: RuntimeSafetyStop[];
+  /** 걸음 없이 같은 자동 실행이 다시 시작된 횟수. 플레이어가 한 칸 움직이면 비운다. */
+  readonly autorunRepeats: Map<string, number>;
   executingEventId?: string;
   lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
   rewardBaseline: { gold: number; inventory: Record<string, number>; monsters: Record<string, number> };
@@ -759,6 +767,8 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     gameOver: false,
     held: null,
     runtimeFailure: null,
+    safetyStops: [],
+    autorunRepeats: new Map(),
     rewardBaseline: { gold: session.gold, inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
   };
   initializeFieldSpawnsForRunner(state);
@@ -942,6 +952,7 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   const previous = { x: state.session.x, y: state.session.y };
   state.session.x = x;
   state.session.y = y;
+  state.autorunRepeats.clear();
   recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
   // 섬하는 경로와 같은 순서: 드나듦 → 접촉 → 인카운터.
@@ -960,6 +971,7 @@ function movePlayerToReachableTarget(state: RunnerState, x: number, y: number): 
   const previous = { x: state.session.x, y: state.session.y };
   state.session.x = x;
   state.session.y = y;
+  state.autorunRepeats.clear();
   recordFollowerPlayerStep(state.session, { ...previous, direction: state.facing });
   syncFollowCamera(state);
   const transition = fireLocationTransitionsForRunner(state);
@@ -1344,6 +1356,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   }
   const interp = createInterpreter([...commands], state.session, state.project, {
     currentEventId: view.event.id, eventPositions: state.eventPositions,
+    onSafetyStop: (stop) => recordRunnerSafetyStop(state, stop),
     ...(proof ? { beforeCommand: (command: Command) => proofCommand(state, command), onUnverified: unverified } : {}),
   });
   state.log.push(`event ${view.event.id} start`);
@@ -1726,6 +1739,8 @@ function runAutoTriggers(state: RunnerState): string | null {
   for (const event of autos) {
     const key = `${state.session.currentMapId}:${event.event.id}:${event.pageId ?? "legacy"}`;
     if (state.autoStartedKeys.has(key)) continue;
+    const repeat = admitRunnerAutorun(state, key, { eventId: event.event.id });
+    if (repeat) return repeat;
     state.autoStartedKeys.add(key);
     const failure = runEventView(state, event);
     if (failure) return failure;
@@ -1740,6 +1755,8 @@ function runAutoTriggers(state: RunnerState): string | null {
       continue;
     }
     if (state.autoStartedKeys.has(key) || state.held || state.inCommonAuto) continue;
+    const repeat = admitRunnerAutorun(state, key, { commonEventId: commonEvent.id });
+    if (repeat) return repeat;
     state.autoStartedKeys.add(key);
     state.inCommonAuto = true;
     let failure: string | null;
@@ -1753,10 +1770,27 @@ function runAutoTriggers(state: RunnerState): string | null {
   return null;
 }
 
+function recordRunnerSafetyStop(state: RunnerState, stop: RuntimeSafetyStop): void {
+  const located = { ...stop, mapId: stop.mapId ?? state.session.currentMapId };
+  state.safetyStops.push(located);
+  state.log.push(`safety-stop ${located.kind}: ${located.message}`);
+  state.runtimeFailure ??= located.message;
+}
+
+function admitRunnerAutorun(state: RunnerState, key: string, owner: { readonly eventId?: string; readonly commonEventId?: string }): string | null {
+  const count = (state.autorunRepeats.get(key) ?? 0) + 1;
+  state.autorunRepeats.set(key, count);
+  if (count <= AUTORUN_REPEAT_LIMIT) return null;
+  recordRunnerSafetyStop(state, createSafetyStop({ kind: "autorun-repeat", limit: AUTORUN_REPEAT_LIMIT, ...owner }));
+  return state.runtimeFailure;
+}
+
 function runCommonEventForRunner(state: RunnerState, commonEvent: { id: string; commands: readonly Command[] }): string | null {
   if (commonEvent.commands.length === 0) return null;
   state.log.push(`common ${commonEvent.id} start`);
-  const interp = createInterpreter([...commonEvent.commands], state.session, state.project);
+  const interp = createInterpreter([...commonEvent.commands], state.session, state.project, {
+    onSafetyStop: (stop) => recordRunnerSafetyStop(state, { ...stop, eventId: undefined, commonEventId: commonEvent.id }),
+  });
   const stop = pump(state, interp, interp.start());
   if (stop.stop === "failed") return stop.reason;
   if (stop.stop !== "done") return `common ${commonEvent.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
@@ -2080,7 +2114,7 @@ function applyNpcSchedulesForRunner(state: RunnerState): void {
     for (const event of map.events) {
       if (!event.schedule?.length) continue;
       activeIds.add(event.id);
-      const target = npcScheduleTargetForEvent(map.id, event, state.session.gameTime);
+      const target = npcScheduleTargetForEvent(map.id, event, state.session.gameTime, weatherKindFromSession(state.session));
       if (!target) continue;
       const targetMap = state.runtimeMaps[target.mapId];
       if (!targetMap) continue;
@@ -2134,7 +2168,9 @@ function runDayEndHookForRunner(state: RunnerState): string | null {
   if (!hook?.commands.length) return null;
   if (state.rewardProof) return "NPC reward unverified: calendar common-event hook";
   state.log.push(`onDayEnd ${hook.id} start`);
-  const interp = createInterpreter([...hook.commands], state.session, state.project);
+  const interp = createInterpreter([...hook.commands], state.session, state.project, {
+    onSafetyStop: (stop) => recordRunnerSafetyStop(state, { ...stop, eventId: undefined, commonEventId: hook.id }),
+  });
   const stop = pump(state, interp, interp.start());
   if (stop.stop === "failed") return stop.reason;
   if (stop.stop === "choices" || stop.stop === "present" || stop.stop === "animation") return `onDayEnd ${hook.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
@@ -3201,7 +3237,10 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
   }
 }
 
-const withHeld = (out: SceneTestResult, state: RunnerState): SceneTestResult => state.held ? { ...out, heldMode: state.held.mode } : out;
+const withHeld = (out: SceneTestResult, state: RunnerState): SceneTestResult => {
+  const held = state.held ? { ...out, heldMode: state.held.mode } : out;
+  return state.safetyStops.length ? { ...held, safetyStops: [...state.safetyStops] } : held;
+};
 
 function result(
   ok: boolean,

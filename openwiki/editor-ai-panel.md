@@ -1436,18 +1436,18 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
-**조수 출하 기본 = Claude · Opus 5.5 · medium (오너 결정 2026-11-16).** 「이 openrpgmaker 의 출시를 빠르게 하기 위해서라도, 조수의 기본 model 을 opus 5.5 medium 으로 해라.」
+**조수 출하 기본 = ChatGPT · GPT-6.2 Sol · medium (오너 결정 2026-11-19).** Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다.
 Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)이 **`claude-opus-5-5` · `medium` 한 모델**이다. Haiku 워커·팀장 나누기와 감독만 `high` 로 두던 것을 기본에서 뺐다(오너: Haiku 로는 게임을 못 만든다). 나누기·다른 모델은 설정에서 고른다.
 
 | 들어가는 길 | 기본이 풀리는 값 | 정하는 곳 |
 |---|---|---|
-| 새 설치(저장 없음) | `anthropic` / `claude-opus-5-5` / medium — 모든 역할·감독. 도트 칸은 비어 계획 모델을 따른다 | `defaultAiConfig()`, `RECOMMENDED_OH_MY_PI_PROVIDER = anthropic`(제공자 목록 맨 앞) |
+| 새 설치(저장 없음) | `openai-codex` / `gpt-6.2-sol` / medium — 모든 역할·감독. 도트 칸은 계획 모델을 따른다 | `defaultAiConfig()` |
 | 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-opus-5-5` 하나 · medium, 팀장 없음 | 첫 실행 마법사 `teamScoreboard.ts chooseTeam`(Opus 를 쓸 수 있으면 Opus 혼자) → `applyTeamPlan`. `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
 | Anthropic 키(`ANTHROPIC_API_KEY`) | 입양한 엔드포인트 `openai-compat:…` / `claude-opus-5-5` / medium — 모든 역할·감독 | `keyRouteAdoptModel("claude")` = opus, `providerSelection.ts`. 이 길은 추론 강도를 보내지 않는다(`KEY_ROUTES.claude.reasoningMode = none`) — Opus 5.5 의 API 기본이 medium 이다 |
 | 편집기 안 Claude 계정(설정에서 Claude 를 고름) | `anthropic` / `claude-opus-5-5` / medium — 모든 역할·감독 | `modelPresets.ts`(anthropic 두 티어 모두 Opus) + `providerSelection.ts`(감독도 medium) |
-| ChatGPT 만 | 지난 기본 그대로: Codex CLI 는 `gpt-6.1-terra` 혼자 medium, 편집기 안 로그인은 Terra medium · 감독 high | 마법사 → `configForPlanAccount` |
+| ChatGPT 구독 또는 로그인 | Codex CLI 와 편집기 안 로그인 모두 `gpt-6.2-sol` · medium | 마법사 → `applyTeamPlan` · `configForPlanAccount` |
 | Google 만 | 지난 기본 그대로: `gemini-4-argon` medium · 감독 high | 마법사 → `configForProviderSelection` |
-| 저장된 설정이 있음 | 그대로(Google·ChatGPT 로 저장된 설정을 Claude 로 옮기지 않는다) | `loadAiConfig` |
+| 저장된 설정이 있음 | Terra 제작 역할은 Sol 로 읽는다 | `loadAiConfig` · `loadAssistantEngine` |
 
 **소급(PR #2535 와 같은 규칙 — 저장값이 옛 기본과 똑같을 때만, 읽을 때 올리고 디스크에는 쓰지 않는다):** ① 표식 없는 엔진 선택이 옛 Claude 구독 기본(Haiku 워커 + Opus 팀장 · medium · `teamLead`)과 똑같으면 Opus 하나로 읽는다
 (`localCliEngine.ts promoteLegacyEngineDefault`. 저장은 `policyVersion: 2` 를 찍으므로 그 뒤에 사람이 다시 고른 나누기는 그대로다) ② Claude 계정을 골랐을 때 제품이 채운 Haiku 칸(직접 고른 표시가 없는 칸)은 Opus 로 읽는다
@@ -4547,8 +4547,8 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | 로그인 | 고르면 | 비고 |
 |---|---|---|
 | Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · `claude-opus-5-5` 하나 · medium(팀장 없음) | 오너 결정 2026-11-16. 그 전에는 워커 `claude-haiku-5-5` + 팀장 `claude-opus-5-5`(`teamLead: true`)였다 — 지금은 설정에서 모델을 나눈 사람만 `request.lead` 가 실린다 |
-| Codex CLI ChatGPT 로그인 | 엔진 `codex` · `gpt-6.1-terra` 혼자 | |
-| 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로 + 모든 역할·계획을 `gpt-6.1-terra` 로(`configForPlanAccount`, 직접 고른 칸은 그대로) | 앱 경로 확장(`scripts/lib/ohMyPiModel.ts` CODEX_GPT6_EXTENSION)·카탈로그에 Terra 를 넣었다. 2026-11-03 앱 경로 실제 호출 OK |
+| Codex CLI ChatGPT 로그인 | 엔진 `codex` · `gpt-6.2-sol` · medium | 2026-11-19 오너 결정 |
+| 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로 + 제작 역할·계획을 `gpt-6.2-sol` · medium 으로(`configForPlanAccount`) | 앱 경로 확장(`scripts/lib/ohMyPiModel.ts`)에 Sol·Astra 6.2 를 등록했다 |
 | Gemini CLI 구글 로그인 / 편집기 안 Google 로그인 | 그 엔진·계정의 지금 기본값 | |
 
 API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사용자(`oprn:assistant-engine` 있음)는 후보가 아니다. 환경 변수 키 동의 규칙은 동반 서비스 그대로다.
@@ -4762,17 +4762,11 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
 - 서버가 AI 를 껐을 때(`hostAiDisabled`) 잠금 막(`aiLockScrim`)과 칩은 같은 「AI 서버에서 꺼짐」 문구를 쓰고, 소용없는 로그인 버튼은 숨긴다. AI 입구 4곳은 그대로 둔다. 대화/조수 탭에는 설명 title 이 붙는다.
 - (UI 감사 2026-10-21) 같은 판정을 더 따른다: AI 설정 「연결」 탭의 계정 카드 배지는 503(`OPRN_HOST_OWNER_AI`)이면 「확인 실패」 대신 「AI 서버에서 꺼짐」(`cardAuth` 의 `"hostDisabled"`), 스튜디오 「내 요청」 유휴 줄은 「AI 꺼짐」 / 평소 「요청 없음」(예전 「대기 중」). 잠금 막이 덮는 동안 막 뒤 본문(스타터·대화 기록, `.ai-chat-body` 의 막 아닌 자식)은 `inert` 라 Tab 이 그리로 들어가지 않는다 — 컴포저는 body 밖이라 살아 있다.
 
-## 그림 기본값은 ChatGPT, 모델 이름은 런타임에 고른다 (2026-11-07 실측)
+## 생성형 그림은 ChatGPT 한 경로 (2026-11-19 오너 결정)
 
-- **기본 제공자**: `DEFAULT_IMAGE_PROVIDER_ID = openai-codex`, `DEFAULT_IMAGE_MODEL = codex-image-default`.
-  새 설정과 「그림 칸이 저장돼 있지 않은 옛 blob」 이 모두 ChatGPT 로 간다. 오너 규칙(그대로): 「엥 ? 이미지는 chatgpt 로 그려」.
-- **자동 대체 없음**: 예전에는 ChatGPT 자격이 없으면 `generateAiImage` 가 조용히 `google-antigravity` 로 갈아탔다.
-  그림은 나오지만 사용자는 Google 화풍으로 그려졌다는 사실을 들을 곳이 없었다 → **그 분기를 삭제**했다.
-  이제 자격이 없으면 제공자가 401 과 「AI 설정 → 「그림·도트 모델」에서 ChatGPT 를 연결 … Google 로 그리려면 같은 화면에서 Google 을 직접 고르세요」를 돌려준다.
-  `FALLBACK_IMAGE_PROVIDER_ID`/`FALLBACK_IMAGE_MODEL` 상수는 없다. Google 은 UI 에서 명시 선택할 때만 쓴다.
-- **모델 이름을 박지 않는다**: `src/ai/imageModelResolution.ts` 의 `pickNewestImageModel` 이 목록에서 고른다
-  (kind=image → priority → revision → id, 결정적). 목록이 비면 `null` 이고 호출자가 자기 최후 수단을 쓴다.
-  `IMAGE_MODEL_ROWS` 에 `revision` 을 넣어 새 줄만 더하면 기본값이 따라온다.
+- 에디터의 그림 모델은 `openai-codex / codex-image-default` 다. 저장된 옛 그림 모델·제공자는 설정을 읽을 때 맞추고 다음 저장에 반영한다. 설정의 그림 선택지와 역할표도 같은 모델을 표시한다.
+- 브라우저의 `generateAiImage`, 동반 서비스의 `/v1/images/generations`, Pi 워커의 `createWorkerImageGenerator` 가 같은 경로를 쓴다. 걷기 칩의 char-gen 사진·설명 모드는 그림 단계만 이 경로에 연결한다. 도트 격자 저작과 그림을 읽는 역할은 텍스트 모델 계약을 따른다.
+- ChatGPT 자격이 없으면 401 과 「그림은 ChatGPT 로만 그려요. AI 설정에서 ChatGPT 로그인을 연결해 주세요.」를 올린다. 다른 이미지 제공자로 다시 요청하는 분기는 없다.
 - **Codex 는 모델을 보내지 않는다**: `scripts/lib/codexImageRuntime.ts` 는 `image_generation.model` 을 **생략**하고,
   응답이 `tools[{type:"image_generation", model}]` 로 되돌려 준 값을 `GeneratedImage.model` 로 기록한다.
   실측(2026-11-07 19:49): 모델을 빼자 백엔드가 `gpt-image-2-codex` 를 골랐다(PNG 1,071,169 B). 고정값은
@@ -4781,12 +4775,7 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
   `generate_battle_backdrop` · `generate_game_over_image` · `generate_character_appearance`)이
   `{status:"ui-required"}` 를 `ok:true` 로 돌려주던 것을 `image-generation-unavailable` 하드 오류로 바꿨다
   (`imageGenerationHandoffRefusedError`). 세션 v1·Pi 는 run 전에 가로채므로, 여기까지 오는 호출은 생성기가 없는 경로뿐이다.
-- **openai 호환 엔드포인트는 그림 미지원**: `openai-compat:*` 로 그림을 요청하면 409 다. 문구를 「Google Antigravity 경로만 지원」에서
-  실제 사실(ChatGPT·Google 중 하나를 고르라)로 고쳤다. 참고: 프록시(127.0.0.1:10200)는 `/v1/images/generations` 에서
-  **model 을 무시**하고(가짜 모델명도 200, 응답에 model 없음) 그림을 돌려준다 — 그 경로에서는 무엇이 그렸는지 증명할 수 없다.
-- **테스트**: `test/imageModelResolution.test.ts`(신규), `test/imageGenerationUnavailableNotice.test.ts`(문구 고정 제거,
-  코드·ToolError.name/code·게이트 종류/개수·실제 레지스트리 도구의 하드 실패를 검사), `test/aiImageSettings.test.ts`(옛 blob 기본값),
-  `test/imageGenerationClient.test.ts`(기본 제공자 id 단언).
+- 계약 검사는 `test/imageRoute.test.ts`, `test/aiImageSettings.test.ts`, `test/imageGenerationClient.test.ts`, `test/ohMyPiHttp.node.test.mjs` 에 둔다.
 - **매트릭스**: 인증 × 런타임 실측표는 `~/claude-viz/terra-fun-game.html` 절 5 (http://mdc-server:18301/terra-fun-game.html).
 
 

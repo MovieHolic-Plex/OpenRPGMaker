@@ -1,7 +1,7 @@
 // 제공자 레지스트리: 앞의 셋은 Codex(ChatGPT) · Claude · Antigravity(Gemini) 이고, 나머지는 뒤에 덧붙는다.
 //
 // 2026-11-02 abaa03e78f 로 레지스트리가 2종 → 17종(OMP 가 로그인해 둔 제공자)으로 늘었다. 첫 항목이 권장 제공자이고
-// (2026-11-19 오너 결정: ChatGPT — 조수 기본은 GPT-6.1 Terra medium. 2026-11-16 에는 Claude 였다), 옛 저장값의 기본 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER 다.
+// (2026-11-19 오너 결정: ChatGPT — 조수 기본은 GPT-6.2 Sol medium. 2026-11-16 에는 Claude 였다), 옛 저장값의 기본 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER 다.
 // 모든 제공자는 구독 로그인(oauth)이다 — API 키 제공자는 없다.
 import { describe, expect, it } from "vitest";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -57,7 +57,7 @@ describe("oh-my-pi provider catalog", () => {
 
     const codex = getOhMyPiProvider(CODEX_PROVIDER_ID);
     expect(codex?.label).toBe("ChatGPT");
-    expect(codex?.defaultModel).toBe("gpt-6.1-sol");
+    expect(codex?.defaultModel).toBe("gpt-6.2-sol");
 
     const claude = getOhMyPiProvider("anthropic");
     expect(claude?.label).toBe("Claude");

@@ -13,16 +13,17 @@
 // 고르는 규칙: 쓸 수 있는 모델로 만들 수 있는 조합을 더 많이 채점한 표를 쓰고(같으면 판 수가 큰 full), 그 표에서
 // 최고 품질에서 1점 이내인 조합 중 가장 싼 것을 고른다.
 // 단, 기본 혼자 모델(SOLO_DEFAULT_WORKERS, 앞이 먼저)을 쓸 수 있으면 점수·값을 견주지 않고 「그 모델 혼자」 를 고른다:
-//   ① GPT-6.1 Terra — 오너 결정 2026-11-19: 조수 기본 AI 는 ChatGPT. ChatGPT(Codex 구독·로그인)가 있으면 Claude 가 있어도 Terra 혼자다.
+//   ① GPT-6.2 Sol — 오너 결정 2026-11-19: ChatGPT(Codex 구독·로그인)가 있으면 Sol · medium 혼자다(teamPlan.ts).
 //   ② Opus 5.5 — 오너 결정 2026-11-16: ChatGPT 가 없고 Claude 가 있으면 Opus 5.5 · medium 한 모델. Haiku 워커로는 게임을 못 만든다고 보아
 //      팀장·워커 나누기를 기본에서 뺐다.
-// 나눈 조합(Opus 팀장 + Haiku/Terra 워커 등)은 설정에서 고를 수 있다. 둘 다 없을 때의 규칙은 그대로다.
 //
 // 순수 모듈 — 브라우저와 Node 가 같이 읽는다.
 
+import { ASSISTANT_CHATGPT_MODEL } from "./chatgptDefault.ts";
+
 export type ModelFamily = "claude" | "openai" | "google" | "deepseek";
 
-export type TeamModelKey = "opus" | "sonnet" | "haiku" | "astra" | "sol" | "terra" | "luna" | "argon" | "flash" | "deepseek";
+export type TeamModelKey = "opus" | "sonnet" | "haiku" | "astra" | "sol" | "sol62" | "terra" | "luna" | "argon" | "flash" | "deepseek";
 
 export interface TeamModel {
   readonly key: TeamModelKey;
@@ -32,13 +33,14 @@ export interface TeamModel {
   readonly label: string;
 }
 
-/** 첫 실행이 쓰는 최신 모델 열 — 오너 지시(2026-11-04): Opus·Sonnet·Haiku 5.5, Astra 6·Sol 6.1·Terra 6.1·Luna 6, Gemini 4 Argon·3.8 Flash, DeepSeek V4.1 Flash. */
+/** 첫 실행 모델과 점수표가 비교한 당시 모델. */
 export const TEAM_MODELS: Readonly<Record<TeamModelKey, TeamModel>> = {
   opus: { key: "opus", family: "claude", id: "claude-opus-5-5", label: "Opus 5.5" },
   sonnet: { key: "sonnet", family: "claude", id: "claude-sonnet-5-5", label: "Sonnet 5.5" },
   haiku: { key: "haiku", family: "claude", id: "claude-haiku-5-5", label: "Haiku 5.5" },
   astra: { key: "astra", family: "openai", id: "gpt-6-astra", label: "GPT-6 Astra" },
   sol: { key: "sol", family: "openai", id: "gpt-6.1-sol", label: "GPT-6.1 Sol" },
+  sol62: { key: "sol62", family: "openai", id: ASSISTANT_CHATGPT_MODEL, label: "GPT-6.2 Sol" },
   terra: { key: "terra", family: "openai", id: "gpt-6.1-terra", label: "GPT-6.1 Terra" },
   luna: { key: "luna", family: "openai", id: "gpt-6-luna", label: "GPT-6 Luna" },
   argon: { key: "argon", family: "google", id: "gemini-4-argon", label: "Gemini 4 Argon" },
@@ -48,7 +50,7 @@ export const TEAM_MODELS: Readonly<Record<TeamModelKey, TeamModel>> = {
 
 export const FAMILY_MODEL_KEYS: Readonly<Record<ModelFamily, readonly TeamModelKey[]>> = {
   claude: ["opus", "sonnet", "haiku"],
-  openai: ["astra", "sol", "terra", "luna"],
+  openai: ["astra", "sol", "sol62", "terra", "luna"],
   google: ["argon", "flash"],
   deepseek: ["deepseek"],
 };
@@ -95,8 +97,8 @@ export const SCORE_ROWS: readonly ScoreRow[] = [
 /** 최고 품질에서 이 점수 이내인 조합이면 «거의 같다» 로 보고 더 싼 쪽을 고른다. */
 export const NEAR_BEST_POINTS = 1;
 
-/** 이 모델들(앞이 먼저)을 쓸 수 있으면 다른 조합과 견주지 않고 혼자 맡긴다(오너 결정 2026-11-19 ChatGPT · 2026-11-16 Opus — 머리말). */
-export const SOLO_DEFAULT_WORKERS: readonly TeamModelKey[] = ["terra", "opus"];
+/** 점수표 안에서 우선하는 단독 모델(2026-11-16 오너 결정). Sol 6.2 는 측정값 없이 teamPlan 에서 고른다. */
+export const SOLO_DEFAULT_WORKERS: readonly TeamModelKey[] = ["opus"];
 
 export interface TeamChoice {
   readonly lead?: TeamModelKey;

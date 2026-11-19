@@ -1,6 +1,7 @@
 // 오프닝 그림 후보를 독립 판정자가 비교해 하나를 고른다. 생성 모델(ChatGPT)과 다른 계열의 판정자를 먼저 쓴다.
 // 모델 호출이 실패하면 막지 않고 첫 후보로 진행하되 verdict 를 'unjudged' 로 남긴다 — 판정 불가를 합격으로 보고하지 않는다.
 import { jpegDataUrl } from './jpegShrink.ts';
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL } from '../../src/ai/chatgptDefault.ts';
 import { completeProvider } from './ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from './aiAuthRuntime.ts';
 
@@ -18,7 +19,7 @@ export type StillCritique = {
 
 const JUDGES = [
   { id: 'gemini', provider: 'google-antigravity', model: 'gemini-3.8-flash', effort: 'medium' },
-  { id: 'gpt', provider: 'openai-codex', model: 'gpt-6.1-sol', effort: 'medium' },
+  { id: 'gpt', provider: 'openai-codex', model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT },
 ] as const;
 
 const RUBRIC = `You are a strict art director judging candidate stills for the opening of a 2D game. Judge only what is visible. Be harsh: a pretty but generic image is a failure.

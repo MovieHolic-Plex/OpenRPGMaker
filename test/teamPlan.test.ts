@@ -20,7 +20,7 @@ describe("first-run team defaults from what the user has", () => {
     // 오너 결정 2026-11-16: Claude 를 쓸 수 있으면 Opus 5.5 하나가 계획부터 만들기까지 — Opus 팀장 + Haiku 워커(62.7점·$0.30)가 1점 이내로 더 싸도 고르지 않는다.
     expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
     expect(shape(buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" })] })))).toEqual({ lead: undefined, worker: "opus", route: "key" });
-    expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
+    expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex")] })))).toEqual({ lead: undefined, worker: "sol62", route: "account" });
     expect(shape(buildTeamPlan(inputs({ keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "deepseek", route: "key" });
   });
 
@@ -30,9 +30,9 @@ describe("first-run team defaults from what the user has", () => {
     expect(plan?.choice).toBeUndefined();
   });
 
-  it("prefers ChatGPT (Terra alone) over Claude when a ChatGPT subscription or login is present — owner decision 2026-11-19", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
+  it("prefers ChatGPT (Sol alone) over Claude when a ChatGPT subscription or login is present — owner decision 2026-11-19", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "sol62", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "sol62", route: "account" });
     expect(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] }))?.routes).toEqual([{ kind: "cli", cli: "codex" }]);
   });
 
@@ -42,9 +42,9 @@ describe("first-run team defaults from what the user has", () => {
     expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
   });
 
-  it("gives ChatGPT Terra alone, with or without Google", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
+  it("gives ChatGPT Sol alone, with or without Google", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("codex")] })))).toEqual({ lead: undefined, worker: "sol62", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "sol62", route: "account" });
   });
 
   it("returns nothing when nothing usable is found", () => {
@@ -65,12 +65,12 @@ describe("first-run team defaults from what the user has", () => {
     expect(routes.get("haiku")?.route.kind).toBe("cli");
   });
 
-  it("only lists the latest models the owner named", () => {
+  it("lists product defaults and the models measured by the scoreboard", () => {
     expect(Object.values(TEAM_MODELS).map((model) => model.id).sort()).toEqual([
       "claude-haiku-5-5", "claude-opus-5-5", "claude-sonnet-5-5",
       "deepseek-v4.1-flash",
       "gemini-3.8-flash", "gemini-4-argon",
-      "gpt-6-astra", "gpt-6-luna", "gpt-6.1-sol", "gpt-6.1-terra",
+      "gpt-6-astra", "gpt-6-luna", "gpt-6.1-sol", "gpt-6.1-terra", "gpt-6.2-sol",
     ]);
     expect(Object.values(FAMILY_MODEL_KEYS).flat().sort()).toEqual(Object.keys(TEAM_MODELS).sort());
   });
@@ -86,16 +86,14 @@ describe("score table", () => {
     }
   });
 
-  it("picks Terra alone whenever Terra is usable, else Opus alone, with that row's measured score and cost", () => {
-    expect(SOLO_DEFAULT_WORKERS).toEqual(["terra", "opus"]);
+  it("prefers Opus alone in the scoreboard when available", () => {
+    expect(SOLO_DEFAULT_WORKERS).toEqual(["opus"]);
     const choice = chooseTeam(new Set(["opus", "haiku"]));
     expect(choice?.lead).toBeUndefined();
     expect(choice).toMatchObject({ worker: "opus", table: "full", quality: 63.5, costUsd: 1.832, n: 33 });
     const everything = chooseTeam(new Set(Object.keys(TEAM_MODELS) as TeamModelKey[]));
     expect(everything?.lead).toBeUndefined();
-    expect(everything).toMatchObject({ worker: "terra", table: "pick3", quality: 70.3 });
-    // 호출부가 Terra 를 빼면(키로만 쓸 수 있을 때) Opus 혼자다.
-    expect(chooseTeam(new Set(Object.keys(TEAM_MODELS) as TeamModelKey[]), ["opus"])).toMatchObject({ worker: "opus", table: "pick3", quality: 72.9 });
+    expect(everything).toMatchObject({ worker: "opus", table: "pick3", quality: 72.9 });
     // 그 표의 최고 점수(Opus 팀장 + Terra 워커 74.9)는 그대로 적는다 — 점수를 고쳐 쓰지 않는다.
     expect(everything!.bestQuality).toBe(74.9);
   });

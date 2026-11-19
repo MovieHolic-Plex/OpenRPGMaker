@@ -1,7 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
-import { generateAiImage, imageGenerationUsesOtherProvider } from "@/ai/imageGenerationClient";
+import { generateAiImage } from "@/ai/imageGenerationClient";
 import { renderAiSettingsForm } from "@/editor/panels/aiSettingsModal";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -41,118 +41,54 @@ function form() {
     if (!control) throw new Error(id);
     return control;
   };
-  const change = (id: string, value: string) => {
-    const control = get(id);
-    control.value = value;
-    control.dispatchEvent(new Event("change"));
-  };
-  return { get, change };
+  return { get };
 }
 
-describe("independent image settings", () => {
-  it("routes the stored Codex sentinel and preserves returned upstream metadata without changing chat", async () => {
-    const before = { ...defaultAiConfig(), imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" };
-    saveAiConfig(before);
-    const view = form();
-    view.change("ai-config-image-provider", "openai-codex");
-    expect(loadAiConfig()).toMatchObject({
-      providerId: before.providerId, model: before.model, liteModel: before.liteModel,
+describe("ChatGPT image settings", () => {
+  it.each([
+    ["google-antigravity", "gemini-3.1-flash-image"],
+    ["openai-codex", "gpt-image-1"],
+    ["unknown-provider", "unknown-image"],
+    [undefined, undefined],
+  ])("옛 그림 설정(%s / %s)을 읽을 때 ChatGPT 로 맞춘다", (imageProviderId, imageModel) => {
+    const before = { ...defaultAiConfig(), providerId: "google-antigravity", model: "gemini-4-argon", imageProviderId, imageModel };
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(before));
+    const migrated = loadAiConfig();
+    expect(migrated).toMatchObject({
+      providerId: before.providerId, model: before.model,
       imageProviderId: "openai-codex", imageModel: "codex-image-default",
     });
-    expect(view.get("ai-config-image-status").dataset.availability).toBe("supported");
-    const fetch = vi.fn(async (_url: unknown, init?: RequestInit) => {
-      expect(new Headers(init?.headers).get("X-Oprn-Provider")).toBe("openai-codex");
-      expect(JSON.parse(String(init?.body)).model).toBe("codex-image-default");
-      return new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA", provider: "openai-codex", model: "gpt-image-2" } }));
+    expect(loadAiConfig()).toEqual(migrated);
+    saveAiConfig(migrated);
+    expect(JSON.parse(localStorage.getItem(AI_CONFIG_STORAGE_KEY)!)).toMatchObject({
+      imageProviderId: "openai-codex", imageModel: "codex-image-default",
     });
-    const image = await generateAiImage({ prompt: "routing check" }, { fetch });
-    expect(image).toMatchObject({ provider: "openai-codex", model: "gpt-image-2" });
-    expect(loadAiConfig().imageModel).toBe("codex-image-default");
-    expect(fetch).toHaveBeenCalledTimes(1);
-  });
-
-  it("preserves unknown saved image choices when the provider DOM emits change", () => {
-    saveAiConfig({ ...defaultAiConfig(), imageProviderId: "unknown-image-provider", imageModel: "unknown-image-model" });
-    const view = form();
-    expect(() => view.change("ai-config-image-provider", "unknown-image-provider")).not.toThrow();
-    view.change("ai-config-model", "gemini-3.7-flash");
-    expect(loadAiConfig()).toMatchObject({ imageProviderId: "unknown-image-provider", imageModel: "unknown-image-model" });
-    expect(view.get("ai-config-image-model").value).toBe("unknown-image-model");
-    expect(view.get("ai-config-image-status").dataset.availability).toBe("unsupported");
-  });
-
-  it("backfills old chat-only settings with the ChatGPT image route", () => {
-    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "openai-codex", model: "gpt-5.6-sol" }));
-    expect(loadAiConfig()).toMatchObject({ imageProviderId: "openai-codex", imageModel: "codex-image-default" });
-  });
-
-  it("preserves an unsupported saved image choice across chat changes and reopening", () => {
-    // 사용자가 고른 그림 칸만 제공자 전환에서 살아남는다 — 자동 칸은 권장 경로로 다시 맞춘다(da29a9f402).
-    saveAiConfig({ ...defaultAiConfig(), imageProviderId: "openai-codex", imageModel: "gpt-image-1", modelSelectionOverrides: { image: true } });
-    const view = form();
-    view.get("ai-auth-quick-openai-codex").click();
-    view.change("ai-config-model", "gpt-5.6-sol");
-    expect(loadAiConfig()).toMatchObject({ providerId: "openai-codex", imageProviderId: "openai-codex", imageModel: "gpt-image-1" });
-    dispose?.();
-    const reopened = form();
-    expect(reopened.get("ai-config-image-provider").value).toBe("openai-codex");
-    expect(reopened.get("ai-config-image-model").value).toBe("gpt-image-1");
-    expect(reopened.get("ai-config-image-status").dataset.availability).toBe("unsupported");
-  });
-
-  it("changes image selection without changing either chat model or provider", () => {
-    // defaultAiConfig() 는 역할 칸을 Argon 으로 고정한다(#2535) — 이 대화 모델을 쓰려면 역할 칸을 비운다.
-    saveAiConfig({ ...defaultAiConfig(), roleModels: {}, providerId: "openai-codex", model: "gpt-5.6-sol", liteModel: "gpt-5.6-sol", imageProviderId: "openai-codex", imageModel: "gpt-image-1" });
-    const before = loadAiConfig();
-    const view = form();
-    view.change("ai-config-image-provider", "google-antigravity");
-    view.change("ai-config-image-model", "gemini-3.1-flash-image");
-    expect(loadAiConfig()).toMatchObject({ providerId: before.providerId, model: before.model, liteModel: before.liteModel, imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" });
-  });
-
-  it("routes stored selection through the real client and keeps request override, references and abort", async () => {
-    saveAiConfig({ ...defaultAiConfig(), imageProviderId: "openai-codex", imageModel: "gpt-image-1" });
-    const controller = new AbortController();
-    const references = [{ data: "AAAA", mimeType: "image/png" as const }];
-    const seen: RequestInit[] = [];
-    const fetch = vi.fn(async (_url: unknown, init?: RequestInit) => {
-      seen.push(init!);
-      return new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA" } }));
-    });
-    const result = await generateAiImage({ prompt: "test", referenceImages: references, signal: controller.signal }, { fetch });
-    expect(new Headers(seen[0]!.headers).get("X-Oprn-Provider")).toBe("openai-codex");
-    expect(JSON.parse(String(seen[0]!.body))).toMatchObject({ model: "gpt-image-1", referenceImages: references });
-    expect(result).toMatchObject({ provider: "openai-codex", model: "gpt-image-1" });
-    controller.abort();
-    expect(seen[0]!.signal?.aborted).toBe(true);
-    await generateAiImage({ prompt: "test", model: "gemini-3-pro-image", providerId: "google-antigravity" }, { fetch });
-    expect(new Headers(seen[1]!.headers).get("X-Oprn-Provider")).toBe("google-antigravity");
-    expect(JSON.parse(String(seen[1]!.body)).model).toBe("gemini-3-pro-image");
-    expect(loadAiConfig().imageModel).toBe("gpt-image-1");
-  });
-
-  it("compares the selected image provider rather than a fixed provider", () => {
-    expect(imageGenerationUsesOtherProvider({ ...defaultAiConfig(), providerId: "openai-codex", imageProviderId: "openai-codex" })).toBe(false);
-  });
-
-  it("recommends GPT for drawing and switches to it in one click without touching chat", () => {
-    const before = { ...defaultAiConfig(), imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" };
-    saveAiConfig(before);
-    const view = form();
-    const note = view.get("ai-config-image-recommend");
-    expect(note.textContent).toContain("GPT 이미지 모델을 권장합니다.");
-    expect(note.dataset.state).toBe("suggest");
-    const useGpt = view.get("ai-config-image-use-gpt");
-    expect(useGpt.hidden).toBe(false);
-    useGpt.click();
     expect(loadAiConfig()).toMatchObject({
       providerId: before.providerId, model: before.model,
       imageProviderId: "openai-codex", imageModel: "codex-image-default",
     });
-    expect(view.get("ai-config-image-provider").value).toBe("openai-codex");
-    // GPT 를 골랐으면 할 말이 없으므로 추천 줄과 바꾸기 버튼이 함께 숨는다.
-    expect(note.dataset.state).toBe("active");
-    expect(note.hidden).toBe(true);
-    expect(useGpt.hidden).toBe(true);
+  });
+
+  it("제공자와 모델 선택에 ChatGPT 한 항목만 보인다", () => {
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" }));
+    const view = form();
+    expect(view.get("ai-config-image-provider").options.map((option) => option.value)).toEqual(["openai-codex"]);
+    expect(view.get("ai-config-image-model").options.map((option) => option.value)).toEqual(["codex-image-default"]);
+    expect(view.get("ai-config-image-model").value).toBe("codex-image-default");
+    expect(view.get("ai-config-image-status").textContent).toContain("그림은 ChatGPT 로만 그려요");
+  });
+
+  it("ChatGPT 요청에 참조 그림과 취소를 전달하고 실제 응답 모델을 기록한다", async () => {
+    const controller = new AbortController();
+    const referenceImages = [{ data: "AAAA", mimeType: "image/png" as const }];
+    const fetch = vi.fn(async (_url: unknown, _init?: RequestInit) =>
+      new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA", model: "gpt-image-2-codex" } })));
+    const result = await generateAiImage({ prompt: "test", referenceImages, signal: controller.signal }, { fetch });
+    const init = fetch.mock.calls[0]![1]!;
+    expect(new Headers(init.headers).get("X-Oprn-Provider")).toBe("openai-codex");
+    expect(JSON.parse(String(init.body))).toMatchObject({ model: "codex-image-default", referenceImages });
+    expect(result).toMatchObject({ provider: "openai-codex", model: "gpt-image-2-codex" });
+    controller.abort();
+    expect(init.signal?.aborted).toBe(true);
   });
 });

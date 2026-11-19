@@ -1,0 +1,1593 @@
+{
+ "_doc": "한국 도시 지구 종류 — 길 줄(strips, 위→아래), 건물 섞기(mix), 빈 필지 쓰임(lots), 같이 놓는 기물 장면(scenes), 밀도. 구성기 src/project/modernCityKoreanDistrict.ts 가 읽는다. 없는 키트는 조용히 건너뛴다. 연구 tiledata/modern-city/research-kr/README.md. ns = 세로 길 꼴 후보(씨앗이 고른다): through 맵을 꿰는 이면도로 · t-up/t-down 한 길에서 끝나는 T자 · stagger 위아래가 어긋난 두 T자 · lane 차 없는 보행 통로 · none 없음(골목 틈으로만 잇는다).",
+ "oldTier": {
+  "small": [
+   "conv",
+   "cafe",
+   "bakery",
+   "shop",
+   "house-modern",
+   "house"
+  ],
+  "medium": [
+   "low3",
+   "mid4",
+   "office",
+   "bank",
+   "post",
+   "police",
+   "slim",
+   "apartment",
+   "parking",
+   "parking-v2",
+   "row"
+  ],
+  "large": [
+   "mid6",
+   "hotel",
+   "hospital",
+   "office-wide",
+   "apt-balcony",
+   "balcony2",
+   "tower10",
+   "tower10b",
+   "dept",
+   "school",
+   "fire",
+   "fire-escape"
+  ]
+ },
+ "oldProgram": {
+  "shop": "mc_clothing",
+  "slim": "mc_office",
+  "post": "mc_post_office",
+  "police": "mc_police",
+  "fire": "mc_fire_station",
+  "parking": "mc_parking",
+  "parking-v2": "mc_parking",
+  "school": "mc_school_building",
+  "bakery": "mc_bakery_cafe",
+  "house-modern": "mc_house"
+ },
+ "scenery": [
+  "kr-cobbler",
+  "kr-guardhouse",
+  "kr-toilet",
+  "kr-palacegate",
+  "kr-bridgepylon",
+  "kr-clocktower"
+ ],
+ "onePerMap": [
+  "hospital",
+  "dept",
+  "hotel",
+  "police",
+  "fire",
+  "post",
+  "tower10",
+  "tower10b",
+  "school",
+  "kr-hospital",
+  "kr-dept",
+  "kr-church",
+  "kr-jumin",
+  "kr-post",
+  "kr-policebox",
+  "kr-gas",
+  "kr-bathhouse",
+  "kr-subway",
+  "kr-market",
+  "kr-terminal",
+  "kr-library",
+  "kr-gucheong",
+  "kr-cinema",
+  "kr-mart",
+  "kr-elementary"
+ ],
+ "wish": {
+  "conv": [
+   "kr-conv",
+   "kr-lotto",
+   "conv"
+  ],
+  "cafe": [
+   "kr-cafe",
+   "kr-hanokcafe",
+   "cafe"
+  ],
+  "bank": [
+   "kr-bank",
+   "bank"
+  ],
+  "hospital": [
+   "kr-hospital",
+   "kr-clinic",
+   "hospital"
+  ],
+  "office": [
+   "kr-sangga5",
+   "kr-officetel",
+   "office",
+   "mid4"
+  ],
+  "office-wide": [
+   "office-wide",
+   "kr-officetel"
+  ],
+  "hotel": [
+   "hotel"
+  ],
+  "dept": [
+   "kr-dept",
+   "dept"
+  ],
+  "apartment": [
+   "kr-villa",
+   "kr-apt-tower",
+   "kr-apt-corridor",
+   "apartment",
+   "apt-balcony"
+  ],
+  "house": [
+   "kr-dasedae",
+   "kr-villa",
+   "house-modern"
+  ],
+  "warehouse": [
+   "warehouse",
+   "kr-hardware"
+  ],
+  "izakaya": [
+   "kr-chicken",
+   "kr-pcnorae"
+  ],
+  "bakery": [
+   "kr-ricecake",
+   "bakery"
+  ],
+  "post": [
+   "kr-post",
+   "post"
+  ],
+  "police": [
+   "kr-policebox",
+   "police"
+  ],
+  "fire": [
+   "fire"
+  ],
+  "parking": [
+   "parking",
+   "parking-v2"
+  ],
+  "shop": [
+   "kr-stationery",
+   "kr-fruit",
+   "shop"
+  ],
+  "tower10": [
+   "tower10",
+   "kr-tower"
+  ]
+ },
+ "mixes": {
+  "shop": {
+   "tiers": {
+    "small": 5,
+    "medium": 4,
+    "large": 1
+   },
+   "prefer": [
+    "kr-conv",
+    "kr-bunsik",
+    "kr-chicken",
+    "kr-cafe",
+    "kr-pharmacy",
+    "kr-salon",
+    "kr-sangga3",
+    "kr-sangga5",
+    "kr-pcnorae",
+    "kr-hagwon",
+    "conv",
+    "cafe",
+    "shop",
+    "low3",
+    "mid4"
+   ],
+   "avoid": [
+    "school",
+    "fire",
+    "warehouse",
+    "kr-apt-corridor",
+    "kr-apt-tower",
+    "kr-elementary",
+    "kr-factory",
+    "row",
+    "house"
+   ]
+  },
+  "villa": {
+   "tiers": {
+    "small": 3,
+    "medium": 5,
+    "large": 0.4
+   },
+   "prefer": [
+    "kr-villa",
+    "kr-dasedae",
+    "kr-gosiwon",
+    "kr-laundry",
+    "kr-realty",
+    "kr-lotto",
+    "kr-church",
+    "kr-bathhouse",
+    "low3",
+    "apartment",
+    "house-modern",
+    "slim",
+    "row",
+    "house"
+   ],
+   "avoid": [
+    "dept",
+    "hotel",
+    "tower10",
+    "office-wide",
+    "hospital",
+    "fire",
+    "kr-dept",
+    "kr-mart",
+    "kr-cinema"
+   ]
+  },
+  "apt": {
+   "tiers": {
+    "small": 0.3,
+    "medium": 2,
+    "large": 5
+   },
+   "prefer": [
+    "kr-apt-corridor",
+    "kr-apt-tower",
+    "kr-officetel",
+    "apartment",
+    "apt-balcony",
+    "balcony2",
+    "tower10b",
+    "fire-escape",
+    "kr-villa"
+   ],
+   "avoid": [
+    "dept",
+    "hotel",
+    "hospital",
+    "fire",
+    "school",
+    "warehouse",
+    "office-wide",
+    "tower10",
+    "police",
+    "post",
+    "bank",
+    "kr-dept",
+    "kr-mart"
+   ],
+   "limit": 4,
+   "space": 0,
+   "repeat": true
+  },
+  "office": {
+   "tiers": {
+    "small": 1.5,
+    "medium": 4,
+    "large": 4
+   },
+   "prefer": [
+    "tower10",
+    "office-wide",
+    "mid6",
+    "hotel",
+    "dept",
+    "bank",
+    "kr-bank",
+    "kr-officetel",
+    "kr-sangga5",
+    "kr-dept",
+    "kr-cinema",
+    "kr-gucheong",
+    "office",
+    "mid4"
+   ],
+   "avoid": [
+    "house-modern",
+    "warehouse",
+    "school",
+    "kr-dasedae",
+    "kr-villa",
+    "kr-apt-corridor",
+    "row",
+    "house"
+   ]
+  },
+  "market": {
+   "tiers": {
+    "small": 6,
+    "medium": 2
+   },
+   "prefer": [
+    "kr-fruit",
+    "kr-butcher",
+    "kr-ricecake",
+    "kr-bunsik",
+    "kr-hardware",
+    "kr-market",
+    "kr-lotto",
+    "shop",
+    "conv",
+    "bakery",
+    "low3"
+   ],
+   "avoid": [
+    "tower10",
+    "tower10b",
+    "office-wide",
+    "hotel",
+    "dept",
+    "school",
+    "fire",
+    "hospital",
+    "row",
+    "house"
+   ],
+   "rowLimit": 3
+  },
+  "campus": {
+   "tiers": {
+    "small": 5,
+    "medium": 4,
+    "large": 1
+   },
+   "prefer": [
+    "kr-cafe",
+    "kr-stationery",
+    "kr-gosiwon",
+    "kr-pcnorae",
+    "kr-chicken",
+    "kr-bunsik",
+    "kr-hagwon",
+    "kr-officetel",
+    "kr-univ",
+    "cafe",
+    "bakery",
+    "slim",
+    "low3",
+    "shop",
+    "school"
+   ],
+   "avoid": [
+    "fire",
+    "warehouse",
+    "dept",
+    "hospital",
+    "row",
+    "house"
+   ]
+  },
+  "station": {
+   "tiers": {
+    "small": 3,
+    "medium": 4,
+    "large": 3
+   },
+   "prefer": [
+    "kr-subway",
+    "kr-terminal",
+    "kr-ticket",
+    "kr-ktx",
+    "hotel",
+    "dept",
+    "bank",
+    "kr-bank",
+    "kr-conv",
+    "conv",
+    "cafe",
+    "mid6",
+    "office"
+   ],
+   "avoid": [
+    "house-modern",
+    "school",
+    "warehouse",
+    "kr-dasedae",
+    "row",
+    "house"
+   ],
+   "rowLimit": 3
+  },
+  "small": {
+   "tiers": {
+    "small": 6,
+    "medium": 0.6
+   },
+   "prefer": [
+    "kr-conv",
+    "kr-bunsik",
+    "kr-cafe",
+    "kr-pharmacy",
+    "kr-salon",
+    "kr-laundry",
+    "kr-realty",
+    "kr-florist",
+    "kr-stationery",
+    "conv",
+    "cafe",
+    "bakery",
+    "shop"
+   ],
+   "avoid": [
+    "row",
+    "house",
+    "house-modern"
+   ],
+   "rowLimit": 4
+  }
+ },
+ "lots": {
+  "parking": {
+   "w": [
+    7,
+    10
+   ]
+  },
+  "pocket": {
+   "w": [
+    6,
+    9
+   ]
+  },
+  "playground": {
+   "w": [
+    7,
+    9
+   ]
+  },
+  "market": {
+   "w": [
+    8,
+    12
+   ]
+  },
+  "construction": {
+   "w": [
+    7,
+    10
+   ]
+  },
+  "recycle": {
+   "w": [
+    4,
+    5
+   ]
+  }
+ },
+ "scenes": {
+  "bus-stop": {
+   "on": "blvdS",
+   "n": 1,
+   "kits": [
+    {
+     "k": "mc-prop-busstop-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-bus-shelter-a",
+     "dx": 2
+    },
+    {
+     "k": "mc-prop-bench2-a",
+     "dx": 4,
+     "opt": true
+    }
+   ]
+  },
+  "taxi-stand": {
+   "on": "blvdS",
+   "n": 1,
+   "kits": [
+    {
+     "k": "mc-prop-taxi-stand-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-bench-a",
+     "dx": 1,
+     "opt": true
+    }
+   ]
+  },
+  "bike-rack": {
+   "on": "blvdN",
+   "n": 2,
+   "kits": [
+    {
+     "k": "mc-prop-bike-row-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-moto-c",
+     "dx": 3,
+     "opt": true
+    }
+   ]
+  },
+  "vending-row": {
+   "on": "walkN",
+   "n": 2,
+   "kits": [
+    {
+     "k": "mc-prop-vending-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-vending2-a",
+     "dx": 1
+    },
+    {
+     "k": "mc-prop-recycle3-a",
+     "dx": 2,
+     "opt": true
+    }
+   ]
+  },
+  "news-kiosk": {
+   "on": "blvdN",
+   "n": 1,
+   "kits": [
+    {
+     "k": "mc-prop-kiosk-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-newsstand-a",
+     "dx": 2,
+     "opt": true
+    }
+   ]
+  },
+  "street-stall": {
+   "on": "walkN",
+   "n": 2,
+   "kits": [
+    {
+     "k": "mc-prop-stall-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-boxes-a",
+     "dx": 2,
+     "opt": true
+    },
+    {
+     "k": "mc-prop-trashbags-a",
+     "dx": -1,
+     "opt": true
+    }
+   ]
+  },
+  "cafe-terrace": {
+   "on": "walkN",
+   "n": 2,
+   "kits": [
+    {
+     "k": "mc-prop-terrace-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-planter-a",
+     "dx": 2,
+     "opt": true
+    }
+   ]
+  },
+  "pole-trash": {
+   "on": "alleyS",
+   "n": 3,
+   "kits": [
+    {
+     "k": "mc-prop-pole-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-trashbags-a",
+     "dx": 1,
+     "opt": true
+    }
+   ]
+  },
+  "alley-moto": {
+   "on": "alleyS",
+   "n": 3,
+   "kits": [
+    {
+     "k": "mc-prop-moto-c",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-boxes-b",
+     "dx": 2,
+     "opt": true
+    }
+   ]
+  },
+  "alley-bikes": {
+   "on": "alleyS",
+   "n": 2,
+   "kits": [
+    {
+     "k": "mc-prop-bike-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-planter-b",
+     "dx": 2,
+     "opt": true
+    }
+   ]
+  },
+  "post-phone": {
+   "on": "walkN",
+   "n": 1,
+   "kits": [
+    {
+     "k": "mc-prop-postbox-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-phone-a",
+     "dx": 1
+    }
+   ]
+  },
+  "notice-board": {
+   "on": "walkN",
+   "n": 1,
+   "kits": [
+    {
+     "k": "mc-prop-board-a-b",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-bench-b",
+     "dx": 1,
+     "opt": true
+    }
+   ]
+  },
+  "river-bench": {
+   "on": "river",
+   "n": 3,
+   "kits": [
+    {
+     "k": "mc-prop-bench-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-park-lamp-a",
+     "dx": 2
+    }
+   ]
+  },
+  "river-trees": {
+   "on": "river",
+   "n": 4,
+   "kits": [
+    {
+     "k": "mc-prop-blossom-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-azalea-a",
+     "dx": 2,
+     "opt": true
+    }
+   ]
+  },
+  "plaza-fountain": {
+   "on": "plaza",
+   "n": 1,
+   "kits": [
+    {
+     "k": "mc-prop-fountain-a",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-bench-a",
+     "dx": 5,
+     "opt": true
+    }
+   ]
+  },
+  "plaza-kiosk": {
+   "on": "plaza",
+   "n": 2,
+   "kits": [
+    {
+     "k": "mc-prop-kiosk-b",
+     "dx": 0
+    },
+    {
+     "k": "mc-prop-terrace-b",
+     "dx": 3,
+     "opt": true
+    }
+   ]
+  }
+ },
+ "kinds": [
+  {
+   "id": "sangga-alley",
+   "ko": "상가 골목",
+   "en": "shop alley district",
+   "strips": [
+    {
+     "t": "B",
+     "min": 7,
+     "max": 10,
+     "mix": "shop"
+    },
+    {
+     "t": "alley",
+     "h": 4
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 10,
+     "mix": "shop"
+    },
+    {
+     "t": "sidep"
+    },
+    {
+     "t": "B",
+     "min": 8,
+     "max": 11,
+     "mix": "shop",
+     "anchor": [
+      "kr-cinema",
+      "kr-mart"
+     ]
+    },
+    {
+     "t": "blvd"
+    }
+   ],
+   "ns": [
+    "through",
+    "t-up",
+    "stagger"
+   ],
+   "gaps": [
+    2,
+    4
+   ],
+   "lots": [
+    "parking",
+    "market"
+   ],
+   "subway": 1,
+   "parked": 0.5,
+   "scenes": [
+    "bus-stop",
+    "vending-row",
+    "street-stall",
+    "cafe-terrace",
+    "pole-trash",
+    "alley-moto",
+    "alley-bikes",
+    "bike-rack",
+    "post-phone"
+   ],
+   "fits": {
+    "minW": 40,
+    "minH": 30
+   },
+   "targets": {
+    "buildings": 26,
+    "objects": 150
+   },
+   "deadEnd": true,
+   "sets": [
+    "sangga"
+   ],
+   "ground": {
+    "walk": "pave-check",
+    "alley": "alley-old",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "arcade": "market-floor",
+    "front": "front-tile",
+    "play": "play-floor"
+   },
+   "frontTile": true,
+   "blvdLanes": 4
+  },
+  {
+   "id": "villa-town",
+   "ko": "빌라촌",
+   "en": "villa (multi-family housing) neighbourhood",
+   "strips": [
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "villa"
+    },
+    {
+     "t": "alley"
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "villa",
+     "anchor": [
+      "kr-church",
+      "kr-bathhouse"
+     ]
+    },
+    {
+     "t": "alley",
+     "h": 4
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "villa"
+    },
+    {
+     "t": "sidep"
+    },
+    {
+     "t": "B",
+     "min": 6,
+     "max": 8,
+     "mix": "villa"
+    },
+    {
+     "t": "alley"
+    }
+   ],
+   "ns": [
+    "stagger",
+    "t-down",
+    "t-up"
+   ],
+   "gaps": [
+    2,
+    3
+   ],
+   "lots": [
+    "playground",
+    "parking",
+    "recycle"
+   ],
+   "subway": 0,
+   "parked": 0.7,
+   "scenes": [
+    "pole-trash",
+    "alley-moto",
+    "alley-bikes",
+    "vending-row",
+    "notice-board",
+    "post-phone"
+   ],
+   "fits": {
+    "minW": 40,
+    "minH": 30,
+    "shopsMax": 3
+   },
+   "targets": {
+    "buildings": 28,
+    "objects": 150
+   },
+   "deadEnd": true,
+   "sets": [
+    "villa"
+   ],
+   "ground": {
+    "walk": "pave-grey",
+    "alley": "alley-cement",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "play": "play-floor",
+    "front": "front-tile"
+   },
+   "schoolZone": true
+  },
+  {
+   "id": "apt-complex",
+   "ko": "아파트 단지",
+   "en": "apartment complex",
+   "strips": [
+    {
+     "t": "B",
+     "min": 10,
+     "max": 12,
+     "mix": "apt"
+    },
+    {
+     "t": "alley"
+    },
+    {
+     "t": "B",
+     "min": 10,
+     "max": 12,
+     "mix": "apt"
+    },
+    {
+     "t": "alley"
+    },
+    {
+     "t": "B",
+     "min": 5,
+     "max": 7,
+     "mix": "small"
+    },
+    {
+     "t": "blvd"
+    }
+   ],
+   "ns": [
+    "none",
+    "t-up"
+   ],
+   "gaps": [
+    1,
+    2
+   ],
+   "lots": [
+    "playground",
+    "parking",
+    "pocket",
+    "recycle"
+   ],
+   "subway": 0,
+   "parked": 0.6,
+   "scenes": [
+    "bus-stop",
+    "notice-board",
+    "bike-rack",
+    "vending-row",
+    "alley-bikes",
+    "post-phone"
+   ],
+   "fits": {
+    "minW": 52,
+    "minH": 44,
+    "shopsMax": 4
+   },
+   "targets": {
+    "buildings": 22,
+    "objects": 140
+   },
+   "lotN": 1,
+   "sets": [
+    "apt",
+    "villa"
+   ],
+   "ground": {
+    "walk": "pave-grey",
+    "alley": "pave-check",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "play": "play-floor"
+   },
+   "schoolZone": true,
+   "fireLane": true
+  },
+  {
+   "id": "blvd-office",
+   "ko": "대로변 업무 지구",
+   "en": "boulevard office district",
+   "strips": [
+    {
+     "t": "B",
+     "min": 8,
+     "max": 10,
+     "mix": "small"
+    },
+    {
+     "t": "side"
+    },
+    {
+     "t": "B",
+     "min": 10,
+     "max": 13,
+     "mix": "office",
+     "anchor": [
+      "kr-tower",
+      "kr-dept",
+      "kr-broadcast",
+      "kr-convention",
+      "kr-palacegate",
+      "tower10"
+     ]
+    },
+    {
+     "t": "blvd"
+    },
+    {
+     "t": "B",
+     "min": 9,
+     "max": 11,
+     "mix": "office"
+    },
+    {
+     "t": "alley"
+    }
+   ],
+   "ns": [
+    "through",
+    "t-up"
+   ],
+   "gaps": [
+    3,
+    5
+   ],
+   "lots": [
+    "pocket",
+    "construction"
+   ],
+   "subway": 2,
+   "parked": 0.3,
+   "scenes": [
+    "bus-stop",
+    "taxi-stand",
+    "news-kiosk",
+    "bike-rack",
+    "cafe-terrace",
+    "vending-row",
+    "post-phone",
+    "pole-trash"
+   ],
+   "fits": {
+    "minW": 48,
+    "minH": 36
+   },
+   "targets": {
+    "buildings": 22,
+    "objects": 140
+   },
+   "lotN": 1,
+   "sets": [
+    "office"
+   ],
+   "ground": {
+    "walk": "pave-granite",
+    "alley": "alley-old",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "front": "front-tile"
+   },
+   "underpass": true
+  },
+  {
+   "id": "market",
+   "ko": "재래시장",
+   "en": "traditional market",
+   "strips": [
+    {
+     "t": "B",
+     "min": 6,
+     "max": 8,
+     "mix": "market"
+    },
+    {
+     "t": "alley",
+     "h": 4,
+     "stalls": true,
+     "arcade": true
+    },
+    {
+     "t": "B",
+     "min": 6,
+     "max": 8,
+     "mix": "market"
+    },
+    {
+     "t": "alley",
+     "h": 4,
+     "stalls": true,
+     "arcade": true
+    },
+    {
+     "t": "B",
+     "min": 6,
+     "max": 9,
+     "mix": "market",
+     "anchor": [
+      "kr-market"
+     ]
+    },
+    {
+     "t": "side"
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "shop"
+    },
+    {
+     "t": "alley"
+    }
+   ],
+   "ns": [
+    "lane"
+   ],
+   "gaps": [
+    3,
+    4
+   ],
+   "lots": [
+    "market",
+    "parking"
+   ],
+   "subway": 0,
+   "parked": 0.4,
+   "scenes": [
+    "street-stall",
+    "vending-row",
+    "alley-moto",
+    "pole-trash",
+    "alley-bikes",
+    "notice-board"
+   ],
+   "fits": {
+    "minW": 40,
+    "minH": 30
+   },
+   "targets": {
+    "buildings": 28,
+    "objects": 170
+   },
+   "sets": [
+    "market",
+    "sangga"
+   ],
+   "ground": {
+    "walk": "pave-red",
+    "alley": "alley-cement",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "arcade": "market-floor",
+    "front": "front-tile"
+   },
+   "frontTile": true
+  },
+  {
+   "id": "campus-town",
+   "ko": "대학가",
+   "en": "university town",
+   "strips": [
+    {
+     "t": "B",
+     "min": 8,
+     "max": 11,
+     "mix": "campus",
+     "anchor": [
+      "kr-univ",
+      "kr-univhospital",
+      "school"
+     ]
+    },
+    {
+     "t": "plaza",
+     "h": 4
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "campus"
+    },
+    {
+     "t": "alley"
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 10,
+     "mix": "campus"
+    },
+    {
+     "t": "sidep"
+    },
+    {
+     "t": "B",
+     "min": 6,
+     "max": 8,
+     "mix": "campus"
+    },
+    {
+     "t": "alley"
+    }
+   ],
+   "ns": [
+    "t-down",
+    "stagger",
+    "through"
+   ],
+   "gaps": [
+    2,
+    4
+   ],
+   "lots": [
+    "pocket",
+    "construction"
+   ],
+   "subway": 1,
+   "parked": 0.4,
+   "scenes": [
+    "cafe-terrace",
+    "bike-rack",
+    "notice-board",
+    "vending-row",
+    "street-stall",
+    "plaza-kiosk",
+    "alley-bikes",
+    "pole-trash",
+    "post-phone"
+   ],
+   "fits": {
+    "minW": 40,
+    "minH": 34
+   },
+   "targets": {
+    "buildings": 26,
+    "objects": 150
+   },
+   "deadEnd": true,
+   "monument": [
+    "kr-clocktower"
+   ],
+   "sets": [
+    "campus",
+    "sangga"
+   ],
+   "ground": {
+    "walk": "pave-red",
+    "alley": "alley-old",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "front": "front-tile",
+    "play": "play-floor"
+   },
+   "frontTile": true
+  },
+  {
+   "id": "riverside",
+   "ko": "천변 산책로",
+   "en": "stream-side walk",
+   "strips": [
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "villa"
+    },
+    {
+     "t": "alley"
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 10,
+     "mix": "shop"
+    },
+    {
+     "t": "side"
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "shop",
+     "anchor": [
+      "kr-ballpark"
+     ]
+    },
+    {
+     "t": "river"
+    },
+    {
+     "t": "B",
+     "min": 6,
+     "max": 8,
+     "mix": "villa"
+    },
+    {
+     "t": "alley"
+    }
+   ],
+   "ns": [
+    "through",
+    "stagger"
+   ],
+   "gaps": [
+    2,
+    4
+   ],
+   "lots": [
+    "pocket",
+    "playground"
+   ],
+   "subway": 0,
+   "parked": 0.4,
+   "scenes": [
+    "river-bench",
+    "river-trees",
+    "cafe-terrace",
+    "alley-bikes",
+    "pole-trash",
+    "vending-row",
+    "notice-board"
+   ],
+   "fits": {
+    "minW": 40,
+    "minH": 40,
+    "shopsMax": 4
+   },
+   "targets": {
+    "buildings": 24,
+    "objects": 150
+   },
+   "lotN": 2,
+   "monument": [
+    "kr-bridgepylon"
+   ],
+   "sets": [
+    "river",
+    "villa"
+   ],
+   "ground": {
+    "walk": "pave-grey",
+    "alley": "alley-cement",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "bike": "bike-path",
+    "deck": "wood-deck",
+    "play": "play-floor",
+    "front": "front-tile"
+   },
+   "frontTile": true
+  },
+  {
+   "id": "station-front",
+   "ko": "역 앞",
+   "en": "station front",
+   "strips": [
+    {
+     "t": "B",
+     "min": 8,
+     "max": 10,
+     "mix": "station",
+     "anchor": [
+      "kr-ktx",
+      "kr-terminal",
+      "kr-subway"
+     ]
+    },
+    {
+     "t": "plaza",
+     "h": 4
+    },
+    {
+     "t": "blvd"
+    },
+    {
+     "t": "B",
+     "min": 7,
+     "max": 9,
+     "mix": "shop"
+    },
+    {
+     "t": "alley"
+    },
+    {
+     "t": "B",
+     "min": 6,
+     "max": 8,
+     "mix": "small"
+    },
+    {
+     "t": "alley"
+    }
+   ],
+   "ns": [
+    "t-down",
+    "through"
+   ],
+   "gaps": [
+    3,
+    4
+   ],
+   "lots": [
+    "parking",
+    "construction"
+   ],
+   "subway": 2,
+   "parked": 0.4,
+   "scenes": [
+    "bus-stop",
+    "taxi-stand",
+    "plaza-fountain",
+    "plaza-kiosk",
+    "news-kiosk",
+    "bike-rack",
+    "vending-row",
+    "street-stall",
+    "post-phone",
+    "pole-trash"
+   ],
+   "fits": {
+    "minW": 52,
+    "minH": 40
+   },
+   "targets": {
+    "buildings": 22,
+    "objects": 150
+   },
+   "trim": "bottom",
+   "lotN": 1,
+   "monument": [
+    "kr-clocktower"
+   ],
+   "sets": [
+    "station",
+    "office",
+    "sangga"
+   ],
+   "ground": {
+    "walk": "pave-granite",
+    "alley": "alley-old",
+    "yard": "alley-cement",
+    "lot": "lot-gravel",
+    "front": "front-tile"
+   },
+   "underpass": true
+  }
+ ],
+ "slots": {
+  "front": [
+   "mc-prop-vending-a",
+   "mc-prop-vending2-a",
+   "mc-prop-vending2-b",
+   "mc-prop-planter-a",
+   "mc-prop-planter-b",
+   "mc-prop-planter-c",
+   "mc-prop-boxes-a",
+   "mc-prop-boxes-b",
+   "mc-prop-boxes-c",
+   "mc-prop-bench-c",
+   "mc-prop-bike-a",
+   "mc-prop-bigpot-a",
+   "mc-prop-bigpot-b",
+   "mc-prop-signboard-a",
+   "mc-prop-signboard-b",
+   "mc-prop-signboard-c",
+   "mc-prop-trash-a",
+   "mc-prop-newsstand-a",
+   "mc-prop-mailbox-red-a",
+   "mc-prop-shrub-a"
+  ],
+  "curb": [
+   "mc-prop-bollard-a",
+   "mc-prop-hydrant-a",
+   "mc-prop-trash-a",
+   "mc-prop-recycle3-a",
+   "mc-prop-meter-a",
+   "mc-prop-postbox-b",
+   "mc-prop-phone-b",
+   "mc-prop-bench2-b",
+   "mc-prop-planter-c"
+  ],
+  "alleyS": [
+   "mc-prop-trashbags-a",
+   "mc-prop-trashbags-b",
+   "mc-prop-trashbags-c",
+   "mc-prop-boxes-a",
+   "mc-prop-boxes-c",
+   "mc-prop-moto-c",
+   "mc-prop-bike-c",
+   "mc-prop-cone-a",
+   "mc-prop-cone-b",
+   "mc-prop-planter-b",
+   "mc-prop-recycle3-b",
+   "mc-prop-barrier-a"
+  ],
+  "yard": [
+   "mc-prop-boxes-b",
+   "mc-prop-trashbags-b",
+   "mc-prop-planter-a",
+   "mc-prop-bike-a",
+   "mc-prop-recycle3-c",
+   "mc-prop-bigpot-a",
+   "mc-prop-shrub-b",
+   "mc-prop-azalea-a",
+   "mc-prop-azalea-b",
+   "mc-prop-hedge-a"
+  ],
+  "yardTree": [
+   "mc-prop-blossom-a",
+   "mc-prop-blossom-b",
+   "mc-prop-ginkgo-a",
+   "mc-prop-ginkgo-b",
+   "mc-prop-conifer-a",
+   "mc-prop-street-tree-a",
+   "mc-prop-street-tree-b"
+  ],
+  "tree": [
+   "mc-prop-keyaki-a",
+   "mc-prop-keyaki-b",
+   "mc-prop-ginkgo-big-a"
+  ],
+  "pole": [
+   "mc-prop-pole-a",
+   "mc-prop-pole-b"
+  ],
+  "parked": [
+   "mc-veh-car2-a",
+   "mc-veh-car2-a-black",
+   "mc-veh-car2-a-white",
+   "mc-veh-car2-a-navy",
+   "mc-veh-car2-c",
+   "mc-veh-car2-c-red",
+   "mc-veh-car2-c-beige",
+   "mc-veh-car2-c-green",
+   "mc-veh-car2-a-l",
+   "mc-veh-car2-c-white-l",
+   "mc-veh-car2-c-navy-l",
+   "mc-veh-taxi-b",
+   "mc-veh-car2-a-beige-l"
+  ],
+  "parkedNose": [
+   "mc-veh-car-front-a",
+   "mc-veh-car-front-a-black",
+   "mc-veh-car-front-a-white",
+   "mc-veh-car-front-c",
+   "mc-veh-car-front-c-navy",
+   "mc-veh-car-front-c-red",
+   "mc-veh-car-back-a",
+   "mc-veh-car-back-b-white",
+   "mc-veh-car-back-c-beige",
+   "mc-veh-car-back-a-green"
+  ],
+  "stall": [
+   "mc-prop-stall-a",
+   "mc-prop-stall-b",
+   "mc-prop-stall-c",
+   "mc-prop-kiosk-a",
+   "mc-prop-kiosk-c"
+  ],
+  "plaza": [
+   "mc-prop-bench-a",
+   "mc-prop-bench-b",
+   "mc-prop-planter-a",
+   "mc-prop-bigpot-b",
+   "mc-prop-park-lamp-b",
+   "mc-prop-bike-row-c",
+   "mc-prop-board-b-b",
+   "mc-prop-vending-a"
+  ],
+  "river": [
+   "mc-prop-azalea-a",
+   "mc-prop-azalea-b",
+   "mc-prop-shrub-a",
+   "mc-prop-park-lamp-c",
+   "mc-prop-bench-c"
+  ]
+ }
+}

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 // Exact selection: local catalog extension is allowed, silent substitution is not.
+import { resolveOhMyPiModel } from "../scripts/lib/ohMyPiModel.ts";
 import { resolvePiModel } from "../scripts/lib/piAgentRuntime.ts";
 
 describe("piAgent resolvePiModel fallback", () => {
@@ -13,7 +14,14 @@ describe("piAgent resolvePiModel fallback", () => {
 
   test("빈 모델은 제공자 기본 모델이다", () => {
     expect(resolvePiModel("google-antigravity", undefined).id).toBe("gemini-3.8-flash");
-    expect(resolvePiModel("openai-codex", undefined).id).toBe("gpt-5.6-sol");
+    expect(resolvePiModel("openai-codex", undefined).id).toBe("gpt-6.2-sol");
+  });
+
+  test("GPT-6.2 Sol 과 Astra 는 정확한 id 로 연결된다", () => {
+    const sol = resolveOhMyPiModel("openai-codex", "gpt-6.2-sol");
+    expect(sol).toMatchObject({ id: "gpt-6.2-sol", api: "openai-codex-responses", contextWindow: 500000 });
+    const astra = resolveOhMyPiModel("openai-codex", "gpt-6.2-astra");
+    expect(astra).toMatchObject({ id: "gpt-6.2-astra", contextWindow: 272000 });
   });
 
   test("번들에 있는 모델은 그대로 쓴다", () => {

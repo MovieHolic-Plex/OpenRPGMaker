@@ -8,11 +8,12 @@ import {
 } from "god-tibo-imagen";
 import { CODEX_PROVIDER_ID, decodeJwtPayload } from "../../src/ai/oauth/credentials.ts";
 import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences.ts";
+import { DEFAULT_IMAGE_MODEL, IMAGE_CHATGPT_LOGIN_REQUIRED } from "../../src/ai/imageModelCatalog.ts";
 import { reportedImageModel } from "../../src/ai/imageModelResolution.ts";
 import type { GeneratedImage } from "./ohMyPiImageRuntime.ts";
 
 // Stable app selection ID; never send this sentinel upstream.
-export const CODEX_IMAGE_MODEL = "codex-image-default";
+export const CODEX_IMAGE_MODEL = DEFAULT_IMAGE_MODEL;
 // god-tibo-imagen(https://github.com/NomaDamas/god-tibo-imagen) 경로: Codex `/responses` 에 image_generation 도구를 붙여 부른다.
 // `/images/generations` 와 달리 참조 그림(input_image)을 받는다 — 설계도 기준 이미지로 건물을 그릴 때 필요하다.
 // 모델·이미지 모델·기본 주소는 god-tibo-imagen 설정(CODEX_IMAGEGEN_* 환경 변수)을 그대로 따른다.
@@ -23,18 +24,17 @@ function statusError(message: string, status: number): Error & { status: number 
   return Object.assign(new Error(message), { status });
 }
 
-const AUTH_MESSAGE = "Codex 이미지 생성에 유효한 ChatGPT 로그인이 필요합니다. AI 설정 → 「그림·도트 모델」에서 ChatGPT 를 연결하거나 `codex login` 으로 로그인하세요. Google 로 그리려면 같은 화면에서 Google 을 직접 고르세요(자동으로 바뀌지 않습니다).";
 
 /** 앱의 Codex 로그인 토큰이 있으면 그것을, 없으면 codex CLI 로그인(~/.codex/auth.json)을 쓴다. */
 async function resolveSession(apiKey: string | undefined, config: ReturnType<typeof resolveConfig>) {
   if (apiKey) {
     const claims = decodeJwtPayload<{ "https://api.openai.com/auth"?: { chatgpt_account_id?: unknown } }>(apiKey);
     const accountId = claims?.["https://api.openai.com/auth"]?.chatgpt_account_id;
-    if (typeof accountId !== "string" || !accountId.trim() || /[\r\n]/.test(accountId)) throw statusError(AUTH_MESSAGE, 401);
+    if (typeof accountId !== "string" || !accountId.trim() || /[\r\n]/.test(accountId)) throw statusError(IMAGE_CHATGPT_LOGIN_REQUIRED, 401);
     return { accessToken: apiKey, accountId, installationId: null };
   }
   const session = await loadCodexSession(config).catch(() => null);
-  if (!session?.accessToken || !session.accountId || session.authMode !== "chatgpt") throw statusError(AUTH_MESSAGE, 401);
+  if (!session?.accessToken || !session.accountId || session.authMode !== "chatgpt") throw statusError(IMAGE_CHATGPT_LOGIN_REQUIRED, 401);
   return { accessToken: session.accessToken, accountId: session.accountId, installationId: session.installationId };
 }
 
@@ -103,7 +103,7 @@ export async function generateCodexImage(
     throw statusError("Codex 이미지 생성 서버에 연결하거나 응답을 읽지 못했습니다.", 502);
   }
   options?.signal?.throwIfAborted();
-  if (response.status === 401) throw statusError(AUTH_MESSAGE, 401);
+  if (response.status === 401) throw statusError(IMAGE_CHATGPT_LOGIN_REQUIRED, 401);
   if (!response.ok) {
     throw statusError("Codex 이미지 생성 실패 (HTTP " + response.status + ").", response.status >= 400 ? response.status : 502);
   }

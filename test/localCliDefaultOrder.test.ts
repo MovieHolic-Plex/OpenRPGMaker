@@ -12,8 +12,8 @@ const row = (id: LocalCliId, state: LocalCliStatus["state"], routine: string, de
 describe("pickDefaultLocalCli", () => {
   it("prefers Codex (ChatGPT) over Claude and Gemini when several are ready, whatever the row order", () => {
     expect(LOCAL_CLI_DEFAULT_ORDER).toEqual(["codex", "claude", "gemini"]);
-    const rows = [row("claude", "ready", "claude-opus-5-5", "claude-opus-5-5"), row("codex", "ready", "gpt-6-luna", "gpt-6.1-sol"), row("gemini", "ready", "auto", "auto")];
-    expect(pickDefaultLocalCli(rows)).toEqual({ provider: "local-cli:codex", routineModel: "gpt-6-luna", deepModel: "gpt-6.1-sol" });
+    const rows = [row("claude", "ready", "claude-opus-5-5", "claude-opus-5-5"), row("codex", "ready", "gpt-6-luna", "gpt-6.2-sol"), row("gemini", "ready", "auto", "auto")];
+    expect(pickDefaultLocalCli(rows)).toEqual({ provider: "local-cli:codex", routineModel: "gpt-6-luna", deepModel: "gpt-6.2-sol" });
     expect(pickDefaultLocalCli([...rows].reverse())?.provider).toBe("local-cli:codex");
   });
 
