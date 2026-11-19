@@ -187,7 +187,13 @@ export const storeGamePublishSchema = z.object({
   version: storeGameVersion.nullable().optional(),
   comment: z.string().max(600).optional(),
   post: z.object({ title: z.string().max(120), body: z.string().max(20000), pinned: z.boolean().optional() }).strict().nullable().optional(),
+  // 게임 공개 선언: 다섯 항목이 모두 true 이고 사는 곳을 골랐을 때만 지나간다. 옛 스토어에 올릴 때만 비운다.
+  declaration: z.object({
+    version: z.string().min(1).max(40), residence: z.enum(["kr", "outside_kr"]),
+    nonCommercial: z.literal(true), ownWork: z.literal(true), noAdultContent: z.literal(true), age14: z.literal(true), agreeTerms: z.literal(true),
+  }).strict().nullable().optional(),
 }).strict();
+export const storeGameDeclarationSchema = z.object({ lang: storeLang.optional() }).strict().optional();
 /** 소식 글 올리기(조수 카드·발행 대화상자). 판본 코멘트를 같이 고칠 수 있다(commentVersion 판본에). */
 export const storeGamePostSchema = z.object({
   slug: storeSlug,

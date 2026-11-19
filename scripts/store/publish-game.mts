@@ -10,6 +10,8 @@
  *   npm run -s store:publish-game -- --rollback fallen-star@1.0 --target staging
  * 제작자 목소리(스토어 「소식」 탭·판본 카드): 올릴 때 [--comment "…"] [--post-title "…" (--post-body "…" | --post-file post.md) [--post-pin]].
  * 판본 없이 소식만: --news <slug> --post-title "…" --post-file post.md [--post-version 1.17] [--post-pin] [--comment "…" --comment-version 1.17].
+ * 게임 공개 선언(2026-11-15, 올릴 때마다 — 운영자도): 스토어가 준 문구를 stderr 에 찍는다. 읽고 모두 맞으면
+ *   --declare <문구 판> --residence kr|outside_kr 을 붙인다. 없으면 파일을 올리기 전에 멈춘다. 문구만 보기: --show-declaration --target staging.
  * 마지막 줄은 한 줄 JSON 결과다. 그림·BGM 이 이 체크아웃 public/ 에 없으면 OPRN_ASSET_ROOTS(콜론 구분)의 public 폴더에서 찾는다.
  */
 import { createHash } from "node:crypto";
@@ -18,7 +20,10 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync,
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import type { FlagshipDemoId } from "@/project/flagship";
-import { publishStoreGame, type StoreGameMeta, type StoreGameMine, type StoreGameTransport } from "@/assetStore/gamePublish";
+import {
+  normalizeStoreGameDeclarationDoc, publishStoreGame, storeGameDeclarationFromFlags, storeGameDeclarationText,
+  type StoreGameDeclaration, type StoreGameDeclarationDoc, type StoreGameMeta, type StoreGameMine, type StoreGameTransport,
+} from "@/assetStore/gamePublish";
 import { REFMAP_CREDIT } from "@/assetStore/format";
 import { PublishError, closeSession, openSession, pinStoreEdge, requireTargetBase, uploadWithRetry, type Session } from "./storePublish.mts";
 
@@ -113,9 +118,34 @@ function sessionTransport(session: Session): StoreGameTransport {
   };
 }
 
+/** 스토어의 선언 문구(로그인 없이 받는다). 선언을 모르는 옛 스토어(404)면 null. */
+async function fetchDeclaration(base: string): Promise<StoreGameDeclarationDoc | null> {
+  const response = await fetch(`${base}/api/v1/games/declaration?lang=ko`);
+  if (response.status === 404) return null;
+  if (!response.ok) throw new PublishError(`GET /api/v1/games/declaration ${response.status}: ${(await response.text()).slice(0, 400)}`);
+  return normalizeStoreGameDeclarationDoc(await response.json());
+}
+/** 문구를 찍고 --declare·--residence 로 확인받는다. 없거나 옛 판이면 여기서 멈춘다(파일을 올리기 전). */
+async function declarationFromArgs(base: string): Promise<StoreGameDeclaration | null> {
+  const doc = await fetchDeclaration(base);
+  if (!doc) { console.error("[publish-game] 이 스토어는 게임 공개 선언을 받지 않습니다(옛 서버) — 선언 없이 올립니다."); return null; }
+  console.error(storeGameDeclarationText(doc));
+  try {
+    return storeGameDeclarationFromFlags(doc, arg("--declare"), arg("--residence"));
+  } catch (error) { // no-excuse-ok: catch — 선언이 없다는 말을 종료 코드 2 로 바꿔 돌려준다
+    throw new PublishError(error instanceof Error ? error.message : String(error), 2);
+  }
+}
+
 const edge = pinStoreEdge();
 if (edge) console.error(`[publish-game] STORE_EDGE_IP: ${edge}`);
 const target = arg("--target");
+if (process.argv.includes("--show-declaration")) {
+  if (target !== "staging" && target !== "production") out({ ok: false, error: "--show-declaration 에는 --target staging|production 이 필요합니다" }, 2);
+  const doc = await fetchDeclaration(requireTargetBase(target));
+  if (doc) console.error(storeGameDeclarationText(doc));
+  out({ ok: true, target, action: "declaration", declaration: doc });
+}
 const rollback = arg("--rollback");
 if (rollback) {
   const [slug, version] = rollback.split("@");
@@ -246,7 +276,7 @@ const summary = {
   demo: demoId, slug: demo.slug, maps: built.mapCount, files: files.size, megabytes: +(bytes / 1048576).toFixed(1),
   projectMegabytes: +(built.projectJson.length / 1048576).toFixed(1), buildSeconds: +((performance.now() - started) / 1000).toFixed(1), contentHash,
 };
-if (process.argv.includes("--dry")) out({ ok: true, dry: true, ...summary });
+if (process.argv.includes("--dry")) out({ ok: true, dry: true, ...summary, declaration: "게시에는 --declare <문구 판> --residence kr|outside_kr 이 필요합니다(문구: --show-declaration --target staging|production)" });
 if (target !== "staging" && target !== "production") out({ ...summary, ok: false, error: "--target staging|production 이 필요합니다(또는 --dry)." }, 2);
 
 const meta: StoreGameMeta = {
@@ -255,6 +285,8 @@ const meta: StoreGameMeta = {
 try {
   const base = requireTargetBase(target);
   if (target === "production" && arg("--confirm") !== contentHash) throw new PublishError("운영에 올리려면 --dry 가 보여 준 contentHash 를 --confirm 으로 주세요.", 2);
+  // 선언부터 확인한다 — 없으면 로그인도 올리기도 하지 않는다.
+  const declaration = await declarationFromArgs(base);
   const session = await openSession(target, base);
   try {
     const transport = sessionTransport(session);
@@ -273,7 +305,7 @@ try {
     const result = await publishStoreGame(transport, {
       projectKey, slug: demo.slug, meta, files, entry: built.entry, cover, art, changelog, changes,
       bump: process.argv.includes("--major") ? "major" : "minor", version: arg("--version") ?? null,
-      ...(commentArg ? { comment: commentArg } : {}), post: postFromArgs(),
+      ...(commentArg ? { comment: commentArg } : {}), post: postFromArgs(), declaration,
     }, (progress) => {
       if (progress.phase === "upload" && progress.starting) {
         console.error(`[publish-game] upload next ${progress.done + 1}/${progress.total}: ${progress.starting.sha256.slice(0, 8)} ${progress.starting.bytes}B ${progress.starting.path}`);

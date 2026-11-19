@@ -162,6 +162,7 @@ const bridge = {
     visibility: invoke(OPRN_CHANNELS.storeVisibility),
     gameMine: invoke(OPRN_CHANNELS.storeGameMine),
     gamePublish: invoke(OPRN_CHANNELS.storeGamePublish),
+    gameDeclaration: invoke(OPRN_CHANNELS.storeGameDeclaration),
     gamePost: invoke(OPRN_CHANNELS.storeGamePost),
     gameReviews: invoke(OPRN_CHANNELS.storeGameReviews),
     reviewReply: invoke(OPRN_CHANNELS.storeReviewReply),
