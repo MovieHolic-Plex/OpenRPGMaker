@@ -53,15 +53,17 @@
 ## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
 
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
-- `fast-build`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
+- `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·호스티드 계약·런타임 에셋·CSS 래칫·openwiki 인덱스)이
-  병렬로 돈다. 집계 잡 `fast` 는 `fast-build` 와 `fast-parity` 가 둘 다 초록이어야 초록이다.
+  서로 기다리지 않고 병렬로 돈다. PR 한 판에 GitHub 호스티드 잡 6개가 돈다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
-- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 **`fast` 와 `fast-static` 이 모두**
-  초록이어야 `--match-head-commit` 으로 머지한다. `fast` 이름은 브랜치 보호가 보는 이름이라 그대로 둔다.
+  같은 날 실측(run 44531254883, 44533700673, 44536145289)에서 ci-full 과 여러 PR 이 겹치자
+  4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
+- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 **`fast`·`fast-static`·`fast-parity (k/N)` 전 N개 샤드**가
+  초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
-- 브랜치 보호(필수 체크 `fast`)는 저장소 설정이라 소유자가 켠다. 켜기 전에는 도우미 규칙이 유일한 방어다.
+- 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
 - **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
   «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의
   503·504 로 죽었다(PR 코드와 무관). ci-fast·desktop-release·windows-worker-smoke 가 같은 판을 쓴다 —
