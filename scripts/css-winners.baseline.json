@@ -10655,7 +10655,9 @@
   "calc(12px + var(--window-inset-left, 0px))",
   "calc(8px + var(--window-inset-left, 0px))",
   "calc(12px + var(--window-inset-right, 0px))",
-  "calc(8px + var(--window-inset-right, 0px))"
+  "calc(8px + var(--window-inset-right, 0px))",
+  "0 0 var(--agent-mode-route-h)",
+  "calc(var(--agent-mode-tabs-h) + var(--agent-mode-route-h, 0px)) 0 0 auto"
  ],
  "entries": {
   "src/editor/panels/aiAuthoring/style.css": {
@@ -60559,6 +60561,16 @@
     "6c035b304165": "215 1 36",
     "62152c428237": "215 1 5",
     "b657467c968c": "215 1 648",
+    "901a0fdfb84d": "215 1 3",
+    "f691fee2ba93": "215 1 15",
+    "75f7ea72c2f3": "215 1 67",
+    "8d63f5e0b04e": "215 1 46",
+    "68d4205d4270": "215 1 0",
+    "dce9c7bd14e8": "215 1 10204",
+    "37797078486c": "215 1 17",
+    "4cea3d97ff34": "215 1 251",
+    "e1ee3c50c984": "215 1 65",
+    "22d32e430195": "215 1 4262",
     "b596e0f0b48d": "215 1 3",
     "938fa71db6df": "215 1 0",
     "7e39316ce9e5": "215 1 1",
@@ -60636,9 +60648,10 @@
     "420db23f881e": "215 1 5",
     "02a8a9262843": "215 1 6864",
     "8e098dea19b9": "215 1 77",
+    "c804760f3bee": "215 1 698",
     "fa7415efe9f1": "215 1 36",
     "5d522d13395a": "215 1 10",
-    "03066f8b8185": "215 1 6865",
+    "03066f8b8185": "215 1 10205",
     "dc52818713ff": "215 1 36"
    }
   },

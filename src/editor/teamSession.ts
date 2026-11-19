@@ -7,7 +7,7 @@ import { TEAM_COLLAB_ENABLED } from '../../electron/shared/teamCollab';
 
 let latest: TeamStatus | null = null;
 let hostConnectionIndicator: HTMLButtonElement | undefined;
-const HOST_DISCONNECTED_DETAIL = '호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다';
+const HOST_DISCONNECTED_DETAIL = '프로젝트 저장 호스트와 연결이 끊겼어요. 편집을 계속할 수 있고 다시 연결되면 자동으로 저장해요.';
 export function teamSessionStatus(): TeamStatus | null { return latest; }
 
 export function renderHostConnectionIndicator(): HTMLElement {
@@ -17,7 +17,7 @@ export function renderHostConnectionIndicator(): HTMLElement {
   indicator.className = 'studio-host-connection';
   indicator.hidden = true;
   indicator.title = HOST_DISCONNECTED_DETAIL;
-  indicator.textContent = '호스트 연결 끊김';
+  indicator.textContent = '프로젝트 저장 연결 끊김';
   indicator.addEventListener('click', () => toast(HOST_DISCONNECTED_DETAIL, { durationMs: 5000 }));
   hostConnectionIndicator = indicator;
   return indicator;
@@ -66,8 +66,11 @@ export function startTeamSession(): void {
   const poll = async () => {
     if (running) return;
     running = true;
+    let receivedStatus = false;
     try {
       latest = await bridge.status();
+      receivedStatus = true;
+      if (!TEAM_COLLAB_ENABLED) renderHostConnectionIndicator().hidden = true;
       setTeamRole(latest.member.role);
       syncTeamReadOnlyUi();
       // Our own autosave bumps the revision too; refetching it downloaded and re-hashed
@@ -78,9 +81,10 @@ export function startTeamSession(): void {
         const kept = store.externalChangeConflict();
         if (kept) toast(`바깥 변경을 반영했습니다. 같은 곳(${kept.join(', ')})은 저장 안 된 내 편집을 남겼습니다.`, 'info');
       }
-      if (!TEAM_COLLAB_ENABLED) { renderHostConnectionIndicator().hidden = true; return; }
+      if (!TEAM_COLLAB_ENABLED) return;
       text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 보기 전용 — 변경할 수 없습니다' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
     } catch {
+      if (receivedStatus) return;
       // 팀 협업이 꺼져 있으면 연결이 끊겨도 역할을 지우지 않는다 — 편집은 계속되고, 저장은 자동 저장 재시도가 맡는다.
       latest = null;
       if (TEAM_COLLAB_ENABLED) {

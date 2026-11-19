@@ -5,8 +5,21 @@
 .ai-chat-float-host.has-agent-mode { flex-direction: column; }
 .ai-chat-float-host.has-agent-mode > .ai-chat-panel { flex: 1; min-height: 0; }
 /* 작업 공간 조수는 도크 위에 절대 위치로 겹친다(32-ai-workspace.css) — 탭 줄 아래부터 덮게 한다. 안 그러면 탭이 가려진다. */
-.ai-right-dock .ai-chat-float-host.has-agent-mode > .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) { inset: var(--agent-mode-tabs-h) 0 0 auto; height: auto; }
+.ai-right-dock .ai-chat-float-host.has-agent-mode > .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) { inset: calc(var(--agent-mode-tabs-h) + var(--agent-mode-route-h, 0px)) 0 0 auto; height: auto; }
 .ai-chat-float-host.has-agent-mode { --agent-mode-tabs-h: 37px; }
+.ai-chat-float-host.is-chatgpt-agent { --agent-mode-route-h: 42px; }
+.agent-mode-route:not([hidden]) {
+  align-items: center;
+  background: var(--bg-raised);
+  box-sizing: border-box;
+  color: var(--text-2);
+  display: flex;
+  flex: 0 0 var(--agent-mode-route-h);
+  font-size: 12px;
+  gap: var(--space-2);
+  justify-content: space-between;
+  padding: 0 var(--space-2);
+}
 .agent-mode-tabs { box-sizing: border-box; height: var(--agent-mode-tabs-h, 37px); }
 .ai-right-dock > .ai-chat-float-host.ai-chat-sidebar-host.is-agent-mode > .ai-chat-panel.ai-chat-panel { display: none; }
 .ai-chat-float-host:not(.is-agent-mode) > .agent-mode-panel { display: none; }

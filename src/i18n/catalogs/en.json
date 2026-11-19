@@ -19922,5 +19922,11 @@
 "프로그램 모델 설정":"Program model settings",
 "프로그램에서 로그인한 다음 여기서 사용할 프로그램을 고르세요.":"Sign in to the program, then choose it here.",
 "이 PC에 설치한 AI 프로그램을 사용 중이에요.":"Using an AI program on this computer.",
-"코드 연규(code-yeongyu)":"Code Yeongyu (code-yeongyu)"
+"코드 연규(code-yeongyu)":"Code Yeongyu (code-yeongyu)",
+"프로젝트 저장 연결 끊김":"Project storage disconnected",
+"프로젝트 저장 호스트와 연결이 끊겼어요. 편집을 계속할 수 있고 다시 연결되면 자동으로 저장해요.":"Project storage disconnected. You can keep editing. Changes save automatically when the connection returns.",
+"ChatGPT 사용 준비됨":"ChatGPT is ready",
+"AI 작업 방식":"AI work mode",
+"이 PC의 에이전트 사용":"Use a local agent",
+"ChatGPT 사용":"Use ChatGPT"
 }
