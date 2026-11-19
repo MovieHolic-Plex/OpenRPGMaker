@@ -1,0 +1,750 @@
+{
+ "style": "dg",
+ "ramps": {
+  "rock": [
+   "#1b1524",
+   "#2e202e",
+   "#442c16",
+   "#614223",
+   "#81582e",
+   "#a47339",
+   "#c69250",
+   "#dcb680"
+  ],
+  "crag": [
+   "#221a26",
+   "#372a42",
+   "#4b4149",
+   "#63504c",
+   "#806752",
+   "#9d815b",
+   "#b8986c",
+   "#d3c088"
+  ],
+  "slab": [
+   "#2f2537",
+   "#3e373e",
+   "#5c4a48",
+   "#776254",
+   "#8f7a69",
+   "#a8927d",
+   "#c1a88e",
+   "#d6c6ab"
+  ],
+  "dark": [
+   "#0e0a12",
+   "#14101c",
+   "#1b1724",
+   "#2e202e",
+   "#372734",
+   "#443445"
+  ],
+  "water": [
+   "#08212e",
+   "#0e2b39",
+   "#0f2f3d",
+   "#1c4a55",
+   "#1d4e5f",
+   "#3a6263",
+   "#658b8f",
+   "#a9d1d7"
+  ],
+  "crystal": [
+   "#201e45",
+   "#2e2b66",
+   "#524cb1",
+   "#3fa2ae",
+   "#7fd6d8",
+   "#c8f4e8",
+   "#f7fdff"
+  ],
+  "fire": [
+   "#6b2c2b",
+   "#a40100",
+   "#dd2912",
+   "#f08a10",
+   "#fbc10d",
+   "#fff0c0"
+  ],
+  "bone": [
+   "#584a52",
+   "#776b6d",
+   "#928484",
+   "#c8b5a8",
+   "#e5d4c3",
+   "#f4ddcc"
+  ],
+  "timber": [
+   "#1e150a",
+   "#312210",
+   "#452a17",
+   "#573921",
+   "#6f4725",
+   "#885a26",
+   "#a26e36"
+  ],
+  "iron": [
+   "#262729",
+   "#37383c",
+   "#4b4b52",
+   "#5a5b62",
+   "#797a84",
+   "#929391",
+   "#aaaba9",
+   "#c4c6c3"
+  ],
+  "gold": [
+   "#583a1a",
+   "#885a26",
+   "#c69250",
+   "#fbc10d",
+   "#fff0c0"
+  ],
+  "moss": [
+   "#143616",
+   "#1e522a",
+   "#3f723e",
+   "#618c3b",
+   "#729c44",
+   "#afda5e"
+  ],
+  "fungus": [
+   "#3a2470",
+   "#5e3eae",
+   "#3fa2ae",
+   "#7fd6d8",
+   "#c8f4e8"
+  ],
+  "lime": [
+   "#3a3040",
+   "#574e50",
+   "#7c6d61",
+   "#988367",
+   "#b3a37f",
+   "#cbbb8d",
+   "#ddd1b5",
+   "#ece2c4"
+  ],
+  "buff": [
+   "#2e2c2b",
+   "#474340",
+   "#625c54",
+   "#7a7669",
+   "#958d81",
+   "#ada898",
+   "#cbc3ac",
+   "#e2dbc6"
+  ],
+  "leaf": [
+   "#0f1310",
+   "#091f19",
+   "#143616",
+   "#183f1a",
+   "#1e522a",
+   "#1f5e3c",
+   "#436e30"
+  ],
+  "teal": [
+   "#16303a",
+   "#1c4a55",
+   "#296b6f",
+   "#4a929a",
+   "#84c3bc",
+   "#c8ece0"
+  ],
+  "terra": [
+   "#3a1815",
+   "#572520",
+   "#7a351e",
+   "#93443a",
+   "#b85530",
+   "#cf7444",
+   "#e08a5c"
+  ],
+  "bronze": [
+   "#22180e",
+   "#3a2a18",
+   "#6a4b2b",
+   "#9c7a4c",
+   "#c69250",
+   "#f0df97"
+  ],
+  "cragb": [
+   "#1c1d2b",
+   "#2a2e42",
+   "#3d4458",
+   "#535c6e",
+   "#6c7786",
+   "#8a949c",
+   "#a9b1b0",
+   "#cdd2c6"
+  ],
+  "buffw": [
+   "#33261f",
+   "#4f3a2c",
+   "#6e533b",
+   "#8a6c4b",
+   "#a5865f",
+   "#bfa276",
+   "#d8bf92",
+   "#ecdbb4"
+  ],
+  "frost": [
+   "#141b2d",
+   "#212d42",
+   "#2f3d64",
+   "#45607f",
+   "#63809e",
+   "#84a3ab",
+   "#a9d1d7",
+   "#e2f0f0"
+  ],
+  "snow": [
+   "#354c65",
+   "#606c88",
+   "#8192ab",
+   "#abb2bd",
+   "#cacfd6",
+   "#e2e4e1",
+   "#eff2f6",
+   "#ffffff"
+  ],
+  "basalt": [
+   "#120e15",
+   "#1f181b",
+   "#2b2426",
+   "#3d3431",
+   "#544443",
+   "#695554",
+   "#877162",
+   "#a08e84"
+  ],
+  "lava": [
+   "#3b1514",
+   "#73150a",
+   "#a8300e",
+   "#dd5a12",
+   "#f08a10",
+   "#fbc10d",
+   "#fff0a3"
+  ],
+  "earth": [
+   "#2a1d1b",
+   "#3b2d23",
+   "#57402d",
+   "#6f553e",
+   "#86694d",
+   "#9d815b",
+   "#b8986c",
+   "#ccb68e"
+  ],
+  "tomb": [
+   "#14161e",
+   "#1e212a",
+   "#323241",
+   "#464756",
+   "#595e6b",
+   "#757680",
+   "#8f919a",
+   "#b0b1b5"
+  ],
+  "brickd": [
+   "#1e1414",
+   "#2c1e1a",
+   "#432721",
+   "#603724",
+   "#7b462e",
+   "#905d3d",
+   "#b06c4c",
+   "#cc8c66"
+  ],
+  "sludge": [
+   "#091f19",
+   "#183018",
+   "#1a4425",
+   "#2d5b31",
+   "#3f723e",
+   "#598d4d",
+   "#88ae67",
+   "#bcd78f"
+  ],
+  "arcane": [
+   "#171531",
+   "#23214c",
+   "#3d3462",
+   "#544a7c",
+   "#6f6696",
+   "#8784a8",
+   "#a6a8c2",
+   "#cecfdc"
+  ],
+  "keep": [
+   "#1b1e25",
+   "#2c2f36",
+   "#3e434d",
+   "#575c68",
+   "#70747e",
+   "#8c9098",
+   "#a9adb2",
+   "#caccc9"
+  ],
+  "sandst": [
+   "#392a1d",
+   "#57402d",
+   "#775936",
+   "#967549",
+   "#b7905a",
+   "#d2ac6c",
+   "#e4c280",
+   "#efe2ae"
+  ],
+  "marble": [
+   "#16303a",
+   "#1c4a55",
+   "#3d6a6d",
+   "#618a8a",
+   "#7fa59d",
+   "#acc5b1",
+   "#d4e1d4",
+   "#f4f2ea"
+  ],
+  "cloth": [
+   "#3b1514",
+   "#662020",
+   "#a42028",
+   "#cd4b40",
+   "#e08a5c"
+  ],
+  "hide": [
+   "#2c2017",
+   "#4a3626",
+   "#6b4f38",
+   "#8b6d4d",
+   "#b38f64",
+   "#ccb68e"
+  ],
+  "frostb": [
+   "#00221e",
+   "#063530",
+   "#004c45",
+   "#276a63",
+   "#4c8a82",
+   "#80a6a0",
+   "#a5d4cd",
+   "#e1f1ee"
+  ],
+  "basaltb": [
+   "#200d0a",
+   "#291916",
+   "#362522",
+   "#493431",
+   "#65433d",
+   "#7d524b",
+   "#a4685f",
+   "#b88a82"
+  ],
+  "earthb": [
+   "#1e2124",
+   "#2d3135",
+   "#3f464e",
+   "#545c64",
+   "#67707a",
+   "#7d8893",
+   "#939fad",
+   "#afbac6"
+  ],
+  "tombb": [
+   "#101c12",
+   "#1a281c",
+   "#263d2b",
+   "#3c5240",
+   "#536757",
+   "#707e72",
+   "#8c998e",
+   "#acb8ae"
+  ],
+  "brickb": [
+   "#211d16",
+   "#2e281d",
+   "#40361f",
+   "#5a4923",
+   "#715b29",
+   "#87703f",
+   "#a18446",
+   "#bfa267"
+  ],
+  "arcaneb": [
+   "#001b32",
+   "#002a4e",
+   "#064066",
+   "#205781",
+   "#42739b",
+   "#6b8dab",
+   "#95aec3",
+   "#c6d2dd"
+  ],
+  "keepb": [
+   "#2a1e0d",
+   "#3b2f1f",
+   "#54422a",
+   "#6f5b3f",
+   "#85745e",
+   "#9e917f",
+   "#bbae9c",
+   "#daccba"
+  ],
+  "sandstb": [
+   "#3b241f",
+   "#5b3930",
+   "#814d40",
+   "#a46656",
+   "#c97e6b",
+   "#eb9681",
+   "#ffab95",
+   "#ffccbb"
+  ],
+  "marbleb": [
+   "#3c261e",
+   "#5b392d",
+   "#7a584c",
+   "#9a796d",
+   "#b49388",
+   "#d5b6ab",
+   "#ebd8d2",
+   "#faefec"
+  ],
+  "cragc": [
+   "#192018",
+   "#283525",
+   "#414640",
+   "#50584e",
+   "#637160",
+   "#788d74",
+   "#8ea689",
+   "#afcaa9"
+  ],
+  "buffc": [
+   "#312725",
+   "#493e3c",
+   "#655654",
+   "#826e6a",
+   "#9a8682",
+   "#b79e9a",
+   "#dab7b0",
+   "#f0cfc9"
+  ],
+  "frostc": [
+   "#1b192c",
+   "#2d2941",
+   "#3f3861",
+   "#5d587e",
+   "#7c789d",
+   "#9c99b2",
+   "#c8c4e3",
+   "#ecebf6"
+  ],
+  "basaltc": [
+   "#14131d",
+   "#1f1e27",
+   "#2b2a33",
+   "#3b3a45",
+   "#4d4b5e",
+   "#605d74",
+   "#7b7798",
+   "#9795ae"
+  ],
+  "earthc": [
+   "#2d1c17",
+   "#412a24",
+   "#61392f",
+   "#7c4d41",
+   "#955f52",
+   "#b37363",
+   "#d28875",
+   "#e7a796"
+  ],
+  "tombc": [
+   "#22160a",
+   "#2e2013",
+   "#47311b",
+   "#5c4631",
+   "#715d4a",
+   "#867769",
+   "#9f9285",
+   "#bfb2a7"
+  ],
+  "brickc": [
+   "#14171a",
+   "#1e2227",
+   "#283039",
+   "#374553",
+   "#47586a",
+   "#5b6d80",
+   "#6c829a",
+   "#8aa0b7"
+  ],
+  "arcanec": [
+   "#2d0d16",
+   "#451423",
+   "#5d2937",
+   "#783f4d",
+   "#935b68",
+   "#a67c84",
+   "#c0a1a7",
+   "#dbccce"
+  ],
+  "keepc": [
+   "#101f2f",
+   "#223040",
+   "#2f455c",
+   "#455f79",
+   "#62768c",
+   "#8192a4",
+   "#9eafc0",
+   "#bdcee0"
+  ],
+  "sandstc": [
+   "#39362f",
+   "#534f44",
+   "#6f6959",
+   "#8d8672",
+   "#aba28b",
+   "#c7bda3",
+   "#dbd2b7",
+   "#f4edd9"
+  ],
+  "marblec": [
+   "#132c3d",
+   "#1c445e",
+   "#3e637d",
+   "#61839c",
+   "#7c9eb6",
+   "#a0bfd6",
+   "#cadcea",
+   "#e6f0f8"
+  ],
+  "wisp": [
+   "#244f6c",
+   "#0065a3",
+   "#008cd9",
+   "#5dbaf7",
+   "#80dfff",
+   "#deffff"
+  ],
+  "darki": [
+   "#020c1c",
+   "#02122a",
+   "#051a33",
+   "#092647",
+   "#112d50",
+   "#1b3b63"
+  ],
+  "darkv": [
+   "#190602",
+   "#250801",
+   "#2e0e04",
+   "#411606",
+   "#4a1e0e",
+   "#5c2a18"
+  ],
+  "darku": [
+   "#001111",
+   "#00191a",
+   "#002122",
+   "#002f30",
+   "#003738",
+   "#004647"
+  ]
+ },
+ "use": {
+  "rock": "warm cave rock, the Beodeul cliff ramp: wall faces, boulders, stalagmites (0-1 violet-black crevices and outlines, 2-3 shaded forms, 4-5 body, 6-7 lit edges)",
+  "crag": "cave rock face, earthy and muted: (0 only the darkest foot and deepest holes, 1 deep recesses, 2 seams and cracks and shadow under ledges, 3-4 the calm body of the face, 5 lit planes, 6-7 warm lit top edges)",
+  "slab": "worn grey-taupe cave floor: flat rock plates and packed earth (0-1 joints and cracks, 2-3 shaded plates, 4-5 body, 6-7 lit plate edges)",
+  "dark": "unlit rock beyond the walls, seen from above: violet-black masses (0 = void between masses, 5 = the faintest lit edge)",
+  "water": "underground water, the Beodeul river ramp (0-2 depth, 3-4 body, 5-6 ripple dashes, 7 a rare glint)",
+  "crystal": "glowing crystal (0-1 violet shade, 2 violet body, 3-4 cyan faces, 5-6 lit facets and glints)",
+  "fire": "flame and embers (0-2 red base, 3 orange, 4 yellow, 5 white-yellow core)",
+  "bone": "old bone, pale plaster-like (0-1 violet shade and eye sockets, 2-3 body, 4-5 lit)",
+  "timber": "dark oak: chest planks, torch shaft, props",
+  "iron": "wrought iron: brackets, bands, rings",
+  "gold": "gold and brass: lock plates, bowls, inlay (0-1 shade, 2 body, 3-4 shine)",
+  "moss": "moss, fern, ivy and grass (0-1 deep shade, 2-3 body, 4-5 lit tips)",
+  "fungus": "faintly glowing cave fungus caps (0-1 violet stalk shade, 2-4 glowing caps)",
+  "lime": "pale cream limestone of the ruin floor and dressed stone (0-1 violet joints and deep shade, 2-3 shaded stone, 4-5 body, 6-7 sun-lit)",
+  "buff": "grey-buff ashlar of the ruin walls (0-1 joints, 2-3 shaded blocks, 4-5 body, 6-7 lit edges)",
+  "leaf": "dense overgrowth beyond the ruin walls seen from above (0-1 gaps between leaf masses, 2-4 leaf clumps, 5-6 rare lit leaves)",
+  "teal": "teal: mosaic tesserae, verdigris on bronze, clear shallow pool water (0-1 deep, 2-3 body, 4-5 light)",
+  "terra": "terracotta: mosaic tesserae, clay urns",
+  "bronze": "old bronze: brazier bowl and legs (0-1 shade, 2-3 body, 4-5 shine)",
+  "cragb": "겉모습: 푸른 회색 바위(crag 과 같은 단)",
+  "buffw": "겉모습: 따뜻한 사암(buff 와 같은 단)",
+  "frost": "ice-bound rock of the ice cave: blue-grey (0-1 deep seams, 2 seams and shade, 3-4 body, 5 lit planes, 6-7 frost and ice glints)",
+  "snow": "trodden snow and frost on the ice-cave floor (0-1 blue shade and cracks, 2-3 shaded snow, 4-5 body, 6-7 lit snow)",
+  "basalt": "black volcanic basalt (0-1 fissures, 2 seams, 3-4 body, 5 lit planes, 6-7 warm lit edges)",
+  "lava": "molten lava and its glow (0-1 cooled crust, 2-3 red flow, 4-5 bright flow, 6 white-hot)",
+  "earth": "packed mine earth and hewn brown rock (0-1 cracks and deep shade, 2 seams, 3-4 body, 5 lit, 6-7 lit edges)",
+  "tomb": "cold dark crypt stone (0-1 joints and deep shade, 2 seams, 3-4 body, 5 lit, 6-7 lit edges)",
+  "brickd": "damp red-brown sewer brick (0-1 joints, 2 shaded brick, 3-4 body, 5 lit, 6-7 lit edges)",
+  "sludge": "green sewer water and slime (0-2 depth, 3-4 body, 5-6 ripples and slime highlights, 7 glint)",
+  "arcane": "violet-grey ashlar of the wizard tower (0-1 joints, 2 shade, 3-4 body, 5 lit, 6-7 lit edges)",
+  "keep": "grey castle keep stone (0-1 joints, 2 shade, 3-4 body, 5 lit, 6-7 lit edges)",
+  "sandst": "golden desert sandstone (0-1 joints and deep shade, 2 seams, 3-4 body, 5 lit, 6-7 sun-lit edges)",
+  "marble": "sea-stained pale marble of the sunken temple (0-1 deep teal joints, 2 shade, 3-4 stained body, 5 body, 6-7 clean lit marble)",
+  "cloth": "red cloth: banners, carpets, tents (0-1 folds in shade, 2 body, 3-4 lit folds)",
+  "hide": "leather, hides, canvas and rope (0-1 shade, 2-3 body, 4-5 lit)"
+ },
+ "new": [
+  "#7fd6d8",
+  "#afda5e",
+  "#3a2470",
+  "#7fd6d8",
+  "#4a929a",
+  "#c8ece0"
+ ],
+ "derived": {
+  "frostb": {
+   "source": "frost",
+   "hue": 185,
+   "chroma": 1.15,
+   "lightness": 0.0
+  },
+  "basaltb": {
+   "source": "basalt",
+   "hue": 30,
+   "chroma": 2.2,
+   "lightness": 0.015
+  },
+  "earthb": {
+   "source": "earth",
+   "hue": 250,
+   "chroma": 0.35,
+   "lightness": 0.0
+  },
+  "tombb": {
+   "source": "tomb",
+   "hue": 150,
+   "chroma": 1.6,
+   "lightness": 0.01
+  },
+  "brickb": {
+   "source": "brickd",
+   "hue": 85,
+   "chroma": 0.9,
+   "lightness": 0.03
+  },
+  "arcaneb": {
+   "source": "arcane",
+   "hue": 245,
+   "chroma": 1.1,
+   "lightness": 0.0
+  },
+  "keepb": {
+   "source": "keep",
+   "hue": 75,
+   "chroma": 2.4,
+   "lightness": 0.01
+  },
+  "sandstb": {
+   "source": "sandst",
+   "hue": 35,
+   "chroma": 1.15,
+   "lightness": -0.01
+  },
+  "marbleb": {
+   "source": "marble",
+   "hue": 40,
+   "chroma": 1.0,
+   "lightness": 0.0
+  },
+  "cragc": {
+   "source": "crag",
+   "hue": 140,
+   "chroma": 0.7,
+   "lightness": 0.0
+  },
+  "buffc": {
+   "source": "buff",
+   "hue": 30,
+   "chroma": 1.3,
+   "lightness": -0.01
+  },
+  "frostc": {
+   "source": "frost",
+   "hue": 290,
+   "chroma": 1.0,
+   "lightness": 0.0
+  },
+  "basaltc": {
+   "source": "basalt",
+   "hue": 290,
+   "chroma": 1.4,
+   "lightness": 0.02
+  },
+  "earthc": {
+   "source": "earth",
+   "hue": 35,
+   "chroma": 1.35,
+   "lightness": 0.0
+  },
+  "tombc": {
+   "source": "tomb",
+   "hue": 65,
+   "chroma": 1.8,
+   "lightness": 0.01
+  },
+  "brickc": {
+   "source": "brickd",
+   "hue": 250,
+   "chroma": 0.45,
+   "lightness": 0.0
+  },
+  "arcanec": {
+   "source": "arcane",
+   "hue": 5,
+   "chroma": 1.0,
+   "lightness": 0.0
+  },
+  "keepc": {
+   "source": "keep",
+   "hue": 250,
+   "chroma": 2.6,
+   "lightness": 0.0
+  },
+  "sandstc": {
+   "source": "sandst",
+   "hue": 90,
+   "chroma": 0.4,
+   "lightness": 0.035
+  },
+  "marblec": {
+   "source": "marble",
+   "hue": 240,
+   "chroma": 1.2,
+   "lightness": -0.01
+  },
+  "wisp": {
+   "source": "fire",
+   "hue": 240,
+   "chroma": 0.75,
+   "lightness": 0.03
+  },
+  "darki": {
+   "source": "dark",
+   "hue": 255,
+   "chroma": 2.2,
+   "lightness": 0.0
+  },
+  "darkv": {
+   "source": "dark",
+   "hue": 40,
+   "chroma": 2.2,
+   "lightness": 0.0
+  },
+  "darku": {
+   "source": "dark",
+   "hue": 195,
+   "chroma": 2.2,
+   "lightness": 0.0
+  }
+ }
+}

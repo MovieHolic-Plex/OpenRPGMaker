@@ -14,7 +14,8 @@
 //   · 벽 앞면 위에 천장이 한 줄도 없는 「떠 있는 벽 토막」이 생길 수 있었다 → 배치 간격 규칙 + 검사(stranded-wall)
 //   · 서사 앵커가 없었다 → 입구(올라가는 계단)·보스방(입구에서 가장 먼 방)·보물 방·잠긴 문 자리(gate)를 결과로 돌려준다
 import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind, supportSurfaceOf } from "@/project/groundSupport";
-import { lookKit } from "@/project/kitLook";
+import { activeTilesetLook, lookKit } from "@/project/kitLook";
+import { dungeonSkinFor, type DungeonSkinExtra } from "@/assets/dungeonSkins";
 import { autotileVariantForMask, cellHash } from "@/project/defaults/autotileEngine";
 import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 import { DungeonComposeError } from "../errors";
@@ -143,9 +144,12 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const hasKit = (id: string) => kits.has(id);
   const autos = new Map((ts.autotileGroups ?? []).map((g) => [g.id, g] as const));
   // gap 바위 줄: 바위 윗면 오토타일 + 앞면 키트가 둘 다 있어야 쓴다. 앞면이 2단이라 벽 높이도 2줄이다.
-  const gapLine = spec.rockLine === "none" ? null : (spec.rockLine ?? GAP_ROCK_LINE[type] ?? null);
+  // 겉가죽(assets/dungeonSkins.ts): 이 게임의 겉모습이 고른 새 그림. 입는 주제는 바위 줄·종류 재질을 쓰지 않는다 — 벽 앞면은 3칸(좁으면 2칸)이고
+  // 칸 그림은 아래 «겉가죽 입히기» 가 바꾼다(배치·벽·천장·물 마스크는 그대로). 야외(수관)·허공 주제, 칸 단위 층(exact), 바위 줄을 직접 고른 요청은 입지 않는다.
+  const skin = spec.skin === false || spec.exact || spec.rockLine || profile.walls === "canopy" || profile.liquid === "void" ? undefined : dungeonSkinFor(ts, type, activeTilesetLook(ts), [...(spec.lair ? ["lair"] : []), ...(spec.flooded ? ["flooded"] : [])]);
+  const gapLine = skin || spec.rockLine === "none" ? null : (spec.rockLine ?? GAP_ROCK_LINE[type] ?? null);
   // 종류 전용 재질(얼음 동굴 등)은 줄을 직접 고르지 않았을 때만, 윗면 오토타일과 앞면 키트가 둘 다 구워져 있을 때만 쓴다 — 아니면 줄 바위.
-  const material = spec.rockLine === undefined ? GAP_ROCK_MATERIAL[type] : undefined;
+  const material = spec.rockLine === undefined && !skin ? GAP_ROCK_MATERIAL[type] : undefined;
   const useMaterial = !!(material && autos.has(material.group) && hasKit(material.face));
   const rockFaceId = useMaterial ? material!.face : gapLine ? `bd-dg-rock-${gapLine}-face` : "";
   const rockGroup = useMaterial ? autos.get(material!.group) : gapLine ? autos.get(`beodeul_dungeon_rock_${gapLine}`) : undefined;
@@ -177,7 +181,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const liquid = g.liquid;
   const bridge = g.bridge;
   const warnings: string[] = mask.warnings;
-  if (spec.rockLine && spec.rockLine !== "none" && !useRock) warnings.push(`이 타일셋 사본에 바위 줄 ${spec.rockLine} 조각(beodeul_dungeon_rock_${spec.rockLine}·bd-dg-rock-${spec.rockLine}-face)이 없어 옛 검은 천장으로 지었다 — 프로젝트를 다시 열면 번들 꼬리가 붙는다.`);
+  if (spec.rockLine && spec.rockLine !== "none" && !useRock && !skin) warnings.push(`이 타일셋 사본에 바위 줄 ${spec.rockLine} 조각(beodeul_dungeon_rock_${spec.rockLine}·bd-dg-rock-${spec.rockLine}-face)이 없어 옛 검은 천장으로 지었다 — 프로젝트를 다시 열면 번들 꼬리가 붙는다.`);
   const doorstep = g.protect;
   const partitions = mask.partitions;
   const bridgeCount = mask.bridgeCount;
@@ -551,6 +555,106 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     lower[idx(x, y)] = kit(ew ? "bd-pick-aqueduct-sewer-bridge-ew-stone" : "bd-pick-aqueduct-sewer-bridge-ns-stone").rows[0]!.tiles[0]!;
   }
 
+  // ---- 겉가죽 입히기: 걷는 바닥 · 벽 앞면(+윗변 입술) · 벽 너머 윗면과 테 · 물과 물가. 마스크는 읽기만 한다. ----
+  const skinOverlay = new Map<number, number>();
+  const skinGlows: { name: string; x: number; y: number }[] = [];
+  const skinWater = !!(skin && skin.look.water && skin.look.shore && (profile.liquid === "lava") === !!skin.theme.lava);
+  /** 겉가죽 벽 앞면 칸 번호 — 벽걸이는 맨 벽 앞면에만 건다(계단·문이 깔린 벽 칸을 덮지 않는다). */
+  const skinFaceTiles = new Set<number>(skin ? skin.look.face.flat(2) : []);
+  if (skin) {
+    const L = skin.look;
+    /** 64px 덩이(4×4칸)마다 조각 하나 — 같은 조각이 줄지어 되풀이되지 않는다. */
+    const blockPick = (x: number, y: number, n: number, salt: number) => Math.min(n - 1, Math.floor(hash01(x >> 2, y >> 2, seed * 31 + salt) * n));
+    /** 바닥 판: 몫이 적혀 있으면 그 몫대로(조용한 판이 절반) — 눈에 띄는 무늬가 격자로 늘어서지 않는다. */
+    const floorPick = (x: number, y: number): number => {
+      const w = L.floorWeights;
+      if (!w || w.length !== L.floor.length) return blockPick(x, y, L.floor.length, 3);
+      let r = hash01(x >> 2, y >> 2, seed * 31 + 3);
+      for (let k = 0; k < w.length; k += 1) { r -= w[k]!; if (r < 0) return k; }
+      return w.length - 1;
+    };
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      const i = idx(x, y);
+      if (bridge[i]) {   // 다리: 걷는 쪽으로 이어지는 한 칸 그림(널다리·돌다리)
+        if (L.bridge) lower[i] = (isWalk(x - 1, y) || bridge[idx(x - 1, y)]) && (isWalk(x + 1, y) || bridge[idx(x + 1, y)]) ? L.bridge.ew : L.bridge.ns;
+        continue;
+      }
+      if (isWalk(x, y)) { lower[i] = L.floor[floorPick(x, y)]![(y & 3) * 4 + (x & 3)]!; continue; }
+      const b = wallB[i]!;
+      if (b < 0) continue;
+      const p = blockPick(x, y + b, L.face.length, 11);
+      lower[i] = L.face[p]![x & 3]![2 - b]!;
+      // 앞면 맨 윗줄 위 천장 칸에 입술(밝은 윗변)을 얹는다
+      if (b === wallH[i]! - 1 && inb(x, y - 1) && !isOpen(x, y - 1)) { const lip = L.lip[p]?.[x & 3] ?? -1; if (lip >= 0) skinOverlay.set(idx(x, y - 1), lip); }
+    }
+    // 벽 너머: 열린 칸에서 멀수록 어둡게(1칸·2칸·그 너머), 열린 칸과 닿는 쪽에는 테(옆면은 그리지 않는다)
+    const dist = new Int16Array(W * H).fill(-1);
+    const queue: number[] = [];
+    for (let i = 0; i < W * H; i += 1) if (isOpen(i % W, (i - (i % W)) / W)) { dist[i] = 0; queue.push(i); }
+    for (let k = 0; k < queue.length; k += 1) {
+      const c = queue[k]!, cx = c % W, cy = (c - cx) / W;
+      for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+        const X = cx + dx, Y = cy + dy;
+        if (!inb(X, Y) || dist[idx(X, Y)]! >= 0) continue;
+        dist[idx(X, Y)] = dist[c]! + 1; queue.push(idx(X, Y));
+      }
+    }
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      if (isOpen(x, y)) continue;
+      const i = idx(x, y);
+      const fN = isFloor(x, y - 1), fE = isFloor(x + 1, y), fW = isFloor(x - 1, y);
+      let t: number | undefined;
+      if (fN) t = (fE ? L.rim.NE : fW ? L.rim.NW : L.rim.N)?.[x & 3];
+      else if (fE && fW && L.rim.EW) t = L.rim.EW[y & 3];   // 한 칸 두께 벽: 양쪽 테를 반씩(가운데 어둠 줄이 검은 막대로 보였다)
+      else if (fE) t = L.rim.E?.[y & 3];
+      else if (fW) t = L.rim.W?.[y & 3];
+      else if (isWall(x + 1, y)) t = L.rim.Ef?.[y & 3];
+      else if (isWall(x - 1, y)) t = L.rim.Wf?.[y & 3];
+      else if (isFloor(x + 1, y - 1)) t = L.rim.cE?.[x & 3];
+      else if (isFloor(x - 1, y - 1)) t = L.rim.cW?.[x & 3];
+      if (t === undefined || t < 0) {
+        const d = dist[i]!, level = L.top[Math.min(d < 0 || d > 2 ? 2 : d <= 1 ? 0 : 1, L.top.length - 1)]!;
+        // 덩이 줄마다 반 덩이 어긋나게(벽돌 쌓기) — 판이 격자로 늘어서 보이지 않는다(테가 한 색인 판만: stagger)
+        const sx = L.stagger ? x + (((y >> 2) & 1) << 1) : x;
+        const piece = level[blockPick(sx, y, level.length, 17)]!;
+        t = piece.length === 4 ? piece[(y & 1) * 2 + (x & 1)]! : piece[(y & 3) * 4 + (sx & 3)]!;
+      }
+      lower[i] = t;
+    }
+    // 물: 몸통 칸 + 물가 덧칸(2층). 못 그림의 가장자리 칸을 이웃 물 모양으로 고르고, 한 칸 폭 물줄기는 좁힌 칸, 안쪽 모서리는 섬 그림 조각.
+    if (skinWater) {
+      const wat = (x: number, y: number) => !inb(x, y) || liquid[idx(x, y)] === 1 || bridge[idx(x, y)] === 1;
+      for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+        const i = idx(x, y);
+        if (!liquid[i] || !isFloor(x, y) || bridge[i]) continue;
+        const n = wat(x, y - 1), s = wat(x, y + 1), w = wat(x - 1, y), e = wat(x + 1, y);
+        const nw = wat(x - 1, y - 1), ne = wat(x + 1, y - 1), sw = wat(x - 1, y + 1), se = wat(x + 1, y + 1);
+        let t = -1;
+        // 2×2 물 덩이에 들지 않는 칸은 한 칸 폭 물줄기다: 끝·곧은 칸·굽이·갈림을 물인 이웃(북 1 · 동 2 · 남 4 · 서 8)으로 고른다
+        const wide = (n && e && ne) || (n && w && nw) || (s && e && se) || (s && w && sw);
+        const m = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
+        if (!wide && L.narrow) {
+          if (m === 0) t = L.narrow.dot;
+          else if (!w && !e) t = L.narrow.v[!n ? 0 : !s ? 3 : 1 + (y & 1)]!;
+          else if (!n && !s) t = L.narrow.h[!w ? 0 : !e ? 3 : 1 + (x & 1)]!;
+          else t = L.narrow.net?.[m] ?? -1;
+        }
+        if (t < 0) {   // 못: 가장자리 칸은 못 그림의 가장자리, 안쪽 칸은 뭍인 대각마다 안쪽 모서리(둘이면 둘을 합친 칸)
+          t = L.shore![(!n ? 0 : !s ? 3 : 1 + (y & 1)) * 4 + (!w ? 0 : !e ? 3 : 1 + (x & 1))]!;
+          if (t < 0) {
+            const d = (nw ? 0 : 1) | (ne ? 0 : 2) | (sw ? 0 : 4) | (se ? 0 : 8);
+            const one = (k: number) => (k & 1 ? L.shoreIn![3]! : k & 2 ? L.shoreIn![2]! : k & 4 ? L.shoreIn![1]! : L.shoreIn![0]!);
+            if (d) t = L.shoreIn2?.[d] ?? L.shoreIn2?.[[3, 5, 10, 12, 6, 9].find((k) => (d & k) === k) ?? -1] ?? one(d);
+          }
+        }
+        // 둑이 그려진 칸: 2층의 막힌 덧칸 + 1층은 걷는 바닥 그림(둑 바깥 투명한 자리로 바닥이 보인다). 덧칸이 없는 안쪽 칸만 물 몸통.
+        if (t >= 0) skinOverlay.set(i, t);
+        if (t >= 0 && !skin.theme.wade) lower[i] = L.floor[floorPick(x, y)]![(y & 3) * 4 + (x & 3)]!;
+        else lower[i] = L.water!.length === 16 ? L.water![(y & 3) * 4 + (x & 3)]! : L.water![(y & 1) * 2 + (x & 1)]!;
+      }
+    }
+  }
+
   // 둥근 탑 링: 키트 그림을 통째로. 남쪽 통로 칸은 pass-s 키트로 덮는다.
   for (const g0 of rings) {
     const { def, ox, oy, N } = g0;
@@ -597,6 +701,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const stand = (x: number, y: number) => isFloor(x, y) && !blocked[idx(x, y)] && passTile(lower[idx(x, y)]!) && (upper[idx(x, y)]! < 0 || passTile(upper[idx(x, y)]!));
   // 입구 칸과 문 칸들 — 물건 하나를 놓을 때마다 여기서 모두 닿는지 본다(줄째 비워 두는 대신 길만 지킨다: 큰 홀 가운데가 비지 않게).
   const keyCells: [number, number][] = [];
+  /** 계단·문 앞 도착 칸 — 물건 자리로는 막아 두지만(blocked) 곁 칸 하나는 길에 이어져 있어야 한다. */
+  const arrivals: [number, number][] = [];
   for (const c of corridors) keyCells.push([c.rect.x + Math.floor(c.rect.w / 2), c.rect.y + Math.floor(c.rect.h / 2)]);
   rooms.forEach((r, ri) => {
     // 방 대표 칸 = 방 아랫변 가운데에 가장 가까운 걸을 수 있는 칸(호수·수로 방은 가운데가 물이다)
@@ -632,6 +738,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (!seen) return false;
     // 방마다: 그 방 바닥 중 걸을 수 있는 칸이 하나라도 닿았나 + 모든 문 칸이 닿았나
     for (const [x, y] of keyCells) if (stand(x, y) && !seen[idx(x, y)]) return false;
+    // 도착 칸이 뒤에 놓이는 물건에 둘러싸이면 그 층에 들어서자마자 갇힌다(큰 2층 하수도 씨앗 3: 구멍 계단 양옆에 해골·밸브)
+    for (const [x, y] of arrivals) if (!([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => stand(x + dx, y + dy) && seen[idx(x + dx, y + dy)])) return false;
     if (reachedBefore) for (let i = 0; i < W * H; i += 1) if (reachedBefore[i] && !seen[i] && stand(i % W, (i - (i % W)) / W)) return false;
     return rooms.every((r, ri) => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (roomAt[idx(x, y)] === ri && seen[idx(x, y)]) return true; return false; });
   };
@@ -639,7 +747,24 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const put = (kitId: string, x: number, y: number, opts: { label?: string; free?: boolean; liquidOk?: boolean } = {}): boolean => {
     if (!hasKit(kitId)) return false;
     // 기물은 이 게임의 변형 그림으로(화로·제단·모닥불 — 같은 칸 크기·같은 막힌 칸). 벽·바닥 킷은 변형이 없어 그대로다(project/kitLook.ts).
-    const def = lookKit(ts, kit(kitId));
+    let def = lookKit(ts, kit(kitId));
+    // 겉가죽을 입은 층: 옛 킷 자리에 그 주제의 새 그림(같은 폭, 더 높으면 아랫줄을 맞춘다). 여럿이면 자리 해시로 하나.
+    let usedId = kitId;
+    const swaps = skin?.theme.swap[kitId];
+    if (swaps?.length) {
+      const to = swaps[Math.min(swaps.length - 1, Math.floor(hash01(x, y, seed * 41 + 7 + skin!.pick * 977) * swaps.length))]!;
+      if (hasKit(to)) {
+        const next = kit(to), base = kit(kitId), dh = next.height - base.height;
+        x += Math.floor((base.width - next.width) / 2);
+        // 더 높은 그림: 서 있는 것은 아랫줄 맞춤. 벽걸이는 위가 벽이 아니면(2칸 벽) 아래로 늘인다. 더 낮은 바닥 그림은 가운데.
+        if (dh > 0) { if (!(kitSupportKind(next) === "mount" && !isWall(x, y - dh))) y -= dh; }
+        else if (dh < 0) { const k = kitSupportKind(next); y += k === "mount" ? 0 : next.rows.every((r) => (r.upperTiles ?? []).every((t) => t < 0 || passTile(t))) ? Math.floor(-dh / 2) : -dh; }   // 낮은 그림: 벽걸이는 위 맞춤, 바닥 그림은 가운데, 서 있는 것은 아랫줄
+        def = next; usedId = to;
+      }
+    }
+    // 이 게임의 빛 색(겉모습): 불을 내는 기물은 그 색 불 그림으로(같은 크기)
+    const lit = skin?.light[usedId];
+    if (lit && hasKit(lit)) { def = kit(lit); usedId = lit; }
     if (x < 0 || y < 0 || x + def.width > W || y + def.height > H) return false;
     if (checkGroundSupportForStamp(pseudo, ts, def, x, y)) return false;
     const ownSupport = kitSupportKind(def) === null;   // 던전 테마 밖 키트(광산 골짜기 등)는 groundSupport 가 안 본다 — 같은 규칙을 여기서 직접
@@ -657,6 +782,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         if (bottom ? !isWalk(X, Y) : !(isWalk(X, Y) || isWall(X, Y))) return false;
       }
       if (upper[idx(X, Y)]! >= 0 || blocked[idx(X, Y)]) return false;
+      if (skin && usedId !== kitId && isWall(X, Y) && !skinFaceTiles.has(lower[idx(X, Y)]!)) return false;
+      // 겉가죽 층의 바닥 그림(걷는 칸 그림, ★ 아님)은 걷는 바닥 위에만 — 벽 줄에 걸치면 그 벽 칸이 걷는 칸이 된다(마법진 3×3 이 북벽에 걸쳤다)
+      if (skin && up >= 0 && ts.priority[up] !== "upper" && passTile(up) && !isWalk(X, Y)) return false;
       if (doorstep[idx(X, Y)] && isFloor(X, Y)) return false;
       cells.push({ x: X, y: Y, lo, up });
     }
@@ -681,14 +809,17 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const decalCells = cells.filter((c) => c.lo >= 0 && c.up < 0 && isFloor(c.x, c.y));
     // 길을 막는 물건이면 되돌린다(바닥 위 걸을 수 없는 칸이 새로 생긴 경우만 검사).
     const blocks = cells.some((c) => isFloor(c.x, c.y) && !passTile(c.up >= 0 ? c.up : c.lo));
-    if (blocks && !opts.free && !connected()) {
+    // 갈아 끼운 그림은 옛 그림과 막는 칸이 다를 수 있다 — 옛 것이 «길을 안 막는 그림» 이라 검사 없이(free) 놓이던 자리도 길을 다시 본다(우거진 풀 자리에 선 석상이 회랑을 막았다).
+    if (blocks && (!opts.free || usedId !== kitId) && !connected()) {
       cells.forEach((c, i) => { lower[idx(c.x, c.y)] = before[i]![0]; upper[idx(c.x, c.y)] = before[i]![1]; });
       return false;
     }
     for (const c of decalCells) decal[idx(c.x, c.y)] = 1;
     const label = opts.label ?? kitId.replace(/^bd-pick-/, "");
     counts[label] = (counts[label] ?? 0) + 1;
-    placedLog.push({ id: kitId, x, y, cells: cells.map((c) => [idx(c.x, c.y), c.lo, c.up] as const) });
+    placedLog.push({ id: usedId, x, y, cells: cells.map((c) => [idx(c.x, c.y), c.lo, c.up] as const) });
+    const glow = skin?.theme.glowOf[usedId];
+    if (glow) skinGlows.push({ name: glow, x, y });
     return true;
   };
   const putAny = (kitId: string, cands: readonly (readonly [number, number])[], opts?: { label?: string }): [number, number] | null => {
@@ -788,8 +919,11 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const entryKind = spec.entryStair === "door" && !BUILT_DUNGEON.has(type) ? "up" : spec.entryStair ?? "up";
   const exitKind = spec.exitStair ?? "down";
   // 동굴만 새 계단(흙굴 바닥 위에 구운 구멍·흙굴 벽에 얹는 돌계단) — 다른 종류 바닥·벽에는 맞지 않는다.
-  const wideUp = type === "cave" && hasKit(CAVE_STAIRS.up);
-  const wideDown = type === "cave" && hasKit(CAVE_STAIRS.down);
+  // 겉가죽을 입은 층은 그 주제·겉모습의 계단 킷(벽 색 줄 문목 계단 · 바닥 색 줄 계단 구멍) — 옛 계단은 갈색 흙벽 조각이라 얼음굴·성에 박힌 딴 그림이었다.
+  const skinUp = skin?.look.stairs && hasKit(skin.look.stairs.up) ? skin.look.stairs.up : null;
+  const skinDown = skin?.look.stairs && hasKit(skin.look.stairs.down) ? skin.look.stairs.down : null;
+  const wideUp = type === "cave" && hasKit(CAVE_STAIRS.up) && !skinUp;
+  const wideDown = type === "cave" && hasKit(CAVE_STAIRS.down) && !skinDown;
   let entryStair: DungeonStairCell | null = null;
   let exitStair: DungeonStairCell | null = null;
   let sideDoor: (DungeonStairCell & { room: string }) | null = null;
@@ -812,13 +946,14 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
    */
   const wallStairs = (q: { x: number; y: number }): DungeonStairCell => {
     const wide = wideUp && flatAt(q, 2);
-    const def = kit(wide ? CAVE_STAIRS.up : K.stairsUp);
+    const def = kit(wide ? CAVE_STAIRS.up : skinUp ?? K.stairsUp);
     for (let dy = 0; dy < def.height; dy += 1) for (let dx = 0; dx < def.width; dx += 1) {
       const row = def.rows[dy]!, up = row.upperTiles?.[dx] ?? -1, lo = row.tiles[dx] ?? -1;
       if (up >= 0) upper[idx(q.x + dx, q.y + dy)] = up;
       if (lo >= 0) lower[idx(q.x + dx, q.y + dy)] = lo;
     }
     for (let dx = 0; dx < def.width; dx += 1) blocked[idx(q.x + dx, q.y + 2)] = 1;
+    arrivals.push([q.x, q.y + 2]);
     return { x: q.x, y: q.y + 1, front: { x: q.x, y: q.y + 2 }, kind: "up" };
   };
   /** 나무 문(1×2)을 벽 두 줄에 건다 — 이동 이벤트는 문 아랫칸(부딪쳐 들어간다), 앞 칸은 비워 둔다. */
@@ -840,7 +975,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
    * 나머지 셋은 막힌 구멍이다. 둘레 한 칸까지 바닥인 자리 중 score 가 낮은 칸(왼쪽 위 기준). 길이 끊기면 다음 칸.
    */
   const placeHole = (cands: [number, number][], front: (x: number, y: number) => { x: number; y: number } | null): DungeonStairCell | null => {
-    const def = kit(wideDown ? CAVE_STAIRS.down : K.stairsDown);
+    const def = kit(wideDown ? CAVE_STAIRS.down : skinDown ?? K.stairsDown);
     for (const [x, y] of cands) {
       const cells: [number, number, number][] = [];
       for (let dy = 0; dy < def.height; dy += 1) for (let dx = 0; dx < def.width; dx += 1) cells.push([x + dx, y + dy, def.rows[dy]!.tiles[dx]!]);
@@ -849,14 +984,19 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       if (!connected()) { cells.forEach(([X, Y], k) => { lower[idx(X, Y)] = was[k]!; blocked[idx(X, Y)] = 0; }); continue; }
       const ex = x, ey = y + def.height - 1;   // 이동 칸: 왼쪽 아래(1×1 이면 그 칸)
       const fr = front(ex, ey) ?? { x: ex, y: ey + 1 };
+      // 도착 칸도 길에 이어져 있어야 한다: 구멍 옆에 먼저 놓인 물건(해골·밸브) 사이에 도착 칸이 갇히면 그 층의 모든 방이
+      // «입구에서 걸어 닿지 않는 방» 이 됐다(큰 2층 하수도 씨앗 3 — 2026-11-15 여러 씨앗 훑기). 그런 자리는 건너뛴다.
+      const reach = flood();
+      if (!inb(fr.x, fr.y) || !stand(fr.x, fr.y) || !reach?.[idx(fr.x, fr.y)]) { cells.forEach(([X, Y], k) => { lower[idx(X, Y)] = was[k]!; blocked[idx(X, Y)] = 0; }); continue; }
       blocked[idx(fr.x, fr.y)] = 1;   // 도착 칸은 물건·이벤트 자리로 쓰지 않는다
+      arrivals.push([fr.x, fr.y]);
       return { x: ex, y: ey, front: fr, kind: "down" };
     }
     return null;
   };
   /** 내려가는 계단을 놓을 수 있는 칸(왼쪽 위): 그림 칸과 둘레 한 칸이 모두 걷는 바닥(다리·물건·막힘 없음), 방 윗줄 밑. */
   const holeCands = (r: PlacedRoom, inset: number, ring: boolean): [number, number][] => {
-    const def = kit(wideDown ? CAVE_STAIRS.down : K.stairsDown);
+    const def = kit(wideDown ? CAVE_STAIRS.down : skinDown ?? K.stairsDown);
     return floorCells(r, inset).filter(([x, y]) => !doorstep[idx(x, y)] && y > r.y + 1
       && Array.from({ length: def.height + 2 }, (_, j) => j - 1).every((dy) => Array.from({ length: def.width + 2 }, (_, j) => j - 1).every((dx) =>
         isWalk(x + dx, y + dy) && !bridge[idx(x + dx, y + dy)] && upper[idx(x + dx, y + dy)]! < 0 && (!ring || !blocked[idx(x + dx, y + dy)]) && !blocked[idx(x + Math.max(0, Math.min(dx, def.width - 1)), y + Math.max(0, Math.min(dy, def.height - 1)))])));
@@ -869,7 +1009,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const standFront = (x: number, y: number) => [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => ({ x: x + dx!, y: y + dy! })).find((q) => isWalk(q.x, q.y) && !blocked[idx(q.x, q.y)] && !bridge[idx(q.x, q.y)]) ?? null;
   /** 둘레 조건 없이 그림 칸만 비어 있는 바닥(물건·위층 그림·다리·문턱 없음) + 서는 이웃이 있는 칸 — 마지막 자리. */
   const looseHoleCands = (r: PlacedRoom): [number, number][] => {
-    const def = kit(wideDown ? CAVE_STAIRS.down : K.stairsDown);
+    const def = kit(wideDown ? CAVE_STAIRS.down : skinDown ?? K.stairsDown);
     const free = (x: number, y: number) => isWalk(x, y) && !bridge[idx(x, y)] && !doorstep[idx(x, y)] && !blocked[idx(x, y)] && upper[idx(x, y)]! < 0;
     return floorCells(r).filter(([x, y]) => y > r.y
       && Array.from({ length: def.height }, (_, dy) => dy).every((dy) => Array.from({ length: def.width }, (_, dx) => dx).every((dx) => free(x + dx, y + dy)))
@@ -1106,6 +1246,52 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const missed = dressDesignFeatures(ctx, r, rng(seed * 53 + i * 29 + 1));
     if (missed.length) warnings.push(`고침: 방 ${r.id} 의 특징 ${missed.join("·")} 은 놓을 빈 바닥·그림이 없어 빠졌다.`);
   });
+  // 겉가죽의 덧놓는 기물(큰 석순·수정·못·모자이크·벽 샘 …): 옛 꾸밈 뒤에 방 넓이에 맞춰 — put 이 길 막힘·받침·문목을 그대로 지킨다.
+  if (skin?.theme.extras.length) {
+    const clear = (x0: number, y0: number, w0: number, h0: number): boolean => {
+      for (let y = y0 - 1; y <= y0 + h0; y += 1) for (let x = x0 - 1; x <= x0 + w0; x += 1) if (inb(x, y) && upper[idx(x, y)]! >= 0) return false;
+      return true;
+    };
+    /** 그 방에 덧놓는 기물을 want 개까지 놓고 놓은 수를 돌려준다. */
+    const lay = (ex: DungeonSkinExtra, r: PlacedRoom, rs: () => number, want: number): number => {
+      const def = kit(ex.kit);
+      if (ex.cls === "run") {   // 방 한가운데 세로 줄(융단): 바닥 첫 줄에서 끝 줄까지 이어 깐다
+        const x = r.x + Math.floor((r.w - def.width) / 2);
+        let n = 0;
+        for (let y = r.y; y + def.height <= r.y + r.h; y += def.height) {
+          if (!Array.from({ length: def.width * def.height }, (_, k) => k).every((k) => isWalk(x + (k % def.width), y + Math.floor(k / def.width)) && upper[idx(x + (k % def.width), y + Math.floor(k / def.width))]! < 0 && !decal[idx(x + (k % def.width), y + Math.floor(k / def.width))])) { if (n) break; continue; }
+          if (put(ex.kit, x, y, { free: true })) n += 1;
+        }
+        return n;
+      }
+      const cands: [number, number][] = ex.cls === "wall" ? shuffle(rs, wallSlots(r)).map((s) => [s.x, s.y + 1 - (def.height - 1)])
+        : (ex.cls === "edge" ? edgeCells(r, rs) : shuffle(rs, floorCells(r, ex.cls === "open" ? 1 : 0))).map(([x, y]) => [x - Math.floor((def.width - 1) / 2), y - (def.height - 1)]);
+      let n = 0;
+      for (const [x, y] of cands) {
+        if (n >= want) break;
+        if (ex.cls !== "wall" && !clear(x, y, def.width, def.height)) continue;
+        if (ex.cls === "wall" && !Array.from({ length: def.width }, (_, dx) => dx).every((dx) => isWall(x + dx, y + def.height - 1) && wallB[idx(x + dx, y + def.height - 1)] === 0 && upper[idx(x + dx, y + def.height - 1)]! < 0 && !blocked[idx(x + dx, y + def.height)]
+          && Array.from({ length: def.height }, (_, dy) => dy).every((dy) => !isWall(x + dx, y + dy) || skinFaceTiles.has(lower[idx(x + dx, y + dy)]!)))) continue;
+        if (put(ex.kit, x, y, { free: ex.cls === "decal" })) n += 1;
+      }
+      return n;
+    };
+    // 그 층에 하나뿐인 볼거리(큰 수정·권양기·분수·마법진 …): 입구가 아닌 가장 넓은 방부터 자리를 찾는다
+    const byArea = rooms.map((r, ri) => ({ r, ri, area: floorCells(r, 0).length })).sort((a, b) => Number(a.r.kind === "entrance") - Number(b.r.kind === "entrance") || b.area - a.area);
+    for (const ex of skin.theme.extras) {
+      if (!ex.once || !hasKit(ex.kit)) continue;
+      for (const { r, ri } of byArea) if (lay(ex, r, rng(seed * 61 + ri * 7 + 1), 1)) break;
+    }
+    rooms.forEach((r, ri) => {
+      const rs = rng(seed * 59 + ri * 13 + 3);
+      const area = floorCells(r, 0).length;
+      for (const ex of skin.theme.extras) {
+        if (ex.once || !hasKit(ex.kit) || (ex.rooms && !ex.rooms.includes(r.kind))) continue;
+        const want = Math.min(ex.max ?? 9, Math.floor((area * ex.per) / 100 + rs()));
+        if (want > 0) lay(ex, r, rs, want);
+      }
+    });
+  }
   // 탑 층(여러 층 탑: 다음 층으로 올라가는 계단·바닥 계단 입구·문 입구)은 북쪽 벽 앞면 위 두 줄에 화살 구멍 창(gap bd-dg-tower-window-*)을 방마다 한두 개.
   // 자연 굴(동굴·광산·화산·얼음굴·숲·늪·이계)에는 창이 없다 — 동굴 북벽에 빛 든 화살 구멍 창이 «아무 데도 안 가는 문틀»로 읽혔다(2026-10-25 J25).
   const towerish = BUILT_DUNGEON.has(type) && (exitKind === "up" || entryKind === "down" || entryKind === "door");
@@ -1270,7 +1456,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     width: W, height: H, lower, upper, rooms, corridors, entrance: { x: startCell[0], y: startCell[1] }, stairsUp: su, stairsDown: sd,
     entryStair, exitStair, sideDoor,
     ...(outdoor ? { canopy: { style: profile.canopy ?? "leaf", cells: canopyCells } } : {}),
-    ...(profile.bank && bankCells.length ? { banks: { style: profile.bank, cells: bankCells } } : {}),
+    ...(profile.bank && bankCells.length && !skinWater ? { banks: { style: profile.bank, cells: bankCells } } : {}),
+    ...(skin ? { skin: { theme: skin.theme.id, look: skin.look.id, overlay: [...skinOverlay], glows: skinGlows } } : {}),
     anchors: { boss: bossRoom?.id ?? null, treasure: vaultRoom?.id ?? null, gate }, spots, chestSpots, picture, counts, warnings,
     ...(reliefPlan && reliefPlan.levels.some((v) => v > 0) ? { relief: { levels: reliefPlan.levels, ramps: reliefPlan.ramps, style: dungeonReliefStyle(type) } } : {}),
   };
