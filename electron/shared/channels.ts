@@ -18,6 +18,7 @@ export const OPRN_CHANNELS = {
   teamLock: "oprn:team.lock",
   companionOrigin: "oprn:companion.origin",
   companionToken: "oprn:companion.token",
+  startManageRecent: "oprn:start.manageRecent",
   startOpenRecent: "oprn:start.openRecent",
   /** 시작 화면 「이름 바꾸기」 — 프로젝트 폴더의 제목만 바꾼다. */
   startRenameProject: "oprn:start.renameProject",

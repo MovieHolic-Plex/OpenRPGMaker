@@ -1,9 +1,9 @@
 import { mainMark } from "./startupTiming";
-import { existsSync, realpathSync } from "node:fs";
+import { existsSync, lstatSync, realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
-import { join, resolve } from "node:path";
+import { basename, join, resolve } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
@@ -24,7 +24,10 @@ import { firstShowSteps } from "./windowShow";
 import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { acceptMenuFolder, prepareNewProjectDir } from "./newProjectDir";
-import { describeRecentProjects, forgetRecentProject, renameRecentEntry, renamableRecentDir, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { describeRecentProjects, forgetRecentProject, listRecentProjects, listRecentTeams, recentProjectCoverSource, recentProjectDir, rememberRecentProject, rememberRecentTeam, renameRecentEntry, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { containsPath, inspectProjectFolder, validateRecentFolder } from "./projectFolderPath";
+import { duplicateProjectFolder } from "./duplicateProject";
+import { filterRecentProjects } from "../shared/recentProjects";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
 import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
@@ -241,6 +244,7 @@ const replaceFlushReady = new Set<number>();
 const replaceFlushWaiters = new Map<number, (payload: unknown) => void>();
 /** 같은 창에서 폴더 대화상자를 두 번 열지 않는다. */
 const folderSwitching = new Set<number>();
+const recentFolderChanges = new Set<string>();
 
 // 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
 // 저장을 기다리는 동안의 두 번째 close 는 막는다(closeFlow.ts). 막지 않으면 연타·Quit 이 저장을 끊는다.
@@ -493,6 +497,9 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
  */
 async function openWindowSession(webContentsId: number, projectDir: string) {
   try {
+    if (recentFolderChanges.size && [...recentFolderChanges].some((dir) => containsPath(dir, safeRealpath(projectDir)))) {
+      throw new Error("프로젝트 폴더를 정리하는 중입니다. 잠시 후 다시 열어 주세요.");
+    }
     return await sessions.open(webContentsId, projectDir);
   } catch (error) {
     if (error instanceof SessionConsumerClosed) return null;
@@ -525,7 +532,10 @@ function loadWindowContent(window: BrowserWindow): void {
         if (!session && !window.isDestroyed() && !smokePage) void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
         return;
       }
-      if (openedByCli) rememberRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      if (openedByCli) {
+        explicitProjectDir.delete(window);
+        recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      }
       if (devServerUrl) void window.loadURL(devServerUrl);
       else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
     }).catch((error: unknown) => {
@@ -550,7 +560,7 @@ async function adoptFolder(window: BrowserWindow, projectDir: string, title?: st
     if (session) sessions.close(webContentsId);
     return;
   }
-  rememberRecentProject(projectDir, title ?? session.store.info().title ?? projectDir);
+  recordRecentProject(session.projectDir, title ?? session.store.info().title ?? session.projectDir);
   void window.loadURL(rendererEntryUrl());
 }
 
@@ -604,10 +614,8 @@ async function openProjectFromCli(projectDir: string): Promise<void> {
     explicitProjectDir.set(idle, resolved);
     focusAppWindow(idle);
     try { await adoptFolder(idle, resolved); }
-    catch (error) {
-      explicitProjectDir.delete(idle);
-      console.warn("[project] 명령줄 폴더를 열지 못했습니다:", error);
-    }
+    catch (error) { console.warn("[project] 명령줄 폴더를 열지 못했습니다:", error); }
+    finally { explicitProjectDir.delete(idle); }
     return;
   }
   createWindow({ projectDir: resolved });
@@ -806,7 +814,47 @@ function showJoinFromMenu(): void {
   createWindow();
 }
 
+function recordRecentProject(dir: string, title: string, lastOpenedAt?: string | null): void {
+  rememberRecentProject(dir, title, lastOpenedAt);
+  buildMenu();
+}
+
+function openRecentWindow(dir: string): void {
+  const existing = windowAlreadyOpening(dir);
+  if (existing) {
+    focusAppWindow(existing);
+    const title = sessions.get(existing.webContents.id)?.store.info().title;
+    recordRecentProject(dir, title ?? listRecentProjects().find((entry) => entry.projectDir === dir)?.title ?? basename(dir));
+  } else {
+    createWindow({ projectDir: dir });
+  }
+}
+
+function isProtectedRecentFolder(dir: string): boolean {
+  const installation = [rendererDir, process.resourcesPath, app.isPackaged ? app.getAppPath() : join(app.getAppPath(), "public", "demos")]
+    .filter(Boolean).map(safeRealpath);
+  return installation.some((root) => containsPath(root, dir) || containsPath(dir, root))
+    || containsPath(dir, safeRealpath(app.getPath("home"))) || containsPath(dir, safeRealpath(app.getPath("userData")));
+}
+
+function hasRecentFolderChange(dir: string): boolean {
+  return [...recentFolderChanges].some((path) => containsPath(path, dir) || containsPath(dir, path));
+}
+
+function requireClosedRecentFolder(dir: string): void {
+  if (sessions.hasOpenProjectWithin(dir) || [...hosting, ...teamHosts.keys()].some((path) => containsPath(dir, path))) {
+    throw new Error("이 프로젝트나 하위 프로젝트를 사용 중입니다. 관련 창이나 호스트를 닫고 다시 시도해 주세요.");
+  }
+}
+
 function buildMenu(): void {
+  const recent = filterRecentProjects(listRecentProjects(), "", "opened")
+    .filter((entry) => validateRecentFolder(entry.projectDir, [entry], inspectProjectFolder))
+    .slice(0, 12)
+    .map((entry) => ({
+      projectDir: entry.projectDir,
+      title: entry.title && entry.title !== entry.projectDir ? entry.title : basename(entry.projectDir),
+    }));
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     { role: "appMenu" },
     {
@@ -844,6 +892,23 @@ function buildMenu(): void {
             // 메뉴 경로는 폴더에 project.sqlite 가 없어도 연다 — initLocalProjectStore 가 만든다.
             openChosenFolder(window, { title: "프로젝트 폴더 열기", failure: "폴더를 열지 못했습니다." });
           },
+        },
+        {
+          label: "최근 프로젝트",
+          enabled: recent.length > 0,
+          submenu: recent.map((entry) => ({
+            label: (recent.some((other) => other !== entry && other.title === entry.title) ? `${entry.title} · ${entry.projectDir}` : entry.title).replaceAll("&", "&&"),
+            toolTip: entry.projectDir,
+            click: () => {
+              const dir = recentProjectDir(entry.projectDir);
+              if (dir) { openRecentWindow(dir); return; }
+              buildMenu();
+              const owner = focusedWindow();
+              const options = { type: "warning" as const, message: "프로젝트 폴더를 찾을 수 없습니다.", detail: entry.projectDir };
+              if (owner) void dialog.showMessageBox(owner, options);
+              else void dialog.showMessageBox(options);
+            },
+          })),
         },
         { type: "separator" },
         {
@@ -1034,7 +1099,7 @@ export async function startApp(boot: BootContext): Promise<void> {
   });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => {
     mainMark("recentProjectsAsked");
-    const entries = describeRecentProjects();
+    const entries = describeRecentProjects(isProtectedRecentFolder);
     mainMark("recentProjectsAnswered");
     return entries;
   });
@@ -1052,54 +1117,145 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, (event: IpcMainInvokeEvent, _payload: unknown) =>
     askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 게임을 만들 위치 선택", true));
   ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent, payload: unknown) => {
-    const senderId = event.sender.id;
-    const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
-    if (typeof requested === "string") {
-      if (!requested || !sessions.directoryExists(requested)) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
-      const session = await openWindowSession(senderId, requested);
+    if (!trustedRendererSender(event)) return null;
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    if (!owner) return null;
+    const id = event.sender.id;
+    if (folderSwitching.has(id)) return null;
+    folderSwitching.add(id);
+    try {
+      const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
+      const dir = requested === undefined
+        ? await askForDirectory(owner, "프로젝트 폴더 열기")
+        : inspectProjectFolder(requested);
+      if (!dir && requested !== undefined) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
+      if (!dir || owner.isDestroyed()) return null;
+      const flushed = await waitForFolderSwitchFlush(owner);
+      if (flushed === "closed" || owner.isDestroyed() || closing.has(id)) return null;
+      if (flushed === "blocked" || flushed === "timeout") {
+        throw new Error("저장이 끝나지 않았습니다. 현재 프로젝트를 저장한 뒤 다시 열어 주세요.");
+      }
+      if (requested !== undefined && inspectProjectFolder(requested) !== dir) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
+      // 폴더 선택 창에서 직접 고른 폴더는 기존 초기화 동작도 지원한다.
+      const isNew = !sessions.directoryExists(dir);
+      const session = await openWindowSession(id, dir);
       if (!session) return null;
-      rememberRecentProject(session.projectDir, session.store.info().title ?? requested);
-      return { projectDir: session.projectDir, isNew: false, projectId: session.store.projectId };
+      recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      return { projectDir: session.projectDir, isNew, projectId: session.store.projectId };
+    } finally {
+      folderSwitching.delete(id);
     }
-    const dir = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "프로젝트 폴더 열기");
-    if (!dir || event.sender.isDestroyed()) return null;
-    // project.sqlite 가 없는 폴더도 그냥 연다 — 스토어가 만들어지고 렌더러의 store.load()
-    // 가 빈 프로젝트를 심는다. isNew 는 시작 화면이 “새 프로젝트로 채택” 토스트를 띄우는 용도다.
-    const isNew = !sessions.directoryExists(dir);
-    const session = await openWindowSession(senderId, dir);
-    if (!session) return null;
-    rememberRecentProject(dir, session.store.info().title ?? dir);
-    return { projectDir: dir, isNew, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startOpenRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return null;
+    const owner = BrowserWindow.fromWebContents(event.sender);
     const senderId = event.sender.id;
-    const input = payload as { readonly projectDir?: unknown };
-    const dir = typeof input?.projectDir === "string" ? input.projectDir : "";
-    if (!dir || !sessions.directoryExists(dir)) return null;
-    const session = await openWindowSession(senderId, dir);
-    if (!session) return null;
-    rememberRecentProject(dir, session.store.info().title ?? dir);
-    return { projectDir: dir, projectId: session.store.projectId };
+    // The editor's folder picker uses startOpenFolder, which flushes before replacing a session.
+    if (!owner || sessions.get(senderId) || folderSwitching.has(senderId)) return null;
+    const dir = recentProjectDir((payload as { readonly projectDir?: unknown } | null)?.projectDir);
+    if (!dir) return null;
+    const existing = windowAlreadyOpening(dir);
+    if (existing && existing !== owner) {
+      openRecentWindow(dir);
+      return { projectDir: dir, projectId: sessions.get(existing.webContents.id)?.store.projectId ?? null, focusedExisting: true };
+    }
+    explicitProjectDir.set(owner, dir);
+    folderSwitching.add(senderId);
+    try {
+      const session = await openWindowSession(senderId, dir);
+      if (!session) return null;
+      recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      return { projectDir: session.projectDir, projectId: session.store.projectId };
+    } finally {
+      explicitProjectDir.delete(owner);
+      folderSwitching.delete(senderId);
+    }
   });
-  ipcMain.handle(OPRN_CHANNELS.startRenameProject, async (_event: IpcMainInvokeEvent, payload: unknown) => {
+  ipcMain.handle(OPRN_CHANNELS.startManageRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return false;
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    if (!owner) return false;
+    const input = payload as { readonly projectDir?: unknown; readonly action?: unknown } | null;
+    const dir = recentProjectDir(input?.projectDir);
+    if (!dir) throw new Error("프로젝트 폴더를 찾을 수 없습니다.");
+    if (input?.action === "open-window") { openRecentWindow(dir); return true; }
+    if (input?.action === "reveal") { shell.showItemInFolder(dir); return true; }
+    if (input?.action !== "duplicate" && input?.action !== "trash") return false;
+    if (isProtectedRecentFolder(dir)) throw new Error("앱에 포함된 프로젝트 폴더는 변경할 수 없습니다.");
+    if (hasRecentFolderChange(dir)) throw new Error("이 프로젝트의 폴더 작업이 이미 진행 중입니다.");
+
+    if (input.action === "trash") {
+      requireClosedRecentFolder(dir);
+      const before = lstatSync(dir);
+      const { response } = await dialog.showMessageBox(owner, {
+        type: "warning",
+        title: "프로젝트 삭제",
+        message: "이 프로젝트 폴더를 휴지통으로 이동할까요?",
+        detail: `프로젝트 파일과 소재가 함께 이동합니다.\n\n${dir}`,
+        buttons: ["취소", "휴지통으로 이동"],
+        cancelId: 0,
+        defaultId: 0,
+      });
+      if (response !== 1 || owner.isDestroyed()) return false;
+      if (recentProjectDir(input.projectDir) !== dir || isProtectedRecentFolder(dir) || hasRecentFolderChange(dir)) {
+        throw new Error("프로젝트 폴더가 바뀌었습니다. 목록을 확인해 주세요.");
+      }
+      const after = lstatSync(dir);
+      if (before.dev !== after.dev || before.ino !== after.ino) throw new Error("프로젝트 폴더가 바뀌었습니다. 목록을 확인해 주세요.");
+      requireClosedRecentFolder(dir);
+    }
+
+    recentFolderChanges.add(dir);
+    try {
+      if (input.action === "duplicate") {
+        const copy = await duplicateProjectFolder(dir).catch((error: unknown) => {
+          console.warn("[project] 복제 실패:", error);
+          throw new Error("프로젝트를 복제하지 못했습니다.");
+        });
+        try { recordRecentProject(copy.projectDir, copy.title, null); }
+        catch { throw new Error(`사본을 만들었지만 최근 목록에 넣지 못했습니다.\n${copy.projectDir}`); }
+      } else {
+        await shell.trashItem(dir).catch((error: unknown) => {
+          console.warn("[project] 휴지통 이동 실패:", error);
+          throw new Error("프로젝트를 휴지통으로 이동하지 못했습니다.");
+        });
+        try { forgetRecentProject(input.projectDir); buildMenu(); }
+        catch { throw new Error("휴지통으로 이동했지만 최근 목록을 갱신하지 못했습니다."); }
+      }
+      return true;
+    } finally {
+      recentFolderChanges.delete(dir);
+    }
+  });
+  ipcMain.handle(OPRN_CHANNELS.startRenameProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return null;
     const input = payload as { readonly projectDir?: unknown; readonly title?: unknown } | null;
-    const dir = renamableRecentDir(input?.projectDir);
+    const dir = recentProjectDir(input?.projectDir);
     const title = typeof input?.title === "string" ? input.title.trim().slice(0, 80) : "";
     if (!dir || !title) return null;
-    // 다른 창이 이미 연 폴더면 그 스토어를 빌려 쓰고, 아니면 잠깐 열었다 닫는다 — 같은 SQLite 에 두 번째 연결을 만들지 않는다.
-    const key = `rename:${dir}:${Date.now()}`;
+    if (isProtectedRecentFolder(dir) || hasRecentFolderChange(dir)) return null;
+    requireClosedRecentFolder(dir);
+    // Do not rename a saved document behind an editor that can overwrite it from memory.
+    const key = `rename:${dir}`;
+    recentFolderChanges.add(dir);
     try {
       const session = await sessions.open(key, dir);
       const snapshot = session.store.loadSnapshot();
       if (snapshot) await session.store.saveProject({ ...snapshot.project, meta: { ...snapshot.project.meta, title } });
       renameRecentEntry(dir, title);
+      buildMenu();
       return { projectDir: dir, title };
     } finally {
       sessions.close(key);
+      recentFolderChanges.delete(dir);
     }
   });
-  ipcMain.handle(OPRN_CHANNELS.startForgetRecent, (_event: IpcMainInvokeEvent, payload: unknown) =>
-    forgetRecentProject((payload as { readonly projectDir?: unknown } | null)?.projectDir));
+  ipcMain.handle(OPRN_CHANNELS.startForgetRecent, (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return false;
+    const forgotten = forgetRecentProject((payload as { readonly projectDir?: unknown } | null)?.projectDir);
+    if (forgotten) buildMenu();
+    return forgotten;
+  });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
@@ -1117,7 +1273,7 @@ export async function startApp(boot: BootContext): Promise<void> {
     if (!session) return null;
     // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
     if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
-    rememberRecentProject(session.projectDir, input.title ?? "새 프로젝트");
+    recordRecentProject(session.projectDir, input.title ?? "새 프로젝트");
     // 세션이 정규화한 경로(realpath)를 돌려준다 — 시작 화면 인계가 편집기가 연 폴더와 같은 문자열로 비교한다.
     return { projectDir: session.projectDir, projectId: session.store.projectId };
   });

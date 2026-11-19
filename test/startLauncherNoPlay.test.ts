@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 // 시작 화면(런처)에는 「플레이」 입구가 없다 — 내 게임·예제는 편집기에서 연다(Studio/런타임 분리 B안).
-// 카드 「⋯」는 열기·이름 바꾸기·목록에서 지우기뿐이고, 지우기는 확인을 거치며 폴더·파일은 건드리지 않는다고 말한다.
+// 카드 「⋯」의 목록 제거는 확인을 거치며 폴더·파일은 그대로 둔다.
 import { describe, expect, it } from "vitest";
 import { HOME_TESTIDS, builtinShelf, myGamesShelf, type HomeActions } from "@/start/home/homeView";
 import type { RecentProjectEntry } from "../electron/shared/start";
@@ -24,7 +24,7 @@ function recorder(): { readonly actions: HomeActions; readonly calls: string[] }
 
 const entry: RecentProjectEntry = { projectDir: "/games/a", title: "A" };
 const shelf = (actions: HomeActions, entries: readonly RecentProjectEntry[] = [entry]): HTMLElement =>
-  myGamesShelf({ entries, titles: new Map(), meta: () => "", note: null, actions });
+  myGamesShelf({ entries, view: { query: "", sort: "opened" }, meta: () => "", note: null, actions });
 const byId = (root: ParentNode, id: string): HTMLElement => root.querySelector<HTMLElement>(`[data-testid="${id}"]`)!;
 
 describe("런처에 플레이 입구 없음", () => {
@@ -49,6 +49,21 @@ describe("내 게임 카드 ⋯ 메뉴", () => {
     const cards = [...shelf(actions, entries).querySelectorAll(`[data-testid^="${HOME_TESTIDS.game}-"]`)]
       .filter((node) => new RegExp(`^${HOME_TESTIDS.game}-\\d+$`).test(node.getAttribute("data-testid") ?? ""));
     expect(cards).toHaveLength(20);
+  });
+
+  it("사라진 프로젝트는 열 수 없고 목록 제거만 제공한다", () => {
+    const { actions } = recorder();
+    const host = shelf({ ...actions, manage: () => {} }, [{ ...entry, hiddenReason: "missing" }]);
+    expect(host.textContent).toContain("찾을 수 없음");
+    expect((byId(host, `${HOME_TESTIDS.game}-1`) as HTMLButtonElement).disabled).toBe(true);
+    expect(host.querySelectorAll("[role=menuitem]")).toHaveLength(1);
+    expect(byId(host, `${HOME_TESTIDS.menuForget}-1`).textContent).toContain("목록에서 제거");
+  });
+
+  it("보호된 폴더에는 삭제 항목이 없다", () => {
+    const { actions } = recorder();
+    const host = shelf({ ...actions, manage: () => {} }, [{ ...entry, protectedFolder: true }]);
+    expect(host.querySelector('[data-testid="start-world-menu-trash-1"]')).toBeNull();
   });
 
   it("이름 바꾸기는 새 제목을 저장하고 대화상자를 닫는다", async () => {

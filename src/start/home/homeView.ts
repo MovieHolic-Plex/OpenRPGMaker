@@ -4,7 +4,9 @@
 //   내 게임: 전체 목록(홈의 「내 게임」 줄과 같은 카드) + 숨김·게임 파일 열기.   예제: 큰 그림 카드 — 누르면 편집기에서 연다.
 //   새로 만들기: 컨셉 피드(src/start/conceptFeed) 전체 — 검색·분류·상세·골라서 만들기·빈 프로젝트.
 import { el } from "@/util/dom";
-import type { RecentProjectEntry } from "../../../electron/shared/start";
+import type { RecentFolderAction, RecentProjectEntry } from "../../../electron/shared/start";
+import { filterRecentProjects, type RecentProjectSort } from "../../../electron/shared/recentProjects";
+import { getLocale } from "@/i18n";
 import { startIcon } from "../icons";
 import { BUILTIN_GAMES, type BuiltinGame, type BuiltinGameId } from "./builtinGames";
 
@@ -41,6 +43,7 @@ export type HomeActions = {
   readonly rename: (entry: RecentProjectEntry, title: string) => Promise<void>;
   /** 카드 「⋯ → 목록에서 지우기」 — 최근 목록에서만 뺀다. 폴더·파일은 그대로다. */
   readonly forget: (entry: RecentProjectEntry) => Promise<void>;
+  readonly manage?: (entry: RecentProjectEntry, action: RecentFolderAction) => void;
   readonly builtinEdit: (id: BuiltinGameId) => void;
   readonly openSettings: () => void;
 };
@@ -136,7 +139,7 @@ function openRenameDialog(entry: RecentProjectEntry, title: string, actions: Hom
 function openForgetDialog(entry: RecentProjectEntry, title: string, actions: HomeActions): void {
   const error = el("p", { class: "ln-dialog-error", attrs: { role: "alert", hidden: "" } });
   const close = (): void => { root.remove(); };
-  const confirm = el("button", { class: "hm-btn hm-btn-danger", attrs: { type: "button" }, text: "목록에서 지우기", dataset: { testid: HOME_TESTIDS.forgetConfirm } });
+  const confirm = el("button", { class: "hm-btn hm-btn-danger", attrs: { type: "button" }, text: "목록에서 제거", dataset: { testid: HOME_TESTIDS.forgetConfirm } });
   confirm.addEventListener("click", () => {
     confirm.disabled = true;
     error.hidden = true;
@@ -155,12 +158,23 @@ function openForgetDialog(entry: RecentProjectEntry, title: string, actions: Hom
 function cardMenu(entry: RecentProjectEntry, title: string, index: number, actions: HomeActions): HTMLElement {
   const item = (label: string, testid: string, run: () => void, danger = false): HTMLButtonElement => el("button", {
     class: "hm-menu-item" + (danger ? " is-danger" : ""), attrs: { type: "button", role: "menuitem" }, dataset: { testid: `${testid}-${index}` }, text: label,
-    on: { click: () => { close(); run(); } },
+    on: { click: () => { button.focus(); close(); run(); } },
   });
   const menu = el("div", { class: "hm-menu", attrs: { role: "menu", hidden: "" }, children: [
-    item("열기", HOME_TESTIDS.menuOpen, () => actions.edit(entry)),
-    item("이름 바꾸기", HOME_TESTIDS.menuRename, () => openRenameDialog(entry, title, actions)),
-    item("목록에서 지우기…", HOME_TESTIDS.menuForget, () => openForgetDialog(entry, title, actions), true),
+    ...(entry.hiddenReason === "missing" ? [] : [
+      item("열기", HOME_TESTIDS.menuOpen, () => actions.edit(entry)),
+      ...(actions.manage ? [
+        item("새 창에서 열기", "start-world-menu-new-window", () => actions.manage?.(entry, "open-window")),
+        item("폴더에서 보기", "start-world-menu-reveal", () => actions.manage?.(entry, "reveal")),
+      ] : []),
+      ...(!entry.protectedFolder ? [
+        item("이름 바꾸기", HOME_TESTIDS.menuRename, () => openRenameDialog(entry, entry.title, actions)),
+        ...(actions.manage ? [item("복제", "start-world-menu-duplicate", () => actions.manage?.(entry, "duplicate"))] : []),
+      ] : []),
+    ]),
+    item("목록에서 제거…", HOME_TESTIDS.menuForget, () => openForgetDialog(entry, title, actions)),
+    ...(actions.manage && entry.hiddenReason !== "missing" && !entry.protectedFolder
+      ? [item("삭제…", "start-world-menu-trash", () => actions.manage?.(entry, "trash"), true)] : []),
   ] });
   const button = el("button", {
     class: "hm-more-btn", attrs: { type: "button", "aria-label": `${title} 메뉴`, "aria-haspopup": "menu", "aria-expanded": "false" },
@@ -168,50 +182,84 @@ function cardMenu(entry: RecentProjectEntry, title: string, index: number, actio
     on: { click: () => { if (menu.hidden) open(); else close(); } },
   });
   const wrap = el("div", { class: "hm-menu-wrap", children: [button, menu] });
-  const onOutside = (event: Event): void => { if (!wrap.contains(event.target as Node)) close(); };
-  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape") { event.stopPropagation(); close(); button.focus(); } };
+  wrap.addEventListener("focusout", (event) => {
+    if (!wrap.contains(event.relatedTarget as Node | null)) close();
+  });
+  wrap.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !menu.hidden) { event.stopPropagation(); button.focus(); close(); }
+  });
   function open(): void {
-    menu.hidden = false; button.setAttribute("aria-expanded", "true"); wrap.closest(".hm-card")?.classList.add("is-menu-open");
-    document.addEventListener("pointerdown", onOutside); document.addEventListener("keydown", onKey, true);
+    menu.hidden = false;
+    button.setAttribute("aria-expanded", "true");
+    wrap.closest(".hm-card")?.classList.add("is-menu-open");
+    menu.querySelector("button")?.focus();
   }
   function close(): void {
-    menu.hidden = true; button.setAttribute("aria-expanded", "false"); wrap.closest(".hm-card")?.classList.remove("is-menu-open");
-    document.removeEventListener("pointerdown", onOutside); document.removeEventListener("keydown", onKey, true);
+    menu.hidden = true;
+    button.setAttribute("aria-expanded", "false");
+    wrap.closest(".hm-card")?.classList.remove("is-menu-open");
   }
   return wrap;
 }
 
-function gameCard(entry: RecentProjectEntry, title: string, meta: string, index: number, actions: HomeActions): HTMLElement {
-  return el("article", { class: "hm-card" + (entry.hiddenReason ? " is-hidden-entry" : ""), children: [
+function gameCard(entry: RecentProjectEntry, meta: string, index: number, actions: HomeActions): HTMLElement {
+  const missing = entry.hiddenReason === "missing";
+  const path = [...entry.projectDir];
+  const shortPath = path.length > 62 ? `${path.slice(0, 18).join("")}…${path.slice(-43).join("")}` : entry.projectDir;
+  return el("article", { class: "hm-card hm-project-row" + (missing ? " is-missing" : ""), children: [
     el("button", {
-      class: "hm-card-hit", attrs: { type: "button", title: entry.projectDir, "aria-label": title }, dataset: { testid: `${HOME_TESTIDS.game}-${index}` },
-      on: { click: () => actions.edit(entry) },
+      class: "hm-card-hit", attrs: { type: "button", title: entry.projectDir, translate: "no", ...(missing ? { disabled: "" } : {}) },
+      dataset: { testid: `${HOME_TESTIDS.game}-${index}` },
+      on: { click: () => { if (!missing) actions.edit(entry); } },
       children: [coverArt(entry), el("span", { class: "hm-cap", children: [
-        el("span", { class: "hm-nm", text: title, attrs: { translate: "no" } }),
-        el("span", { class: "hm-mt", text: meta }),
+        el("span", { class: "hm-nm", text: entry.title }),
+        el("span", { class: "hm-mt", attrs: { title: entry.projectDir }, text: shortPath }),
       ] })],
     }),
-    cardMenu(entry, title, index, actions),
+    el("span", { class: "hm-opened-at", children: [
+      ...(missing ? [el("span", { class: "hm-mt", text: "찾을 수 없음" })] : []),
+      el("span", { class: "hm-mt", attrs: { title: "마지막으로 연 시각" }, text: meta }),
+    ] }),
+    cardMenu(entry, entry.title, index, actions),
   ] });
 }
 
-/** 「내 게임」 탭 — 최근 편집 순 전체 목록. 게임이 몇 개든 전부 보인다. */
+export type RecentProjectsView = { query: string; sort: RecentProjectSort };
+
+/** 「내 게임」 탭 — 폴더를 찾고 관리하는 최근 프로젝트 목록. */
 export function myGamesShelf(options: {
   readonly entries: readonly RecentProjectEntry[];
-  readonly titles: ReadonlyMap<string, string>;
+  readonly view: RecentProjectsView;
   readonly meta: (entry: RecentProjectEntry) => string;
   readonly note: HTMLElement | null;
   readonly actions: HomeActions;
 }): HTMLElement {
-  const { entries, titles, meta, actions } = options;
-  return el("section", { class: "hm-shelf-sec", dataset: { testid: HOME_TESTIDS.games }, attrs: { "aria-label": "내 게임" }, children: [
-    el("div", { class: "hm-shelf hm-games", children: [
-      ...entries.map((entry, index) => gameCard(entry, titles.get(entry.projectDir) ?? entry.title, meta(entry), index + 1, actions)),
-      el("button", {
-        class: "hm-card hm-new", attrs: { type: "button" }, dataset: { testid: HOME_TESTIDS.blankGame }, on: { click: actions.newGame },
-        children: [startIcon("plus", "ln-icon"), el("span", { text: "빈 프로젝트" })],
-      }),
+  const { entries, view, meta, actions } = options;
+  const search = el("input", {
+    class: "ln-input", value: view.query, attrs: { type: "search", "aria-label": "프로젝트 검색", placeholder: "이름 또는 폴더 경로 검색" },
+    dataset: { testid: "start-recent-search" },
+  });
+  const sort = el("select", { class: "ln-input hm-project-sort", attrs: { "aria-label": "프로젝트 정렬" }, children: [
+    el("option", { attrs: { value: "opened" }, text: "최근 연 순" }),
+    el("option", { attrs: { value: "name" }, text: "이름 순" }),
+  ] });
+  sort.value = view.sort;
+  const rows = el("div");
+  const render = (): void => {
+    const visible = filterRecentProjects(entries, view.query, view.sort, getLocale());
+    rows.replaceChildren(...(visible.length
+      ? visible.map((entry, index) => gameCard(entry, meta(entry), index + 1, actions))
+      : [el("p", { class: "ln-note", text: "검색 결과가 없습니다." })]));
+  };
+  search.addEventListener("input", () => { view.query = search.value; render(); });
+  sort.addEventListener("change", () => { view.sort = sort.value === "name" ? "name" : "opened"; render(); });
+  render();
+  return el("section", { class: "hm-shelf-sec", dataset: { testid: HOME_TESTIDS.games }, attrs: { "aria-label": "최근 프로젝트" }, children: [
+    el("div", { class: "hm-project-toolbar", children: [
+      search, sort,
+      button("빈 프로젝트", "hm-btn hm-btn-sec", HOME_TESTIDS.blankGame, actions.newGame),
     ] }),
+    rows,
     ...(options.note ? [options.note] : []),
   ] });
 }

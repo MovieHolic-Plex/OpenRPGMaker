@@ -281,9 +281,9 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
 
   const setGames = (games: readonly PromptHomeGame[], total: number): void => {
     const has = games.length > 0;
-    gamesSection.hidden = !has;
+    gamesSection.hidden = total === 0;
     root.classList.toggle("has-games", has);
-    gamesMore.hidden = total <= PROMPT_HOME_GAMES;
+    gamesMore.hidden = total === 0;
     gamesMore.textContent = `${t("모두 보기")} (${total})`;
     gamesRow.replaceChildren(...games.slice(0, PROMPT_HOME_GAMES).map((game, index) => el("button", {
       class: "fr-gcard", attrs: { type: "button", title: game.title }, dataset: { testid: `${PROMPT_HOME_TESTIDS.game}-${index}` },
