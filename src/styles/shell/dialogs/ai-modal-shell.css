@@ -1,10 +1,5 @@
-/*
- * AI dialogs reuse the database modal class names, but the database stylesheet
- * is intentionally lazy-loaded when the database surface is opened. These
- * rules keep the editor-owned AI dialogs usable when they are the first modal
- * opened in a fresh editor session. Database-layer rules take over after that
- * stylesheet arrives.
- */
+/* Settings, history and instructions can open before database styles load.
+ * History and instructions share database chrome, while settings uses its own. */
 
 :is(
   .ai-settings-modal-backdrop,
@@ -23,7 +18,6 @@
 }
 
 :is(
-  .ai-settings-window,
   .ai-history-window,
   .ai-instructions-window
 ) {
@@ -41,7 +35,6 @@
 }
 
 :is(
-  .ai-settings-window,
   .ai-history-window,
   .ai-instructions-window
 ) .database-modal-header {
@@ -57,7 +50,6 @@
 }
 
 :is(
-  .ai-settings-window,
   .ai-history-window,
   .ai-instructions-window
 ) .database-modal-header h2 {
@@ -68,7 +60,6 @@
 }
 
 :is(
-  .ai-settings-window,
   .ai-history-window,
   .ai-instructions-window
 ) .database-modal-close {
@@ -86,7 +77,6 @@
 }
 
 :is(
-  .ai-settings-window,
   .ai-history-window,
   .ai-instructions-window
 ) .database-modal-close:hover {
@@ -99,14 +89,6 @@
   height: auto;
   max-height: min(86vh, 680px);
   width: min(92vw, 560px);
-}
-
-.ai-settings-window {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  height: min(780px, calc(100vh - 24px));
-  max-height: min(780px, calc(100vh - 24px));
-  width: min(760px, calc(100vw - 24px));
 }
 
 .ai-instructions-window {

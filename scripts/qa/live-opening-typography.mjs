@@ -41,11 +41,8 @@ try {
   await page.goto(projectUrl,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && !window.__oprnAiBridge.status().turnBusy,null,{timeout:180000});
   report.recordDatabases=await page.evaluate(async()=> (await indexedDB.databases()).map(d=>d.name));
-  if (process.env.LIVE_OPENING_IMAGE_PROVIDER) {
-    await page.getByTestId('topbar-ai-settings').click();
-    await page.getByTestId('ai-settings-tab-models').click();
-    await page.getByTestId('ai-config-image-provider').selectOption(process.env.LIVE_OPENING_IMAGE_PROVIDER);
-    await page.getByTestId('ai-settings-close').click();
+  if (process.env.LIVE_OPENING_IMAGE_PROVIDER && process.env.LIVE_OPENING_IMAGE_PROVIDER !== 'openai-codex') {
+    throw new Error('LIVE_OPENING_IMAGE_PROVIDER must be openai-codex.');
   }
   await page.getByTestId('ai-input').fill(task);
   report.sentAt=new Date().toISOString();save();

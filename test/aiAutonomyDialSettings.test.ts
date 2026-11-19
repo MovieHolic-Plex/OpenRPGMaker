@@ -53,11 +53,13 @@ async function openModal(): Promise<FakeElement> {
   openAiSettingsModal();
   const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
   if (!modal) throw new Error("ai-settings-modal missing");
+  findByTestId(modal, "ai-settings-tab-behavior")?.click();
+  findByTestId(modal, "ai-settings-open-advanced")?.click();
   return modal;
 }
 
 describe("자율성 다이얼", () => {
-  it("동작 섹션 맨 위에 전체 레벨 옵션(한국어 라벨)을 렌더한다", async () => {
+  it("고급 작업 방식 맨 위에 전체 레벨 옵션(한국어 라벨)을 렌더한다", async () => {
     const modal = await openModal();
     const dial = findByTestId(modal, "ai-config-autonomy");
     expect(dial).not.toBeNull();
@@ -76,8 +78,8 @@ describe("자율성 다이얼", () => {
       AUTONOMY_LEVELS.map((level) => level.label),
     );
 
-    const behavior = findByTestId(modal, "ai-settings-section-behavior");
-    if (!behavior) throw new Error("behavior section missing");
+    const behavior = findByTestId(modal, "ai-settings-section-work");
+    if (!behavior) throw new Error("advanced work section missing");
     const body = behavior.querySelector(".ai-settings-section-body");
     expect(body?.children[0]?.contains(dial)).toBe(true);
   });

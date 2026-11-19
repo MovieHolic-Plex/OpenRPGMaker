@@ -91,3 +91,14 @@ describe("공방 화면이 떠 있으면 에디터 단축키를 무시한다", (
     expect(shouldIgnoreEditorShortcut(keyEvent("Delete", host))).toBe(true);
   });
 });
+
+it("leaves Space to the focused AI settings switch", () => {
+  const settings = el("div", { dataset: { testid: "ai-settings-modal" } });
+  const toggle = el("button", { attrs: { role: "switch" } });
+  settings.append(toggle);
+  document.body.append(settings);
+
+  expect(shouldIgnoreEditorShortcut(keyEvent(" ", toggle))).toBe(true);
+  settings.remove();
+  expect(shouldIgnoreEditorShortcut(keyEvent(" ", document.body))).toBe(false);
+});

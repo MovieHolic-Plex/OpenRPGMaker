@@ -45,6 +45,7 @@
       --danger-muted: rgba(242, 118, 111, 0.16);
       --success: #4CC38A;
       --success-muted: rgba(76, 195, 138, 0.16);
+      --success-indicator: var(--success);
       --warning: #E3B341;
       --warning-muted: rgba(227, 179, 65, 0.16);
       --shadow-pop: 0 4px 12px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.40);

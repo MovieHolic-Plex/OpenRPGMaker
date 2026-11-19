@@ -27,6 +27,12 @@ export async function openTopbarAiSettings(page: Page): Promise<void> {
   await runPaletteCommand(page, "AI 설정", "topbar-ai-settings");
 }
 
+export async function openAdvancedAiSettings(page: Page): Promise<void> {
+  await page.getByTestId("ai-settings-tab-behavior").click();
+  await page.getByTestId("ai-settings-open-advanced").click();
+  await expect(page.getByTestId("ai-settings-advanced")).toBeVisible();
+}
+
 /** 도움말은 ⌘K 「도움말: 단축키 보기」(help-shortcuts) 명령이 단축키 절 도움말 창을 연다. */
 export async function openHelpShortcuts(page: Page): Promise<void> {
   await runPaletteCommand(page, "단축키 보기", "help-shortcuts");

@@ -315,6 +315,11 @@ async function studioHierarchy(ctx) {
   return { pass: m.tinyTexts === 0 && m.accentFilledButtons <= 1 && m.edgeStripes === 0 && m.sizeRepeats <= 1 && m.warnUnlabeled === 0 && m.zeroOfZero === 0 && m.emptyWithoutAction === 0, measured: m };
 }
 
+async function openAdvancedSettings(page) {
+  await clickTid(page, 'ai-settings-tab-behavior', 1200);
+  await clickTid(page, 'ai-settings-open-advanced', 1200);
+}
+
 // ---------------------------------------------------------------- C-67 one connection/usable state
 async function connectionState(ctx) {
   const { page } = ctx;
@@ -323,7 +328,7 @@ async function connectionState(ctx) {
   await sendAndFail(page, '여기에 작은 연못을 만들어 줘');
   const chip = await pe(page, `const c = tid('ai-connection-chip'); return c ? textOf(c) : '';`);
   await page.locator('[data-testid="ai-connection-chip"]').first().click();
-  await wait(page, 1500);
+  await clickTid(page, 'ai-settings-other-ways', 1500);
   const s = await pe(page, `
     const dlg = q('[data-testid="ai-settings-modal"], .ai-settings-window')[0]; if (!dlg) return { settingsOpen: 0 };
     const head = tid('ai-settings-connection-summary'); const body = dlg.querySelector('.ai-settings-content') || dlg;
@@ -353,11 +358,13 @@ async function failedRunsCounted(ctx) {
   await sendAndFail(page, '여기에 작은 연못을 만들어 줘');
   await sendAndFail(page, '이 영역을 주변과 어울리게 다듬어 줘');
   await clickTid(page, 'topbar-ai-settings', 1500);
-  await clickTid(page, 'ai-settings-tab-usage', 2500);
+  await openAdvancedSettings(page);
+  await page.getByTestId('ai-settings-section-usage').scrollIntoViewIfNeeded();
   const m = await pe(page, `
     const stats = q('.ai-tool-usage-stats > *').map((s) => ({ label: textOf(s).replace(/^\\d+\\s*/, ''), value: Number((textOf(s).match(/^\\d+/) || [-1])[0]) }));
     const get = (re) => stats.find((s) => re.test(s.label))?.value ?? -1;
     return { requests: get(/^요청/), failedRequests: get(/실패한 요청|요청 실패/), toolCalls: get(/도구 호출|^호출/), stats: stats.map((s) => s.label + '=' + s.value).join(', ') };`);
+  await page.getByTestId('ai-settings-advanced-done').click();
   await page.keyboard.press('Escape');
   await wait(page, 800);
   await clickTid(page, 'topbar-ai-studio', 2500);
@@ -370,8 +377,9 @@ async function failedRunsCounted(ctx) {
 async function settingsFooter(ctx) {
   const { page } = ctx;
   await clickTid(page, 'topbar-ai-settings', 1500);
+  await openAdvancedSettings(page);
   const m = await pe(page, `
-    const dlg = q('.ai-settings-window')[0]; const btn = tid('ai-settings-continue');
+    const dlg = q('.ai-settings-window')[0]; const btn = tid('ai-settings-advanced-done');
     const parseC = (c) => { const x = String(c).match(/rgba?\\(([^)]+)\\)/); if (!x) return null; const p = x[1].split(/[ ,/]+/).map(parseFloat); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; };
     const sat = (c) => { const mx = Math.max(c.r, c.g, c.b), mn = Math.min(c.r, c.g, c.b); return mx ? (mx - mn) / mx : 0; };
     const filled = [...dlg.querySelectorAll('button')].filter((b) => vis(b) && (() => { const c = parseC(getComputedStyle(b).backgroundColor); return c && c.a > 0.9 && sat(c) > 0.45 && (c.r + c.g + c.b) / 3 < 170; })()).length;
@@ -397,15 +405,14 @@ async function settingsCopy(ctx) {
   const conn = await pe(page, `const dlg = q('.ai-settings-window')[0]; const t = textOf(dlg);
     const heads = [...dlg.querySelectorAll('h3, h4, strong, .ai-settings-section-title')].filter(vis).map(textOf).filter((x) => /사용자 지정/.test(x));
     return { customHeadings: heads.length, serverListRepeats: (t.match(/LiteLLM/g) || []).length, internalNames: (t.match(/CLIProxyAPI|Antigravity/g) || []).length };`);
-  await clickTid(page, 'ai-settings-tab-models', 1200);
-  const models = await pe(page, `const dlg = q('.ai-settings-window')[0]; const pane = dlg.querySelector('.ai-settings-content') || dlg;
+  await openAdvancedSettings(page);
+  const models = await pe(page, `const dlg = q('.ai-settings-window')[0]; const pane = dlg.querySelector('.ai-settings-section-roles') || dlg;
     const leaves = [...pane.querySelectorAll('*')].filter((e) => vis(e) && !e.children.length && e.tagName !== 'OPTION').map(textOf);
     return { modelIdTexts: leaves.filter((x) => /\\b[a-z]+-\\d(\\.\\d)?-[a-z]+(-\\d)?\\b/.test(x)).length };`);
   await page.setViewportSize({ width: 1024, height: 640 });
-  await clickTid(page, 'ai-settings-tab-connection', 1200);
-  const fit = await pe(page, `const content = q('.ai-settings-content')[0]; const foot = q('.ai-settings-window .ai-config-actions')[0];
-    if (!content || !foot) return { scrollBox: 0 }; const cr = content.getBoundingClientRect(), fr = foot.getBoundingClientRect();
-    return { scrollBox: 1, contentScrolls: content.scrollHeight > content.clientHeight + 1 ? 1 : 0, contentFooterOverlapPx: Math.max(0, Math.round(cr.bottom - fr.top)) };`);
+  const fit = await pe(page, `const content = q('.ai-settings-sheet-body')[0]; const bar = q('.ai-settings-sheet-bar')[0];
+    if (!content || !bar) return { scrollBox: 0 }; const cr = content.getBoundingClientRect(), br = bar.getBoundingClientRect();
+    return { scrollBox: 1, contentScrolls: content.scrollHeight > content.clientHeight + 1 ? 1 : 0, contentFooterOverlapPx: Math.max(0, Math.round(br.bottom - cr.top)) };`);
   const m = { ...menu, ...conn, ...models, ...fit };
   return { pass: m.menu === 1 && m.menuModelIds === 0 && m.menuDashOnly === 0 && m.menuUnnamedItems === 0 && m.customHeadings <= 1 && m.serverListRepeats <= 1 && m.internalNames === 0 && m.modelIdTexts === 0 && m.contentFooterOverlapPx === 0, measured: m };
 }
@@ -549,7 +556,7 @@ export const pairs = {
   'C-66': { surface: 'studioHier', prepare: studio },
   'C-67': { surface: 'conn429', prepare: async ({ page }) => { await mockProvider(page, { quota: true }); await expandPanel(page); await sendAndFail(page, '여기에 작은 연못을 만들어 줘'); await page.locator('[data-testid="ai-connection-chip"]').first().click(); await wait(page, 1500); } },
   'C-68': { surface: 'chipEn', prepare: async ({ page }) => { await page.locator('[data-testid="ai-connection-chip"]').first().hover(); await wait(page, 1600); } },
-  'C-69': { surface: 'usage429', prepare: async ({ page }) => { await mockProvider(page, { quota: true }); await expandPanel(page); await sendAndFail(page, '여기에 작은 연못을 만들어 줘'); await sendAndFail(page, '이 영역을 주변과 어울리게 다듬어 줘'); await clickTid(page, 'topbar-ai-settings', 1500); await clickTid(page, 'ai-settings-tab-usage', 2500); } },
+  'C-69': { surface: 'usage429', prepare: async ({ page }) => { await mockProvider(page, { quota: true }); await expandPanel(page); await sendAndFail(page, '여기에 작은 연못을 만들어 줘'); await sendAndFail(page, '이 영역을 주변과 어울리게 다듬어 줘'); await clickTid(page, 'topbar-ai-settings', 1500); await openAdvancedSettings(page); await page.getByTestId('ai-settings-section-usage').scrollIntoViewIfNeeded(); } },
   'C-70': { surface: 'settingsFoot', prepare: async ({ page }) => clickTid(page, 'topbar-ai-settings', 1500) },
   'C-71': { surface: 'settingsCopy', prepare: async ({ page }) => { await expandPanel(page); await clickTid(page, 'ai-command-menu-toggle', 800); } },
   'C-72': { surface: 'settingsClose', prepare: async ({ page }) => clickTid(page, 'topbar-ai-settings', 1500) },

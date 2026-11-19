@@ -95,7 +95,7 @@ function openSettingsSurface(panel: FakeElement): FakeElement {
 }
 
 describe("설정 자동 저장", () => {
-  it("AI 패널 밖의 전용 설정 모달을 열고 고급 설정을 바로 펼친다", () => {
+  it("AI 패널 밖의 전용 설정 모달에서 고급 설정을 열 수 있다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     // 브라우저 보관 키·엔드포인트 입력은 제거됐다 — 평문 키가 localStorage 에 남던 근원이다.
@@ -116,7 +116,12 @@ describe("설정 자동 저장", () => {
     // 「구독 로그인」 배지는 지웠다 — 카드 필·상태 줄과 같은 말을 세 번째로 되풀이했다.
     // 안내 문장은 abaa03e78f 로 「<계정> 계정으로 로그인」 한 줄이 됐다 — 키 입력칸이 없다는 사실은 위 단언이 고정한다.
     expect(modal.textContent).toMatch(/계정으로 (로그인|연결됨)/u);
-    expect(modal.textContent).toContain("역할별 모델 직접 지정");
+    const sheet = findByTestId(modal, "ai-settings-advanced");
+    expect(sheet?.hidden).toBe(true);
+    findByTestId(modal, "ai-settings-tab-behavior")?.click();
+    findByTestId(modal, "ai-settings-open-advanced")?.click();
+    expect(sheet?.hidden).toBe(false);
+    expect(sheet?.textContent).toContain("역할별 모델");
   });
 
   it("제공자를 바꿔도 전송 축은 동반 서비스로 남는다", () => {
@@ -276,7 +281,7 @@ describe("설정 자동 저장", () => {
   });
 
   it("모델 설정은 감독/실행 역할을 구분한다", () => {
-    // 역할 컨트롤은 「역할별 모델 직접 지정」 표의 행이다 — 행별 제공자·모델·추론 컨트롤이 있다.
+    // 진행 안의 실행 설정과 추가 모델 설정의 작문 설정은 독립적이다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
 
@@ -289,8 +294,7 @@ describe("설정 자동 저장", () => {
   });
 
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
-    // 모델은 역할별로 저장된다(roleModels) — 기본 roleModels 는 모두 Antigravity Argon 이므로
-    // 최상위 providerId 만 바꿔서는 Writer 칸이 Codex 가 되지 않는다. Writer 행의 제공자를 먼저 고른다.
+    // 작문 역할의 제공자와 모델을 골라 roleModels와 주 모델에 함께 저장하는지 확인한다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const writer = findByTestId(modal, "ai-config-writer-provider") as unknown as HTMLSelectElement;

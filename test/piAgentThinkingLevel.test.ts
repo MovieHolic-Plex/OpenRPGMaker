@@ -16,6 +16,8 @@ const writer = { provider: "google-antigravity", model: "gemini-3.8-flash", thin
 
 function runRequest(extra: {
   readonly planOnly?: boolean;
+  readonly readOnly?: boolean;
+  readonly deep?: Parameters<typeof buildPiRunRequest>[0]["deep"];
   readonly team?: boolean;
   readonly callerThinkingLevel?: PiAgentThinkingLevel;
   readonly preferCallerThinking?: boolean;
@@ -33,6 +35,12 @@ function runRequest(extra: {
 describe("실행 루프의 사고 강도는 자율성 다이얼이 정한다", () => {
   it("preferCallerThinking 이 붙은 다이얼 값이 역할 기본값을 이긴다", () => {
     expect(runRequest({ callerThinkingLevel: "low", preferCallerThinking: true }).thinkingLevel).toBe("low");
+  });
+  it("floors GPT-6.2 Sol building turns at medium and preserves high", () => {
+    const sol = { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" } as const;
+    expect(runRequest({ deep: sol, callerThinkingLevel: "low", preferCallerThinking: true }).thinkingLevel).toBe("medium");
+    expect(runRequest({ deep: sol, callerThinkingLevel: "high", preferCallerThinking: true }).thinkingLevel).toBe("high");
+    expect(runRequest({ deep: sol, callerThinkingLevel: "low", preferCallerThinking: true, readOnly: true }).thinkingLevel).toBe("low");
   });
   it("preferCallerThinking 없이는 역할 값이 그대로 이긴다(옛 호출자 무변화)", () => {
     expect(runRequest().thinkingLevel).toBe("high");
@@ -65,7 +73,7 @@ describe("다이얼을 끄는 것은 «사용자가 Deep 역할을 실제로 바
   it("사고 강도·모델·공급자를 바꾼 저장값은 다이얼보다 이긴다", () => {
     expect(prefersCallerThinking({ ...derived, thinkingLevel: "high" }, derived)).toBe(false);
     expect(prefersCallerThinking({ ...derived, model: "gemini-3.7-flash" }, derived)).toBe(false);
-    expect(prefersCallerThinking({ ...derived, provider: "openai-codex" }, derived)).toBe(false);
+    expect(prefersCallerThinking({ ...derived, provider: "google-antigravity" }, derived)).toBe(false);
   });
 });
 
@@ -81,11 +89,10 @@ describe("공급자가 거부하는 사고 강도는 요청을 만들 때 낮춘
   });
 });
 
-describe("측정이 비싸다고 밝힌 기본값", () => {
-  it("deep 역할 폴백은 low, 기본 모델은 4-argon", () => {
-    // 턴당 2.9s(high) → 2.1s(low). 명시 저장값은 폴백을 쓰지 않으므로 그대로 high 다.
+describe("provider-specific defaults", () => {
+  it("uses medium for the default Sol profile and keeps explicit legacy role values", () => {
     const config = defaultAiConfig();
-    expect(modelForRole({ ...config, roleModels: undefined }, "deep").thinkingLevel).toBe("low");
+    expect(modelForRole({ ...config, roleModels: undefined }, "deep").thinkingLevel).toBe("medium");
     expect(modelForRole({ ...config, roleModels: { deep: { ...deep } } }, "deep").thinkingLevel).toBe("high");
     expect(DEFAULT_MODEL).toBe("gemini-4-argon");
   });

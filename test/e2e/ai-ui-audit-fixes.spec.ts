@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { isWikiExtraction } from "../wikiTransportFixture";
-import { openTopbarAiSettings, runPaletteCommand } from "./topbarNavigation";
+import { openAdvancedAiSettings, openTopbarAiSettings, runPaletteCommand } from "./topbarNavigation";
 
 const evidence = path.resolve("output/evidence/ai-ui-fixes", process.env.AI_UI_PHASE ?? "green");
 mkdirSync(evidence, { recursive: true });
@@ -201,10 +201,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 
     test("F6 topbar settings immediately synchronize panel", async ({ page }) => {
       await openTopbarAiSettings(page);
-      // 페인별로 나뉘었으므로 탭을 오가며 고른다 — 수동 저장 버튼은 없고 change 가 자동 저장을 태운다.
-      await page.getByTestId("ai-settings-tab-behavior").click();
+      // Both full autonomy and display preferences are in Advanced and save on change.
+      await openAdvancedAiSettings(page);
       await choose(page, "ai-config-autonomy", "최대");
-      await page.getByTestId("ai-settings-tab-display").click();
       await choose(page, "ai-font-size", "크게");
       await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-ai-font-size", "large");
       await expect(page.getByTestId("ai-composer-autonomy")).toHaveValue("max");
@@ -229,13 +228,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
         await page.keyboard.press("Tab");
         await expect(page.getByTestId(`ai-${kind}-close`)).toBeFocused();
         if (kind === "settings") {
-          // 글자 크기는 「표시」페인에 있다 — 페인을 먼저 연다.
-          await page.getByTestId("ai-settings-tab-display").click();
+          // The select, Advanced, and settings each own one Escape.
+          await openAdvancedAiSettings(page);
           await page.locator("[data-custom-select-for='ai-font-size']").click();
-          await expect(page.getByRole("listbox")).toBeVisible();
+          await expect(page.locator(".event-custom-select-options")).toBeVisible();
           await page.keyboard.press("Escape");
-          await expect(page.getByRole("listbox")).toBeHidden();
-          await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
+          await expect(page.locator(".event-custom-select-options")).toBeHidden();
+          await expect(page.getByTestId("ai-settings-advanced")).toBeVisible();
+          await page.keyboard.press("Escape");
+          await expect(page.getByTestId("ai-settings-advanced")).toBeHidden();
+          await expect(page.getByTestId("ai-settings-open-advanced")).toBeFocused();
         }
         await page.keyboard.press("Escape");
         await expect(page.getByTestId(`ai-${kind}-modal`)).toBeHidden();
@@ -251,7 +253,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
           await page.getByTestId("ai-command-menu-settings").click();
         }
         await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
-        expect(await page.getByTestId("ai-settings-tab-extra-temperature").count()).toBe(0);
+        expect(await page.getByTestId("ai-settings-section-temperature").count()).toBe(0);
         expect(await page.getByTestId("ai-command-temperature-quiet-gold").count()).toBe(0);
         await page.getByTestId("ai-settings-close").click();
       }

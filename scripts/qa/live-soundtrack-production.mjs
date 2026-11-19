@@ -65,11 +65,8 @@ try {
       return result.slice(-20);
     } finally { db.close(); }
   });
-  if (process.env.LIVE_OPENING_IMAGE_PROVIDER) {
-    await page.getByTestId('topbar-ai-settings').click();
-    await page.getByTestId('ai-settings-tab-models').click();
-    await page.getByTestId('ai-config-image-provider').selectOption(process.env.LIVE_OPENING_IMAGE_PROVIDER);
-    await page.getByTestId('ai-settings-close').click();
+  if (process.env.LIVE_OPENING_IMAGE_PROVIDER && process.env.LIVE_OPENING_IMAGE_PROVIDER !== 'openai-codex') {
+    throw new Error('LIVE_OPENING_IMAGE_PROVIDER must be openai-codex.');
   }
   // Record checkpoint acknowledgements without retaining credentials or asset payloads.
   page.on('request', r => {

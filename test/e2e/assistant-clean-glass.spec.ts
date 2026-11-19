@@ -2,7 +2,7 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { Agent, get } from "node:http";
-import { openTopbarAiSettings } from "./topbarNavigation";
+import { openAdvancedAiSettings, openTopbarAiSettings } from "./topbarNavigation";
 
 const EVIDENCE = path.resolve("output/evidence/assistant-clean-glass/phase-1");
 
@@ -13,7 +13,7 @@ test("background opacity: native keyboard, immediate application and reload", as
   const root = page.locator(".ai-chat-panel");
   const deck = page.locator(".ai-deck");
   await openTopbarAiSettings(page);
-  await page.getByTestId("ai-settings-tab-display").click();
+  await openAdvancedAiSettings(page);
   const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
   await expect(slider).toHaveValue("82");
   await slider.focus();
@@ -38,7 +38,7 @@ test("background opacity: native keyboard, immediate application and reload", as
   await expect(root).toHaveClass(/is-collapsed/);
   expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("99%");
   await openTopbarAiSettings(page);
-  await page.getByTestId("ai-settings-tab-display").click();
+  await openAdvancedAiSettings(page);
   await expect(slider).toHaveValue("99");
   await slider.press("Home");
   expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("78%");

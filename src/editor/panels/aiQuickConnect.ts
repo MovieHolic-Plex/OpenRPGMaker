@@ -5,6 +5,7 @@
 // (/auth/openai-compat/connect). 키는 브라우저 저장소·프로젝트 파일에 남지 않는다 — 입력칸은 성공하면 비운다.
 // 쓰는 곳: AI 설정 「연결」 탭 맨 위, 연결 관문(aiConnectGate) 안. 첫 실행 화면도 이 카드를 그대로 끼울 수 있다.
 
+import { isLegacyTerraModel } from "@/ai/chatgptDefault";
 import { connectOpenAiCompatEndpoint, ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
 import { OPENROUTER_DEFAULT_MODEL, OPENROUTER_KEYS_URL, type OpenAiCompatEndpointPublic } from "@/ai/openAiCompat";
 import { el } from "@/util/dom";
@@ -127,6 +128,11 @@ export function renderAiQuickConnect(options: AiQuickConnectOptions): AiQuickCon
     if (busy) return;
     const apiKey = keyInput.value.trim();
     const model = modelInput.value.trim();
+    if (isLegacyTerraModel(model)) {
+      setStatus("지원되는 다른 모델 ID를 골라 주세요.", "error");
+      modelInput.focus();
+      return;
+    }
     const baseUrl = baseUrlInput.value.trim();
     if (kind === "openrouter" && !apiKey) { setStatus("OpenRouter API 키를 붙여 넣어 주세요.", "error"); keyInput.focus(); return; }
     if (kind === "custom" && !baseUrl) { setStatus("서버의 기본 주소를 넣어 주세요.", "error"); baseUrlInput.focus(); return; }

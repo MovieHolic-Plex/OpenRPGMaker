@@ -87,6 +87,8 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     // 도구 목록·AI 내부 로그·마을 정보 창은 .database-modal-backdrop 을 써서 위 조상 검사에 안 걸린다 —
     // 포커스가 본문에 있으면 B·Delete·1~7 이 창 뒤의 맵을 바꿨다.
     if (document.querySelector("[data-testid='tool-browser-modal'], [data-testid='ai-harness-modal'], [data-testid='village-info-modal']")) return true;
+    // The AI settings controls own keys such as Space, which otherwise arms canvas panning.
+    if (document.querySelector("[data-testid='ai-settings-modal']")) return true;
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
     if (document.querySelector("[data-testid='event-editor-modal']:not([hidden])")) return true;
   }

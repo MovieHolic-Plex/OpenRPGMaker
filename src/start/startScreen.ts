@@ -277,7 +277,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     settingsOpen = true;
     // 설정 창은 누를 때만 받는다(첫 화면 번들을 키우지 않게).
     void import("./settings/settingsDialog").then(({ openSettingsDialog }) => {
-      const dialog = openSettingsDialog({ tab, onEngineChange: (summary) => { if (summary.tone === "off") refreshAiStatus(); else applyAiStatus(summary); } });
+      const dialog = openSettingsDialog({ tab, onEngineChange: applyAiStatus });
       const observer = new MutationObserver(() => {
         if (document.querySelector("[data-testid='start-settings']")) return;
         settingsOpen = false;
