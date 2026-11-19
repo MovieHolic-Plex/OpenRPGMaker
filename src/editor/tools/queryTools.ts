@@ -3,6 +3,7 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { openedLoadRepairReport } from "@/project/loadRepairReport";
 import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
@@ -843,9 +844,12 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ? " — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다."
       + " 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
     : "";
-  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건${scope}`,
+  // 마지막 로드가 조용히 고친 것도 같은 결과에 싣는다 — 조수가 만든 참조가 불러오면서 사라졌는지 여기서 안다.
+  const loadRepair = openedLoadRepairReport();
+  const repaired = loadRepair && loadRepair.total > 0 ? ` / 로드 복구 ${loadRepair.total}건(data.loadRepair)` : "";
+  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건${repaired}${scope}`,
     issues: issues.filter(issue => issue.relocation !== undefined),
-    data: { counts: { errors, infos, warnings }, issues } };
+    data: { counts: { errors, infos, warnings }, issues, ...(loadRepair ? { loadRepair } : {}) } };
 }
 
 const runLint: ToolDefinition = {
