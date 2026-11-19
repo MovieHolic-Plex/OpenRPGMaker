@@ -232,7 +232,7 @@
   display: grid;
   flex: 1 1 auto;
   gap: 0;
-  grid-template-rows: var(--hierarchy-pages-height) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
   min-height: 0;
   overflow: hidden;
@@ -477,6 +477,10 @@
 .event-editor > .event-editor-pagebar {
   align-items: center;
   column-gap: 10px;
+  height: auto;
+  min-height: var(--hierarchy-pages-height);
+  max-height: none;
+  padding-block: 2px;
   overflow: hidden;
 }
 
@@ -502,6 +506,30 @@
   white-space: nowrap;
 }
 
+.event-editor-modal-window .event-editor .evt-page-segments > .btn.evt-page-segment {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 6px;
+  row-gap: 2px;
+  width: max-content;
+  max-width: 280px;
+  height: auto;
+  padding: 4px 8px;
+  text-align: start;
+  line-height: 1.2;
+}
+
+.event-editor .evt-page-segment-number {
+  grid-column: 1;
+  grid-row: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.event-editor .evt-page-segment > .warn {
+  grid-column: 3;
+  grid-row: 1;
+}
+
 .event-editor .evt-page-segments .evt-page-segment[draggable="true"] {
   cursor: grab;
 }
@@ -520,12 +548,16 @@
 }
 
 .event-editor .evt-page-segment-title {
+  grid-column: 2;
+  grid-row: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 /* 탭 제자리 이름 바꾸기(더블클릭·F2). 제목 글자 자리를 그대로 차지해 탭이 튀지 않게 한다. */
 .event-editor .evt-page-segment-rename {
+  grid-column: 2;
+  grid-row: 1;
   background: var(--bg-surface);
   border: 1px solid var(--accent);
   border-radius: 3px;
@@ -537,6 +569,8 @@
 }
 
 .event-editor .evt-page-segment-cond {
+  grid-column: 2 / -1;
+  grid-row: 2;
   color: var(--text-3);
   font-size: 11px;
   overflow: hidden;

@@ -16,7 +16,7 @@ import type { Command, EventPage, MapId } from "@/project/types";
 import { auxCompositeKey } from "./auxOpenController";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { renderCommandPreview } from "./commandPreview";
-import { commandSummary } from "./commandSummary";
+import { commandSummary, commandSummaryParts } from "./commandSummary";
 import { commandKindLabel } from "./options";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { simulatePageCommands, type SimulatedStep } from "./previewSimulation";
@@ -100,7 +100,7 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
   const moveTo = (next: number) => { stopPlayback(); index = next; renderStep(); };
   const previous = control("prev", "이전", "arrowLeft", () => moveTo(Math.max(0, index - 1)));
   const next = control("next", "다음", "arrowRight", () => moveTo(Math.min(steps.length - 1, index + 1)));
-  const restart = control("restart", "처음으로", "refresh", () => moveTo(0));
+  const restart = control("restart", "첫 단계로", "refresh", () => moveTo(0));
   const playButton = control("play", "자동 재생", "play", () => {
     if (playTimer !== null) {
       stopPlayback();
@@ -153,8 +153,11 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
     }));
     const branch = step.branchLabel ? `[${step.branchLabel}] ` : "";
     const skipMark = step.skipped ? " (건너뜀)" : "";
-    caption.textContent = `${branch}${commandSummary(step.command)}${skipMark}`;
-    contextBody.textContent = caption.textContent;
+    const summary = commandSummaryParts(step.command)
+      .filter((part) => part.text)
+      .map((part) => el("span", { text: part.text }));
+    caption.replaceChildren(branch, ...summary, skipMark);
+    contextBody.replaceChildren(...Array.from(caption.childNodes, (node) => node.cloneNode(true)));
     position.textContent = `${index + 1}/${steps.length}`;
     const branchExcerpt = step.branchLabel ? ` [${step.branchLabel.slice(0, 60)}${step.branchLabel.length > 60 ? "…" : ""}]` : "";
     status.textContent = `${index + 1}/${steps.length} · ${commandKindLabel(step.command.kind)}${branchExcerpt}${skipMark}`;

@@ -556,6 +556,8 @@ const ONE_PER_ROOM: ReadonlyMap<string, number> = new Map([["globe", 1], ["globe
 /** 좌우로 기운 기물(옆을 보는 의자·문) — 뒤집으면 등을 돌린다. */
 const LATERAL = /\b[EW]\d?$|\b[EW] |left|right|side/u;
 export function hashText(s: string): number { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
+/** 작은 수로 나눌 씨앗 — hashText(FNV-1a)의 낮은 비트는 글자들의 낮은 비트만 따른다(`% 2`·`% 4` 가 글머리만 다른 열쇠에서 같은 답을 낸다). 섞은 뒤 나눈다. */
+export function mixHash(h: number): number { h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return h >>> 0; }
 export function seeded(seed: number): () => number { let a = seed >>> 0 || 1; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
 /** 방 성격 — 용도 글의 낱말. 한 방에 여럿일 수 있다(「마법사 학자의 서재」). */

@@ -9,7 +9,7 @@ let modalDragState: ModalDragState | null = null;
 export function startModalDrag(windowEl: HTMLElement, event: MouseEvent): void {
   if (event.button !== 0 || windowEl.classList.contains("maximized")) return;
   const target = event.target;
-  if (target instanceof Element && target.closest("button")) return;
+  if (target instanceof Element && target.closest("button, [popover]")) return;
   event.preventDefault();
   const rect = windowEl.getBoundingClientRect();
   windowEl.classList.add("floating");

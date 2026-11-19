@@ -332,8 +332,10 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
     children: [
       textControl("이름", editable.name, (value) => {
         recordCoalescedSnapshot(`retro-choreo:${id}:name`, "도트 연출 이름");
-        editRecord(id, (record) => { record.name = value.slice(0, 80); });
-        document.querySelector(`[data-testid="db-retro-choreo-row-${id}"] .db-list-name`)?.replaceChildren(document.createTextNode(value || "(이름 없음)"));
+        const name = value.slice(0, 80);
+        editRecord(id, (record) => { record.name = name; });
+        const label = document.querySelector<HTMLElement>(`[data-testid="db-retro-choreo-row-${id}"] .db-list-name`);
+        if (label) label.textContent = label.title = name || "(이름 없음)";
       }, "db-retro-choreo-name"),
       textControl("설명", editable.description ?? "", (value) => {
         recordCoalescedSnapshot(`retro-choreo:${id}:description`, "도트 연출 설명");

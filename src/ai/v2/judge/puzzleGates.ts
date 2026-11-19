@@ -12,7 +12,7 @@
 //    (옆에서 누르면 원래 선택지). 새 그림은 없다.
 import { canMove } from "@/project/collision";
 import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
-import { anchorsOf, blockersOf, bodyReached, reachFrom } from "./eventReach";
+import { anchorsOf, blockersWhen, bodyReached, reachFrom } from "./eventReach";
 import type { BuildRun } from "../shared/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 
@@ -117,12 +117,13 @@ export function puzzleFlow(project: Project, mapId: string, opts: { anchors?: Ce
   const setters = settersOf(base).filter((s) => !opts.skip?.includes(s.event.id));
   const local = new Set(setters.flatMap((s) => s.sets));
   const elsewhere = setElsewhere(project, mapId);
-  const blocked = blockersOf(base);
   const fired = new Set<string>();
   const ok = (needs: readonly string[]) => needs.every((sw) => on.has(sw) || elsewhere.has(sw));
+  // 막는 칸은 켜진 스위치로 도는 페이지를 따른다 — 풀린 문(마지막 페이지가 지나감)은 더 막지 않는다. 처음에는 blockersOf 와 같다.
+  const blockedNow = () => blockersWhen(base, (page, ev) => ok(pageNeeds(ev, page)));
   let reach: Uint8Array = new Uint8Array(base.width * base.height);
   for (let round = 0; round < 64; round++) {
-    reach = reachFrom(project, map, anchors, blocked, passages.filter((p) => ok(p.needs)));
+    reach = reachFrom(project, map, anchors, blockedNow(), passages.filter((p) => ok(p.needs)));
     let grew = false;
     setters.forEach((s, n) => {
       if (!ok(s.needs) || (!s.auto && !bodyReached(base, reach, s.event))) return;

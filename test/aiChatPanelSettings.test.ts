@@ -294,8 +294,7 @@ describe("설정 자동 저장", () => {
   });
 
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
-    // 모델은 역할별로 저장된다(roleModels) — 기본 roleModels 는 모두 Antigravity Argon 이므로
-    // 최상위 providerId 만 바꿔서는 Writer 칸이 Codex 가 되지 않는다. Writer 행의 제공자를 먼저 고른다.
+    // 작문 역할의 제공자와 모델을 골라 roleModels와 주 모델에 함께 저장하는지 확인한다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const writer = findByTestId(modal, "ai-config-writer-provider") as unknown as HTMLSelectElement;
@@ -543,7 +542,7 @@ describe("대기 화면 설정은 없다", () => {
     const modal = document.querySelector("[data-testid='ai-settings-modal']") as unknown as FakeElement | null;
     expect(modal).not.toBeNull();
     expect(findByTestId(modal!, "ai-settings-section-temperature")).toBeNull();
-    expect(findByTestId(modal!, "ai-settings-section-temperature")).toBeNull();
+    expect(findByTestId(modal!, "ai-settings-tab-extra-temperature")).toBeNull();
     expect(findByTestId(modal!, "ai-command-temperature-map-first")).toBeNull();
   });
 });

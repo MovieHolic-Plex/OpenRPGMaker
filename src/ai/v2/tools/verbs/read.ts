@@ -8,7 +8,8 @@ import { summarizeChecks } from "../../judge/machineChecks";
 import type { PlaceSpec } from "../../shared/types";
 import { HELPER_LIMITS, runHelperJobs, type HelperJob } from "../../shared/helpers";
 import { restoreEventFromBefore } from "../../story/restoreEvent";
-import { roomParts, SHAPE_EXAMPLES } from "../../place/roomParts";
+import { roomParts, tableParts, SHAPE_EXAMPLES } from "../../place/roomParts";
+import { effectiveSpec, interiorTilesetFor } from "../../place/interiorCatalog";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "../../place/roomIdeas";
 import { text, see, withImages } from "../support";
 import type { VerbContext } from "../context";
@@ -38,6 +39,10 @@ export function readVerbs(c: VerbContext) {
       // 글은 가볍게(기본 slim): 기물 40줄·모양 예 하나 — 2026-10-30 서재 시험에서 결과 글 1.2~1.3만 자 뒤 flash 가 도구 호출을 글로 쓰거나 «I'm having a hard time»으로 멈췄다.
       // 더 필요한 기물은 query 로 다시 묻는다.
       const slim = (env.roomPartsText ?? "slim") === "slim";
+      // 어느 표로 답하나는 한 규칙(interiorTilesetFor) — 목록 카드·find_pieces·칸 배치 빌더와 같다. v5 가 아닌 표(버들항 …)면 그 표의 낱말만 낸다.
+      const table = interiorTilesetFor(env.ctx.project, env.ctx.currentMapId);
+      const tableSpec = table && table.id !== HAND_INTERIOR_TILESET_ID ? effectiveSpec(table) : undefined;
+      if (table && tableSpec) return text({ ok: true, ...tableParts(table, tableSpec, String(p.purpose ?? ""), p.query, slim ? 40 : 90) });
       const full = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query, undefined, slim ? 40 : 90);
       if (!full) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
       const plans = roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3, `${String(env.request.projectKey ?? "")}|${session.nonce}`).map((x) => ({ id: x.id, structure: x.idea }));

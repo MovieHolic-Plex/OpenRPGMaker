@@ -2,6 +2,7 @@
 // 메인 프로세스 쪽은 electron/main/agentHost.ts, 도구 실행은 ./agentModeTools.ts.
 import "@/styles/editor/agent-mode.css";
 import { el } from "@/util/dom";
+import { t } from "@/i18n";
 import { undoMapEdit } from "@/editor/mapEditHistory";
 import type { OprnAgentBridge } from "@/project/persistence/electronRepository";
 import { getTool } from "@/editor/tools/toolRegistry";
@@ -101,6 +102,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
     stopButton.disabled = !busy;
     undoButton.disabled = busy || !(turn?.recorded);
     connectButton.textContent = connected ? "다시 연결" : "연결";
+    connectButton.classList.toggle("primary", !connected);
   };
   const bubble = (kind: "user" | "agent" | "system", text: string): HTMLElement => {
     const node = el("div", { class: `agent-mode-bubble is-${kind}`, text });
@@ -135,7 +137,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
       if (agent.appInstalled && !installing) {
         actions.push(button("다시 설치", `agent-setup-repair-${agent.id}`, () => call(bridge.install?.({ agent: agent.id }), agent.id)));
         actions.push(button("지우기", `agent-setup-remove-${agent.id}`, () => {
-          if (window.confirm(`${agent.label} 을(를) 이 앱에서 지울까요? 다시 쓰려면 다시 설치해야 합니다.`)) call(bridge.uninstall?.({ agent: agent.id }), agent.id);
+          if (window.confirm(t(`${agent.label} 을(를) 이 앱에서 지울까요? 다시 쓰려면 다시 설치해야 합니다.`))) call(bridge.uninstall?.({ agent: agent.id }), agent.id);
         }, "danger"));
       }
     }
@@ -151,7 +153,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
     }
     if (state?.phase === "login-waiting-code") {
       const codeInput = el("input", { class: "agent-setup-code", attrs: { type: "text", placeholder: "브라우저가 코드를 보여 주면 여기에 붙여 넣기", autocomplete: "off", spellcheck: "false" }, dataset: { testid: `agent-setup-code-${agent.id}` } }) as HTMLInputElement;
-      const submit = el("button", { class: "agent-mode-btn", text: "확인", attrs: { type: "button" }, on: { click: () => { if (codeInput.value.trim()) call(bridge.loginCode?.({ agent: agent.id, code: codeInput.value.trim() }), agent.id); codeInput.value = ""; } } });
+      const submit = el("button", { class: "agent-mode-btn primary", text: "확인", attrs: { type: "button" }, on: { click: () => { if (codeInput.value.trim()) call(bridge.loginCode?.({ agent: agent.id, code: codeInput.value.trim() }), agent.id); codeInput.value = ""; } } });
       extra.push(el("div", { class: "agent-mode-row", children: [codeInput, submit] }));
     }
     if (!canInstall && !agent.ready) extra.push(el("code", { text: agent.installHint }));
@@ -163,9 +165,8 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
           el("strong", { text: `${usable(agent) ? "●" : "○"} ${agent.label}` }),
           el("span", { class: "agent-setup-status", text: statusText, dataset: { testid: `agent-setup-status-${agent.id}` } }),
         ] }),
-        ...extra,
-        actions.length ? el("div", { class: "agent-mode-row agent-setup-actions", children: actions }) : el("span"),
-        el("small", { text: agent.loginHint }),
+        el("div", { class: "agent-setup-copy", children: [el("small", { text: agent.loginHint }), ...extra] }),
+        el("div", { class: "agent-mode-row agent-setup-actions", children: actions }),
       ],
     });
   };
@@ -270,12 +271,21 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
     const answer = (optionId: string | null, label: string): void => {
       void bridge.permission({ requestId: String(event.requestId), optionId });
       bar.remove();
-      bubble("system", `승인: ${readableTool(String(toolCall.title ?? ""), toolCall.rawInput)} → ${label}`);
+      const result = bubble("system", "");
+      result.append(
+        el("span", { text: "승인" }), ": ",
+        el("span", { text: readableTool(String(toolCall.title ?? ""), toolCall.rawInput) }), " → ",
+        el("span", { text: label }),
+      );
+      scroll();
     };
     bar.append(
-      el("div", { class: "agent-mode-permission-title", text: `⚠ 승인 필요: ${readableTool(String(toolCall.title ?? ""), toolCall.rawInput)}` }),
+      el("div", { class: "agent-mode-permission-title", children: [
+        el("span", { text: "⚠ 승인 필요" }), ": ",
+        el("span", { text: readableTool(String(toolCall.title ?? ""), toolCall.rawInput) }),
+      ] }),
       el("div", { class: "agent-mode-permission-actions", children: options.map((option) => el("button", {
-        class: `agent-mode-btn ${option.kind.startsWith("allow") ? "primary" : "danger"}`,
+        class: option === allowOnce ? "agent-mode-btn primary" : "agent-mode-btn",
         text: OPTION_TEXT[option.kind] ?? option.name,
         attrs: { type: "button" },
         dataset: { testid: `agent-mode-permission-${option.kind}` },

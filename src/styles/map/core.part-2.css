@@ -114,16 +114,28 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 /* 글자 라벨 단추 — 아이콘 SVG 는 이 저장소에 전역 크기 규칙이 없어 8×8px 로 찍혔다(실측). */
 
 .event-list {
-  flex: 1 1 auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  padding: var(--space-1);
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .event-list-title {
   flex: 0 0 auto;
   background: var(--bg);
   padding: 2px var(--space-1) var(--space-1);
+}
+
+.event-list-rows {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  padding: var(--space-1);
+  scrollbar-gutter: stable;
 }
 
 .event-list-empty {
@@ -142,8 +154,9 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   cursor: pointer;
   display: grid;
   font-family: inherit;
-  gap: var(--space-1);
-  grid-template-columns: 22px minmax(0, 1fr) auto;
+  column-gap: 6px;
+  row-gap: 2px;
+  grid-template-columns: 20px minmax(0, 1fr);
   text-align: left;
 }
 
@@ -165,6 +178,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   align-items: center;
   border: 1px solid var(--border-soft);
   display: inline-grid;
+  grid-row: span 2;
   height: 22px;
   justify-items: center;
   overflow: hidden;

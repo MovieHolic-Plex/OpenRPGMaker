@@ -298,28 +298,33 @@
   --db-footer-status-fg: var(--db-studio-text-2);
 }
 
-/* 실패 문구는 잘리면 쓸모가 없다 — 충돌 맵 이름 목록이 ellipsis 로 사라지던 경로.
-   오류일 때만 줄바꿈을 허용하고 폭 제한을 푼다. */
 .database-modal-backdrop .database-modal-window .database-footer-status[data-status-kind="error"] {
   --db-footer-status-bg: var(--db-studio-danger-muted, rgba(185, 28, 28, 0.10));
   --db-footer-status-fg: var(--db-studio-danger);
-  max-width: 100% !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  white-space: normal !important;
+  padding: 0 !important;
 }
 
-/* 저장하지 않는 세션에서 「닫기」가 주 버튼(.primary)이 되면 이 중립 덮개를 받지 않는다(17-database-footer-final.css). */
-.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"]:not(.primary) {
-  background: transparent !important;
-  border-color: var(--db-studio-border-default) !important;
-  color: var(--db-studio-text-2) !important;
-  font-weight: 500 !important;
+.database-save-error-button:not([hidden]) {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 4px;
+  min-width: 0;
+  padding: 4px 8px;
 }
 
-.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"]:not(.primary):hover {
-  background: var(--db-studio-inset) !important;
-  color: var(--db-studio-text-1) !important;
+.database-save-error-button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.database-save-error-button:focus-visible {
+  outline: none;
+  box-shadow: inset var(--focus-ring);
 }
 
 /* danger ghost stays subtle */

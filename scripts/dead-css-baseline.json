@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T16:41:51.993Z",
+  "generatedAt": "2026-11-19T15:11:55.493Z",
   "tokens": [
     "actor-command-row",
     "actor-face-image",
@@ -65,6 +65,8 @@
     "db-neutral-resource-icon",
     "db-neutral-resource-slot",
     "db-overview-issue-icon",
+    "db-quest-table-place",
+    "db-quest-table-row",
     "db-retro-choreo-axis-host",
     "db-script-side-label",
     "db-skill-card-has-retro",

@@ -579,6 +579,8 @@
   min-width: 0;
 }
 
+.ai-settings-status-copy { overflow-wrap: anywhere; }
+
 .ai-settings-status-mark {
   background: currentColor;
   border-radius: 50%;
@@ -669,6 +671,8 @@
   display: grid;
   gap: 4px 8px;
   grid-template-columns: minmax(0, 1fr) auto;
+  grid-row: auto;
+  grid-template-rows: auto auto;
   padding: 10px 8px;
 }
 
@@ -678,7 +682,7 @@
 }
 
 .ai-settings-alternative-body .ai-auth-card-head { grid-column: 1; }
-.ai-settings-alternative-body .ai-auth-card-pill { grid-column: 2; grid-row: 1 / 3; }
+.ai-settings-alternative-body .ai-auth-card-pill { align-self: center; grid-column: 2; grid-row: 1 / 3; }
 .ai-settings-alternative-body .ai-auth-quick-card > small { grid-column: 1; padding-inline-start: 26px; }
 
 .ai-settings-section-quick-connect .ai-quick-connect {
@@ -938,19 +942,22 @@
 .ai-auth-quick {
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .ai-auth-quick-card {
-  align-items: flex-start;
   background: var(--control-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-m);
   color: var(--text-2);
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  font-family: inherit;
   gap: var(--space-2);
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  min-width: 0;
+  overflow-wrap: anywhere;
   padding: var(--space-3);
   position: relative;
   text-align: left;
@@ -958,8 +965,10 @@
 
 .ai-auth-card-head {
   align-items: center;
+  align-self: start;
   display: flex;
   gap: var(--space-2);
+  min-block-size: calc(var(--font-size-sm) * 1.5 + 14px);
   min-width: 0;
   width: 100%;
 }
@@ -971,6 +980,7 @@
 
 /* 제목(계정 이름) 아래에 제품명 보조 줄 — 사용자가 따로 들어 본 이름(Gemini·Antigravity·Codex)을 찾게 한다. */
 .ai-auth-card-name {
+  align-self: start;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -992,15 +1002,17 @@
 
 .ai-auth-card-check {
   color: var(--accent);
-  display: none;
+  display: inline-flex;
   flex: 0 0 auto;
+  visibility: hidden;
 }
 
 .ai-auth-quick-card[aria-checked="true"] .ai-auth-card-check {
-  display: inline-flex;
+  visibility: visible;
 }
 
 .ai-auth-quick-card > small {
+  align-self: start;
   color: var(--text-3);
   font-size: 11px;
   line-height: 1.4;
@@ -1008,10 +1020,11 @@
 
 /* 카드별 자격 상태 필 — 카드가 곧 상태 표시다. */
 .ai-auth-card-pill {
-  align-self: flex-start;
+  align-self: end;
   border-radius: var(--radius-pill);
   font-size: 10.5px;
   font-weight: var(--font-weight-bold);
+  justify-self: start;
   line-height: 1.3;
   padding: 2px var(--space-2);
 }
@@ -1321,12 +1334,14 @@
 .ai-compat-card-head {
   align-items: flex-start;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-3);
   justify-content: space-between;
 }
 
 .ai-compat-card-name {
   display: grid;
+  flex: 1 1 10em;
   gap: 2px;
   min-width: 0;
 }
@@ -1334,6 +1349,7 @@
 .ai-compat-card-name > strong {
   color: var(--text-1);
   font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
 }
 
 .ai-compat-url {
@@ -1344,7 +1360,6 @@
 
 .ai-compat-card-actions {
   display: flex;
-  flex: 0 0 auto;
   flex-wrap: wrap;
   gap: var(--space-1);
   justify-content: flex-end;
@@ -1556,10 +1571,9 @@
 }
 
 .ai-compat-role-name {
-  display: grid;
+  overflow-wrap: anywhere;
 }
 
-.ai-compat-role-name > small,
 .ai-compat-role-note {
   color: var(--text-3);
   font-size: 10.5px;
@@ -1711,6 +1725,17 @@
   color: var(--text-3);
   font-size: 11px;
   line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .ai-compat-role-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .ai-compat-role-name,
+  .ai-compat-role-extra { grid-column: 1 / -1; }
+  .ai-role-matrix .ai-roles-head { display: none; }
+  .ai-role-matrix .ai-role-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .ai-role-matrix .ai-role-row[data-tone="missing"] .ai-role-matrix-note {
@@ -1728,8 +1753,6 @@
 }
 
 @media (max-width: 575px) {
-  .ai-role-matrix .ai-roles-head { display: none; }
-  .ai-role-matrix .ai-role-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ai-role-matrix .ai-role-name { grid-column: 1 / -1; }
   .ai-compat-role-row { grid-template-columns: minmax(0, 1fr); }
   .ai-compat-role-extra { grid-column: 1; }

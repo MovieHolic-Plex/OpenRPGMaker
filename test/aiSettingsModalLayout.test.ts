@@ -9,9 +9,13 @@ vi.mock("@/editor/panels/aiRoleMatrixSettings", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/editor/panels/aiRoleMatrixSettings")>()),
   fetchConnectedRoutes: () => new Promise<never>(() => undefined),
 }));
-// 도구 사용량 패널도 같은 사정이다: 열자마자 IndexedDB·대화 기록을 읽고 나중에 자기 보고서를 그려 넣는다.
+// 고급 시트를 열면 도구 사용량 패널이 IndexedDB·대화 기록을 읽는다. 여기서는 배치만 확인한다.
 vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
-  renderAiToolUsagePanel: () => document.createElement("div"),
+  renderAiToolUsagePanel: () => {
+    const panel = document.createElement("div");
+    panel.dataset.testid = "ai-tool-usage";
+    return panel;
+  },
 }));
 
 const fetchChatGptAuthStatus = vi.fn();
@@ -104,11 +108,14 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
 
     const sheet = findByTestId(modal, "ai-settings-advanced");
     expect(sheet?.hidden).toBe(true);
+    expect(findByTestId(modal, "ai-settings-continue")).toBeNull();
+    expect(findByTestId(modal, "ai-tool-usage")).toBeNull();
     findByTestId(modal, "ai-settings-tab-behavior")?.click();
     expect(findByTestId(modal, "ai-settings-tab-behavior")?.getAttribute("aria-current")).toBe("page");
     findByTestId(modal, "ai-settings-open-advanced")?.click();
     expect(sheet?.hidden).toBe(false);
     expect(sheet?.getAttribute("role")).toBe("dialog");
+    expect(findByTestId(sheet!, "ai-tool-usage")).not.toBeNull();
     const roles = findByTestId(modal, "ai-settings-section-roles");
     for (const role of ["progress", "advisor", "screen", "image", "pixel"]) {
       expect(findByTestId(roles!, `ai-settings-model-${role}`)?.tagName).toBe("DETAILS");
@@ -186,7 +193,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     for (const description of [
       "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요.",
       "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산",
-      "기존 영역 작업 경로의 추론 설정입니다.",
+      "기존 영역 작업 경로의 추론 강도를 설정합니다.",
       "자율 모드는 요청을 작업 계획으로 나누고, 채팅 모드는 대화 중심으로 진행합니다.",
       "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다.",
     ]) {

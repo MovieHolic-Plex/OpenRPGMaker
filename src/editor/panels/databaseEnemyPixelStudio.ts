@@ -308,7 +308,7 @@ export function renderEnemyPixelStudio(record: EnemyRecord): HTMLElement {
     });
 
     body.replaceChildren(
-      el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "도트 몬스터 공방" }), el("span", { class: "db-enemy-stage-status", text: "retro2003 9칸 시트" })] }),
+      el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "도트 몬스터 공방" }), el("span", { class: "db-enemy-stage-status", text: "도트 측면 전투용 9칸 시트" })] }),
       el("div", {
         class: "db-pixel-studio-form",
         on: { change: remember, input: remember },

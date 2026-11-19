@@ -19,6 +19,7 @@
 
 .rm-category-row {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   width: 100%;
@@ -40,7 +41,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow: hidden;
+  min-width: 0;
 }
 
 .rm-category-icon {
@@ -63,9 +64,9 @@
 }
 
 .rm-category-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .rm-category-badge {

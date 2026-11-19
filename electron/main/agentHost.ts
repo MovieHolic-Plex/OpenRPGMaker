@@ -295,7 +295,7 @@ export function createAgentHost(options: AgentHostOptions) {
 
     async start(kind: AgentKind): Promise<{ sessionId: string }> {
       const spec = AGENT_SPECS.find((candidate) => candidate.id === kind);
-      if (!spec) throw new Error(`unknown agent ${kind}`);
+      if (!spec) throw new Error(`지원하지 않는 에이전트입니다: ${kind}`);
       const launch = resolveAdapter(spec, installer, hostEnv);
       if (!launch) throw new Error(`${spec.label} 이(가) 설치되어 있지 않습니다. 「설치」를 눌러 주세요.`);
       stopChild();
@@ -314,7 +314,8 @@ export function createAgentHost(options: AgentHostOptions) {
       spawned.on("exit", (code, signal) => {
         if (child === spawned) {
           stopChild();
-          push({ type: "status", state: "stopped", detail: `에이전트가 종료되었습니다(code ${code ?? "-"}${signal ? `, ${signal}` : ""})` });
+          const exit = signal ? `${code ?? "-"}, ${signal}` : String(code ?? "-");
+          push({ type: "status", state: "stopped", detail: `에이전트가 종료되었습니다 (종료 코드: ${exit})` });
         }
       });
       spawned.on("error", (error) => push({ type: "status", state: "error", detail: error.message }));
@@ -460,7 +461,7 @@ const AGENT_KINDS: ReadonlySet<string> = new Set(["claude", "codex", "opencode"]
 
 function agentKind(input: Record<string, unknown>): AgentKind {
   const kind = String(input.agent ?? "");
-  if (!AGENT_KINDS.has(kind)) throw new Error("agent must be claude, codex or opencode");
+  if (!AGENT_KINDS.has(kind)) throw new Error("Claude Code, Codex, opencode 중 하나를 선택하세요.");
   return kind as AgentKind;
 }
 
@@ -478,18 +479,18 @@ export async function dispatchAgentChannel(host: AgentHost, channel: string, pay
     case AGENT_CHANNELS.login: host.login(agentKind(input)); return { ok: true };
     case AGENT_CHANNELS.loginCode: {
       const code = typeof input.code === "string" ? input.code.trim() : "";
-      if (!code || code.length > 4000) throw new Error("code is required");
+      if (!code || code.length > 4000) throw new Error("로그인 코드를 4,000자 이내로 입력하세요.");
       return { ok: host.loginCode(agentKind(input), code) };
     }
     case AGENT_CHANNELS.cancelLogin: host.cancelLogin(agentKind(input)); return { ok: true };
     case AGENT_CHANNELS.start: {
       const kind = String(input.agent ?? "");
-      if (!AGENT_KINDS.has(kind)) throw new Error("agent must be claude, codex or opencode");
+      if (!AGENT_KINDS.has(kind)) throw new Error("Claude Code, Codex, opencode 중 하나를 선택하세요.");
       return await host.start(kind as AgentKind);
     }
     case AGENT_CHANNELS.prompt: {
       const text = typeof input.text === "string" ? input.text.trim() : "";
-      if (!text || text.length > 20_000) throw new Error("prompt text is required (max 20000 chars)");
+      if (!text || text.length > 20_000) throw new Error("메시지를 20,000자 이내로 입력하세요.");
       return host.prompt(text);
     }
     case AGENT_CHANNELS.cancel: host.cancel(); return { ok: true };

@@ -76,6 +76,8 @@ export interface PlaceSpec {
   readonly layout?: InteriorLayout;
   /** (실내 방 그래프) 남쪽 출구가 나는 방(zones[].id) — 가장 남쪽이어야 한다. */
   readonly entrance?: string;
+  /** (실내) 이 방이 든 집의 바깥 — 문이 달린 바깥 맵의 칩셋·집 킷·양식. 짓는 쪽(make_game·make_place)이 넣는다, 모델은 쓰지 않는다. 실내 빌더가 칩셋과 벽면을 여기서 고른다(builders/interiorExterior.ts). */
+  readonly exterior?: { readonly tileset: string; readonly kit?: string; readonly style?: string; /** 모델이 스스로 큰 건물로 청한 장소(여관·회관·성당·성 같은 종류)의 문이다 — 겉의 크기 단을 모델의 배치에 요구해도 된다. 코드가 남은 문에서 골라 준 겉이면 없다. */ readonly asked?: boolean };
   /** 나가는 쪽. 실내는 기본 south. */
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
   /** (세계 장소) 목적표 — build_places 가 청사진에서 정해 넣는다(place/program.ts), 모델은 쓰지 않는다. 구성기가 이 역할 건물과 채움 집만 놓고 맵 크기도 여기서 나온다. */
@@ -262,7 +264,7 @@ export interface ObjectSpec {
   /** 놓을 자리 낱말 또는 칸. */
   readonly where?: string;
   readonly at?: { readonly x: number; readonly y: number };
-  /** 칩셋에 이름이 비슷한 기물이 있다고 거부됐지만 봤더니 다른 물건일 때 — 그 id 들(거부 메시지에 나온 id). */
+  /** 칩셋에 이름이 정확히 같은 기물이 있다고 거부됐지만 봤더니 다른 물건일 때 — 그 id 들(거부 메시지에 나온 id). */
   readonly notThese?: readonly string[];
 }
 

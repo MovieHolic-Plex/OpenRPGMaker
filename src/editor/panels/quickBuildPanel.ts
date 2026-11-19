@@ -77,11 +77,11 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
       for (const style of group === "assembly" && tileset ? quickHouseStyles(tileset) : []) {
         const kit = quickHouseKit(tileset!, { ...quickHouseOptions(s), style, kitId: null }); if (!kit) continue;
         const card = el("button", { class: "terrain-stamp-card", attrs: { type: "button", "aria-pressed": "false", "aria-label": quickHouseStyleName(style) }, dataset: { houseStyle: style }, on: { click: () => editorState.set({ terrainHouseStyle: style, terrainHouseKitId: null, terrainHouseWidth: Math.max(s.terrainHouseWidth, quickHouseMinWidth(style)), terrainHouseRoofWidth: Math.max(s.terrainHouseRoofWidth, s.terrainHouseWidth, quickHouseMinWidth(style)) }) } });
-        card.append(renderTileCellsToCanvas({ tileset: tileset!, widthTiles: kit.width, heightTiles: kit.height, scale: Math.min(1, 6 / Math.max(kit.width, kit.height)), backgroundTile: null, cells: structureKitUnitCells(kit) }), el("span", { text: quickHouseStyleName(style) })); cards.append(card);
+        card.append(renderTileCellsToCanvas({ tileset: tileset!, widthTiles: kit.width, heightTiles: kit.height, scale: Math.min(1, 6 / Math.max(kit.width, kit.height)), backgroundTile: null, transparentBackground: true, cells: structureKitUnitCells(kit) }), el("span", { text: quickHouseStyleName(style) })); cards.append(card);
       }
       for (const kit of visibleCatalog.slice(page * 12, (page + 1) * 12)) {
         const card = el("button", { class: "terrain-stamp-card", attrs: { type: "button", "aria-pressed": "false" }, dataset: { houseKit: kit.id }, on: { click: () => editorState.set({ terrainHouseKitId: kit.id }) } });
-        card.append(renderTileCellsToCanvas({ tileset: tileset!, widthTiles: kit.width, heightTiles: kit.height, scale: Math.min(1, 6 / Math.max(kit.width, kit.height)), backgroundTile: null, cells: structureKitUnitCells(kit) }), el("span", { text: kit.name ?? kit.id })); cards.append(card);
+        card.append(renderTileCellsToCanvas({ tileset: tileset!, widthTiles: kit.width, heightTiles: kit.height, scale: Math.min(1, 6 / Math.max(kit.width, kit.height)), backgroundTile: null, transparentBackground: true, cells: structureKitUnitCells(kit) }), el("span", { text: kit.name ?? kit.id })); cards.append(card);
       }
       if (!cards.childElementCount) cards.append(el("p", { text: "타일의 구조물에 입구가 있는 집을 등록하면 여기서 고를 수 있습니다." }));
     }

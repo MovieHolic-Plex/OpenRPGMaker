@@ -8,7 +8,8 @@
 //   - 되살린 기록은 session.pastPlaces 에 둔다. session.places 는 «이번 턴에 지은 것» 이라 끝맺음 단계·관문이 읽는다 — 앞 턴의 장소가 거기 들어가면
 //     이번 턴이 손대지 않은 맵까지 끝맺음이 만진다. 고치는 동사가 쓰면 그때 이번 턴 기록이 된다.
 //   - 고치기 바퀴 수는 넘기지 않는다(새 턴의 요청은 새로 센다).
-import type { Project } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
+import { LAYOUT_TAG, layoutGiven } from "../place/interiorLayout";
 import type { ProjectIndex } from "../loop/refs";
 import type { V2Session } from "../turn/session";
 import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
@@ -60,7 +61,11 @@ export function loadPlaces(memory: unknown, session: V2Session, project: Project
     const s = raw as Partial<SavedPlace> | undefined;
     if (!s || typeof s.builder !== "string" || !s.spec || typeof s.spec !== "object" || !Array.isArray(s.mapIds) || !Array.isArray(s.prints) || !s.mapIds.length) continue;
     const mapIds = s.mapIds.map(String);
-    if (!mapIds.every((id, i) => !!project.maps[id] && index.maps.get(id) === s.prints![i])) {
+    // 칸 배치로 깐 실내는 맵에 그 배치의 선언(LAYOUT_TAG)이 남아 있고 크기가 배치와 같으면 지문이 달라도 이어 받는다 — 깐 뒤 찍은 기물 · 턴 끝 마무리가
+    // 지문을 바꿔도 그 맵은 여전히 그 배치다(2026-11-17 r8 D3: 모델의 배치로 깐 여관이 다음 턴 review_layout 에서 «배치 실내가 아니다» 로 거절됐다).
+    // 다시 깔면 배치 밖에서 더한 것은 빠진다 — 고치는 결과에 PAST_DESIGN_NOTE 가 그것을 알린다.
+    const layoutStill = mapIds.every((id) => !!project.maps[id]) && stillLaidFrom(project.maps[mapIds[0]!]!, s.spec);
+    if (!layoutStill && !mapIds.every((id, i) => !!project.maps[id] && index.maps.get(id) === s.prints![i])) {
       stale += 1;
       for (const id of mapIds) if (project.maps[id]) session.stalePlaces.add(id);
       continue;
@@ -71,6 +76,14 @@ export function loadPlaces(memory: unknown, session: V2Session, project: Project
     restored += 1;
   }
   return { restored, stale };
+}
+
+/** 맵이 아직 그 칸 배치로 깐 실내인가 — 배치 선언(LAYOUT_TAG · decl)이 있고 맵 크기가 명세의 배치 크기와 같다. */
+function stillLaidFrom(map: GameMap, spec: PlaceSpec): boolean {
+  const L = spec.layout as { map?: { w?: number; h?: number } } | undefined;
+  if (!layoutGiven(spec.layout) || !L?.map) return false;
+  const decl = (map.locations ?? []).some((l) => (l.tags ?? []).includes(LAYOUT_TAG) && (l.tags ?? []).includes("decl"));
+  return decl && map.width === Number(L.map.w) && map.height === Number(L.map.h);
 }
 
 /** 앞 턴의 설계에서 다시 지었을 때 결과에 붙이는 글(모델이 읽는다). */

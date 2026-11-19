@@ -61,7 +61,7 @@ test("database footer 닫기 keeps edits; Escape can still discard back to the o
   expect((await exportedProject(page)).database.skills.some((skill) => skill.name === "Task 10 Unsaved Skill")).toBe(false);
 
   await page.getByTestId("db-field-name").fill("Task 10 Kept Skill");
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   expect((await exportedProject(page)).database.skills.some((skill) => skill.name === "Task 10 Kept Skill")).toBe(true);
 });

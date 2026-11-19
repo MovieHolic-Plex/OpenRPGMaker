@@ -867,6 +867,13 @@
   outline-offset: 2px;
 }
 
+.ai-settings-form .event-custom-select-value,
+.ai-settings-form .event-custom-select-option-label {
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .event-custom-select-option:hover:not(:disabled),
 .event-custom-select-option.is-active:not(:disabled) {
   background: color-mix(in srgb, var(--accent) 15%, var(--bg-surface));

@@ -1,0 +1,1462 @@
+{
+ "items": [
+  {
+   "png": "tiledata/beodeul-interiors/pieces/edge-default.png",
+   "kind": "terrain",
+   "id": "bd-in-edge-default",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/edge-rock.png",
+   "kind": "terrain",
+   "id": "bd-in-edge-rock",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/edge-gold.png",
+   "kind": "terrain",
+   "id": "bd-in-edge-gold",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-plaster.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-plaster",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-rubble.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-rubble",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-log.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-log",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-stablew.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-stablew",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-stone.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-stone",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-grey.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-grey",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-slumw.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-slumw",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-hobbitw.png",
+   "kind": "terrain",
+   "id": "bd-in-wall-hobbitw",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-dplank.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-dplank",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-plank.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-plank",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-flag.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-flag",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-ovenf.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-ovenf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-earth.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-earth",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-parquet.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-parquet",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-grey.png",
+   "kind": "terrain",
+   "id": "bd-in-floor-grey",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bar-counter.png",
+   "kind": "low_furniture",
+   "id": "bd-in-bar-counter",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bar-plank.png",
+   "kind": "low_furniture",
+   "id": "bd-in-bar-plank",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/ale-kegs-rack.png",
+   "kind": "frame",
+   "id": "bd-in-ale-kegs-rack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/ale-tun.png",
+   "kind": "round_body",
+   "id": "bd-in-ale-tun",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bottle-shelf.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-bottle-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/great-fireplace.png",
+   "kind": "structure",
+   "id": "bd-in-great-fireplace",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/brick-fireplace.png",
+   "kind": "structure",
+   "id": "bd-in-brick-fireplace",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/long-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-long-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/round-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-round-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bench.png",
+   "kind": "seat",
+   "id": "bd-in-bench",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stool.png",
+   "kind": "seat",
+   "id": "bd-in-stool",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/chair.png",
+   "kind": "seat",
+   "id": "bd-in-chair",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/chair-back.png",
+   "kind": "seat",
+   "id": "bd-in-chair-back",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/antlers.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-antlers",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/target-board.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-target-board",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/tally-slate.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-tally-slate",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/key-board.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-key-board",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cooking-hearth.png",
+   "kind": "structure",
+   "id": "bd-in-cooking-hearth",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/quilt-bed.png",
+   "kind": "low_furniture",
+   "id": "bd-in-quilt-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/green-bed.png",
+   "kind": "low_furniture",
+   "id": "bd-in-green-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/inn-bed.png",
+   "kind": "low_furniture",
+   "id": "bd-in-inn-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cradle.png",
+   "kind": "low_furniture",
+   "id": "bd-in-cradle",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dresser.png",
+   "kind": "frame",
+   "id": "bd-in-dresser",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/laid-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-laid-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/plain-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-plain-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/chest.png",
+   "kind": "container",
+   "id": "bd-in-chest",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rocking-chair.png",
+   "kind": "seat",
+   "id": "bd-in-rocking-chair",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/spinning-wheel.png",
+   "kind": "frame",
+   "id": "bd-in-spinning-wheel",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/settle.png",
+   "kind": "seat",
+   "id": "bd-in-settle",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wardrobe.png",
+   "kind": "box",
+   "id": "bd-in-wardrobe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/washstand.png",
+   "kind": "low_furniture",
+   "id": "bd-in-washstand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bookcase.png",
+   "kind": "frame",
+   "id": "bd-in-bookcase",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nightstand.png",
+   "kind": "low_furniture",
+   "id": "bd-in-nightstand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/writing-desk.png",
+   "kind": "low_furniture",
+   "id": "bd-in-writing-desk",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/window.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-window",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/curtain-window.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-curtain-window",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/mirror.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-mirror",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/coat-pegs.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-coat-pegs",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/jar-shelf.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-jar-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/tapestry.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-tapestry",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-shelf.png",
+   "kind": "frame",
+   "id": "bd-in-goods-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/shop-counter.png",
+   "kind": "low_furniture",
+   "id": "bd-in-shop-counter",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/peg-rail-goods.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-peg-rail-goods",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/produce-bins.png",
+   "kind": "container",
+   "id": "bd-in-produce-bins",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sack-pile.png",
+   "kind": "container",
+   "id": "bd-in-sack-pile",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/display-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-display-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/weapon-rack.png",
+   "kind": "frame",
+   "id": "bd-in-weapon-rack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/armor-stand.png",
+   "kind": "figure",
+   "id": "bd-in-armor-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/herb-rail.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-herb-rail",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/kitchen-range.png",
+   "kind": "structure",
+   "id": "bd-in-kitchen-range",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/work-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-work-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pot-rail.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-pot-rail",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stone-sink.png",
+   "kind": "low_furniture",
+   "id": "bd-in-stone-sink",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/crate-stack.png",
+   "kind": "box",
+   "id": "bd-in-crate-stack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wine-rack.png",
+   "kind": "frame",
+   "id": "bd-in-wine-rack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pantry-shelf.png",
+   "kind": "frame",
+   "id": "bd-in-pantry-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/ladder.png",
+   "kind": "frame",
+   "id": "bd-in-ladder",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/forge.png",
+   "kind": "structure",
+   "id": "bd-in-forge",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/anvil.png",
+   "kind": "other",
+   "id": "bd-in-anvil",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/tool-rail.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-tool-rail",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/workbench.png",
+   "kind": "low_furniture",
+   "id": "bd-in-workbench",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bread-oven.png",
+   "kind": "structure",
+   "id": "bd-in-bread-oven",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bread-shelf.png",
+   "kind": "frame",
+   "id": "bd-in-bread-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/kneading-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-kneading-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bakery-counter.png",
+   "kind": "low_furniture",
+   "id": "bd-in-bakery-counter",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/clerk-desk.png",
+   "kind": "low_furniture",
+   "id": "bd-in-clerk-desk",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/scroll-shelf.png",
+   "kind": "frame",
+   "id": "bd-in-scroll-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/high-chair.png",
+   "kind": "seat",
+   "id": "bd-in-high-chair",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/strongbox.png",
+   "kind": "container",
+   "id": "bd-in-strongbox",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/notice-board.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-notice-board",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-map.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-wall-map",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/banner.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-banner",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/altar.png",
+   "kind": "low_furniture",
+   "id": "bd-in-altar",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pew.png",
+   "kind": "seat",
+   "id": "bd-in-pew",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/candelabrum.png",
+   "kind": "column",
+   "id": "bd-in-candelabrum",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/lectern.png",
+   "kind": "low_furniture",
+   "id": "bd-in-lectern",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stained-window.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-stained-window",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/statue-niche.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-statue-niche",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/offering-box.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-offering-box",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/millstones.png",
+   "kind": "structure",
+   "id": "bd-in-millstones",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stable-stall.png",
+   "kind": "frame",
+   "id": "bd-in-stable-stall",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/net-rail.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-net-rail",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cot.png",
+   "kind": "low_furniture",
+   "id": "bd-in-cot",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/spear-stand.png",
+   "kind": "frame",
+   "id": "bd-in-spear-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dining-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-dining-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/canopy-bed.png",
+   "kind": "low_furniture",
+   "id": "bd-in-canopy-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/portrait.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-portrait",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/crossed-swords.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-crossed-swords",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-clock.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-wall-clock",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sconce.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-sconce",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wall-lantern.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-wall-lantern",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/oil-lamp.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-oil-lamp",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/floor-candle.png",
+   "kind": "column",
+   "id": "bd-in-floor-candle",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rush-mat.png",
+   "kind": "flat",
+   "id": "bd-in-rush-mat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/door-mat.png",
+   "kind": "flat",
+   "id": "bd-in-door-mat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/red-rug.png",
+   "kind": "flat",
+   "id": "bd-in-red-rug",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/round-rug.png",
+   "kind": "flat",
+   "id": "bd-in-round-rug",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/aisle-runner.png",
+   "kind": "flat",
+   "id": "bd-in-aisle-runner",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stairs-up.png",
+   "kind": "structure",
+   "id": "bd-in-stairs-up",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cellar-hatch.png",
+   "kind": "flat",
+   "id": "bd-in-cellar-hatch",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/fish-rack.png",
+   "kind": "structure",
+   "id": "bd-in-fish-rack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/boat.png",
+   "kind": "low_furniture",
+   "id": "bd-in-boat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cell-bars.png",
+   "kind": "structure",
+   "id": "bd-in-cell-bars",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cell-door.png",
+   "kind": "structure",
+   "id": "bd-in-cell-door",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pallet.png",
+   "kind": "low_furniture",
+   "id": "bd-in-pallet",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/spiral-stairs.png",
+   "kind": "structure",
+   "id": "bd-in-spiral-stairs",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/lighthouse-lamp.png",
+   "kind": "structure",
+   "id": "bd-in-lighthouse-lamp",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/telescope.png",
+   "kind": "column",
+   "id": "bd-in-telescope",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/kiln.png",
+   "kind": "structure",
+   "id": "bd-in-kiln",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pot-drying-shelf.png",
+   "kind": "box",
+   "id": "bd-in-pot-drying-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/vanity.png",
+   "kind": "box",
+   "id": "bd-in-vanity",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/globe.png",
+   "kind": "column",
+   "id": "bd-in-globe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/joiner-bench.png",
+   "kind": "low_furniture",
+   "id": "bd-in-joiner-bench",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sawhorse.png",
+   "kind": "low_furniture",
+   "id": "bd-in-sawhorse",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/china-cabinet.png",
+   "kind": "box",
+   "id": "bd-in-china-cabinet",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/house-shrine.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-house-shrine",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/boar-trophy.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-boar-trophy",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/mounted-fish.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-mounted-fish",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/lute.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-lute",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/child-drawing.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-child-drawing",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sampler.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-sampler",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bow-and-quiver.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-bow-and-quiver",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/fox-pelt.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-fox-pelt",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/corn-strings.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-corn-strings",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/portrait-pair.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-portrait-pair",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/helmet-and-medal.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-helmet-and-medal",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/glass-floats.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-glass-floats",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/clothesline.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-clothesline",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/canary-cage.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-canary-cage",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/scythe.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-scythe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/straw-hat.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-straw-hat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/model-boat.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-model-boat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sleeping-cat.png",
+   "kind": "other",
+   "id": "bd-in-sleeping-cat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dog-bed.png",
+   "kind": "other",
+   "id": "bd-in-dog-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/toy-horse.png",
+   "kind": "other",
+   "id": "bd-in-toy-horse",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rag-doll.png",
+   "kind": "other",
+   "id": "bd-in-rag-doll",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/boots.png",
+   "kind": "other",
+   "id": "bd-in-boots",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sewing-basket.png",
+   "kind": "other",
+   "id": "bd-in-sewing-basket",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/geranium.png",
+   "kind": "column",
+   "id": "bd-in-geranium",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/garden-tools.png",
+   "kind": "column",
+   "id": "bd-in-garden-tools",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/umbrella-jar.png",
+   "kind": "column",
+   "id": "bd-in-umbrella-jar",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/washtub.png",
+   "kind": "other",
+   "id": "bd-in-washtub",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pumpkins.png",
+   "kind": "other",
+   "id": "bd-in-pumpkins",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/toolbox.png",
+   "kind": "other",
+   "id": "bd-in-toolbox",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rocking-horse.png",
+   "kind": "other",
+   "id": "bd-in-rocking-horse",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/easel.png",
+   "kind": "column",
+   "id": "bd-in-easel",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/music-stand.png",
+   "kind": "column",
+   "id": "bd-in-music-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/parrot-stand.png",
+   "kind": "column",
+   "id": "bd-in-parrot-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/hat-stand.png",
+   "kind": "column",
+   "id": "bd-in-hat-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/blanket-chest.png",
+   "kind": "box",
+   "id": "bd-in-blanket-chest",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stone-column.png",
+   "kind": "column",
+   "id": "bd-in-stone-column",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/oak-post.png",
+   "kind": "column",
+   "id": "bd-in-oak-post",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/chandelier.png",
+   "kind": "other",
+   "id": "bd-in-chandelier",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/throne.png",
+   "kind": "structure",
+   "id": "bd-in-throne",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/royal-runner.png",
+   "kind": "flat",
+   "id": "bd-in-royal-runner",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/grand-stairs.png",
+   "kind": "structure",
+   "id": "bd-in-grand-stairs",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-nw.png",
+   "kind": "flat",
+   "id": "bd-in-dais-nw",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-n.png",
+   "kind": "flat",
+   "id": "bd-in-dais-n",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-ne.png",
+   "kind": "flat",
+   "id": "bd-in-dais-ne",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-w.png",
+   "kind": "flat",
+   "id": "bd-in-dais-w",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-c.png",
+   "kind": "flat",
+   "id": "bd-in-dais-c",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-e.png",
+   "kind": "flat",
+   "id": "bd-in-dais-e",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-sw.png",
+   "kind": "flat",
+   "id": "bd-in-dais-sw",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-s.png",
+   "kind": "flat",
+   "id": "bd-in-dais-s",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dais-se.png",
+   "kind": "flat",
+   "id": "bd-in-dais-se",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/door-oak.png",
+   "kind": "structure",
+   "id": "bd-in-door-oak",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-oak.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-oak",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-log.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-log",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/door-arch.png",
+   "kind": "structure",
+   "id": "bd-in-door-arch",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-iron.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-iron",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stage.png",
+   "kind": "structure",
+   "id": "bd-in-stage",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/great-hearth.png",
+   "kind": "structure",
+   "id": "bd-in-great-hearth",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/guild-board.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-guild-board",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pulpit.png",
+   "kind": "structure",
+   "id": "bd-in-pulpit",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/organ.png",
+   "kind": "structure",
+   "id": "bd-in-organ",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/font.png",
+   "kind": "round_body",
+   "id": "bd-in-font",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sarcophagus.png",
+   "kind": "box",
+   "id": "bd-in-sarcophagus",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/vault-door.png",
+   "kind": "structure",
+   "id": "bd-in-vault-door",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/weapon-wall.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-weapon-wall",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/book-wall.png",
+   "kind": "frame",
+   "id": "bd-in-book-wall",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/reading-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-reading-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cloister-well.png",
+   "kind": "structure",
+   "id": "bd-in-cloister-well",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stairs-down.png",
+   "kind": "structure",
+   "id": "bd-in-stairs-down",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wide-tapestry.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-wide-tapestry",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rose-window.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-rose-window",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/knight-statue.png",
+   "kind": "column",
+   "id": "bd-in-knight-statue",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/garden-bed.png",
+   "kind": "other",
+   "id": "bd-in-garden-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/treasure.png",
+   "kind": "box",
+   "id": "bd-in-treasure",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/weigh-beam.png",
+   "kind": "structure",
+   "id": "bd-in-weigh-beam",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cargo-stack.png",
+   "kind": "box",
+   "id": "bd-in-cargo-stack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/war-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-war-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/confessional.png",
+   "kind": "structure",
+   "id": "bd-in-confessional",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/council-bench.png",
+   "kind": "structure",
+   "id": "bd-in-council-bench",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/hoist.png",
+   "kind": "structure",
+   "id": "bd-in-hoist",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/tower-bell.png",
+   "kind": "structure",
+   "id": "bd-in-tower-bell",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/hearth-glow.png",
+   "kind": "flat",
+   "id": "bd-in-hearth-glow",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/window-light.png",
+   "kind": "flat",
+   "id": "bd-in-window-light",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/lamp-glow.png",
+   "kind": "flat",
+   "id": "bd-in-lamp-glow",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-stone.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-stone",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-red.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-red",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-blue.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-blue",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-tankards.png",
+   "kind": "other",
+   "id": "bd-in-goods-tankards",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-roast.png",
+   "kind": "other",
+   "id": "bd-in-goods-roast",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-bread-cheese.png",
+   "kind": "other",
+   "id": "bd-in-goods-bread-cheese",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-jug.png",
+   "kind": "other",
+   "id": "bd-in-goods-jug",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-table-candle.png",
+   "kind": "other",
+   "id": "bd-in-goods-table-candle",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-apple-bowl.png",
+   "kind": "other",
+   "id": "bd-in-goods-apple-bowl",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-scale.png",
+   "kind": "other",
+   "id": "bd-in-goods-scale",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-ledger.png",
+   "kind": "other",
+   "id": "bd-in-goods-ledger",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-cashbox.png",
+   "kind": "other",
+   "id": "bd-in-goods-cashbox",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-sweet-jar.png",
+   "kind": "other",
+   "id": "bd-in-goods-sweet-jar",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-mortar.png",
+   "kind": "other",
+   "id": "bd-in-goods-mortar",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-table-lamp.png",
+   "kind": "other",
+   "id": "bd-in-goods-table-lamp",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-flower-vase.png",
+   "kind": "other",
+   "id": "bd-in-goods-flower-vase",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-chess.png",
+   "kind": "other",
+   "id": "bd-in-goods-chess",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-pipe.png",
+   "kind": "other",
+   "id": "bd-in-goods-pipe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-book-pile.png",
+   "kind": "other",
+   "id": "bd-in-goods-book-pile",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-knitting.png",
+   "kind": "other",
+   "id": "bd-in-goods-knitting",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-medicine-tray.png",
+   "kind": "other",
+   "id": "bd-in-goods-medicine-tray",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-inkwell.png",
+   "kind": "other",
+   "id": "bd-in-goods-inkwell",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-coins.png",
+   "kind": "other",
+   "id": "bd-in-goods-coins",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-slate-and-top.png",
+   "kind": "other",
+   "id": "bd-in-goods-slate-and-top",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-teapot.png",
+   "kind": "other",
+   "id": "bd-in-goods-teapot",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-tailor-things.png",
+   "kind": "other",
+   "id": "bd-in-goods-tailor-things",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-whittling.png",
+   "kind": "other",
+   "id": "bd-in-goods-whittling",
+   "chipset": "beodeul_city"
+  }
+ ]
+}

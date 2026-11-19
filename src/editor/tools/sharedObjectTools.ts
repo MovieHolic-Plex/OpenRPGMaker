@@ -1,6 +1,6 @@
 // 공용 오브젝트 찍기(stamp_object)와 공용 목록 한 줄 읽기(get_spatial_design 의 공용 id 분기).
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
 import { footprintFromUpper, footprintRefusal, overlappedObjects } from "@/project/objectFootprint";
@@ -283,6 +283,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       installStampAssets(project, resolved.assets);
       const siteCleared = building && site ? clearBuildingSite(project, map, building, site) : undefined;
       if (siteCleared) siteNotes.push(...siteCleared.notes);
+      const stampBounds = { x: Number(args.x), y: Number(args.y), w: pattern.width, h: pattern.height };
+      const pocketBefore = pattern.upper.some((t) => t >= 0) ? nearbyApproaches(project, map, stampBounds) : undefined;
       let result;
       try { result = stampPattern(project, map, resolved.source, pattern, Number(args.x), Number(args.y)); }
       catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
@@ -312,6 +314,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         ...(result.coveredUpper.length && footprintChecked ? [`바닥 덧그림(그림자·노면 표시) ${result.coveredUpper.length}칸 위에 세웠다 — 그 칸의 덧그림은 소품 그림으로 바뀌었다`] : []),
         ...(result.coveredUpper.length && !footprintChecked && !site ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),
         ...(result.slotsAdded > 0 ? [`${map.tilesetId} 에 그림 ${result.slotsAdded}칸을 이식해 붙였다(${resolved.source.id} 그림)`] : []),
+        ...boxedInNote(project, map, stampBounds, pocketBefore),
       ];
       // 입구 부위가 있는 킷(특수 건물 등)은 맵 좌표 입구를 돌려준다 — 길을 입구 바로 아래 칸에서 끝내고 이벤트를 입구 칸에 둔다.
       const entrances = (resolved.entrances ?? []).map(part => ({ x: Number(args.x) + part.dx, y: Number(args.y) + part.dy + part.h - 1, note: part.note ?? "" }));
@@ -324,6 +327,56 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
     },
   },
 ];
+
+const POCKET_CAP = 40;
+const NEIGHBORS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+type StampBounds = { x: number; y: number; w: number; h: number };
+
+/** The nearby floor from which a player can enter each cell, capped to keep stamps local. */
+function nearbyApproaches(project: Project, map: GameMap, r: StampBounds): Map<number, Set<number>> {
+  const { width, height } = map;
+  const approaches = new Map<number, Set<number>>();
+  for (let y = Math.max(0, r.y - 1); y <= Math.min(height - 1, r.y + r.h); y++) {
+    for (let x = Math.max(0, r.x - 1); x <= Math.min(width - 1, r.x + r.w); x++) {
+      if (!isPassable(project, map, x, y)) continue;
+      const start = y * width + x;
+      const seen = new Set([start]);
+      for (const cell of seen) {
+        if (seen.size >= POCKET_CAP) break;
+        const cx = cell % width, cy = Math.floor(cell / width);
+        for (const [dx, dy] of NEIGHBORS) {
+          const nx = cx + dx, ny = cy + dy, next = ny * width + nx;
+          if (nx < 0 || ny < 0 || nx >= width || ny >= height || seen.has(next)) continue;
+          if (canMove(project, map, nx, ny, cx, cy)) seen.add(next);
+        }
+      }
+      approaches.set(start, seen);
+    }
+  }
+  return approaches;
+}
+
+/** r8 D8: stamped luggage and coffins closed off pieces of floor in the inn and crypt. */
+function boxedInNote(project: Project, map: GameMap, r: StampBounds, before: Map<number, Set<number>> | undefined): string[] {
+  if (!before) return [];
+  const after = nearbyApproaches(project, map, r);
+  const at = (i: number) => ({ x: i % map.width, y: Math.floor(i / map.width) });
+  const boxed: { x: number; y: number }[] = [];
+  for (const [i, reachable] of after) {
+    const earlier = before.get(i);
+    if (!earlier || reachable.size >= POCKET_CAP) continue;
+    let cutOff = 0;
+    for (const cell of earlier) {
+      if (reachable.has(cell)) continue;
+      const { x, y } = at(cell);
+      if (isPassable(project, map, x, y)) cutOff++;
+    }
+    // The smaller side is the pocket. Floor covered by the stamp is not counted as another side.
+    if (cutOff > reachable.size) boxed.push(at(i));
+  }
+  if (!boxed.length) return [];
+  return [`Boxed in: floor next to this piece at ${boxed.slice(0, 4).map(({ x, y }) => `(${x},${y})`).join(" ")} lost its walking approach after the stamp. Move or remove the piece if players should be able to walk there.`];
+}
 
 /** 이 맵의 방에서 쓰임에 안 맞는 가구 이름(위층) — 방 기록(hand-layout-room)의 쓰임과 가구 이름표로(src/ai/v2/place/roomPurpose.ts). */
 function offPurposeLabels(project: Project, map: GameMap): Set<string> {

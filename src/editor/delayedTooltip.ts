@@ -89,7 +89,8 @@ export function formatKeyShortcut(value: string | null): string {
 
 /** 툴팁 글자: 라벨(없으면 접근 이름)에 단축키가 빠져 있으면 「(Ctrl+K)」 를 덧붙인다. */
 export function tooltipText(target: HTMLElement, label: string): string {
-  const base = t(label || target.getAttribute("aria-label") || "").trim();
+  const source = label || target.getAttribute("aria-label") || "";
+  const base = (target.closest('[translate="no"]') ? source : t(source)).trim();
   const shortcut = formatKeyShortcut(target.getAttribute("aria-keyshortcuts"));
   if (!shortcut || base.toLowerCase().includes(shortcut.toLowerCase())) return base;
   return `${base} (${shortcut})`;
@@ -212,7 +213,7 @@ function showDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSpec): void
   const tip = el("div", {
     class: `delayed-tooltip side-below`,
     dataset: { testid: "delayed-tooltip" },
-    attrs: { role: "tooltip" },
+    attrs: { role: "tooltip", ...(target.closest('[translate="no"]') ? { translate: "no" } : {}) },
     // 번역된 글자로 넣는다 — DOM 번역 계층은 배치 뒤에 글자를 바꿔 재 폭과 그린 폭이 달랐고,
     // 오른쪽 끝 대상(전체화면)에서 가로 클램프가 모자라 화면 밖으로 나갔다(2026-10-21 UI 감사).
     text: tooltipText(target, spec.label),

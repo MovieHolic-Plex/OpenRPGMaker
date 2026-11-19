@@ -13,9 +13,10 @@ describe("실내 칸 배치 거절 글", () => {
   const tileset = createBlankProject().tilesets[HAND_INTERIOR_TILESET_ID]!;
   const spec = roomSpecOf(tileset)!;
 
-  it("벽 위에 그은 쇠창살은 칸마다가 아니라 벽을 짚어 한 줄로 알린다", () => {
-    const errors = checkLayout(fixture("argonCellLayoutBarsOnWall"), spec, tileset).errors;
-    const rail = errors.filter((e) => e.startsWith("rail"));
+  it("벽 위에 그은 쇠창살은 칸마다가 아니라 벽을 짚어 한 줄로 알린다 — 그 칸만 빼고 깔고 알린다(2026-11-16 «거절은 게임이 깨질 때만»: 벽이 그대로 막는다)", () => {
+    const check = checkLayout(fixture("argonCellLayoutBarsOnWall"), spec, tileset);
+    expect(check.errors.some((e) => e.startsWith("rail"))).toBe(false);
+    const rail = check.warnings.filter((e) => e.startsWith("left out — rail")).map((e) => e.slice("left out — ".length));
     expect(rail).toHaveLength(2);
     expect(rail[0]).toContain(`lie on wall "w_cell_south"`);
     expect(rail[0]).toContain("instead of a wall");

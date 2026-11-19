@@ -2,6 +2,7 @@
 // 도움말 모달 — 툴바 "도움말" 버튼과 도움말 메뉴, 커맨드 팔레트(Ctrl+K)에서 연다.
 // 에디터 전체를 설명하는 인앱 위키: 개요, 화면 구성, 지도/이벤트/데이터베이스/소재/오디오/
 // 시연 실행/저장 공유, 마지막에 단축키 요약. 왼쪽 목차에서 섹션으로 바로 이동한다.
+import { modalCloseButton } from "@/editor/ui/modal";
 import { APP_VERSION, PRODUCT_BRAND, PRODUCT_TAGLINE, appVersionDetail } from "@/brand";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
@@ -258,19 +259,7 @@ export function openHelpModal(sectionId?: string): void {
   // 닫으면 연 자리로 초점을 돌려준다. 명령 팔레트처럼 연 자리가 이미 사라졌으면 도움말 메뉴 단추로 간다.
   const returnFocus = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
 
-  const closeButton = el("button", {
-    class: "help-modal-close",
-    text: "×",
-    attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
-    dataset: { testid: "help-modal-close" },
-  });
-  const closeAction = el("button", {
-    class: "help-modal-button",
-    text: "닫기",
-    attrs: { type: "button" },
-    dataset: { testid: "help-modal-dismiss" },
-    on: { click: () => close() },
-  });
+  const closeButton = modalCloseButton("help-modal-close", () => close(), { testid: "help-modal-close" });
 
   const body = el("div", { class: "help-modal-body" });
   const nav = el("nav", {
@@ -313,7 +302,6 @@ export function openHelpModal(sectionId?: string): void {
             ],
           }),
           el("div", { class: "help-modal-layout", children: [nav, body] }),
-          el("footer", { class: "help-modal-footer", children: [closeAction] }),
         ],
       }),
     ],
@@ -378,7 +366,6 @@ export function openHelpModal(sectionId?: string): void {
     target?.focus();
   }
 
-  closeButton.addEventListener("click", close);
   // aria-modal 이므로 Tab/Shift+Tab 이 창 안의 첫·마지막 단추 사이에서만 돈다(뒤 톱바로 새지 않게).
   backdrop.addEventListener("keydown", (event) => {
     if (event.key !== "Tab") return;
@@ -410,7 +397,7 @@ export function openHelpModal(sectionId?: string): void {
       return;
     }
   }
-  closeAction.focus();
+  closeButton.focus();
 }
 
 function renderSection(section: GuideSection): HTMLElement {

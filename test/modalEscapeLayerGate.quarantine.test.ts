@@ -1,7 +1,7 @@
 /** @vitest-environment happy-dom */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { store } from "@/project/store";
@@ -103,8 +103,8 @@ describe("Escape 계층 게이트", () => {
 
   it("world entry uses the database Escape owner instead of mounting a second modal", async () => {
     store.replace(createBlankProject());
-    await openWorldPanel();
-    expect(document.querySelector('[data-testid="database-modal"]')).not.toBeNull();
+    openWorldPanel();
+    await vi.waitFor(() => expect(document.querySelector('[data-testid="database-modal"]')).not.toBeNull());
     expect(document.querySelector('[data-testid="world-modal"]')).toBeNull();
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
     expect(document.querySelector('[data-testid="database-modal"]')).toBeNull();

@@ -4,6 +4,8 @@
 // 2) 주인공 물건(anchors) → 부품 사전에서 찾아 그 방의 빈 자리에 놓는다. 놓을 때마다 다시 지어 도달 검사(unreachedFloor 0)를 통과한 자리만 남긴다.
 // 3) 「계단」 앵커 → 위층을 따로 짓고 계단끼리 이동 이벤트로 잇는다(계단 입구 계약은 도구의 fitStairTransfers 가 맞춘다).
 // 모델은 칸 좌표를 쓰지 않는다 — 비평가가 짚은 칸(near)은 「그 근처의 빈 자리」를 고르는 힌트로만 쓴다.
+import type { Project } from "@/project/types";
+import type { PlaceSpec } from "../../shared/types";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
 import { roomTemplates, templateStyle } from "@/editor/handInterior/templates";
 import { measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
@@ -17,15 +19,24 @@ import { harmonizeRoomGraph, RoomGraphError, type GraphOut } from "@/editor/hand
 import { copiedReference } from "../roomIdeas";
 import { buildFromLayout, hasLayout } from "./interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_FORMAT_REGIONS, LAYOUT_GRID_RULES } from "../interiorLayout";
-import { effectiveSpec } from "../interiorCatalog";
+import { effectiveSpec, interiorTilesetFor } from "../interiorCatalog";
 import { Obj, Room, Rebuild, InteriorState, interiorTilesetOf, resolveKind, SHRINK_BARE_PCT, FILL_BARE_PCT, SCALE, findPart } from "./interiorKind";
 import { argsFromRebuild, clean, Attempt, build, reachOk, crashesOf, openingColumns, placeAnchor, fillBare, usedTemplates, rotateTemplate, TemplatePick, pickTemplate } from "./interiorFill";
 import { RoomShape, composeShape } from "./interiorShape";
 import { swapForPurpose, cosyFor, coverZones, designedRoom, dressEmptyRooms } from "./interiorCosy";
 import { buildVenue, addBackDoor, buildUpperFloor } from "./interiorFloors";
+import { buildTier, type TierState } from "./interiorTier";
+import { buildTierAroundLayout } from "./interiorTierLayout";
+import { gameInteriorTable } from "../interiorCatalog";
+import { tierTableOf } from "@/editor/handInterior/tierPlan";
+import { exteriorLook, exteriorWall } from "./interiorExterior";
 
 /** 조합 길로 짓는 방 종류(2026-10-29 서재부터 — 다른 종류는 서재 결과를 본 뒤). */
 const COMPOSED_KINDS: ReadonlySet<string> = new Set(["study"]);
+
+/** 그 단의 집 안에 적어도 있어야 하는 방 수(구성 표의 가장 작은 평면 — 중형 2 · 대형 4 · 초대형 8). */
+import { TIER_MIN_ROOMS } from "../doorHouse";
+import { knownWordCount } from "../unknownWords";
 
 export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
 - ★ You design every cell: put one cell layout in spec.layout — map size, the landmark, the outer wall ring, partition walls (wall to wall), doors on those walls, the entrance, one label per room (floor, purpose), wall_items bound to a wall (windows, shelves, fireplace, beds, stairs up) and floor objects (catalog ids). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, open walls, unlabelled pockets, wall-face rules, a door that joins nothing, unreachable rooms, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
@@ -44,6 +55,20 @@ ${LAYOUT_GRID_RULES.map((r) => `- ${r}`).join("\n")}
 - A name word (inn, tavern, observatory…) does not lay down a preset room — an inn hall or a study stands as your design says. Put hero objects like a big telescope in anchors and design.groups.
 - Changing a laid layout: review_layout, or edit_place({patch:{mapId, layoutPatch:{remove_objects, add_objects, remove_wall_items, add_wall_items, replace}}}), or edit_place({patch:{mapId, set:{layout:{…the full corrected layout}}}}) — relaid exactly; layout places are not limited to 3 rebuilds. Fixing an existing room built another way: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
 
+/** 칸 배치를 검사하고 까는 표(칩셋 id) — 바깥 칩셋이 집 안도 짓고 지금 맵이 그 표를 들면 그 칩셋, 아니면 손 도트 v5. */
+function layoutTableFor(project: Project, tilesetId: string, outside: { tileset: string } | undefined, currentMapId?: string): string {
+  // 그 게임의 집 안 표(집 안도 짓는 바깥 칩셋의 마을이 선 게임)가 있으면 늘 그 표 — 빌더가 그 표로 깐다(아래 gameTable, 2026-11-17 r8 D2).
+  const game = gameInteriorTable(project, currentMapId);
+  if (game && effectiveSpec(project.tilesets[game])) return game;
+  const shown = interiorTilesetFor(project, currentMapId)?.id;
+  return outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+}
+/** 이 명세의 칸 배치가 어느 표로 검사될지 — 짓기 전에 make_place 가 «모델이 그 표의 카드를 받았나» 를 본다(빌더와 같은 규칙). */
+export function layoutTableOf(project: Project, spec: PlaceSpec, currentMapId?: string): string {
+  const at = currentMapId ?? project.startMapId;
+  return layoutTableFor(project, interiorTilesetOf(project, spec, at).tilesetId, exteriorLook(project, spec, at), currentMapId);
+}
+
 export const interiorBuilder: PlaceBuilder = {
   id: "interior",
   accepts: (spec) => spec.type === "interior",
@@ -51,7 +76,9 @@ export const interiorBuilder: PlaceBuilder = {
     const notes: string[] = [];
     const missing: string[] = [];
     const prev = previous?.result.state as InteriorState | undefined;
-    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec);
+    // 바깥(문이 달린 맵)의 칩셋이 집 안도 지으면 그 칩셋·그 집 양식의 벽면으로 짓는다 — 지금 맵이 그 바깥이다(자동 짓기는 부모 맵에서 부른다).
+    const outside = exteriorLook(run.ctx.project, spec, run.ctx.currentMapId ?? run.ctx.project.startMapId);
+    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec, run.ctx.currentMapId ?? run.ctx.project.startMapId);
     const tilesetId = sheet.tilesetId;
     if ("note" in sheet && sheet.note) notes.push(sheet.note);
     if (/murim|wuxia|무협|무림|강호|객잔|문파|협객/iu.test(`${spec.name} ${spec.style ?? ""} ${spec.theme ?? ""}`)) missing.push(`${spec.name} — 무협 실내(무림 전용 칩셋 murim_wuxia 가 번들에 없어 ${tilesetId} 로 지었다)`);
@@ -60,10 +87,57 @@ export const interiorBuilder: PlaceBuilder = {
     // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
+    // 큰 집(문이 달린 집 킷의 단이 중형 이상)에 방이 모자란 칸 배치가 오면 그 집의 단과 필요한 방 수를 말해 돌려보낸다 — 고치기를 다 쓰면 구성 표대로 짓는다(interiorTier.ts).
+    const prevTier = (prev as { tier?: TierState } | undefined)?.tier;
+    const houseTier = prevTier ? tierTableOf(tilesetId)?.programs[prevTier.program]?.tier : outside?.tier;
+    const tierRooms = houseTier && tierTableOf(tilesetId) && (prevTier || outside?.tileset === tilesetId) ? TIER_MIN_ROOMS[houseTier] : undefined;
+    const sentRooms = hasLayout(spec) ? Math.max(1, ((spec.layout as { regions?: unknown[] }).regions ?? []).length, ((spec.layout as { rooms?: unknown[] }).rooms ?? []).length) : 0;
+    // 크기 단 때문에 모델의 배치를 거절하지 않는다(2026-11-16 오너 방향 — 거절은 게임이 깨질 때만): 방이 모자라도 배치 그대로 깔고,
+    // 겉이 어떤 단의 건물인지와 그 단의 구성을 받는 법(배치 없이 다시 부른다)을 결과에 적는다. 배치 없이 오면 구성 표대로 짓는다(interiorTier.ts).
+    const smallForHouse = !!tierRooms && hasLayout(spec) && sentRooms < tierRooms;
+    // 모델이 방 수를 청했으면(hints.rooms — 1 이면 «겉은 커도 안은 한 방») 그대로 둔다. 낱말로 읽지 않는다.
+    const wantRooms = Number.isInteger(Number(spec.hints?.rooms)) ? Number(spec.hints?.rooms) : undefined;
+    // 그 게임의 집 안 표 — 바깥 칩셋이 집 안도 짓는 게임(겉의 칩셋 · 지금 맵 · 이 프로젝트의 마을 맵)이면 그 칩셋. 실내는 늘 그 표로 깐다(D2 r8).
+    const gameTable = (outside && effectiveSpec(run.ctx.project.tilesets[outside.tileset])?.looks ? outside.tileset : undefined) ?? gameInteriorTable(run.ctx.project, run.ctx.currentMapId);
     if (hasLayout(spec)) {
-      const lt = run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+      // 어느 표로 까는가: 기본은 그 게임의 표(바깥 칩셋이 집 안도 지으면 그 표) — 다만 배치의 낱말이 다른 표(v5 등)의 것이면 그 표로 그대로 깐다.
+      // 한 맵은 칩셋 하나라 방 하나가 단위다: 낱말을 더 많이 아는 표가 그 방을 깔고, 그 표에도 없는 낱말은 가까운 것으로 바꿔 깔고 알린다(interiorLayoutBuild.ts).
+      const base = layoutTableFor(run.ctx.project, tilesetId, outside, run.ctx.currentMapId);
+      const tables = [...new Set([base, ...(outside ? [outside.tileset] : []), ...(gameTable ? [gameTable] : []), HAND_INTERIOR_TILESET_ID])].filter((id) => !!effectiveSpec(run.ctx.project.tilesets[id]));
+      const scored = tables.map((id) => ({ id, ...knownWordCount(spec.layout, effectiveSpec(run.ctx.project.tilesets[id])!) }));
+      // 그 게임의 집 안 표가 있으면(바깥 칩셋이 집 안도 짓는 게임 — 버들항) 늘 그 표로 깐다: 다른 표(지시문 카드의 v5)의 id 는 그 조각의 갈래·자리·크기로
+      // 이 표의 가장 가까운 것으로 바꿔 깔고 한 줄씩 알린다(2026-11-17 r8 «갈매나루 여관»: v5 id 로 쓴 여관이 v5 로 깔려 한 게임에 실내 칩셋이 둘이었다).
+      // 그런 게임이 아니면 전처럼: 깔 수 없는 낱말이 적은 표, 같으면 낱말을 더 많이 아는 표 — 같으면 base(맨 앞).
+      const best = gameTable && scored.some((t) => t.id === gameTable) ? scored.find((t) => t.id === gameTable)!
+        : scored.reduce((a, c) => (c.lost < a.lost || (c.lost === a.lost && c.known > a.known) ? c : a), scored[0] ?? { id: base, known: 0, total: 0, lost: 0 });
+      const lt = best.id;
       const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
-      if (ls) return buildFromLayout(run, spec, ls, lt, mapId);
+      if (ls) {
+        const others = tables.filter((id) => id !== lt).map((id) => effectiveSpec(run.ctx.project.tilesets[id])!);
+        const look = lt === outside?.tileset ? outside : undefined;
+        // 크기 단(대형·초대형) 겉의 문 뒤인데 배치의 방이 그 단보다 적으면: 모델의 배치를 본채의 큰 방으로 두고 구성의 나머지 방·맵을 둘레에 지어 잇는다(interiorTierLayout.ts).
+        // 모델이 한 방을 청했으면(hints.rooms 1) 배치 그대로.
+        // 이미 키운 장소를 고치는 것이면(앞 상태에 around) 기록의 배치가 이미 합친 배치다 — 다시 키우지 않고 그대로 깔고 딸린 맵을 그대로 둔다.
+        const prevAround = (prev as { around?: Record<string, unknown> } | undefined)?.around;
+        if (prevAround && prevTier) {
+          const laid = buildFromLayout(run, spec, ls, lt, mapId, look, others);
+          if (!laid.ok) return laid;
+          const side = Object.entries(prevTier.maps).filter(([k, id]) => k !== "main" && !!run.ctx.project.maps[id]).map(([, id]) => id);
+          return { ...laid, mapIds: [laid.mapIds[0]!, ...side], state: { ...(laid.state as Record<string, unknown>), tier: { ...prevTier, maps: { ...prevTier.maps, main: laid.mapIds[0]! } }, around: { ...prevAround, layout: spec.layout } } };
+        }
+        if (look && smallForHouse && wantRooms !== 1 && tierTableOf(lt) && (houseTier === "large" || houseTier === "xlarge")) {
+          const grown = buildTierAroundLayout(run, spec, { tilesetId: lt, roomSpec: ls, outside: look, varietyKey: `${spec.variety ?? run.ctx.project.meta.title ?? ""}|${spec.name}|${spec.theme ?? ""}`, mapId, others, ...(prevTier ? { prev: prevTier } : {}) });
+          if (grown) return grown;
+        }
+        const laid = buildFromLayout(run, spec, ls, lt, mapId, look, others);
+        const notes = [
+          ...(lt !== base && laid.ok && lt !== gameTable ? [`laid with chipset ${lt} — ${best.known} of the ${best.total} ids in your layout are that chipset's (this game's houses use ${base}).`] : []),
+          ...(lt === gameTable && best.known < best.total && laid.ok ? [`laid with this game's interior chipset ${lt} — ids from another table were swapped for its nearest pieces (each swap is listed in warnings).`] : []),
+          ...(smallForHouse && wantRooms === 1 && laid.ok ? [`the building outside is ${houseTier}${outside?.kit ? ` (${outside.kit})` : ""}, but the inside is one room as you asked (hints.rooms 1) — laid exactly as you designed it.`] : []),
+          ...(smallForHouse && wantRooms !== 1 && laid.ok ? [`the building outside is ${houseTier}${outside?.kit ? ` (${outside.kit})` : ""} — ${houseTier} buildings have ${tierRooms} or more rooms; the inside is laid as you designed it, ${sentRooms} room(s). For the ${houseTier} plan (rooms, doors between them, stairs to other floors) call make_place for this place again without layout.`] : []),
+        ];
+        return notes.length ? { ...laid, warnings: [...notes, ...laid.warnings] } : laid;
+      }
     }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
@@ -89,6 +163,14 @@ export const interiorBuilder: PlaceBuilder = {
     const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
     // 게임마다 다른, 같은 입력이면 같은 씨앗 — make_place 가 넣은 variety(프로젝트 열쇠 + 요청문), 없으면 게임 제목. 견본·조합 고르기가 이 열쇠를 쓴다.
     const varietyKey = `${spec.variety ?? run.ctx.project.meta.title ?? ""}|${spec.name}|${spec.theme ?? ""}`;
+    // 크기 단(중형·대형·초대형): 문이 달린 집 킷의 tier 태그가 한 방짜리보다 큰 단이고 칩셋에 그 단의 구성이 있으면 구성 표대로 짓는다(interiorTier.ts).
+    // 모델이 설계한 방(zone.design)이 있으면 그 설계가 먼저다.
+    if ((prevTier || (outside?.tier && outside.tier !== "small")) && tierTableOf(tilesetId) && !(spec.zones ?? []).some((z) => z.design)) {
+      const kindOut: { fallback?: boolean } = {};
+      const mainKind = resolveKind(tilesetId, firstFloor[0] ?? { kind: spec.name, purpose: spec.name }, [], `${spec.name} ${spec.theme ?? ""}`, true, kindOut);
+      const done = buildTier(run, spec, { tilesetId, roomSpec, outside, mainKind, named: !kindOut.fallback, varietyKey, mapId, ...(prevTier ? { prev: prevTier } : {}) }, notes);
+      if (done) return done;
+    }
     const single = firstFloor.length === 1;
     let buildingStyle: string | undefined;
     let shapeOut: RoomShape | undefined;
@@ -166,7 +248,8 @@ export const interiorBuilder: PlaceBuilder = {
         return { ok: false, mapIds: [], summary: `Room graph rejected: ${error.message}${error.fixed ? ` Fixed call: ${error.fixed}` : ""}`, warnings: notes, missingArt: missing, calls: run.calls };
       }
       const copy = copiedReference({ w: graph.width, h: graph.height, rooms: graph.rooms.map((r) => ({ name: r.id, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1 })) });
-      if (copy) return { ok: false, mapIds: [], summary: `Room graph rejected: the plan is a near copy of reference room ${copy.id} (plan similarity ${copy.similarity}: same room count, sizes and positions). Borrow its structure, not its plan — change the room count, sizes or arrangement to fit this request.`, warnings: notes, missingArt: missing, calls: run.calls };
+      // 견본 평면을 거의 그대로 옮긴 것은 게임을 깨지 않는다 — 그대로 짓고 알린다(2026-11-16 오너 «거절은 게임이 깨질 때만»).
+      if (copy) notes.push(`room graph: the plan is a near copy of reference room ${copy.id} (plan similarity ${copy.similarity}: same room count, sizes and positions) — laid as you sent it; next time change the room count, sizes or arrangement to fit this request.`);
       notes.push(...graph.notes.map((n) => `room graph: ${n}`));
     }
     // 그래프 선언(검사 room_graph 가 맵 이름표로 읽는다 — handInteriorTools 가 room-graph 이름표로 남긴다).
@@ -186,11 +269,20 @@ export const interiorBuilder: PlaceBuilder = {
     // 빈 바닥은 메우지 않고 방을 줄인다). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
     const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
     const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
+    // 집 벽: 견본의 «집 벽» 자리를 바깥 양식의 벽면으로(같은 칩셋일 때만). 견본이 쓰임으로 정한 벽(부엌·대장간의 돌)은 그대로.
+    const houseWall = (r: (typeof rooms)[number]): string | undefined => {
+      const own = (r as { wall?: string }).wall;
+      if (!outside || outside.tileset !== tilesetId) return own;
+      const tplWall = roomTemplates(tilesetId).find((t) => t.id === (r as { template?: string }).template)?.wall;
+      return exteriorWall(roomSpec, outside, own ?? tplWall);
+    };
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: houseWall(r), notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
         ...(graph ? { placed: { rooms: graph.rooms, connect: graph.connect, exit: graph.exit }, graph: graphDecl } : {}),
         ...(shapeOut ? { exitAt: shapeOut.exitAt, composeSeed: hashText(`${varietyKey}|furnish`) % 1_000_000 } : designExit !== undefined ? { exitAt: designExit } : {}),
         ...(designed ? { designs } : {}),
+        // 사는 사람의 물건(칩셋 사양의 personal 표가 있을 때만) — 열쇠에 집 이름이 들어 있어 한 마을의 두 집이 같은 방이 아니다.
+        ...(roomSpec?.personal ? { personal: Object.fromEntries(rooms.filter((r) => !r.vig).map((r) => [r.id, { key: `${varietyKey}|${r.id}`, text: `${spec.name} ${r.zone.purpose ?? ""} ${spec.theme ?? ""}`, ...(outside?.cat ? { cat: outside.cat } : {}) }])) } : {}),
         ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {

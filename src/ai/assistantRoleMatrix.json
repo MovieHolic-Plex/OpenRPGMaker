@@ -4,7 +4,7 @@
     "main": { "label": "주 작업", "desc": "계획·시공·편집 루프(Opus 급)", "needs": ["text", "tools"], "missing": "조수를 쓸 수 없음 — 계정을 하나 연결하세요" },
     "smol": { "label": "잔일", "desc": "짧은 확인·요약·반복 보조(싼 모델)", "needs": ["text"], "missing": "주 모델이 대신함" },
     "advisor": { "label": "검토자", "desc": "턴 끝 보고를 실제 변경에 대어 봄(주 모델과 다른 눈)", "needs": ["text"], "missing": "검토자 꺼짐" },
-    "vision": { "label": "눈", "desc": "맵·컷신 그림을 보고 판정", "needs": ["text", "images"], "missing": "그림 검사 없음" },
+    "vision": { "label": "시각 관찰", "desc": "맵·컷신 그림을 보고 판정", "needs": ["text", "images"], "missing": "그림 검사 없음" },
     "image": { "label": "그림 생성", "desc": "타이틀·배경·컷신·초상 한 장 통째로", "needs": ["imageOutput"], "missing": "그림은 ChatGPT 로만 그려요. AI 설정에서 ChatGPT 로그인을 연결해 주세요." },
     "pixel": { "label": "도트", "desc": "타일·캐릭터·기물을 격자 문자열로 찍음(텍스트 모델)", "needs": ["text"], "missing": "주 모델이 찍음" }
   },

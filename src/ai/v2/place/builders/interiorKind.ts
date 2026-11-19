@@ -1,11 +1,13 @@
 // 실내 빌더의 밑받침 — 상태 형, 칩셋 고르기, 방 종류 낱말(resolveKind), 기물 이름 찾기(findPart), 크기·채움 기준 수.
-import { HAND_INTERIOR_TILESET_ID, MODERN_CITY_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_TILESET_ID, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { gameInteriorTable } from "../interiorCatalog";
+import { HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, MODERN_CITY_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_TILESET_ID, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomTemplates } from "@/editor/handInterior/templates";
 import { INTERIOR_BARE_FLOOR_LIMIT } from "@/editor/handInterior/bareFloor";
 import type { PlaceSpec, ZoneSpec } from "../../shared/types";
 import type { Project } from "@/project/types";
 import { type VenueStamp } from "./interiorVenues";
 import { kindServesPurpose, purposeOf } from "../roomPurpose";
+import { exteriorLook } from "./interiorExterior";
 
 export type Obj = { id: string; x: number; y: number };
 
@@ -29,8 +31,14 @@ function tilesetFor(style: string | undefined): string {
  * (「마법사의 천문대」를 마법 학교 칩셋으로 지어 망원경·책장이 하나도 없었다, 2026-10-23 v2 실조수).
  * make_place 의 설계 받기(designRooms.ts)도 이 함수로 «손 도트 실내로 지어지나»를 본다 — style 이 modern 이어도 v5 로 짓는 방이 있다(2026-10-29 vm8 flash 방탈출).
  */
-export function interiorTilesetOf(project: Project, spec: PlaceSpec): { tilesetId: string; note?: string } {
+export function interiorTilesetOf(project: Project, spec: PlaceSpec, parentMapId?: string): { tilesetId: string; note?: string } {
+  // 바깥이 «집 안도 짓는 칩셋»이면 그 칩셋 — 화풍 낱말보다 문이 달린 집이 먼저다(interiorExterior.ts).
+  const outside = exteriorLook(project, spec, parentMapId);
   const tilesetId = tilesetFor(spec.style);
+  if (outside && tilesetId === HAND_INTERIOR_TILESET_ID) return { tilesetId: outside.tileset };
+  // 문 뒤를 모르는 실내(지금 맵이 다른 실내 · 빈 맵)도 이 게임에 집 안도 짓는 바깥 칩셋의 마을이 서 있으면 그 칩셋 — 한 게임 한 실내 칩셋(2026-11-17 r8 D2).
+  const game = tilesetId === HAND_INTERIOR_TILESET_ID ? gameInteriorTable(project, parentMapId) : undefined;
+  if (game) return { tilesetId: game };
   if (tilesetId === HAND_INTERIOR_TILESET_ID) return { tilesetId };
   const own = roomSpecOf(project.tilesets[tilesetId]);
   const base = roomSpecOf(project.tilesets[HAND_INTERIOR_TILESET_ID]);
@@ -89,6 +97,8 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/빵/iu, ["bakery_shop", "bakery_oven"]],
 ];
 
+const WORD_KINDS = new Set(KIND_WORDS.flatMap(([, options]) => options));
+
 /** 쓰임 안의 방 낱말 → 방 종류 id 조각(학교의 교무실 → school-staffroom, 병원의 진료실 → cl-exam). */
 const SUBKIND_WORDS: readonly [RegExp, string][] = [
   [/교무실|staff ?room/iu, "staff"], [/보건실|양호실|infirmary/iu, "infirmary"], [/음악실|밴드|band|music/iu, "band"], [/과학실|실험실|science|lab/iu, "sci"],
@@ -133,7 +143,19 @@ export function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], 
   }
   if (kinds.has(raw)) return raw;
   const text = `${raw} ${zone.purpose ?? ""}`;
+  const own = HAND_INTERIOR_SPECS[tilesetId];
+  const ownAlias = (among: readonly string[], min = 1): string | undefined => {
+    const hay = `${text} ${placeName}`.toLowerCase();
+    let best: { k: string; len: number; at: number } | undefined;
+    for (const k of among) { if (!kinds.has(k)) continue; for (const a of own?.rooms?.kinds[k]?.alias ?? []) { const at = a.length >= min ? hay.lastIndexOf(a.toLowerCase()) : -1; if (at >= 0 && (!best || a.length > best.len || (a.length === best.len && at > best.at))) best = { k, len: a.length, at }; } }
+    return best?.k;
+  };
+  // 그 칩셋만 가진 방 종류(아래 두루 낱말 표가 낼 수 없는 것 — 어부 오두막·등대·방앗간·도공 일터)는 칩셋 별칭이 먼저다: 「어부 오두막」이 «오두막» 으로 살림집이 되지 않게.
+  if (own?.looks && own.rooms) { const hit = ownAlias(Object.keys(own.rooms.kinds).filter((k) => !WORD_KINDS.has(k)), 2); if (hit) return hit; }
   for (const [re, options] of KIND_WORDS) if (re.test(text)) { const hit = options.find((k) => kinds.has(k)); if (hit) return hit; }
+  // 칩셋의 방 표가 제 별칭을 가진 «집 안도 짓는 칩셋»(모습 표 looks — 버들항): 그 별칭이 방 이름에 들어 있으면 그 종류(「촌장 집」→ 살림집 방).
+  // 요청 낱말 목록이 아니라 칩셋 자료다 — 견본이 있는 종류만 답한다. 여럿이 맞으면 가장 긴 별칭, 같으면 글에서 더 뒤에 나온 것(「여관 객실」의 객실).
+  if (own?.looks && own.rooms) { const hit = ownAlias(Object.keys(own.rooms.kinds)); if (hit) return hit; }
   // 쓰임을 아는데 이 칩셋에 그 견본이 없으면 거실로 떨어지지 않게 가장 덜 «집» 같은 방(현관·복도)으로 — 거실 견본은 소파·냉장고를 깐다.
   const known = told ?? ctx;
   const neutral = known ? ["entrance", "corridor", "hall", "lobby", "waiting_room", "storeroom"].find((k) => kinds.has(k)) : undefined;

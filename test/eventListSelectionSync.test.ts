@@ -57,15 +57,15 @@ describe("event list selection stays in place", () => {
     const sidebar = new FakeElement("div") as unknown as HTMLElement;
     document.body.append(sidebar);
     renderEventEditor(sidebar);
-    const list = sidebar.querySelector<HTMLElement>('[data-testid="event-list"]')!;
+    const rows = sidebar.querySelector<HTMLElement>(".event-list-rows")!;
     const kept = sidebar.querySelector<HTMLElement>('[data-testid="event-list-row-event-3"]')!;
-    list.scrollTop = 180;
+    rows.scrollTop = 180;
 
     editorState.set({ selectedEventId: "event-3", selectedEventPageId: "event-3-page" });
     expect(syncMountedEventSelection()).toBe(true);
 
     expect(sidebar.querySelector('[data-testid="event-list-row-event-3"]')).toBe(kept);
-    expect(list.scrollTop).toBe(180);
+    expect(rows.scrollTop).toBe(180);
     expect(sidebar.querySelector('[data-testid="event-list-row-event-1"]')?.classList.contains("active")).toBe(false);
     expect(kept.classList.contains("active")).toBe(true);
     expect(sidebar.querySelector(".event-editor-launch-title")?.textContent).toBe("아이");

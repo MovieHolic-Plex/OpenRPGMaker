@@ -51,6 +51,9 @@ import { hasRoomKit } from "../judge/placeFix";
 import { linkAtRoadMouths } from "../place/roadMouths";
 import { LINK_SIDES, repairCap, text, see, seenPayload, withImages, recordWrite, nextStep } from "./support";
 import { keepRelaidMapId, renameIdIn } from "../place/keepMapId";
+import { chipsetCatalog, effectiveSpec, interiorTilesetFor } from "../place/interiorCatalog";
+import { INTERIOR_WORDS } from "../request/place";
+import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 
 /** createV2Tools 에서 뗀 것 — task · run · localizeNewPlace · requestWorld · freshStart · lean · epoch · specShown …. (makeVerbContext) */
 export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
@@ -81,6 +84,17 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     for (const kind of kinds) session.specsShown.set(kind, epoch());
     return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""), String(env.request.projectKey ?? ""))).join("\n\n");
   };
+  // 실내 목록 카드: 지시문은 턴을 시작할 때의 맵으로 카드를 고른다(빈 프로젝트면 v5) — 그 턴에 버들항 마을을 지으면 그 문 뒤 집 안은 버들항 표로 검사된다.
+  // 모델이 실제로 받은 카드의 칩셋을 적어 두고, 다른 표로 검사될 장소에는 그 표의 카드를 먼저 준다(2026-11-16 r6: 첫 두 장소가 v5 낱말로 세 번 거절됐다).
+  const startMap = env.ctx.project.maps[env.ctx.currentMapId ?? env.ctx.project.startMapId];
+  const promptCardTileset = !lean && (INTERIOR_WORDS.test(String(task ?? "")) || startMap?.tilesetId === HAND_INTERIOR_TILESET_ID) ? interiorTilesetFor(env.ctx.project, env.ctx.currentMapId)?.id : undefined;
+  const interiorCardShown = (tilesetId: string): boolean => tilesetId === promptCardTileset || session.interiorCards.get(tilesetId) === epoch();
+  /** 그 칩셋의 목록 카드 글 — 준 것으로 적는다. 방 표가 없는 칩셋이면 undefined. */
+  const showInteriorCard = (tilesetId: string): string | undefined => {
+    const card = chipsetCatalog(env.ctx.project.tilesets[tilesetId], String(task ?? ""), String(env.request.projectKey ?? ""));
+    if (card) session.interiorCards.set(tilesetId, epoch());
+    return card;
+  };
   /** 판정 JSON 한 덩이 + 카드 원문(JSON 따옴표 없이 — 지시문에 있던 모양 그대로). */
   const withSpecText = (head: Record<string, unknown>, cards: string): PiToolExecResult => ({ content: [{ type: "text", text: JSON.stringify(head) }, { type: "text", text: cards }] } as PiToolExecResult);
   /** 이 종류의 카드를 아직 안 줬으면 짓지 않고 카드를 돌려준다(실패 아님) — 모델이 카드대로 다시 부른다. */
@@ -88,8 +102,14 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     if (!kind || specShown(kind)) return undefined;
     return withSpecText({ ok: false, notFailure: true, summary: `Not done yet (not a failure): this is your first ${verb} for «${kind}» in this conversation, so its spec follows. Read it, then call ${verb} again following it. Next time read specs up front with read_specs.` }, showSpecs([kind]));
   };
-  const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
-    : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
+  const problemCount = (seen: Seen | undefined, mapIds: readonly string[], reviewLayoutSpace: boolean) => !seen ? Infinity
+    : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId) && (!reviewLayoutSpace || c.id !== "bare-floor")).length
+    + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
+  // 게임을 깨는 실패만 — 걸어 닿지 못함 · 갈 곳 없는 출구 · 갇히는 도착 칸 · 말을 걸 수 없는 사람 · 맵이 없음 · 청한 물건을 못 놓음.
+  // 비평 major 나 맨바닥·빈칸 같은 꾸밈 문제는 늘어도 되돌리지 않는다(오너 원칙: 거절은 게임이 깨질 때만 — 2026-11-17 r8 D4: 생선 바구니 더하기 · 소금통 빼기 ·
+  // 계단 빼기 · 침대 더하기가 «문제 수가 늘었다» 로 다섯 번 되돌려졌다).
+  const BREAKING = new Set(["exists", "reach", "exit-target", "exit-landing", "exit-reachable", "npc-reachable", "anchor-missing"]);
+  const breakingCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId) && BREAKING.has(c.id)).length;
   const outsideBuilt = (mapId: string): boolean => { const r = session.places.get(mapId); return !!r && isOutdoor(r.spec); };
   /** 칸 배치로 지은 장소를 자기 비평·할 일 확인 목록에 올린다(placeLayout.ts). */
   const noteLayoutPlace = (spec: PlaceSpec, result: PlaceBuildResult): void => {
@@ -160,11 +180,19 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     const anchorFails: MachineCheck[] = result.missingArt.filter((m) => /놓을 빈 자리가 없다|최종 맵에 없다/u.test(m)).map((m) => ({ id: "anchor-missing", mapId: result.mapIds[0]!, ok: false, detail: m }));
     const seen: Seen = anchorFails.length ? { ...seen0, checks: [...seen0.checks, ...anchorFails] } : seen0;
     for (const mapId of result.mapIds) session.seen.set(mapId, seen);
-    // 고친 결과가 앞보다 나쁘면(기계 실패 + 비평 major 가 늘면) 앞 상태로 되돌린다 — 천문대 고치기가 방을 하나 더 붙여 맨바닥 52% 가 됐다(2026-10-23 v2 실조수).
     if (before) {
       const oldIds = before.record.result.mapIds;
-      const was = problemCount(before.seen.get(oldIds[0]!), oldIds), now = problemCount(seen, result.mapIds);
-      if (now > was) {
+      const oldSeen = before.seen.get(oldIds[0]!);
+      // Leave bare-floor findings to review_layout when converting a template into an authored layout.
+      const reviewLayoutSpace = layoutGiven(spec.layout) && !layoutGiven(before.record.spec.layout);
+      const was = problemCount(oldSeen, oldIds, reviewLayoutSpace);
+      const now = problemCount(seen, result.mapIds, reviewLayoutSpace);
+      const brokeWas = breakingCount(oldSeen, oldIds), brokeNow = breakingCount(seen, result.mapIds);
+      if (now > was && brokeNow <= brokeWas) {
+        // 꾸밈 문제만 늘었다 — 고친 것을 남기고 알린다(되돌리지 않는다).
+        result = { ...result, warnings: [...result.warnings, `Kept this change: the review now lists ${now} problem(s) (was ${was}), but none of the new ones breaks the game (nothing became unreachable). Fix what you think matters with one more small patch, or report it.`] };
+      }
+      if (now > was && brokeNow > brokeWas) {
         env.ctx.project = before.project;
         for (const mapId of result.mapIds) { session.places.delete(mapId); session.seen.delete(mapId); }
         // 첫 되돌림은 한 번 더 기회를 준다 — 큰 패치가 바닥 무늬를 더 어지럽혀 되돌렸고, 비평 메모(바닥 무늬·복도 나무 타일·벽 밖 러그)는
@@ -197,7 +225,13 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     const zones = zoneStatusLines(env.ctx.project, result.mapIds, String(task ?? ""));
     // 엄격 스키마가 채운 빈 dungeonDesign({rooms:[]})은 설계가 아니다 — 마을 결과에 «네 dungeonDesign 대로 지었다» 가 붙었다.
     const designedFloor = (spec.type === "dungeon" || spec.type === "cave") && (spec.dungeonDesign?.rooms?.length ?? 0) >= 2;
-    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seenNow), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seenNow, rounds, designedFloor ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seenNow);
+    // 집 안도 짓는 바깥 칩셋(버들항)의 마을을 지었는데 지시문의 실내 카드가 다른 칩셋의 것이면, 이 마을의 문 뒤 집 안이 쓰는 표의 카드를 여기서 준다 —
+    // 모델이 첫 실내를 쓰기 전에 닿는다. 지시문에 실내 카드가 없던 턴은 첫 실내 make_place 가 준다(verbs/place.ts).
+    const builtTileset = isOutdoor(spec) ? env.ctx.project.tilesets[env.ctx.project.maps[result.mapIds[0] ?? ""]?.tilesetId ?? ""] : undefined;
+    const houseCard = builtTileset && promptCardTileset && builtTileset.id !== promptCardTileset && effectiveSpec(builtTileset)?.looks && !interiorCardShown(builtTileset.id) ? showInteriorCard(builtTileset.id) : undefined;
+    const done = withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seenNow), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seenNow, rounds, designedFloor ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seenNow);
+    if (houseCard) done.content.splice(1, 0, { type: "text", text: `Interiors behind this place's doors are checked against chipset ${builtTileset!.id}, not the [Interior catalog] card in your instructions — that card's floor, wall and piece ids are rejected here. Write every spec.layout for these houses with the ids of this card:\n${houseCard}` });
+    return done;
   };
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
     // 방금 지은 이벤트의 대사에 화자 흉상을 건다(story/speakerBust) — 사람·사슬·경로·장면 어느 빌더든 같은 규칙.
@@ -269,7 +303,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds, ...(zones.length ? { zones } : {}),
       ...(seen ? { machineChecks: npcProblems.length ? npcProblems.map((c) => c.detail) : "사람·출입 검사 통과" } : {}),
       next: result.ok ? (npcProblems.length ? "where 낱말이나 at 칸을 바꿔 다시 부른다." : "통과.")
-        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이름이 비슷한 물건이 있다 — inspect 그림이나 이름으로 보아 요청과 같은 물건이면 그 id 를 place_object 로 놓고, 요청과 다른 물건(재질·장치가 다름)이면 draw_object 에 notThese:[그 id 들] 을 넣어 다시 부른다(새로 그린다). 이름만 바꿔 다시 부르지 않는다."
+        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이름이 같은 물건이 있다 — inspect 그림이나 이름으로 보아 요청과 같은 물건이면 그 id 를 place_object 로 놓고, 요청과 다른 물건(재질·장치가 다름)이면 draw_object 에 notThese:[그 id 들] 을 넣어 다시 부른다(새로 그린다). 이름만 바꿔 다시 부르지 않는다."
         : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
   };
   // 청사진 먼저(2026-10-28): 게임 하나를 만드는 요청이면 짓기 전에 write_blueprint 로 목표·핵심 경로·엔딩을 쓴다.
@@ -407,7 +441,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
         }
     return notes.join(" / ");
   };
-  return { env, session, task, run, localizeNewPlace, requestWorld, freshStart, lean, specShown, showSpecs, withSpecText, specGate, outsideBuilt, noteLayoutPlace, finishPlace, finishContent, designed, noteAssembly, blueprintGate, wantsBattle, runBlueprintPath, linkChild };
+  return { env, session, task, run, localizeNewPlace, requestWorld, freshStart, lean, interiorCardShown, showInteriorCard, specShown, showSpecs, withSpecText, specGate, outsideBuilt, noteLayoutPlace, finishPlace, finishContent, designed, noteAssembly, blueprintGate, wantsBattle, runBlueprintPath, linkChild };
 }
 
 export type VerbContext = ReturnType<typeof makeVerbContext>;

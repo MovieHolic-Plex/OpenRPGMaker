@@ -107,7 +107,7 @@ describe("rich event page tabs", () => {
 
     const title2 = findByTestId(strip, "evt-page-segment-2")!.getAttribute("title") ?? "";
     expect(title2).toContain("페이지 2 — 의뢰 수락 후");
-    expect(title2).toContain("별등 의뢰 수락 켜짐");
+    expect(title2).toContain("별등 의뢰 수락 · 켜짐");
     expect(title2).toContain("별등 진행도 3 이상");
     expect(title2).toContain("아이템 missing-item 보유 중");
     expect(title2).toContain("주인공 [missing-actor] 파티에 있음");

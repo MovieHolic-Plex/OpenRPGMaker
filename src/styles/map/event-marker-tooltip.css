@@ -16,9 +16,13 @@
 
 /* 목록 호버 카드는 더 넓고, 포인터로 살짝 넘길 수 있게. */
 .event-marker-tooltip.event-list-tooltip {
+  box-sizing: border-box;
+  position: fixed;
+  width: max-content;
   max-width: min(360px, calc(100vw - 24px));
   max-height: min(420px, calc(100vh - 24px));
   overflow: auto;
+  overflow-wrap: anywhere;
   pointer-events: auto;
   padding: 10px 12px 12px;
 }

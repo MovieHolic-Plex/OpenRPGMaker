@@ -178,11 +178,12 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   refreshPreview();
   refreshIndexPanel();
 
-  const actions: { readonly label: string; readonly testid: string; readonly action?: () => void }[] = [
+  const actions: Parameters<typeof openDialog>[3][number][] = [
     {
       // 한국어 UI 안에서 이 대화상자만 OK/Cancel 였다("지우기" 만 한글이라 더 어긋났다).
       label: "선택",
       testid: `${prefix}-ok`,
+      primary: true,
       action: () => {
         if (!selectedId || isUnsupportedAudio(selectedId)) return;
         options.onConfirm({

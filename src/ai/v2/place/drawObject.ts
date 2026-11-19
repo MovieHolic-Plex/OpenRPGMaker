@@ -5,13 +5,14 @@
 // 성공을 꾸미지 않는다: «카드를 띄웠다 / 기물은 아직 안 놓였다» 를 summary 와 missingArt 에 그대로 적는다.
 import { resolveWhere, type Footprint } from "./where";
 import { findMap } from "./cells";
-import { existingMatches } from "@/editor/tools/objectGenTool";
+import { existingMatches, similarNote } from "@/editor/tools/objectGenTool";
+import type { ObjectGenRequest } from "@/editor/workshop/objectRequest";
 import type { BuildRun, ContentBuildResult, ObjectSpec } from "../shared/types";
 
 export const DRAW_OBJECT_CARD =
   "Missing object (draw_object) spec: {what,description?,where?,at?,mapId?}. what = the object's name as one noun phrase (brass clockwork globe, wooden beehive). " +
   "description = one or two sentences of shape, material and color (filled from what if omitted). People, animals, terrain (floor, wall, water, road) and buildings are not drawn (rejected) — " +
-  "buildings use the house kit, people use people. If the chipset already has an object with a matching name, nothing new is drawn and its id is returned. " +
+  "buildings use the house kit, people use people. An exact id or display-name match returns the existing object id. Similar names are returned as suggestions. " +
   "where uses the same words as people (입구 entrance · 광장 square · 문 앞 in front of the door · «홀 한쪽» · «바 옆» · 북쪽 벽 north wall · 구석 corner · 창가 by the window); at:{x,y} only when really needed. " +
   "Size comes from the words (커다란·큰 big → 2×2 with only the bottom row blocking, tall → 1×2, otherwise 1×1) — the function picks free floor now that fits that size without blocking paths and puts it on the card. " +
   "Placement comes from the name: frames, signs and posters hang on the wall; rugs, carpets and floor patterns lie on the floor; bookshelves, shelves and cabinets stand against a wall; everything else stands on the floor. " +
@@ -110,12 +111,12 @@ export function drawObject(run: BuildRun, spec: ObjectSpec): DrawObjectResult {
     const exists = /이미 있다/.test(String(res.summary));
     // 이미 있는 칩셋 킷이면 그것을 놓는 호출을 실제 값으로 이른다 — 도구 글의 stamp_object 는 작은 요청에 실리지 않아, 이른 호출이 다시 막혔다.
     const tileset = run.ctx.project.tilesets[map.tilesetId];
-    const kits = exists && tileset ? existingMatches(run.ctx.project, tileset, what).filter((row) => !(spec.notThese ?? []).includes(row.id) && (tileset.structureKits ?? []).some((kit) => kit.id === row.id)) : [];
+    const kits = exists && tileset ? existingMatches(run.ctx.project, tileset, what).filter((row) => row.exact && !(spec.notThese ?? []).includes(row.id) && (tileset.structureKits ?? []).some((kit) => kit.id === row.id)) : [];
     if (kits.length) {
       const at = spot ? `,"at":{"x":${spot.cell.x},"y":${spot.cell.y}}` : "";
       return {
         ok: false, mapIds: [mapId], warnings, missingArt: [], calls: run.calls.slice(firstCall),
-        summary: `Not drawn — this chipset already has ${kits.length === 1 ? "an object" : `${kits.length} objects`} whose name matches «${what}». `
+        summary: `Not drawn — this chipset already has ${kits.length === 1 ? "an object" : `${kits.length} objects`} whose id or display name exactly matches «${what}». `
           + `Next call: place_object({"mapId":"${mapId}","objectId":"${kits[0]!.id}"${at}}) — it stamps that object (on nearby free ground if the cell is taken). `
           + `Matches: ${kits.slice(0, 5).map((row) => `${row.id} (${row.name})`).join(" · ")}. If none of these is the thing you mean, call draw_object again with notThese:[${kits.map((row) => `"${row.id}"`).join(",")}].`,
       };
@@ -123,13 +124,13 @@ export function drawObject(run: BuildRun, spec: ObjectSpec): DrawObjectResult {
     return {
       ok: false, mapIds: [mapId], warnings, missingArt: [],
       summary: exists
-        ? `새로 그리지 않았다 — 이름이 맞는 기물이 이미 칩셋에 있다: ${String(res.summary).slice(0, 240)}`
+        ? `새로 그리지 않았다 — 이름이 같은 기물이 이미 칩셋에 있다: ${String(res.summary).slice(0, 240)}`
         : `그리기 요청 거부: ${String(res.summary).slice(0, 240)}`,
       calls: run.calls.slice(firstCall),
     };
   }
 
-  const req = (res.data ?? {}) as { tilesW?: number; tilesH?: number; rise?: number; harnessId?: string; tilesetId?: string; base?: { x: number; y: number } | null };
+  const req = (res.data ?? {}) as Partial<ObjectGenRequest>;
   const over = Math.ceil((req.rise ?? 0) / 16);
   const size = req.tilesW && req.tilesH
     ? `${req.tilesW}×${req.tilesH + over}칸 — 발밑 ${req.tilesH}줄 막힘${over ? `, 위 ${over}줄은 지나갈 수 있고 캐릭터 위로 그려짐` : ""}`
@@ -142,6 +143,7 @@ export function drawObject(run: BuildRun, spec: ObjectSpec): DrawObjectResult {
     card: res.data,
     mapIds: [mapId],
     summary:
+      similarNote(req.similar ?? []) +
       `「${what}」 그리기 카드를 대기열에 올렸다(${objectKind}, ${size}, 놓을 자리 ${where}, 칩셋 ${req.tilesetId ?? map.tilesetId}). ` +
       `아직 그려지지 않았고 맵에도 놓이지 않았다 — 사용자 화면의 공방 카드가 그린 뒤(수 분) 후속 턴이 place_object 로 놓는다(where·at 을 비우면 이 자리).`,
     warnings,

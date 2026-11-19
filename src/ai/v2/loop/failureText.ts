@@ -9,6 +9,7 @@
 // 영어로 쓴다(2026-10-30 사용자 결정: 싼 모델은 영어 되먹임을 훨씬 잘 쓴다). 도구 오류 문장(한국어, src/editor/tools/*)은 고치지 않고
 // 자주 나는 것만 아래 표(코드·정규식)로 영어로 옮기고, 못 옮긴 것은 «Tool said (Korean): …»로 그대로 넘긴다. 맵·인물 이름·대사는 그대로.
 // v1·편집기 경로(toolRunner·toolAdapter)는 건드리지 않는다 — v2 감싸개(todoTools)에서만 바꿔 싣는다.
+import { LAYOUT_REJECTION_MAX } from "../place/unknownWords";
 import type { Project } from "@/project/types";
 import { preCheck, retryCandidates } from "./argGuard";
 import { nextAfterFailure } from "./nextCall";
@@ -391,7 +392,9 @@ export function formatV2VerbFailure(tool: string, sent: unknown, failText: strin
   const issues = parsed.issues.filter((i) => i.message.trim());
   const head = plainOrKorean(englishToolMessage(core), core);
   // 막은 이유가 여럿인 거절(칸 배치: «3 problems»)이 첫 이유에서 잘리지 않게 넉넉히 둔다 — 잘린 판에서 모델은 하나만 고쳐 같은 거절을 다시 받았다.
-  const out: string[] = [`Rejected: ${tool} — ${clip(head, Math.max(560, budget - 500))}`];
+  // 칸 배치 거절은 만드는 쪽이 제 상한(LAYOUT_REJECTION_MAX) 안에 맞춰 온다 — 여기서 900자로 다시 자르면 마지막 문제가 문장 가운데서 끊긴다(2026-11-16 r6 「대성당」).
+  const headMax = /^Rejected: the (?:interior layout|layout patch) for /u.test(head) ? LAYOUT_REJECTION_MAX : Math.max(560, budget - 500);
+  const out: string[] = [`Rejected: ${tool} — ${clip(head, headMax)}`];
   if (issues.length > 1 || (issues.length === 1 && oneLine(issues[0]!.message) !== core)) {
     out.push(`Blocking issues (${issues.length}):`);
     issues.slice(0, 6).forEach((i, k) => out.push(`${k + 1}. ${i.code ? `[${i.code}] ` : ""}${clip(englishToolMessage(i.message, i.code), 200)}`));

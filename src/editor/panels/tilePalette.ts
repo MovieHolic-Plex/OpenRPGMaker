@@ -4,6 +4,7 @@ import type { Layer } from "@/editor/editorState";
 import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { afterOpeningPaint } from "@/editor/ui/afterOpeningPaint";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
@@ -277,7 +278,7 @@ export function renderTilePalette(container: HTMLElement): void {
     const previousList = container.querySelector<HTMLElement>('[data-testid="event-list"]');
     const eventScrollTop = previousList?.dataset.mapId === mapId
       && previousList.dataset.projectLineage === String(store.getVersionToken().lineage)
-      ? previousList.scrollTop
+      ? previousList.querySelector<HTMLElement>(".event-list-rows")?.scrollTop ?? 0
       : 0;
     const map = project.maps[mapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
@@ -292,15 +293,35 @@ export function renderTilePalette(container: HTMLElement): void {
     if (map) appendStandaloneMapHeader(root, map);
     const eventSettings = map && tileset ? [makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset })] : [];
     root.append(...makeTileSection("이벤트", tileset, map, eventSettings));
-    renderEventEditor(root);
-    if (map) offerNewEventInEmptyList(root, map);
+    const renderEvents = (): void => {
+      renderEventEditor(root);
+      if (map) offerNewEventInEmptyList(root, map);
+    };
+    // The event list builds every row and graphic. Give large maps a visible
+    // pane before doing that work when the user switches into the event layer.
+    const openingLargeList = (map?.events.length ?? 0) >= 100
+      && !container.querySelector('[data-testid="palette-event-pane"]');
+    let finishOpening: (() => void) | undefined;
+    if (openingLargeList && container.isConnected) {
+      const loading = el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } });
+      root.append(loading);
+      finishOpening = (): void => {
+        if (!root.isConnected || editorState.get().layer !== "event"
+          || (editorState.get().currentMapId ?? store.getCurrent().startMapId) !== mapId) return;
+        loading.remove();
+        renderEvents();
+        applyRovingTabindex(container);
+        if (document.activeElement === document.body) restoreFocus(container, focusSnapshot);
+      };
+    } else renderEvents();
     // 검사 컨트롤(⋯ 오버플로·핀)은 도구막대 행 끝에 있다(tileToolbar.ts) — 사이드바 아래 줄은 비웠다.
     shell.append(root);
     mountPaletteShell(container, shell);
-    const list = root.querySelector<HTMLElement>('[data-testid="event-list"]');
-    if (list && eventScrollTop) list.scrollTop = eventScrollTop;
+    const rows = root.querySelector<HTMLElement>(".event-list-rows");
+    if (rows && eventScrollTop) rows.scrollTop = eventScrollTop;
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
+    if (finishOpening) afterOpeningPaint(root, finishOpening);
     return;
   }
 

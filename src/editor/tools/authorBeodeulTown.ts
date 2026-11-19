@@ -1,3 +1,4 @@
+import type { BuildingNeed } from "@/project/kitTier";
 import { naturalizeBeodeulHamlet } from './beodeulHamletTools';
 import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 // author_beodeul_town — 버들항 문법으로 마을·도시를 블록 키트 조립으로 깐다(2026-10-01).
@@ -720,10 +721,12 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const askedBuildings = (Array.isArray(args.buildings) ? args.buildings : typeof args.buildings === "string" ? [args.buildings] : []).map((w) => String(w ?? "").trim()).filter(Boolean).slice(0, 3);
   const layoutKits: { landmark?: string; anchor?: string } = {};
   for (const role of ["landmark", "anchor"] as const) { const kit = (args.layout as Record<string, { kit?: unknown } | undefined> | undefined)?.[role]?.kit; if (typeof kit === "string" && kit.trim()) layoutKits[role] = kit.trim(); }
+  // 이야기가 청한 큰 건물(조수 v2 마을 빌더가 청사진 장소 종류에서 넘긴다 — 스키마에 싣지 않는 안쪽 인자, BuildingNeed). 모양이 맞는 것만 받는다. 시공기가 요청 건물과 같은 길로 앉힌다.
+  const buildingNeeds = (Array.isArray(args.buildingNeeds) ? args.buildingNeeds : []).filter((b): b is BuildingNeed => !!b && typeof b === "object" && Array.isArray((b as BuildingNeed).kinds) && Array.isArray((b as BuildingNeed).tiers)).slice(0, 4);
   const noFront = new Set<number>(); // 앞 판에서 갇혔던 문 앞 주머니(아래 «문은 모두 닿아야 한다»)
   let sceneYardsOn = true; // 마을 종류의 장면 터를 비워 둘지 — 터가 문 앞·단 건널목을 끊은 마을은 터 없이 짓고, 그 뒤의 다시 짓기도 그대로 간다
   const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYardsOn ? {} : { sceneYards: false }), ...(noFront.size ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
-    ...(askedBuildings.length ? { buildings: askedBuildings } : {}), ...(Object.keys(layoutKits).length ? { layoutKits } : {}),
+    ...(askedBuildings.length ? { buildings: askedBuildings } : {}), ...(buildingNeeds.length ? { buildingNeeds } : {}), ...(Object.keys(layoutKits).length ? { layoutKits } : {}),
     ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();

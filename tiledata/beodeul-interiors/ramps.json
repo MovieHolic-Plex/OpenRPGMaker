@@ -1,0 +1,309 @@
+{
+ "style": "ref",
+ "ramps": {
+  "roof": [
+   "#231823",
+   "#35242a",
+   "#47322d",
+   "#5a4132",
+   "#6f5239",
+   "#876746",
+   "#a28259"
+  ],
+  "tile": [
+   "#2b203f",
+   "#562945",
+   "#6b2c2b",
+   "#863736",
+   "#ae6930",
+   "#c27536",
+   "#ecdb95"
+  ],
+  "moss": [
+   "#3f723e",
+   "#618c3b",
+   "#729c44"
+  ],
+  "plaster": [
+   "#776b6d",
+   "#928484",
+   "#ad9d94",
+   "#c8b5a8",
+   "#e5d4c3",
+   "#ecd6c6",
+   "#f4ddcc"
+  ],
+  "timber": [
+   "#1e150a",
+   "#312210",
+   "#452a17",
+   "#573921",
+   "#6f4725",
+   "#885a26",
+   "#a26e36"
+  ],
+  "stone": [
+   "#2b203f",
+   "#4d2338",
+   "#703f57",
+   "#928484",
+   "#aa8a7e",
+   "#c4b1b1",
+   "#e0cbcb",
+   "#e8d2d2"
+  ],
+  "board": [
+   "#452a17",
+   "#653f23",
+   "#885a26",
+   "#ad793e",
+   "#c69250",
+   "#dcb070",
+   "#f0df97"
+  ],
+  "glass": [
+   "#071528",
+   "#212d42",
+   "#201e45",
+   "#2e2b66",
+   "#524cb1",
+   "#3fa2ae",
+   "#cbc6e5",
+   "#f7fdff"
+  ],
+  "iron": [
+   "#262729",
+   "#37383c",
+   "#4b4b52",
+   "#5a5b62",
+   "#797a84",
+   "#929391",
+   "#aaaba9",
+   "#c4c6c3",
+   "#dee0dd"
+  ],
+  "accent": [
+   "#6b2c2b",
+   "#a40100",
+   "#dd2912",
+   "#f08a10",
+   "#fbc10d",
+   "#618c3b",
+   "#3fa2ae"
+  ],
+  "shake": [
+   "#241c19",
+   "#3c3128",
+   "#4d4837",
+   "#686048",
+   "#797949",
+   "#8e8e6f",
+   "#b3a37f"
+  ],
+  "log": [
+   "#1e150a",
+   "#2e2218",
+   "#43301b",
+   "#573e23",
+   "#70502e",
+   "#846741",
+   "#a48760"
+  ],
+  "plank": [
+   "#22180e",
+   "#3a2a18",
+   "#523a21",
+   "#6a4b2b",
+   "#835f3c",
+   "#9c7a4c",
+   "#b8986c"
+  ],
+  "fstone": [
+   "#262729",
+   "#3e403d",
+   "#595b58",
+   "#797a84",
+   "#929491",
+   "#a8aaa7",
+   "#c4c6c3",
+   "#dee0dd"
+  ],
+  "trim": [
+   "#1c3e28",
+   "#2e5022",
+   "#3f723e",
+   "#6f9a43"
+  ],
+  "frame": [
+   "#877756",
+   "#c2b082",
+   "#ecdb95",
+   "#fff0c0"
+  ],
+  "cream": [
+   "#493f30",
+   "#6d604a",
+   "#988367",
+   "#b3a37f",
+   "#cbbb8d",
+   "#ddd1b5",
+   "#ece2c4"
+  ],
+  "buff": [
+   "#2e2c2b",
+   "#474340",
+   "#625c54",
+   "#7a7669",
+   "#958d81",
+   "#ada898",
+   "#cbc3ac",
+   "#e2dbc6"
+  ],
+  "teal": [
+   "#16303a",
+   "#1c4a55",
+   "#296b6f",
+   "#4a929a"
+  ],
+  "pale": [
+   "#8f7f62",
+   "#b7ae8e",
+   "#e0cf9a",
+   "#f2ead8"
+  ],
+  "slate": [
+   "#1a132a",
+   "#2a1a50",
+   "#3a2470",
+   "#4c2f8e",
+   "#5e3eae",
+   "#7654c4",
+   "#9474dc"
+  ],
+  "grey": [
+   "#262729",
+   "#3e4045",
+   "#595a61",
+   "#74767d",
+   "#90929a",
+   "#aaaeb4",
+   "#c5cacc",
+   "#e2e4e1"
+  ],
+  "brick": [
+   "#3a1815",
+   "#572520",
+   "#7a351e",
+   "#93443a",
+   "#b85530",
+   "#cf7444",
+   "#e08a5c"
+  ],
+  "violet": [
+   "#2b203f",
+   "#422a7e",
+   "#5e3eae",
+   "#8462d6"
+  ],
+  "tealroof": [
+   "#0b2527",
+   "#163b3d",
+   "#205353",
+   "#296c70",
+   "#438887",
+   "#4ea5a9",
+   "#84c3bc"
+  ],
+  "mauve": [
+   "#372734",
+   "#5b334d",
+   "#74506a",
+   "#866e7c",
+   "#a78c98",
+   "#b8a6b4"
+  ],
+  "blue": [
+   "#1f2b5e",
+   "#2a4496",
+   "#4466c4",
+   "#6f92e0",
+   "#a8c0f0"
+  ],
+  "green": [
+   "#1c4b28",
+   "#2f7b34",
+   "#4aa444",
+   "#7cc860",
+   "#aee18c"
+  ]
+ },
+ "use": {
+  "roof": "dark brown wooden shingles (tone 0 = violet-black gaps and outlines, 6 = sun-bleached worn shingle)",
+  "tile": "red clay roof tiles of the original Beodeul houses (code-made roof face; 0-1 violet gaps, 3 shaded tile, 5 lit tile, 6 highlight)",
+  "moss": "moss flecks on the roof and weeds at the wall foot, a few pixels only",
+  "plaster": "whitewashed plaster panels (0-1 = violet-grey shadow, 2-3 = stains and speckle, 4-6 = lit plaster)",
+  "timber": "dark oak frame beams, posts, braces, barge boards, door planks",
+  "stone": "rubble-stone ground floor (0-2 = deep violet mortar joints, 3-7 = individual stones from shaded to lit)",
+  "board": "lighter sawn boards: balcony, stair treads, shutters, sign boards, crates",
+  "glass": "window glass (0-3 dark panes, 4-5 reflection streak, 6-7 glints) - also the shadow tone under eaves is glass:2/stone:0 violet",
+  "iron": "wrought iron hinges, brackets, chimney cap, chimney stone, smoke (6-8)",
+  "accent": "0-2 red (geraniums, a painted door, sign emblem), 3-4 orange/yellow (flowers, lantern, brass), 5 leaf green, 6 teal glint - a few pixels only",
+  "shake": "old wooden roof shakes gone green-brown with moss (0 = black gaps, 6 = sun-bleached shake)",
+  "log": "dark weathered log / horizontal plank wall",
+  "plank": "vertical board-and-batten planks (gables, upper walls, sheds), a little warmer",
+  "fstone": "grey field stone: footing, chimney, retaining walls (0-2 dark joints, 3-7 stones from shaded to lit)",
+  "trim": "dark green painted trim: eave fascia, shutters, door frames",
+  "frame": "pale painted window frames and sills",
+  "cream": "pale cream sandstone masonry of the house walls",
+  "buff": "darker grey-buff harbour rubble: ground courses, bases, steps, chimneys (0-2 dark joints, 3-7 stones from shaded to lit)",
+  "teal": "dark teal painted woodwork: doors, shutters",
+  "pale": "pale dressed stone: window surrounds, arches, sills, quoins",
+  "slate": "violet roof slates (0 = black gaps, 6 = sun-lit slate edge)",
+  "grey": "cool grey cut-stone (ashlar) wall",
+  "brick": "warm red-brown brick wall",
+  "violet": "violet painted woodwork and cloth: window frames, doors, banners",
+  "tealroof": "blue-green (teal) painted roof shingles (0 = black gaps, 6 = sun-lit edge)",
+  "mauve": "mauve-brown painted horizontal clapboard wall",
+  "blue": "blue dyed awning cloth (0 shadow fold, 4 sun-lit)",
+  "green": "green dyed awning cloth (0 shadow fold, 4 sun-lit)"
+ },
+ "source": {
+  "roof": "halftimber.roof",
+  "tile": "halftimber.tile",
+  "moss": "halftimber.moss",
+  "plaster": "halftimber.plaster",
+  "timber": "halftimber.timber",
+  "stone": "halftimber.stone",
+  "board": "halftimber.board",
+  "glass": "halftimber.glass",
+  "iron": "halftimber.iron",
+  "accent": "halftimber.accent",
+  "shake": "log.roof",
+  "log": "log.wall",
+  "plank": "log.wall2",
+  "fstone": "log.stone",
+  "trim": "log.trim",
+  "frame": "log.frame",
+  "cream": "harbourstone.wall",
+  "buff": "harbourstone.stone",
+  "teal": "harbourstone.trim",
+  "pale": "harbourstone.frame",
+  "slate": "violetslate.roof",
+  "grey": "violetslate.wall",
+  "brick": "violetslate.wall2",
+  "violet": "violetslate.trim",
+  "tealroof": "new (snapped to Beodeul sheet colours within OKLab 0.02)",
+  "mauve": "new (snapped to Beodeul sheet colours within OKLab 0.02)",
+  "blue": "new (snapped to Beodeul sheet colours within OKLab 0.02)",
+  "green": "new (snapped to Beodeul sheet colours within OKLab 0.02)"
+ },
+ "new": [
+  "#74506a",
+  "#2a4496",
+  "#4466c4",
+  "#6f92e0",
+  "#a8c0f0",
+  "#4aa444",
+  "#7cc860"
+ ]
+}

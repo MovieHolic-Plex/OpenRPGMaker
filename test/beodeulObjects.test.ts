@@ -80,7 +80,7 @@ describe("버들항 이야기 기물 꼬리", () => {
     expect(first("쪽지")).toBe("bd-obj-note");
     const ask = (title: string) => () => buildObjectGenRequest(project, { mapId, title, description: `${title} 하나`, objectKind: "floor", need: `${title} 을 놓고 싶다` });
     // 끝 낱말은 «길»(지형)이지만 킷이 그 이름을 태그로 달았다 — 「칸 타일이 없다」가 아니라 그 킷을 이른다
-    expect(ask("판자 길")).toThrow(/이미 있다[^]*bd-obj-plank-ew/u);
+    expect(ask("판자 길")).toThrow(/지형[^]*bd-obj-plank-ew/u);
     // 그런 선언이 없는 지형 이름은 예전처럼 지형으로 돌려보낸다
     expect(ask("자갈 도로")).toThrow(/지형·바닥·벽 칸/u);
     // 봤는데 다른 물건이라고 밝히면(notThese) 그 킷을 건너뛴다

@@ -130,7 +130,7 @@ export function openWalkEncounterModal(draft: WalkEncounterDraft): void {
       actions.append(remove);
     }
     actions.append(el("button", { class: "btn", text: "취소", attrs: { type: "button" }, dataset: { testid: "walk-encounter-cancel" }, on: { click: close } }),
-      el("button", { class: "btn btn-primary", text: "완료", attrs: { type: "button" }, dataset: { testid: "walk-encounter-save" }, on: { click: () => save("save") } }));
+      el("button", { class: "btn primary", text: "완료", attrs: { type: "button" }, dataset: { testid: "walk-encounter-save" }, on: { click: () => save("save") } }));
     body.append(content, error, actions);
     refreshChoices();
     add.focus();

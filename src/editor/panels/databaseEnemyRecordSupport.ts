@@ -72,6 +72,7 @@ export function panel(title: string, children: HTMLElement[], gridClass?: string
  * `.database-modal-body` 하위로 스코프돼 있고 이 대화상자는 `document.body` 에 붙기 때문에,
  * 갈아치우면 스타일이 통째로 사라진다(UA 기본 버튼이 된다). 전역 `.btn.small { flex: 1 }`
  * 인플레이션은 CSS 쪽에서 `.db-enemy-dialog footer` 로 한정해 되돌린다.
+ * 이 셸은 푸터에서 닫기·취소를 제공하므로 헤더에는 제목만 둔다.
  */
 export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly primary?: boolean; readonly action?: () => void }[], opener: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null, onClose?: () => void): () => void {
   const overlay = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid } });
@@ -98,7 +99,7 @@ export function openDialog(testid: string, title: string, content: HTMLElement[]
     children: [
       el("header", { text: title, attrs: { id: titleId } }),
       el("main", { children: content }),
-      el("footer", {
+      ...(actions.length ? [el("footer", {
         children: actions.map((entry) =>
           el("button", {
             class: entry.primary ? "btn small primary" : "btn small",
@@ -114,7 +115,7 @@ export function openDialog(testid: string, title: string, content: HTMLElement[]
             },
           })
         ),
-      }),
+      })] : []),
     ],
   });
   dialog.addEventListener("keydown", (event) => {

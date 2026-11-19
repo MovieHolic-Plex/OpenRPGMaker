@@ -927,6 +927,28 @@ export function makeProbes(item: WorkshopItem, base: RgbaImage, palette: Palette
   return chosen;
 }
 
+/**
+ * 공방 검수 완화(2026-11-08 tiles-relax, 오너 「2번같은 검수를 완화해라」). 데모 3판에서 그린 후보 11장이 모두 떨어졌다 —
+ * 물이 보이는 우물이 「벽돌 같은 돌」·「납작한 덩굴」로, 돌 표지판이 자연물 규칙(Q7)으로, 제단이 「기단 윗면 없음」으로. 화풍 취향은 통과를
+ * 막지 않고, 1배에서 그 물건으로 알아볼 수 없거나 깨진 그림만 떨어뜨린다. 숨긴 반려 표본(평면·잡음·엉뚱한 색·판자)은 여전히 읽기가 깨져 떨어진다.
+ * 기계 검사는 더하지 않는다 — 판정자가 보고 정한다. 번들·스토어 출구 관문은 이 검수가 아니다(그대로).
+ */
+const JUDGE_RELAX: readonly (readonly [string, string])[] = [
+  ["Pure front elevation (top only a 1-2 px line) = FAIL.",
+    "Pure front elevation (top only a 1-2 px line) = FAIL. A three-quarter drawing is fine when its footprint and base read as standing on the ground seen from slightly above; "
+    + "do not FAIL a readable object for a shallow top."],
+  ["Thin or round objects (posts, stands, models) only need their base/plinth to read as seen from above.",
+    "Thin or round objects (posts, stands, models) only need their base/plinth to read as seen from above. Pillars, steles, signs, statues and altars "
+    + "pass when the body stands on a ground line with some depth; a separate lit top on the pedestal or cap is not required."],
+  ["   FAIL if any of Q1-Q3 or Q7 fails, or two of Q4-Q6, or it is closer to the BAD anchor than to the GOOD ones.\n   \"It reads as the object\" is not a reason to pass.",
+    "   quality judges READABILITY, not taste. FAIL quality only when: it does not read as its name at 1x (Q1), the light or outline is so broken "
+    + "that shapes cannot be told apart, it is noise or a flat blob, its colours are clearly foreign to the GOOD anchors, it is closer to the BAD anchor "
+    + "than to the GOOD ones, or (natural objects only) it fails Q7. Stone drawn in courses, flat-ish vines, a slightly stiff silhouette, fewer "
+    + "tones or a less rich texture than the anchors are notes for the reason, not a FAIL."],
+];
+const JUDGE_Q7_NOW = "   Q7 organic form - for a natural object";
+const JUDGE_Q7_NOT_ORGANIC = "   Q7 does not apply to this sample (it is a made object, not a natural one) - never FAIL it for Q7. Q7 organic form - for a natural object";
+
 /** 원본 JUDGE 문장. 그림판(Read 도구로 여는 파일) 대신 메시지에 그림이 붙는다는 첫 문단만 바꾼다. */
 function judgeText(item: WorkshopItem, ids: readonly string[], anchorLines: readonly string[]): string {
   const from = "Open each board image with your Read tool ({n_images} board(s)). Top row of every board = ANCHORS at 6x with a 1x thumbnail:";
@@ -934,9 +956,10 @@ function judgeText(item: WorkshopItem, ids: readonly string[], anchorLines: read
   const from2 = "Bottom row = samples S1..Sn at 6x with a 1x thumbnail";
   const to2 = "Then the samples S1..Sn, each at 6x with a 1x thumbnail beside it";
   const base = kitValue("prompts", "JUDGE");
-  if (!base.includes(from) || !base.includes(from2)) throw new Error("object-gen JUDGE 문장이 바뀌었다 — objectGenFlow.judgeText 를 원본에 맞춰 고쳐라");
+  if (!base.includes(from) || !base.includes(from2) || !JUDGE_RELAX.every(([was]) => base.includes(was))) throw new Error("object-gen JUDGE 문장이 바뀌었다 — objectGenFlow.judgeText 를 원본에 맞춰 고쳐라");
   const brief = `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}` : ""}`;
-  return base.replace(from, to).replace(from2, to2)
+  const relaxed = JUDGE_RELAX.reduce((text, [was, now]) => text.replace(was, now), base);
+  return (ogIsOrganic(item) ? relaxed : relaxed.replace(JUDGE_Q7_NOW, JUDGE_Q7_NOT_ORGANIC)).replace(from, to).replace(from2, to2)
     .replace("{anchors}", anchorLines.map((a) => `- ${a}`).join("\n") || "- (tileset references)")
     .replace("{name}", item.title).replace("{brief}", brief.slice(0, 300)).replace("{ids}", ids.join(", "))
     .replaceAll("{{", "{").replaceAll("}}", "}");
