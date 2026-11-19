@@ -125,22 +125,22 @@ describe("설정 자동 저장", () => {
     // 고르는 것은 제공자다. 종류 카드는 사라졌고, 제공자 카드를 골라도 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    expect(loadAiConfig().authMode).toBe("chatgpt");
+    expect(loadAiConfig()).toMatchObject({ authMode: "chatgpt", providerId: "openai-codex" });
 
-    const codexCard = findByTestId(modal, "ai-auth-quick-openai-codex");
-    if (!codexCard) throw new Error("Codex provider card missing");
-    codexCard.click();
+    const googleCard = findByTestId(modal, "ai-auth-quick-google-antigravity");
+    if (!googleCard) throw new Error("Google provider card missing");
+    googleCard.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.authMode).toBe("chatgpt");
-    expect(stored.providerId).toBe("openai-codex");
+    expect(stored.providerId).toBe("google-antigravity");
     expect(ohMyPiAuthKind(stored.providerId)).toBe("oauth");
     // 브라우저에는 비밀이 남지 않는다.
     expect(stored.apiKey ?? "").toBe("");
     expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 레지스트리 전체를 담고 앞의 셋은 Claude·Google·ChatGPT 다", () => {
+  it("설정 제공자 목록은 레지스트리 전체를 담고 앞의 셋은 ChatGPT·Claude·Google 이다", () => {
     // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     // 「연결 방식」종류 카드는 사라졌다 — 갈릴 목록이 없으므로 목록은 그대로 두 제공자다.
     const panel = renderPanel();
@@ -151,14 +151,15 @@ describe("설정 자동 저장", () => {
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
     expect(values()).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
-    // 2026-11-16(오너 결정: 조수 기본은 Claude Opus 5.5 medium)부터 권장 제공자 Claude 가 맨 앞이다.
-    expect(values().slice(0, 3)).toEqual(["anthropic", "google-antigravity", "openai-codex"]);
+    // 2026-11-19(오너 결정: 기본 AI 는 ChatGPT)부터 권장 제공자 ChatGPT 가 맨 앞이다(2026-11-16 에는 Claude 였다).
+    expect(values().slice(0, 3)).toEqual(["openai-codex", "anthropic", "google-antigravity"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 
   it("Codex 를 고르면 저장·재로드를 살아남는다 (제공자 선택이 실제로 반영된다)", () => {
     // 옛 계약은 "무엇을 골라도 Antigravity 로 되돌린다" 였다. 감독 요구가 바뀌어 Codex 도
     // 1급 선택지이므로, 고른 값이 blob 에 적히고 재로드에서도 유지되는지가 새 회귀선이다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "google-antigravity" }));
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
@@ -216,17 +217,18 @@ describe("설정 자동 저장", () => {
     model.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    // 빈 칸은 그 설정 제공자의 기본 모델로 저장된다 — 공장 기본 제공자는 Claude 다(2026-11-16), 그래서 Opus 5.5.
+    // 빈 칸은 그 설정 제공자의 기본 모델로 저장된다 — 공장 기본 제공자는 ChatGPT 다(2026-11-19), 그래서 Codex 카탈로그 첫 항목 gpt-6.1-sol.
     // 기본 모델은 제공자 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
     // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
     // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
-    expect(stored.providerId).toBe("anthropic");
-    expect(stored.model).toBe("claude-opus-5-5");
+    expect(stored.providerId).toBe("openai-codex");
+    expect(stored.model).toBe("gpt-6.1-sol");
     expect(isModelValidForAuthMode("chatgpt", stored.model, stored.providerId)).toBe(true);
     // Google 계정의 기본 모델 상수는 그대로다(옛 저장값의 모델 기본).
     expect(DEFAULT_MODEL).toBe("gemini-4-argon");
-    expect(loadAiConfig().model).toBe("claude-opus-5-5");
-    expect(loadAiConfig().liteModel).toBe("claude-opus-5-5");
+    expect(loadAiConfig().model).toBe("gpt-6.1-sol");
+    // 실행(lite) 칸은 건드리지 않았으므로 공장 기본(Terra) 그대로다.
+    expect(loadAiConfig().liteModel).toBe("gpt-6.1-terra");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", async () => {
@@ -253,9 +255,9 @@ describe("설정 자동 저장", () => {
     liteModel.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    // 공장 기본 제공자는 Claude 다(2026-11-16) — 빈 칸에 Google 의 기본 모델 이름(gemini-4-argon)을 적지 않는다.
-    expect(stored.providerId).toBe("anthropic");
-    expect(stored.liteModel).toBe("claude-opus-5-5");
+    // 공장 기본 제공자는 ChatGPT 다(2026-11-19) — 빈 칸에 Google 의 기본 모델 이름(gemini-4-argon)을 적지 않는다.
+    expect(stored.providerId).toBe("openai-codex");
+    expect(stored.liteModel).toBe("gpt-6.1-sol");
     expect(isModelValidForAuthMode("chatgpt", stored.liteModel, stored.providerId)).toBe(true);
     // Google 계정의 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
     expect(DEFAULT_LITE_MODEL).toBe("gemini-4-argon");
@@ -301,9 +303,9 @@ describe("설정 자동 저장", () => {
     const select = findByTestId(modal, "ai-config-writer-provider") as unknown as HTMLSelectElement;
     if (!preset || !select) throw new Error("model preset or provider select missing");
 
-    // 공장 기본 제공자(Claude, 2026-11-16): Claude 5.5 세 모델만 보이고 Google·Codex 모델은 없다.
-    expect(preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean)).toEqual(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
-    for (const foreign of ["gemini-", "gpt-5.6-sol", "gpt-6-astra", "glm-", "grok-"]) {
+    // 공장 기본 제공자(ChatGPT, 2026-11-19): Codex 카탈로그만 보이고 Google·Claude 모델은 없다.
+    expect(preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean)).toEqual(["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-5.6-sol"]);
+    for (const foreign of ["gemini-", "claude-opus", "claude-haiku", "glm-", "grok-"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }
 
@@ -335,6 +337,11 @@ describe("설정 자동 저장", () => {
     const brain = findByTestId(modal, "ai-config-ultrabrain-provider") as unknown as HTMLSelectElement;
     if (!writer || !brain) throw new Error("provider selects missing");
 
+    // 공장 기본이 이미 Codex 다(2026-11-19) — 먼저 Google 로 옮긴 뒤 Codex 로 되돌려 «바꾸기» 를 본다.
+    writer.value = "google-antigravity";
+    writer.dispatchEvent(new Event("change"));
+    brain.value = "google-antigravity";
+    brain.dispatchEvent(new Event("change"));
     writer.value = "openai-codex";
     writer.dispatchEvent(new Event("change"));
     brain.value = "openai-codex";
@@ -356,8 +363,8 @@ describe("설정 자동 저장", () => {
     }));
 
     const corrected = loadAiConfig();
-    // 공장 기본 제공자(Claude)의 카탈로그는 5.5 세 모델뿐이다 — claude-opus-4-8 도 grok-4.6 도 카탈로그 밖이다.
-    expect(corrected.providerId).toBe("anthropic");
+    // 공장 기본 제공자(ChatGPT)의 카탈로그에 claude-opus-4-8 도 grok-4.6 도 없다 — 카탈로그 밖이어도 명시적 선택은 보존한다.
+    expect(corrected.providerId).toBe("openai-codex");
     expect(corrected.model).toBe("claude-opus-4-8");
     expect(corrected.liteModel).toBe("grok-4.6");
 

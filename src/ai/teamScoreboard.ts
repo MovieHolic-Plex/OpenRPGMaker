@@ -12,9 +12,11 @@
 // 같은 표 안의 점수만 서로 견준다(같은 조합도 표마다 점수가 다르다 — Opus + Haiku 가 full 62.7, pick3 70.8).
 // 고르는 규칙: 쓸 수 있는 모델로 만들 수 있는 조합을 더 많이 채점한 표를 쓰고(같으면 판 수가 큰 full), 그 표에서
 // 최고 품질에서 1점 이내인 조합 중 가장 싼 것을 고른다.
-// 단, Opus 5.5 를 쓸 수 있으면 점수·값을 견주지 않고 「Opus 5.5 혼자」 를 고른다(SOLO_DEFAULT_WORKER) — 오너 결정 2026-11-16:
-// 조수 기본은 Claude Opus 5.5 · medium 한 모델이다. Haiku 워커로는 게임을 못 만든다고 보아 팀장·워커 나누기를 기본에서 뺐다.
-// 나눈 조합(Opus 팀장 + Haiku/Terra 워커 등)은 설정에서 고를 수 있다. Claude 가 없을 때의 규칙은 그대로다.
+// 단, 기본 혼자 모델(SOLO_DEFAULT_WORKERS, 앞이 먼저)을 쓸 수 있으면 점수·값을 견주지 않고 「그 모델 혼자」 를 고른다:
+//   ① GPT-6.1 Terra — 오너 결정 2026-11-19: 조수 기본 AI 는 ChatGPT. ChatGPT(Codex 구독·로그인)가 있으면 Claude 가 있어도 Terra 혼자다.
+//   ② Opus 5.5 — 오너 결정 2026-11-16: ChatGPT 가 없고 Claude 가 있으면 Opus 5.5 · medium 한 모델. Haiku 워커로는 게임을 못 만든다고 보아
+//      팀장·워커 나누기를 기본에서 뺐다.
+// 나눈 조합(Opus 팀장 + Haiku/Terra 워커 등)은 설정에서 고를 수 있다. 둘 다 없을 때의 규칙은 그대로다.
 //
 // 순수 모듈 — 브라우저와 Node 가 같이 읽는다.
 
@@ -93,8 +95,8 @@ export const SCORE_ROWS: readonly ScoreRow[] = [
 /** 최고 품질에서 이 점수 이내인 조합이면 «거의 같다» 로 보고 더 싼 쪽을 고른다. */
 export const NEAR_BEST_POINTS = 1;
 
-/** 이 모델을 쓸 수 있으면 다른 조합과 견주지 않고 혼자 맡긴다(오너 결정 2026-11-16 — 머리말). */
-export const SOLO_DEFAULT_WORKER: TeamModelKey = "opus";
+/** 이 모델들(앞이 먼저)을 쓸 수 있으면 다른 조합과 견주지 않고 혼자 맡긴다(오너 결정 2026-11-19 ChatGPT · 2026-11-16 Opus — 머리말). */
+export const SOLO_DEFAULT_WORKERS: readonly TeamModelKey[] = ["terra", "opus"];
 
 export interface TeamChoice {
   readonly lead?: TeamModelKey;
@@ -111,8 +113,11 @@ export interface TeamChoice {
 const usable = (row: ScoreRow, available: ReadonlySet<TeamModelKey>): boolean =>
   available.has(row.worker) && (row.lead === undefined || available.has(row.lead));
 
-/** 쓸 수 있는 모델 집합 → 기본 팀. 점수표가 채점한 조합이 하나도 없으면 undefined(호출부가 그 제공자의 기본값을 쓴다). */
-export function chooseTeam(available: ReadonlySet<TeamModelKey>): TeamChoice | undefined {
+/**
+ * 쓸 수 있는 모델 집합 → 기본 팀. 점수표가 채점한 조합이 하나도 없으면 undefined(호출부가 그 제공자의 기본값을 쓴다).
+ * soloDefaults 는 «견주지 않고 혼자 맡길» 모델 순서다(기본 SOLO_DEFAULT_WORKERS). 호출부가 길(구독·키)을 보고 줄일 수 있다.
+ */
+export function chooseTeam(available: ReadonlySet<TeamModelKey>, soloDefaults: readonly TeamModelKey[] = SOLO_DEFAULT_WORKERS): TeamChoice | undefined {
   const byTable: Record<ScoreTable, ScoreRow[]> = {
     full: SCORE_ROWS.filter((row) => row.table === "full" && usable(row, available)),
     pick3: SCORE_ROWS.filter((row) => row.table === "pick3" && usable(row, available)),
@@ -122,7 +127,7 @@ export function chooseTeam(available: ReadonlySet<TeamModelKey>): TeamChoice | u
   if (!rows.length) return undefined;
   const bestQuality = Math.max(...rows.map((row) => row.quality));
   const near = rows.filter((row) => bestQuality - row.quality <= NEAR_BEST_POINTS + 1e-9);
-  const solo = rows.find((row) => row.worker === SOLO_DEFAULT_WORKER && row.lead === undefined);
+  const solo = soloDefaults.map((worker) => rows.find((row) => row.worker === worker && row.lead === undefined)).find((row) => row !== undefined);
   const pick = solo ?? [...near].sort((a, b) => a.costUsd - b.costUsd || b.quality - a.quality)[0]!;
   return {
     ...(pick.lead ? { lead: pick.lead } : {}),

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyTeamPlan, type TeamApplyDeps } from "../src/ai/teamApply";
 import { buildTeamPlan, modelRoutes, type DetectedKey, type TeamInputs, type TeamPlan, type TeamRoute, type TeamSlot } from "../src/ai/teamPlan";
 import { planEvidence, planSentence, planTitle } from "../src/ai/teamPlanText";
-import { FAMILY_MODEL_KEYS, NEAR_BEST_POINTS, SCORE_ROWS, TEAM_MODELS, chooseTeam, type ModelFamily, type TeamModelKey } from "../src/ai/teamScoreboard";
+import { FAMILY_MODEL_KEYS, NEAR_BEST_POINTS, SCORE_ROWS, SOLO_DEFAULT_WORKERS, TEAM_MODELS, chooseTeam, type ModelFamily, type TeamModelKey } from "../src/ai/teamScoreboard";
 import { wizardScreen } from "../src/ai/setupWizardModel";
 
 const cli = (id: "claude" | "codex" | "gemini", state = "ready", billing = "subscription") => ({ id, state, billing });
@@ -30,14 +30,19 @@ describe("first-run team defaults from what the user has", () => {
     expect(plan?.choice).toBeUndefined();
   });
 
-  it("keeps Opus alone when other services are present too — no mixed team by default", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+  it("prefers ChatGPT (Terra alone) over Claude when a ChatGPT subscription or login is present — owner decision 2026-11-19", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
+    expect(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] }))?.routes).toEqual([{ kind: "cli", cli: "codex" }]);
   });
 
-  it("leaves the paths without Claude as they were — ChatGPT gets Terra alone, with or without Google", () => {
+  it("keeps Opus alone when Claude is present without a ChatGPT subscription — an OpenAI API key does not take over", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+  });
+
+  it("gives ChatGPT Terra alone, with or without Google", () => {
     expect(shape(buildTeamPlan(inputs({ clis: [cli("codex")] })))).toEqual({ lead: undefined, worker: "terra", route: "cli" });
     expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "terra", route: "account" });
   });
@@ -81,18 +86,21 @@ describe("score table", () => {
     }
   });
 
-  it("picks Opus alone whenever Opus is usable, with that row's measured score and cost", () => {
+  it("picks Terra alone whenever Terra is usable, else Opus alone, with that row's measured score and cost", () => {
+    expect(SOLO_DEFAULT_WORKERS).toEqual(["terra", "opus"]);
     const choice = chooseTeam(new Set(["opus", "haiku"]));
     expect(choice?.lead).toBeUndefined();
     expect(choice).toMatchObject({ worker: "opus", table: "full", quality: 63.5, costUsd: 1.832, n: 33 });
     const everything = chooseTeam(new Set(Object.keys(TEAM_MODELS) as TeamModelKey[]));
     expect(everything?.lead).toBeUndefined();
-    expect(everything).toMatchObject({ worker: "opus", table: "pick3", quality: 72.9 });
+    expect(everything).toMatchObject({ worker: "terra", table: "pick3", quality: 70.3 });
+    // 호출부가 Terra 를 빼면(키로만 쓸 수 있을 때) Opus 혼자다.
+    expect(chooseTeam(new Set(Object.keys(TEAM_MODELS) as TeamModelKey[]), ["opus"])).toMatchObject({ worker: "opus", table: "pick3", quality: 72.9 });
     // 그 표의 최고 점수(Opus 팀장 + Terra 워커 74.9)는 그대로 적는다 — 점수를 고쳐 쓰지 않는다.
     expect(everything!.bestQuality).toBe(74.9);
   });
 
-  it("without Opus, picks the cheapest combination within NEAR_BEST_POINTS of the best of the table it uses", () => {
+  it("without a solo default, picks the cheapest combination within NEAR_BEST_POINTS of the best of the table it uses", () => {
     for (const set of [["haiku", "argon"], ["terra", "sol", "astra"], ["haiku", "deepseek", "astra", "terra"]] as const) {
       const available = new Set<TeamModelKey>(set);
       const choice = chooseTeam(available)!;
@@ -207,9 +215,10 @@ describe("setup wizard screens", () => {
     expect(ready.details?.rows.map((row) => `${row.label}: ${row.value}`)).toContain("맡는 AI: Opus 5.5");
     expect(ready.details?.rows.map((row) => row.value).join(" ")).not.toMatch(/Haiku/u);
 
-    // Claude 가 있으면 ChatGPT 가 같이 있어도 Claude 하나로 시작한다.
+    // ChatGPT 가 같이 있으면 ChatGPT 하나로 시작한다(오너 결정 2026-11-19: 기본 AI 는 ChatGPT).
     const withChatGpt = wizardScreen({ ...base, plan: buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex")] })) });
-    expect(withChatGpt.title).toBe("Claude로 연결돼 있어요");
+    expect(withChatGpt.service).toBe("chatgpt");
+    expect(withChatGpt.title).toBe("ChatGPT로 연결돼 있어요");
 
     const both = wizardScreen({ ...base, plan: splitPlan(slot("opus", CLAUDE_CLI), slot("terra", { kind: "account", providerId: "openai-codex" })) });
     expect(both.title).toBe("AI가 연결돼 있어요");

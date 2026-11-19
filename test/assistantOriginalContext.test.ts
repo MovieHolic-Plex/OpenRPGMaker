@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+import { configForProviderSelection } from "@/ai/providerSelection";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { fixedDeclarer } from "./intentFixture";
@@ -24,6 +25,9 @@ function original(request: ChatRequest) {
 }
 
 describe("grounded first working request", () => {
+  // These cases need the 1M-token window on both the supervisor and execution paths.
+  const fullContextConfig = configForProviderSelection(defaultAiConfig(), "anthropic");
+
   it("delivers authored start gold and presets before their first writes while excluding live runtime and config", async () => {
     // The current default start map's tileset (beodeul_city) alone projects to ~1.77M estimated tokens, so on it
     // the start-map tileset entry is always paged (omitted) even in a 1M window. This case is about authored
@@ -41,7 +45,7 @@ describe("grounded first working request", () => {
     runtime.inventory.RUNTIME_SECRET_SENTINEL = 1;
     const requests: ChatRequest[] = [];
     const session = new AssistantSession(project, {
-      config: { ...defaultAiConfig(), model: "gemini-3.7-flash", agentMode: "chat", maxToolCalls: 1,
+      config: { ...fullContextConfig, agentMode: "chat", maxToolCalls: 1,
         apiKey: "PRIVATE_CONFIG_SENTINEL" },
       contextOptions: { budgetChars: 1 },
       declareIntent: fixedDeclarer({ mode: "modify", tools: ["set_session_start", "upsert_test_preset"] }),
@@ -87,7 +91,7 @@ describe("grounded first working request", () => {
     ] }];
     const requests: ChatRequest[] = [];
     const session = new AssistantSession(project, {
-      config: { ...defaultAiConfig(), model: "gemini-3.7-flash", agentMode: "chat", apiKey: "PRIVATE_CONFIG_SENTINEL" },
+      config: { ...fullContextConfig, agentMode: "chat", apiKey: "PRIVATE_CONFIG_SENTINEL" },
       contextOptions: { currentMapId: map.id, budgetChars: 1 },
       declareIntent: fixedDeclarer({ mode: "modify", targetMapId: map.id, tools: ["upsert_item"],
         readBeforeWrite: { project: true, collections: ["items"], references: true } }),
@@ -186,7 +190,7 @@ describe("session original snapshot lifecycle", () => {
     expect(session.getAuditEntries().filter(entry => entry.kind === "tool" && entry.name === "upsert_item").map(entry => entry.ok)).toEqual([false, false, true]);
     expect(session.getProposedProject().database.items.find(item => item.id === expected.id)).toEqual({ ...expected, price: 321 });
     expect(project.database.items.find(item => item.id === expected.id)).toEqual(expected);
-  }, 30000);
+  });
 
   it("retains original identity over continuation, recaptures a new request and keeps ask mode read-only", async () => {
     const project = createBlankProject();
@@ -211,7 +215,7 @@ describe("session original snapshot lifecycle", () => {
     let calls = 0;
     const project = createBlankProject();
     const session = new AssistantSession(project, {
-      // The writer runs on the default role models / liteModel (claude-opus-5-5, 1M window); pin every role to the
+      // The writer runs on the default role models / liteModel (gpt-6.1-terra since 2026-11-19, 272k window); pin every role to the
       // 16k-window Google model (its window is listed under google-antigravity) so the catalog really cannot fit.
       config: { ...defaultAiConfig(), providerId: "google-antigravity", model: "tab_flash_lite_preview", liteModel: "tab_flash_lite_preview", roleModels: undefined, agentMode: "chat" },
       chat: async () => { calls++; return { message: { role: "assistant", content: "unexpected" }, finishReason: "stop" }; },

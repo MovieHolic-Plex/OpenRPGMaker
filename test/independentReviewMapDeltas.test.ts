@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildIndependentReviewRequest, reviewChanges, reviewMapReferenceRoots, type ReviewInput } from "@/ai/independentReview";
 import { estimateContextTokens } from "@/ai/contextCompaction";
 import { defaultAiConfig } from "@/ai/llmClient";
+import { configForProviderSelection } from "@/ai/providerSelection";
 import { extractOriginalContext, originalContextWindow } from "@/ai/originalContext";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
@@ -36,8 +37,9 @@ describe("independent review map deltas", () => {
     const renamed = { ...structuredClone(target), name: "Renamed target" };
     after.maps[target.id] = renamed;
     const input = reviewInput(before, after);
-    const config = defaultAiConfig();
-    // 공장 기본 모델은 2026-11-16 에 Claude Opus 5.5 medium 으로 바뀌었다(오너 결정 — 그 전 #2535 는 gemini-4-argon). 창은 둘 다 1M 급이다.
+    // 이 경우는 1M 급 창의 검토자에서 잰다 — 공장 기본은 2026-11-19 에 ChatGPT(GPT-6.1 Terra, 272k 창)로 바뀌었으므로
+    // 지난 공장 기본(Claude Opus 5.5 medium, 1M 창)을 고른 설정으로 고정한다.
+    const config = configForProviderSelection(defaultAiConfig(), "anthropic");
     expect(config.providerId).toBe("anthropic");
     expect(config.model).toBe("claude-opus-5-5");
 
