@@ -196,7 +196,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   const moreItems = actions.more ?? [];
   const moreMenu = el("div", { class: "fr-more-menu", attrs: { role: "menu", hidden: "" }, children: moreItems.map((item) => el("button", {
     class: "fr-more-item", attrs: { type: "button", role: "menuitem" }, dataset: { testid: item.testid }, text: item.label,
-    on: { click: () => { closeMore(); if (!busy) item.run(); } },
+    on: { click: () => { closeMore(); moreButton.focus(); if (!busy) item.run(); } },
   })) });
   const moreButton = el("button", {
     class: "fr-more", attrs: { type: "button", "aria-label": "더 보기", "aria-haspopup": "menu", "aria-expanded": "false" },

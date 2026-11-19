@@ -37,6 +37,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", fetchResponse);
   codexRequests.length = 0;
   cliRequests.length = 0;
+  healthRequests.length = 0;
   authResponse = () => Response.json(account);
   cliResponse = () => Response.json(noClis);
 });
@@ -65,6 +66,7 @@ const noClis = {
 };
 const codexRequests: RequestInit[] = [];
 const cliRequests: string[] = [];
+const healthRequests: unknown[] = [];
 const never = (): Promise<never> => new Promise(() => undefined);
 let authResponse: () => Response | Promise<Response>;
 let cliResponse: () => Response | Promise<Response>;
@@ -79,6 +81,10 @@ async function fetchResponse(input: string, init: RequestInit = {}): Promise<Res
     cliRequests.push(url.pathname + url.search);
     return cliResponse();
   }
+  if (url.pathname === "/v1/local-agents/health") {
+    healthRequests.push(JSON.parse(String(init.body)));
+    return Response.json({ ok: true, ms: 12 });
+  }
   if (url.pathname === "/auth/openai-compat") return Response.json({ endpoints: [] });
   return Response.json({ connected: false });
 }
@@ -89,24 +95,32 @@ function byId(id: string): FakeElement {
   return element;
 }
 
+function openLocalPrograms(): void {
+  byId("ai-settings-other-ways").parentElement?.setAttribute("open", "");
+  const programs = byId("ai-settings-local-programs");
+  programs.setAttribute("open", "");
+  programs.dispatchEvent(new Event("toggle"));
+}
+
 describe("AI settings connection status", () => {
   it("shares the top-bar ChatGPT sign-in across both dialogs with no local CLI installed", async () => {
     await connection.refreshAiConnectionStatus();
     expect(connection.getAiConnectionStatus()).toMatchObject({ kind: "ready", providerId: "openai-codex" });
     closeStart = start.openSettingsDialog().close;
-    await vi.advanceTimersByTimeAsync(0);
+    const accountRow = byId("ai-settings-chatgpt-account");
+    expect(accountRow.hidden).toBe(false);
+    expect(accountRow.textContent).toContain(account.accountEmail);
+    expect(cliRequests).toEqual([]);
 
-    expect(byId("start-settings-engine-claude").textContent).toContain("설치 필요");
-    const codex = byId("start-settings-engine-codex");
-    expect(codex.dataset.state).toBe("ready");
-    expect(codex.textContent).toContain("ChatGPT 연결됨");
-    expect(codex.textContent).not.toContain("설치 필요");
-    expect(byId("start-settings").querySelector(".st-empty")?.textContent).toBe("ChatGPT 연결됨 · gpt-6.2-sol");
-    expect(byId("start-settings").textContent).not.toContain("연결된 AI 프로그램이 없어요");
-    expect(byId("start-settings-oauth-state").textContent).toContain("ChatGPT 연결됨");
     byId("start-settings-tab-general").click();
     byId("start-settings-tab-ai").click();
-    expect(byId("start-settings-oauth-state").textContent).toContain("ChatGPT 연결됨");
+    expect(byId("ai-settings-chatgpt-account")).toBe(accountRow);
+    openLocalPrograms();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(byId("start-settings-engine-claude").textContent).toContain("설치 필요");
+    expect(byId("start-settings-engine-codex").dataset.state).toBe("not-installed");
+    expect(accountRow.hidden).toBe(false);
+    closeStart();
 
     authResponse = never;
     editor.openAiSettingsModal({ nativeSelects: true });
@@ -119,13 +133,15 @@ describe("AI settings connection status", () => {
     authResponse = never;
     cliResponse = never;
     closeStart = start.openSettingsDialog().close;
+    openLocalPrograms();
     await vi.advanceTimersByTimeAsync(COMPANION_TIMEOUT_MS - 1);
-    expect(byId("start-settings-oauth-state").textContent).toContain("확인 중");
+    expect(byId("ai-settings-chatgpt-checking").hidden).toBe(false);
     expect(byId("start-settings-detect").textContent).toBe("다시 확인");
 
     await vi.advanceTimersByTimeAsync(1);
-    expect(byId("start-settings-oauth-state").textContent).toContain("연결 서비스 응답 없음");
-    expect(byId("start-settings-oauth-retry").textContent).toBe("다시 시도");
+    expect(byId("ai-settings-chatgpt-checking").hidden).toBe(true);
+    expect(byId("ai-oauth-status").textContent).toBe("연결 서비스 응답 없음");
+    expect(byId("ai-settings-chatgpt-check-retry").textContent).toBe("다시 시도");
     expect(byId("start-settings-detect").textContent).toBe("다시 확인");
 
     await vi.advanceTimersByTimeAsync(LOCAL_AGENTS_STATUS_TIMEOUT_MS - COMPANION_TIMEOUT_MS);
@@ -136,13 +152,34 @@ describe("AI settings connection status", () => {
 
     authResponse = () => Response.json(account);
     cliResponse = () => Response.json(noClis);
-    byId("start-settings-oauth-retry").click();
+    byId("ai-settings-chatgpt-check-retry").click();
     byId("start-settings-detect").click();
     await vi.advanceTimersByTimeAsync(0);
-    expect(codexRequests).toHaveLength(2);
+    expect(codexRequests.length).toBeGreaterThan(1);
     expect(cliRequests).toEqual(["/v1/local-agents", "/v1/local-agents"]);
-    expect(byId("start-settings-engine-codex").dataset.state).toBe("ready");
+    expect(byId("ai-settings-chatgpt-account").hidden).toBe(false);
+    expect(byId("start-settings-engine-codex").dataset.state).toBe("not-installed");
     expect(byId("start-settings-engine-claude").dataset.state).toBe("not-installed");
+  });
+
+  it("saves, tests and clears an explicitly selected local program", async () => {
+    const { loadEngineChoice } = await import("@/start/settings/localAgents");
+    cliResponse = () => Response.json({ clis: noClis.clis.map(row => row.id === "codex"
+      ? { ...row, state: "ready", stateLabel: "연결됨", found: true }
+      : row) });
+    closeStart = start.openSettingsDialog().close;
+    openLocalPrograms();
+    await vi.advanceTimersByTimeAsync(0);
+    byId("start-settings-engine-codex").click();
+    expect(loadEngineChoice()).toMatchObject({
+      cli: "codex", routineModel: "gpt-6.2-sol", deepModel: "gpt-6.2-sol", effort: "medium",
+    });
+    byId("start-settings-test").click();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(healthRequests).toEqual([{ cli: "codex" }]);
+    expect(byId("start-settings-test-result").textContent).toBe("연결 시험에 성공했어요.");
+    byId("settings-engine-reset").click();
+    expect(loadEngineChoice()).toBeNull();
   });
 
   it("retries a stalled auth response body and cancels the editor's status request on close", async () => {

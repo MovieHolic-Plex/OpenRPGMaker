@@ -136,7 +136,7 @@ export function renderAiAuthSettings(
   primary?: {
     readonly feedback: HTMLElement;
     readonly disconnectError: HTMLElement;
-    readonly onAccount: (status: ChatGptAuthStatus | undefined, checkFailed: boolean) => void;
+    readonly onAccount: (status: ChatGptAuthStatus | undefined, checkFailed: boolean, checking: boolean) => void;
   },
 ): AiAuthSettingsView {
   // 연결 종류 선택 UI 는 없다 — 이 레지스트리의 제공자는 전부 oauth 이고, 예전 「API 키」
@@ -253,7 +253,7 @@ export function renderAiAuthSettings(
   function renderCardPill(id: string): void {
     const auth = cardAuth.get(id);
     const failed = auth === "error" || auth === "hostDisabled";
-    if (id === CODEX_PROVIDER_ID) primary?.onAccount(typeof auth === "object" ? auth : undefined, failed);
+    if (id === CODEX_PROVIDER_ID) primary?.onAccount(typeof auth === "object" ? auth : undefined, failed, !auth || auth === "checking");
     retryCards.hidden = ![...cardAuth].some(([provider, state]) =>
       provider !== providerId && (state === "error" || state === "hostDisabled"));
     const pill = cardPills.get(id);
