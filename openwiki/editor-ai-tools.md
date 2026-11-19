@@ -77,6 +77,7 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
 - 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
 - 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
 - 전투·저장·필드 규칙(같은 날, 사용자 7건):
+  - `set_project_settings battle.enemyStillMotion:"all"|"stillOnly"|"off"` → `system.enemyStillMotion`(기본 all, 저장 안 함) — 엔진이 적 그림을 움직인다: 그림 한 장 적은 전체 몸짓, 칸 있는 도트 시트·걷기 칩은 정수 이동·기울기만 더한다. `runtime-battle.md` 「적 몸짓 엔진」.
   - `set_project_settings battle.allowAutoBattle:false` → `system.allowAutoBattle` — F 키 토글·「자동」 표시가 사라진다(`battleDom.ts`). 배우별 `ActorOptions.autoBattle` 과 별개.
   - `battle.clearStatesAfterBattle:true` → 전투가 끝나면 파티 상태 이상이 풀린다. 상태 하나는 `upsert_state clearOnBattleEnd:true|false` 가 이긴다.
     둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
