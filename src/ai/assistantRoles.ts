@@ -10,6 +10,7 @@
 // - 잔일은 주 모델과 같은 계정의 싼 모델을 먼저 고른다.
 // - 채울 수 없는 역할은 빈칸이 아니라 «무엇으로 물러나는지»를 말한다: 잔일·도트 → 주 모델, 검토자 → 꺼짐, 눈 → 그림 검사 없음.
 // - 사용자가 직접 고른 칸(overrides)이 자동 배정을 이긴다. 그 계정이 연결돼 있지 않으면 쓰지 않고 이유를 말한다.
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "./imageModelCatalog";
 import matrix from "./assistantRoleMatrix.json";
 import type { AiConfig } from "./llmClient";
 import { modelForRole, type RoleModel, type ThinkingEffort } from "./modelRoles";
@@ -55,9 +56,8 @@ export const ROLE_COPY: Readonly<Record<AssistantRole, RoleCopy>> = MATRIX.roles
 export const FAMILY_LABEL: Readonly<Record<ModelFamily, string>> = Object.fromEntries(
   MODEL_FAMILIES.map((family) => [family, MATRIX.families[family].label])) as Record<ModelFamily, string>;
 
-/** 그림 생성은 GPT Image 를 먼저 권한다(src/ai/imageModelCatalog.ts RECOMMENDED_IMAGE_PROVIDER_ID). 나머지는 표 순서. */
 // 주 작업은 Claude(Opus 5.5 medium)를 먼저 본다 — 사용자 결정(2026-10-25). Claude 가 없으면 Gemini Argon medium.
-const ROLE_FAMILY_ORDER: Partial<Record<AssistantRole, readonly ModelFamily[]>> = { image: ["gpt", "gemini", "claude", "deepseek"], main: MATRIX.mainFamilyOrder };
+const ROLE_FAMILY_ORDER: Partial<Record<AssistantRole, readonly ModelFamily[]>> = { main: MATRIX.mainFamilyOrder };
 
 interface Candidate { readonly family: ModelFamily; readonly providerId: string; readonly entry: MatrixEntry }
 
@@ -93,7 +93,13 @@ function candidatesFor(role: AssistantRole, available: readonly AvailableRoute[]
       if (!entries?.length) continue;
       for (const connected of available) {
         if (connected.provider !== family || !routeMatches(route, connected)) continue;
-        for (const entry of entries) if (entryUsable(entry, route, connected)) out.push({ family, providerId: connected.providerId, entry });
+        for (const entry of entries) {
+          // 그림 선택 ID 는 대화 모델 목록에 없다. ChatGPT 연결 여부만 확인한다.
+          const usable = role === "image"
+            ? connected.providerId === DEFAULT_IMAGE_PROVIDER_ID && entry.model === DEFAULT_IMAGE_MODEL
+            : entryUsable(entry, route, connected);
+          if (usable) out.push({ family, providerId: connected.providerId, entry });
+        }
       }
     }
   }
@@ -119,6 +125,7 @@ export function resolveAssistantRoles(available: readonly AvailableRoute[], over
     const chosen = overrides[role];
     if (!chosen) return undefined;
     if (chosen === "off") return missing(role, `직접 끔 — ${ROLE_COPY[role].missing}`);
+    if (role === "image" && (chosen.provider !== DEFAULT_IMAGE_PROVIDER_ID || chosen.model !== DEFAULT_IMAGE_MODEL)) return undefined;
     const family = familyOf(chosen.provider);
     if (!family || !connectedIds.has(chosen.provider)) return missing(role, `직접 고른 계정(${chosen.provider})이 연결돼 있지 않음 — ${ROLE_COPY[role].missing}`);
     return { status: "ok", model: chosen, source: "override", family };
@@ -188,8 +195,7 @@ export function assistantRoleModel(config: AiConfig, role: AssistantRole): RoleM
     case "main": return modelForRole(config, "deep");
     case "vision": return modelForRole(config, "vision");
     case "pixel": return resolvePixelModel(config).model;
-    case "image": return config.imageProviderId && config.imageModel
-      ? { provider: config.imageProviderId, model: config.imageModel, thinkingLevel: "off" } : undefined;
+    case "image": return { provider: DEFAULT_IMAGE_PROVIDER_ID, model: DEFAULT_IMAGE_MODEL, thinkingLevel: "off" };
     case "smol":
     case "advisor": {
       const slot = config.assistantRoles?.[role];

@@ -36,8 +36,9 @@ const ANTIGRAVITY_BUNDLED = [
 
 /** ChatGPT 경로에서 고를 수 있는 모델. 순서 = 화면 순서(최신 우선, 2026-11-04), 첫 항목 = 기본, 끝의 둘은 옛 모델. */
 const CODEX_SUPPORTED = [
+  "gpt-6.2-sol",
+  "gpt-6.2-astra",
   "gpt-6.1-sol",
-  "gpt-6.1-terra",
   "gpt-6-astra",
   "gpt-6-luna",
   "gpt-6-sol",
@@ -47,7 +48,7 @@ const CODEX_SUPPORTED = [
 /** 최신 모델(2026-11-04 오너 목록). 제공자 id → 카탈로그·창 표에 반드시 있어야 하는 id. */
 const TARGET_MODELS: Readonly<Record<string, readonly string[]>> = {
   anthropic: ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"],
-  [CODEX_PROVIDER_ID]: ["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna"],
+  [CODEX_PROVIDER_ID]: ["gpt-6.2-sol", "gpt-6.2-astra", "gpt-6-astra", "gpt-6-luna"],
   [ANTIGRAVITY_PROVIDER_ID]: ["gemini-4-argon", "gemini-3.8-flash"],
 };
 
@@ -63,12 +64,12 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(models).not.toContain("gemini-3.7-flash-high");
   });
 
-  it("Codex 목록은 정확히 여섯 모델(최신 우선)이고 첫 항목이 gpt-6.1-sol 다", async () => {
+  it("Codex 목록은 정확히 일곱 모델(최신 우선)이고 첫 항목이 gpt-6.2-sol 다", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", CODEX_PROVIDER_ID).flatMap((g) => g.models);
 
     expect(models).toEqual(CODEX_SUPPORTED);
-    expect(defaultModelForAuthMode("chatgpt", CODEX_PROVIDER_ID)).toBe("gpt-6.1-sol");
+    expect(defaultModelForAuthMode("chatgpt", CODEX_PROVIDER_ID)).toBe("gpt-6.2-sol");
   });
 
   it("제공자 레코드의 defaultModel 이 카탈로그 첫 항목과 같다 (기본값 출처 하나)", async () => {
@@ -109,7 +110,7 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
 describe("latestModelsFor — 첫 실행 목록은 옛 모델을 뺀다", () => {
   it("제공자별 최신 모델만 카탈로그 순서로 돌려주고 첫 항목이 기본 모델이다", async () => {
     const { defaultModelForAuthMode, latestModelsFor } = await loadCatalog();
-    expect(latestModelsFor(CODEX_PROVIDER_ID)).toEqual(["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna"]);
+    expect(latestModelsFor(CODEX_PROVIDER_ID)).toEqual(["gpt-6.2-sol", "gpt-6.2-astra", "gpt-6-astra", "gpt-6-luna"]);
     expect(latestModelsFor(ANTIGRAVITY_PROVIDER_ID)).toEqual(["gemini-4-argon", "gemini-3.8-flash"]);
     expect(latestModelsFor("anthropic")).toEqual(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
     for (const provider of OH_MY_PI_PROVIDERS) {
@@ -119,7 +120,7 @@ describe("latestModelsFor — 첫 실행 목록은 옛 모델을 뺀다", () => 
 
   it("옛 모델은 첨 실행 목록에서 빠지지만 설정 카탈로그에는 남고 여전히 유효하다", async () => {
     const { LEGACY_MODEL_IDS, isModelValidForAuthMode, latestModelsFor, modelCatalogForAuthMode } = await loadCatalog();
-    expect([...LEGACY_MODEL_IDS[CODEX_PROVIDER_ID]!]).toEqual(["gpt-6-sol", "gpt-5.6-sol"]);
+    expect([...LEGACY_MODEL_IDS[CODEX_PROVIDER_ID]!]).toEqual(["gpt-6.1-sol", "gpt-6-sol", "gpt-5.6-sol"]);
     expect([...LEGACY_MODEL_IDS[ANTIGRAVITY_PROVIDER_ID]!].sort()).toEqual([...ANTIGRAVITY_BUNDLED].sort());
     for (const [provider, legacy] of Object.entries(LEGACY_MODEL_IDS)) {
       const settings = modelCatalogForAuthMode("chatgpt", provider).flatMap((g) => g.models);
@@ -143,7 +144,7 @@ describe("최신 모델은 카탈로그와 창 표에 다 있다", () => {
       }
     }
     expect(ORIGINAL_MODEL_WINDOWS[CODEX_PROVIDER_ID]).toMatchObject({
-      "gpt-6-astra": 272000, "gpt-6-luna": 272000, "gpt-6.1-sol": 500000, "gpt-6.1-terra": 272000,
+      "gpt-6-astra": 272000, "gpt-6-luna": 272000, "gpt-6.1-sol": 500000, "gpt-6.1-terra": 272000, "gpt-6.2-sol": 500000, "gpt-6.2-astra": 272000,
     });
     expect(ORIGINAL_MODEL_WINDOWS.anthropic).toEqual({
       "claude-opus-5-5": 1000000, "claude-sonnet-5-5": 1000000, "claude-haiku-5-5": 1000000,
@@ -162,9 +163,9 @@ describe("isModelValidForAuthMode — 선택된 제공자 기준", () => {
     }
   });
 
-  it("Codex 는 네 모델 밖의 옛 번들 모델을 거부한다", async () => {
+  it("Codex 는 Terra 와 카탈로그 밖의 옛 번들 모델을 거부한다", async () => {
     const { isModelValidForAuthMode } = await loadCatalog();
-    for (const retired of ["gpt-5.4-mini", "gpt-5.4", "gpt-5.5", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.3-codex-spark", "gpt-daybreak-blue-latest"]) {
+    for (const retired of ["gpt-6.1-terra", "gpt-5.4-mini", "gpt-5.4", "gpt-5.5", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.3-codex-spark", "gpt-daybreak-blue-latest"]) {
       expect(isModelValidForAuthMode("chatgpt", retired, CODEX_PROVIDER_ID), retired).toBe(false);
     }
   });

@@ -195,7 +195,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal((await adapters.status()).pendingLogin, undefined);
   });
 
-  it("이미지 생성은 제공자와 프롬프트를 넘기고 dataUrl 로 감싸 돌려준다", async () => {
+  it("이미지 생성은 옛 요청도 ChatGPT 로 보내고 dataUrl 로 감싸 돌려준다", async () => {
     const seen = [];
     const result = await handleCompanionRequest(
       {
@@ -218,10 +218,10 @@ describe("oh-my-pi companion HTTP", () => {
     );
 
     assert.equal(result.status, 200);
-    assert.deepEqual(seen, [["google-antigravity", "슬라임", "gemini-3.1-flash-image"]]);
+    assert.deepEqual(seen, [["openai-codex", "슬라임", "codex-image-default"]]);
     assert.deepEqual(result.body.image, {
-      provider: "google-antigravity",
-      model: "gemini-3.1-flash-image",
+      provider: "openai-codex",
+      model: "codex-image-default",
       mimeType: "image/jpeg",
       dataUrl: "data:image/jpeg;base64,QUJD",
     });

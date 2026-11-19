@@ -26,7 +26,6 @@ import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCata
 import { getOhMyPiProvider, parseOhMyPiProvider, selectableOhMyPiProviders, type OhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { OPENAI_COMPAT_CHANGED_EVENT, getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId, openAiCompatModelBlockReason } from "@/ai/openAiCompat";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
-import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { configForProviderSelection, workProviderIds } from "@/ai/providerSelection";
 import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus, refreshAiConnectionStatus } from "./aiConnectionStatus";
 import {
@@ -237,84 +236,27 @@ export function renderAiSettingsForm(options: {
   let providerId = parseOhMyPiProvider(config.providerId);
   let modelSelectionOverrides = { ...config.modelSelectionOverrides };
   let applyAccountSelection = (_force = false): void => undefined;
+  const [imageEntry] = IMAGE_MODEL_CATALOG;
   const imageProvider = el("select", {
     class: "ai-config-select",
-    attrs: { "aria-label": "이미지 생성 제공자" },
+    attrs: { "aria-label": "이미지 생성 제공자", disabled: "" },
     dataset: { testid: "ai-config-image-provider" },
-    children: [...new Map(IMAGE_MODEL_CATALOG.map((entry) => [entry.providerId, entry.providerLabel]))]
-      .map(([id, label]) => el("option", { attrs: { value: id }, text: label })),
+    children: [el("option", { attrs: { value: imageEntry.providerId }, text: imageEntry.providerLabel })],
   }) as HTMLSelectElement;
-  const initialImageProvider = config.imageProviderId ?? DEFAULT_IMAGE_PROVIDER_ID;
-  if (!IMAGE_MODEL_CATALOG.some((entry) => entry.providerId === initialImageProvider)) {
-    imageProvider.append(el("option", { attrs: { value: initialImageProvider, disabled: "" }, text: initialImageProvider + " · 지원 미확인" }));
-  }
-  imageProvider.value = initialImageProvider;
+  imageProvider.value = imageEntry.providerId;
   const imageModel = el("select", {
     class: "ai-config-select",
-    attrs: { "aria-label": "이미지 생성 모델", "aria-describedby": "ai-config-image-status" },
+    attrs: { "aria-label": "이미지 생성 모델", "aria-describedby": "ai-config-image-status", disabled: "" },
     dataset: { testid: "ai-config-image-model" },
+    children: [el("option", { attrs: { value: imageEntry.model }, text: imageEntry.label })],
   }) as HTMLSelectElement;
+  imageModel.value = imageEntry.model;
   const imageStatus = el("p", {
     class: "ai-config-help ai-card-status",
-    attrs: { id: "ai-config-image-status", role: "status", "aria-live": "polite" },
+    attrs: { id: "ai-config-image-status" },
     dataset: { testid: "ai-config-image-status" },
+    text: "그림은 ChatGPT 로만 그려요. 생성할 때 ChatGPT 로그인을 확인합니다.",
   });
-  // 로그인·제공 방식처럼 «고른 뒤에 읽는» 문단은 카드 안 「자세히」 로 접는다. 항상 보이는 줄은 상태 한 줄뿐이다.
-  const imageRouteNote = el("p", { class: "ai-config-help", dataset: { testid: "ai-config-image-route-note" } });
-  // 그림은 GPT 를 강력히 추천한다(감독 지시 2026-09-27). 추천은 GPT 가 아닐 때만 한 줄로 보이고, 바꾸는 버튼이 곁에 붙는다 —
-  // 이미 GPT 면 말할 것이 없으므로 숨는다(예전 상자형 배너는 로그인 안내와 같은 상자 모양이라 겹쳐 보였다).
-  const recommendedImage = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === CODEX_PROVIDER_ID && entry.supported);
-  const useRecommendedImage = el("button", {
-    class: "ai-assistant-action ai-config-recommend-action",
-    text: "GPT로 바꾸기",
-    attrs: { type: "button" },
-    dataset: { testid: "ai-config-image-use-gpt" },
-  }) as HTMLButtonElement;
-  const imageRecommendation = el("div", {
-    class: "ai-config-recommend",
-    attrs: { role: "note" },
-    dataset: { testid: "ai-config-image-recommend" },
-    children: [
-      el("p", {
-        class: "ai-config-recommend-text",
-        text: "GPT 이미지 모델을 권장합니다. 앵글·초점 지시를 더 잘 지키고 해상도도 높습니다.",
-      }),
-      useRecommendedImage,
-    ],
-  });
-  const refreshImageRecommendation = (): void => {
-    const onGpt = imageProvider.value === CODEX_PROVIDER_ID;
-    imageRecommendation.dataset.state = onGpt ? "active" : "suggest";
-    imageRecommendation.hidden = onGpt || !recommendedImage;
-    useRecommendedImage.hidden = onGpt || !recommendedImage;
-  };
-  const refreshImageStatus = (): void => {
-    refreshImageRecommendation();
-    const entry = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === imageProvider.value && entry.model === imageModel.value);
-    imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
-    imageStatus.textContent = entry?.supported
-      ? `${entry.providerLabel} 로그인이 필요합니다.`
-      : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
-    const routeNote = !entry?.supported ? ""
-      : entry.providerId === CODEX_PROVIDER_ID
-        ? "god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다."
-        : "Google Antigravity 구독 경로로 생성합니다 — 직접 고른 경우에만 쓰입니다.";
-    imageRouteNote.textContent = routeNote;
-    imageRouteNote.hidden = routeNote === "";
-  };
-  const refreshImageModels = (selected: string): void => {
-    const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
-    imageModel.replaceChildren(...entries.map((entry) => el("option", {
-      attrs: { value: entry.model, ...(!entry.supported ? { disabled: "" } : {}) }, text: entry.label,
-    })));
-    if (!entries.some((entry) => entry.model === selected)) {
-      imageModel.append(el("option", { attrs: { value: selected, disabled: "" }, text: selected + " · 지원 미확인" }));
-    }
-    imageModel.value = selected;
-    imageModel.dispatchEvent(new Event("input", { bubbles: true }));
-    refreshImageStatus();
-  };
-  refreshImageModels(config.imageModel ?? DEFAULT_IMAGE_MODEL);
 
   // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
   const EFFORT_LABEL: Record<string, string> = { off: "끔", low: "낮음", medium: "보통", high: "높음" };
@@ -694,8 +636,8 @@ export function renderAiSettingsForm(options: {
     // 빈 칸은 그 칸 제공자의 기본 모델로 채운다 — 공장 기본이 Claude 가 된 뒤(2026-11-16) Google 의 기본 모델 이름을 다른 계정 칸에 적지 않게.
     ultrabrainModel: brainModel.input.value.trim() || getOhMyPiProvider(brainProvider.value)?.defaultModel || DEFAULT_ULTRABRAIN_MODEL,
     ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
-    imageProviderId: imageProvider.value,
-    imageModel: imageModel.value,
+    imageProviderId: DEFAULT_IMAGE_PROVIDER_ID,
+    imageModel: DEFAULT_IMAGE_MODEL,
     // 도트 저작 칸: 「따라가기」면 저장하지 않는다(옛 동작 유지). 고른 값만 저장하고 고른 표시를 남긴다.
     ...(pixelModelSelect.value === PIXEL_FOLLOW ? {} : (() => {
       const [provider, model] = pixelModelSelect.value.split("::");
@@ -804,33 +746,7 @@ export function renderAiSettingsForm(options: {
     brainModel.setValue(next.ultrabrainModel!, authMode, brainProvider.value);
     brainProvider.dispatchEvent(new Event("input", { bubbles: true }));
     brainModel.preset.dispatchEvent(new Event("input", { bubbles: true }));
-    imageProvider.value = next.imageProviderId!;
-    imageProvider.dispatchEvent(new Event("input", { bubbles: true }));
-    refreshImageModels(next.imageModel!);
   };
-  imageProvider.addEventListener("change", () => {
-    modelSelectionOverrides.image = true;
-    const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
-    const chosen = entries.find((entry) => entry.supported) ?? entries[0];
-    if (!chosen) {
-      refreshImageStatus();
-      return;
-    }
-    refreshImageModels(chosen.model);
-    persist(false);
-  });
-  imageModel.addEventListener("change", () => {
-    modelSelectionOverrides.image = true;
-    refreshImageStatus();
-    persist(false);
-  });
-  useRecommendedImage.addEventListener("click", () => {
-    if (!recommendedImage) return;
-    modelSelectionOverrides.image = true;
-    imageProvider.value = recommendedImage.providerId;
-    refreshImageModels(recommendedImage.model);
-    persist(false);
-  });
   pixelModelSelect.addEventListener("change", () => {
     if (pixelModelSelect.value === PIXEL_FOLLOW) delete modelSelectionOverrides.pixel;
     else modelSelectionOverrides.pixel = true;
@@ -1279,13 +1195,9 @@ export function renderAiSettingsForm(options: {
             settingsRow("제공자", "", imageProvider),
             settingsRow("모델", "", imageModel),
             imageStatus,
-            imageRecommendation,
             settingsDetails([
               "인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다.",
-              imageRouteNote,
-              "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.",
-              "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.",
-              "이미지를 읽는 Vision 모델과는 별도로 고릅니다.",
+              "god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다.",
             ]),
           ]),
           settingsCard("image-dot", "도트 (타일·캐릭터·맵 기물)", "텍스트 모델이 격자를 한 줄씩 써서 찍습니다.", [

@@ -9,7 +9,7 @@
 // 그래서 판정·문장·툴 오류가 이 파일 하나에서 나오고, 에디터 표면과 차단 모달이 같은 문장을 쓴다.
 import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { DEFAULT_IMAGE_PROVIDER_ID, IMAGE_CHATGPT_LOGIN_REQUIRED } from "@/ai/imageModelCatalog";
 import { resolveImageRoute } from "@/ai/imageRoute";
 import { isImageCredentialFailure } from "@/editor/imageGenerationFallback";
 import type { AiGateNotice } from "@/ai/aiGateNotice";
@@ -18,8 +18,7 @@ import { ToolError } from "@/editor/tools/types";
 export const IMAGE_GENERATION_UNAVAILABLE_CODE = "image-generation-unavailable";
 
 /** 사용자 화면과 조수 보고가 함께 쓰는 한 문장 — 무엇이 안 되는지 + 한 걸음 해결책. */
-export const IMAGE_GENERATION_UNAVAILABLE_NOTICE =
-  "그림 생성 계정이 연결되지 않아 오프닝·게임오버·아이콘·맵 배경 그림은 만들어지지 않습니다 — AI 설정 → 「그림·도트 모델」에서 이미지 모델 계정을 연결하세요.";
+export const IMAGE_GENERATION_UNAVAILABLE_NOTICE = IMAGE_CHATGPT_LOGIN_REQUIRED;
 
 export function imageGenerationUnavailableInstruction(): string {
   return `${IMAGE_GENERATION_UNAVAILABLE_NOTICE} 보고에 이 사실을 적어라: ${IMAGE_GENERATION_UNAVAILABLE_NOTICE} 생성한 것처럼 보고하거나 이 사실을 빼고 작업을 계속하지 마라.`;
@@ -85,7 +84,7 @@ export function imageUnavailableGateNotice(): AiGateNotice {
     title: "그림 생성이 연결되지 않았습니다",
     headline: "이번 요청에서 새로 만들어진 그림은 없습니다 — 게임에는 생성된 그림이 들어가지 않았습니다.",
     reasons: [IMAGE_GENERATION_UNAVAILABLE_NOTICE],
-    nextSteps: ["AI 설정 → 「그림·도트 모델」에서 이미지 모델 계정을 연결한 뒤 같은 요청을 다시 보내세요."],
+    nextSteps: ["AI 설정에서 ChatGPT 로그인을 연결한 뒤 같은 요청을 다시 보내세요."],
   };
 }
 

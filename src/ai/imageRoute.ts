@@ -92,20 +92,19 @@ export type ImageRoute =
 
 /**
  * 용도 하나가 어느 모델로 가는지 정한다. 순수 함수 — 모델을 부르지 않는다.
- * generative 의 호출별 providerId/model 지정은 `overrides` 가 이긴다(기존 generateAiImage 계약 그대로).
+ * 생성형 그림은 대화 계정과 무관하게 ChatGPT 의 그림 모델로 간다.
  */
 export function resolveImageRoute(
   purpose: ImagePurpose,
   config: ImageRouteConfig,
-  overrides: { readonly providerId?: string; readonly model?: string } = {},
 ): ImageRoute {
   const spec = IMAGE_PURPOSES[purpose];
   if (spec.kind === "generative") {
     return {
       kind: "generative",
       purpose,
-      providerId: overrides.providerId ?? config.imageProviderId ?? DEFAULT_IMAGE_PROVIDER_ID,
-      model: overrides.model ?? config.imageModel ?? DEFAULT_IMAGE_MODEL,
+      providerId: DEFAULT_IMAGE_PROVIDER_ID,
+      model: DEFAULT_IMAGE_MODEL,
     };
   }
   if (spec.kind === "dot-text") {

@@ -9,7 +9,7 @@
 
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials";
 import type { RoleModel, SpecialistRole } from "./modelRoles";
-import { ANTHROPIC_PROVIDER_ID, CLAUDE_DEFAULT_MODEL } from "./ohMyPiProviders";
+import { ANTHROPIC_PROVIDER_ID, CHATGPT_DEFAULT_MODEL, CLAUDE_DEFAULT_MODEL } from "./ohMyPiProviders";
 import { getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId } from "./openAiCompat";
 
 /** 빠른 모델(비용·지연 우선)과 최상위 모델(품질 우선) 두 티어. */
@@ -37,8 +37,8 @@ export interface ModelPreset {
  */
 const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, string>>>> = {
   [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-4-argon", strong: "gemini-4-argon" },
-  // Codex 는 두 티어 모두 gpt-6.1-sol 이고 사고 강도로만 가른다(2026-10-07 조수 시험에서 기본으로 채택).
-  [CODEX_PROVIDER_ID]: { fast: "gpt-6.1-sol", strong: "gpt-6.1-sol" },
+  // Codex 는 두 티어 모두 GPT-6.2 Sol 이고 사고 강도로만 가른다(오너 결정 2026-11-19).
+  [CODEX_PROVIDER_ID]: { fast: CHATGPT_DEFAULT_MODEL, strong: CHATGPT_DEFAULT_MODEL },
   // Claude 계정: 두 티어 모두 Opus 5.5 이고 사고 강도로만 가른다(오너 결정 2026-11-16 — Haiku 워커를 기본에서 뺐다. Codex 와 같은 꼴).
   // 로컬 Claude CLI 기본(src/ai/planDefaults.ts)과 같은 한 모델이다. 티어가 없으면 configForProviderSelection 이
   // 이전 제공자의 모델 id(gemini-4-argon 등)를 Claude 계정에 그대로 남긴다. Haiku·Sonnet 은 설정의 모델 목록에서 직접 고른다.

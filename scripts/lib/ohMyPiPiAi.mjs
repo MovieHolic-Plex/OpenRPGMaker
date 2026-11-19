@@ -22,6 +22,7 @@ import {
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { piTimer } from "./piRunTiming.mjs";
+import { DEFAULT_IMAGE_PROVIDER_ID, IMAGE_CHATGPT_LOGIN_REQUIRED } from "../../src/ai/imageModelCatalog.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import {
   deleteOpenAiCompat,
@@ -391,9 +392,8 @@ export async function createOhMyPiAdapters() {
         try { providerApiKeys[roleProvider] = await resolveRequestApiKey(roleProvider); }
         catch { providerApiKeys[roleProvider] = undefined; }
       }
-            // Resolve the image slot independently. Missing credentials must fail the image tool,
-      // not prevent unrelated read/authoring turns from starting.
-      const imageProvider = body.imageProvider || 'google-antigravity';
+      // 그림 계정은 따로 확인한다. 미로그인은 그림 도구에서 안내하고 조수 턴은 시작한다.
+      const imageProvider = DEFAULT_IMAGE_PROVIDER_ID;
       if (!(imageProvider in providerApiKeys)) {
         try { providerApiKeys[imageProvider] = await resolveRequestApiKey(imageProvider); }
         catch { providerApiKeys[imageProvider] = undefined; }
@@ -456,7 +456,10 @@ export async function createOhMyPiAdapters() {
       return { stream: true, ndjson: keepWorkerKeysFresh(port, providerApiKeys, response.body, options.signal) };
     },
     async generateImage(provider, body) {
-      const apiKey = await resolveRequestApiKey(provider);
+      const apiKey = await resolveRequestApiKey(provider).catch((error) => {
+        if (provider !== DEFAULT_IMAGE_PROVIDER_ID) throw error;
+        throw Object.assign(new Error(IMAGE_CHATGPT_LOGIN_REQUIRED), { status: 401 });
+      });
       return workerJson("/image", { provider, body, apiKey });
     },
   };

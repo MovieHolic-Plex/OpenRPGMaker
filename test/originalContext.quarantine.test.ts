@@ -360,7 +360,7 @@ describe("installed model window contract", () => {
     expect(originalContextWindow({ model: "claude-sonnet-5-5", providerId: "anthropic" })).toBe(1000000);
     expect(originalContextWindow({ model: "gpt-5.3-codex-spark", providerId: "openai-codex" })).toBe(128000);
     expect(originalContextWindow({ model: "gpt-5.6-sol", providerId: "openai-codex" })).toBe(1000000);
-    // 모르는 id 는 동반 서비스처럼 제공자 defaultModel(gpt-6.1-sol) 창을 쓴다.
+    // 모르는 id 는 동반 서비스처럼 제공자 defaultModel(gpt-6.2-sol) 창을 쓴다.
     expect(originalContextWindow({ model: "unknown", providerId: "openai-codex", authMode: "chatgpt" })).toBe(500000);
   });
 });

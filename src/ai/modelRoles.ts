@@ -1,5 +1,6 @@
 import type { AiConfig } from "./llmClient";
 import { getOhMyPiProvider } from "./ohMyPiProviders.ts";
+import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault.ts";
 
 /**
  * build = 공간 시공(타일·맵·장소 짓기, 게임 전체 짓기). 지정하지 않으면 deep 과 같다.
@@ -33,7 +34,8 @@ export function modelForRole(config: AiConfig, role: SpecialistRole): RoleModel 
     // deep 기본값이 high 여서 실행 루프가 매 턴 보이는 만큼 늘어졌다 — 실측(2026-09-26, 3턴 도구 사용 실행):
     // thinking high 는 턴당 약 2.9s, low 는 약 2.1s(전제가 1k→30k 토큰으로 커지는 데는 0.5s 밖에 안 밀리므로
     // 지연은 사고 강도가 지배한다). 사용자가 역할로 지정해 저장한 값은 이 반환에 닿지 않고 그대로 이긴다.
-    thinkingLevel: role === "deep" ? "low" : "medium",
+    thinkingLevel: provider === "openai-codex" || provider === "local-cli:codex"
+      ? atLeastMediumEffort(config.reasoningEffort) : role === "deep" ? "low" : "medium",
   };
 }
 /** 고른 한 칸(제공자·모델·강도)을 호출 설정으로 바꾼다. 역할 칸과 도트 저작 칸이 같이 쓴다. */
@@ -49,6 +51,10 @@ export function parseRoleModel(raw: unknown): RoleModel | undefined {
   const value = raw as Partial<RoleModel> | null | undefined;
   if (!value || typeof value !== "object" || typeof value.provider !== "string" || !value.provider.trim()
     || typeof value.model !== "string" || !value.model.trim()) return undefined;
+  // 오너 결정(2026-11-19): 저장된 Terra 역할은 직접 골랐어도 Sol 로 읽는다.
+  if (isLegacyTerraModel(value.model)) {
+    return { provider: value.provider.trim(), model: ASSISTANT_CHATGPT_MODEL, thinkingLevel: atLeastMediumEffort(value.thinkingLevel) };
+  }
   return { provider: value.provider.trim(), model: value.model.trim(),
     thinkingLevel: value.thinkingLevel === "off" || value.thinkingLevel === "low" || value.thinkingLevel === "medium"
       || value.thinkingLevel === "xhigh" || value.thinkingLevel === "max"

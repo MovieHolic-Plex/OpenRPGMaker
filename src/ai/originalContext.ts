@@ -57,7 +57,9 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     "gpt-6-sol": 272000,
     "gpt-6-luna": 272000,
     "gpt-6.1-sol": 500000,
-    "gpt-6.1-terra": 272000
+    "gpt-6.1-terra": 272000,
+    "gpt-6.2-sol": 500000,
+    "gpt-6.2-astra": 272000
   },
   // Claude 계정(제공자 anthropic) 카탈로그 세 모델. pi-catalog 18.9.1·18.13.2 contextWindow, 프록시 /v1/models 실측도 1M(2026-11-04).
   // 없으면 접두 폴백(claude- 200k)으로 떨어져 창을 5분의 1로 본다.
@@ -70,7 +72,7 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
 
 export function originalContextWindow(config: Pick<AiConfig, "model"> & Partial<Pick<AiConfig, "authMode" | "providerId">>): number {
   const provider = config.providerId ?? "google-antigravity";
-  const models = ORIGINAL_MODEL_WINDOWS[provider];
+  const models = ORIGINAL_MODEL_WINDOWS[provider === "local-cli:codex" ? "openai-codex" : provider];
   const exact = models?.[config.model];
   if (exact !== undefined) return exact;
   if (config.authMode === "chatgpt") {

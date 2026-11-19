@@ -7,11 +7,10 @@ import { OPENING_IMAGE_TOOL } from '../../src/editor/tools/cinematicTools';
 import { generateTitleArt, titleArtToolCalls } from '../../src/editor/titleArtGeneration';
 import { generateOpeningStill, type OpeningStillRequest } from '../../src/editor/openingImageGeneration';
 import { fitTitleArtEffects } from '../../src/editor/titleArtFitting';
-import { DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, newestSupportedImageModel } from '../../src/ai/imageModelCatalog';
+import { DEFAULT_IMAGE_PROVIDER_ID, DEFAULT_IMAGE_MODEL } from '../../src/ai/imageModelCatalog';
 import type { PiOpeningProduction } from '../../src/ai/piAgent/openingProduction';
 import type { ActivityVisual } from '../../src/ai/activityVisual';
 import { activityThumbnail, generateBestStill } from './openingStillCritic';
-import { generateProviderImage } from './ohMyPiImageRuntime';
 import { generateCodexImage } from './codexImageRuntime';
 import { completeProvider } from './ohMyPiPiAiRuntime';
 import type { GenerateAiImageRequest } from '../../src/ai/imageGenerationClient';
@@ -21,24 +20,19 @@ import type { Project } from '../../src/project/types';
 
 export const PI_PRESENTATION_GENERATORS = [TITLE_ART_TOOL, OPENING_IMAGE_TOOL] as const;
 
-export function createWorkerImageGenerator(request: PiAgentRequest, keyFor: (provider: string) => string | undefined) {
+export function createWorkerImageGenerator(_request: PiAgentRequest, keyFor: (provider: string) => string | undefined) {
   return async ({ prompt, signal: imageSignal, referenceImages, purpose }: GenerateAiImageRequest) => {
     // 도트·업로드 전용 용도는 이미지 모델로 보내지 않는다(브라우저 generateAiImage 와 같은 라우터).
     if (purpose) {
-      const route = resolveImageRoute(purpose, { imageProviderId: request.imageProvider, imageModel: request.imageModel });
+      const route = resolveImageRoute(purpose, {});
       if (route.kind !== 'generative') throw new Error(imageRouteRefusal(route));
     }
-    const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
-    // 모델을 안 줬으면 그 제공자 목록의 가장 새 그림 모델을 고른다(코드에 이름을 박지 않는다).
-    const model = request.imageModel ?? (provider === 'openai-codex' ? RECOMMENDED_IMAGE_MODEL : newestSupportedImageModel(provider) ?? RECOMMENDED_IMAGE_MODEL);
-    const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };
+    const payload = { prompt, model: DEFAULT_IMAGE_MODEL, ...(referenceImages ? { referenceImages } : {}) };
     // Codex 는 가끔 그림 대신 글로 답한다 — 같은 요청을 몇 번 더 시도한다(후보 3장이 모두 0장이 되던 실측).
     let image: Awaited<ReturnType<typeof generateCodexImage>> | undefined;
     for (let attempt = 0; !image; attempt++) {
       try {
-        image = provider === 'openai-codex'
-          ? await generateCodexImage(payload, { apiKey: keyFor(provider), signal: imageSignal })
-          : await generateProviderImage(provider, payload, { apiKey: keyFor(provider), signal: imageSignal });
+        image = await generateCodexImage(payload, { apiKey: keyFor(DEFAULT_IMAGE_PROVIDER_ID), signal: imageSignal });
       } catch (error) {
         if (attempt >= 3 || imageSignal?.aborted || !/이미지가 없습니다/u.test(error instanceof Error ? error.message : String(error))) throw error;
       }

@@ -1,3 +1,4 @@
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { inspectionEpoch, publishPromptInspection } from "../authoring/promptInspection";
 import type { Project } from "@/project/types";
 // 브라우저 → 동반 서비스 `/v1/agent/run` 클라이언트. 요청 하나에 프로젝트 사본을 실어 보내고,
@@ -96,8 +97,8 @@ async function openRun(request: PiAgentRequest, runId: string, readerId: string,
 
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
   const imageConfig = loadAiConfig();
-  request = { ...request, imageProvider: request.imageProvider ?? imageConfig.imageProviderId,
-    imageModel: request.imageModel ?? imageConfig.imageModel,
+  request = { ...request, imageProvider: DEFAULT_IMAGE_PROVIDER_ID,
+    imageModel: DEFAULT_IMAGE_MODEL,
     pixelModel: request.pixelModel ?? resolvePixelModel(imageConfig).model,
     ...(request.assistantRoles ?? imageConfig.assistantRoles ? { assistantRoles: request.assistantRoles ?? imageConfig.assistantRoles } : {}) };
   // 조수 v2 팀장: 엔진 선택의 팀장은 그 엔진으로 도는 v2 실행에만, 요청이 실어 온 팀장은 다른 계정이어도 싣는다(src/ai/v2/turn/split.ts leadForRequest).

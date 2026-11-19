@@ -1,12 +1,12 @@
 // Claude 로 도는 길의 기본 = Claude Opus 5.5 · medium (오너 결정 2026-11-16).
 // 「이 openrpgmaker 의 출시를 빠르게 하기 위해서라도, 조수의 기본 model 을 opus 5.5 medium 으로 해라.」
-// 2026-11-19(오너 결정): 공장 기본(저장 없음)과 첫 실행의 우선 계정은 ChatGPT(GPT-6.1 Terra · medium)로 바뀌었다 — test/aiDefaultChatgpt.test.ts.
+// 2026-11-19(오너 결정): 공장 기본(저장 없음)과 첫 실행의 우선 계정은 ChatGPT(GPT-6.2 Sol · medium)로 바뀌었다 — test/aiDefaultModelForced.test.ts.
 // 이 파일은 Claude 를 고른·Claude 만 가진 길이 여전히 Opus 5.5 · medium 한 모델인지 묶는다.
 //
 // 이 파일은 «들어가는 길마다 기본이 무엇으로 풀리는가» 를 한 자리에 고정한다:
 //   Claude 로 도는 길(구독 CLI · Anthropic 키 · 편집기 안 계정) — 계획·실행·시각·작문·시공·감독이 모두 claude-opus-5-5 · medium 한 모델.
 //     Haiku 워커·팀장 나누기는 기본이 아니다(설정에서 고를 수는 있다).
-//   Claude 를 쓸 수 없는 길(ChatGPT 만 · Google 만) — 그 계정의 기본(Terra · Argon).
+//   Claude 를 쓸 수 없는 길(ChatGPT 만 · Google 만) — 그 계정의 기본(Sol · Argon).
 //   이미 저장된 설정 — 그대로. 저장값이 옛 Claude 기본과 똑같을 때만 읽을 때 새 기본으로 올린다(PR #2535 와 같은 규칙, 디스크에는 쓰지 않는다).
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
@@ -77,9 +77,9 @@ async function firstRun(partial: Partial<TeamInputs>): Promise<AiConfig> {
 }
 
 describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 Opus 5.5 · medium 한 모델", () => {
-  it("새 설치(저장 없음): 공장 기본은 ChatGPT 의 Terra · medium 이다(2026-11-19) — Claude 로 시작하지 않는다", () => {
-    expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.1-terra@medium"));
-    expect(resolved(defaultAiConfig())).toEqual(every("openai-codex/gpt-6.1-terra@medium"));
+  it("새 설치(저장 없음): 공장 기본은 ChatGPT 의 Sol · medium 이다(2026-11-19) — Claude 로 시작하지 않는다", () => {
+    expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
+    expect(resolved(defaultAiConfig())).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
   });
 
   it("새 설치 + Claude CLI 구독: 같은 CLI 로 Opus 5.5 · medium 하나 — 팀장도 Haiku 워커도 없다", async () => {
@@ -95,9 +95,9 @@ describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 O
     expect(resolved(config)).toEqual(every(`local-cli:claude/${OPUS}@medium`));
   });
 
-  it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 ChatGPT(Terra) 하나로 시작한다(2026-11-19 오너 결정: 기본 AI 는 ChatGPT)", async () => {
+  it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 ChatGPT(Sol) 하나로 시작한다(2026-11-19 오너 결정: 기본 AI 는 ChatGPT)", async () => {
     const config = await firstRun({ clis: [cli("claude"), cli("codex")], accounts: [oauth("google-antigravity")] });
-    expect(resolved(config)).toEqual(every("local-cli:codex/gpt-6.1-terra@medium"));
+    expect(resolved(config)).toEqual(every("local-cli:codex/gpt-6.2-sol@medium"));
   });
 
   it("Anthropic 키: 입양한 엔드포인트의 모든 역할이 Opus 5.5 · medium 이다", async () => {
@@ -117,12 +117,12 @@ describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 O
 });
 
 describe("들어가는 길마다 — Claude 를 쓸 수 없는 길은 그 계정의 기본", () => {
-  it("ChatGPT 구독(Codex CLI)만: Terra 하나", async () => {
-    expect(resolved(await firstRun({ clis: [cli("codex")] }))).toEqual(every("local-cli:codex/gpt-6.1-terra@medium"));
+  it("ChatGPT 구독(Codex CLI)만: Sol 하나", async () => {
+    expect(resolved(await firstRun({ clis: [cli("codex")] }))).toEqual(every("local-cli:codex/gpt-6.2-sol@medium"));
   });
 
-  it("편집기 안 ChatGPT 로그인만: 공장 기본 그대로 Terra · medium 하나(계획·감독도 medium)", async () => {
-    expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.1-terra@medium"));
+  it("편집기 안 ChatGPT 로그인만: 공장 기본 그대로 Sol · medium 하나(계획·감독도 medium)", async () => {
+    expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
   });
 
   it("Google 로그인만: Gemini 4 Argon medium, 계획·감독은 high", async () => {
@@ -145,6 +145,36 @@ describe("이미 저장된 설정 — 건드리지 않는다", () => {
     stored({ providerId: "openai-codex", model: "gpt-6.1-sol", liteModel: "gpt-6.1-sol", ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-6.1-sol",
       ultrabrainReasoningEffort: "high", roleModels: slots("openai-codex", "gpt-6.1-sol"), modelSelectionOverrides: {}, roleModelsPolicyVersion: 1 });
     expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.1-sol@medium", "openai-codex/gpt-6.1-sol@high"));
+  });
+
+  it("직접 고른 Terra 도 읽을 때 Sol 로 올리고 medium 이상은 유지한다", () => {
+    const terra = (thinkingLevel: string) => ({ provider: "openai-codex", model: "gpt-6.1-terra", thinkingLevel });
+    const raw = JSON.stringify({
+      providerId: "openai-codex", model: "gpt-6.1-terra", liteModel: "gpt-6.1-terra", reasoningEffort: "off",
+      ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-6.1-terra", ultrabrainReasoningEffort: "low",
+      roleModels: { deep: terra("low"), build: terra("high"), writer: terra("off"), vision: terra("minimal") },
+      pixelModel: terra("high"), assistantRoles: { advisor: terra("xhigh") },
+      modelSelectionOverrides: { deep: true, build: true, writer: true, vision: true, ultrabrain: true, pixel: true, advisor: true },
+      roleModelsPolicyVersion: 1,
+    });
+    storage.set(AI_CONFIG_STORAGE_KEY, raw);
+    const config = loadAiConfig();
+    expect(config).toMatchObject({ model: "gpt-6.2-sol", liteModel: "gpt-6.2-sol", reasoningEffort: "medium" });
+    const medium = "openai-codex/gpt-6.2-sol@medium";
+    expect(resolved(config)).toEqual({ ...every(medium), build: "openai-codex/gpt-6.2-sol@high" });
+    expect(config.pixelModel).toMatchObject({ model: "gpt-6.2-sol", thinkingLevel: "high" });
+    expect(config.assistantRoles?.advisor).toMatchObject({ model: "gpt-6.2-sol", thinkingLevel: "xhigh" });
+    expect(storage.get(AI_CONFIG_STORAGE_KEY)).toBe(raw);
+    saveAiConfig(config);
+    expect(loadAiConfig()).toEqual(config);
+  });
+
+  it.each([["low", "medium"], ["high", "high"]])("저장된 Codex Terra 엔진을 Sol 로 읽는다 (%s → %s)", (effort, expected) => {
+    storage.set(ASSISTANT_ENGINE_STORAGE_KEY, JSON.stringify({
+      kind: "local-cli", cli: "codex", routineModel: "gpt-6.1-terra", deepModel: "gpt-6.1-terra", effort, policyVersion: 2,
+    }));
+    expect(loadAssistantEngine()).toEqual({ kind: "local-cli", cli: "codex", routineModel: "gpt-6.2-sol", deepModel: "gpt-6.2-sol", effort: expected });
+    expect(resolved(loadAiConfig())).toEqual(every(`local-cli:codex/gpt-6.2-sol@${expected}`));
   });
 
   it("옛 공장 기본(Claude · Opus 5.5 medium)으로 저장된 설정은 ChatGPT 로 옮기지 않는다(2026-11-19)", () => {
