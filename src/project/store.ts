@@ -108,6 +108,8 @@ export type ProjectChangeDescriptor =
       readonly scope: "map";
       readonly mapId: MapId;
       readonly cells?: readonly ProjectChangeCell[];
+      /** An existing event acquired draft metadata without changing its working body. */
+      readonly eventDraftStarted?: true;
       /** Array-only move; lets the event workbench refresh its List in place. */
       readonly eventCommandMove?: { readonly pageId: string };
       /** 높이(map.relief)만 바뀐 편집 — 높이 붓이 포인터 표본마다 낸다. 타일·이벤트·속성은 안 바뀐다. */

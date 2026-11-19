@@ -6,7 +6,8 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { eventNameFromPages } from "@/project/eventDisplayName";
-import { announceEventEditorClosed } from "@/editor/eventEditorLifecycleEvents";
+import { ensureEventPages } from "@/editor/eventPages";
+import { announceEventEditorClosed, announceEventEditorOpened } from "@/editor/eventEditorLifecycleEvents";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
 import {
   beginExistingEventDraft,
@@ -81,6 +82,9 @@ export function openEventEditorModal(
     return;
   }
   guardedCloseExistingEventEditorModal(() => {
+    // Normalize legacy events before taking the draft baseline.
+    const event = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId);
+    if (event && !event.draft && !event.pages?.length) ensureEventPages(mapId, eventId);
     if (options?.pageId) editorState.set({ selectedEventPageId: options.pageId });
     if (!beginExistingEventDraft(mapId, eventId)) return;
     openDraftEventEditorModal({ mapId, eventId, aiDock: options?.aiDock });
@@ -511,6 +515,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   );
   document.body.classList.add("event-editor-modal-open");
   document.body.append(backdrop);
+  announceEventEditorOpened(request.mapId);
   checkpointEventDraft(request.mapId, request.eventId);
   refresh();
   focusFirstDialogControl(backdrop);

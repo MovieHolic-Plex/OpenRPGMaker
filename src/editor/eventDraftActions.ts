@@ -5,7 +5,6 @@ import { describeEventDiff, eventDiffFields } from "@/editor/eventDiffLabel";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
-  beginEventEditDraft,
   commitEventDraft,
   discardEventDraft as discardProjectEventDraft,
   eventDraftDiffById,
@@ -65,18 +64,18 @@ export function beginExistingEventDraft(mapId: MapId, eventId: string): boolean 
     selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
     return true;
   }
-  let opened = false;
-  store.update(
-    (project) => {
-      opened = beginEventEditDraft(project, mapId, eventId);
-      if (opened) {
-        const draftEvent = project.maps[mapId]?.events.find((item) => item.id === eventId);
-        if (draftEvent) rememberEventDraftVaultEntry(mapId, draftEvent);
-      }
+  store.updateEvent(
+    mapId,
+    eventId,
+    (event) => {
+      event.draft = { kind: "edit", original: eventWithoutDraft(event) };
     },
-    { scope: "map", mapId, label: `이벤트 편집 시작: ${eventDisplayName(event)}`, origin: "system", eventId },
+    { scope: "map", mapId, label: `이벤트 편집 시작: ${eventDisplayName(event)}`, origin: "system", eventId, eventDraftStarted: true },
   );
+  const draftEvent = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
+  const opened = draftEvent?.draft?.kind === "edit";
   if (opened) {
+    rememberEventDraftVaultEntry(mapId, draftEvent);
     selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
     persistEventDraftVaultNow();
   }
