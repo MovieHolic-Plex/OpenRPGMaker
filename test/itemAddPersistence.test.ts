@@ -10,12 +10,19 @@ import { addDatabaseRecord } from "@/editor/databaseActions";
 describe("editor-added item persistence", () => {
   it("marks a fresh-project item edit as non-persistent before the fresh session discards it", async () => {
     freshProjectStorage.clear();
-    setDevProjectFactory(() => createBlankProject());
+    setDevProjectFactory(() => {
+      const sample = createBlankProject();
+      sample.switches = [];
+      return sample;
+    });
     await store.load();
+    expect(store.getCurrent().switches.length).toBeGreaterThan(0);
+    expect(store.hasUnsavedChanges()).toBe(false);
 
     const itemId = addDatabaseRecord("items");
 
     expect(store.getCurrent().database.items.some((item) => item.id === itemId)).toBe(true);
+    expect(store.hasUnsavedChanges()).toBe(true);
     expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
 
     const flushResult = await store.flush();

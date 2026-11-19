@@ -10,7 +10,7 @@ export type BuiltinGameId = "chrono-bell" | "emerald-crown" | "first-love";
 
 export type BuiltinGame = {
   readonly id: BuiltinGameId;
-  /** 게임 제목 — 게임 안 글자라 번역하지 않는다(translate="no"). */
+  /** 예제 카드 제목의 한국어 원문. */
   readonly title: string;
   /** 장르 · 분량 한 줄. */
   readonly genre: string;

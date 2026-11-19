@@ -23,7 +23,7 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "./defaults/defaultDatabase";
 import { repairFaceMatches } from "./faceMatchRepair";
-import { canSaveDevProjectOverride, isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
+import { canSaveDevProjectOverride, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
@@ -1417,9 +1417,9 @@ class ProjectStore {
    * 외부 파일 수정 없이 계측된다. 호출자는 전부 이 클래스 안에 있다 — 이 성질을
    * test/storeMutationInstrumentation.quarantine.test.ts 가 고정한다.
    */
-  private markLocalMutation(change: ProjectChangeDescriptor, onApplied?: (project: Project) => void): void {
+  private markLocalMutation(change: ProjectChangeDescriptor, onApplied?: (project: Project) => void, markDirty = true): void {
     this.mutationGeneration += 1;
-    this.dirtySinceLastPersist = true;
+    if (markDirty) this.dirtySinceLastPersist = true;
     try {
       onApplied?.(this.current);
     } finally {
@@ -1503,7 +1503,7 @@ class ProjectStore {
   private scheduleAutoSave(republishPending = true): void {
     if (!this.loaded) return;
     if (!this.remotePersistenceEnabled) {
-      if (this.remotePersistenceDisabledReason === "dev-showcase" && isSaveSkippedLocation()) {
+      if (this.remotePersistenceDisabledReason === "dev-showcase" && !canSaveDevProjectOverride()) {
         this.setAutoSaveState(nonPersistentSessionAutoSaveState());
       }
       return;
@@ -1659,7 +1659,7 @@ class ProjectStore {
           this.setAutoSaveState(autoSaveStateForFlushResult(
             result,
             this.remotePersistenceDisabledReason === "dev-showcase"
-              && isSaveSkippedLocation()
+              && !canSaveDevProjectOverride()
               && this.dirtySinceLastPersist,
             lastSavedAt,
           ));
@@ -1906,6 +1906,11 @@ class ProjectStore {
     }
   }
 
+  private recordBootRepair(change: ProjectChangeDescriptor): void {
+    // 번들 예제·개발 샘플은 정규화한 문서를 편집의 시작점으로 삼는다.
+    this.markLocalMutation(change, undefined, this.remotePersistenceDisabledReason !== "dev-showcase");
+  }
+
   private async normalizeCurrentProject(options: { readonly persistIfChanged?: boolean } = {}): Promise<void> {
     if (!canWriteTeamProject()) return;
     const persistIfChanged = options.persistIfChanged !== false;
@@ -1966,7 +1971,7 @@ class ProjectStore {
     const stamped = !skipNormalizers && bootMarker !== null;
     if (stamped) stampBootNormalization(this.current, bootMarker);
     if (changed || stamped) {
-      this.markLocalMutation({
+      this.recordBootRepair({
         scope: "system",
         label: changed ? `프로젝트 정규화 (${appliedNormalizers.length}종)` : "프로젝트 정규화 표식",
         origin: "system",
@@ -1984,7 +1989,7 @@ class ProjectStore {
     // A normal edit can also replace that object without advancing load lineage.
     if (this.current !== repairTarget || this.contentLineage !== repairLineage) return;
     if (facesRepaired) {
-      this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
+      this.recordBootRepair({ scope: "system", origin: "system", label: "Faceset sheet migration" });
       this.emit();
     }
     // 파일 저장이 있는 호스트면 인라인 업로드 자산을 지금 파일 참조로 바꾼다(inlineMediaRefs.ts 머리말).
@@ -2026,7 +2031,7 @@ class ProjectStore {
     const draft = cloneProjectSharingReferenceDocuments(this.current);
     if (!applySharedTileReferenceEntries(draft)) return false;
     this.current = draft;
-    this.markLocalMutation({ scope: "system", origin: "system", label: "공용 타일 참고문서 갱신", fields: [{ path: "sharedTileReferences", after: true }] });
+    this.recordBootRepair({ scope: "system", origin: "system", label: "공용 타일 참고문서 갱신", fields: [{ path: "sharedTileReferences", after: true }] });
     this.emit({ scope: "project", origin: "system" });
     if (this.remotePersistenceEnabled) this.scheduleAutoSave();
     return true;

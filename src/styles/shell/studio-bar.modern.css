@@ -211,12 +211,20 @@
 }
 
 .studio-host-connection {
+  border: 0;
   border-radius: var(--radius-s);
   background: var(--bg-inset);
   color: var(--text-2);
+  cursor: pointer;
   font: 500 11px/1.2 var(--font-ui);
   padding: 4px 6px;
   white-space: nowrap;
+}
+
+.studio-host-connection:hover,
+.studio-host-connection:focus-visible {
+  color: var(--text-1);
+  background: var(--bg-hover);
 }
 
 .studio-bar .studio-save-button {

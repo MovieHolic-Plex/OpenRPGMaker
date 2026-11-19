@@ -1008,10 +1008,7 @@ function schedulePaletteOnlyRefresh(): void {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
     if (mapLockBannerRoot) renderMapEditLockBanner(mapLockBannerRoot);
   };
-  const refresh = (): void => {
-    if (editorState.get().layer === "event") runWhenPointerReleased(run);
-    else run();
-  };
+  const refresh = (): void => runWhenPointerReleased(run);
   if (typeof queueMicrotask === "function") queueMicrotask(refresh);
   else setTimeout(refresh, 0);
 }
@@ -1063,11 +1060,7 @@ function scheduleFullPanelRefresh(editorStateOnly = false, fromStore = false): v
       });
     }
   };
-  const refresh = (): void => {
-    // A blur/store refresh must keep the event opener mounted through pointerup and click.
-    if (editorState.get().layer === "event") runWhenPointerReleased(run);
-    else run();
-  };
+  const refresh = (): void => runWhenPointerReleased(run);
   if (typeof requestAnimationFrame === "function") requestAnimationFrame(refresh);
   else setTimeout(refresh, 0);
 }

@@ -25,6 +25,7 @@ import { preloadBundledJsonForProject } from "@/project/defaults/bundledJson";
 import { abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { settleMonsterResourceDraftsForClose } from "@/editor/panels/databaseMonsterResourceEditor";
 import { hasEventDraftVaultEntries, persistEventDraftVaultNow } from "@/project/eventDraftVault";
+import { flushProjectForClose } from "../electron/main/closeFlow";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { reloadFlushAllowsReload } from "../electron/shared/reloadFlow";
@@ -78,8 +79,7 @@ if (typeof window !== "undefined" && window.location) {
         abortAiAssistantTurn();
         const monsterDraftsSaved = settleMonsterResourceDraftsForClose(mode === "save");
         // 이벤트 초안은 적용 버튼을 누르기 전까지 기존 금고에만 저장한다.
-        const projectSaved = !store.hasUnsavedChanges()
-          || reloadFlushAllowsReload((await store.flush()).kind, store.hasUnsavedChanges());
+        const projectSaved = await flushProjectForClose(store);
         const eventDraftsSaved = !hasEventDraftVaultEntries() || persistEventDraftVaultNow();
         return projectSaved && monsterDraftsSaved && eventDraftsSaved && !store.hasUnsavedChanges();
       };
