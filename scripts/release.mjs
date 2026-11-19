@@ -21,14 +21,18 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readAppVersion } from "./lib/appVersion.mjs";
-import { buildReleaseSections, bumpVersion, collectReleaseItems, renderReleaseNotes } from "./lib/releaseNotes.mjs";
+import { buildReleaseSections, bumpVersion, collectReleaseItems, enrichReleaseItems, renderReleaseNotes } from "./lib/releaseNotes.mjs";
 import {
   CHANGELOG_FILE,
   bumpManifestVersion as bumpManifestVersionAt,
+  ghReleaseCreateArgs,
+  gitAnnotateTagArgs,
   localDate,
   writeChangelog as writeChangelogAt,
+  writeReleaseNotesFile,
 } from "./lib/releaseFiles.mjs";
 
 
@@ -59,7 +63,7 @@ const USAGE = `사용: npm run release -- (--first | --patch | --minor | --major
   --minor        0.x 에서는 깨지는 변경도 여기다.
   --major        1.0.0 선언.
   --set X.Y.Z    버전을 직접 지정.
-  --summary      릴리스 노트 맨 위에 붙는 사람이 쓴 한 줄.
+  --summary      「주요 변경」을 사람이 쓴 글로 덮어쓴다(없으면 feat/fix/perf 에서 3–5줄을 고른다).
   --dry-run      파일·커밋·태그를 만들지 않고 계획과 노트만 출력.
   --limit N      수집할 커밋 수 상한(기본: 일반 릴리스는 무제한, --first 는 ${FIRST_RELEASE_LIMIT}).`;
 
@@ -107,6 +111,21 @@ function collectCommits(range, limit) {
     });
 }
 
+
+/** 머지된 PR 본문. gh 가 없거나 실패하면 null — 노트 생성은 커밋 제목으로 이어 간다. */
+function fetchPrBody(number) {
+  try {
+    const raw = execFileSync("gh", ["pr", "view", String(number), "--json", "body"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    }).trim();
+    return JSON.parse(raw).body ?? null;
+  } catch {
+    return null;
+  }
+}
+
 const args = parseArgs(process.argv.slice(2));
 if (args.help) {
   console.log(USAGE);
@@ -148,7 +167,7 @@ if (range) {
 }
 const allCommits = collectCommits(range, null);
 const commits = limit ? allCommits.slice(0, limit) : allCommits;
-const items = collectReleaseItems(commits);
+const items = enrichReleaseItems(collectReleaseItems(commits), fetchPrBody);
 const sections = buildReleaseSections(items);
 const date = localDate();
 const notes = renderReleaseNotes({
@@ -162,7 +181,7 @@ const notes = renderReleaseNotes({
 const bumps = args.first ? [] : ["package.json", ...(existsSync(join(root, "package-lock.json")) ? ["package-lock.json"] : [])];
 const plan = [
   `버전           ${info.version} → ${version}   (지금 이 커밋의 빌드 라벨 ${info.label})`,
-  `태그           ${tag} — 주석 태그, 본문 = 릴리스 노트`,
+  `태그           ${tag} — 주석 태그, 본문 = 릴리스 노트(# 제목 유지)`,
   args.first ? "package.json   범프 없음 (--first)" : `package.json   version 필드 갱신 (+ ${bumps.slice(1).join(", ") || "lock 없음"})`,
   "CHANGELOG.md   항목 1개 추가",
   `수집 범위      ${range ?? "저장소 전체(상한 적용)"} · 커밋 ${commits.length}건 → 노트 ${items.length}줄`,
@@ -184,7 +203,8 @@ writeChangelog(notes);
 // 4. 커밋과 태그.
 git(["add", "--", CHANGELOG_FILE, ...bumps]);
 git(["commit", "-m", `chore(release): ${tag}`]);
-git(["tag", "-a", tag, "-m", notes.trimEnd()]);
+const notesFile = writeReleaseNotesFile(join(tmpdir(), `oprn-release-notes-${tag}.md`), notes);
+git(gitAnnotateTagArgs(tag, notesFile));
 
 console.log(`[release] ${tag} 완료.\n`);
 console.log(plan.map((line) => `  ${line}`).join("\n"));
@@ -192,5 +212,6 @@ console.log(`
 다음 단계 (자동으로 하지 않는다 — 사람이 확인하고 민다):
   git push origin HEAD
   git push origin ${tag}
-  gh release create ${tag} --title "${tag}" --notes-from-tag
+  gh ${ghReleaseCreateArgs(tag, notesFile).join(" ")}
+  (본문은 CHANGELOG 의 이 버전 절과 같다. 태그에서 읽지 않는다 — # 제목이 빠지지 않게.)
 `);

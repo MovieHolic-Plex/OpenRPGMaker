@@ -2,8 +2,6 @@
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { createBuildRun } from "../../shared/buildRun";
 import { builderFor } from "../../place/builders";
-import { localizePlaceSpec } from "../../place/builders/modernCity";
-import { localizeCultureSpec } from "../../place/builders/joseon";
 import { fixPlayerStart } from "../../judge/machineChecks";
 import type { PersonSpec, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { buildPeople } from "../../place/people";
@@ -21,7 +19,7 @@ import type { peopleVerbs } from "./people";
 
 /** createV2Tools 에서 뗀 것 — makeGame. (makeGameVerbs) */
 export function makeGameVerbs(c: VerbContext & Pick<ReturnType<typeof peopleVerbs>, "personItem" | "eventItem">) {
-  const { env, session, task, run, poolVillage, freshStart, outsideBuilt, blueprintGate, linkChild, personItem, eventItem } = c;
+  const { env, session, task, run, localizeNewPlace, freshStart, outsideBuilt, blueprintGate, linkChild, personItem, eventItem } = c;
   const makeGame: PiToolShape = {
     name: "make_game", label: "작은 게임 짓기", concurrency: "exclusive",
     description: "One small game — build several places (5–8), link them parent-child (village house door ↔ interior, outdoor edge to edge, dungeon entrance), place people and events, then machine-walk the path from the start to every map and back, and return a critique per map. Do not call make_place per map.",
@@ -45,7 +43,7 @@ export function makeGameVerbs(c: VerbContext & Pick<ReturnType<typeof peopleVerb
       const lines: string[] = [];
       const linkNotes: string[] = [];
       for (const [i, place] of order.entries()) {
-        const spec0: PlaceSpec = poolVillage(localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true), String(task ?? "")), String(task ?? ""), env.ctx.project));
+        const spec0 = localizeNewPlace(dropModelSeed({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true));
         const parent = place.from ? built.get(place.from) : undefined;
         const parentMap = parent?.result.mapIds[0];
         // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.

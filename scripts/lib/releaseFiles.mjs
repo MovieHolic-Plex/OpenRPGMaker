@@ -14,7 +14,8 @@ export const CHANGELOG_FILE = "CHANGELOG.md";
 export const CHANGELOG_HEADER = `# 변경 기록
 
 이 파일은 \`npm run release\` 가 커밋 메시지에서 생성한다. 손으로 고치지 말 것 —
-고칠 것은 커밋 메시지다(\`feat:\` \`fix:\` \`refactor:\` … 규약은 openwiki/release-and-version.md).
+고칠 것은 커밋 메시지, PR 본문의 「릴리스 노트」/「Release notes」 절, 또는 \`--summary\` 다
+(규약은 openwiki/release-and-version.md).
 
 <!-- releases -->
 `;
@@ -69,7 +70,7 @@ export function writeChangelog(root, entry) {
   writeFileSync(path, `${existing.slice(0, insertAt)}\n${entry}${existing.slice(insertAt)}`);
 }
 
-/** CHANGELOG 본문에서 한 버전의 절만 꺼낸다 — 주석 태그 본문(= GitHub Release 노트)으로 쓴다. */
+/** CHANGELOG 본문에서 한 버전의 절만 꺼낸다 — GitHub Release 본문(--notes-file)의 정본이다. */
 export function changelogEntryFor(text, version) {
   const lines = String(text ?? "").split("\n");
   const start = lines.findIndex((line) => line.startsWith(`## ${version} `) || line.trim() === `## ${version}`);
@@ -89,4 +90,32 @@ export function localDate(when = new Date()) {
   const month = String(when.getMonth() + 1).padStart(2, "0");
   const day = String(when.getDate()).padStart(2, "0");
   return `${when.getFullYear()}-${month}-${day}`;
+}
+
+/**
+ * 주석 태그 메시지의 주석 글자. 기본 `#` 이면 `##`/`###` 제목이 통째로 빠진다
+ * (실측: v0.412.0 태그·GitHub 본문에서 섹션 제목이 사라짐).
+ * `git tag -a -F` 에 이 설정을 붙여 제목을 지킨다.
+ */
+export const GIT_TAG_COMMENT_CHAR = ";";
+
+/** 릴리스 노트 파일을 쓴다. 끝 줄바꿈을 보장한다. 경로를 그대로 돌려준다. */
+export function writeReleaseNotesFile(path, notes) {
+  const text = String(notes ?? "");
+  writeFileSync(path, text.endsWith("\n") ? text : `${text}\n`);
+  return path;
+}
+
+/** `git` 에 그대로 넘길 인자. `core.commentChar` 를 바꿔 `#` 제목을 지킨다. */
+export function gitAnnotateTagArgs(tag, notesFile, commit) {
+  const args = ["-c", `core.commentChar=${GIT_TAG_COMMENT_CHAR}`, "tag", "-a", String(tag), "-F", String(notesFile)];
+  if (commit) args.push(String(commit));
+  return args;
+}
+
+/** `gh` 에 그대로 넘길 인자. 본문은 태그에서 읽지 않고 --notes-file 로 넣는다. */
+export function ghReleaseCreateArgs(tag, notesFile, { draft = false } = {}) {
+  const args = ["release", "create", String(tag), "--title", String(tag), "--notes-file", String(notesFile)];
+  if (draft) args.push("--draft");
+  return args;
 }

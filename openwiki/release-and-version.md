@@ -71,8 +71,11 @@ npm run release -- --dry-run --minor --summary "로컬 SQLite 저장 첫 배포"
 npm run release -- --minor --summary "로컬 SQLite 저장 첫 배포"
 
 # 4. 사람이 확인하고 민다 (스크립트는 푸시하지 않는다)
+# 본문은 CHANGELOG 의 그 절을 --notes-file 로 올린다. --notes-from-tag 를 쓰지 않는다 —
+# git 주석 글자가 # 이라 `##`/`###` 제목이 태그 메시지에서 빠진다(실측 v0.412.0).
 git push origin HEAD && git push origin v0.2.0
-gh release create v0.2.0 --title "v0.2.0" --notes-from-tag
+# npm run release 가 알려 주는 노트 파일 경로를 쓰거나:
+gh release create v0.2.0 --title "v0.2.0" --notes-file /tmp/oprn-release-notes-v0.2.0.md
 ```
 
 첫 릴리스는 범프 없이 현재 버전을 태그한다: `npm run release -- --first` (노트는 최근 300커밋까지).
@@ -189,16 +192,21 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는
-릴리스마다 빠지고, 빠진 릴리스는 아무도 안 쓴다.
+릴리스마다 빠지고, 빠진 릴리스는 아무도 안 쓴다. GitHub 릴리스 본문과 CHANGELOG 는 같은 문자열이다.
 
-- 섹션: `feat` 기능 · `fix` 수정 · `perf` 성능 · `refactor` 정리 · `docs` 문서 · `test` 테스트 ·
-  `style` 스타일 · `build` 빌드 · `ci` CI · `revert` 되돌림 · `chore` 잡무
+- 맨 위 「주요 변경」: `feat`/`fix`/`perf`(및 깨지는 변경)에서 3–5줄을 고른다(깨지는 변경 → feat → fix → perf, PR 노트가 있는 것 우선)
+- 그다음 사용자 섹션: 깨지는 변경 · `feat` 기능 · `fix` 수정 · `perf` 성능 · `revert` 되돌림
+- 내부 섹션(`refactor` 정리 · `docs` 문서 · `test` 테스트 · `style` 스타일 · `build` 빌드 · `ci` CI · `chore` 잡무 · 기타)은 `<details>` 「개발」 안에 접는다
 - `!` 를 붙이면(`feat(editor)!:`) "깨지는 변경" 섹션이 맨 앞에 서고 원래 섹션에도 남는다
 - 머지 커밋과 `chore(release): …` 는 제외한다
 - 규약을 안 따른 메시지도 버리지 않고 "기타" 로 싣는다 — 조용히 사라지는 변경을 만들지 않기 위해서다
 - 같은 요약은 한 번만 싣는다(체리픽·리베이스 중복 방지)
+- 커밋 제목에 `(#1234)` 가 있으면 그 PR 본문의 「릴리스 노트」/「Release notes」 절 첫 줄을 쓴다. gh 를 못 쓰거나 절이 없으면 제목으로 남긴다
 
-사람이 쓸 자리는 `--summary` 한 줄이다.
+사람이 「주요 변경」을 통째로 쓰려면 `--summary` 를 넘긴다(자동 요약을 덮어쓴다).
+
+주석 태그는 `git tag -a -F` 에 `core.commentChar=;` 를 붙여 `##`/`###` 제목을 지킨다. GitHub 본문은
+`--notes-from-tag` 가 아니라 CHANGELOG 절을 `--notes-file` 로 올린다.
 
 ## 아직 안 한 것
 
@@ -230,7 +238,7 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 ```
 
 **① 발행** — 릴리스 PR 이 머지됐는데(= main 의 package.json 버전이 마지막 태그와 다르면)
-그 커밋에 주석 태그를 만들고 GitHub Release 를 낸다. 태그 본문은 CHANGELOG 의 그 절이다.
+그 커밋에 주석 태그를 만들고 GitHub Release 초안을 낸다. 본문은 CHANGELOG 의 그 절을 `--notes-file` 로 올린다.
 
 **② 제안** — 마지막 태그 이후 커밋이 있으면 `release/next` 브랜치를 origin/main 에서 다시
 만들어 범프 + CHANGELOG 항목을 커밋하고 PR 을 생성/갱신한다. 트리가 같으면 아무것도 하지
