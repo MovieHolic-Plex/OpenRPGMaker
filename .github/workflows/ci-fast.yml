@@ -11,8 +11,8 @@ name: ci-fast
 # 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
 # 번져 30분을 넘긴다. 푸시 레인의 게이트로 쓸 수 없다. 로컬 반복용 도구로 남긴다.
 #
-# 러너는 GitHub 호스티드다. 이 저장소는 공개라서, 포크 PR 의 코드를 소유자 컴퓨터의
-# self-hosted 러너에서 실행하지 않는다 (2026-10-12).
+# `runs-on` 식은 푸시와 같은 저장소의 PR 을 mdc2 에서 돌린다.
+# 포크 PR 과 pull_request_target 은 `||` 뒤의 GitHub 호스티드 러너(ubuntu-latest)로 간다.
 
 on:
   push:
@@ -49,7 +49,7 @@ concurrency:
 jobs:
   fast:
     name: fast
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2"]') || 'ubuntu-latest' }}
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -121,7 +121,7 @@ jobs:
 
   fast-parity:
     name: fast-parity (${{ matrix.shard }}/4)
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2"]') || 'ubuntu-latest' }}
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -151,7 +151,7 @@ jobs:
   # 정적 검사 묶음. `fast`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
   # 각 항목은 순수 함수/정적 분석이라 다른 단계의 산출물을 쓰지 않는다(러너도 따로다).
   fast-static:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2"]') || 'ubuntu-latest' }}
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -184,9 +184,12 @@ jobs:
       - name: 배럴 수출 계약
         run: npm run gates:barrel
 
-      # 워크플로가 소유자 컴퓨터(self-hosted)로 돌아가지 않는지.
-      - name: 호스티드 러너 계약
+      # self-hosted 분기는 포크 PR 과 pull_request_target 을 호스티드로 보내는 식에서만 허용한다.
+      - name: 러너 선택 계약
         run: npm run gates:self-hosted
+
+      - name: 러너 선택 계약 테스트
+        run: node --test scripts/check-self-hosted-workflows.test.mjs
 
       # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
       # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.

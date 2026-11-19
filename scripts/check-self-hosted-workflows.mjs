@@ -1,94 +1,99 @@
 #!/usr/bin/env node
-// 워크플로가 **소유자 컴퓨터(self-hosted)** 에서 돌지 않는지 검사하는 게이트.
+// 포크 PR 과 pull_request_target 이 호스티드 러너로 가는지 검사하는 게이트.
 //
-// 이 저장소는 공개다. self-hosted 러너는 소유자의 컴퓨터라, 포크 PR 의 코드가
-// 그 머신에서 실행되면 안 된다. CI 는 GitHub 호스티드 러너에서만 돈다 (2026-10-12).
-//
-// 하는 일: 모든 워크플로의 `runs-on` 을 훑어 self-hosted 이거나 호스티드 라벨이
-//          아니면 exit 1.
+// 모든 워크플로의 `runs-on` 에서 호스티드 라벨과 포크를 거르는 mdc2 선택식만 허용한다.
 //
 // 사용: node scripts/check-self-hosted-workflows.mjs
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+import { load } from "js-yaml";
 
 const DIR = ".github/workflows";
+const HOSTED = /^(?:ubuntu|macos|windows)-[a-z0-9][a-z0-9._-]*$/i;
+const REPOSITORY = String.raw`github\.repository`;
+const HEAD_REPOSITORY = String.raw`github\.event\.pull_request\.head\.repo\.full_name`;
 
-const HOSTED = /^(ubuntu|macos|windows)-/i;
+// 부분 문자열만 찾으면 `||` 로 조건을 우회하는 식도 통과한다. 식 전체에서 두 조건이
+// mdc2 라벨 배열을 AND 로 제어하고 마지막 OR 가 호스티드 라벨인지 확인한다.
+const MDC2_EXPRESSION = new RegExp([
+  String.raw`^\$\{\{`,
+  String.raw`github\.event_name\s*!=\s*'pull_request_target'`,
+  "&&",
+  String.raw`\(\s*github\.event_name\s*!=\s*'pull_request'\s*\|\|\s*`,
+  `(?:${HEAD_REPOSITORY}\\s*==\\s*${REPOSITORY}|${REPOSITORY}\\s*==\\s*${HEAD_REPOSITORY})`,
+  String.raw`\)`,
+  "&&",
+  String.raw`fromJSON\s*\(\s*'(?<labels>[^']*)'\s*\)`,
+  String.raw`\|\|`,
+  "'(?<fallback>[^']*)'",
+  String.raw`\}\}$`,
+].join(String.raw`\s*`));
 
-/**
- * 한 파일에서 `runs-on` 값들을 뽑는다. YAML 파서 의존성 없이 세 가지 표기를 다 본다:
- *   runs-on: ubuntu-latest
- *   runs-on: [ubuntu-latest]
- *   runs-on:
- *     - ubuntu-latest
- * 주석(`#` 뒤)은 버린다 — 이 저장소의 워크플로는 주석이 길어서 `runs-on:` 을 설명하는
- * 문장이 흔하다.
- */
-function runsOnValues(source) {
-  const lines = source.split("\n");
-  const found = [];
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index].replace(/#.*$/, "");
-    const match = /^(\s*)runs-on:\s*(.*)$/.exec(line);
-    if (!match) continue;
-    const [, indent, rest] = match;
-    const trimmed = rest.trim();
-    if (trimmed.startsWith("[")) {
-      found.push({ line: index + 1, labels: trimmed.replace(/^\[|\]$/g, "").split(",").map((s) => s.trim().replace(/^["']|["']$/g, "")).filter(Boolean) });
-      continue;
-    }
-    if (trimmed) {
-      found.push({ line: index + 1, labels: [trimmed.replace(/^["']|["']$/g, "")] });
-      continue;
-    }
-    // 블록 시퀀스: 다음 줄들이 더 깊은 들여쓰기의 `- 라벨`
-    const labels = [];
-    for (let next = index + 1; next < lines.length; next += 1) {
-      const item = /^(\s*)-\s*(.+)$/.exec(lines[next].replace(/#.*$/, ""));
-      if (!item || item[1].length <= indent.length) break;
-      labels.push(item[2].trim().replace(/^["']|["']$/g, ""));
-    }
-    if (labels.length > 0) found.push({ line: index + 1, labels });
+export function runsOnValues(source) {
+  const workflow = load(source);
+  return Object.entries(workflow?.jobs ?? {})
+    .filter(([, job]) => job != null && Object.hasOwn(job, "runs-on"))
+    .map(([job, definition]) => ({ job, value: definition["runs-on"] }));
+}
+
+function isHosted(label) {
+  return typeof label === "string" && HOSTED.test(label);
+}
+
+export function isAllowedRunsOn(value) {
+  if (Array.isArray(value)) return value.length > 0 && value.every(isHosted);
+  if (isHosted(value)) return true;
+  if (typeof value !== "string") return false;
+
+  const match = MDC2_EXPRESSION.exec(value.trim());
+  if (!match || !isHosted(match.groups.fallback)) return false;
+
+  let labels;
+  try {
+    labels = JSON.parse(match.groups.labels);
+  } catch {
+    return false;
   }
-  return found;
+  if (!Array.isArray(labels) || !labels.every((label) => typeof label === "string" && label.length > 0)) return false;
+  const normalized = labels.map((label) => label.toLowerCase());
+  return normalized.includes("self-hosted") && normalized.includes("mdc2");
 }
 
-let files;
-try {
-  files = readdirSync(DIR).filter((name) => /\.ya?ml$/.test(name)).sort();
-} catch {
-  console.error(`워크플로 디렉터리를 읽지 못했다: ${DIR}`);
-  process.exit(2);
-}
+function main() {
+  let files;
+  try {
+    files = readdirSync(DIR).filter((name) => /\.ya?ml$/.test(name)).sort();
+  } catch {
+    console.error(`워크플로 디렉터리를 읽지 못했다: ${DIR}`);
+    return 2;
+  }
 
-const violations = [];
-let checked = 0;
-for (const name of files) {
-  const entries = runsOnValues(readFileSync(join(DIR, name), "utf8"));
-  for (const { line, labels } of entries) {
-    checked += 1;
-    if (labels.some((label) => label.toLowerCase() === "self-hosted")) {
-      violations.push({ name, line, hosted: labels });
-      continue;
+  const violations = [];
+  let checked = 0;
+  for (const name of files) {
+    const path = join(DIR, name);
+    try {
+      for (const { job, value } of runsOnValues(readFileSync(path, "utf8"))) {
+        checked += 1;
+        if (!isAllowedRunsOn(value)) violations.push(`${path}  jobs.${job}.runs-on`);
+      }
+    } catch (error) {
+      violations.push(`${path}  ${error.message}`);
     }
-    const hosted = labels.filter((label) => HOSTED.test(label));
-    if (hosted.length === 0) violations.push({ name, line, hosted: labels });
   }
+
+  if (violations.length > 0) {
+    console.error(`\n러너 선택 계약 위반 ${violations.length}건:\n`);
+    for (const violation of violations) console.error(`  ${violation}`);
+    console.error("\n호스티드 라벨 또는 ci-fast.yml 과 같이 포크 PR 과 pull_request_target 을 호스티드로 보내는 mdc2 선택식을 써야 한다.");
+    return 1;
+  }
+
+  console.log(`러너 선택 계약 통과: 워크플로 ${files.length}개 / runs-on ${checked}곳`);
+  return 0;
 }
 
-if (violations.length > 0) {
-  console.error(`\n소유자 컴퓨터에서 도는 워크플로가 ${violations.length}건 있다:\n`);
-  for (const { name, line, hosted } of violations) {
-    console.error(`  ${DIR}/${name}:${line}  runs-on: ${hosted.join(", ")}`);
-  }
-  console.error(
-    "\n이 저장소는 공개다. CI 는 GitHub 호스티드 러너에서만 돈다.\n" +
-    "self-hosted 는 소유자 컴퓨터라 포크의 코드가 그 머신에서 실행된다.\n\n" +
-    "고치는 법:\n" +
-    "  runs-on: ubuntu-latest\n" +
-    "  runs-on: macos-latest    macOS 가 필요할 때만\n",
-  );
-  process.exit(1);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  process.exitCode = main();
 }
-
-console.log(`호스티드 러너 계약 통과: 워크플로 ${files.length}개 / runs-on ${checked}곳`);

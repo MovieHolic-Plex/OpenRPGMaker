@@ -54,8 +54,10 @@
 
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
 - `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
-  `fast-static`(jp_city 핀·타입체크:electron-store·배럴·호스티드 계약·런타임 에셋·CSS 래칫·openwiki 인덱스)이
-  서로 기다리지 않고 병렬로 돈다. PR 한 판에 GitHub 호스티드 잡 6개가 돈다.
+  `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
+  서로 의존하지 않는다. 한 판에 잡 6개가 돌고, 푸시와 같은 저장소의 PR 은 mdc2 두 대를 쓴다.
+  포크 PR 과 pull_request_target 은 `runs-on` 식에서 `ubuntu-latest` 로 간다. 수동 `ci-vitest-files` 는
+  같은 선택식에 `mdc2-heavy` 라벨을 더해 48GB 러너를 쓴다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
   같은 날 실측(run 44531254883, 44533700673, 44536145289)에서 ci-full 과 여러 PR 이 겹치자
   4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
@@ -63,6 +65,7 @@
   초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
+  테스트 16샤드와 정적 잡은 `ubuntu-latest` 에서 돌려 mdc2 의 PR CI 자리를 비워 둔다.
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
 - **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
   «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의
