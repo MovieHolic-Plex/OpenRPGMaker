@@ -5,7 +5,7 @@ name: ci-fast
 # 무엇을 넣었나: 2026-08-04 마지막 CI 실행에서 **실제로 초록이었던 것들**만 넣었다
 # (editor-player-parity ✅, build ✅). 빨간 잡(unit-tests / e2e / ax-gates)은 여기 없다 —
 # 빨간불을 푸시마다 띄우면 아무도 안 보게 되고, 그래서 이 저장소의 Actions 가 꺼졌다.
-# 전체 스위트는 ci-full.yml(야간+수동)이 기준선 대비 회귀만 잡는다.
+# 전체 스위트는 ci-full.yml(4시간 cron·수동)이 기준선 대비 회귀만 잡는다.
 #
 # 왜 `npm run test:changed` 가 아닌가: 이 래퍼는 import 그래프를 타고 번져서 소요가
 # 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
@@ -21,8 +21,8 @@ on:
       - 'release/**'
   # PR 에도 돈다 (2026-10-25). 전에는 push 만 있어서 PR 에 체크가 하나도 없었고(`gh pr checks` →
   # "no checks reported"), 에이전트가 `gh pr merge` 로 바로 머지해 빨간 코드가 main 에 들어왔다
-  # (run 40185571034: #3464 의 TS18048 이 머지 뒤에야 잡혔다). 이제 PR 머지 전 판정은 이 잡이 한다 —
-  # `node scripts/merge-pr.mjs <번호>` 가 이 체크 초록을 기다린 뒤에만 머지한다.
+  # (run 40185571034: #3464 의 TS18048 이 머지 뒤에야 잡혔다).
+  # `node scripts/merge-pr.mjs <번호>` 가 `fast`·`fast-static`·패리티 전 샤드의 초록을 기다린 뒤에만 머지한다.
   # pull_request 체크아웃은 「PR 머리 + 지금 main」 병합 커밋이라 HEAD~1 = main 이다(jp_city 핀 검사가 그대로 맞다).
   # 포크 PR 도 호스티드 러너·읽기 전용 토큰으로 돈다. 비밀은 쓰지 않는다.
   pull_request:
@@ -42,11 +42,13 @@ concurrency:
 # 독립적인 정적 검사를 fast-static 으로 떼어 병렬로 돌려 임계 경로를 약 100초 줄이는 구성이었다.
 #
 # 2026-11-19 실측(run 44483882406)에서 fast 는 6분 28초 걸렸고, parity 230초(가져오기 40%)·
-# 타입체크 44초·체크아웃 46초가 직렬이었다. parity 를 4샤드로 나누고 컴파일·하네스·타입체크·
-# 앱 빌드는 fast-build 로 떼어 병렬로 돌린다. `fast` 는 둘을 기다리는 집계 잡으로 남긴다.
+# 타입체크 44초·체크아웃 46초가 직렬이었다. `fast`(빌드)·`fast-parity` 4샤드·`fast-static` 은
+# 서로 기다리지 않고 병렬로 돈다. 같은 날 실측(run 44531254883, 44533700673, 44536145289):
+# ci-full 과 여러 PR 이 겹치면 4초짜리 집계 잡도 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다.
+# 집계를 머지 도우미에서 해 PR 한 판에 잡 6개만 실행하고, 마지막 러너 대기를 없앤다.
 jobs:
-  fast-build:
-    name: fast-build
+  fast:
+    name: fast
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -146,28 +148,7 @@ jobs:
       - name: parity 스위트 (샤드 ${{ matrix.shard }}/4)
         run: npm run test:parity -- --shard=${{ matrix.shard }}/4
 
-  # 필수 체크 이름 `fast` 를 유지해 merge-pr.mjs 게이트가 그대로 동작한다.
-  # 빌드나 parity 중 하나라도 실패하거나 건너뛰면 이 체크가 빨강이다.
-  fast:
-    needs: [fast-build, fast-parity]
-    if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: 게이트 판정
-        shell: bash
-        env:
-          BUILD_RESULT: ${{ needs.fast-build.result }}
-          PARITY_RESULT: ${{ needs.fast-parity.result }}
-        run: |
-          set -euo pipefail
-          printf 'fast-build: %s\nfast-parity: %s\n' "$BUILD_RESULT" "$PARITY_RESULT"
-          if [[ "$BUILD_RESULT" != success || "$PARITY_RESULT" != success ]]; then
-            echo '::error::fast-build 와 fast-parity 가 모두 성공해야 한다.'
-            exit 1
-          fi
-
-  # 정적 검사 묶음. `fast-build`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
+  # 정적 검사 묶음. `fast`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
   # 각 항목은 순수 함수/정적 분석이라 다른 단계의 산출물을 쓰지 않는다(러너도 따로다).
   fast-static:
     runs-on: ubuntu-latest

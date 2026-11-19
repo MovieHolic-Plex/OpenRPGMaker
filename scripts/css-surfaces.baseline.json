@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T12:00:02.048Z",
+  "generatedAt": "2026-11-19T16:10:18.505Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -3133,6 +3133,7 @@
     "R2|shell/studio-bar.modern.css|.studio-command-center .workspace-command-chip-key|workspace-command-chip-key",
     "R2|shell/studio-bar.modern.css|.studio-command-center .workspace-command-chip-label|studio-command-center",
     "R2|shell/studio-bar.modern.css|.studio-command-center .workspace-command-chip-label|workspace-command-chip-label",
+    "R2|shell/studio-bar.modern.css|.studio-host-connection:hover|studio-host-connection",
     "R2|shell/studio-bar.modern.css|.studio-host-connection|studio-host-connection",
     "R2|shell/studio-bar.modern.css|.studio-icon-button svg|studio-icon-button",
     "R2|shell/studio-bar.modern.css|.studio-icon-button:focus-visible|studio-icon-button",

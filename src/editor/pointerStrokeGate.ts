@@ -30,7 +30,7 @@ function release(): void {
   deferred.clear();
   // 뗀 순간의 프레임(마지막 칸)이 먼저 그려지게, 미룬 일은 각자 다음 매크로태스크로 흩는다.
   // 한 핸들러에서 몰아 돌리면 팔레트 재구축+직렬화가 하나의 긴 태스크가 된다.
-  for (const task of tasks) setTimeout(task, 0);
+  for (const task of tasks) setTimeout(() => runWhenPointerReleased(task), 0);
 }
 
 /**

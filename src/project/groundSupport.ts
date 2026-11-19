@@ -53,7 +53,8 @@ export function kitSupportKind(kit: StructureKitDef): SupportKind | null {
   if (!isDungeonKit(kit)) return null;
   const role = String(kit.ai?.role ?? "");
   const id = kit.id;
-  if (role === "prop") return WALL_MOUNT.test(id) ? "mount" : WALL_DOOR.test(id) ? "door" : "stand";
+  // 던전 겉가죽 킷(bd-dgn-*)은 굽는 표가 벽걸이를 꼬리표로 적는다 — 이름 낱말(용암 줄기·벽 샘·봉인된 문)로는 가릴 수 없다.
+  if (role === "prop") return WALL_MOUNT.test(id) || (kit.ai?.tags ?? []).includes("벽걸이") ? "mount" : WALL_DOOR.test(id) ? "door" : "stand";
   if (role === "wall" && !/ceiling/.test(id)) return "face";
   return null;
 }

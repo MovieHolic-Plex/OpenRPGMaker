@@ -6,17 +6,19 @@ import { toast } from '@/util/toast';
 import { TEAM_COLLAB_ENABLED } from '../../electron/shared/teamCollab';
 
 let latest: TeamStatus | null = null;
-let hostConnectionIndicator: HTMLElement | undefined;
+let hostConnectionIndicator: HTMLButtonElement | undefined;
+const HOST_DISCONNECTED_DETAIL = '호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다';
 export function teamSessionStatus(): TeamStatus | null { return latest; }
 
 export function renderHostConnectionIndicator(): HTMLElement {
   if (hostConnectionIndicator?.ownerDocument === document) return hostConnectionIndicator;
-  const indicator = document.createElement('span');
+  const indicator = document.createElement('button');
+  indicator.type = 'button';
   indicator.className = 'studio-host-connection';
-  indicator.setAttribute('role', 'status');
   indicator.hidden = true;
-  indicator.title = '호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다';
+  indicator.title = HOST_DISCONNECTED_DETAIL;
   indicator.textContent = '호스트 연결 끊김';
+  indicator.addEventListener('click', () => toast(HOST_DISCONNECTED_DETAIL, { durationMs: 5000 }));
   hostConnectionIndicator = indicator;
   return indicator;
 }

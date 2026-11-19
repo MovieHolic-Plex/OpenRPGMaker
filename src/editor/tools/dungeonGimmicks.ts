@@ -18,6 +18,7 @@ import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, field, list, text } from "./jrpgVolumeTools";
 import { makePage, puzzleEvent, sfx, shake, flash, textCmd, choices, TRANSPARENT } from "./puzzleKit";
 import { resolveGraphic } from "./eventCompile";
+import { auditLeverGates } from "./dungeonGateAudit";
 import { planTileGate, placeTileGate, type TileGateKits, type TileGatePlan } from "./tileGate";
 
 export const DUNGEON_GIMMICKS = ["lever", "bridge", "teleporter", "minecart", "iceslide", "sandpit"] as const;
@@ -620,17 +621,30 @@ export function placeThemeGimmick(draft: Project, map: GameMap, data: Record<str
   const order: DungeonGimmick[] = want ? [want, ...theme.filter((g) => g !== want)] : [theme[seed % Math.min(2, theme.length)]!, ...theme];
   if (!order.includes("lever")) order.push("lever");
   const tried = new Set<DungeonGimmick>();
+  // 레버 관문은 놓은 뒤 지은 맵에서 다시 확인한다(dungeonGateAudit): 닫힌 채로 레버에 닿고, 닫으면 못 가던 곳이 열면 열려야 한다.
+  // 아니면(또는 관문만 서고 레버가 못 선 채 접혔으면) 놓기 전으로 되돌리고 다음 자리·다음 장치로 간다 — 여는 장치가 제 관문 너머에 선 층이 나왔다(2026-11-15).
+  const sound = (place: () => string): string => {
+    const snap = { events: structuredClone(map.events), lower: map.lowerTiles.slice(), upper: map.upperTiles.slice(), switches: draft.switches.map((s) => s.id) };
+    const line = place();
+    if (line && !auditLeverGates(draft, map, entry).length) return line;
+    map.events = snap.events;
+    // 이 시도가 만든 이름 붙은 스위치도 걷는다(쓰이지 않는 스위치가 남지 않게)
+    for (const s of draft.switches.filter((x) => !snap.switches.includes(x.id))) delete draft.session.switches[s.id];
+    draft.switches.splice(0, draft.switches.length, ...draft.switches.filter((x) => snap.switches.includes(x.id)));
+    for (let i = 0; i < snap.lower.length; i += 1) { map.lowerTiles[i] = snap.lower[i]!; map.upperTiles[i] = snap.upper[i]!; }
+    return "";
+  };
   for (const g of order) {
     if (tried.has(g)) continue;
     tried.add(g);
-    const line = g === "lever" ? (leverFallback() || placeChokeLever(c, false)) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
+    const line = g === "lever" ? (sound(leverFallback) || sound(() => placeChokeLever(c, false))) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
     if (line) {
       if (want && g !== want) warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL[g]}(으)로 바꿨다.`);
       return { gimmick: g, line, after };
     }
   }
   // 마지막: 입구 방에 서는 레버(들어서자마자 당기는 레버) — 다른 장치가 다 안 될 때만(dt r2 cave-a 는 다리 자리가 있는데도 입구 레버였다).
-  const last = placeChokeLever(c, true);
+  const last = sound(() => placeChokeLever(c, true));
   if (last) { if (want && want !== "lever") warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL.lever}(으)로 바꿨다.`); return { gimmick: "lever", line: last, after }; }
   warnings.push(`${map.name}: 주제 장치를 둘 자리가 없었다.`);
   return { gimmick: null, line: "", after };

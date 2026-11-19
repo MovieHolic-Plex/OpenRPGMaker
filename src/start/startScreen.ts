@@ -18,7 +18,7 @@ import { mountWindowControls } from "./windowControls";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
-import { getLocale, initI18n, t } from "@/i18n";
+import { getLocale, initI18n, LOCALE_CHANGED_EVENT, t } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
 import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
@@ -34,7 +34,7 @@ import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
 import { startIcon } from "./icons";
 import { builtinGameEditUrl } from "./home/builtinGames";
-import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, myGamesShelf, type HomeActions, type RecentProjectsView } from "./home/homeView";
+import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, isDefaultProjectTitle, myGamesShelf, type HomeActions, type RecentProjectsView } from "./home/homeView";
 import { formatLastOpenedTime } from "@/project/recentProjectTime";
 import { withoutRecentProject } from "../../electron/shared/recentProjects";
 import { BUILTIN_GAMES } from "./home/builtinGames";
@@ -416,10 +416,15 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     promptHome.setGames(worlds.map((entry) => ({
       key: entry.projectDir,
       title: titles.get(entry.projectDir) ?? entry.title,
+      titleIsDefault: isDefaultProjectTitle(entry.title),
       meta: makingMeta(entry),
       cover: coverArt(entry, "fr-gcard-cov"),
     })), state.entries.filter((entry) => entry.hiddenReason !== "temporary").length);
   };
+  document.addEventListener(LOCALE_CHANGED_EVENT, () => {
+    promptHome?.syncLocale();
+    if (promptShown()) renderPromptGames();
+  });
   const showPromptHome = (): void => {
     promptHome ??= createPromptHome({
       submit: submitFirstRun,

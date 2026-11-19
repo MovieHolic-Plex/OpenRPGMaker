@@ -70,6 +70,7 @@ import { focusFirstMenuItem, handleMenuArrowKeys, renderWorkspaceBar } from "@/e
 import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
+import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 
 // ── 스튜디오 바 (2026-09-03) ──────────────────────────────────────────────────────────────
 // 표준·전문가 셸의 톱바는 **한 줄**이다. 그 전에는 메뉴 4개 + 작업 칩 4개 + 보기 + Ctrl K +
@@ -172,6 +173,11 @@ let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
+  // 모달의 blur/닫기에서 온 기록·레이아웃 갱신도 누르는 중인 단추를 교체하면 안 된다.
+  runWhenPointerReleased(() => rebuildTopbar(topbar));
+}
+
+function rebuildTopbar(topbar: HTMLElement): void {
   // 메뉴 모듈이 잡히면 이미 읽기 시작한다. 톱바가 다시 그려져도 한 번만이다.
   scheduleDatabaseModalPrefetch();
   const focusSnapshot = captureFocus(topbar);

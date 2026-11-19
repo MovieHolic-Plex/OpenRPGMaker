@@ -9,6 +9,8 @@ import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store, type AutoSaveState } from "@/project/store";
 import type { Project } from "@/project/types";
+import { renderHostConnectionIndicator } from "@/editor/teamSession";
+import { registerModal } from "@/editor/ui/modalStack";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -148,6 +150,59 @@ afterEach(async () => {
 });
 
 describe("스튜디오 바 — 한 줄, 집 하나", () => {
+  it("keeps the first top-bar click after modal close through a queued rebuild", async () => {
+    const topbar = render();
+    const overlay = document.createElement("div");
+    document.body.append(overlay);
+    const closeModal = registerModal(overlay, () => overlay.remove());
+    const dispatch = (type: string): void => {
+      const listener = vi.mocked(window.addEventListener).mock.calls.find(([eventType]) => eventType === type)?.[1];
+      if (typeof listener !== "function") throw new Error(`Missing ${type} listener`);
+      listener(new Event(type));
+    };
+
+    dispatch("pointerdown");
+    closeModal();
+    renderTopbar(topbar as unknown as HTMLElement);
+    dispatch("pointerup");
+
+    const resource = findByTestId(topbar, "toolbar-resource-manager")!;
+    dispatch("pointerdown");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(findByTestId(topbar, "toolbar-resource-manager")).toBe(resource);
+    dispatch("pointerup");
+    resource.click();
+    expect(mocks.openResourceModal).toHaveBeenCalledOnce();
+
+    const upper = findByTestId(topbar, "layer-upper")!;
+    dispatch("pointerdown");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(findByTestId(topbar, "layer-upper")).toBe(upper);
+    dispatch("pointerup");
+    upper.click();
+    expect(editorState.get().layer).toBe("upper");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(findByTestId(topbar, "layer-upper")).not.toBe(upper);
+  });
+
+  it("explains the disconnected host when its status button is activated", () => {
+    vi.useFakeTimers();
+    try {
+      const topbar = render();
+      const indicator = renderHostConnectionIndicator();
+      expect(indicator.tagName).toBe("BUTTON");
+      expect(indicator.hidden).toBe(true);
+      expect(fake(indicator).parentElement?.parentElement?.parentElement).toBe(topbar);
+      indicator.hidden = false;
+      indicator.click();
+      expect(findByTestId(fake(document.body), "toast")?.textContent)
+        .toContain("편집은 계속됩니다. 다시 연결되면 자동 저장합니다");
+      vi.runOnlyPendingTimers();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("클래식 툴바 행·게임 메뉴·작업 칩·툴바 접기·도구 메뉴·편집 모드 선택이 없다", () => {
     // Break: 복제 표면이 되살아난다.
     const topbar = render();
