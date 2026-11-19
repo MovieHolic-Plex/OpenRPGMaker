@@ -1,4 +1,5 @@
 import { editorState } from "@/editor/editorState";
+import { renderHostConnectionIndicator } from "@/editor/teamSession";
 import { makeLeftLayerSwitcher, paintLayerSwitcher } from "./leftLayerSwitcher";
 import { isTextEditingElement } from "@/editor/hotkeys";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
@@ -8,6 +9,8 @@ import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
 import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t } from "@/i18n";
 import { showAlert, showConfirm } from "@/editor/ui/modal";
 import { showBackupRestoreDialog } from "@/editor/ui/backupRestoreDialog";
+import { loadWithOpeningDialog } from "@/editor/ui/loadWithOpeningDialog";
+import { openProjectFolder } from "@/editor/projectFolderActions";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderAiConnectionChip } from "@/editor/panels/aiConnectionChip";
@@ -55,7 +58,8 @@ import { toast } from "@/util/toast";
 import { beginGameExport, endGameExport } from "./gameExportNotice";
 import { projectRepository } from "@/project/persistence/repository";
 import { sameProjectTarget } from "@/project/persistence/target";
-import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
+import { openPersistenceRecovery, persistenceRecoveryCopy, persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
+import { createSaveErrorPopover, saveErrorIcon } from "@/editor/ui/saveErrorPopover";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { toolLabel, uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
@@ -66,6 +70,7 @@ import { focusFirstMenuItem, handleMenuArrowKeys, renderWorkspaceBar } from "@/e
 import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
+import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 
 // ── 스튜디오 바 (2026-09-03) ──────────────────────────────────────────────────────────────
 // 표준·전문가 셸의 톱바는 **한 줄**이다. 그 전에는 메뉴 4개 + 작업 칩 4개 + 보기 + Ctrl K +
@@ -124,6 +129,7 @@ type MenuCommand =
       readonly label: string;
       readonly icon?: SvgIconName;
       readonly onClick: () => void;
+      readonly prefetch?: () => Promise<unknown>;
       readonly testId: string;
       /** 보이는 단축키 표기(예: "Ctrl+S"). 항목 오른쪽 <kbd> 로 그린다. */
       readonly shortcut?: string;
@@ -167,6 +173,11 @@ let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
+  // 모달의 blur/닫기에서 온 기록·레이아웃 갱신도 누르는 중인 단추를 교체하면 안 된다.
+  runWhenPointerReleased(() => rebuildTopbar(topbar));
+}
+
+function rebuildTopbar(topbar: HTMLElement): void {
   // 메뉴 모듈이 잡히면 이미 읽기 시작한다. 톱바가 다시 그려져도 한 번만이다.
   scheduleDatabaseModalPrefetch();
   const focusSnapshot = captureFocus(topbar);
@@ -239,6 +250,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
     toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
     toolButton({ testId: "topbar-assistant", icon: TOPBAR_ICONS.sparkle, label: "조수", title: "조수 열기", onClick: () => openAssistantDock() }),
+    ...(mode === "edit" ? [renderHostConnectionIndicator()] : []),
     renderSaveButton(),
   );
   if (mode === "edit") trailing.append(renderTestPlayButton());
@@ -363,39 +375,63 @@ function watchProjectMenuLabel(button: HTMLElement): () => void {
 /**
  * 저장 = 오른쪽의 연한 글자 단추 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」(2026-11 개편).
  * 예전에는 디스크 아이콘 + 7px 점, 실패 칩(topbar-save-status), 상태 줄 저장 칸 셋이 같은 상태를 나눠 말했다.
- * 이제 이 글자 하나가 상태를 말하고, 누르면 저장(실패 뒤에는 다시 저장)한다. 실패는 위험색이다.
- * title 은 e2e 계약대로 정확히 「프로젝트 저장 (Ctrl+S)」다. 하네스 드라이버는 data-autosave-kind 를 기다린다.
+ * 평소에는 누르면 저장하고, 실패하면 같은 자리에서 상세와 재시도 동작을 연다.
  */
 function renderSaveButton(): HTMLElement {
+  const saveLabel = "프로젝트 저장 (Ctrl+S)";
+  const icon = saveErrorIcon();
   const label = el("span", { class: "studio-save-label", dataset: { testid: "toolbar-save-label" } });
   // 단추의 접근 이름은 동작(저장)이다 — 바뀐 상태는 옆의 라이브 리전이 읽는다.
   const status = el("span", { class: "visually-hidden", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "toolbar-save-autosave" } });
   const button = el("button", {
     class: "studio-save-button",
-    attrs: { type: "button", title: "프로젝트 저장 (Ctrl+S)", "aria-label": "프로젝트 저장 (Ctrl+S)", "aria-keyshortcuts": "Control+S" },
+    attrs: { type: "button", title: saveLabel, "aria-label": saveLabel, "aria-keyshortcuts": "Control+S" },
     dataset: { testid: "toolbar-save" },
-    children: [label],
-    on: { click: () => void saveProjectNow() },
+    children: [icon, label],
+    on: { click: () => { if (failureDetail === null) void saveProjectNow(); } },
   });
+  let failureDetail: string | null = null;
+  const retry = el("button", {
+    class: "btn small",
+    attrs: { type: "button" },
+    dataset: { testid: "toolbar-save-retry" },
+    on: { click: () => {
+      details.dismiss();
+      button.focus();
+      if (!openPersistenceRecovery()) void saveProjectNow();
+    } },
+  });
+  const details = createSaveErrorPopover(button, [retry]);
   const paint = (state: AutoSaveState): void => {
     const notPersisted = isSessionNotPersisted(state);
-    const blocked = store.getPersistenceRecovery().kind === "blocked";
+    const recovery = store.getPersistenceRecovery();
+    const blocked = recovery.kind === "blocked";
+    if (state.kind === "error" && !notPersisted) failureDetail = state.message;
+    else if (blocked) failureDetail = persistenceRecoveryCopy(recovery.error).message;
+    else if (state.kind === "saved" || state.kind === "idle" || notPersisted) failureDetail = null;
     if ((state.kind === "error" && !notPersisted) || blocked) saveFailureEpisode = true;
     else if (state.kind === "saved" || state.kind === "idle" || notPersisted) saveFailureEpisode = false;
     // 저장하지 않는 세션은 실패가 아니다 — 빨간 글자 대신 회색 「저장 안 함(임시)」(배너가 이유를 말한다).
     button.dataset.autosaveKind = notPersisted ? "unsaved-session" : state.kind;
     button.classList.toggle("is-failing", saveFailureEpisode);
-    const text = blocked && state.kind !== "error" ? "저장 실패" : autosaveStripText(state);
+    const text = blocked ? "저장 실패" : autosaveStripText(state);
     if (label.textContent !== text) label.textContent = text;
+    const actionLabel = failureDetail === null ? saveLabel : "저장 실패 상세";
+    button.title = actionLabel;
+    button.setAttribute("aria-label", actionLabel);
+    retry.textContent = blocked ? "복구" : "다시 저장";
+    retry.disabled = !blocked && (state.kind === "pending" || state.kind === "saving");
+    details.setMessage(failureDetail);
     const retries = state.kind === "error" && !notPersisted && state.retryCount ? ` (${state.retryCount}회)` : "";
     status.textContent = `${autosaveStatusText(state)}${retries}`;
   };
   paint(store.getAutoSaveState());
-  disposeSaveStatus = store.subscribeAutoSave((state) => {
+  const unsubscribe = store.subscribeAutoSave((state) => {
     logAutoSaveTransition(state);
     paint(state);
   });
-  return el("span", { class: "studio-save-wrap", children: [button, status] });
+  disposeSaveStatus = () => { unsubscribe(); details.dispose(); };
+  return el("div", { class: "studio-save-wrap", children: [button, status, details.panel] });
 }
 
 /**
@@ -864,6 +900,10 @@ function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuC
         ...(command.shortcut ? [el("kbd", { class: "oprn-menu-command-kbd", text: command.shortcut, attrs: { translate: "no" } })] : []),
       ],
       on: {
+        ...(command.prefetch ? {
+          pointerenter: () => { void command.prefetch?.().catch(() => undefined); },
+          pointerdown: () => { void command.prefetch?.().catch(() => undefined); },
+        } : {}),
         click: () => {
           command.onClick();
           closeMenuPopup();
@@ -958,8 +998,11 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       // 파일 메뉴의 관례: 만들기·열기·저장이 맨 위다. 저장은 톱바 저장 단추와 같은 한 동작이고, 메뉴에서는
       // 단축키를 보여 주는 자리다. 내보내기 성격 항목 넷은 하위 메뉴 하나로 묶는다(IS-051 — 항목 이름 24자 이하).
       return [
-        item("새 프로젝트 만들기…", "menu-project-new", () => void newProject()),
-        ...(store.getCurrent().gameDesignBrief ? [item("게임 기획…", "menu-project-design-brief", () => void editGameDesignBrief())] : []),
+        { ...item("새 프로젝트 만들기…", "menu-project-new", () => void newProject()), prefetch: loadConceptFeed },
+        ...(store.getCurrent().gameDesignBrief ? [{
+          ...item("게임 기획…", "menu-project-design-brief", () => void editGameDesignBrief()),
+          prefetch: () => loadProjectInterview(!!store.getCurrent().gameDesignBrief?.interview),
+        }] : []),
         item("열기…", "menu-project-load", () => void doLoad()),
         { ...item("저장", "menu-project-save", () => void saveProjectNow()), shortcut: "Ctrl+S", keys: "Control+S" },
         item("저장본 다시 불러오기…", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
@@ -1164,16 +1207,32 @@ function playModeButton(mode: string): HTMLButtonElement {
 let creatingProject = false;
 async function newProject(): Promise<void> {
   if (creatingProject) return;
+  closeMenuPopup({ restoreFocus: true });
   creatingProject = true;
   try { await createProjectFromDialog(); } finally { creatingProject = false; }
+}
+
+function loadProjectInterview(cinematic: boolean) {
+  return cinematic
+    ? import("@/editor/ui/projectInterviewDialog").then((mod) => mod.showProjectInterview)
+    : import("@/editor/ui/legacyProjectInterviewDialog").then((mod) => mod.showLegacyProjectInterview);
+}
+
+function loadConceptFeed() {
+  return import("@/editor/conceptFeedOverlay");
 }
 
 async function editGameDesignBrief(): Promise<void> {
   const initialBrief = store.getCurrent().gameDesignBrief;
   if (!initialBrief) return;
+  closeMenuPopup({ restoreFocus: true });
   const identity = JSON.stringify(store.getProjectIdentity());
-  const { showProjectInterview } = await import("@/editor/ui/projectInterviewDialog");
-  const brief = await showProjectInterview(initialBrief.presetId, { initialBrief, confirmLabel: "기획 저장" });
+  const interview = await loadWithOpeningDialog("게임 기획…", () => loadProjectInterview(!!initialBrief.interview)).catch(() => {
+    toast("창을 열지 못했습니다. 다시 시도해 주세요.", "error");
+    return null;
+  });
+  if (!interview || identity !== JSON.stringify(store.getProjectIdentity())) return;
+  const brief = await interview(initialBrief.presetId, { initialBrief, confirmLabel: "기획 저장" });
   if (!brief || identity !== JSON.stringify(store.getProjectIdentity())) return;
   const { recordProjectSnapshot } = await import("@/editor/mapEditHistory");
   recordProjectSnapshot("게임 기획 수정");
@@ -1194,8 +1253,12 @@ async function editGameDesignBrief(): Promise<void> {
 async function createProjectFromDialog(): Promise<void> {
   // 2026-10-07: 새 프로젝트 = 새 게임 = 컨셉 피드(src/start/conceptFeed). 런처와 같은 화면을 덮는 창으로 연다.
   // 이름·폴더·화면 크기는 묻지 않는다. 만들기는 새 폴더에 씨앗 + 확정 기획을 저장하고 다시 읽는다(src/editor/conceptMake.ts).
-  const { openConceptFeedOverlay } = await import("@/editor/conceptFeedOverlay");
-  await openConceptFeedOverlay("menu");
+  try {
+    const feed = await loadWithOpeningDialog("새 프로젝트 만들기…", loadConceptFeed);
+    await feed?.openConceptFeedOverlay("menu");
+  } catch {
+    toast("창을 열지 못했습니다. 다시 시도해 주세요.", "error");
+  }
 }
 
 async function newScarloxyDemoProject(): Promise<void> {
@@ -1241,7 +1304,7 @@ async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
 }
 
 async function doLoad(): Promise<void> {
-  const { openProjectFolder } = await import("@/editor/projectFolderActions");
+  closeMenuPopup({ restoreFocus: true });
   let opened: boolean;
   try {
     opened = await openProjectFolder();
@@ -1250,8 +1313,8 @@ async function doLoad(): Promise<void> {
     return;
   }
   if (!opened) {
-    // 데스크톱·브라우저 폴더 선택을 취소하면 조용히 끝낸다.
-    if (window.oprn?.start?.manageRecent || (!window.oprn?.start && "showDirectoryPicker" in window)) return;
+    // 호스트·데스크톱 열기나 브라우저 폴더 선택을 취소하면 조용히 끝낸다.
+    if (window.oprn?.start || "showDirectoryPicker" in window) return;
     toast("프로젝트 서버에 연결되지 않았습니다. 내부 IP의 프로젝트 호스트 주소로 다시 접속하세요.", "error");
     return;
   }
@@ -1284,10 +1347,12 @@ let restoringBackup = false;
 async function doRestoreBackup(): Promise<void> {
   if (restoringBackup) return;
   const repository = projectRepository();
-  if (!repository.listBackups || !repository.restoreBackup) {
+  const listBackups = repository.listBackups?.bind(repository);
+  if (!listBackups || !repository.restoreBackup) {
     toast("프로젝트 폴더를 사용하는 앱 또는 호스트에서 백업을 복구할 수 있습니다.", "error");
     return;
   }
+  closeMenuPopup({ restoreFocus: true });
   const target = repository.currentTarget();
   const requireSameTarget = (): void => {
     const active = repository.currentTarget();
@@ -1297,7 +1362,8 @@ async function doRestoreBackup(): Promise<void> {
   };
   restoringBackup = true;
   try {
-    const backups = await repository.listBackups();
+    const backups = await loadWithOpeningDialog("백업에서 복구…", listBackups);
+    if (!backups) return;
     if (!backups.length) {
       await showAlert({ title: "복구할 백업이 없습니다", message: "프로젝트 메뉴의 ‘백업 만들기’로 복구 지점을 남겨 두세요. 다른 폴더에 있는 백업이나 편집기를 열 수 없는 경우에는 복구 명령으로 새 폴더를 만들 수 있습니다." });
       return;

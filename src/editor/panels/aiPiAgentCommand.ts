@@ -1,5 +1,6 @@
 import { observeActivitySave } from "./aiActivitySave";
 import { el } from "@/util/dom";
+import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort } from "@/ai/chatgptDefault";
 import { formatLocalCliCost } from "@/ai/localCliEngine";
 import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
@@ -435,9 +436,13 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 실측(2026-09-26, 읽기 전용 3턴 도구 사용 실행): thinking high 는 턴당 약 2.9s, low 는 약 2.1s 이고
   // 전제가 1k→30k 토큰으로 커져도 0.5s 밖에 안 밀린다. 즉 다이얼을 「빠르게」로 내린 턴이 강도를 못 받으면
   // 매 왕복마다 0.8s 를 그대로 더 낸다.
-  const preferCallerThinking = prefersCallerThinking(config.roleModels?.[executionRole] ?? config.roleModels?.deep, modelForRole({ ...config, roleModels: undefined }, "deep"));
+  const configuredRole = executionRole === "build" && config.roleModels?.build ? "build" : "deep";
+  const preferCallerThinking = !config.modelSelectionOverrides?.[configuredRole]
+    && prefersCallerThinking(config.roleModels?.[configuredRole], modelForRole({ ...config, roleModels: undefined }, "deep"));
   /** 수리 실행은 `buildPiRunRequest` 를 안 거쳐 요청을 직접 짜는다 — 실행 턴과 같은 강도를 들도록 같은 판정을 한 번 더 한다. */
-  const execThinkingLevel: PiAgentThinkingLevel = preferCallerThinking && options.thinkingLevel ? options.thinkingLevel : deep.thinkingLevel;
+  const requestedThinking = preferCallerThinking && options.thinkingLevel ? options.thinkingLevel : deep.thinkingLevel;
+  const execThinkingLevel: PiAgentThinkingLevel = deep.model === ASSISTANT_CHATGPT_MODEL
+    ? atLeastMediumEffort(requestedThinking) : requestedThinking;
   /**
    * 단계 하나를 계측한다. finally 로 닫는 이유: 실행이 중간에 던져도(중단·턴 상한·프로바이더 오류) 그
    * 단계는 닫혀야 한다 — 열린 채 남으면 그 구간이 표에서 통째로 빠져, 정작 알아야 하는 「실패한 턴이 어디서

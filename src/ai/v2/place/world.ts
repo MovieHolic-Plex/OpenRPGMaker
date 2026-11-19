@@ -9,6 +9,7 @@
 //   1) 세계 표: 세계마다 칩셋 하나와 장소 종류(kind) 목록. 종류 하나 = 이미 있는 결정론 구성기 호출 하나(새 그림·새 시공기 없음).
 //   2) 고르기: 요청이 세계를 말하면 그 세계, 다른 테마 낱말이 있으면 고르지 않고(종전 길), 아무 낱말도 없으면 프로젝트 열쇠 해시로 풀에서 하나.
 //   3) 청사진 장소 검사: places[{name, kind}] 가 그 세계의 종류이고 종류가 겹치지 않게 퍼졌는지.
+import type { BuildingNeed } from "@/project/kitTier";
 import type { GameBlueprint, GameBlueprintPlace } from "@/project/gameBlueprint";
 import type { Project } from "@/project/types";
 import { isLivedMap } from "@/editor/tools/livedMap";
@@ -62,6 +63,11 @@ export interface WorldKind {
   /** 구성기로 짓는다. 없으면 spec 으로 종전 빌더(버들항 마을·던전·실내)가 짓는다. */
   readonly compose?: ComposedKind;
   readonly spec?: Pick<PlaceSpec, "type"> & Partial<PlaceSpec>;
+  /**
+   * 실내 종류: 이 장소가 들어설 바깥 건물 — 안의 방 종류(kinds)·크기 단(tiers)·갈래(cat). 청사진에 이 종류의 장소가 있으면 마을 빌더가 그 쓰임·단의 킷을 세우고
+   * (킷 태그 tier:·interior:·cat:, src/project/kitTier.ts) 그 장소는 그 건물의 문에 달린다. 장소 이름·요청 낱말이 아니라 장소 종류가 정한다.
+   */
+  readonly building?: BuildingNeed;
 }
 
 export interface WorldSetting {
@@ -98,7 +104,7 @@ const out = (id: string, ko: string, about: string, size: readonly [number, numb
   ({ id, ko, about, ...(flags.danger ? { danger: true as const } : {}), compose: { value: flags.value ?? id, size } });
 const room = (id: string, ko: string, about: string, size: readonly [number, number], door: RegExp, flags: { danger?: true; home?: true; below?: true; value?: string; tool?: string } = {}): WorldKind =>
   ({ id, ko, about, indoor: true, door, ...(flags.danger ? { danger: true as const } : {}), ...(flags.home ? { home: true as const } : {}), ...(flags.below ? { below: true as const } : {}), compose: { value: flags.value ?? id, size, ...(flags.tool ? { tool: flags.tool } : {}) } });
-const classic = (id: string, ko: string, about: string, spec: WorldKind["spec"], flags: { indoor?: true; danger?: true } = {}): WorldKind => ({ id, ko, about, ...flags, spec });
+const classic = (id: string, ko: string, about: string, spec: WorldKind["spec"], flags: { indoor?: true; danger?: true; building?: BuildingNeed } = {}): WorldKind => ({ id, ko, about, ...flags, spec });
 
 /** 세계 표. 방 크기는 구성기가 짜는 크기 그대로(100칸 미만 방은 세는 맵이 못 되어 싣지 않는다: 사우나 11×9·사막 가게 10×8). 찻집은 13×9 에서만 짜진다(12×9 는 문에서 안 닿는 바닥이 남는다 — scripts/qa/assistant-v2/worldProbe.mts 로 잰다). */
 export const WORLDS: readonly WorldSetting[] = [
@@ -117,8 +123,12 @@ export const WORLDS: readonly WorldSetting[] = [
       classic("tower", "마법사의 탑", "wizard tower going up", { type: "dungeon", theme: "tower", size: "small" }, { danger: true }),
       // 실내(손 도트 실내 — 방은 모델이 설계한다). 없으면 «촌장의 집»·«여관» 이 바깥 종류(포구·늪지 마을)로 메워졌다(2026-11-10 검토).
       classic("house", "집 안", "inside of a house (a named person's home)", { type: "interior", size: "small" }, { indoor: true }),
-      classic("inn", "여관", "inn or tavern common room", { type: "interior", size: "small" }, { indoor: true }),
+      classic("inn", "여관", "inn or tavern common room", { type: "interior", size: "small" }, { indoor: true, building: { kinds: ["tavern"], tiers: ["medium", "large"] } }),
       classic("shop", "가게", "shop, smithy or workshop", { type: "interior", size: "small" }, { indoor: true }),
+      // 큰 건물(2026-11-16 크기 단): 이 종류의 장소가 청사진에 있으면 마을에 그 건물이 서고 안은 방 여럿으로 지어진다(interiorTier.ts).
+      classic("hall", "회관", "guild hall or town hall (big public building)", { type: "interior", size: "large" }, { indoor: true, building: { kinds: ["great_hall", "waiting_room"], tiers: ["large", "xlarge"] } }),
+      classic("church", "성당", "church or cathedral", { type: "interior", size: "large", zones: [{ kind: "chapel" }] }, { indoor: true, building: { kinds: ["chapel"], tiers: ["large", "xlarge"] } }),
+      classic("castle", "성", "castle keep (throne hall, towers, cells)", { type: "interior", size: "large", zones: [{ kind: "great_hall" }] }, { indoor: true, building: { kinds: ["great_hall"], tiers: ["xlarge"], cat: "castle" } }),
     ],
   },
   {
@@ -332,7 +342,8 @@ const kindList = (world: WorldSetting) => world.kinds.map((k) => k.id).join(" ·
 /** 종류를 못 읽은 장소에 줄 종류 — 아직 덜 쓴 종류 중 실내/바깥·위험이 맞는 것 먼저. */
 export function spareKind(world: WorldSetting, used: readonly string[], want: { indoor?: boolean; danger?: boolean } = {}): WorldKind {
   const count = (id: string) => used.filter((u) => u === id).length;
-  const fits = (k: WorldKind) => (want.indoor === undefined || !!k.indoor === want.indoor) && (want.danger === undefined || !!k.danger === want.danger);
+  // 큰 건물 종류(building — 회관·성당·성)는 종류를 못 읽은 장소에 함수가 주지 않는다(모델이 적었을 때만 선다). 여관은 전처럼 준다.
+  const fits = (k: WorldKind) => (want.indoor === undefined || !!k.indoor === want.indoor) && (want.danger === undefined || !!k.danger === want.danger) && !(k.building && k.spec?.size === "large");
   const byUse = [...world.kinds].sort((a, b) => count(a.id) - count(b.id));
   return byUse.find((k) => fits(k) && count(k.id) < MAX_SAME_KIND) ?? byUse.find(fits) ?? byUse[0]!;
 }

@@ -397,6 +397,22 @@
   white-space: nowrap;
 }
 
+.event-editor-modal-header .meta > :is(.event-editor-map-name, .event-editor-identity),
+.event-editor-modal-header .meta .npc > [data-testid="event-editor-npc-name"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor-modal-header .meta > .npc {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-editor-modal-header .meta > :is(.dot-sep, [data-testid="event-editor-coords"]) {
+  flex: none;
+}
+
 .event-editor-modal-window .event-editor-modal-header {
   cursor: grab;
 }

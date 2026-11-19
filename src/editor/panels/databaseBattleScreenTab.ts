@@ -74,16 +74,16 @@ function battleMethodCard(project: Project, rerender: () => void): HTMLElement {
 function hitFeelField(project: Project): HTMLElement {
   const select = el("select", {
     dataset: { testid: "db-field-system-battle-hit-feel" },
-    attrs: { title: BATTLE_HIT_FEEL_IDS.map((id) => `${BATTLE_HIT_FEEL_LABELS[id]}: ${BATTLE_HIT_FEEL_DESCRIPTIONS[id]}`).join("\n") },
   });
-  select.style.maxWidth = "340px";
   for (const id of BATTLE_HIT_FEEL_IDS) {
     select.append(el("option", { text: BATTLE_HIT_FEEL_LABELS[id], attrs: { value: id } }));
   }
   select.value = resolveBattleHitFeel(project.system.battleHitFeel);
+  select.title = BATTLE_HIT_FEEL_DESCRIPTIONS[resolveBattleHitFeel(select.value)];
   select.addEventListener("change", () => {
+    const next = resolveBattleHitFeel(select.value);
+    select.title = BATTLE_HIT_FEEL_DESCRIPTIONS[next];
     updateSystem((draft) => {
-      const next = resolveBattleHitFeel(select.value);
       if (next === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
       else draft.system.battleHitFeel = next;
     });
@@ -110,7 +110,7 @@ function fanfareCard(project: Project, rerender: () => void): HTMLElement {
       selectField("세기", "db-battle-fanfare-style", current.style, BATTLE_FANFARE_STYLES.map((id) => ({ id, name: BATTLE_FANFARE_STYLE_LABELS[id] })), (value) => {
         if (isBattleFanfareStyle(value)) save({ style: value });
       }),
-      toggleSwitch("LEVEL UP 배너", "db-battle-fanfare-levelup", current.levelUp, (checked) => save({ levelUp: checked })),
+      toggleSwitch("레벨 업 배너", "db-battle-fanfare-levelup", current.levelUp, (checked) => save({ levelUp: checked })),
       toggleSwitch("「새 기술 습득!」 카드", "db-battle-fanfare-skill", current.skillLearned, (checked) => save({ skillLearned: checked })),
       toggleSwitch("「새 연계기!」 카드", "db-battle-fanfare-combo", current.comboUnlocked, (checked) => save({ comboUnlocked: checked })),
       toggleSwitch("소리", "db-battle-fanfare-sound", current.sound, (checked) => save({ sound: checked })),

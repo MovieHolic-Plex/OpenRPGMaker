@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-10T08:53:19.115Z",
+  "generatedAt": "2026-11-19T16:10:18.505Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -32,7 +32,7 @@
       "hubs": 0
     },
     "database": {
-      "important": 238,
+      "important": 229,
       "unlayered": 0,
       "hubs": 0
     },
@@ -232,6 +232,10 @@
     "R2|components/icons.css|.oprn-icon-zoom-4|oprn-icon-zoom-4",
     "R2|components/icons.css|.oprn-icon-zoom-8::before|oprn-icon-zoom-8",
     "R2|components/icons.css|.oprn-icon-zoom-8|oprn-icon-zoom-8",
+    "R2|components/save-error-popover.css|.save-error-icon|save-error-icon",
+    "R2|components/save-error-popover.css|.save-error-message|save-error-message",
+    "R2|components/save-error-popover.css|.save-error-popover > button|save-error-popover",
+    "R2|components/save-error-popover.css|.save-error-popover|save-error-popover",
     "R2|database/actors.part-3.css|.oprn-record-actors .oprn-maximum-button|oprn-maximum-button",
     "R2|database/animation-editor.css|.database-modal-backdrop .database-modal-window .db-animation-transport .empty-hint|empty-hint",
     "R2|database/assistant-command-bar.css|.ai-command-menu-advanced-summary::-webkit-details-marker|ai-command-menu-advanced-summary",
@@ -1210,6 +1214,8 @@
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-settings-window .ai-background-opacity-range:focus-visible|ai-settings-window",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-settings-window .ai-background-opacity-range|ai-background-opacity-range",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-settings-window .ai-background-opacity-range|ai-settings-window",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.left-column-body:has(.palette-work-pane.is-event) > .map-sidebar-section|map-sidebar-section",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.left-column-body:has(.palette-work-pane.is-event) > .map-sidebar-section|palette-work-pane",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|html:is(:not([data-ai-render]), [data-ai-render=\"light\"], [data-ai-render=\"off\"]) :is( .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck, .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore, .ai-work-strip-toggle, .ai-work-card, .ai-ghost-phase-chip, .selection-action-chips, .ai-deck > .ai-lock-scrim, .ai-chat-body > .ai-lock-scrim )|ai-collapsed-restore",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|html:is(:not([data-ai-render]), [data-ai-render=\"light\"], [data-ai-render=\"off\"]) :is( .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck, .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore, .ai-work-strip-toggle, .ai-work-card, .ai-ghost-phase-chip, .selection-action-chips, .ai-deck > .ai-lock-scrim, .ai-chat-body > .ai-lock-scrim )|ai-ghost-phase-chip",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|html:is(:not([data-ai-render]), [data-ai-render=\"light\"], [data-ai-render=\"off\"]) :is( .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck, .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore, .ai-work-strip-toggle, .ai-work-card, .ai-ghost-phase-chip, .selection-action-chips, .ai-deck > .ai-lock-scrim, .ai-chat-body > .ai-lock-scrim )|selection-action-chips",
@@ -2713,7 +2719,6 @@
     "R2|resources/resource-manager.css|.asset-source-viewport|asset-source-viewport",
     "R2|resources/resource-manager.css|.asset-source-window|asset-source-window",
     "R2|resources/resource-manager.css|.database-modal-backdrop:has(.resource-modal-window)|database-modal-backdrop",
-    "R2|resources/resource-manager.css|.resource-footer-actions|resource-footer-actions",
     "R2|resources/resource-manager.css|.resource-footer-button:active:not(:disabled)|resource-footer-button",
     "R2|resources/resource-manager.css|.resource-footer-button:focus-visible|resource-footer-button",
     "R2|resources/resource-manager.css|.resource-footer-button:hover:not(:disabled)|resource-footer-button",
@@ -3128,11 +3133,14 @@
     "R2|shell/studio-bar.modern.css|.studio-command-center .workspace-command-chip-key|workspace-command-chip-key",
     "R2|shell/studio-bar.modern.css|.studio-command-center .workspace-command-chip-label|studio-command-center",
     "R2|shell/studio-bar.modern.css|.studio-command-center .workspace-command-chip-label|workspace-command-chip-label",
+    "R2|shell/studio-bar.modern.css|.studio-host-connection:hover|studio-host-connection",
+    "R2|shell/studio-bar.modern.css|.studio-host-connection|studio-host-connection",
     "R2|shell/studio-bar.modern.css|.studio-icon-button svg|studio-icon-button",
     "R2|shell/studio-bar.modern.css|.studio-icon-button:focus-visible|studio-icon-button",
     "R2|shell/studio-bar.modern.css|.studio-icon-button:hover|studio-icon-button",
     "R2|shell/studio-bar.modern.css|.studio-icon-button[aria-pressed=\"true\"]|studio-icon-button",
     "R2|shell/studio-bar.modern.css|.studio-icon-button|studio-icon-button",
+    "R2|shell/studio-bar.modern.css|.studio-save-button:not(.is-failing) .save-error-icon|save-error-icon",
     "R2|shell/studio-bar.modern.css|.workspace-menu-group + .workspace-menu-group|workspace-menu-group",
     "R2|shell/studio-bar.modern.css|.workspace-menu-group|workspace-menu-group",
     "R2|shell/studio-bar.modern.css|.workspace-panel-check svg|workspace-panel-check",
@@ -3194,7 +3202,6 @@
     "R4|runtime/title.css|.player-layout.system-shell .oprn-load-slot|--oprn-title-window-shadow",
     "R4|runtime/title.css|.player-layout.system-shell .oprn-load-window|--oprn-title-window-shadow",
     "R4|runtime/title.css|.player-layout.system-shell .rm-title-menu-button:focus-visible|--oprn-title-highlight-ring",
-    "R4|shell/dialogs/ai-settings-modal.css|.ai-auth-env-scan|--line",
     "R4|shell/editor-ui-modes.css|body .topbar-test-play|--studio-play",
     "R4|shell/figma-editor/02-menus-toolbar-tools.css|body.ai-panel-docked .topbar|--ai-docked-panel-inset",
     "R4|shell/studio-bar.modern.css|.studio-bar .ai-connection-chip.is-actionable:hover|--surface",

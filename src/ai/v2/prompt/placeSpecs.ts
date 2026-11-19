@@ -51,7 +51,7 @@ let catalogCard: string | undefined;
 
 /** 칸 배치 목록 카드 — 칩셋 메타데이터에서 생성(interiorCatalog.ts). 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. */
 export function interiorCatalogCard(project?: Project, currentMapId?: string, task = "", key = ""): string {
-  // 칸 배치를 까는 쪽·find_pieces 와 같은 칩셋 선택 규칙을 쓴다.
+  // 어느 칩셋의 목록인가는 한 규칙(interiorTilesetFor) — 칸 배치를 까는 쪽·find_pieces 와 같다(잔디 한 장뿐인 빈 맵은 바깥 칩셋을 따르지 않는다).
   const cur = interiorTilesetFor(project, currentMapId);
   const v5 = project?.tilesets[HAND_INTERIOR_TILESET_ID];
   const fromCur = cur && cur.id !== HAND_INTERIOR_TILESET_ID && cur.roomKit ? chipsetCatalog(cur, task, key) : undefined;

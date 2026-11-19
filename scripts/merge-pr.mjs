@@ -10,20 +10,20 @@
 //   기본은 --squash. 나머지 인자는 고르지 않는다 — 이 도우미가 할 일은 「기다렸다가 머지」 하나다.
 //
 // 판정:
-//   - PR 머리 sha 의 체크 런 중 이름이 `fast`(ci-fast 워크플로의 잡)인 것을 찾는다.
+//   - PR 머리 sha 의 `fast`·`fast-static`·`fast-parity (k/N)` 전 N개 샤드를 찾는다.
 //   - 없으면 기다린다(푸시 직후엔 아직 안 생겼을 수 있다). 시간 안에 안 생기면 실패한다 — 체크 없음은 통과가 아니다.
-//   - success 면 머지. 그 사이 머리가 바뀌었으면(새 푸시) 처음부터 다시 기다린다.
+//   - 전부 success 면 머지. 그 사이 머리가 바뀌었으면(새 푸시) 처음부터 다시 기다린다.
 //   - failure·cancelled·timed_out 등이면 머지하지 않고 exit 1. 로그 보는 명령을 찍어 준다.
 //   - 머지 직전에 `gh pr merge --match-head-commit <sha>` 를 써서, 검사한 커밋과 다른 커밋이 머지되지 않게 한다.
 //
 // 이 스크립트는 테스트를 돌리지 않는다. GitHub API 만 읽는다.
 import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
-// 머지 조건은 ci-fast 워크플로의 **잡 이름들**이다 (2026-11-08).
-// `fast` 는 저장소 브랜치 보호에도 등록된 이름이라 그대로 두고, 2026-11-08 에 정적 검사를
-// `fast-static` 으로 떼어 내 두 잡을 병렬로 돌린다. 둘 다 초록이어야 머지한다 —
-// 예전과 같은 게이트를, 더 짧은 임계 경로로 지키기 위해서다(옛 구현은 앞의 `fast` 만 봤다).
+// 2026-11-19 실측(run 44531254883, 44533700673, 44536145289): 4초짜리 집계 잡이
+// 선행 잡 완료 뒤 러너를 101~733초 기다렸다. `fast` 는 빌드에 쓰고, 도우미가 패리티까지 직접 판정한다.
 const REQUIRED_CHECKS = ["fast", "fast-static"];
+const PARITY_PREFIX = "fast-parity (";
 const POLL_MS = 20_000;
 
 function usage(message) {
@@ -63,9 +63,41 @@ function prState(pr) {
 }
 
 function fastCheckRuns(repo, sha) {
-  const names = REQUIRED_CHECKS.map((n) => `"${n}"`).join(",");
-  const raw = gh(["api", `repos/${repo}/commits/${sha}/check-runs?per_page=100`, "-q", `[.check_runs[] | select(.name as $n | [${names}] | index($n))]`]);
+  const raw = gh(["api", `repos/${repo}/commits/${sha}/check-runs?per_page=100`, "-q", ".check_runs"]);
   return JSON.parse(raw || "[]");
+}
+
+export function evaluateFastChecks(runs) {
+  // 같은 sha 에 push·pull_request 두 판이 있을 수 있다. 체크 이름마다 가장 최근 것만 본다.
+  const latest = new Map();
+  const relevant = runs.filter(({ name }) => REQUIRED_CHECKS.includes(name) || name.startsWith(PARITY_PREFIX));
+  for (const run of relevant.sort((a, b) => String(a.started_at ?? "").localeCompare(String(b.started_at ?? "")))) {
+    latest.set(run.name, run);
+  }
+
+  const missing = REQUIRED_CHECKS.filter((name) => !latest.has(name));
+  const shardCounts = new Map();
+  for (const name of latest.keys()) {
+    if (!name.startsWith(PARITY_PREFIX)) continue;
+    const shard = /^([1-9]\d*)\/([1-9]\d*)\)$/.exec(name.slice(PARITY_PREFIX.length));
+    const index = Number(shard?.[1]);
+    const total = Number(shard?.[2]);
+    if (!Number.isSafeInteger(total) || index > total) {
+      missing.push(`fast-parity (잘못된 샤드 이름: ${name})`);
+      continue;
+    }
+    shardCounts.set(total, (shardCounts.get(total) ?? 0) + 1);
+  }
+  // 이름마다 한 번만 세므로 1..N 범위의 서로 다른 N개가 있어야 전 샤드가 있는 셈이다.
+  if (!shardCounts.size) missing.push("fast-parity");
+  for (const [total, count] of shardCounts) {
+    if (count !== total) missing.push(`fast-parity (${count}/${total} 확인됨)`);
+  }
+
+  const checks = [...latest.values()];
+  const pending = checks.filter((run) => run.status !== "completed");
+  const failed = checks.filter((run) => run.status === "completed" && run.conclusion !== "success");
+  return { missing, pending, failed };
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -91,15 +123,7 @@ async function main() {
       process.exit(1);
     }
     const sha = state.headRefOid;
-    const runs = fastCheckRuns(repo, sha);
-    // 같은 sha 에 push·pull_request 두 판이 있을 수 있다. 체크 이름마다 가장 최근 것만 본다.
-    const latest = new Map();
-    for (const run of runs.sort((a, b) => String(a.started_at ?? "").localeCompare(String(b.started_at ?? "")))) {
-      latest.set(run.name, run);
-    }
-    const missing = REQUIRED_CHECKS.filter((name) => !latest.has(name));
-    const pending = [...latest.values()].filter((run) => run.status !== "completed");
-    const failed = [...latest.values()].filter((run) => run.status === "completed" && run.conclusion !== "success");
+    const { missing, pending, failed } = evaluateFastChecks(fastCheckRuns(repo, sha));
 
     if (missing.length) {
       note(`${sha.slice(0, 10)} 에 ci-fast 체크가 아직 없다 (${missing.join(", ")}). 기다린다.`);
@@ -113,7 +137,7 @@ async function main() {
       );
       process.exit(1);
     } else {
-      note(`${sha.slice(0, 10)} ci-fast 초록 (${REQUIRED_CHECKS.join(", ")}). 머지한다.`);
+      note(`${sha.slice(0, 10)} ci-fast 초록 (${REQUIRED_CHECKS.join(", ")}, fast-parity). 머지한다.`);
       const args = ["pr", "merge", options.pr, options.method, "--match-head-commit", sha];
       if (options.deleteBranch) args.push("--delete-branch");
       try {
@@ -140,7 +164,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  process.stderr.write(`merge-pr: ${error?.stderr?.toString?.() || error?.message || error}\n`);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    process.stderr.write(`merge-pr: ${error?.stderr?.toString?.() || error?.message || error}\n`);
+    process.exit(1);
+  });
+}

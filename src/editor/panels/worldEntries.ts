@@ -1,5 +1,6 @@
 import type { DatabaseTab } from "@/editor/panels/database";
 import type { WorldTabKey } from "@/editor/panels/worldManager";
+import { openDatabaseModalLazy } from "./databaseModalLazy";
 
 const CODEX_URL_TABS: readonly WorldTabKey[] = [
   "overview",
@@ -17,18 +18,12 @@ const CODEX_URL_TABS: readonly WorldTabKey[] = [
 export const WORLD_ENTRY_TAB: DatabaseTab = "worldCanon";
 export const WORLD_CODEX_ENTRY_TAB: DatabaseTab = "worldCodex";
 
-export function openWorldPanel(): Promise<void> {
-  return openWorldEntryTab(WORLD_ENTRY_TAB);
+export function openWorldPanel(): void {
+  openDatabaseModalLazy(WORLD_ENTRY_TAB);
 }
 
-export function openWorldCodexPanel(): Promise<void> {
-  return openWorldEntryTab(WORLD_CODEX_ENTRY_TAB);
-}
-
-function openWorldEntryTab(tab: DatabaseTab): Promise<void> {
-  return import("./databaseModal").then(({ openDatabaseModal }) => {
-    openDatabaseModal(tab);
-  });
+export function openWorldCodexPanel(): void {
+  openDatabaseModalLazy(WORLD_CODEX_ENTRY_TAB);
 }
 
 export const CODEX_URL_TAB_PARAM = "codexTab";

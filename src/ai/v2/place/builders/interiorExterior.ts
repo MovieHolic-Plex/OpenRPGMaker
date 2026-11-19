@@ -3,6 +3,7 @@
 // (2026-11-15 오너: 버들항 목골 여관 안이 통나무집이었다 — 실내 칩셋이 바깥과 무관하게 손 도트 v5 하나였고 명세에 바깥 집이 없었다.)
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { isBareTileMap } from "../../blankStart";
+import { kitTier } from "@/project/kitTier";
 import { roomTemplates } from "@/editor/handInterior/templates";
 import type { Project } from "@/project/types";
 import type { PlaceSpec } from "../../shared/types";
@@ -19,10 +20,12 @@ export function exteriorLook(project: Project, spec: Pick<PlaceSpec, "exterior">
   const S = roomSpecOf(tileset);
   if (!tileset || !S?.looks?.style || !roomTemplates(tileset.id).length) return undefined;
   const kit = spec.exterior?.kit;
-  const tags = kit ? tileset.structureKits?.find((k) => k.id === kit)?.ai?.tags ?? [] : [];
+  const kitDef = kit ? tileset.structureKits?.find((k) => k.id === kit) : undefined;
+  const tags = kitDef?.ai?.tags ?? [];
   const style = spec.exterior?.style ?? tags.find((t) => t.startsWith("style:") && t !== "style:any")?.slice(6);
   const tag = (head: string) => tags.find((t) => t.startsWith(head))?.slice(head.length);
-  const cat = tag("cat:"), tier = tag("tier:");
+  // 단: 킷의 tier 태그, 태그 없는 옛 사본의 킷은 킷 자료(문 하나에 딸린 넓이)로 센다 — src/project/kitTier.ts.
+  const cat = tag("cat:"), tier = kitTier(kitDef);
   return { tileset: tileset.id, ...(kit ? { kit } : {}), ...(style ? { style } : {}), ...(cat ? { cat } : {}), ...(tier ? { tier } : {}) };
 }
 

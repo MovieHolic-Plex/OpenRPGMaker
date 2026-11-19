@@ -39,6 +39,7 @@ export const PROMPT_HOME_GAMES = 3;
 export type PromptHomeGame = {
   readonly key: string;
   readonly title: string;
+  readonly titleIsDefault?: boolean;
   readonly meta: string;
   readonly cover: HTMLElement;
 };
@@ -75,6 +76,7 @@ export type PromptHomeActions = {
 export type PromptHome = {
   readonly element: HTMLElement;
   focus(): void;
+  syncLocale(): void;
   /** 내 게임 줄을 다시 그린다. 빈 배열이면 줄을 감추고 처음 온 사람의 화면이 된다. */
   setGames(games: readonly PromptHomeGame[], total: number): void;
   setAiStatus(status: { readonly tone: "ok" | "warn" | "off"; readonly text: string }): void;
@@ -194,7 +196,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   const moreItems = actions.more ?? [];
   const moreMenu = el("div", { class: "fr-more-menu", attrs: { role: "menu", hidden: "" }, children: moreItems.map((item) => el("button", {
     class: "fr-more-item", attrs: { type: "button", role: "menuitem" }, dataset: { testid: item.testid }, text: item.label,
-    on: { click: () => { closeMore(); if (!busy) item.run(); } },
+    on: { click: () => { closeMore(); moreButton.focus(); if (!busy) item.run(); } },
   })) });
   const moreButton = el("button", {
     class: "fr-more", attrs: { type: "button", "aria-label": "더 보기", "aria-haspopup": "menu", "aria-expanded": "false" },
@@ -232,6 +234,13 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       : [link("폴더 열기", PROMPT_HOME_TESTIDS.openFolder, actions.openFolder), dot(), link("빈 프로젝트", PROMPT_HOME_TESTIDS.blank, actions.blank)]));
   };
   renderLinks(false);
+  const localeLabel = el("span", { attrs: { "data-i18n-skip": "" } });
+  const syncLocale = (): void => {
+    const locale = getLocale();
+    localeLabel.textContent = LOCALE_NATIVE_NAMES[locale];
+    localeLabel.lang = locale;
+  };
+  syncLocale();
 
   const root = el("div", { class: "fr-root", dataset: { testid: PROMPT_HOME_TESTIDS.root }, children: [
     el("header", { class: "fr-top", children: [
@@ -241,7 +250,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
         el("button", {
           class: "fr-locale", attrs: { type: "button", "aria-label": "언어" }, dataset: { testid: PROMPT_HOME_TESTIDS.locale },
           on: { click: () => { if (!busy) actions.openLocale(); } },
-          children: [startIcon("globe", "fr-icon"), el("span", { text: LOCALE_NATIVE_NAMES[getLocale()], attrs: { translate: "no" } })],
+          children: [startIcon("globe", "fr-icon"), localeLabel],
         }),
         moreWrap,
       ] }),
@@ -269,7 +278,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
           children: [
             el("img", { class: "fr-bcard-img", attrs: { src: game.cover, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
             el("span", { class: "fr-bcard-text", children: [
-              el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim(), attrs: { translate: "no" } }),
+              el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim() }),
               el("span", { class: "fr-bcard-meta", text: game.genre }),
             ] }),
           ],
@@ -284,11 +293,14 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     gamesSection.hidden = total === 0;
     root.classList.toggle("has-games", has);
     gamesMore.hidden = total === 0;
-    gamesMore.textContent = `${t("모두 보기")} (${total})`;
+    gamesMore.textContent = `모두 보기 (${total})`;
     gamesRow.replaceChildren(...games.slice(0, PROMPT_HOME_GAMES).map((game, index) => el("button", {
-      class: "fr-gcard", attrs: { type: "button", title: game.title }, dataset: { testid: `${PROMPT_HOME_TESTIDS.game}-${index}` },
+      class: "fr-gcard", attrs: { type: "button" }, dataset: { testid: `${PROMPT_HOME_TESTIDS.game}-${index}` },
       on: { click: () => { if (!busy) actions.openGame?.(game.key); } },
-      children: [game.cover, el("span", { class: "fr-gcard-name", text: game.title, attrs: { translate: "no" } }), el("span", { class: "fr-gcard-meta", text: game.meta })],
+      children: [game.cover, el("span", {
+        class: "fr-gcard-name", text: game.title,
+        attrs: { title: game.title, ...(game.titleIsDefault ? {} : { "data-i18n-skip": "" }) },
+      }), el("span", { class: "fr-gcard-meta", text: game.meta })],
     })), ...(has ? [blankCard()] : []));
     renderLinks(has);
   };
@@ -298,5 +310,5 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     aiStatus.replaceChildren(el("span", { class: "fr-ai-dot", attrs: { "aria-hidden": "true" } }), el("span", { text: status.tone === "ok" ? status.text : "AI 연결" }));
   };
 
-  return { element: root, focus: () => input.focus(), setGames, setAiStatus };
+  return { element: root, focus: () => input.focus(), syncLocale, setGames, setAiStatus };
 }

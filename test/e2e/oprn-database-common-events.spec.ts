@@ -70,7 +70,7 @@ test("database common events use the full command picker and preserve cancel/sav
   await commandDialog.getByTestId("event-command-edit-ok").click();
 
   await applyDatabaseChanges(page);
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await openCommonEvents(page);
   await expect(page.getByTestId("event-command-setSwitch")).toHaveCount(2);

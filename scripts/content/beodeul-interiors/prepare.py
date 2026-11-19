@@ -55,6 +55,8 @@ def trim_cols(im):
 
 def seat(im, kind, w, foot, o):
     """칸 크기 캔버스에 앉힌다. 선 것은 밑변 맞춤·가로 가운데, 걸이는 위 맞춤(oy)·가로 가운데, 밟는 무늬는 가운데."""
+    if kind in ("door", "sidedoor"):
+        assert im.size == (T, 3 * T), im.size; return im
     if o.get("cx") or im.width > w * T: im = trim_cols(im)
     if im.width > w * T: raise SystemExit(f"폭 {im.width} > {w * T}")
     if kind == "hang":
@@ -132,6 +134,8 @@ def main():
         g = glow(src); assert g.size == (w * T, h * T), (gid, g.size); g.save(OUT / f"{slug(gid)}.png"); made += 1
     for gid, (name, cell), _ko in TB.GOODS:
         load((name, cell * T, 0, T, T)).save(OUT / f"goods-{slug(gid)}.png"); made += 1
+    for did, src, _ko in TB.DAISES:
+        im = load(src); assert im.size == (48, 48), (did, im.size); im.save(OUT / f"nine-{slug(did)}.png"); made += 1
     for wid, src, _ko, _st in TB.WALLS:
         im = load(src); assert im.size == (48, 32), (wid, im.size); im.save(OUT / f"wall-{wid}.png"); made += 1
     for fid, src, _ko, o in TB.FLOORS:

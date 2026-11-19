@@ -19,6 +19,7 @@ import {
 import { updateEvent } from "@/editor/eventActions";
 import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDrafts";
 import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
+import { afterOpeningPaint } from "@/editor/ui/afterOpeningPaint";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
@@ -360,8 +361,9 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       }
     }
   };
+  let opening = true;
   const renderSurface = () => {
-    if (closed || minimized) return;
+    if (closed || minimized || opening) return;
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
     const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
     try {
@@ -514,12 +516,21 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     { capture: true },
   );
   document.body.classList.add("event-editor-modal-open");
+  dynamicBody.append(el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } }));
   document.body.append(backdrop);
   announceEventEditorOpened(request.mapId);
-  checkpointEventDraft(request.mapId, request.eventId);
-  refresh();
   focusFirstDialogControl(backdrop);
+  const openingFocus = document.activeElement;
   disposeFocusTrap = installFocusTrap(backdrop, windowEl);
+  afterOpeningPaint(backdrop, () => {
+    if (closed || !backdrop.isConnected) return;
+    opening = false;
+    checkpointEventDraft(request.mapId, request.eventId);
+    refresh();
+    if (!minimized && isTopModal(backdrop) && document.activeElement === openingFocus) {
+      focusFirstDialogControl(backdrop);
+    }
+  });
 }
 
 export function isEventEditorModalOpenFor(mapId: MapId, eventId: string): boolean {
@@ -596,12 +607,11 @@ function renderModalHeader(
       // 상자에 있어야 「이 상자가 그 이름을 정한다」가 읽힌다. 새 이벤트는 예시로 용도를 말한다.
       placeholder: borrowedName || (ev?.draft?.kind === "new" ? "이벤트 이름 (예: 촌장 할아버지)" : "이벤트 이름"),
       "aria-label": "이벤트 이름",
-      title: borrowedName && !authoredName
-        ? `이벤트 이름입니다. 아직 짓지 않아 페이지 이름 "${borrowedName}" 을 빌려 쓰고 있습니다.`
-        : "이벤트 이름입니다. 맵 툴팁·이벤트 목록·인스펙터가 이 이름으로 부릅니다.",
+      title: authoredName || borrowedName,
     },
     dataset: { testid: "event-editor-name" },
     on: {
+      input: () => { nameInput.title = nameInput.value; },
       change: () => {
         // 다른 곳을 누르며 blur 된 change 면 그 클릭이 끝난 뒤 커밋한다(commitAfterPointerGesture 주석).
         const next = nameInput.value;
@@ -636,6 +646,7 @@ function renderModalHeader(
                 el("span", {
                   class: "event-editor-identity",
                   text: `표시 이름: ${eventIdentity} (페이지 이름에서)`,
+                  attrs: { title: eventIdentity },
                   dataset: { testid: "event-editor-identity" },
                 }),
                 el("span", { class: "dot-sep" }),
@@ -643,7 +654,10 @@ function renderModalHeader(
             : []),
           // 좌표만으로는 어느 맵인지 알 수 없다 — 맵 이름을 좌표 앞에 둔다(2026-09-03 제안서 §6).
           ...(mapName
-            ? [el("span", { class: "event-editor-map-name", text: mapName, dataset: { testid: "event-editor-map-name" } }), el("span", { class: "dot-sep" })]
+            ? [
+                el("span", { class: "event-editor-map-name", text: mapName, attrs: { title: mapName, translate: "no" }, dataset: { testid: "event-editor-map-name" } }),
+                el("span", { class: "dot-sep" }),
+              ]
             : []),
           el("span", { text: coordStr, dataset: { testid: "event-editor-coords" } }),
           // NPC 칩은 연결됐을 때만 — 「NPC 없음」이라는 부정 상태를 제목 줄에서 반복하지 않는다.
@@ -906,12 +920,18 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
   // 이 상자는 이벤트 이름이다. 페이지를 바꿔도 값이 달라질 이유가 없고, 사용자가 타이핑 중인
   // 값을 store 갱신이 뺏으면 안 된다 — 포커스가 없을 때만 모델을 따라간다(place_npc 등 외부 변경).
   const authored = ev.name?.trim() ?? "";
-  if (document.activeElement !== nameInput && nameInput.value !== authored) nameInput.value = authored;
+  const borrowed = eventNameFromPages(ev);
+  if (document.activeElement !== nameInput) {
+    if (nameInput.value !== authored) nameInput.value = authored;
+    nameInput.title = authored || borrowed;
+  }
   const identity = header.querySelector<HTMLElement>('[data-testid="event-editor-identity"]');
   if (identity) {
-    const borrowed = eventNameFromPages(ev);
     identity.hidden = Boolean(authored) || !borrowed;
-    if (!identity.hidden) identity.textContent = `표시 이름: ${eventDisplayName(ev)} (페이지 이름에서)`;
+    if (!identity.hidden) {
+      identity.textContent = `표시 이름: ${eventDisplayName(ev)} (페이지 이름에서)`;
+      identity.title = borrowed;
+    }
   }
 }
 
@@ -1116,6 +1136,7 @@ const EVENT_EDITOR_SCROLL_SELECTORS = [
   ".event-editor-settings-main",
   ".event-page-props",
   ".event-page-number-tabs",
+  ".evt-page-segments",
   ".cmd-list",
   ".story",
   ".event-editor-commands-column",

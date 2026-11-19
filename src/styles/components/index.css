@@ -5,6 +5,7 @@
 @import "./from-map-resource-system-part-2.css" layer(components);
 @import "./icons.css" layer(components);
 @import "./app-modal.css" layer(components);
+@import "./save-error-popover.css" layer(components);
 @import "./empty-state.css" layer(components);
 @import "./grid-4.css" layer(components);
 @import "./from-resources-resource-manager.css" layer(components);

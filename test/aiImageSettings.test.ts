@@ -72,6 +72,9 @@ describe("ChatGPT image settings", () => {
   it("제공자와 모델 선택에 ChatGPT 한 항목만 보인다", () => {
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" }));
     const view = form();
+    expect(view.get("ai-settings-model-image-provider").textContent).toContain("ChatGPT");
+    expect(view.get("ai-settings-model-image").textContent).toContain("ChatGPT");
+    expect(view.get("ai-config-image-provider").getAttribute("disabled")).not.toBeNull();
     expect(view.get("ai-config-image-provider").options.map((option) => option.value)).toEqual(["openai-codex"]);
     expect(view.get("ai-config-image-model").options.map((option) => option.value)).toEqual(["codex-image-default"]);
     expect(view.get("ai-config-image-model").value).toBe("codex-image-default");

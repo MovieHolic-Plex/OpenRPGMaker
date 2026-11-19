@@ -353,7 +353,6 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
     }
   }
   fillWallIslands(g, 30);
-
   // ---- 떠 있는 땅(2026-10-23 dungeon-themes): 방 사이 굽은 길을 허공으로 바꾼다. 늪은 통로를 물로 채우지 않는다 — 벽(수관 숲) 사이 통로 물이
   // 곧게 잘린 네모 물길·외톨이 물 칸으로 읽혔다(2026-10-25 floor VQA r3·r4 swamp). 늪물은 방 안 호수·웅덩이(잡음 덩이 + 진흙 둑)로만 고인다.
   // 방(빈터·둔덕)은 섬이 되고, settle 이 가장 짧은 줄에 다리(마계 돌다리·늪 널판 길)를 놓아 잇는다. 입구 굴 목은 마른 땅으로 둔다.

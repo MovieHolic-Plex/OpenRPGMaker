@@ -25,7 +25,7 @@ import { chestLoot } from "@/editor/tools/jrpgVolumeTools";
 import { terrainReachability } from "@/project/terrainReachability";
 import { dungeonArgs, enlargeBoss } from "./dungeon";
 import { planTroops } from "./dungeonFoes";
-import { villageArgs, villageMapSize } from "./village";
+import { COAST_TERRAIN_NOTE, villageArgs, villageMapSize } from "./village";
 import { ensureBossRest, ensureHealingAccess } from "../../story/healingAccess";
 
 const TS = "beodeul_city";
@@ -100,7 +100,7 @@ function buildDungeon(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): P
   const floor = data.mapId;
   // 적 그룹: 요청 낱말 > 주제(옛 빌더와 같은 고르기). 자리는 모델이 적은 칸 그대로.
   const plan = dungeonArgs({ ...spec, dungeonDesign: undefined, floorDesigns: undefined } as PlaceSpec);
-  const toolArgs = { name: spec.name, type: String(L.theme), theme: spec.theme ?? "" };
+  const toolArgs = { name: spec.name, type: String(L.theme) };
   const given = plan.args.populate === false ? undefined : planTroops(run, plan, toolArgs, warnings);
   const troops = themedTroops(run.ctx.project, { ...toolArgs, ...(given ? { troops: given } : {}) });
   const placedFoes: string[] = [];
@@ -192,7 +192,8 @@ function buildVillage(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): P
   return {
     ok: true, mapIds: [id], ...(entrance ? { entrance } : {}),
     summary: `${spec.name}: village laid exactly as your layout on the code terrain (${T.W}x${T.H}, ${s.buildings ?? 0} buildings, ${s.props ?? 0} props, ${s.trees ?? 0} trees, ${s.pathCells ?? 0} path cells, ${s.stairs ?? 0} stairs, bare land ${s.bareLandPct ?? 0}%)`,
-    warnings: [...(laid.warnings ?? [])], missingArt: [], calls: run.calls.slice(firstCall), state: { bbox: "village", terrain: T },
+    warnings: [...(T.theme === "coast" ? [COAST_TERRAIN_NOTE] : []), ...(laid.warnings ?? [])],
+    missingArt: [], calls: run.calls.slice(firstCall), state: { bbox: "village", terrain: T },
   };
 }
 
@@ -332,6 +333,7 @@ export async function villageLayoutCard(env: PiAssistantV2Env, spec: PlaceSpec, 
     ...(sheet.dataUrl ? ["Image 2 = the kit sheet: every building/prop/tree drawn at real size (16 px per cell); \"sheet (x,y)\" in the catalog is its top-left cell on that sheet."] : []),
     "",
     bboxTerrainText(T),
+    ...(T.theme === "coast" ? [COAST_TERRAIN_NOTE] : []),
     "",
     catText,
     "",

@@ -64,13 +64,13 @@ test("world canon and codex preserve authoring across save, navigation, search, 
   await page.getByTestId("db-world-canon-premise").fill("캐시 무효화 후에도 카드 초안 보존");
   await tab("db-tab-world-codex");
   await expect(page.getByTestId("world-edit-summary")).toHaveValue("저장할 요약");
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-dirty-prompt-region")).toContainText(/저장|변경/);
   const keep = page.getByTestId("database-dirty-prompt-region").getByRole("button", { name: /계속|편집/ });
   await keep.click();
   await page.getByTestId("database-footer-apply").click();
   await expect(page.getByTestId("db-footer-status")).toContainText("닫아도 안전");
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toHaveCount(0);
   await page.getByTestId("toolbar-database").click(); await tab("db-tab-world-codex");
   const card = page.locator(".world-card").first();

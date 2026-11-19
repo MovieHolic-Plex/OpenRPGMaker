@@ -180,6 +180,51 @@ export function pruneUnreachable(g: Grid, start: number): number {
 }
 
 /**
+ * 통째로 외딴 방을 굴로 잇는다: 어느 방의 바닥이 한 칸도 시작(입구)과 이어져 있지 않으면, 그 방이 든 조각에서 가장 가까운 이어진 바닥까지
+ * 바위를 3칸 폭으로 뚫는다(물 칸은 그대로 지나간다 — 다음 바퀴의 다리 놓기가 잇는다). 반환 = 뚫은 칸 수.
+ * 왜(2026-11-15 여러 씨앗 훑기, main 에서도 남): 두께 고르기가 좁은 목을 메우면 방 하나가 통째로 끊기고, 다음 줄의 «못 잇는 조각 제거» 가 그 방의
+ * 바닥을 모두 지워 시공기가 «입구에서 걸어 닿지 않는 방» 내부 오류로 멈췄다(소굴 씨앗 7·19 · 화산 7·10). 방의 한 귀퉁이만 끊긴 조각은 전처럼 지운다.
+ * 시작 칸 둘레(입구 굴과 그 북쪽 벽 — 계단 자리)와 맵 가장자리, 문목(protect)은 뚫지 않는다.
+ */
+export function tunnelLostRooms(g: Grid, start: number): number {
+  const { comp } = walkComponents(g);
+  const main = comp[start]!;
+  if (main < 0) return 0;
+  const inMain = new Set<number>(), lost = new Map<number, number>();   // 방 번호 → 그 방이 든 조각
+  for (let i = 0; i < comp.length; i += 1) { const r = g.roomAt[i]!; if (r < 0 || comp[i]! < 0) continue; if (comp[i] === main) inMain.add(r); else if (!lost.has(r)) lost.set(r, comp[i]!); }
+  const sx = start % g.W, sy = (start / g.W) | 0;
+  const ok = (x: number, y: number) => x >= 2 && y >= 6 && x < g.W - 2 && y < g.H - 2 && !g.protect[g.idx(x, y)] && !(Math.abs(x - sx) <= 8 && y >= sy - 10 && y <= sy + 4);
+  const done = new Set<number>();
+  let carved = 0;
+  for (const [room, c] of lost) {
+    if (inMain.has(room) || done.has(c)) continue;
+    done.add(c);
+    const prev = new Int32Array(g.W * g.H).fill(-2);
+    const queue: number[] = [];
+    for (let i = 0; i < comp.length; i += 1) if (comp[i] === c) { prev[i] = -1; queue.push(i); }
+    let hit = -1;
+    for (let q = 0; q < queue.length && hit < 0; q += 1) {
+      const cur = queue[q]!, cx = cur % g.W, cy = (cur / g.W) | 0;
+      for (const [dx, dy] of N4) {
+        const nx = cx + dx, ny = cy + dy;
+        if (!g.inb(nx, ny)) continue;
+        const ni = g.idx(nx, ny);
+        if (prev[ni] !== -2) continue;
+        if (comp[ni] === main) { prev[ni] = cur; hit = ni; break; }
+        if (!ok(nx, ny)) continue;
+        prev[ni] = cur; queue.push(ni);
+      }
+    }
+    if (hit < 0) continue;
+    for (let at = prev[hit]!; at >= 0 && prev[at] !== -1; at = prev[at]!) {
+      if (g.liquid[at]) continue;
+      carveDisc(g, at % g.W, (at / g.W) | 0, 1.5, -1); carved += 1;
+    }
+  }
+  return carved;
+}
+
+/**
  * 두께 규칙 + 연결을 고정점까지: fixThickness → (다리 연결) → 못 잇는 조각 제거 → 반복.
  * 반환 = 놓은 다리 칸 수.
  */
@@ -188,6 +233,7 @@ export function settle(g: Grid, start: number, rnd: () => number): { bridges: nu
   for (let pass = 0; pass < 8; pass += 1) {
     const f = fixThickness(g); filled += f;
     bridges += bridgeComponents(g, start, rnd).length;
+    if (pass < 6 && tunnelLostRooms(g, start)) continue;   // 통째로 끊긴 방은 지우지 않고 잇는다 — 다음 바퀴에서 두께를 다시 고른다
     const r = pruneUnreachable(g, start); removed += r;
     if (!f && !r) break;
   }

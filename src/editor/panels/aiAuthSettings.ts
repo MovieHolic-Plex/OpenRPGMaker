@@ -73,8 +73,11 @@ export interface AiAuthSettingsView {
   readonly focus: () => void;
   /** 헤더 「연결 확인」 — 패널의 같은 상태 경로로 다시 조회한다(로그인 대기 중이면 끊지 않는다). */
   readonly recheck: () => void;
+  readonly recheckChatGpt: () => void;
   /** 사용자 지정(OpenAI 호환) 연결 카드가 「기본 연결로 사용」 을 누를 때 — 카드 선택과 같은 경로로 제공자를 바꾼다. */
-  readonly selectProvider: (id: string) => void;
+  readonly selectProvider: (id: string, options?: { focus?: boolean; notify?: boolean }) => void;
+  readonly startPrimaryLogin: () => void;
+  readonly disconnectChatGpt: () => void;
   /** 폴링 타이머·진행 중 요청을 정리한다. 모달을 닫을 때 반드시 부른다. */
   readonly dispose: () => void;
 }
@@ -130,15 +133,25 @@ export function renderAiAuthSettings(
    * 「로그인이 필요합니다」 에 머물렀고, 제공자를 바꾸면 「확인 중」 에서 영영 멈췄다(2026-09-26 실측).
    */
   onStatus?: (next: AiAuthStatusSnapshot) => void,
+  primary?: {
+    readonly feedback: HTMLElement;
+    readonly disconnectError: HTMLElement;
+    readonly onAccount: (status: ChatGptAuthStatus | undefined, checkFailed: boolean, checking: boolean) => void;
+  },
 ): AiAuthSettingsView {
   // 연결 종류 선택 UI 는 없다 — 이 레지스트리의 제공자는 전부 oauth 이고, 예전 「API 키」
   // 카드는 지원 제공자가 없는 죽은 선택지였다(고르면 같은 두 제공자만 다시 보였다).
   const kind = editorConnectionKind(config);
   let providerId = parseOhMyPiProvider(config.providerId);
   let stored = false;
+  let primaryFlow = false;
+  let disconnectingChatGpt = false;
   let pollTimer: ReturnType<typeof setTimeout> | undefined;
   let pollAttempt = 0;
   let disposed = false;
+  const statusRequests = new AbortController();
+  const readStatus = (provider: string): Promise<ChatGptAuthStatus> =>
+    fetchChatGptAuthStatus(provider, statusRequests.signal);
   let loginExpiresAt = 0;
   /**
    * 인증 연산 세대 카운터. 제공자/종류 변경과 명시적 취소가 이 값을 올린다 — 진행 중(나 비동기 대기)인
@@ -225,13 +238,26 @@ export function renderAiAuthSettings(
       return button;
     }),
   });
-  quickBlock.append(quickGroup);
+  const retryCards = el("button", {
+    class: "ai-assistant-action", text: "다시 시도", attrs: { type: "button", hidden: "" },
+    dataset: { testid: "ai-auth-cards-retry" },
+    on: { click: () => {
+      for (const [id, auth] of cardAuth) {
+        if (id !== providerId && (auth === "error" || auth === "hostDisabled")) checkCard(id);
+      }
+    } },
+  });
+  quickBlock.append(quickGroup, retryCards);
 
   /** 카드의 상태 필 하나를 캐시된 자격 상태로 다시 그린다. */
   function renderCardPill(id: string): void {
+    const auth = cardAuth.get(id);
+    const failed = auth === "error" || auth === "hostDisabled";
+    if (id === CODEX_PROVIDER_ID) primary?.onAccount(typeof auth === "object" ? auth : undefined, failed, !auth || auth === "checking");
+    retryCards.hidden = ![...cardAuth].some(([provider, state]) =>
+      provider !== providerId && (state === "error" || state === "hostDisabled"));
     const pill = cardPills.get(id);
     if (!pill) return;
-    const auth = cardAuth.get(id);
     let text = "확인 중…";
     let tone = "checking";
     if (auth === "hostDisabled") {
@@ -551,18 +577,18 @@ export function renderAiAuthSettings(
   }
 
   /** 퀵 카드 선택 — 같은 제공자면 포커스만 옮기고, 아니면 일반 선택 경로(startChatGptLogin 라우팅 포함)를 태운다. */
-  function selectQuickProvider(id: string): void {
+  function selectQuickProvider(id: string, options: { focus?: boolean; notify?: boolean } = {}): void {
     const target = parseOhMyPiProvider(id);
     if (target === providerId) {
-      quickButtons.get(target)?.focus();
+      if (options.focus !== false) quickButtons.get(target)?.focus();
       return;
     }
     beginSelectionChange();
     providerId = target;
     providerSelect.value = providerId;
     applyChrome();
-    quickButtons.get(target)?.focus();
-    emit();
+    if (options.focus !== false) quickButtons.get(target)?.focus();
+    if (options.notify !== false) emit();
     void refreshStatus();
   }
 
@@ -572,6 +598,7 @@ export function renderAiAuthSettings(
    * 이전 연산의 늦은 결과가 새 선택의 UI 를 덮어쓰지 못하게 하는 지점이 여기 하나다.
    */
   function beginSelectionChange(): void {
+    placeFeedback(false);
     opGeneration += 1;
     stopPolling();
     stored = false;
@@ -642,12 +669,8 @@ export function renderAiAuthSettings(
   };
 
   const applyStatus = (auth: ChatGptAuthStatus): void => {
-    // 로그인 완료(직접/폴링/붙여넣기), 재확인, 연결 해제가 모두 성공한 인증 상태를 이 한 경로로
-    // 적용한다. 여기서 공유 게이트 캐시도 무효화·재조회해야 버튼별 배선 누락 없이 같은 제공자의
-    // in-session 인증 변경이 모든 AI 표면에 전파된다. 공유 조회는 이 함수를 호출하지 않으므로
-    // 재귀 루프가 없고, aiConnectionStatus 자체가 같은 제공자의 동시 조회를 de-dup 한다.
-    resetAiConnectionStatusCache();
-    void refreshAiConnectionStatus();
+    // 로그인·재확인·연결 해제에서 관측한 상태를 같은 경로로 공유 캐시에 전달한다.
+    void refreshAiConnectionStatus(undefined, { providerId, account: auth });
     stored = hasStoredCompanionCredential(auth);
     const usable = hasUsableCompanionCredential(auth);
     cardAuth.set(providerId, auth);
@@ -660,11 +683,13 @@ export function renderAiAuthSettings(
       return;
     }
     if (!usable && auth.pendingLogin) {
+      if (providerId === CODEX_PROVIDER_ID && (primaryFlow || !authPanel.closest("details[open]"))) placeFeedback(true);
       if (deviceBlock.hidden) restoreLoginFlow(auth.pendingLogin);
       applyChrome();
       return;
     }
     if (usable) stopPolling();
+    placeFeedback(false);
     if (usable && isOpenAiCompatProviderId(providerId)) {
       // 키는 선택이라 「연결됨」 은 엔드포인트가 저장돼 있다는 뜻이다. 실제 도달은 「연결 시험」 이 말한다.
       setStatus(`사용자 지정 연결 · ${auth.planType ?? accountName(providerId)}`, "connected");
@@ -691,7 +716,7 @@ export function renderAiAuthSettings(
   const refreshStatus = async (gen = opGeneration, provider = providerId): Promise<void> => {
     if (disposed) return;
     try {
-      const auth = await fetchChatGptAuthStatus(provider);
+      const auth = await readStatus(provider);
       // 늦은 응답은 무시한다 — 새 선택(세대·제공자)이 이 조회를 이미 대체했다면 UI 를 건드리지 않는다.
       if (disposed || gen !== opGeneration || provider !== providerId) return;
       applyStatus(auth);
@@ -737,7 +762,7 @@ export function renderAiAuthSettings(
       .then(async () => {
         if (disposed || gen !== opGeneration || provider !== providerId) return;
         devicePoll.textContent = "연결하는 중…";
-        const auth = await fetchChatGptAuthStatus(provider);
+        const auth = await readStatus(provider);
         if (disposed || gen !== opGeneration || provider !== providerId) return;
         if (hasStoredCompanionCredential(auth)) {
           stopPolling();
@@ -828,7 +853,7 @@ export function renderAiAuthSettings(
     const provider = providerId;
     pollTimer = setTimeout(() => {
       pollAttempt += 1;
-      void fetchChatGptAuthStatus(provider)
+      void readStatus(provider)
         .then((auth) => {
           if (disposed || gen !== opGeneration || provider !== providerId) return;
           if (hasUsableCompanionCredential(auth) || auth.lastLoginError) {
@@ -1022,7 +1047,7 @@ export function renderAiAuthSettings(
       // apiKey 자격에는 refresh 가 의미 없다 — 서버가 조용히 성공을 돌려주므로(no-op)
       // "새로 고쳤다"는 거짓 인상을 준다. oauth 일 때만 refresh 를 태운다.
       const check = ohMyPiAuthKind(provider) === "oauth"
-        ? refreshCompanionAuth(provider).then(() => undefined, () => undefined)
+        ? refreshCompanionAuth(provider, statusRequests.signal).then(() => undefined, () => undefined)
         : Promise.resolve();
       setStatus("확인 중…", "checking");
       // 재확인은 refreshCompanionAuth 가 끝나도 그 follow-up refreshStatus 가 끝날 때까지
@@ -1086,7 +1111,7 @@ export function renderAiAuthSettings(
   envScanDeny.addEventListener("click", () => chooseEnvScan("deny"));
   envScanAgain.addEventListener("click", () => { envScanBox.hidden = false; });
 
-  disconnectButton.addEventListener("click", () => {
+  const disconnectSelected = (): void => {
     // 실 브라우저는 비활성 버튼의 click 을 발화하지 않는다 — fakeDom 이 발화할 수 있으므로
     // 핸들러가 자체 비활성을 확인해 이중 연산(재확인 중 끼어드는 해제)을 배제한다.
     if (disconnectButton.disabled) return;
@@ -1117,7 +1142,105 @@ export function renderAiAuthSettings(
           disconnectButton.disabled = false;
         }
       });
+  };
+  disconnectButton.addEventListener("click", disconnectSelected);
+
+  const feedback = el("div", {
+    class: "ai-auth-feedback",
+    children: [deviceBlock, timeoutNotice, hint, serverError],
   });
+  const statusRow = el("div", { class: "ai-auth-state", children: [status] });
+  const authPanel = el("div", {
+    class: "ai-auth-panel",
+    dataset: { testid: "ai-auth-connection" },
+    children: [statusRow, providerHelp, envScanBox, actionsRow, feedback, envScanAgain],
+  });
+
+  function placeFeedback(inPrimary: boolean): void {
+    if (!primary || primaryFlow === inPrimary) return;
+    primaryFlow = inPrimary;
+    primary.feedback.hidden = !inPrimary;
+    if (inPrimary) primary.feedback.append(statusRow, feedback);
+    else {
+      authPanel.insertBefore(statusRow, authPanel.firstChild);
+      authPanel.append(feedback);
+    }
+  }
+
+  const disconnectChatGpt = (): void => {
+    if (disconnectingChatGpt) return;
+    if (primary) primary.disconnectError.hidden = true;
+    if (providerId === CODEX_PROVIDER_ID) {
+      placeFeedback(true);
+      disconnectSelected();
+      return;
+    }
+    // ChatGPT can be signed in while another account is the active work connection.
+    disconnectingChatGpt = true;
+    void disconnectCompanionAuth(CODEX_PROVIDER_ID)
+      .then((auth) => {
+        if (disposed) return;
+        cardAuth.set(CODEX_PROVIDER_ID, auth);
+        renderCardPill(CODEX_PROVIDER_ID);
+        resetAiConnectionStatusCache();
+        void refreshAiConnectionStatus();
+        if (providerId === CODEX_PROVIDER_ID) void refreshStatus();
+      })
+      .catch((error: unknown) => {
+        if (disposed || !primary) return;
+        primary.disconnectError.hidden = false;
+        primary.disconnectError.textContent = error instanceof Error
+          ? `ChatGPT에서 로그아웃하지 못했어요. 다시 시도해 주세요. 오류 내용: ${error.message}`
+          : "ChatGPT에서 로그아웃하지 못했어요. 다시 시도해 주세요.";
+      })
+      .finally(() => { disconnectingChatGpt = false; });
+  };
+
+  function checkCard(id: string): void {
+    const previous = cardAuth.get(id);
+    if (disposed || previous === "checking") return;
+    cardAuth.set(id, "checking");
+    if (previous) renderCardPill(id);
+    void readStatus(id)
+      .then((auth) => {
+        if (disposed || id === providerId) return;
+        cardAuth.set(id, auth);
+        renderCardPill(id);
+      })
+      .catch((error: unknown) => {
+        if (disposed || id === providerId) return;
+        const hostOff = isChatGptCompanionResponseError(error) && isHostAiDisabledMessage(error.serverMessage ?? "");
+        cardAuth.set(id, hostOff ? "hostDisabled" : "error");
+        renderCardPill(id);
+      });
+  }
+
+  const recheck = (): void => {
+    if (disposed) return;
+    if (!deviceBlock.hidden) {
+      // 로그인 대기 중에는 흐름을 끊지 않는다 — 이미 끝났는지만 확인하고, 아니면 그대로 기다린다.
+      const gen = opGeneration;
+      const provider = providerId;
+      void readStatus(provider)
+        .then((auth) => {
+          if (disposed || gen !== opGeneration || provider !== providerId) return;
+          if (hasUsableCompanionCredential(auth) || auth.lastLoginError) {
+            stopPolling();
+            applyStatus(auth);
+          }
+        })
+        .catch((error: unknown) => {
+          if (disposed || gen !== opGeneration || provider !== providerId) return;
+          stopPolling();
+          if (isChatGptCompanionResponseError(error)) showServerError(error);
+          else showUnreachable(error);
+        });
+      return;
+    }
+    opGeneration += 1;
+    setStatus("연결 확인 중…", "checking");
+    void refreshStatus();
+  };
 
   fillProviders();
   applyChrome();
@@ -1126,20 +1249,7 @@ export function renderAiAuthSettings(
   // 선택되지 않은 카드도 실제 자격 상태를 보여 준다 — 카드가 곧 상태 표시이므로 둘 다 조회한다.
   // 선택 카드는 위 refreshStatus 경로가 담당한다.
   for (const row of providersForKind(kind)) {
-    if (row.id === providerId) continue;
-    const idle = row.id;
-    void fetchChatGptAuthStatus(idle)
-      .then((auth) => {
-        if (disposed) return;
-        cardAuth.set(idle, auth);
-        renderCardPill(idle);
-      })
-      .catch((error: unknown) => {
-        if (disposed) return;
-        const hostOff = isChatGptCompanionResponseError(error) && isHostAiDisabledMessage(error.serverMessage ?? "");
-        cardAuth.set(idle, hostOff ? "hostDisabled" : "error");
-        renderCardPill(idle);
-      });
+    if (row.id !== providerId) checkCard(row.id);
   }
 
   return {
@@ -1148,56 +1258,33 @@ export function renderAiAuthSettings(
       attrs: { "aria-label": "AI 연결" },
       children: [
         quickBlock,
-        el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
-          el("div", { class: "ai-auth-state", children: [status] }),
-          providerHelp,
-          envScanBox,
-          actionsRow,
-          deviceBlock,
-          envScanAgain,
-          timeoutNotice,
-          hint,
-          serverError,
-        ] }),
+        authPanel,
         // 숨은 제공자 select — 카드가 선택을 주도하지만 값·change 의 원천은 여기다.
         providerSelect,
       ],
     }),
-    selectProvider: (id: string) => selectQuickProvider(id),
+    selectProvider: selectQuickProvider,
+    startPrimaryLogin: () => {
+      if (providerId === CODEX_PROVIDER_ID && loginButton.disabled && !loginButton.title) return;
+      selectQuickProvider(CODEX_PROVIDER_ID, { focus: false });
+      placeFeedback(true);
+      loginButton.click();
+    },
+    disconnectChatGpt,
     focus: () => {
       // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
       // API 키 입력은 두 제공자 모두에게 존재하지 않는다.
       quickButtons.get(providerId)?.focus();
     },
-    recheck: () => {
-      if (disposed) return;
-      if (!deviceBlock.hidden) {
-        // 로그인 대기 중에는 흐름을 끊지 않는다 — 이미 끝났는지만 확인하고, 아니면 그대로 기다린다.
-        const gen = opGeneration;
-        const provider = providerId;
-        void fetchChatGptAuthStatus(provider)
-          .then((auth) => {
-            if (disposed || gen !== opGeneration || provider !== providerId) return;
-            if (hasUsableCompanionCredential(auth) || auth.lastLoginError) {
-              stopPolling();
-              applyStatus(auth);
-            }
-          })
-          .catch((error: unknown) => {
-            if (disposed || gen !== opGeneration || provider !== providerId) return;
-            stopPolling();
-            if (isChatGptCompanionResponseError(error)) showServerError(error);
-            else showUnreachable(error);
-          });
-        return;
-      }
-      opGeneration += 1;
-      setStatus("연결 확인 중…", "checking");
-      void refreshStatus();
+    recheck,
+    recheckChatGpt: () => {
+      if (providerId === CODEX_PROVIDER_ID) recheck();
+      else checkCard(CODEX_PROVIDER_ID);
     },
     dispose: () => {
       disposed = true;
       stopPolling();
+      statusRequests.abort();
     },
   };
 }

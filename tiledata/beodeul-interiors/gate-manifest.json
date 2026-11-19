@@ -1099,6 +1099,186 @@
    "chipset": "beodeul_city"
   },
   {
+   "png": "tiledata/beodeul-interiors/pieces/door-oak.png",
+   "kind": "structure",
+   "id": "bd-in-door-oak",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-oak.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-oak",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-log.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-log",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/door-arch.png",
+   "kind": "structure",
+   "id": "bd-in-door-arch",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-iron.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-iron",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stage.png",
+   "kind": "structure",
+   "id": "bd-in-stage",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/great-hearth.png",
+   "kind": "structure",
+   "id": "bd-in-great-hearth",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/guild-board.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-guild-board",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pulpit.png",
+   "kind": "structure",
+   "id": "bd-in-pulpit",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/organ.png",
+   "kind": "structure",
+   "id": "bd-in-organ",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/font.png",
+   "kind": "round_body",
+   "id": "bd-in-font",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sarcophagus.png",
+   "kind": "box",
+   "id": "bd-in-sarcophagus",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/vault-door.png",
+   "kind": "structure",
+   "id": "bd-in-vault-door",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/weapon-wall.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-weapon-wall",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/book-wall.png",
+   "kind": "frame",
+   "id": "bd-in-book-wall",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/reading-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-reading-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cloister-well.png",
+   "kind": "structure",
+   "id": "bd-in-cloister-well",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/stairs-down.png",
+   "kind": "structure",
+   "id": "bd-in-stairs-down",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/wide-tapestry.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-wide-tapestry",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rose-window.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-rose-window",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/knight-statue.png",
+   "kind": "column",
+   "id": "bd-in-knight-statue",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/garden-bed.png",
+   "kind": "other",
+   "id": "bd-in-garden-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/treasure.png",
+   "kind": "box",
+   "id": "bd-in-treasure",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/weigh-beam.png",
+   "kind": "structure",
+   "id": "bd-in-weigh-beam",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cargo-stack.png",
+   "kind": "box",
+   "id": "bd-in-cargo-stack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/war-table.png",
+   "kind": "low_furniture",
+   "id": "bd-in-war-table",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/confessional.png",
+   "kind": "structure",
+   "id": "bd-in-confessional",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/council-bench.png",
+   "kind": "structure",
+   "id": "bd-in-council-bench",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/hoist.png",
+   "kind": "structure",
+   "id": "bd-in-hoist",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/tower-bell.png",
+   "kind": "structure",
+   "id": "bd-in-tower-bell",
+   "chipset": "beodeul_city"
+  },
+  {
    "png": "tiledata/beodeul-interiors/pieces/hearth-glow.png",
    "kind": "flat",
    "id": "bd-in-hearth-glow",
@@ -1114,6 +1294,24 @@
    "png": "tiledata/beodeul-interiors/pieces/lamp-glow.png",
    "kind": "flat",
    "id": "bd-in-lamp-glow",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-stone.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-stone",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-red.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-red",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-blue.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-blue",
    "chipset": "beodeul_city"
   },
   {

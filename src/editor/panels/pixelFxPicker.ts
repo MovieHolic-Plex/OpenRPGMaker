@@ -319,7 +319,7 @@ export function renderPagePixelFxControl(mapId: MapId, eventId: string, page: Ev
   const label = el("span", {
     class: "pixel-fx-page-current",
     text: current ? (entry ? `${entry.name} · ${entry.id}` : current.effectId) : "없음",
-    attrs: { "data-i18n-skip": "" },
+    ...(current ? { attrs: { "data-i18n-skip": "" } } : {}),
     dataset: { testid: "event-page-pixel-fx-current" },
   });
   const pick = el("button", {

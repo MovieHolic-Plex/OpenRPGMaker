@@ -138,7 +138,7 @@ function actorRow(
     // 선택 상태를 CSS 클래스로만 알리면 보조기술이 못 읽는다. 다른 레코드 목록은
     // databaseRecordViews.ts 에서 aria-pressed 를 세우지만, 여기는 role=row 이므로
     // 유효한 상태 속성은 aria-selected 다.
-    attrs: { role: "row", type: "button", "aria-selected": String(selected), title: `${className} · ID: ${actor.id}` },
+    attrs: { role: "row", type: "button", "aria-selected": String(selected), title: `${actor.name} · ${className} · ID: ${actor.id}` },
     dataset: { recordId: actor.id, testid: `db-record-row-${actor.id}` },
     children: [
       el("span", {

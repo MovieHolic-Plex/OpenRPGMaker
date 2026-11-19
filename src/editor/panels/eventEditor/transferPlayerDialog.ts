@@ -205,13 +205,6 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
                   close();
                 } },
               }),
-              el("button", {
-                class: "transfer-player-button",
-                text: "닫기",
-                dataset: { testid: "transfer-player-cancel" },
-                attrs: { type: "button" },
-                on: { click: close },
-              }),
             ]),
       ] }),
     ] })

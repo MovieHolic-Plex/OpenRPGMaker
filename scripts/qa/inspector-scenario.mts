@@ -21,7 +21,7 @@ async function measureInspector(page: Page) {
     const field = required('[data-testid="spatial-object-chip-custom"]', HTMLInputElement);
     const label = required('.spatial-object-field:has(> [data-testid="spatial-object-chip-custom"]) > span', HTMLElement);
     const labelContainer = required('.spatial-object-field:has(> [data-testid="spatial-object-chip-custom"])', HTMLLabelElement);
-    const close = required('[data-testid="database-footer-ok"]', HTMLButtonElement);
+    const close = required('[data-testid="database-modal-close"]', HTMLButtonElement);
     const save = required('[data-testid="database-footer-apply"]', HTMLButtonElement);
     const help = required('.database-modal-footer > button.tertiary', HTMLButtonElement);
     const rect = (element: HTMLElement) => {

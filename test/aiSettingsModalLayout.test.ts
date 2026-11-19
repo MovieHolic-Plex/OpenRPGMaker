@@ -9,9 +9,13 @@ vi.mock("@/editor/panels/aiRoleMatrixSettings", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/editor/panels/aiRoleMatrixSettings")>()),
   fetchConnectedRoutes: () => new Promise<never>(() => undefined),
 }));
-// 도구 사용량 패널도 같은 사정이다: 열자마자 IndexedDB·대화 기록을 읽고 나중에 자기 보고서를 그려 넣는다.
+// 고급 시트를 열면 도구 사용량 패널이 IndexedDB·대화 기록을 읽는다. 여기서는 배치만 확인한다.
 vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
-  renderAiToolUsagePanel: () => document.createElement("div"),
+  renderAiToolUsagePanel: () => {
+    const panel = document.createElement("div");
+    panel.dataset.testid = "ai-tool-usage";
+    return panel;
+  },
 }));
 
 const fetchChatGptAuthStatus = vi.fn();
@@ -90,60 +94,98 @@ async function openModal(): Promise<FakeElement> {
 }
 
 describe("AI 설정 모달 섹션 레이아웃", () => {
-  it("레일 탭과 페인으로 연결·모델·동작·표시를 나눈다", async () => {
-    // 리디자인 계약: 긴 단일 스크롤 대신 좌측 레일(tablist) + 페인. 역할 섹션 4개는
-    // 「역할별 모델 직접 지정」 표로 압축됐고, 모델 페인은 품질 프리셋으로 시작한다.
+  it("연결·동작 버튼만 표시하고 역할과 상세 설정은 고급 시트에 둔다", async () => {
     const modal = await openModal();
-    const expected = [
-      // abaa03e78f(2026-11-02) 가 연결 절 부제를 지웠다 — 제목만 확인한다.
-      ["connection", "연결", ""],
-      ["presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다."],
-      ["image", "그림·도트 모델", "쓰는 모델이 따로 있습니다."],
-      ["behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다."],
-      ["display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다."],
-    ] as const;
+    const rail = findByTestId(modal, "ai-settings-rail");
+    expect(rail?.querySelectorAll("button").map(button => button.dataset.testid)).toEqual([
+      "ai-settings-tab-connection", "ai-settings-tab-behavior",
+    ]);
+    expect(findByTestId(modal, "ai-settings-tab-connection")?.getAttribute("aria-current")).toBe("page");
+    expect(findByTestId(modal, "ai-settings-pane-behavior")?.hidden).toBe(true);
+    expect(findByTestId(modal, "ai-settings-chatgpt-hero")?.hidden).toBe(false);
+    expect(findByTestId(modal, "ai-settings-chatgpt-account")?.hidden).toBe(true);
+    expect(findByTestId(modal, "ai-settings-other-ways")?.parentElement?.getAttribute("open")).toBeNull();
 
-    for (const [id, title, description] of expected) {
-      const section = findByTestId(modal, `ai-settings-section-${id}`);
-      expect(section, id).not.toBeNull();
-      expect(section?.textContent).toContain(title);
-      expect(section?.textContent).toContain(description);
+    const sheet = findByTestId(modal, "ai-settings-advanced");
+    expect(sheet?.hidden).toBe(true);
+    expect(findByTestId(modal, "ai-settings-continue")).toBeNull();
+    expect(findByTestId(modal, "ai-tool-usage")).toBeNull();
+    findByTestId(modal, "ai-settings-tab-behavior")?.click();
+    expect(findByTestId(modal, "ai-settings-tab-behavior")?.getAttribute("aria-current")).toBe("page");
+    findByTestId(modal, "ai-settings-open-advanced")?.click();
+    expect(sheet?.hidden).toBe(false);
+    expect(sheet?.getAttribute("role")).toBe("dialog");
+    expect(findByTestId(sheet!, "ai-tool-usage")).not.toBeNull();
+    const roles = findByTestId(modal, "ai-settings-section-roles");
+    for (const role of ["progress", "advisor", "screen", "image", "pixel"]) {
+      expect(findByTestId(roles!, `ai-settings-model-${role}`)?.tagName).toBe("DETAILS");
     }
-
-    // 레일 탭 — 연결이 기본 활성, 나머지 페인은 숨겨져 있다.
-    expect(findByTestId(modal, "ai-settings-rail")?.getAttribute("role")).toBe("tablist");
-    for (const id of ["connection", "models", "behavior", "display"]) {
-      expect(findByTestId(modal, `ai-settings-tab-${id}`), `tab ${id}`).not.toBeNull();
-      expect(findByTestId(modal, `ai-settings-pane-${id}`), `pane ${id}`).not.toBeNull();
-    }
-    expect(findByTestId(modal, "ai-settings-tab-connection")?.getAttribute("aria-selected")).toBe("true");
-    expect(findByTestId(modal, "ai-settings-pane-models")?.hidden).toBe(true);
-
-    // 역할 4행은 details 안의 표로 압축 — 섹션 단위가 아니다.
-    const roles = findByTestId(modal, "ai-settings-advanced");
-    expect(roles?.tagName.toLowerCase()).toBe("details");
     for (const role of ["ultrabrain", "vision", "writer", "deep", "build"]) {
-      expect(findByTestId(modal, `ai-settings-role-${role}`), role).not.toBeNull();
+      expect(findByTestId(sheet!, `ai-settings-role-${role}`), role).not.toBeNull();
     }
+    for (const id of ["image", "work", "specialists", "role-matrix", "display", "usage"]) {
+      expect(findByTestId(sheet!, `ai-settings-section-${id}`), id).not.toBeNull();
+    }
+    findByTestId(modal, "ai-settings-advanced-done")?.click();
+    expect(sheet?.hidden).toBe(true);
+    expect(findByTestId(modal, "ai-settings-pane-behavior")?.hidden).toBe(false);
   });
 
-  it("모델 품질 프리셋이 역할 컨트롤을 한 번에 채운다", async () => {
+  it("로그인하면 GPT-6.2 Sol 품질을 고르고 역할을 따로 바꾸면 선택을 푼다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, accountEmail: "you@example.com" });
     const modal = await openModal();
+    const account = findByTestId(modal, "ai-settings-chatgpt-account");
+    await vi.waitFor(() => expect(account?.hidden).toBe(false));
+    expect(account?.textContent).toContain("you@example.com");
     const presets = findByTestId(modal, "ai-model-presets");
     expect(presets?.getAttribute("role")).toBe("radiogroup");
-    for (const id of ["fast", "balanced", "quality"]) {
-      expect(findByTestId(modal, `ai-model-preset-${id}`), id).not.toBeNull();
-    }
+    expect(presets?.querySelectorAll("button")).toHaveLength(2);
+    const balanced = findByTestId(modal, "ai-model-preset-balanced");
+    const quality = findByTestId(modal, "ai-model-preset-quality");
+    expect(balanced?.getAttribute("aria-checked")).toBe("true");
 
-    // 「최고 품질」을 고르면 역할 모델이 상위 티어로 채워지고 저장된다.
-    findByTestId(modal, "ai-model-preset-quality")?.click();
-    const modelInput = findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement | null;
-    // 공장 기본 제공자는 Claude 다(2026-11-16) — Claude 의 상위 티어도 Opus 5.5 하나다(modelPresets).
-    expect(modelInput?.value).toBe("claude-opus-5-5");
+    quality?.click();
     const stored = JSON.parse(storage.get("oprn:ai-config") ?? "{}");
-    expect(stored.model).toBe("claude-opus-5-5");
-    expect(stored.ultrabrainModel).toBe("claude-opus-5-5");
-    expect(stored.roleModels?.writer?.thinkingLevel).toBe("high");
+    expect(stored.model).toBe("gpt-6.2-sol");
+    expect(stored.ultrabrainModel).toBe("gpt-6.2-sol");
+    expect(stored.ultrabrainReasoningEffort).toBe("high");
+    expect(stored.roleModels?.deep).toMatchObject({ model: "gpt-6.2-sol", thinkingLevel: "high" });
+    expect(quality?.getAttribute("aria-checked")).toBe("true");
+
+    const vision = findByTestId(modal, "ai-config-vision-model")!;
+    vision.value = "gpt-6.2-astra";
+    vision.dispatchEvent(new Event("change"));
+    expect(balanced?.getAttribute("aria-checked")).toBe("false");
+    expect(quality?.getAttribute("aria-checked")).toBe("false");
+    expect(presets?.parentElement?.parentElement?.textContent).toContain("고급에서 역할별로 직접 골랐어요.");
+
+    balanced?.click();
+    const updated = JSON.parse(storage.get("oprn:ai-config") ?? "{}");
+    expect(updated.roleModels?.deep).toMatchObject({ model: "gpt-6.2-sol", thinkingLevel: "medium" });
+    expect(balanced?.getAttribute("aria-checked")).toBe("true");
+  });
+
+  it("동작 스위치는 기존 키를 저장하고 상세 적용 모드를 되살릴 수 있다", async () => {
+    storage.set("oprn:ai-config", JSON.stringify({ piApply: "step", piApplyPolicyVersion: 1 }));
+    const modal = await openModal();
+    const apply = findByTestId(modal, "ai-config-apply-immediately");
+    const polish = findByTestId(modal, "ai-config-dialogue-polish");
+    const image = findByTestId(modal, "ai-config-image-plan");
+    for (const control of [apply, polish, image]) expect(control?.getAttribute("role")).toBe("switch");
+    expect(apply?.getAttribute("aria-checked")).toBe("false");
+    apply?.click();
+    expect(JSON.parse(storage.get("oprn:ai-config") ?? "{}").piApply).toBe("default");
+    apply?.click();
+    polish?.click();
+    image?.click();
+    expect(JSON.parse(storage.get("oprn:ai-config") ?? "{}")).toMatchObject({
+      piApply: "step", dialoguePolishAfterBuild: false, imagePlanBuild: false,
+    });
+    const modes = findByTestId(modal, "ai-config-pi-apply")!;
+    expect(modes.options.map(option => option.value)).toEqual(["yolo", "auto", "default", "review", "step"]);
+    modes.value = "auto";
+    modes.dispatchEvent(new Event("change"));
+    expect(apply?.getAttribute("aria-checked")).toBe("true");
   });
 
   it("모든 설정 행의 설명을 화면 텍스트로 제공한다", async () => {
@@ -151,7 +193,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     for (const description of [
       "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요.",
       "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산",
-      "기존 영역 작업 경로의 추론 설정입니다.",
+      "기존 영역 작업 경로의 추론 강도를 설정합니다.",
       "자율 모드는 요청을 작업 계획으로 나누고, 채팅 모드는 대화 중심으로 진행합니다.",
       "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다.",
     ]) {
@@ -159,20 +201,21 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     }
   });
 
-  it("상단 연결 요약과 기존 상태 경로를 다시 확인하는 액션을 제공한다", async () => {
+  it("다른 연결에서 기존 상태를 다시 확인할 수 있다", async () => {
     const modal = await openModal();
     const summary = findByTestId(modal, "ai-settings-connection-summary");
     const check = findByTestId(modal, "ai-settings-connection-check");
 
     expect(summary).not.toBeNull();
     expect(check?.textContent).toContain("연결 확인");
+    fetchChatGptAuthStatus.mockClear();
     check?.click();
     await Promise.resolve();
     await Promise.resolve();
-    expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("google-antigravity");
+    expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("openai-codex", expect.any(AbortSignal));
   });
 
-  it("헤더 요약은 연결 패널과 같은 상태를 말한다", async () => {
+  it("다른 연결의 요약은 인증 패널 상태를 공유한다", async () => {
     // 옛 헤더는 열 때 따로 한 번 조회해서 패널과 다른 말을 했다(패널 「로그인 대기 중」, 헤더 「로그인이 필요합니다」).
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
     const modal = await openModal();
@@ -180,22 +223,23 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
       expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("로그인 필요");
     });
     const summary = findByTestId(modal, "ai-settings-connection-summary");
-    // 공장 기본 제공자 = Claude(2026-11-16).
-    expect(summary?.textContent).toBe("Claude · 로그인 필요");
+    expect(summary?.textContent).toBe("ChatGPT · 로그인 필요");
     expect(summary?.dataset.tone).toBe("warning");
 
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "oauth" });
     findByTestId(modal, "ai-settings-connection-check")?.click();
     await vi.waitFor(() => {
       // 「연결 확인」 뒤에는 확인 시각이 붙는다(C-67, 92a6aba61e) — 시각 문자열은 로케일·시계에 따라 달라 형식만 본다.
-      expect(summary?.textContent).toMatch(/^Claude · 사용 준비됨 · .+ 확인함$/u);
+      expect(summary?.textContent).toMatch(/^ChatGPT · 사용 준비됨 · .+ 확인함$/u);
     });
     expect(summary?.dataset.tone).toBe("ready");
     expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("연결됨");
   });
 
-  it("자동 저장과 연결 후 계속 동작을 푸터에서 제공한다", async () => {
+  it("고급 시트에서 자동 저장 상태를 제공한다", async () => {
     const modal = await openModal();
+    findByTestId(modal, "ai-settings-tab-behavior")?.click();
+    findByTestId(modal, "ai-settings-open-advanced")?.click();
     const hint = findByTestId(modal, "ai-config-saved-hint");
 
     // 「지금 저장」버튼은 없다 — 수동 저장이 있으면 자동 저장이 안 되는 것처럼 보인다.

@@ -2,6 +2,7 @@ import {
   disposeResourceManager, renderResourceManager, requestResourceManagerClose,
 } from "@/editor/panels/resourceManager";
 import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { afterOpeningPaint } from "@/editor/ui/afterOpeningPaint";
 import { handleHistoryHotkey, isHistoryHotkeyChord, isTextEditingElement } from "@/editor/hotkeys";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -22,7 +23,11 @@ export function openResourceModal(initialKind?: ResourceKind): void {
   const opener = document.activeElement;
   const identity = store.getProjectIdentity();
 
-  const body = el("div", { class: "database-modal-body" });
+  const body = el("div", {
+    class: "database-modal-body",
+    attrs: { "aria-busy": "true" },
+    children: [el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } })],
+  });
   const closeButton = el("button", {
     class: "database-modal-close",
     text: "×",
@@ -97,7 +102,6 @@ export function openResourceModal(initialKind?: ResourceKind): void {
   });
   const footer = el("footer", {
     class: "resource-modal-footer",
-    // 도움말은 왼쪽 끝 보조 단추, 오른쪽 끝(가장 강한 자리)은 닫기 — 둘이 같은 무게로 끝자리를 다투지 않게 한다.
     children: [
       el("button", {
         class: "resource-footer-button resource-footer-help",
@@ -106,12 +110,6 @@ export function openResourceModal(initialKind?: ResourceKind): void {
         on: { click: () => toast("리소스 종류를 선택하고 PNG 파일을 가져옵니다.", "ok") },
       }),
       el("span", { class: "resource-footer-status", text: "사용 중인 리소스는 삭제할 수 없습니다." }),
-      el("div", {
-        class: "resource-footer-actions",
-        children: [
-          el("button", { class: "resource-footer-button", text: "닫기", attrs: { type: "button" }, on: { click: close } }),
-        ],
-      }),
     ],
   });
   backdrop.querySelector(".resource-modal-window")?.append(footer);
@@ -119,15 +117,21 @@ export function openResourceModal(initialKind?: ResourceKind): void {
   // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
   // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
   registerModal(backdrop, escape);
-  renderResourceManager(body, initialKind);
+  let ready = false;
   unsubscribe = store.subscribe((_project, change) => {
     const current = store.getProjectIdentity();
     if (change.projectSwitch || current.kind !== identity.kind || current.id !== identity.id) {
       dispose();
       return;
     }
-    if (change.scope === "project" || change.scope === "assets") renderResourceManager(body, initialKind);
+    if (ready && (change.scope === "project" || change.scope === "assets")) renderResourceManager(body, initialKind);
   });
   activeResourceModal = { element: backdrop, dispose };
   closeButton.focus();
+  afterOpeningPaint(backdrop, () => {
+    if (closed || !backdrop.isConnected) return;
+    body.removeAttribute("aria-busy");
+    renderResourceManager(body, initialKind);
+    ready = true;
+  });
 }

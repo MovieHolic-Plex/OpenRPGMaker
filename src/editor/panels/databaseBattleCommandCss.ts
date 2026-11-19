@@ -28,7 +28,7 @@ export function battleCommandCssEditor(labels: readonly string[], rerender: () =
       children: [el("span", { class: "battle-command-text", text: label })],
     })) }),
   ] });
-  const apply = el("button", { class: "db-ws-btn primary", text: "CSS 적용", attrs: { type: "button" }, dataset: { testid: "db-command-css-apply" } });
+  const apply = el("button", { class: "db-ws-btn db-ws-btn-primary", text: "CSS 적용", attrs: { type: "button" }, dataset: { testid: "db-command-css-apply" } });
   const update = (): void => {
     state.value = input.value;
     const parsed = parseBattleCommandCss(input.value);
@@ -60,10 +60,10 @@ export function battleCommandCssEditor(labels: readonly string[], rerender: () =
     class: "db-ws-btn", text: label, attrs: { type: "button" }, dataset: { testid: id }, on: { click: action },
   });
   update();
-  return sectionCard({ title: "메뉴 스타일 · Custom CSS", hint: "프로젝트 공통 · 모든 직업의 전투 명령과 하위 메뉴에 적용됩니다", testid: "db-command-css-editor", children: [
+  return sectionCard({ title: "메뉴 스타일 · 사용자 지정 CSS", hint: "프로젝트 공통 · 모든 직업의 전투 명령과 하위 메뉴에 적용됩니다", testid: "db-command-css-editor", children: [
     el("p", { text: "스타일 샘플입니다. 실제 크기와 배치는 전투 방식(도트 측면/몬스터 대치)을 따릅니다. 버튼에 Tab으로 초점을 옮겨 선택 상태를 확인하세요." }),
     preview,
-    el("label", { text: "Custom CSS", attrs: { for: "db-command-css-input" } }),
+    el("label", { text: "사용자 지정 CSS", attrs: { for: "db-command-css-input" } }),
     input,
     el("p", { attrs: { id: "db-command-css-help" }, text: "선택자: .menu · .command · .label · .command:focus-visible · .command:disabled. 속성: color, background-color, border-color/width/style/radius, font-size/weight, letter-spacing, line-height, text-align/shadow, padding(-inline/-block), gap, row-gap, column-gap, box-shadow. URL·전역 선택자·@규칙은 사용할 수 없습니다." }),
     el("div", { class: "db-ws-toolbar", children: [

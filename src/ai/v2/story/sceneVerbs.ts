@@ -17,7 +17,7 @@ import { buildEvent } from "./events";
 import { buildPeople } from "../place/people";
 import { eventsOf } from "../place/cells";
 import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeonFoes";
-import { currentFoe, leadEnemyId, namedFoe, namedFoeArt, wantedArtName } from "./currentFoes";
+import { bossArtInUse, currentFoe, distinctBossFoe, leadEnemyId, namedFoe, namedFoeArt, wantedArtName } from "./currentFoes";
 import { foeGraphic } from "./stepFoes";
 import { artGapLine, parseArtGap } from "@/project/artGap";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
@@ -25,6 +25,7 @@ import { reachableCells } from "../judge/eventReach";
 import { findMapId } from "../loop/argGuard";
 import { nameScore } from "../todo/names";
 import { findBarSpot } from "../place/barSpot";
+import { findMap } from "./blueprint";
 
 type Obj = Record<string, unknown>;
 type Pt = { x: number; y: number };
@@ -84,7 +85,10 @@ function bossTroop(run: BuildRun, spec: BossEncounterSpec["boss"], warnings: str
   // 스스로 고른 기본값(낱말이 없을 때의 타락한 기사·마왕)은 현행 세트에서만.
   const told = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`);
   const drawn = told ? namedFoe(project, wanted) : currentFoe(project, wanted);
-  const art = drawn?.enemyId ?? wanted;
+  // 게임 안에서 보스 그림은 하나씩: 바란 그림이 없어 대역으로 접혔거나(리치·마왕 → 어둠 망령) 낱말이 없어 기본 그림으로 온 보스가
+  // 이 게임의 다른 보스와 같은 그림이면 남은 그림의 가까운 종으로 세운다. 낱말이 짚은 그림 그대로면 바꾸지 않는다.
+  const folded = !named && (!!drawn?.wanted || !told);
+  const art = folded && drawn ? distinctBossFoe(project, drawn.enemyId, bossArtInUse(project), () => false, `${String((run.ctx as { lookKey?: string }).lookKey ?? project.meta?.title ?? "")}|boss`) : drawn?.enemyId ?? wanted;
   if (drawn?.wanted) warnings.push(artGapLine({ want: "boss", wanted: drawn.wanted, where: spec.name, standIn: project.database.enemies.find((e) => e.id === art)?.name ?? art, by: "add_boss_encounter" }));
   if (!told) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
   return ensureFoeTroop(run, art, "boss", pickTroops(project, undefined).boss, spec.name);
@@ -115,7 +119,11 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   // 길을 막고 선 적: 선 칸이 길을 끊지 않으면 가장 가까운 길목으로 옮긴다 — 거절하지 않고 고쳐 놓고 알린다(모델이 읽는 글이라 영어).
   let bars = "";
   let body: { width: number; height: number } | undefined;
-  if (spec.boss.blocks) {
+  // 청사진의 싸우는 단계인데 마지막이 아니고 다음 단계가 같은 맵에 있으면, 모델이 blocks 를 말하지 않아도 그 다음 단계로 가는 길을 막고 선다
+  // (청사진이 «이겨야 지나간다» 고 정해 둔 것이다 — 요청 글은 보지 않는다). blocks:false 를 주면 그대로 둔다.
+  // 왜(2026-11-16 r8 D5): 「길목을 막은 해골 병사」 를 add_boss_encounter 가 넓은 방 가운데 세워 플레이어가 옆으로 지나갔다.
+  const pathBars = spec.boss.blocks === undefined && blueprintStepBars(run.ctx.project, mapId, name);
+  if (spec.boss.blocks || pathBars) {
     const stood = { x: ev.x, y: ev.y };
     const spot = findBarSpot(run.ctx.project, map, stood, ev.id);
     if (!spot) warnings.push(`"${name}" does NOT bar the way: within 14 steps of (${stood.x},${stood.y}) no passage is 3 cells wide or less, so the player walks around it. Give boss.at on a narrower passage, or narrow the passage first.`);
@@ -125,7 +133,7 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
       if (now && now.x === spot.at.x && now.y === spot.at.y) {
         ev = now;
         if (spot.cells.length > 1) body = spot.footprint;
-        bars = ` It bars the way at (${ev.x},${ev.y})${moved ? ` — moved from (${stood.x},${stood.y}), the nearest spot with no way around` : ""}${body ? `; its body covers the ${spot.cells.length}-cell-wide passage (${spot.cells[0]!.x},${spot.cells[0]!.y})–(${spot.cells.at(-1)!.x},${spot.cells.at(-1)!.y})` : ""}: what lies beyond is reached only after winning.`;
+        bars = `${pathBars ? " It is a blueprint fight step with later steps on this map, so it stands in their way." : ""} It bars the way at (${ev.x},${ev.y})${moved ? ` — moved from (${stood.x},${stood.y}), the nearest spot with no way around` : ""}${body ? `; its body covers the ${spot.cells.length}-cell-wide passage (${spot.cells[0]!.x},${spot.cells[0]!.y})–(${spot.cells.at(-1)!.x},${spot.cells.at(-1)!.y})` : ""}: what lies beyond is reached only after winning.`;
       } else warnings.push(`"${name}" does NOT bar the way: it could not be moved to the passage at (${spot.at.x},${spot.at.y})${moved ? ` (${String(moved.summary).slice(0, 120)})` : ""}. Move it there with move_event.`);
     }
   }
@@ -375,4 +383,12 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
   }
   run.ctx.project = replaceEvent(run.ctx.project, mapId, ev);
   return result(true, run, first, `엔딩 「${title}」 [${endingId}] — ${how} 대사 ${say.length}줄 뒤 엔딩(${ev.id})${epilogue.length ? `, 에필로그 ${epilogue.length}줄` : ""}.`, warnings, [mapId], [{ mapId, eventId: ev.id }]);
+}
+
+/** 이 이름의 적이 청사진의 싸우는 단계(마지막이 아님)이고 뒤 단계 가운데 하나가 같은 맵에 있는가. */
+function blueprintStepBars(project: Project, mapId: string, name: string): boolean {
+  const steps = project.gameBlueprint?.steps ?? [];
+  const k = steps.findIndex((s) => s.kind === "battle" && findMap(project, s.place)?.id === mapId && (nameScore(name, s.who ?? "") >= 3 || nameScore(name, s.event ?? "") >= 3));
+  if (k < 0 || k === steps.length - 1) return false;
+  return steps.slice(k + 1).some((s) => findMap(project, s.place)?.id === mapId);
 }

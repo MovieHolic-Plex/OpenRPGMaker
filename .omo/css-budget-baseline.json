@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-19T12:13:21.885Z",
+  "generatedAt": "2026-11-19T15:37:22.341Z",
   "metrics": {
-    "hexLiterals": 2757,
-    "important": 385,
+    "hexLiterals": 2756,
+    "important": 376,
     "undefinedVars": 56,
     "globalRootFiles": 11,
-    "cssFileCount": 435
+    "cssFileCount": 436
   },
   "details": {
     "hexByFile": {
@@ -122,7 +122,7 @@
       "src/styles/map/map-props.css": 26,
       "src/styles/map/palette-player.css": 1,
       "src/styles/map/tile-palette-clusters.css": 1,
-      "src/styles/resources/resource-manager.css": 3,
+      "src/styles/resources/resource-manager.css": 1,
       "src/styles/runtime/actionHud.css": 4,
       "src/styles/runtime/battle/01-scene-base.css": 14,
       "src/styles/runtime/battle/02-intro-reveal.css": 2,
@@ -176,13 +176,13 @@
       "src/styles/runtime/transitions.css": 2,
       "src/styles/runtime/zoneFeedback.css": 1,
       "src/styles/shell/dialogs/ai-modal-shell.css": 12,
-      "src/styles/shell/dialogs/help-modal.css": 28,
+      "src/styles/shell/dialogs/help-modal.css": 27,
       "src/styles/shell/dialogs/jp-city-pin-repair.css": 1,
       "src/styles/shell/editor-ui-modes.css": 11,
       "src/styles/shell/from-map-resource-system-part-1.css": 1,
       "src/styles/shell/shell-density.part-1.css": 1,
       "src/styles/shell/window-controls.css": 5,
-      "src/styles/tokens.css": 31,
+      "src/styles/tokens.css": 33,
       "src/player/player.css": 1
     },
     "importantByFile": {
@@ -195,7 +195,7 @@
       "src/styles/database/modern/weather-animals.css": 1,
       "src/styles/database/play-resolution.css": 1,
       "src/styles/database/sidebar.css": 45,
-      "src/styles/database/studio-theme.css": 74,
+      "src/styles/database/studio-theme.css": 65,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 1,
       "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css": 2,
       "src/styles/database/tabs-b-assistant-panel/25-team-sidebar.css": 1,
@@ -521,6 +521,7 @@
       "src/styles/components/grid-4.css",
       "src/styles/components/icons.css",
       "src/styles/components/index.css",
+      "src/styles/components/save-error-popover.css",
       "src/styles/database/actors.css",
       "src/styles/database/actors.part-2.css",
       "src/styles/database/actors.part-3.css",

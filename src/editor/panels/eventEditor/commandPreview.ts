@@ -39,7 +39,7 @@ import { initialBadge } from "./recordPicker";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
-import { commandSummaryParts, isSummaryIconPart, transferEditorSummary } from "./commandSummary";
+import { animationName, commandSummaryParts, isSummaryIconPart, transferEditorSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
 import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
@@ -1930,9 +1930,15 @@ function animationStage(cmd: Extract<Command, { kind: "showAnimation" }>): HTMLE
     renderShowAnimationFallback(screen, record?.name ?? "연출 없음");
   }
   stage.append(screen);
-  const meta = [record?.name ?? (cmd.animationId || "연출 없음"), animationTargetPreview(cmd.target)];
-  if (cmd.wait) meta.push("대기");
-  stage.append(el("div", { class: "ecp-fx-caption", text: meta.join(" · ") }));
+  stage.append(el("div", {
+    class: "ecp-fx-caption",
+    children: [
+      el("span", { text: animationName(cmd.animationId) }),
+      " · ",
+      el("span", { text: animationTargetPreview(cmd.target) }),
+      ...(cmd.wait ? [" · ", el("span", { text: "대기" })] : []),
+    ],
+  }));
   return stage;
 }
 
@@ -1993,7 +1999,7 @@ function lightAnchorPreview(anchor: Extract<Command, { kind: "addLight" }>["sour
 
 function animationTargetPreview(target: Extract<Command, { kind: "showAnimation" }>["target"]): string {
   if (target === "player") return "플레이어";
-  if ("eventId" in target) return `이벤트 ${target.eventId || "현재"}`;
+  if ("eventId" in target) return target.eventId ? `이벤트 ${target.eventId}` : "이 이벤트";
   return `(${target.x}, ${target.y})`;
 }
 

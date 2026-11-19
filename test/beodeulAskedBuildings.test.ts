@@ -120,7 +120,8 @@ describe("요청 건물 — 낱말에서 킷으로", () => {
 describe("요청 건물 — 마을 시공기가 세운다", () => {
   it("r6 의 자리 그대로 + buildings:['cathedral']: 성당이 한 단 위에 서고, 문 앞이 시작에서 걸어 닿고, 광장 곁이다", () => {
     const { project, map, summary } = build({ ...R6, hints: { ...(R6.hints as object), buildings: ["cathedral"] } } as unknown as PlaceSpec);
-    const m = /«cathedral» stands as bd-house-cathedral \([^)]*\), door front \((\d+),(\d+)\)/u.exec(summary);
+    // 큰 건물은 단을 같이 적는다(그 문 뒤 실내를 make_place hints.door 로 지으면 그 단의 방 구성 — test/aiV2HouseDoorCard.test.ts)
+    const m = /«cathedral» stands as bd-house-cathedral \([^)]*\) xlarge, door front \((\d+),(\d+)\)/u.exec(summary);
     expect(m, summary).not.toBeNull();
     const front = { x: Number(m![1]), y: Number(m![2]) };
     const placed = (map.structurePlacements ?? []).find((p) => p.kitId === "bd-house-cathedral");

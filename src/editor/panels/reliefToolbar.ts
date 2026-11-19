@@ -36,8 +36,8 @@ import { selectSidebarLayer } from "./leftLayerSwitcher";
 import { TERRAIN_LAND_SIZES, TERRAIN_LANDS, terrainLandLabel, type TerrainLand, type TerrainLandSize } from "../terrainLandBrush";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
-  ["raise", "올리기", "누르고 있으면 계속 쌓인다", '<path d="M4 18h16M7 14l5-8 5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
-  ["lower", "내리기", "누르고 있으면 계속 판다", '<path d="M4 6h16M7 10l5 8 5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
+  ["raise", "높이 올리기", "누르고 있으면 계속 쌓인다", '<path d="M4 18h16M7 14l5-8 5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
+  ["lower", "높이 내리기", "누르고 있으면 계속 판다", '<path d="M4 6h16M7 10l5 8 5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
   ["flatten", "평탄", "처음 누른 칸 높이로 고른다", '<path d="M3 12h18M3 17h18" stroke="currentColor" stroke-width="2"/><path d="M8 7l4-3 4 3" fill="none" stroke="currentColor" stroke-width="1.6"/>'],
   ["set", "단 지정", "상한 단으로 맞춘다", '<rect x="4" y="13" width="16" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 13V9h8v4M10 9V5h4v4" fill="none" stroke="currentColor" stroke-width="1.8"/>'],
   ["mountain", "산", "상한 단 봉우리를 한 번에 — 끌면 능선", '<path d="M2 20l7-12 4 6 3-4 6 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
@@ -59,7 +59,11 @@ const STYLE_LABELS: Readonly<Record<string, string>> = {
   plague: "역병", mushroom: "버섯", savanna: "사바나", badlands: "황무지", saltflat: "소금 평원", desert: "사막", sandstone: "사암",
   dune: "모래 언덕", "desert-cut": "사막 깎은 길", "dune-cut": "모래 깎은 길", tundra: "툰드라", "tundra-snow": "눈 덮인 툰드라", taiga: "타이가",
   "cliff-earth": "돌 박힌 흙 둑", "cliff-strata": "켜 절벽", "cliff-rubble": "막돌 둑", "cliff-ledge": "턱진 바위", "cliff-crag": "갈비 바위벽", "cliff-rock": "바위 절벽",
-  elf: "엘프", gothic: "고딕", holy: "신전", steampunk: "증기", dwarf: "드워프", blight: "마른 땅", crystal: "수정",
+  sheer: "깎아지른 절벽",
+  "grass-steps": "풀 둑과 돌계단", "snow-steps": "눈 둑과 돌계단", "sand-steps": "모래 둑과 돌계단", "cave-steps": "동굴 벽과 돌계단", "peat-steps": "이탄 둑과 돌계단",
+  "grass-steps@ground-dry": "마른 풀 둑과 돌계단", "grass-steps@ground-clover": "토끼풀 둑과 돌계단", "grass-steps@ground-earth": "흙 둑과 돌계단",
+  "grass-steps@ground-terra": "붉은 흙 둑과 돌계단", "grass-steps@ground-sand": "모랫빛 둑과 돌계단",
+  elf: "엘프", gothic: "고딕", holy: "신전", steampunk: "증기", dwarf: "드워프", blight: "마른 땅", crystal: "수정 절벽",
 };
 
 const SIZES: readonly ReliefRoughSize[] = ["S", "M", "L", "XL"];
@@ -146,7 +150,7 @@ function doodadThumb(doodad: ReliefDoodad, tileset: TilesetDef | undefined): HTM
     if (tile >= 0) cells.push({ dx, dy, layer: "upper" as const, tile });
   }
   const canvas = renderTileCellsToCanvas({
-    tileset, widthTiles: kit.width, heightTiles: kit.height, cells, scale: 1,
+    tileset, widthTiles: kit.width, heightTiles: kit.height, cells, scale: 1, transparentBackground: true,
     backgroundTile: doodad.kind === "wall" ? null : reliefTopGrassTile(tileset) ?? null,
   });
   return canvas;
@@ -486,7 +490,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
         thumb.classList.add("relief-pop-thumb");
         return el("button", {
           class: "relief-pop-item",
-          attrs: { type: "button", title: doodad.kind === "ramp" || doodad.kind === "bridge" ? doodad.label : `${doodad.label} (${doodad.kit.id})`, "aria-pressed": "false" },
+          attrs: { type: "button", title: doodad.label, "aria-pressed": "false" },
           dataset: { testid: `relief-doodad-${doodad.id}`, doodadId: doodad.id },
           children: [thumb, el("span", { text: doodad.label })],
           on: { click: () => editorState.set({ reliefDoodad: editorState.get().reliefDoodad === doodad.id ? null : doodad.id, terrainBrush:"height", reliefBridgeStart:null }) },
@@ -646,7 +650,13 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
           : `${picked.label} · 캔버스에서 배치 위치를 고르세요`
       : `지형 · ${MODE_LABEL[state.reliefMode]} · ${MODES.find(([mode]) => mode === state.reliefMode)?.[2] ?? "캔버스에서 드래그"} · 우클릭: ${rightButtonLabel(state.reliefMode)} · Shift: 정밀 붓`;
     if(state.reliefBridgeStart?.mapId===state.currentMapId)hint.textContent="첫 둑 선택됨 — 같은 줄의 반대편 둑을 누른다 · Esc: 시작점 취소";
-    if (landMode) hint.textContent = `땅 칸 · ${terrainLandLabel(state.terrainLand)} · ${state.terrainLandSize === "rect" ? "끌어서 사각형" : `붓 ${state.terrainLandSize}×${state.terrainLandSize}`} · 오른쪽 버튼: 낮은 땅 · Shift+끌기: 사각형 · 1~4 땅 · [ ] 크기`;
+    if (landMode) {
+      const land = terrainLandLabel(state.terrainLand);
+      const size = state.terrainLandSize;
+      hint.textContent = size === "rect"
+        ? `땅 칸 · ${land} · 끌어서 사각형 · 오른쪽 버튼: 낮은 땅 · 1~4 땅 · [ ] 크기`
+        : `땅 칸 · ${land} · 붓 ${size}×${size} · 오른쪽 버튼: 낮은 땅 · Shift+끌기: 사각형 · 1~4 땅 · [ ] 크기`;
+    }
     if(state.terrainBrush==="surface")hint.textContent=(terrainMaterialTile(tileset,state.terrainMaterial)??-1)<0?"이 칩셋에 선택한 재질이 없다 — 다른 재질을 고르라":`표면 ${MATERIAL_LABEL[state.terrainMaterial]} · 높이 유지 · 폭 ${state.terrainWidth}칸`;
     if(state.terrainBrush==="river")hint.textContent=`강 · 끌어서 그리기 · 폭 ${state.terrainWidth}칸`;
     if(state.terrainBrush==="group")hint.textContent=state.terrainMoveGroup?"옮길 자리를 누른다 · 오른쪽 버튼·Esc: 취소":selectedExists?"군집 선택됨 — 옮기기·군집 지우기":"나무·바위 군집을 눌러 선택한다";

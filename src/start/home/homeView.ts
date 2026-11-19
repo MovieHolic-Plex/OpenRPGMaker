@@ -6,9 +6,14 @@
 import { el } from "@/util/dom";
 import type { RecentFolderAction, RecentProjectEntry } from "../../../electron/shared/start";
 import { filterRecentProjects, type RecentProjectSort } from "../../../electron/shared/recentProjects";
-import { getLocale } from "@/i18n";
+import { getLocale, t } from "@/i18n";
 import { startIcon } from "../icons";
 import { BUILTIN_GAMES, type BuiltinGame, type BuiltinGameId } from "./builtinGames";
+
+// 기존 SQLite 프로젝트에는 제목을 기본값으로 만들었다는 별도 표식이 없다.
+export function isDefaultProjectTitle(title: string): boolean {
+  return title === "새 프로젝트";
+}
 
 export const HOME_TESTIDS = {
   games: "start-my-games",
@@ -50,7 +55,7 @@ export type HomeActions = {
 
 /**
  * 같은 이름(「새 게임」)이 여럿이면 날짜를 붙여 구분한다. 날짜는 마지막 편집(없으면 마지막으로 연) 날이다.
- * 제목은 번역하지 않는 칸(translate="no")이라 날짜는 화면 언어의 날짜 형식으로 직접 만든다(ko 「10월 17일」, en 「Oct 17」).
+ * 날짜는 화면 언어의 날짜 형식으로 만든다(ko 「10월 17일」, en 「Oct 17」).
  */
 export function displayTitles(entries: readonly RecentProjectEntry[], locale = "ko"): ReadonlyMap<string, string> {
   const counts = new Map<string, number>();
@@ -85,9 +90,10 @@ export function fillCover(art: HTMLElement, cover: string | null, title: string)
     art.replaceChildren(el("img", { attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
     return;
   }
+  const displayTitle = isDefaultProjectTitle(title) ? t(title) : title;
   art.classList.add("is-empty");
   art.replaceChildren(el("span", { class: "hm-ph", children: [
-    el("b", { text: Array.from(title.trim())[0] ?? "?", attrs: { translate: "no" } }),
+    el("b", { text: Array.from(displayTitle.trim())[0] ?? "?", attrs: { translate: "no" } }),
   ] }));
 }
 
@@ -208,12 +214,12 @@ function gameCard(entry: RecentProjectEntry, meta: string, index: number, action
   const shortPath = path.length > 62 ? `${path.slice(0, 18).join("")}…${path.slice(-43).join("")}` : entry.projectDir;
   return el("article", { class: "hm-card hm-project-row" + (missing ? " is-missing" : ""), children: [
     el("button", {
-      class: "hm-card-hit", attrs: { type: "button", title: entry.projectDir, translate: "no", ...(missing ? { disabled: "" } : {}) },
+      class: "hm-card-hit", attrs: { type: "button", ...(missing ? { disabled: "" } : {}) },
       dataset: { testid: `${HOME_TESTIDS.game}-${index}` },
       on: { click: () => { if (!missing) actions.edit(entry); } },
       children: [coverArt(entry), el("span", { class: "hm-cap", children: [
-        el("span", { class: "hm-nm", text: entry.title }),
-        el("span", { class: "hm-mt", attrs: { title: entry.projectDir }, text: shortPath }),
+        el("span", { class: "hm-nm", text: entry.title, attrs: isDefaultProjectTitle(entry.title) ? {} : { "data-i18n-skip": "" } }),
+        el("span", { class: "hm-mt", attrs: { title: entry.projectDir, "data-i18n-skip": "" }, text: shortPath }),
       ] })],
     }),
     el("span", { class: "hm-opened-at", children: [
@@ -294,7 +300,7 @@ function builtinCard(game: BuiltinGame, actions: HomeActions): HTMLElement {
       el("span", { class: "hm-badge", text: "공식" }),
     ] }),
     el("div", { class: "hm-bside", children: [
-      el("h4", { class: "hm-bname", text: game.title, attrs: { translate: "no" } }),
+      el("h4", { class: "hm-bname", text: game.title }),
       el("p", { class: "hm-bgenre", text: game.genre }),
       el("p", { class: "hm-bdesc", text: game.description }),
       el("div", { class: "hm-acts", children: [

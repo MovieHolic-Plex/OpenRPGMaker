@@ -16,6 +16,8 @@ import { installDomTranslator, type DomTranslator } from "@/i18n/domTranslator";
 export { LOCALE_NATIVE_NAMES, SUPPORTED_LOCALES, type SupportedLocale } from "@/i18n/locale";
 export { sourceAttributeOf, sourceTextOf } from "@/i18n/domTranslator";
 
+export const LOCALE_CHANGED_EVENT = "oprn:locale-changed";
+
 const CATALOG_LOADERS: Record<Exclude<SupportedLocale, "ko">, () => Promise<{ default: Catalog }>> = {
   en: () => import("@/i18n/catalogs/en.json"),
   ja: () => import("@/i18n/catalogs/ja.json"),
@@ -75,7 +77,10 @@ export async function setLocale(locale: SupportedLocale): Promise<void> {
   if (locale === currentLocale) return;
   currentLocale = locale;
   applyDocumentLocale(locale);
-  currentTranslator = await loadTranslator(locale);
+  const translator = await loadTranslator(locale);
+  if (locale !== currentLocale) return;
+  currentTranslator = translator;
   if (domTranslator) domTranslator.retranslate(currentTranslator);
   else if (currentTranslator) domTranslator = installDomTranslator(document.body, currentTranslator);
+  document.dispatchEvent(new Event(LOCALE_CHANGED_EVENT));
 }

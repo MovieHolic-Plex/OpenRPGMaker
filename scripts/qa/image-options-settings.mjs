@@ -29,7 +29,14 @@ try {
     await page.goto("http://127.0.0.1:" + port + "/__image-options-qa");
     await ready;
     const section = page.getByTestId("ai-settings-section-image");
-    await section.scrollIntoViewIfNeeded();
+    const openImageSettings = async () => {
+      await page.getByTestId("ai-settings-tab-behavior").click();
+      await page.getByTestId("ai-settings-open-advanced").click();
+      await page.getByTestId("ai-settings-model-image").locator(":scope > summary").click();
+      await page.getByTestId("ai-settings-model-image-provider").locator(":scope > summary").click();
+      await section.scrollIntoViewIfNeeded();
+    };
+    await openImageSettings();
     const geometry = await section.evaluate((element) => {
       const body = document.querySelector('[data-testid="ai-settings-body"]');
       const rect = element.getBoundingClientRect();
@@ -38,22 +45,20 @@ try {
     assert(geometry.left >= 0 && geometry.right <= width);
     assert(geometry.bodyScrollWidth <= geometry.bodyClientWidth);
     await page.screenshot({ path: resolve(output, width + "-default.png") });
-    const providerTrigger = page.locator('[data-custom-select-for="ai-config-image-provider"]');
-    await providerTrigger.click();
-    await page.keyboard.press("End");
-    await page.keyboard.press("Enter");
-    const selected = await page.evaluate(() => JSON.parse(localStorage.getItem("oprn:ai-config")));
-    assert.equal(selected.imageProviderId, "openai-codex");
-    assert.equal(selected.imageModel, "codex-image-default");
-    assert.equal(selected.providerId, "google-antigravity");
-    assert.equal(await page.getByTestId("ai-config-image-status").getAttribute("data-availability"), "supported");
+    const provider = page.getByTestId("ai-config-image-provider");
+    assert.equal(await provider.isDisabled(), true);
+    assert.deepEqual(await provider.locator("option").evaluateAll(options => options.map(option => option.value)), ["openai-codex"]);
+    await page.getByTestId("ai-settings-advanced-done").click();
+    await page.getByTestId("ai-settings-tab-connection").click();
+    await page.getByTestId("ai-settings-other-ways").click();
+    await page.getByTestId("ai-auth-quick-google-antigravity").click();
     await page.getByTestId("ai-auth-quick-openai-codex").click();
     const afterChat = await page.evaluate(() => JSON.parse(localStorage.getItem("oprn:ai-config")));
-    assert.equal(afterChat.imageProviderId, selected.imageProviderId);
-    assert.equal(afterChat.imageModel, selected.imageModel);
+    assert.equal(afterChat.imageProviderId, "openai-codex");
+    assert.equal(afterChat.imageModel, "codex-image-default");
     await page.getByTestId("ai-settings-close").click();
     await page.evaluate(() => window.openSettings());
-    await section.scrollIntoViewIfNeeded();
+    await openImageSettings();
     assert.equal(await page.getByTestId("ai-config-image-model").inputValue(), "codex-image-default");
     await page.screenshot({ path: resolve(output, width + "-codex-default.png") });
     const wire = [];
@@ -78,21 +83,19 @@ try {
       localStorage.setItem("oprn:ai-config", JSON.stringify({ ...config, imageModel: "gpt-image-1" }));
       window.openSettings();
     });
-    await section.scrollIntoViewIfNeeded();
-    assert.equal(await page.getByTestId("ai-config-image-model").inputValue(), "gpt-image-1");
-    assert.equal(await page.getByTestId("ai-config-image-status").getAttribute("data-availability"), "unsupported");
-    await page.screenshot({ path: resolve(output, width + "-unsupported.png") });
-    const rejected = await page.evaluate(async () => {
+    await openImageSettings();
+    assert.equal(await page.getByTestId("ai-config-image-model").inputValue(), "codex-image-default");
+    await page.screenshot({ path: resolve(output, width + "-migrated.png") });
+    const migrated = await page.evaluate(async () => {
       const { generateAiImage } = await import("/src/ai/imageGenerationClient.ts");
-      try { await generateAiImage({ prompt: "routing check" }); return false; }
-      catch (error) { return error.status === 409; }
+      return (await generateAiImage({ prompt: "routing check" })).provider;
     });
-    assert(rejected);
+    assert.equal(migrated, "openai-codex");
     assert.deepEqual(wire, [
       { provider: "openai-codex", model: "codex-image-default" },
-      { provider: "openai-codex", model: "gpt-image-1" },
+      { provider: "openai-codex", model: "codex-image-default" },
     ]);
-    observations.push({ width, height, geometry, wire, supportedDefault: true, preservedUnsupported: true, keyboardSelection: true, persistedAfterReopen: true });
+    observations.push({ width, height, geometry, wire, supportedDefault: true, migratedLegacy: true, providerLocked: true, persistedAfterReopen: true });
     await page.unroute("**/v1/images/generations");
     await page.evaluate(() => localStorage.clear());
   }

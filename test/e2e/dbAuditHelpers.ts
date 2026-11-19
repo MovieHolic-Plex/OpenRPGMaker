@@ -230,10 +230,8 @@ export async function dirtyGuardOracle(
       await page.getByTestId("database-modal").dispatchEvent("mousedown");
       break;
     case "x":
-      await page.getByTestId("database-modal-close").click();
-      break;
     case "cancel":
-      await page.getByTestId("database-footer-ok").click();
+      await page.getByTestId("database-modal-close").click();
       break;
   }
 

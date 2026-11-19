@@ -1,428 +1,139 @@
-// start/settings/settingsDialog.ts
-// 첫 화면 「설정」 — AI 엔진·모델 · 일반·언어 · 정보. 레일의 「설정」과 AI 상태 줄이 연다(필요할 때만 받는 모듈).
-//
-// 쓰는 사람은 개발자가 아니다: 낱말은 「이 PC 의 AI 프로그램」「로그인」「연결 시험」. 「API 키」는 「고급」 안에만 둔다.
-// 엔진은 자동으로 찾아 기본값을 고른다(연결된 첫 프로그램). OPRN 은 로그인 정보를 읽거나 저장하지 않는다 —
-// 각 프로그램이 스스로 로그인한 상태를 쓴다. 감지·연결 시험은 ./localAgents(PR #3072 백엔드의 얼굴)가 맡는다.
-import "./settings.css";
+// The launcher owns the Settings tabs. The editor owns the shared AI form.
+import { AI_CONFIG_CHANGED_EVENT } from "@/ai/llmClient";
+import { AI_CONNECTION_STATUS_CHANGED_EVENT } from "@/editor/panels/aiConnectionStatus";
+import { deckIcon } from "@/editor/panels/aiDeckIcons";
+import { installAiModalFocus } from "@/editor/panels/aiModalFocus";
+import { renderAiSettingsForm } from "@/editor/panels/aiSettingsModal";
+import { modalCloseButton } from "@/editor/ui/modal";
+import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
-import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
+import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, type SupportedLocale } from "@/i18n";
 import { APP_VERSION } from "@/brand";
-import {
-  costLine, createLocalAgentsApi, loadEngineChoice, localAgentsEnabled, saveEngineChoice,
-  type AssistantEngineChoice, type HealthResult, type LocalAgentsReport, type LocalCliId, type LocalCliStatus,
-} from "./localAgents";
+import { ASSISTANT_ENGINE_CHANGED_EVENT } from "./localAgents";
+import "../aiModalStyles";
+import "./settings.css";
 
 export type SettingsTab = "ai" | "general" | "about";
 
-export const SETTINGS_TESTIDS = {
-  dialog: "start-settings",
-  tab: "start-settings-tab",
-  engine: "start-settings-engine",
-  test: "start-settings-test",
-  close: "start-settings-close",
-  locale: "start-locale-select",
-  advanced: "start-settings-advanced",
-} as const;
-
-type Effort = "low" | "medium" | "high";
-
-/** 엔진 카드에 늘 보이는 네 자리. 감지 결과가 없으면(깃발 꺼짐·백엔드 없음) 「확인 전」으로 그린다. */
-const ENGINE_ORDER: readonly LocalCliId[] = ["claude", "codex", "gemini"];
-const ENGINE_LABEL: Readonly<Record<LocalCliId, string>> = { claude: "Claude Code", codex: "Codex", gemini: "Gemini CLI" };
-
-function stateDot(state: LocalCliStatus["state"] | "unknown"): HTMLElement {
-  const tone = state === "ready" ? "ok" : state === "login-required" ? "warn" : state === "error" ? "bad" : "off";
-  return el("span", { class: `st-dot is-${tone}`, attrs: { "aria-hidden": "true" } });
-}
-
-/** 상태 한 줄 — 경우마다 통째 문장(번역 카탈로그가 문장 단위로 찾는다). */
-/** 상태 글자는 백엔드가 준 stateLabel(연결됨 / 로그인 필요 / 설치 필요 / 확인 실패)을 그대로 쓴다. */
-function engineStateText(row: LocalCliStatus | null): string {
-  if (!row) return "아직 확인하지 않았어요";
-  return row.stateLabel;
-}
+const TABS = [["ai", "AI 설정"], ["general", "일반·언어"], ["about", "정보"]] as const;
 
 export function openSettingsDialog(options: {
   readonly tab?: SettingsTab;
-  /** 엔진 선택·감지가 바뀌면 레일 AI 상태 줄을 다시 그린다. */
-  readonly onEngineChange?: (summary: AiStatusSummary) => void;
+  readonly onConnectionChange?: () => void;
 } = {}): { close(): void } {
-  const enabled = localAgentsEnabled();
-  const api = enabled ? createLocalAgentsApi() : null;
-  let report: LocalAgentsReport | null = null;
-  let detecting = false;
-  let detectFailed = false;
-  let choice: AssistantEngineChoice | null = loadEngineChoice();
-  let split = Boolean(choice?.deepModel && choice.deepModel !== choice.routineModel);
-  const health = new Map<string, HealthResult | "running">();
-  let lastTestAt: number | null = null;
-  let tab: SettingsTab = options.tab ?? "ai";
-
-  const previousFocus = document.activeElement as HTMLElement | null;
-  const pane = el("div", { class: "st-pane" });
-  const tabButtons = new Map<SettingsTab, HTMLButtonElement>();
-  const TABS: readonly (readonly [SettingsTab, string])[] = [["ai", "AI 엔진·모델"], ["general", "일반·언어"], ["about", "정보"]];
-  const tabs = el("nav", { class: "st-tabs", attrs: { role: "tablist", "aria-label": "설정" }, children: [
-    el("h2", { class: "st-title", text: "설정" }),
-    ...TABS.map(([id, label]) => {
-      const button = el("button", {
-        class: "st-tab", attrs: { type: "button", role: "tab" }, dataset: { testid: `${SETTINGS_TESTIDS.tab}-${id}` }, text: label,
-        on: { click: () => { tab = id; render(); } },
-      });
-      tabButtons.set(id, button);
-      return button;
-    }),
-  ] });
-  const closeButton = el("button", { class: "st-btn st-btn-ghost", attrs: { type: "button" }, dataset: { testid: SETTINGS_TESTIDS.close }, text: "닫기", on: { click: () => close() } });
-  const dialog = el("div", {
-    class: "st-dialog", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "설정" }, dataset: { testid: SETTINGS_TESTIDS.dialog },
-    children: [tabs, pane],
+  let selected = options.tab ?? "ai";
+  let aiForm: ReturnType<typeof renderAiSettingsForm> | undefined;
+  const pane = el("div", { class: "ai-settings-body", attrs: { id: "start-settings-pane", role: "tabpanel" } });
+  const tabButtons = TABS.map(([id, text]) => el("button", {
+    class: "st-tab",
+    text,
+    attrs: { type: "button", id: `start-settings-tab-${id}`, role: "tab", "aria-controls": pane.id },
+    dataset: { testid: `start-settings-tab-${id}` },
+    on: { click: () => select(id) },
+  }));
+  const tabs = el("nav", {
+    class: "st-tabs",
+    attrs: { role: "tablist", "aria-label": "설정" },
+    children: tabButtons,
+    on: { keydown: (event) => {
+      const index = TABS.findIndex(([id]) => id === selected);
+      const last = TABS.length - 1;
+      let next: number;
+      switch ((event as KeyboardEvent).key) {
+        case "ArrowRight": next = index === last ? 0 : index + 1; break;
+        case "ArrowLeft": next = index === 0 ? last : index - 1; break;
+        case "Home": next = 0; break;
+        case "End": next = last; break;
+        default: return;
+      }
+      event.preventDefault();
+      select(TABS[next][0]);
+      tabButtons[next].focus();
+    } },
   });
-  const backdrop = el("div", { class: "st-backdrop", children: [dialog], on: { mousedown: (event) => { if (event.target === backdrop) close(); } } });
+  const closeButton = modalCloseButton("ai-settings-close", () => close(), {
+    label: "설정 닫기", testid: "start-settings-close", icon: deckIcon("x"),
+  });
+  const header = el("header", { class: "ai-settings-titlebar", children: [closeButton, tabs] });
+  const dialog = el("div", {
+    class: "ai-settings-window",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": "설정" },
+    dataset: { testid: "start-settings" },
+    children: [header, pane],
+  });
+  const backdrop = el("div", {
+    class: "ai-settings-modal-backdrop",
+    children: [dialog],
+    on: { mousedown: (event) => { if (event.target === backdrop && isTopModal(backdrop)) close(); } },
+  });
 
-  const rowFor = (id: LocalCliId): LocalCliStatus | null => report?.clis.find((row) => row.id === id) ?? null;
-  const selected = (): LocalCliId | null => choice?.cli ?? null;
-  const readySelected = (): LocalCliStatus | null => { const id = selected(); const row = id ? rowFor(id) : null; return row?.state === "ready" ? row : null; };
-
-  const notify = (): void => options.onEngineChange?.(summarizeAiStatus(choice, report));
-
-  const choose = (id: LocalCliId): void => {
-    const row = rowFor(id);
-    if (!row || row.state !== "ready") return;
-    // 한 모델로 시작할 때 Codex 의 제작 역할은 Sol 로 맞춘다. 잔일용 모델은 나누기를 켜고 고를 수 있다.
-    const routineModel = id === "codex" ? row.defaults.deep : row.defaults.routine;
-    const effort = id === "codex" && choice?.cli !== id ? "medium" : choice?.effort ?? "medium";
-    choice = { kind: "local-cli", cli: id, ...(routineModel ? { routineModel } : {}), ...(row.defaults.deep ? { deepModel: row.defaults.deep } : {}), effort };
-    split = false;
-    saveEngineChoice(choice);
-    notify();
-    render();
-  };
-
-  const updateChoice = (patch: Partial<AssistantEngineChoice>): void => {
-    if (!choice) return;
-    choice = { ...choice, ...patch };
-    if (!split) choice = { ...choice, deepModel: choice.routineModel };
-    saveEngineChoice(choice);
-    notify();
-    render();
-  };
-
-  const detect = async (fresh: boolean): Promise<void> => {
-    if (!api || detecting) return;
-    detecting = true;
-    detectFailed = false;
-    render();
-    try {
-      report = await api.detect(fresh);
-      // 고르는 건 사용자다(#3072 D1: 동등성 입증 전에는 opt-in — 기본은 지금 엔진). 백엔드 추천은 카드에 「추천」으로만 보인다.
-    } catch {
-      detectFailed = true;
-    } finally {
-      detecting = false;
-      notify();
-      render();
-    }
-  };
-
-  const runTest = async (): Promise<void> => {
-    const row = readySelected();
-    if (!api || !row || !choice) return;
-    const models = split ? [choice.routineModel, choice.deepModel] : [choice.routineModel];
-    for (const model of models) health.set(model ?? "", "running");
-    render();
-    // 연결 시험은 프로그램 하나에 한 번(아주 짧은 「OK」 왕복) — 역할 줄은 같은 결과를 보인다.
-    let result: HealthResult;
-    try { result = await api.health(row.id); }
-    catch (error) { result = { ok: false, ms: 0, problem: error instanceof Error ? error.message : String(error) }; }
-    for (const model of models) health.set(model ?? "", result);
-    lastTestAt = Date.now();
-    render();
-  };
-
-  // ── AI 엔진·모델 ────────────────────────────────────────────────────
-  const engineCard = (id: LocalCliId): HTMLElement => {
-    const row = rowFor(id);
-    const on = selected() === id && row?.state === "ready";
-    const recommended = !choice && report?.recommended === id && row?.state === "ready";
-    const state = row?.state ?? "unknown";
-    const lines: (HTMLElement | string)[] = [el("span", { class: "st-eng-state", text: engineStateText(row) })];
-    if (row?.state === "ready") {
-      if (row.version) lines.push(el("code", { text: row.version, attrs: { translate: "no" } }));
-      if (row.authMethod) lines.push(el("span", { class: "st-eng-sub", text: t("로그인 방식: {0}").replace("{0}", row.authMethod) }));
-    } else if (row?.state === "login-required") {
-      lines.push(el("span", { class: "st-eng-sub", text: "터미널에서 아래 명령으로 로그인한 뒤 「다시 확인」을 눌러 주세요." }));
-      if (row.login.command) lines.push(copyCommand(row.login.command));
-    } else if (row?.state === "not-installed") {
-      if (row.install.url) lines.push(el("a", { class: "st-link", attrs: { href: row.install.url, target: "_blank", rel: "noopener" }, text: "설치 방법 보기 ↗" }));
-    } else if (row?.state === "error") {
-      lines.push(el("span", { class: "st-eng-sub", text: row.problem ?? "" , attrs: { translate: "no" } }));
-    }
-    return el("button", {
-      class: "st-eng" + (on ? " is-on" : "") + (row?.state === "ready" ? "" : " is-idle"),
-      attrs: { type: "button", "aria-pressed": String(on), ...(row?.state === "ready" ? {} : { "aria-disabled": "true" }) },
-      dataset: { testid: `${SETTINGS_TESTIDS.engine}-${id}`, state },
-      on: { click: () => choose(id) },
-      children: [
-        el("span", { class: "st-eng-name", children: [stateDot(state), el("b", { text: row?.label ?? ENGINE_LABEL[id], attrs: { translate: "no" } })] }),
-        ...lines,
-        ...(on ? [el("span", { class: "st-eng-use", text: "● 사용 중" })] : []),
-        ...(recommended ? [el("span", { class: "st-eng-use", text: "추천 · 눌러서 쓰기" })] : []),
-      ],
+  function renderAi(): HTMLElement {
+    aiForm ??= renderAiSettingsForm({
+      onAdvancedChange: (open) => { header.inert = open; },
     });
-  };
-
-  const modelSelect = (row: LocalCliStatus, value: string | undefined, onPick: (model: string) => void): HTMLElement => {
-    const select = el("select", { class: "st-select", attrs: { "aria-label": "모델" } });
-    select.append(el("option", { text: "프로그램 기본값", attrs: { value: "" } }));
-    for (const model of row.models) select.append(el("option", { text: model.label, attrs: { value: model.id, translate: "no" } }));
-    select.value = value && row.models.some((model) => model.id === value) ? value : "";
-    select.addEventListener("change", () => onPick(select.value));
-    return select;
-  };
-
-  const effortControl = (): HTMLElement => el("div", { class: "st-seg", attrs: { role: "radiogroup", "aria-label": "생각 깊이" }, children: (
-    [["low", "낮음"], ["medium", "보통"], ["high", "높음"]] as const
-  ).map(([value, label]) => el("button", {
-    class: "st-seg-btn" + ((choice?.effort ?? "medium") === value ? " is-on" : ""),
-    attrs: { type: "button", role: "radio", "aria-checked": String((choice?.effort ?? "medium") === value) },
-    text: label,
-    on: { click: () => updateChoice({ effort: value as Effort }) },
-  })) });
-
-  const healthCell = (model: string | undefined): HTMLElement => {
-    const result = health.get(model ?? "");
-    if (result === undefined) return el("span", { class: "st-faint", text: "—" });
-    if (result === "running") return el("span", { class: "st-faint", text: "시험 중…" });
-    if (result.ok) return el("span", { class: "st-ok", text: t("✓ {0}초").replace("{0}", (result.ms / 1000).toFixed(1)) });
-    return el("span", { class: "st-warn", text: t("! {0}").replace("{0}", result.problem ?? "실패"), attrs: { title: result.problem ?? "" } });
-  };
-
-  const rolesTable = (): HTMLElement => {
-    const row = readySelected();
-    if (!row || !choice) {
-      const anyReady = Boolean(report?.clis.some((item) => item.state === "ready"));
-      return el("p", { class: "st-empty", text: enabled
-        ? (anyReady ? "위에서 조수가 쓸 프로그램을 고르면 여기서 모델을 정할 수 있어요. 고르기 전에는 지금 쓰던 AI 연결 그대로예요." : "연결된 AI 프로그램이 없어요. 위에서 하나를 설치·로그인하면 여기서 모델을 고를 수 있어요.")
-        : "이 PC 의 AI 프로그램을 찾는 기능은 곧 켜져요. 지금은 편집기 안 「AI 연결」을 써요." });
-    }
-    const routineRow = el("tr", { children: [
-      el("td", { children: [el("b", { text: split ? "조수" : "모든 일" }), el("span", { class: "st-faint", text: split ? " · 대화·맵 짓기" : " · 대화·맵 짓기·그림·큰 계획" })] }),
-      el("td", { children: [modelSelect(row, choice.routineModel, (model) => updateChoice({ routineModel: model || undefined }))] }),
-      el("td", { children: [effortControl()] }),
-      el("td", { children: [healthCell(choice.routineModel)] }),
-    ] });
-    const deepRow = split ? el("tr", { children: [
-      el("td", { children: [el("b", { text: "그림·큰 계획" }), el("span", { class: "st-faint", text: " · 도트·설계" })] }),
-      el("td", { children: [modelSelect(row, choice.deepModel, (model) => updateChoice({ deepModel: model || undefined }))] }),
-      el("td"),
-      el("td", { children: [healthCell(choice.deepModel)] }),
-    ] }) : null;
-    return el("div", { children: [
-      el("table", { class: "st-roles", children: [
-        el("thead", { children: [el("tr", { children: ["역할", "모델", "생각 깊이", "상태"].map((head) => el("th", { text: head })) })] }),
-        el("tbody", { children: [routineRow, ...(deepRow ? [deepRow] : [])] }),
-      ] }),
-      el("button", {
-        class: "st-link st-split", attrs: { type: "button", "aria-expanded": String(split) },
-        text: split ? "한 모델로 합치기" : "역할별로 나누기",
-        on: { click: () => { split = !split; if (!split && choice) updateChoice({ deepModel: choice.routineModel }); else render(); } },
-      }),
-    ] });
-  };
-
-  /**
-   * 편집기의 AI 설정 막을 연다 — 구글/ChatGPT 로그인과 「사용자 지정(OpenAI 호환)」 카드가 사는 곳.
-   * 첫 화면 설정창은 로컬 CLI 만 다루므로, 로그인·외부 서버는 그 막으로 넘긴다(2026-11-01).
-   * aiModalStyles 를 같이 받아야 막이 문서 끝에 맨몸으로 붙지 않는다(실측: 예약 없이 열면 뒤로 숨었다).
-   */
-  const openEditorAiSettings = async (): Promise<void> => {
-    const [modal, , status] = await Promise.all([
-      import("@/editor/panels/aiSettingsModal"),
-      import("../aiModalStyles"),
-      import("@/editor/panels/aiConnectionStatus"),
-    ]);
-    modal.openAiSettingsModal();
-    const onClosed = (): void => {
-      void status.refreshAiConnectionStatus().catch(() => {});
-      render();
-      options.onEngineChange?.(summarizeAiStatus(choice, report));
-    };
-    window.addEventListener(modal.AI_SETTINGS_CLOSED_EVENT, onClosed, { once: true });
-  };
-
-  const renderAi = (): HTMLElement[] => {
-    const row = readySelected();
-    const status = !enabled ? null
-      : detecting ? "찾는 중…"
-      : detectFailed ? "AI 프로그램 목록을 읽지 못했어요. 앱을 다시 켜 보세요."
-      : null;
-    return [
-      el("section", { class: "st-sec", children: [
-        el("div", { class: "st-sec-head", children: [
-          el("h3", { text: "AI 엔진" }),
-          ...(enabled ? [el("button", { class: "st-link", attrs: { type: "button" }, text: "다시 확인", on: { click: () => void detect(true) } })] : []),
-        ] }),
-        el("p", { class: "st-sub", text: "이 PC 의 Claude Code · Codex · Gemini CLI 로 일해요. 로그인은 그 프로그램에서 해요." }),
-        ...(status ? [el("p", { class: "st-status", attrs: { role: "status" }, text: status })] : []),
-        ...(!enabled ? [el("p", { class: "st-status", text: "이 PC 의 AI 프로그램을 찾는 기능은 곧 켜져요. 지금은 편집기 안 「AI 연결」을 써요." })] : []),
-        el("div", { class: "st-engines", children: ENGINE_ORDER.map(engineCard) }),
-      ] }),
-      el("section", { class: "st-sec", children: [
-        el("h3", { text: "모델" }),
-        el("p", { class: "st-sub", text: "필요하면 역할별로 나눠요." }),
-        rolesTable(),
-        ...(row ? [el("p", { class: "st-cost", text: costLine(row.billing) })] : []),
-      ] }),
-      // 구글·ChatGPT 로그인으로 쓰는 연결은 **로컬 CLI 가 아니다** — 여기서 안내하지 않으면 첫 화면은
-      // 「AI 엔진이 없어요」만 보여 주고, 실제로 연결돼 있는 사람도 설정을 못 찾는다(2026-11-01 실측:
-      // antigravity OAuth 가 살아 있는데 이 창은 로컬 CLI 세 칸만 보여 줬다).
-      el("section", { class: "st-sec", dataset: { testid: "start-settings-oauth" }, children: [
-        el("h3", { text: "구글·ChatGPT 로그인" }),
-        el("p", { class: "st-sub", text: "프로그램 없이 로그인만으로 돼요." }),
-        el("div", { class: "st-oauth-row", children: [
-          el("p", { class: "st-oauth-state", attrs: { role: "status" }, dataset: { testid: "start-settings-oauth-state" }, text: "확인 중…" }),
-          el("button", {
-            class: "st-btn st-btn-ghost", attrs: { type: "button" }, dataset: { testid: "start-settings-oauth-open" },
-            text: "로그인·연결 관리",
-            on: { click: () => void openEditorAiSettings() },
-          }),
-        ] }),
-      ] }),
-      el("details", { class: "st-advanced", dataset: { testid: SETTINGS_TESTIDS.advanced }, children: [
-        el("summary", { text: "고급 — 자동으로 찾지 못했을 때만" }),
-        el("dl", { children: [
-          el("dt", { text: "API 키·외부 서버로 쓰기" }),
-          el("dd", { text: "OpenRouter·OpenAI 등은 「로그인·연결 관리」의 「사용자 지정 연결」에서요." }),
-          el("dt", { text: "프로그램 위치" }),
-          el("dd", { text: "자동 (PATH · ~/.local/bin · %APPDATA%/npm)", attrs: { translate: "no" } }),
-          el("dt", { text: "요금" }),
-          el("dd", { text: "구독으로 로그인했으면 따로 청구되지 않고 그 계정 한도를 써요. 쓴 양은 참고용 환산 금액으로만 보여요. API 키는 쓴 만큼 키 계정에 청구돼요." }),
-        ] }),
-      ] }),
-      el("div", { class: "st-foot", children: [
-        el("button", {
-          class: "st-btn st-btn-primary", attrs: { type: "button", ...(row ? {} : { disabled: "" }) }, dataset: { testid: SETTINGS_TESTIDS.test },
-          text: "연결 시험", on: { click: () => void runTest() },
-        }),
-        el("span", { class: "st-faint", text: lastTestAt ? "방금 시험했어요" : "짧은 요청 하나를 실제로 보내 봐요" }),
-        ...(choice ? [el("button", {
-          class: "st-link", attrs: { type: "button" }, dataset: { testid: "settings-engine-reset" }, text: "원래 AI 연결로 되돌리기",
-          on: { click: () => { choice = null; split = false; health.clear(); saveEngineChoice(null); notify(); render(); } },
-        })] : []),
-        closeButton,
-      ] }),
-    ];
-  };
-
-  // ── 일반·언어 ──────────────────────────────────────────────────────
-  const renderGeneral = (): HTMLElement[] => {
-    const select = el("select", {
-      class: "st-select st-locale", attrs: { "aria-label": "언어", translate: "no" }, dataset: { testid: SETTINGS_TESTIDS.locale },
-      children: SUPPORTED_LOCALES.map((locale) => el("option", { text: LOCALE_NATIVE_NAMES[locale], attrs: { value: locale, lang: locale } })),
-    });
-    select.value = getLocale();
-    select.addEventListener("change", () => void setLocale(select.value as SupportedLocale));
-    return [
-      el("section", { class: "st-sec", children: [
-        el("h3", { text: "언어" }),
-        el("p", { class: "st-sub", text: "편집기와 이 화면의 글자 언어예요. 만든 게임 안의 글자는 바뀌지 않아요." }),
-        select,
-      ] }),
-      el("div", { class: "st-foot", children: [closeButton] }),
-    ];
-  };
-
-  const renderAbout = (): HTMLElement[] => [
-    el("section", { class: "st-sec", children: [
-      el("h3", { text: "정보" }),
-      el("p", { class: "st-sub", children: [el("b", { text: "OPRN Studio", attrs: { translate: "no" } }), " ", el("span", { text: APP_VERSION, attrs: { translate: "no" } })] }),
-      el("p", { class: "st-sub", text: "편집기는 SUL, 게임 런타임은 MIT 라이선스예요. 만든 게임은 자유롭게 배포할 수 있어요." }),
-      el("a", { class: "st-link", attrs: { href: "https://github.com/MovieHolic-Plex/OpenRPGMaker", target: "_blank", rel: "noopener" }, text: "소스 코드 ↗" }),
-    ] }),
-    el("section", { class: "st-sec", children: [
-      el("h3", { text: "크레딧" }),
-      el("p", { class: "st-sub", children: [
-        el("b", { text: "general-good-writing", attrs: { translate: "no" } }),
-        " — ",
-        el("span", { text: "코드 연규(code-yeongyu)", attrs: { translate: "no" } }),
-      ] }),
-      el("p", { class: "st-sub", text: "AI 조수의 공식 윤문 규칙과 윤문 린터를 이 프로젝트에서 가져왔어요." }),
-      el("a", { class: "st-link", attrs: { href: "https://github.com/code-yeongyu/general-good-writing", target: "_blank", rel: "noopener" }, text: "general-good-writing ↗" }),
-    ] }),
-    el("div", { class: "st-foot", children: [closeButton] }),
-  ];
-
-  function render(): void {
-    for (const [id, button] of tabButtons) {
-      button.setAttribute("aria-selected", String(id === tab));
-      button.classList.toggle("is-on", id === tab);
-    }
-    pane.replaceChildren(...(tab === "ai" ? renderAi() : tab === "general" ? renderGeneral() : renderAbout()));
+    return aiForm.element;
   }
 
-  const onKey = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") { event.preventDefault(); close(); }
-  };
-  function close(): void {
-    document.removeEventListener("keydown", onKey, true);
+  function select(id: SettingsTab): void {
+    if (id === selected && pane.firstChild) return;
+    selected = id;
+    TABS.forEach(([key], index) => {
+      const button = tabButtons[index];
+      button.setAttribute("aria-selected", String(key === id));
+      button.tabIndex = key === id ? 0 : -1;
+    });
+    pane.setAttribute("aria-labelledby", `start-settings-tab-${id}`);
+    pane.replaceChildren(id === "ai" ? renderAi() : id === "general" ? renderGeneral() : renderAbout());
+  }
+
+  const restoreFocus = installAiModalFocus(backdrop);
+  const onConnectionChange = (): void => options.onConnectionChange?.();
+  const close = registerModal(backdrop, () => {
+    window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onConnectionChange);
+    window.removeEventListener(AI_CONFIG_CHANGED_EVENT, onConnectionChange);
+    window.removeEventListener(ASSISTANT_ENGINE_CHANGED_EVENT, onConnectionChange);
+    aiForm?.dispose();
     backdrop.remove();
-    previousFocus?.focus?.();
-  }
-
-  document.addEventListener("keydown", onKey, true);
+    restoreFocus();
+  });
+  window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onConnectionChange);
+  window.addEventListener(AI_CONFIG_CHANGED_EVENT, onConnectionChange);
+  window.addEventListener(ASSISTANT_ENGINE_CHANGED_EVENT, onConnectionChange);
   document.body.append(backdrop);
-  render();
-  tabButtons.get(tab)?.focus();
-  if (enabled) void detect(false);
-  void fillOAuthState();
+  select(selected);
+  if (selected === "ai") aiForm?.focusFirstInput();
+  else tabButtons[TABS.findIndex(([id]) => id === selected)].focus();
   return { close };
 }
 
-/**
- * 「구글·ChatGPT 로그인으로 쓰기」 칸의 현재 상태를 채운다.
- * 이 칸을 만들 때 동반 서비스에 묻지 않으면 영원히 「확인 중…」 이 남아,
- * 첫 화면이 다시 모호해진다(2026-11-01). 안 되면 그 사실을 그대로 적는다.
- */
-async function fillOAuthState(): Promise<void> {
-  const target = document.querySelector<HTMLElement>("[data-testid='start-settings-oauth-state']");
-  if (!target) return;
-  try {
-    const { refreshAiConnectionStatus, getAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
-    await refreshAiConnectionStatus();
-    const status = getAiConnectionStatus();
-    target.textContent = status.kind === "ready"
-      ? `${status.label} — 조수가 이 연결로 일해요.`
-      : `${status.label} — 「로그인·연결 관리」에서 로그인하거나 외부 서버를 등록하세요.`;
-    target.dataset.tone = status.kind === "ready" ? "ok" : "off";
-  } catch {
-    target.textContent = "연결 상태를 읽지 못했어요. 「로그인·연결 관리」에서 직접 확인하세요.";
-    target.dataset.tone = "off";
-  }
-}
-
-function copyCommand(command: string): HTMLElement {
-  const button = el("button", { class: "st-copy", attrs: { type: "button", "aria-label": "명령 복사" }, text: "복사" });
-  button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    void navigator.clipboard?.writeText(command).then(() => { button.textContent = t("복사됨"); }).catch(() => {});
+function renderGeneral(): HTMLElement {
+  const select = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "언어" },
+    dataset: { testid: "start-locale-select" },
+    children: SUPPORTED_LOCALES.map(locale => el("option", {
+      text: LOCALE_NATIVE_NAMES[locale], attrs: { value: locale, lang: locale, translate: "no" },
+    })),
   });
-  return el("span", { class: "st-cmd", children: [el("code", { text: command, attrs: { translate: "no" } }), button] });
+  select.value = getLocale();
+  select.addEventListener("change", () => void setLocale(select.value as SupportedLocale));
+  return el("div", { class: "st-info ai-settings-content", children: [
+    el("h3", { text: "언어" }),
+    el("p", { text: "편집기와 이 화면의 글자 언어예요. 만든 게임 안의 글자는 바뀌지 않아요." }),
+    select,
+  ] });
 }
 
-/** 레일 AI 상태 줄이 그리는 요약. */
-export type AiStatusSummary = { readonly tone: "ok" | "warn" | "off"; readonly text: string };
-
-export function summarizeAiStatus(choice: AssistantEngineChoice | null, report: LocalAgentsReport | null): AiStatusSummary {
-  const label = (id: LocalCliId): string => report?.clis.find((row) => row.id === id)?.label ?? ENGINE_LABEL[id];
-  if (choice) {
-    const row = report?.clis.find((entry) => entry.id === choice.cli);
-    if (!report || row?.state === "ready") return { tone: "ok", text: t("{0} · 연결됨").replace("{0}", label(choice.cli)) };
-    return { tone: "warn", text: t("{0} · 확인 필요").replace("{0}", label(choice.cli)) };
-  }
-  const ready = report?.clis.find((row) => row.state === "ready");
-  // 찾았지만 아직 고르지 않았다 — 조수는 지금 엔진 그대로다(opt-in).
-  if (ready) return { tone: "warn", text: t("{0} 찾음 · 고르기").replace("{0}", ready.label) };
-  return { tone: "off", text: "AI 엔진 · 설정" };
+function renderAbout(): HTMLElement {
+  return el("div", { class: "st-info ai-settings-content", children: [
+    el("h3", { text: `OPRN Studio ${APP_VERSION}` }),
+    el("p", { text: "편집기는 SUL, 게임 런타임은 MIT 라이선스예요. 만든 게임은 자유롭게 배포할 수 있어요." }),
+    el("a", { attrs: { href: "https://github.com/MovieHolic-Plex/OpenRPGMaker", target: "_blank", rel: "noopener" }, text: "소스 코드 ↗" }),
+    el("h3", { text: "크레딧" }),
+    el("p", { children: [
+      el("b", { text: "general-good-writing" }), " · ", el("span", { text: "코드 연규(code-yeongyu)" }),
+    ] }),
+    el("p", { text: "AI 조수의 공식 윤문 규칙과 윤문 린터를 이 프로젝트에서 가져왔어요." }),
+    el("a", { attrs: { href: "https://github.com/code-yeongyu/general-good-writing", target: "_blank", rel: "noopener" }, text: "general-good-writing ↗" }),
+  ] });
 }

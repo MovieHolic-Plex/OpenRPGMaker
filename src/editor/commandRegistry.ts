@@ -12,6 +12,8 @@ import { allPanels } from "@/editor/workspace/panelRegistry";
 import { moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
+import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { openHelpModal } from "@/editor/panels/helpModal";
 import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
 import { executeCanvasAiAction } from "@/editor/panels/canvasAiWorkbench";
@@ -114,14 +116,14 @@ const TOPBAR_MOVED_COMMANDS: readonly EditorCommand[] = [
     label: "화면: AI 설정 열기",
     category: "화면",
     keywords: ["ai", "settings", "connect", "model", "key", "AI 설정", "AI 연결", "연결", "모델", "설정"],
-    run: () => { void import("@/editor/panels/aiSettingsModal").then((mod) => mod.openAiSettingsModal()); },
+    run: () => openAiSettingsModal(),
   },
   {
     id: "menu-help-guide",
     label: "도움말: 에디터 가이드",
     category: "화면",
     keywords: ["help", "guide", "manual", "도움말", "가이드", "설명서"],
-    run: () => { void import("@/editor/panels/helpModal").then((mod) => mod.openHelpModal()); },
+    run: () => openHelpModal(),
   },
   ...SUPPORTED_LOCALES.map((locale): EditorCommand => ({
     id: `menu-language-${locale}`,

@@ -9,6 +9,8 @@ import { layerTileAt, setLayerTileAt, shadowAt, setShadowAt } from "@/project/ma
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "../shared/types";
+import { isDoorName } from "../judge/eventReach";
+import { hasTransfer } from "../place/cells";
 import { repairEventReach } from "../place/reachRepairs";
 import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
@@ -521,7 +523,10 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
       if (typeof attempt === "string") return fail(attempt);
       if (!anyOf) pages.push(basePage({ commands: say(link.lockedLines ?? ["자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다."]) }));
       pages.push(basePage({ conditions: need, commands: gated([...say(link.lines), ...attempt], "자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다.") }));
-      pages.push(basePage({ conditions: [{ kind: "switch", switchId: solved, value: true }], commands: say(link.doneLines ?? ["이미 열려 있다."]) }));
+      // A transparent acknowledgement stays walkable if a later layout edit removes its supporting prop.
+      const passableAck = invisible && trig(look) === "action" && !link.opens
+        && !isDoorName(existing?.name ?? link.name ?? "") && !(existing && hasTransfer(existing));
+      pages.push(basePage({ ...(passableAck ? { priority: "below" } : {}), conditions: [{ kind: "switch", switchId: solved, value: true }], commands: say(link.doneLines ?? ["이미 열려 있다."]) }));
       // 뒤 고리(문)가 needs 에 이 고리의 learn·이름을 쓰면 「풀림」 스위치로 잇는다(r9 deepseek: learn:"자물쇠가 풀렸다" 를 문이 needs 로 썼는데 거절).
       for (const key of [link.learn, link.name, existing?.name]) if (typeof key === "string" && key.trim() && !have.has(key)) have.set(key, { kind: "flag", switchId: solved });
     } else if (link.role === "pickup") {

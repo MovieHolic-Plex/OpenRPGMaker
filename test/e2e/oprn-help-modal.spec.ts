@@ -46,7 +46,7 @@ test("help button opens a wiki-style editor guide", async ({ page }, testInfo) =
   // 다시 열고 닫기 버튼으로도 닫힌다.
   await openHelpFromTopbar(page);
   await expect(modal).toBeVisible();
-  await page.getByTestId("help-modal-dismiss").click();
+  await page.getByTestId("help-modal-close").click();
   await expect(modal).toBeHidden();
 });
 

@@ -2,6 +2,7 @@ name: ci-full
 
 # 전체 게이트 — 4시간마다 main(cron) + 수동.
 # 다른 브랜치의 푸시마다 돌리지는 않는다. GitHub 호스티드 러너(ubuntu-latest)에서 돈다.
+# 테스트 16샤드와 정적 잡을 mdc2 두 대에 몰면 몇 시간 동안 PR CI 의 러너 자리까지 막힌다.
 #
 # 왜 테스트를 샤드로 나누는가 (2026-10-12, run 38238570454):
 #   ubuntu-latest 는 4코어/16GB 이고 cgroup 은 max 라 run-vitest 가 VM 크기로 예산을 잡는다.

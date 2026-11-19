@@ -284,6 +284,7 @@ export function renderEventListTooltipElement(model: EventListTooltipModel): HTM
 
   const title = document.createElement("div");
   title.className = "event-marker-tooltip-title";
+  title.setAttribute("translate", "no");
   title.textContent = model.title;
   root.append(title);
 

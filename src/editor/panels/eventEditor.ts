@@ -42,10 +42,7 @@ export function renderEventEditor(container: HTMLElement): void {
     ? events.find((event) => event.id === state.selectedEventId)
     : undefined;
 
-  section.append(
-    el("div", { class: "event-list-title", text: "맵 이벤트 목록" }),
-    renderMapEventList(mapId, events, state.selectedEventId),
-  );
+  section.append(renderMapEventList(mapId, events, state.selectedEventId));
 
   if (!selectedEvent) {
     container.append(section);
@@ -71,6 +68,7 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
     renderEventIdReadout(event.id, { scope: "event-summary" }),
     el("button", {
       class: "btn primary",
+      attrs: { type: "button" },
       text: "이벤트 편집 열기",
       dataset: { testid: "event-editor-open" },
       on: { click: () => openEventEditorModal(mapId, event.id) },
@@ -80,13 +78,15 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
 }
 
 function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selectedEventId: string | null): HTMLElement {
+  const rows = el("div", { class: "event-list-rows" });
   const list = el("div", {
     class: "event-list",
     dataset: { testid: "event-list", mapId, projectLineage: String(store.getVersionToken().lineage) },
+    children: [el("div", { class: "event-list-title", text: "맵 이벤트 목록" }), rows],
   });
   if (events.length === 0) {
     // 다음 행동을 말한다 — 「없습니다」 만으로는 어떻게 놓는지 알 수 없었다(2026-09-24 visual QA).
-    list.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다. 맵의 빈 칸을 더블클릭하면 새 이벤트를 만듭니다." }));
+    rows.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다. 맵의 빈 칸을 더블클릭하면 새 이벤트를 만듭니다." }));
     return list;
   }
   for (const event of events) {
@@ -106,11 +106,11 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
     });
     row.append(
       el("span", { class: "event-list-icon", children: [icon] }),
-      el("span", { class: "event-list-name", text: displayName }),
+      el("span", { class: "event-list-name", text: displayName, attrs: { translate: "no" } }),
       el("span", { class: "event-list-meta", text: `${event.x},${event.y} · ${event.pages?.length ?? 0}p` })
     );
     bindEventListRowHoverTooltip(row, event);
-    list.append(row);
+    rows.append(row);
   }
   return list;
 }
@@ -139,7 +139,8 @@ export function syncMountedEventSelection(): boolean {
   if (state.layer !== "event") return false;
   const list = document.querySelector<HTMLElement>('[data-testid="event-list"]');
   const sidebar = list?.closest<HTMLElement>(".event-editor-sidebar");
-  if (!list || !sidebar) return false;
+  const scroller = list?.querySelector<HTMLElement>(".event-list-rows");
+  if (!list || !sidebar || !scroller) return false;
 
   const project = store.getCurrent();
   const mapId: MapId = state.currentMapId ?? project.startMapId;
@@ -150,7 +151,7 @@ export function syncMountedEventSelection(): boolean {
   const selected = selectedId ? map.events.find((event) => event.id === selectedId) : undefined;
   if (selectedId && !selected) return false;
 
-  const rows = [...list.querySelectorAll<HTMLElement>(".event-list-row")];
+  const rows = [...scroller.querySelectorAll<HTMLElement>(".event-list-row")];
   const wanted = selectedId ? `event-list-row-${selectedId}` : "";
   const activeRow = wanted ? rows.find((row) => row.dataset.testid === wanted) ?? null : null;
   if (wanted && !activeRow) return false;
@@ -174,7 +175,9 @@ export function syncMountedEventSelection(): boolean {
   }
   // 요약 카드가 목록 아래에 붙으면 목록이 짧아진다. 그 다음에 고른 행을 넣어야
   // 맨 아래 이벤트가 카드 뒤로 숨지 않는다.
-  if (activeRow && reveal && list.scrollHeight > list.clientHeight) scrollWithinScroller(activeRow, list, "nearest");
+  if (activeRow && reveal && scroller.scrollHeight > scroller.clientHeight) {
+    scrollWithinScroller(activeRow, scroller, "nearest");
+  }
   return true;
 }
 

@@ -19,8 +19,6 @@
     border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised);
     color: var(--text-1); font: 400 12px/1.5 var(--font-ui);
   }
-  .left-props-browser .left-props-category-row { flex-direction: row; align-items: center; gap: 8px; }
-  .left-props-category-row > span { flex: none; }
   .left-props-results-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .left-props-result-count { color: var(--text-2); font-size: 12px; }
   .left-props-prefix { margin: -6px 0 0; color: var(--text-2); font-size: 12px; }

@@ -14,7 +14,7 @@ export const ASSISTANT_CHATGPT_EFFORT = "medium" as const;
 
 // 2026-11-19 오너 결정 — 직접 고른 Terra 도 게임 제작 칸에서는 Sol 로 읽는다.
 export function isLegacyTerraModel(model: unknown): boolean {
-  return typeof model === "string" && model.trim().toLowerCase() === "gpt-6.1-terra";
+  return typeof model === "string" && /^(?:openai\/)?gpt-[\d.]+-terra$/iu.test(model.trim());
 }
 
 export function atLeastMediumEffort<T extends string>(effort: T | undefined): T | "medium" {

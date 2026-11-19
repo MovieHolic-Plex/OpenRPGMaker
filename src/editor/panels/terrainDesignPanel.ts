@@ -91,7 +91,12 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
     else if (tool === "house") info.textContent = s.terrainHouseKitId ? "원본 크기로 배치 · 문 위치를 누르거나 끌어서 놓으세요 · Esc: 취소" : s.terrainHouseResize === "roof" ? "지붕에서 좌우로 끌어 너비 조절 · Esc: 취소" : "드래그로 너비·높이 정하기 · Esc: 취소";
     else if (tool === "road" && s.terrainRoadDrag && !s.terrainFeatureId) info.textContent = "마우스로 끌어 그리고 놓으면 적용 · Esc: 취소";
     else if(s.terrainFeatureId) info.textContent = "제어점을 드래그하거나 값을 바꾸고 적용하세요 · Esc: 취소";
-    else info.textContent = tool === "route" ? "출발점 → 목적지를 찍으세요. 아래에서 몸 크기·문·NPC·스위치를 검사할 수 있습니다." : tool === "stamp" ? s.terrainStampCapture ? `사각형의 두 모서리를 찍으세요 · ${count}/2` : "놓을 왼쪽 위 칸을 찍으세요. 소품 그림은 똑바로 유지됩니다." : tool === "mix" || tool === "mixedCluster" ? "캔버스를 눌러 배치하세요. 시드가 같으면 같은 배치가 됩니다." : `${count}개 점 · ${["contour", "lake", "lock"].includes(tool) && s.terrainAreaShape === "rect" ? "두 모서리" : "외곽 또는 경유점"}을 찍고 적용하세요. Esc: 취소`;
+    else if (tool === "route") info.textContent = "출발점 → 목적지를 찍으세요. 아래에서 몸 크기·문·NPC·스위치를 검사할 수 있습니다.";
+    else if (tool === "stamp") info.textContent = s.terrainStampCapture ? `사각형의 두 모서리를 찍으세요 · ${count}/2` : "놓을 왼쪽 위 칸을 찍으세요. 소품 그림은 똑바로 유지됩니다.";
+    else if (tool === "mix" || tool === "mixedCluster") info.textContent = "캔버스를 눌러 배치하세요. 시드가 같으면 같은 배치가 됩니다.";
+    else info.textContent = ["contour", "lake", "lock"].includes(tool) && s.terrainAreaShape === "rect"
+      ? `${count}개 점 · 두 모서리를 찍고 적용하세요. Esc: 취소`
+      : `${count}개 점 · 외곽 또는 경유점을 찍고 적용하세요. Esc: 취소`;
   };
   const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();
   const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainHouseDrag) editorState.set({ terrainHouseDrag: null }); else if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };

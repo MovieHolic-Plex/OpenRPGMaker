@@ -7,6 +7,7 @@ import {
   resolveSurfaceAiConfig,
   type AiSurface,
 } from "@/ai/assistantEndpoint";
+import { ASSISTANT_CHATGPT_MODEL } from "@/ai/chatgptDefault";
 import type { AiConfig } from "@/ai/llmClient";
 import { AI_CONFIG_STORAGE_KEY, loadAiConfig, resetAiTransportHealth } from "@/ai/llmClient";
 import {
@@ -51,8 +52,8 @@ function companionConfig(overrides: Partial<AiConfig> = {}): AiConfig {
     authMode: "chatgpt",
     providerId: "openai-codex",
     baseUrl: "",
-    model: "gpt-5.6-sol",
-    liteModel: "gpt-5.6-luna",
+    model: ASSISTANT_CHATGPT_MODEL,
+    liteModel: ASSISTANT_CHATGPT_MODEL,
     apiKey: "",
     maxToolCalls: 60,
     maxTokens: 32768,
@@ -86,23 +87,33 @@ describe("resolveSurfaceAiConfig", () => {
     expect(resolveSurfaceAiConfig("chat", base)).toEqual(base);
   });
 
-  it("Given batch surfaces When resolving Then they run the lite model with reasoning off", () => {
-    const base = companionConfig();
-
+  // 7bd18dcc0 (#4775) routes Codex batch work through Deep and sets Sol's minimum effort to medium.
+  it.each([
+    { setting: "legacy lite model", base: companionConfig({ model: "gpt-6.2-astra", reasoningEffort: "off" }) },
+    {
+      setting: "explicit execution role",
+      base: companionConfig({
+        model: "gpt-6.2-astra",
+        liteModel: "gpt-6.2-astra",
+        reasoningEffort: "high",
+        roleModels: { deep: { provider: "openai-codex", model: ASSISTANT_CHATGPT_MODEL, thinkingLevel: "medium" } },
+      }),
+    },
+  ])("Given batch surfaces with $setting When resolving Then they use Sol at medium effort", ({ base }) => {
     for (const surface of ["region", "cluster", "event-command"] as const) {
       const resolved = resolveSurfaceAiConfig(surface, base);
-      expect(resolved.model, surface).toBe("gpt-5.6-luna");
-      expect(resolved.reasoningEffort, surface).toBe("off");
+      expect(resolved.model, surface).toBe("gpt-6.2-sol");
+      expect(resolved.reasoningEffort, surface).toBe("medium");
     }
   });
 
-  it("Given supervisor surfaces When resolving Then they keep the supervisor model and reasoning effort", () => {
-    const base = companionConfig();
+  it.each(["medium", "high"] as const)("Given supervisor surfaces at %s effort When resolving Then they keep the supervisor model and effort", (reasoningEffort) => {
+    const base = companionConfig({ liteModel: "gpt-6.2-astra", reasoningEffort });
 
     for (const surface of ["chat", "structure-kit", "tileset-analysis"] as const) {
       const resolved = resolveSurfaceAiConfig(surface, base);
-      expect(resolved.model, surface).toBe("gpt-5.6-sol");
-      expect(resolved.reasoningEffort, surface).toBe("medium");
+      expect(resolved.model, surface).toBe("gpt-6.2-sol");
+      expect(resolved.reasoningEffort, surface).toBe(reasoningEffort);
     }
   });
 
@@ -184,8 +195,8 @@ describe("isAssistantEndpointReady", () => {
   });
 
   it("Given a blank config When resolving a batch surface Then the lite default hides the absence", () => {
-    // 준비 판정이 표면을 인자로 받지 않는 이유. configForLiteModel 은 모델이 하나도 없을 때
-    // DEFAULT_LITE_MODEL 을 채우므로, 해석된 설정으로 판정하면 배치 표면은 영원히 '준비됨' 이 된다 —
+    // 준비 판정이 표면을 인자로 받지 않는 이유. Codex 실행 역할은 모델이 하나도 없을 때
+    // 제공자의 기본 모델을 채우므로, 해석된 설정으로 판정하면 배치 표면은 영원히 '준비됨' 이 된다 —
     // 설정이 빈 상태에서 조수만 거부하고 영역·클러스터는 기본 모델로 요청을 보내는 갈림이 그것이다.
     const blank = companionConfig({ model: "   ", liteModel: "" });
 
@@ -212,8 +223,9 @@ describe("isAssistantEndpointReady", () => {
   });
 
   it("Given only a supervisor model When resolving a batch surface Then the lite tier follows it", () => {
-    // configForLiteModel 은 liteModel 이 비면 감독 model 을 따라간다. 그 폴백이 사라지면
-    // 배치 표면이 사용자가 고르지 않은 DEFAULT_LITE_MODEL 로 조용히 갈아탄다.
-    expect(resolveSurfaceAiConfig("region", companionConfig({ liteModel: "" })).model).toBe("gpt-5.6-sol");
+    // Codex 실행 역할은 liteModel 이 비면 감독 model 을 따라간다. 기본값과 다른 모델로 폴백을 검증한다.
+    const base = companionConfig({ model: "gpt-6.2-astra", liteModel: "" });
+
+    expect(resolveSurfaceAiConfig("region", base).model).toBe("gpt-6.2-astra");
   });
 });

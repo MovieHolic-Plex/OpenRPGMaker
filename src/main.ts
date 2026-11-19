@@ -15,6 +15,7 @@ import { mountWindowControls } from "@/start/windowControls";
 // 안 된다(import 호이스팅).
 import "@/storageBoot";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
+import { flagshipDemoIdForLocation } from "@/editor/devShowcaseProjects";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { loadSharedContent } from "@/project/sharedContent";
 import { installReferenceDocumentOwners } from "@/project/installReferenceOwners";
@@ -25,6 +26,7 @@ import { preloadBundledJsonForProject } from "@/project/defaults/bundledJson";
 import { abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { settleMonsterResourceDraftsForClose } from "@/editor/panels/databaseMonsterResourceEditor";
 import { hasEventDraftVaultEntries, persistEventDraftVaultNow } from "@/project/eventDraftVault";
+import { flushProjectForClose } from "../electron/main/closeFlow";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { reloadFlushAllowsReload } from "../electron/shared/reloadFlow";
@@ -78,8 +80,7 @@ if (typeof window !== "undefined" && window.location) {
         abortAiAssistantTurn();
         const monsterDraftsSaved = settleMonsterResourceDraftsForClose(mode === "save");
         // 이벤트 초안은 적용 버튼을 누르기 전까지 기존 금고에만 저장한다.
-        const projectSaved = !store.hasUnsavedChanges()
-          || reloadFlushAllowsReload((await store.flush()).kind, store.hasUnsavedChanges());
+        const projectSaved = await flushProjectForClose(store);
         const eventDraftsSaved = !hasEventDraftVaultEntries() || persistEventDraftVaultNow();
         return projectSaved && monsterDraftsSaved && eventDraftsSaved && !store.hasUnsavedChanges();
       };
@@ -187,29 +188,31 @@ void bootEditorWithOpenedProject(app)
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   reportBootStage("prepare");
   await initI18n();
-  await adoptElectronOpenProject();
-  await initializeTeamAccess();
+  const demoId = flagshipDemoIdForLocation();
+  if (demoId === null) {
+    await adoptElectronOpenProject();
+    await initializeTeamAccess();
+  }
   // 공용 타일 참고문서는 프로젝트에 이미 있는 업로드 타일셋만 보강하고 타일셋을 새로 설치하지 않는다(설치는
   // shared-content 가 한다). 부팅이 기다릴 이유가 없다 — 실측(2026-09-26): 191MB 응답이 10s 제한에 걸려 팀 호스트 부팅이 +10s.
   const tileReferences = loadSharedTileReferences();
   reportBootStage("shared");
-  await loadSharedContent({ scope: "defaults" });
-  // 공용 카탈로그가 설치된 뒤·프로젝트 로드 전에 켠다 — 로드가 표지를 되돌릴 소유자 판본을 알아야 한다.
+  // 샘플은 번들 프로젝트로 부팅한다. 공용 자료는 편집기가 뜬 뒤 받는다.
+  if (demoId === null) await loadSharedContent({ scope: "defaults" });
+  // 프로젝트 로드 전에 소유자 조회를 켠다. 공용 자료는 현재 설치된 카탈로그에서 찾는다.
   installReferenceDocumentOwners();
   let remainingContent: Promise<void> | undefined;
-  const loadRemainingContent = () => remainingContent ??= loadSharedContent({ scope: "rest" });
+  const loadRemainingContent = () => remainingContent ??= loadSharedContent({ scope: demoId === null ? "rest" : "all" });
   configureProjectInterviewBootPreparation(async () => {
     // References can need libraries outside the boot-default scope. Start those
     // here too: waiting for bootApp to return would deadlock its interview handoff.
     await Promise.all([tileReferences, loadRemainingContent()]);
     store.applySharedReferenceRefresh();
   });
-  await bootApp(host);
-  startTeamSession();
+  await bootApp(host, demoId);
+  if (demoId === null) startTeamSession();
   void tileReferences.then(() => store.applySharedReferenceRefresh());
-  // 장소·지역 카탈로그 전체는 편집기가 뜬 뒤 받는다. 기본 라이브러리는 위에서 이미 설치됐으므로
-  // 정규화 결과(프로젝트에 들어가는 shared_* 타일셋)는 바뀌지 않는다.
-  // 나머지(rest)만 받아 합친다 — 전체(all)를 받으면 위에서 받은 기본 20MB(gzip)가 두 번 온다(2026-09-27 실측).
+  // 일반 작업은 위에서 받은 기본 라이브러리에 나머지 범위를 합친다. 샘플은 전체 자료를 여기서 받는다.
   void loadRemainingContent();
 }
 

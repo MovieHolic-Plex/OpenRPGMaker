@@ -5,7 +5,7 @@ import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { DESIGN_FEATURES, DESIGN_SHAPES, type DungeonDesign } from "@/editor/dungeonKit/designLayout";
 import { DUNGEON_DESIGN_SCHEMA as EDITOR_DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { GRAMMAR, inferDungeonType } from "@/editor/dungeonKit/grammar";
-import type { DungeonType } from "@/editor/dungeonKit/types";
+import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../shared/buildRun";
 import type { PiAssistantV2Env } from "../shared/env";
@@ -253,7 +253,9 @@ function rotatedExamples(gameKey: string): typeof DUNGEON_DESIGN_EXAMPLES {
 
 /** 테마(낱말) → 재료(짧게). 방+통로 문법(지하묘지·성·신전…)은 모양·물을 크기·역할로만 옮긴다고 적는다. gameKey 로 예시 순서를 돌린다. */
 export function dungeonParts(theme: string, gameKey = "", context = ""): DungeonPartsOut {
-  const type: DungeonType = inferDungeonType(theme).type ?? "cave";
+  // 닫힌 종류 값이면 그대로(빌더가 게임 열쇠로 고른 종류를 넘긴다) — 낱말 추정은 dungeon_parts 를 모델이 낱말로 부를 때만.
+  const exact = theme.trim().toLowerCase();
+  const type: DungeonType = (DUNGEON_TYPES as readonly string[]).includes(exact) ? (exact as DungeonType) : inferDungeonType(theme).type ?? "cave";
   const g = GRAMMAR[type];
   const liquid = g.liquid === "lava" ? "용암" : g.liquid === "void" ? "허공(다리로 건넌다)" : g.liquid === "water" ? "물" : type === "ice" ? "얼어붙은 빙판(걷는다)" : "없음";
   const grammar = g.grammar === "blob" ? "불규칙 굴 — 설계한 자리·모양 그대로 판다" : g.grammar === "rooms" ? "네모 방+통로 — 역할·크기·이웃·방향으로 옮긴다(ring 은 팔각 방)" : "미궁 격자 — 설계한 방을 자리(at)·크기대로 격자 안 방으로 두고 그 사이를 갈림길 미로로 잇는다(보스·보물은 막다른 끝)";

@@ -7,6 +7,21 @@
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
 
+/** Header dismissal for editor windows. Footers are reserved for actions on the content. */
+export function modalCloseButton(className: string, close: () => void, options: {
+  readonly label?: string;
+  readonly testid?: string;
+  readonly icon?: Node;
+} = {}): HTMLButtonElement {
+  return el("button", {
+    class: className,
+    attrs: { type: "button", title: "닫기", "aria-label": options.label ?? "닫기" },
+    dataset: options.testid ? { testid: options.testid } : undefined,
+    children: [options.icon ?? "×"],
+    on: { click: close },
+  });
+}
+
 export interface ConfirmOptions {
   readonly title?: string;
   readonly message: string;

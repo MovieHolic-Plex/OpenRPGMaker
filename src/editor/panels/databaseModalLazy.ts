@@ -3,6 +3,7 @@ import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { uiLabel } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
 import { afterBootSettled } from "@/util/bootSettled";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { pendingLazyBundledTilesetIds, preloadPendingLazyBundledTilesets } from "@/project/bundledTilesetDiff";
 
@@ -21,7 +22,7 @@ let readyModule: DatabaseModalModule | null = null;
 let prefetchScheduled = false;
 let shell: HTMLElement | null = null;
 let shellToken = 0;
-let shellKeyListener: ((event: KeyboardEvent) => void) | null = null;
+let shellOpener: HTMLElement | null = null;
 let requestSerial = 0;
 let pending: OpenRequest | null = null;
 
@@ -90,10 +91,13 @@ function databaseLabel(): string {
 function dismissShell(token: number): void {
   if (token !== shellToken) return;
   shellToken += 1;
-  if (shellKeyListener) document.removeEventListener("keydown", shellKeyListener, true);
-  shellKeyListener = null;
-  shell?.remove();
+  if (shell) {
+    unregisterModal(shell);
+    if (shell.contains(document.activeElement) && shellOpener?.isConnected) shellOpener.focus();
+    shell.remove();
+  }
   shell = null;
+  shellOpener = null;
   pending = null;
 }
 
@@ -118,12 +122,12 @@ function mountOpeningShell(): number {
       "aria-busy": "true",
       "aria-label": label,
       style: [
-        "background:#fff",
-        "color:#0f172a",
-        "border-radius:12px",
+        "background:var(--bg-raised)",
+        "color:var(--text-1)",
+        "border-radius:var(--radius-l)",
         "padding:28px 32px",
         "min-width:min(420px, calc(100vw - 48px))",
-        "box-shadow:0 18px 50px rgba(15,23,42,.18)",
+        "box-shadow:var(--shadow-modal)",
         "display:grid",
         "gap:12px",
         "justify-items:start",
@@ -138,22 +142,17 @@ function mountOpeningShell(): number {
   const backdrop = el("div", {
     attrs: {
       role: "presentation",
-      style: "position:fixed;inset:0;z-index:900;display:grid;place-items:center;background:rgba(24,22,18,.18);padding:16px",
+      style: "position:fixed;inset:0;z-index:var(--z-app-modal);display:grid;place-items:center;background:rgba(24,22,18,.18);padding:16px",
     },
     dataset: { testid: "database-modal-opening" },
     children: [panel],
   });
-  shellKeyListener = (event: KeyboardEvent): void => {
-    if (event.key !== "Escape" || token !== shellToken) return;
-    event.preventDefault();
-    event.stopPropagation();
-    dismissShell(token);
-  };
-  document.addEventListener("keydown", shellKeyListener, true);
   backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) dismissShell(token);
+    if (event.target === backdrop && isTopModal(backdrop)) dismissShell(token);
   });
+  shellOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   document.body.append(backdrop);
+  registerModal(backdrop, () => dismissShell(token));
   close.focus();
   shell = backdrop;
   return token;
@@ -181,16 +180,15 @@ function showOpeningFailure(token: number): void {
 }
 
 function finishOpen(token: number, serial: number, mod: DatabaseModalModule): void {
-  setTimeout(() => {
-    const current = pending;
-    if (!current || token !== shellToken || serial !== current.serial) return;
-    try {
-      mod.openDatabaseModal(current.tab, current.options);
-      dismissShell(token);
-    } catch {
-      showOpeningFailure(token);
-    }
-  }, 0);
+  const current = pending;
+  if (!current || token !== shellToken || serial !== current.serial) return;
+  dismissShell(token);
+  try {
+    mod.openDatabaseModal(current.tab, { ...current.options, deferInitialBody: true });
+  } catch {
+    pending = current;
+    showOpeningFailure(mountOpeningShell());
+  }
 }
 
 export function openDatabaseModalLazy(
@@ -203,9 +201,11 @@ export function openDatabaseModalLazy(
   // 미리 읽어 둔 본문은 껍데기 없이 바로 연다(지연 번들 타일셋이 남았으면 그 정의를 읽는 동안 껍데기를 띄운다).
   if (readyModule && !hasPendingLazyTilesets()) {
     try {
-      readyModule.openDatabaseModal(initialTab, options);
+      if (shell) dismissShell(shellToken);
+      readyModule.openDatabaseModal(initialTab, { ...options, deferInitialBody: true });
       pending = null;
     } catch {
+      pending = { serial, tab: initialTab, options };
       showOpeningFailure(mountOpeningShell());
     }
     return;
@@ -217,7 +217,7 @@ export function openDatabaseModalLazy(
       mod.openDatabaseModal(initialTab, options);
       pending = null;
     }).catch(() => {
-      showOpeningFailure(mountOpeningShell());
+      if (serial === pending?.serial) showOpeningFailure(mountOpeningShell());
     });
     return;
   }
@@ -225,6 +225,6 @@ export function openDatabaseModalLazy(
   void loadDatabaseModalWithTilesets().then((mod) => {
     finishOpen(token, serial, mod);
   }).catch(() => {
-    showOpeningFailure(token);
+    if (serial === pending?.serial) showOpeningFailure(token);
   });
 }

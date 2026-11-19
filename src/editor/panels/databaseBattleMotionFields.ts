@@ -2,6 +2,8 @@ import {
   BATTLE_MOTION_PATTERNS,
   BATTLE_MOTION_LABELS,
   buildBattleMotionTracks,
+  type MotionAnchor,
+  type MotionCurve,
   type MotionPoint,
   type MotionRole,
   type BattleMotionProgram,
@@ -18,12 +20,83 @@ import {
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { partyPixelChoices } from "@/assets/partyPixelSheets";
 import { store } from "@/project/store";
-import { EXTENDED_POSE_FRAME } from "@/battle/battlePose";
+import type { ExtendedBattlerPose } from "@/battle/battlePose";
 import { el } from "@/util/dom";
 const options = BATTLE_MOTION_PATTERNS.map((id, i) => ({
   id,
   name: BATTLE_MOTION_LABELS[i]!,
 }));
+
+const ANCHOR_LABELS = {
+  home: "원래 자리",
+  front: "대상 앞",
+  target: "대상",
+  target2: "두 번째 대상",
+  target3: "세 번째 대상",
+  midpoint: "중간 지점",
+  aboveHome: "원래 자리 위",
+  behind: "대상 뒤",
+  exit: "화면 밖",
+  caught: "붙잡힌 위치",
+  knockback: "밀려난 위치",
+  throwMidpoint: "던지기 중간 지점",
+  ally: "동료",
+  left: "왼쪽",
+  right: "오른쪽",
+  top: "위쪽",
+} satisfies Record<MotionAnchor, string>;
+
+const CURVE_LABELS = {
+  linear: "등속",
+  pull: "당기기",
+  burst: "급가속",
+  walk: "걷기",
+  rise: "상승",
+  fall: "하강",
+  settle: "감속 정지",
+  flow: "부드럽게",
+} satisfies Record<MotionCurve, string>;
+
+const POSE_LABELS = {
+  idle: "대기",
+  attack: "공격",
+  hit: "피격",
+  defend: "방어",
+  dead: "쓰러짐",
+  victory: "승리",
+  walk_a: "걷기 1",
+  walk_b: "걷기 2",
+  walk_c: "걷기 3",
+  attack_windup: "공격 준비",
+  attack_strike: "공격 적중",
+  attack_follow: "공격 마무리",
+  cast_charge: "시전 준비",
+  cast_raise: "영창",
+  cast_release: "마법 방출",
+  item: "아이템 사용",
+  weak: "빈사 자세",
+  evade: "회피",
+  guard_hit: "막아냄",
+  skill: "기술",
+  victory_b: "승리 2",
+  dying: "빈사",
+  revive: "부활",
+  front: "정면",
+} satisfies Record<ExtendedBattlerPose, string>;
+
+const ROLE_LABELS = {
+  user: "시전자",
+  target: "대상",
+  ally: "동료",
+  cloneA: "분신 A",
+  cloneB: "분신 B",
+  summon: "소환수",
+} satisfies Record<MotionRole, string>;
+
+const anchorOptions = Object.entries(ANCHOR_LABELS).map(([id, name]) => ({ id, name }));
+const curveOptions = Object.entries(CURVE_LABELS).map(([id, name]) => ({ id, name }));
+const poseOptions = Object.entries(POSE_LABELS).map(([id, name]) => ({ id, name }));
+
 export function battleMotionFields(
   value: BattleMotionProgram | undefined,
   save: (next: BattleMotionProgram | undefined) => void,
@@ -78,6 +151,7 @@ export function battleMotionFields(
       );
 
     const custom = el("button", {
+      class: "db-ws-btn",
       text: current.tracks ? "기본 경로로 되돌리기" : "배우별 경로 직접 편집",
       attrs: { type: "button" },
       on: {
@@ -96,33 +170,12 @@ export function battleMotionFields(
     });
     host.append(custom);
     if (current.tracks) {
-      const anchors = [
-          "home",
-          "front",
-          "target",
-          "target2",
-          "target3", "midpoint", "aboveHome", "behind", "exit", "caught", "knockback", "throwMidpoint",
-          "ally",
-          "left",
-          "right",
-          "top",
-        ],
-        curves = [
-          "linear",
-          "pull",
-          "burst",
-          "walk",
-          "rise",
-          "fall",
-          "settle",
-          "flow",
-        ];
       const commit = () => {
         emit(current);
       };
       for (const [index, track] of current.tracks.entries()) {
         const group = el("fieldset", {
-          children: [el("legend", { text: track.role })],
+          children: [el("legend", { text: ROLE_LABELS[track.role] })],
         });
         for (const [i, p] of track.points.entries()) {
           const row = el("div", { class: "db-retro-choreo-layer" });
@@ -144,7 +197,7 @@ export function battleMotionFields(
               "자리",
               `db-motion-${index}-${i}-anchor`,
               p.anchor,
-              anchors.map((id) => ({ id, name: id })),
+              anchorOptions,
               (v) => patch({ anchor: v as MotionPoint["anchor"] }),
             ),
             numberField(
@@ -165,14 +218,14 @@ export function battleMotionFields(
               "속도 곡선",
               `db-motion-${index}-${i}-curve`,
               p.curve ?? "linear",
-              curves.map((id) => ({ id, name: id })),
+              curveOptions,
               (v) => patch({ curve: v as MotionPoint["curve"] }),
             ),
             selectField(
               "자세",
               `db-motion-${index}-${i}-pose`,
               p.pose ?? "idle",
-              Object.keys(EXTENDED_POSE_FRAME).map((id) => ({ id, name: id })),
+              poseOptions,
               (v) => patch({ pose: v as MotionPoint["pose"] }),
             ),
             numberField(
@@ -189,6 +242,7 @@ export function battleMotionFields(
               (v) => patch({ flip: v }),
             ),
             el("button", {
+              class: "db-ws-btn db-ws-btn-danger",
               text: "지점 삭제",
               attrs: {
                 type: "button",
@@ -207,6 +261,7 @@ export function battleMotionFields(
         }
         group.append(
           el("button", {
+            class: "db-ws-btn",
             text: "지점 추가",
             attrs: {
               type: "button",
@@ -226,18 +281,12 @@ export function battleMotionFields(
         );
         host.append(group);
       }
-      for (const role of [
-        "user",
-        "target",
-        "ally",
-        "cloneA",
-        "cloneB",
-        "summon",
-      ] as MotionRole[])
+      for (const role of Object.keys(ROLE_LABELS) as MotionRole[])
         if (!current.tracks.some((t) => t.role === role))
           host.append(
             el("button", {
-              text: `${role} 경로 추가`,
+              class: "db-ws-btn",
+              text: `${ROLE_LABELS[role]} 경로 추가`,
               attrs: { type: "button" },
               on: {
                 click: () => {

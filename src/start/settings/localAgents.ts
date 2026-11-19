@@ -8,13 +8,17 @@
 // 엔진 선택 저장·해석은 조수가 읽는 src/ai/localCliEngine.ts 하나를 쓴다(그 모듈은 타입 말고 아무것도 가져오지 않아 첫 화면 번들이 늘지 않는다).
 // 고르는 것은 여전히 opt-in 이다 — 고르지 않으면(또는 「원래 AI 연결로 되돌리기」) 기존 엔진이다.
 
+import { t } from "@/i18n";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { ASSISTANT_ENGINE_STORAGE_KEY, LOCAL_CLI_ENGINE_IDS, loadAssistantEngine, saveAssistantEngine, type AssistantEngineChoice, type LocalCliEngineId } from "@/ai/localCliEngine";
+import { withRequestTimeout } from "@/util/requestTimeout";
 
 export { ASSISTANT_ENGINE_STORAGE_KEY, type AssistantEngineChoice };
 
 export type LocalCliId = LocalCliEngineId;
 export const LOCAL_CLI_IDS: readonly LocalCliId[] = LOCAL_CLI_ENGINE_IDS;
+export const LOCAL_PROGRAM_LABELS: Readonly<Record<LocalCliId, string>> = { claude: "Claude Code", codex: "Codex CLI", gemini: "Gemini CLI" };
+export const ASSISTANT_ENGINE_CHANGED_EVENT = "oprn:assistant-engine-changed";
 
 export type LocalCliModel = { readonly id: string; readonly label: string; readonly roles?: readonly ("routine" | "deep")[] };
 
@@ -58,11 +62,12 @@ export type InstallResult = { readonly ok: boolean; readonly code: string; reado
 
 export type LocalAgentsApi = {
   install(id: "claude" | "codex"): Promise<InstallResult>;
-  detect(fresh?: boolean): Promise<LocalAgentsReport>;
-  health(id: LocalCliId): Promise<HealthResult>;
+  detect(fresh?: boolean, signal?: AbortSignal): Promise<LocalAgentsReport>;
+  health(id: LocalCliId, signal?: AbortSignal): Promise<HealthResult>;
 };
 
 export const LOCAL_AGENTS_FLAG_KEY = "oprn:flag:local-agents";
+export const LOCAL_AGENTS_STATUS_TIMEOUT_MS = 8_000;
 
 function storage(): Storage | null {
   try { return typeof localStorage === "undefined" ? null : localStorage; } catch { return null; }
@@ -88,7 +93,11 @@ export function loadEngineChoice(): AssistantEngineChoice | null {
 }
 
 export function saveEngineChoice(choice: AssistantEngineChoice | null): void {
-  try { saveAssistantEngine(choice ?? undefined); } catch { /* 저장을 못 해도 이번 화면은 그대로 */ }
+  const previous = loadEngineChoice();
+  try { saveAssistantEngine(choice ?? undefined); } catch { return; }
+  if (typeof window !== "undefined" && JSON.stringify(previous) !== JSON.stringify(loadEngineChoice())) {
+    window.dispatchEvent(new Event(ASSISTANT_ENGINE_CHANGED_EVENT));
+  }
 }
 
 /** 동반 서비스 주소. 데스크톱은 preload 가 준 값(chatgptOAuthClient 의 companionOrigin 과 같은 규칙), 없으면 같은 오리진. */
@@ -96,9 +105,9 @@ function companionBase(): string {
   return (typeof window !== "undefined" ? (window as { oprn?: { companionOrigin?: string } }).oprn?.companionOrigin : undefined) ?? "";
 }
 
-async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
+async function call<T>(method: "GET" | "POST", path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   // 토큰·서버 재시작 뒤 다시 맺기는 한 입구(fetchCompanion)가 맡는다.
-  const response = await fetchCompanion(`${companionBase()}/v1${path}`, { method, headers: { "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  const response = await fetchCompanion(`${companionBase()}/v1${path}`, { method, signal, headers: { "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return await response.json() as T;
 }
@@ -106,8 +115,11 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
 export function createLocalAgentsApi(): LocalAgentsApi {
   if (query("localAgentsMock") === "1") return mockLocalAgentsApi();
   return {
-    detect: (fresh = false) => call<LocalAgentsReport>("GET", fresh ? "/local-agents?fresh=1" : "/local-agents"),
-    health: (id) => call<HealthResult>("POST", "/local-agents/health", { cli: id }),
+    detect: (fresh = false, signal) => withRequestTimeout(
+      (requestSignal) => call<LocalAgentsReport>("GET", fresh ? "/local-agents?fresh=1" : "/local-agents", undefined, requestSignal),
+      LOCAL_AGENTS_STATUS_TIMEOUT_MS, signal,
+    ),
+    health: (id, signal) => call<HealthResult>("POST", "/local-agents/health", { cli: id }, signal),
     install: (id) => call<InstallResult>("POST", "/local-agents/install", { cli: id }),
   };
 }
@@ -130,9 +142,17 @@ export function mockLocalAgentsApi(): LocalAgentsApi {
   };
 }
 
-/** 비용 한 줄(D8 와 같은 규칙, 조수 쪽은 localCliEngine.formatLocalCliCost). 구독이면 청구가 아니라 한도 사용이다. */
-export function costLine(billing: LocalCliStatus["billing"], costUsd?: number): string {
-  if (billing === "subscription") return costUsd === undefined ? "구독 한도에서 써요(따로 청구되지 않아요)" : `구독 한도에서 써요 · 환산 $${costUsd.toFixed(2)}(청구 아님)`;
-  if (billing === "api") return costUsd === undefined ? "쓴 만큼 키 계정에 청구돼요" : `이번 달 $${costUsd.toFixed(2)}`;
-  return "요금은 그 프로그램의 계정 기준이에요";
+/** Summary for the launcher chip when it is showing a local program. */
+export type AiStatusSummary = { readonly tone: "ok" | "warn" | "off"; readonly text: string };
+
+export function summarizeAiStatus(choice: AssistantEngineChoice | null, report: LocalAgentsReport | null): AiStatusSummary {
+  if (choice) {
+    const row = report?.clis.find(entry => entry.id === choice.cli);
+    const label = LOCAL_PROGRAM_LABELS[choice.cli];
+    if (!report || row?.state === "ready") return { tone: "ok", text: t("{0} · 연결됨").replace("{0}", label) };
+    return { tone: "warn", text: t("{0} · 확인 필요").replace("{0}", label) };
+  }
+  const ready = report?.clis.find(row => row.state === "ready");
+  if (ready) return { tone: "warn", text: t("{0} 찾음 · 고르기").replace("{0}", LOCAL_PROGRAM_LABELS[ready.id]) };
+  return { tone: "off", text: "AI 엔진 · 설정" };
 }

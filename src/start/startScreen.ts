@@ -18,7 +18,7 @@ import { mountWindowControls } from "./windowControls";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
-import { getLocale, initI18n, t } from "@/i18n";
+import { getLocale, initI18n, LOCALE_CHANGED_EVENT, t } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
 import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
@@ -34,12 +34,12 @@ import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
 import { startIcon } from "./icons";
 import { builtinGameEditUrl } from "./home/builtinGames";
-import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, myGamesShelf, type HomeActions, type RecentProjectsView } from "./home/homeView";
+import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, isDefaultProjectTitle, myGamesShelf, type HomeActions, type RecentProjectsView } from "./home/homeView";
 import { formatLastOpenedTime } from "@/project/recentProjectTime";
 import { withoutRecentProject } from "../../electron/shared/recentProjects";
 import { BUILTIN_GAMES } from "./home/builtinGames";
-import { loadEngineChoice, localAgentsEnabled } from "./settings/localAgents";
-import type { AiStatusSummary, SettingsTab } from "./settings/settingsDialog";
+import { createLocalAgentsApi, loadEngineChoice, localAgentsEnabled, summarizeAiStatus, type AiStatusSummary } from "./settings/localAgents";
+import type { SettingsTab } from "./settings/settingsDialog";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
@@ -277,7 +277,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     settingsOpen = true;
     // 설정 창은 누를 때만 받는다(첫 화면 번들을 키우지 않게).
     void import("./settings/settingsDialog").then(({ openSettingsDialog }) => {
-      const dialog = openSettingsDialog({ tab, onEngineChange: (summary) => { if (summary.tone === "off") refreshAiStatus(); else applyAiStatus(summary); } });
+      const dialog = openSettingsDialog({ tab, onConnectionChange: () => refreshAiStatus(false) });
       const observer = new MutationObserver(() => {
         if (document.querySelector("[data-testid='start-settings']")) return;
         settingsOpen = false;
@@ -290,36 +290,29 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       setError(error instanceof Error ? error.message : String(error));
     });
   };
-  /**
-   * 「Google 연결됨」 → 「Google 연결됨 · Gemini 4 Argon」.
-   * 어떤 모델로 일하는지가 첫 화면에서 보여야 한다(2026-11-01 사용자 「지금은 좀 애매하다」).
-   * 모델을 못 읽으면 받은 라벨을 그대로 돌려준다 — 첫 화면이 비지 않게.
-   * llmClient 는 편집기 AI 모듈이라 정적으로 받지 않는다(첫 화면 번들을 키우지 않게) — 부를 때만 동적 import.
-   */
-  const aiModelLabelFor = async (statusLabel: string): Promise<string> => {
-    const model = (await import("@/ai/llmClient")).loadAiConfig().model?.trim();
-    if (!model || statusLabel.includes(model)) return statusLabel;
-    return `${statusLabel} · ${model}`;
-  };
-  /** 레일 AI 상태 줄 — 고른 엔진이 있으면 그 이름, 깃발이 켜져 있으면 한가할 때 한 번 찾아본다. */
-  const refreshAiStatus = (): void => {
-    void import("./settings/settingsDialog").then(async ({ summarizeAiStatus }) => {
+  let aiStatusRevision = 0;
+  const refreshAiStatus = (checkConnection = true): void => {
+    const revision = ++aiStatusRevision;
+    const publish = (summary: AiStatusSummary): void => {
+      if (revision === aiStatusRevision) applyAiStatus(summary);
+    };
+    void (async () => {
       const choice = loadEngineChoice();
       if (!choice) {
-        // 이 PC 의 AI 프로그램을 고르지 않았으면 조수는 편집기의 「AI 연결」(Google·ChatGPT 로그인·API 키)을 그대로 쓴다.
-        // 그 연결이 살아 있으면 «AI 엔진이 아직 없어요» 라고 하지 않는다 — 로그인을 마쳐도 첫 화면이 계속 «없음» 이었다.
         const { getAiConnectionStatus, refreshAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
-        await refreshAiConnectionStatus().catch(() => {});
+        if (checkConnection) await refreshAiConnectionStatus();
         const status = getAiConnectionStatus();
-        // 「Google 연결됨」 만으로는 *무엇으로* 일하는지 알 수 없다(2026-11-01 사용자 「지금은 좀 애매하다」).
-        // 모델 이름을 같이 적어 첫 화면이 바로 답하게 한다 — 모델을 못 읽으면 예전 라벨 그대로 둔다.
-        if (status.kind === "ready") { applyAiStatus({ tone: "ok", text: await aiModelLabelFor(status.label) }); return; }
+        if (!checkConnection && status.kind === "checking") return;
+        if (status.kind === "ready") {
+          const model = (await import("@/ai/llmClient")).loadAiConfig().model?.trim();
+          const label = t(status.label);
+          publish({ tone: "ok", text: model && !label.includes(model) ? `${label} · ${model}` : label });
+          return;
+        }
       }
-      if (!localAgentsEnabled()) { applyAiStatus(summarizeAiStatus(choice, null)); return; }
-      const { createLocalAgentsApi } = await import("./settings/localAgents");
-      const report = await createLocalAgentsApi().detect(false).catch(() => null);
-      applyAiStatus(summarizeAiStatus(choice, report));
-    }).catch(() => {});
+      const report = localAgentsEnabled() ? await createLocalAgentsApi().detect(false).catch(() => null) : null;
+      publish(summarizeAiStatus(choice, report));
+    })().catch(() => {});
   };
 
   // ── 칸(section) — 지금 보이는 본문의 주인은 이것 하나다 ─────────────────
@@ -416,6 +409,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     promptHome.setGames(worlds.map((entry) => ({
       key: entry.projectDir,
       title: titles.get(entry.projectDir) ?? entry.title,
+      titleIsDefault: isDefaultProjectTitle(entry.title),
       meta: makingMeta(entry),
       cover: coverArt(entry, "fr-gcard-cov"),
     })), state.entries.filter((entry) => entry.hiddenReason !== "temporary").length);
@@ -505,6 +499,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       : el("div", { children: [firstRunShelf(actions), ...(hiddenNote() ? [hiddenNote()!] : [])] }));
   };
   const renderBuiltinSection = (): void => { builtinPage.inner.replaceChildren(builtinShelf(actions)); };
+  document.addEventListener(LOCALE_CHANGED_EVENT, () => {
+    promptHome?.syncLocale();
+    if (promptShown()) renderPromptGames();
+    else if (state.section === "games") renderGamesSection();
+  });
 
   /** 칸을 상태에서 그려 틀에 꽂는다. */
   const mount = (section: StartSection): void => {
@@ -673,7 +672,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   state.section = initial;
   mount(initial);
   try { history.replaceState({ section: initial }, "", `#${initial}`); } catch { /* 무시 */ }
-  whenIdle(600, refreshAiStatus);
+  whenIdle(600, () => refreshAiStatus());
 
 
   if (!bridge) {

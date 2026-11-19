@@ -20,6 +20,7 @@
 //   riverbank 물가 띠 마을(강만) — 큰길이 넓은 둑을 따라 남북으로, 들길 하나가 가장자리에서 들어온다. 앵커는 들길 어귀.
 //   scatter   흩어진 마을 — 모랫길 폭 1, 집 간격 4~8칸, 갈림길 하나가 모이는 곳. 풀밭 마을은 집마다 울타리 텃밭.
 // 밭은 형태와 상관없이 이어진 울타리로 두른다(풀밭 마을만 — 울타리 조각이 숲 계열이다). 문 한 칸은 길 쪽.
+import { kitServesBuilding, type BuildingNeed } from "@/project/kitTier";
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "@/project/defaults/beodeulGround";
 import { translateTiles } from "@/project/objectStamp";
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
@@ -161,6 +162,8 @@ export function resolveVillageWater(theme: BeodeulVillageTheme, seed: number, fo
 /** 숲(river·coast·snow 마을): edge 마을 둘레 숲 덩이(기본) · dense 숲속 빈터 — 집·길·작은 밭 사이를 숲이 메운다(숲속 마을). */
 export const BEODEUL_VILLAGE_WOODS = ["edge", "dense"] as const;
 export interface BeodeulVillageOptions {
+  /** 이야기가 청한 큰 건물(여관·회관·성당·성) — 그 쓰임·단의 킷(킷 태그 tier:·interior:·cat:, src/project/kitTier.ts)을 모이는 곳 곁에 먼저 세운다. 요청 낱말이 아니라 청사진 장소 종류가 준다. */
+  buildingNeeds?: readonly BuildingNeed[];
   /** 숲 밀도(edge·dense). 생략하면 edge. */
   woods?: string;
   /** 강가 어촌(코드 지형): 물가 길에 어촌 일터 소품 띠와 매어 둔 배. 포구(coast)는 늘. */
@@ -432,7 +435,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   for (const k of ts.structureKits ?? []) {
     const ent = (k.parts ?? []).find((p) => p.kind === "entrance");
     // 허용 건물(bd-house-rv-*)의 문은 두 칸 높이(dy = 문 윗칸) — 문 앞 계산은 아랫칸 기준이라 아랫칸으로 맞춘다
-    const doorDy = ent ? (reviewedPrefix(k.id) ? ent.dy + Math.max(1, ent.h ?? 1) - 1 : ent.dy) : 0;
+    // 참고 건물(bd-bld-ref-*)의 문도 두 칸 높이다 — 이야기가 청한 큰 건물로 설 때 같은 셈.
+    const doorDy = ent ? (reviewedPrefix(k.id) || k.id.startsWith("bd-bld-ref-") ? ent.dy + Math.max(1, ent.h ?? 1) - 1 : ent.dy) : 0;
     kitIndex.set(k.id, { id: k.id, w: k.width, h: k.height, door: ent ? { dx: ent.dx, dy: doorDy } : null, def: k });
   }
   const have = (ids: readonly string[]) => ids.filter((id) => kitIndex.has(id));
@@ -445,6 +449,16 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const askedKits = (word: string): Kit[] => { const found = nearestBuildingKits(ts.structureKits ?? [], word); const ks = found.kits.map((d) => K(d.id)).filter((k) => doorAtBottom(k.id)); if (found.near && ks.length) askedNear.add(word); return ks; };
   const askedWords = [...new Set((options.buildings ?? []).map((w) => String(w).trim()).filter(Boolean))].slice(0, 3);
   const askedPool = new Map<string, Kit[]>([...askedWords, ...[options.layoutKits?.landmark, options.layoutKits?.anchor].filter((w): w is string => !!w && !!w.trim()).map((w) => w.trim())].map((w) => [w, askedKits(w)] as const));
+  // 이야기가 청한 큰 건물(options.buildingNeeds — 청사진 장소 종류가 준 쓰임 · 단, 안쪽 칸): 모델이 낱말로 청한 건물과 같은 길(모이는 곳 가장자리)로 앉힌다.
+  // 그 쓰임·단의 킷(kitServesBuilding) 가운데 씨앗이 고른 순서로 — 같은 주문이면 같은 킷. 모델이 이미 같은 건물을 낱말로 청했으면(같은 킷이 겹치면) 더하지 않는다.
+  (options.buildingNeeds ?? []).forEach((need, i) => {
+    const fit = [...kitIndex.keys()].filter((id) => doorAtBottom(id) && kitServesBuilding(K(id).def, need)).sort();
+    if (!fit.length || [...askedPool.values()].some((ks) => ks.some((k) => fit.includes(k.id)))) return;
+    const start = Math.abs(Math.floor(seed) + i * 7) % fit.length;
+    askedPool.set(`${need.kinds[0] ?? "building"} ${need.tiers.join("/")}`, [...fit.slice(start), ...fit.slice(0, start)].map(K));
+  });
+  const neededWords = [...askedPool.keys()].filter((w) => !askedWords.includes(w) && w !== options.layoutKits?.landmark?.trim() && w !== options.layoutKits?.anchor?.trim());
+  askedWords.push(...neededWords);
   /** 청한 낱말 → 선 자리(킷 · 왼위 · 문 앞). 끝에 data.asked 로 나간다. */
   const askedSeats = new Map<string, { kit: string; x: number; y: number; door: { x: number; y: number } }>();
   // 마을 종류(2026-11-14, beodeulVillageKinds.ts): 강가·포구 마을은 이름으로 받은 종류나, 게임 열쇠가 있으면 터에 맞는 종류 하나로 짓는다.
@@ -900,7 +914,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 일터 건물: 씨앗이 고른 차례대로 한 킷씩 가까운 자리(4칸)를 먼저 본다 — 고리 거리마다 모든 킷을 시험하면 늘 같은 킷이 먼저 맞아
     // 포구 마을 여섯 판이 모두 회벽 화물 창고(rv-r2-06)였다(2026-11-16 av2-variety 탐침: ware0 은 한 번도 서지 않았다). 다 안 맞으면 예전처럼 모두 함께. 게임 열쇠가 없으면(옛 저장본·사람 편집) 예전 그대로.
     if (layout.work && !(villageKind && !villageKind.work.length)) {
-      const ks = shuffled(kindWork.length ? kindWork : doorKits(LOW_WORKS[theme] ?? []));
+      // 이미 선 킷(청한 건물)은 다시 세우지 않는다.
+      const ks = shuffled(kindWork.length ? kindWork : doorKits(LOW_WORKS[theme] ?? []))
+        .filter((k) => !spots.some((sp) => sp.k.id === k.id));
       if (ks.length && !(activeKitLook() && ks.some((k) => !!place("work", [k], layout.work!, 4)))) {
         place("work", ks, layout.work, !given && kindWork.length ? Math.max(W, H) : 9);
       }

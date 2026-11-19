@@ -3,7 +3,7 @@
 
 가구 줄: (id, 원본, 종류, 폭, 발밑 줄 수, 갈래, 이름, 방 태그, 관문 종류, 선택)
   원본 = raw/<이름>.png 또는 (이름, x, y, w, h) 로 한 장에서 잘라 낸 조각.
-  종류 floor(바닥에 선 것) · wall(북벽 앞에 선 것) · hang(벽면에 건 것 — 발밑 0, rows 줄) · flat(밟는 무늬).
+  종류 floor(바닥에 선 것) · wall(북벽 앞에 선 것) · hang(벽면에 건 것 — 발밑 0, rows 줄) · flat(밟는 무늬) · door·sidedoor(방 사이 문 — 16×48 그대로).
   선택: over(걸어 지나가고 사람 위에 그리는 것 — 샹들리에) · rows(hang 줄 수) · oy(hang 위 여백) · use · pair · stairs · halo(불빛 번짐) · noshadow · remap · desc
 """
 CATS = dict(tavern="주점", home="살림집", shop="가게", kitchen="부엌", store="창고", smith="대장간", bake="빵집", office="회관·사무실", church="예배당",
@@ -224,6 +224,21 @@ OBJECTS = [
     ("dais sw", ("dais", 0, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞 왼쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
     ("dais s", ("dais", 16, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞", ["알현실", "제단", "큰 홀"], "flat", {}),
     ("dais se", ("dais", 32, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞 오른쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    # ── 방 사이 문(크기 단: 방이 여럿인 집) — door = 위·아래 방 사이 가로 칸막이의 1칸 틈(틈 칸 + 아래 벽면 두 줄), sidedoor = 왼·오른 방 사이 세로 칸막이의 3줄 틈(끝 벽면 두 줄 + 통로 칸).
+    #    사양의 첫 door·sidedoor 가 기본 문이다(rooms.ts doorOf) — 참나무가 먼저, 돌 벽 방에는 크기 단 배치기가 돌 것을 고른다(tierPlan.ts).
+    ("door oak", "door-wood", "door", 1, 0, "hall", "칸막이 문틀(참나무 · 열린 널문)", ["방 사이 문"], "structure", {}),
+    #    옆문은 문짝이 없는 트인 문목이다(오너 2026-11-16: 「옆으로 여는 문 같은 경우에는 좀 이상한거같고」 — 탑다운 3/4 에서 옆벽의 문짝 면은 보일 수 없다): 위 두 칸 = 칸막이 끝머리, 통로 칸 = 문지방 띠.
+    ("sidedoor oak", "sidepass-wood", "sidedoor", 1, 0, "hall", "옆 칸막이의 트인 문목(널 끝머리 · 문지방)", ["방 사이 문"], "structure", {}),
+    ("sidedoor log", "sidepass-log", "sidedoor", 1, 0, "hall", "옆 칸막이의 트인 문목(통나무 마구리 · 문지방)", ["방 사이 문"], "structure", {}),
+    ("door arch", "door-stone", "door", 1, 0, "hall", "칸막이 돌 아치(쇠띠 문짝)", ["방 사이 문"], "structure", {}),
+    ("sidedoor iron", "sidepass-stone", "sidedoor", 1, 0, "hall", "옆 칸막이의 트인 문목(돌 끝머리 · 돌 문지방)", ["방 사이 문"], "structure", {}),
+]
+# 크기 따라 느는 깔것(사양 daises — 아홉 조각 48×48: 모서리·변·가운데). 한 칸 폭·한 줄짜리는 굽기가 양쪽 반 칸을 붙여 만든다. (id, 원본, 이름)
+#   방 견본의 daises: [[id, x, 바닥 줄, w, h]] · 도구의 daises. 그 위에 선 가구·밟는 무늬는 조립기가 단 위로 올린다.
+DAISES = [
+    ("dais stone", "dais", "돌 단(크기 자동)"),
+    ("dais red", "carpet-red", "붉은 양탄자(크기 자동)"),
+    ("dais blue", "carpet-blue", "푸른 양탄자(크기 자동)"),
 ]
 # 코드로 만드는 빛 무늬(밟는 무늬, 반투명) — prepare.py 가 그린다
 GLOWS = [
@@ -310,3 +325,32 @@ PERSONAL = dict(
         healer=dict(ko="약초꾼·의원", alias=["약초", "의원", "healer", "herbal"], pieces=["medicine tray", "corn strings", "geranium", "teapot"]),
     ),
 )
+
+# ── 큰 공간의 «다른 것 하나»와 초대형 장소의 주인공(2026-11-16) — 큰 홀이 기둥·식탁의 같은 간격 되풀이로만 차지 않게, 홀마다 하나씩 다른 것 ──
+OBJECTS += [
+    ("stage", "stage", "wall", 4, 1, "hall", "작은 무대(막·발등)", ["큰 주점", "회관"], "structure", {}),
+    ("great hearth", "great-hearth", "wall", 5, 1, "hall", "큰 화덕(꼬챙이 구이·솥)", ["성 부엌", "큰 홀", "수도원 식당"], "structure", dict(use=["light"], pair=["hearth glow"], desc="큰 화덕")),
+    ("guild board", "guild-board", "hang", 3, 0, "hall", "의뢰 게시판 벽", ["회관", "큰 주점", "읍사무소"], "wall_mounted", dict(rows=2, oy=1, use=["read"])),
+    ("pulpit", "pulpit", "floor", 2, 1, "church", "설교단", ["본당", "대성당"], "structure", {}),
+    ("organ", "organ", "wall", 3, 1, "church", "파이프 오르간", ["본당", "대성당"], "structure", {}),
+    ("font", "font", "floor", 1, 1, "church", "세례반", ["본당", "대성당"], "round_body", {}),
+    ("sarcophagus", "sarcophagus", "floor", 2, 1, "church", "기사 석관", ["지하 묘", "대성당"], "box", {}),
+    ("vault door", "vault-door", "wall", 2, 1, "office", "금고 문", ["금고", "세관"], "structure", dict(noshadow=1)),
+    ("weapon wall", "weapon-wall", "hang", 3, 0, "guard", "무기 벽", ["무기고", "병영", "성"], "wall_mounted", dict(rows=2, oy=1)),
+    ("book wall", "book-wall", "wall", 3, 1, "office", "긴 책장과 사다리", ["큰 서고", "수도원"], "frame", dict(use=["read"])),
+    ("reading table", "reading-table", "floor", 3, 1, "office", "긴 열람 탁자", ["큰 서고", "수도원"], "low_furniture", dict(surface=1)),
+    ("cloister well", "cloister-well", "floor", 2, 1, "hall", "안뜰 우물", ["안뜰", "수도원"], "structure", {}),
+    ("stairs down", "stairs-down", "wall", 2, 1, "stairs", "내려가는 돌계단", ["지하", "성", "대성당"], "structure", dict(stairs="down", use=["travel"], noshadow=1)),
+    ("wide tapestry", "wide-tapestry", "hang", 3, 0, "hall", "사냥 그림 큰 벽걸이", ["큰 홀", "성", "저택"], "wall_mounted", dict(rows=2, oy=1)),
+    ("rose window", "rose-window", "hang", 2, 0, "church", "둥근 색유리 창", ["본당", "대성당"], "wall_mounted", dict(rows=2, oy=0, use=["light"])),
+    ("knight statue", "knight-statue", "floor", 1, 1, "hall", "기사 석상", ["성", "큰 홀", "대성당"], "column", {}),
+    ("garden bed", "garden-bed", "floor", 2, 1, "hall", "안뜰 화단(월계수)", ["안뜰", "수도원"], "other", {}),
+    ("treasure", "treasure", "floor", 2, 1, "office", "돈궤와 돈자루", ["금고", "세관", "성"], "box", {}),
+    ("weigh beam", "weigh-beam", "floor", 2, 1, "shop", "큰 대저울", ["세관", "창고", "시장"], "structure", {}),
+    ("cargo stack", "cargo-stack", "floor", 3, 1, "store", "짐 더미(봉인 찍힌 궤·보따리)", ["세관", "부두 창고"], "box", {}),
+    ("war table", "war-table", "floor", 3, 1, "guard", "작전 지도 탁자", ["성", "병영"], "low_furniture", {}),
+    ("confessional", "confessional", "wall", 2, 1, "church", "고해소", ["본당", "대성당"], "structure", {}),
+    ("council bench", "council-bench", "floor", 3, 1, "office", "재판·평의 단상", ["읍사무소", "세관", "회관"], "structure", {}),
+    ("hoist", "hoist", "floor", 2, 1, "store", "짐 끌어올리는 틀", ["창고", "세관", "방앗간"], "structure", {}),
+    ("tower bell", "tower-bell", "floor", 2, 1, "church", "종탑의 종(나무 틀)", ["종탑", "대성당"], "structure", {}),
+]

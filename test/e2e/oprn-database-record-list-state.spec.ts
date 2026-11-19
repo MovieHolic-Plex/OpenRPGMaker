@@ -14,7 +14,7 @@ test("RM2K3 database record list resets modal state and has no decorative filler
   await skillRows.nth(1).click();
   await expect(skillRows.nth(1)).toHaveAttribute("aria-pressed", "true");
 
-  await page.getByTestId("database-footer-ok").click();
+  await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await page.getByTestId("toolbar-database").click();
   await expect(page.locator('[data-testid^="db-record-row-"]').first()).toHaveAttribute("aria-pressed", "true");

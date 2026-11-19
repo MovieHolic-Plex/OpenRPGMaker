@@ -48,8 +48,9 @@ try {
       const ready = page.waitForEvent("console", { predicate: (m) => m.text() === "ims-ready", timeout: 150000 });
       await page.goto(`${base}/ims-qa.html?lang=${lang}`);
       await ready;
-      await page.getByTestId("ai-settings-tab-models").click();
-      await page.getByTestId("ai-settings-section-image").scrollIntoViewIfNeeded();
+      await page.getByTestId("ai-settings-tab-behavior").click();
+      await page.getByTestId("ai-settings-open-advanced").click();
+      await page.getByTestId("ai-settings-model-pixel").locator(":scope > summary").click();
       const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem("oprn:ai-config") ?? "null"));
       const opened = await stored();
       const row = { scenario, lang, storedOnOpen: opened ? { pixelModel: opened.pixelModel ?? null, imageModel: opened.imageModel, maxTokens: opened.maxTokens } : null };
@@ -63,13 +64,11 @@ try {
       }
       if (scenario === "legacy") {
         // 옛 설정으로 연 뒤 도트 칸을 만지지 않고 다른 칸(글자 수 예산)을 바꿔 저장시켜 본다 — pixelModel 이 몰래 생기면 안 된다.
-        await page.getByTestId("ai-settings-tab-behavior").click();
         const budget = page.getByTestId("ai-config-maxtokens");
         await budget.fill("12400"); await budget.dispatchEvent("change"); await page.waitForTimeout(500);
         const saved = await stored();
         row.legacyAfterOtherEdit = { hasPixelModel: "pixelModel" in saved, imageModel: saved.imageModel, imageProviderId: saved.imageProviderId, maxTokens: saved.maxTokens, deep: saved.roleModels?.deep };
-        await page.getByTestId("ai-settings-tab-models").click();
-        await page.getByTestId("ai-settings-section-image").scrollIntoViewIfNeeded();
+        await page.getByTestId("ai-settings-section-roles").scrollIntoViewIfNeeded();
       }
       await page.screenshot({ path: resolve(out, `${tag}-${scenario}-${lang}-models.png`) });
       await page.getByTestId("ai-config-pixel-status").scrollIntoViewIfNeeded();

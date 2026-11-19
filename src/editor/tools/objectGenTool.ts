@@ -7,7 +7,9 @@
 // 검수 통과 후보를 그 맵 칩셋 끝에 굽는다(공방 칸, 이 게임에만 — 스토어·공용 DB 로는 못 나간다). 놓기는 후속 턴의 조수가 한다.
 //
 // 거르는 것(도구가 직접 거부한다 — 프롬프트만 믿지 않는다):
-// - 이미 있는 기물: 이름이 맞는 칩셋 물체·손 도트 실내 가구가 있으면 그 id 를 돌려주며 거부(notThese 로 「봤는데 다르다」를 밝혀야 통과).
+// - 이미 있는 기물: id 나 표시 이름이 **정확히 같은** 칩셋 물체·손 도트 실내 가구가 있으면 그 id 를 돌려주며 거부(notThese 로 「봤는데 다르다」를 밝혀야 통과).
+//   이름이 비슷하기만 한 것(끝 낱말이 같다·이름을 품는다)은 거부 이유가 아니다(2026-11-08 오너 「이름 거절을 거의 제거」 — 「얼음 기둥」이 고상 창고 기둥에 막혔다).
+//   그것들은 결과의 similar 와 안내 한 줄로만 돌려준다 — 조수가 원하면 그 기물을 쓰고, 아니면 그대로 그린다.
 // - 사람·동물 캐릭터: 사람은 그리지 않는다(캐릭터 칩은 따로).
 // - 지형·바닥·벽 칸: 칸 타일은 이 도구가 아니다(ask_missing_tiles).
 // - 16px 이 아닌 칩셋: 공방 격자·굽기가 16px 칸 기준이다.
@@ -65,33 +67,36 @@ export function objectSetting(tileset: TilesetDef, mapName: string): string {
 const words = (text: string): string[] => text.trim().split(/[\s·,/()]+/u).filter(Boolean);
 const squash = (text: string): string => text.replace(/[\s·,/()]+/gu, "").toLowerCase();
 
-type Existing = { readonly id: string; readonly name: string; readonly how: string; /** 킷이 그 이름을 태그로 그대로 달고 있다(칩셋 데이터의 선언). */ readonly declared?: true };
+type Existing = { readonly id: string; readonly name: string; readonly how: string; readonly exact: boolean; /** 킷 id·이름·태그가 요청 이름과 같다. */ readonly declared?: true };
 
 /**
  * 이름이 맞는 이미 있는 기물 — 칩셋 구조 킷(어떤 출처든)과 손 도트 실내 가구.
  * 맞는 정도 순으로 낸다(여덟 개에서 자르므로 순서가 답이다):
- *  0 킷이 그 이름을 **태그로 그대로** 달았거나 킷 이름이 그 이름과 같다 — 한 글자 이름(샘)도 여기서는 맞는다. 낱말 목록이 아니라 칩셋 데이터가 답한다.
- *  1 이름 전체(2글자 이상)가 킷 이름·id 에 들어 있다.
- *  2 끝 낱말(2글자 이상)만 들어 있다.
+ *  0 id나 표시 이름이 정확히 같다(구분 공백·기호와 대소문자 무시) — 이 일치만 중복으로 거부한다.
+ *  1 킷이 그 이름을 **태그로 그대로** 달았다 — 한 글자 이름(샘)도 여기서는 맞는다. 낱말 목록이 아니라 칩셋 데이터가 답한다.
+ *  2 이름 전체(2글자 이상)가 킷 이름·id 에 들어 있다.
+ *  3 끝 낱말(2글자 이상)만 들어 있다.
  */
 export function existingMatches(project: Project, tileset: TilesetDef, title: string): Existing[] {
   const full = squash(title);
+  const same = (...names: string[]): boolean => names.some((name) => name !== "" && squash(name) === full);
   const head = words(title).at(-1) ?? "";
   const tail = head.length >= 2 && squash(head) !== full ? squash(head) : "";
   if (!full) return [];
   const needles = [full, tail].filter((needle) => needle.length >= 2);
   const hit = (text: string): boolean => needles.some((needle) => squash(text).includes(needle));
   const rank = (name: string, id: string, tags: readonly string[]): number => {
-    if (squash(name) === full || tags.some((tag) => squash(tag) === full)) return 0;
-    if (full.length >= 2 && (squash(name).includes(full) || squash(id).includes(full))) return 1;
-    return tail && (squash(name).includes(tail) || squash(id).includes(tail)) ? 2 : -1;
+    if (same(name, id)) return 0;
+    if (tags.some((tag) => squash(tag) === full)) return 1;
+    if (full.length >= 2 && (squash(name).includes(full) || squash(id).includes(full))) return 2;
+    return tail && (squash(name).includes(tail) || squash(id).includes(tail)) ? 3 : -1;
   };
   const ranked: { readonly row: Existing; readonly rank: number; readonly variantOf?: string }[] = [];
   for (const kit of tileset.structureKits ?? []) {
     if (kit.width > 8 || kit.height > 8) continue; // 건물·구역 킷은 기물이 아니다
     const r = rank(kit.name ?? "", kit.id, kit.ai?.tags ?? []);
     if (r < 0) continue;
-    ranked.push({ rank: r, ...(kit.ai?.variantOf ? { variantOf: kit.ai.variantOf } : {}), row: { id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object", ...(r === 0 ? { declared: true as const } : {}) } });
+    ranked.push({ rank: r, ...(kit.ai?.variantOf ? { variantOf: kit.ai.variantOf } : {}), row: { id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object", exact: r === 0, ...(r <= 1 ? { declared: true as const } : {}) } });
   }
   // 같은 종류의 다른 그림(변형 킷)은 원본이 같은 정도 이상으로 맞으면 뺀다 — 원본 하나가 그 종류를 대표하고, 놓을 때 그 게임의 변형으로 찍힌다(project/kitLook.ts).
   // 변형만 맞는 이름(«펌프»)이나 변형이 더 꼭 맞는 이름(«펌프 우물»)은 그 변형이 남는다.
@@ -106,13 +111,14 @@ export function existingMatches(project: Project, tileset: TilesetDef, title: st
         const objects = (listed.data as { objects?: { id: string; ko?: string; hit?: string }[] } | undefined)?.objects ?? [];
         for (const object of objects) {
           if (object.hit && object.hit.split("/")[0] !== object.hit.split("/")[1]) continue;
-          if (!hit(object.ko ?? "") && !hit(object.id)) continue;
-          if (!out.some((row) => row.id === object.id)) out.push({ id: object.id, name: object.ko ?? object.id, how: "build_hand_interior_room objects[].id (이미 있는 방이면 같은 방을 다시 지으며 더한다)" });
+          const exact = same(object.ko ?? "", object.id);
+          if (!exact && !hit(object.ko ?? "") && !hit(object.id)) continue;
+          if (!out.some((row) => row.id === object.id)) out.push({ id: object.id, name: object.ko ?? object.id, how: "build_hand_interior_room objects[].id (이미 있는 방이면 같은 방을 다시 지으며 더한다)", exact });
         }
       } catch { /* 부품 사전을 못 읽어도 칩셋 킷 검사는 남는다 */ }
     }
   }
-  return out.slice(0, 8);
+  return out.sort((a, b) => Number(b.exact) - Number(a.exact)).slice(0, 8);
 }
 
 function intArg(value: unknown, name: string, min: number, max: number, fallback: number): number {
@@ -129,7 +135,7 @@ const generateMissingObject: ToolDefinition = {
     "지금 맵의 칩셋에 **없는 기물(물건·가구·소품) 하나**를 사용자 AI 계정으로 새로 그려 그 칩셋에 넣자고 요청한다. 화면에 카드가 뜨고, 공방이 그 칩셋의 색·화풍으로 후보 1~3장을 그려 검수한다. "
     + "기본은 「알아서 고르기」가 검수 통과 후보를 바로 칩셋 끝 공방 칸에 넣고(사용자가 끈 기기에서만 사람이 고른다), 물체 id(workshop:…)와 놓을 자리가 후속 요청으로 온다 — 그때 stamp_tileset_object 로 놓는다. 못 그리면 「[공방에서 못 그림]」 후속 요청이 오고 있는 기물로 잇는다. "
     + "**먼저 있는 것을 찾아라**: list_tileset_objects·list_spatial_designs(kind:object)·list_hand_interior_parts(실내)로 찾아 비슷한 게 있으면 그것을 쓰고 이 도구는 부르지 마라. "
-    + "이름이 맞는 기물이 이미 있으면 이 도구가 그 id 를 돌려주며 거부한다(봤는데 정말 다른 물건이면 notThese 에 그 id 를 적어 다시 부른다). "
+    + "id·이름이 정확히 같은 기물이 이미 있을 때만 이 도구가 그 id 를 돌려주며 거부한다(봤는데 정말 다른 물건이면 notThese 에 그 id 를 적어 다시 부른다). 이름이 비슷하기만 한 기물은 거부하지 않고 결과의 similar 로 알려 준다 — 같은 물건이면 그것을 써도 되고, 아니면 그대로 그려진다. "
     + "사람·동물·캐릭터는 그리지 않는다(거부). 바닥·벽·물·길 같은 지형 칸도 이 도구가 아니다(ask_missing_tiles). 건물(집·가게·탑)도 아니다(거부). 16px 칩셋 맵만. "
     + `크기: ${FOOTPRINT_GUIDE} 이 도구가 크기 사전으로 칸 수를 확인·조정하고 이유를 돌려준다(큰 물건 5×4 노점·4×3 분수·3×2 짐마차까지). `
     + "없는 물건이 여럿이면 같은 턴에 물건마다 한 번씩 불러라 — 모두 공방 작업 줄에 함께 서서 동시에 그려진다(하나씩 기다리지 않는다). "
@@ -157,7 +163,7 @@ const generateMissingObject: ToolDefinition = {
         description: "놓을 자리 — 물체가 땅에 닿는 맨 아래 줄의 왼쪽 칸. 사용자가 자리를 말했으면 그 칸",
       },
       need: { type: "string", description: "사용자의 원래 요청을 한 문장으로(후속 요청에 그대로 돌려준다)" },
-      notThese: { type: "array", items: { type: "string" }, description: "이미 있는 비슷한 기물을 봤지만 요청과 다른 물건이라 쓰지 않는 id 들(거부 메시지에 나온 id)" },
+      notThese: { type: "array", items: { type: "string" }, description: "이름이 정확히 같은 기물을 봤지만 요청과 다른 물건이라 쓰지 않는 id 들(거부 메시지에 나온 id)" },
     },
     required: ["title", "description", "objectKind", "need"],
     additionalProperties: false,
@@ -190,15 +196,20 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
     }
     const notThese = new Set(Array.isArray(args.notThese) ? args.notThese.filter((id): id is string => typeof id === "string") : []);
     const existing = options.skipExisting ? [] : existingMatches(project, tileset, title).filter((row) => !notThese.has(row.id));
+    const exact = existing.filter((row) => row.exact);
+    const similar = existing.filter((row) => !row.exact);
     const existsError = (rows: readonly { id: string; name: string; how: string }[]): ToolError => new ToolError(
-      `「${title}」과(와) 이름이 맞는 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: ${rows.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. `
+      `「${title}」과(와) 이름이 같은 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: ${rows.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. `
       + "모두 봤는데 요청과 다른 물건이면 그 id 들을 notThese 에 적어 다시 불러라.",
       { code: "object-exists", mapId: map.id },
     );
     if (TERRAIN_HEAD.test(head)) {
       // 끝 낱말은 지형(길·바닥)이지만 칩셋 킷이 그 이름을 태그로 그대로 달았으면 그 킷이 답이다(예: 널빤지 길 조각) — 「칸 타일이 없다」고 돌려보내지 않는다.
       const declared = existing.filter((row) => row.declared);
-      if (declared.length) throw existsError(declared);
+      if (exact.length) throw existsError(exact);
+      if (declared.length) {
+        throw new ToolError(`「${title}」은(는) 지형에 해당한다. 이 칩셋의 기물로 만들 수 있다: ${declared.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}.`, { code: "terrain-not-object", mapId: map.id });
+      }
       throw new ToolError(`「${title}」은(는) 지형·바닥·벽 칸이다 — 이 도구는 기물 하나만 그린다. 칸 타일이 없으면 ask_missing_tiles 로 묻는다.`, { code: "terrain-not-object" });
     }
     const objectKind = (OBJECT_GEN_KINDS as readonly string[]).includes(String(args.objectKind)) ? args.objectKind as ObjectGenKind : null;
@@ -237,22 +248,29 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
       }
       base = { x, y };
     }
-    if (existing.length) throw existsError(existing);
+    if (exact.length) throw existsError(exact);
     const gateKind = typeof args.gateKind === "string" && (GATE_KINDS as readonly string[]).includes(args.gateKind) ? args.gateKind : undefined;
     const request: ObjectGenRequest = {
       kind: "workshop-object-request", harnessId, tilesetId: tileset.id, tilesetName: tileset.name, mapId: map.id,
       title, description, objectKind, tilesW, tilesH, rise, base, need,
       setting: objectSetting(tileset, map.name ?? ""),
       ...(gateKind ? { gateKind } : {}),
+      ...(similar.length ? { similar: similar.map((row) => ({ id: row.id, name: row.name, how: row.how })) } : {}),
       footprint: { cls: decided.cls, passage, top: decided.top, reason: decided.reason, adjusted: decided.adjusted, ...(decided.reference ? {} : { reference: false }) },
     };
     const sizeLine = `크기 ${tilesW}×${tilesH + drawnOver}칸 = 발밑 ${tilesH}줄(막힘)${drawnOver ? ` + 위 ${drawnOver}줄(캐릭터 위에 그려짐${rise !== drawnOver * TILE ? `, ${rise}px` : ""})` : ""}`
       + `${decided.adjusted.length ? ` — 조정: ${decided.adjusted.join(", ")}` : ""}. 이유: ${decided.reason}`;
     return {
-      summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 「알아서 고르기」가 검수 통과 후보를 넣으면 물체 id 가 후속 요청으로 온다(못 그리면 「[공방에서 못 그림]」). 사용자에게 고르라고 하지 말고, 없는 물건이 더 있으면 지금 이어서 부르고, 남은 짓기(다른 방·길·물건)는 이 턴에 마저 끝낸다. 그렸다·놓았다고 말하지 않는다.`,
+      summary: `${similarNote(similar)}「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 「알아서 고르기」가 검수 통과 후보를 넣으면 물체 id 가 후속 요청으로 온다(못 그리면 「[공방에서 못 그림]」). 사용자에게 고르라고 하지 말고, 없는 물건이 더 있으면 지금 이어서 부르고, 남은 짓기(다른 방·길·물건)는 이 턴에 마저 끝낸다. 그렸다·놓았다고 말하지 않는다.`,
       data: request,
     };
   }
+}
+
+/** 비슷한 이름의 기물 안내 한 줄(거부가 아니다). 없으면 빈 글. */
+export function similarNote(similar: readonly { readonly id: string; readonly name: string; readonly how: string }[]): string {
+  if (!similar.length) return "";
+  return `참고: 이름이 비슷한 기물이 이 칩셋에 있다(거부 아님) — ${similar.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. 같은 물건이면 그것을 써도 된다. `;
 }
 
 export const OBJECT_GEN_TOOLS: readonly ToolDefinition[] = [generateMissingObject];

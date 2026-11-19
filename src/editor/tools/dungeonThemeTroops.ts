@@ -41,8 +41,10 @@ const WORDS: readonly [RegExp, string][] = [
   [/거미|spider/i, "cave"], [/미노|minotaur/i, "maze"],
 ];
 
-export function dungeonTheme(args: Record<string, unknown>): Theme {
-  const name = `${typeof args.name === "string" ? args.name : ""} ${typeof args.theme === "string" ? args.theme : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`;
+export function dungeonTheme(args: Record<string, unknown>, inferFromTitle = typeof args.type !== "string"): Theme {
+  // 종류를 준 경우 제목은 장소 이름이다. 종류 생략을 지원하는 옛 도구만 제목에서 주제 적을 찾는다.
+  const title = inferFromTitle && typeof args.name === "string" ? args.name : "";
+  const name = `${title} ${typeof args.theme === "string" ? args.theme : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`;
   for (const [re, id] of WORDS) if (re.test(name)) return THEMES[id]!;
   if (/ff\s*6|ff\s*vi|파판\s*6|마도|magitek/i.test(name) && args.type === "mine") return THEMES.magitek!;
   const type = typeof args.type === "string" ? args.type : "catacomb";

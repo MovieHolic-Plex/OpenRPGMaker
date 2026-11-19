@@ -1,5 +1,6 @@
 import { addMapFolder, duplicateMap, moveMapInTree, moveMapsInTree, renameMap, setStartMap } from "@/editor/actions";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
+import { attachDelayedTooltip } from "@/editor/delayedTooltip";
 import { confirmAndDeleteMap, confirmAndDeleteMapRecursive, confirmAndDeleteMaps, confirmAndDissolveFolder } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
 import { addParentChildTransfers, bestTestStartCell } from "@/editor/mapParentLink";
@@ -295,7 +296,7 @@ function inspectorActions(project: Project, inspection: MapInspection): readonly
   const mapId = inspection.mapId;
   const canDelete = Object.keys(project.maps).length > 1;
   return [
-    { id: "properties", label: "맵 설정", primary: true, run: () => openMapProperties(mapId, inspection.name) },
+    { id: "properties", label: "맵 설정", run: () => openMapProperties(mapId, inspection.name) },
     { id: "test-play", label: "시연 실행", run: () => void playMapFromTree(mapId) },
     { id: "add-child", label: "하위 맵 추가", run: () => openMapCreateUnder(mapId) },
     { id: "duplicate", label: "복제", run: () => duplicateAndSelect(mapId) },
@@ -579,11 +580,16 @@ function renderNode(spec: RenderNodeSpec): void {
     if (!isFolder && !isBasicRow) metaBits.push(`문 ${links?.outgoingTransfers ?? 0}개`);
     // 시작 배지는 이름 줄 끝에 둔다. 행 그리드의 열로 두면 메타 줄까지 그 폭을 잃어
     // 「문 N개」가 말줄임됐다(UI 감사 05-maps-03) — 메타 줄은 배지 아래까지 쓴다.
+    const name = el("span", {
+      class: "map-tree-name",
+      text: actionContext.mapName,
+      attrs: { title: actionContext.mapName, translate: "no" },
+    });
+    attachDelayedTooltip(name, { label: actionContext.mapName });
     const nameLine = el("div", {
       class: "map-tree-name-line",
       children: [
-        // 좁은 패널에서 말줄임되면 전체 이름은 title 로 남는다.
-        el("span", { class: "map-tree-name", text: actionContext.mapName, attrs: { title: actionContext.mapName } }),
+        name,
         ...(isStart
           ? [el("span", {
             class: isBasicRow ? "start-mark is-start" : "start-mark",
