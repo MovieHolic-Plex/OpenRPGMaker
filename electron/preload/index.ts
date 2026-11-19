@@ -1,3 +1,4 @@
+import type { CloseSaveMode } from "../main/closeFlow";
 import { contextBridge, ipcRenderer } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { windowChromeFor } from "../shared/windowControl";
@@ -93,10 +94,10 @@ const bridge = {
   },
   assetBaseUrl: (projectId: string) => `oprn-asset://${projectId}/`,
   lifecycle: {
-    onFlushBeforeClose: (callback: () => void): void => {
-      ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeClose, () => callback());
+    onFlushBeforeClose: (callback: (requestId: number, mode: CloseSaveMode) => void): void => {
+      ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeClose, (_event, requestId: number, mode: CloseSaveMode) => callback(requestId, mode));
     },
-    flushDone: (ok: boolean) => ipcRenderer.invoke(OPRN_CHANNELS.lifecycleFlushDone, ok === true),
+    flushDone: (requestId: number, ok: boolean) => ipcRenderer.invoke(OPRN_CHANNELS.lifecycleFlushDone, requestId, ok === true),
     onSaveRequest: (callback: () => void): void => {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleSave, () => callback());
     },
@@ -120,6 +121,7 @@ const bridge = {
   start: {
     recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),
     openFolder: invoke(OPRN_CHANNELS.startOpenFolder),
+    manageRecent: invoke(OPRN_CHANNELS.startManageRecent),
     openRecent: invoke(OPRN_CHANNELS.startOpenRecent),
     renameProject: invoke(OPRN_CHANNELS.startRenameProject),
     forgetRecent: invoke(OPRN_CHANNELS.startForgetRecent),

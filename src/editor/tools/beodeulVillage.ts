@@ -899,7 +899,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const kindWork = villageKind ? doorKits(villageKind.work) : [];
     // 일터 건물: 씨앗이 고른 차례대로 한 킷씩 가까운 자리(4칸)를 먼저 본다 — 고리 거리마다 모든 킷을 시험하면 늘 같은 킷이 먼저 맞아
     // 포구 마을 여섯 판이 모두 회벽 화물 창고(rv-r2-06)였다(2026-11-16 av2-variety 탐침: ware0 은 한 번도 서지 않았다). 다 안 맞으면 예전처럼 모두 함께. 게임 열쇠가 없으면(옛 저장본·사람 편집) 예전 그대로.
-    if (layout.work && !(villageKind && !villageKind.work.length)) { const ks = shuffled(kindWork.length ? kindWork : doorKits(LOW_WORKS[theme] ?? [])); if (ks.length && !(activeKitLook() && ks.some((k) => !!place("work", [k], layout.work!, 4)))) place("work", ks, layout.work); }
+    if (layout.work && !(villageKind && !villageKind.work.length)) {
+      const ks = shuffled(kindWork.length ? kindWork : doorKits(LOW_WORKS[theme] ?? []));
+      if (ks.length && !(activeKitLook() && ks.some((k) => !!place("work", [k], layout.work!, 4)))) {
+        place("work", ks, layout.work, !given && kindWork.length ? Math.max(W, H) : 9);
+      }
+    }
     // 장면 터(마을 종류): 일터 문 곁 마당과 모이는 곳 곁 자리를 집·길보다 먼저 비워 둔다 — 뒤에 찾으면 집·길·밭이 그 곁을 다 차지해
     // 종류의 주 장면(대장간 마당·포도 짜는 마당)이 설 자리가 없다(탐침: 일터 장면 38 가운데 10이 자리 없음). 길은 이 터를 돌아간다.
     // 마당 먼저 배치(beodeulYardLayout)가 일터와 집을 다시 앉히면 이 터도 그 일터 곁에 다시 잡는다(workOnly — 모이는 곳 장면은 그 마당 칸에 선다).

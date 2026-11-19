@@ -100,3 +100,6 @@
 .project-folder-picker-card-path { margin-top: 8px; color: rgb(140 154 176); font: 12px var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .project-folder-picker-card-meta { display: flex; gap: 16px; color: rgb(158 171 192); font-size: 12px; margin-top: 9px; }
 .project-folder-picker-open { flex: none; border: 0; border-radius: 10px; padding: 11px 15px; background: rgb(120 160 255); color: rgb(9 19 41); font-weight: 800; cursor: pointer; }
+.project-folder-picker-sort { flex: none; }
+.project-folder-picker-card.is-missing .project-folder-picker-card-content,
+.project-folder-picker-card.is-missing .project-folder-picker-card-mark { opacity: 0.55; }

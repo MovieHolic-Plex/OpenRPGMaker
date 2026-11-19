@@ -5,6 +5,7 @@ import { deserializeStoredProjectJson } from "../../src/project/persistence/core
 import type { ProjectBackupEntry, RestoredProject } from "../../src/project/persistence/backupTypes";
 import { assetFileName, readVerifiedAsset, writeAssetFile } from "./assetFiles";
 import { openNodeSqliteDriver, type Driver } from "./driver";
+import { assignCopiedProjectId } from "./projectIdentity";
 import { LocalStoreError } from "./errors";
 import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE } from "./schema";
 import { foldDocument, foldedTilesetShas, sha256HexOfText } from "./tilesetFold";
@@ -126,16 +127,9 @@ export async function restoreLocalProjectBackup(backupDir: string, projectDir: s
     } finally { copied.close(); }
     // Folder copies need their own storage identity: Electron's asset URLs use this ID.
     // Keep the document and its hash unchanged, including the saved game and AI records.
-    const restoredId = randomUUID();
     const db = openNodeSqliteDriver(join(pending, PROJECT_STORE_FILE));
-    try {
-      db.exec("BEGIN IMMEDIATE");
-      db.prepare("UPDATE meta SET value = ? WHERE key = ?").run([restoredId, META_KEYS.projectId]);
-      for (const table of ["project", "maps", "commits", "ai_activity_logs", "ai_conversations", "ai_analysis_runs"]) {
-        db.prepare(`UPDATE ${table} SET project_id = ? WHERE project_id = ?`).run([restoredId, snapshot.projectId]);
-      }
-      db.exec("COMMIT");
-    } finally { db.close(); }
+    let restoredId: string;
+    try { restoredId = assignCopiedProjectId(db, snapshot.projectId); } finally { db.close(); }
     const restored = inspectBackup(pending);
     try {
       if (!restored.integrity() || restored.projectId !== restoredId || restored.sha256 !== snapshot.sha256 || restored.serialized !== snapshot.serialized) {

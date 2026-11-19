@@ -1,18 +1,19 @@
-import { createHash } from "node:crypto";
-import { existsSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync, mkdirSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { existsSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import { app } from "electron";
 import { isUsableNewDir } from "./newProjectDir";
 import { readProjectCoverSource, readProjectFolderSummary } from "../local-store/summary";
-import { PROJECT_STORE_FILE } from "../local-store/schema";
+import { inspectProjectFolder, validateRecentFolder } from "./projectFolderPath";
+import { upsertRecentProject, withoutRecentProject } from "../shared/recentProjects";
 import { PROJECT_COVER_VERSION, type ProjectCoverSource, type RecentProjectEntry, type SuggestedProjectDir } from "../shared/start";
 import type { RecentTeamEntry } from "../shared/start";
 
 export { prepareNewProjectDir } from "./newProjectDir";
 
-type RecentEntry = { readonly projectDir: string; readonly title: string; readonly lastOpenedAt: string };
-const MAX_RECENT = 20;
+type RecentEntry = { readonly projectDir: string; readonly title: string; readonly lastOpenedAt: string | null };
+const MAX_RECENT = 100;
 /** 카드 그림 상한. 편집기는 480×300 JPEG(100KB 안팎)을 쓴다 — 이보다 크면 누가 손으로 넣은 파일이다. */
 const MAX_COVER_BYTES = 1_000_000;
 const DEFAULT_PROJECT_NAME = "새 게임";
@@ -26,17 +27,25 @@ export function listRecentProjects(): readonly RecentEntry[] {
   if (!existsSync(path)) return [];
   try {
     const parsed = JSON.parse(readFileSync(path, "utf8"));
-    return Array.isArray(parsed) ? parsed.filter((entry) => typeof entry.projectDir === "string") : [];
+    return Array.isArray(parsed) ? parsed.flatMap((entry): RecentEntry[] => typeof entry?.projectDir === "string" ? [{
+      projectDir: entry.projectDir,
+      title: typeof entry.title === "string" ? entry.title : entry.projectDir,
+      lastOpenedAt: typeof entry.lastOpenedAt === "string" ? entry.lastOpenedAt : null,
+    }] : []) : [];
   } catch { return []; }
 }
 
-export function rememberRecentProject(projectDir: string, title: string): void {
-  const entries = listRecentProjects().filter((entry) => entry.projectDir !== projectDir);
-  entries.unshift({ projectDir, title, lastOpenedAt: new Date().toISOString() });
-  const trimmed = entries.slice(0, MAX_RECENT);
+function writeRecentProjects(entries: readonly RecentEntry[]): void {
   const path = recentPath();
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, JSON.stringify(trimmed, null, 2));
+  const pending = `${path}.${randomUUID()}.tmp`;
+  writeFileSync(pending, JSON.stringify(entries, null, 2), { flag: "wx" });
+  try { renameSync(pending, path); }
+  finally { rmSync(pending, { force: true }); }
+}
+
+export function rememberRecentProject(projectDir: string, title: string, lastOpenedAt: string | null = new Date().toISOString()): void {
+  writeRecentProjects(upsertRecentProject(listRecentProjects(), { projectDir, title, lastOpenedAt }, MAX_RECENT));
 }
 
 export function recentProjectsPath(): string { return recentPath(); }
@@ -45,21 +54,16 @@ export function recentProjectsPath(): string { return recentPath(); }
 export function forgetRecentProject(projectDir: unknown): boolean {
   if (typeof projectDir !== "string" || !projectDir) return false;
   const entries = listRecentProjects();
-  const kept = entries.filter((entry) => entry.projectDir !== projectDir);
+  const kept = withoutRecentProject(entries, projectDir);
   if (kept.length === entries.length) return false;
-  writeFileSync(recentPath(), JSON.stringify(kept, null, 2));
+  writeRecentProjects(kept);
   return true;
 }
 
 /** 최근 목록에 적힌 제목만 바꾼다 — 아직 편집기에서 저장한 적 없는 폴더(저장 문서가 없음)는 이 제목이 카드 이름이다. */
 export function renameRecentEntry(projectDir: string, title: string): void {
   const entries = listRecentProjects().map((entry) => entry.projectDir === projectDir ? { ...entry, title } : entry);
-  writeFileSync(recentPath(), JSON.stringify(entries, null, 2));
-}
-
-/** 시작 화면이 이름을 바꿀 수 있는 폴더 — 최근 목록에 있고 project.sqlite 가 있는 것만. */
-export function renamableRecentDir(projectDir: unknown): string | null {
-  return recentProjectDir(projectDir);
+  writeRecentProjects(entries);
 }
 
 const MAX_RECENT_TEAMS = 8;
@@ -147,12 +151,12 @@ function readCachedCover(key: string): { readonly cover: string | null; readonly
 }
 
 /** 시작 화면 최근 목록. 제목·마지막 편집·맵 수는 폴더의 project.sqlite 에서 읽는다(기록된 제목은 경로일 때가 많다). */
-export function describeRecentProjects(): readonly RecentProjectEntry[] {
+export function describeRecentProjects(isProtected: (dir: string) => boolean): readonly RecentProjectEntry[] {
   const roots = temporaryRoots();
   return listRecentProjects().map((entry): RecentProjectEntry => {
-    const exists = existsSync(join(entry.projectDir, PROJECT_STORE_FILE));
-    const summary = exists ? readProjectFolderSummary(entry.projectDir) : null;
-    const storedTitle = entry.title && entry.title !== entry.projectDir ? entry.title : null;
+    const dir = validateRecentFolder(entry.projectDir, [entry], inspectProjectFolder);
+    const summary = dir ? readProjectFolderSummary(dir) : null;
+    const storedTitle = typeof entry.title === "string" && entry.title !== entry.projectDir ? entry.title : null;
     const key = summary ? coverKey(entry.projectDir, summary.contentHash, summary.updatedAt) : null;
     const cached = key ? readCachedCover(key) : { cover: null, empty: false };
     return {
@@ -164,7 +168,8 @@ export function describeRecentProjects(): readonly RecentProjectEntry[] {
       cover: cached.cover,
       coverEmpty: cached.empty,
       coverStale: false,
-      hiddenReason: !exists ? "missing" : isTemporaryDir(entry.projectDir, roots) ? "temporary" : null,
+      protectedFolder: dir ? isProtected(dir) : false,
+      hiddenReason: !dir ? "missing" : isTemporaryDir(entry.projectDir, roots) ? "temporary" : null,
     };
   });
 }
@@ -172,10 +177,8 @@ export function describeRecentProjects(): readonly RecentProjectEntry[] {
 /**
  * 시작 화면이 부르는 폴더 경로는 **최근 목록에 있는 것만** 받는다. 렌더러가 준 아무 경로나 열거나 쓰지 않는다.
  */
-function recentProjectDir(projectDir: unknown): string | null {
-  if (typeof projectDir !== "string" || !projectDir) return null;
-  const known = listRecentProjects().some((entry) => entry.projectDir === projectDir);
-  return known && existsSync(join(projectDir, PROJECT_STORE_FILE)) ? projectDir : null;
+export function recentProjectDir(projectDir: unknown): string | null {
+  return validateRecentFolder(projectDir, listRecentProjects(), inspectProjectFolder);
 }
 
 /** 최근 목록의 프로젝트에서 카드 그림 재료(시작 맵 + 타일셋)를 읽는다. */

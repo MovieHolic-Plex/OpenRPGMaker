@@ -275,17 +275,17 @@ export function eventDraftVaultStorageKey(projectId = resolveVaultProjectId()): 
   return `oprn:event-draft-vault:${projectId}`;
 }
 
-export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): void {
+export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): boolean {
   cancelPendingPersistSupersededBy(projectId);
   const localStorage = browserLocalStorage();
-  if (!localStorage) return;
+  if (!localStorage) return false;
   const key = eventDraftVaultStorageKey(projectId);
   try {
     if (vault.size === 0) {
       serializedVaultEntries = "";
       serializedRevision = vaultRevision;
       localStorage.removeItem(key);
-      return;
+      return true;
     }
     if (serializedRevision !== vaultRevision) {
       serializedVaultEntries = [...vault.values()].map(entry => {
@@ -298,8 +298,10 @@ export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): 
     // Entries are privately owned immutable copies. Public reads still clone;
     // persistence can reuse their JSON without cloning all command trees again.
     localStorage.setItem(key, `{"version":1,"savedAt":${Date.now()},"entries":[${serializedVaultEntries}]}`);
+    return true;
   } catch (error) {
     console.warn("[eventDraftVault] localStorage persist failed:", error);
+    return false;
   }
 }
 

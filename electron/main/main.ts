@@ -1,9 +1,9 @@
 import { mainMark } from "./startupTiming";
-import { existsSync, realpathSync } from "node:fs";
+import { existsSync, lstatSync, realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
-import { join, resolve } from "node:path";
+import { basename, join, resolve } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
@@ -15,7 +15,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
-import { decideAfterCloseFlush, decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
+import { decideAfterCloseFlush, decideCloseResponse, type CloseSaveMode } from "./closeFlow";
 import { planWindowReload } from "../shared/reloadFlow";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
@@ -24,7 +24,10 @@ import { firstShowSteps } from "./windowShow";
 import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { acceptMenuFolder, prepareNewProjectDir } from "./newProjectDir";
-import { describeRecentProjects, forgetRecentProject, renameRecentEntry, renamableRecentDir, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { describeRecentProjects, forgetRecentProject, listRecentProjects, listRecentTeams, recentProjectCoverSource, recentProjectDir, rememberRecentProject, rememberRecentTeam, renameRecentEntry, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { containsPath, inspectProjectFolder, validateRecentFolder } from "./projectFolderPath";
+import { duplicateProjectFolder } from "./duplicateProject";
+import { filterRecentProjects } from "../shared/recentProjects";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
 import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
@@ -104,8 +107,13 @@ const windowIcon = windowIconPath(rendererDir);
 const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9849];
 
 const closing = new Set<number>();
-const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
-/** 편집기가 새로고침 저장 리스너를 붙인 창. 그 전에는 메모리 편집이 없다. */
+const closeFlushWaiters = new Map<number, { requestId: number; finish: (ok: boolean) => void }>();
+let nextCloseRequestId = 0;
+let closeInProgress = false;
+/** 자동 저장은 4초 안에 끝나면 묻지 않고 닫는다. 사용자가 「저장」을 고른 뒤에는 큰 프로젝트의 첫 저장(실측 16초)도 끝나게 더 기다린다. */
+const CLOSE_FLUSH_TIMEOUT_MS = { auto: 4_000, save: 30_000 } as const;
+const NAVIGATION_FLUSH_TIMEOUT_MS = 60_000;
+/** 편집기가 닫기·새로고침 저장 리스너를 붙인 창. 그 전에는 메모리 편집이 없다. */
 const flushReady = new Set<number>();
 /** 보기 메뉴·개발자 도구 새로고침을 위해 저장 중인 창. 값은 캐시를 무시할지. */
 const reloadFlushing = new Map<number, "soft" | "hard">();
@@ -116,50 +124,6 @@ const reloadArmed = new Set<number>();
 const unsavedReloadBlock = new Set<number>();
 /** 이번 새로고침이 캐시를 무시하는지. 저장이 끝난 뒤의 reload() 까지 유지한다. */
 const reloadHard = new Set<number>();
-/**
- * 사용자가 Quit 을 요청했다. 프로젝트 창이 저장 때문에 close 를 막으면 Electron 이 종료를 취소하므로
- * (app.quit 문서), 그 저장이 끝난 뒤에 다시 건다. 마지막 창을 그냥 닫는 것과는 다르다 — macOS 는 그때 앱이 남는다.
- */
-let quitRequested = false;
-/** 열린 프로젝트의 저장이 Quit 을 한 번 막았다. 막을 일이 없었으면(시작 화면) 다시 종료하지 않는다. */
-let quitHeld = false;
-
-function destroyWindow(window: BrowserWindow): void {
-  if (window.isDestroyed()) return;
-  const id = window.webContents.id;
-  const timer = closeTimers.get(id);
-  if (timer) clearTimeout(timer);
-  closeTimers.delete(id);
-  window.destroy();
-}
-
-/**
- * 닫기 전 저장이 실패했다(디스크 오류·충돌·남은 편집). 창을 없애면 그 편집이 사라지므로 닫기를 취소하고 창을 다시 보인다.
- * 저장 때문에 막아 둔 Quit 도 취소한다 — 다시 걸면 같은 실패로 돌 뿐이다. 사용자가 고르면 저장 없이 닫는다.
- */
-function keepWindowAfterFailedCloseFlush(window: BrowserWindow): void {
-  const id = window.webContents.id;
-  closing.delete(id);
-  const timer = closeTimers.get(id);
-  if (timer) clearTimeout(timer);
-  closeTimers.delete(id);
-  quitRequested = false;
-  quitHeld = false;
-  if (!window.isDestroyed()) window.show();
-  void dialog.showMessageBox(window, {
-    type: "warning",
-    message: "저장하지 못해 창을 닫지 않았습니다.",
-    detail: "방금 한 편집이 아직 디스크에 없습니다. 저장 상태를 확인한 뒤 다시 닫아 주세요.",
-    buttons: ["창 유지", "저장하지 않고 닫기"],
-    defaultId: 0,
-    cancelId: 0,
-  }).then(({ response }) => {
-    if (response === 1 && !window.isDestroyed()) destroyWindow(window);
-  }, (error: unknown) => {
-    console.warn("[project] 닫기 저장 실패 안내를 띄우지 못했습니다:", error);
-  });
-}
-
 function abandonReloadFlush(id: number): void {
   reloadFlushing.delete(id);
   const timer = reloadTimers.get(id);
@@ -218,22 +182,8 @@ function beginReloadFlush(window: BrowserWindow, hard: boolean, becauseDirty = f
     void dialog.showMessageBox(window, { type: "warning", message: RELOAD_BLOCKED_MESSAGE, detail: RELOAD_BLOCKED_DETAIL }).catch((error: unknown) => {
       console.warn("[project] 새로고침 안내를 띄우지 못했습니다:", error);
     });
-  }, CLOSE_FLUSH_TIMEOUT_MS));
+  }, NAVIGATION_FLUSH_TIMEOUT_MS));
 }
-
-function retryQuitIfFlushHeldIt(): void {
-  const pending = (): boolean => shouldRetryQuit({ quitRequested, quitHeld, windowsStillFlushing: closing.size });
-  if (!pending()) return;
-  // 같은 종료에서 다른 창의 close 가 이 핸들러보다 늦게 올 수 있다. 한 틱 뒤에, 아직 저장 중인 창이 없을 때만 다시 건다.
-  setTimeout(() => { if (pending()) app.quit(); }, 0);
-}
-
-/**
- * 닫기 저장을 기다리는 상한. 큰 프로젝트를 새 빌드로 처음 연 직후의 자동 저장(부팅 정규화 결과 + 표식)은 렌더러 준비만 10초를 넘는다
- * (2026-10-20 실측, 71MB: 정착 뒤 저장 완료까지 16초). 예전 상한 10초는 그 저장을 끊어 버려 — 다음 실행이 또 «첫 부팅»(+10~15초)이
- * 되고 저장 중이던 변경도 잃었다. 창은 닫는 즉시 숨기므로 사용자는 기다리지 않는다.
- */
-const CLOSE_FLUSH_TIMEOUT_MS = 60_000;
 
 /** 편집기가 파일 메뉴의 폴더 교체 저장을 받을 수 있다. 문서를 떠나면 지운다. createWindow 보다 위에 둔다. */
 const replaceFlushReady = new Set<number>();
@@ -241,41 +191,124 @@ const replaceFlushReady = new Set<number>();
 const replaceFlushWaiters = new Map<number, (payload: unknown) => void>();
 /** 같은 창에서 폴더 대화상자를 두 번 열지 않는다. */
 const folderSwitching = new Set<number>();
+const recentFolderChanges = new Set<string>();
 
-// 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
-// 저장을 기다리는 동안의 두 번째 close 는 막는다(closeFlow.ts). 막지 않으면 연타·Quit 이 저장을 끊는다.
+function destroyAuxiliaryChildren(): void {
+  const children = BrowserWindow.getAllWindows().filter((window) => window.getParentWindow() && !appWindows.has(window));
+  for (const child of children) {
+    if (!child.isDestroyed()) child.destroy();
+  }
+}
+
+function requestCloseFlush(window: BrowserWindow, mode: CloseSaveMode): Promise<boolean> {
+  if (window.isDestroyed()) return Promise.resolve(true);
+  const id = window.webContents.id;
+  if (!flushReady.has(id)) return Promise.resolve(true); // 시작 화면 또는 편집기 부팅 전
+  const requestId = ++nextCloseRequestId;
+  return new Promise((resolve) => {
+    const finish = (ok: boolean): void => {
+      clearTimeout(timer);
+      closeFlushWaiters.delete(id);
+      resolve(ok);
+    };
+    const timer = setTimeout(() => finish(false), CLOSE_FLUSH_TIMEOUT_MS[mode]);
+    closeFlushWaiters.set(id, { requestId, finish });
+    try {
+      window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose, requestId, mode);
+    } catch {
+      finish(window.isDestroyed());
+    }
+  });
+}
+
+async function closeWindows(windows: readonly BrowserWindow[], owner: BrowserWindow, quit: boolean): Promise<void> {
+  closeInProgress = true;
+  const ids = windows.map((window) => window.webContents.id);
+  let approved = false;
+  try {
+    const prepare = async (mode: CloseSaveMode): Promise<boolean> => {
+      // During a multi-window Quit, an editor can finish saving before its peers.
+      const enabled = windows.filter((window) => !window.isDestroyed() && window.isEnabled());
+      try {
+        for (const window of enabled) window.setEnabled(false);
+        return (await Promise.all(windows.map((window) => requestCloseFlush(window, mode)))).every(Boolean);
+      } finally {
+        for (const window of enabled) {
+          if (!window.isDestroyed()) window.setEnabled(true);
+        }
+      }
+    };
+
+    for (const id of ids) {
+      closing.add(id);
+      abandonReloadFlush(id);
+    }
+    // 마지막 화면 캡처는 저장과 함께 시도한다. 닫기를 기다리게 하거나 창을 숨기지 않는다.
+    for (const [index, window] of windows.entries()) {
+      const session = sessions.get(ids[index]);
+      if (session && window.isVisible()) void captureLastViewBeforeClose(window, session.projectDir);
+    }
+
+    if (decideAfterCloseFlush("auto", await prepare("auto")) === "confirm") {
+      const parent = owner.isDestroyed() ? windows.find((window) => !window.isDestroyed()) : owner;
+      if (!parent) return;
+      if (parent.isMinimized()) parent.restore();
+      parent.show();
+      const { response } = await dialog.showMessageBox(parent, {
+        type: "warning",
+        message: "변경 사항을 저장할까요?",
+        detail: quit
+          ? "열린 편집기에 자동으로 저장하지 못한 변경 사항이 있습니다. 저장하지 않고 종료하면 저장되지 않은 변경 사항이 사라질 수 있습니다."
+          : "자동으로 저장하지 못한 변경 사항이 있습니다. 저장하지 않고 닫으면 저장되지 않은 변경 사항이 사라질 수 있습니다.",
+        buttons: ["저장", "저장 안 함", "취소"],
+        defaultId: 0,
+        cancelId: 2,
+        noLink: true,
+      });
+      const decision = decideCloseResponse(response);
+      if (decision === "cancel") return;
+      if (decision === "save" && decideAfterCloseFlush("save", await prepare("save")) === "report-failure") {
+        if (!parent.isDestroyed()) await dialog.showMessageBox(parent, {
+          type: "error",
+          message: "변경 사항을 저장하지 못했습니다.",
+          detail: "편집 내용을 유지했습니다. 호스트 연결과 저장 상태를 확인하거나 열린 편집기의 변경 사항을 확인해 주세요.",
+          buttons: ["확인"],
+        });
+        return;
+      }
+    }
+
+    // 닫히는 부모 아래의 보조 창은 Quit을 막지 않는다.
+    if (quit) destroyAuxiliaryChildren();
+    // 확인을 마친 창은 렌더러의 beforeunload를 다시 거치지 않는다.
+    for (const window of windows) {
+      if (!window.isDestroyed()) window.destroy();
+    }
+    approved = true;
+  } catch (error) {
+    console.warn("[project] 창 닫기에 실패했습니다:", error);
+  } finally {
+    for (const id of ids) closing.delete(id);
+    closeInProgress = false;
+    if ((approved && quit) || (process.platform !== "darwin" && BrowserWindow.getAllWindows().length === 0)) app.quit();
+  }
+}
+
 function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
-    const session = sessions.get(id);
-    const decision = decideWindowClose(closing.has(id), session !== null);
-    if (decision === "allow") return;
+    if (closeInProgress) { event.preventDefault(); return; }
+    if (!flushReady.has(id)) return;
     event.preventDefault();
-    quitHeld = nextQuitHeld(quitHeld, quitRequested, decision);
-    if (decision === "hold") return;
-    // 새로고침 저장이 진행 중이면 그 저장은 닫기로 넘긴다. 끝나자마자 페이지를 다시 열지 않는다.
-    abandonReloadFlush(id);
-    // flush 는 세션이 있을 때만 나온다. 없으면 닫기를 막아 둔 채 두면 창이 남지 않게 바로 없앤다.
-    if (session === null) { destroyWindow(window); return; }
-    closing.add(id);
-    window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
-    closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
-    // 저장이 끝날 때까지 창을 잡아 두되 화면에서는 곧 치운다 — 숨기기 전에 마지막 편집 화면을 찍는다(상한 250ms, lastView.ts).
-    // 다음 실행에서 이 프로젝트를 열면 편집기가 부팅하는 동안 이 그림이 바로 보인다.
-    // 저장이 먼저 실패해 창을 다시 보였으면(keepWindowAfterFailedCloseFlush) 늦게 끝난 캡처가 숨기지 않는다.
-    void captureLastViewBeforeClose(window, session.projectDir).finally(() => { if (!window.isDestroyed() && closing.has(id)) window.hide(); });
+    void closeWindows([window], window, false);
   });
   window.on("closed", () => {
     forgetLastViewWindow(id);
     abandonReloadFlush(id);
     flushReady.delete(id);
     reloadHard.delete(id);
-    closing.delete(id);
-    const timer = closeTimers.get(id);
-    if (timer) clearTimeout(timer);
-    closeTimers.delete(id);
+    closeFlushWaiters.get(id)?.finish(true);
     sessions.close(id);
-    retryQuitIfFlushHeldIt();
   });
 }
 
@@ -448,15 +481,19 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.webContents.on("did-start-navigation", (details) => {
     if (!details.isMainFrame || details.isSameDocument) return;
     markEditorLeft(id);
-    // 새 문서는 리스너를 다시 붙일 때까지 메모리 편집이 없다.
-    flushReady.delete(id);
     reloadArmed.delete(id);
     reloadHard.delete(id);
   });
+  // beforeunload로 이동이 취소되면 기존 문서의 저장 리스너는 계속 살아 있다.
+  window.webContents.on("did-navigate", () => { flushReady.delete(id); });
   // 개발자 도구의 새로고침은 메뉴를 타지 않는다. 렌더러가 미저장으로 막으면 저장한 뒤 다시 연다.
   // 저장을 마친 reload() 가 다른 beforeunload(미적용 초안)에 막히면 그 새로고침은 그대로 진행한다.
   window.webContents.on("will-prevent-unload", (event) => {
     const webContentsId = window.webContents.id;
+    if (closing.has(webContentsId)) {
+      unsavedReloadBlock.delete(webContentsId);
+      return;
+    }
     if (unsavedReloadBlock.has(webContentsId)) {
       const hard = reloadHard.has(webContentsId);
       unsavedReloadBlock.delete(webContentsId);
@@ -493,6 +530,9 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
  */
 async function openWindowSession(webContentsId: number, projectDir: string) {
   try {
+    if (recentFolderChanges.size && [...recentFolderChanges].some((dir) => containsPath(dir, safeRealpath(projectDir)))) {
+      throw new Error("프로젝트 폴더를 정리하는 중입니다. 잠시 후 다시 열어 주세요.");
+    }
     return await sessions.open(webContentsId, projectDir);
   } catch (error) {
     if (error instanceof SessionConsumerClosed) return null;
@@ -525,7 +565,10 @@ function loadWindowContent(window: BrowserWindow): void {
         if (!session && !window.isDestroyed() && !smokePage) void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
         return;
       }
-      if (openedByCli) rememberRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      if (openedByCli) {
+        explicitProjectDir.delete(window);
+        recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      }
       if (devServerUrl) void window.loadURL(devServerUrl);
       else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
     }).catch((error: unknown) => {
@@ -550,7 +593,7 @@ async function adoptFolder(window: BrowserWindow, projectDir: string, title?: st
     if (session) sessions.close(webContentsId);
     return;
   }
-  rememberRecentProject(projectDir, title ?? session.store.info().title ?? projectDir);
+  recordRecentProject(session.projectDir, title ?? session.store.info().title ?? session.projectDir);
   void window.loadURL(rendererEntryUrl());
 }
 
@@ -604,10 +647,8 @@ async function openProjectFromCli(projectDir: string): Promise<void> {
     explicitProjectDir.set(idle, resolved);
     focusAppWindow(idle);
     try { await adoptFolder(idle, resolved); }
-    catch (error) {
-      explicitProjectDir.delete(idle);
-      console.warn("[project] 명령줄 폴더를 열지 못했습니다:", error);
-    }
+    catch (error) { console.warn("[project] 명령줄 폴더를 열지 못했습니다:", error); }
+    finally { explicitProjectDir.delete(idle); }
     return;
   }
   createWindow({ projectDir: resolved });
@@ -667,7 +708,7 @@ function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFl
     };
     const onDone = (payload: unknown): void => finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
     const onClosed = (): void => finish("closed");
-    timer = setTimeout(() => finish("timeout"), CLOSE_FLUSH_TIMEOUT_MS);
+    timer = setTimeout(() => finish("timeout"), NAVIGATION_FLUSH_TIMEOUT_MS);
     replaceFlushWaiters.set(id, onDone);
     window.once("closed", onClosed);
     if (window.webContents.isDestroyed()) finish("closed");
@@ -806,9 +847,49 @@ function showJoinFromMenu(): void {
   createWindow();
 }
 
+function recordRecentProject(dir: string, title: string, lastOpenedAt?: string | null): void {
+  rememberRecentProject(dir, title, lastOpenedAt);
+  buildMenu();
+}
+
+function openRecentWindow(dir: string): void {
+  const existing = windowAlreadyOpening(dir);
+  if (existing) {
+    focusAppWindow(existing);
+    const title = sessions.get(existing.webContents.id)?.store.info().title;
+    recordRecentProject(dir, title ?? listRecentProjects().find((entry) => entry.projectDir === dir)?.title ?? basename(dir));
+  } else {
+    createWindow({ projectDir: dir });
+  }
+}
+
+function isProtectedRecentFolder(dir: string): boolean {
+  const installation = [rendererDir, process.resourcesPath, app.isPackaged ? app.getAppPath() : join(app.getAppPath(), "public", "demos")]
+    .filter(Boolean).map(safeRealpath);
+  return installation.some((root) => containsPath(root, dir) || containsPath(dir, root))
+    || containsPath(dir, safeRealpath(app.getPath("home"))) || containsPath(dir, safeRealpath(app.getPath("userData")));
+}
+
+function hasRecentFolderChange(dir: string): boolean {
+  return [...recentFolderChanges].some((path) => containsPath(path, dir) || containsPath(dir, path));
+}
+
+function requireClosedRecentFolder(dir: string): void {
+  if (sessions.hasOpenProjectWithin(dir) || [...hosting, ...teamHosts.keys()].some((path) => containsPath(dir, path))) {
+    throw new Error("이 프로젝트나 하위 프로젝트를 사용 중입니다. 관련 창이나 호스트를 닫고 다시 시도해 주세요.");
+  }
+}
+
 function buildMenu(): void {
+  const recent = filterRecentProjects(listRecentProjects(), "", "opened")
+    .filter((entry) => validateRecentFolder(entry.projectDir, [entry], inspectProjectFolder))
+    .slice(0, 12)
+    .map((entry) => ({
+      projectDir: entry.projectDir,
+      title: entry.title && entry.title !== entry.projectDir ? entry.title : basename(entry.projectDir),
+    }));
   Menu.setApplicationMenu(Menu.buildFromTemplate([
-    { role: "appMenu" },
+    ...(process.platform === "darwin" ? [{ role: "appMenu" as const }] : []),
     {
       label: "파일",
       submenu: [
@@ -844,6 +925,23 @@ function buildMenu(): void {
             // 메뉴 경로는 폴더에 project.sqlite 가 없어도 연다 — initLocalProjectStore 가 만든다.
             openChosenFolder(window, { title: "프로젝트 폴더 열기", failure: "폴더를 열지 못했습니다." });
           },
+        },
+        {
+          label: "최근 프로젝트",
+          enabled: recent.length > 0,
+          submenu: recent.map((entry) => ({
+            label: (recent.some((other) => other !== entry && other.title === entry.title) ? `${entry.title} · ${entry.projectDir}` : entry.title).replaceAll("&", "&&"),
+            toolTip: entry.projectDir,
+            click: () => {
+              const dir = recentProjectDir(entry.projectDir);
+              if (dir) { openRecentWindow(dir); return; }
+              buildMenu();
+              const owner = focusedWindow();
+              const options = { type: "warning" as const, message: "프로젝트 폴더를 찾을 수 없습니다.", detail: entry.projectDir };
+              if (owner) void dialog.showMessageBox(owner, options);
+              else void dialog.showMessageBox(options);
+            },
+          })),
         },
         { type: "separator" },
         {
@@ -881,6 +979,7 @@ function buildMenu(): void {
         },
         { type: "separator" },
         { role: "close" },
+        ...(process.platform === "darwin" ? [] : [{ label: "종료", role: "quit" as const, accelerator: "CmdOrCtrl+Q" }]),
       ],
     },
     { role: "editMenu" },
@@ -961,19 +1060,16 @@ export async function startApp(boot: BootContext): Promise<void> {
   // 렌더러는 이 동기 블록이 끝나기 전에는 IPC 를 보낼 수 없다 — 문서를 먼저 걸고 아래 처리기를 같은 틱에 붙인다(약 50ms 앞당김).
   if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow);
   mainMark("windowLoading");
-  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event, ok: unknown) => {
-    const window = BrowserWindow.fromWebContents(event.sender);
-    // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
-    if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
-    if (decideAfterCloseFlush(ok) === "destroy") {
-      destroyWindow(window);
-      return true;
-    }
-    keepWindowAfterFailedCloseFlush(window);
-    return false;
+  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event, requestId: unknown, ok: unknown) => {
+    if (event.senderFrame?.parent != null) return false;
+    const waiter = closeFlushWaiters.get(event.sender.id);
+    if (!waiter || waiter.requestId !== requestId) return false;
+    waiter.finish(ok === true);
+    return true;
   });
   ipcMain.on(OPRN_CHANNELS.lifecycleFlushReady, (event) => {
-    if (event.senderFrame?.parent == null) flushReady.add(event.sender.id);
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (window && appWindows.has(window) && event.senderFrame?.parent == null) flushReady.add(event.sender.id);
     event.returnValue = true;
   });
   ipcMain.on(OPRN_CHANNELS.lifecycleReloadBlocked, (event) => {
@@ -1006,7 +1102,7 @@ export async function startApp(boot: BootContext): Promise<void> {
   });
   ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
     const window = BrowserWindow.fromWebContents(event.sender);
-    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    if (!window || !appWindows.has(window) || !trustedRendererSender(event)) return false;
     if (!isWindowControlAction(action)) return false;
     if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
     if (action === "minimize") { window.minimize(); return true; }
@@ -1034,7 +1130,7 @@ export async function startApp(boot: BootContext): Promise<void> {
   });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => {
     mainMark("recentProjectsAsked");
-    const entries = describeRecentProjects();
+    const entries = describeRecentProjects(isProtectedRecentFolder);
     mainMark("recentProjectsAnswered");
     return entries;
   });
@@ -1052,54 +1148,145 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, (event: IpcMainInvokeEvent, _payload: unknown) =>
     askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 게임을 만들 위치 선택", true));
   ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent, payload: unknown) => {
-    const senderId = event.sender.id;
-    const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
-    if (typeof requested === "string") {
-      if (!requested || !sessions.directoryExists(requested)) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
-      const session = await openWindowSession(senderId, requested);
+    if (!trustedRendererSender(event)) return null;
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    if (!owner) return null;
+    const id = event.sender.id;
+    if (folderSwitching.has(id)) return null;
+    folderSwitching.add(id);
+    try {
+      const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
+      const dir = requested === undefined
+        ? await askForDirectory(owner, "프로젝트 폴더 열기")
+        : inspectProjectFolder(requested);
+      if (!dir && requested !== undefined) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
+      if (!dir || owner.isDestroyed()) return null;
+      const flushed = await waitForFolderSwitchFlush(owner);
+      if (flushed === "closed" || owner.isDestroyed() || closing.has(id)) return null;
+      if (flushed === "blocked" || flushed === "timeout") {
+        throw new Error("저장이 끝나지 않았습니다. 현재 프로젝트를 저장한 뒤 다시 열어 주세요.");
+      }
+      if (requested !== undefined && inspectProjectFolder(requested) !== dir) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
+      // 폴더 선택 창에서 직접 고른 폴더는 기존 초기화 동작도 지원한다.
+      const isNew = !sessions.directoryExists(dir);
+      const session = await openWindowSession(id, dir);
       if (!session) return null;
-      rememberRecentProject(session.projectDir, session.store.info().title ?? requested);
-      return { projectDir: session.projectDir, isNew: false, projectId: session.store.projectId };
+      recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      return { projectDir: session.projectDir, isNew, projectId: session.store.projectId };
+    } finally {
+      folderSwitching.delete(id);
     }
-    const dir = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "프로젝트 폴더 열기");
-    if (!dir || event.sender.isDestroyed()) return null;
-    // project.sqlite 가 없는 폴더도 그냥 연다 — 스토어가 만들어지고 렌더러의 store.load()
-    // 가 빈 프로젝트를 심는다. isNew 는 시작 화면이 “새 프로젝트로 채택” 토스트를 띄우는 용도다.
-    const isNew = !sessions.directoryExists(dir);
-    const session = await openWindowSession(senderId, dir);
-    if (!session) return null;
-    rememberRecentProject(dir, session.store.info().title ?? dir);
-    return { projectDir: dir, isNew, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startOpenRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return null;
+    const owner = BrowserWindow.fromWebContents(event.sender);
     const senderId = event.sender.id;
-    const input = payload as { readonly projectDir?: unknown };
-    const dir = typeof input?.projectDir === "string" ? input.projectDir : "";
-    if (!dir || !sessions.directoryExists(dir)) return null;
-    const session = await openWindowSession(senderId, dir);
-    if (!session) return null;
-    rememberRecentProject(dir, session.store.info().title ?? dir);
-    return { projectDir: dir, projectId: session.store.projectId };
+    // The editor's folder picker uses startOpenFolder, which flushes before replacing a session.
+    if (!owner || sessions.get(senderId) || folderSwitching.has(senderId)) return null;
+    const dir = recentProjectDir((payload as { readonly projectDir?: unknown } | null)?.projectDir);
+    if (!dir) return null;
+    const existing = windowAlreadyOpening(dir);
+    if (existing && existing !== owner) {
+      openRecentWindow(dir);
+      return { projectDir: dir, projectId: sessions.get(existing.webContents.id)?.store.projectId ?? null, focusedExisting: true };
+    }
+    explicitProjectDir.set(owner, dir);
+    folderSwitching.add(senderId);
+    try {
+      const session = await openWindowSession(senderId, dir);
+      if (!session) return null;
+      recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
+      return { projectDir: session.projectDir, projectId: session.store.projectId };
+    } finally {
+      explicitProjectDir.delete(owner);
+      folderSwitching.delete(senderId);
+    }
   });
-  ipcMain.handle(OPRN_CHANNELS.startRenameProject, async (_event: IpcMainInvokeEvent, payload: unknown) => {
+  ipcMain.handle(OPRN_CHANNELS.startManageRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return false;
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    if (!owner) return false;
+    const input = payload as { readonly projectDir?: unknown; readonly action?: unknown } | null;
+    const dir = recentProjectDir(input?.projectDir);
+    if (!dir) throw new Error("프로젝트 폴더를 찾을 수 없습니다.");
+    if (input?.action === "open-window") { openRecentWindow(dir); return true; }
+    if (input?.action === "reveal") { shell.showItemInFolder(dir); return true; }
+    if (input?.action !== "duplicate" && input?.action !== "trash") return false;
+    if (isProtectedRecentFolder(dir)) throw new Error("앱에 포함된 프로젝트 폴더는 변경할 수 없습니다.");
+    if (hasRecentFolderChange(dir)) throw new Error("이 프로젝트의 폴더 작업이 이미 진행 중입니다.");
+
+    if (input.action === "trash") {
+      requireClosedRecentFolder(dir);
+      const before = lstatSync(dir);
+      const { response } = await dialog.showMessageBox(owner, {
+        type: "warning",
+        title: "프로젝트 삭제",
+        message: "이 프로젝트 폴더를 휴지통으로 이동할까요?",
+        detail: `프로젝트 파일과 소재가 함께 이동합니다.\n\n${dir}`,
+        buttons: ["취소", "휴지통으로 이동"],
+        cancelId: 0,
+        defaultId: 0,
+      });
+      if (response !== 1 || owner.isDestroyed()) return false;
+      if (recentProjectDir(input.projectDir) !== dir || isProtectedRecentFolder(dir) || hasRecentFolderChange(dir)) {
+        throw new Error("프로젝트 폴더가 바뀌었습니다. 목록을 확인해 주세요.");
+      }
+      const after = lstatSync(dir);
+      if (before.dev !== after.dev || before.ino !== after.ino) throw new Error("프로젝트 폴더가 바뀌었습니다. 목록을 확인해 주세요.");
+      requireClosedRecentFolder(dir);
+    }
+
+    recentFolderChanges.add(dir);
+    try {
+      if (input.action === "duplicate") {
+        const copy = await duplicateProjectFolder(dir).catch((error: unknown) => {
+          console.warn("[project] 복제 실패:", error);
+          throw new Error("프로젝트를 복제하지 못했습니다.");
+        });
+        try { recordRecentProject(copy.projectDir, copy.title, null); }
+        catch { throw new Error(`사본을 만들었지만 최근 목록에 넣지 못했습니다.\n${copy.projectDir}`); }
+      } else {
+        await shell.trashItem(dir).catch((error: unknown) => {
+          console.warn("[project] 휴지통 이동 실패:", error);
+          throw new Error("프로젝트를 휴지통으로 이동하지 못했습니다.");
+        });
+        try { forgetRecentProject(input.projectDir); buildMenu(); }
+        catch { throw new Error("휴지통으로 이동했지만 최근 목록을 갱신하지 못했습니다."); }
+      }
+      return true;
+    } finally {
+      recentFolderChanges.delete(dir);
+    }
+  });
+  ipcMain.handle(OPRN_CHANNELS.startRenameProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return null;
     const input = payload as { readonly projectDir?: unknown; readonly title?: unknown } | null;
-    const dir = renamableRecentDir(input?.projectDir);
+    const dir = recentProjectDir(input?.projectDir);
     const title = typeof input?.title === "string" ? input.title.trim().slice(0, 80) : "";
     if (!dir || !title) return null;
-    // 다른 창이 이미 연 폴더면 그 스토어를 빌려 쓰고, 아니면 잠깐 열었다 닫는다 — 같은 SQLite 에 두 번째 연결을 만들지 않는다.
-    const key = `rename:${dir}:${Date.now()}`;
+    if (isProtectedRecentFolder(dir) || hasRecentFolderChange(dir)) return null;
+    requireClosedRecentFolder(dir);
+    // Do not rename a saved document behind an editor that can overwrite it from memory.
+    const key = `rename:${dir}`;
+    recentFolderChanges.add(dir);
     try {
       const session = await sessions.open(key, dir);
       const snapshot = session.store.loadSnapshot();
       if (snapshot) await session.store.saveProject({ ...snapshot.project, meta: { ...snapshot.project.meta, title } });
       renameRecentEntry(dir, title);
+      buildMenu();
       return { projectDir: dir, title };
     } finally {
       sessions.close(key);
+      recentFolderChanges.delete(dir);
     }
   });
-  ipcMain.handle(OPRN_CHANNELS.startForgetRecent, (_event: IpcMainInvokeEvent, payload: unknown) =>
-    forgetRecentProject((payload as { readonly projectDir?: unknown } | null)?.projectDir));
+  ipcMain.handle(OPRN_CHANNELS.startForgetRecent, (event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!trustedRendererSender(event)) return false;
+    const forgotten = forgetRecentProject((payload as { readonly projectDir?: unknown } | null)?.projectDir);
+    if (forgotten) buildMenu();
+    return forgotten;
+  });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
@@ -1117,7 +1304,7 @@ export async function startApp(boot: BootContext): Promise<void> {
     if (!session) return null;
     // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
     if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
-    rememberRecentProject(session.projectDir, input.title ?? "새 프로젝트");
+    recordRecentProject(session.projectDir, input.title ?? "새 프로젝트");
     // 세션이 정규화한 경로(realpath)를 돌려준다 — 시작 화면 인계가 편집기가 연 폴더와 같은 문자열로 비교한다.
     return { projectDir: session.projectDir, projectId: session.store.projectId };
   });
@@ -1200,10 +1387,21 @@ export async function startApp(boot: BootContext): Promise<void> {
   });
 }
 
-app.on("before-quit", () => { quitRequested = true; });
+app.on("before-quit", (event) => {
+  if (closeInProgress) { event.preventDefault(); return; }
+  const windows = [...appWindows].filter((window) => !window.isDestroyed());
+  const owner = windows.find((window) => window.isFocused() && flushReady.has(window.webContents.id))
+    ?? windows.find((window) => flushReady.has(window.webContents.id));
+  if (owner) {
+    event.preventDefault();
+    void closeWindows(windows, owner, true);
+    return;
+  }
+  destroyAuxiliaryChildren();
+});
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin" && !closeInProgress) app.quit();
 });
 
 app.on("will-quit", () => {

@@ -42,7 +42,11 @@ describe("첫 화면 예제 행", () => {
     expect(more.hidden).toBe(false);
     expect(more.textContent).toContain("(4)");
     home.setGames([game("/g/a")], 1);
-    expect(more.hidden).toBe(true);
+    expect(more.hidden).toBe(false);
+    expect(more.textContent).toContain("(1)");
+    home.setGames([], 1);
+    expect(section.hidden).toBe(false);
+    expect(more.hidden).toBe(false);
     expect([...home.element.querySelectorAll("button")].some((button) => /플레이/.test(button.textContent ?? ""))).toBe(false);
     home.setGames([], 0);
     expect(section.hidden).toBe(true);

@@ -34,7 +34,9 @@ import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
 import { startIcon } from "./icons";
 import { builtinGameEditUrl } from "./home/builtinGames";
-import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, myGamesShelf, type HomeActions } from "./home/homeView";
+import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, myGamesShelf, type HomeActions, type RecentProjectsView } from "./home/homeView";
+import { formatLastOpenedTime } from "@/project/recentProjectTime";
+import { withoutRecentProject } from "../../electron/shared/recentProjects";
 import { BUILTIN_GAMES } from "./home/builtinGames";
 import { loadEngineChoice, localAgentsEnabled } from "./settings/localAgents";
 import type { AiStatusSummary, SettingsTab } from "./settings/settingsDialog";
@@ -64,7 +66,8 @@ type State = {
   sectionSeq: number;
   entries: readonly RecentProjectEntry[];
   loaded: boolean;
-  showHidden: boolean;
+  showTemporary: boolean;
+  recentView: RecentProjectsView;
   busy: boolean;
   joinUrl: string;
   teams: readonly RecentTeamEntry[];
@@ -139,22 +142,7 @@ function makingMeta(entry: RecentProjectEntry): string {
   const activity = activityLabel(entry.updatedAt, "edited") || activityLabel(entry.lastOpenedAt, "opened");
   if (activity) parts.push(activity);
   if (typeof entry.mapCount === "number" && entry.mapCount > 0) parts.push(`맵 ${entry.mapCount}개`);
-  if (entry.hiddenReason === "temporary") parts.push("임시 폴더");
-  if (entry.hiddenReason === "missing") parts.push("폴더 없음");
   return parts.join(" · ");
-}
-
-/** 숨긴 항목 안내. 문장을 조각으로 이어 붙이면 번역 카탈로그가 찾지 못하므로 경우마다 한 문장으로 쓴다. */
-function hiddenEntriesNote(temporary: number, missing: number, showing: boolean): string {
-  if (temporary > 0 && missing > 0) {
-    return showing
-      ? `임시 폴더의 테스트 프로젝트 ${temporary}개와 찾을 수 없는 폴더 ${missing}개를 함께 보여 주는 중입니다.`
-      : `임시 폴더의 테스트 프로젝트 ${temporary}개와 찾을 수 없는 폴더 ${missing}개를 숨겼습니다.`;
-  }
-  if (temporary > 0) {
-    return showing ? `임시 폴더의 테스트 프로젝트 ${temporary}개를 함께 보여 주는 중입니다.` : `임시 폴더의 테스트 프로젝트 ${temporary}개를 숨겼습니다.`;
-  }
-  return showing ? `찾을 수 없는 폴더 ${missing}개를 함께 보여 주는 중입니다.` : `찾을 수 없는 폴더 ${missing}개를 숨겼습니다.`;
 }
 
 /** 시작 화면이 그림을 다시 구울 항목 — 그림이 없거나(빈 맵 표식도 없다) 낡았고, 숨김(임시·사라진 폴더)이 아닌 것. */
@@ -177,7 +165,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     sectionSeq: 0,
     entries: [],
     loaded: false,
-    showHidden: false,
+    showTemporary: false,
+    recentView: { query: "", sort: "opened" },
     busy: false,
     joinUrl: "",
     teams: [],
@@ -216,11 +205,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (opened) goEditor();
   });
 
-  /** 최근 목록의 폴더를 연다. 사라졌으면 숨김으로 돌리고 던진다. */
   const openRecentFolder = async (entry: RecentProjectEntry): Promise<void> => {
     if (!bridge?.openRecent) throw new Error("데스크톱 앱에서만 최근 프로젝트를 열 수 있습니다.");
     const opened = await bridge.openRecent({ projectDir: entry.projectDir });
-    if (opened) return;
+    if (opened) { if (!opened.focusedExisting) goEditor(); return; }
     state.entries = state.entries.map((candidate) => candidate.projectDir === entry.projectDir ? { ...candidate, hiddenReason: "missing" } : candidate);
     refresh("entries");
     throw new Error("「" + entry.title + "」 폴더를 찾을 수 없습니다: " + entry.projectDir);
@@ -339,9 +327,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   // 앞에서 연 컨셉 상세·검색어가 다른 단추를 눌러도 남았다. 이제 단추 하나 = 칸 하나이고, 칸을 바꿀 때마다
   // 떠나는 칸을 정리(leave)하고 새 칸을 상태에서 다시 그린다(render). 늦게 온 비동기 결과는 상태에만 넣고
   // 지금 칸이 그 데이터를 쓰면 그 칸만 다시 그린다 — 앞 칸의 요청이 새 칸을 덮지 않는다.
-  const listed = (): readonly RecentProjectEntry[] => state.showHidden ? state.entries : partitionRecentEntries(state.entries).visible;
+  const listed = (): readonly RecentProjectEntry[] => state.entries.filter((entry) => state.showTemporary || entry.hiddenReason !== "temporary");
   const actions: HomeActions = {
-    edit: (entry) => void run(async () => { await openRecentFolder(entry); goEditor(); }),
+    edit: (entry) => void run(() => openRecentFolder(entry)),
     newGame: createBlank,
     home: () => { go("home"); },
     openGameFile,
@@ -355,22 +343,27 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     forget: async (entry) => {
       if (!bridge?.forgetRecent) throw new Error("데스크톱 앱에서만 목록에서 지울 수 있습니다.");
       if (!(await bridge.forgetRecent({ projectDir: entry.projectDir }))) throw new Error("목록에서 지우지 못했습니다.");
-      state.entries = state.entries.filter((candidate) => candidate.projectDir !== entry.projectDir);
+      state.entries = withoutRecentProject(state.entries, entry.projectDir);
       refresh("entries");
     },
+    manage: bridge?.manageRecent ? (entry, action) => void run(async () => {
+      if (await bridge.manageRecent?.({ projectDir: entry.projectDir, action }) && (action === "duplicate" || action === "trash")) {
+        state.entries = await bridge.recentProjects();
+        refresh("entries");
+      }
+    }) : undefined,
     builtinEdit: (id) => { if (!state.busy) window.location.href = builtinGameEditUrl(id); },
     openSettings: () => openSettings("ai"),
   };
   const hiddenNote = (): HTMLElement | null => {
-    const { temporary, missing } = partitionRecentEntries(state.entries);
-    if (temporary + missing === 0) return null;
+    const { temporary } = partitionRecentEntries(state.entries);
+    if (!temporary) return null;
     return el("p", { class: "ln-note", children: [
-      el("span", { text: hiddenEntriesNote(temporary, missing, state.showHidden) }), " ",
       el("button", {
-        class: "ln-link", attrs: { type: "button", "aria-pressed": String(state.showHidden) },
+        class: "ln-link", attrs: { type: "button", "aria-pressed": String(state.showTemporary) },
         dataset: { testid: "start-hidden-toggle" },
-        text: state.showHidden ? "다시 숨기기" : "보기",
-        on: { click: () => { state.showHidden = !state.showHidden; refresh("entries"); } },
+        text: state.showTemporary ? "임시 프로젝트 숨기기" : `임시 프로젝트 ${temporary}개 보기`,
+        on: { click: () => { state.showTemporary = !state.showTemporary; refresh("entries"); } },
       }),
     ] });
   };
@@ -425,7 +418,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       title: titles.get(entry.projectDir) ?? entry.title,
       meta: makingMeta(entry),
       cover: coverArt(entry, "fr-gcard-cov"),
-    })), worlds.length);
+    })), state.entries.filter((entry) => entry.hiddenReason !== "temporary").length);
   };
   const showPromptHome = (): void => {
     promptHome ??= createPromptHome({
@@ -508,7 +501,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (!state.loaded) { gamesPage.inner.replaceChildren(el("p", { class: "ln-loading", text: "불러오는 중…" })); return; }
     const worlds = listed();
     gamesPage.inner.replaceChildren(worlds.length > 0
-      ? myGamesShelf({ entries: worlds, titles: displayTitles(worlds, getLocale()), meta: makingMeta, note: hiddenNote(), actions })
+      ? myGamesShelf({ entries: worlds, view: state.recentView, meta: (entry) => formatLastOpenedTime(entry.lastOpenedAt, getLocale()) || "열기 기록 없음", note: hiddenNote(), actions })
       : el("div", { children: [firstRunShelf(actions), ...(hiddenNote() ? [hiddenNote()!] : [])] }));
   };
   const renderBuiltinSection = (): void => { builtinPage.inner.replaceChildren(builtinShelf(actions)); };
@@ -689,6 +682,21 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     setError("시작 화면은 데스크톱 앱에서만 동작합니다.");
     return;
   }
+  window.addEventListener("focus", () => {
+    if (!state.loaded || state.busy) return;
+    const previous = state.entries;
+    void bridge.recentProjects().then((entries) => {
+      if (state.busy || state.entries !== previous) return;
+      const unchanged = entries.length === previous.length && entries.every((entry, i) => {
+        const old = previous[i];
+        return entry.projectDir === old?.projectDir && entry.title === old.title
+          && entry.lastOpenedAt === old.lastOpenedAt && entry.hiddenReason === old.hiddenReason;
+      });
+      if (unchanged) return;
+      state.entries = entries;
+      refresh("entries");
+    }).catch((error: unknown) => console.warn("[start] 최근 프로젝트를 새로 읽지 못했습니다:", error));
+  });
   void bridge.recentProjects()
     .then((entries) => { state.entries = entries; })
     .catch((error: unknown) => {
