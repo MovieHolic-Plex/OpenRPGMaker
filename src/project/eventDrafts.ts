@@ -161,20 +161,21 @@ export function projectViewWithoutEventDrafts(project: Project): Project {
 function committedEventsView(events: readonly GameEvent[]): GameEvent[] {
   const committed: GameEvent[] = [];
   for (const event of events) {
-    if (event.draft?.kind === "new") continue;
-    if (event.draft?.kind === "edit") {
-      if (event.draft.conflict?.kind === "remote-delete") continue;
-      if (event.draft.original) committed.push(event.draft.original);
-      continue;
-    }
-    if (event.draft === undefined) {
-      committed.push(event);
-      continue;
-    }
-    const { draft: _dropped, ...withoutDraft } = event;
-    committed.push(withoutDraft as GameEvent);
+    const view = committedEventView(event);
+    if (view) committed.push(view);
   }
   return committed;
+}
+
+/** Read-only view of one event at the persistence boundary. */
+export function committedEventView(event: GameEvent | null): GameEvent | null {
+  if (!event || event.draft?.kind === "new") return null;
+  if (event.draft?.kind === "edit") {
+    return event.draft.conflict?.kind === "remote-delete" ? null : event.draft.original ?? null;
+  }
+  if (event.draft === undefined) return event;
+  const { draft: _dropped, ...withoutDraft } = event;
+  return withoutDraft as GameEvent;
 }
 
 /**

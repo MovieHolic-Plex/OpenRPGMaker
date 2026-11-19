@@ -194,10 +194,6 @@
 /* shell/figma-editor/04-chipset-events.css:181-187 */
 .left-panel-stack[data-testid="left-palette-root"] .event-list-title {
     background: var(--editor-panel-bg);
-    flex: 0 0 auto;
-    position: sticky;
-    top: 0;
-    z-index: var(--z-base);
   }
 
 /* shell/figma-editor/04-chipset-events.css:189-192 */

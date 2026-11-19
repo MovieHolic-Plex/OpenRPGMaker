@@ -401,7 +401,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
 
   dressShopFronts(project, hubId, homes);
 
-  // 들어가지 않는 문 — 부딪히면 잠겼다고 말한다(가짜 문 금지).
+  // 들어가지 않는 문 — 기존 문 타일이 통행을 막고, 조사 이벤트가 잠겼다고 말한다.
   const LOCKED = [
     "문이 굳게 잠겨 있다.\n두드려도 대답이 없다.",
     "문이 잠겨 있다.\n창틈으로 빵 굽는 냄새만 새어 나온다.",
@@ -419,6 +419,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       pages: [{
         id: `ev_fs_locked_${d.x}_${d.y}_page`, name: "잠김", conditions: [], graphic: { transparent: true },
         movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", trigger: { kind: "action" },
+        overlapForbidden: isPassable(project, liveHub, d.x, d.y),
         commands: [{ kind: "text", body, context: "narration", position: "bottom" }],
       }],
     } as unknown as GameMap["events"][number]);

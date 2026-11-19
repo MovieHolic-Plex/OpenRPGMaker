@@ -6,7 +6,7 @@ import { isMapPanelCollapsed, resetMapPanelSectionForTests } from "@/editor/work
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { FakeElement, findByTestId, flushFakeAnimationFrames, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 vi.mock("@/editor/mapDissolveVeil", () => ({ clearMapDissolveVeil: vi.fn() }));
 
@@ -43,6 +43,28 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, "map-tree-filter")).not.toBeNull();
     expect(findByTestId(panel, "map-add-category")).toBeNull();
     expect(findByTestId(panel, "map-add-folder")).not.toBeNull();
+  });
+
+  it("reveals the active map inside the tree scroller without scrolling its ancestors", () => {
+    const restoreFrames = installFakeDom({ animationFrames: "manual" });
+    try {
+      const container = document.createElement("div");
+      document.body.append(container);
+      renderMapList(container);
+      const tree = container.querySelector<HTMLElement>('[data-testid="map-tree-list"]')!;
+      const row = tree.querySelector<HTMLElement>(`[data-testid="map-tree-node-${store.getCurrent().startMapId}"]`)!;
+      const nativeReveal = vi.spyOn(row, "scrollIntoView");
+      Object.defineProperties(tree, { clientHeight: { value: 100 }, scrollHeight: { value: 300 } });
+      vi.spyOn(tree, "getBoundingClientRect").mockReturnValue({ top: 0, bottom: 100, height: 100 } as DOMRect);
+      vi.spyOn(row, "getBoundingClientRect").mockReturnValue({ top: 120, bottom: 150, height: 30 } as DOMRect);
+
+      flushFakeAnimationFrames(0, 1);
+
+      expect(tree.scrollTop).toBe(50);
+      expect(nativeReveal).not.toHaveBeenCalled();
+    } finally {
+      restoreFrames();
+    }
   });
 
   it("헤더의 주 동작 「새 맵」만 글자 라벨과 강조 톤을 달고 맨 오른쫽에 선다", () => {

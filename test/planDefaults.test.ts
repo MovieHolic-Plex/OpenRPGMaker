@@ -6,16 +6,16 @@ const cli = (id: "claude" | "codex" | "gemini", state: string, billing: string) 
 const oauth = (providerId: string, extra: Record<string, unknown> = {}) => ({ providerId, connected: true, authKind: "oauth", ...extra });
 
 describe("first-run plan defaults", () => {
-  it("orders Claude, then ChatGPT, then the rest, one card per plan", () => {
+  it("orders ChatGPT (the default, owner decision 2026-11-19), then Claude, then the rest, one card per plan", () => {
     const plans = planCandidates(
       [cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription"), cli("claude", "ready", "subscription")],
       [oauth("openai-codex"), oauth("google-antigravity")],
     );
-    expect(plans.map((plan) => plan.key)).toEqual(["claude-cli", "codex-cli", "gemini-cli"]);
+    expect(plans.map((plan) => plan.key)).toEqual(["codex-cli", "claude-cli", "gemini-cli"]);
   });
 
   it("gives a Claude subscription Opus 5.5 medium alone (no lead, no Haiku worker), and ChatGPT Terra alone", () => {
-    const [claude, codex] = planCandidates([cli("claude", "ready", "subscription"), cli("codex", "ready", "subscription")], []);
+    const [codex, claude] = planCandidates([cli("claude", "ready", "subscription"), cli("codex", "ready", "subscription")], []);
     // 오너 결정 2026-11-16: 조수 기본은 Claude Opus 5.5 · medium 한 모델 — Haiku 워커·팀장 나누기를 기본에서 뺐다.
     expect(claude?.kind === "local-cli" && claude.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium" });
     expect(claude?.kind === "local-cli" && assistantEngineLead(claude.engine)).toBeUndefined();

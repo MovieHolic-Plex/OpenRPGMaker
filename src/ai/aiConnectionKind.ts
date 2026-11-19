@@ -9,7 +9,7 @@
 //  - 전송 축  = authMode. 에디터는 **항상** companion 이다(주입 게이트웨이는 UI 가 없다).
 //  - 자격 축  = providerId → ohMyPiAuthKind. 사용자가 고르는 것은 이쪽이다.
 //
-// 레지스트리의 제공자(Claude·Google·ChatGPT …)는 모두 oauth 다. 그래서 자격 축은 실질적으로
+// 레지스트리의 제공자(ChatGPT·Claude·Google …)는 모두 oauth 다. 그래서 자격 축은 실질적으로
 // 한 값이고, 사용자의 선택은 "어느 구독으로 갈 것인가"다. 어느 제공자든 자격을 동반 서비스가
 // 자기 저장소(~/.oprn/oh-my-pi-auth.json)에 보관하므로 **브라우저에 비밀을 남기지 않는다.**
 // `configForConnectionKind` 가 그것을 강제한다.
@@ -54,7 +54,7 @@ export function editorHasProviderChoice(): boolean {
   return OH_MY_PI_PROVIDERS.length > 1;
 }
 
-/** 그 종류의 기본 제공자 = 권장 제공자(Claude, 2026-11-16). 두 종류가 같은 목록을 쓰므로 기본값도 하나다. */
+/** 그 종류의 기본 제공자 = 권장 제공자(ChatGPT, 2026-11-19 오너 결정). 두 종류가 같은 목록을 쓰므로 기본값도 하나다. */
 export function defaultProviderForKind(_kind: AiConnectionKindId): string {
   return RECOMMENDED_OH_MY_PI_PROVIDER;
 }

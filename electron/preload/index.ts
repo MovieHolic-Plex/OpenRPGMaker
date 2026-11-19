@@ -121,6 +121,7 @@ const bridge = {
   start: {
     recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),
     openFolder: invoke(OPRN_CHANNELS.startOpenFolder),
+    manageRecent: invoke(OPRN_CHANNELS.startManageRecent),
     openRecent: invoke(OPRN_CHANNELS.startOpenRecent),
     renameProject: invoke(OPRN_CHANNELS.startRenameProject),
     forgetRecent: invoke(OPRN_CHANNELS.startForgetRecent),
@@ -161,6 +162,7 @@ const bridge = {
     visibility: invoke(OPRN_CHANNELS.storeVisibility),
     gameMine: invoke(OPRN_CHANNELS.storeGameMine),
     gamePublish: invoke(OPRN_CHANNELS.storeGamePublish),
+    gameDeclaration: invoke(OPRN_CHANNELS.storeGameDeclaration),
     gamePost: invoke(OPRN_CHANNELS.storeGamePost),
     gameReviews: invoke(OPRN_CHANNELS.storeGameReviews),
     reviewReply: invoke(OPRN_CHANNELS.storeReviewReply),

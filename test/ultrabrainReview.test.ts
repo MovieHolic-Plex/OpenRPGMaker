@@ -21,8 +21,8 @@ describe("Ultrabrain whole-map review", () => {
     const values = new Map<string, string>();
     vi.stubGlobal("localStorage", { getItem: (k: string) => values.get(k) ?? null, setItem: (k: string, v: string) => values.set(k, v) });
     const config = defaultAiConfig();
-    // 공장 기본(2026-11-16): 계획·감독 칸도 Claude Opus 5.5 · medium — 작문 모델·강도를 바꿔도 따라가지 않는다.
-    expect(configForUltrabrain({ ...config, model: "other", reasoningEffort: "low" })).toMatchObject({ providerId: "anthropic", model: "claude-opus-5-5", reasoningEffort: "medium" });
+    // 공장 기본(2026-11-19): 계획·감독 칸도 ChatGPT GPT-6.1 Terra · medium — 작문 모델·강도를 바꿔도 따라가지 않는다.
+    expect(configForUltrabrain({ ...config, model: "other", reasoningEffort: "low" })).toMatchObject({ providerId: "openai-codex", model: "gpt-6.1-terra", reasoningEffort: "medium" });
     // 계획·감독 칸이 아예 없는 옛 설정은 옛 기본(Google Argon · high)으로 읽는다.
     expect(configForUltrabrain({ ...config, ultrabrainProviderId: undefined, ultrabrainModel: undefined, ultrabrainReasoningEffort: undefined, model: "other", reasoningEffort: "low" })).toMatchObject({ providerId: "google-antigravity", model: "gemini-4-argon", reasoningEffort: "high" });
     saveAiConfig({ ...config, model: "unknown-explicit", ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-5.5", ultrabrainReasoningEffort: "medium" });

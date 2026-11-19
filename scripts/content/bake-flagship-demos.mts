@@ -17,6 +17,7 @@ import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { FLAGSHIP_DEMO_IDS } from "@/project/flagship/types";
+import type { Project } from "@/project/types";
 
 function argOf(name: string): string | undefined {
   const index = process.argv.indexOf(`--${name}`);
@@ -39,6 +40,20 @@ async function bakeDemos(): Promise<void> {
   const { validateShippedPlayJson } = await import("@/project/flagship/ipCleanliness");
   const { demoLoreCounts, demoLoreProblems } = await import("@/project/flagship/loreKit");
   const { prepareWebExport } = await import("@/project/webExport");
+  const { visitProjectCommands } = await import("@/editor/tools/commandTraversal");
+  const { collectProjectItemReferenceIds } = await import("@/project/io/references");
+
+  /** 데이터베이스에 없는 아이템·장비를 가리키는 참조. 폴른 스타가 편집기에서 「Error 2」로 보였다(2026-11-19 QA). */
+  function danglingInventoryRefs(project: Project): string[] {
+    const equipment = new Set(project.database.equipment.map((record) => record.id));
+    const inventory = new Set([...project.database.items.map((record) => record.id), ...equipment]);
+    const missing = new Set([...collectProjectItemReferenceIds(project)].filter((ref) => !inventory.has(ref)));
+    visitProjectCommands(project, ({ command }) => {
+      if (command.kind === "changeEquipment" && command.equipmentId && !equipment.has(command.equipmentId)) missing.add(command.equipmentId);
+    });
+    return [...missing];
+  }
+
   mkdirSync(dir, { recursive: true });
   const mb = (n: number) => (n / 1048576).toFixed(1);
   for (const id of FLAGSHIP_DEMO_IDS) {
@@ -55,6 +70,11 @@ async function bakeDemos(): Promise<void> {
     if (ipHits.length > 0) {
       for (const hit of ipHits) console.error(`[ip-clean] ${id}.play.json ${hit.path}: 「${hit.noun}」`);
       console.error(`[ip-clean] ${id}: 원작 고유명 ${ipHits.length}건 — 굽기 실패`);
+      process.exit(1);
+    }
+    const dangling = danglingInventoryRefs(project);
+    if (dangling.length > 0) {
+      console.error(`[item-refs] ${id}: 데이터베이스에 없는 아이템·장비 참조 ${dangling.length}건 — 굽기 실패: ${dangling.join(", ")}`);
       process.exit(1);
     }
     console.log(`${id}: build ${((built - started) / 1000).toFixed(1)}s · player ${mb(player.length)}MB (gzip ${mb(gzipSync(player).length)}MB) · editor ${mb(editor.length)}MB · total ${((performance.now() - started) / 1000).toFixed(1)}s`);

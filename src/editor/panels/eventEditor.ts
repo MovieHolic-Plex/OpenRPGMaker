@@ -2,16 +2,14 @@ import { editorState } from "@/editor/editorState";
 import {
   eventDisplayName as sharedEventDisplayName,
 } from "@/editor/eventMarkerUx";
-import { ensureEventPages } from "@/editor/eventPages";
 import { handleEditorDeleteKey } from "@/editor/hotkeys";
-import { editorWorkingEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import type { EventPageGraphic, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventGraphicIcon } from "./eventEditor/eventGraphicPreview";
 import { renderEventIdReadout } from "./eventEditor/eventIdReadout";
-import { scrollIntoNearestScroller } from "./eventEditor/scrollIntoNearestScroller";
+import { scrollWithinScroller } from "./eventEditor/scrollIntoNearestScroller";
 import { bindEventListRowHoverTooltip, hideEventListTooltip } from "./eventListHoverTooltip";
 import { openEventEditorModal } from "./eventEditor/modal";
 
@@ -39,19 +37,21 @@ export function renderEventEditor(container: HTMLElement): void {
     return;
   }
 
-  const events = editorWorkingEvents(map.events);
+  const events = map.events;
   const selectedEvent = state.selectedEventId
     ? events.find((event) => event.id === state.selectedEventId)
     : undefined;
 
-  section.append(renderMapEventList(mapId, events, state.selectedEventId));
+  section.append(
+    el("div", { class: "event-list-title", text: "맵 이벤트 목록" }),
+    renderMapEventList(mapId, events, state.selectedEventId),
+  );
 
   if (!selectedEvent) {
     container.append(section);
     return;
   }
 
-  if (!selectedEvent.pages?.length) ensureEventPages(mapId, selectedEvent.id);
   section.append(renderSelectedEventSummary(mapId, selectedEvent));
   container.append(section);
 }
@@ -80,8 +80,10 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
 }
 
 function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selectedEventId: string | null): HTMLElement {
-  const list = el("div", { class: "event-list", dataset: { testid: "event-list" } });
-  list.append(el("div", { class: "event-list-title", text: "맵 이벤트 목록" }));
+  const list = el("div", {
+    class: "event-list",
+    dataset: { testid: "event-list", mapId, projectLineage: String(store.getVersionToken().lineage) },
+  });
   if (events.length === 0) {
     // 다음 행동을 말한다 — 「없습니다」 만으로는 어떻게 놓는지 알 수 없었다(2026-09-24 visual QA).
     list.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다. 맵의 빈 칸을 더블클릭하면 새 이벤트를 만듭니다." }));
@@ -96,7 +98,9 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
       attrs: { type: "button" },
       dataset: { testid: `event-list-row-${event.id}` },
       on: {
-        click: () => selectEventAndFocus(mapId, event),
+        click: (click) => {
+          if (typeof MouseEvent === "undefined" || !(click instanceof MouseEvent) || click.detail <= 1) selectEventAndFocus(mapId, event);
+        },
         dblclick: () => openEventEditorModal(mapId, event.id),
       },
     });
@@ -127,7 +131,7 @@ function eventListGraphic(event: GameEvent): EventPageGraphic {
 /**
  * 이미 떠 있는 맵 이벤트 목록에서 선택 표시와 아래 요약만 옮긴다.
  * 목록이 없거나, 고른 이벤트가 그 목록에 없으면 false — 호출부가 패널을 다시 그린다.
- * 페이지가 없는 옛 이벤트도 다시 그린다. 그 경로는 기본 페이지를 만들어 저장한다.
+ * 페이지가 없는 옛 이벤트는 편집기가 열릴 때 기본 페이지를 준비한다.
  */
 export function syncMountedEventSelection(): boolean {
   if (typeof document === "undefined") return false;
@@ -139,13 +143,12 @@ export function syncMountedEventSelection(): boolean {
 
   const project = store.getCurrent();
   const mapId: MapId = state.currentMapId ?? project.startMapId;
+  if (list.dataset.mapId !== mapId || list.dataset.projectLineage !== String(store.getVersionToken().lineage)) return false;
   const map = project.maps[mapId];
   if (!map) return false;
-  const events = editorWorkingEvents(map.events);
   const selectedId = state.selectedEventId;
-  const selected = selectedId ? events.find((event) => event.id === selectedId) : undefined;
+  const selected = selectedId ? map.events.find((event) => event.id === selectedId) : undefined;
   if (selectedId && !selected) return false;
-  if (selected && !selected.pages?.length) return false;
 
   const rows = [...list.querySelectorAll<HTMLElement>(".event-list-row")];
   const wanted = selectedId ? `event-list-row-${selectedId}` : "";
@@ -171,7 +174,7 @@ export function syncMountedEventSelection(): boolean {
   }
   // 요약 카드가 목록 아래에 붙으면 목록이 짧아진다. 그 다음에 고른 행을 넣어야
   // 맨 아래 이벤트가 카드 뒤로 숨지 않는다.
-  if (activeRow && reveal) scrollIntoNearestScroller(activeRow, "nearest");
+  if (activeRow && reveal && list.scrollHeight > list.clientHeight) scrollWithinScroller(activeRow, list, "nearest");
   return true;
 }
 

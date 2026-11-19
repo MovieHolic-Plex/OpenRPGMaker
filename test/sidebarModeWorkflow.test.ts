@@ -3,6 +3,7 @@ import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { clearTimeout as clearDeadline, setTimeout as deadline } from "node:timers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
+import { createDefaultGameEvent } from "@/editor/eventActions";
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
@@ -113,6 +114,33 @@ describe("sidebar painting workflow", () => {
     expect(editorState.get()).toMatchObject({ layer: "lower", tool: "paint" });
     expect(find("tile-palette")).not.toBeNull();
   });
+
+  it.each(["event-editor-cancel", "event-editor-modal-close", "event-editor-save"])(
+    "opens on the first sidebar activation and preserves list scroll through %s",
+    (closeTestId) => {
+      const mapId = store.getCurrent().startMapId;
+      const event = createDefaultGameEvent(3, 3);
+      store.replaceEvent(mapId, event.id, event);
+      selectSidebarLayer("event");
+      editorState.set({ selectedEventId: event.id });
+      const unsubscribeStore = store.subscribe(() => renderTilePalette(host));
+      const list = () => find("event-list")!;
+      list().scrollTop = 64;
+      try {
+        control("event-editor-open").click();
+        const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+        expect(modal?.dataset.eventId).toBe(event.id);
+        expect(list().scrollTop).toBe(64);
+
+        modal?.querySelector<HTMLButtonElement>(`[data-testid="${closeTestId}"]`)?.click();
+        expect(modal?.isConnected).toBe(false);
+        expect(list().scrollTop).toBe(64);
+      } finally {
+        unsubscribeStore();
+        document.querySelector<HTMLButtonElement>('[data-testid="event-editor-cancel"]')?.click();
+      }
+    },
+  );
 
   it("provides visible undo wired to actual map history and its change event", async () => {
     const undo = control("oprn-tool-undo");

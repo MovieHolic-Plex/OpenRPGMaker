@@ -1,4 +1,5 @@
-// 첫 실행 자동 감지 → 요금제별 조수 기본값 (2026-11-03 사용자 결정, Claude 는 2026-11-16 오너 결정으로 바뀜).
+// 첫 실행 자동 감지 → 요금제별 조수 기본값 (2026-11-03 사용자 결정, Claude 는 2026-11-16 오너 결정으로 바뀜,
+// 2026-11-19 오너 결정: 기본 AI 는 ChatGPT — 후보 순서도 ChatGPT 가 먼저다).
 //
 // 대부분의 사용자는 낮은 요금제 하나(Claude 또는 ChatGPT)만 갖고 있다. 그래서 첫 실행 관문(editor/ui/aiConnectGate.ts)이
 // 이 PC 에서 이미 로그인된 구독을 찾아 「연결됨: <이름> · 이걸로 시작」 한 장으로 보이고, 고르면 그 요금제에 맞는 팀을 고른다.
@@ -13,6 +14,7 @@
 import type { AssistantEngineChoice, LocalCliEngineId } from "./localCliEngine";
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL } from "./chatgptDefault.ts";
 
 /** LocalCliStatus(src/start/settings/localAgents.ts)의 부분. */
 export interface DetectedCli {
@@ -44,7 +46,7 @@ export const CLAUDE_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
 
 /** ChatGPT 구독 기본: Terra 하나가 계획부터 짓기까지 한다. */
 export const CHATGPT_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
-  kind: "local-cli", cli: "codex", routineModel: "gpt-6.1-terra", deepModel: "gpt-6.1-terra", effort: "medium",
+  kind: "local-cli", cli: "codex", routineModel: ASSISTANT_CHATGPT_MODEL, deepModel: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT,
 };
 
 const ready = (rows: readonly DetectedCli[], id: LocalCliEngineId): boolean =>
@@ -54,16 +56,16 @@ const ready = (rows: readonly DetectedCli[], id: LocalCliEngineId): boolean =>
 const signedIn = (accounts: readonly DetectedAccount[], providerId: string): boolean =>
   accounts.some((row) => row.providerId === providerId && row.connected && row.expired !== true && row.env !== true && row.authKind === "oauth");
 
-/** 후보 목록 — Claude, ChatGPT, 나머지 순. 같은 요금제는 한 장만(CLI 가 있으면 CLI). 없으면 빈 배열. */
+/** 후보 목록 — ChatGPT(기본, 2026-11-19 오너 결정), Claude, 나머지 순. 같은 요금제는 한 장만(CLI 가 있으면 CLI). 없으면 빈 배열. */
 export function planCandidates(rows: readonly DetectedCli[], accounts: readonly DetectedAccount[]): PlanCandidate[] {
   const out: PlanCandidate[] = [];
-  if (ready(rows, "claude")) {
-    out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Opus 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
-  }
   if (ready(rows, "codex")) {
     out.push({ key: "codex-cli", kind: "local-cli", name: "ChatGPT 구독", setup: "GPT-6.1 Terra 하나가 계획부터 만들기까지 해요.", engine: CHATGPT_SUBSCRIPTION_ENGINE });
   } else if (signedIn(accounts, CODEX_ACCOUNT_PROVIDER_ID)) {
     out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "GPT-6.1 Terra 하나가 계획부터 만들기까지 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
+  }
+  if (ready(rows, "claude")) {
+    out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Opus 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
   }
   if (ready(rows, "gemini")) {
     out.push({ key: "gemini-cli", kind: "local-cli", name: "Gemini CLI 구글 로그인", setup: "Gemini CLI 기본 모델로 해요.", engine: { kind: "local-cli", cli: "gemini", effort: "medium" } });
@@ -74,7 +76,7 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
 }
 
 /** 편집기 안 ChatGPT 로그인도 Terra 혼자 — 실행·시공·작문·시각·계획이 모두 같은 모델. */
-export const CHATGPT_ACCOUNT_MODEL = "gpt-6.1-terra";
+export const CHATGPT_ACCOUNT_MODEL = ASSISTANT_CHATGPT_MODEL;
 
 type PlanAccountConfig = {
   providerId?: string; model: string; liteModel?: string; roleModels?: SpecialistModels;

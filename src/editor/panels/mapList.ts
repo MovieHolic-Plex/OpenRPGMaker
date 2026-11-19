@@ -12,6 +12,7 @@ import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint }
 import { renderMapInspector, type MapInspectorAction, type MapInspectorView } from "@/editor/panels/mapInspectorPane";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { openMapShiftDialog } from "@/editor/panels/mapShiftDialog";
+import { scrollWithinScroller } from "@/editor/panels/eventEditor/scrollIntoNearestScroller";
 import { collectMapInspection, type MapInspection } from "@/project/mapInspection";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import {
@@ -224,7 +225,9 @@ export function renderMapList(container: HTMLElement, options?: MapListOptions):
   mapListRenderVersions.set(container, (mapListRenderVersions.get(container) ?? 0) + 1);
   if (typeof globalThis.requestAnimationFrame === "function") {
     globalThis.requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>(`[data-testid="map-tree-node-${activeId}"]`)?.scrollIntoView({ block: "nearest" });
+      if (!tree.isConnected || tree.scrollHeight <= tree.clientHeight) return;
+      const row = tree.querySelector<HTMLElement>(`[data-testid="map-tree-node-${activeId}"]`);
+      if (row) scrollWithinScroller(row, tree, "nearest");
     });
   }
 }

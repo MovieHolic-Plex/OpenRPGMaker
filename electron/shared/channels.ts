@@ -18,6 +18,7 @@ export const OPRN_CHANNELS = {
   teamLock: "oprn:team.lock",
   companionOrigin: "oprn:companion.origin",
   companionToken: "oprn:companion.token",
+  startManageRecent: "oprn:start.manageRecent",
   startOpenRecent: "oprn:start.openRecent",
   /** 시작 화면 「이름 바꾸기」 — 프로젝트 폴더의 제목만 바꾼다. */
   startRenameProject: "oprn:start.renameProject",
@@ -112,6 +113,7 @@ export const OPRN_CHANNELS = {
   /** 「바로 플레이」 게임: 이 프로젝트의 게임·다음 판본, 판본 올리기, 지금 판본 바꾸기(되돌리기). */
   storeGameMine: "oprn:store.gameMine",
   storeGamePublish: "oprn:store.gamePublish",
+  storeGameDeclaration: "oprn:store.gameDeclaration",
   storeGameCurrent: "oprn:store.gameCurrent",
   storeGamePost: "oprn:store.gamePost",
   /** 플레이어 평가: 내 게임 평가 읽기·제작자 답글(답글은 작가만 — 서버가 판단). */

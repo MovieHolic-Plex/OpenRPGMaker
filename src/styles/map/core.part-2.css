@@ -122,9 +122,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .event-list-title {
   flex: 0 0 auto;
-  position: sticky;
-  top: 0;
-  z-index: 1;
   background: var(--bg);
   padding: 2px var(--space-1) var(--space-1);
 }
