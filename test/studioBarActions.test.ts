@@ -196,7 +196,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
       indicator.hidden = false;
       indicator.click();
       expect(findByTestId(fake(document.body), "toast")?.textContent)
-        .toContain("편집은 계속됩니다. 다시 연결되면 자동 저장합니다");
+        .toContain("편집을 계속할 수 있고 다시 연결되면 자동으로 저장해요.");
       vi.runOnlyPendingTimers();
     } finally {
       vi.useRealTimers();

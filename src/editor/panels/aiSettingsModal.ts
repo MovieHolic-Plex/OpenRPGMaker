@@ -451,8 +451,10 @@ export function renderAiSettingsForm(options: {
   maxTokens.input.setAttribute("title", maxTokensDescription);
 
   const initialAutonomyLevel: AutonomyLevel = isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced";
+  const autonomyLabel = "일하는 방식";
   const autonomySelect = el("select", {
     class: "ai-config-select",
+    attrs: { "aria-label": autonomyLabel },
     dataset: { testid: "ai-config-autonomy" },
     children: AUTONOMY_LEVELS.map((level) =>
       el("option", { attrs: { value: level.id }, text: level.label }),
@@ -480,7 +482,7 @@ export function renderAiSettingsForm(options: {
   };
   setAutonomyDerived(initialAutonomyLevel);
   const autonomyRow = settingsRow(
-    "일하는 방식",
+    autonomyLabel,
     autonomyDescription,
     el("span", { class: "ai-config-stack", children: [autonomySelect, autonomyDerived] }),
   );
@@ -1475,6 +1477,10 @@ function settingsDetails(items: ReadonlyArray<string | HTMLElement>): HTMLElemen
 }
 
 function settingsRow(label: string, description: string, control: HTMLElement): HTMLElement {
+  // Give custom selects a translatable name separate from the row's help text.
+  if (control.tagName === "SELECT" && !control.getAttribute("aria-label")) {
+    control.setAttribute("aria-label", label);
+  }
   return el("label", {
     class: "ai-config-row",
     children: [

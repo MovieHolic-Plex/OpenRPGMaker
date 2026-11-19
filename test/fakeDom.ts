@@ -536,6 +536,10 @@ export class FakeElement extends FakeNode {
     return Object.keys(this.attrs);
   }
 
+  hasAttribute(name: string): boolean {
+    return this.getAttribute(name) !== null;
+  }
+
   removeAttribute(name: string): void {
     const oldValue = this.getAttribute(name);
     delete this.attrs[name];
