@@ -24,7 +24,7 @@ export const PIXEL_ENEMY_CELL = 48;
 export type PixelEnemyCell = "idle_a" | "idle_b" | "idle_c" | "windup" | "move" | "attack" | "recover" | "hit" | "dead";
 /**
  * 4×4(16칸)·5×4(20칸) 시트만 갖는 칸. 칸 번호(행 우선, 격자 폭과 무관): 9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard ·
- * 13 weak(HP 25% 이하 대기) · 14 intro(전투 시작 한 번) · 15 4×4 는 예약(완전 투명) / 5×4 는 move_b(걷기 2) ·
+ * 13 weak(5×4 에서만 HP 25% 이하 대기에 사용) · 14 intro(전투 시작 한 번) · 15 4×4 는 예약(완전 투명) / 5×4 는 move_b(걷기 2) ·
  * 16 hit_b(피격 2) · 17 attack_b(연타 2타 이후) · 18 stunned(행동 불가 상태 대기) · 19 enrage(HP 50% 이하 대기). 0~8 은 3×3 과 같은 이름·순서다.
  * 저작자가 그리지 못한 확장 칸(4×4 는 9~14, 5×4 는 9~19)은 meta.pixelEnemySheet.missingCells 에 적고 비워 둔다 — pixelEnemyFrame 이 물린다.
  */
@@ -356,7 +356,7 @@ export function monsterBattleMotion(project: PixelEnemySheetProject, resourceId:
   return bundledPixelEnemySheet(resourceId)?.motion;
 }
 
-/** 이 몬스터 소재의 전투 시트가 20칸(5×4: 걷기 2·피격 2·연타·기절·분노 칸까지)이면 20, 16칸(4×4: 공격 중간·시전·막기·빈사·등장 칸까지)이면 16, 9칸이면 9, 시트가 없으면 undefined. */
+/** 이 몬스터 소재의 전투 시트가 20칸(5×4: 걷기 2·피격 2·연타·기절·분노 칸까지)이면 20, 16칸(4×4: 공격 중간·시전·막기·등장 칸까지)이면 16, 9칸이면 9, 시트가 없으면 undefined. */
 export function monsterBattleCells(project: PixelEnemySheetProject, resourceId: string): 9 | 16 | 20 | undefined {
   const authored = projectPixelEnemySheet(resourceId, project);
   if (authored) return authored.grid === "5x4" ? 20 : authored.grid === "4x4" ? 16 : 9;

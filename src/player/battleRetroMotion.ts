@@ -874,9 +874,9 @@ function nodeHasCell(node: HTMLElement, cell: PixelEnemyExtraCell): boolean {
 
 /**
  * 행동하지 않는 동안의 칸. 16·20칸 시트만 바뀐다. 우선순위 guard > stunned > weak > enrage > idle:
- * 방어 중 → guard, 행동 제한 상태(기절·마비·정지) → stunned(정지 칸, 번갈이 없음), HP 25% 이하 → weak 와 idle_b 를 번갈아(숨이 가쁜 대기),
+ * 방어 중 → guard, 20칸 시트에서 행동 제한 상태(기절·마비·정지) → stunned(정지 칸), HP 25% 이하 → weak 와 idle_b 를 번갈아,
  * HP 50% 이하·25% 초과 → enrage 와 idle_b 를 번갈아, 그 밖은 CSS 대기 루프("idle"). 번갈이는 data-pixel-weak·data-pixel-enrage 가 CSS 로 돈다(27-retro-motion.css).
- * stunned·enrage 칸이 없는 시트(3×3·4×4·missingCells)는 이 두 상태가 대기 모습을 바꾸지 않는다.
+ * 16칸 시트는 HP 25% 이하에도 보통 대기다(weak 와 idle_b 교대가 깜빡여 보여 2026-11-08에 끔). 13번 칸은 시트 계약에 남는다.
  */
 function pixelEnemyRestCell(node: HTMLElement): RetroMonsterCell | "idle" {
   if (!isExtendedPixelGrid(node.dataset.pixelGrid)) return "idle";
@@ -887,7 +887,7 @@ function pixelEnemyRestCell(node: HTMLElement): RetroMonsterCell | "idle" {
     return "stunned";
   }
   const weakFlag = node.dataset.battlerWeak === "true";
-  const weak = weakFlag && nodeHasCell(node, "weak");
+  const weak = node.dataset.pixelGrid === "5x4" && weakFlag && nodeHasCell(node, "weak");
   if (weak) node.dataset.pixelWeak = "true";
   else delete node.dataset.pixelWeak;
   const enrage = !weakFlag && node.dataset.battlerEnraged === "true" && nodeHasCell(node, "enrage");
