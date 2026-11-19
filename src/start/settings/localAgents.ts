@@ -8,7 +8,6 @@
 // 엔진 선택 저장·해석은 조수가 읽는 src/ai/localCliEngine.ts 하나를 쓴다(그 모듈은 타입 말고 아무것도 가져오지 않아 첫 화면 번들이 늘지 않는다).
 // 고르는 것은 여전히 opt-in 이다 — 고르지 않으면(또는 「원래 AI 연결로 되돌리기」) 기존 엔진이다.
 
-import { t } from "@/i18n";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { ASSISTANT_ENGINE_STORAGE_KEY, LOCAL_CLI_ENGINE_IDS, loadAssistantEngine, saveAssistantEngine, type AssistantEngineChoice, type LocalCliEngineId } from "@/ai/localCliEngine";
 import { withRequestTimeout } from "@/util/requestTimeout";
@@ -143,16 +142,16 @@ export function mockLocalAgentsApi(): LocalAgentsApi {
 }
 
 /** Summary for the launcher chip when it is showing a local program. */
-export type AiStatusSummary = { readonly tone: "ok" | "warn" | "off"; readonly text: string };
+export type AiStatusSummary = { readonly tone: "ok" | "warn" | "off"; readonly text: string; readonly model?: string };
 
 export function summarizeAiStatus(choice: AssistantEngineChoice | null, report: LocalAgentsReport | null): AiStatusSummary {
   if (choice) {
     const row = report?.clis.find(entry => entry.id === choice.cli);
     const label = LOCAL_PROGRAM_LABELS[choice.cli];
-    if (!report || row?.state === "ready") return { tone: "ok", text: t("{0} · 연결됨").replace("{0}", label) };
-    return { tone: "warn", text: t("{0} · 확인 필요").replace("{0}", label) };
+    if (!report || row?.state === "ready") return { tone: "ok", text: `${label} · 연결됨` };
+    return { tone: "warn", text: `${label} · 확인 필요` };
   }
   const ready = report?.clis.find(row => row.state === "ready");
-  if (ready) return { tone: "warn", text: t("{0} 찾음 · 고르기").replace("{0}", LOCAL_PROGRAM_LABELS[ready.id]) };
+  if (ready) return { tone: "warn", text: `${LOCAL_PROGRAM_LABELS[ready.id]} 찾음 · 고르기` };
   return { tone: "off", text: "AI 엔진 · 설정" };
 }
