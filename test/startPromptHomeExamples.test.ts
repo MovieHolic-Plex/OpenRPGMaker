@@ -1,11 +1,12 @@
 /** @vitest-environment happy-dom */
 // 첫 화면 「예제 열어 보기」 — 기본 게임 행은 편집기에서 연다. 바로 플레이하는 입구로 돌아가면 안 된다
 // (Studio/런타임 분리 B안, http://mdc-server:18301/studio-runtime-split.html).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { LOCALE_CHANGED_EVENT, setLocale } from "@/i18n";
 import { createPromptHome, PROMPT_HOME_TESTIDS } from "@/start/firstRun/promptHome";
 import { BUILTIN_GAMES, type BuiltinGameId } from "@/start/home/builtinGames";
-import { isDefaultProjectTitle } from "@/start/home/homeView";
+import { coverArt, fillCover, isDefaultProjectTitle } from "@/start/home/homeView";
+import { mountStartScreen } from "@/start/startScreen";
 
 describe("첫 화면 예제 행", () => {
   it("행을 누르면 그 게임을 편집기에서 연다", () => {
@@ -62,9 +63,11 @@ describe("첫 화면 예제 행", () => {
     document.addEventListener(LOCALE_CHANGED_EVENT, home.syncLocale);
     document.body.append(home.element);
     const game = (title: string) => ({
-      key: title, title, titleIsDefault: isDefaultProjectTitle(title), meta: "", cover: document.createElement("span"),
+      key: title, title, titleIsDefault: isDefaultProjectTitle(title), meta: "",
+      cover: coverArt({ projectDir: title, title }, "fr-gcard-cov"),
     });
-    home.setGames([game("새 프로젝트"), game("첫사랑")], 2);
+    const defaultGame = game("새 프로젝트");
+    home.setGames([defaultGame, game("첫사랑")], 2);
     const read = () => ({
       locale: home.element.querySelector(".fr-locale span:last-child")?.textContent,
       more: home.element.querySelector(`[data-testid="${PROMPT_HOME_TESTIDS.gamesMore}"]`)?.textContent,
@@ -87,9 +90,60 @@ describe("첫 화면 예제 행", () => {
       expect(read()).toMatchObject({ locale: "日本語", more: "すべて表示（2）", examples: ["フォールン・スター", "アストラ・ホライゾン", "初恋"] });
       await setLocale("zh");
       expect(read()).toMatchObject({ locale: "简体中文", more: "查看全部（2）", examples: ["陨落之星", "星穹地平线", "初恋"] });
+      fillCover(defaultGame.cover, "data:image/jpeg;base64,/9j/", defaultGame.title);
+      expect(defaultGame.cover.querySelector("img")).not.toBeNull();
+      fillCover(defaultGame.cover, null, defaultGame.title);
+      expect(defaultGame.cover.textContent).toBe("新");
     } finally {
       document.removeEventListener(LOCALE_CHANGED_EVENT, home.syncLocale);
       home.element.remove();
+      await setLocale("ko");
+      localStorage.clear();
+    }
+  });
+
+  it("updates the overflow menu and both My games views when the locale changes", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const initialUrl = location.href;
+    const initialHistoryState = history.state;
+    const find = (testid: string) => host.querySelector<HTMLButtonElement>(`[data-testid="${testid}"]`)!;
+    const labels = () => ["first-run-more-create", "first-run-more-builtin"].map((id) => find(id).textContent);
+    const initials = () => [...host.querySelectorAll("[data-cover-for] .hm-ph b")].map((cover) => cover.textContent);
+    try {
+      mountStartScreen(host, {
+        recentProjects: async () => [
+          { projectDir: "/games/default", title: "새 프로젝트" },
+          { projectDir: "/games/authored", title: "첫사랑" },
+        ],
+        openFolder: async () => null,
+        createProject: async () => null,
+      });
+      await vi.waitFor(() => expect(initials()).toHaveLength(2));
+      find("first-run-more").click();
+      expect(find("first-run-more").getAttribute("aria-expanded")).toBe("true");
+      expect(labels()).toEqual(["아이디어 둘러보기", "예제 모두 보기"]);
+      expect(initials()).toEqual(["새", "첫"]);
+      await setLocale("en");
+      expect.soft(labels()).toEqual(["Browse ideas", "See all examples"]);
+      expect.soft(initials()).toEqual(["N", "첫"]);
+      await setLocale("ja");
+      expect.soft(labels()).toEqual(["アイデアを探す", "すべてのサンプルを見る"]);
+      expect.soft(initials()).toEqual(["新", "첫"]);
+      await setLocale("zh");
+      expect.soft(labels()).toEqual(["浏览创意", "查看所有示例"]);
+      expect.soft(initials()).toEqual(["新", "첫"]);
+      await setLocale("ko");
+      expect(labels()).toEqual(["아이디어 둘러보기", "예제 모두 보기"]);
+      expect(initials()).toEqual(["새", "첫"]);
+
+      find(PROMPT_HOME_TESTIDS.gamesMore).click();
+      expect(host.dataset.view).toBe("games");
+      await setLocale("en");
+      expect(initials()).toEqual(["N", "첫"]);
+    } finally {
+      host.remove();
+      history.replaceState(initialHistoryState, "", initialUrl);
       await setLocale("ko");
       localStorage.clear();
     }

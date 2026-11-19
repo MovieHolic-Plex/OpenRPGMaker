@@ -414,10 +414,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       cover: coverArt(entry, "fr-gcard-cov"),
     })), state.entries.filter((entry) => entry.hiddenReason !== "temporary").length);
   };
-  document.addEventListener(LOCALE_CHANGED_EVENT, () => {
-    promptHome?.syncLocale();
-    if (promptShown()) renderPromptGames();
-  });
   const showPromptHome = (): void => {
     promptHome ??= createPromptHome({
       submit: submitFirstRun,
@@ -503,6 +499,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       : el("div", { children: [firstRunShelf(actions), ...(hiddenNote() ? [hiddenNote()!] : [])] }));
   };
   const renderBuiltinSection = (): void => { builtinPage.inner.replaceChildren(builtinShelf(actions)); };
+  document.addEventListener(LOCALE_CHANGED_EVENT, () => {
+    promptHome?.syncLocale();
+    if (promptShown()) renderPromptGames();
+    else if (state.section === "games") renderGamesSection();
+  });
 
   /** 칸을 상태에서 그려 틀에 꽂는다. */
   const mount = (section: StartSection): void => {
