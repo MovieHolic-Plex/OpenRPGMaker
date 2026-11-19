@@ -9,7 +9,7 @@ import { resolve, basename, dirname } from 'node:path';
 import { PNG } from 'pngjs';
 import {
   OBJECT_GATE_EYE_OUTPUT_FORMAT, OBJECT_GATE_EYE_RUBRIC, OBJECT_GATE_KINDS, OBJECT_GATE_OUTPUT_FORMAT, OBJECT_GATE_PROFILE, OBJECT_GATE_RUBRIC, OBJECT_GATE_STYLE_KINDS, OBJECT_GATE_STYLE_OUTPUT_FORMAT, OBJECT_GATE_STYLE_RUBRIC,
-  decideObjectGate, decideObjectGateBoth, decideObjectGateStyle, defaultObjectGateStyleKind, objectGatePixelSha256,
+  decideObjectGate, decideObjectGateBoth, decideObjectGateStyle, decideWorkshopRelaxed, defaultObjectGateStyleKind, objectGatePixelSha256, OBJECT_GATE_WORKSHOP_RELAX_VERSION,
   objectGateProfileHash, type ObjectGateKind, type ObjectGateReceipt, type ObjectGateRun, type ObjectGateStyleKind, type ObjectGateStyleRefSet,
 } from '../../_core/objectGate';
 import { BASE_STYLE_REF_SET, GATE_DATA, chipsetOfLabel, gatePromptHash, gateProfileHash, readPng, readReceipt, resolveStyleRefs, writeHeldImage, writeProfile, writeReceipt } from './store';
@@ -422,30 +422,34 @@ if (stage === 'workshop') {
   const { width, height, data } = readPng(png);
   const sha = await objectGatePixelSha256(width, height, data);
   const profileHash = await gateProfileHash();
-  const recordPath = resolve(root, sha.slice(0, 2), `${sha}-${kind}.json`);
+  const recordPath = resolve(root, sha.slice(0, 2), `${sha}-${kind}-relax${OBJECT_GATE_WORKSHOP_RELAX_VERSION}.json`);
   let fix = '';
-  type WorkshopGateRecord = { schema: 'oprn-workshop-gate/1'; pixelSha256: string; kind: string; profileHash: string; verdict: string; final: 'pass' | 'fail'; reasons: string[]; fix?: string; refer: null | { verdict: 'pass' | 'fail'; sure: boolean; reasons: string[]; judge: string }; receipt: ObjectGateReceipt; decidedAt: string; calls: number; ms: number };
+  type WorkshopGateRecord = { schema: 'oprn-workshop-gate/1'; pixelSha256: string; kind: string; profileHash: string; verdict: string; final: 'pass' | 'fail'; reasons: string[]; fix?: string; refer: null | { verdict: 'pass' | 'fail'; sure: boolean; reasons: string[]; judge: string }; relaxed?: { version: number; state: string; reasons: string[] }; receipt: ObjectGateReceipt; decidedAt: string; calls: number; ms: number };
   const started = Date.now();
   let record: WorkshopGateRecord | null = existsSync(recordPath) ? JSON.parse(readFileSync(recordPath, 'utf8')) as WorkshopGateRecord : null;
   if (record && record.profileHash !== profileHash) record = null;
   if (!record) {
     const before = calls;
     const [receipt] = await judgeItems([item], { force: false, write: false, concurrency, quiet: true, shareEyeAnswers: true });
+    // 공방 단계 완화(2026-11-08 tiles-relax): 같은 판정자 답을 decideWorkshopRelaxed 로 다시 읽는다. 엄격 영수증(receipt.verdict)은 그대로 남기고,
+    // 완화 판정이 pass 면 이 게임에 굽는다. 완화도 갈리면(refer) 적대 검사 한 번이 정한다. 번들·스토어 출구는 이 기록을 쓰지 않는다.
+    const runsAll = receipt!.runs ?? [];
+    const relaxed = decideWorkshopRelaxed(kind, runsAll.map(r => (r.answer ?? null) as never), runsAll.map(r => (r.styleAnswer ?? null) as never));
     let refer: WorkshopGateRecord['refer'] = null;
-    if (receipt!.verdict === 'refer') refer = await referCheck(item, receipt!);
-    const final = receipt!.verdict === 'pass' ? 'pass' : receipt!.verdict === 'refer' && refer?.verdict === 'pass' ? 'pass' : 'fail';
-    const reasons = final === 'pass' ? [] : (refer && refer.verdict === 'fail' ? refer.reasons : receipt!.reasons).slice(0, 4);
+    if (receipt!.verdict !== 'pass' && relaxed.state === 'refer') refer = await referCheck(item, receipt!);
+    const final = receipt!.verdict === 'pass' || relaxed.state === 'pass' ? 'pass' : relaxed.state === 'refer' && refer?.verdict === 'pass' ? 'pass' : 'fail';
+    const reasons = final === 'pass' ? [] : (refer && refer.verdict === 'fail' ? refer.reasons : relaxed.reasons.length ? relaxed.reasons : receipt!.reasons).slice(0, 4);
     // 다시 그릴 때 줄 고칠 점: 판정 규칙 이유(「화풍: 판정자 fail (4/4)」)만으로는 무엇을 고칠지 모른다 — 떨어진 반쪽 판정자의 근거 글을 붙인다.
     const evidence = (answer: unknown) => String((answer as { evidence?: unknown } | null)?.evidence ?? '').replace(/\s+/g, ' ').trim();
     const runs = receipt!.runs ?? [];
     const styleWhy = receipt!.style?.verdict !== 'pass' ? runs.filter(r => r.style && !r.style.pass).map(r => evidence(r.styleAnswer)).find(Boolean) ?? '' : '';
     const viewWhy = receipt!.view34?.verdict !== 'pass' ? runs.filter(r => r.view34 && !r.view34.pass).map(r => evidence(r.answer)).find(Boolean) ?? '' : '';
     fix = final === 'pass' ? '' : [...reasons, ...(viewWhy ? [`3/4: ${viewWhy}`] : []), ...(styleWhy ? [`style: ${styleWhy}`] : [])].join(' / ').slice(0, 1200);
-    record = { schema: 'oprn-workshop-gate/1', pixelSha256: sha, kind, profileHash, verdict: receipt!.verdict, final, reasons, fix, refer, receipt: receipt!, decidedAt: new Date().toISOString(), calls: calls - before, ms: Date.now() - started };
+    record = { schema: 'oprn-workshop-gate/1', pixelSha256: sha, kind, profileHash, verdict: receipt!.verdict, final, reasons, fix, refer, relaxed: { version: OBJECT_GATE_WORKSHOP_RELAX_VERSION, state: relaxed.state, reasons: relaxed.reasons }, receipt: receipt!, decidedAt: new Date().toISOString(), calls: calls - before, ms: Date.now() - started };
     mkdirSync(dirname(recordPath), { recursive: true });
     writeFileSync(recordPath, `${JSON.stringify(record, null, 1)}\n`);
   }
-  console.log(JSON.stringify({ ok: true, pixelSha256: sha, kind, profileHash, verdict: record.verdict, final: record.final, reasons: record.reasons, fix: record.fix ?? record.reasons.join(' / '), refer: record.refer, view34: record.receipt.view34, style: record.receipt.style ? { verdict: record.receipt.style.verdict, reasons: record.receipt.style.reasons } : null, calls: record.calls, ms: record.ms, cached: Date.now() - started < 2000, record: recordPath }));
+  console.log(JSON.stringify({ ok: true, pixelSha256: sha, kind, profileHash, verdict: record.verdict, final: record.final, relaxed: record.relaxed ?? null, reasons: record.reasons, fix: record.fix ?? record.reasons.join(' / '), refer: record.refer, view34: record.receipt.view34, style: record.receipt.style ? { verdict: record.receipt.style.verdict, reasons: record.receipt.style.reasons } : null, calls: record.calls, ms: record.ms, cached: Date.now() - started < 2000, record: recordPath }));
   process.exit(0);
 }
 
