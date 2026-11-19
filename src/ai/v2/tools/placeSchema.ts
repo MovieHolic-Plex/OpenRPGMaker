@@ -99,6 +99,7 @@ export const HINTS_SCHEMA = {
     length: { type: "string", description: "street length short|medium|long (only for builders the card mentions)" },
     plaza: { type: "string" },
     landmark: { type: "string" },
+    district: { type: "string" },
     shops: { type: "string", description: "short shop names, comma-separated, left to right" },
     mirror: { type: "boolean" },
     floorShapes: { type: "string", description: "shape per floor, comma-separated (bottom floor first)" },
