@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { openTeamDirectory, type TeamDirectory, type TeamMember } from "../local-store/team";
 import { join } from "node:path";
 import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
+import { containsPath } from "./projectFolderPath";
 import { initLocalProjectStore, type LocalProjectStore } from "../local-store/store";
 
 /** 창 하나·탭 하나를 가리키는 키. Electron 은 webContents.id, HTTP는 로그인 세션·브라우저 탭별 키를 쓴다. */
@@ -195,6 +196,9 @@ export function createProjectSessionRegistry() {
     close(key: SessionKey): void {
       epoch.set(key, epochOf(key) + 1);
       detach(key);
+    },
+    hasOpenProjectWithin(projectDir: string): boolean {
+      return [...openingCount.keys(), ...byProjectDir.keys()].some((dir) => containsPath(projectDir, dir));
     },
     directoryExists(projectDir: string): boolean {
       return existsSync(join(projectDir, "project.sqlite"));

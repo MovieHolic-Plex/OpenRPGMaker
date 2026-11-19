@@ -77,8 +77,7 @@
 .hm-more:hover { color: var(--text-1); text-decoration: underline; text-underline-offset: 3px; }
 .hm-shelf { display: grid; gap: var(--space-5) var(--space-4); }
 
-/* 내 게임 — 홈의 「내 게임」 줄(fr-gcard)과 같은 카드. 게임이 몇 개든 전부 보인다. */
-.hm-games { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+/* 내 게임 — 프로젝트 이름과 폴더 표지 */
 .hm-card { position: relative; min-width: 0; }
 .hm-card-hit { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .hm-cov {
@@ -92,16 +91,6 @@
 .hm-cap { display: flex; flex-direction: column; min-width: 0; }
 .hm-nm { overflow: hidden; font-size: var(--font-13); font-weight: var(--font-weight-medium); text-overflow: ellipsis; white-space: nowrap; }
 .hm-mt { overflow: hidden; color: var(--text-3); font-size: var(--font-12); text-overflow: ellipsis; white-space: nowrap; }
-.hm-card.is-hidden-entry { opacity: 0.55; }
-.hm-new {
-  display: grid; place-items: center; align-content: center; gap: var(--space-1); align-self: start; aspect-ratio: 16 / 10;
-  border: var(--stroke-1) dashed var(--border-default); border-radius: var(--radius-3); background: transparent;
-  color: var(--text-2); font: inherit; font-size: var(--font-13); font-weight: var(--font-weight-medium); cursor: pointer;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
-}
-.hm-new:hover { background: var(--bg-hover); color: var(--text-1); }
-.hm-new .ln-icon svg { width: 18px; height: 18px; }
-
 /* 게임이 하나도 없을 때 */
 .hm-empty { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); padding: var(--space-6) var(--space-4); text-align: center; }
 .hm-empty h4 { margin: 0; font-size: var(--font-18); font-weight: var(--font-weight-semibold); }
@@ -210,8 +199,24 @@
   .ln-brand strong, .ln-top-actions { display: none; }
   .ln-tabs { justify-self: end; }
   .ln-tab { padding: 0 var(--space-3); }
-  .hm-games { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ln-tab, .ln-tbtn, .ln-btn, .hm-btn, .ln-team, .hm-new { transition: none; }
+  .ln-tab, .ln-tbtn, .ln-btn, .hm-btn, .ln-team { transition: none; }
 }
+
+/* 최근 프로젝트 목록 */
+.hm-project-toolbar { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+.hm-project-toolbar input { flex: 1 1 12rem; }
+.hm-project-toolbar .hm-project-sort { flex: 0 0 auto; }
+.hm-project-row {
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2);
+  border-bottom: var(--stroke-1) solid var(--border-subtle);
+}
+.hm-project-row:hover, .hm-project-row:focus-within { background: var(--bg-hover); }
+.hm-project-row .hm-card-hit { flex: 1; flex-direction: row; align-items: center; gap: var(--space-3); min-width: 0; }
+.hm-project-row .hm-cov { flex: 0 0 48px; margin: 0; }
+.hm-project-row .hm-ph b { font-size: var(--font-13); }
+.hm-project-row .hm-menu-wrap { position: relative; inset: auto; }
+.hm-project-row .hm-more-btn { opacity: 1; }
+.hm-project-row.is-missing .hm-card-hit { opacity: 0.55; cursor: default; }
+.hm-project-row .hm-opened-at { display: grid; justify-items: end; flex: 0 0 auto; }

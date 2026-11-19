@@ -115,7 +115,8 @@ export type OprnBridgeLifecycle = {
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
   readonly openFolder: (payload?: { readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
-  readonly openRecent?: (payload: { readonly projectDir: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+  readonly openRecent?: (payload: { readonly projectDir: string }) => Promise<{ readonly projectDir: string; readonly projectId: string | null; readonly focusedExisting?: boolean } | null>;
+  readonly manageRecent?: (payload: { readonly projectDir: string; readonly action: import("../../../electron/shared/start").RecentFolderAction }) => Promise<boolean>;
   /** 데스크톱 전용 — 최근 목록 프로젝트의 제목(문서 meta.title)을 바꾼다. 목록에 없는 경로·빈 제목이면 null. */
   readonly renameProject?: (payload: { readonly projectDir: string; readonly title: string }) => Promise<{ readonly projectDir: string; readonly title: string } | null>;
   /** 데스크톱 전용 — 최근 목록에서만 뺀다(폴더·파일은 그대로). 목록에 없던 경로면 false. */
