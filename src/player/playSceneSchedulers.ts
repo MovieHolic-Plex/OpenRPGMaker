@@ -379,7 +379,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "playAudio":
       setAudioState(scene.session, step);
       playAudioCommand(step, store.getCurrent());
-      if (step.loop && (step.channel ?? "bgm") === "bgm") showAudioIndicator(scene, step.resourceId);
+      showAudioIndicator(scene, step);
       return true;
     case "stopAudio":
       clearAudioState(scene.session, step.channel);

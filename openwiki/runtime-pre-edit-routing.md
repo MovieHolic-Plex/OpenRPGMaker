@@ -1312,6 +1312,7 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 
+- **결정 키 누르고 있기.** `dialogue.ts`는 운영체제 반복 입력으로 160ms 간격마다 글자를 채우거나 다음 쪽으로 넘긴다. 숨긴 창, 백로그, 오토·스킵 재생 중인 창, 넘기기 금지 줄에서는 반복 입력을 진행에 쓰지 않는다. 선택지와 숫자 입력은 새 결정 키를 받는다.
 - **옵트인 저작.** `meta.oprnDialogueSystem`(순수 모듈 `src/project/dialogueSystem.ts`)이 없고 관계 중심 게임도 아니면 대사창·ESC 메뉴·설정 화면은 예전과 바이트 단위로 같다(예전 hover 「기록」 단추·세션 로그 포함, 설정은 8줄 그대로). 켜지면 `dialogue.ts` 가 단축키(오토 A · 스킵 S · 백로그 L/PageUp/휠 위 · 숨기기 H, Ctrl 누르는 동안 스킵)와 `dialogueBacklogView`(전체 화면, 휠·방향키·Esc, 캡처 단계에서 키를 삼킴)를 붙인다.
 - **대사창 단추 줄 없음 (2026-10-17 사용자 지시).** 예전 `.dialogue-bar`(오토·스킵·백로그·숨기기 단추 + 멈춤 알림)는 흉상·글을 가려 지웠다(`dialogueControlBar.ts`·`bar.*`/`notice.*` 글자·CSS 삭제). 저작된 대사 시스템에서는 옛 「기록」 단추도 그리지 않는다 — 대사창 안에 단추가 하나도 없다. 기능 자체(단축키·백로그·ESC 메뉴·설정)는 남는다. 멈춘 이유는 `overlay.dataset.readingStop` 에만 남는다. `vn-bust-bottom` 탐침은 단추 줄이 다시 생기면 비트를 실패시킨다.
 - **저장.** 세션 `dialogueBacklog`(링 버퍼, 항목 line/choice, 저작 limit 20~500 기본 100)와 `dialogueRead`(화자+본문 FNV-1a 키, 상한 4000)는 세이브에 들어가고 저장·불러오기·파싱 모두에서 `normalizeBacklog`/`normalizeReadKeys` 로 다시 자른다(손댄 세이브도 상한을 넘지 못함). 전투 안 대사는 `reading:"off"` 라 합성 세션에 기록하지 않는다.

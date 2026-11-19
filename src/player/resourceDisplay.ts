@@ -1,4 +1,6 @@
 import { store } from "@/project/store";
+import type { AudioChannel, AudioTrackState } from "@/project/session";
+import { audioChannelForCommand } from "@/player/audio/audioResources";
 
 export function resourceDisplayName(resourceId: string | undefined, fallback: string): string {
   if (!resourceId) return fallback;
@@ -22,12 +24,14 @@ export function audioIndicatorText(resourceId: string | undefined): string | und
   return uploadedName && uploadedName !== id ? uploadedName : undefined;
 }
 
-/** 루프 음원 배너를 띄운다. 보일 이름이 없으면 이전 곡의 배너도 걷는다(지금 곡과 다른 글자가 남지 않게). */
+/** 루프 BGM만 이름을 띄운다. 이름 없는 곡이 시작하면 이전 곡의 배너를 걷는다. */
 export function showAudioIndicator(
   scene: { showRuntimeOverlay(testId: string, text: string): void; clearRuntimeOverlay(testId: string): void },
-  resourceId: string | undefined,
+  track: Pick<AudioTrackState, "resourceId" | "loop"> & { channel?: AudioChannel },
 ): void {
-  const label = audioIndicatorText(resourceId);
+  const channel = track.channel ?? audioChannelForCommand(track.loop);
+  if (channel !== "bgm" || !track.loop) return;
+  const label = audioIndicatorText(track.resourceId);
   if (label) scene.showRuntimeOverlay("audio-indicator", label);
   else scene.clearRuntimeOverlay("audio-indicator");
 }

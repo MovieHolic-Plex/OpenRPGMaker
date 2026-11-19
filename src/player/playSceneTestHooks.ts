@@ -23,6 +23,7 @@ import {
 } from "@/player/cloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
+import { showAudioIndicator } from "@/player/resourceDisplay";
 import { activeEventRunLog, installEventRunLog, type EventRunEffect } from "@/player/eventRunLog";
 import { monsterCurrentHp, monsterMaxHp } from "@/project/monsterCollection";
 import { terrainRecordAt } from "@/project/terrainAt";
@@ -159,9 +160,7 @@ type MediaStateDebug = {
   readonly y?: number;
 };
 
-type RuntimeOverlayScene = Phaser.Scene & {
-  showRuntimeOverlay: (testId: string, text: string) => void;
-};
+type RuntimeOverlayScene = Phaser.Scene & Pick<PlaySceneContext, "showRuntimeOverlay" | "clearRuntimeOverlay">;
 
 type PlayerSpriteDebug = {
   readonly textureKey: string;
@@ -482,7 +481,7 @@ export function installPlaySceneTestHooks(
       if (state.audioResourceId) {
         session.audio.bgm = { resourceId: state.audioResourceId, loop: true };
         if (hasRuntimeOverlay(scene)) {
-          scene.showRuntimeOverlay.call(scene, "audio-indicator", state.audioResourceId);
+          showAudioIndicator(scene, session.audio.bgm);
         }
       }
       if (state.pictureId) {
@@ -727,7 +726,8 @@ function perfCountersDebug(scene: Phaser.Scene): RuntimePerfCounters | null {
 }
 
 function hasRuntimeOverlay(scene: Phaser.Scene): scene is RuntimeOverlayScene {
-  return typeof (scene as RuntimeOverlayScene).showRuntimeOverlay === "function";
+  const candidate = scene as RuntimeOverlayScene;
+  return typeof candidate.showRuntimeOverlay === "function" && typeof candidate.clearRuntimeOverlay === "function";
 }
 
 function playerSpriteDebug(scene: Phaser.Scene): PlayerSpriteDebug | null {

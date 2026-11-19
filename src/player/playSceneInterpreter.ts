@@ -775,8 +775,7 @@ async function consumeBlockingStep(
     case "playAudio":
       setAudioState(scene.session, step);
       playAudioCommand(step, store.getCurrent());
-      // 곡 이름 배너는 BGM용이다. BGS(환경음)는 장면 위에 이름을 띄우지 않는다.
-      if (step.loop && (step.channel ?? "bgm") === "bgm") showAudioIndicator(scene, step.resourceId);
+      showAudioIndicator(scene, step);
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":

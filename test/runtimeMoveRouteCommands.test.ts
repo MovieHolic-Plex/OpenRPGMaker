@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { store } from "@/project/store";
+import type { RuntimeEventView } from "@/project/runtimeEventState";
 import type { MoveCommand } from "@/project/types";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import {
@@ -50,23 +51,23 @@ describe("runtime move route commands", () => {
     });
 
     registerPageMoveRoutes(scene);
-    // 배너는 이름이 있는 음원만 띄운다(리소스 id 는 플레이어에게 보이지 않는다).
+    // 이름 있는 경로 효과음도 배너를 띄우지 않는다.
     store.getCurrent().resourceProfiles.push({ kind: "sound", assetId: "se_route_chime", name: "경로 종소리" });
     const sprite = mockSprite();
     const overlays: Record<string, string> = {};
     const markerUpdates: string[] = [];
-    const runtimeScene: Parameters<typeof updateAutonomousNPCs>[0] = {
+    const runtimeScene = {
       ...scene,
       tileX: 4,
       tileY: 4,
       eventSprites: new Map([["npc", sprite]]),
       runtimeDom: {
-        upsertEventMarker: (view) => {
+        upsertEventMarker: (view: RuntimeEventView) => {
           markerUpdates.push(`${view.x},${view.y}`);
         },
       },
       runEvent: async () => undefined,
-      showRuntimeOverlay: (testId, text) => {
+      showRuntimeOverlay: (testId: string, text: string) => {
         overlays[testId] = text;
       },
     };
@@ -93,7 +94,8 @@ describe("runtime move route commands", () => {
     expect(mover.opacity).toBe(255);
     expect(sprite.alpha).toBe(1);
     expect(sprite.texture.key).toBe("tex_easyrpg_charset_people1");
-    expect(overlays["audio-indicator"]).toBe("경로 종소리");
+    expect(scene.session.audio.se).toEqual({ resourceId: "se_route_chime", loop: false });
+    expect(overlays["audio-indicator"]).toBeUndefined();
     expect(markerUpdates.length).toBeGreaterThan(0);
   });
 

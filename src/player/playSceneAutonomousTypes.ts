@@ -20,7 +20,6 @@ export type AutonomousNpcSceneContext = Pick<
     keys?(): Iterable<string>;
   };
   readonly runtimeDom: Pick<PlaySceneContext["runtimeDom"], "upsertEventMarker">;
-  readonly showRuntimeOverlay?: PlaySceneContext["showRuntimeOverlay"];
   readonly refreshRuntimeSurfaces?: PlaySceneContext["refreshRuntimeSurfaces"];
   readonly syncRuntimeState?: PlaySceneContext["syncRuntimeState"];
   readonly commandMoveRouteEventIds?: PlaySceneContext["commandMoveRouteEventIds"];
