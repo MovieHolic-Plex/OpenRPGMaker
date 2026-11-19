@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEventDraft, beginExistingEventDraft, discardEventDraft, saveEventDraft } from "@/editor/eventDraftActions";
 import { editorState } from "@/editor/editorState";
 import { setEventPageTextCommand } from "@/editor/eventPages";
@@ -22,6 +22,46 @@ beforeEach(() => {
 });
 
 describe("event draft lifecycle", () => {
+  it("publishes opening and cancelling an unchanged edit draft without scheduling autosave", async () => {
+    const mapId = store.getCurrent().startMapId;
+    const eventId = createEventDraft(mapId, 4, 4);
+    saveEventDraft(mapId, eventId);
+    store._setCleanPersistStateForTest();
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    const changes = vi.fn();
+    const saveStates = vi.fn();
+    const unsubscribe = store.subscribe(changes);
+    const unsubscribeSave = store.subscribeAutoSave(saveStates);
+
+    try {
+      expect(beginExistingEventDraft(mapId, eventId)).toBe(true);
+      expect(store.hasUnsavedChanges()).toBe(false);
+      expect(changes).toHaveBeenNthCalledWith(1, expect.anything(), expect.objectContaining({
+        eventId, eventDraftStarted: true,
+      }));
+      expect(discardEventDraft(mapId, eventId)).toBe(true);
+      expect(store.hasUnsavedChanges()).toBe(false);
+      expect(changes).toHaveBeenNthCalledWith(2, expect.anything(), expect.objectContaining({ eventId }));
+      expect(store.getCurrent().maps[mapId].events.find(event => event.id === eventId)?.draft).toBeUndefined();
+      expect(saveStates).not.toHaveBeenCalled();
+
+      beginExistingEventDraft(mapId, eventId);
+      store.updateEvent(mapId, eventId, (event) => { event.name = "Edited"; });
+      expect(store.hasUnsavedChanges()).toBe(true);
+      expect(saveStates).toHaveBeenLastCalledWith({ kind: "pending" });
+
+      saveStates.mockClear();
+      saveEventDraft(mapId, eventId);
+      expect(store.hasUnsavedChanges()).toBe(true);
+      expect(saveStates).toHaveBeenLastCalledWith({ kind: "pending" });
+    } finally {
+      unsubscribe();
+      unsubscribeSave();
+      store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+      await store.flush(); // Clear the Apply autosave timer without writing.
+    }
+  });
+
   it("opens existing multi-page events on the first page by default", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;

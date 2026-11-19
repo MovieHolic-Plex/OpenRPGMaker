@@ -27,7 +27,7 @@ import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
-import { projectViewWithoutEventDrafts, projectWithoutEventDrafts, projectWithoutEventDraftsSharingSharedDictionaries } from "./eventDrafts";
+import { committedEventView, projectViewWithoutEventDrafts, projectWithoutEventDrafts, projectWithoutEventDraftsSharingSharedDictionaries } from "./eventDrafts";
 import { forgetTrustedSharedEntries, jsonContentDigest, primeSharedEntryDigests, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
 import { afterBootSettled } from "@/util/bootSettled";
 import { yieldToTask } from "@/util/yieldToTask";
@@ -110,6 +110,7 @@ export type ProjectChangeDescriptor =
       readonly cells?: readonly ProjectChangeCell[];
       /** An existing event acquired draft metadata without changing its working body. */
       readonly eventDraftStarted?: true;
+      readonly eventDraftDiscarded?: true;
       /** Array-only move; lets the event workbench refresh its List in place. */
       readonly eventCommandMove?: { readonly pageId: string };
       /** 높이(map.relief)만 바뀐 편집 — 높이 붓이 포인터 표본마다 낸다. 타일·이벤트·속성은 안 바뀐다. */
@@ -176,7 +177,8 @@ export type ProjectFlushResult =
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
   // A clean flush after load may have no accepted-save receipt. Never invent proof from it.
-  | { readonly kind: "saved"; readonly sha256?: string; readonly receipt?: ProjectPersistenceReceipt }
+  // written:false identifies a dirty flush whose document patch ended up empty.
+  | { readonly kind: "saved"; readonly written?: false; readonly sha256?: string; readonly receipt?: ProjectPersistenceReceipt }
   /** written:false = 이 세션(fresh/blank 등)은 기록을 건너뛰었다. 성공 토스트를 띄우면 안 된다. */
   | { readonly kind: "saved-local"; readonly written?: boolean };
 
@@ -270,6 +272,7 @@ class ProjectStore {
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveState: AutoSaveState = { kind: "idle" };
+  private lastSavedAt: number | null = null;
   // 마지막 편집 뒤 이만큼 조용하면 저장한다. 편집마다 타이머를 다시 걸어 연속 획은 한 저장으로 묶인다.
   // 4s 는 첫 칠하기가 「저장됨」까지 걸리는 시간의 절반이었다(2026-09-26 실측, 획을 뗄 뒤 6.9s 에 저장 시작).
   private readonly autoSaveDelayMs = 1500;
@@ -1094,12 +1097,19 @@ class ProjectStore {
     const draft = projectWithEventRevision(this.current, mapId, eventId, event);
     if (draft === this.current) return;
     assertCanonicalReplacement(draft, this.writeAuthority);
+    let draftOnly = false;
+    if (change.scope === "map" && (change.eventDraftStarted || change.eventDraftDiscarded)) {
+      const original = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId) ?? null;
+      draftOnly = jsonEqual(committedEventView(original), committedEventView(event));
+    }
     // Event edits cannot create map-tree/connections or database slot shapes.
     this.current = draft;
     syncEventDraftVaultFromProject(this.current);
-    this.markLocalMutation(change);
+    // Draft transitions still notify the editor and remain in the edit activity log.
+    if (draftOnly) this.recordChangeActivity(change);
+    else this.markLocalMutation(change);
     this.emit(change);
-    this.scheduleAutoSave();
+    if (!draftOnly) this.scheduleAutoSave();
   }
 
   /**
@@ -1478,6 +1488,7 @@ class ProjectStore {
   }
 
   private setAutoSaveState(state: AutoSaveState): void {
+    if (state.kind === "saved") this.lastSavedAt = state.at;
     this.autoSaveState = state;
     this.emitAutoSave();
   }
@@ -1623,6 +1634,7 @@ class ProjectStore {
         // immediately instead of reporting "saved" while still dirty and waiting
         // the full autosave debounce (tiles stay local; DB just lags one hop).
         let result = await this.persistCurrent();
+        let lastSavedAt = this.lastSavedAt;
         while (
           this.dirtySinceLastPersist
           && this.contentLineage === lineage
@@ -1632,6 +1644,7 @@ class ProjectStore {
           && (!canonical || this.contentLineage === lineage)
           && target !== null && sameProjectTarget(target, this.repository.currentTarget())
         ) {
+          if (result.written !== false) lastSavedAt = Date.now();
           result = await this.persistCurrent();
         }
         if (target && !sameProjectTarget(target, this.repository.currentTarget())) return result;
@@ -1641,6 +1654,7 @@ class ProjectStore {
             this.remotePersistenceDisabledReason === "dev-showcase"
               && isSaveSkippedLocation()
               && this.dirtySinceLastPersist,
+            lastSavedAt,
           ));
           this.autoSaveRetryCount = 0;
           this.stopHealthCheck();
@@ -1723,6 +1737,13 @@ class ProjectStore {
       : await this.repository.save(submittedProject, target, authority);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
+    if (result.written === false) {
+      if (this.contentLineage === lineageAtSubmit && sameProjectTarget(target, this.repository.currentTarget())
+        && this.mutationGeneration === generationAtSubmit) {
+        this.dirtySinceLastPersist = false;
+      }
+      return result;
+    }
     // 보기 제출본은 current 와 객체를 공유하므로 여기서부터는 붙잡지 않는다. 어댑터가 await 전에 만든 사적 사본을 쓴다.
     const submittedPrivate = result.submitted ?? (viewSubmit ? projectWithoutEventDrafts(submittedProject) : submittedProject);
     const savedProject = result.project ?? submittedPrivate;
@@ -2071,9 +2092,10 @@ function ensureMapTreeCoversAllMaps(project: Project): boolean {
   return repairMapTreeOrphans(project);
 }
 
-function autoSaveStateForFlushResult(result: ProjectFlushResult, sessionNotPersisted = false): AutoSaveState {
+function autoSaveStateForFlushResult(result: ProjectFlushResult, sessionNotPersisted: boolean, lastSavedAt: number | null): AutoSaveState {
   switch (result.kind) {
     case "saved":
+      if (result.written === false) return lastSavedAt === null ? { kind: "idle" } : { kind: "saved", at: lastSavedAt };
       return { kind: "saved", at: Date.now() };
     case "saved-local":
       return sessionNotPersisted ? nonPersistentSessionAutoSaveState() : { kind: "saved", at: Date.now() };
