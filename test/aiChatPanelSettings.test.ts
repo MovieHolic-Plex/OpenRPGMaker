@@ -282,8 +282,8 @@ describe("설정 자동 저장", () => {
 
     const writerRow = findByTestId(modal, "ai-settings-role-writer");
     const deepRow = findByTestId(modal, "ai-settings-role-deep");
-    expect(writerRow?.textContent).toContain("Writer");
-    expect(deepRow?.textContent).toContain("Deep");
+    expect(writerRow?.textContent).toContain("작문");
+    expect(deepRow?.textContent).toContain("실행 · 검증");
     expect(findByTestId(writerRow!, "ai-config-model")).not.toBeNull();
     expect(findByTestId(deepRow!, "ai-config-lite-model")).not.toBeNull();
   });
