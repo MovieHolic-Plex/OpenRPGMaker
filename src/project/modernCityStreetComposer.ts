@@ -11,44 +11,26 @@
 // 순수 함수다(프로젝트를 모른다). 칸 번호는 호출자가 준 사전(palette)에서 — 도구는 번들 정의에서 만든다(modernCityPaletteFromTileset).
 
 import type { MapTransit } from "./mapTransit";
+import { composeKoreanDistrict } from "./modernCityKoreanDistrict";
 import { autoTrafficRoutes, DEFAULT_MODERN_CAR_MIX, type RoadBand, type StopAnchor } from "./transitAuto";
+import { BIG_STREET_TREES, Board, lawnTile, MC_BUILDING_TYPES, mcBuildingType, mulberry, pick, shuffle, type MCBuilding, type MCCell, type MCKit, type MCPalette, type Use } from "./modernCityBoard";
 
-export interface MCKit {
-  readonly id: string;
-  readonly width: number;
-  readonly height: number;
-  readonly rows: readonly { readonly tiles: readonly number[]; readonly upperTiles?: readonly number[] }[];
-  /** 건물 문 앞 접근칸(키트 기준, dy = height). */
-  readonly access?: readonly { readonly dx: number; readonly dy: number }[];
-}
-export interface MCPalette {
-  /** 바닥 묶음(mc:sidewalk·mc:green·mc:plaza …)의 칸 번호들. 없으면 빈 배열. */
-  group(id: string): readonly number[];
-  kit(id: string): MCKit | undefined;
-  /** 건물 키트 id 전체(mc-bld-*). */
-  buildingKits(): readonly string[];
-}
+export { MC_BUILDING_TYPES, mcBuildingType };
+export type { MCBuilding, MCCell, MCKit, MCPalette };
 
-export interface MCCell { readonly x: number; readonly y: number }
-export interface MCBuilding {
-  readonly name: string;
-  readonly kind: string;
-  readonly kit: string;
-  readonly rect: { x: number; y: number; w: number; h: number };
-  /** 막힌 문 칸(키트 맨 아랫줄). */
-  readonly doors: MCCell[];
-  /** 문 바로 아래 접근칸(보도). */
-  readonly access: MCCell[];
-  /** 이 건물에 맞는 실내 방 구성(build_hand_interior_room layout.program) — 없으면 실내 예제 없음. */
-  readonly program?: string;
-}
 /**
  * 업무 지구 꾸밈(선택). 없으면 예전 거리 그대로다.
  * - landmark: 가장 먼저(가장 넓은 블록 가운데) 세울 건물 종류 — 예 "tower10"(유리 오피스 타워). 그 건물이 buildings[0] 이다.
  * - subwayExits: 지하철 출구 수(1~4). 출구마다 번호 표지(mc-prop-kr-exit-N, 칩셋에 있으면)를 옆에 세우고 결과 subwayExits 에 번호·계단 칸을 준다.
  * - korean: 한국 거리 단서 — 보도 점자 블록 줄·가로수 보호판·버스 쉘터·자전거 거치대·한글 세로 입간판(칩셋에 있는 키트만).
  */
-export interface MCDistrict { readonly landmark?: string; readonly subwayExits?: number; readonly korean?: boolean }
+export interface MCDistrict {
+  readonly landmark?: string; readonly subwayExits?: number; readonly korean?: boolean;
+  /** 한국 지구 종류(modernCityDistrictKinds) — 종류 id·이름 또는 "auto". 주면 한국 지구 구성기(modernCityKoreanDistrict.ts)가 짓는다. */
+  readonly kind?: string;
+  /** 게임 열쇠(같은 게임 = 같은 순서) · 그 게임이 이미 쓴 종류 id — 종류 고르기에만 쓴다. */
+  readonly key?: string; readonly used?: readonly string[];
+}
 export interface MCStreetSpec { readonly width: number; readonly height: number; readonly seed?: number; readonly shops?: readonly string[]; readonly district?: MCDistrict }
 /** 지하철 출구 하나: 번호·입구 덩어리 왼쪽 위 칸·계단 칸(막힘, 문 이벤트 자리)·발판(계단 바로 아래 걸을 칸). */
 export interface MCSubwayExit { readonly n: number; readonly at: MCCell; readonly stair: MCCell; readonly step: MCCell }
@@ -64,110 +46,19 @@ export interface MCStreetResult {
   readonly notes: string[];
   readonly transit: MapTransit;
   readonly subwayExits: MCSubwayExit[];
+  /** 한국 지구 구성기가 지었으면 그 종류. */
+  readonly district?: { readonly id: string; readonly ko: string; readonly en: string };
 }
 
 export const MODERN_CITY_STREET_MIN = { w: 40, h: 30 } as const;
 export const MODERN_CITY_STREET_MAX = { w: 120, h: 100 } as const;
 
-/** 건물 종류(키트 id 의 mc-bld-<종류>-…) → 이름 · 실내 방 구성. */
-export const MC_BUILDING_TYPES: Readonly<Record<string, { ko: string; program?: string; weight: number }>> = {
-  conv: { ko: "편의점", program: "konbini", weight: 3 }, cafe: { ko: "카페", program: "cafe", weight: 2 }, bank: { ko: "은행", program: "bank", weight: 2 },
-  hospital: { ko: "병원", program: "hospital-ward", weight: 2 }, office: { ko: "사무소", program: "office-floor", weight: 2 }, "office-wide": { ko: "대형 오피스", program: "office-floor", weight: 2 },
-  mid4: { ko: "4층 사무·상가", program: "office-floor", weight: 2 }, mid6: { ko: "6층 빌딩", program: "lobby", weight: 2 }, tower10: { ko: "오피스 타워", program: "lobby", weight: 1 },
-  hotel: { ko: "호텔", program: "lobby", weight: 1 }, dept: { ko: "백화점", program: "lobby", weight: 1 },
-  apartment: { ko: "아파트", program: "apartment", weight: 2 }, "apt-balcony": { ko: "발코니 아파트", program: "apartment", weight: 1 }, tower10b: { ko: "주거 타워", program: "apartment", weight: 1 },
-  "fire-escape": { ko: "비상계단 아파트", program: "apartment", weight: 1 }, balcony2: { ko: "발코니 아파트", program: "apartment", weight: 1 }, low3: { ko: "3층 상가주택", program: "apartment", weight: 2 },
-  house: { ko: "단독주택", program: "apartment", weight: 1 }, "house-modern": { ko: "주택", program: "apartment", weight: 1 }, row: { ko: "연립주택", program: "apartment", weight: 1 },
-  warehouse: { ko: "창고", program: "warehouse", weight: 1 },
-  shop: { ko: "상점", weight: 2 }, izakaya: { ko: "이자카야", weight: 2 }, bakery: { ko: "빵집", weight: 1 }, slim: { ko: "슬림 빌딩", weight: 1 }, post: { ko: "우체국", weight: 1 },
-  police: { ko: "경찰서", weight: 1 }, fire: { ko: "소방서", weight: 1 }, parking: { ko: "주차 건물", weight: 1 }, "parking-v2": { ko: "주차 건물", weight: 1 },
-};
 /** 거리마다 하나씩은 넣는 종류(씨앗이 순서를 섞는다) — 실내 예제가 있는 건물. */
 const MUST: readonly string[][] = [["conv"], ["office", "office-wide", "mid4"], ["hospital"], ["cafe"], ["bank"], ["apartment", "apt-balcony", "balcony2", "low3"], ["mid6", "hotel", "dept"]];
 /** 한 맵에 하나뿐인 랜드마크(옥상 헬기장 병원·백화점·호텔·관공서·타워) — 둘이 서면 복제한 거리로 보인다(R6 VQA: 헬기장 병원 셋). 나머지 종류는 둘까지. */
 const ONE_PER_MAP: ReadonlySet<string> = new Set(["hospital", "dept", "hotel", "police", "fire", "post", "tower10", "tower10b", "school"]);
 function typeLimit(type: string): number { return ONE_PER_MAP.has(type) ? 1 : 2; }
 
-function mulberry(seed: number): () => number {
-  let s = seed >>> 0;
-  return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-}
-function pick<T>(r: () => number, xs: readonly T[]): T { return xs[Math.floor(r() * xs.length)]!; }
-function shuffle<T>(r: () => number, xs: T[]): T[] { for (let i = xs.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [xs[i], xs[j]] = [xs[j]!, xs[i]!]; } return xs; }
-export function mcBuildingType(kitId: string): string { return kitId.replace(/^mc-bld-/, "").replace(/-roof$/, "").replace(/-[A-C]$/, ""); }
-
-type Use = "ground" | "road" | "walk" | "front" | "bld" | "prop" | "park" | "veh";
-
-/** 칸 해시 0..1(씨앗 무관 — 같은 칸은 같은 잔디). */
-function cellHash(x: number, y: number, k = 0): number { let h = Math.imul(x * 374761393 + y * 668265263 + k * 2147483647, 1274126177); h ^= h >>> 13; h = Math.imul(h, 1103515245); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
-/** 잔디 칸: mc:lawn(2026-10-14, 바탕 4 · 풀 덩이 2 · 꽃 2)이 있으면 섞어 칠하고, 옛 정의면 mc:green 두 칸. */
-function lawnTile(pal: MCPalette, x: number, y: number): number {
-  const lawn = pal.group("mc:lawn");
-  if (lawn.length >= 8) {
-    const j = cellHash(x, y);
-    return lawn[j < 0.9 ? Math.floor(cellHash(x, y, 1) * 4) : j < 0.97 ? 4 + Math.floor(cellHash(x, y, 2) * 2) : 6 + Math.floor(cellHash(x, y, 3) * 2)]!;
-  }
-  const green = pal.group("mc:green");
-  return green[(x * 7 + y * 3) % Math.min(2, green.length)]!;
-}
-/** 큰 가로수(잎 덩이 수관 3×4) — 없으면 옛 2×3 가로수. */
-const BIG_STREET_TREES = ["mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-ginkgo-big-a"] as const;
-
-class Board {
-  readonly lower: number[]; readonly upper: number[]; readonly upper2: number[]; readonly use: Use[]; readonly keep: boolean[];
-  readonly buildings: MCBuilding[] = []; readonly props: { kit: string; x: number; y: number }[] = []; readonly notes: string[] = [];
-  constructor(readonly W: number, readonly H: number, readonly pal: MCPalette) {
-    const walk = pal.group("mc:sidewalk")[0];
-    if (walk === undefined) throw new Error("modern_city 칩셋에 보도(mc:sidewalk) 칸이 없다");
-    this.lower = new Array(W * H).fill(walk); this.upper = new Array(W * H).fill(-1); this.upper2 = new Array(W * H).fill(-1);
-    this.use = new Array(W * H).fill("ground"); this.keep = new Array(W * H).fill(false);
-  }
-  in(x: number, y: number) { return x >= 0 && y >= 0 && x < this.W && y < this.H; }
-  k(x: number, y: number) { return y * this.W + x; }
-  kit(id: string): MCKit { const k = this.pal.kit(id); if (!k) throw new Error(`modern_city 칩셋에 키트 ${id} 가 없다`); return k; }
-  /** 땅 키트(도로 단면·교차로) — 아래층만. */
-  ground(id: string, x: number, y: number, use: Use) {
-    const kit = this.kit(id);
-    kit.rows.forEach((row, r) => row.tiles.forEach((t, c) => {
-      const X = x + c, Y = y + r; if (!this.in(X, Y) || t < 0) return;
-      const i = this.k(X, Y); this.lower[i] = t; if (this.use[i] === "ground" || this.use[i] === "walk" || this.use[i] === "road") this.use[i] = this.useOfGround(t, use);
-    }));
-  }
-  useOfGround(t: number, fallback: Use): Use { return this.pal.group("mc:sidewalk").includes(t) ? "walk" : fallback; }
-  /** 위층 키트가 놓일 수 있나 — 그림 칸(아래·위층 어느 쪽이든)이 전부 맵 안 · 건물/소품/차/예약 칸 아님 · 발밑 칸은 allow 용도. */
-  fits(id: string, x: number, y: number, allow: readonly Use[], margin = 0): boolean {
-    const kit = this.pal.kit(id); if (!kit) return false;
-    for (let r = 0; r < kit.height; r++) for (let c = 0; c < kit.width; c++) {
-      const up = kit.rows[r]?.upperTiles?.[c] ?? -1, lo = kit.rows[r]?.tiles[c] ?? -1;
-      if (up < 0 && lo < 0) continue;
-      const X = x + c, Y = y + r; if (!this.in(X, Y)) return false;
-      const i = this.k(X, Y);
-      if (this.upper[i] >= 0 || this.keep[i] || ["bld", "prop", "veh"].includes(this.use[i]!)) return false;
-      if (!allow.includes(this.use[i]!)) return false;
-    }
-    if (margin > 0) for (let Y = y - margin; Y < y + kit.height + margin; Y++) for (let X = x - margin; X < x + kit.width + margin; X++) {
-      if (!this.in(X, Y) || (X >= x && X < x + kit.width && Y >= y && Y < y + kit.height)) continue;
-      const u = this.use[this.k(X, Y)]; if (u === "prop" || u === "veh") return false;
-    }
-    return true;
-  }
-  stamp(id: string, x: number, y: number, use: Use) {
-    const kit = this.kit(id);
-    kit.rows.forEach((row, r) => {
-      for (let c = 0; c < kit.width; c++) {
-        const X = x + c, Y = y + r; if (!this.in(X, Y)) continue;
-        const i = this.k(X, Y), lo = row.tiles[c] ?? -1, up = row.upperTiles?.[c] ?? -1;
-        if (lo >= 0) this.lower[i] = lo;
-        if (up >= 0) { if (this.upper[i] >= 0) this.upper2[i] = up; else this.upper[i] = up; this.use[i] = use; }
-      }
-    });
-    return kit;
-  }
-  prop(id: string, x: number, y: number, allow: readonly Use[] = ["walk", "ground"], margin = 0): boolean {
-    if (!this.fits(id, x, y, allow, margin)) return false;
-    this.stamp(id, x, y, "prop"); this.props.push({ kit: id, x, y }); return true;
-  }
-}
 
 /** 띠 한 칸(가로 도로 북쪽) 정면 건물 줄. */
 function frontage(b: Board, r: () => number, x0: number, x1: number, accessY: number, maxH: number, counts: Map<string, number>, queue: string[][], wishes: string[], landmark?: { type: string; x: number }) {
@@ -383,6 +274,8 @@ function koreanStreetCues(b: Board, r: () => number, hz: readonly number[], vt: 
 export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCStreetResult {
   const W = spec.width, H = spec.height, seed = spec.seed ?? 0;
   if (W < MODERN_CITY_STREET_MIN.w || H < MODERN_CITY_STREET_MIN.h) throw new Error(`맵이 작다(${W}×${H}) — ${MODERN_CITY_STREET_MIN.w}×${MODERN_CITY_STREET_MIN.h} 이상`);
+  // 한국 지구 종류를 받으면 한국 지구 구성기가 짓는다(길 위계·벽을 맞댄 건물 줄·필지 쓰임). korean:true 만 준 옛 호출은 아래 도쿄풍 길 그대로다.
+  if (spec.district?.kind) return composeKoreanDistrict(spec, pal);
   const r = mulberry(seed * 7919 + W * 31 + H);
   const b = new Board(W, H, pal);
   // 계획: 가로 도로(12줄 단면) + 건물 띠. 띠 높이(8~13)와 맨 아래 남는 줄을 씨앗으로 나눠 같은 맵 크기라도 도로망이 매번 달라지게 한다
@@ -611,14 +504,19 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
 export function modernCityPaletteFromTileset(def: {
   readonly tileGroups?: readonly { readonly id: string; readonly tileIds: readonly number[] }[];
   readonly structureKits?: readonly unknown[];
+  readonly passability?: readonly ({ readonly up?: boolean } | undefined)[];
+  readonly priority?: readonly (string | undefined)[];
 }): MCPalette {
   const groups = new Map((def.tileGroups ?? []).map((g) => [g.id, g.tileIds] as const));
   const kits = new Map<string, MCKit>();
   for (const raw of def.structureKits ?? []) {
-    const k = raw as { id: string; width: number; height: number; rows: MCKit["rows"]; ai?: { access?: { dx: number; dy: number }[] } };
+    const k = raw as { id: string; name?: string; width: number; height: number; rows: MCKit["rows"]; ai?: { access?: { dx: number; dy: number }[]; tags?: string[]; roofFace?: MCKit["roof"] } };
     if (!k?.id || !Array.isArray(k.rows)) continue;
-    kits.set(k.id, { id: k.id, width: k.width, height: k.height, rows: k.rows, ...(k.ai?.access ? { access: k.ai.access } : {}) });
+    const cells = def.passability && def.priority
+      ? k.rows.map((row) => Array.from({ length: k.width }, (_, c) => { const t = row.upperTiles?.[c] ?? -1; return t < 0 ? ((row.tiles[c] ?? -1) >= 0 ? "." : " ") : def.passability![t]?.up === false ? "S" : def.priority![t] === "upper" ? "*" : "."; }).join(""))
+      : undefined;
+    kits.set(k.id, { id: k.id, width: k.width, height: k.height, rows: k.rows, ...(k.ai?.access ? { access: k.ai.access } : {}), ...(k.name ? { name: k.name } : {}), ...(k.ai?.tags ? { tags: k.ai.tags } : {}), ...(cells ? { cells } : {}), ...(k.ai?.roofFace ? { roof: k.ai.roofFace } : {}) });
   }
   const bld = [...kits.keys()].filter((id) => id.startsWith("mc-bld-"));
-  return { group: (id) => groups.get(id) ?? [], kit: (id) => kits.get(id), buildingKits: () => bld };
+  return { group: (id) => groups.get(id) ?? [], kit: (id) => kits.get(id), buildingKits: () => bld, kitIds: () => [...kits.keys()] };
 }

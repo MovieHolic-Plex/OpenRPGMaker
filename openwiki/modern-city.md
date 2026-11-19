@@ -49,6 +49,25 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - **행인 `add_street_walkers` (2026-10-24, `src/editor/tools/streetWalkersTool.ts`):** 사람마다 `stops`(2~8칸, `waitSec`·`face`·`vanish`)를 주면 지형 BFS 로 반복 custom 경로를 짠다. `vanish` 칸(문·계단 그림, 막힌 칸)은 마지막 걸음 전에 통과를 켜고 들어가 투명해졌다가 돌아 나온다. 그림은 charset `selectionId`/query(사람 생성 없음). 이벤트 id 머리 `ev_walker_`, `replace` 는 같은 이름만 지운다. 걷는 사람 앞에서 차가 서고(`playSceneTransit` playerBlocksCell 에 보이는 자율 NPC 칸), NPC 는 차 몸 칸으로 안 들어간다(`canNpcMove` → `transitBlocksCell`). **길은 보도·횡단보도만**(2026-10-26): BFS 가 `carLaneCells`(= `laneCells` − `crosswalkCells`, 칸 이름표·태그 판정, `placementRules.ts`)를 막고, 차도 칸에 준 들를 곳은 `invalid-args` 로 거절한다. 교차로 키트 칸 이름표 「교차로(12×12, 보도 모서리·횡단보도·정지선 포함)」는 괄호 속 «보도»·«횡단보도» 때문에 보도·횡단보도로 읽혔다 — `(… 포함)` 키트 설명 괄호는 판정에서 뺀다(#3535 과 같은 규칙).
 
 
+## 한국 도시 지구 `compose_modern_city_street {district}` (2026-11-15)
+
+오너 말: «근데 생각해보니까 일본 도시랑 한국 도시는 어떻게할거임 ? 아직 퀄리티가 좀 떨어지는거같은데 .. 오브젝트 수랑 도로 뭐 이것저것». 도쿄풍 격자(가로 6칸 도로 둘·세로 6칸 도로 하나)에 한국 표지만 얹던 `korean:true` 길과 달리, `district` 를 주면 **한국 지구 구성기**가 짓는다. `district` 없이 부르면 옛 도쿄풍 길 그대로다(씨앗 1~6 칸 배열 해시 불변).
+
+- **연구:** `tiledata/modern-city/research-kr/README.md` — 한국 거리로 읽히는 신호 열 가지, 지구 종류별 길·건물·기물.
+- **지구 종류 여덟(자료 `src/project/modernCityDistrictKinds.json`):** `sangga-alley` 상가 골목 · `villa-town` 빌라촌 · `apt-complex` 아파트 단지 · `blvd-office` 대로변 업무 지구 · `market` 재래시장 · `campus-town` 대학가 · `riverside` 천변 산책로 · `station-front` 역 앞. 종류마다 길 줄(위→아래), 세로 길 뼈대 후보, 건물 섞기, 빈 필지 쓰임, 기물 장면, 바닥 그림, 쓰는 기물 묶음을 갖는다.
+- **고르기(`pickDistrictKind`):** `district:"auto"` 면 요청 사실(맵 크기·바란 가게 수)에 맞는 종류 가운데 게임 열쇠(`activeKitLook`)와 씨앗으로 고르고, 그 게임의 다른 거리 맵이 이미 쓴 종류(장소 태그 `kr-district:<id>`)는 건너뛴다 — 한 게임의 거리 세 장은 세 종류다. 이름(`district:"market"`)을 주면 그 종류. 요청 낱말 목록은 없다. v2 장소 명세에서는 `hints.district`.
+- **길 위계:** 대로는 많아야 하나(차도 4~6칸·중앙선·넓은 보도) · 이면도로는 차선 2칸 일방(주차 띠가 붙으면 아스팔트 두 줄 더 — 달리는 차선이 아니다) · 골목 3~4칸은 차도가 아니다(걷는 바닥). 낮은 맵(40줄 미만)에는 대로를 두지 않는다.
+- **세로 길 뼈대:** 종류의 후보에서 씨앗이 고른다 — `through` 맵을 꿰는 이면도로 · `t-up`/`t-down` 한 길에서 끝나는 T자 · `stagger` 어긋난 두 T자 · `lane` 차 없는 보행 통로(재래시장) · `none`(골목 틈으로만 잇는다). 빌라촌·대학가·상가 골목은 골목 하나를 울타리로 막아 막다른 골목을 만든다(모든 문이 여전히 닿을 때만).
+- **블록:** 건물 줄은 남쪽 길로 문을 내고 벽을 맞대어 2~4채씩 선다. 묶음 사이 1~2칸 골목 틈이 위아래 길을 잇는다. 같은 키트는 맵에 한 번, 이웃끼리 유형과 높이가 다르다. 건물 뒤는 마당, 남는 자리는 쓰임(주차장·쌈지 공원·놀이터·시장 통로·공사장·분리수거장)이다. 잔디는 쌈지 공원 가장자리와 천변 둑뿐.
+- **한국 건물 키트(`mc-bld-kr-*`, 다른 PR):** 시트에 있으면 급(`tier:small|medium|large`)대로 섞어 먼저 쓴다. 초대형·랜드마크(`tier:xlarge|landmark`)는 종류의 제자리 줄에만, 한 맵에 많아야 하나 — 그 줄은 키트 높이만큼 먼저 자란다. 빈 지붕 면(`ai.roofFace.empty`)에는 옥상 기물(`mc-roof-kr-*`)을 얹는다. 문 없는 랜드마크(시계탑·주탑)는 빈 필지를 작은 광장으로 써서 세운다. `country:west` 키트는 서지 않는다. 없는 키트는 조용히 건너뛴다.
+- **한국 거리 기물(`mc-prop-kr-*`, `tiledata/modern-city/kr-street-objects/`, 굽기 `bake_kr_street.py`):** 자리 태그 `slot:<자리>`(front·alleyS·yard·curb·blvdN·blvdS·plaza·stall·river·hang·awning·kr-play·kr-site·kr-recycle·kr-gap·kr-parking·parkedNose·pole·yardTree)와 묶음 태그 `set:<지구 묶음>` 으로 고른다 — 공용(`set:common`)과 그 지구가 쓰는 묶음만. 한 맵에 같은 것은 셋까지(`max:<수>`). 바닥 그림(`kind ground`)은 지구가 고른 보도·골목·주차장·시장 통로·자전거길·데크·놀이터 바닥으로 깔린다. 주차 칸 표시를 먼저 깔고 차를 그 위에 세운다. 그림은 **3/4 관문 미통과 — 오너 면제**(묶음 `fable-krcity-2026-11-14`)다.
+- 전용 주차장 바닥이 없으면 기존 주차장 키트의 표시 없는 회색 노면을 사용한다. 보행자는 주차 구역을 지날 수 있고, 주차 차량과 시설의 충돌은 위층 칸이 정한다.
+- **달리는 차:** 대로는 양방향 + 버스(정류장 정차), 이면도로와 맵을 꿰는 세로 길은 일방 승용·택시·승합·스쿠터. T자·보행 통로에는 노선이 없다.
+- **수치(60×48, 씨앗 1~6, 여덟 종류 48장, 한국 건물·기물을 굽기 전 시트):** 건물 22~34채(옛 한국 길 9~11) · 차도 4.2~19.4%(옛 32.5%) · 잔디 0~3.8%(옛 16~19%) · 건물도 기물도 없는 8×6 창 0(옛 11~30) · 이웃 같은 높이 0~22%.
+- **탐침:** `bun scripts/content/modern-city-street/qa/kr-district.mts OUT.json [--kinds …] [--seeds …] [--size WxH] [--keys …] [--old] [--fakekr] [--fakeprops 목록.json]` — 표(건물·차도·잔디·기물·빈 20×15 창·빈 8×6 창·이웃 같은 높이)와 칸 배열. 그림은 `scripts/content/modern-city-int/qa/render_map.py`.
+- **파일:** `src/project/modernCityKoreanDistrict.ts`(줄 쌓기·세로 길·길가) · `modernCityKoreanBuildings.ts`(건물 줄) · `modernCityKoreanLots.ts`(필지·장면·주차·바닥 표시) · `modernCityKoreanGround.ts`(바닥) · `modernCityDistrictKinds.{json,ts}`(자료·고르기) · `modernCityBoard.ts`(판 — 도쿄풍 구성기와 같이 쓴다). 테스트 `test/modernCityKoreanDistrict.test.ts`.
+- **안 된 것:** 육교(위로 건너는 길은 두 층 그림으로는 사람이 다리 밑에 가려진다 — 지하보도 입구로 갈음) · 모퉁이 건물(모퉁이 정면 키트가 없다).
+
 ## 거리 녹지 — 버들항 화풍 맞추기 (2026-10-14 quality-b, `scripts/content/modern-city-street/`)
 
 - 코드 손 도트 `art_green.py`: 큰 가로수 키트 `mc-prop-keyaki-a`·`-b`(느티나무 3×4)·`mc-prop-ginkgo-big-a`(은행나무 가을 3×4)·`mc-prop-park-tree-a`(공원 큰 나무 4×5)·`mc-prop-azalea-a`·`-b`(철쭉 덤불 2×2), 잔디 그룹 `mc:lawn`(바탕 4·짙은 풀 덩이 2·토끼풀·민들레). 수관은 잎 덩이 합집합 + 흩뿌린 2~3화소 잎(좌상 빛, 명암 7단) + 덩이 사이 짙은 골 + 짙은 녹색 선택 윤곽(남색 잉크 아님) + 땅 그림자. 맨 아랫줄은 줄기 칸 막힘·그림자만 있는 칸 flat(통행, 사람 밑), 윗줄 ★.

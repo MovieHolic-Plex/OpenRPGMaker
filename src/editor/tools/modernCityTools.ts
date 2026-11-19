@@ -9,6 +9,8 @@ import { clearTileStack } from "@/project/mapOverlayTiles";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { composeModernCityStreet, MC_BUILDING_TYPES, MODERN_CITY_STREET_MAX, MODERN_CITY_STREET_MIN, modernCityPaletteFromTileset } from "@/project/modernCityStreetComposer";
+import { KR_DISTRICT_KINDS } from "@/project/modernCityDistrictKinds";
+import { activeKitLook } from "@/project/kitLook";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -31,6 +33,14 @@ function reachable(project: Project, map: GameMap, from: Cell): Set<number> {
     }
   }
   return seen;
+}
+
+const DISTRICT_TAG = "kr-district:";
+/** 이 게임의 다른 거리 맵이 이미 쓴 한국 지구 종류 — 한 게임의 거리들은 서로 다른 종류가 되게 고르기에서 뺀다. */
+function usedDistrictKinds(project: Project, exceptMapId: string): string[] {
+  const out = new Set<string>();
+  for (const m of Object.values(project.maps)) if (m.id !== exceptMapId) for (const l of m.locations ?? []) for (const t of l.tags ?? []) if (t.startsWith(DISTRICT_TAG)) out.add(t.slice(DISTRICT_TAG.length));
+  return [...out];
 }
 
 /** 가게 낱말 → 건물 종류(키트 mc-bld-<종류>). */
@@ -66,6 +76,7 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
       landmark: { type: "string", description: "가장 넓은 블록 가운데 먼저 세울 랜드마크 건물(예: 오피스 타워 → tower10, 대형 오피스 → office-wide, 호텔·백화점). 결과 buildings[0]. 높이 13칸 타워는 띠가 13줄 이상이어야 서므로 맵 높이 50 이상 권장" },
       subwayExits: { type: "integer", minimum: 1, maximum: 4, description: "지하철 출구 수(기본 1). 2 이상이면 출구마다 번호 표지(1·2·3…)를 세우고 data.subwayExits[{n, stair, step}] 를 준다 — stair 칸에 이동 이벤트, step 이 나오는 칸" },
+      district: { type: "string", description: `Korean district kind. "auto" picks one by game and seed; or name one: ${KR_DISTRICT_KINDS.map((k) => k.id).join(" · ")}. Builds a road hierarchy (one boulevard at most, 2-cell side streets, alleys), wall-to-wall building rows and used lots instead of the Tokyo grid.` },
       korean: { type: "boolean", description: "한국 거리 단서: 보도 점자 블록 줄·가로수 보호판·버스 쉘터·자전거 거치대·가게 옆 한글 세로 입간판(지어낸 이름)" },
     },
     additionalProperties: false,
@@ -92,7 +103,8 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     let r;
     const landmark = typeof args.landmark === "string" && args.landmark.trim() ? shopType(args.landmark) : null;
     if (typeof args.landmark === "string" && args.landmark.trim() && !landmark) throw new ToolError(`랜드마크 '${args.landmark}' 에 맞는 건물이 없다 — tower10·office-wide·hotel·dept 같은 종류나 「오피스 타워」를 준다`, { code: "invalid-args" });
-    const district = { ...(landmark ? { landmark } : {}), ...(typeof args.subwayExits === "number" ? { subwayExits: args.subwayExits } : {}), ...(args.korean === true ? { korean: true } : {}) };
+    const district = { ...(landmark ? { landmark } : {}), ...(typeof args.subwayExits === "number" ? { subwayExits: args.subwayExits } : {}), ...(args.korean === true ? { korean: true } : {}),
+      ...(typeof args.district === "string" && args.district.trim() ? { kind: args.district.trim(), key: activeKitLook(), used: usedDistrictKinds(draft, mapId) } : {}) };
     try { r = composeModernCityStreet({ width: map.width, height: map.height, seed, shops, district }, pal); }
     catch (e) { throw new ToolError(`거리를 짜지 못했다 — ${(e as Error).message}`, { code: "compose-failed", mapId }); }
     const next: Project = { ...draft, maps: { ...draft.maps, [mapId]: structuredClone(map) } };
@@ -120,7 +132,7 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
         note: `문 (${door.x},${door.y})${d.doors.length > 1 ? ` 외 ${d.doors.length - 1}칸` : ""} · 접근칸 (${d.access[0]!.x},${d.access[0]!.y})${d.program ? ` — 실내는 build_hand_interior_room({tileset:"modern_city", layout:{program:"${d.program}"}}) 로 지어 link_modern_city_interior 로 잇는다` : " — 실내 예제 없음"}`,
         // composed-layout: 도로·보도·교차로는 용도로 비운 칸이다 — 배치 품질 권고(layoutQuality.ts)가 이 맵을 「빈 실내」로 보고
         // build_hand_interior_room replace:true 를 시켜 거리를 로비로 덮었다(2026-10-14 실조수 gpt-6.1-sol). 이름표가 있으면 그 권고에서 빠진다.
-        tags: ["modern-city-building", COMPOSED_LAYOUT_TAG, d.kind, d.kit] });
+        tags: ["modern-city-building", COMPOSED_LAYOUT_TAG, d.kind, d.kit, ...(r.district ? [`${DISTRICT_TAG}${r.district.id}`] : [])] });
     }
     target.transit = r.transit;
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
@@ -129,12 +141,12 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     // 시작 칸 (10,8) 이 건물 밑이 되어 커밋이 무결성 오류로 거부됐다 → 모델이 set_start_position 후 다시 불렀다).
     const startNote = claimStartIfBlank(draft, mapId, r.start).note;
     return {
-      summary: `도쿄풍 거리를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 주행·회전 차량 노선 ${r.transit.routes.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
+      summary: `${r.district ? `Korean city street, district ${r.district.id} (${r.district.en}) — ` : "도쿄풍 거리를 "}${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 주행·회전 차량 노선 ${r.transit.routes.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
         + (r.subwayExits.length > 1 ? `지하철 출구 ${r.subwayExits.map((e) => `${e.n}번 계단(${e.stair.x},${e.stair.y})→나오는 칸(${e.step.x},${e.step.y})`).join(" · ")}. ` : "")
         + `건물: ${r.buildings.map((d) => `${d.name} 문(${d.doors[0]!.x},${d.doors[0]!.y})${d.program ? `→${d.program}` : ""}`).join(" · ")}.`
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote
         + " 좌표는 도구 인자용이다 — NPC 대사·안내 문구에는 (x,y) 대신 건물 이름·방향(「본사 정문」 「동쪽 끝」)을 쓴다.",
-      data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, transitRoutes: r.transit.routes.length, subwayExits: r.subwayExits, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length, propList: r.props },
+      data: { mapId, seed, district: r.district ?? null, start: r.start, roads: r.roads, park: r.park, transitRoutes: r.transit.routes.length, subwayExits: r.subwayExits, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length, propList: r.props },
     };
   },
 };
