@@ -17,7 +17,7 @@ import { buildEvent } from "./events";
 import { buildPeople } from "../place/people";
 import { eventsOf } from "../place/cells";
 import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeonFoes";
-import { currentFoe, leadEnemyId, namedFoe, namedFoeArt, wantedArtName } from "./currentFoes";
+import { bossArtInUse, currentFoe, distinctBossFoe, leadEnemyId, namedFoe, namedFoeArt, wantedArtName } from "./currentFoes";
 import { foeGraphic } from "./stepFoes";
 import { artGapLine, parseArtGap } from "@/project/artGap";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
@@ -85,7 +85,10 @@ function bossTroop(run: BuildRun, spec: BossEncounterSpec["boss"], warnings: str
   // 스스로 고른 기본값(낱말이 없을 때의 타락한 기사·마왕)은 현행 세트에서만.
   const told = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`);
   const drawn = told ? namedFoe(project, wanted) : currentFoe(project, wanted);
-  const art = drawn?.enemyId ?? wanted;
+  // 게임 안에서 보스 그림은 하나씩: 바란 그림이 없어 대역으로 접혔거나(리치·마왕 → 어둠 망령) 낱말이 없어 기본 그림으로 온 보스가
+  // 이 게임의 다른 보스와 같은 그림이면 남은 그림의 가까운 종으로 세운다. 낱말이 짚은 그림 그대로면 바꾸지 않는다.
+  const folded = !named && (!!drawn?.wanted || !told);
+  const art = folded && drawn ? distinctBossFoe(project, drawn.enemyId, bossArtInUse(project), () => false, `${String((run.ctx as { lookKey?: string }).lookKey ?? project.meta?.title ?? "")}|boss`) : drawn?.enemyId ?? wanted;
   if (drawn?.wanted) warnings.push(artGapLine({ want: "boss", wanted: drawn.wanted, where: spec.name, standIn: project.database.enemies.find((e) => e.id === art)?.name ?? art, by: "add_boss_encounter" }));
   if (!told) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
   return ensureFoeTroop(run, art, "boss", pickTroops(project, undefined).boss, spec.name);

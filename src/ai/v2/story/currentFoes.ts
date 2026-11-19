@@ -161,6 +161,67 @@ export function settleCurrentArtIn(project: Project): { readonly notes: string[]
   return { notes, missing: [...missing.values()] };
 }
 
+// ---------------------------------------------------------------- 보스 그림은 게임 안에서 하나씩
+// 왜(2026-11-15 버들항 던전): 현행 그림이 있는 종이 서른여덟뿐이라 주제 보스가 대역으로 접히면 한 그림에 몰린다 — 리치·마왕·대마법사가 모두
+// 어둠 망령, 붉은 용·얼음 용·본 드래곤이 모두 푸른 용. 던전 둘을 지은 게임에서 두 보스가 같은 그림이었다(planTroops 의 taken 은 한 번 부를 때만 살았다).
+// 이 게임의 다른 곳 보스가 이미 쓰는 그림은 «쓴 그림» 이고, 새 보스는 남은 그림 가운데 가장 가까운 종(BOSS_KIN) → 센 종 순으로 고른다.
+
+/** 보스 그림이 이미 쓰였을 때 대신 설 가까운 종(적 id 의 enemy_ 뺀 꼬리, 앞이 가깝다). */
+const BOSS_KIN: Readonly<Record<string, readonly string[]>> = {
+  dragon_blue: ["dragon_whelp", "spirit_fire", "hound_hell"],
+  wraith_dark: ["eye_floating", "ghost_pale", "hound_hell", "mantis_blade"],
+  golem_iron: ["golem_stone", "golem_crystal", "bandit_mask", "golem_clay"],
+  golem_stone: ["golem_crystal", "golem_iron", "golem_clay", "bear_brown"],
+  golem_crystal: ["golem_stone", "golem_iron", "golem_clay"],
+  spider_cave: ["mantis_blade", "centipede_fire", "bear_brown"],
+  slime_green: ["eel_electric", "crab_rock", "spirit_water"],
+  spirit_water: ["eel_electric", "crab_rock"],
+  goblin_scout: ["bandit_mask", "bear_brown", "wolf_dire"],
+  wolf_dire: ["bear_brown", "hound_hell"],
+  hound_hell: ["wolf_dire", "spirit_fire"],
+};
+
+const BOSS_EVENT = /_boss(?:_|$)/u;
+
+/**
+ * 이 게임의 보스들이 이미 쓰는 적 그림 — 보스 이벤트(id·무리 id 가 …_boss)의 전투 무리에서 앞장선 적의 그림. skip 맵(지금 다시 짓는 던전)은 뺀다.
+ */
+export function bossArtInUse(project: Project, skip: (map: { id: string; name?: string }) => boolean = () => false): Set<string> {
+  const used = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    if (skip(map)) continue;
+    for (const ev of map.events ?? []) walk(ev.pages ?? [], (c) => {
+      if (c.kind !== "battleProcessing" || typeof c.troopId !== "string") return;
+      if (!BOSS_EVENT.test(ev.id) && !BOSS_EVENT.test(c.troopId)) return;
+      const a = artOf(project, leadEnemyId(project, c.troopId));
+      if (a) used.add(a);
+    });
+  }
+  return used;
+}
+
+const keyHash = (key: string): number => [...key].reduce((h, ch) => (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0, 17);
+
+/**
+ * 보스로 설 적 — want(이미 현행 그림으로 접힌 적)의 그림이 이 게임의 다른 보스와 겹치면 남은 그림의 종으로 바꾼다.
+ * 순서: 가까운 종(BOSS_KIN) → 기본 DB 의 현행 그림 종을 센 순으로(위 여섯은 게임 열쇠로 돌린다 — 게임마다 다른 종이 먼저). avoid = 잡몹과 닮은 종 등 부르는 쪽 금지.
+ * 남은 그림이 없으면 want 그대로(겹침을 받아들인다).
+ */
+export function distinctBossFoe(project: Project, want: string, used: ReadonlySet<string>, avoid: (enemyId: string) => boolean, key: string): string {
+  const free = (id: string): boolean => { const a = artOf(project, id); return !!a && isCurrentMonsterArt(a) && !used.has(a) && !avoid(id); };
+  if (!used.has(artOf(project, want) ?? "")) return want;
+  const kin = (BOSS_KIN[want.replace(/^enemy_/u, "")] ?? []).map((t) => `enemy_${t}`).filter((id) => enemyOf(project, id));
+  const strength = (id: string): number => { const s = enemyOf(project, id)?.stats; return (s?.maxHp ?? 0) + 4 * (s?.attack ?? 0); };
+  const pool = project.database.enemies.map((e) => e.id).filter((id) => /^enemy_(?!v2_|dg_)/u.test(id) && hasCurrentArt(project, id))
+    .sort((a, b) => strength(b) - strength(a) || a.localeCompare(b));
+  const head = pool.slice(0, 6), turn = head.length ? keyHash(key) % head.length : 0;
+  const order = [...kin, ...head.slice(turn), ...head.slice(0, turn), ...pool.slice(6)];
+  const pick = order.find(free);
+  if (!pick) return want;
+  useCurrentArt(project, pick);
+  return pick;
+}
+
 /**
  * 글(모델이 적은 이름·생김새)이 이름과 그림 설계 글로 짚은 적 — 그 적의 그림이 어느 묶음에든 있으면(현행 세트가 아니어도) 그 적. 겹치는 낱말이 둘 이상이고
  * 그런 적이 하나로 갈릴 때만(«해골» 한 낱말은 해골·해골 궁수·해골 기사를 가르지 못한다). 낱말 표가 아니라 적 이름과 그림 설계 글(retroMonsterPlan)을 읽는다.

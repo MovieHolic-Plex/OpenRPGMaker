@@ -1,0 +1,4066 @@
+{
+ "_doc": "scripts/content/beodeul-dungeons/make_spec.py 가 쓴다 — 손으로 고치지 않는다.",
+ "license": "CC0-1.0 (own work, drawn by Claude Fable 5.2 medium one-shot for this project)",
+ "waiver": "fable-dungeons-beodeul-2026-11-15",
+ "lookNames": {
+  "ember": {
+   "label": "던전 첫째 색"
+  },
+  "frost": {
+   "label": "던전 둘째 색"
+  },
+  "dusk": {
+   "label": "던전 셋째 색"
+  }
+ },
+ "kinds": {
+  "br-plank-ew": "terrain",
+  "br-plank-ns": "terrain",
+  "br-stone-ew": "terrain",
+  "br-stone-ns": "terrain",
+  "ca-floor-a": "terrain",
+  "ca-floor-b": "terrain",
+  "ca-floor-c": "terrain",
+  "ca-wall-a": "terrain",
+  "ca-wall-b": "terrain",
+  "ca-wall-c": "terrain",
+  "cab-floor-a": "terrain",
+  "cab-floor-b": "terrain",
+  "cab-wall-a": "terrain",
+  "cab-wall-b": "terrain",
+  "cab-wall-c": "terrain",
+  "cr-floor-a": "terrain",
+  "cr-floor-b": "terrain",
+  "cr-floor-c": "terrain",
+  "cr-wall-a": "terrain",
+  "cr-wall-b": "terrain",
+  "cr-wall-c": "terrain",
+  "crb-floor-a": "terrain",
+  "crb-floor-b": "terrain",
+  "crb-wall-a": "terrain",
+  "crb-wall-b": "terrain",
+  "crb-wall-c": "terrain",
+  "cv-bed-a": "terrain",
+  "cv-bed-b": "terrain",
+  "cv-bed-c": "terrain",
+  "cv-bed-d": "terrain",
+  "cv-bed-e": "terrain",
+  "cv-edge-s": "terrain",
+  "cv-edge-w": "terrain",
+  "cv-face-a2": "terrain",
+  "cv-face-b": "terrain",
+  "cv-face-c": "terrain",
+  "cv-shore": "terrain",
+  "cv-shore-in": "terrain",
+  "cv-top": "terrain",
+  "cv-water2": "terrain",
+  "cvb-face-a": "terrain",
+  "cvb-face-b": "terrain",
+  "cvb-face-c": "terrain",
+  "cvb-floor-a": "terrain",
+  "cvb-floor-b": "terrain",
+  "ic-floor-a": "terrain",
+  "ic-floor-b": "terrain",
+  "ic-floor-c": "terrain",
+  "ic2-face-a": "terrain",
+  "ic2-face-b": "terrain",
+  "ic2-face-c": "terrain",
+  "mb-rim-s": "terrain",
+  "mb-rim-w": "terrain",
+  "mn-face-a": "terrain",
+  "mn-face-b": "terrain",
+  "mn-face-c": "terrain",
+  "mn-floor-a": "terrain",
+  "mn-floor-b": "terrain",
+  "mn-floor-c": "terrain",
+  "nw-net": "terrain",
+  "py-floor-a": "terrain",
+  "py-floor-b": "terrain",
+  "py-floor-c": "terrain",
+  "py-wall-a": "terrain",
+  "py-wall-b": "terrain",
+  "py-wall-c": "terrain",
+  "ru-floor": "terrain",
+  "ru-floor-b": "terrain",
+  "ru-rim-s": "terrain",
+  "ru-rim-w": "terrain",
+  "ru-top-b": "terrain",
+  "ru-top-c": "terrain",
+  "ru-wall-a": "terrain",
+  "ru-wall-b": "terrain",
+  "ru-wall-c": "terrain",
+  "rub-floor-a": "terrain",
+  "rub-floor-b": "terrain",
+  "rub-wall-a": "terrain",
+  "rub-wall-b": "terrain",
+  "rub-wall-c": "terrain",
+  "st-down-built": "terrain",
+  "st-down-rock": "terrain",
+  "st-up-built": "terrain",
+  "st-up-rock": "terrain",
+  "su-floor-a": "terrain",
+  "su-floor-b": "terrain",
+  "su-floor-c": "terrain",
+  "su-wall-a": "terrain",
+  "su-wall-b": "terrain",
+  "su-wall-c": "terrain",
+  "sw-floor-a": "terrain",
+  "sw-floor-b": "terrain",
+  "sw-floor-c": "terrain",
+  "sw-wall-a": "terrain",
+  "sw-wall-b": "terrain",
+  "sw-wall-c": "terrain",
+  "sw-water": "terrain",
+  "tw-floor-a": "terrain",
+  "tw-floor-b": "terrain",
+  "tw-floor-c": "terrain",
+  "tw-wall-a": "terrain",
+  "tw-wall-b": "terrain",
+  "tw-wall-c": "terrain",
+  "vo-floor-a": "terrain",
+  "vo-floor-b": "terrain",
+  "vo-floor-c": "terrain",
+  "vo2-face-a": "terrain",
+  "vo2-face-b": "terrain",
+  "vo2-face-c": "terrain",
+  "cv-torch": "wall_mounted",
+  "ru-brazier": "other",
+  "sh-bones": "flat",
+  "sh-skulls": "other",
+  "sh-crate": "other",
+  "sh-barrel": "other",
+  "sh-candles": "other",
+  "sh-rubble": "flat",
+  "sh-bucket": "other",
+  "sh-cratestack": "other",
+  "sh-chains": "wall_mounted",
+  "sh-sacks": "other",
+  "sh-campfire": "other",
+  "cv-bones": "other",
+  "cv-mushroom": "other",
+  "cv-moss": "flat",
+  "cv-spike-a": "other",
+  "cv-spike-b": "other",
+  "cv-stalactites": "wall_mounted",
+  "cv-vines": "wall_mounted",
+  "cv-pebbles": "flat",
+  "cv-stalag-big": "other",
+  "cv-stalag-set": "other",
+  "cv-rocks": "other",
+  "cv-crystal": "other",
+  "cv-fall": "wall_mounted",
+  "cv-hollow": "flat",
+  "cv-earth": "flat",
+  "ru-pillar": "other",
+  "ru-stump": "other",
+  "ru-vines": "wall_mounted",
+  "ru-niche-urn": "wall_mounted",
+  "ru-altar": "other",
+  "ru-chips": "flat",
+  "ru-statue": "other",
+  "ru-rubble": "other",
+  "ru-mosaic": "flat",
+  "ru-column": "other",
+  "ru-broken": "other",
+  "ru-pool": "other",
+  "ru-door": "wall_mounted",
+  "ru-ivy": "wall_mounted",
+  "ru-leaves": "flat",
+  "ic-crystal": "other",
+  "ic-rock": "other",
+  "ic-drift": "flat",
+  "ic-icicles": "wall_mounted",
+  "ic-mound": "other",
+  "ic-frozen": "other",
+  "ic-pillar": "other",
+  "ic-great": "other",
+  "vo-embers": "flat",
+  "vo-vent": "other",
+  "vo-firecrystal": "other",
+  "vo-spike": "other",
+  "vo-spike-tall": "other",
+  "vo-columns": "other",
+  "vo-lavafall": "wall_mounted",
+  "vo-altar": "other",
+  "mn-ore": "other",
+  "mn-rocks": "other",
+  "mn-timber-frame": "wall_mounted",
+  "mn-lamp": "other",
+  "mn-ore-vein": "wall_mounted",
+  "mn-ore-vein-iron": "wall_mounted",
+  "mn-minecart": "other",
+  "mn-post": "other",
+  "mn-tools": "other",
+  "mn-hoist": "other",
+  "cr-column": "other",
+  "cr-sarcophagus": "other",
+  "cr-sarcophagus-ns": "other",
+  "cr-sarcophagus-open": "other",
+  "cr-banner": "wall_mounted",
+  "cr-ossuary": "wall_mounted",
+  "cr-niche-skull": "wall_mounted",
+  "cr-candelabra": "other",
+  "cr-altar": "other",
+  "cr-tomb-slab": "flat",
+  "cr-angel": "other",
+  "sw-grate": "flat",
+  "sw-pier": "other",
+  "sw-valve": "other",
+  "sw-outfall": "wall_mounted",
+  "sw-bars": "wall_mounted",
+  "sw-wall-lamp": "wall_mounted",
+  "sw-slime": "flat",
+  "sw-cistern": "other",
+  "tw-bookshelf": "other",
+  "tw-bookshelf-tall": "other",
+  "tw-pedestal": "other",
+  "tw-candelabra": "other",
+  "tw-lectern": "other",
+  "tw-rug": "flat",
+  "tw-globe": "other",
+  "tw-circle": "flat",
+  "tw-orrery": "other",
+  "ca-column": "other",
+  "ca-banner": "wall_mounted",
+  "ca-armor": "other",
+  "ca-throne": "other",
+  "ca-weapon-rack": "other",
+  "ca-carpet": "flat",
+  "py-column": "other",
+  "py-sarcophagus": "other",
+  "py-jars": "other",
+  "py-obelisk": "other",
+  "py-sand": "flat",
+  "py-gold": "other",
+  "py-scarab": "other",
+  "py-jackal": "other",
+  "py-sphinx": "other",
+  "su-column": "other",
+  "su-coral": "other",
+  "su-shell": "other",
+  "su-weed": "flat",
+  "su-amphora": "other",
+  "su-trident": "other",
+  "su-statue": "other",
+  "su-fountain": "other",
+  "hd-tent": "other",
+  "hd-hide-rack": "other",
+  "hd-loot": "other",
+  "hd-bones": "flat",
+  "hd-campfire": "other",
+  "hd-weapon-rack": "other",
+  "hd-table": "other",
+  "hd-cage": "other",
+  "hd-platform": "flat",
+  "hd-banner": "wall_mounted",
+  "hd-chief-seat": "other"
+ },
+ "terrain": [
+  "br-plank-ew",
+  "br-plank-ns",
+  "br-stone-ew",
+  "br-stone-ns",
+  "ca-floor-a",
+  "ca-floor-b",
+  "ca-floor-c",
+  "ca-wall-a",
+  "ca-wall-b",
+  "ca-wall-c",
+  "cab-floor-a",
+  "cab-floor-b",
+  "cab-wall-a",
+  "cab-wall-b",
+  "cab-wall-c",
+  "cr-floor-a",
+  "cr-floor-b",
+  "cr-floor-c",
+  "cr-wall-a",
+  "cr-wall-b",
+  "cr-wall-c",
+  "crb-floor-a",
+  "crb-floor-b",
+  "crb-wall-a",
+  "crb-wall-b",
+  "crb-wall-c",
+  "cv-bed-a",
+  "cv-bed-b",
+  "cv-bed-c",
+  "cv-bed-d",
+  "cv-bed-e",
+  "cv-edge-s",
+  "cv-edge-w",
+  "cv-face-a2",
+  "cv-face-b",
+  "cv-face-c",
+  "cv-shore",
+  "cv-shore-in",
+  "cv-top",
+  "cv-water2",
+  "cvb-face-a",
+  "cvb-face-b",
+  "cvb-face-c",
+  "cvb-floor-a",
+  "cvb-floor-b",
+  "ic-floor-a",
+  "ic-floor-b",
+  "ic-floor-c",
+  "ic2-face-a",
+  "ic2-face-b",
+  "ic2-face-c",
+  "mb-rim-s",
+  "mb-rim-w",
+  "mn-face-a",
+  "mn-face-b",
+  "mn-face-c",
+  "mn-floor-a",
+  "mn-floor-b",
+  "mn-floor-c",
+  "nw-net",
+  "py-floor-a",
+  "py-floor-b",
+  "py-floor-c",
+  "py-wall-a",
+  "py-wall-b",
+  "py-wall-c",
+  "ru-floor",
+  "ru-floor-b",
+  "ru-rim-s",
+  "ru-rim-w",
+  "ru-top-b",
+  "ru-top-c",
+  "ru-wall-a",
+  "ru-wall-b",
+  "ru-wall-c",
+  "rub-floor-a",
+  "rub-floor-b",
+  "rub-wall-a",
+  "rub-wall-b",
+  "rub-wall-c",
+  "st-down-built",
+  "st-down-rock",
+  "st-up-built",
+  "st-up-rock",
+  "su-floor-a",
+  "su-floor-b",
+  "su-floor-c",
+  "su-wall-a",
+  "su-wall-b",
+  "su-wall-c",
+  "sw-floor-a",
+  "sw-floor-b",
+  "sw-floor-c",
+  "sw-wall-a",
+  "sw-wall-b",
+  "sw-wall-c",
+  "sw-water",
+  "tw-floor-a",
+  "tw-floor-b",
+  "tw-floor-c",
+  "tw-wall-a",
+  "tw-wall-b",
+  "tw-wall-c",
+  "vo-floor-a",
+  "vo-floor-b",
+  "vo-floor-c",
+  "vo2-face-a",
+  "vo2-face-b",
+  "vo2-face-c"
+ ],
+ "glows": [
+  {
+   "id": "torch",
+   "ko": "횃불 빛",
+   "colour": "#ffb45a",
+   "w": 5,
+   "h": 7,
+   "cx": 40,
+   "cy": 38,
+   "r1": 22,
+   "r2": 40,
+   "a1": 0.34,
+   "a2": 0.13,
+   "torch": true,
+   "dx": -2,
+   "dy": -2
+  },
+  {
+   "id": "fire",
+   "ko": "화로 빛",
+   "colour": "#ffb45a",
+   "w": 5,
+   "h": 5,
+   "cx": 40,
+   "cy": 40,
+   "r1": 15,
+   "r2": 28,
+   "a1": 0.3,
+   "a2": 0.12,
+   "dx": -2,
+   "dy": -2
+  },
+  {
+   "id": "ember",
+   "ko": "작은 불빛",
+   "colour": "#ffb45a",
+   "w": 3,
+   "h": 3,
+   "cx": 24,
+   "cy": 24,
+   "r1": 10,
+   "r2": 19,
+   "a1": 0.26,
+   "a2": 0.1,
+   "dx": -1,
+   "dy": -1
+  },
+  {
+   "id": "crystal",
+   "ko": "수정 빛",
+   "colour": "#9fb8ff",
+   "w": 4,
+   "h": 4,
+   "cx": 32,
+   "cy": 38,
+   "r1": 16,
+   "r2": 29,
+   "a1": 0.31,
+   "a2": 0.11,
+   "dx": -1,
+   "dy": -1
+  },
+  {
+   "id": "torch-wisp",
+   "ko": "푸른 횃불 빛",
+   "colour": "#9cc6ff",
+   "w": 5,
+   "h": 7,
+   "cx": 40,
+   "cy": 38,
+   "r1": 22,
+   "r2": 40,
+   "a1": 0.3,
+   "a2": 0.12,
+   "torch": true,
+   "dx": -2,
+   "dy": -2
+  },
+  {
+   "id": "fire-wisp",
+   "ko": "푸른 화로 빛",
+   "colour": "#9cc6ff",
+   "w": 5,
+   "h": 5,
+   "cx": 40,
+   "cy": 40,
+   "r1": 15,
+   "r2": 28,
+   "a1": 0.27,
+   "a2": 0.11,
+   "dx": -2,
+   "dy": -2
+  },
+  {
+   "id": "ember-wisp",
+   "ko": "푸른 작은 불빛",
+   "colour": "#9cc6ff",
+   "w": 3,
+   "h": 3,
+   "cx": 24,
+   "cy": 24,
+   "r1": 10,
+   "r2": 19,
+   "a1": 0.24,
+   "a2": 0.1,
+   "dx": -1,
+   "dy": -1
+  },
+  {
+   "id": "green",
+   "ko": "초록 등 빛",
+   "colour": "#8fe36a",
+   "w": 5,
+   "h": 5,
+   "cx": 40,
+   "cy": 40,
+   "r1": 14,
+   "r2": 27,
+   "a1": 0.26,
+   "a2": 0.11,
+   "dx": -2,
+   "dy": -2
+  },
+  {
+   "id": "spore",
+   "ko": "버섯 빛",
+   "colour": "#9fe8e0",
+   "w": 3,
+   "h": 3,
+   "cx": 24,
+   "cy": 26,
+   "r1": 9,
+   "r2": 17,
+   "a1": 0.22,
+   "a2": 0.09,
+   "dx": -1,
+   "dy": -1
+  }
+ ],
+ "shared": {
+  "objects": [
+   {
+    "id": "torch-wall",
+    "src": "cv-torch",
+    "w": 1,
+    "h": 2,
+    "cls": "mount",
+    "ko": "벽 횃불",
+    "en": "wall torch",
+    "swap": [
+     "bd-pick-aqueduct-sewer-torch-wall"
+    ],
+    "words": [
+     "횃불",
+     "torch"
+    ]
+   },
+   {
+    "id": "brazier",
+    "src": "ru-brazier",
+    "w": 1,
+    "h": 2,
+    "cls": "object",
+    "ko": "청동 화로",
+    "en": "bronze brazier",
+    "swap": [
+     "bd-pick-aqueduct-sewer-brazier"
+    ],
+    "words": [
+     "화로",
+     "brazier"
+    ]
+   },
+   {
+    "id": "bones",
+    "src": "sh-bones",
+    "w": 1,
+    "h": 1,
+    "cls": "decal",
+    "ko": "뼈",
+    "en": "bones",
+    "swap": [
+     "bd-pick-aqueduct-sewer-bones"
+    ],
+    "words": [
+     "뼈",
+     "bones"
+    ]
+   },
+   {
+    "id": "skulls",
+    "src": "sh-skulls",
+    "w": 1,
+    "h": 1,
+    "cls": "object",
+    "ko": "해골 더미",
+    "en": "skulls",
+    "swap": [
+     "bd-pick-aqueduct-sewer-skulls"
+    ],
+    "words": [
+     "해골",
+     "skulls"
+    ]
+   },
+   {
+    "id": "crate",
+    "src": "sh-crate",
+    "w": 1,
+    "h": 1,
+    "cls": "object",
+    "ko": "나무 궤짝",
+    "en": "crate",
+    "swap": [
+     "bd-pick-aqueduct-sewer-crate"
+    ],
+    "words": [
+     "궤짝",
+     "crate"
+    ]
+   },
+   {
+    "id": "barrel",
+    "src": "sh-barrel",
+    "w": 1,
+    "h": 1,
+    "cls": "object",
+    "ko": "나무 통",
+    "en": "barrel",
+    "swap": [
+     "bd-pick-aqueduct-sewer-barrel",
+     "bd-pick-mining-valley-barrel"
+    ],
+    "words": [
+     "통",
+     "barrel"
+    ]
+   },
+   {
+    "id": "candles",
+    "src": "sh-candles",
+    "w": 1,
+    "h": 1,
+    "cls": "object",
+    "ko": "촛불",
+    "en": "candles",
+    "swap": [
+     "bd-pick-aqueduct-sewer-candles"
+    ],
+    "words": [
+     "촛불",
+     "candles"
+    ]
+   },
+   {
+    "id": "rubble",
+    "src": "sh-rubble",
+    "w": 1,
+    "h": 1,
+    "cls": "decal",
+    "ko": "돌 부스러기",
+    "en": "stone chips",
+    "swap": [
+     "bd-pick-aqueduct-sewer-rubble",
+     "bd-pick-castle-catacombs-rubble"
+    ],
+    "words": [
+     "부스러기",
+     "rubble"
+    ]
+   },
+   {
+    "id": "bucket",
+    "src": "sh-bucket",
+    "w": 1,
+    "h": 1,
+    "cls": "object",
+    "ko": "나무 양동이",
+    "en": "bucket",
+    "swap": [
+     "bd-pick-aqueduct-sewer-bucket"
+    ],
+    "words": [
+     "양동이",
+     "bucket"
+    ]
+   },
+   {
+    "id": "crate-stack",
+    "src": "sh-cratestack",
+    "w": 1,
+    "h": 2,
+    "cls": "object",
+    "ko": "쌓인 궤짝",
+    "en": "stacked crates",
+    "swap": [
+     "bd-pick-aqueduct-sewer-crate-stack"
+    ],
+    "words": [
+     "궤짝",
+     "crates"
+    ]
+   },
+   {
+    "id": "chains",
+    "src": "sh-chains",
+    "w": 1,
+    "h": 1,
+    "cls": "mount",
+    "ko": "벽 사슬",
+    "en": "wall chains",
+    "swap": [
+     "bd-pick-aqueduct-sewer-chains"
+    ],
+    "words": [
+     "사슬",
+     "chains"
+    ]
+   },
+   {
+    "id": "sack-pile",
+    "src": "sh-sacks",
+    "w": 2,
+    "h": 2,
+    "cls": "object",
+    "ko": "자루 더미",
+    "en": "sack pile",
+    "swap": [
+     "bd-pick-walled-market-sack-pile"
+    ],
+    "words": [
+     "자루",
+     "sacks"
+    ]
+   },
+   {
+    "id": "campfire",
+    "src": "sh-campfire",
+    "w": 1,
+    "h": 1,
+    "cls": "object",
+    "ko": "모닥불",
+    "en": "campfire",
+    "swap": [
+     "bd-pick-deep-forest-path-campfire"
+    ],
+    "words": [
+     "모닥불",
+     "campfire"
+    ]
+   },
+   {
+    "id": "bone-heap",
+    "src": "cv-bones",
+    "w": 2,
+    "h": 2,
+    "cls": "object",
+    "ko": "뼈 무더기",
+    "en": "bone heap",
+    "swap": [
+     "bd-pick-aqueduct-sewer-bone-heap"
+    ],
+    "words": [
+     "뼈",
+     "bones"
+    ]
+   }
+  ],
+  "glowOf": {
+   "torch-wall": "torch",
+   "brazier": "fire",
+   "candles": "ember",
+   "campfire": "ember"
+  },
+  "light": {
+   "dusk": {
+    "suffix": "wisp",
+    "ko": "푸른 불",
+    "remap": {
+     "fire": "wisp"
+    },
+    "glow": {
+     "torch": "torch-wisp",
+     "fire": "fire-wisp",
+     "ember": "ember-wisp"
+    }
+   }
+  }
+ },
+ "themes": [
+  {
+   "id": "cave",
+   "ko": "동굴",
+   "types": [
+    "cave"
+   ],
+   "floor": [
+    "cv-bed-a",
+    "cv-bed-b",
+    "cv-bed-c",
+    "cv-bed-d",
+    "cv-bed-e"
+   ],
+   "faces": [
+    "cv-face-a2",
+    "cv-face-b",
+    "cv-face-c"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "cv-edge-s",
+   "rimW": "cv-edge-w",
+   "sliver": "slab:4",
+   "faceGap": "crag:1",
+   "shore": "cv-shore",
+   "shoreIn": "cv-shore-in",
+   "looks": [
+    {
+     "id": "umber",
+     "ko": "갈색 바위"
+    },
+    {
+     "id": "slate",
+     "ko": "푸른 종유석 굴",
+     "remap": {
+      "crag": "cragb"
+     },
+     "faces": [
+      "cvb-face-a",
+      "cvb-face-b",
+      "cvb-face-c"
+     ],
+     "floor": [
+      "cvb-floor-a",
+      "cvb-floor-b"
+     ],
+     "floorWeights": [
+      0.45,
+      0.55
+     ]
+    },
+    {
+     "id": "moss",
+     "ko": "이끼빛 바위",
+     "remap": {
+      "crag": "cragc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "cave-mushroom",
+     "src": "cv-mushroom",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "빛 버섯",
+     "en": "glowing mushrooms",
+     "swap": [
+      "bd-pick-sea-cave-glow-mushroom"
+     ],
+     "words": [
+      "버섯",
+      "mushroom"
+     ]
+    },
+    {
+     "id": "cave-moss",
+     "src": "cv-moss",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "빛 이끼",
+     "en": "glowing moss",
+     "swap": [
+      "bd-pick-sea-cave-glow-moss-floor"
+     ],
+     "words": [
+      "이끼",
+      "moss"
+     ]
+    },
+    {
+     "id": "cave-stalagmite-a",
+     "src": "cv-spike-a",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "석순",
+     "en": "stalagmite",
+     "swap": [
+      "bd-pick-sea-cave-stalagmite-1",
+      "bd-pick-dungeon-cave-broken-pillar"
+     ],
+     "words": [
+      "석순",
+      "stalagmite"
+     ]
+    },
+    {
+     "id": "cave-stalagmite-b",
+     "src": "cv-spike-b",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "석순 한 쌍",
+     "en": "stalagmite pair",
+     "swap": [
+      "bd-pick-sea-cave-stalagmite-1",
+      "bd-pick-dungeon-cave-broken-pillar"
+     ],
+     "words": [
+      "석순",
+      "stalagmite"
+     ]
+    },
+    {
+     "id": "cave-stalactites",
+     "src": "cv-stalactites",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "종유석",
+     "en": "stalactites",
+     "swap": [
+      "bd-pick-dungeon-theme-stalactites"
+     ],
+     "words": [
+      "종유석",
+      "stalactites"
+     ]
+    },
+    {
+     "id": "cave-vines",
+     "src": "cv-vines",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "늘어진 뿌리",
+     "en": "hanging roots",
+     "swap": [
+      "bd-pick-sea-cave-vines-2"
+     ],
+     "words": [
+      "뿌리",
+      "roots"
+     ]
+    },
+    {
+     "id": "cave-pebbles",
+     "src": "cv-pebbles",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "조약돌",
+     "en": "pebbles",
+     "swap": [
+      "bd-pick-sea-cave-rubble-cave"
+     ],
+     "words": [
+      "조약돌",
+      "pebbles"
+     ]
+    },
+    {
+     "id": "cave-stalagmite-big",
+     "src": "cv-stalag-big",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "큰 석순",
+     "en": "big stalagmite",
+     "swap": [
+      "bd-pick-sea-cave-rock-pillar-2"
+     ],
+     "words": [
+      "석순",
+      "stalagmite"
+     ],
+     "remap": {
+      "rock": "crag"
+     }
+    },
+    {
+     "id": "cave-stalagmite-group",
+     "src": "cv-stalag-set",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "석순 무리",
+     "en": "stalagmite group",
+     "swap": [
+      "bd-pick-sea-cave-rock-pillar-2"
+     ],
+     "words": [
+      "석순",
+      "stalagmite"
+     ],
+     "remap": {
+      "rock": "crag"
+     }
+    },
+    {
+     "id": "cave-boulders",
+     "src": "cv-rocks",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "낙석",
+     "en": "fallen boulders",
+     "swap": [
+      "bd-pick-sea-cave-rock-pillar-2"
+     ],
+     "words": [
+      "바위",
+      "boulders"
+     ],
+     "remap": {
+      "rock": "crag"
+     }
+    },
+    {
+     "id": "cave-crystal",
+     "src": "cv-crystal",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "수정 무리",
+     "en": "crystal cluster",
+     "swap": [],
+     "words": [
+      "수정",
+      "crystal"
+     ]
+    },
+    {
+     "id": "cave-spring",
+     "src": "cv-fall",
+     "w": 1,
+     "h": 3,
+     "cls": "mount",
+     "ko": "벽 샘",
+     "en": "wall spring",
+     "swap": [],
+     "words": [
+      "샘",
+      "spring"
+     ],
+     "crop": [
+      0,
+      8,
+      16,
+      56
+     ]
+    },
+    {
+     "id": "cave-hollow",
+     "src": "cv-hollow",
+     "w": 3,
+     "h": 2,
+     "cls": "decal",
+     "ko": "웅덩이 자국",
+     "en": "hollow with a puddle",
+     "swap": [],
+     "words": [
+      "웅덩이",
+      "puddle"
+     ]
+    },
+    {
+     "id": "cave-earth",
+     "src": "cv-earth",
+     "w": 3,
+     "h": 2,
+     "cls": "decal",
+     "ko": "흙과 자갈",
+     "en": "earth and gravel",
+     "swap": [],
+     "words": [
+      "흙",
+      "gravel"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "cave-crystal",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "cave-stalagmite-big",
+     "cls": "open",
+     "per": 0.5,
+     "max": 2
+    },
+    {
+     "id": "cave-hollow",
+     "cls": "decal",
+     "per": 0.5,
+     "max": 1
+    },
+    {
+     "id": "cave-earth",
+     "cls": "decal",
+     "per": 0.8,
+     "max": 2
+    },
+    {
+     "id": "cave-spring",
+     "cls": "wall",
+     "per": 0.4,
+     "max": 1
+    }
+   ],
+   "glowOf": {
+    "cave-crystal": "crystal",
+    "cave-mushroom": "spore"
+   },
+   "water": "cv-water2",
+   "bridge": "plank",
+   "net": "nw-net",
+   "inner2": true,
+   "rimPhases": 2,
+   "stairs": {
+    "up": "st-up-rock",
+    "down": "st-down-rock",
+    "upRemap": {},
+    "downRemap": {}
+   }
+  },
+  {
+   "id": "ruin",
+   "ko": "유적",
+   "types": [
+    "temple"
+   ],
+   "floor": [
+    "ru-floor",
+    "ru-floor-b"
+   ],
+   "floorWeights": [
+    0.6,
+    0.4
+   ],
+   "faces": [
+    "ru-wall-a",
+    "ru-wall-b",
+    "ru-wall-c"
+   ],
+   "top": [
+    "ru-top-b",
+    "ru-top-c"
+   ],
+   "topRamps": [
+    "leaf"
+   ],
+   "rimS": "ru-rim-s",
+   "rimW": "ru-rim-w",
+   "sliver": "lime:2",
+   "faceGap": "buff:1",
+   "looks": [
+    {
+     "id": "buff",
+     "ko": "잿빛 마름돌"
+    },
+    {
+     "id": "sand",
+     "ko": "사암 다각 쌓기",
+     "remap": {
+      "buff": "buffw"
+     },
+     "faces": [
+      "rub-wall-a",
+      "rub-wall-b",
+      "rub-wall-c"
+     ],
+     "floor": [
+      "rub-floor-a",
+      "rub-floor-b"
+     ],
+     "floorWeights": [
+      0.4,
+      0.6
+     ]
+    },
+    {
+     "id": "rose",
+     "ko": "붉은 돌",
+     "remap": {
+      "buff": "buffc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "ruin-column",
+     "src": "ru-pillar",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "돌기둥",
+     "en": "stone column",
+     "swap": [
+      "bd-pick-temple-ruins-column-temple",
+      "bd-pick-castle-catacombs-column-cata"
+     ],
+     "words": [
+      "기둥",
+      "column"
+     ]
+    },
+    {
+     "id": "ruin-column-stump",
+     "src": "ru-stump",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "부러진 기둥",
+     "en": "broken column",
+     "swap": [
+      "bd-pick-temple-ruins-column-temple-broken",
+      "bd-pick-aqueduct-sewer-column-sewer-broken"
+     ],
+     "words": [
+      "기둥",
+      "column"
+     ]
+    },
+    {
+     "id": "ruin-vines",
+     "src": "ru-vines",
+     "w": 1,
+     "h": 3,
+     "cls": "mount",
+     "ko": "늘어진 덩굴",
+     "en": "hanging ivy",
+     "swap": [
+      "bd-pick-temple-ruins-vines-2"
+     ],
+     "words": [
+      "덩굴",
+      "ivy"
+     ]
+    },
+    {
+     "id": "ruin-niche-urn",
+     "src": "ru-niche-urn",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "벽감 항아리",
+     "en": "niche with an urn",
+     "swap": [
+      "bd-pick-castle-catacombs-niche-urn"
+     ],
+     "words": [
+      "벽감",
+      "niche"
+     ]
+    },
+    {
+     "id": "ruin-altar",
+     "src": "ru-altar",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "돌 제단",
+     "en": "stone altar",
+     "swap": [
+      "bd-pick-castle-catacombs-altar-stone"
+     ],
+     "words": [
+      "제단",
+      "altar"
+     ]
+    },
+    {
+     "id": "ruin-chips",
+     "src": "ru-chips",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "돌 조각",
+     "en": "stone fragments",
+     "swap": [
+      "bd-pick-temple-ruins-rubble-temple",
+      "bd-pick-aqueduct-sewer-rubble",
+      "bd-pick-castle-catacombs-rubble"
+     ],
+     "words": [
+      "부스러기",
+      "rubble"
+     ]
+    },
+    {
+     "id": "ruin-statue",
+     "src": "ru-statue",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "수호 석상",
+     "en": "guardian statue",
+     "swap": [
+      "bd-pick-dungeon-theme-statue-head"
+     ],
+     "words": [
+      "석상",
+      "statue"
+     ]
+    },
+    {
+     "id": "ruin-rubble-heap",
+     "src": "ru-rubble",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "무너진 돌 더미",
+     "en": "fallen blocks",
+     "swap": [
+      "bd-pick-dungeon-theme-rubble-heap"
+     ],
+     "words": [
+      "돌 더미",
+      "rubble"
+     ]
+    },
+    {
+     "id": "ruin-mosaic",
+     "src": "ru-mosaic",
+     "w": 3,
+     "h": 3,
+     "cls": "decal",
+     "ko": "바닥 모자이크",
+     "en": "floor mosaic",
+     "swap": [
+      "bd-pick-temple-ruins-mosaic-medallion-7x7",
+      "bd-pick-temple-ruins-mosaic-medallion-5x5"
+     ],
+     "words": [
+      "모자이크",
+      "mosaic"
+     ]
+    },
+    {
+     "id": "ruin-column-tall",
+     "src": "ru-column",
+     "w": 2,
+     "h": 4,
+     "cls": "object",
+     "ko": "큰 돌기둥",
+     "en": "tall column",
+     "swap": [],
+     "words": [
+      "기둥",
+      "column"
+     ]
+    },
+    {
+     "id": "ruin-column-fallen",
+     "src": "ru-broken",
+     "w": 3,
+     "h": 2,
+     "cls": "object",
+     "ko": "쓰러진 기둥",
+     "en": "fallen column",
+     "swap": [],
+     "words": [
+      "기둥",
+      "column"
+     ]
+    },
+    {
+     "id": "ruin-pool",
+     "src": "ru-pool",
+     "w": 4,
+     "h": 3,
+     "cls": "object",
+     "ko": "돌 테 못",
+     "en": "kerbed pool",
+     "swap": [],
+     "words": [
+      "못",
+      "pool"
+     ],
+     "block": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       2
+      ]
+     ]
+    },
+    {
+     "id": "ruin-door-sealed",
+     "src": "ru-door",
+     "w": 2,
+     "h": 3,
+     "cls": "mount",
+     "ko": "봉인된 돌문",
+     "en": "sealed stone door",
+     "swap": [],
+     "words": [
+      "돌문",
+      "door"
+     ],
+     "crop": [
+      0,
+      8,
+      32,
+      56
+     ]
+    },
+    {
+     "id": "ruin-ivy-curtain",
+     "src": "ru-ivy",
+     "w": 2,
+     "h": 3,
+     "cls": "mount",
+     "ko": "덩굴 발",
+     "en": "ivy curtain",
+     "swap": [],
+     "words": [
+      "덩굴",
+      "ivy"
+     ]
+    },
+    {
+     "id": "ruin-leaves",
+     "src": "ru-leaves",
+     "w": 2,
+     "h": 1,
+     "cls": "decal",
+     "ko": "낙엽",
+     "en": "fallen leaves",
+     "swap": [],
+     "words": [
+      "낙엽",
+      "leaves"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "ruin-column-tall",
+     "cls": "open",
+     "per": 0.7,
+     "max": 4
+    },
+    {
+     "id": "ruin-pool",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "ruin-column-fallen",
+     "cls": "open",
+     "per": 0.35,
+     "max": 1
+    },
+    {
+     "id": "ruin-statue",
+     "cls": "edge",
+     "per": 0.35,
+     "max": 2
+    },
+    {
+     "id": "ruin-ivy-curtain",
+     "cls": "wall",
+     "per": 0.5,
+     "max": 2
+    },
+    {
+     "id": "ruin-door-sealed",
+     "cls": "wall",
+     "per": 0.25,
+     "max": 1
+    },
+    {
+     "id": "ruin-leaves",
+     "cls": "decal",
+     "per": 1.0,
+     "max": 3
+    }
+   ],
+   "stagger": true,
+   "deepFull": true,
+   "rimPhases": 2,
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {
+     "keep": "buff"
+    },
+    "downRemap": {
+     "keep": "lime"
+    }
+   }
+  },
+  {
+   "id": "ice",
+   "ko": "얼음굴",
+   "types": [
+    "ice"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "cv-edge-s",
+   "rimW": "cv-edge-w",
+   "rimPhases": 2,
+   "shore": "cv-shore",
+   "shoreIn": "cv-shore-in",
+   "water": "cv-water2",
+   "bridge": "plank",
+   "net": "nw-net",
+   "inner2": true,
+   "floor": [
+    "ic-floor-a",
+    "ic-floor-b",
+    "ic-floor-c"
+   ],
+   "faces": [
+    "ic2-face-a",
+    "ic2-face-b",
+    "ic2-face-c"
+   ],
+   "borrow": {
+    "crag": "frost",
+    "slab": "snow",
+    "dark": "darki",
+    "water": "crystal"
+   },
+   "sliver": "snow:4",
+   "faceGap": "frost:1",
+   "looks": [
+    {
+     "id": "blue",
+     "ko": "푸른 얼음"
+    },
+    {
+     "id": "glacier",
+     "ko": "옥빛 얼음",
+     "remap": {
+      "frost": "frostb"
+     }
+    },
+    {
+     "id": "dusk",
+     "ko": "보랏빛 얼음",
+     "remap": {
+      "frost": "frostc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "ice-crystal",
+     "src": "ic-crystal",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "얼음 수정",
+     "en": "ice crystal",
+     "swap": [
+      "bd-pick-dungeon-theme-ice-crystal"
+     ],
+     "words": [
+      "수정",
+      "crystal"
+     ]
+    },
+    {
+     "id": "ice-rock",
+     "src": "ic-rock",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "눈 덮인 바위",
+     "en": "snowy boulder",
+     "swap": [
+      "bd-pick-snowfield-rock"
+     ],
+     "words": [
+      "바위",
+      "boulder"
+     ]
+    },
+    {
+     "id": "ice-drift",
+     "src": "ic-drift",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "눈 더미",
+     "en": "snow drift",
+     "swap": [
+      "bd-pick-dungeon-theme-snow-drift",
+      "bd-pick-dungeon-theme-snow-drift-2"
+     ],
+     "words": [
+      "눈",
+      "snow"
+     ]
+    },
+    {
+     "id": "ice-icicles",
+     "src": "ic-icicles",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "고드름",
+     "en": "icicles",
+     "swap": [
+      "bd-pick-dungeon-theme-icicles"
+     ],
+     "words": [
+      "고드름",
+      "icicles"
+     ]
+    },
+    {
+     "id": "ice-mound",
+     "src": "ic-mound",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "얼음 조각 더미",
+     "en": "ice rubble",
+     "swap": [
+      "bd-pick-snowfield-mound"
+     ],
+     "words": [
+      "얼음",
+      "ice"
+     ]
+    },
+    {
+     "id": "ice-frozen-warrior",
+     "src": "ic-frozen",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "얼어붙은 전사",
+     "en": "frozen warrior",
+     "swap": [
+      "bd-pick-dungeon-theme-frozen-warrior"
+     ],
+     "words": [
+      "전사",
+      "warrior"
+     ]
+    },
+    {
+     "id": "ice-pillar",
+     "src": "ic-pillar",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "얼음 기둥",
+     "en": "ice pillar",
+     "swap": [],
+     "words": [
+      "기둥",
+      "pillar"
+     ]
+    },
+    {
+     "id": "ice-great-crystal",
+     "src": "ic-great",
+     "w": 3,
+     "h": 3,
+     "cls": "object",
+     "ko": "큰 얼음 수정",
+     "en": "great ice crystal",
+     "swap": [],
+     "words": [
+      "수정",
+      "crystal"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "ice-great-crystal",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "ice-pillar",
+     "cls": "open",
+     "per": 0.6,
+     "max": 2
+    }
+   ],
+   "glowOf": {
+    "ice-crystal": "spore",
+    "ice-great-crystal": "crystal"
+   },
+   "stairs": {
+    "up": "st-up-rock",
+    "down": "st-down-rock",
+    "upRemap": {
+     "crag": "frost"
+    },
+    "downRemap": {
+     "slab": "snow"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "volcano",
+   "ko": "화산",
+   "types": [
+    "volcano"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "cv-edge-s",
+   "rimW": "cv-edge-w",
+   "rimPhases": 2,
+   "shore": "cv-shore",
+   "shoreIn": "cv-shore-in",
+   "water": "cv-water2",
+   "lava": true,
+   "bridge": "stone",
+   "net": "nw-net",
+   "inner2": true,
+   "floor": [
+    "vo-floor-a",
+    "vo-floor-b",
+    "vo-floor-c"
+   ],
+   "faces": [
+    "vo2-face-a",
+    "vo2-face-b",
+    "vo2-face-c"
+   ],
+   "borrow": {
+    "crag": "basalt",
+    "slab": "basalt",
+    "dark": "darkv",
+    "water": "lava",
+    "keep": "basalt"
+   },
+   "sliver": "basalt:4",
+   "faceGap": "basalt:1",
+   "looks": [
+    {
+     "id": "black",
+     "ko": "검은 현무암"
+    },
+    {
+     "id": "rust",
+     "ko": "붉은 현무암",
+     "remap": {
+      "basalt": "basaltb"
+     }
+    },
+    {
+     "id": "ash",
+     "ko": "잿빛 현무암",
+     "remap": {
+      "basalt": "basaltc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "volcano-embers",
+     "src": "vo-embers",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "불씨",
+     "en": "embers",
+     "swap": [
+      "bd-pick-volcano-cave-ember-a"
+     ],
+     "words": [
+      "불씨",
+      "embers"
+     ]
+    },
+    {
+     "id": "volcano-vent",
+     "src": "vo-vent",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "김 구멍",
+     "en": "steam vent",
+     "swap": [
+      "bd-pick-volcano-cave-steam-vent"
+     ],
+     "words": [
+      "김",
+      "vent"
+     ]
+    },
+    {
+     "id": "volcano-fire-crystal",
+     "src": "vo-firecrystal",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "불 수정",
+     "en": "fire crystal",
+     "swap": [
+      "bd-pick-volcano-cave-fire-crystal"
+     ],
+     "words": [
+      "수정",
+      "crystal"
+     ]
+    },
+    {
+     "id": "volcano-spike",
+     "src": "vo-spike",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "흑요석 가시",
+     "en": "obsidian spike",
+     "swap": [
+      "bd-pick-volcano-cave-spike-small"
+     ],
+     "words": [
+      "가시",
+      "spike"
+     ]
+    },
+    {
+     "id": "volcano-spike-tall",
+     "src": "vo-spike-tall",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "큰 흑요석 가시",
+     "en": "tall obsidian spike",
+     "swap": [
+      "bd-pick-volcano-cave-spike-tall",
+      "bd-pick-volcano-cave-stalagmite"
+     ],
+     "words": [
+      "가시",
+      "spike"
+     ]
+    },
+    {
+     "id": "volcano-columns",
+     "src": "vo-columns",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "현무암 기둥 무리",
+     "en": "basalt columns",
+     "swap": [
+      "bd-pick-volcano-cave-spike-wide"
+     ],
+     "words": [
+      "기둥",
+      "columns"
+     ]
+    },
+    {
+     "id": "volcano-lavafall",
+     "src": "vo-lavafall",
+     "w": 1,
+     "h": 3,
+     "cls": "mount",
+     "ko": "용암 줄기",
+     "en": "lava fall",
+     "swap": [],
+     "words": [
+      "용암",
+      "lava"
+     ]
+    },
+    {
+     "id": "volcano-altar",
+     "src": "vo-altar",
+     "w": 3,
+     "h": 2,
+     "cls": "object",
+     "ko": "흑요석 제단",
+     "en": "obsidian altar",
+     "swap": [],
+     "words": [
+      "제단",
+      "altar"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "volcano-altar",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "volcano-lavafall",
+     "cls": "wall",
+     "per": 0.5,
+     "max": 2
+    },
+    {
+     "id": "volcano-columns",
+     "cls": "edge",
+     "per": 0.5,
+     "max": 2
+    }
+   ],
+   "glowOf": {
+    "volcano-fire-crystal": "ember",
+    "volcano-embers": "ember",
+    "volcano-altar": "fire",
+    "volcano-lavafall": "fire"
+   },
+   "stairs": {
+    "up": "st-up-rock",
+    "down": "st-down-rock",
+    "upRemap": {
+     "crag": "basalt"
+    },
+    "downRemap": {
+     "slab": "basalt"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "mine",
+   "ko": "광산",
+   "types": [
+    "mine"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "cv-edge-s",
+   "rimW": "cv-edge-w",
+   "rimPhases": 2,
+   "bridge": "plank",
+   "floor": [
+    "mn-floor-a",
+    "mn-floor-b",
+    "mn-floor-c"
+   ],
+   "faces": [
+    "mn-face-a",
+    "mn-face-b",
+    "mn-face-c"
+   ],
+   "borrow": {
+    "crag": "earth",
+    "slab": "earth",
+    "dark": "darkv"
+   },
+   "sliver": "earth:4",
+   "faceGap": "earth:1",
+   "looks": [
+    {
+     "id": "brown",
+     "ko": "갈색 흙바위"
+    },
+    {
+     "id": "grey",
+     "ko": "잿빛 바위",
+     "remap": {
+      "earth": "earthb"
+     }
+    },
+    {
+     "id": "clay",
+     "ko": "붉은 흙바위",
+     "remap": {
+      "earth": "earthc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "mine-ore",
+     "src": "mn-ore",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "광석 더미",
+     "en": "ore heap",
+     "swap": [
+      "bd-pick-mining-valley-ore"
+     ],
+     "words": [
+      "광석",
+      "ore"
+     ],
+     "block": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "mine-rocks",
+     "src": "mn-rocks",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "버럭 더미",
+     "en": "waste rock",
+     "swap": [
+      "bd-pick-mining-valley-slagrock"
+     ],
+     "words": [
+      "버럭",
+      "rock"
+     ],
+     "block": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "mine-timber-frame",
+     "src": "mn-timber-frame",
+     "w": 3,
+     "h": 2,
+     "cls": "mount",
+     "ko": "갱목 틀",
+     "en": "timber frame",
+     "swap": [
+      "bd-pick-dungeon-theme-timber-frame"
+     ],
+     "words": [
+      "갱목",
+      "timber"
+     ]
+    },
+    {
+     "id": "mine-lamp",
+     "src": "mn-lamp",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "등불 기둥",
+     "en": "lamp post",
+     "swap": [
+      "bd-pick-mining-valley-lamp"
+     ],
+     "words": [
+      "등불",
+      "lamp"
+     ],
+     "block": [
+      [
+       0,
+       2
+      ]
+     ]
+    },
+    {
+     "id": "mine-ore-vein-gold",
+     "src": "mn-ore-vein",
+     "w": 2,
+     "h": 2,
+     "cls": "mount",
+     "ko": "금 광맥",
+     "en": "gold vein",
+     "swap": [
+      "bd-pick-dungeon-theme-ore-vein-gold"
+     ],
+     "words": [
+      "광맥",
+      "vein"
+     ]
+    },
+    {
+     "id": "mine-ore-vein-iron",
+     "src": "mn-ore-vein-iron",
+     "w": 2,
+     "h": 2,
+     "cls": "mount",
+     "ko": "철 광맥",
+     "en": "iron vein",
+     "swap": [
+      "bd-pick-dungeon-theme-ore-vein-iron"
+     ],
+     "words": [
+      "광맥",
+      "vein"
+     ]
+    },
+    {
+     "id": "mine-minecart",
+     "src": "mn-minecart",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "광차",
+     "en": "mine cart",
+     "swap": [
+      "bd-pick-dungeon-theme-minecart"
+     ],
+     "words": [
+      "광차",
+      "cart"
+     ]
+    },
+    {
+     "id": "mine-post",
+     "src": "mn-post",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "갱목 기둥",
+     "en": "timber prop",
+     "swap": [
+      "bd-pick-dungeon-theme-timber-post"
+     ],
+     "words": [
+      "갱목",
+      "prop"
+     ]
+    },
+    {
+     "id": "mine-tools",
+     "src": "mn-tools",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "곡괭이와 투구",
+     "en": "pickaxe and helmet",
+     "swap": [],
+     "words": [
+      "곡괭이",
+      "pickaxe"
+     ]
+    },
+    {
+     "id": "mine-hoist",
+     "src": "mn-hoist",
+     "w": 3,
+     "h": 3,
+     "cls": "object",
+     "ko": "권양기",
+     "en": "mine hoist",
+     "swap": [],
+     "words": [
+      "권양기",
+      "hoist"
+     ],
+     "block": [
+      [
+       0,
+       2
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       2,
+       1
+      ]
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "mine-hoist",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "mine-minecart",
+     "cls": "edge",
+     "per": 0.4,
+     "max": 1
+    },
+    {
+     "id": "mine-tools",
+     "cls": "edge",
+     "per": 0.6,
+     "max": 2
+    }
+   ],
+   "glowOf": {
+    "mine-lamp": "fire"
+   },
+   "stairs": {
+    "up": "st-up-rock",
+    "down": "st-down-rock",
+    "upRemap": {
+     "crag": "earth"
+    },
+    "downRemap": {
+     "slab": "earth"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "crypt",
+   "ko": "지하묘",
+   "types": [
+    "catacomb",
+    "labyrinth"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "mb-rim-s",
+   "rimW": "mb-rim-w",
+   "rimPhases": 2,
+   "bridge": "stone",
+   "floor": [
+    "cr-floor-a",
+    "cr-floor-b",
+    "cr-floor-c"
+   ],
+   "faces": [
+    "cr-wall-a",
+    "cr-wall-b",
+    "cr-wall-c"
+   ],
+   "borrow": {
+    "keep": "tomb"
+   },
+   "sliver": "tomb:3",
+   "faceGap": "tomb:1",
+   "looks": [
+    {
+     "id": "cold",
+     "ko": "푸른 잿빛 돌"
+    },
+    {
+     "id": "mould",
+     "ko": "이끼 낀 벽돌 묘",
+     "remap": {
+      "tomb": "tombb"
+     },
+     "faces": [
+      "crb-wall-a",
+      "crb-wall-b",
+      "crb-wall-c"
+     ],
+     "floor": [
+      "crb-floor-a",
+      "crb-floor-b"
+     ],
+     "floorWeights": [
+      0.4,
+      0.6
+     ]
+    },
+    {
+     "id": "umber",
+     "ko": "갈색 돌",
+     "remap": {
+      "tomb": "tombc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "crypt-column",
+     "src": "cr-column",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "지하묘 기둥",
+     "en": "crypt pillar",
+     "swap": [
+      "bd-pick-castle-catacombs-column-cata"
+     ],
+     "words": [
+      "기둥",
+      "pillar"
+     ]
+    },
+    {
+     "id": "crypt-sarcophagus",
+     "src": "cr-sarcophagus",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "석관",
+     "en": "sarcophagus",
+     "swap": [
+      "bd-pick-dungeon-theme-sarcophagus-ew",
+      "bd-pick-dungeon-theme-sarcophagus-ew-open"
+     ],
+     "words": [
+      "석관",
+      "sarcophagus"
+     ],
+     "block": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "crypt-sarcophagus-ns",
+     "src": "cr-sarcophagus-ns",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "세로 석관",
+     "en": "sarcophagus",
+     "swap": [
+      "bd-pick-dungeon-theme-sarcophagus-ns"
+     ],
+     "words": [
+      "석관",
+      "sarcophagus"
+     ],
+     "block": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "crypt-sarcophagus-open",
+     "src": "cr-sarcophagus-open",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "열린 석관",
+     "en": "opened sarcophagus",
+     "swap": [
+      "bd-pick-dungeon-theme-sarcophagus-ns-open"
+     ],
+     "words": [
+      "석관",
+      "sarcophagus"
+     ],
+     "block": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "crypt-banner",
+     "src": "cr-banner",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "장례 깃발",
+     "en": "funeral banner",
+     "swap": [
+      "bd-pick-aqueduct-sewer-banner-cult"
+     ],
+     "words": [
+      "깃발",
+      "banner"
+     ]
+    },
+    {
+     "id": "crypt-ossuary",
+     "src": "cr-ossuary",
+     "w": 3,
+     "h": 2,
+     "cls": "mount",
+     "ko": "해골 벽",
+     "en": "ossuary wall",
+     "swap": [
+      "bd-pick-dungeon-theme-ossuary-2h",
+      "bd-pick-dungeon-theme-ossuary-3h"
+     ],
+     "words": [
+      "해골",
+      "ossuary"
+     ]
+    },
+    {
+     "id": "crypt-niche-skull",
+     "src": "cr-niche-skull",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "해골 벽감",
+     "en": "skull niche",
+     "swap": [
+      "bd-pick-castle-catacombs-niche-skull",
+      "bd-pick-castle-catacombs-niche-urn",
+      "bd-pick-castle-catacombs-niche-shroud"
+     ],
+     "words": [
+      "벽감",
+      "niche"
+     ]
+    },
+    {
+     "id": "crypt-candelabra",
+     "src": "cr-candelabra",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "쇠 촛대",
+     "en": "iron candelabra",
+     "swap": [
+      "bd-pick-dungeon-theme-iron-candelabra"
+     ],
+     "words": [
+      "촛대",
+      "candelabra"
+     ]
+    },
+    {
+     "id": "crypt-altar",
+     "src": "cr-altar",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "장례 제단",
+     "en": "funeral altar",
+     "swap": [
+      "bd-pick-castle-catacombs-altar-stone"
+     ],
+     "words": [
+      "제단",
+      "altar"
+     ]
+    },
+    {
+     "id": "crypt-tomb-slab",
+     "src": "cr-tomb-slab",
+     "w": 2,
+     "h": 2,
+     "cls": "decal",
+     "ko": "묘석 바닥",
+     "en": "grave slab",
+     "swap": [
+      "bd-pick-dungeon-theme-tomb-slab"
+     ],
+     "words": [
+      "묘석",
+      "slab"
+     ]
+    },
+    {
+     "id": "crypt-angel",
+     "src": "cr-angel",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "슬퍼하는 천사상",
+     "en": "mourning angel",
+     "swap": [
+      "bd-pick-dungeon-theme-statue-head"
+     ],
+     "words": [
+      "천사상",
+      "angel"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "crypt-angel",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "crypt-tomb-slab",
+     "cls": "decal",
+     "per": 0.5,
+     "max": 1
+    },
+    {
+     "id": "crypt-ossuary",
+     "cls": "wall",
+     "per": 0.3,
+     "max": 1
+    }
+   ],
+   "glowOf": {
+    "crypt-candelabra": "ember",
+    "crypt-niche-skull": "ember"
+   },
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {
+     "keep": "tomb"
+    },
+    "downRemap": {
+     "keep": "tomb"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "sewer",
+   "ko": "하수도",
+   "types": [
+    "sewer"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "mb-rim-s",
+   "rimW": "mb-rim-w",
+   "rimPhases": 2,
+   "shore": "cv-shore",
+   "shoreIn": "cv-shore-in",
+   "water": "sw-water",
+   "bridge": "stone",
+   "floor": [
+    "sw-floor-a",
+    "sw-floor-b",
+    "sw-floor-c"
+   ],
+   "faces": [
+    "sw-wall-a",
+    "sw-wall-b",
+    "sw-wall-c"
+   ],
+   "borrow": {
+    "keep": "brickd",
+    "dark": "darku",
+    "slab": "buff",
+    "crag": "brickd",
+    "water": "sludge"
+   },
+   "sliver": "buff:3",
+   "faceGap": "brickd:1",
+   "looks": [
+    {
+     "id": "red",
+     "ko": "붉은 벽돌"
+    },
+    {
+     "id": "ochre",
+     "ko": "누런 벽돌",
+     "remap": {
+      "brickd": "brickb"
+     }
+    },
+    {
+     "id": "slate",
+     "ko": "잿빛 벽돌",
+     "remap": {
+      "brickd": "brickc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "sewer-grate",
+     "src": "sw-grate",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "배수 창살",
+     "en": "drain grate",
+     "swap": [
+      "bd-pick-aqueduct-sewer-grate-floor"
+     ],
+     "words": [
+      "창살",
+      "grate"
+     ]
+    },
+    {
+     "id": "sewer-pier",
+     "src": "sw-pier",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "벽돌 기둥",
+     "en": "brick pier",
+     "swap": [
+      "bd-pick-aqueduct-sewer-column-sewer",
+      "bd-pick-castle-catacombs-column-cata"
+     ],
+     "words": [
+      "기둥",
+      "pier"
+     ]
+    },
+    {
+     "id": "sewer-valve",
+     "src": "sw-valve",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "밸브 관",
+     "en": "valve pipe",
+     "swap": [
+      "bd-pick-aqueduct-sewer-valve-wheel"
+     ],
+     "words": [
+      "밸브",
+      "valve"
+     ]
+    },
+    {
+     "id": "sewer-outfall",
+     "src": "sw-outfall",
+     "w": 2,
+     "h": 2,
+     "cls": "mount",
+     "ko": "물 쏟는 아치",
+     "en": "outfall arch",
+     "swap": [
+      "bd-pick-aqueduct-sewer-arch-water"
+     ],
+     "words": [
+      "아치",
+      "outfall"
+     ]
+    },
+    {
+     "id": "sewer-bars",
+     "src": "sw-bars",
+     "w": 2,
+     "h": 2,
+     "cls": "mount",
+     "ko": "창살 굴",
+     "en": "barred tunnel",
+     "swap": [
+      "bd-pick-aqueduct-sewer-arch-bars"
+     ],
+     "words": [
+      "창살",
+      "bars"
+     ]
+    },
+    {
+     "id": "sewer-wall-lamp",
+     "src": "sw-wall-lamp",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "초록 벽등",
+     "en": "green wall lamp",
+     "swap": [
+      "bd-pick-aqueduct-sewer-torch-wall"
+     ],
+     "words": [
+      "벽등",
+      "lamp"
+     ]
+    },
+    {
+     "id": "sewer-slime",
+     "src": "sw-slime",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "점액",
+     "en": "slime",
+     "swap": [],
+     "words": [
+      "점액",
+      "slime"
+     ]
+    },
+    {
+     "id": "sewer-cistern",
+     "src": "sw-cistern",
+     "w": 3,
+     "h": 3,
+     "cls": "object",
+     "ko": "큰 물통",
+     "en": "cistern",
+     "swap": [],
+     "words": [
+      "물통",
+      "cistern"
+     ],
+     "block": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ]
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "sewer-cistern",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "sewer-slime",
+     "cls": "decal",
+     "per": 1.2,
+     "max": 3
+    }
+   ],
+   "glowOf": {
+    "sewer-wall-lamp": "green"
+   },
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {
+     "keep": "brickd"
+    },
+    "downRemap": {
+     "keep": "buff"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "tower",
+   "ko": "마법탑",
+   "types": [
+    "tower"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "mb-rim-s",
+   "rimW": "mb-rim-w",
+   "rimPhases": 2,
+   "floor": [
+    "tw-floor-a",
+    "tw-floor-b",
+    "tw-floor-c"
+   ],
+   "faces": [
+    "tw-wall-a",
+    "tw-wall-b",
+    "tw-wall-c"
+   ],
+   "borrow": {
+    "keep": "arcane"
+   },
+   "sliver": "lime:4",
+   "faceGap": "arcane:1",
+   "looks": [
+    {
+     "id": "violet",
+     "ko": "보랏빛 마름돌"
+    },
+    {
+     "id": "azure",
+     "ko": "쪽빛 마름돌",
+     "remap": {
+      "arcane": "arcaneb"
+     }
+    },
+    {
+     "id": "wine",
+     "ko": "자줏빛 마름돌",
+     "remap": {
+      "arcane": "arcanec"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "tower-bookshelf",
+     "src": "tw-bookshelf",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "책장",
+     "en": "bookshelf",
+     "swap": [
+      "bd-pick-dungeon-theme-bookshelf"
+     ],
+     "words": [
+      "책장",
+      "bookshelf"
+     ]
+    },
+    {
+     "id": "tower-bookshelf-tall",
+     "src": "tw-bookshelf-tall",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "높은 책장",
+     "en": "tall bookshelf",
+     "swap": [
+      "bd-pick-dungeon-theme-bookshelf-tall"
+     ],
+     "words": [
+      "책장",
+      "bookshelf"
+     ]
+    },
+    {
+     "id": "tower-pedestal",
+     "src": "tw-pedestal",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "수정 받침",
+     "en": "crystal pedestal",
+     "swap": [
+      "bd-pick-dungeon-theme-crystal-pedestal"
+     ],
+     "words": [
+      "수정",
+      "crystal"
+     ]
+    },
+    {
+     "id": "tower-candelabra",
+     "src": "tw-candelabra",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "놋 촛대",
+     "en": "brass candelabra",
+     "swap": [
+      "bd-pick-dungeon-theme-candelabra"
+     ],
+     "words": [
+      "촛대",
+      "candelabra"
+     ]
+    },
+    {
+     "id": "tower-lectern",
+     "src": "tw-lectern",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "독서대",
+     "en": "lectern",
+     "swap": [
+      "bd-pick-dungeon-theme-lectern"
+     ],
+     "words": [
+      "독서대",
+      "lectern"
+     ]
+    },
+    {
+     "id": "tower-rug",
+     "src": "tw-rug",
+     "w": 2,
+     "h": 2,
+     "cls": "decal",
+     "ko": "별 깔개",
+     "en": "star rug",
+     "swap": [
+      "bd-pick-desert-oasis-rug"
+     ],
+     "words": [
+      "깔개",
+      "rug"
+     ]
+    },
+    {
+     "id": "tower-globe",
+     "src": "tw-globe",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "천구의",
+     "en": "celestial globe",
+     "swap": [
+      "bd-pick-wizard-tower-globe"
+     ],
+     "words": [
+      "천구의",
+      "globe"
+     ]
+    },
+    {
+     "id": "tower-circle",
+     "src": "tw-circle",
+     "w": 3,
+     "h": 3,
+     "cls": "decal",
+     "ko": "마법진",
+     "en": "magic circle",
+     "swap": [],
+     "words": [
+      "마법진",
+      "circle"
+     ]
+    },
+    {
+     "id": "tower-orrery",
+     "src": "tw-orrery",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "혼천의",
+     "en": "orrery",
+     "swap": [],
+     "words": [
+      "혼천의",
+      "orrery"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "tower-circle",
+     "cls": "decal",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "tower-orrery",
+     "cls": "open",
+     "per": 0.4,
+     "max": 1
+    },
+    {
+     "id": "tower-globe",
+     "cls": "edge",
+     "per": 0.4,
+     "max": 1
+    }
+   ],
+   "glowOf": {
+    "tower-pedestal": "spore",
+    "tower-candelabra": "ember",
+    "tower-circle": "crystal"
+   },
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {
+     "keep": "arcane"
+    },
+    "downRemap": {
+     "keep": "lime"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "castle",
+   "ko": "성",
+   "types": [
+    "castle"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "mb-rim-s",
+   "rimW": "mb-rim-w",
+   "rimPhases": 2,
+   "floor": [
+    "ca-floor-a",
+    "ca-floor-b",
+    "ca-floor-c"
+   ],
+   "faces": [
+    "ca-wall-a",
+    "ca-wall-b",
+    "ca-wall-c"
+   ],
+   "borrow": {},
+   "sliver": "keep:3",
+   "faceGap": "keep:1",
+   "looks": [
+    {
+     "id": "grey",
+     "ko": "잿빛 성돌"
+    },
+    {
+     "id": "tan",
+     "ko": "회벽과 들보",
+     "remap": {
+      "keep": "keepb"
+     },
+     "faces": [
+      "cab-wall-a",
+      "cab-wall-b",
+      "cab-wall-c"
+     ],
+     "floor": [
+      "cab-floor-a",
+      "cab-floor-b"
+     ],
+     "floorWeights": [
+      0.45,
+      0.55
+     ]
+    },
+    {
+     "id": "slate",
+     "ko": "푸른 성돌",
+     "remap": {
+      "keep": "keepc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "castle-column",
+     "src": "ca-column",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "성 기둥",
+     "en": "castle pier",
+     "swap": [
+      "bd-pick-castle-catacombs-column-cata"
+     ],
+     "words": [
+      "기둥",
+      "pier"
+     ]
+    },
+    {
+     "id": "castle-banner",
+     "src": "ca-banner",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "붉은 깃발",
+     "en": "royal banner",
+     "swap": [
+      "bd-pick-dungeon-theme-royal-banner",
+      "bd-pick-aqueduct-sewer-banner-cult"
+     ],
+     "words": [
+      "깃발",
+      "banner"
+     ]
+    },
+    {
+     "id": "castle-armor",
+     "src": "ca-armor",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "갑옷",
+     "en": "suit of armour",
+     "swap": [
+      "bd-pick-dungeon-theme-armor-stand"
+     ],
+     "words": [
+      "갑옷",
+      "armour"
+     ]
+    },
+    {
+     "id": "castle-throne",
+     "src": "ca-throne",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "옥좌",
+     "en": "throne",
+     "swap": [
+      "bd-pick-dungeon-theme-throne"
+     ],
+     "words": [
+      "옥좌",
+      "throne"
+     ]
+    },
+    {
+     "id": "castle-weapon-rack",
+     "src": "ca-weapon-rack",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "무기 걸이",
+     "en": "weapon rack",
+     "swap": [],
+     "words": [
+      "무기",
+      "weapons"
+     ]
+    },
+    {
+     "id": "castle-carpet",
+     "src": "ca-carpet",
+     "w": 2,
+     "h": 2,
+     "cls": "decal",
+     "ko": "붉은 융단",
+     "en": "red carpet",
+     "swap": [],
+     "words": [
+      "융단",
+      "carpet"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "castle-carpet",
+     "cls": "run",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "castle-weapon-rack",
+     "cls": "edge",
+     "per": 0.4,
+     "max": 2
+    },
+    {
+     "id": "castle-armor",
+     "cls": "edge",
+     "per": 0.5,
+     "max": 2
+    }
+   ],
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {},
+    "downRemap": {}
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "pyramid",
+   "ko": "피라미드",
+   "types": [
+    "pyramid"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "mb-rim-s",
+   "rimW": "mb-rim-w",
+   "rimPhases": 2,
+   "floor": [
+    "py-floor-a",
+    "py-floor-b",
+    "py-floor-c"
+   ],
+   "faces": [
+    "py-wall-a",
+    "py-wall-b",
+    "py-wall-c"
+   ],
+   "borrow": {
+    "keep": "sandst",
+    "dark": "darkv"
+   },
+   "sliver": "sandst:3",
+   "faceGap": "sandst:1",
+   "looks": [
+    {
+     "id": "gold",
+     "ko": "금빛 사암"
+    },
+    {
+     "id": "rose",
+     "ko": "붉은 사암",
+     "remap": {
+      "sandst": "sandstb"
+     }
+    },
+    {
+     "id": "pale",
+     "ko": "흰 석회암",
+     "remap": {
+      "sandst": "sandstc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "pyramid-column",
+     "src": "py-column",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "갈대 기둥",
+     "en": "papyrus column",
+     "swap": [
+      "bd-pick-temple-ruins-column-temple"
+     ],
+     "words": [
+      "기둥",
+      "column"
+     ]
+    },
+    {
+     "id": "pyramid-sarcophagus",
+     "src": "py-sarcophagus",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "선 관",
+     "en": "upright sarcophagus",
+     "swap": [
+      "bd-pick-dungeon-theme-pharaoh-sarcophagus"
+     ],
+     "words": [
+      "관",
+      "sarcophagus"
+     ]
+    },
+    {
+     "id": "pyramid-jars",
+     "src": "py-jars",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "단지 넷",
+     "en": "canopic jars",
+     "swap": [
+      "bd-pick-desert-oasis-jars"
+     ],
+     "words": [
+      "단지",
+      "jars"
+     ],
+     "block": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "pyramid-obelisk",
+     "src": "py-obelisk",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "오벨리스크",
+     "en": "obelisk",
+     "swap": [
+      "bd-pick-dungeon-theme-obelisk"
+     ],
+     "words": [
+      "오벨리스크",
+      "obelisk"
+     ]
+    },
+    {
+     "id": "pyramid-sand",
+     "src": "py-sand",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "모래 더미",
+     "en": "sand drift",
+     "swap": [
+      "bd-pick-dungeon-theme-sand-drift",
+      "bd-pick-dungeon-theme-sand-drift-2"
+     ],
+     "words": [
+      "모래",
+      "sand"
+     ]
+    },
+    {
+     "id": "pyramid-gold",
+     "src": "py-gold",
+     "w": 2,
+     "h": 1,
+     "cls": "object",
+     "ko": "금 더미",
+     "en": "gold pile",
+     "swap": [
+      "bd-pick-dungeon-theme-gold-pile"
+     ],
+     "words": [
+      "금",
+      "gold"
+     ]
+    },
+    {
+     "id": "pyramid-scarab",
+     "src": "py-scarab",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "풍뎅이 상",
+     "en": "scarab statue",
+     "swap": [
+      "bd-pick-dungeon-theme-scarab-statue"
+     ],
+     "words": [
+      "풍뎅이",
+      "scarab"
+     ]
+    },
+    {
+     "id": "pyramid-jackal",
+     "src": "py-jackal",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "자칼 상",
+     "en": "jackal statue",
+     "swap": [
+      "bd-pick-dungeon-theme-jackal-statue"
+     ],
+     "words": [
+      "자칼",
+      "jackal"
+     ]
+    },
+    {
+     "id": "pyramid-sphinx",
+     "src": "py-sphinx",
+     "w": 3,
+     "h": 2,
+     "cls": "object",
+     "ko": "스핑크스",
+     "en": "sphinx",
+     "swap": [],
+     "words": [
+      "스핑크스",
+      "sphinx"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "pyramid-sphinx",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "pyramid-jackal",
+     "cls": "edge",
+     "per": 0.5,
+     "max": 2
+    },
+    {
+     "id": "pyramid-sand",
+     "cls": "decal",
+     "per": 1.0,
+     "max": 3
+    }
+   ],
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {
+     "keep": "sandst"
+    },
+    "downRemap": {
+     "keep": "sandst"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "sunken",
+   "ko": "가라앉은 신전",
+   "types": [
+    "temple+flooded"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "mb-rim-s",
+   "rimW": "mb-rim-w",
+   "rimPhases": 2,
+   "shore": "cv-shore",
+   "shoreIn": "cv-shore-in",
+   "water": "cv-water2",
+   "inherit": "ruin",
+   "bridge": "stone",
+   "inner2": true,
+   "wade": true,
+   "floor": [
+    "su-floor-a",
+    "su-floor-b",
+    "su-floor-c"
+   ],
+   "faces": [
+    "su-wall-a",
+    "su-wall-b",
+    "su-wall-c"
+   ],
+   "borrow": {
+    "keep": "marble",
+    "dark": "darku",
+    "slab": "marble",
+    "crag": "marble",
+    "water": "teal"
+   },
+   "sliver": "marble:4",
+   "faceGap": "marble:1",
+   "looks": [
+    {
+     "id": "sea",
+     "ko": "옥빛 대리석"
+    },
+    {
+     "id": "coral",
+     "ko": "산호빛 대리석",
+     "remap": {
+      "marble": "marbleb"
+     }
+    },
+    {
+     "id": "deep",
+     "ko": "쪽빛 대리석",
+     "remap": {
+      "marble": "marblec"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "sunken-column",
+     "src": "su-column",
+     "w": 1,
+     "h": 3,
+     "cls": "object",
+     "ko": "따개비 낀 기둥",
+     "en": "sea-worn column",
+     "swap": [
+      "bd-pick-temple-ruins-column-temple",
+      "bd-pick-castle-catacombs-column-cata"
+     ],
+     "words": [
+      "기둥",
+      "column"
+     ]
+    },
+    {
+     "id": "sunken-coral",
+     "src": "su-coral",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "산호",
+     "en": "coral",
+     "swap": [
+      "bd-pick-aqueduct-sewer-skulls"
+     ],
+     "words": [
+      "산호",
+      "coral"
+     ]
+    },
+    {
+     "id": "sunken-shell",
+     "src": "su-shell",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "빛나는 조개",
+     "en": "glowing shell",
+     "swap": [
+      "bd-pick-aqueduct-sewer-candles"
+     ],
+     "words": [
+      "조개",
+      "shell"
+     ]
+    },
+    {
+     "id": "sunken-weed",
+     "src": "su-weed",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "바닷말",
+     "en": "sea weed",
+     "swap": [
+      "bd-pick-temple-ruins-rubble-temple",
+      "bd-pick-aqueduct-sewer-bones",
+      "bd-pick-dungeon-theme-overgrown"
+     ],
+     "words": [
+      "바닷말",
+      "weed"
+     ]
+    },
+    {
+     "id": "sunken-amphora",
+     "src": "su-amphora",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "쓰러진 항아리",
+     "en": "amphora",
+     "swap": [
+      "bd-pick-aqueduct-sewer-crate",
+      "bd-pick-aqueduct-sewer-barrel"
+     ],
+     "words": [
+      "항아리",
+      "amphora"
+     ]
+    },
+    {
+     "id": "sunken-trident",
+     "src": "su-trident",
+     "w": 1,
+     "h": 2,
+     "cls": "object",
+     "ko": "청동 삼지창",
+     "en": "trident",
+     "swap": [
+      "bd-pick-temple-ruins-column-temple-broken"
+     ],
+     "words": [
+      "삼지창",
+      "trident"
+     ]
+    },
+    {
+     "id": "sunken-statue",
+     "src": "su-statue",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "바다에 삭은 석상",
+     "en": "sea-worn statue",
+     "swap": [
+      "bd-pick-dungeon-theme-statue-head"
+     ],
+     "words": [
+      "석상",
+      "statue"
+     ]
+    },
+    {
+     "id": "sunken-fountain",
+     "src": "su-fountain",
+     "w": 3,
+     "h": 3,
+     "cls": "object",
+     "ko": "조개 분수",
+     "en": "shell fountain",
+     "swap": [],
+     "words": [
+      "분수",
+      "fountain"
+     ],
+     "block": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ]
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "sunken-fountain",
+     "cls": "open",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "sunken-coral",
+     "cls": "edge",
+     "per": 0.8,
+     "max": 3
+    },
+    {
+     "id": "sunken-trident",
+     "cls": "edge",
+     "per": 0.3,
+     "max": 1
+    }
+   ],
+   "glowOf": {
+    "sunken-shell": "spore"
+   },
+   "stairs": {
+    "up": "st-up-built",
+    "down": "st-down-built",
+    "upRemap": {
+     "keep": "marble"
+    },
+    "downRemap": {
+     "keep": "marble"
+    }
+   },
+   "floorWeights": [
+    0.27,
+    0.23,
+    0.5
+   ]
+  },
+  {
+   "id": "hideout",
+   "ko": "도적 소굴",
+   "types": [
+    "cave+lair"
+   ],
+   "inherit": "cave",
+   "floor": [
+    "cv-bed-a",
+    "cv-bed-b",
+    "cv-bed-c",
+    "cv-bed-d",
+    "cv-bed-e"
+   ],
+   "faces": [
+    "cv-face-a2",
+    "cv-face-b",
+    "cv-face-c"
+   ],
+   "top": [
+    "cv-top"
+   ],
+   "topRamps": [
+    "dark"
+   ],
+   "rimS": "cv-edge-s",
+   "rimW": "cv-edge-w",
+   "sliver": "slab:4",
+   "faceGap": "crag:1",
+   "shore": "cv-shore",
+   "shoreIn": "cv-shore-in",
+   "water": "cv-water2",
+   "bridge": "plank",
+   "net": "nw-net",
+   "inner2": true,
+   "rimPhases": 2,
+   "looks": [
+    {
+     "id": "umber",
+     "ko": "갈색 바위"
+    },
+    {
+     "id": "slate",
+     "ko": "푸른 종유석 굴",
+     "remap": {
+      "crag": "cragb"
+     },
+     "faces": [
+      "cvb-face-a",
+      "cvb-face-b",
+      "cvb-face-c"
+     ],
+     "floor": [
+      "cvb-floor-a",
+      "cvb-floor-b"
+     ],
+     "floorWeights": [
+      0.45,
+      0.55
+     ]
+    },
+    {
+     "id": "moss",
+     "ko": "이끼빛 바위",
+     "remap": {
+      "crag": "cragc"
+     }
+    }
+   ],
+   "objects": [
+    {
+     "id": "hideout-tent",
+     "src": "hd-tent",
+     "w": 3,
+     "h": 2,
+     "cls": "object",
+     "ko": "가죽 천막",
+     "en": "hide tent",
+     "swap": [
+      "bd-dg-goblin-tent"
+     ],
+     "words": [
+      "천막",
+      "tent"
+     ],
+     "block": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ]
+     ]
+    },
+    {
+     "id": "hideout-hide-rack",
+     "src": "hd-hide-rack",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "가죽 걸이",
+     "en": "hide rack",
+     "swap": [
+      "bd-pick-deep-forest-path-hide-rack"
+     ],
+     "words": [
+      "가죽",
+      "hide"
+     ]
+    },
+    {
+     "id": "hideout-loot",
+     "src": "hd-loot",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "노획물",
+     "en": "loot",
+     "swap": [
+      "bd-dg-goblin-loot"
+     ],
+     "words": [
+      "노획물",
+      "loot"
+     ]
+    },
+    {
+     "id": "hideout-bones",
+     "src": "hd-bones",
+     "w": 1,
+     "h": 1,
+     "cls": "decal",
+     "ko": "먹다 남은 뼈",
+     "en": "gnawed bones",
+     "swap": [
+      "bd-dg-goblin-bones"
+     ],
+     "words": [
+      "뼈",
+      "bones"
+     ]
+    },
+    {
+     "id": "hideout-campfire",
+     "src": "hd-campfire",
+     "w": 1,
+     "h": 1,
+     "cls": "object",
+     "ko": "솥 건 모닥불",
+     "en": "cooking fire",
+     "swap": [
+      "bd-dg-goblin-campfire"
+     ],
+     "words": [
+      "모닥불",
+      "fire"
+     ]
+    },
+    {
+     "id": "hideout-weapon-rack",
+     "src": "hd-weapon-rack",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "무기 걸이",
+     "en": "weapon rack",
+     "swap": [],
+     "words": [
+      "무기",
+      "weapons"
+     ]
+    },
+    {
+     "id": "hideout-table",
+     "src": "hd-table",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "지도 탁자",
+     "en": "map table",
+     "swap": [],
+     "words": [
+      "탁자",
+      "table"
+     ]
+    },
+    {
+     "id": "hideout-cage",
+     "src": "hd-cage",
+     "w": 2,
+     "h": 2,
+     "cls": "object",
+     "ko": "쇠 우리",
+     "en": "iron cage",
+     "swap": [],
+     "words": [
+      "우리",
+      "cage"
+     ]
+    },
+    {
+     "id": "hideout-platform",
+     "src": "hd-platform",
+     "w": 3,
+     "h": 2,
+     "cls": "decal",
+     "ko": "널 마루",
+     "en": "plank platform",
+     "swap": [],
+     "words": [
+      "마루",
+      "platform"
+     ]
+    },
+    {
+     "id": "hideout-banner",
+     "src": "hd-banner",
+     "w": 1,
+     "h": 2,
+     "cls": "mount",
+     "ko": "붉은 누더기 깃발",
+     "en": "ragged flag",
+     "swap": [
+      "bd-pick-walled-market-banner-red"
+     ],
+     "words": [
+      "깃발",
+      "flag"
+     ]
+    },
+    {
+     "id": "hideout-chief-seat",
+     "src": "hd-chief-seat",
+     "w": 2,
+     "h": 3,
+     "cls": "object",
+     "ko": "두목 자리",
+     "en": "chief's seat",
+     "swap": [],
+     "words": [
+      "자리",
+      "seat"
+     ]
+    }
+   ],
+   "extras": [
+    {
+     "id": "hideout-chief-seat",
+     "cls": "edge",
+     "per": 1,
+     "max": 1,
+     "once": true
+    },
+    {
+     "id": "hideout-platform",
+     "cls": "decal",
+     "per": 0.6,
+     "max": 2
+    },
+    {
+     "id": "hideout-table",
+     "cls": "open",
+     "per": 0.4,
+     "max": 1
+    },
+    {
+     "id": "hideout-cage",
+     "cls": "edge",
+     "per": 0.3,
+     "max": 1
+    },
+    {
+     "id": "hideout-weapon-rack",
+     "cls": "edge",
+     "per": 0.4,
+     "max": 1
+    }
+   ],
+   "glowOf": {
+    "hideout-campfire": "ember",
+    "hideout-table": "ember"
+   },
+   "stairs": {
+    "up": "st-up-rock",
+    "down": "st-down-rock",
+    "upRemap": {},
+    "downRemap": {}
+   }
+  }
+ ]
+}

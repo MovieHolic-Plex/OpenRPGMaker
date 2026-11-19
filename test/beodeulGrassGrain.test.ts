@@ -97,7 +97,8 @@ describe("버들항 풀 결 — 기본 풀 바닥의 변형", () => {
   it("갈래 더하기: 풀 결·물빛·절벽 모습이 함께 있어도 갈래마다 제 이름으로만 고른다 — 한 갈래가 늘어도 다른 갈래의 값이 밀리지 않는다", () => {
     // 물빛(water, #4724)·절벽 모습(cliff, #4727)·풀 결(grain)은 같은 날 따로 덧붙었다. 풀 결은 맨 뒤다.
     // 한 갈래를 뺀 목록(풀 결을 빼면 = main 의 목록)으로 골라도 남은 갈래 — 물빛·절벽 모습과 그 앞의 일곱 — 의 값이 같아야 한다.
-    expect(TILESET_LOOK_PARTS.slice(-3)).toEqual(["water", "cliff", "grain"]);
+    // 던전 겉가죽(dungeon, 2026-11-15)은 그 뒤에 덧붙었다 — 풀 결은 이제 끝에서 둘째다.
+    expect(TILESET_LOOK_PARTS.slice(-4)).toEqual(["water", "cliff", "grain", "dungeon"]);
     const parts = TILESET_LOOK_PARTS as unknown as string[], full = [...parts];
     const keys = Array.from({ length: 400 }, (_, n) => JSON.stringify(["project", `both-${n}`]));
     const taken: TilesetLook[] = [{ textureKey: looks.texture, surface: "heath", stand: "oakwood", grain: "tufted", water: tilesetLookOptions(looks, "water")[0]!, cliff: tilesetLookOptions(looks, "cliff")[0]!, standKey: table.texture }];
@@ -126,9 +127,9 @@ describe("버들항 풀 결 — 기본 풀 바닥의 변형", () => {
       "game-f": { textureKey: looks.texture, surface: "steppe", woods: "rows", houses: "stone", plaza: "green", stand: "olivegrove", meadow: "clover", grain: "flowery", standKey: table.texture },
     };
     for (const [key, look] of Object.entries(before)) {
-      const { water, waterKey, cliff, ...rest } = chooseTilesetLook(looks, key)!;
+      const { water, waterKey, cliff, dungeon, ...rest } = chooseTilesetLook(looks, key)!;
       expect(rest, key).toEqual(look);
-      expect(water).toBeTruthy(); expect(waterKey).toBeTruthy(); expect(cliff).toBeTruthy();
+      expect(water).toBeTruthy(); expect(waterKey).toBeTruthy(); expect(cliff).toBeTruthy(); expect(dungeon).toBeTruthy();
     }
   });
 

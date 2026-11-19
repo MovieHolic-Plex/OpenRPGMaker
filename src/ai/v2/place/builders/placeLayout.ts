@@ -100,7 +100,7 @@ function buildDungeon(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): P
   const floor = data.mapId;
   // 적 그룹: 요청 낱말 > 주제(옛 빌더와 같은 고르기). 자리는 모델이 적은 칸 그대로.
   const plan = dungeonArgs({ ...spec, dungeonDesign: undefined, floorDesigns: undefined } as PlaceSpec);
-  const toolArgs = { name: spec.name, type: String(L.theme), theme: spec.theme ?? "" };
+  const toolArgs = { name: spec.name, type: String(L.theme) };
   const given = plan.args.populate === false ? undefined : planTroops(run, plan, toolArgs, warnings);
   const troops = themedTroops(run.ctx.project, { ...toolArgs, ...(given ? { troops: given } : {}) });
   const placedFoes: string[] = [];

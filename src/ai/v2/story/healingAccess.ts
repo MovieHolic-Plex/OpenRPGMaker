@@ -6,6 +6,7 @@
 // 쉴 곳·가게가 필요한가는 place/program.ts serviceNeeds 하나가 정한다(2026-11-11 목적표). 목적표가 여관·가게 건물을 세운 게임은 그 방 안에 주인을 세우고,
 // 그런 건물이 없는 게임(선언이 없는 세계·예전 길)만 예전처럼 시작 맵에 샘·떠돌이 상인을 둔다.
 // 목표 줄도 샘 자리를 가리킨다(시작 맵에서 걸리는 목표 글 끝 괄호에 「회복의 샘: <맵> <방위>」).
+import { dropGateBreakers, dungeonStartCell, keepsReach, solidFlood } from "@/editor/tools/dungeonGateAudit";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { canMove, isPassableLanding } from "@/project/collision";
 import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
@@ -282,7 +283,12 @@ export function ensureBossRest(run: BuildRun): string[] {
     const cell = (side ? restCell(run.ctx.project, map, boss, side) : undefined) ?? restCell(run.ctx.project, map, boss);
     if (!cell) continue;
     if (mine) map.events = others;
+    const startAt = dungeonStartCell(map), reachBefore = startAt ? solidFlood(run.ctx.project, map, startAt) : undefined;
     const res = run.call("place_savepoint", { mapId: map.id, x: cell.x, y: cell.y, id, name: "쉼터 결정", heal: true, mode: "both", sparkleRadius: 2 });
+    // 결정은 늘 막는 이벤트다 — 레버로 가는 길(관문을 닫은 채)을 끊는 자리면 걷는다(editor/tools/dungeonGateAudit).
+    const placedOn = run.ctx.project.maps[map.id]!;
+    if (res.ok && startAt && reachBefore && !keepsReach(run.ctx.project, placedOn, startAt, reachBefore)) { placedOn.events = placedOn.events.filter((e) => e.id !== id); continue; }
+    if (res.ok && dropGateBreakers(run.ctx.project, placedOn, [id]).length) continue;
     if (res.ok) notes.push(`${map.name ?? map.id} (${cell.x},${cell.y}) 보스 앞 쉼터 결정(전원 회복·저장)`);
   }
   for (const boss of bossEvents(run.ctx.project)) { const note = restBeforeBoss(run.ctx.project, boss.map.id, boss.id); if (note) notes.push(note); }
