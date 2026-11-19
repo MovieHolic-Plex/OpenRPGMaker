@@ -9,6 +9,7 @@ import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
 import { SHEER_KINDS_CARD_LINE } from "../sheerKindLines";
 import { isPassable } from "@/project/collision";
+import { labelHasWord } from "@/project/labelWords";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { eventsOf, tileLabel } from "../cells";
 import { roadCells } from "../surface";
@@ -47,6 +48,21 @@ export function villageCard(key = "", request = ""): string {
 export function villageKindsLine(theme: string, water?: unknown, key?: string): string | undefined {
   if (theme !== "river" && theme !== "coast") return undefined;
   return `hints.kind: set it only when the request names what the village lives on («a salt-pan village» does; «a seaside village» does not). Left out, the game picks a kind that fits this land, different per game. To set it, put its id in hints.kind of the building call. ${villageKindMenu({ water: theme === "coast" ? "sea" : water === "none" ? "none" : "river", key })} ${SHEER_KINDS_CARD_LINE}`;
+}
+
+/** Keep a registered kind that was named for this place, even if the planner omitted its dedicated hint. */
+export function namedVillageSpec(spec: PlaceSpec): PlaceSpec | undefined {
+  const hint = typeof spec.hints?.kind === "string" ? spec.hints.kind.trim() : "";
+  const matches = (text: string) => BEODEUL_VILLAGE_KINDS.filter((kind) => [kind.id, kind.ko, kind.en].some((name) => labelHasWord(text, name)));
+  const named = hint ? [] : matches(spec.name);
+  const found = !hint && named.length === 0 && spec.theme ? matches(spec.theme) : named;
+  const kind = hint ? villageKindById(hint) : found.length === 1 ? found[0] : undefined;
+  if (!kind) return undefined;
+  const { args: site } = villageArgs(spec);
+  if (site.theme !== undefined && site.theme !== "river" && site.theme !== "coast") return undefined;
+  const coast = site.theme === undefined && site.water === undefined && kind.fit.water.length === 1 && kind.fit.water[0] === "sea";
+  if (hint && !coast) return spec;
+  return { ...spec, ...(coast ? { theme: "coast" } : {}), hints: { ...spec.hints, kind: kind.id } };
 }
 
 /** 명세가 적은 kind 가 표에 없는 이름이면 그 이름(빈 값·글자가 아닌 값은 안 준 것). */
@@ -245,13 +261,21 @@ export function villageLayoutGuide(theme: string, fishing = false, scatter = fal
 }
 
 /** 마을이 지어질 맵 크기(build·authorBeodeulTown 기본값과 같은 계산) — 코드 지형 미리보기가 같은 크기로 땅을 만든다. */
-export function villageMapSize(spec: PlaceSpec, args: Record<string, unknown>): [number, number] {
+export function villageMapSize(spec: PlaceSpec, args: Record<string, unknown>, project?: Project): [number, number] {
   const w = num(args.width), h = num(args.height);
   const flat = args.walls === true || args.landform === "flat" || args.terrain === "flat";
   if (w !== undefined && h !== undefined) return [w, h];
   const theme = args.theme as string | undefined;
   if (spec.salt !== undefined && (theme === undefined || theme === "river" || theme === "coast") && w === undefined && h === undefined) {
-    const [a, b] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!; return [a, b + (flat ? 0 : 8)];
+    const [a, b] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!;
+    const height = b + (flat ? 0 : 8);
+    if (!flat && project && !spec.hints?.layout && !spec.villageLayout) {
+      const kits = beodeulKits(project);
+      const footprints = askedBuildingWords(spec.hints?.buildings).flatMap(word => askedBuildingKits(kits, word).slice(0, 1));
+      // Coast and river terrains share their height between water, banks and terraces.
+      return [Math.max(a, ...footprints.map(k => 4 * k.width)), Math.max(height, ...footprints.map(k => 4 * k.height))];
+    }
+    return [a, height];
   }
   const hc = num(args.houseCount);
   const base: [number, number] = hc === undefined ? ({ river: [56, 44], coast: [56, 40], desert: [58, 44], snow: [56, 44], swamp: [56, 44] } as Record<string, [number, number]>)[theme ?? "river"] ?? [56, 44]
