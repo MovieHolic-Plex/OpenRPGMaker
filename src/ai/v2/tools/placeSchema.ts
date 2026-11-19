@@ -80,6 +80,8 @@ export const HINTS_SCHEMA = {
     program: { type: "string", description: "(modern house) a registered interior program id. Leave empty to infer it from the venue name." },
     dressing: { type: "number", description: "amount of dressing 0 normal · 1 more · 2 packed (cozy)" },
     houseCount: { type: "number" },
+    door: { type: "array", items: { type: "integer" }, description: "(interior) [x,y] of the house door this place is behind (a door cell from the village result) — the inside then follows that building's size" },
+    rooms: { type: "integer", description: "(interior, optional) 1 = keep a big building's inside as your one layout" },
     kind: { type: "string", description: `(village, optional) village kind id — the land answer lists them; or a sheer cliff terrain (no houses): ${SHEER_KIND_IDS}` },
     buildings: { type: "array", items: { type: "string" }, description: "(village) buildings the request asks for, up to 3 — a kit id or a word of a kit's id or name (cathedral · inn · market-hall); the builder seats them by the gather" },
     roofs: { type: "string" },

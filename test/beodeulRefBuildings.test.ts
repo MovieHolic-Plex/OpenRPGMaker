@@ -14,14 +14,16 @@ const closed = (n: number) => { const p = ts.passability[n]!; return !p.up && !p
 describe("버들항 참고 건물 유형 토막", () => {
   it("새 사본은 목록의 킷을 순서대로 모두 갖고 칸 번호가 제 토막 안에 있다", () => {
     expect(kits.map((kit) => kit.id)).toEqual(catalog.buildings.map((b) => b.id));
-    expect(kits).toHaveLength(44);
+    expect(kits).toHaveLength(48);   // 44 + 초대형 넷(성 본채 · 마을 대성당 · 수도원 · 큰 세관 — 둘째 토막)
     expect(catalog.base).toBe(46464);
     expect(catalog.end % ts.tilesPerRow).toBe(0);
     expect(ts.count).toBeGreaterThanOrEqual(catalog.end);
     const seen = new Set<number>();
     for (const b of catalog.buildings) for (const n of [...b.rows.flat(), ...b.lowerRows.flat()]) {
       if (n < 0) continue;
-      expect(n).toBeGreaterThanOrEqual(catalog.base); expect(n).toBeLessThan(catalog.end); expect(seen.has(n)).toBe(false); seen.add(n);
+      const big = catalog as unknown as { bigBase?: number; bigEnd?: number };
+      const inFirst = n >= catalog.base && n < catalog.end, inBig = big.bigBase !== undefined && n >= big.bigBase && n < big.bigEnd!;
+      expect(inFirst || inBig, `${b.id} ${n}`).toBe(true); expect(seen.has(n)).toBe(false); seen.add(n);
     }
   });
 

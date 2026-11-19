@@ -48,7 +48,7 @@ export function doorwayCells(composed: ComposedRooms): Set<string> {
 
 function footprint(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
   if (it.t === "l") return it.cells!.map(([x, y]) => `${x},${y}`);
-  if (it.t === "g") return [];
+  if (it.t === "g" || it.t === "d") return [];   // 단·크기 자동 양탄자는 밟고 지나간다(그 위에 가구가 선다)
   const o = it.t === "o" ? S.objects[it.id] : undefined;
   const w = it.t === "o" ? (o?.w ?? 1) : (it.w ?? 1), h = it.t === "o" ? Math.max(1, o?.h ?? 1) : (it.h ?? 1);
   if (o && (o.kind === "hang" || o.kind === "flat")) return [];
@@ -82,6 +82,7 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
   };
   const orderedRooms = composed.exit.width === 0 ? [...rooms].sort((a, b) => roomHasTravel(b) - roomHasTravel(a)) : rooms;
   const cellsOf = (it: InteriorTemplateItem): string[] => {
+    if (it.t === "d") return Array.from({ length: (it.w ?? 1) * (it.h ?? 1) }, (_, i) => `d:${it.x + (i % (it.w ?? 1))},${it.y + Math.floor(i / (it.w ?? 1))}`);
     const isFlat = it.t === "l" || (it.t === "o" && S.objects[it.id]?.kind === "flat");
     if (isFlat) return flatCells(it, S).map((c) => `f:${c}`);
     const o = it.t === "o" ? S.objects[it.id] : undefined;

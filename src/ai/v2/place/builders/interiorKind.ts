@@ -1,4 +1,5 @@
 // 실내 빌더의 밑받침 — 상태 형, 칩셋 고르기, 방 종류 낱말(resolveKind), 기물 이름 찾기(findPart), 크기·채움 기준 수.
+import { gameInteriorTable } from "../interiorCatalog";
 import { HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, MODERN_CITY_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_TILESET_ID, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomTemplates } from "@/editor/handInterior/templates";
 import { INTERIOR_BARE_FLOOR_LIMIT } from "@/editor/handInterior/bareFloor";
@@ -35,6 +36,9 @@ export function interiorTilesetOf(project: Project, spec: PlaceSpec, parentMapId
   const outside = exteriorLook(project, spec, parentMapId);
   const tilesetId = tilesetFor(spec.style);
   if (outside && tilesetId === HAND_INTERIOR_TILESET_ID) return { tilesetId: outside.tileset };
+  // 문 뒤를 모르는 실내(지금 맵이 다른 실내 · 빈 맵)도 이 게임에 집 안도 짓는 바깥 칩셋의 마을이 서 있으면 그 칩셋 — 한 게임 한 실내 칩셋(2026-11-17 r8 D2).
+  const game = tilesetId === HAND_INTERIOR_TILESET_ID ? gameInteriorTable(project, parentMapId) : undefined;
+  if (game) return { tilesetId: game };
   if (tilesetId === HAND_INTERIOR_TILESET_ID) return { tilesetId };
   const own = roomSpecOf(project.tilesets[tilesetId]);
   const base = roomSpecOf(project.tilesets[HAND_INTERIOR_TILESET_ID]);

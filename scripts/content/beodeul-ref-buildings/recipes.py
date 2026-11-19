@@ -167,4 +167,34 @@ def R():
              feats=[('chimney-brick', 30, 28), ('sdormer', 8, 44), ('vwin-box', 10, 68), ('vwin-box', 36, 68), ('vwin-box', 38, 106)]),
         dict(k='g', x=60, w=50, floors=[('ashlar', 8), ('brick', 34), ('brick', 30)], rd=16, rise=20, ov=2, inset=False, feats=[('banner', 79, 62), ('vwin-tall', 66, 100)])],
         feats=[('gallery', 4, 84, dict(w=54)), ('jars', 84, 110, dict(crop=(0, 0, 28, 26)))])
+    # ── 초대형: 성 본채 · 마을 대성당 · 수도원 · 큰 세관 (있는 부품만으로 조립) ──
+    H['keep-a'] = dict(roof='slate', door=('passage', 112, 176, dict(shade=False)), vols=[
+        dict(k='e', x=44, w=168, floors=[('ashlar', 46), ('ashlar', 34)], rh=42, ov=2, inset=False,
+             feats=[('chimney-brick', 62, 76), ('chimney-brick', 180, 76), ('sdormer', 56, 94, dict(lift=1)), ('sdormer', 180, 94, dict(lift=1)), ('vwin-box', 54, 120), ('vwin-box', 184, 120), ('vwin-tall', 58, 164), ('vwin-tall', 182, 164)]),
+        dict(k='g', x=92, w=72, floors=[('ashlar', 52), ('ashlar', 34)], rd=24, rise=24, ov=2, inset=False,
+             feats=[('vwin-box', 119, 118), ('banner', 100, 116), ('banner', 144, 116), ('slit', 98, 156), ('slit', 150, 156)]),
+        dict(k='s', x=2, w=44, floors=[('ashlar', 46), ('ashlar', 40), ('ashlar', 34)], sh=38, ov=2, inset=False,
+             feats=[('towerband', 2, 68, dict(shade=False)), ('slit', 20, 96), ('banner', 18, 126), ('vwin-box', 15, 160)]),
+        dict(k='s', x=210, w=44, floors=[('ashlar', 46), ('ashlar', 40), ('ashlar', 34)], sh=38, ov=2, inset=False,
+             feats=[('towerband', 210, 68, dict(shade=False)), ('slit', 228, 96), ('banner', 226, 126), ('vwin-box', 223, 160)])])
+    H['cathedral-a'] = dict(roof='roof', door='archdoor', vols=[
+        dict(k='e', x=150, w=54, floors=[('stone', 48)], rh=30, ov=2, inset=False, feats=[('talllattice', 162, 182), ('talllattice', 184, 182)]),
+        dict(k='g', x=58, w=92, floors=[('stone', 48), ('stone', 40), ('plaster', 26)], rd=28, rise=34, ov=2, inset=False,
+             feats=[('win-attic', 99, 66), ('bigarch', 90, 130), ('talllattice', 68, 132), ('talllattice', 130, 132), ('talllattice', 72, 182), ('talllattice', 126, 182)]),
+        dict(k='s', x=6, w=48, floors=[('stone', 48), ('stone', 40), ('stone', 36), ('plaster', 26)], sh=32, ov=2, inset=False,
+             feats=[('louvre', 14, 62), ('louvre', 30, 62), ('slit-stone', 26, 100), ('win-plain', 24, 140), ('slit-stone', 26, 176)])])
+    H['abbey-a'] = dict(roof='shake', door='archdoor', vols=[
+        dict(k='e', x=58, w=124, floors=[('stone', 40), ('plaster', 30)], rh=38, ov=2, inset=False, posts={1: [30, 62, 92]},
+             feats=[('chimney', 112, 70), ('dormer', 76, 90), ('dormer', 140, 90), ('win-plain', 68, 112), ('win-plain', 98, 112), ('win-plain', 130, 112), ('win-plain', 160, 112)]),
+        dict(k='g', x=2, w=58, floors=[('stone', 40), ('stone', 36), ('plaster', 22)], rd=22, rise=26, ov=2, inset=False,
+             feats=[('win-attic', 26, 58), ('bigarch', 17, 112), ('talllattice', 12, 152), ('talllattice', 40, 152)]),
+        dict(k='g', x=180, w=58, floors=[('stone', 40), ('plaster', 34)], rd=22, rise=24, ov=2, inset=False,
+             feats=[('lattice-win', 190, 108), ('lattice-win', 214, 108), ('win-attic', 204, 76), ('win-plain', 218, 146)])],
+        feats=[('bigarch', 63, 152), ('bigarch', 92, 152), ('bigarch', 121, 152), ('bigarch', 150, 152)])
+    H['customs-b'] = dict(roof='tile', door='archdoor', vols=[
+        dict(k='e', x=2, w=146, floors=[('buff', 34), ('cream', 34)], rh=40, ov=2,
+             feats=[('chimney-grey', 26, 72), ('chimney-grey', 112, 72), ('dormer', 50, 92), ('dormer', 84, 92), ('win-shutter', 10, 114), ('win-shutter', 44, 114), ('win-shutter', 78, 114), ('win-shutter', 112, 114), ('bigarch', 18, 154), ('bigarch', 92, 154)]),
+        dict(k='g', x=148, w=90, floors=[('buff', 34), ('cream', 38), ('cream', 30)], rd=22, rise=26, ov=2,
+             feats=[('win-attic', 188, 50), ('talllattice', 158, 120), ('talllattice', 172, 120), ('talllattice', 204, 120), ('talllattice', 218, 120), ('win-plain', 187, 86), ('win-shutter', 204, 150)])],
+        feats=[('clutter', 56, 158, BAR), ('clutter', 70, 158, CRATE)])
     return H
