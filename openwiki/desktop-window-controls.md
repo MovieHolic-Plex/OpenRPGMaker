@@ -24,9 +24,9 @@
 |---|---|
 | `electron/shared/windowControl.ts` | 동작 이름 `toggle-fullscreen｜minimize｜toggle-maximize｜close`, `WindowState`, `windowChromeFor(platform)` — 메인·프리로드·렌더러가 같은 표를 본다 |
 | `electron/shared/channels.ts` | `windowControl`(invoke), `windowFullscreen`(기존), **`windowState`**(조회 invoke + 변화 push, 같은 이름) |
-| `electron/main/main.ts` | `chromeOptions`, 동작 검증(`isWindowControlAction` 밖의 값은 `false`), maximize/unmaximize/restore/minimize/enter·leave-full-screen → `windowState` push, 닫기 저장·Quit 재시도, 아직 안 보인 창을 앞으로 가져올 때 전체화면 |
+| `electron/main/main.ts` | `chromeOptions`, 동작 검증(`isWindowControlAction` 밖의 값은 `false`), maximize/unmaximize/restore/minimize/enter·leave-full-screen → `windowState` push, 닫기 저장·Quit 처리, 아직 안 보인 창을 앞으로 가져올 때 전체화면 |
 | `electron/main/windowShow.ts` | 숨은 창을 처음 보이는 순서(macOS 는 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기) |
-| `electron/main/closeFlow.ts` | 닫기 한 번의 결정(`allow`/`flush`/`hold`)과, 저장 때문에 취소된 Quit 을 다시 걸지 |
+| `electron/main/closeFlow.ts` | 자동 저장 결과와 확인 대화상자의 버튼 판정 |
 | `electron/main/directoryDialog.ts` | 폴더 선택 대화상자를 살아 있는 앱 창에 붙인다. 파일 메뉴는 스플래시·팀 창이 아니라 그 창을 고른다 |
 | `electron/shared/folderSwitch.ts` | 파일 메뉴가 다른 폴더로 넘어가기 전에 보는 저장 결과. 미저장이 남으면 거절 |
 | `electron/preload/index.ts` | `oprn.platform`(동기), `oprn.windowState()`, `oprn.onWindowState(cb)` |
@@ -37,15 +37,16 @@
 
 ## 계약
 
-- **닫기는 우회하지 않는다.** `close` 동작은 `window.close()` 이고 `installCloseFlow` 가 가로채 flush → ack → destroy 한다
-  (미저장 flush 가 먼저). 편집기에서 `flushBeforeClose` 수신 1회 실측. 시작 화면은 열린 세션이 없어 바로 닫힌다.
-  이미 저장을 기다리는 중에 닫기가 한 번 더 오면(단추 연타·Quit 이 다시 닫기) 그 `close` 도 막는다. 막지 않으면 저장이
-  끝나기 전에 창이 사라져 변경을 잃는다. `destroy()` 는 `close` 를 다시 보내지 않으므로 저장이 끝나면 그대로 닫힌다.
-  `flush-done` 은 그 저장을 걸어 둔 창만 없앤다.
+- **닫기와 Quit은 같은 저장 절차를 거친다.** 제목줄 X는 `window.close()`를 호출한다. 파일 → 종료와 Ctrl+Q는 Windows·Linux에서, 앱 메뉴 → 종료와 Cmd+Q는 macOS에서 `before-quit`을 거친다.
+  시작 화면은 그대로 닫힌다. 편집기는 4초 안에 저장이 끝나면 바로 닫힌다. 실패하거나 시간이 지나면 네이티브 창 하나에서 「저장 / 저장 안 함 / 취소」를 묻는다.
+  「저장」은 최대 30초 동안 다시 시도하고 실패하면 안내한 뒤 편집 창을 유지한다. 대화상자가 열린 동안 추가 닫기 요청은 무시한다.
+  저장 확인을 마친 창은 `destroy()`로 닫는다. 늦은 저장 응답은 요청 번호로 구별한다.
+- **2026-11-19 닫기 수정 원인.** 이전 절차는 닫자마자 창을 숨긴 다음 최대 60초 뒤 저장 응답 없이 강제로 닫았다. 연결이 끊겼거나 응답이 늦으면 변경이 사라질 수 있었다.
+  저장 오류 때에는 Quit을 취소한 뒤 별도로 「저장하지 않고 닫기」를 물어 macOS에서 앱이 남을 수 있었다. Windows·Linux 파일 메뉴에는 Quit 항목도 없었다.
+  이벤트 초안은 기존 로컬 금고에 기록하고, 몬스터 소재 편집기의 적용 전 변경은 명시적으로 「저장」을 골랐을 때 적용한다. 브라우저의 `beforeunload`와 에디터의 새로고침 경로는 별도로 동작한다.
 - **보기 메뉴의 새로고침은 저장한 뒤에 한다.** 데스크톱은 창 닫기를 메인이 처리하려고 `beforeunload` 저장을 건너뛴다. 그래서 기본 보기 메뉴의 Reload(`Ctrl/Cmd+R`)·Force Reload 는 렌더러만 다시 읽어 메모리의 맵 편집을 버렸다. 이제 프로젝트가 열려 있으면 닫기와 같은 `store.flush()` 가 끝난 뒤에만 새로고침한다(`electron/shared/reloadFlow.ts`). 저장이 충돌하거나 아직 더러우면 창을 그대로 두고 이유를 알린다. 개발자 도구의 새로고침도 미저장이면 같은 저장을 거친다. 시작 화면(세션 없음)과 편집기 스크립트가 뜨기 전은 저장할 편집이 없어 바로 새로고침한다.
-- **Quit 은 저장이 끝난 뒤에 다시 건다.** 프로젝트 창이 `close` 를 막으면 Electron 이 Quit 을 취소한다. 그 저장이 모두
-  끝나면 종료를 다시 요청한다. 시작 화면처럼 막을 창이 없으면 첫 Quit 이 그대로 끝난다. macOS 는 마지막 창을 그냥
-  닫아도 앱이 남지만, Quit 은 저장 뒤에 앱을 끝낸다.
+- **Quit은 열린 편집기 창을 한꺼번에 확인한다.** 취소하면 창들이 열린 채 남고, 확인을 마치면 창을 닫고 앱을 종료한다.
+  테스트 플레이는 편집기 내부 모달이다. 네이티브 하위 창은 Quit을 막지 않는다. macOS에서 창 하나만 닫으면 앱은 남는다.
 - **폴더 선택 대화상자는 앱 창에 붙인다.** 시작 화면 「폴더 열기」·파일 메뉴는 `electron/main/directoryDialog.ts` 가 살아 있는 편집기 창을 부모로 넘긴다. 부모 없이 열면 모달이 아니어서 전체화면 창 뒤로 가고, 시작 화면은 그동안 바빠 보인다. 포커스가 스플래시·팀 창이어도 파일 메뉴는 그 창이 아니라 앱 창을 쓴다. 열기에 실패하면 메시지 상자를 띄운다.
 - **파일 → 새 프로젝트는 빈 폴더만 받는다.** `electron/main/newProjectDir.ts` 의 `acceptMenuFolder(..., "new")` 가 시작 화면과 같이, 파일이 있는 폴더에는 `project.sqlite` 를 만들지 않고 오류 창을 띄운다. 「폴더 열기」는 저장소가 없는 폴더도 연다.
 - **파일 메뉴로 다른 폴더를 열면 먼저 저장한다.** 새 프로젝트·폴더 열기는 대화상자에서 고른 뒤, 그 창의 편집기가 저장 요청을 받을 준비가 됐으면 flush 가 끝나고 미저장 변경이 없을 때만 폴더를 바꾼다(`electron/shared/folderSwitch.ts`). 저장이 실패하거나 시간이 넘으면 경고만 띄우고 이 프로젝트를 그대로 둔다. 시작 화면(열린 세션 없음)과 편집기 부팅 전(아직 저장할 변경이 없음)은 바로 연다. macOS 에서 창을 모두 닫아도 앱이 남으면 파일 메뉴가 창을 하나 만든 다음 대화상자를 연다.- **전체화면에서 「이전 크기로」** 는 전체화면만 벗어난다(그 전 창 크기/최대화 상태로 복귀). 최대화 단추 아이콘은

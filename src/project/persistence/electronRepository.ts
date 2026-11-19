@@ -1,3 +1,4 @@
+import type { CloseSaveMode } from "../../../electron/main/closeFlow";
 import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";
 import { afterBootSettled } from "@/util/bootSettled";
@@ -95,15 +96,15 @@ export type OprnBridgeAssets = {
   pruneUnused(payload: { readonly projectDir: string; readonly referenced: readonly string[] }): Promise<readonly string[]>;
 };
 export type OprnBridgeLifecycle = {
-  readonly onFlushBeforeClose: (callback: () => void) => void;
-  /** 닫기 저장 보고. ok=false 면 메인이 창을 닫지 않는다. */
-  readonly flushDone: (ok: boolean) => Promise<unknown>;
+  readonly onFlushBeforeClose: (callback: (requestId: number, mode: CloseSaveMode) => void) => void;
+  /** 요청 번호로 늦게 도착한 저장 결과를 구분한다. */
+  readonly flushDone: (requestId: number, ok: boolean) => Promise<unknown>;
   /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
   readonly onSaveRequest: (callback: () => void) => void;
   /** 보기 → 새로고침. 데스크톱만. 저장이 안전할 때만 flushReloadDone(true). */
   readonly onFlushBeforeReload?: (callback: () => void) => void;
   readonly flushReloadDone?: (ok: boolean) => Promise<unknown>;
-  /** 위 리스너를 붙인 뒤 한 번. 그 전에는 메인이 바로 새로고침한다. */
+  /** 닫기·새로고침 리스너를 붙인 뒤 한 번. 그 전에는 메인이 바로 새로고침한다. */
   readonly markFlushReady?: () => void;
   /** beforeunload 가 미저장 때문에 새로고침을 막았음(동기). 메인이 저장 후 다시 연다. */
   readonly noteUnsavedReloadBlock?: () => void;

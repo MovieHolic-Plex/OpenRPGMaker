@@ -24,7 +24,8 @@ await page.waitForLoadState("domcontentloaded");
 await page.evaluate(async (dir) => {
   const bridge = globalThis.oprn;
   await bridge.project.open({ projectDir: dir });
-  bridge.lifecycle.onFlushBeforeClose(() => { void bridge.lifecycle.flushDone(); });
+  bridge.lifecycle.onFlushBeforeClose((requestId) => { void bridge.lifecycle.flushDone(requestId, true); });
+  bridge.lifecycle.markFlushReady();
 }, projectDir);
 process.stdout.write("STEP registered\n");
 
