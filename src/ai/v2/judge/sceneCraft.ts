@@ -36,8 +36,11 @@ function flatten(commands: unknown, out: Obj[] = [], path = ""): Obj[] {
   commands.forEach((raw, i) => {
     const c = obj(raw);
     if (!c) return;
-    PATHS.set(c, path);
-    out.push(c);
+    // A choice builder can reuse a dialogue command in mutually exclusive branches.
+    // Keep each occurrence's path instead of overwriting the shared object's path.
+    const occurrence = c.kind === "text" ? { ...c } : c;
+    PATHS.set(occurrence, path);
+    out.push(occurrence);
     for (const [k, v] of Object.entries(c)) {
       if (k === "condition" || !Array.isArray(v)) continue;
       if (v.some((x) => obj(x)?.kind)) flatten(v, out, `${path}/${i}.${k}`);
