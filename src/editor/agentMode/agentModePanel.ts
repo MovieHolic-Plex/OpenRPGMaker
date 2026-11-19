@@ -188,6 +188,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
   };
   const refreshDetect = async (): Promise<void> => {
     const value = await bridge.detect() as { agents: Availability[]; canInstall?: boolean };
+    if (disposed) return;
     canInstall = value.canInstall === true;
     renderAvailability(value.agents);
   };
@@ -412,6 +413,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
   });
 
   void bridge.detect().then((value) => {
+    if (disposed) return;
     const detected = value as { agents: Availability[]; state: { running: boolean; busy: boolean; seq: number }; canInstall?: boolean };
     canInstall = detected.canInstall === true;
     renderAvailability(detected.agents);

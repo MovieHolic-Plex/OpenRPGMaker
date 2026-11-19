@@ -104,6 +104,7 @@ test("ChatGPT sign-in and quality share the settings connection and role control
     const connected = provider === "openai-codex" && signedIn;
     await route.fulfill({ json: { connected, accountEmail: connected ? "you@example.com" : undefined, endpoints: [] } });
   });
+  await page.route("**/v1/local-agents*", route => route.fulfill({ json: { clis: [] } }));
   await page.goto("/?freshProject=1&lang=en");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.locator("body").press("Control+K");
@@ -114,10 +115,14 @@ test("ChatGPT sign-in and quality share the settings connection and role control
   const alternatives = modal.getByText("Other ways to connect", { exact: true });
   const google = modal.getByTestId("ai-auth-quick-google-antigravity");
   await expect(google).toBeHidden();
+  const localPrograms = modal.getByTestId("ai-settings-local-programs");
+  await expect(localPrograms).toBeHidden();
   await modal.getByRole("button", { name: "Sign in with ChatGPT" }).click();
   await expect(modal.getByTestId("ai-settings-chatgpt-account")).toContainText("you@example.com");
   await alternatives.click();
   await expect(google).toBeVisible();
+  await expect(localPrograms).toBeVisible();
+  await expect(localPrograms.getByTestId("start-settings-engine-codex")).toBeHidden();
   await alternatives.click();
 
   const balanced = modal.getByRole("radio", { name: "Balanced" });

@@ -57,7 +57,8 @@ import { renderAiQuickConnect } from "./aiQuickConnect";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { fetchConnectedRoutes, renderAiRoleMatrixSettings } from "./aiRoleMatrixSettings";
 import { localCliOfProvider } from "@/ai/localCliEngine";
-import { loadEngineChoice, saveEngineChoice } from "@/start/settings/localAgents";
+import { ASSISTANT_ENGINE_CHANGED_EVENT, loadEngineChoice, localAgentsEnabled, saveEngineChoice } from "@/start/settings/localAgents";
+import { renderAiLocalProgramSettings } from "./aiLocalProgramSettings";
 import { deckIcon } from "./aiDeckIcons";
 import { aiProviderIcon } from "./aiProviderIcons";
 import { ASSISTANT_CHATGPT_MODEL, isLegacyTerraModel } from "@/ai/chatgptDefault";
@@ -154,12 +155,18 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
       if (options.fontRoot) applyAiFontSize(options.fontRoot, size);
     },
     extraSections,
+    onAdvancedChange: (open) => { titlebar.inert = open; },
   });
 
   const closeButton = modalCloseButton("ai-settings-close", () => close(), {
     label: "설정 닫기", testid: "ai-settings-close", icon: deckIcon("x"),
   });
 
+  const titlebar = el("header", {
+    class: "ai-settings-titlebar",
+    // Keep Close as the first tab stop, even when an entry directs initial focus to the form.
+    children: [closeButton, el("h2", { text: "AI 설정" })],
+  });
   const backdrop = el("div", {
     class: "ai-settings-modal-backdrop",
     attrs: { role: "presentation" },
@@ -169,11 +176,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
         class: "ai-settings-window",
         attrs: { role: "dialog", "aria-modal": "true", "aria-label": "AI 설정" },
         children: [
-          el("header", {
-            class: "ai-settings-titlebar",
-            // Keep Close as the first tab stop, even when an entry directs initial focus to the form.
-            children: [closeButton, el("h2", { text: "AI 설정" })],
-          }),
+          titlebar,
           el("div", {
             class: "ai-settings-body",
             dataset: { testid: "ai-settings-body" },
@@ -213,6 +216,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 
 export function renderAiSettingsForm(options: {
   readonly onContinue?: () => void;
+  readonly onAdvancedChange?: (open: boolean) => void;
   readonly onSaved?: (config: AiConfig) => void;
   readonly onBackgroundOpacityChange?: (value: number) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
@@ -403,6 +407,7 @@ export function renderAiSettingsForm(options: {
   const disconnectError = el("p", { class: "ai-auth-error", attrs: { hidden: "", role: "alert" } });
   let chatGptAccount: Parameters<typeof hasUsableCompanionCredential>[0] | undefined;
   let chatGptCheckFailed = false;
+  let chatGptAccountChecking = true;
   const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
     providerId = next;
     applyAccountSelection();
@@ -413,9 +418,10 @@ export function renderAiSettingsForm(options: {
   }, {
     feedback: primaryFeedback,
     disconnectError,
-    onAccount: (status, failed) => {
+    onAccount: (status, failed, checking) => {
       chatGptAccount = status;
       chatGptCheckFailed = failed;
+      chatGptAccountChecking = checking;
       syncChatGptAccount();
     },
   });
@@ -910,7 +916,7 @@ export function renderAiSettingsForm(options: {
     const cli = localCliOfProvider(recommended.provider);
     if (cli) {
       saveEngineChoice({ kind: "local-cli", cli, routineModel: recommended.model, deepModel: recommended.model, effort: recommended.thinkingLevel === "low" || recommended.thinkingLevel === "high" ? recommended.thinkingLevel : "medium" });
-      toast(t(`조수 엔진을 ${recommended.model} (${recommended.thinkingLevel})로 맞췄습니다.`), "ok");
+      toast(t("조수 엔진을 {0} ({1})로 맞췄습니다.").replace("{0}", recommended.model).replace("{1}", recommended.thinkingLevel), "ok");
     } else {
       saveEngineChoice(null);
       for (const c of specialistControls.filter((entry) => entry.role === "deep" || entry.role === "build")) {
@@ -1085,7 +1091,9 @@ export function renderAiSettingsForm(options: {
       button.setAttribute("aria-checked", String(selected));
       button.tabIndex = selected || (!current && i === 0) ? 0 : -1;
     });
-    qualityCaption.textContent = current?.caption ?? "고급에서 역할별로 직접 골랐어요.";
+    qualityCaption.textContent = loadEngineChoice()
+      ? "이 PC에 설치한 AI 프로그램을 사용 중이에요."
+      : current?.caption ?? "고급에서 역할별로 직접 골랐어요.";
     const executionModel = liteModel.input.value.trim();
     const planningModel = brainModel.input.value.trim();
     execution.value.textContent = settingsModelName(executionModel);
@@ -1138,6 +1146,10 @@ export function renderAiSettingsForm(options: {
       logout,
     ],
   });
+  const accountChecking = el("p", {
+    class: "ai-config-help", attrs: { role: "status" },
+    dataset: { testid: "ai-settings-chatgpt-checking" }, text: "연결 확인 중…",
+  });
   const accountCheckError = el("div", {
     class: "ai-auth-error ai-auth-actions", attrs: { role: "status" }, dataset: { testid: "ai-settings-chatgpt-check-error" },
     children: [
@@ -1147,6 +1159,8 @@ export function renderAiSettingsForm(options: {
         dataset: { testid: "ai-settings-chatgpt-check-retry" },
         on: { click: () => {
           chatGptCheckFailed = false;
+          chatGptAccountChecking = true;
+          tabs.connection.focus();
           syncChatGptAccount();
           authSettings.recheckChatGpt();
         } },
@@ -1164,8 +1178,9 @@ export function renderAiSettingsForm(options: {
     const focusedFeedback = primaryFeedback.contains(active);
     const label = account?.accountEmail || account?.accountLabel || account?.planType?.toUpperCase();
     accountLabel.textContent = label ? ` · ${label}` : "";
-    hero.hidden = connected;
+    hero.hidden = connected || chatGptAccountChecking;
     accountRow.hidden = !connected;
+    accountChecking.hidden = connected || !chatGptAccountChecking;
     accountCheckError.hidden = !chatGptCheckFailed;
     qualitySection.hidden = !connected;
     logout.hidden = !account || !hasStoredCompanionCredential(account);
@@ -1175,6 +1190,7 @@ export function renderAiSettingsForm(options: {
       || (focusedFeedback && chatGptAccount && !chatGptAccount.pendingLogin && !chatGptAccount.lastLoginError))) loginButton.focus();
   }
 
+  const localPrograms = localAgentsEnabled() ? renderAiLocalProgramSettings() : undefined;
   const alternativeSummary = el("summary", {
     class: "ai-settings-row",
     dataset: { testid: "ai-settings-other-ways" },
@@ -1191,6 +1207,7 @@ export function renderAiSettingsForm(options: {
         ]),
         quickConnectSection,
         settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(OpenRouter 등)", [compatSettings.element]),
+        ...(localPrograms ? [localPrograms.element] : []),
         ...(options.onContinue ? [el("div", { class: "ai-config-actions", children: [continueButton] })] : []),
       ] }),
     ],
@@ -1254,7 +1271,7 @@ export function renderAiSettingsForm(options: {
 
   const panes = {
     connection: settingsPane("connection", [
-      hero, accountRow, accountCheckError, qualitySection, primaryFeedback, disconnectError, alternatives,
+      hero, accountRow, accountChecking, accountCheckError, qualitySection, primaryFeedback, disconnectError, alternatives,
     ]),
     behavior: settingsPane("behavior", [
       el("div", { class: "ai-settings-inset", dataset: { testid: "ai-settings-section-behavior" },
@@ -1287,6 +1304,7 @@ export function renderAiSettingsForm(options: {
     if (closeSheet) return;
     rail.inert = true;
     content.inert = true;
+    options.onAdvancedChange?.(true);
     advancedButton.setAttribute("aria-expanded", "true");
     sheet.hidden = false;
     sheetBody.scrollTop = 0;
@@ -1295,6 +1313,7 @@ export function renderAiSettingsForm(options: {
       sheet.hidden = true;
       rail.inert = false;
       content.inert = false;
+      options.onAdvancedChange?.(false);
       advancedButton.setAttribute("aria-expanded", "false");
       releaseSheetFocus?.();
       releaseSheetFocus = undefined;
@@ -1315,12 +1334,19 @@ export function renderAiSettingsForm(options: {
   syncModelDisplay();
   syncChatGptAccount();
   win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, syncChatGptAccount);
+  const onEngineChanged = (): void => {
+    syncModelDisplay();
+    void refreshAiConnectionStatus();
+  };
+  win?.addEventListener?.(ASSISTANT_ENGINE_CHANGED_EVENT, onEngineChanged);
 
   return {
     element: form,
     dispose: () => {
       disposed = true;
       closeSheet?.();
+      localPrograms?.dispose();
+      win?.removeEventListener?.(ASSISTANT_ENGINE_CHANGED_EVENT, onEngineChanged);
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, syncChatGptAccount);
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, reloadConnectedRoutes);

@@ -19914,4 +19914,19 @@
 "@scope(.agent-mode-btn) ■ 중지":"■ Stop",
 "@scope([class*=\"ai-settings\"]) 연결 확인 중…":"Checking connection…",
 "{0} · 연결 확인 중…":"{0} · Checking connection…",
-"{0} · 확인 중…":"{0} · Checking connection…"}
+"{0} · 확인 중…":"{0} · Checking connection…",
+"기본 모델":"Default model",
+"연결 시험에 성공했어요.":"Connection test passed.",
+"연결 시험에 실패했어요. 프로그램에서 로그인 상태를 확인해 주세요.":"Connection test failed. Check that you’re signed in to the program.",
+"이 PC에 설치한 AI 프로그램":"AI programs on this computer",
+"프로그램 모델 설정":"Program model settings",
+"프로그램에서 로그인한 다음 여기서 사용할 프로그램을 고르세요.":"Sign in to the program, then choose it here.",
+"이 PC에 설치한 AI 프로그램을 사용 중이에요.":"Using an AI program on this computer.",
+"코드 연규(code-yeongyu)":"Code Yeongyu (code-yeongyu)",
+"프로젝트 저장 연결 끊김":"Project storage disconnected",
+"프로젝트 저장 호스트와 연결이 끊겼어요. 편집을 계속할 수 있고 다시 연결되면 자동으로 저장해요.":"Project storage disconnected. You can keep editing. Changes save automatically when the connection returns.",
+"ChatGPT 사용 준비됨":"ChatGPT is ready",
+"AI 작업 방식":"AI work mode",
+"이 PC의 에이전트 사용":"Use a local agent",
+"ChatGPT 사용":"Use ChatGPT"
+}
