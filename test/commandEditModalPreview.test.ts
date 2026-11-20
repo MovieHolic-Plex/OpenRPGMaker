@@ -15,6 +15,7 @@ import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { PORTRAIT_BOTTOM_NOTICE } from "@/project/dialoguePortraitPosition";
+import { resetToastsForTest } from "@/util/toast";
 import { FakeElement, FakeNode, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 const noopActions: CommandListActions = {
@@ -35,6 +36,7 @@ describe("command edit modal — image-rich preview", () => {
   });
 
   afterEach(() => {
+    resetToastsForTest();
     restoreDom?.();
   });
 
@@ -512,6 +514,33 @@ describe("command edit modal — image-rich preview", () => {
     createInterpreter(applied, session, project).start();
     expect(systemAudioOverride(session.m2Runtime, "field")).toBe(expectedId || undefined);
     expect(session.systemAudioOverrides?.bgm?.victory).toBeUndefined();
+  });
+
+  it("keeps the selected silent cue when switching to field music is rejected", () => {
+    const initial: Command = {
+      kind: "m2Command", commandId: "m2-027-change-system-bgm",
+      fields: { slot: "battle", cue: "battle", operation: "set", resourceId: "", volume: 100 },
+    };
+    const body = globalThis.document.body as unknown as FakeNode;
+    const applied: Command[] = [];
+    openEventCommandEditDialog({ initial, onApply: command => applied.push(command) });
+    const cue = findByTestId(body, "m2-command-cue-option-select")!;
+
+    cue.value = "victory";
+    cue.dispatchEvent(new Event("change"));
+    cue.value = "field";
+    cue.dispatchEvent(new Event("change"));
+
+    expect(cue.value).toBe("victory");
+    expect(findByTestId(body, "toast")?.textContent).toContain("필드 기본곡은 무음으로 지정할 수 없습니다.");
+    findByTestId(body, "event-command-edit-ok")!.click();
+    expect(applied).toEqual([{ ...initial, fields: { ...initial.fields, cue: "victory" } }]);
+
+    const project = store.getCurrent();
+    const session = startSession(project);
+    createInterpreter(applied, session, project).start();
+    expect(session.systemAudioOverrides?.bgm?.victory).toEqual({ resourceId: "", volume: 100 });
+    expect(systemAudioOverride(session.m2Runtime, "field")).toBeUndefined();
   });
 
   it.each([

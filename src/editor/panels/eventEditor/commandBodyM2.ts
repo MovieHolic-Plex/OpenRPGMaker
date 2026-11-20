@@ -13,9 +13,10 @@ import { KOREAN_LABEL_BY_TITLE } from "@/project/eventCommands/m2CatalogData";
 import { seCueSpec } from "@/project/seCues";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import { SYSTEM_BGM_CUES, SYSTEM_SE_CUES } from "@/project/systemAudioOverrides";
+import { isSystemBgmCue, SYSTEM_BGM_CUES, SYSTEM_SE_CUES } from "@/project/systemAudioOverrides";
 import type { Command, M2CommandValue, ResourceKind, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { switchVariablePicker } from "./switchVariablePicker";
 import { field as fieldRow } from "./dom";
 import type { CommandEditContext } from "./types";
@@ -792,8 +793,13 @@ function recordPickerControl(request: RecordPickerRequest): HTMLElement {
 function optionsControl(request: OptionsControlRequest): HTMLSelectElement {
   const select = el("select", { attrs: { "aria-label": request.semantic.label }, dataset: { testid: `m2-command-${request.key}-option-select` } }) as HTMLSelectElement;
   for (const option of request.semantic.options) select.append(el("option", { text: option.label, attrs: { value: option.value } }));
-  select.value = request.value;
-  select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
+  let selected = request.value;
+  select.value = selected;
+  select.addEventListener("change", () => {
+    const value = select.value;
+    if (updateField(request.context, request.cmd, request.key, value)) selected = value;
+    else select.value = selected;
+  });
   return select;
 }
 
@@ -1033,11 +1039,16 @@ function resourceImageSize(
   return { ...(imageWidth !== undefined ? { imageWidth } : {}), ...(imageHeight !== undefined ? { imageHeight } : {}) };
 }
 
-function updateField(context: CommandEditContext, cmd: M2Command, key: string, value: M2CommandValue): void {
+function updateField(context: CommandEditContext, cmd: M2Command, key: string, value: M2CommandValue): boolean {
   const current = context.getCurrentCommand?.();
   const latest = current?.kind === "m2Command" && current.commandId === cmd.commandId ? current : cmd;
   const fields = { ...latest.fields, [key]: value };
   if (latest.commandId === "m2-027-change-system-bgm" && key === "cue" && value === "field") {
+    if (isSystemBgmCue(latest.fields.cue) && (fields.operation ?? "set") === "set"
+      && !String(fields.resourceId ?? fields.value ?? "").trim()) {
+      toast("필드 기본곡은 무음으로 지정할 수 없습니다. 음악을 선택한 뒤 대상을 바꿔 주세요.", "error");
+      return false;
+    }
     // Field music is a map BGM fallback and uses the system slot representation.
     fields.slot = value;
     if (fields.operation === "reset") {
@@ -1049,6 +1060,7 @@ function updateField(context: CommandEditContext, cmd: M2Command, key: string, v
     delete fields.volume;
   }
   context.actions.replaceCommand(context.path, { ...latest, fields });
+  return true;
 }
 
 function parseNumber(value: string): number {
