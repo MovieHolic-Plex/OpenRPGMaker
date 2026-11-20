@@ -4,6 +4,7 @@ import type { JsonSchema } from "@/editor/tools/types";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
+import { assertCommandDeletion } from "./commandReferences";
 import { commandListAt, eventName, koreanSentence, scopedPage, updateScopedPage } from "./helpers";
 
 const index: JsonSchema = { type: "integer", minimum: 0, description: "목록 안의 줄 위치. 첫 줄은 0." };
@@ -29,11 +30,13 @@ export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
     apply(ctx, args) {
       const { index, branchPath = [], expectedHash } = args as CommandPosition;
-      return updateScopedPage(ctx, page => {
-        const command = commandListAt(page, branchPath)[index];
-        if (!command) throw new PrimitiveError("지울 명령을 찾을 수 없어요.");
-        return deleteEventCommand(page, [...branchPath, index], expectedHash ?? eventCommandHash(command));
-      });
+      const list = commandListAt(scopedPage(ctx).page, branchPath);
+      const command = list[index];
+      if (!command) throw new PrimitiveError("지울 명령을 찾을 수 없어요.");
+      const after = updateScopedPage(ctx, page =>
+        deleteEventCommand(page, [...branchPath, index], expectedHash ?? eventCommandHash(command)));
+      assertCommandDeletion(ctx, after, list, command);
+      return after;
     },
   },
   {
