@@ -1,4 +1,5 @@
 import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
+import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { compactMapLayers, EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
@@ -7,6 +8,7 @@ import type { GameEvent, GameMap, MapConnection, MapTreeNode, Project, Rect } fr
 import { jsonEqual } from "@/util/structuralJson";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { onlyDialogueChanged } from "./smallTaskDialogueScope";
+import { questDependsOnDraft, removedDatabaseReference, type SmallTaskDraftSource } from "./smallTaskReferences";
 
 type DatabaseCollection = keyof Project["database"];
 type ProjectArea = "quests" | "switches" | "variables" | "commonEvents" | "endings" | "system";
@@ -19,14 +21,30 @@ export type SmallTaskScope =
   | { readonly kind: "tileEvent"; readonly mapId: string; readonly x: number; readonly y: number; readonly eventId: string | null }
   | {
       readonly kind: "dbEntries";
-      readonly entries: readonly { readonly collection: DatabaseCollection; readonly id: string }[];
-      readonly create?: { readonly collection: DatabaseCollection; readonly max: number };
+      readonly entries: readonly { readonly collection: DatabaseCollection; readonly id: string; readonly fields?: readonly string[] }[];
+      readonly create?: { readonly collection: DatabaseCollection; readonly max: number; readonly ids?: readonly string[] };
       readonly remove?: true;
     }
+  | { readonly kind: "dbRemove"; readonly collection: DatabaseCollection; readonly id: string }
   | { readonly kind: "mapRegion"; readonly mapId: string; readonly rect: Readonly<Rect> }
-  | { readonly kind: "mapMeta"; readonly mapId: string }
+  | {
+      readonly kind: "mapMeta";
+      readonly mapId: string;
+      readonly fields?: readonly (keyof GameMap)[];
+      readonly connections?: "none" | "outgoing" | "both";
+      readonly startPosition?: boolean;
+    }
+  | { readonly kind: "mapResize"; readonly mapId: string }
+  | { readonly kind: "mapRemove"; readonly mapId: string }
   | { readonly kind: "newMap"; readonly max: 1; readonly sourceMapId?: string }
-  | { readonly kind: "projectArea"; readonly area: ProjectArea; readonly ids?: readonly string[]; readonly create?: number };
+  | {
+      readonly kind: "projectArea";
+      readonly area: ProjectArea;
+      readonly ids?: readonly string[];
+      readonly create?: number;
+      readonly fields?: readonly string[];
+      readonly remove?: true;
+    };
 
 export type SmallTaskScopeResult = { readonly ok: true } | {
   readonly ok: false;
@@ -252,35 +270,39 @@ function normalizeDatabase(before: Project, after: Project, scope: Extract<Small
   const database = { ...after.database };
   const referenceDatabase = { ...after.database };
   const collections = new Set(scope.entries.map(entry => entry.collection));
-  if (scope.create) collections.add(scope.create.collection);
-  const max = scope.create?.max ?? 0;
+  const create = scope.remove ? undefined : scope.create;
+  if (create) collections.add(create.collection);
+  const max = create?.max ?? 0;
   const createLimit = Number.isSafeInteger(max) && max > 0 ? max : 0;
   for (const collection of collections) {
     const oldEntries = before.database[collection];
     const newEntries = after.database[collection];
     if (!Array.isArray(newEntries) || jsonEqual(oldEntries, newEntries)) continue;
     const original = new Map<string, Entry>(oldEntries?.map(entry => [entry.id, entry]));
-    const editable = new Set(scope.entries.filter(entry => entry.collection === collection).map(entry => entry.id));
+    const editable = new Map(scope.entries.filter(entry => entry.collection === collection).map(entry => [entry.id, entry]));
     const ids = new Set(newEntries.map(entry => entry.id));
     // Keep duplicate IDs visible to the comparison instead of masking them as allowed creates/edits.
-    if (ids.size !== newEntries.length) continue;
+    if (ids.size !== newEntries.length || original.size !== (oldEntries?.length ?? 0)) continue;
     const additions: Entry[] = [];
     const kept: Entry[] = [];
     for (const entry of newEntries) {
       const oldEntry = original.get(entry.id);
-      if (!oldEntry && scope.create?.collection === collection && additions.length < createLimit) {
+      const allowed = editable.get(entry.id);
+      if (!oldEntry && create?.collection === collection && additions.length < createLimit
+        && (create.ids === undefined || create.ids.includes(entry.id))) {
         changed.add(entryLabel(collection, entry));
         additions.push(entry);
-      } else if (oldEntry && editable.has(entry.id)) {
+      } else if (oldEntry && allowed && !scope.remove) {
         if (!jsonEqual(oldEntry, entry)) changed.add(entryLabel(collection, entry));
-        kept.push(oldEntry);
+        kept.push(allowed.fields === undefined ? oldEntry : resetFields(oldEntry, entry, new Set(allowed.fields)));
       } else {
         kept.push(entry);
       }
     }
     if (scope.remove) {
       for (const [i, entry] of (oldEntries ?? []).entries()) {
-        if (editable.has(entry.id) && !ids.has(entry.id)) {
+        if (editable.has(entry.id) && !ids.has(entry.id)
+          && !(collection === "equipmentSlots" && BUILTIN_EQUIPMENT_SLOTS.some(slot => slot.id === entry.id))) {
           changed.add(entryLabel(collection, entry));
           kept.splice(i, 0, entry);
         }
@@ -384,27 +406,69 @@ function mentionsMap(connection: MapConnection, mapId: string): boolean {
   return connection.from.mapId === mapId || connection.to.mapId === mapId;
 }
 
-function normalizeMapMeta(before: Project, after: Project, mapId: string, report: Report): Project {
+function normalizeMapMeta(
+  before: Project, after: Project, scope: Extract<SmallTaskScope, { kind: "mapMeta" }>, report: Report,
+): Project {
+  const { mapId, fields, connections = "outgoing", startPosition = fields === undefined } = scope;
   const original = before.maps[mapId];
   const map = after.maps[mapId];
   if (!original || !map) {
     report(`${mapLabel(original ?? map, mapId)} 대상을 찾을 수 없음`);
     return after;
   }
-  const normalized = { ...original };
-  for (const key of ["id", "width", "height", "events", "relief", "doodadGroups", "terrainDesign", ...MAP_TILE_KEYS] as const) {
-    Object.assign(normalized, { [key]: map[key] });
-  }
-  const foreignConnections = (project: Project) => (project.mapConnections ?? []).filter(connection => !mentionsMap(connection, mapId));
-  const connectionsAllowed = jsonEqual(foreignConnections(before), foreignConnections(after))
+  const structural = new Set<string>([
+    "id", "width", "height", "events", "relief", "doodadGroups", "terrainDesign", "worldmapSource", ...MAP_TILE_KEYS,
+  ]);
+  const editable = new Set(fields ?? keysOf(original, map));
+  const normalized = resetFields(original, map, new Set([...editable].filter(key => !structural.has(key))));
+  const protectedConnections = (project: Project) => (project.mapConnections ?? []).filter(connection =>
+    connections === "both" ? !mentionsMap(connection, mapId) : connection.from.mapId !== mapId);
+  const connectionsAllowed = connections !== "none" && jsonEqual(protectedConnections(before), protectedConnections(after))
     && new Set(after.mapConnections?.map(connection => connection.id)).size === (after.mapConnections?.length ?? 0);
-  const startAllowed = after.startMapId === mapId;
+  const startAllowed = startPosition && after.startMapId === mapId;
   return {
     ...after,
     maps: { ...after.maps, [mapId]: normalized },
     mapConnections: connectionsAllowed ? before.mapConnections : after.mapConnections,
     startMapId: startAllowed ? before.startMapId : after.startMapId,
     startPos: startAllowed ? before.startPos : after.startPos,
+  };
+}
+
+function normalizeMapResize(before: Project, after: Project, mapId: string, report: Report): Project {
+  const original = before.maps[mapId];
+  const map = after.maps[mapId];
+  if (!original || !map || ![map.width, map.height].every(size => Number.isSafeInteger(size) && size > 0)) {
+    report(`${mapLabel(original ?? map, mapId)}의 크기`);
+    return after;
+  }
+  if (original.width === map.width && original.height === map.height) return after;
+  const size = map.width * map.height;
+  if (map.lowerTiles.length !== size || map.upperTiles.length !== size
+    || EXTRA_LAYER_KEYS.some(key => map[key] !== undefined && map[key]?.length !== size)) {
+    report(`${mapLabel(map, mapId)}의 타일 층 크기`);
+  }
+  const mapWithOldSize = resetFields(original, map, new Set(["width", "height", ...MAP_TILE_KEYS]));
+  return { ...after, maps: { ...after.maps, [mapId]: mapWithOldSize } };
+}
+
+function normalizeMapRemove(before: Project, after: Project, mapId: string, report: Report): Project {
+  const map = before.maps[mapId];
+  if (!map || mapId === before.startMapId || Object.hasOwn(after.maps, mapId)) {
+    if (!map || !jsonEqual(map, after.maps[mapId])) report(`${mapLabel(map, mapId)}의 삭제`);
+    return after;
+  }
+  function survivingNodes(node: MapTreeNode): MapTreeNode[] {
+    const children = node.children.flatMap(survivingNodes);
+    return node.mapId === mapId ? children : [{ ...node, children }];
+  }
+  const [first, ...siblings] = survivingNodes(before.mapTree);
+  const [newRoot, ...others] = Object.keys(before.maps).filter(id => id !== mapId);
+  const expectedTree = first ? { ...first, children: [...first.children, ...siblings] }
+    : { mapId: newRoot, children: others.map(id => ({ mapId: id, children: [] })) };
+  return {
+    ...after, maps: { ...after.maps, [mapId]: map },
+    mapTree: jsonEqual(after.mapTree, expectedTree) ? before.mapTree : after.mapTree,
   };
 }
 
@@ -453,7 +517,7 @@ function resetFields<T extends object>(before: T, after: T, fields: ReadonlySet<
 }
 
 function normalizeProjectArea(
-  before: Project, after: Project, { area, ids, create }: Extract<SmallTaskScope, { kind: "projectArea" }>, report: Report,
+  before: Project, after: Project, { area, ids, create, fields, remove }: Extract<SmallTaskScope, { kind: "projectArea" }>, report: Report,
 ): Project {
   const editable = new Set(ids);
   if (area === "system") {
@@ -478,7 +542,7 @@ function normalizeProjectArea(
   const newIds = new Set(newRows.map(idOf));
   if (newIds.size !== newRows.length) report(`${label}의 중복 항목`);
   const additions = newRows.filter(row => !oldIds.has(idOf(row)));
-  const limit = create !== undefined && Number.isSafeInteger(create) && create > 0 ? create : 0;
+  const limit = !remove && create !== undefined && Number.isSafeInteger(create) && create > 0 ? create : 0;
   if (additions.length > limit) report(`${label}의 새 항목 수`);
   const unselected = (row: (typeof oldRows)[number]) => !editable.has(idOf(row));
   if (!jsonEqual(oldRows.filter(unselected), newRows.filter(row => oldIds.has(idOf(row)) && unselected(row)))) {
@@ -486,6 +550,16 @@ function normalizeProjectArea(
   }
   if (!jsonEqual(oldRows.filter(row => newIds.has(idOf(row))).map(idOf),
     newRows.filter(row => oldIds.has(idOf(row))).map(idOf))) report(`${label}의 순서`);
+  if (remove || fields) {
+    const allowedFields = new Set(remove ? [] : fields);
+    const byId = new Map(newRows.map(row => [idOf(row), row]));
+    for (const row of oldRows.filter(row => editable.has(idOf(row)))) {
+      const next = byId.get(idOf(row));
+      if (next ? !jsonEqual(row, resetFields(row, next, allowedFields)) : !remove) {
+        report(`${label}의 허용되지 않은 항목 변경`);
+      }
+    }
+  }
   return { ...after, [area]: before[area] };
 }
 
@@ -494,13 +568,18 @@ const REASONS: Record<SmallTaskScope["kind"], string> = {
   eventPage: "이 요청에서는 선택한 이벤트 페이지의 명령만 고칠 수 있습니다.",
   tileEvent: "이 요청에서는 선택한 칸과 그 칸의 이벤트만 고칠 수 있습니다.",
   dbEntries: "이 요청에서는 선택한 자료집 항목과 허용된 새 항목만 고칠 수 있습니다.",
+  dbRemove: "이 요청에서는 선택한 자료집 항목만 삭제할 수 있습니다.",
   mapRegion: "이 요청에서는 선택한 영역의 칸만 고칠 수 있습니다.",
   mapMeta: "이 요청에서는 선택한 맵의 속성과 연결만 고칠 수 있습니다.",
+  mapResize: "이 요청에서는 선택한 맵의 크기와 그에 따른 타일만 바꿀 수 있습니다.",
+  mapRemove: "이 요청에서는 선택한 맵과 그 맵의 목록 항목만 삭제할 수 있습니다.",
   newMap: "이 요청에서는 새 맵 한 장과 그 맵의 목록 항목, 출발 맵과의 연결만 추가할 수 있습니다.",
   projectArea: "이 요청에서는 지정된 프로젝트 항목만 고칠 수 있습니다.",
 };
 
-export function checkSmallTaskScope(before: Project, after: Project, scope: SmallTaskScope): SmallTaskScopeResult {
+export function checkSmallTaskScope(
+  before: Project, after: Project, scope: SmallTaskScope, live?: SmallTaskDraftSource,
+): SmallTaskScopeResult {
   const outside = new Set<string>();
   const report: Report = what => { outside.add(what); };
   const changedEntries = new Set<string>();
@@ -508,9 +587,13 @@ export function checkSmallTaskScope(before: Project, after: Project, scope: Smal
   let normalized: Project;
   let referenceAfter: Project | undefined;
   let explanation = REASONS[scope.kind];
+  const databaseScope = scope.kind === "dbRemove"
+    ? { kind: "dbEntries", entries: [{ collection: scope.collection, id: scope.id }], remove: true } as const
+    : scope.kind === "dbEntries" ? scope : undefined;
   switch (scope.kind) {
+    case "dbRemove":
     case "dbEntries":
-      ({ normalized, referenceAfter } = normalizeDatabase(before, after, scope, changedEntries));
+      ({ normalized, referenceAfter } = normalizeDatabase(before, after, databaseScope!, changedEntries));
       break;
     case "tileEvent":
       normalized = normalizeTileEvent(before, after, scope, report);
@@ -519,7 +602,13 @@ export function checkSmallTaskScope(before: Project, after: Project, scope: Smal
       normalized = normalizeMapRegion(before, after, scope, report);
       break;
     case "mapMeta":
-      normalized = normalizeMapMeta(before, after, scope.mapId, report);
+      normalized = normalizeMapMeta(before, after, scope, report);
+      break;
+    case "mapResize":
+      normalized = normalizeMapResize(before, after, scope.mapId, report);
+      break;
+    case "mapRemove":
+      normalized = normalizeMapRemove(before, after, scope.mapId, report);
       break;
     case "newMap":
       normalized = normalizeNewMap(before, after, scope, report);
@@ -535,7 +624,18 @@ export function checkSmallTaskScope(before: Project, after: Project, scope: Smal
   }
   describeOutsideChanges(before, normalized, report);
 
-  if (referenceAfter && !outside.size && changedEntries.size) {
+  if (scope.kind === "projectArea" && scope.area === "quests" && questDependsOnDraft(before, after, live)) {
+    explanation = "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.";
+    report("퀘스트가 사용하는 미저장 이벤트");
+  }
+  if (databaseScope?.remove && !outside.size && changedEntries.size) {
+    const removed = databaseScope.entries.filter(({ collection, id }) =>
+      before.database[collection]?.some(row => row.id === id) && !after.database[collection]?.some(row => row.id === id));
+    if (removedDatabaseReference(before, after, removed, live)) {
+      explanation = "다른 설정이나 이벤트, 스크립트에서 쓰는 자료집 항목은 삭제할 수 없습니다.";
+      for (const label of changedEntries) report(`${label}의 참조`);
+    }
+  } else if (referenceAfter && !outside.size && changedEntries.size) {
     const existingIssues = new Set(collectProjectReferenceIssues(before, { databaseOnly: true }));
     if (collectProjectReferenceIssues(referenceAfter, { databaseOnly: true }).some(issue => !existingIssues.has(issue))) {
       explanation = "바뀐 자료집 항목에 연결할 대상을 찾을 수 없습니다.";
