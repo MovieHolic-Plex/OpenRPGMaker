@@ -1,3 +1,4 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { BATTLE_START_FORMATIONS, BATTLE_START_FORMATION_LABELS } from "@/battle/battleFormation";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
@@ -188,9 +189,15 @@ function spawnPatch(ctx: PrimitiveContext, map: GameMap, current: Extract<Battle
     if (!id.trim() || id !== id.trim()) throw new PrimitiveError("출현 이름을 입력하고 앞뒤 공백을 지워 주세요.");
     if (Object.hasOwn(Object.prototype, id)) throw new PrimitiveError("게임에서 예약한 이름입니다. 다른 출현 이름을 입력해 주세요.");
     const ids = new Set((map.fieldSpawns ?? []).map(entry => spawnEventIdPart(entry.id)));
+    const workingMap = withOpenEventDrafts(ctx.project, ctx.live, ctx.target.kind === "event" ? ctx.target : undefined).maps[map.id];
+    for (const event of workingMap.events) {
+      if (!event.id.startsWith(FIELD_SPAWN_EVENT_PREFIX)) continue;
+      const spawnPart = /^(.*)_\d+$/u.exec(event.id.slice(FIELD_SPAWN_EVENT_PREFIX.length))?.[1];
+      if (spawnPart !== undefined) ids.add(spawnPart);
+    }
     let skipCurrent = !insert;
     let referenced = false;
-    for (const command of spawnCommandsOnMap(ctx.project, map)) {
+    for (const command of spawnCommandsOnMap(ctx.project, workingMap)) {
       if (skipCurrent && command === current) {
         skipCurrent = false;
         continue;
@@ -205,7 +212,7 @@ function spawnPatch(ctx: PrimitiveContext, map: GameMap, current: Extract<Battle
     }
     if (mode === "update") {
       if (referenced || battlePagesReferenceSpawn(ctx.project, spawn.id) ||
-        referencesSpawn(ctx.project, map, spawn.id, spawnEventIdPart(spawn.id) !== spawnEventIdPart(id))) {
+        referencesSpawn(ctx.project, workingMap, spawn.id, spawnEventIdPart(spawn.id) !== spawnEventIdPart(id))) {
         throw new PrimitiveError("이 출현 이름을 쓰는 명령이나 조건이 있거나 스크립트 참조를 확인할 수 없어 이름을 바꿀 수 없습니다.");
       }
       // Disabling persistence keeps the explicit false. Old saves still look up kills by this ID.

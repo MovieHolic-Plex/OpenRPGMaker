@@ -194,6 +194,27 @@ test("작은 일 동작도 호출 상한에 포함하고 상한을 넘으면 앞
   expect(done.project).toBe(project);
 });
 
+test("작은 일 Pi 실행은 새 이벤트 초안에서 사용하는 출현 이름을 유지한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn: Command = { kind: "spawnFieldEnemy", spawn: {
+    id: "spawn_trial", troopId: project.database.troops[0]!.id, area: { x: 0, y: 0, w: 1, h: 1 },
+  } };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [...commands, spawn] }];
+  const draft = { ...event, id: "event_draft", pages: undefined, draft: { kind: "new" } as const,
+    commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.spawn.id } satisfies Command] };
+  const rename = apply("cmd.spawnFieldEnemy.update", { index: 3, expectedHash: eventCommandHash(spawn), spawnId: "spawn_renamed" });
+  const blocked = await runPiAgent({ ...request, smallTask: {
+    ...request.smallTask, openEventDrafts: { maps: { [mapId]: { events: [draft] } } },
+  } }, { streamFn: scripted([rename]) });
+  expect(blocked.stoppedEarly).toContain("이 출현 이름을 쓰는 명령이나 조건");
+  expect(blocked.changedKeys).toEqual([]);
+  expect(blocked.project).toBe(project);
+
+  const allowed = await runPiAgent(request, { streamFn: scripted([rename]) });
+  expect(allowed.stoppedEarly).toBeUndefined();
+  expect(allowed.project.maps[mapId].events[0]!.pages![1]!.commands[3]).toMatchObject({ spawn: { id: "spawn_renamed" } });
+});
+
 for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"] as const) {
   test(`작은 일의 타일 칠하기는 먼저 전달된 참고문서가 필요하다 (${delivery})`, async () => {
     const project = createBlankProject();

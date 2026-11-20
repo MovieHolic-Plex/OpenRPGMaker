@@ -432,6 +432,20 @@ it("맵이나 다른 페이지에서 쓰는 출현 이름과 같은 런타임 �
   expect(stored(project)).toEqual([greeting]);
 });
 
+it("저작 이벤트와 충돌하는 출현 이름을 거절하고 기본 이름은 충돌을 건너뛴다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  const map = project.maps[MAP]!;
+  map.events.push({ ...map.events[0]!, id: "__field_spawn__spawn_new_1" });
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", { troopId: TROOP, spawnId: "spawn new" }))
+    .toThrow(/이미 쓰는 출현 이름/u);
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn_new",
+  })).toThrow(/이미 쓰는 출현 이름/u);
+  const { after } = runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", { troopId: TROOP });
+  expect(stored(after).at(-1)).toMatchObject({ spawn: { id: "spawn_new_2" } });
+  expect(after.maps[MAP]!.events[1]).toEqual(map.events[1]);
+});
+
 it("다른 페이지가 같은 출현 줄을 공유하면 런타임 ID가 겹치는 이름 변경을 거절한다", () => {
   const { project, target } = fixture("blank", [dynamicSpawn]);
   project.maps[MAP]!.events[0]!.pages![1]!.commands.push(dynamicSpawn);

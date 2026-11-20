@@ -10,7 +10,7 @@ import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 // The Pi worker edits a private copy. The capsule owns publication and undo.
-export async function runSmallTask(before: Project, target: SmallTaskTarget, request: string, signal: AbortSignal): Promise<Project> {
+export async function runSmallTask(before: Project, target: SmallTaskTarget, request: string, signal: AbortSignal, live = before): Promise<Project> {
   const config = loadAiConfig();
   const role = modelForRole(config, "deep");
   const thinkingLevel = role.model === ASSISTANT_CHATGPT_MODEL ? atLeastMediumEffort(role.thinkingLevel) : role.thinkingLevel;
@@ -18,11 +18,18 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
   const rect = target.kind !== "dbEntry" && selection?.mapId === target.mapId
     ? { x: selection.x, y: selection.y, w: selection.width, h: selection.height }
     : undefined;
+  const draftMaps = Object.entries(live.maps).flatMap(([mapId, map]) => {
+    const events = map.events.filter(event => event.draft);
+    return events.length ? [[mapId, { events }] as const] : [];
+  });
   const result = await runPiAgentViaCompanion({
     mode: "single", provider: role.provider, model: role.model, thinkingLevel,
     task: request, project: before, mapIds: target.kind === "dbEntry" ? [] : [target.mapId],
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
-    smallTask: { target, maxToolCalls: config.maxToolCalls, ...(rect ? { selection: { rect } } : {}) },
+    smallTask: {
+      target, maxToolCalls: config.maxToolCalls, ...(rect ? { selection: { rect } } : {}),
+      ...(draftMaps.length ? { openEventDrafts: { maps: Object.fromEntries(draftMaps) } } : {}),
+    },
   }, { signal });
   signal.throwIfAborted();
   if (!result.smallTask) throw new Error("Pi worker did not acknowledge the small-task scope");
