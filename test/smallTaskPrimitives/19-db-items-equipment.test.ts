@@ -428,7 +428,7 @@ describe("자료집 프리미티브", () => {
 
   it("이벤트 명령을 실행하지 않는 스크립트가 있어도 착용 칸을 바꿀 수 있다", () => {
     const project = setup("blank");
-    const source = 'game.log("안내"); game["log"]("안내 둘");';
+    const source = 'game.log("game[index]"); game["log"]("cmd"); /* game[index](command); */';
     project.scriptLibrary = [{ id: "guide", source, compiled: source, effects: { reads: [], calls: [], writes: [], dynamic: [] } }];
     const { after } = runPrimitive(project, target("equipment"), "db.equipment.update", { slot: "armor" });
     expect(after.database.equipment.find(row => row.id === ids.equipment)?.slot).toBe("armor");

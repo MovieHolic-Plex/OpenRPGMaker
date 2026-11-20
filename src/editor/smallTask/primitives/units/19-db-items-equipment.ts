@@ -1,3 +1,4 @@
+import ts from "typescript5";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { gen1CanonicalTypeForId, gen1ElementIdForCanonical } from "@/battle/typeChart";
 import { clampElementListCount } from "@/editor/databaseElementList";
@@ -389,11 +390,27 @@ function forEachAuthoredScript(project: Project, visit: (script: AuthoredScript)
   for (const script of project.scriptLibrary ?? []) visit(script);
 }
 
+function hasCommandApiReference(source: string): boolean {
+  if (!/\b(?:cmd|game)\b/u.test(source)) return false;
+  const file = ts.createSourceFile("equipment-reference.ts", source, ts.ScriptTarget.ES2022);
+  function visit(node: ts.Node): true | undefined {
+    if (ts.isIdentifier(node) && node.text === "cmd") return true;
+    if (ts.isElementAccessExpression(node)) {
+      let receiver: ts.Expression = node.expression;
+      while (ts.isParenthesizedExpression(receiver) || ts.isAsExpression(receiver) || ts.isTypeAssertionExpression(receiver)
+        || ts.isNonNullExpression(receiver) || ts.isSatisfiesExpression(receiver)) receiver = receiver.expression;
+      if (ts.isIdentifier(receiver) && receiver.text === "game"
+        && (!ts.isStringLiteralLike(node.argumentExpression) || node.argumentExpression.text === "cmd")) return true;
+    }
+    return ts.forEachChild(node, visit);
+  }
+  return visit(file) === true;
+}
+
 function mayRunEventCommand(script: AuthoredScript, dynamic = scriptCommandEffects(script).dynamic): boolean {
   // Saved effects can omit computed API names and fields inside command objects.
-  const possibleCommand = /\bcmd\b|\bgame\s*(?:\)\s*)*(?:\?\.\s*)?\[(?!\s*(["'\x60])[\w$]+\1\s*\])/u;
-  return possibleCommand.test(script.source) || possibleCommand.test(script.compiled)
-    || dynamic.some(({ api }) => api === "*" || api === "cmd" || api.startsWith("cmd."));
+  return dynamic.some(({ api }) => api === "*" || api === "cmd" || api.startsWith("cmd."))
+    || hasCommandApiReference(script.source) || hasCommandApiReference(script.compiled);
 }
 
 function checkScriptReferences(project: Project, collection: Collection, id: string): void {
