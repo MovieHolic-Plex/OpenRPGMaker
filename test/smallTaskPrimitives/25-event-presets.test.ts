@@ -4,12 +4,17 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/25-event-presets";
 import { mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
+import { PASSIVE_MOVEMENT } from "@/editor/tools/eventCompile";
 import { createInterpreter } from "@/player/interpreter";
+import { isPassableLanding } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
+import { doorstepArrival } from "@/project/doorEntries";
 import { GOLD_MAX } from "@/project/economyValues";
+import { resolveFootprintLanding } from "@/project/footprintLanding";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { deserialize, serialize } from "@/project/io/serialize";
+import { mapDoorDefFor } from "@/project/mapDoorKinds";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -179,23 +184,44 @@ it("상점 가격 상한은 저장 형식과 맞고, 초과하면 원본을 보�
   ] });
 });
 
-it("마지막 진열 상품을 빼면 저장 후 다른 상품이 되살아나는 경우 거절한다", () => {
+it.each(["last", "orphan", "empty"] as const)("진열 상태(%s)에서 상품을 빼면 재로드 뒤 다른 상품이 판매되는 경우 거절한다", mode => {
   const { project, merchant, eq, target } = stockScenario();
   const shop = merchant.commands[1] as Extract<Command, { kind: "shop" }>;
   shop.itemIds.push(itemId);
+  if (mode === "orphan") shop.stock!.push({ itemId: project.database.items.find(item => item.id !== itemId)!.id });
+  if (mode === "empty") shop.stock = [];
   const page: EventPage = {
     id: "p_preset_stock", name: "상점", conditions: [], graphic: { transparent: true },
-    trigger: merchant.trigger, priority: "same", commands: merchant.commands,
+    trigger: merchant.trigger, priority: "same", movement: PASSIVE_MOVEMENT, commands: merchant.commands,
   };
   merchant.pages = [page];
   merchant.commands = [];
   const original = structuredClone(page.commands);
   const interpreter = runEvent(project, merchant);
   interpreter.start();
-  expect(interpreter.resume()).toMatchObject({ kind: "shop", items: [{ itemId: eq.id }] });
+  expect(interpreter.resume()).toMatchObject({ kind: "shop", items: (shop.stock ?? []).map(row => ({ itemId: row.itemId })) });
   expect(() => runPrimitive(project, target, "event.shop.removeStock", { itemId: eq.id }))
     .toThrow("상품 목록과 진열 설정이 서로 달라요");
   expect(page.commands).toEqual(original);
+});
+
+it("상점 상품을 뺀 뒤 저장해도 목록의 미진열 상품은 판매하지 않는다", () => {
+  const { project, merchant, eq, target } = stockScenario();
+  const unlisted = project.database.items.find(item => item.id !== itemId)!;
+  const page: EventPage = {
+    id: "p_preset_stock", name: "상점", conditions: [], graphic: { transparent: true },
+    trigger: merchant.trigger, priority: "same", movement: PASSIVE_MOVEMENT, commands: [{
+      kind: "shop", itemIds: [eq.id, itemId, unlisted.id], stock: [{ itemId: eq.id, priceOverride: 75 }, { itemId }],
+    }],
+  };
+  merchant.pages = [page];
+  merchant.commands = [];
+
+  const { after } = runPrimitive(project, target, "event.shop.removeStock", { itemId });
+  const reloaded = deserialize(serialize(after));
+  expect(runEvent(reloaded, eventAt(reloaded)).start()).toMatchObject({
+    kind: "shop", itemIds: [eq.id, unlisted.id], items: [{ itemId: eq.id, price: 75 }],
+  });
 });
 
 it("선택한 상점 페이지의 여러 분기를 편집하고 기존 가격·계절·다른 페이지를 보존한다", async () => {
@@ -285,6 +311,58 @@ it("편도 출입구는 출발 칸만 쓰고 지정한 칸에 도착하며 한 �
   expect(() => runPrimitive(project, target, id, toRoom, invalidSelection)).toThrow("범위 밖");
   expect(() => runPrimitive(project, target, id, { ...toRoom, toMapId: "map_missing" }, selection)).toThrow("찾을 수 없어요");
   await expectUndoRestores(project, after, target);
+});
+
+it("편도 출입구의 착지 칸에서 고정 NPC가 유일한 길을 막으면 거절한다", () => {
+  const project = withRoom(blankWithMap());
+  const room = project.maps[otherMapId];
+  const floor = room.lowerTiles[0]!;
+  room.lowerTiles.fill(-1);
+  for (const x of [3, 4, 5]) room.lowerTiles[3 * room.width + x] = floor;
+  const page: EventPage = {
+    id: "p_blocker", name: "길목", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" },
+    priority: "same", overlapForbidden: true, movement: PASSIVE_MOVEMENT, commands: [],
+  };
+  room.events.push({ id: "ev_blocker", name: "경비", x: 4, y: 3, trigger: page.trigger, commands: [], pages: [page] });
+  const target = mapTarget(project, project.startMapId)!;
+  const place = () => runPrimitive(project, target, "event.transfer.place", toRoom, selection);
+
+  expect(isPassableLanding(project, room, 3, 3)).toBe(true);
+  expect(place).toThrow("걸어서 나갈 수 있어야 해요");
+  expect(project.maps[project.startMapId].events).toEqual([]);
+  page.priority = "below";
+  expect(place().after.maps[otherMapId]).toBe(room);
+});
+
+it("편도 출입구는 다중 칸 주인공이 밀려나는 착지를 거절하고 통행 행을 따른다", () => {
+  const project = withRoom(blankWithMap());
+  const room = project.maps[otherMapId];
+  const footprint = { width: 1, height: 2 };
+  project.system.playerFootprint = footprint;
+  room.lowerTiles[2 * room.width + 3] = -1;
+  const target = mapTarget(project, project.startMapId)!;
+  const place = () => runPrimitive(project, target, "event.transfer.place", toRoom, selection);
+
+  expect(resolveFootprintLanding(project, room, startSession(project), {}, 3, 3, footprint)).not.toEqual({ x: 3, y: 3 });
+  expect(place).toThrow("정확히 도착해");
+  expect(project.maps[project.startMapId].events).toEqual([]);
+  project.system.playerPassRows = 1;
+  const { after } = place();
+  expect(runEvent(after, eventAt(after)).start()).toMatchObject({ kind: "transfer", x: 3, y: 3 });
+});
+
+it("편도 출입구는 옛 문 발판으로 보정되는 착지를 거절한다", () => {
+  const project = withRoom(blankWithMap());
+  const room = project.maps[otherMapId];
+  room.doors = [mapDoorDefFor("swing", { x: 3, y: 1, w: 1, h: 1 })];
+  room.events.push({
+    id: "ev_doorstep", name: "돌아가는 문", x: 3, y: 2, trigger: { kind: "playerTouch" },
+    commands: [{ kind: "transfer", mapId: project.startMapId, x: 1, y: 1 }],
+  });
+  const target = mapTarget(project, project.startMapId)!;
+
+  expect(doorstepArrival(project, room, 3, 3, project.startMapId)).toMatchObject({ x: 3, y: 2, moved: true });
+  expect(() => runPrimitive(project, target, "event.transfer.place", toRoom, selection)).toThrow("정확히 도착해");
 });
 
 it("양쪽 출입구를 쓰는 왕복 요청은 선택한 한 칸의 범위 가드가 거절한다", async () => {
@@ -464,6 +542,44 @@ it("다른 페이지에서 저장한 위치로도 이동할 수 있으면 잠금
   const { project, door, target } = doorScenario();
   door.pages!.push({ ...door.pages![0]!, id: "p_return", commands: [{ kind: "recallParty", partySetId: "return" }] });
   expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("이동할 수 있어요");
+});
+
+it.each<Command>([
+  { kind: "recallParty", partySetId: "return" },
+  { kind: "m2Command", commandId: "m2-223-teleport-menu", fields: {} },
+])("인접한 이동 이벤트의 목적지가 런타임에 정해지면 ($kind) 잠금을 거절한다", command => {
+  const { project, door, target } = doorScenario();
+  const map = project.maps[project.startMapId];
+  map.events.push({ id: "ev_nearby_exit", name: "옆길", x: door.x + 1, y: door.y, trigger: { kind: "action" }, commands: [command] });
+  const before = structuredClone(map.events);
+  expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("붙어 있는 이동 칸");
+  expect(map.events).toEqual(before);
+});
+
+it.each([false, "false"] as const)("옆 순간이동 메뉴의 이동 설정이 %s면 문 잠금의 범위를 넓히지 않는다", transfer => {
+  const { project, door, target } = doorScenario();
+  project.maps[project.startMapId].events.push({
+    id: "ev_nearby_menu", name: "장소 선택", x: door.x + 1, y: door.y, trigger: { kind: "action" },
+    commands: [{ kind: "m2Command", commandId: "m2-223-teleport-menu", fields: { transfer } }],
+  });
+  expect(runPrimitive(project, target, "event.door.setLock", { itemId }).after.maps[project.startMapId].events[0].pages).toHaveLength(2);
+});
+
+it("문 잠금은 저장 후에도 안내를 닫으면 물러나고 같은 페이지 잠금을 다시 적용할 수 있다", () => {
+  const { project, target } = doorScenario();
+  const id = "event.door.setLock";
+  const { after } = runPrimitive(project, target, id, { itemId });
+  const reloaded = deserialize(serialize(after));
+  const door = eventAt(reloaded);
+  const session = startSession(reloaded);
+  session.inventory[itemId] = 0;
+  const interpreter = runEvent(reloaded, door, session);
+  expect(interpreter.start()).toMatchObject({ kind: "text", body: "문이 잠겨 있다." });
+  expect(interpreter.resume()).toMatchObject({ kind: "moveEvent", eventId: "@player", moves: [{ kind: "move" }], wait: true });
+  expect(interpreter.resume()).toMatchObject({ kind: "done" });
+  const updated = runPrimitive(reloaded, target, id, { itemId, text: "열쇠를 가져오세요." }).after;
+  expect(eventAt(updated).pages).toHaveLength(2);
+  expect(runEvent(updated, eventAt(updated), session).start()).toMatchObject({ kind: "text", body: "열쇠를 가져오세요." });
 });
 
 it.each(["auto", "parallel"] as const)("자동 이동(%s)은 잠금 안내가 반복될 수 있어 거절한다", kind => {

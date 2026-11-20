@@ -5,12 +5,18 @@ import { assertEventShape, placeChest, resolveEventPlacement, resolveTransferEnd
 import { compileSimplePage, PASSIVE_MOVEMENT, resolveGraphic, usedCharsetGraphicKeysOnMap } from "@/editor/tools/eventCompile";
 import { inMapBounds, type Point } from "@/editor/tools/mapHelpers";
 import { ToolError, type JsonSchema } from "@/editor/tools/types";
+import { fieldBoolean } from "@/player/interpreter/m2RuntimeFields";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
-import { canMove, isPassableLanding } from "@/project/collision";
+import { canMove, canMoveFootprint, isPassable, isPassableLanding } from "@/project/collision";
+import { doorstepArrival } from "@/project/doorEntries";
 import { GOLD_MAX } from "@/project/economyValues";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
-import { footprintContains, normalizeCharacterFootprint } from "@/project/footprint";
+import { footprintContains, normalizeCharacterFootprint, rectCells } from "@/project/footprint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
+import { playerBodyRect, playerPassageRect, resolvePlayerBody } from "@/project/playerFootprint";
+import { findBlockingEventOverlappingRect } from "@/project/runtimeEventState";
+import { startSession } from "@/project/session";
+import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import type { Command, Condition, Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { josa, roJosa } from "@/util/josa";
 import { jsonEqual } from "@/util/structuralJson";
@@ -256,7 +262,9 @@ function stockPrimitive(change: "add" | "remove"): SmallTaskPrimitive {
         for (const shop of shops) {
           const before = { itemIds: shop.itemIds, stock: shop.stock };
           editStock(shop, item.id, adding, price);
-          edited ||= !jsonEqual(before, { itemIds: shop.itemIds, stock: shop.stock });
+          if (jsonEqual(before, { itemIds: shop.itemIds, stock: shop.stock })) continue;
+          assertStockSurvivesReload(shop);
+          edited = true;
         }
         changed ||= edited;
         // Each shop still lives in its original page and branch.
@@ -289,14 +297,8 @@ function commandsOfKind<K extends Command["kind"]>(commands: readonly Command[],
 
 function editStock(shop: Extract<Command, { kind: "shop" }>, itemId: string, adding: boolean, price?: number): void {
   if (!adding) {
-    const itemIds = shop.itemIds.filter(id => id !== itemId);
-    const stock = shop.stock?.filter(entry => entry.itemId !== itemId);
-    // Loading an empty stock table falls back to itemIds, which can put other goods on sale.
-    if (shop.stock?.length && stock?.length === 0 && itemIds.length > 0) {
-      throw new PrimitiveError("상점의 상품 목록과 진열 설정이 서로 달라요. 상점 편집기에서 목록을 확인한 뒤 빼 주세요.");
-    }
-    shop.itemIds = itemIds;
-    if (stock) shop.stock = stock;
+    shop.itemIds = shop.itemIds.filter(id => id !== itemId);
+    if (shop.stock) shop.stock = shop.stock.filter(entry => entry.itemId !== itemId);
     return;
   }
   const stock = shop.stock ?? (price === undefined ? undefined : shop.itemIds.map(id => ({ itemId: id })));
@@ -306,6 +308,15 @@ function editStock(shop: Extract<Command, { kind: "shop" }>, itemId: string, add
     shop.stock = [...stock, { itemId, ...(price === undefined ? {} : { priceOverride: price }) }];
   } else if (price !== undefined) {
     shop.stock = stock.map(entry => entry.itemId === itemId ? { ...entry, priceOverride: price } : entry);
+  }
+}
+
+function assertStockSurvivesReload({ itemIds, stock }: Extract<Command, { kind: "shop" }>): void {
+  if (!stock) return;
+  const ids = new Set(itemIds);
+  // Loading drops orphaned rows and falls back to itemIds if no explicit rows remain.
+  if ((stock.length === 0 && ids.size > 0) || stock.some(entry => !ids.has(entry.itemId))) {
+    throw new PrimitiveError("상점의 상품 목록과 진열 설정이 서로 달라요. 상점 편집기에서 목록을 확인해 주세요.");
   }
 }
 
@@ -362,6 +373,35 @@ function assertGatePlacement(project: Project, map: GameMap, at: Point): void {
   }
 }
 
+function hasWalkableLanding(
+  project: Project, from: { map: GameMap; at: Point }, { map, at }: { map: GameMap; at: Point },
+): boolean {
+  const sameMap = from.map === map;
+  if ((sameMap && from.at.x === at.x && from.at.y === at.y) || tileOccupied(map, at)
+    || !isPassableLanding(project, map, at.x, at.y)
+    || (!sameMap && doorstepArrival(project, map, at.x, at.y, from.map.id)?.moved)) return false;
+
+  const session = startSession(project);
+  session.currentMapId = map.id;
+  session.x = at.x;
+  session.y = at.y;
+  const body = resolvePlayerBody(project, session);
+  const canStand = (x: number, y: number): boolean => {
+    const bounds = playerBodyRect(body, x, y);
+    if (!inMapBounds(map, bounds.left, bounds.top) || !inMapBounds(map, bounds.right, bounds.bottom)) return false;
+    const passage = playerPassageRect(body, x, y);
+    return rectCells(passage).every(cell => isPassable(project, map, cell.x, cell.y))
+      && !findBlockingEventOverlappingRect(project, map, session, {}, passage)
+      && !isSpatialPlacementBlocking(project, session, map.id, passage);
+  };
+  return canStand(at.x, at.y) && ORTHOGONAL_STEPS.some(([, dx, dy]) => {
+    const x = at.x + dx;
+    const y = at.y + dy;
+    if (sameMap && from.at.x === x && from.at.y === y) return false;
+    return canMoveFootprint(project, map, at.x, at.y, body.footprint, x, y, body.passRows) && canStand(x, y);
+  });
+}
+
 function transferLeg(
   project: Project, from: { map: GameMap; at: Point }, to: { map: GameMap; at: Point },
 ): Project {
@@ -398,10 +438,8 @@ const transfer: SmallTaskPrimitive = {
     const { project } = ctx;
     const from = blankTile(ctx);
     const to = destination(project, args);
-    if ((from.map === to.map && from.at.x === to.at.x && from.at.y === to.at.y)
-      || !isPassableLanding(project, to.map, to.at.x, to.at.y)
-      || tileOccupied(to.map, to.at)) {
-      throw new PrimitiveError("도착할 수 있는 빈 칸을 골라 주세요.");
+    if (!hasWalkableLanding(project, from, to)) {
+      throw new PrimitiveError("도착할 수 있는 빈 칸을 골라 주세요. 주인공이 정확히 도착해 걸어서 나갈 수 있어야 해요.");
     }
     assertGatePlacement(project, from.map, from.at);
     return transferLeg(project, from, to);
@@ -482,8 +520,8 @@ const lock: SmallTaskPrimitive = {
     const destinations = new Set(doors.flatMap(page => page.commands.flatMap(command =>
       command.kind === "transfer" ? [command.mapId] : [])));
     if (map.events.some(candidate => candidate !== event && Math.abs(candidate.x - event.x) + Math.abs(candidate.y - event.y) <= 1
-      && [...transferDestinations(project, map, eventCommandLists(candidate))].some(mapId => mapId !== null && destinations.has(mapId)))) {
-      throw new PrimitiveError("범위 밖이에요. 같은 맵으로 가는 이동 칸이 붙어 있어요. 두 칸을 함께 잠가야 해요.");
+      && [...transferDestinations(project, map, eventCommandLists(candidate))].some(mapId => mapId === null || destinations.has(mapId)))) {
+      throw new PrimitiveError("범위 밖이에요. 붙어 있는 이동 칸도 같은 맵으로 갈 수 있어요. 두 칸을 함께 확인해 주세요.");
     }
 
     const body = textArg((args.text as string | undefined) ?? "문이 잠겨 있다.", "잠겼을 때 보여 줄 글을 입력해 주세요.");
@@ -545,7 +583,8 @@ function transferDestinations(project: Project, map: GameMap, lists: readonly (r
       pending.push(...nestedCommandLists(command));
       if (command.kind === "transfer") destinations.add(command.mapId);
       if (command.kind === "script" || command.kind === "runSchedule" || command.kind === "recallParty"
-        || (command.kind === "m2Command" && m2CommandById(command.commandId)?.title === "Teleport Menu" && command.fields.transfer !== false)) {
+        || (command.kind === "m2Command" && m2CommandById(command.commandId)?.title === "Teleport Menu"
+          && (!("transfer" in command.fields) || fieldBoolean(command.fields, "transfer", true)))) {
         destinations.add(null);
       }
       if (command.kind === "callCommonEvent") {
@@ -561,9 +600,10 @@ function transferDestinations(project: Project, map: GameMap, lists: readonly (r
   return destinations;
 }
 
+const ORTHOGONAL_STEPS = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]] as const;
+
 function doorRetreat(project: Project, map: GameMap, event: GameEvent): Dir | undefined {
-  const options = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]] as const;
-  const open = options.flatMap(([dir, dx, dy]) => {
+  const open = ORTHOGONAL_STEPS.flatMap(([dir, dx, dy]) => {
     const at = { x: event.x + dx, y: event.y + dy };
     if (!canMove(project, map, event.x, event.y, at.x, at.y) || tileOccupied(map, at)) return [];
     return [{ dir, depth: Math.min(at.x, at.y, map.width - 1 - at.x, map.height - 1 - at.y) }];
