@@ -16,7 +16,7 @@ import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
-import type { GameEvent, Project } from "@/project/types";
+import type { Command, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { dbTarget, mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
@@ -173,24 +173,48 @@ it("삭제하려는 상태·연출·애니메이션·스킬의 기존 참조를 
   expect(() => runPrimitive(before, target("skills", "skill_attack"), "db.skills.delete", {})).toThrow(/기본으로 사용/u);
 });
 
-it.each(["skills", "battleAnimations"] as const)("열린 이벤트 작업본에서 쓰는 %s 삭제를 게시 직전에 막는다", collection => {
-  const project = withRecords("built");
+function openEventDraft(project: Project, command: Command): Project {
   const map = project.maps[project.startMapId]!;
   const original: GameEvent = { id: "ev_unit18_draft", x: 0, y: 0, trigger: { kind: "action" }, commands: [] };
   store.replaceProject({ ...project, maps: { ...project.maps, [map.id]: { ...map, events: [...map.events, original] } } });
   store.updateEvent(map.id, original.id, event => {
     event.draft = { kind: "edit", original };
-    event.commands = collection === "skills"
-      ? [{ kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: ids.skills }]
-      : [{ kind: "showAnimation", target: "player", animationId: ids.battleAnimations }];
+    event.commands = [command];
   }, { scope: "map", mapId: map.id, label: "열린 이벤트 편집" });
-  const live = store.getCurrent();
+  return store.getCurrent();
+}
+
+it.each(["skills", "battleAnimations"] as const)("열린 이벤트 작업본에서 쓰는 %s 삭제를 게시 직전에 막는다", collection => {
+  const project = withRecords("built");
+  const live = openEventDraft(project, collection === "skills"
+    ? { kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: ids.skills }
+    : { kind: "showAnimation", target: "player", animationId: ids.battleAnimations });
   const selected = target(collection);
   const before = smallTaskBase(live, selected);
   const { after } = runPrimitive(before, selected, `db.${collection}.delete`, {});
   expect(after.database[collection]?.some(row => row.id === ids[collection])).toBe(false);
   expect(() => commitSmallTask(live, before, after, selected)).toThrow(/열린 이벤트/u);
   expect(store.getCurrent()).toBe(live);
+});
+
+it("열린 이벤트 작업본의 끊어진 스킬 연결에 새 스킬이 연결되지 않게 한다", () => {
+  const project = withRecords("built");
+  const newId = "skill_small_task_1";
+  const live = openEventDraft(project, { kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: newId });
+  const selected = target("skills");
+  const before = smallTaskBase(live, selected);
+  const { after } = runPrimitive(before, selected, "db.skills.create", { name: "새 스킬" });
+  expect(after.database.skills.at(-1)?.id).toBe(newId);
+  expect(() => commitSmallTask(live, before, after, selected)).toThrow(/열린 이벤트/u);
+  expect(store.getCurrent()).toBe(live);
+});
+
+it("다른 자료집 묶음의 같은 ID 선언이 스킬 삭제를 막지 않는다", () => {
+  const before = withRecords("blank");
+  before.database.states.push({ id: ids.skills, name: "같은 ID의 상태" });
+  const { after } = runPrimitive(before, target("skills"), "db.skills.delete", {});
+  expect(after.database.skills.some(row => row.id === ids.skills)).toBe(false);
+  expect(after.database.states).toBe(before.database.states);
 });
 
 it("중첩된 이벤트의 조건과 명령, 적 그룹 조건, 상태 내성 표의 참조를 각각 보호한다", () => {
@@ -504,6 +528,19 @@ it("최대 지속 턴 전에 자연 회복 기회가 있으면 확률만 바꾼�
   expect(runStateUpkeep(after, battler, () => 0.4).removedStateIds).toEqual([]);
   expect(runStateUpkeep(after, battler, () => 0.4).removedStateIds).toEqual([state.id]);
   expect(after.database.states.at(-1)?.runtimeEffects).toEqual({ maxTurns: 3 });
+});
+
+it("최대 지속 턴을 보존하면서 자연 회복 확률을 0으로 끈다", () => {
+  const before = withRecords("blank");
+  const state = before.database.states.at(-1)!;
+  state.recoverNaturallyFromTurn = 3;
+  state.runtimeEffects = { maxTurns: 3 };
+  const { after } = runPrimitive(before, target("states"), "db.states.update", { recoverChance: 0 });
+  expect(after.database.states.at(-1)?.recoverNaturallyChance).toBe(0);
+  const battler = battlerWithStates(state.id);
+  expect(runStateUpkeep(after, battler, () => 0).removedStateIds).toEqual([]);
+  expect(runStateUpkeep(after, battler, () => 0).removedStateIds).toEqual([]);
+  expect(runStateUpkeep(after, battler, () => 0).removedStateIds).toEqual([state.id]);
 });
 
 it("전투 불능의 자연 회복과 피격 해제를 거절한다", () => {

@@ -1,5 +1,6 @@
 import { removedDatabaseReference } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
+import { referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
@@ -21,12 +22,28 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
   return event?.draft ? withEvent(base, target.mapId, eventWithoutDraft(event)) : base;
 }
 
+function draftReferencesNewDatabaseRows(live: Project, before: Project, after: Project, collection: keyof Project["database"]): boolean {
+  if (live.maps === before.maps) return false;
+  const beforeIds = new Set(before.database[collection]?.map(row => row.id));
+  const addedIds = new Set(after.database[collection]?.filter(row => !beforeIds.has(row.id)).map(row => row.id));
+  if (!addedIds.size) return false;
+  for (const sites of referenceIndex(live, addedIds).values()) {
+    if (sites.some(({ path: [root, mapId, field, index] }) =>
+      root === "maps" && typeof mapId === "string" && field === "events" && typeof index === "number"
+      && live.maps[mapId]?.events[index]?.draft !== undefined)) return true;
+  }
+  return false;
+}
+
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
   if (target.kind === "dbEntry") {
     const { collection, id } = target;
-    // The worker saw saved events. Check the open drafts before publishing a deletion.
+    // The worker saw saved events. Keep publication from breaking or redirecting open draft references.
+    if (draftReferencesNewDatabaseRows(live, before, after, collection)) {
+      throw new SmallTaskError("열린 이벤트가 새 항목과 같은 식별자를 쓰고 있어요. 이벤트의 연결을 먼저 확인해 주세요.");
+    }
     if (before.database[collection]?.some(row => row.id === id)
       && !after.database[collection]?.some(row => row.id === id)
       && removedDatabaseReference(before, after, [{ collection, id }], live)) {

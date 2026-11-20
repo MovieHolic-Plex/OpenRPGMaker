@@ -113,7 +113,8 @@ function ensureUnused(project: Project, collection: Collection, id: string, inde
       (collection === "battleAnimations" && id === DEFAULT_ANIMATION_ID)) {
     throw new PrimitiveError("게임이 기본으로 사용 중인 항목이에요. 삭제할 수 없어요.");
   }
-  if (outsideRecord(referenceIndex(project, new Set([id])).get(id) ?? [], ["database", collection, index]).length) {
+  const sites = outsideRecord(referenceIndex(project, new Set([id])).get(id) ?? [], ["database", collection, index]);
+  if (sites.some(({ asKey, path }) => asKey || path[0] !== "database" || path.length !== 4 || path[3] !== "id")) {
     throw new PrimitiveError("다른 곳에서 사용 중인 항목이에요. 먼저 연결을 해제해 주세요.");
   }
   if (collection === "states" && id === RAGE_STATE_ID && project.database.skills.some(skill => skill.effect?.kind === "rage")) {
@@ -244,8 +245,10 @@ const stateEditor: Editor<"states"> = {
     if (project.system.battleModel !== "gen1" && (args.recoverTurns !== undefined || args.recoverChance !== undefined)) {
       const { doomTurns, maxTurns, recoverNaturallyFromTurn, recoverNaturallyChance } = stateBehavior(next);
       const recoveryTurn = Math.max(1, Math.ceil(recoverNaturallyFromTurn));
-      if ((doomTurns > 0 && doomTurns <= recoveryTurn) || (maxTurns > 0 && maxTurns < recoveryTurn) ||
-          (maxTurns === recoveryTurn && recoverNaturallyChance < 100)) {
+      if (recoverNaturallyChance > 0 && (
+        (doomTurns > 0 && doomTurns <= recoveryTurn) || (maxTurns > 0 && maxTurns < recoveryTurn) ||
+        (maxTurns === recoveryTurn && recoverNaturallyChance < 100)
+      )) {
         throw new PrimitiveError("요청한 자동 해제 설정이 적용되지 않아요. 자료집에서 선고나 최대 지속 턴을 확인해 주세요.");
       }
     }
