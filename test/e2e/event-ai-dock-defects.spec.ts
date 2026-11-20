@@ -1,11 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { createBlankProject } from "@/project/defaults";
-import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectForEditor } from "./projectSeed";
+import type { Command, Project } from "@/project/types";
+import { EVENT_DOCK_ID, eventDockProject, mockDockModel, openEventDockFixture } from "./eventAiDockFixture";
 
 /**
  * 「AI로 명령 만들기」 도크가 **보기 방식과 무관하게** 초안을 보여야 한다는 계약.
- *  1) 보기 방식을 건드리지 않은 기본 상태(스토리)에서 초안이 화면에 보인다.
+ *  1) 스토리에서 초안을 검토하고 패널을 접거나 취소하면 스토리로 돌아온다.
  *  2) 생성 도중 스토어가 갱신돼 본문이 다시 그려져도 초안이 보인다(명령 영역이 비지 않는다).
  */
 const EXISTING_COMMANDS: readonly Command[] = [
@@ -30,82 +29,22 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-function probeProject(): Project {
-  const project = createBlankProject();
-  const map = project.maps[project.startMapId];
-  if (!map) throw new Error("blank project has no start map");
-  const commands: Command[] = structuredClone(EXISTING_COMMANDS) as Command[];
-  const eventPage: EventPage = {
-    id: "p1",
-    name: "상자",
-    conditions: [],
-    graphic: {},
-    trigger: { kind: "action" },
-    priority: "same",
-    movement: { type: "fixed", speed: 3, frequency: 3 },
-    commands,
-  };
-  map.events = [{ id: "ev_ai_dock", x: 4, y: 4, pages: [eventPage], commands } as (typeof map.events)[number]];
-  return project;
-}
-
-async function mockLlm(page: Page, commands: readonly Command[]): Promise<void> {
-  await page.route("**/v1/chat/completions", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ choices: [{ message: { role: "assistant", content: JSON.stringify(commands) } }] }),
-    });
-  });
-}
-
-/** 응답을 브라우저 신호(window.__releaseLlm)까지 붙잡아 두는 목 — 「생성 중」 상태를 만든다. */
-async function mockLlmGated(page: Page, commands: readonly Command[]): Promise<void> {
-  await page.addInitScript(() => {
-    (window as unknown as { __llmGate: Promise<void>; __releaseLlm: () => void }).__llmGate = new Promise<void>(
-      (resolve) => {
-        (window as unknown as { __releaseLlm: () => void }).__releaseLlm = resolve;
-      },
-    );
-  });
-  await page.route("**/v1/chat/completions", async (route) => {
-    await page.evaluate(() => (window as unknown as { __llmGate: Promise<void> }).__llmGate);
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ choices: [{ message: { role: "assistant", content: JSON.stringify(commands) } }] }),
-    });
-  });
-}
-
 async function openDock(page: Page, project: Project): Promise<Locator> {
-  await seedProjectForEditor(page, project);
-  await page.evaluate(async (mapId) => {
-    const modalPath = "/src/editor/panels/eventEditor/modal.ts";
-    const modalModule = (await import(modalPath)) as typeof import("@/editor/panels/eventEditor/modal");
-    modalModule.openEventEditorModal(mapId, "ev_ai_dock");
-  }, project.startMapId);
+  await openEventDockFixture(page, project);
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible();
-  await page.evaluate(() => {
-    window.localStorage.setItem(
-      "oprn:ai-config",
-      JSON.stringify({ version: 2, authMode: "chatgpt", model: "gemini-3.7-flash", liteModel: "gemini-3.7-flash" }),
-    );
-  });
-  const dock = editor.getByTestId("ai-event-assist");
-  await dock.getByTestId("ai-event-assist-summary").or(dock.locator("summary")).first().click();
+  await editor.getByTestId("event-command-quick-ai").click();
   await expect(editor.getByTestId("ai-event-input")).toBeVisible();
   return editor;
 }
 
-test("기본 보기(스토리)에서 만든 초안이 화면에 보인다", async ({ page }) => {
-  await mockLlm(page, MOCK_FINAL);
-  const project = probeProject();
-  await page.goto("/");
+test("스토리 보기의 초안을 같은 명령 영역에서 검토하고 접기와 취소 뒤 돌아간다", async ({ page }) => {
+  await mockDockModel(page, MOCK_FINAL);
+  const project = eventDockProject(EXISTING_COMMANDS);
   const editor = await openDock(page, project);
 
-  await expect(editor.getByTestId("event-view-toggle-storyboard")).toHaveAttribute("aria-pressed", "true");
+  await editor.getByTestId("event-view-toggle-storyboard").click();
+  await expect(editor.getByTestId("event-storyboard-host")).toBeVisible();
 
   await editor.getByTestId("ai-event-input").fill("상자가 열리면 기억 A를 켜 줘");
   await editor.getByTestId("ai-event-generate").click();
@@ -115,12 +54,22 @@ test("기본 보기(스토리)에서 만든 초안이 화면에 보인다", asyn
   await expect(stagedHost).toBeVisible();
   await expect(stagedHost.getByTestId("ai-event-staged")).toBeVisible();
   await expect(stagedHost.locator("[data-testid^='ai-event-staged-row-']").first()).toBeVisible();
+  await expect(editor.getByTestId("event-storyboard-host")).toBeHidden();
+  await editor.getByTestId("ai-event-assist-summary").click();
+  await expect(stagedHost).toBeHidden();
+  await expect(editor.getByTestId("event-storyboard-host")).toBeVisible();
+  await editor.getByTestId("event-command-quick-ai").click();
+  await expect(stagedHost).toBeVisible();
+  await editor.getByTestId("ai-event-discard").click();
+  await expect(stagedHost).toBeHidden();
+  await expect(editor.getByTestId("event-storyboard-host")).toBeVisible();
 });
 
 test("생성 중 본문이 다시 그려져도 초안이 보인다", async ({ page }) => {
-  await mockLlmGated(page, MOCK_FINAL);
-  const project = probeProject();
-  await page.goto("/");
+  let release: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  await mockDockModel(page, MOCK_FINAL, () => gate);
+  const project = eventDockProject(EXISTING_COMMANDS);
   const editor = await openDock(page, project);
   await editor.getByTestId("event-view-toggle-list").click();
 
@@ -128,14 +77,20 @@ test("생성 중 본문이 다시 그려져도 초안이 보인다", async ({ pa
   await editor.getByTestId("ai-event-generate").click();
   await expect(editor.getByTestId("ai-event-status")).toHaveClass(/busy/);
 
-  await page.evaluate(async () => {
-    const storePath = "/src/project/store.ts";
-    const storeModule = (await import(storePath)) as typeof import("@/project/store");
-    storeModule.store.update((draft) => {
-      draft.meta.title = `${draft.meta.title} (편집 중)`;
-    });
-  });
-  await page.evaluate(() => (window as unknown as { __releaseLlm: () => void }).__releaseLlm());
+  const dock = editor.getByTestId("ai-event-assist");
+  const previousDockId = await dock.getAttribute("id");
+  await page.evaluate(async ({ mapId, eventId }) => {
+    const { store } = await import("/src/project/store.ts");
+    const event = store.getCurrent().maps[mapId].events.find(candidate => candidate.id === eventId);
+    if (!event) throw new Error("Missing event in fixture");
+    // Publish an equivalent revision so the editor rerenders during generation.
+    // An unrelated content change would trip the assistant's scoped draft check.
+    store.replaceEvent(mapId, eventId, event);
+  }, EVENT_DOCK_ID);
+  await expect(dock).not.toHaveAttribute("id", previousDockId!);
+  await expect(editor.getByTestId("ai-event-stop")).toBeVisible();
+  await expect(editor.locator(".ai-event-elapsed")).toHaveText(/^[1-9]\d*초$/);
+  release!();
 
   const stagedHost = editor.getByTestId("ai-event-staged-host");
   await expect(stagedHost).toBeVisible();

@@ -161,7 +161,7 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 사용자가 다른 그룹을 선택한 뒤에는 `activeEventRailGroup` 상태를 존중한다. 조건을
 작성했는데도 조건 편집면이 접힌 채 시작해 등장 조건이 안 보이던 UX 회귀를 막는 계약이다.
 
-## 명령 중심 배치와 AI 작성 모달 (2026-09-18)
+## 명령 중심 배치와 AI 작성 패널 (2026-11-20)
 
 - `content.ts`의 `event-editor-command-focused`는 왼쪽 페이지 설정, 중앙 명령,
   오른쪽 상시 미리보기로 배치한다. `styles/event/command-workbench.css`가 마지막
@@ -172,16 +172,18 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
   단일 클릭은 선택 강조와 오른쪽 미리보기만 갱신한다. 수정 폼이나 미리보기를
   명령 아래에 펼치지 않는다(사용자 후속 수정). 더블클릭·Enter/Space·명령 편집
   액션에서 기존 명령 편집 다이얼로그를 연다.
-- AI 버튼은 `aiAssist.ts`의 작성 모달을 연다. `eventAiModal.ts`는 배경 입력 차단,
-  Tab 순환, 닫기 후 포커스 복원을 맡고 Escape는 기존 modalStack을 사용한다.
-  초안은 모달 안의 `stagedHost`에만 표시한다. 중앙 목록과 명령 수는 적용 전까지
-  저작 데이터를 기준으로 유지한다. 각 초안 행의 수정은 기존 명령 편집 다이얼로그를
-  사용하며 프로젝트에 즉시 쓰지 않는다. 최종 적용은 기존 replaceAll 한 번으로
-  처리하므로 한 번의 되돌리기 계약을 유지한다.
-- `modal.ts`는 포커스된 인라인 입력을 교체할 때 발생하는 동기 change/store 재진입을
-  직렬화한다. 이전 표면의 selection listener는 렌더 시작 시 해제한다. 이 둘이 없으면
-  중첩 렌더가 공유 인스펙터·AI 호스트를 분리된 DOM으로 바꾸어 입력 후 선택이 사라지거나
-  AI 모달에서 Escape가 부모 편집기를 닫는다. AI 모달 스택 등록은 부착된 DOM만 소유한다.
+- 툴바의 AI 버튼은 `aiAssist.ts`의 작성 패널을 명령 목록 위에 펼치고 입력창에 초점을 준다.
+  Ctrl/Cmd+Enter로 생성하고, 생성 단계·경과 시간·중단 버튼과 실패 사유를 패널에서 확인한다.
+  접으면 프롬프트와 초안이 페이지별로 남는다. 입력·초안 행·AI 버튼에서 Escape를 누르면
+  패널을 접고 AI 버튼에 초점을 돌린다. 이벤트 편집기 자체가 Escape를 처리한다.
+- `content.ts`는 명령 영역의 기존 보기 자리에 `stagedHost`를 표시한다. 추가는 초록 +,
+  삭제는 빨강 −와 취소선, 변경은 기존 값과 바뀐 값을 화살표로 연결한다.
+  검토 중 명령 수와 행 번호는 제외를 반영한 적용 예정 값이다. 접거나 취소하면
+  목록·스토리·플로우 중 직전에 보던 보기로 돌아간다. 각 줄의 「빼기」와 「수정」은
+  적용 전 초안에만 반영되고, 패널의 「적용」은 기존 `replaceAll`을 한 번 호출한다.
+- `modal.ts`의 렌더 보호와 `aiAssist.ts`의 `liveDock`은 생성 뒤 본문이 다시 그려졌을 때에도
+  결과와 경과 시간을 살아 있는 패널로 전달한다. 적용 직전의 페이지 명령을 검토 시작 시점과
+  비교해 오래된 초안이 현재 편집을 덮는 것을 막는다.
 - 1600px 화면 실측: 설정 240px / 리사이저 6px / 명령 약 789px / 미리보기 약 403px.
   801~1100px(1024 등)에서는 **미리보기 열을 접은 채 시작**한다(2026-10-21, UI 감사 07-eventcmd-03):
   설정 최소 240px(저장된 폭) / 6 / 명령 / 32px 세로 단추(`event-editor-preview-toggle`). 단추를 누르면
@@ -606,7 +608,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **Option A 계층 구조:** 헤더(타이틀 + 페이지 세그먼트 + 테스트) + 본문 워크벤치(좌측 4그룹 요약 아코디언 레일 228px, 중앙 명령 목록, 우측 통합 인스펙터 340px) + 단일 primary 저장 액션 푸터. 검증 피드백은 세그먼트 배지 및 푸터 상태 텍스트로 전달된다.
 - **Event editor shell density (Option A layout, 2026-08-27):** `src/editor/panels/eventEditor/` chrome aligns to Option A layout. The titlebar holds the editable name (`event-editor-name`), ID, coords, header page segments (`[data-testid^=evt-page-segment]`), and `테스트` action. The legacy wide page-tab strip in the modal body is removed (`.event-page-number-tabs`, `event-page-strip`, `event-page-tab-*` absent). The left settings rail (`event-editor-settings-column`) is organized into a 4-group summary accordion (`details > summary` for conditions, graphic, trigger/priority, autonomous movement) with live summary copy. Command editing uses click-select to highlight rows, double-click or Enter to open the edit dialog (removing per-row 편집 buttons). The right integrated inspector shows the selected command details and preview directly. Footer contains exactly one primary save action `저장하고 닫기` (`event-editor-save`). Modal root testid stays `event-editor-modal`. Tests: `test/e2e/event-layout-optiona.spec.ts`, `test/eventEditorHierarchyShell.test.ts`, `test/eventEditorBalancedShell.test.ts`, `test/eventEditorSettingsLayout.test.ts`, `test/eventEditorStoryboardBranches.test.ts`, `test/eventEditorUiDensity.test.ts`, `test/eventEditorModal.test.ts`.
 - **Current hierarchy (Option A):** titlebar with integrated page segments + workbench + footer with single primary save. Workbench starts two-column (`228px / minmax(0,1fr)`) with a 4-group summary accordion rail on the left; inspector (`340px`) opens on row selection. Validation is a segment badge plus footer status line, not a full-width identity band. Retained actions remain mounted and keyboard reachable.
-- **Event AI 명령 도크 (2026-08-28, 아래 「Event AI assist card」 항목을 상위 갱신한다):** `aiAssist.ts` 는 **「이 페이지가 하는 일」 칼럼의 마지막 그리드 행에 붙는 인플로우 도크**다. 예전에는 도구 팝오버 안의 칩이 `position:absolute` 카드로 열려 **자기가 명령을 넣을 목록을 덮었다** (실측: 1440 폭에서 cmd-list 면적의 46%, 1024 폭에서는 전폭). 삽입 위치를 못 보면서 삽입 위치를 고르라는 구조였다. 계약:
+- **Event AI 명령 도크 (2026-08-28 당시, 현재는 위 「명령 중심 배치와 AI 작성 패널」 참조):** `aiAssist.ts` 는 **「이 페이지가 하는 일」 칼럼의 마지막 그리드 행에 붙는 인플로우 도크**다. 예전에는 도구 팝오버 안의 칩이 `position:absolute` 카드로 열려 **자기가 명령을 넣을 목록을 덮었다** (실측: 1440 폭에서 cmd-list 면적의 46%, 1024 폭에서는 전폭). 삽입 위치를 못 보면서 삽입 위치를 고르라는 구조였다. 계약:
   - **진입점은 하나** — 툴바 `event-command-quick-ai` 가 도크를 토글한다(`aria-expanded` 반영). 도구 팝오버에는 AI 칩이 없다. 예전에는 같은 「AI 명령」 라벨이 툴바와 팝오버에 동시에 떠 있었다.
   - **칼럼 그리드는 `auto minmax(0,1fr) auto`** (`event-editor.balanced.css`). 암시 행으로 내버려 두면 1fr 이 줄지 않아 도크가 모달 밑밖으로 밀려난다(실측: 900 높이에서 도크 밑이 1016).
   - `event-editor-ai.css` 가 도크를 `max-height: min(46vh, 420px)` 로 묶어 cmd-list 행이 항상 남는다. cmd-list 와의 겹침 면적은 **0** 이어야 한다.
@@ -617,7 +619,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - 프롬프트 예시 칩(`ai-event-example-*`)은 입력만 채운다(자동 생성 금지).
   - 가드: `test/eventCommandAssist.test.ts`, `test/e2e/event-editor-aux-non-occlusion.spec.ts`(겹침 0 · Escape 범위 · 포커스), 증거는 `output/evidence/event-ai-assist-ux/960x900-compact.png`.
 - **Event AI 초안 표시·프롬프트 계약 (2026-08-30, 실측 기반):**
-  - **초안은 보기 방식보다 우선한다.** `content.ts` 의 `applyViewMode` 는 초안이 있으면 `stagedHost` 를 무조건 보인다. 예전에는 스토리·미리보기에서 `stagedHost` 를 숨기면서 목록도 숨겨, 기본 보기(스토리)에서 「위 목록에 표시했어요」라고 말하며 **아무것도 보여주지 않았다**. 기존 e2e 는 도크를 열기 전에 「목록 보기」를 눌러 이 경로를 지나지 않았다.
+  - **펼친 패널의 초안은 보기 방식보다 우선한다.** `content.ts` 의 `applyViewMode` 는 검토 중인 초안을 기존 보기 자리에 표시한다. 예전에는 스토리·미리보기에서 `stagedHost` 를 숨기면서 목록도 숨겨, 기본 보기(스토리)에서 「위 목록에 표시했어요」라고 말하며 **아무것도 보여주지 않았다**. 기존 e2e 는 도크를 열기 전에 「목록 보기」를 눌러 이 경로를 지나지 않았다.
   - **완료 렌더는 살아 있는 도크로 간다.** `aiAssist.ts` 의 `liveDock` 이 현재 렌더 인스턴스를 들고 있고, 생성 완료 콜백은 자기 클로저가 아니라 그쪽에 그린다. 생성 중 스토어가 갱신되면(본문 재렌더) 예전 코드는 문서에서 떨어져 나간 `stagedHost` 에 그려 초안이 영원히 안 보였다. 재렌더된 도크는 `statusKind === "busy"` 면 생성 버튼을 계속 잠근다.
   - **충격은 대사보다 앞이다 (2026-09-22).** `buildEventAssistPrompt` 의 「충격 연출」 절이 함정·피격·마법·사망을 `playAudio`(효과음) → `showAnimation`(wait:true) → 상태 변화 → text 순으로 쓰게 한다. 화면을 덮는 애니메이션 id 를 목록 앞에 둔다. 게임오버 창의 그림·제목은 이 명령 배열 밖이고, 스튜디오 조수의 `set_game_over` 가 `system.gameOver` 를 고친다. 가드: `test/eventCommandAssist.test.ts`. 게임오버 그림은 `generate_game_over_image` 뒤 `set_game_over` 다.
   - **리소스 저작 능력을 유지하되 id 는 종류별로 준다.** `playAudio`/`showPicture`/`changeFace`/`playMovie`를 kind 목록에서 빼지 않는다. 대신 `src/ai/eventResourceCatalog.ts`가 슬롯별(`faceset`/`music`/`sound`/`picture`/`movie`) 목록을 만들고 프롬프트가 절을 나눠 실으며, 각 절은 `refSection`의 `MAX_REF_ENTRIES`로 잘린다. **한 덩어리 `collectResourceIds` 는 쓰지 않는다** — 실측으로 블랭크 프로젝트가 1851개였고 앞 40개가 전부 `tex_*` 칩셋과 `cc0-jetrel-*` 아이콘이라 얼굴·음악·효과음·그림 id 가 하나도 노출되지 않았다. **얼굴·음악·효과음은 에디터 폼과 같은 카탈로그**(`AUTHORABLE_FACESET_FACE_ASSETS`, `BGM_CATALOG`/`SE_CATALOG`+CC0·EasyRPG 오디오)를 쓴다. 얼굴 절은 흉상·전신 프리셋(`generated-face-*`)을 **맨 앞에** 둔다 — 낱장 얼굴 80장 뒤에 붙이면 상한 40개에 잘려 대형 초상 레이아웃이 가능하다는 사실이 프롬프트에서 사라진다. **그림 절은 성격이 다르다: 제안용이다.** 폼이 자유 입력이고 「그림 선택」 픽커는 `kind:"image"`로 454개를 제시하므로 큐레이션 목록은 «추천»일 뿐이고 유효성은 런타임 해석기가 정한다(아래 항목). 그 목록은 `resolvePictureSource`로 한 번 걸러 **검증이 받아 주는 집합의 부분집합**으로 유지한다 — 칩셋 이미지 10개(`newCommand("showPicture")`의 기본값 `tex_tiles_default` 포함)는 해석되지 않아 화면에 아무것도 안 나오므로 추천에서 뺀다.
@@ -625,7 +627,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - **resourceId 검증은 종류까지 본다 — 단, 그림 칸의 권위는 런타임 해석기다.** `io/commandReferenceValidation`은 전역 집합 소속만 보므로 `{"kind":"playAudio","resourceId":"tex_easyrpg_chipset_dungeon"}`가 통과해 **소리 없는 이벤트**로 출하됐다(자가수정 루프가 볼 오류가 아예 없었다). `parseAndValidate`의 `validateResourceSlots`가 얼굴·음악·효과음·동영상은 슬롯 집합으로, **그림은 `resolvePictureSource`(런타임과 같은 함수)로** 판정한다. 그림을 큐레이션 집합으로 판정하던 구현은 픽커가 권한 이미지 **164개**를 반려했다(실측 454개 중; `scarloxy-monster-icon-*`, `monster` 종류로 올린 업로드 등) — false accept 보다 나쁜 false reject 였다(자가수정 3회를 태우고 하드 실패한다). 해석기가 오디오 업로드를 거부하므로 종류 교차 보호는 그대로다: 오디오 업로드를 그림 칸에 쓰면 여전히 반려된다. 빈 문자열은 「얼굴 지우기」라 통과시킨다. 알려진 한계: `playMovie` 는 미등록 id 를 `/assets/movies/<id>.mp4` 로 폴백하므로(`playSceneMovies.ts:30-39`) 이론상 같은 false-reject 가 가능하지만, 동영상 슬롯이 비면 kind 자체가 빠져 오늘은 도달 불가다.
   - **transfer 는 런타임이 실제로 착지시키는 칸으로만 보낸다.** 맵 참조 목록에 `가로 W × 세로 H` 와 `밟을 수 있는 칸 예: x=… y=…`를 싣고, `parseAndValidate`가 맵 밖 좌표와 `isPassableLanding` 실패 좌표를 반려한다. 이 공용 판정은 `isPassable && 네 방향 중 canMove 하나 이상`이며 런타임 `nearestPassableTile`도 그대로 쓴다. 따라서 한 방향 비트만 열린 함정 칸을 AI 게이트가 허용한 뒤 런타임이 조용히 재배치하는 불일치가 없다. 착지 가능한 칸이 맵 전체에 하나도 없을 때만 기존 안전 밸브대로 반려하지 않는다. 실측: 같은 요청에서 `(0,0)`(벽) → `(10,7)`.
   - **생성 시작 목록이 낙관적 동시성 기준이다.** `aiAssist.ts`는 await 전에 `page.commands`를 직렬화하고, 완료 시 store의 같은 페이지를 다시 읽어 비교한다. 생성 중 사용자가 목록을 고쳤으면 초안을 만들지 않고 「명령 목록이 생성 중에 바뀌었어요」 오류와 재생성 안내만 남긴다. `liveDock`은 현재 같은 key의 도크에만 DOM 렌더를 보내며 페이지 전환·에디터 닫기 뒤에는 상태만 저장한다. 에디터 close 이벤트와 테스트 reset은 `liveDock`을 비워 분리된 DOM 클로저를 남기지 않는다.
-  - 「이대로 하기」는 `replaceAll`이 성공한 뒤 현재 도크에서 초안을 닫는다. 교체 중 오류가 나면 원인을 표시하고 검토한 초안과 줄 제외 상태를 보존한다.
+  - 「적용」은 `replaceAll`이 성공한 뒤 초안만 지우고 작성 패널은 펼친 채로 둔다. 교체 중 오류가 나면 원인을 표시하고 검토한 초안과 줄 제외 상태를 보존한다.
   - **생성 버튼은 살아 있는 도크에서 풀어야 한다.** `finally`는 자기 클로저의 버튼과 `liveDock.setGenerating(false)`를 **모두** 호출한다. 생성 중 스토어가 갱신되면 클로저의 버튼은 이미 문서에서 떨어져 나간 옛 도크 것이고, 새 도크는 `statusKind === "busy"`를 보고 자기 버튼을 잠근 상태다. 상태 쓰기는 재렌더를 부르지 않으므로 여기서 직접 풀지 않으면 **다시 생성할 방법이 영구히 없어진다**(B2 가 다루던 바로 그 흔한 경로다). 가드: `test/eventCommandAssist.test.ts`의 「생성 중 재렌더 뒤에도 살아 있는 도크의 생성 버튼이 다시 활성된다」.
   - **실측 도구:** `scripts/event-ai-live-probe.mts` (`emit` / `run` / `score`) + `src/benchmark/eventAi/scenarios.ts` 12 시나리오. 도크 예시 버튼에 박힌 문장을 그대로 쓴다 — 앱이 스스로 권하는 문장이 실패하면 그게 제품 결함이다. 결과는 `reports/event-ai-probe/<run>/REPORT.md`.
   - 가드: `test/e2e/event-ai-dock-defects.spec.ts`(기본 보기 · 생성 중 재렌더), `test/eventCommandAssist.test.ts`(kind 노출 · 좌표 검증). 증거 스크린샷: `test/e2e/_event-ai-adv-shots.spec.ts` → `verify-shots/event-ai-adv/`.
