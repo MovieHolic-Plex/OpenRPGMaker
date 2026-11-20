@@ -1,3 +1,4 @@
+import { canvasSmallTask } from "@/editor/smallTask/capsule";
 // editor/panels/canvasToolPill.ts
 // 캔버스 가운데 위에 뜨는 알약 하나 — 칠하기 · 사각형 · 채우기 · 화면 밀기 | 되돌리기 | 배율.
 //
@@ -159,7 +160,7 @@ export function renderCanvasToolPill(container: HTMLElement): void {
     on: { click: () => { runUndoWithFeedback(); } },
   }) as HTMLButtonElement;
   undo.disabled = !canUndo;
-  container.append(undo, makeZoomControl(state.zoom, zoomMenuWasOpen));
+  container.append(undo, makeZoomControl(state.zoom, zoomMenuWasOpen), canvasSmallTask());
   installDelayedTooltips(container);
   pillRenderMemo.set(container, { key, first: container.firstElementChild });
 }

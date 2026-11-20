@@ -1,5 +1,5 @@
 import type { GameMap, MapId, Project } from "@/project/types";
-import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { mapWithCommittedEvents, projectWithoutEventDrafts, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { hasEventDraftVaultEntries } from "@/project/eventDraftVault";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
@@ -35,10 +35,28 @@ function projectSnapshotSharingTilesets(project: Project): Project {
   return ordered as unknown as Project;
 }
 
+type WorkingEvent = { readonly mapId: string; readonly eventId: string };
+
 type ProjectSnapshot = {
+  readonly workingEvents?: readonly WorkingEvent[];
   readonly kind: "project";
   readonly before: Project;
 };
+
+/** Most history entries own canonical data. An edit from an open event window also owns its working copy. */
+function projectSnapshot(project: Project, workingEvents: readonly WorkingEvent[] = []): ProjectSnapshot {
+  const before = projectSnapshotSharingTilesets(project);
+  for (const { mapId, eventId } of workingEvents) {
+    const event = project.maps[mapId]?.events.find(item => item.id === eventId);
+    if (!event?.draft) continue;
+    // Insert at the live position for a new draft (it has no canonical row yet).
+    const events = before.maps[mapId].events;
+    const index = events.findIndex(item => item.id === eventId);
+    if (index >= 0) events[index] = structuredClone(event);
+    else events.splice(project.maps[mapId].events.indexOf(event), 0, structuredClone(event));
+  }
+  return { kind: "project", before, ...(workingEvents.length ? { workingEvents } : {}) };
+}
 
 type MapSnapshot = {
   readonly kind: "map";
@@ -133,7 +151,7 @@ function makeSnapshotFromCurrent(mapId: string | null | undefined, options?: Map
       };
     }
   }
-  return { kind: "project", before: projectSnapshotSharingTilesets(current) };
+  return projectSnapshot(current);
 }
 
 function historyMapId(mapId: string | null | undefined, options?: MapEditHistoryRecordOptions): string | null | undefined {
@@ -154,7 +172,7 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
       }
       : null;
   }
-  return { kind: "project", before: projectSnapshotSharingTilesets(current) };
+  return projectSnapshot(current, entry.snapshot.workingEvents);
 }
 
 function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Project {
@@ -234,7 +252,7 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
     }, { cells });
     return;
   }
-  store.replace(applySnapshotToProject(current, snapshot));
+  store.replace(applySnapshotToProject(current, snapshot), { adoptWorkingEvents: snapshot.kind === "project" ? snapshot.workingEvents : undefined });
 }
 
 /** replace 가 쓰기 거부로 현재 프로젝트를 그대로 두면 false. 호출자가 스택을 되돌린다. */
@@ -268,7 +286,7 @@ function rebaseHistoryOntoExternalChange(patch: ProjectDocumentPatch): void {
   const rebase = (entry: HistoryEntry): HistoryEntry | null => {
     const snapshot = entry.snapshot;
     if (snapshot.kind === "project") {
-      return { ...entry, snapshot: { kind: "project", before: applyProjectDocumentPatch(snapshot.before, patch) as Project } };
+      return { ...entry, snapshot: { ...snapshot, before: applyProjectDocumentPatch(snapshot.before, patch) as Project } };
     }
     if (patch.set && Object.hasOwn(patch.set, "maps")) return null;
     if (patch.del?.includes("maps") || patch.maps?.del?.includes(snapshot.mapId)) return null;
@@ -304,8 +322,8 @@ function isLargeHistorySnapshot(snapshot: HistorySnapshot): boolean {
   return (sample.width * sample.height) >= 10000 || mapCount > 12;
 }
 
-function pushSnapshot(snapshot: HistorySnapshot, label?: string, mapId?: string | null): void {
-  if (sameAsHistoryTop(snapshot)) return;
+function pushSnapshot(snapshot: HistorySnapshot, label?: string, mapId?: string | null, separateStep = false): void {
+  if (!separateStep && sameAsHistoryTop(snapshot)) return;
   undoStack.push(makeEntry(snapshot, label, mapId));
   trimUndoStack(snapshot);
   redoStack = [];
@@ -339,14 +357,21 @@ export function recordProjectSnapshot(label?: string, mapId?: string | null, opt
 }
 
 /** Commit an already validated project proposal; rejected store writes never alter history. */
-export function applyProjectWithHistory(project: Project, label: string): boolean {
-  const before = projectWithoutEventDrafts(store.getCurrent());
-  if (jsonEqual(before, projectWithoutEventDrafts(project))) return false;
-  store.replace(project, { change: { label }, commitHistory: () => {
+export function applyProjectWithHistory(project: Project, label: string, options: {
+  readonly workingEvent?: WorkingEvent;
+  readonly separateStep?: boolean;
+} = {}): boolean {
+  const workingEvents = options.workingEvent ? [options.workingEvent] : [];
+  const snapshot = projectSnapshot(store.getCurrent(), workingEvents);
+  const next = options.workingEvent ? projectSnapshot(project, workingEvents).before : projectViewWithoutEventDrafts(project);
+  if (jsonEqual(snapshot.before, next)) return false;
+  let applied = false;
+  store.replace(project, { change: { label }, adoptWorkingEvents: workingEvents, commitHistory: () => {
     lastCoalesceKey = null;
-    pushSnapshot({ kind: "project", before }, label);
+    pushSnapshot(snapshot, label, options.workingEvent?.mapId, options.separateStep);
+    applied = true;
   } });
-  return true;
+  return applied;
 }
 
 /**
@@ -662,11 +687,13 @@ export function revertToHistoryMarker(marker: number): boolean {
 export function revertToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= undoStack.length) return false;
   const target = undoStack[index];
-  const project = applyHistorySnapshots(store.getCurrent(), undoStack.slice(index).reverse().map(entry => entry.snapshot));
-  redoStack.push(makeEntry({ kind: "project", before: projectSnapshotSharingTilesets(store.getCurrent()) }, target.label, target.mapId));
+  const snapshots = undoStack.slice(index).reverse().map(entry => entry.snapshot);
+  const workingEvents = snapshots.flatMap(s => s.kind === "project" ? s.workingEvents ?? [] : []);
+  const project = applyHistorySnapshots(store.getCurrent(), snapshots);
+  redoStack.push(makeEntry(projectSnapshot(store.getCurrent(), workingEvents), target.label, target.mapId));
   undoStack = undoStack.slice(0, index);
   lastCoalesceKey = null;
-  store.replace(project);
+  store.replace(project, { adoptWorkingEvents: workingEvents });
   emitHistoryChange();
   return true;
 }
@@ -687,16 +714,18 @@ export function revertToHistoryIndex(index: number): boolean {
 export function redoToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= redoStack.length) return false;
   const target = redoStack[index];
-  const project = applyHistorySnapshots(store.getCurrent(), redoStack.slice(index).reverse().map(entry => entry.snapshot));
+  const snapshots = redoStack.slice(index).reverse().map(entry => entry.snapshot);
+  const workingEvents = snapshots.flatMap(s => s.kind === "project" ? s.workingEvents ?? [] : []);
+  const project = applyHistorySnapshots(store.getCurrent(), snapshots);
   // dedup 을 지나면 되돌릴 대상이 사라지므로 redo 경로 전용 push 를 쓴다(redoMapEdit 과 같다).
   pushSnapshotForRedo(makeEntry(
-    { kind: "project", before: projectSnapshotSharingTilesets(store.getCurrent()) },
+    projectSnapshot(store.getCurrent(), workingEvents),
     target.label,
     target.mapId,
   ));
   redoStack = redoStack.slice(0, index);
   lastCoalesceKey = null;
-  store.replace(project);
+  store.replace(project, { adoptWorkingEvents: workingEvents });
   emitHistoryChange();
   return true;
 }

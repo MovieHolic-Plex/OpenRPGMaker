@@ -1,0 +1,54 @@
+import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
+import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
+import { store } from "@/project/store";
+import type { GameEvent, Project } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
+import { SmallTaskError, type SmallTaskTarget } from "./target";
+
+function withEvent(project: Project, mapId: string, event: GameEvent): Project {
+  const map = project.maps[mapId];
+  const exists = map.events.some(e => e.id === event.id);
+  const events = exists ? map.events.map(e => e.id === event.id ? event : e) : [...map.events, event];
+  return { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
+}
+
+/** The model sees the working event the user sees, without draft metadata or other open drafts. */
+export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
+  const base = projectViewWithoutEventDrafts(live);
+  if (target.kind !== "event") return base;
+  const event = live.maps[target.mapId]?.events.find(e => e.id === target.eventId);
+  return event?.draft ? withEvent(base, target.mapId, eventWithoutDraft(event)) : base;
+}
+
+export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
+  if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
+  if (jsonEqual(before, after)) return null;
+  const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
+  let proposal = after;
+  if (target.kind === "event" && event?.draft) {
+    const edited = after.maps[target.mapId].events.find(e => e.id === event.id);
+    if (!edited) throw new SmallTaskError("편집 중인 이벤트를 찾을 수 없어요.");
+    // A clean editor reflects the new canonical event. Keep unsaved hand edits/new events in their original draft.
+    const clean = event.draft.kind === "edit" && !event.draft.conflict && !eventDraftHasUserChanges(live, target.mapId, event.id);
+    const draft = clean ? { ...event.draft, original: eventWithoutDraft(edited) } : event.draft;
+    proposal = withEvent(after, target.mapId, { ...edited, draft });
+  }
+  const marker = getMapEditHistoryMarker();
+  const lineage = store.getVersionToken().lineage;
+  const applied = applyProjectWithHistory(proposal, `작은 일 · ${target.label}`, {
+    separateStep: true, workingEvent: event?.draft && target.kind === "event" ? target : undefined,
+  });
+  if (!applied) return null;
+  const committed = store.getCurrent();
+  return {
+    async undo(confirmLaterEdits: () => Promise<boolean>): Promise<boolean> {
+      const find = () => store.getVersionToken().lineage === lineage && getMapEditHistoryEntries().find(e => e.at === marker);
+      const entry = find();
+      if (!entry) return false;
+      if (entry.steps === 1 && (committed === store.getCurrent() || jsonEqual(committed, store.getCurrent()))) return undoMapEdit();
+      const version = store.getVersionToken();
+      if (!await confirmLaterEdits() || !find() || !jsonEqual(version, store.getVersionToken())) return false;
+      return revertToHistoryMarker(marker);
+    },
+  };
+}
