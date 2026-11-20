@@ -196,10 +196,10 @@ function editedPage(ctx: PrimitiveContext, args: Args, kind: FlowKind, operation
       ? updateEventCommand(page, path, patch, args.expectedHash as string)
       : insertEventCommand(page, path, { ...newCommand(kind), ...patch } as Command);
   } catch (error) {
-    if (error instanceof EventCommandEditError && error.code !== "invalid-command-edit") {
-      throw new PrimitiveError(error.message);
+    if (error instanceof EventCommandEditError && error.code === "invalid-command-edit") {
+      throw new PrimitiveError("명령 줄의 위치와 내용을 확인해 주세요.");
     }
-    throw new PrimitiveError("명령 줄의 위치와 내용을 확인해 주세요.");
+    throw error;
   }
   const command = listsAt(next.commands, branchPath).at(-1)![index]!;
   if (command.kind === "gotoLabel" && !lists.some(list => firstLabelIndex(list, command.name) >= 0)

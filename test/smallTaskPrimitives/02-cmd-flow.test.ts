@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/02-cmd-flow";
@@ -10,7 +11,9 @@ import { createInterpreter } from "@/player/interpreter";
 import { CUTSCENE_END_LABEL, isCutsceneInputLocked, isCutsceneSkippable } from "@/player/cutsceneControl";
 import { fastForwardAction } from "@/player/cutsceneFastForward";
 import { preloadScriptEngine } from "@/player/script/engine";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { endRoguelikeRun, startRoguelikeRun } from "@/project/roguelikeRun";
 import { scriptSourceHash } from "@/project/script/types";
@@ -27,9 +30,11 @@ const fixtureEvent = "flow-event";
 const fixturePage = "flow-page";
 const neighborPage = "neighbor-page";
 const branchPath = [0, LOOP_BODY_BRANCH_INDEX];
+let blankFixture: Project | undefined;
+
 function setup(commands: Command[], name: FixtureName = "blank") {
-  const fixture = loadFixture(name);
-  const sourceMap = fixture.maps[fixture.startMapId] ?? createBlankProject().maps.map_blank_start!;
+  const fixture = name === "blank" ? (blankFixture ??= loadFixture(name)) : loadFixture(name);
+  const sourceMap = fixture.maps[fixture.startMapId] ?? createBlankMap("빈 맵", 20, 15, DEFAULT_TILESET_ID);
   const page: EventPage = {
     id: fixturePage, name: "흐름", conditions: [], trigger: { kind: "action" }, priority: "same",
     graphic: {}, movement: { type: "fixed", speed: 3, frequency: 3 }, commands,
@@ -49,12 +54,15 @@ function setup(commands: Command[], name: FixtureName = "blank") {
     ...fixture, maps: { ...fixture.maps, [map.id]: map }, startMapId: map.id,
     switches: [...fixture.switches, { id: "flow-sw", name: "문 잠금" }],
     variables: [...fixture.variables, { id: "flow-var", name: "기다릴 시간" }],
+    session: { ...fixture.session, switches: { ...fixture.session.switches }, variables: { ...fixture.session.variables } },
     commonEvents: [
       ...fixture.commonEvents,
       { id: "common-1", name: "여관 회복", trigger: "none" as const, commands: [{ kind: "changeGold", op: "+=", amount: 5 } as const] },
       { id: "common-2", name: "아침 준비", trigger: "none" as const, commands: [] },
     ],
   };
+  // The store expects slots for all definitions when it adopts the frozen baseline for undo.
+  ensureSwitchVariableSlots(project);
   const target = mapTarget(project, map.id, event.id, page.id)!;
   return { project, target };
 }
@@ -130,7 +138,7 @@ describe("흐름 제어 명령", () => {
     expectKoreanSentence(result.sentence, target);
     expect(result.sentence).toMatch(/\.$/u);
     expect(result.sentence).not.toMatch(/[{}]|cmd\.|flow-|callee-|common-/u);
-    const scope = primitive.scope({ project, target }, { ...coreArgs, pageId: neighborPage });
+    const scope = primitive.scope({ project, target }, coreArgs);
     const map = result.after.maps[fixtureMap]!;
     const [event, ...otherEvents] = map.events;
     const [selected, neighbor] = event!.pages!;
@@ -143,6 +151,23 @@ describe("흐름 제어 명령", () => {
     }
     await expectUndoRestores(project, result.after, target);
   }, 300_000); // Building the Maou fixture can be slow on a shared runner.
+
+  it("여러 페이지 중 고른 페이지에만 명령을 넣는다", () => {
+    const { project } = setup([label]);
+    const targetWithoutPage = mapTarget(project, fixtureMap, fixtureEvent)!;
+    const args = { index: 0 };
+    expect(() => runPrimitive(project, targetWithoutPage, "cmd.wait.insert", args)).toThrow(SELECT_EVENT_PAGE);
+
+    const target = mapTarget(project, fixtureMap, fixtureEvent, neighborPage)!;
+    const { after } = runPrimitive(project, target, "cmd.wait.insert", args);
+    const [event, callee] = project.maps[fixtureMap]!.events;
+    const [editedEvent, untouchedCallee] = after.maps[fixtureMap]!.events;
+    expect(editedEvent!.pages![1]!.commands).toEqual([wait]);
+    expect(editedEvent!.pages![0]).toBe(event!.pages![0]);
+    expect(event!.pages![1]!.commands).toEqual([]);
+    expect(untouchedCallee).toBe(callee);
+    expect(after.commonEvents).toBe(project.commonEvents);
+  });
 
   it.each([
     ["fork.insert", { condition: { kind: "all", conditions: [{ kind: "item", itemId: "missing", present: true }] } }, /아이템/u],
@@ -385,8 +410,8 @@ describe("흐름 제어 명령", () => {
       id: "cmd.wait.update", args: { ...args, ...fields },
     });
     const expectedHash = eventCommandHash(wait);
-    await expect(apply({ expectedHash: "오래된 해시" })).rejects.toThrow(/다시 읽은 뒤/u);
-    await expect(apply({ expectedHash, branchPath: [...args.branchPath.slice(0, -1), FORK_ELSE_BRANCH_INDEX] })).rejects.toThrow(/다시 읽은 뒤/u);
+    await expect(apply({ expectedHash: "오래된 해시" })).rejects.toThrow(STALE_COMMAND_LIST);
+    await expect(apply({ expectedHash, branchPath: [...args.branchPath.slice(0, -1), FORK_ELSE_BRANCH_INDEX] })).rejects.toThrow(STALE_COMMAND_LIST);
     await expect(apply({ expectedHash, branchPath: [0, LOOP_BODY_BRANCH_INDEX, 0] })).rejects.toThrow(/분기 위치/u);
     await expect(apply({ expectedHash, index: 1 })).rejects.toThrow(/줄 위치/u);
     await expect(apply({ expectedHash, pageId: neighborPage })).rejects.toThrow(/형식/u);
@@ -430,8 +455,8 @@ describe("흐름 제어 명령", () => {
   it.each([
     { command: { kind: "fork", condition: branch.condition, then: [] }, slot: FORK_ELSE_BRANCH_INDEX, field: "else" },
     { command: { kind: "choices", options: [{ text: "계속", branch: [] }], cancelBehavior: "branch" }, slot: CHOICE_CANCEL_BRANCH_INDEX, field: "cancelBranch" },
-  ] as const)("미생성 $field 분기의 첫 줄을 넣고 되돌린다", async ({ command, slot, field }) => {
-    const initial = structuredClone(command) as Command;
+  ] satisfies { command: Command; slot: number; field: string }[])("미생성 $field 분기의 첫 줄을 넣고 되돌린다", async ({ command, slot, field }) => {
+    const initial = structuredClone(command);
     const { project, target } = setup([initial]);
     const args = { index: 0, branchPath: [0, slot], ms: 750 };
     expect(() => runPrimitive(project, target, "cmd.wait.insert", { ...args, index: 1 })).toThrow(/줄 위치/u);
