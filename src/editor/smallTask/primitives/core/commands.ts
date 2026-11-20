@@ -2,7 +2,7 @@ import { moveCommandBetweenLists } from "@/editor/eventCommandPaths";
 import { deleteEventCommand, eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import type { JsonSchema } from "@/editor/tools/types";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { assertCommandDeletion } from "./commandReferences";
 import { commandListAt, eventName, koreanSentence, scopedPage, updateScopedPage } from "./helpers";
@@ -18,12 +18,12 @@ function scope(ctx: PrimitiveContext): SmallTaskScope {
   return { kind: "eventPage", mapId: map.id, eventId: event.id, pageId: page.id };
 }
 
-type CommandPosition = { index: number; branchPath?: number[]; expectedHash?: string };
+type CommandPosition = { index: number; branchPath?: number[]; expectedHash: string };
 
 export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
   {
     id: "cmd.delete", unit: "00-core", title: "명령 한 줄 삭제", covers: {}, targets: ["event"],
-    args: { type: "object", properties: { index, branchPath, expectedHash }, required: ["index"], additionalProperties: false },
+    args: { type: "object", properties: { index, branchPath, expectedHash }, required: ["index", "expectedHash"], additionalProperties: false },
     scope,
     describe(ctx, args) {
       return koreanSentence(`『${eventName(scopedPage(ctx).event)}』의 ${Number(args.index) + 1}번째 명령을 지웠어요.`);
@@ -32,9 +32,9 @@ export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const { index, branchPath = [], expectedHash } = args as CommandPosition;
       const list = commandListAt(scopedPage(ctx).page, branchPath);
       const command = list[index];
-      if (!command) throw new PrimitiveError("지울 명령을 찾을 수 없어요.");
+      if (!command) throw new PrimitiveError(STALE_COMMAND_LIST);
       const after = updateScopedPage(ctx, page =>
-        deleteEventCommand(page, [...branchPath, index], expectedHash ?? eventCommandHash(command)));
+        deleteEventCommand(page, [...branchPath, index], expectedHash));
       assertCommandDeletion(ctx, after, list, command);
       return after;
     },
@@ -44,7 +44,7 @@ export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
     args: {
       type: "object",
       properties: { index, toIndex: { ...index, description: "이동한 뒤의 줄 위치. 첫 줄은 0." }, branchPath, expectedHash },
-      required: ["index", "toIndex"], additionalProperties: false,
+      required: ["index", "toIndex", "expectedHash"], additionalProperties: false,
     },
     scope,
     describe(ctx, args) {
@@ -55,10 +55,8 @@ export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
       return updateScopedPage(ctx, page => {
         const list = commandListAt(page, branchPath);
         const command = list[index];
-        if (!command || toIndex >= list.length) throw new PrimitiveError("옮길 명령이나 도착 위치를 찾을 수 없어요.");
-        if (expectedHash !== undefined && eventCommandHash(command) !== expectedHash) {
-          throw new PrimitiveError("그 줄의 내용이 바뀌었어요. 다시 읽은 뒤 옮겨 주세요.");
-        }
+        if (!command || eventCommandHash(command) !== expectedHash) throw new PrimitiveError(STALE_COMMAND_LIST);
+        if (toIndex >= list.length) throw new PrimitiveError("옮길 명령의 도착 위치를 찾을 수 없어요.");
         if (index === toIndex) return page;
         // A populated branching row can move as one row. Deleting it would discard its children.
         const edited = { ...page, commands: structuredClone(page.commands) };

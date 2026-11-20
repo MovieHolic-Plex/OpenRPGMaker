@@ -6,7 +6,8 @@ import type { Project } from "@/project/types";
 import type { SmallTaskTarget } from "../target";
 
 export interface PrimitiveContext {
-  readonly project: Project;
+  /** Baseline for comparisons. Copy each path you edit before writing to it. */
+  readonly project: Readonly<Project>;
   /** Host snapshot for reference checks, including events still open in the editor. */
   readonly live?: SmallTaskDraftSource;
   readonly target: SmallTaskTarget;
