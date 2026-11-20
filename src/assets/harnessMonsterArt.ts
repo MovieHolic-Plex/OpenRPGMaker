@@ -9,7 +9,7 @@
 //
 // 리소스 id: `harness-monster-<하네스종>-<front|back>`. 파일: `/assets/harnesses/monster-collect-species/<종>/<front|back>.png`(112×112),
 // 대기 스트립 `<종>/anim/<면>-idle.png`(112×N 가로) — `battlerIdleAnimation()` 이 image-strip 으로 읽는다.
-import bundle from "./harnessMonsterBundle.json";
+import bundle from "./harnessMonsterBundle.json" with { type: "json" };
 import type { BattlerIdleAnimation } from "./battlerIdleAnimations";
 import { charsetFrameIndex, type EasyRpgCharsetAsset } from "./easyrpgRtp";
 import type { EventPageGraphic } from "@/project/types";

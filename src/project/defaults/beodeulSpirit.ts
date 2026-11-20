@@ -1,4 +1,4 @@
-import catalog from '../../assets/beodeulSpiritCatalog.json';
+import catalog from '../../assets/beodeulSpiritCatalog.json' with { type: "json" };
 import type {TilesetDef,StructureKitDef,PassFlag} from '../types';
 import {translateTiles} from '../objectStamp';
 

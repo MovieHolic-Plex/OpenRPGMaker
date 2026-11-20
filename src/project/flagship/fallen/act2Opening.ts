@@ -27,7 +27,7 @@ import { applyFallenWellBeast, wellBeastHanelLine } from "./wellBeast";
 import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
-import act2TitleCard from "./backdrops/act2-title.json";
+import act2TitleCard from "./backdrops/act2-title.json" with { type: "json" };
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */

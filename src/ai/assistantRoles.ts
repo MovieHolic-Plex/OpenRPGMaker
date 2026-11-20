@@ -11,7 +11,7 @@
 // - 채울 수 없는 역할은 빈칸이 아니라 «무엇으로 물러나는지»를 말한다: 잔일·도트 → 주 모델, 검토자 → 꺼짐, 눈 → 그림 검사 없음.
 // - 사용자가 직접 고른 칸(overrides)이 자동 배정을 이긴다. 그 계정이 연결돼 있지 않으면 쓰지 않고 이유를 말한다.
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "./imageModelCatalog";
-import matrix from "./assistantRoleMatrix.json";
+import matrix from "./assistantRoleMatrix.json" with { type: "json" };
 import type { AiConfig } from "./llmClient";
 import { modelForRole, type RoleModel, type ThinkingEffort } from "./modelRoles";
 import { openAiCompatBaseModelId, openAiCompatModelSeesImages } from "./openAiCompat";

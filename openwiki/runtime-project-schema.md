@@ -1437,6 +1437,7 @@ already persist through the existing session/save contract; no schema version ch
 - 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고를 반환한 뒤 현재 `breakLoop` 명령을 한 칸 넘긴다. 같은 명령을 재실행해 instruction budget을 소진하지 않는다. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
 
 ## Canonical event-draft projection (2026-07-30)
+- 새 조건 분기는 `then: []`으로 시작한다. 그 외 분기가 켜져 있으면 `else: []`도 저장할 수 있다. 빈 분기의 추가 버튼은 목록 UI이며, 기존 프로젝트에 저장된 빈 문장도 로드에서 보존한다.
 - Open editor drafts may live inside the in-memory `Project`, but they are never canonical authored output. `committedEvents()` excludes `draft.kind:"new"` and projects `draft.original` for edit drafts; `projectWithoutEventDrafts()` applies this to every map. Autosave, LegacyDb writes, package/web export, edit-history project snapshots, and any canonical serialization boundary must use that projection.
 - Editor-only map/list/marker/drag surfaces use `editorWorkingEvents()` so new and edited events do not disappear while their canonical projection is hidden. Runtime/project consumers must not switch to this working projection.
 - `eventDraftVault.ts` stores project-scoped local recovery copies and reapplies live drafts over incoming remote/replace snapshots. Apply/OK remove draft metadata before canonical persistence; Cancel forgets the vault row and restores the original/removes the new event. The vault is recovery state, not a second authored source of truth and not evidence of a successful remote save.

@@ -276,6 +276,18 @@ export async function readAllAiRecords<T extends AiRecordRow>(store: AiRecordSto
   return rows;
 }
 
+/** Read checkpoint keys without pulling old project snapshots into the renderer. */
+export async function readRunCheckpointIds(conversationId: string): Promise<readonly IDBValidKey[]> {
+  const store = AI_RECORD_STORES.runCheckpoints;
+  const db = await openDatabase();
+  if (!db) return Array.from(memoryStore(store)).flatMap(([id, row]) =>
+    (row as { conversationId?: string } | null)?.conversationId === conversationId ? [id] : []);
+  const transaction = db.transaction(store, "readonly");
+  const request = transaction.objectStore(store).index("conversationId").getAllKeys(conversationId);
+  const [keys] = await Promise.all([requestToPromise(request), transactionDone(transaction)]);
+  return keys;
+}
+
 export async function readAiRecord<T extends AiRecordRow>(store: AiRecordStoreName, id: string): Promise<T | null> {
   const db = await openDatabase();
   if (!db) return (memoryStore(store).get(id) as T | undefined) ?? null;

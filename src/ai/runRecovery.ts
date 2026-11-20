@@ -1,5 +1,8 @@
 import type { Project } from "@/project/types";
-import { deserialize, serializeForComparison } from "@/project/io";
+import { deserializeParsed } from "@/project/io";
+import { BUNDLED_TILESET_DIFF, withLazyBundledTilesets } from "@/project/bundledTilesetDiff";
+import { jsonContentDigest, withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
+import { assertCheckpointData, checkpointProjectView, isCheckpointProject, type CheckpointProject } from "./checkpointPayload";
 import { acceptanceRecord, parseAcceptanceCriteriaResult } from "./assistantAcceptance";
 import { verificationInput } from "./toolVerificationEvidence";
 import type { AcceptanceRecoveryState } from "./assistantAcceptanceLedger";
@@ -15,18 +18,20 @@ import type { RunOutcome } from "./runOutcome";
 
 /** The existing session's goal/authoring state. No messages, functions, review or image capabilities. */
 export interface RunRuntimeState {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 2;
   readonly instruction: string;
   readonly requestText: string;
   readonly composerMode: ComposerMode;
   readonly autonomous: boolean;
   readonly execution: RunOutcome["execution"];
+  /** An event editor draft stays owned by its original dock. */
+  readonly eventEditor?: true;
   /**
    * 이 요청의 원본 기준선. 수락 원장이 있으면 같은 프로젝트를 원장이 이미 보관하므로
    * 생략하고 그쪽을 쓴다 — 한 행에 같은 프로젝트를 두 벌 실으면 쓰기마다 그만큼 복제·검증한다.
    */
-  readonly requestBaseline?: Project;
-  readonly acceptance: AcceptanceRecoveryState | null;
+  readonly requestBaseline?: CheckpointProject;
+  readonly acceptance: AcceptanceRecoveryState<CheckpointProject> | null;
   readonly verification: VerificationRecoveryState;
   readonly verificationOwnerSequence: number;
   readonly verificationOwners: readonly (readonly [string, string, readonly string[]])[];
@@ -62,27 +67,18 @@ function source(value: unknown): boolean {
   const region = value.scope.region;
   return [region.x, region.y, region.width, region.height].every(count) && Number(region.width) > 0 && Number(region.height) > 0;
 }
-/** JSON is a system boundary; malformed contracts never reach a live session. */
+/** Validate the stored wire shape. Full project validation happens on recovery. */
 export function isRunRuntimeState(value: unknown): value is RunRuntimeState {
-  // Different ledger owners can retain byte-identical original projects. Validate each
-  // distinct payload once in this call only; a later read or mutation is always revalidated.
-  const projects = new Set<string>();
-  function project(value: unknown): boolean {
-    try {
-      const raw = JSON.stringify(value);
-      if (!projects.has(raw)) { deserialize(raw); projects.add(raw); }
-      return true;
-    } catch { return false; }
-  }
   function promise(value: unknown): boolean {
-    return acceptanceRecord(value) && text(value.id) && typeof value.title === "string" && project(value.baseline)
+    return acceptanceRecord(value) && text(value.id) && typeof value.title === "string" && isCheckpointProject(value.baseline)
       && (value.criteria === null || parseAcceptanceCriteriaResult(value.criteria).criteria !== null)
       && (value.required === undefined || typeof value.required === "boolean");
   }
-  if (!acceptanceRecord(value) || value.schemaVersion !== 1 || !text(value.instruction) || !text(value.requestText)
+  if (!acceptanceRecord(value) || value.schemaVersion !== 2 || !text(value.instruction) || !text(value.requestText)
     || !["do", "ask", "plan"].includes(String(value.composerMode)) || typeof value.autonomous !== "boolean"
     || !["response-final", "awaiting-user", "blocked", "cancelled", "budget-exhausted", "failed"].includes(String(value.execution))
-    || !(value.requestBaseline === undefined ? value.acceptance !== null : project(value.requestBaseline))
+    || (value.eventEditor !== undefined && value.eventEditor !== true)
+    || !(value.requestBaseline === undefined ? value.acceptance !== null : isCheckpointProject(value.requestBaseline))
     || typeof value.statefulNpcRequirement !== "boolean"
     || ![value.verificationOwnerSequence, value.currentTurnIndex, value.volumeContinueUsed, value.acceptanceRepairAttempts, value.reviewAttempts, value.roundLimit, value.outputLimit].every(count)
     || !pairs(value.npcRewardItemBaselines) || !pairs(value.lastBlockReasons)) return false;
@@ -90,7 +86,7 @@ export function isRunRuntimeState(value: unknown): value is RunRuntimeState {
     && entry.length === 3 && text(entry[0]) && text(entry[1]) && Array.isArray(entry[2]) && entry[2].every(text))) return false;
   const acceptance = value.acceptance;
   if (acceptance !== null && (!acceptanceRecord(acceptance) || acceptance.schemaVersion !== 1 || !text(acceptance.id)
-    || typeof acceptance.goal !== "string" || !project(acceptance.baseline) || typeof acceptance.stopped !== "boolean"
+    || typeof acceptance.goal !== "string" || !isCheckpointProject(acceptance.baseline) || typeof acceptance.stopped !== "boolean"
     || !pairs(acceptance.bindings) || !Array.isArray(acceptance.actionRequirements) || !acceptance.actionRequirements.every(promise)
     || !Array.isArray(acceptance.promises) || !acceptance.promises.every(entry => promise(entry) && acceptanceRecord(entry) && source(entry.source)
       && (entry.refinements === undefined || Array.isArray(entry.refinements) && entry.refinements.every(source))
@@ -123,9 +119,44 @@ export function isRunRuntimeState(value: unknown): value is RunRuntimeState {
     && [entry.authoredMaps, entry.multiPageNpcs, entry.shops, entry.quests].every(count));
 }
 
-/** Same normalized content comparator as persistence. Synchronous to snapshot before reentrant observers. */
+/** Compare authored wire values, ignoring object key order. Keep this synchronous at apply boundaries. */
 export function checkpointContentIdentity(project: Project): string {
-  return serializeForComparison(project);
+  const wire = checkpointProjectView(project);
+  assertCheckpointData(wire);
+  // The diff's key order is for restoring the wire representation, not authored content.
+  const tilesets = Object.fromEntries(Object.entries(wire.tilesets).map(([id, value]) => {
+    const tileset = value as Record<string, unknown>;
+    const diff = tileset[BUNDLED_TILESET_DIFF] as { keys: string[]; del?: string[] } | undefined;
+    return [id, diff ? { ...tileset, [BUNDLED_TILESET_DIFF]: {
+      ...diff, keys: [...diff.keys].sort(), del: diff.del && [...diff.del].sort(),
+    } } : tileset];
+  }));
+  return withContentDigestEpoch(() => jsonContentDigest({ ...wire, tilesets })!);
+}
+
+/** Decode and validate each owned baseline before installing any recovery state. */
+export function restoreCheckpointBaselines(state: RunRuntimeState): {
+  requestBaseline: Project; acceptance: AcceptanceRecoveryState | null;
+} {
+  assertCheckpointData(state);
+  const saved = structuredClone(state);
+  const projects = new Map<CheckpointProject, Project>();
+  const decode = (wire: CheckpointProject): Project => {
+    const prior = projects.get(wire);
+    if (prior) return prior;
+    const project = withLazyBundledTilesets(new Set(), () => deserializeParsed(wire));
+    projects.set(wire, project);
+    return project;
+  };
+  const acceptance = saved.acceptance;
+  return {
+    requestBaseline: decode(saved.requestBaseline ?? acceptance!.baseline),
+    acceptance: acceptance && {
+      ...acceptance, baseline: decode(acceptance.baseline),
+      promises: acceptance.promises.map(promise => ({ ...promise, baseline: decode(promise.baseline) })),
+      actionRequirements: acceptance.actionRequirements.map(requirement => ({ ...requirement, baseline: decode(requirement.baseline) })),
+    },
+  };
 }
 
 export type RunRecovery =
@@ -141,27 +172,21 @@ export function reconcileRunCheckpoint(read: RunCheckpointRead, project: Project
   const checkpoint = read.checkpoint;
   if (!checkpoint.runtime || !isRunRuntimeState(checkpoint.runtime)) return { kind: "unsupported", reason: "no-runtime-state", next: "open-transcript" };
   const reconcile = (reason: string): RunRecovery => ({ kind: "needs-reconciliation", reason, next: "inspect-current-project", checkpoint });
-  let identity: string;
-  try { identity = checkpointContentIdentity(project); }
-  catch { return { kind: "unsupported", reason: "malformed-project", next: "open-transcript" }; }
   if (checkpoint.status === "terminal" || checkpoint.status === "awaiting-user"
     || checkpoint.runtime.execution === "cancelled" || checkpoint.runtime.execution === "awaiting-user") {
     return { kind: "terminal", reason: checkpoint.runtime.execution, next: "new-request", checkpoint };
   }
   const pending = checkpoint.pending;
+  if (checkpoint.runtime.eventEditor) return reconcile("event-editor-draft");
   if (checkpoint.runtime.composerMode === "ask") return reconcile("question-mode");
-  if (pending?.proposal) {
-    try {
-      // 바이트가 실린 경우(적용 대기)에만 자기 정합성을 검사한다. proposal-ready 는 바이트를
-      // 싣지 않으므로 신원 두 개의 관계만 본다.
-      if (pending.proposal.project !== undefined
-        && pending.proposal.contentIdentity !== checkpointContentIdentity(pending.proposal.project)) return reconcile("ambiguous-proposal");
-      if (pending.proposal.contentIdentity === pending.proposal.baseContentIdentity) return reconcile("ambiguous-proposal");
-    } catch { return { kind: "unsupported", reason: "malformed-proposal", next: "open-transcript" }; }
-  }
+  if (pending?.stage === "proposal-ready") return reconcile("unapplied-proposal");
   if (pending?.stage === "saving" || pending?.stage === "proving") return reconcile("save-or-proof-unconfirmed");
+  let identity: string;
+  try { identity = checkpointContentIdentity(project); }
+  catch { return { kind: "unsupported", reason: "malformed-project", next: "open-transcript" }; }
   if (pending?.proposal) {
     if (pending.stage !== "applying") return reconcile("unapplied-proposal");
+    if (pending.proposal.contentIdentity === pending.proposal.baseContentIdentity) return reconcile("ambiguous-proposal");
     if (identity !== pending.proposal.contentIdentity) return reconcile("apply-unconfirmed");
     // This closes the synchronous mutation -> asynchronous IDB receipt gap without executing its tools.
     return { kind: "resumable", reason: "prepared-content-present", next: "continue", checkpoint };

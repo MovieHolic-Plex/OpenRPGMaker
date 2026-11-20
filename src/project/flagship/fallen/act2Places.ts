@@ -12,7 +12,7 @@
  *
  * 아래 칸은 모두 장소 원본 좌표다(가져올 때 칸이 바뀌지 않는다). 걷기 칸·닿음은 짓는 쪽(act2Opening.ts)이 canMove BFS 로 다시 확인한다.
  */
-import wavePlaces from "@/project/regionReferences/beodeul-wave-places.json";
+import wavePlaces from "@/project/regionReferences/beodeul-wave-places.json" with { type: "json" };
 import { primeRegionReferenceSnapshot } from "@/project/regionReferenceSnapshots";
 
 type Cell = { x: number; y: number };

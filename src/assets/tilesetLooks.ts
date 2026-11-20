@@ -7,7 +7,7 @@
 //   · 번들 표가 자라면 이미 고른 게임도 새 칸까지 같은 겉모습으로 그려진다.
 // 표·그림판은 scripts/content/beodeul-looks/bake.py 가 굽는다(버들항 시트가 풀밭·길·광장 재질을 «같은 자리 같은 화소» 로 되풀이해 그린 덕에
 // 재질 화소만 바꾼 칸을 코드로 만들 수 있다). 고르기는 project/tilesetLook.ts.
-import beodeulLooks from "./beodeulLooks.json";
+import beodeulLooks from "./beodeulLooks.json" with { type: "json" };
 import { tilesetStandTableFor } from "./tilesetStands";
 import { dungeonSkinLooks } from "./dungeonSkins";
 import { reliefStyleForGround } from "@/project/relief/styles";
