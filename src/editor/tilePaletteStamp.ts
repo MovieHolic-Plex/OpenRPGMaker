@@ -11,6 +11,8 @@ export type PaletteStampCell = {
 };
 
 export type PaletteStamp = {
+  /** Clicked cell relative to the artwork's top left. Omitted stamps use the top-left cell. */
+  readonly anchor?: { readonly dx: number; readonly dy: number };
   readonly cells: readonly PaletteStampCell[];
   readonly height: number;
   /** 등록된 구조 킷("내 스탬프")에서 온 스탬프면 그 킷 id — 팔레트 선반 하이라이트용. */
@@ -31,6 +33,10 @@ export type PaletteStamp = {
   };
   readonly width: number;
 };
+
+export function paletteStampOrigin(stamp: PaletteStamp, x: number, y: number): { x: number; y: number } {
+  return { x: x - (stamp.anchor?.dx ?? 0), y: y - (stamp.anchor?.dy ?? 0) };
+}
 
 export type PaletteStampDragInput = {
   readonly endTile: number;

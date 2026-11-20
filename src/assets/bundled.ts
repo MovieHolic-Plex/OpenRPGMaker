@@ -15,6 +15,7 @@ import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
 import beodeulOrganicCatalog from './beodeulOrganicCatalog.json';
+import { BEODEUL_OBJECT_IMAGE_ASSETS, beodeulPlaceableObjectForTexture } from "./beodeulPlaceableObjects";
 import beodeulSpiritCatalog from './beodeulSpiritCatalog.json';
 import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
 import beodeulMassingCatalog from './beodeulMassingCatalog.json';
@@ -140,6 +141,7 @@ export const FOREST_FANTASY_TOWN_TEXTURE_KEY = "tex_forest_harmony_fantasy_town"
 // 버들항 겉모습 그림판(2026-11-12) — 타일셋이 아니라 «게임마다 고른 겉모습» 이 겹쳐 그리는 그림만 든 시트다(assets/tilesetLooks.ts,
 // 굽기 scripts/content/beodeul-looks/bake.py). 겉모습을 고른 프로젝트만 싣는다(tileset.look.textureKey 문자열로 찾는다).
 export const BUNDLED_REFERENCE_CHIPSET_ASSETS: readonly BundledImageAsset[] = [
+  ...BEODEUL_OBJECT_IMAGE_ASSETS,
   {textureKey:"tex_beodeul_looks",path:"assets/beodeul-looks/chipset.png",name:"버들항 · 게임마다 다른 겉모습(바닥·길·광장 재질, 나무 수종)"},
   // 버들항 집 벌 그림판(2026-11-13) — 집 벌을 고른 게임의 집 칸이 이식 원본으로 가리킨다(assets/houseSets.ts, 굽기 scripts/content/beodeul-houses/bake.py).
   {textureKey:"tex_beodeul_houses",path:"assets/beodeul-houses/chipset.png",name:"버들항 · 게임마다 다른 집 벌"},
@@ -238,6 +240,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
 
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
+  const object = beodeulPlaceableObjectForTexture(key);
+  if (object) return object.widthTiles * object.heightTiles;
   if (key === "tex_atlas_cartography") return 136;
   if (key === 'tex_beodeul_warm_trees') return beodeulWarmTreesCatalog.count;
   if (key === "tex_beodeul_door") return 16;

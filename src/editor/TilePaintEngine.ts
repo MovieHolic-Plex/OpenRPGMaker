@@ -19,8 +19,10 @@ import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, toastMapEditLockNotice } from "@/editor/mapEditLocks";
 import { appendCellCountToLatestMapEdit, getMapEditHistoryMarker, recordMapEditIfChanged } from "@/editor/mapEditHistory";
 import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
-import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import { paletteStampOrigin, type PaletteStamp } from "@/editor/tilePaletteStamp";
+import { beodeulPlaceableObjectForKit } from "@/assets/beodeulPlaceableObjects";
 import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
+import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { store } from "@/project/store";
 import { stairApproachProblem } from "@/project/stairs/placement";
 import type { MapId, TilesetDef } from "@/project/types";
@@ -191,7 +193,21 @@ export class TilePaintEngine {
             // hard 를 어기면 **칠하지 않는다**. 예전에는 조건이 산문뿐이라 아무 일도 일어나지 않았고,
             // 「화덕은 북벽에 붙는다」 같은 말이 지켜지는지 확인할 방법이 없었다.
             // 토스트는 스트로크 첫 타일에서만 — 드래그로 같은 말을 수십 번 띄우지 않는다.
-            const conditions = checkKitStampConditions(mid, activePaletteStamp, x, y);
+            const origin = paletteStampOrigin(activePaletteStamp, x, y);
+            const kitId = activePaletteStamp.kitId;
+            if (comboMap && kitId && beodeulPlaceableObjectForKit(kitId)?.surface === "water") {
+              const tileset = store.getCurrent().tilesets[comboMap.tilesetId];
+              const kit = tileset?.structureKits?.find(candidate => candidate.id === kitId);
+              const placementProblem = kit && tileset ? checkKitPlacement(comboMap, tileset, kitId, kit, origin.x, origin.y) : null;
+              if (placementProblem) {
+                if (!this.placementNoticeShown) {
+                  this.placementNoticeShown = true;
+                  toast(placementProblem, "error");
+                }
+                return;
+              }
+            }
+            const conditions = checkKitStampConditions(mid, activePaletteStamp, origin.x, origin.y);
             if (conditions && conditions.verdict.blocked.length > 0) {
               // 스트로크 첫 타일이 아니라 **첫 거부**에서 알린다. 유효한 자리에서 드래그를 시작해
               // 안 되는 자리로 넘어가면 예전 규칙(firstStrokeTile)에서는 아무 말도 없이 칠이 멈춰,
@@ -214,12 +230,12 @@ export class TilePaintEngine {
             if (firstStrokeTile && activePaletteStamp.kitId && !this.placementNoticeShown && comboMap) {
               const ts = store.getCurrent().tilesets[comboMap.tilesetId];
               const kit = ts?.structureKits?.find((k) => k.id === activePaletteStamp.kitId);
-              const stairProblem = ts && kit ? stairApproachProblem(comboMap, ts, kit, x, y) : null;
+              const stairProblem = ts && kit ? stairApproachProblem(comboMap, ts, kit, origin.x, origin.y) : null;
               if (stairProblem) { this.placementNoticeShown = true; toast(stairProblem, "info"); }
             }
             // 구조물 배치 기록은 **스트로크의 첫 타일에서 한 번만** — 드래그로 배치가 수십 개 생기는 것을 막는다.
             // 구조물 킷이 아닌 스탬프(일반 드래그 선택·실내 오브젝트)는 beginKitStampCapture 가 null 을 준다.
-            const capture = firstStrokeTile ? beginKitStampCapture(mid, activePaletteStamp, x, y) : null;
+            const capture = firstStrokeTile ? beginKitStampCapture(mid, activePaletteStamp, origin.x, origin.y) : null;
             applyPaletteStamp({
               autoConnect: autoConnectMode,
               bounds: comboMap ? { height: comboMap.height, width: comboMap.width } : null,
@@ -623,12 +639,13 @@ function applyPaletteStamp(input: {
   // 스탬프 밖 이웃의 상위 레이어를 덮어쓰던 문제 차단 + 의도한 배열 보존.
   // 1칸 스탬프는 지형 오토타일(흙길/모래 등)이 기대대로 성형되도록 autoConnect 를 존중한다.
   const single = !isComboBrush(input.stamp);
+  const origin = paletteStampOrigin(input.stamp, input.x, input.y);
   // 칸 좌표는 호버 미리보기와 **같은** comboBrushPlacement 에서 온다 — 두 번째 경계 계산 금지.
   // bounds 가 없으면(맵 조회 실패) 예전처럼 전량을 넘기고 paintTilesBulk 의 inMap 이 막는다.
   const cells = input.bounds
     ? comboBrushPlacement({ bounds: input.bounds, stamp: input.stamp, x: input.x, y: input.y })
       .paintableCells.map((placed) => ({ layer: placed.cell.layer, tile: placed.cell.tile, x: placed.x, y: placed.y }))
-    : input.stamp.cells.map((cell) => ({ layer: cell.layer, tile: cell.tile, x: input.x + cell.dx, y: input.y + cell.dy }));
+    : input.stamp.cells.map((cell) => ({ layer: cell.layer, tile: cell.tile, x: origin.x + cell.dx, y: origin.y + cell.dy }));
   paintTilesBulk(
     input.mapId,
     cells.map((cell) => ({

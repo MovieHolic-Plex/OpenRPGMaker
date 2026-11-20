@@ -3,6 +3,7 @@
 //
 // 왜: 사용자 지적 — 물레방아·배·잔교·다리는 「물 위에만 건설 가능」 같은 규칙이 있어야 하고 AI 가 반드시 따라야 한다.
 // 판정은 찍을 맵의 1층 칸 그림 뜻(tileMeta.tags 의 water / 이름의 「얼음」)으로 한다. 2층 덧그림(물가 둑)은 보지 않는다.
+import { beodeulPlaceableObjectForKit } from "@/assets/beodeulPlaceableObjects";
 import { stairApproachProblem } from "./stairs/placement";
 import type { GameMap, StructureKitDef, TilesetDef } from "./types";
 import { reliefLevel, rampAt } from "./relief/walk";
@@ -19,7 +20,7 @@ interface CellRule {
 }
 export interface KitPlacementRule { rules: readonly CellRule[]; why: string }
 
-const WATER_ALL: KitPlacementRule = { rules: [{ cells: "all", on: "water" }], why: "배·물새·수련은 물 위에만 놓는다(둘레가 뭍이면 안 된다)." };
+const WATER_ALL: KitPlacementRule = { rules: [{ cells: "all", on: "water" }], why: "그림이 있는 칸이 모두 물 위에 있어야 한다." };
 const BRIDGE: KitPlacementRule = {
   rules: [{ cells: "deck", on: "water", atLeast: 0.5 }],
   why: "다리는 물을 건너야 한다 — 다리 바닥(가운데 줄)의 절반 이상이 물 위여야 한다. 물이 없는 곳에 다리를 놓지 않는다.",
@@ -95,7 +96,7 @@ export function checkKitPlacement(map: GameMap, ts: TilesetDef, kitId: string, k
   // 계단 입구 계약(project/stairs): 들어서는 앞 칸이 바닥으로 열려 있어야 한다.
   const stair = stairApproachProblem(map, ts, { id: kitId, name: kit.name }, x, y);
   if (stair) return stair;
-  const rule = KIT_PLACEMENT_RULES[kitId];
+  const rule = KIT_PLACEMENT_RULES[kitId] ?? (beodeulPlaceableObjectForKit(kitId)?.surface === "water" ? WATER_ALL : undefined);
   if (rule) {
     for (const r of rule.rules) {
       const cells = ruleCells(kit, r.cells);
