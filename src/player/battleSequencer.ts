@@ -22,6 +22,7 @@ import {
   directorStateAfterTurn,
   enemyActionDirectorState,
   introDirectorState,
+  passTurnDirectorState,
   sendOutDirectorState,
   type BattleDirectorState,
   resultDirectorState,
@@ -1174,6 +1175,7 @@ export function createBattleSequencer(
     if (entry.commandKind === "defend") {
       return { step: "acting", lines: [`${withJosa(name, "은/는")} 몸을 웅크려 방어했다!`], targetId: entry.targetId };
     }
+    if (entry.commandKind === "pass") return passTurnDirectorState(user);
     if (entry.commandKind === "switch") {
       return { step: "acting", lines: ["전열을 교체했다."], targetId: entry.targetId };
     }
