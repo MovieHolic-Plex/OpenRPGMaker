@@ -9,12 +9,21 @@ const specCategories = {
   prop: "prop", indoor: "furniture", nature: "nature", structure: "building",
 } as const satisfies Record<(typeof BEODEUL_PLACEABLE_OBJECTS)[number]["category"], ObjectSpecCategory>;
 
-function sourceKits(target: TilesetDef) {
+type PlaceableCatalog = "current" | "pre-ingest";
+
+// The compact saves from before this ingest still reference the first 129 objects and the 2×2 crate.
+const preIngestObjects = BEODEUL_PLACEABLE_OBJECTS.slice(0, 129).map(object => object.id !== "crate_stack" ? object : {
+  ...object, sourceFile: "crate_stack_v3.png", widthPx: 32, widthTiles: 2,
+  footprint: ["**", "XX"], tags: ["harbor", "market", "창고"],
+});
+
+function sourceKits(target: TilesetDef, catalog: PlaceableCatalog) {
   const passability: TilesetDef["passability"] = [];
   const priority: TilesetDef["priority"] = [];
   const tileMeta: NonNullable<TilesetDef["tileMeta"]> = [];
   const tileGrafts: NonNullable<TilesetDef["tileGrafts"]> = [];
-  const kits = BEODEUL_PLACEABLE_OBJECTS.map((object, index): SectionStructureKitDef => {
+  const objects = catalog === "pre-ingest" ? preIngestObjects : BEODEUL_PLACEABLE_OBJECTS;
+  const kits = objects.map((object, index): SectionStructureKitDef => {
     const { widthTiles: width, heightTiles: height, footprint, set, growthAxis, surface } = object;
     const id = BEODEUL_OBJECT_KIT_PREFIX + object.id;
     const description = object.nameKo;
@@ -74,10 +83,28 @@ function sourceKits(target: TilesetDef) {
   return { source, kits };
 }
 
+/** The 2-column crate used source frames 2 and 3 for its bottom row. Keep their painted slots. */
+export function upgradeBeodeulCrateStackGrafts(tileset: TilesetDef): boolean {
+  const grafts = tileset.tileGrafts;
+  if (!grafts?.some(graft => graft.sourceChipset === "tex_beodeul_object_crate_stack")) return false;
+  const legacyKit = tileset.structureKits?.find(kit => kit.id === BEODEUL_OBJECT_KIT_PREFIX + "crate_stack");
+  const legacyRow = legacyKit?.kind === "section" && legacyKit.width === 2 ? legacyKit.rows[1]?.upperTiles : undefined;
+  let changed = false;
+  for (const [index, graft] of grafts.entries()) {
+    if (graft.sourceChipset !== "tex_beodeul_object_crate_stack" || (graft.sourceTile !== 2 && graft.sourceTile !== 3)) continue;
+    const column = graft.sourceTile - 2;
+    // Cross-tileset stamps carry the source tile label even when they do not carry the kit.
+    if (legacyRow?.[column] !== graft.targetTile && tileset.tileMeta?.[graft.targetTile]?.label !== `나무 상자 더미 (${column},1)`) continue;
+    grafts[index] = { ...graft, sourceTile: graft.sourceTile + 1 };
+    changed = true;
+  }
+  return changed;
+}
+
 /** Add the bundled kits using the existing graft path, preserving the numbers on maps already painted. */
-export function ensureBeodeulPlaceableObjects(tileset: TilesetDef): boolean {
+export function ensureBeodeulPlaceableObjects(tileset: TilesetDef, catalog: PlaceableCatalog = "current"): boolean {
   if (tileset.tileSize !== BEODEUL_OBJECT_TILE_SIZE) return false;
-  const { source, kits } = sourceKits(tileset);
+  const { source, kits } = sourceKits(tileset, catalog);
   const { map, slotsAdded } = translateTiles(source, tileset, source.passability.keys());
   const registered = tileset.structureKits ??= [];
   const indexes = new Map(registered.map((kit, index) => [kit.id, index]));

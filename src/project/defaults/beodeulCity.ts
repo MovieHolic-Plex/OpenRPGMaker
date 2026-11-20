@@ -129,9 +129,9 @@ export function beodeulCityBundledReferenceDocuments(): TilesetReferenceCategory
 }
 
 /** Independent copy of the shipped tileset, born with its reference documents. */
-export function createBeodeulCityTileset(): TilesetDef {
+export function createBeodeulCityTileset(placeables: "current" | "pre-ingest" = "current"): TilesetDef {
   const tileset = createBeodeulCityBase();
-  ensureBeodeulPlaceableObjects(tileset);
+  ensureBeodeulPlaceableObjects(tileset, placeables);
   return tileset;
 }
 
