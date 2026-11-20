@@ -66,7 +66,7 @@ export function resolveEventPage(
   if (!event.pages || event.pages.length === 0) return undefined;
   for (let index = event.pages.length - 1; index >= 0; index--) {
     const page = event.pages[index];
-    if (page.conditions.every((condition) => evalPageCondition(condition, session, event, context))) {
+    if (page.conditions.every((condition) => evalPageCondition(condition, session, event, context, page.graphic?.direction))) {
       return page;
     }
   }
@@ -77,7 +77,8 @@ function evalPageCondition(
   condition: EventPageCondition,
   session: EventPageSession,
   event: GameEvent,
-  context?: EventPageLocationContext
+  context: EventPageLocationContext | undefined,
+  pageDirection: Dir | undefined,
 ): boolean {
   switch (condition.kind) {
     case "switch":
@@ -143,17 +144,41 @@ function evalPageCondition(
     case "endingSeen":
     case "newGamePlus":
     case "weekday":
-    case "stringVariable":
-      return evalActorQueryCondition(pageQuerySession(session), condition, { eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}), ...(context?.mapEvents ? { mapEvents: context.mapEvents } : {}), ambient: () => (session as { lighting?: { ambient?: number } }).lighting?.ambient, locations: () => context?.locations });
+    case "stringVariable": {
+      const runtimePosition = context?.eventPosition;
+      const eventPosition: ActorQueryOptions["eventPosition"] = runtimePosition && condition.kind === "eventSeesPlayer"
+        ? (id, usePageDirection) => {
+          // A page that checks its own sight uses the facing it would have if selected.
+          const ownSight = usePageDirection && id === event.id;
+          const point = runtimePosition(id, usePageDirection && !ownSight);
+          return ownSight && point && point.direction === undefined && pageDirection !== undefined
+            ? { ...point, direction: pageDirection }
+            : point;
+        }
+        : runtimePosition;
+      const options: ActorQueryOptions = {
+        ...context?.calendar,
+        ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}),
+        ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}),
+        ...(eventPosition ? { eventPosition } : {}),
+        ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}),
+        ...(context?.mapEvents ? { mapEvents: context.mapEvents } : {}),
+        ambient: () => (session as { lighting?: { ambient?: number } }).lighting?.ambient,
+        locations: () => context?.locations,
+      };
+      return evalActorQueryCondition(pageQuerySession(session), condition, {
+        eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction,
+      }, options);
+    }
     case "difficulty":
       return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
     case "itemUsed":
       return session.itemUsedId !== undefined && session.itemUsedId === condition.itemId;
     case "all":
-      return condition.conditions.every((child) => evalPageCondition(child, session, event, context));
+      return condition.conditions.every((child) => evalPageCondition(child, session, event, context, pageDirection));
     case "any":
-      return condition.conditions.some((child) => evalPageCondition(child, session, event, context));
+      return condition.conditions.some((child) => evalPageCondition(child, session, event, context, pageDirection));
     case "not":
-      return !evalPageCondition(condition.condition, session, event, context);
+      return !evalPageCondition(condition.condition, session, event, context, pageDirection);
   }
 }

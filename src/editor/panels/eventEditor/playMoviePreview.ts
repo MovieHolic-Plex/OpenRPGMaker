@@ -15,13 +15,14 @@ const MOVIE_DATA_URL_PREFIXES = ["data:video/webm", "data:video/mp4", "data:vide
 const MOVIE_FILE_EXTENSIONS = [".webm", ".mp4", ".m4v", ".ogv"] as const;
 
 /**
- * 레포에 함께 실리는 샘플 클립. 프로젝트 리소스로 등록하지 않는다 —
- * 리소스 id 등록 지점(src/assets, 검증기)은 이 레인 밖이라, 등록했다고 말하면 거짓말이 된다.
- * 그래서 픽커 항목이 아니라 "동영상이 아직 없을 때 재생이 어떻게 보이는지" 보여 주는 표시면 대체다.
+ * 프로젝트 업로드가 없어도 미리 볼 수 있는 번들 클립. 기존 명령에서 명시적으로
+ * 지정한 경우에는 픽커에도 유지한다.
  */
+const SAMPLE_MOVIE_ID = "sample-movie.webm";
 export const SAMPLE_MOVIE_RESOURCE = {
+  id: SAMPLE_MOVIE_ID,
   name: "샘플 동영상",
-  url: "/assets/movies/sample-movie.webm",
+  url: `/assets/movies/${SAMPLE_MOVIE_ID}`,
 } as const;
 
 export type MovieResourceEntry = {
@@ -33,32 +34,31 @@ export type MovieResourceEntry = {
 /**
  * 프로젝트에 올라온 동영상 리소스(이름 오름차순).
  *
- * 종류(kind)가 근거다 — "movie" 로 등재된 업로드는 데이터 URL 이 무엇이든 동영상이다.
- * 전용 종류가 생기기 전에 다른 kind 로 올라간 레거시 업로드만 미디어 타입으로 구제한다.
+ * 플레이어와 같은 리소스 해석 순서로 확인한다. 같은 ID의 번들 자료가 동영상이 아니면 목록에서 뺀다.
  */
-export function listMovieResources(project: Pick<Project, "assets">): readonly MovieResourceEntry[] {
-  return Object.values(project.assets.uploaded)
-    .filter((asset) => asset.kind === "movie" || isMovieMedia(uploadedAssetUrl(asset)))
-    .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }))
-    .sort((left, right) => left.name.localeCompare(right.name, "ko"));
+export function listMovieResources(project: Pick<Project, "assets">, selectedId?: string): readonly MovieResourceEntry[] {
+  const entries = Object.values(project.assets.uploaded)
+    .filter((asset) => resolveMovieResourceUrl(asset.id, project) !== null)
+    .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }));
+  if (selectedId === SAMPLE_MOVIE_RESOURCE.id && !Object.hasOwn(project.assets.uploaded, selectedId)) {
+    entries.push({ id: selectedId, name: SAMPLE_MOVIE_RESOURCE.name });
+  }
+  return entries.sort((left, right) => left.name.localeCompare(right.name, "ko"));
 }
 
 /**
- * 재생 가능한 URL 을 돌려준다. 업로드 동영상은 데이터 URL 을 직접 쓰고
- * (resolveAssetResourceUrl 의 화이트리스트는 이미지·오디오만 허용한다),
- * 그 밖에는 일반 리소스 해석 → 번들 파일 경로 순으로 떨어진다.
+ * 재생 가능한 URL 을 돌려준다. SQLite 동영상의 해시 주소는 확장자 없이도 쓴다.
  */
 export function resolveMovieResourceUrl(
   resourceId: string | undefined,
   project: Pick<Project, "assets">
 ): string | null {
   if (!resourceId) return null;
-  const uploadedAsset = project.assets.uploaded[resourceId];
-  const uploaded = uploadedAsset ? uploadedAssetUrl(uploadedAsset) : "";
-  if (uploaded !== "") return isMovieMedia(uploaded) ? uploaded : null;
+  const uploadedAsset = Object.hasOwn(project.assets.uploaded, resourceId) ? project.assets.uploaded[resourceId] : undefined;
   const resolved = resolveAssetResourceUrl(resourceId, { project });
-  if (resolved !== null && isMovieMedia(resolved)) return resolved;
-  return null;
+  if (resolved === null) return null;
+  const movieRef = uploadedAsset?.kind === "movie" && uploadedAsset.ref && resolved === uploadedAssetUrl(uploadedAsset);
+  return movieRef || isMovieMedia(resolved) ? resolved : null;
 }
 
 export type MoviePreviewStage = {
