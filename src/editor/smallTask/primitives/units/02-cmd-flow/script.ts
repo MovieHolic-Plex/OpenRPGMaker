@@ -60,7 +60,7 @@ function validateGameCalls(project: Project, source: string, calls: ScriptRef[])
     } else if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) {
       specifier = node.moduleReference.expression;
     } else if (ts.isCallExpression(node)) {
-      const callee = node.expression;
+      const callee = unwrapScriptExpression(ts, node.expression);
       if (callee.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(callee) && callee.text === "require")) {
         specifier = node.arguments[0];
       }
@@ -101,7 +101,12 @@ export function scriptMayDispatchFlow(
 ): boolean {
   const file = ts.createSourceFile("/script.js", compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
   function visit(node: ts.Node): boolean {
-    if (ts.isIdentifier(node) && node.text === "require" && unknownFlow()) return true;
+    if (ts.isIdentifier(node) && node.text === "require") {
+      const parent = node.parent;
+      const propertyKey = ts.isObjectLiteralElementLike(parent) && !ts.isShorthandPropertyAssignment(parent)
+        && "name" in parent && parent.name === node;
+      if (!propertyKey && unknownFlow()) return true;
+    }
     if (isGameObject(ts, node)) {
       const access = node.parent;
       const name = scriptMemberName(ts, access, node);

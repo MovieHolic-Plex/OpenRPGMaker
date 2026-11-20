@@ -1,5 +1,6 @@
 import { scriptContainsLiteral, withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
+import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { openingStageFlag } from "@/project/openingStage";
@@ -37,6 +38,9 @@ export function assertCommandDeletion(
   if (ctx.target.kind !== "event") return;
   if (command.kind === "label") {
     if (list.find(row => row.kind === "label" && row.name === command.name) !== command) return;
+    if (command.name === CUTSCENE_END_LABEL) {
+      throw new PrimitiveError("컷신을 건너뛸 때 사용하는 위치 표시는 삭제할 수 없어요.");
+    }
     const { map, page } = scopedPage(ctx);
     if (usesLabel(list, command.name) || labelReferenceViews(ctx).some(project =>
       labelHasDependentJump(project, project.maps[map.id]!, page.commands, list, command.name))) {

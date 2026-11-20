@@ -235,9 +235,10 @@ export function analyzeScript(
     if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "require") {
       diagnostics.push({ ...position(node), message: "Use `import { … } from \"@lib/<id>\"` instead of require().", severity: "warning", source: "analyzer" });
     }
-    if (ts.isCallExpression(node) && (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
-      && isGameObject(ts, node.expression.expression)) {
-      const name = scriptMemberName(ts, node.expression, node.expression.expression);
+    if (ts.isCallExpression(node)) {
+      const callee = unwrapScriptExpression(ts, node.expression);
+      const name = (ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee))
+        && isGameObject(ts, callee.expression) ? scriptMemberName(ts, callee, callee.expression) : undefined;
       const entry = name === undefined ? undefined : SCRIPT_API_BY_NAME.get(name);
       if (entry) {
         if (transferSeen && entry.awaits && entry.name !== "transfer") {

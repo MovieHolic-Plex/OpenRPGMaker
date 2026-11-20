@@ -215,9 +215,9 @@ function editedPage(ctx: PrimitiveContext, args: Args, kind: FlowKind, operation
   return current && jsonEqual(current, command) ? page : next;
 }
 
-function shortName(name: string, fallback: string): string {
+function shortName(name: string, fallback: string, readable = /[가-힣]/u): string {
   const text = displayText(name, fallback);
-  if (!/[가-힣]/u.test(text) || /[{}\[\]]/u.test(text)) return fallback;
+  if (!readable.test(text) || /[{}\[\]]/u.test(text)) return fallback;
   return text.length > 36 ? text.slice(0, 35) + "…" : text;
 }
 
@@ -243,9 +243,14 @@ function describeChange(ctx: PrimitiveContext, map: GameMap, command: FlowComman
       }
       return `${command.ms / 1000}초 동안 기다리는 줄을 ${verb}.`;
     case "label":
-      return `‘${shortName(command.name, "지정한 위치")}’ 위치 표시를 ${verb}.`;
-    case "gotoLabel":
-      return `‘${shortName(command.name, "지정한 위치")}’로 이동하는 줄을 ${verb}.`;
+    case "gotoLabel": {
+      const { target } = ctx;
+      const words: readonly string[] = command.name.match(/[\p{L}\p{N}_-]+/gu) ?? [];
+      const includesTargetId = target.kind === "event" && [target.mapId, target.eventId, target.pageId]
+        .some(id => id && /^[a-z][\w-]*$/iu.test(id) && words.includes(id));
+      const name = shortName(includesTargetId ? "" : command.name, "지정한 위치", /\p{L}/u);
+      return command.kind === "label" ? `‘${name}’ 위치 표시를 ${verb}.` : `‘${name}’로 이동하는 줄을 ${verb}.`;
+    }
     case "callCommonEvent": {
       const name = shortName(referenceName(project.commonEvents, command.commonEventId), "");
       return `${name ? `‘${name}’ ` : ""}공용 이벤트를 부르는 줄을 ${verb}.`;

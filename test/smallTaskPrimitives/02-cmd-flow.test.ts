@@ -208,6 +208,7 @@ describe("흐름 제어 명령", () => {
     ["script.insert", { source: 'await game.callCommonEvent();' }, /항목을 지정/u],
     ["script.insert", { source: 'await game.callCommonEvent(123);' }, /1번째 인자 형식/u],
     ["script.insert", { source: 'globalThis["game"]["addGold"]("3");' }, /1번째 인자 형식/u],
+    ["script.insert", { source: '(game.addGold)("3");' }, /1번째 인자 형식/u],
     ["script.insert", { source: 'game.setSwitch("flow-sw", 1);' }, /2번째 인자 형식/u],
   ] as const)("%s 잘못된 값 거절", (id, args, message) => {
     const { project, target } = setup([]);
@@ -274,6 +275,22 @@ describe("흐름 제어 명령", () => {
     expect(() => runPrimitive(project, target, "cmd.label.update", {
       index: 2, expectedHash: eventCommandHash(end), name: "도착",
     })).toThrow(/컷신을 건너뛸 때/u);
+    expect(() => runPrimitive(project, target, "cmd.delete", {
+      index: 2, expectedHash: eventCommandHash(end),
+    })).toThrow(/컷신을 건너뛸 때/u);
+  });
+
+  it.each([
+    ["North Gate", "North Gate"], ["hidden_gate", "지정한 위치"],
+    ["Gate [north]", "지정한 위치"], [fixtureEvent, "지정한 위치"],
+  ])("위치 표시 %s의 읽을 수 있는 이름만 확인 문장에 넣는다", (name, expected) => {
+    const { project, target } = setup([]);
+    const inserted = runPrimitive(project, target, "cmd.label.insert", { index: 0, name });
+    const jump = runPrimitive(inserted.after, target, "cmd.gotoLabel.insert", { index: 0, name });
+    expect(inserted.sentence).toContain(`‘${expected}’`);
+    expect(jump.sentence).toContain(`‘${expected}’`);
+    expectKoreanSentence(inserted.sentence, target);
+    expectKoreanSentence(jump.sentence, target);
   });
 
   it("호출된 맵 이벤트와 공용 이벤트가 쓰는 호출자 위치 표시의 이름 변경과 삭제를 거절한다", () => {
@@ -300,6 +317,15 @@ describe("흐름 제어 명령", () => {
       .toThrow(/이동하는 명령/u);
     expect(() => runPrimitive(project, target, "cmd.delete", position, undefined, live)).toThrow(/이동하는 명령/u);
     expect(stored(runPrimitive(project, target, "cmd.delete", position).after)).toEqual([call]);
+  });
+
+  it("스크립트의 require 속성 키가 미사용 위치 표시의 이름 변경이나 삭제를 막지 않는다", () => {
+    const source = "const options = { require: true }; game.addGold(3);";
+    const { project, target } = setup([label, { kind: "script", source, compiled: source }]);
+    const position = { index: 0, expectedHash: eventCommandHash(label) };
+    const renamed = runPrimitive(project, target, "cmd.label.update", { ...position, name: "도착" });
+    expect(stored(renamed.after)[0]).toEqual({ ...label, name: "도착" });
+    expect(stored(runPrimitive(project, target, "cmd.delete", position).after)).toHaveLength(1);
   });
 
   it("자식이 맵을 옮긴 뒤 새 맵의 이벤트가 사용하는 위치 표시를 보존한다", () => {
@@ -543,7 +569,7 @@ describe("흐름 제어 명령", () => {
   it("대괄호로 호출한 게임 기능의 동적 참조도 기록한다", () => {
     const { project, target } = setup([]);
     const { after } = runPrimitive(project, target, "cmd.script.insert", {
-      index: 0, source: 'const id = "flow-sw";\ngame["setSwitch"](id, true);',
+      index: 0, source: 'const id = "flow-sw";\n(game["setSwitch"])(id, true);',
     });
     expect(stored(after)[0]).toMatchObject({ effects: { writes: [], dynamic: [{ api: "setSwitch", line: 2 }] } });
   });
