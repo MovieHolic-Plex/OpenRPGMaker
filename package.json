@@ -132,7 +132,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@oh-my-pi/pi-ai": "18.20.3",
+    "@oh-my-pi/pi-ai": "18.22.0",
     "@playwright/test": "^1.65.1",
     "electron": "^45.3.3",
     "electron-builder": "^26.18.0",
@@ -140,7 +140,7 @@
     "fake-indexeddb": "^6.2.8",
     "fix-webm-duration": "^1.0.6",
     "happy-dom": "^21.0.4",
-    "js-yaml": "4.3.2",
+    "js-yaml": "5.5.0",
     "pngjs": "7.0.0",
     "ts-ebml": "^3.0.2",
     "typescript": "^7.0.2",
