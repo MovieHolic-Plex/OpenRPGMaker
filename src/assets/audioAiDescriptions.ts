@@ -1,6 +1,6 @@
 import { AUDIO_DESCRIPTION_MAX_LENGTH } from "@/project/audioDescriptions";
 import type { AudioResourceKind } from "@/project/types";
-import data from "./audioAiDescriptions.json";
+import data from "./audioAiDescriptions.json" with { type: "json" };
 
 type AudioAiDraftInput = {
   readonly status?: unknown;

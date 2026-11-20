@@ -1,5 +1,5 @@
 import type { SharedContentSnapshot } from "../../sharedContentSchema";
-import data from './reviewedPlaces/catalog.json';
+import data from './reviewedPlaces/catalog.json' with { type: "json" };
 import type { Project, GameMap, TilesetDef } from '@/project/types';
 import type { PlaceDesign, SpatialId } from '@/project/spatial/types';
 

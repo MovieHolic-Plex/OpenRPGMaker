@@ -7,7 +7,7 @@
 //   · 시공기는 역할별 킷 목록(kits)으로 «주 수종 많이 · 곁 수종 섞어 · 강조 나무 드물게» 를 고른다.
 // 숲 바닥·풀밭 얼룩은 2층 투명 덧그림 칸이다(overlays — 꼭짓점 넷의 안팎 15꼴). 1층 바닥 칸·통행은 그대로다(editor/tools/beodeulGroundCover.ts).
 // 그림판·표는 scripts/content/beodeul-looks/bake_stands.py 가 굽는다. 고르기는 겉모습의 stand·meadow 갈래(project/tilesetLook.ts).
-import beodeulStands from "./beodeulStands.json";
+import beodeulStands from "./beodeulStands.json" with { type: "json" };
 import type { TilesetDef } from "@/project/types";
 
 export type StandRole = "dominant" | "companion" | "accent" | "shrub" | "water" | "row" | "fruit";

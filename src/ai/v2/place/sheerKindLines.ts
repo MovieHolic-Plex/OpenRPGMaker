@@ -1,7 +1,7 @@
 // 조수 v2 깎아지른 지형 종류의 모델이 읽는 줄 — sheerTerrainKinds.json 에서 만든다(손으로 쓴 낱말 목록이 아니다).
 // 모델이 바깥 장소가 무엇인지 고르는 곳(마을 카드 · 땅 그림 답의 종류 줄)과 «숲» 이 싣는 숲길 줄이 같은 표를 읽는다(2026-11-17 감독:
 // 실제 조수 네 번에서 hints.kind 스키마 설명만으로는 한 번도 고르지 않았다). 가벼운 모듈이라 지시문 쪽이 relief 코드를 끌어오지 않는다.
-import sheerKinds from "@/assets/sheerTerrainKinds.json";
+import sheerKinds from "@/assets/sheerTerrainKinds.json" with { type: "json" };
 
 const KINDS = sheerKinds.kinds as readonly { id: string; hint: string }[];
 

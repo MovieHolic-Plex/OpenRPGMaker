@@ -421,6 +421,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const base = request.project;
   const ctx: SmallTaskToolContext = {
     project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskDraftSource: draftSource,
+    ...(target.kind === "map" ? { smallTaskCommonEvents: { initialIds: new Set(base.commonEvents.map(event => event.id)) } } : {}),
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);
@@ -449,8 +450,9 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     controller.abort();
     return undefined;
   };
+  const readOnly = request.readOnly || options.readOnlyTools;
   const registryTools = createPiToolset(ctx, {
-    toolNames,
+    toolNames, readOnly,
     referenceGate,
     eventAssistChat: async (_config, chat) => {
       if (cli) return { message: { role: "assistant", content: await localCliChat(cli, request.model)(chat.messages, signal) }, finishReason: "stop" };
@@ -461,11 +463,26 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
       return { message: { role: "assistant", content: choice?.message.content ?? "" }, finishReason: choice?.finish_reason ?? null };
     },
   });
-  const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)).map((tool): PiToolShape => ({
+  const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)
+    && (!readOnly || tool.name !== APPLY_SMALL_TASK_PRIMITIVE)).map((tool): PiToolShape => ({
     ...tool,
     label: tool.name,
     async execute(_id, params) {
-      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      const args = params as Record<string, unknown>;
+      const before = ctx.project;
+      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
+      if (regionScope && tool.name === APPLY_SMALL_TASK_PRIMITIVE && args.id === "event.tile.create") {
+        // The primitive already checked tileEvent. Allow that exact addition in the final mapRegion check.
+        const { mapId } = regionScope;
+        const previousIds = new Set(before.maps[mapId].events.map(event => event.id));
+        const added = ctx.project.maps[mapId].events.find(event => !previousIds.has(event.id));
+        if (added) {
+          const map = regionBaseline.maps[mapId];
+          regionBaseline = { ...regionBaseline, maps: { ...regionBaseline.maps, [mapId]: {
+            ...map, events: [...map.events, structuredClone(added)],
+          } } };
+        }
+      }
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
   }));
@@ -489,9 +506,9 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         const primitive = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string"
           ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(args.id) : undefined;
         if (primitive?.unit === "28-project-data") {
-          // Keep the original map and tileset baseline while accepting project-area changes checked by runPrimitive.
-          regionBaseline = { ...ctx.project, maps: base.maps, tilesets: base.tilesets };
-        } else {
+          // Keep the map and tileset baseline, including any checked tile-event additions.
+          regionBaseline = { ...ctx.project, maps: regionBaseline.maps, tilesets: regionBaseline.tilesets };
+        } else if (primitive?.id !== "event.tile.create") {
           const result = checkSmallTaskScope(before, ctx.project, regionScope, draftSource);
           if (!result.ok) {
             ctx.project = before;

@@ -127,7 +127,7 @@ export interface AiTurnRunner {
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void; readonly deferApply?: boolean },
+    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: (error?: string) => void; readonly deferApply?: boolean },
   ) => Promise<void>;
   /** LLM 오류 버블 + [설정 열기]/[재시도] 행. */
   readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string, runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode }, detail?: string) => void;
@@ -163,7 +163,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void; readonly deferApply?: boolean }
+    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: (error?: string) => void; readonly deferApply?: boolean }
   ): Promise<void> => {
     if (deps.surface.activeAbortController?.signal.aborted) retireActiveTurn?.();
     if (deps.surface.turnBusy) {
@@ -683,7 +683,12 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           });
       }
       deps.surface.notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
-      runOpts?.onSettled?.();
+      const error = abortController.signal.aborted || turnResult?.stoppedReason === "aborted"
+        ? "사용자가 중단했습니다."
+        : turnFailed || turnResult?.stoppedReason === "error"
+          ? turnCatchError ?? turnResult?.error ?? "조수 실행에 실패했습니다."
+          : undefined;
+      runOpts?.onSettled?.(error);
       deps.surface.drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
       // 유리 도크 본문 접힘 예약 — 시작 시 접혀 있었는지와 무관하다(fold 는 입력줄을 남기므로
       // 답이 사라지지 않는다). 실패한 턴은 읽을 수 있게 열어 둔다.

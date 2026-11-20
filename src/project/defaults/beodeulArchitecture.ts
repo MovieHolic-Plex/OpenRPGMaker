@@ -1,4 +1,4 @@
-import catalog from '@/assets/beodeulArchitectureCatalog.json';
+import catalog from '@/assets/beodeulArchitectureCatalog.json' with { type: "json" };
 import type { Project, StructureKitDef, TilesetDef } from '../types';
 import { translateTiles } from '../objectStamp';
 

@@ -4,7 +4,7 @@ import { ASTRA_TITLE_ART_ID } from "@/assets/astraCast";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
-import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
+import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json" with { type: "json" };
 import { composeTown, type TownSketch, type TownTemplate } from "@/project/examples/monsterExpedition/townLayouts";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";

@@ -7,7 +7,7 @@
 // 2026-10-25 얼굴 원본(public/assets/easyrpg/faceset·assets/generated/faceset)을 2~3배로 늘린 접촉 시트로 한 장씩 보고 적었다.
 // 사람이 공용 대응표에서 얼굴 속성을 고치면 그 값이 먼저다(이 표는 번들 기본 설명).
 
-import expressionSources from "../../scripts/shared-face-expression-sources.json";
+import expressionSources from "../../scripts/shared-face-expression-sources.json" with { type: "json" };
 
 export type FaceLookAge = "child" | "youth" | "middle" | "elder";
 export type FaceLookKind = "human" | "monster" | "animal" | "machine" | "hidden";
