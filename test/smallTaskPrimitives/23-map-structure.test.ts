@@ -50,7 +50,7 @@ beforeAll(() => {
   }
 }, 240_000);
 
-function blankProject() {
+function blankProject(): Project {
   return { ...blank, maps: structuredClone(blank.maps), mapTree: structuredClone(blank.mapTree), mapConnections: [] };
 }
 
