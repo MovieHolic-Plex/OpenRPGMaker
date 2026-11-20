@@ -6,6 +6,26 @@ import type { MoveCommand } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
 const DIRECTIONS: readonly Dir[] = ["up", "right", "down", "left"];
+const DEFAULT_JUMP_DISTANCE = 2;
+
+export function commandDelta(dir: Dir): { x: number; y: number } {
+  switch (dir) {
+    case "left":
+      return { x: -1, y: 0 };
+    case "right":
+      return { x: 1, y: 0 };
+    case "up":
+      return { x: 0, y: -1 };
+    case "down":
+      return { x: 0, y: 1 };
+  }
+}
+
+export function jumpDelta(command: Extract<MoveCommand, { kind: "jump" }>, facing: Dir): { x: number; y: number } {
+  if (command.dx !== 0 || command.dy !== 0) return { x: command.dx, y: command.dy };
+  const delta = commandDelta(facing);
+  return { x: delta.x * DEFAULT_JUMP_DISTANCE, y: delta.y * DEFAULT_JUMP_DISTANCE };
+}
 
 export function randomMoveIndex(length: number, rng: Rng): number {
   if (length <= 0) return 0;
