@@ -21,8 +21,8 @@ import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
-  assertReferencesPreserved, changesBlueprintPlaces, duplicateMap, freeId, label, mapDraft, mapLabel, nextMapId, removeMap,
-  requiredName, resizeMap, runMapTool, selectedMap, usesLocation,
+  assertReferencesPreserved, changesBlueprintPlaces, duplicateMap, freeId, label, locationDeletionDraftError,
+  mapDraft, mapLabel, nextMapId, removeMap, requiredName, resizeMap, runMapTool, selectedMap, usesLocation,
 } from "./23-map-structure/maps";
 
 export const UNIT = "23-map-structure";
@@ -424,9 +424,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
 
   primitive("map.structure.resize", "resize_map", "맵 크기 변경", obj(size),
     (map, args) => `『${mapLabel(map)}』 맵을 가로 ${args.width ?? map.width}칸, 세로 ${args.height ?? map.height}칸으로 바꿔요.`,
-    (project, map, args) => {
+    (project, map, args, ctx) => {
       if (args.width === undefined && args.height === undefined) throw new PrimitiveError("바꿀 가로 또는 세로 크기를 적어 주세요.");
-      return resizeMap(project, map, Number(args.width ?? map.width), Number(args.height ?? map.height));
+      return resizeMap(project, map, Number(args.width ?? map.width), Number(args.height ?? map.height), ctx.live);
     }, ctx => ({ kind: "mapResize", mapId: selectedMap(ctx).id })),
 
   primitive("map.properties.set", "set_map_properties", "맵 속성 변경", obj(propertyArgs),
@@ -534,8 +534,10 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
 
   primitive("map.location.delete", "delete_map_location", "장소 삭제", obj({ locationId }, ["locationId"]),
     (map, args) => `『${label(locationInMap(map, args.locationId).name, "선택한 장소")}』 장소를 삭제해요.`,
-    (project, map, args) => {
+    (project, map, args, ctx) => {
       const location = locationInMap(map, args.locationId);
+      const draftError = locationDeletionDraftError(project, map.id, location.id, ctx.live);
+      if (draftError) throw new PrimitiveError(draftError);
       if (usesLocation(project, map, location.id)) {
         throw new PrimitiveError("이 장소를 가리키는 조건이나 설정이 남아 있어 삭제할 수 없어요.");
       }

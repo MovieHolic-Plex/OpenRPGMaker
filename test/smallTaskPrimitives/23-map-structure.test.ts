@@ -187,6 +187,34 @@ it("축소하거나 확장할 때 기존 타일 위치와 이벤트의 이동 �
   });
 });
 
+it("다른 맵의 저장된 이동과 미저장 이동을 모두 확인한 뒤 맵을 줄인다", () => {
+  const project = blankProject();
+  const original = transferEvent(secondId);
+  project.maps[firstId]!.events = [original];
+  const target = mapTarget(project, secondId)!;
+  const resize = (x: number) => runPrimitive(project, target, "map.structure.resize", { width: 9 }, undefined, {
+    maps: { [firstId]: { events: [{ ...original, commands: [{ kind: "transfer", mapId: secondId, x, y: 4 }],
+      draft: { kind: "edit", original } }] } },
+  }).after;
+  expect(() => resize(10)).toThrow(/기존 영역이 맵 밖/u);
+  const after = resize(8);
+  expect(after.maps[secondId]!.width).toBe(9);
+  expect(after.maps[firstId]!.events).toBe(project.maps[firstId]!.events);
+  expect(after.maps[firstId]!.events[0]!.commands).toEqual(original.commands);
+});
+
+it("동일한 기존 오류가 있어도 새로 범위를 벗어나는 게임오버 복구 위치를 막는다", () => {
+  const project = blankProject();
+  project.system = {
+    ...project.system,
+    gameOver: { recovery: { mapId: secondId, x: 10, y: 4 } },
+    gameOvers: [{ id: "go_other", name: "다른 복구", settings: { recovery: { mapId: firstId, x: 25, y: 4 } } }],
+  };
+  expect(run(project, secondId, "map.structure.resize", { width: 11 }).maps[secondId]!.width).toBe(11);
+  expect(() => run(project, secondId, "map.structure.resize", { width: 10 }))
+    .toThrow("크기를 바꾸면 맵을 가리키는 설정이 끊겨요.");
+});
+
 it("맵 이름과 배경 음악 하나를 바꾸고 나머지 제한과 타일은 보존한다", async () => {
   const project = blankProject();
   project.maps[firstId]!.disableEscape = true;
@@ -520,6 +548,22 @@ it.each(["필드 스폰", "경비 시야", "공용 이벤트", "전투 뒤 이�
   }
   expect(() => run(project, firstId, "map.location.delete", { locationId: location.id })).toThrow(/조건이나 설정/u);
   expect(map.locations).toEqual([location]);
+});
+
+it("같은 맵의 장소를 사용하는 새 이벤트 초안의 이름을 삭제 거절에 표시한다", () => {
+  const project = blankProject();
+  const location = { id: "loc1", name: "쉼터", x: 1, y: 1, w: 3, h: 2 };
+  project.maps[firstId]!.locations = [location];
+  project.maps[secondId]!.locations = [location];
+  const original = { ...transferEvent(secondId), name: "미저장 경비" };
+  const target = mapTarget(project, firstId)!;
+  const remove = (draftMapId: string) => runPrimitive(project, target, "map.location.delete", { locationId: location.id }, undefined, {
+    maps: { [draftMapId]: { events: [{ ...original, condition: { kind: "insideLocation", locationId: location.id, inside: true },
+      draft: { kind: "new", original } }] } },
+  }).after;
+  expect(() => remove(firstId)).toThrow(/미저장 경비/u);
+  expect(remove(secondId).maps[firstId]!.locations ?? []).toEqual([]);
+  expect(project.maps[firstId]!.locations).toEqual([location]);
 });
 
 it("장소를 만들거나 이름을 바꿀 때 같은 이름과 식별자를 여러 곳에 쓰지 않는다", () => {

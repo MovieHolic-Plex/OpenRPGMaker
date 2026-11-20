@@ -13,7 +13,7 @@ import { countLocationReferences } from "@/project/mapLocationReferences";
 import { appendToTree, findParentMapId, findTreeNode, insertTreeNode, siblingIndex } from "@/project/mapTree";
 import { isStepQuestDef } from "@/project/quest/questDef";
 import { scriptCalls, scriptCommandEffects, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
-import type { BattleEventCondition, Command, Condition, GameMap, MoveRoute, Project, Rect } from "@/project/types";
+import type { BattleEventCondition, Command, Condition, GameEvent, GameMap, MoveRoute, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { displayText } from "../../../target";
 import { MAP_REMOVAL_DRAFT_REFUSAL, PrimitiveError } from "../../errors";
@@ -62,8 +62,15 @@ export function runMapTool(project: Project, name: string, args: Record<string, 
 }
 
 export function assertReferencesPreserved(before: Project, after: Project, failure: string): void {
-  const priorIssues = new Set(collectProjectReferenceIssues(before));
-  if (collectProjectReferenceIssues(after).some(issue => !priorIssues.has(issue))) throw new PrimitiveError(failure);
+  const priorIssues = new Map<string, number>();
+  for (const issue of collectProjectReferenceIssues(before)) {
+    priorIssues.set(issue, (priorIssues.get(issue) ?? 0) + 1);
+  }
+  for (const issue of collectProjectReferenceIssues(after)) {
+    const count = priorIssues.get(issue) ?? 0;
+    if (count === 0) throw new PrimitiveError(failure);
+    priorIssues.set(issue, count - 1);
+  }
 }
 
 export function nextMapId(project: Project): string {
@@ -216,24 +223,46 @@ function conditionUsesLocation(condition: BattleEventCondition | undefined, id: 
   }
 }
 
+function commandConditionUsesLocation(command: Command, id: string): boolean {
+  if (command.kind === "fork") return conditionUsesLocation(command.condition, id);
+  if (command.kind === "choices") {
+    return command.options.some(option => conditionUsesLocation(option.showWhen, id) || conditionUsesLocation(option.enableWhen, id));
+  }
+  return false;
+}
+
+function eventUsesLocation(event: GameEvent, id: string): boolean {
+  const triggerUsesLocation = (trigger: GameEvent["trigger"]) =>
+    trigger.kind === "locationTransition" && trigger.locationId === id;
+  const commandsUseLocation = (commands: readonly Command[]): boolean =>
+    commands.some(command => commandConditionUsesLocation(command, id)
+      || commandBranches(command).some(branch => commandsUseLocation(branch.commands)));
+  return triggerUsesLocation(event.trigger) || conditionUsesLocation(event.condition, id) || commandsUseLocation(event.commands)
+    || (event.pages?.some(page => triggerUsesLocation(page.trigger)
+      || page.conditions?.some(condition => conditionUsesLocation(condition, id)) || commandsUseLocation(page.commands)) ?? false);
+}
+
+export function locationDeletionDraftError(project: Project, mapId: string, id: string, live?: SmallTaskDraftSource): string | undefined {
+  const working = withOpenEventDrafts(project, live);
+  const event = working.maps[mapId].events.find(event => event.draft && eventUsesLocation(event, id));
+  if (!event) return undefined;
+  return `미저장 이벤트 『${eventLabel(working, mapId, event.id)}』에서 이 장소를 사용하고 있어 삭제할 수 없어요.`;
+}
+
 export function usesLocation(project: Project, map: GameMap, id: string): boolean {
   if (map.fieldSpawns?.some(spawn => spawn.locationId === id)
     || Object.values(map.locationRoleProjection ?? {}).some(roles => Object.hasOwn(roles, id))
     || countLocationReferences(project, id, map.id) > 0
     || questUsesMap(project, point => point.mapId === map.id && point.locationId === id)) return true;
-  if (map.events.some(event => conditionUsesLocation(event.condition, id)
-    || event.pages?.some(page => page.conditions?.some(condition => conditionUsesLocation(condition, id))))) return true;
+  if (map.events.some(event => eventUsesLocation(event, id))) return true;
   if (project.database.troops.some(troop => troop.battleEventPages?.some(page =>
     page.conditions?.some(condition => conditionUsesLocation(condition, id))))) return true;
 
   let used = false;
   // 공용 이벤트와 전투 이벤트는 실행될 때의 맵에서 장소를 찾는다.
   visitProjectCommands(project, ({ command, location }) => {
-    if (used || ("mapId" in location && location.mapId !== map.id)) return;
-    if (command.kind === "fork") used = conditionUsesLocation(command.condition, id);
-    if (command.kind === "choices") {
-      used = command.options.some(option => conditionUsesLocation(option.showWhen, id) || conditionUsesLocation(option.enableWhen, id));
-    }
+    if (used || "mapId" in location) return;
+    used = commandConditionUsesLocation(command, id);
   });
   return used;
 }
@@ -345,12 +374,14 @@ export function removeMap(project: Project, map: GameMap, live?: SmallTaskDraftS
   return after;
 }
 
-export function resizeMap(project: Project, map: GameMap, width: number, height: number): Project {
+export function resizeMap(project: Project, map: GameMap, width: number, height: number, live?: SmallTaskDraftSource): Project {
   if (width === map.width && height === map.height) return project;
   if (map.worldmapSource) {
     throw new PrimitiveError("이 맵의 크기는 세계 지도 원본에서 정해요. 세계 지도 편집에서 바꿔 주세요.");
   }
-  if (width < map.width || height < map.height) {
+  const shrinking = width < map.width || height < map.height;
+  const working = shrinking ? withOpenEventDrafts(project, live) : project;
+  if (shrinking) {
     const outside = (point: { x: number; y: number }) =>
       inMapBounds(map, point.x, point.y) && (point.x >= width || point.y >= height);
     const cutsRect = (rect: Rect) => rect.x < map.width && rect.y < map.height
@@ -359,15 +390,19 @@ export function resizeMap(project: Project, map: GameMap, width: number, height:
       && outside({ x: point.x, y: point.y });
     const lostPosition = (project.mapConnections ?? []).some(({ from, to }) =>
       [from, to].some(point => point.mapId === map.id && outside(point)));
-    let lostCommandTarget = false;
-    visitProjectCommands(project, ({ command }) => {
-      lostCommandTarget ||= commandUsesMap(command, cutsTarget)
-        || (command.kind === "script" && scriptTransfersToMap(command, project, map.id));
+    const sources = working === project ? [project] : [project, working];
+    const lostCommandTarget = sources.some(source => {
+      let lost = false;
+      visitProjectCommands(source, ({ command }) => {
+        lost ||= commandUsesMap(command, cutsTarget)
+          || (command.kind === "script" && scriptTransfersToMap(command, source, map.id));
+      });
+      return lost;
     });
-    const lostRouteTarget = Object.values(project.maps).some(other =>
+    const lostRouteTarget = sources.some(source => Object.values(source.maps).some(other =>
       other.events.some(event => routeUsesMap(event.moveRoute, cutsTarget) || event.schedule?.some(entry => cutsTarget(entry.at))
         || event.pages?.some(page => routeUsesMap(page.movement.route, cutsTarget) || page.movement.living?.destinations.some(cutsTarget)))
-      || other.transit?.routes.some(route => route.stops?.some(stop => stop.board && cutsTarget(stop.board))));
+      || other.transit?.routes.some(route => route.stops?.some(stop => stop.board && cutsTarget(stop.board)))));
     const lostPreset = project.testPresets?.some(preset => preset.startMapId === map.id && preset.startPos && outside(preset.startPos));
     const lostAuthoredTarget = questUsesMap(project, cutsTarget)
       || project.endings?.some(ending => ending.continueTo && cutsTarget(ending.continueTo))
@@ -396,6 +431,8 @@ export function resizeMap(project: Project, map: GameMap, width: number, height:
   }
   const after = runMapTool(mapDraft(project, map), "resize_map", { mapId: map.id, width, height },
     "축소 범위 밖에 이벤트나 시작 위치가 있어요.");
-  assertReferencesPreserved(project, after, "크기를 바꾸면 맵을 가리키는 설정이 끊겨요.");
+  const failure = "크기를 바꾸면 맵을 가리키는 설정이 끊겨요.";
+  assertReferencesPreserved(project, after, failure);
+  if (working !== project) assertReferencesPreserved(working, withOpenEventDrafts(after, live), failure);
   return after;
 }
