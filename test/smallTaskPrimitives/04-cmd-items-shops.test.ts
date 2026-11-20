@@ -294,13 +294,16 @@ it("재고가 있는 상점에 상품을 넣어도 계절 가격과 거래 분�
   });
   const command = commandsOf(after)[0];
   expect(command).toMatchObject({
-    itemIds: [potion, ether, highPotion], stock: [stock[0], stock[2], stock[1], { itemId: highPotion }], transactionBranch: branch,
+    itemIds: [potion, ether, highPotion], stock: [...stock, { itemId: highPotion }], transactionBranch: branch,
     shopType: "buyOnly", allowSell: false,
   });
   expect(execute(after, commandsOf, mapId).step).toMatchObject({
     kind: "shop", shopType: "buyOnly",
     items: [{ itemId: potion, price: 400 }, { itemId: ether, price: 600 }, { itemId: highPotion, price: expect.any(Number) }],
   });
+  expectRefused(after, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(before), addItemId: highPotion,
+  }, new RegExp(STALE_COMMAND_LIST, "u"));
   const { after: removed } = runPrimitive(after, target, "cmd.shop.update", {
     index: 0, expectedHash: eventCommandHash(command), removeItemId: potion,
   });
@@ -310,6 +313,22 @@ it("재고가 있는 상점에 상품을 넣어도 계절 가격과 거래 분�
   expectRefused(removed, target, "cmd.shop.update", {
     index: 0, expectedHash: eventCommandHash(commandsOf(removed)[0]), removeItemId: potion,
   }, /진열된 물건만/u);
+});
+
+it("분기 안 상점에 상품을 추가해도 봄철 진열 순서와 가격을 유지한다", () => {
+  const shop: Command = { kind: "shop", itemIds: [potion, ether], stock: [
+    { itemId: potion, priceOverride: 450, seasons: ["winter"] },
+    { itemId: ether, priceOverride: 600, seasons: ["spring"] },
+    { itemId: potion, priceOverride: 400, seasons: ["spring"] },
+  ] };
+  const { project: base, target, commandsOf, mapId } = setup("blank", [{ kind: "loop", body: [shop, { kind: "breakLoop" }] }]);
+  const project = { ...base, system: { ...base.system, timeSystem: { enabled: true } } };
+  const { after } = runPrimitive(project, target, "cmd.shop.update", {
+    branchPath: [0, LOOP_BODY_BRANCH_INDEX], index: 0, expectedHash: eventCommandHash(shop), addItemId: highPotion,
+  });
+  expect(execute(after, commandsOf, mapId, "spring").step).toMatchObject({
+    kind: "shop", items: [{ itemId: ether, price: 600 }, { itemId: potion, price: 400 }, { itemId: highPotion }],
+  });
 });
 
 it("일부 상품에만 재고 설정이 있어도 기본 가격 상품을 진열에 유지한다", async () => {
@@ -465,26 +484,31 @@ it("상점과 여관의 분기를 정확히 골라 추가하고 게임에서 그
   }, /분기를 찾을 수 없어요/u);
 });
 
+const disabledBranchReward: Command = { kind: "changeGold", op: "+=", amount: 15 };
+
 it.each([
   {
     branch: "상점 거래 성공",
-    command: { kind: "shop", itemIds: [potion], branchOnTransaction: false, transactionBranch: [] },
+    command: { kind: "shop", itemIds: [potion], branchOnTransaction: false, transactionBranch: [disabledBranchReward] },
     branchPath: [0, SHOP_TRANSACTION_BRANCH_INDEX], response: true,
   },
   {
     branch: "상점 거래 실패",
-    command: { kind: "shop", itemIds: [potion], failedTransactionBranch: [] },
+    command: { kind: "shop", itemIds: [potion], failedTransactionBranch: [disabledBranchReward] },
     branchPath: [0, SHOP_FAILED_TRANSACTION_BRANCH_INDEX], response: "failed",
   },
   {
     branch: "여관 골드 부족 분기 안의 반복",
-    command: { kind: "inn", price: 40, branchOnNotEnoughGold: false, notEnoughBranch: [{ kind: "loop", body: [] }] },
+    command: { kind: "inn", price: 40, branchOnNotEnoughGold: false, notEnoughBranch: [{ kind: "loop", body: [disabledBranchReward] }] },
     branchPath: [0, INN_NOT_ENOUGH_BRANCH_INDEX, 0, LOOP_BODY_BRANCH_INDEX], response: "notEnough",
   },
-])("$branch 줄은 분기가 꺼져 있으면 명령을 추가할 수 없다", ({ command, branchPath, response }) => {
+])("$branch 줄은 분기가 꺼져 있으면 명령을 추가하거나 수정할 수 없다", ({ command, branchPath, response }) => {
   const { project, target, commandsOf, mapId } = setup("blank", [command]);
   expectRefused(project, target, "cmd.changeGold.insert", {
     branchPath, amount: 7,
+  }, /꺼져 있는 상점·여관 분기/u);
+  expectRefused(project, target, "cmd.changeGold.update", {
+    branchPath, index: 0, expectedHash: eventCommandHash(disabledBranchReward), amount: 7,
   }, /꺼져 있는 상점·여관 분기/u);
   expect(commandsOf(project)).toEqual([command]);
   const play = execute(project, commandsOf, mapId);

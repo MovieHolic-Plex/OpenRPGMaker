@@ -181,14 +181,11 @@
   {
     "request": "보물상자를 열면 포션 세 개 줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeItem.insert",
-    "args": {"itemId": "item_potion", "amount": 3},
+    "args": {"itemId": "item_potion", "amount": 3, "index": 6},
     "expect": [
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_potion"},
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 3},
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "+="}
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6]", "equals": {"kind": "changeItem", "itemId": "item_potion", "op": "+=", "amount": 3}}
     ]
   },
   {
@@ -661,8 +658,7 @@
     "args": {"upgradeId": "upgrade_potion"},
     "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_potion"}
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1]", "equals": {"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion"}}
     ],
     "expectRefusal": true
   },
@@ -1237,7 +1233,7 @@
     ]
   },
   {
-    "request": "상자이름을 비밀 창고로 표시해 줘",
+    "request": "넓은 보관함 창을 열고 이름은 비밀 창고로 표시해 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.insert",

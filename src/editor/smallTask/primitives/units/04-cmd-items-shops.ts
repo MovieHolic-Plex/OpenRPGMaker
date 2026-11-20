@@ -8,7 +8,7 @@ import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor
 import type { JsonSchema } from "@/editor/tools/types";
 import { craftShopRecipeIds } from "@/project/craftShop";
 import { GOLD_MAX } from "@/project/economyValues";
-import { EventCommandEditError, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
+import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import { validateCommands, type ReferenceContext } from "@/project/io/commandReferenceValidation";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { resolveStorageChest, STORAGE_CHEST_LAYOUTS, STORAGE_CHEST_TEMPLATES } from "@/project/storageChest";
@@ -16,7 +16,7 @@ import type { Command, EventPage, Project, VariableOperand } from "@/project/typ
 import { roJosa } from "@/util/josa";
 import { displayText } from "../../target";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "04-cmd-items-shops";
@@ -169,12 +169,17 @@ function shopPatch(current: Extract<Command, { kind: "shop" }>, patch: Args, arg
   if (typeof addItemId === "string") displayedIds.add(addItemId);
   const itemIds = [...(replacement === undefined ? displayedIds : new Set(replacement))];
   patch.itemIds = itemIds;
-  if (stock) {
-    // 게임은 stock이 있으면 그 목록을 읽으므로 기본 가격 상품에도 행을 채운다.
+  if (!stock) return;
+  // 게임은 stock이 있으면 그 목록을 읽으므로 기본 가격 상품에도 행을 채운다.
+  if (replacement !== undefined) {
     patch.stock = itemIds.flatMap(itemId => {
       const rows = stock.filter(row => row.itemId === itemId);
       return rows.length ? rows : [{ itemId }];
     });
+  } else {
+    const retained = stock.filter(row => displayedIds.has(row.itemId));
+    const stocked = new Set(retained.map(row => row.itemId));
+    patch.stock = [...retained, ...itemIds.filter(itemId => !stocked.has(itemId)).map(itemId => ({ itemId }))];
   }
 }
 
@@ -335,8 +340,8 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
   }
 }
 
-function pageWithInsertBranch(page: EventPage, branchPath: readonly number[]): EventPage {
-  if (branchPath.length === 0 || branchPath.length % 2 !== 0) return page;
+function assertActiveShopInnBranches(page: EventPage, branchPath: readonly number[]): void {
+  if (branchPath.length % 2 !== 0) return;
   for (let offset = 1; offset < branchPath.length; offset += 2) {
     const parent = resolveCommandAtPath(page.commands, branchPath.slice(0, offset));
     const branch = branchPath[offset];
@@ -345,9 +350,13 @@ function pageWithInsertBranch(page: EventPage, branchPath: readonly number[]): E
       || (parent?.kind === "shop" && branch === SHOP_FAILED_TRANSACTION_BRANCH_INDEX && parent.branchOnFailedTransaction !== true)
       || (parent?.kind === "inn" && branch === INN_NOT_ENOUGH_BRANCH_INDEX && parent.branchOnNotEnoughGold !== true)
     ) {
-      throw new PrimitiveError("꺼져 있는 상점·여관 분기에는 명령을 추가할 수 없습니다.");
+      throw new PrimitiveError("꺼져 있는 상점·여관 분기의 명령은 추가하거나 수정할 수 없습니다.");
     }
   }
+}
+
+function pageWithInsertBranch(page: EventPage, branchPath: readonly number[]): EventPage {
+  if (branchPath.length === 0 || branchPath.length % 2 !== 0) return page;
   const path = [...branchPath, 0];
   if (resolveCommandListAtPath(page.commands, path)) return page;
   const parent = resolveCommandAtPath(page.commands, branchPath.slice(0, -1));
@@ -364,12 +373,14 @@ function createPrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
   function prepare(ctx: PrimitiveContext, args: Args) {
     const { page: selectedPage } = scopedPage(ctx);
     const branch = (args.branchPath ?? []) as number[];
+    assertActiveShopInnBranches(selectedPage, branch);
     const page = mode === "insert" ? pageWithInsertBranch(selectedPage, branch) : selectedPage;
     const list = commandListAt(page, branch);
     const row = (args.index ?? list.length) as number;
     const index = [...branch, row];
     const current = mode === "insert" ? newCommand(kind) : list[row];
     if (current?.kind !== kind) throw new PrimitiveError(`선택한 줄에서 ${spec.name} 명령을 찾을 수 없습니다.`);
+    if (mode === "update" && eventCommandHash(current) !== args.expectedHash) throw new PrimitiveError(STALE_COMMAND_LIST);
     return { page, index, ...editedCommand(current, mode, args) };
   }
   return {
