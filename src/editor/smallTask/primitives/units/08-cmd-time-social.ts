@@ -1,5 +1,6 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { newCommand } from "@/editor/eventCommandFactory";
+import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { timerIdLabel } from "@/editor/panels/eventEditor/options";
 import type { JsonSchema } from "@/editor/tools/types";
 import { commandGuarantee } from "@/project/commandGuaranteeRegistry";
@@ -62,7 +63,7 @@ const commands: Record<Kind, { title: string; fields: Fields; required?: readonl
     fields: {
       days: count("지나갈 날 수.", 0, MAX_ADVANCE_DAYS),
       hours: count("더 흐를 시간 수.", 0, MAX_ADVANCE_HOURS),
-      minutes: count("더 흐를 분 수.", 0, MAX_ADVANCE_HOURS * 60),
+      minutes: count("더 흐를 분 수. 강제 취침이 켜져 있으면 시·분 진행 중 하루가 끝날 때 다음 날 아침에 멈춥니다.", 0, MAX_ADVANCE_HOURS * 60),
     },
   },
   advanceCropGrowth: {
@@ -271,13 +272,15 @@ function variableName(project: Project, id: string): string {
 function prepareEdit(ctx: PrimitiveContext, args: Record<string, unknown>, kind: Kind, operation: Operation) {
   const { event, page } = scopedPage(ctx);
   const branch = (args.branchPath as number[] | undefined) ?? [];
-  const list = commandListAt(page, branch);
-  const index = (args.index as number | undefined) ?? list.length;
-  if (index >= list.length + Number(operation === "insert")) {
+  // The native insert creates missing optional branches on its own copy of the page.
+  const list = operation === "insert" ? resolveCommandListAtPath(page.commands, [...branch, 0]) : commandListAt(page, branch);
+  const length = list?.length ?? 0;
+  const index = (args.index as number | undefined) ?? length;
+  if (index >= length + Number(operation === "insert")) {
     throw new PrimitiveError("그 줄을 찾을 수 없어요. 명령 목록을 다시 확인해 주세요.");
   }
   const path = [...branch, index];
-  const current = operation === "update" ? list[index] : undefined;
+  const current = operation === "update" ? list?.[index] : undefined;
   if (operation === "update" && current?.kind !== kind) {
     throw new PrimitiveError(`그 줄은 ‘${commands[kind].title}’ 명령이 아니에요. 고칠 줄을 다시 확인해 주세요.`);
   }
@@ -310,7 +313,9 @@ function edit(ctx: PrimitiveContext, args: Record<string, unknown>, kind: Kind, 
         if (command.action === "stop" && typeof args.seconds === "number") {
           throw new PrimitiveError("타이머를 멈출 때는 초를 지정할 수 없어요. 남은 시간이 그대로 유지돼요.");
         }
-        if (command.action === "set" && args.seconds === null) {
+        // Keep the implicit zero in legacy set commands when patching unrelated fields.
+        const alreadySet = current?.kind === "timer" && current.action === "set";
+        if (command.action === "set" && command.seconds === undefined && (!alreadySet || args.seconds === null)) {
           throw new PrimitiveError("타이머의 시간을 맞추려면 몇 초인지 입력해 주세요.");
         }
       }
@@ -320,7 +325,7 @@ function edit(ctx: PrimitiveContext, args: Record<string, unknown>, kind: Kind, 
   } catch (error) {
     if (!(error instanceof EventCommandEditError)) throw error;
     if (error.code === "stale-event-command") throw new PrimitiveError("그 줄의 내용이 바뀌었어요. 다시 읽은 뒤 수정해 주세요.");
-    throw new PrimitiveError("명령의 줄 위치와 입력값을 확인해 주세요.");
+    throw new PrimitiveError("명령의 분기 위치와 입력값을 확인해 주세요.");
   }
 }
 
@@ -352,7 +357,10 @@ function makePrimitive(kind: Kind, operation: Operation): SmallTaskPrimitive {
       const { event, command, current } = prepareEdit(ctx, args, kind, operation);
       const detail = summary(ctx.project, event, command);
       if (current && jsonEqual(current, command)) return koreanSentence(`${detail} 명령을 그대로 둡니다.`);
-      return koreanSentence(`${detail} 명령을 ${action}합니다.`);
+      const forcedSleep = command.kind === "advanceTime" && ((command.hours ?? 0) > 0 || (command.minutes ?? 0) > 0)
+        && resolveTimeSystem(ctx.project)?.forceSleep;
+      const notice = forcedSleep ? " 시·분 진행 중 하루가 끝나면 다음 날 아침에 멈춰요." : "";
+      return koreanSentence(`${detail} 명령을 ${action}합니다.${notice}`);
     },
     apply(ctx, args) {
       return edit(ctx, args, kind, operation);

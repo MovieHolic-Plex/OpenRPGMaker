@@ -8,11 +8,15 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/08-cmd-time-social";
 import { mapTarget } from "@/editor/smallTask/target";
 import { runTool } from "@/editor/tools/toolRunner";
-import { setTimeWithMakers } from "@/player/dayTransition";
+import { setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 import { createInterpreter } from "@/player/interpreter";
+import { applyAdvanceTimeStep } from "@/player/playSceneTime";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { calendarDayKey } from "@/project/gameTime";
 import { getFriendship, getTimer, getVariable, startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
@@ -267,6 +271,38 @@ it("시간표의 하루 길이로 일·시간·분을 합산하고 시각이 보
   expect(sentence).toContain("27:00");
 });
 
+it.each([
+  { forceSleep: true, startMinute: 50, expectedTime: { day: 2, hour: 6, minute: 0 } },
+  { forceSleep: true, startMinute: 30, expectedTime: { day: 1, hour: 25, minute: 50 } },
+  { forceSleep: false, startMinute: 50, expectedTime: { day: 2, hour: 6, minute: 10 } },
+])("강제 취침 $forceSleep 설정의 시간 진행 미리보기와 실제 시각을 확인한다 (25:$startMinute)", async ({ forceSleep, startMinute, expectedTime }) => {
+  const { project, target } = setup("blank");
+  project.system.timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep };
+  const { after, sentence } = expectApplies(project, target, "cmd.advanceTime.insert", { minutes: 20 });
+  expect(sentence).toBe(forceSleep
+    ? "시간을 20분 진행하는 명령을 추가합니다. 시·분 진행 중 하루가 끝나면 다음 날 아침에 멈춰요."
+    : "시간을 20분 진행하는 명령을 추가합니다.");
+  const { session, machine } = runCommands(stored(after), after);
+  const start = { year: 1, season: "spring", day: 1, hour: 25, minute: startMinute } as const;
+  session.gameTime = start;
+  const step = machine.start();
+  if (step.kind !== "advanceTime") throw new Error("시간 진행 명령이 필요합니다.");
+  const scene = {
+    session,
+    sleepUntilMorning: async () => transitionToNextDay(after, session, calendarDayKey(start)).ok,
+    clearRuntimeOverlay() {},
+    syncRuntimeState() {},
+  } as PlaySceneContext;
+  const previous = store.getCurrent();
+  try {
+    store.replaceProject(after);
+    await applyAdvanceTimeStep(scene, step);
+    expect(session.gameTime).toMatchObject(expectedTime);
+  } finally {
+    store.replaceProject(previous);
+  }
+});
+
 it("타이머의 잘못된 초 입력을 거절하고 같은 값으로 수정하면 프로젝트를 그대로 돌려준다", () => {
   const initial: Command = { kind: "timer", action: "set", seconds: 30, timerId: "timer2" };
   const { project, target } = setup("blank", [initial]);
@@ -276,6 +312,25 @@ it("타이머의 잘못된 초 입력을 거절하고 같은 값으로 수정하
   const { after, sentence } = runPrimitive(project, target, "cmd.timer.update", { ...args, seconds: 30 });
   expect(after).toBe(project);
   expect(sentence).toMatch(/그대로 둡니다/u);
+});
+
+it.each(["start", "stop"] as const)("초 없는 %s 타이머를 설정으로 바꾸려면 초를 입력해야 한다", async action => {
+  const initial = { kind: "timer", action } satisfies Command;
+  const { project, target } = setup("blank", [initial]);
+  const args = { index: 0, expectedHash: eventCommandHash(initial), action: "set" };
+  expectRefused(project, target, "cmd.timer.update", args, /몇 초인지 입력/u);
+  const { after } = runPrimitive(project, target, "cmd.timer.update", { ...args, seconds: 0 });
+  expect(stored(after)).toEqual([{ kind: "timer", action: "set", seconds: 0 }]);
+  await expectUndoRestores(project, after, target);
+});
+
+it("초가 생략된 이전 타이머 설정에서 타이머 번호를 바꿀 수 있다", () => {
+  const initial = { kind: "timer", action: "set" } satisfies Command;
+  const { project, target } = setup("blank", [initial]);
+  const { after } = runPrimitive(project, target, "cmd.timer.update", {
+    index: 0, expectedHash: eventCommandHash(initial), timerId: "timer2",
+  });
+  expect(stored(after)).toEqual([{ ...initial, timerId: "timer2" }]);
 });
 
 it("두 번째 페이지의 빈 선택지 분기에 삽입해도 첫 페이지와 형제 분기는 유지한다", () => {
@@ -297,6 +352,22 @@ it("두 번째 페이지의 빈 선택지 분기에 삽입해도 첫 페이지�
   }]);
   expect(stored(withChoice, otherId)).toEqual([choice]);
   expectRefused(withChoice, target, "cmd.sleepUntilMorning.insert", { branchPath: [0, 0], pageId }, /형식을 확인/u);
+});
+
+it("페이지를 생략하면 첫 페이지의 새 선택적 분기에만 삽입하고 한 번에 되돌린다", async () => {
+  const fork = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [greeting] } satisfies Command;
+  const { project, mapId } = setup("blank", [fork]);
+  const target = mapTarget(project, mapId, eventId)!;
+  const branchPath = [0, FORK_ELSE_BRANCH_INDEX];
+  expectRefused(project, target, "cmd.timer.insert", { branchPath, index: 1 }, /그 줄을 찾을 수 없어요/u);
+  expectRefused(project, target, "cmd.timer.update", {
+    branchPath, index: 0, expectedHash: eventCommandHash(greeting), seconds: 1,
+  }, /분기를 찾을 수 없어요/u);
+  const { after } = runPrimitive(project, target, "cmd.timer.insert", { branchPath, action: "stop" });
+  expect(stored(after)).toEqual([{ ...fork, else: [{ kind: "timer", action: "stop", timerId: "timer1" }] }]);
+  expect(stored(project)).toEqual([fork]);
+  expect(stored(after, otherId)).toEqual([greeting]);
+  await expectUndoRestores(project, after, target);
 });
 
 it("인물 정보가 없는 이벤트에서 최고 호감도는 조회하고 변경 요청은 거절한다", () => {
