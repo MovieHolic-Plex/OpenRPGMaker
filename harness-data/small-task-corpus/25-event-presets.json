@@ -1,1 +1,731 @@
-[]
+[
+  {
+    "request": "여기 나루 상인 세워 주세요. 말 걸면 배가 정오에 뜬다고 해요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "나루 상인", "dialogue": "배가 정오에 떠나요."},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_25_34].name", "equals": "나루 상인"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_25_34].pages[0].commands[-1].body", "equals": "배가 정오에 떠나요."}
+    ]
+  },
+  {
+    "request": "이 칸에 경비 한 명. '시장까지 조심해.'",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "경비", "dialogue": "시장까지 조심해."},
+    "selection": {"rect": {"x": 26, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_26_34].name", "equals": "경비"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_26_34].pages[0].commands[-1].body", "equals": "시장까지 조심해."}
+    ]
+  },
+  {
+    "request": "주민 서린을 여기다 넣고 인사는 좋은 아침이에요로 해줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "서린", "dialogue": "좋은 아침이에요."},
+    "selection": {"rect": {"x": 25, "y": 32, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_25_32].name", "equals": "서린"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_25_32].pages[0].commands[-1].body", "equals": "좋은 아침이에요."}
+    ]
+  },
+  {
+    "request": "여기에 생선 파는 사람 좀 놔주세요",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "생선 장수"},
+    "selection": {"rect": {"x": 23, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_23_34].name", "equals": "생선 장수"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_23_34].pages[0].commands[-1].body", "equals": "생선 장수입니다. 안녕하세요."}
+    ]
+  },
+  {
+    "request": "상인엔피씨 하나만 여기 놓고 대사로 '따뜻한 차 있어요.'",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "차 상인", "dialogue": "따뜻한 차 있어요."},
+    "selection": {"rect": {"x": 27, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_27_34].name", "equals": "차 상인"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_27_34].pages[0].commands[-1].body", "equals": "따뜻한 차 있어요."}
+    ]
+  },
+  {
+    "request": "선택해 둔 칸에 시장 안내인 한 명을 배치해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "시장 안내인"},
+    "selection": {"rect": {"x": 25, "y": 33, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_25_33].name", "equals": "시장 안내인"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_25_33].pages[0].commands[-1].body", "equals": "시장 안내인입니다. 안녕하세요."}
+    ]
+  },
+  {
+    "request": "여기 길손, '밤에는 춥다'고 말하게",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "길손", "dialogue": "밤에는 춥다."},
+    "selection": {"rect": {"x": 26, "y": 35, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_26_35].name", "equals": "길손"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_npc_26_35].pages[0].commands[-1].body", "equals": "밤에는 춥다."}
+    ]
+  },
+  {
+    "request": "지금 선택한 두 칸에 주민 한 명씩 놓아줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.npc.place",
+    "args": {"name": "주민"},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 2, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기 보물상자, 포션 세 개 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_potion", "count": 3},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_34].pages[0].commands[-3].itemId", "equals": "item_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_34].pages[0].commands[-3].amount", "equals": 3},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_34].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_34].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_34].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "이 자리에 상자 하나 만들고 회복약 한 병 담아 주세요",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_potion"},
+    "selection": {"rect": {"x": 26, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_34].pages[0].commands[-3].itemId", "equals": "item_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_34].pages[0].commands[-3].amount", "equals": 1},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_34].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_34].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_34].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "보물함에 돈만 오십 넣어줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"gold": 50},
+    "selection": {"rect": {"x": 25, "y": 32, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_32].pages[0].commands[-3].amount", "equals": 50},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_32].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_32].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_32].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "상자놓고 하이 포션 두 개랑 소지금 스무 늘어나게",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_hi_potion", "count": 2, "gold": 20},
+    "selection": {"rect": {"x": 23, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_23_34].pages[0].commands[-6].itemId", "equals": "item_hi_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_23_34].pages[0].commands[-6].amount", "equals": 2},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_23_34].pages[0].commands[-3].amount", "equals": 20},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_23_34].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_23_34].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_23_34].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "이 칸에 열면 낡은 열쇠를 얻는 보물상자를 배치해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_old_key"},
+    "selection": {"rect": {"x": 27, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_27_34].pages[0].commands[-3].itemId", "equals": "item_old_key"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_27_34].pages[0].commands[-3].amount", "equals": 1},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_27_34].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_27_34].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_27_34].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "보물상자 ㄱㄱ 회복약 다섯개",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_potion", "count": 5},
+    "selection": {"rect": {"x": 25, "y": 33, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_33].pages[0].commands[-3].itemId", "equals": "item_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_33].pages[0].commands[-3].amount", "equals": 5},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_33].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_33].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_25_33].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "선택한 데에 해독초 4개 주는 상자 만들어",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_antidote", "count": 4},
+    "selection": {"rect": {"x": 26, "y": 35, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_35].pages[0].commands[-3].itemId", "equals": "item_antidote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_35].pages[0].commands[-3].amount", "equals": 4},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_35].pages[1].conditions[0].value", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_35].pages[0].commands[-1].kind", "equals": "setSelfSwitch"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_chest_26_35].pages[0].commands[-1].value", "equals": true}
+    ]
+  },
+  {
+    "request": "보물 상자에 없는 용왕의 비늘 한 개 넣어 줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_missing_scale"},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "떠돌이 상인 진열대에 포션도 추가해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_potion"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_potion"}
+    ]
+  },
+  {
+    "request": "이 상점에 마력약 스물한 닢에 올려 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_ether", "price": 21},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_ether"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].stock[4].priceOverride", "equals": 21}
+    ]
+  },
+  {
+    "request": "여기도 포획구슬 팔자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_capture_orb"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_capture_orb"}
+    ]
+  },
+  {
+    "request": "상인에게 각성초를 진열하게 해주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_wake_herb"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_wake_herb"}
+    ]
+  },
+  {
+    "request": "회복약도 이 상인한테 7에 팔게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_potion", "price": 7},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].stock[4].priceOverride", "equals": 7}
+    ]
+  },
+  {
+    "request": "상겸 진열에 낡은열쇠 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_old_key"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_old_key"}
+    ]
+  },
+  {
+    "request": "지금 떠돌이 상인이 파는 물품에 엘릭서도 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_elixir"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "includes": "item_elixir"}
+    ]
+  },
+  {
+    "request": "상인한테 자료집에 없는 달가루도 팔게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_missing_moon"},
+    "expectRefusal": true
+  },
+  {
+    "request": "떠돌이 상인한테 상급 회복약은 빼 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_hi_potion"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_antidote", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "상점에서 해독초는 이제 안 팔았으면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_antidote"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "진열 목록에 하이포션 내리자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_hi_potion"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_antidote", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "정화 혈청 판매 그만",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_gen2_purifying_serum"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_antidote"]}
+    ]
+  },
+  {
+    "request": "해독 초만 진열대에서 좀 치워줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_antidote"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "이 상인 상품 중 대형 회복약만 빼 주실래요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_gen_potion_large"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_hi_potion", "item_antidote", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "상점재고에서 정화혈청 빼",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_gen2_purifying_serum"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_antidote"]}
+    ]
+  },
+  {
+    "request": "등록하지 않은 비단 장갑을 이 상점에서 빼 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_missing_gloves"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 칸에 겨울 시장으로 가는 편도 출구, 도착은 2,17",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_34].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_34].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_34].pages[0].commands[-1].x", "equals": 2},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_34].pages[0].commands[-1].y", "equals": 17}
+    ]
+  },
+  {
+    "request": "선택한 곳을 밟으면 겨울 시장 3,17로 보내 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 3, "toY": 17},
+    "selection": {"rect": {"x": 26, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_34].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_34].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_34].pages[0].commands[-1].x", "equals": 3},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_34].pages[0].commands[-1].y", "equals": 17}
+    ]
+  },
+  {
+    "request": "여기서 겨울시장 두 가로 열여덟 세로 칸으로 보내줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 18},
+    "selection": {"rect": {"x": 25, "y": 32, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_32].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_32].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_32].pages[0].commands[-1].x", "equals": 2},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_32].pages[0].commands[-1].y", "equals": 18}
+    ]
+  },
+  {
+    "request": "발판 만들어 밟으면 시장 3,18 도착. 돌아오는건 필요없어",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 3, "toY": 18},
+    "selection": {"rect": {"x": 23, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_23_34].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_23_34].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_23_34].pages[0].commands[-1].x", "equals": 3},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_23_34].pages[0].commands[-1].y", "equals": 18}
+    ]
+  },
+  {
+    "request": "마을 쪽 이 칸만 고쳐서 겨울 시장 1,19 위치로 이동하게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 1, "toY": 19},
+    "selection": {"rect": {"x": 27, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_27_34].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_27_34].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_27_34].pages[0].commands[-1].x", "equals": 1},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_27_34].pages[0].commands[-1].y", "equals": 19}
+    ]
+  },
+  {
+    "request": "여기 편도이동, 겨울 시장 (2, 19)",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 19},
+    "selection": {"rect": {"x": 25, "y": 33, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_33].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_33].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_33].pages[0].commands[-1].x", "equals": 2},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_25_33].pages[0].commands[-1].y", "equals": 19}
+    ]
+  },
+  {
+    "request": "이 칸에 한쪽 방향 출입구 하나. 겨울 시장 3,19로.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 3, "toY": 19},
+    "selection": {"rect": {"x": 26, "y": 35, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_35].pages[0].commands[-1].kind", "equals": "transfer"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_35].pages[0].commands[-1].mapId", "equals": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_35].pages[0].commands[-1].x", "equals": 3},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_transfer_26_35].pages[0].commands[-1].y", "equals": 19}
+    ]
+  },
+  {
+    "request": "아직 없는 수정 궁전 맵으로 이 칸에서 보내 줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_missing_palace", "toX": 2, "toY": 2},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기랑 겨울 시장 2,17을 서로 오가는 출입구로 이어 줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "양방향 포탈 부탁해요. 반대쪽은 겨울시장 가로 둘, 세로 열일곱.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기서 겨울 시장 2 17로 갔다가 그 자리에서 다시 돌아오게 해줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "왕복출입구로 해주세요, 겨울 시장의 2,17 칸과 쌍으로요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "시장쪽에도 돌아오는 이동 발판 같이 넣어줘. 위치는 2,17",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 이 자리와 겨울 시장 두 번째 가로 칸의 세로 17을 양쪽 다 바꿔서 연결해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "두 맵 오가게 문 한쌍. 맞은편 겨울 장터 2,17.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 칸하고 겨울 시장 2,17 각각에 포탈 하나씩, 서로 이어줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.placePair",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 2, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기에 '환영합니다'라고 써 둔 표지판 놔줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "환영합니다"},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_25_34].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_25_34].pages[0].commands[0].body", "equals": "환영합니다"}
+    ]
+  },
+  {
+    "request": "선택한 칸에 시장은 동쪽이라는 안내판을 세워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "시장은 동쪽입니다."},
+    "selection": {"rect": {"x": 26, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_26_34].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_26_34].pages[0].commands[0].body", "equals": "시장은 동쪽입니다."}
+    ]
+  },
+  {
+    "request": "표지 판 하나, '빙판 주의'",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "빙판 주의"},
+    "selection": {"rect": {"x": 25, "y": 32, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_25_32].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_25_32].pages[0].commands[0].body", "equals": "빙판 주의"}
+    ]
+  },
+  {
+    "request": "이 칸에 장터 안내 간판 일단 '오늘은 쉽니다'라고 적자",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "오늘은 쉽니다"},
+    "selection": {"rect": {"x": 23, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_23_34].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_23_34].pages[0].commands[0].body", "equals": "오늘은 쉽니다"}
+    ]
+  },
+  {
+    "request": "나무 팻말에 '얼음 위에 오르지 마세요.'라고 써 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "얼음 위에 오르지 마세요."},
+    "selection": {"rect": {"x": 27, "y": 34, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_27_34].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_27_34].pages[0].commands[0].body", "equals": "얼음 위에 오르지 마세요."}
+    ]
+  },
+  {
+    "request": "안내간판좀. 남쪽이 마을 입구.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "남쪽이 마을 입구."},
+    "selection": {"rect": {"x": 25, "y": 33, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_25_33].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_25_33].pages[0].commands[0].body", "equals": "남쪽이 마을 입구."}
+    ]
+  },
+  {
+    "request": "조사하면 '눈길에서 뛰지 마세요'가 뜨는 푯말 만들어 줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "눈길에서 뛰지 마세요"},
+    "selection": {"rect": {"x": 26, "y": 35, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_26_35].pages[0].commands[0].kind", "equals": "text"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_preset_sign_26_35].pages[0].commands[0].body", "equals": "눈길에서 뛰지 마세요"}
+    ]
+  },
+  {
+    "request": "선택한 두 칸에 시장 표지판을 한꺼번에 붙여줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "시장"},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 2, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "시장에서 호수 가는 문은 낡은 열쇠 있어야 열리게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"itemId": "item_old_key"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "문이 잠겨 있다."},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.itemId", "equals": "item_old_key"}
+    ]
+  },
+  {
+    "request": "이 문 잠가 주세요. 낡은 열쇠 없으면 '열쇠가 필요하다.'라고 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"itemId": "item_old_key", "text": "열쇠가 필요하다."},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "열쇠가 필요하다."},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.itemId", "equals": "item_old_key"}
+    ]
+  },
+  {
+    "request": "낡은열쇠 있을 때만 이 문을 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"itemId": "item_old_key"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "문이 잠겨 있다."},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.itemId", "equals": "item_old_key"}
+    ]
+  },
+  {
+    "request": "지금 선택한 시장 출구를 1번 스위치가 켜지면 통과할 수 있게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"switchId": "sw_0001"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "문이 잠겨 있다."},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.switchId", "equals": "sw_0001"}
+    ]
+  },
+  {
+    "request": "문 잠그고 두번째 스위치 켜졌을때만 지나가게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"switchId": "sw_0002"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "문이 잠겨 있다."},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.switchId", "equals": "sw_0002"}
+    ]
+  },
+  {
+    "request": "셋째 스위치가 꺼져 있으면 '아직 못 지나간다'라고 하는 잠금 달아줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"switchId": "sw_0003", "text": "아직 못 지나간다"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "아직 못 지나간다"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.switchId", "equals": "sw_0003"}
+    ]
+  },
+  {
+    "request": "여기는 낡은 열쇠로만 열어. 안내문은 '호수 길이 잠겼다.'",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"itemId": "item_old_key", "text": "호수 길이 잠겼다."},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[id=ev_world_gate_1o6qiz7_page].commands[0].kind", "equals": "transfer"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].commands[0].body", "equals": "호수 길이 잠겼다."},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].pages[-1].conditions[-1].condition.itemId", "equals": "item_old_key"}
+    ]
+  },
+  {
+    "request": "등록되지 않은 달의 열쇠로만 이 문 열리게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.door.setLock",
+    "args": {"itemId": "item_missing_key"},
+    "expectRefusal": true
+  }
+]
