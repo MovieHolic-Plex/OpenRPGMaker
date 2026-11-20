@@ -423,6 +423,21 @@ describe("퀘스트 원시 기능", () => {
     const live = { maps: { [target.mapId]: { events: [working] } } };
     expect(() => runPrimitive(project, target, "quest.remove", {}, undefined, live)).toThrow(/이벤트 명령/u);
     expect(runPrimitive(project, target, "quest.remove", {}).after.quests).toEqual([]);
+    const switchId = questFlagIds(draft.key, 2).stepSwitches[1];
+    const progress: Command = { kind: "fork", condition: { kind: "switch", switchId, value: true }, then: [] };
+    const progressDraft = { maps: { [target.mapId]: { events: [{ ...working, commands: [progress] }] } } };
+    expect(() => runPrimitive(project, target, "quest.remove", {}, undefined, progressDraft)).toThrow(/진행 스위치/u);
+    expect(() => runPrimitive(project, target, "quest.objective.remove", { step: 2 }, undefined, progressDraft)).toThrow(/진행 스위치/u);
+  });
+
+  it("열린 이벤트 초안의 목표 명령에 등장하는 퀘스트 ID를 재사용하지 않는다", () => {
+    const { before, target, event, objective } = blank();
+    const command: Command = { kind: "m2Command", commandId: "m2-208-quest-objective", fields: { questId: "quest_2", objectiveId: "well" } };
+    const draft: GameEvent = { ...event, id: "ev_draft", commands: [command], draft: { kind: "new" } };
+    const live = { maps: { [target.mapId]: { events: [draft] } } };
+    const { after } = runPrimitive(before, target, "quest.create", { title: "별개 의뢰", objective }, undefined, live);
+    expect(after.quests).toMatchObject([{ key: "quest_3" }]);
+    expect(after.maps).toBe(before.maps);
   });
 
   it("진행에 연결되지 않은 퀘스트도 아이템 보상의 상한을 검증한다", () => {
@@ -503,6 +518,32 @@ describe("그래프 목표의 연결", () => {
     });
   });
 
+  it("그래프 목표의 ID 할당과 삭제는 열린 초안의 목표 명령을 반영한다", () => {
+    const { project, target, quest, otherFlag, other } = branched();
+    const command = (objectiveId: string): Command => ({
+      kind: "m2Command", commandId: "m2-208-quest-objective", fields: { questId: quest.id, objectiveId },
+    });
+    const draft: GameEvent = { ...other, id: "ev_draft", commands: [command("step_1"), command("middle")], draft: { kind: "new" } };
+    const live = { maps: { [target.mapId]: { events: [draft] } } };
+    expect(() => runPrimitive(project, target, "quest.objective.remove", { step: 2 }, undefined, live)).toThrow(/이벤트 명령/u);
+    const { after } = runPrimitive(project, target, "quest.objective.add", { label: "보고", switchId: otherFlag }, undefined, live);
+    expect(after.quests).toMatchObject([{ nodes: expect.arrayContaining([{ id: "step_2", description: "보고" }]) }]);
+    expect(after.maps).toBe(project.maps);
+  });
+
+  it("시작 스위치를 끄기만 하는 이벤트는 의뢰인으로 세지 않는다", () => {
+    const { project, target, other } = branched();
+    const map = project.maps[target.mapId];
+    const withWriter = (value: boolean) => ({ ...project, maps: { ...project.maps, [map.id]: {
+      ...map, events: map.events.map(event => event === other ? {
+        ...event, commands: [...event.commands, { kind: "setSwitch" as const, switchId: "sw_quest_1_started", value }],
+      } : event),
+    } } });
+    const args = { title: "새 이름" };
+    expect(runPrimitive(withWriter(false), target, "quest.rename", args).after.quests).toMatchObject([{ title: args.title }]);
+    expect(() => runPrimitive(withWriter(true), target, "quest.rename", args)).toThrow(/퀘스트를 찾을 수 없어요/u);
+  });
+
   it("완료 스위치를 바꿔도 꺼짐 조건을 유지하고 여러 조건을 덮어쓰지 않는다", () => {
     const { project, target, quest, otherFlag, other } = branched();
     const map = project.maps[target.mapId];
@@ -541,6 +582,9 @@ describe("그래프 목표의 연결", () => {
     const args = { label: "완료 확인", switchId };
     const live = (original: GameEvent) => ({ maps: { [map.id]: { events: [{ ...working, draft: { kind: "edit" as const, original } }] } } });
     expect(() => runPrimitive(before, target, "quest.objective.add", args, undefined, live(selected)))
+      .toThrow(/이벤트에서 값을 기록/u);
+    const withoutWriter = { ...before, maps: { ...before.maps, [map.id]: { ...map, events: [selected, ...map.events.slice(1)] } } };
+    expect(() => runPrimitive(withoutWriter, target, "quest.objective.add", args, undefined, live(working)))
       .toThrow(/이벤트에서 값을 기록/u);
     expect(runPrimitive(before, target, "quest.objective.add", args, undefined, live(working)).after.quests)
       .toMatchObject([{ nodes: expect.arrayContaining([{ id: "step_1", description: args.label, completesWhen: { kind: "switch", switchId, value: true } }]) }]);

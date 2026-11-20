@@ -9,7 +9,7 @@ import {
   isQuestGraphDef, questDefId, questFlagIds,
   type AnyQuestDef, type EventRef, type QuestDef, type QuestGraphConditionExpression, type QuestGraphDef, type QuestReward, type QuestStep,
 } from "@/project/quest/questDef";
-import { extractQuestGraphConditions, resolveQuestGraphCondition, selectWriteSite, validateQuestGraph } from "@/project/quest/questGraph";
+import { extractQuestGraphConditions, resolveQuestGraphCondition, selectWriteSite, validateQuestGraph, writeKnownNotToSatisfy } from "@/project/quest/questGraph";
 import { questPresetIssue } from "@/project/quest/questPresets";
 import { validateQuestReferences } from "@/project/quest/questValidation";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
@@ -145,9 +145,10 @@ function graphGiver(project: Project, quest: QuestGraphDef, usage: ReturnType<ty
   if (!first) return null;
   let giver: EventRef | null = null;
   try {
-    for (const condition of extractQuestGraphConditions(first.completesWhen)) {
-      const { kind, targetId } = resolveQuestGraphCondition(project, condition);
-      const writers = usageBucketFor(usage, kind, targetId).writes;
+    for (const raw of extractQuestGraphConditions(first.completesWhen)) {
+      const condition = resolveQuestGraphCondition(project, raw);
+      const writers = usageBucketFor(usage, condition.kind, condition.targetId).writes
+        .filter(site => !writeKnownNotToSatisfy(site.assignedValue, condition));
       const owner = writers[0];
       if (!owner?.mapId || !owner.eventId) return null;
       giver ??= { mapId: owner.mapId, eventId: owner.eventId };
@@ -198,6 +199,19 @@ function* questCommands(project: Project) {
   }
 }
 
+function questEventViews(ctx: PrimitiveContext) {
+  // The selected event in the task copy includes edits from earlier tools in this run.
+  const target = ctx.target.kind === "event" ? ctx.target : undefined;
+  const working = withOpenEventDrafts(ctx.project, ctx.live, target);
+  const saved = projectViewWithoutEventDrafts(withOpenEventDrafts(ctx.project, ctx.live));
+  return { working, saved };
+}
+
+function questReferenceViews(ctx: PrimitiveContext): Project[] {
+  const { working, saved } = questEventViews(ctx);
+  return [...new Set([ctx.project, working, saved])];
+}
+
 function commandId(value: string | number | boolean | undefined, fallback: string): string {
   return value === undefined ? fallback : String(value);
 }
@@ -214,18 +228,20 @@ function assertNoTextProposal(project: Project, quest: AnyQuestDef, field: strin
   }
 }
 
-function assertNoObjectiveReferences(project: Project, quest: AnyQuestDef, index: number): void {
+function assertNoObjectiveReferences(ctx: PrimitiveContext, quest: AnyQuestDef, index: number): void {
   const id = questDefId(quest);
   const graph = isQuestGraphDef(quest);
   const prefix = graph ? "node" : "step";
-  if (questDialogueRef(project, id, field => field.startsWith(prefix) && Number(field.slice(prefix.length)) >= index)) {
+  if (questDialogueRef(ctx.project, id, field => field.startsWith(prefix) && Number(field.slice(prefix.length)) >= index)) {
     throw new PrimitiveError("범위 밖: 삭제되거나 번호가 바뀌는 목표에 자료집의 윤문 제안이 있어요.");
   }
-  for (const fields of questCommands(project)) {
-    if (commandId(fields.questId, "quest") !== id) continue;
-    const objectiveId = commandId(fields.objectiveId, "objective");
-    if (!graph || objectiveId === quest.nodes[index].id) {
-      throw new PrimitiveError("범위 밖: 이벤트 명령에서 이 퀘스트 목표를 사용하고 있어요.");
+  for (const project of questReferenceViews(ctx)) {
+    for (const fields of questCommands(project)) {
+      if (commandId(fields.questId, "quest") !== id) continue;
+      const objectiveId = commandId(fields.objectiveId, "objective");
+      if (!graph || objectiveId === quest.nodes[index].id) {
+        throw new PrimitiveError("범위 밖: 이벤트 명령에서 이 퀘스트 목표를 사용하고 있어요.");
+      }
     }
   }
 }
@@ -255,13 +271,15 @@ function questProgressUses(project: Project, key: string, stepMatches?: (index: 
       || ("variableId" in condition && matches(condition.variableId, "variable")))));
 }
 
-function nextQuestKey(project: Project): string {
+function nextQuestKey(ctx: PrimitiveContext): string {
+  const { project } = ctx;
+  const views = questReferenceViews(ctx);
   const used = new Set((project.quests ?? []).map(questDefId));
   for (const quest of project.quests ?? []) {
     if (!isQuestGraphDef(quest)) for (const required of quest.requiresQuestKeys ?? []) used.add(required);
   }
   for (const flag of project.storyFlags ?? []) if (flag.questId) used.add(flag.questId);
-  for (const fields of questCommands(project)) used.add(commandId(fields.questId, "quest"));
+  for (const view of views) for (const fields of questCommands(view)) used.add(commandId(fields.questId, "quest"));
   for (const proposal of project.dialogueDesk?.proposals ?? []) {
     const key = /^qs\/(quest_\d+)#/u.exec(proposal.lineId)?.[1];
     if (key) used.add(key);
@@ -269,11 +287,12 @@ function nextQuestKey(project: Project): string {
   for (const note of project.dialogueDesk?.sceneNotes ?? []) {
     if (note.sceneId.startsWith("qs/")) used.add(note.sceneId.slice(3));
   }
-  const usage = buildStoryFlagUsageIndex(project);
   const switches = new Set(project.switches.map(entry => entry.id));
   for (const flagId of [...Object.keys(project.flags), ...Object.keys(project.session.switches)]) switches.add(flagId);
   const variables = new Set([...project.variables.map(entry => entry.id), ...Object.keys(project.session.variables)]);
-  for (const site of usage.sites) (site.kind === "switch" ? switches : variables).add(site.targetId);
+  for (const view of views) for (const site of buildStoryFlagUsageIndex(view).sites) {
+    (site.kind === "switch" ? switches : variables).add(site.targetId);
+  }
   for (const flag of project.storyFlags ?? []) (flag.kind === "switch" ? switches : variables).add(flag.targetId);
   let index = 1;
   while (true) {
@@ -363,11 +382,14 @@ function validateGraph(project: Project, quest: QuestGraphDef): QuestGraphDef {
 }
 
 function switchCondition(ctx: PrimitiveContext, args: Args, value = true) {
-  const project = projectViewWithoutEventDrafts(withOpenEventDrafts(ctx.project, ctx.live));
+  const { working, saved } = questEventViews(ctx);
   const switchId = requiredText(args.switchId, "목표를 완료할 스위치를 골라 주세요.");
-  if (!project.switches.some(entry => entry.id === switchId)) throw new PrimitiveError("목표를 완료할 스위치를 찾을 수 없어요.");
-  if (!selectWriteSite(project, buildStoryFlagUsageIndex(project), { kind: "switch", targetId: switchId, value })) {
-    throw new PrimitiveError("이벤트에서 값을 기록하는 완료 스위치를 골라 주세요.");
+  if (!ctx.project.switches.some(entry => entry.id === switchId)) throw new PrimitiveError("목표를 완료할 스위치를 찾을 수 없어요.");
+  const condition = { kind: "switch" as const, targetId: switchId, value };
+  for (const view of new Set([working, saved])) {
+    if (!selectWriteSite(buildStoryFlagUsageIndex(view), condition)) {
+      throw new PrimitiveError("이벤트에서 값을 기록하는 완료 스위치를 골라 주세요.");
+    }
   }
   return { kind: "switch" as const, switchId, value };
 }
@@ -420,7 +442,7 @@ function appendObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args):
   if (isQuestGraphDef(quest)) {
     if (args.objective !== undefined) throw new PrimitiveError("그래프 목표에는 문구와 완료 스위치를 입력해 주세요.");
     const used = new Set(quest.nodes.map(node => node.id));
-    for (const fields of questCommands(project)) {
+    for (const view of questReferenceViews(ctx)) for (const fields of questCommands(view)) {
       if (commandId(fields.questId, "quest") === quest.id) used.add(commandId(fields.objectiveId, "objective"));
     }
     let number = 1;
@@ -488,11 +510,12 @@ function updateObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args):
   return updated;
 }
 
-function removeObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQuestDef {
+function removeObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args): AnyQuestDef {
+  const { project } = ctx;
   if (isQuestGraphDef(quest)) {
     const index = stepIndex(args, quest.nodes.length);
     if (quest.nodes.length === 1) throw new PrimitiveError("퀘스트에는 목표가 하나 이상 있어야 해요.");
-    assertNoObjectiveReferences(project, quest, index);
+    assertNoObjectiveReferences(ctx, quest, index);
     const id = quest.nodes[index].id;
     const edges = quest.edges.filter(edge => edge.from !== id && edge.to !== id);
     const parents = quest.edges.filter(edge => edge.to === id);
@@ -516,8 +539,8 @@ function removeObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQ
   const index = stepIndex(args, quest.steps.length);
   if (quest.steps.length === 1) throw new PrimitiveError("퀘스트에는 목표가 하나 이상 있어야 해요.");
   if (quest.gates?.some(gate => gate.requiresStep === index)) throw new PrimitiveError("통로를 여는 목표는 삭제할 수 없어요.");
-  assertNoObjectiveReferences(project, quest, index);
-  if (questProgressUses(project, quest.key, step => step >= index)) {
+  assertNoObjectiveReferences(ctx, quest, index);
+  if (questReferenceViews(ctx).some(view => questProgressUses(view, quest.key, step => step >= index))) {
     throw new PrimitiveError("범위 밖: 이 목표나 뒤 목표의 진행 스위치·변수도 정리해야 해서 삭제할 수 없어요.");
   }
   const steps = quest.steps.filter((_, i) => i !== index);
@@ -570,7 +593,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply(ctx, args) {
       const { project } = ctx;
       const quest = validateStepDef(project, parseStepDef({
-        key: nextQuestKey(project),
+        key: nextQuestKey(ctx),
         title: requiredText(args.title, "퀘스트 이름을 입력해 주세요."),
         summary: typeof args.summary === "string" ? args.summary.trim() : "",
         giver: createGiver(ctx, args),
@@ -629,7 +652,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply(ctx, args) {
       const { project } = ctx;
       const quest = questFor(ctx, args);
-      return replaceQuest(project, quest, removeObjective(project, quest, args));
+      return replaceQuest(project, quest, removeObjective(ctx, quest, args));
     },
   }),
   primitive("quest.reward.set", "퀘스트 보상 정의 변경", {
@@ -662,14 +685,13 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (questDialogueRef(project, id, () => true) || project.dialogueDesk?.sceneNotes?.some(note => note.sceneId === `qs/${id}`)) {
         throw new PrimitiveError("범위 밖: 자료집에 이 퀘스트의 윤문 제안이나 장면 메모가 있어요.");
       }
-      const working = withOpenEventDrafts(project, ctx.live);
-      const saved = projectViewWithoutEventDrafts(working);
-      for (const view of new Set([project, working, saved])) {
+      const views = questReferenceViews(ctx);
+      for (const view of views) {
         for (const fields of questCommands(view)) {
           if (commandId(fields.questId, "quest") === id) throw new PrimitiveError("범위 밖: 이벤트 명령에서 이 퀘스트를 사용하고 있어요.");
         }
       }
-      if (!isQuestGraphDef(quest) && questProgressUses(project, id)) {
+      if (!isQuestGraphDef(quest) && views.some(view => questProgressUses(view, id))) {
         throw new PrimitiveError("범위 밖: 이 퀘스트에 연결된 진행 스위치나 변수를 먼저 정리해야 해요.");
       }
       return { ...project, quests: project.quests?.filter(entry => entry !== quest) };

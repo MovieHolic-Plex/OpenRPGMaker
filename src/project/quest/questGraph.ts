@@ -69,7 +69,6 @@ interface WalkthroughState {
 interface RootCommandContext {
   readonly commands: readonly Command[];
   readonly rootIndex: number;
-  readonly command: Command | null;
 }
 
 const VARIABLE_OPS: readonly QuestVariableOp[] = ["==", ">=", "<=", ">", "<", "!="];
@@ -227,7 +226,7 @@ export function generateQuestWalkthrough(project: Project, questId: string): Que
   };
   for (const node of topologicalQuestNodes(quest)) {
     const conditions = extractQuestGraphConditions(node.completesWhen).map((condition) => resolveQuestGraphCondition(project, condition));
-    const grouped = groupConditionsByWriteSite(project, usageIndex, conditions);
+    const grouped = groupConditionsByWriteSite(usageIndex, conditions);
     const nodeStartManualCount = state.manualHints.length;
     for (const group of grouped) {
       if (group.site) {
@@ -336,13 +335,12 @@ export function questGraphConditionMet(project: Project, session: { readonly swi
 }
 
 function groupConditionsByWriteSite(
-  project: Project,
   usageIndex: ReturnType<typeof buildStoryFlagUsageIndex>,
   conditions: readonly ResolvedQuestCondition[]
 ): Array<{ readonly key: string; readonly site: StoryFlagUsageSite | null; readonly conditions: ResolvedQuestCondition[] }> {
   const groups = new Map<string, { key: string; site: StoryFlagUsageSite | null; conditions: ResolvedQuestCondition[] }>();
   for (const condition of conditions) {
-    const site = selectWriteSite(project, usageIndex, condition);
+    const site = selectWriteSite(usageIndex, condition);
     const key = site
       ? siteKey(site)
       : `manual:${condition.kind}:${condition.targetId}:${condition.kind === "variable" ? condition.op : ""}:${condition.value}`;
@@ -354,20 +352,17 @@ function groupConditionsByWriteSite(
 }
 
 export function selectWriteSite(
-  project: Project,
   usageIndex: ReturnType<typeof buildStoryFlagUsageIndex>,
   condition: ResolvedQuestCondition
 ): StoryFlagUsageSite | null {
   const writes = usageBucketFor(usageIndex, condition.kind, condition.targetId).writes;
-  return writes.find((site) => !writeKnownNotToSatisfy(project, site, condition)) ?? null;
+  return writes.find((site) => !writeKnownNotToSatisfy(site.assignedValue, condition)) ?? null;
 }
 
-function writeKnownNotToSatisfy(project: Project, site: StoryFlagUsageSite, condition: ResolvedQuestCondition): boolean {
-  if (condition.kind === "switch") return site.switchValue !== undefined && site.switchValue !== condition.value;
-  const command = commandForSite(project, site);
-  if (!command) return false;
-  if (command.kind === "setVariable" && command.op === "=" && typeof command.value === "number") {
-    return !compareVariableValue(command.value, condition.op, condition.value);
+export function writeKnownNotToSatisfy(value: boolean | number | undefined, condition: ResolvedQuestCondition): boolean {
+  if (condition.kind === "switch") return typeof value === "boolean" && value !== condition.value;
+  if (typeof value === "number") {
+    return !compareVariableValue(value, condition.op, condition.value);
   }
   return false;
 }
@@ -578,10 +573,6 @@ function commandContainsBattle(command: Command): boolean {
   return false;
 }
 
-function commandForSite(project: Project, site: StoryFlagUsageSite): Command | null {
-  return rootCommandContextForSite(project, site)?.command ?? null;
-}
-
 function rootCommandContextForSite(project: Project, site: StoryFlagUsageSite): RootCommandContext | null {
   const path = site.commandPath;
   if (!path) return null;
@@ -598,7 +589,7 @@ function rootCommandContextForSite(project: Project, site: StoryFlagUsageSite): 
   if (!commands) return null;
   const rootIndex = rootCommandIndex(path);
   if (rootIndex === null || !commands[rootIndex]) return null;
-  return { commands, rootIndex, command: commandAtNestedPath(commands[rootIndex], path) ?? commands[rootIndex] };
+  return { commands, rootIndex };
 }
 
 function rootCommandIndex(path: string): number | null {
@@ -606,44 +597,6 @@ function rootCommandIndex(path: string): number | null {
   if (!match) return null;
   const value = match[1] ?? match[2] ?? match[3];
   return value === undefined ? null : Number(value);
-}
-
-function commandAtNestedPath(root: Command, path: string): Command | null {
-  const tokens = [...path.matchAll(/\.(then|else|body|cancelBranch|successBranch|failureBranch|victoryBranch|defeatBranch|escapeBranch)\[(\d+)\]|\.(options)\[(\d+)\]\.branch\[(\d+)\]/gu)];
-  let current: Command = root;
-  for (const token of tokens) {
-    if (token[1]) {
-      const branch = commandBranch(current, token[1]);
-      const next = branch?.[Number(token[2])];
-      if (!next) return null;
-      current = next;
-      continue;
-    }
-    if (token[3] === "options" && current.kind === "choices") {
-      const option = current.options[Number(token[4])];
-      const next = option?.branch[Number(token[5])];
-      if (!next) return null;
-      current = next;
-    }
-  }
-  return current;
-}
-
-function commandBranch(command: Command, branch: string): readonly Command[] | undefined {
-  if (command.kind === "battleProcessing") {
-    if (branch === "victoryBranch") return command.victoryBranch;
-    if (branch === "defeatBranch") return command.defeatBranch;
-    if (branch === "escapeBranch") return command.escapeBranch;
-  }
-  if (command.kind === "fork" && branch === "then") return command.then;
-  if (command.kind === "fork" && branch === "else") return command.else;
-  if (command.kind === "loop" && branch === "body") return command.body;
-  if (command.kind === "choices" && branch === "cancelBranch") return command.cancelBranch;
-  if (command.kind === "promoteActor" && branch === "successBranch") return command.successBranch;
-  if (command.kind === "promoteActor" && branch === "failureBranch") return command.failureBranch;
-  if (command.kind === "evolveMonster" && branch === "successBranch") return command.successBranch;
-  if (command.kind === "evolveMonster" && branch === "failureBranch") return command.failureBranch;
-  return undefined;
 }
 
 function choiceOptionIndex(path: string | undefined): number | null {

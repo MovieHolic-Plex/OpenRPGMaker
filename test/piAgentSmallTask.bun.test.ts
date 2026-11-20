@@ -194,7 +194,7 @@ test("작은 일 동작도 호출 상한에 포함하고 상한을 넘으면 앞
   expect(done.project).toBe(project);
 });
 
-for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"] as const) {
+for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection", "quest-before-paint"] as const) {
   test(`작은 일의 타일 칠하기는 먼저 전달된 참고문서가 필요하다 (${delivery})`, async () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
@@ -210,6 +210,11 @@ for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"
     const paint = { type: "toolCall", id: "paint-floor", name: "paint_tiles", arguments: {
       mapId, referencePurpose: categoryId, layer: "lower", mode: "cells", tile: -1, cells: [{ x: 1, y: 1 }],
     } } as const;
+    const questArgs = { title: "바닥 확인", giverEventId: "ev_giver", objective: { kind: "reach", mapId, x: 1, y: 1 } };
+    const quest = { type: "toolCall", id: "quest-create", name: APPLY_SMALL_TASK_PRIMITIVE, arguments: { id: "quest.create", args: questArgs } } as const;
+    if (delivery === "quest-before-paint") {
+      map.events.push({ id: questArgs.giverEventId, name: "안내인", x: 2, y: 2, trigger: { kind: "action" }, commands: [] });
+    }
     const paintIndex = map.width + 1;
     expect(map.lowerTiles[paintIndex]).not.toBe(-1);
     let turn = 0;
@@ -218,7 +223,8 @@ for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"
         ? message.content.flatMap(part => part.type === "text" ? [{ type: "function_call_output", output: part.text }] : [])
         : []);
       void options?.onPayload?.({ input: delivery === "omitted" ? [] : toolOutput }, model, options.signal);
-      const calls = turn++ === 0 ? (delivery === "same-turn" ? [read, paint] : [read]) : turn === 2 ? [paint] : [];
+      const steps = delivery === "same-turn" ? [[read, paint]] : delivery === "quest-before-paint" ? [[read], [quest], [paint]] : [[read], [paint]];
+      const calls = steps[turn++] ?? [];
       const stopReason = calls.length ? "toolUse" : "stop";
       const content = calls.length ? calls : [{ type: "text", text: "끝" }];
       const message = { role: "assistant", content, api: model.api, provider: model.provider, model: model.id,
@@ -237,10 +243,11 @@ for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"
         selection: { rect: { x: delivery === "outside-selection" ? 0 : 1, y: 1, w: 1, h: 1 } },
       },
     }, { streamFn });
-    if (delivery === "delivered") {
+    if (delivery === "delivered" || delivery === "quest-before-paint") {
       expect(done.stoppedEarly).toBeUndefined();
-      expect(done.stats.toolCalls).toBe(2);
+      expect(done.stats.toolCalls).toBe(delivery === "delivered" ? 2 : 3);
       expect(done.project.maps[mapId].lowerTiles[paintIndex]).toBe(-1);
+      if (delivery === "quest-before-paint") expect(done.project.quests).toMatchObject([{ title: questArgs.title }]);
     } else {
       expect(done.stoppedEarly).toContain(delivery === "outside-selection"
         ? "선택 영역 바깥 타일" : "타일셋 참고문서 선행 읽기 필요");
@@ -304,5 +311,31 @@ for (const writer of ["native", "script"] as const) {
     const done = await runPiAgent(request, { streamFn: scripted([remove]) });
     expect(done.stoppedEarly).toContain("진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요");
     expect(done.project).toBe(project);
+  });
+}
+
+for (const value of [0, 10]) {
+  test(`그래프 조건을 만족하는 마지막 변수 대입만 삭제를 막는다 (${value})`, async () => {
+    const { request, project, mapId, event } = fixture();
+    const variableId = "var_quest_graph";
+    const command: Command = { kind: "setVariable", variableId, op: "=", value };
+    event.pages[1]!.commands = [command];
+    project.maps[mapId].events = [event];
+    project.variables.push({ id: variableId, name: "의뢰 점수" });
+    project.database.troops = [{
+      id: "troop_reward", name: "점수 초기화", enemyIds: [], autoAlign: true,
+      afterBattle: { victory: [{ ...command, value: 0 }] },
+    }];
+    project.quests = [{
+      kind: "graph", id: "q_graph", title: "길 안내", edges: [],
+      nodes: [{ id: "finish", description: "완료", completesWhen: { kind: "variable", variableId, op: ">=", value: 10 } }],
+    }];
+    const remove = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+    const done = await runPiAgent(request, { streamFn: scripted([remove]) });
+    if (value === 10) expect(done.stoppedEarly).toContain("진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요");
+    else {
+      expect(done.stoppedEarly).toBeUndefined();
+      expect(done.project.maps[mapId].events[0]!.pages![1]!.commands).toEqual([]);
+    }
   });
 }

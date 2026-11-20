@@ -4,7 +4,7 @@ import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { openingStageFlag } from "@/project/openingStage";
 import { isQuestGraphDef } from "@/project/quest/questDef";
-import { extractQuestGraphConditions, resolveQuestGraphCondition, selectWriteSite } from "@/project/quest/questGraph";
+import { extractQuestGraphConditions, resolveQuestGraphCondition, selectWriteSite, writeKnownNotToSatisfy } from "@/project/quest/questGraph";
 import { scriptWrites } from "@/project/script/effects";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { Command, Project } from "@/project/types";
@@ -44,14 +44,14 @@ function losesProgressionWriter(project: Project, command: Command): boolean {
       return bucket.reads.length > 0 && bucket.writes.length === 0;
     })) return true;
   }
+  const assignedValue = command.kind === "setSwitch" && typeof command.value === "boolean" ? command.value
+    : command.kind === "setVariable" && command.op === "=" && typeof command.value === "number" ? command.value : undefined;
   return project.quests?.some(quest => isQuestGraphDef(quest) && quest.nodes.some(node =>
     extractQuestGraphConditions(node.completesWhen).some(raw => {
       try {
         const condition = resolveQuestGraphCondition(project, raw);
         if (!targets[condition.kind].includes(condition.targetId)) return false;
-        if (condition.kind === "switch" && command.kind === "setSwitch"
-          && typeof command.value === "boolean" && command.value !== condition.value) return false;
-        return !selectWriteSite(project, usage, condition);
+        return !writeKnownNotToSatisfy(assignedValue, condition) && !selectWriteSite(usage, condition);
       } catch {
         return false;
       }

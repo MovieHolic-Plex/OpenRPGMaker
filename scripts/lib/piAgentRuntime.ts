@@ -1,5 +1,6 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
+import { jsonEqual } from "../../src/util/structuralJson.ts";
 import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
@@ -465,7 +466,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     ...tool,
     label: tool.name,
     async execute(_id, params) {
-      const questsWereScoped = ctx.project.quests === scopedQuests;
+      const questsWereScoped = jsonEqual(ctx.project.quests, scopedQuests);
       const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
       if (questsWereScoped) scopedQuests = ctx.project.quests;
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
@@ -538,7 +539,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
     // Quest changes that passed their primitive scope are independent of the tile rectangle.
-    const regionAfter = ctx.project.quests === scopedQuests && scopedQuests !== base.quests
+    const regionAfter = jsonEqual(ctx.project.quests, scopedQuests) && !jsonEqual(scopedQuests, base.quests)
       ? { ...ctx.project, quests: base.quests } : ctx.project;
     const result = checkSmallTaskScope(base, regionAfter, regionScope);
     if (!result.ok) failure = result.reason;
