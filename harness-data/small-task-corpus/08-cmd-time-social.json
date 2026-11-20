@@ -1,6 +1,6 @@
 [
   {
-    "request": "종이 울리면 둘째 타이머를 60초로 시작해 주세요.",
+    "request": "둘째 타이머를 60초로 맞춰서 바로 시작해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
@@ -30,10 +30,10 @@
     "request": "초읽기 2번을 멈추는 줄을 맨 끝에 넣어 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "timer", "action": "start", "timerId": "timer1", "seconds": 10}]}]}]},
     "primitive": "cmd.timer.insert",
-    "args": {"index": 0, "action": "stop", "timerId": "timer2"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "timer", "action": "stop", "timerId": "timer2"}]}]
+    "args": {"action": "stop", "timerId": "timer2"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "timer", "action": "start", "timerId": "timer1", "seconds": 10}, {"kind": "timer", "action": "stop", "timerId": "timer2"}]}]
   },
   {
     "request": "10초타이머 시작",
@@ -301,7 +301,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 1}]}]
   },
   {
-    "request": "작물 성장만 사흘 앞당기는 명령을 추가해 주세요.",
+    "request": "시계는 그대로 두고 작물의 일일 성장 확인을 세 번 실행해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
@@ -310,7 +310,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 3}]}]
   },
   {
-    "request": "농작물성장 이틀 추가해줘",
+    "request": "농작물 일일 성장 검사 두 번 추가해줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
@@ -328,7 +328,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 1}]}]
   },
   {
-    "request": "작물이 닷새만큼 크도록 처리해 주세요.",
+    "request": "작물이 자랄 수 있는지 하루 단위로 닷새치 확인해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
@@ -337,7 +337,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 5}]}]
   },
   {
-    "request": "이벤트 끝에서 수확을 앞당기게 작물을 칠 일 키워 줘.",
+    "request": "이벤트 끝에서 작물의 일일 성장 여부를 일곱 번 확인해 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
@@ -346,7 +346,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 7}]}]
   },
   {
-    "request": "모종 성장만 열흘 넘겨",
+    "request": "모종 일일 성장 판정만 열 번 돌려",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
@@ -374,7 +374,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 1}]}]
   },
   {
-    "request": "작물 성장 진행을 사흘로 고쳐 주세요.",
+    "request": "작물 성장 확인 횟수를 셋으로 고쳐 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "advanceCropGrowth", "days": 2}]}]}]},
@@ -392,7 +392,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 0}]}]
   },
   {
-    "request": "거기 모종 크는 거 닷새로 바꿔 봐.",
+    "request": "거기 모종 성장 검사 다섯 번으로 바꿔 봐.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "advanceCropGrowth", "days": 2}]}]}]},
@@ -401,7 +401,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 5}]}]
   },
   {
-    "request": "작물성장 6일로 수정",
+    "request": "작물 성장 확인을 6회로 수정",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "advanceCropGrowth", "days": 2}]}]}]},
@@ -410,7 +410,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 6}]}]
   },
   {
-    "request": "수확이 너무 일러요. 그 줄을 한 주 성장으로 바꿔 주세요.",
+    "request": "그 줄에서 작물의 하루 성장 조건을 한 주에 해당하는 일곱 번 검사해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "advanceCropGrowth", "days": 2}]}]}]},
@@ -419,7 +419,7 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "advanceCropGrowth", "days": 7}]}]
   },
   {
-    "request": "이틀 말고 보름치 키우도록 고쳐.",
+    "request": "성장 확인 두 번을 보름치인 열다섯 번으로 고쳐.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
     "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "advanceCropGrowth", "days": 2}]}]}]},
