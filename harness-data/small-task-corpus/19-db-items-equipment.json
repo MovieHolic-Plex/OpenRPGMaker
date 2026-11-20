@@ -889,11 +889,32 @@
   {
     "request": "포션의 고정 회복량만 5로 하고 비율은 유지해",
     "fixture": "built",
+    "seed": {"database":{"items":[{
+      "id":"item_potion","name":"회복약","imageResourceId":"cc0-jetrel-potion-red",
+      "iconResourceId":"cc0-jetrel-potion-red","scope":"ally","price":60,
+      "skillId":"skill_item_potion","description":"아군 하나의 HP를 50 회복합니다.","type":"medicine",
+      "occasion":"always","consumable":true,"animationId":"anim_heal",
+      "stateEffects":[],"consumptionLimit":"noLimit","usableActorIds":[],
+      "usableClassIds":[],"healStateIds":[],"hpRecovery":{"flat":50,"percentMax":25},
+      "mpRecovery":{"flat":0,"percentMax":0},"onlyUsableInMenu":false,"onlyEffectiveOnDeadActors":false,
+      "usageMessage":"normal","occasionField":true,"occasionBattle":true,
+      "seedParameterBonuses":{"attack":0,"defense":0,"mind":0,"agility":0},
+      "equipmentProfile":{
+        "statBonuses":{"attack":0,"defense":0,"mind":0,"agility":0},
+        "equippableActorIds":[],"equippableClassIds":[],"twoHanded":false,"mpCost":0,"accuracy":90,"criticalRate":0,
+        "attackElementIds":[],"stateInflictIds":[],"stateInflictionChance":100,
+        "effectFlags":{
+          "preemptive":false,"doubleAttack":false,"attackAll":false,"ignoreDodge":false,"preventCriticalHits":false,
+          "increasePhysicalDodge":false,"halfMpCost":false,"negateTerrainDamage":false,"fixedEquipment":false
+        },
+        "elementalDefenseIds":[],"stateDefenseIds":[],"stateDefenseMode":"resist","stateResistanceChance":0
+      }
+    }]}},
     "target": {"kind":"dbEntry","collection":"items","id":"item_potion"},
     "primitive": "db.items.hpRecovery.set",
     "args": {"hpRecovery":5},
     "expect": [
-      {"at":"database.items[id=item_potion].hpRecovery.flat","equals":5}
+      {"at":"database.items[id=item_potion].hpRecovery","equals":{"flat":5,"percentMax":25}}
     ]
   },
   {

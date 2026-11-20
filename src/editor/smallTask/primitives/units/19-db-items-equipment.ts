@@ -7,7 +7,7 @@ import type { JsonSchema } from "@/editor/tools/types";
 import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
 import { normalizeItemRecord, normalizeEquipmentRecord } from "@/project/databaseRecordModel";
 import { normalizeElementRecords } from "@/project/databaseUtilityRecordModel";
-import { effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
+import { canEquip, effectiveActorEquipment, equipmentSlotAccepts, transitionActorEquipment } from "@/project/equipmentRules";
 import {
   BUILTIN_EQUIPMENT_SLOTS, equipmentSlotRemovalBlocker, equipsAsSlot, hasEquipmentSlot, isEquipmentSlotId,
   removeEquipmentSlot, upsertEquipmentSlot,
@@ -15,7 +15,7 @@ import {
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { dynamicRefKinds, forEachProjectScript, scriptCommandEffects } from "@/project/script/effects";
 import type { ScriptModule } from "@/project/script/types";
-import type { Command, ItemRecord, EquipmentRecord, DatabaseElementRecord, EquipmentSlotRecord, Project } from "@/project/types";
+import type { ActorRecord, Command, ItemRecord, EquipmentRecord, DatabaseElementRecord, EquipmentSlotRecord, Project } from "@/project/types";
 import { genId } from "@/util/id";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError } from "../errors";
@@ -192,6 +192,7 @@ function patchItem(project: Project, record: ItemRecord, args: ItemArgs): ItemRe
     ...(occasion !== undefined ? {
       occasion, occasionField: occasion === "always" || occasion === "field",
       occasionBattle: occasion === "always" || occasion === "battle",
+      onlyUsableInMenu: occasion === "field",
     } : {}),
   };
 }
@@ -317,6 +318,21 @@ function validateInitialEquipment(before: Project, after: Project): void {
 
 type EquipCommand = Extract<Command, { kind: "changeEquipment" }>;
 
+function newlyBlockedByOffhand(before: Project, after: Project, actor: ActorRecord, classId: string, equipmentId: string): boolean {
+  return before.database.equipment.some(offhand => {
+    if (!offhand.cursed && !offhand.effectFlags.fixedEquipment) return false;
+    if (!equipmentSlotAccepts(before, actor, "shield", offhand, classId)) return false;
+    if (actor.initialEquipment.shield !== offhand.id && !canEquip(before, actor, offhand, classId)) return false;
+    const input = {
+      actorId: actor.id, classId, equipment: { shield: offhand.id },
+      inventory: { [equipmentId]: 1 }, slot: "weapon", equipmentId,
+    } as const;
+    if (transitionActorEquipment({ ...input, project: before }).kind !== "accepted") return false;
+    const result = transitionActorEquipment({ ...input, project: after });
+    return result.kind === "rejected" && (result.reason === "cursedEquipment" || result.reason === "fixedEquipment");
+  });
+}
+
 function validateEventEquipment(before: Project, after: Project, collection: "equipment" | "equipmentSlots", id: string): void {
   const field = collection === "equipment" ? "equipmentId" : "slot";
   for (const { path, asKey } of referenceIndex(before, new Set([id])).get(id) ?? []) {
@@ -328,16 +344,22 @@ function validateEventEquipment(before: Project, after: Project, collection: "eq
     const previous = before.database.equipment.find(record => record.id === owner.equipmentId);
     const next = after.database.equipment.find(record => record.id === owner.equipmentId);
     if (!actor || !previous || !next) continue;
-    // Check the starting class and possible dual-wield classes separately.
+    const becomingTwoHanded = !previous.twoHanded && next.twoHanded;
+    // Class changes can enable a different off-hand item or dual wielding.
     const classes = new Set([actor.classId]);
-    if (owner.slot === "shield") {
+    if (owner.slot === "weapon" && becomingTwoHanded) {
+      for (const job of before.database.classes) classes.add(job.id);
+    } else if (owner.slot === "shield") {
       for (const job of before.database.classes) if (job.options.dualWield) classes.add(job.id);
     }
     for (const classId of classes) {
       if (!equipmentSlotAccepts(before, actor, owner.slot, previous, classId)) continue;
       if (!equipmentSlotAccepts(after, actor, owner.slot, next, classId)
-        || (owner.slot !== "weapon" && !previous.twoHanded && next.twoHanded)) {
+        || (becomingTwoHanded && owner.slot !== "weapon")) {
         throw new PrimitiveError("이렇게 바꾸면 기존 이벤트에서 장비를 지정한 칸에 착용할 수 없어요.");
+      }
+      if (becomingTwoHanded && newlyBlockedByOffhand(before, after, actor, classId, next.id)) {
+        throw new PrimitiveError("이렇게 바꾸면 기존 이벤트에서 벗을 수 없는 보조 장비 때문에 양손 무기를 착용할 수 없어요.");
       }
     }
   }

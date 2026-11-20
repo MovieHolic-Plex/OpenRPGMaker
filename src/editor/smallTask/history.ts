@@ -1,3 +1,4 @@
+import { removedDatabaseReference } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
@@ -23,6 +24,12 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
+  // Pi edits the saved view. Open events must also be checked before publishing a deletion.
+  if (live !== before && target.kind === "dbEntry" && before.database[target.collection]?.some(row => row.id === target.id)
+    && !after.database[target.collection]?.some(row => row.id === target.id)
+    && removedDatabaseReference(before, after, [target], live)) {
+    throw new SmallTaskError("다른 설정이나 이벤트, 스크립트에서 사용 중인 자료집 항목은 삭제할 수 없어요.");
+  }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
   if (target.kind === "event" && event?.draft) {

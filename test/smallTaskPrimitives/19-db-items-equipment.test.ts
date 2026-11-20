@@ -4,9 +4,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import { equipmentSlotManager } from "@/editor/panels/equipmentSlotManager";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -23,13 +24,13 @@ import { createBlankProject, ensureSwitchVariableSlots } from "@/project/default
 import { activeItemEffects } from "@/project/itemUsage";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
-import type { Command, Project } from "@/project/types";
+import type { Command, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import * as idGenerator from "@/util/id";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import corpus from "../../harness-data/small-task-corpus/19-db-items-equipment.json";
 import slotCorpus from "./19-db-items-equipment/slots-corpus.json";
-import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
+import { expectApplies, expectUndoRestores, loadFixture, setupCorpusProject } from "./harness";
 
 type Collection = "items" | "equipment" | "equipmentSlots" | "elements";
 type Args = Record<string, unknown>;
@@ -87,7 +88,8 @@ const cases: readonly Case[] = [
     expected: { name: "풀잎약", price: 80, type: "medicine", hpRecovery: { flat: 30, percentMax: 0 },
       occasion: "always", occasionField: true, occasionBattle: true } },
   { collection: "items", action: "update", fixture: "maou", args: { name: "별빛 물약", occasion: "field", mpRecovery: 45 },
-    expected: { name: "별빛 물약", occasion: "field", occasionField: true, occasionBattle: false, mpRecovery: { flat: 45, percentMax: 0 } } },
+    expected: { name: "별빛 물약", occasion: "field", occasionField: true, occasionBattle: false, onlyUsableInMenu: true,
+      mpRecovery: { flat: 45, percentMax: 0 } } },
   { collection: "items", action: "delete", fixture: "blank", args: {}, detail: "지워요" },
   { collection: "equipment", action: "create", fixture: "built", args: { name: "청동검", attack: 12, price: 250, attackElementIds: ["fire"] },
     expected: { name: "청동검", slot: "weapon", price: 250, attackElementIds: ["fire"],
@@ -289,6 +291,44 @@ describe("자료집 프리미티브", () => {
     expect(() => runPrimitive(project, target("equipment"), "db.equipment.update", { slot: "armor" })).toThrow(/시작 장비/u);
   });
 
+  it.each(["new", "edit"] as const)("열린 %s 이벤트 초안에서 사용하는 아이템은 적용 시 삭제를 막는다", kind => {
+    const project = setup("blank");
+    const map = createBlankProject();
+    const original: GameEvent = {
+      id: "event_test_draft", name: "약 상자", x: 1, y: 1, trigger: { kind: "action" }, commands: [],
+    };
+    const draft: GameEvent = {
+      ...original,
+      commands: [{ kind: "changeItem", op: "+=", itemId: ids.items, amount: 3 }],
+      draft: kind === "new" ? { kind } : { kind, original },
+    };
+    project.startMapId = map.startMapId;
+    project.maps = { [map.startMapId]: { ...map.maps[map.startMapId], events: [draft] } };
+    store.replaceProject(project);
+    resetMapEditHistory();
+    try {
+      const live = store.getCurrent();
+      const selected = target("items");
+      const before = smallTaskBase(live, selected);
+      const { after } = runPrimitive(before, selected, "db.items.delete", {});
+      expect(() => commitSmallTask(live, before, after, selected)).toThrow(/사용 중/u);
+      expect(store.getCurrent()).toBe(live);
+      expect(getMapEditHistoryDepth()).toBe(0);
+    } finally {
+      resetMapEditHistory();
+    }
+  });
+
+  it.each(["battle", "always", "never"] as const)("메뉴 전용 아이템을 %s로 바꾸면 메뉴 전용 표시를 지운다", occasion => {
+    const project = setup("blank");
+    const selected = target("items");
+    const field = runPrimitive(project, selected, "db.items.update", { occasion: "field" }).after;
+    const { after } = runPrimitive(field, selected, "db.items.update", { occasion });
+    expect(after.database.items.find(row => row.id === ids.items)).toMatchObject({
+      occasion, occasionField: occasion === "always", occasionBattle: occasion !== "never", onlyUsableInMenu: false,
+    });
+  });
+
   it("예전 프로젝트의 기본 장비 칸 이름을 바꾸고 새 칸으로 연결한다", () => {
     const project = setup("blank");
     delete project.database.equipmentSlots;
@@ -332,6 +372,26 @@ describe("자료집 프리미티브", () => {
       expect(after.commonEvents).toBe(before.commonEvents);
       expect(after.database.troops).toBe(before.database.troops);
       expect(after.database.equipmentSlots?.find(row => row.id === slot)).toEqual({ id: slot, label: "새 칸 이름", equipsAs: "weapon" });
+    }
+  });
+
+  it.each(["cursed", "fixed", "normal"] as const)("기존 이벤트가 착용하는 무기를 양손으로 바꿀 때 %s 방패를 검사한다", lock => {
+    const project = setup("blank");
+    const actor = project.database.actors.find(row => row.id === project.system.startActorIds[0])!;
+    const shield = normalizeEquipmentRecord({
+      id: "test_shield", name: "연습 방패", slot: "shield", equippableActorIds: [actor.id], cursed: lock === "cursed",
+    });
+    shield.effectFlags.fixedEquipment = lock === "fixed";
+    project.database.equipment.push(shield);
+    project.database.equipment.find(row => row.id === ids.equipment)!.twoHanded = false;
+    actor.initialEquipment = { shield: shield.id };
+    project.commonEvents = [{ id: "common_equip", name: "무기 착용", trigger: "none",
+      commands: [{ kind: "changeEquipment", actorId: actor.id, slot: "weapon", equipmentId: ids.equipment }] }];
+    const apply = () => runPrimitive(project, target("equipment"), "db.equipment.update", { twoHanded: true });
+    if (lock === "normal") {
+      expect(apply().after.database.equipment.find(row => row.id === ids.equipment)?.twoHanded).toBe(true);
+    } else {
+      expect(apply).toThrow(/벗을 수 없는 보조 장비/u);
     }
   });
 
@@ -633,19 +693,15 @@ describe("자료집 작은 일 진입점", () => {
 });
 
 describe("자료집 한국어 회귀 요청", () => {
-  // Import the corpus directly so file discovery in the browser-backed test environment
-  // does not depend on the runtime URL of the shared test module.
-  type UnitCase = CorpusCase & { setup?: { database: Pick<Project["database"], "equipmentSlots"> } };
   const fixtures = new Map<CorpusCase["fixture"], Project>();
-  for (const entry of [...corpus, ...slotCorpus] as unknown as UnitCase[]) {
+  for (const entry of [...corpus, ...slotCorpus] as unknown as CorpusCase[]) {
     it(entry.request, async () => {
       let fixture = fixtures.get(entry.fixture);
       if (!fixture) {
         fixture = loadFixture(entry.fixture);
         fixtures.set(entry.fixture, fixture);
       }
-      // The shared fixtures have no authored slots. Seed each example before resolving its target.
-      const project = entry.setup ? { ...fixture, database: { ...fixture.database, ...entry.setup.database } } : fixture;
+      const project = setupCorpusProject(fixture, entry);
       const selected = resolveTarget(project, entry.target);
       if (entry.expectRefusal) {
         expect(() => runPrimitive(project, selected, entry.primitive, entry.args)).toThrow(PrimitiveError);
