@@ -1,5 +1,4 @@
 /** @vitest-environment happy-dom */
-import { readFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -8,11 +7,12 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import {
   INN_NOT_ENOUGH_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/04-cmd-items-shops";
 import { createInterpreter } from "@/player/interpreter";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { defaultItemRecords } from "@/project/defaults/defaultDatabaseItemRecords";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { GOLD_MAX } from "@/project/economyValues";
@@ -22,7 +22,7 @@ import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project, Season } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
-import { eventTarget, expectApplies, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
+import { eventTarget, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
 
 const potion = "item_potion";
 const ether = "item_ether";
@@ -102,7 +102,12 @@ const fixtures: readonly Fixture[] = ["blank", "built", "maou"];
 const fixtureCache = new Map<Fixture, Project>();
 
 function fixtureFor(name: Fixture): Project {
-  const fixture = fixtureCache.get(name) ?? loadFixture(name);
+  const cached = fixtureCache.get(name);
+  if (cached) return cached;
+  const fixture = loadFixture(name);
+  // Match the editor's load normalization before the primitive freezes the fixture.
+  ensureSwitchVariableSlots(fixture);
+  removeLegacySpriteReferences(fixture);
   fixtureCache.set(name, fixture);
   return fixture;
 }
@@ -220,6 +225,30 @@ function execute(project: Project, commandsOf: (p: Project) => Command[], mapId:
   return { step: interpreter.start(), session, interpreter };
 }
 
+it("페이지를 명시한 뒤 읽은 해시로 보상 명령을 옮기고 지운다", async () => {
+  const { project, mapId, event, commandsOf } = setup("blank", [opening], [closing]);
+  const ambiguous = eventTarget(project, mapId, eventId);
+  const args = { amount: 100 };
+  expect(() => runPrimitive(project, ambiguous, "cmd.changeGold.insert", args)).toThrow(SELECT_EVENT_PAGE);
+
+  const selected = event.pages![1].id;
+  const target = eventTarget(project, mapId, eventId, selected);
+  const selectedCommands = (p: Project) => p.maps[mapId].events.find(row => row.id === eventId)!
+    .pages!.find(page => page.id === selected)!.commands;
+  const { after: inserted } = runPrimitive(project, target, "cmd.changeGold.insert", args);
+  expect(selectedCommands(inserted)).toEqual([closing, { kind: "changeGold", op: "+=", amount: 100 }]);
+
+  const expectedHash = eventCommandHash(selectedCommands(inserted)[1]);
+  const { after: moved } = runPrimitive(inserted, target, "cmd.move", { index: 1, toIndex: 0, expectedHash });
+  expect(selectedCommands(moved)).toEqual([selectedCommands(inserted)[1], closing]);
+  expect(() => runPrimitive(moved, target, "cmd.delete", { index: 1, expectedHash })).toThrow(STALE_COMMAND_LIST);
+  const { after: removed } = runPrimitive(moved, target, "cmd.delete", { index: 0, expectedHash });
+
+  expect(selectedCommands(removed)).toEqual([closing]);
+  expect(commandsOf(removed)).toBe(commandsOf(project));
+  await expectUndoRestores(moved, removed, target);
+});
+
 it("골드와 아이템 명령을 실행하면 소지금과 가방이 바뀐다", () => {
   const { project, target, mapId, commandsOf } = setup("blank");
   const { after: funded } = runPrimitive(project, target, "cmd.changeGold.insert", { amount: 100 });
@@ -250,10 +279,10 @@ it("재고가 있는 상점에 상품을 넣어도 계절 가격과 거래 분�
     { itemId: potion, priceOverride: 450, seasons: ["winter"] },
   ];
   const branch: Command[] = [{ kind: "text", body: "거래했어요." }];
-  const { project, target, mapId, commandsOf } = setup("maou", [{
+  const { project: base, target, mapId, commandsOf } = setup("maou", [{
     kind: "shop", itemIds: [potion], stock, branchOnTransaction: true, transactionBranch: branch,
   }]);
-  project.system.timeSystem = { enabled: true };
+  const project = { ...base, system: { ...base.system, timeSystem: { enabled: true } } };
   const before = commandsOf(project)[0];
   expectRefused(project, target, "cmd.shop.update", {
     index: 0, expectedHash: eventCommandHash(before), addItemId: ether,
@@ -315,8 +344,8 @@ it("전체 진열 교체 후 SQLite를 다시 열어도 봄·겨울 재고와 �
     kind: "shop", itemIds: [potion, ether], stock: [spring, winter, { itemId: ether, priceOverride: 600 }],
     branchOnTransaction: true, transactionBranch: [closing],
   };
-  const { project, target, mapId, commandsOf } = setup("blank", [shop]);
-  project.system.timeSystem = { enabled: true };
+  const { project: base, target, mapId, commandsOf } = setup("blank", [shop]);
+  const project = { ...base, system: { ...base.system, timeSystem: { enabled: true } } };
   const { after } = runPrimitive(project, target, "cmd.shop.update", {
     index: 0, expectedHash: eventCommandHash(shop), itemIds: [highPotion, potion],
   });
@@ -372,7 +401,7 @@ it("분기 안 한 줄을 수정하며 이전 확인값으로 다시 쓰는 것�
   const args = { branchPath: [0, LOOP_BODY_BRANCH_INDEX], index: 0, amount: 30, expectedHash: eventCommandHash(old) };
   const { after } = runPrimitive(project, target, "cmd.changeGold.update", args);
   expect(commandsOf(after)).toEqual([{ kind: "loop", body: [{ ...old, amount: 30 }, { kind: "breakLoop" }] }, closing]);
-  expect(() => runPrimitive(after, target, "cmd.changeGold.update", { ...args, amount: 40 })).toThrow(/줄의 내용이 바뀌었습니다/);
+  expect(() => runPrimitive(after, target, "cmd.changeGold.update", { ...args, amount: 40 })).toThrow(STALE_COMMAND_LIST);
   expect(jsonEqual(commandsOf(project), [{ kind: "loop", body: [old, { kind: "breakLoop" }] }, closing])).toBe(true);
 });
 
@@ -382,7 +411,7 @@ it("해시 누락, 같은 종류의 다른 줄, 다른 종류의 줄, 잘못된 
   const expectedHash = eventCommandHash(gold);
   expectRefused(project, target, "cmd.changeGold.update", { index: 0, amount: 30 }, /형식/u);
   expectRefused(project, target, "cmd.changeGold.update", { index: 0, amount: 30, expectedHash: "" }, /형식/u);
-  expectRefused(project, target, "cmd.changeGold.update", { index: 1, amount: 30, expectedHash }, /줄의 내용이 바뀌었습니다/u);
+  expect(() => runPrimitive(project, target, "cmd.changeGold.update", { index: 1, amount: 30, expectedHash })).toThrow(STALE_COMMAND_LIST);
   expectRefused(project, target, "cmd.changeGold.update", { index: 2, amount: 30, expectedHash }, /명령을 찾을 수 없습니다/u);
   expectRefused(project, target, "cmd.changeGold.update", { index: 3, amount: 30, expectedHash }, /명령을 찾을 수 없습니다/u);
   expectRefused(project, target, "cmd.changeGold.insert", { index: 4, amount: 30 }, /줄 위치/u);
@@ -485,8 +514,14 @@ it("제작법 없는 공방은 거절하고 모든 제작법으로 바꾼 공방
 
 it("공유 보관함 연결과 물건을 유지하면서 표시 이름만 고친다", () => {
   const chest: Command = { kind: "openChest", chestId: "shared_chest", displayName: "창고" };
-  const { project, target, event, mapId, commandsOf } = setup("blank", [chest], [chest]);
-  project.session.chests = { shared_chest: { id: "shared_chest", mapId, x: 2, y: 2, inventory: { [potion]: 3 } } };
+  const { project: base, target, event, mapId, commandsOf } = setup("blank", [chest], [chest]);
+  const project = {
+    ...base,
+    session: {
+      ...base.session,
+      chests: { shared_chest: { id: "shared_chest", mapId, x: 2, y: 2, inventory: { [potion]: 3 } } },
+    },
+  };
   const position = { index: 0, expectedHash: eventCommandHash(chest) };
   for (const chestId of ["new_chest", ""]) {
     expectRefused(project, target, "cmd.openChest.update", { ...position, chestId }, /연결된 보관함을 유지/u);
@@ -531,46 +566,4 @@ it.each([
 ] as const)("잘못된 %s 명령 입력을 거절한다", (kind, args, reason) => {
   const { project, target } = setup("blank");
   expectRefused(project, target, `cmd.${kind}.insert`, args, reason);
-});
-
-type PreparedCase = CorpusCase & {
-  setup: {
-    commands?: Command[];
-    system?: Partial<Pick<Project["system"], "craftRecipes" | "itemUpgrades">>;
-  };
-};
-
-const corpus: Array<CorpusCase | PreparedCase> = JSON.parse(readFileSync(
-  "harness-data/small-task-corpus/04-cmd-items-shops.json", "utf8",
-));
-const preparedCases = corpus.filter((row): row is PreparedCase => "setup" in row);
-
-describe("기존 줄이나 제작 규칙을 준비한 코퍼스", () => {
-  it.each(preparedCases)("$request", entry => {
-    // 공용 코퍼스 실행기는 원본 픽스처를 그대로 열기 때문에 준비된 사례는 여기서도 실행한다.
-    const base = fixtureFor(entry.fixture);
-    const target = resolveTarget(base, entry.target);
-    if (target.kind !== "event") throw new Error("이벤트 페이지를 골라 주세요.");
-    const map = base.maps[target.mapId];
-    const events = map.events.map(event => event.id !== target.eventId ? event : {
-      ...event,
-      pages: event.pages?.map(page => page.id !== target.pageId || !entry.setup.commands ? page : {
-        ...page, commands: structuredClone(entry.setup.commands),
-      }),
-    });
-    const before = {
-      ...base,
-      system: { ...base.system, ...entry.setup.system },
-      maps: { ...base.maps, [map.id]: { ...map, events } },
-    };
-    if (!entry.expect) {
-      expectRefused(before, target, entry.primitive, entry.args, /제작법|강화 규칙|변수|도구|아이템/u);
-      return;
-    }
-    const result = expectApplies(before, target, entry.primitive, entry.args);
-    for (const check of entry.expect) {
-      expect(readCheckPath(result.after, check.at), check.at).toEqual(check.equals);
-    }
-    return expectUndoRestores(before, result.after, target);
-  });
 });

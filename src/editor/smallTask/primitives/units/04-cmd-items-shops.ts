@@ -423,8 +423,7 @@ function createPrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
         return updateScopedPage(ctx, () => mode === "insert" ? insertEventCommand(page, index, command)
           : updateEventCommand(page, index, patch, args.expectedHash as string));
       } catch (error) {
-        if (!(error instanceof EventCommandEditError)) throw error;
-        if (error.code === "stale-event-command") throw new PrimitiveError(error.message);
+        if (!(error instanceof EventCommandEditError) || error.code === "stale-event-command") throw error;
         throw new PrimitiveError("명령의 줄 위치나 입력값을 다시 확인하세요.");
       }
     },

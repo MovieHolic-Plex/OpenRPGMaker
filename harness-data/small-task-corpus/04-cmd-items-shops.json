@@ -466,7 +466,8 @@
     "primitive": "cmd.craftRecipe.insert",
     "args": {"recipeId": "recipe_missing"},
     "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "제작법을 찾을 수 없습니다"
   },
   {
     "request": "회복약이 아니라 마력약을 만들게 수정해",
@@ -567,7 +568,8 @@
     "primitive": "cmd.craftRecipe.update",
     "args": {"recipeId": "recipe_missing", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "제작법을 찾을 수 없습니다"
   },
   {
     "request": "회복약을 상급 회복약으로 강화해 줘",
@@ -671,7 +673,8 @@
     "primitive": "cmd.applyItemUpgrade.insert",
     "args": {"upgradeId": "upgrade_missing"},
     "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "강화 규칙을 찾을 수 없습니다"
   },
   {
     "request": "강화 대상을 마력약 쪽으로 교체해 줘",
@@ -772,7 +775,8 @@
     "primitive": "cmd.applyItemUpgrade.update",
     "args": {"resultVariableId": "var_missing", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "결과를 기록할 변수를 찾을 수 없습니다"
   },
   {
     "request": "들고 있는 도구 내려놓기 추가",
@@ -957,7 +961,8 @@
     "primitive": "cmd.equipTool.update",
     "args": {"itemId": "item_missing", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "장착할 도구를 자료집에서 찾을 수 없습니다"
   },
   {
     "request": "대장간 제작 상점 열기",
@@ -1058,7 +1063,8 @@
     "primitive": "cmd.openCraftShop.insert",
     "args": {"recipeIds": ["recipe_missing"]},
     "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "제작법을 찾을 수 없습니다"
   },
   {
     "request": "제작 공방 이름을 대장간으로 바꿔",
@@ -1159,7 +1165,8 @@
     "primitive": "cmd.openCraftShop.update",
     "args": {"recipeIds": ["recipe_missing"], "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "제작법을 찾을 수 없습니다"
   },
   {
     "request": "농장 물건 넣는 상자 하나 열어 줘",
@@ -1348,7 +1355,8 @@
     "primitive": "cmd.openChest.update",
     "args": {"lockItemId": "item_missing", "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "상자를 여는 아이템을 찾을 수 없습니다"
   },
   {
     "request": "회복약과 마력약 파는 약방 열어 줘",
@@ -1713,7 +1721,8 @@
     "primitive": "cmd.inn.update",
     "args": {"priceVariableId": "var_missing", "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "숙박 요금을 읽을 변수를 찾을 수 없습니다"
   },
   {
     "request": "어느 줄인지 확인하지 말고 이 보상을 백 골드로 바꿔 줘",
