@@ -5,14 +5,17 @@ import { checkSmallTaskScope, type SmallTaskScope } from "@/ai/smallTaskScope";
 import { collectDialogueLines, dialogueTextHash } from "@/editor/dialogue/dialogueIndex";
 import { CHOICE_CANCEL_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/26-npc-dialogue";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { createInterpreter } from "@/player/interpreter";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { affectionVariableOwner } from "@/project/affectionVariables";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
+import { projectWithEventRevision } from "@/project/projectClone";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
@@ -58,14 +61,17 @@ function blank(list = commands) {
 }
 
 function withOtherSpeech(project: Project, mapId: string, eventIndex: number, pageIndex: number): Project {
-  const map = project.maps[mapId]!;
-  const events = map.events.slice();
-  const event = events[eventIndex]!;
-  const pages = event.pages!.slice();
-  const page = pages[pageIndex]!;
-  pages[pageIndex] = { ...page, commands: [{ ...greeting, body: "범위 밖 대사" }, ...page.commands.slice(1)] };
-  events[eventIndex] = { ...event, pages };
-  return { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
+  const event = project.maps[mapId]!.events[eventIndex]!;
+  return withPageCommands(project, mapId, event, pageIndex, commands => [
+    { ...greeting, body: "범위 밖 대사" }, ...commands.slice(1),
+  ]);
+}
+
+function withPageCommands(project: Project, mapId: string, event: GameEvent, pageIndex: number, edit: (list: Command[]) => Command[]) {
+  const pages = event.pages!.map((page, index) => index === pageIndex
+    ? { ...page, commands: edit(page.commands) }
+    : page);
+  return projectWithEventRevision(project, mapId, event.id, { ...event, pages });
 }
 
 const fixed = { ...greeting, body: "어서 오세요." };
@@ -171,13 +177,30 @@ describe("선택한 인물의 대사 편집", () => {
     expect(() => runPrimitive(project, target, "dialogue.line.remove", { path: [0], pageHash: eventCommandListHash(event.commands) })).toThrow(/페이지를 찾을 수 없어요/u);
   });
 
+  it.each(CASES.filter(({ id }) => id !== "npc.rename"))("$id 여러 페이지가 있으면 선택한 페이지가 필요하다", ({ id, args }) => {
+    const { project, map } = blank();
+    const target = eventTarget(project, map.id, eventId);
+    expect(() => runPrimitive(project, target, id, args)).toThrow(SELECT_EVENT_PAGE);
+  });
+
+  it("페이지가 하나뿐이면 대상을 그대로 사용하고, 이름 변경은 이벤트 전체에 적용한다", () => {
+    const { project, map, event } = blank();
+    const target = eventTarget(project, map.id, eventId);
+    const renamed = runPrimitive(project, target, "npc.rename", { name: "한스" }).after;
+    expect(renamed.maps[map.id]!.events[0]).toEqual({ ...event, name: "한스" });
+
+    const singlePage = projectWithEventRevision(project, map.id, eventId, { ...event, pages: event.pages!.slice(0, 1) });
+    const { after } = runPrimitive(singlePage, target, "dialogue.line.rewrite", { path: [0], text: fixed.body });
+    expect(after.maps[map.id]!.events[0]!.pages![0]!.commands[0]).toEqual(fixed);
+  });
+
   it("선택한 뒤 이벤트가 옮겨지거나 사라졌으면 대사를 건드리지 않는다", () => {
     const { project, target, event, map } = blank();
-    const apply = () => runPrimitive(project, target, "dialogue.line.rewrite", { path: [0], text: fixed.body });
-    event.x += 1;
-    expect(apply).toThrow(/선택한 칸의 이벤트를 다시 고르세요/u);
-    map.events.shift();
-    expect(apply).toThrow(/선택한 칸의 이벤트를 다시 고르세요/u);
+    const apply = (current: Project) => runPrimitive(current, target, "dialogue.line.rewrite", { path: [0], text: fixed.body });
+    const moved = projectWithEventRevision(project, map.id, eventId, { ...event, x: event.x + 1 });
+    expect(() => apply(moved)).toThrow(/선택한 칸의 이벤트를 다시 고르세요/u);
+    const removed = projectWithEventRevision(moved, map.id, eventId, null);
+    expect(() => apply(removed)).toThrow(/선택한 칸의 이벤트를 다시 고르세요/u);
     expect(event.pages![0]!.commands).toEqual(commands);
   });
 
@@ -236,7 +259,7 @@ describe("선택한 인물의 대사 편집", () => {
     const inserted = runPrimitive(project, target, "dialogue.line.insert", { path: [0], text: "새 인사" }).after;
     const currentPage = inserted.maps[map.id]!.events[0]!.pages![0]!;
     expect(eventCommandHash(currentPage.commands[1]!)).toBe(eventCommandHash(greeting));
-    expect(() => runPrimitive(inserted, target, "dialogue.line.remove", { path: [1], pageHash })).toThrow(/페이지의 명령이 바뀌었습니다/u);
+    expect(() => runPrimitive(inserted, target, "dialogue.line.remove", { path: [1], pageHash })).toThrow(STALE_COMMAND_LIST);
     expect(currentPage.commands).toHaveLength(4);
 
     const { after } = runPrimitive(inserted, target, "dialogue.line.remove", { path: [2], pageHash: await readPageHash(inserted) });
@@ -309,23 +332,25 @@ describe("선택한 인물의 대사 편집", () => {
 
   it("목표가 인물을 이름으로 가리키면 거절하고, ID로 가리키면 이름만 바꾼다", () => {
     const { project, target, event, map } = blank();
+    const other = map.events[1]!;
     const objective: Command = { kind: "m2Command", commandId: "m2-214-ui-command", fields: {
       surface: "objectiveChip", message: "「찻집 주인」과 대화하기",
     } };
-    map.events[1]!.pages![0]!.commands.push(objective);
-    const rename = () => runPrimitive(project, target, "npc.rename", { name: "한스" });
-    expect(rename).toThrow(/이 이름으로 인물을 찾는 목표/u);
-    objective.fields.targetMapId = map.id;
-    objective.fields.targetEventId = map.events[1]!.id;
-    expect(rename).toThrow(/이 이름으로 인물을 찾는 목표/u);
-    objective.fields.targetEventId = event.id;
-    const { after } = rename();
+    const renameWithObjective = (fields: typeof objective.fields, current = project) => {
+      const scenario = withPageCommands(current, map.id, other, 0, list => [...list, { ...objective, fields }]);
+      return runPrimitive(scenario, target, "npc.rename", { name: "한스" });
+    };
+    expect(() => renameWithObjective(objective.fields)).toThrow(/이 이름으로 인물을 찾는 목표/u);
+    const directed = { ...objective.fields, targetMapId: map.id };
+    expect(() => renameWithObjective({ ...directed, targetEventId: other.id })).toThrow(/이 이름으로 인물을 찾는 목표/u);
+    const { after } = renameWithObjective({ ...directed, targetEventId: event.id });
     expect(after.maps[map.id]!.events[0]).toEqual({ ...event, name: "한스" });
-    expect(after.maps[map.id]!.events[1]).toBe(map.events[1]);
-    event.name = "봄";
-    delete objective.fields.targetEventId;
-    objective.fields.message = "이야기하기 (봄: 찻집 앞)";
-    expect(rename).toThrow(/이 이름으로 인물을 찾는 목표/u);
+    expect(after.maps[map.id]!.events[1]!.pages![0]!.commands).toEqual([
+      ...other.pages![0]!.commands, { ...objective, fields: { ...directed, targetEventId: event.id } },
+    ]);
+    const shortName = projectWithEventRevision(project, map.id, event.id, { ...event, name: "봄" });
+    expect(() => renameWithObjective({ ...directed, message: "이야기하기 (봄: 찻집 앞)" }, shortName))
+      .toThrow(/이 이름으로 인물을 찾는 목표/u);
   });
 
   it("새 이름이 다른 인물을 가리키는 목표와 같으면 이름 변경을 거절한다", () => {
@@ -374,16 +399,17 @@ describe("선택한 인물의 대사 편집", () => {
     const other = map.events[1]!;
     other.name = "이르마";
     const line = { ...greeting, speaker: "이르마" };
-    other.pages![0]!.commands.push(line);
-    expect(() => runPrimitive(project, target, "npc.rename", { name: "이르마" })).toThrow(/화자로 쓰는 대사/u);
+    const rename = (current: Project) => runPrimitive(current, target, "npc.rename", { name: "이르마" });
+    const withSpeaker = (command: Command) => withPageCommands(project, map.id, other, 0, list => [...list, command]);
+    expect(() => rename(withSpeaker(line))).toThrow(/화자로 쓰는 대사/u);
 
-    other.pages![0]!.commands[commands.length] = { ...line, speakerActor: other.id };
-    const { after } = runPrimitive(project, target, "npc.rename", { name: "이르마" });
+    const linkedSpeaker = withSpeaker({ ...line, speakerActor: other.id });
+    const { after } = rename(linkedSpeaker);
     expect(after.maps[map.id]!.events[0]).toEqual({ ...event, name: "이르마" });
-    expect(after.maps[map.id]!.events[1]).toBe(other);
+    expect(after.maps[map.id]!.events[1]).toBe(linkedSpeaker.maps[map.id]!.events[1]);
 
-    other.pages![0]!.commands[commands.length] = { kind: "m2Command", commandId: "m2-209-advanced-dialogue", fields: { speaker: line.speaker, body: line.body } };
-    expect(() => runPrimitive(project, target, "npc.rename", { name: "이르마" })).toThrow(/화자로 쓰는 대사/u);
+    const advanced = withSpeaker({ kind: "m2Command", commandId: "m2-209-advanced-dialogue", fields: { speaker: line.speaker, body: line.body } });
+    expect(() => rename(advanced)).toThrow(/화자로 쓰는 대사/u);
   });
 
   it.each(["이벤트", "공용 이벤트"])("%s의 호출에서 다른 인물의 첫 대화 기록을 쓰지 않는다", owner => {
@@ -488,8 +514,8 @@ describe("대사 재생", () => {
     expect(next.resume(undefined)).toEqual({ kind: "done" });
     expect(session.selfSwitches?.[eventId]).toMatchObject({ D: true });
     expect(session.gold).toBe(gold + 6);
-    event.pages![1]!.commands.push({ kind: "setSelfSwitch", key: "D", value: false });
-    expect(() => runPrimitive(project, target, "dialogue.firstTimeOnly", { path: [0] })).toThrow(/비어 있는 셀프 스위치/u);
+    const occupied = withPageCommands(project, map.id, event, 1, list => [...list, { kind: "setSelfSwitch", key: "D", value: false }]);
+    expect(() => runPrimitive(occupied, target, "dialogue.firstTimeOnly", { path: [0] })).toThrow(/비어 있는 셀프 스위치/u);
   });
 
   it("대사를 건너뛰는 병렬 실행 페이지에는 첫 대화 기록을 만들지 않는다", () => {
@@ -517,6 +543,9 @@ describe("대사 재생", () => {
 
   it("편의점 게임에서는 고른 근무 장면의 화자만 바뀐다", async () => {
     const project = loadFixture("maou");
+    // The editor normalizes loaded projects before the primitive freezes its baseline.
+    ensureSwitchVariableSlots(project);
+    removeLegacySpriteReferences(project);
     const map = project.maps.map_mk_konbini!;
     const event = map.events.find(entry => entry.id === "ev_mk_hina")!;
     const page = event.pages!.find(entry => entry.id === "ev_mk_hina_p3")!;

@@ -18,7 +18,7 @@ import { scriptCalls, scriptHasDynamic } from "@/project/script/effects";
 import { isNonActorSpeaker, speakerNameScore } from "@/project/staging/dialogueActors";
 import type { Command, EventPage, GameEvent, Project, SelfSwitchKey } from "@/project/types";
 import { scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "26-npc-dialogue";
@@ -341,7 +341,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     () => "선택한 대사 한 줄을 지웁니다.",
     (page, args, ctx) => {
       if (args.pageHash !== eventCommandListHash(page.commands)) {
-        throw new PrimitiveError("페이지의 명령이 바뀌었습니다. 대사를 다시 읽어 주세요.");
+        throw new PrimitiveError(STALE_COMMAND_LIST);
       }
       const { list, row, path } = textSlot(page, args);
       keepChoiceQuestion(list, row);
