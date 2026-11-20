@@ -124,7 +124,7 @@ test("작은 일 Pi 실행은 큰 이벤트에서도 대상 줄과 페이지 해
   page.commands = Array.from({ length: 30 }, (_, index) => ({
     kind: "text", body: `줄 ${index} ${"가".repeat(500)}`,
   }));
-  const commands = page.commands;
+  const originalCommands = structuredClone(page.commands);
   const target = { pageId: page.id, index: 0 };
   const body = "긴 이벤트에서 고른 대사만 고쳤습니다.";
   const calls: Call[] = [
@@ -142,7 +142,7 @@ test("작은 일 Pi 실행은 큰 이벤트에서도 대상 줄과 페이지 해
       expect(outputs[1]).toMatchObject({ ok: true, data: { pageId: page.id } });
       const { expectedPageHash, expectedHash } = outputs[1].data;
       expect(expectedPageHash).toMatch(/^[a-f0-9]{32}$/u);
-      expect(expectedHash).toBe(eventCommandHash(commands[0]!));
+      expect(expectedHash).toBe(eventCommandHash(originalCommands[0]!));
       calls.push(apply("cmd.text.update", { index: target.index, expectedPageHash, expectedHash, body }));
     }
     return stream(model, context, options);
@@ -151,8 +151,9 @@ test("작은 일 Pi 실행은 큰 이벤트에서도 대상 줄과 페이지 해
   const done = await runPiAgent(request, { streamFn });
   expect(done.stoppedEarly).toBeUndefined();
   expect(done.stats).toMatchObject({ toolCalls: 3, toolErrors: 0 });
-  expect(done.project.maps[mapId].events[0]!.pages![1]!.commands).toEqual([{ kind: "text", body }, ...commands.slice(1)]);
-  expect(project.maps[mapId].events[0]!.pages![1]!.commands).toBe(commands);
+  expect(done.project.maps[mapId].events[0]!.pages![1]!.commands)
+    .toEqual([{ kind: "text", body }, ...originalCommands.slice(1)]);
+  expect(project.maps[mapId].events[0]!.pages![1]!.commands).toEqual(originalCommands);
 });
 
 test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", async () => {

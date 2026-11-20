@@ -108,9 +108,11 @@ function editChoices(
   if (action === "insert" && fields.cancelBehavior === undefined && options.length === 1) {
     next.cancelBehavior = "disallow";
   }
-  const cancelIndex = cancelChoiceIndex(next.cancelBehavior, MAX_SHOWN_CHOICES);
-  if (cancelIndex !== null && cancelIndex >= options.length) {
-    throw new PrimitiveError("취소했을 때 고를 선택지가 없습니다.");
+  if (action === "insert" || fields.cancelBehavior !== undefined || appended !== undefined) {
+    const cancelIndex = cancelChoiceIndex(next.cancelBehavior, MAX_SHOWN_CHOICES);
+    if (cancelIndex !== null && cancelIndex >= options.length) {
+      throw new PrimitiveError("취소했을 때 고를 선택지가 없습니다.");
+    }
   }
   if (fields.cancelBehavior === "branch" && next.cancelBranch === undefined) next.cancelBranch = [];
   return next;

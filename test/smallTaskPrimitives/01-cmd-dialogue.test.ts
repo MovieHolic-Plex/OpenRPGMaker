@@ -424,6 +424,22 @@ it("취소 분기 배열이 없는 이전 선택지를 수정해도 기존 분�
   expect(readPage(enabled.after).commands).toStrictEqual([{ ...legacy, cancelBranch: [] }, continuation]);
 });
 
+it("취소 대상이 없는 기존 선택지는 문구를 고칠 수 있고 취소 설정이나 선택지를 추가할 때는 대상을 검사한다", () => {
+  const original: Command = {
+    kind: "choices", options: [{ text: "예", branch: [continuation] }], cancelBehavior: "choice3",
+  };
+  const { project, target, readPage } = arrange("blank", [original]);
+  const args = updatePosition([original], original);
+  const { after } = runPrimitive(project, target, "cmd.choices.update", { ...args, optionLabels: ["좋아요"] });
+  expect(readPage(after).commands).toStrictEqual([{
+    ...original, options: [{ text: "좋아요", branch: [continuation] }],
+  }]);
+  expect(() => runPrimitive(project, target, "cmd.choices.update", { ...args, cancelBehavior: "choice2" }))
+    .toThrow("고를 선택지");
+  expect(() => runPrimitive(project, target, "cmd.choices.update", { ...args, appendOption: "아니요" }))
+    .toThrow("고를 선택지");
+});
+
 it("새 선택지를 붙여도 변수를 쓰는 기존 대기 명령을 그대로 보존한다", () => {
   const legacyWait: Command = { kind: "wait", ms: -1, variableId: variable };
   const original = { ...choices, options: [{ ...choices.options[0]!, branch: [legacyWait] }, choices.options[1]!] };
