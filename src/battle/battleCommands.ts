@@ -82,7 +82,7 @@ export function battleCommandsForActor(
   return [...base, switchCommand()];
 }
 
-function resolveClassBattleCommand(project: Project, command: ClassBattleCommand): RuntimeBattleCommand | undefined {
+export function resolveClassBattleCommand(project: Project, command: ClassBattleCommand): RuntimeBattleCommand | undefined {
   const global = project.database.battleCommands?.find((record) => record.id === command.id);
   const kind = runtimeKind(command.kind, global?.kind);
   if (!kind) return undefined;

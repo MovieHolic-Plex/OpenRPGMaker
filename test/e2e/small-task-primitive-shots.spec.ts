@@ -78,7 +78,7 @@ for (const [index, entry] of cases.entries()) {
     if (await guest.isVisible()) await guest.click();
     await expect(canvasTrigger).toBeVisible({ timeout: 60_000 });
 
-    const target = await page.evaluate(async ({ fixture, setup, target, overlay }) => {
+    const { target, utilityRowIndex } = await page.evaluate(async ({ fixture, setup, target, overlay }) => {
       const { store } = await import("/src/project/store.ts");
       const { editorState } = await import("/src/editor/editorState.ts");
       const { resolveTarget } = await import("/src/editor/smallTask/primitives/corpusSchema.ts");
@@ -128,7 +128,11 @@ for (const [index, entry] of cases.entries()) {
           if (selected.pageId) editorState.set({ selectedEventPageId: selected.pageId });
         }
       }
-      return selected;
+      const utilityRowIndex = selected.kind === "dbEntry"
+        && (selected.collection === "terrains" || selected.collection === "battleCommands")
+        ? store.getCurrent().database[selected.collection]?.findIndex(row => row.id === selected.id)
+        : undefined;
+      return { target: selected, utilityRowIndex };
     }, { ...entry, overlay: readOverlay(entry.fixture) });
 
     let runs = 0;
@@ -172,8 +176,18 @@ for (const [index, entry] of cases.entries()) {
 
     const panel = target.kind === "dbEntry" ? page.getByTestId("database-modal")
       : target.kind === "event" ? page.getByTestId("event-editor-modal") : canvas;
-    if (target.kind === "dbEntry") await panel.getByTestId(`db-record-row-${target.id}`).click();
-    const trigger = panel.getByRole("button", { name: "이걸로 작업" });
+    let triggerHost = panel;
+    if (target.kind === "dbEntry") {
+      if (target.collection === "battleCommands") {
+        triggerHost = panel.getByTestId(`db-battle-command-editor-${utilityRowIndex}`);
+      } else if (target.collection === "terrains") {
+        await panel.getByTestId(`db-terrain-preset-${utilityRowIndex}`).click();
+        triggerHost = panel.getByTestId("db-terrain-hero");
+      } else {
+        await panel.getByTestId(`db-record-row-${target.id}`).click();
+      }
+    }
+    const trigger = triggerHost.getByRole("button", { name: "이걸로 작업" });
     await expect(trigger).toBeVisible();
     const snapshot = () => page.evaluate(async () => {
       const { store } = await import("/src/project/store.ts");

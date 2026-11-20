@@ -8,6 +8,7 @@ import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "./primitives/errors";
 import { assertActorClassDraftChanges } from "./primitives/units/17-db-actors-classes";
+import { assertUnit20DraftReferences } from "./primitives/units/20-db-enemies-troops/references";
 import { mapRemovalDraftError } from "./primitives/units/23-map-structure/maps";
 import { assertProjectDataDraftReferences } from "./primitives/units/28-project-data";
 import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
@@ -77,6 +78,7 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
       && removedDatabaseReference(before, after, [{ collection, id }], live)) {
       throw new SmallTaskError("이벤트 편집에서 쓰는 자료집 항목은 삭제할 수 없어요. 열린 이벤트의 연결을 확인해 주세요.");
     }
+    if (live !== before) assertUnit20DraftReferences(before, after, live, target);
   }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
