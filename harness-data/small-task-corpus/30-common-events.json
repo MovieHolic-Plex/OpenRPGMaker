@@ -1,1 +1,498 @@
-[]
+[
+  {
+    "request": "공용 이벤트에 여관 회복 하나 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "여관 회복"},
+    "expect": [{"at": "commonEvents", "count": 1}, {"at": "commonEvents[-1]", "equals": {"id": "ce_1", "name": "여관 회복", "trigger": "none", "commands": []}}]
+  },
+  {
+    "request": "마을 아침 인사를 담을 공통 이벤트를 하나 추가해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "마을 아침 인사"},
+    "expect": [{"at": "commonEvents", "count": 1}, {"at": "commonEvents[-1]", "equals": {"id": "ce_1", "name": "마을 아침 인사", "trigger": "none", "commands": []}}]
+  },
+  {
+    "request": "경보해제 공용이벤트 하나만 새로.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "경보 해제"},
+    "expect": [{"at": "commonEvents", "count": 1}, {"at": "commonEvents[-1]", "equals": {"id": "ce_1", "name": "경보 해제", "trigger": "none", "commands": []}}]
+  },
+  {
+    "request": "호출할 때 쓸 빈 기념품 지급 이벤트를 만들어 주실래요?",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "기념품 지급"},
+    "expect": [{"at": "commonEvents", "count": 1}, {"at": "commonEvents[-1]", "equals": {"id": "ce_1", "name": "기념품 지급", "trigger": "none", "commands": []}}]
+  },
+  {
+    "request": "공통이벤 이름은 ‘장터 마감’으로 새로 파 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "장터 마감"},
+    "expect": [{"at": "commonEvents", "count": 1}, {"at": "commonEvents[-1]", "equals": {"id": "ce_1", "name": "장터 마감", "trigger": "none", "commands": []}}]
+  },
+  {
+    "request": "아직 넣을 명령은 없고, 나중에 쓰게 공용 이벤트 목록에 ‘배 도착 알림’만 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "배 도착 알림"},
+    "expect": [{"at": "commonEvents", "count": 1}, {"at": "commonEvents[-1]", "equals": {"id": "ce_1", "name": "배 도착 알림", "trigger": "none", "commands": []}}]
+  },
+  {
+    "request": "제목에 공백만 넣어서 공용 이벤트 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "  "},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 공용 이벤트를 한 번에 세 개 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.create",
+    "args": {"name": "여관 안내", "quantity": 3},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 안내 이름을 숙소 설명으로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": "숙소 설명"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "숙소 설명", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "공통 이벤 ‘여관 안내’를 ‘숙박 안내’로 수정 부탁드려요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": "숙박 안내"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "숙박 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "여관안내 공용이벤트 새이름 여관 이용법.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": "여관 이용법"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 이용법", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "다른 내용은 그대로 두고 여관 안내 제목만 ‘오늘의 할인’으로 고쳐 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": "오늘의 할인"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "오늘의 할인", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "‘여관 안내’ 있잖아, 이제 ‘손님 맞이’라고 불러.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": "손님 맞이"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "손님 맞이", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "저장된 공통 이벤트의 이름만 주인장 인사로 바꿔 주시겠어요?",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": "주인장 인사"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "주인장 인사", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "여관 안내 이름을 다 지워서 공란으로 저장해.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_corpus_inn", "name": " "},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "없는 공용 이벤트 ‘북문 입장’을 ‘북문 안내’로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.rename",
+    "args": {"commonEventId": "ce_missing_gate", "name": "북문 안내"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 안내는 첫 번째 스위치가 켜지면 자동으로 돌려 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "auto", "conditionSwitchId": "sw_0001"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "auto", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "기존 조건 유지하고 병열 처리로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "parallel"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "parallel", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "조건 스위치 지우고 배경에서 계속 실행해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "parallel", "conditionSwitchId": null},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "parallel", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "여관안내를 두번째 스위치 켜질때 자동실행으로.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "auto", "conditionSwitchId": "sw_0002"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "auto", "conditionSwitchId": "sw_0002", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "이제 호출할 때만 돌고 스위치 조건도 빼 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "none", "conditionSwitchId": null},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "자동으로 시작하되 켜져 있어야 하는 스위치는 없게 해.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "auto", "conditionSwitchId": null},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn]", "equals": {"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "auto", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}}]
+  },
+  {
+    "request": "여관 안내 자동으로 해줘. 없는 백 번째 스위치가 켜졌을 때만.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "auto", "conditionSwitchId": "sw_0100"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "실행 방식은 매달 보름으로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.trigger.set",
+    "args": {"commonEventId": "ce_corpus_inn", "trigger": "monthly"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "안 쓰는 여관 안내 공용 이벤트 지워.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents", "count": 0}]
+  },
+  {
+    "request": "공통 이벤트 목록에서 ‘여관 안내’를 빼 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents", "count": 0}]
+  },
+  {
+    "request": "여관안내 공용이벤 삭제좀.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents", "count": 0}]
+  },
+  {
+    "request": "여관 안내는 기획이 취소됐으니 공용 이벤트 항목을 통째로 없애 주실래요?",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents", "count": 0}]
+  },
+  {
+    "request": "어디서도 안 부르는 여관 안내 정리해 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents", "count": 0}]
+  },
+  {
+    "request": "커먼 이벤트 중에 여관 안내 없애 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents", "count": 0}]
+  },
+  {
+    "request": "다른 이벤트에서 부르는 중이어도 여관 안내부터 지워.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_corpus_inn"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}, {"id": "ce_corpus_morning", "name": "마을 아침 인사", "trigger": "none", "commands": [{"kind": "callCommonEvent", "commonEventId": "ce_corpus_inn"}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "목록에 없는 ‘별 무덤 인사’ 공통 이벤트 없애 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.remove",
+    "args": {"commonEventId": "ce_missing_grave"},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 안내 맨 뒤에 소지금을 세 개 늘리는 줄을 넣어.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "command": {"kind": "changeGold", "op": "+=", "amount": 3}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}, {"kind": "changeGold", "op": "+=", "amount": 3}]}]
+  },
+  {
+    "request": "첫 줄로 반 초 기다리는 명령을 추가해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "command": {"kind": "wait", "ms": 500}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "wait", "ms": 500}, {"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "여관안내 두번째 줄에 ‘방이 비었어요.’ 대사 하나 넣어줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 1, "command": {"kind": "text", "body": "방이 비었어요."}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "text", "speaker": "", "body": "방이 비었어요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "소지금 지급 다음에 스위치 둘을 켜는 줄을 끼워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 2, "command": {"kind": "setSwitch", "switchId": "sw_0002", "value": true}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "setSwitch", "switchId": "sw_0002", "value": true}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "조건이 참일 때 안내 말 끝나면 잠깐 기다리게 한 줄 넣어.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 1, "branchPath": [3, -2], "command": {"kind": "wait"}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "wait", "ms": 500}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "공용 이벤 맨 끝에 ‘좋은 밤 되세요.’ 하는 대사 추가 부탁.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "command": {"kind": "text", "body": "좋은 밤 되세요."}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}, {"kind": "text", "speaker": "", "body": "좋은 밤 되세요."}]}]
+  },
+  {
+    "request": "여관 안내에 없는 회복약 세 개 주는 줄 추가.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "command": {"kind": "changeItem", "itemId": "item_missing_potion", "op": "+=", "amount": 3}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 안내 백 번째 줄에 대기 명령을 끼워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.insert",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 99, "command": {"kind": "wait"}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 안내 두 번째 줄 보상, 열 개 말고 세 개로 줄여.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 1, "patch": {"amount": 3}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 3}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "처음에 나오는 대사를 ‘따뜻한 방이 있어요.’로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "patch": {"body": "따뜻한 방이 있어요."}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "따뜻한 방이 있어요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "셋째줄 기다리는시간 한 초로 바꿔줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 2, "patch": {"ms": 1000}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 1000}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "조건이 참일 때만 뜨는 대사를 ‘어서 오세요!’로 수정 부탁드립니다.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "branchPath": [3, -2], "patch": {"body": "어서 오세요!"}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "어서 오세요!"}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "마지막 스위치 켜지 말고 꺼지게 고쳐.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 4, "patch": {"value": false}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": false}]}]
+  },
+  {
+    "request": "아니오 쪽에 잠깐 기다리는 그 줄, 삼 초로 늘려 주실래요?",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "branchPath": [3, -3], "patch": {"ms": 3000}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 3000}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "여관 안내 마지막 줄을 없는 백번 스위치로 고쳐 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 4, "patch": {"switchId": "sw_0100"}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "소지금 한 줄 고치는 걸로 분기 전체도 빈 내용으로 덮어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.update",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 3, "patch": {"then": []}},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 안내에 맨 앞 대사 한 줄 빼 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "돈을 주는 두 번째 명령은 지워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 1},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "셋째줄 딜레이 삭제좀.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 2},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "여관 공통 이벤트에서 맨 뒤에 스위치를 켜는 줄만 없애 주시겠어요?",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 4},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}]}]
+  },
+  {
+    "request": "조건에 맞을 때 나오는 짧은 인사가 필요 없어. 그 안의 대사만 지워.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "branchPath": [3, -2]},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "조건에 안 맞을 때 기다리는 줄만 삭제해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "branchPath": [3, -3]},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": []}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
+  },
+  {
+    "request": "조건 분기 줄을 그 아래 명령째 한 번에 날려 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 3},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "공용 이벤트 일흔 번째 줄 지워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "commonEvent.command.delete",
+    "args": {"commonEventId": "ce_corpus_inn", "index": 69},
+    "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
+    "expectRefusal": true
+  }
+]
