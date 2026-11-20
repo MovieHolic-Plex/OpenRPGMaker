@@ -27,7 +27,7 @@ function editTarget(page: EventPage, index: EventCommandIndex, insert = false) {
     throw new EventCommandEditError("명령 줄 위치가 올바르지 않습니다.");
   }
   const commands = structuredClone(page.commands);
-  const list = resolveCommandListAtPath(commands, path);
+  const list = resolveCommandListAtPath(commands, path, { missingBranches: insert ? "create" : "read" });
   if (!list || row >= list.length + Number(insert)) {
     throw new EventCommandEditError("명령 줄을 찾을 수 없습니다. 페이지를 다시 확인하세요.");
   }

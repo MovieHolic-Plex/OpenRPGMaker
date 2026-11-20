@@ -3,8 +3,9 @@ import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { checkSmallTaskScope, smallTaskScopeAllowsTool, type SmallTaskScope } from "@/ai/smallTaskScope";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
+import { collectProjectReferenceIssues } from "@/project/io/references";
 import { setLayerTileAt, setShadowAt } from "@/project/mapLayers";
-import type { EventPage, GameEvent, Project } from "@/project/types";
+import type { EventPage, GameEvent, HomeDecorationTypeRecord, Project } from "@/project/types";
 
 const town = "town";
 const chest = "chest";
@@ -52,17 +53,17 @@ const base: Project = {
 const target = (p: Project) => p.maps[town]!.events[0]!;
 const page = (p: Project) => target(p).pages![0]!;
 
-function verify(scope: SmallTaskScope, mutate: (after: Project) => void) {
-  const before = structuredClone(base);
+function verify(scope: SmallTaskScope, mutate: (after: Project) => void, fixture = base) {
+  const before = structuredClone(fixture);
   const after = structuredClone(before);
   mutate(after);
   const result = checkSmallTaskScope(before, after, scope);
-  expect(before).toEqual(base);
+  expect(before).toEqual(fixture);
   return result;
 }
 
-function rejects(scope: SmallTaskScope, mutate: (after: Project) => void, label: string) {
-  const result = verify(scope, mutate);
+function rejects(scope: SmallTaskScope, mutate: (after: Project) => void, label: string, fixture = base) {
+  const result = verify(scope, mutate, fixture);
   expect(result.ok).toBe(false);
   if (result.ok) throw new Error("범위 검사가 변경을 통과시켰습니다.");
   expect(result.reason).toMatch(/^[가-힣]/u);
@@ -95,6 +96,14 @@ describe("작은 일 범위 검사", () => {
       commands.splice(0, 1);
       commands.splice(1, 0, { kind: "text", speaker: "상인", body: "이쪽으로 오세요." });
     })).toEqual({ ok: true });
+  });
+
+  it("그대로인 대사 뒤에 한 줄을 추가해도 그 앞의 화자 변경을 막는다", () => {
+    rejects(dialogue, p => {
+      const commands = page(p).commands;
+      commands[0] = { kind: "text", speaker: "상인", body: "오늘도 장사합니다." };
+      commands.splice(2, 0, { kind: "text", speaker: "문지기", body: "안으로 들어오세요." });
+    }, "『첫 만남』");
   });
 
   it("대사 외 명령의 값과 순서, 화자·얼굴, 선택지 수·조건과 페이지 설정을 지킨다", () => {
@@ -169,6 +178,80 @@ describe("작은 일 범위 검사", () => {
     rejects(createItem, p => { p.database.items.reverse(); }, "아이템 목록의 순서");
     rejects(item, p => { page(p).commands = []; }, "『보물상자』 이벤트");
     rejects(item, p => { p.database.items[0]!.skillId = "missing-skill"; }, "아이템 『회복약』의 참조");
+  });
+
+  it.each([
+    { target: "스위치", field: "switchId" },
+    { target: "제작법", field: "recipeId" },
+  ])("생활 스킬 보상에서 없는 $target 참조를 막고 유효한 보상을 허용한다", ({ field }) => {
+    const before = structuredClone(base);
+    const skill = { id: "farming", name: "농사", skillType: "farming", maxLevel: 10, levelUpRewards: [] } as const;
+    const scope = { kind: "dbEntries", entries: [{ collection: "lifeSkills", id: skill.id }] } as const;
+    const recipeId = "brew-potion";
+    const switchId = before.switches[0]!.id;
+    before.database.lifeSkills = [skill];
+    before.system.craftRecipes = [{ id: recipeId, ingredients: [], outputItemId: "potion" }];
+
+    expect(verify(scope, p => {
+      p.database.lifeSkills = [{ ...skill, levelUpRewards: [{ level: 2, switchId, recipeId }] }];
+    }, before)).toEqual({ ok: true });
+
+    const setBrokenReward = (p: Project) => {
+      p.database.lifeSkills = [{ ...skill, levelUpRewards: [{ level: 2, switchId, recipeId, [field]: "missing-reward" }] }];
+    };
+    const after = structuredClone(before);
+    setBrokenReward(after);
+    expect(collectProjectReferenceIssues(after)).toContain(`lifeSkill farming: reward ${field} does not exist: missing-reward`);
+    rejects(scope, setBrokenReward, "생활 스킬 『농사』의 참조", before);
+  });
+
+  it("배치가 사용 중인 농장 건물 레벨의 삭제를 막고 이름 변경을 허용한다", () => {
+    const before = createBlankProject();
+    const level = { level: 1, name: "기본", footprint: { width: 2, height: 2 }, capacity: 8, graphicResourceId: "easyrpg-picture-cloud" };
+    const upgraded = { ...level, level: 2, name: "확장" };
+    const building = { id: "shed", name: "작업 창고", levels: [level, upgraded] };
+    const scope = { kind: "dbEntries", entries: [{ collection: "farmBuildingTypes", id: building.id }] } as const;
+    before.database.farmBuildingTypes = [building];
+    before.session.farmBuildingPlacements = [{
+      instanceId: "shed_1", typeId: building.id, level: 2, mapId: before.startMapId, x: 2, y: 2, orientation: "down",
+    }];
+    const withLevels = (levels: typeof building.levels): Project => ({
+      ...before,
+      database: { ...before.database, farmBuildingTypes: [{ ...building, levels }] },
+    });
+
+    expect(collectProjectReferenceIssues(before).filter(issue => issue.includes("farmBuilding"))).toEqual([]);
+    const renamed = withLevels([level, { ...upgraded, name: "넓은 창고" }]);
+    expect(checkSmallTaskScope(before, renamed, scope)).toEqual({ ok: true });
+
+    const after = withLevels([level]);
+    expect(collectProjectReferenceIssues(after)).toContain("session.farmBuildingPlacements[0].level does not exist on farmBuildingType shed: 2");
+    expect(checkSmallTaskScope(before, after, scope)).toMatchObject({
+      ok: false, violations: [{ what: "자료집 농장 건물 『작업 창고』의 참조" }],
+    });
+  });
+
+  it("배치가 사용 중인 장식 방향을 자료집에서 제거하면 막는다", () => {
+    const before = createBlankProject();
+    const decoration: HomeDecorationTypeRecord = {
+      id: "table", name: "나무 탁자", placementItemId: before.database.items[0]!.id,
+      footprint: { width: 1, height: 1 }, blocksMovement: true,
+      allowedOrientations: ["down", "left"], graphicResourceId: "easyrpg-picture-cloud",
+    };
+    const scope = { kind: "dbEntries", entries: [{ collection: "homeDecorationTypes", id: decoration.id }] } as const;
+    before.database.homeDecorationTypes = [decoration];
+    before.session.homeDecorationPlacements = [{
+      instanceId: "table_1", typeId: decoration.id, mapId: before.startMapId, x: 2, y: 2, orientation: "left",
+    }];
+
+    const after: Project = {
+      ...before,
+      database: { ...before.database, homeDecorationTypes: [{ ...decoration, allowedOrientations: ["down"] }] },
+    };
+    expect(collectProjectReferenceIssues(before).filter(issue => issue.includes("homeDecoration"))).toEqual([]);
+    expect(checkSmallTaskScope(before, after, scope)).toMatchObject({
+      ok: false, violations: [{ what: expect.stringContaining("『나무 탁자』의 참조") }],
+    });
   });
 
   it("키 정렬과 관계없이 같게 판정하고 기존 이벤트 페이지 가드가 명령만 허용한다", () => {
