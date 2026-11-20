@@ -192,7 +192,7 @@
     "expectRefusal": true
   },
   {
-    "request": "북쪽 출현 자리에서 슬라임 정찰대 나오게 해.",
+    "request": "슬라임 정찰대가 나오게 하고 출현 이름은 북쪽으로 해 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.spawnFieldEnemy.insert",
@@ -516,7 +516,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"canLose": true, "index": 2},
+    "args": {"canLose": true, "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": true, "canLose": true}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
   },
   {
@@ -524,7 +524,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"troopId": "troop_bat_swarm", "index": 2},
+    "args": {"troopId": "troop_bat_swarm", "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_bat_swarm", "canEscape": true, "canLose": false}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
   },
   {
@@ -532,7 +532,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"canEscape": false, "index": 2},
+    "args": {"canEscape": false, "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": false, "canLose": false}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
   },
   {
@@ -540,7 +540,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"troopId": "troop_slime_pair", "formation": "surprise", "index": 2},
+    "args": {"troopId": "troop_slime_pair", "formation": "surprise", "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_slime_pair", "canEscape": true, "canLose": false, "formation": "surprise"}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
   },
   {
@@ -548,7 +548,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"battleFlow": "strict", "index": 2},
+    "args": {"battleFlow": "strict", "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": true, "canLose": false, "battleFlow": "strict"}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
   },
   {
@@ -556,7 +556,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"troopSource": "variable", "troopVariableId": "var_0001", "index": 2},
+    "args": {"troopSource": "variable", "troopVariableId": "var_0001", "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": true, "canLose": false, "troopSource": "variable", "troopVariableId": "var_0001"}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
   },
   {
@@ -564,7 +564,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"troopId": "not_registered", "index": 2},
+    "args": {"troopId": "not_registered", "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expectRefusal": true
   },
   {
@@ -572,7 +572,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.battleProcessing.update",
-    "args": {"troopSource": "variable", "troopVariableId": "not_registered", "index": 2},
+    "args": {"troopSource": "variable", "troopVariableId": "not_registered", "index": 2, "expectedHash": "42ce15324776fb26146a3b97d3176cf1"},
     "expectRefusal": true
   },
   {

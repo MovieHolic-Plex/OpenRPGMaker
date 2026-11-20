@@ -4,11 +4,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { BATTLE_DEFEAT_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { BATTLE_DEFEAT_BRANCH_INDEX, BATTLE_VICTORY_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/06-cmd-monster-battle";
+import { addFieldSpawnEntry, createFieldSpawnRuntime, removeFieldSpawnEntry } from "@/player/fieldSpawns";
 import { createInterpreter } from "@/player/interpreter";
 import { defaultBattleRecords } from "@/project/defaults/defaultDatabaseBattleRecords";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
@@ -28,6 +29,7 @@ const EVENT = "event_monster_trial";
 const PAGE = "page_monster_trial";
 const SPAWN = "spawn_trial";
 const spawn = { id: SPAWN, troopId: TROOP, area: { x: 1, y: 2, w: 3, h: 2 }, chase: true };
+const dynamicSpawn: Extract<Command, { kind: "spawnFieldEnemy" }> = { kind: "spawnFieldEnemy", spawn: { ...spawn, id: "spawn_event" } };
 const greeting: Command = { kind: "text", body: "도전을 시작할까요?" };
 const victory: Command[] = [{ kind: "text", body: "승리했습니다." }];
 const defeat: Command[] = [{ kind: "text", body: "다음 기회에." }];
@@ -98,11 +100,11 @@ const cases = [
     expected: { kind: "evolveMonster", instanceId: "monster_1", toSpeciesId: "", successBranch: victory, failureBranch: failure },
   },
   {
-    command: { kind: "spawnFieldEnemy", spawn },
-    insert: { spawnId: SPAWN, troopId: TROOP, x: 1, y: 2, w: 3, h: 2 },
+    command: dynamicSpawn,
+    insert: { spawnId: dynamicSpawn.spawn.id, troopId: TROOP, x: 1, y: 2, w: 3, h: 2 },
     update: { troopId: BAT_TROOP, chase: false, maxAlive: 2 },
-    existingBranches: { spawn: { ...spawn, persistKill: true, timePhases: ["night"] } },
-    expected: { kind: "spawnFieldEnemy", spawn: { ...spawn, troopId: BAT_TROOP, chase: false, maxAlive: 2, persistKill: true, timePhases: ["night"] } },
+    existingBranches: { spawn: { ...dynamicSpawn.spawn, persistKill: true, timePhases: ["night"] } },
+    expected: { kind: "spawnFieldEnemy", spawn: { ...dynamicSpawn.spawn, troopId: BAT_TROOP, chase: false, maxAlive: 2, persistKill: true, timePhases: ["night"] } },
   },
   {
     command: { kind: "despawnFieldEnemy", spawnId: SPAWN },
@@ -189,16 +191,74 @@ describe.each(cases)("$command.kind", ({ command, insert, update, existingBranch
       expect(checkSmallTaskScope(project, outOfScope, primitive.scope({ project, target }, args)))
         .toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
       expect(() => runPrimitive(project, { kind: "map", mapId: MAP, label: "도전의 방" }, id, args)).toThrow(/범위 밖/u);
+      expect(() => runPrimitive(project, target, id, { ...args, pageId: "page_other" })).toThrow(PrimitiveError);
       await expectUndoRestores(project, after, target);
     });
   }
 });
 
-it("해시가 달라진 줄과 명령 종류가 다른 줄의 수정을 거절한다", () => {
-  const { project, target } = fixture("blank", [{ kind: "giveMonster", speciesId: SLIME, level: 5 }]);
-  expect(() => runPrimitive(project, target, "cmd.giveMonster.update", { index: 1, level: 8, expectedHash: "old" }))
+it("해시가 없거나 같은 종류의 다른 줄을 가리키면 수정을 거절한다", () => {
+  const first: Command = { kind: "giveMonster", speciesId: SLIME, level: 5 };
+  const second: Command = { kind: "giveMonster", speciesId: BAT, level: 7 };
+  const { project, target } = fixture("blank", [first, second]);
+  expect(() => runPrimitive(project, target, "cmd.giveMonster.update", { index: 1, level: 8 })).toThrow(PrimitiveError);
+  expect(() => runPrimitive(project, target, "cmd.giveMonster.update", { index: 2, level: 8, expectedHash: eventCommandHash(first) }))
     .toThrow(/그 줄의 내용이 바뀌었습니다/u);
-  expect(() => runPrimitive(project, target, "cmd.moveMonster.update", { index: 1, to: "box" })).toThrow(PrimitiveError);
+  expect(() => runPrimitive(project, target, "cmd.moveMonster.update", { index: 1, to: "box", expectedHash: eventCommandHash(first) }))
+    .toThrow(/이 종류의 명령을 찾을 수 없습니다/u);
+  const { after } = runPrimitive(project, target, "cmd.giveMonster.update", { index: 1, level: 8, expectedHash: eventCommandHash(first) });
+  expect(stored(after)).toEqual([greeting, { ...first, level: 8 }, second]);
+});
+
+it("고른 페이지를 하나로 확인할 수 없으면 적용을 거절한다", () => {
+  const { project, target } = fixture("blank");
+  const pages = project.maps[MAP]!.events[0]!.pages!;
+  pages[1] = { ...pages[1]!, id: PAGE };
+  expect(() => runPrimitive(project, target, "cmd.giveMonster.insert", {})).toThrow(/페이지를 하나로 확인/u);
+  expect(pages.map(page => page.commands)).toEqual([[greeting], [greeting]]);
+});
+
+it("다른 분기도 같은 명령 목록을 공유하면 한쪽만 고칠 수 없어 거절한다", () => {
+  const give: Command = { kind: "giveMonster", speciesId: SLIME, level: 5 };
+  const shared = [give];
+  const battle: Command = {
+    kind: "battleProcessing", troopId: TROOP, canEscape: true, canLose: true, branchOnResult: true,
+    victoryBranch: shared, defeatBranch: shared,
+  };
+  const { project, target } = fixture("blank", [battle]);
+  const branchPath = [1, BATTLE_DEFEAT_BRANCH_INDEX];
+  expect(() => runPrimitive(project, target, "cmd.giveMonster.insert", { branchPath }))
+    .toThrow(/분기 위치를 하나로 확인/u);
+  expect(() => runPrimitive(project, target, "cmd.giveMonster.update", { branchPath, index: 0, expectedHash: eventCommandHash(give), level: 6 }))
+    .toThrow(/분기 위치를 하나로 확인/u);
+  expect(shared).toEqual([give]);
+});
+
+it("같은 부모 줄이 두 곳에 있으면 한쪽 빈 분기만 만들 수 없어 거절한다", () => {
+  const battle: Command = {
+    kind: "battleProcessing", troopId: TROOP, canEscape: true, canLose: true, branchOnResult: true,
+  };
+  const { project, target } = fixture("blank", [battle, battle]);
+  expect(() => runPrimitive(project, target, "cmd.giveMonster.insert", { branchPath: [1, BATTLE_DEFEAT_BRANCH_INDEX] }))
+    .toThrow(/분기 위치를 하나로 확인/u);
+  expect(battle.defeatBranch).toBeUndefined();
+});
+
+it.each([
+  ["spawnFieldEnemy", { troopId: TROOP }, dynamicSpawn, { chase: false }],
+  ["despawnFieldEnemy", { spawnId: SPAWN }, { kind: "despawnFieldEnemy", spawnId: SPAWN }, { spawnId: "spawn_spare" }],
+  ["tacticsBattle", { troopId: TROOP }, { kind: "tacticsBattle", troopId: TROOP }, { canLose: true }],
+] as const)("%s 명령이 실행되지 않는 병렬 페이지는 거절한다", (kind, insert, command, patch) => {
+  const { project, target } = fixture("blank", [command]);
+  const selectedPage = project.maps[MAP]!.events[0]!.pages![0]!;
+  selectedPage.trigger = { kind: "parallel" };
+  expect(() => runPrimitive(project, target, `cmd.${kind}.insert`, insert)).toThrow(/병렬 실행 페이지에서/u);
+  expect(() => runPrimitive(project, target, `cmd.${kind}.update`, {
+    index: 1, expectedHash: eventCommandHash(command), ...patch,
+  })).toThrow(/병렬 실행 페이지에서/u);
+  expect(stored(project)).toEqual([greeting, command]);
+  expect(stored(runPrimitive(project, target, "cmd.battleProcessing.insert", { troopId: TROOP }).after).at(-1))
+    .toMatchObject({ kind: "battleProcessing", troopId: TROOP });
 });
 
 it("패배 분기에 삽입하고 그 줄만 수정한다", () => {
@@ -208,7 +268,8 @@ it("패배 분기에 삽입하고 그 줄만 수정한다", () => {
   }]);
   const branchPath = [1, BATTLE_DEFEAT_BRANCH_INDEX];
   const inserted = runPrimitive(project, target, "cmd.giveMonster.insert", { branchPath, index: 0, level: 3 }).after;
-  const edited = runPrimitive(inserted, target, "cmd.giveMonster.update", { branchPath, index: 0, level: 4 }).after;
+  const expectedHash = eventCommandHash({ kind: "giveMonster", speciesId: SLIME, level: 3 });
+  const edited = runPrimitive(inserted, target, "cmd.giveMonster.update", { branchPath, index: 0, level: 4, expectedHash }).after;
   expect(stored(edited)[1]).toMatchObject({
     victoryBranch: victory,
     defeatBranch: [{ kind: "giveMonster", speciesId: SLIME, level: 4 }, ...defeat],
@@ -216,15 +277,33 @@ it("패배 분기에 삽입하고 그 줄만 수정한다", () => {
   expect(stored(project)[1]).toMatchObject({ defeatBranch: defeat });
 });
 
+it("열려 있는 빈 전투 분기에만 첫 줄을 넣고 잘못된 위치는 거절한다", () => {
+  const battle: Command = { kind: "battleProcessing", troopId: TROOP, canEscape: true, canLose: true, branchOnResult: true, victoryBranch: victory };
+  const { project, target } = fixture("blank", [battle]);
+  const id = "cmd.giveMonster.insert";
+  const { after } = runPrimitive(project, target, id, { branchPath: [1, BATTLE_DEFEAT_BRANCH_INDEX] });
+  expect(stored(after)).toEqual([greeting, { ...battle, defeatBranch: [{ kind: "giveMonster", speciesId: SLIME, level: 5 }] }]);
+  expect(stored(project)).toEqual([greeting, battle]);
+  for (const branchPath of [[1], [1, FORK_THEN_BRANCH_INDEX], [0, BATTLE_DEFEAT_BRANCH_INDEX], [1, BATTLE_DEFEAT_BRANCH_INDEX, 0, BATTLE_VICTORY_BRANCH_INDEX]]) {
+    expect(() => runPrimitive(project, target, id, { branchPath })).toThrow(PrimitiveError);
+  }
+  expect(() => runPrimitive(project, target, id, { branchPath: [1, BATTLE_DEFEAT_BRANCH_INDEX], index: 1 })).toThrow(/줄의 위치/u);
+  expect(() => runPrimitive(project, target, id, { index: 3 })).toThrow(/줄의 위치/u);
+});
+
 it("기존 전투의 결과 분기를 켜고 저장된 분기 명령을 보존한다", () => {
-  const { project, target } = fixture("built", [{
+  const battle: Command = {
     kind: "battleProcessing", troopId: TROOP, canEscape: true, canLose: false, victoryBranch: victory,
-  }]);
-  const { after } = runPrimitive(project, target, "cmd.battleProcessing.update", { index: 1, branchOnResult: true });
+  };
+  const { project, target } = fixture("built", [battle]);
+  const { after } = runPrimitive(project, target, "cmd.battleProcessing.update", { index: 1, branchOnResult: true, expectedHash: eventCommandHash(battle) });
   expect(stored(after)[1]).toEqual({
     kind: "battleProcessing", troopId: TROOP, canEscape: true, canLose: false, branchOnResult: true,
     victoryBranch: victory, defeatBranch: [], escapeBranch: [],
   });
+  const interpreter = createInterpreter(stored(after).slice(1), startSession(after, 11), after);
+  expect(interpreter.start()).toMatchObject({ kind: "battleProcessing", branchOnResult: true });
+  expect(interpreter.resume("victory")).toMatchObject({ kind: "text", body: "승리했습니다." });
 });
 
 it("출현 영역은 호스트에서 고른 칸을 기본으로 쓰고 맵 바깥 영역은 거절한다", () => {
@@ -245,6 +324,167 @@ it("올바르지 않은 출현 스위치와 적 무리 참조를 한국어로 �
     .toThrow("자료집에서 쓰러뜨렸을 때 켤 스위치를 찾을 수 없습니다.");
   expect(() => runPrimitive(project, target, "cmd.battleProcessing.insert", { troopId: "missing_troop" }))
     .toThrow("자료집에서 전투에 쓸 적 무리를 찾을 수 없습니다.");
+});
+
+it("맵이나 다른 페이지에서 쓰는 출현 이름과 같은 런타임 이벤트 ID를 거절한다", () => {
+  const { project, target } = fixture("blank");
+  project.maps[MAP]!.events[0]!.pages![1]!.commands.push(dynamicSpawn);
+  for (const spawnId of [SPAWN, dynamicSpawn.spawn.id, "spawn event"]) {
+    expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", { troopId: TROOP, spawnId }))
+      .toThrow(/이미 쓰는 출현 이름/u);
+  }
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", { troopId: TROOP, spawnId: " " }))
+    .toThrow(/출현 이름을 입력/u);
+  expect(stored(project)).toEqual([greeting]);
+});
+
+it("다른 페이지가 같은 출현 줄을 공유하면 런타임 ID가 겹치는 이름 변경을 거절한다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  project.maps[MAP]!.events[0]!.pages![1]!.commands.push(dynamicSpawn);
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn event",
+  })).toThrow(/이미 쓰는 출현 이름/u);
+});
+
+it.each(["constructor", "__proto__"])("처치 기록에서 예약된 출현 이름 %s를 거절한다", spawnId => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", { troopId: TROOP, spawnId, persistKill: true }))
+    .toThrow(/예약한 이름/u);
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId,
+  })).toThrow(/예약한 이름/u);
+});
+
+it.each(["map", "common", "troop"] as const)("%s에서 제거할 출현 이름을 바꾸지 못한다", owner => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  const remove: Command = { kind: "despawnFieldEnemy", spawnId: dynamicSpawn.spawn.id };
+  const commands: Command[] = [{ kind: "loop", body: [remove] }];
+  if (owner === "map") project.maps[MAP]!.events[0]!.pages![1]!.commands.push(...commands);
+  if (owner === "common") project.commonEvents = [...project.commonEvents, { id: "ce_remove", name: "정리", trigger: "none", commands }];
+  if (owner === "troop") project.database.troops = project.database.troops.map(troop => troop.id === TROOP
+    ? { ...troop, afterBattle: { victory: commands } } : troop);
+
+  const args = { index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn_renamed" };
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", args)).toThrow(/이 출현 이름을 쓰고 있어/u);
+  expect(stored(project)).toEqual([greeting, dynamicSpawn]);
+});
+
+it("출현으로 생기는 이벤트를 조건에서 쓸 때 출현 이름을 유지한다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  project.maps[MAP]!.events[0]!.pages![1]!.conditions = [{ kind: "pursuitActive", eventId: "__field_spawn__spawn_event_1", value: true }];
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn_renamed",
+  })).toThrow(/조건에서 이 출현 이름을 쓰고 있어/u);
+});
+
+it("출현 이벤트의 시작 셀프 스위치를 끊는 이름 변경을 거절한다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  project.session = { ...project.session, selfSwitches: { "__field_spawn__spawn_event_1": { A: true } } };
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn_renamed",
+  })).toThrow(/이 출현 이름을 쓰고 있어/u);
+});
+
+it("공용 스크립트에서 출현 이름이나 그 이벤트를 참조하면 이름 변경을 거절한다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  const rename = (spawnId: string) => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId,
+  });
+  // The runtime event id would stay the same, but the script's despawn still uses the original name.
+  const remove = "game.cmd({kind: 'despawnFieldEnemy', spawnId: 'spawn_event'});";
+  project.scriptLibrary = [{ id: "remove_spawn", source: remove, compiled: remove }];
+  expect(() => rename("spawn event")).toThrow(/이 출현 이름을 쓰고 있어/u);
+
+  const move = "game.cmd({kind: 'moveEvent', eventId: '__field_spawn__spawn_event_1', route: {steps: []}});";
+  project.scriptLibrary = [{ id: "move_spawn", source: move, compiled: move }];
+  expect(() => rename("spawn_renamed")).toThrow(/이 출현 이름을 쓰고 있어/u);
+  expect(stored(rename("spawn event").after)[1]).toMatchObject({ spawn: { id: "spawn event" } });
+});
+
+it("다른 이벤트의 편집을 취소하면 돌아올 제거 명령도 보호한다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn]);
+  const remove: Command = { kind: "despawnFieldEnemy", spawnId: dynamicSpawn.spawn.id };
+  const original = { ...project.maps[MAP]!.events[0]!, id: "event_remove", commands: [], pages: [page("remove", [remove])] };
+  project.maps[MAP]!.events.push({ ...original, pages: [page("remove", [])], draft: { kind: "edit", original } });
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn_renamed",
+  })).toThrow(/이 출현 이름을 쓰고 있어/u);
+});
+
+it("기존 처치 기록을 쓰는 출현의 이름을 유지한다", () => {
+  const persistent = { ...dynamicSpawn, spawn: { ...dynamicSpawn.spawn, persistKill: true } };
+  const { project, target } = fixture("blank", [persistent]);
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(persistent), spawnId: "spawn_renamed",
+  })).toThrow(/기존 기록/u);
+});
+
+it("부대의 전투 뒤 출현은 제거할 수 있고 전투 중 출현은 거절한다", () => {
+  const { project, target } = fixture("blank");
+  project.database.troops = project.database.troops.map(troop => troop.id === TROOP
+    ? { ...troop, afterBattle: { victory: [dynamicSpawn] } } : troop);
+  const args = { spawnId: dynamicSpawn.spawn.id };
+  const { after } = runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args);
+  expect(stored(after).at(-1)).toEqual({ kind: "despawnFieldEnemy", spawnId: dynamicSpawn.spawn.id });
+
+  project.database.troops = project.database.troops.map(troop => troop.id === TROOP ? {
+    ...troop, afterBattle: undefined,
+    battleEventPages: [{ id: "trial_battle_event", name: "전투 중", conditions: [], span: "battle", commands: [dynamicSpawn] }],
+  } : troop);
+  expect(() => runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
+});
+
+it("이름 있는 구역을 지울 때만 직접 지정한 영역으로 바꾼다", () => {
+  const anchored = { ...dynamicSpawn, spawn: { ...dynamicSpawn.spawn, locationId: "loc_trial" } };
+  const { project, target } = fixture("blank", [anchored]);
+  project.maps[MAP]!.locations = [{ id: "loc_trial", name: "연습 마당", x: 4, y: 4, w: 3, h: 4 }];
+  const id = "cmd.spawnFieldEnemy.update";
+  const args = { index: 1, expectedHash: eventCommandHash(anchored) };
+  expect(runPrimitive(project, target, id, { ...args, chase: false }).sentence).toContain("연습 마당");
+  expect(() => runPrimitive(project, target, id, { ...args, x: 5 })).toThrow(/구역 지정을 비워/u);
+  const { after } = runPrimitive(project, target, id, { ...args, locationId: "", x: 5 });
+  expect(stored(after)[1]).toEqual({ ...dynamicSpawn, spawn: { ...dynamicSpawn.spawn, area: { ...spawn.area, x: 5 } } });
+});
+
+it("출현 구역 지정을 지우면 다시 쓰게 될 좌표의 범위를 검사한다", () => {
+  const legacy = { ...dynamicSpawn, spawn: { ...dynamicSpawn.spawn, locationId: "loc_trial", area: { ...spawn.area, x: 11 } } };
+  const { project, target } = fixture("blank", [legacy]);
+  project.maps[MAP]!.locations = [{ id: "loc_trial", name: "연습 마당", x: 4, y: 4, w: 3, h: 4 }];
+  const args = { index: 1, expectedHash: eventCommandHash(legacy), locationId: "" };
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", args)).toThrow(/출현 영역을 선택한 맵 안에/u);
+  const { after } = runPrimitive(project, target, "cmd.spawnFieldEnemy.update", { ...args, x: 1 });
+  expect(stored(after)[1]).toEqual(dynamicSpawn);
+});
+
+it("이름 있는 구역을 지정하면 런타임과 예비 좌표가 그 구역을 사용한다", () => {
+  const { project, target } = fixture("blank");
+  const area = { x: 4, y: 4, w: 3, h: 4 };
+  project.maps[MAP]!.locations = [{ id: "loc_trial", name: "연습 마당", ...area }];
+  const { after } = runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", {
+    troopId: TROOP, locationId: "loc_trial",
+  }, { rect: { x: 1, y: 1, w: 2, h: 2 } });
+  const interpreter = createInterpreter(stored(after).slice(1), startSession(after, 11), after);
+  const step = interpreter.start();
+  expect(step).toMatchObject({ kind: "spawnFieldEnemy", spawn: { area, locationId: "loc_trial" } });
+  if (step.kind !== "spawnFieldEnemy") throw new Error("출현 단계가 필요합니다.");
+  const map = after.maps[MAP]!;
+  const player = { x: 0, y: 0 };
+  const runtime = createFieldSpawnRuntime(after, map, player);
+  addFieldSpawnEntry(runtime, after, map, step.spawn, player);
+  expect(runtime.entries.at(-1)?.spawn.area).toEqual(area);
+  expect(runtime.entries.at(-1)?.alive[0]).toMatchObject({ x: area.x, y: area.y });
+});
+
+it("실행에 쓰이지 않는 전투 상대와 잘못된 격자 크기, 빈 진화 종 ID를 거절한다", () => {
+  const { project, target } = fixture("blank");
+  const insert = (kind: string, args: Record<string, unknown>) => runPrimitive(project, target, `cmd.${kind}.insert`, args);
+  expect(() => insert("battleProcessing", { troopId: TROOP, troopVariableId: "bad_var" })).toThrow(/변수에서 읽는 방식/u);
+  expect(() => insert("battleProcessing", { troopId: "bad_troop", troopSource: "variable", troopVariableId: "var_trial_troop" }))
+    .toThrow(/적 무리를 직접 고르는 방식/u);
+  expect(() => insert("tacticsBattle", { troopId: TROOP, width: 17 })).toThrow(PrimitiveError);
+  expect(() => insert("tacticsBattle", { troopId: TROOP, height: 13 })).toThrow(PrimitiveError);
+  expect(() => insert("evolveMonster", { instanceId: "monster_1", toSpeciesId: " " })).toThrow(/몬스터 종을 찾을 수 없습니다/u);
+  expect(() => insert("moveMonster", { instanceId: "monster_99999999999999999", to: "box" })).toThrow(/몬스터 개체를 찾을 수 없습니다/u);
 });
 
 it("지급한 몬스터를 보관함으로 옮긴다", () => {
@@ -280,18 +520,30 @@ it("저장된 적 무리와 패배 허용을 전투 시작 단계에 전달한�
   });
 });
 
-it("저장된 출현·제거 명령을 현재 맵의 실행 단계에 순서대로 전달한다", () => {
+it("저장된 출현 명령으로 적을 만들고 제거 명령으로 그 적만 없앤다", () => {
   let { project, target } = fixture("blank");
   project = runPrimitive(project, target, "cmd.spawnFieldEnemy.insert", { troopId: TROOP, spawnId: "spawn_dynamic" }).after;
   project = runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", { spawnId: "spawn_dynamic" }).after;
   const session = startSession(project, 11);
   const interpreter = createInterpreter(stored(project).slice(1), session, project);
-  expect(interpreter.start()).toMatchObject({ kind: "spawnFieldEnemy", spawn: { id: "spawn_dynamic", troopId: TROOP } });
-  expect(interpreter.resume(undefined)).toMatchObject({ kind: "despawnFieldEnemy", spawnId: "spawn_dynamic" });
+  const spawnStep = interpreter.start();
+  expect(spawnStep).toMatchObject({ kind: "spawnFieldEnemy", spawn: { id: "spawn_dynamic", troopId: TROOP } });
+  if (spawnStep.kind !== "spawnFieldEnemy") throw new Error("출현 단계가 필요합니다.");
+  const map = project.maps[MAP]!;
+  const player = { x: session.x, y: session.y };
+  const runtime = createFieldSpawnRuntime(project, map, player);
+  const otherEntries = runtime.entries.slice();
+  addFieldSpawnEntry(runtime, project, map, spawnStep.spawn, player);
+  expect(runtime.entries.at(-1)?.alive[0]?.spawnId).toBe("spawn_dynamic");
+  const despawnStep = interpreter.resume(undefined);
+  expect(despawnStep).toMatchObject({ kind: "despawnFieldEnemy", spawnId: "spawn_dynamic" });
+  if (despawnStep.kind !== "despawnFieldEnemy") throw new Error("제거 단계가 필요합니다.");
+  removeFieldSpawnEntry(runtime, despawnStep.spawnId);
+  expect(runtime.entries).toEqual(otherEntries);
 });
 
 const testDirectory = dirname(fileURLToPath(import.meta.url));
-const seededCases: (CorpusCase & { seed?: Command })[] = JSON.parse(readFileSync(
+const seededCases: (CorpusCase & { seed?: Command; refusalMessage?: string })[] = JSON.parse(readFileSync(
   resolve(testDirectory, "06-cmd-monster-battle/seeded-corpus.json"), "utf8",
 ));
 const stockCases: CorpusCase[] = JSON.parse(readFileSync(
@@ -315,6 +567,7 @@ it.each(seededCases)("$request", async entry => {
   const apply = () => runPrimitive(project, target, entry.primitive, entry.args, entry.selection);
   if (entry.expectRefusal) {
     expect(apply).toThrow(PrimitiveError);
+    if (entry.refusalMessage) expect(apply).toThrow(entry.refusalMessage);
     return;
   }
   const { after, sentence } = apply();

@@ -4,7 +4,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"level": 9, "index": 1},
+    "args": {"level": 9, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 9}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -13,7 +13,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"speciesId": "species_cave_bat", "index": 1},
+    "args": {"speciesId": "species_cave_bat", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_cave_bat", "level": 5}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -22,7 +22,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"nickname": "말랑이", "index": 1},
+    "args": {"nickname": "말랑이", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5, "nickname": "말랑이"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -31,7 +31,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"speciesId": "species_ember_drake", "level": 7, "index": 1},
+    "args": {"speciesId": "species_ember_drake", "level": 7, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_ember_drake", "level": 7}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -40,7 +40,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"nickname": "통통", "index": 1},
+    "args": {"nickname": "통통", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5, "nickname": "통통"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -49,7 +49,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"speciesId": "species_king_slime", "level": 10, "index": 1},
+    "args": {"speciesId": "species_king_slime", "level": 10, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_king_slime", "level": 10}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -58,16 +58,17 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"speciesId": "not_registered", "index": 1},
+    "args": {"speciesId": "not_registered", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "자료집에서 몬스터 종을 찾을 수 없습니다."
   },
   {
     "request": "지급 줄을 레벨 백으로 올려요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.giveMonster.update",
-    "args": {"level": 100, "index": 1},
+    "args": {"level": 100, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
     "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
     "expectRefusal": true
   },
@@ -76,7 +77,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"to": "box", "index": 1},
+    "args": {"to": "box", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_1", "to": "box"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -85,7 +86,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"instanceId": "monster_2", "index": 1},
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_2", "to": "party"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -94,7 +95,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"instanceId": "monster_4", "to": "box", "index": 1},
+    "args": {"instanceId": "monster_4", "to": "box", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_4", "to": "box"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -103,7 +104,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"instanceId": "monster_3", "to": "party", "index": 1},
+    "args": {"instanceId": "monster_3", "to": "party", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_3", "to": "party"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -112,7 +113,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"instanceId": "monster_2", "to": "box", "index": 1},
+    "args": {"instanceId": "monster_2", "to": "box", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_2", "to": "box"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -121,7 +122,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"instanceId": "monster_4", "index": 1},
+    "args": {"instanceId": "monster_4", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_4", "to": "party"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -130,7 +131,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"instanceId": "not_registered", "index": 1},
+    "args": {"instanceId": "not_registered", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expectRefusal": true
   },
@@ -139,7 +140,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.moveMonster.update",
-    "args": {"to": "river", "index": 1},
+    "args": {"to": "river", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
     "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
     "expectRefusal": true
   },
@@ -148,7 +149,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"toSpeciesId": "species_king_slime", "index": 1},
+    "args": {"toSpeciesId": "species_king_slime", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "species_king_slime", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -157,7 +158,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"instanceId": "monster_2", "index": 1},
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_2", "toSpeciesId": "", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -166,7 +167,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"instanceId": "monster_4", "toSpeciesId": "species_ember_drake", "index": 1},
+    "args": {"instanceId": "monster_4", "toSpeciesId": "species_ember_drake", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_4", "toSpeciesId": "species_ember_drake", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -175,7 +176,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"instanceId": "monster_3", "toSpeciesId": "", "index": 1},
+    "args": {"instanceId": "monster_3", "toSpeciesId": "", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_3", "toSpeciesId": "", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -184,7 +185,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"toSpeciesId": "species_cave_bat", "index": 1},
+    "args": {"toSpeciesId": "species_cave_bat", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "species_cave_bat", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -193,7 +194,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"instanceId": "monster_2", "toSpeciesId": "species_king_slime", "index": 1},
+    "args": {"instanceId": "monster_2", "toSpeciesId": "species_king_slime", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_2", "toSpeciesId": "species_king_slime", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -202,7 +203,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"toSpeciesId": "not_registered", "index": 1},
+    "args": {"toSpeciesId": "not_registered", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expectRefusal": true
   },
@@ -211,7 +212,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.evolveMonster.update",
-    "args": {"instanceId": "not_registered", "index": 1},
+    "args": {"instanceId": "not_registered", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
     "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
     "expectRefusal": true
   },
@@ -220,72 +221,73 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"troopId": "troop_bat_swarm", "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_bat_swarm", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "args": {"troopId": "troop_bat_swarm", "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_bat_swarm", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
     "request": "출현한 적이 쫓아오지 않게 고쳐주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"chase": false, "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": false}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "args": {"chase": false, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": false}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
     "request": "필드 적 리스폰을 열 초 뒤로 바꿔.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"respawnSec": 10, "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "respawnSec": 10}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "args": {"respawnSec": 10, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "respawnSec": 10}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
     "request": "적 나오는 구역을 가로 다섯 칸으로 넓혀줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"w": 5, "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 5, "h": 3}, "chase": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "args": {"w": 5, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 5, "h": 3}, "chase": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
     "request": "동시에 두마리까지만 나오게 고쳐요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"maxAlive": 2, "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "maxAlive": 2}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "args": {"maxAlive": 2, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "maxAlive": 2}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
     "request": "몹을 남쪽이라는 출현 이름으로 옮기고 처치 수도 남겨.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_south", "persistKill": true, "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_south", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "persistKill": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "args": {"spawnId": "spawn_south_event", "persistKill": true, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_south_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "persistKill": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
     "request": "출현시킬 적 무리를 없는 얼음 도마뱀 부대로 바꿔.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"troopId": "not_registered", "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "args": {"troopId": "not_registered", "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
     "expectRefusal": true
   },
   {
-    "request": "적 출현 영역을 지도 밖 십만번째 줄에 두게 고쳐줘요.",
+    "request": "이 적 출현 이름을 이미 맵에서 쓰는 남쪽 출현 이름으로 바꿔.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.spawnFieldEnemy.update",
-    "args": {"y": 100000, "index": 1},
-    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
-    "expectRefusal": true
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expectRefusal": true,
+    "refusalMessage": "이미 쓰는 출현 이름입니다. 다른 이름을 입력해 주세요."
   },
   {
     "request": "여기서 북쪽 몹을 사라지게 해줘.",
@@ -356,7 +358,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_south", "index": 1},
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -365,7 +367,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_east", "index": 1},
+    "args": {"spawnId": "spawn_east", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -374,7 +376,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_south", "index": 1},
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -383,7 +385,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_east", "index": 1},
+    "args": {"spawnId": "spawn_east", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -392,7 +394,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_south", "index": 1},
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -401,7 +403,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "spawn_east", "index": 1},
+    "args": {"spawnId": "spawn_east", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -410,7 +412,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "not_registered", "index": 1},
+    "args": {"spawnId": "not_registered", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expectRefusal": true
   },
@@ -419,7 +421,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.despawnFieldEnemy.update",
-    "args": {"spawnId": "", "index": 1},
+    "args": {"spawnId": "", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
     "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
     "expectRefusal": true
   },
@@ -428,7 +430,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "monster_1", "index": 1},
+    "args": {"instanceId": "monster_1", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_1"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -437,7 +439,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "monster_2", "index": 1},
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -446,7 +448,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "monster_3", "index": 1},
+    "args": {"instanceId": "monster_3", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_3"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -455,7 +457,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "monster_4", "index": 1},
+    "args": {"instanceId": "monster_4", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_4"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -464,7 +466,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "monster_2", "index": 1},
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -473,7 +475,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "", "index": 1},
+    "args": {"instanceId": "", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": ""}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -482,7 +484,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": "not_registered", "index": 1},
+    "args": {"instanceId": "not_registered", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expectRefusal": true
   },
@@ -491,7 +493,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.removeMonster.update",
-    "args": {"instanceId": ["monster_1", "monster_2", "monster_3"], "index": 1},
+    "args": {"instanceId": ["monster_1", "monster_2", "monster_3"], "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
     "seed": {"kind": "removeMonster", "instanceId": ""},
     "expectRefusal": true
   },
@@ -500,7 +502,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"toSpeciesId": "species_king_slime", "index": 1},
+    "args": {"toSpeciesId": "species_king_slime", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_king_slime"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -509,7 +511,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"fromSpeciesId": "species_ember_drake", "index": 1},
+    "args": {"fromSpeciesId": "species_ember_drake", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_ember_drake", "toSpeciesId": "species_cave_bat"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -518,7 +520,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"level": 13, "index": 1},
+    "args": {"level": 13, "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat", "level": 13}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -527,7 +529,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"nickname": "밤손이", "index": 1},
+    "args": {"nickname": "밤손이", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat", "nickname": "밤손이"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -536,7 +538,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"fromSpeciesId": "species_king_slime", "toSpeciesId": "species_ember_drake", "index": 1},
+    "args": {"fromSpeciesId": "species_king_slime", "toSpeciesId": "species_ember_drake", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_king_slime", "toSpeciesId": "species_ember_drake"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -545,7 +547,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"toSpeciesId": "species_ember_drake", "level": 20, "nickname": "불꽃", "index": 1},
+    "args": {"toSpeciesId": "species_ember_drake", "level": 20, "nickname": "불꽃", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_ember_drake", "level": 20, "nickname": "불꽃"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -554,7 +556,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"toSpeciesId": "not_registered", "index": 1},
+    "args": {"toSpeciesId": "not_registered", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expectRefusal": true
   },
@@ -563,7 +565,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tradeMonster.update",
-    "args": {"fromSpeciesId": "", "index": 1},
+    "args": {"fromSpeciesId": "", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
     "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
     "expectRefusal": true
   },
@@ -572,7 +574,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdB": "monster_3", "index": 1},
+    "args": {"instanceIdB": "monster_3", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_3"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -581,7 +583,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdA": "monster_4", "index": 1},
+    "args": {"instanceIdA": "monster_4", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_4", "instanceIdB": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -590,7 +592,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdB": "monster_4", "index": 1},
+    "args": {"instanceIdB": "monster_4", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_4"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -599,7 +601,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdA": "monster_3", "instanceIdB": "monster_4", "index": 1},
+    "args": {"instanceIdA": "monster_3", "instanceIdB": "monster_4", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_3", "instanceIdB": "monster_4"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -608,7 +610,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdA": "monster_3", "index": 1},
+    "args": {"instanceIdA": "monster_3", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_3", "instanceIdB": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -617,7 +619,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdA": "monster_4", "instanceIdB": "monster_3", "index": 1},
+    "args": {"instanceIdA": "monster_4", "instanceIdB": "monster_3", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_4", "instanceIdB": "monster_3"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -626,7 +628,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdB": "monster_1", "index": 1},
+    "args": {"instanceIdB": "monster_1", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expectRefusal": true
   },
@@ -635,7 +637,7 @@
     "fixture": "blank",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.fuseMonsters.update",
-    "args": {"instanceIdB": "not_registered", "index": 1},
+    "args": {"instanceIdB": "not_registered", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
     "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
     "expectRefusal": true
   },
@@ -644,7 +646,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"width": 10, "index": 1},
+    "args": {"width": 10, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": [], "width": 10}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -653,7 +655,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"height": 4, "index": 1},
+    "args": {"height": 4, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": [], "height": 4}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -662,7 +664,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"troopId": "troop_bat_swarm", "index": 1},
+    "args": {"troopId": "troop_bat_swarm", "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_bat_swarm", "canLose": false, "victoryBranch": [], "defeatBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -671,7 +673,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"canLose": true, "index": 1},
+    "args": {"canLose": true, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": true, "victoryBranch": [], "defeatBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
@@ -680,25 +682,25 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"width": 7, "height": 9, "troopId": "troop_slime_pair", "index": 1},
+    "args": {"width": 7, "height": 9, "troopId": "troop_slime_pair", "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime_pair", "canLose": false, "victoryBranch": [], "defeatBranch": [], "width": 7, "height": 9}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
-    "request": "전술판 가로 스무 칸 세로 둘, 패배해도 계속이요.",
+    "request": "전술판 가로 열여섯 칸 세로 둘, 패배해도 계속이요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"width": 20, "height": 2, "canLose": true, "index": 1},
+    "args": {"width": 16, "height": 2, "canLose": true, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
-    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": true, "victoryBranch": [], "defeatBranch": [], "width": 20, "height": 2}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": true, "victoryBranch": [], "defeatBranch": [], "width": 16, "height": 2}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
   },
   {
-    "request": "전술 전투 맵은 가로 한 칸만 되게 고쳐.",
+    "request": "전술 전투 맵은 가로 열일곱 칸이 되게 고쳐.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"width": 1, "index": 1},
+    "args": {"width": 17, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expectRefusal": true
   },
@@ -707,7 +709,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
     "primitive": "cmd.tacticsBattle.update",
-    "args": {"troopId": "not_registered", "index": 1},
+    "args": {"troopId": "not_registered", "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
     "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
     "expectRefusal": true
   }
