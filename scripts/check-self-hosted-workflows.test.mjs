@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { isAllowedRunsOn, runsOnValues } from "./check-self-hosted-workflows.mjs";
 
@@ -7,6 +8,17 @@ const targetCheck = "github.event_name != 'pull_request_target'";
 const sameRepo = "github.event.pull_request.head.repo.full_name == github.repository";
 const forkCheck = `github.event_name != 'pull_request' || ${sameRepo}`;
 const safeExpression = "${{ " + `${targetCheck} && (${forkCheck}) && fromJSON('${labels}') || 'ubuntu-latest' }}`;
+
+test("ci-fast routes only parity to mdc2-fast for trusted runs", () => {
+  const source = readFileSync(new URL("../.github/workflows/ci-fast.yml", import.meta.url), "utf8");
+  const runners = Object.fromEntries(runsOnValues(source).map(({ job, value }) => [job, value]));
+  const fastLabels = '["self-hosted","linux","x64","mdc2","mdc2-fast"]';
+  assert.deepEqual(runners, {
+    fast: "ubuntu-latest",
+    "fast-parity": safeExpression.replace(labels, fastLabels),
+    "fast-static": "ubuntu-latest",
+  });
+});
 
 test("allows hosted runner labels in scalar, flow sequence, and block sequence forms", () => {
   const entries = runsOnValues(`jobs:
