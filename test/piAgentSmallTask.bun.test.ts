@@ -152,6 +152,30 @@ test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조
   expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
 });
 
+test("작은 일 Pi 실행은 다른 이벤트의 열린 초안이 읽는 현대 명령 기록을 보호한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const variableId = project.variables[0]!.id;
+  const submit = {
+    kind: "m2Command", commandId: "m2-222-high-score",
+    fields: { action: "submit", scoreId: "경주", valueVariableId: variableId },
+  } satisfies Command;
+  const read = { ...submit, fields: { action: "read", scoreId: "경주", resultVariableId: variableId } };
+  event.pages[1]!.commands = [submit];
+  const original = project.maps[mapId].events[1]!;
+  const draft: GameEvent = {
+    ...original, pages: [{ ...original.pages![0]!, commands: [read] }], draft: { kind: "edit", original },
+  };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const draftRequest = { ...request, smallTask: { ...request.smallTask, draftSource } };
+  const args = { index: 0, expectedHash: eventCommandHash(submit) };
+  for (const call of [apply("cmd.delete", args), apply("m2.222.update", { ...args, scoreId: "걷기" })]) {
+    const done = await runPiAgent(draftRequest, { streamFn: scripted([call]) });
+    expect(done.stoppedEarly).toContain("점수를 올리는 마지막 명령");
+    expect(done.changedKeys).toEqual([]);
+    expect(done.project).toBe(project);
+  }
+});
+
 test("작은 일 Pi 실행은 다른 열린 이벤트가 참조하는 생성 ID를 바꾸지 않는다", async () => {
   const { request, project, mapId, event, commands } = fixture();
   const spawn: Command = { kind: "m2Command", commandId: "m2-203-spawn-event", fields: {
