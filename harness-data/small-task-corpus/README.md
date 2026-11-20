@@ -19,7 +19,7 @@
 
 예시의 맵, 이벤트, 페이지 이름은 각 픽스처의 실제 식별자로 바꾼다. `cmd.delete`와 `cmd.move`에는 해당 픽스처 명령의 `eventCommandHash`를 넣는다. 나머지 대상은 `{"kind":"map","mapId":"map_example"}` 또는 `{"kind":"dbEntry","collection":"items","id":"item_potion"}`처럼 쓴다. 실패를 기대하는 사례는 `"expectRefusal": true`로 표시한다.
 
-`seed`와 `setup`은 각 사례에만 적용한다. 두 필드가 있으면 `seed`부터 적용한다. `system`과 `database`는 지정한 필드와 컬렉션을 덮어쓰고, `difficulties`는 시스템 난이도 목록을 지정한다. `events`는 선택 맵에, `switches`, `variables`, `commonEvents`, `endings`는 각 프로젝트 목록에 덧붙인다. `commands`는 선택한 이벤트 페이지의 명령 목록을 대체한다. `refusalMessage`로 한국어 거절 사유를 확인할 수 있다. 초기 데이터와 `expectRefusal`, `expect`를 모두 적으면 원래 픽스처에서 거절되고 준비한 픽스처에서 성공하는지 확인한다.
+`seed`와 `setup`은 각 사례에만 적용한다. 두 필드가 있으면 `seed`부터 적용한다. `system`과 `database`는 지정한 필드와 컬렉션을 덮어쓰고, `difficulties`는 시스템 난이도 목록을 지정한다. `events`는 선택 맵에, `switches`, `variables`, `commonEvents`, `endings`는 각 프로젝트 목록에 덧붙인다. `commands`는 해당 블록의 레코드 추가 직후 선택한 이벤트 페이지의 명령 목록을 대체한다. `seed.commands`가 가리키는 페이지는 기본 픽스처 또는 `seed.events`에 있어야 한다. `refusalMessage`로 한국어 거절 사유를 확인할 수 있다. 초기 데이터와 `expectRefusal`, `expect`를 모두 적으면 원래 픽스처에서 거절되고 준비한 픽스처에서 성공하는지 확인한다.
 
 유닛 하나의 코퍼스를 확인하려면 `OPRN_CORPUS_UNIT=08-cmd-time-social`처럼 확장자를 뺀 유닛 이름을 설정하고 `test/smallTaskPrimitives/corpus.test.ts`를 실행한다.
 
