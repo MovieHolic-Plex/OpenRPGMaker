@@ -38,6 +38,7 @@ const source = {
 };
 const tile = integer("현재 맵의 타일셋에서 고른 타일 번호예요.", 0);
 const paintLayer = choice(["1", "2", "3", "4"], "칠할 층이에요. 기본은 1층이며 전용 층이 있는 타일은 그 층에 놓일 수 있어요.");
+const referencePurpose: JsonSchema = { type: "string", minLength: 1, description: "읽은 타일셋 참고문서의 용도 ID예요." };
 const sourceKeys = ["x", "y", "w", "h", "dx", "dy"];
 
 function regionScope(mapId: string, rect: Rect) {
@@ -89,7 +90,7 @@ function paint(ctx: PrimitiveContext, args: Record<string, unknown>, area?: Rect
   assertInside(rect, paintArea);
   const cells: { x: number; y: number }[] = [];
   forEachCell(paintArea, (x, y) => cells.push({ x, y }));
-  return editTiles(ctx.project, map, (draft, next) => {
+  return editTiles(ctx, map, (draft, next) => {
     let result: ToolExecResult;
     try {
       result = byName(MAP_TOOLS, "paint_tiles").run(draft, { mapId: map.id, layer: args.layer ?? "1", mode: "cells", tile, cells });
@@ -106,7 +107,7 @@ function erase(ctx: PrimitiveContext, args: Record<string, unknown>) {
   const { map, rect } = hostRegion(ctx);
   getTileset(ctx.project, map);
   const layer = args.layer ?? "3";
-  return editTiles(ctx.project, map, (draft, next) => {
+  return editTiles(ctx, map, (draft, next) => {
     try {
       const { data } = byName(CONSTRUCTION_TOOLS_V3, "tile_erase").run(draft, { mapId: map.id, rect, layer });
       if ((data as { skipped?: number } | undefined)?.skipped) {
@@ -160,7 +161,7 @@ function stampScope(ctx: PrimitiveContext, args: Record<string, unknown>) {
 function stamp(ctx: PrimitiveContext, args: Record<string, unknown>) {
   const { map, objectId, object, area } = stampPlacement(ctx, args);
   const { x, y, w } = area;
-  return editTiles(ctx.project, map, (draft, next) => {
+  return editTiles(ctx, map, (draft, next) => {
     let result: ToolExecResult;
     try {
       result = byName(SHARED_OBJECT_TOOLS, "stamp_object").run(draft, { mapId: map.id, objectId, x, y });
@@ -218,7 +219,7 @@ function transferScope(ctx: PrimitiveContext, args: Record<string, unknown>, mov
 function copyOrMove(ctx: PrimitiveContext, args: Record<string, unknown>, move: boolean) {
   const { map, from, to, dx, dy } = regionTransfer(ctx, args);
   assertWholeKits(ctx.project, map, from);
-  return editTiles(ctx.project, map, (draft, next) => {
+  return editTiles(ctx, map, (draft, next) => {
     if (move) {
       forEachCell(from, (x, y) => {
         if (!includesCell(to, x, y)) writeTileCell(map, -1, next, y * map.width + x);
@@ -244,7 +245,7 @@ function mirror(ctx: PrimitiveContext, args: Record<string, unknown>) {
   const shadow = horizontal
     ? (bits: number) => ((bits & 0b0101) << 1) | ((bits & 0b1010) >> 1)
     : (bits: number) => ((bits & 0b0011) << 2) | ((bits & 0b1100) >> 2);
-  return editTiles(ctx.project, map, (draft, next) => {
+  return editTiles(ctx, map, (draft, next) => {
     forEachCell(rect, (x, y) => {
       const sx = horizontal ? 2 * rect.x + rect.w - 1 - x : x;
       const sy = horizontal ? y : 2 * rect.y + rect.h - 1 - y;
@@ -295,7 +296,7 @@ function shift(ctx: PrimitiveContext, args: Record<string, unknown>) {
     ? extendedLowerTiles(map, rect.w, rect.h, tile => !validGround(tile), dx, dy)
     : undefined;
   const fallback = blankFillTileFor(tileset.id, -1, tileset);
-  return editTiles(ctx.project, map, (_draft, next) => {
+  return editTiles(ctx, map, (_draft, next) => {
     forEachCell(rect, (x, y) => {
       const i = y * map.width + x;
       const sx = x - dx;
@@ -309,7 +310,7 @@ function shift(ctx: PrimitiveContext, args: Record<string, unknown>) {
 
 export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   primitive("map.tile.paint", "paint_tiles", "타일 칠하기",
-    schema({ ...coords, tile, layer: paintLayer }, ["x", "y", "tile"]),
+    schema({ ...coords, tile, layer: paintLayer, referencePurpose }, ["x", "y", "tile"]),
     () => "지정한 칸에 타일을 칠해요.",
     (ctx, args) => paint(ctx, args, paintCell(ctx, args).rect), paintCell),
   primitive("map.tile.erase", "tile_erase", "타일 지우기",
@@ -323,7 +324,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         : "선택한 영역의 3층과 4층 타일을 지워요.";
     }, erase),
   primitive("map.region.fill", "fill_region", "영역 채우기",
-    schema({ tile, layer: paintLayer }, ["tile"]),
+    schema({ tile, layer: paintLayer, referencePurpose }, ["tile"]),
     () => "선택한 영역을 같은 타일로 채워요.", (ctx, args) => paint(ctx, args)),
   primitive("map.object.stamp", "stamp_object", "물건 찍기",
     schema({ objectId: { type: "string", minLength: 1, description: "현재 맵 타일셋에서 고른 물건의 식별자예요." }, ...coords }, ["objectId"]),

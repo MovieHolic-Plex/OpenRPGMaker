@@ -19,16 +19,20 @@ function matchesAt(map: GameMap, cells: readonly KitCell[], x: number, y: number
 export function assertWholeKits(
   project: Project, map: GameMap, area: Rect, transform?: KitTransform,
 ): void {
-  const positions = new Map<number, { x: number; y: number }[]>();
+  const layers = [1, 3] as const;
+  const positions = { 1: new Map<number, { x: number; y: number }[]>(),
+    3: new Map<number, { x: number; y: number }[]>() };
   forEachCell(area, (x, y) => {
     const index = y * map.width + x;
-    const tile = layerTileAt(map, 3, index);
-    if (tile < 0 || (transform && tile === layerTileAt(transform.next, 3, index))) return;
-    const occurrences = positions.get(tile) ?? [];
-    occurrences.push({ x, y });
-    positions.set(tile, occurrences);
+    for (const layer of layers) {
+      const tile = layerTileAt(map, layer, index);
+      if (tile < 0 || (transform && tile === layerTileAt(transform.next, layer, index))) continue;
+      const occurrences = positions[layer].get(tile) ?? [];
+      occurrences.push({ x, y });
+      positions[layer].set(tile, occurrences);
+    }
   });
-  if (!positions.size) return;
+  if (!positions[1].size && !positions[3].size) return;
 
   for (const kit of getTileset(project, map).structureKits ?? []) {
     if (kit.width * kit.height < 2) continue;
@@ -42,7 +46,8 @@ export function assertWholeKits(
     });
     if (cells.length < 2) continue;
     for (const anchor of cells) {
-      for (const point of positions.get(anchor.upper) ?? []) {
+      const occurrences = [...positions[1].get(anchor.lower) ?? [], ...positions[3].get(anchor.upper) ?? []];
+      for (const point of occurrences) {
         const x = point.x - anchor.dx;
         const y = point.y - anchor.dy;
         if (x < 0 || y < 0 || x + kit.width > map.width || y + kit.height > map.height) continue;

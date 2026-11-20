@@ -1,6 +1,6 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
-import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
+import { APPLY_SMALL_TASK_PRIMITIVE, isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
@@ -72,6 +72,7 @@ import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
 import {
   createPiToolset,
+  formatPiToolFailure,
   selectPiToolDefinitions,
   harvestFindToolsNames,
   resolvePiToolShape,
@@ -417,10 +418,10 @@ function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGat
 /** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
 async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
   const started = Date.now();
-  const { target, maxToolCalls, selection } = scope;
+  const { target, maxToolCalls, selection, live } = scope;
   const base = request.project;
   const ctx: SmallTaskToolContext = {
-    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection,
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskLive: live,
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);
@@ -464,7 +465,14 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     ...tool,
     label: tool.name,
     async execute(_id, params) {
-      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      const args = params as Record<string, unknown>;
+      if (tool.name === APPLY_SMALL_TASK_PRIMITIVE && target.kind === "map"
+        && (args.id === "map.tile.paint" || args.id === "map.region.fill")) {
+        const referencePurpose = (args.args as { referencePurpose?: unknown } | undefined)?.referencePurpose;
+        const gate = referenceGate.beforeWrite(ctx.project, "paint_tiles", { mapId: target.mapId, referencePurpose });
+        if (gate) throw new Error(formatPiToolFailure(gate));
+      }
+      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
   }));

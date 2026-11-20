@@ -78,7 +78,7 @@ export function assertTileChangesInside(before: GameMap, after: GameMap, rect: R
 }
 
 export function editTiles(
-  project: Project, map: GameMap, edit: (draft: Project, next: GameMap) => void,
+  { project, live }: PrimitiveContext, map: GameMap, edit: (draft: Project, next: GameMap) => void,
 ): Project {
   const next = copyTileMap(map);
   const draft = { ...project, maps: { ...project.maps, [map.id]: next } };
@@ -88,7 +88,7 @@ export function editTiles(
       throw new PrimitiveError("범위 밖: 보호된 타일이 포함되어 있어요.");
     }
   }
-  assertTileReferencesPreserved(project, draft, map, next);
+  assertTileReferencesPreserved(project, draft, map, next, live);
   compactMapLayers(next);
   // 이전 저장본이 갖고 있던 빈 선택 배열은 편집 여부와 관계없이 보존한다.
   for (const key of EXTRA_LAYER_KEYS) {

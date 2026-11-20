@@ -248,3 +248,64 @@ for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"
     }
   }, 20_000);
 }
+
+for (const delivered of [true, false]) {
+  test(`작은 일 타일 동작에 참고 그림까지 전달해야 한다 (${delivered})`, async () => {
+    const { request, project, mapId } = fixture();
+    const map = project.maps[mapId];
+    const tilesetId = map.tilesetId;
+    const categoryId = "fixture-floor";
+    const image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jgT8AAAAASUVORK5CYII=";
+    project.tilesets[tilesetId].referenceDocuments = [{
+      id: categoryId, name: "바닥", description: "바닥 칸을 고르는 자료",
+      documents: [{ id: "guide", name: "바닥 안내", markdown: "바닥 타일은 0번이다." }],
+      images: [{ id: "floor", name: "바닥 그림", caption: "바닥 예시", dataUrl: image }],
+    }];
+    const index = map.width + 1;
+    map.lowerTiles[index] = -1;
+    const stream = scripted([
+      { name: "read_tileset_reference", args: { mapId, tilesetId, categoryId } },
+      apply("map.tile.paint", { x: 1, y: 1, tile: 0, referencePurpose: categoryId }),
+    ]);
+    const streamFn: StreamFn = (model, context, options) => {
+      const input = context.messages.flatMap(message => message.role === "toolResult"
+        ? message.content.flatMap((part): object[] => {
+          if (part.type === "text") return [{ type: "function_call_output", output: part.text }];
+          if (delivered && part.type === "image") {
+            return [{ type: "input_image", image_url: `data:${part.mimeType};base64,${part.data}` }];
+          }
+          return [];
+        }) : []);
+      void options?.onPayload?.({ input }, model, options.signal);
+      return stream(model, context, options);
+    };
+    const done = await runPiAgent({
+      ...request, smallTask: { target: mapTarget(project, mapId)!, maxToolCalls: 4,
+        selection: { rect: { x: 1, y: 1, w: 1, h: 1 } } },
+    }, { streamFn });
+    if (delivered) {
+      expect(done.stoppedEarly).toBeUndefined();
+      expect(done.project.maps[mapId].lowerTiles[index]).toBe(0);
+    } else {
+      expect(done.stoppedEarly).toContain("이미지 입력 전달 필요");
+      expect(done.project).toBe(project);
+    }
+  });
+}
+
+test("작은 일 Pi 실행에서 작업 사본에 없는 열린 이벤트의 타일을 보호한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const map = project.maps[mapId];
+  const index = map.width + 1;
+  map.lowerTiles[index] = -1;
+  const command: Command = { kind: "changeTile", mapId, x: 1, y: 1, layer: "lower", tile: -1 };
+  const draft = { ...event, id: "draft", draft: { kind: "new" as const }, pages: [], commands: [command] };
+  const done = await runPiAgent({
+    ...request, smallTask: { target: mapTarget(project, mapId)!, maxToolCalls: 4,
+      selection: { rect: { x: 1, y: 1, w: 1, h: 1 } },
+      live: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([apply("map.tile.paint", { x: 1, y: 1, tile: 0 })]) });
+  expect(done.stoppedEarly).toContain("타일을 바꾸는 이벤트가 있어요.");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+});

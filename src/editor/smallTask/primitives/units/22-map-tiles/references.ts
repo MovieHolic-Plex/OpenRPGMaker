@@ -1,6 +1,7 @@
+import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
-import { inBounds, isPassableLanding } from "@/project/collision";
+import { canMove, inBounds, isPassable, isPassableLanding } from "@/project/collision";
 import { parseDoorValue, type DoorSpec } from "@/project/eventCommands/doorAnimation";
 import { layerTileAt, TILE_LAYER_NOS, type TileLayerNo } from "@/project/mapLayers";
 import { structurePlacementIsOverpainted } from "@/project/structurePlacements";
@@ -61,15 +62,18 @@ function* mapTileCommands(
   return onMap;
 }
 
-function* commandsInProject(project: Project, mapId: string): Iterable<LocatedCommand> {
+function* commandsInProject(project: Project, mapId: string, live?: SmallTaskDraftSource): Iterable<LocatedCommand> {
   const mayTransfer = transferCheck(project, mapId);
+  const working = withOpenEventDrafts(project, live);
   for (const map of Object.values(project.maps)) {
-    for (const event of map.events) {
+    const workingEvents = working.maps[map.id]?.events;
+    const records = new Set(map.events);
+    for (const event of workingEvents ?? []) records.add(event);
+    for (const event of records) {
       const original = event.draft?.kind === "edit" ? event.draft.original : undefined;
-      for (const record of original ? [event, original] : [event]) {
-        yield* mapTileCommands(record.commands, mayTransfer, map.id === mapId);
-        for (const page of record.pages ?? []) yield* mapTileCommands(page.commands, mayTransfer, map.id === mapId);
-      }
+      if (original) records.add(original);
+      yield* mapTileCommands(event.commands, mayTransfer, map.id === mapId);
+      for (const page of event.pages ?? []) yield* mapTileCommands(page.commands, mayTransfer, map.id === mapId);
     }
   }
   for (const event of project.commonEvents) yield* mapTileCommands(event.commands, mayTransfer, true);
@@ -131,41 +135,76 @@ function assertM2TileReferencePreserved(
 }
 
 type Point = { x: number; y: number };
-const APPROACH = [[0, 0], [0, -1], [0, 1], [-1, 0], [1, 0]] as const;
+const NEIGHBORS = [[0, -1], [0, 1], [-1, 0], [1, 0]] as const;
+const APPROACH = [[0, 0], ...NEIGHBORS] as const;
+
+/** Flood from a target's approach cells, following only incoming runtime edges. */
+function landingsThatCanReach(project: Project, map: GameMap, approach: readonly Point[]): Uint8Array {
+  const reached = new Uint8Array(map.width * map.height);
+  const queue = new Int32Array(reached.length);
+  let end = 0;
+  for (const { x, y } of approach) {
+    if (!isPassable(project, map, x, y)) continue;
+    const index = y * map.width + x;
+    reached[index] = 1;
+    queue[end++] = index;
+  }
+  for (let head = 0; head < end; head++) {
+    const index = queue[head]!;
+    const x = index % map.width;
+    const y = Math.floor(index / map.width);
+    for (const [dx, dy] of NEIGHBORS) {
+      const px = x + dx;
+      const py = y + dy;
+      const previous = py * map.width + px;
+      if (!inBounds(map, px, py) || reached[previous] || !canMove(project, map, px, py, x, y)) continue;
+      reached[previous] = 1;
+      queue[end++] = previous;
+    }
+  }
+  return reached;
+}
 
 function assertRoutesPreserved(
   before: Project, after: Project, map: GameMap, next: GameMap, landings: readonly Point[], exits: readonly Point[],
 ): void {
   // Solid NPCs and doors are reached from an adjacent walkable cell. Connections
-  // require a walkable path to their exact cell (checked with both endpoints below).
+  // require a walkable path to their exact cell.
   const targets = [
     ...exits.map(point => ({ point, offsets: [[0, 0]] as const })),
     ...map.events.filter(event => event.commands.length || event.pages?.some(page => page.commands.length))
       .map(point => ({ point, offsets: APPROACH })),
-  ];
-  if (!targets.length) return;
-  const seen = new Set<number>();
+  ].map(({ point, offsets }) => offsets.map(([dx, dy]) => ({ x: point.x + dx, y: point.y + dy }))
+    .filter(({ x, y }) => inBounds(map, x, y)));
+  if (!targets.length || !landings.length) return;
+  const arrivals = new Map<number, Point>();
   for (const { x, y } of landings) {
-    const index = y * map.width + x;
-    if (!inBounds(map, x, y) || seen.has(index)) continue;
-    seen.add(index);
-    const oldReach = terrainReachability(before, map, { x, y });
-    const newReach = terrainReachability(after, next, { x, y });
-    for (const { point, offsets } of targets) {
-      const accessible = (reached: Uint8Array) => offsets.some(([dx, dy]) => {
-        const x = point.x + dx;
-        const y = point.y + dy;
-        return inBounds(map, x, y) && reached[y * map.width + x] === 1;
-      });
-      if (accessible(oldReach) && !accessible(newReach)) {
-        throw new PrimitiveError("착지 칸에서 기존 이벤트나 출구로 가는 길이 끊겨요.");
+    if (inBounds(map, x, y)) arrivals.set(y * map.width + x, { x, y });
+  }
+  const routeLost = "착지 칸에서 기존 이벤트나 출구로 가는 길이 끊겨요.";
+  if (targets.length < arrivals.size) {
+    for (const approach of targets) {
+      const oldReach = landingsThatCanReach(before, map, approach);
+      const newReach = landingsThatCanReach(after, next, approach);
+      for (const index of arrivals.keys()) {
+        if (oldReach[index] && !newReach[index]) throw new PrimitiveError(routeLost);
       }
+    }
+    return;
+  }
+  for (const landing of arrivals.values()) {
+    const oldReach = terrainReachability(before, map, landing);
+    const newReach = terrainReachability(after, next, landing);
+    for (const approach of targets) {
+      const accessible = (reached: Uint8Array) => approach.some(({ x, y }) => reached[y * map.width + x]);
+      if (accessible(oldReach) && !accessible(newReach)) throw new PrimitiveError(routeLost);
     }
   }
 }
 
 export function assertTileReferencesPreserved(
   before: Project, after: Project, map: GameMap, next: GameMap,
+  live?: SmallTaskDraftSource,
   passageTile?: { tile: number; contains: (x: number, y: number) => boolean },
 ): void {
   const lostLanding = (x: number, y: number) =>
@@ -194,7 +233,7 @@ export function assertTileReferencesPreserved(
     if (lostLanding(point.x, point.y)) throw new PrimitiveError("엔딩 뒤에 이어지는 칸에서 움직일 수 없게 돼요.");
     landings.push(point);
   }
-  for (const { command, onMap } of commandsInProject(before, map.id)) {
+  for (const { command, onMap } of commandsInProject(before, map.id, live)) {
     if (command.kind === "transfer") {
       if (command.mapId === map.id) {
         if (lostLanding(command.x, command.y)) throw new PrimitiveError("이벤트가 이동해 오는 칸에서 움직일 수 없게 돼요.");
