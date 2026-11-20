@@ -34,14 +34,14 @@ const fieldDescriptions: Readonly<Record<string, string>> = {
   eventId: "특정 이벤트를 고른 경우 이 맵에서 확인한 이벤트 식별자",
   pictureId: "표시 명령에 지정한 그림 칸 이름",
   zoom: "카메라 확대 배율",
-  se: "기계음 효과음 자료. 빈 값이면 소리를 끕니다.",
+  se: "목록에서 확인한 기계음 효과음. 생략하면 기본 기계음을 씁니다.",
 };
 
 const numberBounds: Readonly<Record<string, { minimum?: number; maximum?: number }>> = {
   durationMs: { minimum: 0 },
   fadeMs: { minimum: 0 },
   opacity: { minimum: 0, maximum: 255 },
-  scale: { minimum: 1 },
+  scale: { minimum: 0 },
   volume: { minimum: 0, maximum: 100 },
 };
 
@@ -73,7 +73,7 @@ export function modelFields(row: string, fields: readonly M2CommandFieldSpec[]):
     case "030":
       return { value: { type: "string", minLength: 1, description: "기록할 화면 전환 값" } };
     case "046":
-      properties.value = { type: "string", description: "직접 지정할 색. 여섯 자리 색상 코드나 쉼표로 구분한 빨강·초록·파랑 값" };
+      properties.value = { type: "string", description: "직접 지정할 색. 여섯 자리 색상 코드나 쉼표로 구분한 빨강·초록·파랑 값(0~255)과 선택 불투명도(0~1)" };
       break;
     case "047":
     case "048":
@@ -82,7 +82,10 @@ export function modelFields(row: string, fields: readonly M2CommandFieldSpec[]):
       break;
     case "052":
       properties.pictureId = { ...properties.pictureId, minLength: 1 };
-      properties.opacity = { ...properties.opacity, description: "불투명도(0에서 255 사이). 생략하면 앞 그림의 값을 유지합니다." };
+      properties.x = { ...properties.x, description: "가로 위치. 생략하면 현재 위치를 유지합니다." };
+      properties.y = { ...properties.y, description: "세로 위치. 생략하면 현재 위치를 유지합니다." };
+      properties.scale = { ...properties.scale, description: "그림 크기(백분율). 생략하면 현재 크기를 유지합니다." };
+      properties.opacity = { ...properties.opacity, description: "불투명도(0~255). 생략하면 현재 불투명도를 유지합니다." };
       properties.waitForPicture = { type: "boolean", description: "그림 움직임이 끝날 때까지 기다릴지 여부" };
       break;
     case "056":
@@ -90,11 +93,14 @@ export function modelFields(row: string, fields: readonly M2CommandFieldSpec[]):
       properties.target = { type: "string", minLength: 1, description: "이 맵에서 확인한 섬광 대상 이벤트. 생략하면 현재 이벤트" };
       break;
     case "201":
-      properties.targetEventId = { type: "string", minLength: 1, description: "이 맵의 특정 이벤트를 겨눌 때 확인한 이벤트 식별자" };
+      properties.x = { ...properties.x, description: "카메라가 비출 맵 칸의 가로 번호(첫 칸은 0)" };
+      properties.y = { ...properties.y, description: "카메라가 비출 맵 칸의 세로 번호(첫 칸은 0)" };
+      properties.targetEventId = { type: "string", minLength: 1, description: "특정 이벤트를 비출 때 확인한 이벤트 식별자. 이 경우 대상과 좌표는 생략합니다." };
+      properties.durationMs = { ...properties.durationMs, maximum: 60_000 };
       properties.wait = { type: "boolean", description: "카메라 이동이 끝날 때까지 기다릴지 여부" };
       break;
     case "202":
-      properties.value = { type: "string", description: "효과의 보조값. 섬광·색조는 색, 날씨는 종류, 검은 띠는 높이 백분율" };
+      properties.value = { type: "string", description: "효과별 설정값. 섬광·색조는 색, 날씨는 종류와 강도, 검은 띠는 높이(0~25%), 문은 가로·세로 위치와 문 크기" };
       break;
     case "210":
       properties.channel = { ...properties.channel, description: "소리 종류. 배경 음악, 배경 소리, 짧은 음악, 효과음, 환경음" };
@@ -102,12 +108,13 @@ export function modelFields(row: string, fields: readonly M2CommandFieldSpec[]):
       break;
     case "225":
       properties.tintHex = { ...properties.tintHex, pattern: `^(?:${hexPattern.slice(1, -1)})?$` };
-      properties.angle = { type: "string", pattern: `^(?:${numberText.slice(1, -1)})?$`, description: "기울기 각도를 숫자 문자열로 입력. 빈 값은 그대로" };
-      properties.opacity = { type: "string", pattern: "^(?:[0-9]{1,3})?$", description: "불투명도 백분율을 숫자 문자열로 입력. 빈 값은 그대로" };
+      properties.angle = { type: "string", pattern: `^(?:${numberText.slice(1, -1)})?$`, description: "기울기 각도(-360~360도)를 글자로 입력합니다. 비워 두면 현재 각도를 유지합니다." };
+      properties.opacity = { type: "string", pattern: "^(?:[0-9]{1,3})?$", description: "불투명도(0~100%)를 글자로 입력합니다. 비워 두면 현재 불투명도를 유지합니다." };
       break;
     case "226":
-      properties.x = { ...properties.x, description: "발판 왼쪽 칸. -1은 주인공 위치" };
-      properties.y = { ...properties.y, description: "발판 위쪽 칸. -1은 주인공 위치" };
+      properties.x = { ...properties.x, type: "integer", minimum: -1, description: "발판 왼쪽 칸. -1은 주인공 위치" };
+      properties.y = { ...properties.y, type: "integer", minimum: -1, description: "발판 위쪽 칸. -1은 주인공 위치" };
+      for (const key of ["distance", "width", "depth"]) properties[key] = { ...properties[key], type: "integer" };
       break;
   }
   return properties;
