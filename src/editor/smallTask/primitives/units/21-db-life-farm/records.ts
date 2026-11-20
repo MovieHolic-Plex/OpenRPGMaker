@@ -99,7 +99,7 @@ function define<R extends LifeFarmRecord>(definition: {
       if (!prior) {
         for (const field of definition.required) {
           if (typeof args[field] !== "string" || !args[field].trim()) {
-            throw new PrimitiveError(`${definition.fields[field].description} 값을 입력해 주세요.`);
+            throw new PrimitiveError(`다음 값이 필요해요. ${definition.fields[field].description}`);
           }
         }
       }
@@ -158,6 +158,10 @@ export const records = {
         throw new PrimitiveError("상성표에 없는 속성이 있어요.");
       }
       const { maxHp, attack, defense, captureRate, dexNote, types } = args;
+      const campaignNote = project.system.monsterCampaign?.speciesNotes[previous?.id ?? args.id!];
+      if (dexNote !== undefined && campaignNote && dexNote.trim() !== campaignNote) {
+        throw new PrimitiveError("도감에 원정에서 정한 설명이 먼저 표시돼요. 원정의 도감 설명을 바꿔 주세요.");
+      }
       const name = args.name?.trim() ?? previous!.name;
       const base = previous ?? normalizeMonsterSpeciesRecord({ id: args.id!, name });
       const editStats = maxHp !== undefined || attack !== undefined || defense !== undefined;
@@ -183,20 +187,25 @@ export const records = {
       harvestItemId: text("수확할 때 받는 기존 아이템"),
       harvestCount: int("한 번에 거두는 수량", 1, 9999),
       growthDays: int("심은 뒤 다 자랄 때까지 필요한 전체 일수", 1, 3650),
-      seasons: list("자라는 계절 목록을 바꿉니다. 봄, 여름, 가을, 겨울 순으로 고를 수 있습니다.", { type: "string", enum: SEASONS }, 4, 1),
-      regrowDays: int("수확하고 다시 자랄 때까지의 일수. 0은 한 번만 수확합니다.", 0, 3650),
+      seasons: list("작물이 자랄 계절을 하나 이상 고릅니다.", { type: "string", enum: SEASONS }, 4, 1),
+      regrowDays: int("수확한 뒤 다시 자라는 데 걸리는 일수. 한 번만 수확하려면 0을 씁니다.", 0, 3650),
     },
-    edit(args, previous) {
+    edit(args, previous, project) {
       const name = args.name?.trim() ?? previous!.name;
       const base = previous ?? normalizeCropRecord({
         id: args.id!, name, seedItemId: args.seedItemId, harvestItemId: args.harvestItemId,
         seasons: [...SEASONS],
       });
       const { regrowDays, growthDays, seasons } = args;
+      // Planting resolves a seed item to the first matching crop.
+      const seedItemId = args.seedItemId ?? base.seedItemId;
+      if (seedItemId !== previous?.seedItemId && project.database.crops?.some(crop => crop.seedItemId === seedItemId)) {
+        throw new PrimitiveError("이 씨앗은 이미 다른 작물에 연결되어 있어요. 다른 씨앗을 골라 주세요.");
+      }
       const next = {
         ...base,
         name,
-        seedItemId: args.seedItemId ?? base.seedItemId,
+        seedItemId,
         harvestItemId: args.harvestItemId ?? base.harvestItemId,
         harvestCount: args.harvestCount ?? base.harvestCount,
         stages: growthDays === undefined ? base.stages : growthStages(growthDays, previous?.stages),
@@ -314,7 +323,8 @@ export const records = {
     required: ["name"],
     fields: {
       name: text("일정표의 제목"),
-      slotLabels: list("일정 칸 이름 전체를 표시 순서대로 바꿉니다.", text("시간이나 요일을 나타내는 일정 칸 이름"), SCHEDULE_SLOT_LIMIT),
+      slotLabels: list("일정 칸 이름을 표시 순서대로 적습니다. 사용 중인 일정표에는 칸이 하나 이상 필요합니다.",
+        text("시간이나 요일을 나타내는 일정 칸 이름"), SCHEDULE_SLOT_LIMIT),
       activityLabel: text("추가할 활동 이름"),
       commonEventId: text("새 활동을 고르면 실행할 기존 공용 이벤트"),
     },

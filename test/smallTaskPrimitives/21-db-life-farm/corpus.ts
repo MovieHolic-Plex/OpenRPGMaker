@@ -7,7 +7,10 @@ import type { Project } from "@/project/types";
 import casesJson from "../../../harness-data/small-task-corpus/21-db-life-farm.json";
 import { expectKoreanSentence, expectUndoRestores, loadFixture } from "../harness";
 
-type SeededCase = CorpusCase & { setup?: { database: Partial<Project["database"]> } };
+type SeededCase = CorpusCase & {
+  setup?: { database?: Partial<Project["database"]>; commonEvents?: Project["commonEvents"] };
+  refusalMessage?: string;
+};
 
 // Use the same database setup format as the shot harness until the common corpus runner accepts it.
 const cases = casesJson as SeededCase[];
@@ -36,12 +39,18 @@ export function testSeededCorpus() {
         };
         fixtures.set(entry.fixture, fixture);
       }
-      const before = { ...fixture, database: { ...fixture.database, ...entry.setup?.database } };
+      const before = {
+        ...fixture,
+        commonEvents: [...fixture.commonEvents, ...(entry.setup?.commonEvents ?? [])],
+        database: { ...fixture.database, ...entry.setup?.database },
+      };
       const target = resolveTarget(before, entry.target);
       const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
       if (entry.expectRefusal) {
-        expect(apply).toThrow(PrimitiveError);
-        expect(apply).toThrow(/[가-힣]/u);
+        expect(apply).toThrow(expect.objectContaining({
+          constructor: PrimitiveError,
+          message: entry.refusalMessage ? expect.stringContaining(entry.refusalMessage) : expect.stringMatching(/[가-힣]/u),
+        }));
         return;
       }
       const { after, sentence } = apply();
