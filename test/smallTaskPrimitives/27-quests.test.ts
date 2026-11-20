@@ -527,7 +527,7 @@ describe("그래프 목표의 연결", () => {
     const live = { maps: { [target.mapId]: { events: [draft] } } };
     expect(() => runPrimitive(project, target, "quest.objective.remove", { step: 2 }, undefined, live)).toThrow(/이벤트 명령/u);
     const { after } = runPrimitive(project, target, "quest.objective.add", { label: "보고", switchId: otherFlag }, undefined, live);
-    expect(after.quests).toMatchObject([{ nodes: expect.arrayContaining([{ id: "step_2", description: "보고" }]) }]);
+    expect(after.quests).toMatchObject([{ nodes: [...quest.nodes, { id: "step_2", description: "보고" }] }]);
     expect(after.maps).toBe(project.maps);
   });
 
