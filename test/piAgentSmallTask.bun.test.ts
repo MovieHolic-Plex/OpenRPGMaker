@@ -71,6 +71,52 @@ function fixture() {
 
 const apply = (id: string, args: Call["args"]): Call => ({ name: APPLY_SMALL_TASK_PRIMITIVE, args: { id, args } });
 
+test("작은 일 Pi 실행은 열린 이벤트 초안에서 호출하는 대사의 첫 회 한정 처리를 거절한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const caller = project.maps[mapId].events[1]!;
+  const draft = {
+    ...caller,
+    draft: { kind: "edit", original: caller } as const,
+    pages: caller.pages!.map(page => ({ ...page, commands: [{ kind: "callMapEvent", eventId: event.id } as const] })),
+  };
+  const action = apply("dialogue.firstTimeOnly", { path: [0] });
+  const accepted = await runPiAgent(request, { streamFn: scripted([action]) });
+  expect(accepted.stoppedEarly).toBeUndefined();
+  expect(accepted.project.maps[mapId].events[0]!.pages![1]!.commands[0]).toMatchObject({ kind: "fork" });
+
+  const done = await runPiAgent({
+    ...request,
+    smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([action]) });
+  expect(done.stoppedEarly).toContain("다른 곳에서 이 이벤트를 호출");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+  expect(event.pages[1]!.commands).toEqual(commands);
+});
+
+test("첫 회 한정 대사는 호출하는 이벤트의 저장본과 초안이 쓰는 셀프 스위치를 피한다", async () => {
+  const { request, project, mapId, commands } = fixture();
+  const helper = project.maps[mapId].events[1]!;
+  const helperPage = helper.pages![1]!;
+  const reset = (key: "A" | "B"): Command => ({ kind: "setSelfSwitch", key, value: false });
+  helper.pages = [{ ...helperPage, commands: [reset("A")] }];
+  const draft = {
+    ...helper,
+    draft: { kind: "edit", original: helper } as const,
+    pages: [{ ...helperPage, commands: [reset("B")] }],
+  };
+  commands.push({ kind: "callMapEvent", eventId: helper.id });
+  const done = await runPiAgent({
+    ...request,
+    smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([apply("dialogue.firstTimeOnly", { path: [0] })]) });
+
+  expect(done.stoppedEarly).toBeUndefined();
+  const [selected, unchangedHelper] = done.project.maps[mapId].events;
+  expect(selected!.pages![1]!.commands[0]).toMatchObject({ kind: "fork", condition: { kind: "selfSwitch", key: "C" } });
+  expect(unchangedHelper).toEqual(helper);
+});
+
 test("작은 일 Pi 실행이 동작을 읽고 고른 페이지에서 cmd.delete와 cmd.move를 적용한다", async () => {
   const { request, project, mapId, event, commands } = fixture();
   const seen: ModelContext[] = [];
