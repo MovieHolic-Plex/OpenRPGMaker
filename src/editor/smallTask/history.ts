@@ -1,3 +1,4 @@
+import { removedDatabaseReference } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
@@ -23,6 +24,15 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
+  if (target.kind === "dbEntry") {
+    const { collection, id } = target;
+    // The worker saw saved events. Check the open drafts before publishing a deletion.
+    if (before.database[collection]?.some(row => row.id === id)
+      && !after.database[collection]?.some(row => row.id === id)
+      && removedDatabaseReference(before, after, [{ collection, id }], live)) {
+      throw new SmallTaskError("이벤트 편집에서 쓰는 자료집 항목은 삭제할 수 없어요. 열린 이벤트의 연결을 확인해 주세요.");
+    }
+  }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
   if (target.kind === "event" && event?.draft) {

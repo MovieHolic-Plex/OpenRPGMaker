@@ -308,8 +308,8 @@ const animationEditor: Editor<"battleAnimations"> = {
     resourceId: textField("애니메이션에 쓸 그림 소재 식별자. 빈 문자열이면 연결 해제"),
     scope: choice(["singleTarget", "allTargets", "screen"], "표시 범위는 대상 하나, 대상 전체, 화면 전체 순서"),
     position: choice(["head", "center", "feet", "screen"], "표시 위치는 머리, 가운데, 발밑, 화면 순서"),
-    large: { type: "boolean", description: "큰 애니메이션 표시 여부" },
-    blendMode: choice(["normal", "add", "screen", "multiply"], "겹치기 방식은 보통, 더하기, 밝게, 곱하기 순서"),
+    large: { type: "boolean", description: "큰 애니메이션 표시 여부. 픽셀 효과에는 적용할 수 없음" },
+    blendMode: choice(["normal", "add", "screen", "multiply"], "전투에서 겹치기 방식은 보통, 더하기, 밝게, 곱하기 순서"),
   },
   create: (_project, id, name) => normalizeBattleAnimationRecord({ id, name }),
   patch(project, row, args) {
@@ -324,7 +324,10 @@ const animationEditor: Editor<"battleAnimations"> = {
     }
     if (args.scope !== undefined) next.scope = args.scope as BattleAnimationRecord["scope"];
     if (args.position !== undefined) next.position = args.position as BattleAnimationRecord["position"];
-    if (args.large !== undefined) next.large = args.large as boolean;
+    if (typeof args.large === "boolean") {
+      if (row.pixelFx) throw new PrimitiveError("픽셀 효과는 큰 표시 설정을 사용하지 않아요.");
+      next.large = args.large;
+    }
     if (args.blendMode !== undefined) {
       const blendMode = normalizeBlendMode(args.blendMode);
       if (blendMode) next.blendMode = blendMode;

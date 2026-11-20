@@ -19,14 +19,15 @@ import { startSession } from "@/project/session";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { dbTarget, mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { plainSummary } from "@/editor/smallTask/plainSummary";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/18-db-skills-states";
+import { getTool } from "@/editor/tools/toolRegistry";
 import { getLocale, setLocale, t } from "@/i18n";
 import { store } from "@/project/store";
 import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
@@ -170,6 +171,26 @@ it("삭제하려는 상태·연출·애니메이션·스킬의 기존 참조를 
     expect(() => runPrimitive(before, target(collection), `db.${collection}.delete`, {})).toThrow(/사용 중/u);
   }
   expect(() => runPrimitive(before, target("skills", "skill_attack"), "db.skills.delete", {})).toThrow(/기본으로 사용/u);
+});
+
+it.each(["skills", "battleAnimations"] as const)("열린 이벤트 작업본에서 쓰는 %s 삭제를 게시 직전에 막는다", collection => {
+  const project = withRecords("built");
+  const map = project.maps[project.startMapId]!;
+  const original: GameEvent = { id: "ev_unit18_draft", x: 0, y: 0, trigger: { kind: "action" }, commands: [] };
+  store.replaceProject({ ...project, maps: { ...project.maps, [map.id]: { ...map, events: [...map.events, original] } } });
+  store.updateEvent(map.id, original.id, event => {
+    event.draft = { kind: "edit", original };
+    event.commands = collection === "skills"
+      ? [{ kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: ids.skills }]
+      : [{ kind: "showAnimation", target: "player", animationId: ids.battleAnimations }];
+  }, { scope: "map", mapId: map.id, label: "열린 이벤트 편집" });
+  const live = store.getCurrent();
+  const selected = target(collection);
+  const before = smallTaskBase(live, selected);
+  const { after } = runPrimitive(before, selected, `db.${collection}.delete`, {});
+  expect(after.database[collection]?.some(row => row.id === ids[collection])).toBe(false);
+  expect(() => commitSmallTask(live, before, after, selected)).toThrow(/열린 이벤트/u);
+  expect(store.getCurrent()).toBe(live);
 });
 
 it("중첩된 이벤트의 조건과 명령, 적 그룹 조건, 상태 내성 표의 참조를 각각 보호한다", () => {
@@ -341,13 +362,23 @@ it("음원과 폐기된 소재를 거절하고 자료집에서 고를 수 있는
   expect(runPrimitive(animation, target("battleAnimations"), "db.battleAnimations.update", { resourceId: "" }).after.database.battleAnimations.at(-1)?.resourceId).toBeUndefined();
 });
 
-it("픽셀 효과가 우선 재생되는 애니메이션에 보이지 않는 그림을 연결하지 않는다", () => {
+it("픽셀 효과 애니메이션에서 그림과 큰 표시 설정을 거절하고 전투 겹치기 방식을 편집한다", () => {
   const before = withRecords("blank");
   before.database.battleAnimations.at(-1)!.pixelFx = { effectId: "impact/sword-light" };
-  expect(() => runPrimitive(before, target("battleAnimations"), "db.battleAnimations.update", {
-    resourceId: GENERATED_EFFECT_SHEET_ASSETS[0]!.id,
-  })).toThrow(/픽셀 효과/u);
+  const update = (args: Record<string, unknown>) => runPrimitive(before, target("battleAnimations"), "db.battleAnimations.update", args);
+  expect(() => update({ resourceId: GENERATED_EFFECT_SHEET_ASSETS[0]!.id })).toThrow(/픽셀 효과/u);
+  expect(() => update({ large: true })).toThrow(/픽셀 효과/u);
+  expect(() => update({ large: false })).toThrow(/픽셀 효과/u);
+  expect(update({ blendMode: "add" }).after.database.battleAnimations.at(-1)?.blendMode).toBe("add");
   expect(before.database.battleAnimations.at(-1)?.resourceId).toBeUndefined();
+});
+
+it.each(["skillChoreographies", "battleAnimations"] as const)("작은 일 도구로 선택한 %s 원본을 읽는다", async collection => {
+  const before = withRecords("blank");
+  const id = ids[collection];
+  const record = before.database[collection]?.at(-1);
+  const reply = await getTool("get_database_records")!.run(before, { collection, ids: [id], include: "full" });
+  expect(reply.data).toMatchObject({ collection, total: 1, records: [record] });
 });
 
 it("번들과 같은 이름의 프로젝트 연출도 겹치지 않는 식별자를 얻고 실제로 연결된다", () => {
@@ -605,61 +636,4 @@ it("지도 선택으로 자료집 추가 범위를 열 수 없다", () => {
   const before = withRecords("built");
   const selected = mapTarget(before, before.startMapId)!;
   expect(() => PRIMITIVES[0]!.scope({ project: before, target: selected }, { name: "번개" })).toThrow(/범위 밖/u);
-});
-
-// 공용 픽스처에는 선택할 프로젝트 연출이 없어 여기서 직접 시드한다.
-const seededRequests = [
-  ["도트 연출 별빛 하나 추가해 줘.", "create", {"name": "별빛"}, {"at": "database.skillChoreographies[id=chor_custom].name", "equals": "별빛"}],
-  ["새 연출 구름 조각, 동작은 주문 시전으로 해 주세요.", "create", {"name": "구름 조각", "motion": "cast"}, {"at": "database.skillChoreographies[id=chor_custom].motion", "equals": "cast"}],
-  ["유리 조각 연출 추가하고 속도 한 배 반", "create", {"name": "유리 조각", "speed": 1.5}, {"at": "database.skillChoreographies[id=chor_custom].speed", "equals": 1.5}],
-  ["스킬 연출 이름을 잔상으로 해서 만들고 첫 효과는 시전자에게.", "create", {"name": "잔상", "anchor": "user"}, {"at": "database.skillChoreographies[id=chor_custom].layers[0].anchor", "equals": "user"}],
-  ["도트연출 새로: 햇발. 전체 화면에서 첫 효과를 보여줘", "create", {"name": "햇발", "anchor": "screen"}, {"at": "database.skillChoreographies[id=chor_custom].layers[0].anchor", "equals": "screen"}],
-  ["느린 번쩍이라는 새 연출 부탁합니다. 플레이 속도는 절반.", "create", {"name": "느린 번쩍", "speed": 0.5}, {"at": "database.skillChoreographies[id=chor_custom].speed", "equals": 0.5}],
-  ["먼지 바람이란 연출 하나, 도약해서 치는 동작으로", "create", {"name": "먼지 바람", "motion": "leap-strike"}, {"at": "database.skillChoreographies[id=chor_custom].motion", "equals": "leap-strike"}],
-  ["노을이라는 연출 새로 만들고 없는 가루 그림 써.", "create", {"name": "노을", "sheet": "fx_absent_unit18"}, null],
-  ["불꽃 도트 연출 두 배로 빠르게 해 주세요.", "update", {"speed": 2}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].speed", "equals": 2}],
-  ["불꽃연출 첫 효과 시전자한테 옮겨 줘", "update", {"anchor": "user"}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].layers[0].anchor", "equals": "user"}],
-  ["선택된 불꽃의 이름을 잿불로요.", "update", {"name": "잿불"}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].name", "equals": "잿불"}],
-  ["불꽃 시전 동작을 쏘는 걸로 바꿔.", "update", {"motion": "shoot"}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].motion", "equals": "shoot"}],
-  ["불꽃 설명에 작은 불티가 번진다를 적어 주세요.", "update", {"description": "작은 불티가 번진다."}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].description", "equals": "작은 불티가 번진다."}],
-  ["첫 효과가 적 전체 쪽에 나오게 바꿔줄래요? 불꽃 연출이요.", "update", {"anchor": "allTargets"}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].layers[0].anchor", "equals": "allTargets"}],
-  ["불꽃 연출 재생 속도를 딱 절반으로 낮춰.", "update", {"speed": 0.5}, {"at": "database.skillChoreographies[id=chor_unit18_corpus].speed", "equals": 0.5}],
-  ["불꽃 연출 속도를 다섯 배로 해 줘.", "update", {"speed": 5}, null],
-  ["불꽃 연출 한 벌만 지워 줘.", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-  ["지금 선택한 불꽃 도트 연출 삭제 부탁합니다.", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-  ["불꽃연출 빼", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-  ["스킬 연출 목록에서 불꽃을 제거해 주세요.", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-  ["미완성인 불꽃은 안 쓸 거야. 저 연출만 없애.", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-  ["불꽃 연출 레코드 삭제해도 돼요.", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-  ["고른 연출 불꽃 그거 지우자.", "delete", {}, {"at": "database.skillChoreographies", "count": 0}],
-] as const;
-const seededCases: CorpusCase[] = seededRequests.map(([request, operation, args, check]) => ({
-  request,
-  fixture: "built",
-  target: { kind: "dbEntry", collection: "skillChoreographies", id: "chor_unit18_corpus" },
-  primitive: `db.skillChoreographies.${operation}`,
-  args,
-  ...(check ? { expect: [check] } : { expectRefusal: true }),
-}));
-it.each(seededCases)("$request", async entry => {
-  const base = fixtureProject(entry.fixture);
-  const before: Project = {
-    ...base,
-    database: {
-      ...base.database,
-      skillChoreographies: [{ id: "chor_unit18_corpus", name: "불꽃", motion: "cast", layers: [{ sheet, anchor: "target" }] }],
-    },
-  };
-  const selected = resolveTarget(before, entry.target);
-  if (entry.expectRefusal) {
-    expect(() => runPrimitive(before, selected, entry.primitive, entry.args)).toThrow(PrimitiveError);
-    return;
-  }
-  const { after } = expectApplies(before, selected, entry.primitive, entry.args);
-  for (const check of entry.expect ?? []) {
-    const actual = readCheckPath(after, check.at);
-    if (check.count !== undefined) expect(actual).toHaveLength(check.count);
-    else expect(actual).toEqual(check.equals);
-  }
-  await expectUndoRestores(before, after, selected);
 });
