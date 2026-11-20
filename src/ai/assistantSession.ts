@@ -1,5 +1,5 @@
 import { captureActivityVisuals, type ActivityVisual } from "./activityVisual";
-import { eventScopeAllowsTool, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
+import { EVENT_COMMAND_SCOPE_TOOLS, eventCommandScopeModeSchema, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
 import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
@@ -40,9 +40,9 @@ import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 import { BATTLE_BACKDROP_TOOL } from "@/editor/tools/battleBackdropTools";
 import { WALK_CHIP_TOOL } from "@/editor/tools/walkChipTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
-import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
+import { EVENT_COMMAND_ASSIST_TOOL, EVENT_COMMAND_ASSIST_TOOLS } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
-import { getTool, runTool } from "@/editor/tools";
+import { getTool, runTool, toOpenAiTools } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
@@ -98,7 +98,7 @@ import { sameSessionProjectJson, sessionDraftCopy, sessionProjectCopy, sessionPr
 import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { syncDraftWikiWithLive } from "@/project/world";
 import type { Project } from "@/project/types";
-import { buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { buildEventCommandSystemPrompt, buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
 import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, OriginalContextStore } from "./originalContext";
 import {
   buildConversationTurnContext,
@@ -876,6 +876,7 @@ export class AssistantSession {
   }
   private storeBacked = false;
   private eventCommandScope: EventCommandScope | undefined;
+  private eventCommandPrompt: ChatMessage | undefined;
   private runReceipt: ProjectPersistenceReceipt | null = null;
   private wikiDelivery: {
     owner: { current: TurnResult | null };
@@ -1839,6 +1840,7 @@ export class AssistantSession {
       runOutcome: deriveRunOutcome({ execution: "cancelled", acceptance: null, hasPendingDraft: false, hasApplied: false, persistence: "none" }) };
     signal = operation.signal;
     this.eventCommandScope = opts?.eventCommandScope ? structuredClone(opts.eventCommandScope) : undefined;
+    this.eventCommandPrompt = undefined;
     this.recoveryOperation = opts?.driverContinue && this.recoveredCheckpoint ? operation : null;
     if (this.recoveryOperation !== operation) { this.recoveredCheckpoint = null; this.recoveryBudget = null; }
     const subscriber = onEvent;
@@ -2116,8 +2118,10 @@ export class AssistantSession {
       this.pushAudit({ kind: "status", text: transition });
       onEvent({ type: "status", text: transition });
     }
-    const userContent = await operation.wait(this.buildUserTurnContent(text));
-    this.messages.push({ role: "user", content: userContent });
+    const userContent = this.eventCommandScope ? text : await operation.wait(this.buildUserTurnContent(text));
+    const userMessage: ChatMessage = { role: "user", content: userContent };
+    this.messages.push(userMessage);
+    if (this.eventCommandScope) this.eventCommandPrompt = userMessage;
     this.pushAudit({ kind: "user", text, context: turnContext });
     // 사용자 발화만 따로 든다. `[컨텍스트]` footer 는 코드가 아는 사실이라 모델에는 그대로 가지만,
     // 의도 선언·툴 이름 언급·능력 승격의 입력은 사용자 말이어야 한다 — 기계 텍스트가 이 자리에
@@ -2324,7 +2328,9 @@ export class AssistantSession {
       this.lastReviewFailure = null;
     }
     const retainsOriginal = !startsGoal && (resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
-    if (!retainsOriginal || !this.originalContext) {
+    if (this.eventCommandScope) {
+      this.originalContext = null;
+    } else if (!retainsOriginal || !this.originalContext) {
       const scope = this.turnScope;
       this.originalContext = new OriginalContextStore(extractOriginalContext(this.ctx.project, {
         snapshotId: `original-${this.currentTurnIndex}`,
@@ -2496,6 +2502,9 @@ export class AssistantSession {
     const operation = this.runOperation;
     operation.assertCurrent();
     if (!instruction) return emptyIntentDeclaration();
+    // The editor already chose the target and the only authoring tool.
+    if (this.eventCommandScope) return { ...emptyIntentDeclaration(), mode: "modify",
+      targetMapId: this.eventCommandScope.mapId, tools: EVENT_COMMAND_SCOPE_TOOLS };
     const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan)) || this.acceptanceOpen() || this.explicitVerificationOpen();
     const scope = this.turnScope;
     const selection = scope
@@ -2541,6 +2550,7 @@ export class AssistantSession {
 
   /** 플래너 왕복을 건너뛸 이유. null 이면 플래너가 돈다(오케스트레이션이 켜져 있을 때). */
   private plannerSkipReasonFor(intent: IntentDeclaration): string | null {
+    if (this.eventCommandScope) return "event-command-scope";
     if (this.turnComposerMode === "ask") return "composer:ask";
     if (intent.source === "empty") return "empty";
     if (this.turnComposerMode === "plan") return null;
@@ -4808,6 +4818,8 @@ export class AssistantSession {
     const operation = this.runOperation;
     operation.assertCurrent();
     this.lastTurnFailed = false;
+    const eventScope = this.eventCommandScope;
+    const eventPrompt = this.eventCommandPrompt;
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
@@ -4840,6 +4852,65 @@ export class AssistantSession {
     // Turn-local: a failed/dropped request cannot revive these captures on a later turn.
     let pendingImages: { parts: ImageUrlPart[]; receipts: AcceptanceImageReceipt[] } | null = null;
     const outputAtStart = this.estimatedOutputTotal;
+    const maxScopedAttempts = 3;
+    let scopedAttempts = 0;
+    let scopedToolResult: ToolResult | undefined;
+
+    const publishFinalText = (content: string): void => {
+      if (scopedToolResult) {
+        this.messages.push({ role: "assistant", content });
+        this.pushAudit({ kind: "assistant", text: content });
+      }
+      onEvent({ type: "assistant_message", content });
+    };
+    const finishScopedFailure = (failure: ToolResult): TurnResult => {
+      const detail = failure.issues?.find(issue => issue.severity === "error")?.message ?? failure.summary;
+      const error = `명령 초안을 만들지 못했어요. 추가하거나 바꿀 명령을 구체적으로 적고 다시 시도해 주세요. — ${detail}`;
+      this.runExecution = "failed";
+      publishFinalText(error);
+      this.pushAudit({ kind: "status", text: `턴 종료(error) — 이벤트 명령 시도 ${scopedAttempts}건` });
+      return { assistantText: error, error, proposedCalls: [], stoppedReason: "error" };
+    };
+    const finishTurn = async (finalText: string): Promise<TurnResult | null> => {
+      if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
+      if (this.turnComposerMode !== "ask" && proposedByKey.size > 0) {
+        // 결정적 검사는 LLM 라운드도 출력 토큰도 쓰지 않는다 — 예산이 바닥이어도 돌린다.
+        spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
+        this.adoptAcceptance(undefined, onEvent);
+        this.captureCheckpoint();
+        await operation.wait(this.checkpointBestEffort());
+        const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, outputLimit - spentOutputTokens));
+        if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
+        if (review.status !== "approved") {
+          const failure = JSON.stringify([this.ctx.project, review.findings.map(({ target, problem, requestedChange }) => ({ target, problem, requestedChange }))]);
+          const stalled = failure === this.lastReviewFailure;
+          this.lastReviewFailure = failure;
+          this.reviewAttempts += 1;
+          if (eventScope || review.status === "error" || stalled || this.reviewAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) {
+            this.runExecution = review.status === "error" ? "failed" : "blocked";
+            const error = `결정적 검사 미통과: ${review.summary}${stalled ? " (동일 실패 반복)" : ""}`;
+            this.lastTurnFailed = review.status === "error";
+            publishFinalText(error);
+            return { assistantText: error, error, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
+          }
+          phase = "execute";
+          this.emitPhase(onEvent, "execute");
+          this.pushOrchestrationMessage(`Repair this same draft using the structured independent findings. Read current records before changing them; do not recreate the project or weaken requirements. Then finish for a new independent review.\n${JSON.stringify(review)}`);
+          return null;
+        }
+        await operation.wait(this.maybeAutoApplyMilestone({ id: `review-${review.revision}`, title: this.workPlan?.goal ?? this.currentTurnInstruction,
+          instruction: "Apply independently approved draft", status: "done" }, onEvent));
+        if (!this.draftBaselineCurrent) return { assistantText: this.resultReview?.summary ?? "Stale authored baseline",
+          error: this.resultReview?.summary, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
+      }
+      // 모델의 마지막 말이 사용자에게 가는 본문이다(질문·[선택지] 포함 — 드라이버의 일시정지 판정도 이 텍스트를 본다).
+      // 결정적 검사 결과는 그 뒤에 한 줄로 붙인다. 옛 LLM 검수는 자기 요약으로 본문을 갈아치웠다.
+      assistantText = this.npcRewardFinalText(this.turnComposerMode !== "ask" && !eventScope && (proposedByKey.size > 0 || this.turnAppliedMilestoneCalls.length > 0)
+        ? [sanitizeAssistantText(finalText).trim(), this.resultReview?.summary ?? ""].filter(Boolean).join("\n\n") : finalText);
+      publishFinalText(assistantText);
+      this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
+      return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+    };
 
     for (let round = 0; round < roundCap; round += 1) {
       // 라운드 예산만 갱신한다. 쓰기는 저작 결과가 바뀌는 tool_call 과 적용·저장·증명 경계가
@@ -4861,26 +4932,35 @@ export class AssistantSession {
       // Start with a small control plane plus intent/plan/discovery candidates.
       // A discovery miss or neutral routing flips turnFullCatalogFallback and
       // restores the complete native catalog on the next round.
-      const tools = [
-        ...buildSessionRegistryTools({
-          requestText: this.currentTurnInstruction,
-          intent: this.turnIntent,
-          discoveredToolNames: this.turnEscalatedToolNames,
-          requiredReadTools: this.readEvidence.requiredReadTools(),
-          workPlan: this.workPlan,
-          fullCatalogFallback: this.eventCommandScope ? true : this.turnFullCatalogFallback,
-          hideTool: (toolName) => toolHiddenByMonsterLock(this.ctx.project, toolName, { monsterTurn: isMonsterRequestTurn(this.currentTurnInstruction) }),
-          // 이벤트 명령 범위는 전체에서 걸러 쓰므로 창 판정을 하지 않는다.
-          ...(this.eventCommandScope ? {} : { contextWindow: resolveContextWindow(this.config.model) }),
-        }),
-        GET_ORIGINAL_CONTEXT_TOOL,
-        CORRECT_VERIFICATION_TOOL,
-        ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
-        SET_BUILD_SPEC_TOOL,
-        ...(planToolsOn ? WORK_PLAN_TOOLS : []),
-        ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
-      ]
-        .filter((tool) => !this.eventCommandScope || eventScopeAllowsTool(tool.function.name))
+      const registryTools = eventScope
+        ? toOpenAiTools(EVENT_COMMAND_ASSIST_TOOLS.map(tool => ({
+          ...tool,
+          description: "이벤트 편집기에서 지정한 페이지의 명령 초안을 생성하고 검증한다. 대상 ID와 사용자 요청을 그대로 전달하세요.",
+          parameters: {
+            ...tool.parameters,
+            properties: { ...tool.parameters.properties, mode: eventCommandScopeModeSchema(eventScope) },
+            required: eventScope.mode === "append" ? [...(tool.parameters.required ?? []), "mode"] : tool.parameters.required,
+          },
+        })))
+        : [
+          ...buildSessionRegistryTools({
+            requestText: this.currentTurnInstruction,
+            intent: this.turnIntent,
+            discoveredToolNames: this.turnEscalatedToolNames,
+            requiredReadTools: this.readEvidence.requiredReadTools(),
+            workPlan: this.workPlan,
+            fullCatalogFallback: this.turnFullCatalogFallback,
+            hideTool: (toolName) => toolHiddenByMonsterLock(this.ctx.project, toolName, { monsterTurn: isMonsterRequestTurn(this.currentTurnInstruction) }),
+            contextWindow: resolveContextWindow(this.config.model),
+          }),
+          GET_ORIGINAL_CONTEXT_TOOL,
+          CORRECT_VERIFICATION_TOOL,
+          ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
+          SET_BUILD_SPEC_TOOL,
+          ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+          ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
+        ];
+      const tools = registryTools
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
         .map((tool) => tool.function.name === "verify_npc_reward" ? tool : injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
@@ -4899,18 +4979,26 @@ export class AssistantSession {
       });
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.
-      await operation.wait(this.maybeCompactConversation(onEvent, signal));
+      if (!eventScope) await operation.wait(this.maybeCompactConversation(onEvent, signal));
       let requestMessages: ChatMessage[] = [];
       try {
-        const rewardNote = this.npcRewardNote();
-        const grounded = buildGroundedRequest(
-          rewardNote ? [...this.messages, { role: "user", content: rewardNote }] : this.messages,
-          tools,
-          this.phaseConfig(phase),
-          this.originalContext!,
-        );
+        let messages = this.messages;
+        if (eventScope) {
+          if (!eventPrompt) throw new Error("이벤트 명령 요청을 찾을 수 없습니다.");
+          // Use the current dock prompt as the boundary, including on a manual retry.
+          // Keep its tool exchange together and leave the shared transcript untouched.
+          const start = this.messages.lastIndexOf(eventPrompt);
+          const exchange = start < 0 ? [eventPrompt] : this.messages.slice(start).filter(message =>
+            message === eventPrompt || message.role === "assistant" || message.role === "tool");
+          messages = [{ role: "system", content: buildEventCommandSystemPrompt(this.ctx.project, eventScope) }, ...exchange];
+        } else {
+          const rewardNote = this.npcRewardNote();
+          if (rewardNote) messages = [...messages, { role: "user", content: rewardNote }];
+        }
+        const original = eventScope ? null : this.originalContext;
+        const grounded = buildGroundedRequest(messages, tools, this.phaseConfig(phase), original);
         requestMessages = grounded.messages;
-        this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${this.originalContext!.context.entries.length}` });
+        this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${original?.context.entries.length ?? 0}` });
         result = await operation.wait(this.chatWithTransientRetry(
           this.phaseConfig(phase),
           { messages: requestMessages, tools, tool_choice: "auto" },
@@ -4919,7 +5007,7 @@ export class AssistantSession {
           this.turnComposerMode === "ask" || this.turnIntent?.mode === "question"
         ));
         // Only exact originals and native/monster reads in a successful writer request count.
-        this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
+        original?.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
         this.readEvidence.observeDelivered(requestMessages);
         this.readEvidence.tilesetReferences.observeImages(requestMessages, result.imageDelivery);
       } catch (cause) {
@@ -4976,6 +5064,7 @@ export class AssistantSession {
 
       const toolCalls = assistantMsg.tool_calls ?? [];
       if (toolCalls.length === 0) {
+        if (scopedToolResult && !scopedToolResult.ok) return finishScopedFailure(scopedToolResult);
         const finalText = sanitizeAssistantText(messageText ?? "");
         // Before the first project write, retain the existing bounded acceptance
         // repair path. There is no result for an independent reviewer yet.
@@ -5099,44 +5188,9 @@ export class AssistantSession {
         // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
         await operation.wait(this.sweepFinishedLayers(onEvent));
         if (workPlanDecision !== null) this.recordWorkPlanDecision(workPlanDecision);
-        if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
-        if (this.turnComposerMode !== "ask" && proposedByKey.size > 0) {
-          // 결정적 검사는 LLM 라운드도 출력 토큰도 쓰지 않는다 — 예산이 바닥이어도 돌린다.
-          spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
-          this.adoptAcceptance(undefined, onEvent);
-          this.captureCheckpoint();
-          await operation.wait(this.checkpointBestEffort());
-          const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, outputLimit - spentOutputTokens));
-          if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
-          if (review.status !== "approved") {
-            const failure = JSON.stringify([this.ctx.project, review.findings.map(({ target, problem, requestedChange }) => ({ target, problem, requestedChange }))]);
-            const stalled = failure === this.lastReviewFailure;
-            this.lastReviewFailure = failure;
-            this.reviewAttempts += 1;
-            if (review.status === "error" || stalled || this.reviewAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) {
-              this.runExecution = review.status === "error" ? "failed" : "blocked";
-              const error = `결정적 검사 미통과: ${review.summary}${stalled ? " (동일 실패 반복)" : ""}`;
-              this.lastTurnFailed = review.status === "error";
-              onEvent({ type: "assistant_message", content: error });
-              return { assistantText: error, error, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
-            }
-            phase = "execute";
-            this.emitPhase(onEvent, "execute");
-            this.pushOrchestrationMessage(`Repair this same draft using the structured independent findings. Read current records before changing them; do not recreate the project or weaken requirements. Then finish for a new independent review.\n${JSON.stringify(review)}`);
-            continue;
-          }
-          await operation.wait(this.maybeAutoApplyMilestone({ id: `review-${review.revision}`, title: this.workPlan?.goal ?? this.currentTurnInstruction,
-            instruction: "Apply independently approved draft", status: "done" }, onEvent));
-          if (!this.draftBaselineCurrent) return { assistantText: this.resultReview?.summary ?? "Stale authored baseline",
-            error: this.resultReview?.summary, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
-        }
-        // 모델의 마지막 말이 사용자에게 가는 본문이다(질문·[선택지] 포함 — 드라이버의 일시정지 판정도 이 텍스트를 본다).
-        // 결정적 검사 결과는 그 뒤에 한 줄로 붙인다. 옛 LLM 검수는 자기 요약으로 본문을 갈아치웠다.
-        assistantText = this.npcRewardFinalText(this.turnComposerMode !== "ask" && (proposedByKey.size > 0 || this.turnAppliedMilestoneCalls.length > 0)
-          ? [sanitizeAssistantText(finalText).trim(), this.resultReview?.summary ?? ""].filter(Boolean).join("\n\n") : finalText);
-        onEvent({ type: "assistant_message", content: assistantText });
-        this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
-        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+        const finished = await finishTurn(finalText);
+        if (finished) return finished;
+        continue;
       }
 
       const startsWriteThisRound = toolCalls.some((call) => isWriteToolName(call.function.name));
@@ -5161,10 +5215,6 @@ export class AssistantSession {
         const args = split.args;
         const callReason = split.reason;
         const tool = getTool(name);
-        if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
-        this.emitToolStarted(onEvent, name, args);
-        await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL || name === TITLE_ART_TOOL || name === BATTLE_BACKDROP_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5180,6 +5230,19 @@ export class AssistantSession {
           });
           if (tool?.mode === "read") this.readEvidence.queue({ toolCallId: call.id, name, args, result });
         };
+        // Answer every slot in the batch, including calls we skip after the scoped writer settles.
+        if (eventScope) {
+          operation.assertCurrent();
+          if (scopedToolResult?.ok || scopedAttempts >= maxScopedAttempts) {
+            respond(deferredToolResult("event-command-turn-settled", "이벤트 명령 작성이 종료되어 이 호출을 실행하지 않았습니다."));
+            continue;
+          }
+          scopedAttempts += 1;
+        }
+        if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
+        this.emitToolStarted(onEvent, name, args);
+        await operation.wait(this.yieldForUi(signal));
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL || name === TITLE_ART_TOOL || name === BATTLE_BACKDROP_TOOL) writeToolAttempts += 1;
         try {
           // Tool subscribers may synchronously replace this run. Publish only after
           // the completed tool's proposal, audit and protocol response are recorded.
@@ -5196,13 +5259,14 @@ export class AssistantSession {
             this.pushAudit({ kind: "status", text: `tool-args:missing-reason ${name}` });
           }
           const recordDependency = tool?.mode === "write" ? failedRecordReference(args, failedRecords) : undefined;
+          const scopeRefusal = eventScope ? eventScopeRefusal(eventScope, name, args) : null;
           if (signal?.aborted) {
             toolResult = deferredToolResult("cancelled", "사용자가 중단하여 실행하지 않았습니다.");
+          } else if (scopeRefusal) {
+            toolResult = scopeRefusal;
           } else if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
-          } else if (this.eventCommandScope && eventScopeRefusal(this.eventCommandScope, name, args)) {
-            toolResult = eventScopeRefusal(this.eventCommandScope, name, args)!;
           } else if (this.turnComposerMode === "ask" && isWriteToolName(name)) {
             // 노출 목록은 감사용이고 실행은 이름으로 한다 — 모델이 외워 둔 쓰기 툴을 불러도 여기서 막는다.
             toolResult = composerAskRefusal(name);
@@ -5412,6 +5476,7 @@ export class AssistantSession {
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
             }
           }
+          if (eventScope) scopedToolResult = toolResult;
           if (tool?.mode === "write" || name === "set_build_spec") {
             const target = toolRetryTarget(name, args);
             if (toolResult.ok) {
@@ -5435,7 +5500,7 @@ export class AssistantSession {
             if (toolResult.ok) failedRecords.delete(record.key);
             else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
           }
-          if (tool?.mode === "read" || name === "get_original_context") {
+          if (!eventScope && (tool?.mode === "read" || name === "get_original_context")) {
             if (!toolResult.ok) failedReadInBatch ??= name;
           }
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
@@ -5510,7 +5575,8 @@ export class AssistantSession {
           }
 
           // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
-          if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
+          if (toolResult.ok && tool?.mode === "write" && toolResult.diff
+            && (!eventScope || toolResult.diff.eventsModified > 0)) {
             const softConfirm = extractVocabSoftConfirm(toolResult.data);
             let proposal: ProposedCall = {
               name,
@@ -5622,6 +5688,16 @@ export class AssistantSession {
       }
 
       if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
+      if (scopedToolResult?.ok) {
+        const finalText = proposedByKey.size > 0
+          ? "명령 초안을 만들었어요. 변경 내용을 확인하고 적용해 주세요."
+          : "변경 없음";
+        const finished = await finishTurn(finalText);
+        if (finished) return finished;
+      }
+      if (scopedToolResult && (scopedAttempts >= maxScopedAttempts || round + 1 === roundCap || spentOutputTokens >= outputLimit)) {
+        return finishScopedFailure(scopedToolResult);
+      }
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
       await operation.wait(this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent));
       const afterItemId = this.workPlan?.currentItemId ?? null;

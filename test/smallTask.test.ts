@@ -88,6 +88,7 @@ it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼�
 it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 } },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, omitChangedKeys: true },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, withSpawnDraft: true },
   { kind: "event", selectedMapId: "another_map", rect: undefined },
   { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
@@ -104,7 +105,9 @@ it.each([
   { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
     stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc2`,
     shownMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, shownMessage, savedMapReference, draftLocationId }) => {
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
+  kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, withSpawnDraft, shownMessage, savedMapReference, draftLocationId,
+}) => {
   const project = fixture();
   if (savedMapReference) {
     const gate: GameEvent = { id: "north_gate", name: "North Gate", x: 1, y: 1, trigger: { kind: "action" },
@@ -115,10 +118,14 @@ it.each([
   const live = structuredClone(project);
   const original = live.maps.map_a.events[0]!;
   const draft: GameEvent = {
-    ...original, id: "draft_event", name: "미저장 출입구", draft: { kind: "new", original },
+    ...original, id: "draft_event", draft: { kind: "new", original },
+    ...(kind === "map" ? { name: "미저장 출입구" } : {}),
     ...(draftLocationId ? { condition: { kind: "insideLocation", locationId: draftLocationId, inside: true } } : {}),
   };
   if (!savedMapReference) live.maps.map_a.events.push(draft);
+  const spawnDraft: GameEvent = { ...original, id: "ev_spawn_draft", draft: { kind: "new" }, pages: [],
+    commands: [{ kind: "despawnFieldEnemy", spawnId: "spawn_trial" }] };
+  if (withSpawnDraft) live.maps.map_a.events.push(spawnDraft);
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")!
     : kind === "map" ? mapTarget(project, "map_a")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
@@ -133,7 +140,8 @@ it.each([
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
-    expect(body.smallTask.draftSource).toEqual(savedMapReference ? undefined : { maps: { map_a: { events: [draft] } } });
+    expect(body.smallTask.draftSource).toEqual(savedMapReference
+      ? undefined : { maps: { map_a: { events: withSpawnDraft ? [draft, spawnDraft] : [draft] } } });
     expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
