@@ -7,7 +7,9 @@ import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "./primitives/errors";
+import { assertActorClassDraftChanges } from "./primitives/units/17-db-actors-classes";
 import { mapRemovalDraftError } from "./primitives/units/23-map-structure/maps";
+import { assertProjectDataDraftReferences } from "./primitives/units/28-project-data";
 import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -51,6 +53,7 @@ function draftReferencesNewDatabaseRows(live: Project, before: Project, after: P
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
+  if (target.kind === "map") assertProjectDataDraftReferences(live, before, after);
   if (before.commonEvents !== after.commonEvents) {
     const remaining = new Set(after.commonEvents.map(event => event.id));
     try {
@@ -64,6 +67,7 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
   }
   if (target.kind === "dbEntry") {
     const { collection, id } = target;
+    if (before !== live) assertActorClassDraftChanges(before, after, collection, id, live);
     // The worker saw saved events. Keep publication from breaking or redirecting open draft references.
     if (draftReferencesNewDatabaseRows(live, before, after, collection)) {
       throw new SmallTaskError("열린 이벤트가 새 항목과 같은 식별자를 쓰고 있어요. 이벤트의 연결을 먼저 확인해 주세요.");

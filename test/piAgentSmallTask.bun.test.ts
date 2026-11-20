@@ -71,6 +71,52 @@ function fixture() {
 
 const apply = (id: string, args: Call["args"]): Call => ({ name: APPLY_SMALL_TASK_PRIMITIVE, args: { id, args } });
 
+test("작은 일 Pi 실행은 열린 이벤트 초안에서 호출하는 대사의 첫 회 한정 처리를 거절한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const caller = project.maps[mapId].events[1]!;
+  const draft = {
+    ...caller,
+    draft: { kind: "edit", original: caller } as const,
+    pages: caller.pages!.map(page => ({ ...page, commands: [{ kind: "callMapEvent", eventId: event.id } as const] })),
+  };
+  const action = apply("dialogue.firstTimeOnly", { path: [0] });
+  const accepted = await runPiAgent(request, { streamFn: scripted([action]) });
+  expect(accepted.stoppedEarly).toBeUndefined();
+  expect(accepted.project.maps[mapId].events[0]!.pages![1]!.commands[0]).toMatchObject({ kind: "fork" });
+
+  const done = await runPiAgent({
+    ...request,
+    smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([action]) });
+  expect(done.stoppedEarly).toContain("다른 곳에서 이 이벤트를 호출");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+  expect(event.pages[1]!.commands).toEqual(commands);
+});
+
+test("첫 회 한정 대사는 호출하는 이벤트의 저장본과 초안이 쓰는 셀프 스위치를 피한다", async () => {
+  const { request, project, mapId, commands } = fixture();
+  const helper = project.maps[mapId].events[1]!;
+  const helperPage = helper.pages![1]!;
+  const reset = (key: "A" | "B"): Command => ({ kind: "setSelfSwitch", key, value: false });
+  helper.pages = [{ ...helperPage, commands: [reset("A")] }];
+  const draft = {
+    ...helper,
+    draft: { kind: "edit", original: helper } as const,
+    pages: [{ ...helperPage, commands: [reset("B")] }],
+  };
+  commands.push({ kind: "callMapEvent", eventId: helper.id });
+  const done = await runPiAgent({
+    ...request,
+    smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([apply("dialogue.firstTimeOnly", { path: [0] })]) });
+
+  expect(done.stoppedEarly).toBeUndefined();
+  const [selected, unchangedHelper] = done.project.maps[mapId].events;
+  expect(selected!.pages![1]!.commands[0]).toMatchObject({ kind: "fork", condition: { kind: "selfSwitch", key: "C" } });
+  expect(unchangedHelper).toEqual(helper);
+});
+
 test("작은 일 Pi 실행이 동작을 읽고 고른 페이지에서 cmd.delete와 cmd.move를 적용한다", async () => {
   const { request, project, mapId, event, commands } = fixture();
   const seen: ModelContext[] = [];
@@ -303,7 +349,7 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
   const outside = await runPiAgent(selectedRequest, { streamFn: scripted([paint(0), paint(1)]) });
   expect(outside.stoppedEarly).toContain("선택 영역 바깥 타일");
-  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 0 });
+  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 1 });
   expect(outside.changedKeys).toEqual([]);
   expect(outside.project).toBe(project);
   expect(layerTileAt(project.maps[mapId], 2, 0)).toBe(-1);
@@ -314,6 +360,38 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   expect(inside.changedKeys).toEqual([`maps.${mapId}`]);
   expect(layerTileAt(inside.project.maps[mapId], 2, 0)).toBe(0);
   expect(layerTileAt(inside.project.maps[mapId], 2, 1)).toBe(-1);
+});
+
+test("작은 일 Pi 실행은 선택 영역이 있어도 제목을 바꾸고 영역 밖 타일 변경이 섞이면 모두 폐기한다", async () => {
+  const { request, project, mapId } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const selection = { rect: { x: 0, y: 0, w: 1, h: 1 } };
+  const selected = { ...request, smallTask: { ...request.smallTask, target, selection } };
+  const title = "달빛 아래 마을";
+  const changeTitle = apply("system.title", { title });
+  const renamed = await runPiAgent(selected, { streamFn: scripted([changeTitle]) });
+  expect(renamed.stoppedEarly).toBeUndefined();
+  expect(renamed.project.meta.title).toBe(title);
+  expect(renamed.project.maps[mapId]).toEqual(project.maps[mapId]);
+
+  const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
+  const mixed = await runPiAgent(selected, { streamFn: scripted([paint(0), changeTitle]) });
+  expect(mixed.stoppedEarly).toBeUndefined();
+  expect(mixed.project.meta.title).toBe(title);
+  expect(layerTileAt(mixed.project.maps[mapId], 2, 0)).toBe(0);
+
+  const createEvent = apply("event.tile.create", { name: "새 안내인" });
+  const mixedWithEvent = await runPiAgent(selected, { streamFn: scripted([createEvent, paint(0), changeTitle]) });
+  expect(mixedWithEvent.stoppedEarly).toBeUndefined();
+  expect(mixedWithEvent.project.meta.title).toBe(title);
+  expect(mixedWithEvent.project.maps[mapId].events.at(-1)).toMatchObject({ name: "새 안내인", x: 0, y: 0 });
+  expect(layerTileAt(mixedWithEvent.project.maps[mapId], 2, 0)).toBe(0);
+
+  const rejected = await runPiAgent(selected, { streamFn: scripted([changeTitle, paint(1),
+    apply("system.title", { title: "실행되면 안 되는 제목" })]) });
+  expect(rejected.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(rejected.stats.toolCalls).toBe(2);
+  expect(rejected.project).toBe(project);
 });
 
 test("유닛 24는 선택한 칸에 이벤트를 만들고 영역 밖 타일 변경이 있으면 전체 작업을 취소한다", async () => {

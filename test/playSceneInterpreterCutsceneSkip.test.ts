@@ -1,12 +1,15 @@
 import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { runPrimitive } from "@/editor/smallTask/primitives/run";
+import { mapTarget } from "@/editor/smallTask/target";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
+import { nameplateSpeaker } from "@/player/dialogue";
 import { runCommands } from "@/player/playSceneInterpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
-import type { Command, Project } from "@/project/types";
+import type { Command, GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 
@@ -51,7 +54,9 @@ function createFixture(): Fixture {
     inputEnabled: true,
     lastActionTargetKey: "",
     tileY: 0,
-    map: { height: 1 },
+    map: project.maps[project.startMapId],
+    eventPositions: {},
+    eventSprites: new Map(),
     autonomousNPCs,
     commandMoveRouteEventIds: new Set(),
     playerRoute: null,
@@ -66,6 +71,18 @@ function createFixture(): Fixture {
     registerAutonomousMover: (eventId: string) => autonomousNPCs.set(eventId, {}),
   } as unknown as PlaySceneContext;
   return { project, scene, visibleOverlays };
+}
+
+function addNpc(project: Project, commands: Command[]): GameEvent {
+  const trigger = { kind: "action" } as const;
+  const event: GameEvent = {
+    id: "ev_tea", characterId: "tea_owner", name: "찻집 주인", x: 2, y: 2, trigger, commands: [],
+    pages: [{ id: "greeting", name: "인사", conditions: [], graphic: {}, trigger, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands }],
+  };
+  project.maps[project.startMapId]!.events.push(event);
+  project.characters = { tea_owner: { displayName: "찻집 주인" } };
+  return event;
 }
 
 function skippableCutscene(blockingCommand: Command): readonly Command[] {
@@ -137,6 +154,41 @@ it("local diagnostics distinguish interpreter start and completed commands", asy
 });
 
 describe("skippable cutscene skip hint", () => {
+  it("does not use up a first-time NPC line that fast-forward never showed", async () => {
+    const fixture = createFixture();
+    const { project, scene } = fixture;
+    const mapId = project.startMapId;
+    const line = { kind: "text", body: "어느 차를 드릴까요?", speaker: "찻집 주인" } as const;
+    const event = addNpc(project, [line]);
+    const target = mapTarget(project, mapId, event.id, "greeting")!;
+    const { after } = runPrimitive(project, target, "dialogue.firstTimeOnly", { path: [0] });
+    const edited = after.maps[mapId]!.events.find(entry => entry.id === event.id)!.pages![0]!.commands;
+    store.replaceProject(after);
+    const dialogue = scene.game.registry.get("dialogue") as { showText: ReturnType<typeof vi.fn> };
+    const running = runCommands(scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      { kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "panTo", target: "screen", x: 3, y: 4, durationMs: 300, wait: true } },
+      ...edited,
+      { kind: "setSwitch", switchId: SKIPPED_SWITCH, value: true },
+      { kind: "setSelfSwitch", key: "B", value: true },
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ], event.id);
+    pressEscape();
+    pressEscape();
+    await running;
+    expect(scene.session.switches[SKIPPED_SWITCH]).toBe(true);
+    expect(scene.session.selfSwitches?.[event.id]).toEqual({ B: true });
+    expect(dialogue.showText).not.toHaveBeenCalled();
+
+    await runCommands(scene, edited, event.id);
+    expect(dialogue.showText).toHaveBeenCalledOnce();
+    expect(dialogue.showText).toHaveBeenCalledWith(expect.objectContaining({ body: line.body }));
+    expect(scene.session.selfSwitches?.[event.id]?.A).toBe(true);
+    await runCommands(scene, edited, event.id);
+    expect(dialogue.showText).toHaveBeenCalledOnce();
+  });
+
   it("shows the hint while a skippable cutscene blocks and clears it when the cutscene ends", async () => {
     // Given: a skippable cutscene blocked on camera completion.
     const fixture = createFixture();
@@ -281,6 +333,24 @@ describe("skippable cutscene blocking waits", () => {
     expect(fixture.scene.session.switches.sw_b).toBe(true);
     expect(fixture.scene.session.switches.sw_a).toBeUndefined();
   });
+});
+
+it("keeps a linked character's nameplate hidden when the speaker is explicitly blank", async () => {
+  const { project, scene } = createFixture();
+  const mapId = project.startMapId;
+  const event = addNpc(project, [{ kind: "text", body: "어서 오세요." }]);
+  const target = mapTarget(project, mapId, event.id, "greeting")!;
+  const dialogue = scene.game.registry.get("dialogue") as { showText: ReturnType<typeof vi.fn> };
+  store.replaceProject(project);
+  await runCommands(scene, event.pages![0]!.commands, event.id);
+  expect(nameplateSpeaker(dialogue.showText.mock.lastCall?.[0]?.speaker)).toBe("찻집 주인");
+
+  const { after } = runPrimitive(project, target, "dialogue.speaker.set", { path: [0], speaker: " " });
+  store.replaceProject(after);
+  const edited = after.maps[mapId]!.events.find(entry => entry.id === event.id)!.pages![0]!.commands;
+  await runCommands(scene, edited, event.id);
+  expect(dialogue.showText.mock.lastCall?.[0]?.speaker).toBe("");
+  expect(nameplateSpeaker(dialogue.showText.mock.lastCall?.[0]?.speaker)).toBeUndefined();
 });
 
 describe("field input wait lifecycle", () => {

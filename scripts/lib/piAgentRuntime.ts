@@ -1,6 +1,5 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
-import { jsonEqual } from "../../src/util/structuralJson.ts";
 import { APPLY_SMALL_TASK_PRIMITIVE, isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
@@ -465,7 +464,6 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
       return { message: { role: "assistant", content: choice?.message.content ?? "" }, finishReason: choice?.finish_reason ?? null };
     },
   });
-  let scopedQuests = base.quests;
   const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)
     && (!readOnly || tool.name !== APPLY_SMALL_TASK_PRIMITIVE)).map((tool): PiToolShape => ({
     ...tool,
@@ -479,9 +477,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         if (gate) throw new Error(formatPiToolFailure(gate));
       }
       const before = ctx.project;
-      const questsWereScoped = jsonEqual(before.quests, scopedQuests);
       const result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
-      if (questsWereScoped) scopedQuests = ctx.project.quests;
       if (regionScope && tool.name === APPLY_SMALL_TASK_PRIMITIVE && args.id === "event.tile.create") {
         // The primitive already checked tileEvent. Allow that exact addition in the final mapRegion check.
         const { mapId } = regionScope;
@@ -511,7 +507,27 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         refuse(refusal);
         throw new Error(refusal);
       }
-      return tool.execute(id, args, toolSignal ?? signal);
+      const before = ctx.project;
+      const response = await tool.execute(id, args, toolSignal ?? signal);
+      if (regionScope && ctx.project !== before) {
+        const primitive = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string"
+          ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(args.id) : undefined;
+        if (primitive?.unit === "28-project-data") {
+          // Keep the map and tileset baseline, including any checked tile-event additions.
+          regionBaseline = { ...ctx.project, maps: regionBaseline.maps, tilesets: regionBaseline.tilesets };
+        } else if (primitive?.unit === "27-quests") {
+          // The primitive checked the quest changes independently of the tile rectangle.
+          regionBaseline = { ...regionBaseline, quests: ctx.project.quests };
+        } else if (primitive?.id !== "event.tile.create") {
+          const result = checkSmallTaskScope(before, ctx.project, regionScope, draftSource);
+          if (!result.ok) {
+            ctx.project = before;
+            refuse(result.reason);
+            throw new Error(result.reason);
+          }
+        }
+      }
+      return response;
     },
   }));
   const resolveFallbackTool = () => refuse(SMALL_TASK_SCOPE_REFUSAL);
@@ -563,10 +579,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   }
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
-    // Quest changes that passed their primitive scope are independent of the tile rectangle.
-    const regionAfter = jsonEqual(ctx.project.quests, scopedQuests) && !jsonEqual(scopedQuests, base.quests)
-      ? { ...ctx.project, quests: base.quests } : ctx.project;
-    const result = checkSmallTaskScope(regionBaseline, regionAfter, regionScope, draftSource);
+    const result = checkSmallTaskScope(regionBaseline, ctx.project, regionScope, draftSource);
     if (!result.ok) failure = result.reason;
   }
   const project = failure ? base : ctx.project;

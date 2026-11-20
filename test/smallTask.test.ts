@@ -107,12 +107,13 @@ it.each([
   { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
     stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc2`,
     shownMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, dialogueCaller: true },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.\n범위 밖: 퀘스트가 사용하는 미저장 이벤트",
     shownMessage: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요." },
 ])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
   kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft,
-  shownMessage, savedMapReference, draftLocationId,
+  shownMessage, savedMapReference, draftLocationId, dialogueCaller,
 }) => {
   const project = fixture();
   if (savedMapReference) {
@@ -127,6 +128,9 @@ it.each([
     ...original, id: "draft_event", draft: { kind: "new", original },
     ...(kind === "map" ? { name: "미저장 출입구" } : {}),
     ...(draftLocationId ? { condition: { kind: "insideLocation", locationId: draftLocationId, inside: true } } : {}),
+    ...(dialogueCaller ? { pages: original.pages!.map(page => ({
+      ...page, commands: [{ kind: "callMapEvent", eventId: original.id }],
+    })) } : {}),
   };
   const selected = live.maps.map_a.events[0]!;
   const spawnDraft: GameEvent = { ...original, id: "ev_spawn_draft", draft: { kind: "new" }, pages: [],
@@ -155,6 +159,7 @@ it.each([
     ];
     expect(body.smallTask.draftSource).toEqual(drafts.length ? { maps: { map_a: { events: drafts } } } : undefined);
     expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
+    if (dialogueCaller) expect(body.task).toBe("고른 대사를 첫 대화에만 보여 줘");
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
@@ -163,7 +168,8 @@ it.each([
   });
   vi.stubGlobal("fetch", fetch);
   try {
-    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal, live);
+    const request = dialogueCaller ? "고른 대사를 첫 대화에만 보여 줘" : "고른 대상을 확인해 줘";
+    const run = runSmallTask(project, target, request, signal, live);
     if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(shownMessage ?? stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
