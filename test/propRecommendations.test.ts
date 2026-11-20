@@ -77,6 +77,7 @@ describe("map prop recommendations", () => {
     expect(filterProps(entries, undefined, "자작").map(({ choice }) => choice.id)).toEqual(["bd-object:birch_tree"]);
     expect(filterProps(entries, undefined, "OR_DEC").map(({ choice }) => choice.id)).toEqual(["bd-object:anchor_decor"]);
     expect(filterProps(entries, undefined, "ARBO").map(({ choice }) => choice.id)).toEqual(["bd-object:anchor_decor"]);
+    expect(filterProps(entries, undefined, "닻 항구")).toEqual([]);
     expect(groupProps(filterProps(entries, undefined, "버들항 기본 기물")).groups.map(({ group }) => group.id))
       .toEqual(["nature", "indoor", "harbor"]);
     expect(groupProps(filterProps(entries, undefined, "이전 저장 태그"))).toEqual({ groups: [], ungrouped: [] });

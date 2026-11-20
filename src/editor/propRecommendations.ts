@@ -134,14 +134,19 @@ export function propRecommendationContext(map: GameMap): string {
 
 /** Filter the full compatible catalog before pagination, so unopened cards remain searchable. */
 export function filterProps(entries: readonly PropRecommendation[], category: PropCategoryId | undefined, query: string): readonly PropRecommendation[] {
-  const tokens = query.normalize("NFKC").toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const needle = query.normalize("NFKC").toLowerCase().trim();
+  const tokens = needle.split(/\s+/u);
   return entries.filter(({ choice }) => {
     if (category && choice.category !== category) return false;
-    if (!tokens.length) return true;
+    if (!needle) return true;
     const object = choice.beodeul;
-    const fields = object
-      ? [object.nameKo, object.id, choice.id, object.category, beodeulObjectGroup(object.group)?.labelKo ?? "", ...choice.terms]
-      : [choice.name, t(choice.name), t(PROP_CATEGORIES.find(kind => kind.id === choice.category)?.label ?? ""), choice.id, ...choice.terms];
+    if (object) {
+      const label = beodeulObjectGroup(object.group)?.labelKo ?? "";
+      return [object.id, choice.id, object.category, label, ...choice.terms]
+        .some(field => field.normalize("NFKC").toLowerCase().includes(needle));
+    }
+    const kindLabel = PROP_CATEGORIES.find(kind => kind.id === choice.category)?.label ?? "";
+    const fields = [choice.name, t(choice.name), t(kindLabel), choice.id, ...choice.terms];
     const text = fields.join(" ").normalize("NFKC").toLowerCase();
     return tokens.every(token => text.includes(token));
   });
