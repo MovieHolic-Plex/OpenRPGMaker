@@ -388,12 +388,15 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply({ project }, args) {
       const title = requiredText(args.title, "게임 제목을 입력해 주세요.");
       const opening = openingWithTitle(project, title);
-      const titleScreen = project.system.titleScreen ?? defaultTitleScreenSettings();
-      return {
-        ...project,
-        meta: { ...project.meta, title },
-        system: { ...project.system, titleScreen: { ...titleScreen, title }, ...(opening ? { opening } : {}) },
-      };
+      const { system } = project;
+      const meta = project.meta.title === title ? project.meta : { ...project.meta, title };
+      const titleScreen = system.titleScreen?.title === title
+        ? system.titleScreen
+        : { ...(system.titleScreen ?? defaultTitleScreenSettings()), title };
+      if (titleScreen === system.titleScreen && !opening) {
+        return meta === project.meta ? project : { ...project, meta };
+      }
+      return { ...project, meta, system: { ...system, titleScreen, ...(opening ? { opening } : {}) } };
     },
   }),
   primitive("system.startGold", "시작 소지금 변경", "system", ["session.gold"], {

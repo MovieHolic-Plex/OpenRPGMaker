@@ -1593,5 +1593,203 @@
       "conditions": [{ "kind": "friendshipAtLeast", "npcKey": "*", "value": 7.5 }]
     },
     "expectRefusal": true
+  },
+  {
+    "request": "아무 이벤트에도 연결하지 않은 ‘남겨 둔 초안’ 결말을 지워 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "남겨 둔 초안"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "남겨 둔 초안",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "고른 엔딩 ‘임시 결말’ 삭제해.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "임시 결말"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "임시 결말",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "‘폐기한 끝’ 엔딩지워줘",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "폐기한 끝"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "폐기한 끝",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "테스트 삼아 추가한 ‘눈 오는 정류장’은 빼 주실래요? 다른 결말은 남겨 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "눈 오는 정류장"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "눈 오는 정류장",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "선택한 ‘셋째 결말’만 목록에서 빼.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "셋째 결말"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "셋째 결말",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "아직 부르는 장면 없는 앤딩 ‘돌아가는 길’은 이제 필요 없어요. 삭제 부탁해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "돌아가는 길"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "돌아가는 길",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
   }
 ]

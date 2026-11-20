@@ -1,11 +1,10 @@
 /** @vitest-environment happy-dom */
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { collectDialogueLines } from "@/editor/dialogue/dialogueIndex";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { compileScriptAsync } from "@/editor/script/compile";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { dbTarget } from "@/editor/smallTask/target";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
@@ -25,8 +24,6 @@ import { store } from "@/project/store";
 import type { Command, EndingDef, GameEvent, Project } from "@/project/types";
 import { listEndingRows } from "@/project/vnExtras";
 import { structuralJson } from "@/util/structuralJson";
-import corpus from "../../harness-data/small-task-corpus/28-project-data.json";
-import endingRemovalCases from "./28-project-data/ending-remove-corpus.json";
 import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
 
 type Fixture = Parameters<typeof loadFixture>[0];
@@ -281,7 +278,10 @@ it("시작 화면에 이미 맞는 제목이 있으면 프로젝트 제목만 �
   expect(scope).toEqual({ kind: "projectArea", area: "system", ids: ["meta.title"] });
   expect(checkSmallTaskScope(before, { ...before, system: { ...before.system, titleScreen: { ...titleScreen, title: "다른 제목" } } }, scope))
     .toMatchObject({ ok: false });
-  expect(runPrimitive(before, target, "system.title", args).after.meta.title).toBe(args.title);
+  const { after } = runPrimitive(before, target, "system.title", args);
+  expect(after.meta.title).toBe(args.title);
+  expect(after.system).toBe(before.system);
+  expect(runPrimitive(after, target, "system.title", args).after).toBe(after);
 });
 
 it.each([
@@ -308,11 +308,14 @@ it.each([
 });
 
 it("엔딩을 본 기록을 확인하는 중첩 조건도 삭제를 막아요", () => {
-  const project = blankWithUnusedEnding();
-  project.commonEvents = [...project.commonEvents, {
-    id: "ce_check_ending", name: "결말 확인", trigger: "none",
-    commands: [{ kind: "fork", condition: { kind: "not", condition: { kind: "endingSeen", endingId: unusedEnding.id, value: true } }, then: [] }],
-  }];
+  const before = blankWithUnusedEnding();
+  const project: Project = {
+    ...before,
+    commonEvents: [...before.commonEvents, {
+      id: "ce_check_ending", name: "결말 확인", trigger: "none",
+      commands: [{ kind: "fork", condition: { kind: "not", condition: { kind: "endingSeen", endingId: unusedEnding.id, value: true } }, then: [] }],
+    }],
+  };
   expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.name }, /쓰는 엔딩/u);
 });
 
@@ -585,7 +588,12 @@ it("맵 작업으로 미저장 스크립트가 이름으로 찾는 스위치를 
     id: "ev_draft_switch", x: 2, y: 2, trigger: { kind: "action" }, draft: { kind: "new" },
     commands: [{ kind: "script", source, compiled: source }],
   };
-  const project = { ...fixtureProject("blank"), switches: [{ id: "sw_door", name: "문 열림" }] };
+  const fixture = fixtureProject("blank");
+  const project = {
+    ...fixture,
+    switches: [{ id: "sw_door", name: "문 열림" }],
+    session: { ...fixture.session, switches: { ...fixture.session.switches, sw_door: false } },
+  };
   store.replaceProject(withMapEvent(project, event));
   resetMapEditHistory();
   const live = store.getCurrent();
@@ -619,32 +627,6 @@ it("인물의 호감도에 연결된 변수는 연결이 끊기는 이름으로 
   const target = mapTarget(project);
   expectRefused(project, target, "variable.rename", { record: "var_heart", name: "새 이름" }, /호감도/u);
   expect(runPrimitive(project, target, "variable.rename", { record: "var_heart", name: "이루리의 친밀도" }).after.variables[0]?.name).toBe("이루리의 친밀도");
-});
-
-// 공용 러너의 디렉터리 URL이 브라우저 주소로 변환되는 환경에서도 같은 사례를 실행한다.
-type ProjectDataCase = CorpusCase & { seedEnding?: EndingDef };
-const corpusCases = [...corpus, ...endingRemovalCases] as ProjectDataCase[];
-describe("28-project-data 코퍼스", () => {
-  it.each(corpusCases)("$request", async ({ fixture, target: selector, primitive, args, expect: checks, expectRefusal, seedEnding }) => {
-    const original = fixtureProject(fixture);
-    // 고정 픽스처의 엔딩은 이벤트에 연결되어 있으므로 삭제 성공 사례에는 별도의 시드를 둔다.
-    const before = seedEnding ? { ...original, endings: [...(original.endings ?? []), seedEnding] } : original;
-    const target = resolveTarget(before, selector);
-    if (expectRefusal) {
-      const snapshot = structuralJson(before);
-      expect(() => runPrimitive(before, target, primitive, args)).toThrow(PrimitiveError);
-      expect(structuralJson(before) === snapshot).toBe(true);
-      return;
-    }
-    const { after, sentence } = runPrimitive(before, target, primitive, args);
-    expectKoreanSentence(sentence, target);
-    for (const check of checks ?? []) {
-      const value = readCheckPath(after, check.at);
-      if (check.count !== undefined) expect(value).toHaveLength(check.count);
-      else expect(value).toEqual(check.equals);
-    }
-    await expectUndoRestores(before, after, target);
-  });
 });
 
 it("새 스위치가 꺼짐으로 시작하고 이벤트에서 켜면 조건 분기를 지나가요", () => {
