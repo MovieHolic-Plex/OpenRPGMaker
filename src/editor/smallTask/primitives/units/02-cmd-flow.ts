@@ -14,7 +14,7 @@ import { eventName, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { compileFlowScript } from "./02-cmd-flow/script";
-import { firstLabelIndex, hasCallerLabel, validateLabelChange } from "./02-cmd-flow/labels";
+import { firstLabelIndex, hasCallerLabel, labelReferenceViews, validateLabelChange } from "./02-cmd-flow/labels";
 import { referenceName, requireReference, validateForkCondition } from "./02-cmd-flow/references";
 
 export const UNIT = "02-cmd-flow";
@@ -207,7 +207,10 @@ function editedPage(ctx: PrimitiveContext, args: Args, kind: FlowKind, operation
     throw new PrimitiveError("이 줄에서 이동할 수 있는 위치 표시가 없습니다.");
   }
   if (command.kind === "label") {
-    validateLabelChange(ctx.project, map, lists, index, command.name, current?.kind === "label" ? current.name : undefined);
+    const previousName = current?.kind === "label" ? current.name : undefined;
+    for (const project of labelReferenceViews(ctx)) {
+      validateLabelChange(project, project.maps[map.id]!, lists, index, command.name, previousName);
+    }
   }
   return current && jsonEqual(current, command) ? page : next;
 }

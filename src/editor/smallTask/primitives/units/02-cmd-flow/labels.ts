@@ -1,3 +1,4 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
@@ -5,6 +6,7 @@ import { findSchedule } from "@/project/schedule";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { Command, GameMap, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
+import type { PrimitiveContext } from "../../types";
 import { scriptMayDispatchFlow } from "./script";
 
 type CommandList = readonly Command[];
@@ -15,8 +17,8 @@ export function firstLabelIndex(commands: readonly Command[], name: string): num
   return commands.findIndex(command => command.kind === "label" && command.name === name);
 }
 
-function activePageLists(event: GameMap["events"][number]): Command[][] {
-  const lists: Command[][] = [];
+function activePageLists(event: GameMap["events"][number]): readonly CommandList[] {
+  const lists: CommandList[] = [];
   // The highest matching page wins. An unconditional page hides all earlier pages and the legacy list.
   for (const page of [...(event.pages ?? [])].reverse()) {
     lists.push(page.commands);
@@ -194,6 +196,30 @@ export function hasCallerLabel(project: Project, map: GameMap, lists: readonly C
   return false;
 }
 
+export function labelReferenceViews(ctx: PrimitiveContext): readonly Project[] {
+  const working = withOpenEventDrafts(ctx.project, ctx.live, ctx.target.kind === "event" ? ctx.target : undefined);
+  return working === ctx.project ? [ctx.project] : [ctx.project, working];
+}
+
+function someRootContext(
+  project: Project, map: GameMap, page: CommandList,
+  matches: (root: FlowRoot, context: ReturnType<typeof rootContext>) => boolean,
+): boolean {
+  for (const root of flowRoots(project, map, page)) {
+    if (matches(root, rootContext(project, root, true))) return true;
+  }
+  return false;
+}
+
+export function labelHasDependentJump(
+  project: Project, map: GameMap, page: CommandList, list: CommandList, name: string,
+): boolean {
+  const allMaps = new Set(Object.keys(project.maps));
+  return hasDependentJump(project, () => allMaps, list, name)
+    && someRootContext(project, map, page, (_, { mapsAt, reachable }) => reachable.has(list)
+      && hasDependentJump(project, mapsAt, list, name));
+}
+
 export function validateLabelChange(
   project: Project, map: GameMap, lists: readonly (readonly Command[])[], index: number, name: string, previousName?: string,
 ): void {
@@ -206,24 +232,16 @@ export function validateLabelChange(
   if (previousName === CUTSCENE_END_LABEL) {
     throw new PrimitiveError("컷신을 건너뛸 때 사용하는 위치 표시의 이름은 바꿀 수 없습니다.");
   }
-  function someRootContext(matches: (root: FlowRoot, context: ReturnType<typeof rootContext>) => boolean): boolean {
-    for (const root of flowRoots(project, map, lists[0]!)) {
-      if (matches(root, rootContext(project, root, true))) return true;
-    }
-    return false;
-  }
-  const allMaps = new Set(Object.keys(project.maps));
-  const jumpsTo = (target: string) => hasDependentJump(project, () => allMaps, list, target)
-    && someRootContext((_, { mapsAt, reachable }) => reachable.has(list)
-      && hasDependentJump(project, mapsAt, list, target));
+  const page = lists[0]!;
+  const jumpsTo = (target: string) => labelHasDependentJump(project, map, page, list, target);
   if (previousName !== undefined && firstLabelIndex(list, previousName) === index
     && jumpsTo(previousName)) {
     throw new PrimitiveError("이 위치로 이동하는 명령이 남아 있거나 스크립트가 이 위치를 사용할 수 있습니다.");
   }
-  const pageCanBeCalled = map.events.some(event => activePageLists(event).some(commands => commands === lists[0]));
+  const pageCanBeCalled = map.events.some(event => activePageLists(event).includes(page));
   if ((name === CUTSCENE_END_LABEL || jumpsTo(name))
     && (lists.slice(0, -1).some(ancestor => firstLabelIndex(ancestor, name) >= 0)
-      || someRootContext((root, { mapIds, mapsAt, reachable }) => {
+      || someRootContext(project, map, page, (root, { mapIds, mapsAt, reachable }) => {
         return (reachable.has(list) || (pageCanBeCalled && mapIds.has(map.id)))
           && callerLabelInRoot(project, mapsAt, root.commands, list, name, pageCanBeCalled && mapIds.has(map.id));
       }))) {

@@ -1,5 +1,5 @@
 import ts from "typescript5";
-import { analyzeScript, knownScriptIds } from "@/editor/script/analyze";
+import { analyzeScript, isGameObject, knownScriptIds, scriptMemberName, scriptStringLiteral, unwrapScriptExpression } from "@/editor/script/analyze";
 import { scriptCommandFields } from "@/editor/script/compile";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
@@ -10,32 +10,14 @@ import { PrimitiveError } from "../../errors";
 
 type ScriptCommand = Extract<Command, { kind: "script" }>;
 
-function stringLiteral(node: ts.Node | undefined): string | undefined {
-  return node && ts.isStringLiteralLike(node) ? node.text : undefined;
-}
-
-function memberName(access: ts.Node, object: ts.Node): string | undefined {
-  if (ts.isPropertyAccessExpression(access) && access.expression === object) return access.name.text;
-  if (ts.isElementAccessExpression(access) && access.expression === object) return stringLiteral(access.argumentExpression);
-  return undefined;
-}
-
-function isGameObject(node: ts.Node): boolean {
-  if (ts.isIdentifier(node)) return node.text === "game";
-  return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
-    && ts.isIdentifier(node.expression) && node.expression.text === "globalThis"
-    && memberName(node, node.expression) === "game";
-}
-
 function addRef(list: ScriptRef[], ref: ScriptRef): void {
   if (!list.some(entry => entry.kind === ref.kind && entry.id === ref.id)) list.push(ref);
 }
 
 type LiteralType = "string" | "number" | "boolean" | "bigint" | "null" | "object";
 
-function literalType(node: ts.Expression): LiteralType | undefined {
-  if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)
-    || ts.isNonNullExpression(node) || ts.isSatisfiesExpression(node)) return literalType(node.expression);
+function literalType(expression: ts.Expression): LiteralType | undefined {
+  const node = unwrapScriptExpression(ts, expression);
   if (ts.isStringLiteralLike(node) || ts.isTemplateExpression(node)) return "string";
   if (ts.isNumericLiteral(node)) return "number";
   if (ts.isBigIntLiteral(node)) return "bigint";
@@ -69,10 +51,10 @@ function validateLiteralArgs(call: ts.CallExpression, params: string): void {
   }
 }
 
-function validateGameCalls(project: Project, source: string, effects: Record<"reads" | "writes" | "calls", ScriptRef[]>): void {
+function validateGameCalls(project: Project, source: string, calls: ScriptRef[]): void {
   const file = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2022, true);
   function visit(node: ts.Node): void {
-    let specifier: ts.Node | undefined;
+    let specifier: ts.Expression | undefined;
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
       specifier = node.moduleSpecifier;
     } else if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) {
@@ -82,31 +64,30 @@ function validateGameCalls(project: Project, source: string, effects: Record<"re
       if (callee.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(callee) && callee.text === "require")) {
         specifier = node.arguments[0];
       }
-      if ((ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) && isGameObject(callee.expression)) {
-        const name = memberName(callee, callee.expression);
+      if ((ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) && isGameObject(ts, callee.expression)) {
+        const name = scriptMemberName(ts, callee, callee.expression);
         if (name !== undefined) {
           const api = SCRIPT_API_BY_NAME.get(name);
           if (!api) throw new PrimitiveError("스크립트에서 사용한 게임 기능을 찾을 수 없습니다. 함수 이름을 확인해 주세요.");
-          for (const { arg, kind, access } of api.refs ?? []) {
+          for (const { arg } of api.refs ?? []) {
             if (node.arguments.slice(0, arg + 1).some(ts.isSpreadElement)) continue;
             const argument = node.arguments[arg];
-            const id = stringLiteral(argument);
-            if (!argument || argument.kind === ts.SyntaxKind.NullKeyword || id?.trim() === "") {
+            if (!argument || unwrapScriptExpression(ts, argument).kind === ts.SyntaxKind.NullKeyword
+              || scriptStringLiteral(ts, argument)?.trim() === "") {
               throw new PrimitiveError("스크립트에서 사용할 항목을 지정해 주세요.");
             }
-            if (id !== undefined) addRef(effects[access === "read" ? "reads" : access === "write" ? "writes" : "calls"], { kind, id });
           }
           validateLiteralArgs(node, api.params);
         }
       }
     }
-    const moduleName = stringLiteral(specifier);
+    const moduleName = scriptStringLiteral(ts, specifier);
     if (moduleName !== undefined) {
       const libraryId = libraryIdFromSpecifier(moduleName);
       if (!libraryId || !project.scriptLibrary?.some(module => module.id === libraryId)) {
         throw new PrimitiveError("스크립트에서 가져올 프로젝트 라이브러리를 찾을 수 없습니다.");
       }
-      addRef(effects.calls, { kind: "library", id: libraryId });
+      addRef(calls, { kind: "library", id: libraryId });
     }
     ts.forEachChild(node, visit);
   }
@@ -121,12 +102,12 @@ export function scriptMayDispatchFlow(
   const file = ts.createSourceFile("/script.js", compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
   function visit(node: ts.Node): boolean {
     if (ts.isIdentifier(node) && node.text === "require" && unknownFlow()) return true;
-    if (isGameObject(node)) {
+    if (isGameObject(ts, node)) {
       const access = node.parent;
-      const name = memberName(access, node);
+      const name = scriptMemberName(ts, access, node);
       if (name === "callCommonEvent" || name === "transfer") {
         const call = access.parent;
-        const id = ts.isCallExpression(call) && call.expression === access ? stringLiteral(call.arguments[0]) : undefined;
+        const id = ts.isCallExpression(call) && call.expression === access ? scriptStringLiteral(ts, call.arguments[0]) : undefined;
         if (name === "transfer") return transfers(id);
         return id === undefined ? unknownFlow() : followsCommonEvent(id);
       }
@@ -152,9 +133,8 @@ export function compileFlowScript(project: Project, mapId: string, source: strin
     throw new PrimitiveError("스크립트의 문법이나 가져올 모듈을 확인해 주세요.");
   }
   if (result.outputText.length > SCRIPT_COMPILED_LIMIT) throw new PrimitiveError("스크립트가 너무 깁니다.");
-  const { reads, writes, calls, dynamic } = analysis.effects;
-  const effects = { reads: [...reads], writes: [...writes], calls: [...calls], dynamic };
-  validateGameCalls(project, source, effects);
+  const effects = { ...analysis.effects, calls: [...analysis.effects.calls] };
+  validateGameCalls(project, source, effects.calls);
 
   const known = knownScriptIds(project, mapId);
   let resources: ReturnType<typeof collectResourceIds> | undefined;

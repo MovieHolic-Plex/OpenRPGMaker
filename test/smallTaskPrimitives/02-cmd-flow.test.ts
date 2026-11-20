@@ -197,6 +197,8 @@ describe("흐름 제어 명령", () => {
     ["breakLoop.insert", {}, /반복 안/u],
     ["script.insert", { source: "const x = ;" }, /문법/u],
     ["script.insert", { source: 'game.hasItem("missing");' }, /연결할 대상/u],
+    ["script.insert", { source: 'game["hasItem"](("missing"));' }, /연결할 대상/u],
+    ["script.insert", { source: 'game.hasItem((<string>"missing")!);' }, /연결할 대상/u],
     ["script.insert", { source: 'await game.playSe("missing");' }, /소리 자료/u],
     ["script.insert", { source: 'export { reward } from "@lib/missing";' }, /라이브러리/u],
     ["script.insert", { source: 'await import("@lib/missing");' }, /라이브러리/u],
@@ -274,7 +276,7 @@ describe("흐름 제어 명령", () => {
     })).toThrow(/컷신을 건너뛸 때/u);
   });
 
-  it("호출된 맵 이벤트와 공용 이벤트가 호출자의 위치 표시로 이동하는 경우 이름 변경을 거절한다", () => {
+  it("호출된 맵 이벤트와 공용 이벤트가 쓰는 호출자 위치 표시의 이름 변경과 삭제를 거절한다", () => {
     const { project, target } = setup([call, wait, label, { ...wait, ms: 200 }]);
     project.maps[fixtureMap]!.events[1]!.commands = [common];
     project.commonEvents.find(event => event.id === "common-1")!.commands = [jump];
@@ -282,6 +284,22 @@ describe("흐름 제어 명령", () => {
     expect(() => runPrimitive(project, target, "cmd.label.update", {
       index: 2, expectedHash: eventCommandHash(label), name: "도착",
     })).toThrow(/이동하는 명령/u);
+    expect(() => runPrimitive(project, target, "cmd.delete", {
+      index: 2, expectedHash: eventCommandHash(label),
+    })).toThrow(/이동하는 명령/u);
+  });
+
+  it("호출된 이벤트의 열린 초안에서 쓰는 위치 표시도 보존한다", () => {
+    const { project, target } = setup([call, label]);
+    const map = project.maps[fixtureMap]!;
+    const callee = map.events[1]!;
+    const draft: GameEvent = { ...callee, commands: [jump], draft: { kind: "edit", original: callee } };
+    const live = { maps: { [fixtureMap]: { events: [draft] } } };
+    const position = { index: 1, expectedHash: eventCommandHash(label) };
+    expect(() => runPrimitive(project, target, "cmd.label.update", { ...position, name: "도착" }, undefined, live))
+      .toThrow(/이동하는 명령/u);
+    expect(() => runPrimitive(project, target, "cmd.delete", position, undefined, live)).toThrow(/이동하는 명령/u);
+    expect(stored(runPrimitive(project, target, "cmd.delete", position).after)).toEqual([call]);
   });
 
   it("자식이 맵을 옮긴 뒤 새 맵의 이벤트가 사용하는 위치 표시를 보존한다", () => {
@@ -513,13 +531,21 @@ describe("흐름 제어 명령", () => {
     await preloadScriptEngine();
     const { project, target } = setup([]);
     const { after } = runPrimitive(project, target, "cmd.script.insert", {
-      index: 0, source: 'await game["callCommonEvent"]("common-1");',
+      index: 0, source: 'await game["callCommonEvent"](("common-1" as const));',
     });
-    expect(stored(after)[0]).toMatchObject({ effects: { calls: [{ kind: "commonEvent", id: "common-1" }] } });
+    expect(stored(after)[0]).toMatchObject({ effects: { calls: [{ kind: "commonEvent", id: "common-1" }], dynamic: [] } });
     const session = startSession(after);
     const beforeGold = session.gold;
     expect(createInterpreter(stored(after), session, after).start()).toEqual({ kind: "done" });
     expect(session.gold - beforeGold).toBe(5);
+  });
+
+  it("대괄호로 호출한 게임 기능의 동적 참조도 기록한다", () => {
+    const { project, target } = setup([]);
+    const { after } = runPrimitive(project, target, "cmd.script.insert", {
+      index: 0, source: 'const id = "flow-sw";\ngame["setSwitch"](id, true);',
+    });
+    expect(stored(after)[0]).toMatchObject({ effects: { writes: [], dynamic: [{ api: "setSwitch", line: 2 }] } });
   });
 
   it("스크립트가 프로젝트 라이브러리의 함수를 가져와 재생한다", async () => {

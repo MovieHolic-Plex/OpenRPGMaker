@@ -7,6 +7,8 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import type { Command, Project } from "@/project/types";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext } from "../types";
+import { labelHasDependentJump, labelReferenceViews } from "../units/02-cmd-flow/labels";
+import { scopedPage } from "./helpers";
 
 function usesLabel(list: readonly Command[], name: string, root = true): boolean {
   if (!root && list.some(command => command.kind === "label" && command.name === name)) return false;
@@ -34,7 +36,10 @@ export function assertCommandDeletion(
 ): void {
   if (ctx.target.kind !== "event") return;
   if (command.kind === "label") {
-    if (list.find(row => row.kind === "label" && row.name === command.name) === command && usesLabel(list, command.name)) {
+    if (list.find(row => row.kind === "label" && row.name === command.name) !== command) return;
+    const { map, page } = scopedPage(ctx);
+    if (usesLabel(list, command.name) || labelReferenceViews(ctx).some(project =>
+      labelHasDependentJump(project, project.maps[map.id]!, page.commands, list, command.name))) {
       throw new PrimitiveError("이 위치 표시로 이동하는 명령이 남아 있어 삭제할 수 없어요.");
     }
   } else if (command.kind === "setFlag" && !command.value) {

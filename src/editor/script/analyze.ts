@@ -34,10 +34,29 @@ export interface ScriptAnalysis {
   readonly apis: string[];
 }
 
-function literalText(ts: TypeScriptApi, node: TS.Node | undefined): string | undefined {
+export function unwrapScriptExpression(ts: TypeScriptApi, node: TS.Expression): TS.Expression {
+  while (ts.isParenthesizedExpression(node) || ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)
+    || ts.isNonNullExpression(node) || ts.isSatisfiesExpression(node)) node = node.expression;
+  return node;
+}
+
+export function scriptStringLiteral(ts: TypeScriptApi, node: TS.Expression | undefined): string | undefined {
   if (!node) return undefined;
-  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+  const expression = unwrapScriptExpression(ts, node);
+  return ts.isStringLiteralLike(expression) ? expression.text : undefined;
+}
+
+export function scriptMemberName(ts: TypeScriptApi, access: TS.Node, object: TS.Node): string | undefined {
+  if (ts.isPropertyAccessExpression(access) && access.expression === object) return access.name.text;
+  if (ts.isElementAccessExpression(access) && access.expression === object) return scriptStringLiteral(ts, access.argumentExpression);
   return undefined;
+}
+
+export function isGameObject(ts: TypeScriptApi, node: TS.Node): boolean {
+  if (ts.isIdentifier(node)) return node.text === "game";
+  return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+    && ts.isIdentifier(node.expression) && node.expression.text === "globalThis"
+    && scriptMemberName(ts, node, node.expression) === "game";
 }
 
 function levenshtein(a: string, b: string): number {
@@ -147,10 +166,11 @@ export function analyzeScript(
 
   const visitGameCall = (node: TS.CallExpression, entry: ScriptApiEntry): void => {
     if (!apis.includes(entry.name)) apis.push(entry.name);
+    const spreadIndex = node.arguments.findIndex(ts.isSpreadElement);
     for (const ref of entry.refs ?? []) {
-      const argument = node.arguments[ref.arg];
+      const argument = node.arguments[spreadIndex >= 0 && spreadIndex <= ref.arg ? spreadIndex : ref.arg];
       if (!argument) continue;
-      const id = literalText(ts, argument);
+      const id = scriptStringLiteral(ts, argument);
       if (id === undefined) {
         dynamic.push({ api: entry.name, line: position(argument).line });
         continue;
@@ -183,14 +203,14 @@ export function analyzeScript(
       if (!ts.isPropertyAssignment(property)) continue;
       const name = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) ? property.name.text : undefined;
       if (!name) continue;
-      if (name === "kind") kind = literalText(ts, property.initializer);
+      if (name === "kind") kind = scriptStringLiteral(ts, property.initializer);
       else fields.push([name, property.initializer]);
     }
     const access = scriptCmdAccess(kind);
     for (const [name, initializer] of fields) {
       const refKind = CMD_ID_FIELDS[name];
       if (!refKind) continue;
-      const id = literalText(ts, initializer);
+      const id = scriptStringLiteral(ts, initializer);
       if (id === undefined) {
         dynamic.push({ api: `cmd.${kind ?? "?"}.${name}`, line: position(initializer).line });
         continue;
@@ -215,8 +235,10 @@ export function analyzeScript(
     if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "require") {
       diagnostics.push({ ...position(node), message: "Use `import { … } from \"@lib/<id>\"` instead of require().", severity: "warning", source: "analyzer" });
     }
-    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "game") {
-      const entry = SCRIPT_API_BY_NAME.get(node.expression.name.text);
+    if (ts.isCallExpression(node) && (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
+      && isGameObject(ts, node.expression.expression)) {
+      const name = scriptMemberName(ts, node.expression, node.expression.expression);
+      const entry = name === undefined ? undefined : SCRIPT_API_BY_NAME.get(name);
       if (entry) {
         if (transferSeen && entry.awaits && entry.name !== "transfer") {
           warn(node, "This game call comes after game.transfer(...). A transfer ends the running event, so it will not run.", "warning");
