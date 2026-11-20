@@ -3,9 +3,9 @@ import { findCharsetSemantic, upsertCharsetLabelOverride } from "@/assets/charse
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { PRODUCT_SLUG } from "@/brand";
-import faceExpressionSources from "../../scripts/shared-face-expression-sources.json";
+import faceExpressionSources from "../../scripts/shared-face-expression-sources.json" with { type: "json" };
 import { FACESET_PEOPLE1_FACES } from "@/assets/charsetFaceMap";
-import previousFaceNames from "@/assets/previousFaceReferenceNames.json";
+import previousFaceNames from "@/assets/previousFaceReferenceNames.json" with { type: "json" };
 import { MODERN_PORTRAIT_SETS, SHARED_PORTRAIT_ASSETS } from "@/assets/sharedPortraitAssets";
 import { sharedCharacterIndices } from './sharedCharacters';
 import type { Project, ResourceProfile } from "./types";

@@ -5,7 +5,7 @@
 // 칸 번호는 덧붙이기 전용이다. 명단의 desc 가 조수가 찾는 외형 문장이다. 이 칩은 charsetFamily 가 `scarloxy-people` 로 분류해 몬스터 수집 장르 잠금이 허용한다. 출처 크레딧: public/assets/ATTRIBUTION.md 「ScarloxyPeople」.
 import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import type { CharsetAge, CharsetGender, CharsetSemanticEntry } from "@/assets/charsetSemantics";
-import roster from "@/assets/scarloxyPeopleCharsets.json";
+import roster from "@/assets/scarloxyPeopleCharsets.json" with { type: "json" };
 
 interface ScarloxyPeopleCharacter {
   id: string; name: string; desc: string; genre: string; role: string;

@@ -7,7 +7,7 @@
 //
 // 런처 번들에 넣는다 — 편집기 모듈(gameDesignBrief.ts 등)은 정적으로 끌어오지 않는다.
 import "./quickInterview.css";
-import data from "@/editor/projectInterviewScenes.json";
+import data from "@/editor/projectInterviewScenes.json" with { type: "json" };
 import { interviewSceneImage } from "@/editor/interviewSceneBank";
 import { cinematicInterviewSummary, SCENE_SLOTS } from "@/editor/cinematicInterviewQuestions";
 import { interviewPreset, type GameInterview, type InterviewGenre } from "@/project/gameInterview";

@@ -1,4 +1,4 @@
-import catalog from '@/assets/tileAssemblyCatalog.json';
+import catalog from '@/assets/tileAssemblyCatalog.json' with { type: "json" };
 import type { GameMap, Project } from './types';
 import { canMove } from './collision';
 import { topTileInStack } from './mapOverlayTiles';

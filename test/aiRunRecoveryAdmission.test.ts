@@ -60,7 +60,7 @@ it.each([
   if (scenario === "preapply" || scenario === "apply-uncertain") {
     const draft = structuredClone(original); draft.meta.title = "Prepared candidate";
     row = { ...row, pending: { operationId: "candidate", stage: scenario === "preapply" ? "proposal-ready" : "applying", proposal: {
-      baseContentIdentity: row.currentContentIdentity, contentIdentity: checkpointContentIdentity(draft), project: draft, calls: [],
+      baseContentIdentity: row.currentContentIdentity, contentIdentity: checkpointContentIdentity(draft), calls: [],
     } } };
   }
   if (scenario === "saving") row = { ...row, pending: { operationId: "save", stage: "saving", proposal: null } };

@@ -4,7 +4,7 @@ import { CINEMATIC_SCENE_LIMIT, keepOpeningStage } from '@/project/cinematicSett
 import { catalogLookup, characterSheetKind, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
 import { unsuitableOpeningStillMessage } from '@/assets/openingStillMoods';
-import references from '@/assets/openingReferences.json';
+import references from '@/assets/openingReferences.json' with { type: "json" };
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { findCharsetAsset } from '@/assets/charsetCatalog';
 import { CHARSET_CHARACTER_COUNT, CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex, type CharsetDirection } from '@/assets/easyrpgRtp';

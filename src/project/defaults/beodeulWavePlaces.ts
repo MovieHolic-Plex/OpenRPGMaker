@@ -6,9 +6,9 @@
 //
 // 칸 = 원본 그림 그대로(아래층 = 원본 칸, 위층 = 키 큰 물체 화소). 조립 부품·오토타일은 없다 — 이 칩셋은 「장소 맵을 그대로 가져오는」 용도다
 // (import_region_reference 「bd-wave-*」). 새 맵에 낱칸을 골라 까는 재료가 아니다.
-import sheet from "@/assets/beodeulWavePlacesSheet.json";
+import sheet from "@/assets/beodeulWavePlacesSheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
-import references from "@/assets/beodeulWavePlacesReferences.json";
+import references from "@/assets/beodeulWavePlacesReferences.json" with { type: "json" };
 import type { PassFlag, TileAiMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 

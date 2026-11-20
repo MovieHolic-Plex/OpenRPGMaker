@@ -26,7 +26,7 @@ function button(root: HTMLElement, label: string): HTMLButtonElement | undefined
   return Array.from(root.querySelectorAll("button")).find(node => node.textContent === label);
 }
 
-async function openPreview() {
+async function openPreview(shortcut = false) {
   // happy-dom에는 팝오버 표시가 없어 위치를 그리는 호출만 대신한다.
   Object.defineProperty(HTMLElement.prototype, "showPopover", { configurable: true, value: vi.fn() });
   const project = createBlankProject();
@@ -51,7 +51,11 @@ async function openPreview() {
   input.dispatchEvent(new Event("input"));
   const live = store.getCurrent();
   const depth = getMapEditHistoryDepth();
-  form.dispatchEvent(new Event("submit", { cancelable: true }));
+  if (shortcut) {
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", ctrlKey: true, bubbles: true, cancelable: true }));
+  } else {
+    form.dispatchEvent(new Event("submit", { cancelable: true }));
+  }
   await vi.waitFor(() => expect(button(box, "적용")).toBeDefined());
   return { box, input, live, depth };
 }
@@ -65,8 +69,8 @@ it("새 브라우저에서는 꺼져 있고 켜기와 끄기를 저장한다", (
   expect(readSmallTaskPreviewPreference()).toBe(false);
 });
 
-it("미리 보는 동안에는 저장하지 않고 적용할 때 한 단계로 기록한다", async () => {
-  const { box, live, depth } = await openPreview();
+it("Ctrl+Enter로 미리 보는 동안에는 저장하지 않고 적용할 때 한 단계로 기록한다", async () => {
+  const { box, live, depth } = await openPreview(true);
   expect(box.querySelector("strong")?.textContent).toBe("포션 가격 50 → 80");
   expect(store.getCurrent()).toBe(live);
   expect(getMapEditHistoryDepth()).toBe(depth);

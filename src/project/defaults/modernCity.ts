@@ -6,11 +6,11 @@
 // 칸 번호는 덧붙이기 전용이다 — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다. 그래서 칸 수가 번들 이하이고 한 줄 폭이 같은
 // 사본은 같은 시트의 옛 굽기로 보고, 번들 소유 칸 표(통행·층·그룹·오토타일·움직임·조립 부품)만 새 굽기로 바꾼다. 맵은 건드리지 않는다.
 // 시트 칸 수·열 수는 하드코딩하지 않고 정의 JSON 에서 읽는다.
-import sheet from "@/assets/modernCitySheet.json";
+import sheet from "@/assets/modernCitySheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`modernCitySheet.json`)에서 읽는다. */
 const data = () => bundledJson("modernCityTileset");
-import references from "@/assets/modernCityReferences.json";
+import references from "@/assets/modernCityReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";

@@ -1,4 +1,4 @@
-import sheet from '@/assets/worldmapAuthoringSheet.json';
+import sheet from '@/assets/worldmapAuthoringSheet.json' with { type: "json" };
 import type { AutotileGroup, TilesetDef } from '../types';
 import { WORLDMAP_SELECTED_TEXTURE, WORLDMAP_SELECTED_ICONS } from './worldmapSelected';
 export const WORLDMAP_AUTHORING_ID = 'worldmap_authoring';
