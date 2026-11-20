@@ -7,10 +7,12 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   await page.goto("/?blankProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60000 });
   const target = await page.evaluate(async () => {
-    const { createBlankProject } = await import("/src/project/defaults.ts");
+    const { createStarterBlankProject } = await import("/src/project/defaults.ts");
     const { store } = await import("/src/project/store.ts");
-    const project = createBlankProject();
+    const project = createStarterBlankProject();
     const mapId = project.startMapId;
+    const tilesetId = project.maps[mapId].tilesetId;
+    project.tilesets = { [tilesetId]: project.tilesets[tilesetId] };
     const target = { mapId, eventId: "shared-assist-event", pageId: "shared-assist-page" };
     const original = [{ kind: "text" as const, body: "기존 인사입니다." }];
     const basePage = { id: target.pageId, name: "인사", conditions: [], graphic: {}, trigger: { kind: "action" as const },
