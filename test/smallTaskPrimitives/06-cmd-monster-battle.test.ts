@@ -14,6 +14,8 @@ import { addFieldSpawnEntry, createFieldSpawnRuntime, removeFieldSpawnEntry } fr
 import { createInterpreter } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { defaultBattleRecords } from "@/project/defaults/defaultDatabaseBattleRecords";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -32,6 +34,7 @@ const MAP = "map_monster_trial";
 const EVENT = "event_monster_trial";
 const PAGE = "page_monster_trial";
 const SPAWN = "spawn_trial";
+const TROOP_VARIABLE = "var_trial_troop";
 const spawn = { id: SPAWN, troopId: TROOP, area: { x: 1, y: 2, w: 3, h: 2 }, chase: true };
 const dynamicSpawn: Extract<Command, { kind: "spawnFieldEnemy" }> = { kind: "spawnFieldEnemy", spawn: { ...spawn, id: "spawn_event" } };
 const greeting: Command = { kind: "text", body: "도전을 시작할까요?" };
@@ -52,6 +55,9 @@ function baseFixture(name: FixtureName): Project {
   let base = bases.get(name);
   if (!base) {
     base = loadFixture(name);
+    // Match the editor's normalization before runPrimitive freezes the fixture.
+    ensureSwitchVariableSlots(base);
+    removeLegacySpriteReferences(base);
     bases.set(name, base);
   }
   return base;
@@ -71,7 +77,8 @@ function fixture(name: FixtureName, commands: Command[] = []) {
   const project: Project = {
     ...base, startMapId: MAP, startPos: { x: 2, y: 3 },
     maps: { ...base.maps, [MAP]: map },
-    variables: [...base.variables, { id: "var_trial_troop", name: "도전 상대" }],
+    variables: [...base.variables, { id: TROOP_VARIABLE, name: "도전 상대" }],
+    session: { ...base.session, variables: { ...base.session.variables, [TROOP_VARIABLE]: 0 } },
     database: {
       ...base.database,
       troops: battleRecords.troops,
