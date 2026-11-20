@@ -338,11 +338,25 @@ it("일부 상품에만 재고 설정이 있어도 기본 가격 상품을 진�
   await expectUndoRestores(project, removed, target);
 });
 
-it("전체 진열 교체 후 SQLite를 다시 열어도 봄·겨울 재고와 거래 분기를 유지한다", async () => {
+it("자료집에서 사라진 상품을 진열에서 뺄 수 있다", () => {
+  const missing = "deleted_item";
+  const shop: Command = {
+    kind: "shop", itemIds: [missing, potion], stock: [{ itemId: missing }, { itemId: potion, priceOverride: 400 }],
+  };
+  const { project, target, commandsOf, mapId } = setup("blank", [shop]);
+  const position = { index: 0, expectedHash: eventCommandHash(shop) };
+  expectRefused(project, target, "cmd.shop.update", { ...position, removeItemId: potion }, /자료집/u);
+  const { after } = runPrimitive(project, target, "cmd.shop.update", { ...position, removeItemId: missing });
+  expect(commandsOf(after)[0]).toEqual({ ...shop, itemIds: [potion], stock: [{ itemId: potion, priceOverride: 400 }] });
+  expect(execute(after, commandsOf, mapId).step).toMatchObject({ kind: "shop", items: [{ itemId: potion, price: 400 }] });
+});
+
+it("SQLite 재로드 후 계절별 행과 분기를 보존하고 마지막 적용 행의 가격으로 한 번만 진열한다", async () => {
   const spring = { itemId: potion, seasons: ["spring"] as const, priceBySeason: { spring: 400 }, displayTileId: 1 };
   const winter = { itemId: potion, seasons: ["winter"] as const, priceOverride: 450, displayTileId: 2 };
+  const laterSpring = { ...spring, priceOverride: 500, priceBySeason: { spring: 470 } };
   const shop: Command = {
-    kind: "shop", itemIds: [potion, ether], stock: [spring, winter, { itemId: ether, priceOverride: 600 }],
+    kind: "shop", itemIds: [potion, ether], stock: [spring, winter, laterSpring, { itemId: ether, priceOverride: 600 }],
     branchOnTransaction: true, transactionBranch: [closing],
   };
   const { project: base, target, mapId, commandsOf } = setup("blank", [shop]);
@@ -362,10 +376,10 @@ it("전체 진열 교체 후 SQLite를 다시 열어도 봄·겨울 재고와 �
     try {
       const reloaded = reopened.loadSnapshot()!.project;
       expect(commandsOf(reloaded)[0]).toMatchObject({
-        kind: "shop", itemIds: [highPotion, potion], stock: [{ itemId: highPotion }, spring, winter],
+        kind: "shop", itemIds: [highPotion, potion], stock: [{ itemId: highPotion }, spring, winter, laterSpring],
         branchOnTransaction: true, transactionBranch: [closing],
       });
-      for (const [season, price] of [["spring", 400], ["winter", 450]] as const) {
+      for (const [season, price] of [["spring", 470], ["winter", 450]] as const) {
         const play = execute(reloaded, commandsOf, mapId, season);
         expect(play.step).toMatchObject({ kind: "shop", items: [{ itemId: highPotion }, { itemId: potion, price }] });
         expect(play.interpreter.resume(true)).toMatchObject({ kind: "text", body: closing.body });
@@ -550,8 +564,10 @@ it("보관함 잠금에 쓸 식별자를 게임과 같은 값으로 확인하고
   const { after: unlocked } = runPrimitive(after, target, "cmd.openChest.update", {
     index: 0, expectedHash: eventCommandHash(commandsOf(after)[0]), lockSwitchId: " ", lockItemId: "",
   });
-  expect(execute(unlocked, commandsOf, mapId).step).not.toHaveProperty("lockSwitchId");
-  expect(execute(unlocked, commandsOf, mapId).step).not.toHaveProperty("lockItemId");
+  const { step } = execute(unlocked, commandsOf, mapId);
+  expect(step.kind).toBe("openChest");
+  expect(step).not.toHaveProperty("lockSwitchId");
+  expect(step).not.toHaveProperty("lockItemId");
 });
 
 it.each([

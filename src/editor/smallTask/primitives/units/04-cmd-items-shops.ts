@@ -265,10 +265,6 @@ function validateReferences(project: Project, command: EconomyCommand, args: Arg
   if (command.kind === "inn" && typeof command.price !== "number" && !variableIds.has(command.price.id)) {
     throw new PrimitiveError("숙박 요금을 읽을 변수를 찾을 수 없습니다.");
   }
-  if (command.kind === "shop" && typeof args.removeItemId === "string"
-    && !itemIds.has(args.removeItemId) && !equipmentIds.has(args.removeItemId)) {
-    throw new PrimitiveError("진열에서 뺄 물건을 찾을 수 없습니다.");
-  }
 }
 
 function safeName(value: string | undefined, fallback: string): string {

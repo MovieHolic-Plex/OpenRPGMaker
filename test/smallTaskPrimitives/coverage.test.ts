@@ -35,6 +35,7 @@ it("등록한 유닛의 소유 항목을 빠짐없이 한 유닛에서만 다룬
     }
     const owned = coverKeys(OWNERSHIP[unit.UNIT]);
     expect([...actual], unit.UNIT).toEqual(expect.arrayContaining(owned));
+    expect(actual.size, unit.UNIT).toBe(owned.length);
   }
   const ids = new Set<string>();
   for (const primitive of PRIMITIVES) {

@@ -432,7 +432,7 @@
     "expectRefusal": true
   },
   {
-    "request": "포션 제작법 실행 추가",
+    "request": "포션 제작법 실행을 추가하고 결과를 두 번째 변수에 기록해 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.insert",
@@ -1604,7 +1604,7 @@
     ]
   },
   {
-    "request": "한박 잘래요 라는 질문 띄워주세요",
+    "request": "여관에서 ‘하룻밤 묵으시겠어요?’라고 물어봐 주세요",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.insert",
