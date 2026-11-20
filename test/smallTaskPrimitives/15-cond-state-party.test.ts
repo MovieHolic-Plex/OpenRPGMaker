@@ -8,7 +8,7 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES, buildConditionAny, buildConditionNot } from "@/editor/smallTask/primitives/units/15-cond-state-party";
 import { createInterpreter } from "@/player/interpreter";
 import { findFacedItemTarget } from "@/player/itemUseOnTarget";
-import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
@@ -241,6 +241,18 @@ it.each([[undefined, "<="], ["<=", undefined]] as const)("타이머의 생략된
   expect(getPage(getEvent(changed, mapId, eventId), pageId).conditions).toEqual([existing, { ...timer, op: ">" }]);
 });
 
+it("스킬 보유 여부를 생략한 기존 조건을 보존하고 미보유는 별도 조건으로 추가한다", async () => {
+  const skillId = "skill_condition_test";
+  const existing = { kind: "partyKnowsSkill", skillId } as const;
+  const { before, selection } = await blankPage([existing]);
+  const skills = [...before.database.skills, normalizeSkillRecord({ id: skillId, name: "시험 스킬" })];
+  const project = { ...before, database: { ...before.database, skills } };
+  const { after } = runPrimitive(project, selection, "cond.partyKnowsSkill.page.set", { skillId, present: true });
+  expect(after).toEqual(project);
+  const changed = runPrimitive(after, selection, "cond.partyKnowsSkill.page.set", { skillId, present: false }).after;
+  expect(getPage(getEvent(changed, mapId, eventId), pageId).conditions).toEqual([existing, { ...existing, present: false }]);
+});
+
 it("기존 스위치를 보존하고 다른 스위치를 추가하며 재호출해도 한 줄만 붙인다", async () => {
   const oldCondition = { kind: "switch", switchId, value: true } as const;
   const { before, selection } = await blankPage([oldCondition]);
@@ -362,7 +374,7 @@ it.each<{ condition: Condition; reason: RegExp }>([
   expect(() => runPrimitive(before, selection, "cond.page.remove", { conditionNumber: 1 })).not.toThrow();
 });
 
-it("시야 선택의 모든 칸에 일치하는 감시자가 있을 때만 반전할 수 있다", async () => {
+it("시야 조건을 묶을 때 감시자의 이름과 그림을 확인하고 방 출입은 플레이 중 위치로 판단한다", async () => {
   const condition: Condition = { kind: "eventSeesPlayer", eventId: "", watchers: { name: "경비", characterId: "guard", locationId: "room" } };
   const { before, selection } = await blankPage([condition]);
   const guard: GameEvent = { id: "guard_event", name: "문 앞 경비", characterId: "guard", x: 0, y: 0, commands: [], trigger: { kind: "action" } };
@@ -374,17 +386,21 @@ it("시야 선택의 모든 칸에 일치하는 감시자가 있을 때만 반�
   };
   const project = withTestMap(before, map);
   const args = { conditionNumber: 1 };
-  expectRefused(project, selection, "cond.not.page.set", args, /일치하는 감시 이벤트가 없어요/u);
+  const withoutGuard = withTestMap(project, { ...map, events: map.events.filter(entry => entry.id !== guard.id) });
+  expectRefused(withoutGuard, selection, "cond.not.page.set", args, /일치하는 감시 이벤트가 없어요/u);
 
   const movedGuard = { ...guard, x: 2, y: 4 };
-  const { after } = runPrimitive(withTestEvent(project, movedGuard), selection, "cond.not.page.set", args);
+  const { after } = runPrimitive(project, selection, "cond.not.page.set", args);
   const event = getEvent(after, mapId, eventId);
   const session = startSession(after, 15);
-  const context = { locations: map.locations, mapEvents: () => after.maps[mapId].events, eventPosition: () => movedGuard };
-  expect(resolveEventPage(event, session, context)?.id).toBe("fallback");
+  const context = { locations: map.locations, mapEvents: () => after.maps[mapId].events };
+  const outside = { ...context, eventPosition: (id: string) => id === guard.id ? guard : undefined };
+  const inside = { ...context, eventPosition: (id: string) => id === guard.id ? movedGuard : undefined };
+  expect(resolveEventPage(event, session, outside)?.id).toBe(pageId);
+  expect(resolveEventPage(event, session, inside)?.id).toBe("fallback");
   session.x = 7;
   session.y = 7;
-  expect(resolveEventPage(event, session, context)?.id).toBe(pageId);
+  expect(resolveEventPage(event, session, inside)?.id).toBe(pageId);
 });
 
 it("다른 맵에서 올 수 있는 이벤트가 지정된 추격 조건은 묶을 수 있다", async () => {
@@ -421,7 +437,7 @@ it.each(["constructor", "__proto__", "toString"])("기본 속성 이름(%s)을 �
 it.each([["==", true, "비어 있음"], ["!=", false, "비어 있지 않음"]] as const)("빈 문자열 비교(%s)의 판정과 설명이 일치한다", async (op, matchesEmpty, detail) => {
   const { before, selection } = await blankPage();
   const { after, sentence } = runPrimitive(before, selection, "cond.stringVariable.page.set", { stringVariableId: "암호", op, value: "" });
-  expect(sentence).toContain(`「암호」의 값이 ${detail}`);
+  expect(sentence).toContain(`"암호"의 값이 ${detail}`);
   givesReward(after, { switches: {}, variables: {} }, matchesEmpty);
   const session = startSession(after, 15);
   session.stringVariables = { 암호: "열쇠" };
@@ -438,6 +454,12 @@ it.each([
   const { after, sentence } = runPrimitive(before, selection, "cond.stringVariable.page.set", args);
   expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([{ kind: "stringVariable", ...args }]);
   expect(sentence).toContain(`${literal} 포함`);
+});
+
+it.each(["문.지기", "flag_1", "  암호  "])("문자열 변수 이름을 결과 문장에도 보존한다 (%s)", async stringVariableId => {
+  const { before, selection } = await blankPage();
+  const { sentence } = runPrimitive(before, selection, "cond.stringVariable.page.set", { stringVariableId, op: "empty" });
+  expect(sentence).toContain(`${JSON.stringify(stringVariableId)}의 값이 비어 있음`);
 });
 
 it("나중에 조건 분기에서도 쓸 묶음 빌더가 기존 조건 객체를 보존한다", () => {

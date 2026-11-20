@@ -133,6 +133,9 @@ function setCondition(conditions: readonly Condition[], next: Leaf, row: unknown
         return condition.timerId === next.timerId && condition.seconds === next.seconds
           && (condition.op ?? "<=") === (next.op ?? "<=");
       }
+      if (condition.kind === "partyKnowsSkill" && next.kind === "partyKnowsSkill") {
+        return condition.skillId === next.skillId && (condition.present ?? true) === (next.present ?? true);
+      }
       return jsonEqual(condition, next);
     });
     return duplicate ? [...conditions] : [...conditions, next];
@@ -217,10 +220,12 @@ function validateConditionValues(project: Project, map: GameMap, condition: Cond
       if (condition.eventId) return requireEvent(project, condition.eventId, "시야 조건");
       const watchers = condition.watchers;
       if (!watchers || !watchersHaveSelector(watchers)) throw new PrimitiveError("시야 조건에서 주인공을 볼 이벤트를 골라 주세요.");
-      if (watchers.locationId?.trim() && !findLocationById(map, watchers.locationId)) {
+      const { locationId, ...identity } = watchers;
+      if (locationId?.trim() && !findLocationById(map, locationId)) {
         throw new PrimitiveError("선택한 맵에서 시야 조건에 쓰인 장소를 찾을 수 없어요.");
       }
-      if (sightWatcherIds(map.events, watchers, map.locations).length === 0) {
+      // The runtime evaluates room membership at the watcher's live position.
+      if (watchersHaveSelector(identity) && sightWatcherIds(map.events, identity, undefined).length === 0) {
         throw new PrimitiveError("선택한 맵에 시야 조건과 일치하는 감시 이벤트가 없어요.");
       }
       return;
@@ -320,13 +325,13 @@ function pageSentence(project: Project, condition: Leaf): string {
       detail = `이벤트의 ${memoryLabels[condition.key]} 기억 ${condition.value ? "켜짐" : "꺼짐"}`;
       break;
     case "stringVariable": {
-      const name = safeName(condition.stringVariableId, "지정한 변수");
+      const name = comparisonLiteral(condition.stringVariableId);
       if (condition.op === "empty" || condition.value === "") {
-        detail = `「${name}」의 값이 ${condition.op === "!=" ? "비어 있지 않음" : "비어 있음"}`;
+        detail = `${name}의 값이 ${condition.op === "!=" ? "비어 있지 않음" : "비어 있음"}`;
       } else if (condition.op === "contains") {
-        detail = `「${name}」의 값에 ${comparisonLiteral(condition.value)} 포함`;
+        detail = `${name}의 값에 ${comparisonLiteral(condition.value)} 포함`;
       } else {
-        detail = `「${name}」의 값이 ${comparisonLiteral(condition.value)}${condition.op === "==" ? "와 같음" : "와 다름"}`;
+        detail = `${name}의 값이 ${comparisonLiteral(condition.value)}${condition.op === "==" ? "와 같음" : "와 다름"}`;
       }
       break;
     }
