@@ -16,7 +16,7 @@ import { scriptCalls, scriptCommandEffects, scriptHasDynamic, scriptReads, scrip
 import type { BattleEventCondition, Command, Condition, GameEvent, GameMap, MoveRoute, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { displayText } from "../../../target";
-import { MAP_REMOVAL_DRAFT_REFUSAL, PrimitiveError } from "../../errors";
+import { MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL, PrimitiveError } from "../../errors";
 import type { PrimitiveContext } from "../../types";
 
 export function selectedMap(ctx: PrimitiveContext): GameMap {
@@ -267,7 +267,7 @@ export function usesLocation(project: Project, map: GameMap, id: string): boolea
   return used;
 }
 
-function mapReferenceNames(project: Project, mapId: string): ReadonlySet<string> {
+export function mapRemovalReferenceError(project: Project, mapId: string): string | undefined {
   const references = new Set<string>();
   const pointsHere: MapTargetCheck = point => point.mapId === mapId;
   visitProjectCommands(project, ({ command, location }) => {
@@ -315,10 +315,6 @@ function mapReferenceNames(project: Project, mapId: string): ReadonlySet<string>
     const other = project.maps[connection.from.mapId === mapId ? connection.to.mapId : connection.from.mapId];
     references.add(label(connection.name === connection.id ? undefined : connection.name, other ? `${mapLabel(other)} 연결` : "맵 연결"));
   }
-  return references;
-}
-
-function mapReferenceError(references: ReadonlySet<string>): string | undefined {
   if (!references.size) return undefined;
   const names = [...references].slice(0, 3).map(name => `『${name}』`).join(", ");
   const extra = references.size > 3 ? ` 외 ${references.size - 3}곳` : "";
@@ -331,7 +327,7 @@ export function mapRemovalDraftError(project: Project, mapId: string, live: Smal
   if (unsaved) return `『${label(eventDisplayName(unsaved), "이름 없는 이벤트")}』의 편집을 먼저 저장하거나 취소해 주세요.`;
 
   if (!Object.values(live.maps).some(map => map.events.some(event => event.draft))) return undefined;
-  return mapReferenceError(mapReferenceNames(withOpenEventDrafts(project, live), mapId));
+  return mapRemovalReferenceError(withOpenEventDrafts(project, live), mapId);
 }
 
 export function removeMap(project: Project, map: GameMap, live?: SmallTaskDraftSource): Project {
@@ -340,8 +336,8 @@ export function removeMap(project: Project, map: GameMap, live?: SmallTaskDraftS
   }
   const draftError = mapRemovalDraftError(project, map.id, live ?? project);
   if (draftError) throw new PrimitiveError(`${MAP_REMOVAL_DRAFT_REFUSAL}${draftError}`);
-  const error = mapReferenceError(mapReferenceNames(project, map.id));
-  if (error) throw new PrimitiveError(error);
+  const error = mapRemovalReferenceError(project, map.id);
+  if (error) throw new PrimitiveError(`${MAP_REMOVAL_REFERENCE_REFUSAL}${error}`);
   if (questUsesMap(project, point => point.mapId === map.id)) {
     throw new PrimitiveError("이 맵을 사용하는 퀘스트가 있어 삭제할 수 없어요.");
   }
@@ -381,7 +377,12 @@ export function resizeMap(project: Project, map: GameMap, width: number, height:
   }
   const shrinking = width < map.width || height < map.height;
   const working = shrinking ? withOpenEventDrafts(project, live) : project;
+  const boundsError = "축소 범위 밖에 이벤트나 시작 위치가 있어요.";
   if (shrinking) {
+    const bounds = { ...map, width, height };
+    if (working.maps[map.id].events.some(event => event.draft && !inMapBounds(bounds, event.x, event.y))) {
+      throw new PrimitiveError(boundsError);
+    }
     const outside = (point: { x: number; y: number }) =>
       inMapBounds(map, point.x, point.y) && (point.x >= width || point.y >= height);
     const cutsRect = (rect: Rect) => rect.x < map.width && rect.y < map.height
@@ -429,8 +430,7 @@ export function resizeMap(project: Project, map: GameMap, width: number, height:
       throw new PrimitiveError("맵을 이 크기로 줄이면 이동 위치나 기존 영역이 맵 밖으로 나가요.");
     }
   }
-  const after = runMapTool(mapDraft(project, map), "resize_map", { mapId: map.id, width, height },
-    "축소 범위 밖에 이벤트나 시작 위치가 있어요.");
+  const after = runMapTool(mapDraft(project, map), "resize_map", { mapId: map.id, width, height }, boundsError);
   const failure = "크기를 바꾸면 맵을 가리키는 설정이 끊겨요.";
   assertReferencesPreserved(project, after, failure);
   if (working !== project) assertReferencesPreserved(working, withOpenEventDrafts(after, live), failure);

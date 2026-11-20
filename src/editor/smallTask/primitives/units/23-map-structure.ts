@@ -109,8 +109,9 @@ function newLocationName(map: GameMap, value: unknown, current?: MapNamedLocatio
   const name = sanitizeName(requiredName(value));
   if (name === current?.name) return name;
   const nameKey = (value: string) => value.replace(/\s+/gu, "").toLowerCase();
+  const key = nameKey(name);
   if (map.locations?.some(location => location !== current &&
-    (location.id === name || nameKey(location.name) === nameKey(name)))) {
+    (nameKey(location.id) === key || nameKey(location.name) === key))) {
     throw new PrimitiveError("다른 장소와 구분할 수 있는 이름을 적어 주세요.");
   }
   return name;
@@ -331,12 +332,22 @@ function setDoor(project: Project, map: GameMap, args: Args): Project {
   if (chime !== undefined && !definition?.auto) {
     throw new PrimitiveError("차임 소리는 자동문에서 고를 수 있어요.");
   }
-  if (definition && selected && doorKindName(definition) === doorKindName(selected)) {
-    definition = {
-      ...selected, ...rect,
-      ...(hinge === undefined ? {} : { hinge: definition.hinge }),
-      ...(chime === undefined ? {} : { chimeSe: definition.chimeSe }),
-    };
+  if (definition && selected) {
+    if (doorKindName(definition) === doorKindName(selected)) {
+      definition = {
+        ...selected, ...rect,
+        ...(hinge === undefined ? {} : { hinge: definition.hinge }),
+        ...(chime === undefined ? {} : { chimeSe: definition.chimeSe }),
+      };
+    } else {
+      definition = {
+        ...definition,
+        ...(selected.frame === undefined ? {} : { frame: selected.frame }),
+        ...(selected.openSe === undefined ? {} : { openSe: selected.openSe }),
+        ...(selected.closeSe === undefined ? {} : { closeSe: selected.closeSe }),
+        ...(definition.auto && chime === undefined && selected.chimeSe !== undefined ? { chimeSe: selected.chimeSe } : {}),
+      };
+    }
   }
   if (!selected && !definition) return project;
   const doors = existing.flatMap(row => row === selected ? (definition ? [definition] : []) : [row]);

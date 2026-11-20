@@ -5,7 +5,7 @@ import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { editorState } from "@/editor/editorState";
 import { commitChangeset } from "@/editor/tools/changeset";
 import type { Project } from "@/project/types";
-import { MAP_REMOVAL_DRAFT_REFUSAL, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "./primitives/errors";
+import { MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "./primitives/errors";
 import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -36,10 +36,12 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
   if (result.stoppedEarly === SMALL_TASK_SCOPE_REFUSAL || result.stoppedEarly === STALE_COMMAND_LIST || result.stoppedEarly === SELECT_EVENT_PAGE) {
     throw new SmallTaskError(result.stoppedEarly);
   }
-  if (live && target.kind === "map" && result.stoppedEarly?.startsWith(MAP_REMOVAL_DRAFT_REFUSAL)) {
-    const { mapRemovalDraftError } = await import("./primitives/units/23-map-structure/maps");
+  const savedMapRefusal = result.stoppedEarly?.startsWith(MAP_REMOVAL_REFERENCE_REFUSAL);
+  if (target.kind === "map" && (savedMapRefusal || (live && result.stoppedEarly?.startsWith(MAP_REMOVAL_DRAFT_REFUSAL)))) {
+    const { mapRemovalDraftError, mapRemovalReferenceError } = await import("./primitives/units/23-map-structure/maps");
     signal.throwIfAborted();
-    const message = mapRemovalDraftError(before, target.mapId, live);
+    const message = savedMapRefusal ? mapRemovalReferenceError(before, target.mapId)
+      : live && mapRemovalDraftError(before, target.mapId, live);
     if (message) throw new SmallTaskError(message);
   }
   if (result.stoppedEarly) throw new Error(result.stoppedEarly);

@@ -4,7 +4,7 @@ import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
 import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsule";
-import { MAP_REMOVAL_DRAFT_REFUSAL } from "@/editor/smallTask/primitives/errors";
+import { MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL } from "@/editor/smallTask/primitives/errors";
 import { editorState } from "@/editor/editorState";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -96,12 +96,20 @@ it.each([
     stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
   { kind: "map", selectedMapId: "another_map", rect: undefined,
     stoppedEarly: `${MAP_REMOVAL_DRAFT_REFUSAL}워커 문구`, shownMessage: "『미저장 출입구』의 편집을 먼저 저장하거나 취소해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, shownMessage }) => {
+  { kind: "map", selectedMapId: "another_map", rect: undefined, savedMapReference: true,
+    stoppedEarly: `${MAP_REMOVAL_REFERENCE_REFUSAL}워커 문구`, shownMessage: "『North Gate』에서 이 맵을 사용하고 있어 삭제할 수 없어요." },
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, shownMessage, savedMapReference }) => {
   const project = fixture();
+  if (savedMapReference) {
+    const gate: GameEvent = { id: "north_gate", name: "North Gate", x: 1, y: 1, trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: "map_a", x: 2, y: 3 }] };
+    project.maps.map_b = { ...project.maps.map_a, id: "map_b", events: [gate] };
+    project.commonEvents = [];
+  }
   const live = structuredClone(project);
   const original = live.maps.map_a.events[0]!;
   const draft = { ...original, id: "draft_event", name: "미저장 출입구", draft: { kind: "new", original } } as const;
-  live.maps.map_a.events.push(draft);
+  if (!savedMapReference) live.maps.map_a.events.push(draft);
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")!
     : kind === "map" ? mapTarget(project, "map_a")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
@@ -116,7 +124,7 @@ it.each([
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
-    expect(body.smallTask.draftSource).toEqual({ maps: { map_a: { events: [draft] } } });
+    expect(body.smallTask.draftSource).toEqual(savedMapReference ? undefined : { maps: { map_a: { events: [draft] } } });
     expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };

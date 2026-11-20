@@ -4,7 +4,7 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { MAP_REMOVAL_REFERENCE_REFUSAL, PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/23-map-structure";
 import { dbTarget, mapTarget } from "@/editor/smallTask/target";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
@@ -203,6 +203,19 @@ it("다른 맵의 저장된 이동과 미저장 이동을 모두 확인한 뒤 �
   expect(after.maps[firstId]!.events[0]!.commands).toEqual(original.commands);
 });
 
+it("미저장 이벤트의 현재 칸을 잘라내는 맵 축소를 막는다", () => {
+  const project = blankProject();
+  const original = { ...transferEvent(firstId), y: 4 };
+  const target = mapTarget(project, secondId)!;
+  const resize = (x: number) => runPrimitive(project, target, "map.structure.resize", { width: 9 }, undefined, {
+    maps: { [secondId]: { events: [{ ...original, x, draft: { kind: "new", original } }] } },
+  }).after;
+  expect(() => resize(10)).toThrow("축소 범위 밖에 이벤트나 시작 위치가 있어요.");
+  const after = resize(8);
+  expect(after.maps[secondId]).toMatchObject({ width: 9, events: [] });
+  expect(project.maps[secondId]).toMatchObject({ width: 12, events: [] });
+});
+
 it("동일한 기존 오류가 있어도 새로 범위를 벗어나는 게임오버 복구 위치를 막는다", () => {
   const project = blankProject();
   project.system = {
@@ -361,7 +374,8 @@ it("다른 맵의 중첩 이동 이벤트와 연결 이름을 제시하며 맵 �
   project.maps[firstId]!.events = [{ ...exit, commands: [{ kind: "choices", options: [{ text: "건너기", branch: exit.commands }] }] }];
   const args = { name: "나루 통로", x: 2, y: 3, toMapId: secondId, toX: 3, toY: 4 };
   const after = run(project, firstId, "map.connection.upsert", args);
-  expect(() => run(after, secondId, "map.structure.remove", {})).toThrow(/광장 정문.*나루 통로/u);
+  expect(() => run(after, secondId, "map.structure.remove", {}))
+    .toThrow(`${MAP_REMOVAL_REFERENCE_REFUSAL}『광장 정문』, 『나루 통로』에서 이 맵을 사용하고 있어 삭제할 수 없어요.`);
   expect(after.maps[secondId]).toBeDefined();
 });
 
@@ -490,6 +504,20 @@ it("문 크기만 바꾸면 기존 문의 종류, 문틀과 배경은 보존한�
   expect(() => run(project, firstId, "map.door.set", { x: 2, y: 3, chime: true })).toThrow(/자동문/u);
 });
 
+it("문 종류를 바꿀 때 문틀과 효과음을 유지하고 새 경첩과 차임 설정을 적용한다", () => {
+  const project = blankProject();
+  const frame = { l: 2, r: 3, t: 4, b: 0 };
+  const sounds = { openSe: "custom_open", closeSe: "custom_close" };
+  const at = { x: 2, y: 3 };
+  project.maps[firstId]!.doors = [{ ...at, w: 1, h: 1, style: "shutter", hinge: "left", frame, ...sounds }];
+
+  const set = (args: Args) => run(project, firstId, "map.door.set", { ...at, ...args }).maps[firstId]!.doors?.[0];
+  expect(set({ kind: "slide" })).toMatchObject({ style: "slide", frame, ...sounds });
+  expect(set({ kind: "swing", hinge: "right" })).toMatchObject({ style: "swing", hinge: "right", frame, ...sounds });
+  expect(set({ kind: "auto", chime: true })).toMatchObject({ auto: true, chimeSe: expect.any(String), frame, ...sounds });
+  expect(set({ kind: "none" })).toBeUndefined();
+});
+
 it("공간 설계에서 만든 출입구를 수정하거나 같은 칸에 연결을 겹치면 거절한다", () => {
   const project = blankProject();
   const document = geographyFixture("region").spatialAuthoring!;
@@ -576,7 +604,7 @@ it("장소를 만들거나 이름을 바꿀 때 같은 이름과 식별자를 �
   duplicateIds.maps[firstId]!.locations![1]!.id = "loc1";
   expect(() => run(project, firstId, "map.location.create", { name: "나무그늘", x: 1, y: 1, w: 1, h: 1 }))
     .toThrow(/구분할 수 있는 이름/u);
-  expect(() => run(project, firstId, "map.location.update", { locationId: "loc2", name: "loc1" }))
+  expect(() => run(project, firstId, "map.location.update", { locationId: "loc2", name: "Lo c1" }))
     .toThrow(/구분할 수 있는 이름/u);
   expect(() => run(duplicateIds, firstId, "map.location.delete", { locationId: "정문" })).toThrow(/같은 식별자/u);
 });
