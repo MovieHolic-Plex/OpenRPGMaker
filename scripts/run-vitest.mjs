@@ -8,6 +8,15 @@ import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
 applyLegacyEnvAliases();
 
+const cliArgs = process.argv.slice(2);
+if (cliArgs[0] === "--oprn-unit") {
+  if (!cliArgs[1]?.trim() || cliArgs[1].startsWith("-")) {
+    console.error("Usage: npm run test:unit -- <test file> [more test files] [Vitest options]");
+    process.exit(2);
+  }
+  cliArgs.splice(0, 1, "run", "--configLoader", "bundle", "--maxWorkers=1");
+}
+
 function canonicalizeWindowsDrive(path) {
   if (process.platform !== "win32") return path;
   return path.replace(/^([a-z]):/, (_, drive) => `${drive.toUpperCase()}:`);
@@ -295,7 +304,7 @@ const vitestVersion = JSON.parse(readFileSync(packagePath, "utf8")).version;
 const VITEST_SUPPORTS_MIN_WORKERS = Number.parseInt(vitestVersion.split(".")[0], 10) < 4;
 const vitestCli = canonicalizeWindowsDrive(join(dirname(packagePath), "vitest.mjs"));
 const root = canonicalizeWindowsDrive(process.cwd());
-const requestedArgs = canonicalizeRootArgs(process.argv.slice(2), root);
+const requestedArgs = canonicalizeRootArgs(cliArgs, root);
 // cgroup 상한이 있으면(= CI 슬라이스) 워커 수와 힙을 예산에 맞춘다. 없으면 그대로 간다.
 const budget = cgroupBudget(requestedArgs);
 // vitest 4+ 는 --minWorkers 가 없다. 예산으로 워커를 깎지 않으면 플래그가 그대로 전달돼
