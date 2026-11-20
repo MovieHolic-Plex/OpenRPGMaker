@@ -9,12 +9,14 @@ import { normalizeItemRecord, normalizeEquipmentRecord } from "@/project/databas
 import { normalizeElementRecords } from "@/project/databaseUtilityRecordModel";
 import { effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import {
-  BUILTIN_EQUIPMENT_SLOTS, equipmentSlotRemovalBlocker, hasEquipmentSlot, isEquipmentSlotId,
+  BUILTIN_EQUIPMENT_SLOTS, equipmentSlotRemovalBlocker, equipsAsSlot, hasEquipmentSlot, isEquipmentSlotId,
   removeEquipmentSlot, upsertEquipmentSlot,
 } from "@/project/equipmentSlots";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { dynamicRefKinds, forEachProjectScript, scriptCommandEffects } from "@/project/script/effects";
+import type { ScriptModule } from "@/project/script/types";
 import type { Command, ItemRecord, EquipmentRecord, DatabaseElementRecord, EquipmentSlotRecord, Project } from "@/project/types";
+import { genId } from "@/util/id";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
@@ -121,12 +123,12 @@ const prefixes: Record<Collection, string> = {
 };
 
 function newId(project: Project, collection: Collection): string {
-  const ids = new Set(rows(project, collection).map(record => record.id));
-  for (let index = 1; ; index++) {
-    const id = `${prefixes[collection]}_${index}`;
-    // Prevent a collision with other shop goods or an ID already used by project data.
-    if (!ids.has(id) && !referenceIndex(project, new Set([id])).has(id)) return id;
-  }
+  // Published saves can still refer to IDs of records that have since been deleted.
+  let id: string;
+  do {
+    id = genId(prefixes[collection]);
+  } while (referenceIndex(project, new Set([id])).has(id));
+  return id;
 }
 
 function scopeFor(ctx: PrimitiveContext, collection: Collection, edit: Edit, args: Args): SmallTaskScope {
@@ -288,6 +290,13 @@ function writeRecord(ctx: PrimitiveContext, collection: Collection, edit: "creat
     || (collection === "equipmentSlots" && args.equipsAs !== undefined))) {
     validateInitialEquipment(project, next);
     validateEventEquipment(project, next, collection, id);
+    if (mayBreakScriptEquipment(project, next, collection, id)) {
+      forEachAuthoredScript(project, script => {
+        if (mayRunEventCommand(script)) {
+          throw new PrimitiveError("스크립트가 실행하는 이벤트 명령의 장비 착용을 확인할 수 없어요.");
+        }
+      });
+    }
   }
   validateReferences(project, next);
   return next;
@@ -341,17 +350,38 @@ function validateReferences(before: Project, after: Project): void {
   }
 }
 
+function mayBreakScriptEquipment(before: Project, after: Project, collection: "equipment" | "equipmentSlots", id: string): boolean {
+  if (collection === "equipmentSlots") {
+    const prior = equipsAsSlot(before, id);
+    return prior !== undefined && prior !== equipsAsSlot(after, id);
+  }
+  const prior = before.database.equipment.find(record => record.id === id)!;
+  const next = after.database.equipment.find(record => record.id === id)!;
+  return prior.slot !== next.slot || (!prior.twoHanded && next.twoHanded);
+}
+
+type AuthoredScript = Pick<ScriptModule, "source" | "compiled" | "effects">;
+
+function forEachAuthoredScript(project: Project, visit: (script: AuthoredScript) => void): void {
+  forEachProjectScript(project, visit);
+  for (const script of project.scriptLibrary ?? []) visit(script);
+}
+
+function mayRunEventCommand(script: AuthoredScript, dynamic = scriptCommandEffects(script).dynamic): boolean {
+  // A command object can be computed, or contain nested commands and fields absent from the effects index.
+  return /\bcmd\b/u.test(script.source) || /\bcmd\b/u.test(script.compiled)
+    || dynamic.some(({ api }) => api === "*" || api === "cmd" || api.startsWith("cmd."));
+}
+
 function checkScriptReferences(project: Project, collection: Collection, id: string): void {
   const literal = new RegExp(`(["'\x60])${id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\1`, "u");
-  const check = (script: { source: string; compiled: string }) => {
+  forEachAuthoredScript(project, script => {
     if (literal.test(script.source) || literal.test(script.compiled)) {
       throw new PrimitiveError("스크립트에서 사용 중인 항목은 지울 수 없어요.");
     }
     if (collection === "elements") return;
     const dynamic = scriptCommandEffects(script).dynamic;
-    // The command API accepts nested commands and fields that script effects do not index.
-    if (/\bcmd\b/u.test(script.source) || /\bcmd\b/u.test(script.compiled)
-      || dynamic.some(({ api }) => api === "*" || api === "cmd" || api.startsWith("cmd."))) {
+    if (mayRunEventCommand(script, dynamic)) {
       throw new PrimitiveError("스크립트가 실행하는 이벤트 명령에서 이 항목을 쓰는지 확인할 수 없어요.");
     }
     // Items and equipment share the inventory addressed by the item script API.
@@ -359,9 +389,7 @@ function checkScriptReferences(project: Project, collection: Collection, id: str
       dynamicRefKinds(api).some(ref => ref.kind === "item"))) {
       throw new PrimitiveError("실행할 때 아이템을 고르는 스크립트가 있어 이 항목을 지워도 되는지 확인할 수 없어요.");
     }
-  };
-  forEachProjectScript(project, check);
-  for (const script of project.scriptLibrary ?? []) check(script);
+  });
 }
 
 function deleteRecord(ctx: PrimitiveContext, collection: Collection): Project {

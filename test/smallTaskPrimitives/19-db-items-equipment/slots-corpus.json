@@ -7,7 +7,7 @@
     "args": {"label":"신발"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"신발"}
+      {"at":"database.equipmentSlots[-1].label","equals":"신발"}
     ]
   },
   {
@@ -18,8 +18,8 @@
     "args": {"label":"보조 손","equipsAs":"weapon"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"보조 손"},
-      {"at":"database.equipmentSlots[id=slot_small_1].equipsAs","equals":"weapon"}
+      {"at":"database.equipmentSlots[-1].label","equals":"보조 손"},
+      {"at":"database.equipmentSlots[-1].equipsAs","equals":"weapon"}
     ]
   },
   {
@@ -30,7 +30,7 @@
     "args": {"label":"부적"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"부적"}
+      {"at":"database.equipmentSlots[-1].label","equals":"부적"}
     ]
   },
   {
@@ -41,7 +41,7 @@
     "args": {"label":"가방 고리"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"가방 고리"}
+      {"at":"database.equipmentSlots[-1].label","equals":"가방 고리"}
     ]
   },
   {
@@ -52,8 +52,8 @@
     "args": {"label":"두 번째 장신구","equipsAs":"accessory"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"두 번째 장신구"},
-      {"at":"database.equipmentSlots[id=slot_small_1].equipsAs","equals":"accessory"}
+      {"at":"database.equipmentSlots[-1].label","equals":"두 번째 장신구"},
+      {"at":"database.equipmentSlots[-1].equipsAs","equals":"accessory"}
     ]
   },
   {
@@ -64,7 +64,7 @@
     "args": {"label":"등"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"등"}
+      {"at":"database.equipmentSlots[-1].label","equals":"등"}
     ]
   },
   {
@@ -75,7 +75,7 @@
     "args": {"label":"겉옷"},
     "setup": {"database":{"equipmentSlots":[{"id":"weapon","label":"무기"}]}},
     "expect": [
-      {"at":"database.equipmentSlots[id=slot_small_1].label","equals":"겉옷"}
+      {"at":"database.equipmentSlots[-1].label","equals":"겉옷"}
     ]
   },
   {

@@ -1,20 +1,32 @@
 /** @vitest-environment happy-dom */
-import { beforeAll, describe, expect, it } from "vitest";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
+import { equipmentSlotManager } from "@/editor/panels/equipmentSlotManager";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/19-db-items-equipment";
-import type { SmallTaskTarget } from "@/editor/smallTask/target";
+import * as smallTaskRun from "@/editor/smallTask/run";
+import { dbTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
+import { createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { goodsIndex } from "@/player/playSceneShopGoods";
 import { useItemFromMenu } from "@/player/playerItemUse";
+import { applySaveSnapshot, createSaveSnapshot, snapshotLoadBlocker } from "@/player/saveSlots";
 import { normalizeEquipmentRecord, normalizeItemRecord, normalizeTroopRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { activeItemEffects } from "@/project/itemUsage";
 import { startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Command, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import * as idGenerator from "@/util/id";
+import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import corpus from "../../harness-data/small-task-corpus/19-db-items-equipment.json";
 import slotCorpus from "./19-db-items-equipment/slots-corpus.json";
 import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
@@ -66,31 +78,30 @@ type Case = {
   action: string;
   fixture: "blank" | "built" | "maou";
   args: Args;
-  resultId?: string;
   expected?: Record<string, unknown>;
   detail?: string;
 };
 
 const cases: readonly Case[] = [
   { collection: "items", action: "create", fixture: "blank", args: { name: "풀잎약", price: 80, hpRecovery: 30 },
-    resultId: "item_small_1", expected: { name: "풀잎약", price: 80, type: "medicine", hpRecovery: { flat: 30, percentMax: 0 },
+    expected: { name: "풀잎약", price: 80, type: "medicine", hpRecovery: { flat: 30, percentMax: 0 },
       occasion: "always", occasionField: true, occasionBattle: true } },
   { collection: "items", action: "update", fixture: "maou", args: { name: "별빛 물약", occasion: "field", mpRecovery: 45 },
     expected: { name: "별빛 물약", occasion: "field", occasionField: true, occasionBattle: false, mpRecovery: { flat: 45, percentMax: 0 } } },
   { collection: "items", action: "delete", fixture: "blank", args: {}, detail: "지워요" },
   { collection: "equipment", action: "create", fixture: "built", args: { name: "청동검", attack: 12, price: 250, attackElementIds: ["fire"] },
-    resultId: "equip_small_1", expected: { name: "청동검", slot: "weapon", price: 250, attackElementIds: ["fire"],
+    expected: { name: "청동검", slot: "weapon", price: 250, attackElementIds: ["fire"],
       statBonuses: { attack: 12, defense: 0, mind: 0, agility: 0 } } },
   { collection: "equipment", action: "update", fixture: "blank", args: { slot: "armor", defense: 13, cursed: true },
     expected: { slot: "armor", twoHanded: false, cursed: true, statBonuses: { attack: 3, defense: 13, mind: 5, agility: 6 } } },
   { collection: "equipment", action: "delete", fixture: "maou", args: {}, detail: "지워요" },
   { collection: "equipmentSlots", action: "create", fixture: "blank", args: { label: "보조 손", equipsAs: "weapon" },
-    resultId: "slot_small_1", expected: { label: "보조 손", equipsAs: "weapon" } },
+    expected: { label: "보조 손", equipsAs: "weapon" } },
   { collection: "equipmentSlots", action: "update", fixture: "built", args: { label: "부적", equipsAs: "accessory" },
     expected: { label: "부적", equipsAs: "accessory" } },
   { collection: "equipmentSlots", action: "delete", fixture: "blank", args: {}, detail: "지워요" },
   { collection: "elements", action: "create", fixture: "blank", args: { name: "번개" },
-    resultId: "element_small_1", expected: { name: "번개", kind: "magical",
+    expected: { name: "번개", kind: "magical",
       rateLabels: ["A", "B", "C", "D", "E"], damageMultipliers: { A: 200, B: 150, C: 100, D: 50, E: 0 } } },
   { collection: "elements", action: "update", fixture: "maou", args: { kind: "physical" },
     expected: { kind: "physical", name: "달빛", damageMultipliers: { A: 220, B: 150, C: 100, D: 50, E: 0 } } },
@@ -105,18 +116,20 @@ describe("자료집 프리미티브", () => {
   beforeAll(() => { maou = loadFixture("maou"); }, 300_000);
 
   for (const test of cases) {
-    const { collection, action, args, expected, resultId = ids[collection], detail } = test;
+    const { collection, action, args, expected, detail } = test;
     const id = `db.${collection}.${action}`;
     it(`${id}는 선택 범위에서만 정확히 저장하고 한 번에 되돌린다`, async () => {
       const project = setup(test.fixture);
       const source = structuredClone(project.database[collection]);
       const selected = target(collection);
       const result = expectApplies(project, selected, id, args);
-      const record = result.after.database[collection]?.find(row => row.id === resultId);
+      const records = result.after.database[collection]!;
+      const record = action === "create" ? records.at(-1) : records.find(row => row.id === ids[collection]);
+      const resultId = record?.id ?? ids[collection];
       if (expected) {
         const original = source?.find(row => row.id === resultId);
         if (original) expect(record).toEqual({ ...original, ...expected });
-        else expect(record).toMatchObject({ id: resultId, ...expected });
+        else expect(record).toMatchObject({ id: expect.any(String), ...expected });
       } else {
         expect(record).toBeUndefined();
       }
@@ -188,12 +201,38 @@ describe("자료집 프리미티브", () => {
       id: "common_old_reward", name: "예전 보상", trigger: "none",
       commands: [{ kind: "changeItem", op: "+=", amount: 1, itemId: "item_small_2" }],
     }];
-    const { after } = runPrimitive(project, target("items"), "db.items.create", { name: "새 회복약" });
-    expect(goodsIndex(after).get("item_small_1")).toMatchObject({ name: "기존 검", source: "equipment" });
-    expect(goodsIndex(after).has("item_small_2")).toBe(false);
-    expect(after.database.items.at(-1)).toMatchObject({ id: "item_small_3", name: "새 회복약" });
-    expect(after.commonEvents).toBe(project.commonEvents);
+    const generate = vi.spyOn(idGenerator, "genId").mockReturnValueOnce("item_small_1").mockReturnValueOnce("item_small_2");
+    try {
+      const { after } = runPrimitive(project, target("items"), "db.items.create", { name: "새 회복약" });
+      expect(generate).toHaveBeenCalledTimes(3);
+      expect(goodsIndex(after).get("item_small_1")).toMatchObject({ name: "기존 검", source: "equipment" });
+      expect(goodsIndex(after).has("item_small_2")).toBe(false);
+      expect(after.database.items.at(-1)).toMatchObject({ name: "새 회복약" });
+      expect(after.commonEvents).toBe(project.commonEvents);
+    } finally {
+      generate.mockRestore();
+    }
   });
+
+  it.each([["items", "item_small_1"], ["equipment", "equip_small_1"]] as const)(
+    "예전 플레이 세이브의 %s 수량은 같은 종류의 새 행에 붙지 않는다", (collection, legacyId) => {
+      const project = createBlankProject();
+      if (collection === "items") project.database.items.push(normalizeItemRecord({ id: legacyId, name: "예전 물약" }));
+      else project.database.equipment.push(normalizeEquipmentRecord({ id: legacyId, name: "예전 장비" }));
+      const session = startSession(project, 19);
+      session.inventory[legacyId] = 3;
+      const snapshot = createSaveSnapshot(project, session);
+      const removed = runPrimitive(project, target(collection, legacyId), `db.${collection}.delete`, {}).after;
+      const existing = removed.database[collection][0];
+      const { after } = runPrimitive(removed, target(collection, existing.id), `db.${collection}.create`, { name: "새 상품" });
+      const created = after.database[collection].at(-1)!;
+      expect(created.id).not.toBe(legacyId);
+      expect(snapshotLoadBlocker(after, snapshot)).toBeNull();
+      const loaded = applySaveSnapshot(after, snapshot);
+      expect(loaded.inventory[created.id]).toBeUndefined();
+      expect(goodsIndex(after).has(legacyId)).toBe(false);
+    },
+  );
 
   it("회복량·가격·이름의 입력 범위를 검사하고 약의 비율 회복량을 보존한다", () => {
     const project = setup("blank");
@@ -260,7 +299,7 @@ describe("자료집 프리미티브", () => {
     expect(runPrimitive(after, target("equipmentSlots", "weapon"), "db.equipmentSlots.create",
       { label: "왼손", equipsAs: "weapon" }).after.database.equipmentSlots).toEqual([
       { id: "weapon", label: "오른손" },
-      { id: "slot_small_1", label: "왼손", equipsAs: "weapon" },
+      { id: expect.stringMatching(/^slot_small_/u), label: "왼손", equipsAs: "weapon" },
     ]);
   });
 
@@ -291,6 +330,45 @@ describe("자료집 프리미티브", () => {
       expect(after.database.troops).toBe(before.database.troops);
       expect(after.database.equipmentSlots?.find(row => row.id === slot)).toEqual({ id: slot, label: "새 칸 이름", equipsAs: "weapon" });
     }
+  });
+
+  it.each(["event", "library", "legacy"] as const)(
+    "착용을 실행할 수 있는 %s 스크립트가 있을 때 호환성을 줄이는 변경만 막는다", owner => {
+      const project = setup("blank");
+      const slot = project.database.equipmentSlots!.find(row => row.id === ids.equipmentSlots)!;
+      slot.equipsAs = "weapon";
+      project.database.equipment.find(row => row.id === ids.equipment)!.twoHanded = false;
+      const command = `{ kind: "changeEquipment", actorId: "${project.system.startActorIds[0]}", slot: "${slot.id}", equipmentId: "${ids.equipment}" }`;
+      const source = owner === "event" ? `await game.cmd(${command});`
+        : owner === "library" ? `const command = ${command}; await game["cmd"](command);`
+        : `const command = ${command}; await game["c" + "md"](command);`;
+      const effects = { reads: [], calls: [], writes: [], dynamic: [] };
+      if (owner === "event") {
+        project.commonEvents = [{ id: "common_script_equip", name: "외투 지급", trigger: "none", commands: [{
+          kind: "script", source, compiled: source, effects,
+        }] }];
+      } else {
+        project.scriptLibrary = [{ id: "script_equip", source, compiled: source, ...(owner === "library" ? { effects } : {}) }];
+      }
+      const equipment = target("equipment");
+      const slotTarget = target("equipmentSlots");
+      expect(() => runPrimitive(project, slotTarget, "db.equipmentSlots.update", { equipsAs: null })).toThrow(/스크립트가 실행/u);
+      expect(() => runPrimitive(project, equipment, "db.equipment.update", { slot: "armor" })).toThrow(/스크립트가 실행/u);
+      expect(() => runPrimitive(project, equipment, "db.equipment.update", { twoHanded: true })).toThrow(/스크립트가 실행/u);
+      expect(runPrimitive(project, slotTarget, "db.equipmentSlots.update", { label: "보조 손", equipsAs: "weapon" })
+        .after.database.equipmentSlots?.find(row => row.id === slot.id)).toMatchObject({ label: "보조 손", equipsAs: "weapon" });
+      expect(runPrimitive(project, equipment, "db.equipment.update", { slot: "weapon", twoHanded: false, attack: 12 })
+        .after.database.equipment.find(row => row.id === ids.equipment)?.statBonuses.attack).toBe(12);
+      expect(slot.equipsAs).toBe("weapon");
+    },
+  );
+
+  it("이벤트 명령을 실행하지 않는 스크립트가 있어도 착용 칸을 바꿀 수 있다", () => {
+    const project = setup("blank");
+    const source = 'game.log("안내");';
+    project.scriptLibrary = [{ id: "guide", source, compiled: source, effects: { reads: [], calls: [], writes: [], dynamic: [] } }];
+    const { after } = runPrimitive(project, target("equipment"), "db.equipment.update", { slot: "armor" });
+    expect(after.database.equipment.find(row => row.id === ids.equipment)?.slot).toBe("armor");
   });
 
   it("양손 무기로 바꿨을 때 시작 방패가 사라지는 편집을 거절한다", () => {
@@ -378,6 +456,26 @@ describe("자료집 프리미티브", () => {
     expect(after.database.elements?.find(row => row.id === element.id)?.name).toBe("불");
   });
 
+  it("속성 목록을 99개까지만 늘리고 한 개 이상 남긴다", () => {
+    const project = setup("blank");
+    const elements = project.database.elements!;
+    const element = elements.find(row => row.id === ids.elements)!;
+    const extras = Array.from({ length: 98 - elements.length }, (_, index) => ({
+      ...element, id: `element_limit_${index}`, name: `속성 ${index + 1}`,
+    }));
+    project.database.elements = [...elements, ...extras];
+    const selected = target("elements");
+    const args = { name: "아흔아홉 번째 속성" };
+    const full = runPrimitive(project, selected, "db.elements.create", args).after;
+    expect(full.database.elements).toHaveLength(99);
+    expect(() => runPrimitive(full, selected, "db.elements.create", args)).toThrow(/최대 99개/u);
+    const extra = extras[0];
+    const two = { ...project, database: { ...project.database, elements: [element, extra] } };
+    const last = runPrimitive(two, target("elements", extra.id), "db.elements.delete", {}).after;
+    expect(last.database.elements).toEqual([element]);
+    expect(() => runPrimitive(last, selected, "db.elements.delete", {})).toThrow(/한 개 이상/u);
+  });
+
   it("장비 칸 연결만 해제하고 같은 이름의 칸을 서로 다른 항목으로 보존한다", () => {
     const project = setup("blank");
     project.database.equipmentSlots!.push({ id: "slot_small_1", label: "다른 칸" });
@@ -386,20 +484,22 @@ describe("자료집 프리미티브", () => {
     const cleared = runPrimitive(linked, selected, "db.equipmentSlots.update", { equipsAs: null }).after;
     expect(cleared.database.equipmentSlots).toEqual(project.database.equipmentSlots);
     const added = runPrimitive(cleared, selected, "db.equipmentSlots.create", { label: names.equipmentSlots }).after;
-    expect(added.database.equipmentSlots?.at(-1)).toEqual({ id: "slot_small_2", label: names.equipmentSlots });
+    expect(added.database.equipmentSlots?.at(-1)).toEqual({ id: expect.stringMatching(/^slot_small_/u), label: names.equipmentSlots });
+    expect(added.database.equipmentSlots?.at(-1)?.id).not.toBe("slot_small_1");
   });
 
   it("새 회복약을 이벤트로 세 개 받은 뒤 메뉴에서 사용한다", () => {
     const project = setup("blank");
     const { after } = runPrimitive(project, target("items"), "db.items.create", { name: "풀잎약", hpRecovery: 30 });
+    const itemId = after.database.items.at(-1)!.id;
     const session = startSession(after, 19);
     const actorId = session.partyActorIds[0];
     session.actorVitals[actorId] = { ...session.actorVitals[actorId], hp: 1, maxHp: 100 };
-    createInterpreter([{ kind: "changeItem", op: "+=", itemId: "item_small_1", amount: 3 }], session, after).start();
-    expect(session.inventory.item_small_1).toBe(3);
-    expect(useItemFromMenu(after, session, "item_small_1", actorId)).toMatchObject({ kind: "used" });
+    createInterpreter([{ kind: "changeItem", op: "+=", itemId, amount: 3 }], session, after).start();
+    expect(session.inventory[itemId]).toBe(3);
+    expect(useItemFromMenu(after, session, itemId, actorId)).toMatchObject({ kind: "used" });
     expect(session.actorVitals[actorId].hp).toBe(31);
-    expect(session.inventory.item_small_1).toBe(2);
+    expect(session.inventory[itemId]).toBe(2);
   });
 
   it("이벤트가 연 상점에 바뀐 회복약 가격이 표시된다", () => {
@@ -423,6 +523,110 @@ describe("자료집 프리미티브", () => {
     expect(session.actorEquipment[actorId][ids.equipmentSlots]).toBe(ids.equipment);
     expect(session.inventory[ids.equipment] ?? 0).toBe(0);
     expect(goodsIndex(after).get(ids.equipment)?.statBonuses?.attack).toBe(12);
+  });
+});
+
+describe("자료집 작은 일 진입점", () => {
+  it.each([
+    ["equipmentSlots", "weapon", "무기", "오른손", { label: "오른손" }],
+    ["equipmentSlots", ids.equipmentSlots, names.equipmentSlots, "보조 손", { label: "보조 손" }],
+    ["elements", ids.elements, names.elements, "별빛", { name: "별빛" }],
+  ] as const)("%s %s 행에서 작업을 열고 적용·되돌린다", async (collection, id, name, renamed, args) => {
+    const project = setup("blank");
+    store.replaceProject(project);
+    resetMapEditHistory();
+    const host = document.createElement("div");
+    host.setAttribute("role", "dialog");
+    document.body.append(host);
+    const selected = dbTarget(project, collection, id);
+    expect(selected).toMatchObject({ kind: "dbEntry", collection, id, label: expect.stringContaining(name) });
+    const before = store.getCurrent();
+    const run = vi.spyOn(smallTaskRun, "runSmallTask").mockImplementation(async (base, target) =>
+      runPrimitive(base, target, `db.${collection}.update`, args).after);
+    const createElement = document.createElement.bind(document);
+    const create = vi.spyOn(document, "createElement").mockImplementation((tag, options) => {
+      const element = createElement(tag, options);
+      if (tag === "section" && !element.showPopover) element.showPopover = () => {};
+      return element;
+    });
+    try {
+      let button: HTMLButtonElement | null | undefined;
+      if (collection === "equipmentSlots") {
+        expect(project.database.equipmentSlots?.some(slot => slot.id === "weapon")).toBe(false);
+        const manager = equipmentSlotManager(ids.equipment, () => {});
+        host.append(manager);
+        button = manager.querySelector(`[data-testid="db-equipment-slot-label-${id}"]`)
+          ?.parentElement?.querySelector<HTMLButtonElement>('.small-task-trigger');
+      } else {
+        renderElementsTab(host);
+        const index = project.database.elements!.findIndex(row => row.id === id);
+        host.querySelector<HTMLElement>(`[data-testid="db-elements-row-${index}"]`)?.click();
+        button = host.querySelector<HTMLButtonElement>('[data-testid="db-elements-hero"] .small-task-trigger');
+      }
+      expect(button?.textContent).toBe("이걸로 작업");
+      button!.click();
+      const box = host.querySelector<HTMLElement>(".small-task")!;
+      expect(box.querySelector("strong")?.textContent).toBe(selected?.label);
+      const input = box.querySelector("input")!;
+      expect(input.disabled).toBe(false);
+      input.value = `${renamed}(으)로 이름을 바꿔 줘`;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      box.querySelector<HTMLFormElement>("form")!.dispatchEvent(new Event("submit", { cancelable: true }));
+      await vi.waitFor(() => expect(box.querySelector('[role="status"] button')?.textContent).toBe("되돌리기"));
+      expect(run).toHaveBeenCalledExactlyOnceWith(before, selected, input.value, expect.any(AbortSignal));
+      expect(dbTarget(store.getCurrent(), collection, id)?.label).toContain(renamed);
+      box.querySelector<HTMLButtonElement>('[role="status"] button')!.click();
+      await vi.waitFor(() => expect(box.querySelector('[role="status"]')?.textContent).toBe("되돌렸어요."));
+      expect(store.getCurrent().database[collection]).toEqual(before.database[collection]);
+    } finally {
+      host.querySelector<HTMLButtonElement>(".small-task header button")?.click();
+      host.remove();
+      create.mockRestore();
+      run.mockRestore();
+      resetMapEditHistory();
+    }
+  });
+
+  it("장비 슬롯 작업 제목과 스크립트 착용 거절 사유를 번역한다", async () => {
+    const selected = dbTarget(setup("blank"), "equipmentSlots", "weapon")!;
+    const catalogs = await Promise.all([
+      import("@/i18n/catalogs/en.json"), import("@/i18n/catalogs/ja.json"), import("@/i18n/catalogs/zh.json"),
+    ]);
+    for (const [index, { default: catalog }] of catalogs.entries()) {
+      const translator = createTranslator(catalog);
+      expect(translator.translate(selected.label)?.split(" · ")[0]).toBe(["Equipment slot", "装備スロット", "装备栏位"][index]);
+      expect(translator.translate("이걸로 작업")).toBeTruthy();
+      expect(translator.translate("스크립트가 실행하는 이벤트 명령의 장비 착용을 확인할 수 없어요.")).toBeTruthy();
+    }
+  });
+
+  it("기본 장비 칸과 속성의 편집 결과가 SQLite 재로드 뒤에도 유지된다", async () => {
+    const project = createBlankProject();
+    delete project.database.equipmentSlots;
+    const { id } = project.database.elements![0];
+    const slot = dbTarget(project, "equipmentSlots", "weapon")!;
+    const element = dbTarget(project, "elements", id)!;
+    const renamed = runPrimitive(project, slot, "db.equipmentSlots.update", { label: "오른손" }).after;
+    const edited = runPrimitive(renamed, element, "db.elements.update", { name: "별빛" }).after;
+    const projectDir = await mkdtemp(join(tmpdir(), "oprn-small-task-items-"));
+    try {
+      const local = await initLocalProjectStore({ projectDir });
+      try {
+        expect((await local.saveProject(edited)).kind).toBe("saved");
+      } finally {
+        local.close();
+      }
+      const reopened = await openLocalProjectStore({ projectDir });
+      try {
+        const loaded = reopened.loadSnapshot()?.project;
+        expect(loaded?.database.equipmentSlots?.find(row => row.id === "weapon")?.label).toBe("오른손");
+        expect(loaded?.database.elements?.find(row => row.id === id)?.name).toBe("별빛");
+      } finally {
+        reopened.close();
+      }
+    } finally {
+      await rm(projectDir, { force: true, recursive: true });
+    }
   });
 });
 
