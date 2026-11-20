@@ -6,7 +6,7 @@ import { createInterpreter } from "@/player/interpreter";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
-import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { eventCommandHash, eventCommandPageHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -329,6 +329,20 @@ it("분기 순서가 바뀌면 같은 내용의 하위 줄을 수정하거나 �
   expect(readPage(project).commands).toStrictEqual([reordered]);
 });
 
+it("페이지 해시가 최신이어도 줄 해시가 다르면 수정을 거부하고, 페이지가 바뀌면 삽입을 거부한다", () => {
+  const { project, target, readPage } = arrange("blank", [continuation]);
+  const expectedPageHash = eventCommandPageHash(readPage(project));
+  const body = "조회한 위치에만 대사를 씁니다.";
+  expect(() => runPrimitive(project, target, "cmd.text.update", {
+    index: 0, expectedPageHash, expectedHash: "stale", body,
+  })).toThrow(STALE_COMMAND_LIST);
+
+  const { after } = runPrimitive(project, target, "cmd.text.insert", { index: 0, expectedPageHash, body });
+  expect(readPage(after).commands[0]).toMatchObject({ kind: "text", body });
+  expect(() => runPrimitive(after, target, "cmd.text.insert", { index: 0, expectedPageHash, body }))
+    .toThrow(STALE_COMMAND_LIST);
+});
+
 it("반복 안의 취소 분기에 삽입하고 잘못된 경로는 거부한다", () => {
   const loop: Command = { kind: "loop", body: [choices] };
   const { project, target, readPage } = arrange("blank", [loop, continuation]);
@@ -381,6 +395,31 @@ it("취소 분기 배열이 없는 이전 선택지를 수정해도 기존 분�
     ...updatePosition(disabledCommands, disabledCommands[0]!), cancelBehavior: "branch",
   });
   expect(readPage(enabled.after).commands).toStrictEqual([{ ...legacy, cancelBranch: [] }, continuation]);
+});
+
+it("새 선택지를 붙여도 변수를 쓰는 기존 대기 명령을 그대로 보존한다", () => {
+  const legacyWait: Command = { kind: "wait", ms: -1, variableId: variable };
+  const original = { ...choices, options: [{ ...choices.options[0]!, branch: [legacyWait] }, choices.options[1]!] };
+  const { project, target, readPage } = arrange("blank", [original, continuation]);
+  const { after } = runPrimitive(project, target, "cmd.choices.update", {
+    ...updatePosition([original, continuation], original), appendOption: "다음에",
+  });
+  expect(readPage(after).commands).toStrictEqual([{
+    ...original, options: [...original.options, { text: "다음에", branch: [] }],
+  }, continuation]);
+});
+
+it("여섯 개가 저장된 선택지의 문구는 고칠 수 있고 새 선택지는 다섯 개까지만 만든다", () => {
+  const original = { ...choices, options: Array.from({ length: 6 }, (_, i) => ({ text: `기존 ${i}`, branch: [continuation] })) };
+  const optionLabels = original.options.map((_, i) => `수정 ${i}`);
+  const { project, target, readPage } = arrange("blank", [original]);
+  const args = updatePosition([original], original);
+  const { after } = runPrimitive(project, target, "cmd.choices.update", { ...args, optionLabels });
+  expect(readPage(after).commands).toStrictEqual([{
+    ...original, options: original.options.map((option, i) => ({ ...option, text: optionLabels[i] })),
+  }]);
+  expect(() => runPrimitive(project, target, "cmd.choices.update", { ...args, appendOption: "더 보기" })).toThrow("다섯 개");
+  expect(() => runPrimitive(project, target, "cmd.choices.insert", { optionLabels })).toThrow(PrimitiveError);
 });
 
 it("아이템 제시 목록을 바꿀 때 기존 정답과 분기를 계속 사용할 수 있어야 한다", () => {
@@ -545,7 +584,7 @@ it("아이템 제시를 수정한 뒤 오답과 닫기는 각 분기를 실행�
 it("중첩 선택지를 편집해도 숨김, 비활성, 취소를 플레이할 수 있고 실행 취소가 복원한다", async () => {
   const nestedChoice = {
     ...choices,
-    options: [choices.options[0]!, {
+    options: [{ ...choices.options[0]!, branch: [{ kind: "text" as const, body: "숨긴 선택지의 대사입니다." }] }, {
       ...choices.options[1]!, enableWhen: { kind: "switch", switchId, value: false } as const,
     }],
   };

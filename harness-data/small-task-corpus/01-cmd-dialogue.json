@@ -160,12 +160,12 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].flipHorizontally", "equals": true}]
   },
   {
-    "request": "기본 배역 얼굴을 오른편에 흉상으로 하나 더 붙여.",
+    "request": "공용 소년 흉상을 오른편에 하나 더 붙여.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.insert",
-    "args": {"presentation": "bust", "position": "right"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "bust"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "right"}]
+    "args": {"resourceId": "shared-people1-boy-expressions-bust-base", "presentation": "bust", "position": "right"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].resourceId", "equals": "shared-people1-boy-expressions-bust-base"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "bust"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "right"}]
   },
   {
     "request": "대화 끝에 기본 얼굴 소재를 다시 한 번 지정해 주세요.",
@@ -176,12 +176,12 @@
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].resourceId", "equals": "easyrpg-faceset-actor1-00"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "left"}]
   },
   {
-    "request": "전신 초상을 추가하고 기본 크기의 두 배로 보여 줘.",
+    "request": "공용 소년 전신 초상을 추가하고 기본 크기의 두 배로 보여 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.insert",
-    "args": {"presentation": "full", "fullScale": 200},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "full"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].fullScale", "equals": 200}]
+    "args": {"resourceId": "shared-people1-boy-expressions-full-base", "presentation": "full", "fullScale": 200},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].resourceId", "equals": "shared-people1-boy-expressions-full-base"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "full"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].fullScale", "equals": 200}]
   },
   {
     "request": "자료에도 없는 달의 기사 얼굴을 하나 더 띄워.",
@@ -253,7 +253,8 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
     "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "presentation": "bust"},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "표시할 초상이 없습니다"
   },
   {
     "request": "첫 얼굴을 가져온 적 없는 초상으로 교체해.",

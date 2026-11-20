@@ -15,6 +15,8 @@
 
 공용 명령 `cmd.delete`와 `cmd.move`는 `index`와 `expectedHash`를 필수로 받고 분기 안의 줄에는 `branchPath`를 받는다. `cmd.move`의 `toIndex`는 같은 목록에서 이동 후의 위치다. `get_event`에서 `includeCommandHashes`를 켜고 명령 위치와 해시를 읽는다. 줄의 해시가 달라졌으면 이벤트를 다시 읽으라는 안내를 돌려준다. 내용이 있는 분기 명령은 자식과 함께 이동할 수 있다. 자식이 남은 분기, 하위 분기에서 참조하는 위치 표시, 다른 이벤트에서 제거하는 출현 대상을 삭제하면 한국어 사유로 거절한다.
 
+대화 명령을 수정하거나 삽입 위치를 지정할 때는 `get_event`의 `commandHashTarget: { pageId, index?, branchPath? }`으로 이벤트 본문 없이 페이지 해시를 읽을 수 있다. 반환된 `expectedPageHash`는 기존의 순서대로 나열한 `expectedPageHashes`를 대신한다. 수정할 때는 줄 번호를 함께 조회해 반환된 `expectedHash`도 전달한다.
+
 ## 편집 범위
 
 | 범위 | 편집 가능한 내용 |
@@ -42,9 +44,4 @@ Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 
 
 화면 하네스는 `SHOTS_CASES`와 `SHOTS_OUT`이 설정되면 실행된다. 사례는 `{ fixture, setup?, target, primitive, args, label }` 배열이다. `setup`의 선택 필드 `mapName`, `events`, `database`로 화면에 열 시드를 준비하고 `rect: {x,y,w,h}`로 캔버스 영역을 선택한다. 빈 픽스처에 맵 이름, 이벤트, 영역을 제공하면 편집기의 기본 맵이 추가된다. 브라우저는 실제 작은 일 상자를 열고, Pi HTTP 요청을 받아 공용 동작 실행기로 처리한 응답을 돌려준다. 변경과 복원을 확인하며 `NN-before.png`, `NN-after.png`, `NN-summary.png`, `NN-undo.png`를 만든다. `test/piAgentSmallTask.bun.test.ts`는 모델 스트림을 고정해 실제 Pi 워커의 도구 호출과 실패 시 사본 폐기를 검증한다.
 
-```sh
-DEV_SERVER_PORT=9900 SHOTS_CASES=artifacts/step2/00-core/shots.json \
-  SHOTS_OUT=artifacts/step2/00-core npx playwright test test/e2e/small-task-primitive-shots.spec.ts
-```
-
-2단계 병렬 검증에서는 위 명령을 공용 슬롯 제한기로 실행한다. 첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.
+화면 검수용 GitHub Actions 잡에서 `SHOTS_CASES`를 러너의 사례 JSON 경로로, `SHOTS_OUT`을 이미지 출력 경로로 지정한다. 그 환경에서 `test/e2e/small-task-primitive-shots.spec.ts`를 실행하고 출력 폴더를 아티팩트로 보관한다. 기본 PR 워크플로는 두 변수를 설정하지 않는다. 첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.

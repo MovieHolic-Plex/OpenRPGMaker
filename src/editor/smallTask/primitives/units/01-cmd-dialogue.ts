@@ -4,7 +4,9 @@ import { newCommand } from "@/editor/eventCommandFactory";
 import type { JsonSchema } from "@/editor/tools/types";
 import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
-import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
+import { EventCommandEditError, eventCommandHash, eventCommandPageHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
+import { ProjectFormatError } from "@/project/io/errors";
+import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { scopedPage, updateScopedPage } from "../core/helpers";
@@ -26,11 +28,15 @@ const branchPathField: JsonSchema = {
 };
 const expectedHashField: JsonSchema = {
   type: "string", minLength: 1,
-  description: "get_event에서 includeCommandHashes를 켜고 읽은 이 줄의 확인값(hash).",
+  description: "get_event의 commandHashTarget에서 받은 expectedHash 또는 includeCommandHashes에서 읽은 줄 해시.",
+};
+const expectedPageHashField: JsonSchema = {
+  type: "string", minLength: 1,
+  description: "get_event의 commandHashTarget에서 받은 expectedPageHash. 수정하거나 삽입 위치를 지정할 때 이 값 또는 expectedPageHashes가 필요합니다.",
 };
 const expectedPageHashesField: JsonSchema = {
   type: "array", items: { type: "string", minLength: 1 },
-  description: "get_event에서 includeCommandHashes를 켜고 읽은 해당 페이지의 최상위 줄(branchPath가 빈 줄) 해시를 순서대로 넣습니다. 수정하거나 삽입 위치를 지정할 때 필요합니다. 빈 페이지는 빈 배열을 넣습니다.",
+  description: "expectedPageHash 대신 사용할 수 있는 목록. get_event의 includeCommandHashes에서 읽은 최상위 줄(branchPath가 빈 줄) 해시를 순서대로 넣습니다.",
 };
 
 function commandLocation(page: EventPage, action: Action, args: Args) {
@@ -112,7 +118,10 @@ function editChoices(
 
 function commandFields(kind: DialogueKind, action: Action): Record<string, JsonSchema> {
   const fields: Record<string, JsonSchema> = { ...dialogueFields[kind].fields };
-  if (kind === "choices" && action === "update") fields.appendOption = dialogueFields.choices.appendOption;
+  if (kind === "choices") {
+    if (action === "insert") fields.optionLabels = { ...dialogueFields.choices.fields.optionLabels, maxItems: MAX_SHOWN_CHOICES };
+    else fields.appendOption = dialogueFields.choices.appendOption;
+  }
   if (kind === "presentItem" && action === "insert") fields.correctItemIds = dialogueFields.presentItem.correctItemIds;
   return fields;
 }
@@ -181,22 +190,21 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     if (!inserting && eventCommandHash(current!) !== expectedHash) {
       throw new PrimitiveError(STALE_COMMAND_LIST);
     }
-    const expectedPageHashes = args.expectedPageHashes;
+    const { expectedPageHash, expectedPageHashes } = args;
     const positioned = !inserting || args.index !== undefined || path.length > 1;
-    if (positioned || expectedPageHashes !== undefined) {
-      if (expectedPageHashes === undefined) {
-        throw new PrimitiveError("명령 위치를 확인할 수 없습니다. 페이지의 최상위 명령 해시를 읽어 주세요.");
-      }
-      // 최상위 명령 해시는 하위 분기도 포함하므로 같은 내용의 줄로 위치가 밀려도 확인할 수 있다.
-      if (!jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes)) {
-        throw new PrimitiveError(STALE_COMMAND_LIST);
-      }
+    if (positioned && expectedPageHash === undefined && expectedPageHashes === undefined) {
+      throw new PrimitiveError("명령 위치를 확인할 수 없습니다. 페이지 명령 해시를 읽어 주세요.");
+    }
+    // 페이지와 최상위 줄 해시는 하위 분기를 포함한다.
+    if ((expectedPageHash !== undefined && eventCommandPageHash(page) !== expectedPageHash) ||
+        (expectedPageHashes !== undefined && !jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes))) {
+      throw new PrimitiveError(STALE_COMMAND_LIST);
     }
     const edits = Object.fromEntries(Object.keys(fields).filter(key => Object.hasOwn(args, key)).map(key => [key, args[key]]));
     if (!inserting && Object.keys(edits).length === 0) throw new PrimitiveError("바꿀 값을 하나 이상 입력해 주세요.");
     const base = (inserting ? newCommand(kind) : current) as DialogueCommand;
     const { command, patch } = nextCommand(ctx.project, base, action, edits);
-    return { page, path, index, command, patch, current };
+    return { page, path, index, command, patch };
   }
 
   return {
@@ -211,10 +219,11 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
         index: inserting ? { ...indexField, description: "끼워 넣을 위치. 첫 줄은 0이며, 생략하면 끝에 추가합니다." } : indexField,
         branchPath: branchPathField,
         ...(inserting ? {} : { expectedHash: expectedHashField }),
+        expectedPageHash: expectedPageHashField,
         expectedPageHashes: expectedPageHashesField,
         ...fields,
       },
-      required: inserting ? insertRequires : ["index", "expectedHash", "expectedPageHashes"],
+      required: inserting ? insertRequires : ["index", "expectedHash"],
       additionalProperties: false,
     },
     scope(ctx) {
@@ -230,25 +239,29 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
       return `「${detail.length <= room ? detail : detail.slice(0, room - 1).trimEnd() + "…"}${ending}`;
     },
     apply(ctx, args) {
-      const { page, path, index, command, patch, current } = prepare(ctx, args);
+      const { page, path, index, command, patch } = prepare(ctx, args);
       validateDialogueReferences(ctx.project, command, patch);
       let nextPage: EventPage;
       try {
         if (inserting) {
           nextPage = insertEventCommand(page, path, command);
+        } else if (command.kind === "choices") {
+          // 기존 분기 안의 명령은 이 편집의 검증 대상이 아니다. 새 분기는 비어 있다.
+          validateCommandArray("선택지", [{
+            ...command,
+            options: command.options.map(option => ({ ...option, branch: [] })),
+            ...(command.cancelBranch !== undefined ? { cancelBranch: [] } : {}),
+          }]);
+          const commands = structuredClone(page.commands);
+          resolveCommandListAtPath(commands, path)![index] = structuredClone(command);
+          nextPage = { ...page, commands };
         } else {
-          if (command.kind === "choices" && current?.kind === "choices" &&
-              (command.options.length !== current.options.length || command.cancelBranch !== current.cancelBranch ||
-               (current.cancelBehavior === "branch" && current.cancelBranch === undefined && command.cancelBehavior !== "branch"))) {
-            // 분기 안의 명령은 보존한다. 빈 분기가 생기거나 표시되지 않을 때는 머리줄을 교체한다.
-            nextPage = insertEventCommand(page, path, command);
-            resolveCommandListAtPath(nextPage.commands, path)!.splice(index + 1, 1);
-          } else {
-            nextPage = updateEventCommand(page, path, patch, args.expectedHash as string);
-          }
+          nextPage = updateEventCommand(page, path, patch, args.expectedHash as string);
         }
       } catch (error) {
-        if (error instanceof EventCommandEditError) throw new PrimitiveError("명령 값이나 분기 위치를 다시 확인해 주세요.");
+        if (error instanceof EventCommandEditError || error instanceof ProjectFormatError) {
+          throw new PrimitiveError("명령 값이나 분기 위치를 다시 확인해 주세요.");
+        }
         throw error;
       }
 

@@ -2,7 +2,6 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { JsonSchema } from "@/editor/tools/types";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
-import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { DIALOGUE_FULL_PORTRAIT_LIMITS } from "@/project/dialogueStyles";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { validateCommands } from "@/project/io/commandReferenceValidation";
@@ -53,7 +52,7 @@ export const dialogueFields = {
     fields: {
       prompt: string("선택지와 함께 표시할 질문."),
       optionLabels: {
-        type: "array", minItems: 1, maxItems: MAX_SHOWN_CHOICES,
+        type: "array", minItems: 1,
         items: id("화면에 표시할 선택지 문구."),
         description: "화면 순서대로 적은 선택지 문구. 수정할 때는 기존 선택지 수와 같아야 합니다.",
       },
