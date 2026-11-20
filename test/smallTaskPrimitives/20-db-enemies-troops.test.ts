@@ -672,7 +672,7 @@ it("열린 이벤트의 슬롯이 사용한 전투 명령 식별자를 다시 �
   expect(store.getCurrent()).toBe(live);
 });
 
-it("전투 명령이 사용하는 무리만 빈 명단으로 바꾸는 것을 거절한다", () => {
+it("저장된 전투 이벤트가 사용하는 한 마리 무리는 명단을 비울 수 없다", () => {
   const seed = fixtureProject("built");
   const map = seed.maps[seed.startMapId]!;
   const id = "troop_bat_swarm";
@@ -680,10 +680,17 @@ it("전투 명령이 사용하는 무리만 빈 명단으로 바꾸는 것을 �
     id: "event_roster_battle", name: "전투", x: 0, y: 0, trigger: { kind: "action" },
     commands: [{ kind: "battleProcessing", troopId: id, canEscape: false, canLose: true }],
   };
-  const project = { ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, event] } } };
-  expectRefused(project, select(project, "troops", id), "db.troops.update", { members: [] }, /한 마리 이상/u);
-  const { after } = runPrimitive(seed, select(seed, "troops", id), "db.troops.update", { members: [] });
-  expect(after.database.troops.find(troop => troop.id === id)?.enemyIds).toEqual([]);
+  const troops = editRow(seed.database.troops, id, troop => ({
+    ...troop, members: troop.members!.slice(0, 1), enemyIds: troop.enemyIds.slice(0, 1), battleEventPages: [],
+  }));
+  const unused = { ...seed, database: { ...seed.database, troops } };
+  const project = { ...unused, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, event] } } };
+  const target = select(project, "troops", id);
+  expectRefused(project, target, "db.troops.update", { members: [] }, /한 마리 이상/u);
+  const replacement = runPrimitive(project, target, "db.troops.update", { members: [{ enemyId: "enemy_slime" }] }).after;
+  expect(replacement.database.troops.find(troop => troop.id === id)?.enemyIds).toEqual(["enemy_slime"]);
+  const { after } = runPrimitive(unused, select(unused, "troops", id), "db.troops.update", { members: [] });
+  expect(after.database.troops.find(troop => troop.id === id)).toMatchObject({ members: [], enemyIds: [] });
 });
 
 it("레코드 ID로 나오는 숨은 증원 개체를 보호한다", () => {

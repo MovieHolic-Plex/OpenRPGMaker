@@ -131,6 +131,7 @@ function validateCommandShape(label: string, value: unknown): void {
     case "setSelfSwitch":
       requireSelfSwitchKey(`${label}.key`, command.key);
       requireBoolean(`${label}.value`, command.value);
+      if (command.skipDuringFastForward !== undefined) requireBoolean(`${label}.skipDuringFastForward`, command.skipDuringFastForward);
       return;
     case "setSwitch":
       requireString(`${label}.switchId`, command.switchId);

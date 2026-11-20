@@ -425,6 +425,9 @@ const getEvent: ToolDefinition = {
     return {
       summary: `이벤트 '${event.id}' (${event.x},${event.y}) — 페이지 ${pages.length}개`,
       data: {
+        ...(args.includeCommandHashes === true ? {
+          pageHashes: pages.map(page => ({ pageId: page.id, pageHash: eventCommandListHash(page.commands) })),
+        } : {}),
         event,
         ...(args.includeCommandHashes === true ? {
           commandHashes: pages.map(page => ({ pageId: page.id, commands: commandHashes(page.commands) })),

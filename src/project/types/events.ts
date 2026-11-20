@@ -789,7 +789,7 @@ export type Command =
   | { kind: "ending"; title: string; message: string; presentation?: import("../cinematicSettings").EndingPresentation }
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
-  | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }
+  | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean; skipDuringFastForward?: boolean }
   | { kind: "m2Command"; commandId: string; fields: M2CommandFields }
   /** 난이도 변경(system.difficulties 의 id). 없는 id 는 무시한다. */
   | { kind: "setDifficulty"; difficultyId: string }
