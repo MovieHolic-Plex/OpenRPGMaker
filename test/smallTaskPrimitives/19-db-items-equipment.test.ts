@@ -317,7 +317,7 @@ describe("자료집 프리미티브", () => {
       })).rejects.toThrow(/쓰는 자료집 항목/u);
       expect(ctx.project).toBe(before);
       const { after } = runPrimitive(before, selected, "db.items.delete", {});
-      expect(() => commitSmallTask(live, before, after, selected)).toThrow(/사용 중/u);
+      expect(() => commitSmallTask(live, before, after, selected)).toThrow(/쓰는 자료집 항목/u);
       expect(store.getCurrent()).toBe(live);
       expect(getMapEditHistoryDepth()).toBe(0);
     } finally {

@@ -1022,7 +1022,7 @@ export function playMovieBody(
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "play-movie-command-body");
   const project = store.getCurrent();
-  const movies = listMovieResources(project);
+  const movies = listMovieResources(project, cmd.resourceId);
   const resource = recordPickerWithPreview({
     records: movies,
     selectedId: cmd.resourceId,
