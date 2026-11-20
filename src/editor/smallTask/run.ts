@@ -7,7 +7,7 @@ import { commitChangeset } from "@/editor/tools/changeset";
 import type { Project } from "@/project/types";
 import {
   LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL,
-  SELECT_EVENT_PAGE, STALE_COMMAND_LIST,
+  SAVE_QUEST_EVENT_FIRST, SELECT_EVENT_PAGE, STALE_COMMAND_LIST,
 } from "./primitives/errors";
 import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
@@ -52,6 +52,7 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
       : locationId && locationDeletionDraftError(before, target.mapId, locationId, live);
     if (message) throw new SmallTaskError(message);
   }
+  if (result.stoppedEarly?.split("\n", 1)[0] === SAVE_QUEST_EVENT_FIRST) throw new SmallTaskError(SAVE_QUEST_EVENT_FIRST);
   if (result.stoppedEarly) throw new Error(result.stoppedEarly);
   if ((result.changedKeys?.length ?? 0) === 0) return before;
   if (!commitChangeset(result.project, before).ok) throw new SmallTaskError("선택한 대상에 요청한 변경을 적용할 수 없어요.");

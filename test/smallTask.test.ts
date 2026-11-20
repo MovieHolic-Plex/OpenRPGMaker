@@ -108,6 +108,9 @@ it.each([
     stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc2`,
     shownMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, dialogueCaller: true },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
+    stoppedEarly: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.\n범위 밖: 퀘스트가 사용하는 미저장 이벤트",
+    shownMessage: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요." },
 ])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
   kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft,
   shownMessage, savedMapReference, draftLocationId, dialogueCaller,

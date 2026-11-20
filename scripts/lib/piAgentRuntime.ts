@@ -515,6 +515,9 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         if (primitive?.unit === "28-project-data") {
           // Keep the map and tileset baseline, including any checked tile-event additions.
           regionBaseline = { ...ctx.project, maps: regionBaseline.maps, tilesets: regionBaseline.tilesets };
+        } else if (primitive?.unit === "27-quests") {
+          // The primitive checked the quest changes independently of the tile rectangle.
+          regionBaseline = { ...regionBaseline, quests: ctx.project.quests };
         } else if (primitive?.id !== "event.tile.create") {
           const result = checkSmallTaskScope(before, ctx.project, regionScope, draftSource);
           if (!result.ok) {

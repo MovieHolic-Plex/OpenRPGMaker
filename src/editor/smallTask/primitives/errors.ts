@@ -5,6 +5,7 @@ export const SELECT_EVENT_PAGE = "이벤트 페이지가 여러 개예요. 고�
 export const MAP_REMOVAL_DRAFT_REFUSAL = "맵 삭제 초안 보호: ";
 export const MAP_REMOVAL_REFERENCE_REFUSAL = "맵 삭제 참조 보호: ";
 export const LOCATION_DELETION_DRAFT_REFUSAL = "장소 삭제 초안 보호: ";
+export const SAVE_QUEST_EVENT_FIRST = "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.";
 
 export class PrimitiveError extends SmallTaskError {
   constructor(message: string) {
