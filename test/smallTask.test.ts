@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { dbTarget, mapTarget, type SmallTaskCollection } from "@/editor/smallTask/target";
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
+import { canvasSmallTask } from "@/editor/smallTask/capsule";
 import type { GameEvent, Project } from "@/project/types";
+import { installFakeDom } from "./fakeDom";
 
 const collections: SmallTaskCollection[] = ["actors", "classes", "items", "skills", "enemies", "troops", "states", "equipment"];
 function fixture(): Project {
@@ -46,6 +48,36 @@ describe("호스트가 고른 작은 일 대상", () => {
     expect(smallTaskRefusal(target, tool, { [key]: { id: "foreign" } })).toBeTruthy();
     expect(smallTaskRefusal(target, tool === "upsert_skill" ? "upsert_actor" : "upsert_skill", args)).toBeTruthy();
   });
+});
+
+it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼에 초점을 돌려준다", () => {
+  const restoreDom = installFakeDom({ window: true });
+  vi.stubGlobal("innerWidth", window.innerWidth);
+  vi.stubGlobal("innerHeight", window.innerHeight);
+  const createElement = document.createElement.bind(document);
+  const create = vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+    const element = createElement(tag);
+    if (tag === "section") element.showPopover = () => {};
+    return element;
+  });
+  try {
+    const toolbar = document.createElement("div");
+    toolbar.classList.add("canvas-toolbar");
+    const original = canvasSmallTask(), replacement = canvasSmallTask();
+    const otherTrigger = canvasSmallTask();
+    document.body.append(otherTrigger, toolbar);
+    toolbar.append(original);
+    original.click();
+    expect(document.querySelector(".small-task")).not.toBeNull();
+    toolbar.replaceChildren(replacement);
+    document.dispatchEvent(Object.assign(new Event("keydown", { cancelable: true }), { key: "Escape" }));
+    expect(document.querySelector(".small-task")).toBeNull();
+    expect(document.activeElement).toBe(replacement);
+  } finally {
+    create.mockRestore();
+    vi.unstubAllGlobals();
+    restoreDom();
+  }
 });
 
 describe("명세를 읽는 쉬운 말 요약", () => {

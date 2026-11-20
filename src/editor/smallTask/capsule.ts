@@ -46,6 +46,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   const closeButton = el("button", { text: "닫기", attrs: { type: "button" } });
   box.append(el("header", { children: [title, closeButton] }), form, status);
   const dialog = anchor.closest('[role="dialog"]');
+  const toolbar = anchor.closest(".canvas-toolbar");
   (dialog ?? document.body).append(box);
   box.showPopover();
   const place = () => {
@@ -64,6 +65,10 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
     box.remove();
     dismiss = undefined;
     if (anchor.isConnected) anchor.focus({ preventScroll: true });
+    else if (toolbar) {
+      const host = toolbar.isConnected ? toolbar : document.querySelector(".canvas-toolbar");
+      host?.querySelector<HTMLElement>('[data-testid="small-task-open"]')?.focus({ preventScroll: true });
+    }
   };
   document.addEventListener("pointerdown", event => {
     if (!input.disabled && form.isConnected && event.target instanceof Node && !box.contains(event.target)) close();
@@ -112,6 +117,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
         const undo = el("button", { text: "되돌리기", attrs: { type: "button" } });
         undo.onclick = async () => {
           undo.disabled = true;
+          let message = "현재 편집을 유지했어요.";
           // 기본 확인 창이 팝오버보다 앞에서 키보드와 포인터를 받게 한다.
           const done = await receipt.undo(async () => {
             box.hidePopover();
@@ -119,9 +125,11 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
               return await showConfirm({ title: "뒤에 고친 내용이 있어요", message: "이 작업 뒤의 편집도 함께 되돌릴까요?",
                 confirmLabel: "함께 되돌리기", cancelLabel: "유지하기" });
             } finally { if (box.isConnected) box.showPopover(); }
+          }, () => {
+            message = "이 이벤트를 작업 뒤에 직접 고쳐서 되돌리지 않았어요. 창에서 먼저 저장하거나 취소해 주세요.";
           });
           if (done) status.replaceChildren("되돌렸어요.");
-          else { undo.disabled = false; status.querySelector("small")?.remove(); status.append(el("small", { text: "현재 편집을 유지했어요." })); }
+          else { undo.disabled = false; status.querySelector("small")?.remove(); status.append(el("small", { text: message })); }
         };
         const details = summary.lines.length === 1 ? [] : summary.lines;
         status.replaceChildren(...(details.length ? [el("ul", { children: details.map(text => el("li", { text })) })] : []), undo);

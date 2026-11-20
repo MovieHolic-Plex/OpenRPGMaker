@@ -1,7 +1,11 @@
 /** @vitest-environment happy-dom */
 import { beforeEach, expect, it, vi } from "vitest";
-import { discardEventDraft } from "@/editor/eventDraftActions";
-import { applyProjectWithHistory, getMapEditHistoryDepth, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { beginExistingEventDraft, discardEventDraft } from "@/editor/eventDraftActions";
+import {
+  applyProjectWithHistory, getMapEditHistoryDepth, getMapEditHistoryEntries, getMapEditHistoryMarker,
+  getMapEditHistoryRevision, getMapEditRedoEntries, peekPreviousProject, redoMapEdit, redoToHistoryIndex,
+  resetMapEditHistory, revertToHistoryIndex, revertToHistoryMarker, undoMapEdit,
+} from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { mapTarget } from "@/editor/smallTask/target";
 import { HISTORY_TOOLS } from "@/editor/tools/historyTools";
@@ -21,13 +25,13 @@ beforeEach(() => {
   resetMapEditHistory();
 });
 
-function task() {
+function task(eventId = "ev_1", name = "약초상") {
   const live = store.getCurrent();
-  const target = mapTarget(live, live.startMapId, "ev_1")!;
+  const target = mapTarget(live, live.startMapId, eventId)!;
   const before = smallTaskBase(live, target);
   const after = structuredClone(before);
-  const event = after.maps[after.startMapId].events[0];
-  event.name = "약초상";
+  const event = after.maps[after.startMapId].events.find(e => e.id === eventId)!;
+  event.name = name;
   event.commands.push({ kind: "text", body: "어서 오세요." });
   return { live, after, receipt: commitSmallTask(live, before, after, target)! };
 }
@@ -105,4 +109,65 @@ it("이벤트 창을 닫은 뒤 되돌려도 닫힌 초안을 다시 열지 않�
   expect(redoMapEdit()).toBe(true);
   expect(current().name).toBe("약초상");
   expect(current().draft).toBeUndefined();
+});
+
+it.each([
+  ["undoMapEdit", false, () => undoMapEdit()],
+  ["revertToHistoryMarker", false, (marker: number) => revertToHistoryMarker(marker)],
+  ["revertToHistoryIndex", false, () => revertToHistoryIndex(0)],
+  ["redoMapEdit", true, () => redoMapEdit()],
+  ["redoToHistoryIndex", true, () => redoToHistoryIndex(0)],
+] as const)("%s: 다시 연 창의 작업 뒤 손편집을 보호한다", (_name, redo, restore) => {
+  const mapId = store.getCurrent().startMapId;
+  beginExistingEventDraft(mapId, "ev_1");
+  const marker = getMapEditHistoryMarker();
+  task();
+  if (redo) expect(undoMapEdit()).toBe(true);
+  expect(discardEventDraft(mapId, "ev_1")).toBe(true);
+  expect(beginExistingEventDraft(mapId, "ev_1")).toBe(true);
+  store.updateEvent(mapId, "ev_1", event => { event.commands.push({ kind: "text", body: "다시 열어서 직접 작성" }); });
+  const live = store.getCurrent();
+  const undoEntries = getMapEditHistoryEntries(), redoEntries = getMapEditRedoEntries();
+  const revision = getMapEditHistoryRevision();
+  expect(restore(marker)).toBe(false);
+  expect(store.getCurrent()).toBe(live);
+  expect(getMapEditHistoryEntries()).toEqual(undoEntries);
+  expect(getMapEditRedoEntries()).toEqual(redoEntries);
+  expect(getMapEditHistoryRevision()).toBe(revision);
+});
+
+it.each([false, true])("두 초안을 각 작업의 전후 본문으로 복원한다 (개별 되돌리기 %s)", individually => {
+  const mapId = store.getCurrent().startMapId;
+  store.updateMap(mapId, map => { map.events.push({ ...structuredClone(map.events[0]), id: "ev_2", name: "경비" }); });
+  for (const [id, body] of [["ev_1", "상인의 손편집"], ["ev_2", "경비의 손편집"]]) {
+    beginExistingEventDraft(mapId, id);
+    store.updateEvent(mapId, id, event => { event.commands.push({ kind: "text", body }); });
+  }
+  const before = store.getCurrent().maps[mapId].events;
+  task("ev_1", "약초상");
+  task("ev_2", "성문 경비");
+  const after = store.getCurrent().maps[mapId].events;
+  if (individually) {
+    expect(undoMapEdit()).toBe(true);
+    expect(undoMapEdit()).toBe(true);
+  } else {
+    expect(revertToHistoryIndex(0)).toBe(true);
+  }
+  expect(store.getCurrent().maps[mapId].events).toEqual(before);
+  expect(redoToHistoryIndex(0)).toBe(true);
+  expect(store.getCurrent().maps[mapId].events).toEqual(after);
+});
+
+it.each([
+  [["ev_removed", "ev_1", "ev_new", "ev_last"], ["ev_1", "ev_new", "ev_last"]],
+  [["ev_removed", "ev_new", "ev_1", "ev_last"], ["ev_new", "ev_1", "ev_last"]],
+])("앞선 초안이 빠진 스냅샷에서도 새 초안의 위치를 보존한다 (%j)", (order, expected) => {
+  const mapId = store.getCurrent().startMapId;
+  store.updateMap(mapId, map => {
+    map.events = order.map(id => ({ ...structuredClone(map.events[0]), id,
+      ...(id === "ev_removed" || id === "ev_new" ? { draft: { kind: "new" } as const } : {}),
+    }));
+  });
+  task("ev_new");
+  expect(peekPreviousProject()?.maps[mapId].events.map(event => event.id)).toEqual(expected);
 });

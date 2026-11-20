@@ -1,4 +1,4 @@
-import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
+import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
@@ -42,10 +42,14 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
   if (!applied) return null;
   const committed = store.getCurrent();
   return {
-    async undo(confirmLaterEdits: () => Promise<boolean>): Promise<boolean> {
+    async undo(confirmLaterEdits: () => Promise<boolean>, onDraftConflict?: () => void): Promise<boolean> {
       const find = () => store.getVersionToken().lineage === lineage && getMapEditHistoryEntries().find(e => e.at === marker);
       const entry = find();
       if (!entry) return false;
+      if (hasRevertDraftConflict(entry.index)) {
+        onDraftConflict?.();
+        return false;
+      }
       if (entry.steps === 1 && (committed === store.getCurrent() || jsonEqual(committed, store.getCurrent()))) return undoMapEdit();
       const version = store.getVersionToken();
       if (!await confirmLaterEdits() || !find() || !jsonEqual(version, store.getVersionToken())) return false;

@@ -1,7 +1,7 @@
-import type { GameMap, MapId, Project } from "@/project/types";
-import { mapWithCommittedEvents, projectWithoutEventDrafts, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
+import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { eventWithoutDraft, mapWithCommittedEvents, projectWithoutEventDrafts, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { hasEventDraftVaultEntries } from "@/project/eventDraftVault";
-import { store, type ProjectChangeAnnotation, type ProjectChangeCell } from "@/project/store";
+import { hasChangedWorkingEventDraft, store, type ProjectChangeAnnotation, type ProjectChangeCell, type WorkingEventAdoption } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { jsonEqual } from "@/util/structuralJson";
@@ -38,24 +38,42 @@ function projectSnapshotSharingTilesets(project: Project): Project {
 type WorkingEvent = { readonly mapId: string; readonly eventId: string };
 
 type ProjectSnapshot = {
-  readonly workingEvents?: readonly WorkingEvent[];
+  readonly workingEvents?: readonly WorkingEventAdoption[];
   readonly kind: "project";
   readonly before: Project;
 };
+
+function copyWorkingEvent(events: GameEvent[], source: readonly GameEvent[], event: GameEvent): void {
+  const index = events.findIndex(item => item.id === event.id);
+  if (index >= 0) {
+    events[index] = structuredClone(event);
+    return;
+  }
+  let predecessor = -1;
+  for (let i = source.indexOf(event) - 1; i >= 0 && predecessor < 0; i -= 1) {
+    predecessor = events.findIndex(item => item.id === source[i].id);
+  }
+  events.splice(predecessor + 1, 0, structuredClone(event));
+}
 
 /** Most history entries own canonical data. An edit from an open event window also owns its working copy. */
 function projectSnapshot(project: Project, workingEvents: readonly WorkingEvent[] = []): ProjectSnapshot {
   const before = projectSnapshotSharingTilesets(project);
   for (const { mapId, eventId } of workingEvents) {
-    const event = project.maps[mapId]?.events.find(item => item.id === eventId);
-    if (!event?.draft) continue;
-    // Insert at the live position for a new draft (it has no canonical row yet).
-    const events = before.maps[mapId].events;
-    const index = events.findIndex(item => item.id === eventId);
-    if (index >= 0) events[index] = structuredClone(event);
-    else events.splice(project.maps[mapId].events.indexOf(event), 0, structuredClone(event));
+    const source = project.maps[mapId]?.events;
+    const event = source?.find(item => item.id === eventId);
+    if (source && event?.draft) copyWorkingEvent(before.maps[mapId].events, source, event);
   }
-  return { kind: "project", before, ...(workingEvents.length ? { workingEvents } : {}) };
+  return { kind: "project", before };
+}
+
+function withWorkingEventExpectations(snapshot: ProjectSnapshot, workingEvents: readonly WorkingEvent[]): ProjectSnapshot {
+  if (!workingEvents.length) return snapshot;
+  const applied = store.getCurrent();
+  return { ...snapshot, workingEvents: workingEvents.map(({ mapId, eventId }) => {
+    const event = applied.maps[mapId]?.events.find(item => item.id === eventId);
+    return { mapId, eventId, expectedBody: event ? eventWithoutDraft(event) : null };
+  }) };
 }
 
 type MapSnapshot = {
@@ -172,7 +190,7 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
       }
       : null;
   }
-  return projectSnapshot(current, entry.snapshot.workingEvents);
+  return projectSnapshot(current);
 }
 
 function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Project {
@@ -206,6 +224,48 @@ function applyHistorySnapshots(base: Project, snapshots: readonly HistorySnapsho
   for (const [mapId, snapshot] of maps) next.maps[mapId] = structuredClone(snapshot.before);
   if (tilesets) next.tilesets = structuredClone(tilesets);
   return next;
+}
+
+function workingEventsIn(snapshots: readonly HistorySnapshot[]) {
+  const owned = new Map<string, { adoption: WorkingEventAdoption; source: Project }>();
+  for (const snapshot of snapshots) {
+    if (snapshot.kind !== "project") continue;
+    for (const event of snapshot.workingEvents ?? []) {
+      const key = JSON.stringify([event.mapId, event.eventId]);
+      // Traversal starts at the live end. The first owner guards that end;
+      // the last owner supplies the working copy at the destination.
+      owned.set(key, { adoption: owned.get(key)?.adoption ?? event, source: snapshot.before });
+    }
+  }
+  return [...owned.values()];
+}
+
+function applyHistoryJump(snapshots: readonly HistorySnapshot[], commit: (before: ProjectSnapshot) => void): boolean {
+  const live = store.getCurrent();
+  const owned = workingEventsIn(snapshots);
+  const adoptions = owned.map(({ adoption }) => adoption);
+  const project = applyHistorySnapshots(live, snapshots);
+  for (const { adoption: { mapId, eventId }, source } of owned) {
+    if (!live.maps[mapId]?.events.some(event => event.id === eventId && event.draft)) continue;
+    const events = project.maps[mapId]?.events;
+    if (!events) continue;
+    const sourceEvents = source.maps[mapId]?.events ?? [];
+    const event = sourceEvents.find(item => item.id === eventId);
+    if (event) copyWorkingEvent(events, sourceEvents, event);
+    else {
+      const index = events.findIndex(item => item.id === eventId);
+      if (index >= 0) events.splice(index, 1);
+    }
+  }
+  const before = projectSnapshot(live, adoptions);
+  let applied = false;
+  store.replace(project, { adoptWorkingEvents: adoptions, commitHistory: () => {
+    commit(withWorkingEventExpectations(before, adoptions));
+    lastCoalesceKey = null;
+    applied = true;
+  } });
+  if (applied) emitHistoryChange();
+  return applied;
 }
 
 /** Only dense base-layer edits qualify. Every other map shape uses full restoration. */
@@ -252,7 +312,7 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
     }, { cells });
     return;
   }
-  store.replace(applySnapshotToProject(current, snapshot), { adoptWorkingEvents: snapshot.kind === "project" ? snapshot.workingEvents : undefined });
+  store.replace(applySnapshotToProject(current, snapshot));
 }
 
 /** replace 가 쓰기 거부로 현재 프로젝트를 그대로 두면 false. 호출자가 스택을 되돌린다. */
@@ -370,7 +430,7 @@ export function applyProjectWithHistory(project: Project, label: string, options
   let applied = false;
   store.replace(project, { change: { label, origin: options.origin, eventId: options.workingEvent?.eventId }, adoptWorkingEvents: workingEvents, commitHistory: () => {
     lastCoalesceKey = null;
-    pushSnapshot(snapshot, label, options.mapId, options.separateStep);
+    pushSnapshot(withWorkingEventExpectations(snapshot, workingEvents), label, options.mapId, options.separateStep);
     applied = true;
   } });
   return applied;
@@ -454,6 +514,8 @@ export function recordCoalescedSnapshot(
 
 export function undoMapEdit(): boolean {
   if (!canWriteTeamProject()) return false;
+  const snapshot = undoStack.at(-1)?.snapshot;
+  if (snapshot?.kind === "project" && snapshot.workingEvents?.length) return revertToHistoryIndex(undoStack.length - 1);
   const previous = undoStack.pop();
   if (!previous) return false;
   const currentSnapshot = makeCurrentSnapshotForEntry(previous);
@@ -475,6 +537,8 @@ export function undoMapEdit(): boolean {
 
 export function redoMapEdit(): boolean {
   if (!canWriteTeamProject()) return false;
+  const snapshot = redoStack.at(-1)?.snapshot;
+  if (snapshot?.kind === "project" && snapshot.workingEvents?.length) return redoToHistoryIndex(redoStack.length - 1);
   const next = redoStack.pop();
   if (!next) return false;
   const currentSnapshot = makeCurrentSnapshotForEntry(next);
@@ -690,18 +754,15 @@ export function revertToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= undoStack.length) return false;
   const target = undoStack[index];
   const snapshots = undoStack.slice(index).reverse().map(entry => entry.snapshot);
-  const workingEvents = snapshots.flatMap(s => s.kind === "project" ? s.workingEvents ?? [] : []);
-  const project = applyHistorySnapshots(store.getCurrent(), snapshots);
-  const before = projectSnapshot(store.getCurrent(), workingEvents);
-  let applied = false;
-  store.replace(project, { adoptWorkingEvents: workingEvents, commitHistory: () => {
+  return applyHistoryJump(snapshots, before => {
     redoStack.push(makeEntry(before, target.label, target.mapId));
     undoStack = undoStack.slice(0, index);
-    lastCoalesceKey = null;
-    applied = true;
-  } });
-  if (applied) emitHistoryChange();
-  return applied;
+  });
+}
+
+export function hasRevertDraftConflict(index: number): boolean {
+  const snapshots = undoStack.slice(index).reverse().map(entry => entry.snapshot);
+  return hasChangedWorkingEventDraft(store.getCurrent(), workingEventsIn(snapshots).map(({ adoption }) => adoption));
 }
 
 /**
@@ -721,19 +782,11 @@ export function redoToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= redoStack.length) return false;
   const target = redoStack[index];
   const snapshots = redoStack.slice(index).reverse().map(entry => entry.snapshot);
-  const workingEvents = snapshots.flatMap(s => s.kind === "project" ? s.workingEvents ?? [] : []);
-  const project = applyHistorySnapshots(store.getCurrent(), snapshots);
-  const before = projectSnapshot(store.getCurrent(), workingEvents);
-  let applied = false;
-  store.replace(project, { adoptWorkingEvents: workingEvents, commitHistory: () => {
+  return applyHistoryJump(snapshots, before => {
     // 되돌릴 대상을 보존하려고 redoMapEdit 처럼 중복 제거 없이 기록한다.
     pushSnapshotForRedo(makeEntry(before, target.label, target.mapId));
     redoStack = redoStack.slice(0, index);
-    lastCoalesceKey = null;
-    applied = true;
-  } });
-  if (applied) emitHistoryChange();
-  return applied;
+  });
 }
 
 export function getMapEditHistoryDepth(): number {
