@@ -153,8 +153,8 @@ function location(number: string, title: string, teleport: boolean): Entry {
       const map = Object.hasOwn(ctx.project.maps, mapId) ? ctx.project.maps[mapId] : undefined;
       if (!map) throw new PrimitiveError("목적지 맵을 찾을 수 없습니다.");
       const useEventPosition = mapId === eventMap.id && !(editing && previous.mapId);
-      const x = Number(args.x ?? previous.x ?? (useEventPosition ? event.x : 0));
-      const y = Number(args.y ?? previous.y ?? (useEventPosition ? event.y : 0));
+      const x = Number(args.x ?? (editing ? previous.x : undefined) ?? (useEventPosition ? event.x : 0));
+      const y = Number(args.y ?? (editing ? previous.y : undefined) ?? (useEventPosition ? event.y : 0));
       if (!Number.isSafeInteger(x) || !Number.isSafeInteger(y) || !inBounds(map, x, y)) {
         throw new PrimitiveError("목적지 칸이 맵 범위 밖에 있습니다.");
       }

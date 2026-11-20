@@ -388,6 +388,19 @@ describe("시스템·메뉴 작은 일", () => {
   });
 });
 
+it("탈출 위치 삽입은 빠진 좌표에 이벤트 위치를 쓰고 부분 수정은 기존 좌표를 보존한다", () => {
+  const { project, target, event, commands } = scene("blank", []);
+  const inserted = runPrimitive(project, target, "m2.074.insert", { x: 5 });
+  const [initial] = commands(inserted.after);
+  expect(initial).toMatchObject({ fields: { x: 5, y: event.y } });
+  const explicitZero = runPrimitive(project, target, "m2.074.insert", { y: 0 });
+  expect(commands(explicitZero.after)[0]).toMatchObject({ fields: { x: event.x, y: 0 } });
+  const updated = runPrimitive(inserted.after, target, "m2.074.update", {
+    index: 0, expectedHash: eventCommandHash(initial), y: 0,
+  });
+  expect(commands(updated.after)[0]).toMatchObject({ fields: { x: 5, y: 0 } });
+});
+
 function play(id: string, args: Args) {
   const { project, target, map, commands } = scene("blank", []);
   const { after } = runPrimitive(project, target, id, args);
