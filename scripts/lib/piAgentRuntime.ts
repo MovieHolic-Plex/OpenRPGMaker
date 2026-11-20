@@ -73,6 +73,7 @@ import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
 import {
   createPiToolset,
+  formatPiToolFailure,
   selectPiToolDefinitions,
   harvestFindToolsNames,
   resolvePiToolShape,
@@ -471,6 +472,12 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     label: tool.name,
     async execute(_id, params) {
       const args = params as Record<string, unknown>;
+      if (tool.name === APPLY_SMALL_TASK_PRIMITIVE && target.kind === "map"
+        && (args.id === "map.tile.paint" || args.id === "map.region.fill")) {
+        const referencePurpose = (args.args as { referencePurpose?: unknown } | undefined)?.referencePurpose;
+        const gate = referenceGate.beforeWrite(ctx.project, "paint_tiles", { mapId: target.mapId, referencePurpose });
+        if (gate) throw new Error(formatPiToolFailure(gate));
+      }
       const before = ctx.project;
       const questsWereScoped = jsonEqual(before.quests, scopedQuests);
       const result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
