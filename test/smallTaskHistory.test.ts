@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { beginExistingEventDraft, discardEventDraft } from "@/editor/eventDraftActions";
 import {
   applyProjectWithHistory, getMapEditHistoryDepth, getMapEditHistoryEntries, getMapEditHistoryMarker,
@@ -13,7 +13,9 @@ import { createBlankProject } from "@/project/defaults/blankProject";
 import { store } from "@/project/store";
 import { jsonEqual } from "@/util/structuralJson";
 
-beforeEach(() => {
+let projectTemplate: ReturnType<typeof createBlankProject>;
+
+beforeAll(() => {
   const p = createBlankProject();
   const map = p.maps[p.startMapId];
   // The asset catalog is independent of undo ownership. Keep this fixture cheap to deep-compare.
@@ -21,7 +23,11 @@ beforeEach(() => {
   p.assets = { sprites: {}, uploaded: {} };
   p.resourceProfiles = [];
   map.events = [{ id: "ev_1", name: "상인", x: 2, y: 3, commands: [], trigger: { kind: "action" } }];
-  store.replaceProject(p);
+  projectTemplate = p;
+});
+
+beforeEach(() => {
+  store.replaceProject(structuredClone(projectTemplate));
   resetMapEditHistory();
 });
 

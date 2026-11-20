@@ -127,6 +127,21 @@ CSS 축은 그 한 잡이 vitest 에서 240분을 넘겨 한 번도 도달하지
 `project-start.css`)은 배럴에 이었고, 배틀 `24-` 접두사 충돌은 `30-backdrop-motion.css` 로
 갈랐다(import 위치는 그대로라 cascade 는 안 바뀐다). 다음 증가는 다시 실패다.
 
+## 로컬 반복 검증 (2026-11-20)
+
+`npm run typecheck:app`은 같은 워크트리의 `.cache/typecheck-app.tsbuildinfo`를 재사용한다.
+TypeScript가 변경 영향과 캐시된 진단을 반영해 기존 앱 범위를 검사한다.
+
+이번 세션에서 로컬 테스트 실행을 별도로 지시받았으면, 검증할 테스트 파일을 `test:unit`에 넘긴다.
+
+```sh
+npm run typecheck:app
+OPRN_LOCAL_TESTS=1 npm run test:unit -- test/smallTaskHistory.test.ts
+```
+
+`test:unit`은 지정한 파일을 Vitest 기본 스위트 설정과 워커 한 개로 실행한다. 로컬 Vitest의
+변환 및 결과 캐시는 워크트리 안의 `.cache/vitest/`에 저장된다.
+
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
 **워크트리·세션 에이전트는 `npm run gates` / vitest 를 스스로 돌리지 말라.** 게이트는 감독자가 돌린다.
