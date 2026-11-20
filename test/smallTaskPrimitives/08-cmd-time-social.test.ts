@@ -1,14 +1,14 @@
 /** @vitest-environment happy-dom */
-import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
+import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/08-cmd-time-social";
 import { mapTarget } from "@/editor/smallTask/target";
+import { runTool } from "@/editor/tools/toolRunner";
+import { setTimeWithMakers } from "@/player/dayTransition";
 import { createInterpreter } from "@/player/interpreter";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -57,6 +57,7 @@ function setup(fixture: Fixture, commands: Command[] = []) {
   };
   const project: Project = {
     ...source,
+    system: { ...source.system, timeSystem: { enabled: true } },
     variables: [...source.variables, { id: variableId, name: "기록" }],
     commonEvents: [...source.commonEvents, {
       id: commonEventId, name: "공부하기", trigger: "none",
@@ -125,7 +126,7 @@ describe.each(["blank", "built", "maou"] as const)("%s 프로젝트", fixture =>
     const baseline = update ? [greeting, initial] : [greeting];
     const originalCommands = structuredClone(baseline);
     const { project, target, mapId } = setup(fixture, baseline);
-    const args = { index: 1, ...(update ? patch : insert) };
+    const args = { index: 1, ...(update ? { ...patch, expectedHash: eventCommandHash(initial) } : insert) };
     const { after, sentence } = expectApplies(project, target, id, args);
     expect(stored(after)).toEqual([greeting, update ? updated : initial]);
     expect(stored(project)).toEqual(originalCommands);
@@ -198,21 +199,47 @@ it("일정에서 고른 활동을 실행하고 각 순번을 돌며 호감도를
   expect(getFriendship(session, characterId)).toBe(6);
 });
 
-it("선택한 분기의 한 줄만 고치고 낡은 줄 지문을 거절한다", () => {
+it("이벤트 읽기에서 받은 위치와 지문으로 선택한 분기의 한 줄만 고친다", () => {
   const original = { kind: "timer", action: "set", seconds: 30 } as const;
-  const fork = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [original], else: [greeting] } satisfies Command;
-  const { project, target } = setup("blank", [fork, greeting]);
-  const args = { index: 0, branchPath: [0, FORK_THEN_BRANCH_INDEX], seconds: 45, expectedHash: eventCommandHash(original) };
+  const other = { ...original, seconds: 10 };
+  const fork = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [original], else: [other] } satisfies Command;
+  const { project, target, mapId } = setup("blank", [fork, greeting]);
+  const read = runTool({ project }, "get_event", { mapId, eventId, includeCommandHashes: true });
+  expect(read.ok).toBe(true);
+  const data = read.data as { commandHashes: { pageId: string; commands: { index: number; branchPath: number[]; hash: string }[] }[] };
+  const row = data.commandHashes.find(page => page.pageId === pageId)!.commands.find(command =>
+    command.index === 0 && jsonEqual(command.branchPath, [0, FORK_THEN_BRANCH_INDEX]))!;
+  const fields = { index: row.index, branchPath: row.branchPath, seconds: 45 };
+  const args = { ...fields, expectedHash: row.hash };
   const { after } = runPrimitive(project, target, "cmd.timer.update", args);
   expect(stored(after)).toEqual([{ ...fork, then: [{ ...original, seconds: 45 }] }, greeting]);
-  expect(() => runPrimitive(after, target, "cmd.timer.update", args)).toThrow(/내용이 바뀌었어요/u);
+  expectRefused(after, target, "cmd.timer.update", args, /내용이 바뀌었어요/u);
+  expectRefused(project, target, "cmd.timer.update", fields, /형식을 확인/u);
+  expectRefused(project, target, "cmd.timer.update",
+    { ...args, branchPath: [0, FORK_ELSE_BRANCH_INDEX] }, /내용이 바뀌었어요/u);
+  expectRefused(project, target, "cmd.timer.update",
+    { ...args, index: 1 }, /그 줄을 찾을 수 없어요/u);
+  expectRefused(project, target, "cmd.timer.insert", { branchPath: [0] }, /분기 위치/u);
+  expectRefused(project, target, "cmd.timer.insert", { branchPath: [0, -99] }, /분기/u);
   expect(jsonEqual(stored(project), [fork, greeting])).toBe(true);
+});
+
+it("시간 시스템이 꺼져 있으면 작동할 수 없는 시각·날짜 명령을 거절한다", () => {
+  const { project, target } = setup("blank", [greeting]);
+  const disabled = { ...project, system: { ...project.system, timeSystem: { enabled: false } } };
+  expectRefused(disabled, target, "cmd.setTime.insert", { hour: 18 }, /시간 시스템이 꺼져 있어요/u);
+  expectRefused(disabled, target, "cmd.advanceTime.insert", { days: 1 }, /시간 시스템이 꺼져 있어요/u);
+  expectRefused(disabled, target, "cmd.sleepUntilMorning.insert", {}, /시간 시스템이 꺼져 있어요/u);
+  expect(runPrimitive(disabled, target, "cmd.advanceCropGrowth.insert", { days: 1 }).after.system).toBe(disabled.system);
+  expect(stored(disabled)).toEqual([greeting]);
 });
 
 it("시간만 진행할 때 기본 분 수를 더하지 않고 기존 타이머의 시작 시간을 지울 수 있다", () => {
   const { project, target } = setup("blank");
   const timer = runPrimitive(project, target, "cmd.timer.insert", { action: "start", seconds: 60 }).after;
-  const existing = runPrimitive(timer, target, "cmd.timer.update", { index: 0, seconds: null }).after;
+  const existing = runPrimitive(timer, target, "cmd.timer.update", {
+    index: 0, seconds: null, expectedHash: eventCommandHash(stored(timer)[0]!),
+  }).after;
   const advance = runPrimitive(existing, target, "cmd.advanceTime.insert", { hours: 2 }).after;
   expect(stored(advance)).toEqual([{ kind: "timer", action: "start", timerId: "timer1" }, { kind: "advanceTime", hours: 2 }]);
   const { session, machine } = runCommands(stored(advance), advance);
@@ -222,6 +249,98 @@ it("시간만 진행할 때 기본 분 수를 더하지 않고 기존 타이머�
   expect(machine.skip()).toMatchObject({ kind: "advanceTime", minutes: 120 });
 });
 
+it("시간표의 하루 길이로 일·시간·분을 합산하고 시각이 보정될 입력을 거절한다", () => {
+  const { project, target } = setup("blank", [{ kind: "advanceTime", days: 395, hours: 1 }]);
+  const system = { ...project.system, timeSystem: { enabled: true, dayStartHour: 6, dayEndHour: 7 } };
+  const clock = { ...project, system };
+  expectRefused(clock, target, "cmd.advanceTime.update", {
+    index: 0, expectedHash: eventCommandHash(stored(clock)[0]!), minutes: 1,
+  }, /396일/u);
+  expectRefused(clock, target, "cmd.setTime.insert", { hour: 24 }, /23시까지/u);
+  const lateNight = { ...clock, system: { ...system, timeSystem: { ...system.timeSystem, dayEndHour: 27 } } };
+  const { after, sentence } = runPrimitive(lateNight, target, "cmd.setTime.insert", { hour: 27 });
+  const inserted = stored(after)[1]!;
+  expect(inserted).toEqual({ kind: "setTime", hour: 27, minute: 0 });
+  const session = startSession(after, 8);
+  expect(setTimeWithMakers(after, session, inserted as Extract<Command, { kind: "setTime" }>))
+    .toMatchObject({ ok: true, time: { hour: 27, minute: 0 } });
+  expect(sentence).toContain("27:00");
+});
+
+it("타이머의 잘못된 초 입력을 거절하고 같은 값으로 수정하면 프로젝트를 그대로 돌려준다", () => {
+  const initial: Command = { kind: "timer", action: "set", seconds: 30, timerId: "timer2" };
+  const { project, target } = setup("blank", [initial]);
+  const args = { index: 0, expectedHash: eventCommandHash(initial) };
+  expectRefused(project, target, "cmd.timer.update", { ...args, seconds: null }, /몇 초인지 입력/u);
+  expectRefused(project, target, "cmd.timer.update", { ...args, action: "stop", seconds: 30 }, /초를 지정할 수 없어요/u);
+  const { after, sentence } = runPrimitive(project, target, "cmd.timer.update", { ...args, seconds: 30 });
+  expect(after).toBe(project);
+  expect(sentence).toMatch(/그대로 둡니다/u);
+});
+
+it("두 번째 페이지의 빈 선택지 분기에 삽입해도 첫 페이지와 형제 분기는 유지한다", () => {
+  const { project, mapId } = setup("blank", [greeting]);
+  const choice = { kind: "choices", prompt: "출발할까요?", options: [
+    { text: "예", branch: [] }, { text: "아니요", branch: [greeting] },
+  ] } satisfies Command;
+  const map = project.maps[mapId]!;
+  const withChoice = { ...project, maps: { ...project.maps, [mapId]: {
+    ...map, events: map.events.map(event => event.id !== eventId ? event : {
+      ...event, pages: event.pages!.map(page => page.id === otherId ? { ...page, commands: [choice] } : page),
+    }),
+  } } };
+  const target = mapTarget(withChoice, mapId, eventId, otherId)!;
+  const { after } = runPrimitive(withChoice, target, "cmd.sleepUntilMorning.insert", { branchPath: [0, 0] });
+  expect(stored(after)).toEqual([greeting]);
+  expect(stored(after, otherId)).toEqual([{
+    ...choice, options: [{ ...choice.options[0], branch: [{ kind: "sleepUntilMorning" }] }, choice.options[1]],
+  }]);
+  expect(stored(withChoice, otherId)).toEqual([choice]);
+  expectRefused(withChoice, target, "cmd.sleepUntilMorning.insert", { branchPath: [0, 0], pageId }, /형식을 확인/u);
+});
+
+it("인물 정보가 없는 이벤트에서 최고 호감도는 조회하고 변경 요청은 거절한다", () => {
+  const { project, target, mapId } = setup("blank");
+  const map = project.maps[mapId]!;
+  const noCharacter = { ...project, maps: { ...project.maps, [mapId]: {
+    ...map, events: map.events.map(event => event.id === eventId ? { ...event, characterId: undefined } : event),
+  } } };
+  expectRefused(noCharacter, target, "cmd.getFriendship.insert", { variableId }, /연결된 인물/u);
+  expectRefused(noCharacter, target, "cmd.changeFriendship.insert", { npcKey: "*" }, /별표/u);
+  expectRefused(noCharacter, target, "cmd.setRelationship.insert", { npcKey: "*" }, /별표/u);
+  expectRefused(noCharacter, target, "cmd.changeFriendship.insert", { npcKey: "constructor", delta: 5 }, /이 이름표는/u);
+  const custom = runPrimitive(noCharacter, target, "cmd.changeFriendship.insert", { npcKey: "  여행자  ", delta: 5 }).after;
+  const customRun = runCommands(stored(custom), custom);
+  expect(customRun.machine.start()).toEqual({ kind: "done" });
+  expect(getFriendship(customRun.session, "여행자")).toBe(5);
+  const { after, sentence } = runPrimitive(noCharacter, target, "cmd.getFriendship.insert", { npcKey: "*", variableId });
+  const { session, machine } = runCommands(stored(after), after);
+  session.friendship = { one: 4, two: 9 };
+  expect(machine.start()).toEqual({ kind: "done" });
+  expect(getVariable(session, variableId)).toBe(9);
+  expect(sentence).toBe("가장 높은 호감도를 ‘기록’에 저장하는 명령을 추가합니다.");
+});
+
+it("일정표 변경으로 기존 칸 수가 맞지 않으면 거절하고 순번 변수 오류를 따로 안내한다", () => {
+  const initial: Command = { kind: "planSchedule", scheduleId, slotCount: 2 };
+  const { project, target } = setup("blank", [initial]);
+  const shorter = "schedule_short";
+  const database = { ...project.database, schedules: [
+    ...project.database.schedules!, { id: shorter, title: "쉬기", slots: [{ label: "오늘" }], activities: [] },
+  ] };
+  const withSchedule = { ...project, database };
+  const args = { index: 0, expectedHash: eventCommandHash(initial), scheduleId: shorter };
+  expectRefused(withSchedule, target, "cmd.planSchedule.update", args, /1칸이 있어요/u);
+  expectRefused(withSchedule, target, "cmd.runSchedule.insert", { scheduleId, slotVariableId: "missing" }, /순번을 저장할 변수/u);
+  const withoutActivityEvent = { ...withSchedule, commonEvents: withSchedule.commonEvents.filter(row => row.id !== commonEventId) };
+  expectRefused(withoutActivityEvent, target, "cmd.runSchedule.insert", { scheduleId }, /공용 이벤트를 찾을 수 없어요/u);
+  expectRefused(withoutActivityEvent, target, "cmd.planSchedule.insert", { scheduleId }, /공용 이벤트를 찾을 수 없어요/u);
+  const { after } = runPrimitive(withSchedule, target, "cmd.planSchedule.update", { ...args, slotCount: null });
+  expect(stored(after)).toEqual([{ kind: "planSchedule", scheduleId: shorter }]);
+  expect(after.database).toBe(database);
+  expect(after.commonEvents).toBe(project.commonEvents);
+});
+
 it("진영 태도 변경은 등록하되 모델에 제시하는 목록에서 가린다", () => {
   const { target } = setup("blank");
   const faction = PRIMITIVES.filter(primitive => primitive.covers.commandKinds?.includes("changeFactionStance"));
@@ -229,40 +348,4 @@ it("진영 태도 변경은 등록하되 모델에 제시하는 목록에서 가
   expect(faction.every(primitive => primitive.hidden)).toBe(true);
   expect(primitivesForTarget(target).map(primitive => primitive.id)).not.toContain("cmd.changeFactionStance.insert");
   expect(primitivesForTarget(target).map(primitive => primitive.id)).toContain("cmd.timer.insert");
-});
-
-type SeededCase = CorpusCase & {
-  setup: {
-    events: GameEvent[];
-    variables?: Project["variables"];
-    database?: Partial<Project["database"]>;
-  };
-};
-const corpus: SeededCase[] = JSON.parse(readFileSync(
-  "harness-data/small-task-corpus/08-cmd-time-social.json", "utf8",
-));
-
-// 공용 코퍼스 실행기가 사례별 시드를 적용할 때 이 검수는 공용 실행기로 옮길 수 있다.
-describe("시간·일정·관계 자연어 회귀 요청", () => {
-  it.each(corpus)("$request", async entry => {
-    const fixture = fixtureProject(entry.fixture);
-    const map = fixture.maps[fixture.startMapId]!;
-    const project: Project = {
-      ...fixture,
-      variables: [...fixture.variables, ...entry.setup.variables ?? []],
-      database: { ...fixture.database, ...entry.setup.database },
-      maps: { ...fixture.maps, [map.id]: { ...map, events: [...map.events, ...entry.setup.events] } },
-    };
-    const target = resolveTarget(project, entry.target);
-    if (entry.expectRefusal) {
-      expectRefused(project, target, entry.primitive, entry.args, /[가-힣]/u);
-      return;
-    }
-    const { after } = expectApplies(project, target, entry.primitive, entry.args);
-    expect(entry.expect?.length).toBeGreaterThan(0);
-    for (const check of entry.expect ?? []) {
-      expect(readCheckPath(after, check.at)).toEqual(check.equals);
-    }
-    await expectUndoRestores(project, after, target);
-  });
 });

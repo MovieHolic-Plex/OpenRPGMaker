@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
-import type { FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
+import type { CorpusCase, FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import type { PrimitiveContext } from "@/editor/smallTask/primitives/types";
@@ -23,6 +23,25 @@ export function loadFixture(fixture: FixtureName): Project {
     case "maou": return createMaouKonbiniFlagshipDemo().project;
     default: throw new Error("검수 자료 이름을 확인해 주세요.");
   }
+}
+
+export function setupCorpusProject(fixture: Project, entry: CorpusCase): Project {
+  if (!entry.setup) return fixture;
+  const { events, variables, commonEvents, system, database } = structuredClone(entry.setup);
+  const project: Project = {
+    ...fixture,
+    ...(variables ? { variables: [...fixture.variables, ...variables] } : {}),
+    ...(commonEvents ? { commonEvents: [...fixture.commonEvents, ...commonEvents] } : {}),
+    ...(system ? { system: { ...fixture.system, ...system } } : {}),
+    ...(database ? { database: { ...fixture.database, ...database } } : {}),
+  };
+  if (events?.length) {
+    const mapId = entry.target.kind === "dbEntry" ? fixture.startMapId : entry.target.mapId ?? fixture.startMapId;
+    const map = fixture.maps[mapId];
+    if (!map) throw new Error("이벤트를 넣을 검수 맵을 찾을 수 없어요.");
+    project.maps = { ...fixture.maps, [mapId]: { ...map, events: [...map.events, ...events] } };
+  }
+  return project;
 }
 
 export function eventTarget(project: Project, mapId: string, eventId: string, pageId?: string) {

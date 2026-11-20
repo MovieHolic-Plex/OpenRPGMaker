@@ -9,7 +9,7 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { OWNERSHIP } from "@/editor/smallTask/primitives/ownership";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
+import { expectKoreanSentence, expectUndoRestores, loadFixture, setupCorpusProject } from "./harness";
 
 const directory = resolve(dirname(fileURLToPath(import.meta.url)), "../../harness-data/small-task-corpus");
 const files = readdirSync(directory).filter(file => file.endsWith(".json")).sort();
@@ -48,15 +48,17 @@ for (const file of files) {
     const fixtures = new Map<FixtureName, Project>();
     for (const entry of cases) {
       it(entry.request, async () => {
-        let before = fixtures.get(entry.fixture);
-        if (!before) {
-          before = loadFixture(entry.fixture);
-          fixtures.set(entry.fixture, before);
+        let fixture = fixtures.get(entry.fixture);
+        if (!fixture) {
+          fixture = loadFixture(entry.fixture);
+          fixtures.set(entry.fixture, fixture);
         }
+        const before = setupCorpusProject(fixture, entry);
         const target = resolveTarget(before, entry.target);
         const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
         if (entry.expectRefusal) {
           expect(apply).toThrow(PrimitiveError);
+          if (entry.refusalMessage) expect(apply).toThrow(new RegExp(entry.refusalMessage, "u"));
           return;
         }
         const { after, sentence } = apply();

@@ -18,15 +18,25 @@ export interface Check {
   count?: number;
 }
 
+export interface CorpusSetup {
+  events?: Project["maps"][string]["events"];
+  variables?: Project["variables"];
+  commonEvents?: Project["commonEvents"];
+  system?: Partial<Project["system"]>;
+  database?: Partial<Project["database"]>;
+}
+
 export interface CorpusCase {
   request: string;
   fixture: FixtureName;
+  setup?: CorpusSetup;
   target: TargetSelector;
   selection?: PrimitiveContext["selection"];
   primitive: string;
   args: Record<string, unknown>;
   expect?: Check[];
   expectRefusal?: true;
+  refusalMessage?: string;
 }
 
 export function resolveTarget(project: Project, selector: TargetSelector): SmallTaskTarget {
