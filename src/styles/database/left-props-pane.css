@@ -24,6 +24,12 @@
   .left-props-prefix { margin: -6px 0 0; color: var(--text-2); font-size: 12px; }
   .left-props-prefix[hidden] { display: none; }
   .left-props-title { margin: 2px 0 0; font: 600 12px/1.5 var(--font-ui); }
+  .left-props-results { display: flex; flex-direction: column; gap: 8px; }
+  .left-props-results:empty { display: none; }
+  .left-props-group { border: 1px solid var(--border-subtle); border-radius: var(--radius-s); }
+  .left-props-group summary { min-height: 32px; padding: 6px 8px; box-sizing: border-box; font-weight: 600; cursor: pointer; }
+  .left-props-group summary:hover { background: var(--bg-inset); }
+  .left-props-group-body { display: flex; flex-direction: column; gap: 8px; padding: 0 8px 8px; }
   .left-props-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .left-props-card {
     display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; padding: 9px 7px;

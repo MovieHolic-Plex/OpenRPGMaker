@@ -137,7 +137,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
   const state = editorState.get();
   const stamp = state.activePaletteStamp;
   const stampKey = stamp
-    ? `${stamp.width}x${stamp.height}:${stamp.source.startTile}-${stamp.source.endTile}:${stamp.cells.length}`
+    ? `${stamp.width}x${stamp.height}:${stamp.source.startTile}-${stamp.source.endTile}:${stamp.cells.length}:${stamp.anchor?.dx ?? 0},${stamp.anchor?.dy ?? 0}`
     : "";
   return [
     spec.mapId, spec.centerX, spec.centerY, spec.groundY ?? spec.centerY, state.tool, state.layer,

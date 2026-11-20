@@ -40,115 +40,115 @@
     "id": "bd-obj-atlas",
     "name": "이야기 기물 16종(목록 순서)",
     "caption": "풀밭 위에 실제 칸을 놓은 그림을 3배 최근접 확대(원본 416×144). 자리는 「조립 예제 배열」 문서 끝. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.",
-    "dataUrl": "/assets/beodeul-objects/atlas-3x.png"
+    "dataUrl": "/assets/beodeul-object-references/atlas-3x.png"
    },
    {
     "id": "bd-obj-scene",
     "name": "조립 예제 22×15 (원본 해상도)",
     "caption": "원본 352×240, 시트 칸 그대로(실제 놓기 도구 출력). 검사 결함 0.",
-    "dataUrl": "/assets/beodeul-objects/scene-1x.png"
+    "dataUrl": "/assets/beodeul-object-references/scene-1x.png"
    },
    {
     "id": "bd-obj-scene-3x",
     "name": "조립 예제 22×15 (3배 최근접)",
     "caption": "같은 장면을 3배 최근접 확대. 못 위 널빤지 길 ㄱ자·막다른 잔교, 입구 둘 앞 접근칸이 비어 있다.",
-    "dataUrl": "/assets/beodeul-objects/scene-3x.png"
+    "dataUrl": "/assets/beodeul-object-references/scene-3x.png"
    },
    {
     "id": "bd-obj-variants",
     "name": "종류별 변형 50종 (원본 해상도)",
     "caption": "원본 480×448. 종류마다 한 줄 — 맨 왼쪽이 원본 킷, 그 오른쪽이 변형(칸 크기·막힌 칸이 원본과 같다). 자리는 「종류별 변형 배열」 문서.",
-    "dataUrl": "/assets/beodeul-objects/variants-1x.png"
+    "dataUrl": "/assets/beodeul-object-references/variants-1x.png"
    },
    {
     "id": "bd-obj-variants-3x",
     "name": "종류별 변형 50종 (3배 최근접)",
     "caption": "같은 그림을 3배 최근접 확대. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.",
-    "dataUrl": "/assets/beodeul-objects/variants-3x.png"
+    "dataUrl": "/assets/beodeul-object-references/variants-3x.png"
    },
    {
     "id": "bd-obj-new",
     "name": "새 종류 105종 (원본 해상도)",
     "caption": "원본 640×544. 쓰임 순서로 풀밭에 줄지어 놓고, 아래 못에 물 위 것과 못을 건너는 징검돌 한 줄. 자리는 「새 종류 배열」 문서.",
-    "dataUrl": "/assets/beodeul-objects/new-1x.png"
+    "dataUrl": "/assets/beodeul-object-references/new-1x.png"
    },
    {
     "id": "bd-obj-new-2x",
     "name": "새 종류 105종 (2배 최근접)",
     "caption": "같은 그림을 2배 최근접 확대. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.",
-    "dataUrl": "/assets/beodeul-objects/new-2x.png"
+    "dataUrl": "/assets/beodeul-object-references/new-2x.png"
    },
    {
     "id": "bd-obj-kinds",
     "name": "마을 종류별 기물 331종 (원본 해상도)",
     "caption": "원본 736×1728. 종류마다 한 무더기씩 풀밭에, 아래 못에 물 위 것과 못을 건너는 건널 널. 자리는 「마을 종류별 기물 배열」 문서.",
-    "dataUrl": "/assets/beodeul-objects/kinds-1x.png"
+    "dataUrl": "/assets/beodeul-object-references/kinds-1x.png"
    },
    {
     "id": "bd-obj-kinds-2x",
     "name": "마을 종류별 기물 331종 (2배 최근접)",
     "caption": "같은 그림을 2배 최근접 확대. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.",
-    "dataUrl": "/assets/beodeul-objects/kinds-2x.png"
+    "dataUrl": "/assets/beodeul-object-references/kinds-2x.png"
    },
    {
     "id": "bd-obj-err-kind-walk-blocked",
     "name": "정상/오류 · walk-blocked · 건널 널 한 칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 마을 종류 장면 칸 (42,104)). 못을 건너는 건널 널의 한 칸을 뺐다 — 물 칸이 드러나 건널 수 없다. 검사 코드 walk-blocked 검출. 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-kind-walk-blocked.png"
+    "dataUrl": "/assets/beodeul-object-references/err-kind-walk-blocked.png"
    },
    {
     "id": "bd-obj-err-kind-kit-incomplete",
     "name": "정상/오류 · kit-incomplete · 자루 도르래 윗칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 마을 종류 장면 칸 (13,5)). 자루 도르래(1×3)의 맨 윗칸을 뺐다 — 그림이 잘린다. 검사 코드 kit-incomplete 검출. 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-kind-kit-incomplete.png"
+    "dataUrl": "/assets/beodeul-object-references/err-kind-kit-incomplete.png"
    },
    {
     "id": "bd-obj-err-new-walk-blocked",
     "name": "정상/오류 · walk-blocked · 징검돌 한 칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 새 종류 장면 칸 (35,30)). 못을 건너는 징검돌 넷 가운데 하나를 뺐다 — 물 칸이 드러나 건널 수 없다. 검사 코드 walk-blocked 검출. 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-new-walk-blocked.png"
+    "dataUrl": "/assets/beodeul-object-references/err-new-walk-blocked.png"
    },
    {
     "id": "bd-obj-err-new-kit-incomplete",
     "name": "정상/오류 · kit-incomplete · 비둘기 집 윗칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 새 종류 장면 칸 (7,4)). 장대 위 비둘기 집(1×3)의 맨 윗칸을 뺐다 — 집이 잘린다. 검사 코드 kit-incomplete 검출. 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-new-kit-incomplete.png"
+    "dataUrl": "/assets/beodeul-object-references/err-new-kit-incomplete.png"
    },
    {
     "id": "bd-obj-err-variant-kit-incomplete",
     "name": "정상/오류 · kit-incomplete · 변형 가로등 윗칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 변형 장면 칸 (18,10)). 기둥 등 가로등(1×3)의 맨 윗칸을 뺐다 — 등이 잘린다. 검사 코드 kit-incomplete 검출. 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-variant-kit-incomplete.png"
+    "dataUrl": "/assets/beodeul-object-references/err-variant-kit-incomplete.png"
    },
    {
     "id": "bd-obj-err-variant-variant-passage",
     "name": "정상/오류 · variant-passage · 변형 벤치 한 칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 변형 장면 칸 (19,1)). 돌 벤치(2×1)의 왼쪽 칸을 뺐다 — 원본 벤치의 같은 칸은 막힌 칸인데 이 칸은 걸음이 된다(갈아 끼운 자리의 통행이 달라진다). 검사 코드 variant-passage 검출. 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-variant-variant-passage.png"
+    "dataUrl": "/assets/beodeul-object-references/err-variant-variant-passage.png"
    },
    {
     "id": "bd-obj-err-wrong-layer",
     "name": "정상/오류 · wrong-layer · 널빤지를 아래층에",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 맵 칸 (4,9)). 널빤지 칸을 3층에서 빼 1층(물 칸 자리)에 찍었다 — 물 그림이 사라지고 널빤지 둘레가 뚫린다. 검사 코드 wrong-layer 검출. 실제 시트 칸 조립을 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-wrong-layer.png"
+    "dataUrl": "/assets/beodeul-object-references/err-wrong-layer.png"
    },
    {
     "id": "bd-obj-err-walk-blocked",
     "name": "정상/오류 · walk-blocked · 널빤지 길 한 칸 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 맵 칸 (6,10)). 세로 널빤지 한 칸을 뺐다 — 물 칸이 드러나 길이 끊긴다. 검사 코드 walk-blocked 검출. 실제 시트 칸 조립을 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-walk-blocked.png"
+    "dataUrl": "/assets/beodeul-object-references/err-walk-blocked.png"
    },
    {
     "id": "bd-obj-err-entrance-blocked",
     "name": "정상/오류 · entrance-blocked · 동굴 입구 앞을 막음",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 맵 칸 (3,4)). 굴 칸 바로 아래 접근칸에 빛나는 파편(막힘 1칸)을 놓았다 — 굴에 다가설 수 없다. 검사 코드 entrance-blocked 검출. 실제 시트 칸 조립을 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-entrance-blocked.png"
+    "dataUrl": "/assets/beodeul-object-references/err-entrance-blocked.png"
    },
    {
     "id": "bd-obj-err-kit-incomplete",
     "name": "정상/오류 · kit-incomplete · 천막 윗줄 빠짐",
     "caption": "왼쪽 정상 · 오른쪽 오류(빨간 상자 = 맵 칸 (10,7)). 야영 천막의 윗줄 두 칸을 뺐다 — 천막이 잘린다. 검사 코드 kit-incomplete 검출. 실제 시트 칸 조립을 3배 최근접 확대.",
-    "dataUrl": "/assets/beodeul-objects/err-kit-incomplete.png"
+    "dataUrl": "/assets/beodeul-object-references/err-kit-incomplete.png"
    }
   ]
  }

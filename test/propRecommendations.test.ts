@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterProps, recommendProps, propsForTileset } from "@/editor/propRecommendations";
+import { filterProps, groupProps, recommendProps, propsForTileset } from "@/editor/propRecommendations";
 import type { GameMap, TilesetDef } from "@/project/types";
 
 function fixture() {
@@ -57,5 +57,29 @@ describe("map prop recommendations", () => {
     const choices = propsForTileset(tileset);
     expect(choices.find(choice => choice.id === "key-pedestal")?.category).toBe("devices");
     expect(choices.find(choice => choice.id === "flower-bed")?.category).toBe("plants");
+  });
+
+  it("groups bundled props by manifest order and searches catalog fields across groups", () => {
+    const { map, tileset } = fixture();
+    for (const id of ["anchor_decor", "bed_double", "birch_tree"]) {
+      tileset.structureKits!.push({
+        id: `bd-object:${id}`, kind: "section", name: "이전 저장 이름", width: 1, height: 1,
+        rows: [{ tiles: [-1], upperTiles: [7] }],
+        ai: { description: "", placementRules: "", tags: ["이전 저장 태그"] },
+      });
+    }
+    const entries = recommendProps(map, tileset);
+    const { groups, ungrouped } = groupProps(entries);
+    expect(groups.map(({ group, entries }) => [group.id, entries.map(({ choice }) => choice.name)])).toEqual([
+      ["nature", ["자작나무"]], ["indoor", ["더블 침대"]], ["harbor", ["닻 장식"]],
+    ]);
+    expect(ungrouped.map(({ choice }) => choice.id)).toEqual(["statue", "chair-red", "chair-blue"]);
+    expect(filterProps(entries, undefined, "자작").map(({ choice }) => choice.id)).toEqual(["bd-object:birch_tree"]);
+    expect(filterProps(entries, undefined, "OR_DEC").map(({ choice }) => choice.id)).toEqual(["bd-object:anchor_decor"]);
+    expect(filterProps(entries, undefined, "ARBO").map(({ choice }) => choice.id)).toEqual(["bd-object:anchor_decor"]);
+    expect(filterProps(entries, undefined, "닻 항구")).toEqual([]);
+    expect(groupProps(filterProps(entries, undefined, "버들항 기본 기물")).groups.map(({ group }) => group.id))
+      .toEqual(["nature", "indoor", "harbor"]);
+    expect(groupProps(filterProps(entries, undefined, "이전 저장 태그"))).toEqual({ groups: [], ungrouped: [] });
   });
 });

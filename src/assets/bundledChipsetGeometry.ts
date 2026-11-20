@@ -1,6 +1,7 @@
 import { monsterKitSheet } from "./monsterKitAssets";
 import { RESOURCE_SLICING } from "./resourceSlicing";
 import beodeulCitySheet from "./beodeulCitySheet.json";
+import { BEODEUL_OBJECT_TILE_SIZE, beodeulPlaceableObjectForTexture } from "./beodeulPlaceableObjects";
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
@@ -42,6 +43,7 @@ import {
 const ROOM_KIT_KEY = /^(?:store_[A-Za-z0-9_]+__)?roomkit_(16|24|32|48)_/u;
 
 export function bundledChipsetTileSize(key: string): number {
+  if (beodeulPlaceableObjectForTexture(key)) return BEODEUL_OBJECT_TILE_SIZE;
   const roomKit = ROOM_KIT_KEY.exec(key);
   if (roomKit) return Number(roomKit[1]);
   if (key === "tex_slates_32" || key === "tex_atlas_cartography") return 32;
@@ -53,6 +55,8 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  const object = beodeulPlaceableObjectForTexture(key);
+  if (object) return object.widthTiles;
   if (ROOM_KIT_KEY.test(key)) return 16;
   if (key === "tex_worldmap_authoring") return 12;
   if (key === "tex_atlas_cartography") return 8;
