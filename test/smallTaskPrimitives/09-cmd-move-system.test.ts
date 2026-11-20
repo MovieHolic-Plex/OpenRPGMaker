@@ -1,7 +1,7 @@
 /** @vitest-environment happy-dom */
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { mapTarget } from "@/editor/smallTask/target";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
@@ -10,13 +10,15 @@ import { PRIMITIVES } from "@/editor/smallTask/primitives/units/09-cmd-move-syst
 import { getSessionCheckpoint } from "@/player/checkpoints";
 import { createInterpreter } from "@/player/interpreter";
 import { isPassableLanding } from "@/project/collision";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
-import type { Command, DifficultyRecord, EventPage, GameEvent, Project } from "@/project/types";
+import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import corpusData from "../../harness-data/small-task-corpus/09-cmd-move-system.json";
-import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, setupCorpusProject } from "./harness";
 
 const mapId = "map_unit09";
 const eventId = "ev_unit09";
@@ -33,11 +35,15 @@ type Fixture = "blank" | "built" | "maou";
 const fixtures = new Map<Fixture, Project>();
 
 beforeAll(() => {
-  fixtures.set("maou", loadFixture("maou"));
-}, 180_000);
+  for (const name of ["blank", "built", "maou"] as const) {
+    const fixture = loadFixture(name);
+    ensureSwitchVariableSlots(fixture);
+    removeLegacySpriteReferences(fixture);
+    fixtures.set(name, fixture);
+  }
+}, 240_000);
 
 function sample(fixture: Fixture, commands: Command[] = []) {
-  if (!fixtures.has(fixture)) fixtures.set(fixture, loadFixture(fixture));
   const project = fixtures.get(fixture)!;
   const tileset = project.tilesets.beodeul_city ?? project.tilesets[project.maps[project.startMapId]!.tilesetId]!;
   const grid = createBlankMap("아침 광장", 6, 6, tileset.id, tileset.tileSize, tileset);
@@ -152,7 +158,8 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
       const [args, expected] = example[edit];
       const starting = edit === "insert" ? [text, wait] : [text, example.before, wait];
       const { before, target } = sample(example.fixture, structuredClone(starting));
-      const result = runPrimitive(before, target, id, { ...args, index: 1 });
+      const expectedHash = edit === "update" ? { expectedHash: eventCommandHash(example.before) } : {};
+      const result = runPrimitive(before, target, id, { ...args, ...expectedHash, index: 1 });
       expect(stored(result.after)).toStrictEqual([text, expected, wait]);
       expect(stored(before)).toStrictEqual(starting);
       expect(result.after.maps[mapId]!.events[0]!.pages![1]).toBe(before.maps[mapId]!.events[0]!.pages![1]);
@@ -190,8 +197,72 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
     const { before, target } = sample("blank", [{ kind: "returnToTitle" }]);
     const otherTarget = mapTarget(before, mapId)!;
     expectRefused(before, otherTarget, "cmd.returnToTitle.insert", {});
-    expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 0, pageId: "page_neighbor" })).toThrow(PrimitiveError);
-    expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 1 })).toThrow("명령 줄");
+    const expectedHash = eventCommandHash({ kind: "returnToTitle" });
+    expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 0, expectedHash, pageId: "page_neighbor" })).toThrow(PrimitiveError);
+    expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 1, expectedHash })).toThrow("명령 줄");
+  });
+
+  it("없는 선택지 취소 분기를 만들어 삽입하지 않는다", () => {
+    const choices: Command = { kind: "choices", options: [{ text: "듣기", branch: [text] }] };
+    const { before, target } = sample("blank", [choices, wait]);
+    expect(() => runPrimitive(before, target, "cmd.checkpointSave.insert", {
+      branchPath: [0, CHOICE_CANCEL_BRANCH_INDEX],
+    })).toThrow("선택한 명령 분기를 찾을 수 없어요.");
+    expect(stored(before)).toStrictEqual([choices, wait]);
+  });
+
+  it("한 줄을 지우고 다시 끼우는 수정도 미리 읽은 해시를 요구한다", async () => {
+    const first: Command = { kind: "killPlayer", gameOverId: defeatId };
+    const shifted: Command = { kind: "killPlayer", gameOverId: defeatId, message: "남겨야 할 줄" };
+    const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [shifted, wait], else: [text] };
+    const { before, target } = sample("blank", [fork]);
+    const id = "cmd.killPlayer.update";
+    const args = { branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 0, gameOverId: "" };
+    expect(() => runPrimitive(before, target, id, args)).toThrow("동작에 필요한 값의 형식");
+    expect(() => runPrimitive(before, target, id, { ...args, expectedHash: eventCommandHash(first) }))
+      .toThrow("그 줄의 내용이 바뀌었습니다");
+    expect(stored(before)).toStrictEqual([fork]);
+    const { after } = runPrimitive(before, target, id, { ...args, expectedHash: eventCommandHash(shifted) });
+    expect(stored(after)).toStrictEqual([{ ...fork, then: [{ kind: "killPlayer", message: shifted.message }, wait] }]);
+    await expectUndoRestores(before, after, target);
+  });
+
+  it("복합 이동 경로에서 걷는 방향만 바꾸고 회전과 대기를 보존한다", async () => {
+    const command: Command = {
+      kind: "moveEvent", eventId: "", route: {
+        moves: [{ kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "move", dir: "down" }, { kind: "move", dir: "up" }],
+        repeat: true, wait: false, skippable: true,
+      },
+    };
+    const { before, target } = sample("blank", [text, command, wait]);
+    const id = "cmd.moveEvent.update";
+    const args = { index: 1, expectedHash: eventCommandHash(command) };
+    const { after } = runPrimitive(before, target, id, { ...args, direction: "left" });
+    const [turn, pause] = command.route.moves;
+    expect(stored(after)).toStrictEqual([text, {
+      ...command, route: { ...command.route, moves: [turn, pause, { kind: "move", dir: "left" }, { kind: "move", dir: "left" }] },
+    }, wait]);
+    for (const change of [{ steps: 2 }, { direction: "left", steps: 2 }]) {
+      expect(() => runPrimitive(before, target, id, { ...args, ...change })).toThrow("걸음 수를 바꿀 수 없습니다");
+    }
+    expect(stored(before)).toStrictEqual([text, command, wait]);
+    await expectUndoRestores(before, after, target);
+  });
+
+  it("기존에 막힌 착지점은 유지하고 방향·화면 전환만 고친다", async () => {
+    const command: Command = { kind: "transfer", mapId, x: 2, y: 2, fade: "black", door: true };
+    const { before, target } = sample("blank", [command]);
+    const map = before.maps[mapId]!;
+    map.lowerTiles[2 + 2 * map.width] = -1;
+    map.lowerTiles[3 + 2 * map.width] = -1;
+    expect(isPassableLanding(before, map, 2, 2)).toBe(false);
+    expect(isPassableLanding(before, map, 3, 2)).toBe(false);
+    const args = { index: 0, expectedHash: eventCommandHash(command), direction: "left", fade: "white" };
+    const { after } = runPrimitive(before, target, "cmd.transfer.update", args);
+    expect(stored(after)).toStrictEqual([{ ...command, direction: "left", fade: "white" }]);
+    expect(() => runPrimitive(before, target, "cmd.transfer.update", { ...args, x: 3 }))
+      .toThrow("도착 칸에서 걸어 나갈 수 없습니다");
+    await expectUndoRestores(before, after, target);
   });
 
   it("착지를 다른 칸으로 보정하지 않고 막힌 칸을 거절한다", () => {
@@ -205,6 +276,41 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
 });
 
 describe("참조 검증", () => {
+  it("선택한 페이지의 업로드 스프라이트에서 실제 프레임 범위를 확인한다", () => {
+    const { before, target } = sample("blank");
+    const event = before.maps[mapId]!.events[0]!;
+    const spriteId = "sprite_unit09";
+    before.assets = { ...before.assets, uploaded: {
+      ...before.assets.uploaded,
+      [spriteId]: { id: spriteId, name: "문", kind: "sprite", meta: { width: 32, height: 16, frameWidth: 16, frameHeight: 16, frames: 2 } },
+    } };
+    event.pages![0]!.graphic = { sprite: { type: "uploaded", id: spriteId } };
+    const insert = (pattern: number) => runPrimitive(before, target, "cmd.setEventGraphicPattern.insert", { pattern });
+    const { after } = insert(1);
+    expect(stored(after)).toStrictEqual([{ kind: "setEventGraphicPattern", eventId: "", pattern: 1 }]);
+    expect(() => insert(2)).toThrow("대상 이벤트의 그림에 그 프레임이 없습니다");
+    expect(stored(before)).toStrictEqual([]);
+  });
+
+  it("엔딩 음악과 배경의 미디어 종류를 확인하고 비우면 참조를 제거한다", async () => {
+    const command: Command = { kind: "ending", title: "달빛", message: "잘 가.", presentation: { portraits: "none", tone: "warm" } };
+    const { before, target } = sample("blank", [command]);
+    const musicResourceId = "cc0-bgm-town";
+    const backgroundResourceId = "oprn-title-bright";
+    const args = { index: 0, expectedHash: eventCommandHash(command) };
+    const update = (presentation: Args) => runPrimitive(before, target, "cmd.ending.update", { ...args, ...presentation });
+    expect(() => update({ musicResourceId: backgroundResourceId })).toThrow("엔딩 음악에는 배경음악");
+    expect(() => update({ backgroundResourceId: musicResourceId })).toThrow("엔딩 배경에는 그림");
+    const { after } = update({ musicResourceId, backgroundResourceId });
+    const withMedia = { ...command, presentation: { ...command.presentation, musicResourceId, backgroundResourceId } };
+    expect(stored(after)).toStrictEqual([withMedia]);
+    const { after: cleared } = runPrimitive(after, target, "cmd.ending.update", {
+      index: 0, expectedHash: eventCommandHash(withMedia), musicResourceId: "", backgroundResourceId: "",
+    });
+    expect(stored(cleared)).toStrictEqual([command]);
+    await expectUndoRestores(after, cleared, target);
+  });
+
   it.each([
     ["cmd.transfer.insert", { mapId: "missing_map", x: 1, y: 1 }, "목적지 맵"],
     ["cmd.transfer.insert", { mapId, x: 100, y: 1 }, "지정한 칸"],
@@ -275,35 +381,13 @@ describe("헤드리스 실행", () => {
   });
 });
 
-type SeededCase = CorpusCase & {
-  setup?: { commands?: Command[]; difficulties?: DifficultyRecord[] };
-};
-
-const corpus = corpusData as SeededCase[];
-
-// These stored rows and difficulty records are absent from the shared fixtures.
+const corpus = corpusData as CorpusCase[];
 describe("이동·시스템·엔딩 요청 코퍼스", () => {
   for (const entry of corpus) {
     it(entry.request, async () => {
-      if (!fixtures.has(entry.fixture)) fixtures.set(entry.fixture, loadFixture(entry.fixture));
-      const original = fixtures.get(entry.fixture)!;
-      const target = resolveTarget(original, entry.target);
+      const before = setupCorpusProject(fixtures.get(entry.fixture)!, entry);
+      const target = resolveTarget(before, entry.target);
       if (target.kind !== "event") throw new Error("검수에 필요한 이벤트 페이지를 고르세요.");
-      const map = original.maps[target.mapId]!;
-      const before: Project = {
-        ...original,
-        system: entry.setup?.difficulties ? { ...original.system, difficulties: entry.setup.difficulties } : original.system,
-        maps: entry.setup?.commands ? {
-          ...original.maps,
-          [map.id]: {
-            ...map,
-            events: map.events.map(event => event.id === target.eventId ? {
-              ...event,
-              pages: event.pages?.map(page => page.id === target.pageId ? { ...page, commands: entry.setup!.commands! } : page),
-            } : event),
-          },
-        } : original.maps,
-      };
       const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
       if (entry.expectRefusal) {
         expect(apply).toThrow(PrimitiveError);

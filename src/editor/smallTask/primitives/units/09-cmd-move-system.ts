@@ -1,3 +1,8 @@
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { CHARSET_FRAME_COUNT } from "@/assets/easyrpgRtp";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import { transferDirectionLabel, transferFadeLabel } from "@/editor/panels/eventEditor/transferPlayerDialog";
@@ -13,9 +18,11 @@ import { gameOverName } from "@/project/gameOverLibrary";
 import { validateCommands, type ReferenceContext } from "@/project/io/commandReferenceValidation";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { uploadedAssetMime } from "@/project/persistence/assetAccessors";
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 import { ROGUELIKE_FLOOR_MAX } from "@/project/roguelikeRun";
-import type { Command, EventPage, GameMap } from "@/project/types";
+import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import { uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
 import { commandListAt, eventName, koreanSentence, mapName, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
@@ -76,8 +83,8 @@ const specs = {
     title: "이동 경로 설정",
     fields: {
       eventId: text("같은 맵 이벤트 식별자. 빈 값은 이 이벤트, @player는 주인공"),
-      direction: choice("걸어갈 방향. 위, 오른쪽, 아래, 왼쪽", directions),
-      steps: integer("같은 방향으로 걷는 칸 수", 1, 100),
+      direction: choice("걷는 단계의 방향. 위, 오른쪽, 아래, 왼쪽", directions),
+      steps: integer("한 방향 걷기로 된 경로의 걸음 수. 여러 동작이 섞인 경로는 방향만 수정 가능", 1, 100),
       wait: toggle("걷기가 끝날 때까지 다음 명령 대기"),
       repeat: toggle("이동 경로 반복"),
       skippable: toggle("막힌 걸음 건너뛰기"),
@@ -147,12 +154,18 @@ function resolveEdit(page: EventPage, args: Args, kind: Kind, edit: Edit) {
 function moveRoute(base: Move, fields: Args): Move {
   const { direction, steps, wait, repeat, skippable, ...target } = fields;
   let moves = base.route.moves;
-  if (direction !== undefined || steps !== undefined) {
+  const dir = direction as (typeof directions)[number] | undefined;
+  if (steps !== undefined || (dir !== undefined && moves.length === 0)) {
     const first = moves[0];
-    const straight = first?.kind === "move" && moves.every(move => move.kind === "move" && move.dir === first.dir);
-    if (!straight && direction === undefined) throw new PrimitiveError("걸음 수를 바꾸려면 방향도 지정하세요.");
-    const dir = (direction ?? (first?.kind === "move" ? first.dir : "right")) as (typeof directions)[number];
-    moves = Array.from({ length: (steps ?? (straight ? moves.length : 1)) as number }, () => ({ kind: "move", dir }));
+    if (first && (first.kind !== "move" || moves.some(move => move.kind !== "move" || move.dir !== first.dir))) {
+      throw new PrimitiveError("여러 동작이 섞인 경로는 걸음 수를 바꿀 수 없습니다.");
+    }
+    const walkDir = dir ?? first?.dir;
+    if (!walkDir) throw new PrimitiveError("걸음 수를 바꾸려면 방향도 지정하세요.");
+    moves = Array.from({ length: (steps ?? 1) as number }, () => ({ kind: "move", dir: walkDir }));
+  } else if (dir !== undefined) {
+    if (!moves.some(move => move.kind === "move")) throw new PrimitiveError("경로에 방향을 바꿀 걸음이 없습니다.");
+    moves = moves.map(move => move.kind === "move" ? { ...move, dir } : move);
   }
   return {
     ...base, ...target,
@@ -189,9 +202,12 @@ function buildCommand(kind: Kind, source: GameMap, args: Args, current?: Command
     case "ending": {
       const { title, message, ...presentation } = fields;
       const defaults = current?.kind === "ending" ? current : { title: "끝", message: "플레이해 주셔서 감사합니다." };
+      const next = { ...base.presentation, ...presentation };
+      if (presentation.musicResourceId === "") delete next.musicResourceId;
+      if (presentation.backgroundResourceId === "") delete next.backgroundResourceId;
       return {
         ...base, title: (title ?? defaults.title) as string, message: (message ?? defaults.message) as string,
-        ...(Object.keys(presentation).length ? { presentation: { ...base.presentation, ...presentation } } : {}),
+        ...(base.presentation || Object.keys(next).length ? { presentation: next } : {}),
       };
     }
     case "setEventGraphicPattern": {
@@ -219,7 +235,44 @@ function buildCommand(kind: Kind, source: GameMap, args: Args, current?: Command
 
 const empty = new Set<string>();
 
-function validateReferences({ project }: PrimitiveContext, source: GameMap, command: Command): void {
+function spriteFrameCount(project: Project, spriteId: string): number | undefined {
+  const definition = project.assets.sprites[spriteId];
+  const textureId = definition?.image.id ?? spriteId;
+  const upload = project.assets.uploaded[textureId];
+  if (findCharsetAsset(textureId) || upload?.kind === "charset") return CHARSET_FRAME_COUNT;
+  return uploadedSpriteGeometry(upload)?.frames ?? definition?.frames;
+}
+
+function validateGraphicPattern(project: Project, target: GameEvent, pages: readonly EventPage[], pattern: number): void {
+  const frameCounts = (pages.length ? pages.map(page => page.graphic.sprite ?? target.sprite) : [target.sprite])
+    .map(sprite => sprite && spriteFrameCount(project, sprite.id));
+  // Another event's active page may depend on game state. Reject only when every possible sheet is known.
+  if (frameCounts.every(count => count !== undefined && pattern >= count)) {
+    throw new PrimitiveError("대상 이벤트의 그림에 그 프레임이 없습니다.");
+  }
+}
+
+function validateEndingMedia(project: Project, command: Extract<Command, { kind: "ending" }>, current?: Command): void {
+  const previous = current?.kind === "ending" ? current.presentation : undefined;
+  const { musicResourceId, backgroundResourceId } = command.presentation ?? {};
+  if (musicResourceId && musicResourceId !== previous?.musicResourceId) {
+    const upload = project.assets.uploaded[musicResourceId];
+    const isMusic = upload ? upload.kind === "music" && uploadedAssetMime(upload).startsWith("audio/")
+      : findBgmRuntimeEntry(musicResourceId) || listAudioResources("music", project).some(resource => resource.id === musicResourceId);
+    if (!isMusic) throw new PrimitiveError("엔딩 음악에는 배경음악 리소스를 지정하세요.");
+  }
+  if (backgroundResourceId && backgroundResourceId !== previous?.backgroundResourceId) {
+    const upload = project.assets.uploaded[backgroundResourceId];
+    const url = upload ? undefined : resolveAssetResourceUrl(backgroundResourceId, { project });
+    const isImage = upload ? uploadedAssetMime(upload).startsWith("image/")
+      : url && /^(?:data:image\/)|\.(?:png|jpe?g|gif|webp|svg|avif|bmp)(?:[?#]|$)/iu.test(url);
+    if (!isImage) throw new PrimitiveError("엔딩 배경에는 그림 리소스를 지정하세요.");
+  }
+}
+
+function validateReferences(
+  { project }: PrimitiveContext, source: GameMap, event: GameEvent, page: EventPage, command: Command, current?: Command,
+): void {
   const { kind } = command;
   const endPresentation = kind === "ending" ? command.presentation : undefined;
   const context: ReferenceContext = {
@@ -245,7 +298,9 @@ function validateReferences({ project }: PrimitiveContext, source: GameMap, comm
     if (!Number.isSafeInteger(command.x) || !Number.isSafeInteger(command.y) || !inBounds(map, command.x, command.y)) {
       throw new PrimitiveError("지정한 칸을 맵에서 찾을 수 없습니다.");
     }
-    if (kind === "transfer" && !isPassableLanding(project, map, command.x, command.y)) {
+    const sameLanding = current?.kind === "transfer"
+      && command.mapId === current.mapId && command.x === current.x && command.y === current.y;
+    if (kind === "transfer" && !sameLanding && !isPassableLanding(project, map, command.x, command.y)) {
       throw new PrimitiveError("도착 칸에서 걸어 나갈 수 없습니다.");
     }
     if (kind === "changeTile" && command.tile !== -1 && command.tile >= (getTileset(project, map)?.count ?? 0)) {
@@ -253,10 +308,16 @@ function validateReferences({ project }: PrimitiveContext, source: GameMap, comm
     }
   } else if (kind === "moveEvent" || kind === "setEventGraphicPattern") {
     const id = command.eventId;
-    const self = !id;
-    if (!self && !(kind === "moveEvent" && id === PLAYER_MOVE_TARGET) && !source.events.some(event => event.id === id)) {
+    const target = !id || id === event.id ? event : source.events.find(row => row.id === id);
+    if (!target && !(kind === "moveEvent" && id === PLAYER_MOVE_TARGET)) {
       throw new PrimitiveError("이 맵에서 대상 이벤트를 찾을 수 없습니다.");
     }
+    if (kind === "setEventGraphicPattern" && target
+        && (current?.kind !== kind || current.eventId !== id || current.pattern !== command.pattern)) {
+      validateGraphicPattern(project, target, target === event ? [page] : target.pages ?? [], command.pattern);
+    }
+  } else if (kind === "ending") {
+    validateEndingMedia(project, command, current);
   } else if (kind === "runControl" && command.action === "resetRoom" && command.roomId !== undefined
       && !Object.values(project.maps).some(map => roguelikeRoomId(map) === command.roomId)) {
     throw new PrimitiveError("초기화할 방을 찾을 수 없습니다.");
@@ -329,11 +390,11 @@ function describeCommand({ project }: PrimitiveContext, map: GameMap, command: C
 }
 
 function primitive(kind: Kind, spec: Spec, edit: Edit): SmallTaskPrimitive {
-  const required = edit === "insert" ? spec.requiredOnInsert ?? [] : ["index"];
+  const required = edit === "insert" ? spec.requiredOnInsert ?? [] : ["index", "expectedHash"];
   const properties = {
     index: integer(edit === "insert" ? "끼워 넣을 줄. 첫 줄은 0, 생략하면 마지막에 추가" : "고칠 줄. 첫 줄은 0", 0),
     branchPath: { type: "array", items: integer("분기 경로 번호"), description: "중첩된 명령 목록의 분기 경로. 바깥 목록이면 생략" },
-    ...(edit === "update" ? { expectedHash: reference("미리 읽은 명령 줄의 확인값. 생략하면 현재 줄을 기준으로 수정") } : {}),
+    ...(edit === "update" ? { expectedHash: reference("get_event에서 includeCommandHashes를 켜고 읽은 명령 줄의 확인값") } : {}),
     ...spec.fields,
   } satisfies Record<string, JsonSchema>;
   return {
@@ -359,13 +420,16 @@ function primitive(kind: Kind, spec: Spec, edit: Edit): SmallTaskPrimitive {
       return koreanSentence(describeCommand(ctx, map, buildCommand(kind, map, args, current), spec.title));
     },
     apply(ctx, args) {
-      const { map, page } = scopedPage(ctx);
+      const { map, event, page } = scopedPage(ctx);
       const { path, current } = resolveEdit(page, args, kind, edit);
+      const hash = args.expectedHash as string;
+      if (current && eventCommandHash(current) !== hash) {
+        throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
+      }
       const command = buildCommand(kind, map, args, current);
-      validateReferences(ctx, map, command);
+      validateReferences(ctx, map, event, page, command, current);
       let edited: EventPage;
       try {
-        const hash = current ? args.expectedHash as string | undefined ?? eventCommandHash(current) : "";
         if (!current) {
           edited = insertEventCommand(page, path, command);
         } else if (Object.keys(current).some(key => !Object.hasOwn(command, key))) {
@@ -376,8 +440,7 @@ function primitive(kind: Kind, spec: Spec, edit: Edit): SmallTaskPrimitive {
         }
       } catch (error) {
         if (!(error instanceof EventCommandEditError)) throw error;
-        const message = error.code === "stale-event-command" ? error.message : "명령 값이나 줄 위치를 다시 확인하세요.";
-        throw new PrimitiveError(message);
+        throw new PrimitiveError("명령 값이나 줄 위치를 다시 확인하세요.");
       }
       return updateScopedPage(ctx, () => edited);
     },
