@@ -15,7 +15,7 @@ import { uploadedAssetMime } from "@/project/persistence/assetAccessors";
 import { SYSTEM_BGM_CUES, SYSTEM_SE_CUES } from "@/project/systemAudioOverrides";
 import type { Command, M2CommandFields, Project } from "@/project/types";
 import { commandListAt, insertAtIndex, koreanSentence, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "11-m2-system-menu";
@@ -278,15 +278,15 @@ function primitive(entry: Entry, update: boolean): SmallTaskPrimitive {
       throw new PrimitiveError("여러 분기가 같은 명령 목록을 공유하고 있습니다. 이벤트 편집기에서 분기를 확인해 주세요.");
     }
     const index = (args.index ?? commands.length) as number;
-    if (!Number.isSafeInteger(index) || index < 0 || index >= commands.length + Number(!update)) {
+    if (!Number.isSafeInteger(index) || index < 0 || (!update && index > commands.length)) {
       throw new PrimitiveError("선택한 명령 목록에서 줄 위치를 다시 확인해 주세요.");
     }
     const current = commands[index];
-    if (update && (current?.kind !== "m2Command" || current.commandId !== catalog.id)) {
-      throw new PrimitiveError("선택한 줄에서 이 종류의 명령을 찾을 수 없습니다.");
-    }
-    if (update && eventCommandHash(current!) !== args.expectedHash) {
-      throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
+    if (update) {
+      if (!current || eventCommandHash(current) !== args.expectedHash) throw new PrimitiveError(STALE_COMMAND_LIST);
+      if (current.kind !== "m2Command" || current.commandId !== catalog.id) {
+        throw new PrimitiveError("선택한 줄에서 이 종류의 명령을 찾을 수 없습니다.");
+      }
     }
     const defaults = newM2Command(catalog.id);
     const result = entry.prepare(ctx, args, current?.kind === "m2Command" && update ? current.fields : defaults.fields, update);
@@ -319,7 +319,9 @@ function primitive(entry: Entry, update: boolean): SmallTaskPrimitive {
         return updateScopedPage(ctx, page =>
           updateEventCommand(page, [...branchPath, index], { fields: command.fields }, args.expectedHash as string));
       } catch (error) {
-        if (error instanceof EventCommandEditError) throw new PrimitiveError("명령 줄의 위치나 설정을 확인해 주세요.");
+        if (error instanceof EventCommandEditError && error.code !== "stale-event-command") {
+          throw new PrimitiveError("명령 줄의 위치나 설정을 확인해 주세요.");
+        }
         throw error;
       }
     },

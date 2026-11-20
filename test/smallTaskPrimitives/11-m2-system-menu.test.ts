@@ -7,12 +7,13 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/11-m2-system-menu";
 import { createInterpreter } from "@/player/interpreter";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { serialize } from "@/project/io";
@@ -96,15 +97,24 @@ const cases: Row[] = [
 ];
 
 const fixtures = ["blank", "built", "maou"] as const;
-const sceneFixtures = new Map<(typeof fixtures)[number], Project>();
+type Fixture = (typeof fixtures)[number];
+const fixtureProjects = new Map<Fixture, Project>();
 const unchanged: Command = { kind: "text", body: "원래 대사" };
 
-function scene(fixture: (typeof fixtures)[number], commands: Command[] = [unchanged]) {
-  let before = sceneFixtures.get(fixture);
-  if (!before) {
-    before = loadFixture(fixture);
-    sceneFixtures.set(fixture, before);
+function fixtureProject(fixture: Fixture): Project {
+  let project = fixtureProjects.get(fixture);
+  if (!project) {
+    project = loadFixture(fixture);
+    // Match editor load normalization before the primitive freezes the fixture.
+    ensureSwitchVariableSlots(project);
+    removeLegacySpriteReferences(project);
+    fixtureProjects.set(fixture, project);
   }
+  return project;
+}
+
+function scene(fixture: Fixture, commands: Command[] = [unchanged]) {
+  const before = fixtureProject(fixture);
   const template = before.maps[before.startMapId] ? undefined : createBlankProject();
   const map = template ? template.maps[template.startMapId] : before.maps[before.startMapId];
   const page: EventPage = {
@@ -135,7 +145,7 @@ function expectedFields(row: Row, mapId: string) {
 
 describe("시스템·메뉴 작은 일", () => {
   beforeAll(() => {
-    for (const fixture of fixtures) sceneFixtures.set(fixture, loadFixture(fixture));
+    for (const fixture of fixtures) fixtureProject(fixture);
   }, 120_000);
 
   cases.forEach((row, i) => {
@@ -193,12 +203,28 @@ describe("시스템·메뉴 작은 일", () => {
     });
   });
 
+  it("페이지가 여러 개면 페이지 선택을 요구하고 선택한 페이지에만 추가한다", () => {
+    const { project, map, event, otherPage, current } = scene("blank");
+    const id = "m2.077.insert";
+    const args = { enabled: false };
+    const eventOnly = eventTarget(project, map.id, event.id);
+    expect(() => runPrimitive(project, eventOnly, id, args)).toThrow(SELECT_EVENT_PAGE);
+
+    const pageTarget = eventTarget(project, map.id, event.id, otherPage.id);
+    const { after } = runPrimitive(project, pageTarget, id, args);
+    expect(current(after).pages![0]).toBe(event.pages![0]);
+    expect(current(after).pages![1].commands).toEqual([
+      unchanged, { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "false" } },
+    ]);
+    expect(otherPage.commands).toEqual([unchanged]);
+  });
+
   it("분기 안의 명령을 고치고 오래된 확인값을 거부한다", async () => {
     const original: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "true" } };
     const { project, target, commands } = scene("blank", [original, { kind: "loop", body: [original, unchanged] }]);
     const args = { index: 0, branchPath: [1, LOOP_BODY_BRANCH_INDEX], enabled: false };
     const id = "m2.077.update";
-    expect(() => runPrimitive(project, target, id, { ...args, expectedHash: "이전 줄" })).toThrow(/바뀌었습니다/u);
+    expect(() => runPrimitive(project, target, id, { ...args, expectedHash: "이전 줄" })).toThrow(STALE_COMMAND_LIST);
     const { after } = runPrimitive(project, target, id, { ...args, expectedHash: eventCommandHash(original) });
     expect(commands(after)).toEqual([original, { kind: "loop", body: [{ ...original, fields: { enabled: "false" } }, unchanged] }]);
     await expectUndoRestores(project, after, target);
@@ -229,7 +255,8 @@ describe("시스템·메뉴 작은 일", () => {
     const { project, target, commands } = scene("blank", [neighbor, original]);
     const args = { index: 0, comment: "첫 주석 수정" };
     expect(() => runPrimitive(project, target, "m2.088.update", args)).toThrow(PrimitiveError);
-    expect(() => runPrimitive(project, target, "m2.088.update", { ...args, expectedHash })).toThrow(/바뀌었습니다/u);
+    expect(() => runPrimitive(project, target, "m2.088.update", { ...args, expectedHash })).toThrow(STALE_COMMAND_LIST);
+    expect(() => runPrimitive(project, target, "m2.088.update", { ...args, index: 2, expectedHash })).toThrow(STALE_COMMAND_LIST);
     expect(commands(project)).toEqual([neighbor, original]);
     const { after } = runPrimitive(project, target, "m2.088.update", { ...args, index: 1, expectedHash });
     expect(commands(after)).toEqual([neighbor, { ...original, fields: { comment: "첫 주석 수정", color: "green" } }]);
@@ -485,14 +512,8 @@ function corpusProject(fixture: Project, { setup, target }: UpdateCase): Project
 }
 
 describe("기존 명령을 심은 수정 코퍼스", () => {
-  const loaded = new Map<UpdateCase["fixture"], Project>();
   it.each(updateCorpus)("$request", async entry => {
-    let fixture = loaded.get(entry.fixture);
-    if (!fixture) {
-      fixture = loadFixture(entry.fixture);
-      loaded.set(entry.fixture, fixture);
-    }
-    const before = corpusProject(fixture, entry);
+    const before = corpusProject(fixtureProject(entry.fixture), entry);
     const target = resolveTarget(before, entry.target);
     // The corpus seeds the line the assistant originally read, including stale-location refusal cases.
     const args = { expectedHash: eventCommandHash(entry.setup.commands[0]), ...entry.args };
