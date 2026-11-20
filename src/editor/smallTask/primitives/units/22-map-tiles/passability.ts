@@ -39,7 +39,8 @@ export function setRegionPassability(ctx: PrimitiveContext, args: Record<string,
   const passability = tileset.passability.slice();
   passability[tile] = flags;
   const edited = { ...tileset, passability };
-  if (selected.some(index => !jsonEqual(cellPassability(edited, map, index), flags))) {
+  if (selected.some(index => !jsonEqual(cellPassability(edited, map, index), flags)
+    || (changed && jsonEqual(cellPassability(tileset, map, index), flags)))) {
     throw new PrimitiveError("이 칸의 통행은 높이 지형이나 다른 층의 타일이 결정해요.");
   }
   if (!changed) return project;

@@ -270,7 +270,14 @@ function shift(ctx: PrimitiveContext, args: Record<string, unknown>) {
   const legacyFeature = tileset.image.type === "bundled" && tileset.kind !== "custom"
     ? groundFeaturePredicate(map, ctx.project.tilesets) : undefined;
   const isFeature = (tile: number) => autotiles.has(tile) || legacyFeature?.(tile) === true;
-  if (map.events.length || map.locations?.length || map.relief?.levels.some(Boolean)
+  const validGround = (tile: number) => {
+    if (!Number.isSafeInteger(tile) || tile < 0 || tile >= tileset.count || isFeature(tile)
+      || tileset.priority[tile] === "upper") return false;
+    const flags = tileset.passability[tile];
+    return !!flags && flags.up && flags.down && flags.left && flags.right;
+  };
+  if (map.events.length || ctx.live?.maps[map.id]?.events.some(event => event.draft)
+    || map.locations?.length || map.relief?.levels.some(Boolean)
     || map.relief?.ramps?.some(Boolean) || map.relief?.wallDecor?.length || map.relief?.falls?.length
     || map.terrainDesign?.waterDepth?.some(Boolean) || map.terrainDesign?.features?.length) {
     throw new PrimitiveError("이 맵에는 타일과 함께 옮겨야 할 이벤트나 장소, 지형이 있어요.");
@@ -282,27 +289,24 @@ function shift(ctx: PrimitiveContext, args: Record<string, unknown>) {
     const edgeX = Math.max(kept.x, Math.min(x, kept.x + kept.w - 1));
     const edgeY = Math.max(kept.y, Math.min(y, kept.y + kept.h - 1));
     const lower = layerTileAt(map, 1, index);
-    const passes = tileset.passability[lower];
-    const sameGround = !isFeature(lower) && tileset.priority[lower] !== "upper"
-      && passes && passes.up && passes.down && passes.left && passes.right
-      && lower === layerTileAt(map, 1, edgeY * map.width + edgeX);
+    const sameGround = validGround(lower) && lower === layerTileAt(map, 1, edgeY * map.width + edgeX);
     if ((lower >= 0 && !sameGround) || TILE_LAYER_NOS.some(layer => layer > 1 && layerTileAt(map, layer, index) >= 0)
       || shadowAt(map, index) || map.lowerTileStacks?.[index]?.length || map.upperTileStacks?.[index]?.length) {
       throw new PrimitiveError("맵 가장자리의 타일이나 그림자가 맵 밖으로 밀려나요.");
     }
   });
-  const validGround = (tile: number) => Number.isSafeInteger(tile) && tile >= 0 && tile < tileset.count && !isFeature(tile);
   const ground = map.lowerTiles.some(validGround)
     ? extendedLowerTiles(map, rect.w, rect.h, tile => !validGround(tile), dx, dy)
     : undefined;
-  const fallback = blankFillTileFor(tileset.id, -1, tileset);
+  const defaultTile = blankFillTileFor(tileset.id, -1, tileset);
+  const fallback = validGround(defaultTile) ? defaultTile : -1;
   return editTiles(ctx, map, (_draft, next) => {
     forEachCell(rect, (x, y) => {
       const i = y * map.width + x;
       const sx = x - dx;
       const sy = y - dy;
       const from = includesCell(rect, sx, sy) ? sy * map.width + sx : -1;
-      const vacated = ground?.[i] ?? (fallback < tileset.count ? fallback : -1);
+      const vacated = ground?.[i] ?? fallback;
       writeTileCell(map, from, next, i, { ground: vacated });
     });
   });

@@ -36,6 +36,7 @@ type Fixture = Parameters<typeof loadFixture>[0];
 const BUILT_MAP = "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d";
 const fixtures = new Map<Fixture, Project>();
 const rect = (x: number, y: number, w = 1, h = 1): Rect => ({ x, y, w, h });
+const block = { up: false, down: false, left: false, right: false };
 
 function fixture(name: Fixture, mapId?: string): { project: Project; map: GameMap } {
   let project = fixtures.get(name);
@@ -235,6 +236,15 @@ describe("맵 타일 적용과 한 번의 실행 취소", () => {
     expect(runPrimitive(project, target, "map.tile.shift", shift).after.maps[map.id].upperTiles[1]).toBe(1);
     expect(() => runPrimitive(project, target, "map.tile.shift", shift, { rect: rect(0, 0, 3, 3) }))
       .toThrow("맵 전체를 밀려면 맵 전체를 선택해 주세요.");
+  });
+
+  it("밀기로 드러난 가장자리는 이동한 벽을 복제하지 않고 바닥을 잇는다", () => {
+    const { project, map, tileset } = customFixture();
+    map.lowerTiles[0] = 1;
+    map.upperTiles[0] = -1;
+    tileset.passability[1] = block;
+    const { after } = runPrimitive(project, mapTarget(project, map.id)!, "map.tile.shift", { dx: 1, dy: 0 });
+    expect(after.maps[map.id].lowerTiles.slice(0, 3)).toEqual([0, 1, 0]);
   });
 
   it("타일 번호 240이 있는 커스텀 타일셋도 빈 바닥을 임의로 채우지 않는다", () => {
@@ -488,6 +498,14 @@ describe("플레이 이동 판정", () => {
     expect(canMove(edited, edited.maps[map.id], 1, 0, 0, 0)).toBe(false);
     expect(canMove(edited, edited.maps[map.id], 0, 0, 1, 0)).toBe(false);
   });
+
+  it("윗층이 이미 막은 칸에서는 아랫층을 막아 달라는 요청도 거절한다", () => {
+    const { project, map, tileset } = customFixture(3);
+    map.lowerTiles[0] = 2;
+    tileset.passability[1] = block;
+    expect(() => execute(project, map, "map.tile.setPassability", { tile: 2, passable: false }, rect(0, 0)))
+      .toThrow("다른 층의 타일이 결정해요.");
+  });
 });
 
 function eventAt(id: string, x: number, y: number, commands: Command[]): GameEvent {
@@ -509,7 +527,7 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
     expect(map).toEqual(original);
   });
 
-  it.each(["event", "relief", "location"] as const)("타일만 밀면 %s의 좌표가 어긋나는 맵은 거부한다", content => {
+  it.each(["event", "draft", "relief", "location"] as const)("타일만 밀면 %s의 좌표가 어긋나는 맵은 거부한다", content => {
     const { project, map } = customFixture(12);
     map.lowerTiles.fill(10);
     if (content === "event") map.events = [eventAt("npc", 1, 1, [])];
@@ -517,7 +535,9 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
     if (content === "location") map.locations = [
       { id: "market", name: "장터", ...rect(1, 1) },
     ];
-    expect(() => runPrimitive(project, mapTarget(project, map.id)!, "map.tile.shift", { dx: 1, dy: 0 }))
+    const draft = { ...eventAt("draft", 1, 1, []), draft: { kind: "new" as const } };
+    const live = content === "draft" ? { maps: { [map.id]: { events: [draft] } } } : undefined;
+    expect(() => runPrimitive(project, mapTarget(project, map.id)!, "map.tile.shift", { dx: 1, dy: 0 }, undefined, live))
       .toThrow("타일과 함께 옮겨야 할");
   });
 
@@ -545,6 +565,45 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
     expect(terrainReachability(before, blocked, before.startPos)[5]).toBe(0);
     expect(() => execute(before, map, "map.tile.paint", { x: 2, y: 0, tile: 1, layer: "4" }, rect(2, 0)))
       .toThrow("기존 이벤트나 출구로 가는 길이 끊겨요.");
+  });
+
+  it.each(["draft", "teleport"] as const)("초안 이벤트와 지정된 순간이동에서 길이 끊기지 않게 한다 (%s)", mode => {
+    const { project, map, tileset } = customFixture();
+    tileset.passability[1] = block;
+    map.upperTiles.fill(-1);
+    map.lowerTiles.fill(1);
+    map.lowerTiles.fill(0, 0, map.width);
+    const destination = eventAt("end_of_path", 5, 0, [{ kind: "text", body: "도착" }]);
+    const draft = { ...destination, draft: { kind: "new" as const } };
+    const live = mode === "draft" ? { maps: { [map.id]: { events: [draft] } } } : undefined;
+    const before = { ...project, startPos: { x: 0, y: 0 } };
+    if (mode === "teleport") {
+      const other = { ...map, id: "other" };
+      before.maps = { ...before.maps, [other.id]: other };
+      before.startMapId = other.id;
+      map.events = [destination];
+      before.commonEvents = [{ id: "warp", name: "순간이동", trigger: "none", commands: [{
+        kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields: { mapId: map.id, x: 0, y: 0 },
+      }] }];
+    }
+    const args = { x: 2, y: 0, tile: 1, layer: "4" };
+    const selection = { rect: rect(2, 0) };
+    const target = mapTarget(before, map.id)!;
+    if (mode === "draft") expect(runPrimitive(before, target, "map.tile.paint", args, selection).after).not.toBe(before);
+    expect(() => runPrimitive(before, target, "map.tile.paint", args, selection, live))
+      .toThrow("기존 이벤트나 출구로 가는 길이 끊겨요.");
+  });
+
+  it("갈래 안에서 상위 위치 표시로 돌아가 열리는 문 타일을 보호한다", () => {
+    const { project, map } = customFixture();
+    const owner = { ...map, id: "owner", events: [eventAt("reenter", 1, 1, [
+      { kind: "label", name: "door" },
+      { kind: "m2Command", commandId: "m2-202-screen-effect", fields: { effect: "doorOpen", value: "0,0" } },
+      { kind: "transfer", mapId: map.id, x: 3, y: 3, fade: "black" },
+      { kind: "choices", options: [{ text: "돌아가기", branch: [{ kind: "gotoLabel", name: "door" }] }] },
+    ])] };
+    expect(() => execute(withMap(project, owner), map, "map.tile.erase", {}, rect(0, 0)))
+      .toThrow("문을 여닫는 데 쓰여요.");
   });
 
   it.each([
@@ -652,6 +711,8 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
     const index = map.width + 2;
     map.lowerTiles[index] = 1;
     map.lowerTiles[index + 1] = 2;
+    map.lowerTiles[index + 3] = 3;
+    map.lowerTiles[index + 4] = 2;
     tileset.structureKits = [{
       kind: "section", id: "floor-kit", name: "두 칸 바닥", tileSize: map.tileSize, width: 2, height: 1,
       rows: [{ tiles: [1, 2] }], learnedFrom: "db-authored", createdAt: "2026-11-20T00:00:00Z",
@@ -660,6 +721,10 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
       expect(() => execute(project, map, id, { ...rect(2, 1), dx: 2, dy: 0 }, rect(2, 1, 3)))
         .toThrow("물건의 일부만");
     }
+    expect(() => execute(project, map, "map.region.copy", { ...rect(5, 1, 2), dx: -3, dy: 0 }, rect(2, 1, 5)))
+      .toThrow("물건의 그림이 조각나요.");
+    const replaced = execute(project, map, "map.region.copy", { ...rect(7, 1, 2), dx: -5, dy: 0 }, rect(2, 1, 7));
+    expect(replaced.maps[map.id].lowerTiles.slice(index, index + 2)).toEqual([0, 0]);
     const mixedMap = { ...map, upperTiles: map.upperTiles.slice() };
     mixedMap.upperTiles[index] = mixedMap.upperTiles[index - 1] = 3;
     const mixedTileset = { ...tileset, structureKits: tileset.structureKits.map(kit =>
@@ -691,7 +756,6 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
 });
 
 describe("통행 설정 저장과 표시", () => {
-  const block = { up: false, down: false, left: false, right: false };
   it("상위 별과 4층에 가려 실제로 열리지 않는 칸은 거부한다", () => {
     const { project, map, tileset } = customFixture(3);
     tileset.priority[1] = "upper";
@@ -767,6 +831,10 @@ describe("통행 설정 저장과 표시", () => {
       "공용 타일셋의 통행 설정은 프로젝트에 저장할 수 없어요.",
       "이 타일셋은 프로젝트를 다시 열 때 통행 설정이 원래대로 돌아가요.",
       "이 칸의 통행은 높이 지형이나 다른 층의 타일이 결정해요.",
-    ]) expect(translator.translate(message)).not.toBe(message);
+    ]) {
+      const translation = translator.translate(message);
+      expect(translation).toMatch(/\S/u);
+      expect(translation).not.toBe(message);
+    }
   });
 });

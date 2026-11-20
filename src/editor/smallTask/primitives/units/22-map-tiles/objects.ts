@@ -54,12 +54,20 @@ export function assertWholeKits(
         const inside = (rect: Rect) => cells.every(cell => includesCell(rect, x + cell.dx, y + cell.dy));
         if (transform?.movingFrom && inside(transform.movingFrom)) continue;
         const complete = inside(area);
-        if (complete && !transform?.mirror) continue;
+        if (complete && !transform) continue;
         if (!matchesAt(map, cells, x, y)) continue;
         if (!complete) throw new PrimitiveError("선택한 영역에 여러 칸짜리 물건의 일부만 들어 있어요.");
-
+        if (!transform) continue;
+        if (!transform.mirror) {
+          const replaced = cells.every(cell => {
+            const index = (y + cell.dy) * map.width + x + cell.dx;
+            return (cell.lower >= 0 && layerTileAt(transform.next, 1, index) !== cell.lower)
+              || (cell.upper >= 0 && layerTileAt(transform.next, 3, index) !== cell.upper);
+          });
+          if (!replaced) throw new PrimitiveError("여러 칸짜리 물건의 그림이 조각나요. 물건을 선택해서 편집해 주세요.");
+          continue;
+        }
         // A whole prop can change position if its stitched image still matches at the mirrored location.
-        if (!transform?.mirror) continue;
         const offsets = cells.map(cell => transform.mirror === "horizontal" ? cell.dx : cell.dy);
         const span = Math.min(...offsets) + Math.max(...offsets);
         const mirroredX = transform.mirror === "horizontal" ? 2 * area.x + area.w - 1 - x - span : x;
