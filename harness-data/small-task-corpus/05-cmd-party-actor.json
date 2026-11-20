@@ -64,12 +64,13 @@
     "expectRefusal": true
   },
   {
-    "request": "지금은 지도를 골라 놨어. 다른 이벤트의 화염 배우는 줄을 잊기로 바꿔 줘",
+    "request": "지도를 선택한 채 이벤트의 화염 배우기를 잊기로 바꿔 줘",
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "cmd.learnSkill.update",
-    "args": {"index": 0, "expectedHash": "e0746cd061256c59879ed7d390133235", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "args": {"index": 0, "expectedHash": "e0746cd061256c59879ed7d390133235", "action": "forget"},
+    "expectRefusal": true,
+    "refusalMessage": "선택한 대상"
   },
   {
     "request": "시온 경험치 삼 점 더해",
@@ -136,12 +137,13 @@
     "expectRefusal": true
   },
   {
-    "request": "이 페이지 말고 옆 이벤트의 경험치 보상 줄을 두 배로 고쳐요",
+    "request": "선택한 페이지에 없는 분기에서 경험치 변경 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeExp.update",
     "args": {"index": 0, "expectedHash": "1e4436a47a758b09cc0b753b395163d5", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "이 이벤트에서 시온 렙 5로 해 줘요",
@@ -208,12 +210,13 @@
     "expectRefusal": true
   },
   {
-    "request": "선택 안 한 뒷페이지의 레벨 올리는 줄을 5로 바꾸자",
+    "request": "선택한 페이지에 없는 분기에서 레벨 변경 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeLevel.update",
     "args": {"index": 0, "expectedHash": "914d44272e3cefe4544d5e53f0cad44c", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "없는 재봉 생활 스킬 올려줘",
@@ -224,12 +227,13 @@
     "expectRefusal": true
   },
   {
-    "request": "다른 이벤트의 낚시 숙련 보상 줄을 10에서 20으로 수정해 주세요",
+    "request": "선택한 페이지에 없는 분기에서 생활 스킬 경험치 변경 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeLifeSkillExp.update",
     "args": {"index": 0, "expectedHash": "1b07a89123143de894e2e7289b23ab41", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "시온을 수호자로 승급시켜",
@@ -296,12 +300,13 @@
     "expectRefusal": true
   },
   {
-    "request": "다른 맵의 승급 줄 직업을 수호자로 바꿔",
+    "request": "선택한 페이지에 없는 분기에서 승급 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.promoteActor.update",
     "args": {"index": 0, "expectedHash": "ce7739c8d8cd1085e6bb13fdef4ebc24", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "시온한테 철 검 쥐여 줘",
@@ -368,12 +373,13 @@
     "expectRefusal": true
   },
   {
-    "request": "여기서 선택하지 않은 페이지의 장비 줄만 철 검으로 바꿔 주라",
+    "request": "선택한 페이지에 없는 분기에서 장비 변경 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeEquipment.update",
     "args": {"index": 0, "expectedHash": "f61c51c921200fb8a11c9b2641cf0a73", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "시온 체력 열 점 깎기",
@@ -440,12 +446,13 @@
     "expectRefusal": true
   },
   {
-    "request": "옆 페이지의 체력 피해 줄을 세 점으로 조정해 주세요",
+    "request": "선택한 페이지에 없는 분기에서 체력 변경 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeActorHp.update",
     "args": {"index": 0, "expectedHash": "f9a5adb11dd6fdf6187868a2428fa9b7", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "시온 마나 다섯 깎아 줘",
@@ -512,12 +519,13 @@
     "expectRefusal": true
   },
   {
-    "request": "이 페이지 건들지 말고 다른 보상 페이지의 마력 변경 줄을 수정",
+    "request": "선택한 페이지에 없는 분기에서 마력 변경 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeActorMp.update",
     "args": {"index": 0, "expectedHash": "ef055e75803b59cbe52bbdbb654c2cc0", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "샘 마시면 전원 완쾌하게 해 줘",
@@ -712,12 +720,13 @@
     "expectRefusal": true
   },
   {
-    "request": "다른 이벤트의 영입 줄에서 멤버가 나가게 바꿔 주세요",
+    "request": "선택한 페이지에 없는 분기에서 파티 편성 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.changeParty.update",
     "args": {"index": 0, "expectedHash": "5d1c939b58e1e9010e4f0529ae35e441", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "지금 파티를 선발대로 저장해 둬",
@@ -784,12 +793,13 @@
     "expectRefusal": true
   },
   {
-    "request": "선택 안 한 야영지 이벤트의 파티 저장 이름을 야영조로 바꿔줘",
+    "request": "선택한 페이지에 없는 분기에서 파티 저장 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.storeParty.update",
     "args": {"index": 0, "expectedHash": "2039e5072899ab3dc5b0d00d8a577049", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "저장된 선발대로 전환해",
@@ -856,12 +866,13 @@
     "expectRefusal": true
   },
   {
-    "request": "옆 맵에 있는 파티 호출 명령을 경비조로 수정해 줘요",
+    "request": "선택한 페이지에 없는 분기에서 파티 불러오기 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.recallParty.update",
     "args": {"index": 0, "expectedHash": "c0b89f816c49e4a1d0c8dcedf1571945", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "시온을 뒤따라오게 해 줘",
@@ -928,12 +939,13 @@
     "expectRefusal": true
   },
   {
-    "request": "이 이벤트 아닌 다음 이벤트의 강아지 동행 줄 이름을 고쳐",
+    "request": "선택한 페이지에 없는 분기에서 동행자 추가 명령을 고쳐 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.addFollower.update",
     "args": {"index": 0, "expectedHash": "90139b08936b454b4c8a804f38f96839", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "명령 분기"
   },
   {
     "request": "따라오는 강아지만 떠나게 해줘",
@@ -1000,12 +1012,13 @@
     "expectRefusal": true
   },
   {
-    "request": "지도만 선택했는데 다른 페이지의 동행 해제 줄을 전원 해산으로 바꿔 주세요",
+    "request": "지도를 선택한 채 이벤트의 동행자 제거를 전원 해산으로 바꿔 줘",
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "cmd.removeFollower.update",
-    "args": {"index": 0, "expectedHash": "e5ff784ab01d87a98aa853bba22ad764", "branchPath": [0, 999]},
-    "expectRefusal": true
+    "args": {"index": 0, "expectedHash": "e5ff784ab01d87a98aa853bba22ad764", "all": true},
+    "expectRefusal": true,
+    "refusalMessage": "선택한 대상"
   },
   {
     "request": "이 이벤트에서 파티 전원의 체력을 절반으로 맞춰 줘",

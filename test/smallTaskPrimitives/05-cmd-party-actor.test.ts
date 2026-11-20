@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -245,6 +245,27 @@ it("두 분기가 같은 목록을 공유할 때 한 분기만 고치는 요청�
   expect(branch).toEqual([{ kind: "changeLevel", actorId, op: "+=", amount: 1 }]);
 });
 
+it("배열이 아직 없는 취소 분기에 처음 명령을 넣는다", () => {
+  const choice: Command = { kind: "choices", options: [{ text: "계속", branch: [text] }], cancelBehavior: "branch" };
+  const { project, target, mapId } = fixture("blank", [choice]);
+  const branchPath = [0, CHOICE_CANCEL_BRANCH_INDEX];
+  const { after } = runPrimitive(project, target, "cmd.learnSkill.insert", { branchPath, actorId, skillId });
+  expect(pages(after, mapId)[1]!.commands).toEqual([{ ...choice, cancelBranch: [{ kind: "learnSkill", actorId, skillId }] }]);
+  expect(choice.cancelBranch).toBeUndefined();
+  expect(() => runPrimitive(project, target, "cmd.learnSkill.update", {
+    branchPath, index: 0, expectedHash: eventCommandHash(text), skillId,
+  })).toThrow(/명령 분기/u);
+});
+
+it("두 곳에서 공유하는 명령에 새 분기 배열을 만들지 않는다", () => {
+  const choice: Command = { kind: "choices", options: [{ text: "계속", branch: [] }], cancelBehavior: "branch" };
+  const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 }, then: [choice], else: [choice] };
+  const { project, target } = fixture("blank", [fork]);
+  const branchPath = [0, FORK_THEN_BRANCH_INDEX, 0, CHOICE_CANCEL_BRANCH_INDEX];
+  expect(() => runPrimitive(project, target, "cmd.learnSkill.insert", { branchPath, actorId, skillId })).toThrow(/선택한 분기만/u);
+  expect(choice.cancelBranch).toBeUndefined();
+});
+
 it("선택한 페이지에 없는 줄, 다른 페이지 지정과 파티 위치 오류를 거부한다", () => {
   const { project, target, mapId } = fixture("built", [text]);
   const eventOnly = mapTarget(project, mapId, eventId)!;
@@ -392,6 +413,18 @@ it("다른 이벤트의 동행 확인 조건에 사용되는 이름은 바꾸지
   expect(pages(project, mapId)[1]?.commands).toEqual([command]);
 });
 
+it("두 동행자 중 한 명에게 붙은 번호 이름을 다른 동행자가 가로챌 수 없다", () => {
+  const guide: Command = { kind: "addFollower", actorId, name: "길잡이" };
+  const otherGuide: Command = { ...guide, actorId: "actor_mage" };
+  const removal: Command = { kind: "removeFollower", name: "길잡이 (2)" };
+  const { project, target, mapId } = fixture("blank", [guide, otherGuide, removal]);
+  const edit = { index: 0, expectedHash: eventCommandHash(guide) };
+  expect(() => runPrimitive(project, target, "cmd.addFollower.update", { ...edit, name: "길잡이 (2)" }))
+    .toThrow(/동행자를 가리키는 다른 명령/u);
+  const { after } = runPrimitive(project, target, "cmd.addFollower.update", { ...edit, name: "길잡이" });
+  expect(pages(after, mapId)[1]!.commands).toEqual([guide, otherGuide, removal]);
+});
+
 it.each([
   { kind: "removeFollower", name: "길잡이 (2)" },
   { kind: "m2Command", commandId: "m2-217-data-query", fields: { query: "followerPresent", target: "길잡이 (2)", variableId } },
@@ -457,6 +490,7 @@ it("다른 맵의 파티 저장 위치에는 두 좌표가 필요하고 불러�
   const interpreter = createInterpreter(pages(after, mapId)[1]!.commands, session, after, { currentEventId: eventId });
   expect(interpreter.start()).toEqual({ kind: "transfer", ...location });
   expect(session.partySets?.["정찰대"]).toMatchObject(location);
+  expect(session.flags.storePartySuccess).toBe(true);
   expect(session.flags.recallPartySuccess).toBe(true);
 });
 
@@ -466,16 +500,18 @@ it("맵을 생략한 파티 저장 좌표는 이동 뒤 실제 맵에서 검사�
   const destination = createBlankMap("넓은 야영지", x + 2, 4);
   const project = { ...base, maps: { ...base.maps, [destination.id]: destination } };
   const { after: stored } = runPrimitive(project, target, "cmd.storeParty.insert", { partySetId: "야영조", x });
-  const { after } = runPrimitive(stored, target, "cmd.storeParty.insert", { partySetId: "맵 밖", x: destination.width });
+  const { after } = runPrimitive(stored, target, "cmd.storeParty.insert", { partySetId: "야영조", x: destination.width });
   const session = startSession(after, 1);
   const arrival = { kind: "transfer", mapId: destination.id, x: 1, y: 2 } as const;
-  const commands = [arrival, ...pages(after, mapId)[1]!.commands];
+  const recall: Command = { kind: "recallParty", partySetId: "야영조" };
+  const commands = [arrival, ...pages(after, mapId)[1]!.commands, recall];
   const interpreter = createInterpreter(commands, session, after, { currentEventId: eventId, continueAfterTransfer: true });
   expect(interpreter.start()).toMatchObject(arrival);
   Object.assign(session, { currentMapId: arrival.mapId, x: arrival.x, y: arrival.y });
   expect(interpreter.resume()).toEqual({ kind: "done" });
   expect(session.partySets?.["야영조"]).toMatchObject({ mapId: destination.id, x, y: arrival.y });
-  expect(session.partySets?.["맵 밖"]).toBeUndefined();
+  expect(session.flags.storePartySuccess).toBe(false);
+  expect(session.flags.recallPartySuccess).toBeUndefined();
 });
 
 function applyAndRun(edits: ReadonlyArray<readonly [string, Record<string, unknown>]>, arrange?: (session: ReturnType<typeof startSession>) => void) {

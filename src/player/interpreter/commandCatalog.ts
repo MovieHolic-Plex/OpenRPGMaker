@@ -1264,9 +1264,12 @@ export function executeCommand(
     case "setDifficulty":
       if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
       return resumeNext(frame);
-    case "storeParty":
-      storePartySet(state.session as PlaySession, command.partySetId, command, state.project);
-      return resumeNext(frame);
+    case "storeParty": {
+      const saved = storePartySet(state.session as PlaySession, command.partySetId, command, state.project);
+      state.session.flags.storePartySuccess = saved;
+      // A subsequent recall could otherwise load an older snapshot for this slot.
+      return saved ? resumeNext(frame) : { kind: "done" };
+    }
     case "recallParty": {
       if (!state.project) return resumeNext(frame);
       const recalled = recallPartySet(state.project, state.session as PlaySession, command.partySetId);

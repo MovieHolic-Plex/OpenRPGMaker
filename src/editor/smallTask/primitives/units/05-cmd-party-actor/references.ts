@@ -162,8 +162,7 @@ export function validatePartyActorRename(project: Project, before: PartyActorCom
     const nextName = followerName(project, after);
     const nameChanged = oldName !== nextName;
     const matchesOldName = (target: string): boolean => nameChanged
-      && (target === oldName || isNumberedFollowerName(target, oldName))
-      && target !== nextName;
+      && (target === oldName || isNumberedFollowerName(target, oldName));
     const losesActorAnchor = Boolean(before.actorId && before.actorId !== after.actorId
       && before.actorId !== nextName);
     if (!nameChanged && !losesActorAnchor) return;

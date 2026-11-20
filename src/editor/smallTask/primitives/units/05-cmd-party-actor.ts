@@ -1,5 +1,7 @@
 import { CHARSET_CHARACTER_COUNT, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
+import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import type { JsonSchema } from "@/editor/tools/types";
 import { isCharsetSpriteTexture, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -144,12 +146,18 @@ function editFields(project: Project, args: Record<string, unknown>, current: Pa
 function editCommand(project: Project, page: EventPage, kind: Kind, action: Action, args: Record<string, unknown>) {
   const index = args.index as number | undefined;
   const branch = (args.branchPath as number[] | undefined) ?? [];
-  let list;
+  let list: readonly Command[];
+  let branchOwner: Command | null = null;
   try {
     list = commandListAt(page, branch);
   } catch (error) {
     if (!(error instanceof PrimitiveError)) throw error;
-    throw new PrimitiveError("범위 밖이에요. 선택한 페이지의 명령 분기를 확인해 주세요.");
+    const parent = action === "insert" && branch.length >= 2 && branch.length % 2 === 0
+      ? resolveCommandAtPath(page.commands, branch.slice(0, -1)) : null;
+    const visibleBranch = parent && eventCommandBranches(parent).find(row => row.branchIndex === branch.at(-1));
+    if (!visibleBranch) throw new PrimitiveError("범위 밖이에요. 선택한 페이지의 명령 분기를 확인해 주세요.");
+    list = visibleBranch.commands;
+    branchOwner = parent;
   }
   const row = index ?? list.length;
   if (!Number.isSafeInteger(row) || row < 0 || row >= list.length + Number(action === "insert")) {
@@ -160,18 +168,19 @@ function editCommand(project: Project, page: EventPage, kind: Kind, action: Acti
   if (current?.kind !== kind) throw new PrimitiveError("범위 밖이에요. 고칠 종류에 맞는 명령 줄을 골라 주세요.");
   const patch = editFields(project, args, current);
   const command = { ...current, ...patch } as PartyActorCommand;
-  return { current, list, path, patch, command };
+  return { current, branchTarget: branchOwner ?? list, path, patch, command };
 }
 
-function isSharedCommandList(root: readonly Command[], selected: readonly Command[]): boolean {
+function isSharedCommandTarget(root: readonly Command[], selected: readonly Command[] | Command): boolean {
   let found = false;
-  const visit = (list: readonly Command[]): boolean => {
-    if (list === selected) {
-      if (found) return true;
-      found = true;
-    }
-    return list.some(command => nestedCommandLists(command).some(visit));
+  const visitedTwice = (value: readonly Command[] | Command): boolean => {
+    if (value !== selected) return false;
+    if (found) return true;
+    found = true;
+    return false;
   };
+  const visit = (list: readonly Command[]): boolean => visitedTwice(list)
+    || list.some(command => visitedTwice(command) || nestedCommandLists(command).some(visit));
   return visit(root);
 }
 
@@ -215,9 +224,9 @@ function primitive(kind: Kind, action: Action): SmallTaskPrimitive {
     },
     apply(ctx, args) {
       return updateScopedPage(ctx, page => {
-        const { current, list, path, patch, command } = editCommand(ctx.project, page, kind, action, args);
-        // The shared edit helper clones the page, which preserves aliases between branch lists.
-        if (path.length > 1 && isSharedCommandList(page.commands, list)) {
+        const { current, branchTarget, path, patch, command } = editCommand(ctx.project, page, kind, action, args);
+        // Cloning preserves aliases between lists and between owners of branches created on insertion.
+        if (path.length > 1 && isSharedCommandTarget(page.commands, branchTarget)) {
           throw new PrimitiveError("여러 분기가 이 명령 목록을 함께 쓰고 있어요. 선택한 분기만 고칠 수 없어요.");
         }
         try {

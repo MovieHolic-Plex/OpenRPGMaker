@@ -41,8 +41,14 @@ it.each(cases)("$request", entry => {
   const target = resolveTarget(before, entry.target);
   const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
   if (entry.expectRefusal) {
-    expect(apply).toThrow(entry.refusalMessage ?? PrimitiveError);
-    return;
+    try {
+      apply();
+    } catch (error) {
+      expect(error).toBeInstanceOf(PrimitiveError);
+      if (entry.refusalMessage) expect(error).toHaveProperty("message", expect.stringContaining(entry.refusalMessage));
+      return;
+    }
+    expect.fail("동작이 거절되어야 합니다.");
   }
   const result = apply();
   const label = entry.receiptLabel && `「${entry.receiptLabel}」`;
