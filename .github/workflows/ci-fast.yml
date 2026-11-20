@@ -11,10 +11,11 @@ name: ci-fast
 # 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
 # 번져 30분을 넘긴다. 푸시 레인의 게이트로 쓸 수 없다. 로컬 반복용 도구로 남긴다.
 #
-# ci-fast 는 GitHub 호스티드(ubuntu-latest)에서 돈다.
-# 2026-11-20 실측: mdc2 4×5코어/22G + 영속 체크아웃에서도 잡 한 개가 4–5분(체크아웃 85–139초, 타입체크 88초)이라
-# 벽시계가 호스티드 3m20s 를 못 이겼다. 잡 6개를 러너 4대에 올리면 두 물결이라 더 길다.
-# mdc2 는 ci-vitest-files(mdc2-heavy)만 담당한다.
+# `fast` 와 `fast-static` 은 GitHub 호스티드(ubuntu-latest)에서 돈다.
+# `fast-parity` 4샤드는 푸시와 같은 저장소의 PR 에서만 mdc2-fast 를 쓴다.
+# 포크 PR 과 pull_request_target 은 `runs-on` 식에서 ubuntu-latest 로 간다.
+# 포크 PR 워크플로는 저장소 설정에서 외부 기여자 전원 승인 필요(all_external_contributors)다.
+# 두 러너 풀에 잡을 나눠 PR 이 몰릴 때 대기를 줄이고, Codex 워커와 CPU 를 공유하는 mdc2(러너 10대)의 부하를 제한한다.
 
 on:
   push:
@@ -32,7 +33,7 @@ on:
       - main
 
 concurrency:
-  # push 와 pull_request 가 같은 브랜치면 메모리 예산을 같이 쓴다.
+  # push 와 pull_request 가 같은 브랜치면 동시 실행 그룹을 공유한다.
   # PR 브랜치는 새 푸시가 옛 잡을 끊는다.
   # main 은 끊지 않는다. 2026-09-26 에 머지 간격이 잡(타입체크만 약 3분)보다 짧아서,
   # 타입체크가 통과한 main 잡이 parity 도중에 취소되고 완료된 체크가 하나도 남지 않았다.
@@ -111,8 +112,7 @@ jobs:
           "$RUNNER_TEMP/charset-harness-venv/bin/python" src/harnesses/charset-actor/verify.py
 
       # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 죽었다.
-      # 호스티드 16GB 에서는 힙 10GB 를 썼다. mdc2 러너는 MemoryMax=12G 이라
-      # 10GB 힙은 RSS 가 상한에 붙는다(2026-11-20 실측, 러너 피크 12.00G). 8GB 로 줄인다.
+      # 호스티드 러너에서 타입체크에 8GB 힙을 준다.
       - name: 타입체크 (src 만)
         env:
           NODE_OPTIONS: --max-old-space-size=8192
@@ -124,7 +124,7 @@ jobs:
 
   fast-parity:
     name: fast-parity (${{ matrix.shard }}/4)
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -135,15 +135,22 @@ jobs:
         with:
           fetch-depth: 1
 
+      # mdc2 의 기본 npm 캐시는 호스트 공용이다. setup-node 가 아카이브를 각 러너의 _temp 에 복원하게 한다.
+      - name: mdc2 npm 캐시 경로 분리
+        if: runner.environment == 'self-hosted'
+        run: |
+          printf '%s\n' "NPM_CONFIG_CACHE=$RUNNER_TEMP/npm-cache" "npm_config_cache=$RUNNER_TEMP/npm-cache" >> "$GITHUB_ENV"
+
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
           cache: npm
 
+      # node_modules 는 러너별 체크아웃에 매번 설치한다. setup-node 는 npm 패키지 캐시만 복원한다.
       - run: npm ci
 
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
-      # 잡은 러너마다 격리되므로 호스트 락은 없다.
+      # Node 환경의 Vitest 스위트라 고정 포트나 X 디스플레이를 쓰지 않는다.
       # vitest 내장 --shard 는 파일 경로의 SHA-1 해시로 정렬해 연속 구간으로 자른다.
       # 분할은 결정적이고 네 샤드의 합집합이 test/parity 전체다(누락·중복 없음).
       # 2026-11-19 기준 9파일은 3/2/2/2로 나뉜다. 샤드 수가 파일 수보다 많으면
@@ -196,8 +203,7 @@ jobs:
 
       # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
       # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
-      # vite-node 기본 힙은 약 2GB 다. 12G 러너에서 여러 잡이 겹치면
-      # 그 한도에 먼저 죽는다(2026-11-20, fast-static exit 134).
+      # vite-node 기본 힙(약 2GB)을 넘겼던 검사에 6GB 힙을 준다(2026-11-20, fast-static exit 134).
       - name: 런타임 에셋 존재
         env:
           NODE_OPTIONS: --max-old-space-size=6144
