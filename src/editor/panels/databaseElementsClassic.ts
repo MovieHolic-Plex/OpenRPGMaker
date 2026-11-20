@@ -26,6 +26,7 @@ import {
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { elementArtwork, elementDefenseContext, elementDefenseNote, elementOutcome } from "@/editor/panels/databaseElementPresentation";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -260,18 +261,20 @@ function elementDetailPane(
       testid: "db-elements-editor",
     });
   }
+  const hero = detailHero({
+    eyebrow: "속성",
+    title: element.name?.trim() ? element.name : "(이름 없음)",
+    subtitle: element.id,
+    media: elementArtwork(element, store.getCurrent(), 52),
+    tags: [
+      `#${index + 1} / ${total}`,
+      element.kind === "magical" ? "마법 계열" : "물리 계열",
+    ],
+    testid: "db-elements-hero",
+  });
+  hero.append(recordSmallTask("elements", element.id));
   return detailPane({
-    hero: detailHero({
-      eyebrow: "속성",
-      title: element.name?.trim() ? element.name : "(이름 없음)",
-      subtitle: element.id,
-      media: elementArtwork(element, store.getCurrent(), 52),
-      tags: [
-        `#${index + 1} / ${total}`,
-        element.kind === "magical" ? "마법 계열" : "물리 계열",
-      ],
-      testid: "db-elements-hero",
-    }),
+    hero,
     body: el("div", {
       class: "db-ws-stack db-el-worksheet",
       children: [

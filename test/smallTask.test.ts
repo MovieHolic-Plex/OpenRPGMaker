@@ -4,6 +4,7 @@ import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
 import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsule";
+import { LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL } from "@/editor/smallTask/primitives/errors";
 import { editorState } from "@/editor/editorState";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -96,15 +97,34 @@ it.each([
     stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined,
+    stoppedEarly: `${MAP_REMOVAL_DRAFT_REFUSAL}워커 문구`, shownMessage: "『미저장 출입구』의 편집을 먼저 저장하거나 취소해 주세요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, savedMapReference: true, noDraft: true,
+    stoppedEarly: `${MAP_REMOVAL_REFERENCE_REFUSAL}워커 문구`, shownMessage: "『North Gate』에서 이 맵을 사용하고 있어 삭제할 수 없어요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
+    stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc1`,
+    shownMessage: "미저장 이벤트 『미저장 출입구』에서 이 장소를 사용하고 있어 삭제할 수 없어요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
+    stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc2`,
+    shownMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, dialogueCaller: true },
 ])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
-  kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft, dialogueCaller,
+  kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft,
+  shownMessage, savedMapReference, draftLocationId, dialogueCaller,
 }) => {
   const project = fixture();
+  if (savedMapReference) {
+    const gate: GameEvent = { id: "north_gate", name: "North Gate", x: 1, y: 1, trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: "map_a", x: 2, y: 3 }] };
+    project.maps.map_b = { ...project.maps.map_a, id: "map_b", events: [gate] };
+    project.commonEvents = [];
+  }
   const live = structuredClone(project);
   const original = project.maps.map_a.events[0]!;
   const draft: GameEvent = {
     ...original, id: "draft_event", draft: { kind: "new", original },
+    ...(kind === "map" ? { name: "미저장 출입구" } : {}),
+    ...(draftLocationId ? { condition: { kind: "insideLocation", locationId: draftLocationId, inside: true } } : {}),
     ...(dialogueCaller ? { pages: original.pages!.map(page => ({
       ...page, commands: [{ kind: "callMapEvent", eventId: original.id }],
     })) } : {}),
@@ -115,7 +135,8 @@ it.each([
   if (selectedDraft) selected.draft = { kind: "edit", original };
   if (!noDraft) live.maps.map_a.events.push(draft);
   if (withSpawnDraft) live.maps.map_a.events.push(spawnDraft);
-  const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
+  const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")!
+    : kind === "map" ? mapTarget(project, "map_a")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
   editorState.set({ selection: { mapId: selectedMapId, x: 2, y: 3, width: 4, height: 5 } });
   const signal = new AbortController().signal;
@@ -146,7 +167,7 @@ it.each([
   try {
     const request = dialogueCaller ? "고른 대사를 첫 대화에만 보여 줘" : "고른 대상을 확인해 줘";
     const run = runSmallTask(project, target, request, signal, live);
-    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(stoppedEarly);
+    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(shownMessage ?? stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);

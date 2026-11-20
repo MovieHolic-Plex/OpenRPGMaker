@@ -3,6 +3,7 @@ import type { StreamFn } from "@oh-my-pi/pi-agent-core";
 import { createAssistantMessageEventStream, type AssistantMessage } from "@oh-my-pi/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
+import { MAP_REMOVAL_DRAFT_REFUSAL } from "../src/editor/smallTask/primitives/errors.ts";
 import { mapTarget } from "../src/editor/smallTask/target.ts";
 import { SMALL_TASK_SCOPE_REFUSAL } from "../src/editor/smallTask/tools.ts";
 import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/editor/tools/smallTaskPrimitiveTools.ts";
@@ -164,6 +165,44 @@ test("작은 일 Pi 실행은 열린 초안이 읽는 스위치의 마지막 쓰
   expect(allowed.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual([{ ...write, switchId: nextSwitchId }]);
 }, 20_000);
 
+test("작은 일 Pi 실행은 큰 이벤트에서도 대상 줄과 페이지 해시를 읽어 대사를 수정한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const page = event.pages[1]!;
+  page.commands = Array.from({ length: 30 }, (_, index) => ({
+    kind: "text", body: `줄 ${index} ${"가".repeat(500)}`,
+  }));
+  const originalCommands = structuredClone(page.commands);
+  const target = { pageId: page.id, index: 0 };
+  const body = "긴 이벤트에서 고른 대사만 고쳤습니다.";
+  const calls: Call[] = [
+    { name: "get_event", args: { mapId, eventId: event.id, includeCommandHashes: true } },
+    { name: "get_event", args: { mapId, eventId: event.id, commandHashTarget: target } },
+  ];
+  const seen: ModelContext[] = [];
+  const stream = scripted(calls, seen);
+  const streamFn: StreamFn = (model, context, options) => {
+    if (seen.length === calls.length && calls.length === 2) {
+      const outputs = context.messages.flatMap(message => message.role === "toolResult" && message.toolName === "get_event"
+        ? message.content.flatMap(part => part.type === "text" ? [JSON.parse(part.text)] : [])
+        : []);
+      expect(outputs[0]).toMatchObject({ ok: true, dataTruncated: true });
+      expect(outputs[1]).toMatchObject({ ok: true, data: { pageId: page.id } });
+      const { expectedPageHash, expectedHash } = outputs[1].data;
+      expect(expectedPageHash).toMatch(/^[a-f0-9]{32}$/u);
+      expect(expectedHash).toBe(eventCommandHash(originalCommands[0]!));
+      calls.push(apply("cmd.text.update", { index: target.index, expectedPageHash, expectedHash, body }));
+    }
+    return stream(model, context, options);
+  };
+
+  const done = await runPiAgent(request, { streamFn });
+  expect(done.stoppedEarly).toBeUndefined();
+  expect(done.stats).toMatchObject({ toolCalls: 3, toolErrors: 0 });
+  expect(done.project.maps[mapId].events[0]!.pages![1]!.commands)
+    .toEqual([{ kind: "text", body }, ...originalCommands.slice(1)]);
+  expect(project.maps[mapId].events[0]!.pages![1]!.commands).toEqual(originalCommands);
+});
+
 test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", async () => {
   const { request, project, mapId } = fixture();
   const target = mapTarget(project, mapId)!;
@@ -196,6 +235,23 @@ test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조
   const withoutDraft = await runPiAgent(request, { streamFn: scripted([deletion]) });
   expect(withoutDraft.stoppedEarly).toBeUndefined();
   expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
+});
+
+test("작은 일 Pi 실행은 이동 초안이 가리키는 맵의 삭제를 거절한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const removableId = "map_removable";
+  project.maps[removableId] = { ...project.maps[mapId], id: removableId, name: "삭제 대상 맵", events: [] };
+  project.mapTree.children.push({ mapId: removableId, children: [] });
+  const original = { id: "draft_door", name: "미저장 출입구", x: 3, y: 3, trigger: event.trigger, commands: [] };
+  const draft: GameEvent = { ...original, commands: [{ kind: "transfer", mapId: removableId, x: 1, y: 1 }],
+    draft: { kind: "new", original } };
+  const target = mapTarget(project, removableId)!;
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, target, draftSource } },
+    { streamFn: scripted([apply("map.structure.remove", {})]) });
+  expect(done.stoppedEarly).toBe(`${MAP_REMOVAL_DRAFT_REFUSAL}『미저장 출입구』에서 이 맵을 사용하고 있어 삭제할 수 없어요.`);
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
 });
 
 test("작은 일 Pi 실행은 다른 이벤트의 열린 초안이 읽는 현대 명령 기록을 보호한다", async () => {
@@ -461,3 +517,64 @@ for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"
     }
   }, 20_000);
 }
+
+for (const delivered of [true, false]) {
+  test(`작은 일 타일 동작에 참고 그림까지 전달해야 한다 (${delivered})`, async () => {
+    const { request, project, mapId } = fixture();
+    const map = project.maps[mapId];
+    const tilesetId = map.tilesetId;
+    const categoryId = "fixture-floor";
+    const image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jgT8AAAAASUVORK5CYII=";
+    project.tilesets[tilesetId].referenceDocuments = [{
+      id: categoryId, name: "바닥", description: "바닥 칸을 고르는 자료",
+      documents: [{ id: "guide", name: "바닥 안내", markdown: "바닥 타일은 0번이다." }],
+      images: [{ id: "floor", name: "바닥 그림", caption: "바닥 예시", dataUrl: image }],
+    }];
+    const index = map.width + 1;
+    map.lowerTiles[index] = -1;
+    const stream = scripted([
+      { name: "read_tileset_reference", args: { mapId, tilesetId, categoryId } },
+      apply("map.tile.paint", { x: 1, y: 1, tile: 0, referencePurpose: categoryId }),
+    ]);
+    const streamFn: StreamFn = (model, context, options) => {
+      const input = context.messages.flatMap(message => message.role === "toolResult"
+        ? message.content.flatMap((part): object[] => {
+          if (part.type === "text") return [{ type: "function_call_output", output: part.text }];
+          if (delivered && part.type === "image") {
+            return [{ type: "input_image", image_url: `data:${part.mimeType};base64,${part.data}` }];
+          }
+          return [];
+        }) : []);
+      void options?.onPayload?.({ input }, model, options.signal);
+      return stream(model, context, options);
+    };
+    const done = await runPiAgent({
+      ...request, smallTask: { target: mapTarget(project, mapId)!, maxToolCalls: 4,
+        selection: { rect: { x: 1, y: 1, w: 1, h: 1 } } },
+    }, { streamFn });
+    if (delivered) {
+      expect(done.stoppedEarly).toBeUndefined();
+      expect(done.project.maps[mapId].lowerTiles[index]).toBe(0);
+    } else {
+      expect(done.stoppedEarly).toContain("이미지 입력 전달 필요");
+      expect(done.project).toBe(project);
+    }
+  });
+}
+
+test("작은 일 Pi 실행에서 작업 사본에 없는 열린 이벤트의 타일을 보호한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const map = project.maps[mapId];
+  const index = map.width + 1;
+  map.lowerTiles[index] = -1;
+  const command: Command = { kind: "changeTile", mapId, x: 1, y: 1, layer: "lower", tile: -1 };
+  const draft = { ...event, id: "draft", draft: { kind: "new" as const }, pages: [], commands: [command] };
+  const done = await runPiAgent({
+    ...request, smallTask: { target: mapTarget(project, mapId)!, maxToolCalls: 4,
+      selection: { rect: { x: 1, y: 1, w: 1, h: 1 } },
+      draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([apply("map.tile.paint", { x: 1, y: 1, tile: 0 })]) });
+  expect(done.stoppedEarly).toContain("타일을 바꾸는 이벤트가 있어요.");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+});
