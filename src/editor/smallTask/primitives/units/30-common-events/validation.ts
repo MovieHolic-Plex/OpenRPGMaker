@@ -20,7 +20,7 @@ import { validateCommands, type ReferenceContext } from "@/project/io/commandRef
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { isPlayerMoveTarget } from "@/project/moveRouteTarget";
 import { scriptCalls, scriptHasDynamic } from "@/project/script/effects";
-import type { Command, Condition, EventPage, Project } from "@/project/types";
+import type { Command, Condition, EventPage, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../../errors";
 
@@ -169,13 +169,22 @@ function scriptMayJumpToLabel(project: Project, command: Extract<Command, { kind
   return project.scriptLibrary?.some(module => imports.has(module.id) && usesOpaqueScriptCalls(module)) ?? false;
 }
 
-function usesLabel(project: Project, commands: readonly Command[], name: string): boolean {
+function projectHasLabel(project: Project, name: string): boolean {
+  let found = false;
+  visitProjectCommands(project, ({ command }) => {
+    if (command.kind === "label" && command.name === name) found = true;
+  });
+  return found;
+}
+
+function usesLabel(project: Project, commands: readonly Command[], name: string, hasDestination = () => true): boolean {
   const seen = new Set<readonly Command[]>();
+  let mayRedirectOpaqueJump: boolean | undefined;
   const visit = (list: readonly Command[]): boolean => {
     if (seen.has(list)) return false;
     seen.add(list);
     return list.some(command => (command.kind === "gotoLabel" && command.name === name) ||
-      (command.kind === "script" && scriptMayJumpToLabel(project, command)) ||
+      (command.kind === "script" && scriptMayJumpToLabel(project, command) && (mayRedirectOpaqueJump ??= hasDestination())) ||
       [...nestedCommandLists(command), ...calledCommandLists(project, command)].some(child =>
         !child.some(row => row.kind === "label" && row.name === name) && visit(child),
       ));
@@ -197,15 +206,10 @@ export function validateLabelEdit(
     if (list.some(row => row !== next && row.kind === "label" && row.name === next.name)) {
       throw new PrimitiveError("같은 목록에 이 이름의 라벨이 이미 있습니다.");
     }
+    // A jump can leave this command list and reach a label in a caller's frame.
     const previous = resolveCommandListAtPath(before, path);
-    for (let end = path.length - 2; previous && end > 0; end -= 2) {
-      const parent = resolveCommandListAtPath(before, path.slice(0, end));
-      if (parent?.some(row => row.kind === "label" && row.name === next.name)) {
-        if (usesLabel(project, previous, next.name)) {
-          throw new PrimitiveError("이 이름을 쓰면 기존 이동 명령이 다른 라벨로 이동합니다. 다른 이름을 골라 주세요.");
-        }
-        break;
-      }
+    if (previous && usesLabel(project, previous, next.name, () => projectHasLabel(project, next.name))) {
+      throw new PrimitiveError("이 이름을 쓰면 기존 이동 명령이 다른 라벨로 이동합니다. 다른 이름을 골라 주세요.");
     }
   }
   if (next?.kind === "gotoLabel" && (current?.kind !== "gotoLabel" || current.name !== next.name)) {
@@ -242,7 +246,7 @@ function validateM2Edit(command: Extract<Command, { kind: "m2Command" }>, curren
   }
 }
 
-function validateCommandInput(project: Project, command: Command, current?: Command): void {
+function validateCommandInput(project: Project, map: GameMap, command: Command, current?: Command): void {
   if (command.kind === "m2Command") {
     validateM2Edit(command, current);
     const id = commonEventCallId(command);
@@ -292,8 +296,11 @@ function validateCommandInput(project: Project, command: Command, current?: Comm
   if (command.kind === "setDifficulty" && !project.system.difficulties?.some(row => row.id === command.difficultyId)) {
     throw new PrimitiveError("설정할 난이도를 찾을 수 없습니다.");
   }
-  if (command.kind === "callMapEvent" || command.kind === "moveEvent" || command.kind === "setEventGraphicPattern") {
-    const optional = command.kind !== "callMapEvent" && command.eventId === "";
+  if (command.kind === "callMapEvent" && !map.events.some(event => committedEventView(event)?.id === command.eventId)) {
+    throw new PrimitiveError("작업을 시작한 맵에서 호출할 이벤트를 찾을 수 없습니다.");
+  }
+  if (command.kind === "moveEvent" || command.kind === "setEventGraphicPattern") {
+    const optional = command.eventId === "";
     const player = command.kind === "moveEvent" && isPlayerMoveTarget(command.eventId);
     if (!optional && !player && !hasMapEvent(project, command.eventId)) {
       throw new PrimitiveError("대상 맵 이벤트를 찾을 수 없습니다.");
@@ -343,8 +350,8 @@ function conditionReferencesExist(project: Project, context: ReferenceContext, c
   }
 }
 
-export function validateCommandReferences(project: Project, command: Command, current?: Command): void {
-  validateCommandInput(project, command, current);
+export function validateCommandReferences(project: Project, map: GameMap, command: Command, current?: Command): void {
+  validateCommandInput(project, map, command, current);
   const checked = structuredClone(command);
   // The shared validator descends into branches. Existing child rows are outside this edit.
   for (const { branchIndex } of eventCommandBranches(checked)) {

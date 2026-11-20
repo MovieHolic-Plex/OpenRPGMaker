@@ -52,10 +52,15 @@ function argsSchema(properties: Record<string, JsonSchema>, required: readonly s
   return { type: "object", properties, required, additionalProperties: false };
 }
 
-function projectScope(ctx: PrimitiveContext, args?: Args): Scope {
+function targetMap(ctx: PrimitiveContext) {
   if (ctx.target.kind !== "map" || !Object.hasOwn(ctx.project.maps, ctx.target.mapId)) {
     throw new PrimitiveError("범위 밖: 맵에서 공용 이벤트 작업을 시작해 주세요.");
   }
+  return ctx.project.maps[ctx.target.mapId];
+}
+
+function projectScope(ctx: PrimitiveContext, args?: Args): Scope {
+  targetMap(ctx);
   return args
     ? { kind: "projectArea", area: "commonEvents", ids: [findEvent(ctx, args).id] }
     : { kind: "projectArea", area: "commonEvents", ids: [], create: 1 };
@@ -246,7 +251,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const next = { ...event, commands: edited.commands };
       const inserted = existingCommand(next, path);
       validateSingleInsert(inserted);
-      validateCommandReferences(ctx.project, inserted);
+      validateCommandReferences(ctx.project, targetMap(ctx), inserted);
       validateLabelEdit(ctx.project, event.commands, next.commands, path, undefined, inserted);
       return editEvent(event, ctx.project, next);
     },
@@ -279,7 +284,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const edited = editCommands(() => updateEventCommand(page, path, fields, expectedCommandHash(args)));
       const next = { ...event, commands: edited.commands };
       const updated = existingCommand(next, path);
-      validateCommandReferences(ctx.project, updated, current);
+      validateCommandReferences(ctx.project, targetMap(ctx), updated, current);
       validateLabelEdit(ctx.project, event.commands, next.commands, path, current, updated);
       return editEvent(event, ctx.project, next);
     },
