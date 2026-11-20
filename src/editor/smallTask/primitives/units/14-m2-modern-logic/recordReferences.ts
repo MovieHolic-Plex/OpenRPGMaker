@@ -8,11 +8,9 @@ type M2Command = Extract<Command, { kind: "m2Command" }>;
 function* projectCommandLists(project: Project): Generator<readonly Command[]> {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      if (event.pages?.length) {
-        for (const page of event.pages) yield page.commands;
-      } else {
-        yield event.commands;
-      }
+      for (const page of event.pages ?? []) yield page.commands;
+      // Call Map Event falls back to the top-level list when no page is active.
+      if (!event.pages?.some(page => page.conditions.length === 0)) yield event.commands;
     }
   }
   for (const common of project.commonEvents) yield common.commands;
@@ -46,6 +44,8 @@ const submitsScore = (fields: M2CommandFields) => fields.action === undefined ||
 const journalText = (value: unknown) => typeof value === "string" ? value.trim() : typeof value === "number" ? String(value) : "";
 const lineId = (fields: M2CommandFields) => journalText(fields.lineId);
 const writesLine = (fields: M2CommandFields) => fields.action !== "erase" && fields.action !== "reread" && journalText(fields.text) !== "";
+const readsLine = (fields: M2CommandFields) => fields.action === "erase" || fields.action === "reread";
+const automaticLineId = /^line-[1-9]\d*$/u;
 
 /** Record keys are shared by commands in different pages and command lists. */
 export function validateRecordEdit(
@@ -81,9 +81,18 @@ export function validateRecordEdit(
       const sameKey = key === lineId(next);
       const removesWrite = wasWrite && (!sameKey || !writesLine(next));
       const removesErase = wasErase && (!sameKey || next.action !== "erase");
-      if (!key || (!removesWrite && !removesErase)) return;
+      if (!removesWrite && !removesErase) return;
+      if (!key) {
+        // The session assigns the number at play time. Changing one allocation can shift later IDs too.
+        for (const other of references()) {
+          if (readsLine(other) && automaticLineId.test(lineId(other))) {
+            throw new PrimitiveError("다른 명령이 자동으로 이름표가 붙는 일지 줄을 지우거나 다시 읽습니다. 이 줄의 이름표나 쓰기 동작을 바꿀 수 없습니다.");
+          }
+        }
+        return;
+      }
       const matching = [...references()].filter(other => lineId(other) === key);
-      if (removesWrite && matching.some(other => other.action === "erase" || other.action === "reread") && !matching.some(writesLine)) {
+      if (removesWrite && matching.some(readsLine) && !matching.some(writesLine)) {
         throw new PrimitiveError("다른 명령이 이 일지 줄을 지우거나 다시 읽습니다. 줄을 쓰는 마지막 명령을 바꿀 수 없습니다.");
       }
       if (removesErase && matching.some(other => other.action === "reread") && !matching.some(other => other.action === "erase")) {

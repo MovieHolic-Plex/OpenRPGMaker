@@ -6,10 +6,15 @@ import { FORK_THEN_BRANCH_INDEX, resolveCommandAtPath } from "@/editor/eventComm
 import { mapTarget } from "@/editor/smallTask/target";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { getPrimitive, primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
+import { PRIMITIVES as movementPrimitives } from "@/editor/smallTask/primitives/units/09-cmd-move-system";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/14-m2-modern-logic";
+import { QUERY_TOOLS } from "@/editor/tools/queryTools";
 import { hasSessionCheckpoint } from "@/player/checkpoints";
 import { createInterpreter } from "@/player/interpreter";
+import { judgeQuickTime } from "@/player/interpreter/minigameCommands";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { createBlankProject } from "@/project/defaults";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -18,6 +23,7 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import type { Command, EventPage, GameEvent, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import shots from "./14-m2-modern-logic/shots.json";
 import updateCorpus from "./14-m2-modern-logic/update-corpus.json";
 
 const EVENT = "ev_modern_logic";
@@ -139,10 +145,16 @@ describe("현대 명령 한 줄 편집", () => {
     expect(jsonEqual(findEvent(project).pages![0]!.commands, [FIRST])).toBe(true);
   });
 
-  it("체크포인트를 분기 끝에 넣고 실제로 게임 상태를 저장한다", () => {
+  it("사용 가능한 체크포인트 동작을 노출하고 별칭으로 추가해도 저장하고 되돌릴 수 있다", async () => {
     const fork: Command = { kind: "fork", condition: { kind: "switch", switchId: SW, value: true }, then: [], else: [FIRST] };
     const { project, target, findEvent } = scenario("built", [fork]);
-    const { after } = runPrimitive(project, target, "m2.213.insert", { branchPath: [0, FORK_THEN_BRANCH_INDEX], label: "북문" });
+    const alias = "m2.213.insert";
+    const canonical = movementPrimitives.find(row => row.id === "cmd.checkpointSave.insert");
+    const visibleCheckpointIds = primitivesForTarget(target)
+      .map(row => row.id).filter(id => id === alias || id === "cmd.checkpointSave.insert");
+    expect(visibleCheckpointIds).toEqual([canonical?.id ?? alias]);
+    expect(getPrimitive(alias)).toBe(canonical ?? PRIMITIVES.find(row => row.id === alias));
+    const { after } = runPrimitive(project, target, alias, { branchPath: [0, FORK_THEN_BRANCH_INDEX], label: "북문" });
     const commands = findEvent(after).pages![0]!.commands;
     expect(commands).toEqual([{ ...fork, then: [{ kind: "checkpointSave", label: "북문" }] }]);
     expect(findEvent(project).pages![0]!.commands).toEqual([fork]);
@@ -151,7 +163,8 @@ describe("현대 명령 한 줄 편집", () => {
     expect(hasSessionCheckpoint(play)).toBe(false);
     expect(createInterpreter(commands, play, after).start()).toEqual({ kind: "done" });
     expect(hasSessionCheckpoint(play)).toBe(true);
-  });
+    await expectUndoRestores(project, after, target);
+  }, 150_000);
 
   it("분기 안 한 줄을 고치면서 저장된 필드와 다른 분기를 보존하고 오래된 확인값을 거절한다", () => {
     const legacy: Command = {
@@ -178,6 +191,27 @@ describe("현대 명령 한 줄 편집", () => {
     }, /줄의 내용이 바뀌었습니다/u);
     expect(findEvent(project).pages![0]!.commands).toEqual([replacement, original]);
   });
+
+  it("화면 검수의 배너 수정에 get_event에서 읽은 해시를 쓸 수 있다", async () => {
+    const { target: selected, primitive, args } = shots[0]!;
+    const project = fixtureProject("built");
+    const target = mapTarget(project, selected.mapId, selected.eventId, selected.pageId)!;
+    const getEvent = QUERY_TOOLS.find(tool => tool.name === "get_event")!;
+    const read = getEvent.run(project, { ...selected, includeCommandHashes: true });
+    expect(read.data).toMatchObject({
+      commandHashes: expect.arrayContaining([expect.objectContaining({
+        pageId: selected.pageId,
+        commands: expect.arrayContaining([{ index: args.index, branchPath: [], hash: args.expectedHash }]),
+      })]),
+    });
+    const { after } = runPrimitive(project, target, primitive, args);
+    const page = after.maps[selected.mapId]!.events.find(event => event.id === selected.eventId)!
+      .pages!.find(page => page.id === selected.pageId)!;
+    expect(page.commands[args.index!]).toMatchObject({
+      fields: { message: "샘에서 회복하자", surface: "banner", durationMs: 1500 },
+    });
+    await expectUndoRestores(project, after, target);
+  }, 150_000);
 
   it("없는 분기와 목록 밖 위치를 거절하고 분기에 한 줄만 추가한다", () => {
     const fork: Command = { kind: "fork", condition: { kind: "switch", switchId: SW, value: true }, then: [FIRST] };
@@ -253,6 +287,27 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     expect(() => runPrimitive(withSecondWriter, target, "m2.222.update", editArgs(commands, 1, { scoreId: "걷기" }))).not.toThrow();
   });
 
+  it("활성 페이지가 없어 이벤트 호출이 최상위에서 점수표를 읽으면 마지막 제출을 보호한다", () => {
+    const { project, target, id, findEvent } = scenario("built", []);
+    const fallbackId = "ev_score_read";
+    const readScore = { ...newM2Command("m2-222-high-score"), fields: { scoreId: "달리기", action: "read", resultVariableId: VAR } };
+    const event = findEvent(project);
+    project.maps[id]!.events.push({
+      ...event, id: fallbackId, commands: [readScore], pages: event.pages!.map(page => ({
+        ...page, conditions: [{ kind: "switch", switchId: SW, value: true }],
+      })),
+    });
+    const { after } = runPrimitive(project, target, "m2.222.insert", { scoreId: "달리기", valueVariableId: VAR });
+    const commands = findEvent(after).pages![0]!.commands;
+    const play = session(id);
+    play.variables[VAR] = 37;
+    expect(createInterpreter(commands, play, after).start()).toEqual({ kind: "done" });
+    play.variables[VAR] = -1;
+    expect(createInterpreter([{ kind: "callMapEvent", eventId: fallbackId }], play, after).start()).toEqual({ kind: "done" });
+    expect(play.variables[VAR]).toBe(37);
+    expectRefused(after, target, "m2.222.update", editArgs(commands, 0, { scoreId: "걷기" }), /점수를 올리는 마지막 명령/u);
+  });
+
   it("전투 후에 일지를 다시 읽으면 마지막 쓰기 명령을 바꾸지 않는다", () => {
     const reread = { ...newM2Command("m2-227-journal-line"), fields: { action: "reread", lineId: "숲 기록" } };
     const { project, target, findEvent } = scenario("built");
@@ -271,11 +326,29 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     const eraseCommands = findEvent(withErase).pages![0]!.commands;
     expect(() => runPrimitive(withErase, target, "m2.227.update", editArgs(eraseCommands, 2, { lineId: "다른 기록" }))).toThrow(/줄을 지우는 마지막 명령/u);
   });
+
+  it.each(["erase", "reread"])("자동 일지 줄을 %s로 참조하면 쓰기 동작과 자동 이름표를 보존한다", action => {
+    const { project, target, id, findEvent } = scenario("built", []);
+    const { after } = runPrimitive(project, target, "m2.227.insert", { text: "숲 기록" });
+    const commands = findEvent(after).pages![0]!.commands;
+    const erase = { ...newM2Command("m2-227-journal-line"), fields: { action: "erase", lineId: "line-1" } };
+    const reread = { ...erase, fields: { ...erase.fields, action: "reread" } };
+    const playback = action === "erase" ? [...commands, erase] : [...commands, erase, reread];
+    findEvent(after).pages![1]!.commands = [action === "erase" ? erase : reread];
+    const play = session(id);
+    expect(createInterpreter(playback, play, after).start()).toEqual({ kind: "done" });
+    expect(play.storyJournal).toMatchObject([{ id: "line-1", state: action === "erase" ? "erased" : "reread" }]);
+    for (const edit of [{ lineId: "숲" }, { action: "erase", lineId: "숲" }]) {
+      expectRefused(after, target, "m2.227.update", editArgs(commands, 0, edit), /자동으로 이름표/u);
+    }
+    expect(() => runPrimitive(after, target, "m2.227.update", editArgs(commands, 0, { text: "남긴 기록" }))).not.toThrow();
+    findEvent(after).pages![1]!.commands = [{ ...erase, fields: { ...erase.fields, lineId: "고정 기록" } }];
+    expect(() => runPrimitive(after, target, "m2.227.update", editArgs(commands, 0, { lineId: "숲" }))).not.toThrow();
+  });
 });
 
 describe("추가한 현대 명령을 실제 해석기로 실행", () => {
-  function runtime(primitive: string, fields: M2CommandFields) {
-    const { project, target, id, findEvent } = scenario("built", []);
+  function runtime(primitive: string, fields: M2CommandFields, { project, target, id, findEvent } = scenario("built", [])) {
     const { after } = runPrimitive(project, target, primitive, fields);
     const play = session(id);
     return { play, interpreter: createInterpreter(findEvent(after).pages![0]!.commands, play, after, { currentEventId: EVENT }) };
@@ -293,6 +366,18 @@ describe("추가한 현대 명령을 실제 해석기로 실행", () => {
     const { after } = runPrimitive(project, target, "m2.206.insert", { condition: "eventIdle", target: "player" });
     const interpreter = createInterpreter(findEvent(after).pages![0]!.commands, session(id), after, { isEventIdle: id => id === "player" });
     expect(interpreter.start()).toEqual({ kind: "done" });
+  });
+
+  it("대기 중 주인공이 지정 구역에 들어가면 계속 실행한다", () => {
+    const fixture = scenario("built", []);
+    fixture.project.maps[fixture.id]!.layoutPlan = {
+      version: 1, kind: "test", regions: [{ id: "north", label: "북문", role: "custom", x: 2, y: 1, w: 2, h: 2 }],
+    };
+    const { play, interpreter } = runtime("m2.206.insert", { condition: "region", target: "north" }, fixture);
+    expect(interpreter.start()).toMatchObject({ kind: "wait", allowParallelEvents: true });
+    play.x = 2;
+    expect(interpreter.resume(undefined)).toEqual({ kind: "done" });
+    expect(play.flags["m2-wait:region:north"]).toBe(true);
   });
 
   it("빈 현재 목표를 넣으면 앞에서 띄운 목표가 실제로 사라진다", () => {
@@ -344,6 +429,37 @@ describe("추가한 현대 명령을 실제 해석기로 실행", () => {
     expect(interpreter.start()).toEqual({ kind: "timedChoice", options: ["남문", "북문"], timeLimitMs: 10000 });
     expect(interpreter.resume(2)).toEqual({ kind: "done" });
     expect(play.variables[VAR]).toBe(2);
+  });
+
+  it("제한시간 선택에 응답이 없으면 결과 변수에 0을 저장한다", () => {
+    const { play, interpreter } = runtime("m2.220.insert", { options: "남문\n북문", resultVariableId: VAR });
+    play.variables[VAR] = 3;
+    expect(interpreter.start()).toMatchObject({ kind: "timedChoice" });
+    expect(interpreter.resume(0)).toEqual({ kind: "done" });
+    expect(play.variables[VAR]).toBe(0);
+  });
+
+  it("버튼 연타의 횟수와 성공 여부를 저장한다", () => {
+    const { play, interpreter } = runtime("m2.221.insert", {
+      mode: "mash", keys: "x", windowMs: 900, resultVariableId: VAR, resultSwitchId: SW,
+    });
+    const step = interpreter.start();
+    expect(step).toEqual({ kind: "quickTimeEvent", mode: "mash", keys: ["x"], windowMs: 900 });
+    if (step.kind !== "quickTimeEvent") throw new Error("연타 입력을 기다리지 않습니다.");
+    expect(interpreter.resume(judgeQuickTime(step, ["x", "x", "x"]))).toEqual({ kind: "done" });
+    expect(play.variables[VAR]).toBe(3);
+    expect(play.switches[SW]).toBe(true);
+  });
+
+  it.each([[false, -1], [true, 0]] as const)("순간이동 허가가 %s일 때 이동 없이 결과 %s를 저장한다", (allowed, result) => {
+    const { play, interpreter } = runtime("m2.223.insert", { resultVariableId: VAR });
+    const position = { currentMapId: play.currentMapId, x: play.x, y: play.y };
+    ensureM2Runtime(play).access.teleportation = allowed;
+    const step = interpreter.start();
+    expect(step.kind).toBe(allowed ? "teleportMenu" : "done");
+    if (allowed) expect(interpreter.resume(0)).toEqual({ kind: "done" });
+    expect(play.variables[VAR]).toBe(result);
+    expect(play).toMatchObject(position);
   });
 
   it("일지에는 입력한 글과 기록자 이름을 남긴다", () => {
