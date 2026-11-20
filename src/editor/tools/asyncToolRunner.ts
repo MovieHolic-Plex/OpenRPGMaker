@@ -1,5 +1,5 @@
 import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
-import { eventScopeRefusal, onlyEventPageCommandsChanged, type EventCommandScope } from "@/ai/eventCommandScope";
+import { checkEventCommandScope, eventScopeRefusal, type EventCommandScope } from "@/ai/eventCommandScope";
 import { resolveAssistScope, runEventCommandAssist } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { EVENT_COMMAND_ASSIST_TOOL, eventCommandAssistTarget } from "./eventCommandAssistTool";
@@ -103,10 +103,13 @@ export async function runToolAsync(
         };
       },
     }, normalized, { ...options, dryRun: false });
-    if (applied.ok && !onlyEventPageCommandsChanged(before, isolated.project, {
-      mapId: normalized.mapId as string, eventId: normalized.eventId as string, pageId: normalized.pageId as string,
-    })) throw new ToolError("명령 외의 변경이 있어 초안을 거부했습니다.", { code: "event-page-scope" });
-    if (applied.ok && !options.dryRun) ctx.project = isolated.project;
+    if (applied.ok) {
+      const scopeCheck = checkEventCommandScope(before, isolated.project, {
+        mapId: normalized.mapId as string, eventId: normalized.eventId as string, pageId: normalized.pageId as string,
+      });
+      if (!scopeCheck.ok) throw new ToolError(scopeCheck.reason, { code: "event-page-scope" });
+      if (!options.dryRun) ctx.project = isolated.project;
+    }
     return applied;
   } catch (cause) {
     options.signal?.throwIfAborted();

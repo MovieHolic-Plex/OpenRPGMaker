@@ -1168,6 +1168,13 @@ GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했�
 
 ## 전투 저작 입력 수정 (2026-09-20)
 
+## 이벤트 명령 한 줄 편집과 작은 일 범위 (2026-11-20)
+
+- 기존 페이지의 한 줄에는 `insert_event_command`, `update_event_command`, `delete_event_command`를 쓴다. 먼저 `get_event({mapId,eventId,includeCommandHashes:true})`에서 페이지와 줄의 `index`, `branchPath`, `hash`를 읽는다. 수정과 삭제에는 읽은 해시를 `expectedHash`로 보낸다. 첫 줄의 번호는 0이고, 추가할 때는 목록 길이를 쓰면 맨 뒤에 붙는다.
+- `update_event_command`의 `patch`는 한 명령의 필드를 덮어쓴다. 선택지 문구는 `optionLabels`에 현재 순서로 넣는다. 분기 안의 명령은 그 줄의 경로로 고친다. 안에 명령이 남은 분기 머리줄은 지울 수 없다.
+- 호스트는 `checkSmallTaskScope(before, after, scope)`로 대사, 한 칸과 그 칸의 이벤트, 지정 자료집 항목, 이벤트 페이지 명령의 범위를 검증한다. 범위 밖 변경은 맵·이벤트·레코드 이름과 함께 돌려준다. 대사 줄에는 고유 ID가 없어 한 구간에서 문장과 화자를 동시에 바꾼 결과는 화자 수정으로 판정한다. 서로 다른 화자의 줄을 교체할 때는 삭제와 추가를 각각 검사할 수 있다.
+- 기존 이벤트 명령 초안도 같은 범위 비교를 사용한다. 작은 일 화면 연결은 이후 변경에서 이 API를 호출한다.
+
 ## 이벤트 명령 AI 공용 도구 (2026-09-20)
 
 `event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지

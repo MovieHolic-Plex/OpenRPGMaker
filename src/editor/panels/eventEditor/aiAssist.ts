@@ -17,7 +17,7 @@
 import { eventCommandGateNotice } from "@/ai/aiGateNotice";
 import { consumeEventAiDockOpen } from "./aiDockOpenRequest";
 import { sendAiAssistantMessage, getAiAssistantStatus, abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
-import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
+import { checkEventCommandScope } from "@/ai/eventCommandScope";
 import { resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
@@ -466,7 +466,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       if (!response.ok) throw new Error(response.error ?? "조수 실행에 실패했습니다.");
       const proposal = response.pendingProposal;
       if (!proposal) throw new Error(response.lastAssistantText || "조수가 검토할 명령 초안을 만들지 못했습니다.");
-      if (!onlyEventPageCommandsChanged(proposal.before, proposal.after, target)) throw new Error("지정한 페이지 밖의 변경이 있어 초안을 거부했습니다.");
+      const scopeCheck = checkEventCommandScope(proposal.before, proposal.after, target);
+      if (!scopeCheck.ok) throw new Error(scopeCheck.reason);
       const generatedPage = proposal.after.maps[mapId]?.events.find(entry => entry.id === eventId)?.pages?.find(entry => entry.id === page.id);
       if (!generatedPage) throw new Error("초안에서 대상 페이지를 찾을 수 없습니다.");
       const livePage = store.getCurrent().maps[mapId]?.events

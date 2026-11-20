@@ -1,3 +1,4 @@
+import { checkSmallTaskScope, type SmallTaskScopeResult } from "./smallTaskScope";
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 
@@ -50,11 +51,10 @@ export function eventScopeRefusal(scope: EventCommandScope, name: string, args: 
   return { ok: false, summary, issues: [{ severity: "error", code: "event-page-scope", message: summary }] };
 }
 
+export function checkEventCommandScope(before: Project, after: Project, scope: EventCommandScope): SmallTaskScopeResult {
+  return checkSmallTaskScope(before, after, { ...scope, kind: "eventPage" });
+}
+
 export function onlyEventPageCommandsChanged(before: Project, after: Project, scope: EventCommandScope): boolean {
-  const original = before.maps[scope.mapId]?.events.find(e => e.id === scope.eventId)?.pages?.find(p => p.id === scope.pageId);
-  const copy = structuredClone(after);
-  const changed = copy.maps[scope.mapId]?.events.find(e => e.id === scope.eventId)?.pages?.find(p => p.id === scope.pageId);
-  if (!original || !changed) return false;
-  changed.commands = structuredClone(original.commands);
-  return JSON.stringify(before) === JSON.stringify(copy);
+  return checkEventCommandScope(before, after, scope).ok;
 }
