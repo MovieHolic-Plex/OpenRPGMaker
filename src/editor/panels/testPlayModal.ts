@@ -470,7 +470,7 @@ function openTestPlayShell(
     dataset: { testid: "test-play-window-body" },
   });
 
-  windowNode.append(titlebar, body, renderRuntimeDebugPanel());
+  windowNode.append(titlebar, body, renderRuntimeDebugPanel(body));
   backdrop.append(windowNode);
   document.body.append(backdrop);
   // 코치마크 숨김 CSS 가 body:has() 로 문서 전체를 훑지 않게 상태를 body 에 직접 둔다.

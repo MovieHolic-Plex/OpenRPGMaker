@@ -57,6 +57,7 @@ import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
 import { closeStatusMenu } from "@/player/playerStatusMenuMotion";
+import { focusPlayCanvas } from "@/player/focusGuard";
 import {
   moveTitleSelection,
   type RuntimeMenuKey,
@@ -840,13 +841,16 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const closeMenu = (): void => {
     loadDetach?.();
     loadDetach = null;
-    layout.querySelector("[data-testid='main-menu']")?.remove();
+    const menu = layout.querySelector("[data-testid='main-menu']");
+    if (playStage && menu?.contains(document.activeElement)) focusPlayCanvas(playStage);
+    menu?.remove();
   };
 
   const closeMenuWithJuice = (): void => {
     const menu = currentStatusMenu(layout);
     if (!menu) return;
     emitMenuJuice("menu-close");
+    if (playStage && menu.contains(document.activeElement)) focusPlayCanvas(playStage);
     closeStatusMenu(menu);
   };
 

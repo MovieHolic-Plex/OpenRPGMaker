@@ -16,15 +16,19 @@ function isActivatable(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest("button, a[href], summary, select, [role=button]") !== null;
 }
 
+export function focusPlayCanvas(root: HTMLElement): void {
+  const canvas = root.querySelector("canvas");
+  if (!canvas) return;
+  if (!canvas.hasAttribute("tabindex")) canvas.setAttribute("tabindex", "-1");
+  canvas.focus({ preventScroll: true });
+}
+
 function focusGame(root: HTMLElement): void {
   try { window.focus(); } catch { /* 일부 브라우저는 막는다 */ }
   const active = document.activeElement;
   // 대화 입력칸·버튼 같은 DOM 조작 중이면 초점을 빼앗지 않는다.
   if (active && active !== document.body && active !== document.documentElement && root.contains(active) && !(active instanceof HTMLCanvasElement)) return;
-  const canvas = root.querySelector("canvas");
-  if (!canvas) return;
-  if (!canvas.hasAttribute("tabindex")) canvas.setAttribute("tabindex", "-1");
-  canvas.focus({ preventScroll: true });
+  focusPlayCanvas(root);
 }
 
 export function installFocusGuard(root: HTMLElement): void {

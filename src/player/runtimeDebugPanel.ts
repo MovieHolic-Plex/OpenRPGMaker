@@ -16,6 +16,7 @@ import { upsertPreset, type StatePreset } from "@/testing/debugSession";
 import type { RuntimeDebugHook } from "@/player/playSceneTestHooks";
 import { STORAGE_PREFIX } from "@/util/appStorage";
 import { renderRunLogSection } from "@/player/runtimeDebugRunLog";
+import { focusPlayCanvas } from "@/player/focusGuard";
 
 // 패널 확장 상태 저장 키. 접두사는 STORAGE_PREFIX(=`oprn:`)를 쓴다 —
 // 구 접두사 `rpg-zzu:` 로 직접 쓰면 부팅 시 migrateLegacyStorageKeys 가 새 접두사로
@@ -317,7 +318,7 @@ function setSwitchAndRefresh(id: string, value: boolean, switchValue: SwitchValu
   switchValue.apply(hook.readState());
 }
 
-export function renderRuntimeDebugPanel(): HTMLElement {
+export function renderRuntimeDebugPanel(playBody?: HTMLElement): HTMLElement {
   ensureDebugPanelStyles();
   const project = store.getCurrent();
   const stateDump = el("pre", { class: "runtime-debug-state", dataset: { testid: "runtime-debug-state" }, text: "상태를 읽으려면 '상태 읽기'를 누르세요." });
@@ -372,7 +373,19 @@ export function renderRuntimeDebugPanel(): HTMLElement {
   const tyInput = el("input", { class: "runtime-debug-input", attrs: { type: "number", value: "1", title: "y" } }) as HTMLInputElement;
   const teleRow = el("div", {
     class: "runtime-debug-controls",
-    children: [mapSelect, txInput, tyInput, el("button", { class: "runtime-debug-btn", text: "이동", attrs: { type: "button" }, dataset: { testid: "runtime-debug-teleport" }, on: { click: () => debug()?.teleport(mapSelect.value, Number(txInput.value) || 0, Number(tyInput.value) || 0) } })],
+    children: [
+      mapSelect, txInput, tyInput,
+      el("button", {
+        class: "runtime-debug-btn", text: "이동", attrs: { type: "button" },
+        dataset: { testid: "runtime-debug-teleport" },
+        on: { click: () => {
+          const hook = debug();
+          if (!hook) return;
+          hook.teleport(mapSelect.value, Number(txInput.value) || 0, Number(tyInput.value) || 0);
+          if (playBody) focusPlayCanvas(playBody);
+        } },
+      }),
+    ],
   });
 
   const seedInput = el("input", { class: "runtime-debug-input", attrs: { type: "number", value: "1", title: "seed" } }) as HTMLInputElement;
@@ -480,7 +493,10 @@ export function renderRuntimeDebugPanel(): HTMLElement {
     ],
   }) as HTMLDetailsElement;
   details.open = readExpanded();
-  details.addEventListener("toggle", () => writeExpanded(details.open));
+  details.addEventListener("toggle", () => {
+    writeExpanded(details.open);
+    if (!details.open && playBody && details.contains(document.activeElement)) focusPlayCanvas(playBody);
+  });
 
   applyLiveReadout(details, liveLine, stateDump, dumpDetails, switchValue);
   startLiveLoop(details, () => applyLiveReadout(details, liveLine, stateDump, dumpDetails, switchValue));
