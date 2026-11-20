@@ -141,8 +141,9 @@ export interface ActorQueryOptions {
   /**
    * 방향·시야 조건에 쓰는 이벤트의 런타임 위치. 걷는 NPC 의 실시간 칸은 장면의 eventPositions 에 있어
    * 세션 eventLocations 만으로는 모른다 — 호출측이 장면 위치를 넘긴다. 생략하면 eventLocations 를 본다.
+   * 시야 판정은 런타임 방향이 없는 관찰자의 활성 페이지 방향도 요청할 수 있다.
    */
-  readonly eventPosition?: (eventId: string) => SightPoint | undefined;
+  readonly eventPosition?: (eventId: string, usePageDirection?: boolean) => SightPoint | undefined;
   /** eventSeesPlayer: 시선을 막는 칸(벽). 호출측이 sightBlockers.cachedSightBlocker 로 만든다. 생략 = 광선 검사 없음. */
   readonly blocksSight?: SightBlocker;
   /** eventSeesPlayer watchers·doorsBlock: 현재 맵의 이벤트. 생략하면 watchers 는 아무도 못 고르고 문은 막지 않는다. */
@@ -210,9 +211,9 @@ export function evalActorQueryCondition(
       return false;
     }
     case "eventSeesPlayer": {
-      const pointOf = (eventId: string): SightPoint | undefined => {
+      const pointOf = (eventId: string, usePageDirection?: boolean): SightPoint | undefined => {
         if (session.erasedEventIds?.includes(eventId)) return undefined;
-        const live = options.eventPosition?.(eventId);
+        const live = options.eventPosition?.(eventId, usePageDirection);
         const loc = session.eventLocations?.[eventId];
         return live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
       };
@@ -222,7 +223,7 @@ export function evalActorQueryCondition(
       const blocks = condition.doorsBlock ? withDoorBlocker(options.blocksSight, events, pointOf) : options.blocksSight;
       const light = condition.darkness ? { night: timePhaseFor(session.gameTime) === "night", ambient: options.ambient?.() } : undefined;
       const ids = condition.eventId || !condition.watchers ? [condition.eventId] : sightWatcherIds(events, condition.watchers, locations, pointOf);
-      const seen = ids.some((id) => eventSeesPlayer(pointOf(id), { x: session.x, y: session.y }, condition, locations, blocks, light));
+      const seen = ids.some((id) => eventSeesPlayer(pointOf(id, condition.requireFacing !== false), { x: session.x, y: session.y }, condition, locations, blocks, light));
       return seen === (condition.value !== false);
     }
     case "hiding":

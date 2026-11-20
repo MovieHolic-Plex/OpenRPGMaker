@@ -16,7 +16,7 @@ import { resolveEventPage } from "@/project/io/pageResolution";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { endRoguelikeRun, startRoguelikeRun } from "@/project/roguelikeRun";
-import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
+import { initialRuntimeEventPositions, runtimeEventViewById, runtimeEventViewsForMap, setRuntimeEventPositionDirection, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { setMapTileOverride, startSession, type PlaySession } from "@/project/session";
 import { cachedSightBlocker } from "@/project/sightBlockers";
@@ -374,6 +374,68 @@ describe("실행 중 등장 조건 판정", () => {
     expect(jsonEqual(getPage(project, at).conditions, [])).toBe(true);
   });
 
+  it("정지한 관찰자는 활성 페이지의 저작 방향을 보고 런타임 방향을 우선한다", () => {
+    const at = fixture(blank);
+    const guard = at.project.maps[at.mapId]!.events[1]!;
+    const base = guard.pages![0]!;
+    base.graphic.direction = "left";
+    guard.pages!.push({
+      ...base, id: "pg_test_guard_right", graphic: { ...base.graphic, direction: "right" },
+      conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+    });
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      eventId: guard.id, range: 3, sameRoom: false,
+    });
+    const map = after.maps[at.mapId]!;
+    const session = Object.assign(startSession(after, 7), { x: 2, y: 4 });
+    const positions = initialRuntimeEventPositions(map.events);
+    const view = (eventId: string) => runtimeEventViewById(after, map, session, positions, eventId);
+
+    expect(view(guard.id)?.direction).toBe("left");
+    expect(view(at.eventId)?.pageId).toBe(PAGE);
+    session.selfSwitches = { [guard.id]: { A: true } };
+    expect(view(guard.id)?.direction).toBe("right");
+    expect(view(at.eventId)?.pageId).toBe("pg_test_base");
+    session.x = 6;
+    expect(view(at.eventId)?.pageId).toBe(PAGE);
+    session.x = 2;
+    session.eventLocations = { [guard.id]: { mapId: at.mapId, x: 4, y: 4 } };
+    setRuntimeEventPositionDirection(positions, guard.id, "left");
+    expect(view(guard.id)?.direction).toBe("left");
+    expect(view(at.eventId)?.pageId).toBe(PAGE);
+    session.eventLocations[guard.id] = { ...session.eventLocations[guard.id]!, direction: "right" };
+    expect(view(guard.id)?.direction).toBe("right");
+    expect(view(at.eventId)?.pageId).toBe("pg_test_base");
+  });
+
+  it("자기 시야를 조건으로 삼는 관찰자의 페이지도 판정한다", () => {
+    const at = fixture(blank);
+    getEvent(at.project, at).pages![0]!.graphic.direction = "right";
+    getPage(at.project, at).graphic.direction = "left";
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      eventId: at.eventId, range: 3, sameRoom: false,
+    });
+    const map = after.maps[at.mapId]!;
+    const session = Object.assign(startSession(after, 7), { x: 0, y: 2 });
+    const positions = initialRuntimeEventPositions(map.events);
+    expect(runtimeEventViewById(after, map, session, positions, at.eventId)?.pageId).toBe(PAGE);
+    session.x = 4;
+    expect(runtimeEventViewById(after, map, session, positions, at.eventId)?.pageId).toBe("pg_test_base");
+  });
+
+  it("서로의 시야를 조건으로 삼는 관찰자는 순환 조회에서 기본 방향을 쓴다", () => {
+    const at = fixture(blank);
+    const guard = at.project.maps[at.mapId]!.events[1]!;
+    guard.pages![0]!.conditions = [{ kind: "eventSeesPlayer", eventId: at.eventId, range: 5, sameRoom: false }];
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      eventId: guard.id, range: 5, sameRoom: false,
+    });
+    const map = after.maps[at.mapId]!;
+    const session = Object.assign(startSession(after, 7), { x: 4, y: 7 });
+    const positions = initialRuntimeEventPositions(map.events);
+    expect(runtimeEventViewById(after, map, session, positions, at.eventId)?.pageId).toBe(PAGE);
+  });
+
   it.each([true, false])("구역에 들어오고 나가는 관찰자로 발견 조건 %s을 판정한다", (value) => {
     const at = fixture(blank);
     const args = { watcherCharacterId: "guard_test", watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 3, value };
@@ -394,8 +456,10 @@ describe("실행 중 등장 조건 판정", () => {
   it.each(["이동", "소환"] as const)("%s한 관찰자는 기존 필터를 유지하고 사라지면 제외한다", (arrival) => {
     const at = fixture(blank);
     const id = "cond.eventSeesPlayer.page.set";
+    const watcher = at.project.maps[at.mapId]!.events[1]!;
+    watcher.pages![0]!.graphic.direction = "left";
     const { after } = runPrimitive(at.project, at.target, id, {
-      watcherCharacterId: "guard_test", watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 1, requireFacing: false,
+      watcherCharacterId: "guard_test", watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 1,
     });
     const map = after.maps[at.mapId]!;
     const guard = map.events.find((event) => event.id === "ev_test_guard")!;

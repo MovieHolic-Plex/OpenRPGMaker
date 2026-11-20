@@ -163,7 +163,8 @@ export function runtimePageContext(
   positions: RuntimeEventPositions | undefined,
 ): EventPageLocationContext {
   let mapEvents: readonly GameEvent[] | undefined;
-  return {
+  let resolvingSightDirections: Set<string> | undefined;
+  const context = {
     locations: map.locations,
     ...partySkillContext(project, session),
     blocksSight: cachedSightBlocker(project, map),
@@ -185,19 +186,35 @@ export function runtimePageContext(
       });
       return mapEvents = events;
     },
-    eventPosition: (id) => {
+    eventPosition: (id, usePageDirection): RuntimeEventPosition | undefined => {
       const location = session.eventLocations?.[id];
+      if (location && location.mapId !== map.id) return undefined;
       const position = positions?.[id];
-      if (location) {
-        if (location.mapId !== map.id) return undefined;
-        return location.direction === undefined && position?.direction !== undefined
-          ? { ...location, direction: position.direction }
-          : location;
+      if (location && location.direction === undefined && position?.direction !== undefined) {
+        return { ...location, direction: position.direction };
       }
       const spawn = session.spawnedEvents?.[id];
-      return position ?? firstEventById(map.events, id) ?? (spawn?.mapId === map.id ? spawn : undefined);
+      const local = location || position ? undefined : firstEventById(map.events, id);
+      const point: RuntimeEventPosition | undefined = location ?? position ?? local ?? (spawn?.mapId === map.id ? spawn : undefined);
+      if (!point || !usePageDirection || point.direction !== undefined || resolvingSightDirections?.has(id)) return point;
+      const authored = local ?? firstEventById(map.events, id);
+      const observer = authored && !runtimeEventGone(session, map.id, id)
+        ? authored
+        : (location || spawn) ? firstEventById(context.mapEvents(), id) : undefined;
+      if (!observer) return point;
+
+      // If page sight conditions refer back to this observer, use its position with the default facing.
+      const resolving = resolvingSightDirections ??= new Set();
+      resolving.add(id);
+      try {
+        const direction = resolveEventPage(observer, session, context)?.graphic.direction;
+        return direction === undefined ? point : { ...point, direction };
+      } finally {
+        resolving.delete(id);
+      }
     },
-  };
+  } satisfies EventPageLocationContext;
+  return context;
 }
 
 /**
