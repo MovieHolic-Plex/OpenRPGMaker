@@ -4,6 +4,7 @@ import type { JsonSchema } from "@/editor/tools/types";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
+import { validateRecordEdit } from "../units/14-m2-modern-logic/recordReferences";
 import { assertCommandDeletion } from "./commandReferences";
 import { commandListAt, eventName, koreanSentence, scopedPage, updateScopedPage } from "./helpers";
 
@@ -36,6 +37,7 @@ export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const after = updateScopedPage(ctx, page =>
         deleteEventCommand(page, [...branchPath, index], expectedHash));
       assertCommandDeletion(ctx, after, list, command);
+      if (command.kind === "m2Command") validateRecordEdit(ctx.project, command, undefined, list, index);
       return after;
     },
   },

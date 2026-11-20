@@ -293,6 +293,14 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     expect(() => runPrimitive(after, target, "m2.208.update", editArgs(commands, 1, { text: "문을 확인하자." }))).not.toThrow();
   });
 
+  it("예전 퀘스트 목표의 생략된 이름표를 채우지 않고 문구만 바꾼다", () => {
+    const objective = { ...newM2Command("m2-208-quest-objective"), fields: { text: "이전 목표" } };
+    const { project, target, findEvent } = scenario("blank", [objective]);
+    const { after } = runPrimitive(project, target, "m2.208.update", editArgs([objective], 0, { text: "새 목표" }));
+    expect(findEvent(after).pages![0]!.commands).toEqual([{ ...objective, fields: { text: "새 목표" } }]);
+    expect(() => runPrimitive(project, target, "m2.208.insert", { text: "새 목표" })).toThrow(PrimitiveError);
+  });
+
   it("다른 페이지에서 점수표를 읽으면 마지막 제출 명령을 바꾸지 않는다", () => {
     const readScore = { ...newM2Command("m2-222-high-score"), fields: { scoreId: "달리기", action: "read", resultVariableId: VAR } };
     const { project, target, findEvent } = scenario("built");
@@ -328,6 +336,45 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     expect(play.variables[VAR]).toBe(37);
     expectRefused(after, target, "m2.222.update", editArgs(commands, 0, { scoreId: "걷기" }), /점수를 올리는 마지막 명령/u);
   });
+
+  it("같은 목록에서 읽기보다 먼저 실행되는 점수 제출만 그 읽기를 보호한다", () => {
+    const submit = { ...newM2Command("m2-222-high-score"), fields: { scoreId: "경주", action: "submit", valueVariableId: VAR } };
+    const read = { ...submit, fields: { scoreId: "경주", action: "read", resultVariableId: VAR } };
+    const commands = [submit, read, submit];
+    const { project, target } = scenario("blank", commands);
+    expectRefused(project, target, "m2.222.update", editArgs(commands, 0, { scoreId: "걷기" }), /점수를 올리는 마지막 명령/u);
+    expectRefused(project, target, "cmd.delete", editArgs(commands, 0, {}), /점수를 올리는 마지막 명령/u);
+    expect(() => runPrimitive(project, target, "m2.222.update", editArgs(commands, 2, { scoreId: "걷기" }))).not.toThrow();
+  });
+
+  it.each([
+    ["m2-208-quest-objective",
+      { questId: "순찰", objectiveId: "북문", state: "start" },
+      { questId: "순찰", objectiveId: "북문", state: "complete" }, /목표를 시작하는 마지막 명령/u],
+    ["m2-222-high-score",
+      { scoreId: "경주", action: "submit", valueVariableId: VAR },
+      { scoreId: "경주", action: "read", resultVariableId: VAR }, /점수를 올리는 마지막 명령/u],
+    ["m2-227-journal-line",
+      { lineId: "기록", action: "write", text: "닫힌 문" },
+      { lineId: "기록", action: "erase" }, /줄을 쓰는 마지막 명령/u],
+    ["m2-227-journal-line",
+      { lineId: "기록", action: "erase" },
+      { lineId: "기록", action: "reread" }, /줄을 지우는 마지막 명령/u],
+  ] satisfies [string, M2CommandFields, M2CommandFields, RegExp][])(
+    "%s에서 참조된 마지막 기록 명령만 삭제를 거절한다",
+    (commandId, writer, reader, reason) => {
+      const producer = { ...newM2Command(commandId), fields: writer };
+      const consumer = { ...newM2Command(commandId), fields: reader };
+      const args = editArgs([producer], 0, {});
+      const used = scenario("blank", [producer, consumer]);
+      expectRefused(used.project, used.target, "cmd.delete", args, reason);
+      for (const remaining of [[], [producer, consumer]]) {
+        const { project, target, findEvent } = scenario("blank", [producer, ...remaining]);
+        const { after } = runPrimitive(project, target, "cmd.delete", args);
+        expect(findEvent(after).pages![0]!.commands).toEqual(remaining);
+      }
+    },
+  );
 
   it("전투 후에 일지를 다시 읽으면 마지막 쓰기 명령을 바꾸지 않는다", () => {
     const reread = { ...newM2Command("m2-227-journal-line"), fields: { action: "reread", lineId: "숲 기록" } };
@@ -371,6 +418,16 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
       ...page, commands: [{ ...erase, fields: { ...erase.fields, lineId: "고정 기록" } }],
     }));
     expect(() => runPrimitive(withFixedReference, target, "m2.227.update", editArgs(commands, 0, { lineId: "숲" }))).not.toThrow();
+  });
+
+  it("기존 이름표를 바꿔 일지 줄이 늘어나면 뒤의 자동 이름표를 보존한다", () => {
+    const intro = { ...newM2Command("m2-227-journal-line"), fields: { lineId: "intro", text: "첫 기록" } };
+    const automatic = { ...intro, fields: { text: "자동 기록" } };
+    const erase = { ...intro, fields: { action: "erase", lineId: "line-2" } };
+    const commands = [intro, intro, automatic, erase];
+    const { project, target } = scenario("blank", commands);
+    expectRefused(project, target, "m2.227.update", editArgs(commands, 1, { lineId: "prologue" }), /자동으로 이름표/u);
+    expect(() => runPrimitive(project, target, "m2.227.update", editArgs(commands, 1, { text: "수정한 기록" }))).not.toThrow();
   });
 });
 

@@ -82,8 +82,8 @@ function commandEdit(entry: M2CommandCatalogEntry, row: ModernLogicRow, update: 
       current,
       list,
       command: { ...current, fields: { ...current.fields, ...editFields } },
-      // Older stored commands may omit new fields. Validate with factory defaults without writing them back.
-      validationFields: { ...command.fields, ...current.fields, ...editFields },
+      // Older commands may omit fields whose playback defaults differ from the factory.
+      validationFields: { ...command.fields, ...row.legacyDefaults, ...current.fields, ...editFields },
     };
   }
 

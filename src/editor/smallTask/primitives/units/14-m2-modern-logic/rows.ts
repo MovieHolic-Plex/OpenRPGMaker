@@ -10,6 +10,7 @@ export interface ModernLogicRow {
   readonly title?: string;
   readonly required?: readonly string[];
   readonly descriptions?: Readonly<Record<string, string>>;
+  readonly legacyDefaults?: Readonly<M2CommandFields>;
   validate?(ctx: PrimitiveContext, fields: M2CommandFields, args: Record<string, unknown>): void;
   prepare?(stored: M2CommandFields, fields: M2CommandFields, args: Record<string, unknown>): M2CommandFields;
   detail(ctx: PrimitiveContext, fields: M2CommandFields): string;
@@ -146,6 +147,7 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
   },
   208: {
     required: ["questId", "objectiveId"],
+    legacyDefaults: { questId: "quest", objectiveId: "objective" },
     descriptions: {
       questId: "이벤트에서 기록할 퀘스트의 이름표입니다. 같은 퀘스트를 갱신할 때 같은 값을 씁니다.",
       objectiveId: "퀘스트 안에서 목표를 구분하는 이름표입니다.",
