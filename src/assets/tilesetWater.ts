@@ -6,7 +6,7 @@
 //     칸 번호·통행·오토타일·8프레임 물결 띠는 그대로다(프레임 칸마다 다시 칠한 칸이 있다).
 //   · 물가 둑(shore)·깊이 띠(deep)·폭포(fall): 2층 투명 덧그림과 절벽면 그림 칸. 시공기가 이식해 쓴다(editor/tools/beodeulWater.ts).
 // 그림판·표는 scripts/content/beodeul-water/bake.py 가 굽는다 — 버들항 시트 화소와 수식뿐이다(새로 그린 그림 없음).
-import beodeulWater from "./beodeulWater.json";
+import beodeulWater from "./beodeulWater.json" with { type: "json" };
 import type { TilesetDef } from "@/project/types";
 
 type Pairs = readonly number[];

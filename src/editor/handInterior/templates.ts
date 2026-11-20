@@ -2,17 +2,17 @@
 // 집 한 채를 베끼는 대신, layout.ts 가 새로 짠 방 사각형마다 같은 종류 견본의 가구 한 벌을 옮겨 심는다.
 // 옮겨 심기: 붙은 가구는 덩이로 묶어 같이 옮긴다. 벽에 붙은 덩이는 그 벽에 붙인 채로, 떨어진 덩이는 방 안 비율 자리로.
 // 벽 가구·걸이는 늘 북쪽 벽 줄에 남는다. 심을 때 덩이마다 자리 후보를 차례로 검사한다(furnish.ts).
-import data from "@/assets/interiorRoomTemplates.json";
+import data from "@/assets/interiorRoomTemplates.json" with { type: "json" };
 // 전국·에도(sengoku_edo) 방 견본은 손으로 짠 따로 된 파일이다(공용 JSON 한 줄을 여러 PR 이 같이 고치지 않게) — 아래에서 합친다.
-import sengokuData from "@/assets/sengokuEdoRoomTemplates.json";
+import sengokuData from "@/assets/sengokuEdoRoomTemplates.json" with { type: "json" };
 // 박물관·배 안·투기장(interior-plus, 손 도트 v5 에 덧붙인 조각) 방 견본 — scripts/content/interior-plus/templates.mts 가 굽는다.
 // 같은 칩셋(atlas_biome_interior) 키라 펼치기로 합치면 v5 견본을 덮는다 → 배열·건물 목록을 이어 붙인다.
-import plusData from "@/assets/interiorPlusRoomTemplates.json";
+import plusData from "@/assets/interiorPlusRoomTemplates.json" with { type: "json" };
 // 손으로 짠 방 견본 — 예제 맵에 없거나 약한 용도(교실·잡화점·연구실·감옥·작은 예배당·작은 서재·방탈출 작은 방)를 칩셋에 있는 기물로 짠 것.
 // scripts/content/interior-authored/build.mts 가 rooms.mts 에서 굽는다(적대 검수·도달 검사를 통과한 것만).
-import authoredData from "@/assets/interiorAuthoredRoomTemplates.json";
+import authoredData from "@/assets/interiorAuthoredRoomTemplates.json" with { type: "json" };
 // 버들항 집 안(beodeul_city 실내 토막) 방 견본 — scripts/content/beodeul-interiors/rooms.mts 가 굽는다. 방 종류마다 여러 벌(게임 열쇠가 고른다).
-import beodeulData from "@/assets/beodeulInteriorRoomTemplates.json";
+import beodeulData from "@/assets/beodeulInteriorRoomTemplates.json" with { type: "json" };
 import type { HandInteriorSpec } from "./builder";
 import { MODERN_PRESET_DATA } from "./modernPresets";
 export interface InteriorTemplateItem {

@@ -6,7 +6,7 @@
  *   (광장 판석·풀밭 위 둥근 얼룩·가로등 그림자). 그림자는 오른쪽 아래로 지므로 제자리·왼쪽·위쪽 두 칸 안에 물체가 없으면 지운다.
  * - 화로의 방: 좌우 「긴 화덕」 띠가 네온 간판처럼 번쩍여 방의 시선을 빼앗았다 — 걷어 내고 그을린 바닥만 남긴다.
  */
-import catalog from "@/assets/beodeulNatureCatalog.json";
+import catalog from "@/assets/beodeulNatureCatalog.json" with { type: "json" };
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { translateTiles } from "@/project/objectStamp";

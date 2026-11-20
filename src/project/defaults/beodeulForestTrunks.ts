@@ -1,7 +1,7 @@
 // 버들항 숲 composer 줄기 T3(나무껍질 대비, 2026-10-24 사용자 선택·허용). 그림·표는 scripts/content/fallen-forest-trunks/bake.py 가 굽는다.
 // 원본 버들항 나무 키트와 화소가 다른 줄기·뿌리 칸만 들어 있다. beodeulForestComposer() 가 나무 이름별 표(cells)로
 // 바뀐 칸만 translateTiles 로 대상 칩셋(beodeul_city 계열)에 이식한다 — 수관 칸은 원본 칸 번호 그대로다.
-import catalog from '@/assets/beodeulForestTrunks.json';
+import catalog from '@/assets/beodeulForestTrunks.json' with { type: "json" };
 import type { TilesetDef } from '../types';
 
 export const BEODEUL_FOREST_TRUNKS_ID = 'beodeul_forest_trunks';

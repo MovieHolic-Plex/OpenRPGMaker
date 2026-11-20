@@ -6,10 +6,10 @@
 // 아래 VARIANTS 에 import 한 줄 + 항목 한 줄만 더한다. effects 를 주지 않으면 그림 좌표에 묶이지 않는 잔잔한 효과(NEUTRAL)를 쓴다.
 // 항목이 없거나 id 가 다르면 지금의 사슴(해안) 그림으로 돌아간다 — 빌드가 그림 파일 유무로 깨지지 않는다.
 import type { Project, TitleEffect, UploadedAsset } from './types';
-import stagArtwork from '../../public/assets/emerald-monster/title-asset.json';
-import meadowTitle from '../../public/assets/emerald-monster/title-meadow-asset.json';
-import desertTitle from '../../public/assets/emerald-monster/title-desert-asset.json';
-import snowTitle from '../../public/assets/emerald-monster/title-snow-asset.json';
+import stagArtwork from '../../public/assets/emerald-monster/title-asset.json' with { type: "json" };
+import meadowTitle from '../../public/assets/emerald-monster/title-meadow-asset.json' with { type: "json" };
+import desertTitle from '../../public/assets/emerald-monster/title-desert-asset.json' with { type: "json" };
+import snowTitle from '../../public/assets/emerald-monster/title-snow-asset.json' with { type: "json" };
 
 export const MONSTER_TITLE_THEMES = ['default', 'coast', 'desert', 'snow'] as const;
 export type MonsterTitleTheme = typeof MONSTER_TITLE_THEMES[number];

@@ -1,5 +1,5 @@
 import { PRODUCT_BRAND } from "@/brand";
-import sharedIconAssets from "./sharedItemIconAssets.json";
+import sharedIconAssets from "./sharedItemIconAssets.json" with { type: "json" };
 
 export type Cc0IconAsset = {
   readonly id: string;

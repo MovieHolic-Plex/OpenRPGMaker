@@ -3,7 +3,7 @@
 // 종류마다 길 줄(위→아래), 건물 섞기, 빈 필지 쓰임, 같이 놓는 기물 장면, 밀도 목표를 갖는다. 구성기 modernCityKoreanDistrict.ts 가 읽는다.
 // 고르기: 게임 열쇠와 맵 씨앗으로, 요청 사실(맵 크기·바란 가게 수)에 맞는 종류 가운데, 그 게임이 이미 쓴 종류는 빼고. 요청 낱말 목록은 없다.
 import { labelNames } from "./labelWords";
-import data from "./modernCityDistrictKinds.json";
+import data from "./modernCityDistrictKinds.json" with { type: "json" };
 import type { KRGroundNames } from "./modernCityKoreanGround";
 
 export type KRTier = "small" | "medium" | "large" | "xlarge" | "landmark";

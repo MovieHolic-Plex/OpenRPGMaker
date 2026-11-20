@@ -40,7 +40,7 @@ import { canMove, isPassable } from "../collision";
 import { resolveMapCameraZoom } from "../cameraZoom";
 import { passageMarkForTile } from "../tilesetPassage";
 import { createTransitSim, transitPose, transitRectCells } from "../mapTransit";
-import handInteriorSpec from "@/assets/handInteriorSpec.json";
+import handInteriorSpec from "@/assets/handInteriorSpec.json" with { type: "json" };
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
 import { listGallerySlots } from "../vnExtras";
