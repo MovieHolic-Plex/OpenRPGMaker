@@ -586,23 +586,19 @@ it("부대의 전투 뒤 출현은 제거할 수 있고 전투 중 출현은 거
   expect(() => runPrimitive(duringBattle, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
 });
 
-it("꺼진 결과 분기 안에서만 출현하는 적은 제거 대상으로 쓰지 못한다", () => {
-  const { project, target } = fixture("blank", [
-    { kind: "battleProcessing", troopId: TROOP, branchOnResult: false, victoryBranch: [dynamicSpawn] },
-  ]);
+it.each([false, true])("출현을 제거 대상으로 쓸 수 있는지는 결과 분기 활성 여부(%s)를 따른다", branchOnResult => {
+  const { project, target } = fixture("blank", [{
+    kind: "battleProcessing", troopId: TROOP, canEscape: false, canLose: false, branchOnResult, victoryBranch: [dynamicSpawn],
+  }]);
   const args = { spawnId: dynamicSpawn.spawn.id };
-  expect(() => runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
-
-  const enabled = runPrimitive(project, target, "cmd.battleProcessing.update", {
-    index: 1, expectedHash: eventCommandHash(stored(project)[1]!), branchOnResult: true,
-  }).after;
-  const { after } = runPrimitive(enabled, target, "cmd.despawnFieldEnemy.insert", args);
-  expect(stored(after).at(-1)).toEqual({ kind: "despawnFieldEnemy", ...args });
+  const insert = () => runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args);
+  if (branchOnResult) expect(stored(insert().after).at(-1)).toEqual({ kind: "despawnFieldEnemy", ...args });
+  else expect(insert).toThrow(/제거할 적 무리의 출현/u);
 });
 
 it("꺼진 결과 분기에서 가리키는 출현 이름을 유지한다", () => {
   const { project, target } = fixture("blank", [dynamicSpawn, {
-    kind: "battleProcessing", troopId: TROOP, branchOnResult: false,
+    kind: "battleProcessing", troopId: TROOP, canEscape: false, canLose: false, branchOnResult: false,
     victoryBranch: [{ kind: "despawnFieldEnemy", spawnId: dynamicSpawn.spawn.id }],
   }]);
   expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
