@@ -8,11 +8,12 @@ import type { Condition, EventPage, EventSightWatchers, GameEvent, Project } fro
 
 type RecordNode = Record<string, unknown>;
 
-function someRecord(value: unknown, test: (node: RecordNode) => boolean): boolean {
-  if (Array.isArray(value)) return value.some(child => someRecord(child, test));
+function someRecord(value: unknown, test: (node: RecordNode) => boolean, descend?: (node: RecordNode) => boolean): boolean {
+  if (Array.isArray(value)) return value.some(child => someRecord(child, test, descend));
   if (value === null || typeof value !== "object") return false;
   const node = value as RecordNode;
-  return test(node) || (node.kind !== "m2Command" && Object.values(node).some(child => someRecord(child, test)));
+  return test(node) || (node.kind !== "m2Command" && (descend?.(node) ?? true)
+    && Object.values(node).some(child => someRecord(child, test, descend)));
 }
 
 const isId = (value: unknown, id: string) => typeof value === "string" && value.trim() === id;
@@ -138,8 +139,9 @@ export function hasNamedEventReference(project: Project, mapId: string, event: G
     if ((node.kind !== "text" && fields === node) || typeof fields?.speaker !== "string" || !fields.speaker.trim()) return false;
     if (typeof fields.speakerActor === "string" && fields.speakerActor.trim()) return false;
     const input = { speaker: fields.speaker, currentEventId: ownerId, playerNames: leader ? [leader.name] : [], player: null };
-    return resolveSpeakerActor({ ...input, visible: beforeActors }) === event.id
-      && resolveSpeakerActor({ ...input, visible: afterActors }) !== event.id;
+    const before = resolveSpeakerActor({ ...input, visible: beforeActors });
+    const after = resolveSpeakerActor({ ...input, visible: afterActors });
+    return (before === event.id) !== (after === event.id);
   });
   return refers(authoredRoots(project)) || (name === undefined ? remaining : map.events).some(owner => refers(owner, owner.id));
 }
@@ -166,6 +168,15 @@ export function strandsSwitch(after: Project, removed: EventPage | GameEvent): b
       enabled.delete(id);
     }
   }
+  const readsEnabledSwitch = (node: RecordNode): boolean => {
+    if (node.kind !== "switch" && node.kind !== "storyFlag") return false;
+    const flagId = node.kind === "switch" ? node.storyFlagId : node.flagId;
+    if (typeof flagId === "string" && flagId.trim()) {
+      const flag = storyFlagById(after, flagId);
+      return flag?.kind === "switch" && enabled.has(flag.targetId);
+    }
+    return typeof node.switchId === "string" && enabled.has(node.switchId);
+  };
   return enabled.size > 0 && someRecord([events, ...authoredRoots(after)], node => {
     if (node.kind === "m2Command") {
       const fields = node.fields as RecordNode | undefined;
@@ -173,17 +184,24 @@ export function strandsSwitch(after: Project, removed: EventPage | GameEvent): b
         && ((m2Index(node) === 206 && (fields.condition === "switchOn" || fields.condition === undefined))
           || (m2Index(node) === 217 && fields.query === "switch"));
     }
-    if ((node.kind === "switch" || node.kind === "storyFlag") && node.value !== false) {
-      const flagId = node.kind === "switch" ? node.storyFlagId : node.flagId;
-      if (typeof flagId === "string" && flagId.trim()) {
-        const flag = storyFlagById(after, flagId);
-        return flag?.kind === "switch" && enabled.has(flag.targetId);
-      }
-      return typeof node.switchId === "string" && enabled.has(node.switchId);
-    }
-    return (typeof node.conditionSwitchId === "string" && enabled.has(node.conditionSwitchId))
+    return readsSwitchOn(node, readsEnabledSwitch)
+      || (typeof node.conditionSwitchId === "string" && enabled.has(node.conditionSwitchId))
       || (node.kind === "script" && scriptReads(node, "switch", after).some(id => enabled.has(id)));
-  });
+  }, outsideCompoundCondition);
+}
+
+function outsideCompoundCondition(node: RecordNode): boolean {
+  return node.kind !== "not" && node.kind !== "all" && node.kind !== "any";
+}
+
+function readsSwitchOn(value: unknown, matches: (node: RecordNode) => boolean, negated = false): boolean {
+  if (!value || typeof value !== "object") return false;
+  const node = value as RecordNode;
+  if (node.kind === "not") return readsSwitchOn(node.condition, matches, !negated);
+  if (node.kind === "all" || node.kind === "any") {
+    return Array.isArray(node.conditions) && node.conditions.some(child => readsSwitchOn(child, matches, negated));
+  }
+  return (node.value === false) === negated && matches(node);
 }
 
 type OffSwitch = { kind: "switch" | "selfSwitch"; id: string };
@@ -214,13 +232,12 @@ function eventCanWriteWithSwitchOff(event: GameEvent, off: OffSwitch, writes: (n
     if (someRecord([page.commands, page.movement?.route], writes)) return true;
     if (results.every(result => result === true)) return false;
   }
-  return (!event.condition || conditionWithSwitchOff(event.condition, off) !== false)
+  return !pages.length && (!event.condition || conditionWithSwitchOff(event.condition, off) !== false)
     && someRecord([event.commands, event.moveRoute], writes);
 }
 
 function legacyExecution(event: GameEvent) {
-  // A page that always qualifies prevents the runtime from falling back to the old event-level commands.
-  return event.pages?.some(page => page.conditions?.length === 0) ? undefined : [event.commands, event.moveRoute];
+  return event.pages?.length ? undefined : [event.commands, event.moveRoute];
 }
 
 export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean {
@@ -237,6 +254,6 @@ export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean
   for (const key of keys) {
     if (eventCanWriteWithSwitchOff(event, { kind: "selfSwitch", id: key }, node => written(node) === key)) keys.delete(key);
   }
-  return keys.size > 0 && someRecord(remaining, node =>
-    node.kind === "selfSwitch" && node.value === true && typeof node.key === "string" && keys.has(node.key));
+  return keys.size > 0 && someRecord(remaining, node => readsSwitchOn(node, condition =>
+    condition.kind === "selfSwitch" && typeof condition.key === "string" && keys.has(condition.key)), outsideCompoundCondition);
 }

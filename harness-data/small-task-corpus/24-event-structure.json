@@ -224,7 +224,7 @@
   {
     "request": "손님이 왼쪽을 보게 해 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
     "primitive": "event.page.patch",
     "args": {"direction": "left"},
     "expect": [
@@ -268,7 +268,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
     "primitive": "event.page.patch",
-    "args": {"graphic": {"type": "bundled", "id": "tex_easyrpg_charset_actor1"}, "direction": "up"},
+    "args": {"page": 1, "graphic": {"type": "bundled", "id": "tex_easyrpg_charset_actor1"}, "direction": "up"},
     "expect": [
       {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].graphic.sprite.id", "equals": "tex_easyrpg_charset_actor1"},
       {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].graphic.direction", "equals": "up"}
@@ -287,7 +287,7 @@
   {
     "request": "지워진 옛날 그림으로 바꿔 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
     "primitive": "event.page.patch",
     "args": {"graphic": {"type": "bundled", "id": "missing_sprite"}},
     "expectRefusal": true
@@ -303,7 +303,7 @@
   {
     "request": "시장 손님 그림에서 천 번째 칸을 보여 줘.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
     "primitive": "event.page.patch",
     "args": {"pattern": 999},
     "expectRefusal": true
@@ -311,7 +311,7 @@
   {
     "request": "선택한 페이지 그림에 확인 효과음을 넣어 줘.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
     "primitive": "event.page.patch",
     "args": {"graphic": {"type": "bundled", "id": "cc0-sound-ui-confirm"}},
     "expectRefusal": true
@@ -628,7 +628,11 @@
     "args": {},
     "expect": [
       {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
-      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"}
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_lt3gf7].id", "equals": "ev_world_gate_lt3gf7"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_world_gate_1o6qiz7].id", "equals": "ev_world_gate_1o6qiz7"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].id", "equals": "ev_chain_kehegd7_2"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].id", "equals": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"}
     ]
   },
   {

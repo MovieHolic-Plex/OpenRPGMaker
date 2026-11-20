@@ -13,7 +13,7 @@ import { validateAssetRef } from "@/project/io/shapeReferenceFields";
 import { uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
 import type { Dir, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import { genId } from "@/util/id";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { hasEventReference, hasNamedEventReference, hasNamedObjective, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
 
@@ -166,7 +166,9 @@ function selectedPageNumber(ctx: PrimitiveContext, pages: readonly EventPage[], 
     if (!number || (args.page !== undefined && args.page !== number)) scopeRefusal("선택한 페이지만 고칠 수 있어요.");
     return number;
   }
-  return typeof args.page === "number" ? args.page : 1;
+  if (typeof args.page === "number") return args.page;
+  if (pages.length > 1) throw new PrimitiveError(SELECT_EVENT_PAGE);
+  return 1;
 }
 
 function optionalName(args: Args): string | undefined {

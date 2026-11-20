@@ -1,9 +1,10 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
+import { OWNERSHIP } from "@/editor/smallTask/primitives/ownership";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import { PRIMITIVES } from "@/editor/smallTask/primitives/units/24-event-structure";
+import { PRIMITIVES, UNIT } from "@/editor/smallTask/primitives/units/24-event-structure";
 import { mapTarget } from "@/editor/smallTask/target";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -334,7 +335,7 @@ describe("선택 범위와 입력 검증", () => {
 
   it("그림 참조와 페이지 번호의 오류는 한국어로 거절한다", () => {
     const before = blank();
-    const target = mapTarget(before, MAP, EVENT)!;
+    const target = mapTarget(before, MAP, EVENT, "page_first")!;
     for (const [id, args, message] of [
       ["event.page.patch", { graphic: { type: "bundled", id: "missing_sprite" } }, "사용할 그림을 찾을 수 없어요."],
       ["event.page.patch", { graphic: { type: "bundled", id: "constructor" } }, "사용할 그림을 찾을 수 없어요."],
@@ -441,6 +442,41 @@ describe("선택 범위와 입력 검증", () => {
     const commands = runtimeEventView(reachable, session, {}).page!.commands;
     expect(createInterpreter(commands, session, after).start().kind).toBe("done");
     expect(session.switches[switchId]).toBe(true);
+  });
+
+  it("부정 조건에서 켜져야 하는 스위치는 지키고 꺼진 상태를 요구하는 조건은 그대로 둔다", () => {
+    const before = blank();
+    const [source] = before.maps[MAP].events;
+    const [first, second] = source.pages!;
+    const switchId = "sw_gate";
+    const off = { kind: "switch", switchId, value: false } as const;
+    const write = [{ kind: "setSwitch", switchId, value: true }] satisfies Command[];
+    before.switches = [{ id: switchId, name: "문 열림" }];
+    first.commands = write;
+    const reader = { ...source, id: "ev_gate", x: 4, pages: [{ ...second, commands: [], conditions: [off] }] };
+    const direct = withEvents(before, [source, reader]);
+    const target = mapTarget(direct, MAP, EVENT)!;
+    expect(runPrimitive(direct, target, "event.tile.remove", {}).after.maps[MAP].events).toEqual([reader]);
+
+    const requiresOn = { ...reader, pages: [{ ...reader.pages[0], conditions: [{ kind: "not", condition: off }] }] } satisfies GameEvent;
+    const guarded = withEvents(before, [source, requiresOn]);
+    expect(() => runPrimitive(guarded, target, "event.tile.remove", {})).toThrow(/진행에 필요한 스위치/u);
+  });
+
+  it("조건을 충족하는 페이지가 없는 이벤트의 옛 명령은 스위치를 대신 켤 수 없다", () => {
+    const before = blank();
+    const [source] = before.maps[MAP].events;
+    const switchId = "sw_gate";
+    const on = { kind: "switch", switchId, value: true } as const;
+    const write = [{ kind: "setSwitch", switchId, value: true }] satisfies Command[];
+    before.switches = [{ id: switchId, name: "문 열림" }];
+    source.pages![0].commands = write;
+    const dormant: GameEvent = { ...source, id: "ev_gate", x: 4, commands: write,
+      pages: [{ ...source.pages![0], conditions: [on], commands: [] }] };
+    const guarded = withEvents(before, [source, dormant]);
+    const target = mapTarget(guarded, MAP, EVENT)!;
+    expect(runtimeEventView(dormant, startSession(guarded), {}).pageId).toBeUndefined();
+    expect(() => runPrimitive(guarded, target, "event.tile.remove", {})).toThrow(/진행에 필요한 스위치/u);
   });
 
   it.each([
@@ -595,6 +631,33 @@ describe("선택 범위와 입력 검증", () => {
     expect(() => runPrimitive(before, target, "event.tile.remove", {})).toThrow(/다른 곳에서 이 이벤트/u);
     expect(() => runPrimitive(before, target, "event.tile.rename", { name: "나무 궤짝" })).toThrow(/이벤트를 이름으로/u);
     expect(runPrimitive(before, target, "event.tile.rename", { name: "낡은 보상 상자" }).after.maps[MAP].events[0].name).toBe("낡은 보상 상자");
+  });
+
+  it("같은 이름으로 바꾸어 대사의 화자가 선택한 이벤트로 바뀌면 거절한다", () => {
+    const before = blank();
+    const [speaking] = before.maps[MAP].events;
+    speaking.name = "점원";
+    speaking.pages![0].commands = [{ kind: "text", speaker: "문지기", body: "문을 열게요." }];
+    before.maps[MAP].events.push({ id: "ev_gatekeeper", name: "문지기", x: 4, y: 4, sprite,
+      trigger: { kind: "action" }, commands: [] });
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(before, target, "event.tile.rename", { name: "문지기" })).toThrow(/이벤트를 이름으로/u);
+    expect(runPrimitive(before, target, "event.tile.rename", { name: "상인" }).after.maps[MAP].events[0].name).toBe("상인");
+  });
+
+  it("페이지가 여러 장이면 선택한 페이지나 명시한 페이지 번호를 사용한다", () => {
+    const before = blank();
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(before, target, "event.page.patch", { direction: "left" })).toThrow(SELECT_EVENT_PAGE);
+    const { after } = runPrimitive(before, target, "event.page.patch", { page: 2, direction: "left" });
+    expect(after.maps[MAP].events[0].pages?.[1].graphic.direction).toBe("left");
+  });
+
+  it("유닛 24의 동작은 소유권 표의 이 유닛 도구만 다룬다", () => {
+    const fields = ["commandKinds", "m2Ids", "conditionKinds", "collections", "tools"] as const;
+    const coverage = PRIMITIVES.flatMap(primitive => fields.flatMap(field =>
+      (primitive.covers[field] ?? []).map(key => `${field}:${key}`)));
+    expect(new Set(coverage)).toEqual(new Set(OWNERSHIP[UNIT].tools.map(key => `tools:${key}`)));
   });
 
   it("다른 이벤트의 기존 일정 오류가 배열 위치만 바뀌면 삭제를 허용한다", () => {

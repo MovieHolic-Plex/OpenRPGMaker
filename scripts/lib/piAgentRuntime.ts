@@ -1,6 +1,6 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
-import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
+import { APPLY_SMALL_TASK_PRIMITIVE, isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
@@ -428,6 +428,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const keyForRun = () => options.providerApiKeys?.[request.provider] ?? options.apiKey;
   const regionScope = target.kind === "map" && selection?.rect
     ? { kind: "mapRegion", mapId: target.mapId, rect: selection.rect } as const : undefined;
+  let regionBaseline = base;
   const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. list_small_task_primitives에서 맞는 동작을 찾으면 그 동작을 쓴다. 명령 줄을 고치기 전에는 get_event에서 includeCommandHashes를 켜고 줄 위치와 해시를 확인한다. 대상: ${JSON.stringify(target)}`
     + (regionScope ? ` 타일을 바꿀 수 있는 선택 영역: ${JSON.stringify(regionScope.rect)}` : "");
   const controller = new AbortController();
@@ -464,7 +465,21 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     ...tool,
     label: tool.name,
     async execute(_id, params) {
-      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      const args = params as Record<string, unknown>;
+      const before = ctx.project;
+      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
+      if (regionScope && tool.name === APPLY_SMALL_TASK_PRIMITIVE && args.id === "event.tile.create") {
+        // The primitive already checked tileEvent. Allow that exact addition in the final mapRegion check.
+        const { mapId } = regionScope;
+        const previousIds = new Set(before.maps[mapId].events.map(event => event.id));
+        const added = ctx.project.maps[mapId].events.find(event => !previousIds.has(event.id));
+        if (added) {
+          const map = regionBaseline.maps[mapId];
+          regionBaseline = { ...regionBaseline, maps: { ...regionBaseline.maps, [mapId]: {
+            ...map, events: [...map.events, structuredClone(added)],
+          } } };
+        }
+      }
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
   }));
@@ -534,7 +549,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   }
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
-    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    const result = checkSmallTaskScope(regionBaseline, ctx.project, regionScope);
     if (!result.ok) failure = result.reason;
   }
   const project = failure ? base : ctx.project;
