@@ -1,4 +1,4 @@
-import references from '@/assets/beodeulDoorReferences.json';
+import references from '@/assets/beodeulDoorReferences.json' with { type: "json" };
 import type { TilesetDef } from '../types';
 export const BEODEUL_DOOR_TEXTURE = 'tex_beodeul_door';
 export const BEODEUL_DOOR_ID = 'beodeul_door';

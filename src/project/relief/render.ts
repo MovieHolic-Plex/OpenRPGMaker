@@ -4,7 +4,7 @@
 // 좌표: 맵 화소 (px, py) 의 높이가 c 이면 화면 y = py + pad - c*U. pad = 최고 단 × U.
 // 벽은 윗면 가장자리에서 (높이차 × U) 화소만큼 남쪽으로 내려 그린다.
 
-import palette from "./reliefPalette.json";
+import palette from "./reliefPalette.json" with { type: "json" };
 import { copyGrid, RELIEF_MAX_LEVEL, RELIEF_TILE as T, RELIEF_UNIT as U, type HeightGrid } from "./types";
 import { compileReliefStyle, RELIEF_DEFAULT_RIM, type ReliefWallStyle } from "./styles";
 import { paintSheer } from "./sheerPaint";

@@ -1,5 +1,5 @@
 import {beodeulFacilityPlans,facilityPropId} from '../../assets/beodeulFacilitiesPlans';
-import references from '../../assets/beodeulFacilitiesReferences.json';
+import references from '../../assets/beodeulFacilitiesReferences.json' with { type: "json" };
 import {createBeodeulArchitectureTileset} from './beodeulArchitecture';
 import {translateTiles} from '../objectStamp';
 import type {StructureKitDef,TilesetDef} from '../types';

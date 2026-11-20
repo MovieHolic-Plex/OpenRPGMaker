@@ -35,6 +35,7 @@ import { worldCanonPromptSection } from "./worldCanonContext";
 import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
+import { eventCommandScopeModeSchema, type EventCommandScope } from "./eventCommandScope";
 import { ASSISTANT_PRESENTATION_BLOCK } from "./eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
@@ -615,12 +616,12 @@ function ruleText(rule: ClusterRuleHint): string {
  */
 export function buildGroundedRequest(
   messages: readonly ChatMessage[], tools: readonly OpenAiToolSchema[],
-  config: Pick<AiConfig, "model" | "baseUrl"> & Partial<Pick<AiConfig, "authMode" | "providerId">>, original: OriginalContextStore,
+  config: Pick<AiConfig, "model" | "baseUrl"> & Partial<Pick<AiConfig, "authMode" | "providerId">>, original: OriginalContextStore | null,
 ): { messages: ChatMessage[]; includedIds: string[]; budget: { windowTokens: number; toolsTokens: number; reserveTokens: number; inputTokens: number } } {
   const windowTokens = originalContextWindow(config);
   const reserveTokens = DEFAULT_COMPACTION_SETTINGS.reserveTokens;
   const toolsTokens = tools.length ? estimateContextTokens([{ role: "system", content: JSON.stringify(tools) }]) : 0;
-  const manifestTokens = original.minimumTokens();
+  const manifestTokens = original?.minimumTokens() ?? 0;
   let historyChars = Math.max(0, Math.min(resolveRequestCharBudget(config), windowTokens * 4) - (toolsTokens + reserveTokens + manifestTokens) * 4);
   let request = compactMessagesForRequest(messages, historyChars);
   // The character clamp omits tool-call arguments and token weighting. Reconcile its
@@ -632,14 +633,40 @@ export function buildGroundedRequest(
     request = compactMessagesForRequest(messages, historyChars);
   }
   const remaining = windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request);
-  const grounding = original.message(remaining);
-  request.push(grounding.message);
+  const grounding = original?.message(remaining);
+  if (grounding) request.push(grounding.message);
   const inputTokens = estimateContextTokens(request) + toolsTokens;
   if (inputTokens + reserveTokens > windowTokens) {
     throw new Error("original-context-window-exceeded: conversation and full tool schemas exceed the model window; no capability was removed");
   }
-  return { messages: request, includedIds: grounding.includedIds,
+  return { messages: request, includedIds: grounding?.includedIds ?? [],
     budget: { windowTokens, toolsTokens, reserveTokens, inputTokens } };
+}
+
+/** Request-only context for the event editor's command draft. */
+export function buildEventCommandSystemPrompt(project: Project, scope: EventCommandScope): string {
+  const map = project.maps[scope.mapId];
+  const event = map?.events.find(entry => entry.id === scope.eventId);
+  const page = event?.pages?.find(entry => entry.id === scope.pageId);
+  const target = { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId };
+  const pageContext = {
+    mapName: map?.name,
+    eventName: event?.name,
+    position: event && { x: event.x, y: event.y },
+    pageName: page?.name,
+    commandCount: page?.commands.length,
+    firstCommandKinds: page?.commands.slice(0, 30).map(command => command.kind),
+    selection: scope.selection,
+    selectionLabel: scope.selectionLabel,
+  };
+  return [
+    "이벤트 편집기에서 지정한 한 페이지의 명령 초안을 만든다.",
+    `event_command_assist를 바로 호출하세요. 대상 인자: ${JSON.stringify(target)}`,
+    eventCommandScopeModeSchema(scope).description,
+    `현재 페이지 요약: ${JSON.stringify(pageContext)}`,
+    "prompt에는 현재 사용자 요청을 그대로 전달하세요. 도구가 대상 페이지의 전체 명령과 프로젝트 리소스를 읽고 결과를 검증합니다.",
+    "초안 생성에 성공하면 사용자가 이벤트 편집기에서 검토하고 적용할 수 있다고 짧게 안내하세요.",
+  ].join("\n");
 }
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.

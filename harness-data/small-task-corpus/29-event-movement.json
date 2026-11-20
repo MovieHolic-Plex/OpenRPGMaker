@@ -1,1 +1,1859 @@
-[]
+[
+  {
+    "request": "이거 오른쪽으로 한 칸 갔다가 한 번 쉬도록 경로를 짜 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "wait"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "기존 동선 지우고 아래로 세 칸만 가게 해.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ],
+      "repeat": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ],
+          "repeat": false,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "윗쪽 한칸 갔다 되돌아오는 동선으로 바꿔줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "왼쪽을 본 다음에 한 걸음 앞으로. 이 순서 한 번만요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "turn",
+          "dir": "left"
+        },
+        {
+          "kind": "stepForward"
+        }
+      ],
+      "repeat": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "turn",
+              "dir": "left"
+            },
+            {
+              "kind": "stepForward"
+            }
+          ],
+          "repeat": false,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "이 사람은 왼쪽 위로 이동시키고, 길 막히면 그 동작은 넘겨주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "moveDiagonal",
+          "horizontal": "left",
+          "vertical": "up"
+        }
+      ],
+      "skippable": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "moveDiagonal",
+              "horizontal": "left",
+              "vertical": "up"
+            }
+          ],
+          "repeat": true,
+          "skippable": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "한 번 쉬고 무작위로 한 칸 움직이는 걸 계속 반복해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "wait"
+        },
+        {
+          "kind": "moveRandom"
+        }
+      ],
+      "repeat": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "moveRandom"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "등록된 이동 경로를 전부 지워 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": []
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement",
+        "equals": {
+          "type": "custom",
+          "speed": 3,
+          "frequency": 3,
+          "moveIntervalMs": 700
+        }
+      }
+    ]
+  },
+  {
+    "request": "경로를 이 프로젝트에서 지운 맵의 첫 칸으로 넘어가게 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "npcTransfer",
+          "mapId": "map_deleted",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "경로에서 이미 삭제한 스위치 켜 줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "setSwitch",
+          "switchId": "sw_deleted",
+          "value": true
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 경로 그대로 두고 마지막에 한 번 더 쉬게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "wait"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "끝에 오른쪽으로 두 칸 덧붙여주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "다 돌면 잠깐 멈추고 위쪽 봐",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "wait"
+        },
+        {
+          "kind": "turn",
+          "dir": "up"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "turn",
+              "dir": "up"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "동선 맨 뒤에 뒤돌기 세 번만 더 넣어 줄래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "turnRelative",
+          "turn": "turn180"
+        },
+        {
+          "kind": "turnRelative",
+          "turn": "turn180"
+        },
+        {
+          "kind": "turnRelative",
+          "turn": "turn180"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "turnRelative",
+              "turn": "turn180"
+            },
+            {
+              "kind": "turnRelative",
+              "turn": "turn180"
+            },
+            {
+              "kind": "turnRelative",
+              "turn": "turn180"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "끝에 왼쪽 한칸추가",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "left"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "원래 걷던 순서 다음에 주인공 쪽을 바라보는 동작을 하나 이어 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "turnTowardPlayer"
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "turnTowardPlayer"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "끝에 삭제된 효과음 한 번 틀게 더해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "playSe",
+          "resourceId": "se_deleted"
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "그 동굴에 없는 경비병 쪽 바라보는 동작을 끝에 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "turnToward",
+          "target": "ev_deleted"
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "플레이어 쪽으로 알아서 다가오게 해줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "approach"
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "approach"
+      }
+    ]
+  },
+  {
+    "request": "주인공한테 슬금슬금 가까워지는 이동으로 바꿔 주세요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "approach"
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "approach"
+      }
+    ]
+  },
+  {
+    "request": "이 애가 근처를 이리저리 서성였으면 좋겠어요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "random"
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "random"
+      }
+    ]
+  },
+  {
+    "request": "맘대로 돌아댕기게",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "random"
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].movement.type",
+        "equals": "random"
+      }
+    ]
+  },
+  {
+    "request": "동굴 짐승은 여기 가만히 서 있게 해.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "fixed"
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.type",
+        "equals": "fixed"
+      }
+    ]
+  },
+  {
+    "request": "이 적은 동선 대신 제자리를 지키도록 해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "fixed"
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.type",
+        "equals": "fixed"
+      }
+    ]
+  },
+  {
+    "request": "이동 방식을 하늘로 순간이동하는 방식으로 넣어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "teleport"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "여기 말고 동굴에 서 있는 다른 애를 이리저리 걷게 해.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.type.set",
+    "args": {
+      "type": "random",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이 사람 걷는 속도 제일 느리게 부탁해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 1
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 1
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "걸음은 이 단계 말고 2단계로 낮춰 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 2
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "지금보다 한 단계 빠르게 걸어.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 4
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 4
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "이동속도 다섯으로",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 5
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 5
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "여섯 번째 걸음 속도로 바꾸되 움직이는 간격은 그대로 두세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 6
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 6
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "최고속으로 걷게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 8
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 8
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "걸음 속도 0단계로.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 0
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "속도 10단계로 올려 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.speed.set",
+    "args": {
+      "speed": 10
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이동하는 횟수를 가장 드문 단계로 내려 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 1
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 1
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "이 적, 움직임빈도 2로 바꿔 줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 2
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "지금보다 한 단계 더 자주 움직이게.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 4
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 4
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "빈도는 다섯 단계로 하고 걸음 빠르기는 유지해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 5
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 5
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "동굴 짐승 자주 움직이게요. 빈도 일곱이면 돼요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 7
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 7
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "걷기 사이에 쉬는 시간을 가장 짧게 바꿔 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 8
+    },
+    "expect": [
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.frequency",
+        "equals": 8
+      },
+      {
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.speed",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "움직임 빈도 0으로 내려 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 0
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "움직임빈도 9단으로 맞춰 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.frequency.set",
+    "args": {
+      "frequency": 9
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "공원 애를 오른쪽 한 칸 갔다 오게 해서 순찰시켜 주세요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "right",
+        "left"
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.moveIntervalMs",
+        "equals": 1600
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "왼쪽 한칸 갔다가 원래 자리로 돌아와. 이걸 계속해.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "left",
+        "right"
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.moveIntervalMs",
+        "equals": 1600
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "아래로 한 걸음 갔다 올라오는 걸 순찰로 넣어줘.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "down",
+        "up"
+      ]
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.moveIntervalMs",
+        "equals": 1600
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "순찰이니 윗쪽으로 한 칸 갔다 바로 내려오도록. 간격은 이 초요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "up",
+        "down"
+      ],
+      "intervalMs": 2000
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.moveIntervalMs",
+        "equals": 2000
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "오른쪽으로 두 칸, 왼쪽으로 두 칸씩. 동작 간격은 3초로 순찰해.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "right",
+        "right",
+        "left",
+        "left"
+      ],
+      "intervalMs": 3000
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.moveIntervalMs",
+        "equals": 3000
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "왼쪽갔다 오른쪽으로 원위치하는 순찰을 1초 간격으로 반복.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "left",
+        "right"
+      ],
+      "intervalMs": 1000
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.type",
+        "equals": "custom"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.moveIntervalMs",
+        "equals": 1000
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].movement.route",
+        "equals": {
+          "repeat": true,
+          "skippable": false,
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "request": "순찰은 오른쪽으로만 세 칸 가고 돌아오지 않게 해 줘",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "right",
+        "right",
+        "right"
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 공원 출구도 옆으로 왔다갔다하게 순찰 넣어 주세요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_exit_18",
+      "pageId": "ev_mk_pk_exit_18_p"
+    },
+    "primitive": "npc.patrol.set",
+    "args": {
+      "directions": [
+        "right",
+        "left"
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "항상 아래쪽만 바라보도록 해 주세요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "down",
+      "fixed": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].graphic.direction",
+        "equals": "down"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].animationType",
+        "equals": "fixedDirection"
+      }
+    ]
+  },
+  {
+    "request": "처음에는 왼쪽을 보고 서 있게 해 줘.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "left"
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].graphic.direction",
+        "equals": "left"
+      }
+    ]
+  },
+  {
+    "request": "얘 위 보게 글고 방향 고정",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "up",
+      "fixed": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].graphic.direction",
+        "equals": "up"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].animationType",
+        "equals": "fixedDirection"
+      }
+    ]
+  },
+  {
+    "request": "무조건 오른쪽 보게 바꿔 주세요. 걸어도 시선은 그쪽으로요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "right",
+      "fixed": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].graphic.direction",
+        "equals": "right"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].animationType",
+        "equals": "fixedDirection"
+      }
+    ]
+  },
+  {
+    "request": "시선 고정 풀고 처음엔 오른쪽 보게.",
+    "fixture": "maou",
+    "seed": {
+      "events": [
+        {
+          "id": "ev_locked_face",
+          "x": 1,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [],
+          "pages": [
+            {
+              "id": "page_locked_face",
+              "name": "방향 고정",
+              "conditions": [],
+              "graphic": { "direction": "left" },
+              "animationType": "fixedDirection",
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": []
+            }
+          ]
+        }
+      ]
+    },
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_locked_face",
+      "pageId": "page_locked_face"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "right",
+      "fixed": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_locked_face].pages[0].graphic.direction",
+        "equals": "right"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_locked_face].pages[0].animationType",
+        "equals": "normal"
+      }
+    ]
+  },
+  {
+    "request": "공원 아이가 윗쪽을 보고 시작했으면 좋겠어요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "up"
+    },
+    "expect": [
+      {
+        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].graphic.direction",
+        "equals": "up"
+      }
+    ]
+  },
+  {
+    "request": "항상 오른쪽 위 대각선으로 보게 해.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "upRight",
+      "fixed": true
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 선택한 아이 말고 동굴 짐승의 시선을 아래로 바꿔 주세요.",
+    "fixture": "maou",
+    "target": {
+      "kind": "event",
+      "mapId": "map_mk_park",
+      "eventId": "ev_mk_pk_kid",
+      "pageId": "ev_mk_pk_kid_p"
+    },
+    "primitive": "npc.face.set",
+    "args": {
+      "direction": "down",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이동 경로에서 주인공 쪽을 한번 바라보고 그 자리에서 잠깐 쉬게 해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "turnToward",
+          "target": "@player"
+        },
+        {
+          "kind": "wait"
+        }
+      ],
+      "repeat": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "turnToward",
+              "target": "@player"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": false,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "경로에서 효과음 대신 이 캐릭터 걷기 그림을 소리로 틀어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "playSe",
+          "resourceId": "easyrpg-charset-people1"
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이 상인을 동굴로 딱 한 번 보내고, 도착한 다음엔 그대로 있게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "npcTransfer",
+          "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "repeat": false
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "끝에 다가갈 사람도 자리도 비워 둔 다가가기 동작 하나를 이어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "approach",
+          "target": ""
+        }
+      ]
+    },
+    "expectRefusal": true
+  }
+]

@@ -90,6 +90,7 @@ describe("assistant owner-turn presentation cleanup", () => {
       onApply: vi.fn(), onDiscard, onSettle: vi.fn(),
     });
     const visibleCounts: number[] = [];
+    const onSettled = vi.fn();
     await h.runner.executeTurn(h.session, "inspect", async (onEvent) => {
       visibleCounts.push(agentBlueprintForMap(getAgentBlueprintState(), spec.mapId).length);
       appendAgentGhostPreviewForToolCall(before, "fill_region", { mapId: spec.mapId, rect: { x: 4, y: 4, w: 6, h: 5 } });
@@ -98,7 +99,12 @@ describe("assistant owner-turn presentation cleanup", () => {
       if (ending === "abort-throw") h.surface.activeAbortController?.abort();
       if (ending === "throw" || ending === "abort-throw") throw new Error("scripted transport failure");
       return { assistantText: "retained answer", proposedCalls: [], stoppedReason: ending };
-    }, { composerMode: "ask" });
+    }, { composerMode: "ask", onSettled });
+    const expectedError = ending === "throw" ? "scripted transport failure"
+      : ending === "error" ? "조수 실행에 실패했습니다."
+      : ending === "final" ? undefined : "사용자가 중단했습니다.";
+    expect(onSettled).toHaveBeenCalledExactlyOnceWith(expectedError);
+    expect(h.surface.turnBusy).toBe(false);
     expect(getAgentBlueprintState().entries).toHaveLength(0);
     expect(getAgentGhostPreviewState()).toMatchObject({ previews: regionPreviews, runningToolName: "" });
     expect(getAgentGhostDraftMap(spec.mapId)).toBe(regionDraft.maps[spec.mapId]);

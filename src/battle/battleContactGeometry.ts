@@ -1,5 +1,5 @@
 import { inlineAssetSource } from "@/assets/inlineAssetStore";
-import bounds from "@/assets/battleContactBounds.json";
+import bounds from "@/assets/battleContactBounds.json" with { type: "json" };
 type Bounds = readonly [number, number, number, number];
 type Row = { cell: number; idle: Bounds; strike: Bounds; attack: Bounds };
 /** Unknown and uploaded assets keep the existing fallback. No async decoding in the frame loop. */
