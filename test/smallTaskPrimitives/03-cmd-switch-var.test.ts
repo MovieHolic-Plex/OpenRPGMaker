@@ -2,6 +2,7 @@
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { smallTaskBase } from "@/editor/smallTask/history";
 import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/03-cmd-switch-var";
@@ -701,6 +702,39 @@ it("열린 초안과 그 저장본에서 옛 기억 이름의 충돌을 각각 �
   }
   const { after } = runPrimitive(before, target, "cmd.setFlag.update", args);
   expect(commandsOn(after)).toStrictEqual([{ ...flagOn, flag: nextFlag }]);
+});
+
+it("분기 안에서 고른 초안의 기억 이름을 저장본 이름으로 되돌릴 수 있다", () => {
+  const draftFlag = { ...flagOn, flag: "draft_memory" };
+  const loop: Command = { kind: "loop", body: [text, draftFlag] };
+  const { before: live, target } = setup("blank", [loop, wait]);
+  const [event, neighbor] = live.maps[mapId]!.events;
+  const [page, otherPage] = event!.pages!;
+  const savedLoop = { ...loop, body: [text, flagOn] };
+  const original = { ...event!, pages: [{ ...page!, commands: [savedLoop, wait] }, otherPage!] };
+  const draft = { ...event!, draft: { kind: "edit" as const, original } };
+  live.maps[mapId]!.events = [draft, neighbor!];
+  const args = checkedUpdate(draftFlag, { branchPath: [0, LOOP_BODY_BRANCH_INDEX], index: 1, flag });
+
+  for (const project of [live, smallTaskBase(live, target)]) {
+    const { after } = runPrimitive(project, target, "cmd.setFlag.update", args, undefined, live);
+    expect(commandsOn(after)).toStrictEqual([savedLoop, wait]);
+  }
+  expect(commandsOn(live)).toStrictEqual([loop, wait]);
+});
+
+it.each([flag, "draft_memory"])("선택한 초안의 저장본에서 다른 줄이 쓰는 기억 %s는 거절한다", name => {
+  const draftFlag = { ...flagOn, flag: "draft_memory" };
+  const { before: live, target } = setup("blank", [draftFlag]);
+  const [event, neighbor] = live.maps[mapId]!.events;
+  const [page, otherPage] = event!.pages!;
+  const original = { ...event!, pages: [
+    { ...page!, commands: [flagOn] }, { ...otherPage!, commands: [{ ...flagOn, flag: name }] },
+  ] };
+  live.maps[mapId]!.events = [{ ...event!, draft: { kind: "edit", original } }, neighbor!];
+  const project = smallTaskBase(live, target);
+  const args = checkedUpdate(draftFlag, { index: 0, flag });
+  expect(() => runPrimitive(project, target, "cmd.setFlag.update", args, undefined, live)).toThrow(/다른 명령에서도/);
 });
 
 it("기존 기억 명령은 공용 한 줄 삭제로 제거하고 되돌릴 수 있다", async () => {

@@ -3,6 +3,7 @@ import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
 import { eventCommandBranches, type EventCommandBranch } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
+import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { shortRecordName } from "@/editor/shortRecordName";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import type { JsonSchema } from "@/editor/tools/types";
@@ -16,8 +17,9 @@ import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { OPENING_STAGE_FLAG_PREFIX } from "@/project/openingStage";
 import { VARIABLE_MAX, VARIABLE_MIN } from "@/project/session";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
-import type { BattleEventCondition, Command, GameEvent, GameMap, Project, SwitchDef, VariableDef } from "@/project/types";
+import type { BattleEventCondition, Command, EventPage, GameEvent, GameMap, Project, SwitchDef, VariableDef } from "@/project/types";
 import { roJosa, withJosa } from "@/util/josa";
+import { jsonEqual } from "@/util/structuralJson";
 import { displayText } from "../../target";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
@@ -28,6 +30,7 @@ export const UNIT = "03-cmd-switch-var";
 type Args = Record<string, unknown>;
 type StateKind = "setSwitch" | "setVariable" | "setSelfSwitch" | "setFlag";
 type StateCommand = Extract<Command, { kind: StateKind }>;
+type FlagCommand = Extract<StateCommand, { kind: "setFlag" }>;
 type VariableCommand = Extract<StateCommand, { kind: "setVariable" }>;
 type SelfSwitchCommand = Extract<StateCommand, { kind: "setSelfSwitch" }>;
 type SelfSwitchValues = Partial<Record<SelfSwitchCommand["key"], boolean>>;
@@ -118,21 +121,48 @@ function projectViewsWithOpenDrafts(ctx: PrimitiveContext, project: Project): Pr
   return saved === working ? [working] : [working, saved];
 }
 
-function validateFlagRename(ctx: PrimitiveContext, previous: string, next: string): void {
+function savedFlagCommand(workingPage: EventPage, savedPage: EventPage, path: readonly number[], current: FlagCommand): FlagCommand | undefined {
+  const saved = resolveCommandAtPath(savedPage.commands, path);
+  if (saved?.kind !== "setFlag") return undefined;
+  // Commands have no stable IDs. Ignore a saved row only when the rest of the command tree agrees.
+  const commands = structuredClone(savedPage.commands);
+  resolveCommandListAtPath(commands, path)![path[path.length - 1]!] = current;
+  return jsonEqual(commands, workingPage.commands) ? saved : undefined;
+}
+
+function validateFlagRename(ctx: PrimitiveContext, current: FlagCommand, next: string, path: readonly number[]): void {
   const { project } = ctx;
+  const previous = current.flag;
   const isUsedByGame = (flag: string) => Object.hasOwn(project.flags, flag) || isEngineFlag(flag);
   if (isUsedByGame(previous) || isUsedByGame(next)) {
     throw new PrimitiveError("게임이 사용하는 기억 이름은 바꾸거나 새 이름으로 쓸 수 없습니다.");
   }
-  if (projectViewsWithOpenDrafts(ctx, project).some(view => {
-    let previousUses = 0;
-    let nextUsed = false;
-    visitProjectCommands(view, ({ command }) => {
-      if (command.kind !== "setFlag") return;
-      if (command.flag === previous) previousUses++;
-      if (command.flag === next) nextUsed = true;
+  const { map, event, page } = selectedPage(ctx);
+  // The task's working copy strips the selected draft's metadata. Its saved original is in the host snapshot.
+  const draft = ctx.live?.maps[map.id]?.events.find(row => row.id === event.id)?.draft;
+  const workingProject = draft && !event.draft ? {
+    ...project,
+    maps: {
+      ...project.maps,
+      [map.id]: { ...map, events: map.events.map(row => row === event ? { ...row, draft } : row) },
+    },
+  } : project;
+  if (projectViewsWithOpenDrafts(ctx, workingProject).some((view, viewIndex) => {
+    const savedPage = viewIndex === 0 ? undefined : view.maps[map.id]?.events.find(row => row.id === event.id)
+      ?.pages?.find(row => row.id === page.id);
+    const selected = viewIndex === 0 || savedPage === page ? current : savedPage && savedFlagCommand(page, savedPage, path, current);
+    let skippedSelected = false;
+    let conflict = false;
+    visitProjectCommands(view, ({ command, location }) => {
+      if (command.kind !== "setFlag" || (command.flag !== previous && command.flag !== next)) return;
+      if (!skippedSelected && command === selected && location.kind === "eventPage" && location.mapId === map.id
+          && location.eventId === event.id && location.pageId === page.id) {
+        skippedSelected = true;
+      } else {
+        conflict = true;
+      }
     });
-    return previousUses > 1 || nextUsed;
+    return conflict;
   })) {
     throw new PrimitiveError("이 기억 이름을 다른 명령에서도 쓰고 있어 바꿀 수 없습니다.");
   }
@@ -344,7 +374,7 @@ function validateStateRetarget(ctx: PrimitiveContext, edited: Project, current: 
   }
 }
 
-function commandFromArgs(ctx: PrimitiveContext, current: StateCommand, args: Args): StateCommand {
+function commandFromArgs(ctx: PrimitiveContext, current: StateCommand, args: Args, path: readonly number[]): StateCommand {
   const { project } = ctx;
   const { value, operandVariableId } = args;
   if (value !== undefined && operandVariableId !== undefined) {
@@ -377,7 +407,7 @@ function commandFromArgs(ctx: PrimitiveContext, current: StateCommand, args: Arg
       const flag = (args.flag as string | undefined) ?? current.flag;
       if (typeof flag !== "string" || !flag.trim()) throw new PrimitiveError("기억 이름을 입력하세요.");
       if (Object.hasOwn(Object.prototype, flag)) throw new PrimitiveError("이 이름은 기억에 사용할 수 없습니다.");
-      if (flag !== current.flag) validateFlagRename(ctx, current.flag, flag);
+      if (flag !== current.flag) validateFlagRename(ctx, current, flag, path);
       if (typeof (value ?? current.value) !== "boolean") throw new PrimitiveError("기억을 켤지 끌지 지정하세요.");
       if (value !== undefined && value !== current.value && isEngineFlag(current.flag)) {
         throw new PrimitiveError("게임이 제어하는 기억의 켜짐 상태는 바꿀 수 없습니다.");
@@ -494,9 +524,10 @@ function prepareCommand(ctx: PrimitiveContext, args: Args, kind: StateKind, upda
     throw new PrimitiveError(STALE_COMMAND_LIST);
   }
   if (current?.kind !== kind) throw new PrimitiveError("선택한 줄에서 같은 종류의 명령을 찾을 수 없습니다.");
-  const command = commandFromArgs(ctx, current, args);
+  const path = [...branchPath, index];
+  const command = commandFromArgs(ctx, current, args, path);
   validateCommand(ctx.project, command);
-  return { path: [...branchPath, index], current, command };
+  return { path, current, command };
 }
 
 function primitive(kind: StateKind, name: string, update: boolean): SmallTaskPrimitive {
