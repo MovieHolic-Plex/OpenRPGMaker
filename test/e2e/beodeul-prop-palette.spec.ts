@@ -39,6 +39,8 @@ test("the object palette opens catalog groups and searches them from one input",
   for (const id of ["nature", "harbor", "structures"]) {
     await expect(palette.locator(`details[data-prop-group="${id}"][open]`)).toBeVisible();
   }
+  await search.fill("버들항 기본 기물");
+  await expect(harbor.locator("summary")).toHaveText(/^항구·부두 \([1-9]\d*\)$/u);
   await palette.screenshot({ path: testInfo.outputPath("grouped-search.png") });
 
   await search.fill("no-match-for-beodeul-props");
