@@ -34,7 +34,7 @@ export function setupCorpusProject(fixture: Project, entry: CorpusCase): Project
 }
 
 function applyCorpusSetup(project: Project, entry: CorpusCase, setup: CorpusSetup): Project {
-  const { system, database, difficulties, commonEvents, variables, switches, endings, events, commands } = setup;
+  const { system, database, difficulties, commonEvents, variables, switches, endings, events, commands, uploaded } = setup;
   const seeded: Project = {
     ...project,
     ...(system || difficulties ? { system: { ...project.system, ...system, ...(difficulties ? { difficulties } : {}) } } : {}),
@@ -43,6 +43,7 @@ function applyCorpusSetup(project: Project, entry: CorpusCase, setup: CorpusSetu
     ...(variables ? { variables: [...project.variables, ...variables] } : {}),
     ...(switches ? { switches: [...project.switches, ...switches] } : {}),
     ...(endings ? { endings: [...project.endings ?? [], ...endings] } : {}),
+    ...(uploaded ? { assets: { ...project.assets, uploaded: { ...project.assets.uploaded, ...uploaded } } } : {}),
   };
   if (events) {
     const mapId = entry.target.kind === "dbEntry" ? project.startMapId : entry.target.mapId ?? project.startMapId;

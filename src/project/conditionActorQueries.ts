@@ -23,6 +23,7 @@ export interface ActorQuerySession {
   readonly y: number;
   readonly playerFacing?: Dir;
   readonly eventLocations?: Readonly<Record<string, { readonly x: number; readonly y: number; readonly direction?: Dir; readonly mapId: string }>>;
+  readonly erasedEventIds?: readonly string[];
   readonly horror?: { readonly hiding?: unknown; readonly pursuits: Readonly<Record<string, { readonly active: boolean }>> };
   readonly flags: Readonly<Record<string, boolean>>;
   /** 게임 스위치(badgeCount 가 배지 스위치를 센다). PlaySession·페이지 세션이 구조적으로 가진다. */
@@ -91,19 +92,21 @@ export function dirIndex(dir: Dir): number {
   return ({ down: 2, left: 4, right: 6, up: 8 } as const)[dir];
 }
 
-/** from 이 dir 을 볼 때 to 가 그 반평면(정면 쪽)에 있는가. 같은 칸은 거짓. */
-function isInFront(from: { x: number; y: number }, dir: Dir, to: { x: number; y: number }): boolean {
+/** 정면이면 양수, 등 뒤면 음수, 옆줄 또는 같은 칸이면 0이다. */
+function forwardDistance(from: { x: number; y: number }, dir: Dir, to: { x: number; y: number }): number {
   const d = DIR_DELTA[dir];
-  const dot = (to.x - from.x) * d.dx + (to.y - from.y) * d.dy;
-  return dot > 0;
+  return (to.x - from.x) * d.dx + (to.y - from.y) * d.dy;
 }
 
-function hostPosition(session: ActorQuerySession, host: ActorQueryHost | undefined): { x: number; y: number; direction?: Dir } | undefined {
+function hostPosition(session: ActorQuerySession, host: ActorQueryHost | undefined, options: ActorQueryOptions): SightPoint | undefined {
   if (!host) return undefined;
   if (host.x !== undefined && host.y !== undefined) return { x: host.x, y: host.y, direction: host.direction };
-  const loc = host.eventId ? session.eventLocations?.[host.eventId] : undefined;
-  if (!loc || loc.mapId !== session.currentMapId) return undefined;
-  return { x: loc.x, y: loc.y, direction: host.direction ?? loc.direction };
+  if (!host.eventId) return undefined;
+  const loc = session.eventLocations?.[host.eventId];
+  if (loc && loc.mapId !== session.currentMapId) return undefined;
+  const position = options.eventPosition?.(host.eventId) ?? loc;
+  if (!position) return undefined;
+  return { x: position.x, y: position.y, direction: host.direction ?? position.direction ?? loc?.direction };
 }
 
 /** 게임 달력의 절대 일수(1년 = 4계절). 시계가 없으면 undefined. */
@@ -136,10 +139,11 @@ export interface ActorQueryOptions {
   /** eventSeesPlayer: 현재 맵의 명명 로케이션(방 사각형). 호출측이 맵으로 넘긴다. 생략하면 같은 방 판정은 거짓. */
   readonly locations?: () => readonly SightLocation[] | undefined;
   /**
-   * eventSeesPlayer: 이벤트의 런타임 위치. 걷는 NPC 의 실시간 칸은 장면의 eventPositions 에 있어
+   * 방향·시야 조건에 쓰는 이벤트의 런타임 위치. 걷는 NPC 의 실시간 칸은 장면의 eventPositions 에 있어
    * 세션 eventLocations 만으로는 모른다 — 호출측이 장면 위치를 넘긴다. 생략하면 eventLocations 를 본다.
+   * 시야 판정은 런타임 방향이 없는 관찰자의 활성 페이지 방향도 요청할 수 있다.
    */
-  readonly eventPosition?: (eventId: string) => SightPoint | undefined;
+  readonly eventPosition?: (eventId: string, usePageDirection?: boolean) => SightPoint | undefined;
   /** eventSeesPlayer: 시선을 막는 칸(벽). 호출측이 sightBlockers.cachedSightBlocker 로 만든다. 생략 = 광선 검사 없음. */
   readonly blocksSight?: SightBlocker;
   /** eventSeesPlayer watchers·doorsBlock: 현재 맵의 이벤트. 생략하면 watchers 는 아무도 못 고르고 문은 막지 않는다. */
@@ -188,27 +192,28 @@ export function evalActorQueryCondition(
       return compareVariableValue(partySizeOf(session), condition.op, condition.value);
     case "facing": {
       if (condition.subject === "player") return (session.playerFacing ?? "down") === condition.dir;
-      const pos = hostPosition(session, host);
+      const pos = hostPosition(session, host, options);
       return pos?.direction === condition.dir;
     }
     case "relativeFacing": {
-      const pos = hostPosition(session, host);
+      const pos = hostPosition(session, host, options);
       if (!pos) return false;
       const player = { x: session.x, y: session.y };
       const playerDir = session.playerFacing ?? "down";
       switch (condition.relation) {
         case "playerFacingEvent":
-          return isInFront(player, playerDir, pos);
+          return forwardDistance(player, playerDir, pos) > 0;
         case "playerBehindEvent":
-          return pos.direction !== undefined && !isInFront(pos, pos.direction, player) && !(pos.x === player.x && pos.y === player.y);
+          return pos.direction !== undefined && forwardDistance(pos, pos.direction, player) < 0;
         case "eventBehindPlayer":
-          return !isInFront(player, playerDir, pos) && !(pos.x === player.x && pos.y === player.y);
+          return forwardDistance(player, playerDir, pos) < 0;
       }
       return false;
     }
     case "eventSeesPlayer": {
-      const pointOf = (eventId: string): SightPoint | undefined => {
-        const live = options.eventPosition?.(eventId);
+      const pointOf = (eventId: string, usePageDirection?: boolean): SightPoint | undefined => {
+        if (session.erasedEventIds?.includes(eventId)) return undefined;
+        const live = options.eventPosition?.(eventId, usePageDirection);
         const loc = session.eventLocations?.[eventId];
         return live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
       };
@@ -218,7 +223,10 @@ export function evalActorQueryCondition(
       const blocks = condition.doorsBlock ? withDoorBlocker(options.blocksSight, events, pointOf) : options.blocksSight;
       const light = condition.darkness ? { night: timePhaseFor(session.gameTime) === "night", ambient: options.ambient?.() } : undefined;
       const ids = condition.eventId || !condition.watchers ? [condition.eventId] : sightWatcherIds(events, condition.watchers, locations, pointOf);
-      const seen = ids.some((id) => eventSeesPlayer(pointOf(id), { x: session.x, y: session.y }, condition, locations, blocks, light));
+      const player = { x: session.x, y: session.y };
+      const seen = ids.some((id) => eventSeesPlayer(
+        pointOf(id), player, condition, locations, blocks, light, () => pointOf(id, true)?.direction,
+      ));
       return seen === (condition.value !== false);
     }
     case "hiding":
