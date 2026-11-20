@@ -56,6 +56,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   const eventHeader = anchor.closest(".event-editor-modal-header");
   const box = el("section", {
     class: eventHeader ? "small-task event-editor-small-task" : "small-task",
+    dataset: { ownsCtrlEnter: "" },
     attrs: { role: "dialog", "aria-label": "작은 일", ...(eventHeader ? {} : { popover: "manual" }) },
   });
   const title = el("strong", { text: target?.label ?? hint });
@@ -129,7 +130,16 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   if (target) input.focus();
   else closeButton.focus();
   input.addEventListener("input", () => { send.disabled = !target || !input.value.trim(); });
-  input.addEventListener("keydown", e => { if (e.key === "Enter" && e.isComposing) e.preventDefault(); });
+  input.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!e.isComposing && !send.disabled) form.requestSubmit(send);
+    } else if (e.isComposing) {
+      e.preventDefault();
+    }
+  });
   form.addEventListener("submit", async e => {
     e.preventDefault();
     if (!target || send.disabled || owner.signal.aborted) return;

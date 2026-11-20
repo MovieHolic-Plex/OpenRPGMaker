@@ -5,12 +5,17 @@ import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCo
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
+import { runSmallTask } from "@/editor/smallTask/run";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { createBlankProject } from "@/project/defaults";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
-import type { Command } from "@/project/types";
+import type { Command, Project } from "@/project/types";
+
+vi.mock("@/editor/smallTask/run", () => ({
+  runSmallTask: vi.fn(async (before: Project) => before),
+}));
 
 function control<T extends HTMLElement = HTMLButtonElement>(testId: string): T {
   const element = document.querySelector<T>(`[data-testid="${testId}"]`);
@@ -50,6 +55,7 @@ function pressHistoryKey(key: string, shiftKey = false): KeyboardEvent {
 
 describe("event editor QA regressions", () => {
   beforeEach(() => {
+    vi.mocked(runSmallTask).mockClear();
     localStorage.setItem("oprn:storyboard-mode", "list");
     _resetEventDraftVaultForTest();
   });
@@ -63,6 +69,44 @@ describe("event editor QA regressions", () => {
     resetModalStackForTest();
     _resetEventDraftVaultForTest();
     localStorage.clear();
+  });
+
+  it.each(["ctrlKey", "metaKey"])("runs the small task on %s+Enter without saving and closing", async modifier => {
+    await openEditor();
+    const modal = control("event-editor-modal");
+    const onModalKeyDown = vi.fn();
+    modal.addEventListener("keydown", onModalKeyDown);
+    const save = vi.spyOn(control("event-editor-save"), "click");
+    control("small-task-open").click();
+    const input = modal.querySelector<HTMLInputElement>(".event-editor-small-task input")!;
+    input.value = "이벤트 이름 확인";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+
+    const key = new KeyboardEvent("keydown", { key: "Enter", [modifier]: true, bubbles: true, cancelable: true });
+    input.dispatchEvent(key);
+    expect(key.defaultPrevented).toBe(true);
+    expect(onModalKeyDown).not.toHaveBeenCalled();
+    await vi.waitFor(() => expect(modal.querySelector(".small-task-status")?.textContent).toBe("바뀐 내용이 없어요."));
+    expect(runSmallTask).toHaveBeenCalledTimes(1);
+    expect(save).not.toHaveBeenCalled();
+    expect(modal.isConnected).toBe(true);
+  });
+
+  it("leaves Ctrl+Enter to inputs that own the shortcut", async () => {
+    await openEditor();
+    const input = control<HTMLInputElement>("event-editor-name");
+    const save = vi.spyOn(control("event-editor-save"), "click");
+    const pressShortcut = () => input.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Enter", ctrlKey: true, bubbles: true, cancelable: true,
+    }));
+    input.setAttribute("data-owns-ctrl-enter", "");
+    input.focus();
+    pressShortcut();
+    expect(save).not.toHaveBeenCalled();
+
+    input.removeAttribute("data-owns-ctrl-enter");
+    pressShortcut();
+    expect(save).toHaveBeenCalledTimes(1);
   });
 
   it("keeps focus for both redo shortcuts after undo removes the last command", async () => {
