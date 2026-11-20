@@ -1484,18 +1484,6 @@
     "tags": ["indoor", "실내", "kitchen", "부엌"]
   },
   {
-    "id": "cart_wooden_empty",
-    "nameKo": "빈 나무 수레",
-    "category": "prop",
-    "sourceFile": "cart_wooden_empty_r3.png",
-    "widthPx": 48,
-    "heightPx": 32,
-    "widthTiles": 3,
-    "heightTiles": 2,
-    "footprint": ["***", "XX*"],
-    "tags": ["farm", "농장"]
-  },
-  {
     "id": "cooking_pot_on_hook",
     "nameKo": "걸이 솥",
     "category": "indoor",
@@ -1530,18 +1518,6 @@
     "heightTiles": 4,
     "footprint": ["*", "*", "*", "X"],
     "tags": ["village", "광장"]
-  },
-  {
-    "id": "haycart_with_horse_free",
-    "nameKo": "건초를 실은 마차",
-    "category": "prop",
-    "sourceFile": "haycart_with_horse_free_r2.png",
-    "widthPx": 64,
-    "heightPx": 48,
-    "widthTiles": 4,
-    "heightTiles": 3,
-    "footprint": ["****", "****", "*XXX"],
-    "tags": ["farm", "농장"]
   },
   {
     "id": "kitchen_stove_iron",
