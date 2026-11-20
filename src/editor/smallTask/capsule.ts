@@ -1,3 +1,4 @@
+import { describeAiFailure } from "@/editor/panels/assistantErrorDetail";
 import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
@@ -11,6 +12,18 @@ function example(target: SmallTaskTarget | null): string {
   if (target.kind === "map") return "이 마을에 밤에만 나오는 상인 추가";
   if (target.kind === "event") return target.isNpc ? "상점 주인 대사를 오사카 사투리로" : "보물상자에 포션 3개";
   return target.collection === "items" ? "포션 가격을 80으로" : "이름을 더 짧게 바꿔 줘";
+}
+
+export function smallTaskErrorMessage(error: unknown): string {
+  if (error instanceof SmallTaskError) return error.message;
+  const status = error && typeof error === "object" && "status" in error ? error.status : undefined;
+  const reason = error instanceof Error ? error.message : String(error);
+  const { kind } = describeAiFailure(reason);
+  if (status === 401 || status === 403 || (status !== 404 && kind === "auth")) {
+    return "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요.";
+  }
+  if (status === 0 || kind === "network") return "인터넷 연결을 확인하고 다시 시도해 주세요.";
+  return "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요.";
 }
 
 export function canvasSmallTask(): HTMLElement {
@@ -50,13 +63,24 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   (dialog ?? document.body).append(box);
   box.showPopover();
   const place = () => {
-    const r = anchor.getBoundingClientRect();
     if (!anchor.isConnected) return;
+    const r = anchor.getBoundingClientRect();
+    const eventChrome = dialog?.querySelectorAll(".event-editor-pagebar, .event-editor-command-toolbar");
+    const controlsBottom = Math.max(r.bottom, ...Array.from(eventChrome ?? [], row => row.getBoundingClientRect().bottom));
+    const top = controlsBottom + 6;
+    // Keep event page and command controls above the popover even as its result grows.
+    if (eventChrome?.length) box.style.maxHeight = `${Math.max(0, innerHeight - top - 8)}px`;
     box.style.left = `${Math.max(8, Math.min(innerWidth - box.offsetWidth - 8, r.left))}px`;
-    box.style.top = `${Math.max(8, Math.min(innerHeight - box.offsetHeight - 8, r.bottom + 6))}px`;
+    box.style.top = `${Math.max(8, eventChrome?.length ? top : Math.min(innerHeight - box.offsetHeight - 8, top))}px`;
   };
   place();
   window.addEventListener("resize", place, { signal: owner.signal });
+  dialog?.addEventListener("scroll", place, { capture: true, signal: owner.signal });
+  if (typeof ResizeObserver !== "undefined") {
+    const resize = new ResizeObserver(place);
+    resize.observe(box);
+    owner.signal.addEventListener("abort", () => resize.disconnect(), { once: true });
+  }
   const close = () => {
     if (owner.signal.aborted) return;
     owner.abort();
@@ -114,6 +138,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
       if (receipt) {
         form.remove();
         title.textContent = summary.headline;
+        title.setAttribute("data-i18n-skip", "");
         const undo = el("button", { text: "되돌리기", attrs: { type: "button" } });
         undo.onclick = async () => {
           undo.disabled = true;
@@ -132,14 +157,14 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
           else { undo.disabled = false; status.querySelector("small")?.remove(); status.append(el("small", { text: message })); }
         };
         const details = summary.lines.length === 1 ? [] : summary.lines;
-        status.replaceChildren(...(details.length ? [el("ul", { children: details.map(text => el("li", { text })) })] : []), undo);
+        status.replaceChildren(...(details.length ? [el("ul", { children: details.map(text => el("li", { text, attrs: { "data-i18n-skip": "" } })) })] : []), undo);
         undo.focus();
         place();
       } else status.textContent = "바뀐 내용이 없어요.";
     } catch (error) {
       if (!owner.signal.aborted) {
-        // 전송·도구 예외는 요청 본문, 내부 id 등을 포함할 수 있다.
-        status.textContent = error instanceof SmallTaskError ? error.message : "작업을 마치지 못했어요. AI 연결을 확인하고 다시 시도해 주세요.";
+        console.error("[small-task] Request failed", error);
+        status.textContent = smallTaskErrorMessage(error);
       }
     } finally {
       if (!owner.signal.aborted) {

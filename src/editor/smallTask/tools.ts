@@ -10,22 +10,22 @@ export function smallTaskTools(target: SmallTaskTarget): string[] {
   return [...common, "find_events", "place_npc", "upsert_event", "move_event", "paint_tiles", "set_map_properties"];
 }
 
-const refusal = "선택한 대상만 고칠 수 있어요.";
+export const SMALL_TASK_SCOPE_REFUSAL = "선택한 대상만 고칠 수 있어요.";
 export function smallTaskRefusal(target: SmallTaskTarget, name: string, args: Record<string, unknown>): string | null {
-  if (!smallTaskTools(target).includes(name)) return refusal;
-  if (args.mapId !== undefined && (target.kind === "dbEntry" || args.mapId !== target.mapId)) return refusal;
+  if (!smallTaskTools(target).includes(name)) return SMALL_TASK_SCOPE_REFUSAL;
+  if (args.mapId !== undefined && (target.kind === "dbEntry" || args.mapId !== target.mapId)) return SMALL_TASK_SCOPE_REFUSAL;
   if (target.kind === "dbEntry") {
-    if (args.eventId !== undefined) return refusal;
+    if (args.eventId !== undefined) return SMALL_TASK_SCOPE_REFUSAL;
     const write = DB_UPSERT_TOOLS[name];
     if (!write) return null;
     const record = args[write.arg] as { id?: unknown } | undefined;
     return record?.id === target.id && (args.collection === undefined || args.collection === target.collection)
-      && (args.id === undefined || args.id === target.id) ? null : refusal;
+      && (args.id === undefined || args.id === target.id) ? null : SMALL_TASK_SCOPE_REFUSAL;
   }
   if (target.kind === "event") {
-    if (args.eventId !== undefined && args.eventId !== target.eventId) return refusal;
-    if (name === "upsert_event" && (args.event as { id?: unknown } | undefined)?.id !== target.eventId) return refusal;
-    if (target.pageId && (name === "patch_event_page" || name === "event_command_assist") && args.pageId !== target.pageId) return refusal;
+    if (args.eventId !== undefined && args.eventId !== target.eventId) return SMALL_TASK_SCOPE_REFUSAL;
+    if (name === "upsert_event" && (args.event as { id?: unknown } | undefined)?.id !== target.eventId) return SMALL_TASK_SCOPE_REFUSAL;
+    if (target.pageId && (name === "patch_event_page" || name === "event_command_assist") && args.pageId !== target.pageId) return SMALL_TASK_SCOPE_REFUSAL;
   }
   return null;
 }

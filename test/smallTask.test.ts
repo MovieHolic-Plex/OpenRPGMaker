@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { dbTarget, mapTarget, type SmallTaskCollection } from "@/editor/smallTask/target";
+import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@/editor/smallTask/target";
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
-import { canvasSmallTask } from "@/editor/smallTask/capsule";
+import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsule";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
+import { runSmallTask } from "@/editor/smallTask/run";
 
 const collections: SmallTaskCollection[] = ["actors", "classes", "items", "skills", "enemies", "troops", "states", "equipment"];
 function fixture(): Project {
@@ -78,6 +79,44 @@ it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼�
     vi.unstubAllGlobals();
     restoreDom();
   }
+});
+
+it("ChatGPT 로그인 요청을 조수의 Pi HTTP 경로로 보내고 호스트 대상과 동반 서비스 토큰을 싣는다", async () => {
+  const project = fixture();
+  const target = dbTarget(project, "items", "id_first")!;
+  const signal = new AbortController().signal;
+  const config = { authMode: "chatgpt", apiKey: "", providerId: "openai-codex", model: "gpt-6.1-sol",
+    roleModelsPolicyVersion: 1, roleModels: { deep: { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" } } };
+  vi.stubGlobal("window", { oprn: { companionOrigin: "http://127.0.0.1:12345", companionToken: "test-companion-token" } });
+  vi.stubGlobal("localStorage", { getItem: (key: string) => key === "oprn:ai-config" ? JSON.stringify(config) : null });
+  const fetch = vi.fn(async (_input: string, init: RequestInit) => {
+    const body = JSON.parse(String(init.body));
+    expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
+    expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
+    expect(body).not.toHaveProperty("apiKey");
+    const done = { type: "done", smallTask: true, project, changedKeys: [], stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    return new Response(JSON.stringify(done) + "\n", {
+      headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
+    });
+  });
+  vi.stubGlobal("fetch", fetch);
+  try {
+    await expect(runSmallTask(project, target, "가격을 확인해 줘", signal)).resolves.toBe(project);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
+
+it.each([
+  [Object.assign(new Error("credential missing"), { status: 401 }), "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요."],
+  [new Error("No API key found"), "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요."],
+  [new TypeError("Failed to fetch"), "인터넷 연결을 확인하고 다시 시도해 주세요."],
+  [new Error("400: Invalid tools schema"), "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요."],
+  [new SmallTaskError("선택한 대상만 고칠 수 있어요."), "선택한 대상만 고칠 수 있어요."],
+])("작은 일이 실패하면 내부 오류 대신 대응하는 안내를 표시한다 (%s)", (error, message) => {
+  expect(smallTaskErrorMessage(error)).toBe(message);
 });
 
 describe("명세를 읽는 쉬운 말 요약", () => {
