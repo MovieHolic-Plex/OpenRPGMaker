@@ -47,6 +47,8 @@ type ArrayPatch = {
   readonly n: number;
   /** 칸 표(번들 길이 == 번들 count). 다른 판에서도 번호로 맞춘다. 없으면 id 목록으로 본다. */
   readonly t?: 1;
+  /** ID 목록의 저장 당시 순서. 같은 길이로 번들이 재배열된 경우도 구분한다. */
+  readonly ids?: readonly string[];
   /** 번들 길이 안에서 다른 칸: [번호, 값]. */
   readonly at?: readonly (readonly [number, unknown])[];
   /** 번들 길이 뒤의 칸(공방 칸·덧붙인 킷 등). */
@@ -88,8 +90,9 @@ function arrayPatch(value: readonly unknown[], base: readonly unknown[], baseCou
     at.push([index, item]);
     if (at.length > budget) return null;
   }
-  const patch: { b: number; n: number; t?: 1; at?: [number, unknown][]; tail?: unknown[] } = { b, n };
+  const patch: { b: number; n: number; t?: 1; ids?: string[]; at?: [number, unknown][]; tail?: unknown[] } = { b, n };
   if (b === baseCount) patch.t = 1;
+  else if (base.length && base.every(item => idOf(item) !== undefined)) patch.ids = base.map(item => idOf(item)!);
   if (at.length > 0) patch.at = at;
   if (n > b) patch.tail = value.slice(b).map(jsonValue);
   return patch;
@@ -260,7 +263,7 @@ function idOf(value: unknown): string | undefined {
 
 function rebuildArray(patch: ArrayPatch, current: unknown, counters: { rebased: number; missing: number }): unknown[] {
   const base = Array.isArray(current) ? current : [];
-  const sameLayout = base.length === patch.b;
+  const sameLayout = base.length === patch.b && (patch.ids === undefined || patch.ids.every((id, i) => idOf(base[i]) === id));
   if (patch.t === 1 || sameLayout) {
     if (!sameLayout) counters.rebased += 1;
     const out = new Array<unknown>(patch.n);
@@ -277,12 +280,7 @@ function rebuildArray(patch: ArrayPatch, current: unknown, counters: { rebased: 
     }
     for (const [index, value] of patch.at ?? []) {
       if (index < 0 || index >= patch.n) continue;
-      // 같은 판이면 번호가 곧 자리다. 목록에서 그 자리의 id 가 다르면(다른 판) id 로 맞춘다.
-      const id = patch.t === 1 ? undefined : idOf(value);
-      if (id !== undefined && idOf(out[index]) !== id) {
-        const found = out.findIndex((item) => idOf(item) === id);
-        if (found >= 0) { out[found] = value; continue; }
-      }
+      // at은 저장할 때 비교한 위치다. 꼬리까지 채운 out에서 ID를 찾으면 이동한 항목이 두 번 남는다.
       out[index] = value;
     }
     return out;
@@ -315,6 +313,7 @@ function readDiff(id: string, value: unknown): TilesetDiff {
   if (value.del !== undefined && !Array.isArray(value.del)) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 차이의 del 이 배열이 아닙니다.`);
   for (const [key, patch] of Object.entries((value.arrays ?? {}) as Record<string, unknown>)) {
     if (!isRecord(patch) || typeof patch.b !== "number" || typeof patch.n !== "number" || !Number.isInteger(patch.n) || patch.n < 0
+      || (patch.ids !== undefined && (!Array.isArray(patch.ids) || patch.ids.length !== patch.b || !patch.ids.every(id => typeof id === "string")))
       || (patch.at !== undefined && !Array.isArray(patch.at)) || (patch.tail !== undefined && !Array.isArray(patch.tail))) {
       throw new BundledTilesetDiffError(`번들 타일셋 ${id} 차이의 배열 ${key} 를 읽을 수 없습니다.`);
     }

@@ -41,8 +41,8 @@ export function menuBriefHandler(deps: Omit<EditorMakeDeps, "made"> & { readonly
     const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
     const seed = await createProjectStartSeed(brief.presetId, title, "ai", "wide");
     seed.gameDesignBrief = { ...brief, generationPending: true };
-    const { saveProjectNow } = await import("@/editor/saveActions");
-    if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return false;
+    const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
+    if (!(await saveOrConfirmLeave("새 프로젝트 만들기"))) return false;
     const suggested = await window.oprn?.start?.suggestProjectDir?.({ title }).catch(() => null);
     const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
     const created = await createProjectFolderWithSeed(title, seed, suggested?.projectDir);

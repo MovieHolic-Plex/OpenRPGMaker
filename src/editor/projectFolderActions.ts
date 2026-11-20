@@ -5,8 +5,21 @@ import { getLocale } from "@/i18n";
 import { el } from "@/util/dom";
 import { serialize } from "@/project/io";
 import { ensureSharedContent, loadSharedContent } from "@/project/sharedContent";
+import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { loadWithOpeningDialog } from "@/editor/ui/loadWithOpeningDialog";
+
+function finishFolderSwitch(): void {
+  store.leaveProjectSession();
+  // 데스크톱 IPC는 URL을 유지한다. 예제 미리보기에서 떠날 때 방금 선택한 폴더로 부팅한다.
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("demo")) {
+    url.searchParams.delete("demo");
+    url.searchParams.delete("play");
+    url.searchParams.delete("map");
+    window.history.replaceState(window.history.state, "", url);
+  }
+}
 
 function startBridge(): NonNullable<Window["oprn"]>["start"] | undefined {
   return typeof window === "undefined" ? undefined : window.oprn?.start;
@@ -26,7 +39,9 @@ export async function createProjectFolderWithSeed(title: string, seed: Project, 
   await loadSharedContent({ required, scope: "defaults" });
   ensureSharedContent(seed);
   const created = await bridge.createProject({ title, seed: serialize(seed), ...(projectDir ? { projectDir } : {}) });
-  return created !== null;
+  if (!created) return false;
+  finishFolderSwitch();
+  return true;
 }
 
 /** 기존 폴더를 고르게 한다. 성공 뒤에도 같은 리로드 규칙이 적용된다. */
@@ -45,7 +60,8 @@ export async function openProjectFolder(): Promise<boolean> {
     const file = await (await directory.getFileHandle("project.json")).getFile();
     const project = JSON.parse(await file.text()) as Project;
     if (!project || typeof project !== "object" || !project.meta) throw new Error("선택한 폴더에 올바른 project.json이 없습니다.");
-    const { store } = await import("@/project/store");
+    const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
+    if (!(await saveOrConfirmLeave("프로젝트 열기"))) return false;
     store.replaceProject(project);
     return true;
   }
@@ -55,8 +71,15 @@ export async function openProjectFolder(): Promise<boolean> {
   if (!forgetRecent && projects.length === 0) throw new Error("이 서버에 열 수 있는 프로젝트 폴더가 없습니다. 먼저 새 프로젝트를 만드세요.");
   const selection = await chooseProject(forgetRecent ? projects.filter((entry) => entry.hiddenReason !== "temporary") : projects, forgetRecent);
   if (!selection) return false;
+  // 데스크톱은 파일 메뉴와 같은 네이티브 확인을 쓴다.
+  if (!window.oprn?.closeIsHostDriven) {
+    const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
+    if (!(await saveOrConfirmLeave("프로젝트 열기"))) return false;
+  }
   const opened = await bridge.openFolder(selection === "browse" ? undefined : { projectDir: selection.projectDir });
-  return opened !== null;
+  if (!opened) return false;
+  finishFolderSwitch();
+  return true;
 }
 
 function chooseProject(

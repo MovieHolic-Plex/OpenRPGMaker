@@ -25,12 +25,13 @@ export type ToastOptions = {
   readonly action?: ToastAction;
 };
 
-/** 동시에 보여 줄 최대 개수. 넘치면 오래된 것부터 걷는다. */
+/** 동작을 기다리는 알림은 사용자가 직접 닫는다. 일반 알림만 밀어낸다. */
 const MAX_STACK = 4;
 
 type ToastEntry = {
   readonly key?: symbol;
   readonly element: HTMLElement;
+  readonly actionable: boolean;
   timer: ReturnType<typeof setTimeout> | null;
 };
 
@@ -106,7 +107,13 @@ function buildElement(message: string, kind: ToastKind, action: ToastAction | un
       action.onClick();
       expireEntry(entry);
     });
-    element.append(button);
+    const dismiss = document.createElement("button");
+    dismiss.type = "button";
+    dismiss.className = "toast-action";
+    dismiss.setAttribute("aria-label", "닫기");
+    dismiss.textContent = "×";
+    dismiss.addEventListener("click", () => expireEntry(entry));
+    element.append(button, dismiss);
   }
   return element;
 }
@@ -117,7 +124,6 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
 
   const options: ToastOptions = typeof kindOrOptions === "string" ? { kind: kindOrOptions } : kindOrOptions;
   const kind: ToastKind = options.kind ?? "info";
-  const durationMs = options.durationMs ?? (kind === "error" ? 4000 : options.action ? 6000 : 2000);
 
   const stack = ensureStack();
 
@@ -125,16 +131,19 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
   const previous = entries[entries.length - 1];
   if (previous && !previous.element.classList.contains("show")) dropEntry(previous);
 
-  const entry: ToastEntry = { element: null as unknown as HTMLElement, timer: null };
+  const entry: ToastEntry = { element: null as unknown as HTMLElement, actionable: !!options.action, timer: null };
   const element = buildElement(message, kind, options.action, entry);
   Object.assign(entry, { element, key: options.key });
 
   stack.append(element);
   entries.push(entry);
-  while (entries.length > MAX_STACK) dropEntry(entries[0]!);
+  const transient = entries.filter(candidate => !candidate.actionable);
+  if (transient.length > MAX_STACK) dropEntry(transient[0]!);
   retagEntries();
 
-  entry.timer = setTimeout(() => expireEntry(entry), durationMs);
+  if (!options.action) {
+    entry.timer = setTimeout(() => expireEntry(entry), options.durationMs ?? (kind === "error" ? 4000 : 2000));
+  }
 }
 
 export function dismissToastsByKey(key: symbol): void {

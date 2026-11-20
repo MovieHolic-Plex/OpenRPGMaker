@@ -79,25 +79,25 @@ export async function openFlagshipDemo(id: FlagshipDemoId, options: OpenFlagship
     const demo = await loadFlagshipDemoProject(id);
     if (options.action === "open" && window.oprn?.start) {
       try {
+        const { saveBeforeLeaving } = await import("@/editor/leaveProject");
+        if (!(await saveBeforeLeaving())) throw new Error("현재 프로젝트를 먼저 저장하지 못했습니다.");
         return await createEditableCopy(demo);
       } catch (error) {
         log.error(`데모 복사 실패 (${id})`, error);
         toast("예제를 새 프로젝트 폴더로 복사하지 못했습니다. 현재 작업의 저장 상태와 새 폴더의 쓰기 권한을 확인해 주세요.", {
           kind: "error",
-          durationMs: 10_000,
           action: {
             label: "저장 없이 예제 열기",
-            onClick: () => {
-              if (store.hasUnsavedChanges()) {
-                toast("현재 작업을 저장한 뒤 예제를 열어 주세요.", "error");
-                return;
-              }
+            onClick: async () => {
+              const { confirmDiscardToLeave } = await import("@/editor/leaveProject");
+              if (!(await confirmDiscardToLeave("저장 없이 예제 열기"))) return;
               const url = new URL(window.location.href);
               const lang = url.searchParams.get("lang");
               url.search = "";
               url.hash = "";
               url.searchParams.set("demo", id);
               if (lang) url.searchParams.set("lang", lang);
+              store.leaveProjectSession();
               window.location.assign(url.href);
             },
           },
@@ -132,23 +132,9 @@ export async function openFlagshipDemo(id: FlagshipDemoId, options: OpenFlagship
  * 재로드가 일어나면 이 함수는 사실상 돌아오지 않는다.
  */
 async function createEditableCopy(demo: Pick<LoadedFlagshipDemo, "project" | "title">): Promise<boolean> {
-  const { store } = await import("@/project/store");
-  const { saveProjectNow } = await import("@/editor/saveActions");
-  // 다른 프로젝트 세션 위에서 열면 그 작업이 사라진다 — 먼저 저장한다(실패하면 열지 않는다).
-  if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) {
-    throw new Error("현재 프로젝트를 먼저 저장하지 못했습니다.");
-  }
   const suggested = await window.oprn?.start?.suggestProjectDir?.({ title: demo.title }).catch(() => null);
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
   if (!(await createProjectFolderWithSeed(demo.title, demo.project, suggested?.projectDir))) return false;
-  // 데스크톱 IPC는 현재 URL을 유지한다. 리로드는 방금 만든 SQLite 사본을 열어야 한다.
-  const url = new URL(window.location.href);
-  if (url.searchParams.has("demo")) {
-    url.searchParams.delete("demo");
-    url.searchParams.delete("play");
-    url.searchParams.delete("map");
-    window.history.replaceState(window.history.state, "", url);
-  }
   window.location.reload();
   return true;
 }
@@ -158,5 +144,7 @@ async function createEditableCopy(demo: Pick<LoadedFlagshipDemo, "project" | "ti
  * 저장 브리지가 없으면 false(호출자가 확인 뒤 메모리 열기로 내려간다).
  */
 export async function openProjectAsNewFolder(project: Project, title: string): Promise<boolean> {
+  const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
+  if (!(await saveOrConfirmLeave("예제 프로젝트 열기"))) return false;
   return createEditableCopy({ project, title });
 }

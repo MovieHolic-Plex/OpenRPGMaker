@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { folderSwitchFlushOk, isAppRendererFrame } from "../electron/shared/folderSwitch";
+import { describe, expect, it, vi } from "vitest";
+import { allowFolderSwitch, folderSwitchFlushOk, isAppRendererFrame } from "../electron/shared/folderSwitch";
 
 describe("folder switch flush", () => {
   it("accepts a settled save with nothing left dirty", () => {
@@ -8,6 +8,15 @@ describe("folder switch flush", () => {
     expect(folderSwitchFlushOk({ kind: "not-loaded", dirty: false })).toBe(true);
     expect(folderSwitchFlushOk({ kind: "not-configured", dirty: false })).toBe(true);
     expect(folderSwitchFlushOk({ kind: "disabled", dirty: false })).toBe(true);
+  });
+
+  it.each(["blocked", "timeout"] as const)("continues after %s only on explicit discard", async result => {
+    const confirm = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    expect(await allowFolderSwitch(result, confirm)).toBe(false);
+    expect(await allowFolderSwitch(result, confirm)).toBe(true);
+    expect(confirm).toHaveBeenCalledWith(result);
+    expect(await allowFolderSwitch("closed", confirm)).toBe(false);
+    expect(confirm).toHaveBeenCalledTimes(2);
   });
 
   it("refuses a save that left changes, a conflict, or a bad report", () => {

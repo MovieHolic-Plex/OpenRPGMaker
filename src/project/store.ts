@@ -734,6 +734,22 @@ class ProjectStore {
     return this.dirtySinceLastPersist;
   }
 
+  /** 새 폴더가 열렸거나 확인한 예제로 이동하는 순간, 이전 문서의 저장·재시도 권한을 끝낸다. */
+  leaveProjectSession(): void {
+    this.contentLineage += 1;
+    this.loaded = false;
+    this.remotePersistenceEnabled = false;
+    this.remotePersistenceDisabledReason = null;
+    this.writeAuthority = null;
+    this.deferredBootNormalization = null;
+    this.persistedBaseline = null;
+    this.dirtySinceLastPersist = false;
+    if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    this.autoSaveTimer = null;
+    this.clearAutoSaveRetry();
+    this.stopHealthCheck();
+  }
+
   subscribeAutoSave(listener: AutoSaveListener): () => void {
     this.autoSaveListeners.add(listener);
     return () => this.autoSaveListeners.delete(listener);

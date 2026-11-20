@@ -362,7 +362,14 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     await separateInlineMediaOnOpen(session.store);
   };
   const handlers = Object.fromEntries(Object.entries(raw).map(([channel, handler]) => [channel, (key: SessionKey, payload: unknown, context?: { readonly recoveryRoot: string }) => {
+    const isSave = channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch;
+    const saveSession = isSave ? sessions.get(key) : null;
     const run = async () => {
+      // IPC는 같은 창에서 폴더를 교체한다. 대기열에 있던 옛 저장도 요청한 폴더에서만 실행한다.
+      if (isSave && (saveSession !== sessions.get(key) || (typeof key === "number"
+        && (payload as { projectDir?: unknown } | null)?.projectDir !== saveSession?.projectDir))) {
+        throw new Error("저장 대상 프로젝트 폴더가 바뀌었습니다.");
+      }
       // Initial desktop open/status has no adopted folder yet.
       if (!sessions.get(key) && [OPRN_CHANNELS.projectOpen, OPRN_CHANNELS.projectStatus, OPRN_CHANNELS.projectProbe].some(candidate => candidate === channel)) return handler(key, payload);
       const member = sessions.member(key);
@@ -422,7 +429,6 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       }
       return handler(key, payload, context);
     };
-    const isSave = channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch;
     const settled = tail.then(run);
     // 분리는 저장의 일부다 — 저장 응답이 분리 **뒤** 리비전을 싣는다. 응답이 분리 전 리비전을 싣고 분리가 뒤에서 다음 리비전을 만들면,
     // 클라이언트는 그 리비전을 「남이 쓴 것」으로 보고 호스트 문서를 다시 받아 통째 교체(projectSwitch)한다 — 이 편집기가 쓴 것을 한 글자도
@@ -430,7 +436,9 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     // (2026-10-14 monster-free-a 실측: 저장 4 → 분리 5, 호스트 폴링이 5 를 받아 refreshFromHost).
     const result = isSave
       ? settled.then(async (value) => {
+        if (sessions.get(key) !== saveSession) return value;
         await separateMediaAfterSave(key).catch(() => {});
+        if (sessions.get(key) !== saveSession) return value;
         if (value && typeof value === "object" && (value as { kind?: unknown }).kind === "saved" && typeof (value as { revision?: unknown }).revision === "number") {
           const info = store(key).info();
           // 분리가 새 행을 썼으면 응답이 그 행(리비전·sha)을 가리킨다 — 클라이언트의 다음 저장 expectedSha 도 같이 맞는다.

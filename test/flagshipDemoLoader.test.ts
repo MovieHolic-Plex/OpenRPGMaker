@@ -10,6 +10,9 @@ const mocks = vi.hoisted(() => ({
   build: vi.fn(),
   deserializeParsed: vi.fn((data: unknown) => data),
   copy: vi.fn(),
+  leave: vi.fn(),
+  confirm: vi.fn(),
+  save: vi.fn(),
   hasUnsavedChanges: vi.fn(() => false),
   replaceProject: vi.fn(),
   toast: vi.fn<(message: string, options: ToastKind | ToastOptions) => void>(),
@@ -20,15 +23,25 @@ vi.mock("@/project/io", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/project/io")>(),
   deserializeParsed: mocks.deserializeParsed,
 }));
-vi.mock("@/editor/projectFolderActions", () => ({ createProjectFolderWithSeed: mocks.copy }));
+vi.mock("@/project/sharedContent", async (original) => ({
+  ...await original<typeof import("@/project/sharedContent")>(),
+  loadSharedContent: vi.fn(),
+  ensureSharedContent: vi.fn(),
+}));
 vi.mock("@/project/store", () => ({
   store: {
-    hasUnsavedChanges: mocks.hasUnsavedChanges,
+    leave: vi.fn(),
+  confirm: vi.fn(),
+  save: vi.fn(),
+  hasUnsavedChanges: mocks.hasUnsavedChanges,
+    leaveProjectSession: mocks.leave,
+    getAutoSaveState: () => ({ kind: "pending" }),
     isSharedDemoSession: () => false,
     replaceProject: mocks.replaceProject,
   },
 }));
-vi.mock("@/editor/saveActions", () => ({ saveProjectNow: vi.fn() }));
+vi.mock("@/editor/ui/modal", () => ({ showConfirm: mocks.confirm }));
+vi.mock("@/editor/saveActions", () => ({ saveProjectNow: mocks.save }));
 vi.mock("@/util/toast", () => ({ toast: mocks.toast, dismissToastsByKey: vi.fn() }));
 
 function launchOffline(id: FlagshipDemoId, response: Response) {
@@ -40,7 +53,7 @@ function launchOffline(id: FlagshipDemoId, response: Response) {
   vi.stubGlobal("window", {
     location: Object.assign(url, { reload, assign }),
     history: { state: null, replaceState },
-    oprn: { project: { status: offline }, team: { status: offline }, start: {} },
+    oprn: { project: { status: offline }, team: { status: offline }, start: { createProject: mocks.copy } },
   });
   vi.stubGlobal("document", { baseURI: url.href });
   vi.stubEnv("DEV", false);
@@ -101,7 +114,7 @@ describe("opening a bundled sample", () => {
   });
 
   it("offers an offline preview after copy failure and guards unsaved work", async () => {
-    const { assign } = launchOffline("emerald-crown", Response.json({ meta: { title: "Astra Horizon" }, tilesets: {} }));
+    const { assign } = launchOffline("emerald-crown", Response.json({ meta: { title: "Astra Horizon" }, system: {}, tilesets: {} }));
     mocks.copy.mockRejectedValue(new Error("Permission denied"));
 
     expect(await openFlagshipDemo("emerald-crown", { action: "open" })).toBe(false);
@@ -114,23 +127,44 @@ describe("opening a bundled sample", () => {
 
     const options = mocks.toast.mock.lastCall?.[1];
     if (typeof options !== "object" || !options.action) throw new Error("Missing sample preview action");
-    mocks.hasUnsavedChanges.mockReturnValueOnce(true);
-    options.action.onClick();
+    mocks.hasUnsavedChanges.mockReturnValue(true);
+    mocks.confirm.mockResolvedValueOnce(false);
+    await options.action.onClick();
     expect(assign).not.toHaveBeenCalled();
-    expect(mocks.toast).toHaveBeenLastCalledWith("현재 작업을 저장한 뒤 예제를 열어 주세요.", "error");
+    expect(mocks.leave).not.toHaveBeenCalled();
 
-    options.action.onClick();
+    mocks.confirm.mockResolvedValueOnce(true);
+    await options.action.onClick();
+    expect(mocks.confirm).toHaveBeenCalledWith(expect.objectContaining({ danger: true, message: expect.stringContaining("사라집니다") }));
+    expect(mocks.leave).toHaveBeenCalledOnce();
+    expect(mocks.save).not.toHaveBeenCalled();
+    expect(assign).toHaveBeenCalledWith("app://oprn/index.html?demo=emerald-crown&lang=en");
+  });
+
+  it("opens the sample after a failed save without attempting a second save", async () => {
+    const { assign } = launchOffline("emerald-crown", Response.json({ meta: { title: "예제" }, tilesets: {} }));
+    mocks.hasUnsavedChanges.mockReturnValue(true);
+    mocks.save.mockResolvedValue(false);
+    expect(await openFlagshipDemo("emerald-crown", { action: "open" })).toBe(false);
+    const options = mocks.toast.mock.lastCall?.[1];
+    if (typeof options !== "object" || !options.action) throw new Error("Missing discard action");
+    mocks.confirm.mockResolvedValue(true);
+    await options.action.onClick();
+    expect(mocks.save).toHaveBeenCalledTimes(1);
+    expect(mocks.copy).not.toHaveBeenCalled();
+    expect(mocks.leave).toHaveBeenCalledOnce();
     expect(assign).toHaveBeenCalledWith("app://oprn/index.html?demo=emerald-crown&lang=en");
   });
 
   it("reloads a saved copy outside the sample preview URL", async () => {
-    const project = { meta: { title: "Astra Horizon" }, tilesets: {} };
+    const project = { meta: { title: "Astra Horizon" }, system: {}, tilesets: {} };
     const { reload, replaceState } = launchOffline("emerald-crown", Response.json(project));
-    mocks.copy.mockResolvedValue(true);
+    mocks.copy.mockResolvedValue({ projectId: "new", projectDir: "/new" });
 
     expect(await openFlagshipDemo("emerald-crown", { action: "open" })).toBe(true);
 
-    expect(mocks.copy).toHaveBeenCalledWith("Astra Horizon", project, undefined);
+    expect(mocks.copy).toHaveBeenCalledWith({ title: "Astra Horizon", seed: JSON.stringify(project) });
+    expect(mocks.leave).toHaveBeenCalledOnce();
     expect(replaceState).toHaveBeenCalledWith(null, "", new URL("app://oprn/index.html?lang=en"));
     expect(reload).toHaveBeenCalledOnce();
     expect(mocks.replaceProject).not.toHaveBeenCalled();

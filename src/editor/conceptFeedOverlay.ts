@@ -103,9 +103,8 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
 async function createBlankFromMenu(): Promise<boolean> {
   const { toast } = await import("@/util/toast");
   try {
-    const { store } = await import("@/project/store");
-    const { saveProjectNow } = await import("@/editor/saveActions");
-    if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return false;
+    const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
+    if (!(await saveOrConfirmLeave("새 프로젝트 만들기"))) return false;
     const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
     const title = "새 프로젝트";
     const seed = await createProjectStartSeed(null, title, "blank", "wide");

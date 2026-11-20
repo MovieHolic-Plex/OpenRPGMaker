@@ -107,11 +107,11 @@ const bridge = {
     flushReloadDone: (ok: boolean) => ipcRenderer.invoke(OPRN_CHANNELS.lifecycleFlushReloadDone, ok === true),
     markFlushReady: (): void => { ipcRenderer.sendSync(OPRN_CHANNELS.lifecycleFlushReady); },
     noteUnsavedReloadBlock: (): void => { ipcRenderer.sendSync(OPRN_CHANNELS.lifecycleReloadBlocked); },
-    onFlushBeforeReplace: (callback: () => void): void => {
-      ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeReplace, () => callback());
+    onFlushBeforeReplace: (callback: (requestId: number) => void): void => {
+      ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeReplace, (_event, requestId: number) => callback(requestId));
     },
-    flushReplaceDone: (report: { readonly kind: string; readonly dirty: boolean }): void => {
-      ipcRenderer.send(OPRN_CHANNELS.lifecycleFlushReplaceDone, report);
+    flushReplaceDone: (requestId: number, report: { readonly kind: string; readonly dirty: boolean }): void => {
+      ipcRenderer.send(OPRN_CHANNELS.lifecycleFlushReplaceDone, requestId, report);
     },
     flushReplaceReady: (): void => {
       ipcRenderer.send(OPRN_CHANNELS.lifecycleFlushReplaceReady);

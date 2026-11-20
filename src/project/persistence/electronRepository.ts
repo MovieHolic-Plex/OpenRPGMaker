@@ -26,6 +26,7 @@ import { bootNormalizationMatches, currentBootNormalizationMarker } from "../boo
 import { sharedDefaultAssetDataUrl } from "../sharedContent";
 import { readTilesetBlobs, writeTilesetBlobs } from "./tilesetBlobCache";
 import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValuesSliced, type ProjectDocumentPatch } from "./core/projectPatch";
+import { cloneTilesetSharingReferenceDocuments } from "../projectClone";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
@@ -110,8 +111,8 @@ export type OprnBridgeLifecycle = {
   /** beforeunload 가 미저장 때문에 새로고침을 막았음(동기). 메인이 저장 후 다시 연다. */
   readonly noteUnsavedReloadBlock?: () => void;
   /** 파일 → 새 프로젝트·폴더 열기. 폴더를 바꾸기 전에 flush 하고 결과를 보고한다. */
-  readonly onFlushBeforeReplace?: (callback: () => void) => void;
-  readonly flushReplaceDone?: (report: { readonly kind: string; readonly dirty: boolean }) => void;
+  readonly onFlushBeforeReplace?: (callback: (requestId: number) => void) => void;
+  readonly flushReplaceDone?: (requestId: number, report: { readonly kind: string; readonly dirty: boolean }) => void;
   readonly flushReplaceReady?: () => void;};
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
@@ -448,7 +449,7 @@ export function createElectronRepository(): ElectronRepository {
     async open(projectDir: string): Promise<LocalProjectTarget> {
       const result = await electronBridge().project.open({ projectDir });
       loadedSha = null;
-      opened = { kind: "local", projectDir, projectId: result.projectId };
+      opened = { kind: "local", projectDir: result.projectDir, projectId: result.projectId };
       return opened;
     },
     async adoptOpenProject(): Promise<boolean> {
@@ -505,6 +506,10 @@ export function createElectronRepository(): ElectronRepository {
       // 패치 값은 이미 JSON 왕복 사본이고, 나머지 가지는 기준본(사적·불변)을 공유한다 — 복제가 변경량에 비례한다.
       // 실측(2026-09-26, 81MB 새 프로젝트): 저장마다 전체 복제 1.2s 를 없앤다. serialize(submitted) 는 호스트 행과 같다.
       const submitted = applyProjectDocumentPatch(baseProject, patch) as Project;
+      // 다음 편집의 기준본에는 IPC용 번들 차이·참고문서 소유 표지 대신 실제 타일셋을 보관한다.
+      for (const id of Object.keys(patch.tilesets?.set ?? {})) {
+        submitted.tilesets[id] = cloneTilesetSharingReferenceDocuments(persisted.tilesets[id]!);
+      }
       const send = (includeBase: boolean) => electronBridge().project.saveMapPatch({
         projectDir: resolved.projectDir,
         baseSha: loadedSha,

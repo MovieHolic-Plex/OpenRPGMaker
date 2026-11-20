@@ -102,6 +102,19 @@ describe("기존 계약 유지", () => {
     expect(element.classList.contains("show")).toBe(false);
   });
 
+  it("동작이 있는 오류는 시간이 지나거나 새 알림이 쌓여도 직접 닫을 수 있다", () => {
+    vi.useFakeTimers();
+    const onClick = vi.fn();
+    toast("저장 실패", { kind: "error", durationMs: 10_000, action: { label: "저장 없이 열기", onClick } });
+    const error = taggedToast()[0]!;
+    for (let i = 0; i < 5; i++) toast("진행 중", { durationMs: 500 });
+    vi.advanceTimersByTime(60_000);
+    expect(visible()).toEqual([error]);
+    error.querySelector<HTMLButtonElement>('[aria-label="닫기"]')!.click();
+    expect(visible()).toHaveLength(0);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
   it("body 가 교체돼도 고아 노드를 붙잡지 않는다", () => {
     toast("이전 body");
     document.body.innerHTML = "";
