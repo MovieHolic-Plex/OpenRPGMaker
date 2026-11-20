@@ -34,7 +34,7 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
     proposal = withEvent(after, target.mapId, { ...edited, draft });
   }
   const mapId = target.kind === "dbEntry" ? undefined : target.mapId;
-  const afterEvents = mapId ? new Map(after.maps[mapId].events.map(event => [event.id, event])) : null;
+  const afterEvents = mapId ? new Map(after.maps[mapId]?.events.map(event => [event.id, event])) : null;
   const refreshCleanEventDrafts = mapId ? before.maps[mapId].events
     .filter(event => !jsonEqual(event, afterEvents?.get(event.id)))
     .map(event => ({ mapId, eventId: event.id })) : [];

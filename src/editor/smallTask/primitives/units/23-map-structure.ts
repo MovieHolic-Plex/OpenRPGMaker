@@ -1,3 +1,4 @@
+import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { towardJosa } from "@/ai/v2/story/blueprintPathNames";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
@@ -52,9 +53,14 @@ const rectFields = ["x", "y", "w", "h"] as const;
 const locationId = text("선택한 맵에서 바꿀 장소의 이름 또는 식별자");
 const directions = ["up", "down", "left", "right"] as const;
 
-function mapMeta(ctx: PrimitiveContext) {
-  return { kind: "mapMeta", mapId: selectedMap(ctx).id } as const;
+function mapMeta(
+  fields: readonly (keyof GameMap)[],
+  options: Pick<Extract<SmallTaskScope, { kind: "mapMeta" }>, "connections" | "startPosition"> = {},
+): SmallTaskPrimitive["scope"] {
+  return ctx => ({ kind: "mapMeta", mapId: selectedMap(ctx).id, fields, connections: "none", ...options });
 }
+
+const locationScope = mapMeta(["locations"]);
 
 function newMap(ctx: PrimitiveContext) {
   selectedMap(ctx);
@@ -65,7 +71,7 @@ function primitive(
   id: string, tool: string, title: string, args: JsonSchema,
   describe: (map: GameMap, args: Args, ctx: PrimitiveContext) => string,
   apply: MapOperation,
-  scope: SmallTaskPrimitive["scope"] = mapMeta,
+  scope: SmallTaskPrimitive["scope"],
 ): SmallTaskPrimitive {
   return {
     id, unit: UNIT, title, covers: { tools: [tool] }, targets: ["map"], args, scope,
@@ -389,14 +395,15 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (project, map, args) => duplicateMap(project, map, args.name === undefined ? `${map.name} 복사` : requiredName(args.name)), newMap),
 
   primitive("map.structure.remove", "remove_map", "맵 삭제", obj({}),
-    map => `『${mapLabel(map)}』 맵을 삭제해요.`, removeMap),
+    map => `『${mapLabel(map)}』 맵을 삭제해요.`, removeMap,
+    ctx => ({ kind: "mapRemove", mapId: selectedMap(ctx).id })),
 
   primitive("map.structure.resize", "resize_map", "맵 크기 변경", obj(size),
     (map, args) => `『${mapLabel(map)}』 맵을 가로 ${args.width ?? map.width}칸, 세로 ${args.height ?? map.height}칸으로 바꿔요.`,
     (project, map, args) => {
       if (args.width === undefined && args.height === undefined) throw new PrimitiveError("바꿀 가로 또는 세로 크기를 적어 주세요.");
       return resizeMap(project, map, Number(args.width ?? map.width), Number(args.height ?? map.height));
-    }),
+    }, ctx => ({ kind: "mapResize", mapId: selectedMap(ctx).id })),
 
   primitive("map.properties.set", "set_map_properties", "맵 속성 변경", obj(propertyArgs),
     (map, args) => {
@@ -409,11 +416,15 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (args.bgmMode !== undefined || args.bgmResourceId !== undefined) return `『${mapLabel(map)}』 맵의 배경 음악 설정을 바꿔요.`;
       return `『${mapLabel(map)}』 맵의 속성을 바꿔요.`;
     },
-    setProperties),
+    setProperties, mapMeta([
+      "name", "tilesetId", "tileSize", "bgm", "background", "battleBackground", "disableSave", "disableTeleport",
+      "disableEscape", "encounterRate", "loop", "cameraZoom", "characterScale", "mapRole",
+    ])),
 
   primitive("map.encounterTable.set", "set_encounter_table", "조우표 설정",
     obj({ entries: arr("이 맵에서 등장할 적 무리 목록", encounterEntry, 64), encounterRate: propertyArgs.encounterRate }, ["entries"]),
-    (map, args) => `『${mapLabel(map)}』 맵의 조우표를 ${(args.entries as unknown[]).length}개 항목으로 설정해요.`, setEncounterTable),
+    (map, args) => `『${mapLabel(map)}』 맵의 조우표를 ${(args.entries as unknown[]).length}개 항목으로 설정해요.`,
+    setEncounterTable, mapMeta(["encounterTable", "encounterRate", "troopIds"])),
 
   primitive("map.startPosition.set", "set_start_position", "게임 시작 위치 변경", obj(xy, positionFields),
     (map, args) => `『${mapLabel(map)}』 맵의 (${args.x}, ${args.y}) 칸에서 게임을 시작해요.`,
@@ -422,7 +433,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       pointInMap(map, x, y);
       if (!isPassable(project, map, x, y)) throw new PrimitiveError("걸을 수 있는 시작 칸을 골라 주세요.");
       return { ...project, startMapId: map.id, startPos: { x, y } };
-    }),
+    }, mapMeta([], { startPosition: true })),
 
   primitive("map.door.set", "set_map_door", "문 열림 설정", obj({
     ...xy, kind: choice("문 종류. 자동문, 여닫이, 두 짝 여닫이, 미닫이, 셔터, 연출 끄기 또는 그림으로 판단", doorTypes),
@@ -434,7 +445,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     if (args.kind === "none") return `『${mapLabel(map)}』 맵에 따로 지정한 문 열림 설정을 지워요.`;
     if (args.kind === undefined) return `『${mapLabel(map)}』 맵의 문 열림 설정을 바꿔요.`;
     return `『${mapLabel(map)}』 맵의 문을 ${doorNames[args.kind as keyof typeof doorNames]} 설정해요.`;
-  }, setDoor),
+  }, setDoor, mapMeta(["doors"])),
 
   primitive("map.connection.upsert", "upsert_map_connection", "맵 연결 설정", obj({
     ...xy, toMapId: text("도착 맵의 식별자"),
@@ -449,7 +460,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     const id = String(args.toMapId);
     const toMap = Object.hasOwn(project.maps, id) ? project.maps[id] : undefined;
     return `『${mapLabel(map)}』 맵에서 『${toMap ? mapLabel(toMap) : "도착 맵"}』 맵으로 가는 연결을 설정해요.`;
-  }, upsertConnection),
+  }, upsertConnection, mapMeta([], { connections: "outgoing" })),
 
   primitive("map.location.create", "create_map_location", "새 장소 만들기", obj({
     ...rect, name, note: text("장소의 용도를 설명하는 메모", 240), tags: arr("장소를 찾을 낱말", text("검색 낱말", 32), 12),
@@ -467,7 +478,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       note: args.note as string | undefined, tags });
     if (!result.ok) throw new PrimitiveError(result.error);
     return mapDraft(project, map, next);
-  }),
+  }, locationScope),
 
   primitive("map.location.update", "update_map_location", "장소 수정", obj({ locationId, name, ...rect }, ["locationId"]),
     (map, args) => {
@@ -498,7 +509,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         if (!result.ok) throw new PrimitiveError("장소 영역을 확인해 주세요.");
       }
       return mapDraft(project, map, next);
-    }),
+    }, locationScope),
 
   primitive("map.location.delete", "delete_map_location", "장소 삭제", obj({ locationId }, ["locationId"]),
     (map, args) => `『${label(locationInMap(map, args.locationId).name, "선택한 장소")}』 장소를 삭제해요.`,
@@ -510,5 +521,5 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const next = { ...map };
       deleteMapLocation(next, location.id);
       return mapDraft(project, map, next);
-    }),
+    }, locationScope),
 ];

@@ -1,7 +1,6 @@
 /** @vitest-environment happy-dom */
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { primitiveScope } from "@/editor/smallTask/primitives/core/scope";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/23-map-structure";
@@ -10,6 +9,8 @@ import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { pickEncounterTroopForMap } from "@/player/encounters";
 import { createInterpreter } from "@/player/interpreter";
 import { firstConnectionToward } from "@/player/npcLivingTravel";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { doorKindName } from "@/project/eventCommands/doorAnimation";
 import { startSession } from "@/project/session";
 import { own } from "@/project/spatial/domain";
@@ -43,6 +44,10 @@ beforeAll(() => {
   create.run(blank, { id: secondId, name: "강 건너", width: 12, height: 10, bgm: { mode: "none" } });
   built = loadFixture("built");
   maou = loadFixture("maou");
+  for (const fixture of [built, maou]) {
+    ensureSwitchVariableSlots(fixture);
+    removeLegacySpriteReferences(fixture);
+  }
 }, 240_000);
 
 function blankProject() {
@@ -60,7 +65,7 @@ async function expectEdit(project: Project, mapId: string, primitiveId: string, 
   expectKoreanSentence(result.sentence, target);
   expect(jsonEqual(project, snapshot)).toBe(true);
   const primitive = PRIMITIVES.find(row => row.id === primitiveId)!;
-  const scope = primitiveScope({ project, target }, primitive, args);
+  const scope = primitive.scope({ project, target }, args);
   const changed = { ...result.after, meta: { ...result.after.meta, title: "요청 범위 바깥 제목" } };
   const refused = checkSmallTaskScope(project, changed, scope);
   expect(refused.ok).toBe(false);
@@ -70,11 +75,6 @@ async function expectEdit(project: Project, mapId: string, primitiveId: string, 
 
 function run(project: Project, mapId: string, id: string, args: Args) {
   return runPrimitive(project, mapTarget(project, mapId)!, id, args).after;
-}
-
-function applyMapPrimitive(project: Project, mapId: string, id: string, args: Args) {
-  const primitive = PRIMITIVES.find(row => row.id === id)!;
-  return primitive.apply({ project, target: mapTarget(project, mapId)! }, args);
 }
 
 function play(project: Project, map: GameMap, commands: Command[], x = 3, y = 4) {
@@ -386,11 +386,12 @@ it("청사진의 이름 참조를 끊는 이름 변경을 거절한다", () => {
     version: 1, title: "강 건너 이야기", genre: "모험", playerGoal: "강 건너 묵은 비밀을 찾는다",
     places: [{ name: "강 건너", kind: "village" }], steps: [], ending: { name: "귀환", how: "비밀을 푼다", feeling: "안도" },
   };
+  const partialName = structuredClone(project);
+  partialName.gameBlueprint!.places![0]!.name = "건너";
   expect(() => run(project, secondId, "map.properties.set", { name: "달빛 언덕" })).toThrow(/청사진/u);
-  project.gameBlueprint.places![0]!.name = "건너";
-  expect(() => run(project, firstId, "map.properties.set", { name: "건너" })).toThrow(/청사진/u);
-  const renamed = run(project, firstId, "map.properties.set", { name: "달빛 언덕" });
-  expect(renamed.gameBlueprint).toEqual(project.gameBlueprint);
+  expect(() => run(partialName, firstId, "map.properties.set", { name: "건너" })).toThrow(/청사진/u);
+  const renamed = run(partialName, firstId, "map.properties.set", { name: "달빛 언덕" });
+  expect(renamed.gameBlueprint).toEqual(partialName.gameBlueprint);
   expect(renamed.maps[firstId]!.name).toBe("달빛 언덕");
 });
 
@@ -481,12 +482,13 @@ it("장소를 만들거나 이름을 바꿀 때 같은 이름과 식별자를 �
     { id: "loc1", name: "나무 그늘", x: 1, y: 1, w: 2, h: 2 },
     { id: "loc2", name: "정문", x: 3, y: 1, w: 1, h: 1 },
   ];
+  const duplicateIds = structuredClone(project);
+  duplicateIds.maps[firstId]!.locations![1]!.id = "loc1";
   expect(() => run(project, firstId, "map.location.create", { name: "나무그늘", x: 1, y: 1, w: 1, h: 1 }))
     .toThrow(/구분할 수 있는 이름/u);
   expect(() => run(project, firstId, "map.location.update", { locationId: "loc2", name: "loc1" }))
     .toThrow(/구분할 수 있는 이름/u);
-  project.maps[firstId]!.locations[1]!.id = "loc1";
-  expect(() => run(project, firstId, "map.location.delete", { locationId: "정문" })).toThrow(/같은 식별자/u);
+  expect(() => run(duplicateIds, firstId, "map.location.delete", { locationId: "정문" })).toThrow(/같은 식별자/u);
 });
 
 it("다른 맵의 NPC 경로와 전투 뒤 파티 위치가 삭제·축소할 맵을 계속 가리키면 거절한다", () => {
@@ -551,13 +553,13 @@ it("삭제할 맵에만 있는 이벤트의 셀프 스위치 시작값을 보존
 it("축소가 필드 스폰을 자르면 거절하고, 참조 없는 맵의 구조 변환은 선택 맵에만 적용한다", () => {
   const project = blankProject();
   const map = project.maps[secondId]!;
-  map.fieldSpawns = [{ id: "spawn_one", troopId, area: { x: 9, y: 2, w: 2, h: 2 } }];
-  expect(() => run(project, secondId, "map.structure.resize", { width: 10 })).toThrow(/기존 영역이 맵 밖/u);
-  delete map.fieldSpawns;
-  const resized = applyMapPrimitive(project, secondId, "map.structure.resize", { width: 13 });
+  const withSpawn = blankProject();
+  withSpawn.maps[secondId]!.fieldSpawns = [{ id: "spawn_one", troopId, area: { x: 9, y: 2, w: 2, h: 2 } }];
+  expect(() => run(withSpawn, secondId, "map.structure.resize", { width: 10 })).toThrow(/기존 영역이 맵 밖/u);
+  const resized = run(project, secondId, "map.structure.resize", { width: 13 });
   expect(resized.maps[firstId]).toBe(project.maps[firstId]);
   expect(resized.maps[secondId]!.lowerTiles).toHaveLength(130);
-  const removed = applyMapPrimitive(project, secondId, "map.structure.remove", {});
+  const removed = run(project, secondId, "map.structure.remove", {});
   expect(removed.maps).toEqual({ [firstId]: project.maps[firstId] });
   expect(removed.mapTree).toEqual({ mapId: firstId, children: [] });
   expect(project.maps[secondId]).toBe(map);
