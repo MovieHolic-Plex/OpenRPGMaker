@@ -1,1 +1,1208 @@
-[]
+[
+  {
+    "request": "토르와 얘기가 끝나면 ‘눈 속의 소문 완료’ 스위치 켜 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "눈 속의 소문 완료"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_q_snow_rumor_done",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "여기 맨 끝에 성문 개방 스위치를 끄는 명령도 붙여 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "성문 개방",
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_gate_open",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "첫 줄에 성문개방 스윗치 반전 넣어줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "성문 개방",
+      "index": 0,
+      "value": "toggle"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[0]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_gate_open",
+          "value": "toggle"
+        }
+      }
+    ]
+  },
+  {
+    "request": "소문 진행도가 0이 아니면 성문 개방이 켜지도록 마지막 줄에 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "성문 개방",
+      "operandVariableId": "눈 속의 소문 진행도"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_gate_open",
+          "value": {
+            "kind": "var",
+            "id": "var_q_snow_rumor_progress"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": "두번째 줄 앞에 분수 작동을 켜는 줄 끼워 넣어",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "분수 작동",
+      "index": 1,
+      "value": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_fountain_flow",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "제일 마지막에 등대 점화를 꺼 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "등대 점화",
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_lighthouse_lit",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "열쇠 받음은 아직 없으니 새 스위치를 만들고 켜는 줄까지 넣어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "열쇠 받음"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "얼음길 첫 지점에 닿으면 맨 끝에 ‘광산 승강기 작동’도 켜 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_9be2312c-43c7-4037-8a7b-73645ee8d6b3",
+      "eventId": "ev_q_ice_patrol_reach0",
+      "pageId": "ev_q_ice_patrol_reach0_arrive"
+    },
+    "primitive": "cmd.setSwitch.insert",
+    "args": {
+      "switchId": "광산 승강기 작동"
+    },
+    "expect": [
+      {
+        "at": "maps.map_9be2312c-43c7-4037-8a7b-73645ee8d6b3.events[id=ev_q_ice_patrol_reach0].pages[0].commands[-1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_mine_lift",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째 줄에서 눈 속의 소문 단계 0을 켜는 걸 끄는 걸로 고쳐 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_q_snow_rumor_step0",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "두 번째 스위치 줄 말고, 두 번째 줄의 스위치를 반전으로 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "value": "toggle"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_q_snow_rumor_step0",
+          "value": "toggle"
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째 줄의 스윗치를 성문 개방으로만 바꿔줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "switchId": "성문 개방"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_gate_open",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "그 켜는 줄은 이제 분수 작동을 끄도록 바꿔 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "switchId": "분수 작동",
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_fountain_flow",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째 줄은 소문 진행 변수의 값대로 켜고 꺼 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "operandVariableId": "눈 속의 소문 진행도"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_q_snow_rumor_step0",
+          "value": {
+            "kind": "var",
+            "id": "var_q_snow_rumor_progress"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째 줄에서 켤 스위치 이름을 ‘눈 속의 소문 완료’로 수정해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "switchId": "눈 속의 소문 완료",
+      "value": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_q_snow_rumor_done",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "두번째 줄에서 등대 점화 상태를 반대로 바꾸게 해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "switchId": "등대 점화",
+      "value": "toggle"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[1]",
+        "equals": {
+          "kind": "setSwitch",
+          "switchId": "sw_catalog_lighthouse_lit",
+          "value": "toggle"
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째 줄이 존재하지 않는 출입 허가 스위치를 켜게 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setSwitch.update",
+    "args": {
+      "index": 1,
+      "switchId": "출입 허가"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "말을 다 듣고 나면 눈 속의 소문 진행도를 2로 설정해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "눈 속의 소문 진행도",
+      "value": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "=",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "request": "맨 끝에 화롯불의 안부 진행도에 세 개를 더해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "화롯불의 안부 진행도",
+      "op": "+=",
+      "value": 3
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_hearth_progress",
+          "op": "+=",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도에서 하나 빼는 줄 맨 앞에 추가해줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "눈 속의 소문 진행도",
+      "op": "-=",
+      "value": 1,
+      "index": 0
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[0]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "-=",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "request": "새 줄에서 화롯불의 안부 진행도를 눈 속의 소문 진행도 값으로 맞춰 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "화롯불의 안부 진행도",
+      "operandVariableId": "눈 속의 소문 진행도"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_hearth_progress",
+          "op": "=",
+          "value": {
+            "kind": "var",
+            "id": "var_q_snow_rumor_progress"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": "소문 진행도 두배 하는 줄 끝에 하나 넣어.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "눈 속의 소문 진행도",
+      "op": "*=",
+      "value": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "*=",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "request": "끝에서 화롯불의 안부 진행도를 둘로 나누는 명령 추가 부탁해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "화롯불의 안부 진행도",
+      "op": "/=",
+      "value": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[-1]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_hearth_progress",
+          "op": "/=",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "request": "‘호감’ 변수를 새로 만들고 마지막에 5점 더해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "호감",
+      "op": "+=",
+      "value": 5
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "얼음길 첫 지점 이벤트 끝에 화롯불의 안부 진행도를 영으로 초기화하는 줄도 넣어 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_9be2312c-43c7-4037-8a7b-73645ee8d6b3",
+      "eventId": "ev_q_ice_patrol_reach0",
+      "pageId": "ev_q_ice_patrol_reach0_arrive"
+    },
+    "primitive": "cmd.setVariable.insert",
+    "args": {
+      "variableId": "화롯불의 안부 진행도"
+    },
+    "expect": [
+      {
+        "at": "maps.map_9be2312c-43c7-4037-8a7b-73645ee8d6b3.events[id=ev_q_ice_patrol_reach0].pages[0].commands[-1]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_hearth_progress",
+          "op": "=",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "request": "토르 마지막 줄, 소문 진행도를 하나 말고 세 개 올려 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "value": 3
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "+=",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "request": "진행도 올리는 마지막 줄은 더하지 말고 2를 넣게 고쳐줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "op": "=",
+      "value": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "=",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "request": "마지막 계산 줄의 대상 변수를 ‘화롯불의 안부 진행도’로만 수정해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "variableId": "화롯불의 안부 진행도"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_hearth_progress",
+          "op": "+=",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "request": "소문 진행도 더하는 줄을 화롯불 진행도 값만큼 올리게 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "operandVariableId": "화롯불의 안부 진행도"
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "+=",
+          "value": {
+            "kind": "var",
+            "id": "var_q_hearth_progress"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "request": "맨 끝의 더하기를 빼기로 바꿔 줘요. 숫자는 그대로요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "op": "-="
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "-=",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "request": "마지막 줄에서 소문 진행도가 두배가 되게 계산만 바꿔줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "op": "*=",
+      "value": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "*=",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "request": "마지막 변수 계산을 두 점으로 나누도록 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "op": "/=",
+      "value": 2
+    },
+    "expect": [
+      {
+        "at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].commands[3]",
+        "equals": {
+          "kind": "setVariable",
+          "variableId": "var_q_snow_rumor_progress",
+          "op": "/=",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "request": "마지막 줄의 소문 진행도를 자료집에 없는 ‘숨은 보상’ 값만큼 올리게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_chain_kehegd7_2",
+      "pageId": "ev_chain_kehegd7_2_q_snow_rumor_talk0"
+    },
+    "primitive": "cmd.setVariable.update",
+    "args": {
+      "index": 3,
+      "operandVariableId": "숨은 보상"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "시작 목표를 보고 나면 맨 아래에서 셀프 스위치 B를 켜 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "B"
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[-1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "B",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "맨 첫 줄에 이 이벤트의 셀프 스위치 C를 끄는 명령을 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "C",
+      "value": false,
+      "index": 0
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[0]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "C",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "이 페이지 마지막에 자기 스위치 D 켜기 하나 넣어줘",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "D",
+      "value": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[-1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "D",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "첫 대사 다음에 셀프스위치 B 끄는 줄 하나 부탁해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "B",
+      "value": false,
+      "index": 1
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "B",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "현재 이벤트의 기억을 기본 셀프 스위치로 켜 두는 줄을 맨 끝에 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[-1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "A",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "여기 마지막에 자기 스윗치 C도 켜.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "C"
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[-1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "C",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "맨 아래에 셀프 스위치 E 켜기 넣어 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "E"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이 페이지에서 말고 옆 페이지 끝에 D 켜는 줄 넣어.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.insert",
+    "args": {
+      "key": "D",
+      "pageId": "ev_objective_start_p1"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "둘째 줄에 있는 A는 켜지 말고 끄도록 고쳐 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "A",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "처음 목표의 두 번째 줄, 켜는 셀프 스위치를 B로 바꿔 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "key": "B"
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "B",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "지금 A 쓰는 줄에서 C를 끄도록 수정 부탁합니다.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "key": "C",
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "C",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째줄 셀프스위치 A 대신 D 켜.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "key": "D",
+      "value": true
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "D",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "두 번째 줄에서 B를 끄게만 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "key": "B",
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "B",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "둘째 줄의 문자를 C로만 고쳐줘 상태는 그대로",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "key": "C"
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "C",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "request": "두 번째 줄 수정해서 자기 스위치 D가 꺼지게 해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 1,
+      "key": "D",
+      "value": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_objective_start].pages[0].commands[1]",
+        "equals": {
+          "kind": "setSelfSwitch",
+          "key": "D",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "대사 줄을 직접 골라 놨어. 그 첫 줄에서 쓰는 셀프 스위치를 꺼 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setSelfSwitch.update",
+    "args": {
+      "index": 0,
+      "value": false
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "두번째 줄의 옛 기억을 꺼 줘. 골라 둔 줄에서만 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setFlag.update",
+    "args": {
+      "index": 1,
+      "value": false
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "다른 이벤트에 있는 옛날 기억 명령을 지금 화면에서 켜 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "cmd.setFlag.update",
+    "args": {
+      "index": 0,
+      "value": true,
+      "eventId": "ev_opening_stage"
+    },
+    "expectRefusal": true
+  }
+]
