@@ -122,6 +122,7 @@ function hostMap(ctx: PrimitiveContext) {
   }
   const map = project.maps[target.mapId];
   if (target.kind === "event") {
+    // A quest references the giver event as a whole. Validate a page if the host selected one.
     const event = map.events.find(event => event.id === target.eventId);
     if (!event || (target.pageId && !event.pages?.some(page => page.id === target.pageId))) {
       throw new PrimitiveError("범위 밖: 선택한 이벤트나 페이지를 찾을 수 없어요.");
@@ -157,8 +158,10 @@ function graphGiver(project: Project, quest: QuestGraphDef, usage: ReturnType<ty
   return giver;
 }
 
-function editScope(ctx: PrimitiveContext, args: Args): ReturnType<SmallTaskPrimitive["scope"]> {
-  return { kind: "projectArea", area: "quests", ids: [questDefId(questFor(ctx, args))] };
+function editScope(
+  ctx: PrimitiveContext, args: Args, change: { fields: readonly string[] } | { remove: true },
+): ReturnType<SmallTaskPrimitive["scope"]> {
+  return { kind: "projectArea", area: "quests", ids: [questDefId(questFor(ctx, args))], ...change };
 }
 
 function createGiver(ctx: PrimitiveContext, args: Args): EventRef {
@@ -537,9 +540,8 @@ function setReward(project: Project, quest: AnyQuestDef, args: Args): QuestDef {
   return updated;
 }
 
-function primitive(id: string, title: string, spec: Pick<SmallTaskPrimitive, "args" | "describe" | "apply">
-  & Partial<Pick<SmallTaskPrimitive, "scope" | "hidden">>): SmallTaskPrimitive {
-  return { id, unit: UNIT, title, covers: { tools: [id] }, targets: ["map", "event"], scope: editScope, ...spec };
+function primitive(id: string, title: string, spec: Pick<SmallTaskPrimitive, "args" | "describe" | "apply" | "scope" | "hidden">): SmallTaskPrimitive {
+  return { id, unit: UNIT, title, covers: { tools: [id] }, targets: ["map", "event"], ...spec };
 }
 
 const objectiveFields = { label: LABEL, switchId: SWITCH, objective: OBJECTIVE };
@@ -574,6 +576,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }),
   primitive("quest.rename", "퀘스트 이름 변경", {
     args: schema("퀘스트 일지의 제목을 바꿉니다.", { questId: QUEST_ID, title: TITLE }, ["title"]),
+    scope: (ctx, args) => editScope(ctx, args, { fields: ["title"] }),
     describe(_ctx, args) {
       const name = preview(args.title, "새 이름");
       return `퀘스트 이름을 「${name}」${roJosa(name)} 바꿉니다.`;
@@ -587,6 +590,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }),
   primitive("quest.objective.add", "퀘스트 목표 추가", {
     args: schema("아직 플레이 진행에 연결하지 않은 단계형에 목표 하나를 추가합니다. 그래프형에는 문구와 기존 완료 스위치를 추가합니다.", { questId: QUEST_ID, ...objectiveFields }, []),
+    scope: (ctx, args) => editScope(ctx, args, { fields: ["steps", "blueprint", "nodes", "edges"] }),
     describe(ctx, args) {
       return `「${questName(ctx, args)}」 정의에 목표를 하나 추가합니다.`;
     },
@@ -600,6 +604,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     args: schema("목표 문구를 바꾸거나 단계형 목표를 교체합니다. 그래프에서는 완료 스위치도 바꿀 수 있습니다.", {
       questId: QUEST_ID, step: STEP_NUMBER, ...objectiveFields,
     }, ["step"]),
+    scope: (ctx, args) => editScope(ctx, args, { fields: ["steps", "blueprint", "nodes"] }),
     describe(ctx, args) {
       return `「${questName(ctx, args)}」 정의의 ${args.step}번 목표를 수정합니다.`;
     },
@@ -611,6 +616,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }),
   primitive("quest.objective.remove", "퀘스트 목표 삭제", {
     args: schema("퀘스트 정의에서 번호로 지정한 목표를 지웁니다.", { questId: QUEST_ID, step: STEP_NUMBER }, ["step"]),
+    scope: (ctx, args) => editScope(ctx, args, { fields: ["steps", "blueprint", "gates", "nodes", "edges"] }),
     describe(ctx, args) {
       return `「${questName(ctx, args)}」 정의의 ${args.step}번 목표를 지웁니다.`;
     },
@@ -622,6 +628,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }),
   primitive("quest.reward.set", "퀘스트 보상 정의 변경", {
     args: schema("아직 플레이 진행에 연결하지 않은 단계형 퀘스트 정의에 골드나 아이템 보상을 기록합니다.", { questId: QUEST_ID, gold: GOLD, items: REWARD_ITEMS }, []),
+    scope: (ctx, args) => editScope(ctx, args, { fields: ["rewards"] }),
     describe(ctx, args) {
       const reward = args.gold !== undefined && args.items === undefined ? `보상 골드를 ${args.gold}골드로` : "보상 내역을";
       return `「${questName(ctx, args)}」 정의의 ${reward} 바꿉니다.`;
@@ -634,6 +641,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }),
   primitive("quest.remove", "퀘스트 등록 삭제", {
     args: schema("퀘스트 정의를 지워 일지에서 등록을 취소합니다.", { questId: QUEST_ID }, []),
+    scope: (ctx, args) => editScope(ctx, args, { remove: true }),
     describe(ctx, args) {
       return `「${questName(ctx, args)}」 퀘스트 등록을 삭제합니다.`;
     },

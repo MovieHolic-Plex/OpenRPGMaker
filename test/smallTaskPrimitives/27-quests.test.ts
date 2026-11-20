@@ -5,7 +5,8 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/27-quests";
 import { mapTarget } from "@/editor/smallTask/target";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import type { DialogueProposal } from "@/project/dialogueDesk";
 import { startSession } from "@/project/session";
 import { compileQuest } from "@/project/quest/questCompiler";
@@ -41,6 +42,8 @@ function stepQuest(project: Project, key: string): QuestDef {
 
 function built() {
   const before = loadFixture("built");
+  ensureSwitchVariableSlots(before);
+  removeLegacySpriteReferences(before);
   const target = mapTarget(before, before.startMapId, "ev_supply_shop")!;
   return { before, target };
 }
@@ -51,6 +54,7 @@ function blank() {
   const mapId = project.startMapId || source.startMapId;
   const map = project.maps[mapId] ?? source.maps[mapId];
   const flags = questFlagIds("quest_1", 2);
+  const progressSwitchIds = [flags.started, flags.stepSwitches[0]];
   const commands: GameEvent["commands"] = [
     { kind: "setSwitch", switchId: flags.started, value: true },
     { kind: "setSwitch", switchId: flags.stepSwitches[0], value: true },
@@ -69,7 +73,10 @@ function blank() {
     startPos: { x: 0, y: 0 },
     mapTree: { mapId, children: [] },
     maps: { ...project.maps, [mapId]: { ...map, events: [event] } },
-    switches: [...project.switches, ...[flags.started, flags.stepSwitches[0]].map(id => ({ id, name: "의뢰 진행" }))],
+    switches: [...project.switches, ...progressSwitchIds.map(id => ({ id, name: "의뢰 진행" }))],
+    session: { ...project.session, switches: {
+      ...project.session.switches, ...Object.fromEntries(progressSwitchIds.map(id => [id, false])),
+    } },
   };
   const target = mapTarget(before, mapId, event.id)!;
   if (target.kind !== "event") throw new Error("이벤트 대상이 필요합니다.");
@@ -100,6 +107,8 @@ describe("퀘스트 원시 기능", () => {
 
   it("마왕 예제에서는 선택한 맵의 기존 이벤트에만 새 정의를 등록한다", async () => {
     const before = loadFixture("maou");
+    ensureSwitchVariableSlots(before);
+    removeLegacySpriteReferences(before);
     const map = Object.values(before.maps).find(entry => entry.events.length > 0)!;
     const event = map.events[0];
     const target = mapTarget(before, map.id)!;
@@ -265,14 +274,17 @@ describe("퀘스트 원시 기능", () => {
     expect(() => runPrimitive(before, target, id, args)).toThrow(/범위 밖/u);
   });
 
-  it("호스트 범위에서는 다른 프로젝트 정보 변경과 선택하지 않은 의뢰 변경을 거절한다", () => {
+  it("이름 변경 범위는 선택한 의뢰의 제목만 허용한다", () => {
     const { before, target } = built();
     const primitive = PRIMITIVES.find(entry => entry.id === "quest.rename")!;
     const args = { questId: RUMOR, title: "겨울 소식" };
     const scope = primitive.scope({ project: before, target }, args);
-    expect(scope).toEqual({ kind: "projectArea", area: "quests", ids: [RUMOR] });
+    expect(scope).toEqual({ kind: "projectArea", area: "quests", ids: [RUMOR], fields: ["title"] });
     const changed = { ...before, meta: { ...before.meta, title: "다른 프로젝트 이름" } };
     expect(checkSmallTaskScope(before, changed, scope)).toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
+    const changedRewards = { ...before, quests: before.quests?.map(quest => "key" in quest && quest.key === RUMOR
+      ? { ...quest, rewards: { gold: 500 } } : quest) };
+    expect(checkSmallTaskScope(before, changedRewards, scope)).toMatchObject({ ok: false });
     const otherTarget = mapTarget(before, MARKET, "ev_chain_kehegd7_2")!;
     expect(() => primitive.scope({ project: before, target: otherTarget }, args)).toThrow(/범위 밖/u);
     expect(() => primitive.apply({ project: before, target: otherTarget }, args)).toThrow(/범위 밖/u);
@@ -280,10 +292,21 @@ describe("퀘스트 원시 기능", () => {
     expect(checkSmallTaskScope(before, after, scope)).toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
   });
 
-  it("빈 선택자나 사라진 페이지를 생략된 선택으로 처리하지 않는다", () => {
-    const { before, target, quest } = blank();
-    const project = { ...before, quests: [quest] };
+  it("여러 페이지의 의뢰 이벤트를 선택하거나 개별 페이지를 지정해도 퀘스트 정의만 바꾼다", () => {
+    const { before, target, event, quest } = blank();
+    const map = before.maps[target.mapId];
+    const firstPage = event.pages![0];
+    const secondPage = { ...firstPage, id: "ev_mayor_done", commands: [] };
+    const project = {
+      ...before, quests: [quest],
+      maps: { ...before.maps, [map.id]: { ...map, events: [{ ...event, pages: [firstPage, secondPage] }] } },
+    };
     const rename = { title: "새 이름" };
+    const selectedPage = mapTarget(project, map.id, event.id, secondPage.id)!;
+    const { after } = runPrimitive(project, target, "quest.rename", rename);
+    expect(after.quests).toEqual([{ ...quest, title: rename.title }]);
+    expect(after.maps).toBe(project.maps);
+    expect(runPrimitive(project, selectedPage, "quest.rename", rename).after).toEqual(after);
     expect(() => runPrimitive(project, target, "quest.rename", { ...rename, questId: "  " })).toThrow(/이름/u);
     expect(() => runPrimitive(project, target, "quest.rename", { ...rename, questId: "missing" })).toThrow(/찾을 수/u);
     const stale = { ...target, pageId: "stale_page" };
@@ -495,9 +518,9 @@ describe("그래프 목표의 연결", () => {
   it("등록됐지만 이벤트에서 값을 한 번도 쓰지 않는 스위치로 목표를 추가하거나 바꾸지 않는다", () => {
     const { project, target } = branched();
     const switchId = "sw_unused_objective";
-    project.switches.push({ id: switchId, name: "사용하지 않는 완료 스위치" });
-    expect(() => runPrimitive(project, target, "quest.objective.add", { label: "우물 확인", switchId })).toThrow(/이벤트에서 값을 기록/u);
-    expect(() => runPrimitive(project, target, "quest.objective.update", { step: 2, switchId })).toThrow(/이벤트에서 값을 기록/u);
+    const before = { ...project, switches: [...project.switches, { id: switchId, name: "사용하지 않는 완료 스위치" }] };
+    expect(() => runPrimitive(before, target, "quest.objective.add", { label: "우물 확인", switchId })).toThrow(/이벤트에서 값을 기록/u);
+    expect(() => runPrimitive(before, target, "quest.objective.update", { step: 2, switchId })).toThrow(/이벤트에서 값을 기록/u);
   });
 
   it("첫 목표에서 갈라진 갈래를 끊는 삭제를 거절한다", () => {
@@ -515,12 +538,24 @@ describe("이벤트 명령을 실행한 뒤 퀘스트 일지", () => {
     ["목표 추가", "quest.objective.add", /완료 이벤트/u],
     ["보상 변경", "quest.reward.set", /지급 이벤트/u],
   ] as const)("컴파일된 완료·보상 이벤트와 정의가 어긋나는 %s 요청을 거절한다", (_name, primitive, reason) => {
-    const { before, target, event, quest, objective } = blank();
+    const { before: seed, event, quest, objective } = blank();
     const item = createBlankProject().database.items.find(entry => entry.id === "item_potion")!;
-    before.database = { ...before.database, items: [item] };
+    const map = seed.maps[seed.startMapId];
+    const draft = {
+      ...seed,
+      database: { ...seed.database, items: [item] },
+      maps: { ...seed.maps, [map.id]: { ...map, events: structuredClone(map.events) } },
+      switches: [...seed.switches],
+      variables: [...seed.variables],
+      session: { ...seed.session, switches: { ...seed.session.switches }, variables: { ...seed.session.variables } },
+    };
     const compiled = { ...quest, rewards: { gold: 20, items: [{ itemId: item.id, count: 1 }] } };
-    const { flags } = compileQuest(before, compiled);
-    before.session.switches = { [flags.started]: true, ...Object.fromEntries(flags.stepSwitches.map(id => [id, true])) };
+    const { flags } = compileQuest(draft, compiled);
+    const before = { ...draft, session: { ...draft.session, switches: {
+      ...draft.session.switches, [flags.started]: true, ...Object.fromEntries(flags.stepSwitches.map(id => [id, true])),
+    } } };
+    const giver = before.maps[map.id].events.find(entry => entry.id === event.id)!;
+    const target = mapTarget(before, map.id, giver.id, giver.pages![0].id)!;
     const args = primitive === "quest.objective.add" ? { objective: { ...objective, x: 5, y: 5 } }
       : { gold: 50, items: [{ itemId: item.id, count: 3 }] };
     expect(() => runPrimitive(before, target, primitive, args)).toThrow(reason);

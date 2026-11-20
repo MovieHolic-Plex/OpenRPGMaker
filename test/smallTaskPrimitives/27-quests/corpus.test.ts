@@ -5,12 +5,13 @@ import { describe, expect, it } from "vitest";
 import { readCheckPath, resolveTarget, type CorpusCase, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { questDefId } from "@/project/quest/questDef";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectKoreanSentence, expectUndoRestores, loadFixture } from "../harness";
 
-// Resolve via Node's filesystem path since happy-dom can turn the shared suite's relative URL into HTTP.
 const corpusPath = resolve("harness-data", "small-task-corpus", "27-quests.json");
 const cases: CorpusCase[] = JSON.parse(readFileSync(corpusPath, "utf8"));
 const fixtures = new Map<FixtureName, Project>();
@@ -21,6 +22,9 @@ describe("퀘스트 한국어 회귀 요청", () => {
       let before = fixtures.get(entry.fixture);
       if (!before) {
         before = loadFixture(entry.fixture);
+        // The store expects normalized data when an undo check reuses this frozen fixture.
+        ensureSwitchVariableSlots(before);
+        removeLegacySpriteReferences(before);
         fixtures.set(entry.fixture, before);
       }
       const target = resolveTarget(before, entry.target);
