@@ -1,10 +1,13 @@
 import { join } from "node:path";
+import { gunzipSync } from "node:zlib";
 import { expect, test, type Page } from "@playwright/test";
+import type { PiAgentRequest, PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol";
 import { pointAtTile } from "./eventStoryboardPicker";
 
 const settingLabel = "AI가 고친 내용을 적용 전에 보기";
 const request = "인사를 어서 오세요로 고쳐 줘";
 const headline = "대사 1줄 수정 · 이벤트 1개";
+type RunBody = PiAgentRequest & { runId: string; heavy?: Partial<Record<PiCheckpointHeavyKey, string>> };
 
 test.beforeEach(async ({ page }) => {
   test.setTimeout(240_000);
@@ -12,6 +15,8 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
+    localStorage.setItem("oprn:ai-config", JSON.stringify({ authMode: "chatgpt", apiKey: "",
+      providerId: "openai-codex", model: "gpt-6.2-sol", liteModel: "gpt-6.2-sol" }));
   });
 });
 
@@ -61,18 +66,20 @@ async function openSmallTask(page: Page) {
     editorState.set({ currentMapId: mapId, layer: "event", tool: "event", selectedEventId: null });
     return { mapId, x, y };
   });
-  await page.route("**/v1/chat/completions", route => {
-    const { messages, tools } = route.request().postDataJSON();
-    expect(messages.find((message: { role: string }) => message.role === "user")?.content).toBe(request);
-    expect(tools.map((tool: { function: { name: string } }) => tool.function.name)).toContain("patch_event_page");
-    const writing = !messages.some((message: { role: string }) => message.role === "tool");
-    const message = writing ? { role: "assistant", content: null, tool_calls: [{ id: "call-preview", type: "function",
-      function: { name: "patch_event_page", arguments: JSON.stringify({
-        mapId: fixture.mapId, eventId: "ev_greeting", pageId: "page_greeting",
-        set: { commands: [{ kind: "text", body: "어서 오세요!" }] },
-      }) },
-    }] } : { role: "assistant", content: "마쳤어요." };
-    return route.fulfill({ json: { choices: [{ finish_reason: writing ? "tool_calls" : "stop", message }] } });
+  await page.route("**/v1/agent/run?**", route => {
+    const incoming = route.request();
+    const buffer = incoming.postDataBuffer()!;
+    const body = JSON.parse((incoming.headers()["content-encoding"] === "gzip" ? gunzipSync(buffer) : buffer).toString()) as RunBody;
+    expect(body.task).toBe(request);
+    expect(body.smallTask?.target).toMatchObject({ kind: "event", mapId: fixture.mapId, eventId: "ev_greeting" });
+    const event = body.project.maps[fixture.mapId].events.find(event => event.id === "ev_greeting")!;
+    event.pages![0].commands = [{ kind: "text", body: "어서 오세요!" }];
+    return route.fulfill({
+      headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
+      body: JSON.stringify({ type: "done", smallTask: true, project: body.project,
+        changedKeys: [`maps.${fixture.mapId}`], unchangedKeys: Object.keys(body.heavy ?? {}),
+        stats: { ms: 1, turns: 1, toolCalls: 1, toolErrors: 0 } }) + "\n",
+    });
   });
   await page.getByTestId("edit-canvas").locator("canvas").click({ position: await pointAtTile(page, fixture) });
   await trigger.click();

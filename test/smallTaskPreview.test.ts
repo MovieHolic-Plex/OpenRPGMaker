@@ -85,3 +85,17 @@ it("취소하면 저장 기록을 건드리지 않고 요청과 초점을 돌려
   expect(input.value).toBe("포션 가격을 80으로");
   expect(document.activeElement).toBe(input);
 });
+
+it("미리 보기 뒤 다른 편집이 생기면 적용을 거절하고 입력을 복구한다", async () => {
+  const { box, input, depth } = await openPreview();
+  store.update(project => { project.meta.title = "다른 편집"; });
+  const edited = store.getCurrent();
+  button(box, "적용")!.click();
+  await vi.waitFor(() => expect(box.querySelector('[role="status"]')?.textContent)
+    .toBe("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요."));
+  expect(store.getCurrent()).toBe(edited);
+  expect(edited.database.items[0].price).toBe(50);
+  expect(getMapEditHistoryDepth()).toBe(depth);
+  expect(input.value).toBe("포션 가격을 80으로");
+  expect(document.activeElement).toBe(input);
+});
