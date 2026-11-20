@@ -2,12 +2,13 @@
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { FORK_ELSE_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/11-m2-system-menu";
 import { createInterpreter } from "@/player/interpreter";
+import { systemAudioOverride } from "@/player/systemAudioSlots";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
@@ -157,7 +158,8 @@ describe("시스템·메뉴 작은 일", () => {
       const { after, sentence } = runPrimitive(project, target, updateId, {
         index: 0, expectedHash: eventCommandHash(old), ...row.updateArgs,
       });
-      const expected = parameterless ? {} : { ...fields, legacy: "기존 값", ...row.updateFields };
+      const expected: M2CommandFields = parameterless ? {} : { ...fields, legacy: "기존 값", ...row.updateFields };
+      if (row.updateArgs.operation === "reset") delete expected.volume;
       expect(commands(after)).toEqual([m2(row, expected), unchanged]);
       expect(current(after).pages![1]).toEqual(otherPage);
       expect(jsonEqual(project, before)).toBe(true);
@@ -185,12 +187,92 @@ describe("시스템·메뉴 작은 일", () => {
 
   it("분기 안의 명령을 고치고 오래된 확인값을 거부한다", () => {
     const original: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "true" } };
-    const { project, target, commands } = scene("blank", [{ kind: "loop", body: [original, unchanged] }]);
-    const args = { index: 0, branchPath: [0, LOOP_BODY_BRANCH_INDEX], enabled: false };
+    const { project, target, commands } = scene("blank", [original, { kind: "loop", body: [original, unchanged] }]);
+    const args = { index: 0, branchPath: [1, LOOP_BODY_BRANCH_INDEX], enabled: false };
     const id = "m2.077.update";
     expect(() => runPrimitive(project, target, id, { ...args, expectedHash: "이전 줄" })).toThrow(/바뀌었습니다/u);
     const { after } = runPrimitive(project, target, id, { ...args, expectedHash: eventCommandHash(original) });
-    expect(commands(after)).toEqual([{ kind: "loop", body: [{ ...original, fields: { enabled: "false" } }, unchanged] }]);
+    expect(commands(after)).toEqual([original, { kind: "loop", body: [{ ...original, fields: { enabled: "false" } }, unchanged] }]);
+  });
+
+  it("선택지의 빈 분기 끝에 추가하고 없는 분기와 범위 밖 줄은 거부한다", () => {
+    const choice: Command = { kind: "choices", options: [{ text: "저장 금지", branch: [] }, { text: "그대로", branch: [unchanged] }] };
+    const { project, target, commands } = scene("blank", [choice, unchanged]);
+    const id = "m2.077.insert";
+    for (const args of [
+      { branchPath: [0], enabled: false },
+      { branchPath: [0, FORK_ELSE_BRANCH_INDEX], enabled: false },
+      { branchPath: [0, 2], enabled: false },
+    ]) {
+      expect(() => runPrimitive(project, target, id, args)).toThrow(/분기/u);
+    }
+    expect(() => runPrimitive(project, target, id, { branchPath: [0, 0], index: 1, enabled: false })).toThrow(/줄 위치/u);
+    const { after } = runPrimitive(project, target, id, { branchPath: [0, 0], enabled: false });
+    const inserted: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "false" } };
+    expect(commands(after)).toEqual([{ ...choice, options: [{ text: "저장 금지", branch: [inserted] }, choice.options[1]] }, unchanged]);
+    expect(commands(project)).toEqual([choice, unchanged]);
+  });
+
+  it("같은 배열을 공유하는 두 선택지를 한 분기 편집으로 동시에 바꾸지 않는다", () => {
+    const original: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "true" } };
+    const branch = [original];
+    const choice: Command = { kind: "choices", options: [{ text: "첫 분기", branch }, { text: "다른 분기", branch }] };
+    const { project, target, commands } = scene("blank", [choice]);
+    for (const id of ["m2.077.insert", "m2.077.update"]) {
+      expect(() => runPrimitive(project, target, id, { branchPath: [0, 0], index: 0, enabled: false })).toThrow(/분기가 같은 명령 목록/u);
+    }
+    expect(commands(project)).toEqual([{ ...choice, options: [{ text: "첫 분기", branch: [original] }, { text: "다른 분기", branch: [original] }] }]);
+  });
+
+  it("파일이 없는 자료집 항목과 종류가 다른 메뉴 그림을 거부한다", () => {
+    const { project: fixture, target } = scene("blank");
+    const project: Project = {
+      ...fixture,
+      resourceProfiles: [...fixture.resourceProfiles,
+        { kind: "music", assetId: "missing-music-file", name: "없는 음악 파일" },
+        { kind: "music", assetId: sound, name: "음악으로 잘못 분류한 효과음" },
+        { kind: "system", assetId: "missing-menu-file", name: "없는 메뉴 그림 파일" },
+        { kind: "system", assetId: sound, name: "잘못 분류된 효과음" },
+        { kind: "system", assetId: music, name: "메뉴 그림으로 잘못 분류한 음악" },
+      ],
+    };
+    for (const resourceId of ["missing-music-file", sound]) {
+      expect(() => runPrimitive(project, target, "m2.027.insert", { resourceId })).toThrow(/음악을 찾을 수 없습니다/u);
+    }
+    for (const resourceId of ["missing-menu-file", sound, music]) {
+      expect(() => runPrimitive(project, target, "m2.029.insert", { resourceId })).toThrow(/메뉴 그림을 찾을 수 없습니다/u);
+    }
+  });
+
+  it("음원 누락과 공백, 복원과 음원 지정이 겹치는 입력을 거부한다", () => {
+    const { project, target } = scene("blank");
+    expect(() => runPrimitive(project, target, "m2.027.insert", { volume: 42 })).toThrow(/사용할 소리를 고르/u);
+    expect(() => runPrimitive(project, target, "m2.028.insert", { resourceId: "  " })).toThrow(/공백/u);
+    expect(() => runPrimitive(project, target, "m2.027.insert", { operation: "reset", resourceId: music })).toThrow(/따로 고르지/u);
+    expect(() => runPrimitive(project, target, "m2.027.insert", { operation: "reset", volume: 42 })).toThrow(/기본값.*소리 크기/u);
+    expect(() => runPrimitive(project, target, "m2.027.insert", { cue: "field", resourceId: music, volume: 42 })).toThrow(/필드 기본곡/u);
+    expect(() => runPrimitive(project, target, "m2.078.insert", { screen: "skills", actorId: "  " })).toThrow(/입력칸을 비워/u);
+  });
+
+  it("올린 리소스는 실제 파일과 등록한 종류가 일치할 때만 선택한다", () => {
+    const { project: fixture, target, commands } = scene("blank");
+    const audio = "data:audio/wav;base64,AA==";
+    const image = "data:image/png;base64,AA==";
+    const project: Project = { ...fixture, assets: { ...fixture.assets, uploaded: {
+      ...fixture.assets.uploaded,
+      "real-audio": { id: "real-audio", name: "음원", kind: "music", dataUrl: audio, meta: {} },
+      "real-menu": { id: "real-menu", name: "메뉴 그림", kind: "system", dataUrl: image, meta: {} },
+      "image-as-audio": { id: "image-as-audio", name: "잘못 등록한 그림", kind: "music", dataUrl: image, meta: {} },
+      "audio-as-image": { id: "audio-as-image", name: "잘못 등록한 음원", kind: "system", dataUrl: audio, meta: {} },
+    } } };
+    for (const [id, valid, invalid, field] of [
+      ["m2.027.insert", "real-audio", "image-as-audio", "resourceId"],
+      ["m2.029.insert", "real-menu", "audio-as-image", "value"],
+    ] as const) {
+      const { after } = runPrimitive(project, target, id, { resourceId: valid });
+      expect(commands(after).at(-1)).toMatchObject({ fields: { [field]: valid } });
+      expect(() => runPrimitive(project, target, id, { resourceId: invalid })).toThrow(/찾을 수 없습니다/u);
+    }
   });
 
   it("동적으로 위치를 잡던 옛 순간이동 명령은 이름만 바꿔도 위치 지정 방식이 유지된다", () => {
@@ -242,9 +324,65 @@ describe("시스템·메뉴 명령 실행", () => {
     expect(session.systemAudioOverrides?.bgm?.battle).toEqual({ resourceId: music, volume: 42 });
   });
 
+  it("무음으로 지정한 전투곡은 기본값 복원 명령을 실행할 때까지 덮어쓴다", () => {
+    const { project, target, commands } = scene("blank", []);
+    const { after: muted } = runPrimitive(project, target, "m2.027.insert", { resourceId: "" });
+    const { after: reset } = runPrimitive(muted, target, "m2.027.insert", { operation: "reset" });
+    const session = startSession(project, 42);
+    createInterpreter(commands(muted), session, muted).start();
+    expect(session.systemAudioOverrides?.bgm?.battle).toEqual({ resourceId: "", volume: 100 });
+    createInterpreter(commands(reset).slice(1), session, reset).start();
+    expect(session.systemAudioOverrides?.bgm?.battle).toBeUndefined();
+  });
+
   it("순간이동 지점에 이름과 좌표를 기록한다", () => {
     const { session, map } = play("m2.072.insert", { x: 3, y: 4, label: "동쪽 관문" });
     expect(session.teleportPoints).toEqual([{ mapId: map.id, x: 3, y: 4, label: "동쪽 관문" }]);
+  });
+
+  it("옛 순간이동 줄에서 이름만 바꾸면 플레이어 위치를 쓰고 좌표를 바꾸면 지점이 고정된다", () => {
+    const original: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields: { label: "귀환" } };
+    const { project, target, commands, map } = scene("built", [original]);
+    const otherMap = Object.values(project.maps).find(candidate => candidate.id !== map.id)!;
+    const { after: renamed } = runPrimitive(project, target, "m2.072.update", { index: 0, label: "시장" });
+    const { after: fixed } = runPrimitive(project, target, "m2.072.update", { index: 0, x: 3, y: 4 });
+    const session = startSession(project, 42);
+    session.currentMapId = otherMap.id;
+    session.x = 1;
+    session.y = 2;
+    createInterpreter(commands(renamed), session, renamed).start();
+    expect(session.teleportPoints).toEqual([{ mapId: otherMap.id, x: 1, y: 2, label: "시장" }]);
+    createInterpreter(commands(fixed), session, fixed).start();
+    expect(session.teleportPoints).toEqual([
+      { mapId: otherMap.id, x: 1, y: 2, label: "시장" },
+      { mapId: map.id, x: 3, y: 4, label: "귀환" },
+    ]);
+  });
+
+  it("옛 전투곡 줄은 음원을 바꾸거나 복원해도 원래 오디오 칸을 쓴다", () => {
+    const original: Command = { kind: "m2Command", commandId: "m2-027-change-system-bgm", fields: { slot: "battle", value: "old-battle-music" } };
+    const { project, target, commands } = scene("blank", [original]);
+    const { after } = runPrimitive(project, target, "m2.027.update", { index: 0, cue: "battle", resourceId: music });
+    expect(commands(after)).toEqual([{ ...original, fields: { slot: "battle", resourceId: music } }]);
+    const session = startSession(after, 42);
+    createInterpreter(commands(after), session, after).start();
+    expect(systemAudioOverride(session.m2Runtime, "battle")).toBe(music);
+    expect(session.systemAudioOverrides?.bgm?.battle).toBeUndefined();
+    expect(() => runPrimitive(after, target, "m2.027.update", { index: 0, operation: "reset", volume: 30 })).toThrow(/기본값.*소리 크기/u);
+    const { after: reset } = runPrimitive(after, target, "m2.027.update", { index: 0, operation: "reset" });
+    createInterpreter(commands(reset), session, reset).start();
+    expect(systemAudioOverride(session.m2Runtime, "battle")).toBeUndefined();
+  });
+
+  it("좌표를 생략한 옛 고정 순간이동 지점은 이름을 바꿔도 맵의 원점으로 등록한다", () => {
+    const fixture = scene("blank");
+    const original: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields: { mapId: fixture.map.id, label: "귀환" } };
+    const { project, target, commands, map } = scene("blank", [original]);
+    const { after } = runPrimitive(project, target, "m2.072.update", { index: 0, label: "북문" });
+    expect(commands(after)).toEqual([{ ...original, fields: { ...original.fields, label: "북문" } }]);
+    const session = startSession(after, 42);
+    createInterpreter(commands(after), session, after).start();
+    expect(session.teleportPoints).toEqual([{ mapId: map.id, x: 0, y: 0, label: "북문" }]);
   });
 
   it("스킬 장착 단계에서 이벤트 실행을 멈춘다", () => {
