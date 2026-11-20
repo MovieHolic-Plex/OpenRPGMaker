@@ -182,6 +182,12 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
 
   function prepare(ctx: PrimitiveContext, args: Args) {
     const { page } = scopedPage(ctx);
+    const { expectedPageHash, expectedPageHashes } = args;
+    // 페이지와 최상위 줄 해시는 하위 분기를 포함한다.
+    if ((expectedPageHash !== undefined && eventCommandPageHash(page) !== expectedPageHash) ||
+        (expectedPageHashes !== undefined && !jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes))) {
+      throw new PrimitiveError(STALE_COMMAND_LIST);
+    }
     const { path, current, index } = commandLocation(page, action, args);
     if (!inserting && current?.kind !== kind) {
       throw new PrimitiveError("범위 밖: 이 줄에서 해당 명령을 찾을 수 없습니다.");
@@ -190,15 +196,9 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     if (!inserting && eventCommandHash(current!) !== expectedHash) {
       throw new PrimitiveError(STALE_COMMAND_LIST);
     }
-    const { expectedPageHash, expectedPageHashes } = args;
     const positioned = !inserting || args.index !== undefined || path.length > 1;
     if (positioned && expectedPageHash === undefined && expectedPageHashes === undefined) {
       throw new PrimitiveError("명령 위치를 확인할 수 없습니다. 페이지 명령 해시를 읽어 주세요.");
-    }
-    // 페이지와 최상위 줄 해시는 하위 분기를 포함한다.
-    if ((expectedPageHash !== undefined && eventCommandPageHash(page) !== expectedPageHash) ||
-        (expectedPageHashes !== undefined && !jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes))) {
-      throw new PrimitiveError(STALE_COMMAND_LIST);
     }
     const edits = Object.fromEntries(Object.keys(fields).filter(key => Object.hasOwn(args, key)).map(key => [key, args[key]]));
     if (!inserting && Object.keys(edits).length === 0) throw new PrimitiveError("바꿀 값을 하나 이상 입력해 주세요.");

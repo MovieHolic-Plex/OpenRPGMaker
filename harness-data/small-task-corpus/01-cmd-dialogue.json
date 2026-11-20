@@ -477,8 +477,10 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.presentItem.update",
-    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "prompt": "보여 주세요", "eventId": "ev_other"},
-    "expectRefusal": true
+    "setup": {"commands": [{"kind": "presentItem", "options": [], "otherwiseBranch": [], "cancelBranch": []}]},
+    "args": {"expectedPageHashes": ["ce820c0c0de0ca7cdd6b73e9fa17e479"], "index": 0, "expectedHash": "ce820c0c0de0ca7cdd6b73e9fa17e479", "prompt": "보여 주세요", "eventId": "ev_other"},
+    "expectRefusal": true,
+    "refusalMessage": "동작에 필요한 값의 형식"
   },
   {
     "request": "상인 말 마지막에 아무 키나 누를 때까지 기다려.",
@@ -557,8 +559,10 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inputWait.update",
-    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "variableId": "var_0002", "pageId": "ev_supply_shop_active"},
-    "expectRefusal": true
+    "setup": {"commands": [{"kind": "inputWait"}]},
+    "args": {"expectedPageHashes": ["1e40f52f6472a22e7b678077c4c027aa"], "index": 0, "expectedHash": "1e40f52f6472a22e7b678077c4c027aa", "variableId": "var_0002", "pageId": "ev_supply_shop_active"},
+    "expectRefusal": true,
+    "refusalMessage": "동작에 필요한 값의 형식"
   },
   {
     "request": "입력받은 수를 첫째 변수에 적어 주세요.",
@@ -637,8 +641,10 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inputNumber.update",
-    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "digits": 2, "eventId": "ev_other"},
-    "expectRefusal": true
+    "setup": {"commands": [{"kind": "inputNumber", "variableId": "var_0001", "digits": 1}]},
+    "args": {"expectedPageHashes": ["12db542b54cbf1d3263074b994af3797"], "index": 0, "expectedHash": "12db542b54cbf1d3263074b994af3797", "digits": 2, "eventId": "ev_other"},
+    "expectRefusal": true,
+    "refusalMessage": "동작에 필요한 값의 형식"
   },
   {
     "request": "주인공 이름을 입력받는 창 넣어줘.",
@@ -717,8 +723,10 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.enterHeroName.update",
-    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "maxLength": 3, "eventId": "ev_other"},
-    "expectRefusal": true
+    "setup": {"commands": [{"kind": "enterHeroName", "actorId": "actor_hero", "maxLength": 6, "showInitialName": true}]},
+    "args": {"expectedPageHashes": ["1e9de8128a9a261ededdf7a9614c1ce4"], "index": 0, "expectedHash": "1e9de8128a9a261ededdf7a9614c1ce4", "maxLength": 3, "eventId": "ev_other"},
+    "expectRefusal": true,
+    "refusalMessage": "동작에 필요한 값의 형식"
   },
   {
     "request": "대사 칸을 화면 위쪽에 띄워 줘.",

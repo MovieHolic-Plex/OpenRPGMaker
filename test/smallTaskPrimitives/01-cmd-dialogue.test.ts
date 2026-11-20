@@ -13,10 +13,12 @@ import { jsonEqual } from "@/util/structuralJson";
 import { normalizeEventPage } from "@/editor/eventPages";
 import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/01-cmd-dialogue";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
+import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget, setupCorpusProject } from "./harness";
+import dialogueCorpus from "../../harness-data/small-task-corpus/01-cmd-dialogue.json";
 import seededCases from "./01-cmd-dialogue/seeded-cases.json";
 
 type Fixture = "blank" | "built" | "maou";
@@ -246,6 +248,16 @@ it("다른 페이지를 인자로 지정하거나 선택한 페이지 밖의 줄
   })).toThrow("범위 밖");
 });
 
+const targetOverrideCases = (dialogueCorpus as CorpusCase[]).filter(entry =>
+  entry.setup?.commands && (Object.hasOwn(entry.args, "pageId") || Object.hasOwn(entry.args, "eventId")));
+it.each(targetOverrideCases)("$request · 대상 지정 인자만 빼면 수정에 성공한다", entry => {
+  const project = setupCorpusProject(fixtures.get(entry.fixture)!, entry);
+  const target = resolveTarget(project, entry.target);
+  const { pageId: _pageId, eventId: _eventId, ...args } = entry.args;
+  expect(runPrimitive(project, target, entry.primitive, args).after).not.toBe(project);
+  expect(() => runPrimitive(project, target, entry.primitive, entry.args)).toThrow("동작에 필요한 값의 형식");
+});
+
 it("이벤트에서 읽은 위치로 분기 안의 대사를 변경하고 오래된 줄 확인값을 거부한다", async () => {
   const { project, target, readPage, mapId } = arrange("built", [choices]);
   const { data } = await getTool("get_event")!.run(project, { mapId, eventId, includeCommandHashes: true });
@@ -341,6 +353,21 @@ it("페이지 해시가 최신이어도 줄 해시가 다르면 수정을 거부
   expect(readPage(after).commands[0]).toMatchObject({ kind: "text", body });
   expect(() => runPrimitive(after, target, "cmd.text.insert", { index: 0, expectedPageHash, body }))
     .toThrow(STALE_COMMAND_LIST);
+});
+
+it("읽은 페이지에서 줄이 삭제되면 남은 줄의 종류나 위치를 확인하기 전에 다시 읽으라고 안내한다", () => {
+  const wait: Command = { kind: "wait", ms: 50 };
+  const { project, target, readPage } = arrange("blank", [continuation, wait, continuation]);
+  const page = readPage(project);
+  const expectedPageHash = eventCommandPageHash(page);
+  const expectedHash = eventCommandHash(continuation);
+  const after = runPrimitive(project, target, "cmd.delete", { index: 0, expectedHash }).after;
+  const body = "이미 읽은 대사를 고칩니다.";
+  expect(() => runPrimitive(after, target, "cmd.text.update", { index: 0, expectedPageHash, expectedHash, body }))
+    .toThrow(STALE_COMMAND_LIST);
+  expect(() => runPrimitive(after, target, "cmd.text.update", {
+    ...updatePosition(page.commands, continuation, 2), body,
+  })).toThrow(STALE_COMMAND_LIST);
 });
 
 it("반복 안의 취소 분기에 삽입하고 잘못된 경로는 거부한다", () => {
