@@ -142,6 +142,23 @@ const propertyArgs = {
   mapRole: choice("맵의 용도. 마을, 던전, 들판, 실내, 자동 중 선택", ["town", "dungeon", "field", "interior", "auto"]),
 };
 
+const propertyFields = {
+  name: ["name"], tilesetId: ["tilesetId", "tileSize"], bgmMode: ["bgm"], bgmResourceId: ["bgm"],
+  backgroundImageId: ["background"], clearBackground: ["background"],
+  battleBackground: ["battleBackground"], clearBattleBackground: ["battleBackground"],
+  disableSave: ["disableSave"], disableTeleport: ["disableTeleport"], disableEscape: ["disableEscape"],
+  encounterRate: ["encounterRate"], loop: ["loop"], zoom: ["cameraZoom"],
+  characterScale: ["characterScale"], mapRole: ["mapRole"],
+} satisfies Record<keyof typeof propertyArgs, readonly (keyof GameMap)[]>;
+
+function propertyScope(ctx: PrimitiveContext, args: Args): SmallTaskScope {
+  const fields = (Object.keys(propertyFields) as (keyof typeof propertyFields)[]).flatMap<keyof GameMap>(key => {
+    if (key === "clearBackground" || key === "clearBattleBackground") return args[key] === true ? propertyFields[key] : [];
+    return args[key] === undefined ? [] : propertyFields[key];
+  });
+  return mapMeta(fields)(ctx, args);
+}
+
 function setProperties(project: Project, map: GameMap, args: Args): Project {
   const { name, bgmMode, bgmResourceId, backgroundImageId, battleBackground, clearBackground, clearBattleBackground, ...properties } = args;
   const nextName = name === undefined ? undefined : requiredName(name);
@@ -199,6 +216,12 @@ function setProperties(project: Project, map: GameMap, args: Args): Project {
   }
   if (hasToolArgs) {
     runMapTool(after, "set_map_properties", { ...toolArgs, mapId: map.id }, "맵 속성에 지정한 그림, 음악 또는 타일셋을 확인해 주세요.");
+  }
+  if (project.startMapId === map.id && draft.tilesetId !== map.tilesetId) {
+    const { x, y } = project.startPos;
+    if (isPassable(project, map, x, y) && !isPassable(after, draft, x, y)) {
+      throw new PrimitiveError("타일셋을 바꾸면 게임 시작 칸을 걸을 수 없어요. 시작 위치를 먼저 옮겨 주세요.");
+    }
   }
   if (backgroundId !== undefined || properties.tilesetId !== undefined) {
     assertReferencesPreserved(project, after, "맵 속성에 연결할 그림이나 타일셋을 찾을 수 없어요.");
@@ -364,7 +387,7 @@ function upsertConnection(project: Project, map: GameMap, args: Args): Project {
     npcEnabled: (args.npcEnabled as boolean | undefined) ?? prior?.npcEnabled ?? false,
   };
   if (prior && jsonEqual(prior, next)) return project;
-  if (usesSpatialEntrance(project, next)) {
+  if ((prior && usesSpatialEntrance(project, prior)) || usesSpatialEntrance(project, next)) {
     throw new PrimitiveError("공간 설계에서 만든 출입구가 이 연결이나 출발 칸을 써요. 공간 설계에서 출입구를 바꿔 주세요.");
   }
   return { ...project, mapConnections: prior ? connections.map(row => row === prior ? next : row) : [...connections, next] };
@@ -395,7 +418,8 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (project, map, args) => duplicateMap(project, map, args.name === undefined ? `${map.name} 복사` : requiredName(args.name)), newMap),
 
   primitive("map.structure.remove", "remove_map", "맵 삭제", obj({}),
-    map => `『${mapLabel(map)}』 맵을 삭제해요.`, removeMap,
+    map => `『${mapLabel(map)}』 맵을 삭제해요.`,
+    (project, map, _args, ctx) => removeMap(project, map, ctx.live),
     ctx => ({ kind: "mapRemove", mapId: selectedMap(ctx).id })),
 
   primitive("map.structure.resize", "resize_map", "맵 크기 변경", obj(size),
@@ -416,10 +440,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (args.bgmMode !== undefined || args.bgmResourceId !== undefined) return `『${mapLabel(map)}』 맵의 배경 음악 설정을 바꿔요.`;
       return `『${mapLabel(map)}』 맵의 속성을 바꿔요.`;
     },
-    setProperties, mapMeta([
-      "name", "tilesetId", "tileSize", "bgm", "background", "battleBackground", "disableSave", "disableTeleport",
-      "disableEscape", "encounterRate", "loop", "cameraZoom", "characterScale", "mapRole",
-    ])),
+    setProperties, propertyScope),
 
   primitive("map.encounterTable.set", "set_encounter_table", "조우표 설정",
     obj({ entries: arr("이 맵에서 등장할 적 무리 목록", encounterEntry, 64), encounterRate: propertyArgs.encounterRate }, ["entries"]),

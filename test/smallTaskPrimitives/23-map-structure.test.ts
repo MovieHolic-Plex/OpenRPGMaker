@@ -1,6 +1,8 @@
 /** @vitest-environment happy-dom */
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/23-map-structure";
@@ -14,6 +16,7 @@ import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { doorKindName } from "@/project/eventCommands/doorAnimation";
 import { startSession } from "@/project/session";
 import { own } from "@/project/spatial/domain";
+import { store } from "@/project/store";
 import type { Command, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { geographyFixture, geographyRoot } from "../support/spatialGeographyFixture";
@@ -148,6 +151,24 @@ it("참조 없는 맵을 지울 때 그 맵의 하위 맵은 목록에 남긴다
   });
 });
 
+it.each([firstId, secondId])("%s의 미저장 이동 초안을 실행과 적용 단계에서 보호한다", (ownerId) => {
+  const project = blankProject();
+  const original = transferEvent(ownerId);
+  project.maps[ownerId]!.events = [{ ...transferEvent(secondId), name: "미저장 출입구",
+    draft: { kind: "edit", original } }];
+  store.replaceProject(project);
+  resetMapEditHistory();
+  const live = store.getCurrent();
+  const target = mapTarget(live, secondId)!;
+  const before = smallTaskBase(live, target);
+  const id = "map.structure.remove";
+  const { after } = runPrimitive(before, target, id, {});
+  expect(() => runPrimitive(before, target, id, {}, undefined, live)).toThrow(/미저장 출입구/u);
+  expect(() => commitSmallTask(live, before, after, target)).toThrow(/미저장 출입구/u);
+  expect(store.getCurrent()).toBe(live);
+  expect(getMapEditHistoryDepth()).toBe(0);
+});
+
 it("축소하거나 확장할 때 기존 타일 위치와 이벤트의 이동 목적지를 보존한다", async () => {
   const project = blankProject();
   const map = project.maps[firstId]!;
@@ -175,6 +196,26 @@ it("맵 이름과 배경 음악 하나를 바꾸고 나머지 제한과 타일�
     expect(after.maps[firstId]).toEqual({ ...before.maps[firstId], name: "달빛 언덕",
       bgm: { mode: "custom", resourceId: "cc0-bgm-field" }, disableSave: true, disableEscape: true });
   });
+});
+
+it("이름 요청은 이름만 허용하며 타일셋 변경이 시작 칸을 막으면 거절한다", () => {
+  const project = blankProject();
+  project.startMapId = firstId;
+  project.startPos = { x: 3, y: 4 };
+  const map = project.maps[firstId]!;
+  const tileset = project.tilesets[map.tilesetId]!;
+  const blocked = { up: false, down: false, left: false, right: false };
+  const id = "blocked-tileset";
+  project.tilesets = { ...project.tilesets, [id]: { ...tileset, id, passability: tileset.passability.map(() => blocked) } };
+  const target = mapTarget(project, firstId)!;
+  const primitive = PRIMITIVES.find(row => row.id === "map.properties.set")!;
+  const args = { name: "새 마을" };
+  const scope = primitive.scope({ project, target }, args);
+  expect(scope).toMatchObject({ fields: ["name"] });
+  const changed = { ...project, maps: { ...project.maps, [firstId]: { ...map, ...args, bgm: { mode: "parent" } as const } } };
+  expect(checkSmallTaskScope(project, changed, scope).ok).toBe(false);
+  expect(() => run(project, firstId, primitive.id, { tilesetId: id })).toThrow(/게임 시작 칸/u);
+  expect(run(project, secondId, primitive.id, { tilesetId: id }).maps[secondId]!.tilesetId).toBe(id);
 });
 
 it("조우표가 시작값을 저장하고 지정된 장소에서만 슬라임을 뽑는다", async () => {
@@ -454,6 +495,11 @@ it("공간 설계에서 만든 출입구를 수정하거나 같은 칸에 연결
     .toThrow(/공간 설계/u);
   expect(run(project, from.mapId, "map.connection.upsert", { ...args, connectionId: id })).toBe(project);
   expect(run(project, from.mapId, "map.connection.upsert", { ...args, x: from.x + 1 }).mapConnections).toHaveLength(3);
+
+  const manual = structuredClone(project);
+  manual.mapConnections![0]!.id = "manual_connection";
+  expect(() => run(manual, from.mapId, "map.connection.upsert", { ...args, x: from.x + 1, connectionId: "manual_connection" }))
+    .toThrow(/공간 설계/u);
 });
 
 it.each(["필드 스폰", "경비 시야", "공용 이벤트", "전투 뒤 이벤트"])("장소를 사용하는 %s가 있으면 삭제를 거절한다", (site) => {
@@ -489,6 +535,14 @@ it("장소를 만들거나 이름을 바꿀 때 같은 이름과 식별자를 �
   expect(() => run(project, firstId, "map.location.update", { locationId: "loc2", name: "loc1" }))
     .toThrow(/구분할 수 있는 이름/u);
   expect(() => run(duplicateIds, firstId, "map.location.delete", { locationId: "정문" })).toThrow(/같은 식별자/u);
+});
+
+it("새 장소의 식별자가 기존 장소의 이름을 가리지 않는다", () => {
+  const create = (project: Project, name: string) => run(project, firstId, "map.location.create", { name, x: 2, y: 2, w: 1, h: 1 });
+  const project = create(create(blankProject(), "Lo c2"), "쉼터");
+  expect(project.maps[firstId]!.locations).toMatchObject([{ id: "loc1" }, { id: "loc3" }]);
+  const after = run(project, firstId, "map.location.update", { locationId: "loc2", name: "정문" });
+  expect(after.maps[firstId]!.locations).toMatchObject([{ name: "정문" }, { name: "쉼터" }]);
 });
 
 it("다른 맵의 NPC 경로와 전투 뒤 파티 위치가 삭제·축소할 맵을 계속 가리키면 거절한다", () => {

@@ -1,8 +1,10 @@
+import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { blueprintMapFor } from "@/ai/v2/story/blueprintPathNames";
 import { commandBranches, visitProjectCommands } from "@/editor/tools/commandTraversal";
 import { inMapBounds } from "@/editor/tools/mapHelpers";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { ToolError } from "@/editor/tools/types";
+import { eventDraftDiff } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { cloneGameMap } from "@/project/mapClone";
 import { applyMapDeletion } from "@/project/mapDeletion";
@@ -236,17 +238,14 @@ export function usesLocation(project: Project, map: GameMap, id: string): boolea
   return used;
 }
 
-export function removeMap(project: Project, map: GameMap): Project {
-  if (project.startMapId === map.id || Object.keys(project.maps).length <= 1) {
-    throw new PrimitiveError("게임의 시작 맵이나 마지막 맵은 삭제할 수 없어요.");
-  }
+function mapReferenceNames(project: Project, mapId: string): ReadonlySet<string> {
   const references = new Set<string>();
-  const pointsHere: MapTargetCheck = point => point.mapId === map.id;
+  const pointsHere: MapTargetCheck = point => point.mapId === mapId;
   visitProjectCommands(project, ({ command, location }) => {
-    if ("mapId" in location && location.mapId === map.id) return;
+    if ("mapId" in location && location.mapId === mapId) return;
     const scriptTargetsMap = command.kind === "script" && (
-      scriptTransfersToMap(command, project, map.id) || scriptReads(command, "map", project).includes(map.id)
-      || scriptWrites(command, "map", project).includes(map.id)
+      scriptTransfersToMap(command, project, mapId) || scriptReads(command, "map", project).includes(mapId)
+      || scriptWrites(command, "map", project).includes(mapId)
       || scriptHasDynamic(command, "map", { library: project.scriptLibrary })
     );
     if (!commandUsesMap(command, pointsHere) && !scriptTargetsMap) return;
@@ -265,33 +264,54 @@ export function removeMap(project: Project, map: GameMap): Project {
   });
   for (const module of project.scriptLibrary ?? []) {
     const { reads, writes, calls } = scriptCommandEffects(module);
-    if ([...reads, ...writes, ...calls].some(ref => ref.kind === "map" && ref.id === map.id)) {
+    if ([...reads, ...writes, ...calls].some(ref => ref.kind === "map" && ref.id === mapId)) {
       references.add(label(module.name, "공용 스크립트"));
     }
   }
   for (const other of Object.values(project.maps)) {
-    if (other.id === map.id) continue;
+    if (other.id === mapId) continue;
     for (const event of other.events) {
-      if (routeUsesMap(event.moveRoute, pointsHere) || event.pages?.some(page => routeUsesMap(page.movement.route, pointsHere))) {
+      if (routeUsesMap(event.moveRoute, pointsHere) || event.schedule?.some(entry => pointsHere(entry.at))
+        || event.pages?.some(page => routeUsesMap(page.movement.route, pointsHere) || page.movement.living?.destinations.some(pointsHere))) {
         references.add(eventLabel(project, other.id, event.id));
       }
     }
-    if (other.transit?.routes.some(route => route.stops?.some(stop => stop.board?.mapId === map.id))) {
+    if (other.transit?.routes.some(route => route.stops?.some(stop => stop.board?.mapId === mapId))) {
       references.add(`${mapLabel(other)} 탈것 노선`);
     }
-    if (other.worldmapSource?.variant?.of === map.id) references.add(`${mapLabel(other)} 세계 지도`);
+    if (other.worldmapSource?.variant?.of === mapId) references.add(`${mapLabel(other)} 세계 지도`);
   }
   for (const connection of project.mapConnections ?? []) {
-    if (connection.from.mapId !== map.id && connection.to.mapId !== map.id) continue;
-    const other = project.maps[connection.from.mapId === map.id ? connection.to.mapId : connection.from.mapId];
+    if (connection.from.mapId !== mapId && connection.to.mapId !== mapId) continue;
+    const other = project.maps[connection.from.mapId === mapId ? connection.to.mapId : connection.from.mapId];
     references.add(label(connection.name === connection.id ? undefined : connection.name, other ? `${mapLabel(other)} 연결` : "맵 연결"));
   }
-  if (references.size) {
-    const names = [...references].slice(0, 3).map(name => `『${name}』`).join(", ");
-    const extra = references.size > 3 ? ` 외 ${references.size - 3}곳` : "";
-    throw new PrimitiveError(`${names}${extra}에서 이 맵을 사용하고 있어 삭제할 수 없어요.`);
+  return references;
+}
+
+function mapReferenceError(references: ReadonlySet<string>): string | undefined {
+  if (!references.size) return undefined;
+  const names = [...references].slice(0, 3).map(name => `『${name}』`).join(", ");
+  const extra = references.size > 3 ? ` 외 ${references.size - 3}곳` : "";
+  return `${names}${extra}에서 이 맵을 사용하고 있어 삭제할 수 없어요.`;
+}
+
+export function mapRemovalDraftError(project: Project, mapId: string, live: SmallTaskDraftSource): string | undefined {
+  const unsaved = live.maps[mapId]?.events.find(event => event.draft &&
+    (event.draft.conflict || eventDraftDiff(mapId, event)?.changes.length));
+  if (unsaved) return `『${label(eventDisplayName(unsaved), "이름 없는 이벤트")}』의 편집을 먼저 저장하거나 취소해 주세요.`;
+
+  if (!Object.values(live.maps).some(map => map.events.some(event => event.draft))) return undefined;
+  return mapReferenceError(mapReferenceNames(withOpenEventDrafts(project, live), mapId));
+}
+
+export function removeMap(project: Project, map: GameMap, live?: SmallTaskDraftSource): Project {
+  if (project.startMapId === map.id || Object.keys(project.maps).length <= 1) {
+    throw new PrimitiveError("게임의 시작 맵이나 마지막 맵은 삭제할 수 없어요.");
   }
-  if (questUsesMap(project, pointsHere)) {
+  const error = mapReferenceError(mapReferenceNames(project, map.id)) ?? mapRemovalDraftError(project, map.id, live ?? project);
+  if (error) throw new PrimitiveError(error);
+  if (questUsesMap(project, point => point.mapId === map.id)) {
     throw new PrimitiveError("이 맵을 사용하는 퀘스트가 있어 삭제할 수 없어요.");
   }
 
