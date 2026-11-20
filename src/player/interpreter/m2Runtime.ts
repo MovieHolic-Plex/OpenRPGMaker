@@ -661,14 +661,17 @@ export function relocateM2Events(
   session: PlaySessionLike,
   title: "Set Event Location" | "Swap Event Location",
   fields: M2CommandFields,
-  context: { readonly project?: Project; readonly eventPositions?: RuntimeEventPositions }
+  context: { readonly currentEventId?: string; readonly project?: Project; readonly eventPositions?: RuntimeEventPositions }
 ): string[] {
   const runtime = ensureM2Runtime(session);
-  const eventA = fieldString(fields, title === "Set Event Location" || fields.eventA === undefined ? "target" : "eventA", "");
+  const resolve = (id: string) => id === "this-event" ? context.currentEventId ?? "" : id;
+  const eventA = resolve(fieldString(fields, title === "Set Event Location" || fields.eventA === undefined ? "target" : "eventA", ""));
   const eventB = title === "Swap Event Location"
-    ? fieldString(fields, fields.eventB !== undefined ? "eventB" : fields.value !== undefined ? "value" : "mapId", "") : "";
-  if (title === "Set Event Location") recordMapOrEventState(runtime, title, fields);
-  else runtime.events._swap = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
+    ? resolve(fieldString(fields, fields.eventB !== undefined ? "eventB" : fields.value !== undefined ? "value" : "mapId", "")) : "";
+  if (title === "Set Event Location") {
+    if (fields.target !== "this-event") recordMapOrEventState(runtime, title, fields);
+    else if (eventA) recordMapOrEventState(runtime, title, { ...fields, target: eventA });
+  } else runtime.events._swap = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
 
   const project = context.project;
   if (!project) return [];

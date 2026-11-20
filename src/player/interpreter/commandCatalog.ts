@@ -54,7 +54,7 @@ import { presentableItems } from "@/player/interpreter/presentItem";
 import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { recordSoundLayer, removeEventId, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -1456,10 +1456,6 @@ function shouldWaitForPicture(fields: M2CommandFields): boolean {
 function spawnEventId(fields: M2CommandFields): string {
   const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
   return fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
-}
-
-function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
-  return fieldString(fields, "eventId", currentEventId ?? "");
 }
 
 function hasM2Field(fields: M2CommandFields, key: string): boolean {

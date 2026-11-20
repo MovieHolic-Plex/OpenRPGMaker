@@ -1409,6 +1409,9 @@ function m2ReferenceFieldApplies(
     // may identify an event created earlier by Spawn Event rather than project data.
     return false;
   }
+  if (entry.title === "Swap Event Location" && (fieldKey === "eventA" || fieldKey === "eventB") && value === "this-event") {
+    return false;
+  }
   if (entry.title === "Region Trigger" && (fieldKey === "eventId" || fieldKey === "switchId")) {
     return value.length > 0;
   }
