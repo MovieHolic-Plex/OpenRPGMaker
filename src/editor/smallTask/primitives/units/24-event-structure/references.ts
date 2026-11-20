@@ -154,7 +154,7 @@ export function anOpenDraftReferencesDeletedEvent(
   const workingAfter = withOpenEventDrafts(after, live, target);
   if (workingAfter === after) return false;
   const workingBefore = withOpenEventDrafts(before, live, target);
-  return hasEventReference(workingAfter, mapId, event.id) || hasNamedObjective(workingAfter, event)
+  return hasEventReference(workingAfter, mapId, event.id) || hasNamedObjective(workingAfter, event) || strandsSwitch(workingAfter, event)
     || hasNamedEventReference(workingBefore, mapId, event);
 }
 
@@ -180,20 +180,12 @@ export function strandsSwitch(after: Project, removed: EventPage | GameEvent): b
   const otherRoots = authoredRoots(after).filter(root => root !== after.commonEvents);
   const blockedSwitch = (node: RecordNode) => node.kind === "switch" && typeof node.switchId === "string" && enabled.has(node.switchId);
   const evaluate = (value: unknown) => knownCondition(value, blockedSwitch, false);
-  // A surviving starter can unlock another setter. A cycle with no starter leaves all its switches off.
-  let changed = true;
-  while (changed && enabled.size > 0) {
-    changed = false;
-    for (const id of enabled) {
-      const writes = (node: RecordNode) => written(node).includes(id);
-      if (events.some(event => eventCanWrite(event, evaluate, writes))
-        || after.commonEvents?.some(event => !enabled.has(event.conditionSwitchId ?? "") && someExecutableWrite(event.commands, evaluate, writes))
-        || someExecutableWrite(otherRoots, evaluate, writes)) {
-        enabled.delete(id);
-        changed = true;
-      }
-    }
-  }
+  removeReplacedSwitches(enabled, id => {
+    const writes = (node: RecordNode) => written(node).includes(id);
+    return events.some(event => eventCanWrite(event, evaluate, writes))
+      || (after.commonEvents?.some(event => !enabled.has(event.conditionSwitchId ?? "") && someExecutableWrite(event.commands, evaluate, writes)) ?? false)
+      || someExecutableWrite(otherRoots, evaluate, writes);
+  });
   const readsEnabledSwitch = (node: RecordNode): boolean => {
     if (node.kind !== "switch" && node.kind !== "storyFlag") return false;
     const flagId = node.kind === "switch" ? node.storyFlagId : node.flagId;
@@ -275,6 +267,15 @@ function legacyExecution(event: GameEvent) {
   return event.pages?.length ? undefined : [event.commands, event.moveRoute];
 }
 
+function removeReplacedSwitches(keys: Set<string>, hasSurvivingSetter: (id: string) => boolean): void {
+  // A surviving starter can unlock another setter. A cycle with no starter leaves all its switches off.
+  let previousSize: number;
+  do {
+    previousSize = keys.size;
+    for (const id of keys) if (hasSurvivingSetter(id)) keys.delete(id);
+  } while (keys.size > 0 && keys.size < previousSize);
+}
+
 export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean {
   const written = (node: RecordNode) => node.kind === "setSelfSwitch" && node.value === true && typeof node.key === "string"
     ? node.key : undefined;
@@ -286,11 +287,9 @@ export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean
     return false;
   });
   if (!keys.size) return false;
-  for (const key of keys) {
-    if (eventCanWrite(event, condition => knownCondition(condition, node => node.kind === "selfSwitch" && node.key === key, false),
-      node => written(node) === key)) keys.delete(key);
-  }
   const readsSelfSwitch = (node: RecordNode) => node.kind === "selfSwitch" && typeof node.key === "string" && keys.has(node.key);
+  const evaluate = (value: unknown) => knownCondition(value, readsSelfSwitch, false);
+  removeReplacedSwitches(keys, key => eventCanWrite(event, evaluate, node => written(node) === key));
   return keys.size > 0 && someRecord(remaining, node => knownCondition(node, readsSelfSwitch, false) !== true
     && readsSwitchOn(node, readsSelfSwitch), outsideCompoundCondition);
 }

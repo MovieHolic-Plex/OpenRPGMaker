@@ -548,12 +548,19 @@ describe("선택 범위와 입력 검증", () => {
       .toEqual([starter, sourceB]);
   });
 
-  it("다른 이벤트의 저장 전 초안이 가리키는 이벤트는 실행과 적용에서 삭제를 거절한다", () => {
+  it.each(["이벤트 ID", "스위치"] as const)("다른 이벤트의 열린 초안이 %s로 의존하는 이벤트는 삭제를 거절한다", dependency => {
     const before = blank();
     const [selected] = before.maps[MAP].events;
+    const switchId = "sw_draft_gate";
+    if (dependency === "스위치") {
+      before.switches = [{ id: switchId, name: "초안의 문" }];
+      before.session = { ...before.session, switches: { ...before.session.switches, [switchId]: false } };
+      selected.pages![1].commands = [{ kind: "setSwitch", switchId, value: true }];
+    }
     const original: GameEvent = { id: "ev_draft_reader", x: 4, y: 4, trigger: { kind: "action" }, commands: [] };
     const draft: GameEvent = { ...original, draft: { kind: "edit", original },
-      commands: [{ kind: "moveEvent", eventId: EVENT, route: { moves: [], repeat: false } }] };
+      ...(dependency === "스위치" ? { condition: { kind: "switch", switchId, value: true } }
+        : { commands: [{ kind: "moveEvent", eventId: EVENT, route: { moves: [], repeat: false } }] }) };
     const prior = store.getCurrent();
     try {
       store.replaceProject(withEvents(before, [selected, draft]));
@@ -605,6 +612,23 @@ describe("선택 범위와 입력 검증", () => {
     second.conditions = [{ kind: "selfSwitch", key: "A", value: true }];
     second.commands = [...first.commands];
     expect(() => runPrimitive(before, mapTarget(before, MAP, EVENT)!, "event.page.remove", { page: 1 })).toThrow(/셀프 스위치를 켤 수 없어요/u);
+  });
+
+  it("셀프 스위치가 서로를 기다리면 바깥에서 켤 수 있어야 원래 페이지를 지운다", () => {
+    const before = blank();
+    const [event] = before.maps[MAP].events;
+    const [source, template] = event.pages!;
+    const on = (key: "A" | "B"): Condition => ({ kind: "selfSwitch", key, value: true });
+    const write = (key: "A" | "B"): Command => ({ kind: "setSelfSwitch", key, value: true });
+    source.commands = [write("A"), write("B")];
+    const a = { ...template, id: "page_a", conditions: [on("B")], commands: [write("A")] };
+    const b = { ...template, id: "page_b", conditions: [on("A")], commands: [write("B")] };
+    const starter = { ...template, commands: [write("A")] };
+    const guarded = withEvents(before, [{ ...event, pages: [source, a, b] }]);
+    const target = mapTarget(guarded, MAP, EVENT, source.id)!;
+    expect(() => runPrimitive(guarded, target, "event.page.remove", {})).toThrow(/셀프 스위치를 켤 수 없어요/u);
+    const unguarded = withEvents(before, [{ ...event, pages: [starter, source, a, b] }]);
+    expect(runPrimitive(unguarded, target, "event.page.remove", {}).after.maps[MAP].events[0].pages).toEqual([starter, a, b]);
   });
 
   it("기본 페이지가 실행을 가리면 옛 이벤트 명령을 스위치의 대체 작성자로 보지 않는다", () => {
