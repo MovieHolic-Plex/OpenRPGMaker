@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { CHOICE_CANCEL_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { createInterpreter } from "@/player/interpreter";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -8,6 +9,8 @@ import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { normalizeEventPage } from "@/editor/eventPages";
+import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
+import { getTool } from "@/editor/tools/toolRegistry";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/01-cmd-dialogue";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -165,7 +168,7 @@ it.each(cases.flatMap(shape => (["insert", "update"] as const).map(action => ({
 }))))("$id · 저장 결과, 문장, 범위와 되돌리기", async testCase => {
   const { action, fixture, id, original } = testCase;
   const { project, target, readPage, mapId, siblingPage } = arrange(fixture, [original, continuation]);
-  const args = { ...testCase[action], ...(action === "update" ? { index: 0 } : {}) };
+  const args = { ...testCase[action], ...(action === "update" ? { index: 0, expectedHash: eventCommandHash(original) } : {}) };
   const primitive = PRIMITIVES.find(entry => entry.id === id)!;
   const { after, sentence } = runPrimitive(project, target, id, args);
   const expected = action === "insert" ? [original, continuation, testCase.inserted] : [testCase.updated, continuation];
@@ -200,11 +203,16 @@ it.each(cases.flatMap(shape => (["insert", "update"] as const).map(action => ({
 it.each([
   { id: "text", args: { body: " " }, message: "대사 문구" },
   { id: "changeFace", args: { resourceId: "face_missing" }, message: "얼굴 그림" },
+  { id: "changeFace", args: { appearanceId: "appearance_missing" }, message: "인물 외형" },
+  { id: "changeFace", args: { resourceId: face, appearanceId: "appearance_missing" }, message: "하나만 골라" },
   { id: "choices", args: { optionLabels: ["예"], cancelBehavior: "choice2" }, message: "고를 선택지" },
+  { id: "choices", args: { optionLabels: ["  "] }, message: "선택지 문구" },
   { id: "presentItem", args: { correctItemIds: ["item_missing"] }, message: "아이템" },
+  { id: "presentItem", args: { itemIds: ["item_ether"], correctItemIds: [potion] }, message: "제시할 목록에도" },
   { id: "inputWait", args: { variableId: "var_missing" }, message: "변수" },
   { id: "inputNumber", args: { variableId: "var_missing" }, message: "변수" },
   { id: "enterHeroName", args: { actorId: "actor_missing" }, message: "배우" },
+  { id: "enterHeroName", args: { actorId: "  ", stringVariableId: variable }, message: "배우" },
 ])("$id 추가에서 잘못된 값을 거부한다", ({ id, args, message }) => {
   const { project, target, readPage } = arrange("built", [continuation]);
   const invoke = () => runPrimitive(project, target, `cmd.${id}.insert`, args);
@@ -219,23 +227,121 @@ it("다른 페이지를 인자로 지정하거나 선택한 페이지 밖의 줄
     body: "다른 페이지로 보냅니다.", pageId: siblingPage.id,
   })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.text.update", {
-    index: 1, body: "존재하지 않는 줄입니다.",
+    index: 1, expectedHash: eventCommandHash(continuation), body: "존재하지 않는 줄입니다.",
   })).toThrow("범위 밖");
   expect(() => runPrimitive(project, target, "cmd.text.insert", {
     branchPath: [0, 0], body: "대사에는 분기가 없습니다.",
   })).toThrow("범위 밖");
 });
 
-it("분기 안의 대사를 변경하고 오래된 줄 확인값을 거부한다", () => {
-  const { project, target, readPage } = arrange("built", [choices]);
-  const args = { branchPath: [0, 0], index: 0, body: "분기 안의 새 대사입니다." };
-  const conflict = () => runPrimitive(project, target, "cmd.text.update", { ...args, expectedHash: "stale" });
-  expect(conflict).toThrow("명령 줄이 바뀌었습니다");
-  const { after } = runPrimitive(project, target, "cmd.text.update", { ...args, expectedHash: eventCommandHash(continuation) });
-  expect(readPage(after).commands).toStrictEqual([{
+it("이벤트에서 읽은 위치로 분기 안의 대사를 변경하고 오래된 줄 확인값을 거부한다", async () => {
+  const { project, target, readPage, mapId } = arrange("built", [choices]);
+  const { data } = await getTool("get_event")!.run(project, { mapId, eventId, includeCommandHashes: true });
+  const { commandHashes } = data as { commandHashes: { pageId: string; commands: { index: number; branchPath: number[]; hash: string }[] }[] };
+  const selectedPage = commandHashes.find(entry => entry.pageId === pageId)!;
+  const row = selectedPage.commands.find(entry => jsonEqual(entry.branchPath, [0, 0]))!;
+  expect(row.hash).toBe(eventCommandHash(continuation));
+  const args = { branchPath: row.branchPath, index: row.index, body: "분기 안의 새 대사입니다." };
+  const context = { project, smallTaskTarget: target };
+  const update = (expectedHash: string) => runSmallTaskPrimitiveTool(context, APPLY_SMALL_TASK_PRIMITIVE, {
+    id: "cmd.text.update", args: { ...args, expectedHash },
+  });
+  await expect(update("stale")).rejects.toThrow("명령 줄이 바뀌었습니다");
+  expect(context.project).toBe(project);
+  await expect(update(row.hash)).resolves.toMatchObject({ ok: true });
+  expect(readPage(context.project).commands).toStrictEqual([{
     ...choices, options: [{ ...choices.options[0], branch: [{ ...continuation, body: args.body }] }, choices.options[1]],
   }]);
   expect(jsonEqual(readPage(project).commands, [choices])).toBe(true);
+});
+
+it("같은 종류의 명령이 앞으로 끼어들면 확인값 없는 수정과 오래된 위치의 수정을 거부한다", () => {
+  const preceding = { ...continuation, body: "새로 끼워 넣은 대사입니다." };
+  const { project, target, readPage } = arrange("blank", [preceding, continuation]);
+  const args = { index: 0, body: "두 번째 대사만 고칩니다." };
+  expect(() => runPrimitive(project, target, "cmd.text.update", args)).toThrow(PrimitiveError);
+  expect(() => runPrimitive(project, target, "cmd.text.update", { ...args, expectedHash: eventCommandHash(continuation) }))
+    .toThrow("명령 줄이 바뀌었습니다");
+  expect(readPage(project).commands).toStrictEqual([preceding, continuation]);
+});
+
+it("반복 안의 취소 분기에 삽입하고 잘못된 경로는 거부한다", () => {
+  const loop: Command = { kind: "loop", body: [choices] };
+  const { project, target, readPage } = arrange("blank", [loop, continuation]);
+  const branchPath = [0, LOOP_BODY_BRANCH_INDEX, 0, CHOICE_CANCEL_BRANCH_INDEX];
+  const body = "취소 분기의 끝에 대사를 추가합니다.";
+  const { after } = runPrimitive(project, target, "cmd.text.insert", { branchPath, body });
+  expect(readPage(after).commands).toStrictEqual([{
+    ...loop, body: [{ ...choices, cancelBranch: [...choices.cancelBranch!, { kind: "text", body, speaker: "" }] }],
+  }, continuation]);
+  expect(() => runPrimitive(project, target, "cmd.text.insert", { branchPath: [...branchPath, 0], body })).toThrow("분기");
+});
+
+it("여러 분기가 같은 명령 목록을 공유하면 다른 분기까지 바뀌는 수정을 거부한다", () => {
+  const shared = [continuation];
+  const joined = { ...choices, options: choices.options.map(option => ({ ...option, branch: shared })) };
+  const { project, target, readPage } = arrange("blank", [joined]);
+  expect(() => runPrimitive(project, target, "cmd.text.update", {
+    branchPath: [0, 0], index: 0, expectedHash: eventCommandHash(continuation), body: "첫 선택지만 바꿉니다.",
+  })).toThrow("다른 명령이나 분기");
+  expect(readPage(project).commands).toStrictEqual([joined]);
+  expect(shared).toStrictEqual([continuation]);
+});
+
+it("취소 분기 배열이 없는 이전 선택지를 수정해도 기존 분기와 배열의 부재를 유지한다", () => {
+  const { cancelBranch: _cancelBranch, ...legacy } = choices;
+  const { project, target, readPage } = arrange("blank", [legacy, continuation]);
+  const args = { index: 0, expectedHash: eventCommandHash(legacy) };
+  const relabelled = runPrimitive(project, target, "cmd.choices.update", { ...args, optionLabels: ["할래요", "안 할래요"] });
+  expect(readPage(relabelled.after).commands).toStrictEqual([{
+    ...legacy, options: [{ ...legacy.options[0], text: "할래요" }, { ...legacy.options[1], text: "안 할래요" }],
+  }, continuation]);
+  const disabled = runPrimitive(project, target, "cmd.choices.update", { ...args, cancelBehavior: "disallow" });
+  expect(readPage(disabled.after).commands).toStrictEqual([{ ...legacy, cancelBehavior: "disallow" }, continuation]);
+  const enabled = runPrimitive(disabled.after, target, "cmd.choices.update", {
+    index: 0, expectedHash: eventCommandHash(readPage(disabled.after).commands[0]!), cancelBehavior: "branch",
+  });
+  expect(readPage(enabled.after).commands).toStrictEqual([{ ...legacy, cancelBranch: [] }, continuation]);
+});
+
+it("아이템 제시 목록을 바꿀 때 기존 정답과 분기를 계속 사용할 수 있어야 한다", () => {
+  const { project, target, readPage } = arrange("built", [presentItem]);
+  const args = { index: 0, expectedHash: eventCommandHash(presentItem) };
+  expect(() => runPrimitive(project, target, "cmd.presentItem.update", { ...args, itemIds: ["item_ether"] }))
+    .toThrow("제시할 목록에도");
+  const { after } = runPrimitive(project, target, "cmd.presentItem.update", { ...args, itemIds: [potion] });
+  expect(readPage(after).commands).toStrictEqual([{ ...presentItem, itemIds: [potion] }]);
+});
+
+it.each([39, 200.5, 201])("전신 그림 배율 %s를 거부한다", fullScale => {
+  const { project, target } = arrange("built", []);
+  expect(() => runPrimitive(project, target, "cmd.changeFace.insert", { presentation: "full", fullScale })).toThrow(PrimitiveError);
+});
+
+it("표시할 수 없는 그림은 거부하고 외형에서 실제로 표시되는 초상을 요약한다", () => {
+  const { project, target } = arrange("built", []);
+  const appearanceId = "appearance_without_portrait";
+  const brokenId = "appearance_with_sound";
+  const guardId = "appearance_guard";
+  const resourceId = "sound_without_portrait";
+  const withAssets: Project = {
+    ...project,
+    database: { ...project.database, characterAppearances: [
+      { id: appearanceId, name: "초상 없는 외형", description: "" },
+      { id: brokenId, name: "초상이 잘못된 외형", description: "", face: { resourceId } },
+      { id: guardId, name: "경비 외형", description: "", face: { resourceId: face } },
+    ] },
+    assets: { ...project.assets, uploaded: {
+      ...project.assets.uploaded, [resourceId]: { id: resourceId, name: "경비 목소리", kind: "sound", meta: {} },
+    } },
+  };
+  expect(() => runPrimitive(withAssets, target, "cmd.changeFace.insert", { appearanceId })).toThrow("표시할 초상");
+  expect(() => runPrimitive(withAssets, target, "cmd.changeFace.insert", { resourceId })).toThrow("표시할 수 있는 얼굴 그림");
+  expect(() => runPrimitive(withAssets, target, "cmd.changeFace.insert", { appearanceId: brokenId })).toThrow("표시할 수 있는 얼굴 그림");
+  expect(() => runPrimitive(withAssets, target, "cmd.changeFace.insert", { resourceId: "easyrpg-picture-retired" }))
+    .toThrow("표시할 수 있는 얼굴 그림");
+  const { sentence } = runPrimitive(withAssets, target, "cmd.changeFace.insert", { appearanceId: guardId, presentation: "full" });
+  expect(sentence).toBe("「왼쪽 얼굴」 명령을 추가합니다.");
 });
 
 it("긴 대사 요약에서 내부 식별자를 가린다", () => {
@@ -298,7 +404,7 @@ it.each(seededCases)("$request", async ({ primitive, args, fields }) => {
   const original = cases.find(entry => `cmd.${entry.original.kind}.update` === primitive)?.original;
   expect(original).toBeDefined();
   const { project, target, readPage } = arrange("built", [original!, continuation]);
-  const { after, sentence } = runPrimitive(project, target, primitive, args);
+  const { after, sentence } = runPrimitive(project, target, primitive, { ...args, expectedHash: eventCommandHash(original!) });
   const expected = { ...original!, ...fields };
   if (primitive === "cmd.presentItem.update" && args.itemIds?.length === 0) Reflect.deleteProperty(expected, "itemIds");
   expect(jsonEqual(readPage(after).commands, [expected, continuation])).toBe(true);

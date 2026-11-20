@@ -1,8 +1,14 @@
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { JsonSchema } from "@/editor/tools/types";
+import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
+import { DIALOGUE_FULL_PORTRAIT_LIMITS } from "@/project/dialogueStyles";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { validateCommands } from "@/project/io/commandReferenceValidation";
+import { ProjectFormatError } from "@/project/io/errors";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { uploadedAssetMime } from "@/project/persistence/assetAccessors";
 import type { Command, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 import { displayText } from "../../../target";
@@ -15,13 +21,14 @@ const integer = (description: string, minimum: number, maximum: number): JsonSch
   ({ type: "integer", minimum, maximum, description });
 const ids = (description: string): JsonSchema =>
   ({ type: "array", items: id("자료에서 확인한 아이템 식별자"), description });
+const fullScale = DIALOGUE_FULL_PORTRAIT_LIMITS.scale;
 
 export const dialogueFields = {
   text: {
     title: "대사",
     fields: {
       body: id("화면에 표시할 대사. 줄바꿈을 포함할 수 있습니다."),
-      speaker: string("말하는 인물의 이름. 빈 글자는 화자 이름을 숨깁니다."),
+      speaker: string("말하는 인물의 이름. 비워 두면 이름을 숨깁니다."),
       emotion: options("표정. 기본, 기쁨, 슬픔, 분노, 놀람 중 하나입니다.", "neutral", "happy", "sad", "angry", "surprised"),
       autoAdvance: flag("확인 입력 없이 대사를 넘길지 정합니다."),
       position: options("이 대사의 창 위치. 자동, 위, 가운데, 아래 중 하나입니다.", "auto", "top", "center", "bottom"),
@@ -31,12 +38,13 @@ export const dialogueFields = {
   changeFace: {
     title: "얼굴 바꾸기",
     fields: {
-      resourceId: string("프로젝트에서 확인한 얼굴 그림 식별자. 빈 글자는 얼굴을 지웁니다."),
+      resourceId: string("프로젝트에서 확인한 얼굴 그림 식별자. 빈 문자열을 보내면 얼굴을 숨깁니다."),
       appearanceId: id("얼굴을 가져올 인물 외형의 식별자."),
       position: options("얼굴을 띄울 쪽. 왼쪽 또는 오른쪽입니다.", "left", "right"),
       flipHorizontally: flag("그림을 좌우로 뒤집을지 정합니다."),
       presentation: options("그림 형태. 얼굴, 흉상, 전신 중 하나입니다.", "face", "bust", "full"),
-      fullScale: { type: "number", minimum: 1, description: "전신 그림 배율. 기본 크기가 100입니다." },
+      fullScale: integer(`전신 그림 배율. ${fullScale.min}%부터 ${fullScale.max}%까지이며 기본 크기는 100%입니다.`,
+        fullScale.min, fullScale.max),
     },
     insertRequires: [],
   },
@@ -68,7 +76,7 @@ export const dialogueFields = {
   inputWait: {
     title: "입력 대기",
     fields: {
-      variableId: string("누른 키를 저장할 변수 식별자. 빈 글자는 저장하지 않고 기다립니다."),
+      variableId: string("누른 키를 저장할 변수 식별자. 빈 문자열을 보내면 입력만 기다립니다."),
     },
     insertRequires: [],
   },
@@ -86,7 +94,7 @@ export const dialogueFields = {
     title: "이름 입력",
     fields: {
       actorId: string("이름을 바꿀 배우 식별자. 문자열 변수에 저장할 때는 비워도 됩니다."),
-      stringVariableId: string("입력한 글자를 저장할 변수 식별자. 빈 글자는 배우 이름을 바꿉니다."),
+      stringVariableId: string("입력한 글자를 저장할 변수 식별자. 빈 문자열을 보내면 배우 이름을 바꿉니다."),
       maxLength: integer("입력할 수 있는 최대 글자 수. 한 자부터 열두 자까지입니다.", 1, 12),
       showInitialName: flag("입력창을 열 때 기존 이름이나 글자를 채워 둘지 정합니다."),
       prompt: string("문자열 입력창 위에 표시할 안내 문구."),
@@ -119,8 +127,19 @@ function requireVariable(project: Project, variableId: string | undefined) {
   }
 }
 
+function requirePortraitImage(project: Project, resourceId: string): void {
+  const uploaded = Object.hasOwn(project.assets.uploaded, resourceId) ? project.assets.uploaded[resourceId] : undefined;
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  const image = uploaded?.ref
+    ? /^image\/(?:png|jpeg|webp|gif)$/iu.test(uploadedAssetMime(uploaded))
+    : url !== null && (/\.(?:png|jpe?g|webp|gif)(?:[?#].*)?$/iu.test(url) || /^data:image\/(?:png|jpeg|webp|gif);base64,/iu.test(url));
+  if (!image || uploaded?.kind === "music" || uploaded?.kind === "sound" || uploaded?.kind === "movie") {
+    throw new PrimitiveError("대화창에 표시할 수 있는 얼굴 그림을 골라 주세요.");
+  }
+}
+
 /** Validate the edited row, leaving pre-existing commands in its branches alone. */
-export function validateDialogueReferences(project: Project, command: DialogueCommand) {
+export function validateDialogueReferences(project: Project, command: DialogueCommand, patch: Readonly<Record<string, unknown>>) {
   if (command.kind === "inputWait") requireVariable(project, command.variableId);
   if (command.kind === "enterHeroName") {
     requireVariable(project, command.stringVariableId);
@@ -151,7 +170,8 @@ export function validateDialogueReferences(project: Project, command: DialogueCo
       classIds: empty, enemyIds: empty, equipmentIds: empty, skillIds: empty, animationIds: empty,
       switchIds: empty, mapIds: empty, commonEventIds: empty, endingIds: empty, gameOverIds: empty, troopIds: empty, speciesIds: empty,
     });
-  } catch {
+  } catch (error) {
+    if (!(error instanceof ProjectFormatError)) throw error;
     const messages = {
       changeFace: "지정한 얼굴 그림이나 인물 외형을 찾을 수 없습니다.",
       presentItem: "제시할 아이템을 자료집에서 찾을 수 없습니다.",
@@ -159,6 +179,15 @@ export function validateDialogueReferences(project: Project, command: DialogueCo
       enterHeroName: "이름을 바꿀 배우를 자료집에서 찾을 수 없습니다.",
     };
     throw new PrimitiveError(messages[command.kind]);
+  }
+
+  if (command.kind !== "changeFace") return;
+  if (command.appearanceId && (Object.hasOwn(patch, "appearanceId") || Object.hasOwn(patch, "presentation"))) {
+    const portrait = resolveAppearancePortrait(project, command.appearanceId, command.presentation ?? "face");
+    if (!portrait) throw new PrimitiveError("선택한 인물 외형에 표시할 초상이 없습니다.");
+    requirePortraitImage(project, portrait.resourceId);
+  } else if (command.resourceId && Object.hasOwn(patch, "resourceId")) {
+    requirePortraitImage(project, command.resourceId);
   }
 }
 
@@ -185,22 +214,26 @@ export function dialogueDetail(project: Project, command: DialogueCommand): stri
     case "displayTextSettings":
       return commandSummary(command);
     case "changeFace": {
-      if (!command.resourceId && !command.appearanceId) return "얼굴 숨기기";
+      const portrait = command.appearanceId
+        ? resolveAppearancePortrait(project, command.appearanceId, command.presentation ?? "face")
+        : command;
+      if (!portrait?.resourceId) return "얼굴 숨기기";
       const side = command.position === "left" ? "왼쪽" : "오른쪽";
-      const shape = command.presentation === "bust" ? "흉상" : command.presentation === "full" ? "전신" : "얼굴";
+      const mode = portrait.presentation ?? facePresentationForResource(portrait.resourceId);
+      const shape = mode === "bust" ? "흉상" : mode === "full" ? "전신" : "얼굴";
       return `${side} ${shape}${command.flipHorizontally ? " 좌우 반전" : ""}`;
     }
     case "presentItem":
-      return previewText(command.prompt ?? "", "아이템 제시");
+      return `아이템 제시 · ${previewText(command.prompt ?? "", "소지품에서 고르기")}`;
     case "inputWait":
       return command.variableId
-        ? `키 입력 결과를 ${recordLabel(project.variables, command.variableId, "지정한 변수")}에 저장`
+        ? `키 입력 대기 · ${recordLabel(project.variables, command.variableId, "지정한 변수")}에 저장`
         : commandSummary(command);
     case "inputNumber":
       return `${recordLabel(project.variables, command.variableId, "지정한 변수")}에 최대 ${command.digits}자리 숫자 입력`;
     case "enterHeroName":
       return command.stringVariableId
         ? `${recordLabel(project.variables, command.stringVariableId, "지정한 변수")}에 최대 ${command.maxLength}자 입력`
-        : `${recordLabel(project.database.actors, command.actorId, "지정한 배우")} 이름 최대 ${command.maxLength}자 입력`;
+        : `${recordLabel(project.database.actors, command.actorId, "지정한 배우")}의 이름을 최대 ${command.maxLength}자 입력`;
   }
 }

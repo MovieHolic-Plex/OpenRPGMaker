@@ -1,3 +1,4 @@
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { newCommand } from "@/editor/eventCommandFactory";
 import type { JsonSchema } from "@/editor/tools/types";
@@ -5,6 +6,7 @@ import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import type { Command, EventPage, Project } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
@@ -23,7 +25,8 @@ const branchPathField: JsonSchema = {
   description: "분기 안이면 읽어 온 분기 경로를 넣습니다. 가장 바깥 목록이면 생략합니다.",
 };
 const expectedHashField: JsonSchema = {
-  type: "string", minLength: 1, description: "읽어 온 명령의 확인값. 줄 내용이 바뀌었는지 확인할 때 사용합니다.",
+  type: "string", minLength: 1,
+  description: "get_event에서 includeCommandHashes를 켜고 읽은 이 줄의 확인값(hash).",
 };
 
 function commandLocation(page: EventPage, action: Action, args: Args) {
@@ -41,6 +44,29 @@ function commandLocation(page: EventPage, action: Action, args: Args) {
     throw new PrimitiveError("범위 밖: 선택한 페이지에서 명령 줄을 찾을 수 없습니다.");
   }
   return { path: [...branchPath, index], current: list[index], index };
+}
+
+function verifyCommandEdit(
+  before: Command[], after: Command[], path: readonly number[], action: Action, command: Command,
+): void {
+  const outsideRow = () => new PrimitiveError("범위 밖: 다른 명령이나 분기도 함께 바뀌어 적용할 수 없습니다.");
+  for (let depth = 0; depth < path.length - 1; depth += 2) {
+    const row = path[depth]!;
+    const branch = path[depth + 1]!;
+    const beforeBranches = eventCommandBranches(before[row]!);
+    const afterBranches = eventCommandBranches(after[row]!);
+    // 복제 뒤에도 여러 분기가 같은 배열을 공유할 수 있다.
+    if (before.length !== after.length ||
+        !before.every((entry, index) => index === row || jsonEqual(entry, after[index])) ||
+        beforeBranches.some((entry, index) => entry.branchIndex !== branch && !jsonEqual(entry.commands, afterBranches[index]?.commands))) {
+      throw outsideRow();
+    }
+    before = resolveCommandListAtPath(before, [row, branch, 0])!;
+    after = resolveCommandListAtPath(after, [row, branch, 0])!;
+  }
+  const expected = before.slice();
+  expected.splice(path.at(-1)!, action === "insert" ? 0 : 1, command);
+  if (!jsonEqual(expected, after)) throw outsideRow();
 }
 
 function editChoices(
@@ -69,7 +95,7 @@ function editChoices(
   if (cancelIndex !== null && cancelIndex >= options.length) {
     throw new PrimitiveError("취소했을 때 고를 선택지가 없습니다.");
   }
-  if (next.cancelBehavior === "branch" && next.cancelBranch === undefined) next.cancelBranch = [];
+  if (fields.cancelBehavior === "branch" && next.cancelBranch === undefined) next.cancelBranch = [];
   return next;
 }
 
@@ -98,13 +124,25 @@ function nextCommand(
       const { correctItemIds, ...settings } = patch;
       const options = correctItemIds === undefined ? base.options
         : [...new Set(correctItemIds as string[])].map(itemId => ({ itemId, branch: [] }));
-      return { command: { ...base, ...settings, options }, patch: settings };
+      const command = { ...base, ...settings, options };
+      const itemIds = settings.itemIds;
+      if (Array.isArray(itemIds) && options.some(option => !itemIds.includes(option.itemId))) {
+        throw new PrimitiveError("정답 아이템은 제시할 목록에도 넣어 주세요.");
+      }
+      return { command, patch: settings };
     }
     case "changeFace":
-      if (Object.hasOwn(patch, "resourceId") && base.appearanceId !== undefined && !Object.hasOwn(patch, "appearanceId")) patch.appearanceId = undefined;
-      if (patch.appearanceId !== undefined && !Object.hasOwn(patch, "resourceId")) patch.resourceId = "";
+      if (patch.appearanceId !== undefined) {
+        if (patch.resourceId) throw new PrimitiveError("얼굴 그림과 인물 외형 중 하나만 골라 주세요.");
+        patch.resourceId = "";
+      } else if (Object.hasOwn(patch, "resourceId") && base.appearanceId !== undefined) {
+        patch.appearanceId = undefined;
+      }
       break;
     case "enterHeroName":
+      if (typeof patch.actorId === "string" && patch.actorId && !patch.actorId.trim()) {
+        throw new PrimitiveError("이름을 바꿀 배우를 자료집에서 골라 주세요.");
+      }
       if (action === "insert" && patch.actorId === undefined && !patch.stringVariableId) {
         patch.actorId = project.session.partyActorIds[0] ?? project.database.actors[0]?.id ?? "";
       }
@@ -124,6 +162,10 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     const { path, current, index } = commandLocation(page, action, args);
     if (!inserting && current?.kind !== kind) {
       throw new PrimitiveError("범위 밖: 이 줄에서 해당 명령을 찾을 수 없습니다.");
+    }
+    const expectedHash = args.expectedHash as string;
+    if (!inserting && eventCommandHash(current!) !== expectedHash) {
+      throw new PrimitiveError("명령 줄이 바뀌었습니다. 그 줄을 다시 읽어 주세요.");
     }
     const edits = Object.fromEntries(Object.keys(fields).filter(key => Object.hasOwn(args, key)).map(key => [key, args[key]]));
     if (!inserting && Object.keys(edits).length === 0) throw new PrimitiveError("바꿀 값을 하나 이상 입력해 주세요.");
@@ -146,10 +188,11 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
         ...(inserting ? {} : { expectedHash: expectedHashField }),
         ...fields,
       },
-      required: inserting ? insertRequires : ["index"],
+      required: inserting ? insertRequires : ["index", "expectedHash"],
       additionalProperties: false,
     },
     scope(ctx) {
+      // 공용 검사는 페이지를 고정하고 verifyCommandEdit는 그 안에서 명령 한 줄만 바뀌었는지 확인한다.
       const { map, event, page } = scopedPage(ctx);
       return { kind: "eventPage", mapId: map.id, eventId: event.id, pageId: page.id };
     },
@@ -162,23 +205,20 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     },
     apply(ctx, args) {
       const { page, path, index, command, patch, current } = prepare(ctx, args);
-      validateDialogueReferences(ctx.project, command);
+      validateDialogueReferences(ctx.project, command, patch);
       let nextPage: EventPage;
       try {
         if (inserting) {
           nextPage = insertEventCommand(page, path, command);
         } else {
-          const hash = eventCommandHash(current!);
-          if (args.expectedHash !== undefined && args.expectedHash !== hash) {
-            throw new PrimitiveError("명령 줄이 바뀌었습니다. 다시 읽어 주세요.");
-          }
           if (command.kind === "choices" && current?.kind === "choices" &&
-              (command.options.length !== current.options.length || command.cancelBranch !== current.cancelBranch)) {
-            // The generic patch intentionally requires identical branch lists. Here only new empty branches can be added.
+              (command.options.length !== current.options.length || command.cancelBranch !== current.cancelBranch ||
+               (current.cancelBehavior === "branch" && current.cancelBranch === undefined && command.cancelBehavior !== "branch"))) {
+            // 분기 안의 명령은 보존한다. 빈 분기가 생기거나 표시되지 않을 때는 머리줄을 교체한다.
             nextPage = insertEventCommand(page, path, command);
             resolveCommandListAtPath(nextPage.commands, path)!.splice(index + 1, 1);
           } else {
-            nextPage = updateEventCommand(page, path, patch, hash);
+            nextPage = updateEventCommand(page, path, patch, args.expectedHash as string);
           }
         }
       } catch (error) {
@@ -186,6 +226,7 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
         throw error;
       }
 
+      verifyCommandEdit(page.commands, nextPage.commands, path, action, command);
       return updateScopedPage(ctx, () => nextPage);
     },
   };

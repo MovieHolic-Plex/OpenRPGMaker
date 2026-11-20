@@ -24,10 +24,10 @@
     "fields": {"prompt": "무얼 가져왔나"}
   },
   {
-    "request": "회복약 대신 마력약만 내밀 수 있게 고쳐 주세요.",
+    "request": "아이템 제시 목록에서 마력약을 회복약보다 먼저 보여 주세요.",
     "primitive": "cmd.presentItem.update",
-    "args": {"index": 0, "itemIds": ["item_ether"]},
-    "fields": {"itemIds": ["item_ether"]}
+    "args": {"index": 0, "itemIds": ["item_ether", "item_potion"]},
+    "fields": {"itemIds": ["item_ether", "item_potion"]}
   },
   {
     "request": "제시 물건을 제한하지 말고 기본 후보를 다시 보여줘",
