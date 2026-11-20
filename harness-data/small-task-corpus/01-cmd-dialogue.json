@@ -1,1 +1,834 @@
-[]
+[
+  {
+    "request": "떠돌이 상인 말 끝에 ‘조심히 다녀오게’ 한 줄 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "조심히 다녀오게"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].body", "equals": "조심히 다녀오게"}]
+  },
+  {
+    "request": "마지막에 ‘필요하면 다시 찾아와.’라고 덧붙여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "필요하면 다시 찾아와."},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].body", "equals": "필요하면 다시 찾아와."}]
+  },
+  {
+    "request": "장사 끝날 때 ‘숨을 돌리게.’ 하고 줄바꾼 다음 ‘아직 날은 길어.’라고 말하게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "숨을 돌리게.\n아직 날은 길어.", "speaker": "떠돌이 상인"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].body", "equals": "숨을 돌리게.\n아직 날은 길어."}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].speaker", "equals": "떠돌이 상인"}]
+  },
+  {
+    "request": "끝에 ‘다음 손님!’ 넣고 확인 안 눌러도 넘어가게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "다음 손님!", "autoAdvance": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].autoAdvance", "equals": true}]
+  },
+  {
+    "request": "대사 추가좀. ‘위를 봐.’를 화면 위에 띄워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "위를 봐.", "position": "top"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].body", "equals": "위를 봐."}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "top"}]
+  },
+  {
+    "request": "떠돌이 상인이 기뻐하면서 ‘잘 돌아왔구나!’라고 한마디 더 하게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "잘 돌아왔구나!", "emotion": "happy"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].emotion", "equals": "happy"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].body", "equals": "잘 돌아왔구나!"}]
+  },
+  {
+    "request": "아무 글도 없는 빈 대사창을 끝에 하나 띄워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": ""},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 이벤트 말고 뒷문 안내판 페이지에 ‘들어가세요’ 한 줄 붙여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.insert",
+    "args": {"body": "들어가세요", "pageId": "page_other"},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인의 첫 말만 ‘먼 길에는 약을 챙기게.’로 고쳐 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 1, "body": "먼 길에는 약을 챙기게."},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].body", "equals": "먼 길에는 약을 챙기게."}]
+  },
+  {
+    "request": "두 번째 명령에 있는 스피커 이름을 ‘약초상’으로 바꿔 주시겠어요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 1, "speaker": "약초상"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].speaker", "equals": "약초상"}]
+  },
+  {
+    "request": "그 약 챙기라는 대사는 화면 가운데에 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 1, "position": "center"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].position", "equals": "center"}]
+  },
+  {
+    "request": "처음 상인 말은 자동넘김으로 해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 1, "autoAdvance": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].autoAdvance", "equals": true}]
+  },
+  {
+    "request": "첫 인삿말에 놀란 표정 붙여.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 1, "emotion": "surprised"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].emotion", "equals": "surprised"}]
+  },
+  {
+    "request": "첫 대사는 누가 말하는지 이름만 가려 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 1, "speaker": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].speaker", "equals": ""}]
+  },
+  {
+    "request": "저 페이지 스무 번째 대사 ‘잠깐만’으로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 19, "body": "잠깐만"},
+    "expectRefusal": true
+  },
+  {
+    "request": "처음 얼굴 바꾸는 줄을 ‘서둘러’라는 대사 수정으로 처리해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.text.update",
+    "args": {"index": 0, "body": "서둘러"},
+    "expectRefusal": true
+  },
+  {
+    "request": "맨끝에 얼굴 지우는 동작 넣어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"resourceId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].resourceId", "equals": ""}]
+  },
+  {
+    "request": "마지막에는 기본 얼굴을 오른쪽에 띄워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"position": "right"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "right"}]
+  },
+  {
+    "request": "끝에 기본 얼굴 넣되 좌우로 뒤집어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"flipHorizontally": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].flipHorizontally", "equals": true}]
+  },
+  {
+    "request": "기본 배역 얼굴을 오른편에 흉상으로 하나 더 붙여.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"presentation": "bust", "position": "right"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "bust"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "right"}]
+  },
+  {
+    "request": "대화 끝에 기본 얼굴 소재를 다시 한 번 지정해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].resourceId", "equals": "easyrpg-faceset-actor1-00"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "left"}]
+  },
+  {
+    "request": "전신 초상을 추가하고 기본 크기의 두 배로 보여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"presentation": "full", "fullScale": 200},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "full"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].fullScale", "equals": 200}]
+  },
+  {
+    "request": "자료에도 없는 달의 기사 얼굴을 하나 더 띄워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"resourceId": "face_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "말 끝에 없는 유령 외형으로 얼굴을 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.insert",
+    "args": {"appearanceId": "appearance_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 줄 상인 얼굴만 오른편으로 옮겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "position": "right"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].position", "equals": "right"}]
+  },
+  {
+    "request": "맨 위 얼굴 그림을 좌우 반전해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "flipHorizontally": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].flipHorizontally", "equals": true}]
+  },
+  {
+    "request": "상인의 처음 얼굴을 흉상으로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "presentation": "bust"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].presentation", "equals": "bust"}]
+  },
+  {
+    "request": "처음 얼굴 지정 줄에서 그림 자체를 지워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "resourceId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].resourceId", "equals": ""}]
+  },
+  {
+    "request": "상인의 외형에서 고른 얼굴 말고 기본 배우 얼굴로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "resourceId": "easyrpg-faceset-actor1-00"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].resourceId", "equals": "easyrpg-faceset-actor1-00"}]
+  },
+  {
+    "request": "첫줄 초상은 전신으로 바꾸고 크기는 백이십 퍼센트로 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "presentation": "full", "fullScale": 120},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].presentation", "equals": "full"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].fullScale", "equals": 120}]
+  },
+  {
+    "request": "첫 얼굴을 가져온 적 없는 초상으로 교체해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "resourceId": "face_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 얼굴을 아직 안 만든 외형으로 연결해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeFace.update",
+    "args": {"index": 0, "appearanceId": "appearance_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "마지막에 ‘더 알아볼까?’라고 묻는 선택지 붙여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"prompt": "더 알아볼까?"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].prompt", "equals": "더 알아볼까?"}]
+  },
+  {
+    "request": "예 아니오 말고 ‘쉬어 간다’, ‘계속 걷는다’ 둘로 물어봐 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"optionLabels": ["쉬어 간다", "계속 걷는다"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].options[0].text", "equals": "쉬어 간다"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].options[1].text", "equals": "계속 걷는다"}]
+  },
+  {
+    "request": "‘돌아간다’ 하나만 고를 수 있게 맨 끝에 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"optionLabels": ["돌아간다"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].options[0].text", "equals": "돌아간다"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].cancelBehavior", "equals": "disallow"}]
+  },
+  {
+    "request": "선택지를 하나 더 만들고 취소키는 먹지 않게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"cancelBehavior": "disallow"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].cancelBehavior", "equals": "disallow"}]
+  },
+  {
+    "request": "끝에 3개 답 ‘산’, ‘강’, ‘숲’ 넣고 취소하면 숲으로 골라줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"optionLabels": ["산", "강", "숲"], "cancelBehavior": "choice3"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].options[2].text", "equals": "숲"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].cancelBehavior", "equals": "choice3"}]
+  },
+  {
+    "request": "답을 고르는 창을 넣고 취소했을 때 처리할 분기도 마련해 주시겠어요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"cancelBehavior": "branch"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].cancelBehavior", "equals": "branch"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].cancelBranch", "equals": []}]
+  },
+  {
+    "request": "답 하나도 없는 선택창 하나 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"optionLabels": []},
+    "expectRefusal": true
+  },
+  {
+    "request": "예·아니요 두 개만 넣고 취소할 땐 셋째 답으로 가도록 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.insert",
+    "args": {"optionLabels": ["예", "아니요"], "cancelBehavior": "choice3"},
+    "expectRefusal": true
+  },
+  {
+    "request": "의뢰 선택지 질문만 ‘화롯불 일을 맡을까요?’로 고쳐 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "prompt": "화롯불 일을 맡을까요?"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].prompt", "equals": "화롯불 일을 맡을까요?"}]
+  },
+  {
+    "request": "수락/다음에 있던 선택을 ‘맡는다’랑 ‘그만둔다’로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "optionLabels": ["맡는다", "그만둔다"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].options[0].text", "equals": "맡는다"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].options[1].text", "equals": "그만둔다"}]
+  },
+  {
+    "request": "상인 의뢰 선택창에 ‘자세히 듣기’를 세번째로 추가해 주실래요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "appendOption": "자세히 듣기"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].options[2]", "equals": {"text": "자세히 듣기", "branch": []}}]
+  },
+  {
+    "request": "의뢰 질문에서 취소 못 하게 막아줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "cancelBehavior": "disallow"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].cancelBehavior", "equals": "disallow"}]
+  },
+  {
+    "request": "화롯불 질문은 취소 누르면 첫 번째 답을 선택하게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "cancelBehavior": "choice1"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].cancelBehavior", "equals": "choice1"}]
+  },
+  {
+    "request": "의뢰 문답에 질문 문구는 지워주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "prompt": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].prompt", "equals": ""}]
+  },
+  {
+    "request": "상인 답은 ‘수락’ 한 줄로 다른 분기도 없애.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "optionLabels": ["수락"]},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 두 답만 있는 의뢰창에서 취소는 네 번째로 보내.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.choices.update",
+    "args": {"index": 5, "cancelBehavior": "choice4"},
+    "expectRefusal": true
+  },
+  {
+    "request": "장사 끝에 ‘증거를 보여 주세요’라고 물건 내미는 창 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"prompt": "증거를 보여 주세요"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "presentItem"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].prompt", "equals": "증거를 보여 주세요"}]
+  },
+  {
+    "request": "마지막에 포션만 제시할 수 있게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"itemIds": ["item_potion"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "presentItem"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].itemIds", "equals": ["item_potion"]}]
+  },
+  {
+    "request": "회복약과 마력약 중에서 하나 골라 보여주게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"itemIds": ["item_potion", "item_ether"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "presentItem"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].itemIds", "equals": ["item_potion", "item_ether"]}]
+  },
+  {
+    "request": "포션을 정답으로 받는 아이템 창 하나 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"correctItemIds": ["item_potion"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "presentItem"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].options[0]", "equals": {"itemId": "item_potion", "branch": []}}]
+  },
+  {
+    "request": "정답이 회복약인 제시 창 추가하고 맞으면 한 개를 써 버리게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"correctItemIds": ["item_potion"], "consume": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "presentItem"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].consume", "equals": true}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].options[0].itemId", "equals": "item_potion"}]
+  },
+  {
+    "request": "‘물건을 건네 보세요’라고 안내하고 정답을 내도 아이템은 안 줄도록요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"prompt": "물건을 건네 보세요", "consume": false},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "presentItem"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].prompt", "equals": "물건을 건네 보세요"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].consume", "equals": false}]
+  },
+  {
+    "request": "없는 수정 열쇠를 제시 목록에 넣은 창을 추가해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"itemIds": ["item_crystal_missing"]},
+    "expectRefusal": true
+  },
+  {
+    "request": "아직 만들지 않은 붉은 인장을 정답으로 받는 창 추가좀.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.insert",
+    "args": {"correctItemIds": ["item_seal_missing"]},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인 세번째 줄에서 물건 보여 주는 창의 안내만 ‘증거를 내세요’로요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 2, "prompt": "증거를 내세요"},
+    "expectRefusal": true
+  },
+  {
+    "request": "저편 안내 이벤트의 물건 제시 문구를 고쳐 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "prompt": "보여 주세요", "eventId": "ev_other"},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인 말 마지막에 아무 키나 누를 때까지 기다려.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputWait"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": ""}]
+  },
+  {
+    "request": "안내가 끝나면 입력대기 넣어주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputWait"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": ""}]
+  },
+  {
+    "request": "결정키 기다리는 줄 추가하고 결과는 첫째 변수에 적어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {"variableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputWait"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": "var_0001"}]
+  },
+  {
+    "request": "누른 키 번호를 두 번째 변수에 넣는 대기 하나 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {"variableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputWait"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": "var_0002"}]
+  },
+  {
+    "request": "세번째 변수에 키 입력 저장하게 마지막에 붙여.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {"variableId": "var_0003"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputWait"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": "var_0003"}]
+  },
+  {
+    "request": "그냥 키 눌러야 진행하게, 기록은 하지 마.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {"variableId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputWait"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": ""}]
+  },
+  {
+    "request": "아직 안 만든 버튼 변수에 키 기록하는 대기 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {"variableId": "var_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "현재 이벤트 말고 옆의 문 이벤트에 키 대기를 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.insert",
+    "args": {"eventId": "ev_other"},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인 쪽 첫 줄 키 입력 대기는 결과를 첫째 변수에 저장하게 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": "var_0001"},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인 다음 페이지의 키 대기에 둘째 변수만 연결해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": "var_0002", "pageId": "ev_supply_shop_active"},
+    "expectRefusal": true
+  },
+  {
+    "request": "입력받은 수를 첫째 변수에 적어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputNumber"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": "var_0001"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].digits", "equals": 1}]
+  },
+  {
+    "request": "두번째 변수로 숫자 세 자리 입력창 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0002", "digits": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputNumber"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].digits", "equals": 3}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": "var_0002"}]
+  },
+  {
+    "request": "‘몇 개 살까요?’ 숫자 입력창 추가. 응답은 셋째 변수.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0003", "prompt": "몇 개 살까요?"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputNumber"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].prompt", "equals": "몇 개 살까요?"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].variableId", "equals": "var_0003"}]
+  },
+  {
+    "request": "숫자 키패드 달아서 네 자리 수를 첫 번째 변수에 받아.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0001", "showPad": true, "digits": 4},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputNumber"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].showPad", "equals": true}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].digits", "equals": 4}]
+  },
+  {
+    "request": "첫 변수에 여섯자리 비번을 받아 줘. 키패드는 숨겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0001", "showPad": false, "digits": 6},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputNumber"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].showPad", "equals": false}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].digits", "equals": 6}]
+  },
+  {
+    "request": "‘가격을 적으세요’라고 묻고 두 자리 숫자를 두번째 변수에 저장해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0002", "digits": 2, "prompt": "가격을 적으세요"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "inputNumber"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].digits", "equals": 2}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].prompt", "equals": "가격을 적으세요"}]
+  },
+  {
+    "request": "아직 만들지 않은 가격 변수에 숫자를 받는 창 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫째 변수로 열세 자리 코드 입력창 만들래.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.insert",
+    "args": {"variableId": "var_0001", "digits": 13},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인 첫 대사 줄에 있는 숫자 입력을 세 자리로 고쳐 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 1, "digits": 3},
+    "expectRefusal": true
+  },
+  {
+    "request": "이벤트 밖에 있는 숫자 입력창만 두 자리로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "digits": 2, "eventId": "ev_other"},
+    "expectRefusal": true
+  },
+  {
+    "request": "주인공 이름을 입력받는 창 넣어줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "enterHeroName"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].actorId", "equals": "actor_hero"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].maxLength", "equals": 6}]
+  },
+  {
+    "request": "주인공 새 이름은 최대 세 글자로 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"actorId": "actor_hero", "maxLength": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "enterHeroName"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].maxLength", "equals": 3}]
+  },
+  {
+    "request": "이름 입력 칸 처음엔 아무 글자도 안 채워 주셨으면 해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"actorId": "actor_hero", "showInitialName": false},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "enterHeroName"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].showInitialName", "equals": false}]
+  },
+  {
+    "request": "‘암호를 적으세요’ 하고 글자를 첫 변수에 받아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"stringVariableId": "var_0001", "prompt": "암호를 적으세요"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "enterHeroName"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].stringVariableId", "equals": "var_0001"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].prompt", "equals": "암호를 적으세요"}]
+  },
+  {
+    "request": "이름 고르는 창에 별빛 연출도 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"actorId": "actor_hero", "presentation": "showcase"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "enterHeroName"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].presentation", "equals": "showcase"}]
+  },
+  {
+    "request": "경비 배우의 이름을 입력받되 최대 열두 자까지.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"actorId": "actor_guardian", "maxLength": 12},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "enterHeroName"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].actorId", "equals": "actor_guardian"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].maxLength", "equals": 12}]
+  },
+  {
+    "request": "등록 안 한 마법사 이름을 받는 창 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"actorId": "actor_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "아직 없는 암호 변수에 글을 입력받아.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.insert",
+    "args": {"stringVariableId": "var_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인 첫 말 뒤의 이름 입력에서 여덟 글자까지 받도록 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 2, "maxLength": 8},
+    "expectRefusal": true
+  },
+  {
+    "request": "다른 이벤트의 이름 창만 최대 세 글자로 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "maxLength": 3, "eventId": "ev_other"},
+    "expectRefusal": true
+  },
+  {
+    "request": "대사 칸을 화면 위쪽에 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"position": "top"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "displayTextSettings"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "top"}]
+  },
+  {
+    "request": "말풍선 말고 대사창 배경을 투명하게 만드는 줄을 추가해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"format": "transparent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "displayTextSettings"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].format", "equals": "transparent"}]
+  },
+  {
+    "request": "문장창 가운데로 설정하는 명령 넣어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"position": "center"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "displayTextSettings"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "center"}]
+  },
+  {
+    "request": "대사가 주인공을 가려도 위치가 안 바뀌는 설정을 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"preventObscuringPlayer": false},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "displayTextSettings"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].preventObscuringPlayer", "equals": false}]
+  },
+  {
+    "request": "대사 읽는 중에도 주변 인물 움직이게 설정 추가해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"allowEventMovementDuringWait": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "displayTextSettings"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].allowEventMovementDuringWait", "equals": true}]
+  },
+  {
+    "request": "투명한 아래쪽 창으로 돌려 놓는 명령을 끝에 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"position": "bottom", "format": "transparent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].kind", "equals": "displayTextSettings"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].position", "equals": "bottom"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1].format", "equals": "transparent"}]
+  },
+  {
+    "request": "문장창을 화면 왼쪽으로 보내는 설정을 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"position": "left"},
+    "expectRefusal": true
+  },
+  {
+    "request": "우리 이벤트가 아닌 건너편 가게 페이지의 대화창 위치를 위로 지정해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.displayTextSettings.insert",
+    "args": {"pageId": "page_other", "position": "top"},
+    "expectRefusal": true
+  },
+  {
+    "request": "최후의 결전의 대화창 설정에서 윗쪽으로 위치를 옮겨 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "position": "top"},
+    "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].position", "equals": "top"}]
+  },
+  {
+    "request": "전투 뒤 대사 상자 배경을 투명하게 바꿔주실래요?",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "format": "transparent"},
+    "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].format", "equals": "transparent"}]
+  },
+  {
+    "request": "원래 아래에 있던 대화창 가운데로.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "position": "center"},
+    "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].position", "equals": "center"}]
+  },
+  {
+    "request": "마지막 무대에서는 주인공 가림 방지를 꺼줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "preventObscuringPlayer": false},
+    "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].preventObscuringPlayer", "equals": false}]
+  },
+  {
+    "request": "창 떠있는 동안도 이벤트 캐릭 움직일 수 있게.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "allowEventMovementDuringWait": true},
+    "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].allowEventMovementDuringWait", "equals": true}]
+  },
+  {
+    "request": "가운데 투명 창으로 변경하되 주인공 때문에 자동 이동하진 않게요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "position": "center", "format": "transparent", "preventObscuringPlayer": false},
+    "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].position", "equals": "center"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].format", "equals": "transparent"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].preventObscuringPlayer", "equals": false}]
+  },
+  {
+    "request": "문장 창을 오른쪽에만 표시하도록 설정 바꿔 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "position": "right"},
+    "expectRefusal": true
+  },
+  {
+    "request": "최후의 결전 페이지는 그대로 두고 왕좌 옆 이벤트의 설정을 고쳐 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
+    "primitive": "cmd.displayTextSettings.update",
+    "args": {"index": 4, "position": "top", "eventId": "ev_other"},
+    "expectRefusal": true
+  }
+]
