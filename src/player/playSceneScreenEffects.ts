@@ -1,4 +1,5 @@
 import { dialogueHost } from "@/player/playSceneDom";
+import { armDialogueConfirmRelease } from "@/player/confirmMashGuard";
 import { el } from "@/util/dom";
 import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { FADE_OUT_TINT } from "@/player/interpreter/screenEffectPlan";
@@ -106,6 +107,7 @@ export function releaseOrphanedFadeOut(scene: PlaySceneContext, delayMs = 450): 
     if (scene.session !== session || scene.running || !scene.inputEnabled || scene.sys?.isActive() === false) return;
     const screen = session.m2Runtime?.screen;
     if (!screen || screen.hidden === true || screen.tint !== FADE_OUT_TINT) return;
+    armDialogueConfirmRelease();
     screen.tint = "none";
     screen.tintDurationMs = 500;
     syncScreenEffects(scene);

@@ -502,21 +502,43 @@ function buildKonbini(project: Project, links: Links): Cell {
     ifCond(varIs(V_TASKS, 1), [...say("manager", "happy", "하나 끝냈어요? 나머지도 천천히.")]),
     ifCond(varIs(V_TASKS, 2), [...say("manager", "happy", "거의 다 왔어요. 하나만 더.")]),
   ];
+  const taskHints = {
+    3: [
+      ["sw_mk_t_box1", "상자는 매장 왼쪽 진열대 사이에 있어요.", "상자는 매장 왼쪽 진열대 사이. 마왕군 보급품은 아니고 컵라면."],
+      ["sw_mk_t_trash1", "분리수거함은 입구 왼쪽이에요.", "분리수거함은 입구 왼쪽. 어둠의 차원 말고 거기."],
+    ],
+    5: [
+      ["sw_mk_t_snack2", "핫스낵은 매장 안쪽, 진열대 끝에 있는 케이스에서 준비해요.", "핫스낵 케이스는 매장 안쪽, 진열대 끝. 가라아게 레드는 검게 튀기는 거 아니야."],
+      ["sw_mk_t_order2", "발주 단말은 제 옆 책상에 있어요.", "발주 단말은 점장님 옆 책상. 마왕군 식량 주문하는 거 아니니까 적당히."],
+    ],
+    7: [
+      ["sw_mk_t_box3", "잡지 상자는 매장 왼쪽 진열대 사이에 있어요.", "잡지 상자도 매장 왼쪽 진열대 사이. 이번에도 네가 표지 모델은 아니야."],
+      ["sw_mk_t_waste3", "폐기 바구니는 오른쪽 백룸 선반에 있어요.", "폐기 바구니는 오른쪽 백룸 선반. 도시락 정리는 정복보다 먼저야."],
+    ],
+  } as const;
+  const unfinishedHints = (stage: keyof typeof taskHints, who: "manager" | "hina"): Command[] =>
+    taskHints[stage].map(([sw, manager, hina]) => ifCond(swOff(sw),
+      who === "hina" ? say("hina", "happy", hina)
+        : stage === 7 ? note(manager) : say("manager", "base", manager)));
   ev(event(MGR_B, "사토미 점장", BACK, [
     gone(`${MGR_B}_off`, []),
-    page(`${MGR_B}_p3`, [varIs(V_STAGE, 3)], [faceHero(MGR_B), ...say("manager", "base", "오늘은 계산대, 상자 진열, 분리수거. 모르는 건 히나한테 물어요."), ...progress], { who: "manager" }),
-    page(`${MGR_B}_p5`, [varIs(V_STAGE, 5)], [faceHero(MGR_B), ...say("manager", "base", "오늘은 계산대, 핫스낵, 발주. 발주 단말은 제 옆 책상."), ...progress], { who: "manager" }),
+    page(`${MGR_B}_p3`, [varIs(V_STAGE, 3)], [faceHero(MGR_B), ...say("manager", "base", "오늘은 계산대, 상자 진열, 분리수거. 모르는 건 히나한테 물어요."), ...unfinishedHints(3, "manager"), ...progress], { who: "manager" }),
+    page(`${MGR_B}_p5`, [varIs(V_STAGE, 5)], [faceHero(MGR_B), ...say("manager", "base", "오늘은 계산대, 핫스낵, 발주."), ...unfinishedHints(5, "manager"), ...progress], { who: "manager" }),
+    // 야간엔 점장이 집에 있다. 백룸의 같은 조사 자리에는 근무 메모를 남긴다.
+    page(`${MGR_B}_p7`, [varIs(V_STAGE, 7)], [
+      ...note("【사토미 점장 메모】 오늘은 계산대, 잡지 진열, 폐기 정리. 모르는 건 히나한테 물어요."),
+      ...unfinishedHints(7, "manager"),
+    ]),
   ]));
 
   // ── 히나 ──
-  const hinaTalk = (stage: number): Command[] => {
-    const lines: Record<number, Command[]> = {
-      2: [],
+  const hinaTalk = (stage: keyof typeof taskHints): Command[] => {
+    const lines = {
       3: [...say("hina", "happy", "손님 오면 계산대 앞에서 말 걸어. 「데워 드릴까요?」 그런 거.")],
       5: [...say("hina", "base", "아침엔 다나카 씨 와. 단골. 말은 없는데 착해."), ...say("hina", "happy", "핫스낵은 오늘 네가 해. 가라아게 레드. 우리 가게 간판.")],
-      7: [...say("hina", "base", "야간은 조용해서 좋아. …가끔 이상한 사람 오는 거 빼면."), ...say("hina", "happy", "택배 또 왔어. 잡지. 백룸 폐기 정리도.")],
+      7: [...say("hina", "base", "야간은 조용해서 좋아. …가끔 이상한 사람 오는 거 빼면."), ...say("hina", "happy", "택배 또 왔어. 잡지. 폐기 정리도 있어.")],
     };
-    return [faceHero(HINA_ID), ...(lines[stage] ?? [])];
+    return [faceHero(HINA_ID), ...lines[stage], ...unfinishedHints(stage, "hina")];
   };
   ev(event(HINA_ID, "히나", HINA, [
     gone(`${HINA_ID}_off`, []),
@@ -794,7 +816,7 @@ function buildKonbini(project: Project, links: Links): Cell {
     ...fadeIn(700),
     playSe(SE_CHIME),
     bgm(BGM_NIGHT),
-    ...say("hina", "base", "왔어? 야간은 나랑 둘이야. 점장님은 집에서 주무셔."),
+    ...say("hina", "base", "왔어? 야간은 나랑 둘이야. 점장님은 집에서 주무셔. 메모는 백룸에 두셨어."),
     ...say("hina", "happy", "상자는 매장 왼쪽 진열대 사이에, 폐기할 도시락은 오른쪽 백룸 선반에 있어. 계산대는… 손님 오면."),
     ...boxTiles(true),
     setSw(SW_SHIFT), setSw("sw_mk_brief3"),

@@ -1,4 +1,5 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
+import { armDialogueConfirmRelease } from "@/player/confirmMashGuard";
 import { releaseOrphanedFadeOut } from "@/player/playSceneScreenEffects";
 import { sendMapPursuersHome, sendPursuerHome } from "@/player/pursuitNavigation";
 import { isTouchUiHost } from "@/player/touchTap";
@@ -144,6 +145,7 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
   const activeSession = scene.session;
   try {
     if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
+      armDialogueConfirmRelease();
       const action = await showGiftMenu(scene, event, page?.name);
       if (action === "talk") await runTalkPath(scene, event, commands, eventId, options);
       if (action === "gift") await runGiftSelection(scene, event);
@@ -311,6 +313,7 @@ export async function runCommands(
   const previousRunning = scene.running, previousInputEnabled = scene.inputEnabled;
   const lease = options.allowNested === true ? undefined : claimForeground(scene);
   if (options.allowNested !== true && !lease) return;
+  armDialogueConfirmRelease();
   const owner = foregroundOwner(scene), activeSession = scene.session;
   const current = () => scene.session === activeSession && foregroundOwner(scene) === owner
     && owner?.current() !== false && options.isCurrent?.() !== false;
@@ -319,6 +322,7 @@ export async function runCommands(
   activeSession.commonEvents = project.commonEvents;
   const runTrace = activeEventRunLog()?.trace("foreground", activeSession, currentEventId);
   const base = createInterpreter([...commands], activeSession, project, {
+    onScreenFade: armDialogueConfirmRelease,
     ...(runTrace ? { trace: runTrace } : {}),
     currentEventId, continueAfterTransfer: options.continueAfterTransfer, getEventPositions: () => scene.eventPositions,
     isEventIdle: target => isRuntimeEventIdle(scene, target),
@@ -749,6 +753,7 @@ async function consumeBlockingStep(
       try {
         const result = await playCommandBattle(scene, step, isCurrent, isCurrent, currentEventId);
         if (result === null || (result === "defeat" && !battleStepCanLose(store.getCurrent(), step, scene.session))) return { kind: "done" };
+        armDialogueConfirmRelease();
         return resumeWithValue(scene, interpreter, result);
       } catch (error) {
         onHandledFailure();

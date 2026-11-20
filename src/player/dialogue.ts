@@ -54,7 +54,7 @@ import {
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
 import { directionForKey, isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey } from "@/player/keyBindings";
-import { installConfirmPressTracker, isLeakedConfirmPress, isPlayerKeyInput, OPEN_GRACE_MS } from "@/player/confirmMashGuard";
+import { acknowledgeFreshDialogueConfirm, blocksDialogueConfirm, installConfirmPressTracker, isLeakedConfirmPress, isPlayerKeyInput, OPEN_GRACE_MS } from "@/player/confirmMashGuard";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
@@ -1669,8 +1669,14 @@ export function createDialogueUI(
         const key = keyboardEventKey(e);
         if (key === "Process" || key === "Unidentified") return;
         if ((e.isComposing && key === e.key) || isTextEntryTarget(e.target)) return;
+        const confirm = isDialogueAdvanceKey(key);
+        if (confirm && blocksDialogueConfirm(e)) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
         if (e.repeat) {
-          if (!isDialogueAdvanceKey(key) || e.ctrlKey || e.metaKey || e.altKey) return;
+          if (!confirm || e.ctrlKey || e.metaKey || e.altKey) return;
           e.preventDefault();
           e.stopImmediatePropagation();
           if (lockedLine || readingMode !== "off" || ctrlSkip || hiddenByUser || logPanel || backlogViewIsOpen()) return;
@@ -1715,9 +1721,10 @@ export function createDialogueUI(
           }
         }
         if (handleLogKey(e)) return;
-        if (isDialogueAdvanceKey(key)) {
+        if (confirm) {
           e.preventDefault();
           e.stopImmediatePropagation();
+          acknowledgeFreshDialogueConfirm();
           nextHeldAdvanceAt = e.timeStamp + DIALOGUE_CONFIRM_REPEAT_MS;
           advance();
         }
@@ -1938,6 +1945,11 @@ export function createDialogueUI(
         const key = keyboardEventKey(e);
         if (key === "Process" || key === "Unidentified") return;
         if (e.isComposing && key === e.key) return;
+        if (isConfirmKey(key) && blocksDialogueConfirm(e)) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
         // 앞 대사를 넘기던 결정 키 연타가 선택지를 고르지 않게 한다(confirmMashGuard): 열리기 전·열린 뒤 300ms 안에 누른 결정 키,
         // 바로 앞 결정 키에서 450ms 안에 이어 누른 결정 키는 버린다. 손을 멈췄다 새로 누르거나 커서를 옮긴 뒤의 결정만 받는다.
         // 첫사랑 r11·r8(선택지 등장과 Enter 가 같은 0.1초), 회귀 벤치 ebfe-sl 방탈출·추리 A8 「Enter 10번」(연타 간격 250~400ms).
@@ -1988,6 +2000,7 @@ export function createDialogueUI(
         // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
         if (isConfirmKey(key)) {
           e.preventDefault();
+          acknowledgeFreshDialogueConfirm();
           pick(selectedIndex);
         }
       };

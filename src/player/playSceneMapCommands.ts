@@ -1,4 +1,5 @@
 import { doorstepArrival } from "@/project/doorEntries";
+import { armDialogueConfirmRelease } from "@/player/confirmMashGuard";
 import { noteDoorArrival } from "@/player/playSceneDoorEntry";
 import { findBlockingRuntimeEventAtInMap } from "@/project/runtimeEventState";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
@@ -85,6 +86,7 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     console.warn(`[player] transfer target map missing: ${request.mapId}`);
     return;
   }
+  armDialogueConfirmRelease();
   // 전환 연출: 모자이크/블라인드는 DOM 오버레이, 그 외(기본)는 카메라 페이드.
   const transition = parseTransitionKind(request.transition);
   const overlayTransition = usesOverlayTransition(transition);
@@ -222,6 +224,7 @@ function transferFadeColor(fade: TransferFade): FadeColor | null {
 }
 
 export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: FadeColor, durationMs = TRANSFER_FADE_DURATION_MS): Promise<void> {
+  armDialogueConfirmRelease();
   return new Promise((resolve) => {
     const eventName = phase === "out" ? "camerafadeoutcomplete" : "camerafadeincomplete";
     scene.cameras.main.once(eventName, () => resolve());

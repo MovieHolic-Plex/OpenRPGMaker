@@ -90,7 +90,10 @@ function setup(path: Path) {
 }
 
 function press(key: string) {
-  (document.activeElement ?? document).dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
+  const target = document.activeElement ?? document;
+  target.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
+  // A tap releases the key even when the keydown replaced the focused window.
+  (target.isConnected ? target : document).dispatchEvent(new KeyboardEvent("keyup", { key, bubbles: true }));
 }
 async function acknowledge() {
   await vi.runAllTimersAsync();

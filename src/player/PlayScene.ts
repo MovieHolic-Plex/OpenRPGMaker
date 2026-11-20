@@ -64,6 +64,7 @@ import {
   shakeCamera,
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
+import { armDialogueConfirmRelease } from "@/player/confirmMashGuard";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
 import { prefetchBattleAssetsForMap } from "@/player/battleAssetPrefetch";
 import { recordDungeonEntrance } from "@/project/encounterGuard";
@@ -533,6 +534,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
+    armDialogueConfirmRelease();
     clearAllSceneEmotes(this);
     // 던전에 들어가는 순간 바깥에서 서 있던 칸을 적는다(탈출 로프의 목적지). loadSceneMap 이 this.map 을 갈아치기 전에 읽는다.
     const departure = this.map ? { map: this.map, at: { x: this.tileX, y: this.tileY } } : undefined;

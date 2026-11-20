@@ -31,6 +31,7 @@ export function createInterpreter(
     : undefined;
   const state: InterpreterState = {
     beforeCommand: options?.beforeCommand,
+    onScreenFade: options?.onScreenFade,
     onUnverified: options?.onUnverified,
     onSafetyStop: options?.onSafetyStop,
     continueAfterTransfer: options?.continueAfterTransfer,
