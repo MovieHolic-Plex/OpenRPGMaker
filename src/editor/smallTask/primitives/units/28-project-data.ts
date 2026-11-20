@@ -7,15 +7,17 @@ import { affectionVariableOwner } from "@/project/affectionVariables";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { GOLD_MAX, isSafeEconomyValue } from "@/project/economyValues";
-import { blueprintEndingId } from "@/project/gameBlueprint";
+import { listEventDraftVaultEntries } from "@/project/eventDraftVault";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
-import { isScriptCommand, resolveScriptRefId, scriptCommandEffects, SCRIPT_UNKNOWN_EFFECTS_API, type ScriptEffectSource } from "@/project/script/effects";
+import { isScriptCommand, resolveScriptRefId, type ScriptEffectSource } from "@/project/script/effects";
 import { ANY_FRIENDSHIP_KEY, FRIENDSHIP_MAX, FRIENDSHIP_MIN } from "@/project/session";
-import type { EndingCondition, EndingDef, Project } from "@/project/types";
+import type { EndingCondition, EndingDef, PersistedGameEvent, Project } from "@/project/types";
+import { genId } from "@/util/id";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError } from "../errors";
 import type { SmallTaskPrimitive } from "../types";
+import { scriptCmdMayMatch, scriptMayUseGameApi, scriptStringArg } from "./28-project-data/scriptReferences";
 
 export const UNIT = "28-project-data";
 
@@ -103,23 +105,20 @@ function defineFlag(area: FlagArea, prefix: "sw" | "var", label: string): Operat
   };
 }
 
-function scriptUsesIndirectGameApi(script: ScriptEffectSource): boolean {
-  // 효과 목록은 game.getSwitch(...) 같은 직접 호출을 해석한다. 별칭이나 대괄호 접근은 따로 확인한다.
-  return typeof script.compiled === "string" && /(?:\.\s*game\b|\bgame\b(?!\s*\.\s*[\w$]+\s*\())/u.test(script.compiled);
-}
-
-function flagScriptLookupChanges(before: Project, after: Project, area: FlagArea): boolean {
+function flagScriptLookupChanges(script: ScriptEffectSource, before: Project, after: Project, area: FlagArea): boolean {
   const kind = area === "switches" ? "switch" : "variable";
-  const affected = (script: ScriptEffectSource) => {
-    const { reads, writes, dynamic } = scriptCommandEffects(script);
-    return scriptUsesIndirectGameApi(script)
-      || [...reads, ...writes].some(ref => ref.kind === kind
-        && resolveScriptRefId(before, kind, ref.id) !== resolveScriptRefId(after, kind, ref.id))
-      || dynamic.some(({ api }) => api === SCRIPT_UNKNOWN_EFFECTS_API
-        || SCRIPT_API_BY_NAME.get(api)?.refs?.some(ref => ref.kind === kind));
-  };
-  return someProjectRecord(before, node => isScriptCommand(node) && affected(node))
-    || (before.scriptLibrary ?? []).some(affected);
+  return scriptMayUseGameApi(script, (api, call) => {
+    if (api === "cmd") {
+      // Commands themselves use IDs. A nested script can still look up a flag by name.
+      return scriptCmdMayMatch(call, command => someAuthoredRecord(command, node =>
+        isScriptCommand(node) && flagScriptLookupChanges(node, before, after, area)));
+    }
+    return SCRIPT_API_BY_NAME.get(api)?.refs?.some(ref => {
+      if (ref.kind !== kind) return false;
+      const id = scriptStringArg(call, ref.arg);
+      return id === undefined || resolveScriptRefId(before, kind, id) !== resolveScriptRefId(after, kind, id);
+    }) ?? false;
+  });
 }
 
 function renameFlag(area: FlagArea, label: string): Operation {
@@ -134,7 +133,9 @@ function renameFlag(area: FlagArea, label: string): Operation {
       const name = requiredText(args.name, "이름을 입력해 주세요.");
       if (name === record.name) return ctx.project;
       const next = { ...ctx.project, [area]: records.map(entry => entry === record ? { ...entry, name } : entry) };
-      if (flagScriptLookupChanges(ctx.project, next, area)) {
+      const affected = (script: ScriptEffectSource) => flagScriptLookupChanges(script, ctx.project, next, area);
+      if (someProjectRecord(ctx.project, node => isScriptCommand(node) && affected(node))
+        || (ctx.project.scriptLibrary ?? []).some(affected)) {
         throw new PrimitiveError(`스크립트가 ${label}를 찾는 데 영향을 줄 수 있어 이름을 바꿀 수 없어요.`);
       }
       if (area === "variables" && affectionVariableOwner(ctx.project, record.id) !== affectionVariableOwner(next, record.id)) {
@@ -218,9 +219,12 @@ function someProjectRecord(
   endings = project.endings,
 ): boolean {
   return Object.values(project.maps).some(map => map.events.some(event =>
-    eventReferenceMatches(event, body => Object.entries(body).some(([key, value]) =>
-      key !== "draft" && someAuthoredRecord(value, matches)))))
+    eventReferenceMatches(event, body => someEventRecord(body, matches))))
     || someAuthoredRecord([project.commonEvents, project.database, project.system, project.quests, endings], matches);
+}
+
+function someEventRecord(event: PersistedGameEvent, matches: (node: Record<string, unknown>) => boolean): boolean {
+  return Object.entries(event).some(([key, value]) => key !== "draft" && someAuthoredRecord(value, matches));
 }
 
 function someAuthoredRecord(value: unknown, matches: (node: Record<string, unknown>) => boolean): boolean {
@@ -236,11 +240,43 @@ function refersToEnding(node: Record<string, unknown>, id: string): boolean {
   return node.endingId === id && (node.kind === "triggerEnding" || node.kind === "endingSeen" || node.kind === "ending");
 }
 
-function scriptMayUseEnding(script: ScriptEffectSource & { readonly source?: unknown }): boolean {
-  // 효과 목록에 명령 종류와 엔딩 ID가 없어서, cmd 객체의 kind가 계산돼도 효과 목록만으로는 알 수 없다.
-  const usesCommands = (code: unknown) => typeof code === "string" && /\bgame\s*\.\s*cmd\b/u.test(code);
-  return usesCommands(script.source) || usesCommands(script.compiled) || scriptUsesIndirectGameApi(script)
-    || scriptCommandEffects(script).dynamic.some(({ api }) => api === "cmd" || api === SCRIPT_UNKNOWN_EFFECTS_API);
+function scriptMayUseEnding(script: ScriptEffectSource, id: string): boolean {
+  return scriptMayUseGameApi(script, (api, call) => api === "cmd" && scriptCmdMayMatch(call, command =>
+    someAuthoredRecord(command, node => refersToEnding(node, id) || (isScriptCommand(node) && scriptMayUseEnding(node, id)))));
+}
+
+/** Check working bodies before the editor restores them onto the worker's canonical proposal. */
+export function assertProjectDataDraftReferences(live: Project, before: Project, after: Project): void {
+  const remaining = before.endings === after.endings ? undefined : new Set(after.endings?.map(ending => ending.id));
+  const removed = remaining ? before.endings?.filter(ending => !remaining.has(ending.id)) ?? [] : [];
+  const flags = (["switches", "variables"] as const).filter(area => {
+    if (before[area] === after[area]) return false;
+    const oldNames = new Map(before[area].map(record => [record.id, record.name]));
+    return after[area].some(record => oldNames.has(record.id) && oldNames.get(record.id) !== record.name);
+  });
+  if (!removed.length && !flags.length) return;
+
+  function checkDraft(event: PersistedGameEvent): void {
+    if (removed.length && someEventRecord(event, node => removed.some(({ id }) =>
+      refersToEnding(node, id) || (isScriptCommand(node) && scriptMayUseEnding(node, id))))) {
+      throw new PrimitiveError("저장하지 않은 이벤트에서 엔딩을 쓸 수 있어 삭제할 수 없어요.");
+    }
+    if (flags.length && someEventRecord(event, node => isScriptCommand(node)
+      && flags.some(area => flagScriptLookupChanges(node, before, after, area)))) {
+      throw new PrimitiveError("저장하지 않은 이벤트 스크립트에 영향을 줄 수 있어 이름을 바꿀 수 없어요.");
+    }
+  }
+
+  for (const map of Object.values(live.maps)) {
+    if (!Object.hasOwn(after.maps, map.id)) continue;
+    for (const event of map.events) if (event.draft) checkDraft(event);
+  }
+  // The store also restores vault entries missing from the live project. Live drafts take precedence.
+  for (const { mapId, event } of listEventDraftVaultEntries()) {
+    if (Object.hasOwn(after.maps, mapId) && !live.maps[mapId]?.events.some(liveEvent => liveEvent.id === event.id && liveEvent.draft)) {
+      checkDraft(event);
+    }
+  }
 }
 
 function blueprintEnding(project: Project, endings: readonly EndingDef[]): EndingDef | undefined {
@@ -279,8 +315,8 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply({ project }, args) {
       const endings = project.endings ?? [];
       const name = requiredText(args.name, "엔딩 이름을 입력해 주세요.");
-      const key = blueprintEndingId(name);
-      const id = endings.some(ending => ending.id === key) ? nextNumberedId(key, endings) : key;
+      // Device clear records may outlive a deleted ending and can exist on other machines.
+      const id = genId("ending");
       const ending = patchEnding(project, { id, name, conditions: [], priority: 0 }, args);
       const next = [...endings, ending];
       const linked = blueprintEnding(project, endings);
@@ -325,10 +361,10 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (someProjectRecord(project, node => refersToEnding(node, ending.id), remaining)) {
         throw new PrimitiveError("이벤트나 조건에서 쓰는 엔딩이라 삭제할 수 없어요.");
       }
-      if (someProjectRecord(project, node => isScriptCommand(node) && scriptMayUseEnding(node), remaining)) {
+      if (someProjectRecord(project, node => isScriptCommand(node) && scriptMayUseEnding(node, ending.id), remaining)) {
         throw new PrimitiveError("이벤트 스크립트에서 엔딩을 쓸 수 있어 삭제할 수 없어요.");
       }
-      if ((project.scriptLibrary ?? []).some(scriptMayUseEnding)) {
+      if ((project.scriptLibrary ?? []).some(script => scriptMayUseEnding(script, ending.id))) {
         throw new PrimitiveError("공용 스크립트에서 엔딩을 쓸 수 있어 삭제할 수 없어요.");
       }
       if (project.dialogueDesk?.proposals.some(({ lineId }) => {

@@ -3,6 +3,7 @@ import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDra
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { assertProjectDataDraftReferences } from "./primitives/units/28-project-data";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 function withEvent(project: Project, mapId: string, event: GameEvent): Project {
@@ -23,6 +24,7 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
+  if (target.kind === "map") assertProjectDataDraftReferences(live, before, after);
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
   if (target.kind === "event" && event?.draft) {

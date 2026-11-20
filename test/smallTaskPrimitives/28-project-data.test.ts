@@ -1,8 +1,10 @@
 /** @vitest-environment happy-dom */
-import { beforeAll, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { collectDialogueLines } from "@/editor/dialogue/dialogueIndex";
+import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { compileScriptAsync } from "@/editor/script/compile";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { dbTarget } from "@/editor/smallTask/target";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
@@ -11,11 +13,17 @@ import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/28-project-data";
+import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
 import { createInterpreter } from "@/player/interpreter";
+import { clearRecordKey } from "@/player/saveSlots";
 import { GOLD_MAX } from "@/project/economyValues";
+import { forgetEventDraftVaultEntry, rememberEventDraftVaultEntry } from "@/project/eventDraftVault";
+import { blueprintEndingId } from "@/project/gameBlueprint";
 import { EMPTY_SCRIPT_EFFECTS } from "@/project/script/types";
 import { startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Command, EndingDef, GameEvent, Project } from "@/project/types";
+import { listEndingRows } from "@/project/vnExtras";
 import { structuralJson } from "@/util/structuralJson";
 import corpus from "../../harness-data/small-task-corpus/28-project-data.json";
 import endingRemovalCases from "./28-project-data/ending-remove-corpus.json";
@@ -222,6 +230,20 @@ it.each([
   expect(checkSmallTaskScope(project, outside, scope)).toMatchObject({ ok: false });
 });
 
+it.each([
+  ["switch.rename", "switches"], ["variable.rename", "variables"],
+  ["ending.update", "endings"], ["ending.remove", "endings"],
+] as const)("%s 같은 이름이 여럿이면 식별자를 입력해야 해요", (id, area) => {
+  const one = { ...unusedEnding, id: "first", name: "같은 이름" };
+  const two = { ...one, id: "second" };
+  const project = { ...fixtureProject("blank"), [area]: [one, two] };
+  const target = mapTarget(project);
+  const args = id === "ending.remove" ? {} : { name: "새 이름" };
+  expectRefused(project, target, id, { ...args, record: one.name }, /항목이 여러 개/u);
+  const { after } = runPrimitive(project, target, id, { ...args, record: two.id });
+  expect(after[area]).toEqual(id === "ending.remove" ? [one] : [one, { ...two, name: "새 이름" }]);
+});
+
 it("제목 설정이 없는 옛 프로젝트에서도 시작 화면 제목을 저장해요", async () => {
   const original = fixtureProject("blank");
   const project: Project = { ...original, system: { ...original.system } };
@@ -397,6 +419,82 @@ it("청사진이 이름으로 가리키는 결말을 지우거나 연결이 끊�
   expectRefused(fallback, target, "ending.define", { name: unusedEnding.name }, /게임 청사진/u);
 });
 
+it.each(["new", "edit", "vault"] as const)("맵 작업에서 %s 이벤트 초안에만 참조가 있어도 엔딩 삭제를 적용하지 않아요", kind => {
+  const original: GameEvent = { id: "ev_working_ending", x: 2, y: 2, trigger: { kind: "action" }, commands: [] };
+  const draft: GameEvent = {
+    ...original, draft: { kind: kind === "edit" ? "edit" : "new", original },
+    commands: [{ kind: "triggerEnding", endingId: unusedEnding.id }],
+  };
+  const project = blankWithUnusedEnding();
+  store.replaceProject(kind === "vault" ? project : withMapEvent(project, draft));
+  resetMapEditHistory();
+  const live = store.getCurrent();
+  if (kind === "vault") rememberEventDraftVaultEntry(live.startMapId, draft);
+  try {
+    const target = mapTarget(live);
+    const before = smallTaskBase(live, target);
+    expect(before.maps[before.startMapId].events).toEqual(kind === "edit" ? [original] : []);
+    const { after } = runPrimitive(before, target, "ending.remove", { record: unusedEnding.id });
+    expect(after.endings).toEqual([]);
+    expect(() => commitSmallTask(live, before, after, target)).toThrow(/저장하지 않은 이벤트/u);
+    expect(store.getCurrent()).toBe(live);
+    expect(store.getCurrent().maps[before.startMapId].events).toEqual(kind === "vault" ? [] : [draft]);
+    expect(getMapEditHistoryDepth()).toBe(0);
+  } finally {
+    if (kind === "vault") forgetEventDraftVaultEntry(live.startMapId, draft.id);
+  }
+});
+
+it("엔딩과 무관한 초안은 삭제를 적용하고 되돌릴 때 모두 보존해요", async () => {
+  const draft: GameEvent = {
+    id: "ev_draft_greeting", x: 2, y: 2, trigger: { kind: "action" }, draft: { kind: "new" },
+    commands: [{ kind: "text", body: "작성 중인 대사" }],
+  };
+  store.replaceProject(withMapEvent(blankWithUnusedEnding(), draft));
+  resetMapEditHistory();
+  const live = store.getCurrent();
+  const target = mapTarget(live);
+  const before = smallTaskBase(live, target);
+  const { after } = runPrimitive(before, target, "ending.remove", { record: unusedEnding.id });
+  const receipt = commitSmallTask(live, before, after, target);
+  expect(store.getCurrent().endings).toEqual([]);
+  expect(store.getCurrent().maps[before.startMapId].events).toEqual([draft]);
+  expect(await receipt?.undo(async () => false)).toBe(true);
+  expect(store.getCurrent().endings).toEqual([unusedEnding]);
+  expect(store.getCurrent().maps[before.startMapId].events).toEqual([draft]);
+});
+
+it("엔딩을 같은 이름으로 다시 만들어도 예전 기기 기록에서 본 엔딩으로 표시되지 않아요", () => {
+  const legacy = { ...unusedEnding, id: blueprintEndingId(unusedEnding.name) };
+  const project = { ...fixtureProject("blank"), endings: [legacy] };
+  const target = mapTarget(project);
+  const key = clearRecordKey();
+  const previous = localStorage.getItem(key);
+  localStorage.removeItem(key);
+  try {
+    recordEndingClear(localStorage, project, startSession(project, 1), legacy.id);
+    const seen = readClearRecord(localStorage)?.endingIds;
+    expect(listEndingRows(project, seen)).toMatchObject([{ id: legacy.id, seen: true }]);
+    const removed = runPrimitive(project, target, "ending.remove", { record: legacy.id }).after;
+    const added = runPrimitive(removed, target, "ending.define", { name: legacy.name }).after;
+    expect(added.endings?.[0]?.id).not.toBe(legacy.id);
+    expect(listEndingRows(added, seen)).toMatchObject([{ name: legacy.name, seen: false }]);
+  } finally {
+    if (previous === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, previous);
+  }
+});
+
+it("동명 엔딩을 추가하면 기존 엔딩과 다른 식별자를 부여해요", () => {
+  const args = { name: unusedEnding.name };
+  const before = blankWithUnusedEnding();
+  const target = mapTarget(before);
+  const first = runPrimitive(before, target, "ending.define", args).after;
+  const second = runPrimitive(first, target, "ending.define", args).after;
+  expect(second.endings?.map(ending => ending.name)).toEqual([args.name, args.name, args.name]);
+  expect(new Set(second.endings?.map(ending => ending.id)).size).toBe(3);
+});
+
 it("우선순위가 소수인 옛 엔딩도 이름만 바꿀 수 있어요", () => {
   const oldEnding = { ...unusedEnding, priority: 0.5 };
   const project = { ...blankWithUnusedEnding(), endings: [oldEnding] };
@@ -430,6 +528,7 @@ it("스위치나 변수를 이름으로 찾는 스크립트가 있으면 이름 
 it.each([
   ['game.setSwitch(game.getText("선택"), true);', [{ api: "setSwitch", line: 1 }]],
   ['const set = game.setSwitch; set("문 열림", true);', []],
+  ['globalThis["game"]["getSwitch"]("문 열림");', []],
 ] as const)("직접 확인할 수 없는 스크립트 접근은 이름 변경을 막아요 (%s)", (source, dynamic) => {
   const project: Project = {
     ...fixtureProject("blank"),
@@ -439,6 +538,63 @@ it.each([
     } }],
   };
   expectRefused(project, mapTarget(project), "switch.rename", { record: "sw_door", name: "문 열기" }, /스크립트/u);
+});
+
+it("이름 조회와 무관한 간접 API와 고정 명령은 스위치·변수 이름 변경을 막지 않아요", async () => {
+  const source = 'const log = game.log; log("hello"); game["gold"]();\nawait game.cmd({ kind: "changeGold", op: "+=", amount: 1 });';
+  const { ok, compiled, effects } = await compileScriptAsync(source, { typeCheck: false });
+  expect(ok).toBe(true);
+  const project: Project = {
+    ...fixtureProject("blank"), switches: [{ id: "sw_door", name: "문 열림" }], variables: [{ id: "var_steps", name: "걸음" }],
+    scriptLibrary: [{ id: "greeting", source, compiled, effects }],
+  };
+  const target = mapTarget(project);
+  const renamed = runPrimitive(project, target, "switch.rename", { record: "sw_door", name: "문 열기" }).after;
+  expect(renamed.switches[0]?.name).toBe("문 열기");
+  const { after } = runPrimitive(renamed, target, "variable.rename", { record: "var_steps", name: "걸음 수" });
+  expect(after.variables[0]?.name).toBe("걸음 수");
+  expect(after.scriptLibrary).toBe(project.scriptLibrary);
+});
+
+it("다른 엔딩만 부르는 고정 명령과 엔딩과 무관한 game.cmd는 삭제를 막지 않아요", async () => {
+  const other = { ...unusedEnding, id: "ending_other", name: "다른 결말" };
+  const source = 'await game.cmd({ kind: "changeGold", op: "+=", amount: -1 });\n'
+    + `await game["cmd"]({ kind: "triggerEnding", endingId: "${other.id}" });`;
+  const { ok, compiled, effects } = await compileScriptAsync(source, { typeCheck: false });
+  expect(ok).toBe(true);
+  const project: Project = {
+    ...blankWithUnusedEnding(), endings: [unusedEnding, other],
+    scriptLibrary: [{ id: "greeting", source, compiled, effects }],
+  };
+  const target = mapTarget(project);
+  expectRefused(project, target, "ending.remove", { record: other.id }, /공용 스크립트/u);
+  const { after } = runPrimitive(project, target, "ending.remove", { record: unusedEnding.id });
+  expect(after.endings).toEqual([other]);
+  await expectUndoRestores(project, after, target);
+});
+
+it("스크립트에 인라인으로 넣은 분기 조건의 엔딩 참조는 계속 보호해요", () => {
+  const source = `await game.cmd({ kind: "fork", condition: { kind: "endingSeen", endingId: "${unusedEnding.id}", value: true }, then: [] });`;
+  const project = { ...blankWithUnusedEnding(), scriptLibrary: [{ id: "epilogue", source, compiled: source }] };
+  expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.id }, /공용 스크립트/u);
+});
+
+it("맵 작업으로 미저장 스크립트가 이름으로 찾는 스위치를 바꾸지 않아요", () => {
+  const source = 'game.getSwitch("문 열림");';
+  const event: GameEvent = {
+    id: "ev_draft_switch", x: 2, y: 2, trigger: { kind: "action" }, draft: { kind: "new" },
+    commands: [{ kind: "script", source, compiled: source }],
+  };
+  const project = { ...fixtureProject("blank"), switches: [{ id: "sw_door", name: "문 열림" }] };
+  store.replaceProject(withMapEvent(project, event));
+  resetMapEditHistory();
+  const live = store.getCurrent();
+  const target = mapTarget(live);
+  const before = smallTaskBase(live, target);
+  const { after } = runPrimitive(before, target, "switch.rename", { record: "sw_door", name: "문 열기" });
+  expect(() => commitSmallTask(live, before, after, target)).toThrow(/저장하지 않은 이벤트 스크립트/u);
+  expect(store.getCurrent()).toBe(live);
+  expect(getMapEditHistoryDepth()).toBe(0);
 });
 
 it("저장될 이벤트 원본에서 이름으로 읽는 스위치는 이름을 바꿀 수 없어요", () => {
@@ -468,25 +624,27 @@ it("인물의 호감도에 연결된 변수는 연결이 끊기는 이름으로 
 // 공용 러너의 디렉터리 URL이 브라우저 주소로 변환되는 환경에서도 같은 사례를 실행한다.
 type ProjectDataCase = CorpusCase & { seedEnding?: EndingDef };
 const corpusCases = [...corpus, ...endingRemovalCases] as ProjectDataCase[];
-it.each(corpusCases)("$request", async ({ fixture, target: selector, primitive, args, expect: checks, expectRefusal, seedEnding }) => {
-  const original = fixtureProject(fixture);
-  // 고정 픽스처의 엔딩은 이벤트에 연결되어 있으므로 삭제 성공 사례에는 별도의 시드를 둔다.
-  const before = seedEnding ? { ...original, endings: [...(original.endings ?? []), seedEnding] } : original;
-  const target = resolveTarget(before, selector);
-  if (expectRefusal) {
-    const snapshot = structuralJson(before);
-    expect(() => runPrimitive(before, target, primitive, args)).toThrow(PrimitiveError);
-    expect(structuralJson(before) === snapshot).toBe(true);
-    return;
-  }
-  const { after, sentence } = runPrimitive(before, target, primitive, args);
-  expectKoreanSentence(sentence, target);
-  for (const check of checks) {
-    const value = readCheckPath(after, check.at);
-    if (check.count !== undefined) expect(value).toHaveLength(check.count);
-    else expect(value).toEqual(check.equals);
-  }
-  await expectUndoRestores(before, after, target);
+describe("28-project-data 코퍼스", () => {
+  it.each(corpusCases)("$request", async ({ fixture, target: selector, primitive, args, expect: checks, expectRefusal, seedEnding }) => {
+    const original = fixtureProject(fixture);
+    // 고정 픽스처의 엔딩은 이벤트에 연결되어 있으므로 삭제 성공 사례에는 별도의 시드를 둔다.
+    const before = seedEnding ? { ...original, endings: [...(original.endings ?? []), seedEnding] } : original;
+    const target = resolveTarget(before, selector);
+    if (expectRefusal) {
+      const snapshot = structuralJson(before);
+      expect(() => runPrimitive(before, target, primitive, args)).toThrow(PrimitiveError);
+      expect(structuralJson(before) === snapshot).toBe(true);
+      return;
+    }
+    const { after, sentence } = runPrimitive(before, target, primitive, args);
+    expectKoreanSentence(sentence, target);
+    for (const check of checks ?? []) {
+      const value = readCheckPath(after, check.at);
+      if (check.count !== undefined) expect(value).toHaveLength(check.count);
+      else expect(value).toEqual(check.equals);
+    }
+    await expectUndoRestores(before, after, target);
+  });
 });
 
 it("새 스위치가 꺼짐으로 시작하고 이벤트에서 켜면 조건 분기를 지나가요", () => {
@@ -527,6 +685,23 @@ it("게임이 바꾼 소지금으로 시작하고 명령이 그 잔액을 사용
   const session = startSession(after, 1);
   expect(createInterpreter([{ kind: "changeGold", op: "-=", amount: 12 }], session, after).start()).toEqual({ kind: "done" });
   expect(session.gold).toBe(288);
+});
+
+it("한 인물의 호감도 조건을 저장하고 플레이에서 그 인물의 값만 판정해요", async () => {
+  const before = { ...fixtureProject("blank"), characters: { ruri: { displayName: "이루리" }, hana: { displayName: "유하나" } } };
+  const target = mapTarget(before);
+  const conditions = [{ kind: "friendshipAtLeast", npcKey: "ruri", value: 10 }];
+  const { after } = runPrimitive(before, target, "ending.define", { name: "루리와 다시 만남", conditions });
+  const ending = after.endings!.at(-1)!;
+  expect(ending.conditions).toEqual(conditions);
+  await expectUndoRestores(before, after, target);
+
+  const session = startSession(after, 1);
+  const trigger: Command = { kind: "triggerEnding", endingId: ending.id };
+  expect(createInterpreter([{ kind: "changeFriendship", npcKey: "hana", delta: 10 }, trigger], session, after).start())
+    .toEqual({ kind: "done" });
+  expect(createInterpreter([{ kind: "changeFriendship", npcKey: "ruri", delta: 10 }, trigger], session, after).start())
+    .toMatchObject({ kind: "returnToTitle", clear: { endingId: ending.id } });
 });
 
 it("첫 플레이에서도 시작 파티 순서와 선두가 적용돼요", () => {
