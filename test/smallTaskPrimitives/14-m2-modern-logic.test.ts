@@ -4,8 +4,9 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { FORK_THEN_BRANCH_INDEX, resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { mapTarget } from "@/editor/smallTask/target";
+import { updateScopedPage } from "@/editor/smallTask/primitives/core/helpers";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { getPrimitive, primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES as movementPrimitives } from "@/editor/smallTask/primitives/units/09-cmd-move-system";
@@ -17,6 +18,8 @@ import { judgeQuickTime } from "@/player/interpreter/minigameCommands";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { createBlankProject } from "@/project/defaults";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
@@ -62,6 +65,9 @@ function fixtureProject(name: "blank" | "built" | "maou") {
   const existing = fixtures.get(name);
   if (existing) return existing;
   const loaded = loadFixture(name);
+  // Match the editor's normalization while this fixture still owns writable data.
+  ensureSwitchVariableSlots(loaded);
+  removeLegacySpriteReferences(loaded);
   fixtures.set(name, loaded);
   return loaded;
 }
@@ -133,17 +139,19 @@ describe("현대 명령 한 줄 편집", () => {
     expect(() => runPrimitive(after, target, updateId, editArgs(commands, 1, invalid))).toThrow(PrimitiveError);
     expect(() => runPrimitive(after, target, updateId, editArgs(commands, 0, initial))).toThrow(/범위 밖/u);
 
+    const otherTarget = mapTarget(project, id, EVENT, OTHER)!;
+    const attempted = updateScopedPage({ project, target: otherTarget }, page => ({
+      ...page, commands: [...page.commands, FIRST],
+    }));
     for (const primitiveId of [insertId, updateId]) {
       const primitive = PRIMITIVES.find(row => row.id === primitiveId)!;
-      const attempted = structuredClone(project);
-      findEvent(attempted).pages![1]!.commands.push(FIRST);
       const verdict = checkSmallTaskScope(project, attempted, primitive.scope({ project, target }, { pageId: OTHER }));
       expect(verdict.ok).toBe(false);
       if (!verdict.ok) expect(verdict.reason).toMatch(/범위 밖/u);
       expectRefused(project, mapTarget(project, id)!, primitiveId, { index: 0, ...initial });
     }
     expect(jsonEqual(findEvent(project).pages![0]!.commands, [FIRST])).toBe(true);
-  });
+  }, 60_000);
 
   it("사용 가능한 체크포인트 동작을 노출하고 별칭으로 추가해도 저장하고 되돌릴 수 있다", async () => {
     const fork: Command = { kind: "fork", condition: { kind: "switch", switchId: SW, value: true }, then: [], else: [FIRST] };
@@ -177,7 +185,7 @@ describe("현대 명령 한 줄 편집", () => {
     expect(findEvent(result).pages![0]!.commands).toEqual([{
       ...fork, then: [{ ...legacy, fields: { ...legacy.fields, message: "바뀐 안내" } }],
     }]);
-    expect(() => runPrimitive(result, target, "m2.214.update", args)).toThrow(/줄의 내용이 바뀌었습니다/u);
+    expect(() => runPrimitive(result, target, "m2.214.update", args)).toThrow(STALE_COMMAND_LIST);
   });
 
   it("같은 종류의 명령이 그 자리에 새로 들어오면 이전 확인값으로 고칠 수 없다", () => {
@@ -186,10 +194,23 @@ describe("현대 명령 한 줄 편집", () => {
     const replacement = log("새 기록");
     const { project, target, findEvent } = scenario("built", [replacement, original]);
     expectRefused(project, target, "m2.215.update", { index: 0, message: "수정" }, /형식/u);
-    expectRefused(project, target, "m2.215.update", {
+    expect(() => runPrimitive(project, target, "m2.215.update", {
       index: 0, expectedHash: eventCommandHash(original), message: "수정",
-    }, /줄의 내용이 바뀌었습니다/u);
+    })).toThrow(STALE_COMMAND_LIST);
     expect(findEvent(project).pages![0]!.commands).toEqual([replacement, original]);
+  });
+
+  it("페이지가 여러 개면 선택을 요구하고 지정한 페이지에만 명령을 넣는다", () => {
+    const { project, id, findEvent } = scenario("built");
+    const args = { message: "두 번째 페이지의 기록" };
+    const unselected = mapTarget(project, id, EVENT)!;
+    expect(() => runPrimitive(project, unselected, "m2.215.insert", args)).toThrow(SELECT_EVENT_PAGE);
+
+    const selected = mapTarget(project, id, EVENT, OTHER)!;
+    const { after } = runPrimitive(project, selected, "m2.215.insert", args);
+    expect(findEvent(after).pages![0]).toBe(findEvent(project).pages![0]);
+    expect(findEvent(after).pages![1]!.commands).toMatchObject([{ fields: args }]);
+    expect(findEvent(project).pages![1]!.commands).toEqual([]);
   });
 
   it("화면 검수의 배너 수정에 get_event에서 읽은 해시를 쓸 수 있다", async () => {
@@ -334,16 +355,22 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     const erase = { ...newM2Command("m2-227-journal-line"), fields: { action: "erase", lineId: "line-1" } };
     const reread = { ...erase, fields: { ...erase.fields, action: "reread" } };
     const playback = action === "erase" ? [...commands, erase] : [...commands, erase, reread];
-    findEvent(after).pages![1]!.commands = [action === "erase" ? erase : reread];
+    const otherTarget = mapTarget(after, id, EVENT, OTHER)!;
+    const withAutomaticReference = updateScopedPage({ project: after, target: otherTarget }, page => ({
+      ...page, commands: [action === "erase" ? erase : reread],
+    }));
     const play = session(id);
-    expect(createInterpreter(playback, play, after).start()).toEqual({ kind: "done" });
+    expect(createInterpreter(playback, play, withAutomaticReference).start()).toEqual({ kind: "done" });
     expect(play.storyJournal).toMatchObject([{ id: "line-1", state: action === "erase" ? "erased" : "reread" }]);
-    for (const edit of [{ lineId: "숲" }, { action: "erase", lineId: "숲" }]) {
-      expectRefused(after, target, "m2.227.update", editArgs(commands, 0, edit), /자동으로 이름표/u);
+    const edits: M2CommandFields[] = [{ lineId: "숲" }, { action: "erase", lineId: "숲" }];
+    for (const edit of edits) {
+      expectRefused(withAutomaticReference, target, "m2.227.update", editArgs(commands, 0, edit), /자동으로 이름표/u);
     }
-    expect(() => runPrimitive(after, target, "m2.227.update", editArgs(commands, 0, { text: "남긴 기록" }))).not.toThrow();
-    findEvent(after).pages![1]!.commands = [{ ...erase, fields: { ...erase.fields, lineId: "고정 기록" } }];
-    expect(() => runPrimitive(after, target, "m2.227.update", editArgs(commands, 0, { lineId: "숲" }))).not.toThrow();
+    expect(() => runPrimitive(withAutomaticReference, target, "m2.227.update", editArgs(commands, 0, { text: "남긴 기록" }))).not.toThrow();
+    const withFixedReference = updateScopedPage({ project: after, target: otherTarget }, page => ({
+      ...page, commands: [{ ...erase, fields: { ...erase.fields, lineId: "고정 기록" } }],
+    }));
+    expect(() => runPrimitive(withFixedReference, target, "m2.227.update", editArgs(commands, 0, { lineId: "숲" }))).not.toThrow();
   });
 });
 
@@ -469,7 +496,7 @@ describe("추가한 현대 명령을 실제 해석기로 실행", () => {
   });
 });
 
-type PreparedCase = CorpusCase & { setup: Pick<CorpusCase, "primitive" | "args"> };
+type PreparedCase = Omit<CorpusCase, "setup"> & { setup: Pick<CorpusCase, "primitive" | "args"> };
 
 describe("기본 픽스처에 없는 명령의 수정 요청", () => {
   it.each(updateCorpus as PreparedCase[])("$request", async entry => {

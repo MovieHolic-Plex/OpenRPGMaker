@@ -4,7 +4,7 @@ import { M2_COMMAND_CATALOG, type M2CommandCatalogEntry, type M2CommandFieldSpec
 import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import type { M2CommandFields } from "@/project/types";
 import { commandListAt, insertAtIndex, koreanSentence, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { PRIMITIVES as movementPrimitives } from "./09-cmd-move-system";
 import { ROWS, type ModernLogicRow } from "./14-m2-modern-logic/rows";
@@ -73,7 +73,7 @@ function commandEdit(entry: M2CommandCatalogEntry, row: ModernLogicRow, update: 
     }
     const hash = eventCommandHash(current);
     if (args.expectedHash !== hash) {
-      throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정해 주세요.");
+      throw new PrimitiveError(STALE_COMMAND_LIST);
     }
     if (Object.keys(editFields).length === 0) throw new PrimitiveError("바꿀 명령 항목을 한 가지 이상 입력해 주세요.");
     return {
@@ -120,10 +120,7 @@ function commandEdit(entry: M2CommandCatalogEntry, row: ModernLogicRow, update: 
           ? insertEventCommand(page, path, { ...command, fields })
           : updateEventCommand(page, path, { fields }, hash));
       } catch (error) {
-        if (!(error instanceof EventCommandEditError)) throw error;
-        if (error.code === "stale-event-command") {
-          throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
-        }
+        if (!(error instanceof EventCommandEditError) || error.code === "stale-event-command") throw error;
         throw new PrimitiveError("명령 줄 위치나 입력값을 다시 확인해 주세요.");
       }
     },
