@@ -18,6 +18,7 @@ import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { resolveMovieResourceUrl } from "@/player/playSceneMovies";
 import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { beginEventEditDraft } from "@/project/eventDrafts";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 import { showPictureState, startSession } from "@/project/session";
@@ -329,6 +330,41 @@ it("같은 그림 자리를 채우는 명령이 남으면 위치만 바꿀 수 �
   expect(selectedPage(after, mapId).commands).toStrictEqual([slotPicture, { ...later, x: 60 }]);
 });
 
+it.each(["new", "edit", "original"] as const)("다른 이벤트의 초안과 저장본에 남은 그림 자리를 보호한다 · %s", source => {
+  const picture = { ...slotPicture, pictureId: "free_card" };
+  const { project, target, mapId } = fixture("blank", [slotPicture, picture]);
+  const other = project.maps[mapId]!.events.find(event => event.id === OTHER)!;
+  const commands: Command[] = [
+    { kind: "erasePicture", pictureId: "title_card" },
+    { ...slotPicture, pictureId: "occupied_card" },
+  ];
+  const original = { ...other, commands: source === "original" ? commands : [] };
+  const draft: GameEvent = {
+    ...other, id: source === "new" ? "new_event_draft" : other.id,
+    commands: source === "original" ? [] : commands,
+    draft: source === "new" ? { kind: "new" } : { kind: "edit", original },
+  };
+  if (source === "original") other.commands = commands;
+  const live = { maps: { [mapId]: { events: [draft] } } };
+  const rename = (args: Fields) => runPrimitive(project, target, "cmd.showPicture.update", args, undefined, live);
+  expect(() => rename(editArgs(slotPicture, { pictureId: "new_card" }))).toThrow(/그림을 움직이거나 지우고 있어/u);
+  expect(() => rename(editArgs(picture, { index: 1, pictureId: "occupied_card" }))).toThrow(/이미 쓰는 그림 자리/u);
+});
+
+it("선택한 이벤트 초안의 이전 그림 자리와 현재 명령을 구분한다", () => {
+  const destination = { ...slotPicture, pictureId: "new_card" };
+  const { project, target, mapId, page } = fixture("blank", [slotPicture, destination]);
+  beginEventEditDraft(project, mapId, EVENT);
+  page.commands = [slotPicture];
+  const event = project.maps[mapId]!.events.find(row => row.id === EVENT)!;
+  const live = { maps: { [mapId]: { events: [event] } } };
+  const args = editArgs(slotPicture, { pictureId: destination.pictureId });
+  const { after } = runPrimitive(project, target, "cmd.showPicture.update", args, undefined, live);
+  expect(selectedPage(after, mapId).commands).toStrictEqual([destination]);
+  expect(after.maps[mapId]!.events.find(row => row.id === EVENT)?.draft).toBe(event.draft);
+  expect(event.draft?.original?.pages?.[1]?.commands).toStrictEqual([slotPicture, destination]);
+});
+
 it.each(["command", "mapDefault", "inheritedDefault"] as const)("다른 광원의 이름으로 바꿀 수 없다 · %s", owner => {
   const other = { ...slotLight.source, id: " other_lamp ", radius: 6 };
   const { project, target, mapId, page } = fixture("blank", owner === "command" ? [slotLight, { kind: "addLight", source: other }] : [slotLight]);
@@ -431,10 +467,14 @@ it.each(["battlePage", "afterBattle"] as const)("적 그룹의 %s 명령에서 �
 it("사용 중인 명령이 없으면 그림 자리와 광원 이름을 바꾼다", () => {
   const { project, target, mapId } = fixture("blank", [slotPicture, slotLight]);
   const picture = runPrimitive(project, target, "cmd.showPicture.update", editArgs(slotPicture, { pictureId: "new_card" })).after;
-  const light = runPrimitive(picture, target, "cmd.addLight.update", editArgs(slotLight, { index: 1, id: "new_lamp" })).after;
-  expect(selectedPage(light, mapId).commands).toStrictEqual([
+  const rename = (fields: Fields) => runPrimitive(picture, target, "cmd.addLight.update", editArgs(slotLight, { index: 1, ...fields }));
+  const { after, sentence } = rename({ id: " new_lamp " });
+  expect(selectedPage(after, mapId).commands).toStrictEqual([
     { ...slotPicture, pictureId: "new_card" }, { ...slotLight, source: { ...slotLight.source, id: "new_lamp" } },
   ]);
+  expect(sentence).toContain("이름 new_lamp");
+  expect(rename({ id: "another_lamp" }).sentence).toContain("이름 another_lamp");
+  expect(rename({ radius: 5 }).sentence).toBe("빛 켜기(주인공 · 반지름 5칸) 명령을 수정합니다.");
 });
 
 it.each([

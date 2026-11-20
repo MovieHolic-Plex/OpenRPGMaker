@@ -1,4 +1,5 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { findBgmTrack } from "@/assets/bgmCatalog";
 import { isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -293,12 +294,19 @@ function validateReferences(project: Project, command: StagingCommand, previous:
   if (!drawable || audioKind || uploaded?.kind === "movie") throw new PrimitiveError(message);
 }
 
-function hasCommandReference(project: Project, matches: (command: Command) => boolean): boolean {
+function hasCommandReference(
+  project: Project,
+  matches: (command: Command) => boolean,
+  skipOriginal?: { mapId: string; eventId: string },
+): boolean {
   const uses = (list: readonly Command[]): boolean => list.some(command => matches(command) || nestedCommandLists(command).some(uses));
   const eventUses = (event: Pick<GameMap["events"][number], "commands" | "pages">): boolean =>
     uses(event.commands) || (event.pages ?? []).some(page => uses(page.commands));
-  return Object.values(project.maps).some(map => map.events.some(event =>
-    eventUses(event) || (event.draft?.kind === "edit" && event.draft.original !== undefined && eventUses(event.draft.original))))
+  return Object.values(project.maps).some(map => map.events.some(event => {
+    if (eventUses(event)) return true;
+    if (map.id === skipOriginal?.mapId && event.id === skipOriginal.eventId) return false;
+    return event.draft?.kind === "edit" && event.draft.original !== undefined && eventUses(event.draft.original);
+  }))
     || project.commonEvents.some(event => uses(event.commands))
     || project.database.troops.some(troop => troop.battleEventPages.some(page => uses(page.commands))
       || troopAfterBattleLists(troop).some(list => uses(list.commands)));
@@ -327,18 +335,23 @@ function hasUnresolvedSlotScript(project: Project, slot: "picture" | "light"): b
     || (project.scriptLibrary ?? []).some(mayCallSlotCommand);
 }
 
-function validateSlotRename(project: Project, after: Project, map: GameMap, command: StagingCommand, previous: StagingCommand | undefined): void {
+function validateSlotRename(ctx: PrimitiveContext, after: Project, map: GameMap, command: StagingCommand, previous: StagingCommand | undefined): void {
+  const { project, live, target } = ctx;
   if (command.kind === "showPicture" && previous?.kind === "showPicture" && command.pictureId !== previous.pictureId) {
-    if (hasCommandReference(project, row => referencesPicture(row, previous.pictureId))) {
+    const selected = target.kind === "event" ? target : undefined;
+    const working = withOpenEventDrafts(project, live, selected);
+    // Cancelling the selected draft rolls back the rename too. Only its working commands can conflict.
+    if (hasCommandReference(working, row => referencesPicture(row, previous.pictureId), selected)) {
       throw new PrimitiveError("다른 명령에서 이 그림을 움직이거나 지우고 있어 그림 자리를 바꿀 수 없습니다.");
     }
-    if (hasCommandReference(after, row => referencesPicture(row, previous.pictureId, true))) {
+    const edited = withOpenEventDrafts(after, live, selected);
+    if (hasCommandReference(edited, row => referencesPicture(row, previous.pictureId, true), selected)) {
       throw new PrimitiveError("다른 명령에서 이 그림 자리를 채우고 있어 그림 자리를 바꿀 수 없습니다.");
     }
-    if (hasCommandReference(project, row => referencesPicture(row, command.pictureId, true))) {
+    if (hasCommandReference(working, row => referencesPicture(row, command.pictureId, true), selected)) {
       throw new PrimitiveError("다른 명령에서 이미 쓰는 그림 자리입니다. 빈 자리를 골라 주세요.");
     }
-    if (hasUnresolvedSlotScript(project, "picture")) {
+    if (hasUnresolvedSlotScript(working, "picture")) {
       throw new PrimitiveError("스크립트에서 이 그림 자리를 사용하는지 확인할 수 없어 자리를 바꿀 수 없습니다.");
     }
   }
@@ -438,7 +451,7 @@ function pictureSlotName(id: string): string {
   return /^pic\d+$/u.test(id) ? `${id.slice(3)}번 자리` : safeName(id, "지정한 그림 자리");
 }
 
-function summaryDetails(ctx: PrimitiveContext, map: GameMap, cmd: StagingCommand, args: Args): string {
+function summaryDetails(ctx: PrimitiveContext, map: GameMap, cmd: StagingCommand, args: Args, mode: Mode): string {
   function targetSummary(at: LightSourceAnchor): string {
     if (typeof at === "object" && "eventId" in at) {
       const event = map.events.find(entry => entry.id === at.eventId);
@@ -496,6 +509,7 @@ function summaryDetails(ctx: PrimitiveContext, map: GameMap, cmd: StagingCommand
       const { source } = cmd;
       const cone = source.cone;
       return [
+        mode === "update" && args.id !== undefined ? `이름 ${source.id.replace(/\s+/gu, " ")}` : "",
         args.color !== undefined ? `색 ${source.color}` : "",
         args.edge !== undefined ? (source.edge === "hard" ? "또렷한 가장자리" : "부드러운 가장자리") : "",
         cone && (args.coneDegrees !== undefined || args.coneFacing !== undefined)
@@ -542,7 +556,7 @@ function makePrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
     describe(ctx, args) {
       const { map, command } = prepareEdit(ctx, args, kind, mode);
       const ending = ` 명령을 ${action}합니다.`;
-      const subject = `${spec.title}(${summaryDetails(ctx, map, command, args)})`;
+      const subject = `${spec.title}(${summaryDetails(ctx, map, command, args, mode)})`;
       const limit = 80 - ending.length;
       return `${subject.length > limit ? subject.slice(0, limit - 2) + "…)" : subject}${ending}`;
     },
@@ -566,7 +580,7 @@ function makePrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
           throw new PrimitiveError("명령 줄의 위치나 설정을 다시 확인해 주세요.");
         }
       });
-      validateSlotRename(ctx.project, after, map, command, current);
+      validateSlotRename(ctx, after, map, command, current);
       return after;
     },
   };
