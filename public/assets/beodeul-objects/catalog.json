@@ -109,7 +109,7 @@
   },
   {
     "id": "beehive_box",
-    "nameKo": "벌통",
+    "nameKo": "나무 상자 벌통",
     "category": "prop",
     "sourceFile": "beehive_box_r2.png",
     "widthPx": 32,
@@ -867,7 +867,7 @@
     "widthTiles": 3,
     "heightTiles": 2,
     "footprint": ["***", "X*X"],
-    "tags": ["village", "빨래"]
+    "tags": ["village", "laundry"]
   },
   {
     "id": "laundry_tub",
@@ -879,7 +879,7 @@
     "widthTiles": 1,
     "heightTiles": 1,
     "footprint": ["X"],
-    "tags": ["village", "빨래"]
+    "tags": ["village", "laundry"]
   },
   {
     "id": "lighthouse_small",
@@ -1220,7 +1220,7 @@
   },
   {
     "id": "stepping_stones",
-    "nameKo": "징검돌",
+    "nameKo": "낮은 징검돌",
     "category": "prop",
     "sourceFile": "stepping_stones_r2.png",
     "widthPx": 48,
@@ -1385,7 +1385,7 @@
     "widthTiles": 3,
     "heightTiles": 3,
     "footprint": ["***", "***", "XXX"],
-    "tags": ["village", "우물"]
+    "tags": ["village", "well"]
   },
   {
     "id": "well_wooden_roof",
@@ -1397,7 +1397,7 @@
     "widthTiles": 3,
     "heightTiles": 3,
     "footprint": ["***", "***", "XXX"],
-    "tags": ["village", "우물"]
+    "tags": ["village", "well"]
   },
   {
     "id": "wheelbarrow",
