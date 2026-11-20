@@ -1,4 +1,157 @@
-import type { SmallTaskPrimitive } from "../types";
+import type { SmallTaskScope } from "@/ai/smallTaskScope";
+import { outsideRecord, referenceIndex, type RefSite } from "@/editor/tools/dbReferenceIndex";
+import type { JsonSchema } from "@/editor/tools/types";
+import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
+import type { Project } from "@/project/types";
+import { displayText } from "../../target";
+import { PrimitiveError } from "../errors";
+import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
+import {
+  battleCommandFields, enemyFields, nonempty, terrainFields, textField, troopFields, troopUpdateFields,
+  writeBattleCommand, writeEnemy, writeTerrain, writeTroop,
+} from "./20-db-enemies-troops/records";
 
 export const UNIT = "20-db-enemies-troops";
-export const PRIMITIVES: readonly SmallTaskPrimitive[] = [];
+
+type Collection = "enemies" | "troops" | "terrains" | "battleCommands";
+type Row<C extends Collection> = NonNullable<Project["database"][C]>[number];
+type Args = Record<string, unknown>;
+type Action = "create" | "update" | "delete";
+
+interface CollectionOptions<C extends Collection> {
+  collection: C;
+  label?: string;
+  idPrefix: string;
+  fields: Record<string, JsonSchema>;
+  updateFields?: Record<string, JsonSchema>;
+  createRequired?: readonly string[];
+  write: (project: Project, key: { id: string; name: string }, args: Args, current?: Row<C>) => Row<C>;
+}
+
+function selectedRow<C extends Collection>(ctx: PrimitiveContext, collection: C) {
+  if (ctx.target.kind !== "dbEntry" || ctx.target.collection !== collection) {
+    throw new PrimitiveError("범위 밖 자료집 항목이에요.");
+  }
+  const id = ctx.target.id;
+  const rows = (ctx.project.database[collection] ?? []) as readonly Row<C>[];
+  const index = rows.findIndex(row => row.id === id);
+  const row = rows[index];
+  if (!row) throw new PrimitiveError("선택한 자료집 항목을 찾을 수 없어요.");
+  return { rows, index, row };
+}
+
+function freshId(project: Project, rows: readonly { id: string }[], prefix: string): string {
+  const used = new Set(rows.map(row => row.id));
+  for (let number = 1; ; number += 1) {
+    const id = `${prefix}_small_${number}`;
+    if (!used.has(id) && !referenceIndex(project, new Set([id])).has(id)) return id;
+  }
+}
+
+function independentClassCommand(project: Project, site: RefSite, catalogIndex: number): boolean {
+  const [root, collection, classIndex, field, commandIndex, key] = site.path;
+  if (site.path.length !== 6 || root !== "database" || collection !== "classes" || field !== "battleCommands"
+    || key !== "id" || typeof classIndex !== "number" || typeof commandIndex !== "number") return false;
+
+  // 직업에 배치한 명령은 별도 값이다. 카탈로그에서 상속하는 값이 있으면 연결을 보호한다.
+  const command = project.database.classes[classIndex]?.battleCommands[commandIndex];
+  const catalog = project.database.battleCommands?.[catalogIndex];
+  return Boolean(command?.name && command.kind && catalog
+    && (!catalog.skillId || command.skillId)
+    && (!catalog.skillSubsetName || command.skillSubsetName)
+    && (!catalog.commonEventId || command.commonEventId));
+}
+
+function validateDelete(project: Project, collection: Collection, id: string, index: number, count: number): void {
+  const uses = outsideRecord(referenceIndex(project, new Set([id])).get(id) ?? [], ["database", collection, index]);
+  if (uses.some(site => collection !== "battleCommands" || !independentClassCommand(project, site, index))) {
+    throw new PrimitiveError("다른 항목에서 사용 중이에요. 연결을 먼저 해제해 주세요.");
+  }
+  if ((collection === "terrains" || collection === "battleCommands") && count === 1) {
+    throw new PrimitiveError("마지막 항목을 지우면 기본 목록이 다시 생겨요. 목록에 한 항목을 남겨 주세요.");
+  }
+  if (collection !== "terrains") return;
+  // 지형 태그는 1부터 세는 목록 위치다. 이후 행을 가리키는 태그도 보호한다.
+  const atOrAfter = (tag: number | undefined) => tag !== undefined && Math.trunc(tag) > index && Math.trunc(tag) <= count;
+  const changesTile = Object.values(project.tilesets).some(tileset =>
+    tileset.tileMeta?.some(meta => atOrAfter(meta?.terrainTag)) ||
+    tileset.terrain?.some((tag, tileIndex) => atOrAfter(tileset.tileMeta?.[tileIndex]?.terrainTag ?? tag)),
+  );
+  if (changesTile) throw new PrimitiveError("지우면 타일에 연결된 지형이 달라져요. 지형 연결을 먼저 정리해 주세요.");
+}
+
+const actions = [
+  { action: "create", title: "추가", verb: "추가했어요" },
+  { action: "update", title: "수정", verb: "수정했어요" },
+  { action: "delete", title: "삭제", verb: "삭제했어요" },
+] as const;
+
+function describeRow(label: string, verb: string, current: { id: string; name: string }, name?: string): string {
+  const raw = name ?? current.name;
+  const visible = displayText(raw === current.id ? "" : raw.replace(/[{}\[\]「」]/gu, ""), "");
+  const short = visible.length > 40 ? `${visible.slice(0, 39)}…` : visible;
+  return short ? `${label} 「${short}」 항목을 ${verb}.` : `${label} 항목을 ${verb}.`;
+}
+
+function scopeFor<C extends Collection>(ctx: PrimitiveContext, collection: C, action: Action): SmallTaskScope {
+  const { row } = selectedRow(ctx, collection);
+  return action === "create"
+    ? { kind: "dbEntries", entries: [], create: { collection, max: 1 } }
+    : { kind: "dbEntries", entries: [{ collection, id: row.id }], ...(action === "delete" ? { remove: true as const } : {}) };
+}
+
+function defineCollection<C extends Collection>(options: CollectionOptions<C>): SmallTaskPrimitive[] {
+  const { collection, fields } = options;
+  const label = options.label ?? DATABASE_AREA_LABELS[collection];
+  const updateFields = options.updateFields ?? fields;
+  return actions.map(({ action, title, verb }) => ({
+    id: `db.${collection}.${action}`,
+    unit: UNIT,
+    title: `${label} ${title}`,
+    covers: { collections: [collection] },
+    targets: ["dbEntry"],
+    args: {
+      type: "object",
+      additionalProperties: false,
+      properties: action === "delete" ? {} : {
+        name: textField("자료집에 표시할 이름"),
+        ...(action === "update" ? updateFields : fields),
+      },
+      required: action === "create" ? ["name", ...(options.createRequired ?? [])] : [],
+    },
+    scope(ctx) {
+      return scopeFor(ctx, collection, action);
+    },
+    describe(ctx, args) {
+      const { row } = selectedRow(ctx, collection);
+      return describeRow(label, verb, row, args.name as string | undefined);
+    },
+    apply(ctx, args) {
+      const { rows, index, row } = selectedRow(ctx, collection);
+      let edited: readonly Row<C>[];
+      if (action === "delete") {
+        validateDelete(ctx.project, collection, row.id, index, rows.length);
+        edited = rows.filter((_, i) => i !== index);
+      } else {
+        if (action === "update" && !Object.keys(args).length) throw new PrimitiveError("바꿀 값을 넣어 주세요.");
+        const name = args.name === undefined ? row.name : nonempty(args.name as string);
+        const id = action === "create" ? freshId(ctx.project, rows, options.idPrefix) : row.id;
+        const record = options.write(ctx.project, { id, name }, args, action === "update" ? row : undefined);
+        edited = action === "create" ? [...rows, record] : rows.map((entry, i) => i === index ? record : entry);
+      }
+      return { ...ctx.project, database: { ...ctx.project.database, [collection]: edited } };
+    },
+  }));
+}
+
+export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
+  ...defineCollection({ collection: "enemies", idPrefix: "enemy", fields: enemyFields, write: writeEnemy }),
+  ...defineCollection({
+    collection: "troops", label: "적 무리", idPrefix: "troop",
+    fields: troopFields, updateFields: troopUpdateFields, createRequired: ["members"], write: writeTroop,
+  }),
+  ...defineCollection({ collection: "terrains", idPrefix: "terrain", fields: terrainFields, write: writeTerrain }),
+  ...defineCollection({
+    collection: "battleCommands", label: "전투 명령", idPrefix: "cmd", fields: battleCommandFields, write: writeBattleCommand,
+  }),
+];
