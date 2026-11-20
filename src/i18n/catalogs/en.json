@@ -18479,6 +18479,8 @@
 "폴더를 읽지 못했습니다. 파일을 직접 끌어다 놓아 주세요.":"Could not read that folder. Drop the files themselves instead.",
 "이걸로 작업":"Edit this with AI",
 "작은 일":"Small task",
+"작은 일 동작 읽기":"List small-task actions",
+"작은 일 동작 적용":"Apply small-task action",
 "한 줄 요청":"One-line request",
 "무엇을 고칠지 먼저 고르세요":"Choose what to edit first",
 "이 마을에 밤에만 나오는 상인 추가":"Add a merchant who only appears at night",
