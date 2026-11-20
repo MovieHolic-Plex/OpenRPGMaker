@@ -72,7 +72,7 @@ const cases: readonly {
   },
   {
     id: "switch.rename", fixture: "maou", args: { record: "근무 중", name: "교대 근무 시작" },
-    sentence: "선택한 스위치 이름을 「교대 근무 시작」(으)로 바꿔요.",
+    sentence: "스위치 이름을 「교대 근무 시작」으로 바꿔요.",
     check(before, after) {
       expect(after.switches).toEqual(before.switches.map(record => record.id === switchId ? { ...record, name: "교대 근무 시작" } : record));
       expect(after.session).toBe(before.session);
@@ -90,7 +90,7 @@ const cases: readonly {
   },
   {
     id: "variable.rename", fixture: "maou", args: { record: variableId, name: "끝낸 일" },
-    sentence: "선택한 변수 이름을 「끝낸 일」(으)로 바꿔요.",
+    sentence: "변수 이름을 「끝낸 일」로 바꿔요.",
     check(before, after) {
       expect(after.variables).toEqual(before.variables.map(record => record.id === variableId ? { ...record, name: "끝낸 일" } : record));
       expect(after.session).toBe(before.session);
@@ -112,7 +112,7 @@ const cases: readonly {
   {
     id: "ending.update", fixture: "built",
     args: { record: "봄을 기다리는 노래", name: "봄의 노래", priority: 3, conditions: [{ kind: "variable", variableId: "var_0001", op: ">=", value: 3 }] },
-    sentence: "「봄의 노래」 엔딩을 수정해요.",
+    sentence: "엔딩 「봄의 노래」의 설정을 수정해요.",
     check(before, after) {
       expect(after.endings).toEqual(before.endings!.map(record => record.id === builtEndingId
         ? { ...record, name: "봄의 노래", priority: 3, conditions: [{ kind: "variable", variableId: "var_0001", op: ">=", value: 3 }] }
@@ -131,7 +131,7 @@ const cases: readonly {
   },
   {
     id: "system.title", fixture: "maou", args: { title: " 달빛 편의점 " },
-    sentence: "게임 제목을 「달빛 편의점」(으)로 바꿔요.",
+    sentence: "게임 제목을 「달빛 편의점」으로 바꿔요.",
     check(before, after) {
       expect(after.meta).toEqual({ ...before.meta, title: "달빛 편의점" });
       expect(after.system).toEqual({ ...before.system, titleScreen: { ...before.system.titleScreen, title: "달빛 편의점" } });
@@ -140,7 +140,7 @@ const cases: readonly {
   },
   {
     id: "system.startGold", fixture: "built", args: { gold: 300 },
-    sentence: "시작 소지금을 300 골드로 바꿔요.",
+    sentence: "시작 소지금을 300골드로 바꿔요.",
     check(before, after) {
       expect(after.session).toEqual({ ...before.session, gold: 300 });
       expect(after.system).toBe(before.system);
@@ -148,7 +148,7 @@ const cases: readonly {
   },
   {
     id: "system.startParty", fixture: "built", args: { actorIds: ["마도사", "actor_hero"] },
-    sentence: "「마도사」, 「시온」(으)로 시작해요.",
+    sentence: "시작 파티를 「마도사」, 「시온」 순서로 바꿔요.",
     check(before, after) {
       expect(after.system).toEqual({ ...before.system, startActorIds: ["actor_mage", "actor_hero"] });
       expect(after.session).toEqual({ ...before.session, partyActorIds: ["actor_mage", "actor_hero"] });
@@ -182,12 +182,12 @@ it("지워진 맵을 대상으로 프로젝트 자료를 바꾸지 않아요", (
   expectRefused(project, stale, "system.startGold", { gold: 3 });
 });
 
-it.each(cases)("$id 다른 영역의 변경을 끼우면 범위 가드가 거절", ({ id, args }) => {
-  const project = fixtureProject("built");
+it.each(cases)("$id 다른 영역의 변경을 끼우면 범위 가드가 거절", ({ id, fixture, args, prepare }) => {
+  const original = fixtureProject(fixture);
+  const project = prepare?.(original) ?? original;
   const primitive = PRIMITIVES.find(entry => entry.id === id)!;
   const ctx = { project, target: mapTarget(project) };
   const scope = primitive.scope(ctx, args);
-  expect(primitive.scope(ctx, { ...args, record: "other_record" })).toEqual(scope);
   const outside = id.startsWith("system.")
     ? { ...project, switches: [...project.switches, { id: "sw_untargeted", name: "끼운 스위치" }] }
     : { ...project, meta: { ...project.meta, title: "끼운 제목" } };
@@ -195,10 +195,60 @@ it.each(cases)("$id 다른 영역의 변경을 끼우면 범위 가드가 거절
 });
 
 it.each([
+  ["switch.rename", "switches", "sw_0001"],
+  ["variable.rename", "variables", "var_0001"],
+  ["ending.update", "endings", unusedEnding.id],
+  ["ending.remove", "endings", unusedEnding.id],
+] as const)("%s 같은 종류의 다른 항목도 범위 밖이에요", (id, area, selectedId) => {
+  const project = {
+    ...blankWithUnusedEnding(),
+    switches: [{ id: "sw_0001", name: "문 열림" }, { id: "sw_0002", name: "불 켜짐" }],
+    variables: [{ id: "var_0001", name: "방문 횟수" }, { id: "var_0002", name: "남은 횟수" }],
+    endings: [unusedEnding, { ...unusedEnding, id: "ending_other", name: "다른 결말" }],
+  };
+  const primitive = PRIMITIVES.find(entry => entry.id === id)!;
+  const scope = primitive.scope({ project, target: mapTarget(project) }, { record: selectedId });
+  expect(scope).toEqual({ kind: "projectArea", area, ids: [selectedId] });
+  const records = project[area];
+  const outside = { ...project, [area]: records.map(row => row.id === selectedId ? row : { ...row, name: "다른 변경" }) };
+  expect(checkSmallTaskScope(project, outside, scope)).toMatchObject({ ok: false });
+});
+
+it("제목 설정이 없는 옛 프로젝트에서도 시작 화면 제목을 저장해요", () => {
+  const original = fixtureProject("blank");
+  const project: Project = { ...original, system: { ...original.system } };
+  delete project.system.titleScreen;
+  const { after } = runPrimitive(project, mapTarget(project), "system.title", { title: "바다의 노래" });
+  expect(after.meta.title).toBe("바다의 노래");
+  expect(after.system.titleScreen?.title).toBe("바다의 노래");
+  expect(project.system.titleScreen).toBeUndefined();
+});
+
+it("제목 카드만 고치고 저작된 오프닝은 수정 범위에도 넣지 않아요", () => {
+  const original = fixtureProject("blank");
+  const opening = { scenes: [{ id: "scene_title", kind: "text" as const, narration: `— ${original.meta.title} —`, durationMs: 4000 }] };
+  const project = { ...original, system: { ...original.system, opening } };
+  const args = { title: "바다의 노래" };
+  const { after } = runPrimitive(project, mapTarget(project), "system.title", args);
+  expect(after.system.opening).toEqual({ scenes: [{ ...opening.scenes[0], narration: "— 바다의 노래 —" }] });
+
+  const authored = { scenes: [{ ...opening.scenes[0]!, narration: "그날 밤, 별이 바다로 떨어졌다." }] };
+  const withStory = { ...project, system: { ...project.system, opening: authored } };
+  const target = mapTarget(withStory);
+  const scope = PRIMITIVES.find(entry => entry.id === "system.title")!.scope({ project: withStory, target }, args);
+  expect(checkSmallTaskScope(withStory, { ...withStory, system: { ...withStory.system, opening } }, scope)).toMatchObject({ ok: false });
+  expect(runPrimitive(withStory, target, "system.title", args).after.system.opening).toBe(authored);
+});
+
+it.each([
   ["switch.rename", { record: "sw_missing", name: "새 이름" }, /스위치.*찾을 수 없어요/u],
   ["variable.define", { name: "   " }, /이름을 입력/u],
   ["ending.define", { name: "첫 결말", conditions: [{ kind: "switch", switchId: "sw_missing", value: true }] }, /엔딩 조건의 스위치/u],
   ["ending.update", { record: builtEndingId, conditions: [{ kind: "variable", variableId: "var_missing", op: ">=", value: 3 }] }, /엔딩 조건의 변수/u],
+  ["ending.update", { record: builtEndingId }, /바꿀 엔딩 설정/u],
+  ["ending.define", { name: "만남", conditions: [{ kind: "friendshipAtLeast", npcKey: "없는 인물", value: 3 }] }, /호감도를 확인할 인물/u],
+  ["ending.define", { name: "만남", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 1001 }] }, /값의 형식/u],
+  ["ending.define", { name: "만남", priority: Number.MAX_SAFE_INTEGER + 1 }, /값의 형식|우선순위/u],
   ["ending.remove", { record: builtEndingId }, /이벤트나 조건에서 쓰는 엔딩/u],
   ["system.title", { title: "   " }, /게임 제목을 입력/u],
   ["system.startGold", { gold: GOLD_MAX + 1 }, /소지금|값의 형식/u],
@@ -214,11 +264,117 @@ it.each([
 
 it("엔딩을 본 기록을 확인하는 중첩 조건도 삭제를 막아요", () => {
   const project = blankWithUnusedEnding();
-  project.commonEvents.push({
+  project.commonEvents = [...project.commonEvents, {
     id: "ce_check_ending", name: "결말 확인", trigger: "none",
     commands: [{ kind: "fork", condition: { kind: "not", condition: { kind: "endingSeen", endingId: unusedEnding.id, value: true } }, then: [] }],
-  });
+  }];
   expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.name }, /쓰는 엔딩/u);
+});
+
+it("부대의 전투 후 분기에서 조건으로 고르는 결말도 삭제를 막아요", () => {
+  const original = fixtureProject("built");
+  const [troop] = original.database.troops;
+  const project: Project = {
+    ...original, endings: [unusedEnding],
+    database: { ...original.database, troops: [{ ...troop!, afterBattle: { victory: [{ kind: "loop", body: [{ kind: "triggerEnding" }] }] } }] },
+  };
+  expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.id }, /쓰는 엔딩/u);
+});
+
+it("자료집 일정에서 해금에 쓰는 엔딩은 삭제할 수 없어요", () => {
+  const original = blankWithUnusedEnding();
+  const project: Project = {
+    ...original,
+    commonEvents: [{ id: "ce_walk", name: "산책", trigger: "none", commands: [] }],
+    database: { ...original.database, schedules: [{
+      id: "schedule_spring", title: "봄맞이", slots: [{ label: "아침" }], activities: [{
+        id: "spring_walk", label: "산책", description: "강가를 걸어요.", commonEventId: "ce_walk",
+        condition: { kind: "endingSeen", endingId: unusedEnding.id, value: true },
+      }],
+    }] },
+  };
+  expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.id }, /쓰는 엔딩/u);
+});
+
+it("공용 스크립트에서 쓰는 엔딩은 삭제할 수 없어요", () => {
+  const source = `await game.cmd({ kind: "triggerEnding", endingId: "${unusedEnding.id}" });`;
+  const project = { ...blankWithUnusedEnding(), scriptLibrary: [{ id: "epilogue", source, compiled: source }] };
+  expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.id }, /공용 스크립트/u);
+});
+
+it("청사진이 이름으로 가리키는 결말을 지우거나 연결이 끊기게 이름을 바꿀 수 없어요", () => {
+  const original = blankWithUnusedEnding();
+  const project: Project = {
+    ...original,
+    endings: [unusedEnding, { ...unusedEnding, id: "ending_other", name: "바다의 노래" }],
+    gameBlueprint: {
+      version: 1, title: "별의 항구", genre: "adventure", playerGoal: "등대를 다시 켜기",
+      steps: [
+        { id: "s1", place: "항구", event: "정비공", action: "열쇠를 받는다", feeling: "기대", gives: "열쇠" },
+        { id: "s2", place: "등대", event: "발전기", action: "등불을 켠다", feeling: "안도", gives: "결말" },
+      ],
+      ending: { name: unusedEnding.name, how: "등대를 밝힌다", feeling: "안도" },
+    },
+  };
+  const target = mapTarget(project);
+  expectRefused(project, target, "ending.remove", { record: unusedEnding.id }, /게임 청사진/u);
+  expectRefused(project, target, "ending.update", { record: unusedEnding.id, name: "봄의 소식" }, /게임 청사진/u);
+});
+
+it("우선순위가 소수인 옛 엔딩도 이름만 바꿀 수 있어요", () => {
+  const oldEnding = { ...unusedEnding, priority: 0.5 };
+  const project = { ...blankWithUnusedEnding(), endings: [oldEnding] };
+  const { after } = runPrimitive(project, mapTarget(project), "ending.update", { record: oldEnding.id, name: "새 결말" });
+  expect(after.endings).toEqual([{ ...oldEnding, name: "새 결말" }]);
+});
+
+it("스위치나 변수를 이름으로 찾는 스크립트가 있으면 이름 변경을 거절해요", () => {
+  const original = fixtureProject("blank");
+  const source = 'game.setSwitch("문 열림", true); game.addVar("잰 걸음", 3);';
+  const project: Project = {
+    ...original,
+    switches: [{ id: "sw_other", name: "다른 문" }, { id: "sw_door", name: "문 열림" }],
+    variables: [{ id: "var_steps", name: "잰 걸음" }],
+    scriptLibrary: [{ id: "door", source, compiled: source, effects: {
+      reads: [], writes: [{ kind: "switch", id: "문 열림" }, { kind: "variable", id: "잰 걸음" }], calls: [], dynamic: [],
+    } }],
+  };
+  const target = mapTarget(project);
+  expectRefused(project, target, "switch.rename", { record: "sw_door", name: "새 이름" }, /스크립트/u);
+  expectRefused(project, target, "switch.rename", { record: "sw_other", name: "문 열림" }, /스크립트/u);
+  expectRefused(project, target, "variable.rename", { record: "var_steps", name: "새 이름" }, /스크립트/u);
+  const byId = 'game.setSwitch("sw_door", true);';
+  const safe: Project = { ...project, scriptLibrary: [{ id: "door", source: byId, compiled: byId, effects: {
+    reads: [], writes: [{ kind: "switch", id: "sw_door" }], calls: [], dynamic: [],
+  } }] };
+  const { after } = runPrimitive(safe, target, "switch.rename", { record: "sw_door", name: "문 열기" });
+  expect(after.switches.find(record => record.id === "sw_door")?.name).toBe("문 열기");
+});
+
+it.each([
+  ['game.setSwitch(game.getText("선택"), true);', [{ api: "setSwitch", line: 1 }]],
+  ['const set = game.setSwitch; set("문 열림", true);', []],
+] as const)("직접 확인할 수 없는 스크립트 접근은 이름 변경을 막아요 (%s)", (source, dynamic) => {
+  const project: Project = {
+    ...fixtureProject("blank"),
+    switches: [{ id: "sw_door", name: "문 열림" }],
+    scriptLibrary: [{ id: "door", source, compiled: source, effects: {
+      reads: [], writes: [], calls: [], dynamic,
+    } }],
+  };
+  expectRefused(project, mapTarget(project), "switch.rename", { record: "sw_door", name: "문 열기" }, /스크립트/u);
+});
+
+it("인물의 호감도에 연결된 변수는 연결이 끊기는 이름으로 바꾸지 않아요", () => {
+  const before = fixtureProject("blank");
+  const project: Project = {
+    ...before,
+    variables: [{ id: "var_heart", name: "이루리 호감도" }],
+    characters: { ruri: { displayName: "이루리" } },
+  };
+  const target = mapTarget(project);
+  expectRefused(project, target, "variable.rename", { record: "var_heart", name: "새 이름" }, /호감도/u);
+  expect(runPrimitive(project, target, "variable.rename", { record: "var_heart", name: "이루리의 친밀도" }).after.variables[0]?.name).toBe("이루리의 친밀도");
 });
 
 // 공용 러너의 디렉터리 URL이 브라우저 주소로 변환되는 환경에서도 같은 사례를 실행한다.
@@ -230,7 +386,9 @@ it.each(corpusCases)("$request", async ({ fixture, target: selector, primitive, 
   const before = seedEnding ? { ...original, endings: [...(original.endings ?? []), seedEnding] } : original;
   const target = resolveTarget(before, selector);
   if (expectRefusal) {
+    const snapshot = structuralJson(before);
     expect(() => runPrimitive(before, target, primitive, args)).toThrow(PrimitiveError);
+    expect(structuralJson(before) === snapshot).toBe(true);
     return;
   }
   const { after, sentence } = runPrimitive(before, target, primitive, args);

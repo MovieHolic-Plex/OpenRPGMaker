@@ -1517,5 +1517,70 @@
       ]
     },
     "expectRefusal": true
+  },
+  {
+    "request": "결말 목록에 없는 ‘잊힌 항구’ 결말을 삭제해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "잊힌 항구"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "호감도가 제일 높은 사람의 호감도가 40 이상이면 ‘별의 편지’가 열리게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "별의 편지",
+      "conditions": [
+        {
+          "kind": "friendshipAtLeast",
+          "npcKey": "*",
+          "value": 40
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "별의 편지"
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": [
+          {
+            "kind": "friendshipAtLeast",
+            "npcKey": "*",
+            "value": 40
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "없는 인물 ‘별지기’의 호감도가 높으면 ‘별의 편지’를 열어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "별의 편지",
+      "conditions": [
+        {
+          "kind": "friendshipAtLeast",
+          "npcKey": "별지기",
+          "value": 40
+        }
+      ]
+    },
+    "expectRefusal": true
   }
 ]
