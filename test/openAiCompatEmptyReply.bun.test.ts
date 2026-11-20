@@ -62,10 +62,10 @@ describe("stripImageParts", () => {
 describe("guardedOpenAiCompatFetch 빈 답", () => {
   test("이미지 요청이 비면 이미지를 빼고 한 번 더 보낸다", async () => {
     const bodies: string[] = [];
-    const base = async (_input: unknown, init?: RequestInit) => {
+    const base = (async (_input: unknown, init?: RequestInit) => {
       bodies.push(String(init?.body));
       return bodies.length === 1 ? EMPTY_SSE() : TEXT_SSE();
-    };
+    }) as typeof fetch;
     const response = await guardedOpenAiCompatFetch(base)(URL_, { method: "POST", body: imageBody });
     expect(response.status).toBe(200);
     expect(await response.text()).toContain("pong");
@@ -75,7 +75,7 @@ describe("guardedOpenAiCompatFetch 빈 답", () => {
   });
   test("다시 보내도 비거나 이미지가 없으면 재시도되지 않는 오류(422)로 바꾼다", async () => {
     let calls = 0;
-    const base = async () => { calls += 1; return EMPTY_SSE(); };
+    const base = (async () => { calls += 1; return EMPTY_SSE(); }) as typeof fetch;
     const withImage = await guardedOpenAiCompatFetch(base)(URL_, { method: "POST", body: imageBody });
     expect(withImage.status).toBe(422);
     expect(calls).toBe(2);
@@ -86,7 +86,7 @@ describe("guardedOpenAiCompatFetch 빈 답", () => {
     expect(explainOpenAiCompatError(`422 ${message}`, { name: "CLIProxyAPI Argon" })).toContain("빈 답을 돌려줬어요");
   });
   test("채팅이 아닌 호출(/models)은 그대로 둔다", async () => {
-    const base = async () => new Response('{"data":[]}', { headers: { "content-type": "application/json" } });
+    const base = (async () => new Response('{"data":[]}', { headers: { "content-type": "application/json" } })) as typeof fetch;
     const response = await guardedOpenAiCompatFetch(base)("http://127.0.0.1:8318/v1/models", { method: "GET" });
     expect(await response.text()).toBe('{"data":[]}');
   });

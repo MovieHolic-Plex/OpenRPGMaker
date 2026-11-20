@@ -1,4 +1,4 @@
-import { committedEventView, eventDraftHasUserChanges, eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
+import { eventDraftHasUserChanges, eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
@@ -238,11 +238,10 @@ function projectWithLiveDrafts(
       if (!liveEvent.draft) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       const incoming = index >= 0 ? targetMap.events[index] : undefined;
-      const canonical = committedEventView(incoming ?? null);
       const conflict = liveEvent.draft.kind === "edit"
-        ? !canonical
+        ? !incoming
           ? "remote-delete"
-          : liveEvent.draft.original && JSON.stringify(canonical) !== JSON.stringify(liveEvent.draft.original)
+          : liveEvent.draft.original && JSON.stringify(eventWithoutDraft(incoming)) !== JSON.stringify(liveEvent.draft.original)
             ? "remote-change"
             : undefined
         : undefined;
@@ -259,7 +258,7 @@ function projectWithLiveDrafts(
         preserved.draft = { ...preserved.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
       }
       if (index >= 0) {
-        const placed = rebaseOpenEditDraft(canonical ? [canonical] : undefined, preserved);
+        const placed = rebaseOpenEditDraft(targetMap.events, preserved);
         targetMap.events[index] = placed;
         rememberEventDraftVaultEntry(mapId, placed);
       } else {

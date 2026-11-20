@@ -38,10 +38,10 @@ describe("tileset reference gate scope", () => {
 
   it("only tile-choosing tools tell the model to read references first", () => {
     const byName = new Map(listTools().map(tool => [tool.name, tool]));
-    for (const name of ["create_map", "resize_map", "duplicate_map"]) {
+    for (const name of ["create_map", "run_dungeon_room_pipeline", "run_interior_room_pipeline"]) {
       const tool = byName.get(name)!;
       expect(tool.description).not.toContain("먼저 조회한다");
-      expect(JSON.stringify(tool.parameters.properties?.referencePurpose)).toContain("읽지 않아도 된다");
+      expect(JSON.stringify(tool.parameters.properties.referencePurpose)).toContain("읽지 않아도 된다");
     }
     expect(byName.get("paint_tiles")!.description).toContain("먼저 조회한다");
   });

@@ -5,7 +5,7 @@ import { describe, expect, test } from "bun:test";
 import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import { createBlankProject } from "../src/project/defaults.ts";
-import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT } from "../src/ai/piAgent/providerRetry.ts";
+import { isTransientProviderStreamError } from "../src/ai/piAgent/providerRetry.ts";
 import type { PiAgentEvent, PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 
 const DROP = "Cloud Code Assist stream ended without a finish reason (connection dropped or response truncated)";
@@ -70,15 +70,15 @@ describe("제공자 스트림 끊김", () => {
     expect(events.filter((e) => e.type === "error")).toEqual([]);
     expect(events.some((e) => e.type === "execution_status" && e.name === "provider_retry")).toBe(true);
     expect(seen.length).toBe(3);
-    expect(seen[1]!.join("\n")).toContain(`연결 끊김 1/${PI_PROVIDER_STREAM_RETRY_LIMIT}`);
+    expect(seen[1]!.join("\n")).toContain("연결 끊김 1/2");
     expect(done.stats.toolCalls).toBeGreaterThanOrEqual(1);
   }, 20_000);
 
   test("한도를 넘게 끊기면 끊김 문구로 끝난다", async () => {
     const events: PiAgentEvent[] = [];
     const seen: string[][] = [];
-    await runPiAgent(request(), { streamFn: scripted(["drop"], seen) as never, onEvent: (e) => events.push(e) }).catch(() => undefined);
-    expect(seen.length).toBe(PI_PROVIDER_STREAM_RETRY_LIMIT + 1);
+    await runPiAgent(request(), { streamFn: scripted(["drop", "drop", "drop", "stop"], seen) as never, onEvent: (e) => events.push(e) }).catch(() => undefined);
+    expect(seen.length).toBe(3);
     expect(events.filter((e) => e.type === "error").map((e) => (e as { message: string }).message)).toContain(DROP);
-  }, 60_000);
+  }, 20_000);
 });

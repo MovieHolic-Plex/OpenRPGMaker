@@ -74,7 +74,7 @@ describe("event draft vault recovery", () => {
     const oldMap = store.getCurrent().maps[mapId];
     blank.maps = { [mapId]: { ...structuredClone(oldMap), events: [] } };
     blank.startMapId = mapId;
-    blank.mapTree = { mapId, children: [] };
+    blank.mapTree = { children: [{ mapId, children: [] }] };
 
     const recovered = applyEventDraftVault(blank);
     const event = recovered.maps[mapId].events.find((entry) => entry.id === eventId);

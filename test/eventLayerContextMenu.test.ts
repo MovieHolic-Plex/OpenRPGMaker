@@ -224,8 +224,6 @@ describe("event layer context menu", () => {
     expect(redoMapEdit()).toBe(true);
     expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([]);
     expect(getMapEditHistoryEntries()).toHaveLength(1);
-  });
-
   it("refuses a paste whose body would leave the map, and still pastes when the body fits", () => {
     resetMapEditHistory();
     const wide = sampleEvent("event-wide", 1, 1, { width: 3, height: 1 });
@@ -257,8 +255,7 @@ describe("event layer context menu", () => {
     expect(toast).toHaveBeenCalledWith("이벤트 몸이 맵 밖으로 나갑니다.", "error");
 
     eventLayerContextMenuItems({ ...target, x: 8, y: 1 }).find((item) => item.id === "paste")?.action();
-    expect(store.getCurrent().maps[target.mapId].events.some((item) => item.x === 8 && item.y === 1)).toBe(true);
-  });
+    expect(store.getCurrent().maps[target.mapId].events.some((item) => item.x === 8 && item.y === 1)).toBe(true);  });
 
   it("does not create a second event on a cell that is already covered", () => {
     const occupant = sampleEvent("event-occupant", target.x, target.y + 1, { width: 1, height: 2 });

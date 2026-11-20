@@ -106,7 +106,7 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
   await expect(box.locator("strong")).toHaveText("대사 1줄 수정 · 이벤트 1개", { timeout: 90_000 });
   await expect(box).toContainText("「안녕.」 → 「어서 오세요!」");
   const readEvent = () => page.evaluate(async id => (await import("/src/project/store.ts")).store.getCurrent().maps[id].events[0], mapId);
-  expect((await readEvent()).pages?.[0]?.commands[0]).toMatchObject({ kind: "text", body: "어서 오세요!" });
+  expect((await readEvent()).pages[0].commands[0].body).toBe("어서 오세요!");
   expect(await depth()).toBe(beforeDepth + 1);
   await box.getByRole("button", { name: "되돌리기" }).click();
   await expect(box.getByRole("status")).toHaveText("되돌렸어요.");
@@ -135,7 +135,7 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
   await input.fill("인사를 고쳐 줘");
   await input.press("Enter");
   await expect(box).toContainText("「안녕.」 → 「안녕하세요!」", { timeout: 90_000 });
-  expect((await readEvent()).pages?.[0]?.commands[0]).toMatchObject({ kind: "text", body: "안녕하세요!" });
+  expect((await readEvent()).pages[0].commands[0].body).toBe("안녕하세요!");
   await box.getByRole("button", { name: "되돌리기" }).click();
   await expect(box.getByRole("status")).toHaveText("되돌렸어요.");
   await expect(eventEditor.locator(".event-editor-commands-column")).toContainText("안녕.");
