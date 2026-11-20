@@ -16,7 +16,7 @@ import { scriptCalls, scriptCommandEffects, scriptHasDynamic, scriptReads, scrip
 import type { BattleEventCondition, Command, Condition, GameMap, MoveRoute, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { displayText } from "../../../target";
-import { PrimitiveError } from "../../errors";
+import { MAP_REMOVAL_DRAFT_REFUSAL, PrimitiveError } from "../../errors";
 import type { PrimitiveContext } from "../../types";
 
 export function selectedMap(ctx: PrimitiveContext): GameMap {
@@ -309,7 +309,9 @@ export function removeMap(project: Project, map: GameMap, live?: SmallTaskDraftS
   if (project.startMapId === map.id || Object.keys(project.maps).length <= 1) {
     throw new PrimitiveError("게임의 시작 맵이나 마지막 맵은 삭제할 수 없어요.");
   }
-  const error = mapReferenceError(mapReferenceNames(project, map.id)) ?? mapRemovalDraftError(project, map.id, live ?? project);
+  const draftError = mapRemovalDraftError(project, map.id, live ?? project);
+  if (draftError) throw new PrimitiveError(`${MAP_REMOVAL_DRAFT_REFUSAL}${draftError}`);
+  const error = mapReferenceError(mapReferenceNames(project, map.id));
   if (error) throw new PrimitiveError(error);
   if (questUsesMap(project, point => point.mapId === map.id)) {
     throw new PrimitiveError("이 맵을 사용하는 퀘스트가 있어 삭제할 수 없어요.");
