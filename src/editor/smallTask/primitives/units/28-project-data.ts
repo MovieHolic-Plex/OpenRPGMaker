@@ -1,4 +1,6 @@
 import { sameName } from "@/ai/v2/story/blueprintPathNames";
+import { eventReferenceMatches } from "@/editor/databaseEventReferences";
+import { parseDialogueLineId } from "@/editor/dialogue/dialogueIndex";
 import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { affectionVariableOwner } from "@/project/affectionVariables";
@@ -8,7 +10,7 @@ import { GOLD_MAX, isSafeEconomyValue } from "@/project/economyValues";
 import { blueprintEndingId } from "@/project/gameBlueprint";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
-import { forEachProjectScript, resolveScriptRefId, scriptCommandEffects, SCRIPT_UNKNOWN_EFFECTS_API, type ScriptEffectSource } from "@/project/script/effects";
+import { isScriptCommand, resolveScriptRefId, scriptCommandEffects, SCRIPT_UNKNOWN_EFFECTS_API, type ScriptEffectSource } from "@/project/script/effects";
 import { ANY_FRIENDSHIP_KEY, FRIENDSHIP_MAX, FRIENDSHIP_MIN } from "@/project/session";
 import type { EndingCondition, EndingDef, Project } from "@/project/types";
 import { roJosa } from "@/util/josa";
@@ -116,9 +118,8 @@ function flagScriptLookupChanges(before: Project, after: Project, area: FlagArea
       || dynamic.some(({ api }) => api === SCRIPT_UNKNOWN_EFFECTS_API
         || SCRIPT_API_BY_NAME.get(api)?.refs?.some(ref => ref.kind === kind));
   };
-  let found = false;
-  forEachProjectScript(before, script => { if (!found) found = affected(script); });
-  return found || (before.scriptLibrary ?? []).some(affected);
+  return someProjectRecord(before, node => isScriptCommand(node) && affected(node))
+    || (before.scriptLibrary ?? []).some(affected);
 }
 
 function renameFlag(area: FlagArea, label: string): Operation {
@@ -152,7 +153,7 @@ const CONDITIONS: JsonSchema = {
     oneOf: [
       object({ kind: { enum: ["switch"], description: "스위치 조건" }, switchId: text("기존 스위치의 이름 또는 식별자"), value: { type: "boolean", description: "켜져 있어야 하면 참" } }, ["kind", "switchId", "value"]),
       object({ kind: { enum: ["variable"], description: "변수 조건" }, variableId: text("기존 변수의 이름 또는 식별자"), op: { enum: VARIABLE_OPS, description: "비교 방법" }, value: { type: "number", description: "비교할 값" } }, ["kind", "variableId", "op", "value"]),
-      object({ kind: { enum: ["friendshipAtLeast"], description: "호감도 조건" }, npcKey: text("호감도를 확인할 기존 인물의 관계 키. 가장 높은 호감도를 보려면 별표"), value: { type: "number", minimum: FRIENDSHIP_MIN, maximum: FRIENDSHIP_MAX, description: "필요한 호감도" } }, ["kind", "npcKey", "value"]),
+      object({ kind: { enum: ["friendshipAtLeast"], description: "호감도 조건" }, npcKey: text("호감도를 확인할 기존 인물의 관계 키. 가장 높은 호감도를 보려면 별표"), value: { type: "integer", minimum: FRIENDSHIP_MIN, maximum: FRIENDSHIP_MAX, description: "필요한 호감도" } }, ["kind", "npcKey", "value"]),
       object({ kind: { enum: ["newGamePlus"], description: "강하게 다시 하기 조건" }, value: { type: "boolean", description: "강하게 다시 하기 회차면 참" } }, ["kind", "value"]),
     ],
   },
@@ -173,7 +174,7 @@ function endingConditions(project: Project, value: unknown): EndingCondition[] {
       const npcKey = requiredText(condition.npcKey, "호감도를 확인할 인물을 골라 주세요.");
       if (npcKey !== ANY_FRIENDSHIP_KEY && !Object.hasOwn(project.characters ?? {}, npcKey)
         && !Object.values(project.maps).some(map => map.events.some(event => event.characterId?.trim() === npcKey))
-        && !someAuthoredRecord(referenceSources(project), node => node.kind === "changeFriendship"
+        && !someProjectRecord(project, node => node.kind === "changeFriendship"
           && typeof node.npcKey === "string" && node.npcKey.trim() === npcKey)) {
         throw new PrimitiveError("호감도를 확인할 인물을 찾을 수 없어요.");
       }
@@ -211,8 +212,15 @@ function patchEnding(project: Project, ending: EndingDef, args: Args): EndingDef
   };
 }
 
-function referenceSources(project: Project): readonly unknown[] {
-  return [...Object.values(project.maps).map(map => map.events), project.commonEvents, project.database, project.system, project.quests];
+function someProjectRecord(
+  project: Project,
+  matches: (node: Record<string, unknown>) => boolean,
+  endings = project.endings,
+): boolean {
+  return Object.values(project.maps).some(map => map.events.some(event =>
+    eventReferenceMatches(event, body => Object.entries(body).some(([key, value]) =>
+      key !== "draft" && someAuthoredRecord(value, matches)))))
+    || someAuthoredRecord([project.commonEvents, project.database, project.system, project.quests, endings], matches);
 }
 
 function someAuthoredRecord(value: unknown, matches: (node: Record<string, unknown>) => boolean): boolean {
@@ -225,15 +233,14 @@ function someAuthoredRecord(value: unknown, matches: (node: Record<string, unkno
 function refersToEnding(node: Record<string, unknown>, id: string): boolean {
   // ID를 생략하면 조건에 맞는 엔딩을 목록에서 고른다.
   if (node.kind === "triggerEnding" && !node.endingId) return true;
-  if (node.endingId === id && (node.kind === "triggerEnding" || node.kind === "endingSeen" || node.kind === "ending")) return true;
-  return node.kind === "script" && scriptMayUseEnding({ source: node.source, compiled: node.compiled, effects: node.effects });
+  return node.endingId === id && (node.kind === "triggerEnding" || node.kind === "endingSeen" || node.kind === "ending");
 }
 
 function scriptMayUseEnding(script: ScriptEffectSource & { readonly source?: unknown }): boolean {
-  const mentionsEnding = (code: unknown) => typeof code === "string"
-    && /\b(?:triggerEnding|endingSeen)\b/u.test(code);
-  return mentionsEnding(script.source) || mentionsEnding(script.compiled) || scriptUsesIndirectGameApi(script)
-    || scriptCommandEffects(script).dynamic.some(({ api }) => api === "cmd");
+  // 효과 목록에 명령 종류와 엔딩 ID가 없어서, cmd 객체의 kind가 계산돼도 효과 목록만으로는 알 수 없다.
+  const usesCommands = (code: unknown) => typeof code === "string" && /\bgame\s*\.\s*cmd\b/u.test(code);
+  return usesCommands(script.source) || usesCommands(script.compiled) || scriptUsesIndirectGameApi(script)
+    || scriptCommandEffects(script).dynamic.some(({ api }) => api === "cmd" || api === SCRIPT_UNKNOWN_EFFECTS_API);
 }
 
 function blueprintEnding(project: Project, endings: readonly EndingDef[]): EndingDef | undefined {
@@ -275,7 +282,12 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const key = blueprintEndingId(name);
       const id = endings.some(ending => ending.id === key) ? nextNumberedId(key, endings) : key;
       const ending = patchEnding(project, { id, name, conditions: [], priority: 0 }, args);
-      return { ...project, endings: [...endings, ending] };
+      const next = [...endings, ending];
+      const linked = blueprintEnding(project, endings);
+      if (linked && blueprintEnding(project, next)?.id !== linked.id) {
+        throw new PrimitiveError("엔딩을 추가하면 게임 청사진의 기존 엔딩 연결이 바뀌어서 추가할 수 없어요.");
+      }
+      return { ...project, endings: next };
     },
   }),
   primitive("ending.update", "엔딩 수정", "endings", "edit", {
@@ -310,11 +322,20 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const endings = project.endings ?? [];
       const ending = namedRecord(endings, args.record, "엔딩");
       const remaining = endings.filter(entry => entry !== ending);
-      if (someAuthoredRecord([...referenceSources(project), remaining], node => refersToEnding(node, ending.id))) {
+      if (someProjectRecord(project, node => refersToEnding(node, ending.id), remaining)) {
         throw new PrimitiveError("이벤트나 조건에서 쓰는 엔딩이라 삭제할 수 없어요.");
+      }
+      if (someProjectRecord(project, node => isScriptCommand(node) && scriptMayUseEnding(node), remaining)) {
+        throw new PrimitiveError("이벤트 스크립트에서 엔딩을 쓸 수 있어 삭제할 수 없어요.");
       }
       if ((project.scriptLibrary ?? []).some(scriptMayUseEnding)) {
         throw new PrimitiveError("공용 스크립트에서 엔딩을 쓸 수 있어 삭제할 수 없어요.");
+      }
+      if (project.dialogueDesk?.proposals.some(({ lineId }) => {
+        const line = parseDialogueLineId(lineId);
+        return (line?.scope === "en" || line?.scope === "ep") && line.segments[0] === ending.id;
+      })) {
+        throw new PrimitiveError("자료집에 이 엔딩의 문장 수정 제안이 남아 있어 삭제할 수 없어요.");
       }
       if (blueprintEnding(project, endings)?.id === ending.id) {
         throw new PrimitiveError("게임 청사진에서 쓰는 엔딩이라 삭제할 수 없어요.");

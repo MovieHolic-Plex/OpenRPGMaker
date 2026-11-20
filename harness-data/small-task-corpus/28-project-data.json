@@ -1582,5 +1582,16 @@
       ]
     },
     "expectRefusal": true
+  },
+  {
+    "request": "가장 가까운 사람의 호감도가 7.5 이상이면 ‘별의 편지’를 열어 줘.",
+    "fixture": "built",
+    "target": { "kind": "map" },
+    "primitive": "ending.define",
+    "args": {
+      "name": "별의 편지",
+      "conditions": [{ "kind": "friendshipAtLeast", "npcKey": "*", "value": 7.5 }]
+    },
+    "expectRefusal": true
   }
 ]

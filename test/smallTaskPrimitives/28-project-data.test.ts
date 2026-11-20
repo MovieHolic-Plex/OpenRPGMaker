@@ -1,6 +1,8 @@
 /** @vitest-environment happy-dom */
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { collectDialogueLines } from "@/editor/dialogue/dialogueIndex";
+import { compileScriptAsync } from "@/editor/script/compile";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { dbTarget } from "@/editor/smallTask/target";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
@@ -11,8 +13,9 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/28-project-data";
 import { createInterpreter } from "@/player/interpreter";
 import { GOLD_MAX } from "@/project/economyValues";
+import { EMPTY_SCRIPT_EFFECTS } from "@/project/script/types";
 import { startSession } from "@/project/session";
-import type { Command, EndingDef, Project } from "@/project/types";
+import type { Command, EndingDef, GameEvent, Project } from "@/project/types";
 import { structuralJson } from "@/util/structuralJson";
 import corpus from "../../harness-data/small-task-corpus/28-project-data.json";
 import endingRemovalCases from "./28-project-data/ending-remove-corpus.json";
@@ -51,6 +54,11 @@ const unusedEnding: EndingDef = { id: "ending_unused", name: "폐기한 결말",
 function blankWithUnusedEnding(): Project {
   const project = fixtureProject("blank");
   return { ...project, endings: [...(project.endings ?? []), unusedEnding] };
+}
+
+function withMapEvent(project: Project, event: GameEvent): Project {
+  const map = project.maps[project.startMapId]!;
+  return { ...project, maps: { ...project.maps, [map.id]: { ...map, events: [...map.events, event] } } };
 }
 
 const cases: readonly {
@@ -214,7 +222,7 @@ it.each([
   expect(checkSmallTaskScope(project, outside, scope)).toMatchObject({ ok: false });
 });
 
-it("제목 설정이 없는 옛 프로젝트에서도 시작 화면 제목을 저장해요", () => {
+it("제목 설정이 없는 옛 프로젝트에서도 시작 화면 제목을 저장해요", async () => {
   const original = fixtureProject("blank");
   const project: Project = { ...original, system: { ...original.system } };
   delete project.system.titleScreen;
@@ -222,22 +230,36 @@ it("제목 설정이 없는 옛 프로젝트에서도 시작 화면 제목을 �
   expect(after.meta.title).toBe("바다의 노래");
   expect(after.system.titleScreen?.title).toBe("바다의 노래");
   expect(project.system.titleScreen).toBeUndefined();
+  await expectUndoRestores(project, after, mapTarget(project));
 });
 
 it("제목 카드만 고치고 저작된 오프닝은 수정 범위에도 넣지 않아요", () => {
   const original = fixtureProject("blank");
-  const opening = { scenes: [{ id: "scene_title", kind: "text" as const, narration: `— ${original.meta.title} —`, durationMs: 4000 }] };
+  const opening = { enabled: true, skippable: true, scenes: [{ id: "scene_title", kind: "text" as const, narration: `— ${original.meta.title} —`, durationMs: 4000 }] };
   const project = { ...original, system: { ...original.system, opening } };
   const args = { title: "바다의 노래" };
   const { after } = runPrimitive(project, mapTarget(project), "system.title", args);
-  expect(after.system.opening).toEqual({ scenes: [{ ...opening.scenes[0], narration: "— 바다의 노래 —" }] });
+  expect(after.system.opening).toEqual({ ...opening, scenes: [{ ...opening.scenes[0], narration: "— 바다의 노래 —" }] });
 
-  const authored = { scenes: [{ ...opening.scenes[0]!, narration: "그날 밤, 별이 바다로 떨어졌다." }] };
+  const authored = { ...opening, scenes: [{ ...opening.scenes[0]!, narration: "그날 밤, 별이 바다로 떨어졌다." }] };
   const withStory = { ...project, system: { ...project.system, opening: authored } };
   const target = mapTarget(withStory);
   const scope = PRIMITIVES.find(entry => entry.id === "system.title")!.scope({ project: withStory, target }, args);
   expect(checkSmallTaskScope(withStory, { ...withStory, system: { ...withStory.system, opening } }, scope)).toMatchObject({ ok: false });
   expect(runPrimitive(withStory, target, "system.title", args).after.system.opening).toBe(authored);
+});
+
+it("시작 화면에 이미 맞는 제목이 있으면 프로젝트 제목만 범위에 넣어요", () => {
+  const project = fixtureProject("built");
+  const titleScreen = project.system.titleScreen!;
+  const before = { ...project, meta: { ...project.meta, title: "이전 제목" } };
+  const target = mapTarget(before);
+  const args = { title: titleScreen.title };
+  const scope = PRIMITIVES.find(entry => entry.id === "system.title")!.scope({ project: before, target }, args);
+  expect(scope).toEqual({ kind: "projectArea", area: "system", ids: ["meta.title"] });
+  expect(checkSmallTaskScope(before, { ...before, system: { ...before.system, titleScreen: { ...titleScreen, title: "다른 제목" } } }, scope))
+    .toMatchObject({ ok: false });
+  expect(runPrimitive(before, target, "system.title", args).after.meta.title).toBe(args.title);
 });
 
 it.each([
@@ -248,6 +270,7 @@ it.each([
   ["ending.update", { record: builtEndingId }, /바꿀 엔딩 설정/u],
   ["ending.define", { name: "만남", conditions: [{ kind: "friendshipAtLeast", npcKey: "없는 인물", value: 3 }] }, /호감도를 확인할 인물/u],
   ["ending.define", { name: "만남", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 1001 }] }, /값의 형식/u],
+  ["ending.define", { name: "만남", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 3.5 }] }, /값의 형식/u],
   ["ending.define", { name: "만남", priority: Number.MAX_SAFE_INTEGER + 1 }, /값의 형식|우선순위/u],
   ["ending.remove", { record: builtEndingId }, /이벤트나 조건에서 쓰는 엔딩/u],
   ["system.title", { title: "   " }, /게임 제목을 입력/u],
@@ -302,6 +325,55 @@ it("공용 스크립트에서 쓰는 엔딩은 삭제할 수 없어요", () => {
   expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.id }, /공용 스크립트/u);
 });
 
+it("실행할 명령 종류를 계산하는 스크립트가 있으면 엔딩 삭제를 거절해요", async () => {
+  const before = blankWithUnusedEnding();
+  const source = `const kind = ["trigger", "Ending"].join("") as EventCommand["kind"];\nawait game.cmd({ kind, endingId: "${unusedEnding.id}" });`;
+  const { ok, compiled, effects } = await compileScriptAsync(source, { project: before });
+  expect(ok).toBe(true);
+  expect(effects).toEqual(EMPTY_SCRIPT_EFFECTS);
+  const project = withMapEvent(before, {
+    id: "ev_epilogue", x: 2, y: 2, trigger: { kind: "action" },
+    commands: [{ kind: "script", source, compiled, effects }],
+  });
+  expectRefused(project, mapTarget(project), "ending.remove", { record: unusedEnding.id }, /이벤트 스크립트/u);
+}, 60_000);
+
+it("시작 화면의 해금에 쓰는 엔딩만 삭제를 차단해요", () => {
+  const before = blankWithUnusedEnding();
+  const other = { ...unusedEnding, id: "ending_other", name: "다른 결말" };
+  const titleScreen = { ...before.system.titleScreen!, variants: [{
+    when: { kind: "endingSeen" as const, endingId: unusedEnding.id },
+  }] };
+  const project: Project = { ...before, endings: [unusedEnding, other], system: { ...before.system, titleScreen } };
+  const target = mapTarget(project);
+  expectRefused(project, target, "ending.remove", { record: unusedEnding.id }, /쓰는 엔딩/u);
+  const { after } = runPrimitive(project, target, "ending.remove", { record: other.id });
+  expect(after.endings).toEqual([unusedEnding]);
+  expect(after.system.titleScreen).toBe(titleScreen);
+});
+
+it.each(["name", "text"])("자료집에 엔딩의 문장 수정 제안이 남아 있으면 삭제를 거절해요 (%s)", field => {
+  const ending = { ...unusedEnding, id: "ending/old", epilogue: [{ kind: "say", text: "안녕." }] };
+  const project = { ...fixtureProject("blank"), endings: [ending] };
+  const line = collectDialogueLines(project).find(row => row.endingId === ending.id && row.field === field)!;
+  const withProposal: Project = { ...project, dialogueDesk: { voices: [], proposals: [{
+    id: "proposal_epilogue", lineId: line.id, baseHash: line.hash, before: line.text,
+    after: "다음에 또 만나.", source: "human", createdAt: "2026-11-20",
+  }] } };
+  expectRefused(withProposal, mapTarget(withProposal), "ending.remove", { record: ending.id }, /문장 수정 제안/u);
+});
+
+it("이벤트 초안에서는 현재 본문과 저장될 원본의 엔딩 연결을 확인해요", () => {
+  const before = blankWithUnusedEnding();
+  const original: GameEvent = { id: "ev_epilogue", x: 2, y: 2, trigger: { kind: "action" }, commands: [{ kind: "triggerEnding", endingId: unusedEnding.id }] };
+  const draft = { ...original, commands: [], draft: { kind: "edit" as const, original } };
+  const project = withMapEvent(before, draft);
+  const args = { record: unusedEnding.id };
+  expectRefused(project, mapTarget(project), "ending.remove", args, /쓰는 엔딩/u);
+  const remoteDeleted = withMapEvent(before, { ...draft, draft: { ...draft.draft, conflict: { kind: "remote-delete", detectedAt: 1 } } });
+  expect(runPrimitive(remoteDeleted, mapTarget(remoteDeleted), "ending.remove", args).after.endings).not.toContainEqual(unusedEnding);
+});
+
 it("청사진이 이름으로 가리키는 결말을 지우거나 연결이 끊기게 이름을 바꿀 수 없어요", () => {
   const original = blankWithUnusedEnding();
   const project: Project = {
@@ -319,6 +391,10 @@ it("청사진이 이름으로 가리키는 결말을 지우거나 연결이 끊�
   const target = mapTarget(project);
   expectRefused(project, target, "ending.remove", { record: unusedEnding.id }, /게임 청사진/u);
   expectRefused(project, target, "ending.update", { record: unusedEnding.id, name: "봄의 소식" }, /게임 청사진/u);
+
+  const fallback = { ...project, endings: [{ ...unusedEnding, name: "옛 결말" }] };
+  expectRefused(fallback, target, "ending.define", { name: "또 다른 결말" }, /게임 청사진/u);
+  expectRefused(fallback, target, "ending.define", { name: unusedEnding.name }, /게임 청사진/u);
 });
 
 it("우선순위가 소수인 옛 엔딩도 이름만 바꿀 수 있어요", () => {
@@ -362,6 +438,18 @@ it.each([
       reads: [], writes: [], calls: [], dynamic,
     } }],
   };
+  expectRefused(project, mapTarget(project), "switch.rename", { record: "sw_door", name: "문 열기" }, /스크립트/u);
+});
+
+it("저장될 이벤트 원본에서 이름으로 읽는 스위치는 이름을 바꿀 수 없어요", () => {
+  const before = { ...fixtureProject("blank"), switches: [{ id: "sw_door", name: "문 열림" }] };
+  const source = 'game.getSwitch("문 열림");';
+  const original: GameEvent = {
+    id: "ev_open_door", x: 2, y: 2, trigger: { kind: "action" }, commands: [{
+      kind: "script", source, compiled: source, effects: { ...EMPTY_SCRIPT_EFFECTS, reads: [{ kind: "switch", id: "문 열림" }] },
+    }],
+  };
+  const project = withMapEvent(before, { ...original, commands: [], draft: { kind: "edit", original } });
   expectRefused(project, mapTarget(project), "switch.rename", { record: "sw_door", name: "문 열기" }, /스크립트/u);
 });
 
