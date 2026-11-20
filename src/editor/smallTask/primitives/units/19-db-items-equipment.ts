@@ -390,8 +390,9 @@ function forEachAuthoredScript(project: Project, visit: (script: AuthoredScript)
 }
 
 function mayRunEventCommand(script: AuthoredScript, dynamic = scriptCommandEffects(script).dynamic): boolean {
-  // A command object can be computed, or contain nested commands and fields absent from the effects index.
-  return /\bcmd\b/u.test(script.source) || /\bcmd\b/u.test(script.compiled)
+  // Saved effects can omit computed API names and fields inside command objects.
+  const possibleCommand = /\bcmd\b|\bgame\s*(?:\)\s*)*(?:\?\.\s*)?\[(?!\s*(["'\x60])[\w$]+\1\s*\])/u;
+  return possibleCommand.test(script.source) || possibleCommand.test(script.compiled)
     || dynamic.some(({ api }) => api === "*" || api === "cmd" || api.startsWith("cmd."));
 }
 

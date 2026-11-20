@@ -395,7 +395,7 @@ describe("자료집 프리미티브", () => {
     }
   });
 
-  it.each(["event", "library", "legacy"] as const)(
+  it.each(["event", "library", "computed", "legacy"] as const)(
     "착용을 실행할 수 있는 %s 스크립트가 있을 때 호환성을 줄이는 변경만 막는다", owner => {
       const project = setup("blank");
       const slot = project.database.equipmentSlots!.find(row => row.id === ids.equipmentSlots)!;
@@ -411,7 +411,7 @@ describe("자료집 프리미티브", () => {
           kind: "script", source, compiled: source, effects,
         }] }];
       } else {
-        project.scriptLibrary = [{ id: "script_equip", source, compiled: source, ...(owner === "library" ? { effects } : {}) }];
+        project.scriptLibrary = [{ id: "script_equip", source, compiled: source, ...(owner !== "legacy" ? { effects } : {}) }];
       }
       const equipment = target("equipment");
       const slotTarget = target("equipmentSlots");
@@ -428,7 +428,7 @@ describe("자료집 프리미티브", () => {
 
   it("이벤트 명령을 실행하지 않는 스크립트가 있어도 착용 칸을 바꿀 수 있다", () => {
     const project = setup("blank");
-    const source = 'game.log("안내");';
+    const source = 'game.log("안내"); game["log"]("안내 둘");';
     project.scriptLibrary = [{ id: "guide", source, compiled: source, effects: { reads: [], calls: [], writes: [], dynamic: [] } }];
     const { after } = runPrimitive(project, target("equipment"), "db.equipment.update", { slot: "armor" });
     expect(after.database.equipment.find(row => row.id === ids.equipment)?.slot).toBe("armor");
