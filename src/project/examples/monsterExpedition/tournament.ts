@@ -7,8 +7,8 @@ import { charsetGraphic, demoEnemy, demoTroop } from "@/project/defaults/scarlox
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { EXPEDITION_AUDIO as audio } from "./audio";
 import { EXPEDITION_BALL_IDS, EXPEDITION_HELD_ITEM_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS } from "./roster";
-import markerAssets from "./markers.json";
-import templateData from "./mapTemplates.json";
+import markerAssets from "./markers.json" with { type: "json" };
+import templateData from "./mapTemplates.json" with { type: "json" };
 import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, type StartTheme } from "./townLayouts";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";

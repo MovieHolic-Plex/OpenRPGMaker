@@ -43,7 +43,7 @@ import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
-import previousFaceNames from "@/assets/previousFaceReferenceNames.json";
+import previousFaceNames from "@/assets/previousFaceReferenceNames.json" with { type: "json" };
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { refreshMvPackGuide } from "@/project/rpgmakerMv/refreshGuide";

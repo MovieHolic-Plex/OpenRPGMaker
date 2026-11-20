@@ -6,13 +6,13 @@
 //      어떻게 만들면 되는지(생성형 초상 경로·사람이 고르는 하네스)를 결과 경고로 알린다. 지어낸 그림을 넣지 않는다.
 // 이미 그려진 그림(잠금 이전부터 있던 것)은 건드리지 않는다. 강제 대상은 조수·도구 경로(ctx.assistantRun)뿐 — 사용자의 손 편집은 막지 않는다.
 
-import reviewedCatalog from "@/assets/sharedCharacterGraphics.json";
-import trainerIndex from "../../public/assets/battle-trainers/index.json";
+import reviewedCatalog from "@/assets/sharedCharacterGraphics.json" with { type: "json" };
+import trainerIndex from "../../public/assets/battle-trainers/index.json" with { type: "json" };
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import expressionSources from "../../scripts/shared-face-expression-sources.json";
+import expressionSources from "../../scripts/shared-face-expression-sources.json" with { type: "json" };
 import { facePresentationForResource } from "./facePresentation";
 import { activeGenreLock, type ActiveGenreLock } from "./genreLock";
 import {

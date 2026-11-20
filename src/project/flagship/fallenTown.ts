@@ -10,7 +10,7 @@
  *   성문 통로를 숲으로 나가는 출구로 쓴다. 성벽 밖은 숲.
  * - 성문 앞 포석 광장, 마을 가운데 밭은 정원·나무로.
  */
-import catalog from "@/assets/beodeulNatureCatalog.json";
+import catalog from "@/assets/beodeulNatureCatalog.json" with { type: "json" };
 import { isPassable } from "@/project/collision";
 import type { GameEvent, Project } from "@/project/types";
 import { bakeWorkshopObject, workshopAssetId } from "@/project/workshopTiles";

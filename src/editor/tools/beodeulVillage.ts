@@ -23,7 +23,7 @@
 import { kitServesBuilding, type BuildingNeed } from "@/project/kitTier";
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "@/project/defaults/beodeulGround";
 import { translateTiles } from "@/project/objectStamp";
-import groundCatalog from "@/assets/beodeulGroundCatalog.json";
+import groundCatalog from "@/assets/beodeulGroundCatalog.json" with { type: "json" };
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { planBeodeulCanopy, raiseBeodeulCrowns, shapeBeodeulCanopyMask, type BeodeulForestType } from "./beodeulForest";

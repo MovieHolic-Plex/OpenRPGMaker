@@ -1,4 +1,4 @@
-import parts from "@/assets/forestHarmonyHouseParts.json";
+import parts from "@/assets/forestHarmonyHouseParts.json" with { type: "json" };
 import type { GameMap, PassFlag, TileAiMetadata, TileGraft, TilesetDef } from "../types";
 
 // 숲마을 집 부품 칸(3060~) — 굴뚝·지붕창·현관 차양·박공 꼭대기 장식 손 도트. 박공 조합 형태(editor/gableHouseCompose)가

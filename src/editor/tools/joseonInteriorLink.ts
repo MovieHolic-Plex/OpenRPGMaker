@@ -7,7 +7,7 @@
 // 문 자리는 번들 표 src/project/defaults/joseonDoors.json(scripts/content/prepare-joseon-doors.py, 구운 지도의 문·디딤돌·통행에서 뽑음)이 쥔다.
 // 가져온 맵이 그 등록 장소 그대로인지는 지문(크기 + 아랫층 칸 표본)으로 본다. 표에 없는 맵(손으로 지은 조선 맵·고친 맵)은
 // 주어진 칸에서 같은 규칙(디딤돌 위 첫 막힌 칸 = 문, 방 맨 아래 줄 걸음 칸 = 출구)으로 정한다.
-import doorTable from "@/project/defaults/joseonDoors.json";
+import doorTable from "@/project/defaults/joseonDoors.json" with { type: "json" };
 import { JOSEON_BARAM_FAMILY } from "@/project/defaults/joseonBaram";
 import { isPassable } from "@/project/collision";
 import { inMainWalkComponent, mainWalkComponent } from "@/project/walkComponent";

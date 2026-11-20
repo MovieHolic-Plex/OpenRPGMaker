@@ -1,4 +1,4 @@
-import manifest from "../assets/bundledReferenceImageManifest.json";
+import manifest from "../assets/bundledReferenceImageManifest.json" with { type: "json" };
 import { isBundledReferenceImage, isSharedReferenceImage, parseSharedReferenceImage, referenceImageDigest } from "./bundledReferenceImagePath";
 import type { Project } from "./types";
 

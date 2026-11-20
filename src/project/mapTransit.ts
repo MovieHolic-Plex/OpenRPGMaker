@@ -18,7 +18,7 @@
 //   몸이 머리 둘레로 순간이동해 옆 차선·횡단보도로 튀었다.
 //
 // 상태(어디쯤 달리는가)는 프로젝트에 저장하지 않는다. 런타임(player/playSceneTransit.ts)이 맵에 들어올 때 처음부터 돌린다.
-import catalogJson from "@/assets/jpCityVehicles.json";
+import catalogJson from "@/assets/jpCityVehicles.json" with { type: "json" };
 
 export type TransitDir = "right" | "left" | "up" | "down";
 export type TransitRouteKind = "road" | "bus" | "tram" | "train" | "subway";
