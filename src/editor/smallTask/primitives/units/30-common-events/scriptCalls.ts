@@ -1,9 +1,10 @@
 import ts from "typescript5";
 
 /** Inspect compiled scripts without running them. The saved effects omit nested game.cmd commands. */
-export function scriptCommonEventCalls(compiled: string): { ids: Set<string>; opaque: boolean } {
+export function scriptCommonEventCalls(compiled: string): { ids: Set<string>; opaque: boolean; mayJump: boolean } {
   const ids = new Set<string>();
   let opaque = false;
+  let mayJump = false;
   const file = ts.createSourceFile("event.js", compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
   const literal = (node: ts.Node | undefined) => node && ts.isStringLiteralLike(node) ? node.text : undefined;
   const addId = (node: ts.Node | undefined) => {
@@ -26,6 +27,7 @@ export function scriptCommonEventCalls(compiled: string): { ids: Set<string>; op
       if (literal(kind) === "callCommonEvent") addId(fields.get("commonEventId"));
       // M2 commands, scripts and schedules can dispatch calls indirectly.
       const commandKind = literal(kind);
+      if (commandKind === "gotoLabel" || commandKind === "callMapEvent") mayJump = true;
       if (commandKind === "m2Command" || commandKind === "script" || commandKind === "runSchedule") opaque = true;
       for (const value of fields.values()) inspectLiteral(value);
     } else if (ts.isArrayLiteralExpression(node)) {
@@ -58,5 +60,5 @@ export function scriptCommonEventCalls(compiled: string): { ids: Set<string>; op
     ts.forEachChild(node, visit);
   };
   visit(file);
-  return { ids, opaque };
+  return { ids, opaque, mayJump };
 }

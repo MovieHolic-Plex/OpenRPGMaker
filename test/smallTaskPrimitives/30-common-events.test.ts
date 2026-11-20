@@ -222,7 +222,7 @@ describe("공용 이벤트", () => {
     expect(() => runOn(seed([call]), "commonEvent.remove", { commonEventId: eventId })).toThrow(/여관 혜택.*지울 수 없습니다/u);
   });
 
-  it.each(["전투 명령", "직업", "필드 스킬"] as const)("자료집의 %s에서 사용하는 동안 삭제를 거부하고 이름 변경은 허용한다", source => {
+  it.each(["전투 명령", "직업", "필드 스킬", "장비"] as const)("자료집의 %s에서 사용하는 동안 삭제를 거부하고 이름 변경은 허용한다", source => {
     const baseline = seed();
     const entry = { id: "linked_command", name: "여관기술", kind: "commonEvent", commonEventId: eventId } as const;
     const database = { ...baseline.database };
@@ -234,6 +234,10 @@ describe("공용 이벤트", () => {
     if (source === "필드 스킬") {
       const [first, ...rest] = database.skills;
       database.skills = [{ ...first!, fieldCommonEventId: eventId }, ...rest];
+    }
+    if (source === "장비") {
+      const [first, ...rest] = database.equipment;
+      database.equipment = [{ ...first!, grantsCommand: entry }, ...rest];
     }
     const project = { ...baseline, database };
     const args = { commonEventId: eventId };
@@ -319,6 +323,13 @@ describe("공용 이벤트", () => {
     expect(runOn(project, "commonEvent.remove", { commonEventId: eventId }).after.commonEvents.map(event => event.id)).toEqual(["ce_other"]);
   });
 
+  it("골드만 바꾸는 리터럴 game.cmd와 함께 있는 미사용 라벨을 삭제한다", () => {
+    const source = `await game.cmd({ kind: "changeGold", op: "+=", amount: 1 });`;
+    const script: Command = { kind: "script", source, compiled: source, effects: { calls: [], reads: [], writes: [], dynamic: [] } };
+    const project = seed([script, { kind: "label", name: "정산" }]);
+    expect(runOn(project, "commonEvent.command.delete", { commonEventId: eventId, index: 1 }).after.commonEvents.at(-1)?.commands).toEqual([script]);
+  });
+
   it("자료집에서 읽은 기존 명령으로 수정하고, 줄이 밀리면 수정과 삭제를 거부한다", async () => {
     const project = seed([wait, gold]);
     const read = getTool("get_database_records")!.run(project, { collection: "commonEvents", ids: [eventId], include: "full" });
@@ -349,6 +360,15 @@ describe("공용 이벤트", () => {
     await expect(apply("commonEvent.rename", { commonEventId: created.id, name: "새 이름" })).rejects.toThrow("작업을 시작할 때 있던");
     await apply("commonEvent.rename", { commonEventId: eventId, name: "기존 이벤트의 새 이름" });
     expect(ctx.project.commonEvents.at(-1)).toBe(created);
+  });
+
+  it("맵 사각형이 선택된 요청에서는 공용 이벤트 편집을 즉시 거부한다", async () => {
+    const project = seed();
+    const ctx = { project, smallTaskTarget: startMapTarget(project), smallTaskSelection: { rect: { x: 0, y: 0, w: 1, h: 1 } } };
+    await expect(runSmallTaskPrimitiveTool(ctx, APPLY_SMALL_TASK_PRIMITIVE, {
+      id: "commonEvent.rename", args: { commonEventId: eventId, name: "새 이름" },
+    })).rejects.toThrow("맵의 선택 영역을 해제한 뒤");
+    expect(ctx.project).toBe(project);
   });
 
   it("삽입 뒤 동일한 명령을 가리키는 낡은 분기 경로의 삽입·수정·삭제를 거부한다", () => {
@@ -455,6 +475,21 @@ describe("공용 이벤트", () => {
     expect(runOn(project, "commonEvent.command.insert", {
       commonEventId: eventId, command: label,
     }).after.commonEvents.at(-1)?.commands).toEqual([jump, label]);
+  });
+
+  it("호출자 라벨에 기대는 이벤트의 자동 실행과 라벨 없는 새 호출을 거부한다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const project = seed([{ kind: "gotoLabel", name: label.name }]);
+    const indirectId = "ce_indirect";
+    project.commonEvents.unshift({ ...commonEvent(), id: indirectId });
+    project.maps[project.startMapId].events = [
+      { id: "ev_has_label", x: 0, y: 0, trigger: { kind: "action" }, commands: [call, label] },
+      { id: "ev_indirect", x: 1, y: 0, trigger: { kind: "action" }, commands: [{ ...call, commonEventId: indirectId }] },
+    ];
+    expect(() => runOn(project, "commonEvent.trigger.set", { commonEventId: eventId, trigger: "parallel" }))
+      .toThrow("자동 실행할 수 없습니다");
+    expect(() => runOn(project, "commonEvent.command.insert", { commonEventId: indirectId, command: call }))
+      .toThrow("이 호출에서 공용 이벤트의 이동 명령이 사용할 라벨을 찾을 수 없습니다");
   });
 
   it.each(["insert", "update"])("맵 이벤트의 라벨로 돌아가는 기존 이동을 가로채는 라벨 편집을 거부한다 (%s)", edit => {

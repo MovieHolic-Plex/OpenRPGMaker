@@ -15,7 +15,7 @@ import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   commandForInsert, editCommands, quotedName, refuseReferencedRemoval,
-  validateCommandReferences, validateLabelEdit,
+  validateCommandReferences, validateCommonEventCallEdit, validateCommonEventTrigger, validateLabelEdit,
   validateSingleInsert,
 } from "./30-common-events/validation";
 
@@ -215,6 +215,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (trigger !== "none" && typeof condition === "string" && !ctx.project.switches.some(row => row.id === condition)) {
         throw new PrimitiveError("실행 조건에 쓸 스위치를 찾을 수 없습니다.");
       }
+      validateCommonEventTrigger(event, trigger);
       const next = { ...event, trigger };
       if (typeof condition === "string") next.conditionSwitchId = condition;
       else delete next.conditionSwitchId;
@@ -261,7 +262,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       validateSingleInsert(inserted);
       validateCommandReferences(ctx.project, targetMap(ctx), inserted);
       validateLabelEdit(ctx.project, event, next.commands, path, undefined, inserted);
-      return editEvent(event, ctx.project, next);
+      const after = editEvent(event, ctx.project, next);
+      validateCommonEventCallEdit(after, inserted);
+      return after;
     },
   ),
   createPrimitive(
@@ -293,7 +296,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const updated = existingCommand(next, path);
       validateCommandReferences(ctx.project, targetMap(ctx), updated, current);
       validateLabelEdit(ctx.project, event, next.commands, path, current, updated);
-      return editEvent(event, ctx.project, next);
+      const after = editEvent(event, ctx.project, next);
+      validateCommonEventCallEdit(after, updated, current);
+      return after;
     },
   ),
   createPrimitive(

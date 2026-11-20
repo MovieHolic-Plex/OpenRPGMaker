@@ -67,6 +67,9 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
   if (!offered.some(row => row.id === id)) throw new PrimitiveError("범위 밖: 선택한 대상에 이 동작을 쓸 수 없어요.");
   const primitiveArgs = args.args as Record<string, unknown>;
   const commonEvents = ctx.smallTaskCommonEvents;
+  if (ctx.smallTaskSelection?.rect && id.startsWith("commonEvent.")) {
+    throw new PrimitiveError("맵의 선택 영역을 해제한 뒤 공용 이벤트를 편집해 주세요.");
+  }
   if (commonEvents && id.startsWith("commonEvent.")) {
     if (id === "commonEvent.create") {
       if (commonEvents.createdId !== undefined) throw new PrimitiveError("작은 일 한 번에 공용 이벤트를 하나만 만들 수 있어요.");

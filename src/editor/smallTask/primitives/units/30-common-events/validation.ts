@@ -41,13 +41,6 @@ function commonEventCallId(command: Command): string | undefined {
 
 type ScriptBody = Pick<Extract<Command, { kind: "script" }>, "compiled" | "effects">;
 
-function usesOpaqueScriptCalls(script: ScriptBody): boolean {
-  // The analyzer records direct game.callCommonEvent calls. Aliases, computed
-  // methods and nested commands passed to game.cmd may be absent from effects.
-  const otherCode = script.compiled.replace(/\bgame\.callCommonEvent\s*\(/gu, "");
-  return /\b(?:cmd|callCommonEvent)\b|\bgame\s*\[/u.test(otherCode);
-}
-
 export function refuseReferencedRemoval(project: Project, id: string, live?: SmallTaskDraftSource): void {
   const callers = new Set<string>();
   const mayCallDynamically = (script: ScriptBody) =>
@@ -98,11 +91,13 @@ export function refuseReferencedRemoval(project: Project, id: string, live?: Sma
     throw new PrimitiveError(`${[...callers].join(", ")}에서 호출 중이라 공용 이벤트를 지울 수 없습니다.`);
   }
 
-  const { battleCommands, classes, skills } = project.database;
+  const { battleCommands, classes, equipment, skills } = project.database;
   const command = battleCommands?.find(row => row.commonEventId === id);
   if (command) throw new PrimitiveError(`자료집의 전투 명령 ${quotedName(command.name, "항목")}에서 사용 중이라 공용 이벤트를 지울 수 없습니다.`);
   const owner = classes.find(row => row.battleCommands?.some(entry => entry.commonEventId === id));
   if (owner) throw new PrimitiveError(`직업 ${quotedName(owner.name, "항목")}의 전투 명령에서 사용 중이라 공용 이벤트를 지울 수 없습니다.`);
+  const gear = equipment.find(row => row.grantsCommand?.commonEventId === id);
+  if (gear) throw new PrimitiveError(`장비 ${quotedName(gear.name, "항목")}의 전투 명령에서 사용 중이라 공용 이벤트를 지울 수 없습니다.`);
   const skill = skills.find(row => row.fieldCommonEventId === id);
   if (skill) throw new PrimitiveError(`필드 스킬 ${quotedName(skill.name, "항목")}에서 사용 중이라 공용 이벤트를 지울 수 없습니다.`);
 
@@ -165,7 +160,9 @@ function calledCommandLists(project: Project, command: Command, callerMap?: Game
   const mapEventIds = command.kind === "callMapEvent" ? [command.eventId]
     : command.kind === "script" ? scriptCalls(command, "event", project) : [];
   const lists: Command[][] = [];
-  if (command.kind === "script") lists.push(...commonLists(scriptCalls(command, "commonEvent", project)));
+  if (command.kind === "script") lists.push(...commonLists([
+    ...scriptCalls(command, "commonEvent", project), ...scriptCommonEventCalls(command.compiled).ids,
+  ]));
   for (const map of mapEventIds.length ? (callerMap ? [callerMap] : Object.values(project.maps)) : []) {
     for (const event of map.events) {
       if (!mapEventIds.includes(event.id)) continue;
@@ -228,11 +225,15 @@ function callerLabels(project: Project, event: CommonEvent, name: string): { vis
 }
 
 function scriptMayJumpToLabel(project: Project, command: Extract<Command, { kind: "script" }>): boolean {
-  if (usesOpaqueScriptCalls(command) ||
+  const mayJump = (script: ScriptBody) => {
+    const parsed = scriptCommonEventCalls(script.compiled);
+    return parsed.opaque || parsed.mayJump;
+  };
+  if (mayJump(command) ||
     (["commonEvent", "event"] as const).some(kind =>
       scriptHasDynamic(command, kind, { access: "call", library: project.scriptLibrary }))) return true;
   const imports = new Set(scriptCalls(command, "library", project));
-  return project.scriptLibrary?.some(module => imports.has(module.id) && usesOpaqueScriptCalls(module)) ?? false;
+  return project.scriptLibrary?.some(module => imports.has(module.id) && (mayJump(module) || scriptCommonEventCalls(module.compiled).ids.size > 0)) ?? false;
 }
 
 function projectHasLabel(project: Project, name: string): boolean {
@@ -267,6 +268,50 @@ function labelInCommandPath(commands: Command[], path: number[], name: string): 
     if (list?.some(row => row.kind === "label" && row.name === name)) return true;
   }
   return false;
+}
+
+function callerLabelNames(commands: readonly Command[]): Set<string> {
+  const names = new Set<string>();
+  const visit = (list: readonly Command[], ancestors: ReadonlySet<string>): void => {
+    const visible = new Set(ancestors);
+    for (const command of list) if (command.kind === "label") visible.add(command.name);
+    for (const command of list) {
+      if (command.kind === "gotoLabel" && !visible.has(command.name)) names.add(command.name);
+      for (const child of nestedCommandLists(command)) visit(child, visible);
+    }
+  };
+  visit(commands, new Set());
+  return names;
+}
+
+export function validateCommonEventTrigger(event: CommonEvent, trigger: CommonEvent["trigger"]): void {
+  if (event.trigger === "none" && trigger !== "none" && callerLabelNames(event.commands).size > 0) {
+    throw new PrimitiveError("호출자의 라벨로 이동하는 명령이 있어 이 공용 이벤트를 자동 실행할 수 없습니다.");
+  }
+}
+
+export function validateCommonEventCallEdit(project: Project, command: Command, current?: Command): void {
+  const callee = commonEventCallId(command);
+  if (callee === undefined || (current && commonEventCallId(current) === callee)) return;
+  const pending = new Set([callee]);
+  for (const id of pending) {
+    const event = project.commonEvents.find(row => row.id === id);
+    if (!event) continue;
+    for (const name of callerLabelNames(event.commands)) {
+      const callers = callerLabels(project, event, name);
+      if (!callers.visible || callers.missing) {
+        throw new PrimitiveError("이 호출에서 공용 이벤트의 이동 명령이 사용할 라벨을 찾을 수 없습니다.");
+      }
+    }
+    const visit = (list: readonly Command[]): void => {
+      for (const row of list) {
+        const target = commonEventCallId(row);
+        if (target !== undefined) pending.add(target);
+        for (const child of nestedCommandLists(row)) visit(child);
+      }
+    };
+    visit(event.commands);
+  }
 }
 
 export function validateLabelEdit(
