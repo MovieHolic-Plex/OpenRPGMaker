@@ -142,13 +142,13 @@ function location(number: string, title: string, teleport: boolean): Entry {
       ...(teleport ? { label: { type: "string", maxLength: 80, description: "순간이동 목록에 표시할 이름입니다. 비우면 맵 이름을 표시합니다." } } satisfies Record<string, JsonSchema> : {}),
     },
     prepare(ctx, args, previous, editing) {
-      const { map: eventMap, event } = scopedPage(ctx);
       const label = typeof args.label === "string" ? args.label.trim() : undefined;
       const fields: M2CommandFields = { ...previous, ...(label === undefined ? {} : { label }) };
       const changesPosition = args.mapId !== undefined || args.x !== undefined || args.y !== undefined;
-      if (teleport && editing && !previous.mapId && !changesPosition) {
+      if (teleport && editing && !changesPosition) {
         return { fields, summary: "순간이동 목록에 표시할 이름을 정하는 명령을" };
       }
+      const { map: eventMap, event } = scopedPage(ctx);
       const mapId = String(args.mapId ?? previous.mapId ?? "") || eventMap.id;
       const map = Object.hasOwn(ctx.project.maps, mapId) ? ctx.project.maps[mapId] : undefined;
       if (!map) throw new PrimitiveError("목적지 맵을 찾을 수 없습니다.");
@@ -160,9 +160,6 @@ function location(number: string, title: string, teleport: boolean): Entry {
       }
       const name = textSnippet(map.name === map.id ? "" : map.name, "목적지 맵").slice(0, 27);
       const position = `‘${name}’의 가로 ${x}, 세로 ${y} 칸을`;
-      if (teleport && editing && !changesPosition) {
-        return { fields, summary: "순간이동 목록에 표시할 이름을 정하는 명령을" };
-      }
       const summary = teleport ? `${position} 순간이동 지점으로 등록하는 명령을` : `${position} 탈출 위치로 기록하는 명령을`;
       return { fields: { ...fields, mapId, x, y }, summary };
     },
@@ -288,12 +285,12 @@ function primitive(entry: Entry, update: boolean): SmallTaskPrimitive {
     if (update && (current?.kind !== "m2Command" || current.commandId !== catalog.id)) {
       throw new PrimitiveError("선택한 줄에서 이 종류의 명령을 찾을 수 없습니다.");
     }
-    if (update && args.expectedHash !== undefined && eventCommandHash(current!) !== args.expectedHash) {
+    if (update && eventCommandHash(current!) !== args.expectedHash) {
       throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
     }
     const defaults = newM2Command(catalog.id);
     const result = entry.prepare(ctx, args, current?.kind === "m2Command" && update ? current.fields : defaults.fields, update);
-    return { current, index, branchPath, command: { ...defaults, fields: result.fields }, summary: result.summary };
+    return { index, branchPath, command: { ...defaults, fields: result.fields }, summary: result.summary };
   }
   return {
     id: `m2.${entry.number}.${update ? "update" : "insert"}`, unit: UNIT,
@@ -305,9 +302,9 @@ function primitive(entry: Entry, update: boolean): SmallTaskPrimitive {
       description: update && !Object.keys(entry.properties).length ? "기존 명령 줄의 설정을 기본값으로 정리합니다." : undefined,
       properties: {
         ...entry.properties, index: indexSchema, branchPath: branchSchema,
-        ...(update ? { expectedHash: { type: "string", minLength: 1, description: "읽어 온 명령 줄의 변경 확인값입니다." } } : {}),
+        ...(update ? { expectedHash: { type: "string", minLength: 1, description: "get_event에서 includeCommandHashes를 켜고 읽은 해당 줄의 hash입니다." } } : {}),
       },
-      required: update ? ["index"] : entry.required ?? [],
+      required: update ? ["index", "expectedHash"] : entry.required ?? [],
       additionalProperties: false,
     },
     scope,
@@ -316,11 +313,11 @@ function primitive(entry: Entry, update: boolean): SmallTaskPrimitive {
       return koreanSentence(`${summary} ${update ? "수정합니다." : "추가합니다."}`);
     },
     apply(ctx, args): Project {
-      const { current, index, branchPath, command } = prepare(ctx, args);
+      const { index, branchPath, command } = prepare(ctx, args);
       try {
         if (!update) return insertAtIndex(ctx, command, index, branchPath);
         return updateScopedPage(ctx, page =>
-          updateEventCommand(page, [...branchPath, index], { fields: command.fields }, eventCommandHash(current!)));
+          updateEventCommand(page, [...branchPath, index], { fields: command.fields }, args.expectedHash as string));
       } catch (error) {
         if (error instanceof EventCommandEditError) throw new PrimitiveError("명령 줄의 위치나 설정을 확인해 주세요.");
         throw error;

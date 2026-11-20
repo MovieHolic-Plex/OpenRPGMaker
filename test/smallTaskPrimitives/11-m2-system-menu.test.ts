@@ -1,5 +1,8 @@
 /** @vitest-environment happy-dom */
 import { readFileSync } from "node:fs";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
@@ -10,10 +13,13 @@ import { PRIMITIVES } from "@/editor/smallTask/primitives/units/11-m2-system-men
 import { createInterpreter } from "@/player/interpreter";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
 import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import { eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture, mapTarget } from "./harness";
 
 const music = "cc0-music-field-loop";
@@ -170,7 +176,9 @@ describe("시스템·메뉴 작은 일", () => {
     it(`${row.suffix} 잘못된 인자와 다른 페이지 변경 거부`, () => {
       const { project, target, map, event, current } = scene(fixture);
       expect(() => runPrimitive(project, target, insertId, row.invalid)).toThrow(row.reason);
-      expect(() => runPrimitive(project, target, updateId, { index: 0, ...row.updateArgs })).toThrow(/[가-힣]/u);
+      expect(() => runPrimitive(project, target, updateId, {
+        index: 0, expectedHash: eventCommandHash(unchanged), ...row.updateArgs,
+      })).toThrow(/이 종류의 명령/u);
       const ctx = { project, target };
       for (const id of [insertId, updateId]) {
         const primitive = PRIMITIVES.find(candidate => candidate.id === id)!;
@@ -185,7 +193,7 @@ describe("시스템·메뉴 작은 일", () => {
     });
   });
 
-  it("분기 안의 명령을 고치고 오래된 확인값을 거부한다", () => {
+  it("분기 안의 명령을 고치고 오래된 확인값을 거부한다", async () => {
     const original: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "true" } };
     const { project, target, commands } = scene("blank", [original, { kind: "loop", body: [original, unchanged] }]);
     const args = { index: 0, branchPath: [1, LOOP_BODY_BRANCH_INDEX], enabled: false };
@@ -193,6 +201,38 @@ describe("시스템·메뉴 작은 일", () => {
     expect(() => runPrimitive(project, target, id, { ...args, expectedHash: "이전 줄" })).toThrow(/바뀌었습니다/u);
     const { after } = runPrimitive(project, target, id, { ...args, expectedHash: eventCommandHash(original) });
     expect(commands(after)).toEqual([original, { kind: "loop", body: [{ ...original, fields: { enabled: "false" } }, unchanged] }]);
+    await expectUndoRestores(project, after, target);
+
+    const projectDir = await mkdtemp(join(tmpdir(), "oprn-system-menu-"));
+    try {
+      const storage = await initLocalProjectStore({ projectDir });
+      try {
+        expect((await storage.saveSerialized(serialize(after))).kind).toBe("saved");
+      } finally {
+        storage.close();
+      }
+      const reopened = await openLocalProjectStore({ projectDir });
+      try {
+        expect(commands(reopened.loadSnapshot()!.project)).toEqual(commands(after));
+      } finally {
+        reopened.close();
+      }
+    } finally {
+      await rm(projectDir, { recursive: true, force: true });
+    }
+  });
+
+  it("같은 종류의 두 줄이 이동했으면 해시 없는 수정과 이전 위치의 수정을 거부한다", () => {
+    const original: Command = { kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "첫 주석" } };
+    const neighbor = { ...original, fields: { comment: "두 번째 주석" } };
+    const expectedHash = eventCommandHash(original);
+    const { project, target, commands } = scene("blank", [neighbor, original]);
+    const args = { index: 0, comment: "첫 주석 수정" };
+    expect(() => runPrimitive(project, target, "m2.088.update", args)).toThrow(PrimitiveError);
+    expect(() => runPrimitive(project, target, "m2.088.update", { ...args, expectedHash })).toThrow(/바뀌었습니다/u);
+    expect(commands(project)).toEqual([neighbor, original]);
+    const { after } = runPrimitive(project, target, "m2.088.update", { ...args, index: 1, expectedHash });
+    expect(commands(after)).toEqual([neighbor, { ...original, fields: { comment: "첫 주석 수정", color: "green" } }]);
   });
 
   it("선택지의 빈 분기 끝에 추가하고 없는 분기와 범위 밖 줄은 거부한다", () => {
@@ -219,7 +259,8 @@ describe("시스템·메뉴 작은 일", () => {
     const choice: Command = { kind: "choices", options: [{ text: "첫 분기", branch }, { text: "다른 분기", branch }] };
     const { project, target, commands } = scene("blank", [choice]);
     for (const id of ["m2.077.insert", "m2.077.update"]) {
-      expect(() => runPrimitive(project, target, id, { branchPath: [0, 0], index: 0, enabled: false })).toThrow(/분기가 같은 명령 목록/u);
+      const hash = id.endsWith(".update") ? { expectedHash: eventCommandHash(original) } : {};
+      expect(() => runPrimitive(project, target, id, { branchPath: [0, 0], index: 0, enabled: false, ...hash })).toThrow(/분기가 같은 명령 목록/u);
     }
     expect(commands(project)).toEqual([{ ...choice, options: [{ text: "첫 분기", branch: [original] }, { text: "다른 분기", branch: [original] }] }]);
   });
@@ -278,8 +319,27 @@ describe("시스템·메뉴 작은 일", () => {
   it("동적으로 위치를 잡던 옛 순간이동 명령은 이름만 바꿔도 위치 지정 방식이 유지된다", () => {
     const original: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields: { label: "귀환" } };
     const { project, target, commands } = scene("blank", [original]);
-    const { after } = runPrimitive(project, target, "m2.072.update", { index: 0, label: "동쪽 관문" });
+    const { after } = runPrimitive(project, target, "m2.072.update", { index: 0, expectedHash: eventCommandHash(original), label: "동쪽 관문" });
     expect(commands(after)).toEqual([{ ...original, fields: { label: "동쪽 관문" } }]);
+  });
+
+  it.each(["deleted", "resized"])("목적지가 %s 상태여도 이름만 바꾸고 되돌릴 수 있다", async state => {
+    const mapId = "old-destination";
+    const fields = { mapId, x: 4, y: 6, label: "귀환" };
+    const original: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields };
+    const fixture = scene("blank", [original]);
+    const { maps, mapTree } = fixture.project;
+    const project = state === "deleted" ? fixture.project : {
+      ...fixture.project,
+      maps: { ...maps, [mapId]: { ...createBlankMap("옛 목적지", 2, 2, fixture.map.tilesetId), id: mapId } },
+      mapTree: { ...mapTree, children: [...mapTree.children, { mapId, children: [] }] },
+    };
+    const args = { index: 0, expectedHash: eventCommandHash(original), label: "옛 관문" };
+    const { after } = runPrimitive(project, fixture.target, "m2.072.update", args);
+    expect(fixture.commands(after)).toEqual([{ ...original, fields: { ...fields, label: args.label } }]);
+    expect(() => runPrimitive(project, fixture.target, "m2.072.update", { ...args, x: 3 }))
+      .toThrow(state === "deleted" ? /목적지 맵을 찾을 수 없습니다/u : /맵 범위 밖/u);
+    await expectUndoRestores(project, after, fixture.target);
   });
 
   it("다른 맵을 목적지로 가리켜도 선택한 페이지에만 쓴다", () => {
@@ -344,8 +404,9 @@ describe("시스템·메뉴 명령 실행", () => {
     const original: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields: { label: "귀환" } };
     const { project, target, commands, map } = scene("built", [original]);
     const otherMap = Object.values(project.maps).find(candidate => candidate.id !== map.id)!;
-    const { after: renamed } = runPrimitive(project, target, "m2.072.update", { index: 0, label: "시장" });
-    const { after: fixed } = runPrimitive(project, target, "m2.072.update", { index: 0, x: 3, y: 4 });
+    const line = { index: 0, expectedHash: eventCommandHash(original) };
+    const { after: renamed } = runPrimitive(project, target, "m2.072.update", { ...line, label: "시장" });
+    const { after: fixed } = runPrimitive(project, target, "m2.072.update", { ...line, x: 3, y: 4 });
     const session = startSession(project, 42);
     session.currentMapId = otherMap.id;
     session.x = 1;
@@ -362,14 +423,17 @@ describe("시스템·메뉴 명령 실행", () => {
   it("옛 전투곡 줄은 음원을 바꾸거나 복원해도 원래 오디오 칸을 쓴다", () => {
     const original: Command = { kind: "m2Command", commandId: "m2-027-change-system-bgm", fields: { slot: "battle", value: "old-battle-music" } };
     const { project, target, commands } = scene("blank", [original]);
-    const { after } = runPrimitive(project, target, "m2.027.update", { index: 0, cue: "battle", resourceId: music });
+    const { after } = runPrimitive(project, target, "m2.027.update", {
+      index: 0, expectedHash: eventCommandHash(original), cue: "battle", resourceId: music,
+    });
     expect(commands(after)).toEqual([{ ...original, fields: { slot: "battle", resourceId: music } }]);
     const session = startSession(after, 42);
     createInterpreter(commands(after), session, after).start();
     expect(systemAudioOverride(session.m2Runtime, "battle")).toBe(music);
     expect(session.systemAudioOverrides?.bgm?.battle).toBeUndefined();
-    expect(() => runPrimitive(after, target, "m2.027.update", { index: 0, operation: "reset", volume: 30 })).toThrow(/기본값.*소리 크기/u);
-    const { after: reset } = runPrimitive(after, target, "m2.027.update", { index: 0, operation: "reset" });
+    const line = { index: 0, expectedHash: eventCommandHash(commands(after)[0]) };
+    expect(() => runPrimitive(after, target, "m2.027.update", { ...line, operation: "reset", volume: 30 })).toThrow(/기본값.*소리 크기/u);
+    const { after: reset } = runPrimitive(after, target, "m2.027.update", { ...line, operation: "reset" });
     createInterpreter(commands(reset), session, reset).start();
     expect(systemAudioOverride(session.m2Runtime, "battle")).toBeUndefined();
   });
@@ -378,7 +442,7 @@ describe("시스템·메뉴 명령 실행", () => {
     const fixture = scene("blank");
     const original: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point", fields: { mapId: fixture.map.id, label: "귀환" } };
     const { project, target, commands, map } = scene("blank", [original]);
-    const { after } = runPrimitive(project, target, "m2.072.update", { index: 0, label: "북문" });
+    const { after } = runPrimitive(project, target, "m2.072.update", { index: 0, expectedHash: eventCommandHash(original), label: "북문" });
     expect(commands(after)).toEqual([{ ...original, fields: { ...original.fields, label: "북문" } }]);
     const session = startSession(after, 42);
     createInterpreter(commands(after), session, after).start();
@@ -388,6 +452,20 @@ describe("시스템·메뉴 명령 실행", () => {
   it("스킬 장착 단계에서 이벤트 실행을 멈춘다", () => {
     const { step } = play("m2.078.insert", { screen: "skills" });
     expect(step).toEqual({ kind: "openMenuScreen", screen: "skills" });
+  });
+
+  it("지정한 배우의 스킬 장착과 몬스터 보관함으로 넘긴다", () => {
+    const { project } = scene("blank");
+    const actorId = project.database.actors[0].id;
+    expect(play("m2.078.insert", { screen: "skills", actorId }).step)
+      .toEqual({ kind: "openMenuScreen", screen: "skills", actorId });
+    expect(play("m2.078.insert", { screen: "monster-box" }).step)
+      .toEqual({ kind: "openMenuScreen", screen: "monster-box" });
+  });
+
+  it("불러오기와 게임 종료를 플레이어 전환 단계로 넘긴다", () => {
+    expect(play("m2.093.insert", {}).step).toEqual({ kind: "openLoadMenu" });
+    expect(play("m2.094.insert", {}).step).toEqual({ kind: "returnToTitle" });
   });
 });
 
@@ -416,7 +494,9 @@ describe("기존 명령을 심은 수정 코퍼스", () => {
     }
     const before = corpusProject(fixture, entry);
     const target = resolveTarget(before, entry.target);
-    const apply = () => runPrimitive(before, target, entry.primitive, entry.args);
+    // The corpus seeds the line the assistant originally read, including stale-location refusal cases.
+    const args = { expectedHash: eventCommandHash(entry.setup.commands[0]), ...entry.args };
+    const apply = () => runPrimitive(before, target, entry.primitive, args);
     if (entry.expectRefusal) {
       expect(apply).toThrow(PrimitiveError);
       return;
