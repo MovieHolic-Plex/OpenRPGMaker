@@ -526,6 +526,21 @@ describe("추가한 현대 명령을 실제 해석기로 실행", () => {
     expect(play.m2Runtime?.quests["순찰"]?.["북문"]).toEqual({ state: "complete", text: "북문을 살폈다." });
   });
 
+  it("이름표가 생략된 기존 퀘스트 목표는 문구만 수정해도 기본 이름표로 실행된다", () => {
+    const current = { ...newM2Command("m2-208-quest-objective"), fields: { state: "start", text: "북문으로 가자." } };
+    const { project, target, id, findEvent } = scenario("built", [current]);
+    const text = "남문으로 가자.";
+    const { after } = runPrimitive(project, target, "m2.208.update", editArgs([current], 0, { text }));
+    const commands = findEvent(after).pages![0]!.commands;
+    expect(commands).toEqual([{ ...current, fields: { state: "start", text } }]);
+    const play = session(id);
+    expect(createInterpreter(commands, play, after).start()).toEqual({ kind: "done" });
+    expect(play.m2Runtime?.quests.quest?.objective).toEqual({ state: "start", text });
+
+    expect(() => runPrimitive(project, target, "m2.208.insert", { objectiveId: "남문", text })).toThrow(PrimitiveError);
+    expect(() => runPrimitive(project, target, "m2.208.insert", { questId: "순찰", text })).toThrow(PrimitiveError);
+  });
+
   it("확률 결과는 0보다 큰 가중치 줄에 매긴 0부터의 번호로 저장한다", () => {
     const { play, interpreter } = runtime("m2.211.insert", { table: "없음=0\n열쇠=5", resultVariableId: VAR });
     expect(interpreter.start()).toEqual({ kind: "done" });
