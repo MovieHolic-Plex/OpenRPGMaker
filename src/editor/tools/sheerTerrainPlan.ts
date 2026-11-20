@@ -12,7 +12,7 @@
 //   · 통행 보증: 들어오는 칸에서 물들이기 — 출구 · 볼거리 앞 · 막다른 턱에 안 닿으면 그 경계에 장치를 하나 더 둔다. 그래도 안 닿는 걷는 칸은 막는다(시공 쪽).
 //   · 가려진 땅: 면이 3칸이라 고원 북쪽 3h 칸은 화면에서 가려진다(check.ts) — 볼거리 · 상자 · 장치 발치를 거기 두지 않는다.
 // 난수는 씨앗 하나(mulberry32)뿐 — 같은 씨앗 · 같은 크기면 같은 계획이다.
-import kindsTable from "@/assets/sheerTerrainKinds.json";
+import kindsTable from "@/assets/sheerTerrainKinds.json" with { type: "json" };
 import { mulberry32 } from "@/util/rng";
 import { effectiveHeights } from "@/project/relief/render";
 import { reliefAllowsStep, invalidateReliefSlopes } from "@/project/relief/walk";

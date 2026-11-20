@@ -1,4 +1,4 @@
-import data from './projectInterviewScenes.json';
+import data from './projectInterviewScenes.json' with { type: "json" };
 
 export const INTERVIEW_SCENE_STYLE_VERSION = 2;
 /** Small deterministic freshness marker; SHA-256 receipts remain the publication authority. */

@@ -2,8 +2,8 @@
 // 일본 도시(jp_city) 거리 종류 — 자료(src/assets/jpCityStreetKinds.json)를 읽어 «요청에 맞는 종류 가운데 게임 열쇠와 씨앗으로 하나»를 고른다.
 // 왜(오너 2026-11-14 «일본 도시 … 퀄리티가 좀 떨어지는거같은데 .. 오브젝트 수랑 도로 뭐 이것저것»): 거리 꼴이 넷뿐이라 게임마다 같은 거리였다.
 // 종류는 도로 짜임(연석 큰길 · 보도 없는 생활도로 · 보행자 시장 길, 하천)·건물 섞임·구획 조각·장면 벌·바닥 톤을 한 벌로 묶는다. 요청 낱말 목록은 없다 — style·shops·region 만 본다.
-import catalogJson from "@/assets/jpCityStreetCatalog.json";
-import kindsJson from "@/assets/jpCityStreetKinds.json";
+import catalogJson from "@/assets/jpCityStreetCatalog.json" with { type: "json" };
+import kindsJson from "@/assets/jpCityStreetKinds.json" with { type: "json" };
 import { lookHash } from "@/project/kitLook";
 
 export type SceneStyle = "shopping" | "residential" | "shitamachi" | "shotengai";

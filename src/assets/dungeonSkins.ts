@@ -8,7 +8,7 @@
 // 시공기(dungeonKit/beodeul/compose.ts)는 배치·벽·천장·물 마스크를 그대로 두고 칸 그림만 이 표로 바꾼다 — 걷는 칸·막힌 칸은 달라지지 않는다.
 // 고르기: 게임 겉모습의 dungeon 갈래(project/tilesetLook.ts)가 겉모습 이름 하나를 정하고, 주제마다 그 이름 순번의 벽 색 줄을 쓴다 — 한 게임은 한 모습, 게임끼리는 다르다.
 // 겉모습이 없는 게임(옛 게임·열쇠 없는 편집)과 아직 겉가죽이 없는 주제는 옛 그림 그대로다.
-import table from "./beodeulDungeonSkins.json";
+import table from "./beodeulDungeonSkins.json" with { type: "json" };
 import type { TilesetLook } from "@/project/types";
 
 export interface DungeonSkinLook {

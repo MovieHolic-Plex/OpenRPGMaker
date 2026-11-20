@@ -1,5 +1,5 @@
-import catalog from '../../assets/beodeulFormsCatalog.json';
-import references from '../../assets/beodeulFormsReferences.json';
+import catalog from '../../assets/beodeulFormsCatalog.json' with { type: "json" };
+import references from '../../assets/beodeulFormsReferences.json' with { type: "json" };
 import type {TilesetDef,StructureKitDef} from '../types';
 import type {TilesetReferenceCategory} from '../tilesetReferences';
 import {translateTiles} from '../objectStamp';
