@@ -125,6 +125,34 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
+it("returns focus to the test-play canvas after teleport and drawer collapse", async () => {
+  const hook = installDebugHook(stateSnapshot);
+  const playBody = document.createElement("div");
+  const canvas = document.createElement("canvas");
+  playBody.append(canvas);
+  const panel = renderRuntimeDebugPanel(playBody);
+  document.body.append(playBody, panel);
+
+  const toggle = testid(panel, "runtime-debug-toggle");
+  toggle.click();
+  await nextFrames(1);
+  const mapFilter = input(panel, "runtime-debug-map-filter");
+  mapFilter.focus();
+  await nextFrames(1);
+  expect(document.activeElement).toBe(mapFilter);
+
+  const teleport = testid(panel, "runtime-debug-teleport");
+  teleport.focus();
+  teleport.click();
+  expect(hook.teleport).toHaveBeenCalledWith(storeMocks.project?.startMapId, 1, 1);
+  expect(document.activeElement).toBe(canvas);
+
+  toggle.focus();
+  toggle.click();
+  await nextFrames(1);
+  expect(document.activeElement).toBe(canvas);
+});
+
 describe("runtime debug panel option labels", () => {
   it("labels empty-named switch slots by id instead of dropping them", () => {
     const project = storeMocks.project as Project;

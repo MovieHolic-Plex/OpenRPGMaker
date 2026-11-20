@@ -270,6 +270,12 @@ function buildMaps(project: Project): Links {
   for (const [x1, y1, x2, y2] of [[0, 0, 28, 7], [34, 0, W - 1, 7], [0, 15, 28, 22], [34, 15, W - 1, 22]] as const) {
     execTool(project, "paint_tiles", { mapId: M.street, layer: "4", mode: "rect", tile: BLOCK, from: { x: x1, y: y1 }, to: { x: x2, y: y2 } });
   }
+  // 서쪽 끝은 가게 정면과 강둑 사이 두 줄짜리 보도다. 벤치와 화분을 통째로 걷어
+  // 아래 줄도 열어 두면, 가장자리에서 입간판 앞 한 칸으로 돌아가지 않고 편의점에 갈 수 있다.
+  execTool(project, "paint_tiles", {
+    mapId: M.street, layer: "3", mode: "cells", tile: -1,
+    cells: [{ x: 1, y: 10 }, { x: 2, y: 10 }, { x: 9, y: 9 }, { x: 9, y: 10 }],
+  });
   // 도구는 맵 객체를 새로 만든다 — 칠한 뒤에 다시 읽는다.
   const street = project.maps[M.street]!;
   for (const c of [{ x: 2, y: 9 }, { x: 13, y: 9 }, { x: 26, y: 9 }, { x: 31, y: 1 }, { x: 31, y: 26 }, { x: 20, y: 26 }]) mustWalk(project, street, c, "거리 길");
