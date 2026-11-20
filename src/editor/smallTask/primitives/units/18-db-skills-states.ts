@@ -1,16 +1,21 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
+import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 import { freshChoreographyId } from "@/assets/retroChoreographyClone";
 import { resolveSkillChoreography, retroFxSheetKeys, retroFxSheetMeta } from "@/assets/retroSkillCatalog";
+import { abilityContactStatus } from "@/battle/abilities";
+import { RAGE_STATE_ID, stateBehavior } from "@/battle/battleStates";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeSkillRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
-import { collectResourceIds, validateOptionalResource } from "@/project/io/resourceReferenceValidation";
+import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
+import { projectScriptUsage, scriptHasDynamic } from "@/project/script/effects";
 import {
   normalizeSkillChoreographyRecord, SKILL_CHOREOGRAPHY_ANCHORS, SKILL_CHOREOGRAPHY_LIMIT,
   SKILL_CHOREOGRAPHY_MOTIONS, SKILL_CHOREOGRAPHY_RANGES,
 } from "@/project/skillChoreographyRecords";
 import type { BattleAnimationRecord, Project, SkillChoreographyRecord, SkillRecord, StateRecord } from "@/project/types";
+import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { outsideRecord, referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import type { JsonSchema } from "@/editor/tools/types";
 import { displayText } from "../../target";
@@ -42,6 +47,7 @@ const integer = (minimum: number, maximum: number, description: string): JsonSch
   ({ type: "integer", minimum, maximum, description });
 const choice = (values: readonly string[], description: string): JsonSchema =>
   ({ type: "string", enum: values, description });
+const bundledChoreographyIds = new Set(BUNDLED_BATTLE_MOTIONS.map(record => record.id));
 
 function selectedId(ctx: PrimitiveContext, collection: Collection): string {
   if (ctx.target.kind !== "dbEntry" || ctx.target.collection !== collection) {
@@ -55,10 +61,19 @@ function rows<K extends Collection>(project: Project, collection: K): readonly R
   return database[collection] ?? [];
 }
 
-function selectedRow<K extends Collection>(ctx: PrimitiveContext, collection: K, id: string): Records[K] {
-  const row = rows(ctx.project, collection).find(entry => entry.id === id);
-  if (!row) throw new PrimitiveError("범위 밖입니다. 선택한 자료집 항목을 찾을 수 없어요.");
-  return row;
+function uniqueRecordIndex(records: readonly { id: string }[], id: string, label: string): number {
+  const index = records.findIndex(entry => entry.id === id);
+  if (index >= 0 && records.some((entry, position) => position > index && entry.id === id)) {
+    throw new PrimitiveError(`${label} 목록에 같은 식별자를 쓰는 항목이 여러 개 있어요. 자료집에서 중복을 먼저 정리해 주세요.`);
+  }
+  return index;
+}
+
+function selectedIndex(records: readonly { id: string }[], id: string, edit: Edit, label: string): number {
+  if (edit === "create" && !id && records.length === 0) return -1;
+  const index = id ? uniqueRecordIndex(records, id, label) : -1;
+  if (index < 0) throw new PrimitiveError("범위 밖입니다. 자료집에서 작업할 항목을 다시 골라 주세요.");
+  return index;
 }
 
 function withRows<K extends Collection>(project: Project, collection: K, next: Records[K][]): Project {
@@ -66,11 +81,19 @@ function withRows<K extends Collection>(project: Project, collection: K, next: R
 }
 
 function nextId<K extends Collection>(project: Project, collection: K, prefix: string, name: string): string {
-  if (collection === "skillChoreographies") return freshChoreographyId(project.database.skillChoreographies ?? [], name);
   const used = new Set(rows(project, collection).map(row => row.id));
+  const choreography = collection === "skillChoreographies";
+  if (choreography) for (const id of bundledChoreographyIds) used.add(id);
+  const base = choreography ? freshChoreographyId([], name) : prefix;
+  const candidate = (n: number) => choreography && n === 1 ? base : `${base}_${n}`;
   let n = 1;
-  while (used.has(`${prefix}_${n}`)) n += 1;
-  return `${prefix}_${n}`;
+  let id = candidate(n);
+  // 새 항목이 다른 곳의 끊어진 연결에 갑자기 쓰이지 않도록 한다.
+  while (used.has(id) || referenceIndex(project, new Set([id])).has(id)) {
+    n += 1;
+    id = candidate(n);
+  }
+  return id;
 }
 
 function cleanName(value: string): string {
@@ -85,22 +108,38 @@ function previewName(value: string, fallback: string, id?: string): string {
 }
 
 function ensureUnused(project: Project, collection: Collection, id: string, index: number): void {
-  if ((collection === "skills" && id === "skill_attack") || (collection === "states" && id === "state_death")) {
-    throw new PrimitiveError("게임에 꼭 필요한 기본 항목이에요.");
+  if ((collection === "skills" && id === DEFAULT_SKILL_ID) ||
+      (collection === "states" && id === "state_death") ||
+      (collection === "battleAnimations" && id === DEFAULT_ANIMATION_ID)) {
+    throw new PrimitiveError("게임이 기본으로 사용 중인 항목이에요. 삭제할 수 없어요.");
   }
   if (outsideRecord(referenceIndex(project, new Set([id])).get(id) ?? [], ["database", collection, index]).length) {
-    throw new PrimitiveError("다른 곳에서 사용 중인 항목이에요. 먼저 연결을 정리해 주세요.");
+    throw new PrimitiveError("다른 곳에서 사용 중인 항목이에요. 먼저 연결을 해제해 주세요.");
+  }
+  if (collection === "states" && id === RAGE_STATE_ID && project.database.skills.some(skill => skill.effect?.kind === "rage")) {
+    throw new PrimitiveError("폭주 스킬에서 사용 중인 상태예요. 먼저 스킬의 폭주 효과를 해제해 주세요.");
+  }
+  if (collection === "states" && project.system.battleModel === "gen1") {
+    const status = project.database.states[index]?.gen1MajorStatus;
+    if (status && project.database.states.find(state => state.gen1MajorStatus === status)?.id === id &&
+        project.database.monsterSpecies?.some(species => abilityContactStatus(species.ability)?.status === status)) {
+      throw new PrimitiveError("몬스터의 접촉 특성이 이 상태를 부여해요. 먼저 해당 특성을 바꿔 주세요.");
+    }
+  }
+  const scriptKind = collection === "skills" ? "skill" : collection === "battleAnimations" ? "animation" : undefined;
+  if (scriptKind && (projectScriptUsage(project).dynamic(scriptKind) || project.scriptLibrary?.some(module =>
+    scriptHasDynamic({ ...module, kind: "script" }, scriptKind)))) {
+    throw new PrimitiveError("스크립트에서 어떤 항목을 쓰는지 확인할 수 없어요. 스크립트의 연결을 확인해 주세요.");
   }
 }
 
-function resource(project: Project, value: unknown, message: string): string | undefined {
-  if (value === undefined) return undefined;
-  const id = (value as string).trim();
+function resource(project: Project, value: string, kind: "icon" | "battle"): string | undefined {
+  const id = value.trim();
   if (!id) return undefined;
-  try {
-    validateOptionalResource("소재", id, collectResourceIds(project));
-  } catch {
-    throw new PrimitiveError(message);
+  if (!listDatabaseResourceOptions(kind, project).some(option => option.id === id)) {
+    throw new PrimitiveError(kind === "icon"
+      ? "상태 아이콘으로 고를 수 있는 그림을 찾을 수 없어요."
+      : "애니메이션에 쓸 그림 소재를 찾을 수 없어요.");
   }
   return id;
 }
@@ -114,8 +153,8 @@ const skillEditor: Editor<"skills"> = {
     mpPercent: integer(0, 100, "최대 마력에 비례하는 소모율"),
     scope: choice(["self", "ally", "allAllies", "enemy", "allEnemies"], "대상은 자신, 아군 하나, 아군 전체, 적 하나, 적 전체 순서"),
     animationId: textField("연결할 전투 애니메이션 식별자. 빈 문자열이면 연결 해제"),
-    retroChoreographyId: textField("연결할 도트 연출 식별자. 빈 문자열이면 연결 해제"),
-    stateId: textField("명중 시 부여할 상태 식별자"),
+    retroChoreographyId: textField("연결할 도트 연출 식별자. 빈 문자열이면 직접 연결한 연출을 해제하고 기본 연출 사용"),
+    stateId: textField("명중 시 부여할 상태 식별자. 같은 상태를 해제하는 효과가 있으면 부여로 변경"),
   },
   create: (_project, id, name) => normalizeSkillRecord({ id, name }),
   patch(project, row, args) {
@@ -123,6 +162,9 @@ const skillEditor: Editor<"skills"> = {
     if (args.description !== undefined) next.description = args.description as string;
     if (args.power !== undefined) next.power = args.power as number;
     if (args.mpCost !== undefined || args.mpPercent !== undefined) {
+      if (project.system.battleModel === "gen1" && row.maxPp !== undefined) {
+        throw new PrimitiveError("이 스킬은 마력 대신 사용 횟수(PP)를 소모해요. 자료집에서 사용 횟수를 바꿔 주세요.");
+      }
       next.mpCost = {
         flat: (args.mpCost as number | undefined) ?? row.mpCost?.flat ?? 0,
         percentMax: (args.mpPercent as number | undefined) ?? row.mpCost?.percentMax ?? 0,
@@ -131,7 +173,7 @@ const skillEditor: Editor<"skills"> = {
     if (args.scope !== undefined) next.scope = args.scope as SkillRecord["scope"];
     if (args.animationId !== undefined) {
       const id = (args.animationId as string).trim();
-      if (id && !project.database.battleAnimations.some(entry => entry.id === id)) {
+      if (id && uniqueRecordIndex(project.database.battleAnimations, id, "전투 애니메이션") < 0) {
         throw new PrimitiveError("연결할 전투 애니메이션을 찾을 수 없어요.");
       }
       if (id) next.animationId = id;
@@ -139,19 +181,34 @@ const skillEditor: Editor<"skills"> = {
     }
     if (args.retroChoreographyId !== undefined) {
       const id = (args.retroChoreographyId as string).trim();
-      const resolved = resolveSkillChoreography({ id: row.id, retroChoreographyId: id }, project.database.skillChoreographies);
-      if (id && resolved?.id !== id) throw new PrimitiveError("연결할 수 있는 스킬 연출을 찾을 수 없어요.");
-      if (id) next.retroChoreographyId = id;
-      else delete next.retroChoreographyId;
+      if (!id) {
+        delete next.retroChoreographyId;
+      } else {
+        const records = rows(project, "skillChoreographies");
+        if (uniqueRecordIndex(records, id, "스킬 연출") >= 0 && bundledChoreographyIds.has(id)) {
+          throw new PrimitiveError("이 스킬 연출은 기본 연출과 식별자가 겹쳐요. 자료집에서 연출 사본을 만든 뒤 연결해 주세요.");
+        }
+        const requested = resolveSkillChoreography({ id: "", retroChoreographyId: id }, records);
+        if (!requested) throw new PrimitiveError("연결할 스킬 연출을 찾을 수 없어요.");
+        const resolved = resolveSkillChoreography({ id: row.id, retroChoreographyId: id }, records);
+        if (resolved?.id !== requested.id) {
+          throw new PrimitiveError("이 스킬은 자체 기본 연출을 써요. 다른 연출을 붙이려면 자료집에서 연출 사본을 만든 뒤 연결해 주세요.");
+        }
+        next.retroChoreographyId = id;
+      }
     }
     if (args.stateId !== undefined) {
       const stateId = (args.stateId as string).trim();
-      if (!project.database.states.some(entry => entry.id === stateId)) throw new PrimitiveError("부여할 상태를 찾을 수 없어요.");
-      const effects = next.stateEffects ?? [];
-      if (!effects.some(effect => effect.stateId === stateId && effect.operation === "add")) {
-        // 부여와 해제가 같은 명중에서 충돌하지 않도록 같은 상태의 효과만 교체한다.
-        next.stateEffects = [...effects.filter(effect => effect.stateId !== stateId), { stateId, operation: "add", chance: 100 }];
+      if (!stateId || uniqueRecordIndex(project.database.states, stateId, "상태") < 0) {
+        throw new PrimitiveError("부여할 상태를 찾을 수 없어요.");
       }
+      const effects = next.stateEffects ?? [];
+      const first = effects.findIndex(effect => effect.stateId === stateId);
+      const existingAdd = effects.find(effect => effect.stateId === stateId && effect.operation === "add" && effect.chance > 0);
+      const add = existingAdd ?? { stateId, operation: "add" as const, chance: 100 };
+      next.stateEffects = first < 0 ? [...effects, add] : [
+        ...effects.slice(0, first), add, ...effects.slice(first + 1).filter(effect => effect.stateId !== stateId),
+      ];
     }
     return next;
   },
@@ -169,15 +226,34 @@ const stateEditor: Editor<"states"> = {
   create: (_project, id, name) => normalizeStateRecord({ id, name }),
   patch(project, row, args) {
     const next = { ...row };
-    if (args.recoverTurns !== undefined) {
-      next.recoverNaturallyFromTurn = args.recoverTurns as number;
+    if (row.id === "state_death" && (args.recoverTurns !== undefined || args.recoverChance !== undefined ||
+        args.recoverWhenHitChance !== undefined || args.clearOnBattleEnd === true)) {
+      throw new PrimitiveError("전투 불능은 부활할 때 풀려요. 자동 해제를 설정할 수 없어요.");
+    }
+    if (project.system.battleModel === "gen1" && (
+      args.recoverTurns !== undefined || args.recoverWhenHitChance !== undefined ||
+      (args.recoverChance !== undefined && row.gen1MajorStatus !== "freeze")
+    )) {
+      throw new PrimitiveError("포켓몬식 전투에서는 이 상태의 회복 시점과 확률을 전투 규칙이 정해요.");
+    }
+    if (typeof args.recoverTurns === "number") {
+      const { doomTurns, maxTurns } = stateBehavior(row);
+      if ((doomTurns > 0 && doomTurns <= args.recoverTurns) || (maxTurns > 0 && maxTurns < args.recoverTurns) ||
+          (maxTurns === args.recoverTurns && typeof args.recoverChance === "number" && args.recoverChance < 100)) {
+        throw new PrimitiveError("요청한 자동 해제 설정이 적용되지 않아요. 자료집에서 선고나 최대 지속 턴을 확인해 주세요.");
+      }
+      next.recoverNaturallyFromTurn = args.recoverTurns;
       next.recoverNaturallyChance = 100;
     }
     if (args.recoverChance !== undefined) next.recoverNaturallyChance = args.recoverChance as number;
     if (args.recoverWhenHitChance !== undefined) next.recoverWhenHitChance = args.recoverWhenHitChance as number;
-    if (args.clearOnBattleEnd !== undefined) next.clearOnBattleEnd = args.clearOnBattleEnd as boolean;
-    if (args.iconResourceId !== undefined) {
-      const id = resource(project, args.iconResourceId, "상태 아이콘으로 쓸 소재를 찾을 수 없어요.");
+    if (typeof args.clearOnBattleEnd === "boolean") {
+      // 전투 종료 스냅샷과 필드에 상태를 넘기는 코드가 각각 이 값을 읽는다.
+      next.clearOnBattleEnd = args.clearOnBattleEnd;
+      next.runtimeEffects = { ...row.runtimeEffects, removeOnBattleEnd: args.clearOnBattleEnd };
+    }
+    if (typeof args.iconResourceId === "string") {
+      const id = resource(project, args.iconResourceId, "icon");
       if (id) next.iconResourceId = id;
       else delete next.iconResourceId;
     }
@@ -235,8 +311,11 @@ const animationEditor: Editor<"battleAnimations"> = {
   create: (_project, id, name) => normalizeBattleAnimationRecord({ id, name }),
   patch(project, row, args) {
     const next = { ...row };
-    if (args.resourceId !== undefined) {
-      const id = resource(project, args.resourceId, "애니메이션에 쓸 그림 소재를 찾을 수 없어요.");
+    if (typeof args.resourceId === "string") {
+      const id = resource(project, args.resourceId, "battle");
+      if (id && row.pixelFx) {
+        throw new PrimitiveError("이 애니메이션은 픽셀 효과를 재생해요. 그림 소재를 쓰려면 자료집에서 먼저 픽셀 효과를 해제해 주세요.");
+      }
       if (id) next.resourceId = id;
       else delete next.resourceId;
     }
@@ -271,17 +350,20 @@ function databasePrimitives<K extends Collection>(collection: K, editor: Editor<
     },
     scope(ctx): SmallTaskScope {
       const id = selectedId(ctx, collection);
+      selectedIndex(rows(ctx.project, collection), id, edit, label);
       return edit === "create"
         ? { kind: "dbEntries", entries: [], create: { collection, max: 1 } }
         : { kind: "dbEntries", entries: [{ collection, id }], ...(edit === "delete" ? { remove: true } : {}) };
     },
     describe(ctx, args) {
-      const current = edit === "create" ? undefined : selectedRow(ctx, collection, selectedId(ctx, collection));
+      const id = selectedId(ctx, collection);
+      const records = rows(ctx.project, collection);
+      const current = edit === "create" ? undefined : records[selectedIndex(records, id, edit, label)];
       const name = previewName(current?.name ?? args.name as string, label, current?.id);
       if (edit === "update" && Object.keys(args).length === 1) {
-        if (typeof args.name === "string") return `「${name}」의 새 이름은 「${previewName(args.name, label)}」입니다.`;
-        if (collection === "skills" && typeof args.mpCost === "number") return `「${name}」의 고정 마력 소모량은 ${args.mpCost}입니다.`;
-        if (collection === "states" && typeof args.recoverTurns === "number") return `「${name}」 상태가 ${args.recoverTurns}턴째에 풀리게 합니다.`;
+        if (typeof args.name === "string") return `「${name}」의 이름을 「${previewName(args.name, label, id)}」로 바꿉니다.`;
+        if (collection === "skills" && typeof args.mpCost === "number") return `「${name}」의 고정 마력 소모량을 ${args.mpCost}로 바꿉니다.`;
+        if (collection === "states" && typeof args.recoverTurns === "number") return `「${name}」이 ${args.recoverTurns}턴째에 자동으로 풀리게 합니다.`;
       }
       return `${label} 「${name}」 항목을 ${verbs[edit]}합니다.`;
     },
@@ -289,21 +371,21 @@ function databasePrimitives<K extends Collection>(collection: K, editor: Editor<
       const { project } = ctx;
       const id = selectedId(ctx, collection);
       const before = rows(project, collection);
+      const index = selectedIndex(before, id, edit, label);
       if (edit === "create") {
-        if (id) selectedRow(ctx, collection, id);
         const name = cleanName(args.name as string);
         const row = editor.create(project, nextId(project, collection, editor.prefix, name), name);
         return withRows(project, collection, [...before, editor.patch(project, row, args)]);
       }
-      const row = selectedRow(ctx, collection, id);
+      const row = before[index]!;
       if (edit === "delete") {
-        ensureUnused(project, collection, id, before.indexOf(row));
-        return withRows(project, collection, before.filter(entry => entry !== row));
+        ensureUnused(project, collection, id, index);
+        return withRows(project, collection, before.filter((_, position) => position !== index));
       }
       if (!Object.keys(args).length) throw new PrimitiveError("바꿀 내용을 입력해 주세요.");
       const next = editor.patch(project, row, args);
       if (typeof args.name === "string") next.name = cleanName(args.name);
-      return withRows(project, collection, before.map(entry => entry === row ? next : entry));
+      return withRows(project, collection, before.map((entry, position) => position === index ? next : entry));
     },
   });
   const primitives = [primitive("create"), primitive("update"), primitive("delete")];
