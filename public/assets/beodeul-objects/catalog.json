@@ -14923,7 +14923,7 @@
   },
   {
     "id": "beehive_box",
-    "nameKo": "벌통",
+    "nameKo": "나무 상자 벌통",
     "category": "prop",
     "sourceFile": "beehive_box_r2.png",
     "widthPx": 32,
@@ -16077,7 +16077,7 @@
     ],
     "tags": [
       "village",
-      "빨래"
+      "laundry"
     ]
   },
   {
@@ -16094,7 +16094,7 @@
     ],
     "tags": [
       "village",
-      "빨래"
+      "laundry"
     ]
   },
   {
@@ -16653,7 +16653,7 @@
   },
   {
     "id": "stepping_stones",
-    "nameKo": "징검돌",
+    "nameKo": "낮은 징검돌",
     "category": "prop",
     "sourceFile": "stepping_stones_r2.png",
     "widthPx": 48,
@@ -16914,7 +16914,7 @@
     ],
     "tags": [
       "village",
-      "우물"
+      "well"
     ]
   },
   {
@@ -16933,7 +16933,7 @@
     ],
     "tags": [
       "village",
-      "우물"
+      "well"
     ]
   },
   {

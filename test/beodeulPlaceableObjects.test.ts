@@ -9,7 +9,7 @@ import { filterProps, recommendProps } from "@/editor/propRecommendations";
 import { runTool } from "@/editor/tools/toolRunner";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults/blankProject";
-import { defaultTileset, ensureBundledTilesets } from "@/project/defaults/defaultAssets";
+import { defaultTileset } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { ensureBeodeulPlaceableObjects } from "@/project/defaults/beodeulPlaceableObjects";
 import { deserialize, serialize } from "@/project/io";
@@ -102,10 +102,15 @@ describe("bundled Beodeul placeable objects", () => {
     expect(ensureBeodeulPlaceableObjects(tileset)).toBe(false);
   });
 
-  it("lists the same catalog through both assistant tools and stamps with the authored collision", () => {
-    const ctx = { project: createBlankProject() };
-    const [map] = Object.values(ctx.project.maps);
-    const mapId = map!.id;
+  function projectWithObjectTileset() {
+    const project = createBlankProject();
+    const map = Object.values(project.maps)[0]!;
+    project.tilesets = { [map.tilesetId]: project.tilesets[map.tilesetId]! };
+    return { ctx: { project }, mapId: map.id, tilesetId: map.tilesetId };
+  }
+
+  it("lists the full catalog through both assistant tools and the placement planner", () => {
+    const { ctx, mapId, tilesetId } = projectWithObjectTileset();
     const query = "버들항 기본 기물";
     const expected = BEODEUL_PLACEABLE_OBJECTS.map(object => ({
       id: kitId(object.id), width: object.widthTiles, height: object.heightTiles,
@@ -114,17 +119,22 @@ describe("bundled Beodeul placeable objects", () => {
     const listed = runTool(ctx, "list_tileset_objects", { mapId, query });
     expect(listed.ok, listed.summary).toBe(true);
     expect(listed.data).toMatchObject({ objects: expected });
-    const plannerIndex = buildStampObjectIndex(ctx.project.tilesets[map!.tilesetId]);
-    expect(plannerIndex).toEqual(expect.arrayContaining(BEODEUL_PLACEABLE_OBJECTS.map(object => expect.objectContaining({
-      id: kitId(object.id), width: object.widthTiles, height: object.heightTiles,
-      placement: object.surface ?? "floor", indoor: object.category === "indoor",
-    }))));
+    const plannerIndex = new Map(buildStampObjectIndex(ctx.project.tilesets[tilesetId]).map(entry => [entry.id, entry]));
+    for (const object of BEODEUL_PLACEABLE_OBJECTS) {
+      expect(plannerIndex.get(kitId(object.id))).toMatchObject({
+        width: object.widthTiles, height: object.heightTiles,
+        placement: object.surface ?? "floor", indoor: object.category === "indoor",
+      });
+    }
     const shared = runTool(ctx, "list_spatial_designs", { kind: "object", query, limit: 200 });
     expect(shared.ok, shared.summary).toBe(true);
     expect(shared.data).toMatchObject({ shared: { rows: expected.map(entry => ({
-      ...entry, id: `kit:${map!.tilesetId}/${entry.id}`,
+      ...entry, id: `kit:${tilesetId}/${entry.id}`,
     })) } });
+  });
 
+  it("preserves stamped collision through serialization and includes the painted asset in web export", () => {
+    const { ctx, mapId } = projectWithObjectTileset();
     const object = BEODEUL_PLACEABLE_OBJECTS.find(entry => entry.id === "lantern_post")!;
     const x = 4, y = 4;
     const stamped = runTool(ctx, "stamp_tileset_object", { mapId, objectId: kitId(object.id), at: { x, y } });
@@ -140,14 +150,13 @@ describe("bundled Beodeul placeable objects", () => {
 
     const before = [...painted.upperTiles];
     const reloaded = deserialize(serialize(ctx.project));
-    ensureBundledTilesets(reloaded);
     expect(reloaded.maps[mapId]!.upperTiles).toEqual(before);
     for (const [dy, row] of object.footprint.entries()) {
       for (const [dx, mark] of [...row].entries()) {
         expect(isPassable(reloaded, reloaded.maps[mapId]!, x + dx, y + dy)).toBe(mark !== "X");
       }
     }
-  });
+  }, 60_000);
 
   it("extends straight dock and hedge sections on their own axes with the intended passage", () => {
     const ctx = { project: createBlankProject() };

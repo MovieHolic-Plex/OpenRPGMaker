@@ -12,6 +12,7 @@ import {
 } from "@/assets/bundled";
 import { hasInlineAssets } from "@/assets/inlineAssetStore";
 import { imageWarmSupported, warmImageUrls } from "@/assets/imageWarmQueue";
+import { beodeulPlaceableObjectForTexture } from "@/assets/beodeulPlaceableObjects";
 import { resolveAssetResourceUrl } from './generatedAssetResourceResolver';
 import { EASYRPG_PICTURE_ASSETS } from './easyrpgRtp';
 import { EMOTE_ASSET_PATH } from "@/project/emotes";
@@ -44,6 +45,9 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
   }
   for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
     if (used && !used.has(asset.textureKey)) continue;
+    // The engine loader requests these grafts together. Individual object sprites would otherwise
+    // fill the low-concurrency speculative queue even when the map has no placed objects.
+    if (beodeulPlaceableObjectForTexture(asset.textureKey)) continue;
     paths.add(asset.path);
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
