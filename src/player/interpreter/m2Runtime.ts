@@ -262,26 +262,29 @@ function executeByTitle(
     return;
   }
   if (title === "Change System BGM" || title === "Change System SE") {
-    const key = title === "Change System BGM" ? "system_bgm" : "system_se";
-    // Cue-less legacy commands remain metadata-only, including explicit empty resources.
+    const bgm = title === "Change System BGM";
     if (fields.cue !== undefined) {
       const cue = fields.cue;
+      if (typeof cue !== "string") return;
       const operation = fieldString(fields, "operation", "set");
       if (operation !== "set" && operation !== "reset") return;
+      if (operation === "reset") {
+        // Restoring a default also clears a legacy slot for the same cue.
+        if (clearSystemAudioCue(session, bgm, cue) && isSystemAudioSlot(cue)) {
+          delete runtime.system[systemAudioOverrideKey(cue)];
+        }
+        return;
+      }
       const volume = Math.min(100, Math.max(0, fieldNumber(fields, "volume", 100)));
       const value = { resourceId: commandResourceId(fields), volume };
-      if (title === "Change System BGM" && isSystemBgmCue(cue)) {
-        if (operation === "reset") delete session.systemAudioOverrides?.bgm?.[cue];
-        else (session.systemAudioOverrides ??= {}).bgm = { ...session.systemAudioOverrides?.bgm, [cue]: value };
-      } else if (title === "Change System SE" && isSystemSeCue(cue)) {
-        if (operation === "reset") delete session.systemAudioOverrides?.se?.[cue];
-        else (session.systemAudioOverrides ??= {}).se = { ...session.systemAudioOverrides?.se, [cue]: value };
+      if (bgm && isSystemBgmCue(cue)) {
+        (session.systemAudioOverrides ??= {}).bgm = { ...session.systemAudioOverrides?.bgm, [cue]: value };
+      } else if (!bgm && isSystemSeCue(cue)) {
+        (session.systemAudioOverrides ??= {}).se = { ...session.systemAudioOverrides?.se, [cue]: value };
       }
       return;
     }
-    // The slot picker's choice must reach mapBgm/battleAudio, which read runtime.system by slot key.
-    recordSystemAudioChange(runtime, title, fields);
-    if (fields.volume !== undefined) runtime.system[`${key}_volume`] = fieldNumber(fields, "volume", 100);
+    recordSystemAudioChange(session, runtime, bgm, fields);
     return;
   }
   if (title === "Change System Graphic") {
@@ -372,13 +375,28 @@ function toDurationMs(value: number): number {
   return value <= 60 ? Math.round(value * 1000) : Math.round(value);
 }
 
-// The picker writes resourceId; older commands may still carry value.
-function recordSystemAudioChange(runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
-  const bgm = title === "Change System BGM";
-  const resourceId = fieldString(fields, "resourceId", fieldString(fields, "value", ""));
+function clearSystemAudioCue(session: PlaySessionLike, bgm: boolean, cue: string): boolean {
+  if (bgm && isSystemBgmCue(cue)) {
+    delete session.systemAudioOverrides?.bgm?.[cue];
+    return true;
+  }
+  if (!bgm && isSystemSeCue(cue)) {
+    delete session.systemAudioOverrides?.se?.[cue];
+    return true;
+  }
+  return false;
+}
+
+function recordSystemAudioChange(session: PlaySessionLike, runtime: M2RuntimeState, bgm: boolean, fields: M2CommandFields): void {
+  const resourceId = commandResourceId(fields);
   const slot = fieldString(fields, "slot", bgm ? "battle" : "defeat");
-  runtime.system[bgm ? "system_bgm" : "system_se"] = resourceId;
-  if (isSystemAudioSlot(slot)) runtime.system[systemAudioOverrideKey(slot)] = resourceId;
+  const key = bgm ? "system_bgm" : "system_se";
+  runtime.system[key] = resourceId;
+  if (fields.volume !== undefined) runtime.system[`${key}_volume`] = fieldNumber(fields, "volume", 100);
+  if (isSystemAudioSlot(slot)) {
+    runtime.system[systemAudioOverrideKey(slot)] = resourceId;
+    if (!resourceId.trim()) clearSystemAudioCue(session, bgm, slot);
+  }
 }
 
 const MEMORIZED_BGM_FADE_LIMIT_MS = 60_000;

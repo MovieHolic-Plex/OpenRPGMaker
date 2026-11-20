@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
 import { getAudioEngine, playAudioCommand, resumeAudioState } from "@/player/audio";
 import { enterBattleAudio, exitBattleAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
+import { playBattleCue } from "@/player/battleJuice";
 import { createInterpreter } from "@/player/interpreter";
 import { runCommands } from "@/player/playSceneInterpreter";
 import { applyNonBlockingStep } from "@/player/playSceneSchedulers";
@@ -219,6 +220,58 @@ describe("U14 actual audio handoffs", () => {
     enterBattleAudio(project, restored);
     expect(play.mock.calls.map(([, resource]) => resource)).toEqual([FIELD, BATTLE]);
     expect(startSession(project, 3).m2Runtime).toBeUndefined();
+  });
+
+  it("restores authored battle music across both command formats without clearing the field slot", async () => {
+    const { project, session, scene } = setup();
+    project.system.battleBgmResourceId = FIELD;
+    await runCommands(scene, [
+      m2("Change System BGM", { slot: "field", resourceId: BATTLE }),
+      m2("Change System BGM", { slot: "battle", value: BATTLE }),
+      m2("Change System BGM", { cue: "battle", operation: "set", resourceId: BATTLE, volume: 42 }),
+    ]);
+    enterBattleAudio(project, session);
+    expect(session.audio.bgm).toMatchObject({ resourceId: BATTLE, volume: 42 });
+
+    await runCommands(scene, [m2("Change System BGM", { cue: "battle", operation: "reset" })]);
+    enterBattleAudio(project, session);
+    expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: true });
+    startMapBgm(project, session, project.startMapId);
+    expect(session.audio.bgm?.resourceId).toBe(BATTLE);
+
+    await runCommands(scene, [
+      m2("Change System BGM", { cue: "battle", operation: "set", resourceId: BATTLE, volume: 42 }),
+      m2("Change System BGM", { slot: "battle", resourceId: "" }),
+    ]);
+    enterBattleAudio(project, session);
+    expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: true });
+  });
+
+  it.each(["defeat", "escape"] as const)("plays the active %s sound and restores the authored sound in either format", async cue => {
+    const { project, session, scene } = setup();
+    project.system.seCues = { [cue]: SE };
+    const play = vi.spyOn(getAudioEngine(), "play");
+    const playResult = () => playBattleCue(cue, { project, session });
+    const playedResources = () => play.mock.calls.filter(([channel]) => channel === "se").map(([, resource]) => resource);
+
+    await runCommands(scene, [m2("Change System SE", { slot: cue, resourceId: OTHER_SE })]);
+    playResult();
+    expect(playedResources()).toEqual([OTHER_SE]);
+
+    await runCommands(scene, [m2("Change System SE", { cue, operation: "set", resourceId: "", volume: 100 })]);
+    playResult();
+    expect(playedResources()).toEqual([OTHER_SE]);
+
+    await runCommands(scene, [m2("Change System SE", { cue, operation: "reset" })]);
+    playResult();
+    expect(playedResources()).toEqual([OTHER_SE, SE]);
+
+    await runCommands(scene, [
+      m2("Change System SE", { cue, operation: "set", resourceId: OTHER_SE, volume: 42 }),
+      m2("Change System SE", { slot: cue, resourceId: "" }),
+    ]);
+    playResult();
+    expect(playedResources()).toEqual([OTHER_SE, SE, SE]);
   });
 
   it("keeps battle result overrides session-owned even with overlapping battle lifetimes", async () => {
