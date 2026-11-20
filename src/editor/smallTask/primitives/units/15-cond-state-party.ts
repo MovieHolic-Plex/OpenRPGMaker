@@ -1,9 +1,15 @@
 import { pageConditionSentence } from "@/editor/panels/eventEditor/pageConditionSentence";
 import { displayText } from "@/editor/smallTask/target";
+import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import type { JsonSchema } from "@/editor/tools/types";
+import { ACTOR_LEVEL_MAX } from "@/project/actorModel";
+import { GOLD_MAX } from "@/project/economyValues";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { validateCondition, validateMonsterSpeciesReferences } from "@/project/io/commandReferenceValidation";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
-import type { Condition, ConditionCompareOp, Project } from "@/project/types";
+import { findLocationById } from "@/project/mapNamedLocations";
+import { watchersHaveSelector } from "@/project/sightWatchers";
+import type { Condition, ConditionCompareOp, EventPage, GameMap, Project } from "@/project/types";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import * as build from "./15-cond-state-party/builders";
@@ -41,24 +47,27 @@ type Leaf = Extract<Condition, { kind: LeafKind }>;
 type Named = { readonly id: string; readonly name: string };
 
 function ref(description: string): JsonSchema {
-  return { type: "string", minLength: 1, description };
+  return { type: "string", minLength: 1, pattern: "\\S", description };
 }
 
 function rowNumber(description: string): JsonSchema {
-  return { type: "integer", minimum: 1, description };
+  return { type: "integer", minimum: 1, maximum: Number.MAX_SAFE_INTEGER, description };
 }
 
-const conditionNumber = rowNumber("페이지의 맨 바깥 조건 줄 번호입니다. 첫 줄은 1번입니다.");
+const conditionNumber = rowNumber("현재 페이지의 맨 바깥 조건 줄 번호입니다. 첫 줄은 1번입니다.");
+const compareOps = ["==", "!=", ">", ">=", "<", "<="] as const;
+const selfSwitchKeys = ["A", "B", "C", "D"] as const;
+const timerIds = ["timer1", "timer2"] as const;
 const comparison: JsonSchema = {
   type: "string",
-  enum: ["==", "!=", ">", ">=", "<", "<="],
+  enum: compareOps,
   description: "같음, 다름, 초과, 이상, 미만, 이하 중 비교 방법입니다. 생략하면 이상입니다.",
 };
 const on: JsonSchema = { type: "boolean", description: "켜짐이면 참, 꺼짐이면 거짓입니다. 생략하면 켜짐입니다." };
 const present: JsonSchema = { type: "boolean", description: "있어야 하면 참, 없어야 하면 거짓입니다. 생략하면 참입니다." };
 const number: JsonSchema = { type: "number", description: "기준 수치입니다. 생략하면 0입니다." };
-const amount: JsonSchema = { type: "integer", minimum: 0, description: "0 이상의 기준 금액입니다. 생략하면 0입니다." };
-const count: JsonSchema = { type: "integer", minimum: 0, description: "0 이상의 기준 개수입니다." };
+const count: JsonSchema = { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER, description: "0 이상의 기준 개수입니다." };
+const amount: JsonSchema = { ...count, maximum: GOLD_MAX, description: `0부터 ${GOLD_MAX.toLocaleString("ko-KR")}까지의 기준 금액입니다. 생략하면 0입니다.` };
 const switchId = ref("프로젝트에 등록된 스위치의 식별자입니다.");
 const variableId = ref("프로젝트에 등록된 숫자 변수의 식별자입니다.");
 const itemId = ref("자료집에 등록된 아이템의 식별자입니다.");
@@ -84,8 +93,9 @@ function pageScope({ target }: PrimitiveContext) {
 function locatePage(ctx: PrimitiveContext) {
   const { mapId, eventId, pageId } = pageScope(ctx);
   const map = ctx.project.maps[mapId];
-  const eventIndex = map?.events.findIndex(event => event.id === eventId) ?? -1;
-  const event = map?.events[eventIndex];
+  if (!map || map.id !== mapId) throw new PrimitiveError("범위 밖입니다. 선택한 맵을 다시 골라 주세요.");
+  const eventIndex = map.events.findIndex(event => event.id === eventId);
+  const event = map.events[eventIndex];
   const pageIndex = event?.pages?.findIndex(page => page.id === pageId) ?? -1;
   const page = event?.pages?.[pageIndex];
   if (!page || !event?.pages) throw new PrimitiveError("범위 밖입니다. 선택한 이벤트 페이지를 찾을 수 없어요.");
@@ -93,16 +103,16 @@ function locatePage(ctx: PrimitiveContext) {
       event.pages.slice(pageIndex + 1).some(entry => entry.id === pageId)) {
     throw new PrimitiveError("범위 밖입니다. 선택한 이벤트 페이지를 하나로 확인할 수 없어요.");
   }
-  return { map, event, eventIndex, page, pageIndex, pages: event.pages };
+  return { mapId, map, event, eventIndex, page, pageIndex, pages: event.pages };
 }
 
-function changeConditions(ctx: PrimitiveContext, edit: (conditions: readonly Condition[]) => Condition[]): Project {
-  const { map, event, eventIndex, page, pageIndex, pages } = locatePage(ctx);
+function changeConditions(ctx: PrimitiveContext, edit: (conditions: readonly Condition[], page: EventPage, map: GameMap) => Condition[]): Project {
+  const { mapId, map, event, eventIndex, page, pageIndex, pages } = locatePage(ctx);
   const nextPages = [...pages];
-  nextPages[pageIndex] = { ...page, conditions: edit(page.conditions ?? []) };
+  nextPages[pageIndex] = { ...page, conditions: edit(page.conditions ?? [], page, map) };
   const events = [...map.events];
   events[eventIndex] = { ...event, pages: nextPages };
-  return { ...ctx.project, maps: { ...ctx.project.maps, [map.id]: { ...map, events } } };
+  return { ...ctx.project, maps: { ...ctx.project.maps, [mapId]: { ...map, events } } };
 }
 
 function indexOfRow(conditions: readonly Condition[], row: unknown): number {
@@ -124,11 +134,27 @@ function setCondition(conditions: readonly Condition[], next: Leaf, row: unknown
   return conditions.map((condition, position) => position === index ? next : condition);
 }
 
-function requireRecord(records: readonly Named[] | undefined, id: string, label: string): void {
+function requireRecord(records: readonly { readonly id: string }[] | undefined, id: string, label: string): void {
   if (!records?.some(record => record.id === id)) throw new PrimitiveError(`${label} 항목을 찾을 수 없어요.`);
 }
 
-function validateReferences(project: Project, condition: Condition): void {
+function requireEvent(project: Project, id: string, label: string): void {
+  // 이벤트는 플레이 중 다른 맵에서 오거나 이벤트 생성 명령으로 나타날 수 있습니다.
+  if (Object.values(project.maps).some(map => map.events.some(event => event.id === id))) return;
+  let spawned = false;
+  visitProjectCommands(project, ({ command }) => {
+    if (spawned || command.kind !== "m2Command" || m2CommandById(command.commandId)?.title !== "Spawn Event") return;
+    const templateId = String(command.fields.templateEventId ?? command.fields.prefabId ?? "");
+    const fallbackId = templateId ? `${templateId}_spawn` : "spawned-event";
+    spawned = String(command.fields.eventId ?? fallbackId) === id;
+  });
+  if (!spawned) throw new PrimitiveError(`${label}에 지정한 이벤트를 찾을 수 없어요.`);
+}
+
+function validateConditionValues(project: Project, map: GameMap, condition: Condition): void {
+  if ("op" in condition && condition.kind !== "stringVariable" && condition.op !== undefined && !compareOps.includes(condition.op)) {
+    throw new PrimitiveError("등장 조건의 비교 방법을 다시 골라 주세요.");
+  }
   switch (condition.kind) {
     case "switch":
     case "variable": {
@@ -163,37 +189,78 @@ function validateReferences(project: Project, condition: Condition): void {
     case "stringVariable":
       // 문자 입력 명령이 자유 키를 씁니다. 숫자 변수 목록에는 등록되지 않습니다.
       if (!condition.stringVariableId.trim()) throw new PrimitiveError("문자열 변수를 지정해 주세요.");
+      // 값이 아직 없는 변수는 일반 객체에서 읽히므로 기본 속성 이름과 충돌할 수 있습니다.
+      if (Object.hasOwn(Object.prototype, condition.stringVariableId)) throw new PrimitiveError("이 이름은 문자열 변수에 쓸 수 없어요. 다른 이름을 골라 주세요.");
       if (condition.op === "contains" && condition.value === "") throw new PrimitiveError("포함 여부를 확인할 글자를 입력해 주세요.");
       return;
+    case "selfSwitch":
+      if (!selfSwitchKeys.includes(condition.key)) throw new PrimitiveError("이벤트 기억은 A부터 D까지 고를 수 있어요.");
+      return;
+    case "timer":
+      if (!timerIds.includes(condition.timerId)) throw new PrimitiveError("첫째 또는 둘째 타이머를 골라 주세요.");
+      return;
+    case "insideLocation":
+      if (!findLocationById(map, condition.locationId)) throw new PrimitiveError("선택한 맵에서 조건에 쓰인 장소를 찾을 수 없어요.");
+      if (condition.eventId) requireEvent(project, condition.eventId, "장소 조건");
+      return;
+    case "pursuitActive":
+      if (condition.eventId) requireEvent(project, condition.eventId, "추격 조건");
+      return;
+    case "eventSeesPlayer": {
+      if (condition.eventId) return requireEvent(project, condition.eventId, "시야 조건");
+      const watchers = condition.watchers;
+      if (!watchersHaveSelector(watchers)) throw new PrimitiveError("시야 조건에서 주인공을 볼 이벤트를 골라 주세요.");
+      if (watchers?.locationId?.trim() && !findLocationById(map, watchers.locationId)) {
+        throw new PrimitiveError("선택한 맵에서 시야 조건에 쓰인 장소를 찾을 수 없어요.");
+      }
+      return;
+    }
+    case "difficulty":
+      return requireRecord(project.system.difficulties, condition.difficultyId, "난이도");
+    case "endingSeen":
+      return requireRecord(project.endings, condition.endingId, "결말");
     case "all":
     case "any":
-      for (const child of condition.conditions) validateReferences(project, child);
+      for (const child of condition.conditions) validateConditionValues(project, map, child);
       return;
     case "not":
-      return validateReferences(project, condition.condition);
+      return validateConditionValues(project, map, condition.condition);
     default:
       return;
   }
 }
 
-function validate(project: Project, condition: Condition): void {
+function validate(project: Project, map: GameMap, condition: Condition): void {
   try {
     validateConditionShape("등장 조건", condition);
   } catch {
     throw new PrimitiveError("등장 조건의 입력값을 확인해 주세요.");
   }
-  validateReferences(project, condition);
+  validateConditionValues(project, map, condition);
 }
 
-function validateLeaf(project: Project, condition: Leaf): void {
-  validate(project, condition);
-  const field = condition.kind === "gold" ? { value: condition.amount, label: "기준 금액" }
+function validateLeaf(project: Project, map: GameMap, page: EventPage, condition: Leaf): void {
+  validate(project, map, condition);
+  if (condition.kind === "itemUsed") {
+    const trigger = page.trigger.kind;
+    if (trigger !== "action" && trigger !== "touch" && trigger !== "playerTouch" && trigger !== "eventTouch") {
+      throw new PrimitiveError("아이템 사용 조건을 쓰려면 페이지의 시작 방식을 조사나 접촉으로 바꿔 주세요.");
+    }
+  }
+  const field = condition.kind === "gold" ? { value: condition.amount, label: "기준 금액", max: GOLD_MAX }
     : condition.kind === "timer" ? { value: condition.seconds, label: "기준 시간" }
     : condition.kind === "partySize" ? { value: condition.value, label: "기준 파티 인원" }
     : condition.kind === "badgeCount" ? { value: condition.value, label: "기준 배지 수" }
+    : condition.kind === "actorStat" ? {
+      value: condition.value, label: "기준 능력치",
+      max: condition.stat === "level" ? ACTOR_LEVEL_MAX : condition.stat.endsWith("Percent") ? 100 : undefined,
+    }
     : undefined;
   if (field && (!Number.isSafeInteger(field.value) || field.value < 0)) {
     throw new PrimitiveError(`${field.label}에는 0 이상의 정수를 입력해 주세요.`);
+  }
+  if (field?.max !== undefined && field.value > field.max) {
+    throw new PrimitiveError(`${field.label}에는 ${field.max.toLocaleString("ko-KR")} 이하의 값을 입력해 주세요.`);
   }
 }
 
@@ -213,10 +280,9 @@ const compareLabels: Record<ConditionCompareOp, string> = {
 };
 const statLabels = { level: "레벨", hp: "체력", mp: "마력", hpPercent: "체력 비율", mpPercent: "마력 비율" };
 const memoryLabels = { A: "첫째", B: "둘째", C: "셋째", D: "넷째" };
-const stringLabels = { "==": "일치", "!=": "불일치", contains: "포함" };
 
 function pageSentence(project: Project, condition: Leaf): string {
-  const actor = (id: string) => id === "leader" ? "선두 배우" : id === "anyone" ? "파티원 중 한 명" : recordName(project.database.actors, id, "지정한 배우");
+  const actor = (id: string) => recordName(project.database.actors, id, "지정한 배우");
   const item = (id: string) => recordName(project.database.items, id, "지정한 아이템");
   let detail: string;
   switch (condition.kind) {
@@ -232,25 +298,40 @@ function pageSentence(project: Project, condition: Leaf): string {
     case "selfSwitch":
       detail = `이벤트의 ${memoryLabels[condition.key]} 기억 ${condition.value ? "켜짐" : "꺼짐"}`;
       break;
-    case "stringVariable":
-      detail = condition.op === "empty" ? "지정한 문자열 변수가 비어 있음" : `문자열에 「${safeName(condition.value, "지정한 글자")}」 ${stringLabels[condition.op]}`;
+    case "stringVariable": {
+      const text = safeName(condition.value, "…");
+      const name = safeName(condition.stringVariableId, "지정한 변수");
+      if (condition.op === "empty" || condition.value === "") {
+        detail = `「${name}」의 값이 ${condition.op === "!=" ? "비어 있지 않음" : "비어 있음"}`;
+      } else if (condition.op === "contains") {
+        detail = `「${name}」의 값에 「${text}」 포함`;
+      } else {
+        detail = `「${name}」의 값이 「${text}」${condition.op === "==" ? "와 같음" : "와 다름"}`;
+      }
       break;
+    }
     case "item":
       detail = `「${item(condition.itemId)}」 ${condition.present ? "보유 중" : "없음"}`;
       break;
     case "itemUsed":
-      return `이 이벤트에 「${item(condition.itemId)}」을 사용하면 페이지가 보입니다.`;
+      detail = `이 이벤트에 아이템 「${item(condition.itemId)}」 사용`;
+      break;
     case "actor":
       detail = `「${actor(condition.actorId)}」 파티에 ${condition.present ? "있음" : "없음"}`;
       break;
     case "actorStat":
-      detail = `「${actor(condition.actorId)}」의 ${statLabels[condition.stat]} ${condition.value}${condition.stat.endsWith("Percent") ? "%" : ""}${compareLabels[condition.op]}`;
+      detail = `${condition.actorId === "leader" ? "파티 선두" : `「${actor(condition.actorId)}」`}의 ${statLabels[condition.stat]} ${condition.value}${condition.stat.endsWith("Percent") ? "%" : ""}${compareLabels[condition.op]}`;
       break;
-    case "actorState":
-      detail = `「${actor(condition.actorId)}」에게 「${recordName(project.database.states, condition.stateId, "지정한 상태")}」 ${condition.present ? "있음" : "없음"}`;
+    case "actorState": {
+      const state = recordName(project.database.states, condition.stateId, "지정한 상태");
+      const subject = condition.actorId === "anyone" ? condition.present ? "파티원 중 누군가에게" : "파티원 모두에게"
+        : condition.actorId === "leader" ? "파티 선두에게" : `「${actor(condition.actorId)}」에게`;
+      detail = `${subject} 「${state}」 ${condition.present ? "있음" : "없음"}`;
       break;
+    }
     case "partyLeader":
-      return `파티 선두가 「${actor(condition.actorId)}」이면 이 페이지가 보입니다.`;
+      detail = `파티 선두가 「${actor(condition.actorId)}」임`;
+      break;
     case "partyKnowsSkill":
       detail = `파티가 「${recordName(project.database.skills, condition.skillId, "지정한 기술")}」을 ${condition.present === false ? "모름" : "앎"}`;
       break;
@@ -264,7 +345,7 @@ function pageSentence(project: Project, condition: Leaf): string {
       detail = `파티나 보관함에 「${recordName(project.database.monsterSpecies, condition.speciesId, "지정한 몬스터 종")}」 ${condition.present ? "있음" : "없음"}`;
       break;
   }
-  return `이 페이지는 ${detail}일 때 보입니다.`;
+  return `이 페이지에 ‘${detail}’ 조건을 설정합니다.`;
 }
 
 function leaf<A extends Record<string, unknown>>(
@@ -281,12 +362,15 @@ function leaf<A extends Record<string, unknown>>(
     title: TITLES[kind],
     covers: { conditionKinds: [kind] },
     targets: ["event"],
-    args: schema({ ...properties, conditionNumber: rowNumber("같은 종류가 여러 줄이면 바꿀 줄 번호를 고릅니다. 첫 줄은 1번입니다.") }, required),
+    args: schema({
+      ...properties,
+      conditionNumber: rowNumber("현재 페이지의 전체 조건 목록에서 바꿀 줄 번호입니다. 첫 줄은 1번입니다. 생략하면 같은 종류가 한 줄일 때 바꾸고, 없으면 끝에 추가합니다."),
+    }, required),
     scope: pageScope,
     describe: (ctx, args) => pageSentence(ctx.project, fromArgs(args)),
-    apply: (ctx, args) => changeConditions(ctx, conditions => {
+    apply: (ctx, args) => changeConditions(ctx, (conditions, page, map) => {
       const condition = fromArgs(args);
-      validateLeaf(ctx.project, condition);
+      validateLeaf(ctx.project, map, page, condition);
       return setCondition(conditions, condition, args.conditionNumber);
     }),
   };
@@ -307,12 +391,12 @@ function group(kind: GroupKind): SmallTaskPrimitive {
       }, ["conditionNumbers"]),
     scope: pageScope,
     describe: (_ctx, args) => {
-      if (kind === "not") return `${args.conditionNumber}번 조건이 맞지 않을 때 보이도록 바꿉니다.`;
+      if (kind === "not") return `이 페이지의 ${args.conditionNumber}번 조건을 반대로 바꿉니다.`;
       const size = Array.isArray(args.conditionNumbers) ? args.conditionNumbers.length : 0;
-      const match = kind === "all" ? "모두" : "중 하나라도";
-      return `고른 조건 ${size}개 ${match} 맞을 때 보이도록 묶습니다.`;
+      return kind === "all" ? `고른 조건 ${size}개가 모두 맞아야 하도록 묶습니다.`
+        : `고른 조건 ${size}개 중 하나라도 맞으면 되도록 묶습니다.`;
     },
-    apply: (ctx, args) => changeConditions(ctx, conditions => {
+    apply: (ctx, args) => changeConditions(ctx, (conditions, _page, map) => {
       const rows = single ? [args.conditionNumber] : args.conditionNumbers;
       if (!Array.isArray(rows) || rows.length === 0) throw new PrimitiveError("묶을 조건 줄을 골라 주세요.");
       const indexes = new Set(rows.map(row => indexOfRow(conditions, row)));
@@ -320,7 +404,7 @@ function group(kind: GroupKind): SmallTaskPrimitive {
       const selected = conditions.filter((_condition, index) => indexes.has(index));
       const combined = single ? build.buildConditionNot({ condition: selected[0] })
         : kind === "all" ? build.buildConditionAll({ conditions: selected }) : build.buildConditionAny({ conditions: selected });
-      validate(ctx.project, combined);
+      validate(ctx.project, map, combined);
       const first = conditions.findIndex((_condition, index) => indexes.has(index));
       return conditions.flatMap((condition, index) => index === first ? [combined] : indexes.has(index) ? [] : [condition]);
     }),
@@ -331,7 +415,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   leaf("switch", build.buildConditionSwitch, { switchId, value: on }, ["switchId"]),
   leaf("variable", build.buildConditionVariable, { variableId, op: comparison, value: number }, ["variableId"]),
   leaf("selfSwitch", build.buildConditionSelfSwitch, {
-    key: { type: "string", enum: ["A", "B", "C", "D"], description: "이 이벤트의 기억 네 칸 중 하나입니다. 생략하면 첫째 칸입니다." },
+    key: { type: "string", enum: selfSwitchKeys, description: "이 이벤트의 기억 A부터 D까지 중 하나입니다. 생략하면 A입니다." },
     value: on,
   }),
   leaf("stringVariable", build.buildConditionStringVariable, {
@@ -343,7 +427,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   leaf("itemUsed", build.buildConditionItemUsed, { itemId }, ["itemId"]),
   leaf("gold", build.buildConditionGold, { op: comparison, amount }),
   leaf("timer", build.buildConditionTimer, {
-    timerId: { type: "string", enum: ["timer1", "timer2"], description: "첫째 또는 둘째 타이머입니다. 생략하면 첫째입니다." },
+    timerId: { type: "string", enum: timerIds, description: "첫째 또는 둘째 타이머입니다. 생략하면 첫째입니다." },
     seconds: { ...count, description: "남은 시간의 기준을 초로 입력합니다. 생략하면 0초입니다." },
     op: { ...comparison, description: "남은 시간의 비교 방법입니다. 생략하면 이하입니다." },
   }),
@@ -351,7 +435,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   leaf("actorStat", build.buildConditionActorStat, {
     actorId: ref("배우의 식별자 또는 파티 선두입니다. 생략하면 선두입니다."),
     stat: { type: "string", enum: ["level", "hp", "mp", "hpPercent", "mpPercent"], description: "레벨, 체력, 마력, 체력 비율, 마력 비율 중 하나입니다. 생략하면 레벨입니다." },
-    op: comparison, value: { ...number, description: "능력치 기준입니다. 비율은 백분율로 입력합니다. 생략하면 10입니다." },
+    op: comparison, value: { ...count, description: `능력치 기준입니다. 레벨 기준은 ${ACTOR_LEVEL_MAX} 이하, 비율은 0~100의 정수입니다. 생략하면 10입니다.` },
   }),
   leaf("actorState", build.buildConditionActorState, {
     actorId: ref("배우의 식별자, 선두 또는 파티원 중 한 명입니다. 생략하면 파티원 중 한 명입니다."),
