@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { readCheckPath, resolveTarget, type CorpusCase, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
+import { questDefId } from "@/project/quest/questDef";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectKoreanSentence, expectUndoRestores, loadFixture } from "../harness";
@@ -23,12 +24,22 @@ describe("퀘스트 한국어 회귀 요청", () => {
         fixtures.set(entry.fixture, before);
       }
       const target = resolveTarget(before, entry.target);
+      const originalQuests = structuredClone(before.quests);
       const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
       if (entry.expectRefusal) {
         expect(apply).toThrow(PrimitiveError);
+        expect(before.quests).toEqual(originalQuests);
         return;
       }
       const { after, sentence } = apply();
+      expect(before.quests).toEqual(originalQuests);
+      expect({ ...after, quests: before.quests }).toEqual(before);
+      expect(entry.expect?.length).toBeGreaterThan(0);
+      const afterById = new Map(after.quests?.map(quest => [questDefId(quest), quest]));
+      const changed = originalQuests?.filter(quest => !jsonEqual(quest, afterById.get(questDefId(quest)))) ?? [];
+      const added = (after.quests?.length ?? 0) - (originalQuests?.length ?? 0);
+      expect(changed).toHaveLength(entry.primitive === "quest.create" ? 0 : 1);
+      expect(added).toBe(entry.primitive === "quest.create" ? 1 : entry.primitive === "quest.remove" ? -1 : 0);
       expectKoreanSentence(sentence, target);
       for (const check of entry.expect ?? []) {
         const value = readCheckPath(after, check.at);
