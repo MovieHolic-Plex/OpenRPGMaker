@@ -8,6 +8,7 @@ import { SMALL_TASK_SCOPE_REFUSAL } from "../src/editor/smallTask/tools.ts";
 import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { createBlankProject } from "../src/project/defaults/blankProject.ts";
 import { eventCommandHash } from "../src/project/eventCommands/singleCommandOps.ts";
+import { layerTileAt } from "../src/project/mapLayers.ts";
 import type { Command, EventPage } from "../src/project/types.ts";
 
 type Call = { name: string; args: Record<string, unknown> };
@@ -39,6 +40,18 @@ function scripted(calls: readonly Call[], seen: ModelContext[] = []): StreamFn {
 function fixture() {
   const project = createBlankProject();
   const mapId = project.startMapId;
+  const map = project.maps[mapId];
+  map.tilesetId = "tileset_test";
+  map.lowerTiles.fill(0);
+  project.tilesets = {
+    [map.tilesetId]: {
+      id: map.tilesetId, name: "검수 타일셋", image: { type: "bundled", id: "tex_default_tiles" }, kind: "custom",
+      tileSize: map.tileSize, tilesPerRow: 1, count: 1, priority: ["lower"], terrain: [0],
+      passability: [{ up: true, down: true, left: true, right: true }],
+    },
+  };
+  project.assets = { sprites: {}, uploaded: {} };
+  project.resourceProfiles = [];
   const commands: Command[] = ["처음", "둘째", "마지막"].map(body => ({ kind: "text", body }));
   const page: EventPage = {
     id: "page_selected", name: "인사", commands, conditions: [], graphic: {}, trigger: { kind: "action" },
@@ -46,7 +59,7 @@ function fixture() {
   };
   const event = { id: "event_selected", name: "안내인", x: 2, y: 3, trigger: page.trigger, commands: [],
     pages: [{ ...page, id: "page_other" }, page] };
-  project.maps[mapId].events = [event, { ...event, id: "event_other" }];
+  map.events = [event, { ...event, id: "event_other" }];
   const target = mapTarget(project, mapId, event.id, page.id)!;
   const request = {
     provider: "google-antigravity", mode: "single", task: "안내인의 대사를 정리해 줘", project, mapIds: [mapId],
@@ -94,10 +107,10 @@ test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", 
 });
 
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {
-  const { request, project } = fixture();
+  const { request, project, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
-    apply("cmd.delete", { index: 0 }),
-    apply("cmd.move", { index: 0, toIndex: 2 }),
+    apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(commands[0]!) }),
+    apply("cmd.move", { index: 0, toIndex: 2, expectedHash: eventCommandHash(commands[1]!) }),
   ]) });
 
   expect(done.stoppedEarly).toContain("도착 위치를 찾을 수 없어요");
@@ -106,10 +119,61 @@ test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 �
   expect(done.project).toBe(project);
 });
 
-test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기까지 버린다", async () => {
+for (const [id, extra] of [["cmd.delete", {}], ["cmd.move", { toIndex: 0 }]] as const) {
+  test(`${id}: 앞선 삭제로 줄이 밀린 뒤 해시 누락과 불일치를 거절한다`, async () => {
+    const { request, project, commands } = fixture();
+    for (const [hashArg, reason] of [
+      [{}, "동작에 필요한 값의 형식을 확인해 주세요."],
+      [{ expectedHash: eventCommandHash(commands[1]!) }, "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요."],
+    ] as const) {
+      const done = await runPiAgent(request, { streamFn: scripted([
+        apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(commands[0]!) }),
+        apply(id, { index: 1, ...extra, ...hashArg }),
+      ]) });
+      expect(done.stoppedEarly).toBe(reason);
+      expect(done.stats).toMatchObject({ toolCalls: 2, toolErrors: 1 });
+      expect(done.changedKeys).toEqual([]);
+      expect(done.project).toBe(project);
+    }
+  });
+}
+
+test("작은 일 Pi 실행은 여러 페이지 중 고른 페이지가 없으면 삭제를 거절한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const target = mapTarget(project, mapId, event.id)!;
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, target } }, {
+    streamFn: scripted([apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(commands[0]!) })]),
+  });
+  expect(done.stoppedEarly).toBe("이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요.");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+});
+
+test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖의 타일 변경을 거절한다", async () => {
   const { request, project, mapId } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const selection = { rect: { x: 0, y: 0, w: 1, h: 1 } };
+  const selectedRequest = { ...request, smallTask: { ...request.smallTask, target, selection } };
+  const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
+  const outside = await runPiAgent(selectedRequest, { streamFn: scripted([paint(0), paint(1)]) });
+  expect(outside.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 0 });
+  expect(outside.changedKeys).toEqual([]);
+  expect(outside.project).toBe(project);
+  expect(layerTileAt(project.maps[mapId], 2, 0)).toBe(-1);
+  expect(layerTileAt(project.maps[mapId], 2, 1)).toBe(-1);
+
+  const inside = await runPiAgent(selectedRequest, { streamFn: scripted([paint(0)]) });
+  expect(inside.stoppedEarly).toBeUndefined();
+  expect(inside.changedKeys).toEqual([`maps.${mapId}`]);
+  expect(layerTileAt(inside.project.maps[mapId], 2, 0)).toBe(0);
+  expect(layerTileAt(inside.project.maps[mapId], 2, 1)).toBe(-1);
+});
+
+test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기까지 버린다", async () => {
+  const { request, project, mapId, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
-    apply("cmd.delete", { index: 0 }),
+    apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(commands[0]!) }),
     { name: "get_event", args: { mapId, eventId: "event_other" } },
   ]) });
   expect(done.stoppedEarly).toBe(SMALL_TASK_SCOPE_REFUSAL);
@@ -119,9 +183,9 @@ test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기
 });
 
 test("작은 일 동작도 호출 상한에 포함하고 상한을 넘으면 앞선 쓰기를 버린다", async () => {
-  const { request, project } = fixture();
+  const { request, project, commands } = fixture();
   const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, maxToolCalls: 1 } }, { streamFn: scripted([
-    apply("cmd.delete", { index: 0 }),
+    apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(commands[0]!) }),
     { name: LIST_SMALL_TASK_PRIMITIVES, args: {} },
   ]) });
   expect(done.stoppedEarly).toContain("작업 수를 넘었어요");
