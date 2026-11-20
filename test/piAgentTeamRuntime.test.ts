@@ -41,7 +41,7 @@ async function callTool(tools: readonly PiToolShape[], name: string, params: unk
   const tool = tools.find((candidate) => candidate.name === name);
   if (!tool) throw new Error(`팀장 툴 '${name}' 이 없다. 있는 것: ${tools.map((t) => t.name).join(", ")}`);
   const result = await tool.execute("call", params);
-  return JSON.parse(result.content[0]!.text) as Record<string, unknown>;
+  return JSON.parse(result.content.find(part => part.type === "text")!.text) as Record<string, unknown>;
 }
 
 /** 맵 이름을 바꿔 "이 팀원이 이 맵에서 일했다"는 흔적을 남기는 시공 결과. */

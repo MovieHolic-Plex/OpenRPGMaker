@@ -29,7 +29,7 @@ describe("Pi checkpoints while background rendering and timers are stalled", { t
     let stream: ReadableStreamDefaultController<Uint8Array>;
     const emit = (event: unknown) => stream.enqueue(new TextEncoder().encode(JSON.stringify(event) + "\n"));
     const checkpoint = (id: string) => emit({ type: "checkpoint", checkpointId: id, toolName: "rename_map", label: id, project });
-    const fetchImpl: typeof fetch = async (input, init) => {
+    const fetchImpl = Object.assign(async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
       if (String(input).includes("/checkpoint")) {
         const response = new Response(init?.body as BodyInit);
         const body = new Headers(init?.headers).get("content-encoding") === "gzip"
@@ -48,7 +48,7 @@ describe("Pi checkpoints while background rendering and timers are stalled", { t
         stream = controller;
         checkpoint("first");
       } }));
-    };
+    }, { preconnect: vi.fn() });
     const applied: string[] = [];
     await runPiAgentViaCompanion({ provider: "google-antigravity", task: "background", mapIds: [], project }, {
       fetchImpl, onCheckpoint: async event => { applied.push(event.checkpointId); return project; },

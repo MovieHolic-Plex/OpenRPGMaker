@@ -68,7 +68,7 @@ describe("history restore with shared asset dictionaries", () => {
     const before = store.getCurrent(), tileset = Object.values(before.tilesets)[0]!;
     const image = before.assets.uploaded.historyProbe;
     recordProjectSnapshot("rename project");
-    store.update(project => { project.meta.title = "renamed"; }, { label: "rename project" });
+    store.update(project => { project.meta.title = "renamed"; }, { scope: "project", label: "rename project" });
     expect(undoMapEdit()).toBe(true);
     expect(store.getCurrent().meta.title).toBe(before.meta.title);
     expect(redoMapEdit()).toBe(true);

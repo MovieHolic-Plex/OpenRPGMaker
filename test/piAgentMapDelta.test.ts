@@ -84,13 +84,13 @@ describe("piAgent mapDelta", () => {
   it("이벤트 추가·이동·삭제를 나른다", () => {
     const base = seed();
     base.maps.map_east!.events = [
-      { id: "ev_keep", x: 1, y: 1, trigger: "action", commands: [] },
-      { id: "ev_gone", x: 2, y: 2, trigger: "action", commands: [] },
+      { id: "ev_keep", x: 1, y: 1, trigger: { kind: "action" }, commands: [] },
+      { id: "ev_gone", x: 2, y: 2, trigger: { kind: "action" }, commands: [] },
     ];
     const after = clone(base);
     after.maps.map_east!.events = [
-      { id: "ev_keep", x: 4, y: 1, trigger: "action", commands: [] },
-      { id: "ev_new", x: 8, y: 8, trigger: "action", commands: [] },
+      { id: "ev_keep", x: 4, y: 1, trigger: { kind: "action" }, commands: [] },
+      { id: "ev_new", x: 8, y: 8, trigger: { kind: "action" }, commands: [] },
     ];
 
     const { deltas, shadow } = relay(clone(base.maps), after.maps);
@@ -140,7 +140,7 @@ describe("piAgent mapDelta", () => {
     const steps: Array<() => void> = [
       () => { ctx.project.maps.map_east!.lowerTiles[10] = 5; },
       () => { ctx.project.maps.map_east!.lowerTiles[11] = 5; ctx.project.maps.map_west!.upperTiles[0] = 6; },
-      () => { ctx.project.maps.map_east!.events.push({ id: "ev_a", x: 3, y: 3, trigger: "action", commands: [] }); },
+      () => { ctx.project.maps.map_east!.events.push({ id: "ev_a", x: 3, y: 3, trigger: { kind: "action" }, commands: [] }); },
     ];
     for (const step of steps) {
       step();
