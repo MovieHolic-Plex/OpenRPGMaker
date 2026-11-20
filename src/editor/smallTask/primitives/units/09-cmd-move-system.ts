@@ -85,8 +85,8 @@ const specs = {
       eventId: text("같은 맵 이벤트 식별자. 빈 값은 이 이벤트, @player는 주인공"),
       direction: choice("걷는 단계의 방향. 위, 오른쪽, 아래, 왼쪽", directions),
       steps: integer("한 방향 걷기로 된 경로의 걸음 수. 여러 동작이 섞인 경로는 방향만 수정 가능", 1, 100),
-      wait: toggle("걷기가 끝날 때까지 다음 명령 대기"),
-      repeat: toggle("이동 경로 반복"),
+      wait: toggle("걷기가 끝날 때까지 다음 명령 대기. 반복하지 않는 경로에서만 사용"),
+      repeat: toggle("이동 경로 반복. 완료 대기와 함께 사용할 수 없음"),
       skippable: toggle("막힌 걸음 건너뛰기"),
     },
   },
@@ -158,6 +158,9 @@ function resolveEdit(page: EventPage, args: Args, kind: Kind, edit: Edit) {
 
 function moveRoute(base: Move, fields: Args): Move {
   const { direction, steps, wait, repeat, skippable, ...target } = fields;
+  if ((wait === true || repeat === true) && (wait ?? base.route.wait) && (repeat ?? base.route.repeat)) {
+    throw new PrimitiveError("반복 이동과 완료 대기를 함께 켤 수 없습니다.");
+  }
   let moves = base.route.moves;
   const dir = direction as (typeof directions)[number] | undefined;
   if (steps !== undefined || (dir !== undefined && moves.length === 0)) {
@@ -300,13 +303,15 @@ function validateReferences(
 
   if (kind === "transfer" || kind === "changeTile") {
     const map = project.maps[command.mapId]!;
-    if (!Number.isSafeInteger(command.x) || !Number.isSafeInteger(command.y) || !inBounds(map, command.x, command.y)) {
-      throw new PrimitiveError("지정한 칸을 맵에서 찾을 수 없습니다.");
-    }
-    const sameLanding = current?.kind === "transfer"
+    const sameLanding = kind === "transfer" && current?.kind === "transfer"
       && command.mapId === current.mapId && command.x === current.x && command.y === current.y;
-    if (kind === "transfer" && !sameLanding && !isPassableLanding(project, map, command.x, command.y)) {
-      throw new PrimitiveError("도착 칸에서 걸어 나갈 수 없습니다.");
+    if (!sameLanding) {
+      if (!Number.isSafeInteger(command.x) || !Number.isSafeInteger(command.y) || !inBounds(map, command.x, command.y)) {
+        throw new PrimitiveError("지정한 칸을 맵에서 찾을 수 없습니다.");
+      }
+      if (kind === "transfer" && !isPassableLanding(project, map, command.x, command.y)) {
+        throw new PrimitiveError("도착 칸에서 걸어 나갈 수 없습니다.");
+      }
     }
     if (kind === "changeTile" && command.tile !== -1 && command.tile >= (getTileset(project, map)?.count ?? 0)) {
       throw new PrimitiveError("대상 맵의 타일셋에서 그 타일을 찾을 수 없습니다.");

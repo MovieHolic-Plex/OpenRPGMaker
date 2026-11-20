@@ -278,6 +278,39 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
     await expectUndoRestores(before, after, target);
   });
 
+  it("맵이 줄어든 뒤 화면 전환만 고칠 수 있고 새 착지는 범위를 확인한다", () => {
+    const command: Command = { kind: "transfer", mapId, x: 5, y: 2, fade: "black" };
+    const { before: original, target } = sample("blank", [command]);
+    const map = original.maps[mapId]!;
+    const tileset = original.tilesets[map.tilesetId]!;
+    const resized = createBlankMap(map.name, 5, map.height, tileset.id, tileset.tileSize, tileset);
+    const before: Project = {
+      ...original,
+      maps: { ...original.maps, [mapId]: { ...resized, id: mapId, events: map.events } },
+    };
+    const args = { index: 0, expectedHash: eventCommandHash(command), fade: "white" };
+    const { after } = runPrimitive(before, target, "cmd.transfer.update", args);
+    expect(stored(after)).toStrictEqual([{ ...command, fade: "white" }]);
+    expect(() => runPrimitive(before, target, "cmd.transfer.update", { ...args, y: 3 }))
+      .toThrow("지정한 칸을 맵에서 찾을 수 없습니다");
+    const moved = runPrimitive(before, target, "cmd.transfer.update", { ...args, x: 3 });
+    expect(stored(moved.after)).toStrictEqual([{ ...command, x: 3, fade: "white" }]);
+  });
+
+  it("반복 경로에 완료 대기를 함께 켜는 새 삽입과 수정을 거절한다", () => {
+    const command: Command = {
+      kind: "moveEvent", eventId: "", route: { moves: [{ kind: "move", dir: "right" }], repeat: false, wait: true },
+    };
+    const { before, target } = sample("blank", [command]);
+    const reason = "반복 이동과 완료 대기를 함께 켤 수 없습니다";
+    expect(() => runPrimitive(before, target, "cmd.moveEvent.insert", { repeat: true, wait: true })).toThrow(reason);
+    const args = { index: 0, expectedHash: eventCommandHash(command), repeat: true };
+    expect(() => runPrimitive(before, target, "cmd.moveEvent.update", args)).toThrow(reason);
+    const { after } = runPrimitive(before, target, "cmd.moveEvent.update", { ...args, wait: false });
+    expect(stored(after)).toStrictEqual([{ ...command, route: { ...command.route, repeat: true, wait: false } }]);
+    expect(stored(before)).toStrictEqual([command]);
+  });
+
   it("착지를 다른 칸으로 보정하지 않고 막힌 칸을 거절한다", () => {
     const { before: original, target } = sample("blank");
     expect(isPassableLanding(original, original.maps[mapId]!, 2, 2)).toBe(true);
@@ -411,6 +444,7 @@ describe("이동·시스템·엔딩 요청 코퍼스", () => {
       const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
       if (entry.expectRefusal) {
         expect(apply).toThrow(PrimitiveError);
+        if (entry.refusalMessage) expect(apply).toThrow(new RegExp(entry.refusalMessage, "u"));
         return;
       }
       const { after, sentence } = apply();
