@@ -3,7 +3,7 @@ import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
 import {
   BATTLE_DEFEAT_BRANCH_INDEX, BATTLE_ESCAPE_BRANCH_INDEX, BATTLE_VICTORY_BRANCH_INDEX,
-  PROMOTE_FAILURE_BRANCH_INDEX, PROMOTE_SUCCESS_BRANCH_INDEX, resolveCommandListAtPath,
+  PROMOTE_FAILURE_BRANCH_INDEX, PROMOTE_SUCCESS_BRANCH_INDEX, resolveCommandAtPath, resolveCommandListAtPath,
 } from "@/editor/eventCommandPaths";
 import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
@@ -36,6 +36,8 @@ const choice = (description: string, values: readonly string[]): JsonSchema => (
 const troopId = text("자료집에서 찾은 적 무리의 식별값.");
 const level = { ...integer("받는 몬스터의 레벨. 1부터 99까지.", 1), maximum: 99 };
 const nickname = text("받는 몬스터의 별명. 빈 문자열을 보내면 별명을 지웁니다.", 0);
+// The player creates every live enemy and its event synchronously.
+const MAX_FIELD_SPAWN_ALIVE = 64;
 
 const specs = {
   giveMonster: {
@@ -64,7 +66,7 @@ const specs = {
       y: integer("출현 영역 위쪽 칸. 첫 칸은 0.", 0),
       w: integer("출현 영역 너비의 칸 수.", 1),
       h: integer("출현 영역 높이의 칸 수.", 1),
-      maxAlive: { ...integer("동시에 출현할 최대 마릿수.", 1), maximum: Number.MAX_SAFE_INTEGER },
+      maxAlive: { ...integer(`동시에 출현할 최대 마릿수. 1부터 ${MAX_FIELD_SPAWN_ALIVE}까지.`, 1), maximum: MAX_FIELD_SPAWN_ALIVE },
       respawnSec: { type: "number", minimum: 0, maximum: Number.MAX_SAFE_INTEGER / 1000, description: "다시 나오기까지 기다리는 시간(초)." },
       chase: toggle("플레이어를 뒤쫓을지 여부."),
       locationId: text("선택한 맵의 이름 있는 구역 식별값. 비우면 사각형을 사용합니다.", 0),
@@ -173,6 +175,14 @@ function spawnPatch(ctx: PrimitiveContext, map: GameMap, current: Extract<Battle
   const h = (fields.h ?? (insert && !selected ? Math.min(base.h, map.height - y) : base.h)) as number;
   const area = insert || hasCoordinates ? { x, y, w, h } : spawn.area;
   if (insert || hasCoordinates || (fields.locationId === "" && spawn.locationId)) validateSpawnRect(map, area);
+  if (!insert && fields.maxAlive === undefined && (spawn.maxAlive ?? 0) > MAX_FIELD_SPAWN_ALIVE) {
+    const regionChanged = (locationId || undefined) !== (spawn.locationId || undefined) ||
+      x !== spawn.area.x || y !== spawn.area.y || w !== spawn.area.w || h !== spawn.area.h;
+    const effectiveArea = location ? locationRect(location) : area;
+    if (regionChanged && effectiveArea.w * effectiveArea.h > MAX_FIELD_SPAWN_ALIVE) {
+      throw new PrimitiveError(`이 출현 영역을 바꾸려면 동시 출현 마릿수를 ${MAX_FIELD_SPAWN_ALIVE} 이하로 지정해 주세요.`);
+    }
+  }
   let id = (fields.spawnId ?? spawn.id) as string;
   if (insert || id !== spawn.id) {
     if (!id.trim() || id !== id.trim()) throw new PrimitiveError("출현 이름을 입력하고 앞뒤 공백을 지워 주세요.");
@@ -196,9 +206,12 @@ function spawnPatch(ctx: PrimitiveContext, map: GameMap, current: Extract<Battle
     if (mode === "update") {
       if (referenced || battlePagesReferenceSpawn(ctx.project, spawn.id) ||
         referencesSpawn(ctx.project, map, spawn.id, spawnEventIdPart(spawn.id) !== spawnEventIdPart(id))) {
-        throw new PrimitiveError("다른 명령이나 조건에서 이 출현 이름을 쓰고 있어 바꿀 수 없습니다.");
+        throw new PrimitiveError("이 출현 이름을 쓰는 명령이나 조건이 있거나 스크립트 참조를 확인할 수 없어 이름을 바꿀 수 없습니다.");
       }
-      if (spawn.persistKill) throw new PrimitiveError("처치 수를 저장하는 출현은 기존 기록을 이어가도록 이름을 유지해야 합니다.");
+      // Disabling persistence keeps the explicit false. Old saves still look up kills by this ID.
+      if (spawn.persistKill !== undefined) {
+        throw new PrimitiveError("처치 수 저장을 설정한 출현은 기존 기록을 이어가도록 이름을 유지해야 합니다.");
+      }
     }
   }
   const next = { ...spawn, id, area };
@@ -221,17 +234,13 @@ function referencesSpawn(project: Project, map: GameMap, spawnId: string, eventI
   const matchesId = (id: string) => eventIdChanges && id.startsWith(prefix) && /^\d+$/u.test(id.slice(prefix.length));
   if (Object.keys(project.session.selfSwitches ?? {}).some(matchesId)) return true;
 
-  // An id can also be embedded in a script without saved reference metadata.
-  const scriptId = new RegExp(`(?<![a-zA-Z0-9_-])${prefix}[0-9]+(?![a-zA-Z0-9_-])`, "u");
-  const scriptReferencesSpawn = (source: string) => (eventIdChanges && scriptId.test(source)) ||
-    (source.includes("despawnFieldEnemy") &&
-      [JSON.stringify(spawnId), `'${spawnId}'`, `\`${spawnId}\``].some(literal => source.includes(literal)));
   function containsReference(value: unknown): boolean {
     if (typeof value === "string") return matchesId(value);
     if (value === null || typeof value !== "object") return false;
     const entry = value as Record<string, unknown>;
-    if (typeof entry.compiled === "string" && (scriptReferencesSpawn(entry.compiled) ||
-      (typeof entry.source === "string" && scriptReferencesSpawn(entry.source)))) return true;
+    // game.cmd can compute both the command kind and the raw or generated ID at runtime.
+    // Script effects do not record spawn IDs, so keep the ID if executable code can reach this map.
+    if (typeof entry.compiled === "string" && entry.compiled.trim()) return true;
     return Object.values(entry).some(containsReference);
   }
   return containsReference([
@@ -385,6 +394,17 @@ function canCreateBranch(page: EventPage, path: number[]): boolean {
   return Boolean(parent && eventCommandBranches(parent).some(branch => branch.branchIndex === path.at(-1)));
 }
 
+function requireActiveBattleBranches(page: EventPage, path: readonly number[]): void {
+  for (let depth = 0; depth < path.length; depth += 2) {
+    const branch = path[depth + 1];
+    if (branch !== BATTLE_VICTORY_BRANCH_INDEX && branch !== BATTLE_DEFEAT_BRANCH_INDEX && branch !== BATTLE_ESCAPE_BRANCH_INDEX) continue;
+    const parent = resolveCommandAtPath(page.commands, path.slice(0, depth + 1));
+    if (parent?.kind === "battleProcessing" && parent.branchOnResult !== true) {
+      throw new PrimitiveError("이 전투의 결과 분기를 먼저 켠 뒤 분기 안의 명령을 고쳐 주세요.");
+    }
+  }
+}
+
 function validateBranchTarget(page: EventPage, list: Command[], path: number[], createBranch: boolean): void {
   if (!path.length) return;
   // Cloning a page preserves shared arrays and rows. Editing a shared branch would edit both paths.
@@ -410,6 +430,7 @@ function prepare(ctx: PrimitiveContext, kind: Kind, mode: Mode, args: Args) {
     throw new PrimitiveError(`병렬 실행 페이지에서는 ‘${spec.title}’ 명령이 실행되지 않습니다. 다른 페이지를 골라 주세요.`);
   }
   const branchPath = (args.branchPath ?? []) as number[];
+  requireActiveBattleBranches(page, branchPath);
   const createBranch = mode === "insert" && !resolveCommandListAtPath(page.commands, [...branchPath, 0]) && canCreateBranch(page, branchPath);
   const list = createBranch ? [] : commandListAt(page, branchPath);
   validateBranchTarget(page, list, branchPath, createBranch);
