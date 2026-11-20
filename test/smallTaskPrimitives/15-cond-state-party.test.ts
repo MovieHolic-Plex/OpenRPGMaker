@@ -3,16 +3,19 @@ import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
+import { SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES, buildConditionAny, buildConditionNot } from "@/editor/smallTask/primitives/units/15-cond-state-party";
 import { createInterpreter } from "@/player/interpreter";
 import { findFacedItemTarget } from "@/player/itemUseOnTarget";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
-import type { Condition, ConditionCompareOp, EventPage, GameEvent, Project } from "@/project/types";
+import type { Condition, ConditionCompareOp, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import corpus from "../../harness-data/small-task-corpus/15-cond-state-party.json";
 import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
@@ -36,9 +39,25 @@ function getPage(event: GameEvent, id: string): EventPage {
   return page;
 }
 
+function withTestMap(project: Project, map: GameMap): Project {
+  return { ...project, maps: { ...project.maps, [map.id]: map } };
+}
+
+function withTestEvent(project: Project, event: GameEvent): Project {
+  const map = project.maps[mapId];
+  return withTestMap(project, { ...map, events: map.events.map(entry => entry.id === event.id ? event : entry) });
+}
+
+function loadSourceFixture(fixture: "built" | "maou"): Project {
+  const project = loadFixture(fixture);
+  ensureSwitchVariableSlots(project);
+  removeLegacySpriteReferences(project);
+  return project;
+}
+
 const sourceFixtures = {
-  built: Promise.resolve().then(() => loadFixture("built")),
-  maou: Promise.resolve().then(() => loadFixture("maou")),
+  built: Promise.resolve().then(() => loadSourceFixture("built")),
+  maou: Promise.resolve().then(() => loadSourceFixture("maou")),
 };
 
 it.each(PRIMITIVES)("저장값과 한 번 되돌리기 확인 · $id", async primitive => {
@@ -206,9 +225,9 @@ it("기존 스위치를 보존하고 다른 스위치를 추가하며 재호출�
   const oldCondition = { kind: "switch", switchId, value: true } as const;
   const { before, selection } = await blankPage([oldCondition]);
   const nextId = "sw_condition_reward";
-  before.switches.push({ id: nextId, name: "보상 허용" });
+  const project = { ...before, switches: [...before.switches, { id: nextId, name: "보상 허용" }] };
   const args = { switchId: nextId, value: true };
-  const { after } = runPrimitive(before, selection, "cond.switch.page.set", args);
+  const { after } = runPrimitive(project, selection, "cond.switch.page.set", args);
   expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([oldCondition, { kind: "switch", ...args }]);
   givesReward(after, { switches: { [nextId]: true }, variables: {} }, false);
   givesReward(after, { switches: { [switchId]: true, [nextId]: true }, variables: {} }, true);
@@ -219,13 +238,16 @@ it("기존 스위치를 보존하고 다른 스위치를 추가하며 재호출�
 
 it("조건 적용을 되돌리면 저장하지 않은 수동 이벤트 편집을 복원한다", async () => {
   const { before, selection } = await blankPage();
-  const event = getEvent(before, mapId, eventId);
-  const original = structuredClone(event);
-  event.draft = { kind: "edit", original };
-  getPage(event, pageId).commands.push({ kind: "text", body: "저장하지 않은 대사" });
-  const working = structuredClone(event);
+  const original = getEvent(before, mapId, eventId);
+  const working: GameEvent = {
+    ...original,
+    draft: { kind: "edit", original },
+    pages: original.pages?.map(page => page.id === pageId
+      ? { ...page, commands: [...page.commands, { kind: "text", body: "저장하지 않은 대사" }] }
+      : page),
+  };
 
-  store.replaceProject(before);
+  store.replaceProject(withTestEvent(before, working));
   resetMapEditHistory();
   try {
     const live = store.getCurrent();
@@ -260,28 +282,46 @@ it("선택한 맵의 키와 레코드 ID가 달라지면 다른 맵의 페이지
   expect(getPage(getEvent(inconsistent, otherMapId, eventId), pageId).conditions).toEqual([]);
 });
 
-it("페이지가 지정되지 않았거나 하나로 확인되지 않으면 같은 이벤트의 다른 페이지를 고치지 않는다", async () => {
+it("여러 페이지에서 선택이 빠지거나 페이지 ID가 모호하면 조건을 고치지 않는다", async () => {
   const { before, selection } = await blankPage();
   const event = getEvent(before, mapId, eventId);
   const page = getPage(event, pageId);
-  expectRefused(before, { ...selection, pageId: undefined }, "cond.gold.page.set", { amount: 10 });
+  const eventOnly = eventTarget(before, mapId, eventId);
+  expect(() => runPrimitive(before, eventOnly, "cond.gold.page.set", { amount: 10 })).toThrow(SELECT_EVENT_PAGE);
   expectRefused(before, { ...selection, pageId: "missing_page" }, "cond.gold.page.set", { amount: 10 });
-  event.pages!.push({ ...page, name: "같은 ID의 다른 페이지" });
-  const snapshot = structuredClone(event.pages);
-  expectRefused(before, selection, "cond.gold.page.set", { amount: 10 });
-  expect(event.pages).toEqual(snapshot);
+  const duplicate = { ...event, pages: [...event.pages!, { ...page, name: "같은 ID의 다른 페이지" }] };
+  const snapshot = structuredClone(duplicate.pages);
+  expectRefused(withTestEvent(before, duplicate), selection, "cond.gold.page.set", { amount: 10 });
+  expect(duplicate.pages).toEqual(snapshot);
+});
+
+it("페이지가 하나인 이벤트는 이벤트만 선택해도 그 페이지의 조건을 바꾼다", async () => {
+  const { before } = await blankPage();
+  const event = getEvent(before, mapId, eventId);
+  const page = getPage(event, pageId);
+  const project = withTestEvent(before, { ...event, pages: [page] });
+  const selection = eventTarget(project, mapId, eventId);
+  const { after } = runPrimitive(project, selection, "cond.gold.page.set", { amount: 10 });
+  expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([{ kind: "gold", op: ">=", amount: 10 }]);
+  expect(page.conditions).toEqual([]);
 });
 
 it("페이지 조건을 제거해도 다른 페이지와 명령의 중첩 조건 분기를 보존한다", async () => {
   const condition: Condition = { kind: "item", itemId: keyId, present: true };
   const { before, selection } = await blankPage([condition]);
-  const original = getEvent(before, mapId, eventId);
-  const page = getPage(original, pageId);
-  page.commands = [{ kind: "fork", condition, then: page.commands, else: [{ kind: "wait", ms: 1000 }] }];
+  const event = getEvent(before, mapId, eventId);
+  const original: GameEvent = {
+    ...event,
+    pages: event.pages?.map(page => page.id === pageId ? {
+      ...page,
+      commands: [{ kind: "fork", condition, then: page.commands, else: [{ kind: "wait", ms: 1000 }] }],
+    } : page),
+  };
   const snapshot = structuredClone(original);
+  const project = withTestEvent(before, original);
 
-  expect(() => runPrimitive(before, selection, "cond.page.remove", { conditionNumber: 1, branchPath: [0, 1] })).toThrow("형식");
-  const { after } = runPrimitive(before, selection, "cond.page.remove", { conditionNumber: 1 });
+  expect(() => runPrimitive(project, selection, "cond.page.remove", { conditionNumber: 1, branchPath: [0, 1] })).toThrow("형식");
+  const { after } = runPrimitive(project, selection, "cond.page.remove", { conditionNumber: 1 });
   expect(original).toEqual(snapshot);
   expect(getEvent(after, mapId, eventId)).toEqual({ ...snapshot, pages: [snapshot.pages![0], { ...snapshot.pages![1], conditions: [] }] });
 });
@@ -305,19 +345,22 @@ it.each<{ condition: Condition; reason: RegExp }>([
 it("시야 선택의 모든 칸에 일치하는 감시자가 있을 때만 반전할 수 있다", async () => {
   const condition: Condition = { kind: "eventSeesPlayer", eventId: "", watchers: { name: "경비", characterId: "guard", locationId: "room" } };
   const { before, selection } = await blankPage([condition]);
-  const map = before.maps[mapId];
-  map.locations = [{ id: "room", name: "경비실", x: 2, y: 2, w: 4, h: 4 }];
   const guard: GameEvent = { id: "guard_event", name: "문 앞 경비", characterId: "guard", x: 0, y: 0, commands: [], trigger: { kind: "action" } };
+  const original = before.maps[mapId];
+  const map: GameMap = {
+    ...original,
+    locations: [{ id: "room", name: "경비실", x: 2, y: 2, w: 4, h: 4 }],
+    events: [...original.events, guard, { ...guard, id: "fake_guard", characterId: "merchant", x: 2, y: 4 }],
+  };
+  const project = withTestMap(before, map);
   const args = { conditionNumber: 1 };
-  map.events.push(guard, { ...guard, id: "fake_guard", characterId: "merchant", x: 2, y: 4 });
-  expectRefused(before, selection, "cond.not.page.set", args, /일치하는 감시 이벤트가 없어요/u);
+  expectRefused(project, selection, "cond.not.page.set", args, /일치하는 감시 이벤트가 없어요/u);
 
-  guard.x = 2;
-  guard.y = 4;
-  const { after } = runPrimitive(before, selection, "cond.not.page.set", args);
+  const movedGuard = { ...guard, x: 2, y: 4 };
+  const { after } = runPrimitive(withTestEvent(project, movedGuard), selection, "cond.not.page.set", args);
   const event = getEvent(after, mapId, eventId);
   const session = startSession(after, 15);
-  const context = { locations: map.locations, mapEvents: () => map.events, eventPosition: () => guard };
+  const context = { locations: map.locations, mapEvents: () => after.maps[mapId].events, eventPosition: () => movedGuard };
   expect(resolveEventPage(event, session, context)?.id).toBe("fallback");
   session.x = 7;
   session.y = 7;
@@ -339,12 +382,14 @@ it("다른 맵에서 올 수 있는 이벤트가 지정된 추격 조건은 묶�
 it("중첩 명령에서 생성할 이벤트가 지정된 시야 조건은 묶을 수 있다", async () => {
   const condition: Condition = { kind: "eventSeesPlayer", eventId: "ev_condition_test_spawn" };
   const { before, selection } = await blankPage([condition]);
-  const page = getPage(getEvent(before, mapId, eventId), pageId);
-  page.commands.push({
+  const event = getEvent(before, mapId, eventId);
+  const original = getPage(event, pageId);
+  const page: EventPage = { ...original, commands: [...original.commands, {
     kind: "fork", condition: { kind: "switch", switchId, value: true },
     then: [{ kind: "m2Command", commandId: "m2-203-spawn-event", fields: { templateEventId: eventId, x: 2, y: 3 } }],
-  });
-  const { after } = runPrimitive(before, selection, "cond.not.page.set", { conditionNumber: 1 });
+  }] };
+  const project = withTestEvent(before, { ...event, pages: event.pages?.map(entry => entry === original ? page : entry) });
+  const { after } = runPrimitive(project, selection, "cond.not.page.set", { conditionNumber: 1 });
   expect(getPage(getEvent(after, mapId, eventId), pageId)).toEqual({ ...page, conditions: [{ kind: "not", condition }] });
 });
 

@@ -11,6 +11,7 @@ import { findLocationById } from "@/project/mapNamedLocations";
 import { sightWatcherIds, watchersHaveSelector } from "@/project/sightWatchers";
 import type { Condition, ConditionCompareOp, EventPage, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { scopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import * as build from "./15-cond-state-party/builders";
@@ -84,11 +85,13 @@ function schema(properties: Record<string, JsonSchema>, required: readonly strin
   };
 }
 
-function pageScope({ target }: PrimitiveContext) {
-  if (target.kind !== "event" || !target.pageId) {
+function pageScope(ctx: PrimitiveContext) {
+  const { target } = ctx;
+  if (target.kind !== "event") {
     throw new PrimitiveError("범위 밖입니다. 먼저 이벤트 페이지를 선택하세요.");
   }
-  return { kind: "eventPage" as const, field: "conditions" as const, mapId: target.mapId, eventId: target.eventId, pageId: target.pageId };
+  const pageId = target.pageId ?? scopedPage(ctx).page.id;
+  return { kind: "eventPage" as const, field: "conditions" as const, mapId: target.mapId, eventId: target.eventId, pageId };
 }
 
 function locatePage(ctx: PrimitiveContext) {
