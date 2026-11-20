@@ -271,28 +271,32 @@ function labelInCommandPath(commands: Command[], path: number[], name: string): 
   return false;
 }
 
-function requiredCallerLabels(project: Project, roots: readonly (readonly Command[])[]): Set<string> {
+function requiredCallerLabels(
+  project: Project, rootsForMap: (map: GameMap) => readonly (readonly Command[])[],
+): Set<string> {
   const names = new Set<string>();
-  const seenLabels = new Map<readonly Command[], ReadonlySet<string>>();
-  const visit = (list: readonly Command[], ancestors: ReadonlySet<string>): void => {
-    const visible = new Set(ancestors);
-    for (const command of list) if (command.kind === "label") visible.add(command.name);
-    // A path only adds new requirements if it lacks a label every prior path provided.
-    const previous = seenLabels.get(list);
-    if (previous && [...previous].every(name => visible.has(name))) return;
-    seenLabels.set(list, previous ? new Set([...previous].filter(name => visible.has(name))) : visible);
-    for (const command of list) {
-      if (command.kind === "gotoLabel" && !visible.has(command.name)) names.add(command.name);
-      for (const child of [...nestedCommandLists(command), ...calledCommandLists(project, command)]) visit(child, visible);
-    }
-  };
-  for (const root of roots) visit(root, new Set());
+  for (const map of Object.values(project.maps)) {
+    const seenLabels = new Map<readonly Command[], ReadonlySet<string>>();
+    const visit = (list: readonly Command[], ancestors: ReadonlySet<string>): void => {
+      const visible = new Set(ancestors);
+      for (const command of list) if (command.kind === "label") visible.add(command.name);
+      // A path only adds new requirements if it lacks a label every prior path provided on this map.
+      const previous = seenLabels.get(list);
+      if (previous && [...previous].every(name => visible.has(name))) return;
+      seenLabels.set(list, previous ? new Set([...previous].filter(name => visible.has(name))) : visible);
+      for (const command of list) {
+        if (command.kind === "gotoLabel" && !visible.has(command.name)) names.add(command.name);
+        for (const child of [...nestedCommandLists(command), ...calledCommandLists(project, command, map)]) visit(child, visible);
+      }
+    };
+    for (const root of rootsForMap(map)) visit(root, new Set());
+  }
   return names;
 }
 
 export function validateCommonEventTrigger(project: Project, event: CommonEvent, trigger: CommonEvent["trigger"]): void {
   if (event.trigger === "none" && trigger !== "none" &&
-    requiredCallerLabels(projectViewWithoutEventDrafts(project), [event.commands]).size > 0) {
+    requiredCallerLabels(projectViewWithoutEventDrafts(project), () => [event.commands]).size > 0) {
     throw new PrimitiveError("호출자의 라벨로 이동하는 명령이 있어 이 공용 이벤트를 자동 실행할 수 없습니다.");
   }
 }
@@ -305,8 +309,7 @@ export function validateCallEdit(project: Project, event: CommonEvent, path: num
     if (callee === undefined || (current && commonEventCallId(current) === callee)) return;
   }
   const committed = projectViewWithoutEventDrafts(project);
-  const roots = calledCommandLists(committed, command);
-  for (const name of requiredCallerLabels(committed, roots)) {
+  for (const name of requiredCallerLabels(committed, map => calledCommandLists(committed, command, map))) {
     if (labelInCommandPath(event.commands, path, name)) continue;
     const callers = callerLabels(committed, event, name);
     if (!callers.visible || callers.missing) {

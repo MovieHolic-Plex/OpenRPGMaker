@@ -310,6 +310,7 @@ describe("공용 이벤트", () => {
   it.each([
     { title: "분기 안의 호출", source: `await game.cmd({ kind: "loop", body: [{ kind: "callCommonEvent", commonEventId: "${eventId}" }] });`, reason: /가게 판매.*지울 수 없습니다/u },
     { title: "다른 이름으로 꺼낸 호출", source: `const call = game.callCommonEvent; await call("${eventId}");`, reason: /사용하는지 확인할 수 없습니다/u },
+    { title: "API를 담은 축약 속성", source: "const api = { game };", reason: /사용하는지 확인할 수 없습니다/u },
     { title: "계산된 명령", source: "await game.cmd(command);", reason: /사용하는지 확인할 수 없습니다/u },
   ])("스크립트의 $title이 기록에서 빠져도 삭제를 거부한다", ({ source, reason }) => {
     const project = seed();
@@ -320,9 +321,13 @@ describe("공용 이벤트", () => {
     expect(() => runOn(project, "commonEvent.remove", { commonEventId: eventId })).toThrow(reason);
   });
 
-  it("공용 이벤트를 부르지 않는 리터럴 game.cmd는 삭제를 허용한다", () => {
+  it.each([
+    { title: "일반 속성과 리터럴 game.cmd", source: `const labels = { game: "Game" };\nconst title = labels.game;\nawait game.cmd({ kind: "changeGold", op: "+=", amount: 1 });` },
+    { title: "객체 메서드 이름", source: `const labels = { game() { return "Game"; } };` },
+    { title: "객체 접근자 이름", source: `const labels = { get game() { return "Game"; } };` },
+    { title: "클래스 필드 이름", source: `class Labels { game = "Game"; }` },
+  ])("게임 API 호출을 숨기지 않는 $title 때문에 삭제가 막히지 않는다", ({ source }) => {
     const project = seed();
-    const source = `const labels = { game: "Game" };\nconst title = labels.game;\nawait game.cmd({ kind: "changeGold", op: "+=", amount: 1 });`;
     project.commonEvents.unshift({ ...commonEvent([{
       kind: "script", source, compiled: source, effects: { calls: [], reads: [], writes: [], dynamic: [] },
     }]), id: "ce_other" });
@@ -542,6 +547,38 @@ describe("공용 이벤트", () => {
     expect(() => runOn(project, "commonEvent.trigger.set", args)).toThrow("자동 실행할 수 없습니다");
     const localLabel = { ...project, commonEvents: [project.commonEvents[0], commonEvent([nestedCall, label])] };
     expect(runOn(localLabel, "commonEvent.trigger.set", args).after.commonEvents.at(-1)?.trigger).toBe("parallel");
+  });
+
+  it("호출 추가와 병렬 처리 전환에서 중첩 맵 이벤트의 라벨을 맵별로 검사한다", () => {
+    const label: Command = { kind: "label", name: "마무리" };
+    const outerCall = { kind: "callMapEvent", eventId: "ev_outer" } as const;
+    const innerCall = { kind: "callMapEvent", eventId: "ev_inner" } as const;
+    const outer = {
+      id: outerCall.eventId, x: 0, y: 0, trigger: { kind: "action" }, commands: [innerCall],
+    } satisfies GameEvent;
+    const inner = { ...outer, id: innerCall.eventId, commands: [gold] };
+    const project = seed([outerCall]);
+    const start = { ...project.maps[project.startMapId], events: [outer, inner] };
+    const other = {
+      ...createBlankMap("다른 맵", 3, 3),
+      id: "map_nested_call",
+      events: [
+        { ...outer, commands: [innerCall, label] },
+        { ...inner, commands: [{ kind: "gotoLabel", name: label.name }] },
+      ],
+    } satisfies Project["maps"][string];
+    project.maps = { [start.id]: start, [other.id]: other };
+    const setTrigger = (before: Project) => runOn(before, "commonEvent.trigger.set", { commonEventId: eventId, trigger: "parallel" });
+    const insertCall = (before: Project) => runOn({
+      ...before, commonEvents: [{ ...commonEvent(), trigger: "parallel" }],
+    }, "commonEvent.command.insert", { commonEventId: eventId, command: outerCall });
+
+    expect(setTrigger(project).after.commonEvents.at(-1)?.trigger).toBe("parallel");
+    expect(insertCall(project).after.commonEvents.at(-1)?.commands).toEqual([outerCall]);
+
+    const missingLabel = { ...project, maps: { [start.id]: start, [other.id]: { ...other, events: [outer, other.events[1]] } } };
+    expect(() => setTrigger(missingLabel)).toThrow("자동 실행할 수 없습니다");
+    expect(() => insertCall(missingLabel)).toThrow("이동 명령이 사용할 라벨을 찾을 수 없습니다");
   });
 
   it.each(["insert", "update"])("맵 이벤트의 라벨로 돌아가는 기존 이동을 가로채는 라벨 편집을 거부한다 (%s)", edit => {
