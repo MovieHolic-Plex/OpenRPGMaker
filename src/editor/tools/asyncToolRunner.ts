@@ -85,12 +85,16 @@ export async function runToolAsync(
       ...tool,
       run(draft, targetArgs) {
         const target = eventCommandAssistTarget(draft, targetArgs);
-        const wasCommands = structuredClone(target.page.commands);
+        const wasCommands = target.page.commands;
         if (result.scope === "append") {
+          // An event or another page can share the original command array, including nested lists.
+          const commands = structuredClone(wasCommands);
+          const addedCommands = structuredClone(result.commands);
           const selection = options.eventCommandScope?.selection;
-          const list = selection?.length ? resolveCommandListAtPath(target.page.commands, selection) : null;
-          if (list && selection) list.splice(selection[selection.length - 1] + 1, 0, ...structuredClone(result.commands));
-          else target.page.commands.push(...structuredClone(result.commands));
+          const list = selection?.length ? resolveCommandListAtPath(commands, selection) : null;
+          if (list && selection) list.splice(selection[selection.length - 1] + 1, 0, ...addedCommands);
+          else commands.push(...addedCommands);
+          target.page.commands = commands;
         } else target.page.commands = structuredClone(result.commands);
         // 결과를 말로 못 보면 모델은 성공한 편집 위에 다른 도구로 덮어쓴다(실측 2026-10-13). 무엇이 추가·제거됐는지 적어 준다.
         const label = (command: unknown): string => { const c = command as { kind?: string; commandId?: string }; return c.commandId ? `${c.kind}:${c.commandId}` : String(c.kind); };

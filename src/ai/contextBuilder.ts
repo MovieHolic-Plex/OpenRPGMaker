@@ -35,7 +35,7 @@ import { worldCanonPromptSection } from "./worldCanonContext";
 import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
-import type { EventCommandScope } from "./eventCommandScope";
+import { eventCommandScopeModeSchema, type EventCommandScope } from "./eventCommandScope";
 import { ASSISTANT_PRESENTATION_BLOCK } from "./eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
@@ -648,7 +648,7 @@ export function buildEventCommandSystemPrompt(project: Project, scope: EventComm
   const map = project.maps[scope.mapId];
   const event = map?.events.find(entry => entry.id === scope.eventId);
   const page = event?.pages?.find(entry => entry.id === scope.pageId);
-  const target = { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId, mode: scope.mode ?? "edit" };
+  const target = { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId };
   const pageContext = {
     mapName: map?.name,
     eventName: event?.name,
@@ -662,6 +662,7 @@ export function buildEventCommandSystemPrompt(project: Project, scope: EventComm
   return [
     "이벤트 편집기에서 지정한 한 페이지의 명령 초안을 만든다.",
     `event_command_assist를 바로 호출하세요. 대상 인자: ${JSON.stringify(target)}`,
+    eventCommandScopeModeSchema(scope).description,
     `현재 페이지 요약: ${JSON.stringify(pageContext)}`,
     "prompt에는 현재 사용자 요청을 그대로 전달하세요. 도구가 대상 페이지의 전체 명령과 프로젝트 리소스를 읽고 결과를 검증합니다.",
     "초안 생성에 성공하면 사용자가 이벤트 편집기에서 검토하고 적용할 수 있다고 짧게 안내하세요.",

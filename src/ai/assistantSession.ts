@@ -1,5 +1,5 @@
 import { captureActivityVisuals, type ActivityVisual } from "./activityVisual";
-import { EVENT_COMMAND_SCOPE_TOOLS, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
+import { EVENT_COMMAND_SCOPE_TOOLS, eventCommandScopeModeSchema, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
 import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
@@ -38,9 +38,9 @@ import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 import { BATTLE_BACKDROP_TOOL } from "@/editor/tools/battleBackdropTools";
 import { WALK_CHIP_TOOL } from "@/editor/tools/walkChipTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
-import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
+import { EVENT_COMMAND_ASSIST_TOOL, EVENT_COMMAND_ASSIST_TOOLS } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
-import { getTool, runTool } from "@/editor/tools";
+import { getTool, runTool, toOpenAiTools } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
@@ -106,7 +106,6 @@ import {
 } from "./conversationTurnContext";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
 import { buildSessionRegistryTools } from "./sessionToolExposure";
-import { toolSchemasForNames } from "./planToolExposure";
 import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
 import { isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
 import { resolveWorkingContextTokens } from "./messageBudget";
@@ -4851,10 +4850,15 @@ export class AssistantSession {
       // A discovery miss or neutral routing flips turnFullCatalogFallback and
       // restores the complete native catalog on the next round.
       const registryTools = eventScope
-        ? toolSchemasForNames(EVENT_COMMAND_SCOPE_TOOLS).map(tool => ({
+        ? toOpenAiTools(EVENT_COMMAND_ASSIST_TOOLS.map(tool => ({
           ...tool,
-          function: { ...tool.function, description: "이벤트 편집기에서 지정한 페이지의 명령 초안을 생성하고 검증한다. 대상 인자와 사용자 요청을 그대로 전달하세요." },
-        }))
+          description: "이벤트 편집기에서 지정한 페이지의 명령 초안을 생성하고 검증한다. 대상 ID와 사용자 요청을 그대로 전달하세요.",
+          parameters: {
+            ...tool.parameters,
+            properties: { ...tool.parameters.properties, mode: eventCommandScopeModeSchema(eventScope) },
+            required: eventScope.mode === "append" ? [...(tool.parameters.required ?? []), "mode"] : tool.parameters.required,
+          },
+        })))
         : [
           ...buildSessionRegistryTools({
             requestText: this.currentTurnInstruction,

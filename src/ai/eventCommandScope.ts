@@ -19,12 +19,19 @@ export function eventScopeAllowsTool(name: string): boolean {
   return EVENT_COMMAND_SCOPE_TOOLS.includes(name);
 }
 
+export function eventCommandScopeModeSchema(scope: EventCommandScope) {
+  return scope.mode === "append"
+    ? { type: "string" as const, enum: ["append"], description: "mode에 append를 명시하세요." }
+    : { type: "string" as const, enum: ["edit", "append"], description: "추가 요청은 mode에 append를 사용하세요. 생략하면 edit입니다." };
+}
+
 export function eventScopeRefusal(scope: EventCommandScope, name: string, args: Record<string, unknown>): ToolResult | null {
-  const mode = scope.mode ?? "edit";
+  const mode = eventCommandScopeModeSchema(scope);
+  const requestedMode = args.mode === undefined ? "edit" : args.mode;
   if (eventScopeAllowsTool(name) && args.mapId === scope.mapId && args.eventId === scope.eventId
-    && args.pageId === scope.pageId && (args.mode ?? "edit") === mode) return null;
-  const target = { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId, mode };
-  const summary = `이 요청에서는 지정한 이벤트 페이지의 명령만 수정할 수 있습니다. event_command_assist에 ${JSON.stringify(target)}와 사용자 요청(prompt)을 넣어 다시 호출하세요.`;
+    && args.pageId === scope.pageId && mode.enum.some(value => value === requestedMode)) return null;
+  const target = { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId };
+  const summary = `이 요청에서는 지정한 이벤트 페이지의 명령만 수정할 수 있습니다. event_command_assist에 ${JSON.stringify(target)}와 사용자 요청(prompt)을 넣어 다시 호출하세요. ${mode.description}`;
   return { ok: false, summary, issues: [{ severity: "error", code: "event-page-scope", message: summary }] };
 }
 
