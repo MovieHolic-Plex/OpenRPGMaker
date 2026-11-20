@@ -551,6 +551,6 @@ No image-generation output and no third-party art other than the Scarloxy chip b
 
 ## Beodeul placeable objects
 
-- Files: the 610 placeable PNGs in [the Beodeul catalog](beodeul-objects/catalog.json) that passed the 2026-11-21 버들항-grade re-audit (52 connecting tiles from #4877, plus 169 + 134 + 255 standalone city props). Each entry records the approved source filename.
+- Files: the 741 placeable PNGs in [the Beodeul catalog](beodeul-objects/catalog.json): 610 that passed the 2026-11-21 버들항-grade re-audit (52 connecting tiles from #4877, plus 169 + 134 + 255 standalone city props) and 131 base placeable props from #4849. Each entry records the approved source filename. The existing Beodeul reference illustrations are under `beodeul-object-references/`.
 - Artwork: OPRN Studio · ChatGPT dots, in the Beodeul style.
 - License: OPRN-GAME ([OPRN Game Use License](../../ASSET-LICENSE.md)).

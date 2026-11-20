@@ -2,6 +2,7 @@
 // 구조 킷 순수 변환 계층 — 감지 패턴 ↔ 저장 스키마 ↔ 팔레트 스탬프. store 의존 없음(유닛 테스트 대상).
 
 import { sectionPatternSignature, type DetectedSectionPattern } from "@/editor/harnessSuggestion/patternDetect";
+import { beodeulPlaceableObjectForKit } from "@/assets/beodeulPlaceableObjects";
 import type { PaletteStamp, PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
@@ -164,7 +165,11 @@ export function paletteStampFromKit(kit: SectionStructureKitDef): PaletteStamp {
   const cells = structureKitUnitCells(kit);
   const { width, height } = structureKitSize(kit);
   const firstTile = cells[0]?.tile ?? 0;
+  const anchor = beodeulPlaceableObjectForKit(kit.id)
+    ? { dx: Math.floor(width / 2), dy: height - 1 }
+    : undefined;
   return {
+    ...(anchor ? { anchor } : {}),
     cells,
     height,
     width,

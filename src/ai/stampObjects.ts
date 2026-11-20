@@ -8,6 +8,7 @@
 //  - 이름·태그 수준에서 맞아야 한다(설명문에 낱말이 스친 것은 후보일 뿐 — 「탁상 물건 · 생선」이 벤치가 되지 않게).
 //  - 못 찾으면 이벤트도 지형도 깔지 않는다. 가까운 물건 이름을 돌려 거절한다(무음 대체 금지).
 // 순수 모듈 — 스토어·네트워크 없음.
+import { beodeulPlaceableObjectForKit } from "@/assets/beodeulPlaceableObjects";
 import type { SectionStructureKitDef, TileGroupMetadata, TilesetDef } from "@/project/types";
 
 export type StampObjectSource = "pack" | "authored" | "hand" | "group";
@@ -61,6 +62,8 @@ const WATER_BRIDGE_KIT = /\bbridge\b|footbridge|다리|널다리|돌다리/iu;
 const ROAD_VEHICLE_OR_MARKING_KIT = /^mc-veh-|^jp-prop-(?:car|ad-truck|ricksha|train)|^mc-crosswalk-|crosswalk|횡단보도/iu;
 
 function kitPlacementOf(kit: SectionStructureKitDef): StampObjectPlacement | null {
+  const object = beodeulPlaceableObjectForKit(kit.id);
+  if (object) return object.surface ?? "floor";
   const label = `${kit.id} ${kit.name ?? ""}`;
   if (WATER_BRIDGE_KIT.test(label) && !/말뚝|기둥|post|pier-hut/iu.test(label)) return "water";
   if (ROAD_VEHICLE_OR_MARKING_KIT.test(label)) return "road";
@@ -167,7 +170,7 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
       floorStanding: placement !== "wall",
       placement,
       coreName: norm(core),
-      indoor: /^(?:jp-in-|mc-in-)/i.test(kit.id),
+      indoor: beodeulPlaceableObjectForKit(kit.id)?.category === "indoor" || /^(?:jp-in-|mc-in-)/i.test(kit.id),
     });
   }
   for (const group of tileset.tileGroups ?? []) {

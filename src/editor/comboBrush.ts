@@ -11,7 +11,7 @@
 //  · 브러시 크기   = 같은 타일 하나를 N×N 으로 되풀이하는 것. 배열 정보가 없다.
 // 이 둘은 UI 에서 반드시 다르게 보여야 한다 — `comboBrushBadge` 가 그 한 곳이다.
 
-import type { PaletteStamp, PaletteStampCell } from "@/editor/tilePaletteStamp";
+import { paletteStampOrigin, type PaletteStamp, type PaletteStampCell } from "@/editor/tilePaletteStamp";
 
 /** 붓이 어디서 왔는가 — UI 배지와 진단 문구가 이 값으로 갈린다. */
 export type ComboBrushOrigin = "curated" | "palette-drag" | "structure-kit";
@@ -88,7 +88,7 @@ export function comboBrushBadge(stamp: PaletteStamp): string {
 }
 
 /**
- * 붓을 (x, y) 원점에 대고 칸마다 좌표를 푼다 — **미리보기와 페인트가 공유하는 유일한 계산.**
+ * 붓의 기준 칸을 (x, y)에 대고 칸마다 좌표를 푼다 — **미리보기와 페인트가 공유하는 유일한 계산.**
  * 맵 밖 칸도 목록에 남긴다(`inBounds:false`) — 미리보기가 "여기는 잘린다"를 보여야 한다.
  */
 export function comboBrushPlacement(input: {
@@ -99,9 +99,10 @@ export function comboBrushPlacement(input: {
 }): ComboBrushPlacement {
   const cells: ComboBrushPlacementCell[] = [];
   const paintable: ComboBrushPlacementCell[] = [];
+  const origin = paletteStampOrigin(input.stamp, input.x, input.y);
   for (const cell of input.stamp.cells) {
-    const x = input.x + cell.dx;
-    const y = input.y + cell.dy;
+    const x = origin.x + cell.dx;
+    const y = origin.y + cell.dy;
     const inBounds = x >= 0 && y >= 0 && x < input.bounds.width && y < input.bounds.height;
     const placed: ComboBrushPlacementCell = { cell, inBounds, x, y };
     cells.push(placed);

@@ -154,16 +154,16 @@ function centerLineWarning(project: Project, map: GameMap, objectId: string, x: 
 const listTilesetObjects: ToolDefinition = {
   name: "list_tileset_objects",
   description:
-    "팩 프리셋 타일셋(사용자가 올린 RPG Maker 팩으로 만든 타일셋)의 여러 칸 물체 목록 — 가로등·신호등·자판기·벤치·창문·문·차선·횡단보도 등. "
+    "현재 타일셋의 여러 칸 물체 목록 — 버들항 기본 기물, 설치한 팩 프리셋의 가로등·신호등·자판기·벤치·창문·문·차선·횡단보도 등. "
     + "손 도트 실내 칩셋에서는 사용자가 공방에서 그려 넣은 기물(id workshop:…)이 나온다. "
-    + "id·이름·크기·종류(decal 바닥 표시/prop 막힘/tall 밑줄만 막힘/wallmount 벽·옥상 부착/door 문/overhead 머리 위)·이어 찍기 축. "
+    + "id·이름·크기·태그·종류(decal 바닥 표시/prop 막힘/tall 밑줄만 막힘/wallmount 벽·옥상 부착/door 문/overhead 머리 위)·이어 찍기 축. "
     + "놓을 때는 stamp_tileset_object.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      query: { type: "string", description: "선택. 이름·id·설명에 든 낱말로 거른다(예: \"가로등\")" },
+      query: { type: "string", description: "선택. 이름·id·설명·태그에 든 낱말로 거른다(예: \"가로등\", \"버들항 기본 기물\", \"market\")" },
     },
     required: ["mapId"],
   },
@@ -172,7 +172,8 @@ const listTilesetObjects: ToolDefinition = {
     const tileset = project.tilesets[map.tilesetId];
     const query = typeof args.query === "string" ? args.query.trim() : "";
     const objects = packObjects(tileset)
-      .filter((kit) => !query || kit.id.includes(query) || (kit.name ?? "").includes(query) || (kit.ai?.description ?? "").includes(query))
+      .filter((kit) => !query || kit.id.includes(query) || (kit.name ?? "").includes(query) || (kit.ai?.description ?? "").includes(query)
+        || kit.ai?.tags?.some(tag => tag.includes(query)))
       .map((kit) => {
         const axes = growth(kit);
         return {
@@ -181,6 +182,7 @@ const listTilesetObjects: ToolDefinition = {
           width: kit.width,
           height: kit.height,
           kind: objectKind(kit),
+          ...(kit.ai?.tags?.length ? { tags: kit.ai.tags } : {}),
           ...(axes.x || axes.y ? { repeat: axes.x && axes.y ? "x,y" : axes.x ? "x" : "y" } : {}),
           ...(kit.ai?.description ? { description: kit.ai.description } : {}),
         };
@@ -188,7 +190,7 @@ const listTilesetObjects: ToolDefinition = {
     return {
       summary: objects.length === 0
         ? `${map.name} 타일셋(${map.tilesetId})에 ${query ? `"${query}" 에 맞는 ` : ""}팩 물체가 없습니다. 칩셋 소품 킷(버들항 bd-prop-* 등)은 list_spatial_designs({kind:"object", query}) 로 찾고 stamp_object 로 놓는다 — 거기에도 없을 때만 generate_missing_object.`
-        : `${map.name} 타일셋의 팩 물체 ${objects.length}개${query ? `("${query}")` : ""}`,
+        : `${map.name} 타일셋의 물체 ${objects.length}개${query ? `("${query}")` : ""}`,
       data: { tilesetId: map.tilesetId, objects },
     };
   },
@@ -197,7 +199,7 @@ const listTilesetObjects: ToolDefinition = {
 const stampTilesetObject: ToolDefinition = {
   name: "stamp_tileset_object",
   description:
-    "팩 프리셋 물체 하나를 at(왼쪽 위 칸) 또는 base(땅에 닿는 맨 아래 줄 왼쪽 칸)에 원형 그대로 찍는다(위층). objectId = list_tileset_objects 의 id(또는 정확한 이름). "
+    "버들항 기본 기물이나 팩 프리셋 물체 하나를 at(왼쪽 위 칸) 또는 base(땅에 닿는 맨 아래 줄 왼쪽 칸)에 원형 그대로 찍는다(위층). objectId = list_tileset_objects 의 id(또는 정확한 이름). "
     + "막힌 밑칸(발)이 옥상·외벽·벽·천장·허공·물 위거나 그림이 다른 물체와 겹치면 거부하고 가장 가까운 빈 바닥 자리(at·base)를 알려 준다 — 그 자리로 다시 부른다. 한 줄 높이 소품은 탁자·카운터·상자 같은 다른 물체 위에 올릴 수 있다(자동으로 4층). "
     + "repeat {x,y} 는 이어 찍을 수 있는 물체(차선·횡단보도·벤치·울타리)만 — 그 축으로 물체 크기만큼 붙여 반복한다. "
     + "이미 위층 타일이 있는 칸은 overwrite:true 가 없으면 거부한다. 문(door)은 외벽 맨 아래 줄에, 창·간판(wallmount)은 외벽·옥상 안에만(밖에 걸치면 거부) 찍는다. "

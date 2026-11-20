@@ -4,6 +4,7 @@ import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthor
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset, beodeulCityBundledReferenceDocuments } from "./beodeulCity";
 import {ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {BEODEUL_ORGANIC_TEXTURE,createBeodeulOrganicTileset,ensureBeodeulOrganicTileset,ensureBeodeulOrganic} from './beodeulOrganic';
+import { ensureBeodeulPlaceableObjects } from "./beodeulPlaceableObjects";
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
 import {BEODEUL_MASSING_TEXTURE,createBeodeulMassingTileset,ensureBeodeulMassingTileset,ensureBeodeulMassing} from './beodeulMassing';
@@ -256,6 +257,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureBeodeulReviewed(project.tilesets[id]) || changed;
         changed = ensureBeodeulMassing(project.tilesets[id]) || changed;
         changed = ensureBeodeulOrganic(project.tilesets[id]) || changed;
+        changed = ensureBeodeulPlaceableObjects(project.tilesets[id]) || changed;
       }
       // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
       if (asset.textureKey === JOSEON_BARAM_TEXTURE) {

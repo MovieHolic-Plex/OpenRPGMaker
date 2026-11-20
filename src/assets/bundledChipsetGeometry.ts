@@ -18,6 +18,7 @@ import prehistoricSheet from "./prehistoricSheet.json" with { type: "json" };
 import desertEastSheet from "./desertEastSheet.json" with { type: "json" };
 import snowNorthSheet from "./snowNorthSheet.json" with { type: "json" };
 import atlasBiomeInteriorSheet from "./atlasBiomeInteriorSheet.json" with { type: "json" };
+import { BEODEUL_OBJECT_TILE_SIZE, beodeulPlaceableObjectForTexture } from "./beodeulPlaceableObjects";
 import { emeraldMonsterKitSheet } from "./emeraldMonsterKitAssets";
 import {
   CASTLE_REFERENCE_TILESET_TEXTURE_KEY,
@@ -42,6 +43,7 @@ import {
 const ROOM_KIT_KEY = /^(?:store_[A-Za-z0-9_]+__)?roomkit_(16|24|32|48)_/u;
 
 export function bundledChipsetTileSize(key: string): number {
+  if (beodeulPlaceableObjectForTexture(key)) return BEODEUL_OBJECT_TILE_SIZE;
   const roomKit = ROOM_KIT_KEY.exec(key);
   if (roomKit) return Number(roomKit[1]);
   if (key === "tex_slates_32" || key === "tex_atlas_cartography") return 32;
@@ -53,6 +55,8 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  const object = beodeulPlaceableObjectForTexture(key);
+  if (object) return object.widthTiles;
   if (ROOM_KIT_KEY.test(key)) return 16;
   if (key === "tex_worldmap_authoring") return 12;
   if (key === "tex_atlas_cartography") return 8;
