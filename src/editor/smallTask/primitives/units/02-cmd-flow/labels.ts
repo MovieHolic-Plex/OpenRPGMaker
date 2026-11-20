@@ -5,6 +5,7 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { findSchedule } from "@/project/schedule";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { Command, GameMap, Project } from "@/project/types";
+import { scopedPage } from "../../core/helpers";
 import { PrimitiveError } from "../../errors";
 import type { PrimitiveContext } from "../../types";
 import { scriptMayDispatchFlow } from "./script";
@@ -211,13 +212,26 @@ function someRootContext(
   return false;
 }
 
-export function labelHasDependentJump(
+function labelHasDependentJump(
   project: Project, map: GameMap, page: CommandList, list: CommandList, name: string,
 ): boolean {
   const allMaps = new Set(Object.keys(project.maps));
   return hasDependentJump(project, () => allMaps, list, name)
     && someRootContext(project, map, page, (_, { mapsAt, reachable }) => reachable.has(list)
       && hasDependentJump(project, mapsAt, list, name));
+}
+
+export function assertFlowCommandDeletion(ctx: PrimitiveContext, list: CommandList, command: Command): void {
+  if (command.kind !== "label") return;
+  if (command.name === CUTSCENE_END_LABEL) {
+    throw new PrimitiveError("컷신을 건너뛸 때 사용하는 위치 표시는 삭제할 수 없어요.");
+  }
+  if (list[firstLabelIndex(list, command.name)] !== command) return;
+  const { map, page } = scopedPage(ctx);
+  if (labelReferenceViews(ctx).some(project =>
+    labelHasDependentJump(project, project.maps[map.id]!, page.commands, list, command.name))) {
+    throw new PrimitiveError("이 위치 표시로 이동하는 명령이 남아 있어 삭제할 수 없어요.");
+  }
 }
 
 export function validateLabelChange(

@@ -18,6 +18,7 @@ import { firstLabelIndex, hasCallerLabel, labelReferenceViews, validateLabelChan
 import { referenceName, requireReference, validateForkCondition } from "./02-cmd-flow/references";
 
 export const UNIT = "02-cmd-flow";
+export { assertFlowCommandDeletion } from "./02-cmd-flow/labels";
 
 type Args = Record<string, unknown>;
 type Operation = "insert" | "update";

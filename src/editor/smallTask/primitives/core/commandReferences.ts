@@ -1,6 +1,5 @@
 import { scriptContainsLiteral, withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
-import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { openingStageFlag } from "@/project/openingStage";
@@ -10,8 +9,6 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import type { Command, Project } from "@/project/types";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext } from "../types";
-import { labelHasDependentJump, labelReferenceViews } from "../units/02-cmd-flow/labels";
-import { scopedPage } from "./helpers";
 
 function usesLabel(list: readonly Command[], name: string, root = true): boolean {
   if (!root && list.some(command => command.kind === "label" && command.name === name)) return false;
@@ -51,14 +48,9 @@ export function assertCommandDeletion(
   ctx: PrimitiveContext, after: Project, list: readonly Command[], command: Command,
 ): void {
   if (ctx.target.kind !== "event") return;
+  ctx.commandDeletionGuard?.(ctx, list, command);
   if (command.kind === "label") {
-    if (list.find(row => row.kind === "label" && row.name === command.name) !== command) return;
-    if (command.name === CUTSCENE_END_LABEL) {
-      throw new PrimitiveError("컷신을 건너뛸 때 사용하는 위치 표시는 삭제할 수 없어요.");
-    }
-    const { map, page } = scopedPage(ctx);
-    if (usesLabel(list, command.name) || labelReferenceViews(ctx).some(project =>
-      labelHasDependentJump(project, project.maps[map.id]!, page.commands, list, command.name))) {
+    if (list.find(row => row.kind === "label" && row.name === command.name) === command && usesLabel(list, command.name)) {
       throw new PrimitiveError("이 위치 표시로 이동하는 명령이 남아 있어 삭제할 수 없어요.");
     }
   } else if (command.kind === "setFlag" && !command.value) {

@@ -270,13 +270,16 @@ describe("흐름 제어 명령", () => {
 
   it("같은 목록에 중복을 만들지 않고 컷신의 건너뛰기 목적지를 보존한다", () => {
     const end: Command = { kind: "label", name: CUTSCENE_END_LABEL };
-    const { project, target } = setup([{ ...cutscene, skippable: true }, label, end]);
+    const { project, target } = setup([{ ...cutscene, skippable: true }, label, end, { ...end }]);
     expect(() => runPrimitive(project, target, "cmd.label.insert", { index: 0, name: " 출발 " })).toThrow(/같은 이름/u);
     expect(() => runPrimitive(project, target, "cmd.label.update", {
       index: 2, expectedHash: eventCommandHash(end), name: "도착",
     })).toThrow(/컷신을 건너뛸 때/u);
     expect(() => runPrimitive(project, target, "cmd.delete", {
       index: 2, expectedHash: eventCommandHash(end),
+    })).toThrow(/컷신을 건너뛸 때/u);
+    expect(() => runPrimitive(project, target, "cmd.delete", {
+      index: 3, expectedHash: eventCommandHash(end),
     })).toThrow(/컷신을 건너뛸 때/u);
   });
 
