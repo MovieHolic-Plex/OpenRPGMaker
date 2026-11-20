@@ -296,6 +296,38 @@ it.each([
   else expect(session.variables[variableId]).toBe(0);
 });
 
+it.each([
+  { kind: "setSwitch", writer: switchOn, destination: { switchId: "sw_state_other" },
+    condition: { kind: "switch", switchId, value: true }, initial: { switches: { [switchId]: true } } },
+  { kind: "setVariable", writer: { ...variableSet, value: 3 }, destination: { variableId: sourceId },
+    condition: { kind: "variable", variableId, op: ">=", value: 3 }, initial: { variables: { [variableId]: 3 } } },
+] as const)("$kind 재지정은 기존 값이 있어야 열리는 페이지의 쓰기를 대체로 세지 않는다", ({ kind, writer, destination, condition, initial }) => {
+  const { before, target } = setup("blank", [writer]);
+  const map = before.maps[mapId]!;
+  const [event, neighbor] = map.events;
+  const selected = { ...event!, pages: [event!.pages![0]!] };
+  const page = { ...neighbor!.pages![0]!, conditions: [condition], commands: [writer] };
+  const project = {
+    ...before,
+    maps: { ...before.maps, [mapId]: { ...map, events: [selected, { ...neighbor!, pages: [page] }] } },
+    switches: [...before.switches, { id: "sw_state_other", name: "다른 스위치" }],
+  };
+  const primitive = `cmd.${kind}.update`;
+  const args = checkedUpdate(writer, { index: 0, ...destination });
+  expectRefused(project, target, primitive, args, /값을 바꾸는 명령이 이 줄뿐/);
+
+  const unlocked = { ...project, session: { ...project.session, ...initial } };
+  expect(commandsOn(runPrimitive(unlocked, target, primitive, args).after)[0]).toStrictEqual({ ...writer, ...destination });
+
+  const troop = loadFixture("built").database.troops[0]!;
+  const battlePage = {
+    id: "battle_state_gate", name: "진행 조건", conditions: [condition], span: "battle", commands: [writer],
+  } satisfies (typeof troop.battleEventPages)[number];
+  const battle = { ...project, database: { ...project.database, troops: [{ ...troop, battleEventPages: [battlePage] }] },
+    maps: { ...before.maps, [mapId]: { ...map, events: [selected] } } };
+  expectRefused(battle, target, primitive, args, /값을 바꾸는 명령이 이 줄뿐/);
+});
+
 it("엔딩 조건이나 맵 인카운터가 읽는 스위치의 마지막 쓰기를 보호한다", () => {
   const { before, target } = setup("blank", [switchOn]);
   const nextSwitchId = "sw_state_next";
@@ -382,6 +414,26 @@ it("A로 잠겼거나 실행이 꺼진 분기의 쓰기는 A를 처음 켤 수 �
     const project = { ...before, maps: { ...before.maps, [mapId]: { ...map, events: [{ ...event, pages: [event.pages![0]!] }] } } };
     expectRefused(project, target, "cmd.setSelfSwitch.update", checkedUpdate(selfOn, { index: 0, key: "B" }), /셀프 스위치 A를 조건으로/);
   }
+});
+
+it("앞 줄에서 B를 끄면 B가 켜졌을 때만 실행되는 분기는 A를 처음 켤 수 없다", () => {
+  const turnOffB: Command = { kind: "setSelfSwitch", key: "B", value: false };
+  const branch: Command = { kind: "fork", condition: { kind: "selfSwitch", key: "B", value: true }, then: [selfOn] };
+  const commands = [selfOn, turnOffB, branch];
+  const { before, target } = setup("blank", commands);
+  const map = before.maps[mapId]!;
+  const event = map.events[0]!;
+  const [first, second] = event.pages!;
+  const locked: EventPage = { ...second!, conditions: [{ kind: "selfSwitch", key: "A", value: true }] };
+  const withCommands = (list: Command[]) => ({ ...before, maps: { ...before.maps, [mapId]: { ...map, events: [
+    { ...event, pages: [{ ...first!, commands: list }, locked] },
+  ] } } });
+  const args = checkedUpdate(selfOn, { index: 0, key: "C" });
+  expectRefused(withCommands(commands), target, "cmd.setSelfSwitch.update", args, /셀프 스위치 A를 조건으로/);
+
+  const { after } = runPrimitive(withCommands([...commands, selfOn]), target, "cmd.setSelfSwitch.update", args);
+  expect(commandsOn(after)).toStrictEqual([{ ...selfOn, key: "C" }, turnOffB, branch, selfOn]);
+  expect(resolveEventPage(after.maps[mapId]!.events[0]!, play(after))?.id).toBe(locked.id);
 });
 
 it.each(["showWhen", "enableWhen"] as const)("선택지 %s에서 확인하는 셀프 스위치를 보호한다", field => {

@@ -96,6 +96,28 @@ test("작은 일 Pi 실행이 동작을 읽고 고른 페이지에서 cmd.delete
   expect(project.maps[mapId].events[0]!.pages![1]!.commands).toHaveLength(3);
 });
 
+test("작은 일 Pi 실행은 열린 초안이 읽는 스위치의 마지막 쓰기 재지정을 거절한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const switchId = "sw_draft_gate";
+  const nextSwitchId = "sw_other_gate";
+  project.switches = [{ id: switchId, name: "초안 문" }, { id: nextSwitchId, name: "다른 문" }];
+  const write: Command = { kind: "setSwitch", switchId, value: true };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [write] }];
+  const draft = { ...event, id: "event_draft", draft: { kind: "new" as const }, pages: [{
+    ...event.pages[1], conditions: [{ kind: "switch" as const, switchId, value: true }], commands: [],
+  }] };
+  const update = apply("cmd.setSwitch.update", { index: 0, expectedHash: eventCommandHash(write), switchId: nextSwitchId });
+  const blocked = await runPiAgent({
+    ...request, smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([update]) });
+  expect(blocked.stoppedEarly).toContain("값을 바꾸는 명령이 이 줄뿐입니다");
+  expect(blocked.project).toBe(project);
+
+  const allowed = await runPiAgent(request, { streamFn: scripted([update]) });
+  expect(allowed.stoppedEarly).toBeUndefined();
+  expect(allowed.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual([{ ...write, switchId: nextSwitchId }]);
+}, 20_000);
+
 test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", async () => {
   const { request, project, mapId } = fixture();
   const target = mapTarget(project, mapId)!;

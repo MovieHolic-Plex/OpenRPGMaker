@@ -1304,18 +1304,59 @@
   {
     "request": "오프닝 이벤트의 둘째 페이지 끝에 있는 예전 기억을 다시 켜 줘.",
     "fixture": "built",
+    "setup": {
+      "events": [
+        {
+          "id": "ev_corpus_opening_stage",
+          "name": "오프닝 검수 무대",
+          "x": 1,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [],
+          "pages": [
+            {
+              "id": "page_corpus_opening_intro",
+              "name": "등장",
+              "trigger": { "kind": "action" },
+              "conditions": [],
+              "graphic": {},
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": []
+            },
+            {
+              "id": "page_corpus_opening_end",
+              "name": "종료",
+              "trigger": { "kind": "action" },
+              "conditions": [],
+              "graphic": {},
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                {
+                  "kind": "setFlag",
+                  "flag": "opening:stage:map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d:ev_corpus_opening_stage",
+                  "value": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "target": {
       "kind": "event",
       "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
-      "eventId": "ev_opening_stage",
-      "pageId": "ev_opening_stage_cutscene_1"
+      "eventId": "ev_corpus_opening_stage",
+      "pageId": "page_corpus_opening_end"
     },
     "primitive": "cmd.setFlag.update",
     "args": {
-      "index": 12,
+      "index": 0,
       "value": true,
-      "expectedHash": "8856c545cf390f1dca8b98aac397396f"
+      "expectedHash": "d062b23f1da479a401d54a7ad71d206f"
     },
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "게임이 제어하는 기억의 켜짐 상태는 바꿀 수 없습니다."
   }
 ]

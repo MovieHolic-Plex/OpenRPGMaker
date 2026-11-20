@@ -1,3 +1,4 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
 import { eventCommandBranches, type EventCommandBranch } from "@/editor/eventCommandBranches";
@@ -7,7 +8,9 @@ import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import type { JsonSchema } from "@/editor/tools/types";
 import { COMPANION_SCENE_FLAG } from "@/player/playSceneFollowers";
 import { NEW_GAME_PLUS_SESSION_FLAG } from "@/project/conditionActorQueries";
+import { compareVariableValue } from "@/project/conditionEvaluation";
 import { eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
+import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { validateCommands, type ReferenceContext } from "@/project/io/commandReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { OPENING_STAGE_FLAG_PREFIX } from "@/project/openingStage";
@@ -27,7 +30,11 @@ type StateKind = "setSwitch" | "setVariable" | "setSelfSwitch" | "setFlag";
 type StateCommand = Extract<Command, { kind: StateKind }>;
 type VariableCommand = Extract<StateCommand, { kind: "setVariable" }>;
 type SelfSwitchCommand = Extract<StateCommand, { kind: "setSelfSwitch" }>;
+type SelfSwitchValues = Partial<Record<SelfSwitchCommand["key"], boolean>>;
+type ConditionMatch = boolean | undefined;
 type PageScope = Extract<SmallTaskScope, { kind: "eventPage" }>;
+
+const selfSwitchKeys = ["A", "B", "C", "D"] as const;
 
 const variableActions = {
   "=": (name: string, value: string) => `${name}에 ${withJosa(value, "을/를")} 저장합니다.`,
@@ -62,7 +69,7 @@ const fields = {
     operandVariableId: sourceField,
   },
   setSelfSwitch: {
-    key: { type: "string", enum: ["A", "B", "C", "D"], description: "이 이벤트의 셀프 스위치 문자. 삽입할 때 기본은 A." },
+    key: { type: "string", enum: [...selfSwitchKeys], description: "이 이벤트의 셀프 스위치 문자. 삽입할 때 기본은 A." },
     value: booleanValue,
   },
   setFlag: {
@@ -138,6 +145,29 @@ function branchEnabled(command: Command, branch: EventCommandBranch): boolean {
   }
 }
 
+function allMatch(results: readonly ConditionMatch[]): ConditionMatch {
+  return results.includes(false) ? false : results.includes(undefined) ? undefined : true;
+}
+
+function matchCondition(
+  condition: BattleEventCondition | undefined,
+  matchLeaf: (condition: BattleEventCondition) => ConditionMatch,
+): ConditionMatch {
+  if (condition === undefined) return undefined;
+  switch (condition.kind) {
+    case "all": return allMatch(condition.conditions.map(child => matchCondition(child, matchLeaf)));
+    case "any": {
+      const results = condition.conditions.map(child => matchCondition(child, matchLeaf));
+      return results.includes(true) ? true : results.includes(undefined) ? undefined : false;
+    }
+    case "not": {
+      const result = matchCondition(condition.condition, matchLeaf);
+      return result === undefined ? undefined : !result;
+    }
+    default: return matchLeaf(condition);
+  }
+}
+
 function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEvent, current: SelfSwitchCommand, next: SelfSwitchCommand): void {
   if (current.key === next.key && current.value === next.value) return;
   function readsKey(condition: BattleEventCondition | undefined): boolean {
@@ -150,25 +180,11 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
     }
   }
 
-  function conditionBeforeWrite(condition: BattleEventCondition | undefined): boolean | undefined {
-    switch (condition?.kind) {
-      case "selfSwitch": return condition.key === current.key ? condition.value !== current.value : undefined;
-      case "all": return allConditionsBeforeWrite(condition.conditions);
-      case "any": {
-        const results = condition.conditions.map(conditionBeforeWrite);
-        return results.includes(true) ? true : results.includes(undefined) ? undefined : false;
-      }
-      case "not": {
-        const result = conditionBeforeWrite(condition.condition);
-        return result === undefined ? undefined : !result;
-      }
-      default: return undefined;
-    }
-  }
-
-  function allConditionsBeforeWrite(conditions: readonly BattleEventCondition[]): boolean | undefined {
-    const results = conditions.map(conditionBeforeWrite);
-    return results.includes(false) ? false : results.includes(undefined) ? undefined : true;
+  function matchSelfSwitch(condition: BattleEventCondition | undefined, known: SelfSwitchValues): ConditionMatch {
+    return matchCondition(condition, leaf => {
+      if (leaf.kind !== "selfSwitch" || known[leaf.key] === undefined) return undefined;
+      return known[leaf.key] === leaf.value;
+    });
   }
 
   let linked = readsKey(event.condition);
@@ -177,12 +193,14 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
   function visitCall(commands: readonly Command[]): void {
     if (calledLists.has(commands)) return;
     calledLists.add(commands);
-    visit(commands, false);
+    visit(commands, false, {});
   }
-  function visit(commands: readonly Command[], canReplace: boolean): void {
+  function visit(commands: readonly Command[], canReplace: boolean, initial: SelfSwitchValues): SelfSwitchValues {
+    let known = { ...initial };
     for (const command of commands) {
-      if (canReplace && command.kind === "setSelfSwitch" && command.key === current.key && command.value === current.value) {
-        hasReplacementWrite = true;
+      if (command.kind === "setSelfSwitch") {
+        if (canReplace && command.key === current.key && command.value === current.value) hasReplacementWrite = true;
+        known[command.key] = command.value;
       }
       if (command.kind === "fork" && readsKey(command.condition)) linked = true;
       if (command.kind === "choices" && command.options.some(option => readsKey(option.showWhen) || readsKey(option.enableWhen))) linked = true;
@@ -208,27 +226,40 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
           }
         }
       }
-      for (const branch of eventCommandBranches(command)) {
+      // Called commands and scripts can change the caller's self-switches.
+      if (command.kind === "callCommonEvent" || command.kind === "callMapEvent"
+          || command.kind === "script" || command.kind === "battleProcessing" || command.kind === "gotoLabel") known = {};
+      const forkMatch = command.kind === "fork" ? matchSelfSwitch(command.condition, known) : undefined;
+      const outcomes: SelfSwitchValues[] = [];
+      const branches = eventCommandBranches(command);
+      for (const branch of branches) {
         if (!branchEnabled(command, branch)) continue;
-        let reachable = canReplace;
-        if (reachable && command.kind === "fork") {
-          const matches = conditionBeforeWrite(command.condition);
-          reachable = matches === undefined || matches === (branch.kind === "forkThen");
-        }
+        let reachable = forkMatch === undefined || forkMatch === (branch.kind === "forkThen");
         if (reachable && command.kind === "choices" && branch.kind === "choiceOption") {
           const option = command.options[branch.branchIndex]!;
-          reachable = conditionBeforeWrite(option.showWhen) !== false && conditionBeforeWrite(option.enableWhen) !== false;
+          reachable = matchSelfSwitch(option.showWhen, known) !== false && matchSelfSwitch(option.enableWhen, known) !== false;
         }
-        visit(branch.commands, reachable);
+        const result = visit(branch.commands, canReplace && reachable, command.kind === "loop" ? {} : known);
+        if (reachable) outcomes.push(result);
+      }
+      if (outcomes.length) {
+        // Keep only values shared by every possible continuation of the list.
+        if (command.kind !== "fork" || (forkMatch === undefined && !command.else)) outcomes.push(known);
+        known = { ...outcomes[0] };
+        for (const key of selfSwitchKeys) {
+          if (outcomes.some(values => values[key] !== known[key])) delete known[key];
+        }
       }
     }
+    return known;
   }
   // 바뀌기 전 셀프 스위치 상태에서 진입할 수 있는 페이지의 쓰기만 대체로 센다.
+  const initial = { [current.key]: !current.value };
   let canReachEarlierPage = true;
   for (const page of [...(event.pages ?? [])].reverse()) {
     linked ||= page.conditions.some(readsKey);
-    const matches = allConditionsBeforeWrite(page.conditions);
-    visit(page.commands, canReachEarlierPage && matches !== false);
+    const matches = allMatch(page.conditions.map(condition => matchSelfSwitch(condition, initial)));
+    visit(page.commands, canReachEarlierPage && matches !== false, initial);
     if (matches === true) canReachEarlierPage = false;
   }
   if (linked && !hasReplacementWrite) {
@@ -248,25 +279,49 @@ function withoutInactiveLegacyCommands(project: Project): Project {
   return { ...project, maps };
 }
 
-function validateStateRetarget(project: Project, current: StateCommand, next: StateCommand): void {
+function validateStateRetarget(ctx: PrimitiveContext, edited: Project, current: StateCommand, next: StateCommand): void {
   const previous = current.kind === "setSwitch" && next.kind === "setSwitch" && current.switchId !== next.switchId
     ? { kind: "switch", id: current.switchId } as const
     : current.kind === "setVariable" && next.kind === "setVariable" && current.variableId !== next.variableId
       ? { kind: "variable", id: current.variableId } as const : undefined;
   if (!previous) return;
   const { kind, id } = previous;
-  project = withoutInactiveLegacyCommands(project);
-  const index = buildStoryFlagUsageIndex(project);
-  const { reads, writes } = Object.hasOwn(kind === "switch" ? index.switches : index.variables, id.trim())
-    ? usageBucketFor(index, kind, id.trim()) : { reads: [], writes: [] };
-  if (writes.length) return;
-
-  const field = kind === "switch" ? "switchId" : "variableId";
-  if (reads.length || index.scriptDynamic[kind].read || projectSwitchVariableReferenceMessage(project, kind, id) ||
+  const working = withOpenEventDrafts(edited, ctx.live, ctx.target.kind === "event" ? ctx.target : undefined);
+  const saved = projectViewWithoutEventDrafts(working);
+  const views = saved === working ? [working] : [working, saved];
+  if (views.some(view => {
+    const project = withoutInactiveLegacyCommands(view);
+    const index = buildStoryFlagUsageIndex(project);
+    const { reads, writes } = Object.hasOwn(kind === "switch" ? index.switches : index.variables, id.trim())
+      ? usageBucketFor(index, kind, id.trim()) : { reads: [], writes: [] };
+    const matchInitialValue = (leaf: BattleEventCondition): ConditionMatch => {
+      if (kind === "switch" && leaf.kind === "switch" && leaf.switchId === id) {
+        return (project.session.switches?.[id] ?? false) === leaf.value;
+      }
+      if (kind === "variable" && leaf.kind === "variable" && leaf.variableId === id) {
+        return compareVariableValue(project.session.variables?.[id] ?? 0, leaf.op, leaf.value);
+      }
+      return undefined;
+    };
+    const hasReachableWriter = writes.some(site => {
+      if (site.pageNumber === undefined) return true;
+      const map = site.mapId === undefined ? undefined : project.maps[site.mapId];
+      const event = map?.events.find(row => row.id === site.eventId);
+      const pageIndex = site.pageNumber - 1;
+      const page = site.source === "troop-event"
+        ? project.database.troops.find(troop => troop.id === site.troopId)?.battleEventPages?.[pageIndex]
+        : event?.pages?.[pageIndex];
+      // A page that needs the flag to change first cannot supply its first write.
+      return !page?.conditions.some(condition => matchCondition(condition, matchInitialValue) === false);
+    });
+    if (hasReachableWriter) return false;
+    const field = kind === "switch" ? "switchId" : "variableId";
+    return reads.length > 0 || index.scriptDynamic[kind].read || projectSwitchVariableReferenceMessage(project, kind, id) ||
       project.endings?.some(ending => ending.conditions.some(condition =>
         kind === "switch" ? condition.kind === "switch" && condition.switchId === id
           : condition.kind === "variable" && condition.variableId === id)) ||
-      Object.values(project.maps).some(map => map.encounterTable?.some(entry => entry.conditions?.[field] === id))) {
+      Object.values(project.maps).some(map => map.encounterTable?.some(entry => entry.conditions?.[field] === id));
+  })) {
     const label = kind === "switch" ? "스위치를 확인" : "변수 값을 읽";
     throw new PrimitiveError(`다른 곳에서 기존 ${label}는데 값을 바꾸는 명령이 이 줄뿐입니다.`);
   }
@@ -462,7 +517,7 @@ function primitive(kind: StateKind, name: string, update: boolean): SmallTaskPri
         const { map, event } = selectedPage({ ...ctx, project: edited });
         validateSelfSwitchChange(edited, map, event, current, command);
       }
-      if (update) validateStateRetarget(edited, current, command);
+      if (update) validateStateRetarget(ctx, edited, current, command);
       return edited;
     },
   };
