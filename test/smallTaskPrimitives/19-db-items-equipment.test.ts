@@ -19,7 +19,7 @@ import { goodsIndex } from "@/player/playSceneShopGoods";
 import { useItemFromMenu } from "@/player/playerItemUse";
 import { applySaveSnapshot, createSaveSnapshot, snapshotLoadBlocker } from "@/player/saveSlots";
 import { normalizeEquipmentRecord, normalizeItemRecord, normalizeTroopRecord } from "@/project/databaseRecordModel";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { activeItemEffects } from "@/project/itemUsage";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -112,8 +112,11 @@ const cases: readonly Case[] = [
 ];
 
 describe("자료집 프리미티브", () => {
-  // Build the authored demo only once so each operation measures the edit and its undo.
-  beforeAll(() => { maou = loadFixture("maou"); }, 300_000);
+  beforeAll(() => {
+    maou = loadFixture("maou");
+    // Match the editor's normalization before a primitive freezes the fixture.
+    ensureSwitchVariableSlots(maou);
+  }, 300_000);
 
   for (const test of cases) {
     const { collection, action, args, expected, detail } = test;
@@ -404,11 +407,12 @@ describe("자료집 프리미티브", () => {
     expect(() => runPrimitive(project, target("equipment"), "db.equipment.delete", {})).toThrow(/스크립트에서 사용 중/u);
     expect(() => runPrimitive(project, target("equipmentSlots"), "db.equipmentSlots.delete", {})).toThrow(/스크립트에서 사용 중/u);
     const dynamic = 'game.addItem(`item_${game.getVariable("reward")}`);';
-    project.scriptLibrary = [{ id: "item_reward", source: dynamic, compiled: dynamic, effects: {
-      reads: [], calls: [], writes: [], dynamic: [{ api: "addItem", line: 1 }],
-    } }];
-    expect(() => runPrimitive(project, target("items"), "db.items.delete", {})).toThrow(/실행할 때 아이템을 고르는 스크립트/u);
-    expect(() => runPrimitive(project, target("equipment"), "db.equipment.delete", {})).toThrow(/실행할 때 아이템을 고르는 스크립트/u);
+    const dynamicProject: Project = { ...project, scriptLibrary: [{
+      id: "item_reward", source: dynamic, compiled: dynamic,
+      effects: { reads: [], calls: [], writes: [], dynamic: [{ api: "addItem", line: 1 }] },
+    }] };
+    expect(() => runPrimitive(dynamicProject, target("items"), "db.items.delete", {})).toThrow(/실행할 때 아이템을 고르는 스크립트/u);
+    expect(() => runPrimitive(dynamicProject, target("equipment"), "db.equipment.delete", {})).toThrow(/실행할 때 아이템을 고르는 스크립트/u);
   });
 
   it("스크립트가 계산한 착용 칸과 상점 목록의 참조를 보호한다", () => {
@@ -425,8 +429,8 @@ describe("자료집 프리미티브", () => {
       expect(() => runPrimitive(project, target(collection), `db.${collection}.delete`, {})).toThrow(/이벤트 명령에서 이 항목/u);
     }
     const unrelated = 'game.log("안내");';
-    project.scriptLibrary = [{ id: "guide", source: unrelated, compiled: unrelated, effects }];
-    expect(runPrimitive(project, target("equipment"), "db.equipment.delete", {}).after.database.equipment
+    const guideProject: Project = { ...project, scriptLibrary: [{ id: "guide", source: unrelated, compiled: unrelated, effects }] };
+    expect(runPrimitive(guideProject, target("equipment"), "db.equipment.delete", {}).after.database.equipment
       .some(row => row.id === ids.equipment)).toBe(false);
   });
 
@@ -543,12 +547,10 @@ describe("자료집 작은 일 진입점", () => {
     const before = store.getCurrent();
     const run = vi.spyOn(smallTaskRun, "runSmallTask").mockImplementation(async (base, target) =>
       runPrimitive(base, target, `db.${collection}.update`, args).after);
-    const createElement = document.createElement.bind(document);
-    const create = vi.spyOn(document, "createElement").mockImplementation((tag, options) => {
-      const element = createElement(tag, options);
-      if (tag === "section" && !element.showPopover) element.showPopover = () => {};
-      return element;
-    });
+    const needsPopoverShim = typeof HTMLElement.prototype.showPopover !== "function";
+    if (needsPopoverShim) {
+      Object.defineProperty(HTMLElement.prototype, "showPopover", { configurable: true, value: () => {} });
+    }
     try {
       let button: HTMLButtonElement | null | undefined;
       if (collection === "equipmentSlots") {
@@ -581,7 +583,7 @@ describe("자료집 작은 일 진입점", () => {
     } finally {
       host.querySelector<HTMLButtonElement>(".small-task header button")?.click();
       host.remove();
-      create.mockRestore();
+      if (needsPopoverShim) Reflect.deleteProperty(HTMLElement.prototype, "showPopover");
       run.mockRestore();
       resetMapEditHistory();
     }
