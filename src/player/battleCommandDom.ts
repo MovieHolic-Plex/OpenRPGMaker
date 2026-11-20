@@ -358,7 +358,12 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     const combo = comboCommandButton(snapshot, options, actor, targetMode);
     if (combo) menu.append(combo);
   }
-  if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
+  if (!targetMode && !snapshot.forcedSwitchActorId) {
+    menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
+    if (overrideCommandIds?.length === 0 && !menu.querySelector('button:not(:disabled):not([aria-disabled="true"])')) {
+      menu.append(commandButton("대기", "actor-command-pass", "boot", "", () => options.runActorCommand({ kind: "pass" })));
+    }
+  }
   // 붙은 뒤(마이크로태스크) 못 쓰는 명령의 사유가 메뉴 오른쪽 끝을 넘는지 재서 맞춘다 — attachScrollCue 와 같은 시점.
   queueMicrotask(() => fitInertReasons(menu));
   return menu;

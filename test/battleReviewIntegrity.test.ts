@@ -95,6 +95,10 @@ describe("battle review integrity boundaries", () => {
 
   it.each(["rich", "legacy", "party"])("addresses actual actors for %s m2-092 targets", (mode) => {
     const project = deserialize(JSON.stringify(fixture));
+    project.database.battleCommands = [
+      ...(project.database.battleCommands ?? []),
+      { id: "defend", name: "방어", kind: "defend" },
+    ];
     const session = startSession(project);
     const actorId = session.partyActorIds[0];
     const commandId = "m2-092-change-battle-commands";

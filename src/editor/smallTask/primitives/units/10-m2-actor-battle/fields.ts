@@ -17,7 +17,7 @@ export type Row = {
   properties: Record<string, JsonSchema>;
   required?: readonly string[];
   defaults?: M2CommandFields;
-  prepare?: (fields: M2CommandFields, patch: M2CommandFields) => void;
+  prepare?: (fields: M2CommandFields, patch: M2CommandFields, previous: M2CommandFields) => void;
   references?: readonly Reference[];
   detail?: (project: Project, fields: M2CommandFields) => string | undefined;
 };
@@ -68,13 +68,11 @@ function variableReference(project: Project, fields: M2CommandFields): void {
   if (fields.valueSource === "variable") requireRecord(project.variables, field(fields, "valueVariableId").trim(), "변수");
 }
 
-function battleCommandRecords(project: Project, fields: M2CommandFields): readonly RecordName[] {
-  const target = field(fields, "target");
-  const actorId = target === "actor" ? field(fields, "actorId").trim() : target;
-  const actorClassId = project.database.actors.find(actor => actor.id === actorId)?.classId;
+function battleCommandRecords(project: Project): readonly RecordName[] {
+  // A preceding event or promotion can change the class before this row runs.
   return [
     ...(project.database.battleCommands ?? []),
-    ...(project.database.classes.find(record => record.id === actorClassId)?.battleCommands ?? []),
+    ...project.database.classes.flatMap(record => record.battleCommands ?? []),
   ];
 }
 
@@ -82,7 +80,7 @@ function battleCommandReference(project: Project, fields: M2CommandFields): void
   if (fields.target === "actor") requireRecord(project.database.actors, field(fields, "actorId").trim(), "주인공");
   else actorReference(project, fields);
   const slots = fields.operation === "set" ? field(fields, "slots").split(",").map(id => id.trim()).filter(Boolean) : [];
-  const records = battleCommandRecords(project, fields);
+  const records = battleCommandRecords(project);
   for (const id of slots.length ? slots : [field(fields, "value")]) requireRecord(records, id, "전투 명령");
 }
 
@@ -150,11 +148,20 @@ function prepareName(fields: M2CommandFields): void {
   if (!field(fields, "value").trim()) throw new PrimitiveError("바꿀 이름을 입력해 주세요.");
 }
 
-function prepareGraphic(fields: M2CommandFields, patch: M2CommandFields): void {
-  const graphic = parseActorGraphicOverride(field(fields, "value"));
+function prepareGraphic(fields: M2CommandFields, patch: M2CommandFields, previous: M2CommandFields): void {
+  const value = field(fields, "value").trim();
+  const graphic = parseActorGraphicOverride(value);
   if (graphic.characterIndex > 7) throw new PrimitiveError("그림 속 인물 칸은 첫 칸부터 여덟째 칸까지 고를 수 있어요.");
-  if (patch.value !== undefined && patch.characterIndex === undefined && fields.characterIndex !== undefined) {
-    fields.characterIndex = graphic.characterIndex;
+  if (patch.value !== undefined && patch.characterIndex === undefined) {
+    if (!graphic.resourceId) {
+      delete fields.characterIndex;
+    } else if (value !== graphic.resourceId) {
+      if (fields.characterIndex !== undefined) fields.characterIndex = graphic.characterIndex;
+    } else if (fields.characterIndex === undefined) {
+      const oldValue = field(previous, "value").trim();
+      const oldGraphic = parseActorGraphicOverride(oldValue);
+      if (oldValue !== oldGraphic.resourceId) fields.characterIndex = oldGraphic.characterIndex;
+    }
   }
   if (!graphic.resourceId && Number(fields.characterIndex ?? 0) !== 0) {
     throw new PrimitiveError("인물 칸을 고르려면 먼저 걷기 그림을 골라 주세요.");
@@ -248,10 +255,10 @@ export const ROWS: Readonly<Record<number, Row>> = {
     properties: {
       target: actor,
       operation: choices("전투 메뉴에 추가하려면 add, 빼려면 remove, 메뉴의 명령을 하나로 교체하려면 set을 고릅니다.", "add", "remove", "set"),
-      value: text("전투 명령의 자료집 항목입니다. 직업 전용 명령을 고를 때는 해당 주인공을 지정합니다."),
+      value: text("전투 명령의 자료집 항목입니다. 직업 전용 명령은 실행 시 그 명령을 가진 직업에 적용됩니다."),
     },
     required: ["value"], defaults: { target: "party", operation: "add" }, prepare: prepareBattleCommands, references: [battleCommandReference],
-    detail: (project, fields) => nameOf(battleCommandRecords(project, fields), field(fields, "value")),
+    detail: (project, fields) => nameOf(battleCommandRecords(project), field(fields, "value")),
   },
   98: {
     title: "적 체력 변경", properties: { target: allEnemies, operation, value: amount },
@@ -297,7 +304,7 @@ export const ROWS: Readonly<Record<number, Row>> = {
   },
 };
 
-export function validateFields(project: Project, row: Row, fields: M2CommandFields, patch: M2CommandFields): void {
-  row.prepare?.(fields, patch);
+export function validateFields(project: Project, row: Row, fields: M2CommandFields, patch: M2CommandFields, previous: M2CommandFields): void {
+  row.prepare?.(fields, patch, previous);
   for (const validate of row.references ?? []) validate(project, fields);
 }

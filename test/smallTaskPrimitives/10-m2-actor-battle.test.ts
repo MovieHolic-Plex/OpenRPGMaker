@@ -4,21 +4,26 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { HEROES_CHARSET_ASSETS } from "@/assets/heroesCharsets";
 import { SHARED_PORTRAIT_ASSETS } from "@/assets/sharedPortraitAssets";
 import { battleCommandsForActor } from "@/battle/battleCommands";
+import { createBattleRuntime } from "@/battle/runtime";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
-import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
+import { getPrimitive, primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/10-m2-actor-battle";
+import { ROWS, validateFields } from "@/editor/smallTask/primitives/units/10-m2-actor-battle/fields";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
+import { commandPanel } from "@/player/battleCommandDom";
+import { actorCommandDirectorState } from "@/player/battleDirectorDom";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
 import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import { store } from "@/project/store";
 import type { Command, EventPage, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, runHeadless } from "./harness";
+import { dbTarget, eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, runHeadless } from "./harness";
 import seededCorpus from "./10-m2-actor-battle/seeded-corpus.json";
 
 const EVENT = "ev_actor_battle_test";
@@ -185,6 +190,42 @@ describe("능력과 전투 명령 한 줄 저작", () => {
     ]);
   });
 
+  it("자료집의 적 그룹 선택으로 전투 이벤트 페이지 범위를 대신할 수 없다", () => {
+    const { project } = fixture();
+    const troop = project.database.troops[0]!;
+    const target = dbTarget(project, "troops", troop.id);
+    expectRefused(project, target, "m2.104.insert", { target: CALLED_PAGE });
+  });
+
+  it.each([98, 99, 108])("m2.%i의 예전 숫자 필드를 카탈로그 문자열로 읽는다", number => {
+    const { project } = fixture();
+    const previous = { target: number === 108 ? hero : "all", value: 4, operation: "set" };
+    const patch = { operation: "add" };
+    const fields = { ...previous, ...patch };
+    validateFields(project, ROWS[number]!, fields, patch, previous);
+    expect(fields).toEqual({ target: previous.target, value: "4", operation: "add" });
+    expect(previous.value).toBe(4);
+  });
+
+  for (const [alias, canonical, args, stored] of [
+    ["m2.103.insert", "cmd.showAnimation.insert", { animationId: "review_animation" }, { kind: "showAnimation", animationId: "review_animation" }],
+    ["m2.106.insert", "cmd.callCommonEvent.insert", { index: 1, commonEventId: "review_common_event" }, { kind: "callCommonEvent", commonEventId: "review_common_event" }],
+  ] as const) {
+    it.runIf(getPrimitive(canonical) !== undefined)(`${alias}가 합류한 정본 명령을 실행한다`, async () => {
+      const { project, target, read } = fixture();
+      project.commonEvents = [...project.commonEvents, { id: "review_common_event", name: "공용 호출", trigger: "none", commands: [] }];
+      const animation = project.database.battleAnimations[0]!;
+      project.database = {
+        ...project.database,
+        battleAnimations: [...project.database.battleAnimations, { ...animation, id: "review_animation", name: "빛" }],
+      };
+      expect(getPrimitive(alias)).toBe(getPrimitive(canonical));
+      const { after } = runPrimitive(project, target, alias, { ...args });
+      expect(read(after)).toEqual([original, expect.objectContaining(stored)]);
+      await expectUndoRestores(project, after, target);
+    });
+  }
+
   it("다른 명령 줄을 같은 명령으로 덮어쓸 수 없다", () => {
     const { project, target } = fixture();
     expectRefused(project, target, "m2.022.update", { index: 0, expectedHash: eventCommandHash(original), value: "카이" }, /이 종류의 명령/u);
@@ -297,6 +338,84 @@ describe("능력과 전투 명령 한 줄 저작", () => {
       .toEqual([expect.objectContaining({ id: command.id, kind: "defend" })]);
   });
 
+  it("전직한 직업의 전용 명령을 쓰고 이전 직업 명령으로 덮어쓰지 않는다", async () => {
+    const { project, target } = fixture("built", []);
+    const actor = project.database.actors.find(record => record.id === hero)!;
+    const nextClass = project.database.classes.find(record => record.id !== actor.classId)!;
+    const oldCommand = { id: "old_class_command", name: "수비", kind: "defend" } as const;
+    const newCommand = { id: "new_class_command", name: "전술", kind: "skill" } as const;
+    project.database = {
+      ...project.database,
+      classes: project.database.classes.map(record => record.id === actor.classId
+        ? { ...record, battleCommands: [oldCommand] }
+        : record.id === nextClass.id ? { ...record, battleCommands: [newCommand] } : record),
+    };
+    const setCommand = (source: Project, value: string) => runPrimitive(source, target, "m2.092.insert", {
+      target: hero, operation: "set", value,
+    }).after;
+    const beforeChange = setCommand(project, oldCommand.id);
+    const changed = runPrimitive(beforeChange, target, "m2.091.insert", { target: hero, value: nextClass.id }).after;
+    const battleMenu = (source: Project) => {
+      const { session } = runHeadless(source, target.mapId, target.eventId);
+      expect(session.classOverrides?.[hero]).toBe(nextClass.id);
+      return battleCommandsForActor(source, hero, {
+        classId: session.classOverrides?.[hero], overrideCommandIds: session.actorBattleCommands?.[hero],
+      });
+    };
+    // 이미 세션에 저장된 옛 직업 명령과 전직 뒤 새로 실행한 옛 직업 명령을 모두 검사한다.
+    expect(battleMenu(changed)).toEqual([newCommand]);
+    const withNew = setCommand(changed, newCommand.id);
+    expect(runHeadless(withNew, target.mapId, target.eventId).session.actorBattleCommands?.[hero]).toEqual([newCommand.id]);
+    const after = setCommand(withNew, oldCommand.id);
+    expect(battleMenu(after)).toEqual([newCommand]);
+    await expectUndoRestores(changed, withNew, target);
+  });
+
+  it.each(["gauge", "strict"] as const)("마지막 전투 명령을 빼면 %s 메뉴의 대기로 차례를 진행한다", async battleFlow => {
+    const { project, target } = fixture("built", []);
+    const actor = project.database.actors.find(record => record.id === hero)!;
+    const command = { id: "last_guard", name: "철벽", kind: "defend" } as const;
+    project.database = {
+      ...project.database,
+      classes: project.database.classes.map(record => record.id === actor.classId
+        ? { ...record, battleCommands: [command] } : record),
+    };
+    const { after } = runPrimitive(project, target, "m2.092.insert", {
+      target: hero, operation: "remove", value: command.id,
+    });
+    const { session } = runHeadless(after, target.mapId, target.eventId);
+    expect(session.actorBattleCommands?.[hero]).toEqual([]);
+    expect(battleCommandsForActor(after, hero, { overrideCommandIds: session.actorBattleCommands?.[hero] })).toEqual([]);
+    session.partyActorIds = [hero];
+    store.replaceProject(after);
+    const runtime = createBattleRuntime({
+      project: after, troopId: after.database.troops[0]!.id, sessionState: session,
+      battleFlow, canLose: true, canEscape: false, rng: () => 0.5,
+    });
+    try {
+      for (let step = 0; step < 10 && runtime.snapshot().phase === "charging"; step += 1) runtime.tick(10_000);
+      const snapshot = runtime.snapshot();
+      expect(snapshot.phase).toBe("actorCommand");
+      expect(snapshot.activeActorId).toBe(hero);
+      const panel = commandPanel(snapshot, {
+        runtime, submenu: null, setSubmenu() {}, setDirectorState() {}, render() {},
+        runActorCommand: command => runtime.performActorCommand(command),
+        beginTargetCommand() {}, confirmTargetSelection() {},
+      });
+      expect(panel.querySelector('[data-testid="actor-command-defend"]')).toBeNull();
+      const pass = panel.querySelector<HTMLButtonElement>('[data-testid="actor-command-pass"]');
+      expect(pass?.textContent).toContain("대기");
+      pass!.click();
+      const advanced = runtime.snapshot();
+      expect(advanced.timeline).toContainEqual(expect.objectContaining({ commandKind: "pass" }));
+      expect(actorCommandDirectorState({ kind: "pass" }, snapshot, advanced).lines)
+        .toEqual([expect.stringContaining("차례를 넘겼다.")]);
+    } finally {
+      runtime.cancel();
+    }
+    await expectUndoRestores(project, after, target);
+  });
+
   it("예전의 주인공 직접 지정 줄을 수정해도 전투 메뉴가 해당 주인공에게만 바뀐다", () => {
     const command: M2 = {
       kind: "m2Command", commandId: "m2-092-change-battle-commands",
@@ -376,6 +495,26 @@ describe("저장된 명령 실행", () => {
     expect(resolvePlayerSpriteResource(after, session)).toMatchObject({ resourceId: sheet.id, characterIndex: 3 });
     const actor = project.database.actors.find(record => record.id === hero)!;
     expect(resolveActorFaceResourceId(session, actor, after)).toBe(portrait.id);
+  });
+
+  it.each([
+    { value: "tex_easyrpg_charset_actor1", characterIndex: 4 },
+    { value: "tex_easyrpg_charset_actor1#4" },
+    { value: "charset:tex_easyrpg_charset_actor1:4" },
+  ])("걷기 시트만 바꿀 때 기존 인물 칸을 보존한다 (%j)", async fields => {
+    const command: M2 = { kind: "m2Command", commandId: "m2-024-change-actor-graphic", fields: { target: hero, ...fields } };
+    const { project, target, read } = fixture("built", [command]);
+    const sheet = HEROES_CHARSET_ASSETS.find(asset => asset.textureKey !== "tex_easyrpg_charset_actor1")!;
+    const { after } = runPrimitive(project, target, "m2.024.update", {
+      index: 0, expectedHash: eventCommandHash(command), value: sheet.textureKey,
+    });
+    const { session } = runHeadless(after, target.mapId, target.eventId);
+    expect(resolvePlayerSpriteResource(after, session)).toMatchObject({ resourceId: sheet.id, characterIndex: 4 });
+    const cleared = runPrimitive(after, target, "m2.024.update", {
+      index: 0, expectedHash: eventCommandHash(read(after)[0]!), value: "",
+    }).after;
+    expect(read(cleared)).toEqual([{ ...command, fields: { target: hero, value: "" } }]);
+    await expectUndoRestores(project, after, target);
   });
 });
 

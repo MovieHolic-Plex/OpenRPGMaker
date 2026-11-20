@@ -52,7 +52,7 @@ function prepareCommand(project: Project, args: Args, row: Row, initial: M2Comma
     if (Object.hasOwn(args, key)) patch[key] = args[key] as M2CommandFields[string];
   }
   const fields = { ...initial.fields, ...patch };
-  validateFields(project, row, fields, patch);
+  validateFields(project, row, fields, patch, initial.fields);
   return { ...initial, fields };
 }
 

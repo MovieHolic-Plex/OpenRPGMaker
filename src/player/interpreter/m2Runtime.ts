@@ -10,7 +10,7 @@ import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
 import { effectiveActorClassId } from "@/project/growth/lineage";
-import { baseBattleCommandIds } from "@/battle/battleCommands";
+import { baseBattleCommandIds, findBattleCommandRecord } from "@/battle/battleCommands";
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
@@ -501,20 +501,29 @@ function mutateActorState(
       .split(",")
       .map((entry) => entry.trim())
       .filter(Boolean);
+    const requested = operation === "set" && slots.length > 0 ? slots : commandId ? [commandId] : [];
+    const project = context.project;
     actor.battleCommands = commandId;
     session.actorBattleCommands ??= {};
     for (const targetActorId of resolveActorTargets(session, actorId)) {
-      // 아직 바꾼 적 없는 배우는 지금 메뉴(배우 고유 목록 > 직업 명령)에서 더하고 뺀다.
-      const current = session.actorBattleCommands[targetActorId]
-        ?? (context.project ? baseBattleCommandIds(context.project, targetActorId, effectiveActorClassId(context.project, session, targetActorId)) : []);
+      const classId = project && effectiveActorClassId(project, session, targetActorId);
+      const available = (id: string) => !project || findBattleCommandRecord(project, classId, id) !== undefined;
+      const override = session.actorBattleCommands[targetActorId];
+      const usableOverride = override?.filter(available);
+      // 전직 뒤에도 유효한 명령은 유지한다. 전부 이전 직업 명령이면 현재 메뉴에서 시작한다.
+      const current = usableOverride && (override?.length === 0 || usableOverride.length > 0)
+        ? usableOverride
+        : project ? baseBattleCommandIds(project, targetActorId, classId) : [];
       if (operation === "remove") {
-        session.actorBattleCommands[targetActorId] = current.filter((id) => id !== commandId);
+        if (current.includes(commandId)) {
+          session.actorBattleCommands[targetActorId] = current.filter(id => id !== commandId);
+        }
       } else if (operation === "set") {
-        session.actorBattleCommands[targetActorId] = slots.length > 0 ? slots : (commandId ? [commandId] : []);
-      } else if (commandId && !current.includes(commandId)) {
-        session.actorBattleCommands[targetActorId] = [...current, commandId];
-      } else {
-        session.actorBattleCommands[targetActorId] = current.length ? current : (commandId ? [commandId] : []);
+        const commands = requested.filter(available);
+        if (commands.length > 0) session.actorBattleCommands[targetActorId] = commands;
+        else if (requested.length === 0) delete session.actorBattleCommands[targetActorId];
+      } else if (commandId && available(commandId)) {
+        session.actorBattleCommands[targetActorId] = current.includes(commandId) ? current : [...current, commandId];
       }
     }
     return;
