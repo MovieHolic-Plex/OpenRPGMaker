@@ -207,6 +207,7 @@ export function actorCommandDirectorState(
   options: { readonly describeEffectiveness?: boolean } = {},
 ): BattleDirectorState {
   const actor = activeActor(before);
+  if (command.kind === "pass") return passTurnDirectorState(actor);
   const commanded = commandTarget(command, before, after);
   // 이 명령의 결과는 타임라인 델타에서 찾는다. after.lastActionResult 는 strict 플로우에서
   // 라운드의 "마지막" 액션(대개 적의 반격)이라, 그걸 쓰면 아군 공격 메시지의 숫자가
@@ -274,6 +275,14 @@ export function actorCommandDirectorState(
     lines: spoken,
     activeActorRecordId: actor?.recordId,
     targetId: target?.id,
+  };
+}
+
+export function passTurnDirectorState(actor: BattleBattlerSnapshot | undefined): BattleDirectorState {
+  return {
+    step: "acting",
+    lines: [`${withJosa(actor?.name ?? "아군", "이/가")} 차례를 넘겼다.`],
+    activeActorRecordId: actor?.recordId,
   };
 }
 
@@ -990,7 +999,7 @@ export function applyBattleDirectorState(
 }
 
 function commandTarget(
-  command: ActorCommand,
+  command: Exclude<ActorCommand, { kind: "pass" }>,
   before: BattleSnapshot,
   after: BattleSnapshot
 ): BattleBattlerSnapshot | undefined {
@@ -1015,7 +1024,7 @@ function commandTarget(
   }
 }
 
-function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undefined, before?: BattleSnapshot): string {
+function commandLine(command: Exclude<ActorCommand, { kind: "pass" }>, actor: BattleBattlerSnapshot | undefined, before?: BattleSnapshot): string {
   const actorName = actor?.name ?? "아군";
   const subject = withJosa(actorName, "이/가");
   switch (command.kind) {

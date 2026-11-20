@@ -45,6 +45,8 @@ import {
 } from "@/project/eventCommands/coordinateDestination";
 import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import { resolveEventPage } from "@/project/io";
+import { runtimePageContext } from "@/project/runtimeEventState";
+import { runtimeMap } from "@/project/runtimeMap";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
@@ -122,13 +124,14 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
 // 맵 이벤트 호출: 현재 맵의 eventId 이벤트를 찾아 활성 페이지의 commands 를 실행한다.
 // 페이지가 없는 레거시 이벤트는 최상위 commands 로 폴백한다(RM2K3 "Call Event" 동작).
 function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): CommandExecution {
-  const map = state.project?.maps[state.session.currentMapId];
+  const project = state.project;
+  const map = project?.maps[state.session.currentMapId];
   const event = map?.events.find((entry) => entry.id === eventId);
-  if (!event) {
+  if (!project || !map || !event) {
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations, ...partySkillContext(state.project, state.session) }) : undefined;
+  const page = resolveEventPage(event, state.session, runtimePageContext(project, runtimeMap(map, state.session), state.session, state.eventPositions));
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };
