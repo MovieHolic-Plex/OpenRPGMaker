@@ -31,8 +31,8 @@ import {
   gone, ifCond, m2, mustBlock, mustReach, mustWalk, nearestFree, note, page, panBack, panTo, playSe, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, thinkAs,
   timedChoice, tint, transfer, varAtLeast, varIs, voice, wait, walk, walkTo, type Who,
 } from "./maouKonbiniKit";
-import throneBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_throne_212b9127.json";
-import konbiniBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_konbini_night_matte_63290325.json";
+import throneBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_throne_212b9127.json" with { type: "json" };
+import konbiniBackdrop from "./maouKonbiniBackdrops/battle_backdrop_maou_konbini_night_matte_63290325.json" with { type: "json" };
 import { buildMaouOpening, buildMaouThrone, setupMaouTitle, stageMaouRoomWake } from "./maouKonbiniOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 

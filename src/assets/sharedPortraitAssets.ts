@@ -1,5 +1,5 @@
 import { FACE_EXPRESSION_SETS } from "./faceExpressionSets";
-import expressionSources from "../../scripts/shared-face-expression-sources.json";
+import expressionSources from "../../scripts/shared-face-expression-sources.json" with { type: "json" };
 
 /**
  * 공용 표정 세트 76종의 대화용 흉상·전신(2026-10-01, scripts/content/portraits/).

@@ -3,7 +3,7 @@
 // 왜(오너 2026-11-15 «확대해서 보면 엉망진창인 게 너무많다. 버들항급 퀄리티도 안 되고»): 옛 소품은 손이 셋이고 크기가 제각각이며 아무 칸에나 놓였다.
 //   새 조각은 모두 한 손으로 다시 그렸고, 조각마다 «어디에 서는가»(앵커 등급)를 자료로 갖는다 — 구성기는 그 자리에만 놓는다.
 // 자료: src/assets/jpCityStreetPieces.json (생성물 — scripts/content/jp-city/street/fable_street_spec.py).
-import piecesJson from "@/assets/jpCityStreetPieces.json";
+import piecesJson from "@/assets/jpCityStreetPieces.json" with { type: "json" };
 
 /**
  * 바닥 가족: 0 없음 · pave 보도 블록 · forecourt 가게 앞마당 판 · tarmac 아스팔트(연석 있는 차도·주차장) · alley 골목 돌길(참배길·옛 골목) · earth 다진 흙 · lawn 잔디 · water 물 ·

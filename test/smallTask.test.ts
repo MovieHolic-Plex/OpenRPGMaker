@@ -86,13 +86,14 @@ it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼�
 
 it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 } },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, omitChangedKeys: true },
   { kind: "event", selectedMapId: "another_map", rect: undefined },
   { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly }) => {
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys }) => {
   const project = fixture();
   const live = structuredClone(project);
   const original = live.maps.map_a.events[0]!;
@@ -114,7 +115,7 @@ it.each([
     expect(body.smallTask.draftSource).toEqual({ maps: { map_a: { events: [draft] } } });
     expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     expect(body).not.toHaveProperty("apiKey");
-    const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
       headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
     });

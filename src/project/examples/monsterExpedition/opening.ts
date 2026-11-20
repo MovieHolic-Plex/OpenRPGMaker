@@ -1,7 +1,7 @@
 import type { Project, UploadedAsset } from "@/project/types";
-import artwork from "../../../../public/assets/monster-expedition/opening/uploaded-art.json";
-import storyboardArtwork from "../../../../public/assets/monster-expedition/opening/storyboard-uploaded-art.json";
-import prologueMusic from "../../../../public/assets/monster-expedition/opening/score/payload.json";
+import artwork from "../../../../public/assets/monster-expedition/opening/uploaded-art.json" with { type: "json" };
+import storyboardArtwork from "../../../../public/assets/monster-expedition/opening/storyboard-uploaded-art.json" with { type: "json" };
+import prologueMusic from "../../../../public/assets/monster-expedition/opening/score/payload.json" with { type: "json" };
 
 /** Authored prologue and title art; the canonical document carries the media. */
 export function configureExpeditionOpening(project: Project): void {

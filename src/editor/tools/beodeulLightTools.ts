@@ -1,5 +1,5 @@
-import architecture from '@/assets/beodeulArchitectureCatalog.json';
-import catalog from '@/assets/beodeulGroundCatalog.json';
+import architecture from '@/assets/beodeulArchitectureCatalog.json' with { type: "json" };
+import catalog from '@/assets/beodeulGroundCatalog.json' with { type: "json" };
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from '@/project/defaults/beodeulGround';
 import { translateTiles } from '@/project/objectStamp';
 import { houseSetBaseTiles } from '@/project/houseSetKit';

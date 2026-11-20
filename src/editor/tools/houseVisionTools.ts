@@ -8,7 +8,7 @@
 import type { GameMap, Project } from "@/project/types";
 import { layerTileAt } from '@/project/mapLayers';
 import { houseSetBaseTiles } from '@/project/houseSetKit';
-import beodeulArchitecture from '@/assets/beodeulArchitectureCatalog.json';
+import beodeulArchitecture from '@/assets/beodeulArchitectureCatalog.json' with { type: "json" };
 import { TILE } from "@/project/defaults/constants";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";

@@ -1,4 +1,4 @@
-import data from "./projectInterviewScenes.json";
+import data from "./projectInterviewScenes.json" with { type: "json" };
 import type { GameBriefSlot, GameDesignAnswers } from "@/project/gameDesignBrief";
 import type { GameInterview, InterviewGenre } from "@/project/gameInterview";
 

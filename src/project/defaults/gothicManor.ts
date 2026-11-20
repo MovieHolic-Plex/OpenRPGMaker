@@ -6,11 +6,11 @@
 // 칸 번호는 덧붙이기 전용이다(자리 키 핀 tiledata/gothic-manor/pins.json) — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다.
 // 번들 소유 = id 가 `gm-` 로 시작하는 조립 부품·오토타일 그룹·참고문서. 저자가 더한 것(다른 id)은 갱신 때 보존한다.
 // 구조는 wizardingWorld.ts 와 같다(같은 갱신 규약).
-import sheet from "@/assets/gothicManorSheet.json";
+import sheet from "@/assets/gothicManorSheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`gothicManorSheet.json`)에서 읽는다. */
 const data = () => bundledJson("gothicManorTileset");
-import references from "@/assets/gothicManorReferences.json";
+import references from "@/assets/gothicManorReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";

@@ -1982,7 +1982,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendText = async (
     text: string,
     displayAs?: string,
-    opts?: { readonly replay?: boolean; readonly onSettled?: () => void; readonly deferApply?: boolean; readonly eventCommandScope?: AiBridgeSendOptions["eventCommandScope"] },
+    opts?: { readonly replay?: boolean; readonly onSettled?: (error?: string) => void; readonly deferApply?: boolean; readonly eventCommandScope?: AiBridgeSendOptions["eventCommandScope"] },
   ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -4428,10 +4428,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       try {
         let result: AiBridgeTurnResult | undefined;
         await sendText(trimmed, undefined, { ...(sendOptions?.deferApply === true || sendOptions?.eventCommandScope ? { deferApply: true } : {}),
-          ...(sendOptions?.eventCommandScope ? { eventCommandScope: sendOptions.eventCommandScope } : {}), onSettled: () => {
+          ...(sendOptions?.eventCommandScope ? { eventCommandScope: sendOptions.eventCommandScope } : {}), onSettled: (error) => {
           const audit = collectAudit();
+          const eventError = sendOptions?.eventCommandScope ? error : undefined;
           result = {
-            ok: true,
+            ok: eventError === undefined,
+            ...(eventError === undefined ? {} : { error: eventError }),
             status: {
               ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "대기",
               bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
@@ -4440,7 +4442,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
             harness: controller.session?.getHarnessSnapshot() ?? null,
             lastAssistantText: lastAssistantFromAudit(),
             runOutcome: controller.session?.getRunOutcome() ?? null,
-            pendingProposal: pendingProposalSnapshot(),
+            pendingProposal: eventError === undefined ? pendingProposalSnapshot() : null,
           };
         } });
         if (!result) throw new Error("AI turn ownership retired before publication");

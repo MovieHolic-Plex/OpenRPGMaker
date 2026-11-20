@@ -1,5 +1,5 @@
 import { emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
-import references from "@/assets/emeraldMonsterReferences.json";
+import references from "@/assets/emeraldMonsterReferences.json" with { type: "json" };
 import { createMonsterKitTileset } from "./monsterKit";
 import type { TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
