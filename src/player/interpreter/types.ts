@@ -275,6 +275,7 @@ export interface Frame {
 export interface InterpreterState {
   /** Host-owned proof hooks. Absent in ordinary game execution. */
   beforeCommand?: (command: Command) => void;
+  onScreenFade?: () => void;
   onUnverified?: (reason: string) => never;
   onSafetyStop?: (stop: import("@/player/runtimeSafetyStop").RuntimeSafetyStop) => void;
   continueAfterTransfer?: boolean;
@@ -324,6 +325,7 @@ export interface InterpreterTrace {
 export interface InterpreterOptions {
   readonly trace?: InterpreterTrace;
   readonly beforeCommand?: (command: Command) => void;
+  readonly onScreenFade?: () => void;
   readonly onUnverified?: (reason: string) => never;
   /** 명령·루프·스택 예산에 걸려 멈춘 순간. 화면 알림과 도구가 읽는 기록을 여기서 받는다(runtimeSafetyStop.ts). */
   readonly onSafetyStop?: (stop: import("@/player/runtimeSafetyStop").RuntimeSafetyStop) => void;

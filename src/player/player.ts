@@ -41,6 +41,7 @@ import {
 } from "@/player/saveSlots";
 import { resetAutosaveDebounce } from "@/player/autosave";
 import { createDialogueUI } from "@/player/dialogue";
+import { installConfirmPressTracker } from "@/player/confirmMashGuard";
 import { destroyBattleSceneOnHost } from "@/player/battleDom";
 import { markPlayRender } from "@/app/perfMetrics";
 import type { PlayScene } from "@/player/PlayScene";
@@ -192,6 +193,7 @@ const MENU_CLOSE_JUICE_MS = 250;
 const TITLE_CONFIRM_JUICE_MS = 180;
 
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
+  installConfirmPressTracker();
   teardownShell?.();
   setSavePublication(store.getCurrent().meta.publication, options.saveIsolationScope);
   clearChildren(main);

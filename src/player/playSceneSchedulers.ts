@@ -1,4 +1,5 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
+import { armDialogueConfirmRelease } from "@/player/confirmMashGuard";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { queueScheduledBattle, resumeScheduledBattle } from "./scheduledBattle";
 import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
@@ -137,6 +138,7 @@ function createParallelProcess(
     currentEventId: event.event.id,
     interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
       ...parallelTrace("parallel", scene, event.event.id),
+      onScreenFade: armDialogueConfirmRelease,
       currentEventId: event.event.id,
       getEventPositions: () => scene.eventPositions,
       isEventIdle: target => isRuntimeEventIdle(scene, target),
@@ -157,6 +159,7 @@ function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent
     pageId: event.id,
     interpreter: createInterpreter(event.commands, scene.session, project, {
       ...parallelTrace("commonParallel", scene, event.id),
+      onScreenFade: armDialogueConfirmRelease,
       getEventPositions: () => scene.eventPositions,
       isEventIdle: target => isRuntimeEventIdle(scene, target),
       onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),

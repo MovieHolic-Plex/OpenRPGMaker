@@ -362,6 +362,7 @@ function executeM2Command(
 
   // 화면 숨기기/표시는 페이드가 끝난 뒤에 다음 명령이 시작한다. 안 기다리면 대사가 검게 덮이는 도중에 뜬다.
   if ((entry.title === "Hide Screen" || entry.title === "Show Screen") && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    state.onScreenFade?.();
     return pause("wait", { kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
   }
 
@@ -381,8 +382,10 @@ function executeM2Command(
   // 지속형(tint/fade)·날씨는 applyScreenEffect 가 runtime.screen 에 반영해 두므로
   // 여기서는 일회형만 블로킹 pause 로 넘긴다.
   if (entry.title === "Screen Effect" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const effect = fieldString(command.fields, "effect", "fadeIn");
+    if (effect === "fadeIn" || effect === "fadeOut") state.onScreenFade?.();
     const plan = planScreenEffect(
-      fieldString(command.fields, "effect", "fadeIn"),
+      effect,
       fieldString(command.fields, "value", ""),
       fieldNumber(command.fields, "durationMs", 300)
     );

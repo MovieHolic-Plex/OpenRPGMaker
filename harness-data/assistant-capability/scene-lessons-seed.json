@@ -1375,6 +1375,19 @@
     "The shop door still transfers the player by walking into it"
    ],
    "lint0": []
+  },
+  {
+   "id": "konbini-unfinished-task-reminders",
+   "label": "편의점에서 미완료 업무 위치만 다시 묻기",
+   "port": 19581,
+   "lessons": ["shift-workplace-landmarks", "switch-gated-task-reminders"],
+   "prompt": "편의점 첫 근무 브리핑 뒤에도 점장이나 히나한테 다시 말을 걸면 남은 업무의 위치를 알려 줘. 상자는 왼쪽 진열대 사이, 분리수거함은 입구 왼쪽이야. 둘 중 어느 쪽을 먼저 끝내든 끝낸 업무의 위치는 그 뒤로 말하지 마. 기존 업무나 지도를 바꾸지 말고 대사만 추가해 줘.",
+   "requirements": [
+    "Both speakers repeat both locations before either task is done",
+    "Completing either task first suppresses only its location in each speaker's repeat dialogue",
+    "Existing task triggers, task completion, and map layout still work after a save and reload"
+   ],
+   "lint0": []
   }
  ]
 }

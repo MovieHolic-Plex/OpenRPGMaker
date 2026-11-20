@@ -16,7 +16,7 @@
 // 단위 테스트가 보내는 합성 키는 표시가 없어 그대로 지나간다. 대사 넘기기는 이 판정을 쓰지 않는다 — 연타로 대사를
 // 빨리 넘기는 것은 정상 동작이고, 넘기기에 지연을 두지 않는다.
 
-import { isConfirmKey, keyboardEventKey } from "@/player/keyBindings";
+import { isConfirmKey, keyboardEventKey, normalizeKey } from "@/player/keyBindings";
 
 /** 창이 열린 뒤 결정 키를 받지 않는 시간. */
 export const OPEN_GRACE_MS = 300;
@@ -43,6 +43,24 @@ let previousConfirmDownAt = Number.NEGATIVE_INFINITY;
 let latestConfirmDownAt = Number.NEGATIVE_INFINITY;
 let latestOtherKeyDownAt = Number.NEGATIVE_INFINITY;
 let trackerInstalled = false;
+const heldConfirmKeys = new Set<string>();
+const confirmKeysAwaitingRelease = new Set<string>();
+let awaitingFreshConfirm = false;
+
+/** End a hold across a scene boundary, even if no dialogue window is mounted. */
+export function armDialogueConfirmRelease(): void {
+  installConfirmPressTracker();
+  awaitingFreshConfirm = true;
+  for (const key of heldConfirmKeys) confirmKeysAwaitingRelease.add(key);
+}
+
+export function blocksDialogueConfirm(event: KeyboardEvent): boolean {
+  return confirmKeysAwaitingRelease.size > 0 || (awaitingFreshConfirm && event.repeat);
+}
+
+export function acknowledgeFreshDialogueConfirm(): void {
+  awaitingFreshConfirm = false;
+}
 
 const MODIFIER_KEYS = new Set(["Shift", "Control", "Alt", "Meta", "CapsLock", "Process", "Unidentified"]);
 
@@ -54,15 +72,35 @@ export function installConfirmPressTracker(): void {
   if (trackerInstalled || typeof window === "undefined") return;
   trackerInstalled = true;
   window.addEventListener("keydown", (event) => {
-    if (event.repeat || !isPlayerKeyInput(event)) return;
+    if (event.repeat || typeof event.key !== "string") return;
     const key = keyboardEventKey(event);
-    if (isConfirmKey(key)) {
+    const confirm = isConfirmKey(key);
+    if (confirm) {
+      const normalized = normalizeKey(key);
+      if (awaitingFreshConfirm && heldConfirmKeys.has(normalized)) {
+        confirmKeysAwaitingRelease.add(normalized);
+      }
+      heldConfirmKeys.add(normalized);
+    }
+    if (!isPlayerKeyInput(event)) return;
+    if (confirm) {
       previousConfirmDownAt = latestConfirmDownAt;
       latestConfirmDownAt = event.timeStamp;
     } else if (!MODIFIER_KEYS.has(key)) {
       latestOtherKeyDownAt = event.timeStamp;
     }
   }, true);
+  window.addEventListener("keyup", (event) => {
+    if (typeof event.key !== "string") return;
+    const key = normalizeKey(keyboardEventKey(event));
+    heldConfirmKeys.delete(key);
+    confirmKeysAwaitingRelease.delete(key);
+  }, true);
+  window.addEventListener("blur", () => {
+    heldConfirmKeys.clear();
+    confirmKeysAwaitingRelease.clear();
+    awaitingFreshConfirm = true;
+  });
 }
 
 /**
