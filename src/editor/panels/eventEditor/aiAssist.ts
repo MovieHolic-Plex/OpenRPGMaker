@@ -98,6 +98,7 @@ function stopEventRequest(): void {
 // stagedHost 에 그리면 화면엔 아무것도 안 나온다 — 목록은 초안이 있다고 숨고, 초안은 없는 상태.
 let liveDock: {
   key: string;
+  root: HTMLDetailsElement;
   /** 이 도크를 펼치고 입력창으로 초점을 준다. 자기 페이지 키를 스스로 알고 있다. */
   open: () => boolean;
   renderStaged: () => void;
@@ -561,17 +562,27 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }
     const commands = applyCommandDiff(staged.rows, staged.excluded);
     const summary = stagedDiffSummary(staged.rows, staged.excluded);
-    // 적용 전에 초안을 비워, 스토어 갱신으로 재생성될 패널이 목록을 다시 보이게 한다.
+    // 명령 목록 전체를 교체해 되돌리기 한 칸으로 기록한다.
+    try {
+      replaceAll(commands);
+    } catch (cause) {
+      const detail = cause instanceof Error ? cause.message : String(cause);
+      state.status = `변경 내용을 적용하지 못했어요. — ${detail}`;
+      state.statusKind = "error";
+      if (liveDock?.key === key) liveDock.setStatus(state.status, "error");
+      return;
+    }
     state.staged = null;
     state.open = false;
-    root.open = false;
     state.applied = true;
     state.status = `${summary} 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.`;
     state.statusKind = "";
-    // 명령 하나씩 넣지 않고 목록을 통째로 교체한다 — 되돌리기 스냅샷이 정확히 한 칸 쌓인다.
-    replaceAll(commands);
-    renderStaged();
-    setStatus(state.status);
+    // 스토어 갱신이 동기적으로 도크를 다시 그릴 수 있다.
+    if (liveDock?.key === key) {
+      liveDock.root.open = false;
+      liveDock.setStatus(state.status);
+      liveDock.renderStaged();
+    }
   });
 
   cancelBtn.addEventListener("click", () => {
@@ -676,6 +687,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   if (state.statusKind === "busy") setGenerating(true);
   liveDock = {
     key,
+    root,
     open: () => {
       if (!root.isConnected) return false;
       // `state.open` 을 함께 세운다. `details.open` 만 켜면 `toggle` 이벤트에 기대게 되는데

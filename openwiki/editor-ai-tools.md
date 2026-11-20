@@ -1179,7 +1179,8 @@ GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했�
 
 `event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지
 명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. 일반 조수에서는 페이지 ID를
-모를 때 `get_event`로 조회한다. 이벤트 편집기 도크는 ID와 페이지 요약을 이미 전달하므로
+모를 때 `get_event`로 조회하고, 장소나 맵의 실제 배치는 `get_map_region` 등 기존 조회 도구로 확인한다.
+이벤트 편집기 도크는 ID와 페이지 요약을 이미 전달하므로
 `event_command_assist`만 노출한다. 도크의 범위 거절은 사용할 대상 ID와 모드를 안내한다.
 새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
 
@@ -1202,6 +1203,8 @@ GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했�
 이벤트 편집기의 생성 버튼도 `sendAiAssistantMessage` → `aiChatPanel.sendText` →
 `aiTurnRunner` → `AssistantSession.sendUserMessage` 공용 경로를 사용한다.
 호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨을 고정한다.
+도크 요청에는 전용 시스템 지시, 현재 사용자 발화, 그 턴의 도구 호출과 응답만 담는다.
+이전 공용 대화는 세션 기록에 보존한다.
 `edit` 범위에선 전체 편집과 `append`가 가능하다. `append` 전용 범위에선 도구 스키마와
 실행 경계 모두 명시적인 `append`만 받는다. 다른 대상은 호출 시 거부하고,
 `checkEventCommandScope`로 생성 결과가 지정한 페이지의 명령에만 영향을 주는지 확인한다.

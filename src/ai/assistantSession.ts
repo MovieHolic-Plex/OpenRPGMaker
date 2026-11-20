@@ -856,6 +856,7 @@ export class AssistantSession {
   }
   private storeBacked = false;
   private eventCommandScope: EventCommandScope | undefined;
+  private eventCommandPrompt: ChatMessage | undefined;
   private runReceipt: ProjectPersistenceReceipt | null = null;
   private wikiDelivery: {
     owner: { current: TurnResult | null };
@@ -1819,6 +1820,7 @@ export class AssistantSession {
       runOutcome: deriveRunOutcome({ execution: "cancelled", acceptance: null, hasPendingDraft: false, hasApplied: false, persistence: "none" }) };
     signal = operation.signal;
     this.eventCommandScope = opts?.eventCommandScope ? structuredClone(opts.eventCommandScope) : undefined;
+    this.eventCommandPrompt = undefined;
     this.recoveryOperation = opts?.driverContinue && this.recoveredCheckpoint ? operation : null;
     if (this.recoveryOperation !== operation) { this.recoveredCheckpoint = null; this.recoveryBudget = null; }
     const subscriber = onEvent;
@@ -2100,7 +2102,9 @@ export class AssistantSession {
       onEvent({ type: "status", text: transition });
     }
     const userContent = this.eventCommandScope ? text : await operation.wait(this.buildUserTurnContent(text));
-    this.messages.push({ role: "user", content: userContent });
+    const userMessage: ChatMessage = { role: "user", content: userContent };
+    this.messages.push(userMessage);
+    if (this.eventCommandScope) this.eventCommandPrompt = userMessage;
     this.pushAudit({ kind: "user", text, context: turnContext });
     // 사용자 발화만 따로 든다. `[컨텍스트]` footer 는 코드가 아는 사실이라 모델에는 그대로 가지만,
     // 의도 선언·툴 이름 언급·능력 승격의 입력은 사용자 말이어야 한다 — 기계 텍스트가 이 자리에
@@ -4796,6 +4800,7 @@ export class AssistantSession {
     operation.assertCurrent();
     this.lastTurnFailed = false;
     const eventScope = this.eventCommandScope;
+    const eventPrompt = this.eventCommandPrompt;
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
@@ -4958,10 +4963,19 @@ export class AssistantSession {
       if (!eventScope) await operation.wait(this.maybeCompactConversation(onEvent, signal));
       let requestMessages: ChatMessage[] = [];
       try {
-        const rewardNote = this.npcRewardNote();
-        const messages: ChatMessage[] = eventScope
-          ? [{ role: "system", content: buildEventCommandSystemPrompt(this.ctx.project, eventScope) }, ...this.messages.slice(1)]
-          : rewardNote ? [...this.messages, { role: "user", content: rewardNote }] : this.messages;
+        let messages = this.messages;
+        if (eventScope) {
+          if (!eventPrompt) throw new Error("이벤트 명령 요청을 찾을 수 없습니다.");
+          // Use the current dock prompt as the boundary, including on a manual retry.
+          // Keep its tool exchange together and leave the shared transcript untouched.
+          const start = this.messages.lastIndexOf(eventPrompt);
+          const exchange = start < 0 ? [eventPrompt] : this.messages.slice(start).filter(message =>
+            message === eventPrompt || message.role === "assistant" || message.role === "tool");
+          messages = [{ role: "system", content: buildEventCommandSystemPrompt(this.ctx.project, eventScope) }, ...exchange];
+        } else {
+          const rewardNote = this.npcRewardNote();
+          if (rewardNote) messages = [...messages, { role: "user", content: rewardNote }];
+        }
         const original = eventScope ? null : this.originalContext;
         const grounded = buildGroundedRequest(messages, tools, this.phaseConfig(phase), original);
         requestMessages = grounded.messages;

@@ -1,7 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import { AssistantSession, type ChatFn } from "@/ai/assistantSession";
-import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
+import { resolveContextWindow } from "@/ai/contextCompaction";
+import { emptyIntentDeclaration, type IntentDeclaration } from "@/ai/intentDeclaration";
+import { defaultAiConfig, type ChatMessage, type ChatResult } from "@/ai/llmClient";
+import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
+import { ToolReadEvidence } from "@/ai/toolReadEvidence";
 import { createStarterBlankProject } from "@/project/defaults";
+import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
 import { eventScopeRefusal, onlyEventPageCommandsChanged, type EventCommandScope } from "@/ai/eventCommandScope";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { JsonSchema } from "@/editor/tools/types";
@@ -27,6 +32,62 @@ function fixture() {
 }
 
 describe("event editor shared assistant scope", () => {
+  it("keeps the origin/main tool catalog for a non-scoped event request", async () => {
+    const { project } = fixture();
+    const prompt = "Review this event's commands";
+    const config = { ...defaultAiConfig(), agentMode: "chat" as const };
+    const intent: IntentDeclaration = { ...emptyIntentDeclaration(), source: "llm", tools: ["run_lint", "event_command_assist"] };
+    const chat = vi.fn<ChatFn>(async () => text("검토했습니다."));
+    const session = new AssistantSession(project, { config, chat, declareIntent: async () => ({ intent, elapsedMs: 0 }) });
+    const result = await session.sendUserMessage(prompt, undefined, undefined, { autonomous: false });
+
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(chat).toHaveBeenCalledTimes(1);
+    const exposed = chat.mock.calls[0][1].tools?.map(tool => tool.function.name);
+    // origin/main's non-scoped path uses the registry plus the session control tools.
+    const registry = buildSessionRegistryTools({ requestText: prompt, intent, contextWindow: resolveContextWindow(config.model),
+      requiredReadTools: new ToolReadEvidence().requiredReadTools(),
+      hideTool: name => toolHiddenByMonsterLock(project, name, { monsterTurn: false }) });
+    expect(exposed).toEqual([...registry.map(tool => tool.function.name), "get_original_context", "correct_verification", "set_build_spec"]);
+    expect(exposed).toEqual(expect.arrayContaining([
+      "get_map_region", "get_project_summary", "find_events", "find_layout_regions", "list_resources",
+      "get_event", "get_database_records", "run_lint",
+    ]));
+  }, 60_000);
+
+  it.each(["with no system message", "with oversized shared history"])("sends the current dock exchange %s", async history => {
+    const { project, scope } = fixture();
+    const prompt = "대사를 한 줄 추가해 줘";
+    const rejected = call("get_event", scope);
+    const chat = vi.fn<ChatFn>()
+      .mockResolvedValueOnce(rejected)
+      .mockResolvedValueOnce(call("event_command_assist", { ...target, mapId: scope.mapId, prompt, mode: "append" }))
+      .mockResolvedValueOnce(text('[{"kind":"text","body":"새 대사"}]'));
+    const session = new AssistantSession(project, { config: defaultAiConfig(), chat });
+    const prior: ChatMessage[] = history === "with no system message" ? [] : [
+      { role: "system", content: "공용 조수 시스템 지시" },
+      { role: "user", content: "지난 요청 ".repeat(400_000) },
+      { role: "system", content: "지난 시스템 지시" },
+      rejected.message,
+      { role: "tool", tool_call_id: "call-get_event", content: "지난 조회" },
+    ];
+    session["messages"].splice(0, session["messages"].length, ...prior);
+
+    const result = await session.sendUserMessage(prompt, undefined, undefined, { eventCommandScope: scope, goalAction: "new-goal" });
+
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(chat).toHaveBeenCalledTimes(3);
+    const first = chat.mock.calls[0][1].messages;
+    expect(first.map(message => message.role)).toEqual(["system", "user"]);
+    expect(first[1].content).toBe(prompt);
+    const retry = chat.mock.calls[1][1].messages;
+    expect(retry.map(message => message.role)).toEqual(["system", "user", "assistant", "tool"]);
+    expect(retry[1].content).toBe(prompt);
+    expect(retry[2].tool_calls?.map(entry => entry.id)).toEqual([retry[3].tool_call_id]);
+    expect(retry[3].content).toContain("event-page-scope");
+    expect(session.getMessages().slice(0, prior.length)).toEqual(prior);
+  }, 60_000);
+
   it.each(["edit", "append"] as const)("reviews an append draft with host mode %s and refuses out-of-scope calls", async mode => {
     const { project, scope: eventScope, original } = fixture();
     const scope: EventCommandScope = { ...eventScope, mode };
