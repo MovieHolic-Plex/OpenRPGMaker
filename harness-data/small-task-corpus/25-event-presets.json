@@ -209,7 +209,7 @@
   {
     "request": "떠돌이 상인 진열대에 포션도 추가해 줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_potion"},
     "expect": [
@@ -219,7 +219,7 @@
   {
     "request": "이 상점에 마력약 스물한 닢에 올려 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_ether", "price": 21},
     "expect": [
@@ -230,7 +230,7 @@
   {
     "request": "여기도 포획구슬 팔자",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_capture_orb"},
     "expect": [
@@ -240,7 +240,7 @@
   {
     "request": "상인에게 각성초를 진열하게 해주세요",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_wake_herb"},
     "expect": [
@@ -250,7 +250,7 @@
   {
     "request": "회복약도 이 상인한테 7에 팔게",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_potion", "price": 7},
     "expect": [
@@ -261,7 +261,7 @@
   {
     "request": "상겸 진열에 낡은열쇠 추가",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_old_key"},
     "expect": [
@@ -271,7 +271,7 @@
   {
     "request": "지금 떠돌이 상인이 파는 물품에 엘릭서도 넣어 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_elixir"},
     "expect": [
@@ -281,7 +281,7 @@
   {
     "request": "상인한테 자료집에 없는 달가루도 팔게 해줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_missing_moon"},
     "expectRefusal": true
@@ -289,7 +289,7 @@
   {
     "request": "떠돌이 상인한테 상급 회복약은 빼 줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_hi_potion"},
     "expect": [
@@ -299,7 +299,7 @@
   {
     "request": "상점에서 해독초는 이제 안 팔았으면 좋겠어요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_antidote"},
     "expect": [
@@ -309,7 +309,7 @@
   {
     "request": "진열 목록에 하이포션 내리자",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_hi_potion"},
     "expect": [
@@ -319,7 +319,7 @@
   {
     "request": "정화 혈청 판매 그만",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_gen2_purifying_serum"},
     "expect": [
@@ -329,7 +329,7 @@
   {
     "request": "해독 초만 진열대에서 좀 치워줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_antidote"},
     "expect": [
@@ -339,7 +339,7 @@
   {
     "request": "이 상인 상품 중 대형 회복약만 빼 주실래요?",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_gen_potion_large"},
     "expect": [
@@ -349,7 +349,7 @@
   {
     "request": "상점재고에서 정화혈청 빼",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_gen2_purifying_serum"},
     "expect": [
@@ -359,7 +359,7 @@
   {
     "request": "등록하지 않은 비단 장갑을 이 상점에서 빼 주세요",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_missing_gloves"},
     "expectRefusal": true
@@ -739,7 +739,7 @@
   {
     "request": "보급 상점에 포션을 백만 골드에 진열해 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_potion", "price": 1000000},
     "expectRefusal": true
@@ -747,7 +747,7 @@
   {
     "request": "포션은 이 상점 진열대에서 내려 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "event.shop.removeStock",
     "args": {"itemId": "item_potion"},
     "expectRefusal": true
@@ -755,7 +755,7 @@
   {
     "request": "선택한 겨울 시장 출구에서 해독초를 팔게 해 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7", "pageId": "ev_world_gate_1o6qiz7_page"},
     "primitive": "event.shop.addStock",
     "args": {"itemId": "item_antidote"},
     "expectRefusal": true

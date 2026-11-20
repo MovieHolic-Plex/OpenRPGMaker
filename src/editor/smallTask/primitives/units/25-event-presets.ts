@@ -20,7 +20,7 @@ import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import type { Command, Condition, Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { josa, roJosa } from "@/util/josa";
 import { jsonEqual } from "@/util/structuralJson";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "25-event-presets";
@@ -58,6 +58,14 @@ function selectedEvent({ project, target }: PrimitiveContext): { map: GameMap; e
   const pages = event.pages?.filter(page => page.id === target.pageId);
   if (pages?.length !== 1) throw new PrimitiveError("범위 밖이에요. 이벤트 페이지를 다시 선택해 주세요.");
   return { map, event, page: pages[0] };
+}
+
+function selectedStockEvent(ctx: PrimitiveContext) {
+  const selected = selectedEvent(ctx);
+  if (selected.page) return selected;
+  const pages = selected.event.pages;
+  if (pages && pages.length > 1) throw new PrimitiveError(SELECT_EVENT_PAGE);
+  return { ...selected, page: pages?.[0] };
 }
 
 function eventScope(map: GameMap, event: GameEvent): TileScope {
@@ -239,7 +247,7 @@ function stockPrimitive(change: "add" | "remove"): SmallTaskPrimitive {
       ...(adding ? { price: { type: "integer", minimum: 0, maximum: SHOP_PRICE_MAX, description: "기본 판매가(0~999,999골드). 새 상품의 가격을 생략하면 자료집 가격을 사용해요." } } : {}),
     }, ["itemId"]),
     scope(ctx) {
-      const { map, event, page } = selectedEvent(ctx);
+      const { map, event, page } = selectedStockEvent(ctx);
       return page ? { kind: "eventPage", mapId: map.id, eventId: event.id, pageId: page.id } : eventScope(map, event);
     },
     describe(ctx, args) {
@@ -250,34 +258,23 @@ function stockPrimitive(change: "add" | "remove"): SmallTaskPrimitive {
     },
     apply(ctx, args) {
       const item = goods(ctx.project, args.itemId);
-      const { map, event, page } = selectedEvent(ctx);
+      const { map, event, page } = selectedStockEvent(ctx);
       const price = args.price as number | undefined;
-      let foundShop = false;
+      const commands = structuredClone(page?.commands ?? event.commands);
+      const shops = commandsOfKind(commands, "shop");
+      if (!shops.length) throw new PrimitiveError("선택한 곳에서 상점을 찾을 수 없어요.");
       let changed = false;
-      const editList = (commands: Command[]): Command[] => {
-        const commandsWithEdits = structuredClone(commands);
-        const shops = commandsOfKind(commandsWithEdits, "shop");
-        foundShop ||= shops.length > 0;
-        let edited = false;
-        for (const shop of shops) {
-          const before = { itemIds: shop.itemIds, stock: shop.stock };
-          editStock(shop, item.id, adding, price);
-          if (jsonEqual(before, { itemIds: shop.itemIds, stock: shop.stock })) continue;
-          assertStockSurvivesReload(shop);
-          edited = true;
-        }
-        changed ||= edited;
-        // Each shop still lives in its original page and branch.
-        return edited ? commandsWithEdits : commands;
-      };
-      const pages = event.pages?.length ? event.pages.map(candidate => {
-        if (page && candidate !== page) return candidate;
-        const commands = editList(candidate.commands);
-        return commands === candidate.commands ? candidate : { ...candidate, commands };
-      }) : undefined;
-      const edited = pages ? { ...event, pages } : { ...event, commands: editList(event.commands) };
-      if (!foundShop) throw new PrimitiveError("선택한 곳에서 상점을 찾을 수 없어요.");
+      for (const shop of shops) {
+        const before = { itemIds: shop.itemIds, stock: shop.stock };
+        editStock(shop, item.id, adding, price);
+        if (jsonEqual(before, { itemIds: shop.itemIds, stock: shop.stock })) continue;
+        assertStockSurvivesReload(shop);
+        changed = true;
+      }
       if (!changed) throw new PrimitiveError(adding ? "이미 같은 설정으로 파는 상품이에요." : "이 상점에서 팔고 있는 상품이 아니에요.");
+      const edited = page
+        ? { ...event, pages: event.pages!.map(candidate => candidate === page ? { ...page, commands } : candidate) }
+        : { ...event, commands };
       return replaceEvent(ctx.project, map, event, edited);
     },
   };

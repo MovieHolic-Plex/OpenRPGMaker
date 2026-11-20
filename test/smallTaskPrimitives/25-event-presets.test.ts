@@ -1,13 +1,13 @@
 /** @vitest-environment happy-dom */
 import { expect, it } from "vitest";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/25-event-presets";
 import { mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { PASSIVE_MOVEMENT } from "@/editor/tools/eventCompile";
 import { createInterpreter } from "@/player/interpreter";
 import { isPassableLanding } from "@/project/collision";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { doorstepArrival } from "@/project/doorEntries";
 import { GOLD_MAX } from "@/project/economyValues";
@@ -15,10 +15,11 @@ import { resolveFootprintLanding } from "@/project/footprintLanding";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { deserialize, serialize } from "@/project/io/serialize";
 import { mapDoorDefFor } from "@/project/mapDoorKinds";
+import { projectWithEventRevision } from "@/project/projectClone";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
+import { eventTarget, expectApplies, expectUndoRestores, loadFixture } from "./harness";
 
 const selection = { rect: { x: 2, y: 2, w: 1, h: 1 } };
 const invalidSelection = { rect: { ...selection.rect, w: 2 } };
@@ -29,7 +30,7 @@ const toRoom = { toMapId: otherMapId, toX: 3, toY: 3 };
 function blankWithMap(): Project {
   const fixture = loadFixture("blank");
   const sample = createBlankProject();
-  return {
+  const project = {
     ...fixture,
     maps: sample.maps,
     mapTree: sample.mapTree,
@@ -37,6 +38,8 @@ function blankWithMap(): Project {
     startPos: sample.startPos,
     database: { ...fixture.database, items: sample.database.items },
   };
+  ensureSwitchVariableSlots(project);
+  return project;
 }
 
 function withRoom(project: Project) {
@@ -77,7 +80,7 @@ function stockScenario() {
     ],
   };
   project.maps[project.startMapId].events.push(merchant);
-  return { project, merchant, eq, target: mapTarget(project, project.startMapId, merchant.id)! };
+  return { project, merchant, eq, target: eventTarget(project, project.startMapId, merchant.id) };
 }
 
 function doorScenario() {
@@ -85,7 +88,7 @@ function doorScenario() {
   const target = mapTarget(project, project.startMapId)!;
   const { after } = runPrimitive(project, target, "event.transfer.place", toRoom, selection);
   const door = eventAt(after);
-  return { project: after, door, target: mapTarget(after, after.startMapId, door.id)! };
+  return { project: after, door, target: eventTarget(after, after.startMapId, door.id) };
 }
 
 it("주민을 선택 칸에 세우고 대사를 실행한 뒤 한 번에 되돌린다", async () => {
@@ -239,12 +242,15 @@ it("선택한 상점 페이지의 여러 분기를 편집하고 기존 가격·�
   };
   const page: EventPage = {
     id: "p_selected_shop", name: "상점", conditions: [], graphic: { transparent: true },
-    trigger: { kind: "action" }, priority: "below", commands: [choice],
+    trigger: { kind: "action" }, priority: "below", movement: PASSIVE_MOVEMENT, commands: [choice],
   };
   const sibling = { ...page, id: "p_other_shop", commands: [{ kind: "shop", itemIds: [eq.id] }] } satisfies EventPage;
   merchant.pages = [page, sibling];
-  const target = mapTarget(project, project.startMapId, merchant.id, page.id)!;
+  const wholeEvent = eventTarget(project, project.startMapId, merchant.id);
+  const target = eventTarget(project, project.startMapId, merchant.id, page.id);
   const id = "event.shop.addStock";
+  expect(() => runPrimitive(project, wholeEvent, id, { itemId, price: 0 })).toThrow(SELECT_EVENT_PAGE);
+  expect(() => runPrimitive(project, wholeEvent, "event.shop.removeStock", { itemId })).toThrow(SELECT_EVENT_PAGE);
   const { after } = checked(project, target, id, { itemId, price: 0 });
   const saved = after.maps[after.startMapId].events.find(event => event.id === merchant.id)!;
   expect(saved.pages![0]!.commands).toEqual([{ ...choice, options: [
@@ -272,14 +278,15 @@ it("없는 진열품과 상점 명령이 없는 페이지는 이유를 알려 �
   expect(() => runPrimitive(project, target, "event.shop.removeStock", { itemId })).toThrow("팔고 있는 상품이 아니에요");
   const page: EventPage = {
     id: "p_quest", name: "의뢰", conditions: [], graphic: { transparent: true },
-    trigger: { kind: "action" }, priority: "below", commands: [{ kind: "text", body: "길을 찾아 주세요." }],
+    trigger: { kind: "action" }, priority: "below", movement: PASSIVE_MOVEMENT, commands: [{ kind: "text", body: "길을 찾아 주세요." }],
   };
-  merchant.pages = [page, { ...page, id: "p_shop", commands: merchant.commands }];
-  const pageTarget = mapTarget(project, project.startMapId, merchant.id, page.id)!;
-  const original = structuredClone(merchant);
-  expect(() => runPrimitive(project, pageTarget, "event.shop.addStock", { itemId })).toThrow("상점을 찾을 수 없어요");
-  expect(() => runPrimitive(project, { ...pageTarget, pageId: "p_old" }, "event.shop.addStock", { itemId })).toThrow("페이지를 다시 선택");
-  expect(merchant).toEqual(original);
+  const pagedMerchant = { ...merchant, pages: [page, { ...page, id: "p_shop", commands: merchant.commands }] };
+  const paged = projectWithEventRevision(project, project.startMapId, merchant.id, pagedMerchant);
+  const pageTarget = eventTarget(paged, project.startMapId, merchant.id, page.id);
+  const original = structuredClone(pagedMerchant);
+  expect(() => runPrimitive(paged, pageTarget, "event.shop.addStock", { itemId })).toThrow("상점을 찾을 수 없어요");
+  expect(() => runPrimitive(paged, { ...pageTarget, pageId: "p_old" }, "event.shop.addStock", { itemId })).toThrow("페이지를 다시 선택");
+  expect(pagedMerchant).toEqual(original);
 });
 
 it("표지판은 그림과 안내 한 줄을 저장하고 원래 칸을 복원한다", async () => {
@@ -323,15 +330,15 @@ it("편도 출입구의 착지 칸에서 고정 NPC가 유일한 길을 막으�
     id: "p_blocker", name: "길목", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" },
     priority: "same", overlapForbidden: true, movement: PASSIVE_MOVEMENT, commands: [],
   };
-  room.events.push({ id: "ev_blocker", name: "경비", x: 4, y: 3, trigger: page.trigger, commands: [], pages: [page] });
+  const blocker: GameEvent = { id: "ev_blocker", name: "경비", x: 4, y: 3, trigger: page.trigger, commands: [], pages: [page] };
+  room.events.push(blocker);
   const target = mapTarget(project, project.startMapId)!;
-  const place = () => runPrimitive(project, target, "event.transfer.place", toRoom, selection);
 
   expect(isPassableLanding(project, room, 3, 3)).toBe(true);
-  expect(place).toThrow("걸어서 나갈 수 있어야 해요");
+  expect(() => runPrimitive(project, target, "event.transfer.place", toRoom, selection)).toThrow("걸어서 나갈 수 있어야 해요");
   expect(project.maps[project.startMapId].events).toEqual([]);
-  page.priority = "below";
-  expect(place().after.maps[otherMapId]).toBe(room);
+  const cleared = projectWithEventRevision(project, room.id, blocker.id, { ...blocker, pages: [{ ...page, priority: "below" }] });
+  expect(runPrimitive(cleared, target, "event.transfer.place", toRoom, selection).after.maps[otherMapId]).toBe(cleared.maps[otherMapId]);
 });
 
 it("편도 출입구는 다중 칸 주인공이 밀려나는 착지를 거절하고 통행 행을 따른다", () => {
@@ -341,13 +348,11 @@ it("편도 출입구는 다중 칸 주인공이 밀려나는 착지를 거절하
   project.system.playerFootprint = footprint;
   room.lowerTiles[2 * room.width + 3] = -1;
   const target = mapTarget(project, project.startMapId)!;
-  const place = () => runPrimitive(project, target, "event.transfer.place", toRoom, selection);
-
   expect(resolveFootprintLanding(project, room, startSession(project), {}, 3, 3, footprint)).not.toEqual({ x: 3, y: 3 });
-  expect(place).toThrow("정확히 도착해");
+  expect(() => runPrimitive(project, target, "event.transfer.place", toRoom, selection)).toThrow("정확히 도착해");
   expect(project.maps[project.startMapId].events).toEqual([]);
-  project.system.playerPassRows = 1;
-  const { after } = place();
+  const narrowPassage = { ...project, system: { ...project.system, playerPassRows: 1 } };
+  const { after } = runPrimitive(narrowPassage, target, "event.transfer.place", toRoom, selection);
   expect(runEvent(after, eventAt(after)).start()).toMatchObject({ kind: "transfer", x: 3, y: 3 });
 });
 
@@ -390,17 +395,19 @@ it("나중 페이지의 발자국까지 확인해 배치와 출입구 도착을 
   const { project, door } = doorScenario();
   const room = project.maps[otherMapId];
   const original = door.pages![0]!;
-  room.events.push({ ...door, id: "ev_wide_prop", x: 3, y: 4, pages: [
+  const prop = { ...door, id: "ev_wide_prop", x: 3, y: 4, pages: [
     { ...original, id: "p_small", commands: [] },
     { ...original, id: "p_wide", footprint: { width: 3, height: 2 }, commands: [] },
-  ] });
-  const destinationTarget = mapTarget(project, otherMapId)!;
+  ] };
+  const revised = projectWithEventRevision(project, room.id, prop.id, prop);
+  const destinationTarget = mapTarget(revised, otherMapId)!;
   const cell = { rect: { x: 3, y: 3, w: 1, h: 1 } };
-  expect(() => runPrimitive(project, destinationTarget, "event.chest.place", { gold: 10 }, cell)).toThrow("이미 이벤트가 있어요");
-  expect(() => runPrimitive(project, mapTarget(project, project.startMapId)!, "event.transfer.place", toRoom, {
+  expect(() => runPrimitive(revised, destinationTarget, "event.chest.place", { gold: 10 }, cell)).toThrow("이미 이벤트가 있어요");
+  expect(() => runPrimitive(revised, mapTarget(revised, revised.startMapId)!, "event.transfer.place", toRoom, {
     rect: { ...selection.rect, x: 5 },
   })).toThrow("도착할 수 있는 빈 칸");
-  expect(room.events).toHaveLength(1);
+  expect(revised.maps[room.id].events).toEqual([prop]);
+  expect(room.events).toEqual([]);
 });
 
 it("막힌 선택 칸에 놓는 상자와 출입구는 주변 칸으로 옮기지 않고 거절한다", () => {
@@ -430,8 +437,7 @@ it.each([
 
 it("문 잠금은 기존 조건과 이동을 보존하며 열쇠가 있을 때 통과시킨다", async () => {
   const { project, door, target } = doorScenario();
-  const switchId = "sw_preset_test_story";
-  project.switches.push({ id: switchId, name: "이야기 진행" });
+  const switchId = project.switches[0]!.id;
   const opening = door.pages![0];
   opening.conditions = [{ kind: "switch", switchId, value: true }];
   const id = "event.door.setLock";
@@ -461,8 +467,7 @@ it("문 잠금은 기존 조건과 이동을 보존하며 열쇠가 있을 때 �
 it("문을 다시 잠글 때 앞뒤 페이지와 기존 명령을 보존하고 잠금만 갱신한다", () => {
   const { project, door } = doorScenario();
   const original = door.pages![0]!;
-  const switchId = "sw_preset_test_repair";
-  project.switches.push({ id: switchId, name: "수리 완료" });
+  const switchId = project.switches[0]!.id;
   const later: EventPage = {
     ...original, id: "p_later", conditions: [{ kind: "switch", switchId, value: true }],
     commands: [{ kind: "text", body: "수리 중에는 다른 문을 써 주세요." }],
@@ -497,9 +502,11 @@ it("기존 잠금 페이지와 식별자가 겹치거나 분기에서 이동하�
   const branched: EventPage = {
     ...original, id: "p_branch", commands: [{ kind: "choices", options: [{ text: "나가기", branch: original.commands }], cancelBehavior: "disallow" }],
   };
-  door.pages = [original, branched];
-  expect(() => runPrimitive(project, target, id, { itemId })).toThrow("분기, 다른 이벤트 호출, 페이지 밖 명령");
-  expect(door.pages).toEqual([original, branched]);
+  const branchedDoor = { ...door, pages: [original, branched] };
+  const revised = projectWithEventRevision(project, project.startMapId, door.id, branchedDoor);
+  expect(() => runPrimitive(revised, target, id, { itemId })).toThrow("분기, 다른 이벤트 호출, 페이지 밖 명령");
+  expect(door.pages).toEqual([original, custom]);
+  expect(branchedDoor.pages).toEqual([original, branched]);
 });
 
 it("페이지 하나를 골랐을 때는 다른 페이지를 추가하거나 이미 있는 잠금을 바꾸지 않는다", () => {
@@ -525,16 +532,16 @@ it("다른 페이지가 공용 이벤트와 맵 이벤트를 거쳐서 이동하
     id: relayId, name: "이동 중계", x: 6, y: 6, trigger: { kind: "action" }, commands: [...open.commands],
   };
   project.maps[project.startMapId].events.push(relay);
-  project.commonEvents.push({
+  const withRelay = { ...project, commonEvents: [...project.commonEvents, {
     id: commonId, name: "문 이동", trigger: "none",
     commands: [{ kind: "callMapEvent", eventId: relayId }, { kind: "callCommonEvent", commonEventId: commonId }],
-  });
+  }] } satisfies Project;
   const later: EventPage = {
     ...open, id: "p_preset_indirect_transfer", commands: [{ kind: "callCommonEvent", commonEventId: commonId }],
   };
   door.pages!.push(later);
   const original = structuredClone(project.maps[project.startMapId].events);
-  expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("다른 이벤트 호출");
+  expect(() => runPrimitive(withRelay, target, "event.door.setLock", { itemId })).toThrow("다른 이벤트 호출");
   expect(project.maps[project.startMapId].events).toEqual(original);
 });
 
