@@ -18,6 +18,7 @@ import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { GOLD_MAX } from "@/project/economyValues";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
+import { ensureChest } from "@/project/placeables";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project, Season } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -513,22 +514,25 @@ it("제작법 없는 공방은 거절하고 모든 제작법으로 바꾼 공방
 });
 
 it("공유 보관함 연결과 물건을 유지하면서 표시 이름만 고친다", () => {
-  const chest: Command = { kind: "openChest", chestId: "shared_chest", displayName: "창고" };
-  const { project: base, target, event, mapId, commandsOf } = setup("blank", [chest], [chest]);
-  const project = {
-    ...base,
-    session: {
-      ...base.session,
-      chests: { shared_chest: { id: "shared_chest", mapId, x: 2, y: 2, inventory: { [potion]: 3 } } },
-    },
-  };
+  const sharedId = "shared_chest";
+  const chest: Command = { kind: "openChest", chestId: sharedId, displayName: "창고" };
+  const { project, target, event, mapId, commandsOf } = setup("blank", [chest], [chest]);
+  const session = startSession(project, 42);
+  const location = { mapId, x: event.x, y: event.y };
+  const stored = ensureChest(session, { ...location, id: sharedId });
+  stored.inventory[potion] = 3;
   const position = { index: 0, expectedHash: eventCommandHash(chest) };
   for (const chestId of ["new_chest", ""]) {
     expectRefused(project, target, "cmd.openChest.update", { ...position, chestId }, /연결된 보관함을 유지/u);
   }
   const { after } = runPrimitive(project, target, "cmd.openChest.update", { ...position, displayName: "마을 창고" });
-  expect(execute(after, commandsOf, mapId).step).toMatchObject({ kind: "openChest", chestId: "shared_chest", displayName: "마을 창고" });
-  expect(after.session.chests).toBe(project.session.chests);
+  const step = createInterpreter(commandsOf(after), session, after, { currentEventId: eventId }).start();
+  expect(step).toMatchObject({ kind: "openChest", chestId: sharedId, displayName: "마을 창고" });
+  if (step.kind !== "openChest") throw new Error("공유 보관함을 열 수 없어요.");
+  const reopened = ensureChest(session, { ...location, id: step.chestId });
+  expect(reopened).toBe(stored);
+  expect(reopened.inventory).toEqual({ [potion]: 3 });
+  expect(after.session).toBe(project.session);
   expect(after.maps[mapId].events.find(row => row.id === eventId)?.pages?.[1]).toBe(event.pages?.[1]);
 });
 
