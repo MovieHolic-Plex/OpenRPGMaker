@@ -54,6 +54,17 @@ function commonCommands(project: Project, commands: Command[]): Project {
   return { ...project, commonEvents: [...project.commonEvents, { id: "ce_review", name: "검수", trigger: "none", commands }] };
 }
 
+function liveWithDraft(command: (actorCount: number) => Command): Project {
+  const project = projectWithRows("built");
+  store.replaceProject(project);
+  resetMapEditHistory();
+  store.updateMap(project.startMapId, map => {
+    map.events.push({ id: "ev_review_draft", name: "초안", x: 2, y: 2,
+      commands: [command(project.database.actors.length)], trigger: { kind: "action" }, draft: { kind: "new" } });
+  });
+  return store.getCurrent();
+}
+
 const actorTarget = target("actors", spareActor.id);
 const classTarget = target("classes", spareClass.id);
 const lookTarget = target("characterAppearances", look.id);
@@ -358,6 +369,27 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(() => runPrimitive(project, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
   });
 
+  it("숫자 변수 화자가 연결할 수 있는 외형을 보호한다", () => {
+    const before = projectWithRows("blank");
+    const speaker = "여행복\\V[1]";
+    for (const suffix of ["-2", "02", "10000000"]) {
+      const project = commonCommands({ ...before, database: { ...before.database, characterAppearances: [
+        { ...look, name: `여행복${suffix}`, face: { resourceId: face } },
+      ] } }, [{ kind: "text", speaker, body: "출발" }]);
+      const apply = () => runPrimitive(project, lookTarget, "db.characterAppearances.delete", {});
+      if (suffix === "-2") {
+        expect(resolveDialogueSpeakerName(speaker, { project, session: { variables: { var_0001: -2 } } })).toBe(`여행복${suffix}`);
+        expect(apply).toThrow("대사의 화자");
+      } else {
+        expect(apply().after.database.characterAppearances).toEqual([]);
+      }
+      if (suffix === "10000000") {
+        const seeded = { ...project, session: { ...project.session, variables: { ...project.session.variables, var_0001: 10_000_000 } } };
+        expect(() => runPrimitive(seeded, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
+      }
+    }
+  });
+
   it("번호를 쓰는 화자는 주인공의 바뀐 이름을 따라간다", () => {
     const before = projectWithRows("blank");
     const speaker = `\\N[${before.database.actors.length}]`;
@@ -391,24 +423,36 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
   it.each([
     ["화자 번호", (number: number): Command => ({ kind: "text", speaker: `\\N[${number}]`, body: "출발" }), "대사의 주인공 번호"],
     ["명령 참조", (): Command => ({ kind: "changeParty", actorId: spareActor.id, action: "add" }), "쓰는 자료집 항목"],
-  ] as const)("열린 이벤트 초안의 %s를 참조하는 주인공 삭제를 적용 전에 거절한다", (_name, command, reason) => {
-    const project = projectWithRows("blank");
-    const mapId = project.startMapId;
-    store.replaceProject(structuredClone(project));
-    resetMapEditHistory();
-    const actorNumber = project.database.actors.length;
-    store.updateMap(mapId, map => {
-      map.events.push({ id: "ev_review_draft", name: "초안", x: 2, y: 2,
-        commands: [command(actorNumber)], trigger: { kind: "action" }, draft: { kind: "new" } });
-    });
-    const live = store.getCurrent();
+    ["공백을 포함한 ID", (): Command => ({ kind: "m2Command", commandId: "m2-078-open-menu-screen",
+      fields: { screen: "skills", actorId: ` ${spareActor.id} ` } }), "사용 중인 주인공"],
+  ] as const)("열린 이벤트 초안의 %s 때문에 주인공 삭제를 적용 전에 거절한다", (_name, command, reason) => {
+    const live = liveWithDraft(command);
     const before = smallTaskBase(live, actorTarget);
-    expect(before.maps[mapId].events.some(event => event.id === "ev_review_draft")).toBe(false);
+    expect(before.maps[before.startMapId].events.some(event => event.id === "ev_review_draft")).toBe(false);
     const { after } = runPrimitive(before, actorTarget, "db.actors.delete", {});
     expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {}, undefined, live)).toThrow(reason);
     const commit = () => commitSmallTask(live, before, after, actorTarget);
     expect(commit).toThrow(SmallTaskError);
     expect(commit).toThrow(reason);
+    expect(store.getCurrent()).toBe(live);
+    expect(getMapEditHistoryDepth()).toBe(0);
+  });
+
+  it.each(["주인공 번호", "생성 ID"] as const)("열린 이벤트 초안의 %s와 충돌하는 주인공 생성을 막는다", reference => {
+    const live = liveWithDraft(count => reference === "주인공 번호"
+      ? { kind: "text", speaker: `\\N[${count + 1}]`, body: "출발" }
+      : { kind: "changeParty", actorId: "actor_small_task_1", action: "add" });
+    const before = smallTaskBase(live, actorTarget);
+    const args = { name: "미나" };
+    const { after } = runPrimitive(before, actorTarget, "db.actors.create", args);
+    expect(after.database.actors.at(-1)?.id).toBe("actor_small_task_1");
+    if (reference === "주인공 번호") {
+      expect(() => runPrimitive(before, actorTarget, "db.actors.create", args, undefined, live)).toThrow("대사의 주인공 번호");
+    } else {
+      const safe = runPrimitive(before, actorTarget, "db.actors.create", args, undefined, live).after;
+      expect(safe.database.actors.at(-1)?.id).toBe("actor_small_task_2");
+    }
+    expect(() => commitSmallTask(live, before, after, actorTarget)).toThrow(reference === "주인공 번호" ? "대사의 주인공 번호" : "새 항목의 식별자");
     expect(store.getCurrent()).toBe(live);
     expect(getMapEditHistoryDepth()).toBe(0);
   });

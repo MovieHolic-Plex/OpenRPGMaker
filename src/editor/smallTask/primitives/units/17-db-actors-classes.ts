@@ -13,6 +13,7 @@ import { playerChoiceText } from "@/project/choiceText";
 import { normalizeClassRecord } from "@/project/databaseRecordModel";
 import { characterAppearanceReferenceIssues, validateCharacterAppearances } from "@/project/io/characterAppearanceValidation";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { clampVariableValue, VARIABLE_MAX, VARIABLE_MIN } from "@/project/session";
 import { isNonActorSpeaker, speakerNameScore } from "@/project/staging/dialogueActors";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { ActorRecord, CharacterAppearanceRecord, ClassRecord, Command, Project } from "@/project/types";
@@ -76,8 +77,7 @@ function nextId(project: Project, collection: Collection, records: readonly { id
   for (let number = 1; ; number++) {
     const id = `${prefix}${number}`;
     // An older project can still name a row that was deleted elsewhere.
-    if (!ids.has(id) && !referenceIndex(project, new Set([id])).has(id)
-      && (collection !== "actors" || !legacyActorReference(project, id))) return id;
+    if (!ids.has(id) && !recordIdIsReferenced(project, collection, id)) return id;
   }
 }
 
@@ -97,6 +97,10 @@ function legacyActorReference(project: Project, id: string): boolean {
     && ((command.commandId === "m2-078-open-menu-screen" && command.fields.screen === "skills")
       || (command.commandId === "m2-092-change-battle-commands" && command.fields.target === "actor"))
     && typeof command.fields.actorId === "string" && command.fields.actorId.trim() === id);
+}
+
+function recordIdIsReferenced(project: Project, collection: Collection, id: string): boolean {
+  return referenceIndex(project, new Set([id])).has(id) || (collection === "actors" && legacyActorReference(project, id));
 }
 
 function someDialogue(project: Project, matches: (text: string, isSpeaker: boolean, speakerActor?: string) => boolean): boolean {
@@ -131,9 +135,38 @@ function dialogueUsesActorNumber(project: Project, firstChangedIndex: number): b
     && resolveDialogueText(text, { project, session }) !== resolveDialogueText(text, { project, session: { ...session, actorNames } }));
 }
 
-export function assertActorNumberDeletion(project: Project, index: number, live?: SmallTaskDraftSource): void {
-  if (dialogueUsesActorNumber(withOpenEventDrafts(project, live), index)) {
+function assertActorDeletion(project: Project, index: number): void {
+  if (legacyActorReference(project, project.database.actors[index].id)) {
+    throw new PrimitiveError("사용 중인 주인공 항목이에요. 다른 곳의 연결을 먼저 해제해 주세요.");
+  }
+  if (dialogueUsesActorNumber(project, index)) {
     throw new PrimitiveError("이 주인공을 지우면 대사에 나오는 이름이 바뀌거나 사라져요. 대사의 주인공 번호를 먼저 확인해 주세요.");
+  }
+}
+
+function assertActorCreation(project: Project, firstNewIndex: number): void {
+  if (dialogueUsesActorNumber(project, firstNewIndex)) {
+    throw new PrimitiveError("새 주인공이 대사에서 이미 쓰는 번호에 들어가요. 대사의 주인공 번호를 먼저 확인해 주세요.");
+  }
+}
+
+export function assertActorClassDraftChanges(before: Project, after: Project, collection: keyof Project["database"], id: string, live: SmallTaskDraftSource): void {
+  if (collection !== "actors" && collection !== "classes" && collection !== "characterAppearances") return;
+  const beforeRows = before.database[collection] ?? [];
+  const afterRows = after.database[collection] ?? [];
+  const existingIds = new Set(beforeRows.map(row => row.id));
+  const added = afterRows.filter(row => !existingIds.has(row.id));
+  const removedIndex = collection === "actors" && !afterRows.some(row => row.id === id)
+    ? beforeRows.findIndex(row => row.id === id) : -1;
+  if (!added.length && removedIndex === -1) return;
+  const working = withOpenEventDrafts(before, live);
+  if (added.some(row => recordIdIsReferenced(working, collection, row.id))) {
+    throw new PrimitiveError("열린 이벤트에서 새 항목의 식별자를 사용하고 있어요. 이벤트를 먼저 확인해 주세요.");
+  }
+  if (removedIndex !== -1) assertActorDeletion(working, removedIndex);
+  if (collection === "actors" && added.length) {
+    const firstNewIndex = afterRows.findIndex(row => row.id === added[0].id);
+    assertActorCreation(withOpenEventDrafts(after, live), firstNewIndex);
   }
 }
 
@@ -142,13 +175,39 @@ function appearancePortraitByName(project: Project, name: string) {
   return appearance && resolveAppearancePortrait(project, appearance.id, "full");
 }
 
-function stringVariableSpeakerCanMatch(text: string, project: Project, names: ReadonlySet<string>): boolean {
-  if (!/\\t\[/iu.test(text)) return false;
+function numericVariableSpeakerCanMatch(parts: readonly string[], name: string): boolean {
+  if (!name.startsWith(parts[0])) return false;
+  const maxLength = Math.max(String(VARIABLE_MIN).length, String(VARIABLE_MAX).length);
+  let positions = new Set([parts[0].length]);
+  for (const suffix of parts.slice(1)) {
+    const next = new Set<number>();
+    for (const start of positions) {
+      for (let end = start + 1; end <= Math.min(start + maxLength, name.length); end++) {
+        const value = name.slice(start, end);
+        if (String(clampVariableValue(Number(value))) === value && name.startsWith(suffix, end)) next.add(end + suffix.length);
+      }
+    }
+    positions = next;
+  }
+  return positions.has(name.length);
+}
+
+function variableSpeakerCanMatch(text: string, project: Project, names: ReadonlySet<string>): boolean {
+  if (!/\\[tv]\[/iu.test(text)) return false;
+  // Authored starting values can be present before the first clamped variable write.
+  if (names.has(resolveDialogueSpeakerName(text, { project, session: project.session }) ?? "")) return true;
   // Let the runtime parser recognize real substitutions, including escapes and inline tags.
-  const marker = "\0";
-  const stringVariables = new Proxy<Record<string, string>>({}, { get: () => marker });
-  const parts = resolveDialogueText(text, { project, session: { variables: {}, stringVariables } }).split(marker);
-  if (parts.length === 1) return false;
+  const stringMarker = "\0";
+  const numberMarker = "\u0001";
+  const stringVariables = new Proxy<Record<string, string>>({}, { get: () => stringMarker });
+  // The parser stringifies numeric variable values when it appends them to the dialogue.
+  const variables = new Proxy<Record<string, number>>({}, { get: () => numberMarker });
+  const resolved = resolveDialogueText(text, { project, session: { variables, stringVariables } });
+  const parts = resolved.split(stringMarker);
+  if (parts.length === 1) {
+    const numericParts = resolved.trim().split(numberMarker);
+    return numericParts.length > 1 && [...names].some(name => numericVariableSpeakerCanMatch(numericParts, name));
+  }
   // Actor names and numeric variables in a mixed expression can change during play too.
   if (/\\[nv]\[/iu.test(text)) return true;
   const literals = parts.map(part => part.trim());
@@ -186,7 +245,7 @@ function dialogueUsesName(project: Project, collection: Collection, record: Reco
   return someDialogue(project, (text, isSpeaker, speakerActor) => {
     if (!isSpeaker || !text.trim()) return false;
     if (names.has(resolveDialogueSpeakerName(text, byNumber) ?? "")) return true;
-    if (!isActor) return stringVariableSpeakerCanMatch(text, project, names);
+    if (!isActor) return variableSpeakerCanMatch(text, project, names);
     // Automatic staging also considers partial and subsequence matches on the raw speaker label.
     if (speakerActor?.trim() || isNonActorSpeaker(text)) return false;
     return speakerNameScore(text, oldName) !== speakerNameScore(text, newName ?? "");
@@ -337,10 +396,8 @@ function databaseFamily<C extends Collection>(collection: C, config: {
       const edited = [...records];
       const proposed = { ...project, database: { ...project.database, [collection]: edited } };
       if (operation === "create") {
-        edited.push(config.create(ctx, nextId(project, collection, records), selected, args));
-        if (collection === "actors" && dialogueUsesActorNumber(proposed, records.length)) {
-          throw new PrimitiveError("새 주인공이 대사에서 이미 쓰는 번호에 들어가요. 대사의 주인공 번호를 먼저 확인해 주세요.");
-        }
+        edited.push(config.create(ctx, nextId(withOpenEventDrafts(project, ctx.live), collection, records), selected, args));
+        if (collection === "actors") assertActorCreation(withOpenEventDrafts(proposed, ctx.live), records.length);
       }
       if (operation === "update") {
         if (!Object.keys(args).length) throw new PrimitiveError("바꿀 내용을 입력해 주세요.");
@@ -351,11 +408,10 @@ function databaseFamily<C extends Collection>(collection: C, config: {
       }
       if (operation === "delete") {
         const sites = referenceIndex(project, new Set([selected.id])).get(selected.id) ?? [];
-        if (outsideRecord(sites, ["database", collection, index]).length
-          || (collection === "actors" && legacyActorReference(project, selected.id))) {
+        if (outsideRecord(sites, ["database", collection, index]).length) {
           throw new PrimitiveError(`사용 중인 ${label} 항목이에요. 다른 곳의 연결을 먼저 해제해 주세요.`);
         }
-        if (collection === "actors") assertActorNumberDeletion(project, index, ctx.live);
+        if (collection === "actors") assertActorDeletion(withOpenEventDrafts(project, ctx.live), index);
         edited.splice(index, 1);
         if (dialogueUsesName(project, collection, selected, proposed)) {
           throw new PrimitiveError(`대사에서 이름으로 사용하는 ${label} 항목이에요. 대사의 화자를 먼저 확인해 주세요.`);
