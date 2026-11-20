@@ -1,5 +1,5 @@
 import type { Project, UploadedAsset } from './types';
-import artwork from '../../public/assets/monster-expedition/creatures/uploaded-art.json';
+import artwork from '../../public/assets/monster-expedition/creatures/uploaded-art.json' with { type: "json" };
 
 /** Reuse the original shared campaign pack without touching species or saved instances. */
 export function configureEmeraldMonsterCreatureArt(project: Project, replaceExisting = false): string[] {

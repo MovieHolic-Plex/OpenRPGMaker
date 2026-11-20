@@ -6,11 +6,13 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/?blankProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60000 });
-  const target = await page.evaluate(async () => {
-    const { createBlankProject } = await import("/src/project/defaults.ts");
+  const { target, switchId } = await page.evaluate(async () => {
+    const { createStarterBlankProject } = await import("/src/project/defaults.ts");
     const { store } = await import("/src/project/store.ts");
-    const project = createBlankProject();
+    const project = createStarterBlankProject();
     const mapId = project.startMapId;
+    const tilesetId = project.maps[mapId].tilesetId;
+    project.tilesets = { [tilesetId]: project.tilesets[tilesetId] };
     const target = { mapId, eventId: "shared-assist-event", pageId: "shared-assist-page" };
     const original = [{ kind: "text" as const, body: "기존 인사입니다." }];
     const basePage = { id: target.pageId, name: "인사", conditions: [], graphic: {}, trigger: { kind: "action" as const },
@@ -18,13 +20,17 @@ test("event button uses shared assistant, reviews locally, applies once and undo
     project.maps[mapId].events.push({ id: target.eventId, name: "안내인", x: 3, y: 3, trigger: { kind: "action" }, commands: original,
       pages: [basePage, { ...structuredClone(basePage), id: "untouched-page", name: "보존할 페이지" }] });
     store.replaceProject(project);
-    return target;
+    return { target, switchId: project.switches[0].id };
   });
   const { mapId } = target;
   const original = [{ kind: "text", body: "기존 인사입니다." }];
-  const generated = [{ kind: "text", body: "여행자님, 마을에 오신 것을 환영합니다." }];
+  const setSwitch = { kind: "setSwitch", switchId, value: true };
+  const fork = { kind: "fork", condition: { kind: "switch", switchId, value: true }, then: [setSwitch], else: [] };
+  const generated = [...original, setSwitch];
+  const instruction = "스위치 1번을 켜는 명령 추가";
   const calls: { tools: string[]; kind: string }[] = [];
   let writerRound = 0;
+  let toolCallId = 0;
   let pauseGenerator = false;
   let generatorPaused = false;
   let releaseGenerator: (() => void) | undefined;
@@ -37,25 +43,24 @@ test("event button uses shared assistant, reviews locally, applies once and undo
     let kind = "routing";
     if (tools.length) {
       kind = "shared-session";
-      expect(tools).toContain("event_command_assist");
-      expect(tools).not.toContain("upsert_event");
-      if (writerRound < 2) {
-        const name = writerRound++ === 0 ? "get_event" : "event_command_assist";
-        const args = name === "get_event" ? { mapId, eventId: target.eventId }
-          : { ...target, prompt: "현재 인사를 따뜻한 환영 인사로 고쳐 줘" };
-        tool_calls = [{ id: `browser-${writerRound}`, type: "function", function: { name, arguments: JSON.stringify({ ...args, reason: "선택한 이벤트 페이지 수정" }) } }];
-      } else content = "현재 페이지의 인사말 초안을 만들었습니다. 변경 내용을 확인해 주세요.";
+      expect(tools).toEqual(["event_command_assist"]);
+      expect(request.messages[0].content).toContain(target.pageId);
+      if (writerRound++ < 2) {
+        const args = { ...target, prompt: writerRound === 1 ? instruction : "분기 명령 추가",
+          mode: "append", reason: "선택한 이벤트 페이지 수정" };
+        tool_calls = [{ id: `browser-event-assist-${++toolCallId}`, type: "function", function: { name: "event_command_assist", arguments: JSON.stringify(args) } }];
+      } else content = "명령 초안을 만들었습니다.";
     } else if (prompt.includes("당신은 브라우저 기반 2D RPG 에디터의 이벤트 명령 편집기입니다.")) {
       kind = "event-command-generator";
-      expect(prompt).toContain("기존 인사입니다.");
-      content = JSON.stringify(generated);
+      expect(prompt).toContain("뒤에 붙일 커맨드 JSON 배열");
+      content = JSON.stringify([writerRound === 1 ? setSwitch : fork]);
       if (pauseGenerator) {
         generatorPaused = true;
         await new Promise<void>(resolve => { releaseGenerator = resolve; });
       }
     } else content = JSON.stringify({ mode: "modify", space: "none", facility: null, targetMapId: mapId,
       useSelection: false, clarify: null, clarifyOptions: [], needsPlan: false, resetsContext: false,
-      tools: ["event_command_assist"], summary: "이벤트 페이지 인사 수정", requirements: [] });
+      tools: ["event_command_assist"], summary: "이벤트 페이지 스위치 명령 추가", requirements: [] });
     calls.push({ tools, kind });
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({
       choices: [{ message: { role: "assistant", content, ...(tool_calls ? { tool_calls } : {}) }, finish_reason: tool_calls ? "tool_calls" : "stop" }],
@@ -68,13 +73,14 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible();
   await editor.getByTestId("event-command-quick-ai").click();
-  await editor.getByTestId("ai-event-input").fill("현재 인사를 따뜻한 환영 인사로 고쳐 줘");
+  await editor.getByTestId("ai-event-input").fill(instruction);
   const evidence = "output/evidence/event-ai-shared-assistant";
   await mkdir(evidence, { recursive: true });
   await page.screenshot({ path: `${evidence}/01-request.png` });
   await editor.getByTestId("ai-event-generate").click();
   await expect(editor.getByTestId("ai-event-staged")).toBeVisible({ timeout: 120_000 });
-  await expect(editor.getByTestId("ai-event-staged")).toContainText(generated[0].body);
+  expect(await page.getByTestId("ai-command-row-user").last().evaluate(bubble => bubble.firstChild?.textContent)).toBe(instruction);
+  await expect(editor.getByTestId("ai-event-staged")).toContainText("스위치");
   const read = () => page.evaluate(async target => {
     const { store } = await import("/src/project/store.ts");
     return store.getCurrent().maps[target.mapId].events.find(e => e.id === target.eventId)!.pages!;
@@ -93,7 +99,7 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   await editor.getByTestId("event-command-toolbar-undo").click();
   expect((await read())[0].commands).toEqual(original);
   await page.screenshot({ path: `${evidence}/04-undone.png` });
-  expect(calls.some(c => c.kind === "shared-session")).toBe(true);
+  expect(calls.filter(c => c.kind === "shared-session")).toHaveLength(1);
   expect(calls.filter(c => c.kind === "event-command-generator")).toHaveLength(1);
   // A second request stalls inside the real generator; cancellation must settle without a draft.
   writerRound = 0;
@@ -108,5 +114,5 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   expect((await read())[0].commands).toEqual(original);
   await page.screenshot({ path: `${evidence}/05-cancelled.png` });
   await writeFile(`${evidence}/receipt.json`, JSON.stringify({ transport: "mocked LLM responses; real bridge/session/tools/editor", calls,
-    assertions: ["shared session tool exposure", "generator reuse", "review before mutation", "other page preserved", "no duplicate chat proposal", "apply", "one-step undo", "cancel without mutation"] }, null, 2));
+    assertions: ["shared session tool exposure", "single writer", "review before mutation", "original setSwitch draft without a fork", "other page preserved", "no duplicate chat proposal", "apply", "one-step undo", "cancel without mutation"] }, null, 2));
 });

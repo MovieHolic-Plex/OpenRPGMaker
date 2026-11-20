@@ -7,7 +7,6 @@ import {
 } from "@/ai/aiRecordDb";
 import { CONVERSATION_MAX_RECORDS, listConversations, loadConversation, type ConversationRecord } from "@/ai/conversationStore";
 import type { RunCheckpoint } from "@/ai/runCheckpointStore";
-import { createBlankProject } from "@/project/defaults";
 
 // Dynamic import keeps the migration RED at the actual v2 storage seam before the new module exists.
 const api = () => import("@/ai/runCheckpointStore");
@@ -100,7 +99,7 @@ it("awaits transaction completion and atomically replaces the one pending snapsh
     return transaction;
   });
   const proposal = { operationId: "op-1", stage: "applying" as const,
-    proposal: { baseContentIdentity: "base", contentIdentity: "draft", project: createBlankProject(), calls: [] } };
+    proposal: { baseContentIdentity: "base", contentIdentity: "draft", calls: [] } };
   await saveRunCheckpoint(fixture({ pending: proposal }));
   expect(completed).toBe(1);
   await saveRunCheckpoint(fixture({ savedAt: 2, pending: { ...proposal, operationId: "op-2" } }));
@@ -125,6 +124,17 @@ it("propagates an actual transaction abort rather than reporting durable success
   await expect(saveRunCheckpoint(fixture({ savedAt: 2 }))).rejects.toThrow();
   spy.mockRestore();
   expect(await readRunCheckpoint(fixture())).toMatchObject({ durable: true, checkpoint: { savedAt: 1 } });
+});
+
+it("checks the row budget before cloning or starting an IndexedDB write", async () => {
+  const { saveRunCheckpoint, readRunCheckpoint } = await api();
+  await saveRunCheckpoint(fixture());
+  const clone = vi.spyOn(globalThis, "structuredClone");
+  const request = { ...fixture().request, text: "x".repeat(9 * 1024 * 1024) };
+  await expect(saveRunCheckpoint(fixture({ savedAt: 2, request }))).rejects.toThrow("snapshot budget");
+  expect(clone).not.toHaveBeenCalled();
+  clone.mockRestore();
+  expect(await readRunCheckpoint(fixture())).toMatchObject({ checkpoint: { savedAt: 1 } });
 });
 
 it.each([

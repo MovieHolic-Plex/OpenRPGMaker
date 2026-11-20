@@ -1,6 +1,6 @@
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { createMonsterKitTileset } from "@/project/defaults/monsterKit";
-import monsterKitIndex from "@/assets/monsterKit/index.json";
+import monsterKitIndex from "@/assets/monsterKit/index.json" with { type: "json" };
 import { serialize } from "@/project/io";
 import type { Project } from "@/project/types";
 

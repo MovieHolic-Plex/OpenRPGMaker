@@ -13,7 +13,7 @@
 //   mode               walk = trigger 칸을 밟고 올라선다 · bump = trigger 칸이 막힌 그림이라 approach 칸에서 부딪혀 탄다(priority same).
 //   leads              up 위층으로 · down 아래층으로 · same 같은 맵 안의 단(이동 이벤트 없음, exit 쪽으로 이어진다).
 //   exit               leads=same 일 때 반대쪽 끝(올라선 뒤 나가는 칸, 키트 밖).
-import contracts from "@/assets/stairContracts.json";
+import contracts from "@/assets/stairContracts.json" with { type: "json" };
 
 export type StairSide = "N" | "S" | "E" | "W";
 export type StairLeads = "up" | "down" | "same";

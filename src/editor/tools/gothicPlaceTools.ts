@@ -3,7 +3,7 @@
 //   build_gothic_place  : 야외는 composeGothicPlace(src/editor/gothic/composer.ts), 실내는 같은 조립기 buildWizardingSpace 에
 //                         고딕 공간 사양(src/assets/gothicSpaceSpec.json, scripts/content/gothic-manor/space_recipes_gm.py)을 넣어 짓는다.
 //                         오류가 하나라도 있으면 맵을 바꾸지 않는다. 새 맵은 create_map 경로로 만든다(맵 트리·BGM·시작 맵 규칙 그대로).
-import gothicSpaceSpec from "@/assets/gothicSpaceSpec.json";
+import gothicSpaceSpec from "@/assets/gothicSpaceSpec.json" with { type: "json" };
 import { composeGothicPlace, GOTHIC_PLACE_INFO, GOTHIC_PLACE_KINDS, type GothicPlaceKind } from "@/editor/gothic/composer";
 import { buildWizardingSpace, type WizardingDoorInput, type WizardingFurnitureInput, type WizardingSpaceInput, type WizardingSpaceSpec } from "@/editor/wizarding/builder";
 import { createGothicManorTileset, ensureGothicManorTileset, GOTHIC_MANOR_ID, isGothicManorTileset } from "@/project/defaults/gothicManor";

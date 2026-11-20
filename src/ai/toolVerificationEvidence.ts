@@ -256,10 +256,14 @@ export class ToolVerificationEvidence {
   private lintBaseline: ReadonlyMap<string, number> | null | undefined;
 
   exportRecovery(): VerificationRecoveryState {
-    return structuredClone({ schemaVersion: 1,
+    return structuredClone(this.recoveryView());
+  }
+
+  recoveryView(): VerificationRecoveryState {
+    return { schemaVersion: 1,
       requirements: [...this.requirements.values()].map(({ requirement, inactive }) => ({ requirement, inactive })),
       findings: [...this.findings.values()], attempts: this.attempts, sequence: this.sequence, revision: this.revision,
-      lintBaseline: this.lintBaseline ? [...this.lintBaseline] : this.lintBaseline });
+      lintBaseline: this.lintBaseline ? [...this.lintBaseline] : this.lintBaseline };
   }
 
   /** Fresh revision invalidates even unowned exploratory passes. No confirmed approach is reauthorized. */
@@ -320,12 +324,16 @@ export class ToolVerificationEvidence {
   }
 
   snapshot(includeAttempts = true) {
-    return structuredClone({
+    return structuredClone(this.snapshotView(includeAttempts));
+  }
+
+  snapshotView(includeAttempts = true) {
+    return {
       requirements: [...this.requirements.values()].map(({ requirement, pass, stale, criterionPassed }) => ({ ...requirement,
         status: requirement.args === null ? "pending-specification" : stale ? "stale" : pass && criterionPassed ? "passed" : "unverified" })),
       findings: [...this.findings.values()], attempts: includeAttempts ? this.attempts : [],
       approaches: this.approaches, resolutions: this.resolutions,
-    });
+    };
   }
 
   /** Bounded derivation, never execution: the native adjacent walk owns routing and facing. */

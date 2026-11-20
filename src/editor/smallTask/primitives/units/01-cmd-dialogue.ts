@@ -4,7 +4,7 @@ import { newCommand } from "@/editor/eventCommandFactory";
 import type { JsonSchema } from "@/editor/tools/types";
 import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
-import { EventCommandEditError, eventCommandHash, eventCommandPageHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
+import { EventCommandEditError, eventCommandHash, eventCommandListHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import { ProjectFormatError } from "@/project/io/errors";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, Project } from "@/project/types";
@@ -184,7 +184,7 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     const { page } = scopedPage(ctx);
     const { expectedPageHash, expectedPageHashes } = args;
     // 페이지와 최상위 줄 해시는 하위 분기를 포함한다.
-    if ((expectedPageHash !== undefined && eventCommandPageHash(page) !== expectedPageHash) ||
+    if ((expectedPageHash !== undefined && eventCommandListHash(page.commands) !== expectedPageHash) ||
         (expectedPageHashes !== undefined && !jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes))) {
       throw new PrimitiveError(STALE_COMMAND_LIST);
     }

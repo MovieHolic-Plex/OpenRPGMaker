@@ -1,7 +1,7 @@
 // REFMAP 변형 인물 칩(RefmapDoll<n>)의 조수 검색 라벨 — 에디터 전용(charsetSemantics 에 합쳐진다). 시트 목록은 refmapDollCharsets.ts.
 // 이름·외형 문장·역할·태그는 Kiro Opus 가 칩 8개씩(앞·옆모습) 보고 적은 것이다(char-gen `refmap.read_labels`). 원본 REFMAP 인물의 성별·나이 꼬리표를 힌트로 줬다.
 import type { CharsetAge, CharsetGender, CharsetSemanticEntry } from "@/assets/charsetSemantics";
-import roster from "@/assets/refmapDollCharsets.json";
+import roster from "@/assets/refmapDollCharsets.json" with { type: "json" };
 import { hasRefmapDollBattler } from "@/assets/refmapDollCharsets";
 
 interface RefmapDollCharacter {

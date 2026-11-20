@@ -1,4 +1,4 @@
-import sheet from '@/assets/worldmapAuthoringSheet.json';
+import sheet from '@/assets/worldmapAuthoringSheet.json' with { type: "json" };
 const WORLDMAP_BRUSHES = sheet.brushes;
 import type { GameMap, TileGroupMetadata, TilesetDef } from './types';
 

@@ -6,7 +6,7 @@ import { createInterpreter } from "@/player/interpreter";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
-import { eventCommandHash, eventCommandPageHash } from "@/project/eventCommands/singleCommandOps";
+import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -343,7 +343,7 @@ it("분기 순서가 바뀌면 같은 내용의 하위 줄을 수정하거나 �
 
 it("페이지 해시가 최신이어도 줄 해시가 다르면 수정을 거부하고, 페이지가 바뀌면 삽입을 거부한다", () => {
   const { project, target, readPage } = arrange("blank", [continuation]);
-  const expectedPageHash = eventCommandPageHash(readPage(project));
+  const expectedPageHash = eventCommandListHash(readPage(project).commands);
   const body = "조회한 위치에만 대사를 씁니다.";
   expect(() => runPrimitive(project, target, "cmd.text.update", {
     index: 0, expectedPageHash, expectedHash: "stale", body,
@@ -359,7 +359,7 @@ it("읽은 페이지에서 줄이 삭제되면 남은 줄의 종류나 위치를
   const wait: Command = { kind: "wait", ms: 50 };
   const { project, target, readPage } = arrange("blank", [continuation, wait, continuation]);
   const page = readPage(project);
-  const expectedPageHash = eventCommandPageHash(page);
+  const expectedPageHash = eventCommandListHash(page.commands);
   const expectedHash = eventCommandHash(continuation);
   const after = runPrimitive(project, target, "cmd.delete", { index: 0, expectedHash }).after;
   const body = "이미 읽은 대사를 고칩니다.";
@@ -645,6 +645,7 @@ it("중첩 선택지를 편집해도 숨김, 비활성, 취소를 플레이할 �
     expect(runtime.resume(option)).toMatchObject({
       kind: "text", body: option === -1 ? "다음에 오세요." : continuation.body,
     });
+    if (option === 0) expect(runtime.resume(undefined)).toEqual({ kind: "done" });
   }
   await expectUndoRestores(project, after, target);
 });
