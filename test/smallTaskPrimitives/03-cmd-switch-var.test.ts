@@ -2,12 +2,13 @@
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/03-cmd-switch-var";
 import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { createInterpreter } from "@/player/interpreter";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { resolveEventPage } from "@/project/io/pageResolution";
@@ -51,7 +52,13 @@ function setup(fixture: Fixture, commands: Command[], selection = pageId) {
     mapTree: starter ? project.mapTree : { mapId, children: [] },
     switches: [...project.switches, { id: switchId, name: "문 잠금" }],
     variables: [...project.variables, { id: variableId, name: "획득 개수" }, { id: sourceId, name: "보상 개수" }],
+    session: {
+      ...project.session,
+      switches: { ...project.session.switches },
+      variables: { ...project.session.variables },
+    },
   };
+  ensureSwitchVariableSlots(before);
   const target = eventTarget(before, mapId, eventId, selection);
   return { before, target };
 }
@@ -169,7 +176,7 @@ it("동명 정의, 이미 바뀐 줄, 맞지 않는 명령 종류와 두 값 출
   const { before, target } = setup("blank", [switchOn, text]);
   const ambiguous = { ...before, switches: [...before.switches, { id: "sw_another", name: "문 잠금" }] };
   expect(() => runPrimitive(ambiguous, target, "cmd.setSwitch.insert", { switchId: "문 잠금" })).toThrow(/여럿/);
-  expect(() => runPrimitive(before, target, "cmd.setSwitch.update", { index: 0, value: false, expectedHash: "outdated" })).toThrow(/내용이 바뀌었습니다/);
+  expect(() => runPrimitive(before, target, "cmd.setSwitch.update", { index: 0, value: false, expectedHash: "outdated" })).toThrow(STALE_COMMAND_LIST);
   expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(text, { index: 1, value: false }), /같은 종류/);
   expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { index: 0, value: false, operandVariableId: sourceId }), /하나만/);
 });
@@ -178,7 +185,17 @@ it("같은 종류의 줄이 들어선 이전 위치와 확인값을 생략한 �
   const otherSwitch = { ...switchOn, value: "toggle" } satisfies Command;
   const { before, target } = setup("blank", [otherSwitch, switchOn]);
   expectRefused(before, target, "cmd.setSwitch.update", { index: 0, value: false }, /값의 형식/);
-  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { index: 0, value: false }), /내용이 바뀌었습니다/);
+  expect(() => runPrimitive(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { index: 0, value: false }))).toThrow(STALE_COMMAND_LIST);
+});
+
+it("페이지가 여러 개면 대상에서 페이지를 지정한 뒤 상태 명령을 수정한다", () => {
+  const { before, target } = setup("blank", [switchOn]);
+  const eventOnly = eventTarget(before, mapId, eventId);
+  const args = checkedUpdate(switchOn, { index: 0, value: false });
+  expect(() => runPrimitive(before, eventOnly, "cmd.setSwitch.update", args)).toThrow(SELECT_EVENT_PAGE);
+  const { after } = runPrimitive(before, target, "cmd.setSwitch.update", args);
+  expect(commandsOn(after)).toStrictEqual([{ ...switchOn, value: false }]);
+  expect(commandsOn(before)).toStrictEqual([switchOn]);
 });
 
 it("같은 식별자를 쓰는 페이지와 이벤트를 각각 거절한다", () => {
@@ -447,7 +464,7 @@ it("중첩 분기 안의 한 줄을 수정하고 다른 분기와 원본은 보�
   expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath: [0, FORK_THEN_BRANCH_INDEX, 0, FORK_ELSE_BRANCH_INDEX] }, /분기를 찾을 수 없어요/);
   expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath: [...branchPath, 0] }, /분기 위치/);
   expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath, index: 3 }, /명령 줄을 찾을 수 없습니다/);
-  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { branchPath, index: 2, value: false }), /명령 줄을 찾을 수 없습니다/);
+  expect(() => runPrimitive(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { branchPath, index: 2, value: false }))).toThrow(STALE_COMMAND_LIST);
 });
 
 it("두 분기가 명령 배열 하나를 공유하면 추가와 수정을 거절한다", () => {
@@ -590,6 +607,7 @@ it("시작 상태나 공용 이벤트·부대에서 쓰는 기억 이름을 떼�
 
 it("기존 기억 명령은 공용 한 줄 삭제로 제거하고 되돌릴 수 있다", async () => {
   const { before, target } = setup("blank", [text, flagOn, wait]);
+  expect(() => runPrimitive(before, target, "cmd.delete", { index: 1, expectedHash: eventCommandHash(wait) })).toThrow(STALE_COMMAND_LIST);
   const { after } = runPrimitive(before, target, "cmd.delete", { index: 1, expectedHash: eventCommandHash(flagOn) });
   expect(commandsOn(after)).toStrictEqual([text, wait]);
   await expectUndoRestores(before, after, target);

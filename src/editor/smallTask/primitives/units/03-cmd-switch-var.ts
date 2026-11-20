@@ -17,7 +17,7 @@ import type { BattleEventCondition, Command, GameEvent, GameMap, Project, Switch
 import { roJosa, withJosa } from "@/util/josa";
 import { displayText } from "../../target";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "03-cmd-switch-var";
@@ -413,14 +413,14 @@ function prepareCommand(ctx: PrimitiveContext, args: Args, kind: StateKind, upda
     throw new PrimitiveError("여러 분기가 같은 명령 목록을 쓰고 있어 이 분기만 고칠 수 없습니다.");
   }
   const index = (args.index as number | undefined) ?? list.length;
-  if (!Number.isSafeInteger(index) || index < 0 || index >= list.length + Number(!update)) {
+  if (!Number.isSafeInteger(index) || index < 0 || (!update && index > list.length)) {
     throw new PrimitiveError("명령 줄을 찾을 수 없습니다. 페이지를 다시 확인하세요.");
   }
   const current = update ? list[index] : newCommand(kind);
-  if (current?.kind !== kind) throw new PrimitiveError("선택한 줄에서 같은 종류의 명령을 찾을 수 없습니다.");
-  if (update && args.expectedHash !== eventCommandHash(current)) {
-    throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
+  if (update && (!current || args.expectedHash !== eventCommandHash(current))) {
+    throw new PrimitiveError(STALE_COMMAND_LIST);
   }
+  if (current?.kind !== kind) throw new PrimitiveError("선택한 줄에서 같은 종류의 명령을 찾을 수 없습니다.");
   const command = commandFromArgs(ctx.project, current, args);
   validateCommand(ctx.project, command);
   return { path: [...branchPath, index], current, command };
