@@ -15,7 +15,7 @@ import {
   type WorldmapBase, type WorldmapBuildRequest, type WorldmapBuildResult,
 } from "@/editor/worldmap/worldmapBuild";
 import { PLACE_REFERENCES } from "@/project/regionReferences";
-import themeCatalog from "@/assets/worldmapThemeCatalog.json";
+import themeCatalog from "@/assets/worldmapThemeCatalog.json" with { type: "json" };
 import { WORLDMAP_SELECTED_ICONS, WORLDMAP_SELECTED_ID } from "@/project/defaults/worldmapSelected";
 import { makeWorldmapTilemap } from "@/editor/worldmap/worldmapTilemap";
 import { isRetiredEasyRpgTileset } from "@/project/retiredEasyRpgTilesets";

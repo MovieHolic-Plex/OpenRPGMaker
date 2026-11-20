@@ -2,7 +2,7 @@
 // 방 안 가구는 줄(rows)·격자(grid)·벽 줄(wall)·걸이 줄(hang)·책상 열(desks)로 적고, 칸 크기는 공용 방 스펙(modernCityRoomSpec.json)에서 읽는다.
 // 겹침·방 밖은 furnish.ts 가 거른다. 평면은 rows 의 `~` 표지가 만든다: `~` 는 그 줄에서 남는 너비를 채우는 건물 밖(void)이라
 // 줄마다 방 너비 합이 다르면 ㄱ·ㅜ·ㄷ·계단형 외곽이 된다 - 사각형으로 두지 않는다.
-import spec from "@/assets/modernCityRoomSpec.json";
+import spec from "@/assets/modernCityRoomSpec.json" with { type: "json" };
 import type { InteriorRoomTemplate, InteriorTemplateItem } from "./templates";
 import type { ModernProgramVariation } from "./modernPresets";
 import { o, seatedTable, t, type Venue } from "./venueKit";

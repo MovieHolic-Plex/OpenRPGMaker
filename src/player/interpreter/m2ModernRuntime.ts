@@ -277,20 +277,34 @@ function recordSpawnEvent(session: PlaySessionLike, runtime: M2RuntimeState, fie
   session.eventLocations[eventId] = { mapId, x, y };
 }
 
+export function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
+  const target = String(fields.eventId ?? "");
+  return target && target !== "this-event" ? target : currentEventId ?? "";
+}
+
 function recordRemoveEvent(
   session: PlaySessionLike,
   runtime: M2RuntimeState,
   fields: M2CommandFields,
-  context: { readonly currentEventId?: string }
+  context: M2ModernRuntimeContext
 ): void {
-  const eventId = fieldString(fields, "eventId", context.currentEventId ?? "");
+  const target = removeEventId(fields, undefined);
+  const eventId = target || context.currentEventId;
   if (!eventId) return;
   const spawned = session.spawnedEvents?.[eventId];
-  const mapId = spawned?.mapId ?? (fieldString(fields, "mapId", session.currentMapId) || session.currentMapId);
   runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), removed: true };
   if (spawned) {
     delete session.spawnedEvents?.[eventId];
   } else {
+    let mapId = String(fields.mapId ?? "") || session.currentMapId;
+    if (!target) {
+      // Persistent removal is keyed by the authoring map, even after this event moves.
+      const maps = context.project?.maps;
+      const local = maps?.[session.currentMapId];
+      const source = local?.events.some(event => event.id === eventId) ? local
+        : Object.values(maps ?? {}).find(map => map.events.some(event => event.id === eventId));
+      if (source) mapId = source.id;
+    }
     session.removedEventIds ??= {};
     const removed = new Set(session.removedEventIds[mapId] ?? []);
     removed.add(eventId);

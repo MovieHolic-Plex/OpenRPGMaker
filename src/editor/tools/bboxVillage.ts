@@ -18,7 +18,7 @@ import { planBeodeulCanopy } from "./beodeulForest";
 import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "@/project/relief/walk";
 import { CUT_MAX_RISE, reverseCutLength } from "@/project/relief/cutPieces";
 import { createBeodeulGroundTileset } from "@/project/defaults/beodeulGround";
-import groundCatalog from "@/assets/beodeulGroundCatalog.json";
+import groundCatalog from "@/assets/beodeulGroundCatalog.json" with { type: "json" };
 import type { ReliefData } from "@/project/relief/types";
 import { ToolError, type ToolExecResult } from "./types";
 

@@ -5,11 +5,11 @@
 //
 // 칸마다 통행·레이어가 구워져 있다(조각별 X 막힘 / C 걸음★ / F 걸음 격자 = tiledata/joseon-village/piece-walk.json).
 // 시트 칸 수·열 수는 하드코딩하지 않고 정의 JSON 에서 읽는다 — 국내성 조각이 합쳐지면 칸이 늘어난다.
-import sheet from "@/assets/joseonBaramSheet.json";
+import sheet from "@/assets/joseonBaramSheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`joseonBaramSheet.json`)에서 읽는다. */
 const data = () => bundledJson("joseonBaramTileset");
-import references from "@/assets/joseonBaramReferences.json";
+import references from "@/assets/joseonBaramReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 

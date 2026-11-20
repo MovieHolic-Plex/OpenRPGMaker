@@ -1,4 +1,4 @@
-import catalog from '@/assets/beodeulWarmTreesCatalog.json';
+import catalog from '@/assets/beodeulWarmTreesCatalog.json' with { type: "json" };
 import type {TilesetDef,StructureKitDef,TileGroupMetadata} from '../types';
 export const BEODEUL_WARM_TREES_TEXTURE='tex_beodeul_warm_trees';
 export function createBeodeulWarmTreesTileset():TilesetDef{

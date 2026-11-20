@@ -54,7 +54,7 @@ import { presentableItems } from "@/player/interpreter/presentItem";
 import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { recordSoundLayer, removeEventId, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -1264,9 +1264,12 @@ export function executeCommand(
     case "setDifficulty":
       if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
       return resumeNext(frame);
-    case "storeParty":
-      storePartySet(state.session as PlaySession, command.partySetId, command);
-      return resumeNext(frame);
+    case "storeParty": {
+      const saved = storePartySet(state.session as PlaySession, command.partySetId, command, state.project);
+      state.session.flags.storePartySuccess = saved;
+      // A subsequent recall could otherwise load an older snapshot for this slot.
+      return saved ? resumeNext(frame) : { kind: "done" };
+    }
     case "recallParty": {
       if (!state.project) return resumeNext(frame);
       const recalled = recallPartySet(state.project, state.session as PlaySession, command.partySetId);
@@ -1453,10 +1456,6 @@ function shouldWaitForPicture(fields: M2CommandFields): boolean {
 function spawnEventId(fields: M2CommandFields): string {
   const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
   return fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
-}
-
-function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
-  return fieldString(fields, "eventId", currentEventId ?? "");
 }
 
 function hasM2Field(fields: M2CommandFields, key: string): boolean {
