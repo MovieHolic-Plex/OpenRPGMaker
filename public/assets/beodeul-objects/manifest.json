@@ -34,6 +34,11 @@
       "id": "outdoor",
       "labelKo": "야외·기타 소품",
       "order": 70
+    },
+    {
+      "id": "city",
+      "labelKo": "현대 도시",
+      "order": 80
     }
   ],
   "sets": [

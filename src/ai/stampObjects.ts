@@ -111,8 +111,10 @@ function isObjectKit(kit: SectionStructureKitDef): boolean {
   const name = (kit.name ?? "").trim();
   if (!name) return false;
   if (kit.width < 1 || kit.height < 1 || kit.width > MAX_OBJECT_SIDE || kit.height > MAX_OBJECT_SIDE) return false;
-  if (kit.width * kit.height > MAX_OBJECT_CELLS) return false;
   if (!kit.rows?.length) return false;
+  // 버들항 카탈로그가 배치 기물로 지정한 킷에는 도시 건물 외형도 들어 있다.
+  if (beodeulPlaceableObjectForKit(kit.id)) return true;
+  if (kit.width * kit.height > MAX_OBJECT_CELLS) return false;
   if (NON_OBJECT_KIT_ID.test(kit.id)) return false;
   if (STRUCTURE_WORDS.test(name)) return false;
   return kitPlacementOf(kit) !== null;
