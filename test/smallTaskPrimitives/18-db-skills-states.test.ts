@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { beforeAll, expect, it } from "vitest";
+import { beforeAll, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -16,11 +16,17 @@ import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
+import { dbTarget, mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
+import { plainSummary } from "@/editor/smallTask/plainSummary";
+import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/18-db-skills-states";
+import { getLocale, setLocale, t } from "@/i18n";
+import { store } from "@/project/store";
 import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
 
 type Collection = "skills" | "states" | "skillChoreographies" | "battleAnimations";
@@ -424,6 +430,33 @@ it("선고와 최대 지속 턴을 보존하고 적용할 수 있는 해제 턴�
   expect(() => apply(4)).toThrow(/선고/u);
 });
 
+it.each([
+  { from: 3, maxTurns: 3 },
+  { from: 4, maxTurns: 3 },
+  { from: undefined, maxTurns: 3 },
+  { from: 3, doomTurns: 3 },
+])("확률만 바꿔도 선고·최대 지속 턴과 실제 회복 시작 턴을 비교한다 (%j)", ({ from, maxTurns, doomTurns }) => {
+  const before = withRecords("blank");
+  const state = before.database.states.at(-1)!;
+  state.recoverNaturallyFromTurn = from;
+  state.runtimeEffects = { maxTurns, doomTurns };
+
+  expect(() => runPrimitive(before, target("states"), "db.states.update", { recoverChance: 50 })).toThrow(/선고나 최대 지속 턴/u);
+  expect(state.recoverNaturallyChance).toBe(20);
+});
+
+it("최대 지속 턴 전에 자연 회복 기회가 있으면 확률만 바꾼다", () => {
+  const before = withRecords("blank");
+  const state = before.database.states.at(-1)!;
+  state.recoverNaturallyFromTurn = 2;
+  state.runtimeEffects = { maxTurns: 3 };
+  const { after } = runPrimitive(before, target("states"), "db.states.update", { recoverChance: 50 });
+  const battler = battlerWithStates(state.id);
+  expect(runStateUpkeep(after, battler, () => 0.4).removedStateIds).toEqual([]);
+  expect(runStateUpkeep(after, battler, () => 0.4).removedStateIds).toEqual([state.id]);
+  expect(after.database.states.at(-1)?.runtimeEffects).toEqual({ maxTurns: 3 });
+});
+
 it("전투 불능의 자연 회복과 피격 해제를 거절한다", () => {
   const before = withRecords("blank");
   if (!before.database.states.some(row => row.id === "state_death")) {
@@ -475,6 +508,70 @@ it("변경한 도트 연출의 첫 효과 위치를 재생기가 읽는다", () 
   const result = resolveSkillChoreography({ id: ids.skills, retroChoreographyId: ids.skillChoreographies }, after.database.skillChoreographies);
   expect(result?.skill.layers[0]?.anchor).toBe("screen");
   expect(result?.skill.layers[1]?.anchor).toBe("user");
+});
+
+it("전투 애니메이션과 프로젝트 도트 연출에서 선택한 항목으로 작은 일을 연다", () => {
+  store.replaceProject(withRecords("blank"));
+  resetDatabaseRecordViewSession();
+  resetRetroChoreographyViewState();
+  const host = document.createElement("div");
+  host.setAttribute("role", "dialog");
+  document.body.append(host);
+  const createElement = document.createElement.bind(document);
+  const create = vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+    const element = createElement(tag);
+    if (tag === "section") element.showPopover = () => {};
+    return element;
+  });
+  const trigger = '[data-testid="small-task-open"]';
+  const openAndCheck = (label: string) => {
+    host.querySelector<HTMLButtonElement>(trigger)!.click();
+    expect(host.querySelector(".small-task strong")?.textContent).toBe(label);
+    expect(host.querySelector<HTMLInputElement>(".small-task input")?.disabled).toBe(false);
+    host.querySelector<HTMLButtonElement>(".small-task header button")!.click();
+  };
+
+  try {
+    setSelectedRecordId("battleAnimations", ids.battleAnimations);
+    renderRecordTab(host, "battleAnimations", () => {});
+    openAndCheck("전투 애니메이션 · 불똥");
+    host.querySelector<HTMLButtonElement>('[data-testid="db-animation-frame-0"]')!.click();
+    openAndCheck("전투 애니메이션 · 불똥");
+
+    const renderChoreographies = () => renderRetroChoreographyTab(host, renderChoreographies);
+    renderChoreographies();
+    host.querySelector<HTMLButtonElement>(`[data-testid="db-retro-choreo-row-${ids.skillChoreographies}"]`)!.click();
+    openAndCheck("스킬 연출 · 불꽃");
+    host.querySelector<HTMLButtonElement>('[data-testid="db-retro-choreo-badge-default"]')!.closest("button")!.click();
+    expect(host.querySelector(trigger)).toBeNull();
+  } finally {
+    host.querySelector<HTMLButtonElement>(".small-task header button")?.click();
+    create.mockRestore();
+    resetRetroChoreographyViewState();
+    resetDatabaseRecordViewSession();
+    host.remove();
+  }
+});
+
+it.each([
+  ["en", "Skill choreography · Ember", "Removed Skill choreography"],
+  ["ja", "スキル演出 · Ember", "スキル演出を削除"],
+  ["zh", "技能演出 · Ember", "已删除 技能演出"],
+] as const)("%s 편집기의 도트 연출 대상과 삭제 요약에 번역한 항목 종류를 표시한다", async (locale, label, summary) => {
+  const before = withRecords("blank");
+  const record = before.database.skillChoreographies!.at(-1)!;
+  record.name = "Ember";
+  const selected = dbTarget(before, "skillChoreographies", record.id)!;
+  record.name = record.id;
+  const { after } = runPrimitive(before, target("skillChoreographies"), "db.skillChoreographies.delete", {});
+  const previous = getLocale();
+  try {
+    await setLocale(locale);
+    expect(t(selected.label)).toBe(label);
+    expect(plainSummary(before, after)).toEqual({ headline: summary, lines: [summary] });
+  } finally {
+    await setLocale(previous);
+  }
 });
 
 it("지도 선택으로 자료집 추가 범위를 열 수 없다", () => {

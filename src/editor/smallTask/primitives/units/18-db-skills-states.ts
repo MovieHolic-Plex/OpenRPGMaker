@@ -237,15 +237,18 @@ const stateEditor: Editor<"states"> = {
       throw new PrimitiveError("포켓몬식 전투에서는 이 상태의 회복 시점과 확률을 전투 규칙이 정해요.");
     }
     if (typeof args.recoverTurns === "number") {
-      const { doomTurns, maxTurns } = stateBehavior(row);
-      if ((doomTurns > 0 && doomTurns <= args.recoverTurns) || (maxTurns > 0 && maxTurns < args.recoverTurns) ||
-          (maxTurns === args.recoverTurns && typeof args.recoverChance === "number" && args.recoverChance < 100)) {
-        throw new PrimitiveError("요청한 자동 해제 설정이 적용되지 않아요. 자료집에서 선고나 최대 지속 턴을 확인해 주세요.");
-      }
       next.recoverNaturallyFromTurn = args.recoverTurns;
       next.recoverNaturallyChance = 100;
     }
     if (args.recoverChance !== undefined) next.recoverNaturallyChance = args.recoverChance as number;
+    if (project.system.battleModel !== "gen1" && (args.recoverTurns !== undefined || args.recoverChance !== undefined)) {
+      const { doomTurns, maxTurns, recoverNaturallyFromTurn, recoverNaturallyChance } = stateBehavior(next);
+      const recoveryTurn = Math.max(1, Math.ceil(recoverNaturallyFromTurn));
+      if ((doomTurns > 0 && doomTurns <= recoveryTurn) || (maxTurns > 0 && maxTurns < recoveryTurn) ||
+          (maxTurns === recoveryTurn && recoverNaturallyChance < 100)) {
+        throw new PrimitiveError("요청한 자동 해제 설정이 적용되지 않아요. 자료집에서 선고나 최대 지속 턴을 확인해 주세요.");
+      }
+    }
     if (args.recoverWhenHitChance !== undefined) next.recoverWhenHitChance = args.recoverWhenHitChance as number;
     if (typeof args.clearOnBattleEnd === "boolean") {
       // 전투 종료 스냅샷과 필드에 상태를 넘기는 코드가 각각 이 값을 읽는다.
