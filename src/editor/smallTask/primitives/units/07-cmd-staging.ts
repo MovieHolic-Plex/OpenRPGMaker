@@ -3,6 +3,7 @@ import { isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { audioName, commandSummary } from "@/editor/panels/eventEditor/commandSummary";
+import { SAMPLE_MOVIE_RESOURCE } from "@/editor/panels/eventEditor/playMoviePreview";
 import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -23,7 +24,7 @@ import { SCRIPT_UNKNOWN_EFFECTS_API, scriptCommandEffects } from "@/project/scri
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { AudioCommandChannel, Command, EventPage, GameMap, LightSourceAnchor, Project } from "@/project/types";
 import { commandListAt, eventName, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "07-cmd-staging";
@@ -67,6 +68,7 @@ const lightFields = {
   coneDegrees: number("부채꼴로 비출 각도. 생략하면 기존 방식 유지.", 20, 180),
   coneFacing: choice("부채꼴이 비추는 방향. 이벤트에 붙으면 이벤트 방향을 따릅니다.", ["up", "down", "left", "right"]),
 };
+const lightFacingNames = { up: "위", down: "아래", left: "왼쪽", right: "오른쪽" } as const;
 
 const specs = {
   showAnimation: {
@@ -112,7 +114,10 @@ const specs = {
   },
   playMovie: {
     title: "동영상 재생",
-    fields: { resourceId, wait: flag("영상이 끝날 때까지 기다릴지 여부."), skippable: flag("영상을 건너뛸 수 있는지 여부.") },
+    fields: {
+      resourceId: text(`업로드에서 확인한 동영상 식별자 또는 번들 샘플 ${SAMPLE_MOVIE_RESOURCE.id}.`),
+      wait: flag("영상이 끝날 때까지 기다릴지 여부."), skippable: flag("영상을 건너뛸 수 있는지 여부."),
+    },
     insertRequired: ["resourceId"],
   },
   setLighting: {
@@ -260,9 +265,12 @@ function validateReferences(project: Project, command: StagingCommand, previous:
   const ids = collectResourceIds(project);
   const stillId = command.kind === "showPicture" ? openingStillBaseId(id) : undefined;
   const known = ids.has(id) || (stillId !== undefined && ids.has(stillId));
-  if (actorId || !known || Object.hasOwn(Object.prototype, id)) throw new PrimitiveError(message);
+  const bundledMovie = command.kind === "playMovie" && id === SAMPLE_MOVIE_RESOURCE.id;
+  if (actorId || (!known && !bundledMovie) || Object.hasOwn(Object.prototype, id)) throw new PrimitiveError(message);
   const uploaded = Object.hasOwn(project.assets.uploaded, id) ? project.assets.uploaded[id] : undefined;
   const url = resolveAssetResourceUrl(id, { project });
+  // A missing upload must not silently fall back to the sample with the same filename.
+  if (bundledMovie && !uploaded && !url) return;
   // Content-addressed uploads are also edited in hosts that have no URL resolver installed.
   const mime = uploaded?.ref && (!url || url === uploadedAssetUrl(uploaded))
     ? uploadedAssetMime(uploaded).toLowerCase()
@@ -294,26 +302,27 @@ function hasCommandReference(project: Project, matches: (command: Command) => bo
       || troopAfterBattleLists(troop).some(list => uses(list.commands)));
 }
 
-function referencesPicture(command: Command, id: string): boolean {
+function referencesPicture(command: Command, id: string, includeShow = false): boolean {
+  if (includeShow && command.kind === "showPicture") return command.pictureId === id;
   if (command.kind === "erasePicture") return command.pictureId === id;
   if (command.kind !== "m2Command") return false;
   const title = m2CommandById(command.commandId)?.title;
-  if (title !== "Move Picture" && title !== "Erase Picture") return false;
+  if (title !== "Move Picture" && title !== "Erase Picture" && !(includeShow && title === "Show Picture")) return false;
   const slot = command.fields.pictureId;
   return (typeof slot === "string" || typeof slot === "number" || typeof slot === "boolean" ? String(slot) : "pic1") === id;
 }
 
-function hasUnresolvedSlotScript(project: Project, kind: "erasePicture" | "removeLight"): boolean {
-  const mentionsConsumer = kind === "removeLight" ? /["'`]removeLight["'`]/u
-    : /["'`](?:erasePicture|m2-052-move-picture|m2-053-erase-picture)["'`]/u;
-  const mayCallConsumer = (entry: Pick<Extract<Command, { kind: "script" }>, "source" | "compiled" | "effects">) => {
+function hasUnresolvedSlotScript(project: Project, slot: "picture" | "light"): boolean {
+  const mentionsSlotCommand = slot === "light" ? /["'`](?:addLight|removeLight)["'`]/u
+    : /["'`](?:showPicture|erasePicture|m2-051-show-picture|m2-052-move-picture|m2-053-erase-picture)["'`]/u;
+  const mayCallSlotCommand = (entry: Pick<Extract<Command, { kind: "script" }>, "source" | "compiled" | "effects">) => {
     // Script effects do not track runtime slot IDs. A matching command or computed game.cmd needs review.
     const code = `${entry.source}\n${entry.compiled}`;
-    return mentionsConsumer.test(code) || scriptCommandEffects(entry).dynamic.some(({ api }) => api === "cmd"
+    return mentionsSlotCommand.test(code) || scriptCommandEffects(entry).dynamic.some(({ api }) => api === "cmd"
       || (api === SCRIPT_UNKNOWN_EFFECTS_API && /\bcmd\b/u.test(code)));
   };
-  return hasCommandReference(project, row => row.kind === "script" && mayCallConsumer(row))
-    || (project.scriptLibrary ?? []).some(mayCallConsumer);
+  return hasCommandReference(project, row => row.kind === "script" && mayCallSlotCommand(row))
+    || (project.scriptLibrary ?? []).some(mayCallSlotCommand);
 }
 
 function validateSlotRename(project: Project, map: GameMap, command: StagingCommand, previous: StagingCommand | undefined): void {
@@ -321,20 +330,33 @@ function validateSlotRename(project: Project, map: GameMap, command: StagingComm
     if (hasCommandReference(project, row => referencesPicture(row, previous.pictureId))) {
       throw new PrimitiveError("다른 명령에서 이 그림을 움직이거나 지우고 있어 그림 자리를 바꿀 수 없습니다.");
     }
-    if (hasUnresolvedSlotScript(project, "erasePicture")) {
+    if (hasCommandReference(project, row => referencesPicture(row, command.pictureId, true))) {
+      throw new PrimitiveError("다른 명령에서 이미 쓰는 그림 자리입니다. 빈 자리를 골라 주세요.");
+    }
+    if (hasUnresolvedSlotScript(project, "picture")) {
       throw new PrimitiveError("스크립트에서 이 그림 자리를 사용하는지 확인할 수 없어 자리를 바꿀 수 없습니다.");
     }
   }
   if (command.kind === "addLight" && previous?.kind === "addLight") {
     const oldId = normalizeLightSource(previous.source).id;
-    if (normalizeLightSource(command.source).id !== oldId) {
-      if (map.defaultLighting?.sources.some(source => normalizeLightSource(source).id === oldId)) {
+    const newId = normalizeLightSource(command.source).id;
+    if (newId !== oldId) {
+      // Entering a map without default lighting retains the lights from the previous map.
+      const sourceMaps = map.defaultLighting ? [map] : Object.values(project.maps);
+      const isDefaultLight = (id: string) => sourceMaps.some(sourceMap =>
+        sourceMap.defaultLighting?.sources.some(source => normalizeLightSource(source).id === id));
+      if (isDefaultLight(oldId)) {
         throw new PrimitiveError("이 명령은 맵의 기본 광원을 바꾸고 있어 광원 이름을 바꿀 수 없습니다.");
       }
       if (hasCommandReference(project, row => row.kind === "removeLight" && row.all !== true && row.id === oldId)) {
         throw new PrimitiveError("다른 명령에서 이 광원을 끄고 있어 광원 이름을 바꿀 수 없습니다.");
       }
-      if (hasUnresolvedSlotScript(project, "removeLight")) {
+      if (isDefaultLight(newId)
+        || hasCommandReference(project, row => (row.kind === "addLight" && normalizeLightSource(row.source).id === newId)
+          || (row.kind === "removeLight" && row.all !== true && row.id === newId))) {
+        throw new PrimitiveError("이미 쓰는 광원 이름입니다. 새 이름을 골라 주세요.");
+      }
+      if (hasUnresolvedSlotScript(project, "light")) {
         throw new PrimitiveError("스크립트에서 이 광원을 사용하는지 확인할 수 없어 이름을 바꿀 수 없습니다.");
       }
     }
@@ -378,8 +400,8 @@ function prepareEdit(ctx: PrimitiveContext, args: Args, kind: Kind, mode: Mode) 
   }
   const current = row?.kind === kind ? row : undefined;
   const hash = current && eventCommandHash(current);
-  if (mode === "update" && args.expectedHash !== undefined && args.expectedHash !== hash) {
-    throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
+  if (mode === "update" && args.expectedHash !== hash) {
+    throw new PrimitiveError(STALE_COMMAND_LIST);
   }
   const command = buildCommand(current ?? (newCommand(kind) as StagingCommand), args, map, event.id);
   if ((command.kind === "showPicture" || command.kind === "erasePicture")
@@ -409,10 +431,8 @@ function summaryDetails(ctx: PrimitiveContext, map: GameMap, cmd: StagingCommand
   function targetSummary(at: LightSourceAnchor): string {
     if (typeof at === "object" && "eventId" in at) {
       const event = map.events.find(entry => entry.id === at.eventId);
-      if (at.eventId && ctx.target.kind === "event" && at.eventId !== ctx.target.eventId && event) {
-        return safeName(eventName(event), "다른 인물");
-      }
-      return "이 이벤트";
+      if (!at.eventId || (ctx.target.kind === "event" && at.eventId === ctx.target.eventId)) return "이 이벤트";
+      return event ? safeName(eventName(event), "다른 인물") : "찾을 수 없는 이벤트";
     }
     return at === "player" ? "주인공" : `${at.x}, ${at.y} 칸`;
   }
@@ -456,13 +476,18 @@ function summaryDetails(ctx: PrimitiveContext, map: GameMap, cmd: StagingCommand
       return cmd.channel ? audioNames[cmd.channel] ?? "지정한 소리" : "모든 소리";
     case "playMovie":
       return [
-        referenceName(project, cmd.resourceId, "지정한 동영상"),
+        referenceName(project, cmd.resourceId, "지정한 동영상", cmd.resourceId === SAMPLE_MOVIE_RESOURCE.id ? SAMPLE_MOVIE_RESOURCE.name : undefined),
         cmd.wait === false ? "바로 다음 줄로" : "영상이 끝날 때까지 대기",
         cmd.skippable === false ? "건너뛰기 금지" : "건너뛰기 허용",
       ].join(" · ");
     case "addLight": {
       const { source } = cmd;
+      const cone = source.cone;
       return [
+        args.color !== undefined ? `색 ${source.color}` : "",
+        args.edge !== undefined ? (source.edge === "hard" ? "또렷한 가장자리" : "부드러운 가장자리") : "",
+        cone && (args.coneDegrees !== undefined || args.coneFacing !== undefined)
+          ? `부채꼴 ${cone.degrees}도${cone.facing ? ` ${lightFacingNames[cone.facing]}` : ""}` : "",
         targetSummary(source.at),
         `반지름 ${source.radius}칸`,
         args.intensity !== undefined && source.intensity !== undefined ? `세기 ${Math.round(source.intensity * 100)}%` : "",
@@ -495,7 +520,7 @@ function makePrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
         branchPath: { type: "array", items: { type: "integer" }, description: "분기 안의 명령이면 읽기 결과의 분기 경로. 바깥 목록이면 생략." },
         ...(mode === "update" ? { expectedHash: text("이벤트를 읽을 때 받은 줄 확인값. 명령이 바뀌었으면 수정을 중단합니다.") } : {}),
       },
-      required: mode === "update" ? ["index"] : spec.insertRequired ?? [],
+      required: mode === "update" ? ["index", "expectedHash"] : spec.insertRequired ?? [],
       additionalProperties: false,
     },
     scope(ctx): PageScope {

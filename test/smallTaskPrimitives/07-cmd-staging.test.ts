@@ -1,24 +1,32 @@
 /** @vitest-environment happy-dom */
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { smallTaskErrorMessage } from "@/editor/smallTask/capsule";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/07-cmd-staging";
 import { mapTarget } from "@/editor/smallTask/target";
+import { SAMPLE_MOVIE_RESOURCE } from "@/editor/panels/eventEditor/playMoviePreview";
+import en from "@/i18n/catalogs/en.json";
+import ja from "@/i18n/catalogs/ja.json";
+import zh from "@/i18n/catalogs/zh.json";
+import { containsHangul, createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { resolveMovieResourceUrl } from "@/player/playSceneMovies";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
-import { startSession } from "@/project/session";
+import { applyMapDefaultLighting } from "@/project/lightingRules";
+import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
+import { showPictureState, startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project, UploadedAsset } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
 
 const MOVIE: UploadedAsset = {
   id: "movie_opening_stage",
@@ -42,10 +50,16 @@ type Example = { args: Fields; expected: Command };
 type StagingExamples = { fixture: Fixture; insert: Example; update: Example };
 const fixtures = new Map<Fixture, Project>();
 
+function editArgs(command: Command, args: Fields): Fields {
+  return { index: 0, expectedHash: eventCommandHash(command), ...args };
+}
+
 function cachedFixture(name: Fixture): Project {
   const existing = fixtures.get(name);
   if (existing) return existing;
   const loaded = loadFixture(name);
+  // The editor fills session slots on opening the project, before the primitive freezes its snapshot.
+  ensureSwitchVariableSlots(loaded);
   fixtures.set(name, loaded);
   return loaded;
 }
@@ -192,13 +206,14 @@ for (const row of examples) {
       const initial = mode === "insert" ? [LINE, WAIT] : [LINE, row.insert.expected, WAIT];
       const { project, target, mapId, page } = fixture(row.fixture, initial);
       const beforeCommands = structuredClone(initial);
-      const result = runPrimitive(project, target, id, { ...args, index: 1 });
+      const fields = mode === "insert" ? { ...args, index: 1 } : editArgs(row.insert.expected, { ...args, index: 1 });
+      const result = runPrimitive(project, target, id, fields);
       expect(selectedPage(result.after, mapId).commands).toStrictEqual([LINE, expected, WAIT]);
       expect(jsonEqual(page.commands, beforeCommands)).toBe(true);
       const primitive = PRIMITIVES.find(entry => entry.id === id)!;
-      expect(result.sentence).toBe(primitive.describe({ project, target }, { ...args, index: 1 }));
+      expect(result.sentence).toBe(primitive.describe({ project, target }, fields));
       expect(result.sentence).toMatch(/[가-힣].*합니다\.$/u);
-      expect(result.sentence).not.toMatch(/[A-Za-z{}\[\]]/u);
+      expect(result.sentence.replace(/#[0-9a-f]{6}\b/giu, "")).not.toMatch(/[A-Za-z{}\[\]]/u);
       expect(result.sentence.length).toBeLessThanOrEqual(80);
       const scope = primitive.scope({ project, target }, { mapId: "다른 맵" });
       expect(scope).toEqual({ kind: "eventPage", mapId, eventId: EVENT, pageId: PAGE });
@@ -220,9 +235,22 @@ it("분기 안 한 줄을 끼워 넣고 해시로 오래된 수정 요청을 거
     LINE, { ...loop, body: [{ kind: "showEmote", emote: "question", target: { eventId: "" } }, WAIT] },
   ]);
   const current: Command = { kind: "showEmote", emote: "question", target: { eventId: "" } };
-  expect(() => runPrimitive(after, target, "cmd.showEmote.update", { ...path, expectedHash: eventCommandHash(WAIT), emote: "idea" })).toThrow("그 줄의 내용이 바뀌었습니다");
+  expect(() => runPrimitive(after, target, "cmd.showEmote.update", { ...path, expectedHash: eventCommandHash(WAIT), emote: "idea" })).toThrow(STALE_COMMAND_LIST);
   const updated = runPrimitive(after, target, "cmd.showEmote.update", { ...path, expectedHash: eventCommandHash(current), emote: "idea" });
   expect(selectedPage(updated.after, mapId).commands).toStrictEqual([LINE, { ...loop, body: [{ ...current, emote: "idea" }, WAIT] }]);
+});
+
+it("같은 종류의 줄이 재정렬되면 확인값 없는 요청과 이전 줄 확인값을 모두 거절한다", async () => {
+  const first: Command = { kind: "showEmote", emote: "heart", target: "player" };
+  const second: Command = { ...first, emote: "question" };
+  const { project, target, page, mapId } = fixture("blank", [second, first]);
+  const id = "cmd.showEmote.update";
+  expectRefused(project, target, id, { index: 0, durationMs: 500 }, /값의 형식/u);
+  expectRefused(project, target, id, editArgs(first, { durationMs: 500 }), /명령 목록이 바뀌었어요/u);
+  expect(page.commands).toStrictEqual([second, first]);
+  const { after } = expectApplies(project, target, id, editArgs(first, { index: 1, durationMs: 500 }));
+  expect(selectedPage(after, mapId).commands).toStrictEqual([second, { ...first, durationMs: 500 }]);
+  await expectUndoRestores(project, after, target);
 });
 
 it("없는 분기와 줄에 쓰지 않고, 비어 있는 분기에는 끝에 추가한다", () => {
@@ -232,7 +260,7 @@ it("없는 분기와 줄에 쓰지 않고, 비어 있는 분기에는 끝에 추
   expectRefused(project, target, id, { branchPath: [1] }, /분기 위치/u);
   expectRefused(project, target, id, { branchPath: [1, FORK_ELSE_BRANCH_INDEX] }, /명령 분기를 찾을 수 없어요/u);
   expectRefused(project, target, id, { branchPath: [1, LOOP_BODY_BRANCH_INDEX], index: 1 }, /줄이 없습니다/u);
-  expectRefused(project, target, "cmd.showEmote.update", { index: 0, emote: "heart" }, /같은 종류/u);
+  expectRefused(project, target, "cmd.showEmote.update", editArgs(LINE, { emote: "heart" }), /같은 종류/u);
   const { after } = runPrimitive(project, target, id, { branchPath: [1, LOOP_BODY_BRANCH_INDEX] });
   expect(selectedPage(after, mapId).commands).toStrictEqual([
     LINE, { ...loop, body: [{ kind: "showEmote", emote: "heart", target: { eventId: "" } }] },
@@ -244,7 +272,7 @@ it("없는 분기와 줄에 쓰지 않고, 비어 있는 분기에는 끝에 추
   expect(afterMap.events.find(event => event.id === OTHER)).toBe(beforeMap.events.find(event => event.id === OTHER));
 });
 
-it.each(["insert", "update"] as const)("같은 배열을 쓰는 두 분기에서도 선택한 분기에만 %s 한다", mode => {
+it.each(["insert", "update"] as const)("같은 배열을 쓰는 두 분기에서 선택한 분기만 %s 하고 되돌린다", async mode => {
   const emote: Command = { kind: "showEmote", target: "player", emote: "heart", durationMs: undefined };
   const shared = [emote];
   const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 3 }, then: shared, else: shared };
@@ -258,17 +286,54 @@ it.each(["insert", "update"] as const)("같은 배열을 쓰는 두 분기에서
   expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...fork, then: next, else: [emote] }]);
   expect(page.commands).toStrictEqual([fork]);
   expect(shared).toStrictEqual([emote]);
+  await expectUndoRestores(project, after, target);
 });
 
 it("그림 합성을 보통으로 돌리면 합성 설정만 지운다", () => {
   const picture: Command = { kind: "showPicture", resourceId: PICTURE, pictureId: "pic1", x: 0, y: 0, opacity: 128 };
-  const { project, target, mapId } = fixture("blank", [{ ...picture, blendMode: "screen" }]);
-  const { after } = runPrimitive(project, target, "cmd.showPicture.update", { index: 0, blendMode: "normal" });
+  const before = { ...picture, blendMode: "screen" } as const;
+  const { project, target, mapId } = fixture("blank", [before]);
+  const { after } = runPrimitive(project, target, "cmd.showPicture.update", editArgs(before, { blendMode: "normal" }));
   expect(selectedPage(after, mapId).commands).toStrictEqual([picture]);
 });
 
 const slotPicture: Command = { kind: "showPicture", resourceId: PICTURE, pictureId: "title_card", x: 0, y: 0 };
 const slotLight: Command = { kind: "addLight", source: { id: "door_lamp", at: "player", radius: 3 } };
+
+it("다른 그림이 쓰는 자리로 바꾸려 해도 재생 시 두 자리를 유지한다", () => {
+  const laterPicture = { ...slotPicture, pictureId: "second_card", x: 40 };
+  const { project, target, page } = fixture("blank", [slotPicture, laterPicture]);
+  expectRefused(project, target, "cmd.showPicture.update", editArgs(slotPicture, { pictureId: " second_card " }), /이미 쓰는 그림 자리/u);
+  const session = startSession(project, 7);
+  const player = createInterpreter(page.commands, session, project);
+  const first = player.start();
+  if (first.kind !== "showPicture") throw new Error("첫 그림 표시 단계가 없습니다.");
+  showPictureState(session, first);
+  const second = player.resume(undefined);
+  if (second.kind !== "showPicture") throw new Error("두 번째 그림 표시 단계가 없습니다.");
+  showPictureState(session, second);
+  expect(Object.keys(session.pictures)).toEqual(["title_card", "second_card"]);
+});
+
+it.each(["command", "mapDefault", "inheritedDefault"] as const)("다른 광원의 이름으로 바꿀 수 없다 · %s", owner => {
+  const other = { ...slotLight.source, id: " other_lamp ", radius: 6 };
+  const { project, target, mapId, page } = fixture("blank", owner === "command" ? [slotLight, { kind: "addLight", source: other }] : [slotLight]);
+  const map = project.maps[mapId]!;
+  const defaultLighting = { ambient: 0.5, sources: [other] };
+  if (owner === "mapDefault") map.defaultLighting = defaultLighting;
+  const previousMap = { ...map, id: "test_previous_map", events: [], defaultLighting };
+  if (owner === "inheritedDefault") project.maps[previousMap.id] = previousMap;
+  expectRefused(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "other_lamp" }), /이미 쓰는 광원 이름/u);
+  const session = startSession(project, 7);
+  if (owner === "inheritedDefault") {
+    applyMapDefaultLighting(session, previousMap);
+    applyMapDefaultLighting(session, map);
+  }
+  expect(createInterpreter(page.commands, session, project).start().kind).toBe("done");
+  expect(session.lighting?.sources).toHaveLength(2);
+  expect(session.lighting?.sources).toContainEqual({ ...other, id: "other_lamp" });
+  expect(session.lighting?.sources).toContainEqual(slotLight.source);
+});
 
 it("같은 페이지의 다른 분기에서 지우는 그림은 자리를 바꿀 수 없다", () => {
   const remove: Command = { kind: "erasePicture", pictureId: "title_card" };
@@ -284,24 +349,25 @@ it("공용 이벤트에서 이동시키는 그림은 자리를 바꿀 수 없다
   const { project, target } = fixture("blank", [slotPicture]);
   const move: Command = { kind: "m2Command", commandId: "m2-052-move-picture", fields: { pictureId: "title_card" } };
   project.commonEvents = [{ id: "move_card", name: "그림 옮기기", trigger: "none", commands: [move] }];
-  expectRefused(project, target, "cmd.showPicture.update", { index: 0, pictureId: "new_card" }, /그림 자리를 바꿀 수 없습니다/u);
+  expectRefused(project, target, "cmd.showPicture.update", editArgs(slotPicture, { pictureId: "new_card" }), /그림 자리를 바꿀 수 없습니다/u);
 });
 
 it("그림 자리를 생략한 M2 이동 명령의 기본 자리도 보호한다", () => {
-  const { project, target } = fixture("blank", [{ ...slotPicture, pictureId: "pic1" }]);
+  const picture = { ...slotPicture, pictureId: "pic1" };
+  const { project, target } = fixture("blank", [picture]);
   project.commonEvents = [{
     id: "move_card", name: "그림 옮기기", trigger: "none",
     commands: [{ kind: "m2Command", commandId: "m2-052-move-picture", fields: { x: 40 } }],
   }];
-  expectRefused(project, target, "cmd.showPicture.update", { index: 0, pictureId: "pic2" }, /그림 자리를 바꿀 수 없습니다/u);
+  expectRefused(project, target, "cmd.showPicture.update", editArgs(picture, { pictureId: "pic2" }), /그림 자리를 바꿀 수 없습니다/u);
 });
 
 it("공용 스크립트가 광원을 끄는 경우에는 이름만 보호한다", () => {
   const { project, target, mapId } = fixture("blank", [slotLight]);
   const code = 'await game.cmd({ "kind": "removeLight", id: "door_lamp" })';
   project.scriptLibrary = [{ id: "staging_light", source: code, compiled: code }];
-  expectRefused(project, target, "cmd.addLight.update", { index: 0, id: "new_lamp" }, /스크립트/u);
-  const { after } = runPrimitive(project, target, "cmd.addLight.update", { index: 0, radius: 5 });
+  expectRefused(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "new_lamp" }), /스크립트/u);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { radius: 5 }));
   expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...slotLight, source: { ...slotLight.source, radius: 5 } }]);
   expect(after.scriptLibrary).toBe(project.scriptLibrary);
 });
@@ -309,8 +375,8 @@ it("공용 스크립트가 광원을 끄는 경우에는 이름만 보호한다"
 it("맵의 기본 광원을 갱신하는 명령은 이름을 바꿀 수 없다", () => {
   const { project, target, mapId } = fixture("blank", [slotLight]);
   project.maps[mapId]!.defaultLighting = { ambient: 0.5, sources: [{ ...slotLight.source, id: " door_lamp ", radius: 1 }] };
-  expectRefused(project, target, "cmd.addLight.update", { index: 0, id: "new_lamp" }, /맵의 기본 광원/u);
-  const { after } = runPrimitive(project, target, "cmd.addLight.update", { index: 0, radius: 5 });
+  expectRefused(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "new_lamp" }), /맵의 기본 광원/u);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { radius: 5 }));
   expect(after.maps[mapId]!.defaultLighting).toBe(project.maps[mapId]!.defaultLighting);
   const session = startSession(after, 7);
   const commands = selectedPage(after, mapId).commands;
@@ -330,16 +396,16 @@ it.each(["battlePage", "afterBattle"] as const)("적 그룹의 %s 명령에서 �
       afterBattle: context === "afterBattle" ? { victory: commands } : undefined,
     }],
   };
-  expectRefused(project, target, "cmd.addLight.update", { index: 0, id: "new_lamp" }, /광원 이름을 바꿀 수 없습니다/u);
-  const { after } = runPrimitive(project, target, "cmd.addLight.update", { index: 0, radius: 7 });
+  expectRefused(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "new_lamp" }), /광원 이름을 바꿀 수 없습니다/u);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { radius: 7 }));
   expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...slotLight, source: { ...slotLight.source, radius: 7 } }]);
   expect(after.database.troops).toBe(project.database.troops);
 });
 
 it("사용 중인 명령이 없으면 그림 자리와 광원 이름을 바꾼다", () => {
   const { project, target, mapId } = fixture("blank", [slotPicture, slotLight]);
-  const picture = runPrimitive(project, target, "cmd.showPicture.update", { index: 0, pictureId: "new_card" }).after;
-  const light = runPrimitive(picture, target, "cmd.addLight.update", { index: 1, id: "new_lamp" }).after;
+  const picture = runPrimitive(project, target, "cmd.showPicture.update", editArgs(slotPicture, { pictureId: "new_card" })).after;
+  const light = runPrimitive(picture, target, "cmd.addLight.update", editArgs(slotLight, { index: 1, id: "new_lamp" })).after;
   expect(selectedPage(light, mapId).commands).toStrictEqual([
     { ...slotPicture, pictureId: "new_card" }, { ...slotLight, source: { ...slotLight.source, id: "new_lamp" } },
   ]);
@@ -373,15 +439,28 @@ it("기존 명령이 있는 줄에서도 다른 맵의 이벤트와 맵 밖 위�
   const animation: Command = { kind: "showAnimation", target: "player", animationId: "fx:door-open" };
   const { project, target, mapId } = fixture("blank", [animation]);
   const id = "cmd.showAnimation.update";
-  expectRefused(project, target, id, { index: 0, targetEventId: "absent_event" }, /현재 맵에서 연출할 이벤트/u);
-  expectRefused(project, target, id, { index: 0, x: project.maps[mapId]!.width, y: 0 }, /현재 맵 안에서 연출할 칸/u);
+  expectRefused(project, target, id, editArgs(animation, { targetEventId: "absent_event" }), /현재 맵에서 연출할 이벤트/u);
+  expectRefused(project, target, id, editArgs(animation, { x: project.maps[mapId]!.width, y: 0 }), /현재 맵 안에서 연출할 칸/u);
 });
 
 it("예전 연출의 사라진 참조를 그대로 두고 대기 설정만 수정한다", () => {
   const animation: Command = { kind: "showAnimation", target: { eventId: "old_actor" }, animationId: "old_effect", wait: true };
   const { project, target, mapId } = fixture("blank", [animation]);
-  const { after } = runPrimitive(project, target, "cmd.showAnimation.update", { index: 0, wait: false });
+  const { after, sentence } = runPrimitive(project, target, "cmd.showAnimation.update", editArgs(animation, { wait: false }));
   expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...animation, wait: false }]);
+  expect(sentence).toContain("찾을 수 없는 이벤트");
+  expect(sentence).not.toContain("이 이벤트");
+});
+
+it("빛의 색과 가장자리, 부채꼴 각도와 방향을 요약한다", async () => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  const fields = { color: "#e02020", edge: "hard", coneDegrees: 60, coneFacing: "down" };
+  const { after, sentence } = expectApplies(project, target, "cmd.addLight.update", editArgs(slotLight, fields));
+  expect(sentence).toContain("색 #e02020 · 또렷한 가장자리 · 부채꼴 60도 아래");
+  expect(selectedPage(after, mapId).commands[0]).toMatchObject({
+    source: { color: "#e02020", edge: "hard", cone: { degrees: 60, facing: "down" } },
+  });
+  await expectUndoRestores(project, after, target);
 });
 
 it("자료집에 이름만 있는 소리와 종류만 동영상인 그림을 거절한다", () => {
@@ -394,12 +473,13 @@ it("자료집에 이름만 있는 소리와 종류만 동영상인 그림을 거
 });
 
 it("동영상 검증은 업로드 형식과 실제 재생기가 고르는 리소스를 확인한다", () => {
-  const { project, target, mapId } = fixture("blank", []);
-  project.assets.uploaded[MOVIE.id] = { ...MOVIE, dataUrl: "data:video/webm,GkXfow==" };
-  project.assets.uploaded[AUDIO] = { ...MOVIE, id: AUDIO };
-  expectRefused(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id }, /재생할 수 있는 동영상/u);
-  expectRefused(project, target, "cmd.playMovie.insert", { resourceId: AUDIO }, /재생할 수 있는 동영상/u);
+  const invalid = fixture("blank", []);
+  invalid.project.assets.uploaded[MOVIE.id] = { ...MOVIE, dataUrl: "data:video/webm,GkXfow==" };
+  invalid.project.assets.uploaded[AUDIO] = { ...MOVIE, id: AUDIO };
+  expectRefused(invalid.project, invalid.target, "cmd.playMovie.insert", { resourceId: MOVIE.id }, /재생할 수 있는 동영상/u);
+  expectRefused(invalid.project, invalid.target, "cmd.playMovie.insert", { resourceId: AUDIO }, /재생할 수 있는 동영상/u);
 
+  const { project, target, mapId } = fixture("blank", []);
   project.assets.uploaded[MOVIE.id] = {
     ...MOVIE, dataUrl: undefined, ref: { sha256: "a".repeat(64), mime: "video/webm", bytes: 4, extension: "webm" },
   };
@@ -410,9 +490,72 @@ it("동영상 검증은 업로드 형식과 실제 재생기가 고르는 리소
 it("기존 자료를 건드리지 않는 영상 설정 수정은 허용한다", () => {
   const movie: Command = { kind: "playMovie", resourceId: "old_movie_file", wait: true };
   const { project, target, mapId } = fixture("blank", [movie]);
-  const { after, sentence } = runPrimitive(project, target, "cmd.playMovie.update", { index: 0, wait: false });
+  const { after, sentence } = runPrimitive(project, target, "cmd.playMovie.update", editArgs(movie, { wait: false }));
   expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...movie, wait: false }]);
   expect(sentence).toContain("바로 다음 줄로 · 건너뛰기 허용");
+});
+
+it.each(["insert", "update"] as const)("번들 샘플을 %s 하면 플레이어가 동영상 경로를 사용한다", async mode => {
+  const movie: Command = { kind: "playMovie", resourceId: MOVIE.id, wait: false };
+  const { project, target, mapId } = fixture("blank", mode === "insert" ? [] : [movie]);
+  const fields = { resourceId: SAMPLE_MOVIE_RESOURCE.id };
+  const args = mode === "insert" ? fields : editArgs(movie, fields);
+  const { after, sentence } = expectApplies(project, target, `cmd.playMovie.${mode}`, args);
+  const step = createInterpreter(selectedPage(after, mapId).commands, startSession(after, 7), after).start();
+  expect(step).toMatchObject({ kind: "playMovie", resourceId: SAMPLE_MOVIE_RESOURCE.id });
+  expect(sentence).toContain(SAMPLE_MOVIE_RESOURCE.name);
+  expect(resolveMovieResourceUrl(SAMPLE_MOVIE_RESOURCE.id, after)).toBe(SAMPLE_MOVIE_RESOURCE.url);
+  await expectUndoRestores(project, after, target);
+});
+
+it("번들 동영상과 이름이 같은 잘못된 업로드 및 확인되지 않은 파일은 거절한다", () => {
+  const { project, target } = fixture("blank", []);
+  const id = SAMPLE_MOVIE_RESOURCE.id;
+  project.assets.uploaded[id] = { ...MOVIE, id, dataUrl: "data:image/png;base64,AAAA" };
+  for (const resourceId of [id, "absent.webm"]) {
+    expectRefused(project, target, "cmd.playMovie.insert", { resourceId }, /재생할 수 있는 동영상/u);
+  }
+});
+
+it("SQLite에서 다시 연 업로드 동영상의 해시를 플레이어가 호스트 URL로 해석한다", async () => {
+  const { repository, close } = await createLocalRepositoryFixture();
+  try {
+    const { project, target, mapId } = fixture("blank", []);
+    const bytes = readFileSync(`public${SAMPLE_MOVIE_RESOURCE.url}`);
+    const { ref } = await repository.assets.put(bytes, { mime: "video/webm", extension: "webm" });
+    project.assets.uploaded[MOVIE.id] = { ...MOVIE, dataUrl: undefined, ref };
+    const { after } = expectApplies(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id });
+    expect((await repository.save(after)).kind).toBe("saved");
+    const reloaded = await repository.loadProject();
+    if (!reloaded) throw new Error("SQLite 프로젝트를 다시 열지 못했습니다.");
+    expect(reloaded.assets.uploaded[MOVIE.id]?.ref).toEqual(ref);
+    const step = createInterpreter(selectedPage(reloaded, mapId).commands, startSession(reloaded, 7), reloaded).start();
+    if (step.kind !== "playMovie") throw new Error("동영상 재생 단계가 없습니다.");
+    setUploadedAssetResolver({ url: ref => repository.assets.url(ref.sha256), bytes: async () => bytes });
+    expect(resolveMovieResourceUrl(step.resourceId, reloaded)).toBe(repository.assets.url(ref.sha256));
+  } finally {
+    setUploadedAssetResolver(null);
+    close();
+  }
+});
+
+it.each([["en", en], ["ja", ja], ["zh", zh]] as const)("%s 편집기 카탈로그가 연출 거절 문구를 번역한다", (locale, catalog) => {
+  const { project, target } = fixture("blank", [slotLight, { ...slotLight, source: { ...slotLight.source, id: "second_light" } }]);
+  const translator = createTranslator(catalog, { locale });
+  const operations = [
+    () => runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "second_light" })),
+    () => runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { expectedHash: "stale", radius: 8 })),
+    () => runPrimitive(project, target, "cmd.playMovie.insert", { resourceId: "missing_movie" }),
+  ];
+  for (const operation of operations) {
+    let error: unknown;
+    try { operation(); } catch (caught) { error = caught; }
+    expect(error).toBeInstanceOf(PrimitiveError);
+    const translated = translator.translate(smallTaskErrorMessage(error));
+    expect(translated).toBeTruthy();
+    expect(containsHangul(translated!)).toBe(false);
+  }
+  expect(translator.translate(smallTaskErrorMessage(new Error("Failed")))).toBeTruthy();
 });
 
 it("광원 이름 앞뒤 공백을 일치시켜 실제로 같은 빛을 끈다", () => {
@@ -441,7 +584,7 @@ it("그림 명령이 실행기에 넘긴 리소스를 게임에서 해석할 수
 
 it("그림 자리의 공백을 정리하고 요약에 바뀐 그림 크기를 보여 준다", () => {
   const { project, target, mapId } = fixture("blank", [slotPicture]);
-  const moved = runPrimitive(project, target, "cmd.showPicture.update", { index: 0, pictureId: " pic3 ", scale: 25 });
+  const moved = runPrimitive(project, target, "cmd.showPicture.update", editArgs(slotPicture, { pictureId: " pic3 ", scale: 25 }));
   const erased = runPrimitive(moved.after, target, "cmd.erasePicture.insert", { pictureId: " pic3 " });
   expect(selectedPage(erased.after, mapId).commands).toStrictEqual([
     { ...slotPicture, pictureId: "pic3", scale: 25 }, { kind: "erasePicture", pictureId: "pic3" },
@@ -489,35 +632,17 @@ it("실행기가 선택한 이벤트에 붙은 광원을 게임 상태에 추가
   ]);
 });
 
-const corpusFile = resolve(dirname(fileURLToPath(import.meta.url)), "../../harness-data/small-task-corpus/07-cmd-staging.json");
+const corpusFile = resolve("harness-data/small-task-corpus/07-cmd-staging.json");
 const corpus: CorpusCase[] = JSON.parse(readFileSync(corpusFile, "utf8"));
 const movieSeed: UploadedAsset = { ...MOVIE, id: "staging_corpus_movie" };
-const commandSeeds: Readonly<Partial<Record<string, Command>>> = {
-  "cmd.showAnimation.update": { kind: "showAnimation", target: { eventId: "" }, animationId: "fx:container:chest", wait: false },
-  "cmd.erasePicture.update": { kind: "erasePicture", pictureId: "pic1" },
-  "cmd.playMovie.update": { kind: "playMovie", resourceId: movieSeed.id, wait: true, skippable: true },
-  "cmd.removeLight.update": { kind: "removeLight", id: "candle" },
-  "cmd.setWeather.update": { kind: "setWeather", weather: "snow", intensity: 0.5, transitionMs: 1000 },
-};
 
-// 공용 자료는 준비 단계가 없다. 필요한 명령이나 동영상이 없는 상태에서 먼저 거절을 확인하고,
-// 같은 요청을 자료가 준비된 페이지에도 적용해 결과를 확인한다.
-for (const entry of corpus.filter(row => row.expectRefusal && row.expect?.length)) {
-  it(`준비된 페이지에서 적용한다 · ${entry.request}`, async () => {
+// 공용 코퍼스의 준비 단계는 업로드 에셋을 지원하지 않는다.
+for (const entry of corpus.filter(row => row.primitive === "cmd.playMovie.insert" && row.expectRefusal && row.expect?.length)) {
+  it(`업로드된 동영상을 적용한다 · ${entry.request}`, async () => {
     const baseline = cachedFixture(entry.fixture);
     const target = resolveTarget(baseline, entry.target);
-    if (target.kind !== "event") throw new Error("연출 명령의 이벤트를 찾을 수 없습니다.");
-    const map = baseline.maps[target.mapId]!;
-    const seed = commandSeeds[entry.primitive];
-    const events = map.events.map(event => event.id === target.eventId ? {
-      ...event, pages: event.pages?.map(page => page.id === target.pageId && seed
-        ? { ...page, commands: [structuredClone(seed), ...page.commands] }
-        : page),
-    } : event);
-    const assets = entry.primitive.startsWith("cmd.playMovie.")
-      ? { ...baseline.assets, uploaded: { ...baseline.assets.uploaded, [movieSeed.id]: movieSeed } }
-      : baseline.assets;
-    const project = { ...baseline, maps: { ...baseline.maps, [map.id]: { ...map, events } }, assets };
+    const assets = { ...baseline.assets, uploaded: { ...baseline.assets.uploaded, [movieSeed.id]: movieSeed } };
+    const project = { ...baseline, assets };
     const { after } = expectApplies(project, target, entry.primitive, entry.args);
     for (const check of entry.expect!) expect(readCheckPath(after, check.at), check.at).toEqual(check.equals);
     await expectUndoRestores(project, after, target);

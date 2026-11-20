@@ -89,9 +89,9 @@
     "request": "이미 있는 연출을 문 열리는 걸로 바꿔 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "animationId": "fx:door-open"},
-    "expectRefusal": true,
+    "args": {"index": 0, "animationId": "fx:door-open", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:door-open"}
@@ -101,9 +101,9 @@
     "request": "효과는 그대로, 위치는 주인공 쪽으로 옮겨 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "target": "player"},
-    "expectRefusal": true,
+    "args": {"index": 0, "target": "player", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": "player"}
@@ -113,9 +113,9 @@
     "request": "연출 끝까지 대기하도록만 고쳐.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "wait": true},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": true, "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true}
@@ -125,9 +125,9 @@
     "request": "연출을 기다리지 말고 바로 다음 줄로 넘어가게 해 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "wait": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": false, "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
@@ -137,9 +137,9 @@
     "request": "이 인물 대신 가로 두 칸 세로 세 칸 위치에 표시해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "target": "tile", "x": 2, "y": 3},
-    "expectRefusal": true,
+    "args": {"index": 0, "target": "tile", "x": 2, "y": 3, "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": {"x": 2, "y": 3}}
@@ -149,9 +149,9 @@
     "request": "상자 효과를 서랍 여는 걸로 교체해줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "animationId": "fx:container:drawer"},
-    "expectRefusal": true,
+    "args": {"index": 0, "animationId": "fx:container:drawer", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:container:drawer"}
@@ -161,9 +161,9 @@
     "request": "타격 효과에서 동전 세 개 표시로 수정.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "animationId": "fx:popup:gold:3"},
-    "expectRefusal": true,
+    "args": {"index": 0, "animationId": "fx:popup:gold:3", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:popup:gold:3"}
@@ -173,8 +173,10 @@
     "request": "지금 연출 대상만 다른 맵 경비로 바꿔 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "targetEventId": "distant_guard"},
+    "args": {"index": 0, "targetEventId": "distant_guard", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "refusalMessage": "현재 맵에서 연출할 이벤트",
     "expectRefusal": true
   },
 
@@ -270,7 +272,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "emote": "smile"},
+    "args": {"index": 0, "emote": "smile", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "smile"}
@@ -281,7 +283,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "durationMs": 2000},
+    "args": {"index": 0, "durationMs": 2000, "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].durationMs", "equals": 2000}
@@ -292,7 +294,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "target": "player"},
+    "args": {"index": 0, "target": "player", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].target", "equals": "player"}
@@ -303,7 +305,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "emote": "music", "durationMs": 3000},
+    "args": {"index": 0, "emote": "music", "durationMs": 3000, "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "music"},
@@ -315,7 +317,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "emote": "heart"},
+    "args": {"index": 0, "emote": "heart", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "heart"}
@@ -326,7 +328,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "emote": "sweat"},
+    "args": {"index": 0, "emote": "sweat", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "sweat"}
@@ -337,7 +339,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "emote": "sparkle", "durationMs": 300},
+    "args": {"index": 0, "emote": "sparkle", "durationMs": 300, "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "sparkle"},
@@ -349,7 +351,8 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
-    "args": {"index": 0, "targetEventId": "distant_guard"},
+    "args": {"index": 0, "targetEventId": "distant_guard", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "refusalMessage": "현재 맵에서 연출할 이벤트",
     "expectRefusal": true
   },
 
@@ -449,7 +452,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "x": 20, "branchPath": [51, 0]},
+    "args": {"index": 47, "x": 20, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].x", "equals": 20}
@@ -460,7 +463,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "pictureId": "pic3", "branchPath": [51, 0]},
+    "args": {"index": 47, "pictureId": "pic3", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].pictureId", "equals": "pic3"}
@@ -471,7 +474,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "opacity": 128, "branchPath": [51, 0]},
+    "args": {"index": 47, "opacity": 128, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].opacity", "equals": 128}
@@ -482,7 +485,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "scale": 25, "branchPath": [51, 0]},
+    "args": {"index": 47, "scale": 25, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].scale", "equals": 25}
@@ -493,7 +496,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "waitForPicture": true, "branchPath": [51, 0]},
+    "args": {"index": 47, "waitForPicture": true, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].waitForPicture", "equals": true}
@@ -504,7 +507,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "y": -12, "branchPath": [51, 0]},
+    "args": {"index": 47, "y": -12, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].y", "equals": -12}
@@ -515,7 +518,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "blendMode": "multiply", "branchPath": [51, 0]},
+    "args": {"index": 47, "blendMode": "multiply", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].blendMode", "equals": "multiply"}
@@ -526,7 +529,8 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
-    "args": {"index": 47, "resourceId": "absent_portrait", "branchPath": [51, 0]},
+    "args": {"index": 47, "resourceId": "absent_portrait", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "refusalMessage": "프로젝트에서 표시할 수 있는 그림",
     "expectRefusal": true
   },
 
@@ -620,9 +624,9 @@
     "request": "그림 지우기 줄이 가리키는 자리를 3번으로 바꿔 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "pic3"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "pic3", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"}
@@ -632,9 +636,9 @@
     "request": "지우는 사진의 이름을 기념사진으로 돌려 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "기념사진"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "기념사진", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "기념사진"}
@@ -644,9 +648,9 @@
     "request": "일 번 말고 두 번 그림을 치우게.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "pic2"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "pic2", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic2"}
@@ -656,9 +660,9 @@
     "request": "삭제 명령의 그림 자리를 여섯째로 고쳐줘요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "pic6"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "pic6", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic6"}
@@ -668,9 +672,9 @@
     "request": "지금 명령은 지도 조각 사진만 내리게 바꿔.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "지도 조각"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "지도 조각", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "지도 조각"}
@@ -680,9 +684,9 @@
     "request": "내리는 그림을 여덟번 자리로 수정.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "pic8"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "pic8", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic8"}
@@ -692,9 +696,9 @@
     "request": "다른 건 놔두고 열 번 사진만 숨기도록 고쳐 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "pic10"},
-    "expectRefusal": true,
+    "args": {"index": 0, "pictureId": "pic10", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic10"}
@@ -704,8 +708,10 @@
     "request": "지울 그림 자리 이름을 공백만 남기도록 수정.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
     "primitive": "cmd.erasePicture.update",
-    "args": {"index": 0, "pictureId": "   "},
+    "args": {"index": 0, "pictureId": "   ", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "refusalMessage": "값의 형식",
     "expectRefusal": true
   },
 
@@ -804,7 +810,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "resourceId": "cc0-se-orp-inventory-coin"},
+    "args": {"index": 0, "resourceId": "cc0-se-orp-inventory-coin", "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].resourceId", "equals": "cc0-se-orp-inventory-coin"}
@@ -815,7 +821,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "volume": 50},
+    "args": {"index": 0, "volume": 50, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].volume", "equals": 50}
@@ -826,7 +832,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "channel": "bgs", "loop": true},
+    "args": {"index": 0, "channel": "bgs", "loop": true, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].channel", "equals": "bgs"},
@@ -838,7 +844,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "resourceId": "cc0-se-osx-bell-01"},
+    "args": {"index": 0, "resourceId": "cc0-se-osx-bell-01", "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].resourceId", "equals": "cc0-se-osx-bell-01"}
@@ -849,7 +855,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "fadeInMs": 1000},
+    "args": {"index": 0, "fadeInMs": 1000, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].fadeInMs", "equals": 1000}
@@ -860,7 +866,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "volume": 0},
+    "args": {"index": 0, "volume": 0, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].volume", "equals": 0}
@@ -871,7 +877,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "channel": "me", "loop": false},
+    "args": {"index": 0, "channel": "me", "loop": false, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].channel", "equals": "me"}
@@ -882,7 +888,8 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.playAudio.update",
-    "args": {"index": 0, "resourceId": "absent_recording"},
+    "args": {"index": 0, "resourceId": "absent_recording", "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 소리",
     "expectRefusal": true
   },
 
@@ -971,7 +978,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "se"},
+    "args": {"index": 2, "channel": "se", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "se"}
@@ -982,7 +989,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "bgm"},
+    "args": {"index": 2, "channel": "bgm", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "bgm"}
@@ -993,7 +1000,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "all"},
+    "args": {"index": 2, "channel": "all", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [{"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2]", "equals": {"kind": "stopAudio"}}]
   },
   {
@@ -1001,7 +1008,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "bgs"},
+    "args": {"index": 2, "channel": "bgs", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "bgs"}
@@ -1012,7 +1019,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "me"},
+    "args": {"index": 2, "channel": "me", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "me"}
@@ -1023,7 +1030,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "all"},
+    "args": {"index": 2, "channel": "all", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [{"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2]", "equals": {"kind": "stopAudio"}}]
   },
   {
@@ -1031,7 +1038,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "se"},
+    "args": {"index": 2, "channel": "se", "expectedHash": "7824dd82f620f58860155022c9373001"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "se"}
@@ -1042,7 +1049,8 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.stopAudio.update",
-    "args": {"index": 2, "channel": "radio"},
+    "args": {"index": 2, "channel": "radio", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "refusalMessage": "값의 형식",
     "expectRefusal": true
   },
 
@@ -1052,6 +1060,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1066,6 +1075,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1078,6 +1088,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "skippable": false},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1090,6 +1101,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": true, "skippable": true},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1103,6 +1115,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1115,6 +1128,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": true},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1127,6 +1141,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false, "skippable": false},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
@@ -1140,6 +1155,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "absent_end_movie"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true
   },
 
@@ -1147,9 +1163,9 @@
     "request": "영상은 끝까지 기다리지 않게 고쳐 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "wait": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
@@ -1159,9 +1175,9 @@
     "request": "지금 오프닝은 건너뛰지 못하게 해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "skippable": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
@@ -1171,9 +1187,9 @@
     "request": "클립이랑 대사는 같이 돌리고 스킵은 켜 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "wait": false, "skippable": true},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": false, "skippable": true, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false},
@@ -1184,9 +1200,9 @@
     "request": "영상 끝나면 넘어가되 생략 버튼은 막도록 고쳐.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "wait": true, "skippable": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": true, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true},
@@ -1197,9 +1213,9 @@
     "request": "영상 나오는 동안 다음 이벤트 명령도 실행해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "wait": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
@@ -1209,9 +1225,9 @@
     "request": "건너뛰기 막고 다음 연출도 바로 실행되도록 설정.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "wait": false, "skippable": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "wait": false, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false},
@@ -1222,9 +1238,9 @@
     "request": "지금 틀던 영상을 계속 보게 스킵만 해제해줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "skippable": false},
-    "expectRefusal": true,
+    "args": {"index": 0, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
@@ -1234,8 +1250,10 @@
     "request": "기존 영상 대신 등록 안 된 영상으로 바꿔요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
     "primitive": "cmd.playMovie.update",
-    "args": {"index": 0, "resourceId": "absent_clip"},
+    "args": {"index": 0, "resourceId": "absent_clip", "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
     "expectRefusal": true
   },
 
@@ -1335,7 +1353,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "ambient": 0.7},
+    "args": {"index": 0, "ambient": 0.7, "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].ambient", "equals": 0.7}
@@ -1346,7 +1364,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "color": "#321953"},
+    "args": {"index": 0, "color": "#321953", "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].color", "equals": "#321953"}
@@ -1357,7 +1375,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "transitionMs": 2000},
+    "args": {"index": 0, "transitionMs": 2000, "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].transitionMs", "equals": 2000}
@@ -1368,7 +1386,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "ambient": 1},
+    "args": {"index": 0, "ambient": 1, "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].ambient", "equals": 1}
@@ -1379,7 +1397,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "ambient": 0.3},
+    "args": {"index": 0, "ambient": 0.3, "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].ambient", "equals": 0.3}
@@ -1390,7 +1408,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "transitionMs": 500},
+    "args": {"index": 0, "transitionMs": 500, "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].transitionMs", "equals": 500}
@@ -1401,7 +1419,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "color": "#b5d9ff"},
+    "args": {"index": 0, "color": "#b5d9ff", "expectedHash": "120403350113d8e7ea041032487e90c6"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].color", "equals": "#b5d9ff"}
@@ -1412,7 +1430,8 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.setLighting.update",
-    "args": {"index": 0, "transitionMs": -100},
+    "args": {"index": 0, "transitionMs": -100, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "refusalMessage": "값의 형식",
     "expectRefusal": true
   },
 
@@ -1507,7 +1526,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "radius": 8},
+    "args": {"index": 1, "radius": 8, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.radius", "equals": 8}
@@ -1518,7 +1537,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "flicker": true},
+    "args": {"index": 1, "flicker": true, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.flicker", "equals": true}
@@ -1529,7 +1548,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "target": "player"},
+    "args": {"index": 1, "target": "player", "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.at", "equals": "player"}
@@ -1540,7 +1559,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "intensity": 0.5},
+    "args": {"index": 1, "intensity": 0.5, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.intensity", "equals": 0.5}
@@ -1551,7 +1570,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "color": "#e02020"},
+    "args": {"index": 1, "color": "#e02020", "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.color", "equals": "#e02020"}
@@ -1562,7 +1581,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "edge": "hard"},
+    "args": {"index": 1, "edge": "hard", "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.edge", "equals": "hard"}
@@ -1573,7 +1592,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "x": 3, "y": 2},
+    "args": {"index": 1, "x": 3, "y": 2, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
     "expect": [
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
       {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.at", "equals": {"x": 3, "y": 2}}
@@ -1584,7 +1603,8 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
     "primitive": "cmd.addLight.update",
-    "args": {"index": 1, "radius": -3},
+    "args": {"index": 1, "radius": -3, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "refusalMessage": "값의 형식",
     "expectRefusal": true
   },
 
@@ -1678,9 +1698,9 @@
     "request": "그 불 끄는 줄을 전체 광원 정지로 바꿔 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "all": true},
-    "expectRefusal": true,
+    "args": {"index": 0, "all": true, "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].all", "equals": true}
@@ -1690,9 +1710,9 @@
     "request": "전에 쓰던 등불 말고 모퉁이 것만 끄게 해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "id": "corner"},
-    "expectRefusal": true,
+    "args": {"index": 0, "id": "corner", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "corner"}
@@ -1702,9 +1722,9 @@
     "request": "끊어야 하는 광원 이름은 주인공 등불로 수정.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "id": "lantern"},
-    "expectRefusal": true,
+    "args": {"index": 0, "id": "lantern", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "lantern"}
@@ -1714,9 +1734,9 @@
     "request": "중간 불만 끄게 고쳐줘요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "id": "middle"},
-    "expectRefusal": true,
+    "args": {"index": 0, "id": "middle", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "middle"}
@@ -1726,9 +1746,9 @@
     "request": "장면이 어두워지게 불 전부 꺼지는 걸로 수정해.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "all": true},
-    "expectRefusal": true,
+    "args": {"index": 0, "all": true, "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].all", "equals": true}
@@ -1738,9 +1758,9 @@
     "request": "촛불 대신 가드 초롱불을 내리도록 바꿔 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "id": "guard_beam"},
-    "expectRefusal": true,
+    "args": {"index": 0, "id": "guard_beam", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "guard_beam"}
@@ -1750,9 +1770,9 @@
     "request": "이 소등 명령은 빈방 조명 하나만 끄게 됐으면 해.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "id": "empty_room_light"},
-    "expectRefusal": true,
+    "args": {"index": 0, "id": "empty_room_light", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "empty_room_light"}
@@ -1762,8 +1782,10 @@
     "request": "끄는 광원 이름이랑 전체 끄기 둘 다 제대로 켜 달라니까.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
     "primitive": "cmd.removeLight.update",
-    "args": {"index": 0, "id": "corner", "all": true},
+    "args": {"index": 0, "id": "corner", "all": true, "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "refusalMessage": "빛 하나 또는 전체",
     "expectRefusal": true
   },
 
@@ -1863,9 +1885,9 @@
     "request": "눈 말고 비 오게 바꿔 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "weather": "rain"},
-    "expectRefusal": true,
+    "args": {"index": 0, "weather": "rain", "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "rain"}
@@ -1875,9 +1897,9 @@
     "request": "눈은 그대로 유지하고 강도는 삼십 퍼센트로 낮춰 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "intensity": 0.3},
-    "expectRefusal": true,
+    "args": {"index": 0, "intensity": 0.3, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.3}
@@ -1887,9 +1909,9 @@
     "request": "지금 눈 내리는 장면을 안개로 수정해줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "weather": "fog"},
-    "expectRefusal": true,
+    "args": {"index": 0, "weather": "fog", "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "fog"}
@@ -1899,9 +1921,9 @@
     "request": "날씨 효과 없이 맑게 개는 걸로 바꿔.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "weather": "none"},
-    "expectRefusal": true,
+    "args": {"index": 0, "weather": "none", "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "none"}
@@ -1911,9 +1933,9 @@
     "request": "눈이 갑자기 오지 않고 두 초 반 동안 세져야 해요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "transitionMs": 2500},
-    "expectRefusal": true,
+    "args": {"index": 0, "transitionMs": 2500, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 2500}
@@ -1923,9 +1945,9 @@
     "request": "눈발이 세게, 팔십 퍼센트로.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "intensity": 0.8},
-    "expectRefusal": true,
+    "args": {"index": 0, "intensity": 0.8, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.8}
@@ -1935,9 +1957,9 @@
     "request": "날씨를 바로 폭풍으로 바꿔 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "weather": "storm", "transitionMs": 0},
-    "expectRefusal": true,
+    "args": {"index": 0, "weather": "storm", "transitionMs": 0, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "storm"},
@@ -1948,8 +1970,10 @@
     "request": "날씨 강도를 2로 바꿔요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
     "primitive": "cmd.setWeather.update",
-    "args": {"index": 0, "intensity": 2},
+    "args": {"index": 0, "intensity": 2, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "refusalMessage": "값의 형식",
     "expectRefusal": true
   },
   {
@@ -1974,6 +1998,7 @@
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
     "args": {"index": 47, "x": 20, "branchPath": [51, 0], "expectedHash": "stale"},
+    "refusalMessage": "명령 목록이 바뀌었어요",
     "expectRefusal": true
   },
   {
@@ -1993,5 +2018,26 @@
     "primitive": "cmd.showPicture.insert",
     "args": {"index": 0, "resourceId": "oprn-title-field", "durationMs": 60001},
     "expectRefusal": true
+  },
+  {
+    "request": "첫 줄에 번들 샘플 동영상을 바로 틀어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "sample-movie.webm", "wait": false},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "playMovie", "resourceId": "sample-movie.webm", "wait": false, "skippable": true}}
+    ]
+  },
+  {
+    "request": "첫 줄 동영상을 번들 샘플로 바꾸고 재생 대기는 그대로 둬.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": false}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "resourceId": "sample-movie.webm", "expectedHash": "8ad0741edf93cffb160f465c730da4ed"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "playMovie", "resourceId": "sample-movie.webm", "wait": false}}
+    ]
   }
 ]

@@ -127,6 +127,18 @@ describe("playMovie 편집기 본문", () => {
     expect(findByTestId(body, "play-movie-sample-note")?.textContent).toContain("샘플");
   });
 
+  it("명령에 지정된 번들 동영상은 대기 설정을 바꿔도 유지한다", () => {
+    const replaceCommand = vi.fn();
+    const body = movieBody({ kind: "playMovie", resourceId: SAMPLE_MOVIE_RESOURCE.id }, replaceCommand);
+    const wait = findByTestId(body, "play-movie-wait-select") as FakeElement;
+    wait.value = "false";
+    wait.dispatchEvent(new Event("change"));
+
+    expect(lastCommand(replaceCommand)).toMatchObject({ resourceId: SAMPLE_MOVIE_RESOURCE.id, wait: false });
+    expect(findByTestId(body, "play-movie-preview-video")?.getAttribute("src")).toBe(SAMPLE_MOVIE_RESOURCE.url);
+    expect(findByTestId(body, "play-movie-sample-note")).toBeNull();
+  });
+
   it("픽커 선택이 명령의 resourceId 를 갱신한다", () => {
     const replaceCommand = vi.fn();
     const body = movieBody({ kind: "playMovie", resourceId: "movie-opening" }, replaceCommand);

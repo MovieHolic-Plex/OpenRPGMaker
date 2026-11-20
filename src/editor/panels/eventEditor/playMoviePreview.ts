@@ -15,13 +15,14 @@ const MOVIE_DATA_URL_PREFIXES = ["data:video/webm", "data:video/mp4", "data:vide
 const MOVIE_FILE_EXTENSIONS = [".webm", ".mp4", ".m4v", ".ogv"] as const;
 
 /**
- * 레포에 함께 실리는 샘플 클립. 프로젝트 리소스로 등록하지 않는다 —
- * 리소스 id 등록 지점(src/assets, 검증기)은 이 레인 밖이라, 등록했다고 말하면 거짓말이 된다.
- * 그래서 픽커 항목이 아니라 "동영상이 아직 없을 때 재생이 어떻게 보이는지" 보여 주는 표시면 대체다.
+ * 프로젝트 업로드가 없어도 미리 볼 수 있는 번들 클립. 기존 명령에서 명시적으로
+ * 지정한 경우에는 픽커에도 유지한다.
  */
+const SAMPLE_MOVIE_ID = "sample-movie.webm";
 export const SAMPLE_MOVIE_RESOURCE = {
+  id: SAMPLE_MOVIE_ID,
   name: "샘플 동영상",
-  url: "/assets/movies/sample-movie.webm",
+  url: `/assets/movies/${SAMPLE_MOVIE_ID}`,
 } as const;
 
 export type MovieResourceEntry = {
@@ -36,11 +37,14 @@ export type MovieResourceEntry = {
  * 종류(kind)가 근거다 — "movie" 로 등재된 업로드는 데이터 URL 이 무엇이든 동영상이다.
  * 전용 종류가 생기기 전에 다른 kind 로 올라간 레거시 업로드만 미디어 타입으로 구제한다.
  */
-export function listMovieResources(project: Pick<Project, "assets">): readonly MovieResourceEntry[] {
-  return Object.values(project.assets.uploaded)
+export function listMovieResources(project: Pick<Project, "assets">, selectedId?: string): readonly MovieResourceEntry[] {
+  const entries = Object.values(project.assets.uploaded)
     .filter((asset) => asset.kind === "movie" || isMovieMedia(uploadedAssetUrl(asset)))
-    .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }))
-    .sort((left, right) => left.name.localeCompare(right.name, "ko"));
+    .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }));
+  if (selectedId === SAMPLE_MOVIE_RESOURCE.id && !Object.hasOwn(project.assets.uploaded, selectedId)) {
+    entries.push({ id: selectedId, name: SAMPLE_MOVIE_RESOURCE.name });
+  }
+  return entries.sort((left, right) => left.name.localeCompare(right.name, "ko"));
 }
 
 /**
@@ -58,7 +62,7 @@ export function resolveMovieResourceUrl(
   if (uploaded !== "") return isMovieMedia(uploaded) ? uploaded : null;
   const resolved = resolveAssetResourceUrl(resourceId, { project });
   if (resolved !== null && isMovieMedia(resolved)) return resolved;
-  return null;
+  return resourceId === SAMPLE_MOVIE_RESOURCE.id && !uploadedAsset && resolved === null ? SAMPLE_MOVIE_RESOURCE.url : null;
 }
 
 export type MoviePreviewStage = {
