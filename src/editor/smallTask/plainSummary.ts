@@ -95,8 +95,10 @@ export function plainSummary(before: Project, after: Project) {
         const edited = row.after?.kind === "text" ? row.after : undefined;
         dialogue[old && edited ? "change" : old ? "remove" : "add"]++;
         const showSpeaker = old?.speaker !== edited?.speaker;
-        const show = (line?: DialogueLine) => line ? quote(showSpeaker && line.speaker ? `${line.speaker} · ${line.body}` : line.body) : t("없음");
-        lines.push(format("대사 {0} → {1}", show(old), show(edited)));
+        const show = (line: DialogueLine) => quote(showSpeaker && line.speaker ? `${line.speaker} · ${line.body}` : line.body);
+        if (old && edited) lines.push(format("대사 {0} → {1}", show(old), show(edited)));
+        else if (edited) lines.push(format("대사 추가 {0}", show(edited)));
+        else if (old) lines.push(format("대사 {0} → {1}", show(old), t("없음")));
       }
     }
   }
