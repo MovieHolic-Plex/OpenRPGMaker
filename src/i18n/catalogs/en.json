@@ -19982,6 +19982,7 @@
 "범위 밖: 페이지를 하나로 구분할 수 없어요. 이벤트 편집기에서 확인해 주세요.":"Out of scope: The page cannot be uniquely identified. Check it in the event editor.",
 "순찰은 선택한 페이지에 보이는 한 칸 크기 캐릭터에 설정할 수 있어요.":"To set a patrol, the selected page needs a visible, one-tile character.",
 "순찰은 출발점으로 돌아와야 해요.":"The patrol must return to its starting tile.",
+"이동 경로에 방향 고정을 푸는 단계가 있어요. 그 단계를 지운 뒤 방향을 고정해 주세요.":"The move route unlocks facing. Remove that step before locking the direction.",
 "순찰 경로에 지날 수 없는 칸이 있어요.":"The patrol route crosses an impassable tile.",
 "출입구, 시작점, 안내판 근처를 피해서 순찰 경로를 정해 주세요.":"Keep the patrol route away from entrances, the starting tile, and signs.",
 "다른 이벤트나 순찰 경로가 사용하는 칸을 피해 주세요.":"Avoid tiles used by another event or patrol route.",

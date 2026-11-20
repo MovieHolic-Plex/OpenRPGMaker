@@ -65,9 +65,11 @@ const touches = (cells: ReadonlySet<string>, x: number, y: number): boolean =>
   cells.has(`${x},${y}`) || cells.has(`${x + 1},${y}`) || cells.has(`${x - 1},${y}`) || cells.has(`${x},${y + 1}`) || cells.has(`${x},${y - 1}`);
 
 /** 이 이벤트가 서 있어서 입구에서 닿지 못하게 된 다른 이벤트들. 비어 있으면 통로를 막지 않는다. */
-export function eventsCutOffBy(project: Project, map: GameMap, event: GameEvent): GameEvent[] {
+export function eventsCutOffBy(
+  project: Project, map: GameMap, event: GameEvent, extraEntries: readonly { x: number; y: number }[] = [],
+): GameEvent[] {
   if (!eventAlwaysBlocks(event)) return [];
-  const seeds = entryCells(project, map);
+  const seeds = [...entryCells(project, map), ...extraEntries];
   if (seeds.length === 0) return [];
   const others = (map.events ?? []).filter((other) => other.id !== event.id);
   const otherBlocked = new Set(others.filter(eventAlwaysBlocks).map((other) => `${other.x},${other.y}`));

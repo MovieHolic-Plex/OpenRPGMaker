@@ -17,6 +17,7 @@ import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/project/characterMotion";
+import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { initialRuntimeEventPositions, runtimeEventViewsForMap } from "@/project/runtimeEventState";
@@ -467,6 +468,42 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     expectRefused(project, target, "npc.patrol.set", { directions: ["right", "left"] }, /다른 이벤트나 순찰/u);
   });
 
+  it.each([true, false])("기존 경로의 둘째 바퀴는 반복 설정을 따릅니다 (%j)", repeat => {
+    const { project, target, map, guard } = blank();
+    const page = guard.pages![0]!;
+    map.events.push({ ...guard, id: "ev_repeating_guard", x: 9, pages: [{
+      ...page, movement: { type: "custom", speed: 3, frequency: 3, route: { repeat, moves: [{ kind: "move", dir: "left" }] } },
+    }] });
+    const patrol = { directions: ["right", "left"] };
+    if (repeat) expectRefused(project, target, "npc.patrol.set", patrol, /다른 이벤트나 순찰/u);
+    else expectApplies(project, target, "npc.patrol.set", patrol);
+  });
+
+  it.each([true, false])("기존 경로의 지형에 막힌 걸음은 건너뛰기 설정을 따릅니다 (%j)", skippable => {
+    const { project, target, map, guard } = blank();
+    map.lowerTiles[5 * map.width + 9] = -1;
+    const page = guard.pages![0]!;
+    map.events.push({ ...guard, id: "ev_blocked_guard", x: 8, y: 5, pages: [{
+      ...page, movement: { type: "custom", speed: 3, frequency: 3, route: {
+        repeat: false, skippable, moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "down" }, { kind: "move", dir: "left" }],
+      } },
+    }] });
+    const patrol = { directions: ["right", "left"] };
+    if (skippable) expectRefused(project, target, "npc.patrol.set", patrol, /다른 이벤트나 순찰/u);
+    else expectApplies(project, target, "npc.patrol.set", patrol);
+  });
+
+  it("기존 경로에서 이동량을 생략한 점프의 착지 칸을 보호합니다", () => {
+    const { project, target, map, guard } = blank();
+    const page = guard.pages![0]!;
+    map.events.push({ ...guard, id: "ev_jumping_guard", x: 9, pages: [{
+      ...page, graphic: { ...page.graphic, direction: "left" },
+      movement: { type: "custom", speed: 3, frequency: 3, route: { repeat: false, moves: [{ kind: "jump", dx: 0, dy: 0 }] } },
+    }] });
+    expectRefused(project, target, "npc.patrol.set", { directions: ["right", "left"] }, /다른 이벤트나 순찰/u);
+    expectApplies(project, target, "npc.patrol.set", { directions: ["left", "right"] });
+  });
+
   it.each([
     { moves: [{ kind: "moveRandom" }, { kind: "placeAt", x: 7, y: 6 }] },
     { moves: [{ kind: "moveRandom" }, { kind: "placeAt", x: 8, y: 6 }, { kind: "move", dir: "left" }] },
@@ -528,6 +565,42 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     expectRefused(withBattle, target, "npc.patrol.set", patrol, /출입구/u);
   });
 
+  it("맵 연결의 도착 칸에서 다른 이벤트로 가는 통로를 보호합니다", () => {
+    const { project, target, map } = blank();
+    const other = { ...createBlankMap("출발 지역", 5, 5), id: "map_connection_source" };
+    project.maps[other.id] = other;
+    project.startMapId = other.id;
+    const floor = map.lowerTiles[6 * map.width + 6]!;
+    map.lowerTiles.fill(-1);
+    for (let x = 1; x <= 10; x += 1) map.lowerTiles[6 * map.width + x] = floor;
+    for (const x of [6, 7]) map.lowerTiles[5 * map.width + x] = floor;
+    map.events[1] = { ...map.events[1]!, x: 10, y: 6 };
+    const connection = {
+      id: "connection_arrival", from: { mapId: other.id, x: 1, y: 1 }, to: { mapId: map.id, x: 1, y: 6 },
+      playerEnabled: true, npcEnabled: false,
+    };
+    const patrol = { directions: ["right", "left"] };
+    const npcOnly = { ...project, mapConnections: [{ ...connection, playerEnabled: false, npcEnabled: true }] };
+    expectApplies(npcOnly, target, "npc.patrol.set", patrol);
+    expectRefused({ ...project, mapConnections: [connection] }, target, "npc.patrol.set", patrol, /다른 이벤트로 가는 길/u);
+  });
+
+  it.each([true, false])("시작 상태의 장식이 통행을 막는 경우에만 순찰을 거절합니다 (%j)", blocksMovement => {
+    const { project, target, map } = blank();
+    const item = normalizeItemRecord({ id: "item_patrol_decoration", name: "순찰로 장식", scope: "none" });
+    project.database.items.push(item);
+    project.database.homeDecorationTypes = [{
+      id: "patrol_decoration", name: "순찰로 장식", placementItemId: item.id,
+      footprint: { width: 1, height: 1 }, blocksMovement, allowedOrientations: ["down"], graphicResourceId: "easyrpg-picture-cloud",
+    }];
+    project.session.homeDecorationPlacements = [{
+      instanceId: "patrol_decoration_instance", typeId: "patrol_decoration", mapId: map.id, x: 7, y: 6, orientation: "down",
+    }];
+    const patrol = { directions: ["right", "left"] };
+    if (blocksMovement) expectRefused(project, target, "npc.patrol.set", patrol, /지날 수 없는 칸/u);
+    else expectApplies(project, target, "npc.patrol.set", patrol);
+  });
+
   it("실제로 불러올 수 없는 걷기 그림에는 순찰을 설정하지 않습니다", () => {
     const { project, target } = blank({ graphic: { sprite: { type: "bundled", id: "sprite_missing" } } });
     expectRefused(project, target, "npc.patrol.set", { directions: ["right", "left"] }, /보이는 한 칸/u);
@@ -550,6 +623,14 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     expect(pageOf(lock.after, map.id, guard.id).animationType).toBe("fixedDirectionStep");
     const unlock = runPrimitive(lock.after, target, "npc.face.set", { direction: "right", fixed: false });
     expect(pageOf(unlock.after, map.id, guard.id)).toMatchObject({ animationType: "step", graphic: { direction: "right" } });
+  });
+
+  it("현재 경로가 방향 고정을 해제할 때는 고정 요청만 거절합니다", () => {
+    const { project, target } = blank({ movement: { type: "custom", speed: 3, frequency: 3, route: {
+      repeat: true, moves: [{ kind: "setDirectionFix", enabled: false }, { kind: "turn", dir: "right" }],
+    } } });
+    expectRefused(project, target, "npc.face.set", { direction: "up", fixed: true }, /이동 경로에 방향 고정을 푸는 단계/u);
+    expectApplies(project, target, "npc.face.set", { direction: "up" });
   });
 
   it("연결한 외형의 가운데 발 모양을 보존하며 처음 바라보는 방향을 바꿉니다", () => {

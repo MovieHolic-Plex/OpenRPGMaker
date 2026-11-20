@@ -1,18 +1,21 @@
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { facingForDelta, relativeTurn } from "@/player/playSceneAutonomousRouteDirection";
+import { commandDelta, facingForDelta, jumpDelta, relativeTurn } from "@/player/playSceneAutonomousRouteDirection";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
-import { canMove, isLedgeCell } from "@/project/collision";
+import { canMove, canMoveFootprint, inBounds, isLedgeCell, isPassableLanding } from "@/project/collision";
 import { eventsCutOffBy } from "@/project/eventPassageBlock";
 import { eventDisplayName } from "@/project/eventDisplayName";
-import { normalizeCharacterFootprint, normalizePassRows, passageBounds } from "@/project/footprint";
+import { normalizeCharacterFootprint, normalizePassRows, passageBounds, pointRect } from "@/project/footprint";
 import { defaultChasePursuit } from "@/project/npcBehavior";
+import { startSession, startStateOf } from "@/project/session";
+import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { dirToward } from "@/project/staging/approach";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { Command, Dir, EventPage, EventPageMovement, GameEvent, GameMap, MoveCommand, MoveRoute, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 
 const STEPS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+type Cell = { x: number; y: number };
 
 function patrolCells(event: GameEvent, directions: Dir[]) {
   let at = { x: event.x, y: event.y };
@@ -23,12 +26,16 @@ function patrolCells(event: GameEvent, directions: Dir[]) {
   })];
 }
 
-function protectedCells(project: Project, map: GameMap): { x: number; y: number }[] {
+function protectedCells(project: Project, map: GameMap) {
   const cells = map.id === project.startMapId ? [project.startPos] : [];
+  const connectionArrivals: Cell[] = [];
   for (const { from, to, playerEnabled } of project.mapConnections ?? []) {
     if (!playerEnabled) continue;
     if (from.mapId === map.id) cells.push(from);
-    if (to.mapId === map.id) cells.push(to);
+    if (to.mapId === map.id) {
+      cells.push(to);
+      connectionArrivals.push(to);
+    }
   }
   const commonEvents = new Map(project.commonEvents.map(event => [event.id, event]));
 
@@ -77,75 +84,124 @@ function protectedCells(project: Project, map: GameMap): { x: number; y: number 
   for (const troop of project.database.troops) {
     for (const { commands } of troopAfterBattleLists(troop)) scanTransfers(commands, new Set());
   }
-  return cells;
+  return { cells, connectionArrivals };
 }
 
-function routeVisits(event: GameEvent, route: MoveRoute | undefined, covers: (x: number, y: number) => boolean, page?: EventPage): boolean {
+function routeVisits(
+  project: Project, map: GameMap, event: GameEvent, route: MoveRoute | undefined,
+  covers: (x: number, y: number) => boolean, page?: EventPage,
+): boolean {
   if (!route) return false;
-  let at: { x: number; y: number } | undefined = { x: event.x, y: event.y };
+  const chase = page?.movement.type === "chase";
+  const repeat = chase || route.repeat;
+  const skipsBlocked = chase || route.skippable !== false;
+  const footprint = normalizeCharacterFootprint(page?.footprint);
+  const passRows = normalizePassRows(page?.passRows, footprint.height);
+  const seen = new Set<string>();
+  let at: Cell | undefined = { x: event.x, y: event.y };
+  if (covers(at.x, at.y)) return true;
   let facing: Dir | undefined = page?.graphic.direction ?? "down";
   let directionFixed = page?.animationType === "fixedDirection" || page?.animationType === "fixedDirectionStep";
+  let through = false;
+
   function face(direction: Dir | undefined) {
     if (!directionFixed) facing = direction;
   }
-  for (const move of route.moves) {
-    if (at && covers(at.x, at.y)) return true;
-    switch (move.kind) {
-      case "move": case "stepForward": {
-        const direction: Dir | undefined = move.kind === "move" ? move.dir : facing;
-        if (at && direction) {
-          const [dx, dy] = STEPS[direction];
-          at = { x: at.x + dx, y: at.y + dy };
-        } else {
-          at = undefined;
-        }
-        face(direction);
-        break;
-      }
-      case "moveDiagonal":
-        if (at) at = { x: at.x + STEPS[move.horizontal][0], y: at.y + STEPS[move.vertical][1] };
-        face(move.horizontal);
-        break;
-      case "jump":
-        if (!move.dx && !move.dy) {
-          at = undefined;
-        } else {
-          if (at) at = { x: at.x + move.dx, y: at.y + move.dy };
-          face(facingForDelta(move.dx, move.dy, "down"));
-        }
-        break;
-      case "placeAt":
-        at = { x: move.x, y: move.y };
-        break;
-      case "setDirectionFix":
-        directionFixed = move.enabled;
-        break;
-      case "turn":
-        face(move.dir);
-        break;
-      case "turnRelative":
-        face(facing && move.turn !== "leftOrRight90" ? relativeTurn(facing, move.turn, () => 0) : undefined);
-        break;
-      case "turnToward":
-        face(at && !move.target && move.x !== undefined && move.y !== undefined
-          ? dirToward(at, { x: move.x, y: move.y }) ?? facing : undefined);
-        break;
-      case "turnRandom": case "turnTowardPlayer": case "turnAwayFromPlayer":
-        face(undefined);
-        break;
-      case "moveRandom": case "moveTowardPlayer": case "moveAwayFromPlayer":
-      case "approach": case "exitVia": case "enterVia": case "npcTransfer":
-        at = undefined;
-        face(undefined);
-        break;
-    }
+
+  function canWalkLeg(from: Cell, to: Cell): boolean {
+    const leavingWall = footprint.width === 1 && footprint.height === 1 &&
+      !isPassableLanding(project, map, from.x, from.y);
+    return !isLedgeCell(project, map, to.x, to.y) && (leavingWall
+      ? isPassableLanding(project, map, to.x, to.y)
+      : canMoveFootprint(project, map, from.x, from.y, footprint, to.x, to.y, passRows));
   }
-  return at !== undefined && covers(at.x, at.y);
+
+  function step(delta: Cell, direction: Dir, jump = false): boolean {
+    face(direction); // Runtime updates facing even when the step is blocked.
+    if (!at) return true;
+    const to = { x: at.x + delta.x, y: at.y + delta.y };
+    let allowed: boolean;
+    if (through || jump) {
+      allowed = inBounds(map, to.x, to.y);
+    } else if (delta.x && delta.y) {
+      const horizontal = { x: to.x, y: at.y };
+      const vertical = { x: at.x, y: to.y };
+      allowed = (canWalkLeg(at, horizontal) && canWalkLeg(horizontal, to)) ||
+        (canWalkLeg(at, vertical) && canWalkLeg(vertical, to));
+    } else {
+      allowed = canWalkLeg(at, to);
+    }
+    if (allowed) at = to;
+    return allowed || skipsBlocked;
+  }
+
+  do {
+    // The authored terrain is static. A repeated cycle-start state cannot reach a new cell.
+    const state = `${at?.x},${at?.y},${facing},${directionFixed},${through}`;
+    if (seen.has(state)) return false;
+    seen.add(state);
+    for (const move of route.moves) {
+      switch (move.kind) {
+        case "move": case "stepForward": {
+          const direction: Dir | undefined = move.kind === "move" ? move.dir : facing;
+          if (direction) {
+            if (!step(commandDelta(direction), direction)) return false;
+          } else {
+            at = undefined;
+          }
+          break;
+        }
+        case "moveDiagonal":
+          if (!step({ x: STEPS[move.horizontal][0], y: STEPS[move.vertical][1] }, move.horizontal)) return false;
+          break;
+        case "jump": {
+          if (!move.dx && !move.dy && !facing) {
+            at = undefined;
+            break;
+          }
+          const delta = jumpDelta(move, facing ?? "down");
+          if (!step(delta, facingForDelta(delta.x, delta.y, "down"), true)) return false;
+          break;
+        }
+        case "placeAt": {
+          const x = Math.round(move.x), y = Math.round(move.y);
+          if (inBounds(map, x, y)) at = { x, y };
+          break;
+        }
+        case "setDirectionFix":
+          directionFixed = move.enabled;
+          break;
+        case "setThrough":
+          through = move.enabled;
+          break;
+        case "turn":
+          face(move.dir);
+          break;
+        case "turnRelative":
+          face(facing && move.turn !== "leftOrRight90" ? relativeTurn(facing, move.turn, () => 0) : undefined);
+          break;
+        case "turnToward":
+          face(at && !move.target && move.x !== undefined && move.y !== undefined
+            ? dirToward(at, { x: move.x, y: move.y }) ?? facing : undefined);
+          break;
+        case "turnRandom": case "turnTowardPlayer": case "turnAwayFromPlayer":
+          face(undefined);
+          break;
+        case "moveRandom": case "moveTowardPlayer": case "moveAwayFromPlayer":
+        case "approach": case "exitVia": case "enterVia": case "npcTransfer":
+          at = undefined;
+          face(undefined);
+          break;
+      }
+      if (at && covers(at.x, at.y)) return true;
+    }
+  } while (repeat);
+  return false;
 }
 
-function usesPatrolCell(event: GameEvent, x: number, y: number): boolean {
-  const sameCell = (atX: number, atY: number) => atX === x && atY === y;
-  if (!event.pages?.length) return sameCell(event.x, event.y) || routeVisits(event, event.moveRoute, sameCell);
+function usesPatrolCell(project: Project, map: GameMap, event: GameEvent, cells: readonly Cell[]): boolean {
+  const sameCell = (atX: number, atY: number) => cells.some(({ x, y }) => atX === x && atY === y);
+  if (!event.pages?.length) return sameCell(event.x, event.y) || routeVisits(project, map, event, event.moveRoute, sameCell);
   return event.pages.some(page => {
     const blocks = (page.priority ?? "same") === "same" && (page.overlapForbidden ?? true);
     const footprint = normalizeCharacterFootprint(page.footprint);
@@ -153,11 +209,11 @@ function usesPatrolCell(event: GameEvent, x: number, y: number): boolean {
     const covers = (atX: number, atY: number) => {
       if (!blocks) return sameCell(atX, atY);
       const rect = passageBounds(atX, atY, footprint, passRows);
-      return rect.left <= x && x <= rect.right && rect.top <= y && y <= rect.bottom;
+      return cells.some(({ x, y }) => rect.left <= x && x <= rect.right && rect.top <= y && y <= rect.bottom);
     };
     if (blocks && covers(event.x, event.y)) return true;
     const { route, type } = page.movement;
-    return (type === "custom" || type === "chase") && routeVisits(event, route, covers, page);
+    return (type === "custom" || type === "chase") && routeVisits(project, map, event, route, covers, page);
   });
 }
 
@@ -182,16 +238,23 @@ export function editPatrol(
     }
   }
 
-  const protectedAt = protectedCells(project, map);
+  const start = startStateOf(project);
+  if (start.farmBuildingPlacements?.length || start.homeDecorationPlacements?.length) {
+    const session = startSession(project, 0);
+    if (cells.some(({ x, y }) => isSpatialPlacementBlocking(project, session, map.id, pointRect(x, y)))) {
+      throw new PrimitiveError("순찰 경로에 지날 수 없는 칸이 있어요.");
+    }
+  }
+  const { cells: protectedAt, connectionArrivals } = protectedCells(project, map);
+  if (cells.some(({ x, y }) => protectedAt.some(entry => Math.abs(entry.x - x) + Math.abs(entry.y - y) <= 2))) {
+    throw new PrimitiveError("출입구, 시작점, 안내판 근처를 피해서 순찰 경로를 정해 주세요.");
+  }
+  if (map.events.some(other => other.id !== event.id && usesPatrolCell(project, map, other, cells))) {
+    throw new PrimitiveError("다른 이벤트나 순찰 경로가 사용하는 칸을 피해 주세요.");
+  }
   for (const { x, y } of cells) {
-    if (protectedAt.some(entry => Math.abs(entry.x - x) + Math.abs(entry.y - y) <= 2)) {
-      throw new PrimitiveError("출입구, 시작점, 안내판 근처를 피해서 순찰 경로를 정해 주세요.");
-    }
-    if (map.events.some(other => other.id !== event.id && usesPatrolCell(other, x, y))) {
-      throw new PrimitiveError("다른 이벤트나 순찰 경로가 사용하는 칸을 피해 주세요.");
-    }
     const exits = Object.values(STEPS).filter(([dx, dy]) => canMove(project, map, x, y, x + dx, y + dy));
-    if (exits.length < 3 || eventsCutOffBy(project, map, { ...event, x, y, pages: [page] }).length) {
+    if (exits.length < 3 || eventsCutOffBy(project, map, { ...event, x, y, pages: [page] }, connectionArrivals).length) {
       throw new PrimitiveError("다른 이벤트로 가는 길을 막지 않는 넓은 곳에서 순찰해 주세요.");
     }
   }

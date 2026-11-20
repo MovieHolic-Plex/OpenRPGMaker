@@ -208,9 +208,16 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (fixed === false) return `${facing} 보게 하고 방향 고정을 풉니다.`;
       return `${fixed ? "항상 " : ""}${facing} 바라보게 합니다.`;
     },
-    apply: (ctx, { direction, fixed }) => editPage(ctx, (page, _map, event) => ({
-      graphic: faceGraphic(ctx.project, page.graphic, event.sprite?.id, direction as Dir),
-      animationType: directionAnimation(page.animationType, fixed as boolean | undefined),
-    })),
+    apply: (ctx, { direction, fixed }) => editPage(ctx, (page, _map, event) => {
+      const { type, route } = page.movement;
+      if (fixed === true && (type === "custom" || type === "chase") &&
+        route?.moves.some(move => move.kind === "setDirectionFix" && !move.enabled)) {
+        throw new PrimitiveError("이동 경로에 방향 고정을 푸는 단계가 있어요. 그 단계를 지운 뒤 방향을 고정해 주세요.");
+      }
+      return {
+        graphic: faceGraphic(ctx.project, page.graphic, event.sprite?.id, direction as Dir),
+        animationType: directionAnimation(page.animationType, fixed as boolean | undefined),
+      };
+    }),
   }),
 ];
