@@ -11,7 +11,7 @@
  */
 import type { Command, Project } from "@/project/types";
 import { towerKit } from "./act2Tower";
-import skySummitBackdrop from "./backdrops/sky-summit.json";
+import skySummitBackdrop from "./backdrops/sky-summit.json" with { type: "json" };
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Cell = { x: number; y: number };

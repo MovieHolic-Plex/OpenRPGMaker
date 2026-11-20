@@ -5,8 +5,8 @@
  *   공방 실행기는 손으로 옮긴 사본 대신 여기서 읽는다(kitText). 파이썬 형식 자리표시({kind} 등)는 그대로라 쓰는 쪽이 채운다.
  * - kits.json: 세 저장소(object-gen·char-gen·tile-gen)의 고정 커밋과 계약 검사 결과. 비공개 저장소의 글은 들어 있지 않다.
  */
-import objectGen from "./object-gen.json";
-import kits from "./kits.json";
+import objectGen from "./object-gen.json" with { type: "json" };
+import kits from "./kits.json" with { type: "json" };
 
 export type GenKit = {
   readonly kit: string;

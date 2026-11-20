@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
 import { basename, join, resolve } from "node:path";
-import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent } from "electron";
+import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent, type MessageBoxOptions } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { allowFolderSwitch, folderSwitchFlushOk, isAppRendererFrame, type FolderSwitchFlush } from "../shared/folderSwitch";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
@@ -17,6 +17,7 @@ import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
 import { decideAfterCloseFlush, decideCloseResponse, type CloseSaveMode } from "./closeFlow";
 import { planWindowReload } from "../shared/reloadFlow";
+import { planRendererCrashRecovery } from "./rendererCrashPolicy";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
@@ -455,10 +456,59 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     window.webContents.on("did-navigate", (_event, url, httpResponseCode, httpStatusText) => {
       if (httpResponseCode >= 400) fail(`${httpResponseCode} ${httpStatusText}\n${url}`);
     });
-    window.webContents.on("render-process-gone", (_event, details) => fail(`renderer ${details.reason} (exit ${details.exitCode})`));
     window.webContents.on("preload-error", (_event, _path, error) => fail(`preload: ${error.message}`));
     window.webContents.on("did-start-loading", () => { failed = false; });
   }
+  let crashReloads: readonly number[] = [];
+  let crashNotice: AbortController | undefined;
+  window.webContents.on("render-process-gone", (_event, details) => {
+    const detail = `renderer ${details.reason} (exit ${details.exitCode})`;
+    if (!presentedWindows.has(window)) {
+      fail(detail);
+      return;
+    }
+    const plan = planRendererCrashRecovery(details.reason, performance.now(), crashReloads);
+    if (plan.action === "ignore") return;
+    console.warn(`[renderer] 창 ${id}: ${detail}`);
+    if (window.isDestroyed() || closing.has(id)) return;
+
+    // The crashed document cannot answer a save request. Keep its main-process SQLite session.
+    abandonReloadFlush(id);
+    flushReady.delete(id);
+    replaceFlushReady.delete(id);
+    markEditorLeft(id);
+    crashNotice?.abort();
+    const notice = new AbortController();
+    crashNotice = notice;
+    const showNotice = (options: MessageBoxOptions): void => {
+      if (notice.signal.aborted || window.isDestroyed() || closing.has(id)) return;
+      void dialog.showMessageBox(window, { ...options, buttons: ["확인"], signal: notice.signal }).catch((error: unknown) => {
+        console.warn("[renderer] 복구 안내를 띄우지 못했습니다:", error);
+      });
+    };
+    if (plan.action === "report") {
+      showNotice({ type: "error", message: "화면이 반복해서 종료되어 자동으로 다시 열기를 멈췄어요.", detail });
+      return;
+    }
+
+    crashReloads = plan.reloads;
+    const hasProject = sessions.get(id) !== null;
+    void loadWindowDocument(window).then(() => {
+      const editorMessage = details.reason === "oom"
+        ? "메모리가 부족해 편집기가 다시 시작됐어요."
+        : "편집기 화면이 종료되어 다시 시작됐어요.";
+      showNotice({
+        type: "warning",
+        message: hasProject ? editorMessage : "앱 화면이 종료되어 다시 열었어요.",
+        detail: hasProject ? "저장된 내용은 그대로예요. 자동 복구에 남은 이벤트 초안은 해당 맵에서 확인할 수 있어요." : undefined,
+      });
+    }, (error: unknown) => {
+      if (notice.signal.aborted) return;
+      console.warn("[renderer] 화면을 다시 열지 못했습니다:", error);
+      showNotice({ type: "error", message: "종료된 화면을 다시 열지 못했어요.", detail });
+    });
+  });
+  window.on("unresponsive", () => console.warn(`[renderer] 창 ${id} 응답 없음`));
   // F11·보기 메뉴 등 버튼 밖에서도 전체화면이 바뀐다 — 렌더러가 아이콘 상태를 맞출 수 있게 알린다.
   const broadcastFullscreen = (fullscreen: boolean): void => {
     if (!window.isDestroyed()) window.webContents.send(OPRN_CHANNELS.windowFullscreen, fullscreen);
@@ -474,6 +524,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("restore", broadcastState);
   window.on("minimize", broadcastState);
   window.on("closed", () => {
+    crashNotice?.abort();
     revealOnStartReady.delete(id);
     replacingDocument.delete(id);
     replacementEditHolds.delete(id);
@@ -549,7 +600,15 @@ async function openWindowSession(webContentsId: number, projectDir: string) {
   }
 }
 
-/** 창에 첫 문서를 싣는다 — 시작 화면, QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 명령줄 폴더, 또는 편집기. */
+/** 창에 첫 문서나 크래시 복구 문서를 싣는다. 열린 세션은 같은 webContents id 로 다시 읽는다. */
+function loadWindowDocument(window: BrowserWindow): Promise<void> {
+  const smokePage = process.env.OPRN_SMOKE_PAGE;
+  if (smokePage) return window.loadFile(smokePage);
+  if (isStartScreenBoot(window)) return window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
+  return window.loadURL(rendererEntryUrl());
+}
+
+/** 창에 첫 문서를 싣고 QA 또는 명령줄에서 지정한 폴더가 있으면 세션을 연다. */
 function loadWindowContent(window: BrowserWindow): void {
   // QA 하니스용 진입점(OPRN_SMOKE_PAGE·OPRN_RENDERER_DIR 와 같은 계열): 폴더를 주면 시작 화면을
   // 건너뛰고 그 폴더를 연 채로 편집기를 띄운다. GUI 폴더 선택 대화상자를 자동화할 수 없어서
@@ -558,13 +617,8 @@ function loadWindowContent(window: BrowserWindow): void {
   // 편집기 부팅이 빈 세션을 보지 않는다.
   const bootProjectDir = bootProjectDirOf(window);
   const openedByCli = explicitProjectDir.has(window);
-  const startScreen = isStartScreenBoot(window);
   const smokePage = process.env.OPRN_SMOKE_PAGE;
-  const devServerUrl = process.env.ELECTRON_RENDERER_URL;
-  if (smokePage) void window.loadFile(smokePage);
-  else if (startScreen) void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
-  else if (devServerUrl) void window.loadURL(devServerUrl);
-  else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
+  void loadWindowDocument(window);
   if (bootProjectDir !== undefined) {
     const webContentsId = window.webContents.id;
     void openWindowSession(webContentsId, bootProjectDir).then((session) => {
@@ -578,8 +632,7 @@ function loadWindowContent(window: BrowserWindow): void {
         explicitProjectDir.delete(window);
         recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
       }
-      if (devServerUrl) void window.loadURL(devServerUrl);
-      else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
+      void window.loadURL(rendererEntryUrl());
     }).catch((error: unknown) => {
       console.warn("[project] 폴더를 열지 못했습니다:", error);
       explicitProjectDir.delete(window);

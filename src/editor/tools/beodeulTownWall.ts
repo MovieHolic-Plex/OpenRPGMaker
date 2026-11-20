@@ -16,7 +16,7 @@
  */
 import type { GameMap, TilesetDef } from "@/project/types";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
-import pieces from "@/assets/beodeulTownWallPieces.json";
+import pieces from "@/assets/beodeulTownWallPieces.json" with { type: "json" };
 
 const TILES = (pieces as { tiles: Record<string, number> }).tiles;
 const LOWER = new Set((pieces as { lower: string[] }).lower);

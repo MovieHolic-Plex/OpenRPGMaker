@@ -453,8 +453,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     setGenerating(true);
     state.applied = false;
     setStatus("명령 초안을 만들고 있어요…", "busy");
-    const beforeCommands = JSON.stringify(page.commands);
     try {
+      const beforeCommands = JSON.stringify(page.commands);
       const selection = selectedCommandPath(cmdList, options.selectionPath);
       const target = { mapId, eventId, pageId: page.id, selection,
         selectionLabel: selectedCommandName(cmdList, page.commands, options.selectionPath) ?? undefined,

@@ -971,10 +971,11 @@ function withConfirmShortcut(button: HTMLButtonElement): HTMLButtonElement {
 
 function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorRequest): void {
   if (event.key === "Escape") return;
-  // Ctrl/Cmd+Enter = 「저장하고 닫기」. 안쪽 입력(조수 초안 상자 등)이 이미 처리한 키와 IME 조합 중인 키는
-  // 건드리지 않는다. 포커스된 입력을 먼저 blur 해 그 change(이벤트 이름 등)를 커밋한 뒤 같은 버튼 경로로 저장한다.
+  // Ctrl/Cmd+Enter = 「저장하고 닫기」. 안쪽 입력이 소유하거나 처리한 키와 IME 조합 중인 키는 건드리지 않는다.
+  // 포커스된 입력을 먼저 blur 해 그 change(이벤트 이름 등)를 커밋한 뒤 같은 버튼 경로로 저장한다.
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key === "Enter") {
     if (event.defaultPrevented || event.isComposing) return;
+    if (event.target instanceof Element && event.target.closest("[data-owns-ctrl-enter]")) return;
     const root = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
     const save = root?.querySelector<HTMLButtonElement>('[data-testid="event-editor-save"]');
     if (!root || !save || save.disabled) return;
@@ -1249,7 +1250,9 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
       finishCommandListMount(list);
       row = findRenderedCommand(root, snapshot.focusCommandPath);
     }
-    focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row;
+    // When history removes the focused row, keep shortcuts in the modal via the append button.
+    focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row
+      ?? (list && !list.hidden ? list.querySelector<HTMLElement>(".cmd-empty-line") : null);
   }
   if (!focusTarget) return;
   focusTarget.focus({ preventScroll: true });

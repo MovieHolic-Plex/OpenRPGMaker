@@ -4,7 +4,7 @@
 // (src/assets/beodeulForestComposer.json, 빌더 scripts/content/build-beodeul-forest-composer.py).
 // 나무 밑 땅(r5, 2026-10-21 사용자 정정): 원본 도시처럼 「짙은 풀」 — 속은 원본 칸 11628, 가장자리 46모양은 원본 화소 조합 칸(beodeul_ground,
 // 빌더 scripts/content/build-beodeul-forest-ground.py)을 translateTiles 로 대상 칩셋에 이식해 오토타일 그룹(ensureBeodeulDarkGrass)으로 단다.
-import data from "@/assets/beodeulForestComposer.json";
+import data from "@/assets/beodeulForestComposer.json" with { type: "json" };
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "@/project/defaults/beodeulGround";
 import { translateTiles } from "@/project/objectStamp";
 import type { AutotileGroup, GameMap, Project, TilesetDef, TreeComposerDef, TreeComposerSprite } from "@/project/types";

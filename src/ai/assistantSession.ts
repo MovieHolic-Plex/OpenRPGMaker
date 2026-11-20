@@ -4,8 +4,10 @@ import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceRes
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
 import { genId as newCheckpointRunId } from "@/util/id";
-import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type RunCheckpointKey } from "./runCheckpointStore";
-import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
+import { latestRunCheckpointEpoch, saveRunCheckpoint, type RunCheckpoint, type RunCheckpointKey } from "./runCheckpointStore";
+import { assertCheckpointData, checkpointProjectView, type CheckpointProject } from "./checkpointPayload";
+import { createLogger } from "@/util/logger";
+import { checkpointContentIdentity, reconcileRunCheckpoint, restoreCheckpointBaselines, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { formatThrownDiagnostic } from "./errorDiagnostic";
@@ -417,24 +419,24 @@ export function deterministicDraftFindings(project: Project, changedMapIds: read
     }));
 }
 
+const checkpointLog = createLogger("aiRunCheckpoint");
+
 export class AssistantSession {
   private checkpointHost: AssistantSessionOptions["checkpoint"];
   private checkpointKey: RunCheckpointKey | null = null;
   private checkpointSavedAt = 0;
-  private checkpointCurrentIdentity = "";
-  private checkpointRequestBaseline: { readonly project: Project; readonly identity: string } | null = null;
-  /**
-   * 같은 프로젝트 객체의 신원 재계산을 막는다. 실측(2026-09-09, 기본 프로젝트): 신원 1회가
-   * **약 160ms** 인데 라운드마다 두 번 계산해 20라운드짜리 턴이 6초 이상을 여기에만 썼다.
-   * 실표면에서는 그 누적이 60초 정착 예산을 넘겨 UI 가 굳었다. 객체가 바뀌면 자동으로
-   * 무효화된다 — 내용이 바뀌면 저장소가 새 객체를 만들기 때문이다.
-   */
-  private identityOf(project: Project): string {
-    // 캐시하지 않는다. 독립 검토(2026-09-09)가 잡은 결함: 세션은 위키 준비 뒤 baselineProject·
-    // ctx.project 의 world 를 제자리에서 바꾸므로, 객체 신원을 키로 캐시하면 낡은 신원을 찍는다.
-    return checkpointContentIdentity(project);
-  }
+  private checkpointCurrentIdentity: string | null = null;
+  private checkpointRequestBaseline: { readonly project: Project; readonly identity: string | null } | null = null;
+  private readonly checkpointBaselines = new WeakMap<Project, CheckpointProject>();
   private checkpointQueue: Promise<void> = Promise.resolve();
+  private checkpointDrain: Promise<void> | null = null;
+  private checkpointNext: RunCheckpoint | null = null;
+  private lastCheckpointWarning: string | null = null;
+
+  private identifyCheckpointContent(project: Project): string | null {
+    try { return checkpointContentIdentity(project); }
+    catch (cause) { this.warnCheckpointFailure(cause); return null; }
+  }
   private checkpointPending: RunCheckpoint["pending"] = null;
   private checkpointApplied: RunCheckpoint["applied"] = null;
   private checkpointTerminal = false;
@@ -447,37 +449,38 @@ export class AssistantSession {
   private recoveryBudget: RunCheckpoint["budget"] | null = null;
 
   getRunIdentity(): RunCheckpointKey | null { return this.checkpointKey ? { ...this.checkpointKey } : null; }
-  /**
-   * 가장 최근 캡처 시도의 완료. 큐 전체의 과거 실패를 누적해서 보고하지 않는다 —
-   * capture 직후 await 하는 호출자는 자기 쓰기의 실패를 그대로 받고, 중간의
-   * best-effort 캡처 실패는 경고로만 남는다(그 지점들은 애초에 await 하지 않는다).
-   */
+  /** Completion of the latest capture, including any durable write failure. */
   whenCheckpointed(): Promise<void> { return this.checkpointQueue; }
 
-  /**
-   * 저장·증명 경로에서 쓰는 대기. 체크포인트 쓰기가 실패해도 **삼키고 진행**한다.
-   *
-   * 왜: 이 대기를 그대로 throw 하면 `proveAppliedRevision` 의 catch 가 잡아 저장 증명을
-   * `failed` 로 끝내고 원격 읽기조차 시도하지 않는다. 실측(2026-09-09, proof-failure
-   * 실표면 시나리오): 체크포인트 한 건이 거부되자 `store.flush()` 에 도달하지 못해
-   * **저장 자체가 사라졌다**. 복구 장치가 정본 저장을 죽이는 것은 순서가 뒤집힌 것이다.
-   * 실패하면 복구 가능성만 잃고, 저장·증명은 그대로 간다.
-   */
+  private warnCheckpointFailure(cause: unknown): void {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    if (message === this.lastCheckpointWarning) return;
+    this.lastCheckpointWarning = message;
+    checkpointLog.warn("Checkpoint persistence failed", cause);
+    this.pushAudit({ kind: "status", text: `agent_run:checkpoint-write-failed — ${message}` });
+  }
+
   private async checkpointBestEffort(): Promise<void> {
-    try { await this.whenCheckpointed(); }
-    catch (cause) {
-      this.pushAudit({ kind: "status", text: `agent_run:checkpoint-write-failed — ${cause instanceof Error ? cause.message : String(cause)} (저장·증명은 계속합니다)` });
-    }
+    // Capture and storage report failures without blocking the turn or canonical save.
+    await this.whenCheckpointed().catch(() => {});
+  }
+
+  private checkpointBaselineView(project: Project): CheckpointProject {
+    const cached = this.checkpointBaselines.get(project);
+    if (cached) return cached;
+    const view = checkpointProjectView(project);
+    this.checkpointBaselines.set(project, view);
+    return view;
   }
 
   private exportRuntime(): RunRuntimeState {
-    // captureCheckpoint clones the whole row synchronously, including this runtime.
-    return { schemaVersion: 1, instruction: this.currentTurnInstruction,
+    const acceptance = this.acceptance?.recoveryView(project => this.checkpointBaselineView(project)) ?? null;
+    return { schemaVersion: 2, instruction: this.currentTurnInstruction,
       requestText: this.currentTurnRequestText, composerMode: this.turnComposerMode, autonomous: this.milestoneAutoApply,
       execution: this.runExecution,
-      // 원장이 같은 기준선을 이미 보관한다 — 두 벌 실으면 쓰기마다 복제·검증이 두 배가 된다.
-      ...(this.acceptance ? {} : { requestBaseline: this.acceptanceRequestBaseline }),
-      acceptance: this.acceptance?.exportRecovery() ?? null, verification: this.verificationEvidence.exportRecovery(),
+      ...(this.eventCommandScope ? { eventEditor: true } : {}),
+      ...(acceptance ? {} : { requestBaseline: this.checkpointBaselineView(this.acceptanceRequestBaseline) }),
+      acceptance, verification: this.verificationEvidence.recoveryView(),
       verificationOwnerSequence: this.verificationOwnerSequence,
       verificationOwners: this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => {
         const owner = this.verificationOwners.get(item);
@@ -493,40 +496,63 @@ export class AssistantSession {
       lastBlockReasons: [...this.lastBlockReasonByItemId], roundLimit: this.config.maxToolCalls, outputLimit: this.config.maxTokens };
   }
 
-  /** Capture synchronously, enqueue immutable rows. Retired completions keep their old run/epoch key. */
+  /** Capture before observers can mutate the plan. At most one row waits behind the ongoing write. */
   private captureCheckpoint(): void {
     const key = this.checkpointKey;
-    if (!key || !this.storeBacked) return;
-    // This original-request baseline is replaced, never mutated; live draft identities are not cached.
+    if (!key || !this.storeBacked || !this.checkpointCurrentIdentity) return;
+    try {
+      const checkpoint = this.buildCheckpoint(key, this.checkpointCurrentIdentity);
+      if (!checkpoint) return;
+      assertCheckpointData(checkpoint);
+      this.checkpointNext = structuredClone(checkpoint);
+      if (!this.checkpointDrain) {
+        const drain = Promise.resolve().then(async () => {
+          try {
+            while (this.checkpointNext) {
+              const row = this.checkpointNext;
+              this.checkpointNext = null;
+              try { await saveRunCheckpoint(row); }
+              catch (cause) {
+                if (this.checkpointKey?.runId === row.runId) this.warnCheckpointFailure(cause);
+                if (!this.checkpointNext) throw cause;
+              }
+            }
+          } finally {
+            this.checkpointDrain = null;
+          }
+        });
+        void drain.catch(() => {});
+        this.checkpointDrain = drain;
+      }
+      this.checkpointQueue = this.checkpointDrain;
+    } catch (cause) {
+      this.checkpointNext = null;
+      this.warnCheckpointFailure(cause);
+    }
+  }
+
+  private buildCheckpoint(key: RunCheckpointKey, currentContentIdentity: string): RunCheckpoint | null {
+    // The request baseline is replaced as a unit. A draft is mutable and is hashed only at apply.
     if (this.checkpointRequestBaseline?.project !== this.acceptanceRequestBaseline) {
       this.checkpointRequestBaseline = { project: this.acceptanceRequestBaseline,
-        identity: this.identityOf(this.acceptanceRequestBaseline) };
+        identity: this.identifyCheckpointContent(this.acceptanceRequestBaseline) };
     }
+    if (!this.checkpointRequestBaseline.identity) return null;
     let pending = this.checkpointPending;
-    // 라운드마다 도는 캡처는 초안 신원을 **다시 계산하지 않는다**. 실측(2026-09-09, late-cancel):
-    // 신원 1회가 200ms대라 미스 23회가 4.8초였고, 그 누적이 하네스의 60초 신호 창을 넘겨
-    // 늦은 적용 검증이 통째로 실패했다(병합 이전 main 은 같은 지점을 27.8초에 통과).
-    // 적용 직전(prepareCheckpointApply)에는 그대로 정확히 계산한다 — 거기가 진짜 경계다.
     if (!pending && this.turnProposals.size && !this.checkpointTerminal) pending = {
-      operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: {
-        baseContentIdentity: this.identityOf(this.baselineProject),
-        contentIdentity: this.identityOf(this.ctx.project),
-        // 초안 바이트는 적용 대기에서만 싣는다(prepareCheckpointApply). 여기서 실으면 쓰기마다
-        // 프로젝트를 한 벌 더 복제하는데, 재개는 이 단계에서 그 바이트를 쓰지 않는다.
-        calls: this.finalizeProposals(this.turnProposals),
-      },
+      operationId: `${key.runId}:${key.epoch}:apply`, stage: "proposal-ready", proposal: null,
     };
     const paused = this.runExecution === "cancelled" || this.runExecution === "awaiting-user";
     if (paused && pending?.stage === "proposal-ready") pending = null;
     const status: RunCheckpoint["status"] = paused ? pending ? "awaiting-user" : "terminal"
       : this.checkpointTerminal && !pending ? "terminal" : "active";
-    // 캡처는 **그 순간을 동결**해야 한다. 독립 검토(2026-09-09)가 잡은 결함: workPlan 은 살아 있는
-    // 참조이고 항목 상태가 제자리에서 바뀌므로, 동결하지 않으면 저장된 행이 나중의 계획 진행과
-    // 이전 런타임·예산을 섞어 담는다(찢어진 복구 상태). 비용보다 무결성이 먼저다.
-    const checkpoint: RunCheckpoint = structuredClone({ ...key, schemaVersion: 1,
+    const save = this.runReceipt?.projectId === key.projectId ? { ...this.runReceipt } : null;
+    const proof = this.getRunEndProof();
+    const localProof = proof?.receipt && proof.receipt.projectId !== key.projectId ? null : proof;
+    return { ...key, schemaVersion: 1,
       savedAt: this.checkpointSavedAt = Math.max(Date.now(), this.checkpointSavedAt + 1), status,
       request: this.acceptanceRequestSource, baseContentIdentity: this.checkpointRequestBaseline.identity,
-      currentContentIdentity: this.checkpointCurrentIdentity, workPlan: this.workPlan,
+      currentContentIdentity, workPlan: this.workPlan,
       runtime: this.exportRuntime(), budget: {
         remainingToolCalls: Math.max(0, this.checkpointRoundLimit - this.checkpointRoundsUsed),
         remainingOutputTokens: Math.max(0, this.checkpointOutputLimit - (this.estimatedOutputTotal - this.checkpointOutputStart)),
@@ -534,23 +560,13 @@ export class AssistantSession {
         remainingWorkPlanSteps: Math.max(0, MAX_WORK_PLAN_AUTO_STEPS_PER_TURN - this.workPlanAutoStepsThisUserMessage),
         ralphAttemptsByItemId: [...this.ralphAttemptsByItemId],
         repeatedToolFailures: [...this.repeatedToolFailures].map(([id, failures]) => [id, [...failures]] as const),
-      }, verification: this.verificationEvidence.snapshot(), acceptance: this.getAcceptanceSnapshot(),
-      applied: this.checkpointApplied,
-      // 영수증은 이 체크포인트가 가리키는 프로젝트의 것만 담는다. 다른 프로젝트(전환·다중 세션)의
-      // 영수증을 넣으면 행 전체가 malformed 로 거부되어 **복구 기록이 통째로 사라진다** —
-      // 실측(2026-09-09, late-cancel): save/proof 필드가 계속 거부됐다. 소유가 다르면
-      // 기록하지 않는 편이 정확하다(없는 것은 "모름"이고, 거짓 증거가 아니다).
-      save: this.runReceipt?.projectId === key.projectId ? this.runReceipt : null,
-      proof: (() => { const proof = this.getRunEndProof();
-        return proof?.receipt && proof.receipt.projectId !== key.projectId ? null : proof; })(),
-      pending });
-    // Order is preserved, but a rejected predecessor must not skip this write: `.then` alone would
-    // silently drop every later capture in this session after one failed row (unsupported existing row,
-    // aborted transaction). Each capture waits for the previous attempt to settle and then writes itself.
-    const attempt = this.checkpointQueue.catch(() => {}).then(async () => { await saveRunCheckpoint(checkpoint); });
-    this.checkpointQueue = attempt;
-    // Observe synchronous callback failures without pretending durability; awaited boundaries still reject.
-    void attempt.catch(cause => console.warn("[aiRunCheckpoint] Checkpoint persistence failed", cause));
+      }, verification: this.verificationEvidence.snapshotView(), acceptance: this.getAcceptanceSnapshot(),
+      applied: this.checkpointApplied, save,
+      proof: localProof && {
+        ...localProof,
+        ...(localProof.receipt ? { receipt: { ...localProof.receipt } } : {}),
+        ...(localProof.proof ? { proof: { ...localProof.proof, receipt: { ...localProof.proof.receipt } } } : {}),
+      }, pending };
   }
 
   private async beginCheckpoint(instruction: string, text: string, options: SessionTurnOptions): Promise<void> {
@@ -562,10 +578,13 @@ export class AssistantSession {
     // 턴 시작 시점의 실제 신원을 쓰고, 그 이후로는 이 런의 키를 고정한다.
     const host = { ...this.checkpointHost, projectId: store.getProjectIdentity().id };
     this.checkpointHost = host;
-    const latest = await operation.wait(readLatestRunCheckpoint(host.conversationId, host.projectId, host.projectContextKey));
-    this.checkpointKey = { ...host, runId: newCheckpointRunId(), epoch: Math.max(Date.now(), (this.checkpointKey?.epoch ?? 0) + 1, latest.kind === "found" ? latest.checkpoint.epoch + 1 : 0) };
+    this.lastCheckpointWarning = null;
+    let latestEpoch = -1;
+    try { latestEpoch = await operation.wait(latestRunCheckpointEpoch(host.conversationId)); }
+    catch (cause) { operation.assertCurrent(); this.warnCheckpointFailure(cause); }
+    this.checkpointKey = { ...host, runId: newCheckpointRunId(), epoch: Math.max(Date.now(), (this.checkpointKey?.epoch ?? 0) + 1, latestEpoch + 1) };
     this.checkpointPending = null;
-    this.checkpointCurrentIdentity = this.identityOf(store.getCurrent());
+    this.checkpointCurrentIdentity = this.identifyCheckpointContent(store.getCurrent());
     this.checkpointTerminal = false;
     this.checkpointRoundLimit = this.recoveryBudget?.remainingToolCalls ?? this.config.maxToolCalls;
     this.checkpointRoundsUsed = 0;
@@ -585,21 +604,19 @@ export class AssistantSession {
     await operation.wait(this.checkpointBestEffort());
   }
 
-  /** Durably prepare the one candidate BEFORE the real store mutation; this grants no review authority. */
+  /** Record the expected result before apply, when checkpoint storage is available. */
   async prepareCheckpointApply(): Promise<void> {
-    if (!this.checkpointKey) return;
+    if (!this.checkpointKey || !this.checkpointCurrentIdentity) return;
     const operation = this.runOperation;
     operation.assertCurrent();
-    const project = this.getProposedProject();
+    const baseContentIdentity = this.identifyCheckpointContent(this.baselineProject);
+    const contentIdentity = this.identifyCheckpointContent(this.ctx.project);
+    if (!baseContentIdentity || !contentIdentity) return;
     this.checkpointPending = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`, stage: "applying", proposal: {
-      baseContentIdentity: this.identityOf(this.baselineProject), contentIdentity: this.identityOf(project),
-      project, calls: this.finalizeProposals(this.turnProposals),
+      baseContentIdentity, contentIdentity, calls: this.finalizeProposals(this.turnProposals),
     } };
     this.captureCheckpoint();
-    // 적용 직전은 **진짜 내구성 경계**다 — 여기서 기다린 기록이 있어야 적용 직후 중단에서
-    // "이미 적용됨"을 알아볼 수 있다. 그래서 실패를 삼키지 않는다. 호출자(aiProposalCard)는
-    // 중단으로 인한 거부를 소유권 상실로 처리하고, 그 외 실패는 그대로 드러난다.
-    await operation.wait(this.whenCheckpointed());
+    await operation.wait(this.checkpointBestEffort());
   }
 
   /**
@@ -625,6 +642,9 @@ export class AssistantSession {
     const recovery = reconcileRunCheckpoint({ kind: "found", checkpoint, durable }, store.getCurrent());
     if (recovery.kind !== "resumable" || !checkpoint.runtime) return recovery;
     const state = checkpoint.runtime;
+    let baselines: ReturnType<typeof restoreCheckpointBaselines>;
+    try { baselines = restoreCheckpointBaselines(state); }
+    catch { return { kind: "unsupported", reason: "malformed-runtime-project", next: "open-transcript" }; }
     this.rebaseProject(store.getCurrent());
     this.workPlan = structuredClone(checkpoint.workPlan);
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
@@ -633,10 +653,10 @@ export class AssistantSession {
       const owner = state.verificationOwners.find(([id]) => id === item.id);
       if (owner) this.verificationOwners.set(item, { ownerId: owner[1], checkIds: [...owner[2]] });
     }
-    this.acceptanceRequestBaseline = structuredClone(state.requestBaseline ?? state.acceptance!.baseline);
+    this.acceptanceRequestBaseline = baselines.requestBaseline;
     this.acceptanceRequestSource = structuredClone(checkpoint.request);
     this.verificationEvidence.restoreRecovery(state.verification);
-    this.acceptance = state.acceptance ? AssistantAcceptanceLedger.restoreRecovery(state.acceptance, this.imageEvidence,
+    this.acceptance = baselines.acceptance ? AssistantAcceptanceLedger.restoreOwnedRecovery(baselines.acceptance, this.imageEvidence,
       (project, requirement) => verifyNpcRewardsPlayable(project, [requirement], this.npcRewardWitnesses)) : null;
     this.currentTurnInstruction = state.instruction; this.currentTurnRequestText = state.requestText;
     this.currentTurnIndex = state.currentTurnIndex;
@@ -1825,10 +1845,7 @@ export class AssistantSession {
     let authoring = true;
     onEvent = event => {
       if (!authoring || operation.signal.aborted || owner.settled) return;
-      // 사건마다 캡처하면 쓰기마다 프로젝트 여러 벌이 복제된다 — 실측(2026-09-09,
-      // late-cancel A/B): 이 한 줄이 실행 시간의 30초를 썼다(144.6초 → 112.8초).
-      // 저작 결과가 실제로 바뀌는 사건(tool_call)만 남긴다. work_plan·acceptance 변화는
-      // 다음 tool_call 이나 적용·저장·증명 경계의 캡처에 그대로 실린다.
+      // Plan and acceptance changes are captured at the next tool result or delivery boundary.
       if (event.type === "tool_call") this.captureCheckpoint();
       subscriber(event);
       operation.assertCurrent();
@@ -2130,7 +2147,7 @@ export class AssistantSession {
             if (owner !== this.runResult) return;
             if (milestone.kind === "applied") {
               this.wikiDelivery = { owner, project: milestone.project, receipt: null };
-              if (milestone.project) this.checkpointCurrentIdentity = this.identityOf(milestone.project);
+              if (this.checkpointKey && milestone.project) this.checkpointCurrentIdentity = this.identifyCheckpointContent(milestone.project);
               this.lastAppliedProject = null;
               this.runReceipt = null;
             } else if (this.wikiDelivery?.owner === owner && this.wikiDelivery.project === milestone.project
@@ -3615,9 +3632,9 @@ export class AssistantSession {
     this.turnAppliedMilestoneCalls.push(...this.finalizeProposals(this.turnProposals));
     this.turnProposals.clear();
     if (mutation && this.checkpointKey) {
-      this.checkpointCurrentIdentity = this.identityOf(applied.applied);
-      this.checkpointApplied = { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`,
-        contentIdentity: this.identityOf(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
+      this.checkpointCurrentIdentity = this.identifyCheckpointContent(applied.applied);
+      this.checkpointApplied = this.checkpointCurrentIdentity ? { operationId: `${this.checkpointKey.runId}:${this.checkpointKey.epoch}:apply`,
+        contentIdentity: this.checkpointCurrentIdentity, commitId: null, calls: [...this.turnAppliedMilestoneCalls] } : null;
       this.checkpointPending = null;
     } else if (this.checkpointApplied) {
       this.checkpointApplied = { ...this.checkpointApplied, commitId: applied.commit.commitId };
@@ -3778,7 +3795,9 @@ export class AssistantSession {
         commitId = applied.commitId;
         if (outcomeOwner === this.runResult) {
           this.runReceipt = receipt;
-          if (store.isPersistenceReceiptCurrent(receipt)) this.checkpointCurrentIdentity = this.identityOf(store.getCurrent());
+          if (this.checkpointKey && store.isPersistenceReceiptCurrent(receipt)) {
+            this.checkpointCurrentIdentity = this.identifyCheckpointContent(store.getCurrent());
+          }
         }
       }
       state = { status: "attempted", verified: false, receipt, commitId };
