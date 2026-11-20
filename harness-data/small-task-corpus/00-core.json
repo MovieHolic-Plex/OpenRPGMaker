@@ -1,0 +1,27 @@
+[
+  {
+    "request": "회복의 샘 이벤트의 첫 인사 줄을 둘째 줄로 옮겨 줘",
+    "fixture": "built",
+    "target": { "kind": "event", "eventId": "ev_heal_spring" },
+    "setup": { "commands": [
+      { "kind": "text", "body": "안녕하세요." },
+      { "kind": "text", "body": "회복의 샘입니다." }
+    ] },
+    "primitive": "cmd.move",
+    "args": { "index": 0, "toIndex": 1, "expectedHash": "32e14fdad43d44f5df1d5619c2d53fdb" },
+    "expect": [
+      { "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands", "count": 2 },
+      { "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[1].body", "equals": "안녕하세요." }
+    ]
+  },
+  {
+    "request": "목록을 읽은 뒤 바뀐 첫 줄을 기존 위치로 지워 달라는 요청을 거절한다",
+    "fixture": "built",
+    "target": { "kind": "event", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page" },
+    "setup": { "commands": [{ "kind": "text", "body": "회복의 샘입니다." }] },
+    "primitive": "cmd.delete",
+    "args": { "index": 0, "expectedHash": "32e14fdad43d44f5df1d5619c2d53fdb" },
+    "expectRefusal": true,
+    "refusalMessage": "명령 목록이 바뀌었어요"
+  }
+]
