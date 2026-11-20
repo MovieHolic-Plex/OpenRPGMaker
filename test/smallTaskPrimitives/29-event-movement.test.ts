@@ -379,8 +379,10 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     map.events[0] = old;
     const target = selected(project, map.id, guard.id);
     const { after } = runPrimitive(project, target, "move.speed.set", { speed: 5 });
-    expect(after.maps[map.id].events[0]).toMatchObject({
-      ...old, commands: [], pages: [{ conditions: [], commands, movement: { type: "custom", route: moveRoute, speed: 5, frequency: 3 } }],
+    const converted = after.maps[map.id].events[0]!;
+    expect(converted).not.toHaveProperty("moveRoute");
+    expect(converted).toMatchObject({
+      id: old.id, commands: [], pages: [{ conditions: [], commands, movement: { type: "custom", route: moveRoute, speed: 5, frequency: 3 } }],
     });
     await expectUndoRestores(project, after, target);
 
@@ -399,6 +401,25 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     } finally {
       await rm(projectDir, { recursive: true, force: true });
     }
+  });
+
+  it("옛 경로를 비운 뒤 페이지 조건이 맞지 않아도 이전 경로가 되살아나지 않습니다", () => {
+    const { project, map, guard } = blank();
+    const switchId = "sw_legacy_movement";
+    project.switches.push({ id: switchId, name: "옛 이동 페이지 표시" });
+    map.events[0] = {
+      ...guard, pages: undefined, moveRoute: { repeat: true, moves: [{ kind: "move", dir: "right" }] },
+    };
+    expect(play(project, map.id).autonomousNPCs.has(guard.id)).toBe(true);
+    const { after } = runPrimitive(project, selected(project, map.id, guard.id), "move.route.set", { moves: [] });
+    const conditional = structuredClone(after);
+    const page = pageOf(conditional, map.id, guard.id);
+    expect(page.movement.route).toBeUndefined();
+    page.conditions = [{ kind: "switch", switchId, value: true }];
+    const scene = play(conditional, map.id);
+    expect(runtimeEventViewsForMap(conditional, scene.map, scene.session, scene.eventPositions)
+      .find(view => view.event.id === guard.id)?.movement.type).toBe("fixed");
+    expect(scene.autonomousNPCs.has(guard.id)).toBe(false);
   });
 
   it("옛 이벤트의 이동을 바꾼 뒤에도 공용 삭제가 페이지의 마지막 스위치 쓰기를 보호합니다", () => {
@@ -565,14 +586,14 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     expectRefused(withBattle, target, "npc.patrol.set", patrol, /출입구/u);
   });
 
-  it("맵 연결의 도착 칸에서 다른 이벤트로 가는 통로를 보호합니다", () => {
+  it.each(["맵 연결", "전투 뒤 이동", "양쪽 맵 연결"])("도착 칸마다 다른 이벤트로 가는 통로를 보호합니다 (%s)", source => {
     const { project, target, map } = blank();
     const other = { ...createBlankMap("출발 지역", 5, 5), id: "map_connection_source" };
     project.maps[other.id] = other;
     project.startMapId = other.id;
     const floor = map.lowerTiles[6 * map.width + 6]!;
     map.lowerTiles.fill(-1);
-    for (let x = 1; x <= 10; x += 1) map.lowerTiles[6 * map.width + x] = floor;
+    for (let x = 1; x <= 11; x += 1) map.lowerTiles[6 * map.width + x] = floor;
     for (const x of [6, 7]) map.lowerTiles[5 * map.width + x] = floor;
     map.events[1] = { ...map.events[1]!, x: 10, y: 6 };
     const connection = {
@@ -580,9 +601,21 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
       playerEnabled: true, npcEnabled: false,
     };
     const patrol = { directions: ["right", "left"] };
-    const npcOnly = { ...project, mapConnections: [{ ...connection, playerEnabled: false, npcEnabled: true }] };
-    expectApplies(npcOnly, target, "npc.patrol.set", patrol);
-    expectRefused({ ...project, mapConnections: [connection] }, target, "npc.patrol.set", patrol, /다른 이벤트로 가는 길/u);
+    if (source === "전투 뒤 이동") {
+      project.database.troops = [{
+        id: "troop_arrival", name: "길 지킴이", enemyIds: [], autoAlign: true, battleEventPages: [],
+        afterBattle: { victory: [{ kind: "transfer", ...connection.to }] },
+      }];
+    } else if (source === "양쪽 맵 연결") {
+      const right = { ...connection, id: "connection_right", to: { ...connection.to, x: 11 } };
+      expectApplies({ ...project, mapConnections: [right] }, target, "npc.patrol.set", patrol);
+      project.mapConnections = [connection, right];
+    } else {
+      const npcOnly = { ...connection, playerEnabled: false, npcEnabled: true };
+      expectApplies({ ...project, mapConnections: [npcOnly] }, target, "npc.patrol.set", patrol);
+      project.mapConnections = [connection];
+    }
+    expectRefused(project, target, "npc.patrol.set", patrol, /다른 이벤트로 가는 길/u);
   });
 
   it.each([true, false])("시작 상태의 장식이 통행을 막는 경우에만 순찰을 거절합니다 (%j)", blocksMovement => {

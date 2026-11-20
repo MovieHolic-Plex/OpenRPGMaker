@@ -85,8 +85,13 @@ function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, e
     ? { ...page, movement: patch.movement }
     : { ...page, graphic: patch.graphic, ...(patch.animationType === undefined ? {} : { animationType: patch.animationType }) };
   const events = map.events.slice();
-  // Once the new page owns the commands, reference checks should see a single writer.
-  events[index] = { ...event, pages, ...(originalPages.length === 0 ? { commands: [] } : {}) };
+  const next: GameEvent = { ...event, pages };
+  if (originalPages.length === 0) {
+    // The new page owns the commands and route. Remove the top-level runtime fallback.
+    next.commands = [];
+    delete next.moveRoute;
+  }
+  events[index] = next;
   return { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
 }
 

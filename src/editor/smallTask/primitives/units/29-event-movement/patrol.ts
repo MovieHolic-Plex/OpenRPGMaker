@@ -27,15 +27,12 @@ function patrolCells(event: GameEvent, directions: Dir[]) {
 }
 
 function protectedCells(project: Project, map: GameMap) {
-  const cells = map.id === project.startMapId ? [project.startPos] : [];
-  const connectionArrivals: Cell[] = [];
+  const arrivals: Cell[] = map.id === project.startMapId ? [project.startPos] : [];
+  const departuresAndSigns: Cell[] = [];
   for (const { from, to, playerEnabled } of project.mapConnections ?? []) {
     if (!playerEnabled) continue;
-    if (from.mapId === map.id) cells.push(from);
-    if (to.mapId === map.id) {
-      cells.push(to);
-      connectionArrivals.push(to);
-    }
+    if (from.mapId === map.id) departuresAndSigns.push(from);
+    if (to.mapId === map.id) arrivals.push(to);
   }
   const commonEvents = new Map(project.commonEvents.map(event => [event.id, event]));
 
@@ -45,7 +42,7 @@ function protectedCells(project: Project, map: GameMap) {
     let transfers = false;
     for (const command of commands) {
       if (command.kind === "transfer") {
-        if (command.mapId === map.id) cells.push({ x: command.x, y: command.y });
+        if (command.mapId === map.id) arrivals.push({ x: command.x, y: command.y });
         transfers = true;
       }
       if (command.kind === "callCommonEvent") {
@@ -74,7 +71,7 @@ function protectedCells(project: Project, map: GameMap) {
         if (scanTransfers(commands, seen, source)) transfers = true;
       }
       if (source.id === map.id && (transfers || /표지|안내/u.test(eventDisplayName(event)))) {
-        cells.push({ x: event.x, y: event.y });
+        departuresAndSigns.push({ x: event.x, y: event.y });
       }
     }
   }
@@ -84,7 +81,7 @@ function protectedCells(project: Project, map: GameMap) {
   for (const troop of project.database.troops) {
     for (const { commands } of troopAfterBattleLists(troop)) scanTransfers(commands, new Set());
   }
-  return { cells, connectionArrivals };
+  return { cells: [...arrivals, ...departuresAndSigns], arrivals };
 }
 
 function routeVisits(
@@ -245,7 +242,7 @@ export function editPatrol(
       throw new PrimitiveError("순찰 경로에 지날 수 없는 칸이 있어요.");
     }
   }
-  const { cells: protectedAt, connectionArrivals } = protectedCells(project, map);
+  const { cells: protectedAt, arrivals } = protectedCells(project, map);
   if (cells.some(({ x, y }) => protectedAt.some(entry => Math.abs(entry.x - x) + Math.abs(entry.y - y) <= 2))) {
     throw new PrimitiveError("출입구, 시작점, 안내판 근처를 피해서 순찰 경로를 정해 주세요.");
   }
@@ -254,7 +251,7 @@ export function editPatrol(
   }
   for (const { x, y } of cells) {
     const exits = Object.values(STEPS).filter(([dx, dy]) => canMove(project, map, x, y, x + dx, y + dy));
-    if (exits.length < 3 || eventsCutOffBy(project, map, { ...event, x, y, pages: [page] }, connectionArrivals).length) {
+    if (exits.length < 3 || eventsCutOffBy(project, map, { ...event, x, y, pages: [page] }, { fromEachEntry: arrivals }).length) {
       throw new PrimitiveError("다른 이벤트로 가는 길을 막지 않는 넓은 곳에서 순찰해 주세요.");
     }
   }
