@@ -416,7 +416,9 @@ function normalizeMapMeta(
     report(`${mapLabel(original ?? map, mapId)} 대상을 찾을 수 없음`);
     return after;
   }
-  const structural = new Set<string>(["id", "width", "height", "events", "relief", "doodadGroups", "terrainDesign", ...MAP_TILE_KEYS]);
+  const structural = new Set<string>([
+    "id", "width", "height", "events", "relief", "doodadGroups", "terrainDesign", "worldmapSource", ...MAP_TILE_KEYS,
+  ]);
   const editable = new Set(fields ?? keysOf(original, map));
   const normalized = resetFields(original, map, new Set([...editable].filter(key => !structural.has(key))));
   const protectedConnections = (project: Project) => (project.mapConnections ?? []).filter(connection =>

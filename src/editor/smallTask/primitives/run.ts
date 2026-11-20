@@ -5,10 +5,13 @@ import type { Project } from "@/project/types";
 import { plainSummary } from "../plainSummary";
 import type { SmallTaskTarget } from "../target";
 import { primitiveScope } from "./core/scope";
-import { PrimitiveError } from "./errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "./errors";
 import { PRIMITIVES } from "./index";
 import { getPrimitive } from "./registry";
 import type { PrimitiveContext } from "./types";
+
+const freezeBaseline = import.meta.env?.DEV || (typeof process !== "undefined"
+  && (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"));
 
 function matchesType(value: unknown, type: JsonSchemaType): boolean {
   switch (type) {
@@ -46,6 +49,13 @@ export function matchesPrimitiveSchema(schema: JsonSchema, value: unknown): bool
   return true;
 }
 
+function deepFreezeProject(value: unknown, seen = new WeakSet<object>()): void {
+  if (value === null || typeof value !== "object" || seen.has(value)) return;
+  seen.add(value);
+  for (const child of Object.values(value)) deepFreezeProject(child, seen);
+  Object.freeze(value);
+}
+
 export function runPrimitive(
   project: Project, target: SmallTaskTarget, id: string, args: Record<string, unknown>, selection?: PrimitiveContext["selection"],
   live?: PrimitiveContext["live"],
@@ -60,6 +70,8 @@ export function runPrimitive(
     throw new PrimitiveError("동작에 필요한 값의 형식을 확인해 주세요.");
   }
 
+  // Primitives copy the paths they edit. Check that contract before computing the diff in dev and tests.
+  if (freezeBaseline) deepFreezeProject(project);
   const ctx: PrimitiveContext = { project, target, selection, live };
   try {
     const scope = primitiveScope(ctx, primitive, args);
@@ -68,7 +80,9 @@ export function runPrimitive(
     if (!result.ok) throw new PrimitiveError(result.reason);
     return { after, sentence: primitive.describe(ctx, args), summary: plainSummary(project, after) };
   } catch (error) {
-    if (error instanceof EventCommandEditError) throw new PrimitiveError(error.message);
+    if (error instanceof EventCommandEditError) {
+      throw new PrimitiveError(error.code === "stale-event-command" ? STALE_COMMAND_LIST : error.message);
+    }
     throw error;
   }
 }
