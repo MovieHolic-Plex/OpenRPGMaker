@@ -106,6 +106,30 @@ test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", 
   expect(done.project).toBe(project);
 });
 
+test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조하는 출현 명령을 보호한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn = { id: "slimes", troopId: "troop_slime", area: { x: 1, y: 1, w: 1, h: 1 }, maxAlive: 1 };
+  const command: Command = { kind: "spawnFieldEnemy", spawn };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [command, ...commands] }];
+  const original = { id: "event_draft", x: 3, y: 3, trigger: event.trigger, commands: [] };
+  const draft: GameEvent = {
+    ...original,
+    commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.id }],
+    draft: { kind: "new", original },
+  };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const deletion = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
+    { streamFn: scripted([deletion]) });
+
+  expect(done.stoppedEarly).toContain("제거하는 명령");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+  const withoutDraft = await runPiAgent(request, { streamFn: scripted([deletion]) });
+  expect(withoutDraft.stoppedEarly).toBeUndefined();
+  expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
+});
+
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {
   const { request, project, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
@@ -274,9 +298,9 @@ for (const draftKind of ["new", "edit"] as const) {
   test(`작은 일 Pi 실행은 퀘스트 의뢰 이벤트의 저장 여부를 확인한다 (${draftKind})`, async () => {
     const { request, project, mapId, event } = fixture();
     const working: GameEvent = { ...event, draft: { kind: draftKind, original: event } };
-    const live = { maps: { [mapId]: { events: [working] } } };
+    const draftSource = { maps: { [mapId]: { events: [working] } } };
     const args = { title: "길 안내", objective: { kind: "reach", mapId, x: 1, y: 1 } };
-    const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, live } },
+    const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
       { streamFn: scripted([apply("quest.create", args)]) });
 
     if (draftKind === "new") {
@@ -290,52 +314,20 @@ for (const draftKind of ["new", "edit"] as const) {
   });
 }
 
-for (const writer of ["native", "script"] as const) {
-  test(`작은 일 Pi 실행은 그래프 목표의 마지막 완료 스위치 쓰기를 보호한다 (${writer})`, async () => {
-    const { request, project, mapId, event } = fixture();
-    const switchId = "sw_quest_graph";
-    const command: Command = writer === "native" ? { kind: "setSwitch", switchId, value: true } : {
-      kind: "script", source: `game.setSwitch('${switchId}', true);`, compiled: "",
-      effects: { reads: [], writes: [{ kind: "switch", id: switchId }], calls: [], dynamic: [] },
-    };
-    const commands = event.pages[1]!.commands;
-    commands.splice(0, commands.length, command, { kind: "setSwitch", switchId, value: false });
-    event.pages[0]!.commands = [];
-    project.maps[mapId].events = [event];
-    project.switches.push({ id: switchId, name: "의뢰 완료" });
-    project.quests = [{
-      kind: "graph", id: "q_graph", title: "길 안내", edges: [],
-      nodes: [{ id: "finish", description: "완료", completesWhen: { kind: "switch", switchId, value: true } }],
-    }];
-    const remove = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
-    const done = await runPiAgent(request, { streamFn: scripted([remove]) });
-    expect(done.stoppedEarly).toContain("진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요");
-    expect(done.project).toBe(project);
-  });
-}
-
-for (const value of [0, 10]) {
-  test(`그래프 조건을 만족하는 마지막 변수 대입만 삭제를 막는다 (${value})`, async () => {
-    const { request, project, mapId, event } = fixture();
-    const variableId = "var_quest_graph";
-    const command: Command = { kind: "setVariable", variableId, op: "=", value };
-    event.pages[1]!.commands = [command];
-    project.maps[mapId].events = [event];
-    project.variables.push({ id: variableId, name: "의뢰 점수" });
-    project.database.troops = [{
-      id: "troop_reward", name: "점수 초기화", enemyIds: [], autoAlign: true,
-      afterBattle: { victory: [{ ...command, value: 0 }] },
-    }];
-    project.quests = [{
-      kind: "graph", id: "q_graph", title: "길 안내", edges: [],
-      nodes: [{ id: "finish", description: "완료", completesWhen: { kind: "variable", variableId, op: ">=", value: 10 } }],
-    }];
-    const remove = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
-    const done = await runPiAgent(request, { streamFn: scripted([remove]) });
-    if (value === 10) expect(done.stoppedEarly).toContain("진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요");
-    else {
-      expect(done.stoppedEarly).toBeUndefined();
-      expect(done.project.maps[mapId].events[0]!.pages![1]!.commands).toEqual([]);
-    }
-  });
-}
+test("작은 일 Pi 실행은 그래프 목표의 마지막 완료 스위치 쓰기를 보호한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const switchId = "sw_quest_graph";
+  const command: Command = { kind: "setSwitch", switchId, value: true };
+  event.pages[1]!.commands = [command];
+  event.pages[0]!.commands = [];
+  project.maps[mapId].events = [event];
+  project.switches.push({ id: switchId, name: "의뢰 완료" });
+  project.quests = [{
+    kind: "graph", id: "q_graph", title: "길 안내", edges: [],
+    nodes: [{ id: "finish", description: "완료", completesWhen: { kind: "switch", switchId, value: true } }],
+  }];
+  const remove = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+  const done = await runPiAgent(request, { streamFn: scripted([remove]) });
+  expect(done.stoppedEarly).toContain("진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요");
+  expect(done.project).toBe(project);
+});

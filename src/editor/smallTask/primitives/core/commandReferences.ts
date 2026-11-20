@@ -4,8 +4,7 @@ import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { openingStageFlag } from "@/project/openingStage";
 import { isQuestGraphDef } from "@/project/quest/questDef";
-import { extractQuestGraphConditions, resolveQuestGraphCondition, selectWriteSite, writeKnownNotToSatisfy } from "@/project/quest/questGraph";
-import { scriptWrites } from "@/project/script/effects";
+import { extractQuestGraphConditions, resolveQuestGraphCondition } from "@/project/quest/questGraph";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { Command, Project } from "@/project/types";
 import { PrimitiveError } from "../errors";
@@ -32,27 +31,14 @@ function lastSpawnStillUsed(project: Project, mapId: string, id: string): boolea
   return used && !defined;
 }
 
-function losesProgressionWriter(project: Project, command: Command): boolean {
-  const targets = command.kind === "setSwitch" ? { switch: [command.switchId], variable: [] }
-    : command.kind === "setVariable" ? { switch: [], variable: [command.variableId] }
-    : { switch: scriptWrites(command, "switch", project), variable: scriptWrites(command, "variable", project) };
-  if (!targets.switch.length && !targets.variable.length) return false;
-  const usage = buildStoryFlagUsageIndex(project);
-  for (const kind of ["switch", "variable"] as const) {
-    if (targets[kind].some(id => {
-      const bucket = usageBucketFor(usage, kind, id);
-      return bucket.reads.length > 0 && bucket.writes.length === 0;
-    })) return true;
-  }
-  const assignedValue = command.kind === "setSwitch" && typeof command.value === "boolean" ? command.value
-    : command.kind === "setVariable" && command.op === "=" && typeof command.value === "number" ? command.value : undefined;
+function questReadsSwitch(project: Project, id: string): boolean {
   return project.quests?.some(quest => isQuestGraphDef(quest) && quest.nodes.some(node =>
-    extractQuestGraphConditions(node.completesWhen).some(raw => {
+    extractQuestGraphConditions(node.completesWhen).some(condition => {
       try {
-        const condition = resolveQuestGraphCondition(project, raw);
-        if (!targets[condition.kind].includes(condition.targetId)) return false;
-        return !writeKnownNotToSatisfy(assignedValue, condition) && !selectWriteSite(usage, condition);
+        const resolved = resolveQuestGraphCondition(project, condition);
+        return resolved.kind === "switch" && resolved.targetId === id;
       } catch {
+        // An unrelated invalid condition in a saved quest cannot resolve to a runtime reader.
         return false;
       }
     }))) ?? false;
@@ -71,7 +57,7 @@ export function assertCommandDeletion(
     if (stage && command.flag === openingStageFlag(stage.mapId, stage.eventId)) {
       throw new PrimitiveError("오프닝을 마치는 데 필요한 기억 명령이라 삭제할 수 없어요.");
     }
-  } else if (command.kind === "spawnFieldEnemy" || command.kind === "setSwitch" || command.kind === "setVariable" || command.kind === "script") {
+  } else if (command.kind === "spawnFieldEnemy" || command.kind === "setSwitch" || command.kind === "setVariable") {
     // The selected edit takes precedence over the open draft and its original in both views.
     const target = ctx.target;
     const selected = after.maps[target.mapId]?.events.find(event => event.id === target.eventId);
@@ -90,7 +76,12 @@ export function assertCommandDeletion(
       if (views.some(project => lastSpawnStillUsed(project, target.mapId, command.spawn.id))) {
         throw new PrimitiveError("이 출현 대상을 제거하는 명령이 남아 있어 삭제할 수 없어요.");
       }
-    } else if (views.some(project => losesProgressionWriter(project, command))) {
+    } else if (views.some(project => {
+      const kind = command.kind === "setSwitch" ? "switch" : "variable";
+      const id = command.kind === "setSwitch" ? command.switchId : command.variableId;
+      const usage = usageBucketFor(buildStoryFlagUsageIndex(project), kind, id);
+      return usage.writes.length === 0 && (usage.reads.length > 0 || (kind === "switch" && questReadsSwitch(project, id)));
+    })) {
       throw new PrimitiveError("이 명령이 설정하는 진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요.");
     }
   }

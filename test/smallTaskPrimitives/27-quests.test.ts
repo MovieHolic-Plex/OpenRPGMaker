@@ -410,8 +410,14 @@ describe("퀘스트 원시 기능", () => {
     const switchId = questFlagIds(draft.key, 2).stepSwitches[1];
     const project = { ...before, quests: [draft], session: { ...before.session, switches: { [switchId]: on } } };
     const remove = () => runPrimitive(project, target, "quest.remove", {});
-    if (on) expect(remove).toThrow(/진행 스위치/u);
-    else expect(remove().after.quests).toEqual([]);
+    const removeFirst = () => runPrimitive(project, target, "quest.objective.remove", { step: 1 });
+    if (on) {
+      expect(remove).toThrow(/진행 스위치/u);
+      expect(removeFirst).toThrow(/진행 스위치/u);
+    } else {
+      expect(remove().after.quests).toEqual([]);
+      expect(removeFirst().after.quests).toEqual([{ ...draft, steps: [draft.steps[1]] }]);
+    }
   });
 
   it("다른 이벤트의 열린 초안이 참조하는 퀘스트를 삭제하지 않는다", () => {
@@ -637,10 +643,7 @@ describe("그래프 목표의 연결", () => {
 });
 
 describe("이벤트 명령을 실행한 뒤 퀘스트 일지", () => {
-  it.each([
-    ["목표 추가", "quest.objective.add", /완료 이벤트/u],
-    ["보상 변경", "quest.reward.set", /지급 이벤트/u],
-  ] as const)("컴파일된 완료·보상 이벤트와 정의가 어긋나는 %s 요청을 거절한다", (_name, primitive, reason) => {
+  it("컴파일된 퀘스트의 목표 추가를 거절하고 보상 편집은 정의에만 적용한다", () => {
     const { before: seed, event, quest, objective } = blank();
     const item = createBlankProject().database.items.find(entry => entry.id === "item_potion")!;
     const map = seed.maps[seed.startMapId];
@@ -659,15 +662,18 @@ describe("이벤트 명령을 실행한 뒤 퀘스트 일지", () => {
     } } };
     const giver = before.maps[map.id].events.find(entry => entry.id === event.id)!;
     const target = mapTarget(before, map.id, giver.id, giver.pages![0].id)!;
-    const args = primitive === "quest.objective.add" ? { objective: { ...objective, x: 5, y: 5 } }
-      : { gold: 50, items: [{ itemId: item.id, count: 3 }] };
-    expect(() => runPrimitive(before, target, primitive, args)).toThrow(reason);
+    expect(() => runPrimitive(before, target, "quest.objective.add", { objective: { ...objective, x: 5, y: 5 } }))
+      .toThrow(/완료 이벤트/u);
+    const rewards = { gold: 50, items: [{ itemId: item.id, count: 3 }] };
+    const { after } = runPrimitive(before, target, "quest.reward.set", rewards);
     expect(before.quests).toEqual([compiled]);
-    const initial = startSession(before, 1);
-    const { session } = runHeadless(before, before.startMapId, event.id);
+    expect(after.quests).toEqual([{ ...compiled, rewards }]);
+    expect(after.maps).toBe(before.maps);
+    const initial = startSession(after, 1);
+    const { session } = runHeadless(after, after.startMapId, event.id);
     expect(session.gold).toBe(initial.gold + compiled.rewards.gold);
     expect(session.inventory[item.id]).toBe(1);
-    expect(buildQuestLog(before, session)[0]).toMatchObject({ state: "done", completedSteps: quest.steps.length });
+    expect(buildQuestLog(after, session)[0]).toMatchObject({ state: "done", completedSteps: quest.steps.length });
   });
 
   it("새 정의를 등록한 뒤 기존 이벤트의 골드 지급을 실행한다", () => {

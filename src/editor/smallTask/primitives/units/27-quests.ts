@@ -562,11 +562,7 @@ function setReward(project: Project, quest: AnyQuestDef, args: Args): QuestDef {
     ...(args.items !== undefined ? { items: structuredClone(args.items) as QuestReward["items"] } : {}),
   };
   if ((rewards.gold ?? 0) === (quest.rewards?.gold ?? 0) && jsonEqual(rewards.items ?? [], quest.rewards?.items ?? [])) return quest;
-  const updated = validateStepDef(project, parseStepDef({ ...quest, rewards }), quest);
-  if (questProgressUses(project, quest.key)) {
-    throw new PrimitiveError("범위 밖: 플레이에 연결된 퀘스트의 보상을 바꾸려면 지급 이벤트도 함께 바꿔야 해요.");
-  }
-  return updated;
+  return validateStepDef(project, parseStepDef({ ...quest, rewards }), quest);
 }
 
 function primitive(id: string, title: string, spec: Pick<SmallTaskPrimitive, "args" | "describe" | "apply" | "scope" | "hidden">): SmallTaskPrimitive {
@@ -656,7 +652,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
   }),
   primitive("quest.reward.set", "퀘스트 보상 정의 변경", {
-    args: schema("아직 플레이 진행에 연결하지 않은 단계형 퀘스트 정의에 골드나 아이템 보상을 기록합니다.", { questId: QUEST_ID, gold: GOLD, items: REWARD_ITEMS }, []),
+    args: schema("단계형 퀘스트 정의에 골드나 아이템 보상을 기록합니다. 플레이 지급 이벤트를 갱신하려면 별도 컴파일이 필요합니다.", { questId: QUEST_ID, gold: GOLD, items: REWARD_ITEMS }, []),
     scope: (ctx, args) => editScope(ctx, args, { fields: ["rewards"] }),
     describe(ctx, args) {
       const reward = args.gold !== undefined && args.items === undefined ? `보상 골드를 ${args.gold}골드로` : "보상 내역을";
