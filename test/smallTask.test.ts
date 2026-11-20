@@ -98,6 +98,10 @@ it.each([
     stoppedEarly: "임시 워커 오류", expectedMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
 ])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, smallTaskPrimitiveRefused, expectedMessage }) => {
   const project = fixture();
+  const live = structuredClone(project);
+  const original = live.maps.map_a.events[0]!;
+  const draft = { ...original, id: "draft_event", draft: { kind: "new", original } } as const;
+  live.maps.map_a.events.push(draft);
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
   editorState.set({ selection: { mapId: selectedMapId, x: 2, y: 3, width: 4, height: 5 } });
@@ -111,6 +115,8 @@ it.each([
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
+    expect(body.smallTask.draftSource).toEqual({ maps: { map_a: { events: [draft] } } });
+    expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, smallTaskPrimitiveRefused,
       stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
@@ -120,7 +126,7 @@ it.each([
   });
   vi.stubGlobal("fetch", fetch);
   try {
-    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal);
+    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal, live);
     if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(expectedMessage ?? stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
