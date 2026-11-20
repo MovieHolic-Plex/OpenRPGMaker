@@ -1,5 +1,6 @@
 import { parseWeightedBranchTable } from "@/editor/panels/eventEditor/weightedBranchTable";
 import { QTE_KEYS } from "@/player/interpreter/minigameCommands";
+import { currentObjectiveText } from "@/player/zoneFeedback";
 import type { M2CommandFields, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 import type { PrimitiveContext } from "../../types";
@@ -9,19 +10,20 @@ export interface ModernLogicRow {
   readonly title?: string;
   readonly required?: readonly string[];
   readonly descriptions?: Readonly<Record<string, string>>;
-  validate?(ctx: PrimitiveContext, fields: M2CommandFields): void;
+  validate?(ctx: PrimitiveContext, fields: M2CommandFields, args: Record<string, unknown>): void;
+  prepare?(stored: M2CommandFields, fields: M2CommandFields, args: Record<string, unknown>): M2CommandFields;
   detail(ctx: PrimitiveContext, fields: M2CommandFields): string;
 }
 
 const text = (fields: M2CommandFields, key: string) => String(fields[key] ?? "").trim();
 
 function requireText(value: string, label: string): void {
-  if (!value) throw new PrimitiveError(`${label} 항목을 입력해 주세요.`);
+  if (!value) throw new PrimitiveError(`「${label}」 값을 입력해 주세요.`);
 }
 
 function requireReference(rows: readonly { id: string }[], id: string, label: string): void {
   if (!id || !rows.some(row => row.id === id)) {
-    throw new PrimitiveError(`${label} 항목을 프로젝트에서 찾을 수 없습니다.`);
+    throw new PrimitiveError(`「${label}」에 지정한 대상을 프로젝트에서 찾을 수 없습니다.`);
   }
 }
 
@@ -32,7 +34,7 @@ function optionalReference(rows: readonly { id: string }[], id: string, label: s
 function runtimeKey(value: string, label: string): void {
   requireText(value, label);
   if (Object.hasOwn(Object.prototype, value) || value === "prototype") {
-    throw new PrimitiveError(`${label} 항목에 다른 이름을 입력해 주세요.`);
+    throw new PrimitiveError(`「${label}」에 다른 이름을 입력해 주세요.`);
   }
 }
 
@@ -61,11 +63,13 @@ function validateWait({ project, target }: PrimitiveContext, fields: M2CommandFi
       }
       // The interpreter compares the number's string form, so a differently formatted value will never match.
       if (String(Number(fields.value)) !== fields.value) {
-        throw new PrimitiveError("기다릴 변수의 값을 공백이나 불필요한 영 없이 입력해 주세요.");
+        throw new PrimitiveError("변수 값은 05 대신 5처럼 적고, 앞뒤 공백을 빼 주세요.");
       }
       break;
     case "eventIdle":
-      if (reference && reference !== "this-event") requireReference(map?.events ?? [], reference, "대기 이벤트");
+      if (reference && !["this-event", "player", "@player"].includes(reference)) {
+        requireReference(map?.events ?? [], reference, "대기 이벤트");
+      }
       break;
     case "region":
       requireReference(map?.layoutPlan?.regions ?? [], reference, "대기 구역");
@@ -82,13 +86,16 @@ const EXPRESSION_BUILTINS = new Set([
 function validateExpression(project: Project, expression: string): void {
   let depth = 0;
   let needsValue = true;
-  const tokens = expression.match(/\d+(?:\.\d+)?|[a-z_][a-z\d_]*|[^\s]/giu) ?? [];
+  const tokens = expression.match(/\d+(?:\.\d+)?|[A-Za-z_][A-Za-z\d_]*|[^\s]/gu) ?? [];
   for (const token of tokens) {
     if (needsValue && token === "(") {
       depth++;
-    } else if (needsValue && /^(?:\d+(?:\.\d+)?|[a-z_][a-z\d_]*)$/iu.test(token)) {
-      if (/^[a-z_]/iu.test(token)) {
-        if (!EXPRESSION_BUILTINS.has(token)) requireReference(project.variables, token, "계산에 쓰는 변수");
+    } else if (needsValue && /^(?:\d+(?:\.\d+)?|[A-Za-z_][A-Za-z\d_]*)$/u.test(token)) {
+      if (/^[A-Za-z_]/u.test(token)) {
+        if (!EXPRESSION_BUILTINS.has(token)) {
+          runtimeKey(token, "계산에 쓰는 변수 이름");
+          requireReference(project.variables, token, "계산에 쓰는 변수");
+        }
       } else if (!Number.isFinite(Number(token))) {
         throw new PrimitiveError("계산식의 숫자가 너무 큽니다.");
       }
@@ -112,10 +119,12 @@ function validateQuery({ project }: PrimitiveContext, fields: M2CommandFields): 
   if (query === "switch") requireReference(project.switches, target, "조회할 스위치");
   if (query === "variable") requireReference(project.variables, target, "조회할 변수");
   if (query === "followerPresent") requireText(target, "동행자 이름");
-  if (query === "stringLength") requireText(target, "문자열 변수 이름");
+  if (query === "stringLength") runtimeKey(target, "문자열 변수 이름");
   if (ACTOR_QUERIES.includes(query) && target !== "leader") optionalReference(project.database.actors, target, "조회할 배우");
   if (query === "actorHasState") {
-    const [actor, state] = target.includes(":") ? target.split(":") : ["anyone", target];
+    const parts = target.includes(":") ? target.split(":") : ["anyone", target];
+    if (parts.length !== 2) throw new PrimitiveError("배우와 상태는 콜론 하나로 이어 주세요. 파티 전체를 확인하려면 상태만 입력하세요.");
+    const [actor, state] = parts;
     if (actor && actor !== "anyone" && actor !== "leader") requireReference(project.database.actors, actor, "조회할 배우");
     requireReference(project.database.states, state ?? "", "조회할 상태");
   }
@@ -125,7 +134,7 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
   206: {
     title: "조건 대기",
     descriptions: {
-      target: "조건에서 확인할 스위치, 변수, 구역 또는 이벤트. 현재 이벤트의 이동을 기다리면 생략할 수 있습니다.",
+      target: "조건에서 확인할 스위치, 변수, 구역 또는 이벤트입니다. 현재 이벤트의 이동은 생략하고, 주인공의 이동은 player를 입력합니다.",
       value: "변수 조건에서 비교할 숫자를 글자로 입력합니다.",
       timeoutMs: "최대 대기 시간(밀리초). 0이면 조건이 맞을 때까지 기다립니다.",
     },
@@ -156,12 +165,21 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
     required: ["resultVariableId"],
     descriptions: {
       table: "줄마다 결과 이름과 가중치를 등호로 잇습니다. 양수인 줄만 뽑습니다.",
-      resultVariableId: "뽑은 결과 번호를 저장할 기존 변수입니다. 번호는 0부터 시작합니다.",
+      resultVariableId: "뽑은 결과 번호를 저장할 기존 변수입니다. 가중치가 양수인 줄에만 0부터 번호를 매깁니다.",
     },
-    validate({ project }, fields) {
-      const rows = parseWeightedBranchTable(text(fields, "table"));
+    validate({ project }, fields, args) {
+      const table = text(fields, "table");
+      if (Object.hasOwn(args, "table")) {
+        for (const line of table.split(/\r?\n/u).filter(line => line.trim())) {
+          const [name, weight, extra] = line.split("=");
+          if (!name?.trim() || !weight?.trim() || extra !== undefined || !Number.isFinite(Number(weight)) || Number(weight) < 0) {
+            throw new PrimitiveError("각 줄을 ‘결과 이름=가중치’로 적고, 가중치는 0 이상의 숫자로 입력해 주세요.");
+          }
+        }
+      }
+      const rows = parseWeightedBranchTable(table);
       if (rows.length === 0 || !Number.isFinite(rows.reduce((sum, row) => sum + row.weight, 0))) {
-        throw new PrimitiveError("뽑을 결과에 유한한 양수 가중치를 하나 이상 입력해 주세요.");
+        throw new PrimitiveError("가중치는 하나 이상 0보다 커야 합니다. 합계가 너무 크면 가중치를 줄여 주세요.");
       }
       requireReference(project.variables, text(fields, "resultVariableId"), "결과 변수");
     },
@@ -170,17 +188,37 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
   214: {
     title: "화면 안내",
     descriptions: {
-      surface: "안내를 띄울 위치",
+      surface: "안내를 띄울 위치입니다. 짧은 알림, 배너, 현재 목표를 화면에 표시할 수 있습니다.",
       message: "화면에 보여 줄 문구입니다. 현재 목표는 문구를 비우면 지워집니다.",
-      durationMs: "안내가 보일 시간(밀리초)입니다.",
+      durationMs: "짧은 알림이 보일 시간(밀리초)입니다. 배너는 1.5초 동안 표시되고, 현재 목표는 다른 목표로 바뀔 때까지 남습니다.",
     },
-    validate(_ctx, fields) {
+    validate(_ctx, fields, args) {
+      if (fields.surface === "hud" || fields.surface === "menuPrompt") {
+        throw new PrimitiveError("화면에 표시할 수 있는 짧은 알림, 배너, 현재 목표 중 하나를 골라 주세요.");
+      }
       if (fields.surface !== "objectiveChip") requireText(text(fields, "message"), "안내 문구");
+      if (Object.hasOwn(args, "durationMs")) {
+        if (fields.surface === "toast" && Number(fields.durationMs) === 0) throw new PrimitiveError("짧은 알림을 띄울 시간을 0보다 크게 입력해 주세요.");
+        if (fields.surface === "banner" && Number(fields.durationMs) !== 1500) throw new PrimitiveError("배너는 1.5초 동안 표시됩니다. 시간을 정하려면 짧은 알림을 골라 주세요.");
+        if (fields.surface === "objectiveChip" && Number(fields.durationMs) !== 0) throw new PrimitiveError("현재 목표는 표시 시간을 정할 수 없습니다. 잠깐 보여 주려면 짧은 알림을 골라 주세요.");
+      }
+    },
+    prepare(stored, fields, args) {
+      // The player skips blank entries. A completed progress message clears the current objective.
+      if (fields.surface === "objectiveChip" && !text(fields, "message") && ("message" in args || "surface" in args)) {
+        return { ...stored, message: "1/1" };
+      }
+      if (args.surface === "toast" && !("durationMs" in args) && Number(fields.durationMs) <= 0) {
+        return { ...stored, durationMs: 1600 };
+      }
+      return stored;
     },
     detail(_ctx, fields) {
-      if (fields.surface === "objectiveChip" && !text(fields, "message")) return "화면의 현재 목표를 지우는";
-      const surface = ({ toast: "짧은 알림", hud: "상태 표시", banner: "배너", menuPrompt: "메뉴 안내", objectiveChip: "현재 목표" })[text(fields, "surface")];
-      return `${quote(text(fields, "message"))}문구를 ${surface ?? "화면 안내"}로 보여 주는`;
+      const message = text(fields, "message");
+      if (fields.surface === "objectiveChip" && message &&
+        !currentObjectiveText([{ surface: "objectiveChip", message, durationMs: 0 }])) return "화면의 현재 목표를 지우는";
+      const surface = ({ toast: "짧은 알림으로", banner: "배너로", objectiveChip: "현재 목표로" })[text(fields, "surface")];
+      return `${quote(text(fields, "message"))}문구를 ${surface ?? "화면에"} 보여 주는`;
     },
   },
   215: {
@@ -219,15 +257,16 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
         playerFacing: "주인공이 보는 방향", playtimeSeconds: "플레이 시간(초)", steps: "걸음 수",
         clearCount: "클리어 횟수", weekday: "요일", stringLength: "문자열 길이",
       })[text(fields, "query")];
-      return `조회한 ${query ?? "값"}을 변수에 담는`;
+      return `${query ?? "값"} 조회 결과를 변수에 담는`;
     },
   },
   219: {
     title: "누른 키 확인",
     validate({ project }, fields) {
       const direction = text(fields, "dirVariableId");
-      const switches = ["confirmSwitchId", "cancelSwitchId", "dashSwitchId"].map(key => text(fields, key));
-      if (!direction && !switches.some(Boolean)) throw new PrimitiveError("키 상태를 저장할 변수나 스위치를 골라 주세요.");
+      const switches = ["confirmSwitchId", "cancelSwitchId", "dashSwitchId"].map(key => text(fields, key)).filter(Boolean);
+      if (!direction && !switches.length) throw new PrimitiveError("키 상태를 저장할 변수나 스위치를 골라 주세요.");
+      if (new Set(switches).size !== switches.length) throw new PrimitiveError("키마다 서로 다른 스위치를 골라 주세요.");
       optionalReference(project.variables, direction, "방향 변수");
       for (const id of switches) optionalReference(project.switches, id, "키 상태 스위치");
     },
@@ -249,19 +288,21 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
   221: {
     title: "제한시간 버튼 입력",
     descriptions: {
-      keys: "위·아래·왼쪽·오른쪽은 각각 up·down·left·right, 결정과 취소는 z·x입니다. 쉼표로 구분해 최대 열두 개를 입력합니다.",
+      keys: "위·아래·왼쪽·오른쪽은 up·down·left·right, 결정과 취소는 z·x입니다. 순서 입력은 쉼표로 최대 열두 개, 연타 안내에는 키 하나를 입력합니다.",
       windowMs: "키 하나당 제한 시간 또는 연타 시간(밀리초)입니다.",
     },
     validate({ project }, fields) {
       const keys = text(fields, "keys").toLowerCase().split(/[\s,]+/u).filter(Boolean);
-      if (!keys.length || keys.length > 12 || keys.some(key => !QTE_KEYS.some(allowed => allowed === key))) {
-        throw new PrimitiveError("방향 키와 결정 키, 취소 키 중 하나 이상을 골라 주세요.");
+      if (!keys.length || keys.some(key => !QTE_KEYS.some(allowed => allowed === key))) {
+        throw new PrimitiveError("방향 키와 결정 키, 취소 키 중에서 골라 주세요.");
       }
+      if (keys.length > 12) throw new PrimitiveError("순서대로 누를 키를 열두 개 이하로 입력해 주세요.");
+      if (fields.mode === "mash" && keys.length !== 1) throw new PrimitiveError("연타 화면에 표시할 키를 하나만 골라 주세요.");
       optionalReference(project.variables, text(fields, "resultVariableId"), "결과 변수");
       optionalReference(project.switches, text(fields, "resultSwitchId"), "성공 스위치");
     },
     detail: (_ctx, fields) => fields.mode === "mash"
-      ? `${seconds(fields, "windowMs")} 동안 버튼을 연타하는`
+      ? `${seconds(fields, "windowMs")} 동안 버튼 연타 횟수를 세는`
       : `버튼마다 ${seconds(fields, "windowMs")} 안에 순서대로 누르는`,
   },
   222: {
@@ -275,7 +316,8 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
       } else {
         optionalReference(project.variables, text(fields, "valueVariableId"), "점수 변수");
       }
-      optionalReference(project.variables, text(fields, "resultVariableId"), "최고 점수 변수");
+      if (fields.action === "read") requireReference(project.variables, text(fields, "resultVariableId"), "최고 점수 변수");
+      else optionalReference(project.variables, text(fields, "resultVariableId"), "최고 점수 변수");
       optionalReference(project.switches, text(fields, "recordSwitchId"), "새 기록 스위치");
     },
     detail(_ctx, fields) {
@@ -286,7 +328,11 @@ export const ROWS: Readonly<Partial<Record<number, ModernLogicRow>>> = {
     },
   },
   223: {
-    validate({ project }, fields) { optionalReference(project.variables, text(fields, "resultVariableId"), "결과 변수"); },
+    validate({ project }, fields) {
+      const result = text(fields, "resultVariableId");
+      if (fields.transfer === false || fields.transfer === "false") requireReference(project.variables, result, "고른 장소를 저장할 변수");
+      else optionalReference(project.variables, result, "고른 장소를 저장할 변수");
+    },
     detail: (_ctx, fields) => fields.transfer === false || fields.transfer === "false"
       ? "순간이동 메뉴에서 고른 장소를 기록하는"
       : "순간이동 메뉴에서 고른 장소로 이동하는",
