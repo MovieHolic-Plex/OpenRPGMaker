@@ -23,17 +23,17 @@ export function battleCommandSlotIds(project: Project): ReadonlySet<string> {
 export function protectTroopTargets(
   project: Project, troop: TroopRecord, before: readonly string[], after: readonly string[],
 ): void {
-  // A slot still resolving after the edit can silently point to a different enemy.
+  // Battle runtime resolves both slot and record IDs to the first matching battler.
+  const firstMatch = (members: readonly string[], id: string) =>
+    members.findIndex((recordId, index) => recordId === id || `enemy-${index + 1}` === id);
+  const changed = (id: string | undefined) => {
+    if (!id) return false;
+    const oldIndex = firstMatch(before, id);
+    const newIndex = firstMatch(after, id);
+    return oldIndex !== newIndex || before[oldIndex] !== after[newIndex];
+  };
   const remainingIds = new Set(after);
-  const changedSlots = new Set<string>();
-  const removedIds = new Set<string>();
-  before.forEach((id, i) => {
-    if (id !== after[i]) changedSlots.add(`enemy-${i + 1}`);
-    if (!remainingIds.has(id)) removedIds.add(id);
-  });
-  if (!changedSlots.size) return;
-
-  const changed = (id: string | undefined) => id !== undefined && (changedSlots.has(id) || removedIds.has(id));
+  const removedIds = new Set(before.filter(id => !remainingIds.has(id)));
   const conditionChanged = (condition: BattleEventCondition): boolean => {
     switch (condition.kind) {
       case "all":
@@ -42,6 +42,7 @@ export function protectTroopTargets(
       case "not":
         return conditionChanged(condition.condition);
       case "enemyTurn":
+      case "enemyState":
       case "enemiesAlive":
         return condition.enemyId !== undefined && removedIds.has(condition.enemyId);
       default:

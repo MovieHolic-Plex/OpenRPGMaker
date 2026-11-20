@@ -4,14 +4,16 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { enemyBattlers } from "@/battle/battleBattlers";
 import { battleCommandsForActor } from "@/battle/battleCommands";
 import { collectBattleRewards } from "@/battle/battleRewards";
+import { plainSummary } from "@/editor/smallTask/plainSummary";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/20-db-enemies-troops";
+import { setLocale, t } from "@/i18n";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { scaledEncounterRate } from "@/project/terrainStep";
-import type { Command, CommonEvent, Project, TroopRecord } from "@/project/types";
+import type { Command, CommonEvent, GameEvent, Project, TroopRecord } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { dbTarget as select, expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 
@@ -347,6 +349,59 @@ it("슬롯 번호가 남아 있어도 전투 조건이 가리키는 적을 바�
   expect(after.database.troops.find(troop => troop.id === id)?.battleEventPages).toBe(battleEventPages);
 });
 
+it.each([
+  {
+    conditions: [{ kind: "enemyHpBelow", enemyId: "enemy_cave_bat", percent: 50 }],
+    commands: [],
+    refusal: /전투 조건/u,
+  },
+  {
+    conditions: [],
+    commands: [{
+      kind: "m2Command", commandId: "m2-098-change-enemy-hp",
+      fields: { target: "enemy_cave_bat", operation: "set", value: 1 },
+    }],
+    refusal: /전투 명령/u,
+  },
+] satisfies (Pick<TroopRecord["battleEventPages"][number], "conditions" | "commands"> & { refusal: RegExp })[])(
+  "같은 적을 앞에 추가해도 레코드 ID가 가리키는 첫 개체를 바꾸지 않는다 ($refusal)",
+  ({ conditions, commands, refusal }) => {
+    const seed = fixtureProject("built");
+    const id = "troop_bat_swarm";
+    const enemyId = "enemy_cave_bat";
+    const battleEventPages: TroopRecord["battleEventPages"] = [{
+      id: "page_first_match", name: "박쥐 개체 확인", span: "battle", conditions, commands,
+    }];
+    const project = { ...seed, database: {
+      ...seed.database, troops: editRow(seed.database.troops, id, troop => ({
+        ...troop, battleEventPages, members: undefined, enemyIds: ["enemy_slime", enemyId],
+      })),
+    } };
+    const target = select(project, "troops", id);
+    expectRefused(project, target, "db.troops.update", { members: [{ enemyId }, { enemyId }] }, refusal);
+    const { after } = runPrimitive(project, target, "db.troops.update", {
+      members: [{ enemyId: "enemy_slime" }, { enemyId }, { enemyId }],
+    });
+    expect(after.database.troops.find(troop => troop.id === id)?.enemyIds).toEqual(["enemy_slime", enemyId, enemyId]);
+  },
+);
+
+it("부위의 본체가 다른 적이 될 수 있는 명단 교체를 거절한다", () => {
+  const seed = fixtureProject("built");
+  const id = "troop_bat_swarm";
+  const project = { ...seed, database: {
+    ...seed.database, troops: editRow(seed.database.troops, id, troop => ({
+      ...troop, members: troop.members!.map((member, index) => index === 1 ? { ...member, partOf: 0 } : member),
+    })),
+  } };
+  const target = select(project, "troops", id);
+  expectRefused(project, target, "db.troops.update", {
+    members: [{ enemyId: "enemy_slime" }, { enemyId: "enemy_cave_bat" }],
+  }, /본체와 부위/u);
+  const { after } = runPrimitive(project, target, "db.troops.update", { memberNumber: 2, hidden: true });
+  expect(after.database.troops.find(troop => troop.id === id)?.members?.[1]).toMatchObject({ partOf: 0, hidden: true });
+});
+
 it("전투가 중첩 호출한 공통 이벤트의 적 대상까지 보호한다", () => {
   const seed = fixtureProject("built");
   const id = "troop_bat_swarm";
@@ -448,6 +503,91 @@ it("지우는 지형에 태그가 없어도 뒤 행을 가리키는 태그를 �
   const project = { ...seed, tilesets: { [tileset.id]: { ...tileset, terrain: [2], tileMeta: undefined } } };
   const target = select(project, "terrains", "terrain_water");
   expect(() => runPrimitive(project, target, "db.terrains.delete", {})).toThrow("연결된 지형");
+});
+
+it.each(["legacy", "metadata"] as const)("새 지형에 배치된 타일의 기존 태그가 연결되면 추가를 거절한다 (%s)", source => {
+  const seed = fixtureProject("built");
+  const map = seed.maps[seed.startMapId]!;
+  const tileset = seed.tilesets[map.tilesetId]!;
+  const tag = seed.database.terrains!.length + 1;
+  const meta = { label: "", description: "", tags: [] };
+  const tags = {
+    terrain: [source === "legacy" ? tag : 0],
+    tileMeta: source === "metadata" ? [{ ...meta, terrainTag: tag }] : undefined,
+  };
+  const project = {
+    ...seed,
+    maps: { ...seed.maps, [map.id]: { ...map, lowerTiles: [0, ...map.lowerTiles.slice(1)] } },
+    tilesets: { ...seed.tilesets, [tileset.id]: { ...tileset, ...tags } },
+  };
+  const location = { mapId: map.id, x: 0, y: 0 };
+  expect(terrainRecordAt(project, location)).toBeUndefined();
+  const target = select(project, "terrains", "terrain_water");
+  const args = { name: "용암", damage: 9 };
+  expectRefused(project, target, "db.terrains.create", args, /배치된 타일/u);
+
+  // A metadata override disconnects the tile even when a legacy tag remains underneath.
+  const overridden = { ...project, tilesets: {
+    ...project.tilesets, [tileset.id]: { ...tileset, terrain: [tag], tileMeta: [{ ...meta, terrainTag: 0 }] },
+  } };
+  const { after } = runPrimitive(overridden, target, "db.terrains.create", args);
+  expect(after.database.terrains?.at(-1)?.damage).toBe(9);
+  expect(terrainRecordAt(after, location)).toBeUndefined();
+});
+
+it("조건별 전리품을 쓰는 적의 구형 드롭률을 수정하지 않는다", () => {
+  const seed = fixtureProject("built");
+  const project = { ...seed, database: {
+    ...seed.database, enemies: editRow(seed.database.enemies, "enemy_slime", enemy => ({
+      ...enemy, rewards: { ...enemy.rewards, drops: [] },
+    })),
+  } };
+  const target = select(project, "enemies", "enemy_slime");
+  expectRefused(project, target, "db.enemies.update", { dropRatePercent: 50 }, /조건별 전리품/u);
+  const { after } = runPrimitive(project, target, "db.enemies.update", { exp: 50 });
+  expect(after.database.enemies.find(enemy => enemy.id === target.id)?.rewards).toMatchObject({ exp: 50, drops: [] });
+});
+
+it.each(["terrains", "battleCommands"] as const)("정규화가 기본값을 다시 만드는 %s의 마지막 행은 지우지 않는다", collection => {
+  const seed = fixtureProject("blank");
+  const row = { ...seed.database[collection]![0]!, id: "last_unreferenced" };
+  const project = { ...seed, database: { ...seed.database, [collection]: [row] } };
+  expectRefused(project, select(project, collection, row.id), `db.${collection}.delete`, {}, /마지막 항목/u);
+});
+
+it("삭제 가드에 열린 이벤트 초안이 전달되면 초안의 전투 연결을 보호한다", () => {
+  const seed = fixtureProject("built");
+  const id = "troop_bat_swarm";
+  const map = seed.maps[seed.startMapId]!;
+  const draft: GameEvent = {
+    id: "event_draft_battle", name: "전투 초안", x: 0, y: 0, trigger: { kind: "action" },
+    commands: [{ kind: "battleProcessing", troopId: id, canEscape: false, canLose: true }],
+    draft: { kind: "new" },
+  };
+  const project = { ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, draft] } } };
+  expectRefused(project, select(project, "troops", id), "db.troops.delete", {}, /사용 중/u);
+});
+
+it.each([
+  ["en", "Troop", "Battle command"],
+  ["ja", "敵グループ", "戦闘コマンド"],
+  ["zh", "敌群", "战斗指令"],
+] as const)("작업 창의 무리와 전투 명령 라벨을 번역한다 (%s)", async (locale, troop, command) => {
+  const seed = fixtureProject("built");
+  const row = { id: "cmd_locale_test", name: "cmd_locale_test", kind: "defend" as const };
+  const project = { ...seed, database: { ...seed.database, battleCommands: [...seed.database.battleCommands!, row] } };
+  await setLocale(locale);
+  try {
+    const troopTarget = select(project, "troops", "troop_bat_swarm");
+    expect(t(troopTarget.label)).toBe(`${troop} · 동굴 박쥐 떼`);
+    const target = select(project, "battleCommands", row.id);
+    expect(t(target.label)).toBe(command);
+    const { after } = runPrimitive(project, target, "db.battleCommands.delete", {});
+    expect(plainSummary(project, after).headline).toContain(command);
+    expect(plainSummary(project, after).headline).not.toMatch(/[가-힣]/u);
+  } finally {
+    await setLocale("ko");
+  }
 });
 
 it("사용 중인 식별자를 건너뛰고 새 명령만 자료집 끝에 붙인다", () => {

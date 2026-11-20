@@ -2,6 +2,7 @@ import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { outsideRecord, referenceIndex, type RefSite } from "@/editor/tools/dbReferenceIndex";
 import type { JsonSchema } from "@/editor/tools/types";
 import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
+import { terrainTagAt } from "@/project/terrainAt";
 import type { Project } from "@/project/types";
 import { displayText } from "../../target";
 import { PrimitiveError } from "../errors";
@@ -86,6 +87,15 @@ function validateDelete(project: Project, collection: Collection, id: string, in
   if (changesTile) throw new PrimitiveError("지우면 타일에 연결된 지형이 달라져요. 지형 연결을 먼저 정리해 주세요.");
 }
 
+function validateTerrainAppend(project: Project, tag: number): void {
+  const changesMap = Object.values(project.maps).some(map => map.lowerTiles.some((tile, index) =>
+    terrainTagAt(project, { mapId: map.id, x: index % map.width, y: Math.floor(index / map.width) }, tile) === tag,
+  ));
+  if (changesMap) {
+    throw new PrimitiveError("추가하면 배치된 타일에 새 지형 효과가 적용돼요. 지형 태그를 먼저 정리해 주세요.");
+  }
+}
+
 const actions = [
   { action: "create", title: "추가", verb: "추가했어요" },
   { action: "update", title: "수정", verb: "수정했어요" },
@@ -143,6 +153,7 @@ function defineCollection<C extends Collection>(options: CollectionOptions<C>): 
         const name = args.name === undefined ? row.name : nonempty(args.name as string);
         const id = action === "create" ? freshId(ctx.project, rows, options.idPrefix, collection) : row.id;
         const record = options.write(ctx.project, { id, name }, args, action === "update" ? row : undefined);
+        if (action === "create" && collection === "terrains") validateTerrainAppend(ctx.project, rows.length + 1);
         edited = action === "create" ? [...rows, record] : rows.map((entry, i) => i === index ? record : entry);
       }
       return { ...ctx.project, database: { ...ctx.project.database, [collection]: edited } };
