@@ -44,9 +44,6 @@ Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 
 
 화면 하네스는 `SHOTS_CASES`와 `SHOTS_OUT`이 설정되면 실행된다. 사례는 `{ fixture, setup?, target, primitive, args, label }` 배열이다. `setup`의 선택 필드 `mapName`, `events`, `database`로 화면에 열 시드를 준비하고 `rect: {x,y,w,h}`로 캔버스 영역을 선택한다. 빈 픽스처에 맵 이름, 이벤트, 영역을 제공하면 편집기의 기본 맵이 추가된다. 브라우저는 실제 작은 일 상자를 열고, Pi HTTP 요청을 받아 공용 동작 실행기로 처리한 응답을 돌려준다. 변경과 복원을 확인하며 `NN-before.png`, `NN-after.png`, `NN-summary.png`, `NN-undo.png`를 만든다. `test/piAgentSmallTask.bun.test.ts`는 모델 스트림을 고정해 실제 Pi 워커의 도구 호출과 실패 시 사본 폐기를 검증한다.
 
-```sh
-DEV_SERVER_PORT=9900 SHOTS_CASES=artifacts/step2/00-core/shots.json \
-  SHOTS_OUT=artifacts/step2/00-core npx playwright test test/e2e/small-task-primitive-shots.spec.ts
-```
+화면 검수는 GitHub Actions에서 실행한다. 검수용 브랜치의 `parity` 워크플로에서 `e2e` 잡에 별도 스텝을 추가하고 수동 실행한다. 스텝의 `env`에 체크아웃에서 읽을 수 있는 사례 JSON 경로(`SHOTS_CASES`)와 결과 경로(`SHOTS_OUT`)를 지정한다. 스텝은 `npm run test:e2e -- test/e2e/small-task-primitive-shots.spec.ts`를 실행하고 후속 스텝에서 결과 경로를 아티팩트로 올린다.
 
-2단계 병렬 검증에서는 위 명령을 공용 슬롯 제한기로 실행한다. 첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.
+첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.

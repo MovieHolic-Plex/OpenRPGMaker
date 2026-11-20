@@ -1,4 +1,5 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { compareControlCodes } from "@/editor/dialogue/dialogueText";
 import { normalizeEditedDialogueText, DIALOGUE_TEXT_LIMIT } from "@/editor/dialogue/dialogueEdits";
 import { dialogueTextHash, parseDialogueLineId } from "@/editor/dialogue/dialogueIndex";
@@ -200,11 +201,14 @@ function assertOwnConversation(project: Project, mapId: string, eventId: string)
 
 function unusedSelfSwitch(ctx: PrimitiveContext, event: GameEvent): SelfSwitchKey {
   const { project } = ctx;
-  const { map } = locateEvent(ctx);
-  if (Object.values(project.maps).some(entry => entry !== map && entry.events.some(candidate => candidate.id === event.id))) {
-    throw new PrimitiveError("이 이벤트의 기록을 다른 이벤트와 공유하고 있어요.");
+  const { map, target } = locateEvent(ctx);
+  const working = withOpenEventDrafts(project, ctx.live, target);
+  for (const view of working === project ? [project] : [project, working]) {
+    if (Object.entries(view.maps).some(([mapId, entry]) => mapId !== map.id && entry.events.some(candidate => candidate.id === event.id))) {
+      throw new PrimitiveError("이 이벤트의 기록을 다른 이벤트와 공유하고 있어요.");
+    }
+    assertOwnConversation(view, map.id, event.id);
   }
-  assertOwnConversation(project, map.id, event.id);
   const used = new Set(Object.keys(project.session.selfSwitches?.[event.id] ?? {}));
   const visited = new WeakSet<object>();
   const pending: unknown[] = [event];
