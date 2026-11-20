@@ -4,7 +4,7 @@
 // 한 표면 안에 있고, 가짜 연출을 그리지 않는다 — 진짜 <video> 를 걸고 브라우저가 재생한다.
 //
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import type { Project, UploadedAsset } from "@/project/types";
+import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
@@ -34,12 +34,11 @@ export type MovieResourceEntry = {
 /**
  * 프로젝트에 올라온 동영상 리소스(이름 오름차순).
  *
- * 종류(kind)가 근거다 — "movie" 로 등재된 업로드는 데이터 URL 이 무엇이든 동영상이다.
- * 전용 종류가 생기기 전에 다른 kind 로 올라간 레거시 업로드만 미디어 타입으로 구제한다.
+ * 플레이어와 같은 리소스 해석 순서로 확인한다. 같은 ID의 번들 자료가 동영상이 아니면 목록에서 뺀다.
  */
 export function listMovieResources(project: Pick<Project, "assets">, selectedId?: string): readonly MovieResourceEntry[] {
   const entries = Object.values(project.assets.uploaded)
-    .filter((asset) => isMovieUpload(asset))
+    .filter((asset) => resolveMovieResourceUrl(asset.id, project) !== null)
     .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }));
   if (selectedId === SAMPLE_MOVIE_RESOURCE.id && !Object.hasOwn(project.assets.uploaded, selectedId)) {
     entries.push({ id: selectedId, name: SAMPLE_MOVIE_RESOURCE.name });
@@ -48,9 +47,7 @@ export function listMovieResources(project: Pick<Project, "assets">, selectedId?
 }
 
 /**
- * 재생 가능한 URL 을 돌려준다. 업로드 동영상은 데이터 URL 을 직접 쓰고
- * (resolveAssetResourceUrl 의 화이트리스트는 이미지·오디오만 허용한다),
- * 그 밖에는 일반 리소스 해석 → 번들 파일 경로 순으로 떨어진다.
+ * 재생 가능한 URL 을 돌려준다. SQLite 동영상의 해시 주소는 확장자 없이도 쓴다.
  */
 export function resolveMovieResourceUrl(
   resourceId: string | undefined,
@@ -58,11 +55,10 @@ export function resolveMovieResourceUrl(
 ): string | null {
   if (!resourceId) return null;
   const uploadedAsset = Object.hasOwn(project.assets.uploaded, resourceId) ? project.assets.uploaded[resourceId] : undefined;
-  const uploaded = uploadedAsset ? uploadedAssetUrl(uploadedAsset) : "";
-  if (uploadedAsset && uploaded !== "") return isMovieUpload(uploadedAsset, uploaded) ? uploaded : null;
   const resolved = resolveAssetResourceUrl(resourceId, { project });
-  if (resolved !== null && isMovieMedia(resolved)) return resolved;
-  return resourceId === SAMPLE_MOVIE_RESOURCE.id && !uploadedAsset && resolved === null ? SAMPLE_MOVIE_RESOURCE.url : null;
+  if (resolved === null) return null;
+  const movieRef = uploadedAsset?.kind === "movie" && uploadedAsset.ref && resolved === uploadedAssetUrl(uploadedAsset);
+  return movieRef || isMovieMedia(resolved) ? resolved : null;
 }
 
 export type MoviePreviewStage = {
@@ -109,10 +105,6 @@ export function renderMoviePreviewStage(url: string | null): MoviePreviewStage {
   // fakeDom 에는 play() 가 없다. 실제 브라우저에서만 자동 재생을 시도한다.
   video.play?.()?.catch(() => {});
   return { stage, video };
-}
-
-function isMovieUpload(asset: UploadedAsset, url?: string): boolean {
-  return asset.kind === "movie" || isMovieMedia(url ?? uploadedAssetUrl(asset));
 }
 
 function isMovieMedia(value: string): boolean {

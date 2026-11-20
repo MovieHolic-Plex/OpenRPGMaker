@@ -22,6 +22,7 @@ import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 import { showPictureState, startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project, UploadedAsset } from "@/project/types";
+import { collectWebExportAssets } from "@/project/webExportAssets";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
@@ -320,6 +321,14 @@ it("다른 그림이 쓰는 자리로 바꾸려 해도 재생 시 두 자리를 
   expect(Object.keys(session.pictures)).toEqual(["title_card", "second_card"]);
 });
 
+it("같은 그림 자리를 채우는 명령이 남으면 위치만 바꿀 수 있다", () => {
+  const later = { ...slotPicture, x: 40 };
+  const { project, target, mapId } = fixture("blank", [slotPicture, later]);
+  expectRefused(project, target, "cmd.showPicture.update", editArgs(later, { index: 1, pictureId: "new_card" }), /이 그림 자리를 채우고 있어/u);
+  const { after } = expectApplies(project, target, "cmd.showPicture.update", editArgs(later, { index: 1, x: 60 }));
+  expect(selectedPage(after, mapId).commands).toStrictEqual([slotPicture, { ...later, x: 60 }]);
+});
+
 it.each(["command", "mapDefault", "inheritedDefault"] as const)("다른 광원의 이름으로 바꿀 수 없다 · %s", owner => {
   const other = { ...slotLight.source, id: " other_lamp ", radius: 6 };
   const { project, target, mapId, page } = fixture("blank", owner === "command" ? [slotLight, { kind: "addLight", source: other }] : [slotLight]);
@@ -522,6 +531,10 @@ it.each(["insert", "update"] as const)("번들 샘플을 %s 하면 플레이어�
   expect(step).toMatchObject({ kind: "playMovie", resourceId: SAMPLE_MOVIE_RESOURCE.id });
   expect(sentence).toContain(SAMPLE_MOVIE_RESOURCE.name);
   expect(resolveMovieResourceUrl(SAMPLE_MOVIE_RESOURCE.id, after)).toBe(SAMPLE_MOVIE_RESOURCE.url);
+  const path = SAMPLE_MOVIE_RESOURCE.url.slice(1);
+  expect(collectWebExportAssets(after)).toContainEqual({
+    kind: "public", resourceId: SAMPLE_MOVIE_RESOURCE.id, sourcePath: path, zipPath: path,
+  });
   await expectUndoRestores(project, after, target);
 });
 

@@ -332,6 +332,9 @@ function validateSlotRename(project: Project, after: Project, map: GameMap, comm
     if (hasCommandReference(project, row => referencesPicture(row, previous.pictureId))) {
       throw new PrimitiveError("다른 명령에서 이 그림을 움직이거나 지우고 있어 그림 자리를 바꿀 수 없습니다.");
     }
+    if (hasCommandReference(after, row => referencesPicture(row, previous.pictureId, true))) {
+      throw new PrimitiveError("다른 명령에서 이 그림 자리를 채우고 있어 그림 자리를 바꿀 수 없습니다.");
+    }
     if (hasCommandReference(project, row => referencesPicture(row, command.pictureId, true))) {
       throw new PrimitiveError("다른 명령에서 이미 쓰는 그림 자리입니다. 빈 자리를 골라 주세요.");
     }

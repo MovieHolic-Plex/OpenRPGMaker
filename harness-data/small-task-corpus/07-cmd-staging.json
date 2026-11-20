@@ -125,9 +125,9 @@
     "request": "연출을 기다리지 말고 바로 다음 줄로 넘어가게 해 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
-    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": true}]},
     "primitive": "cmd.showAnimation.update",
-    "args": {"index": 0, "wait": false, "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "args": {"index": 0, "wait": false, "expectedHash": "c0872426750dfe919b9fafda7f4028f8"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
@@ -459,15 +459,13 @@
     ]
   },
   {
-    "request": "이미 띄운 엔딩 그림을 3번 자리로 바꿔 주세요.",
+    "request": "여러 엔딩이 함께 쓰는 그림 자리를 3번으로 바꿔 주세요.",
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
     "args": {"index": 47, "pictureId": "pic3", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
-    "expect": [
-      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
-      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].pictureId", "equals": "pic3"}
-    ]
+    "expectRefusal": true,
+    "refusalMessage": "이 그림 자리를 채우고 있어"
   },
   {
     "request": "그림 반투명하게 바꿔줘.",

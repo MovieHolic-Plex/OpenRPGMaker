@@ -19982,6 +19982,7 @@
 "다른 명령에서 이 광원을 끄고 있어 광원 이름을 바꿀 수 없습니다.":"Another command turns off this light, so its name cannot be changed.",
 "다른 명령에서 이 광원을 켜고 있어 광원 이름을 바꿀 수 없습니다.":"Another command turns on this light, so its name cannot be changed.",
 "다른 명령에서 이 그림을 움직이거나 지우고 있어 그림 자리를 바꿀 수 없습니다.":"This picture slot cannot be changed because another command moves or erases the picture.",
+"다른 명령에서 이 그림 자리를 채우고 있어 그림 자리를 바꿀 수 없습니다.":"Another command fills this picture slot, so the slot cannot be changed.",
 "다른 명령에서 이미 쓰는 그림 자리입니다. 빈 자리를 골라 주세요.":"Another command already uses this picture slot. Choose an unused slot.",
 "동작에 필요한 값의 형식을 확인해 주세요.":"Check the format of the values required for this action.",
 "동전 표시용 내장 연출에는 1 이상의 정수로 동전 개수를 입력해 주세요.":"Enter a whole number of at least 1 for the built-in coin effect.",
