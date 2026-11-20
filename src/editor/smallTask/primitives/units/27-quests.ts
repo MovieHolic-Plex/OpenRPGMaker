@@ -27,7 +27,7 @@ const QUEST_ID = { type: "string", minLength: 1, description: "퀘스트의 현�
 const TITLE = { type: "string", minLength: 1, description: "퀘스트에 표시할 이름" } satisfies JsonSchema;
 const LABEL = { type: "string", minLength: 1, description: "퀘스트 일지에 표시할 목표 문구" } satisfies JsonSchema;
 const STEP_NUMBER = { type: "integer", minimum: 1, description: "첫 목표를 1로 세는 목표 번호" } satisfies JsonSchema;
-const SWITCH = { type: "string", minLength: 1, description: "그래프 목표를 완료시키는 기존 스위치의 식별자" } satisfies JsonSchema;
+const SWITCH = { type: "string", minLength: 1, description: "이벤트에서 값을 기록하는 기존 완료 스위치의 식별자" } satisfies JsonSchema;
 const stepSchema = QUEST_DEF_SCHEMA.properties!.steps.items!;
 const objectiveKeys = {
   talk: ["target", "lines"],
@@ -139,20 +139,22 @@ function giverRef(quest: QuestDef): EventRef | null {
 
 function graphGiver(project: Project, quest: QuestGraphDef, usage: ReturnType<typeof buildStoryFlagUsageIndex>): EventRef | null {
   const first = quest.nodes[0];
-  const condition = first && extractQuestGraphConditions(first.completesWhen)[0];
-  if (!condition) return null;
+  if (!first) return null;
+  let giver: EventRef | null = null;
   try {
-    const { kind, targetId } = resolveQuestGraphCondition(project, condition);
-    const writers = usageBucketFor(usage, kind, targetId).writes;
-    const owner = writers[0];
-    // A display row can show the first writer. An edit needs a uniquely attributable event.
-    if (owner?.mapId && owner.eventId && writers.every(site => site.mapId === owner.mapId && site.eventId === owner.eventId)) {
-      return { mapId: owner.mapId, eventId: owner.eventId };
+    for (const condition of extractQuestGraphConditions(first.completesWhen)) {
+      const { kind, targetId } = resolveQuestGraphCondition(project, condition);
+      const writers = usageBucketFor(usage, kind, targetId).writes;
+      const owner = writers[0];
+      if (!owner?.mapId || !owner.eventId) return null;
+      giver ??= { mapId: owner.mapId, eventId: owner.eventId };
+      const { mapId, eventId } = giver;
+      if (writers.some(site => site.mapId !== mapId || site.eventId !== eventId)) return null;
     }
   } catch {
-    // A saved graph may still contain an unresolved condition.
+    return null;
   }
-  return null;
+  return giver;
 }
 
 function editScope(ctx: PrimitiveContext, args: Args): ReturnType<SmallTaskPrimitive["scope"]> {
@@ -234,6 +236,7 @@ function questProgressUses(project: Project, key: string, stepMatches?: (index: 
     return match !== null && (!stepMatches || stepMatches(Number(match[1])));
   };
   if (project.switches.some(entry => matches(entry.id, "switch"))
+    || Object.keys(project.flags).some(id => matches(id, "switch"))
     || project.variables.some(entry => matches(entry.id, "variable"))
     || project.storyFlags?.some(flag => matches(flag.targetId, flag.kind))
     || project.endings?.some(ending => ending.conditions.some(condition =>
@@ -356,6 +359,9 @@ function validateGraph(project: Project, quest: QuestGraphDef): QuestGraphDef {
 function switchCondition(project: Project, args: Args) {
   const switchId = requiredText(args.switchId, "목표를 완료할 스위치를 골라 주세요.");
   if (!project.switches.some(entry => entry.id === switchId)) throw new PrimitiveError("목표를 완료할 스위치를 찾을 수 없어요.");
+  if (!usageBucketFor(buildStoryFlagUsageIndex(project), "switch", switchId).writes.length) {
+    throw new PrimitiveError("이벤트에서 값을 기록하는 완료 스위치를 골라 주세요.");
+  }
   return { kind: "switch" as const, switchId, value: true };
 }
 
@@ -428,8 +434,8 @@ function appendObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQ
   }
   const updated = parseStepDef(withSteps(quest, [...quest.steps, structuredClone(args.objective) as QuestStep]));
   validateStepDef(project, updated, quest);
-  if (questProgressUses(project, quest.key, step => step === quest.steps.length)) {
-    throw new PrimitiveError("범위 밖: 새 목표 번호에 이미 연결된 진행 스위치나 변수가 있어요.");
+  if (questProgressUses(project, quest.key)) {
+    throw new PrimitiveError("범위 밖: 플레이에 연결된 퀘스트에 목표를 추가하려면 완료 이벤트도 함께 바꿔야 해요.");
   }
   return updated;
 }
@@ -523,7 +529,12 @@ function setReward(project: Project, quest: AnyQuestDef, args: Args): QuestDef {
     ...(args.gold !== undefined ? { gold: args.gold as number } : {}),
     ...(args.items !== undefined ? { items: structuredClone(args.items) as QuestReward["items"] } : {}),
   };
-  return validateStepDef(project, parseStepDef({ ...quest, rewards }), quest);
+  if ((rewards.gold ?? 0) === (quest.rewards?.gold ?? 0) && jsonEqual(rewards.items ?? [], quest.rewards?.items ?? [])) return quest;
+  const updated = validateStepDef(project, parseStepDef({ ...quest, rewards }), quest);
+  if (questProgressUses(project, quest.key)) {
+    throw new PrimitiveError("범위 밖: 플레이에 연결된 퀘스트의 보상을 바꾸려면 지급 이벤트도 함께 바꿔야 해요.");
+  }
+  return updated;
 }
 
 function primitive(id: string, title: string, spec: Pick<SmallTaskPrimitive, "args" | "describe" | "apply">
@@ -575,7 +586,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
   }),
   primitive("quest.objective.add", "퀘스트 목표 추가", {
-    args: schema("단계형은 목표 하나를 추가하고, 그래프형은 문구와 기존 완료 스위치를 추가합니다.", { questId: QUEST_ID, ...objectiveFields }, []),
+    args: schema("아직 플레이 진행에 연결하지 않은 단계형에 목표 하나를 추가합니다. 그래프형에는 문구와 기존 완료 스위치를 추가합니다.", { questId: QUEST_ID, ...objectiveFields }, []),
     describe(ctx, args) {
       return `「${questName(ctx, args)}」 정의에 목표를 하나 추가합니다.`;
     },
@@ -610,7 +621,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
   }),
   primitive("quest.reward.set", "퀘스트 보상 정의 변경", {
-    args: schema("단계형 퀘스트 정의에 골드나 아이템 보상을 기록합니다.", { questId: QUEST_ID, gold: GOLD, items: REWARD_ITEMS }, []),
+    args: schema("아직 플레이 진행에 연결하지 않은 단계형 퀘스트 정의에 골드나 아이템 보상을 기록합니다.", { questId: QUEST_ID, gold: GOLD, items: REWARD_ITEMS }, []),
     describe(ctx, args) {
       const reward = args.gold !== undefined && args.items === undefined ? `보상 골드를 ${args.gold}골드로` : "보상 내역을";
       return `「${questName(ctx, args)}」 정의의 ${reward} 바꿉니다.`;

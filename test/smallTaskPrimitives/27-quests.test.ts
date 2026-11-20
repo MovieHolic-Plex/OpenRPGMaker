@@ -8,7 +8,8 @@ import { mapTarget } from "@/editor/smallTask/target";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import type { DialogueProposal } from "@/project/dialogueDesk";
 import { startSession } from "@/project/session";
-import { questFlagIds, type QuestDef, type QuestGraphDef } from "@/project/quest/questDef";
+import { compileQuest } from "@/project/quest/questCompiler";
+import { questFlagIds, type QuestDef, type QuestGraphDef, type QuestStep } from "@/project/quest/questDef";
 import type { Command, GameEvent, Project, TroopRecord } from "@/project/types";
 import { buildQuestLog } from "@/player/questLog";
 import { jsonEqual } from "@/util/structuralJson";
@@ -132,11 +133,12 @@ describe("퀘스트 원시 기능", () => {
   });
 
   it("목표 한 개를 끝에 추가하고 사용자 정의 단계 순서를 맞춘다", async () => {
-    const { before, target } = built();
-    const old = stepQuest(before, PATROL);
+    const { before: base, target } = built();
+    const old = { ...stepQuest(base, PATROL), key: "draft_patrol" };
+    const before = { ...base, quests: [old] };
     const objective = { kind: "reach", mapId: MARKET, x: 6, y: 7, label: "시장 도착" };
-    const { after, sentence } = runPrimitive(before, target, "quest.objective.add", { questId: PATROL, objective });
-    expect(stepQuest(after, PATROL)).toEqual({ ...old, steps: [...old.steps, objective], blueprint: ["reach", "reach", "reach"] });
+    const { after, sentence } = runPrimitive(before, target, "quest.objective.add", { objective });
+    expect(stepQuest(after, old.key)).toEqual({ ...old, steps: [...old.steps, objective], blueprint: ["reach", "reach", "reach"] });
     expect(sentence).toBe("「얼음길 살피기」 정의에 목표를 하나 추가합니다.");
     textHasNoIds(sentence);
     expect(after.maps).toBe(before.maps);
@@ -166,12 +168,53 @@ describe("퀘스트 원시 기능", () => {
     await expectUndoRestores(before, after, target);
   });
 
+  it("통로 목표를 보존하고 앞 목표가 지워지면 통로의 목표 번호도 당긴다", async () => {
+    const { before: base, target, quest } = blank();
+    const gate = { mapId: target.mapId, x: 4, y: 4, requiresStep: 1, lockedText: "먼저 문을 찾아라." };
+    const old: QuestDef = { ...quest, key: "draft_patrol", gates: [gate] };
+    const before = { ...base, quests: [old] };
+    expect(() => runPrimitive(before, target, "quest.objective.remove", { step: 2 })).toThrow(/통로/u);
+    const { after } = runPrimitive(before, target, "quest.objective.remove", { step: 1 });
+    expect(after.quests).toEqual([{ ...old, steps: [old.steps[1]], gates: [{ ...gate, requiresStep: 0 }] }]);
+    expect(after.maps).toBe(before.maps);
+    await expectUndoRestores(before, after, target);
+  });
+
+  it("아직 이벤트에 연결되지 않은 목표를 수집·납품·선택·동행·제작으로 교체한다", async () => {
+    const { before: base, target } = built();
+    const source = stepQuest(base, RUMOR);
+    const old: QuestDef = { ...source, key: "draft_errand", presetId: "custom", blueprint: source.steps.map(step => step.kind) };
+    const itemId = "item_potion";
+    const recipeId = "recipe_potion";
+    const before = { ...base, quests: [old], system: { ...base.system, craftRecipes: [
+      { id: recipeId, name: "회복약", outputItemId: itemId, outputCount: 1, ingredients: [] },
+    ] } };
+    const npc = { mapId: MARKET, eventId: "ev_chain_kehegd7_2" };
+    const point = { mapId: MARKET, x: 6, y: 7 };
+    const objectives: QuestStep[] = [
+      { kind: "collect", itemId, count: 1, sources: [{ kind: "pickup", ...point }] },
+      { kind: "deliver", target: npc, itemId, count: 1 },
+      { kind: "choice", target: npc, prompt: "함께 갈까요?", options: [{ text: "간다" }, { text: "남는다", completes: false }] },
+      { kind: "escort", target: npc, destination: point },
+      { kind: "craft", at: point, recipeId },
+    ];
+    for (const objective of objectives) {
+      const { after } = runPrimitive(before, target, "quest.objective.update", { step: 1, objective });
+      const steps = [objective, ...old.steps.slice(1)];
+      expect(after.quests).toEqual([{ ...old, steps, blueprint: steps.map(step => step.kind) }]);
+      expect(after.maps).toBe(before.maps);
+      await expectUndoRestores(before, after, target);
+    }
+  });
+
   it("회복약 세 개를 보상 정의에 넣고 기존 골드 금액을 보존한다", async () => {
-    const { before, target } = built();
+    const { before: base, target } = built();
+    const old = { ...stepQuest(base, RUMOR), key: "draft_rumor" };
+    const before = { ...base, quests: [old] };
     const items = [{ itemId: "item_potion", count: 3 }];
-    const { after, sentence } = runPrimitive(before, target, "quest.reward.set", { questId: RUMOR, items });
-    expect(stepQuest(after, RUMOR)).toEqual({ ...stepQuest(before, RUMOR), rewards: { gold: 20, items } });
-    expect(stepQuest(after, RUMOR).rewards?.items).not.toBe(items);
+    const { after, sentence } = runPrimitive(before, target, "quest.reward.set", { items });
+    expect(stepQuest(after, old.key)).toEqual({ ...old, rewards: { gold: 20, items } });
+    expect(stepQuest(after, old.key).rewards?.items).not.toBe(items);
     expect(sentence).toBe("「눈 속의 소문」 정의의 보상 내역을 바꿉니다.");
     textHasNoIds(sentence);
     expect(after.maps).toBe(before.maps);
@@ -326,6 +369,18 @@ describe("퀘스트 원시 기능", () => {
     expect(() => runPrimitive(project, target, "quest.remove", { questId: draft.key })).toThrow(/진행 스위치/u);
   });
 
+  it("레거시 플래그에만 남은 단계 완료 상태를 다른 목표로 옮기거나 지우지 않는다", () => {
+    const { before, target, quest } = blank();
+    const draft = { ...quest, key: "draft_well" };
+    const { started, stepSwitches } = questFlagIds(draft.key, 2);
+    const project = { ...before, quests: [draft], flags: { ...before.flags, [started]: true, [stepSwitches[1]]: true } };
+    expect(project.switches.some(entry => entry.id === stepSwitches[1])).toBe(false);
+    expect(buildQuestLog(project, startSession(project, 1))[0].steps.map(step => step.done)).toEqual([false, true]);
+    expect(() => runPrimitive(project, target, "quest.objective.remove", { step: 1 })).toThrow(/진행 스위치/u);
+    expect(() => runPrimitive(project, target, "quest.remove", {})).toThrow(/진행 스위치/u);
+    expect(project.quests).toEqual([draft]);
+  });
+
   it("자료집 윤문 제안과 연결된 제목·목표·퀘스트의 변경을 거절한다", () => {
     const { before, target, quest } = blank();
     const draft = { ...quest, key: "draft_well" };
@@ -420,9 +475,63 @@ describe("그래프 목표의 연결", () => {
     }] } } };
     expect(() => runPrimitive(ambiguous, target, "quest.rename", { questId: quest.id, title: "다른 이름" })).toThrow(/범위 밖/u);
   });
+
+  it("복합 시작 조건 모두를 같은 이벤트가 작성해야 그래프를 편집할 수 있다", () => {
+    const { project, target, quest, otherFlag } = branched();
+    const first = quest.nodes[0];
+    const compound = (secondSwitchId: string) => ({ ...project, quests: [{ ...quest, nodes: [{
+      ...first, completesWhen: { all: [
+        { kind: "switch" as const, switchId: "sw_quest_1_started", value: true },
+        { kind: "switch" as const, switchId: secondSwitchId, value: true },
+      ] },
+    }, ...quest.nodes.slice(1)] }] });
+    const args = { questId: quest.id, title: "우물 조사" };
+    expect(() => runPrimitive(compound(otherFlag), target, "quest.rename", args)).toThrow(/범위 밖/u);
+    expect(() => runPrimitive(compound(otherFlag), mapTarget(project, target.mapId)!, "quest.rename", args)).toThrow(/범위 밖/u);
+    const { after } = runPrimitive(compound("sw_quest_1_step0"), target, "quest.rename", args);
+    expect(after.quests?.[0].title).toBe(args.title);
+  });
+
+  it("등록됐지만 이벤트에서 값을 한 번도 쓰지 않는 스위치로 목표를 추가하거나 바꾸지 않는다", () => {
+    const { project, target } = branched();
+    const switchId = "sw_unused_objective";
+    project.switches.push({ id: switchId, name: "사용하지 않는 완료 스위치" });
+    expect(() => runPrimitive(project, target, "quest.objective.add", { label: "우물 확인", switchId })).toThrow(/이벤트에서 값을 기록/u);
+    expect(() => runPrimitive(project, target, "quest.objective.update", { step: 2, switchId })).toThrow(/이벤트에서 값을 기록/u);
+  });
+
+  it("첫 목표에서 갈라진 갈래를 끊는 삭제를 거절한다", () => {
+    const { project, target, quest } = branched();
+    const [start, middle, left, right] = quest.nodes;
+    const before = { ...project, quests: [{ ...quest, edges: [
+      { from: start.id, to: middle.id }, { from: start.id, to: right.id }, { from: middle.id, to: left.id },
+    ] }] };
+    expect(() => runPrimitive(before, target, "quest.objective.remove", { step: 1 })).toThrow(/일부 갈래로 진행/u);
+  });
 });
 
 describe("이벤트 명령을 실행한 뒤 퀘스트 일지", () => {
+  it.each([
+    ["목표 추가", "quest.objective.add", /완료 이벤트/u],
+    ["보상 변경", "quest.reward.set", /지급 이벤트/u],
+  ] as const)("컴파일된 완료·보상 이벤트와 정의가 어긋나는 %s 요청을 거절한다", (_name, primitive, reason) => {
+    const { before, target, event, quest, objective } = blank();
+    const item = createBlankProject().database.items.find(entry => entry.id === "item_potion")!;
+    before.database = { ...before.database, items: [item] };
+    const compiled = { ...quest, rewards: { gold: 20, items: [{ itemId: item.id, count: 1 }] } };
+    const { flags } = compileQuest(before, compiled);
+    before.session.switches = { [flags.started]: true, ...Object.fromEntries(flags.stepSwitches.map(id => [id, true])) };
+    const args = primitive === "quest.objective.add" ? { objective: { ...objective, x: 5, y: 5 } }
+      : { gold: 50, items: [{ itemId: item.id, count: 3 }] };
+    expect(() => runPrimitive(before, target, primitive, args)).toThrow(reason);
+    expect(before.quests).toEqual([compiled]);
+    const initial = startSession(before, 1);
+    const { session } = runHeadless(before, before.startMapId, event.id);
+    expect(session.gold).toBe(initial.gold + compiled.rewards.gold);
+    expect(session.inventory[item.id]).toBe(1);
+    expect(buildQuestLog(before, session)[0]).toMatchObject({ state: "done", completedSteps: quest.steps.length });
+  });
+
   it("새 정의를 등록한 뒤 기존 이벤트의 골드 지급을 실행한다", () => {
     const { before, target, objective, event } = blank();
     const { after } = runPrimitive(before, target, "quest.create", { title: "우물 방문", objective });
