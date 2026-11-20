@@ -18,7 +18,7 @@ import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
 import { spatialPortLanding } from "@/project/spatial/overview";
 import type { Dir, GameMap, MapConnection, MapNamedLocation, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { PrimitiveError } from "../errors";
+import { LOCATION_DELETION_DRAFT_REFUSAL, PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   assertReferencesPreserved, changesBlueprintPlaces, duplicateMap, freeId, label, locationDeletionDraftError,
@@ -548,7 +548,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (project, map, args, ctx) => {
       const location = locationInMap(map, args.locationId);
       const draftError = locationDeletionDraftError(project, map.id, location.id, ctx.live);
-      if (draftError) throw new PrimitiveError(draftError);
+      if (draftError) throw new PrimitiveError(`${LOCATION_DELETION_DRAFT_REFUSAL}${draftError}\n${location.id}`);
       if (usesLocation(project, map, location.id)) {
         throw new PrimitiveError("이 장소를 가리키는 조건이나 설정이 남아 있어 삭제할 수 없어요.");
       }

@@ -4,7 +4,7 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import { MAP_REMOVAL_REFERENCE_REFUSAL, PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL, PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/23-map-structure";
 import { dbTarget, mapTarget } from "@/editor/smallTask/target";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
@@ -589,7 +589,9 @@ it("같은 맵의 장소를 사용하는 새 이벤트 초안의 이름을 삭�
     maps: { [draftMapId]: { events: [{ ...original, condition: { kind: "insideLocation", locationId: location.id, inside: true },
       draft: { kind: "new", original } }] } },
   }).after;
-  expect(() => remove(firstId)).toThrow(/미저장 경비/u);
+  expect(() => remove(firstId)).toThrow(
+    `${LOCATION_DELETION_DRAFT_REFUSAL}미저장 이벤트 『미저장 경비』에서 이 장소를 사용하고 있어 삭제할 수 없어요.\n${location.id}`,
+  );
   expect(remove(secondId).maps[firstId]!.locations ?? []).toEqual([]);
   expect(project.maps[firstId]!.locations).toEqual([location]);
 });

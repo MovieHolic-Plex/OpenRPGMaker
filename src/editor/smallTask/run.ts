@@ -5,7 +5,10 @@ import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { editorState } from "@/editor/editorState";
 import { commitChangeset } from "@/editor/tools/changeset";
 import type { Project } from "@/project/types";
-import { MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "./primitives/errors";
+import {
+  LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL,
+  SELECT_EVENT_PAGE, STALE_COMMAND_LIST,
+} from "./primitives/errors";
 import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -37,11 +40,16 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
     throw new SmallTaskError(result.stoppedEarly);
   }
   const savedMapRefusal = result.stoppedEarly?.startsWith(MAP_REMOVAL_REFERENCE_REFUSAL);
-  if (target.kind === "map" && (savedMapRefusal || (live && result.stoppedEarly?.startsWith(MAP_REMOVAL_DRAFT_REFUSAL)))) {
-    const { mapRemovalDraftError, mapRemovalReferenceError } = await import("./primitives/units/23-map-structure/maps");
+  const mapDraftRefusal = live && result.stoppedEarly?.startsWith(MAP_REMOVAL_DRAFT_REFUSAL);
+  const locationRefusal = live && result.stoppedEarly?.startsWith(LOCATION_DELETION_DRAFT_REFUSAL) ? result.stoppedEarly : undefined;
+  if (target.kind === "map" && (savedMapRefusal || mapDraftRefusal || locationRefusal)) {
+    const { locationDeletionDraftError, mapRemovalDraftError, mapRemovalReferenceError } = await import("./primitives/units/23-map-structure/maps");
     signal.throwIfAborted();
+    // The worker appends the location ID after its explanation. Rebuild the visible message from the local draft.
+    const locationId = locationRefusal?.match(/\n([\s\S]+)$/u)?.[1];
     const message = savedMapRefusal ? mapRemovalReferenceError(before, target.mapId)
-      : live && mapRemovalDraftError(before, target.mapId, live);
+      : mapDraftRefusal && live ? mapRemovalDraftError(before, target.mapId, live)
+      : locationId && locationDeletionDraftError(before, target.mapId, locationId, live);
     if (message) throw new SmallTaskError(message);
   }
   if (result.stoppedEarly) throw new Error(result.stoppedEarly);

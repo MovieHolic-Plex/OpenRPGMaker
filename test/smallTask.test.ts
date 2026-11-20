@@ -4,7 +4,7 @@ import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
 import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsule";
-import { MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL } from "@/editor/smallTask/primitives/errors";
+import { LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL } from "@/editor/smallTask/primitives/errors";
 import { editorState } from "@/editor/editorState";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -98,7 +98,13 @@ it.each([
     stoppedEarly: `${MAP_REMOVAL_DRAFT_REFUSAL}워커 문구`, shownMessage: "『미저장 출입구』의 편집을 먼저 저장하거나 취소해 주세요." },
   { kind: "map", selectedMapId: "another_map", rect: undefined, savedMapReference: true,
     stoppedEarly: `${MAP_REMOVAL_REFERENCE_REFUSAL}워커 문구`, shownMessage: "『North Gate』에서 이 맵을 사용하고 있어 삭제할 수 없어요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, shownMessage, savedMapReference }) => {
+  { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
+    stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc1`,
+    shownMessage: "미저장 이벤트 『미저장 출입구』에서 이 장소를 사용하고 있어 삭제할 수 없어요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
+    stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc2`,
+    shownMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, shownMessage, savedMapReference, draftLocationId }) => {
   const project = fixture();
   if (savedMapReference) {
     const gate: GameEvent = { id: "north_gate", name: "North Gate", x: 1, y: 1, trigger: { kind: "action" },
@@ -108,7 +114,10 @@ it.each([
   }
   const live = structuredClone(project);
   const original = live.maps.map_a.events[0]!;
-  const draft = { ...original, id: "draft_event", name: "미저장 출입구", draft: { kind: "new", original } } as const;
+  const draft: GameEvent = {
+    ...original, id: "draft_event", name: "미저장 출입구", draft: { kind: "new", original },
+    ...(draftLocationId ? { condition: { kind: "insideLocation", locationId: draftLocationId, inside: true } } : {}),
+  };
   if (!savedMapReference) live.maps.map_a.events.push(draft);
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")!
     : kind === "map" ? mapTarget(project, "map_a")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
