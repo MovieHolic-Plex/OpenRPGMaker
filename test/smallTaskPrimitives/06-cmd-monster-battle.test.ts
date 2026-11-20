@@ -114,7 +114,7 @@ const cases = [
     command: dynamicSpawn,
     insert: { spawnId: dynamicSpawn.spawn.id, troopId: TROOP, x: 1, y: 2, w: 3, h: 2 },
     update: { troopId: BAT_TROOP, chase: false, maxAlive: 2 },
-    existingBranches: { spawn: { ...dynamicSpawn.spawn, persistKill: true, timePhases: ["night"] } },
+    existingBranches: { spawn: { ...dynamicSpawn.spawn, persistKill: true, timePhases: ["night" as const] } },
     expected: { kind: "spawnFieldEnemy", spawn: { ...dynamicSpawn.spawn, troopId: BAT_TROOP, chase: false, maxAlive: 2, persistKill: true, timePhases: ["night"] } },
   },
   {
@@ -669,8 +669,9 @@ it("변수로 지정한 적 무리를 실제 전투 시작에 전달한다", asy
   const step = createInterpreter(stored(after).slice(1), session, after).start();
   if (step.kind !== "battleProcessing") throw new Error("전투 단계가 필요합니다.");
   const playBattle = vi.fn().mockResolvedValue("victory");
-  const scene = { session, map: after.maps[MAP]!, clearRuntimeOverlay: vi.fn(), playBattle } satisfies
-    Pick<PlaySceneContext, "session" | "map" | "clearRuntimeOverlay" | "playBattle">;
+  const scene: Pick<PlaySceneContext, "session" | "map" | "clearRuntimeOverlay" | "playBattle"> = {
+    session, map: after.maps[MAP]!, clearRuntimeOverlay: vi.fn(), playBattle,
+  };
   const current = vi.spyOn(store, "getCurrent").mockReturnValue(after);
   try {
     expect(await playCommandBattle(scene as PlaySceneContext, step, () => true)).toBe("victory");
