@@ -289,7 +289,8 @@ pre-merge main passed the same scenarios, which is how each was attributed:
 1. A rejected checkpoint row aborted `proveAppliedRevision` before `store.flush()`, so the
    save and its proof disappeared entirely. Checkpoint writes are recovery convenience; the save
    is the user's canonical work. Failures are now audit warnings (`agent_run:checkpoint-write-failed`)
-   and save/proof/turn progress continue. Only `prepareCheckpointApply` still demands durability.
+   and save/proof/turn progress continue. The application boundary also treats the write as
+   best-effort as of the v0.413.0 memory fix.
 2. The same rejection killed the retry turn through `turn-boundary-error`.
 3. Content identity was recomputed twice per round at ~160ms each on the default project.
 4. `AssistantAcceptanceLedger.exportRecovery()` deep-cloned every promise baseline on every
@@ -325,6 +326,11 @@ clicks Continue: create/apply counts must not increase. Its other controls keep
 remaining WorkPlan/requirements and reviewer budgets, and run actual ending
 quality assessment without reauthoring. `aiRunRecoveryAdmission.test.ts` checks
 ten nonresumable classes through the real panel admission boundary.
+
+The event editor regression in `aiRunRecoveryRuntime.test.ts` runs three scoped read tools on a
+fresh project with the full bundled tileset catalog and reads the saved IndexedDB rows. It checks
+the snapshot size, bundles represented as diffs, and identity computation count. The storage
+contract also checks that an oversized row is rejected before cloning.
 
 The runtime fixture keeps the actual start map and its referenced tileset rather
 than twelve unused bundled tilesets. Image delivery for the authored marker is

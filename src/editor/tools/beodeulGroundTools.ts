@@ -1,6 +1,6 @@
 import { houseSetBaseTiles } from '@/project/houseSetKit';
 import { tilesetStandTableFor } from '@/assets/tilesetStands';
-import architectureCatalog from '@/assets/beodeulArchitectureCatalog.json';
+import architectureCatalog from '@/assets/beodeulArchitectureCatalog.json' with { type: "json" };
 import { BEODEUL_GROUND_ID, BEODEUL_GROUND_TEXTURE, BEODEUL_GROUND_RECIPES, createBeodeulGroundTileset } from '@/project/defaults/beodeulGround';
 import { translateTiles } from '@/project/objectStamp';
 import { compactMapLayers, layerTileAt, setLayerTileAt, type TileLayerNo } from '@/project/mapLayers';

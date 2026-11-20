@@ -1,5 +1,5 @@
-import catalog from '@/assets/beodeulGroundCatalog.json';
-import references from '@/assets/beodeulGroundReferences.json';
+import catalog from '@/assets/beodeulGroundCatalog.json' with { type: "json" };
+import references from '@/assets/beodeulGroundReferences.json' with { type: "json" };
 import type { StructureKitDef, TileGroupMetadata, TilesetDef } from '../types';
 
 export const BEODEUL_GROUND_ID='beodeul_ground';

@@ -1,4 +1,4 @@
-import documents from './documents.json';
+import documents from './documents.json' with { type: "json" };
 import type { GameDesignBrief, GameBriefSlot } from '../gameDesignBrief';
 import type { InterviewGenre } from '../gameInterview';
 import { choiceExecutionBindings } from './choices';

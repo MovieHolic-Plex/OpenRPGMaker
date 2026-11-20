@@ -7,11 +7,11 @@
 //   · 예제 26맵(tiledata/hand-interior/v5-maps)의 합성 칸(탁상 물건을 얹은 가구·창 빛)
 // 옛 정의(2026-09-29 오전, Tibo 실내 번호 0~2159 + 배·던전 블록)는 폐기했다. 배·던전은 atlasBiomeDungeon.ts 로 떼었다.
 // 조립은 src/editor/handInterior/builder.ts(평면 문자열 → 구조 자동, 가구는 v5 물건 id), 도구 build_hand_interior_room.
-import sheet from "@/assets/atlasBiomeInteriorSheet.json";
+import sheet from "@/assets/atlasBiomeInteriorSheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`atlasBiomeInteriorSheet.json`)에서 읽는다. */
 const data = () => bundledJson("atlasBiomeInteriorTileset");
-import references from "@/assets/sharedHandInteriorReferences.json";
+import references from "@/assets/sharedHandInteriorReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, Project, SlideRule, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import { REFERENCE_LIMITS, type TilesetReferenceCategory } from "../tilesetReferences";
 import { PAD_LABEL, attachWorkshopTiles, detachGraftTail, detachWorkshopTiles } from "../workshopTiles";

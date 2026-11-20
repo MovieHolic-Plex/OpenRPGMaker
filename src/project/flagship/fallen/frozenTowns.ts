@@ -14,7 +14,7 @@
 import type { GameMap, Project } from "@/project/types";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";
-import frozen from "./frozenTowns.json";
+import frozen from "./frozenTowns.json" with { type: "json" };
 
 type Rec = Record<string, unknown>;
 interface TilesetAppend { readonly baseCount: number; readonly count: number; readonly arrays: Readonly<Record<string, readonly unknown[]>> }

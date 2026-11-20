@@ -1,6 +1,6 @@
 // 몬스터 수집 손 도트 시트(지역별) 번들 목록 — src/harnesses/tileset-authoring 하네스가 굽고 lib/wire.py 가 index.json 을 쓴다.
 // 그림은 전부 좌표로 찍은 원본 도트(생성 이미지·외부 팩 픽셀 없음). 정의는 project/defaults/monsterKit.ts, openwiki/harnesses/tileset-authoring.md.
-import index from "./monsterKit/index.json";
+import index from "./monsterKit/index.json" with { type: "json" };
 
 export type MonsterKitSheetEntry = {
   readonly theme: string;

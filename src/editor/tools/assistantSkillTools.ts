@@ -6,7 +6,7 @@
 // 스킬 폴더의 references/**/*.md 는 «부분(part)» 이다. 본문은 src/assets/assistantSkillParts.json 에 따로 굽고
 // (편집기 첫 번들 밖), read_assistant_skill({id, part}) 의 prepare 가 동적 import 로 받는다.
 
-import bundle from "@/assets/assistantSkills.json";
+import bundle from "@/assets/assistantSkills.json" with { type: "json" };
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { SCRIPT_SKILL_ID, assistantScriptsOn } from "@/ai/scriptsSwitch";
 

@@ -1,6 +1,6 @@
 // 「내가 쓴 걸로 만들기」 — 피드 입력창의 문장 한 줄로 컨셉 카드 한 장을 쓰고, 도트 썸네일을 뒤에서 그린다.
 // 쓰기 규칙은 공식 컨셉 하네스와 같은 시드를 읽는다(harness-data/game-concepts/seed.json).
-import seed from "../../harness-data/game-concepts/seed.json";
+import seed from "../../harness-data/game-concepts/seed.json" with { type: "json" };
 import { generateAiImage } from "@/ai/imageGenerationClient";
 import { chatCompletion, configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import { configForRole } from "@/ai/modelRoles";

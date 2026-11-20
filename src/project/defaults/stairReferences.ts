@@ -1,4 +1,4 @@
-import shipped from "@/assets/sharedStairReferences.json";
+import shipped from "@/assets/sharedStairReferences.json" with { type: "json" };
 import type { TilesetDef } from "../types";
 import { REFERENCE_LIMITS, type TilesetReferenceCategory } from "../tilesetReferences";
 

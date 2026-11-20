@@ -1,6 +1,6 @@
 import type {Project,Dir} from '@/project/types';
 import {canMove} from '@/project/collision';
-import patrolData from './residentPatrols.json';
+import patrolData from './residentPatrols.json' with { type: "json" };
 // Reviewed for these bundled town templates; never apply this layout to other games.
 const texts=[
  ['연구소 친구가 기다릴 거예요.\n북동쪽 파란 지붕을 찾아보세요.','동료를 얻으면 풀숲을 걸어 봐요.\n여기 상점에서 회복약도 살 수 있어요.'],

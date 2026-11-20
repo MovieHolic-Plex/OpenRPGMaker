@@ -1,5 +1,5 @@
 import type { MonsterMetadata } from "@/project/types";
-import monsterCatalogData from "./monsterCatalogData.json";
+import monsterCatalogData from "./monsterCatalogData.json" with { type: "json" };
 
 /** Original-artwork observations and source hashes are recorded in monsterCatalogReview.json. */
 export const MONSTER_CATALOG: Readonly<Record<string, MonsterMetadata>> = Object.freeze(monsterCatalogData);

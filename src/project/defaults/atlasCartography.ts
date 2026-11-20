@@ -1,5 +1,5 @@
-import sheet from '@/assets/atlasCartographySheet.json';
-import references from '@/assets/atlasCartographyReferences.json';
+import sheet from '@/assets/atlasCartographySheet.json' with { type: "json" };
+import references from '@/assets/atlasCartographyReferences.json' with { type: "json" };
 import type { Project,TilesetDef } from '../types';
 import type { TilesetReferenceCategory } from '../tilesetReferences';
 

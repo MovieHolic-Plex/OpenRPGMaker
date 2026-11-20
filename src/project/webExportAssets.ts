@@ -32,7 +32,7 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
 import { transitVehicle } from "@/project/mapTransit";
-import battleTrainerSpriteFiles from "@/assets/battleTrainerSpriteFiles.json";
+import battleTrainerSpriteFiles from "@/assets/battleTrainerSpriteFiles.json" with { type: "json" };
 export { safeFileName } from './webUploadedAssetPath';
 
 const encoder = new TextEncoder();

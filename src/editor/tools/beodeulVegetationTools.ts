@@ -1,4 +1,4 @@
-import catalog from '@/assets/beodeulGroundCatalog.json';
+import catalog from '@/assets/beodeulGroundCatalog.json' with { type: "json" };
 import {createBeodeulGroundTileset,ensureBeodeulGroundReferences} from '@/project/defaults/beodeulGround';
 import {installBeodeulArchitecture} from '@/project/defaults/beodeulArchitecture';
 import {translateTiles} from '@/project/objectStamp';

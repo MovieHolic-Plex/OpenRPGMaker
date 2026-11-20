@@ -10,7 +10,7 @@ import type { SpatialDesignReference } from "@/project/spatial/types";
 import type { TilesetDef } from "@/project/types";
 import { SHARED_OBJECTS } from "@/editor/tools/sharedDesignCatalog";
 import { isJpCityTileset, JP_CITY_ID, JP_CITY_PREFIX } from "@/project/defaults/jpCity";
-import jpInteriorSpec from "@/assets/jpInteriorSpec.json";
+import jpInteriorSpec from "@/assets/jpInteriorSpec.json" with { type: "json" };
 
 const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
   tree: "잎 없는 고목", volcano: "화산 봉우리", gate: "성문·문루", terrain: "기후 지형", harbor: "항구 부품", house: "집 외형", prop: "마을 소품",

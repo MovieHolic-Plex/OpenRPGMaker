@@ -1,4 +1,4 @@
-import catalog from '@/assets/beodeulArchitectureCatalog.json';
+import catalog from '@/assets/beodeulArchitectureCatalog.json' with { type: "json" };
 import { installBeodeulArchitecture } from '@/project/defaults/beodeulArchitecture';
 import { layerTileAt, setLayerTileAt } from '@/project/mapLayers';
 import type { Project, StructureKitDef } from '@/project/types';

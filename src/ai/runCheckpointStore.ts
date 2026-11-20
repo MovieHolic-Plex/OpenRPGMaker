@@ -1,11 +1,10 @@
-import { aiRecordBackendKind, AI_RECORD_STORES, mutateAiRecord, readAllAiRecords } from "./aiRecordDb";
+import { aiRecordBackendKind, AI_RECORD_STORES, mutateAiRecord, readRunCheckpointIds } from "./aiRecordDb";
 import type { AcceptanceSnapshot, AcceptanceSource } from "./assistantAcceptance";
 import type { ProposedCall, RunEndProofState } from "./session/types";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import type { WorkPlan } from "./workPlan";
 import type { ProjectPersistenceReceipt } from "@/project/store";
-import type { Project } from "@/project/types";
-
+import { assertCheckpointData } from "./checkpointPayload";
 import { isRunRuntimeState, type RunRuntimeState } from "./runRecovery";
 
 export const RUN_CHECKPOINT_SCHEMA_VERSION = 1;
@@ -58,8 +57,6 @@ export interface RunCheckpoint extends RunCheckpointKey {
     readonly proposal: {
       readonly baseContentIdentity: string;
       readonly contentIdentity: string;
-      /** 적용 대기(applying)에서만 싣는다 — 재개가 실제로 그 내용을 쓰는 유일한 단계다. */
-    readonly project?: Project;
       readonly calls: readonly ProposedCall[];
     } | null;
   } | null;
@@ -76,22 +73,6 @@ const record = (value: unknown): value is Record<string, unknown> =>
 const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
 const count = (value: unknown): value is number => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 const oneOf = (value: unknown, values: readonly string[]): boolean => typeof value === "string" && values.includes(value);
-
-/** IDB supports undefined optional fields; reject functions, cycles and non-data objects on both backends. */
-function dataOnly(value: unknown, ancestors = new Set<object>()): boolean {
-  if (value === null || value === undefined || typeof value === "string" || typeof value === "boolean") return true;
-  if (typeof value === "number") return Number.isFinite(value);
-  if (typeof value !== "object" || ancestors.has(value)) return false;
-  if (!Array.isArray(value) && Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) return false;
-  ancestors.add(value);
-  const valid = Reflect.ownKeys(value).every(key => typeof key === "string"
-    && (Array.isArray(value) && key === "length" || (() => {
-      const descriptor = Object.getOwnPropertyDescriptor(value, key);
-      return descriptor !== undefined && "value" in descriptor && dataOnly(descriptor.value, ancestors);
-    })()));
-  ancestors.delete(value);
-  return valid;
-}
 
 function validKey(value: unknown): value is RunCheckpointKey {
   return record(value) && text(value.conversationId) && text(value.runId) && count(value.epoch)
@@ -170,27 +151,24 @@ function validPayload(value: Record<string, unknown>): boolean {
     const pending = value.pending;
     if (value.status === "terminal" || !record(pending) || !text(pending.operationId)
       || !oneOf(pending.stage, ["proposal-ready", "applying", "saving", "proving"])) return false;
-    if (pending.proposal === null) return pending.stage === "saving" || pending.stage === "proving";
+    if (pending.proposal === null) return pending.stage !== "applying";
     const proposal = pending.proposal;
     if (!record(proposal) || !text(proposal.baseContentIdentity) || !text(proposal.contentIdentity)
-      || !calls(proposal.calls)) return false;
-    // 초안 바이트는 **적용 대기(applying)** 에서만 필요하다 — 거기서만 재개가 그 내용을 쓴다.
-    // proposal-ready 는 항상 재조정으로 가므로 바이트를 싣지 않는다. 쓰지 못할 것을 쓰기마다
-    // 복제하면 저작 왕복이 느려진다(2026-09-09 실측: 사건 캡처 한 줄이 30초).
-    if (pending.stage === "applying") {
-      if (!record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps)) return false;
-    } else if (proposal.project !== undefined) {
-      if (!record(proposal.project) || !record(proposal.project.meta) || !record(proposal.project.maps)) return false;
-    }
+      || "project" in proposal || !calls(proposal.calls)) return false;
   }
   return true;
 }
 
-function invalid(value: unknown, key: RunCheckpointKey): RunCheckpointUnsupportedReason | null {
+function invalid(value: unknown, key: RunCheckpointKey, checkedData = false): RunCheckpointUnsupportedReason | null {
   if (!record(value)) return "malformed";
   if (typeof value.schemaVersion === "number" && Number.isSafeInteger(value.schemaVersion) && value.schemaVersion > 0
     && value.schemaVersion !== RUN_CHECKPOINT_SCHEMA_VERSION) return "schema-version";
-  if (value.schemaVersion !== RUN_CHECKPOINT_SCHEMA_VERSION || !dataOnly(value)
+  // Old runtime rows used full projects and full-text identities. Keep their transcripts.
+  if (record(value.runtime) && value.runtime.schemaVersion === 1) return "schema-version";
+  if (!checkedData) {
+    try { assertCheckpointData(value); } catch { return "malformed"; }
+  }
+  if (value.schemaVersion !== RUN_CHECKPOINT_SCHEMA_VERSION
     || Object.keys(value).some(field => !["id", "schemaVersion", "conversationId", "runId", "epoch", "projectId", "projectContextKey", "savedAt", "status",
       "request", "baseContentIdentity", "currentContentIdentity", "workPlan", "budget", "verification", "acceptance", "applied", "save", "proof", "pending", "runtime"].includes(field))
     || !validPayload(value)) return "malformed";
@@ -220,7 +198,8 @@ export async function readRunCheckpoint(key: RunCheckpointKey): Promise<RunCheck
 export async function saveRunCheckpoint(checkpoint: RunCheckpoint): Promise<{ readonly durable: boolean; readonly written: boolean }> {
   const id = runCheckpointId(checkpoint);
   const row = { ...checkpoint, id };
-  const reason = invalid(row, checkpoint);
+  assertCheckpointData(row);
+  const reason = invalid(row, checkpoint, true);
   if (reason) {
     // 사유만 던지면 어느 필드가 깨졌는지 알 수 없어 다음 실행이 같은 자리를 다시 헤맨다.
     // 실측(2026-09-09): 실표면에서 malformed 만 남아 원인 추적에 여러 번의 재현이 필요했다.
@@ -231,7 +210,6 @@ export async function saveRunCheckpoint(checkpoint: RunCheckpoint): Promise<{ re
       ["request", source(probe.request)], ["baseContentIdentity", text(probe.baseContentIdentity)],
       ["currentContentIdentity", text(probe.currentContentIdentity)], ["workPlan", workPlan(probe.workPlan)],
       ["runtime", probe.runtime === undefined || isRunRuntimeState(probe.runtime)],
-      ["dataOnly", dataOnly(probe)],
       ["acceptance", probe.acceptance === null || (record(probe.acceptance) && text(probe.acceptance.id)
         && typeof probe.acceptance.goal === "string"
         && oneOf(probe.acceptance.status, ["pending", "working", "verifying", "verified", "blocked"])
@@ -270,12 +248,12 @@ export async function deleteTerminalRunCheckpointsForConversation(
 ): Promise<{ readonly durable: boolean; readonly deleted: number }> {
   if (!text(conversationId) || !text(projectContextKey)) throw new TypeError("Invalid checkpoint cleanup identity");
   let deleted = 0;
-  const rows = await readAllAiRecords<{ readonly id: string }>(STORE);
-  for (const row of rows) {
-    if (!record(row) || !validKey(row) || row.conversationId !== conversationId || row.projectContextKey !== projectContextKey) continue;
-    const key = row;
-    const result = await mutateAiRecord(STORE, row.id, current => {
-      if (invalid(current, key) !== null || !record(current) || current.status !== "terminal" || current.pending !== null) return undefined;
+  for (const id of await readRunCheckpointIds(conversationId)) {
+    if (typeof id !== "string") continue;
+    const result = await mutateAiRecord(STORE, id, current => {
+      if (!record(current) || !validKey(current) || current.conversationId !== conversationId
+        || current.projectContextKey !== projectContextKey || current.status !== "terminal" || current.pending !== null
+        || invalid(current, current) !== null) return undefined;
       return null;
     });
     if (result.written) deleted++;
@@ -283,16 +261,34 @@ export async function deleteTerminalRunCheckpointsForConversation(
   return { durable: await aiRecordBackendKind() === "indexeddb", deleted };
 }
 
+async function latestRunKey(conversationId: string): Promise<{
+  epoch: number; runId: string | null; reason?: "malformed";
+}> {
+  let epoch = -1;
+  let runId: string | null = null;
+  for (const id of await readRunCheckpointIds(conversationId)) {
+    let parts: unknown;
+    try { if (typeof id === "string") parts = JSON.parse(id); } catch { /* invalid key */ }
+    if (!Array.isArray(parts) || parts.length !== 3 || parts[0] !== conversationId || !text(parts[1]) || !count(parts[2])) {
+      return { epoch, runId: null, reason: "malformed" };
+    }
+    if (parts[2] < epoch) continue;
+    runId = parts[2] === epoch ? null : parts[1];
+    epoch = parts[2];
+  }
+  return { epoch, runId };
+}
+
+export async function latestRunCheckpointEpoch(conversationId: string): Promise<number> {
+  return (await latestRunKey(conversationId)).epoch;
+}
+
 /** Select host epoch, never last-completion time. Foreign/ambiguous newest rows block admission. */
 export async function readLatestRunCheckpoint(conversationId: string, projectId: string, projectContextKey: string): Promise<RunCheckpointRead> {
-  const rows = (await readAllAiRecords<RunCheckpoint & { readonly id: string }>(STORE))
-    .filter(row => record(row) && row.conversationId === conversationId);
+  const { epoch, runId, reason } = await latestRunKey(conversationId);
   const durable = await aiRecordBackendKind() === "indexeddb";
-  if (!rows.length) return { kind: "missing", durable };
-  if (rows.some(row => !count(row.epoch))) return { kind: "unsupported", reason: "malformed", durable };
-  const epoch = Math.max(...rows.map(row => row.epoch));
-  const newest = rows.filter(row => row.epoch === epoch);
-  const selected = newest[0];
-  if (newest.length !== 1 || !selected || !text(selected.runId)) return { kind: "unsupported", reason: "malformed", durable };
-  return readRunCheckpoint({ conversationId, projectId, projectContextKey, runId: selected.runId, epoch });
+  if (reason) return { kind: "unsupported", reason, durable };
+  if (epoch < 0) return { kind: "missing", durable };
+  if (!runId) return { kind: "unsupported", reason: "malformed", durable };
+  return readRunCheckpoint({ conversationId, projectId, projectContextKey, runId, epoch });
 }

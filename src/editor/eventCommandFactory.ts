@@ -17,7 +17,7 @@ export function newCommand(kind: Command["kind"]): Command {
     case "runSchedule":
       return { kind: "runSchedule", scheduleId: "" };
     case "fork":
-      return { kind: "fork", condition: { kind: "switch", switchId: "", value: true }, then: [{ kind: "text", body: "" }] };
+      return { kind: "fork", condition: { kind: "switch", switchId: "", value: true }, then: [] };
     case "wait":
       return { kind: "wait", ms: 500 };
     case "inputWait":
