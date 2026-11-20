@@ -152,6 +152,26 @@ test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조
   expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
 });
 
+test("작은 일 Pi 실행은 다른 열린 이벤트가 참조하는 생성 ID를 바꾸지 않는다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn: Command = { kind: "m2Command", commandId: "m2-203-spawn-event", fields: {
+    prefabId: event.id, eventId: "copy", x: 2, y: 3,
+  } };
+  commands[0] = spawn;
+  const other = project.maps[mapId].events[1]!;
+  const draft: GameEvent = { ...other, draft: { kind: "edit", original: other }, pages: [{
+    ...other.pages![1]!, commands: [{ kind: "m2Command", commandId: "m2-204-remove-event", fields: { eventId: "copy" } }],
+  }] };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const rename = apply("m2.203.update", { index: 0, expectedHash: eventCommandHash(spawn), eventId: "new_copy" });
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
+    { streamFn: scripted([rename]) });
+
+  expect(done.stoppedEarly).toContain("기존 식별자를 참조하는 곳이");
+  expect(done.project).toBe(project);
+  expect(done.changedKeys).toEqual([]);
+});
+
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {
   const { request, project, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
