@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
-import type { CorpusCase, FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
+import { resolveTarget, type CorpusCase, type CorpusSetup, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import type { PrimitiveContext } from "@/editor/smallTask/primitives/types";
@@ -26,22 +26,42 @@ export function loadFixture(fixture: FixtureName): Project {
 }
 
 export function setupCorpusProject(fixture: Project, entry: CorpusCase): Project {
-  if (!entry.setup) return fixture;
-  const { events, variables, commonEvents, system, database } = structuredClone(entry.setup);
-  const project: Project = {
-    ...fixture,
-    ...(variables ? { variables: [...fixture.variables, ...variables] } : {}),
-    ...(commonEvents ? { commonEvents: [...fixture.commonEvents, ...commonEvents] } : {}),
-    ...(system ? { system: { ...fixture.system, ...system } } : {}),
-    ...(database ? { database: { ...fixture.database, ...database } } : {}),
-  };
-  if (events?.length) {
-    const mapId = entry.target.kind === "dbEntry" ? fixture.startMapId : entry.target.mapId ?? fixture.startMapId;
-    const map = fixture.maps[mapId];
-    if (!map) throw new Error("이벤트를 넣을 검수 맵을 찾을 수 없어요.");
-    project.maps = { ...fixture.maps, [mapId]: { ...map, events: [...map.events, ...events] } };
+  let project = fixture;
+  for (const fields of [entry.seed, entry.setup]) {
+    if (fields) project = applyCorpusSetup(project, entry, structuredClone(fields));
   }
   return project;
+}
+
+function applyCorpusSetup(project: Project, entry: CorpusCase, setup: CorpusSetup): Project {
+  const { system, database, difficulties, commonEvents, variables, switches, endings, events, commands } = setup;
+  const seeded: Project = {
+    ...project,
+    ...(system || difficulties ? { system: { ...project.system, ...system, ...(difficulties ? { difficulties } : {}) } } : {}),
+    ...(database ? { database: { ...project.database, ...database } } : {}),
+    ...(commonEvents ? { commonEvents: [...project.commonEvents, ...commonEvents] } : {}),
+    ...(variables ? { variables: [...project.variables, ...variables] } : {}),
+    ...(switches ? { switches: [...project.switches, ...switches] } : {}),
+    ...(endings ? { endings: [...project.endings ?? [], ...endings] } : {}),
+  };
+  if (events) {
+    const mapId = entry.target.kind === "dbEntry" ? project.startMapId : entry.target.mapId ?? project.startMapId;
+    const map = seeded.maps[mapId];
+    if (!map) throw new Error("이벤트를 넣을 검수 맵을 찾을 수 없어요.");
+    seeded.maps = { ...seeded.maps, [mapId]: { ...map, events: [...map.events, ...events] } };
+  }
+  if (commands) {
+    const target = resolveTarget(seeded, entry.target);
+    if (target.kind !== "event") throw new Error("명령을 넣을 검수 이벤트를 골라 주세요.");
+    const map = seeded.maps[target.mapId];
+    seeded.maps = { ...seeded.maps, [map.id]: { ...map, events: map.events.map(event => {
+      if (event.id !== target.eventId) return event;
+      if (!event.pages?.length) return { ...event, commands };
+      const pageId = target.pageId ?? event.pages[0].id;
+      return { ...event, pages: event.pages.map(page => page.id === pageId ? { ...page, commands } : page) };
+    }) } };
+  }
+  return seeded;
 }
 
 export function eventTarget(project: Project, mapId: string, eventId: string, pageId?: string) {
