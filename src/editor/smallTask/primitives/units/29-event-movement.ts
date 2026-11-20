@@ -3,6 +3,8 @@ import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp"
 import type { JsonSchema } from "@/editor/tools/types";
 import { isCharsetLikeTextureKey } from "@/player/charsetMotion";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { getCharacterAppearance } from "@/project/characterAppearances";
+import { inBounds } from "@/project/collision";
 import type { Dir, EventAnimationType, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
@@ -24,14 +26,19 @@ function targetEvent(ctx: PrimitiveContext): Extract<PrimitiveContext["target"],
 
 function scope(ctx: PrimitiveContext): SmallTaskScope {
   const { mapId, eventId, x, y } = targetEvent(ctx);
+  // 공용 페이지 범위는 명령과 조건만 지원한다. 아래에서 선택한 페이지의 이동 또는 방향만 쓴다.
   return { kind: "tileEvent", mapId, eventId, x, y };
 }
 
 function legacyPage(event: GameEvent): EventPage {
+  // 최상위 조건은 명령 실행만 막는다. 페이지 조건으로 옮기면 이벤트 자체가 사라진다.
+  if (event.condition) {
+    throw new PrimitiveError("이 옛 이벤트에는 실행 조건이 있어요. 이벤트 편집기에서 페이지를 확인한 뒤 다시 요청해 주세요.");
+  }
   return {
     id: `${event.id}_page_1`,
     name: "페이지 1",
-    conditions: event.condition ? [event.condition] : [],
+    conditions: [],
     graphic: event.sprite ? { sprite: event.sprite } : {},
     trigger: event.trigger,
     priority: "same",
@@ -42,20 +49,32 @@ function legacyPage(event: GameEvent): EventPage {
   };
 }
 
-function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, event: GameEvent) => EventPage): Project {
+type PageMotionPatch = { movement: EventPageMovement } | { graphic: EventPageGraphic; animationType?: EventAnimationType };
+
+function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, event: GameEvent) => PageMotionPatch): Project {
   const { project } = ctx;
   const target = targetEvent(ctx);
   const map = Object.hasOwn(project.maps, target.mapId) ? project.maps[target.mapId] : undefined;
   const index = map?.events.findIndex(event => event.id === target.eventId) ?? -1;
   const event = map?.events[index];
   if (!map || !event) throw new PrimitiveError("범위 밖: 선택한 이벤트를 찾을 수 없어요.");
+  if (!Number.isInteger(target.x) || !Number.isInteger(target.y) || !inBounds(map, target.x, target.y) ||
+    event.x !== target.x || event.y !== target.y || map.events.some((entry, i) => i > index && entry.id === event.id)) {
+    throw new PrimitiveError("범위 밖: 작업할 칸의 이벤트를 다시 선택해 주세요.");
+  }
   const originalPages = event.pages ?? [];
   const pageIndex = target.pageId === undefined ? 0 : originalPages.findIndex(page => page.id === target.pageId);
   const page = originalPages[pageIndex] ?? (pageIndex === 0 && !originalPages.length ? legacyPage(event) : undefined);
   if (!page) throw new PrimitiveError("범위 밖: 선택한 이벤트 페이지를 찾을 수 없어요.");
+  if (originalPages.some((entry, i) => i !== pageIndex && entry.id === page.id)) {
+    throw new PrimitiveError("범위 밖: 페이지를 하나로 구분할 수 없어요. 이벤트 편집기에서 확인해 주세요.");
+  }
 
+  const patch = edit(page, map, event);
   const pages = originalPages.slice();
-  pages[pageIndex] = edit(page, map, event);
+  pages[pageIndex] = "movement" in patch
+    ? { ...page, movement: patch.movement }
+    : { ...page, graphic: patch.graphic, ...(patch.animationType === undefined ? {} : { animationType: patch.animationType }) };
   const events = map.events.slice();
   events[index] = { ...event, pages };
   return { ...project, maps: { ...project.maps, [target.mapId]: { ...map, events } } };
@@ -72,7 +91,10 @@ function directionAnimation(type: EventAnimationType | undefined, fixed: boolean
   return type;
 }
 
-function faceGraphic(project: Project, graphic: EventPageGraphic, spriteId: string | undefined, direction: Dir): EventPageGraphic {
+function faceGraphic(project: Project, graphic: EventPageGraphic, fallbackSpriteId: string | undefined, direction: Dir): EventPageGraphic {
+  // 외형을 연결한 페이지는 렌더할 때 그 외형으로 프레임을 정한다.
+  if (getCharacterAppearance(project, graphic.appearanceId)?.charset) return { ...graphic, direction };
+  const spriteId = graphic.sprite?.id ?? fallbackSpriteId;
   const texture = spriteId ? resolveEventSpriteTexture(project, spriteId, graphic.pattern) : null;
   // 첫 렌더는 저장된 프레임을 사용하므로 방향 줄도 바꾼다. 칩 번호와 발 모양을 유지한다.
   if (!texture || typeof texture.frame !== "number" || (!texture.charset && !isCharsetLikeTextureKey(texture.texture))) {
@@ -102,14 +124,14 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const count = (args.moves as unknown[]).length;
       return count ? `이동 경로를 ${count}단계로 바꿉니다.` : "이동 경로를 비웁니다.";
     },
-    apply: (ctx, args) => editPage(ctx, (page, map, event) => editRoute(ctx.project, map, event, page, args, false)),
+    apply: (ctx, args) => editPage(ctx, (page, map, event) => ({ movement: editRoute(ctx.project, map, event, page, args, false) })),
   }),
   primitive({
     id: "move.route.append",
     title: "이동 경로에 덧붙이기",
     args: ROUTE_APPEND_ARGS,
     describe: (_ctx, args) => `이동 경로 끝에 ${(args.moves as unknown[]).length}단계를 더합니다.`,
-    apply: (ctx, args) => editPage(ctx, (page, map, event) => editRoute(ctx.project, map, event, page, args, true)),
+    apply: (ctx, args) => editPage(ctx, (page, map, event) => ({ movement: editRoute(ctx.project, map, event, page, args, true) })),
   }),
   primitive({
     id: "move.type.set",
@@ -121,26 +143,24 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       },
     }, ["type"]),
     describe: (_ctx, args) => MOVEMENT_SENTENCES[args.type as keyof typeof MOVEMENT_SENTENCES],
-    apply: (ctx, { type }) => editPage(ctx, page => ({
-      ...page, movement: { ...page.movement, type: type as EventPageMovement["type"] },
-    })),
+    apply: (ctx, { type }) => editPage(ctx, page => ({ movement: { ...page.movement, type: type as EventPageMovement["type"] } })),
   }, "move.type.set(random/approach/fixed)"),
   primitive({
     id: "move.speed.set",
     title: "이동 속도 바꾸기",
-    args: rankArgs("speed", "걸음 속도 단계. 1이 가장 느리고 8이 가장 빠름"),
+    args: rankArgs("speed", "걸음 속도 단계. 1이 가장 느리고 7과 8이 가장 빠름"),
     describe: (_ctx, args) => `이동 속도를 ${args.speed}단계로 바꿉니다.`,
-    apply: (ctx, { speed }) => editPage(ctx, page => ({ ...page, movement: { ...page.movement, speed: speed as number } })),
+    apply: (ctx, { speed }) => editPage(ctx, page => ({ movement: { ...page.movement, speed: speed as number } })),
   }),
   primitive({
     id: "move.frequency.set",
     title: "이동 빈도 바꾸기",
-    args: rankArgs("frequency", "움직임 빈도 단계. 1이 가장 드물고 8이 가장 잦음"),
+    args: rankArgs("frequency", "움직임 빈도 단계. 1이 가장 드물고 6부터 8까지는 가장 자주 움직임"),
     describe: (_ctx, args) => `이동 빈도를 ${args.frequency}단계로 바꿉니다.`,
     apply: (ctx, { frequency }) => editPage(ctx, page => {
       const movement = { ...page.movement, frequency: frequency as number };
       delete movement.moveIntervalMs; // 명시한 밀리초 간격이 새 빈도 단계를 가리지 않도록 한다.
-      return { ...page, movement };
+      return { movement };
     }),
   }),
   primitive({
@@ -153,12 +173,13 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       },
       intervalMs: {
         type: "integer", minimum: 800, maximum: 5000,
-        description: "움직임 사이의 간격(밀리초). 일반 순찰은 생략하면 1600",
+        description: "움직임 사이의 간격(밀리초). 생략하면 저장된 순찰 간격을 쓰며, 새 일반 순찰은 1600",
       },
     }, ["directions"]),
-    describe: (_ctx, args) => `${(args.directions as Dir[]).length}걸음을 돌아 출발점으로 오는 순찰을 설정합니다.`,
-    apply: (ctx, { directions, intervalMs }) => editPage(ctx, (page, map, event) =>
-      editPatrol(ctx.project, map, event, page, directions as Dir[], intervalMs as number | undefined)),
+    describe: (_ctx, args) => `${(args.directions as Dir[]).length}걸음으로 출발점에 돌아오는 순찰을 설정합니다.`,
+    apply: (ctx, { directions, intervalMs }) => editPage(ctx, (page, map, event) => ({
+      movement: editPatrol(ctx.project, map, event, page, directions as Dir[], intervalMs as number | undefined),
+    })),
   }),
   primitive({
     id: "npc.face.set",
@@ -173,13 +194,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (fixed === false) return `${facing} 보게 하고 방향 고정을 풉니다.`;
       return `${fixed ? "항상 " : ""}${facing} 바라보게 합니다.`;
     },
-    apply: (ctx, { direction, fixed }) => editPage(ctx, (page, _map, event) => {
-      const animationType = directionAnimation(page.animationType, fixed as boolean | undefined);
-      return {
-        ...page,
-        graphic: faceGraphic(ctx.project, page.graphic, page.graphic.sprite?.id ?? event.sprite?.id, direction as Dir),
-        ...(animationType === undefined ? {} : { animationType }),
-      };
-    }),
+    apply: (ctx, { direction, fixed }) => editPage(ctx, (page, _map, event) => ({
+      graphic: faceGraphic(ctx.project, page.graphic, event.sprite?.id, direction as Dir),
+      animationType: directionAnimation(page.animationType, fixed as boolean | undefined),
+    })),
   }),
 ];

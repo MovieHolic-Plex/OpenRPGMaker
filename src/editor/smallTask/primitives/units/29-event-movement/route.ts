@@ -1,9 +1,13 @@
+import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import type { JsonSchema } from "@/editor/tools/types";
+import { MAX_HOP_DURATION_MS, MAX_HOP_LIFT_PX, MIN_HOP_DURATION_MS } from "@/player/characterHop";
+import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { inBounds } from "@/project/collision";
-import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateMoveRoute } from "@/project/io/shapeCommandFields";
-import type { EventPage, GameEvent, GameMap, MoveCommand, MoveRoute, Project } from "@/project/types";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import type { Command, EventPage, EventPageMovement, GameEvent, GameMap, MoveCommand, MoveRoute, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 
 export const DIRECTION_LABELS = { up: "위", down: "아래", left: "왼쪽", right: "오른쪽" } as const;
@@ -17,12 +21,16 @@ export function objectArgs(properties: Record<string, JsonSchema>, required: rea
 
 const x: JsonSchema = { type: "integer", minimum: 0, description: "대상 칸의 가로 좌표" };
 const y: JsonSchema = { type: "integer", minimum: 0, description: "대상 칸의 세로 좌표" };
-const target: JsonSchema = { type: "string", description: "이 맵에서 찾은 이벤트 또는 주인공" };
-const se: JsonSchema = { type: "string", description: "프로젝트에서 찾은 효과음" };
-const heightPx: JsonSchema = { type: "integer", minimum: 1, description: "점프 또는 낙하 높이" };
-const durationMs: JsonSchema = { type: "integer", minimum: 1, description: "체공 시간(밀리초)" };
+const nonBlankId = { type: "string", pattern: "\\S" } as const;
+const optionalId = { type: "string", pattern: "^(?:$|.*\\S.*)$" } as const;
+const target: JsonSchema = { ...optionalId, description: "이 맵에서 찾은 이벤트 또는 주인공. 좌표를 쓰면 생략하거나 비워 둠" };
+const door: JsonSchema = { ...nonBlankId, description: "이 맵에서 찾은 문 이벤트" };
+const se: JsonSchema = { ...nonBlankId, description: "프로젝트에서 찾은 효과음" };
+const doorSound: JsonSchema = { ...optionalId, description: "프로젝트에서 찾은 효과음. 빈 문자열이면 소리 없이 실행" };
+const heightPx: JsonSchema = { type: "integer", minimum: 1, maximum: MAX_HOP_LIFT_PX, description: "점프 또는 낙하 높이(픽셀)" };
+const durationMs: JsonSchema = { type: "integer", minimum: MIN_HOP_DURATION_MS, maximum: MAX_HOP_DURATION_MS, description: "체공 시간(밀리초)" };
 const enabled: JsonSchema = { type: "boolean", description: "이 단계에서 설정을 켤지 여부" };
-const delta: JsonSchema = { type: "integer", description: "한 단계에서 더하거나 뺄 값" };
+const delta: JsonSchema = { type: "integer", minimum: -7, maximum: 7, description: "올리거나 내릴 단계 수. 낮출 때는 음수" };
 
 function step(
   kind: MoveCommand["kind"], description: string,
@@ -66,28 +74,28 @@ const moves: JsonSchema = {
         target, x, y, distance: { type: "integer", minimum: 0, maximum: 6, description: "대상과 남겨 둘 거리(칸)" },
       }),
       step("turnToward", "대상 또는 지정한 칸 바라보기", { target, x, y }),
-      step("exitVia", "지정한 문이나 가까운 출구로 나가기", { target, x, y, se, closeSe: se }),
-      step("enterVia", "지정한 문이나 가까운 입구로 들어오기", { target, x, y, dir: DIRECTION_SCHEMA, se, closeSe: se }),
+      step("exitVia", "지정한 문이나 가까운 출구로 나가기", { target: door, x, y, se: doorSound, closeSe: doorSound }),
+      step("enterVia", "지정한 문이나 가까운 입구로 들어오기", { target: door, x, y, dir: DIRECTION_SCHEMA, se: doorSound, closeSe: doorSound }),
       step("doorCue", "문 그림이나 소리 재생", {
-        target, se, ms: { type: "integer", minimum: 0, description: "문 연출 시간(밀리초)" },
+        target: door, se,
         frame: { type: "integer", minimum: 0, maximum: 3, description: "문이 열린 정도" },
       }),
       step("placeAt", "이 맵의 지정한 칸으로 바로 이동", { x, y }, ["x", "y"]),
       step("setDirectionFix", "방향 고정 설정", { enabled }, ["enabled"]),
       step("setThrough", "충돌 무시 설정", { enabled }, ["enabled"]),
       step("setAnimation", "걷기 그림 재생 설정", { enabled }, ["enabled"]),
-      step("changeOpacity", "불투명도 조절", { delta: { type: "number", description: "더하거나 뺄 불투명도" } }, ["delta"]),
+      step("changeOpacity", "불투명도 조절", { delta: { type: "integer", minimum: -255, maximum: 255, description: "더하거나 뺄 불투명도" } }, ["delta"]),
       step("setSwitch", "스위치 켜기 또는 끄기", {
-        switchId: { type: "string", description: "프로젝트에서 찾은 스위치" },
+        switchId: { ...nonBlankId, description: "프로젝트에서 찾은 스위치" },
         value: { type: "boolean", description: "스위치를 켤지 여부" },
       }, ["switchId", "value"]),
       step("changeSpeed", "걸음 속도 변경", { delta }, ["delta"]),
       step("changeFrequency", "움직임 빈도 변경", { delta }, ["delta"]),
       step("changeGraphic", "걷기 그림 변경", {
-        spriteId: { type: "string", description: "프로젝트에서 찾은 걷기 그림" },
+        spriteId: { ...nonBlankId, description: "프로젝트에서 찾은 걷기 그림" },
       }, ["spriteId"]),
-      step("npcTransfer", "다른 맵의 지정한 칸으로 이동", {
-        mapId: { type: "string", description: "프로젝트에서 찾은 목적지 맵" }, x, y, direction: DIRECTION_SCHEMA,
+      step("npcTransfer", "맵 이동. 페이지의 자율 이동 경로에서는 사용할 수 없음", {
+        mapId: { ...nonBlankId, description: "프로젝트에서 찾은 목적지 맵" }, x, y, direction: DIRECTION_SCHEMA,
       }, ["mapId", "x", "y"]),
       step("playSe", "효과음 재생", { resourceId: se }, ["resourceId"]),
       step("wait", "한 차례 쉬기"),
@@ -104,7 +112,10 @@ export const ROUTE_SET_ARGS = objectArgs({
 export const ROUTE_APPEND_ARGS = objectArgs({ moves }, ["moves"]);
 
 type RouteArgs = { moves: MoveCommand[]; repeat?: boolean; skippable?: boolean };
-const STAGING_TARGETS = new Set(["@player", "player", "@this", "this-event"]);
+
+function hasTransfer(commands: readonly Command[]): boolean {
+  return commands.some(command => command.kind === "transfer" || nestedCommandLists(command).some(hasTransfer));
+}
 
 function validateRouteReferences(project: Project, map: GameMap, event: GameEvent, page: EventPage, route: MoveRoute): void {
   // 편집기와 같은 참조 검사를 새로 쓰는 단계에만 적용한다.
@@ -117,31 +128,57 @@ function validateRouteReferences(project: Project, map: GameMap, event: GameEven
   }
   if (invalid) {
     const labels: Record<string, string> = {
-      "reference.switch.missing": "스위치",
-      "reference.event.missing": "대상 이벤트",
-      "reference.map.missing": "목적지 맵",
-      "reference.resource.missing": "그림이나 효과음",
+      "reference.switch.missing": "스위치를",
+      "reference.event.missing": "대상 이벤트를",
+      "reference.map.missing": "목적지 맵을",
+      "reference.resource.missing": "그림이나 효과음을",
     };
-    throw new PrimitiveError(`이동 경로에 쓸 ${labels[invalid.code] ?? "대상"}을 찾을 수 없어요.`);
+    throw new PrimitiveError(`이동 경로에 쓸 ${labels[invalid.code] ?? "대상을"} 찾을 수 없어요.`);
   }
 
-  // 이동 경로 대화상자의 검사에서 다루지 않는 칸과 문 연출 참조도 확인한다.
-  let resources: ReadonlySet<string> | undefined;
+  // 대화상자의 공용 검사에 없는 런타임 제약도 확인한다.
+  let sounds: ReadonlySet<string> | undefined;
   for (const move of route.moves) {
     const positioned = "x" in move || "y" in move;
     if (positioned && move.kind !== "npcTransfer" &&
       (move.x === undefined || move.y === undefined || !inBounds(map, move.x, move.y))) {
       throw new PrimitiveError("이동 경로에 이 맵 안의 가로·세로 좌표를 함께 지정해 주세요.");
     }
+    if ("target" in move && move.target) {
+      if (positioned) throw new PrimitiveError("이동 경로 단계마다 대상과 좌표 중 하나를 지정해 주세요.");
+      const canTargetPlayer = move.kind === "approach" || move.kind === "turnToward";
+      const isPlayer = move.target === PLAYER_MOVE_TARGET || move.target === "player";
+      if (!(canTargetPlayer && isPlayer) && !map.events.some(entry => entry.id === move.target)) {
+        throw new PrimitiveError("이동 경로에서 지정한 대상 이벤트를 이 맵에서 찾을 수 없어요.");
+      }
+    }
     if ((move.kind === "approach" || move.kind === "turnToward") && !move.target && !positioned) {
       throw new PrimitiveError("이동 경로에 대상이나 칸을 지정해 주세요.");
     }
-    if (move.kind === "doorCue" && move.target && !STAGING_TARGETS.has(move.target) &&
-      !map.events.some(entry => entry.id === move.target)) {
-      throw new PrimitiveError("문 연출에 쓸 이벤트를 찾을 수 없어요.");
+    if ((move.kind === "exitVia" || move.kind === "enterVia") && !move.target && !positioned &&
+      !map.events.some(entry => entry.id !== event.id && entry.pages?.some(page => hasTransfer(page.commands)))) {
+      throw new PrimitiveError("이 맵에 출입구가 없어요. 드나들 문이나 칸을 지정해 주세요.");
     }
-    for (const sound of ["se" in move ? move.se : undefined, "closeSe" in move ? move.closeSe : undefined]) {
-      if (sound && !(resources ??= collectResourceIds(project)).has(sound)) {
+    if ((move.kind === "exitVia" || move.kind === "enterVia" || move.kind === "doorCue") && "target" in move && move.target === event.id) {
+      throw new PrimitiveError("문 연출에는 이동하는 이벤트와 다른 문 이벤트를 지정해 주세요.");
+    }
+    if (move.kind === "doorCue" && ((move.frame !== undefined) !== Boolean(move.target) || (!move.target && !move.se))) {
+      throw new PrimitiveError("문 소리를 고르거나 문 이벤트와 열림 단계를 함께 지정해 주세요.");
+    }
+    if (move.kind === "jump" && (Math.abs(move.dx) >= map.width || Math.abs(move.dy) >= map.height)) {
+      throw new PrimitiveError("점프로 이동할 칸 수가 이 맵의 크기를 벗어났어요.");
+    }
+    // 도착 맵에서도 플레이어가 같은 페이지를 등록하므로 반복을 꺼도 맵 이동이 다시 실행된다.
+    if (move.kind === "npcTransfer") {
+      throw new PrimitiveError("자율 이동 경로는 도착한 맵에서도 다시 시작돼요. 맵을 옮기려면 이벤트 명령에서 이동 경로를 설정해 주세요.");
+    }
+    if (move.kind === "changeGraphic" && !resolveEventSpriteTexture(project, move.spriteId, page.graphic.pattern)) {
+      throw new PrimitiveError("이동 경로에 쓸 이벤트 그림을 찾을 수 없어요.");
+    }
+    const soundIds = move.kind === "playSe" ? [move.resourceId] :
+      ["se" in move ? move.se : undefined, "closeSe" in move ? move.closeSe : undefined];
+    for (const sound of soundIds) {
+      if (sound && !(sounds ??= new Set(listAudioResources("sound", project).map(entry => entry.id))).has(sound)) {
         throw new PrimitiveError("이동 경로에 쓸 효과음을 찾을 수 없어요.");
       }
     }
@@ -151,7 +188,11 @@ function validateRouteReferences(project: Project, map: GameMap, event: GameEven
 export function editRoute(
   project: Project, map: GameMap, event: GameEvent, page: EventPage,
   rawArgs: Record<string, unknown>, append: boolean,
-): EventPage {
+): EventPageMovement {
+  const previous = append ? page.movement.route : undefined;
+  if (append && !previous) {
+    throw new PrimitiveError("덧붙일 이동 경로가 없어요. 먼저 이 페이지의 이동 경로를 정해 주세요.");
+  }
   const args = rawArgs as RouteArgs;
   const steps: MoveRoute = {
     moves: structuredClone(args.moves),
@@ -164,10 +205,11 @@ export function editRoute(
     throw new PrimitiveError("이동 경로 단계의 형식이 올바르지 않아요.");
   }
   validateRouteReferences(project, map, event, page, steps);
-  const previous = page.movement.route;
-  if (append && previous) {
-    const route = { ...previous, moves: [...previous.moves, ...steps.moves] };
-    return { ...page, movement: { ...page.movement, route } };
+  const editedMoves = previous ? [...previous.moves, ...steps.moves] : steps.moves;
+  if (previous?.moves.some(move => move.kind === "npcTransfer")) {
+    throw new PrimitiveError("기존 경로에 맵 이동이 있어 뒤에 동작을 더할 수 없어요. 이동 경로를 새로 정해 주세요.");
   }
-  return { ...page, movement: { ...page.movement, type: "custom", route: steps } };
+  return previous
+    ? { ...page.movement, route: { ...previous, moves: editedMoves } }
+    : { ...page.movement, type: "custom", route: steps };
 }

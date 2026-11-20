@@ -1727,5 +1727,109 @@
       "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1"
     },
     "expectRefusal": true
+  },
+  {
+    "request": "이동 경로에서 주인공 쪽을 한번 바라보고 그 자리에서 잠깐 쉬게 해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "turnToward",
+          "target": "@player"
+        },
+        {
+          "kind": "wait"
+        }
+      ],
+      "repeat": false
+    },
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].movement.route",
+        "equals": {
+          "moves": [
+            {
+              "kind": "turnToward",
+              "target": "@player"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": false,
+          "skippable": false
+        }
+      }
+    ]
+  },
+  {
+    "request": "경로에서 효과음 대신 이 캐릭터 걷기 그림을 소리로 틀어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "playSe",
+          "resourceId": "easyrpg-charset-people1"
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이 상인을 동굴로 딱 한 번 보내고, 도착한 다음엔 그대로 있게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "pageId": "ev_supply_shop_offer"
+    },
+    "primitive": "move.route.set",
+    "args": {
+      "moves": [
+        {
+          "kind": "npcTransfer",
+          "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "repeat": false
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "끝에 다가갈 사람도 자리도 비워 둔 다가가기 동작 하나를 이어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1",
+      "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"
+    },
+    "primitive": "move.route.append",
+    "args": {
+      "moves": [
+        {
+          "kind": "approach",
+          "target": ""
+        }
+      ]
+    },
+    "expectRefusal": true
   }
 ]
