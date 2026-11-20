@@ -1,15 +1,18 @@
+import { CHARSET_FRAME_COUNT } from "@/assets/easyrpgRtp";
 import { displayText } from "@/editor/smallTask/target";
-import { strandedByRemoval } from "@/editor/tools/strandedSwitches";
 import type { JsonSchema } from "@/editor/tools/types";
+import { isCharsetSpriteTexture, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { eventWithoutDraft } from "@/project/eventDrafts";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateAssetRef } from "@/project/io/shapeReferenceFields";
+import { uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
 import type { Dir, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
+import { hasEventReference, hasNamedObjective, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
 
 export const UNIT = "24-event-structure";
 
@@ -46,16 +49,20 @@ function scopeRefusal(message: string): never {
 function selectedMap(ctx: PrimitiveContext): GameMap {
   if (ctx.target.kind === "dbEntry") scopeRefusal("맵이나 이벤트를 선택해 주세요.");
   const map = ctx.project.maps[ctx.target.mapId];
-  if (!map) throw new PrimitiveError("선택한 맵을 찾을 수 없어요.");
+  if (!map || map.id !== ctx.target.mapId) scopeRefusal("선택한 맵을 찾을 수 없어요.");
   return map;
 }
 
 function selectedEvent(ctx: PrimitiveContext): { map: GameMap; event: GameEvent } {
   if (ctx.target.kind !== "event") scopeRefusal("먼저 고칠 이벤트를 선택해 주세요.");
-  const { eventId, x, y } = ctx.target;
+  const { eventId, pageId, x, y } = ctx.target;
   const map = selectedMap(ctx);
-  const event = map.events.find(entry => entry.id === eventId);
-  if (!event || event.x !== x || event.y !== y) scopeRefusal("이벤트의 현재 자리를 다시 선택해 주세요.");
+  const [event, duplicate] = map.events.filter(entry => entry.id === eventId);
+  if (!event || duplicate || event.x !== x || event.y !== y) scopeRefusal("이벤트의 현재 자리를 다시 선택해 주세요.");
+  assertInMap(map, event);
+  if (pageId !== undefined && event.pages?.filter(page => page.id === pageId).length !== 1) {
+    scopeRefusal("고칠 페이지를 다시 선택해 주세요.");
+  }
   return { map, event };
 }
 
@@ -116,12 +123,17 @@ function nextId(stem: string, used: ReadonlySet<string>, start = 1): string {
   return `${stem}_${number}`;
 }
 
-function nextEventId(project: Project): string {
+function nextEventId(project: Project, mapId: string): string {
   const used = new Set(Object.keys(project.session.selfSwitches ?? {}));
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) used.add(event.id);
   }
-  return nextId("ev_small_task", used);
+  let id = nextId("ev_small_task", used);
+  while (hasEventReference(project, mapId, id, false)) {
+    used.add(id);
+    id = nextId("ev_small_task", used);
+  }
+  return id;
 }
 
 function legacyPage(event: GameEvent): EventPage {
@@ -197,7 +209,20 @@ function assertPlacement(project: Project, map: GameMap, event: GameEvent): void
   }
 }
 
-function patchedGraphic(project: Project, previous: EventPage["graphic"], args: Args): EventPage["graphic"] {
+function eventGraphicFrames(project: Project, id: string): number | undefined {
+  const { sprites, uploaded } = project.assets;
+  if ((id in sprites && !Object.hasOwn(sprites, id)) || (id in uploaded && !Object.hasOwn(uploaded, id))) return undefined;
+  const texture = resolveEventSpriteTexture(project, id, 0);
+  if (!texture) return undefined;
+  const def = sprites[id];
+  const upload = uploaded[def?.image.id ?? texture.texture];
+  if (upload?.kind === "sprite") return uploadedSpriteGeometry(upload)?.frames;
+  if (isCharsetSpriteTexture(texture)) return CHARSET_FRAME_COUNT;
+  if (texture.frame === "__BASE") return 1;
+  return def?.frames ?? upload?.meta.frames ?? 1;
+}
+
+function patchedGraphic(project: Project, event: GameEvent, previous: EventPage["graphic"], args: Args): EventPage["graphic"] {
   const graphic = { ...previous };
   if (args.graphic === null) {
     delete graphic.sprite;
@@ -212,7 +237,7 @@ function patchedGraphic(project: Project, previous: EventPage["graphic"], args: 
       throw new PrimitiveError("이벤트 그림을 다시 골라 주세요.");
     }
     const uploaded = Object.hasOwn(project.assets.uploaded, sprite.id);
-    if (sprite.type === "uploaded" ? !uploaded : uploaded || !collectResourceIds(project).has(sprite.id)) {
+    if ((sprite.type === "uploaded") !== uploaded || eventGraphicFrames(project, sprite.id) === undefined) {
       throw new PrimitiveError("사용할 그림을 찾을 수 없어요.");
     }
     if (graphic.sprite?.id !== sprite.id || graphic.sprite?.type !== sprite.type) delete graphic.pattern;
@@ -221,8 +246,12 @@ function patchedGraphic(project: Project, previous: EventPage["graphic"], args: 
     graphic.transparent = false;
   }
   if (typeof args.pattern === "number") {
-    if (!Number.isSafeInteger(args.pattern) || args.pattern < 0) throw new PrimitiveError("그림의 칸 번호를 확인해 주세요.");
-    if (!graphic.sprite) throw new PrimitiveError("그림을 먼저 골라 주세요.");
+    const sprite = resolveEventAppearanceGraphic(project, graphic).sprite ?? event.sprite;
+    const frames = sprite && eventGraphicFrames(project, sprite.id);
+    if (args.graphic === null || frames === undefined) throw new PrimitiveError("그림을 먼저 골라 주세요.");
+    if (!Number.isSafeInteger(args.pattern) || args.pattern < 0 || args.pattern >= frames) {
+      throw new PrimitiveError("그림에 있는 칸 번호를 골라 주세요. 첫 칸은 0이에요.");
+    }
     graphic.pattern = args.pattern;
   }
   if (typeof args.direction === "string") graphic.direction = args.direction as Dir;
@@ -251,7 +280,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     targets: mapTargets, args: schema({ name: nameField, ...cellFields }),
     scope: cellScope,
     describe(_ctx, args) {
-      return args.name ? `선택한 칸에 ‘${previewName(String(args.name), "이벤트")}’ 이름으로 이벤트를 만들어요.` : "선택한 칸에 빈 이벤트를 만들어요.";
+      return args.name ? `선택한 칸에 ‘${previewName(String(args.name), "새 이벤트")}’ 이벤트를 만들어요.` : "선택한 칸에 빈 이벤트를 만들어요.";
     },
     apply(ctx, args) {
       if (ctx.target.kind !== "map") scopeRefusal("이벤트를 만들 맵의 빈 칸을 선택해 주세요.");
@@ -260,7 +289,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       requireSelectedDestination(cell, requestedCell(args));
       const name = optionalName(args);
       const event: GameEvent = {
-        id: nextEventId(ctx.project), ...cell, ...(name ? { name } : {}),
+        id: nextEventId(ctx.project, map.id), ...cell, ...(name ? { name } : {}),
         trigger: { kind: "action" }, commands: [],
       };
       event.pages = [legacyPage(event)];
@@ -274,18 +303,21 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     args: schema({
       name: nameField,
       copyFrom: { ...pageField, description: "그림과 실행 설정을 가져올 페이지 번호. 생략하면 첫 페이지" },
-      position: { ...pageField, description: "새 페이지가 들어갈 자리. 첫 자리는 1이며 생략하면 맨 뒤" },
+      position: { ...pageField, description: "새 페이지가 들어갈 자리. 첫 자리는 1이며 생략하면 맨 앞. 뒤쪽 페이지가 먼저 실행됩니다." },
     }),
     scope: eventScope,
     describe(_ctx, args) {
-      return typeof args.position === "number" ? `${args.position}번째 자리에 빈 페이지를 추가해요.` : "이벤트 맨 뒤에 빈 페이지를 추가해요.";
+      return typeof args.position === "number" ? `${args.position}번째 자리에 빈 페이지를 추가해요.` : "이벤트 맨 앞에 빈 페이지를 추가해요.";
     },
     apply(ctx, args) {
       const { map, event } = selectedEvent(ctx);
       const pages = [...pagesOf(event)];
-      const position = Number(args.position ?? pages.length + 1);
+      const position = Number(args.position ?? 1);
       if (!Number.isSafeInteger(position) || position < 1 || position > pages.length + 1) throw new PrimitiveError("페이지를 추가할 자리를 찾을 수 없어요.");
       const base = pageAt(pages, Number(args.copyFrom ?? 1));
+      if (args.position === undefined && !pages.some(page => (page.conditions ?? []).length === 0)) {
+        throw new PrimitiveError("모든 페이지에 등장 조건이 있어요. 빈 페이지를 넣을 자리를 지정해 주세요.");
+      }
       const usedNames = new Set(pages.map(page => page.name));
       let pageNumber = pages.length + 1;
       while (usedNames.has(`페이지 ${pageNumber}`)) pageNumber += 1;
@@ -296,6 +328,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         priority: base.priority ?? "same", conditions: [], commands: [],
         movement: structuredClone(base.movement ?? legacyPage(event).movement),
         ...(base.overlapForbidden !== undefined ? { overlapForbidden: base.overlapForbidden } : {}),
+        ...(base.animationType !== undefined ? { animationType: base.animationType } : {}),
+        ...(base.footprint ? { footprint: { ...base.footprint } } : {}),
+        ...(base.passRows !== undefined ? { passRows: base.passRows } : {}),
       };
       pages.splice(position - 1, 0, page);
       return replaceEvent(ctx.project, map, { ...event, pages });
@@ -315,7 +350,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         typeof args.through === "boolean" ? (args.through ? "통과 허용" : "통과 금지") : "",
         typeof args.direction === "string" ? `${directions[args.direction as Dir]} 보기` : "",
       ].filter(Boolean);
-      return `${number}번째 페이지에 ${changes.join("·")} 설정을 적용해요.`;
+      return `${number}번째 페이지에 ${changes.join(", ")} 설정을 적용해요.`;
     },
     apply(ctx, args) {
       const { map, event } = selectedEvent(ctx);
@@ -326,7 +361,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const graphicChanged = args.graphic !== undefined || args.direction !== undefined || args.pattern !== undefined;
       pages[number - 1] = {
         ...page,
-        ...(graphicChanged ? { graphic: patchedGraphic(ctx.project, page.graphic ?? {}, args) } : {}),
+        ...(graphicChanged ? { graphic: patchedGraphic(ctx.project, event, page.graphic ?? {}, args) } : {}),
         ...(typeof args.trigger === "string" ? { trigger: { kind: args.trigger as SimpleTriggerKind } } : {}),
         ...(typeof args.priority === "string" ? { priority: args.priority as EventPage["priority"] } : {}),
         ...(typeof args.through === "boolean" ? { overlapForbidden: !args.through } : {}),
@@ -345,10 +380,18 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const { map, event } = selectedEvent(ctx);
       const pages = [...pagesOf(event)];
       const number = selectedPageNumber(ctx, pages, args);
-      pageAt(pages, number);
+      const removed = pageAt(pages, number);
       if (pages.length === 1) throw new PrimitiveError("이벤트에는 페이지를 한 장 이상 남겨야 해요.");
       pages.splice(number - 1, 1);
-      return replaceEvent(ctx.project, map, { ...event, pages });
+      const edited = { ...event, pages };
+      const after = replaceEvent(ctx.project, map, edited);
+      if (strandsSelfSwitch(edited, removed)) {
+        throw new PrimitiveError("이 페이지를 지우면 다음 진행에 필요한 셀프 스위치를 켤 수 없어요.");
+      }
+      if (strandsSwitch(after, removed)) {
+        throw new PrimitiveError("이 페이지를 지우면 다른 곳에서 기다리는 스위치를 켤 수 없어요.");
+      }
+      return after;
     },
   },
   {
@@ -383,7 +426,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const { map, event } = selectedEvent(ctx);
       const cell = selectedCell(ctx);
       requireSelectedDestination(cell, requestedCell(args, event));
-      const id = nextEventId(ctx.project);
+      const id = nextEventId(ctx.project, map.id);
       const copy = movedTo(map, { ...eventWithoutDraft(event), id }, cell);
       if (copy.pages) copy.pages = copy.pages.map((page, index) => ({ ...page, id: `${id}_page_${index + 1}` }));
       assertPlacement(ctx.project, map, copy);
@@ -402,10 +445,13 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply(ctx) {
       const { map, event } = selectedEvent(ctx);
       if (event.draft) throw new PrimitiveError("열린 이벤트 편집을 먼저 마쳐 주세요.");
-      if (strandedByRemoval(ctx.project, map.id, event.id).length) {
-        throw new PrimitiveError("다른 이벤트의 진행에 필요한 스위치를 켜는 이벤트예요.");
-      }
       const after = replaceEvents(ctx.project, map, map.events.filter(entry => entry.id !== event.id));
+      if (strandsSwitch(after, event)) {
+        throw new PrimitiveError("이 이벤트를 지우면 진행에 필요한 스위치를 켤 수 없어요.");
+      }
+      if (hasEventReference(after, map.id, event.id) || hasNamedObjective(after, event)) {
+        throw new PrimitiveError("다른 곳에서 이 이벤트를 사용하고 있어요. 연결을 먼저 확인해 주세요.");
+      }
       validateReferences(ctx.project, after, "다른 곳에서 이 이벤트를 사용하고 있어요.");
       if (!Object.hasOwn(ctx.project.session.selfSwitches ?? {}, event.id)
         || Object.values(after.maps).some(other => other.events.some(entry => entry.id === event.id))) return after;
@@ -427,13 +473,11 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         : "선택한 이벤트를 선택한 칸으로 옮겨요.";
     },
     apply(ctx, args) {
-      const { map, event } = selectedEvent(ctx);
+      const { event } = selectedEvent(ctx);
       const selected = selectedCell(ctx);
       requireSelectedDestination(selected, requestedCell(args, event));
       if (event.x === selected.x && event.y === selected.y) return ctx.project;
-      const moved = movedTo(map, event, selected);
-      assertPlacement(ctx.project, map, moved);
-      return replaceEvent(ctx.project, map, moved);
+      scopeRefusal("작은 일에서는 이벤트를 다른 칸으로 옮길 수 없어요. 맵에서 이벤트를 직접 옮겨 주세요.");
     },
   },
   {
@@ -445,7 +489,12 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
     apply(ctx, args) {
       const { map, event } = selectedEvent(ctx);
-      return replaceEvent(ctx.project, map, { ...event, name: optionalName(args) });
+      const name = optionalName(args);
+      if (!name) throw new PrimitiveError("이름을 한 글자 이상 적어 주세요.");
+      if (hasNamedObjective(ctx.project, event, name)) {
+        throw new PrimitiveError("현재 목표가 이 이벤트를 이름으로 가리키고 있어요. 목표의 연결을 먼저 확인해 주세요.");
+      }
+      return replaceEvent(ctx.project, map, { ...event, name });
     },
   },
 ];
