@@ -2,14 +2,18 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { normalizeEventPage } from "@/editor/eventPages";
+import { updateScopedPage } from "@/editor/smallTask/primitives/core/helpers";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/16-cond-world-social";
 import { createInterpreter } from "@/player/interpreter";
 import { findFacedItemTarget } from "@/player/itemUseOnTarget";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { resolveEventPage } from "@/project/io/pageResolution";
+import { setLayerTileAt } from "@/project/mapLayers";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { endRoguelikeRun, startRoguelikeRun } from "@/project/roguelikeRun";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
@@ -64,6 +68,9 @@ function fixtureProject(name: Place[0]): Project {
   let project = sharedProjects.get(name);
   if (!project) {
     project = loadFixture(name);
+    // Match the editor's normalization before the first primitive freezes the fixture.
+    ensureSwitchVariableSlots(project);
+    removeLegacySpriteReferences(project);
     sharedProjects.set(name, project);
   }
   return project;
@@ -151,8 +158,10 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
     expect(getPage(result.after, at).conditions).toEqual([EXISTING, { kind: "season", season: "winter" }, other]);
     expect(page.conditions).toEqual([EXISTING, old, other]);
 
-    page.conditions.push({ kind: "season", season: "fall" });
-    expect(() => runPrimitive(at.project, at.target, id, args)).toThrow(/같은 종류의 조건이 여러 개/u);
+    const duplicate = updateScopedPage(at, (original) => ({
+      ...original, conditions: [...original.conditions, { kind: "season", season: "fall" }],
+    }));
+    expect(() => runPrimitive(duplicate, at.target, id, args)).toThrow(/같은 종류의 조건이 여러 개/u);
   });
 
   it("복합 시야의 거리만 고치고 한 번의 되돌리기로 원래 조건을 돌린다", async () => {
@@ -215,6 +224,14 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
     const refusal = checkSmallTaskScope(project, commandEdit, scope);
     expect(refusal.ok).toBe(false);
     if (!refusal.ok) expect(refusal.reason).toMatch(/범위 밖/u);
+  });
+
+  it("페이지가 여럿이면 조건을 바꿀 페이지를 먼저 고르도록 안내한다", () => {
+    const at = fixture(blank);
+    const target = eventTarget(at.project, at.mapId, at.eventId);
+    const apply = () => runPrimitive(at.project, target, "cond.timePhase.page.set", { phase: "night" });
+    expect(apply).toThrow(SELECT_EVENT_PAGE);
+    expect(getPage(at.project, at).conditions).toEqual([]);
   });
 
   it("읽는 참조가 같은 맵에 있어도 모델이 페이지나 맵을 바꿔 쓸 수 없다", () => {
@@ -389,8 +406,8 @@ describe("실행 중 등장 조건 판정", () => {
     });
     const positions = { ev_test_guard: { x: 4, y: 4, direction: "left" as const } };
     const sight = { eventId: "ev_test_guard", range: 4, nightRange: 1, darkRange: 1, darkAmbient: 0.8 };
-    function page(args: Record<string, unknown>, hour = 13, ambient = 0) {
-      const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", { ...sight, ...args });
+    function page(args: Record<string, unknown>, hour = 13, ambient = 0, project = at.project) {
+      const { after } = runPrimitive(project, at.target, "cond.eventSeesPlayer.page.set", { ...sight, ...args });
       const session = Object.assign(startSession(after, 7), { x: 2, y: 4, gameTime: { ...day, hour }, lighting: { ambient } });
       return runtimeEventViewsForMap(after, after.maps[at.mapId]!, session, positions).find((view) => view.event.id === at.eventId)?.pageId;
     }
@@ -401,7 +418,9 @@ describe("실행 중 등장 조건 판정", () => {
     expect(page({}, 13, 0.8)).toBe("pg_test_base");
     expect(page({ doorsBlock: true, hearRange: 4 }, 23)).toBe("pg_test_base");
     expect(page({ doorsBlock: true, hearRange: 5 }, 23)).toBe(PAGE);
-    map.lowerTiles[4 * map.width + 3] = -1;
-    expect(page({})).toBe("pg_test_base");
+    const mapWithGap = { ...map, lowerTiles: [...map.lowerTiles] };
+    setLayerTileAt(mapWithGap, 1, 4 * map.width + 3, -1);
+    const projectWithGap = { ...at.project, maps: { ...at.project.maps, [at.mapId]: mapWithGap } };
+    expect(page({}, 13, 0, projectWithGap)).toBe("pg_test_base");
   });
 });
