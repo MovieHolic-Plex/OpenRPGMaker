@@ -1,11 +1,99 @@
 import ts from "typescript5";
 import { analyzeScript, knownScriptIds } from "@/editor/script/analyze";
 import { scriptCommandFields } from "@/editor/script/compile";
-import { SCRIPT_API_VERSION, SCRIPT_COMPILED_LIMIT, scriptSourceHash } from "@/project/script/types";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
+import { libraryIdFromSpecifier } from "@/project/script/library";
+import { SCRIPT_API_VERSION, SCRIPT_COMPILED_LIMIT, scriptSourceHash, type ScriptRef } from "@/project/script/types";
 import type { Command, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 
 type ScriptCommand = Extract<Command, { kind: "script" }>;
+
+function stringLiteral(node: ts.Node | undefined): string | undefined {
+  return node && ts.isStringLiteralLike(node) ? node.text : undefined;
+}
+
+function memberName(access: ts.Node, object: ts.Node): string | undefined {
+  if (ts.isPropertyAccessExpression(access) && access.expression === object) return access.name.text;
+  if (ts.isElementAccessExpression(access) && access.expression === object) return stringLiteral(access.argumentExpression);
+  return undefined;
+}
+
+function isGameObject(node: ts.Node): boolean {
+  if (ts.isIdentifier(node)) return node.text === "game";
+  return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+    && ts.isIdentifier(node.expression) && node.expression.text === "globalThis"
+    && memberName(node, node.expression) === "game";
+}
+
+function addRef(list: ScriptRef[], ref: ScriptRef): void {
+  if (!list.some(entry => entry.kind === ref.kind && entry.id === ref.id)) list.push(ref);
+}
+
+function validateGameCalls(project: Project, source: string, effects: Record<"reads" | "writes" | "calls", ScriptRef[]>): void {
+  const file = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2022, true);
+  function visit(node: ts.Node): void {
+    let specifier: ts.Node | undefined;
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      specifier = node.moduleSpecifier;
+    } else if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) {
+      specifier = node.moduleReference.expression;
+    } else if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      if (callee.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(callee) && callee.text === "require")) {
+        specifier = node.arguments[0];
+      }
+      if ((ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) && isGameObject(callee.expression)) {
+        const name = memberName(callee, callee.expression);
+        if (name !== undefined) {
+          const api = SCRIPT_API_BY_NAME.get(name);
+          if (!api) throw new PrimitiveError("스크립트에서 사용한 게임 기능을 찾을 수 없습니다. 함수 이름을 확인해 주세요.");
+          for (const { arg, kind, access } of api.refs ?? []) {
+            if (node.arguments.slice(0, arg + 1).some(ts.isSpreadElement)) continue;
+            const argument = node.arguments[arg];
+            const id = stringLiteral(argument);
+            if (!argument || argument.kind === ts.SyntaxKind.NullKeyword || id?.trim() === "") {
+              throw new PrimitiveError("스크립트에서 사용할 항목을 지정해 주세요.");
+            }
+            if (id !== undefined) addRef(effects[access === "read" ? "reads" : access === "write" ? "writes" : "calls"], { kind, id });
+          }
+        }
+      }
+    }
+    const moduleName = stringLiteral(specifier);
+    if (moduleName !== undefined) {
+      const libraryId = libraryIdFromSpecifier(moduleName);
+      if (!libraryId || !project.scriptLibrary?.some(module => module.id === libraryId)) {
+        throw new PrimitiveError("스크립트에서 가져올 프로젝트 라이브러리를 찾을 수 없습니다.");
+      }
+      addRef(effects.calls, { kind: "library", id: libraryId });
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(file);
+}
+
+/** A running script can put a command or a called common event on the same interpreter stack. */
+export function scriptMayDispatchFlow(compiled: string, followsCommonEvent: (id: string) => boolean, unknownFlow = () => true): boolean {
+  const file = ts.createSourceFile("/script.js", compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
+  function visit(node: ts.Node): boolean {
+    if (ts.isIdentifier(node) && node.text === "require" && unknownFlow()) return true;
+    if (isGameObject(node)) {
+      const access = node.parent;
+      const name = memberName(access, node);
+      if (name === "callCommonEvent") {
+        const call = access.parent;
+        const id = ts.isCallExpression(call) && call.expression === access ? stringLiteral(call.arguments[0]) : undefined;
+        return id === undefined ? unknownFlow() : followsCommonEvent(id);
+      }
+      // Computed or aliased calls and game.cmd can dispatch commands selected at run time.
+      return (name === undefined || name === "cmd") && unknownFlow();
+    }
+    return ts.forEachChild(node, visit) === true;
+  }
+  return visit(file);
+}
 
 /** The primitive contract is synchronous, so this path uses the same transpiler and analyzer directly. */
 export function compileFlowScript(project: Project, mapId: string, source: string, name?: string): ScriptCommand {
@@ -21,10 +109,16 @@ export function compileFlowScript(project: Project, mapId: string, source: strin
     throw new PrimitiveError("스크립트의 문법이나 가져올 모듈을 확인해 주세요.");
   }
   if (result.outputText.length > SCRIPT_COMPILED_LIMIT) throw new PrimitiveError("스크립트가 너무 깁니다.");
+  const { reads, writes, calls, dynamic } = analysis.effects;
+  const effects = { reads: [...reads], writes: [...writes], calls: [...calls], dynamic };
+  validateGameCalls(project, source, effects);
 
   const known = knownScriptIds(project, mapId);
-  const { reads, writes, calls } = analysis.effects;
-  for (const { kind, id } of [...reads, ...writes, ...calls]) {
+  let resources: ReturnType<typeof collectResourceIds> | undefined;
+  for (const { kind, id } of [...effects.reads, ...effects.writes, ...effects.calls]) {
+    if (kind === "resource" && !(resources ??= collectResourceIds(project)).has(id)) {
+      throw new PrimitiveError("스크립트에 지정한 그림이나 소리 자료를 찾을 수 없습니다.");
+    }
     if (known[kind] && !known[kind].includes(id)) {
       throw new PrimitiveError("스크립트에 연결할 대상이 없습니다.");
     }
@@ -33,7 +127,7 @@ export function compileFlowScript(project: Project, mapId: string, source: strin
     ok: true,
     compiled: result.outputText,
     diagnostics: analysis.diagnostics,
-    effects: analysis.effects,
+    effects,
     summary: analysis.summary,
     sourceHash: scriptSourceHash(source),
     apiVersion: SCRIPT_API_VERSION,

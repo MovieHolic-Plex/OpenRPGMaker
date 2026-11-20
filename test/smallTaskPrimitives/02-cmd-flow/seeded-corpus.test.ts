@@ -11,6 +11,7 @@ import type { Command, CommonEvent, EventPage, GameEvent, Project } from "@/proj
 import { expectKoreanSentence, expectUndoRestores, loadFixture } from "../harness";
 
 type FlowCase = CorpusCase & {
+  refusalMessage?: string;
   setup: {
     commands: Command[];
     commonEvents: CommonEvent[];
@@ -50,16 +51,26 @@ function fixtureWithFlow({ fixture, setup }: FlowCase): Project {
 }
 
 it.each(cases)("$request", async entry => {
-  const { target: selector, primitive, args, expect: checks, expectRefusal } = entry;
+  const { target: selector, primitive, args, expect: checks, expectRefusal, refusalMessage } = entry;
   const project = fixtureWithFlow(entry);
   const target = resolveTarget(project, selector);
   const apply = () => runPrimitive(project, target, primitive, args);
   if (expectRefusal) {
+    const map = project.maps.map_blank_start;
+    const events = structuredClone(map.events);
+    const commonEvents = structuredClone(project.commonEvents);
     expect(apply).toThrow(PrimitiveError);
+    if (refusalMessage) expect(apply).toThrow(refusalMessage);
+    expect(project.maps.map_blank_start.events).toEqual(events);
+    expect(project.commonEvents).toEqual(commonEvents);
     return;
   }
   const { after, sentence } = apply();
   expectKoreanSentence(sentence, target);
-  for (const check of checks ?? []) expect(readCheckPath(after, check.at), check.at).toEqual(check.equals);
+  expect(checks?.length).toBeGreaterThan(0);
+  for (const check of checks ?? []) {
+    expect(Object.hasOwn(check, "equals"), check.at).toBe(true);
+    expect(readCheckPath(after, check.at), check.at).toEqual(check.equals);
+  }
   await expectUndoRestores(project, after, target);
 });
