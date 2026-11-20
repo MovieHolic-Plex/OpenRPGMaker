@@ -1,7 +1,10 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import {
+  FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX,
+  SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
+} from "@/editor/eventCommandPaths";
 import { normalizeEventPage } from "@/editor/eventPages";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
@@ -218,8 +221,9 @@ describe("공용 이벤트", () => {
     }
   });
 
-  it("자기 자신을 호출하는 공용 이벤트도 삭제할 수 없다", () => {
-    expect(() => runOn(seed([call]), "commonEvent.remove", { commonEventId: eventId })).toThrow(/여관 혜택.*지울 수 없습니다/u);
+  it("함께 지워지는 분기 안의 자기 호출은 공용 이벤트 삭제를 막지 않는다", () => {
+    const project = seed([{ ...fork, then: [call] }]);
+    expect(runOn(project, "commonEvent.remove", { commonEventId: eventId }).after.commonEvents).toEqual([]);
   });
 
   it.each(["전투 명령", "직업", "필드 스킬", "장비"] as const)("자료집의 %s에서 사용하는 동안 삭제를 거부하고 이름 변경은 허용한다", source => {
@@ -282,7 +286,9 @@ describe("공용 이벤트", () => {
   });
 
   it("구형 스크립트의 호출 대상을 확인할 수 없으면 삭제를 거부한다", () => {
-    const project = seed([{ kind: "script", source: "await game.callCommonEvent(id)", compiled: "await game.callCommonEvent(id)" }]);
+    const project = seed();
+    const source = "await game.callCommonEvent(id)";
+    project.commonEvents.unshift({ ...commonEvent([{ kind: "script", source, compiled: source }]), id: "ce_other" });
     expect(() => runOn(project, "commonEvent.remove", { commonEventId: eventId })).toThrow("사용하는지 확인할 수 없습니다");
   });
 
@@ -415,6 +421,19 @@ describe("공용 이벤트", () => {
     expect(() => runOn(project, "commonEvent.command.insert", { ...args, index: 1 })).toThrow("명령 줄을 찾을 수 없습니다");
   });
 
+  it.each([
+    [SHOP_TRANSACTION_BRANCH_INDEX, "branchOnTransaction", "transactionBranch"],
+    [SHOP_FAILED_TRANSACTION_BRANCH_INDEX, "branchOnFailedTransaction", "failedTransactionBranch"],
+  ] as const)("켜진 상점 분기 %i에서만 첫 줄을 추가한다", (branch, flag, list) => {
+    const shop: Command = { kind: "shop", itemIds: [], [flag]: false };
+    const args = { commonEventId: eventId, index: 0, branchPath: [0, branch], command: gold };
+    expect(() => runOn(seed([shop]), "commonEvent.command.insert", args)).toThrow("상점의 해당 거래 분기를 켠 뒤");
+    expect(() => runOn(seed([{ ...shop, [list]: [wait] }]), "commonEvent.command.insert", args))
+      .toThrow("상점의 해당 거래 분기를 켠 뒤");
+    const { after } = runOn(seed([{ ...shop, [flag]: true }]), "commonEvent.command.insert", args);
+    expect(after.commonEvents.at(-1)?.commands).toEqual([{ ...shop, [flag]: true, [list]: [gold] }]);
+  });
+
   it("분기 안에서 라벨을 사용하는 동안 이름 변경과 삭제를 막고, 독립 분기의 라벨은 지운다", () => {
     const label: Command = { kind: "label", name: "다음 장면" };
     const jump: Command = { kind: "gotoLabel", name: label.name };
@@ -489,7 +508,40 @@ describe("공용 이벤트", () => {
     expect(() => runOn(project, "commonEvent.trigger.set", { commonEventId: eventId, trigger: "parallel" }))
       .toThrow("자동 실행할 수 없습니다");
     expect(() => runOn(project, "commonEvent.command.insert", { commonEventId: indirectId, command: call }))
-      .toThrow("이 호출에서 공용 이벤트의 이동 명령이 사용할 라벨을 찾을 수 없습니다");
+      .toThrow("이 호출에서 이동 명령이 사용할 라벨을 찾을 수 없습니다");
+  });
+
+  it("공용 이벤트 호출 대상을 바꿀 때 새 대상의 라벨 의존성을 확인한다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const jump = { kind: "gotoLabel", name: label.name } as const;
+    const original = { ...call, commonEventId: "ce_original" };
+    const project = seed([original]);
+    project.commonEvents.unshift(
+      { ...commonEvent(), id: original.commonEventId },
+      { ...commonEvent([jump]), id: "ce_needs_label" },
+      { ...commonEvent([jump, label]), id: "ce_local_label" },
+    );
+    const args = { commonEventId: eventId, index: 0, expectedCommand: original };
+    expect(() => runOn(project, "commonEvent.command.update", { ...args, patch: { commonEventId: "ce_needs_label" } }))
+      .toThrow("이동 명령이 사용할 라벨을 찾을 수 없습니다");
+    expect(runOn(project, "commonEvent.command.update", { ...args, patch: { commonEventId: "ce_local_label" } })
+      .after.commonEvents.at(-1)?.commands).toEqual([{ ...call, commonEventId: "ce_local_label" }]);
+  });
+
+  it("병렬 처리에서 하위 공용 이벤트가 볼 수 있는 라벨을 검사한다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const jump = { kind: "gotoLabel", name: label.name } as const;
+    const calleeId = "ce_descendant";
+    const nestedCall = { ...call, commonEventId: calleeId };
+    const project = seed([nestedCall]);
+    project.commonEvents.unshift({ ...commonEvent([{ ...fork, then: [jump] }]), id: calleeId });
+    project.maps[project.startMapId].events = [
+      { id: "ev_caller", x: 0, y: 0, trigger: { kind: "action" }, commands: [call, label] },
+    ];
+    const args = { commonEventId: eventId, trigger: "parallel" };
+    expect(() => runOn(project, "commonEvent.trigger.set", args)).toThrow("자동 실행할 수 없습니다");
+    const localLabel = { ...project, commonEvents: [project.commonEvents[0], commonEvent([nestedCall, label])] };
+    expect(runOn(localLabel, "commonEvent.trigger.set", args).after.commonEvents.at(-1)?.trigger).toBe("parallel");
   });
 
   it.each(["insert", "update"])("맵 이벤트의 라벨로 돌아가는 기존 이동을 가로채는 라벨 편집을 거부한다 (%s)", edit => {
@@ -531,6 +583,22 @@ describe("공용 이벤트", () => {
       .toThrow("이 라벨로 이동하는 명령");
   });
 
+  it("맵 스크립트의 리터럴 호출에서도 호출자의 라벨을 가로채는 편집을 거부한다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const source = `await game.callCommonEvent("${eventId}");`;
+    const script: Command = { kind: "script", source, compiled: source, effects: { calls: [], reads: [], writes: [], dynamic: [] } };
+    const jump = { kind: "gotoLabel", name: label.name } as const;
+    const project = seed([jump]);
+    project.maps[project.startMapId].events = [
+      { id: "ev_script_caller", x: 0, y: 0, trigger: { kind: "action" }, commands: [script, gold, label] },
+    ];
+    expect(() => runOn(project, "commonEvent.command.insert", { commonEventId: eventId, command: label }))
+      .toThrow("기존 이동 명령이 다른 라벨로 이동합니다");
+    const noJump = { ...project, commonEvents: [commonEvent()] };
+    expect(runOn(noJump, "commonEvent.command.insert", { commonEventId: eventId, command: jump })
+      .after.commonEvents.at(-1)?.commands).toEqual([jump]);
+  });
+
   it.each([
     { kind: "setSwitch", switchId: "sw_missing", value: true },
     { kind: "changeItem", itemId: "item_missing", op: "+=", amount: 3 },
@@ -547,7 +615,7 @@ describe("공용 이벤트", () => {
     expect(project.commonEvents.at(-1)).toEqual(commonEvent());
   });
 
-  it("맵 이벤트 호출은 작업을 시작한 맵의 저장된 이벤트만 가리킬 수 있다", () => {
+  it("맵 이벤트 호출은 모든 맵에 저장된 이벤트를 요구한다", () => {
     const project = seed();
     const selectedMap = { ...createBlankMap("다른 맵", 3, 3), id: "map_call_target" };
     const called = {
@@ -560,21 +628,49 @@ describe("공용 이벤트", () => {
     project.maps[project.startMapId].events = [otherEvent];
     const target = mapTarget(project, selectedMap.id)!;
     const command = { kind: "callMapEvent", eventId: called.id } as const;
-    const insert = (mapCommand: Command) => runPrimitive(project, target, "commonEvent.command.insert", {
+    const insert = (mapCommand: Command, before = project) => runPrimitive(before, target, "commonEvent.command.insert", {
       commonEventId: eventId, command: mapCommand,
     });
     for (const unavailable of [otherEvent, draft]) {
       expect(() => insert({ ...command, eventId: unavailable.id })).toThrow("작업을 시작한 맵에서 호출할 이벤트를 찾을 수 없습니다");
     }
 
-    const { after } = insert(command);
+    expect(() => insert(command)).toThrow("모든 맵에 호출할 이벤트가 있어야 합니다");
+    const allMaps = {
+      ...project,
+      maps: Object.fromEntries(Object.entries(project.maps).map(([id, map]) =>
+        [id, map === selectedMap ? map : { ...map, events: [...map.events, called] }])),
+    };
+    const { after } = insert(command, allMaps);
     expect(() => runPrimitive(after, target, "commonEvent.command.update", {
       commonEventId: eventId, index: 0, expectedListHash: eventCommandListHash([command]), expectedCommand: command, patch: { eventId: otherEvent.id },
     })).toThrow("작업을 시작한 맵에서 호출할 이벤트를 찾을 수 없습니다");
-    const session = startSession(after, 1);
-    session.currentMapId = selectedMap.id;
-    expect(createInterpreter([call], session, after).start()).toEqual({ kind: "done" });
-    expect(getVariable(session, variableId)).toBe(1);
+    for (const mapId of [selectedMap.id, project.startMapId]) {
+      const session = startSession(after, 1);
+      session.currentMapId = mapId;
+      expect(createInterpreter([call], session, after).start()).toEqual({ kind: "done" });
+      expect(getVariable(session, variableId)).toBe(1);
+    }
+  });
+
+  it("맵 이벤트 호출을 추가할 때 새 호출 경로에서 이동할 라벨을 확인한다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const command = { kind: "callMapEvent", eventId: "ev_callee" } as const;
+    const called = {
+      id: command.eventId, x: 0, y: 0, trigger: { kind: "action" },
+      commands: [{ kind: "gotoLabel", name: label.name }],
+    } satisfies GameEvent;
+    const project = seed();
+    const map = {
+      ...project.maps[project.startMapId],
+      events: [called, { ...called, id: "ev_original_caller", commands: [command, label] }],
+    };
+    project.maps = { [map.id]: map };
+    project.commonEvents = [{ ...commonEvent(), trigger: "parallel" }];
+    const args = { commonEventId: eventId, command };
+    expect(() => runOn(project, "commonEvent.command.insert", args)).toThrow("이동 명령이 사용할 라벨을 찾을 수 없습니다");
+    const localLabel = { ...project, maps: { [map.id]: { ...map, events: [{ ...called, commands: [...called.commands, label] }] } } };
+    expect(runOn(localLabel, "commonEvent.command.insert", args).after.commonEvents[0]?.commands).toEqual([command]);
   });
 
   it("빈 문장, 맵 바깥 좌표, 잘못된 변수 연산자를 거부한다", () => {
@@ -615,6 +711,20 @@ describe("공용 이벤트", () => {
     expect(after.commonEvents.at(-1)?.commands).toEqual([{ ...tint, fields: { ...tint.fields, saturation: 150 } }]);
     expect(() => runOn(project, "commonEvent.command.update", { ...args, patch: { fields: { saturation: 201 } } }))
       .toThrow("숫자 범위를 확인해 주세요");
+  });
+
+  it.each(["switchOn", "switchOff"])("대기 조건 %s에 저장된 스위치를 요구한다", condition => {
+    const command: Command = {
+      kind: "m2Command", commandId: "m2-206-wait-until", fields: { condition, target: switchId, value: "", timeoutMs: 0 },
+    };
+    const args = { commonEventId: eventId, command };
+    expect(() => runOn(seed(), "commonEvent.command.insert", {
+      ...args, command: { ...command, fields: { ...command.fields, target: "sw_missing" } },
+    })).toThrow("대기에 사용할 스위치를 찾을 수 없습니다");
+    expect(runOn(seed(), "commonEvent.command.insert", args).after.commonEvents.at(-1)?.commands).toEqual([command]);
+    expect(() => runOn(seed([command]), "commonEvent.command.update", {
+      commonEventId: eventId, index: 0, patch: { fields: { target: "sw_missing" } },
+    })).toThrow("대기에 사용할 스위치를 찾을 수 없습니다");
   });
 
   it("스크립트 이름만 고칠 수 있고 코드와 참조 기록의 교체는 거부한다", () => {

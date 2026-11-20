@@ -1,5 +1,6 @@
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_ELSE_BRANCH_INDEX, PRESENT_OTHERWISE_BRANCH_INDEX,
+  SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
   resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { COMMON_EVENT_TRIGGER_OPTIONS, commonEventTriggerLabel } from "@/editor/panels/databaseDisplay";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
@@ -15,7 +16,7 @@ import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   commandForInsert, editCommands, quotedName, refuseReferencedRemoval,
-  validateCommandReferences, validateCommonEventCallEdit, validateCommonEventTrigger, validateLabelEdit,
+  validateCallEdit, validateCommandReferences, validateCommonEventTrigger, validateLabelEdit,
   validateSingleInsert,
 } from "./30-common-events/validation";
 
@@ -139,6 +140,14 @@ function expectedCommandHash(event: CommonEvent, path: number[], args: Args): st
 }
 
 function eventForInsert(event: CommonEvent, path: number[]): CommonEvent {
+  for (let end = 1; end < path.length; end += 2) {
+    const branch = path[end];
+    if (branch !== SHOP_TRANSACTION_BRANCH_INDEX && branch !== SHOP_FAILED_TRANSACTION_BRANCH_INDEX) continue;
+    const parent = resolveCommandAtPath(event.commands, path.slice(0, end));
+    if (parent?.kind !== "shop") continue;
+    const enabled = branch === SHOP_TRANSACTION_BRANCH_INDEX ? parent.branchOnTransaction : parent.branchOnFailedTransaction;
+    if (enabled !== true) throw new PrimitiveError("상점의 해당 거래 분기를 켠 뒤 명령을 넣어 주세요.");
+  }
   if (path.length === 1 || path.at(-1) !== 0 || resolveCommandListAtPath(event.commands, path)) return event;
   const parent = resolveCommandAtPath(event.commands, path.slice(0, -2));
   if (!parent) return event;
@@ -215,7 +224,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (trigger !== "none" && typeof condition === "string" && !ctx.project.switches.some(row => row.id === condition)) {
         throw new PrimitiveError("실행 조건에 쓸 스위치를 찾을 수 없습니다.");
       }
-      validateCommonEventTrigger(event, trigger);
+      validateCommonEventTrigger(ctx.project, event, trigger);
       const next = { ...event, trigger };
       if (typeof condition === "string") next.conditionSwitchId = condition;
       else delete next.conditionSwitchId;
@@ -228,8 +237,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (ctx, args) => `${nameOf(findEvent(ctx, args))} 항목을 공용 이벤트 목록에서 지워요.`,
     (ctx, args) => {
       const event = findEvent(ctx, args);
-      refuseReferencedRemoval(ctx.project, event.id, ctx.live);
-      return { ...ctx.project, commonEvents: ctx.project.commonEvents.filter(row => row !== event) };
+      const after = { ...ctx.project, commonEvents: ctx.project.commonEvents.filter(row => row !== event) };
+      refuseReferencedRemoval(after, event.id, ctx.live);
+      return after;
     },
   ),
   createPrimitive(
@@ -263,7 +273,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       validateCommandReferences(ctx.project, targetMap(ctx), inserted);
       validateLabelEdit(ctx.project, event, next.commands, path, undefined, inserted);
       const after = editEvent(event, ctx.project, next);
-      validateCommonEventCallEdit(after, inserted);
+      validateCallEdit(after, next, path, inserted);
       return after;
     },
   ),
@@ -297,7 +307,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       validateCommandReferences(ctx.project, targetMap(ctx), updated, current);
       validateLabelEdit(ctx.project, event, next.commands, path, current, updated);
       const after = editEvent(event, ctx.project, next);
-      validateCommonEventCallEdit(after, updated, current);
+      validateCallEdit(after, next, path, updated, current);
       return after;
     },
   ),

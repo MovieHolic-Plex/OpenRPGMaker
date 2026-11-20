@@ -191,8 +191,10 @@ function callerLabels(project: Project, event: CommonEvent, name: string): { vis
     if (location.kind === "troopPage") add(commonEventCallId(command));
     if (command.kind !== "script") return;
     const parsed = scriptCommonEventCalls(command.compiled);
-    for (const id of parsed.ids) add(id);
-    for (const id of scriptCalls(command, "commonEvent", committed)) add(id);
+    if (location.kind === "troopPage") {
+      for (const id of parsed.ids) add(id);
+      for (const id of scriptCalls(command, "commonEvent", committed)) add(id);
+    }
     opaque ||= parsed.opaque || scriptHasDynamic(command, "commonEvent", { access: "call", library: committed.scriptLibrary });
   });
   let visible = false;
@@ -206,12 +208,11 @@ function callerLabels(project: Project, event: CommonEvent, name: string): { vis
       if (seen.has(list)) return;
       seen.add(list);
       for (const command of list) {
-        const callee = commonEventCallId(command);
-        if (callee === event.id) {
+        const calls = calledCommandLists(committed, command, map);
+        if (calls.includes(event.commands)) {
           visible ||= hasLabel;
           missing ||= !hasLabel;
         }
-        const calls = command.kind === "callMapEvent" || callee !== undefined ? calledCommandLists(committed, command, map) : [];
         for (const child of [...nestedCommandLists(command), ...calls]) visit(child, hasLabel);
       }
     };
@@ -270,47 +271,47 @@ function labelInCommandPath(commands: Command[], path: number[], name: string): 
   return false;
 }
 
-function callerLabelNames(commands: readonly Command[]): Set<string> {
+function requiredCallerLabels(project: Project, roots: readonly (readonly Command[])[]): Set<string> {
   const names = new Set<string>();
+  const seenLabels = new Map<readonly Command[], ReadonlySet<string>>();
   const visit = (list: readonly Command[], ancestors: ReadonlySet<string>): void => {
     const visible = new Set(ancestors);
     for (const command of list) if (command.kind === "label") visible.add(command.name);
+    // A path only adds new requirements if it lacks a label every prior path provided.
+    const previous = seenLabels.get(list);
+    if (previous && [...previous].every(name => visible.has(name))) return;
+    seenLabels.set(list, previous ? new Set([...previous].filter(name => visible.has(name))) : visible);
     for (const command of list) {
       if (command.kind === "gotoLabel" && !visible.has(command.name)) names.add(command.name);
-      for (const child of nestedCommandLists(command)) visit(child, visible);
+      for (const child of [...nestedCommandLists(command), ...calledCommandLists(project, command)]) visit(child, visible);
     }
   };
-  visit(commands, new Set());
+  for (const root of roots) visit(root, new Set());
   return names;
 }
 
-export function validateCommonEventTrigger(event: CommonEvent, trigger: CommonEvent["trigger"]): void {
-  if (event.trigger === "none" && trigger !== "none" && callerLabelNames(event.commands).size > 0) {
+export function validateCommonEventTrigger(project: Project, event: CommonEvent, trigger: CommonEvent["trigger"]): void {
+  if (event.trigger === "none" && trigger !== "none" &&
+    requiredCallerLabels(projectViewWithoutEventDrafts(project), [event.commands]).size > 0) {
     throw new PrimitiveError("호출자의 라벨로 이동하는 명령이 있어 이 공용 이벤트를 자동 실행할 수 없습니다.");
   }
 }
 
-export function validateCommonEventCallEdit(project: Project, command: Command, current?: Command): void {
-  const callee = commonEventCallId(command);
-  if (callee === undefined || (current && commonEventCallId(current) === callee)) return;
-  const pending = new Set([callee]);
-  for (const id of pending) {
-    const event = project.commonEvents.find(row => row.id === id);
-    if (!event) continue;
-    for (const name of callerLabelNames(event.commands)) {
-      const callers = callerLabels(project, event, name);
-      if (!callers.visible || callers.missing) {
-        throw new PrimitiveError("이 호출에서 공용 이벤트의 이동 명령이 사용할 라벨을 찾을 수 없습니다.");
-      }
+export function validateCallEdit(project: Project, event: CommonEvent, path: number[], command: Command, current?: Command): void {
+  if (command.kind === "callMapEvent") {
+    if (current?.kind === "callMapEvent" && current.eventId === command.eventId) return;
+  } else {
+    const callee = commonEventCallId(command);
+    if (callee === undefined || (current && commonEventCallId(current) === callee)) return;
+  }
+  const committed = projectViewWithoutEventDrafts(project);
+  const roots = calledCommandLists(committed, command);
+  for (const name of requiredCallerLabels(committed, roots)) {
+    if (labelInCommandPath(event.commands, path, name)) continue;
+    const callers = callerLabels(committed, event, name);
+    if (!callers.visible || callers.missing) {
+      throw new PrimitiveError("이 호출에서 이동 명령이 사용할 라벨을 찾을 수 없습니다.");
     }
-    const visit = (list: readonly Command[]): void => {
-      for (const row of list) {
-        const target = commonEventCallId(row);
-        if (target !== undefined) pending.add(target);
-        for (const child of nestedCommandLists(row)) visit(child);
-      }
-    };
-    visit(event.commands);
   }
 }
 
@@ -372,6 +373,12 @@ function validateM2Edit(command: Extract<Command, { kind: "m2Command" }>, curren
 function validateCommandInput(project: Project, map: GameMap, command: Command, current?: Command): void {
   if (command.kind === "m2Command") {
     validateM2Edit(command, current);
+    if (command.commandId === "m2-206-wait-until") {
+      const { condition = "switchOn", target } = command.fields;
+      if ((condition === "switchOn" || condition === "switchOff") && !project.switches.some(row => row.id === target)) {
+        throw new PrimitiveError("대기에 사용할 스위치를 찾을 수 없습니다.");
+      }
+    }
     const id = commonEventCallId(command);
     if (id !== undefined && !project.commonEvents.some(row => row.id === id)) {
       throw new PrimitiveError("호출할 공용 이벤트를 찾을 수 없습니다.");
@@ -419,8 +426,12 @@ function validateCommandInput(project: Project, map: GameMap, command: Command, 
   if (command.kind === "setDifficulty" && !project.system.difficulties?.some(row => row.id === command.difficultyId)) {
     throw new PrimitiveError("설정할 난이도를 찾을 수 없습니다.");
   }
-  if (command.kind === "callMapEvent" && !map.events.some(event => committedEventView(event)?.id === command.eventId)) {
-    throw new PrimitiveError("작업을 시작한 맵에서 호출할 이벤트를 찾을 수 없습니다.");
+  if (command.kind === "callMapEvent") {
+    const hasTarget = (candidate: GameMap) => candidate.events.some(event => committedEventView(event)?.id === command.eventId);
+    if (!hasTarget(map)) throw new PrimitiveError("작업을 시작한 맵에서 호출할 이벤트를 찾을 수 없습니다.");
+    if (!Object.values(project.maps).every(hasTarget)) {
+      throw new PrimitiveError("공용 이벤트는 어느 맵에서도 실행될 수 있으므로 모든 맵에 호출할 이벤트가 있어야 합니다.");
+    }
   }
   if (command.kind === "moveEvent" || command.kind === "setEventGraphicPattern") {
     const optional = command.eventId === "";
