@@ -83,12 +83,13 @@ function resolveBaseShopStock(
 ): ResolvedShopStockItem[] {
   if (!command.stock) return command.itemIds.map((itemId) => ({ itemId }));
   const season = project.system.timeSystem?.enabled === true ? session.gameTime?.season : undefined;
-  return command.stock
-    .filter((entry) => stockEntryVisibleInSeason(entry, season))
-    .map((entry) => ({
-      itemId: entry.itemId,
-      price: stockEntryPrice(entry, season),
-    }));
+  const visible = new Map<ItemId, ResolvedShopStockItem>();
+  for (const entry of command.stock) {
+    if (!stockEntryVisibleInSeason(entry, season)) continue;
+    // Keep the last applicable row's price, as the old save normalizer did for duplicate IDs.
+    visible.set(entry.itemId, { itemId: entry.itemId, price: stockEntryPrice(entry, season) });
+  }
+  return [...visible.values()];
 }
 
 /** Scale resolved buy prices; fills DB price when stock left price undefined.
