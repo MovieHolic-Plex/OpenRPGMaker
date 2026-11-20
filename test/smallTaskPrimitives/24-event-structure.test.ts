@@ -649,6 +649,96 @@ describe("선택 범위와 입력 검증", () => {
     expect(() => runPrimitive(before, target, "event.tile.remove", {})).toThrow(/스위치/u);
   });
 
+  function endingGate() {
+    const before = blank();
+    const [source] = before.maps[MAP].events;
+    const page = source.pages![1];
+    const gate = "sw_ending";
+    const on = (switchId: string): Condition => ({ kind: "switch", switchId, value: true });
+    const write = (switchId: string, value = true): Command => ({ kind: "setSwitch", switchId, value });
+    const event = (id: string, commands: Command[]): GameEvent => ({
+      ...source, id, x: 4, pages: [{ ...page, conditions: [], commands }],
+    });
+    before.switches = [{ id: gate, name: "엔딩 잠금 해제" }];
+    before.endings = [{ id: "end_test", name: "시험 엔딩", priority: 1, conditions: [on(gate)] }];
+    page.commands = [write(gate)];
+    const target = mapTarget(before, MAP, EVENT)!;
+    const remove = (...others: GameEvent[]) => runPrimitive(withEvents(before, [source, ...others]), target, "event.tile.remove", {});
+    return { before, source, page, gate, on, write, event, target, remove };
+  }
+
+  it("대체 명령의 변수 쓰기를 실제 실행 순서대로 반영한다", () => {
+    const { before, gate, event, remove } = endingGate();
+    const variableId = "var_gate";
+    before.variables = [{ id: variableId, name: "문 상태" }];
+    before.session = { ...before.session, variables: { [variableId]: 1 } };
+    const writeFromVariable: Command = { kind: "setSwitch", switchId: gate, value: { kind: "var", id: variableId } };
+    const setter = (value: number) => event("ev_setter", [{ kind: "setVariable", variableId, op: "=", value }, writeFromVariable]);
+    expect(() => remove(setter(0))).toThrow(/진행에 필요한 스위치/u);
+    expect(remove(setter(-1)).after.maps[MAP].events).toEqual([setter(-1)]);
+  });
+
+  it("처음부터 켜진 스위치는 남는 명령이 끌 수 있을 때 다시 켤 방법을 요구한다", () => {
+    const { before, gate, write, event, remove } = endingGate();
+    before.session = { ...before.session, switches: { [gate]: true } };
+    expect(remove().after.maps[MAP].events).toEqual([]);
+    const off = event("ev_off", [write(gate, false)]);
+    expect(() => remove(off)).toThrow(/진행에 필요한 스위치/u);
+    expect(remove(off, event("ev_on", [write(gate)])).after.maps[MAP].events).toHaveLength(2);
+  });
+
+  it("대체 페이지와 그 위 페이지를 같은 스위치 상태에서 검사한다", () => {
+    const { before, page, gate, on, write, event, remove } = endingGate();
+    const starterId = "sw_starter";
+    before.switches.push({ id: starterId, name: "시작" });
+    page.commands = [write(starterId), write(gate)];
+    const starter = event("ev_start", [write(starterId)]);
+    const lower = { ...page, conditions: [on(starterId)], commands: [write(gate)] };
+    const higher = { ...lower, id: "page_higher", commands: [] };
+    const setter = { ...event("ev_setter", []), pages: [lower, higher] };
+    expect(() => remove(starter, setter)).toThrow(/진행에 필요한 스위치/u);
+    const unshadowed: GameEvent = { ...setter, pages: [lower, { ...higher, conditions: [{ kind: "not", condition: on(starterId) }] }] };
+    expect(remove(starter, unshadowed).after.maps[MAP].events).toEqual([starter, unshadowed]);
+  });
+
+  it("수동 공용 이벤트는 남아 있는 실행 가능한 호출을 통해서만 대체 작성자가 된다", () => {
+    const { before, gate, on, write, event, remove } = endingGate();
+    const commonEventId = "ce_gate";
+    const call: Command = { kind: "callCommonEvent", commonEventId };
+    before.commonEvents = [{ id: commonEventId, name: "문 열기", trigger: "none", commands: [write(gate)] }];
+    expect(() => remove()).toThrow(/진행에 필요한 스위치/u);
+    const unreachable = event("ev_caller", [{ kind: "fork", condition: on(gate), then: [call] }]);
+    expect(() => remove(unreachable)).toThrow(/진행에 필요한 스위치/u);
+    expect(remove(event("ev_caller", [call])).after.commonEvents).toEqual(before.commonEvents);
+    before.commonEvents = [{ ...before.commonEvents[0], trigger: "parallel", conditionSwitchId: gate }];
+    expect(() => remove()).toThrow(/진행에 필요한 스위치/u);
+    before.commonEvents = [{ ...before.commonEvents[0], conditionSwitchId: undefined }];
+    expect(remove().after.maps[MAP].events).toEqual([]);
+  });
+
+  it("분기에서 상위 목록의 위치 표시로 이동하면 건너뛴 쓰기를 세지 않는다", () => {
+    const { gate, on, write, event, remove } = endingGate();
+    const jump: Command = { kind: "fork", condition: { kind: "not", condition: on(gate) }, then: [{ kind: "gotoLabel", name: "end" }] };
+    const label: Command = { kind: "label", name: "end" };
+    expect(() => remove(event("ev_setter", [jump, write(gate), label]))).toThrow(/진행에 필요한 스위치/u);
+    expect(remove(event("ev_setter", [jump, label, write(gate)])).after.maps[MAP].events).toHaveLength(1);
+  });
+
+  it("전역 스위치와 셀프 스위치가 서로를 기다리면 독립적으로 켜는 페이지가 필요하다", () => {
+    const { before, source, page, gate, on, write, target } = endingGate();
+    const localOn: Condition = { kind: "selfSwitch", key: "A", value: true };
+    const localWrite: Command = { kind: "setSelfSwitch", key: "A", value: true };
+    page.commands = [write(gate), localWrite];
+    const global = { ...page, id: "page_global", conditions: [localOn], commands: [write(gate)] };
+    const local = { ...page, id: "page_local", conditions: [on(gate)], commands: [localWrite] };
+    const first = source.pages![0];
+    const apply = (starter: EventPage) => runPrimitive(
+      withEvents(before, [{ ...source, pages: [starter, page, global, local] }]), target, "event.page.remove", { page: 2 },
+    );
+    expect(() => apply(first)).toThrow(/셀프 스위치를 켤 수 없어요/u);
+    expect(apply({ ...first, commands: [localWrite] }).after.maps[MAP].events[0].pages).toHaveLength(3);
+  });
+
   it.each(["이벤트 명령", "페이지 조건", "공용 이벤트", "부대", "퀘스트", "맵 조명"] as const)("%s에서 가리키는 이벤트는 삭제를 거절한다", source => {
     const before = blank();
     const map = before.maps[MAP];

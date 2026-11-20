@@ -15,7 +15,7 @@ import type { Dir, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } f
 import { genId } from "@/util/id";
 import { PrimitiveError, SELECT_EVENT_PAGE } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
-import { anOpenDraftReferencesDeletedEvent, hasEventReference, hasNamedEventReference, hasNamedObjective, pageIsShadowed, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
+import { anOpenDraftReferencesDeletedEvent, hasEventReference, hasNamedEventReference, hasNamedObjective, pageIsShadowed, switchesStrandedByDeletion } from "./24-event-structure/references";
 
 export const UNIT = "24-event-structure";
 
@@ -403,11 +403,10 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       pages.splice(number - 1, 1);
       const edited = { ...event, pages };
       const after = replaceEvent(ctx.project, map, edited);
-      if (!pageIsShadowed(event, removed) && strandsSelfSwitch(edited, removed)) {
-        throw new PrimitiveError("이 페이지를 지우면 다음 진행에 필요한 셀프 스위치를 켤 수 없어요.");
-      }
-      if (!pageIsShadowed(event, removed) && strandsSwitch(after, removed)) {
-        throw new PrimitiveError("이 페이지를 지우면 다른 곳에서 기다리는 스위치를 켤 수 없어요.");
+      if (!pageIsShadowed(event, removed)) {
+        const stranded = switchesStrandedByDeletion(after, removed, edited);
+        if (stranded.self) throw new PrimitiveError("이 페이지를 지우면 다음 진행에 필요한 셀프 스위치를 켤 수 없어요.");
+        if (stranded.global) throw new PrimitiveError("이 페이지를 지우면 다른 곳에서 기다리는 스위치를 켤 수 없어요.");
       }
       return after;
     },
@@ -466,7 +465,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         throw new PrimitiveError("열린 이벤트 편집을 먼저 마쳐 주세요.");
       }
       const after = replaceEvents(ctx.project, map, map.events.filter(entry => entry.id !== event.id));
-      if (strandsSwitch(after, event)) {
+      if (switchesStrandedByDeletion(after, event).global) {
         throw new PrimitiveError("이 이벤트를 지우면 진행에 필요한 스위치를 켤 수 없어요.");
       }
       if (hasEventReference(after, map.id, event.id) || hasNamedObjective(after, event)

@@ -1,11 +1,18 @@
 import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
+import { gotoLabel } from "@/player/interpreter/stack";
+import type { Frame } from "@/player/interpreter/types";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { getCharacterProfile } from "@/project/characterProfiles";
+import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
+import { compareVariableValue } from "@/project/conditionEvaluation";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { scriptCalls, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
+import { clampVariableValue, startStateOf } from "@/project/session";
 import { sightWatcherIds } from "@/project/sightWatchers";
 import { resolveSpeakerActor } from "@/project/staging/dialogueActors";
 import { storyFlagById } from "@/project/storyFlags";
-import type { EventPage, EventSightWatchers, GameEvent, Project } from "@/project/types";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
+import type { Command, Condition, EventPage, EventSightWatchers, GameEvent, MoveRoute, Project } from "@/project/types";
 
 type RecordNode = Record<string, unknown>;
 
@@ -154,7 +161,8 @@ export function anOpenDraftReferencesDeletedEvent(
   const workingAfter = withOpenEventDrafts(after, live, target);
   if (workingAfter === after) return false;
   const workingBefore = withOpenEventDrafts(before, live, target);
-  return hasEventReference(workingAfter, mapId, event.id) || hasNamedObjective(workingAfter, event) || strandsSwitch(workingAfter, event)
+  return hasEventReference(workingAfter, mapId, event.id) || hasNamedObjective(workingAfter, event)
+    || switchesStrandedByDeletion(workingAfter, event).global
     || hasNamedEventReference(workingBefore, mapId, event);
 }
 
@@ -163,53 +171,70 @@ export function pageIsShadowed(event: GameEvent, page: EventPage): boolean {
   return pages.slice(pages.indexOf(page) + 1).some(later => !later.conditions?.length);
 }
 
-export function strandsSwitch(after: Project, removed: EventPage | GameEvent): boolean {
-  const enabled = new Set<string>();
-  const written = (node: RecordNode) => {
-    if (node.kind === "script") return scriptWrites(node, "switch", after);
-    return node.kind === "setSwitch" && node.value !== false && typeof node.switchId === "string" ? [node.switchId] : [];
-  };
+const globalKey = (id: string) => `switch:${id}`;
+const selfKey = (eventId: string, key: string) => `self:${eventId}:${key}`;
+const variableKey = (id: string) => `variable:${id}`;
+
+function readGlobalSwitch(project: Project, node: RecordNode): string | undefined {
+  if (node.kind !== "switch" && node.kind !== "storyFlag") return undefined;
+  const flagId = node.kind === "switch" ? node.storyFlagId : node.flagId;
+  if (typeof flagId === "string" && flagId.trim()) {
+    const flag = storyFlagById(project, flagId);
+    return flag?.kind === "switch" ? flag.targetId : undefined;
+  }
+  return typeof node.switchId === "string" ? node.switchId : undefined;
+}
+
+export function switchesStrandedByDeletion(after: Project, removed: EventPage | GameEvent, owner?: GameEvent) {
+  const global = new Set<string>();
+  const local = new Map<string, string>();
   const removedCommands = "x" in removed
-    ? [removed.pages?.filter(page => !pageIsShadowed(removed, page)), legacyExecution(removed)] : removed;
+    ? (removed.pages?.length ? removed.pages.filter(page => !pageIsShadowed(removed, page)) : [removed.commands, removed.moveRoute])
+    : removed;
   someRecord(removedCommands, node => {
-    for (const id of written(node)) enabled.add(id);
+    if (node.kind === "setSwitch" && node.value !== false && typeof node.switchId === "string") global.add(node.switchId);
+    if (node.kind === "script") for (const id of scriptWrites(node, "switch", after)) global.add(id);
+    if (owner && node.kind === "setSelfSwitch" && node.value === true && typeof node.key === "string") {
+      local.set(node.key, selfKey(owner.id, node.key));
+    }
     return false;
   });
-  if (!enabled.size) return false;
+  if (!global.size && !local.size) return { global: false, self: false };
+
   const events = Object.values(after.maps).flatMap(map => map.events);
-  const otherRoots = authoredRoots(after).filter(root => root !== after.commonEvents);
-  const blockedSwitch = (node: RecordNode) => node.kind === "switch" && typeof node.switchId === "string" && enabled.has(node.switchId);
-  const evaluate = (value: unknown) => knownCondition(value, blockedSwitch, false);
-  removeReplacedSwitches(enabled, id => {
-    const writes = (node: RecordNode) => written(node).includes(id);
-    return events.some(event => eventCanWrite(event, evaluate, writes))
-      || (after.commonEvents?.some(event => !enabled.has(event.conditionSwitchId ?? "") && someExecutableWrite(event.commands, evaluate, writes)) ?? false)
-      || someExecutableWrite(otherRoots, evaluate, writes);
-  });
-  const readsEnabledSwitch = (node: RecordNode): boolean => {
-    if (node.kind !== "switch" && node.kind !== "storyFlag") return false;
-    const flagId = node.kind === "switch" ? node.storyFlagId : node.flagId;
-    if (typeof flagId === "string" && flagId.trim()) {
-      const flag = storyFlagById(after, flagId);
-      return flag?.kind === "switch" && enabled.has(flag.targetId);
-    }
-    return typeof node.switchId === "string" && enabled.has(node.switchId);
+  const targets = new Set([...Array.from(global, globalKey), ...local.values()]);
+  const stranded = unreplacedSwitches(after, events, targets);
+  if (!stranded.size) return { global: false, self: false };
+  const readsGlobal = (node: RecordNode) => {
+    const id = readGlobalSwitch(after, node);
+    return id !== undefined && stranded.has(globalKey(id));
   };
-  return enabled.size > 0 && someRecord([events, ...authoredRoots(after)], node => {
-    if (node.kind === "m2Command") {
-      const fields = node.fields as RecordNode | undefined;
-      return typeof fields?.target === "string" && enabled.has(fields.target)
-        && ((m2Index(node) === 206 && (fields.condition === "switchOn" || fields.condition === undefined))
-          || (m2Index(node) === 217 && fields.query === "switch"));
-    }
-    return (knownCondition(node, readsEnabledSwitch, false) !== true && readsSwitchOn(node, readsEnabledSwitch))
-      || (typeof node.conditionSwitchId === "string" && enabled.has(node.conditionSwitchId))
-      || (node.kind === "script" && scriptReads(node, "switch", after).some(id => enabled.has(id)));
-  }, outsideCompoundCondition);
+  const readsSelf = (node: RecordNode) => node.kind === "selfSwitch"
+    && typeof node.key === "string" && stranded.has(local.get(node.key) ?? "");
+
+  return {
+    self: local.size > 0 && someRecord(owner?.pages, node => requiresSwitchOn(node, readsSelf), outsideCompoundCondition),
+    global: global.size > 0 && someRecord([events, ...authoredRoots(after)], node => {
+      if (node.kind === "m2Command") {
+        const fields = node.fields as RecordNode | undefined;
+        return typeof fields?.target === "string" && stranded.has(globalKey(fields.target))
+          && ((m2Index(node) === 206 && (fields.condition === "switchOn" || fields.condition === undefined))
+            || (m2Index(node) === 217 && fields.query === "switch"));
+      }
+      return requiresSwitchOn(node, readsGlobal)
+        || (typeof node.conditionSwitchId === "string" && stranded.has(globalKey(node.conditionSwitchId)))
+        || (node.kind === "script" && scriptReads(node, "switch", after).some(id => stranded.has(globalKey(id))));
+    }, outsideCompoundCondition),
+  };
 }
 
 function outsideCompoundCondition(node: RecordNode): boolean {
   return node.kind !== "not" && node.kind !== "all" && node.kind !== "any";
+}
+
+function requiresSwitchOn(node: RecordNode, matches: (node: RecordNode) => boolean): boolean {
+  return evaluateCondition(node, leaf => matches(leaf) ? leaf.value === false : undefined) !== true
+    && readsSwitchOn(node, matches);
 }
 
 function readsSwitchOn(value: unknown, matches: (node: RecordNode) => boolean, negated = false): boolean {
@@ -222,74 +247,261 @@ function readsSwitchOn(value: unknown, matches: (node: RecordNode) => boolean, n
   return (node.value === false) === negated && matches(node);
 }
 
-function knownCondition(value: unknown, matches: (node: RecordNode) => boolean, on: boolean): boolean | undefined {
+function evaluateCondition(value: unknown, leaf: (node: RecordNode) => boolean | undefined): boolean | undefined {
   if (!value || typeof value !== "object") return undefined;
   const node = value as RecordNode;
   if (node.kind === "not") {
-    const result = knownCondition(node.condition, matches, on);
+    const result = evaluateCondition(node.condition, leaf);
     return result === undefined ? undefined : !result;
   }
   if ((node.kind === "all" || node.kind === "any") && Array.isArray(node.conditions)) {
-    const results = node.conditions.map(child => knownCondition(child, matches, on));
+    const results = node.conditions.map(child => evaluateCondition(child, leaf));
     const decisive = node.kind === "any";
     if (results.includes(decisive)) return decisive;
     if (results.every(result => result === !decisive)) return !decisive;
   }
-  return matches(node) ? (node.value !== false) === on : undefined;
+  return leaf(node);
 }
 
-type EvaluateCondition = (value: unknown) => boolean | undefined;
+type State = ReadonlyMap<string, boolean | number>;
+type ConditionEvaluator = (condition: unknown, state: State, eventId?: string) => boolean | undefined;
 
-function someExecutableWrite(value: unknown, evaluate: EvaluateCondition, writes: (node: RecordNode) => boolean): boolean {
-  return someRecord(value, node => {
-    if (node.kind !== "fork") return writes(node);
-    const condition = evaluate(node.condition);
-    return (condition !== false && someExecutableWrite(node.then, evaluate, writes))
-      || (condition !== true && someExecutableWrite(node.else, evaluate, writes));
-  }, node => node.kind !== "fork");
+function routeSwitches(route: MoveRoute | undefined): Command[] {
+  return route?.moves.filter(move => move.kind === "setSwitch") ?? [];
 }
 
-function eventCanWrite(event: GameEvent, evaluate: EvaluateCondition, writes: (node: RecordNode) => boolean): boolean {
-  // Higher pages take priority. Unrelated conditions remain unknown.
+function* activeCommandLists(event: GameEvent, state: State, evaluate: ConditionEvaluator): Generator<Command[]> {
   const pages = event.pages ?? [];
   for (let index = pages.length - 1; index >= 0; index--) {
     const page = pages[index];
-    const results = (page.conditions ?? []).map(evaluate);
+    const results = (page.conditions ?? []).map(condition => evaluate(condition, state, event.id));
     if (results.includes(false)) continue;
-    if (someExecutableWrite([page.commands, page.movement?.route], evaluate, writes)) return true;
-    if (results.every(result => result === true)) return false;
+    yield page.commands;
+    yield routeSwitches(page.movement?.route);
+    if (results.every(result => result === true)) return;
   }
-  return !pages.length && evaluate(event.condition) !== false
-    && someExecutableWrite([event.commands, event.moveRoute], evaluate, writes);
+  if (!pages.length && evaluate(event.condition, state, event.id) !== false) {
+    yield event.commands;
+    yield routeSwitches(event.moveRoute);
+  }
 }
 
-function legacyExecution(event: GameEvent) {
-  return event.pages?.length ? undefined : [event.commands, event.moveRoute];
-}
+const MAX_REACHABLE_STATES = 256;
+const MAX_COMMAND_STEPS = 2048;
 
-function removeReplacedSwitches(keys: Set<string>, hasSurvivingSetter: (id: string) => boolean): void {
-  // A surviving starter can unlock another setter. A cycle with no starter leaves all its switches off.
-  let previousSize: number;
-  do {
-    previousSize = keys.size;
-    for (const id of keys) if (hasSurvivingSetter(id)) keys.delete(id);
-  } while (keys.size > 0 && keys.size < previousSize);
-}
+function unreplacedSwitches(project: Project, events: GameEvent[], targets: ReadonlySet<string>): Set<string> {
+  const commonEvents = project.commonEvents ?? [];
+  const commonCommands = new Map(commonEvents.map(event => [event.id, event.commands]));
+  const otherLists = project.database.troops.flatMap(troop => [
+    ...troop.battleEventPages.map(page => page.commands), ...troopAfterBattleLists(troop).map(entry => entry.commands),
+  ]);
+  const start = startStateOf(project);
+  const initial = new Map<string, boolean | number>();
+  for (const [id, value] of Object.entries(project.flags)) initial.set(globalKey(id), value);
+  for (const { id } of project.switches) initial.set(globalKey(id), start.switches?.[id] ?? false);
+  for (const { id } of project.variables) initial.set(variableKey(id), start.variables?.[id] ?? 0);
 
-export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean {
-  const written = (node: RecordNode) => node.kind === "setSelfSwitch" && node.value === true && typeof node.key === "string"
-    ? node.key : undefined;
-  const remaining = [legacyExecution(event), event.pages];
-  const keys = new Set<string>();
-  someRecord(removed.commands, node => {
-    const key = written(node);
-    if (key) keys.add(key);
+  // Keep state for candidate switches and values that can affect subsequent execution.
+  const tracked = new Set(targets);
+  const selfReads = new Set<string>();
+  const possibleOff = new Set<string>();
+  someRecord([events, commonEvents, otherLists], node => {
+    const switchId = readGlobalSwitch(project, node);
+    if (switchId !== undefined) tracked.add(globalKey(switchId));
+    if (typeof node.conditionSwitchId === "string") tracked.add(globalKey(node.conditionSwitchId));
+    if (node.kind === "selfSwitch" && typeof node.key === "string") selfReads.add(node.key);
+    if (node.kind === "variable" && typeof node.variableId === "string") tracked.add(variableKey(node.variableId));
+    if (node.kind === "var" && typeof node.id === "string") tracked.add(variableKey(node.id));
+    if (node.kind === "setSwitch" && node.value !== true && typeof node.switchId === "string") {
+      possibleOff.add(globalKey(node.switchId));
+    }
     return false;
   });
-  if (!keys.size) return false;
-  const readsSelfSwitch = (node: RecordNode) => node.kind === "selfSwitch" && typeof node.key === "string" && keys.has(node.key);
-  const evaluate = (value: unknown) => knownCondition(value, readsSelfSwitch, false);
-  removeReplacedSwitches(keys, key => eventCanWrite(event, evaluate, node => written(node) === key));
-  return keys.size > 0 && someRecord(remaining, node => knownCondition(node, readsSelfSwitch, false) !== true
-    && readsSwitchOn(node, readsSelfSwitch), outsideCompoundCondition);
+
+  const switchOn = (state: State, key: string) => (state.get(key) ?? initial.get(key)) === true;
+  const readVariable = (state: State, id: string) => Number(state.get(variableKey(id)) ?? initial.get(variableKey(id)) ?? 0);
+  const evaluate: ConditionEvaluator = (condition, state, eventId) => evaluateCondition(condition, node => {
+    const id = readGlobalSwitch(project, node);
+    if (id !== undefined) return switchOn(state, globalKey(id)) === (node.value !== false);
+    if (node.kind === "selfSwitch" && typeof node.key === "string") {
+      return Boolean(eventId && switchOn(state, selfKey(eventId, node.key))) === (node.value !== false);
+    }
+    if (node.kind === "variable" && typeof node.variableId === "string" && typeof node.value === "number") {
+      const { op } = node as Extract<Condition, { kind: "variable" }>;
+      return compareVariableValue(readVariable(state, node.variableId), op, node.value);
+    }
+    return undefined;
+  });
+
+  const replaced = new Set<string>();
+  const empty: State = new Map();
+  const seenOff = new Set([...targets].filter(key => !switchOn(empty, key)));
+  const states: State[] = [empty];
+  const seenStates = new Set<string>(["[]"]);
+  const stateKeys = new WeakMap<State, string>();
+  const relevantLists = new WeakMap<Command[], boolean>();
+  let truncated = false;
+  const stateKey = (state: State) => {
+    let key = stateKeys.get(state);
+    if (key === undefined) {
+      key = JSON.stringify([...state].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0));
+      stateKeys.set(state, key);
+    }
+    return key;
+  };
+  const enqueue = (state: State) => {
+    const key = stateKey(state);
+    if (seenStates.has(key)) return;
+    if (states.length >= MAX_REACHABLE_STATES) { truncated = true; return; }
+    seenStates.add(key);
+    states.push(state);
+  };
+
+  const run = (commands: Command[], state: State, eventId?: string) => {
+    if (!commands.length || replaced.size === targets.size) return;
+    if (!relevantLists.has(commands)) {
+      relevantLists.set(commands, someRecord(commands, node => node.kind === "setSwitch" || node.kind === "setSelfSwitch"
+        || node.kind === "setVariable" || node.kind === "callCommonEvent" || node.kind === "script"));
+    }
+    if (!relevantLists.get(commands)) return;
+    const write = (prior: State, key: string, value: boolean | number, fallback: boolean | number) => {
+      const current = prior.get(key) ?? initial.get(key) ?? fallback;
+      if (targets.has(key) && value === true && current === false) replaced.add(key);
+      if (targets.has(key) && value === false) seenOff.add(key);
+      if (current === value) return prior;
+      const next = new Map(prior);
+      if ((initial.get(key) ?? fallback) === value) next.delete(key);
+      else next.set(key, value);
+      return next;
+    };
+    walkCommands(commands, state, commonCommands, eventId, evaluate, (command, prior) => {
+      if (command.kind === "setSwitch") {
+        const key = globalKey(command.switchId);
+        if (!tracked.has(key)) return prior;
+        const value = command.value;
+        const on = typeof value === "boolean" ? value : value === "toggle"
+          ? !switchOn(prior, key) : readVariable(prior, value.id) !== 0;
+        return write(prior, key, on, false);
+      }
+      if (command.kind === "setSelfSwitch" && eventId) {
+        const key = selfKey(eventId, command.key);
+        if (targets.has(key) || selfReads.has(command.key)) return write(prior, key, command.value, false);
+      }
+      if (command.kind === "setVariable" && tracked.has(variableKey(command.variableId))) {
+        const current = readVariable(prior, command.variableId);
+        const value = typeof command.value === "number" ? command.value : readVariable(prior, command.value.id);
+        const result = { "=": value, "+=": current + value, "-=": current - value,
+          "*=": current * value, "/=": value === 0 ? current : current / value }[command.op];
+        return write(prior, variableKey(command.variableId), clampVariableValue(result), 0);
+      }
+      if (command.kind === "script") {
+        for (const id of scriptWrites(command, "switch", project)) {
+          const key = globalKey(id);
+          if (tracked.has(key)) prior = write(prior, key, true, false);
+        }
+      }
+      return prior;
+    }, stateKey, enqueue, () => { truncated = true; });
+  };
+
+  // Re-evaluate page priority only between command lists, using one state for all of an event's pages.
+  for (const state of states) {
+    if (replaced.size === targets.size) return new Set();
+    for (const event of events) for (const list of activeCommandLists(event, state, evaluate)) run(list, state, event.id);
+    for (const event of commonEvents) {
+      if ((event.trigger === "auto" || event.trigger === "parallel")
+        && (!event.conditionSwitchId || switchOn(state, globalKey(event.conditionSwitchId)))) run(event.commands, state);
+    }
+    for (const list of otherLists) run(list, state);
+  }
+  // If exploration runs out of room, a switch with an unproven path from off still needs its original writer.
+  return new Set([...targets].filter(key => !replaced.has(key) && (seenOff.has(key) || (truncated && possibleOff.has(key)))));
+}
+
+function nextBranches(command: Command, evaluate: (condition: unknown) => boolean | undefined): readonly (readonly Command[])[] {
+  if (command.kind === "fork") {
+    const result = evaluate(command.condition);
+    if (result === true) return [command.then];
+    if (result === false) return [command.else ?? []];
+    return [command.then, command.else ?? []];
+  }
+  if (command.kind === "choices") {
+    const available = command.options.slice(0, MAX_SHOWN_CHOICES).map(option => ({
+      branch: option.branch,
+      show: option.showWhen ? evaluate(option.showWhen) : true,
+      enable: option.enableWhen ? evaluate(option.enableWhen) : true,
+    }));
+    const branches = available.filter(option => option.show !== false && option.enable !== false).map(option => option.branch);
+    if (command.cancelBehavior === "branch") branches.push(command.cancelBranch ?? []);
+    if (!available.some(option => option.show === true && option.enable === true)) branches.push([]);
+    return branches;
+  }
+  if (command.kind === "moveEvent") return [routeSwitches(command.route), []];
+  const branches = nestedCommandLists(command);
+  return branches.length ? [...branches, []] : branches;
+}
+
+function walkCommands(
+  commands: Command[], initial: State, common: ReadonlyMap<string, Command[]>, eventId: string | undefined,
+  evaluate: ConditionEvaluator, apply: (command: Command, state: State) => State,
+  stateKey: (state: State) => string, complete: (state: State) => void, truncate: () => void,
+): void {
+  if (!commands.length) return;
+  const pending = [{ stack: [{ commands, pc: 0 }] as Frame[], state: initial }];
+  const seen = new Set<string>();
+  const listIds = new Map<Command[], number>();
+  while (pending.length > 0) {
+    const { stack, state: start } = pending.pop()!;
+    let state = start;
+    while (stack.length > 0) {
+      const key = JSON.stringify([stateKey(state), stack.map(frame => {
+        if (!listIds.has(frame.commands)) listIds.set(frame.commands, listIds.size);
+        return [listIds.get(frame.commands), frame.pc, Boolean(frame.loopOwner)];
+      })]);
+      if (seen.has(key)) break;
+      if (seen.size >= MAX_COMMAND_STEPS) { truncate(); return; }
+      seen.add(key);
+
+      const frame = stack.at(-1)!;
+      const command = frame.commands[frame.pc];
+      if (!command) {
+        if (frame.loopOwner) frame.pc = 0;
+        else stack.pop();
+        continue;
+      }
+      frame.pc += 1;
+      if (command.kind === "gotoLabel") {
+        gotoLabel(stack, command.name);
+        continue;
+      }
+      if (command.kind === "breakLoop") {
+        for (let index = stack.length - 1; index >= 0; index--) {
+          if (!stack[index].loopOwner) continue;
+          stack.length = index;
+          break;
+        }
+        continue;
+      }
+      if (command.kind === "loop") {
+        if (command.body.length) stack.push({ commands: command.body, pc: 0,
+          loopOwner: { commands: frame.commands, pc: frame.pc - 1, iterations: 0 } });
+        continue;
+      }
+      if (command.kind === "callCommonEvent") {
+        const called = common.get(command.commonEventId);
+        if (called?.length) stack.push({ commands: called, pc: 0 });
+        continue;
+      }
+
+      state = apply(command, state);
+      const [branch, ...alternates] = nextBranches(command, condition => evaluate(condition, state, eventId));
+      for (const alternate of alternates) {
+        const frames = stack.map(entry => ({ ...entry }));
+        if (alternate.length) frames.push({ commands: alternate as Command[], pc: 0 });
+        pending.push({ stack: frames, state });
+      }
+      if (branch?.length) stack.push({ commands: branch as Command[], pc: 0 });
+    }
+    if (stack.length === 0) complete(state);
+  }
 }
