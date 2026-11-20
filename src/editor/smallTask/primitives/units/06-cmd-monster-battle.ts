@@ -16,7 +16,7 @@ import { findLocationById, locationRect } from "@/project/mapNamedLocations";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { Command, EventPage, FieldSpawnDef, GameMap, Project, Rect } from "@/project/types";
 import { commandListAt, koreanSentence, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "06-cmd-monster-battle";
@@ -442,7 +442,7 @@ function prepare(ctx: PrimitiveContext, kind: Kind, mode: Mode, args: Args) {
   const current = mode === "insert" ? newCommand(kind) : list[index];
   if (current?.kind !== kind) throw new PrimitiveError("선택한 줄에서 이 종류의 명령을 찾을 수 없습니다.");
   if (mode === "update" && args.expectedHash !== eventCommandHash(current)) {
-    throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
+    throw new PrimitiveError(STALE_COMMAND_LIST);
   }
   const fields = Object.fromEntries(Object.keys(spec.fields).filter(key => Object.hasOwn(args, key)).map(key => [key, args[key]]));
   if (mode === "update" && Object.keys(fields).length === 0) throw new PrimitiveError("고칠 명령 내용을 입력해 주세요.");
@@ -453,7 +453,7 @@ function prepare(ctx: PrimitiveContext, kind: Kind, mode: Mode, args: Args) {
   }
   const command = { ...current, ...patch } as BattleCommand;
   validateReferences(ctx.project, map, command, fields);
-  return { map, command, patch, current, path, createBranch };
+  return { map, command, patch, current, path };
 }
 
 function previewText(value: string, fallback: string): string {
@@ -575,18 +575,15 @@ function primitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
       return koreanSentence(`‘${details.length > 66 ? details.slice(0, 65) + "…" : details}’ 명령을 ${action}했습니다.`);
     },
     apply(ctx, args) {
-      const { command, patch, current, path, createBranch } = prepare(ctx, kind, mode, args);
+      const { command, patch, current, path } = prepare(ctx, kind, mode, args);
       try {
-        return updateScopedPage(ctx, page => {
-          if (update) return updateCommand(page, path, current, patch, args.expectedHash as string);
-          if (!createBranch) return insertEventCommand(page, path, command);
-          const seededPage = { ...page, commands: structuredClone(page.commands) };
-          resolveCommandListAtPath(seededPage.commands, path, { missingBranches: "create" });
-          return insertEventCommand(seededPage, path, command);
-        });
+        return updateScopedPage(ctx, page => update
+          ? updateCommand(page, path, current, patch, args.expectedHash as string)
+          : insertEventCommand(page, path, command));
       } catch (error) {
         if (!(error instanceof EventCommandEditError)) throw error;
-        throw new PrimitiveError(error.code === "stale-event-command" ? error.message : "명령 줄의 위치나 내용이 올바르지 않습니다.");
+        if (error.code === "stale-event-command") throw error;
+        throw new PrimitiveError("명령 줄의 위치나 내용이 올바르지 않습니다.");
       }
     },
   };

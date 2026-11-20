@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { BATTLE_DEFEAT_BRANCH_INDEX, BATTLE_VICTORY_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/06-cmd-monster-battle";
 import { playCommandBattle } from "@/player/commandBattle";
@@ -207,11 +207,27 @@ it("해시가 없거나 같은 종류의 다른 줄을 가리키면 수정을 �
   const { project, target } = fixture("blank", [first, second]);
   expect(() => runPrimitive(project, target, "cmd.giveMonster.update", { index: 1, level: 8 })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.giveMonster.update", { index: 2, level: 8, expectedHash: eventCommandHash(first) }))
-    .toThrow(/그 줄의 내용이 바뀌었습니다/u);
+    .toThrow(STALE_COMMAND_LIST);
   expect(() => runPrimitive(project, target, "cmd.moveMonster.update", { index: 1, to: "box", expectedHash: eventCommandHash(first) }))
     .toThrow(/이 종류의 명령을 찾을 수 없습니다/u);
   const { after } = runPrimitive(project, target, "cmd.giveMonster.update", { index: 1, level: 8, expectedHash: eventCommandHash(first) });
   expect(stored(after)).toEqual([greeting, { ...first, level: 8 }, second]);
+});
+
+it("고른 페이지에서 현재 줄의 해시로 몬스터 지급 명령을 옮기고 지운다", () => {
+  const give: Command = { kind: "giveMonster", speciesId: SLIME, level: 5 };
+  const { project, target } = fixture("blank", [give]);
+  const eventOnly = eventTarget(project, MAP, EVENT);
+  expect(() => runPrimitive(project, eventOnly, "cmd.giveMonster.insert", {})).toThrow(SELECT_EVENT_PAGE);
+
+  const expectedHash = eventCommandHash(give);
+  const { after: moved } = runPrimitive(project, target, "cmd.move", { index: 1, toIndex: 0, expectedHash });
+  expect(stored(moved)).toEqual([give, greeting]);
+  expect(() => runPrimitive(moved, target, "cmd.delete", { index: 1, expectedHash })).toThrow(STALE_COMMAND_LIST);
+  const { after } = runPrimitive(moved, target, "cmd.delete", { index: 0, expectedHash });
+  expect(stored(after)).toEqual([greeting]);
+  expect(after.maps[MAP]!.events[0]!.pages![1]).toBe(project.maps[MAP]!.events[0]!.pages![1]);
+  expect(stored(project)).toEqual([greeting, give]);
 });
 
 it("고른 페이지를 하나로 확인할 수 없으면 적용을 거절한다", () => {
@@ -458,17 +474,17 @@ it("출현 이벤트의 시작 셀프 스위치를 끊는 이름 변경을 거�
 
 it("공용 스크립트에서 출현 이름이나 그 이벤트를 참조하면 이름 변경을 거절한다", () => {
   const { project, target } = fixture("blank", [dynamicSpawn]);
-  const rename = (spawnId: string) => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+  const rename = (before: Project, spawnId: string) => runPrimitive(before, target, "cmd.spawnFieldEnemy.update", {
     index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId,
   });
   // The runtime event id would stay the same, but the script's despawn still uses the original name.
   const remove = "game.cmd({kind: 'despawnFieldEnemy', spawnId: 'spawn_event'});";
-  project.scriptLibrary = [{ id: "remove_spawn", source: remove, compiled: remove }];
-  expect(() => rename("spawn event")).toThrow(/스크립트 참조를 확인할 수 없어/u);
+  const withRemove = { ...project, scriptLibrary: [{ id: "remove_spawn", source: remove, compiled: remove }] };
+  expect(() => rename(withRemove, "spawn event")).toThrow(/스크립트 참조를 확인할 수 없어/u);
 
   const move = "game.cmd({kind: 'moveEvent', eventId: '__field_spawn__spawn_event_1', route: {steps: []}});";
-  project.scriptLibrary = [{ id: "move_spawn", source: move, compiled: move }];
-  expect(() => rename("spawn_renamed")).toThrow(/스크립트 참조를 확인할 수 없어/u);
+  const withMove = { ...project, scriptLibrary: [{ id: "move_spawn", source: move, compiled: move }] };
+  expect(() => rename(withMove, "spawn_renamed")).toThrow(/스크립트 참조를 확인할 수 없어/u);
 });
 
 it.each(["page", "library"] as const)("출현 ID를 조합하는 실행 가능한 %s 스크립트가 있으면 이름을 유지한다", owner => {
@@ -541,11 +557,12 @@ it("부대의 전투 뒤 출현은 제거할 수 있고 전투 중 출현은 거
   const { after } = runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args);
   expect(stored(after).at(-1)).toEqual({ kind: "despawnFieldEnemy", spawnId: dynamicSpawn.spawn.id });
 
-  project.database.troops = project.database.troops.map(troop => troop.id === TROOP ? {
+  const troops = project.database.troops.map(troop => troop.id === TROOP ? {
     ...troop, afterBattle: undefined,
-    battleEventPages: [{ id: "trial_battle_event", name: "전투 중", conditions: [], span: "battle", commands: [dynamicSpawn] }],
+    battleEventPages: [{ id: "trial_battle_event", name: "전투 중", conditions: [], span: "battle" as const, commands: [dynamicSpawn] }],
   } : troop);
-  expect(() => runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
+  const duringBattle = { ...project, database: { ...project.database, troops } };
+  expect(() => runPrimitive(duringBattle, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
 });
 
 it("이름 있는 구역을 지울 때만 직접 지정한 영역으로 바꾼다", () => {
@@ -690,7 +707,7 @@ it("저장된 출현 명령으로 적을 만들고 제거 명령으로 그 적�
 });
 
 const testDirectory = dirname(fileURLToPath(import.meta.url));
-const seededCases: (CorpusCase & { seed?: Command; refusalMessage?: string })[] = JSON.parse(readFileSync(
+const seededCases: (Omit<CorpusCase, "seed"> & { seed?: Command })[] = JSON.parse(readFileSync(
   resolve(testDirectory, "06-cmd-monster-battle/seeded-corpus.json"), "utf8",
 ));
 const stockCases: CorpusCase[] = JSON.parse(readFileSync(
