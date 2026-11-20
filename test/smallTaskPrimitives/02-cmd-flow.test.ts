@@ -322,13 +322,47 @@ describe("흐름 제어 명령", () => {
     expect(stored(runPrimitive(project, target, "cmd.delete", position).after)).toEqual([call]);
   });
 
-  it("스크립트의 require 속성 키가 미사용 위치 표시의 이름 변경이나 삭제를 막지 않는다", () => {
-    const source = "const options = { require: true }; game.addGold(3);";
+  it("스크립트의 지역 game, globalThis, require가 미사용 위치 표시의 편집을 막지 않는다", () => {
+    const source = `
+      const options = { require: true };
+      function format(require) { return require("coins"); }
+      format(String);
+      {
+        const game = { cmd() {} };
+        (game).cmd();
+        const globalThis = { fake: game, game };
+        const key = "fake";
+        globalThis[key].cmd();
+        globalThis.game.cmd();
+      }
+      (globalThis).game.addGold(3);
+    `;
     const { project, target } = setup([label, { kind: "script", source, compiled: source }]);
     const position = { index: 0, expectedHash: eventCommandHash(label) };
     const renamed = runPrimitive(project, target, "cmd.label.update", { ...position, name: "도착" });
     expect(stored(renamed.after)[0]).toEqual({ ...label, name: "도착" });
     expect(stored(runPrimitive(project, target, "cmd.delete", position).after)).toHaveLength(1);
+  });
+
+  it("계산한 전역 속성으로 게임 명령을 부르는 스크립트가 쓸 수 있는 위치 표시를 보호한다", () => {
+    const source = 'const apiName = "game"; await (globalThis)[apiName].cmd({ kind: "gotoLabel", name: "출발" });';
+    const { project, target } = setup([label, { kind: "script", source, compiled: source }]);
+    const position = { index: 0, expectedHash: eventCommandHash(label) };
+    expect(() => runPrimitive(project, target, "cmd.label.update", { ...position, name: "도착" })).toThrow(/이 위치/u);
+    expect(() => runPrimitive(project, target, "cmd.delete", position)).toThrow(/이 위치/u);
+  });
+
+  it.each(["insert", "update"] as const)("괄호로 감싼 스크립트 호출자의 위치로 이동을 작성한다 (%s)", operation => {
+    const inserting = operation === "insert";
+    const { project, target } = setup(inserting ? [branch] : [jump]);
+    const map = project.maps[fixtureMap]!;
+    map.events[0]!.pages![1]!.conditions = [branch.condition];
+    const source = 'await ((game).callCommonEvent)("common-1");';
+    map.events[1]!.commands = [{ kind: "script", source, compiled: source }, label];
+    project.commonEvents.find(event => event.id === "common-1")!.commands = [{ ...call, eventId: fixtureEvent }];
+    const position = inserting ? { branchPath: [0, FORK_THEN_BRANCH_INDEX] } : { expectedHash: eventCommandHash(jump) };
+    const { after } = runPrimitive(project, target, `cmd.gotoLabel.${operation}`, { ...position, index: 0, name: label.name });
+    expect(stored(after)).toEqual(inserting ? [{ ...branch, then: [jump] }] : [jump]);
   });
 
   it("자식이 맵을 옮긴 뒤 새 맵의 이벤트가 사용하는 위치 표시를 보존한다", () => {
@@ -397,6 +431,23 @@ describe("흐름 제어 명령", () => {
     })).toThrow(/위치 표시가 없습니다/u);
     const { after } = runPrimitive(project, target, "cmd.label.insert", { index: 1, name: label.name });
     expect(stored(after)).toEqual([jump, label]);
+  });
+
+  it("공용 이벤트가 명시적으로 이동한 뒤에는 목적지 맵의 이벤트만 호출할 수 있다", () => {
+    const apply = (mapId: string) => {
+      const { project, target } = setup([jump]);
+      const map = project.maps[fixtureMap]!;
+      map.events[0]!.pages![1]!.conditions = [branch.condition];
+      project.maps.other = { ...map, id: "other", events: [] };
+      project.commonEvents.find(event => event.id === "common-1")!.commands = [
+        { kind: "transfer", mapId, x: 2, y: 2 }, { ...call, eventId: fixtureEvent }, label,
+      ];
+      return runPrimitive(project, target, "cmd.gotoLabel.update", {
+        index: 0, expectedHash: eventCommandHash(jump), name: label.name,
+      });
+    };
+    expect(() => apply("other")).toThrow(/위치 표시가 없습니다/u);
+    expect(stored(apply(fixtureMap).after)).toEqual([jump]);
   });
 
   it("호출된 이벤트에 자체 목적지가 있거나 참조가 다른 페이지에만 있으면 이름을 바꿀 수 있다", () => {
@@ -586,9 +637,9 @@ describe("흐름 제어 명령", () => {
       add({ game: { addGold: () => {} } });
       {
         const game = { hasItem: (id: string) => id.length > 0 };
-        game.hasItem("local-item");
+        (game).hasItem("local-item");
       }
-      globalThis.game.setSwitch("flow-sw", true);
+      ((globalThis).game).setSwitch("flow-sw", true);
     `;
     const { after } = runPrimitive(project, target, "cmd.script.insert", { index: 0, source: localCalls });
     expect(stored(after)[0]).toMatchObject({
@@ -598,6 +649,29 @@ describe("흐름 제어 명령", () => {
     expect(() => runPrimitive(project, target, "cmd.script.insert", { index: 0, source: localGlobal })).not.toThrow();
     const ambientGame = `declare const game: { addGold: (value: string) => void }; game.addGold("3");`;
     expect(() => runPrimitive(project, target, "cmd.script.insert", { index: 0, source: ambientGame })).toThrow(/1번째 인자 형식/u);
+    expect(() => runPrimitive(project, target, "cmd.script.insert", { index: 0, source: '(game).hasItem("missing");' }))
+      .toThrow(/연결할 대상이 없습니다/u);
+  });
+
+  it("스크립트가 지역 require에는 일반 문자열을 넘기고 샌드박스 require에는 라이브러리를 넘긴다", () => {
+    const { project, target } = setup([]);
+    project.scriptLibrary = [{ id: "reward", source: "", compiled: "" }];
+    const insert = (source: string) => runPrimitive(project, target, "cmd.script.insert", { index: 0, source });
+    const format = 'function format(require: (text: string) => string) { return require("coins"); }\nformat(String);';
+    expect(stored(insert(format + '\n(require)("@lib/reward");').after)[0]).toMatchObject({
+      effects: { calls: [{ kind: "library", id: "reward" }] },
+    });
+    expect(() => insert('require("coins")')).toThrow(/프로젝트 라이브러리/u);
+  });
+
+  it("game.cmd에 명령 객체 대신 넘긴 리터럴을 저장 전에 거절한다", () => {
+    const { project, target } = setup([]);
+    const insert = (source: string) => runPrimitive(project, target, "cmd.script.insert", { index: 0, source });
+    for (const argument of ["42", "null", "[]"]) {
+      expect(() => insert(`await game.cmd(${argument});`)).toThrow(/1번째 인자 형식/u);
+    }
+    expect(() => insert('await game.cmd({ kind: "wait", ms: 1 });')).not.toThrow();
+    expect(() => insert('const command = { kind: "wait", ms: 1 }; await game.cmd(command);')).not.toThrow();
   });
 
   it("스크립트가 프로젝트 라이브러리의 함수를 가져와 재생한다", async () => {

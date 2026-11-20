@@ -1,5 +1,5 @@
 import ts from "typescript5";
-import { analyzeScript, isGameObject, knownScriptIds, scriptCallSource, scriptMemberName, scriptStringLiteral, unwrapScriptExpression } from "@/editor/script/analyze";
+import { analyzeScript, knownScriptIds, scriptCallSource, scriptMemberName, scriptStringLiteral, unwrapScriptExpression } from "@/editor/script/analyze";
 import { scriptCommandFields } from "@/editor/script/compile";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
@@ -14,7 +14,7 @@ function addRef(list: ScriptRef[], ref: ScriptRef): void {
   if (!list.some(entry => entry.kind === ref.kind && entry.id === ref.id)) list.push(ref);
 }
 
-type LiteralType = "string" | "number" | "boolean" | "bigint" | "null" | "object";
+type LiteralType = "string" | "number" | "boolean" | "bigint" | "null" | "undefined" | "array" | "object";
 
 function literalType(expression: ts.Expression): LiteralType | undefined {
   const node = unwrapScriptExpression(ts, expression);
@@ -30,21 +30,26 @@ function literalType(expression: ts.Expression): LiteralType | undefined {
   }
   if (node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword) return "boolean";
   if (node.kind === ts.SyntaxKind.NullKeyword) return "null";
-  if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) return "object";
+  if (ts.isVoidExpression(node)) return "undefined";
+  if (ts.isArrayLiteralExpression(node)) return "array";
+  if (ts.isObjectLiteralExpression(node)) return "object";
   return undefined;
 }
 
 function validateLiteralArgs(call: ts.CallExpression, params: string): void {
-  // Read primitive parameter types from the API spec and leave inferred/structural types to the full compiler.
+  // Check the outer type of literals here. The command's fields are validated by the runtime.
   const signature = ts.createSourceFile("/game.d.ts", `declare function api(${params}): void;`, ts.ScriptTarget.ES2022);
   const { parameters } = signature.statements[0] as ts.FunctionDeclaration;
   for (const [index, parameter] of parameters.entries()) {
     const declared = parameter.type?.getText(signature) ?? "";
-    const expected = /^(string|number|boolean)$/u.test(declared) ? declared : /^[A-Z]\w*Id$/u.test(declared) ? "string" : undefined;
+    let expected: string | undefined;
+    if (/^(string|number|boolean)$/u.test(declared)) expected = declared;
+    if (/^[A-Z]\w*Id$/u.test(declared)) expected = "string";
+    if (declared === "EventCommand") expected = "object";
     const argument = call.arguments[index];
     if (argument && ts.isSpreadElement(argument)) break;
     const actual = argument && literalType(argument);
-    if (!expected || parameter.dotDotDotToken || (parameter.questionToken && actual === "null")) continue;
+    if (!expected || parameter.dotDotDotToken || (parameter.questionToken && (actual === "null" || actual === "undefined"))) continue;
     if ((!argument && !parameter.questionToken) || (actual !== undefined && actual !== expected)) {
       throw new PrimitiveError(`스크립트에서 게임 기능의 ${index + 1}번째 인자 형식을 확인해 주세요.`);
     }
@@ -52,7 +57,7 @@ function validateLiteralArgs(call: ts.CallExpression, params: string): void {
 }
 
 function validateGameCalls(project: Project, source: string, calls: ScriptRef[]): void {
-  const { file, isEngineGameObject } = scriptCallSource(ts, source);
+  const { file, isGlobal, isEngineGameObject } = scriptCallSource(ts, source);
   function visit(node: ts.Node): void {
     let specifier: ts.Expression | undefined;
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
@@ -61,7 +66,7 @@ function validateGameCalls(project: Project, source: string, calls: ScriptRef[])
       specifier = node.moduleReference.expression;
     } else if (ts.isCallExpression(node)) {
       const callee = unwrapScriptExpression(ts, node.expression);
-      if (callee.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(callee) && callee.text === "require")) {
+      if (callee.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(callee) && callee.text === "require" && isGlobal(callee))) {
         specifier = node.arguments[0];
       }
       if ((ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) && isEngineGameObject(callee.expression)) {
@@ -94,30 +99,39 @@ function validateGameCalls(project: Project, source: string, calls: ScriptRef[])
   visit(file);
 }
 
+function isIdentifierUse(node: ts.Identifier): boolean {
+  const { parent } = node;
+  if (ts.isShorthandPropertyAssignment(parent)) return true;
+  return !("name" in parent && parent.name === node) && !(ts.isBindingElement(parent) && parent.propertyName === node);
+}
+
+function outsideParentheses(node: ts.Node): ts.Node {
+  while (ts.isParenthesizedExpression(node.parent)) node = node.parent;
+  return node;
+}
+
 /** A running script can put a command or a called common event on the same interpreter stack. */
 export function scriptMayDispatchFlow(
   compiled: string, followsCommonEvent: (id: string) => boolean, unknownFlow = () => true,
   transfers = (_mapId?: string) => false,
 ): boolean {
-  const file = ts.createSourceFile("/script.js", compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
+  const { file, isGlobal, isEngineGameObject } = scriptCallSource(ts, compiled, "/script.js", ts.ScriptKind.JS);
   function visit(node: ts.Node): boolean {
-    if (ts.isIdentifier(node) && node.text === "require") {
-      const parent = node.parent;
-      const propertyKey = ts.isObjectLiteralElementLike(parent) && !ts.isShorthandPropertyAssignment(parent)
-        && "name" in parent && parent.name === node;
-      if (!propertyKey && unknownFlow()) return true;
-    }
-    if (isGameObject(ts, node)) {
-      const access = node.parent;
-      const name = scriptMemberName(ts, access, node);
+    if (ts.isIdentifier(node) && node.text === "require" && isIdentifierUse(node) && isGlobal(node) && unknownFlow()) return true;
+    if (((ts.isIdentifier(node) && isIdentifierUse(node)) || ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+      && isEngineGameObject(node, true)) {
+      const receiver = outsideParentheses(node);
+      const access = receiver.parent;
+      const name = scriptMemberName(ts, access, receiver);
       if (name === "callCommonEvent" || name === "transfer") {
-        const call = access.parent;
-        const id = ts.isCallExpression(call) && call.expression === access ? scriptStringLiteral(ts, call.arguments[0]) : undefined;
-        if (name === "transfer") return transfers(id);
-        return id === undefined ? unknownFlow() : followsCommonEvent(id);
+        const callee = outsideParentheses(access);
+        const call = callee.parent;
+        const id = ts.isCallExpression(call) && call.expression === callee ? scriptStringLiteral(ts, call.arguments[0]) : undefined;
+        if (name === "transfer" ? transfers(id) : id === undefined ? unknownFlow() : followsCommonEvent(id)) return true;
+      } else if ((name === undefined || name === "cmd") && unknownFlow()) {
+        // Computed or aliased calls and game.cmd can dispatch commands selected at run time.
+        return true;
       }
-      // Computed or aliased calls and game.cmd can dispatch commands selected at run time.
-      return (name === undefined || name === "cmd") && unknownFlow();
     }
     return ts.forEachChild(node, visit) === true;
   }

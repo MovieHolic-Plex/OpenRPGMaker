@@ -203,10 +203,6 @@ function editedPage(ctx: PrimitiveContext, args: Args, kind: FlowKind, operation
     throw error;
   }
   const command = listsAt(next.commands, branchPath).at(-1)![index]!;
-  if (command.kind === "gotoLabel" && !lists.some(list => firstLabelIndex(list, command.name) >= 0)
-    && !(operation === "update" && hasCallerLabel(ctx.project, map, lists, command.name))) {
-    throw new PrimitiveError("이 줄에서 이동할 수 있는 위치 표시가 없습니다.");
-  }
   if (command.kind === "label") {
     const previousName = current?.kind === "label" ? current.name : undefined;
     for (const project of labelReferenceViews(ctx)) {
@@ -308,7 +304,16 @@ function primitive(kind: FlowKind, operation: Operation): SmallTaskPrimitive {
     },
     apply(ctx, args) {
       const selected = scopedPage(ctx);
-      return updateScopedPage(ctx, () => editedPage(ctx, args, kind, operation, selected));
+      const project = updateScopedPage(ctx, () => editedPage(ctx, args, kind, operation, selected));
+      if (kind === "gotoLabel") {
+        const { map, page } = scopedPage({ ...ctx, project });
+        const lists = listsAt(page.commands, (args.branchPath ?? []) as number[]);
+        const name = args.name as string;
+        if (!lists.some(list => firstLabelIndex(list, name) >= 0) && !hasCallerLabel(project, map, lists, name)) {
+          throw new PrimitiveError("이 줄에서 이동할 수 있는 위치 표시가 없습니다.");
+        }
+      }
+      return project;
     },
   };
 }

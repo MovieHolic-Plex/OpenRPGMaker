@@ -119,9 +119,12 @@ function rootContext(project: Project, root: FlowRoot, conservative: boolean) {
             for (const called of calledLists(project, [from], command)) follow(called, from);
           }
           if (command.kind === "transfer") {
-            if (!conservative && !root.continueAfterTransfer) {
-              currentMaps.clear();
-              break;
+            if (!conservative) {
+              if (!root.continueAfterTransfer) {
+                currentMaps.clear();
+                break;
+              }
+              if (Object.hasOwn(project.maps, command.mapId)) currentMaps.clear();
             }
             transfer(command.mapId);
           }

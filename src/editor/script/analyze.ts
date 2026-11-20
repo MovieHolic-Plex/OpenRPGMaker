@@ -52,19 +52,24 @@ export function scriptMemberName(ts: TypeScriptApi, access: TS.Node, object: TS.
   return undefined;
 }
 
-export function isGameObject(ts: TypeScriptApi, node: TS.Node, isGlobal = (_id: TS.Identifier) => true): boolean {
+function isGameObject(
+  ts: TypeScriptApi, expression: TS.Expression, isGlobal: (id: TS.Identifier) => boolean, allowComputedGlobal: boolean,
+): boolean {
+  const node = unwrapScriptExpression(ts, expression);
   if (ts.isIdentifier(node)) return node.text === "game" && isGlobal(node);
-  return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
-    && ts.isIdentifier(node.expression) && node.expression.text === "globalThis"
-    && scriptMemberName(ts, node, node.expression) === "game" && isGlobal(node.expression);
+  if (!ts.isPropertyAccessExpression(node) && !ts.isElementAccessExpression(node)) return false;
+  const object = unwrapScriptExpression(ts, node.expression);
+  if (!ts.isIdentifier(object) || object.text !== "globalThis" || !isGlobal(object)) return false;
+  const name = scriptMemberName(ts, node, node.expression);
+  return name === "game" || (allowComputedGlobal && name === undefined);
 }
 
-export function scriptCallSource(ts: TypeScriptApi, source: string, fileName = "/script.ts") {
+export function scriptCallSource(ts: TypeScriptApi, source: string, fileName = "/script.ts", kind = ts.ScriptKind.TS) {
   // The sandbox wraps each script, so declarations at the top of the file are local too.
-  const file = ts.createSourceFile(fileName, `${source}\nexport {};`, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TS);
+  const file = ts.createSourceFile(fileName, `${source}\nexport {};`, ts.ScriptTarget.ES2022, true, kind);
   let checker: TS.TypeChecker | undefined;
   const isGlobal = (id: TS.Identifier): boolean => {
-    checker ??= ts.createProgram([fileName], { noLib: true, noResolve: true, types: [] }, {
+    checker ??= ts.createProgram([fileName], { noLib: true, noResolve: true, types: [], allowJs: kind === ts.ScriptKind.JS }, {
       getSourceFile: name => name === fileName ? file : undefined,
       getDefaultLibFileName: () => "",
       writeFile: () => undefined,
@@ -81,7 +86,11 @@ export function scriptCallSource(ts: TypeScriptApi, source: string, fileName = "
       (ts.getCombinedModifierFlags(declaration) & ts.ModifierFlags.Ambient) === 0
       && !ts.isPartOfTypeOnlyImportOrExportDeclaration(declaration));
   };
-  return { file, isEngineGameObject: (node: TS.Node) => isGameObject(ts, node, isGlobal) };
+  return {
+    file,
+    isGlobal,
+    isEngineGameObject: (node: TS.Expression, allowComputedGlobal = false) => isGameObject(ts, node, isGlobal, allowComputedGlobal),
+  };
 }
 
 function levenshtein(a: string, b: string): number {
@@ -159,7 +168,7 @@ export function analyzeScript(
   source: string,
   options: { readonly project?: Project; readonly mapId?: string; readonly fileName?: string } = {}
 ): ScriptAnalysis {
-  const { file, isEngineGameObject } = scriptCallSource(ts, source, options.fileName);
+  const { file, isGlobal, isEngineGameObject } = scriptCallSource(ts, source, options.fileName);
   const reads: ScriptRef[] = [];
   const writes: ScriptRef[] = [];
   const calls: ScriptRef[] = [];
@@ -257,11 +266,11 @@ export function analyzeScript(
         diagnostics.push({ ...position(node.moduleSpecifier), message: `Scripts can only import project library modules ("@lib/<id>"), not "${specifier}".`, severity: "error", source: "analyzer" });
       }
     }
-    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "require") {
-      diagnostics.push({ ...position(node), message: "Use `import { … } from \"@lib/<id>\"` instead of require().", severity: "warning", source: "analyzer" });
-    }
     if (ts.isCallExpression(node)) {
       const callee = unwrapScriptExpression(ts, node.expression);
+      if (ts.isIdentifier(callee) && callee.text === "require" && isGlobal(callee)) {
+        warn(node, "Use `import { … } from \"@lib/<id>\"` instead of require().");
+      }
       const name = (ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee))
         && isEngineGameObject(callee.expression) ? scriptMemberName(ts, callee, callee.expression) : undefined;
       const entry = name === undefined ? undefined : SCRIPT_API_BY_NAME.get(name);
