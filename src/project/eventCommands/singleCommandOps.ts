@@ -8,6 +8,7 @@ import { jsonEqual, structuralJson } from "@/util/structuralJson";
 
 /** Root index or [command index, branch index, ..., index within the list]. All row indices start at zero. */
 export type EventCommandIndex = number | readonly number[];
+type CommandOwner = Pick<EventPage, "commands">;
 
 export class EventCommandEditError extends Error {
   constructor(message: string, readonly code: "invalid-command-edit" | "stale-event-command" | "event-command-branch" = "invalid-command-edit") {
@@ -23,7 +24,7 @@ export function eventCommandListHash(commands: readonly Command[]): string {
   return contentFingerprint(structuralJson(commands));
 }
 
-function editTarget(page: EventPage, index: EventCommandIndex, insert = false) {
+function editTarget(page: CommandOwner, index: EventCommandIndex, insert = false) {
   const path = typeof index === "number" ? [index] : index;
   const row = path.at(-1);
   if (row === undefined || path.length % 2 !== 1 ||
@@ -83,7 +84,7 @@ function commandBranches(command: Command) {
   }));
 }
 
-export function insertEventCommand(page: EventPage, index: EventCommandIndex, command: Command): EventPage {
+export function insertEventCommand<T extends CommandOwner>(page: T, index: EventCommandIndex, command: Command): T {
   const { commands, list, row, inLoop } = editTarget(page, index, true);
   validateCommand(command);
   validateInsertedFields(command, inLoop);
@@ -92,7 +93,7 @@ export function insertEventCommand(page: EventPage, index: EventCommandIndex, co
 }
 
 /** Patch the fields of one command. Branch contents belong to their own editable rows. */
-export function updateEventCommand(page: EventPage, index: EventCommandIndex, patch: Readonly<Record<string, unknown>>, expectedHash: string): EventPage {
+export function updateEventCommand<T extends CommandOwner>(page: T, index: EventCommandIndex, patch: Readonly<Record<string, unknown>>, expectedHash: string): T {
   const { commands, list, row, inLoop } = editTarget(page, index);
   const current = list[row]!;
   verifyHash(current, expectedHash);
@@ -116,7 +117,7 @@ export function updateEventCommand(page: EventPage, index: EventCommandIndex, pa
   return { ...page, commands };
 }
 
-export function deleteEventCommand(page: EventPage, index: EventCommandIndex, expectedHash: string): EventPage {
+export function deleteEventCommand<T extends CommandOwner>(page: T, index: EventCommandIndex, expectedHash: string): T {
   const { commands, list, row } = editTarget(page, index);
   const current = list[row]!;
   verifyHash(current, expectedHash);

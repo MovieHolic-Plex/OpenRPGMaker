@@ -21,7 +21,7 @@ import { validateCommands, type ReferenceContext } from "@/project/io/commandRef
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { isPlayerMoveTarget } from "@/project/moveRouteTarget";
 import { scriptCalls, scriptHasDynamic } from "@/project/script/effects";
-import type { Command, CommonEvent, Condition, EventPage, GameMap, Project } from "@/project/types";
+import type { Command, CommonEvent, Condition, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../../errors";
 import { scriptCommonEventCalls } from "./scriptCalls";
@@ -118,7 +118,7 @@ export function refuseReferencedRemoval(project: Project, id: string, live?: Sma
   }
 }
 
-export function editCommands(edit: () => EventPage): EventPage {
+export function editCommands(edit: () => CommonEvent): CommonEvent {
   try {
     return edit();
   } catch (error) {

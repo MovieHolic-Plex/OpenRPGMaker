@@ -1,7 +1,6 @@
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_ELSE_BRANCH_INDEX, PRESENT_OTHERWISE_BRANCH_INDEX,
   resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
-import { normalizeEventPage } from "@/editor/eventPages";
 import { COMMON_EVENT_TRIGGER_OPTIONS, commonEventTriggerLabel } from "@/editor/panels/databaseDisplay";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
 import { displayText } from "@/editor/smallTask/target";
@@ -10,7 +9,7 @@ import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import {
   deleteEventCommand, eventCommandHash, eventCommandListHash, insertEventCommand, updateEventCommand,
 } from "@/project/eventCommands/singleCommandOps";
-import type { Command, CommonEvent, EventPage, Project } from "@/project/types";
+import type { Command, CommonEvent, Project } from "@/project/types";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
@@ -134,19 +133,18 @@ function expectedCommandHash(event: CommonEvent, path: number[], args: Args): st
   return eventCommandHash(existingCommand(event, path));
 }
 
-function pageForInsert(event: CommonEvent, path: number[]): EventPage {
-  const page = normalizeEventPage({ id: event.id, commands: event.commands });
-  if (path.length === 1 || path.at(-1) !== 0 || resolveCommandListAtPath(page.commands, path)) return page;
+function eventForInsert(event: CommonEvent, path: number[]): CommonEvent {
+  if (path.length === 1 || path.at(-1) !== 0 || resolveCommandListAtPath(event.commands, path)) return event;
   const parent = resolveCommandAtPath(event.commands, path.slice(0, -2));
-  if (!parent) return page;
+  if (!parent) return event;
   const branchIndex = path.at(-2);
   const implicit = (parent.kind === "fork" && branchIndex === FORK_ELSE_BRANCH_INDEX) ||
     (parent.kind === "presentItem" && (branchIndex === PRESENT_OTHERWISE_BRANCH_INDEX || branchIndex === CHOICE_CANCEL_BRANCH_INDEX));
-  if (!implicit && !eventCommandBranches(parent).some(branch => branch.branchIndex === branchIndex)) return page;
+  if (!implicit && !eventCommandBranches(parent).some(branch => branch.branchIndex === branchIndex)) return event;
   // An available branch may have no stored array until its first row is inserted.
-  const commands = structuredClone(page.commands);
+  const commands = structuredClone(event.commands);
   resolveCommandListAtPath(commands, path, { missingBranches: "create" });
-  return { ...page, commands };
+  return { ...event, commands };
 }
 
 function describeCommand(ctx: PrimitiveContext, args: Args, verb: string): string {
@@ -252,9 +250,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const event = findEvent(ctx, args);
       const command = commandForInsert(args.command as Command);
       const path = commandPath(event, args);
-      const page = pageForInsert(event, path);
-      const edited = editCommands(() => insertEventCommand(page, path, command));
-      const next = { ...event, commands: edited.commands };
+      const next = editCommands(() => insertEventCommand(eventForInsert(event, path), path, command));
       const inserted = existingCommand(next, path);
       validateSingleInsert(inserted);
       validateCommandReferences(ctx.project, targetMap(ctx), inserted);
@@ -287,9 +283,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const fields = current.kind === "m2Command" && patch.fields !== undefined
         ? { ...patch, fields: { ...current.fields, ...patch.fields as Args } }
         : patch;
-      const page = normalizeEventPage({ id: event.id, commands: event.commands });
-      const edited = editCommands(() => updateEventCommand(page, path, fields, expectedHash));
-      const next = { ...event, commands: edited.commands };
+      const next = editCommands(() => updateEventCommand(event, path, fields, expectedHash));
       const updated = existingCommand(next, path);
       validateCommandReferences(ctx.project, targetMap(ctx), updated, current);
       validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, current, updated);
@@ -305,10 +299,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const path = commandPath(event, args);
       const expectedHash = expectedCommandHash(event, path, args);
       const current = existingCommand(event, path);
-      const page = normalizeEventPage({ id: event.id, commands: event.commands });
-      const edited = editCommands(() => deleteEventCommand(page, path, expectedHash));
-      validateLabelEdit(ctx.project, targetMap(ctx), event, edited.commands, path, current);
-      return editEvent(event, ctx.project, { ...event, commands: edited.commands });
+      const next = editCommands(() => deleteEventCommand(event, path, expectedHash));
+      validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, current);
+      return editEvent(event, ctx.project, next);
     },
   ),
 ];
