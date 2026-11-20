@@ -113,6 +113,7 @@ export type OprnBridgeLifecycle = {
   /** 파일 → 새 프로젝트·폴더 열기. 폴더를 바꾸기 전에 flush 하고 결과를 보고한다. */
   readonly onFlushBeforeReplace?: (callback: (requestId: number) => void) => void;
   readonly flushReplaceDone?: (requestId: number, report: { readonly kind: string; readonly dirty: boolean }) => void;
+  readonly onReleaseReplace?: (callback: (requestId: number) => void) => void;
   readonly flushReplaceReady?: () => void;};
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
@@ -273,11 +274,19 @@ export function createElectronRepository(): ElectronRepository {
     if (!resolved) throw new Error("열린 프로젝트 폴더가 없습니다");
     return resolved;
   };
+  const baselineBelongsTo = (target: LocalProjectTarget): (() => boolean) => {
+    // open/adopt replace this object, even when reopening the same folder.
+    const session = opened;
+    return () => session !== null && opened === session
+      && session.projectDir === target.projectDir && session.projectId === target.projectId;
+  };
   const savePreparedProject = async (persisted: Project, target: ProjectTarget): Promise<SaveResult> => {
     const resolved = requireOpened(target);
+    const ownsBaseline = baselineBelongsTo(resolved);
+    if (!ownsBaseline()) return { kind: "not-configured" };
     const serialized = serialize(persisted);
     const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
-    if (result.kind === "saved") loadedSha = result.sha256 ?? null;
+    if (result.kind === "saved" && ownsBaseline()) loadedSha = result.sha256 ?? null;
     if (result.kind !== "saved") return result;
     const revision = result.revision === undefined ? {} : { revision: result.revision };
     return result.serialized
@@ -285,9 +294,9 @@ export function createElectronRepository(): ElectronRepository {
       : { kind: "saved", project: persisted, submitted: persisted, sha256: result.sha256, ...revision };
   };
 
-  const snapshotOf = (serialized: string | null | undefined, sha256: string | null | undefined, target: LocalProjectTarget): ProjectSnapshot | null => {
+  const snapshotOf = (serialized: string | null | undefined, sha256: string | null | undefined, target: LocalProjectTarget, ownsBaseline: () => boolean): ProjectSnapshot | null => {
     if (!serialized) return null;
-    loadedSha = sha256 ?? null;
+    if (ownsBaseline()) loadedSha = sha256 ?? null;
     return {
       authority: { mode: "legacy", target },
       project: collectLoadRepairs(() => deserialize(serialized)),
@@ -330,11 +339,12 @@ export function createElectronRepository(): ElectronRepository {
    */
   const loadSnapshotFromHost = async (target: LocalProjectTarget): Promise<ProjectSnapshot | null> => {
     const bridge = electronBridge().project;
+    const ownsBaseline = baselineBelongsTo(target);
     if (!bridge.loadFolded || !bridge.tilesetBlobs) {
       // 옛 브리지(접힌 행 없음): 문서 전체를 한 번에 되돌린다 — 번들 정의를 모두 먼저 읽어 동기 XHR 을 타지 않게 한다.
       await preloadAllBundledTilesetDefinitions();
       const loaded = await bridge.load({ projectDir: target.projectDir });
-      return snapshotOf(loaded?.serialized, loaded?.sha256, target);
+      return snapshotOf(loaded?.serialized, loaded?.sha256, target, ownsBaseline);
     }
     const assetTransport = typeof bridge.assetBlobs === "function";
     if (parsedTilesetsDir !== target.projectDir) {
@@ -346,7 +356,7 @@ export function createElectronRepository(): ElectronRepository {
       if (!loaded) return null;
       if ("serialized" in loaded) {
         await preloadAllBundledTilesetDefinitions();
-        return snapshotOf(loaded.serialized, loaded.sha256, target);
+        return snapshotOf(loaded.serialized, loaded.sha256, target, ownsBaseline);
       }
       const folded = parseFoldedDocument(loaded.folded);
       // 저장본은 번들 타일셋을 번들 정의와의 차이로 싣는다(bundledTilesetDiff.ts). 맵이 쓰는 타일셋만 정의를 읽어 곧바로 되돌리고,
@@ -413,7 +423,7 @@ export function createElectronRepository(): ElectronRepository {
       parsedTilesets = next;
       unsettledDigests = lazyDigests;
       if (lazyDigests.length > 0) digestParsedTilesetsWhenIdle(next, lazyDigests);
-      loadedSha = loaded.sha256;
+      if (ownsBaseline()) loadedSha = loaded.sha256;
       return {
         authority: { mode: "legacy", target },
         project,
@@ -491,6 +501,7 @@ export function createElectronRepository(): ElectronRepository {
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
+      const ownsBaseline = baselineBelongsTo(resolved);
       // `MapPatchInput` 은 이밌트 초안을 이미 떼낸 문서를 들고 온다(types.ts `MapPatchInput` 머리말).
       // 여기서 다시 `projectWithoutEventDrafts` 를 부르면 생산 프로젝트 한 번에 전역 딥클로이 두 번 더 도는다
       // (2026-09-25 실측: 42MB 문서 토한 프로젝트에서 한 번에 563ms).
@@ -518,10 +529,14 @@ export function createElectronRepository(): ElectronRepository {
         ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
       });
       // 해시가 맞으면 변경분만 보낸다. 다른 저장이 끼면 기준 문서를 한 번 더 보낸다.
+      if (!ownsBaseline()) return { kind: "not-configured" };
       let result = await send(false);
-      if (result.kind === "stale-base") result = await send(true);
+      if (result.kind === "stale-base") {
+        if (!ownsBaseline()) return { kind: "not-configured" };
+        result = await send(true);
+      }
       if (result.kind === "stale-base") throw new Error("저장 기준 문서가 서버와 달라 맵 패치를 적용하지 못했습니다");
-      if (result.kind === "saved") loadedSha = result.sha256 ?? null;
+      if (result.kind === "saved" && ownsBaseline()) loadedSha = result.sha256 ?? null;
       if (result.kind !== "saved") return result;
       const revision = result.revision === undefined ? {} : { revision: result.revision };
       return result.serialized

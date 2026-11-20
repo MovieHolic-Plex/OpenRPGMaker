@@ -68,6 +68,8 @@ export const OPRN_CHANNELS = {
   lifecycleFlushBeforeReplace: "oprn:lifecycle.flush-before-replace",
   /** 그 저장이 끝났다. 보고는 { kind, dirty }. */
   lifecycleFlushReplaceDone: "oprn:lifecycle.flush-replace-done",
+  /** 폴더 교체를 중단했으므로 기존 문서의 편집을 다시 허용한다. */
+  lifecycleReleaseReplace: "oprn:lifecycle.release-replace",
   /** 편집기 문서가 그 요청을 받을 준비가 됐다. 부팅 전에는 저장할 변경이 없다. */
   lifecycleFlushReplaceReady: "oprn:lifecycle.flush-replace-ready",  /** 이 창이 연 프로젝트의 «마지막 편집 화면» 그림(편집기 부팅 동안 읽기 전용 자리표시). electron/main/lastView.ts */
   resumeLastView: "oprn:resume.lastView",

@@ -30,6 +30,7 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
       cancelLabel: "취소 · 원본 유지",
     });
     if (!accepted) return false;
+    const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
     const currentIdentity = store.getProjectIdentity();
     if (store.getCurrent() !== source || identity.kind !== currentIdentity.kind || identity.id !== currentIdentity.id) {
       throw new NewRemoteProjectTransactionError("concurrent-edit", "확인 중 프로젝트가 변경되었습니다. 현재 작업에서 파일을 다시 선택하세요.");
@@ -37,7 +38,6 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
     const candidate = structuredClone(source);
     addMedia(candidate, asset);
     toast("새 폴더에 사본을 만들고 다시 읽어 확인하는 중...", "info");
-    const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
     const created = await createProjectFolderWithSeed(source.meta?.title ?? "새 프로젝트", candidate);
     if (!created) throw new NewRemoteProjectTransactionError("configuration", "새 폴더는 데스크톱 앱에서만 만들 수 있습니다. 파일을 다시 선택해 주세요.");
     // 새 폴더가 열렸다 — 문서를 다시 띄워야 그 폴더로 부팅한다.

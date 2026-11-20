@@ -122,3 +122,17 @@ it("rebases a changed page by ID when a later bundle reorders the same number of
   expect(restored.referenceDocuments!.map(doc => doc.id)).toEqual(later.referenceDocuments.map(doc => doc.id));
   expect(restored.referenceDocuments!.at(-1)?.name).toBe("내 편집");
 });
+
+it.each([false, true])("preserves a saved deletion when rebasing reordered categories (new category: %s)", (added) => {
+  const bundle = bundledTilesetById("beodeul_city")!;
+  const docs = bundle.referenceDocuments!.slice(0, 3);
+  const base = { ...bundle, referenceDocuments: docs };
+  const edited = { ...base, referenceDocuments: docs.slice(1) };
+  const view = bundledTilesetDiffForTest.diff(edited, base)!;
+  const reordered = [docs[2]!, docs[0]!, docs[1]!];
+  if (added) reordered.splice(2, 0, { ...docs[0]!, id: "added-by-bundle" });
+  const later = { ...base, referenceDocuments: reordered };
+  const restored = bundledTilesetDiffForTest.restore(base.id, view, later).tileset;
+
+  expect(restored.referenceDocuments).toEqual(reordered.filter(doc => doc.id !== docs[0]!.id));
+});

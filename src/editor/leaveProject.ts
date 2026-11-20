@@ -2,6 +2,22 @@ import { store } from "@/project/store";
 import { showConfirm } from "@/editor/ui/modal";
 import { saveProjectNow } from "@/editor/saveActions";
 
+export function holdEditsForFolderSwitch(): () => void {
+  // Commit a focused field before the save decision and before blocking edits.
+  const focused = document.activeElement;
+  if (focused && focused instanceof HTMLElement && focused.matches("input, textarea, select, [contenteditable]")) focused.blur();
+  return store.holdProjectEdits();
+}
+
+export async function withFolderSwitchEditsHeld<T>(operation: () => Promise<T>): Promise<T> {
+  const release = holdEditsForFolderSwitch();
+  try {
+    return await operation();
+  } finally {
+    release();
+  }
+}
+
 /** 확인만 한다. 폴더 선택을 취소하거나 새 폴더를 열지 못하면 현재 편집은 계속된다. */
 export async function confirmDiscardToLeave(action: string): Promise<boolean> {
   if (!store.hasUnsavedChanges()) return true;

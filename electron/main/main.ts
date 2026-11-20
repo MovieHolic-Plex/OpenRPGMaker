@@ -193,6 +193,7 @@ const replaceFlushWaiters = new Map<number, (requestId: unknown, payload: unknow
 /** 같은 창에서 폴더 대화상자를 두 번 열지 않는다. */
 const folderSwitching = new Set<number>();
 const replacingDocument = new Set<number>();
+const replacementEditHolds = new Map<number, number>();
 const recentFolderChanges = new Set<string>();
 
 function destroyAuxiliaryChildren(): void {
@@ -475,6 +476,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("closed", () => {
     revealOnStartReady.delete(id);
     replacingDocument.delete(id);
+    replacementEditHolds.delete(id);
     replaceFlushReady.delete(id);
     appWindows.delete(window);
     explicitProjectDir.delete(window);
@@ -492,6 +494,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     flushReady.delete(id);
     replaceFlushReady.delete(id);
     replacingDocument.delete(id);
+    replacementEditHolds.delete(id);
   });
   // 개발자 도구의 새로고침은 메뉴를 타지 않는다. 렌더러가 미저장으로 막으면 저장한 뒤 다시 연다.
   // 저장을 마친 reload() 가 다른 beforeunload(미적용 초안)에 막히면 그 새로고침은 그대로 진행한다.
@@ -594,6 +597,7 @@ function rendererEntryUrl(): string {
 /** 폴더를 이 창의 세션으로 열고 편집기 문서로 넘긴다. 파일 메뉴가 쓰는 경로. */
 async function adoptFolder(window: BrowserWindow, projectDir: string, title?: string): Promise<void> {
   const webContentsId = window.webContents.id;
+  const previousDir = sessions.get(webContentsId)?.projectDir;
   const session = await openWindowSession(webContentsId, projectDir);
   if (!session || window.isDestroyed()) {
     if (session) sessions.close(webContentsId);
@@ -601,7 +605,16 @@ async function adoptFolder(window: BrowserWindow, projectDir: string, title?: st
   }
   recordRecentProject(session.projectDir, title ?? session.store.info().title ?? session.projectDir);
   replacingDocument.add(webContentsId);
-  void window.loadURL(rendererEntryUrl());
+  try {
+    await window.loadURL(rendererEntryUrl());
+  } catch (error) {
+    // A failed navigation can leave the old editor alive. Restore its folder before unlocking it.
+    if (!window.isDestroyed() && replacementEditHolds.has(webContentsId) && previousDir) {
+      await openWindowSession(webContentsId, previousDir);
+      replacingDocument.delete(webContentsId);
+    }
+    throw error;
+  }
 }
 
 function dismissSplash(): void {
@@ -702,6 +715,7 @@ function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFl
   if (sessions.get(id) === null || !replaceFlushReady.has(id)) return Promise.resolve("skip");
   return new Promise((resolve) => {
     let settled = false;
+    let locked = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const finish = (result: FolderSwitchFlush): void => {
       if (settled) return;
@@ -713,15 +727,29 @@ function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFl
     };
     const requestId = ++nextReplaceRequestId;
     const onDone = (replyId: unknown, payload: unknown): void => {
-      if (replyId === requestId) finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
+      if (replyId !== requestId) return;
+      if ((payload as { kind?: unknown } | null)?.kind === "locked") locked = true;
+      else if (locked) finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
     };
     const onClosed = (): void => finish("closed");
-    timer = setTimeout(() => finish("timeout"), NAVIGATION_FLUSH_TIMEOUT_MS);
+    // Without the renderer's lock acknowledgment, even discard cannot authorize replacement.
+    timer = setTimeout(() => finish(locked ? "timeout" : "unavailable"), NAVIGATION_FLUSH_TIMEOUT_MS);
     replaceFlushWaiters.set(id, onDone);
     window.once("closed", onClosed);
     if (window.webContents.isDestroyed()) finish("closed");
-    else window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReplace, requestId);
+    else {
+      replacementEditHolds.set(id, requestId);
+      window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReplace, requestId);
+    }
   });
+}
+
+function releaseFolderSwitchEdits(window: BrowserWindow, id: number): void {
+  const requestId = replacementEditHolds.get(id);
+  replacementEditHolds.delete(id);
+  if (requestId !== undefined && !window.isDestroyed() && !window.webContents.isDestroyed()) {
+    window.webContents.send(OPRN_CHANNELS.lifecycleReleaseReplace, requestId);
+  }
 }
 
 async function mayReplaceFolder(window: BrowserWindow): Promise<boolean> {
@@ -766,6 +794,7 @@ function openChosenFolder(window: BrowserWindow, options: {
         console.warn("[project] 오류 창을 띄우지 못했습니다:", dialogError);
       });
     } finally {
+      if (!replacingDocument.has(id)) releaseFolderSwitchEdits(window, id);
       folderSwitching.delete(id);
     }
   })();
@@ -1186,6 +1215,7 @@ export async function startApp(boot: BootContext): Promise<void> {
       recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
       return { projectDir: session.projectDir, isNew, projectId: session.store.projectId };
     } finally {
+      if (!replacingDocument.has(id)) releaseFolderSwitchEdits(owner, id);
       folderSwitching.delete(id);
     }
   });
@@ -1325,6 +1355,7 @@ export async function startApp(boot: BootContext): Promise<void> {
       if (event.sender.isDestroyed()) return null;
       const session = await openWindowSession(senderId, dir);
       if (!session) return null;
+      replacingDocument.add(senderId);
       recordRecentProject(session.projectDir, input.title ?? "새 프로젝트");
       // 세션이 정규화한 경로(realpath)를 돌려준다 — 시작 화면 인계가 편집기가 연 폴더와 같은 문자열로 비교한다.
       return { projectDir: session.projectDir, projectId: session.store.projectId };

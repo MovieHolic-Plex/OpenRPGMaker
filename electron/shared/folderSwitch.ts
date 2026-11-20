@@ -18,14 +18,14 @@ export function folderSwitchFlushOk(payload: unknown): boolean {
   return report.dirty === false && typeof report.kind === "string" && SETTLED_FLUSH_KINDS.has(report.kind);
 }
 
-export type FolderSwitchFlush = "ok" | "blocked" | "timeout" | "closed" | "skip";
+export type FolderSwitchFlush = "ok" | "blocked" | "timeout" | "unavailable" | "closed" | "skip";
 
 export async function allowFolderSwitch(
   result: FolderSwitchFlush,
   confirmDiscard: (reason: "blocked" | "timeout") => Promise<boolean>,
 ): Promise<boolean> {
   if (result === "blocked" || result === "timeout") return confirmDiscard(result);
-  return result !== "closed";
+  return result !== "closed" && result !== "unavailable";
 }
 
 /** 창 컨트롤·저장 신호를 받을 렌더러 문서. 배포는 app://, 개발 서버는 그 출처만. */

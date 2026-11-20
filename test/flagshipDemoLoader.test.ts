@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   confirm: vi.fn(),
   save: vi.fn(),
   hasUnsavedChanges: vi.fn(() => false),
+  holdProjectEdits: vi.fn(),
   replaceProject: vi.fn(),
   toast: vi.fn<(message: string, options: ToastKind | ToastOptions) => void>(),
 }));
@@ -35,6 +36,7 @@ vi.mock("@/project/store", () => ({
   save: vi.fn(),
   hasUnsavedChanges: mocks.hasUnsavedChanges,
     leaveProjectSession: mocks.leave,
+    holdProjectEdits: mocks.holdProjectEdits,
     getAutoSaveState: () => ({ kind: "pending" }),
     isSharedDemoSession: () => false,
     replaceProject: mocks.replaceProject,
@@ -55,7 +57,8 @@ function launchOffline(id: FlagshipDemoId, response: Response) {
     history: { state: null, replaceState },
     oprn: { project: { status: offline }, team: { status: offline }, start: { createProject: mocks.copy } },
   });
-  vi.stubGlobal("document", { baseURI: url.href });
+  vi.stubGlobal("document", { baseURI: url.href, body: { inert: false } });
+  mocks.holdProjectEdits.mockImplementation(() => vi.fn());
   vi.stubEnv("DEV", false);
   vi.stubGlobal("fetch", async (resource: URL) => {
     expect(resource.href).toBe(`app://oprn/demos/${id}.project.json`);
@@ -115,7 +118,13 @@ describe("opening a bundled sample", () => {
 
   it("offers an offline preview after copy failure and guards unsaved work", async () => {
     const { assign } = launchOffline("emerald-crown", Response.json({ meta: { title: "Astra Horizon" }, system: {}, tilesets: {} }));
-    mocks.copy.mockRejectedValue(new Error("Permission denied"));
+    const release = vi.fn();
+    let duringCopy: { inert: boolean; releases: number } | undefined;
+    mocks.holdProjectEdits.mockReturnValue(release);
+    mocks.copy.mockImplementation(async () => {
+      duringCopy = { inert: document.body.inert, releases: release.mock.calls.length };
+      throw new Error("Permission denied");
+    });
 
     expect(await openFlagshipDemo("emerald-crown", { action: "open" })).toBe(false);
 
@@ -123,7 +132,11 @@ describe("opening a bundled sample", () => {
       "예제를 새 프로젝트 폴더로 복사하지 못했습니다. 현재 작업의 저장 상태와 새 폴더의 쓰기 권한을 확인해 주세요.",
       expect.objectContaining({ kind: "error", action: expect.objectContaining({ label: "저장 없이 예제 열기" }) }),
     );
+    expect(mocks.copy).toHaveBeenCalledOnce();
+    expect(duringCopy).toEqual({ inert: true, releases: 0 });
     expect(mocks.replaceProject).not.toHaveBeenCalled();
+    expect(document.body.inert).toBe(false);
+    expect(release).toHaveBeenCalledTimes(2);
 
     const options = mocks.toast.mock.lastCall?.[1];
     if (typeof options !== "object" || !options.action) throw new Error("Missing sample preview action");

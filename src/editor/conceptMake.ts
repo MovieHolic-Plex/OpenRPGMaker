@@ -41,14 +41,16 @@ export function menuBriefHandler(deps: Omit<EditorMakeDeps, "made"> & { readonly
     const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
     const seed = await createProjectStartSeed(brief.presetId, title, "ai", "wide");
     seed.gameDesignBrief = { ...brief, generationPending: true };
-    const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
-    if (!(await saveOrConfirmLeave("새 프로젝트 만들기"))) return false;
-    const suggested = await window.oprn?.start?.suggestProjectDir?.({ title }).catch(() => null);
-    const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
-    const created = await createProjectFolderWithSeed(title, seed, suggested?.projectDir);
-    if (!created) throw new Error("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.");
-    deps.reload();
-    return true;
+    const { saveOrConfirmLeave, withFolderSwitchEditsHeld } = await import("@/editor/leaveProject");
+    return withFolderSwitchEditsHeld(async () => {
+      if (!(await saveOrConfirmLeave("새 프로젝트 만들기"))) return false;
+      const suggested = await window.oprn?.start?.suggestProjectDir?.({ title }).catch(() => null);
+      const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
+      const created = await createProjectFolderWithSeed(title, seed, suggested?.projectDir);
+      if (!created) throw new Error("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.");
+      deps.reload();
+      return true;
+    });
   };
 }
 

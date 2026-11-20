@@ -287,7 +287,22 @@ function rebuildArray(patch: ArrayPatch, current: unknown, counters: { rebased: 
   }
   // 다른 판의 목록: 지금 번들 목록에 저자 항목을 id 로 얹는다(같은 id 는 바꾸고, 없으면 덧붙인다).
   counters.rebased += 1;
-  const out = base.slice();
+  const removed = new Set(patch.ids);
+  if (patch.ids) {
+    const changed = new Map(patch.at);
+    for (let index = 0; index < Math.min(patch.b, patch.n); index += 1) {
+      const id = changed.has(index) ? idOf(changed.get(index)) : patch.ids[index];
+      if (id !== undefined) removed.delete(id);
+    }
+    for (const value of patch.tail ?? []) {
+      const id = idOf(value);
+      if (id !== undefined) removed.delete(id);
+    }
+  }
+  const out = base.filter(item => {
+    const id = idOf(item);
+    return id === undefined || !removed.has(id);
+  });
   const place = (value: unknown, index: number): void => {
     const id = idOf(value);
     if (id !== undefined) {

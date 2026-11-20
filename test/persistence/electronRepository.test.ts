@@ -63,6 +63,27 @@ afterEach(() => {
 });
 
 describe("electron repository", () => {
+  it("keeps authored edits out during a folder switch and accepts them again on cancellation", async () => {
+    const { store } = await import("@/project/store");
+    const first = store.holdProjectEdits();
+    const second = store.holdProjectEdits();
+    const edit = vi.fn();
+    try {
+      store.update(edit);
+      first();
+      first();
+      store.update(edit);
+      expect(edit).not.toHaveBeenCalled();
+
+      second();
+      store.update(edit);
+      expect(edit).toHaveBeenCalledOnce();
+    } finally {
+      first();
+      second();
+    }
+  });
+
   it("skips an empty document patch and keeps the last successful save time", async () => {
     const bridge = fakeBridge();
     const save = vi.spyOn(bridge.project, "save").mockResolvedValue({ kind: "saved", sha256: SHA, revision: 1 });
@@ -134,6 +155,44 @@ describe("electron repository", () => {
     expect(hasElectronBridge()).toBe(true);
     expect(projectRepository().kind).toBe("local");
     expect(projectRepository().supportsAssetRefs).toBe(true);
+  });
+
+  it.each(["save", "saveMapPatch"] as const)("keeps the new folder's baseline after a late %s response", async (method) => {
+    const bridge = fakeBridge();
+    const nextDir = `${DIR}-next`;
+    const nextSha = "b".repeat(64);
+    bridge.project.open = async ({ projectDir }) => ({ projectDir, projectId: projectDir });
+    bridge.project.load = async ({ projectDir }) => ({ serialized: SERIALIZED, sha256: projectDir === DIR ? SHA : nextSha, revision: 1 });
+    let markStarted!: () => void;
+    const started = new Promise<void>(resolve => { markStarted = resolve; });
+    let release!: () => void;
+    const wait = new Promise<void>(resolve => { release = resolve; });
+    vi.spyOn(bridge.project, method).mockImplementationOnce(async () => {
+      markStarted();
+      await wait;
+      return { kind: "saved", sha256: SHA };
+    });
+    vi.stubGlobal("window", { oprn: bridge });
+    const repository = createElectronRepository();
+    const target = await repository.open(DIR);
+    await repository.loadSnapshot(target);
+    const edited = { ...PROJECT, meta: { ...PROJECT.meta, title: "Edit in the first folder" } };
+    const pending = method === "save"
+      ? repository.save(edited, target)
+      : repository.saveMapPatch!({ baseProject: PROJECT, project: edited }, target);
+    await started;
+    try {
+      const next = await repository.open(nextDir);
+      await repository.loadSnapshot(next);
+      release();
+      await expect(pending).resolves.toMatchObject({ kind: "saved" });
+
+      const save = vi.spyOn(bridge.project, "save");
+      await repository.save(PROJECT, next);
+      expect(save).toHaveBeenLastCalledWith(expect.objectContaining({ projectDir: nextDir, expectedSha: nextSha }));
+    } finally {
+      release();
+    }
   });
 
   it("폴더를 열면 그 대상이 currentTarget 이 되고 저장·읽기가 브리지를 탄다", async () => {

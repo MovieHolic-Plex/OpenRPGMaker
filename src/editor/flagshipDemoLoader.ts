@@ -79,9 +79,11 @@ export async function openFlagshipDemo(id: FlagshipDemoId, options: OpenFlagship
     const demo = await loadFlagshipDemoProject(id);
     if (options.action === "open" && window.oprn?.start) {
       try {
-        const { saveBeforeLeaving } = await import("@/editor/leaveProject");
-        if (!(await saveBeforeLeaving())) throw new Error("현재 프로젝트를 먼저 저장하지 못했습니다.");
-        return await createEditableCopy(demo);
+        const { saveBeforeLeaving, withFolderSwitchEditsHeld } = await import("@/editor/leaveProject");
+        return await withFolderSwitchEditsHeld(async () => {
+          if (!(await saveBeforeLeaving())) throw new Error("현재 프로젝트를 먼저 저장하지 못했습니다.");
+          return createEditableCopy(demo);
+        });
       } catch (error) {
         log.error(`데모 복사 실패 (${id})`, error);
         toast("예제를 새 프로젝트 폴더로 복사하지 못했습니다. 현재 작업의 저장 상태와 새 폴더의 쓰기 권한을 확인해 주세요.", {
@@ -144,7 +146,9 @@ async function createEditableCopy(demo: Pick<LoadedFlagshipDemo, "project" | "ti
  * 저장 브리지가 없으면 false(호출자가 확인 뒤 메모리 열기로 내려간다).
  */
 export async function openProjectAsNewFolder(project: Project, title: string): Promise<boolean> {
-  const { saveOrConfirmLeave } = await import("@/editor/leaveProject");
-  if (!(await saveOrConfirmLeave("예제 프로젝트 열기"))) return false;
-  return createEditableCopy({ project, title });
+  const { saveOrConfirmLeave, withFolderSwitchEditsHeld } = await import("@/editor/leaveProject");
+  return withFolderSwitchEditsHeld(async () => {
+    if (!(await saveOrConfirmLeave("예제 프로젝트 열기"))) return false;
+    return createEditableCopy({ project, title });
+  });
 }

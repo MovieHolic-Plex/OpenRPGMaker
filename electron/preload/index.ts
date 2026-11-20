@@ -113,6 +113,9 @@ const bridge = {
     flushReplaceDone: (requestId: number, report: { readonly kind: string; readonly dirty: boolean }): void => {
       ipcRenderer.send(OPRN_CHANNELS.lifecycleFlushReplaceDone, requestId, report);
     },
+    onReleaseReplace: (callback: (requestId: number) => void): void => {
+      ipcRenderer.on(OPRN_CHANNELS.lifecycleReleaseReplace, (_event, requestId: number) => callback(requestId));
+    },
     flushReplaceReady: (): void => {
       ipcRenderer.send(OPRN_CHANNELS.lifecycleFlushReplaceReady);
     },  },

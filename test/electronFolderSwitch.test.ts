@@ -16,6 +16,7 @@ describe("folder switch flush", () => {
     expect(await allowFolderSwitch(result, confirm)).toBe(true);
     expect(confirm).toHaveBeenCalledWith(result);
     expect(await allowFolderSwitch("closed", confirm)).toBe(false);
+    expect(await allowFolderSwitch("unavailable", confirm)).toBe(false);
     expect(confirm).toHaveBeenCalledTimes(2);
   });
 

@@ -74,6 +74,7 @@ describe("editor make", () => {
   it("keeps a failed-save project on cancel and opens the new folder on discard", async () => {
     vi.doMock("@/project/store", () => ({ store: {
       hasUnsavedChanges: () => true, isSharedDemoSession: () => false, getAutoSaveState: () => ({ kind: "error" }),
+      holdProjectEdits: () => () => {},
     } }));
     vi.doMock("@/editor/projectStartSeed", () => ({ createProjectStartSeed: async () => ({}) }));
     const create = vi.fn(async () => true);
