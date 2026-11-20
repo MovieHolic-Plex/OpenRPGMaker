@@ -28,7 +28,7 @@ import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
-import { committedEventView, projectViewWithoutEventDrafts, projectWithoutEventDrafts, projectWithoutEventDraftsSharingSharedDictionaries } from "./eventDrafts";
+import { committedEventView, eventWithoutDraft, projectViewWithoutEventDrafts, projectWithoutEventDrafts, projectWithoutEventDraftsSharingSharedDictionaries } from "./eventDrafts";
 import { forgetTrustedSharedEntries, jsonContentDigest, primeSharedEntryDigests, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
 import { afterBootSettled } from "@/util/bootSettled";
 import { yieldToTask } from "@/util/yieldToTask";
@@ -67,9 +67,23 @@ import {
   type EditActivityField,
   type EditActivityOrigin,
 } from "@/editor/editActivityLog";
-import type { Command, GameEvent, GameMap, MapId, Project } from "./types";
+import type { Command, GameEvent, GameMap, MapId, PersistedGameEvent, Project } from "./types";
 
 const log = createLogger("store");
+
+export type WorkingEventAdoption = {
+  readonly mapId: MapId;
+  readonly eventId: string;
+  readonly expectedBody?: PersistedGameEvent | null;
+};
+
+export function hasChangedWorkingEventDraft(project: Project, adoptions: readonly WorkingEventAdoption[]): boolean {
+  return adoptions.some(({ mapId, eventId, expectedBody }) => {
+    if (expectedBody === undefined) return false;
+    const event = project.maps[mapId]?.events.find(e => e.id === eventId);
+    return !!event?.draft && !jsonEqual(eventWithoutDraft(event), expectedBody);
+  });
+}
 
 export type ProjectChangeCell = {
   readonly x: number;
@@ -978,7 +992,9 @@ class ProjectStore {
     project: Project,
     options: {
       /** A local history entry may explicitly own the working body of an open event. */
-      readonly adoptWorkingEvents?: readonly { readonly mapId: string; readonly eventId: string }[];
+      readonly adoptWorkingEvents?: readonly WorkingEventAdoption[];
+      /** These local edits may also refresh untouched drafts that were opened separately. */
+      readonly refreshCleanEventDrafts?: readonly Pick<WorkingEventAdoption, "mapId" | "eventId">[];
       readonly preserveEventDrafts?: boolean;
       readonly change?: ProjectChangeAnnotation;
       /** 맵 칸만 바뀌었을 때 전체 재렌더 대신 그 칸만 그리게 한다. */
@@ -990,6 +1006,7 @@ class ProjectStore {
     } = {},
   ): Project {
     if (!this.canEditProject()) return this.current;
+    if (options.adoptWorkingEvents?.length && hasChangedWorkingEventDraft(this.current, options.adoptWorkingEvents)) return this.current;
     assertCanonicalReplacement(project, this.writeAuthority);
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
@@ -1012,7 +1029,7 @@ class ProjectStore {
       // A history snapshot can outlive its event window. Its canonical view keeps
       // undo from reopening a closed draft or restoring a discarded new event.
       const incoming = options.adoptWorkingEvents?.length ? projectViewWithoutEventDrafts(project) : project;
-      const merged = preserveEventDraftsOnProject(incoming, live);
+      const merged = preserveEventDraftsOnProject(incoming, live, options.refreshCleanEventDrafts);
       for (const { mapId, eventId } of options.adoptWorkingEvents ?? []) {
         if (!live.maps[mapId]?.events.some(e => e.id === eventId && e.draft)) continue;
         const event = project.maps[mapId]?.events.find(e => e.id === eventId);

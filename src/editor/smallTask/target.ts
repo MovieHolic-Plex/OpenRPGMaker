@@ -5,7 +5,7 @@ import type { Project } from "@/project/types";
 /** Only host-authored Korean explanations are safe to display in the request box. */
 export class SmallTaskError extends Error {}
 
-export type SmallTaskCollection = "actors" | "classes" | "skills" | "items" | "equipment" | "enemies" | "troops" | "states";
+export type SmallTaskCollection = keyof Project["database"];
 export type SmallTaskTarget =
   | Readonly<{ kind: "map"; mapId: string; label: string }>
   | Readonly<{ kind: "event"; mapId: string; eventId: string; pageId?: string; x: number; y: number; isNpc: boolean; label: string }>
@@ -36,9 +36,10 @@ export function mapTarget(project: Project, mapId: string | null, eventId?: stri
 }
 
 export function dbTarget(project: Project, collection: SmallTaskCollection, id: string): SmallTaskTarget | null {
-  const record = project.database[collection].find(candidate => candidate.id === id);
+  const record = project.database[collection]?.find(candidate => candidate.id === id);
   if (!record) return null;
-  const kindLabel = DATABASE_AREA_LABELS[collection];
-  const name = displayText(record.name === record.id ? "" : record.name, "");
+  const kindLabel = DATABASE_AREA_LABELS[collection] ?? "자료집 항목";
+  const authoredName = "name" in record ? record.name : "title" in record ? record.title : "label" in record ? record.label : "";
+  const name = displayText(typeof authoredName === "string" && authoredName !== record.id ? authoredName : "", "");
   return Object.freeze({ kind: "dbEntry", collection, id, label: name ? `${kindLabel} · ${name}` : kindLabel });
 }

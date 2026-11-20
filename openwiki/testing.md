@@ -55,9 +55,14 @@
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
 - `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
-  서로 의존하지 않는다. 한 판에 잡 6개가 돌고, 전부 GitHub 호스티드(`ubuntu-latest`)에서 돈다. mdc2 는 ci-vitest-files 만 쓴다.
-  포크 PR 과 pull_request_target 은 `runs-on` 식에서 `ubuntu-latest` 로 간다. 수동 `ci-vitest-files` 는
-  같은 선택식에 `mdc2-heavy` 라벨을 더해 mdc2 러너(4대, 각 MemoryMax=22G·CPUQuota=500%)를 쓴다.
+  서로 의존하지 않는다. `fast` 와 `fast-static` 은 항상 GitHub 호스티드(`ubuntu-latest`)에서 돈다.
+  같은 저장소의 푸시·PR 에서는 `fast-parity` 4샤드만 mdc2 러너(`mdc2-fast`, 10대)를 쓴다.
+  포크 PR 과 `pull_request_target` 의 러너 선택은 전부 `ubuntu-latest` 다. 두 풀에 잡을 분산해 PR 이 몰릴 때 대기를 줄이고,
+  Codex 워커와 CPU 를 공유하는 mdc2 의 부하를 제한한다.
+  mdc2 샤드는 체크아웃 뒤 npm 패키지 캐시를 러너별 `$RUNNER_TEMP/npm-cache` 에 복원한다. `npm ci` 는
+  각 러너의 별도 작업공간에 `node_modules` 를 설치한다. 패리티는 Node 환경에서 실행하며 고정 포트나 X 디스플레이를 쓰지 않는다.
+  수동 `ci-vitest-files` 는
+  같은 선택식에 `mdc2-heavy` 라벨을 더해 mdc2 러너(10대: runner-1..4 는 MemoryMax=22G·CPUQuota=500%, runner-5..10 은 20G·400%)를 쓴다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
   같은 날 실측(run 44531254883, 44533700673, 44536145289)에서 ci-full 과 여러 PR 이 겹치자
   4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
@@ -126,6 +131,21 @@ CSS 축은 그 한 잡이 vitest 에서 240분을 넘겨 한 번도 도달하지
 2026-10-12 에 그 바닥을 현재 트리로 다시 찍었다. 고아 두 장(`tileset-ai-workspace.css`,
 `project-start.css`)은 배럴에 이었고, 배틀 `24-` 접두사 충돌은 `30-backdrop-motion.css` 로
 갈랐다(import 위치는 그대로라 cascade 는 안 바뀐다). 다음 증가는 다시 실패다.
+
+## 로컬 반복 검증 (2026-11-20)
+
+`npm run typecheck:app`은 같은 워크트리의 `.cache/typecheck-app.tsbuildinfo`를 재사용한다.
+TypeScript가 변경 영향과 캐시된 진단을 반영해 기존 앱 범위를 검사한다.
+
+이번 세션에서 로컬 테스트 실행을 별도로 지시받았으면, 검증할 테스트 파일을 `test:unit`에 넘긴다.
+
+```sh
+npm run typecheck:app
+OPRN_LOCAL_TESTS=1 npm run test:unit -- test/smallTaskHistory.test.ts
+```
+
+`test:unit`은 지정한 파일을 Vitest 기본 스위트 설정과 워커 한 개로 실행한다. 로컬 Vitest의
+변환 및 결과 캐시는 워크트리 안의 `.cache/vitest/`에 저장된다.
 
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 

@@ -24,6 +24,8 @@ export interface CompanionFetchOptions {
   readonly fetchImpl?: typeof fetch;
   /** 이 호출에서 404 는 정상 결과다(예: 끝난 실행 이어 받기). 알림을 띄우지 않는다. */
   readonly expect404?: boolean;
+  /** The caller displays its own error copy. Token refresh still runs. */
+  readonly notifyProblems?: boolean;
 }
 
 export interface CompanionRefreshResult {
@@ -214,6 +216,6 @@ export async function fetchCompanion(input: string, init?: RequestInit, options:
   if (response.status === 404 && options.expect404) return response;
   const route = routeOf(input);
   const problem = classify(response.status, route, await errorText(response), isJson(response));
-  if (problem) reportProblem(problem);
+  if (problem && options.notifyProblems !== false) reportProblem(problem);
   return response;
 }

@@ -75,7 +75,7 @@ async function openRun(request: PiAgentRequest, runId: string, readerId: string,
   const plan = await planHeavyWire(request);
   const post = async (body: unknown) => {
     const wire = await piRequestBody(body, signal);
-    return fetchCompanion(url, { method: "POST", ...wire, headers: wire.headers, ...(signal ? { signal } : {}) }, { fetchImpl: doFetch });
+    return fetchCompanion(url, { method: "POST", ...wire, headers: wire.headers, ...(signal ? { signal } : {}) }, { fetchImpl: doFetch, notifyProblems: !request.smallTask });
   };
   if (!plan) return post({ ...request, runId });
   let response = await post({ ...(await withHeavyBlobs(plan, origin, [])), runId });
@@ -96,23 +96,25 @@ async function openRun(request: PiAgentRequest, runId: string, readerId: string,
 }
 
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
-  const imageConfig = loadAiConfig();
-  request = { ...request, imageProvider: DEFAULT_IMAGE_PROVIDER_ID,
-    imageModel: DEFAULT_IMAGE_MODEL,
-    pixelModel: request.pixelModel ?? resolvePixelModel(imageConfig).model,
-    ...(request.assistantRoles ?? imageConfig.assistantRoles ? { assistantRoles: request.assistantRoles ?? imageConfig.assistantRoles } : {}) };
-  // 조수 v2 팀장: 엔진 선택의 팀장은 그 엔진으로 도는 v2 실행에만, 요청이 실어 온 팀장은 다른 계정이어도 싣는다(src/ai/v2/turn/split.ts leadForRequest).
-  const lead = leadForRequest(request.lead || request.assistantVersion !== "v2" ? request : { ...request, lead: loadTeamLead() }, () => assistantEngineLead(loadAssistantEngine()));
-  if (lead) request = { ...request, lead };
-  if (!request.store) {
-    const store = await import("@/editor/assetStore/storeHint").then((m) => m.storeRunHint()).catch(() => undefined);
-    if (store) request = { ...request, store };
-  }
-  // 겉모습 퍼뜨리기: 이 기기의 다른 게임들이 이미 쓴 겉모습을 실어 보낸다 — 새 게임이 덜 쓴 숲·바닥을 먼저 고른다(gameLooks.ts). 보내기 전에 이 게임 것도 적어 둔다.
-  rememberGameLooks(request.projectKey, request.project);
-  if (!request.lookTaken) {
-    const lookTaken = otherGameLooks(request.projectKey);
-    if (lookTaken.length) request = { ...request, lookTaken };
+  if (!request.smallTask) {
+    const imageConfig = loadAiConfig();
+    request = { ...request, imageProvider: DEFAULT_IMAGE_PROVIDER_ID,
+      imageModel: DEFAULT_IMAGE_MODEL,
+      pixelModel: request.pixelModel ?? resolvePixelModel(imageConfig).model,
+      ...(request.assistantRoles ?? imageConfig.assistantRoles ? { assistantRoles: request.assistantRoles ?? imageConfig.assistantRoles } : {}) };
+    // 조수 v2 팀장: 엔진 선택의 팀장은 그 엔진으로 도는 v2 실행에만, 요청이 실어 온 팀장은 다른 계정이어도 싣는다(src/ai/v2/turn/split.ts leadForRequest).
+    const lead = leadForRequest(request.lead || request.assistantVersion !== "v2" ? request : { ...request, lead: loadTeamLead() }, () => assistantEngineLead(loadAssistantEngine()));
+    if (lead) request = { ...request, lead };
+    if (!request.store) {
+      const store = await import("@/editor/assetStore/storeHint").then((m) => m.storeRunHint()).catch(() => undefined);
+      if (store) request = { ...request, store };
+    }
+    // 겉모습 퍼뜨리기: 이 기기의 다른 게임들이 이미 쓴 겉모습을 실어 보낸다 — 새 게임이 덜 쓴 숲·바닥을 먼저 고른다(gameLooks.ts). 보내기 전에 이 게임 것도 적어 둔다.
+    rememberGameLooks(request.projectKey, request.project);
+    if (!request.lookTaken) {
+      const lookTaken = otherGameLooks(request.projectKey);
+      if (lookTaken.length) request = { ...request, lookTaken };
+    }
   }
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
@@ -123,7 +125,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let response = await openRun(request, runId, readerId, doFetch, options.signal);
   if (!response.ok) {
     const payload = await readError(response);
-    const connection = describeCompanionFailure(response, "/v1/agent/run", typeof payload.error === "string" ? payload.error : "");
+    const connection = request.smallTask ? null : describeCompanionFailure(response, "/v1/agent/run", typeof payload.error === "string" ? payload.error : "");
     throw new PiAgentClientError(connection ?? `Pi 에이전트 실행 실패: ${payload.error ?? response.status}`, response.status);
   }
   if (!response.body) throw new PiAgentClientError("Pi 에이전트 응답에 본문이 없습니다");
@@ -384,7 +386,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         // 404 는 「호스트가 실행을 잃었다」는 정상 결과다 — 아래에서 따로 처리하므로 연결 알림을 띄우지 않는다.
         resumed = await fetchCompanion(companionAuthUrl("/v1/agent/run", request.provider) + "&runId=" + encodeURIComponent(runId) + "&after=" + (lastSeq + 1) + "&reader=" + encodeURIComponent(readerId), {
           method: "GET", ...(options.signal ? { signal: options.signal } : {}),
-        }, { fetchImpl: doFetch, expect404: true });
+        }, { fetchImpl: doFetch, expect404: true, notifyProblems: !request.smallTask });
       } catch (error) { dropError = error; continue; }
       // 404: 호스트가 실행을 잃었다(재시작·기록 만료) — 더 기다려도 오지 않는다.
       if (resumed.status === 404) { lastError = (await readError(resumed)).error ?? lastError; break; }

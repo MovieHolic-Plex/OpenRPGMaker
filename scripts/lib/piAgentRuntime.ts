@@ -1,3 +1,7 @@
+import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
+import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
+import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
+import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
 import { monsterAssetsAllowed, toolHiddenByMonsterLock } from '../../src/project/genreLockMonsterAssets.ts';
@@ -58,7 +62,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 // 이 파일 하나를 다시 쓰면 된다.
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
-import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
+import { streamSimple, validateToolArguments, type Effort } from "@oh-my-pi/pi-ai";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
 import { CLI_CALL_TOOL, CLI_LAZY_TOOLS_LINE, cliToolFreezeOn } from "../../src/ai/piAgent/cliToolFreeze.ts";
 import { coerceToolArgs } from "../../src/ai/piAgent/argCoerce.ts";
@@ -388,11 +392,167 @@ function trimText(value: unknown, max: number): string {
 /** 몬스터 자산이 막힌 프로젝트의 게임 시스템 저작 지침 — 몬스터 수집 낱말(configure_monster_system·gen1·collector·도감·배지)을 싣지 않는다. */
 const GAME_SYSTEM_PROMPT_GENERIC = '[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·지도·음악을 함께 확인한다. configure_field_menu로 실제 기능 ID를 설정한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.';
 
+function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGate, stallLimits = modelStallLimits()): StreamFn | undefined {
+  const stallEnvSet = process.env.OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS !== undefined || process.env.OPRN_MODEL_IDLE_TIMEOUT_MS !== undefined;
+  const compatStall = (model: unknown) => {
+    const compat = (model as { compat?: { streamFirstEventTimeoutMs?: number; streamIdleTimeoutMs?: number } } | undefined)?.compat;
+    return { firstEventMs: compat?.streamFirstEventTimeoutMs, idleMs: compat?.streamIdleTimeoutMs };
+  };
+  const stallOptions = (model: unknown, options?: Parameters<StreamFn>[2]) =>
+    stallEnvSet ? withModelStallLimits({ ...options }, compatStall(model), stallLimits) : { ...options };
+  if (provider === "openai-codex") return ((model, context, options) => streamSimple(model, context, {
+    ...stallOptions(model, options), fetch: codexVersionFetch(options?.fetch ?? fetch),
+  })) as StreamFn;
+  if (isOpenAiCompatProviderId(provider)) return ((model, context, options) => {
+    const shaped = shapeOpenAiCompatCall(provider, model, { ...options });
+    return streamSimple(shaped.model as typeof model, context, {
+      ...withModelStallLimits(shaped.options, compatStall(shaped.model), stallLimits),
+      fetch: guardedOpenAiCompatFetch(options?.fetch ?? fetch, () => referenceGate.omitPayloadImages()),
+    });
+  }) as StreamFn;
+  if (stallEnvSet) return ((model, context, options) => streamSimple(model, context, stallOptions(model, options))) as StreamFn;
+  return undefined;
+}
+
+/** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
+async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
+  const started = Date.now();
+  const { target, maxToolCalls, selection } = scope;
+  const base = request.project;
+  const ctx: SmallTaskToolContext = {
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection,
+    ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
+  };
+  const cli = localCliIdOf(request.provider);
+  const model = cli ? undefined : options.model ?? resolvePiModel(request.provider, request.model);
+  const keyForRun = () => options.providerApiKeys?.[request.provider] ?? options.apiKey;
+  const regionScope = target.kind === "map" && selection?.rect
+    ? { kind: "mapRegion", mapId: target.mapId, rect: selection.rect } as const : undefined;
+  const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. list_small_task_primitives에서 맞는 동작을 찾으면 그 동작을 쓴다. 명령 줄을 고치기 전에는 get_event에서 includeCommandHashes를 켜고 줄 위치와 해시를 확인한다. 대상: ${JSON.stringify(target)}`
+    + (regionScope ? ` 타일을 바꿀 수 있는 선택 영역: ${JSON.stringify(regionScope.rect)}` : "");
+  const controller = new AbortController();
+  const signal = options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal;
+  const toolNames = smallTaskTools(target);
+  const referenceGate = new PiTilesetReferenceGate();
+  referenceGate.evidence.shrinkImage = shrinkReferenceImage;
+  const onPayload = (payload: unknown) => {
+    referenceGate.payload(payload);
+    return payload;
+  };
+  let toolCalls = 0;
+  let toolErrors = 0;
+  let turns = 0;
+  let failure: string | undefined;
+  const refuse = (message: string): undefined => {
+    failure ??= message;
+    controller.abort();
+    return undefined;
+  };
+  const registryTools = createPiToolset(ctx, {
+    toolNames,
+    referenceGate,
+    eventAssistChat: async (_config, chat) => {
+      if (cli) return { message: { role: "assistant", content: await localCliChat(cli, request.model)(chat.messages, signal) }, finishReason: "stop" };
+      const { completion } = await completeProvider(request.provider, {
+        model: model?.id, max_tokens: 8192, messages: chat.messages,
+      }, { apiKey: keyForRun(), signal });
+      const choice = completion.choices[0];
+      return { message: { role: "assistant", content: choice?.message.content ?? "" }, finishReason: choice?.finish_reason ?? null };
+    },
+  });
+  const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)).map((tool): PiToolShape => ({
+    ...tool,
+    label: tool.name,
+    async execute(_id, params) {
+      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      return { content: [{ type: "text", text: JSON.stringify(result) }] };
+    },
+  }));
+  const tools = [...registryTools, ...primitiveTools].map(tool => ({
+    ...tool,
+    concurrency: "exclusive" as const,
+    async execute(id: string, params: unknown, toolSignal?: AbortSignal) {
+      signal.throwIfAborted();
+      if (++toolCalls > maxToolCalls) throw new Error("한 번에 할 수 있는 작업 수를 넘었어요.");
+      const raw = params as Record<string, unknown>;
+      const args = isSmallTaskPrimitiveTool(tool.name) ? raw : normalizeToolArgs(tool.name, tool.name === "find_events" && target.kind === "map" && raw.mapId === undefined
+        ? { ...raw, mapId: target.mapId } : raw);
+      const refusal = smallTaskRefusal(target, tool.name, args);
+      if (refusal) {
+        refuse(refusal);
+        throw new Error(refusal);
+      }
+      return tool.execute(id, args, toolSignal ?? signal);
+    },
+  }));
+  const resolveFallbackTool = () => refuse(SMALL_TASK_SCOPE_REFUSAL);
+  const effort = request.thinkingLevel;
+  const local = cli ? await createLocalCliLoop({
+    cli, model: request.model, signal, systemPrompt: [systemPrompt], tools, resolveFallbackTool,
+    effort: effort === "low" || effort === "medium" || effort === "high" ? effort : undefined,
+    onPayload,
+  }) : undefined;
+  const agent: PiLoopDriver = local ?? new Agent({
+    initialState: {
+      model: model as never, systemPrompt: [systemPrompt], tools: tools as never,
+      thinkingLevel: normalizePiThinkingLevel(request.provider, effort) as Effort | undefined,
+    },
+    getApiKey: keyForRun,
+    streamFn: options.streamFn ?? piProviderStream(request.provider, referenceGate),
+    onPayload,
+    resolveFallbackTool,
+  }) as unknown as PiLoopDriver;
+  const abort = () => agent.abort(failure ?? "Request was aborted");
+  const unsubscribe = agent.subscribe(event => {
+    if (event.type === "turn_start") turns++;
+    if (event.type === "tool_execution_end" && event.isError) {
+      toolErrors++;
+      const result = event.result as PiToolExecResult | undefined;
+      refuse(result?.content.find(part => part.type === "text")?.text ?? "작은 일 도구 실행 실패");
+    }
+    if (event.type === "message_end") {
+      const message = event.message as { role?: string; stopReason?: string; errorMessage?: string } | undefined;
+      if (message?.role !== "assistant") return;
+      const success = (message.stopReason === "stop" || message.stopReason === "toolUse") && !message.errorMessage && !signal.aborted;
+      referenceGate.complete(success);
+      if (!success && !signal.aborted) refuse(message.errorMessage ?? `Provider completion ${message.stopReason}`);
+    }
+  });
+  signal.addEventListener("abort", abort, { once: true });
+  const timeout = setTimeout(() => refuse("작은 일 요청 시간 초과"), options.timeoutMs ?? PI_AGENT_DEFAULT_TIMEOUT_MS);
+  try {
+    signal.throwIfAborted();
+    await agent.prompt(request.task);
+  } catch (error) {
+    // The engine may reject its promise after a host refusal or cancellation.
+    if (!failure) throw error;
+  } finally {
+    clearTimeout(timeout);
+    signal.removeEventListener("abort", abort);
+    unsubscribe();
+    await local?.dispose();
+  }
+  options.signal?.throwIfAborted();
+  if (!failure && regionScope && ctx.project !== base) {
+    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    if (!result.ok) failure = result.reason;
+  }
+  const project = failure ? base : ctx.project;
+  const done: PiAgentDoneEvent = {
+    type: "done", smallTask: true, project, changedKeys: changedProjectKeys(base, project),
+    ...(failure ? { stoppedEarly: failure } : {}),
+    stats: { ms: Date.now() - started, turns, toolCalls, toolErrors },
+  };
+  options.onEvent?.(slimDoneEvent(done, base));
+  return done;
+}
+
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   const setupTimer = piTimer("worker runPiAgent setup");
   // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
   const { preparePiWorkerSharedContent } = await import('./piWorkerSharedContent');
   await preparePiWorkerSharedContent();
+  if (request.smallTask) return runPiSmallTask(request, request.smallTask, options);
   setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   // 워커에는 브라우저 fetch 경로가 없다 — 컷신 배우/배경 그림도 오프닝 그림과 같은 이미지 경로로 만든다("fetch() URL is invalid" 실측).
@@ -1381,7 +1541,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...systemPrompt,
   ];
   const sessionKey = request.sessionKey;
-  const sessionReuseEnabled = Boolean(localCli) && engineSessionReuseOn(process.env);
+  const sessionReuseEnabled = Boolean(localCli) && engineSessionReuseOn({ OPRN_ENGINE_SESSION: process.env.OPRN_ENGINE_SESSION });
   const sessionDecision = decideSessionResume({
     requestedSessionId: recallEngineSession(sessionKey)?.sessionId,
     previous: recallEngineSession(sessionKey)?.fingerprint,
@@ -1414,12 +1574,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let emptyRetries = 0;
   // 모델 호출 무응답 한도(src/ai/piAgent/providerRetry.ts). 감시가 끊은 호출은 같은 기록으로 stallLimits.retries 번만 다시 요청한다.
   const stallLimits = modelStallLimits();
-  const stallEnvSet = process.env.OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS !== undefined || process.env.OPRN_MODEL_IDLE_TIMEOUT_MS !== undefined;
-  const compatStall = (m: unknown) => {
-    const compat = (m as { compat?: { streamFirstEventTimeoutMs?: number; streamIdleTimeoutMs?: number } } | undefined)?.compat;
-    return { firstEventMs: compat?.streamFirstEventTimeoutMs, idleMs: compat?.streamIdleTimeoutMs };
-  };
-  const stallOptions = (m: unknown, o?: Record<string, unknown>) => stallEnvSet ? withModelStallLimits({ ...o }, compatStall(m), stallLimits) : { ...o };
   let stallRetries = 0;
   // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
   let answered = false;
@@ -1485,21 +1639,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     // 요청마다 다시 읽는다 — 긴 실행 도중 호스트가 갱신한 키가 providerApiKeys 에 들어온다(piWorkerKeys.ts).
     ...(apiKey ? { getApiKey: () => ((options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? apiKey) as never } : {}),
-    ...(options.streamFn ? { streamFn: options.streamFn }
-      : request.provider === "openai-codex"
-        ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
-          streamSimple(m as never, c as never, { ...stallOptions(m, o), fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
-        // 사용자 지정(OpenAI 호환): 리다이렉트를 따라가지 않고 사용자가 고른 호스트로만 보내는 fetch 를 끼운다.
-        // 무응답 한도(providerRetry.ts modelStallLimits)는 여기서 늘 씌운다 — 엔드포인트 「첫 토큰 대기」 600초가 토큰 사이 감시까지 10분으로 늘려 놓았다.
-        : isOpenAiCompatProviderId(request.provider)
-          ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => {
-            const shaped = shapeOpenAiCompatCall(request.provider, m as { id: string; name?: string }, { ...o });
-            return streamSimple(shaped.model as never, c as never, { ...withModelStallLimits(shaped.options, compatStall(shaped.model), stallLimits), fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
-          }) as never }
-          // 다른 제공자는 제공자 기본 감시(pi-ai 100초/120초, Argon 300초)를 쓴다. OPRN_MODEL_* 를 명시했을 때만 씌운다.
-          : stallEnvSet
-            ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => streamSimple(m as never, c as never, stallOptions(m, o) as never)) as never }
-            : {}),
+    streamFn: options.streamFn ?? piProviderStream(request.provider, referenceGate, stallLimits),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,

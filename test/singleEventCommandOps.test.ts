@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
@@ -69,6 +69,16 @@ describe("이벤트 명령 한 줄", () => {
     expect(() => insertEventCommand(original, [0, FORK_THEN_BRANCH_INDEX], text)).toThrow();
     expect(() => insertEventCommand(original, 1, { kind: "breakLoop" })).toThrow("반복 안에만");
     expect(() => insertEventCommand(original, 1, { kind: "text" } as Command)).toThrow("문구가 필요");
+  });
+
+  it("없는 조건 분기는 삽입할 때 만들고 수정과 삭제는 거절한다", () => {
+    const fork: Command = { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [wait] };
+    const original = page(fork);
+    const path = [0, FORK_ELSE_BRANCH_INDEX, 0];
+    expect(() => updateEventCommand(original, path, { body: "분기 안의 대사" }, eventCommandHash(text))).toThrow("명령 줄을 찾을 수 없습니다.");
+    expect(() => deleteEventCommand(original, path, eventCommandHash(text))).toThrow("명령 줄을 찾을 수 없습니다.");
+    expect(insertEventCommand(original, path, text).commands).toEqual([{ ...fork, else: [text] }]);
+    expect(original.commands[0]).not.toHaveProperty("else");
   });
 
   it("등록된 쓰기 도구와 get_event 해시로 실제 도구 실행 경계를 왕복한다", async () => {

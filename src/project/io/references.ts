@@ -246,9 +246,9 @@ export function collectProjectReferenceIssues(project: Project, options?: { read
   check(() => validateElementRates(project, issues));
   check(() => validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues));
   check(() => validateCropRecords(project, itemIds, resourceIds, issues));
-  check(() => validateLifeAuthoringRecords(project, itemIds, issues));
+  check(() => validateLifeAuthoringRecords(project, itemIds, switchIds, issues));
   check(() => validateFarmAnimalReferences(project, itemIds, issues, options?.databaseOnly));
-  check(() => validateSpatialReferences(project, itemIds, resourceIds, issues, options?.databaseOnly));
+  check(() => validateSpatialReferences(project, itemIds, resourceIds, issues));
   check(() => validateTroopRecords(project, enemyIds, context, issues));
   check(() => validateScheduleReferences(project, context, issues));
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
@@ -396,16 +396,6 @@ function validateP0SystemReferences(
   for (const maker of project.system.makers ?? []) {
     collectExistingIdIssues(`system.makers ${maker.id}: input itemId`, maker.inputs.map((entry) => entry.itemId), itemIds, issues);
     collectExistingIdIssues(`system.makers ${maker.id}: output itemId`, maker.outputs.map((entry) => entry.itemId), itemIds, issues);
-  }
-  for (const skill of project.database.lifeSkills ?? []) {
-    for (const reward of skill.levelUpRewards) {
-      if (reward.switchId && !switchIds.has(reward.switchId)) {
-        issues.push(`lifeSkill ${skill.id}: reward switchId does not exist: ${reward.switchId}`);
-      }
-      if (reward.recipeId && !recipeIds.has(reward.recipeId)) {
-        issues.push(`lifeSkill ${skill.id}: reward recipeId does not exist: ${reward.recipeId}`);
-      }
-    }
   }
 }
 
@@ -820,14 +810,9 @@ function validateCropRecords(
 function validateLifeAuthoringRecords(
   project: Project,
   itemIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
   issues: string[],
 ): void {
-  const seenSkills = new Set<string>();
-  for (const skill of project.database.lifeSkills ?? []) {
-    if (seenSkills.has(skill.id)) issues.push(`lifeSkill ${skill.id}: duplicate id.`);
-    seenSkills.add(skill.id);
-  }
-
   const seenRecipes = new Set<string>();
   for (const recipe of project.system.craftRecipes ?? []) {
     if (seenRecipes.has(recipe.id)) issues.push(`craftRecipe ${recipe.id}: duplicate id.`);
@@ -861,6 +846,20 @@ function validateLifeAuthoringRecords(
     if (seenToolActions.has(action.id)) issues.push(`toolAction ${action.id}: duplicate id.`);
     seenToolActions.add(action.id);
     if (action.itemId && !itemIds.has(action.itemId)) issues.push(`toolAction ${action.id}: itemId does not exist: ${action.itemId}`);
+  }
+
+  const seenSkills = new Set<string>();
+  for (const skill of project.database.lifeSkills ?? []) {
+    if (seenSkills.has(skill.id)) issues.push(`lifeSkill ${skill.id}: duplicate id.`);
+    seenSkills.add(skill.id);
+    for (const reward of skill.levelUpRewards) {
+      if (reward.switchId && !switchIds.has(reward.switchId)) {
+        issues.push(`lifeSkill ${skill.id}: reward switchId does not exist: ${reward.switchId}`);
+      }
+      if (reward.recipeId && !seenRecipes.has(reward.recipeId)) {
+        issues.push(`lifeSkill ${skill.id}: reward recipeId does not exist: ${reward.recipeId}`);
+      }
+    }
   }
 }
 
@@ -1025,7 +1024,6 @@ function validateSpatialReferences(
   itemIds: ReadonlySet<string>,
   resourceIds: ReadonlySet<string>,
   issues: string[],
-  databaseOnly = false,
 ): void {
   const mapIds = new Set(Object.keys(project.maps));
   const buildingTypes = project.database.farmBuildingTypes ?? [];
@@ -1067,12 +1065,13 @@ function validateSpatialReferences(
     }
   }
 
-  if (databaseOnly) return;
+  const buildings = project.session.farmBuildingPlacements ?? [];
+  const decorations = project.session.homeDecorationPlacements ?? [];
+  if (!buildings.length && !decorations.length) return;
 
   const buildingTypeById = new Map(buildingTypes.map((row) => [row.id, row] as const));
   const decorationTypeById = new Map(decorationTypes.map((row) => [row.id, row] as const));
   const occupied = initialSpatialOccupiedCells(project);
-  const buildings = project.session.farmBuildingPlacements ?? [];
   collectDuplicateValuePathIssues("session.farmBuildingPlacements", "instanceId", buildings.map((row) => row.instanceId), issues);
   for (const [index, placement] of buildings.entries()) {
     const path = `session.farmBuildingPlacements[${index}]`;
@@ -1089,7 +1088,6 @@ function validateSpatialReferences(
     validateAndOccupySpatialPlacement(project, path, placement, level.footprint, type.allowedMapIds, occupied, issues);
   }
 
-  const decorations = project.session.homeDecorationPlacements ?? [];
   collectDuplicateValuePathIssues("session.homeDecorationPlacements", "instanceId", decorations.map((row) => row.instanceId), issues);
   for (const [index, placement] of decorations.entries()) {
     const path = `session.homeDecorationPlacements[${index}]`;

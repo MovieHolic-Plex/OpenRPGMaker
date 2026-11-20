@@ -20,7 +20,6 @@ function textFieldsInOrder(before: readonly TextCommand[], after: readonly TextC
 
 /** Line identities are positional. Unchanged lines can separate an insertion from a deletion. */
 function preservesTextFields(before: readonly TextCommand[], after: readonly TextCommand[]): boolean {
-  if (textFieldsInOrder(before, after)) return true;
   const positions = new Map<string, number>();
   after.forEach((line, index) => {
     const key = structuralJson(line);
