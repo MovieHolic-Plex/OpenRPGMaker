@@ -443,7 +443,7 @@
     "args": {"commonEventId": "ce_corpus_inn","index": 1,"patch": {"amount": 3},"expectedCommand": {"kind": "changeGold","op": "+=","amount": 5}},
     "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
     "expectRefusal": true,
-    "refusalMessage": "그 줄의 내용이 바뀌었습니다"
+    "refusalMessage": "명령 목록이 바뀌었어요"
   },
   {
     "request": "여관 안내에 맨 앞 대사 한 줄 빼 줘.",

@@ -3,13 +3,14 @@ import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { normalizeEventPage } from "@/editor/eventPages";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/30-common-events";
 import { dbTarget, mapTarget } from "@/editor/smallTask/target";
 import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { createInterpreter } from "@/player/interpreter";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap, singleNodeTree } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { scriptSourceHash } from "@/project/script/types";
@@ -38,6 +39,8 @@ function startMapTarget(project: Project) {
 
 function seed(commands: Command[] = [], fixture: "built" | "maou" = "built"): Project {
   const project = loadFixture(fixture);
+  // Normalize authored switch and variable definitions before the runner freezes the fixture.
+  ensureSwitchVariableSlots(project);
   const map = project.maps[project.startMapId];
   const maps = { ...project.maps, [map.id]: { ...map } };
   return { ...project, maps, commonEvents: [...project.commonEvents, commonEvent(commands)] };
@@ -138,8 +141,11 @@ describe("공용 이벤트", () => {
   });
 
   it("실행 방식만 바꾸면 스위치를 유지하고, 비우라는 요청은 조건을 지운다", () => {
-    const project = seed();
-    project.commonEvents.at(-1)!.conditionSwitchId = switchId;
+    const baseline = seed();
+    const project = {
+      ...baseline,
+      commonEvents: [...baseline.commonEvents.slice(0, -1), { ...commonEvent(), conditionSwitchId: switchId }],
+    };
     const args = { commonEventId: eventId, trigger: "parallel" };
     const { after } = runOn(project, "commonEvent.trigger.set", args);
     expect(after.commonEvents.at(-1)).toEqual({ ...commonEvent(), trigger: "parallel", conditionSwitchId: switchId });
@@ -147,9 +153,12 @@ describe("공용 이벤트", () => {
     expect(cleared.after.commonEvents.at(-1)).toEqual(commonEvent());
     expect(() => runOn(project, "commonEvent.trigger.set", { ...args, conditionSwitchId: "sw_missing" })).toThrow("스위치를 찾을 수 없습니다");
     expect(() => runOn(project, "commonEvent.trigger.set", { ...args, trigger: "none", conditionSwitchId: switchId })).toThrow("자동 실행이나 병렬 처리");
-    project.commonEvents.at(-1)!.conditionSwitchId = "sw_missing";
-    expect(() => runOn(project, "commonEvent.trigger.set", args)).toThrow("스위치를 찾을 수 없습니다");
-    expect(runOn(project, "commonEvent.trigger.set", { ...args, conditionSwitchId: null }).after.commonEvents.at(-1))
+    const missingSwitch = {
+      ...baseline,
+      commonEvents: [...baseline.commonEvents.slice(0, -1), { ...commonEvent(), conditionSwitchId: "sw_missing" }],
+    };
+    expect(() => runOn(missingSwitch, "commonEvent.trigger.set", args)).toThrow("스위치를 찾을 수 없습니다");
+    expect(runOn(missingSwitch, "commonEvent.trigger.set", { ...args, conditionSwitchId: null }).after.commonEvents.at(-1))
       .toEqual({ ...commonEvent(), trigger: "parallel" });
   });
 
@@ -186,11 +195,19 @@ describe("공용 이벤트", () => {
   });
 
   it.each(["전투 명령", "직업", "필드 스킬"] as const)("자료집의 %s에서 사용하는 동안 삭제를 거부하고 이름 변경은 허용한다", source => {
-    const project = seed();
+    const baseline = seed();
     const entry = { id: "linked_command", name: "여관기술", kind: "commonEvent", commonEventId: eventId } as const;
-    if (source === "전투 명령") project.database.battleCommands = [entry];
-    if (source === "직업") project.database.classes[0]!.battleCommands = [entry];
-    if (source === "필드 스킬") project.database.skills[0]!.fieldCommonEventId = eventId;
+    const database = { ...baseline.database };
+    if (source === "전투 명령") database.battleCommands = [entry];
+    if (source === "직업") {
+      const [first, ...rest] = database.classes;
+      database.classes = [{ ...first!, battleCommands: [entry] }, ...rest];
+    }
+    if (source === "필드 스킬") {
+      const [first, ...rest] = database.skills;
+      database.skills = [{ ...first!, fieldCommonEventId: eventId }, ...rest];
+    }
+    const project = { ...baseline, database };
     const args = { commonEventId: eventId };
     expect(() => runOn(project, "commonEvent.remove", args)).toThrow(new RegExp(`${source}.*지울 수 없습니다`, "u"));
     const { after } = runOn(project, "commonEvent.rename", { ...args, name: "새 혜택" });
@@ -199,12 +216,21 @@ describe("공용 이벤트", () => {
   });
 
   it("전투 페이지에 이전 방식의 호출이 남아 있으면 삭제를 거부한다", () => {
-    const project = seed();
-    const troop = project.database.troops[0]!;
-    troop.battleEventPages = [{
-      id: "old_call_page", name: "개막", conditions: [], span: "battle",
-      commands: [{ kind: "m2Command", commandId: "m2-106-call-common-event", fields: { value: `  ${eventId}  ` } }],
-    }];
+    const baseline = seed();
+    const [troop, ...rest] = baseline.database.troops;
+    const project: Project = {
+      ...baseline,
+      database: {
+        ...baseline.database,
+        troops: [{
+          ...troop!,
+          battleEventPages: [{
+            id: "old_call_page", name: "개막", conditions: [], span: "battle",
+            commands: [{ kind: "m2Command", commandId: "m2-106-call-common-event", fields: { value: `  ${eventId}  ` } }],
+          }],
+        }, ...rest],
+      },
+    };
     expect(() => runOn(project, "commonEvent.remove", { commonEventId: eventId })).toThrow(/개막.*지울 수 없습니다/u);
   });
 
@@ -231,13 +257,15 @@ describe("공용 이벤트", () => {
   it("라이브러리 스크립트의 호출 대상을 확인할 수 없으면 삭제를 거부한다", () => {
     const project = seed();
     const source = "export const run = async (id) => { await game.callCommonEvent(id); };";
-    project.scriptLibrary = [{
-      id: "bonus_runner", source, compiled: source,
-      effects: { calls: [], reads: [], writes: [], dynamic: [{ api: "callCommonEvent", line: 1 }] },
-    }];
+    const withScript: Project = {
+      ...project,
+      scriptLibrary: [{
+        id: "bonus_runner", source, compiled: source,
+        effects: { calls: [], reads: [], writes: [], dynamic: [{ api: "callCommonEvent", line: 1 }] },
+      }],
+    };
     const args = { commonEventId: eventId };
-    expect(() => runOn(project, "commonEvent.remove", args)).toThrow("사용하는지 확인할 수 없습니다");
-    project.scriptLibrary = [];
+    expect(() => runOn(withScript, "commonEvent.remove", args)).toThrow("사용하는지 확인할 수 없습니다");
     expect(runOn(project, "commonEvent.remove", args).after.commonEvents).toEqual([]);
   });
 
@@ -263,9 +291,9 @@ describe("공용 이벤트", () => {
     expect(ctx.project.commonEvents.at(-1)?.commands).toEqual([{ ...wait, ms: 900 }, gold]);
 
     const shifted = runOn(project, "commonEvent.command.insert", { commonEventId: eventId, index: 0, command: gold }).after;
-    expect(() => runOn(shifted, "commonEvent.command.update", args)).toThrow("그 줄의 내용이 바뀌었습니다");
+    expect(() => runOn(shifted, "commonEvent.command.update", args)).toThrow(STALE_COMMAND_LIST);
     expect(() => runOn(shifted, "commonEvent.command.delete", { commonEventId: eventId, index: 0, expectedHash: eventCommandHash(wait) }))
-      .toThrow("그 줄의 내용이 바뀌었습니다");
+      .toThrow(STALE_COMMAND_LIST);
     expect(() => runOn(project, "commonEvent.command.delete", { commonEventId: eventId, index: 0 }))
       .toThrow("기존 명령을 다시 읽고");
     expect(runOn(project, "commonEvent.command.delete", { commonEventId: eventId, index: 0, expectedHash: eventCommandHash(wait) })

@@ -8,7 +8,7 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/30-common-events";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectKoreanSentence, expectUndoRestores, loadFixture } from "../harness";
+import { expectKoreanSentence, expectUndoRestores, loadFixture, setupCorpusProject } from "../harness";
 
 const file = resolve(dirname(fileURLToPath(import.meta.url)), "../../../harness-data/small-task-corpus/30-common-events.json");
 const cases = JSON.parse(readFileSync(file, "utf8")) as CorpusCase[];
@@ -30,8 +30,8 @@ it.each(cases)("$request", async entry => {
     fixture = loadFixture(entry.fixture);
     fixtures.set(entry.fixture, fixture);
   }
-  const initialEvents = entry.setup?.commonEvents ?? fixture.commonEvents;
-  const before = { ...fixture, commonEvents: structuredClone(initialEvents) };
+  const before = setupCorpusProject(fixture, entry);
+  const initialEvents = [...fixture.commonEvents, ...(entry.seed?.commonEvents ?? []), ...(entry.setup?.commonEvents ?? [])];
   const target = resolveTarget(before, entry.target);
   const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
   if (entry.expectRefusal) {

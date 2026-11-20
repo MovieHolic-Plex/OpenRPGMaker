@@ -105,7 +105,7 @@ export function editCommands(edit: () => EventPage): EventPage {
   try {
     return edit();
   } catch (error) {
-    if (!(error instanceof EventCommandEditError)) throw error;
+    if (!(error instanceof EventCommandEditError) || error.code === "stale-event-command") throw error;
     throw new PrimitiveError(/^[가-힣0-9 .]+$/u.test(error.message) ? error.message : "명령에 필요한 값과 형식을 확인해 주세요.");
   }
 }
