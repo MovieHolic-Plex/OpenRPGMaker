@@ -1,4 +1,3 @@
-import "@/styles/small-task.css";
 import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
