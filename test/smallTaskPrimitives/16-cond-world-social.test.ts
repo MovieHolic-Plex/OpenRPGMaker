@@ -441,6 +441,41 @@ describe("실행 중 등장 조건 판정", () => {
     expect(resolutions).toBe(1);
   });
 
+  it("서로를 관찰하는 경비의 페이지는 방향이 없어도 조회 컨텍스트마다 한 번만 평가한다", () => {
+    const at = fixture(blank);
+    const map = at.project.maps[at.mapId]!;
+    const guard = map.events[1]!;
+    const sight: EventPage["conditions"][number] = {
+      kind: "eventSeesPlayer", eventId: "", watchers: { name: "문지기" },
+      range: 3, sameRoom: false, value: false,
+    };
+    getPage(at.project, at).conditions = [sight];
+    const resolutions = Array<number>(6).fill(0);
+    const guards = resolutions.map((_, index): GameEvent => ({
+      ...guard,
+      id: `guard_${index}`,
+      pages: [{
+        ...guard.pages![0]!,
+        graphic: index === 0 ? {} : { direction: "left" },
+        conditions: [{ kind: "switch", switchId: `count_guard_${index}`, value: true }, sight],
+      }],
+    }));
+    map.events = [getEvent(at.project, at), ...guards];
+    const session = Object.assign(startSession(at.project, 7), { x: 7, y: 4 });
+    for (const [index] of guards.entries()) {
+      Object.defineProperty(session.switches, `count_guard_${index}`, {
+        get: () => { resolutions[index]++; return true; },
+      });
+    }
+    const positions = initialRuntimeEventPositions(map.events);
+    const activePage = () => runtimeEventViewById(at.project, map, session, positions, at.eventId)?.pageId;
+
+    expect(activePage()).toBe(PAGE);
+    expect(resolutions).toEqual([1, 1, 1, 1, 1, 1]);
+    expect(activePage()).toBe(PAGE);
+    expect(resolutions).toEqual([2, 2, 2, 2, 2, 2]);
+  });
+
   it("자기 시야를 조건으로 삼는 관찰자의 페이지도 판정한다", () => {
     const at = fixture(blank);
     getEvent(at.project, at).pages![0]!.graphic.direction = "right";

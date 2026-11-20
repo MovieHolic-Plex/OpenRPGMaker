@@ -164,6 +164,7 @@ export function runtimePageContext(
 ): EventPageLocationContext {
   let mapEvents: readonly GameEvent[] | undefined;
   let resolvingSightDirections: Set<string> | undefined;
+  let resolvedSightDirections: Map<string, Dir | undefined> | undefined;
   const context = {
     locations: map.locations,
     ...partySkillContext(project, session),
@@ -197,6 +198,10 @@ export function runtimePageContext(
       const local = location || position ? undefined : firstEventById(map.events, id);
       const point: RuntimeEventPosition | undefined = location ?? position ?? local ?? (spawn?.mapId === map.id ? spawn : undefined);
       if (!point || !usePageDirection || point.direction !== undefined || resolvingSightDirections?.has(id)) return point;
+      if (resolvedSightDirections?.has(id)) {
+        const direction = resolvedSightDirections.get(id);
+        return direction === undefined ? point : { ...point, direction };
+      }
       const authored = local ?? firstEventById(map.events, id);
       const observer = authored && !runtimeEventGone(session, map.id, id)
         ? authored
@@ -208,6 +213,7 @@ export function runtimePageContext(
       resolving.add(id);
       try {
         const direction = resolveEventPage(observer, session, context)?.graphic.direction;
+        (resolvedSightDirections ??= new Map()).set(id, direction);
         return direction === undefined ? point : { ...point, direction };
       } finally {
         resolving.delete(id);
