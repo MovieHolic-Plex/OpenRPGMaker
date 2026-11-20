@@ -1,4 +1,6 @@
-import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { CHOICE_CANCEL_BRANCH_INDEX, FORK_ELSE_BRANCH_INDEX, PRESENT_OTHERWISE_BRANCH_INDEX,
+  resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { normalizeEventPage } from "@/editor/eventPages";
 import { COMMON_EVENT_TRIGGER_OPTIONS, commonEventTriggerLabel } from "@/editor/panels/databaseDisplay";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
@@ -8,11 +10,13 @@ import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import {
   deleteEventCommand, eventCommandHash, insertEventCommand, updateEventCommand,
 } from "@/project/eventCommands/singleCommandOps";
-import type { Command, CommonEvent, Project } from "@/project/types";
+import type { Command, CommonEvent, EventPage, Project } from "@/project/types";
+import { roJosa } from "@/util/josa";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
-  commandForInsert, editCommands, quotedName, refuseReferencedRemoval, validateCommandReferences,
+  commandForInsert, editCommands, quotedName, refuseReferencedRemoval,
+  validateCommandReferences, validateLabelEdit,
   validateSingleInsert,
 } from "./30-common-events/validation";
 
@@ -21,17 +25,24 @@ export const UNIT = "30-common-events";
 type Args = Record<string, unknown>;
 type Scope = ReturnType<SmallTaskPrimitive["scope"]>;
 
-const eventId = { type: "string", minLength: 1, description: "자료집에서 확인한 공용 이벤트의 식별자입니다." } as const;
+const eventId = { type: "string", minLength: 1, description: "get_database_records(collection: commonEvents)에서 확인한 공용 이벤트의 식별자입니다." } as const;
 const eventName = { type: "string", minLength: 1, description: "공용 이벤트에 붙일 이름입니다." } as const;
-const index = { type: "integer", minimum: 0, description: "목록의 줄 위치입니다. 첫 줄은 0입니다." } as const;
+const index = { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER, description: "목록의 줄 위치입니다. 첫 줄은 0입니다." } as const;
 const branchPath = {
   type: "array",
   items: { type: "integer" },
-  description: "바깥에서 안쪽 순으로 명령 줄과 분기 번호를 짝지어 입력합니다. 선택지는 0부터, 조건 참은 -2, 거짓은 -3, 반복 안은 -5입니다. 바깥 목록이면 생략합니다.",
+  description: "바깥에서 안쪽 순으로 명령 줄과 분기 번호를 짝지어 입력합니다. 선택지는 0부터, 거래 성공 -1, 조건 참 -2, 거짓 -3, 취소 -4, 반복 -5, 승급·진화 성공 -6, 실패 -7, 숙박비 부족 -8, 전투 승리 -9, 패배 -10, 도주 -11, 거래 실패 -12, 틀린 아이템 제시 -13입니다. 바깥 목록이면 생략합니다.",
+} as const;
+const commandSnapshot = {
+  expectedCommand: {
+    type: "object", additionalProperties: true, required: ["kind"], properties: { kind: { type: "string", enum: COMMAND_KINDS } },
+    description: "자료집에서 전체 내용(include: full)을 읽고 고른 줄의 기존 명령을 그대로 입력합니다.",
+  },
+  expectedHash: { type: "string", minLength: 1, description: "해당 줄의 기존 내용 해시를 이미 읽었다면 기존 명령 대신 입력할 수 있습니다." },
 } as const;
 const commandFields: Record<string, JsonSchema> = {
   body: { type: ["string", "array"], description: "대사 문구 또는 반복 명령의 목록입니다." },
-  ms: { type: "integer", minimum: 0, description: "대기 시간입니다. 1초는 1000입니다." },
+  ms: { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER, description: "대기 시간입니다. 1초는 1000입니다." },
   amount: { type: ["number", "object"], description: "아이템이나 소지금의 수량 또는 그 값을 담은 변수입니다." },
   switchId: { type: "string", description: "조작할 스위치의 식별자입니다." },
   resourceId: { type: "string", description: "재생할 소리나 표시할 그림의 식별자입니다." },
@@ -41,13 +52,13 @@ function argsSchema(properties: Record<string, JsonSchema>, required: readonly s
   return { type: "object", properties, required, additionalProperties: false };
 }
 
-function projectScope(ctx: PrimitiveContext, create = false): Scope {
-  if (ctx.target.kind !== "map" || !ctx.project.maps[ctx.target.mapId]) {
+function projectScope(ctx: PrimitiveContext, args?: Args): Scope {
+  if (ctx.target.kind !== "map" || !Object.hasOwn(ctx.project.maps, ctx.target.mapId)) {
     throw new PrimitiveError("범위 밖: 맵에서 공용 이벤트 작업을 시작해 주세요.");
   }
-  return create
-    ? { kind: "projectArea", area: "commonEvents", ids: [], create: 1 }
-    : { kind: "projectArea", area: "commonEvents", ids: ctx.project.commonEvents.map(event => event.id) };
+  return args
+    ? { kind: "projectArea", area: "commonEvents", ids: [findEvent(ctx, args).id] }
+    : { kind: "projectArea", area: "commonEvents", ids: [], create: 1 };
 }
 
 function findEvent(ctx: PrimitiveContext, args: Args): CommonEvent {
@@ -66,6 +77,12 @@ function nameOf(event: CommonEvent): string {
   return quotedName(event.name === event.id ? "" : event.name, "공용 이벤트");
 }
 
+function renameSentence(event: CommonEvent, name: string): string {
+  const quoted = quotedName(name, "새 이름");
+  const label = quoted.endsWith("」") ? quoted.slice(1, -1) : quoted;
+  return `${nameOf(event)}의 이름을 ${quoted}${roJosa(label)} 바꿔요.`;
+}
+
 function nextCommonEventId(project: Project): string {
   const used = new Set(project.commonEvents.map(event => event.id));
   let number = 1;
@@ -76,7 +93,7 @@ function nextCommonEventId(project: Project): string {
 function createPrimitive(
   id: string, title: string, args: JsonSchema,
   describe: SmallTaskPrimitive["describe"], apply: SmallTaskPrimitive["apply"],
-  scope: SmallTaskPrimitive["scope"] = ctx => projectScope(ctx),
+  scope: SmallTaskPrimitive["scope"] = projectScope,
 ): SmallTaskPrimitive {
   return { id, unit: UNIT, title, covers: { tools: [id] }, targets: ["map"], args, scope, describe, apply };
 }
@@ -86,13 +103,39 @@ function editEvent(event: CommonEvent, project: Project, next: CommonEvent): Pro
 }
 
 function commandPath(event: CommonEvent, args: Args): number[] {
-  return [...(args.branchPath as number[] | undefined ?? []), (args.index as number | undefined) ?? event.commands.length];
+  const branch = (args.branchPath as number[] | undefined) ?? [];
+  if (branch.length % 2 || branch.some((part, offset) => !Number.isSafeInteger(part) || (offset % 2 === 0 && part < 0))) {
+    throw new PrimitiveError("명령 줄과 분기 위치를 다시 확인해 주세요.");
+  }
+  if (branch.length && args.index === undefined) throw new PrimitiveError("분기 안에 넣을 명령 줄 위치를 알려 주세요.");
+  return [...branch, (args.index as number | undefined) ?? event.commands.length];
 }
 
 function existingCommand(event: CommonEvent, path: number[]): Command {
   const command = resolveCommandAtPath(event.commands, path);
   if (!command) throw new PrimitiveError("공용 이벤트의 명령 줄을 찾을 수 없습니다.");
   return command;
+}
+
+function expectedCommandHash(args: Args): string {
+  if (typeof args.expectedHash === "string" && args.expectedCommand === undefined) return args.expectedHash;
+  if (args.expectedHash === undefined && args.expectedCommand !== undefined) return eventCommandHash(args.expectedCommand as Command);
+  throw new PrimitiveError("기존 명령을 다시 읽고 기존 내용이나 해시 중 하나를 입력해 주세요.");
+}
+
+function pageForInsert(event: CommonEvent, path: number[]): EventPage {
+  const page = normalizeEventPage({ id: event.id, commands: event.commands });
+  if (path.length === 1 || path.at(-1) !== 0 || resolveCommandListAtPath(page.commands, path)) return page;
+  const parent = resolveCommandAtPath(event.commands, path.slice(0, -2));
+  if (!parent) return page;
+  const branchIndex = path.at(-2);
+  const implicit = (parent.kind === "fork" && branchIndex === FORK_ELSE_BRANCH_INDEX) ||
+    (parent.kind === "presentItem" && (branchIndex === PRESENT_OTHERWISE_BRANCH_INDEX || branchIndex === CHOICE_CANCEL_BRANCH_INDEX));
+  if (!implicit && !eventCommandBranches(parent).some(branch => branch.branchIndex === branchIndex)) return page;
+  // An available branch may have no stored array until its first row is inserted.
+  const commands = structuredClone(page.commands);
+  resolveCommandListAtPath(commands, path, { missingBranches: "create" });
+  return { ...page, commands };
 }
 
 function describeCommand(ctx: PrimitiveContext, args: Args, verb: string): string {
@@ -106,19 +149,19 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   createPrimitive(
     "commonEvent.create", "공용 이벤트 추가",
     argsSchema({ name: eventName }, ["name"]),
-    (_ctx, args) => `${quotedName(nameFromArgs(args), "공용 이벤트")} 이름으로 공용 이벤트를 만들어요.`,
+    (_ctx, args) => `이름이 ${quotedName(nameFromArgs(args), "공용 이벤트")}인 공용 이벤트를 만들어요.`,
     ({ project }, args) => ({
       ...project,
       commonEvents: [...project.commonEvents, {
         id: nextCommonEventId(project), name: nameFromArgs(args), trigger: "none", commands: [],
       }],
     }),
-    ctx => projectScope(ctx, true),
+    ctx => projectScope(ctx),
   ),
   createPrimitive(
     "commonEvent.rename", "공용 이벤트 이름 변경",
     argsSchema({ commonEventId: eventId, name: eventName }, ["commonEventId", "name"]),
-    (ctx, args) => `${nameOf(findEvent(ctx, args))}에 새 이름 ${quotedName(nameFromArgs(args), "새 이름")}을 붙여요.`,
+    (ctx, args) => renameSentence(findEvent(ctx, args), nameFromArgs(args)),
     (ctx, args) => {
       const event = findEvent(ctx, args);
       return editEvent(event, ctx.project, { ...event, name: nameFromArgs(args) });
@@ -134,7 +177,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       },
       conditionSwitchId: {
         type: ["string", "null"], minLength: 1,
-        description: "켜져 있어야 실행되는 스위치의 식별자입니다. 비움은 조건 해제, 생략은 현재 조건 유지입니다.",
+        description: "자동 실행이나 병렬 처리에 쓸 스위치의 식별자입니다. null은 조건 해제, 생략은 현재 조건 유지입니다.",
       },
     }, ["commonEventId", "trigger"]),
     (ctx, args) => {
@@ -142,18 +185,20 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const label = commonEventTriggerLabel(args.trigger as CommonEvent["trigger"]);
       if (typeof args.conditionSwitchId === "string") {
         const condition = ctx.project.switches.find(row => row.id === args.conditionSwitchId);
-        const name = quotedName(condition && condition.name !== condition.id ? condition.name : "", "조건 스위치");
-        if (args.trigger === "none") return `${nameOf(event)}에 ‘호출’ 방식과 ${name} 조건을 설정해요.`;
-        return `${nameOf(event)}에 ${name}가 켜졌을 때 ‘${label}’을 적용해요.`;
+        const name = quotedName(condition && condition.name !== condition.id ? condition.name : "", "");
+        return `${nameOf(event)}에 ‘${label}’ 방식과 ${name || "스위치"} 켜짐 조건을 설정해요.`;
       }
-      const condition = args.conditionSwitchId === null ? "조건 없이 " : "";
-      return `${nameOf(event)}에 ${condition}‘${label}’을 적용해요.`;
+      const suffix = args.conditionSwitchId === null ? "설정하고 스위치 조건을 지워요." : "설정해요.";
+      return `${nameOf(event)}에 ‘${label}’ 방식을 ${suffix}`;
     },
     (ctx, args) => {
       const event = findEvent(ctx, args);
       const trigger = args.trigger as CommonEvent["trigger"];
       const condition = args.conditionSwitchId === undefined ? event.conditionSwitchId : args.conditionSwitchId;
-      if (typeof args.conditionSwitchId === "string" && !ctx.project.switches.some(row => row.id === args.conditionSwitchId)) {
+      if (trigger === "none" && typeof args.conditionSwitchId === "string") {
+        throw new PrimitiveError("호출 방식에는 스위치 조건을 새로 설정할 수 없습니다. 자동 실행이나 병렬 처리를 골라 주세요.");
+      }
+      if (trigger !== "none" && typeof condition === "string" && !ctx.project.switches.some(row => row.id === condition)) {
         throw new PrimitiveError("실행 조건에 쓸 스위치를 찾을 수 없습니다.");
       }
       const next = { ...event, trigger };
@@ -165,7 +210,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   createPrimitive(
     "commonEvent.remove", "공용 이벤트 삭제",
     argsSchema({ commonEventId: eventId }, ["commonEventId"]),
-    (ctx, args) => `${nameOf(findEvent(ctx, args))} 공용 이벤트를 지워요.`,
+    (ctx, args) => `${nameOf(findEvent(ctx, args))} 항목을 공용 이벤트 목록에서 지워요.`,
     (ctx, args) => {
       const event = findEvent(ctx, args);
       refuseReferencedRemoval(ctx.project, event.id);
@@ -194,29 +239,28 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
     (ctx, args) => {
       const event = findEvent(ctx, args);
-      if ((args.branchPath as number[] | undefined)?.length && args.index === undefined) {
-        throw new PrimitiveError("분기 안에 넣을 명령 줄 위치를 알려 주세요.");
-      }
       const command = commandForInsert(args.command as Command);
       const path = commandPath(event, args);
-      const page = normalizeEventPage({ id: event.id, commands: event.commands });
+      const page = pageForInsert(event, path);
       const edited = editCommands(() => insertEventCommand(page, path, command));
       const next = { ...event, commands: edited.commands };
       const inserted = existingCommand(next, path);
       validateSingleInsert(inserted);
       validateCommandReferences(ctx.project, inserted);
+      validateLabelEdit(ctx.project, event.commands, next.commands, path, undefined, inserted);
       return editEvent(event, ctx.project, next);
     },
   ),
   createPrimitive(
     "commonEvent.command.update", "공용 이벤트 명령 수정",
     argsSchema({
-      commonEventId: eventId, index, branchPath,
+      commonEventId: eventId, index, branchPath, ...commandSnapshot,
       patch: {
         type: "object", additionalProperties: true,
         properties: {
           ...commandFields,
           optionLabels: { type: "array", items: { type: "string" }, description: "기존 순서에 맞춘 모든 선택지의 문구입니다." },
+          fields: { type: "object", additionalProperties: true, description: "기타 명령에서 바꿀 항목과 값입니다. 생략한 항목은 유지합니다." },
         },
         description: "고칠 필드와 값입니다. 선택지 문구만 고칠 때는 기존 순서대로 문구 목록을 입력합니다.",
       },
@@ -225,24 +269,32 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (ctx, args) => {
       const event = findEvent(ctx, args);
       const path = commandPath(event, args);
-      const expectedHash = eventCommandHash(existingCommand(event, path));
+      const current = existingCommand(event, path);
+      const patch = args.patch as Args;
+      if (Object.keys(patch).length === 0) throw new PrimitiveError("이 명령에서 바꿀 값을 입력해 주세요.");
+      const fields = current.kind === "m2Command" && patch.fields !== undefined
+        ? { ...patch, fields: { ...current.fields, ...patch.fields as Args } }
+        : patch;
       const page = normalizeEventPage({ id: event.id, commands: event.commands });
-      const edited = editCommands(() => updateEventCommand(page, path, args.patch as Args, expectedHash));
+      const edited = editCommands(() => updateEventCommand(page, path, fields, expectedCommandHash(args)));
       const next = { ...event, commands: edited.commands };
-      validateCommandReferences(ctx.project, existingCommand(next, path));
+      const updated = existingCommand(next, path);
+      validateCommandReferences(ctx.project, updated, current);
+      validateLabelEdit(ctx.project, event.commands, next.commands, path, current, updated);
       return editEvent(event, ctx.project, next);
     },
   ),
   createPrimitive(
     "commonEvent.command.delete", "공용 이벤트 명령 삭제",
-    argsSchema({ commonEventId: eventId, index, branchPath }, ["commonEventId", "index"]),
+    argsSchema({ commonEventId: eventId, index, branchPath, ...commandSnapshot }, ["commonEventId", "index"]),
     (ctx, args) => describeCommand(ctx, args, "지워요"),
     (ctx, args) => {
       const event = findEvent(ctx, args);
       const path = commandPath(event, args);
-      const expectedHash = eventCommandHash(existingCommand(event, path));
+      const current = existingCommand(event, path);
       const page = normalizeEventPage({ id: event.id, commands: event.commands });
-      const edited = editCommands(() => deleteEventCommand(page, path, expectedHash));
+      const edited = editCommands(() => deleteEventCommand(page, path, expectedCommandHash(args)));
+      validateLabelEdit(ctx.project, event.commands, edited.commands, path, current);
       return editEvent(event, ctx.project, { ...event, commands: edited.commands });
     },
   ),
