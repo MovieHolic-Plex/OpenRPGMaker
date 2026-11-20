@@ -14,6 +14,7 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/19-db-items-equipment";
 import * as smallTaskRun from "@/editor/smallTask/run";
 import { dbTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
+import { runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { goodsIndex } from "@/player/playSceneShopGoods";
@@ -291,7 +292,7 @@ describe("자료집 프리미티브", () => {
     expect(() => runPrimitive(project, target("equipment"), "db.equipment.update", { slot: "armor" })).toThrow(/시작 장비/u);
   });
 
-  it.each(["new", "edit"] as const)("열린 %s 이벤트 초안에서 사용하는 아이템은 적용 시 삭제를 막는다", kind => {
+  it.each(["new", "edit"] as const)("열린 %s 이벤트 초안에서 사용하는 아이템은 도구와 적용 단계에서 삭제를 막는다", async kind => {
     const project = setup("blank");
     const map = createBlankProject();
     const original: GameEvent = {
@@ -310,6 +311,11 @@ describe("자료집 프리미티브", () => {
       const live = store.getCurrent();
       const selected = target("items");
       const before = smallTaskBase(live, selected);
+      const ctx = { project: before, smallTaskTarget: selected, smallTaskDraftSource: live };
+      await expect(runSmallTaskPrimitiveTool(ctx, "apply_small_task_primitive", {
+        id: "db.items.delete", args: {},
+      })).rejects.toThrow(/쓰는 자료집 항목/u);
+      expect(ctx.project).toBe(before);
       const { after } = runPrimitive(before, selected, "db.items.delete", {});
       expect(() => commitSmallTask(live, before, after, selected)).toThrow(/사용 중/u);
       expect(store.getCurrent()).toBe(live);
@@ -395,16 +401,22 @@ describe("자료집 프리미티브", () => {
     }
   });
 
-  it.each(["event", "library", "computed", "legacy"] as const)(
+  it.each(["event", "library", "computed", "quoted binding", "computed binding", "legacy"] as const)(
     "착용을 실행할 수 있는 %s 스크립트가 있을 때 호환성을 줄이는 변경만 막는다", owner => {
       const project = setup("blank");
       const slot = project.database.equipmentSlots!.find(row => row.id === ids.equipmentSlots)!;
       slot.equipsAs = "weapon";
       project.database.equipment.find(row => row.id === ids.equipment)!.twoHanded = false;
       const command = `{ kind: "changeEquipment", actorId: "${project.system.startActorIds[0]}", slot: "${slot.id}", equipmentId: "${ids.equipment}" }`;
-      const source = owner === "event" ? `await game.cmd(${command});`
-        : owner === "library" ? `const command = ${command}; await game["cmd"](command);`
-        : `const command = ${command}; await game["c" + "md"](command);`;
+      const call = {
+        event: `await game.cmd(${command});`,
+        library: 'await game["cmd"](command);',
+        computed: 'await game["c" + "md"](command);',
+        "quoted binding": 'const { "cmd": equip } = game; await equip(command);',
+        "computed binding": 'const { ["cmd"]: equip } = game; await equip(command);',
+        legacy: 'await game["c" + "md"](command);',
+      }[owner];
+      const source = owner === "event" ? call : `const command = ${command}; ${call}`;
       const effects = { reads: [], calls: [], writes: [], dynamic: [] };
       if (owner === "event") {
         project.commonEvents = [{ id: "common_script_equip", name: "외투 지급", trigger: "none", commands: [{
@@ -635,7 +647,7 @@ describe("자료집 작은 일 진입점", () => {
       input.dispatchEvent(new Event("input", { bubbles: true }));
       box.querySelector<HTMLFormElement>("form")!.dispatchEvent(new Event("submit", { cancelable: true }));
       await vi.waitFor(() => expect(box.querySelector('[role="status"] button')?.textContent).toBe("되돌리기"));
-      expect(run).toHaveBeenCalledExactlyOnceWith(before, selected, input.value, expect.any(AbortSignal));
+      expect(run).toHaveBeenCalledExactlyOnceWith(before, selected, input.value, expect.any(AbortSignal), before);
       expect(dbTarget(store.getCurrent(), collection, id)?.label).toContain(renamed);
       box.querySelector<HTMLButtonElement>('[role="status"] button')!.click();
       await vi.waitFor(() => expect(box.querySelector('[role="status"]')?.textContent).toBe("되돌렸어요."));

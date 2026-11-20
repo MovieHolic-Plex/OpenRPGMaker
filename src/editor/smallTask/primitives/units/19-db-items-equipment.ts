@@ -395,6 +395,10 @@ function hasCommandApiReference(source: string): boolean {
   const file = ts.createSourceFile("equipment-reference.ts", source, ts.ScriptTarget.ES2022);
   function visit(node: ts.Node): true | undefined {
     if (ts.isIdentifier(node) && node.text === "cmd") return true;
+    if (ts.isBindingElement(node) && node.propertyName) {
+      const key = ts.isComputedPropertyName(node.propertyName) ? node.propertyName.expression : node.propertyName;
+      if (ts.isStringLiteralLike(key) && key.text === "cmd") return true;
+    }
     if (ts.isElementAccessExpression(node)) {
       let receiver: ts.Expression = node.expression;
       while (ts.isParenthesizedExpression(receiver) || ts.isAsExpression(receiver) || ts.isTypeAssertionExpression(receiver)
