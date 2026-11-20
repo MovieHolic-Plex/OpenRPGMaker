@@ -7,9 +7,10 @@ import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { displayText, mapTarget } from "@/editor/smallTask/target";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import type { JsonSchema } from "@/editor/tools/types";
+import { objectiveTextOnMap } from "@/player/objectiveTarget";
 import { affectionVariableOwners } from "@/project/affectionVariables";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
-import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { projectWithEventRevision } from "@/project/projectClone";
 import { findSchedule } from "@/project/schedule";
@@ -259,35 +260,42 @@ function objectiveName(value: string) {
   return value.replace(/[\s「」『』"'·.,!?]/gu, "");
 }
 
-function assertNameUnreferenced(project: Project, mapId: string, eventId: string, oldName: string) {
-  const objectiveKey = objectiveName(oldName);
+function assertRenamePreservesReferences(project: Project, updated: Project, mapId: string, event: GameEvent, newName: string) {
+  const oldName = event.name?.trim() ?? "";
+  const objectiveKeys = [objectiveName(oldName), objectiveName(newName)].filter(Boolean);
+  const noEmptyInteractivePage = event.pages?.every(page => page.commands.length > 0 ||
+    (page.trigger.kind !== "action" && page.trigger.kind !== "playerTouch" && page.trigger.kind !== "eventTouch"));
   visitProjectCommands(project, ({ command, location }) => {
     const m2Title = command.kind === "m2Command" ? m2CommandById(command.commandId)?.title : undefined;
     const speaker = command.kind === "text" ? command.speaker
       : command.kind === "m2Command" && m2Title === "Advanced Dialogue" ? command.fields.speaker : undefined;
     if (typeof speaker === "string") {
-      const mayUseStagingName = command.kind === "text" && !command.speakerActor?.trim() && !isNonActorSpeaker(speaker) &&
+      const mayUseStagingName = (command.kind !== "text" || !command.speakerActor?.trim()) && !isNonActorSpeaker(speaker) &&
         (!("mapId" in location) || location.mapId === mapId);
-      if (speaker.trim() === oldName || (mayUseStagingName && speakerNameScore(speaker, oldName) > 0)) {
-        throw new PrimitiveError("이 이름을 화자로 쓰는 대사가 있어요. 대사의 화자 연결을 확인한 뒤 이름을 바꿔 주세요.");
+      if ((oldName && speaker.trim() === oldName) || (mayUseStagingName &&
+        (speakerNameScore(speaker, oldName) > 0 || speakerNameScore(speaker, newName) > 0))) {
+        throw new PrimitiveError("이전 이름이나 새 이름을 화자로 쓰는 대사가 있어요. 대사의 화자 연결을 확인한 뒤 이름을 바꿔 주세요.");
       }
     }
     if (command.kind === "script") {
       const sources = scriptSources(command, project);
-      if (sources.some(source => source.includes(oldName)) && sources.some(source => /\b(?:event|events)\b/u.test(source))) {
+      if (oldName && sources.some(source => source.includes(oldName)) && sources.some(source => /\b(?:event|events)\b/u.test(source))) {
         throw new PrimitiveError("스크립트에서 이 인물의 이름을 쓰고 있어요. 스크립트의 이름 연결을 확인해 주세요.");
       }
     }
     if (command.kind === "m2Command" && m2Title === "UI Command" && command.fields.surface === "objectiveChip") {
       const { targetMapId, targetEventId, message } = command.fields;
-      const hasTarget = typeof targetMapId === "string" && targetMapId.trim() === mapId &&
-        typeof targetEventId === "string" && targetEventId.trim() === eventId;
-      if (hasTarget || typeof message !== "string" || !objectiveKey) return;
+      if (typeof message !== "string") return;
+      // An empty interactive page can still be found by name after the ID lookup falls through.
+      const hasStableTarget = typeof targetMapId === "string" && targetMapId.trim() === mapId &&
+        typeof targetEventId === "string" && targetEventId.trim() === event.id && noEmptyInteractivePage;
       const tail = /\(([^():]+):([^()]*)\)\s*$/u.exec(message);
       const tailNames = [tail?.[1] ?? "", ...(tail?.[2]?.split("→").slice(1).join("·").split("·") ?? [])];
-      if ((objectiveKey.length >= 2 && objectiveName(message).includes(objectiveKey)) ||
-        tailNames.some(name => objectiveName(name) === objectiveKey)) {
-        throw new PrimitiveError("이 이름으로 인물을 찾는 목표가 있어요. 목표에 대상 이벤트를 지정한 뒤 이름을 바꿔 주세요.");
+      const mentionsName = objectiveKeys.some(key => (key.length >= 2 && objectiveName(message).includes(key)) ||
+        tailNames.some(name => objectiveName(name) === key));
+      if ((!hasStableTarget && mentionsName) ||
+        objectiveTextOnMap(project.maps[mapId]!, message) !== objectiveTextOnMap(updated.maps[mapId]!, message)) {
+        throw new PrimitiveError("이 이름으로 인물을 찾는 목표가 있어요. 목표의 문구와 대상 이벤트를 확인한 뒤 이름을 바꿔 주세요.");
       }
     }
   });
@@ -326,9 +334,15 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const command = newCommand("text") as TextCommand;
       list.splice(row, 0, validCommand({ ...command, body: newText(args.text) }));
     }),
-  pagePrimitive("dialogue.line.remove", "대사 지우기", schema({ path, hash }, ["path"]),
+  pagePrimitive("dialogue.line.remove", "대사 지우기", schema({ path, pageHash: {
+    type: "string", minLength: 1,
+    description: "get_event에서 includeCommandHashes를 켜고 pageHashes에서 읽은 이 페이지의 pageHash입니다. 대사나 위치가 바뀌면 다시 읽어야 합니다.",
+  } }, ["path", "pageHash"]),
     () => "선택한 대사 한 줄을 지웁니다.",
     (page, args, ctx) => {
+      if (args.pageHash !== eventCommandListHash(page.commands)) {
+        throw new PrimitiveError("페이지의 명령이 바뀌었습니다. 대사를 다시 읽어 주세요.");
+      }
       const { list, row, path } = textSlot(page, args);
       keepChoiceQuestion(list, row);
       assertProposalPositions(ctx, page, path, true);
@@ -368,13 +382,14 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   pagePrimitive("dialogue.firstTimeOnly", "대사를 처음 한 번만 표시", schema({ path, hash }, ["path"]),
     () => "선택한 대사를 처음 한 번만 보여 줍니다.",
     (page, args, ctx) => {
+      if (page.trigger.kind === "parallel") throw new PrimitiveError("병렬 실행 페이지는 대사를 표시할 수 없어요.");
       const { list, row, path, command } = textSlot(page, args);
       keepChoiceQuestion(list, row);
       assertProposalPositions(ctx, page, path, false);
       const key = unusedSelfSwitch(ctx, locateEvent(ctx).event);
       list[row] = validCommand({
         kind: "fork", condition: { kind: "selfSwitch", key, value: false },
-        then: [{ kind: "setSelfSwitch", key, value: true }, command],
+        then: [command, { kind: "setSelfSwitch", key, value: true, skipDuringFastForward: true }],
       });
     }, "eventPage"),
   {
@@ -391,9 +406,8 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const next = (args.name as string).trim();
       if (!next) throw new PrimitiveError("새 인물 이름을 입력해 주세요.");
       if (event.name === next) return ctx.project;
-      const oldName = event.name?.trim();
-      if (oldName && oldName !== next) assertNameUnreferenced(ctx.project, map.id, event.id, oldName);
       const updated = projectWithEventRevision(ctx.project, map.id, event.id, { ...event, name: next });
+      if (event.name?.trim() !== next) assertRenamePreservesReferences(ctx.project, updated, map.id, event, next);
       if (event.characterId) {
         const beforeOwners = affectionVariableOwners(ctx.project);
         const afterOwners = affectionVariableOwners(updated);
@@ -412,11 +426,6 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     : "선택한 대사에서 화자 이름을 지웁니다.",
     (page, args) => {
       const { list, row, command } = textSlot(page, args);
-      const speaker = (args.speaker as string).trim();
-      if (speaker) list[row] = validCommand({ ...command, speaker });
-      else {
-        const { speaker: _speaker, ...rest } = command;
-        list[row] = validCommand(rest);
-      }
+      list[row] = validCommand({ ...command, speaker: (args.speaker as string).trim() });
     }, "eventPage"),
 ];

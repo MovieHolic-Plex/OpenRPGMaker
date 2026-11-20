@@ -1251,6 +1251,8 @@ export function executeCommand(
       state.session.flags[command.flag] = command.value;
       return resumeNext(frame);
     case "setSelfSwitch": {
+      // A first-time dialogue writes its receipt after the text, only when it was played.
+      if (command.skipDuringFastForward && state.fastForwardLabel !== undefined) return resumeNext(frame);
       const eventId = state.currentEventId;
       if (eventId) {
         state.session.selfSwitches ??= {};

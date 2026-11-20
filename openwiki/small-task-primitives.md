@@ -15,6 +15,8 @@
 
 공용 명령은 `cmd.delete`와 `cmd.move`다. 둘 다 `index`, 선택적인 `branchPath`와 `expectedHash`를 받는다. `cmd.move`의 `toIndex`는 같은 목록에서 이동 후의 위치다. `get_event`에서 명령 위치와 해시를 읽을 수 있다. 내용이 있는 분기 명령은 자식과 함께 이동할 수 있다. 분기 삭제는 자식이 남아 있으면 거절된다.
 
+`dialogue.line.remove`는 `get_event({includeCommandHashes:true})`의 `pageHashes`에서 선택 페이지의 `pageHash`를 받아야 한다. 같은 페이지에서 명령을 추가하거나 위치를 바꿨으면 삭제 전에 페이지를 다시 읽는다. `dialogue.firstTimeOnly`가 만든 셀프 스위치는 대사를 끝낸 뒤 기록하며 컷신 빨리 감기 중에는 기록하지 않는다. `dialogue.speaker.set`에 빈 문자열을 주면 인물 프로필이 연결된 경우에도 이름표를 숨긴다.
+
 ## 편집 범위
 
 | 범위 | 편집 가능한 내용 |
