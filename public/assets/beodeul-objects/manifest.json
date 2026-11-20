@@ -73,6 +73,44 @@
         "mooring_v",
         "v_straight"
       ]
+    },
+    {
+      "id": "stone_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "gate_h",
+        "h_straight",
+        "t_n",
+        "t_s",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "wooden_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "gate_h",
+        "h_straight",
+        "t_n",
+        "t_s",
+        "v_straight"
+      ]
     }
   ]
 }
