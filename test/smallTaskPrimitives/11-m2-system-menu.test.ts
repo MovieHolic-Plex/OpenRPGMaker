@@ -278,6 +278,18 @@ describe("시스템·메뉴 작은 일", () => {
     expect(commands(project)).toEqual([choice, unchanged]);
   });
 
+  it("옛 상점에 거래 분기가 없어도 별도의 반복 분기에 명령을 추가한다", () => {
+    const choice: Command = { kind: "choices", options: [{ text: "상점", branch: [{ kind: "shop", itemIds: [] }] }] };
+    const loop: Command = { kind: "loop", body: [unchanged] };
+    const { project, target, commands } = scene("blank", [choice, loop]);
+    const { after } = runPrimitive(project, target, "m2.077.insert", {
+      branchPath: [1, LOOP_BODY_BRANCH_INDEX], enabled: false,
+    });
+    const inserted: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "false" } };
+    expect(commands(after)).toEqual([choice, { ...loop, body: [unchanged, inserted] }]);
+    expect(commands(project)).toEqual([choice, loop]);
+  });
+
   it("같은 배열을 공유하는 두 선택지를 한 분기 편집으로 동시에 바꾸지 않는다", () => {
     const original: Command = { kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "true" } };
     const branch = [original];

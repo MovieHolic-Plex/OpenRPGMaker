@@ -260,6 +260,9 @@ function commandEditTitle(command: Command): string {
 /** 종류 변경 또는 폼 DOM 구조가 바뀌는 필드 변경이면 true — 프리뷰-only 갱신으로는 부족. */
 export function shouldRerenderCommandForm(prev: Command, next: Command): boolean {
   if (prev.kind !== next.kind) return true;
+  if (prev.kind === "m2Command" && next.kind === "m2Command" && prev.commandId === "m2-027-change-system-bgm") {
+    return (prev.fields.cue === undefined) !== (next.fields.cue === undefined);
+  }
   // The shop owns its mounted list, inspector, and conditional settings. Rebuilding here
   // would discard the selected tab and detach the active input during a goods edit.
   if (prev.kind === "shop" && next.kind === "shop") return false;
