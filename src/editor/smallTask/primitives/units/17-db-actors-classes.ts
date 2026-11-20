@@ -4,7 +4,7 @@ import { displayText } from "@/editor/smallTask/target";
 import { outsideRecord, referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import { expandShortParameterCurves } from "@/editor/tools/parameterCurveInput";
 import type { JsonSchema } from "@/editor/tools/types";
-import { resolveDialogueSpeakerName, resolveDialogueText } from "@/player/dialogue";
+import { resolveDialogueSpeakerName, resolveDialogueText } from "@/player/dialogueText";
 import { ACTOR_LEVEL_MAX, ACTOR_LEVEL_MIN, createActorRecord } from "@/project/actorModel";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
