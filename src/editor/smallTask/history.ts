@@ -1,7 +1,8 @@
-import { removedDatabaseReference } from "@/ai/smallTaskReferences";
+import { removedDatabaseReference, scriptContainsLiteral } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
 import { referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
+import { forEachProjectScript } from "@/project/script/effects";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -32,7 +33,16 @@ function draftReferencesNewDatabaseRows(live: Project, before: Project, after: P
       root === "maps" && typeof mapId === "string" && field === "events" && typeof index === "number"
       && live.maps[mapId]?.events[index]?.draft !== undefined)) return true;
   }
-  return false;
+  // Script bodies can name IDs that are absent from their indexed effects.
+  const ids = [...addedIds];
+  let found = false;
+  forEachProjectScript(live, (script, { mapId, eventId }) => {
+    if (found || mapId === undefined || eventId === undefined) return;
+    if (live.maps[mapId]?.events.some(event => event.id === eventId && event.draft)) {
+      found = ids.some(id => scriptContainsLiteral(script, id));
+    }
+  });
+  return found;
 }
 
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {

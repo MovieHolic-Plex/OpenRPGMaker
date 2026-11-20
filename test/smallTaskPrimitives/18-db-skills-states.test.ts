@@ -230,6 +230,26 @@ it("작업본 없이 만든 새 스킬의 식별자가 열린 이벤트와 겹�
   expect(store.getCurrent()).toBe(live);
 });
 
+it.each(["source", "compiled"] as const)("열린 초안 스크립트의 %s에만 있는 중첩 스킬 ID와의 충돌을 막는다", field => {
+  const project = withRecords("built");
+  const newId = "skill_small_task_1";
+  const command = {
+    kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 },
+    then: [{ kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: newId }],
+  };
+  const live = openEventDraft(project, {
+    kind: "script", source: "", compiled: "",
+    effects: { reads: [], writes: [], calls: [], dynamic: [] },
+    [field]: `await game.cmd(${JSON.stringify(command)});`,
+  });
+  const selected = target("skills");
+  const before = smallTaskBase(live, selected);
+  const { after } = runPrimitive(before, selected, "db.skills.create", { name: "새 스킬" });
+  expect(after.database.skills.at(-1)?.id).toBe(newId);
+  expect(() => commitSmallTask(live, before, after, selected)).toThrow(/열린 이벤트.*같은 식별자/u);
+  expect(store.getCurrent()).toBe(live);
+});
+
 it("다른 자료집 묶음의 같은 ID 선언이 스킬 삭제를 막지 않는다", () => {
   const before = withRecords("blank");
   before.database.states.push({ id: ids.skills, name: "같은 ID의 상태" });
