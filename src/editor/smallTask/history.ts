@@ -8,6 +8,7 @@ import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "./primitives/errors";
 import { assertUnit20DraftReferences } from "./primitives/units/20-db-enemies-troops/references";
+import { mapRemovalDraftError } from "./primitives/units/23-map-structure/maps";
 import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -86,7 +87,11 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
     proposal = withEvent(after, target.mapId, { ...edited, draft });
   }
   const mapId = target.kind === "dbEntry" ? undefined : target.mapId;
-  const afterEvents = mapId ? new Map(after.maps[mapId].events.map(event => [event.id, event])) : null;
+  if (target.kind === "map" && !after.maps[target.mapId]) {
+    const error = mapRemovalDraftError(before, target.mapId, live);
+    if (error) throw new SmallTaskError(error);
+  }
+  const afterEvents = mapId ? new Map(after.maps[mapId]?.events.map(event => [event.id, event])) : null;
   const refreshCleanEventDrafts = mapId ? before.maps[mapId].events
     .filter(event => !jsonEqual(event, afterEvents?.get(event.id)))
     .map(event => ({ mapId, eventId: event.id })) : [];
