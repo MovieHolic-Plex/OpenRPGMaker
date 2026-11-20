@@ -1,3 +1,4 @@
+import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { eventReferenceMatches } from "@/editor/databaseEventReferences";
 import { displayText } from "@/editor/smallTask/target";
 import { outsideRecord, referenceIndex } from "@/editor/tools/dbReferenceIndex";
@@ -128,6 +129,12 @@ function dialogueUsesActorNumber(project: Project, firstChangedIndex: number): b
   const session = { variables: {} };
   return someDialogue(project, text => /\\n\[/iu.test(text)
     && resolveDialogueText(text, { project, session }) !== resolveDialogueText(text, { project, session: { ...session, actorNames } }));
+}
+
+export function assertActorNumberDeletion(project: Project, index: number, live?: SmallTaskDraftSource): void {
+  if (dialogueUsesActorNumber(withOpenEventDrafts(project, live), index)) {
+    throw new PrimitiveError("이 주인공을 지우면 대사에 나오는 이름이 바뀌거나 사라져요. 대사의 주인공 번호를 먼저 확인해 주세요.");
+  }
 }
 
 function appearancePortraitByName(project: Project, name: string) {
@@ -348,9 +355,7 @@ function databaseFamily<C extends Collection>(collection: C, config: {
           || (collection === "actors" && legacyActorReference(project, selected.id))) {
           throw new PrimitiveError(`사용 중인 ${label} 항목이에요. 다른 곳의 연결을 먼저 해제해 주세요.`);
         }
-        if (collection === "actors" && dialogueUsesActorNumber(project, index)) {
-          throw new PrimitiveError("이 주인공을 지우면 대사에 나오는 이름이 바뀌거나 사라져요. 대사의 주인공 번호를 먼저 확인해 주세요.");
-        }
+        if (collection === "actors") assertActorNumberDeletion(project, index, ctx.live);
         edited.splice(index, 1);
         if (dialogueUsesName(project, collection, selected, proposed)) {
           throw new PrimitiveError(`대사에서 이름으로 사용하는 ${label} 항목이에요. 대사의 화자를 먼저 확인해 주세요.`);

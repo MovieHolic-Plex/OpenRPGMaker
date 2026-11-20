@@ -5,10 +5,12 @@ import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/17-db-actors-classes";
-import type { SmallTaskTarget } from "@/editor/smallTask/target";
+import { SmallTaskError, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { resolveDialogueSpeakerName, resolveDialogueText } from "@/player/dialogue";
 import { createInterpreter } from "@/player/interpreter";
 import { createActorRecord } from "@/project/actorModel";
@@ -16,6 +18,7 @@ import { normalizeClassRecord } from "@/project/databaseRecordModel";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Command, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
@@ -383,6 +386,31 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     createInterpreter(commands, session, before).start();
     expect(session.actorBattleCommands?.[spareActor.id]).toEqual(["cmd_attack"]);
     expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
+  });
+
+  it.each([
+    ["화자 번호", (number: number): Command => ({ kind: "text", speaker: `\\N[${number}]`, body: "출발" }), "대사의 주인공 번호"],
+    ["명령 참조", (): Command => ({ kind: "changeParty", actorId: spareActor.id, action: "add" }), "쓰는 자료집 항목"],
+  ] as const)("열린 이벤트 초안의 %s를 참조하는 주인공 삭제를 적용 전에 거절한다", (_name, command, reason) => {
+    const project = projectWithRows("blank");
+    const mapId = project.startMapId;
+    store.replaceProject(structuredClone(project));
+    resetMapEditHistory();
+    const actorNumber = project.database.actors.length;
+    store.updateMap(mapId, map => {
+      map.events.push({ id: "ev_review_draft", name: "초안", x: 2, y: 2,
+        commands: [command(actorNumber)], trigger: { kind: "action" }, draft: { kind: "new" } });
+    });
+    const live = store.getCurrent();
+    const before = smallTaskBase(live, actorTarget);
+    expect(before.maps[mapId].events.some(event => event.id === "ev_review_draft")).toBe(false);
+    const { after } = runPrimitive(before, actorTarget, "db.actors.delete", {});
+    expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {}, undefined, live)).toThrow(reason);
+    const commit = () => commitSmallTask(live, before, after, actorTarget);
+    expect(commit).toThrow(SmallTaskError);
+    expect(commit).toThrow(reason);
+    expect(store.getCurrent()).toBe(live);
+    expect(getMapEditHistoryDepth()).toBe(0);
   });
 
   it("사용하지 않는 주인공·직업·외형을 삭제한 뒤 SQLite에서 다시 읽는다", async () => {

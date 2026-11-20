@@ -1,8 +1,10 @@
+import { removedDatabaseReference } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { assertActorNumberDeletion } from "./primitives/units/17-db-actors-classes";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 function withEvent(project: Project, mapId: string, event: GameEvent): Project {
@@ -23,6 +25,17 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
+  if (target.kind === "dbEntry" && before !== live) {
+    const { collection, id } = target;
+    const index = before.database[collection]?.findIndex(row => row.id === id) ?? -1;
+    // The worker validates the saved project. Check unsaved references here before applying its proposal.
+    if (index !== -1 && !after.database[collection]?.some(row => row.id === id)) {
+      if (removedDatabaseReference(before, after, [{ collection, id }], live)) {
+        throw new SmallTaskError("다른 설정이나 이벤트, 스크립트에서 쓰는 자료집 항목은 삭제할 수 없습니다.");
+      }
+      if (collection === "actors") assertActorNumberDeletion(before, index, live);
+    }
+  }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
   if (target.kind === "event" && event?.draft) {

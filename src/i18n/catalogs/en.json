@@ -19989,6 +19989,7 @@
 "바꿀 내용을 입력해 주세요.":"Enter what you want to change.",
 "대사에 이 이름과 연결된 화자가 있어요. 대사의 화자를 먼저 확인해 주세요.":"A speaker in the dialogue uses this name. Check the speaker first.",
 "사용 중인 {0} 항목이에요. 다른 곳의 연결을 먼저 해제해 주세요.":"This record in {0} is in use. Remove its links elsewhere first.",
+"다른 설정이나 이벤트, 스크립트에서 쓰는 자료집 항목은 삭제할 수 없습니다.":"Database records used by other settings, events, or scripts cannot be deleted.",
 "이 주인공을 지우면 대사에 나오는 이름이 바뀌거나 사라져요. 대사의 주인공 번호를 먼저 확인해 주세요.":"Deleting this actor would change or remove a name in dialogue. Check the actor number in the dialogue first.",
 "대사에서 이름으로 사용하는 {0} 항목이에요. 대사의 화자를 먼저 확인해 주세요.":"Dialogue refers to this record in {0} by name. Check the speaker first.",
 "주인공에게 연결할 직업을 먼저 만들어 주세요.":"Create a class to link to the actor first."

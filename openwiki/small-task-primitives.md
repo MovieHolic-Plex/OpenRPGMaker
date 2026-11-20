@@ -34,7 +34,9 @@
 
 Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 `mapRegion` 범위로 검사한다. 기존 `paint_tiles`를 비롯한 도구가 범위 밖을 바꾸면 턴의 변경을 폐기한다. 개발 및 테스트에서 `runPrimitive`는 기준 프로젝트의 중첩 데이터를 동결해 제자리 수정을 즉시 검출한다. 배포 실행에서는 동작이 바꾸는 경로만 복사한다.
 
-호스트가 작업 사본에서 편집 초안을 걷어 낸 경우 `runPrimitive(project, target, id, args, selection, live)`에 시작 시점의 열린 이벤트를 전달한다. `live.maps[mapId].events`에 작업본의 `draft`와 그 원본을 보존한다. 공용 검사는 이 정보를 읽어 참조된 삭제와 취소 가능한 새 이벤트에 의뢰를 등록하는 변경을 거절한다. 검사에 사용한 초안은 동작 결과에 추가되지 않는다.
+`runPrimitive`를 직접 호출하는 호스트는 `runPrimitive(project, target, id, args, selection, live)`에 시작 시점의 열린 이벤트를 전달할 수 있다. `live.maps[mapId].events`에 작업본의 `draft`와 그 원본을 보존한다. 공용 검사는 이 정보를 읽어 참조된 삭제와 취소 가능한 새 이벤트에 의뢰를 등록하는 변경을 거절한다. 검사에 사용한 초안은 동작 결과에 추가되지 않는다.
+
+편집기의 Pi 경로에서 자료집 항목 삭제를 적용하기 직전 `commitSmallTask`가 열린 이벤트의 참조를 확인한다. 주인공 삭제는 대사에 쓰인 주인공 번호도 확인한다.
 
 ## 코퍼스와 화면 검수
 
@@ -42,9 +44,11 @@ Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 
 
 화면 하네스는 `SHOTS_CASES`와 `SHOTS_OUT`이 설정되면 실행된다. 사례는 `{ fixture, setup?, target, primitive, args, label }` 배열이다. `setup`의 선택 필드 `mapName`, `events`, `database`로 화면에 열 시드를 준비하고 `rect: {x,y,w,h}`로 캔버스 영역을 선택한다. 빈 픽스처에 맵 이름, 이벤트, 영역을 제공하면 편집기의 기본 맵이 추가된다. 브라우저는 실제 작은 일 상자를 열고, Pi HTTP 요청을 받아 공용 동작 실행기로 처리한 응답을 돌려준다. 변경과 복원을 확인하며 `NN-before.png`, `NN-after.png`, `NN-summary.png`, `NN-undo.png`를 만든다. `test/piAgentSmallTask.bun.test.ts`는 모델 스트림을 고정해 실제 Pi 워커의 도구 호출과 실패 시 사본 폐기를 검증한다.
 
+아래 Playwright 명령은 GitHub CI 화면 검수의 실행 예시다.
+
 ```sh
 DEV_SERVER_PORT=9900 SHOTS_CASES=artifacts/step2/00-core/shots.json \
   SHOTS_OUT=artifacts/step2/00-core npx playwright test test/e2e/small-task-primitive-shots.spec.ts
 ```
 
-2단계 병렬 검증에서는 위 명령을 공용 슬롯 제한기로 실행한다. 첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.
+첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.
