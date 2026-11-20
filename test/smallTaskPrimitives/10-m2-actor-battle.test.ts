@@ -7,7 +7,7 @@ import { battleCommandsForActor } from "@/battle/battleCommands";
 import { createBattleRuntime } from "@/battle/runtime";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { getPrimitive, primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/10-m2-actor-battle";
@@ -17,6 +17,8 @@ import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/
 import { commandPanel } from "@/player/battleCommandDom";
 import { actorCommandDirectorState } from "@/player/battleDirectorDom";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
 import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -98,6 +100,9 @@ function cachedFixture(name: "blank" | "built" | "maou"): Project {
   const cached = fixtures.get(name);
   if (cached) return cached;
   const seed = loadFixture(name);
+  // Match editor normalization before primitives freeze the fixture's shared data.
+  ensureSwitchVariableSlots(seed);
+  removeLegacySpriteReferences(seed);
   fixtures.set(name, seed);
   return seed;
 }
@@ -212,12 +217,15 @@ describe("능력과 전투 명령 한 줄 저작", () => {
     ["m2.106.insert", "cmd.callCommonEvent.insert", { index: 1, commonEventId: "review_common_event" }, { kind: "callCommonEvent", commonEventId: "review_common_event" }],
   ] as const) {
     it.runIf(getPrimitive(canonical) !== undefined)(`${alias}가 합류한 정본 명령을 실행한다`, async () => {
-      const { project, target, read } = fixture();
-      project.commonEvents = [...project.commonEvents, { id: "review_common_event", name: "공용 호출", trigger: "none", commands: [] }];
-      const animation = project.database.battleAnimations[0]!;
-      project.database = {
-        ...project.database,
-        battleAnimations: [...project.database.battleAnimations, { ...animation, id: "review_animation", name: "빛" }],
+      const { project: baseline, target, read } = fixture();
+      const animation = baseline.database.battleAnimations[0]!;
+      const project: Project = {
+        ...baseline,
+        commonEvents: [...baseline.commonEvents, { id: "review_common_event", name: "공용 호출", trigger: "none", commands: [] }],
+        database: {
+          ...baseline.database,
+          battleAnimations: [...baseline.database.battleAnimations, { ...animation, id: "review_animation", name: "빛" }],
+        },
       };
       expect(getPrimitive(alias)).toBe(getPrimitive(canonical));
       const { after } = runPrimitive(project, target, alias, { ...args });
@@ -238,7 +246,8 @@ describe("능력과 전투 명령 한 줄 저작", () => {
     const { project, target, read } = fixture("built", [first, second]);
     const args = { index: 1, value: "하루" };
     expectRefused(project, target, "m2.022.update", args, /값의 형식/u);
-    expectRefused(project, target, "m2.022.update", { ...args, expectedHash: eventCommandHash(first) }, /줄의 내용이 바뀌었습니다/u);
+    expect(() => runPrimitive(project, target, "m2.022.update", { ...args, expectedHash: eventCommandHash(first) }))
+      .toThrow(STALE_COMMAND_LIST);
     expectRefused(project, target, "m2.022.update", { index: 1, expectedHash: eventCommandHash(second) }, /바꿀 값을/u);
     expect(read(project)).toEqual([first, second]);
   });
@@ -246,6 +255,12 @@ describe("능력과 전투 명령 한 줄 저작", () => {
   it("인자로 읽기 전용 페이지를 지정해도 선택 대상을 바꿀 수 없다", () => {
     const { project, target } = fixture();
     expectRefused(project, target, "m2.022.insert", { pageId: READ_ONLY_PAGE, value: "하루" }, /값의 형식/u);
+  });
+
+  it("페이지가 여러 개면 편집기에서 고른 페이지가 필요하다", () => {
+    const { project, target } = fixture();
+    const eventOnly = eventTarget(project, target.mapId, target.eventId);
+    expect(() => runPrimitive(project, eventOnly, "m2.022.insert", { value: "하루" })).toThrow(SELECT_EVENT_PAGE);
   });
 
   it("맵 저장 키와 내부 식별자가 다르면 다른 맵에 쓰지 않는다", () => {
@@ -307,8 +322,11 @@ describe("능력과 전투 명령 한 줄 저작", () => {
   it("걷기 그림으로 등록되지 않은 스프라이트를 거절한다", () => {
     const { project, target } = fixture();
     const id = "non_charset_sprite";
-    project.assets = { ...project.assets, uploaded: { ...project.assets.uploaded, [id]: { id, name: "다른 그림", kind: "sprite", meta: {} } } };
-    expectRefused(project, target, "m2.024.insert", { target: hero, value: id }, /그림을 찾을/u);
+    const assets: Project["assets"] = {
+      ...project.assets,
+      uploaded: { ...project.assets.uploaded, [id]: { id, name: "다른 그림", kind: "sprite", meta: {} } },
+    };
+    expectRefused({ ...project, assets }, target, "m2.024.insert", { target: hero, value: id }, /그림을 찾을/u);
   });
 
   it("전투 명령 교체 목록이 비어 있으면 실제로 읽는 단일 명령을 검사한다", () => {
@@ -344,7 +362,7 @@ describe("능력과 전투 명령 한 줄 저작", () => {
     const nextClass = project.database.classes.find(record => record.id !== actor.classId)!;
     const oldCommand = { id: "old_class_command", name: "수비", kind: "defend" } as const;
     const newCommand = { id: "new_class_command", name: "전술", kind: "skill" } as const;
-    project.database = {
+    const database = {
       ...project.database,
       classes: project.database.classes.map(record => record.id === actor.classId
         ? { ...record, battleCommands: [oldCommand] }
@@ -353,7 +371,7 @@ describe("능력과 전투 명령 한 줄 저작", () => {
     const setCommand = (source: Project, value: string) => runPrimitive(source, target, "m2.092.insert", {
       target: hero, operation: "set", value,
     }).after;
-    const beforeChange = setCommand(project, oldCommand.id);
+    const beforeChange = setCommand({ ...project, database }, oldCommand.id);
     const changed = runPrimitive(beforeChange, target, "m2.091.insert", { target: hero, value: nextClass.id }).after;
     const battleMenu = (source: Project) => {
       const { session } = runHeadless(source, target.mapId, target.eventId);
@@ -375,12 +393,12 @@ describe("능력과 전투 명령 한 줄 저작", () => {
     const { project, target } = fixture("built", []);
     const actor = project.database.actors.find(record => record.id === hero)!;
     const command = { id: "last_guard", name: "철벽", kind: "defend" } as const;
-    project.database = {
+    const database = {
       ...project.database,
       classes: project.database.classes.map(record => record.id === actor.classId
         ? { ...record, battleCommands: [command] } : record),
     };
-    const { after } = runPrimitive(project, target, "m2.092.insert", {
+    const { after } = runPrimitive({ ...project, database }, target, "m2.092.insert", {
       target: hero, operation: "remove", value: command.id,
     });
     const { session } = runHeadless(after, target.mapId, target.eventId);
@@ -497,7 +515,7 @@ describe("저장된 명령 실행", () => {
     expect(resolveActorFaceResourceId(session, actor, after)).toBe(portrait.id);
   });
 
-  it.each([
+  it.each<M2CommandFields>([
     { value: "tex_easyrpg_charset_actor1", characterIndex: 4 },
     { value: "tex_easyrpg_charset_actor1#4" },
     { value: "charset:tex_easyrpg_charset_actor1:4" },
