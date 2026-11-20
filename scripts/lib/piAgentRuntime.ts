@@ -418,10 +418,10 @@ function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGat
 /** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
 async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
   const started = Date.now();
-  const { target, maxToolCalls, selection, live } = scope;
+  const { target, maxToolCalls, selection, draftSource } = scope;
   const base = request.project;
   const ctx: SmallTaskToolContext = {
-    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskLive: live,
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskDraftSource: draftSource,
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);
@@ -542,7 +542,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   }
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
-    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    const result = checkSmallTaskScope(base, ctx.project, regionScope, draftSource);
     if (!result.ok) failure = result.reason;
   }
   const project = failure ? base : ctx.project;
