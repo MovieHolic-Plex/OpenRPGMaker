@@ -7,7 +7,7 @@ import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import type { Command, EventPage, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
+import { scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
@@ -28,16 +28,24 @@ const expectedHashField: JsonSchema = {
   type: "string", minLength: 1,
   description: "get_event에서 includeCommandHashes를 켜고 읽은 이 줄의 확인값(hash).",
 };
+const expectedPageHashesField: JsonSchema = {
+  type: "array", items: { type: "string", minLength: 1 },
+  description: "get_event에서 includeCommandHashes를 켜고 읽은 해당 페이지의 최상위 줄(branchPath가 빈 줄) 해시를 순서대로 넣습니다. 수정하거나 삽입 위치를 지정할 때 필요합니다. 빈 페이지는 빈 배열을 넣습니다.",
+};
 
 function commandLocation(page: EventPage, action: Action, args: Args) {
   const branchPath = args.branchPath as number[] | undefined ?? [];
   const row = args.index as number | undefined;
-  let list: Command[];
-  try {
-    list = commandListAt(page, branchPath);
-  } catch (error) {
-    if (error instanceof PrimitiveError) throw new PrimitiveError("범위 밖: 선택한 페이지에서 명령 분기를 찾을 수 없습니다.");
-    throw error;
+  const missingBranch = () => new PrimitiveError("범위 밖: 선택한 페이지에서 명령 분기를 찾을 수 없습니다.");
+  if (branchPath.length % 2 !== 0) throw missingBranch();
+  let list: readonly Command[] = page.commands;
+  for (let depth = 0; depth < branchPath.length; depth += 2) {
+    const parentIndex = branchPath[depth]!;
+    if (!Number.isSafeInteger(parentIndex) || parentIndex < 0) throw missingBranch();
+    const parent = list[parentIndex];
+    const branch = parent && eventCommandBranches(parent).find(entry => entry.branchIndex === branchPath[depth + 1]);
+    if (!branch) throw missingBranch();
+    list = branch.commands;
   }
   const index = row ?? list.length;
   if (!Number.isSafeInteger(index) || index < 0 || index >= list.length + Number(action === "insert")) {
@@ -47,7 +55,7 @@ function commandLocation(page: EventPage, action: Action, args: Args) {
 }
 
 function verifyCommandEdit(
-  before: Command[], after: Command[], path: readonly number[], action: Action, command: Command,
+  before: readonly Command[], after: readonly Command[], path: readonly number[], action: Action, command: Command,
 ): void {
   const outsideRow = () => new PrimitiveError("범위 밖: 다른 명령이나 분기도 함께 바뀌어 적용할 수 없습니다.");
   for (let depth = 0; depth < path.length - 1; depth += 2) {
@@ -55,14 +63,17 @@ function verifyCommandEdit(
     const branch = path[depth + 1]!;
     const beforeBranches = eventCommandBranches(before[row]!);
     const afterBranches = eventCommandBranches(after[row]!);
+    const beforeList = beforeBranches.find(entry => entry.branchIndex === branch)?.commands;
+    const afterList = afterBranches.find(entry => entry.branchIndex === branch)?.commands;
     // 복제 뒤에도 여러 분기가 같은 배열을 공유할 수 있다.
-    if (before.length !== after.length ||
+    if (!beforeList || !afterList || before.length !== after.length || beforeBranches.length !== afterBranches.length ||
         !before.every((entry, index) => index === row || jsonEqual(entry, after[index])) ||
-        beforeBranches.some((entry, index) => entry.branchIndex !== branch && !jsonEqual(entry.commands, afterBranches[index]?.commands))) {
+        beforeBranches.some(entry => entry.branchIndex !== branch &&
+          !jsonEqual(entry.commands, afterBranches.find(candidate => candidate.branchIndex === entry.branchIndex)?.commands))) {
       throw outsideRow();
     }
-    before = resolveCommandListAtPath(before, [row, branch, 0])!;
-    after = resolveCommandListAtPath(after, [row, branch, 0])!;
+    before = beforeList;
+    after = afterList;
   }
   const expected = before.slice();
   expected.splice(path.at(-1)!, action === "insert" ? 0 : 1, command);
@@ -146,6 +157,9 @@ function nextCommand(
       if (action === "insert" && patch.actorId === undefined && !patch.stringVariableId) {
         patch.actorId = project.session.partyActorIds[0] ?? project.database.actors[0]?.id ?? "";
       }
+      if (action === "update" && patch.actorId && patch.stringVariableId === undefined && base.stringVariableId) {
+        patch.stringVariableId = undefined;
+      }
       break;
   }
   return { command: { ...base, ...patch }, patch };
@@ -167,6 +181,17 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     if (!inserting && eventCommandHash(current!) !== expectedHash) {
       throw new PrimitiveError("명령 줄이 바뀌었습니다. 그 줄을 다시 읽어 주세요.");
     }
+    const expectedPageHashes = args.expectedPageHashes;
+    const positioned = !inserting || args.index !== undefined || path.length > 1;
+    if (positioned || expectedPageHashes !== undefined) {
+      if (expectedPageHashes === undefined) {
+        throw new PrimitiveError("명령 위치를 확인할 수 없습니다. 페이지의 최상위 명령 해시를 읽어 주세요.");
+      }
+      // 최상위 명령 해시는 하위 분기도 포함하므로 같은 내용의 줄로 위치가 밀려도 확인할 수 있다.
+      if (!jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes)) {
+        throw new PrimitiveError("페이지의 명령 목록이 바뀌었습니다. 그 페이지를 다시 읽어 주세요.");
+      }
+    }
     const edits = Object.fromEntries(Object.keys(fields).filter(key => Object.hasOwn(args, key)).map(key => [key, args[key]]));
     if (!inserting && Object.keys(edits).length === 0) throw new PrimitiveError("바꿀 값을 하나 이상 입력해 주세요.");
     const base = (inserting ? newCommand(kind) : current) as DialogueCommand;
@@ -186,9 +211,10 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
         index: inserting ? { ...indexField, description: "끼워 넣을 위치. 첫 줄은 0이며, 생략하면 끝에 추가합니다." } : indexField,
         branchPath: branchPathField,
         ...(inserting ? {} : { expectedHash: expectedHashField }),
+        expectedPageHashes: expectedPageHashesField,
         ...fields,
       },
-      required: inserting ? insertRequires : ["index", "expectedHash"],
+      required: inserting ? insertRequires : ["index", "expectedHash", "expectedPageHashes"],
       additionalProperties: false,
     },
     scope(ctx) {

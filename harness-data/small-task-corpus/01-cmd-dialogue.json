@@ -68,7 +68,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "body": "먼 길에는 약을 챙기게."},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "body": "먼 길에는 약을 챙기게."},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].body", "equals": "먼 길에는 약을 챙기게."}]
   },
   {
@@ -76,7 +76,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "speaker": "약초상"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "speaker": "약초상"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].speaker", "equals": "약초상"}]
   },
   {
@@ -84,7 +84,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "position": "center"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "position": "center"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].position", "equals": "center"}]
   },
   {
@@ -92,7 +92,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "autoAdvance": true},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "autoAdvance": true},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].autoAdvance", "equals": true}]
   },
   {
@@ -100,7 +100,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "emotion": "surprised"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "emotion": "surprised"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].emotion", "equals": "surprised"}]
   },
   {
@@ -108,7 +108,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "speaker": ""},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "speaker": ""},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].kind", "equals": "text"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[1].speaker", "equals": ""}]
   },
   {
@@ -116,7 +116,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 19, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "body": "잠깐만"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 19, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "body": "잠깐만"},
     "expectRefusal": true
   },
   {
@@ -124,7 +124,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "body": "서둘러"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "body": "서둘러"},
     "expectRefusal": true
   },
   {
@@ -132,7 +132,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.text.update",
-    "args": {"index": 1, "expectedHash": "f1d77776dc240774b14f09d8c8d005f0", "body": "서둘러."},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "f1d77776dc240774b14f09d8c8d005f0", "body": "서둘러."},
     "expectRefusal": true
   },
   {
@@ -204,7 +204,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "position": "right"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "position": "right"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].position", "equals": "right"}]
   },
   {
@@ -212,7 +212,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "flipHorizontally": true},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "flipHorizontally": true},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].flipHorizontally", "equals": true}]
   },
   {
@@ -220,7 +220,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "shared-people1-boy-expressions-bust-base", "presentation": "bust"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "shared-people1-boy-expressions-bust-base", "presentation": "bust"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].resourceId", "equals": "shared-people1-boy-expressions-bust-base"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].presentation", "equals": "bust"}]
   },
   {
@@ -228,7 +228,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": ""},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": ""},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].resourceId", "equals": ""}]
   },
   {
@@ -236,7 +236,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "easyrpg-faceset-actor1-00"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "easyrpg-faceset-actor1-00"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].resourceId", "equals": "easyrpg-faceset-actor1-00"}]
   },
   {
@@ -244,7 +244,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "shared-people1-boy-expressions-full-base", "presentation": "full", "fullScale": 120},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "shared-people1-boy-expressions-full-base", "presentation": "full", "fullScale": 120},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].kind", "equals": "changeFace"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].resourceId", "equals": "shared-people1-boy-expressions-full-base"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].presentation", "equals": "full"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0].fullScale", "equals": 120}]
   },
   {
@@ -252,7 +252,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "presentation": "bust"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "presentation": "bust"},
     "expectRefusal": true
   },
   {
@@ -260,7 +260,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "face_missing"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "resourceId": "face_missing"},
     "expectRefusal": true
   },
   {
@@ -268,7 +268,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.changeFace.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "appearanceId": "appearance_missing"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "appearanceId": "appearance_missing"},
     "expectRefusal": true
   },
   {
@@ -340,7 +340,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "prompt": "화롯불 일을 맡을까요?"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "prompt": "화롯불 일을 맡을까요?"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].prompt", "equals": "화롯불 일을 맡을까요?"}]
   },
   {
@@ -348,7 +348,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "optionLabels": ["맡는다", "그만둔다"]},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "optionLabels": ["맡는다", "그만둔다"]},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].options[0].text", "equals": "맡는다"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].options[1].text", "equals": "그만둔다"}]
   },
   {
@@ -356,7 +356,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "appendOption": "자세히 듣기"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "appendOption": "자세히 듣기"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].options[2]", "equals": {"text": "자세히 듣기", "branch": []}}]
   },
   {
@@ -364,7 +364,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "cancelBehavior": "disallow"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "cancelBehavior": "disallow"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].cancelBehavior", "equals": "disallow"}]
   },
   {
@@ -372,7 +372,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "cancelBehavior": "choice1"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "cancelBehavior": "choice1"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].cancelBehavior", "equals": "choice1"}]
   },
   {
@@ -380,7 +380,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "prompt": ""},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "prompt": ""},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].kind", "equals": "choices"}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[5].prompt", "equals": ""}]
   },
   {
@@ -388,7 +388,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "optionLabels": ["수락"]},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "optionLabels": ["수락"]},
     "expectRefusal": true
   },
   {
@@ -396,7 +396,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.choices.update",
-    "args": {"index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "cancelBehavior": "choice4"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 5, "expectedHash": "000897cbae6d2e010582a4bc34f6138c", "cancelBehavior": "choice4"},
     "expectRefusal": true
   },
   {
@@ -468,7 +468,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.presentItem.update",
-    "args": {"index": 2, "expectedHash": "846d16754aafaee3fef156528138e008", "prompt": "증거를 내세요"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008", "prompt": "증거를 내세요"},
     "expectRefusal": true
   },
   {
@@ -476,7 +476,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.presentItem.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "prompt": "보여 주세요", "eventId": "ev_other"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "prompt": "보여 주세요", "eventId": "ev_other"},
     "expectRefusal": true
   },
   {
@@ -548,7 +548,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inputWait.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "variableId": "var_0001"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "variableId": "var_0001"},
     "expectRefusal": true
   },
   {
@@ -556,7 +556,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inputWait.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "variableId": "var_0002", "pageId": "ev_supply_shop_active"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "variableId": "var_0002", "pageId": "ev_supply_shop_active"},
     "expectRefusal": true
   },
   {
@@ -628,7 +628,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inputNumber.update",
-    "args": {"index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "digits": 3},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 1, "expectedHash": "9a0c0e243e746eb03eebeed5a2224f68", "digits": 3},
     "expectRefusal": true
   },
   {
@@ -636,7 +636,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inputNumber.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "digits": 2, "eventId": "ev_other"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "digits": 2, "eventId": "ev_other"},
     "expectRefusal": true
   },
   {
@@ -708,7 +708,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.enterHeroName.update",
-    "args": {"index": 2, "expectedHash": "846d16754aafaee3fef156528138e008", "maxLength": 8},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008", "maxLength": 8},
     "expectRefusal": true
   },
   {
@@ -716,7 +716,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.enterHeroName.update",
-    "args": {"index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "maxLength": 3, "eventId": "ev_other"},
+    "args": {"expectedPageHashes": ["1d2816e05c3b328b04af2141afb86c38", "9a0c0e243e746eb03eebeed5a2224f68", "846d16754aafaee3fef156528138e008", "b918bd25ecff7ceb7a4824d4822317ad", "f1d77776dc240774b14f09d8c8d005f0", "000897cbae6d2e010582a4bc34f6138c"], "index": 0, "expectedHash": "1d2816e05c3b328b04af2141afb86c38", "maxLength": 3, "eventId": "ev_other"},
     "expectRefusal": true
   },
   {
@@ -788,7 +788,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "top"},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "top"},
     "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].position", "equals": "top"}]
   },
   {
@@ -796,7 +796,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "format": "transparent"},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "format": "transparent"},
     "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].format", "equals": "transparent"}]
   },
   {
@@ -804,7 +804,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "center"},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "center"},
     "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].position", "equals": "center"}]
   },
   {
@@ -812,7 +812,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "preventObscuringPlayer": false},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "preventObscuringPlayer": false},
     "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].preventObscuringPlayer", "equals": false}]
   },
   {
@@ -820,7 +820,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "allowEventMovementDuringWait": true},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "allowEventMovementDuringWait": true},
     "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].allowEventMovementDuringWait", "equals": true}]
   },
   {
@@ -828,7 +828,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "center", "format": "transparent", "preventObscuringPlayer": false},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "center", "format": "transparent", "preventObscuringPlayer": false},
     "expect": [{"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].kind", "equals": "displayTextSettings"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].position", "equals": "center"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].format", "equals": "transparent"}, {"at": "maps.map_mk_throne.events[id=ev_mk_throne_scene].pages[0].commands[4].preventObscuringPlayer", "equals": false}]
   },
   {
@@ -836,7 +836,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "right"},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "right"},
     "expectRefusal": true
   },
   {
@@ -844,7 +844,7 @@
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_throne", "eventId": "ev_mk_throne_scene", "pageId": "ev_mk_throne_scene_p"},
     "primitive": "cmd.displayTextSettings.update",
-    "args": {"index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "top", "eventId": "ev_other"},
+    "args": {"expectedPageHashes": ["632e4aae092f12ab1d4a0faf6100804e", "746c97cc6a95c541405294eea3e227b8", "c7bfe98d5e6eb1a68bb9c57bd8222228", "c9d745d3403377875144ab6f666ddee1", "1facea1becda31de5c75df902cdc9d50", "a9d740f0c53e9c1287e8f808000ce7e2", "25ff81e375a8d880568b2262590ab92e", "7824dd82f620f58860155022c9373001", "c041a4c798d8db30c963c2150140daea", "03f67f35daf1a735ed3d68ff26e743db", "5d1c939b58e1e9010e4f0529ae35e441", "87371b78b8579b971f4f78816e5af7c4", "129b1ffefbbb87d7b8d91d6e20a39b33", "b43d7db797bc2204d0c3d9cb46c5acb3"], "index": 4, "expectedHash": "1facea1becda31de5c75df902cdc9d50", "position": "top", "eventId": "ev_other"},
     "expectRefusal": true
   }
 ]

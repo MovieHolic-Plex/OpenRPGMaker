@@ -93,7 +93,7 @@ export const dialogueFields = {
   enterHeroName: {
     title: "이름 입력",
     fields: {
-      actorId: string("이름을 바꿀 배우 식별자. 문자열 변수에 저장할 때는 비워도 됩니다."),
+      actorId: string("이름을 바꿀 배우 식별자. 수정할 때 배우만 지정하면 배우 이름 입력으로 전환합니다. 문자열 변수에 저장할 때는 비워도 됩니다."),
       stringVariableId: string("입력한 글자를 저장할 변수 식별자. 빈 문자열을 보내면 배우 이름을 바꿉니다."),
       maxLength: integer("입력할 수 있는 최대 글자 수. 한 자부터 열두 자까지입니다.", 1, 12),
       showInitialName: flag("입력창을 열 때 기존 이름이나 글자를 채워 둘지 정합니다."),
@@ -192,7 +192,7 @@ export function validateDialogueReferences(project: Project, command: DialogueCo
 }
 
 function previewText(text: string, fallback = ""): string {
-  return displayText(text.replace(/[\p{Script=Latin}\d_:@/.-]*\p{Script=Latin}[\p{Script=Latin}\d_:@/.-]*/gu, "…")
+  return displayText(text.replace(/"[^"\r\n]+"(?=\s*:)/gu, "…")
     .replace(/[{}[\]<>]/gu, ""), fallback);
 }
 

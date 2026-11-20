@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { CHOICE_CANCEL_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { createInterpreter } from "@/player/interpreter";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -59,6 +59,10 @@ const settings: Extract<Command, { kind: "displayTextSettings" }> = {
   preventObscuringPlayer: true,
   allowEventMovementDuringWait: false,
 };
+
+function updatePosition(commands: readonly Command[], row: Command, index = 0) {
+  return { index, expectedHash: eventCommandHash(row), expectedPageHashes: commands.map(eventCommandHash) };
+}
 
 const cases: DialogueCase[] = [
   {
@@ -168,7 +172,7 @@ it.each(cases.flatMap(shape => (["insert", "update"] as const).map(action => ({
 }))))("$id · 저장 결과, 문장, 범위와 되돌리기", async testCase => {
   const { action, fixture, id, original } = testCase;
   const { project, target, readPage, mapId, siblingPage } = arrange(fixture, [original, continuation]);
-  const args = { ...testCase[action], ...(action === "update" ? { index: 0, expectedHash: eventCommandHash(original) } : {}) };
+  const args = { ...testCase[action], ...(action === "update" ? updatePosition([original, continuation], original) : {}) };
   const primitive = PRIMITIVES.find(entry => entry.id === id)!;
   const { after, sentence } = runPrimitive(project, target, id, args);
   const expected = action === "insert" ? [original, continuation, testCase.inserted] : [testCase.updated, continuation];
@@ -177,8 +181,7 @@ it.each(cases.flatMap(shape => (["insert", "update"] as const).map(action => ({
   expect(readPage(after, 1)).toBe(siblingPage);
   expect(sentence).toBe(primitive.describe({ project, target }, args));
   expect(sentence).toMatch(/[가-힣].*합니다\.$/u);
-  expect(sentence).not.toMatch(/[a-z{}\[\]]/iu);
-  expect(sentence.length).toBeLessThanOrEqual(80);
+  expectKoreanSentence(sentence, target);
 
   expectRefused(project, mapTarget(project, mapId), id, args);
   const scope = primitive.scope({ project, target }, { ...args, pageId: siblingPage.id });
@@ -227,7 +230,7 @@ it("다른 페이지를 인자로 지정하거나 선택한 페이지 밖의 줄
     body: "다른 페이지로 보냅니다.", pageId: siblingPage.id,
   })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.text.update", {
-    index: 1, expectedHash: eventCommandHash(continuation), body: "존재하지 않는 줄입니다.",
+    ...updatePosition([continuation], continuation, 1), body: "존재하지 않는 줄입니다.",
   })).toThrow("범위 밖");
   expect(() => runPrimitive(project, target, "cmd.text.insert", {
     branchPath: [0, 0], body: "대사에는 분기가 없습니다.",
@@ -241,7 +244,8 @@ it("이벤트에서 읽은 위치로 분기 안의 대사를 변경하고 오래
   const selectedPage = commandHashes.find(entry => entry.pageId === pageId)!;
   const row = selectedPage.commands.find(entry => jsonEqual(entry.branchPath, [0, 0]))!;
   expect(row.hash).toBe(eventCommandHash(continuation));
-  const args = { branchPath: row.branchPath, index: row.index, body: "분기 안의 새 대사입니다." };
+  const expectedPageHashes = selectedPage.commands.filter(entry => entry.branchPath.length === 0).map(entry => entry.hash);
+  const args = { branchPath: row.branchPath, index: row.index, expectedPageHashes, body: "분기 안의 새 대사입니다." };
   const context = { project, smallTaskTarget: target };
   const update = (expectedHash: string) => runSmallTaskPrimitiveTool(context, APPLY_SMALL_TASK_PRIMITIVE, {
     id: "cmd.text.update", args: { ...args, expectedHash },
@@ -260,9 +264,42 @@ it("같은 종류의 명령이 앞으로 끼어들면 확인값 없는 수정과
   const { project, target, readPage } = arrange("blank", [preceding, continuation]);
   const args = { index: 0, body: "두 번째 대사만 고칩니다." };
   expect(() => runPrimitive(project, target, "cmd.text.update", args)).toThrow(PrimitiveError);
-  expect(() => runPrimitive(project, target, "cmd.text.update", { ...args, expectedHash: eventCommandHash(continuation) }))
+  expect(() => runPrimitive(project, target, "cmd.text.update", { ...args, ...updatePosition([continuation], continuation) }))
     .toThrow("명령 줄이 바뀌었습니다");
   expect(readPage(project).commands).toStrictEqual([preceding, continuation]);
+});
+
+it("같은 내용의 줄이 끼어들면 줄 해시가 일치해도 수정과 위치 지정 삽입을 거부한다", () => {
+  const duplicate = { ...continuation };
+  const { project, target, readPage } = arrange("blank", [duplicate, continuation]);
+  const oldPosition = updatePosition([continuation], continuation);
+  const body = "조회한 줄 근처만 편집합니다.";
+  expect(() => runPrimitive(project, target, "cmd.text.update", { ...oldPosition, body })).toThrow("명령 목록이 바뀌었습니다");
+  expect(() => runPrimitive(project, target, "cmd.text.insert", {
+    index: 0, expectedPageHashes: oldPosition.expectedPageHashes, body,
+  })).toThrow("명령 목록이 바뀌었습니다");
+  expect(() => runPrimitive(project, target, "cmd.text.insert", { index: 0, body })).toThrow("명령 위치를 확인할 수 없습니다");
+  const { after } = runPrimitive(project, target, "cmd.text.insert", {
+    index: 1, expectedPageHashes: [duplicate, continuation].map(eventCommandHash), body,
+  });
+  expect(readPage(after).commands).toStrictEqual([duplicate, { kind: "text", body, speaker: "" }, continuation]);
+  expect(readPage(project).commands).toStrictEqual([duplicate, continuation]);
+});
+
+it("분기 순서가 바뀌면 같은 내용의 하위 줄을 수정하거나 분기 끝에 삽입할 수 없다", () => {
+  const first = { text: "첫 분기", branch: [continuation] };
+  const second = { text: "둘째 분기", branch: [{ ...continuation }] };
+  const original = { ...choices, options: [first, second] };
+  const reordered = { ...choices, options: [second, first] };
+  const { project, target, readPage } = arrange("blank", [reordered]);
+  const body = "조회한 분기만 편집합니다.";
+  const position = updatePosition([original], continuation);
+  expect(() => runPrimitive(project, target, "cmd.text.update", { ...position, branchPath: [0, 0], body }))
+    .toThrow("명령 목록이 바뀌었습니다");
+  expect(() => runPrimitive(project, target, "cmd.text.insert", {
+    branchPath: [0, 0], expectedPageHashes: position.expectedPageHashes, body,
+  })).toThrow("명령 목록이 바뀌었습니다");
+  expect(readPage(project).commands).toStrictEqual([reordered]);
 });
 
 it("반복 안의 취소 분기에 삽입하고 잘못된 경로는 거부한다", () => {
@@ -270,7 +307,9 @@ it("반복 안의 취소 분기에 삽입하고 잘못된 경로는 거부한다
   const { project, target, readPage } = arrange("blank", [loop, continuation]);
   const branchPath = [0, LOOP_BODY_BRANCH_INDEX, 0, CHOICE_CANCEL_BRANCH_INDEX];
   const body = "취소 분기의 끝에 대사를 추가합니다.";
-  const { after } = runPrimitive(project, target, "cmd.text.insert", { branchPath, body });
+  const { after } = runPrimitive(project, target, "cmd.text.insert", {
+    branchPath, body, expectedPageHashes: [loop, continuation].map(eventCommandHash),
+  });
   expect(readPage(after).commands).toStrictEqual([{
     ...loop, body: [{ ...choices, cancelBranch: [...choices.cancelBranch!, { kind: "text", body, speaker: "" }] }],
   }, continuation]);
@@ -282,31 +321,44 @@ it("여러 분기가 같은 명령 목록을 공유하면 다른 분기까지 �
   const joined = { ...choices, options: choices.options.map(option => ({ ...option, branch: shared })) };
   const { project, target, readPage } = arrange("blank", [joined]);
   expect(() => runPrimitive(project, target, "cmd.text.update", {
-    branchPath: [0, 0], index: 0, expectedHash: eventCommandHash(continuation), body: "첫 선택지만 바꿉니다.",
+    ...updatePosition([joined], continuation), branchPath: [0, 0], body: "첫 선택지만 바꿉니다.",
   })).toThrow("다른 명령이나 분기");
   expect(readPage(project).commands).toStrictEqual([joined]);
   expect(shared).toStrictEqual([continuation]);
 });
 
+it("배열이 없는 이전 취소 분기에 직접 삽입하고 실행 취소하면 원래 형식을 복원한다", async () => {
+  const { cancelBranch: _cancelBranch, ...legacy } = choices;
+  const { project, target, readPage } = arrange("blank", [legacy, continuation]);
+  const body = "취소 분기에 삽입한 대사입니다.";
+  const { after } = runPrimitive(project, target, "cmd.text.insert", {
+    branchPath: [0, CHOICE_CANCEL_BRANCH_INDEX], expectedPageHashes: [legacy, continuation].map(eventCommandHash), body,
+  });
+  expect(readPage(after).commands).toStrictEqual([{ ...legacy, cancelBranch: [{ kind: "text", body, speaker: "" }] }, continuation]);
+  expect(readPage(project).commands).toStrictEqual([legacy, continuation]);
+  await expectUndoRestores(project, after, target);
+});
+
 it("취소 분기 배열이 없는 이전 선택지를 수정해도 기존 분기와 배열의 부재를 유지한다", () => {
   const { cancelBranch: _cancelBranch, ...legacy } = choices;
   const { project, target, readPage } = arrange("blank", [legacy, continuation]);
-  const args = { index: 0, expectedHash: eventCommandHash(legacy) };
+  const args = updatePosition([legacy, continuation], legacy);
   const relabelled = runPrimitive(project, target, "cmd.choices.update", { ...args, optionLabels: ["할래요", "안 할래요"] });
   expect(readPage(relabelled.after).commands).toStrictEqual([{
     ...legacy, options: [{ ...legacy.options[0], text: "할래요" }, { ...legacy.options[1], text: "안 할래요" }],
   }, continuation]);
   const disabled = runPrimitive(project, target, "cmd.choices.update", { ...args, cancelBehavior: "disallow" });
   expect(readPage(disabled.after).commands).toStrictEqual([{ ...legacy, cancelBehavior: "disallow" }, continuation]);
+  const disabledCommands = readPage(disabled.after).commands;
   const enabled = runPrimitive(disabled.after, target, "cmd.choices.update", {
-    index: 0, expectedHash: eventCommandHash(readPage(disabled.after).commands[0]!), cancelBehavior: "branch",
+    ...updatePosition(disabledCommands, disabledCommands[0]!), cancelBehavior: "branch",
   });
   expect(readPage(enabled.after).commands).toStrictEqual([{ ...legacy, cancelBranch: [] }, continuation]);
 });
 
 it("아이템 제시 목록을 바꿀 때 기존 정답과 분기를 계속 사용할 수 있어야 한다", () => {
   const { project, target, readPage } = arrange("built", [presentItem]);
-  const args = { index: 0, expectedHash: eventCommandHash(presentItem) };
+  const args = updatePosition([presentItem], presentItem);
   expect(() => runPrimitive(project, target, "cmd.presentItem.update", { ...args, itemIds: ["item_ether"] }))
     .toThrow("제시할 목록에도");
   const { after } = runPrimitive(project, target, "cmd.presentItem.update", { ...args, itemIds: [potion] });
@@ -354,9 +406,23 @@ it("긴 대사 요약에서 내부 식별자를 가린다", () => {
   expect(readPage(after).commands).toStrictEqual([{ kind: "text", body, speaker: "" }]);
 });
 
+it("한국어 동작 요약에서 저작한 영문 대사와 변수 이름을 읽을 수 있다", () => {
+  const { project, target } = arrange("built", []);
+  const { sentence: textSentence } = runPrimitive(project, target, "cmd.text.insert", { body: "Meet me by the gate." });
+  expect(textSentence).toContain("Meet me by the gate");
+  expectKoreanSentence(textSentence, target);
+
+  const named = { ...project, variables: project.variables.map(entry => entry.id === variable ? { ...entry, name: "Gate code" } : entry) };
+  const { sentence: numberSentence } = runPrimitive(named, target, "cmd.inputNumber.insert", { variableId: variable });
+  expect(numberSentence).toContain("Gate code");
+  expectKoreanSentence(numberSentence, target);
+});
+
 function runInGame(kind: string, args: Record<string, unknown>, prior: Command[] = []) {
   const { project, target, mapId, readPage } = arrange("built", prior);
-  const { after } = runPrimitive(project, target, `cmd.${kind}.insert`, { index: 0, ...args });
+  const { after } = runPrimitive(project, target, `cmd.${kind}.insert`, {
+    index: 0, expectedPageHashes: prior.map(eventCommandHash), ...args,
+  });
   const session = startSession(after, 42);
   session.currentMapId = mapId;
   return { session, runtime: createInterpreter(readPage(after).commands, session, after, { currentEventId: eventId }) };
@@ -383,11 +449,40 @@ it("숫자 입력은 자릿수와 안내 문구를 표시하고 입력한 수를
   expect(session.variables[variable]).toBe(137);
 });
 
+it("숫자 입력을 취소하면 이전 변수 값을 보존하고 다음 줄을 실행하지 않는다", () => {
+  const { session, runtime } = runInGame("inputNumber", { variableId: variable, digits: 3 }, [continuation]);
+  session.variables[variable] = 137;
+  expect(runtime.start()).toMatchObject({ kind: "inputNumber" });
+  expect(runtime.resume(-1)).toEqual({ kind: "done" });
+  expect(session.variables[variable]).toBe(137);
+});
+
 it("문자 입력은 입력한 글자를 제한 길이로 잘라 변수에 저장한다", () => {
   const { session, runtime } = runInGame("enterHeroName", { stringVariableId: variable, maxLength: 3 });
   expect(runtime.start()).toMatchObject({ kind: "enterHeroName", maxLength: 3 });
   expect(runtime.resume("바람노래")).toEqual({ kind: "done" });
   expect(session.stringVariables?.[variable]).toBe("바람노");
+});
+
+it("변수에 받던 이름 입력에 배우를 지정하면 플레이에서 배우 이름을 바꾼다", async () => {
+  const original: Command = { kind: "enterHeroName", actorId: "", stringVariableId: variable, maxLength: 6, showInitialName: true };
+  const { project, target, mapId, readPage } = arrange("built", [original]);
+  const position = updatePosition([original], original);
+  const { after } = runPrimitive(project, target, "cmd.enterHeroName.update", { ...position, actorId: actor });
+  expect(readPage(after).commands[0]).toMatchObject({ actorId: actor, stringVariableId: undefined });
+  const session = startSession(after, 42);
+  session.currentMapId = mapId;
+  session.stringVariables = { [variable]: "기존 글자" };
+  const runtime = createInterpreter(readPage(after).commands, session, after, { currentEventId: eventId });
+  expect(runtime.start()).toMatchObject({ kind: "enterHeroName", actorId: actor });
+  expect(runtime.resume("새 이름")).toEqual({ kind: "done" });
+  expect(session.actorNames?.[actor]).toBe("새 이름");
+  expect(session.stringVariables[variable]).toBe("기존 글자");
+  const explicitVariable = runPrimitive(project, target, "cmd.enterHeroName.update", {
+    ...position, actorId: actor, stringVariableId: anotherVariable,
+  });
+  expect(readPage(explicitVariable.after).commands[0]).toMatchObject({ actorId: actor, stringVariableId: anotherVariable });
+  await expectUndoRestores(project, after, target);
 });
 
 it("정답 아이템을 제시하면 소지품에서 한 개가 줄어든다", () => {
@@ -398,13 +493,78 @@ it("정답 아이템을 제시하면 소지품에서 한 개가 줄어든다", (
   expect(session.inventory[potion]).toBe(2);
 });
 
+it("아이템 제시를 수정한 뒤 오답과 닫기는 각 분기를 실행하고 아이템을 소모하지 않는다", () => {
+  const authored = { ...presentItem, consume: true };
+  const { project, target, readPage } = arrange("built", [authored, continuation]);
+  const prompt = "증거를 보여 주세요.";
+  const { after } = runPrimitive(project, target, "cmd.presentItem.update", {
+    ...updatePosition([authored, continuation], authored), prompt,
+  });
+  const ether = "item_ether";
+  for (const selection of [ether, undefined]) {
+    const session = startSession(after, 42);
+    session.inventory[potion] = 3;
+    session.inventory[ether] = 2;
+    const runtime = createInterpreter(readPage(after).commands, session, after, { currentEventId: eventId });
+    expect(runtime.start()).toMatchObject({ kind: "presentItem", prompt });
+    expect(runtime.resume(selection)).toMatchObject(selection
+      ? { kind: "text", body: "이 물건은 아니에요." }
+      : { kind: "wait", ms: 50 });
+    expect(session.inventory[potion]).toBe(3);
+    expect(session.inventory[ether]).toBe(2);
+  }
+});
+
+it("중첩 선택지를 편집해도 숨김, 비활성, 취소를 플레이할 수 있고 실행 취소가 복원한다", async () => {
+  const nestedChoice = {
+    ...choices,
+    options: [choices.options[0]!, {
+      ...choices.options[1]!, enableWhen: { kind: "switch", switchId, value: false } as const,
+    }],
+  };
+  const fork: Command = {
+    kind: "fork", condition: { kind: "switch", switchId, value: true }, then: [nestedChoice], else: [continuation],
+  };
+  const commands = [fork, continuation];
+  const { project, target, readPage } = arrange("built", commands);
+  const { after } = runPrimitive(project, target, "cmd.choices.update", {
+    ...updatePosition(commands, nestedChoice), branchPath: [0, FORK_THEN_BRANCH_INDEX],
+    optionLabels: ["숨기는 줄", "고를 수 없는 줄"], appendOption: "다음으로",
+  });
+  expect(readPage(after).commands).toStrictEqual([{
+    ...fork, then: [{
+      ...nestedChoice,
+      options: [
+        { ...nestedChoice.options[0], text: "숨기는 줄" },
+        { ...nestedChoice.options[1], text: "고를 수 없는 줄" },
+        { text: "다음으로", branch: [] },
+      ],
+    }],
+  }, continuation]);
+  for (const option of [0, 1, -1]) {
+    const session = startSession(after, 42);
+    session.switches[switchId] = true;
+    const runtime = createInterpreter(readPage(after).commands, session, after, { currentEventId: eventId });
+    expect(runtime.start()).toMatchObject({
+      kind: "choices", cancelBehavior: "branch",
+      options: [{ text: "고를 수 없는 줄", disabled: true, disabledText: "아직 이릅니다." }, { text: "다음으로" }],
+    });
+    expect(runtime.resume(option)).toMatchObject({
+      kind: "text", body: option === -1 ? "다음에 오세요." : continuation.body,
+    });
+  }
+  await expectUndoRestores(project, after, target);
+});
+
 // The shared fixtures do not contain these rows. Seed the existing command,
 // then execute the same typed update that the request maps to.
 it.each(seededCases)("$request", async ({ primitive, args, fields }) => {
   const original = cases.find(entry => `cmd.${entry.original.kind}.update` === primitive)?.original;
   expect(original).toBeDefined();
   const { project, target, readPage } = arrange("built", [original!, continuation]);
-  const { after, sentence } = runPrimitive(project, target, primitive, { ...args, expectedHash: eventCommandHash(original!) });
+  const { after, sentence } = runPrimitive(project, target, primitive, {
+    ...args, ...updatePosition([original!, continuation], original!, args.index),
+  });
   const expected = { ...original!, ...fields };
   if (primitive === "cmd.presentItem.update" && args.itemIds?.length === 0) Reflect.deleteProperty(expected, "itemIds");
   expect(jsonEqual(readPage(after).commands, [expected, continuation])).toBe(true);
