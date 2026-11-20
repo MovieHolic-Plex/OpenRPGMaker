@@ -323,8 +323,7 @@ function edit(ctx: PrimitiveContext, args: Record<string, unknown>, kind: Kind, 
       return current && jsonEqual(current, command) ? page : edited;
     });
   } catch (error) {
-    if (!(error instanceof EventCommandEditError)) throw error;
-    if (error.code === "stale-event-command") throw new PrimitiveError("그 줄의 내용이 바뀌었어요. 다시 읽은 뒤 수정해 주세요.");
+    if (!(error instanceof EventCommandEditError) || error.code === "stale-event-command") throw error;
     throw new PrimitiveError("명령의 분기 위치와 입력값을 확인해 주세요.");
   }
 }

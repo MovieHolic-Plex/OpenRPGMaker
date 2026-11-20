@@ -879,61 +879,61 @@
     "request": "고른 주간 공부 일정을 순서대로 실행해.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
     "args": {"index": 0, "scheduleId": "schedule_time_social"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social"}]}]
   },
   {
-    "request": "공부 계획을 진행하면서 몇 번째인지 기록 변수에 써 주세요.",
+    "request": "공부 계획을 진행하면서 몇 번째인지 1번 변수에 써 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
-    "args": {"index": 0, "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]
   },
   {
     "request": "휴식일정 실행 줄 추가해줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
     "args": {"index": 0, "scheduleId": "schedule_time_social_other"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other"}]}]
   },
   {
-    "request": "휴식 계획을 재생하면서 순번은 참고 변수에 저장해 주세요.",
+    "request": "휴식 계획을 재생하면서 순번은 2번 변수에 저장해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
-    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social_other"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0002"}]}]
   },
   {
-    "request": "주간 공부 계획을 돌리고 참고 변수에 차례를 넣자.",
+    "request": "주간 공부 계획을 돌리고 2번 변수에 차례를 넣자.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
-    "args": {"index": 0, "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social_other"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social", "slotVariableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0002"}]}]
   },
   {
-    "request": "여기서 휴식 계획 돌려. 차례 값은 기록에 넣어.",
+    "request": "여기서 휴식 계획 돌려. 차례 값은 1번 변수에 넣어.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
-    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0001"}]}]
   },
   {
     "request": "짜 놓은 일정대로만 실행하고 순번은 남길 필요 없어요. 공부 일정으로요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
     "args": {"index": 0, "scheduleId": "schedule_time_social", "slotVariableId": null},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social"}]}]
@@ -942,82 +942,82 @@
     "request": "없는 심야 일정표를 실행하는 명령 추가.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
     "args": {"index": 0, "scheduleId": "schedule_missing"},
     "expectRefusal": true,
     "refusalMessage": "자료집에서 일정표를 찾을 수 없어요"
   },
   {
-    "request": "지금 일정 실행 줄에서 순번을 참고 변수로 옮겨 주세요.",
+    "request": "지금 일정 실행 줄에서 순번을 2번 변수로 옮겨 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "slotVariableId": "var_time_social_other", "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "slotVariableId": "var_0002", "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0002"}]}]
   },
   {
     "request": "공부 일정 실행에서 차례를 기록하지 않게 바꿔.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "slotVariableId": null, "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
+    "args": {"index": 0, "slotVariableId": null, "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social"}]}]
   },
   {
     "request": "실행하는 일정표 휴식으로수정",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0001"}]}]
   },
   {
-    "request": "그 줄에서 휴식 일정을 돌리고 참고에 차례를 써 줘.",
+    "request": "그 줄에서 휴식 일정을 돌리고 2번 변수에 차례를 써 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social_other", "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0002", "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0002"}]}]
   },
   {
     "request": "일정 실행은 휴식으로 바꾸되 기록은 빼 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": null, "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
+    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": null, "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other"}]}]
   },
   {
     "request": "공부 계획은 그대로 실행하고 순번 저장만 비워 주실래요?",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "slotVariableId": null, "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
+    "args": {"index": 0, "slotVariableId": null, "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social"}]}]
   },
   {
-    "request": "같은 기록 변수에 두고 휴식 계획을 따라가게 해줘",
+    "request": "같은 1번 변수에 두고 휴식 계획을 따라가게 해줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social", "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_time_social"}]}]
+    "args": {"index": 0, "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0001", "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "runSchedule", "scheduleId": "schedule_time_social_other", "slotVariableId": "var_0001"}]}]
   },
   {
     "request": "그 일정의 순번을 아직 없는 임시 변수로 보내 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_time_social"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}, "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "runSchedule", "scheduleId": "schedule_time_social", "slotVariableId": "var_0001"}]}]}], "database": {"schedules": [{"id": "schedule_time_social", "title": "주간 공부", "slots": [{"label": "월요일"}, {"label": "화요일"}], "activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]}, {"id": "schedule_time_social_other", "title": "휴식 일정", "slots": [{"label": "첫 휴식"}, {"label": "둘째 휴식"}], "activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.update",
-    "args": {"index": 0, "slotVariableId": "var_missing", "expectedHash": "ccd78ad7e532015edf87d083fbd2c1f0"},
+    "args": {"index": 0, "slotVariableId": "var_missing", "expectedHash": "198e837ce19d36691fc2c14cca186f52"},
     "expectRefusal": true,
     "refusalMessage": "순번을 저장할 변수"
   },
@@ -1460,148 +1460,148 @@
     "refusalMessage": "설정된 진영을 찾을 수 없어요"
   },
   {
-    "request": "미루 호감도를 기록 변수에 담아 줘",
+    "request": "미루 호감도를 1번 변수에 담아 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_time_social"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]
+    "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]
   },
   {
-    "request": "경비에게 지금까지 쌓인 친밀도를 참고 변수에 써 주세요.",
+    "request": "경비에게 지금까지 쌓인 친밀도를 2번 변수에 써 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_time_social_other"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_0002"}]}]
   },
   {
-    "request": "최고 호감값읽어서 기록에 넣기",
+    "request": "최고 호감값읽어서 1번 변수에 넣기",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "*", "variableId": "var_time_social"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_time_social"}]}]
+    "args": {"index": 0, "npcKey": "*", "variableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_0001"}]}]
   },
   {
-    "request": "미루의 호감도를 살펴서 참고 칸에 숫자로 남겨.",
+    "request": "미루의 호감도를 살펴서 2번 변수에 숫자로 남겨.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_time_social_other"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0002"}]}]
   },
   {
-    "request": "경비 호감 수치를 구해 기록 변수에 대입해 주세요.",
+    "request": "경비 호감 수치를 구해 1번 변수에 대입해 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_time_social"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_time_social"}]}]
+    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_0001"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_0001"}]}]
   },
   {
-    "request": "가장 친한 사람의 호감 점수를 참고 변수에 보관해 주실래요?",
+    "request": "가장 친한 사람의 호감 점수를 2번 변수에 보관해 주실래요?",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "*", "variableId": "var_time_social_other"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "npcKey": "*", "variableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_0002"}]}]
   },
   {
-    "request": "다음 줄에서 미루 호감을 참고 변수로 넘겨줘",
+    "request": "다음 줄에서 미루 호감을 2번 변수로 넘겨줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
-    "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_time_social_other"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_0002"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0002"}]}]
   },
   {
     "request": "미루 호감을 존재하지 않는 변수에 저장해 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]}]},
     "primitive": "cmd.getFriendship.insert",
     "args": {"index": 0, "npcKey": "char_time_social", "variableId": "var_missing"},
     "expectRefusal": true,
     "refusalMessage": "호감도를 저장할 변수"
   },
   {
-    "request": "호감도 저장 변수만 참고로 바꿔 주세요.",
+    "request": "호감도 저장 변수만 2번 변수로 바꿔 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "variableId": "var_time_social_other", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "variableId": "var_0002", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0002"}]}]
   },
   {
     "request": "그 줄에서 미루 말고 경비 호감도를 읽어.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "npcKey": "char_guard", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_time_social"}]}]
+    "args": {"index": 0, "npcKey": "char_guard", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_0001"}]}]
   },
   {
     "request": "최고호감값 읽도록 기존 줄 수정",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "npcKey": "*", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_time_social"}]}]
+    "args": {"index": 0, "npcKey": "*", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_0001"}]}]
   },
   {
-    "request": "경비 친밀도를 읽고 숫자를 참고 변수로 보내도록 고쳐 주세요.",
+    "request": "경비 친밀도를 읽고 숫자를 2번 변수로 보내도록 고쳐 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_time_social_other", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_0002", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_0002"}]}]
   },
   {
-    "request": "기존 호감도 조회는 최고값을 읽어서 참고에 담게 해.",
+    "request": "기존 호감도 조회는 최고값을 읽어서 2번 변수에 담게 해.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "npcKey": "*", "variableId": "var_time_social_other", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "npcKey": "*", "variableId": "var_0002", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "*", "variableId": "var_0002"}]}]
   },
   {
-    "request": "누구를 읽는지는 유지하고 저장 위치만 참고 변수로 바꿔 주실래요?",
+    "request": "누구를 읽는지는 유지하고 저장 위치만 2번 변수로 바꿔 주실래요?",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "variableId": "var_time_social_other", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social_other"}]}]
+    "args": {"index": 0, "variableId": "var_0002", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0002"}]}]
   },
   {
-    "request": "기록에 넣는 건 그대로 하되 경비의 점수로 갈아 줘요.",
+    "request": "1번 변수에 넣는 건 그대로 하되 경비의 점수로 갈아 줘요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_time_social", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
-    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_time_social"}]}]
+    "args": {"index": 0, "npcKey": "char_guard", "variableId": "var_0001", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_time_social].pages[0].commands", "equals": [{"kind": "getFriendship", "npcKey": "char_guard", "variableId": "var_0001"}]}]
   },
   {
     "request": "그 줄에서 호감 저장 용지를 없는 변수로 바꿔 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_time_social", "pageId": "page_time_social"},
-    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_time_social"}]}]}], "variables": [{"id": "var_time_social", "name": "기록"}, {"id": "var_time_social_other", "name": "참고"}]},
+    "setup": {"events": [{"id": "ev_time_social", "name": "미루", "x": 2, "y": 2, "characterId": "char_time_social", "trigger": {"kind": "action"}, "commands": [], "pages": [{"id": "page_time_social", "name": "안내", "graphic": {}, "conditions": [], "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": [{"kind": "getFriendship", "npcKey": "char_time_social", "variableId": "var_0001"}]}]}]},
     "primitive": "cmd.getFriendship.update",
-    "args": {"index": 0, "variableId": "var_missing", "expectedHash": "dc85a37f0084eab8010b3aa5ec32f944"},
+    "args": {"index": 0, "variableId": "var_missing", "expectedHash": "28b94c75c677ea173d18948a3eedb19b"},
     "expectRefusal": true,
     "refusalMessage": "호감도를 저장할 변수"
   },
@@ -1623,7 +1623,7 @@
     "primitive": "cmd.timer.update",
     "args": {"index":0,"seconds":35,"expectedHash":"d4612149a475986d79e0ce2b5936ad4c"},
     "expectRefusal": true,
-    "refusalMessage": "내용이 바뀌었어요"
+    "refusalMessage": "명령 목록이 바뀌었어요"
   },
   {
     "request": "타이머 줄을 읽지 않고 바로 첫 줄의 초를 바꿔 줘.",
@@ -1669,7 +1669,7 @@
     "request": "공백만 있는 이름의 변수에 일정 순번을 기록해 줘.",
     "fixture": "built",
     "target": {"kind":"event","mapId":"map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d","eventId":"ev_time_social","pageId":"page_time_social"},
-    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events":[{"id":"ev_time_social","name":"미루","x":2,"y":2,"characterId":"char_time_social","trigger":{"kind":"action"},"commands":[],"pages":[{"id":"page_time_social","name":"안내","graphic":{},"conditions":[],"trigger":{"kind":"action"},"priority":"same","movement":{"type":"fixed","speed":3,"frequency":3},"commands":[]}]}],"database":{"schedules":[{"id":"schedule_time_social","title":"주간 공부","slots":[{"label":"월요일"},{"label":"화요일"}],"activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]},{"id":"schedule_time_social_other","title":"휴식 일정","slots":[{"label":"첫 휴식"},{"label":"둘째 휴식"}],"activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]},"variables":[{"id":"var_time_social","name":"기록"},{"id":"var_time_social_other","name":"참고"}]},
+    "setup": {"commonEvents": [{"id": "common_time_social", "name": "일정 활동", "trigger": "none", "commands": [{"kind": "changeFriendship", "npcKey": "char_time_social", "delta": 3}]}], "events":[{"id":"ev_time_social","name":"미루","x":2,"y":2,"characterId":"char_time_social","trigger":{"kind":"action"},"commands":[],"pages":[{"id":"page_time_social","name":"안내","graphic":{},"conditions":[],"trigger":{"kind":"action"},"priority":"same","movement":{"type":"fixed","speed":3,"frequency":3},"commands":[]}]}],"database":{"schedules":[{"id":"schedule_time_social","title":"주간 공부","slots":[{"label":"월요일"},{"label":"화요일"}],"activities": [{"id": "activity_study", "label": "공부", "description": "책을 읽어요.", "commonEventId": "common_time_social"}]},{"id":"schedule_time_social_other","title":"휴식 일정","slots":[{"label":"첫 휴식"},{"label":"둘째 휴식"}],"activities": [{"id": "activity_rest", "label": "휴식", "description": "잠깐 쉬어요.", "commonEventId": "common_time_social"}]}]}},
     "primitive": "cmd.runSchedule.insert",
     "args": {"scheduleId":"schedule_time_social","slotVariableId":"   "},
     "expectRefusal": true,

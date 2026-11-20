@@ -2,7 +2,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/08-cmd-time-social";
@@ -12,7 +12,8 @@ import { setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 import { createInterpreter } from "@/player/interpreter";
 import { applyAdvanceTimeStep } from "@/player/playSceneTime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { calendarDayKey } from "@/project/gameTime";
 import { getFriendship, getTimer, getVariable, startSession } from "@/project/session";
@@ -42,6 +43,8 @@ function fixtureProject(fixture: Fixture): Project {
       const { maps, startMapId, startPos, mapTree } = createBlankProject();
       source = { ...source, maps, startMapId, startPos, mapTree };
     }
+    ensureSwitchVariableSlots(source);
+    removeLegacySpriteReferences(source);
     fixtures.set(fixture, source);
   }
   return source;
@@ -63,6 +66,7 @@ function setup(fixture: Fixture, commands: Command[] = []) {
     ...source,
     system: { ...source.system, timeSystem: { enabled: true } },
     variables: [...source.variables, { id: variableId, name: "기록" }],
+    session: { ...source.session, variables: { ...source.session.variables, [variableId]: 0 } },
     commonEvents: [...source.commonEvents, {
       id: commonEventId, name: "공부하기", trigger: "none",
       commands: [{ kind: "changeFriendship", npcKey: characterId, delta: 3 }],
@@ -217,10 +221,11 @@ it("이벤트 읽기에서 받은 위치와 지문으로 선택한 분기의 한
   const args = { ...fields, expectedHash: row.hash };
   const { after } = runPrimitive(project, target, "cmd.timer.update", args);
   expect(stored(after)).toEqual([{ ...fork, then: [{ ...original, seconds: 45 }] }, greeting]);
-  expectRefused(after, target, "cmd.timer.update", args, /내용이 바뀌었어요/u);
+  expect(() => runPrimitive(after, target, "cmd.timer.update", args)).toThrow(STALE_COMMAND_LIST);
   expectRefused(project, target, "cmd.timer.update", fields, /형식을 확인/u);
-  expectRefused(project, target, "cmd.timer.update",
-    { ...args, branchPath: [0, FORK_ELSE_BRANCH_INDEX] }, /내용이 바뀌었어요/u);
+  expect(() => runPrimitive(project, target, "cmd.timer.update", {
+    ...args, branchPath: [0, FORK_ELSE_BRANCH_INDEX],
+  })).toThrow(STALE_COMMAND_LIST);
   expectRefused(project, target, "cmd.timer.update",
     { ...args, index: 1 }, /그 줄을 찾을 수 없어요/u);
   expectRefused(project, target, "cmd.timer.insert", { branchPath: [0] }, /분기 위치/u);
@@ -277,8 +282,9 @@ it.each([
   { forceSleep: false, startMinute: 50, expectedTime: { day: 2, hour: 6, minute: 10 } },
 ])("강제 취침 $forceSleep 설정의 시간 진행 미리보기와 실제 시각을 확인한다 (25:$startMinute)", async ({ forceSleep, startMinute, expectedTime }) => {
   const { project, target } = setup("blank");
-  project.system.timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep };
-  const { after, sentence } = expectApplies(project, target, "cmd.advanceTime.insert", { minutes: 20 });
+  const timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep };
+  const configured = { ...project, system: { ...project.system, timeSystem } };
+  const { after, sentence } = expectApplies(configured, target, "cmd.advanceTime.insert", { minutes: 20 });
   expect(sentence).toBe(forceSleep
     ? "시간을 20분 진행하는 명령을 추가합니다. 시·분 진행 중 하루가 끝나면 다음 날 아침에 멈춰요."
     : "시간을 20분 진행하는 명령을 추가합니다.");
@@ -287,16 +293,16 @@ it.each([
   session.gameTime = start;
   const step = machine.start();
   if (step.kind !== "advanceTime") throw new Error("시간 진행 명령이 필요합니다.");
-  const scene = {
+  const scene: Pick<PlaySceneContext, "session" | "sleepUntilMorning" | "clearRuntimeOverlay" | "syncRuntimeState"> = {
     session,
     sleepUntilMorning: async () => transitionToNextDay(after, session, calendarDayKey(start)).ok,
     clearRuntimeOverlay() {},
     syncRuntimeState() {},
-  } as PlaySceneContext;
+  };
   const previous = store.getCurrent();
   try {
     store.replaceProject(after);
-    await applyAdvanceTimeStep(scene, step);
+    await applyAdvanceTimeStep(scene as PlaySceneContext, step);
     expect(session.gameTime).toMatchObject(expectedTime);
   } finally {
     store.replaceProject(previous);
@@ -354,16 +360,18 @@ it("두 번째 페이지의 빈 선택지 분기에 삽입해도 첫 페이지�
   expectRefused(withChoice, target, "cmd.sleepUntilMorning.insert", { branchPath: [0, 0], pageId }, /형식을 확인/u);
 });
 
-it("페이지를 생략하면 첫 페이지의 새 선택적 분기에만 삽입하고 한 번에 되돌린다", async () => {
+it("페이지가 여러 개면 선택을 요구하고 선택한 페이지의 새 분기만 편집해 한 번에 되돌린다", async () => {
   const fork = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [greeting] } satisfies Command;
-  const { project, mapId } = setup("blank", [fork]);
-  const target = mapTarget(project, mapId, eventId)!;
+  const { project, target, mapId } = setup("blank", [fork]);
+  const withoutPage = mapTarget(project, mapId, eventId)!;
   const branchPath = [0, FORK_ELSE_BRANCH_INDEX];
+  const args = { branchPath, action: "stop" };
+  expect(() => runPrimitive(project, withoutPage, "cmd.timer.insert", args)).toThrow(SELECT_EVENT_PAGE);
   expectRefused(project, target, "cmd.timer.insert", { branchPath, index: 1 }, /그 줄을 찾을 수 없어요/u);
   expectRefused(project, target, "cmd.timer.update", {
     branchPath, index: 0, expectedHash: eventCommandHash(greeting), seconds: 1,
   }, /분기를 찾을 수 없어요/u);
-  const { after } = runPrimitive(project, target, "cmd.timer.insert", { branchPath, action: "stop" });
+  const { after } = runPrimitive(project, target, "cmd.timer.insert", args);
   expect(stored(after)).toEqual([{ ...fork, else: [{ kind: "timer", action: "stop", timerId: "timer1" }] }]);
   expect(stored(project)).toEqual([fork]);
   expect(stored(after, otherId)).toEqual([greeting]);
