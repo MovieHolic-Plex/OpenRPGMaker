@@ -191,6 +191,24 @@ test("유닛 24는 선택한 칸에 이벤트를 만들고 영역 밖 타일 변
   expect(outside.project).toBe(project);
 });
 
+for (const flag of ["request", "worker"] as const) {
+  test(`작은 일 Pi 읽기 전용 실행은 이벤트 생성 도구를 노출하거나 적용하지 않는다 (${flag})`, async () => {
+    const { request, project, mapId } = fixture();
+    const target = mapTarget(project, mapId)!;
+    const seen: ModelContext[] = [];
+    const done = await runPiAgent({ ...request, readOnly: flag === "request",
+      smallTask: { ...request.smallTask, target, selection: { rect: { x: 0, y: 0, w: 1, h: 1 } } },
+    }, { readOnlyTools: flag === "worker", streamFn: scripted([apply("event.tile.create", {})], seen) });
+    const toolNames = seen[0]?.tools?.map(tool => tool.name) ?? [];
+    expect(toolNames).toContain(LIST_SMALL_TASK_PRIMITIVES);
+    for (const write of [APPLY_SMALL_TASK_PRIMITIVE, "upsert_event", "place_npc", "paint_tiles", "move_event"]) {
+      expect(toolNames).not.toContain(write);
+    }
+    expect(done.changedKeys).toEqual([]);
+    expect(done.project).toBe(project);
+  });
+}
+
 test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기까지 버린다", async () => {
   const { request, project, mapId, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([

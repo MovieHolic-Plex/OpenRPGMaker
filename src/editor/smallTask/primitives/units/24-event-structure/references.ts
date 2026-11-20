@@ -1,10 +1,11 @@
+import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { getCharacterProfile } from "@/project/characterProfiles";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { scriptCalls, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
 import { sightWatcherIds } from "@/project/sightWatchers";
 import { resolveSpeakerActor } from "@/project/staging/dialogueActors";
 import { storyFlagById } from "@/project/storyFlags";
-import type { Condition, EventPage, EventSightWatchers, GameEvent, Project } from "@/project/types";
+import type { EventPage, EventSightWatchers, GameEvent, Project } from "@/project/types";
 
 type RecordNode = Record<string, unknown>;
 
@@ -146,13 +147,30 @@ export function hasNamedEventReference(project: Project, mapId: string, event: G
   return refers(authoredRoots(project)) || (name === undefined ? remaining : map.events).some(owner => refers(owner, owner.id));
 }
 
+export function anOpenDraftReferencesDeletedEvent(
+  before: Project, after: Project, mapId: string, event: GameEvent, live?: SmallTaskDraftSource,
+): boolean {
+  const target = { mapId, eventId: event.id };
+  const workingAfter = withOpenEventDrafts(after, live, target);
+  if (workingAfter === after) return false;
+  const workingBefore = withOpenEventDrafts(before, live, target);
+  return hasEventReference(workingAfter, mapId, event.id) || hasNamedObjective(workingAfter, event)
+    || hasNamedEventReference(workingBefore, mapId, event);
+}
+
+export function pageIsShadowed(event: GameEvent, page: EventPage): boolean {
+  const pages = event.pages ?? [];
+  return pages.slice(pages.indexOf(page) + 1).some(later => !later.conditions?.length);
+}
+
 export function strandsSwitch(after: Project, removed: EventPage | GameEvent): boolean {
   const enabled = new Set<string>();
   const written = (node: RecordNode) => {
     if (node.kind === "script") return scriptWrites(node, "switch", after);
     return node.kind === "setSwitch" && node.value !== false && typeof node.switchId === "string" ? [node.switchId] : [];
   };
-  const removedCommands = "x" in removed ? [removed.pages, legacyExecution(removed)] : removed;
+  const removedCommands = "x" in removed
+    ? [removed.pages?.filter(page => !pageIsShadowed(removed, page)), legacyExecution(removed)] : removed;
   someRecord(removedCommands, node => {
     for (const id of written(node)) enabled.add(id);
     return false;
@@ -160,12 +178,20 @@ export function strandsSwitch(after: Project, removed: EventPage | GameEvent): b
   if (!enabled.size) return false;
   const events = Object.values(after.maps).flatMap(map => map.events);
   const otherRoots = authoredRoots(after).filter(root => root !== after.commonEvents);
-  for (const id of enabled) {
-    const writes = (node: RecordNode) => written(node).includes(id);
-    if (events.some(event => eventCanWriteWithSwitchOff(event, { kind: "switch", id }, writes))
-      || after.commonEvents?.some(event => event.conditionSwitchId !== id && someRecord(event.commands, writes))
-      || someRecord(otherRoots, writes)) {
-      enabled.delete(id);
+  const blockedSwitch = (node: RecordNode) => node.kind === "switch" && typeof node.switchId === "string" && enabled.has(node.switchId);
+  const evaluate = (value: unknown) => knownCondition(value, blockedSwitch, false);
+  // A surviving starter can unlock another setter. A cycle with no starter leaves all its switches off.
+  let changed = true;
+  while (changed && enabled.size > 0) {
+    changed = false;
+    for (const id of enabled) {
+      const writes = (node: RecordNode) => written(node).includes(id);
+      if (events.some(event => eventCanWrite(event, evaluate, writes))
+        || after.commonEvents?.some(event => !enabled.has(event.conditionSwitchId ?? "") && someExecutableWrite(event.commands, evaluate, writes))
+        || someExecutableWrite(otherRoots, evaluate, writes)) {
+        enabled.delete(id);
+        changed = true;
+      }
     }
   }
   const readsEnabledSwitch = (node: RecordNode): boolean => {
@@ -184,7 +210,7 @@ export function strandsSwitch(after: Project, removed: EventPage | GameEvent): b
         && ((m2Index(node) === 206 && (fields.condition === "switchOn" || fields.condition === undefined))
           || (m2Index(node) === 217 && fields.query === "switch"));
     }
-    return readsSwitchOn(node, readsEnabledSwitch)
+    return (knownCondition(node, readsEnabledSwitch, false) !== true && readsSwitchOn(node, readsEnabledSwitch))
       || (typeof node.conditionSwitchId === "string" && enabled.has(node.conditionSwitchId))
       || (node.kind === "script" && scriptReads(node, "switch", after).some(id => enabled.has(id)));
   }, outsideCompoundCondition);
@@ -204,36 +230,45 @@ function readsSwitchOn(value: unknown, matches: (node: RecordNode) => boolean, n
   return (node.value === false) === negated && matches(node);
 }
 
-type OffSwitch = { kind: "switch" | "selfSwitch"; id: string };
-
-function conditionWithSwitchOff(condition: Condition, off: OffSwitch): boolean | undefined {
-  if (condition.kind === "switch" && off.kind === "switch" && condition.switchId === off.id) return !condition.value;
-  if (condition.kind === "selfSwitch" && off.kind === "selfSwitch" && condition.key === off.id) return !condition.value;
-  if (condition.kind === "not") {
-    const result = conditionWithSwitchOff(condition.condition, off);
+function knownCondition(value: unknown, matches: (node: RecordNode) => boolean, on: boolean): boolean | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const node = value as RecordNode;
+  if (node.kind === "not") {
+    const result = knownCondition(node.condition, matches, on);
     return result === undefined ? undefined : !result;
   }
-  if (condition.kind === "all" || condition.kind === "any") {
-    const results = condition.conditions.map(child => conditionWithSwitchOff(child, off));
-    const decisive = condition.kind === "any";
+  if ((node.kind === "all" || node.kind === "any") && Array.isArray(node.conditions)) {
+    const results = node.conditions.map(child => knownCondition(child, matches, on));
+    const decisive = node.kind === "any";
     if (results.includes(decisive)) return decisive;
     if (results.every(result => result === !decisive)) return !decisive;
   }
-  return undefined;
+  return matches(node) ? (node.value !== false) === on : undefined;
 }
 
-function eventCanWriteWithSwitchOff(event: GameEvent, off: OffSwitch, writes: (node: RecordNode) => boolean): boolean {
+type EvaluateCondition = (value: unknown) => boolean | undefined;
+
+function someExecutableWrite(value: unknown, evaluate: EvaluateCondition, writes: (node: RecordNode) => boolean): boolean {
+  return someRecord(value, node => {
+    if (node.kind !== "fork") return writes(node);
+    const condition = evaluate(node.condition);
+    return (condition !== false && someExecutableWrite(node.then, evaluate, writes))
+      || (condition !== true && someExecutableWrite(node.else, evaluate, writes));
+  }, node => node.kind !== "fork");
+}
+
+function eventCanWrite(event: GameEvent, evaluate: EvaluateCondition, writes: (node: RecordNode) => boolean): boolean {
   // Higher pages take priority. Unrelated conditions remain unknown.
   const pages = event.pages ?? [];
   for (let index = pages.length - 1; index >= 0; index--) {
     const page = pages[index];
-    const results = (page.conditions ?? []).map(condition => conditionWithSwitchOff(condition, off));
+    const results = (page.conditions ?? []).map(evaluate);
     if (results.includes(false)) continue;
-    if (someRecord([page.commands, page.movement?.route], writes)) return true;
+    if (someExecutableWrite([page.commands, page.movement?.route], evaluate, writes)) return true;
     if (results.every(result => result === true)) return false;
   }
-  return !pages.length && (!event.condition || conditionWithSwitchOff(event.condition, off) !== false)
-    && someRecord([event.commands, event.moveRoute], writes);
+  return !pages.length && evaluate(event.condition) !== false
+    && someExecutableWrite([event.commands, event.moveRoute], evaluate, writes);
 }
 
 function legacyExecution(event: GameEvent) {
@@ -252,8 +287,10 @@ export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean
   });
   if (!keys.size) return false;
   for (const key of keys) {
-    if (eventCanWriteWithSwitchOff(event, { kind: "selfSwitch", id: key }, node => written(node) === key)) keys.delete(key);
+    if (eventCanWrite(event, condition => knownCondition(condition, node => node.kind === "selfSwitch" && node.key === key, false),
+      node => written(node) === key)) keys.delete(key);
   }
-  return keys.size > 0 && someRecord(remaining, node => readsSwitchOn(node, condition =>
-    condition.kind === "selfSwitch" && typeof condition.key === "string" && keys.has(condition.key)), outsideCompoundCondition);
+  const readsSelfSwitch = (node: RecordNode) => node.kind === "selfSwitch" && typeof node.key === "string" && keys.has(node.key);
+  return keys.size > 0 && someRecord(remaining, node => knownCondition(node, readsSelfSwitch, false) !== true
+    && readsSwitchOn(node, readsSelfSwitch), outsideCompoundCondition);
 }

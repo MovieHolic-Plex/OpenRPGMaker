@@ -15,7 +15,7 @@ import type { Dir, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } f
 import { genId } from "@/util/id";
 import { PrimitiveError, SELECT_EVENT_PAGE } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
-import { hasEventReference, hasNamedEventReference, hasNamedObjective, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
+import { anOpenDraftReferencesDeletedEvent, hasEventReference, hasNamedEventReference, hasNamedObjective, pageIsShadowed, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
 
 export const UNIT = "24-event-structure";
 
@@ -212,13 +212,14 @@ function overlapsLaterPage(map: GameMap, candidate: GameEvent): boolean {
 }
 
 function assertPlacement(project: Project, map: GameMap, event: GameEvent): void {
-  const pages = pagesOf(event);
-  const needsFloor = eventRequiresPassableTile(event) || pages.some(page =>
-    (page.trigger.kind === "touch" || page.trigger.kind === "playerTouch") && page.priority !== "same");
   const analysis = new EventPlacementAnalysis(project, map);
-  const laterPages = pages.slice(1).filter(page => page.footprint).map(page => ({ ...event, pages: [page] }));
-  if (!analysis.validDestination(event, needsFloor) || overlapsLaterPage(map, event)
-    || laterPages.some(candidate => !analysis.canOccupy(candidate) || overlapsLaterPage(map, candidate))) {
+  const fits = pagesOf(event).every(page => {
+    const candidate = { ...event, pages: [page] };
+    const needsFloor = eventRequiresPassableTile(candidate)
+      || ((page.trigger.kind === "touch" || page.trigger.kind === "playerTouch") && page.priority !== "same");
+    return analysis.validDestination(candidate, needsFloor) && !overlapsLaterPage(map, candidate);
+  });
+  if (!fits) {
     throw new PrimitiveError("그 칸에 이벤트를 놓을 수 없어요. 비어 있고 접근할 수 있는 자리를 골라 주세요.");
   }
 }
@@ -233,7 +234,8 @@ function eventGraphicFrames(project: Project, id: string): number | undefined {
   if (upload?.kind === "sprite") return uploadedSpriteGeometry(upload)?.frames;
   if (isCharsetSpriteTexture(texture)) return CHARSET_FRAME_COUNT;
   if (texture.frame === "__BASE") return 1;
-  return def?.frames ?? upload?.meta.frames ?? 1;
+  const bundled = def ?? Object.values(sprites).find(sprite => sprite.image.type === "bundled" && sprite.image.id === id);
+  return bundled?.frames ?? upload?.meta.frames ?? 1;
 }
 
 function patchedGraphic(project: Project, event: GameEvent, previous: EventPage["graphic"], args: Args): EventPage["graphic"] {
@@ -401,10 +403,10 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       pages.splice(number - 1, 1);
       const edited = { ...event, pages };
       const after = replaceEvent(ctx.project, map, edited);
-      if (strandsSelfSwitch(edited, removed)) {
+      if (!pageIsShadowed(event, removed) && strandsSelfSwitch(edited, removed)) {
         throw new PrimitiveError("이 페이지를 지우면 다음 진행에 필요한 셀프 스위치를 켤 수 없어요.");
       }
-      if (strandsSwitch(after, removed)) {
+      if (!pageIsShadowed(event, removed) && strandsSwitch(after, removed)) {
         throw new PrimitiveError("이 페이지를 지우면 다른 곳에서 기다리는 스위치를 켤 수 없어요.");
       }
       return after;
@@ -460,13 +462,16 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
     apply(ctx) {
       const { map, event } = selectedEvent(ctx);
-      if (event.draft) throw new PrimitiveError("열린 이벤트 편집을 먼저 마쳐 주세요.");
+      if (event.draft || ctx.live?.maps[map.id]?.events.some(entry => entry.id === event.id && entry.draft)) {
+        throw new PrimitiveError("열린 이벤트 편집을 먼저 마쳐 주세요.");
+      }
       const after = replaceEvents(ctx.project, map, map.events.filter(entry => entry.id !== event.id));
       if (strandsSwitch(after, event)) {
         throw new PrimitiveError("이 이벤트를 지우면 진행에 필요한 스위치를 켤 수 없어요.");
       }
       if (hasEventReference(after, map.id, event.id) || hasNamedObjective(after, event)
-        || hasNamedEventReference(ctx.project, map.id, event)) {
+        || hasNamedEventReference(ctx.project, map.id, event)
+        || anOpenDraftReferencesDeletedEvent(ctx.project, after, map.id, event, ctx.live)) {
         throw new PrimitiveError("다른 곳에서 이 이벤트를 사용하고 있어요. 연결을 먼저 확인해 주세요.");
       }
       // Reference diagnostics may include array indexes. Keep the surviving events at the same indexes in both snapshots.

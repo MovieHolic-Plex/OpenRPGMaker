@@ -449,8 +449,9 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     controller.abort();
     return undefined;
   };
+  const readOnly = request.readOnly || options.readOnlyTools;
   const registryTools = createPiToolset(ctx, {
-    toolNames,
+    toolNames, readOnly,
     referenceGate,
     eventAssistChat: async (_config, chat) => {
       if (cli) return { message: { role: "assistant", content: await localCliChat(cli, request.model)(chat.messages, signal) }, finishReason: "stop" };
@@ -461,7 +462,8 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
       return { message: { role: "assistant", content: choice?.message.content ?? "" }, finishReason: choice?.finish_reason ?? null };
     },
   });
-  const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)).map((tool): PiToolShape => ({
+  const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)
+    && (!readOnly || tool.name !== APPLY_SMALL_TASK_PRIMITIVE)).map((tool): PiToolShape => ({
     ...tool,
     label: tool.name,
     async execute(_id, params) {

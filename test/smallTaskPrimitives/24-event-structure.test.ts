@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { OWNERSHIP } from "@/editor/smallTask/primitives/ownership";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -16,6 +17,7 @@ import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { runtimeEventView, runtimeEventViewById } from "@/project/runtimeEventState";
 import { startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Command, Condition, EventPage, GameEvent, Project } from "@/project/types";
 import * as ids from "@/util/id";
 import { jsonEqual } from "@/util/structuralJson";
@@ -65,6 +67,7 @@ function executeActivePage(project: Project, event: GameEvent) {
   const session = startSession(project, 42);
   const gold = session.gold;
   const view = runtimeEventView(event, session, {}, project);
+  if (event.pages?.length) expect(view.page).toBeDefined();
   const interpreter = createInterpreter(view.page?.commands ?? event.commands, session, project, { currentEventId: event.id });
   expect(interpreter.start().kind).toBe("done");
   return { view, reward: session.gold - gold };
@@ -310,6 +313,26 @@ describe("선택 범위와 입력 검증", () => {
     expect(before.maps[MAP].events).toHaveLength(1);
   });
 
+  it("나중 페이지의 발 밑이 벽에 걸리면 복제를 거절한다", () => {
+    const before = blank();
+    const map = before.maps[MAP];
+    const page = map.events[0].pages![1];
+    page.footprint = { width: 1, height: 2 };
+    page.passRows = 2;
+    const floor = { up: true, down: true, left: true, right: true };
+    const wall = { up: false, down: false, left: false, right: false };
+    const tileset = before.tilesets[map.tilesetId];
+    before.tilesets = { ...before.tilesets, [map.tilesetId]: { ...tileset, count: 2, passability: [floor, wall] } };
+    map.lowerTiles.fill(0);
+    map.upperTiles.fill(-1);
+    const blockedTiles = [...map.lowerTiles];
+    blockedTiles[2 * map.width + 5] = 1;
+    const blocked = { ...before, maps: { ...before.maps, [MAP]: { ...map, lowerTiles: blockedTiles } } };
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(blocked, target, "event.tile.duplicate", {}, selection(5, 3))).toThrow(/이벤트를 놓을 수 없어요/u);
+    expect(runPrimitive(before, target, "event.tile.duplicate", {}, selection(5, 3)).after.maps[MAP].events).toHaveLength(2);
+  });
+
   it("기존 이벤트의 두 번째 페이지가 덮는 칸에는 생성·복제하지 않는다", () => {
     const before = blank();
     const map = before.maps[MAP];
@@ -362,6 +385,18 @@ describe("선택 범위와 입력 검증", () => {
     expect(() => runPrimitive(before, target, "event.page.patch", { graphic, pattern: 2 })).toThrow(/그림에 있는 칸/u);
     expect(runPrimitive(before, target, "event.page.patch", { graphic, pattern: 1 }).after.maps[MAP].events[0].pages?.[1].graphic.pattern).toBe(1);
     expect(() => runPrimitive(before, target, "event.page.patch", { graphic: { type: "bundled", id: "cc0-sound-ui-confirm" } })).toThrow(/사용할 그림/u);
+  });
+
+  it("별칭으로 등록된 번들 그림도 원본 ID의 프레임 수를 사용한다", () => {
+    const before = blank();
+    const graphic = { type: "bundled", id: "test_sheet_source" } as const;
+    before.assets = { ...before.assets, sprites: { ...before.assets.sprites, test_sheet_alias: {
+      id: "test_sheet_alias", image: graphic, frames: 4, frameWidth: 16, frameHeight: 16,
+    } } };
+    const target = mapTarget(before, MAP, EVENT, "page_second")!;
+    const edit = (pattern: number) => runPrimitive(before, target, "event.page.patch", { graphic, pattern });
+    expect(edit(2).after.maps[MAP].events[0].pages?.[1].graphic.pattern).toBe(2);
+    expect(() => edit(4)).toThrow(/그림에 있는 칸/u);
   });
 
   it("같은 맵에 이벤트 ID가 중복되거나 선택한 페이지가 사라지면 구조를 바꾸지 않는다", () => {
@@ -452,7 +487,7 @@ describe("선택 범위와 입력 검증", () => {
     const off = { kind: "switch", switchId, value: false } as const;
     const write = [{ kind: "setSwitch", switchId, value: true }] satisfies Command[];
     before.switches = [{ id: switchId, name: "문 열림" }];
-    first.commands = write;
+    second.commands = write;
     const reader = { ...source, id: "ev_gate", x: 4, pages: [{ ...second, commands: [], conditions: [off] }] };
     const direct = withEvents(before, [source, reader]);
     const target = mapTarget(direct, MAP, EVENT)!;
@@ -461,6 +496,16 @@ describe("선택 범위와 입력 검증", () => {
     const requiresOn = { ...reader, pages: [{ ...reader.pages[0], conditions: [{ kind: "not", condition: off }] }] } satisfies GameEvent;
     const guarded = withEvents(before, [source, requiresOn]);
     expect(() => runPrimitive(guarded, target, "event.tile.remove", {})).toThrow(/진행에 필요한 스위치/u);
+
+    const either: Condition = { kind: "any", conditions: [off, { ...off, value: true }] };
+    const passesEitherWay = { ...reader, pages: [{ ...reader.pages[0], conditions: [either] }] };
+    expect(runPrimitive(withEvents(before, [source, passesEitherWay]), target, "event.tile.remove", {}).after.maps[MAP].events)
+      .toEqual([passesEitherWay]);
+
+    const shadowed = { ...source, pages: [{ ...first, commands: write }, { ...second, commands: [] }] };
+    const alreadyShadowed = withEvents(before, [shadowed, requiresOn]);
+    expect(runPrimitive(alreadyShadowed, target, "event.tile.remove", {}).after.maps[MAP].events).toEqual([requiresOn]);
+    expect(runPrimitive(alreadyShadowed, target, "event.page.remove", { page: 1 }).after.maps[MAP].events[0].pages).toHaveLength(1);
   });
 
   it("조건을 충족하는 페이지가 없는 이벤트의 옛 명령은 스위치를 대신 켤 수 없다", () => {
@@ -470,13 +515,58 @@ describe("선택 범위와 입력 검증", () => {
     const on = { kind: "switch", switchId, value: true } as const;
     const write = [{ kind: "setSwitch", switchId, value: true }] satisfies Command[];
     before.switches = [{ id: switchId, name: "문 열림" }];
-    source.pages![0].commands = write;
+    source.pages![1].commands = write;
     const dormant: GameEvent = { ...source, id: "ev_gate", x: 4, commands: write,
       pages: [{ ...source.pages![0], conditions: [on], commands: [] }] };
     const guarded = withEvents(before, [source, dormant]);
     const target = mapTarget(guarded, MAP, EVENT)!;
     expect(runtimeEventView(dormant, startSession(guarded), {}).pageId).toBeUndefined();
     expect(() => runPrimitive(guarded, target, "event.tile.remove", {})).toThrow(/진행에 필요한 스위치/u);
+  });
+
+  it("서로를 기다리거나 이미 켜져야 실행되는 분기는 스위치를 대신 켤 수 없다", () => {
+    const before = blank();
+    const [source] = before.maps[MAP].events;
+    const active = source.pages![1];
+    const on = (switchId: string): Condition => ({ kind: "switch", switchId, value: true });
+    const write = (switchId: string): Command => ({ kind: "setSwitch", switchId, value: true });
+    const a = "sw_a", b = "sw_b";
+    before.switches = [{ id: a, name: "문 열림" }, { id: b, name: "문 열쇠" }];
+    before.endings = [{ id: "end_gate", name: "문 열기", priority: 1, conditions: [on(a), on(b)] }];
+    active.commands = [write(a), write(b)];
+    const sourceA = { ...source, id: "ev_a", x: 4, pages: [{ ...active, conditions: [on(b)], commands: [write(a)] }] };
+    const sourceB = { ...source, id: "ev_b", x: 5, pages: [{ ...active, conditions: [on(a)], commands: [write(b)] }] };
+    const guarded = withEvents(before, [source, sourceA, sourceB]);
+    const target = mapTarget(guarded, MAP, EVENT)!;
+    expect(() => runPrimitive(guarded, target, "event.tile.remove", {})).toThrow(/진행에 필요한 스위치/u);
+    const withBranch = withEvents(before, [source, sourceB, { ...sourceA, pages: [{ ...active, conditions: [],
+      commands: [{ kind: "fork", condition: on(a), then: [write(a)] }],
+    }] }]);
+    expect(() => runPrimitive(withBranch, target, "event.tile.remove", {})).toThrow(/진행에 필요한 스위치/u);
+    const starter = { ...sourceA, pages: [{ ...active, conditions: [], commands: [write(a)] }] };
+    expect(runPrimitive(withEvents(before, [source, starter, sourceB]), target, "event.tile.remove", {}).after.maps[MAP].events)
+      .toEqual([starter, sourceB]);
+  });
+
+  it("다른 이벤트의 저장 전 초안이 가리키는 이벤트는 실행과 적용에서 삭제를 거절한다", () => {
+    const before = blank();
+    const [selected] = before.maps[MAP].events;
+    const original: GameEvent = { id: "ev_draft_reader", x: 4, y: 4, trigger: { kind: "action" }, commands: [] };
+    const draft: GameEvent = { ...original, draft: { kind: "edit", original },
+      commands: [{ kind: "moveEvent", eventId: EVENT, route: { moves: [], repeat: false } }] };
+    const prior = store.getCurrent();
+    try {
+      store.replaceProject(withEvents(before, [selected, draft]));
+      const live = store.getCurrent();
+      const target = mapTarget(live, MAP, EVENT)!;
+      const base = smallTaskBase(live, target);
+      expect(() => runPrimitive(base, target, "event.tile.remove", {}, undefined, live)).toThrow(/다른 곳에서 이 이벤트/u);
+      const { after } = runPrimitive(base, target, "event.tile.remove", {});
+      expect(() => commitSmallTask(live, base, after, target)).toThrow(/열린 이벤트 편집/u);
+      expect(store.getCurrent()).toBe(live);
+    } finally {
+      store.replaceProject(prior);
+    }
   });
 
   it.each([
