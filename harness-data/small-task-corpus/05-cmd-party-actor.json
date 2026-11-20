@@ -1,1 +1,1010 @@
-[]
+[
+  {
+    "request": "여기서 시온한테 화염을 가르쳐 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "skillId": "skill_fire"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "actor_hero", "skillId": "skill_fire"}}]
+  },
+  {
+    "request": "이 문 지나갈 때 동료 전원이 빙결을 배우게 해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "skillId": "skill_ice"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "", "skillId": "skill_ice"}}]
+  },
+  {
+    "request": "마도사한테 마법탄 습득",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "skillId": "skill_arcane_bolt"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "actor_mage", "skillId": "skill_arcane_bolt"}}]
+  },
+  {
+    "request": "시온은 이제 물대포 잊게해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "skillId": "skill_water", "action": "forget"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "actor_hero", "skillId": "skill_water", "action": "forget"}}]
+  },
+  {
+    "request": "정찰병 검격을 잊도록 설정 부탁해요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "skillId": "skill_sword_slash", "action": "forget"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "actor_scout", "skillId": "skill_sword_slash", "action": "forget"}}]
+  },
+  {
+    "request": "파티에 낙뢰 스킬 하나씩 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "skillId": "skill_thunder", "action": "learn"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "", "skillId": "skill_thunder", "action": "learn"}}]
+  },
+  {
+    "request": "수호자가 성광 익히게 한 줄 넣어 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "skillId": "skill_holy"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "learnSkill", "actorId": "actor_guardian", "skillId": "skill_holy"}}]
+  },
+  {
+    "request": "자료집에 없는 번개갑옷 기술도 배우게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.learnSkill.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "skillId": "skill_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금은 지도를 골라 놨어. 다른 이벤트의 화염 배우는 줄을 잊기로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "cmd.learnSkill.update",
+    "args": {"index": 0, "expectedHash": "e0746cd061256c59879ed7d390133235", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "시온 경험치 삼 점 더해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "amount": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "actor_hero", "op": "+=", "amount": 3}}]
+  },
+  {
+    "request": "모든 멤버한테 경험치 30 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "amount": 30},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "", "op": "+=", "amount": 30}}]
+  },
+  {
+    "request": "마도사 경험치 50으로 맞춰 주실래요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "op": "=", "amount": 50},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "actor_mage", "op": "=", "amount": 50}}]
+  },
+  {
+    "request": "수호자 경험치 오만큼 깎아",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "op": "-=", "amount": 5},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "actor_guardian", "op": "-=", "amount": 5}}]
+  },
+  {
+    "request": "파티 경험치 보상 200 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "op": "+=", "amount": 200},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "", "op": "+=", "amount": 200}}]
+  },
+  {
+    "request": "시온 경험치 초기화해 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "op": "=", "amount": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "actor_hero", "op": "=", "amount": 0}}]
+  },
+  {
+    "request": "그냥 시온한테 기본 경험치 보상 한 줄 넣어",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeExp", "actorId": "actor_hero", "op": "+=", "amount": 10}}]
+  },
+  {
+    "request": "시온한테 등록 안 된 일일 보상 변수만큼 경험치 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "amountVariableId": "var_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 페이지 말고 옆 이벤트의 경험치 보상 줄을 두 배로 고쳐요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeExp.update",
+    "args": {"index": 0, "expectedHash": "1e4436a47a758b09cc0b753b395163d5", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 이벤트에서 시온 렙 5로 해 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "op": "=", "amount": 5},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_hero", "op": "=", "amount": 5}}]
+  },
+  {
+    "request": "주인공 레벨 세 단계 올려",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "amount": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_hero", "op": "+=", "amount": 3}}]
+  },
+  {
+    "request": "마도사 레벨을 1 낮춰주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "op": "-=", "amount": 1},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_mage", "op": "-=", "amount": 1}}]
+  },
+  {
+    "request": "수호자 지금보다 두 렙 업",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "amount": 2},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_guardian", "op": "+=", "amount": 2}}]
+  },
+  {
+    "request": "정찰병을 레벨 십으로 맞추자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "op": "=", "amount": 10},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_scout", "op": "=", "amount": 10}}]
+  },
+  {
+    "request": "시온이 경험치와 관계없이 레벨 하나 오르게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_hero", "op": "+=", "amount": 1}}]
+  },
+  {
+    "request": "레밸 7로, 이번엔 성직자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_cleric", "op": "=", "amount": 7},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeLevel", "actorId": "actor_cleric", "op": "=", "amount": 7}}]
+  },
+  {
+    "request": "새로 만든 적 부대장에게 레벨 하나 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.insert",
+    "args": {"index": 0, "actorId": "actor_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택 안 한 뒷페이지의 레벨 올리는 줄을 5로 바꾸자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLevel.update",
+    "args": {"index": 0, "expectedHash": "914d44272e3cefe4544d5e53f0cad44c", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "없는 재봉 생활 스킬 올려줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLifeSkillExp.insert",
+    "args": {"index": 0, "skillId": "life_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "다른 이벤트의 낚시 숙련 보상 줄을 10에서 20으로 수정해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeLifeSkillExp.update",
+    "args": {"index": 0, "expectedHash": "1b07a89123143de894e2e7289b23ab41", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "시온을 수호자로 승급시켜",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "toClassId": "class_guardian"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_hero", "toClassId": "class_guardian", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "조건 맞으면 주인공 자동 승급하게 해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_hero", "toClassId": "", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "마도사를 마녀 직업으로 전직시키는 줄",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "toClassId": "class_witch"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_mage", "toClassId": "class_witch", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "수호자가 전사로 진급하게요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "toClassId": "class_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_guardian", "toClassId": "class_hero", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "정찰병을 닌자로 전직시켜줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "toClassId": "class_ninja"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_scout", "toClassId": "class_ninja", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "성직자 자동전직 추가해 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_cleric"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_cleric", "toClassId": "", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "시온 승급 직업은 사무라이로 지정",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "toClassId": "class_samurai"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "promoteActor", "actorId": "actor_hero", "toClassId": "class_samurai", "successBranch": [], "failureBranch": []}}]
+  },
+  {
+    "request": "시온을 자료집에 없는 바다왕으로 만들자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "toClassId": "class_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "다른 맵의 승급 줄 직업을 수호자로 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.promoteActor.update",
+    "args": {"index": 0, "expectedHash": "ce7739c8d8cd1085e6bb13fdef4ebc24", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "시온한테 철 검 쥐여 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "equipmentId": "equip_iron_sword"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_hero", "slot": "weapon", "equipmentId": "equip_iron_sword"}}]
+  },
+  {
+    "request": "주인공에게 청동 검 장비시키는 명령 추가해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "equipmentId": "equip_sword"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_hero", "slot": "weapon", "equipmentId": "equip_sword"}}]
+  },
+  {
+    "request": "시온 방패는 참나무 방패 끼워",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "slot": "shield", "equipmentId": "equip_oak_shield"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_hero", "slot": "shield", "equipmentId": "equip_oak_shield"}}]
+  },
+  {
+    "request": "마도사 무기를 수습 지팡이로 껴줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "equipmentId": "equip_mage_staff"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_mage", "slot": "weapon", "equipmentId": "equip_mage_staff"}}]
+  },
+  {
+    "request": "정찰병 무기 장착해제",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "equipmentId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_scout", "slot": "weapon", "equipmentId": ""}}]
+  },
+  {
+    "request": "성직자한테 여행자 모자 씌워 주라",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_cleric", "slot": "helmet", "equipmentId": "equip_traveler_hat"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_cleric", "slot": "helmet", "equipmentId": "equip_traveler_hat"}}]
+  },
+  {
+    "request": "시온이 강철검을 들도록 여기서 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "equipmentId": "equip_steel_sword"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeEquipment", "actorId": "actor_hero", "slot": "weapon", "equipmentId": "equip_steel_sword"}}]
+  },
+  {
+    "request": "없는 유리검 끼워줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "equipmentId": "equip_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기서 선택하지 않은 페이지의 장비 줄만 철 검으로 바꿔 주라",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeEquipment.update",
+    "args": {"index": 0, "expectedHash": "f61c51c921200fb8a11c9b2641cf0a73", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "시온 체력 열 점 깎기",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_hero", "op": "-=", "amount": 10}}]
+  },
+  {
+    "request": "마도사 체력 삼 점 회복시켜 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "op": "+=", "amount": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_mage", "op": "+=", "amount": 3}}]
+  },
+  {
+    "request": "수호자 피를 반으로 맞춰줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "op": "=", "amount": 50, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_guardian", "op": "=", "amount": 50, "amountMode": "percent"}}]
+  },
+  {
+    "request": "정찰병 체력 20만큼 깍아 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "amount": 20},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_scout", "op": "-=", "amount": 20}}]
+  },
+  {
+    "request": "주인공 최대 체력의 25퍼 올려",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "op": "+=", "amount": 25, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_hero", "op": "+=", "amount": 25, "amountMode": "percent"}}]
+  },
+  {
+    "request": "성직자 체력 한 점으로 설정 부탁",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_cleric", "op": "=", "amount": 1},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_cleric", "op": "=", "amount": 1}}]
+  },
+  {
+    "request": "이 함정에 걸리면 시온 체력 최대치에서 10퍼센트에 해당하는 만큼 빠지게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "amount": 10, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "actor_hero", "op": "-=", "amount": 10, "amountMode": "percent"}}]
+  },
+  {
+    "request": "등록 안 한 도깨비 체력을 열 깎아",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "옆 페이지의 체력 피해 줄을 세 점으로 조정해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.update",
+    "args": {"index": 0, "expectedHash": "f9a5adb11dd6fdf6187868a2428fa9b7", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "시온 마나 다섯 깎아 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_hero", "op": "-=", "amount": 5}}]
+  },
+  {
+    "request": "이 곳에서 마도사 마력을 세 점 회복해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_mage", "op": "+=", "amount": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_mage", "op": "+=", "amount": 3}}]
+  },
+  {
+    "request": "수호자 마력을 완전히 비워",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "op": "=", "amount": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_guardian", "op": "=", "amount": 0}}]
+  },
+  {
+    "request": "정찰병 최대 마나 25퍼만큼 차감",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "amount": 25, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_scout", "op": "-=", "amount": 25, "amountMode": "percent"}}]
+  },
+  {
+    "request": "주인공의 마력은 반만 남게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "op": "=", "amount": 50, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_hero", "op": "=", "amount": 50, "amountMode": "percent"}}]
+  },
+  {
+    "request": "성직자 마나10 채워 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_cleric", "op": "+=", "amount": 10},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_cleric", "op": "+=", "amount": 10}}]
+  },
+  {
+    "request": "시온 마력을 최대치의 십 퍼센트만큼 더 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "op": "+=", "amount": 10, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorMp", "actorId": "actor_hero", "op": "+=", "amount": 10, "amountMode": "percent"}}]
+  },
+  {
+    "request": "목록에 없는 마법사한테 마나 추가해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.insert",
+    "args": {"index": 0, "actorId": "actor_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 페이지 건들지 말고 다른 보상 페이지의 마력 변경 줄을 수정",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorMp.update",
+    "args": {"index": 0, "expectedHash": "ef055e75803b59cbe52bbdbb654c2cc0", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "샘 마시면 전원 완쾌하게 해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": ""}}]
+  },
+  {
+    "request": "시온 체력과 마력을 전부 채우는 명령을 넣어 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_hero"}}]
+  },
+  {
+    "request": "마도사만 완전회복",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": "actor_mage"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_mage"}}]
+  },
+  {
+    "request": "수호자가 여기서 다 낫게 해봐",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": "actor_guardian"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_guardian"}}]
+  },
+  {
+    "request": "파티 전채 완전 회복 부탁해요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": ""}}]
+  },
+  {
+    "request": "정찰병 체력 마나 끝까지 채워",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": "actor_scout"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_scout"}}]
+  },
+  {
+    "request": "성직자만 몸 상태랑 마력을 모두 복구해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": "actor_cleric"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_cleric"}}]
+  },
+  {
+    "request": "자료집에 없는 행인을 완전 회복시켜",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recoverAll.insert",
+    "args": {"index": 0, "actorId": "actor_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "샘에서 전원 대신 시온만 낫게 수정",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_hero", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_hero"}}]
+  },
+  {
+    "request": "완전 회복을 마도사한테만 적용해 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_mage", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_mage"}}]
+  },
+  {
+    "request": "이 회복 줄은 수호자를 대상으로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_guardian", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_guardian"}}]
+  },
+  {
+    "request": "전원 말구 정찰병만 회복",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_scout", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_scout"}}]
+  },
+  {
+    "request": "완쾌 대상은 성직자로 바꿔주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_cleric", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_cleric"}}]
+  },
+  {
+    "request": "다 같이 쉬던 줄은 마녀만 완쾌하는 걸로 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_witch", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_witch"}}]
+  },
+  {
+    "request": "따라온 궁수만 치료하는 걸로 바꿔 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_ranger", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_heal_spring].pages[0].commands[0]", "equals": {"kind": "recoverAll", "actorId": "actor_ranger"}}]
+  },
+  {
+    "request": "완전 회복 줄에서 없는 배우를 고쳐줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_heal_spring", "pageId": "ev_heal_spring_page"},
+    "primitive": "cmd.recoverAll.update",
+    "args": {"index": 0, "actorId": "actor_missing", "expectedHash": "fd14756caa4fb047ab5dd47fb4f3d4ab"},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기서 마도사 동료로 영입",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_mage"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_mage", "action": "add"}}]
+  },
+  {
+    "request": "수호자를 파티에서 빼 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "action": "remove"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_guardian", "action": "remove"}}]
+  },
+  {
+    "request": "시온이 대열 제일 앞에 서게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "action": "lead"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_hero", "action": "lead"}}]
+  },
+  {
+    "request": "정찰병 파티합류하게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_scout", "action": "add"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_scout", "action": "add"}}]
+  },
+  {
+    "request": "성직자는 여정에서 빠지도록 부탁해요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_cleric", "action": "remove"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_cleric", "action": "remove"}}]
+  },
+  {
+    "request": "궁수에게 파티 리더 넘겨",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_ranger", "action": "lead"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_ranger", "action": "lead"}}]
+  },
+  {
+    "request": "시온을 지금 파티에 다시 넣어 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeParty", "actorId": "actor_hero", "action": "add"}}]
+  },
+  {
+    "request": "자료집에 아직 없는 견습 마녀를 영입해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.insert",
+    "args": {"index": 0, "actorId": "actor_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "다른 이벤트의 영입 줄에서 멤버가 나가게 바꿔 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeParty.update",
+    "args": {"index": 0, "expectedHash": "5d1c939b58e1e9010e4f0529ae35e441", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 파티를 선발대로 저장해 둬",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "선발대"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "선발대"}}]
+  },
+  {
+    "request": "여기서 팀 이름을 후발대로 해서 편성을 저장해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "후발대"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "후발대"}}]
+  },
+  {
+    "request": "정찰대에 시온하고 마도사 넣어서 저장",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "정찰대", "actorIds": ["actor_hero", "actor_mage"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "정찰대", "actorIds": ["actor_hero", "actor_mage"]}}]
+  },
+  {
+    "request": "현재 구성에 이 맵 좌표 세 칸, 네 칸을 정해 야영조로 기록",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "야영조", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 3, "y": 4},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "야영조", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 3, "y": 4}}]
+  },
+  {
+    "request": "수호자 한 명만 남는 경비조를 미리 만들어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "경비조", "actorIds": ["actor_guardian"]},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "경비조", "actorIds": ["actor_guardian"]}}]
+  },
+  {
+    "request": "기본 파티 슬롯에 저장하는 한 줄 부탁해요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "party_a"}}]
+  },
+  {
+    "request": "내 파티를 지금 위치 그대로 귀환조에 기록해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "귀환조"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "storeParty", "partySetId": "귀환조"}}]
+  },
+  {
+    "request": "없는 캐릭터가 들어간 예비대를 만들어 저장해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "예비대", "actorIds": ["actor_missing"]},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택 안 한 야영지 이벤트의 파티 저장 이름을 야영조로 바꿔줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.update",
+    "args": {"index": 0, "expectedHash": "2039e5072899ab3dc5b0d00d8a577049", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "저장된 선발대로 전환해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": "선발대"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "선발대"}}]
+  },
+  {
+    "request": "파티를 후발대 편성으로 불러와 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": "후발대"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "후발대"}}]
+  },
+  {
+    "request": "야영조로 조작 넘겨줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": "야영조"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "야영조"}}]
+  },
+  {
+    "request": "정찰대가 대기하던 자리와 구성으로 돌아가게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": "정찰대"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "정찰대"}}]
+  },
+  {
+    "request": "귀환조 파티 불러오기 한 줄",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": "귀환조"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "귀환조"}}]
+  },
+  {
+    "request": "기본 파티로 전환 부탁해요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "party_a"}}]
+  },
+  {
+    "request": "이 문으로 들어오면 경비조로 바뀌게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": "경비조"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "경비조"}}]
+  },
+  {
+    "request": "이름을 공백으로만 해서 파티를 불러줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.insert",
+    "args": {"index": 0, "partySetId": " "},
+    "expectRefusal": true
+  },
+  {
+    "request": "옆 맵에 있는 파티 호출 명령을 경비조로 수정해 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.recallParty.update",
+    "args": {"index": 0, "expectedHash": "c0b89f816c49e4a1d0c8dcedf1571945", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "시온을 뒤따라오게 해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "actorId": "actor_hero"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "actor_hero", "name": ""}}]
+  },
+  {
+    "request": "마도사가 따라다니도록 동행자 추가해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "actorId": "actor_mage"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "actor_mage", "name": ""}}]
+  },
+  {
+    "request": "이 걷기 그림 두 번째 칸으로 강아지 달아 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "spriteId": "tex_easyrpg_charset_people1", "characterIndex": 1, "name": "강아지"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "", "name": "강아지", "graphic": {"sprite": {"type": "bundled", "id": "tex_easyrpg_charset_people1"}, "direction": "down", "pattern": 28}}}]
+  },
+  {
+    "request": "수호자는 길잡이라는 이름으로 따라오게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "actorId": "actor_guardian", "name": "길잡이"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "actor_guardian", "name": "길잡이"}}]
+  },
+  {
+    "request": "정찰병을 파티 가입 말고 동행으로 붙여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "actorId": "actor_scout"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "actor_scout", "name": ""}}]
+  },
+  {
+    "request": "이 걷기 그림 첫 칸으로 고양이 데꼬 다니게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "spriteId": "tex_easyrpg_charset_people1", "name": "고양이"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "", "name": "고양이", "graphic": {"sprite": {"type": "bundled", "id": "tex_easyrpg_charset_people1"}, "direction": "down", "pattern": 25}}}]
+  },
+  {
+    "request": "성직자가 이제 견습생이라는 이름으로 쫓아오게 해주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "actorId": "actor_cleric", "name": "견습생"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "addFollower", "actorId": "actor_cleric", "name": "견습생"}}]
+  },
+  {
+    "request": "있는 그림 아무것도 없이 이름만 강아지로 동행시켜",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.insert",
+    "args": {"index": 0, "name": "강아지"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 이벤트 아닌 다음 이벤트의 강아지 동행 줄 이름을 고쳐",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.update",
+    "args": {"index": 0, "expectedHash": "90139b08936b454b4c8a804f38f96839", "branchPath": [0, 999]},
+    "expectRefusal": true
+  },
+  {
+    "request": "따라오는 강아지만 떠나게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "name": "강아지"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": false, "name": "강아지"}}]
+  },
+  {
+    "request": "동행자 전원을 돌려 보내 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "all": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": true}}]
+  },
+  {
+    "request": "고양이 더이상 안 따라오게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "name": "고양이"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": false, "name": "고양이"}}]
+  },
+  {
+    "request": "길잡이라고 이름 붙인 동행을 지워 줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "name": "길잡이"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": false, "name": "길잡이"}}]
+  },
+  {
+    "request": "옆에 따라오는 애들 다 해산",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": true}}]
+  },
+  {
+    "request": "경비라는 이름의 동행만 떼어 내",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "name": "경비", "all": false},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": false, "name": "경비"}}]
+  },
+  {
+    "request": "견습생 뒤따라오기 중지시켜 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "name": "견습생"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "all": false, "name": "견습생"}}]
+  },
+  {
+    "request": "누군지 모르는데 전원 말고 아무나 한 명만 내보내 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "all": false},
+    "expectRefusal": true
+  },
+  {
+    "request": "지도만 선택했는데 다른 페이지의 동행 해제 줄을 전원 해산으로 바꿔 주세요",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "cmd.removeFollower.update",
+    "args": {"index": 0, "expectedHash": "e5ff784ab01d87a98aa853bba22ad764", "branchPath": [0, 999]},
+    "expectRefusal": true
+  }
+]
