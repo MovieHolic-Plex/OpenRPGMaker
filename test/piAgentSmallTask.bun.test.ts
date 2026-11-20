@@ -93,6 +93,29 @@ test("작은 일 Pi 실행은 열린 이벤트 초안에서 호출하는 대사�
   expect(event.pages[1]!.commands).toEqual(commands);
 });
 
+test("첫 회 한정 대사는 호출하는 이벤트의 저장본과 초안이 쓰는 셀프 스위치를 피한다", async () => {
+  const { request, project, mapId, commands } = fixture();
+  const helper = project.maps[mapId].events[1]!;
+  const helperPage = helper.pages![1]!;
+  const reset = (key: "A" | "B"): Command => ({ kind: "setSelfSwitch", key, value: false });
+  helper.pages = [{ ...helperPage, commands: [reset("A")] }];
+  const draft = {
+    ...helper,
+    draft: { kind: "edit", original: helper } as const,
+    pages: [{ ...helperPage, commands: [reset("B")] }],
+  };
+  commands.push({ kind: "callMapEvent", eventId: helper.id });
+  const done = await runPiAgent({
+    ...request,
+    smallTask: { ...request.smallTask, liveDrafts: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([apply("dialogue.firstTimeOnly", { path: [0] })]) });
+
+  expect(done.stoppedEarly).toBeUndefined();
+  const [selected, unchangedHelper] = done.project.maps[mapId].events;
+  expect(selected!.pages![1]!.commands[0]).toMatchObject({ kind: "fork", condition: { kind: "selfSwitch", key: "C" } });
+  expect(unchangedHelper).toEqual(helper);
+});
+
 test("작은 일 Pi 실행이 동작을 읽고 고른 페이지에서 cmd.delete와 cmd.move를 적용한다", async () => {
   const { request, project, mapId, event, commands } = fixture();
   const seen: ModelContext[] = [];

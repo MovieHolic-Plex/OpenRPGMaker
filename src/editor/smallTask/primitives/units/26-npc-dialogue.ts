@@ -203,7 +203,8 @@ function unusedSelfSwitch(ctx: PrimitiveContext, event: GameEvent): SelfSwitchKe
   const { project } = ctx;
   const { map, target } = locateEvent(ctx);
   const working = withOpenEventDrafts(project, ctx.live, target);
-  for (const view of working === project ? [project] : [project, working]) {
+  const views = working === project ? [project] : [project, working];
+  for (const view of views) {
     if (Object.entries(view.maps).some(([mapId, entry]) => mapId !== map.id && entry.events.some(candidate => candidate.id === event.id))) {
       throw new PrimitiveError("이 이벤트의 기록을 다른 이벤트와 공유하고 있어요.");
     }
@@ -224,7 +225,9 @@ function unusedSelfSwitch(ctx: PrimitiveContext, event: GameEvent): SelfSwitchKe
         pending.push(project.commonEvents.find(common => common.id === entry.commonEventId));
         break;
       case "callMapEvent":
-        pending.push(map.events.find(candidate => candidate.id === entry.eventId));
+        for (const view of views) {
+          pending.push(view.maps[map.id]?.events.find(candidate => candidate.id === entry.eventId));
+        }
         break;
       case "runSchedule": {
         const schedule = typeof entry.scheduleId === "string" ? findSchedule(project.database, entry.scheduleId) : undefined;
