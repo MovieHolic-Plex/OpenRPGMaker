@@ -993,6 +993,8 @@ class ProjectStore {
     options: {
       /** A local history entry may explicitly own the working body of an open event. */
       readonly adoptWorkingEvents?: readonly WorkingEventAdoption[];
+      /** These local edits may also refresh untouched drafts that were opened separately. */
+      readonly refreshCleanEventDrafts?: readonly Pick<WorkingEventAdoption, "mapId" | "eventId">[];
       readonly preserveEventDrafts?: boolean;
       readonly change?: ProjectChangeAnnotation;
       /** 맵 칸만 바뀌었을 때 전체 재렌더 대신 그 칸만 그리게 한다. */
@@ -1027,7 +1029,7 @@ class ProjectStore {
       // A history snapshot can outlive its event window. Its canonical view keeps
       // undo from reopening a closed draft or restoring a discarded new event.
       const incoming = options.adoptWorkingEvents?.length ? projectViewWithoutEventDrafts(project) : project;
-      const merged = preserveEventDraftsOnProject(incoming, live);
+      const merged = preserveEventDraftsOnProject(incoming, live, options.refreshCleanEventDrafts);
       for (const { mapId, eventId } of options.adoptWorkingEvents ?? []) {
         if (!live.maps[mapId]?.events.some(e => e.id === eventId && e.draft)) continue;
         const event = project.maps[mapId]?.events.find(e => e.id === eventId);
