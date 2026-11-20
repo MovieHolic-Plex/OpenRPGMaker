@@ -33,12 +33,11 @@ export const SMALL_TASK_PRIMITIVE_TOOLS = [
 export interface SmallTaskToolContext extends ToolContext {
   readonly smallTaskTarget: SmallTaskTarget;
   readonly smallTaskSelection?: PrimitiveContext["selection"];
+  readonly smallTaskDraftSource?: PrimitiveContext["live"];
 }
 
 /** Only the small-task host can supply this context. Its final changeset and history are handled by the frame. */
-export async function runSmallTaskPrimitiveTool(
-  ctx: SmallTaskToolContext, name: string, args: Record<string, unknown>, live?: PrimitiveContext["live"],
-) {
+export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name: string, args: Record<string, unknown>) {
   // 등록 초기화가 끝난 뒤 유닛을 읽는다. 유닛과 범위 검사도 공용 도구를 참조할 수 있다.
   const [{ PrimitiveError }, { getPrimitive, primitivesForTarget }, { matchesPrimitiveSchema, runPrimitive }] = await Promise.all([
     import("@/editor/smallTask/primitives/errors"),
@@ -47,18 +46,25 @@ export async function runSmallTaskPrimitiveTool(
   ]);
   const tool = SMALL_TASK_PRIMITIVE_TOOLS.find(tool => tool.name === name);
   if (!tool || !matchesPrimitiveSchema(tool.parameters, args)) throw new PrimitiveError("동작에 필요한 값의 형식을 확인해 주세요.");
-  const offered = primitivesForTarget(ctx.smallTaskTarget);
+  const target = ctx.smallTaskTarget;
+  const offered = primitivesForTarget(target);
   if (tool.name === LIST_SMALL_TASK_PRIMITIVES) {
+    const event = target.kind === "event"
+      ? ctx.project.maps[target.mapId]?.events.find(row => row.id === target.eventId)
+      : undefined;
+    const available = target.kind === "event" && !event?.pages?.length
+      ? offered.filter(row => !["cmd.delete", "cmd.move"].includes(getPrimitive(row.id)!.id))
+      : offered;
     return {
       ok: true,
       summary: "선택한 대상에 쓸 수 있는 동작을 읽었어요.",
-      data: offered.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
+      data: available.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
     };
   }
 
   const id = args.id as string;
   if (!offered.some(row => row.id === id)) throw new PrimitiveError("범위 밖: 선택한 대상에 이 동작을 쓸 수 없어요.");
-  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, args.args as Record<string, unknown>, ctx.smallTaskSelection, live);
+  const result = runPrimitive(ctx.project, target, id, args.args as Record<string, unknown>, ctx.smallTaskSelection, ctx.smallTaskDraftSource);
   ctx.project = result.after;
   return { ok: true, summary: result.sentence };
 }

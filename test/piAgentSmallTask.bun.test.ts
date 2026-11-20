@@ -106,6 +106,30 @@ test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", 
   expect(done.project).toBe(project);
 });
 
+test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조하는 출현 명령을 보호한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn = { id: "slimes", troopId: "troop_slime", area: { x: 1, y: 1, w: 1, h: 1 }, maxAlive: 1 };
+  const command: Command = { kind: "spawnFieldEnemy", spawn };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [command, ...commands] }];
+  const original = { id: "event_draft", x: 3, y: 3, trigger: event.trigger, commands: [] };
+  const draft: GameEvent = {
+    ...original,
+    commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.id }],
+    draft: { kind: "new", original },
+  };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const deletion = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
+    { streamFn: scripted([deletion]) });
+
+  expect(done.stoppedEarly).toContain("제거하는 명령");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+  const withoutDraft = await runPiAgent(request, { streamFn: scripted([deletion]) });
+  expect(withoutDraft.stoppedEarly).toBeUndefined();
+  expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
+});
+
 test("작은 일 Pi 실행은 다른 이벤트의 열린 초안이 읽는 현대 명령 기록을 보호한다", async () => {
   const { request, project, mapId, event } = fixture();
   const variableId = project.variables[0]!.id;
@@ -119,7 +143,8 @@ test("작은 일 Pi 실행은 다른 이벤트의 열린 초안이 읽는 현대
   const draft: GameEvent = {
     ...original, pages: [{ ...original.pages![0]!, commands: [read] }], draft: { kind: "edit", original },
   };
-  const draftRequest = { ...request, smallTask: { ...request.smallTask, live: { maps: { [mapId]: { events: [draft] } } } } };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const draftRequest = { ...request, smallTask: { ...request.smallTask, draftSource } };
   const args = { index: 0, expectedHash: eventCommandHash(submit) };
   for (const call of [apply("cmd.delete", args), apply("m2.222.update", { ...args, scoreId: "걷기" })]) {
     const done = await runPiAgent(draftRequest, { streamFn: scripted([call]) });

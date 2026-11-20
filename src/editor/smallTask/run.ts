@@ -10,7 +10,7 @@ import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 // The Pi worker edits a private copy. The capsule owns publication and undo.
-export async function runSmallTask(before: Project, target: SmallTaskTarget, request: string, signal: AbortSignal, live = before): Promise<Project> {
+export async function runSmallTask(before: Project, target: SmallTaskTarget, request: string, signal: AbortSignal, live?: Project): Promise<Project> {
   const config = loadAiConfig();
   const role = modelForRole(config, "deep");
   const thinkingLevel = role.model === ASSISTANT_CHATGPT_MODEL ? atLeastMediumEffort(role.thinkingLevel) : role.thinkingLevel;
@@ -18,9 +18,8 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
   const rect = target.kind !== "dbEntry" && selection?.mapId === target.mapId
     ? { x: selection.x, y: selection.y, w: selection.width, h: selection.height }
     : undefined;
-  const draftMaps = Object.fromEntries(Object.entries(live.maps).flatMap(([mapId, map]) => {
-    const events = map.events.filter(event => event.draft
-      && !(target.kind === "event" && target.mapId === mapId && target.eventId === event.id));
+  const draftMaps = Object.fromEntries(Object.entries(live?.maps ?? {}).flatMap(([mapId, map]) => {
+    const events = map.events.filter(event => event.draft);
     return events.length ? [[mapId, { events }] as const] : [];
   }));
   const result = await runPiAgentViaCompanion({
@@ -29,7 +28,7 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
     smallTask: {
       target, maxToolCalls: config.maxToolCalls, ...(rect ? { selection: { rect } } : {}),
-      ...(Object.keys(draftMaps).length ? { live: { maps: draftMaps } } : {}),
+      ...(Object.keys(draftMaps).length ? { draftSource: { maps: draftMaps } } : {}),
     },
   }, { signal });
   signal.throwIfAborted();
