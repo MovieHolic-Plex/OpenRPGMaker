@@ -422,6 +422,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const base = request.project;
   const ctx: SmallTaskToolContext = {
     project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskDraftSource: draftSource,
+    ...(target.kind === "map" ? { smallTaskCommonEvents: { initialIds: new Set(base.commonEvents.map(event => event.id)) } } : {}),
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);

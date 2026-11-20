@@ -1,0 +1,26 @@
+[
+  {
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "m2.214.update",
+    "args": { "index": 0, "expectedHash": "b91201e01010fa54645893a1f921de43", "message": "샘에서 회복하자", "surface": "banner", "durationMs": 1500 },
+    "label": "첫 안내를 샘에서 회복하자로 바꾸고 배너에 띄워 주세요."
+  },
+  {
+    "fixture": "built",
+    "target": {
+      "kind": "event",
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_objective_start",
+      "pageId": "ev_objective_start_p0"
+    },
+    "primitive": "m2.220.insert",
+    "args": { "prompt": "어느 쪽으로 갈까요?", "options": "남문\n북문", "timeLimitMs": 10000 },
+    "label": "열 초 안에 남문하고 북문 중 고르는 선택지를 넣어 주세요."
+  }
+]

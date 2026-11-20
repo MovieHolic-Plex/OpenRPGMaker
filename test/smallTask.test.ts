@@ -90,6 +90,8 @@ it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, withSpawnDraft: true },
   { kind: "event", selectedMapId: "another_map", rect: undefined },
   { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, selectedDraft: true },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, noDraft: true },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
@@ -97,14 +99,18 @@ it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.\n범위 밖: 퀘스트가 사용하는 미저장 이벤트",
     expectedMessage: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, withSpawnDraft, expectedMessage }) => {
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
+  kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft, expectedMessage,
+}) => {
   const project = fixture();
   const live = structuredClone(project);
-  const original = live.maps.map_a.events[0]!;
+  const original = project.maps.map_a.events[0]!;
   const draft = { ...original, id: "draft_event", draft: { kind: "new", original } } as const;
-  live.maps.map_a.events.push(draft);
+  const selected = live.maps.map_a.events[0]!;
   const spawnDraft: GameEvent = { ...original, id: "ev_spawn_draft", draft: { kind: "new" }, pages: [],
     commands: [{ kind: "despawnFieldEnemy", spawnId: "spawn_trial" }] };
+  if (selectedDraft) selected.draft = { kind: "edit", original };
+  if (!noDraft) live.maps.map_a.events.push(draft);
   if (withSpawnDraft) live.maps.map_a.events.push(spawnDraft);
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
@@ -119,7 +125,12 @@ it.each([
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
-    expect(body.smallTask.draftSource).toEqual({ maps: { map_a: { events: withSpawnDraft ? [draft, spawnDraft] : [draft] } } });
+    const drafts = [
+      ...(selectedDraft ? [selected] : []),
+      ...(noDraft ? [] : [draft]),
+      ...(withSpawnDraft ? [spawnDraft] : []),
+    ];
+    expect(body.smallTask.draftSource).toEqual(drafts.length ? { maps: { map_a: { events: drafts } } } : undefined);
     expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };

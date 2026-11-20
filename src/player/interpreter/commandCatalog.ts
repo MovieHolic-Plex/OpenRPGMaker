@@ -45,6 +45,8 @@ import {
 } from "@/project/eventCommands/coordinateDestination";
 import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import { resolveEventPage } from "@/project/io";
+import { runtimePageContext } from "@/project/runtimeEventState";
+import { runtimeMap } from "@/project/runtimeMap";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
@@ -54,7 +56,7 @@ import { presentableItems } from "@/player/interpreter/presentItem";
 import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { recordSoundLayer, removeEventId, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -122,13 +124,14 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
 // 맵 이벤트 호출: 현재 맵의 eventId 이벤트를 찾아 활성 페이지의 commands 를 실행한다.
 // 페이지가 없는 레거시 이벤트는 최상위 commands 로 폴백한다(RM2K3 "Call Event" 동작).
 function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): CommandExecution {
-  const map = state.project?.maps[state.session.currentMapId];
+  const project = state.project;
+  const map = project?.maps[state.session.currentMapId];
   const event = map?.events.find((entry) => entry.id === eventId);
-  if (!event) {
+  if (!project || !map || !event) {
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations, ...partySkillContext(state.project, state.session) }) : undefined;
+  const page = resolveEventPage(event, state.session, runtimePageContext(project, runtimeMap(map, state.session), state.session, state.eventPositions));
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };
@@ -1264,9 +1267,12 @@ export function executeCommand(
     case "setDifficulty":
       if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
       return resumeNext(frame);
-    case "storeParty":
-      storePartySet(state.session as PlaySession, command.partySetId, command);
-      return resumeNext(frame);
+    case "storeParty": {
+      const saved = storePartySet(state.session as PlaySession, command.partySetId, command, state.project);
+      state.session.flags.storePartySuccess = saved;
+      // A subsequent recall could otherwise load an older snapshot for this slot.
+      return saved ? resumeNext(frame) : { kind: "done" };
+    }
     case "recallParty": {
       if (!state.project) return resumeNext(frame);
       const recalled = recallPartySet(state.project, state.session as PlaySession, command.partySetId);
@@ -1453,10 +1459,6 @@ function shouldWaitForPicture(fields: M2CommandFields): boolean {
 function spawnEventId(fields: M2CommandFields): string {
   const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
   return fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
-}
-
-function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
-  return fieldString(fields, "eventId", currentEventId ?? "");
 }
 
 function hasM2Field(fields: M2CommandFields, key: string): boolean {

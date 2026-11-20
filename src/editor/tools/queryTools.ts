@@ -4,7 +4,8 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
-import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
 import { openedLoadRepairReport } from "@/project/loadRepairReport";
 import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
@@ -379,7 +380,7 @@ function eventCatalogFields(event: GameEvent): {
 // find_events는 위치만 주므로, 내용을 모른 채 덮어써 대사가 사라지는 사고를 막는다.
 const getEvent: ToolDefinition = {
   name: "get_event",
-  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다. 명령 한 줄을 수정·삭제하려면 includeCommandHashes를 켠다.",
+  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다. 명령 한 줄을 수정·삭제하려면 includeCommandHashes를 켜거나, commandHashTarget으로 한 페이지와 필요한 줄의 해시만 읽는다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -387,6 +388,15 @@ const getEvent: ToolDefinition = {
       mapId: { type: "string" },
       eventId: { type: "string" },
       includeCommandHashes: { type: "boolean", description: "명령 한 줄을 수정·삭제할 때 필요한 위치와 내용 해시를 포함한다." },
+      commandHashTarget: {
+        type: "object", description: "이벤트 본문을 생략하고 해당 페이지와 지정한 줄의 해시만 반환한다.",
+        properties: {
+          pageId: { type: "string", minLength: 1 },
+          index: { type: "integer", minimum: 0, description: "확인할 줄 번호. 페이지 해시만 필요하면 생략한다." },
+          branchPath: { type: "array", items: { type: "integer" }, description: "분기 안의 줄이면 명령과 분기 번호를 순서대로 넣는다." },
+        },
+        required: ["pageId"], additionalProperties: false,
+      },
     },
     required: ["mapId", "eventId"],
   },
@@ -399,6 +409,19 @@ const getEvent: ToolDefinition = {
       throw new ToolError(`이벤트를 찾을 수 없습니다: ${eventId} (이 맵의 이벤트: ${known})`, { code: "event-not-found", mapId: map.id });
     }
     const pages = event.pages ?? [];
+    if (args.commandHashTarget !== undefined) {
+      const { pageId, index, branchPath = [] } = args.commandHashTarget as { pageId: string; index?: number; branchPath?: number[] };
+      const page = pages.find(entry => entry.id === pageId);
+      if (!page) throw new ToolError("지정한 이벤트 페이지를 찾을 수 없습니다.", { code: "event-page-not-found", mapId: map.id });
+      const command = index === undefined ? undefined : resolveCommandListAtPath(page.commands, [...branchPath, index])?.[index];
+      if (index !== undefined && (branchPath.length % 2 !== 0 || !command)) {
+        throw new ToolError("지정한 페이지의 명령 줄을 찾을 수 없습니다.", { code: "event-command-not-found", mapId: map.id });
+      }
+      return {
+        summary: "선택한 이벤트 페이지의 명령 해시를 읽었습니다.",
+        data: { pageId, expectedPageHash: eventCommandListHash(page.commands), ...(command && { expectedHash: eventCommandHash(command) }) },
+      };
+    }
     return {
       summary: `이벤트 '${event.id}' (${event.x},${event.y}) — 페이지 ${pages.length}개`,
       data: {
@@ -1032,7 +1055,7 @@ const listProjectCommits: ToolDefinition = {
 // "속성 id 를 조회할 기능이 없다"며 작업 3건을 건너뛰었다. 참조 대상은 반드시 조회 가능해야 한다.
 export const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
-  "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
+  "battleAnimations", "skillChoreographies", "switches", "variables", "commonEvents", "quests", "maps",
   "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
   "characterAppearances", "terrains", "battleCommands", "equipmentSlots", "fishSpecies", "schedules",
   "farmBuildingTypes", "homeDecorationTypes",
@@ -1065,7 +1088,7 @@ const SETTING_COLLECTIONS = ["system", "terms"] as const;
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {position, id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을(«#3» = 목록 3번 — 편집기의 0003) 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
+  description: "컬렉션 레코드를 반환한다. 기본은 {position, id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을(«#3» = 목록 3번 — 편집기의 0003) 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/skillChoreographies/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
   mode: "read",
   parameters: {
     type: "object",
@@ -1102,14 +1125,21 @@ const getDatabaseRecords: ToolDefinition = {
       && (!positions || positions.has(position))
       && (!query || String(record.id).toLowerCase().includes(query) || String(record.name ?? "").toLowerCase().includes(query)));
     const offset = typeof args.offset === "number" ? args.offset : 0;
+    const readRecord = ({ record, position }: (typeof matching)[number]) => {
+      if (collection !== "commonEvents" || args.include !== "full" || !("commands" in record) || !Array.isArray(record.commands)) {
+        return { position, ...record };
+      }
+      const { commands, ...fields } = record;
+      return { position, ...fields, commandListHash: eventCommandListHash(commands), commands };
+    };
     let records: Record<string, unknown>[];
-    if (typeof args.limit === "number") records = matching.slice(offset, offset + args.limit).map(({ record, position }) => ({ position, ...record }));
+    if (typeof args.limit === "number") records = matching.slice(offset, offset + args.limit).map(readRecord);
     else {
       // 한도에 드는 만큼만 — 잘린 결과는 커서(nextOffset)를 잃는다(2026-11-16 db-review A F7 · B #4: 기본 프로젝트 스킬 id 목록만 59k 자).
       records = [];
       let used = 0;
-      for (const { record, position } of matching.slice(offset)) {
-        const row = { position, ...record };
+      for (const match of matching.slice(offset)) {
+        const row = readRecord(match);
         const size = JSON.stringify(row).length + 1;
         if (records.length > 0 && used + size > RECORD_PAGE_CHARS) break;
         records.push(row); used += size;

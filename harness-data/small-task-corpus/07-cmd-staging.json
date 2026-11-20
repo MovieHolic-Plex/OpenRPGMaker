@@ -1,1 +1,2034 @@
-[]
+[
+  {
+    "request": "대사 전에 문 열리는 연출을 먼저 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "fx:door-open", "target": "self"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": {"eventId": ""}}
+    ]
+  },
+  {
+    "request": "주인공 위에 타격 효과 한 번 보여주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "anim_hit"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "anim_hit"}
+    ]
+  },
+  {
+    "request": "이 이벤트에서 나무 상자 여는 연출 넣고 끝나면 넘어가.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "fx:container:chest", "target": "self", "wait": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true}
+    ]
+  },
+  {
+    "request": "한 칸 오른쪽, 세 칸 아래에 동전 세 개 뜨게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "fx:popup:gold:3", "x": 1, "y": 3},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": {"x": 1, "y": 3}}
+    ]
+  },
+  {
+    "request": "문열리는 효과, 재생 끝날 때까지 대기요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "fx:door-open", "wait": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true}
+    ]
+  },
+  {
+    "request": "서랍 뒤지는 연출을 이 자리에서 바로 틀어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "fx:container:drawer", "target": "self"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:container:drawer"}
+    ]
+  },
+  {
+    "request": "첫 줄에 주인공이 반짝이며 동전 두 개 얻는 표시를 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "fx:popup:gold:2", "target": "player"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": "player"}
+    ]
+  },
+  {
+    "request": "프로젝트에 없는 얼음 폭발 연출을 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showAnimation.insert",
+    "args": {"index": 0, "animationId": "absent_ice_burst"},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "이미 있는 연출을 문 열리는 걸로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "animationId": "fx:door-open", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:door-open"}
+    ]
+  },
+  {
+    "request": "효과는 그대로, 위치는 주인공 쪽으로 옮겨 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "target": "player", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": "player"}
+    ]
+  },
+  {
+    "request": "연출 끝까지 대기하도록만 고쳐.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "wait": true, "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true}
+    ]
+  },
+  {
+    "request": "연출을 기다리지 말고 바로 다음 줄로 넘어가게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": true}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "wait": false, "expectedHash": "c0872426750dfe919b9fafda7f4028f8"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
+    ]
+  },
+  {
+    "request": "이 인물 대신 가로 두 칸 세로 세 칸 위치에 표시해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "target": "tile", "x": 2, "y": 3, "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": {"x": 2, "y": 3}}
+    ]
+  },
+  {
+    "request": "상자 효과를 서랍 여는 걸로 교체해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "animationId": "fx:container:drawer", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:container:drawer"}
+    ]
+  },
+  {
+    "request": "타격 효과에서 동전 세 개 표시로 수정.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "animationId": "fx:popup:gold:3", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showAnimation"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].animationId", "equals": "fx:popup:gold:3"}
+    ]
+  },
+  {
+    "request": "지금 연출 대상만 다른 맵 경비로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "showAnimation", "target": {"eventId": ""}, "animationId": "fx:container:chest", "wait": false}]},
+    "primitive": "cmd.showAnimation.update",
+    "args": {"index": 0, "targetEventId": "distant_guard", "expectedHash": "45d0cc02495dc2c9854e82eb365cdf12"},
+    "refusalMessage": "현재 맵에서 연출할 이벤트",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "먼저 지금 고른 애 머리 위에 느낌표 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "exclamation"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].emote", "equals": "exclamation"}
+    ]
+  },
+  {
+    "request": "주인공에게 물음표를 잠깐 띄워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "target": "player", "emote": "question", "durationMs": 600},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].target", "equals": "player"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].durationMs", "equals": 600}
+    ]
+  },
+  {
+    "request": "머리위 하트 하나, 일 초만.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "heart", "durationMs": 1000},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].durationMs", "equals": 1000}
+    ]
+  },
+  {
+    "request": "대사 나오기 직전에 당황한 땀방울 좀.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "sweat", "target": "self"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].emote", "equals": "sweat"}
+    ]
+  },
+  {
+    "request": "이 인물이 생각난 듯 전구를 띄우게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "idea"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].emote", "equals": "idea"}
+    ]
+  },
+  {
+    "request": "여기서 졸음표시 삼 초만 보이게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "sleep", "durationMs": 3000},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].durationMs", "equals": 3000}
+    ]
+  },
+  {
+    "request": "기분 좋다는 뜻으로 주인공 위에 음표 부탁.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "music", "target": "player"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].emote", "equals": "music"}
+    ]
+  },
+  {
+    "request": "다른 맵의 신전 경비 위에 하트 올려.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showEmote.insert",
+    "args": {"index": 0, "emote": "heart", "targetEventId": "distant_guard"},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "저 인물의 느낌표를 웃는 표시로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "emote": "smile", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "smile"}
+    ]
+  },
+  {
+    "request": "머리 위 감정은 그대로 두고 표시 시간을 두 초로 늘려 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "durationMs": 2000, "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].durationMs", "equals": 2000}
+    ]
+  },
+  {
+    "request": "이번엔 느낌표를 주인공한테 띄워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "target": "player", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].target", "equals": "player"}
+    ]
+  },
+  {
+    "request": "느낌표 말고 음표, 삼 초만요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "emote": "music", "durationMs": 3000, "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "music"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].durationMs", "equals": 3000}
+    ]
+  },
+  {
+    "request": "지금 있는 감정 표시를 하트로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "emote": "heart", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "heart"}
+    ]
+  },
+  {
+    "request": "머리 위에 땀 흘리는 표시로 수정.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "emote": "sweat", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "sweat"}
+    ]
+  },
+  {
+    "request": "반짝임 효과로 바꾸고 아주 잠깐만 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "emote": "sparkle", "durationMs": 300, "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].kind", "equals": "showEmote"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].emote", "equals": "sparkle"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[0].durationMs", "equals": 300}
+    ]
+  },
+  {
+    "request": "이 감정 줄을 다른 맵 상인 머리 위로 옮겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.showEmote.update",
+    "args": {"index": 0, "targetEventId": "distant_guard", "expectedHash": "c67f548a8fefedbb7dc30696e2f1d8d1"},
+    "refusalMessage": "현재 맵에서 연출할 이벤트",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "들판 배경 그림을 세 번째 자리에 놓아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "pictureId": "pic3"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "oprn-title-field"}
+    ]
+  },
+  {
+    "request": "들판 그림 가로 마흔 세로 스무에 띄워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "x": 40, "y": 20},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].x", "equals": 40},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].y", "equals": 20}
+    ]
+  },
+  {
+    "request": "자리 둘에 들판 그림 반 정도 투명하게 넣어줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "pictureId": "pic2", "opacity": 128},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic2"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].opacity", "equals": 128}
+    ]
+  },
+  {
+    "request": "들판 그림을 절반 크기로, 다 뜨고 나서 다음 줄로 가 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "scale": 50, "waitForPicture": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].scale", "equals": 50},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].waitForPicture", "equals": true}
+    ]
+  },
+  {
+    "request": "들판 그림 왼쪽으로 열두만큼 밖에 걸치게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "x": -12},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].x", "equals": -12}
+    ]
+  },
+  {
+    "request": "들판 그림을 갤러리에도 남겨 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "recordInGallery": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].recordInGallery", "equals": true}
+    ]
+  },
+  {
+    "request": "들판 그림을 화면에 1초 동안 천천히 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "durationMs": 1000, "easing": "easeOut"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].durationMs", "equals": 1000},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].easing", "equals": "easeOut"}
+    ]
+  },
+  {
+    "request": "자료집에 없는 배우의 걷는 그림을 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "actor:absent_actor"},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "엔딩 그림을 오른쪽으로 스무 픽셀 옮겨 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "x": 20, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].x", "equals": 20}
+    ]
+  },
+  {
+    "request": "여러 엔딩이 함께 쓰는 그림 자리를 3번으로 바꿔 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "pictureId": "pic3", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expectRefusal": true,
+    "refusalMessage": "이 그림 자리를 채우고 있어"
+  },
+  {
+    "request": "그림 반투명하게 바꿔줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "opacity": 128, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].opacity", "equals": 128}
+    ]
+  },
+  {
+    "request": "이 그림의 크기만 사분의 일로.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "scale": 25, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].scale", "equals": 25}
+    ]
+  },
+  {
+    "request": "엔딩 그림이 다 뜰때까지 기다리도록 고쳐 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "waitForPicture": true, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].waitForPicture", "equals": true}
+    ]
+  },
+  {
+    "request": "그림의 화면 세로 좌표를 -12픽셀로 바꿔 줘요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "y": -12, "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].y", "equals": -12}
+    ]
+  },
+  {
+    "request": "그림을 겹칠 때 이미 있는 화면과 곱해지게 해.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "blendMode": "multiply", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].kind", "equals": "showPicture"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[51].options[0].branch[47].blendMode", "equals": "multiply"}
+    ]
+  },
+  {
+    "request": "엔딩 그림 대신 등록 안 한 새 얼굴 그림으로 바꿔.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "resourceId": "absent_portrait", "branchPath": [51, 0], "expectedHash": "fd9141a828a6701ada70287b9a14ef1a"},
+    "refusalMessage": "프로젝트에서 표시할 수 있는 그림",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "세 번째 그림을 화면에서 치워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "pic3"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"}
+    ]
+  },
+  {
+    "request": "사진 자리 하나 비워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic1"}
+    ]
+  },
+  {
+    "request": "그림 2번 지워줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "pic2"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic2"}
+    ]
+  },
+  {
+    "request": "기념사진이라고 붙인 그림만 닫아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "기념사진"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "기념사진"}
+    ]
+  },
+  {
+    "request": "화면 네번째 그림 내리기.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "pic4"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic4"}
+    ]
+  },
+  {
+    "request": "다음 장면 전에 지도 조각을 숨겨 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "지도 조각"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "지도 조각"}
+    ]
+  },
+  {
+    "request": "열두 번 자리에 띄운 사진을 게임 화면에서 지워줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "pic12"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic12"}
+    ]
+  },
+  {
+    "request": "자리 이름은 공백만 넣어서 화면 그림 하나 지워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.erasePicture.insert",
+    "args": {"index": 0, "pictureId": "   "},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "그림 지우기 줄이 가리키는 자리를 3번으로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "pic3", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"}
+    ]
+  },
+  {
+    "request": "지우는 사진의 이름을 기념사진으로 돌려 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "기념사진", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "기념사진"}
+    ]
+  },
+  {
+    "request": "일 번 말고 두 번 그림을 치우게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "pic2", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic2"}
+    ]
+  },
+  {
+    "request": "삭제 명령의 그림 자리를 여섯째로 고쳐줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "pic6", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic6"}
+    ]
+  },
+  {
+    "request": "지금 명령은 지도 조각 사진만 내리게 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "지도 조각", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "지도 조각"}
+    ]
+  },
+  {
+    "request": "내리는 그림을 여덟번 자리로 수정.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "pic8", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic8"}
+    ]
+  },
+  {
+    "request": "다른 건 놔두고 열 번 사진만 숨기도록 고쳐 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "pic10", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "erasePicture"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic10"}
+    ]
+  },
+  {
+    "request": "지울 그림 자리 이름을 공백만 남기도록 수정.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "erasePicture", "pictureId": "pic1"}]},
+    "primitive": "cmd.erasePicture.update",
+    "args": {"index": 0, "pictureId": "   ", "expectedHash": "ca06532987c0719069763c44a4ebed31"},
+    "refusalMessage": "값의 형식",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "대사 받기 전에 나무 상자 뚜껑 여는 소리 한 번.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-osx-wooded-box-open", "channel": "se"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "cc0-se-osx-wooded-box-open"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "se"}
+    ]
+  },
+  {
+    "request": "동전 짤랑 소리 작게 부탁해요. 사십 퍼센트쯤.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-orp-inventory-coin", "volume": 40},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].volume", "equals": 40}
+    ]
+  },
+  {
+    "request": "종 소리 추가해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-osx-bell-01"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "cc0-se-osx-bell-01"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].loop", "equals": false}
+    ]
+  },
+  {
+    "request": "환경음용으로 작은 종 소리를 반복 재생해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-osx-bell-01", "channel": "bgs", "loop": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "bgs"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].loop", "equals": true}
+    ]
+  },
+  {
+    "request": "상자 소리 반 초에 걸쳐 커지도록 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-osx-wooded-box-open", "fadeInMs": 500},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].fadeInMs", "equals": 500}
+    ]
+  },
+  {
+    "request": "첫 줄에서 알림 종을 음량 70으로 한번 울려요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-osx-bell-01", "channel": "se", "volume": 70},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].volume", "equals": 70}
+    ]
+  },
+  {
+    "request": "짧은 음악 채널에 동전 효과 넣을래.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "cc0-se-orp-inventory-coin", "channel": "me", "loop": false},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "me"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].loop", "equals": false}
+    ]
+  },
+  {
+    "request": "등록하지 않은 사람 목소리 파일을 찾아서 재생해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playAudio.insert",
+    "args": {"index": 0, "resourceId": "absent_voice_resource"},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "상자 소리를 동전 효과로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "resourceId": "cc0-se-orp-inventory-coin", "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].resourceId", "equals": "cc0-se-orp-inventory-coin"}
+    ]
+  },
+  {
+    "request": "그 소리는 반 정도로 줄여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "volume": 50, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].volume", "equals": 50}
+    ]
+  },
+  {
+    "request": "반복해서 흐르게 바꿔. 환경음으로.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "channel": "bgs", "loop": true, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].channel", "equals": "bgs"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].loop", "equals": true}
+    ]
+  },
+  {
+    "request": "뚜껑 소리 대신 작은 종소리로 교체해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "resourceId": "cc0-se-osx-bell-01", "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].resourceId", "equals": "cc0-se-osx-bell-01"}
+    ]
+  },
+  {
+    "request": "재생 설정에서 소리가 한 초에 걸쳐 커지게 수정해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "fadeInMs": 1000, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].fadeInMs", "equals": 1000}
+    ]
+  },
+  {
+    "request": "이 소리만 빼지 말고 음량 0으로 바꿔줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "volume": 0, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].volume", "equals": 0}
+    ]
+  },
+  {
+    "request": "이 소리를 짧게 한 번 재생하는 음악 채널로 돌려요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "channel": "me", "loop": false, "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].kind", "equals": "playAudio"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[0].commands[0].channel", "equals": "me"}
+    ]
+  },
+  {
+    "request": "상자 소리를 아직 없는 녹음 파일로 변경해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.playAudio.update",
+    "args": {"index": 0, "resourceId": "absent_recording", "expectedHash": "c5802435276fe31310225ddf9dd47338"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 소리",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "배경음악만 멈추게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "bgm"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "stopAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "bgm"}
+    ]
+  },
+  {
+    "request": "소리 전부 끄는 줄 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "stopAudio"}}]
+  },
+  {
+    "request": "환경음 정지.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "bgs"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "stopAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "bgs"}
+    ]
+  },
+  {
+    "request": "효과음만 다 끊어줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "se"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "stopAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "se"}
+    ]
+  },
+  {
+    "request": "알림에 쓰는 짧은 음악을 여기서 멈춰 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "me"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "stopAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "me"}
+    ]
+  },
+  {
+    "request": "무음으로 넘어가게 맨 먼저 모든 재생을 멈춰.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "all"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "stopAudio"}}]
+  },
+  {
+    "request": "주변소리는 두고 배경곡을 내렸으면 해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "bgm"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "stopAudio"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].channel", "equals": "bgm"}
+    ]
+  },
+  {
+    "request": "있는 채널과 별도로 라디오 채널만 멈춰 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.stopAudio.insert",
+    "args": {"index": 0, "channel": "radio"},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "지금 정지 명령은 효과음만 멈추게 바꿔.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "se", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "se"}
+    ]
+  },
+  {
+    "request": "배경 음악만 끄도록 고쳐 주시겠어요?",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "bgm", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "bgm"}
+    ]
+  },
+  {
+    "request": "하나만 끄는거 말고 몽땅 정지.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "all", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [{"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2]", "equals": {"kind": "stopAudio"}}]
+  },
+  {
+    "request": "멈추는 소리는 배경음 말고 주변음으로 해 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "bgs", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "bgs"}
+    ]
+  },
+  {
+    "request": "짧게 나오는 음악 채널만 끄도록 정지 줄을 편집해.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "me", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "me"}
+    ]
+  },
+  {
+    "request": "그 정지 줄의 적용 대상을 모든 소리로 바꿔줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "all", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [{"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2]", "equals": {"kind": "stopAudio"}}]
+  },
+  {
+    "request": "효과음만 딱 정지, 다른 채널은 놔 둬.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "se", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].kind", "equals": "stopAudio"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_end].pages[3].commands[2].channel", "equals": "se"}
+    ]
+  },
+  {
+    "request": "정지 대상만 프로젝트에 없는 라디오 채널로 고쳐.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.stopAudio.update",
+    "args": {"index": 2, "channel": "radio", "expectedHash": "7824dd82f620f58860155022c9373001"},
+    "refusalMessage": "값의 형식",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "달밤의 오프닝 영상 한편 틀어줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie"},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "staging_corpus_movie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": true}
+    ]
+  },
+  {
+    "request": "오프닝 재생하는 동안도 이벤트가 계속 가도록 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
+    ]
+  },
+  {
+    "request": "달밤 영상은 스킵 안되게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie", "skippable": false},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
+    ]
+  },
+  {
+    "request": "달밤 영상은 건너뛸 수 있고 끝날 때까지 다음 줄은 기다려 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": true, "skippable": true},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": true}
+    ]
+  },
+  {
+    "request": "처음에 달밤 동영상 넣어. 대기는 하지 마.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
+    ]
+  },
+  {
+    "request": "업로드한 달밤 영상 보여주고 다 끝나면 대사로 넘어가.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": true},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true}
+    ]
+  },
+  {
+    "request": "달밤의 오프닝은 기다리지도 말고 건너뛰기도 막아 줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false, "skippable": false},
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
+    ]
+  },
+  {
+    "request": "올린 적 없는 엔딩 영상 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "absent_end_movie"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "영상은 끝까지 기다리지 않게 고쳐 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "wait": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
+    ]
+  },
+  {
+    "request": "지금 오프닝은 건너뛰지 못하게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
+    ]
+  },
+  {
+    "request": "클립이랑 대사는 같이 돌리고 스킵은 켜 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "wait": false, "skippable": true, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": true}
+    ]
+  },
+  {
+    "request": "영상 끝나면 넘어가되 생략 버튼은 막도록 고쳐.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "wait": true, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
+    ]
+  },
+  {
+    "request": "영상 나오는 동안 다음 이벤트 명령도 실행해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "wait": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
+    ]
+  },
+  {
+    "request": "건너뛰기 막고 다음 연출도 바로 실행되도록 설정.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "wait": false, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
+    ]
+  },
+  {
+    "request": "지금 틀던 영상을 계속 보게 스킵만 해제해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "skippable": false, "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
+    ]
+  },
+  {
+    "request": "기존 영상 대신 등록 안 된 영상으로 바꿔요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": true, "skippable": true}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "resourceId": "absent_clip", "expectedHash": "7322ce03a68084c8d34d440de9791127"},
+    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "방 좀 어둡게 해 줘요. 어둠 절반만.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "ambient": 0.5},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].ambient", "equals": 0.5}
+    ]
+  },
+  {
+    "request": "완전히 암전. 삼 초에 걸쳐.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "ambient": 1, "transitionMs": 3000},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].ambient", "equals": 1},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 3000}
+    ]
+  },
+  {
+    "request": "불켜진 것처럼 어둠을 전부 걷어 내.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "ambient": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].ambient", "equals": 0}
+    ]
+  },
+  {
+    "request": "따뜻한 크림색 조명을 약하게 깔아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "ambient": 0.2, "color": "#ffe6a0"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].ambient", "equals": 0.2},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].color", "equals": "#ffe6a0"}
+    ]
+  },
+  {
+    "request": "칠십 퍼센트만 어둡게, 바로 바꿔줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "ambient": 0.7, "transitionMs": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].ambient", "equals": 0.7},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 0}
+    ]
+  },
+  {
+    "request": "새벽처럼 푸른빛으로 반초에 바꿔 줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "color": "#193452", "transitionMs": 500},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].color", "equals": "#193452"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 500}
+    ]
+  },
+  {
+    "request": "조명은 기본값으로 한 줄 넣자.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].ambient", "equals": 0.85},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].color", "equals": "#000000"}
+    ]
+  },
+  {
+    "request": "방을 백이십 퍼센트나 어둡게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setLighting.insert",
+    "args": {"index": 0, "ambient": 1.2},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "저녁빛 어둠을 칠십 퍼센트로 높여 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "ambient": 0.7, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].ambient", "equals": 0.7}
+    ]
+  },
+  {
+    "request": "기존 조명을 보랏빛으로만 바꿔 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "color": "#321953", "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].color", "equals": "#321953"}
+    ]
+  },
+  {
+    "request": "암전 정도 건들지 말고 전환 두초 더 부드럽게.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "transitionMs": 2000, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].transitionMs", "equals": 2000}
+    ]
+  },
+  {
+    "request": "지금 색으로 완전히 어둡게 바꿔 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "ambient": 1, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].ambient", "equals": 1}
+    ]
+  },
+  {
+    "request": "저녁빛이 너무 진하니 삼십 퍼센트로 줄여줘요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "ambient": 0.3, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].ambient", "equals": 0.3}
+    ]
+  },
+  {
+    "request": "어둠 뚝 끊기는 대신 반 초로 바꾸자.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "transitionMs": 500, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].transitionMs", "equals": 500}
+    ]
+  },
+  {
+    "request": "조명 설정의 남색을 연한 하늘색으로 고쳐 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "color": "#b5d9ff", "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].kind", "equals": "setLighting"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[0].color", "equals": "#b5d9ff"}
+    ]
+  },
+  {
+    "request": "조명이 0초보다 빨리 바뀌게 음수 시간을 넣어.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.setLighting.update",
+    "args": {"index": 0, "transitionMs": -100, "expectedHash": "120403350113d8e7ea041032487e90c6"},
+    "refusalMessage": "값의 형식",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "이 이벤트에 촛불 하나, 세 칸까지 일렁이게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "id": "candle", "target": "self", "radius": 3, "flicker": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "candle", "at": {"eventId": "ev_world_gate_fr1ddn"}, "radius": 3, "intensity": 1, "flicker": true}}
+    ]
+  },
+  {
+    "request": "주인공에게 노란 등불을 달아주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "id": "lantern", "target": "player", "color": "#ffdd85"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "lantern", "at": "player", "radius": 4, "intensity": 1, "color": "#ffdd85"}}
+    ]
+  },
+  {
+    "request": "가로 둘 세로 셋 칸에 반경 한 칸짜리 빛을 켜 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "id": "corner", "x": 2, "y": 3, "radius": 1},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "corner", "at": {"x": 2, "y": 3}, "radius": 1, "intensity": 1}}
+    ]
+  },
+  {
+    "request": "플레이어 등불은 반만 밝게 추가.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "id": "dim_player", "intensity": 0.5},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "dim_player", "at": "player", "radius": 4, "intensity": 0.5}}
+    ]
+  },
+  {
+    "request": "주인공 앞쪽으로 육십 도만 비추는 빛을 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "id": "beam", "coneDegrees": 60, "coneFacing": "down"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "beam", "at": "player", "radius": 4, "intensity": 1, "cone": {"degrees": 60, "facing": "down"}}}
+    ]
+  },
+  {
+    "request": "등불이 빛을 퍼뜨리는 끝이 딱 끊기게 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "id": "guard_beam", "edge": "hard"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "guard_beam", "at": "player", "radius": 4, "intensity": 1, "edge": "hard"}}
+    ]
+  },
+  {
+    "request": "조명 말고 내 캐릭터를 따라다니는 빛 한 개 추가해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "addLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].source", "equals": {"id": "light_1", "at": "player", "radius": 4, "intensity": 1}}
+    ]
+  },
+  {
+    "request": "맵 바깥 가로 구백구십구 칸에 촛불 올려.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addLight.insert",
+    "args": {"index": 0, "x": 999, "y": 3},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "계산대 불빛 반경만 여덟 칸으로 넓혀 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "radius": 8, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.radius", "equals": 8}
+    ]
+  },
+  {
+    "request": "계산대 빛이 촛불처럼 흔들리도록 바꿔 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "flicker": true, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.flicker", "equals": true}
+    ]
+  },
+  {
+    "request": "원래 빛을 주인공 몸에 붙여줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "target": "player", "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.at", "equals": "player"}
+    ]
+  },
+  {
+    "request": "지금 등불의 세기를 절반으로 줄이고 싶어요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "intensity": 0.5, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.intensity", "equals": 0.5}
+    ]
+  },
+  {
+    "request": "빛중에 색깔만 빨간색으로 바꾸기.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "color": "#e02020", "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.color", "equals": "#e02020"}
+    ]
+  },
+  {
+    "request": "계산대 광원이 닿는 경계가 확실하게 바꿔.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "edge": "hard", "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.edge", "equals": "hard"}
+    ]
+  },
+  {
+    "request": "등불을 가로 셋 아래 둘 위치로 옮겨 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "x": 3, "y": 2, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "expect": [
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].kind", "equals": "addLight"},
+      {"at": "maps.map_mk_konbini.events[id=ev_mk_ctrl_brief].pages[3].commands[1].source.at", "equals": {"x": 3, "y": 2}}
+    ]
+  },
+  {
+    "request": "등불의 반경을 마이너스 세 칸으로 고쳐.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_brief", "pageId": "ev_mk_ctrl_brief_p7"},
+    "primitive": "cmd.addLight.update",
+    "args": {"index": 1, "radius": -3, "expectedHash": "cdbce38d20a4b544b5f5aa19c30343e5"},
+    "refusalMessage": "값의 형식",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "촛불만 꺼줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "id": "candle"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "candle"}
+    ]
+  },
+  {
+    "request": "켜진 빛 전부 끄는 줄을 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "all": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].all", "equals": true}
+    ]
+  },
+  {
+    "request": "주인공이 들고 있는 등불을 내려 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "id": "lantern"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "lantern"}
+    ]
+  },
+  {
+    "request": "주변 광원 몽땅 끄기.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].all", "equals": true}
+    ]
+  },
+  {
+    "request": "모퉁이 조명만 빼고 싶어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "id": "corner"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "corner"}
+    ]
+  },
+  {
+    "request": "경비 등불 표시만 끄고 다른 빛은 놔둬.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "id": "guard_beam"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "guard_beam"}
+    ]
+  },
+  {
+    "request": "테스트 마지막엔 가운데 불만 꺼주실래요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "id": "middle"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "middle"}
+    ]
+  },
+  {
+    "request": "촛불 하나랑 모든 광원을 한 설정으로 동시에 선택해서 꺼.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeLight.insert",
+    "args": {"index": 0, "id": "candle", "all": true},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "그 불 끄는 줄을 전체 광원 정지로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "all": true, "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].all", "equals": true}
+    ]
+  },
+  {
+    "request": "전에 쓰던 등불 말고 모퉁이 것만 끄게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "id": "corner", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "corner"}
+    ]
+  },
+  {
+    "request": "끊어야 하는 광원 이름은 주인공 등불로 수정.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "id": "lantern", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "lantern"}
+    ]
+  },
+  {
+    "request": "중간 불만 끄게 고쳐줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "id": "middle", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "middle"}
+    ]
+  },
+  {
+    "request": "장면이 어두워지게 불 전부 꺼지는 걸로 수정해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "all": true, "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].all", "equals": true}
+    ]
+  },
+  {
+    "request": "촛불 대신 가드 초롱불을 내리도록 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "id": "guard_beam", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "guard_beam"}
+    ]
+  },
+  {
+    "request": "이 소등 명령은 빈방 조명 하나만 끄게 됐으면 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "id": "empty_room_light", "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "removeLight"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].id", "equals": "empty_room_light"}
+    ]
+  },
+  {
+    "request": "끄는 광원 이름이랑 전체 끄기 둘 다 제대로 켜 달라니까.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "removeLight", "id": "candle"}]},
+    "primitive": "cmd.removeLight.update",
+    "args": {"index": 0, "id": "corner", "all": true, "expectedHash": "a5acf9dec1b6db262c6fad880b9ac1a6"},
+    "refusalMessage": "빛 하나 또는 전체",
+    "expectRefusal": true
+  },
+
+  {
+    "request": "비 오게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "rain"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.5}
+    ]
+  },
+  {
+    "request": "눈발을 약하게, 세기 삼십으로 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "snow", "intensity": 0.3},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "snow"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.3}
+    ]
+  },
+  {
+    "request": "폭풍을 세게 불게해. 천천히 두 초.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "storm", "intensity": 1, "transitionMs": 2000},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "storm"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 2000}
+    ]
+  },
+  {
+    "request": "안게 깔아줘 반 정도.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "fog", "intensity": 0.5},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "fog"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.5}
+    ]
+  },
+  {
+    "request": "맑아지는 명령을 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "none"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "none"}
+    ]
+  },
+  {
+    "request": "일초 반에 걸쳐 가랑비가 시작됐으면 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "rain", "intensity": 0.2, "transitionMs": 1500},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.2},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 1500}
+    ]
+  },
+  {
+    "request": "여기 눈 오는 설정 추가 부탁. 바로 변하게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "snow", "transitionMs": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "snow"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 0}
+    ]
+  },
+  {
+    "request": "바람이 강한 게 아니라 세기 일 점 오로 저장해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "storm", "intensity": 1.5},
+    "expectRefusal": true
+  },
+
+  {
+    "request": "눈 말고 비 오게 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "weather": "rain", "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "rain"}
+    ]
+  },
+  {
+    "request": "눈은 그대로 유지하고 강도는 삼십 퍼센트로 낮춰 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "intensity": 0.3, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.3}
+    ]
+  },
+  {
+    "request": "지금 눈 내리는 장면을 안개로 수정해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "weather": "fog", "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "fog"}
+    ]
+  },
+  {
+    "request": "날씨 효과 없이 맑게 개는 걸로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "weather": "none", "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "none"}
+    ]
+  },
+  {
+    "request": "눈이 갑자기 오지 않고 두 초 반 동안 세져야 해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "transitionMs": 2500, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 2500}
+    ]
+  },
+  {
+    "request": "눈발이 세게, 팔십 퍼센트로.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "intensity": 0.8, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].intensity", "equals": 0.8}
+    ]
+  },
+  {
+    "request": "날씨를 바로 폭풍으로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "weather": "storm", "transitionMs": 0, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "setWeather"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].weather", "equals": "storm"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].transitionMs", "equals": 0}
+    ]
+  },
+  {
+    "request": "날씨 강도를 2로 바꿔요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "setWeather", "weather": "snow", "intensity": 0.5, "transitionMs": 1000}]},
+    "primitive": "cmd.setWeather.update",
+    "args": {"index": 0, "intensity": 2, "expectedHash": "97ae3a46bc4cf54853818d45d6ae6d30"},
+    "refusalMessage": "값의 형식",
+    "expectRefusal": true
+  },
+  {
+    "request": "비로 바뀌는 데 9007199254740992밀리초가 걸리게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "rain", "transitionMs": 9007199254740992},
+    "expectRefusal": true
+  },
+  {
+    "request": "예전 기본 타이틀 그림을 이 이벤트 첫 줄에서 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "easyrpg-title-title1"},
+    "expectRefusal": true
+  },
+  {
+    "request": "엔딩 선택지 안의 그림을 방금 읽었던 줄 기준으로 조금 오른쪽에 옮겨 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "x": 20, "branchPath": [51, 0], "expectedHash": "stale"},
+    "refusalMessage": "명령 목록이 바뀌었어요",
+    "expectRefusal": true
+  },
+  {
+    "request": "들판 그림을 3번 자리에 넣어 줘. 자리 이름 앞뒤의 공백은 빼 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "pictureId": " pic3 "},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"}
+    ]
+  },
+  {
+    "request": "들판 그림이 60초를 넘겨서 나타나게 설정해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "durationMs": 60001},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 줄에 번들 샘플 동영상을 바로 틀어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.playMovie.insert",
+    "args": {"index": 0, "resourceId": "sample-movie.webm", "wait": false},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "playMovie", "resourceId": "sample-movie.webm", "wait": false, "skippable": true}}
+    ]
+  },
+  {
+    "request": "첫 줄 동영상을 번들 샘플로 바꾸고 재생 대기는 그대로 둬.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "setup": {"commands": [{"kind": "playMovie", "resourceId": "staging_corpus_movie", "wait": false}]},
+    "primitive": "cmd.playMovie.update",
+    "args": {"index": 0, "resourceId": "sample-movie.webm", "expectedHash": "8ad0741edf93cffb160f465c730da4ed"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "playMovie", "resourceId": "sample-movie.webm", "wait": false}}
+    ]
+  }
+]
