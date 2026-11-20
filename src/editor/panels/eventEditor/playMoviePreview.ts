@@ -4,7 +4,7 @@
 // 한 표면 안에 있고, 가짜 연출을 그리지 않는다 — 진짜 <video> 를 걸고 브라우저가 재생한다.
 //
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import type { Project } from "@/project/types";
+import type { Project, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
@@ -39,7 +39,7 @@ export type MovieResourceEntry = {
  */
 export function listMovieResources(project: Pick<Project, "assets">, selectedId?: string): readonly MovieResourceEntry[] {
   const entries = Object.values(project.assets.uploaded)
-    .filter((asset) => asset.kind === "movie" || isMovieMedia(uploadedAssetUrl(asset)))
+    .filter((asset) => isMovieUpload(asset))
     .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }));
   if (selectedId === SAMPLE_MOVIE_RESOURCE.id && !Object.hasOwn(project.assets.uploaded, selectedId)) {
     entries.push({ id: selectedId, name: SAMPLE_MOVIE_RESOURCE.name });
@@ -57,9 +57,9 @@ export function resolveMovieResourceUrl(
   project: Pick<Project, "assets">
 ): string | null {
   if (!resourceId) return null;
-  const uploadedAsset = project.assets.uploaded[resourceId];
+  const uploadedAsset = Object.hasOwn(project.assets.uploaded, resourceId) ? project.assets.uploaded[resourceId] : undefined;
   const uploaded = uploadedAsset ? uploadedAssetUrl(uploadedAsset) : "";
-  if (uploaded !== "") return isMovieMedia(uploaded) ? uploaded : null;
+  if (uploadedAsset && uploaded !== "") return isMovieUpload(uploadedAsset, uploaded) ? uploaded : null;
   const resolved = resolveAssetResourceUrl(resourceId, { project });
   if (resolved !== null && isMovieMedia(resolved)) return resolved;
   return resourceId === SAMPLE_MOVIE_RESOURCE.id && !uploadedAsset && resolved === null ? SAMPLE_MOVIE_RESOURCE.url : null;
@@ -109,6 +109,10 @@ export function renderMoviePreviewStage(url: string | null): MoviePreviewStage {
   // fakeDom 에는 play() 가 없다. 실제 브라우저에서만 자동 재생을 시도한다.
   video.play?.()?.catch(() => {});
   return { stage, video };
+}
+
+function isMovieUpload(asset: UploadedAsset, url?: string): boolean {
+  return asset.kind === "movie" || isMovieMedia(url ?? uploadedAssetUrl(asset));
 }
 
 function isMovieMedia(value: string): boolean {

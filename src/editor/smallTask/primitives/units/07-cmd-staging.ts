@@ -1,8 +1,10 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
+import { findBgmTrack } from "@/assets/bgmCatalog";
 import { isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { SE_CATALOG } from "@/assets/seCatalog";
 import { newCommand } from "@/editor/eventCommandFactory";
-import { audioName, commandSummary } from "@/editor/panels/eventEditor/commandSummary";
+import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import { SAMPLE_MOVIE_RESOURCE } from "@/editor/panels/eventEditor/playMoviePreview";
 import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
@@ -325,7 +327,7 @@ function hasUnresolvedSlotScript(project: Project, slot: "picture" | "light"): b
     || (project.scriptLibrary ?? []).some(mayCallSlotCommand);
 }
 
-function validateSlotRename(project: Project, map: GameMap, command: StagingCommand, previous: StagingCommand | undefined): void {
+function validateSlotRename(project: Project, after: Project, map: GameMap, command: StagingCommand, previous: StagingCommand | undefined): void {
   if (command.kind === "showPicture" && previous?.kind === "showPicture" && command.pictureId !== previous.pictureId) {
     if (hasCommandReference(project, row => referencesPicture(row, previous.pictureId))) {
       throw new PrimitiveError("다른 명령에서 이 그림을 움직이거나 지우고 있어 그림 자리를 바꿀 수 없습니다.");
@@ -350,6 +352,9 @@ function validateSlotRename(project: Project, map: GameMap, command: StagingComm
       }
       if (hasCommandReference(project, row => row.kind === "removeLight" && row.all !== true && row.id === oldId)) {
         throw new PrimitiveError("다른 명령에서 이 광원을 끄고 있어 광원 이름을 바꿀 수 없습니다.");
+      }
+      if (hasCommandReference(after, row => row.kind === "addLight" && normalizeLightSource(row.source).id === oldId)) {
+        throw new PrimitiveError("다른 명령에서 이 광원을 켜고 있어 광원 이름을 바꿀 수 없습니다.");
       }
       if (isDefaultLight(newId)
         || hasCommandReference(project, row => (row.kind === "addLight" && normalizeLightSource(row.source).id === newId)
@@ -403,6 +408,9 @@ function prepareEdit(ctx: PrimitiveContext, args: Args, kind: Kind, mode: Mode) 
   if (mode === "update" && args.expectedHash !== hash) {
     throw new PrimitiveError(STALE_COMMAND_LIST);
   }
+  if (current && list.some((candidate, position) => position !== index && candidate.kind === kind && eventCommandHash(candidate) === hash)) {
+    throw new PrimitiveError("선택한 목록에 같은 명령이 여러 개 있어 수정할 줄을 확인할 수 없습니다.");
+  }
   const command = buildCommand(current ?? (newCommand(kind) as StagingCommand), args, map, event.id);
   if ((command.kind === "showPicture" || command.kind === "erasePicture")
     && args.pictureId !== undefined && Object.hasOwn(Object.prototype, command.pictureId)) {
@@ -420,7 +428,7 @@ function referenceName(project: Project, id: string, fallback: string, catalogNa
   const actorId = actorPictureActorId(id);
   const name = actorId ? project.database.actors.find(actor => actor.id === actorId)?.name
     : project.assets.uploaded[id]?.name ?? project.resourceProfiles.find(profile => profile.assetId === id)?.name ?? catalogName;
-  return safeName(name === id ? undefined : name, fallback);
+  return displayText(name === (actorId ?? id) ? "" : (name ?? "").replace(/[\[\]{}]/gu, " "), fallback);
 }
 
 function pictureSlotName(id: string): string {
@@ -470,7 +478,8 @@ function summaryDetails(ctx: PrimitiveContext, map: GameMap, cmd: StagingCommand
       return pictureSlotName(cmd.pictureId);
     case "playAudio": {
       const channel = audioNames[cmd.channel ?? (cmd.loop ? "bgm" : "se")] ?? "지정한 소리";
-      return detail({ ...cmd, resourceId: "" }).replace("(선택 없음)", () => referenceName(project, cmd.resourceId, channel, audioName(cmd.resourceId)));
+      const catalogName = findBgmTrack(cmd.resourceId)?.title ?? SE_CATALOG.find(entry => entry.id === cmd.resourceId)?.title;
+      return detail({ ...cmd, resourceId: "" }).replace("(선택 없음)", () => referenceName(project, cmd.resourceId, channel, catalogName));
     }
     case "stopAudio":
       return cmd.channel ? audioNames[cmd.channel] ?? "지정한 소리" : "모든 소리";
@@ -537,8 +546,7 @@ function makePrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
     apply(ctx, args) {
       const { map, command, branchPath, index, current, hash } = prepareEdit(ctx, args, kind, mode);
       validateReferences(ctx.project, command, current);
-      validateSlotRename(ctx.project, map, command, current);
-      return updateScopedPage(ctx, page => {
+      const after = updateScopedPage(ctx, page => {
         try {
           const path = [...branchPath, index];
           const isolatedPage = isolateSharedBranch(page, branchPath);
@@ -555,6 +563,8 @@ function makePrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
           throw new PrimitiveError("명령 줄의 위치나 설정을 다시 확인해 주세요.");
         }
       });
+      validateSlotRename(ctx.project, after, map, command, current);
+      return after;
     },
   };
 }

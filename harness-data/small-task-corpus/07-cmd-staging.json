@@ -503,7 +503,7 @@
     ]
   },
   {
-    "request": "그림 세로 위치를 열두 칸 올려 줘요.",
+    "request": "그림의 화면 세로 좌표를 -12픽셀로 바꿔 줘요.",
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
@@ -1060,8 +1060,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie"},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "staging_corpus_movie"},
@@ -1075,8 +1074,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
@@ -1088,8 +1086,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "skippable": false},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].skippable", "equals": false}
@@ -1101,8 +1098,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": true, "skippable": true},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true},
@@ -1115,8 +1111,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false}
@@ -1128,8 +1123,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": true},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": true}
@@ -1141,8 +1135,7 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.playMovie.insert",
     "args": {"index": 0, "resourceId": "staging_corpus_movie", "wait": false, "skippable": false},
-    "refusalMessage": "프로젝트에서 재생할 수 있는 동영상",
-    "expectRefusal": true,
+    "seed": {"uploaded": {"staging_corpus_movie": {"id": "staging_corpus_movie", "name": "달밤의 오프닝", "kind": "movie", "dataUrl": "data:video/webm;base64,GkXfow==", "meta": {}}}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "playMovie"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].wait", "equals": false},

@@ -44,6 +44,7 @@ export interface CorpusSetup {
   variables?: Project["variables"];
   switches?: Project["switches"];
   endings?: Project["endings"];
+  uploaded?: Project["assets"]["uploaded"];
   commands?: Command[];
 }
 

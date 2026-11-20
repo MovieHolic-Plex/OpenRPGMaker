@@ -1,16 +1,14 @@
 /** @vitest-environment happy-dom */
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { smallTaskErrorMessage } from "@/editor/smallTask/capsule";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/07-cmd-staging";
 import { mapTarget } from "@/editor/smallTask/target";
-import { SAMPLE_MOVIE_RESOURCE } from "@/editor/panels/eventEditor/playMoviePreview";
+import { SAMPLE_MOVIE_RESOURCE, resolveMovieResourceUrl as resolveMoviePreviewUrl } from "@/editor/panels/eventEditor/playMoviePreview";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
 import zh from "@/i18n/catalogs/zh.json";
@@ -253,6 +251,13 @@ it("같은 종류의 줄이 재정렬되면 확인값 없는 요청과 이전 �
   await expectUndoRestores(project, after, target);
 });
 
+it("같은 내용의 명령이 이동해도 원래 줄로 오인해 수정하지 않는다", () => {
+  const emote: Command = { kind: "showEmote", emote: "heart", target: "player" };
+  const { project, target, page } = fixture("blank", [{ ...emote }, emote, WAIT]);
+  expectRefused(project, target, "cmd.showEmote.update", editArgs(emote, { durationMs: 500 }), /같은 명령이 여러 개/u);
+  expect(page.commands).toStrictEqual([emote, emote, WAIT]);
+});
+
 it("없는 분기와 줄에 쓰지 않고, 비어 있는 분기에는 끝에 추가한다", () => {
   const loop: Command = { kind: "loop", body: [] };
   const { project, target, mapId } = fixture("blank", [LINE, loop]);
@@ -343,6 +348,18 @@ it("같은 페이지의 다른 분기에서 지우는 그림은 자리를 바꿀
     index: 0, pictureId: "new_card", expectedHash: eventCommandHash(slotPicture),
   }, /그림 자리를 바꿀 수 없습니다/u);
   expect(page.commands).toStrictEqual(before);
+});
+
+it("다른 명령이 켜는 광원은 이름을 보존하면서 반지름만 고친다", () => {
+  const earlier = { ...slotLight, source: { ...slotLight.source, id: " door_lamp ", radius: 1 } };
+  const { project, target, mapId } = fixture("blank", [earlier, slotLight]);
+  expectRefused(project, target, "cmd.addLight.update", editArgs(slotLight, { index: 1, id: "new_lamp" }), /이 광원을 켜고 있어/u);
+  const { after } = expectApplies(project, target, "cmd.addLight.update", editArgs(slotLight, { index: 1, radius: 5 }));
+  const commands = selectedPage(after, mapId).commands;
+  expect(commands).toStrictEqual([earlier, { ...slotLight, source: { ...slotLight.source, radius: 5 } }]);
+  const session = startSession(after, 7);
+  expect(createInterpreter(commands, session, after).start().kind).toBe("done");
+  expect(session.lighting?.sources).toEqual([{ ...slotLight.source, radius: 5 }]);
 });
 
 it("공용 이벤트에서 이동시키는 그림은 자리를 바꿀 수 없다", () => {
@@ -517,7 +534,7 @@ it("번들 동영상과 이름이 같은 잘못된 업로드 및 확인되지 �
   }
 });
 
-it("SQLite에서 다시 연 업로드 동영상의 해시를 플레이어가 호스트 URL로 해석한다", async () => {
+it("SQLite에서 다시 연 업로드 동영상의 호스트 URL을 편집기와 플레이어가 함께 쓴다", async () => {
   const { repository, close } = await createLocalRepositoryFixture();
   try {
     const { project, target, mapId } = fixture("blank", []);
@@ -533,10 +550,19 @@ it("SQLite에서 다시 연 업로드 동영상의 해시를 플레이어가 호
     if (step.kind !== "playMovie") throw new Error("동영상 재생 단계가 없습니다.");
     setUploadedAssetResolver({ url: ref => repository.assets.url(ref.sha256), bytes: async () => bytes });
     expect(resolveMovieResourceUrl(step.resourceId, reloaded)).toBe(repository.assets.url(ref.sha256));
+    expect(resolveMoviePreviewUrl(step.resourceId, reloaded)).toBe(repository.assets.url(ref.sha256));
   } finally {
     setUploadedAssetResolver(null);
     close();
   }
+});
+
+it.each(["Moonlight", "月明かり", MOVIE.id])("동영상 요약에 표시 이름만 쓴다 · %s", name => {
+  const { project, target } = fixture("blank", []);
+  project.assets.uploaded[MOVIE.id] = { ...MOVIE, name };
+  const { sentence } = expectApplies(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id });
+  expect(sentence).toContain(name === MOVIE.id ? "지정한 동영상" : name);
+  expect(sentence).not.toContain(MOVIE.id);
 });
 
 it.each([["en", en], ["ja", ja], ["zh", zh]] as const)("%s 편집기 카탈로그가 연출 거절 문구를 번역한다", (locale, catalog) => {
@@ -631,20 +657,3 @@ it("실행기가 선택한 이벤트에 붙은 광원을 게임 상태에 추가
     { id: "corner_light", at: { eventId: EVENT }, radius: 3, intensity: 1, flicker: true },
   ]);
 });
-
-const corpusFile = resolve("harness-data/small-task-corpus/07-cmd-staging.json");
-const corpus: CorpusCase[] = JSON.parse(readFileSync(corpusFile, "utf8"));
-const movieSeed: UploadedAsset = { ...MOVIE, id: "staging_corpus_movie" };
-
-// 공용 코퍼스의 준비 단계는 업로드 에셋을 지원하지 않는다.
-for (const entry of corpus.filter(row => row.primitive === "cmd.playMovie.insert" && row.expectRefusal && row.expect?.length)) {
-  it(`업로드된 동영상을 적용한다 · ${entry.request}`, async () => {
-    const baseline = cachedFixture(entry.fixture);
-    const target = resolveTarget(baseline, entry.target);
-    const assets = { ...baseline.assets, uploaded: { ...baseline.assets.uploaded, [movieSeed.id]: movieSeed } };
-    const project = { ...baseline, assets };
-    const { after } = expectApplies(project, target, entry.primitive, entry.args);
-    for (const check of entry.expect!) expect(readCheckPath(after, check.at), check.at).toEqual(check.equals);
-    await expectUndoRestores(project, after, target);
-  });
-}
