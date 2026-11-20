@@ -319,6 +319,8 @@ type PiAgentEventPayload =
        */
       readonly stoppedEarly?: string;
       readonly smallTask?: true;
+      /** The worker caught a PrimitiveError whose explanation can be shown in the capsule. */
+      readonly smallTaskPrimitiveRefused?: true;
       /** 완성 뒤 대사 윤문 고리의 결과(src/ai/piAgent/dialoguePolishHook.ts) — 실행기가 센 전/후 적중 수와 고친 줄. */
       readonly dialoguePolish?: import("./dialoguePolishHook").DialoguePolishReport };
 

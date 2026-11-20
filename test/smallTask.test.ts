@@ -92,7 +92,11 @@ it.each([
     stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly }) => {
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, smallTaskPrimitiveRefused: true,
+    stoppedEarly: "도착할 수 있는 빈 칸을 골라 주세요. 주인공이 정확히 도착해 걸어서 나갈 수 있어야 해요." },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
+    stoppedEarly: "임시 워커 오류", expectedMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, smallTaskPrimitiveRefused, expectedMessage }) => {
   const project = fixture();
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
@@ -108,7 +112,8 @@ it.each([
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
     expect(body).not.toHaveProperty("apiKey");
-    const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, smallTaskPrimitiveRefused,
+      stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
       headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
     });
@@ -116,7 +121,7 @@ it.each([
   vi.stubGlobal("fetch", fetch);
   try {
     const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal);
-    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(stoppedEarly);
+    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(expectedMessage ?? stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);

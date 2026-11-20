@@ -1,6 +1,7 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
-import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
+import { PrimitiveError } from "../../src/editor/smallTask/primitives/errors.ts";
+import { APPLY_SMALL_TASK_PRIMITIVE, isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
@@ -105,7 +106,7 @@ import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { mergeConstructionLogs } from "../../src/editor/tools/constructionLog.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
-import type { GameMap, Project } from "../../src/project/types.ts";
+import type { GameEvent, GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { ITEM_ICON_AUTO_WALL_MS, ITEM_ICON_MAX_ATTEMPTS, ITEM_ICON_RUN_BUDGET, ITEM_ICON_TOOL, iconRecordOf, livePlaceholderIcons, prepareItemIconTargets } from '../../src/editor/tools/itemIconTools.ts';
@@ -428,6 +429,8 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const keyForRun = () => options.providerApiKeys?.[request.provider] ?? options.apiKey;
   const regionScope = target.kind === "map" && selection?.rect
     ? { kind: "mapRegion", mapId: target.mapId, rect: selection.rect } as const : undefined;
+  const originalRegionMap = regionScope && base.maps[regionScope.mapId];
+  const placedEvents: GameEvent[] = [];
   const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. list_small_task_primitives에서 맞는 동작을 찾으면 그 동작을 쓴다. 명령 줄을 고치기 전에는 get_event에서 includeCommandHashes를 켜고 줄 위치와 해시를 확인한다. 대상: ${JSON.stringify(target)}`
     + (regionScope ? ` 타일을 바꿀 수 있는 선택 영역: ${JSON.stringify(regionScope.rect)}` : "");
   const controller = new AbortController();
@@ -443,6 +446,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   let toolErrors = 0;
   let turns = 0;
   let failure: string | undefined;
+  let primitiveRefusal: string | undefined;
   const refuse = (message: string): undefined => {
     failure ??= message;
     controller.abort();
@@ -464,7 +468,28 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     ...tool,
     label: tool.name,
     async execute(_id, params) {
-      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      const placement = tool.name === APPLY_SMALL_TASK_PRIMITIVE ? originalRegionMap : undefined;
+      const beforeIds = placement && new Set([
+        ...placement.events, ...(ctx.project.maps[placement.id]?.events ?? []),
+      ].map(event => event.id));
+      let result: Awaited<ReturnType<typeof runSmallTaskPrimitiveTool>>;
+      try {
+        result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      } catch (error) {
+        if (error instanceof PrimitiveError) primitiveRefusal = error.message;
+        throw error;
+      }
+      if (regionScope && placement && beforeIds) {
+        const { x, y, w, h } = regionScope.rect;
+        // The primitive already passed its own scope check. Only its new events in the selection
+        // may survive the final mapRegion check. Snapshot them so another tool cannot change them.
+        for (const event of ctx.project.maps[placement.id]?.events ?? []) {
+          if (!beforeIds.has(event.id) && Number.isSafeInteger(event.x) && Number.isSafeInteger(event.y)
+            && event.x >= x && event.x < x + w && event.y >= y && event.y < y + h) {
+            placedEvents.push(structuredClone(event));
+          }
+        }
+      }
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
   }));
@@ -534,13 +559,17 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   }
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
-    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    const { mapId } = regionScope;
+    const regionBase = originalRegionMap && placedEvents.length ? {
+      ...base, maps: { ...base.maps, [mapId]: { ...originalRegionMap, events: [...originalRegionMap.events, ...placedEvents] } },
+    } : base;
+    const result = checkSmallTaskScope(regionBase, ctx.project, regionScope);
     if (!result.ok) failure = result.reason;
   }
   const project = failure ? base : ctx.project;
   const done: PiAgentDoneEvent = {
     type: "done", smallTask: true, project, changedKeys: changedProjectKeys(base, project),
-    ...(failure ? { stoppedEarly: failure } : {}),
+    ...(failure ? { stoppedEarly: failure, ...(failure === primitiveRefusal ? { smallTaskPrimitiveRefused: true } : {}) } : {}),
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors },
   };
   options.onEvent?.(slimDoneEvent(done, base));
