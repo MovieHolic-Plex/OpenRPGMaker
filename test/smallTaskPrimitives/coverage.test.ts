@@ -21,15 +21,15 @@ it("소유권 표에 명령 종류 90개, 전용 목록 93개, 조건 37개, 자
 
 it("등록한 유닛의 소유 항목을 빠짐없이 한 유닛에서만 다룬다", () => {
   expect(PRIMITIVE_UNITS.map(unit => unit.UNIT)).toEqual(Object.keys(OWNERSHIP));
-  const ownerByKey = new Map<string, string>();
+  const ownerByKey = new Map(Object.entries(OWNERSHIP).flatMap(([unit, covers]) =>
+    coverKeys(covers).map(key => [key, unit] as const)));
   for (const unit of PRIMITIVE_UNITS) {
     if (!unit.PRIMITIVES.length) continue;
     const actual = new Set<string>();
     for (const primitive of unit.PRIMITIVES) {
       expect(primitive.unit, primitive.id).toBe(unit.UNIT);
       for (const key of coverKeys(primitive.covers)) {
-        expect(ownerByKey.get(key) ?? unit.UNIT, key).toBe(unit.UNIT);
-        ownerByKey.set(key, unit.UNIT);
+        expect(ownerByKey.get(key), key).toBe(unit.UNIT);
         actual.add(key);
       }
     }
