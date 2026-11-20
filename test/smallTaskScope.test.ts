@@ -3,9 +3,10 @@ import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { checkSmallTaskScope, smallTaskScopeAllowsTool, type SmallTaskScope } from "@/ai/smallTaskScope";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
+import { discardEventDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { setLayerTileAt, setShadowAt } from "@/project/mapLayers";
-import type { EventPage, GameEvent, HomeDecorationTypeRecord, Project } from "@/project/types";
+import type { Command, EventPage, GameEvent, HomeDecorationTypeRecord, Project } from "@/project/types";
 
 const town = "town";
 const chest = "chest";
@@ -168,6 +169,75 @@ describe("작은 일 범위 검사", () => {
   it("선택된 아이템 가격과 한도 내 새 아이템을 허용한다", () => {
     expect(verify(item, p => { p.database.items[0]!.price = 75; })).toEqual({ ok: true });
     expect(verify(createItem, p => { p.database.items[0]!.price = 75; p.database.items.unshift(potion("mega", "특효약")); })).toEqual({ ok: true });
+  });
+
+  it("선택한 자료 행의 동작별 필드만 허용하고 삭제 중에는 행 편집도 막는다", () => {
+    const price = { ...item, entries: [{ ...item.entries[0]!, fields: ["price"] }] } as const;
+    expect(verify(price, p => { p.database.items[0]!.price = 42; })).toEqual({ ok: true });
+    rejects(price, p => { p.database.items[0]!.name = "새 이름"; }, "회복약");
+    const remove = { kind: "dbRemove", collection: "items", id: "potion" } as const;
+    expect(verify(remove, p => { p.database.items.shift(); })).toEqual({ ok: true });
+    rejects(remove, p => { p.database.items[0]!.price = 42; }, "회복약");
+    rejects(remove, p => { p.database.items.splice(0, 1, potion("new", "새 약")); }, "새 약");
+  });
+
+  it("새 장비 칸에 허용된 ID와 수를 각각 검사한다", () => {
+    const scope = { kind: "dbEntries", entries: [], create: { collection: "equipmentSlots", max: 1, ids: ["weapon"] } } as const;
+    const before = structuredClone(base);
+    delete before.database.equipmentSlots;
+    const save = (id: string) => ({ ...before, database: { ...before.database, equipmentSlots: [{ id, label: "무기 칸" }] } });
+    expect(checkSmallTaskScope(before, save("weapon"), scope)).toEqual({ ok: true });
+    expect(checkSmallTaskScope(before, save("armor"), scope)).toMatchObject({ ok: false, reason: expect.stringContaining("무기 칸") });
+  });
+
+  it.each(["명령", "스크립트", "저장된 원본"])("열린 이벤트의 중첩 %s가 쓰는 자료 행 삭제를 거절한다", source => {
+    const live = structuredClone(base);
+    const selected = target(live);
+    const original = structuredClone(selected);
+    const reference: Command = source === "스크립트"
+      ? { kind: "script", source: "game.addItem('potion', 1);", compiled: "" }
+      : { kind: "changeItems", itemId: "potion", op: "+=", amount: 1 };
+    const branch: Command = { kind: "loop", body: [reference] };
+    if (source === "저장된 원본") original.pages![0]!.commands.push(branch);
+    else selected.pages![0]!.commands.push(branch);
+    selected.draft = { kind: "edit", original };
+    const before = projectViewWithoutEventDrafts(live);
+    const after = { ...before, database: { ...before.database, items: before.database.items.slice(1) } };
+    expect(checkSmallTaskScope(before, after, { kind: "dbRemove", collection: "items", id: "potion" }, live))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
+  it("직업에 완전히 복사된 전투 명령은 남겨 두고 카탈로그 행을 삭제한다", () => {
+    const before = structuredClone(base);
+    const catalog = { id: "catalog_skill", name: "특수 기술", kind: "skill", skillId: before.database.skills[0]!.id } as const;
+    before.database.battleCommands = [catalog];
+    before.database.classes[0]!.battleCommands = [{ ...catalog }];
+    const remove = { kind: "dbRemove", collection: "battleCommands", id: catalog.id } as const;
+    const after = { ...before, database: { ...before.database, battleCommands: [] } };
+    expect(checkSmallTaskScope(before, after, remove)).toEqual({ ok: true });
+    delete before.database.classes[0]!.battleCommands[0]!.skillId;
+    expect(checkSmallTaskScope(before, after, remove)).toMatchObject({
+      ok: false, reason: expect.stringContaining("삭제할 수 없습니다"),
+    });
+  });
+
+  it("취소할 수 있는 새 이벤트에 의뢰 등록을 막고, 저장된 이벤트에는 등록할 수 있다", () => {
+    const live = structuredClone(base);
+    const original = event("new-giver", "의뢰인", 2);
+    live.maps[town]!.events.push({ ...original, draft: { kind: "new", original } });
+    const before = { ...live, maps: { ...live.maps, [town]: {
+      ...live.maps[town]!, events: [...base.maps[town]!.events, original],
+    } } };
+    const after: Project = { ...before, quests: [{
+      key: "new_quest", title: "의뢰", summary: "부탁", giver: { mapId: town, eventId: original.id }, steps: [],
+    }] };
+    const scope = { kind: "projectArea", area: "quests", create: 1 } as const;
+    expect(checkSmallTaskScope(before, after, scope, live))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("이벤트를 먼저 저장") });
+    discardEventDraft(live, town, original.id);
+    expect(live.maps[town]!.events.some(row => row.id === original.id)).toBe(false);
+    expect(live.quests).toEqual(base.quests);
+    expect(checkSmallTaskScope(before, after, scope)).toEqual({ ok: true });
   });
 
   it("다른 자료집 항목, 초과 생성, 삭제, 중복 ID와 이벤트 변경을 차단한다", () => {
@@ -333,6 +403,32 @@ describe("선택 영역, 맵 속성, 새 맵과 프로젝트 항목 범위", () 
     rejects(meta, p => { p.maps[town]!.width++; }, "속성");
     rejects(meta, p => { p.startMapId = "woods"; }, "프로젝트의 다른 설정");
     rejects(meta, p => { p.mapConnections = [link("woods", "woods")]; }, "맵 연결");
+  });
+
+  it("선택 맵으로 들어오는 연결은 해당 동작이 허용할 때만 수정한다", () => {
+    const before = { ...base, mapConnections: [link("woods", town)] };
+    const after = { ...before, mapConnections: [{ ...before.mapConnections[0]!, npcEnabled: true }] };
+    expect(checkSmallTaskScope(before, after, { ...meta, fields: [], connections: "both" })).toEqual({ ok: true });
+    for (const connections of ["none", "outgoing"] as const) {
+      expect(checkSmallTaskScope(before, after, { ...meta, fields: [], connections })).toMatchObject({ ok: false });
+    }
+    rejects({ ...meta, fields: ["name"], connections: "none" }, p => { p.maps[town]!.locations = []; }, "속성");
+  });
+
+  it("맵 크기 변경과 삭제에 필요한 변경만 각각 허용한다", () => {
+    const before = { ...base, mapTree: { mapId: town, children: [{ mapId: "woods", children: [] }] } };
+    const resize = { kind: "mapResize", mapId: town } as const;
+    const resized = { ...before, maps: { ...before.maps, [town]: {
+      ...before.maps[town]!, width: 4, lowerTiles: Array(12).fill(0), upperTiles: Array(12).fill(-1),
+    } } };
+    expect(checkSmallTaskScope(before, resized, resize)).toEqual({ ok: true });
+    resized.maps[town].name = "다른 이름";
+    expect(checkSmallTaskScope(before, resized, resize)).toMatchObject({ ok: false });
+
+    const remove = { kind: "mapRemove", mapId: "woods" } as const;
+    const removed = { ...before, maps: { [town]: before.maps[town]! }, mapTree: { mapId: town, children: [] } };
+    expect(checkSmallTaskScope(before, removed, remove)).toEqual({ ok: true });
+    expect(checkSmallTaskScope(before, { ...removed, startPos: { x: 1, y: 1 } }, remove)).toMatchObject({ ok: false });
   });
 
   it("새 맵 한 장의 목록과 지정된 출발 맵 연결만 추가한다", () => {

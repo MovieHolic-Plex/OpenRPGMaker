@@ -4,6 +4,7 @@ import { EventCommandEditError } from "@/project/eventCommands/singleCommandOps"
 import type { Project } from "@/project/types";
 import { plainSummary } from "../plainSummary";
 import type { SmallTaskTarget } from "../target";
+import { primitiveScope } from "./core/scope";
 import { PrimitiveError } from "./errors";
 import { PRIMITIVES } from "./index";
 import { getPrimitive } from "./registry";
@@ -47,6 +48,7 @@ export function matchesPrimitiveSchema(schema: JsonSchema, value: unknown): bool
 
 export function runPrimitive(
   project: Project, target: SmallTaskTarget, id: string, args: Record<string, unknown>, selection?: PrimitiveContext["selection"],
+  live?: PrimitiveContext["live"],
 ) {
   const publicRow = PRIMITIVES.find(row => row.id === id);
   const primitive = getPrimitive(id);
@@ -58,11 +60,11 @@ export function runPrimitive(
     throw new PrimitiveError("동작에 필요한 값의 형식을 확인해 주세요.");
   }
 
-  const ctx: PrimitiveContext = { project, target, selection };
+  const ctx: PrimitiveContext = { project, target, selection, live };
   try {
-    const scope = primitive.scope(ctx, args);
+    const scope = primitiveScope(ctx, primitive, args);
     const after = primitive.apply(ctx, args);
-    const result = checkSmallTaskScope(project, after, scope);
+    const result = checkSmallTaskScope(project, after, scope, live);
     if (!result.ok) throw new PrimitiveError(result.reason);
     return { after, sentence: primitive.describe(ctx, args), summary: plainSummary(project, after) };
   } catch (error) {
