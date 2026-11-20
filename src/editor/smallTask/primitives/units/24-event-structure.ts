@@ -5,11 +5,14 @@ import { isCharsetSpriteTexture, resolveEventSpriteTexture } from "@/player/even
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { eventWithoutDraft } from "@/project/eventDrafts";
+import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
+import { rectsOverlap } from "@/project/footprint";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { validateAssetRef } from "@/project/io/shapeReferenceFields";
 import { uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
 import type { Dir, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
+import { genId } from "@/util/id";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { hasEventReference, hasNamedEventReference, hasNamedObjective, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
@@ -128,11 +131,10 @@ function nextEventId(project: Project, mapId: string): string {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) used.add(event.id);
   }
-  let id = nextId("ev_small_task", used);
-  while (hasEventReference(project, mapId, id, false)) {
-    used.add(id);
-    id = nextId("ev_small_task", used);
-  }
+  // Play saves can still refer to IDs removed from the authored project.
+  let id: string;
+  do id = genId("ev_small_task");
+  while (used.has(id) || hasEventReference(project, mapId, id, false));
   return id;
 }
 
@@ -201,13 +203,20 @@ function movedTo(map: GameMap, event: GameEvent, destination: Cell): GameEvent {
   };
 }
 
+function overlapsLaterPage(map: GameMap, candidate: GameEvent): boolean {
+  const body = eventBodyRect(candidate);
+  return map.events.some(event => event.pages?.slice(1).some(page =>
+    rectsOverlap(body, eventBodyRect({ ...event, pages: [page] }))));
+}
+
 function assertPlacement(project: Project, map: GameMap, event: GameEvent): void {
   const pages = pagesOf(event);
   const needsFloor = eventRequiresPassableTile(event) || pages.some(page =>
     (page.trigger.kind === "touch" || page.trigger.kind === "playerTouch") && page.priority !== "same");
   const analysis = new EventPlacementAnalysis(project, map);
-  if (!analysis.validDestination(event, needsFloor)
-    || pages.slice(1).some(page => page.footprint && !analysis.canOccupy({ ...event, pages: [page] }))) {
+  const laterPages = pages.slice(1).filter(page => page.footprint).map(page => ({ ...event, pages: [page] }));
+  if (!analysis.validDestination(event, needsFloor) || overlapsLaterPage(map, event)
+    || laterPages.some(candidate => !analysis.canOccupy(candidate) || overlapsLaterPage(map, candidate))) {
     throw new PrimitiveError("그 칸에 이벤트를 놓을 수 없어요. 비어 있고 접근할 수 있는 자리를 골라 주세요.");
   }
 }
@@ -296,7 +305,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         trigger: { kind: "action" }, commands: [],
       };
       event.pages = [legacyPage(event)];
-      if (!new EventPlacementAnalysis(ctx.project, map).canOccupy(event)) throw new PrimitiveError("이미 사용 중인 칸이에요.");
+      if (!new EventPlacementAnalysis(ctx.project, map).canOccupy(event) || overlapsLaterPage(map, event)) {
+        throw new PrimitiveError("이미 사용 중인 칸이에요.");
+      }
       return replaceEvents(ctx.project, map, [...map.events, event]);
     },
   },

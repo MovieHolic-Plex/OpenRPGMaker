@@ -3,7 +3,8 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { scriptCalls, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
 import { sightWatcherIds } from "@/project/sightWatchers";
 import { resolveSpeakerActor } from "@/project/staging/dialogueActors";
-import type { EventPage, EventSightWatchers, GameEvent, Project } from "@/project/types";
+import { storyFlagById } from "@/project/storyFlags";
+import type { Condition, EventPage, EventSightWatchers, GameEvent, Project } from "@/project/types";
 
 type RecordNode = Record<string, unknown>;
 
@@ -155,23 +156,66 @@ export function strandsSwitch(after: Project, removed: EventPage | GameEvent): b
     return false;
   });
   if (!enabled.size) return false;
-  const maps = Object.values(after.maps);
-  const eventCommands = maps.map(map => map.events.map(event => [event.pages, legacyExecution(event)]));
-  someRecord([eventCommands, ...authoredRoots(after)], node => {
-    for (const id of written(node)) enabled.delete(id);
-    return enabled.size === 0;
-  });
-  return enabled.size > 0 && someRecord([maps.map(map => map.events), ...authoredRoots(after)], node => {
+  const events = Object.values(after.maps).flatMap(map => map.events);
+  const otherRoots = authoredRoots(after).filter(root => root !== after.commonEvents);
+  for (const id of enabled) {
+    const writes = (node: RecordNode) => written(node).includes(id);
+    if (events.some(event => eventCanWriteWithSwitchOff(event, { kind: "switch", id }, writes))
+      || after.commonEvents?.some(event => event.conditionSwitchId !== id && someRecord(event.commands, writes))
+      || someRecord(otherRoots, writes)) {
+      enabled.delete(id);
+    }
+  }
+  return enabled.size > 0 && someRecord([events, ...authoredRoots(after)], node => {
     if (node.kind === "m2Command") {
       const fields = node.fields as RecordNode | undefined;
       return typeof fields?.target === "string" && enabled.has(fields.target)
         && ((m2Index(node) === 206 && (fields.condition === "switchOn" || fields.condition === undefined))
           || (m2Index(node) === 217 && fields.query === "switch"));
     }
-    return (node.kind === "switch" && node.value !== false && typeof node.switchId === "string" && enabled.has(node.switchId))
-      || (typeof node.conditionSwitchId === "string" && enabled.has(node.conditionSwitchId))
+    if ((node.kind === "switch" || node.kind === "storyFlag") && node.value !== false) {
+      const flagId = node.kind === "switch" ? node.storyFlagId : node.flagId;
+      if (typeof flagId === "string" && flagId.trim()) {
+        const flag = storyFlagById(after, flagId);
+        return flag?.kind === "switch" && enabled.has(flag.targetId);
+      }
+      return typeof node.switchId === "string" && enabled.has(node.switchId);
+    }
+    return (typeof node.conditionSwitchId === "string" && enabled.has(node.conditionSwitchId))
       || (node.kind === "script" && scriptReads(node, "switch", after).some(id => enabled.has(id)));
   });
+}
+
+type OffSwitch = { kind: "switch" | "selfSwitch"; id: string };
+
+function conditionWithSwitchOff(condition: Condition, off: OffSwitch): boolean | undefined {
+  if (condition.kind === "switch" && off.kind === "switch" && condition.switchId === off.id) return !condition.value;
+  if (condition.kind === "selfSwitch" && off.kind === "selfSwitch" && condition.key === off.id) return !condition.value;
+  if (condition.kind === "not") {
+    const result = conditionWithSwitchOff(condition.condition, off);
+    return result === undefined ? undefined : !result;
+  }
+  if (condition.kind === "all" || condition.kind === "any") {
+    const results = condition.conditions.map(child => conditionWithSwitchOff(child, off));
+    const decisive = condition.kind === "any";
+    if (results.includes(decisive)) return decisive;
+    if (results.every(result => result === !decisive)) return !decisive;
+  }
+  return undefined;
+}
+
+function eventCanWriteWithSwitchOff(event: GameEvent, off: OffSwitch, writes: (node: RecordNode) => boolean): boolean {
+  // Higher pages take priority. Unrelated conditions remain unknown.
+  const pages = event.pages ?? [];
+  for (let index = pages.length - 1; index >= 0; index--) {
+    const page = pages[index];
+    const results = (page.conditions ?? []).map(condition => conditionWithSwitchOff(condition, off));
+    if (results.includes(false)) continue;
+    if (someRecord([page.commands, page.movement?.route], writes)) return true;
+    if (results.every(result => result === true)) return false;
+  }
+  return (!event.condition || conditionWithSwitchOff(event.condition, off) !== false)
+    && someRecord([event.commands, event.moveRoute], writes);
 }
 
 function legacyExecution(event: GameEvent) {
@@ -190,11 +234,9 @@ export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean
     return false;
   });
   if (!keys.size) return false;
-  someRecord(remaining, node => {
-    const key = written(node);
-    if (key) keys.delete(key);
-    return keys.size === 0;
-  });
+  for (const key of keys) {
+    if (eventCanWriteWithSwitchOff(event, { kind: "selfSwitch", id: key }, node => written(node) === key)) keys.delete(key);
+  }
   return keys.size > 0 && someRecord(remaining, node =>
     node.kind === "selfSwitch" && node.value === true && typeof node.key === "string" && keys.has(node.key));
 }
