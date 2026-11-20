@@ -1,20 +1,27 @@
+import { towardJosa } from "@/ai/v2/story/blueprintPathNames";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
-import { AUTHORING_MISC_TOOLS } from "@/editor/tools/authoringMiscTools";
+import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { inMapBounds } from "@/editor/tools/mapHelpers";
-import { ToolError, type JsonSchema } from "@/editor/tools/types";
+import type { JsonSchema } from "@/editor/tools/types";
 import { isPassable } from "@/project/collision";
+import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
+import { GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
+import { doorKindName } from "@/project/eventCommands/doorAnimation";
 import { SEASONS, TIME_PHASES } from "@/project/gameTime";
-import { countLocationReferences } from "@/project/mapLocationReferences";
-import { DOOR_KINDS, inferMapDoor, removeMapDoorsOver, upsertMapDoor, type DoorKind, type InferDoorOptions } from "@/project/mapDoorKinds";
+import { locationRoleTag } from "@/project/locationRoles";
+import { DOOR_KINDS, inferMapDoor, type DoorKind, type InferDoorOptions } from "@/project/mapDoorKinds";
 import { MAP_LOOP_VALUES } from "@/project/mapLoop";
-import { addMapLocation, deleteMapLocation, findLocationById, findLocationsByName, renameMapLocation, resizeMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, deleteMapLocation, findLocationsByName, locationsOverlap, renameMapLocation, resizeMapLocation, sanitizeName } from "@/project/mapNamedLocations";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
-import type { GameMap, MapNamedLocation, Project, Rect } from "@/project/types";
+import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
+import { spatialPortLanding } from "@/project/spatial/overview";
+import type { Dir, GameMap, MapConnection, MapNamedLocation, Project, Rect } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
-  assertReferencesPreserved, duplicateMap, freeId, label, mapDraft, mapLabel, nextMapId, removeMap,
-  requiredName, resizeMap, runMapTool, selectedMap,
+  assertReferencesPreserved, changesBlueprintPlaces, duplicateMap, freeId, label, mapDraft, mapLabel, nextMapId, removeMap,
+  requiredName, resizeMap, runMapTool, selectedMap, usesLocation,
 } from "./23-map-structure/maps";
 
 export const UNIT = "23-map-structure";
@@ -22,7 +29,7 @@ export const UNIT = "23-map-structure";
 type Args = Record<string, unknown>;
 type MapOperation = (project: Project, map: GameMap, args: Args, ctx: PrimitiveContext) => Project;
 
-const text = (description: string, maxLength = 128): JsonSchema => ({ type: "string", description, minLength: 1, maxLength });
+const text = (description: string, maxLength = 128): JsonSchema => ({ type: "string", description, minLength: 1, maxLength, pattern: "\\S" });
 const bool = (description: string): JsonSchema => ({ type: "boolean", description });
 const integer = (description: string, minimum = 0, maximum = Number.MAX_SAFE_INTEGER): JsonSchema =>
   ({ type: "integer", description, minimum, maximum });
@@ -50,7 +57,8 @@ function mapMeta(ctx: PrimitiveContext) {
 }
 
 function newMap(ctx: PrimitiveContext) {
-  return { kind: "newMap", max: 1, sourceMapId: selectedMap(ctx).id } as const;
+  selectedMap(ctx);
+  return { kind: "newMap", max: 1 } as const;
 }
 
 function primitive(
@@ -67,26 +75,44 @@ function primitive(
 }
 
 function pointInMap(map: GameMap, x: number, y: number): void {
-  if (!inMapBounds(map, x, y)) throw new PrimitiveError("범위 밖이에요. 맵 안의 칸을 골라 주세요.");
+  if (!Number.isSafeInteger(x) || !Number.isSafeInteger(y) || !inMapBounds(map, x, y)) {
+    throw new PrimitiveError("범위 밖이에요. 맵 안의 칸을 골라 주세요.");
+  }
 }
 
 function rectInMap(map: GameMap, value: Rect): void {
+  if (value.w < 1 || value.h < 1) throw new PrimitiveError("가로와 세로는 각각 한 칸 이상이어야 해요.");
   pointInMap(map, value.x, value.y);
   pointInMap(map, value.x + value.w - 1, value.y + value.h - 1);
 }
 
 function locationInMap(map: GameMap, query: unknown): MapNamedLocation {
   const key = String(query);
-  const byId = findLocationById(map, key);
-  if (byId) return byId;
-  const matches = findLocationsByName(map, key);
+  const byId = map.locations?.filter(location => location.id === key) ?? [];
+  const matches = byId.length ? byId : findLocationsByName(map, key);
   if (!matches.length) throw new PrimitiveError("이 맵에서 장소를 찾을 수 없어요.");
   if (matches.length > 1) throw new PrimitiveError("이름이 비슷한 장소가 여럿 있어요. 장소 하나를 골라 주세요.");
-  return matches[0]!;
+  const match = matches[0]!;
+  if (map.locations?.some(location => location !== match && location.id === match.id)) {
+    throw new PrimitiveError("같은 식별자를 쓰는 장소가 여럿 있어요. 장소 목록을 먼저 확인해 주세요.");
+  }
+  return match;
+}
+
+function newLocationName(map: GameMap, value: unknown, current?: MapNamedLocation): string {
+  const name = sanitizeName(requiredName(value));
+  if (name === current?.name) return name;
+  const nameKey = (value: string) => value.replace(/\s+/gu, "").toLowerCase();
+  if (map.locations?.some(location => location !== current &&
+    (location.id === name || nameKey(location.name) === nameKey(name)))) {
+    throw new PrimitiveError("다른 장소와 구분할 수 있는 이름을 적어 주세요.");
+  }
+  return name;
 }
 
 function validateTileset(project: Project, tilesetId: unknown): void {
-  if (tilesetId !== undefined && !Object.hasOwn(project.tilesets, String(tilesetId))) {
+  const id = String(tilesetId);
+  if (tilesetId !== undefined && (!Object.hasOwn(project.tilesets, id) || project.tilesets[id]?.id !== id)) {
     throw new PrimitiveError("프로젝트에서 지정한 타일셋을 찾을 수 없어요.");
   }
 }
@@ -111,9 +137,9 @@ const propertyArgs = {
 };
 
 function setProperties(project: Project, map: GameMap, args: Args): Project {
-  const { name, bgmMode, bgmResourceId, backgroundImageId, ...properties } = args;
+  const { name, bgmMode, bgmResourceId, backgroundImageId, battleBackground, clearBackground, clearBattleBackground, ...properties } = args;
   const nextName = name === undefined ? undefined : requiredName(name);
-  if (nextName !== undefined && Object.values(project.maps).some(other =>
+  if (nextName !== undefined && nextName !== map.name.trim() && Object.values(project.maps).some(other =>
     other.id !== map.id && other.name.trim() === nextName)) {
     throw new PrimitiveError("그 이름을 쓰는 다른 맵이 있어요.");
   }
@@ -125,22 +151,50 @@ function setProperties(project: Project, map: GameMap, args: Args): Project {
   if (bgmResourceId !== undefined && !listAudioResources("music", project).some(resource => resource.id === bgmResourceId)) {
     throw new PrimitiveError("지정한 배경 음악을 찾을 수 없어요.");
   }
-  if ((backgroundImageId && properties.clearBackground) || (properties.battleBackground && properties.clearBattleBackground)) {
+  if ((backgroundImageId && clearBackground) || (battleBackground && clearBattleBackground)) {
     throw new PrimitiveError("그림을 지정할지 기본 그림으로 돌릴지 하나를 골라 주세요.");
+  }
+  const backgroundId = typeof backgroundImageId === "string" ? backgroundImageId.trim().replace(/^backdrop:/u, "").trim() : undefined;
+  const battleId = typeof battleBackground === "string" ? battleBackground.trim().replace(/^backdrop:/u, "").trim() : undefined;
+  if (backgroundId !== undefined || battleId !== undefined) {
+    const backdrops = listDatabaseResourceOptions("backdrop", project);
+    if (backgroundId !== undefined && !backdrops.some(resource => resource.id === backgroundId)) {
+      throw new PrimitiveError("지정한 맵 배경 그림을 찾을 수 없어요.");
+    }
+    if (battleId !== undefined && battleId !== FIELD_BATTLE_BACKGROUND_ID && !backdrops.some(resource => resource.id === battleId)) {
+      throw new PrimitiveError("지정한 전투 배경 그림을 찾을 수 없어요.");
+    }
   }
   const toolArgs = {
     ...properties,
-    ...(mode === undefined ? {} : { bgm: { mode, ...(bgmResourceId === undefined ? {} : { resourceId: bgmResourceId }) } }),
-    ...(backgroundImageId === undefined ? {} : { background: { imageId: backgroundImageId } }),
+    ...(clearBackground === true ? { clearBackground } : {}),
+    ...(clearBattleBackground === true ? { clearBattleBackground } : {}),
+    ...(mode === undefined ? {} : { bgm: {
+      mode,
+      ...(bgmResourceId === undefined ? {} : { resourceId: bgmResourceId }),
+      ...(map.bgm?.fadeInMs === undefined ? {} : { fadeInMs: map.bgm.fadeInMs }),
+    } }),
+    ...(battleId === undefined ? {} : { battleBackground: battleId }),
   };
-  if (nextName === undefined && !Object.keys(toolArgs).length) throw new PrimitiveError("바꿀 맵 속성을 골라 주세요.");
+  const hasToolArgs = Object.keys(toolArgs).length > 0;
+  if (nextName === undefined && backgroundId === undefined && !hasToolArgs) {
+    throw new PrimitiveError("바꿀 맵 속성을 골라 주세요.");
+  }
 
   // 이름은 맵의 표시 속성만 바꾼다. 넓은 조수 툴의 지형 자동 보정은 여기서 부르지 않는다.
-  const after = mapDraft(project, map, { ...map, ...(nextName === undefined ? {} : { name: nextName }) });
-  if (Object.keys(toolArgs).length) {
+  const draft = { ...map, ...(nextName === undefined ? {} : { name: nextName }) };
+  const after = mapDraft(project, map, draft);
+  if (nextName !== undefined && nextName !== map.name && changesBlueprintPlaces(project, after)) {
+    throw new PrimitiveError("이 이름으로 바꾸면 게임 청사진이 가리키는 맵이 달라져요. 맵과 청사진의 장소 이름을 함께 확인해 주세요.");
+  }
+  if (backgroundId !== undefined) {
+    const { fromMap: _previousSource, ...background } = map.background ?? { showInEmptyCells: true };
+    draft.background = { ...background, imageId: backgroundId };
+  }
+  if (hasToolArgs) {
     runMapTool(after, "set_map_properties", { ...toolArgs, mapId: map.id }, "맵 속성에 지정한 그림, 음악 또는 타일셋을 확인해 주세요.");
   }
-  if (backgroundImageId !== undefined || properties.battleBackground !== undefined || properties.tilesetId !== undefined) {
+  if (backgroundId !== undefined || properties.tilesetId !== undefined) {
     assertReferencesPreserved(project, after, "맵 속성에 연결할 그림이나 타일셋을 찾을 수 없어요.");
   }
   return after;
@@ -149,7 +203,7 @@ function setProperties(project: Project, map: GameMap, args: Args): Project {
 const encounterConditions = obj({
   switchId: text("켜져 있어야 하는 스위치의 식별자"),
   variableId: text("값을 비교할 변수의 식별자"),
-  atLeast: integer("변수가 넘어야 할 기준값", -Number.MAX_SAFE_INTEGER),
+  atLeast: integer("변수가 이 값 이상일 때 등장", -Number.MAX_SAFE_INTEGER),
   minPartyLevel: integer("등장할 최소 파티 레벨", 1),
   maxPartyLevel: integer("등장할 최대 파티 레벨", 1),
   locationId: text("이 맵에서 조우할 장소 이름 또는 식별자"),
@@ -167,25 +221,39 @@ const encounterEntry = obj({
 }, ["troopId"]);
 
 function setEncounterTable(project: Project, map: GameMap, args: Args): Project {
+  const locationIds: (string | undefined)[] = [];
   const entries = (args.entries as Args[]).map(entry => {
-    const conditions = entry.conditions as Args | undefined;
-    if (conditions?.terrainId && !project.database.terrains?.some(terrain => terrain.id === conditions.terrainId)) {
+    const { conditions: input, ...fields } = entry;
+    const { locationId, ...conditions } = (input ?? {}) as Args;
+    const terrainId = typeof conditions.terrainId === "string" ? conditions.terrainId.trim() : undefined;
+    const canonicalTerrainId = terrainId === "grass" || terrainId === "tall_grass" ? GRASS_TERRAIN_ID : terrainId;
+    if (canonicalTerrainId !== undefined && !project.database.terrains?.some(terrain => terrain.id === canonicalTerrainId)) {
       throw new PrimitiveError("조우 조건에 지정한 지형을 찾을 수 없어요.");
     }
-    if (conditions?.atLeast !== undefined && conditions.variableId === undefined) {
+    if (canonicalTerrainId !== undefined) conditions.terrainId = canonicalTerrainId;
+    if (conditions.atLeast !== undefined && conditions.variableId === undefined) {
       throw new PrimitiveError("조우 기준값을 비교할 변수를 골라 주세요.");
     }
-    return {
-      weight: 1, ...entry,
-      ...(conditions?.locationId === undefined ? {} : {
-        conditions: { ...conditions, locationId: locationInMap(map, conditions.locationId).id },
-      }),
-    };
+    if (conditions.variableId !== undefined && conditions.atLeast === undefined) {
+      throw new PrimitiveError("변수가 얼마 이상일 때 적이 등장할지 적어 주세요.");
+    }
+    if (locationId !== undefined && conditions.region !== undefined) {
+      throw new PrimitiveError("조우할 장소 이름이나 칸 범위 중 하나를 골라 주세요.");
+    }
+    locationIds.push(locationId === undefined ? undefined : locationInMap(map, locationId).id);
+    return { weight: 1, ...fields, ...(input === undefined ? {} : { conditions }) };
   });
   // 기존 검증기는 지형 자료가 없으면 표를 초기화한다. 그 사본은 결과에 포함하지 않는다.
-  const after = mapDraft(project, map);
+  const next = { ...map };
+  const after = mapDraft(project, map, next);
   const draft = { ...after, database: { ...project.database, terrains: project.database.terrains?.slice() } };
   runMapTool(draft, "set_encounter_table", { ...args, entries, mapId: map.id }, "조우표의 적 무리와 등장 조건을 확인해 주세요.");
+  // 도구가 이름을 다시 찾는 과정에서 공백이 있는 기존 ID를 다른 장소로 해석할 수 있다.
+  next.encounterTable = next.encounterTable?.map((entry, index) => {
+    const locationId = locationIds[index];
+    return locationId === undefined ? entry : { ...entry, conditions: { ...entry.conditions, locationId } };
+  });
+  if (!next.encounterTable) delete next.encounterTable;
   return after;
 }
 
@@ -199,24 +267,74 @@ function setDoor(project: Project, map: GameMap, args: Args): Project {
   const at = { x: Number(args.x), y: Number(args.y) };
   pointInMap(map, at.x, at.y);
   const { kind, width, height, hinge, chime } = args;
+  const existing = map.doors ?? [];
+  const inside = existing.filter(row => locationsOverlap(row, { ...at, w: 1, h: 1 }));
+  const candidates = inside.length ? inside : existing.filter(row =>
+    at.y === row.y + row.h && at.x >= row.x && at.x < row.x + row.w);
+  if (candidates.length > 1) throw new PrimitiveError("이 칸에 문이 여럿 걸쳐 있어요. 문 한 곳의 칸을 골라 주세요.");
+  const selected = candidates[0];
   const options: InferDoorOptions = {
-    kind: kind === "detect" ? undefined : kind as DoorKind | undefined,
-    width: width as number | undefined, height: height as number | undefined,
+    kind: kind === "detect" ? undefined : (kind as DoorKind | undefined) ?? (selected && doorKindName(selected)),
+    width: (width as number | undefined) ?? selected?.w,
+    height: (height as number | undefined) ?? selected?.h,
     hinge: hinge as InferDoorOptions["hinge"], chime: chime as boolean | undefined,
   };
-  const door = inferMapDoor(project, map, at, options);
+  let door = inferMapDoor(project, map, at, options);
+  if (selected && (!door || !locationsOverlap(selected, door.rect))) {
+    door = inferMapDoor(project, map, { x: selected.x, y: selected.y + selected.h - 1 }, {
+      ...options, kind: options.kind ?? doorKindName(selected),
+    });
+  }
   if (!door) throw new PrimitiveError("문 그림을 찾을 수 없어요. 문 칸이나 문 종류를 골라 주세요.");
-  rectInMap(map, door.rect);
+  const rect = selected ? {
+    x: selected.x, y: selected.y + selected.h - options.height!, w: options.width!, h: options.height!,
+  } : door.rect;
+  rectInMap(map, rect);
+  const hitDoors = existing.filter(row => locationsOverlap(row, rect));
+  // 그림을 알아낸 영역이 이웃 문까지 덮더라도 한 개의 문만 바꾼다.
+  if (hitDoors.length > 1 || (hitDoors[0] && hitDoors[0] !== selected)) {
+    throw new PrimitiveError("다른 문과 범위가 겹쳐요. 바꿀 문 한 곳의 칸과 크기를 확인해 주세요.");
+  }
+  let definition = door.def && { ...door.def, ...rect };
+  if (hinge !== undefined && (!definition || doorKindName(definition) !== "swing")) {
+    throw new PrimitiveError("경첩 방향은 한 짝 여닫이문에서 고를 수 있어요.");
+  }
+  if (chime !== undefined && !definition?.auto) {
+    throw new PrimitiveError("차임 소리는 자동문에서 고를 수 있어요.");
+  }
+  if (definition && selected && doorKindName(definition) === doorKindName(selected)) {
+    definition = {
+      ...selected, ...rect,
+      ...(hinge === undefined ? {} : { hinge: definition.hinge }),
+      ...(chime === undefined ? {} : { chimeSe: definition.chimeSe }),
+    };
+  }
+  if (!selected && !definition) return project;
+  const doors = existing.flatMap(row => row === selected ? (definition ? [definition] : []) : [row]);
+  if (!selected && definition) doors.push(definition);
   const next = { ...map };
-  if (door.def) upsertMapDoor(next, door.def);
-  else removeMapDoorsOver(next, door.rect);
+  if (doors.length) next.doors = doors;
+  else delete next.doors;
   return mapDraft(project, map, next);
+}
+
+function usesSpatialEntrance(project: Project, link: MapConnection): boolean {
+  const document = project.spatialAuthoring;
+  if (!document) return false;
+  const sameStart = (point: MapConnection["from"]) =>
+    point.mapId === link.from.mapId && point.x === link.from.x && point.y === link.from.y;
+  return Object.values(document.occurrences).some(occurrence => occurrence.bindings.some(binding =>
+    isOwnedSpatialBinding(binding) && binding.overviewEntries?.some(entry => {
+      if (link.id === entry.eventId || link.id === entry.returnEventId || sameStart({ ...entry, mapId: binding.mapId })) return true;
+      const landing = spatialPortLanding(document, entry.target);
+      return landing !== undefined && sameStart(landing);
+    })));
 }
 
 function upsertConnection(project: Project, map: GameMap, args: Args): Project {
   const toMapId = String(args.toMapId);
   const toMap = Object.hasOwn(project.maps, toMapId) ? project.maps[toMapId] : undefined;
-  if (!toMap) throw new PrimitiveError("도착 맵을 찾을 수 없어요.");
+  if (!toMap || toMap.id !== toMapId) throw new PrimitiveError("도착 맵을 찾을 수 없어요.");
   const fromX = Number(args.x), fromY = Number(args.y), toX = Number(args.toX), toY = Number(args.toY);
   pointInMap(map, fromX, fromY);
   pointInMap(toMap, toX, toY);
@@ -224,24 +342,26 @@ function upsertConnection(project: Project, map: GameMap, args: Args): Project {
   const connections = project.mapConnections ?? [];
   const prior = connections.find(connection => connection.id === args.connectionId);
   if (args.connectionId !== undefined && !prior) throw new PrimitiveError("고칠 맵 연결을 찾을 수 없어요.");
-  if (prior && prior.from.mapId !== map.id) throw new PrimitiveError("범위 밖이에요. 출발 맵을 선택해 주세요.");
-  const after = { ...project };
-  try {
-    AUTHORING_MISC_TOOLS.find(tool => tool.name === "upsert_map_connection")!.run(after, {
-      connection: {
-        id: prior?.id ?? freeId("connection_small_task_", id => connections.some(row => row.id === id)),
-        name: args.name ?? prior?.name,
-        from: { mapId: map.id, x: fromX, y: fromY, direction: args.fromDirection ?? prior?.from.direction },
-        to: { mapId: toMapId, x: toX, y: toY, direction: args.toDirection ?? prior?.to.direction },
-        playerEnabled: args.playerEnabled ?? prior?.playerEnabled ?? true,
-        npcEnabled: args.npcEnabled ?? prior?.npcEnabled ?? false,
-      },
-    });
-  } catch (error) {
-    if (error instanceof ToolError) throw new PrimitiveError("맵 연결의 이름과 이동 위치를 확인해 주세요.");
-    throw error;
+  if (prior && connections.some(connection => connection !== prior && connection.id === prior.id)) {
+    throw new PrimitiveError("같은 식별자를 쓰는 연결이 여럿 있어요. 맵 연결 목록을 먼저 확인해 주세요.");
   }
-  return after;
+  if (prior && prior.from.mapId !== map.id) throw new PrimitiveError("범위 밖이에요. 출발 맵을 선택해 주세요.");
+  const name = args.name === undefined ? prior?.name : requiredName(args.name);
+  const fromDirection = (args.fromDirection as Dir | undefined) ?? prior?.from.direction;
+  const toDirection = (args.toDirection as Dir | undefined) ?? prior?.to.direction;
+  const next: MapConnection = {
+    id: prior?.id ?? freeId("connection_small_task_", id => connections.some(row => row.id === id)),
+    ...(name === undefined ? {} : { name }),
+    from: { mapId: map.id, x: fromX, y: fromY, ...(fromDirection ? { direction: fromDirection } : {}) },
+    to: { mapId: toMapId, x: toX, y: toY, ...(toDirection ? { direction: toDirection } : {}) },
+    playerEnabled: (args.playerEnabled as boolean | undefined) ?? prior?.playerEnabled ?? true,
+    npcEnabled: (args.npcEnabled as boolean | undefined) ?? prior?.npcEnabled ?? false,
+  };
+  if (prior && jsonEqual(prior, next)) return project;
+  if (usesSpatialEntrance(project, next)) {
+    throw new PrimitiveError("공간 설계에서 만든 출입구가 이 연결이나 출발 칸을 써요. 공간 설계에서 출입구를 바꿔 주세요.");
+  }
+  return { ...project, mapConnections: prior ? connections.map(row => row === prior ? next : row) : [...connections, next] };
 }
 
 export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
@@ -250,12 +370,17 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }, ["name"]),
   (_map, args) => `『${label(String(args.name), "새 맵")}』 맵을 만들어요.`,
   (project, map, args) => {
-    validateTileset(project, args.tilesetId);
-    return runMapTool(
+    const tilesetId = String(args.tilesetId ?? map.tilesetId).trim();
+    validateTileset(project, tilesetId);
+    const after = runMapTool(
       { ...project, maps: { ...project.maps }, mapTree: structuredClone(project.mapTree) }, "create_map",
-      { width: 20, height: 15, tilesetId: map.tilesetId, ...args, name: requiredName(args.name), id: nextMapId(project) },
+      { width: 20, height: 15, ...args, tilesetId, name: requiredName(args.name), id: nextMapId(project) },
       "새 맵에 사용할 타일셋과 크기를 확인해 주세요.",
     );
+    if (changesBlueprintPlaces(project, after)) {
+      throw new PrimitiveError("이 이름을 쓰면 게임 청사진이 새 맵을 가리켜요. 다른 이름을 골라 주세요.");
+    }
+    return after;
   }, newMap),
 
   primitive("map.structure.duplicate", "duplicate_map", "맵 복제", obj({ name }),
@@ -274,11 +399,16 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     }),
 
   primitive("map.properties.set", "set_map_properties", "맵 속성 변경", obj(propertyArgs),
-    (map, args) => args.name !== undefined
-      ? `『${mapLabel(map)}』 맵 이름을 『${label(String(args.name), "새 이름")}』${Object.keys(args).length > 1 ? "으로 바꾸고 속성도 고쳐요" : "으로 바꿔요"}.`
-      : args.bgmMode === "none" ? `『${mapLabel(map)}』 맵의 배경 음악을 꺼요.`
-        : args.bgmMode !== undefined || args.bgmResourceId !== undefined ? `『${mapLabel(map)}』 맵의 배경 음악 설정을 바꿔요.`
-          : `『${mapLabel(map)}』 맵의 속성을 바꿔요.`,
+    (map, args) => {
+      if (args.name !== undefined) {
+        const newName = label(String(args.name), "새 이름");
+        const action = Object.keys(args).length > 1 ? "바꾸고 속성도 고쳐요" : "바꿔요";
+        return `『${mapLabel(map)}』 맵 이름을 『${newName}』${towardJosa(newName)} ${action}.`;
+      }
+      if (args.bgmMode === "none") return `『${mapLabel(map)}』 맵의 배경 음악을 꺼요.`;
+      if (args.bgmMode !== undefined || args.bgmResourceId !== undefined) return `『${mapLabel(map)}』 맵의 배경 음악 설정을 바꿔요.`;
+      return `『${mapLabel(map)}』 맵의 속성을 바꿔요.`;
+    },
     setProperties),
 
   primitive("map.encounterTable.set", "set_encounter_table", "조우표 설정",
@@ -295,12 +425,16 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     }),
 
   primitive("map.door.set", "set_map_door", "문 열림 설정", obj({
-    ...xy, kind: choice("문 종류. 자동문, 여닫이, 양짝 여닫이, 미닫이, 셔터, 출구 또는 그림으로 판단", doorTypes),
+    ...xy, kind: choice("문 종류. 자동문, 여닫이, 두 짝 여닫이, 미닫이, 셔터, 연출 끄기 또는 그림으로 판단", doorTypes),
     width: integer("문 가로 칸 수. 생략하면 그림으로 판단해요", 1, 4),
     height: integer("문 세로 칸 수. 생략하면 그림으로 판단해요", 1, 4),
     hinge: choice("여닫이 경첩이 있는 쪽", ["left", "right"]),
     chime: bool("자동문을 열 때 입점 소리를 낼지"),
-  }, positionFields), (map, args) => `『${mapLabel(map)}』 맵의 문을 ${doorNames[(args.kind ?? "detect") as keyof typeof doorNames]} 설정해요.`, setDoor),
+  }, positionFields), (map, args) => {
+    if (args.kind === "none") return `『${mapLabel(map)}』 맵에 따로 지정한 문 열림 설정을 지워요.`;
+    if (args.kind === undefined) return `『${mapLabel(map)}』 맵의 문 열림 설정을 바꿔요.`;
+    return `『${mapLabel(map)}』 맵의 문을 ${doorNames[args.kind as keyof typeof doorNames]} 설정해요.`;
+  }, setDoor),
 
   primitive("map.connection.upsert", "upsert_map_connection", "맵 연결 설정", obj({
     ...xy, toMapId: text("도착 맵의 식별자"),
@@ -324,9 +458,13 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   (project, map, args) => {
     const area = { x: Number(args.x), y: Number(args.y), w: Number(args.w), h: Number(args.h) };
     rectInMap(map, area);
+    const tags = args.tags as string[] | undefined;
+    if (locationRoleTag({ tags })) {
+      throw new PrimitiveError("안전지대나 경작지 역할은 장소 편집에서 지정해 주세요.");
+    }
     const next = { ...map };
-    const result = addMapLocation(next, { ...area, name: requiredName(args.name),
-      note: args.note as string | undefined, tags: args.tags as string[] | undefined });
+    const result = addMapLocation(next, { ...area, name: newLocationName(map, args.name),
+      note: args.note as string | undefined, tags });
     if (!result.ok) throw new PrimitiveError(result.error);
     return mapDraft(project, map, next);
   }),
@@ -334,16 +472,22 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   primitive("map.location.update", "update_map_location", "장소 수정", obj({ locationId, name, ...rect }, ["locationId"]),
     (map, args) => {
       const location = locationInMap(map, args.locationId);
-      return args.name === undefined ? `『${label(location.name, "선택한 장소")}』 장소의 영역을 바꿔요.`
-        : `『${label(location.name, "선택한 장소")}』 장소 이름을 『${label(String(args.name), "새 이름")}』으로 바꿔요.`;
+      const current = label(location.name, "선택한 장소");
+      if (args.name === undefined) return `『${current}』 장소의 영역을 바꿔요.`;
+      const name = label(String(args.name), "새 이름");
+      return `『${current}』 장소 이름을 『${name}』${towardJosa(name)} ${rectFields.some(key => args[key] !== undefined) ? "바꾸고 영역도 고쳐요" : "바꿔요"}.`;
     },
     (project, map, args) => {
       const location = locationInMap(map, args.locationId);
       const wantsRect = rectFields.some(key => args[key] !== undefined);
       if (args.name === undefined && !wantsRect) throw new PrimitiveError("바꿀 장소 이름이나 영역을 적어 주세요.");
+      if (rectFields.some(key => args[key] !== undefined && args[key] !== location[key]) && (locationRoleTag(location)
+        || Object.values(map.locationRoleProjection ?? {}).some(roles => Object.hasOwn(roles, location.id)))) {
+        throw new PrimitiveError("이 장소는 안전지대나 경작지로 쓰여요. 장소 편집에서 영역을 바꿔 주세요.");
+      }
       const next = { ...map, locations: map.locations?.map(row => row === location ? { ...row } : row) };
       if (args.name !== undefined) {
-        const result = renameMapLocation(next, location.id, requiredName(args.name));
+        const result = renameMapLocation(next, location.id, newLocationName(map, args.name, location));
         if (!result.ok) throw new PrimitiveError("장소 이름을 확인해 주세요.");
       }
       if (wantsRect) {
@@ -360,8 +504,8 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (map, args) => `『${label(locationInMap(map, args.locationId).name, "선택한 장소")}』 장소를 삭제해요.`,
     (project, map, args) => {
       const location = locationInMap(map, args.locationId);
-      if (countLocationReferences(project, location.id, map.id) > 0) {
-        throw new PrimitiveError("이 장소를 가리키는 조건이 남아 있어 삭제할 수 없어요.");
+      if (usesLocation(project, map, location.id)) {
+        throw new PrimitiveError("이 장소를 가리키는 조건이나 설정이 남아 있어 삭제할 수 없어요.");
       }
       const next = { ...map };
       deleteMapLocation(next, location.id);
