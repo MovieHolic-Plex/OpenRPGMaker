@@ -164,6 +164,7 @@ const WHEEL_REOPEN_COOLDOWN_MS = 450;
  * 네 줄짜리 선택지가 한 바퀴 돌아 손을 뗀 자리와 다른 줄이 골라진다. 사람이 훑는 속도에 맞춘다(2026-11-05 사장 보고).
  */
 const CHOICE_REPEAT_STEP_MS = 120;
+const DIALOGUE_CONFIRM_REPEAT_MS = 160;
 const WHEEL_OPEN_WINDOW_MS = 300;
 const WHEEL_OPEN_THRESHOLD = 40;
 /** 말풍선 본문 폭(논리 px). 넘으면 줄을 바꾸고, 세 줄을 넘으면 상자로 간다. */
@@ -561,6 +562,8 @@ export function createDialogueUI(
   let activeExitMs = 0;
   let cancelActiveChoice: (() => void) | undefined;
   let cancelActiveText: (() => void) | undefined;
+  // 운영체제의 반복 입력은 대사에서만 받고, 연속 대사 사이에도 같은 간격을 유지한다.
+  let nextHeldAdvanceAt = 0;
 
   const clearOverlay = (): void => {
     clearChildren(overlay);
@@ -1662,10 +1665,20 @@ export function createDialogueUI(
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
         // 한글 IME 는 key 를 Process 로 바꾸므로, 진행·취소는 물리 키를 본다.
-        if (settled || e.repeat) return;
+        if (settled) return;
         const key = keyboardEventKey(e);
         if (key === "Process" || key === "Unidentified") return;
         if ((e.isComposing && key === e.key) || isTextEntryTarget(e.target)) return;
+        if (e.repeat) {
+          if (!isDialogueAdvanceKey(key) || e.ctrlKey || e.metaKey || e.altKey) return;
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if (lockedLine || readingMode !== "off" || ctrlSkip || hiddenByUser || logPanel || backlogViewIsOpen()) return;
+          if (e.timeStamp < nextHeldAdvanceAt) return;
+          nextHeldAdvanceAt = e.timeStamp + DIALOGUE_CONFIRM_REPEAT_MS;
+          advance();
+          return;
+        }
         if (system) {
           // Ctrl 은 누르는 동안만 스킵. 누르고 있다가 다른 키가 Ctrl 없이 눌리면(놓친 keyup) 스킵을 푼다.
           if (ctrlSkip && !e.ctrlKey) ctrlSkip = false;
@@ -1705,6 +1718,7 @@ export function createDialogueUI(
         if (isDialogueAdvanceKey(key)) {
           e.preventDefault();
           e.stopImmediatePropagation();
+          nextHeldAdvanceAt = e.timeStamp + DIALOGUE_CONFIRM_REPEAT_MS;
           advance();
         }
       };

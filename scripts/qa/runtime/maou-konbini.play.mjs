@@ -75,7 +75,7 @@ async function read(page, seg, until = async () => false, { maxMs = 300_000, sho
     if (s.box === null) { await page.waitForTimeout(200); continue; }
     const clean = s.box.replace(/\s+/g, " ").trim();
     if (clean && clean !== last) {
-      await page.waitForTimeout(500);
+      await page.locator('[data-testid="dialogue-box"].page-ready').waitFor({ timeout: 2500 }).catch(() => {});
       const full = ((await ui(page)).box ?? clean).replace(/\s+/g, " ").trim();
       seg.texts.push(full); last = full;
       if (shotOn && shotOn.test(full)) shot(page, `${seg.key}-${seg.texts.length}`);
@@ -325,6 +325,7 @@ const B = {
     await streetWalk(page, roomDoorOnStreet.x + 1, roomDoorOnStreet.y + 1); await streetWalk(page, roomDoorOnStreet.x - 3, roomDoorOnStreet.y + 1);
     await streetWalk(page, konDoorOnStreet.x + 1, konDoorOnStreet.y + 1); await enterDoor(page, konDoorOnStreet); await page.waitForTimeout(2000); mark("enter");
     await play(page, seg, [2, 1], quietAnd(async () => (await st(page))?.v?.var_mk_stage === 3), { shotOn: /이력서|마계|명찰|선배라고|매뉴얼 제1조/ }); mark("hired");
+    assert.ok(seg.texts.some((line) => /매장 왼쪽 진열대.*분리수거함은 입구 왼쪽/.test(line)), "첫날 브리핑에 상자와 분리수거함 위치가 없다.");
     await page.waitForFunction(() => window.__oprnPlayerSprite()?.textureKey === "tex_oprn_charset_scarloxy_people5");
     shot(page, "shift-start", 600);
   },
@@ -417,6 +418,10 @@ const B = {
 const fromCheckpoint = (fn, opts) => async (page, seg, mark) => { await ready(page); await page.waitForTimeout(1500); mark("ready"); await fn(page, seg, mark, opts); };
 
 try {
+  if (only.has("opening-brief")) await segment(browser, server, "opening-brief", null, async (page, seg, mark) => {
+    await B.opening(page, seg, mark);
+    await B.interview(page, seg, mark);
+  });
   // full = 타이틀부터 매뉴얼 결말까지 한 판(체크포인트 없이).
   if (only.has("full")) await segment(browser, server, "full", null, async (page, seg, mark) => {
     for (const key of ["opening", "interview", "day1", "evening1", "day2", "meeting", "night"]) { mark(`>${key}`); await B[key](page, seg, mark); }

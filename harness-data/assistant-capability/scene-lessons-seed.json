@@ -1362,6 +1362,19 @@
     "the wake effect is gone and neither the ambient resource label nor a waypoint overlay covers the map",
     "the wake dialogue names the hallway exit and the flyer can be read on the way out"
    ]
+  },
+  {
+   "id": "konbini-shift-landmarks",
+   "label": "편의점 근무 브리핑과 행인 대화",
+   "port": 19580,
+   "lessons": ["shift-workplace-landmarks", "walker-action-dialogue"],
+   "prompt": "편의점 첫 근무에 계산대, 상자 진열, 분리수거 일을 만들어 줘. 점장이 첫 브리핑에서 상자와 분리수거함 위치를 매장 안의 눈에 띄는 물건을 기준으로 한 문장으로 알려 줘. 밖에서 돌아다니는 행인은 부딪혀도 말을 시작하지 않고, 결정 키로 말을 걸 때만 대답하게 해 줘.",
+   "requirements": [
+    "The opening shift dialogue points to the actual stocking and recycling interaction cells using visible landmarks",
+    "A collision with a street walker starts no dialogue; pressing confirm does",
+    "The shop door still transfers the player by walking into it"
+   ],
+   "lint0": []
   }
  ]
 }

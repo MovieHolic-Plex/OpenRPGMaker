@@ -57,8 +57,10 @@ describe("audio indicator text", () => {
       clearRuntimeOverlay: (id: string) => calls.push(`clear ${id}`),
     };
     withProfiles([{ assetId: "bgm_1", name: "첫 곡" }]);
-    showAudioIndicator(scene, "bgm_1");
-    showAudioIndicator(scene, "cc0-bgm-rtp-emo-002");
+    showAudioIndicator(scene, { resourceId: "bgm_1", loop: true });
+    showAudioIndicator(scene, { resourceId: "bgm_1", loop: true, channel: "bgs" });
+    showAudioIndicator(scene, { resourceId: "bgm_1", loop: false });
+    showAudioIndicator(scene, { resourceId: "cc0-bgm-rtp-emo-002", loop: true });
     expect(calls).toEqual(["show audio-indicator 첫 곡", "clear audio-indicator"]);
   });
 });

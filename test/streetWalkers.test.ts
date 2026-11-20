@@ -50,11 +50,14 @@ describe("add_street_walkers 행인 경로", () => {
   it("도구는 행인 이벤트를 반복 custom 경로로 놓고, 같은 이름만 replace 로 바꾼다", () => {
     const { project, mapId, map } = fixture();
     const tool = getTool("add_street_walkers")!;
-    const args = { mapId, walkers: [{ name: "출근하는 회사원", graphic: { selectionId: "charset:tex_oprn_charset_modern3:0" }, stops: [{ x: 2, y: 2 }, { x: 8, y: 2, waitSec: 2 }], speed: 4 }] };
+    const args = { mapId, walkers: [{ name: "출근하는 회사원", graphic: { selectionId: "charset:tex_oprn_charset_modern3:0" }, stops: [{ x: 2, y: 2 }, { x: 8, y: 2, waitSec: 2 }], speed: 4, lines: ["좋은 아침입니다."] }] };
     tool.run(project, args);
     tool.run(project, { ...args, replace: true });
     const walkers = map.events.filter((e) => e.id.startsWith(WALKER_ID_PREFIX));
     expect(walkers).toHaveLength(1);
+    expect(walkers[0]!.trigger.kind).toBe("action");
+    expect(walkers[0]!.pages![0]!.trigger.kind).toBe("action");
+    expect(walkers[0]!.pages![0]!.commands).toContainEqual({ kind: "text", speaker: "출근하는 회사원", body: "좋은 아침입니다." });
     const mv = walkers[0]!.pages![0]!.movement!;
     expect(mv.type).toBe("custom");
     expect(mv.speed).toBe(4);
