@@ -33,6 +33,7 @@ export const SMALL_TASK_PRIMITIVE_TOOLS = [
 export interface SmallTaskToolContext extends ToolContext {
   readonly smallTaskTarget: SmallTaskTarget;
   readonly smallTaskSelection?: PrimitiveContext["selection"];
+  readonly smallTaskDraftSource?: PrimitiveContext["live"];
   readonly smallTaskCommonEvents?: { readonly initialIds: ReadonlySet<string>; createdId?: string };
 }
 
@@ -46,12 +47,19 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
   ]);
   const tool = SMALL_TASK_PRIMITIVE_TOOLS.find(tool => tool.name === name);
   if (!tool || !matchesPrimitiveSchema(tool.parameters, args)) throw new PrimitiveError("동작에 필요한 값의 형식을 확인해 주세요.");
-  const offered = primitivesForTarget(ctx.smallTaskTarget);
+  const target = ctx.smallTaskTarget;
+  const offered = primitivesForTarget(target);
   if (tool.name === LIST_SMALL_TASK_PRIMITIVES) {
+    const event = target.kind === "event"
+      ? ctx.project.maps[target.mapId]?.events.find(row => row.id === target.eventId)
+      : undefined;
+    const available = target.kind === "event" && !event?.pages?.length
+      ? offered.filter(row => !["cmd.delete", "cmd.move"].includes(getPrimitive(row.id)!.id))
+      : offered;
     return {
       ok: true,
       summary: "선택한 대상에 쓸 수 있는 동작을 읽었어요.",
-      data: offered.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
+      data: available.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
     };
   }
 
@@ -69,7 +77,7 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
       }
     }
   }
-  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, primitiveArgs, ctx.smallTaskSelection);
+  const result = runPrimitive(ctx.project, target, id, primitiveArgs, ctx.smallTaskSelection, ctx.smallTaskDraftSource);
   if (commonEvents && id === "commonEvent.create") commonEvents.createdId = result.after.commonEvents.at(-1)?.id;
   ctx.project = result.after;
   return { ok: true, summary: result.sentence };
