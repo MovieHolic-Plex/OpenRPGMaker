@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { runtimeResourceUrl } from "@/assets/runtimeResourceUrls";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { smallTaskErrorMessage } from "@/editor/smallTask/capsule";
 import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
@@ -407,6 +408,27 @@ it("다른 명령이 켜는 광원은 이름을 보존하면서 반지름만 고
   expect(session.lighting?.sources).toEqual([{ ...slotLight.source, radius: 5 }]);
 });
 
+it("열린 다른 이벤트 초안에서 같은 광원을 켜면 이름을 바꿀 수 없다", () => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  const other = project.maps[mapId]!.events.find(event => event.id === OTHER)!;
+  const source = { ...slotLight.source, id: " door_lamp ", radius: 1 };
+  const draft: GameEvent = { ...other, commands: [{ kind: "addLight", source }], draft: { kind: "edit", original: other } };
+  const live = { maps: { [mapId]: { events: [draft] } } };
+  const args = editArgs(slotLight, { id: "new_lamp" });
+  expect(() => runPrimitive(project, target, "cmd.addLight.update", args, undefined, live)).toThrow(/이 광원을 켜고 있어/u);
+});
+
+it("선택한 이벤트의 취소용 원본에만 남은 광원 이름은 바꿀 수 있다", () => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  beginEventEditDraft(project, mapId, EVENT);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "new_lamp" }));
+  expect(selectedPage(after, mapId).commands).toStrictEqual([
+    { ...slotLight, source: { ...slotLight.source, id: "new_lamp" } },
+  ]);
+  expect(after.maps[mapId]!.events.find(event => event.id === EVENT)?.draft?.original?.pages?.[1]?.commands)
+    .toStrictEqual([slotLight]);
+});
+
 it("공용 이벤트에서 이동시키는 그림은 자리를 바꿀 수 없다", () => {
   const { project, target } = fixture("blank", [slotPicture]);
   const move: Command = { kind: "m2Command", commandId: "m2-052-move-picture", fields: { pictureId: "title_card" } };
@@ -659,6 +681,23 @@ it("그림 명령이 실행기에 넘긴 리소스를 게임에서 해석할 수
   const { step, project } = runtime("showPicture", { resourceId: PICTURE, pictureId: "pic3" });
   expect(step).toMatchObject({ kind: "showPicture", resourceId: PICTURE, pictureId: "pic3" });
   expect(resolvePictureSource(PICTURE, project)).toBe("/assets/generated/title/oprn-title-field.png");
+});
+
+it("렌더링 전에도 존재하는 오프닝 스틸을 선택하고 없는 컷은 거절한다", () => {
+  const { project, target, mapId } = fixture("blank", []);
+  const sceneId = "staging_still_scene";
+  project.system = {
+    ...project.system,
+    opening: {
+      enabled: true, skippable: true,
+      scenes: [{ id: sceneId, kind: "animatic", narration: "", durationMs: 1000, composition: { width: 320, height: 180, layers: [] } }],
+    },
+  };
+  const resourceId = `opening-still:${sceneId}@500`;
+  expect(runtimeResourceUrl(resourceId)).toBeNull();
+  const { after } = expectApplies(project, target, "cmd.showPicture.insert", { resourceId });
+  expect(selectedPage(after, mapId).commands[0]).toMatchObject({ kind: "showPicture", resourceId });
+  expectRefused(project, target, "cmd.showPicture.insert", { resourceId: "opening-still:missing@500" }, /표시할 수 있는 그림/u);
 });
 
 it("그림 자리의 공백을 정리하고 요약에 바뀐 그림 크기를 보여 준다", () => {

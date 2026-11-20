@@ -19,7 +19,7 @@ import {
 } from "@/project/eventCommands/singleCommandOps";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { normalizeLightSource } from "@/project/lightingRules";
-import { openingStillBaseId } from "@/project/openingStill";
+import { findOpeningStillScene, OPENING_STILL_PREFIX, parseOpeningStill } from "@/project/openingStill";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { dataUrlMime, uploadedAssetMime, uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { actorPictureActorId } from "@/project/pictureSources";
@@ -265,9 +265,12 @@ function validateReferences(project: Project, command: StagingCommand, previous:
   const message = command.kind === "showPicture" ? "프로젝트에서 표시할 수 있는 그림을 찾을 수 없습니다."
     : command.kind === "playMovie" ? "프로젝트에서 재생할 수 있는 동영상을 찾을 수 없습니다."
     : "프로젝트에서 재생할 수 있는 소리를 찾을 수 없습니다.";
-  const ids = collectResourceIds(project);
-  const stillId = command.kind === "showPicture" ? openingStillBaseId(id) : undefined;
-  const known = ids.has(id) || (stillId !== undefined && ids.has(stillId));
+  if (command.kind === "showPicture" && id.startsWith(OPENING_STILL_PREFIX)) {
+    const still = parseOpeningStill(id);
+    if (!still || !findOpeningStillScene(project, still.sceneId)) throw new PrimitiveError(message);
+    return;
+  }
+  const known = collectResourceIds(project).has(id);
   const bundledMovie = command.kind === "playMovie" && id === SAMPLE_MOVIE_RESOURCE.id;
   if (actorId || (!known && !bundledMovie) || Object.hasOwn(Object.prototype, id)) throw new PrimitiveError(message);
   const uploaded = Object.hasOwn(project.assets.uploaded, id) ? project.assets.uploaded[id] : undefined;
@@ -337,8 +340,8 @@ function hasUnresolvedSlotScript(project: Project, slot: "picture" | "light"): b
 
 function validateSlotRename(ctx: PrimitiveContext, after: Project, map: GameMap, command: StagingCommand, previous: StagingCommand | undefined): void {
   const { project, live, target } = ctx;
+  const selected = target.kind === "event" ? target : undefined;
   if (command.kind === "showPicture" && previous?.kind === "showPicture" && command.pictureId !== previous.pictureId) {
-    const selected = target.kind === "event" ? target : undefined;
     const working = withOpenEventDrafts(project, live, selected);
     // Cancelling the selected draft rolls back the rename too. Only its working commands can conflict.
     if (hasCommandReference(working, row => referencesPicture(row, previous.pictureId), selected)) {
@@ -369,7 +372,8 @@ function validateSlotRename(ctx: PrimitiveContext, after: Project, map: GameMap,
       if (hasCommandReference(project, row => row.kind === "removeLight" && row.all !== true && row.id === oldId)) {
         throw new PrimitiveError("다른 명령에서 이 광원을 끄고 있어 광원 이름을 바꿀 수 없습니다.");
       }
-      if (hasCommandReference(after, row => row.kind === "addLight" && normalizeLightSource(row.source).id === oldId)) {
+      const edited = withOpenEventDrafts(after, live, selected);
+      if (hasCommandReference(edited, row => row.kind === "addLight" && normalizeLightSource(row.source).id === oldId, selected)) {
         throw new PrimitiveError("다른 명령에서 이 광원을 켜고 있어 광원 이름을 바꿀 수 없습니다.");
       }
       if (isDefaultLight(newId)
