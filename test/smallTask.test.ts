@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
 import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@/editor/smallTask/target";
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
@@ -6,6 +7,7 @@ import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsu
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 import { runSmallTask } from "@/editor/smallTask/run";
+import { setLocale } from "@/i18n";
 
 const collections: SmallTaskCollection[] = ["actors", "classes", "items", "skills", "enemies", "troops", "states", "equipment"];
 function fixture(): Project {
@@ -133,6 +135,22 @@ describe("명세를 읽는 쉬운 말 요약", () => {
     expect(lines).toContain("대사 「안녕.」 → 「들어와.」");
     expect(lines.join(" ")).not.toMatch(/map_hidden|ev_f52|page_first/);
     expect(lines.every(line => line.length < 100)).toBe(true);
+  });
+  it.each([
+    ["ko", "대사 추가 「경비 · 좋은 아침!」"],
+    ["en", "Dialogue added 「경비 · 좋은 아침!」"],
+    ["ja", "せりふを追加 「경비 · 좋은 아침!」"],
+    ["zh", "新增对话 「경비 · 좋은 아침!」"],
+  ] as const)("%s에서 새 대사는 이전 값 없이 표시한다", async (locale, added) => {
+    try {
+      await setLocale(locale);
+      const a = fixture(), b = structuredClone(a);
+      b.maps.map_a.events[0].pages![0].commands.push({ kind: "text", speaker: "경비", body: "좋은 아침!" });
+      const lines = plainSummary(a, b).lines;
+      expect(lines.filter(line => line.includes("좋은 아침!"))).toEqual([added]);
+    } finally {
+      await setLocale("ko");
+    }
   });
   it("추가·삭제·변경과 낯선 모양도 한 줄 이상 남기고 내부 식별자를 숨긴다", () => {
     for (const change of ["added", "removed", "changed"] as const) {

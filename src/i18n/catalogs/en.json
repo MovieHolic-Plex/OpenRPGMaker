@@ -18507,6 +18507,7 @@
 "{0} 바뀜":"{0} changed",
 "그 밖의 설정":"Other settings",
 "그 밖의 설정 1곳 바뀜":"One other setting changed",
+"대사 추가 {0}":"Dialogue added {0}",
 "대사 {0} → {1}":"Dialogue {0} → {1}",
 "대사 {0}줄 추가":"{0} {0|one:line|other:lines} of dialogue added",
 "대사 {0}줄 삭제":"{0} {0|one:line|other:lines} of dialogue removed",

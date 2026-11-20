@@ -425,6 +425,12 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const controller = new AbortController();
   const signal = options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal;
   const toolNames = smallTaskTools(target);
+  const referenceGate = new PiTilesetReferenceGate();
+  referenceGate.evidence.shrinkImage = shrinkReferenceImage;
+  const onPayload = (payload: unknown) => {
+    referenceGate.payload(payload);
+    return payload;
+  };
   let toolCalls = 0;
   let toolErrors = 0;
   let turns = 0;
@@ -436,6 +442,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   };
   const tools = createPiToolset(ctx, {
     toolNames,
+    referenceGate,
     eventAssistChat: async (_config, chat) => {
       if (cli) return { message: { role: "assistant", content: await localCliChat(cli, request.model)(chat.messages, signal) }, finishReason: "stop" };
       const { completion } = await completeProvider(request.provider, {
@@ -466,12 +473,13 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const local = cli ? await createLocalCliLoop({
     cli, model: request.model, signal, systemPrompt: [systemPrompt], tools, resolveFallbackTool,
     effort: effort === "low" || effort === "medium" || effort === "high" ? effort : undefined,
-    onPayload: payload => payload,
+    onPayload,
   }) : undefined;
   const agent: PiLoopDriver = local ?? new Agent({
     initialState: { model: model as never, systemPrompt, tools: tools as never, thinkingLevel: normalizePiThinkingLevel(request.provider, effort) },
     getApiKey: keyForRun,
     streamFn: options.streamFn ?? piProviderStream(request.provider),
+    onPayload,
     resolveFallbackTool,
   }) as unknown as PiLoopDriver;
   const abort = () => agent.abort(failure ?? "Request was aborted");
@@ -484,9 +492,10 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     }
     if (event.type === "message_end") {
       const message = event.message as { role?: string; stopReason?: string; errorMessage?: string } | undefined;
-      if (message?.role === "assistant" && message.stopReason !== "stop" && message.stopReason !== "toolUse") {
-        refuse(message.errorMessage ?? `Provider completion ${message.stopReason}`);
-      }
+      if (message?.role !== "assistant") return;
+      const success = (message.stopReason === "stop" || message.stopReason === "toolUse") && !message.errorMessage && !signal.aborted;
+      referenceGate.complete(success);
+      if (!success && !signal.aborted) refuse(message.errorMessage ?? `Provider completion ${message.stopReason}`);
     }
   });
   signal.addEventListener("abort", abort, { once: true });
