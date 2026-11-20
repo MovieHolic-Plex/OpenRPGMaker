@@ -5,14 +5,16 @@ import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { getCharacterProfile } from "@/project/characterProfiles";
 import { MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { compareVariableValue } from "@/project/conditionEvaluation";
+import { findShadowedPages } from "@/project/eventPageShadow";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { canonicalJsonString } from "@/project/persistence/core/canonicalJson";
 import { scriptCalls, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
 import { clampVariableValue, startStateOf } from "@/project/session";
 import { sightWatcherIds } from "@/project/sightWatchers";
 import { resolveSpeakerActor } from "@/project/staging/dialogueActors";
 import { storyFlagById } from "@/project/storyFlags";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
-import type { Command, Condition, EventPage, EventSightWatchers, GameEvent, MoveRoute, Project } from "@/project/types";
+import type { Command, Condition, EndingDef, EventPage, EventSightWatchers, GameEvent, MoveRoute, Project } from "@/project/types";
 
 type RecordNode = Record<string, unknown>;
 
@@ -54,8 +56,8 @@ function m2EventReference(node: RecordNode, mapId: string, id: string): boolean 
   }
 }
 
-function authoredRoots(project: Project) {
-  return [project.commonEvents, project.database, project.quests, project.endings, project.gameBlueprint, project.system,
+function authoredRoots(project: Project, endings: unknown = project.endings) {
+  return [project.commonEvents, project.database, project.quests, endings, project.gameBlueprint, project.system,
     project.session.farmAnimals, project.spatialAuthoring, project.worldAtlases, project.worldGraph,
     project.testPresets, project.meta.oprnCinematicTimelines];
 }
@@ -151,7 +153,8 @@ export function hasNamedEventReference(project: Project, mapId: string, event: G
     const after = resolveSpeakerActor({ ...input, visible: afterActors });
     return (before === event.id) !== (after === event.id);
   });
-  return refers(authoredRoots(project)) || (name === undefined ? remaining : map.events).some(owner => refers(owner, owner.id));
+  return refers(authoredRoots(project)) || (name === undefined ? remaining : map.events)
+    .some(owner => refers({ ...owner, pages: unshadowedPages(owner) }, owner.id));
 }
 
 export function anOpenDraftReferencesDeletedEvent(
@@ -162,13 +165,18 @@ export function anOpenDraftReferencesDeletedEvent(
   if (workingAfter === after) return false;
   const workingBefore = withOpenEventDrafts(before, live, target);
   return hasEventReference(workingAfter, mapId, event.id) || hasNamedObjective(workingAfter, event)
-    || switchesStrandedByDeletion(workingAfter, event).global
+    || switchesStrandedByDeletion(workingAfter, mapId, event).global
     || hasNamedEventReference(workingBefore, mapId, event);
 }
 
 export function pageIsShadowed(event: GameEvent, page: EventPage): boolean {
-  const pages = event.pages ?? [];
-  return pages.slice(pages.indexOf(page) + 1).some(later => !later.conditions?.length);
+  const index = event.pages?.indexOf(page);
+  return findShadowedPages(event.pages).some(shadow => shadow.index === index);
+}
+
+function unshadowedPages(event: GameEvent): EventPage[] {
+  const shadowed = new Set(findShadowedPages(event.pages).map(page => page.index));
+  return event.pages?.filter((_, index) => !shadowed.has(index)) ?? [];
 }
 
 const globalKey = (id: string) => `switch:${id}`;
@@ -185,36 +193,26 @@ function readGlobalSwitch(project: Project, node: RecordNode): string | undefine
   return typeof node.switchId === "string" ? node.switchId : undefined;
 }
 
-export function switchesStrandedByDeletion(after: Project, removed: EventPage | GameEvent, owner?: GameEvent) {
-  const global = new Set<string>();
-  const local = new Map<string, string>();
-  const removedCommands = "x" in removed
-    ? (removed.pages?.length ? removed.pages.filter(page => !pageIsShadowed(removed, page)) : [removed.commands, removed.moveRoute])
-    : removed;
-  someRecord(removedCommands, node => {
-    if (node.kind === "setSwitch" && node.value !== false && typeof node.switchId === "string") global.add(node.switchId);
-    if (node.kind === "script") for (const id of scriptWrites(node, "switch", after)) global.add(id);
-    if (owner && node.kind === "setSelfSwitch" && node.value === true && typeof node.key === "string") {
-      local.set(node.key, selfKey(owner.id, node.key));
-    }
-    return false;
-  });
-  if (!global.size && !local.size) return { global: false, self: false };
-
-  const events = Object.values(after.maps).flatMap(map => map.events);
-  const targets = new Set([...Array.from(global, globalKey), ...local.values()]);
-  const stranded = unreplacedSwitches(after, events, targets);
-  if (!stranded.size) return { global: false, self: false };
+export function switchesStrandedByDeletion(after: Project, mapId: string, removed: EventPage | GameEvent, owner?: GameEvent) {
+  const targets = removedSwitchWrites(after, mapId, removed, owner);
+  if (!targets.size) return { global: false, self: false };
+  const endings = (after.endings ?? []).filter(ending => requiresSwitchOn(allConditions(ending.conditions), node => {
+    const id = readGlobalSwitch(after, node);
+    return id !== undefined && targets.has(globalKey(id));
+  }));
+  const { stranded, endingStranded } = unreplacedSwitches(after, targets, endings);
+  if (!stranded.size && !endingStranded) return { global: false, self: false };
   const readsGlobal = (node: RecordNode) => {
     const id = readGlobalSwitch(after, node);
     return id !== undefined && stranded.has(globalKey(id));
   };
   const readsSelf = (node: RecordNode) => node.kind === "selfSwitch"
-    && typeof node.key === "string" && stranded.has(local.get(node.key) ?? "");
+    && typeof node.key === "string" && owner !== undefined && stranded.has(selfKey(owner.id, node.key));
+  const events = Object.values(after.maps).flatMap(map => map.events);
 
   return {
-    self: local.size > 0 && someRecord(owner?.pages, node => requiresSwitchOn(node, readsSelf), outsideCompoundCondition),
-    global: global.size > 0 && someRecord([events, ...authoredRoots(after)], node => {
+    self: someRecord(owner?.pages, node => requiresSwitchOn(node, readsSelf), outsideCompoundCondition),
+    global: endingStranded || someRecord([events, ...authoredRoots(after, after.endings?.map(ending => ending.epilogue))], node => {
       if (node.kind === "m2Command") {
         const fields = node.fields as RecordNode | undefined;
         return typeof fields?.target === "string" && stranded.has(globalKey(fields.target))
@@ -264,34 +262,176 @@ function evaluateCondition(value: unknown, leaf: (node: RecordNode) => boolean |
 }
 
 type State = ReadonlyMap<string, boolean | number>;
-type ConditionEvaluator = (condition: unknown, state: State, eventId?: string) => boolean | undefined;
+type ValueReader = (state: State, key: string, fallback: boolean | number) => boolean | number | undefined;
+type UnknownCondition = (node: RecordNode) => boolean | undefined;
+type ConditionEvaluator = (condition: unknown, state: State, eventId?: string, unknown?: UnknownCondition) => boolean | undefined;
+
+const allConditions = (conditions: readonly unknown[]) => ({ kind: "all" as const, conditions });
+
+function conditionEvaluator(project: Project, read: ValueReader): ConditionEvaluator {
+  return (condition, state, eventId, unknown) => evaluateCondition(condition, node => {
+    const id = readGlobalSwitch(project, node);
+    const key = id !== undefined ? globalKey(id)
+      : node.kind === "selfSwitch" && eventId && typeof node.key === "string" ? selfKey(eventId, node.key) : undefined;
+    if (node.kind === "selfSwitch" && !eventId) return node.value === false;
+    if (key !== undefined) {
+      const value = read(state, key, false);
+      if (value !== undefined) return value === (node.value !== false);
+    }
+    if (node.kind === "variable" && typeof node.variableId === "string" && typeof node.value === "number") {
+      const value = read(state, variableKey(node.variableId), 0);
+      if (typeof value === "number") {
+        const { op } = node as Extract<Condition, { kind: "variable" }>;
+        return compareVariableValue(value, op, node.value);
+      }
+    }
+    return unknown?.(node);
+  });
+}
+
+function applySwitchEffects(
+  project: Project, command: Command, state: State, eventId: string | undefined, read: ValueReader,
+  write: (state: State, key: string, value: boolean | number | undefined) => State,
+): State {
+  const readVariable = (id: string) => read(state, variableKey(id), 0) as number | undefined;
+  if (command.kind === "setSwitch") {
+    const key = globalKey(command.switchId);
+    const value = command.value;
+    if (typeof value === "boolean") return write(state, key, value);
+    const operand = value === "toggle" ? read(state, key, false) : readVariable(value.id);
+    const on = operand === undefined ? undefined : value === "toggle" ? !operand : operand !== 0;
+    return write(state, key, on);
+  }
+  if (command.kind === "setSelfSwitch" && eventId) return write(state, selfKey(eventId, command.key), command.value);
+  if (command.kind === "setVariable") {
+    const value = typeof command.value === "number" ? command.value : readVariable(command.value.id);
+    const current = readVariable(command.variableId);
+    let result: number | undefined;
+    if (command.op === "=") result = value;
+    else if (current !== undefined && value !== undefined) {
+      result = { "+=": current + value, "-=": current - value,
+        "*=": current * value, "/=": value === 0 ? current : current / value }[command.op];
+    }
+    return write(state, variableKey(command.variableId), result === undefined ? undefined : clampVariableValue(result));
+  }
+  if (command.kind === "script") {
+    for (const id of scriptWrites(command, "switch", project)) state = write(state, globalKey(id), true);
+  }
+  return state;
+}
 
 function routeSwitches(route: MoveRoute | undefined): Command[] {
   return route?.moves.filter(move => move.kind === "setSwitch") ?? [];
 }
 
-function* activeCommandLists(event: GameEvent, state: State, evaluate: ConditionEvaluator): Generator<Command[]> {
-  const pages = event.pages ?? [];
-  for (let index = pages.length - 1; index >= 0; index--) {
-    const page = pages[index];
-    const results = (page.conditions ?? []).map(condition => evaluate(condition, state, event.id));
-    if (results.includes(false)) continue;
-    yield page.commands;
-    yield routeSwitches(page.movement?.route);
-    if (results.every(result => result === true)) return;
-  }
-  if (!pages.length && evaluate(event.condition, state, event.id) !== false) {
-    yield event.commands;
-    yield routeSwitches(event.moveRoute);
-  }
-}
-
 const MAX_REACHABLE_STATES = 256;
 const MAX_COMMAND_STEPS = 2048;
 
-function unreplacedSwitches(project: Project, events: GameEvent[], targets: ReadonlySet<string>): Set<string> {
+function canMatch(condition: unknown, state: State, eventId: string | undefined, evaluate: ConditionEvaluator, truncate: () => void): boolean {
+  const assignments = new Map<string, boolean>();
+  let remaining = MAX_REACHABLE_STATES;
+  const search = (): boolean => {
+    if (remaining-- <= 0) { truncate(); return false; }
+    let undecided: string | undefined;
+    const result = evaluate(condition, state, eventId, node => {
+      // Presence and absence are two values of the same item, actor or species predicate.
+      const presence = node.kind === "item" || node.kind === "actor" || node.kind === "monsterSpecies";
+      const key = canonicalJsonString(presence ? { ...node, present: true } : node);
+      const assignment = assignments.get(key);
+      if (assignment === undefined) { undecided ??= key; return undefined; }
+      return presence && node.present === false ? !assignment : assignment;
+    });
+    if (result !== undefined) return result;
+    if (undecided === undefined) return false;
+    const key = undecided;
+    assignments.set(key, true);
+    if (search()) return true;
+    assignments.set(key, false);
+    const matches = search();
+    assignments.delete(key);
+    return matches;
+  };
+  return search();
+}
+
+function* possiblePages(event: GameEvent, state: State, evaluate: ConditionEvaluator, truncate: () => void): Generator<EventPage | undefined> {
+  const pages = event.pages ?? [];
+  const higherFailures: unknown[] = [];
+  for (let index = pages.length - 1; index >= 0; index--) {
+    const page = pages[index];
+    const conditions = page.conditions ?? [];
+    const own = allConditions(conditions);
+    const result = evaluate(own, state, event.id);
+    if (result === false) continue;
+    if ((result === true && higherFailures.length === 0)
+      || canMatch(allConditions([...conditions, ...higherFailures]), state, event.id, evaluate, truncate)) yield page;
+    if (result === true) return;
+    higherFailures.push({ kind: "not", condition: own });
+  }
+  if (higherFailures.length === 0 || canMatch(allConditions(higherFailures), state, event.id, evaluate, truncate)) yield undefined;
+}
+
+type EventCall = Extract<Command, { kind: "callCommonEvent" | "callMapEvent" }>;
+
+function commandCalls(project: Project, evaluate: ConditionEvaluator, truncate: () => void) {
+  const common = new Map((project.commonEvents ?? []).map(event => [event.id, event.commands]));
+  return (command: EventCall, state: State, mapId: string): Command[][] => {
+    if (command.kind === "callCommonEvent") return [common.get(command.commonEventId) ?? []];
+    const event = project.maps[mapId]?.events.find(entry => entry.id === command.eventId);
+    if (!event) return [[]];
+    return [...possiblePages(event, state, evaluate, truncate)].map(page => page?.commands ?? event.commands);
+  };
+}
+
+function removedSwitchWrites(project: Project, mapId: string, removed: EventPage | GameEvent, owner?: GameEvent): Set<string> {
+  const eventId = owner?.id ?? ("x" in removed ? removed.id : undefined);
+  // The removed page may have started in any session. Use values established by its own command path.
+  const read: ValueReader = (state, key) => state.get(key);
+  const evaluate = conditionEvaluator(project, read);
+  const targets = new Set<string>();
+  const collect = (key: string, value: boolean | number | undefined) => {
+    if (key.startsWith("switch:") && value !== false) targets.add(key);
+    if (owner && key.startsWith(`self:${owner.id}:`) && value === true) targets.add(key);
+  };
+  const lists = "x" in removed
+    ? (removed.pages?.length ? unshadowedPages(removed).flatMap(page => [page.commands, routeSwitches(page.movement?.route)])
+      : [removed.commands, routeSwitches(removed.moveRoute)])
+    : [removed.commands, routeSwitches(removed.movement?.route)];
+  let truncated = false;
+  const truncate = () => { truncated = true; };
+  const calls = commandCalls(project, evaluate, truncate);
+  for (const commands of lists) {
+    truncated = false;
+    walkCommands(commands, new Map(), {
+      project, mapId, eventId, evaluate, calls, truncate,
+      apply: (command, state) => applySwitchEffects(project, command, state, eventId, read, (prior, key, value) => {
+        collect(key, value);
+        if (prior.get(key) === value) return prior;
+        const next = new Map(prior);
+        if (value === undefined) next.delete(key);
+        else next.set(key, value);
+        return next;
+      }),
+      complete: () => {},
+    });
+    if (!truncated) continue;
+    // Keep the deletion guard conservative when the command budget runs out.
+    someRecord(commands, node => {
+      if (node.kind === "setSwitch" && node.value !== false && typeof node.switchId === "string") collect(globalKey(node.switchId), true);
+      if (node.kind === "script") for (const id of scriptWrites(node, "switch", project)) collect(globalKey(id), true);
+      if (eventId && node.kind === "setSelfSwitch" && node.value === true && typeof node.key === "string") {
+        collect(selfKey(eventId, node.key), true);
+      }
+      return false;
+    });
+  }
+  return targets;
+}
+
+function unreplacedSwitches(project: Project, targets: ReadonlySet<string>, endings: EndingDef[]) {
+  const maps = Object.values(project.maps);
+  const events = maps.flatMap(map => map.events);
   const commonEvents = project.commonEvents ?? [];
-  const commonCommands = new Map(commonEvents.map(event => [event.id, event.commands]));
   const otherLists = project.database.troops.flatMap(troop => [
     ...troop.battleEventPages.map(page => page.commands), ...troopAfterBattleLists(troop).map(entry => entry.commands),
   ]);
@@ -305,7 +445,7 @@ function unreplacedSwitches(project: Project, events: GameEvent[], targets: Read
   const tracked = new Set(targets);
   const selfReads = new Set<string>();
   const possibleOff = new Set<string>();
-  someRecord([events, commonEvents, otherLists], node => {
+  someRecord([events, commonEvents, otherLists, project.endings], node => {
     const switchId = readGlobalSwitch(project, node);
     if (switchId !== undefined) tracked.add(globalKey(switchId));
     if (typeof node.conditionSwitchId === "string") tracked.add(globalKey(node.conditionSwitchId));
@@ -318,22 +458,11 @@ function unreplacedSwitches(project: Project, events: GameEvent[], targets: Read
     return false;
   });
 
-  const switchOn = (state: State, key: string) => (state.get(key) ?? initial.get(key)) === true;
-  const readVariable = (state: State, id: string) => Number(state.get(variableKey(id)) ?? initial.get(variableKey(id)) ?? 0);
-  const evaluate: ConditionEvaluator = (condition, state, eventId) => evaluateCondition(condition, node => {
-    const id = readGlobalSwitch(project, node);
-    if (id !== undefined) return switchOn(state, globalKey(id)) === (node.value !== false);
-    if (node.kind === "selfSwitch" && typeof node.key === "string") {
-      return Boolean(eventId && switchOn(state, selfKey(eventId, node.key))) === (node.value !== false);
-    }
-    if (node.kind === "variable" && typeof node.variableId === "string" && typeof node.value === "number") {
-      const { op } = node as Extract<Condition, { kind: "variable" }>;
-      return compareVariableValue(readVariable(state, node.variableId), op, node.value);
-    }
-    return undefined;
-  });
-
+  const read: ValueReader = (state, key, fallback) => state.get(key) ?? initial.get(key) ?? fallback;
+  const switchOn = (state: State, key: string) => read(state, key, false) === true;
+  const evaluate = conditionEvaluator(project, read);
   const replaced = new Set<string>();
+  const reachableEndings = new Set<EndingDef>();
   const empty: State = new Map();
   const seenOff = new Set([...targets].filter(key => !switchOn(empty, key)));
   const states: State[] = [empty];
@@ -341,31 +470,41 @@ function unreplacedSwitches(project: Project, events: GameEvent[], targets: Read
   const stateKeys = new WeakMap<State, string>();
   const relevantLists = new WeakMap<Command[], boolean>();
   let truncated = false;
-  const stateKey = (state: State) => {
-    let key = stateKeys.get(state);
-    if (key === undefined) {
-      key = JSON.stringify([...state].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0));
-      stateKeys.set(state, key);
+  const truncate = () => { truncated = true; };
+  const calls = commandCalls(project, evaluate, truncate);
+  const noteEndings = (state: State, eventId?: string, endingId?: string) => {
+    for (const ending of endings) {
+      if (endingId && ending.id !== endingId) continue;
+      if (!reachableEndings.has(ending) && canMatch(allConditions(ending.conditions), state, eventId, evaluate, truncate)) {
+        reachableEndings.add(ending);
+      }
     }
-    return key;
   };
   const enqueue = (state: State) => {
-    const key = stateKey(state);
+    const key = keyOfState(state, stateKeys);
     if (seenStates.has(key)) return;
-    if (states.length >= MAX_REACHABLE_STATES) { truncated = true; return; }
+    if (states.length >= MAX_REACHABLE_STATES) { truncate(); return; }
     seenStates.add(key);
     states.push(state);
   };
 
-  const run = (commands: Command[], state: State, eventId?: string) => {
-    if (!commands.length || replaced.size === targets.size) return;
+  const done = () => replaced.size === targets.size && reachableEndings.size === endings.length;
+  const run = (commands: Command[], state: State, mapId: string, eventId?: string) => {
+    if (!commands.length || done()) return;
     if (!relevantLists.has(commands)) {
       relevantLists.set(commands, someRecord(commands, node => node.kind === "setSwitch" || node.kind === "setSelfSwitch"
-        || node.kind === "setVariable" || node.kind === "callCommonEvent" || node.kind === "script"));
+        || node.kind === "setVariable" || node.kind === "callCommonEvent" || node.kind === "callMapEvent"
+        || node.kind === "triggerEnding" || node.kind === "script"));
     }
     if (!relevantLists.get(commands)) return;
-    const write = (prior: State, key: string, value: boolean | number, fallback: boolean | number) => {
-      const current = prior.get(key) ?? initial.get(key) ?? fallback;
+    const selfPrefix = eventId === undefined ? undefined : selfKey(eventId, "");
+    const write = (prior: State, key: string, value: boolean | number | undefined) => {
+      if (value === undefined) return prior;
+      if (!tracked.has(key) && !(selfPrefix && key.startsWith(selfPrefix) && selfReads.has(key.slice(selfPrefix.length)))) {
+        return prior;
+      }
+      const fallback = typeof value === "number" ? 0 : false;
+      const current = read(prior, key, fallback);
       if (targets.has(key) && value === true && current === false) replaced.add(key);
       if (targets.has(key) && value === false) seenOff.add(key);
       if (current === value) return prior;
@@ -374,48 +513,49 @@ function unreplacedSwitches(project: Project, events: GameEvent[], targets: Read
       else next.set(key, value);
       return next;
     };
-    walkCommands(commands, state, commonCommands, eventId, evaluate, (command, prior) => {
-      if (command.kind === "setSwitch") {
-        const key = globalKey(command.switchId);
-        if (!tracked.has(key)) return prior;
-        const value = command.value;
-        const on = typeof value === "boolean" ? value : value === "toggle"
-          ? !switchOn(prior, key) : readVariable(prior, value.id) !== 0;
-        return write(prior, key, on, false);
-      }
-      if (command.kind === "setSelfSwitch" && eventId) {
-        const key = selfKey(eventId, command.key);
-        if (targets.has(key) || selfReads.has(command.key)) return write(prior, key, command.value, false);
-      }
-      if (command.kind === "setVariable" && tracked.has(variableKey(command.variableId))) {
-        const current = readVariable(prior, command.variableId);
-        const value = typeof command.value === "number" ? command.value : readVariable(prior, command.value.id);
-        const result = { "=": value, "+=": current + value, "-=": current - value,
-          "*=": current * value, "/=": value === 0 ? current : current / value }[command.op];
-        return write(prior, variableKey(command.variableId), clampVariableValue(result), 0);
-      }
-      if (command.kind === "script") {
-        for (const id of scriptWrites(command, "switch", project)) {
-          const key = globalKey(id);
-          if (tracked.has(key)) prior = write(prior, key, true, false);
-        }
-      }
-      return prior;
-    }, stateKey, enqueue, () => { truncated = true; });
+    walkCommands(commands, state, {
+      project, mapId, eventId, evaluate, calls, truncate, stateKeys,
+      apply: (command, prior) => {
+        if (command.kind === "triggerEnding") noteEndings(prior, eventId, command.endingId);
+        return applySwitchEffects(project, command, prior, eventId, read, write);
+      },
+      complete: (result, endsGame) => {
+        noteEndings(result, eventId);
+        if (!endsGame) enqueue(result);
+      },
+    });
   };
 
-  // Re-evaluate page priority only between command lists, using one state for all of an event's pages.
+  // Each completed list supplies one state for the next action and for all conditions of an ending.
+  noteEndings(empty);
   for (const state of states) {
-    if (replaced.size === targets.size) return new Set();
-    for (const event of events) for (const list of activeCommandLists(event, state, evaluate)) run(list, state, event.id);
-    for (const event of commonEvents) {
-      if ((event.trigger === "auto" || event.trigger === "parallel")
-        && (!event.conditionSwitchId || switchOn(state, globalKey(event.conditionSwitchId)))) run(event.commands, state);
+    if (done()) break;
+    for (const map of maps) {
+      for (const event of map.events) {
+        for (const page of possiblePages(event, state, evaluate, truncate)) {
+          if (page) {
+            run(page.commands, state, map.id, event.id);
+            run(routeSwitches(page.movement?.route), state, map.id, event.id);
+          } else if (!event.pages?.length && evaluate(event.condition, state, event.id) !== false) {
+            run(event.commands, state, map.id, event.id);
+            run(routeSwitches(event.moveRoute), state, map.id, event.id);
+          }
+        }
+      }
+      for (const event of commonEvents) {
+        if ((event.trigger === "auto" || event.trigger === "parallel")
+          && (!event.conditionSwitchId || switchOn(state, globalKey(event.conditionSwitchId)))) run(event.commands, state, map.id);
+      }
+      for (const list of otherLists) run(list, state, map.id);
     }
-    for (const list of otherLists) run(list, state);
   }
   // If exploration runs out of room, a switch with an unproven path from off still needs its original writer.
-  return new Set([...targets].filter(key => !replaced.has(key) && (seenOff.has(key) || (truncated && possibleOff.has(key)))));
+  const stranded = new Set([...targets].filter(key => !replaced.has(key) && (seenOff.has(key) || (truncated && possibleOff.has(key)))));
+  const endingStranded = endings.some(ending => !reachableEndings.has(ending) || requiresSwitchOn(allConditions(ending.conditions), node => {
+    const id = readGlobalSwitch(project, node);
+    return id !== undefined && stranded.has(globalKey(id));
+  }));
+  return { stranded, endingStranded };
 }
 
 function nextBranches(command: Command, evaluate: (condition: unknown) => boolean | undefined): readonly (readonly Command[])[] {
@@ -441,20 +581,42 @@ function nextBranches(command: Command, evaluate: (condition: unknown) => boolea
   return branches.length ? [...branches, []] : branches;
 }
 
-function walkCommands(
-  commands: Command[], initial: State, common: ReadonlyMap<string, Command[]>, eventId: string | undefined,
-  evaluate: ConditionEvaluator, apply: (command: Command, state: State) => State,
-  stateKey: (state: State) => string, complete: (state: State) => void, truncate: () => void,
-): void {
+function keyOfState(state: State, keys: WeakMap<State, string>): string {
+  let key = keys.get(state);
+  if (key === undefined) {
+    key = JSON.stringify([...state].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0));
+    keys.set(state, key);
+  }
+  return key;
+}
+
+interface CommandWalk {
+  project: Project;
+  mapId: string;
+  eventId?: string;
+  evaluate: ConditionEvaluator;
+  calls: ReturnType<typeof commandCalls>;
+  apply: (command: Command, state: State) => State;
+  complete: (state: State, endsGame: boolean) => void;
+  truncate: () => void;
+  stateKeys?: WeakMap<State, string>;
+}
+
+const terminalKinds = new Set<Command["kind"]>(["returnToTitle", "ending", "gameOver", "killPlayer"]);
+
+function walkCommands(commands: Command[], initial: State, walk: CommandWalk): void {
   if (!commands.length) return;
-  const pending = [{ stack: [{ commands, pc: 0 }] as Frame[], state: initial }];
+  const { project, eventId, evaluate, calls, apply, complete, truncate, stateKeys = new WeakMap<State, string>() } = walk;
+  const pending = [{ stack: [{ commands, pc: 0 }] as Frame[], state: initial, mapId: walk.mapId }];
   const seen = new Set<string>();
   const listIds = new Map<Command[], number>();
   while (pending.length > 0) {
-    const { stack, state: start } = pending.pop()!;
+    const { stack, state: start, mapId: startMapId } = pending.pop()!;
     let state = start;
+    let mapId = startMapId;
+    let endsGame = false;
     while (stack.length > 0) {
-      const key = JSON.stringify([stateKey(state), stack.map(frame => {
+      const key = JSON.stringify([mapId, keyOfState(state, stateKeys), stack.map(frame => {
         if (!listIds.has(frame.commands)) listIds.set(frame.commands, listIds.size);
         return [listIds.get(frame.commands), frame.pc, Boolean(frame.loopOwner)];
       })]);
@@ -487,21 +649,30 @@ function walkCommands(
           loopOwner: { commands: frame.commands, pc: frame.pc - 1, iterations: 0 } });
         continue;
       }
-      if (command.kind === "callCommonEvent") {
-        const called = common.get(command.commonEventId);
-        if (called?.length) stack.push({ commands: called, pc: 0 });
-        continue;
+      if (command.kind === "transfer" && project.maps[command.mapId]) mapId = command.mapId;
+      state = apply(command, state);
+      const m2Title = command.kind === "m2Command" ? m2CommandById(command.commandId)?.title : undefined;
+      const namedEnding = command.kind === "triggerEnding" && command.endingId
+        ? project.endings?.find(ending => ending.id === command.endingId) : undefined;
+      endsGame = terminalKinds.has(command.kind)
+        || (command.kind === "triggerEnding" && (!namedEnding || evaluate(allConditions(namedEnding.conditions), state, eventId) === true))
+        || m2Title === "Exit Game";
+      if (endsGame || m2Title === "End Event Processing") {
+        stack.length = 0;
+        break;
       }
 
-      state = apply(command, state);
-      const [branch, ...alternates] = nextBranches(command, condition => evaluate(condition, state, eventId));
+      const branches = command.kind === "callCommonEvent" || command.kind === "callMapEvent"
+        ? calls(command, state, mapId) : nextBranches(command, condition => evaluate(condition, state, eventId));
+      if (!branches.length && command.kind === "callMapEvent") break;
+      const [branch, ...alternates] = branches;
       for (const alternate of alternates) {
         const frames = stack.map(entry => ({ ...entry }));
         if (alternate.length) frames.push({ commands: alternate as Command[], pc: 0 });
-        pending.push({ stack: frames, state });
+        pending.push({ stack: frames, state, mapId });
       }
       if (branch?.length) stack.push({ commands: branch as Command[], pc: 0 });
     }
-    if (stack.length === 0) complete(state);
+    if (stack.length === 0) complete(state, endsGame);
   }
 }

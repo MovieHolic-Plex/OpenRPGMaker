@@ -701,6 +701,93 @@ describe("선택 범위와 입력 검증", () => {
     expect(remove(starter, unshadowed).after.maps[MAP].events).toEqual([starter, unshadowed]);
   });
 
+  it("아이템 조건이 겹치면 실제로 선택될 수 있는 페이지만 스위치를 대신 켠다", () => {
+    const { before, page, gate, write, event, remove } = endingGate();
+    const itemId = "item_key";
+    const present = { kind: "item", itemId, present: true } as const;
+    const absent = { ...present, present: false };
+    const lower = { ...page, conditions: [present], commands: [write(gate)] };
+    const higher = { ...lower, id: "page_higher", commands: [] };
+    const setter = { ...event("ev_setter", []), pages: [lower, higher] };
+    const session = startSession(before);
+    session.inventory[itemId] = 1;
+    expect(runtimeEventView(setter, session, {}).pageId).toBe(higher.id);
+    expect(() => remove(setter)).toThrow(/진행에 필요한 스위치/u);
+
+    const unshadowed = { ...setter, pages: [lower, { ...higher, conditions: [absent] }] };
+    expect(runtimeEventView(unshadowed, session, {}).pageId).toBe(lower.id);
+    expect(remove(unshadowed).after.maps[MAP].events).toEqual([unshadowed]);
+
+    const covered = { ...setter, pages: [{ ...lower, conditions: [] }, higher,
+      { ...higher, id: "page_without_item", conditions: [absent] }] };
+    expect(() => remove(covered)).toThrow(/진행에 필요한 스위치/u);
+  });
+
+  it("엔딩 스위치를 모두 켤 수 있는 하나의 도달 가능한 상태를 요구한다", () => {
+    const { before, page, gate, on, write, event, remove } = endingGate();
+    const key = "sw_key";
+    before.switches.push({ id: key, name: "열쇠" });
+    before.endings![0].conditions.push({ kind: "switch", switchId: key, value: true });
+    page.commands = [write(gate), write(key)];
+    const setGate = event("ev_gate", [write(key, false), write(gate)]);
+    const setKey = event("ev_key", [write(gate, false), write(key)]);
+    expect(() => remove(setGate, setKey)).toThrow(/진행에 필요한 스위치/u);
+    const keepGate = event("ev_key", [write(key)]);
+    expect(remove(setGate, keepGate).after.maps[MAP].events).toEqual([setGate, keepGate]);
+
+    const transient = event("ev_key", [write(key), write(gate, false)]);
+    expect(() => remove(setGate, transient)).toThrow(/진행에 필요한 스위치/u);
+    const finishes = event("ev_key", [
+      { kind: "fork", condition: on(gate), then: [write(key), { kind: "triggerEnding", endingId: "end_test" }] },
+      write(gate, false),
+    ]);
+    expect(remove(setGate, finishes).after.maps[MAP].events).toEqual([setGate, finishes]);
+  });
+
+  it("엔딩에서만 읽는 변수 조건도 대체 스위치와 함께 확인한다", () => {
+    const { before, gate, write, event, remove } = endingGate();
+    const variableId = "var_ending";
+    before.variables = [{ id: variableId, name: "엔딩 진행도" }];
+    before.endings![0].conditions.push({ kind: "variable", variableId, op: ">=", value: 1 });
+    const setter = event("ev_setter", [write(gate)]);
+    const advance = event("ev_advance", [{ kind: "setVariable", variableId, op: "=", value: 1 }]);
+    expect(() => remove(setter)).toThrow(/진행에 필요한 스위치/u);
+    expect(remove(setter, advance).after.maps[MAP].events).toEqual([setter, advance]);
+  });
+
+  it("맵 이벤트는 호출한 시점의 스위치로 페이지를 고른다", () => {
+    const { before, page, gate, on, write, event, remove } = endingGate();
+    const hold = "sw_hold";
+    before.switches.push({ id: hold, name: "호출 신호" });
+    const callee = { ...event("ev_callee", []), pages: [
+      { ...page, conditions: [on(hold)], commands: [write(gate)] },
+    ] };
+    const call: Command = { kind: "callMapEvent", eventId: callee.id };
+    const caller = event("ev_caller", [write(hold), call, write(hold, false)]);
+    const { after } = remove(caller, callee);
+    const session = startSession(after);
+    expect(createInterpreter(caller.pages![0].commands, session, after).start().kind).toBe("done");
+    expect(session.switches[gate]).toBe(true);
+    expect(session.switches[hold]).toBe(false);
+    expect(() => remove(event("ev_caller", [write(hold), write(hold, false), call]), callee))
+      .toThrow(/진행에 필요한 스위치/u);
+
+    const fallback = { ...callee, commands: [write(gate)] };
+    const callOnly = event("ev_caller", [call]);
+    expect(remove(callOnly, fallback).after.maps[MAP].events).toEqual([callOnly, fallback]);
+  });
+
+  it("호출한 공용 이벤트에서 게임이 끝나면 호출자도 이후의 스위치를 쓰지 않는다", () => {
+    const { before, gate, write, event, remove } = endingGate();
+    const commonEventId = "ce_title";
+    const call: Command = { kind: "callCommonEvent", commonEventId };
+    before.commonEvents = [{ id: commonEventId, name: "타이틀", trigger: "none",
+      commands: [{ kind: "returnToTitle" }, write(gate)] }];
+    expect(() => remove(event("ev_caller", [call, write(gate)]))).toThrow(/진행에 필요한 스위치/u);
+    const beforeTitle = event("ev_caller", [write(gate), call]);
+    expect(remove(beforeTitle).after.maps[MAP].events).toEqual([beforeTitle]);
+  });
+
   it("수동 공용 이벤트는 남아 있는 실행 가능한 호출을 통해서만 대체 작성자가 된다", () => {
     const { before, gate, on, write, event, remove } = endingGate();
     const commonEventId = "ce_gate";
@@ -722,6 +809,21 @@ describe("선택 범위와 입력 검증", () => {
     const label: Command = { kind: "label", name: "end" };
     expect(() => remove(event("ev_setter", [jump, write(gate), label]))).toThrow(/진행에 필요한 스위치/u);
     expect(remove(event("ev_setter", [jump, label, write(gate)])).after.maps[MAP].events).toHaveLength(1);
+  });
+
+  it.each([true, false])("삭제할 페이지에서 위치 표시로 스위치 쓰기를 건너뛰는지 확인한다 (%s)", skipWrite => {
+    const { before, page, gate, write, remove, target } = endingGate();
+    const jump: Command = { kind: "gotoLabel", name: "end" };
+    const label: Command = { kind: "label", name: "end" };
+    page.commands = skipWrite ? [jump, write(gate), label] : [jump, label, write(gate)];
+    const removePage = () => runPrimitive(before, target, "event.page.remove", { page: 2 });
+    if (skipWrite) {
+      expect(remove().after.maps[MAP].events).toEqual([]);
+      expect(removePage().after.maps[MAP].events[0].pages).toHaveLength(1);
+    } else {
+      expect(() => remove()).toThrow(/진행에 필요한 스위치/u);
+      expect(removePage).toThrow(/기다리는 스위치/u);
+    }
   });
 
   it("전역 스위치와 셀프 스위치가 서로를 기다리면 독립적으로 켜는 페이지가 필요하다", () => {
@@ -831,12 +933,30 @@ describe("선택 범위와 입력 검증", () => {
     const before = blank();
     const [speaking] = before.maps[MAP].events;
     speaking.name = "점원";
-    speaking.pages![0].commands = [{ kind: "text", speaker: "문지기", body: "문을 열게요." }];
+    const active = speaking.pages![1];
+    active.commands = [{ kind: "text", speaker: "문지기", body: "문을 열게요." }];
     before.maps[MAP].events.push({ id: "ev_gatekeeper", name: "문지기", x: 4, y: 4, sprite,
       trigger: { kind: "action" }, commands: [] });
     const target = mapTarget(before, MAP, EVENT)!;
+    const view = runtimeEventView(speaking, startSession(before), {});
+    expect(view.pageId).toBe(active.id);
+    expect(view.page?.commands[0]).toMatchObject({ kind: "text", speaker: "문지기" });
     expect(() => runPrimitive(before, target, "event.tile.rename", { name: "문지기" })).toThrow(/이벤트를 이름으로/u);
     expect(runPrimitive(before, target, "event.tile.rename", { name: "상인" }).after.maps[MAP].events[0].name).toBe("상인");
+  });
+
+  it("가려진 페이지에만 있는 대사는 이름 변경을 막지 않는다", () => {
+    const before = blank();
+    const [speaking] = before.maps[MAP].events;
+    speaking.name = "점원";
+    const [shadowed, active] = speaking.pages!;
+    shadowed.commands = [{ kind: "text", speaker: "문지기", body: "문을 열게요." }];
+    before.maps[MAP].events.push({ id: "ev_gatekeeper", name: "문지기", x: 4, y: 4, sprite,
+      trigger: { kind: "action" }, commands: [] });
+    expect(runtimeEventView(speaking, startSession(before), {}).pageId).toBe(active.id);
+    const { after } = runPrimitive(before, mapTarget(before, MAP, EVENT)!, "event.tile.rename", { name: "문지기" });
+    expect(after.maps[MAP].events[0].name).toBe("문지기");
+    expect(after.maps[MAP].events[0].pages![0].commands).toEqual(shadowed.commands);
   });
 
   it("페이지가 여러 장이면 선택한 페이지나 명시한 페이지 번호를 사용한다", () => {

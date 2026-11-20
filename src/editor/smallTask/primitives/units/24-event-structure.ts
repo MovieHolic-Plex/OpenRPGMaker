@@ -404,7 +404,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const edited = { ...event, pages };
       const after = replaceEvent(ctx.project, map, edited);
       if (!pageIsShadowed(event, removed)) {
-        const stranded = switchesStrandedByDeletion(after, removed, edited);
+        const stranded = switchesStrandedByDeletion(after, map.id, removed, edited);
         if (stranded.self) throw new PrimitiveError("이 페이지를 지우면 다음 진행에 필요한 셀프 스위치를 켤 수 없어요.");
         if (stranded.global) throw new PrimitiveError("이 페이지를 지우면 다른 곳에서 기다리는 스위치를 켤 수 없어요.");
       }
@@ -465,7 +465,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         throw new PrimitiveError("열린 이벤트 편집을 먼저 마쳐 주세요.");
       }
       const after = replaceEvents(ctx.project, map, map.events.filter(entry => entry.id !== event.id));
-      if (switchesStrandedByDeletion(after, event).global) {
+      if (switchesStrandedByDeletion(after, map.id, event).global) {
         throw new PrimitiveError("이 이벤트를 지우면 진행에 필요한 스위치를 켤 수 없어요.");
       }
       if (hasEventReference(after, map.id, event.id) || hasNamedObjective(after, event)
