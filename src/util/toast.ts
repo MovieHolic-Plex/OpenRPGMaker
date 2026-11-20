@@ -25,13 +25,13 @@ export type ToastOptions = {
   readonly action?: ToastAction;
 };
 
-/** 동작을 기다리는 알림은 사용자가 직접 닫는다. 일반 알림만 밀어낸다. */
 const MAX_STACK = 4;
+const MAX_PERSISTENT_STACK = 3;
 
 type ToastEntry = {
   readonly key?: symbol;
   readonly element: HTMLElement;
-  readonly actionable: boolean;
+  readonly persistent: boolean;
   timer: ReturnType<typeof setTimeout> | null;
 };
 
@@ -131,18 +131,22 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
   const previous = entries[entries.length - 1];
   if (previous && !previous.element.classList.contains("show")) dropEntry(previous);
 
-  const entry: ToastEntry = { element: null as unknown as HTMLElement, actionable: !!options.action, timer: null };
+  // 표시 시간을 지정하지 않은 동작 있는 오류만 직접 닫을 때까지 남긴다.
+  const persistent = kind === "error" && !!options.action && options.durationMs === undefined;
+  const entry: ToastEntry = { element: null as unknown as HTMLElement, persistent, timer: null };
   const element = buildElement(message, kind, options.action, entry);
   Object.assign(entry, { element, key: options.key });
 
   stack.append(element);
   entries.push(entry);
-  const transient = entries.filter(candidate => !candidate.actionable);
-  if (transient.length > MAX_STACK) dropEntry(transient[0]!);
+  const sameGroup = entries.filter(candidate => candidate.persistent === persistent);
+  const limit = persistent ? MAX_PERSISTENT_STACK : MAX_STACK;
+  if (sameGroup.length > limit) dropEntry(sameGroup[0]!);
   retagEntries();
 
-  if (!options.action) {
-    entry.timer = setTimeout(() => expireEntry(entry), options.durationMs ?? (kind === "error" ? 4000 : 2000));
+  if (!persistent) {
+    const durationMs = options.durationMs ?? (kind === "error" ? 4000 : options.action ? 6000 : 2000);
+    entry.timer = setTimeout(() => expireEntry(entry), durationMs);
   }
 }
 
