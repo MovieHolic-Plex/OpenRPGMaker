@@ -417,10 +417,10 @@ function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGat
 /** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
 async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
   const started = Date.now();
-  const { target, maxToolCalls, selection } = scope;
+  const { target, maxToolCalls, selection, openDrafts } = scope;
   const base = request.project;
   const ctx: SmallTaskToolContext = {
-    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection,
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskLive: openDrafts,
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);

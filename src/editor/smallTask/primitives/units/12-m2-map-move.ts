@@ -164,12 +164,9 @@ function explicitRemovalId(fields: M2CommandFields): string {
 }
 
 function finishPatch(ctx: PageContext, entry: M2CommandCatalogEntry, fields: M2CommandFields, patch: M2CommandFields, inserting: boolean) {
-  const current = ctx.event.id;
-  const resolved = effectiveFields(entry, fields);
-  for (const key of entry.index === 40 ? ["target"] : entry.index === 41 ? ["eventA", "eventB"] : []) {
-    if (!inserting && !Object.hasOwn(patch, key)) continue;
-    const id = stringField(resolved, key);
-    if (id === "this-event" || (!id && key !== "eventB")) patch[key] = current;
+  const selfField = entry.index === 40 ? "target" : entry.index === 41 ? "eventA" : undefined;
+  if (selfField && (inserting || Object.hasOwn(patch, selfField)) && !stringField(effectiveFields(entry, fields), selfField)) {
+    patch[selfField] = "this-event";
   }
   if ((entry.index === 39 || entry.index === 40) && (inserting || Object.hasOwn(patch, "mapId"))) {
     patch.mapId = stringField(fields, "mapId") || ctx.map.id;
@@ -178,7 +175,7 @@ function finishPatch(ctx: PageContext, entry: M2CommandCatalogEntry, fields: M2C
     patch.templateEventId = patch.prefabId;
   }
   if (entry.index === 203 && (inserting || Object.hasOwn(patch, "eventId"))) {
-    const prefabId = stringField({ ...resolved, ...patch }, "prefabId");
+    const prefabId = stringField(effectiveFields(entry, { ...fields, ...patch }), "prefabId");
     patch.eventId = stringField(fields, "eventId") || `${prefabId}_spawn`;
   }
   if (entry.index === 204 && patch.eventId === "this-event") patch.eventId = "";
@@ -239,6 +236,9 @@ function validateReferences(
   const requireEvent = (id: string, event: GameEvent | undefined) => {
     if (!event) throw new PrimitiveError(id ? "지정한 이벤트를 찾을 수 없습니다." : "이벤트를 선택해 주세요.");
   };
+  const requireLocationEvent = (id: string) => {
+    requireEvent(id, id === "this-event" ? ctx.event : projectEvent(ctx.project, id));
+  };
   let hasLegacyLookupMap = false;
 
   switch (entry.index) {
@@ -252,11 +252,11 @@ function validateReferences(
       break;
     case 40:
       fields.mapId = string("mapId") || ctx.map.id;
-      requireEvent(string("target"), projectEvent(ctx.project, string("target")));
+      requireLocationEvent(string("target"));
       break;
     case 41:
-      requireEvent(string("eventA"), projectEvent(ctx.project, string("eventA")));
-      requireEvent(string("eventB"), projectEvent(ctx.project, string("eventB")));
+      requireLocationEvent(string("eventA"));
+      requireLocationEvent(string("eventB"));
       if (string("eventA") && string("eventA") === string("eventB")) throw new PrimitiveError("서로 다른 이벤트 두 개를 선택해 주세요.");
       break;
     case 42:

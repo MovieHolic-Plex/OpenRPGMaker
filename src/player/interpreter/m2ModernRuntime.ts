@@ -303,7 +303,7 @@ function recordRemoveEvent(
       const local = maps?.[session.currentMapId];
       const source = local?.events.some(event => event.id === eventId) ? local
         : Object.values(maps ?? {}).find(map => map.events.some(event => event.id === eventId));
-      mapId = source?.id ?? session.currentMapId;
+      if (source) mapId = source.id;
     }
     session.removedEventIds ??= {};
     const removed = new Set(session.removedEventIds[mapId] ?? []);

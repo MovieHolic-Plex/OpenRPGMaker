@@ -65,10 +65,10 @@ const cases: readonly Row[] = [
     stored: project => ({ vehicle: "raft", mapId: project.startMapId, x: 2, y: 3 }),
     update: { x: 4 }, changed: { x: 4 }, bad: { mapId: "없는-맵" } },
   { id: "040", fixture: "blank", command: "set-event-location", insert: { x: 2, y: 3 },
-    stored: project => ({ target: HOST, mapId: project.startMapId, x: 2, y: 3 }),
+    stored: project => ({ target: "this-event", mapId: project.startMapId, x: 2, y: 3 }),
     update: { target: OTHER, x: 4 }, changed: { target: OTHER, x: 4 }, bad: { target: "없는-이벤트" } },
   { id: "041", fixture: "built", command: "swap-event-location", insert: { eventB: OTHER },
-    stored: { eventA: HOST, eventB: OTHER }, update: { eventA: OTHER, eventB: HOST },
+    stored: { eventA: "this-event", eventB: OTHER }, update: { eventA: OTHER, eventB: HOST },
     changed: { eventA: OTHER, eventB: HOST }, bad: { eventB: "없는-이벤트" } },
   { id: "042", fixture: "maou", command: "get-terrain-id", insert: { variableId: VARIABLES.location, x: 2, y: 3 },
     stored: { variableId: VARIABLES.location, x: 2, y: 3 }, update: { x: 4 }, changed: { x: 4 }, bad: { x: 99999 } },
@@ -192,7 +192,8 @@ describe.each(cases)("지도·이동 명령 $id", (row) => {
     checkSentence(result.sentence, target);
     expect(commandsOf(result.after)).toEqual([{ ...command, fields: { ...command.fields, ...row.changed } }, TAIL]);
     expect(commandsOf(project)).toEqual([command, TAIL]);
-    expect(() => runPrimitive(project, target, id, { ...args, index: 1 })).toThrow(/[가-힣]/u);
+    expect(() => runPrimitive(project, target, id, { ...args, index: 1, expectedHash: eventCommandHash(TAIL) }))
+      .toThrow("선택한 줄에 이 종류의 명령이 없습니다.");
     if (row.bad) expect(() => runPrimitive(project, target, id, { ...args, ...row.bad })).toThrow(/[가-힣]/u);
     await expectUndoRestores(project, result.after, target);
   });
@@ -300,7 +301,7 @@ it("좌표만 수정할 때 대상이 비어 있으면 이동 대상을 선택�
   const args = { index: 0, expectedHash: eventCommandHash(command), x: 3 };
   expect(() => runPrimitive(project, target, "m2.040.update", args)).toThrow("이벤트를 선택해 주세요");
   const { after } = runPrimitive(project, target, "m2.040.update", { ...args, target: "this-event" });
-  expect(commandsOf(after)[0]).toMatchObject({ fields: { target: HOST, x: 3, y: 2 } });
+  expect(commandsOf(after)[0]).toMatchObject({ fields: { target: "this-event", x: 3, y: 2 } });
 });
 
 it("다른 맵에 있는 이벤트와 교환할 수 있으며 양쪽 맵의 저작 위치는 보존한다", () => {
@@ -311,7 +312,8 @@ it("다른 맵에 있는 이벤트와 교환할 수 있으며 양쪽 맵의 저�
   const { after } = runPrimitive(project, target, "m2.041.insert", { eventB: OTHER });
   expect(after.maps.remote).toBe(project.maps.remote);
   const session = startSession(after, 7);
-  expect(createInterpreter(commandsOf(after), session, after).start()).toMatchObject({ kind: "relocateEvents", eventIds: [HOST, OTHER] });
+  expect(createInterpreter(commandsOf(after), session, after, { currentEventId: HOST }).start())
+    .toMatchObject({ kind: "relocateEvents", eventIds: [HOST, OTHER] });
   expect(session.eventLocations).toMatchObject({
     [HOST]: { mapId: "remote", x: other.x, y: other.y },
     [OTHER]: { mapId: map.id, x: 1, y: 1 },
@@ -492,6 +494,13 @@ const spawnReferenceSites: Record<string, (project: Project) => void> = {
   },
 };
 
+it("변수 ID와 맵 ID가 생성 ID와 같아도 이름을 바꿀 수 있다", () => {
+  const { project, target } = seed("blank", [SPAWN, { ...newM2Command("m2-039-set-vehicle-location"), fields: { mapId: COPY } }]);
+  project.variables.push({ id: COPY, name: "시험 변수" });
+  const { after } = runPrimitive(project, target, "m2.203.update", { index: 0, expectedHash: eventCommandHash(SPAWN), eventId: "new_copy" });
+  expect(commandsOf(after)[0]).toMatchObject({ fields: { eventId: "new_copy" } });
+});
+
 it.each(Object.entries(spawnReferenceSites))("%s에 생성 ID 참조가 남으면 변경을 거절한다", (_site, addReference) => {
   const { project, target } = seed("blank", [SPAWN]);
   addReference(project);
@@ -615,6 +624,16 @@ it("공용 이벤트가 복제본을 제거할 수 있거나 반복을 돌며 �
   })).toThrow("이벤트를 찾을 수 없습니다");
 });
 
+it("공용 이벤트의 같은 이름 라벨은 호출자에서 이미 생성한 복제본에 영향을 주지 않는다", () => {
+  const label = { kind: "label", name: "계속" } as const;
+  const { project, target } = seed("blank", [SPAWN, { kind: "callCommonEvent", commonEventId: "jump" }, label]);
+  project.commonEvents = [{ id: "jump", name: "위치 이동", trigger: "none", commands: [
+    { kind: "gotoLabel", name: label.name }, { ...label },
+  ] }];
+  const { after } = runPrimitive(project, target, "m2.204.insert", { eventId: COPY });
+  expect(commandsOf(after).at(-1)).toMatchObject(REMOVE);
+});
+
 it("기존 제거 명령의 대상 맵과 저장된 제거 플래그를 검사한다", () => {
   const command = { ...REMOVE, fields: { eventId: OTHER, mapId: "remote" } };
   const { project, target, map } = seed("blank", [command]);
@@ -700,6 +719,23 @@ it("삽입한 이벤트 위치 교환이 실제 두 런타임 위치를 맞바�
   expect(session.eventLocations?.[OTHER]).toMatchObject({ mapId: after.startMapId, x: 1, y: 1 });
 });
 
+it.each([
+  ["m2.040.insert", { x: 5, y: 6 }, [COPY]],
+  ["m2.041.insert", { eventA: "this-event", eventB: HOST }, [COPY, HOST]],
+  ["m2.041.insert", { eventA: HOST, eventB: "this-event" }, [HOST, COPY]],
+] as const)("복제본이 실행한 %s의 자기 참조는 실행 중인 ID로 해석된다", (id, args, eventIds) => {
+  const { project, target } = seed("blank", []);
+  const { after } = runPrimitive(project, target, id, args);
+  const session = startSession(after, 7);
+  const spawn = { ...SPAWN, fields: { ...SPAWN.fields, prefabId: HOST, templateMapId: after.startMapId } };
+  expect(createInterpreter([spawn], session, after).start()).toEqual({ kind: "spawnEvent", eventId: COPY });
+  expect(createInterpreter(commandsOf(after), session, after, { currentEventId: COPY }).start())
+    .toEqual({ kind: "relocateEvents", eventIds });
+  expect(session.eventLocations?.[COPY]).toMatchObject(id === "m2.040.insert" ? { x: 5, y: 6 } : { x: 1, y: 1 });
+  expect(session.eventLocations?.[HOST]).toEqual(id === "m2.040.insert" ? undefined
+    : expect.objectContaining({ x: 2, y: 3 }));
+});
+
 it("삽입한 종료 명령 뒤의 기존 대사는 실행하지 않는다", () => {
   const { interpreter } = interpret("m2.085.insert", {}, [TAIL]);
   expect(interpreter.start().kind).toBe("done");
@@ -762,4 +798,14 @@ it("다른 맵으로 옮겨진 이벤트는 저장된 this-event 제거를 원�
     .toEqual({ kind: "removeEvent", eventId: HOST });
   expect(session.removedEventIds?.[map.id]).toEqual([HOST]);
   expect(runtimeEventViewById(project, map, session, {}, HOST)).toBeUndefined();
+});
+
+it("저작 맵을 조회할 수 없으면 자기 제거에 저장된 맵을 사용한다", () => {
+  const { project } = seed("blank", []);
+  const session = startSession(project, 7);
+  session.currentMapId = "remote";
+  const command = { ...REMOVE, fields: { eventId: "this-event", mapId: project.startMapId } };
+  expect(createInterpreter([command], session, undefined, { currentEventId: HOST }).start())
+    .toEqual({ kind: "removeEvent", eventId: HOST });
+  expect(session.removedEventIds?.[project.startMapId]).toEqual([HOST]);
 });
