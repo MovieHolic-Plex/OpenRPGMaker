@@ -1,6 +1,6 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
-import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { eventCommandBranches, type EventCommandBranch } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { shortRecordName } from "@/editor/shortRecordName";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
@@ -100,11 +100,13 @@ function recordId(records: readonly (SwitchDef | VariableDef)[], input: string, 
   throw new PrimitiveError(`범위 밖입니다. 등록된 ${label} 항목이 없어서 이 페이지에서 새로 만들 수 없습니다.`);
 }
 
+function isEngineFlag(flag: string): boolean {
+  return typeof flag === "string" && (flag === NEW_GAME_PLUS_SESSION_FLAG || flag === COMPANION_SCENE_FLAG ||
+    flag.startsWith(OPENING_STAGE_FLAG_PREFIX) || flag.startsWith("cutscene:"));
+}
+
 function validateFlagRename(project: Project, previous: string, next: string): void {
-  function isUsedByGame(flag: string): boolean {
-    return typeof flag === "string" && (Object.hasOwn(project.flags, flag) || flag === NEW_GAME_PLUS_SESSION_FLAG ||
-      flag === COMPANION_SCENE_FLAG || flag.startsWith(OPENING_STAGE_FLAG_PREFIX) || flag.startsWith("cutscene:"));
-  }
+  const isUsedByGame = (flag: string) => Object.hasOwn(project.flags, flag) || isEngineFlag(flag);
   if (isUsedByGame(previous) || isUsedByGame(next)) {
     throw new PrimitiveError("게임이 사용하는 기억 이름은 바꾸거나 새 이름으로 쓸 수 없습니다.");
   }
@@ -120,6 +122,22 @@ function validateFlagRename(project: Project, previous: string, next: string): v
   }
 }
 
+function canRunLegacyCommands(event: GameEvent): boolean {
+  // 맵 이벤트 호출도 활성 페이지가 없을 때만 최상위 명령으로 돌아간다.
+  return !event.pages?.some(page => page.conditions.length === 0);
+}
+
+function branchEnabled(command: Command, branch: EventCommandBranch): boolean {
+  switch (command.kind) {
+    case "choices": return branch.kind !== "choiceCancel" || command.cancelBehavior === "branch";
+    case "shop": return branch.kind === "shopTransaction"
+      ? command.branchOnTransaction === true : command.branchOnFailedTransaction === true;
+    case "inn": return command.branchOnNotEnoughGold === true;
+    case "battleProcessing": return command.branchOnResult === true;
+    default: return true;
+  }
+}
+
 function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEvent, current: SelfSwitchCommand, next: SelfSwitchCommand): void {
   if (current.key === next.key && current.value === next.value) return;
   function readsKey(condition: BattleEventCondition | undefined): boolean {
@@ -132,17 +150,40 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
     }
   }
 
+  function conditionBeforeWrite(condition: BattleEventCondition | undefined): boolean | undefined {
+    switch (condition?.kind) {
+      case "selfSwitch": return condition.key === current.key ? condition.value !== current.value : undefined;
+      case "all": return allConditionsBeforeWrite(condition.conditions);
+      case "any": {
+        const results = condition.conditions.map(conditionBeforeWrite);
+        return results.includes(true) ? true : results.includes(undefined) ? undefined : false;
+      }
+      case "not": {
+        const result = conditionBeforeWrite(condition.condition);
+        return result === undefined ? undefined : !result;
+      }
+      default: return undefined;
+    }
+  }
+
+  function allConditionsBeforeWrite(conditions: readonly BattleEventCondition[]): boolean | undefined {
+    const results = conditions.map(conditionBeforeWrite);
+    return results.includes(false) ? false : results.includes(undefined) ? undefined : true;
+  }
+
   let linked = readsKey(event.condition);
-  let writes = 0;
+  let hasReplacementWrite = false;
   const calledLists = new Set<readonly Command[]>();
   function visitCall(commands: readonly Command[]): void {
     if (calledLists.has(commands)) return;
     calledLists.add(commands);
     visit(commands, false);
   }
-  function visit(commands: readonly Command[], ownPage: boolean): void {
+  function visit(commands: readonly Command[], canReplace: boolean): void {
     for (const command of commands) {
-      if (ownPage && command.kind === "setSelfSwitch" && command.key === current.key && command.value === current.value) writes++;
+      if (canReplace && command.kind === "setSelfSwitch" && command.key === current.key && command.value === current.value) {
+        hasReplacementWrite = true;
+      }
       if (command.kind === "fork" && readsKey(command.condition)) linked = true;
       if (command.kind === "choices" && command.options.some(option => readsKey(option.showWhen) || readsKey(option.enableWhen))) linked = true;
       // 호출된 명령은 호출한 이벤트의 셀프 스위치를 읽는다.
@@ -153,7 +194,7 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
       if (!linked && command.kind === "callMapEvent") {
         const called = map.events.find(entry => entry.id === command.eventId);
         if (called) {
-          visitCall(called.commands);
+          if (canRunLegacyCommands(called)) visitCall(called.commands);
           for (const page of called.pages ?? []) visitCall(page.commands);
         }
       }
@@ -167,17 +208,44 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
           }
         }
       }
-      for (const branch of eventCommandBranches(command)) visit(branch.commands, ownPage);
+      for (const branch of eventCommandBranches(command)) {
+        if (!branchEnabled(command, branch)) continue;
+        let reachable = canReplace;
+        if (reachable && command.kind === "fork") {
+          const matches = conditionBeforeWrite(command.condition);
+          reachable = matches === undefined || matches === (branch.kind === "forkThen");
+        }
+        if (reachable && command.kind === "choices" && branch.kind === "choiceOption") {
+          const option = command.options[branch.branchIndex]!;
+          reachable = conditionBeforeWrite(option.showWhen) !== false && conditionBeforeWrite(option.enableWhen) !== false;
+        }
+        visit(branch.commands, reachable);
+      }
     }
   }
-  // 페이지가 있는 이벤트는 실행 시 페이지의 명령을 사용한다.
-  for (const page of event.pages ?? []) {
+  // 바뀌기 전 셀프 스위치 상태에서 진입할 수 있는 페이지의 쓰기만 대체로 센다.
+  let canReachEarlierPage = true;
+  for (const page of [...(event.pages ?? [])].reverse()) {
     linked ||= page.conditions.some(readsKey);
-    visit(page.commands, true);
+    const matches = allConditionsBeforeWrite(page.conditions);
+    visit(page.commands, canReachEarlierPage && matches !== false);
+    if (matches === true) canReachEarlierPage = false;
   }
-  if (linked && writes === 1) {
+  if (linked && !hasReplacementWrite) {
     throw new PrimitiveError(`이 이벤트의 다른 페이지나 명령에서 셀프 스위치 ${current.key}를 조건으로 써서 이 줄을 바꿀 수 없습니다.`);
   }
+}
+
+function withoutInactiveLegacyCommands(project: Project): Project {
+  const maps = { ...project.maps };
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    if (!map.events.some(event => event.commands.length && !canRunLegacyCommands(event))) continue;
+    maps[mapId] = {
+      ...map,
+      events: map.events.map(event => canRunLegacyCommands(event) ? event : { ...event, commands: [] }),
+    };
+  }
+  return { ...project, maps };
 }
 
 function validateStateRetarget(project: Project, current: StateCommand, next: StateCommand): void {
@@ -187,6 +255,7 @@ function validateStateRetarget(project: Project, current: StateCommand, next: St
       ? { kind: "variable", id: current.variableId } as const : undefined;
   if (!previous) return;
   const { kind, id } = previous;
+  project = withoutInactiveLegacyCommands(project);
   const index = buildStoryFlagUsageIndex(project);
   const { reads, writes } = Object.hasOwn(kind === "switch" ? index.switches : index.variables, id.trim())
     ? usageBucketFor(index, kind, id.trim()) : { reads: [], writes: [] };
@@ -237,6 +306,9 @@ function commandFromArgs(project: Project, current: StateCommand, args: Args): S
       if (Object.hasOwn(Object.prototype, flag)) throw new PrimitiveError("이 이름은 기억에 사용할 수 없습니다.");
       if (flag !== current.flag) validateFlagRename(project, current.flag, flag);
       if (typeof (value ?? current.value) !== "boolean") throw new PrimitiveError("기억을 켤지 끌지 지정하세요.");
+      if (value !== undefined && value !== current.value && isEngineFlag(current.flag)) {
+        throw new PrimitiveError("게임이 제어하는 기억의 켜짐 상태는 바꿀 수 없습니다.");
+      }
       return { ...current, flag, value: (value as boolean | undefined) ?? current.value };
     }
   }
@@ -351,9 +423,6 @@ function prepareCommand(ctx: PrimitiveContext, args: Args, kind: StateKind, upda
   }
   const command = commandFromArgs(ctx.project, current, args);
   validateCommand(ctx.project, command);
-  if (update && current.kind === "setSelfSwitch" && command.kind === "setSelfSwitch") {
-    validateSelfSwitchChange(ctx.project, map, event, current, command);
-  }
   return { path: [...branchPath, index], current, command };
 }
 
@@ -387,8 +456,12 @@ function primitive(kind: StateKind, name: string, update: boolean): SmallTaskPri
     apply(ctx, args) {
       const { path, current, command } = prepareCommand(ctx, args, kind, update);
       const edited = updateScopedPage(ctx, page => update
-          ? updateEventCommand(page, path, command, args.expectedHash as string)
-          : insertEventCommand(page, path, command));
+        ? updateEventCommand(page, path, command, args.expectedHash as string)
+        : insertEventCommand(page, path, command));
+      if (update && current.kind === "setSelfSwitch" && command.kind === "setSelfSwitch") {
+        const { map, event } = selectedPage({ ...ctx, project: edited });
+        validateSelfSwitchChange(edited, map, event, current, command);
+      }
       if (update) validateStateRetarget(edited, current, command);
       return edited;
     },
@@ -405,6 +478,6 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   primitive("setSelfSwitch", "셀프 스위치", false),
   primitive("setSelfSwitch", "셀프 스위치", true),
   // 새 기억은 기존 자료집 스위치를 사용한다. 저장된 옛 기억은 그 종류를 유지하며 고친다.
-  { ...switchInsert, id: "cmd.setFlag.insert", aliasOf: switchInsert.id, covers: {}, hidden: true },
+  { ...switchInsert, id: "cmd.setFlag.insert", title: "기억 추가 (스위치 사용)", aliasOf: switchInsert.id, covers: {} },
   primitive("setFlag", "이전 방식의 기억", true),
 ];
