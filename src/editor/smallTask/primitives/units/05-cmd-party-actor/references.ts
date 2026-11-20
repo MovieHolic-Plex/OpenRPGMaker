@@ -95,6 +95,11 @@ export function validatePartyActorCommand(
       if (!validCoordinate(command.x, map.width) || !validCoordinate(command.y, map.height)) {
         throw new PrimitiveError("범위 밖이에요. 파티를 맵 안에 놓아 주세요.");
       }
+      // A page can keep running after a transfer, so the current map may differ from the event's map.
+      const locationEdited = ["mapId", "x", "y"].some(key => Object.hasOwn(patch, key));
+      if (locationEdited && command.mapId !== undefined && (command.x === undefined || command.y === undefined)) {
+        throw new PrimitiveError("파티를 둘 맵을 지정할 때는 가로와 세로 좌표를 모두 입력해 주세요.");
+      }
       return;
     }
     case "recallParty":
@@ -162,9 +167,9 @@ export function validatePartyActorRename(project: Project, before: PartyActorCom
     const nameChanged = oldName !== nextName;
     const matchesOldName = (target: string): boolean => nameChanged
       && (target === oldName || isNumberedFollowerName(target, oldName))
-      && target !== nextName && !isNumberedFollowerName(target, nextName);
+      && target !== nextName;
     const losesActorAnchor = Boolean(before.actorId && before.actorId !== after.actorId
-      && before.actorId !== nextName && !isNumberedFollowerName(before.actorId, nextName));
+      && before.actorId !== nextName);
     if (!nameChanged && !losesActorAnchor) return;
 
     const usesFollowerAnchor = ({ at }: LightSource): boolean => typeof at === "object" && "eventId" in at

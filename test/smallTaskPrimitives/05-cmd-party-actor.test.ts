@@ -7,8 +7,10 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/05-cmd-party-actor";
 import { mapTarget } from "@/editor/smallTask/target";
+import { commitChangeset } from "@/editor/tools/changeset";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { charsetFollowerGraphic } from "@/project/followers";
 import { startSession } from "@/project/session";
@@ -49,6 +51,7 @@ function fixture(name: typeof fixtures[number], commands: Command[]) {
     },
     variables: [...source.variables, { id: variableId, name: "보상 점수" }],
   };
+  ensureSwitchVariableSlots(project);
   return { project, target: mapTarget(project, mapId, eventId, pageId)!, mapId };
 }
 
@@ -358,19 +361,35 @@ it("다른 이벤트의 동행 확인 조건에 사용되는 이름은 바꾸지
   expect(pages(project, mapId)[1]?.commands).toEqual([command]);
 });
 
+it.each([
+  { kind: "removeFollower", name: "길잡이 (2)" },
+  { kind: "m2Command", commandId: "m2-217-data-query", fields: { query: "followerPresent", target: "길잡이 (2)", variableId } },
+  { kind: "addLight", source: { id: "escort_light", at: { eventId: "길잡이 (2)" }, radius: 2 } },
+] satisfies Command[])("번호가 붙은 이름을 참조하는 $kind 명령을 보존한다", reference => {
+  const command: Command = { kind: "addFollower", actorId, name: "길잡이 (2)" };
+  const { project, target, mapId } = fixture("blank", [command, reference]);
+  expect(() => runPrimitive(project, target, "cmd.addFollower.update", {
+    index: 0, expectedHash: eventCommandHash(command), name: "길잡이",
+  })).toThrow(/동행자를 가리키는 다른 명령/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([command, reference]);
+});
+
 it("광원이 주인공 식별자로 동행자를 따라가면 이름이 같아도 주인공 교체를 거부한다", () => {
   const command: Command = { kind: "addFollower", actorId, name: "길잡이" };
   const { project, target, mapId } = fixture("blank", [command]);
   const light = { id: "escort_light", at: { eventId: actorId }, radius: 2 };
   const edit = { index: 0, expectedHash: eventCommandHash(command), actorId: "actor_mage" };
-  const apply = () => runPrimitive(project, target, "cmd.addFollower.update", edit);
-  project.maps[mapId].defaultLighting = { ambient: 0.4, sources: [light] };
-  expect(apply).toThrow(/맵의 조명/u);
-  delete project.maps[mapId].defaultLighting;
-  project.commonEvents = [...project.commonEvents, {
-    id: "ce_escort_light", name: "동행자 등불", trigger: "none", commands: [{ kind: "addLight", source: light }],
-  }];
-  expect(apply).toThrow(/동행자를 가리키는 다른 명령/u);
+  const map = project.maps[mapId];
+  const mapLighting: Project = {
+    ...project, maps: { ...project.maps, [mapId]: { ...map, defaultLighting: { ambient: 0.4, sources: [light] } } },
+  };
+  const commonEventLighting: Project = {
+    ...project, commonEvents: [...project.commonEvents, {
+      id: "ce_escort_light", name: "동행자 등불", trigger: "none", commands: [{ kind: "addLight", source: light }],
+    }],
+  };
+  expect(() => runPrimitive(mapLighting, target, "cmd.addFollower.update", edit)).toThrow(/맵의 조명/u);
+  expect(() => runPrimitive(commonEventLighting, target, "cmd.addFollower.update", edit)).toThrow(/동행자를 가리키는 다른 명령/u);
   expect(pages(project, mapId)[1]?.commands).toEqual([command]);
 });
 
@@ -381,6 +400,33 @@ it("파티 저장의 사전 편성과 위치를 지우면 실행 시 편성과 �
     index: 0, expectedHash: eventCommandHash(command), actorIds: null, x: null, y: null,
   });
   expect(jsonEqual(pages(after, mapId)[1]!.commands[0], { kind: "storeParty", partySetId: "정찰대" })).toBe(true);
+});
+
+it("다른 맵의 파티 저장 위치에는 두 좌표가 필요하고 불러올 때 지정한 칸으로 이동한다", () => {
+  const command: Command = { kind: "storeParty", partySetId: "정찰대" };
+  const recall: Command = { kind: "recallParty", partySetId: "정찰대" };
+  const { project, target, mapId } = fixture("blank", [command, recall]);
+  const destination = createBlankMap("작은 야영지", 3, 3);
+  project.maps[destination.id] = destination;
+  const location = { mapId: destination.id, x: 1, y: 2 };
+  const row = { index: 0, expectedHash: eventCommandHash(command) };
+  expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId: destination.id, x: 1 }))
+    .toThrow(/가로와 세로 좌표/u);
+  expect(() => runPrimitive(project, target, "cmd.storeParty.update", { ...row, mapId: destination.id, y: 2 }))
+    .toThrow(/가로와 세로 좌표/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([command, recall]);
+
+  const { after } = runPrimitive(project, target, "cmd.storeParty.update", { ...row, ...location });
+  const saved = pages(after, mapId)[1]!.commands[0]!;
+  expect(() => runPrimitive(after, target, "cmd.storeParty.update", { ...row, expectedHash: eventCommandHash(saved), y: null }))
+    .toThrow(/가로와 세로 좌표/u);
+  const session = startSession(after, 1);
+  session.x = destination.width + 1;
+  session.y = destination.height + 1;
+  const interpreter = createInterpreter(pages(after, mapId)[1]!.commands, session, after, { currentEventId: eventId });
+  expect(interpreter.start()).toEqual({ kind: "transfer", ...location });
+  expect(session.partySets?.["정찰대"]).toMatchObject(location);
+  expect(session.flags.recallPartySuccess).toBe(true);
 });
 
 function applyAndRun(edits: ReadonlyArray<readonly [string, Record<string, unknown>]>, arrange?: (session: ReturnType<typeof startSession>) => void) {
@@ -427,19 +473,70 @@ it("완전 회복을 실행하면 파티의 체력과 마력이 최대치로 복
   expect(vitals.maxMp).toBeGreaterThan(0);
 });
 
-it("파티 전체의 체력과 마력을 바꾸고 대기 멤버는 건드리지 않는다", () => {
+it.each(["", "party", "all"])("파티 전체 대상 %j의 변경을 최종 적용하고 파티에만 실행한다", party => {
   const mage = "actor_mage";
   const reserve = "actor_guardian";
-  const session = applyAndRun([
-    ["cmd.changeActorHp.insert", { actorId: "", op: "=", amount: 0 }],
-    ["cmd.changeActorMp.insert", { actorId: "all", op: "=", amount: 0 }],
-  ], session => {
-    session.partyActorIds = [actorId, mage];
-    session.actorVitals[mage]!.mp = 5;
+  const { project, target, mapId } = fixture("blank", []);
+  const edits = [
+    ["cmd.learnSkill.insert", { actorId: party, skillId }],
+    ["cmd.changeExp.insert", { actorId: party, op: "=", amount: 42 }],
+    ["cmd.changeActorHp.insert", { actorId: party, op: "=", amount: 0 }],
+    ["cmd.changeActorMp.insert", { actorId: party, op: "=", amount: 0 }],
+  ] as const;
+  const after = edits.reduce((draft, [id, args]) => runPrimitive(draft, target, id, args).after, project);
+  const commit = commitChangeset(after, project);
+  expect(commit.blocking).toEqual([]);
+  expect(commit.ok).toBe(true);
+
+  const session = startSession(after, 1);
+  session.partyActorIds = [actorId, mage];
+  session.actorVitals[mage]!.mp = 5;
+  const reserveVitals = { ...session.actorVitals[reserve] };
+  const reserveExperience = session.actorExperience[reserve];
+  const reserveSkills = session.actorSkillIds[reserve]?.slice();
+  const interpreter = createInterpreter(pages(after, mapId)[1]!.commands, session, after, { currentEventId: eventId });
+  expect(interpreter.start()).toEqual({ kind: "done" });
+  for (const id of session.partyActorIds) {
+    expect(session.actorVitals[id]).toMatchObject({ hp: 0, mp: 0 });
+    expect(session.actorExperience[id]).toBe(42);
+    expect(session.actorSkillIds[id]).toContain(skillId);
+  }
+  expect(session.actorVitals[reserve]).toEqual(reserveVitals);
+  expect(session.actorExperience[reserve]).toBe(reserveExperience);
+  expect(session.actorSkillIds[reserve]).toEqual(reserveSkills);
+});
+
+it("최종 적용에서 알 수 없는 체력 변경 대상을 거부한다", () => {
+  const { project, mapId } = fixture("blank", []);
+  const after = structuredClone(project);
+  pages(after, mapId)[1]!.commands.push({ kind: "changeActorHp", actorId: "actor_missing", op: "-=", amount: 1 });
+  const result = commitChangeset(after, project);
+  expect(result.ok).toBe(false);
+  expect(result.blocking.map(issue => issue.message).join("\n")).toMatch(/changeActorHp.*actor_missing/u);
+});
+
+it.each([4, 5])("승급 명령을 수정한 뒤 레벨 %i에 맞는 기존 분기만 실행한다", level => {
+  const toClassId = "class_guardian";
+  const command: Command = {
+    kind: "promoteActor", actorId,
+    successBranch: [{ kind: "setVariable", variableId, op: "=", value: 1 }],
+    failureBranch: [{ kind: "setVariable", variableId, op: "=", value: -1 }],
+  };
+  const { project, target, mapId } = fixture("blank", [command]);
+  const classId = project.database.actors.find(actor => actor.id === actorId)!.classId;
+  project.database.classes = project.database.classes.map(record => record.id === classId
+    ? { ...record, promotions: [{ toClassId, requires: { level: 5 } }] }
+    : record);
+  const { after } = runPrimitive(project, target, "cmd.promoteActor.update", {
+    index: 0, expectedHash: eventCommandHash(command), toClassId,
   });
-  expect(session.actorVitals[actorId]?.hp).toBe(0);
-  expect(session.actorVitals[mage]).toMatchObject({ hp: 0, mp: 0 });
-  expect(session.actorVitals[reserve]?.hp).toBeGreaterThan(0);
+  const session = startSession(after, 1);
+  session.actorLevels[actorId] = level;
+  const interpreter = createInterpreter(pages(after, mapId)[1]!.commands, session, after, { currentEventId: eventId });
+  expect(interpreter.start()).toEqual({ kind: "done" });
+  expect(session.flags.promoteActorSuccess).toBe(level === 5);
+  expect(session.variables[variableId]).toBe(level === 5 ? 1 : -1);
+  expect(session.classOverrides?.[actorId]).toBe(level === 5 ? toClassId : undefined);
 });
 
 it("파티 저장과 불러오기가 바뀐 멤버를 되돌린다", () => {

@@ -70,6 +70,10 @@ export function validateCommands(commands: readonly Command[], context: Referenc
   for (const command of commands) validateCommandReferences(command, context);
 }
 
+function isWholePartyActorTarget(actorId: string): boolean {
+  return actorId === "" || actorId === "party" || actorId === "all";
+}
+
 /** 이벤트 명령 트리에서 아이템 참조를 모은다. 검증과 같은 중첩 분기 구조를 순회한다. */
 export function collectCommandItemReferenceIds(commands: readonly Command[], ids: Set<string>): void {
   for (const command of commands) collectCommandItemReferences(command, ids);
@@ -306,13 +310,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       validateCommands(command.escapeBranch ?? [], context);
       return;
     case "learnSkill":
-      if ((command.actorId ?? "").trim().length > 0) {
+      if ((command.actorId ?? "").trim().length > 0 && !isWholePartyActorTarget(command.actorId)) {
         assert(context.actorIds.has(command.actorId), `learnSkill: actorId가 존재하지 않습니다: ${command.actorId}`);
       }
       assert(context.skillIds.has(command.skillId), `learnSkill: skillId가 존재하지 않습니다: ${command.skillId}`);
       return;
     case "changeExp":
-      if ((command.actorId ?? "").trim().length > 0) {
+      if ((command.actorId ?? "").trim().length > 0 && !isWholePartyActorTarget(command.actorId)) {
         assert(context.actorIds.has(command.actorId), `changeExp: actorId가 존재하지 않습니다: ${command.actorId}`);
       }
       if (typeof command.amount !== "number") {
@@ -338,10 +342,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       }
       return;
     case "changeActorHp":
-      assert(context.actorIds.has(command.actorId), `changeActorHp: actorId가 존재하지 않습니다: ${command.actorId}`);
-      return;
     case "changeActorMp":
-      assert(context.actorIds.has(command.actorId), `changeActorMp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      assert(isWholePartyActorTarget(command.actorId) || context.actorIds.has(command.actorId),
+        `${command.kind}: actorId가 존재하지 않습니다: ${command.actorId}`);
       return;
     case "recoverAll":
       if ((command.actorId ?? "").trim().length > 0) {

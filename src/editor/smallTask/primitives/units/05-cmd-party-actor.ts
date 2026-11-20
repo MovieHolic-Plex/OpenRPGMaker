@@ -69,7 +69,7 @@ const commands = {
     fields: {
       partySetId: partySet,
       actorIds: { type: "array", minItems: 1, items: key("구성원의 주인공 식별자."), description: "미리 지정할 구성원 목록. 생략하면 현재 파티를 저장합니다." },
-      mapId: key("미리 정할 위치의 맵 식별자. 생략하면 실행 시의 맵을 사용합니다."),
+      mapId: key("미리 정할 위치의 맵 식별자. 지정할 때는 가로·세로 좌표를 모두 입력합니다. 생략하면 실행 시의 맵을 사용합니다."),
       x: { ...coordinate, description: "미리 정할 위치의 가로 칸. 생략하면 실행 시의 위치를 사용합니다." },
       y: { ...coordinate, description: "미리 정할 위치의 세로 칸. 생략하면 실행 시의 위치를 사용합니다." },
     },
