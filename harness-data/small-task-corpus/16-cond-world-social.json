@@ -299,12 +299,17 @@
   {
     "request": "이 인물이 일할 때만 이 페이지가 나오게 해 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "work"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {"activity": "work"},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "work"}
       }
     ]
@@ -312,12 +317,17 @@
   {
     "request": "휴식 상태일 때만 뜨게",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "rest"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {"activity": "rest"},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "rest"}
       }
     ]
@@ -325,12 +335,17 @@
   {
     "request": "잠자는 활동에만 이 대사 걸어줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "sleep"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {"activity": "sleep"},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "sleep"}
       }
     ]
@@ -338,12 +353,17 @@
   {
     "request": "장사 중일 때에만 고르는 대사로 해 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "shop"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {"activity": "shop"},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "shop"}
       }
     ]
@@ -351,12 +371,17 @@
   {
     "request": "밥먹을 때만 보여줘",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "eat"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {"activity": "eat"},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "eat"}
       }
     ]
@@ -364,12 +389,17 @@
   {
     "request": "산책 중에 이 페이지를 보이게 해 주세요.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "walk"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {"activity": "walk"},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "walk"}
       }
     ]
@@ -377,15 +407,29 @@
   {
     "request": "활동 기본값인 일로 해 줘.",
     "fixture": "built",
-    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "work"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
     "primitive": "cond.npcActivity.page.set",
     "args": {},
     "expect": [
       {
-        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
         "equals": {"kind": "npcActivity", "activity": "work"}
       }
     ]
+  },
+  {
+    "request": "일정 없는 떠돌이 상인이 일하고 있을 때만 이 페이지를 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "work"},
+    "expectRefusal": true,
+    "refusalMessage": "이 이벤트의 일정"
   },
   {
     "request": "확인할 활동은 빈칸으로 두고 저장해 줘.",

@@ -7,8 +7,12 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/16-cond-world-social";
 import { createInterpreter } from "@/player/interpreter";
+import { findFacedItemTarget } from "@/player/itemUseOnTarget";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { resolveEventPage } from "@/project/io/pageResolution";
+import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
+import { endRoguelikeRun, startRoguelikeRun } from "@/project/roguelikeRun";
+import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { startSession, type PlaySession } from "@/project/session";
 import type { Condition, DifficultyRecord, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -151,6 +155,44 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
     expect(() => runPrimitive(at.project, at.target, id, args)).toThrow(/같은 종류의 조건이 여러 개/u);
   });
 
+  it("복합 시야의 거리만 고치고 한 번의 되돌리기로 원래 조건을 돌린다", async () => {
+    const at = fixture(blank);
+    const page = getPage(at.project, at);
+    const old: Condition = {
+      kind: "eventSeesPlayer", eventId: "", range: 5, value: false, sameRoom: true, requireFacing: false,
+      hearRange: 4, doorsBlock: true, watchers: { characterId: "guard_test", name: "문지기", locationId: "loc_test_shop" },
+      darkness: { night: 2, dark: 1, darkAmbient: 0.8 },
+    };
+    const later: Condition = { kind: "season", season: "summer" };
+    page.conditions = [EXISTING, old, later];
+    const id = "cond.eventSeesPlayer.page.set";
+    const { after, sentence } = runPrimitive(at.project, at.target, id, { range: 3 });
+
+    expect(getPage(after, at).conditions).toEqual([EXISTING, { ...old, range: 3 }, later]);
+    expect(getPage(after, at).commands).toBe(page.commands);
+    expect(page.conditions).toEqual([EXISTING, old, later]);
+    expect(sentence).toContain("중 아무도");
+    expectRefused(after, at.target, id, { sameRoom: false }, /같은 방 제한/u);
+    await expectUndoRestores(at.project, after, at.target);
+
+    const updated = runPrimitive(after, at.target, id, { eventId: "ev_test_guard", darkAmbient: 0.7 });
+    const { watchers: _watchers, ...direct } = old;
+    expect(getPage(updated.after, at).conditions[1]).toEqual({
+      ...direct, eventId: "ev_test_guard", range: 3, darkness: { night: 2, dark: 1, darkAmbient: 0.7 },
+    });
+  });
+
+  it("선택한 인물의 일정에 없는 활동은 다른 인물에게 등록돼 있어도 거부한다", () => {
+    const at = fixture(blank);
+    const owner = getEvent(at.project, at);
+    const guard = at.project.maps[at.mapId]!.events.find((event) => event.id === "ev_test_guard")!;
+    guard.schedule = [{ ...owner.schedule![0]!, activity: "rest" }];
+    const id = "cond.npcActivity.page.set";
+    expectRefused(at.project, at.target, id, { activity: "rest" }, /이 이벤트의 일정/u);
+    expectRefused(at.project, at.target, id, { activity: "wrok" }, /이 이벤트의 일정/u);
+    expect(getPage(at.project, at).conditions).toEqual([]);
+  });
+
   it("조건을 다른 페이지나 다른 이벤트에 쓴 변경을 가드가 범위 밖으로 거부한다", () => {
     const at = fixture(blank);
     const { project, target } = at;
@@ -193,6 +235,9 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
     ["pursuitActive", { eventId: "ev_missing" }, "이벤트"],
     ["eventSeesPlayer", { watcherLocationId: "loc_missing" }, "구역"],
     ["eventSeesPlayer", { watcherCharacterId: "missing_character" }, "인물"],
+    ["eventSeesPlayer", { watcherCharacterId: "guard_test", watcherName: "서윤", watcherLocationId: "loc_test_shop", value: false }, "관찰자"],
+    ["eventSeesPlayer", { watcherName: "없는 이름" }, "관찰자"],
+    ["eventSeesPlayer", { sameRoom: false, doorsBlock: true }, "같은 방 제한"],
     ["endingSeen", { endingId: "end_missing" }, "엔딩"],
     ["difficulty", { difficultyId: "diff_missing" }, "난이도"],
     ["weekday", { weekdays: [] }, "값의 형식"],
@@ -258,6 +303,37 @@ describe("실행 중 등장 조건 판정", () => {
     checkGold("clearCount", { value: 2 }, { clearHistory: { count: 1, endingIds: [] } }, { clearHistory: { count: 2, endingIds: [] } });
   });
 
+  it("등록된 난이도와 현재 세션의 난이도가 같을 때 보상을 준다", () => {
+    checkGold("difficulty", { difficultyId: "hard" }, { difficultyId: "normal" }, { difficultyId: "hard" });
+  });
+
+  it("일정에서 실제로 발생한 활동으로 등장 페이지를 고른다", () => {
+    const at = fixture(blank);
+    const authored = getEvent(at.project, at);
+    authored.schedule = [{ ...authored.schedule![0]!, activity: "  빵 굽기  " }];
+    const { after } = runPrimitive(at.project, at.target, "cond.npcActivity.page.set", { activity: "빵 굽기" });
+    const event = getEvent(after, at);
+    const session = startSession(after, 7);
+    expect(resolveEventPage(event, session)?.id).toBe("pg_test_base");
+    const activity = npcScheduleTargetForEvent(at.mapId, event, { ...day, hour: 13 }, undefined)?.activity;
+    expect(activity).toBe("빵 굽기");
+    session.npcActivities = { [event.id]: activity! };
+    expect(resolveEventPage(event, session)?.id).toBe(PAGE);
+  });
+
+  it.each(["completed", "failed", "abandoned"] as const)("탐험 상태가 %s여도 기록의 층 조건을 평가한다", (status) => {
+    const at = fixture(blank);
+    const { after, sentence } = runPrimitive(at.project, at.target, "cond.run.page.set", { query: "floor", value: 3 });
+    expect(sentence).toContain("탐험 기록의 층이 3층 이상");
+    const event = getEvent(after, at);
+    const session = startSession(after, 7);
+    expect(resolveEventPage(event, session)?.id).toBe("pg_test_base");
+    startRoguelikeRun(session, { seed: 7, startFloor: 3 });
+    expect(resolveEventPage(event, session)?.id).toBe(PAGE);
+    expect(endRoguelikeRun(session, status)).toBe(true);
+    expect(resolveEventPage(event, session)?.id).toBe(PAGE);
+  });
+
   it("관찰자의 거리와 방향을 평가한다", () => {
     const at = fixture(blank);
     const { project, target } = at;
@@ -270,5 +346,62 @@ describe("실행 중 등장 조건 판정", () => {
     session.x = 6;
     expect(resolveEventPage(event, session, { eventPosition: observer })?.id).toBe("pg_test_base");
     expect(jsonEqual(getPage(project, at).conditions, [])).toBe(true);
+  });
+
+  it.each([true, false])("구역에 들어오고 나가는 관찰자로 발견 조건 %s을 판정한다", (value) => {
+    const at = fixture(blank);
+    const args = { watcherCharacterId: "guard_test", watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 3, value };
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", args);
+    const map = after.maps[at.mapId]!;
+    for (const [x, inLocation] of [[5, false], [4, true]] as const) {
+      const session = Object.assign(startSession(after, 7), { x: 3, y: 4 });
+      const eventPositions = { ev_test_guard: { x, y: 4, direction: "left" as const } };
+      const matches = inLocation === value;
+      expect(runtimeEventViewById(after, map, session, eventPositions, at.eventId)?.pageId).toBe(matches ? PAGE : "pg_test_base");
+      const priorGold = session.gold;
+      const command = { kind: "callMapEvent", eventId: at.eventId } as const;
+      expect(createInterpreter([command], session, after, { eventPositions }).start().kind).toBe("done");
+      expect(session.gold - priorGold).toBe(matches ? 3 : 0);
+    }
+  });
+
+  it("아이템을 사용할 때에도 실제 관찰자로 등장 페이지를 고른다", () => {
+    const at = fixture(blank);
+    const itemId = "test_key";
+    getPage(at.project, at).conditions = [{ kind: "itemUsed", itemId }];
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      watcherName: "문지기", value: false, sameRoom: false, requireFacing: false, range: 3,
+    });
+    const player = { x: 2, y: 1, facing: "down" as const };
+    const session = Object.assign(startSession(after, 7), player);
+    const map = after.maps[at.mapId]!;
+    expect(findFacedItemTarget(after, map, session, { ev_test_guard: { x: 6, y: 4 } }, player, itemId)?.page.id).toBe(PAGE);
+    expect(findFacedItemTarget(after, map, session, { ev_test_guard: { x: 4, y: 4 } }, player, itemId)).toBeUndefined();
+    expect(session.itemUsedId).toBeUndefined();
+  });
+
+  it("플레이에서 닫힌 문, 밤과 어두운 조명, 문을 통과한 소리를 판정한다", () => {
+    const at = fixture(blank);
+    const map = at.project.maps[at.mapId]!;
+    map.events.push({
+      id: "ev_test_door", name: "문", x: 3, y: 4, trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: at.mapId, x: 3, y: 5 }],
+    });
+    const positions = { ev_test_guard: { x: 4, y: 4, direction: "left" as const } };
+    const sight = { eventId: "ev_test_guard", range: 4, nightRange: 1, darkRange: 1, darkAmbient: 0.8 };
+    function page(args: Record<string, unknown>, hour = 13, ambient = 0) {
+      const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", { ...sight, ...args });
+      const session = Object.assign(startSession(after, 7), { x: 2, y: 4, gameTime: { ...day, hour }, lighting: { ambient } });
+      return runtimeEventViewsForMap(after, after.maps[at.mapId]!, session, positions).find((view) => view.event.id === at.eventId)?.pageId;
+    }
+
+    expect(page({})).toBe(PAGE);
+    expect(page({ doorsBlock: true })).toBe("pg_test_base");
+    expect(page({}, 23)).toBe("pg_test_base");
+    expect(page({}, 13, 0.8)).toBe("pg_test_base");
+    expect(page({ doorsBlock: true, hearRange: 4 }, 23)).toBe("pg_test_base");
+    expect(page({ doorsBlock: true, hearRange: 5 }, 23)).toBe(PAGE);
+    map.lowerTiles[4 * map.width + 3] = -1;
+    expect(page({})).toBe("pg_test_base");
   });
 });

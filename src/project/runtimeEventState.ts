@@ -25,6 +25,9 @@ import type {
 } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { partySkillContext } from "@/project/partySkills";
+import { cachedSightBlocker } from "@/project/sightBlockers";
+
+type RuntimeEventProject = Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets" | "tilesets">>;
 
 const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
   type: "fixed",
@@ -153,6 +156,29 @@ export function runtimeEventView(
   };
 }
 
+export function runtimePageContext(
+  project: RuntimeEventProject,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions | undefined,
+): EventPageLocationContext {
+  let mapEvents: readonly GameEvent[] | undefined;
+  return {
+    locations: map.locations,
+    ...partySkillContext(project, session),
+    blocksSight: cachedSightBlocker(project, map),
+    mapEvents: () => mapEvents ??= map.events.filter((event) => {
+      const location = session.eventLocations?.[event.id];
+      return !runtimeEventGone(session, map.id, event.id) && (!location || location.mapId === map.id);
+    }),
+    eventPosition: (id) => {
+      const location = session.eventLocations?.[id];
+      if (location) return location.mapId === map.id ? location : undefined;
+      return positions?.[id] ?? firstEventById(map.events, id);
+    },
+  };
+}
+
 /**
  * 이 맵에 있는 런타임 이벤트 뷰를 순서대로 방문한다 — 이 파일의 유일한 순회 원본.
  * visit 이 true 를 내면 즉시 멈춘다(찾기 질의는 배열을 만들지 않는다).
@@ -162,7 +188,7 @@ export function runtimeEventView(
  * 1~3회 불려 O(N²) 가 됐다(실측 0.04~0.16ms/호출).
  */
 function forEachRuntimeEventView(
-  project: Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets">>,
+  project: RuntimeEventProject,
   map: GameMap,
   session: PlaySessionLike,
   positions: RuntimeEventPositions,
@@ -181,7 +207,7 @@ function forEachRuntimeEventView(
   includeEvent?: (event: GameEvent) => boolean,
 ): void {
   const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
-  const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
+  const pageContext = runtimePageContext(project, map, session, positions);
   const erased = idSet(session.erasedEventIds);
   const removedOnCurrentMap = removedEventSet(session, map.id);
   const locations = session.eventLocations;
@@ -302,7 +328,7 @@ export function runtimeEventViewById(
   // 전에 맵의 모든 이벤트 뷰(페이지 조건 평가 포함)를 만들었다 — NPC 마다 프레임당 1~3회 불려
   // NPC 수의 제곱으로 커졌다. 순서·중복 규칙은 순회 원본과 같다: 현재 맵 → 옮겨 온 이벤트 → 소환.
   const appearanceProject = runtimeAppearanceProject(project);
-  const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
+  const pageContext = runtimePageContext(project, map, session, positions);
   const erased = session.erasedEventIds;
   const location = session.eventLocations?.[eventId];
   // 거르는 조건이 전부 id·세션으로만 정해져서, 같은 id 가 여럿이어도 답은 **첫** 이벤트가 정한다(예전 선형

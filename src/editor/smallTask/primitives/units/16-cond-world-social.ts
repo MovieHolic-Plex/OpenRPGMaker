@@ -3,6 +3,7 @@ import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { findCharacterIdEntry } from "@/project/characterIdIndex";
 import { WEEKDAY_LABELS } from "@/project/conditionActorQueries";
+import { DEFAULT_SIGHT_RANGE } from "@/project/conditionEventSight";
 import { difficultiesOf } from "@/project/difficulty";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { SEASONS, TIME_PHASES } from "@/project/gameTime";
@@ -11,6 +12,7 @@ import { findLocationById } from "@/project/mapNamedLocations";
 import { RELATIONSHIP_STATES, relationshipStateName } from "@/project/relationshipState";
 import { ROGUELIKE_FLOOR_MAX, ROGUELIKE_FLOOR_MIN } from "@/project/roguelikeRun";
 import { FRIENDSHIP_MAX, FRIENDSHIP_MIN } from "@/project/session";
+import { sightWatcherIds } from "@/project/sightWatchers";
 import { resolveSocialKey } from "@/project/socialKey";
 import type { Condition, ConditionCompareOp, GameEvent, GameMap, Project } from "@/project/types";
 import { josa, withJosa } from "@/util/josa";
@@ -107,17 +109,22 @@ function pageCondition<K extends Condition["kind"], A extends Args>(
   title: string,
   properties: Record<keyof A, JsonSchema>,
   required: readonly (string & keyof A)[],
-  prepare: (context: PageContext, args: A) => PreparedCondition<K>,
+  prepare: (context: PageContext, args: A, current: PageCondition<K> | undefined) => PreparedCondition<K>,
 ): SmallTaskPrimitive {
   function build(context: PageContext, args: Args) {
+    const matches = context.page.conditions.filter((entry): entry is PageCondition<K> => entry.kind === kind);
+    if (matches.length > 1) {
+      throw new PrimitiveError("같은 종류의 조건이 여러 개라 바꿀 조건을 고를 수 없습니다.");
+    }
+    const [current] = matches;
     // The runner validates the flat argument schema before calling the primitive.
-    const result = prepare(context, args as A);
+    const result = prepare(context, args as A, current);
     try {
       validateConditionShape("등장 조건", result.condition);
     } catch {
       throw new PrimitiveError("등장 조건의 값을 다시 확인해 주세요.");
     }
-    return result;
+    return { ...result, current };
   }
 
   return {
@@ -136,15 +143,11 @@ function pageCondition<K extends Condition["kind"], A extends Args>(
       return `${clause} 보이도록 조건을 설정합니다.`;
     },
     apply(ctx, args) {
-      const { condition } = build({ project: ctx.project, ...scopedPage(ctx) }, args);
+      const { condition, current } = build({ project: ctx.project, ...scopedPage(ctx) }, args);
       return updateScopedPage(ctx, (page) => {
-        const index = page.conditions.findIndex((entry) => entry.kind === kind);
-        if (index >= 0 && page.conditions.some((entry, i) => i > index && entry.kind === kind)) {
-          throw new PrimitiveError("같은 종류의 조건이 여러 개라 바꿀 조건을 고를 수 없습니다.");
-        }
-        const conditions = page.conditions.slice();
-        if (index < 0) conditions.push(condition);
-        else conditions[index] = condition;
+        const conditions = current
+          ? page.conditions.map((entry) => entry === current ? condition : entry)
+          : [...page.conditions, condition];
         return { ...page, conditions };
       });
     },
@@ -170,7 +173,7 @@ function prepareRun(_context: PageContext, { query = "active", value, op, flag, 
         throw new PrimitiveError("확인할 탐험 층을 지정해 주세요.");
       }
       const comparison = op ?? ">=";
-      return { condition: { kind: "run", query, value, op: comparison }, clause: `탐험 중 ${comparisonClause(comparison, `${value}층`)}` };
+      return { condition: { kind: "run", query, value, op: comparison }, clause: `탐험 기록의 층이 ${comparisonClause(comparison, `${value}층`)}` };
     }
     case "flag": {
       if (op !== undefined || result !== undefined || typeof value === "number") break;
@@ -196,17 +199,31 @@ type SightArgs = Omit<ConditionFields<"eventSeesPlayer">, "watchers" | "darkness
 
 const SIGHT_DISTANCE_MAX = Number.MAX_SAFE_INTEGER;
 
-function prepareSight({ map, event, project }: PageContext, args: Partial<SightArgs>): PreparedCondition<"eventSeesPlayer"> {
+function prepareSight(
+  { map, event, project }: PageContext,
+  args: Partial<SightArgs>,
+  current: PageCondition<"eventSeesPlayer"> | undefined,
+): PreparedCondition<"eventSeesPlayer"> {
   const {
-    eventId, range = 5, sameRoom, requireFacing, hearRange, value = true, doorsBlock,
-    watcherCharacterId, watcherName, watcherLocationId, nightRange, darkRange, darkAmbient,
+    eventId, range = current ? current.range : DEFAULT_SIGHT_RANGE,
+    value = current ? current.value : true,
+    sameRoom = current?.sameRoom, requireFacing = current?.requireFacing,
+    hearRange = current?.hearRange, doorsBlock = current?.doorsBlock,
+    watcherCharacterId, watcherName, watcherLocationId,
+    nightRange = current?.darkness?.night, darkRange = current?.darkness?.dark, darkAmbient = current?.darkness?.darkAmbient,
   } = args;
-  const characterId = watcherCharacterId === undefined ? undefined : nonempty(watcherCharacterId, "시야를 확인할 인물을 지정해 주세요.");
-  const name = watcherName === undefined ? undefined : nonempty(watcherName, "시야를 확인할 이름을 입력해 주세요.");
-  const locationId = watcherLocationId === undefined ? undefined : nonempty(watcherLocationId, "시야를 확인할 구역을 지정해 주세요.");
-  const hasFilter = Boolean(characterId || name || locationId);
-  if (eventId !== undefined && hasFilter) throw new PrimitiveError("보는 이벤트와 관찰자 조건 중 하나를 골라 주세요.");
-  const watchedEventId = hasFilter ? "" : eventId ?? event.id;
+  const newFilter = [watcherCharacterId, watcherName, watcherLocationId].some((entry) => entry !== undefined);
+  if (eventId !== undefined && newFilter) throw new PrimitiveError("보는 이벤트와 관찰자 조건 중 하나를 골라 주세요.");
+  if (sameRoom === false && doorsBlock === true) {
+    throw new PrimitiveError("닫힌 문으로 시야를 막으려면 같은 방 제한을 켜 주세요.");
+  }
+  const watchers = newFilter ? {
+    ...(watcherCharacterId === undefined ? {} : { characterId: nonempty(watcherCharacterId, "시야를 확인할 인물을 지정해 주세요.") }),
+    ...(watcherName === undefined ? {} : { name: nonempty(watcherName, "시야를 확인할 이름을 입력해 주세요.") }),
+    ...(watcherLocationId === undefined ? {} : { locationId: nonempty(watcherLocationId, "시야를 확인할 구역을 지정해 주세요.") }),
+  } : eventId === undefined && current?.eventId === "" ? current.watchers : undefined;
+  const watchedEventId = watchers ? "" : eventId ?? current?.eventId ?? event.id;
+  const { characterId, name, locationId } = watchers ?? {};
   const locationName = locationId === undefined ? undefined : localLocationName(map, locationId);
   let characterName: string | undefined;
   if (characterId !== undefined) {
@@ -217,37 +234,41 @@ function prepareSight({ map, event, project }: PageContext, args: Partial<SightA
     const host = map.events.find((entry) => entry.characterId === characterId);
     characterName = conditionLabel(character.profile?.displayName || host?.name, characterId, "지정 인물");
   }
-  const who = hasFilter
+  // A location can gain watchers during play. Only check the static identity filters here.
+  if (name && sightWatcherIds(map.events, { characterId, name }, undefined).length === 0) {
+    throw new PrimitiveError("이 맵에서 지정한 조건에 맞는 관찰자를 찾을 수 없습니다.");
+  }
+  const who = watchers
     ? [locationName && `「${locationName}」 안의`, characterName && `「${characterName}」인`, name && `이름에 「${conditionLabel(name, "", "지정한 말")}」이 든`, "이벤트"].filter(Boolean).join(" ")
     : watchedEventId === event.id ? "이 이벤트" : `「${localEventName(map, watchedEventId, "선택한 이벤트")}」 이벤트`;
-  if (darkAmbient !== undefined && darkRange === undefined) {
+  if (args.darkAmbient !== undefined && darkRange === undefined) {
     throw new PrimitiveError("어두울 때 시야 거리와 어둠 기준을 확인해 주세요.");
   }
   const condition: PageCondition<"eventSeesPlayer"> = {
-    kind: "eventSeesPlayer", eventId: watchedEventId, range, value,
+    kind: "eventSeesPlayer", eventId: watchedEventId,
+    ...(range === undefined ? {} : { range }),
+    ...(value === undefined ? {} : { value }),
     ...(sameRoom === undefined ? {} : { sameRoom }),
     ...(requireFacing === undefined ? {} : { requireFacing }),
     ...(hearRange === undefined ? {} : { hearRange }),
     ...(doorsBlock === undefined ? {} : { doorsBlock }),
-    ...(hasFilter ? { watchers: {
-      ...(characterId === undefined ? {} : { characterId }),
-      ...(name === undefined ? {} : { name }),
-      ...(locationId === undefined ? {} : { locationId }),
-    } } : {}),
-    ...(nightRange !== undefined || darkRange !== undefined ? { darkness: {
+    ...(watchers ? { watchers } : {}),
+    ...(nightRange !== undefined || darkRange !== undefined || darkAmbient !== undefined ? { darkness: {
       ...(nightRange === undefined ? {} : { night: nightRange }),
       ...(darkRange === undefined ? {} : { dark: darkRange }),
       ...(darkAmbient === undefined ? {} : { darkAmbient }),
     } } : {}),
   };
   const shortWho = who.length > 26 ? "지정한 관찰자" : who;
-  const observer = hasFilter && !value ? `${shortWho} 중 아무도` : `${shortWho}가`;
+  const sees = value !== false;
+  const observer = watchers && !sees ? `${shortWho} 중 아무도` : `${shortWho}가`;
   const detection = hearRange && hearRange > 0 ? "알아차릴" : "볼";
-  const distanceLabel = hearRange && hearRange > 0 ? `시야 ${range}칸·소리 ${hearRange}칸에서` : `${range}칸 안에서`;
-  const clause = `${observer} 주인공을 ${distanceLabel} ${detection} 수 ${value ? "있을" : "없을"} 때`;
+  const distance = range ?? DEFAULT_SIGHT_RANGE;
+  const distanceLabel = hearRange && hearRange > 0 ? `시야 ${distance}칸·소리 ${hearRange}칸에서` : `${distance}칸 안에서`;
+  const clause = `${observer} 주인공을 ${distanceLabel} ${detection} 수 ${sees ? "있을" : "없을"} 때`;
   return {
     condition,
-    clause: clause.length <= 63 ? clause : `지정한 관찰자가 주인공을 ${detection} 수 ${value ? "있을" : "없을"} 때`,
+    clause: clause.length <= 63 ? clause : `${watchers && !sees ? "지정한 관찰자 중 아무도" : "지정한 관찰자가"} 주인공을 ${detection} 수 ${sees ? "있을" : "없을"} 때`,
   };
 }
 
@@ -270,8 +291,11 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   }),
   pageCondition<"npcActivity", Partial<ConditionFields<"npcActivity">>>("npcActivity", "인물 활동에 따라 등장", {
     activity: wording("이 이벤트의 일정에 적힌 활동입니다. 생략하면 일입니다."),
-  }, [], (_ctx, { activity = "work" }) => {
+  }, [], ({ event }, { activity = "work" }) => {
     const key = nonempty(activity, "확인할 활동을 입력해 주세요.");
+    if (!event.schedule?.some((entry) => entry.activity?.trim() === key)) {
+      throw new PrimitiveError("이 이벤트의 일정에 등록된 활동을 지정해 주세요.");
+    }
     const name = Object.hasOwn(ACTIVITY_LABELS, key) ? ACTIVITY_LABELS[key] : conditionLabel(key, "", "선택한 활동");
     return { condition: { kind: "npcActivity", activity: key }, clause: `이 인물의 활동이 「${name}」일 때` };
   }),
@@ -315,7 +339,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     condition: { kind: "battleResult", result }, clause: `마지막 전투에서 ${BATTLE_RESULTS[result]} 때`,
   })),
   pageCondition<"run", RunArgs>("run", "탐험 상태에 따라 등장", {
-    query: choices(["active", "floor", "flag", "result"], "탐험 중인지, 몇 층인지, 기록이 켜져 있는지, 어떤 결과인지 고릅니다. 생략하면 탐험 중인지 봅니다."),
+    query: choices(["active", "floor", "flag", "result"], "탐험 중인지, 탐험 기록의 층이 몇 층인지, 기록이 켜져 있는지, 어떤 결과인지 고릅니다. 층은 탐험이 끝난 뒤에도 비교합니다. 생략하면 탐험 중인지 봅니다."),
     value: { type: ["boolean", "integer"], description: "진행 중 여부와 기록은 참 또는 거짓이며 생략하면 참입니다. 층 조건은 비교할 층 번호를 넣습니다." },
     op: choices(COMPARE_OPS, "층 조건의 비교 방식입니다. 생략하면 이상입니다."),
     flag: wording("기록 조건에서 확인할 탐험 기록의 이름입니다."),
@@ -349,19 +373,19 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     };
   }),
   pageCondition<"eventSeesPlayer", Partial<SightArgs>>("eventSeesPlayer", "주인공을 발견하면 등장", {
-    eventId: wording("보는 쪽의 같은 맵 이벤트 식별자입니다. 다른 관찰자 조건도 생략하면 이 이벤트가 봅니다."),
-    range: count(0, SIGHT_DISTANCE_MAX, "기본 시야 거리이며 단위는 칸입니다. 생략하면 다섯 칸입니다."),
-    sameRoom: yesNo("같은 방에서만 봅니다. 생략하면 켜집니다."),
-    requireFacing: yesNo("이벤트의 정면에 있는 주인공만 봅니다. 생략하면 켜집니다."),
-    hearRange: count(0, SIGHT_DISTANCE_MAX, "소리를 알아차리는 거리이며 단위는 칸입니다. 생략하면 듣지 않습니다."),
-    value: yesNo("참이면 주인공을 발견할 때, 거짓이면 발견하지 못할 때입니다. 생략하면 참입니다."),
-    watcherCharacterId: wording("보는 쪽을 고를 때 쓸 같은 맵 인물의 식별자입니다."),
+    eventId: wording("보는 쪽의 같은 맵 이벤트 식별자입니다. 수정할 때 생략한 값과 관찰자 선택을 유지합니다. 새 조건에 관찰자 선택이 없으면 이 이벤트가 봅니다."),
+    range: count(0, SIGHT_DISTANCE_MAX, "기본 시야 거리이며 단위는 칸입니다. 새 조건에서 생략하면 다섯 칸입니다."),
+    sameRoom: yesNo("같은 방에서만 보며, 꺼지면 벽과 문을 무시합니다. 새 조건에서 생략하면 켜집니다."),
+    requireFacing: yesNo("이벤트의 정면에 있는 주인공만 봅니다. 새 조건에서 생략하면 켜집니다."),
+    hearRange: count(0, SIGHT_DISTANCE_MAX, "소리를 알아차리는 거리이며 단위는 칸입니다. 0이나 새 조건에서 생략하면 듣지 않습니다."),
+    value: yesNo("참이면 주인공을 발견할 때, 거짓이면 발견하지 못할 때입니다. 새 조건에서 생략하면 참입니다."),
+    watcherCharacterId: wording("보는 쪽을 고를 때 쓸 같은 맵 인물의 식별자입니다. 관찰자를 새로 고를 때는 사용할 필터를 모두 지정합니다."),
     watcherName: wording("보는 쪽의 이벤트 이름에 포함될 말입니다."),
     watcherLocationId: wording("보는 쪽이 서 있어야 하는 같은 맵 구역의 식별자입니다."),
-    doorsBlock: yesNo("닫힌 문이 시야를 막는지 정합니다. 생략하면 문이 시야를 막지 않습니다."),
-    nightRange: count(0, SIGHT_DISTANCE_MAX, "밤의 시야 거리이며 단위는 칸입니다. 생략하면 기본 거리를 씁니다."),
-    darkRange: count(0, SIGHT_DISTANCE_MAX, "어두울 때 시야 거리이며 단위는 칸입니다. 생략하면 조명이 거리에 영향을 주지 않습니다."),
-    darkAmbient: { type: "number", minimum: 0, maximum: 1, description: "어둡다고 보는 조명 값입니다. 어두울 때 시야 거리와 함께 지정합니다. 생략하면 0.6입니다." },
+    doorsBlock: yesNo("닫힌 문이 시야를 막으려면 같은 방 제한도 켜야 합니다. 새 조건에서 생략하면 문이 시야를 막지 않습니다."),
+    nightRange: count(0, SIGHT_DISTANCE_MAX, "밤의 시야 거리이며 단위는 칸입니다. 새 조건에서 생략하면 기본 거리를 씁니다."),
+    darkRange: count(0, SIGHT_DISTANCE_MAX, "어두울 때 시야 거리이며 단위는 칸입니다. 새 조건에서 생략하면 조명이 거리에 영향을 주지 않습니다."),
+    darkAmbient: { type: "number", minimum: 0, maximum: 1, description: "어두울 때 시야 거리를 설정한 경우 어둡다고 보는 조명 값입니다. 새 조건에서 생략하면 0.6입니다." },
   }, [], prepareSight),
   pageCondition<"clearCount", Partial<ConditionFields<"clearCount">>>("clearCount", "클리어 횟수에 따라 등장", {
     op: choices(COMPARE_OPS, "클리어 횟수의 비교 방식입니다. 생략하면 이상입니다."),

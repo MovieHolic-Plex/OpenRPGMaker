@@ -953,6 +953,11 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 쓰므로 두 어휘가 공존한다 — 그래서 "영어 기본값" 을 결함으로 보고 빈 값으로 바꾸면 도구가 만든 NPC 를
 가리키는 가장 흔한 경우가 깨진다.
 
+작은 일의 페이지 활동 조건은 선택한 이벤트의 일정에서 활동 키를 확인한다. 페이지 시야 조건은 플레이의
+맵 이벤트 조회, 맵 이벤트 호출, 아이템 사용에서 실시간 위치, 관찰자 후보, 벽·문 차단 정보를 받는다.
+같은 방 제한을 끈 상태에서 문으로 시야를 막으려는 입력은 작은 일에서 거부한다. 구역 관찰자는 플레이 중
+들어오거나 나갈 수 있다. 관찰자가 없을 때 「아무도 발견하지 못함」은 참이다.
+
 **셋이 갈라져 있었다(실측).** `npcActivity` 는 전투에서 하드코딩 `false` 였고,
 `friendshipAtLeast` 는 빈 `npcKey` 를 소유 이벤트 `characterId` 로 해석하지 않아 항상 거짓이었다.
 둘 다 `src/editor/tools/troopBattlePageTools.ts` 가 모든 `CONDITION_KINDS` 를 받으므로
