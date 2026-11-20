@@ -14,7 +14,7 @@ import { SCREEN_DISTORTION_LIMITS } from "@/project/eventCommands/screenDistorti
 import { eventCommandHash, EventCommandEditError, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import type { Command, GameMap, M2CommandFields } from "@/project/types";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { COMMAND_TITLES, modelFields } from "./13-m2-screen-sound/catalog";
 import { hasDependentBgmReplay, hasEarlierPicture, memorizeBgmId, movePictureId } from "./13-m2-screen-sound/commandOrder";
@@ -290,13 +290,11 @@ function edit(ctx: PrimitiveContext, args: Args, entry: M2CommandCatalogEntry, r
   let current: M2Command | undefined;
   if (operation === "update") {
     const command = list[index];
+    if (!command || args.expectedHash !== eventCommandHash(command)) throw new PrimitiveError(STALE_COMMAND_LIST);
     const oldRow = (args.replaceFrom as string | undefined) ?? fixedPairs[row] ?? row;
     const expectedId = catalogRow(oldRow).id;
-    if (command?.kind !== "m2Command" || command.commandId !== expectedId) {
+    if (command.kind !== "m2Command" || command.commandId !== expectedId) {
       throw new PrimitiveError("범위 밖. 선택한 줄의 기존 연출 종류를 다시 확인해 주세요.");
-    }
-    if (args.expectedHash !== eventCommandHash(command)) {
-      throw new PrimitiveError("그 줄의 내용이 바뀌었거나 확인값이 없습니다. 줄을 다시 읽어 주세요.");
     }
     if (oldRow === row && Object.keys(patch).length === 0) throw new PrimitiveError("바꿀 연출 값을 한 가지 이상 입력해 주세요.");
     current = command;
@@ -415,7 +413,7 @@ function primitive(row: string, operation: Operation): SmallTaskPrimitive {
       } catch (error) {
         if (!(error instanceof EventCommandEditError)) throw error;
         throw new PrimitiveError(error.code === "stale-event-command"
-          ? "그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요."
+          ? STALE_COMMAND_LIST
           : "명령 줄의 위치나 연출 값이 올바르지 않습니다.");
       }
     },

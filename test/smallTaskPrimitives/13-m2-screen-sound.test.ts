@@ -3,12 +3,13 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/13-m2-screen-sound";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { DEPRECATED_M2_COMMAND_IDS } from "@/project/eventCommands/m2CatalogData";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { showPictureState, startSession } from "@/project/session";
@@ -57,18 +58,28 @@ function stagePage(id: string, commands: Command[]): EventPage {
 
 const fixtures = new Map<Fixture, Project>();
 
+function fixtureProject(fixture: Fixture): Project {
+  const cached = fixtures.get(fixture);
+  if (cached) return cached;
+  const project = loadFixture(fixture);
+  // Match the editor's normalization before runPrimitive freezes the fixture.
+  ensureSwitchVariableSlots(project);
+  removeLegacySpriteReferences(project);
+  fixtures.set(fixture, project);
+  return project;
+}
+
 beforeAll(() => {
-  fixtures.set("maou", loadFixture("maou"));
+  fixtureProject("maou");
 }, 300_000);
 
-function setup(fixture: Fixture, commands: Command[] = [prefix]) {
-  if (!fixtures.has(fixture)) fixtures.set(fixture, loadFixture(fixture));
-  const base = fixtures.get(fixture)!;
+function setup(fixture: Fixture, commands: Command[] = [prefix], siblingId = "stage_other") {
+  const base = fixtureProject(fixture);
   const blank = base.startMapId && base.maps[base.startMapId] ? base : createBlankProject();
   const mapId = blank.startMapId;
   const map = base.maps[mapId] ?? blank.maps[mapId]!;
   const page = stagePage("stage_fx", commands);
-  const sibling = stagePage("stage_other", [prefix, picture]);
+  const sibling = stagePage(siblingId, [prefix, picture]);
   const event: GameEvent = { id: "ev_stage_fx", name: "무대", x: 1, y: 1, commands: [], trigger, pages: [sibling, page] };
   const boss: GameEvent = { id: "ev_stage_boss", name: "무대 지킴이", x: 2, y: 2, commands: [], trigger, pages: [stagePage("stage_boss", [])] };
   const project: Project = {
@@ -110,8 +121,14 @@ describe.each(cases)("화면·소리 명령 $row", sample => {
     const primitive = PRIMITIVES.find(p => p.id === `m2.${sample.row}.insert`)!;
     const scope = primitive.scope({ project, target }, { pageId: "stage_other" });
     expect(scope).toEqual({ kind: "eventPage", mapId, eventId: event.id, pageId: "stage_fx" });
-    const outside = { ...result.after, maps: structuredClone(result.after.maps) };
-    outside.maps[mapId]!.events.find(e => e.id === event.id)!.pages![0]!.commands.push(expectedInsert(sample));
+    const map = result.after.maps[mapId]!;
+    const events = map.events.map(entry => entry.id === event.id ? {
+      ...entry,
+      pages: entry.pages!.map((page, index) => index === 0
+        ? { ...page, commands: [...page.commands, expectedInsert(sample)] }
+        : page),
+    } : entry);
+    const outside = { ...result.after, maps: { ...result.after.maps, [mapId]: { ...map, events } } };
     expect(checkSmallTaskScope(project, outside, scope)).toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
   });
 
@@ -129,7 +146,10 @@ describe.each(cases)("화면·소리 명령 $row", sample => {
     expect(commandsOf(result.after)).toEqual([preceding, sample.swap ? expectedInsert(sample) : { ...baseRow, fields }, prefix]);
     expectKoreanSentence(result.sentence);
     expect(jsonEqual(project.maps, originalMaps)).toBe(true);
-    expect(() => runPrimitive(project, target, `m2.${sample.row}.update`, { ...values, index: 0 })).toThrow(/범위 밖/u);
+    expect(() => runPrimitive(project, target, `m2.${sample.row}.update`, { ...values, index: 0 })).toThrow(STALE_COMMAND_LIST);
+    expect(() => runPrimitive(project, target, `m2.${sample.row}.update`, {
+      ...values, index: 0, expectedHash: eventCommandHash(preceding),
+    })).toThrow(/범위 밖/u);
     await expectUndoRestores(project, result.after, target);
   });
 });
@@ -213,15 +233,20 @@ it("분기 안의 한 줄을 갱신하며 오래된 줄 확인값은 거절합�
   expect(commandsOf(runPrimitive(project, target, "m2.047.update", args).after)).toEqual([
     { ...fork, then: [{ ...flash, fields: { ...flash.fields, color: "red" } }] }, prefix,
   ]);
-  expect(() => runPrimitive(project, target, "m2.047.update", { ...args, expectedHash: "오래된 값" })).toThrow(/내용이 바뀌었/u);
+  expect(() => runPrimitive(project, target, "m2.047.update", { ...args, expectedHash: "오래된 값" })).toThrow(STALE_COMMAND_LIST);
   expect(() => runPrimitive(project, target, "m2.047.update", { index: 0, branchPath: args.branchPath, color: "red" })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "m2.047.update", { ...args, branchPath: [0] })).toThrow(/분기 위치/u);
   expect(() => runPrimitive(project, target, "m2.047.update", { ...args, branchPath: [0, 99] })).toThrow(/분기/u);
 });
 
+it("페이지가 여러 개면 대상에 페이지를 명시해야 합니다", () => {
+  const { project, mapId, event } = setup("blank");
+  const target = eventTarget(project, mapId, event.id);
+  expect(() => runPrimitive(project, target, "m2.047.insert", { color: "red" })).toThrow(SELECT_EVENT_PAGE);
+});
+
 it("같은 식별자를 가진 페이지를 골랐으면 편집을 거절합니다", () => {
-  const { project, target, event } = setup("blank");
-  event.pages!.push(stagePage("stage_fx", []));
+  const { project, target } = setup("blank", [prefix], "stage_fx");
   const before = structuredClone(project);
   expect(() => runPrimitive(project, target, "m2.047.insert", { color: "red" })).toThrow(/범위 밖.*같은 식별자/u);
   expect(jsonEqual(project, before)).toBe(true);
@@ -249,11 +274,14 @@ it("뒤에서 호출한 공용 이벤트의 재생이 읽는 배경 음악 기�
   const old = newM2Command("m2-063-memorize-current-bgm");
   const call: Command = { kind: "callCommonEvent", commonEventId: "ce_replay" };
   const branch: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 }, then: [old] };
-  const { project, target, commandsOf } = setup("blank", [branch, call]);
-  project.commonEvents = [...project.commonEvents, {
-    id: "ce_replay", name: "배경 음악 복원", trigger: "none",
-    commands: [newM2Command("m2-064-play-memorized-bgm")],
-  }];
+  const { project: base, target, commandsOf } = setup("blank", [branch, call]);
+  const project: Project = {
+    ...base,
+    commonEvents: [...base.commonEvents, {
+      id: "ce_replay", name: "배경 음악 복원", trigger: "none",
+      commands: [newM2Command("m2-064-play-memorized-bgm")],
+    }],
+  };
   expect(() => runPrimitive(project, target, "m2.064.update", {
     branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 0, expectedHash: eventCommandHash(old),
   })).toThrow(/배경 음악을 다시 재생하는 명령/u);
@@ -268,10 +296,13 @@ it("뒤에서 호출한 공용 이벤트의 재생이 읽는 배경 음악 기�
 it("다른 맵이나 호출하지 않은 공용 이벤트의 배경 음악 재생은 교체를 막지 않습니다", async () => {
   const old = newM2Command("m2-063-memorize-current-bgm");
   const replay = newM2Command("m2-064-play-memorized-bgm");
-  const { project, target, mapId, event, commandsOf } = setup("blank", [old]);
-  project.commonEvents = [...project.commonEvents, { id: "ce_other", name: "다른 음악", trigger: "none", commands: [replay] }];
-  project.maps.other_map = {
-    ...project.maps[mapId]!, id: "other_map", events: [{ ...event, pages: [stagePage("other_page", [replay])] }],
+  const { project: base, target, mapId, event, commandsOf } = setup("blank", [old]);
+  const project: Project = {
+    ...base,
+    commonEvents: [...base.commonEvents, { id: "ce_other", name: "다른 음악", trigger: "none", commands: [replay] }],
+    maps: { ...base.maps, other_map: {
+      ...base.maps[mapId]!, id: "other_map", events: [{ ...event, pages: [stagePage("other_page", [replay])] }],
+    } },
   };
   const { after } = runPrimitive(project, target, "m2.064.update", { index: 0, expectedHash: eventCommandHash(old) });
   expect(commandsOf(after)).toEqual([replay]);
