@@ -22,6 +22,37 @@ function withParentheses(node: ts.Node): ts.Node {
   return node;
 }
 
+/** Prove a simple local data read without assuming that arbitrary receivers are local. */
+function localGameDataReads(file: ts.SourceFile): ReadonlySet<string> {
+  const declarations = new Map<string, ts.Identifier>();
+  for (const statement of file.statements) {
+    if (!ts.isVariableStatement(statement) || !(statement.declarationList.flags & ts.NodeFlags.Const)) continue;
+    for (const { name, initializer } of statement.declarationList.declarations) {
+      if (!ts.isIdentifier(name) || !initializer || !ts.isObjectLiteralExpression(initializer)) continue;
+      if (initializer.properties.length !== 1) continue;
+      const [property] = initializer.properties;
+      if (property && ts.isPropertyAssignment(property)
+        && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) && property.name.text === "game"
+        && stringValue(property.initializer) !== undefined) declarations.set(name.text, name);
+    }
+  }
+  if (!declarations.size) return new Set();
+  function visit(node: ts.Node): void {
+    if (ts.isIdentifier(node) && declarations.has(node.text) && declarations.get(node.text) !== node) {
+      const receiver = withParentheses(node);
+      const member = receiver.parent;
+      const read = withParentheses(member);
+      const usage = read.parent;
+      if (!propertyAccess(member, receiver) || propertyName(member) !== "game"
+        || !(ts.isCallExpression(usage) && usage.arguments.some(argument => argument === read)
+          || ts.isVariableDeclaration(usage) && usage.initializer === read)) declarations.delete(node.text);
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(file);
+  return new Set(declarations.keys());
+}
+
 /** Inspect the code the player executes. Passing the game object or using a computed API may hide a reference. */
 export function scriptMayUseGameApi(
   script: ScriptEffectSource,
@@ -29,6 +60,7 @@ export function scriptMayUseGameApi(
 ): boolean {
   if (typeof script.compiled !== "string" || !script.compiled.trim()) return false;
   const file = ts.createSourceFile("script.js", script.compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
+  const localReads = localGameDataReads(file);
   function visit(node: ts.Node): true | undefined {
     if (ts.isIdentifier(node)) {
       const receiver = withParentheses(node);
@@ -37,12 +69,14 @@ export function scriptMayUseGameApi(
         if (!propertyAccess(member, receiver) || propertyName(member) === undefined) return true;
       }
       if (node.text === "eval" || node.text === "Function") return true;
-      if (node.text === "game" && !(ts.isPropertyAccessExpression(member) && member.name === node)) {
+      if (node.text === "game" && !((ts.isPropertyAccessExpression(member) || ts.isPropertyAssignment(member)) && member.name === node)) {
         if (gameObjectMayMatch(receiver)) return true;
       }
     }
     if ((ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) && propertyName(node) === "game") {
-      if (gameObjectMayMatch(withParentheses(node))) return true;
+      let receiver: ts.Expression = node.expression;
+      while (ts.isParenthesizedExpression(receiver)) receiver = receiver.expression;
+      if (!(ts.isIdentifier(receiver) && localReads.has(receiver.text)) && gameObjectMayMatch(withParentheses(node))) return true;
     }
     return ts.forEachChild(node, visit);
   }

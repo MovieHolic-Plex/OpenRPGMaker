@@ -18,6 +18,7 @@ import { clearRecordKey } from "@/player/saveSlots";
 import { GOLD_MAX } from "@/project/economyValues";
 import { forgetEventDraftVaultEntry, rememberEventDraftVaultEntry } from "@/project/eventDraftVault";
 import { blueprintEndingId } from "@/project/gameBlueprint";
+import { resolveScriptRefId } from "@/project/script/effects";
 import { EMPTY_SCRIPT_EFFECTS } from "@/project/script/types";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -225,6 +226,17 @@ it.each([
   const records = project[area];
   const outside = { ...project, [area]: records.map(row => row.id === selectedId ? row : { ...row, name: "다른 변경" }) };
   expect(checkSmallTaskScope(project, outside, scope)).toMatchObject({ ok: false });
+});
+
+it.each([
+  ["switch.define", "switches", "switch", "sw"], ["variable.define", "variables", "variable", "var"],
+] as const)("%s 새 ID는 기존 표시 이름으로 찾는 스크립트 연결을 보존해요", (primitive, area, kind, prefix) => {
+  const name = `${prefix}_0001`;
+  const existing = { id: "existing", name };
+  const project: Project = { ...fixtureProject("blank"), [area]: [existing] };
+  const { after } = runPrimitive(project, mapTarget(project), primitive, { name: "새 항목" });
+  expect(after[area]).toEqual([existing, { id: `${prefix}_0002`, name: "새 항목" }]);
+  expect(resolveScriptRefId(after, kind, name)).toBe(existing.id);
 });
 
 it.each([
@@ -532,6 +544,7 @@ it.each([
   ['game.setSwitch(game.getText("선택"), true);', [{ api: "setSwitch", line: 1 }]],
   ['const set = game.setSwitch; set("문 열림", true);', []],
   ['globalThis["game"]["getSwitch"]("문 열림");', []],
+  ['const host = globalThis; host["game"].getSwitch("문 열림");', []],
 ] as const)("직접 확인할 수 없는 스크립트 접근은 이름 변경을 막아요 (%s)", (source, dynamic) => {
   const project: Project = {
     ...fixtureProject("blank"),
@@ -544,7 +557,8 @@ it.each([
 });
 
 it("이름 조회와 무관한 간접 API와 고정 명령은 스위치·변수 이름 변경을 막지 않아요", async () => {
-  const source = 'const log = game.log; log("hello"); game["gold"]();\nawait game.cmd({ kind: "changeGold", op: "+=", amount: 1 });';
+  const source = 'const log = game.log; const config = { "game": "demo" }; log(config["game"]); game["gold"]();\n'
+    + 'await game.cmd({ kind: "changeGold", op: "+=", amount: 1 });';
   const { ok, compiled, effects } = await compileScriptAsync(source, { typeCheck: false });
   expect(ok).toBe(true);
   const project: Project = {
@@ -561,7 +575,8 @@ it("이름 조회와 무관한 간접 API와 고정 명령은 스위치·변수 
 
 it("다른 엔딩만 부르는 고정 명령과 엔딩과 무관한 game.cmd는 삭제를 막지 않아요", async () => {
   const other = { ...unusedEnding, id: "ending_other", name: "다른 결말" };
-  const source = 'await game.cmd({ kind: "changeGold", op: "+=", amount: -1 });\n'
+  const source = 'const config = { game: "demo" }; const label = config.game; game.log(label);\n'
+    + 'await game.cmd({ kind: "changeGold", op: "+=", amount: -1 });\n'
     + `await game["cmd"]({ kind: "triggerEnding", endingId: "${other.id}" });`;
   const { ok, compiled, effects } = await compileScriptAsync(source, { typeCheck: false });
   expect(ok).toBe(true);

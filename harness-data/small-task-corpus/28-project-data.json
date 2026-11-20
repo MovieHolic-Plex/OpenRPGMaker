@@ -859,6 +859,19 @@
       {
         "at": "endings[id=ending_8hw9rp].name",
         "equals": "봄의 마지막 편지"
+      },
+      {
+        "at": "endings[id=ending_8hw9rp].epilogue",
+        "equals": [
+          { "kind": "say", "text": "얼음 아래의 노래가 잦아들고, 호수는 다시 고요해졌다." },
+          { "kind": "say", "speaker": "이르마", "text": "이제야 마을 사람들이 편히 잠들겠구나. 고맙네." },
+          { "kind": "say", "speaker": "토르", "text": "봄이 오면 호숫가에 가장 먼저 터를 잡아야겠어." },
+          { "kind": "say", "text": "화롯불 곁에서 사람들은 봄에 다시 들을 노래를 기다렸다." }
+        ]
+      },
+      {
+        "at": "endings[id=ending_8hw9rp].presentation.credits",
+        "equals": "얼음 아래의 노래\n플레이해 주셔서 감사합니다"
       }
     ]
   },
@@ -975,7 +988,8 @@
     "args": {
       "record": "봄을 기다리는 노래"
     },
-    "expectRefusal": true
+    "expectRefusal": true,
+    "refusalMessage": "이벤트나 조건에서 쓰는 엔딩이라 삭제할 수 없어요"
   },
   {
     "request": "배우 항목을 고른 상태에서 ‘봄을 기다리는 노래’ 결말을 지워 줘.",

@@ -1,6 +1,6 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
-import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
+import { APPLY_SMALL_TASK_PRIMITIVE, isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
@@ -443,6 +443,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   let toolErrors = 0;
   let turns = 0;
   let failure: string | undefined;
+  let regionFailure: string | undefined;
   const refuse = (message: string): undefined => {
     failure ??= message;
     controller.abort();
@@ -482,7 +483,18 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         refuse(refusal);
         throw new Error(refusal);
       }
-      return tool.execute(id, args, toolSignal ?? signal);
+      const before = ctx.project;
+      const response = await tool.execute(id, args, toolSignal ?? signal);
+      if (regionScope && !regionFailure && ctx.project !== before) {
+        const primitive = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string"
+          ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(args.id) : undefined;
+        // Unit 28 is already checked against its project-area scope by runPrimitive.
+        if (primitive?.unit !== "28-project-data") {
+          const result = checkSmallTaskScope(before, ctx.project, regionScope);
+          if (!result.ok) regionFailure = result.reason;
+        }
+      }
+      return response;
     },
   }));
   const resolveFallbackTool = () => refuse(SMALL_TASK_SCOPE_REFUSAL);
@@ -533,10 +545,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     await local?.dispose();
   }
   options.signal?.throwIfAborted();
-  if (!failure && regionScope && ctx.project !== base) {
-    const result = checkSmallTaskScope(base, ctx.project, regionScope);
-    if (!result.ok) failure = result.reason;
-  }
+  failure ??= regionFailure;
   const project = failure ? base : ctx.project;
   const done: PiAgentDoneEvent = {
     type: "done", smallTask: true, project, changedKeys: changedProjectKeys(base, project),

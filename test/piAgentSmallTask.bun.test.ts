@@ -170,6 +170,25 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   expect(layerTileAt(inside.project.maps[mapId], 2, 1)).toBe(-1);
 });
 
+test("작은 일 Pi 실행은 선택 영역이 있어도 제목을 바꾸고 영역 밖 타일 변경이 섞이면 모두 폐기한다", async () => {
+  const { request, project, mapId } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const selection = { rect: { x: 0, y: 0, w: 1, h: 1 } };
+  const selected = { ...request, smallTask: { ...request.smallTask, target, selection } };
+  const title = "달빛 아래 마을";
+  const changeTitle = apply("system.title", { title });
+  const renamed = await runPiAgent(selected, { streamFn: scripted([changeTitle]) });
+  expect(renamed.stoppedEarly).toBeUndefined();
+  expect(renamed.project.meta.title).toBe(title);
+  expect(renamed.project.maps[mapId]).toEqual(project.maps[mapId]);
+
+  const rejected = await runPiAgent(selected, { streamFn: scripted([changeTitle, {
+    name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x: 1, y: 0 }] },
+  }]) });
+  expect(rejected.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(rejected.project).toBe(project);
+});
+
 test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기까지 버린다", async () => {
   const { request, project, mapId, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([

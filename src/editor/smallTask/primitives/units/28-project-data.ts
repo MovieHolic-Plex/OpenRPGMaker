@@ -92,7 +92,7 @@ function defineFlag(area: FlagArea, prefix: "sw" | "var", label: string): Operat
     },
     apply({ project }, args) {
       const name = requiredText(args.name, "이름을 입력해 주세요.");
-      const reserved = Object.keys(project.session[area]);
+      const reserved = [...Object.keys(project.session[area]), ...project[area].map(record => record.name)];
       if (area === "switches") reserved.push(...Object.keys(project.flags));
       const id = nextNumberedId(prefix, project[area], reserved);
       // 스토어가 적용할 때 새 항목의 시작 값 슬롯을 채우므로 그 사본도 분리한다.
