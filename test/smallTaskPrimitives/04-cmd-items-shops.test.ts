@@ -2,6 +2,9 @@
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import {
+  INN_NOT_ENOUGH_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
+} from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -9,7 +12,9 @@ import { PRIMITIVES } from "@/editor/smallTask/primitives/units/04-cmd-items-sho
 import { createInterpreter } from "@/player/interpreter";
 import { defaultItemRecords } from "@/project/defaults/defaultDatabaseItemRecords";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
+import { GOLD_MAX } from "@/project/economyValues";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -56,7 +61,7 @@ const cases = [
   },
   {
     kind: "openCraftShop", insert: { title: "대장간", recipeIds: [recipe] }, initial: { kind: "openCraftShop", title: "대장간", recipeIds: [recipe] },
-    update: { speaker: "대장장이", recipeIds: [] }, next: { kind: "openCraftShop", title: "대장간", speaker: "대장장이", recipeIds: [] },
+    update: { speaker: "대장장이", recipeIds: null }, next: { kind: "openCraftShop", title: "대장간", speaker: "대장장이" },
     invalid: { recipeIds: ["recipe_missing"] }, message: /제작법/,
   },
   {
@@ -163,7 +168,8 @@ describe.each(cases)("돈·아이템·상점 명령 $kind", ({ kind, insert, ini
 
   it("같은 종류의 한 줄만 수정하고 한 번에 되돌린다", async () => {
     const { project, target, commandsOf } = setup(fixture, [opening, initial, closing]);
-    const result = runPrimitive(project, target, `cmd.${kind}.update`, { ...update, index: 1 });
+    const expectedHash = eventCommandHash(commandsOf(project)[1]);
+    const result = runPrimitive(project, target, `cmd.${kind}.update`, { ...update, index: 1, expectedHash });
     expect(commandsOf(result.after)).toEqual([opening, next, closing]);
     expect(commandsOf(project)).toEqual([opening, initial, closing]);
     checkSentence(result.sentence, "수정");
@@ -171,9 +177,10 @@ describe.each(cases)("돈·아이템·상점 명령 $kind", ({ kind, insert, ini
   });
 
   it("삽입과 수정에서 없는 참조를 한국어로 거절한다", () => {
-    const { project, target } = setup(fixture, [initial]);
+    const { project, target, commandsOf } = setup(fixture, [initial]);
+    const expectedHash = eventCommandHash(commandsOf(project)[0]);
     const invalidInsert = kind === "inn" || kind === "changeGold" ? invalid : { ...insert, ...invalid };
-    for (const [mode, args] of [["insert", invalidInsert], ["update", { index: 0, ...invalid }]] as const) {
+    for (const [mode, args] of [["insert", invalidInsert], ["update", { index: 0, expectedHash, ...invalid }]] as const) {
       const apply = () => runPrimitive(project, target, `cmd.${kind}.${mode}`, args);
       expect(apply).toThrow(PrimitiveError);
       expect(apply).toThrow(message);
@@ -185,7 +192,7 @@ describe.each(cases)("돈·아이템·상점 명령 $kind", ({ kind, insert, ini
     const map = project.maps[mapId];
     for (const mode of ["insert", "update"] as const) {
       const primitive = PRIMITIVES.find(row => row.id === `cmd.${kind}.${mode}`)!;
-      const args = mode === "insert" ? insert : { ...update, index: 0 };
+      const args = mode === "insert" ? insert : { ...update, index: 0, expectedHash: eventCommandHash(event.pages![0].commands[0]) };
       const scope = primitive.scope({ project, target }, args);
       expect(scope).toEqual({ kind: "eventPage", mapId, eventId, pageId });
       const foreignTarget = eventTarget(project, mapId, eventId, event.pages![1].id);
@@ -204,8 +211,8 @@ function execute(project: Project, commandsOf: (p: Project) => Command[], mapId:
   session.gold = 20;
   session.inventory = { [ether]: 1, [potion]: 1 };
   session.variables[variable] = 7;
-  const step = createInterpreter(commandsOf(project), session, project, { currentEventId: eventId }).start();
-  return { step, session };
+  const interpreter = createInterpreter(commandsOf(project), session, project, { currentEventId: eventId });
+  return { step: interpreter.start(), session, interpreter };
 }
 
 it("골드와 아이템 명령을 실행하면 소지금과 가방이 바뀐다", () => {
@@ -233,24 +240,41 @@ it("제작과 강화를 실행하면 재료·골드·결과 변수가 바뀐다"
 
 it("재고가 있는 상점에 상품을 넣어도 계절 가격과 거래 분기를 유지한다", () => {
   const stock = [
-    { itemId: potion, priceOverride: 40, seasons: ["spring"] },
-    { itemId: ether, priceOverride: 60 },
-    { itemId: potion, priceOverride: 45, seasons: ["winter"] },
+    { itemId: potion, priceOverride: 400, seasons: ["spring"] },
+    { itemId: ether, priceOverride: 600 },
+    { itemId: potion, priceOverride: 450, seasons: ["winter"] },
   ];
   const branch: Command[] = [{ kind: "text", body: "거래했어요." }];
   const { project, target, mapId, commandsOf } = setup("maou", [{
     kind: "shop", itemIds: [potion], stock, branchOnTransaction: true, transactionBranch: branch,
   }]);
-  const { after } = runPrimitive(project, target, "cmd.shop.update", { index: 0, addItemId: highPotion, allowSell: false });
+  project.system.timeSystem = { enabled: true };
+  const before = commandsOf(project)[0];
+  expectRefused(project, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(before), addItemId: ether,
+  }, /이미 진열된 상품/u);
+  expect(commandsOf(project)[0]).toBe(before);
+  const { after } = runPrimitive(project, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(before), addItemId: highPotion, allowSell: false,
+  });
   const command = commandsOf(after)[0];
   expect(command).toMatchObject({
-    itemIds: [potion, highPotion], stock: [...stock, { itemId: highPotion }], transactionBranch: branch,
+    itemIds: [potion, ether, highPotion], stock: [...stock, { itemId: highPotion }], transactionBranch: branch,
     shopType: "buyOnly", allowSell: false,
   });
   expect(execute(after, commandsOf, mapId).step).toMatchObject({
     kind: "shop", shopType: "buyOnly",
-    items: expect.arrayContaining([{ itemId: highPotion, price: expect.any(Number) }]),
+    items: [{ itemId: potion, price: 400 }, { itemId: ether, price: 600 }, { itemId: highPotion, price: expect.any(Number) }],
   });
+  const { after: removed } = runPrimitive(after, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(command), removeItemId: potion,
+  });
+  expect(commandsOf(removed)[0]).toMatchObject({
+    itemIds: [ether, highPotion], stock: [stock[1], { itemId: highPotion }], transactionBranch: branch,
+  });
+  expectRefused(removed, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(commandsOf(removed)[0]), removeItemId: potion,
+  }, /진열된 물건만/u);
 });
 
 it("숙박 요금에 연결한 변수와 회복 옵션이 게임에 전달된다", () => {
@@ -274,11 +298,141 @@ it("선택한 칸의 금고를 열 때 잠금과 용량을 게임에 전달하�
 it("분기 안 한 줄을 수정하며 이전 확인값으로 다시 쓰는 것을 막는다", () => {
   const old = { kind: "changeGold", amount: 10, op: "+=" } as const;
   const { project, target, commandsOf } = setup("built", [{ kind: "loop", body: [old, { kind: "breakLoop" }] }, closing]);
-  const args = { branchPath: [0, -5], index: 0, amount: 30, expectedHash: eventCommandHash(old) };
+  const args = { branchPath: [0, LOOP_BODY_BRANCH_INDEX], index: 0, amount: 30, expectedHash: eventCommandHash(old) };
   const { after } = runPrimitive(project, target, "cmd.changeGold.update", args);
   expect(commandsOf(after)).toEqual([{ kind: "loop", body: [{ ...old, amount: 30 }, { kind: "breakLoop" }] }, closing]);
   expect(() => runPrimitive(after, target, "cmd.changeGold.update", { ...args, amount: 40 })).toThrow(/줄의 내용이 바뀌었습니다/);
   expect(jsonEqual(commandsOf(project), [{ kind: "loop", body: [old, { kind: "breakLoop" }] }, closing])).toBe(true);
+});
+
+it("해시 누락, 같은 종류의 다른 줄, 다른 종류의 줄, 잘못된 위치를 거절한다", () => {
+  const gold: Command = { kind: "changeGold", amount: 10, op: "+=" };
+  const { project, target, commandsOf } = setup("blank", [gold, { ...gold, amount: 50 }, closing]);
+  const expectedHash = eventCommandHash(gold);
+  expectRefused(project, target, "cmd.changeGold.update", { index: 0, amount: 30 }, /형식/u);
+  expectRefused(project, target, "cmd.changeGold.update", { index: 0, amount: 30, expectedHash: "" }, /형식/u);
+  expectRefused(project, target, "cmd.changeGold.update", { index: 1, amount: 30, expectedHash }, /줄의 내용이 바뀌었습니다/u);
+  expectRefused(project, target, "cmd.changeGold.update", { index: 2, amount: 30, expectedHash }, /명령을 찾을 수 없습니다/u);
+  expectRefused(project, target, "cmd.changeGold.update", { index: 3, amount: 30, expectedHash }, /명령을 찾을 수 없습니다/u);
+  expectRefused(project, target, "cmd.changeGold.insert", { index: 4, amount: 30 }, /줄 위치/u);
+  expectRefused(project, target, "cmd.changeGold.update", { index: 0, expectedHash }, /고칠 내용/u);
+  expect(commandsOf(project)).toEqual([gold, { ...gold, amount: 50 }, closing]);
+});
+
+it("상점과 여관의 분기를 정확히 골라 추가하고 게임에서 그 분기만 실행한다", () => {
+  const shop: Command = {
+    kind: "shop", itemIds: [potion], branchOnTransaction: true, transactionBranch: [],
+    branchOnFailedTransaction: true, failedTransactionBranch: [closing],
+  };
+  const inn: Command = { kind: "inn", price: 40, branchOnNotEnoughGold: true, notEnoughBranch: [] };
+  const { project, target, commandsOf, mapId } = setup("blank", [shop, inn]);
+  const gold: Command = { kind: "changeGold", amount: 7, op: "+=" };
+  const { after: traded } = runPrimitive(project, target, "cmd.changeGold.insert", {
+    branchPath: [0, SHOP_TRANSACTION_BRANCH_INDEX], amount: 7,
+  });
+  const { after } = runPrimitive(traded, target, "cmd.changeGold.insert", {
+    branchPath: [1, INN_NOT_ENOUGH_BRANCH_INDEX], amount: 7,
+  });
+  expect(commandsOf(after)).toEqual([{ ...shop, transactionBranch: [gold] }, { ...inn, notEnoughBranch: [gold] }]);
+  expect(commandsOf(project)).toEqual([shop, inn]);
+  const failedTrade = execute(after, commandsOf, mapId);
+  expect(failedTrade.interpreter.resume("failed").kind).toBe("text");
+  expect(failedTrade.session.gold).toBe(20);
+  const trade = execute(after, commandsOf, mapId);
+  expect(trade.step.kind).toBe("shop");
+  expect(trade.interpreter.resume(true).kind).toBe("inn");
+  expect(trade.session.gold).toBe(27);
+  expect(trade.interpreter.resume("notEnough").kind).toBe("done");
+  expect(trade.session.gold).toBe(34);
+  expectRefused(after, target, "cmd.changeGold.insert", { branchPath: [1], amount: 5 }, /분기 위치/u);
+  expectRefused(after, target, "cmd.changeGold.insert", {
+    branchPath: [1, SHOP_FAILED_TRANSACTION_BRANCH_INDEX], amount: 5,
+  }, /분기를 찾을 수 없어요/u);
+});
+
+it("기존 저장본에 배열이 없는 여관 분기에도 추가하고 실행하며 되돌린다", async () => {
+  const inn: Command = { kind: "inn", price: 30, branchOnNotEnoughGold: true };
+  const { project, target, commandsOf, mapId } = setup("blank", [{ kind: "loop", body: [inn, { kind: "breakLoop" }] }]);
+  const branchPath = [0, LOOP_BODY_BRANCH_INDEX, 0, INN_NOT_ENOUGH_BRANCH_INDEX];
+  expectRefused(project, target, "cmd.changeGold.insert", { branchPath, index: 1, amount: 7 }, /줄 위치/u);
+  expectRefused(project, target, "cmd.changeGold.insert", {
+    branchPath: [...branchPath, 0, INN_NOT_ENOUGH_BRANCH_INDEX], amount: 7,
+  }, /분기를 찾을 수 없어요/u);
+  const { after } = runPrimitive(project, target, "cmd.changeGold.insert", { branchPath, amount: 7 });
+  expect(commandsOf(after)).toEqual([{
+    kind: "loop", body: [{ ...inn, notEnoughBranch: [{ kind: "changeGold", op: "+=", amount: 7 }] }, { kind: "breakLoop" }],
+  }]);
+  const play = execute(after, commandsOf, mapId);
+  expect(play.step.kind).toBe("inn");
+  expect(play.interpreter.resume("notEnough").kind).toBe("done");
+  expect(play.session.gold).toBe(27);
+  expect(commandsOf(project)).toEqual([{ kind: "loop", body: [inn, { kind: "breakLoop" }] }]);
+  await expectUndoRestores(project, after, target);
+});
+
+it("제작법 없는 공방은 거절하고 모든 제작법으로 바꾼 공방은 실제로 연다", () => {
+  const { project, target, commandsOf, mapId } = setup("blank", [{ kind: "openCraftShop", recipeIds: [recipe] }]);
+  const noRecipes = { ...project, system: { ...project.system, craftRecipes: [] } };
+  expectRefused(noRecipes, target, "cmd.openCraftShop.insert", { title: "대장간" }, /제작법이 하나 이상/u);
+  const position = { index: 0, expectedHash: eventCommandHash(commandsOf(project)[0]) };
+  expectRefused(project, target, "cmd.openCraftShop.update", { ...position, recipeIds: [] }, /제작법이 하나 이상/u);
+  const secondRecipe = { ...project.system.craftRecipes![0], id: "recipe_second", outputItemId: ether };
+  const withRecipes = { ...project, system: { ...project.system, craftRecipes: [project.system.craftRecipes![0], secondRecipe] } };
+  const { after } = runPrimitive(withRecipes, target, "cmd.openCraftShop.update", { ...position, recipeIds: null });
+  expect(commandsOf(after)[0]).toEqual({ kind: "openCraftShop" });
+  const { step } = execute(after, commandsOf, mapId);
+  expect(step.kind).toBe("craftShop");
+  if (step.kind === "craftShop") expect(step.rows.map(row => row.recipeId)).toEqual([recipe, secondRecipe.id]);
+});
+
+it("공유 보관함 연결과 물건을 유지하면서 표시 이름만 고친다", () => {
+  const chest: Command = { kind: "openChest", chestId: "shared_chest", displayName: "창고" };
+  const { project, target, event, mapId, commandsOf } = setup("blank", [chest], [chest]);
+  project.session.chests = { shared_chest: { id: "shared_chest", mapId, x: 2, y: 2, inventory: { [potion]: 3 } } };
+  const position = { index: 0, expectedHash: eventCommandHash(chest) };
+  for (const chestId of ["new_chest", ""]) {
+    expectRefused(project, target, "cmd.openChest.update", { ...position, chestId }, /연결된 보관함을 유지/u);
+  }
+  const { after } = runPrimitive(project, target, "cmd.openChest.update", { ...position, displayName: "마을 창고" });
+  expect(execute(after, commandsOf, mapId).step).toMatchObject({ kind: "openChest", chestId: "shared_chest", displayName: "마을 창고" });
+  expect(after.session.chests).toBe(project.session.chests);
+  expect(after.maps[mapId].events.find(row => row.id === eventId)?.pages?.[1]).toBe(event.pages?.[1]);
+});
+
+it("보관함 잠금에 쓸 식별자를 게임과 같은 값으로 확인하고 빈 입력으로 해제한다", () => {
+  const oldChest: Command = { kind: "openChest", lockSwitchId: ` ${lock} `, lockItemId: ` ${potion} ` };
+  const { project, target, commandsOf, mapId } = setup("blank", [oldChest]);
+  const { after: renamed } = runPrimitive(project, target, "cmd.openChest.update", {
+    index: 0, expectedHash: eventCommandHash(oldChest), displayName: "공동 창고",
+  });
+  expect(commandsOf(renamed)[0]).toEqual({ ...oldChest, displayName: "공동 창고" });
+  const { after } = runPrimitive(project, target, "cmd.openChest.insert", {
+    index: 0, lockSwitchId: ` ${lock} `, lockItemId: ` ${potion} `,
+  });
+  expect(execute(after, commandsOf, mapId).step).toMatchObject({ kind: "openChest", lockSwitchId: lock, lockItemId: potion });
+  const { after: unlocked } = runPrimitive(after, target, "cmd.openChest.update", {
+    index: 0, expectedHash: eventCommandHash(commandsOf(after)[0]), lockSwitchId: " ", lockItemId: "",
+  });
+  expect(execute(unlocked, commandsOf, mapId).step).not.toHaveProperty("lockSwitchId");
+  expect(execute(unlocked, commandsOf, mapId).step).not.toHaveProperty("lockItemId");
+});
+
+it.each([
+  ["changeGold", { amount: GOLD_MAX + 1 }, /형식/u],
+  ["changeGold", { amount: 1, amountVariableId: variable }, /하나만 지정/u],
+  ["changeItem", { itemId: potion, amount: ITEM_QUANTITY_MAX + 1 }, /형식/u],
+  ["changeItem", { itemId: "" }, /물건/u],
+  ["craftRecipe", { recipeId: "" }, /제작법/u],
+  ["applyItemUpgrade", { upgradeId: "" }, /강화 규칙/u],
+  ["inn", { price: 0, priceVariableId: variable }, /하나만 지정/u],
+  ["inn", { restDurationMs: 10001 }, /형식/u],
+  ["openChest", { capacity: 0 }, /형식/u],
+  ["openChest", { allowedItemTypes: ["회복약"] }, /아이템 분류/u],
+  ["openChest", { chestId: "constructor" }, /보관함에 쓸 수 없는 이름/u],
+  ["shop", { itemIds: [""] }, /형식/u],
+] as const)("잘못된 %s 명령 입력을 거절한다", (kind, args, reason) => {
+  const { project, target } = setup("blank");
+  expectRefused(project, target, `cmd.${kind}.insert`, args, reason);
 });
 
 type PreparedCase = CorpusCase & {

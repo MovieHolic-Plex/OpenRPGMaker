@@ -1,11 +1,16 @@
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
+import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor/commandSummary";
 import type { JsonSchema } from "@/editor/tools/types";
+import { craftShopRecipeIds } from "@/project/craftShop";
 import { GOLD_MAX } from "@/project/economyValues";
-import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
+import { EventCommandEditError, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import { validateCommands, type ReferenceContext } from "@/project/io/commandReferenceValidation";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
-import type { Command, Project, VariableOperand } from "@/project/types";
+import { resolveStorageChest, STORAGE_CHEST_LAYOUTS, STORAGE_CHEST_TEMPLATES } from "@/project/storageChest";
+import type { Command, EventPage, Project, VariableOperand } from "@/project/types";
+import { roJosa } from "@/util/josa";
 import { displayText } from "../../target";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
@@ -30,7 +35,7 @@ const ids = (description: string): JsonSchema => ({
 const amountFields = {
   op: choice("더하기(+=), 빼기(-=), 이 값으로 설정(=)", "+=", "-=", "="),
   amount: integer("골드", 0, GOLD_MAX),
-  amountVariableId: text("수량을 읽을 변수의 식별자"),
+  amountVariableId: text("숫자 대신 수량을 읽을 변수의 식별자"),
 };
 const resultVariableId = text("성공이면 1, 실패면 0을 기록할 변수의 식별자. 빈 문자열로 기록을 해제합니다.");
 
@@ -59,7 +64,10 @@ const specs = {
   openCraftShop: {
     name: "제작 공방",
     fields: {
-      recipeIds: ids("진열할 제작법의 식별자 목록. 새 공방에서 생략하면 모든 제작법을 표시합니다."),
+      recipeIds: {
+        ...ids("진열할 제작법을 표시 순서대로 하나 이상 지정합니다. null을 보내거나 새 공방에서 생략하면 모든 제작법을 표시합니다."),
+        type: ["array", "null"],
+      },
       title: text("공방 이름"),
       speaker: text("공방 주인 이름"),
     },
@@ -67,10 +75,10 @@ const specs = {
   openChest: {
     name: "보관 상자",
     fields: {
-      chestId: text("상자끼리 인벤토리를 공유할 때 쓸 이름표. 빈 문자열이면 현재 위치의 상자를 엽니다."),
+      chestId: text("상자끼리 보관 내용을 공유할 때 쓰는 이름입니다. 새 상자에만 지정할 수 있고, 비우면 현재 위치의 상자를 엽니다."),
       displayName: text("상자 창에 표시할 이름"),
-      template: choice("상자 양식: 농장, 창고, 금고", "farm", "warehouse", "vault"),
-      layout: choice("창 위치: 중앙, 하단, 넓은 창", "center", "bottom", "wide"),
+      template: choice("상자 양식: 농장, 창고, 금고", ...STORAGE_CHEST_TEMPLATES),
+      layout: choice("창 위치: 중앙, 하단, 넓은 창", ...STORAGE_CHEST_LAYOUTS),
       capacity: integer("서로 다른 물건을 보관할 칸 수", 1),
       showIcons: flag("물건 아이콘을 표시할지 여부"),
       allowBulk: flag("여러 물건을 한꺼번에 옮길 수 있는지 여부"),
@@ -79,7 +87,7 @@ const specs = {
       goldVault: flag("골드를 보관할 수 있는지 여부"),
       lockSwitchId: text("켜져 있어야 열리는 스위치의 식별자. 빈 문자열로 해제합니다."),
       lockItemId: text("열 때 필요한 아이템의 식별자. 빈 문자열로 해제합니다."),
-      allowedItemTypes: ids("보관을 허용할 아이템 분류 목록"),
+      allowedItemTypes: ids("보관을 허용할 아이템 분류 목록. 빈 목록이면 모든 분류를 허용합니다."),
     },
   },
   shop: {
@@ -89,7 +97,7 @@ const specs = {
       title: text("상점 창에 표시할 이름"),
       allowSell: flag("손님이 물건을 팔 수 있게 할지 여부"),
       quantityMode: choice("구매 수량: 한 개씩, 수량 선택", "single", "select"),
-      shopType: choice("거래 방식: 양방향, 구매 전용, 판매 전용", "normal", "buyOnly", "sellOnly"),
+      shopType: choice("손님이 사고팔기, 사기만, 팔기만", "normal", "buyOnly", "sellOnly"),
       merchantGold: integer("상인이 손님 물건을 살 때 쓸 소지금", 0, 999999),
     },
   },
@@ -118,7 +126,7 @@ const updateShopFields = {
 
 function replaceOperand(patch: Args, args: Args, valueKey: string, variableKey: string): void {
   if (args[variableKey] === undefined) return;
-  if (args[valueKey] !== undefined) throw new PrimitiveError("숫자와 수량을 읽을 변수 중 하나만 지정하세요.");
+  if (args[valueKey] !== undefined) throw new PrimitiveError("숫자와 값을 읽을 변수 중 하나만 지정해 주세요.");
   patch[valueKey] = { kind: "var", id: args[variableKey] };
 }
 
@@ -142,6 +150,13 @@ function shopPatch(current: Extract<Command, { kind: "shop" }>, patch: Args, arg
     throw new PrimitiveError("같은 물건을 동시에 넣고 뺄 수 없습니다.");
   }
   const { stock } = current;
+  const displayedIds = stock?.map(row => row.itemId) ?? current.itemIds;
+  if (typeof addItemId === "string" && displayedIds.includes(addItemId)) {
+    throw new PrimitiveError("이미 진열된 상품입니다. 추가할 다른 상품을 골라 주세요.");
+  }
+  if (typeof removeItemId === "string" && !displayedIds.includes(removeItemId)) {
+    throw new PrimitiveError("현재 상점에 진열된 물건만 뺄 수 있습니다.");
+  }
   if (replacement !== undefined) {
     const itemIds = [...new Set(replacement)];
     patch.itemIds = itemIds;
@@ -154,26 +169,42 @@ function shopPatch(current: Extract<Command, { kind: "shop" }>, patch: Args, arg
     return;
   }
 
-  const itemIds = current.itemIds.filter(id => id !== removeItemId);
-  if (typeof addItemId === "string" && !itemIds.includes(addItemId)) itemIds.push(addItemId);
-  patch.itemIds = itemIds;
+  const itemIds = new Set(displayedIds.filter(id => id !== removeItemId));
+  if (typeof addItemId === "string") itemIds.add(addItemId);
+  patch.itemIds = [...itemIds];
   if (stock) {
     // 기존 재고 행의 순서와 계절·가격·그림 설정을 유지한다.
     const rows = stock.filter(row => row.itemId !== removeItemId);
-    if (typeof addItemId === "string" && !rows.some(row => row.itemId === addItemId)) rows.push({ itemId: addItemId });
+    if (typeof addItemId === "string") rows.push({ itemId: addItemId });
     patch.stock = rows;
   }
 }
 
-function editedCommand(kind: Kind, current: EconomyCommand, args: Args) {
+function editedCommand(current: EconomyCommand, mode: Mode, args: Args) {
   // 편집할 수 있는 필드만 골라 저장한다. 분기·대상 선택·위치 인자는 명령에 들어갈 수 없다.
-  const patch = Object.fromEntries(Object.keys(specs[kind].fields)
+  const patch = Object.fromEntries(Object.keys(specs[current.kind].fields)
     .filter(key => Object.hasOwn(args, key) && key !== "amountVariableId" && key !== "priceVariableId")
     .map(key => [key, args[key]]));
-  replaceOperand(patch, args, "amount", "amountVariableId");
-  replaceOperand(patch, args, "price", "priceVariableId");
-  for (const key of ["resultVariableId", "lockSwitchId", "lockItemId"]) {
-    if (patch[key] === "") patch[key] = undefined;
+  if (current.kind === "changeGold" || current.kind === "changeItem") replaceOperand(patch, args, "amount", "amountVariableId");
+  if (current.kind === "inn") replaceOperand(patch, args, "price", "priceVariableId");
+  if (patch.resultVariableId === "") patch.resultVariableId = undefined;
+  for (const key of ["lockSwitchId", "lockItemId"]) {
+    const value = patch[key];
+    if (typeof value === "string") patch[key] = value.trim() || undefined;
+  }
+  if (current.kind === "openCraftShop") {
+    if (args.recipeIds === null) patch.recipeIds = undefined;
+    if (Array.isArray(args.recipeIds)) patch.recipeIds = [...new Set(args.recipeIds)];
+  }
+  if (current.kind === "openChest" && typeof args.chestId === "string") {
+    const chestId = args.chestId.trim();
+    if (Object.hasOwn(Object.prototype, chestId)) {
+      throw new PrimitiveError("공유 보관함에 쓸 수 없는 이름입니다. 다른 이름을 입력해 주세요.");
+    }
+    if (mode === "update" && chestId !== (current.chestId ?? "").trim()) {
+      throw new PrimitiveError("기존 물건을 계속 꺼낼 수 있도록 연결된 보관함을 유지해 주세요. 화면에 보이는 이름은 바꿀 수 있습니다.");
+    }
+    patch.chestId = chestId;
   }
   if (current.kind === "shop") shopPatch(current, patch, args);
   return { patch, command: { ...current, ...patch } as EconomyCommand };
@@ -212,6 +243,9 @@ function validateReferences(project: Project, command: EconomyCommand, args: Arg
     || command.kind === "openCraftShop" && command.recipeIds?.some(id => !hasRecipe(id))) {
     throw new PrimitiveError("지정한 제작법을 찾을 수 없습니다.");
   }
+  if (command.kind === "openCraftShop" && craftShopRecipeIds(project, command).length === 0) {
+    throw new PrimitiveError("제작 공방을 열려면 보여 줄 제작법이 하나 이상 필요합니다.");
+  }
   if (command.kind === "applyItemUpgrade" && !project.system.itemUpgrades?.some(rule => rule.id === command.upgradeId)) {
     throw new PrimitiveError("지정한 강화 규칙을 찾을 수 없습니다.");
   }
@@ -219,11 +253,15 @@ function validateReferences(project: Project, command: EconomyCommand, args: Arg
     throw new PrimitiveError("장착할 도구를 자료집에서 찾을 수 없습니다.");
   }
   if (command.kind === "openChest") {
-    if (command.lockSwitchId && !project.switches.some(row => row.id === command.lockSwitchId)) {
+    const { lockSwitchId, lockItemId, allowedItemTypes } = resolveStorageChest(command);
+    if (lockSwitchId && !project.switches.some(row => row.id === lockSwitchId)) {
       throw new PrimitiveError("상자를 여는 스위치를 찾을 수 없습니다.");
     }
-    if (command.lockItemId && !itemIds.has(command.lockItemId)) {
+    if (lockItemId && !itemIds.has(lockItemId)) {
       throw new PrimitiveError("상자를 여는 아이템을 찾을 수 없습니다.");
+    }
+    if (Array.isArray(args.allowedItemTypes) && allowedItemTypes.length !== args.allowedItemTypes.length) {
+      throw new PrimitiveError("보관을 허용할 아이템 분류를 다시 골라 주세요.");
     }
   }
   if (command.kind === "inn" && typeof command.price !== "number" && !variableIds.has(command.price.id)) {
@@ -247,7 +285,8 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
   const amountName = (value: VariableOperand, unit: string) => {
     if (typeof value === "number") return `${value}${unit}`;
     const name = project.variables.find(row => row.id === value.id)?.name;
-    return `변수 「${safeName(name === value.id ? undefined : name, "지정한 변수")}」의 값`;
+    const variableName = safeName(name === value.id ? undefined : name, "");
+    return variableName ? `변수 「${variableName}」의 값` : "지정한 변수의 값";
   };
   switch (command.kind) {
     case "changeGold":
@@ -256,7 +295,9 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
       const operation = commandSummaryParts({ kind: "changeGold", op: command.op, amount: 0 })
         .find(part => part.tone.startsWith("op-"))?.text;
       const name = command.kind === "changeItem" ? itemName(command.itemId) : "소지금";
-      return `${name} ${amountName(command.amount, command.kind === "changeGold" ? "골드" : "개")} ${operation ?? "변경"}`;
+      const amount = amountName(command.amount, command.kind === "changeGold" ? "골드" : "개");
+      if (command.op === "=") return `${name} ${amount}${roJosa(amount)} 설정`;
+      return `${name} ${amount} ${operation ?? "변경"}`;
     }
     case "craftRecipe": {
       const recipe = project.system.craftRecipes?.find(row => row.id === command.recipeId);
@@ -275,9 +316,9 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
       return `${name} 열기 · ${details}`;
     }
     case "openChest": {
-      const summary = commandSummary({ ...command, chestId: undefined, displayName: safeName(command.displayName, "") })
-        .replace(": ", " 열기 · ");
-      return command.capacity === undefined ? summary : `${summary} · ${command.capacity}칸`;
+      const { capacity, displayName } = resolveStorageChest(command);
+      const name = safeName(displayName, "보관 상자");
+      return capacity === undefined ? `${name} 열기` : `${name} 열기 · ${capacity}칸`;
     }
     case "shop": {
       const name = safeName(command.title, "상점");
@@ -286,30 +327,45 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
       }
       if (typeof args.addItemId === "string") return `${name}에 ${itemName(args.addItemId)} 진열`;
       if (typeof args.removeItemId === "string") return `${name}에서 ${itemName(args.removeItemId)} 빼기`;
-      return commandSummary({ ...command, itemIds: command.stock?.map(row => row.itemId) ?? command.itemIds })
+      return commandSummary({ ...command, itemIds: [...new Set(command.stock?.map(row => row.itemId) ?? command.itemIds)] })
         .replace(/^상점: /u, () => `${name} 열기 · 상품 `).replace(/·(\d+)G$/u, " · 상인 소지금 $1골드");
     }
     case "inn": {
       // 숫자 요금과 회복·기상 표시는 기존 요약의 표현을 사용한다.
-      const details = commandSummary({ ...command, price: typeof command.price === "number" ? command.price : 0 })
-        .replace(": ", " 숙박 · ").replace(/(\d+)G/u, "$1골드").replace("HP만", "체력만 회복");
-      return typeof command.price === "number" ? details : details.replace("무료", amountName(command.price, "골드"));
+      const { price } = command;
+      const details = commandSummary({ ...command, price: typeof price === "number" ? price : 0 })
+        .replace(": ", " 숙박 · ").replace(/(\d+)G/u, "$1골드").replace("HP만", "체력만 회복")
+        .replace("부족분기", "골드가 모자랄 때 분기");
+      return typeof price === "number" ? details : details.replace("무료", () => `요금은 ${amountName(price, "골드")}`);
     }
   }
+}
+
+function pageWithInsertBranch(page: EventPage, branchPath: readonly number[]): EventPage {
+  if (branchPath.length === 0) return page;
+  const path = [...branchPath, 0];
+  if (resolveCommandListAtPath(page.commands, path)) return page;
+  const parent = resolveCommandAtPath(page.commands, branchPath.slice(0, -1));
+  // 켜져 있지만 배열이 아직 저장되지 않은 분기도 명령 목록에는 표시된다.
+  if (!parent || !eventCommandBranches(parent).some(branch => branch.branchIndex === branchPath.at(-1))) return page;
+  const commands = structuredClone(page.commands);
+  if (!resolveCommandListAtPath(commands, path, { missingBranches: "create" })) return page;
+  return { ...page, commands };
 }
 
 function createPrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
   const spec: { name: string; fields: Fields; required?: string[] } = specs[kind];
   const verb = mode === "insert" ? "추가" : "수정";
   function prepare(ctx: PrimitiveContext, args: Args) {
-    const { page } = scopedPage(ctx);
+    const { page: selectedPage } = scopedPage(ctx);
     const branch = (args.branchPath ?? []) as number[];
+    const page = mode === "insert" ? pageWithInsertBranch(selectedPage, branch) : selectedPage;
     const list = commandListAt(page, branch);
     const row = (args.index ?? list.length) as number;
     const index = [...branch, row];
     const current = mode === "insert" ? newCommand(kind) : list[row];
     if (current?.kind !== kind) throw new PrimitiveError(`선택한 줄에서 ${spec.name} 명령을 찾을 수 없습니다.`);
-    return { index, current, ...editedCommand(kind, current, args) };
+    return { page, index, ...editedCommand(current, mode, args) };
   }
   return {
     id: `cmd.${kind}.${mode}`,
@@ -323,14 +379,19 @@ function createPrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
       properties: {
         index: integer(mode === "insert" ? "앞에 삽입할 줄 번호. 첫 줄은 0이며, 생략하면 목록 끝에 추가합니다." : "수정할 줄 번호. 첫 줄은 0입니다."),
         branchPath: {
-          type: "array", description: "페이지 안에서 분기를 선택할 때 줄 번호와 분기 번호를 순서대로 나열합니다.",
-          items: { type: "integer" },
+          type: "array", description: "get_event에서 읽은 분기 경로입니다. 줄 번호와 분기 번호를 한 쌍씩 나열합니다. 분기 밖의 줄이면 생략합니다.",
+          items: { type: "integer", minimum: Number.MIN_SAFE_INTEGER, maximum: Number.MAX_SAFE_INTEGER },
         },
-        ...(mode === "update" ? { expectedHash: text("줄을 읽을 때 확인한 변경 확인값") } : {}),
+        ...(mode === "update" ? {
+          expectedHash: {
+            ...text("get_event에서 includeCommandHashes를 켜고 읽은 해당 줄의 변경 확인값(hash)입니다."),
+            minLength: 1,
+          },
+        } : {}),
         ...spec.fields,
         ...(mode === "update" && kind === "shop" ? updateShopFields : {}),
       },
-      required: mode === "insert" ? spec.required : ["index"],
+      required: mode === "insert" ? spec.required : ["index", "expectedHash"],
     },
     scope(ctx) {
       const { map, event, page } = scopedPage(ctx);
@@ -344,11 +405,14 @@ function createPrimitive(kind: Kind, mode: Mode): SmallTaskPrimitive {
       return `${detail.length > limit ? detail.slice(0, limit - 1) + "…" : detail}${suffix}`;
     },
     apply(ctx, args) {
-      const { index, current, patch, command } = prepare(ctx, args);
+      const { page, index, patch, command } = prepare(ctx, args);
+      if (mode === "update" && Object.keys(patch).length === 0) {
+        throw new PrimitiveError("고칠 내용을 하나 이상 입력해 주세요.");
+      }
       validateReferences(ctx.project, command, args);
       try {
-        return updateScopedPage(ctx, page => mode === "insert" ? insertEventCommand(page, index, command)
-          : updateEventCommand(page, index, patch, (args.expectedHash as string | undefined) ?? eventCommandHash(current)));
+        return updateScopedPage(ctx, () => mode === "insert" ? insertEventCommand(page, index, command)
+          : updateEventCommand(page, index, patch, args.expectedHash as string));
       } catch (error) {
         if (!(error instanceof EventCommandEditError)) throw error;
         if (error.code === "stale-event-command") throw new PrimitiveError(error.message);

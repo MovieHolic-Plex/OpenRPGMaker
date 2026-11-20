@@ -90,11 +90,11 @@
     "expectRefusal": true
   },
   {
-    "request": "보상금 오백 골드를 150골드로 올려 줘",
+    "request": "보상금 오백 골드를 150골드로 줄여 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"amount": 150, "index": 6},
+    "args": {"amount": 150, "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 150},
@@ -106,7 +106,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"op": "-=", "index": 6},
+    "args": {"op": "-=", "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "-="},
@@ -118,7 +118,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"amount": 0, "index": 6},
+    "args": {"amount": 0, "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 0}
@@ -129,7 +129,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"op": "=", "amount": 300, "index": 6},
+    "args": {"op": "=", "amount": 300, "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "="},
@@ -141,7 +141,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"amountVariableId": "var_0001", "index": 6},
+    "args": {"amountVariableId": "var_0001", "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": {"kind": "var", "id": "var_0001"}}
@@ -152,7 +152,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"op": "-=", "amount": 5, "index": 6},
+    "args": {"op": "-=", "amount": 5, "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "-="},
@@ -164,7 +164,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"amount": 1, "index": 6},
+    "args": {"amount": 1, "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expect": [
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
       {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 1}
@@ -175,7 +175,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
     "primitive": "cmd.changeGold.update",
-    "args": {"amountVariableId": "var_missing", "index": 6},
+    "args": {"amountVariableId": "var_missing", "index": 6, "expectedHash": "a2170f31cea477186814653299a95f07"},
     "expectRefusal": true
   },
   {
@@ -278,7 +278,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"amount": 3, "index": 6},
+    "args": {"amount": 3, "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "item_quill"},
@@ -290,7 +290,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"itemId": "item_ether", "index": 6},
+    "args": {"itemId": "item_ether", "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "item_ether"},
@@ -302,7 +302,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"itemId": "item_hi_potion", "amount": 2, "index": 6},
+    "args": {"itemId": "item_hi_potion", "amount": 2, "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "item_hi_potion"},
@@ -314,7 +314,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"op": "-=", "index": 6},
+    "args": {"op": "-=", "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].op", "equals": "-="},
@@ -326,7 +326,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"op": "=", "amount": 2, "index": 6},
+    "args": {"op": "=", "amount": 2, "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].op", "equals": "="},
@@ -338,7 +338,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"itemId": "equip_sword", "index": 6},
+    "args": {"itemId": "equip_sword", "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "equip_sword"},
@@ -350,7 +350,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"amountVariableId": "var_0001", "index": 6},
+    "args": {"amountVariableId": "var_0001", "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expect": [
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
       {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": {"kind": "var", "id": "var_0001"}}
@@ -361,7 +361,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
     "primitive": "cmd.changeItem.update",
-    "args": {"itemId": "item_missing", "index": 6},
+    "args": {"itemId": "item_missing", "index": 6, "expectedHash": "659b62ca00a399331f3d8bef52c157d3"},
     "expectRefusal": true
   },
   {
@@ -473,7 +473,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"recipeId": "recipe_clear_tonic", "index": 0},
+    "args": {"recipeId": "recipe_clear_tonic", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
@@ -486,7 +486,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"resultVariableId": "var_0002", "index": 0},
+    "args": {"resultVariableId": "var_0002", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
@@ -500,7 +500,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"recipeId": "recipe_clear_tonic", "index": 0},
+    "args": {"recipeId": "recipe_clear_tonic", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
@@ -514,7 +514,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "var_0002", "index": 0},
+    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "var_0002", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
@@ -528,7 +528,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"resultVariableId": "", "index": 0},
+    "args": {"resultVariableId": "", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "craftRecipe", "recipeId": "recipe_small_salve"}}
@@ -540,7 +540,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "", "index": 0},
+    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "craftRecipe", "recipeId": "recipe_clear_tonic"}}
@@ -552,7 +552,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"resultVariableId": "var_0002", "index": 0},
+    "args": {"resultVariableId": "var_0002", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
@@ -565,7 +565,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.craftRecipe.update",
-    "args": {"recipeId": "recipe_missing", "index": 0},
+    "args": {"recipeId": "recipe_missing", "index": 0, "expectedHash": "7083f29c70d5165d8530a11f126cee30"},
     "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expectRefusal": true
   },
@@ -678,7 +678,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"upgradeId": "upgrade_ether", "index": 0},
+    "args": {"upgradeId": "upgrade_ether", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
@@ -691,7 +691,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"resultVariableId": "var_0002", "index": 0},
+    "args": {"resultVariableId": "var_0002", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
@@ -704,7 +704,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"resultVariableId": "", "index": 0},
+    "args": {"resultVariableId": "", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion"}}
@@ -716,7 +716,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "var_0002", "index": 0},
+    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "var_0002", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
@@ -730,7 +730,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "", "index": 0},
+    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "applyItemUpgrade", "upgradeId": "upgrade_ether"}}
@@ -742,7 +742,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"resultVariableId": "var_0002", "index": 0},
+    "args": {"resultVariableId": "var_0002", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
@@ -756,7 +756,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"upgradeId": "upgrade_ether", "index": 0},
+    "args": {"upgradeId": "upgrade_ether", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
@@ -770,7 +770,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.applyItemUpgrade.update",
-    "args": {"resultVariableId": "var_missing", "index": 0},
+    "args": {"resultVariableId": "var_missing", "index": 0, "expectedHash": "1ff9ff5b397d3f4180be80fe2083e19d"},
     "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
     "expectRefusal": true
   },
@@ -864,7 +864,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "", "index": 0},
+    "args": {"itemId": "", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -877,7 +877,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "item_axe", "index": 0},
+    "args": {"itemId": "item_axe", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -890,7 +890,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "item_pickaxe", "index": 0},
+    "args": {"itemId": "item_pickaxe", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -903,7 +903,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "", "index": 0},
+    "args": {"itemId": "", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -916,7 +916,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "item_watering_can", "index": 0},
+    "args": {"itemId": "item_watering_can", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -929,7 +929,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "", "index": 0},
+    "args": {"itemId": "", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -942,7 +942,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "item_watering_can", "index": 0},
+    "args": {"itemId": "item_watering_can", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
@@ -955,7 +955,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.equipTool.update",
-    "args": {"itemId": "item_missing", "index": 0},
+    "args": {"itemId": "item_missing", "index": 0, "expectedHash": "f9fd347653b73d93bfc8016a6ff074d6"},
     "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
     "expectRefusal": true
   },
@@ -965,6 +965,8 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.insert",
     "args": {"title": "대장간"},
+    "setup": {"system":{"craftRecipes":[{"id":"recipe_small_salve","name":"회복약 조합","ingredients":[{"itemId":"item_ether","count":1}],"outputItemId":"item_potion"},{"id":"recipe_clear_tonic","name":"마력약 조합","ingredients":[{"itemId":"item_potion","count":1}],"outputItemId":"item_ether"}]}},
+    "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "대장간"}
@@ -976,6 +978,8 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.insert",
     "args": {},
+    "setup": {"system":{"craftRecipes":[{"id":"recipe_small_salve","name":"회복약 조합","ingredients":[{"itemId":"item_ether","count":1}],"outputItemId":"item_potion"},{"id":"recipe_clear_tonic","name":"마력약 조합","ingredients":[{"itemId":"item_potion","count":1}],"outputItemId":"item_ether"}]}},
+    "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"}
     ]
@@ -1013,6 +1017,8 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.insert",
     "args": {"speaker": "하늘이"},
+    "setup": {"system":{"craftRecipes":[{"id":"recipe_small_salve","name":"회복약 조합","ingredients":[{"itemId":"item_ether","count":1}],"outputItemId":"item_potion"},{"id":"recipe_clear_tonic","name":"마력약 조합","ingredients":[{"itemId":"item_potion","count":1}],"outputItemId":"item_ether"}]}},
+    "expectRefusal": true,
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].speaker", "equals": "하늘이"}
@@ -1059,7 +1065,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"title": "대장간", "index": 0},
+    "args": {"title": "대장간", "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1072,7 +1078,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"speaker": "하늘이", "index": 0},
+    "args": {"speaker": "하늘이", "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1085,7 +1091,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"recipeIds": ["recipe_clear_tonic"], "index": 0},
+    "args": {"recipeIds": ["recipe_clear_tonic"], "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1098,7 +1104,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"recipeIds": ["recipe_small_salve", "recipe_clear_tonic"], "index": 0},
+    "args": {"recipeIds": ["recipe_small_salve", "recipe_clear_tonic"], "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1111,7 +1117,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"recipeIds": ["recipe_clear_tonic", "recipe_small_salve"], "index": 0},
+    "args": {"recipeIds": ["recipe_clear_tonic", "recipe_small_salve"], "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1124,7 +1130,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"title": "조합대", "index": 0},
+    "args": {"title": "조합대", "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1137,7 +1143,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"speaker": "조합사", "index": 0},
+    "args": {"speaker": "조합사", "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
@@ -1151,7 +1157,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openCraftShop.update",
-    "args": {"recipeIds": ["recipe_missing"], "index": 0},
+    "args": {"recipeIds": ["recipe_missing"], "index": 0, "expectedHash": "09f8cf87d12c8800936f3332bdfa2794"},
     "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
     "expectRefusal": true
   },
@@ -1248,7 +1254,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"capacity": 20, "index": 0},
+    "args": {"capacity": 20, "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
@@ -1261,7 +1267,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"template": "vault", "goldVault": true, "index": 0},
+    "args": {"template": "vault", "goldVault": true, "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
@@ -1275,7 +1281,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"displayName": "모험가 창고", "index": 0},
+    "args": {"displayName": "모험가 창고", "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
@@ -1288,7 +1294,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"lockItemId": "", "index": 0},
+    "args": {"lockItemId": "", "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8}}
@@ -1300,7 +1306,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"lockSwitchId": "sw_0001", "index": 0},
+    "args": {"lockSwitchId": "sw_0001", "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
@@ -1313,7 +1319,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"layout": "bottom", "index": 0},
+    "args": {"layout": "bottom", "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
@@ -1326,7 +1332,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"allowSort": false, "allowBulk": true, "index": 0},
+    "args": {"allowSort": false, "allowBulk": true, "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
@@ -1340,7 +1346,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.openChest.update",
-    "args": {"lockItemId": "item_missing", "index": 0},
+    "args": {"lockItemId": "item_missing", "index": 0, "expectedHash": "b26c8cecced70523a7a0051772f3a4b9"},
     "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
     "expectRefusal": true
   },
@@ -1439,7 +1445,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"addItemId": "equip_sword", "index": 2},
+    "args": {"addItemId": "equip_sword", "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_antidote", "item_gen2_purifying_serum", "equip_sword"]}
@@ -1450,7 +1456,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"removeItemId": "item_hi_potion", "index": 2},
+    "args": {"removeItemId": "item_hi_potion", "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_antidote", "item_gen2_purifying_serum"]}
@@ -1461,7 +1467,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"itemIds": ["item_ether"], "index": 2},
+    "args": {"itemIds": ["item_ether"], "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_ether"]}
@@ -1472,7 +1478,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"title": "북문 무기점", "index": 2},
+    "args": {"title": "북문 무기점", "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].title", "equals": "북문 무기점"},
@@ -1484,7 +1490,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"merchantGold": 50, "index": 2},
+    "args": {"merchantGold": 50, "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].merchantGold", "equals": 50}
@@ -1495,7 +1501,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"allowSell": false, "shopType": "buyOnly", "index": 2},
+    "args": {"allowSell": false, "shopType": "buyOnly", "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].allowSell", "equals": false},
@@ -1507,7 +1513,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"removeItemId": "item_hi_potion", "addItemId": "item_old_key", "index": 2},
+    "args": {"removeItemId": "item_hi_potion", "addItemId": "item_old_key", "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_antidote", "item_gen2_purifying_serum", "item_old_key"]}
@@ -1518,7 +1524,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.shop.update",
-    "args": {"addItemId": "equip_missing", "index": 2},
+    "args": {"addItemId": "equip_missing", "index": 2, "expectedHash": "846d16754aafaee3fef156528138e008"},
     "expectRefusal": true
   },
   {
@@ -1613,7 +1619,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"price": 70, "index": 0},
+    "args": {"price": 70, "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1626,7 +1632,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"price": 0, "index": 0},
+    "args": {"price": 0, "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1639,7 +1645,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"recoverMp": false, "index": 0},
+    "args": {"recoverMp": false, "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1653,7 +1659,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"advanceToMorning": true, "index": 0},
+    "args": {"advanceToMorning": true, "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1666,7 +1672,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"priceVariableId": "var_0002", "index": 0},
+    "args": {"priceVariableId": "var_0002", "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1679,7 +1685,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"note": "어서 쉬어 가세요.", "index": 0},
+    "args": {"note": "어서 쉬어 가세요.", "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1692,7 +1698,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"wakeDurationMs": 1000, "index": 0},
+    "args": {"wakeDurationMs": 1000, "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
@@ -1705,8 +1711,48 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
     "primitive": "cmd.inn.update",
-    "args": {"priceVariableId": "var_missing", "index": 0},
+    "args": {"priceVariableId": "var_missing", "index": 0, "expectedHash": "ead71f31a123f007dc84359f29883a66"},
     "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "어느 줄인지 확인하지 말고 이 보상을 백 골드로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"index": 6, "amount": 100},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 진열돼 있지 않은 마력약을 가게에서 빼 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"index": 2, "expectedHash": "846d16754aafaee3fef156528138e008", "removeItemId": "item_ether"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이미 파는 상급 회복약을 한 번 더 진열해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"index": 2, "expectedHash": "846d16754aafaee3fef156528138e008", "addItemId": "item_hi_potion"},
+    "expectRefusal": true
+  },
+  {
+    "request": "제작법이 하나도 없는 상태에서 공방을 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"title": "빈 공방"},
+    "expectRefusal": true
+  },
+  {
+    "request": "정체불명 분류 물건만 넣을 수 있는 보관함 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"allowedItemTypes": ["unknown"]},
     "expectRefusal": true
   }
 ]
