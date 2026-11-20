@@ -7,6 +7,7 @@ dist/
 # 병렬 워크트리가 자습의 vite 옵토마이즈 캐시를 따로 쓸 때 생긴다(VITE_CACHE_DIR).
 .vite-cache/
 .vite/
+/.cache/
 # Repository-local agent state and generated/private material. These paths are intentionally kept outside the public source tree.
 /.infisical.json
 /.kiro/
