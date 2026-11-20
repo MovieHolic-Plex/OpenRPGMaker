@@ -18500,6 +18500,7 @@
 "선택한 대상에 요청한 변경을 적용할 수 없어요.":"The requested change can’t be applied to the selected target.",
 "작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.":"The project changed during the task. Submit your request again.",
 "편집 중인 이벤트를 찾을 수 없어요.":"The event being edited couldn’t be found.",
+"범위 밖: 작은 일에서는 이벤트를 다른 칸으로 옮길 수 없어요. 맵에서 이벤트를 직접 옮겨 주세요.":"Out of scope: To move the event to another cell, drag it on the map.",
 "{0} 항목 추가":"Added {0}",
 "{0} 항목 삭제":"Removed {0}",
 "{0} {1} 바뀜":"{0} {1} changed",

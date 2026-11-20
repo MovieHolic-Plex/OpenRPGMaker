@@ -40,6 +40,8 @@ Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 
 
 편집기는 `smallTask.draftSource`에 시작 시점의 열린 이벤트와 초안 원본을 싣는다. Pi 워커는 이 정보를 `runPrimitive(project, target, id, args, selection, live)`의 범위 및 참조 검사에 전달한다. 검사에 사용한 초안은 동작 결과에 추가되지 않는다.
 
+유닛 24의 `event.tile.create`가 선택한 한 칸에 이벤트를 추가하면 Pi는 `tileEvent` 검사를 통과한 추가분을 최종 `mapRegion` 검사의 기준에 반영한다. 최종 검사는 타일 변경의 범위와 새 이벤트의 보존을 확인한다. 읽기 전용 Pi 실행에는 쓰기 도구가 노출되지 않는다. 이벤트 삭제는 열린 초안이 참조하거나 진행 스위치로 의존하는 이벤트를 보호한다.
+
 ## 코퍼스와 화면 검수
 
 [코퍼스 규격](../harness-data/small-task-corpus/README.md)에 따라 유닛 파일을 작성한다. `test/smallTaskPrimitives/harness.ts`에서 원본 픽스처, 대상, 범위 거절, 문장, 실제 편집 기록 복원, 헤드리스 실행를 쓸 수 있다.
