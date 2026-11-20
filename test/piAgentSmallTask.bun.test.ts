@@ -9,7 +9,7 @@ import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/e
 import { createBlankProject } from "../src/project/defaults/blankProject.ts";
 import { eventCommandHash } from "../src/project/eventCommands/singleCommandOps.ts";
 import { layerTileAt } from "../src/project/mapLayers.ts";
-import type { Command, EventPage } from "../src/project/types.ts";
+import type { Command, EventPage, GameEvent } from "../src/project/types.ts";
 
 type Call = { name: string; args: Record<string, unknown> };
 type ModelContext = Parameters<StreamFn>[1];
@@ -106,6 +106,30 @@ test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", 
   expect(done.project).toBe(project);
 });
 
+test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조하는 출현 명령을 보호한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn = { id: "slimes", troopId: "troop_slime", area: { x: 1, y: 1, w: 1, h: 1 }, maxAlive: 1 };
+  const command: Command = { kind: "spawnFieldEnemy", spawn };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [command, ...commands] }];
+  const original = { id: "event_draft", x: 3, y: 3, trigger: event.trigger, commands: [] };
+  const draft: GameEvent = {
+    ...original,
+    commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.id }],
+    draft: { kind: "new", original },
+  };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const deletion = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
+    { streamFn: scripted([deletion]) });
+
+  expect(done.stoppedEarly).toContain("제거하는 명령");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+  const withoutDraft = await runPiAgent(request, { streamFn: scripted([deletion]) });
+  expect(withoutDraft.stoppedEarly).toBeUndefined();
+  expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
+});
+
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {
   const { request, project, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
@@ -182,9 +206,14 @@ test("작은 일 Pi 실행은 선택 영역이 있어도 제목을 바꾸고 영
   expect(renamed.project.meta.title).toBe(title);
   expect(renamed.project.maps[mapId]).toEqual(project.maps[mapId]);
 
-  const rejected = await runPiAgent(selected, { streamFn: scripted([changeTitle, {
-    name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x: 1, y: 0 }] },
-  }, apply("system.title", { title: "실행되면 안 되는 제목" })]) });
+  const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
+  const mixed = await runPiAgent(selected, { streamFn: scripted([paint(0), changeTitle]) });
+  expect(mixed.stoppedEarly).toBeUndefined();
+  expect(mixed.project.meta.title).toBe(title);
+  expect(layerTileAt(mixed.project.maps[mapId], 2, 0)).toBe(0);
+
+  const rejected = await runPiAgent(selected, { streamFn: scripted([changeTitle, paint(1),
+    apply("system.title", { title: "실행되면 안 되는 제목" })]) });
   expect(rejected.stoppedEarly).toContain("선택 영역 바깥 타일");
   expect(rejected.stats.toolCalls).toBe(2);
   expect(rejected.project).toBe(project);
