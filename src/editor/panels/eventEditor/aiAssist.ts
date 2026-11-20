@@ -463,6 +463,15 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       if (request.cancelled) throw new Error("중단했습니다.");
       if (!response.ok) throw new Error(response.error ?? "조수 실행에 실패했습니다.");
       const proposal = response.pendingProposal;
+      if (!proposal && response.runOutcome?.execution === "response-final" && response.runOutcome.delivery === "no-change" && response.lastAssistantText) {
+        state.staged = null;
+        state.status = response.lastAssistantText;
+        state.statusKind = "";
+        const activeDock = liveDock && liveDock.key === key ? liveDock : null;
+        activeDock?.setStatus(state.status);
+        activeDock?.renderStaged();
+        return;
+      }
       if (!proposal) throw new Error(response.lastAssistantText || "조수가 검토할 명령 초안을 만들지 못했습니다.");
       const scopeCheck = checkEventCommandScope(proposal.before, proposal.after, target);
       if (!scopeCheck.ok) throw new Error(scopeCheck.reason);
