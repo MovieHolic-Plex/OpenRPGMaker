@@ -2,9 +2,9 @@
 
 ## 기본 기물 카탈로그
 
-새 프로젝트와 불러온 버들항 칩셋 맵의 왼쪽 **기물**에서 `버들항 기본 기물`이나 이름으로 검색해 찍는다. 조수는 `list_tileset_objects({mapId, query:"버들항 기본 기물"})`의 id·크기·태그를 보고 `stamp_tileset_object`로 놓는다. `list_spatial_designs({kind:"object"})`와 `stamp_object`도 같은 구조 킷을 쓴다.
+새 프로젝트와 불러온 버들항 칩셋 맵의 왼쪽 **기물**에서 분류별 묶음을 펼쳐 찍거나 한국어 이름·ID·태그로 검색한다. 조수는 `list_tileset_objects({mapId, query:"버들항 기본 기물"})`의 id·크기·태그를 보고 `stamp_tileset_object`로 놓는다. `list_spatial_designs({kind:"object"})`와 `stamp_object`도 같은 구조 킷을 쓴다.
 
-`public/assets/beodeul-objects/catalog.json`이 독립 PNG, 통행표, 검색 태그, 출처의 정본이다. `src/project/defaults/beodeulPlaceableObjects.ts`에서 투명 빈 칸을 제외한 그림을 기존 버들항 칩셋 끝에 이식하고, 이미 저장한 칸은 같은 원본 그림을 찾아 재사용한다. 추가 절차는 [기물 README](../public/assets/beodeul-objects/README.md)에 있다.
+`public/assets/beodeul-objects/catalog.json`이 독립 PNG, 이름, 팔레트 그룹, 통행표, 검색 태그, 세트 소속, 출처의 정본이다. 같은 폴더의 `manifest.json`은 그룹 이름과 순서, 세트별 필수 조각을 정한다. `src/project/defaults/beodeulPlaceableObjects.ts`에서 투명 빈 칸을 제외한 그림을 기존 버들항 칩셋 끝에 이식하고, 이미 저장한 칸은 같은 원본 그림을 찾아 재사용한다. 추가 절차는 [기물 README](../public/assets/beodeul-objects/README.md)에 있다.
 
 ## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 
