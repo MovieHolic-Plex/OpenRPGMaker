@@ -137,9 +137,10 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 
 ## 조수에서도 이벤트 명령 생성기 사용 (2026-09-20)
 
-「AI로 명령 만들기」 버튼은 공용 조수 브리지·세션·턴 실행기로 들어간다. 호스트가
-현재 이벤트·페이지·선택 명령을 전달하고, 실행 가능한 도구와 쓰기 대상을 해당 페이지로
-제한한다. `event_command_assist`가 기존 생성/검증을 맡으며 모달 안에서 명령 diff를
+「AI로 명령 만들기」 버튼은 공용 조수 브리지·세션·턴 실행기로 들어간다. 오른쪽 대화창과
+대화 기록에는 입력한 요청 문장이 표시된다. 호스트는 현재 이벤트·페이지·선택 명령과
+페이지 명령 요약을 모델 요청의 시스템 메시지로 전달한다. 도크 요청은 대상 조회와 의도
+분류를 건너뛰고 `event_command_assist`만 호출할 수 있다. 이 도구가 기존 생성/검증을 맡으며 모달 안에서 명령 diff를
 검토하고 줄을 제외·수정한 뒤 기존 일괄 적용과 한 번 되돌리기를 사용한다.
 대상 페이지·추가 전용 모드·취소/오래된 결과 거부 계약은 `editor-ai-tools.md`의
 「이벤트 명령 AI 공용 도구」 절을 따른다.
@@ -624,6 +625,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - **resourceId 검증은 종류까지 본다 — 단, 그림 칸의 권위는 런타임 해석기다.** `io/commandReferenceValidation`은 전역 집합 소속만 보므로 `{"kind":"playAudio","resourceId":"tex_easyrpg_chipset_dungeon"}`가 통과해 **소리 없는 이벤트**로 출하됐다(자가수정 루프가 볼 오류가 아예 없었다). `parseAndValidate`의 `validateResourceSlots`가 얼굴·음악·효과음·동영상은 슬롯 집합으로, **그림은 `resolvePictureSource`(런타임과 같은 함수)로** 판정한다. 그림을 큐레이션 집합으로 판정하던 구현은 픽커가 권한 이미지 **164개**를 반려했다(실측 454개 중; `scarloxy-monster-icon-*`, `monster` 종류로 올린 업로드 등) — false accept 보다 나쁜 false reject 였다(자가수정 3회를 태우고 하드 실패한다). 해석기가 오디오 업로드를 거부하므로 종류 교차 보호는 그대로다: 오디오 업로드를 그림 칸에 쓰면 여전히 반려된다. 빈 문자열은 「얼굴 지우기」라 통과시킨다. 알려진 한계: `playMovie` 는 미등록 id 를 `/assets/movies/<id>.mp4` 로 폴백하므로(`playSceneMovies.ts:30-39`) 이론상 같은 false-reject 가 가능하지만, 동영상 슬롯이 비면 kind 자체가 빠져 오늘은 도달 불가다.
   - **transfer 는 런타임이 실제로 착지시키는 칸으로만 보낸다.** 맵 참조 목록에 `가로 W × 세로 H` 와 `밟을 수 있는 칸 예: x=… y=…`를 싣고, `parseAndValidate`가 맵 밖 좌표와 `isPassableLanding` 실패 좌표를 반려한다. 이 공용 판정은 `isPassable && 네 방향 중 canMove 하나 이상`이며 런타임 `nearestPassableTile`도 그대로 쓴다. 따라서 한 방향 비트만 열린 함정 칸을 AI 게이트가 허용한 뒤 런타임이 조용히 재배치하는 불일치가 없다. 착지 가능한 칸이 맵 전체에 하나도 없을 때만 기존 안전 밸브대로 반려하지 않는다. 실측: 같은 요청에서 `(0,0)`(벽) → `(10,7)`.
   - **생성 시작 목록이 낙관적 동시성 기준이다.** `aiAssist.ts`는 await 전에 `page.commands`를 직렬화하고, 완료 시 store의 같은 페이지를 다시 읽어 비교한다. 생성 중 사용자가 목록을 고쳤으면 초안을 만들지 않고 「명령 목록이 생성 중에 바뀌었어요」 오류와 재생성 안내만 남긴다. `liveDock`은 현재 같은 key의 도크에만 DOM 렌더를 보내며 페이지 전환·에디터 닫기 뒤에는 상태만 저장한다. 에디터 close 이벤트와 테스트 reset은 `liveDock`을 비워 분리된 DOM 클로저를 남기지 않는다.
+  - 「이대로 하기」는 `replaceAll`이 성공한 뒤 현재 도크에서 초안을 닫는다. 교체 중 오류가 나면 원인을 표시하고 검토한 초안과 줄 제외 상태를 보존한다.
   - **생성 버튼은 살아 있는 도크에서 풀어야 한다.** `finally`는 자기 클로저의 버튼과 `liveDock.setGenerating(false)`를 **모두** 호출한다. 생성 중 스토어가 갱신되면 클로저의 버튼은 이미 문서에서 떨어져 나간 옛 도크 것이고, 새 도크는 `statusKind === "busy"`를 보고 자기 버튼을 잠근 상태다. 상태 쓰기는 재렌더를 부르지 않으므로 여기서 직접 풀지 않으면 **다시 생성할 방법이 영구히 없어진다**(B2 가 다루던 바로 그 흔한 경로다). 가드: `test/eventCommandAssist.test.ts`의 「생성 중 재렌더 뒤에도 살아 있는 도크의 생성 버튼이 다시 활성된다」.
   - **실측 도구:** `scripts/event-ai-live-probe.mts` (`emit` / `run` / `score`) + `src/benchmark/eventAi/scenarios.ts` 12 시나리오. 도크 예시 버튼에 박힌 문장을 그대로 쓴다 — 앱이 스스로 권하는 문장이 실패하면 그게 제품 결함이다. 결과는 `reports/event-ai-probe/<run>/REPORT.md`.
   - 가드: `test/e2e/event-ai-dock-defects.spec.ts`(기본 보기 · 생성 중 재렌더), `test/eventCommandAssist.test.ts`(kind 노출 · 좌표 검증). 증거 스크린샷: `test/e2e/_event-ai-adv-shots.spec.ts` → `verify-shots/event-ai-adv/`.
