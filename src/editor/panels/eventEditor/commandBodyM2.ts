@@ -10,10 +10,13 @@ import { SCREEN_COLOR_OPTIONS } from "@/project/eventCommands/m2ModernCatalog";
 import { screenColorToRgb } from "@/player/interpreter/commandCatalog";
 import { isRecognizedTintValue } from "@/player/screen/tintModel";
 import { KOREAN_LABEL_BY_TITLE } from "@/project/eventCommands/m2CatalogData";
+import { seCueSpec } from "@/project/seCues";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
+import { isSystemBgmCue, SYSTEM_BGM_CUES, SYSTEM_SE_CUES } from "@/project/systemAudioOverrides";
 import type { Command, M2CommandValue, ResourceKind, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { switchVariablePicker } from "./switchVariablePicker";
 import { field as fieldRow } from "./dom";
 import type { CommandEditContext } from "./types";
@@ -41,6 +44,10 @@ const VEHICLE_OPTIONS = [
   { value: "raft", label: "뗏목" },
 ] as const;
 const PLAYER_OPTIONS = [{ value: "player", label: "주인공" }] as const;
+const SYSTEM_BGM_TARGET_LABELS = { field: "필드 기본곡", battle: "전투곡", victory: "전투 승리" } as const;
+const SYSTEM_BGM_TARGETS = (["field", ...SYSTEM_BGM_CUES] as const)
+  .map(value => ({ value, label: SYSTEM_BGM_TARGET_LABELS[value] }));
+const SYSTEM_SE_TARGETS = SYSTEM_SE_CUES.map(value => ({ value, label: seCueSpec(value)?.label ?? value }));
 
 export function renderM2CommandBody(context: CommandEditContext, cmd: Command): HTMLElement | undefined {
   if (cmd.kind !== "m2Command") return undefined;
@@ -106,8 +113,15 @@ function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Comm
     })
   );
 
-  for (const spec of entry.fields) {
-    wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value: cmd.fields[spec.key] ?? spec.defaultValue })));
+  const cueOptions = entry.title === "Change System BGM" ? SYSTEM_BGM_TARGETS
+    : entry.title === "Change System SE" ? SYSTEM_SE_TARGETS : undefined;
+  for (const field of entry.fields) {
+    const spec = cueOptions && cmd.fields.cue !== undefined && field.key === "slot"
+      ? { ...field, key: "cue", options: cueOptions }
+      : field;
+    const legacyResource = cueOptions && spec.key === "resourceId" ? cmd.fields.value : undefined;
+    const value = cmd.fields[spec.key] ?? legacyResource ?? spec.defaultValue;
+    wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value })));
   }
   if (entry.title === "Screen Effect") decorateScreenEffectBody(wrap);
   if (entry.title === "Particle Effect" || entry.title === "Sprite Look") decorateStagingTargetBody(wrap);
@@ -778,12 +792,14 @@ function recordPickerControl(request: RecordPickerRequest): HTMLElement {
 
 function optionsControl(request: OptionsControlRequest): HTMLSelectElement {
   const select = el("select", { attrs: { "aria-label": request.semantic.label }, dataset: { testid: `m2-command-${request.key}-option-select` } }) as HTMLSelectElement;
-  const legacyCue = request.key === "cue" && request.cmd.fields.cue === undefined
-    && (request.cmd.commandId === "m2-027-change-system-bgm" || request.cmd.commandId === "m2-028-change-system-se");
-  if (legacyCue) select.append(el("option", { text: "기존 메타데이터 (소리를 선택하면 적용)", attrs: { value: "", disabled: "" } }));
   for (const option of request.semantic.options) select.append(el("option", { text: option.label, attrs: { value: option.value } }));
-  select.value = legacyCue ? "" : request.value;
-  select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
+  let selected = request.value;
+  select.value = selected;
+  select.addEventListener("change", () => {
+    const value = select.value;
+    if (updateField(request.context, request.cmd, request.key, value)) selected = value;
+    else select.value = selected;
+  });
   return select;
 }
 
@@ -1023,16 +1039,28 @@ function resourceImageSize(
   return { ...(imageWidth !== undefined ? { imageWidth } : {}), ...(imageHeight !== undefined ? { imageHeight } : {}) };
 }
 
-function updateField(context: CommandEditContext, cmd: M2Command, key: string, value: M2CommandValue): void {
+function updateField(context: CommandEditContext, cmd: M2Command, key: string, value: M2CommandValue): boolean {
   const current = context.getCurrentCommand?.();
   const latest = current?.kind === "m2Command" && current.commandId === cmd.commandId ? current : cmd;
-  context.actions.replaceCommand(context.path, {
-    ...latest,
-    fields: {
-      ...latest.fields,
-      [key]: value,
-    },
-  });
+  const fields = { ...latest.fields, [key]: value };
+  if (latest.commandId === "m2-027-change-system-bgm" && key === "cue" && value === "field") {
+    if (isSystemBgmCue(latest.fields.cue) && (fields.operation ?? "set") === "set"
+      && !String(fields.resourceId ?? fields.value ?? "").trim()) {
+      toast("필드 기본곡은 무음으로 지정할 수 없습니다. 음악을 선택한 뒤 대상을 바꿔 주세요.", "error");
+      return false;
+    }
+    // Field music is a map BGM fallback and uses the system slot representation.
+    fields.slot = value;
+    if (fields.operation === "reset") {
+      fields.resourceId = "";
+      delete fields.value;
+    }
+    delete fields.cue;
+    delete fields.operation;
+    delete fields.volume;
+  }
+  context.actions.replaceCommand(context.path, { ...latest, fields });
+  return true;
 }
 
 function parseNumber(value: string): number {
