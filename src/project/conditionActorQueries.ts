@@ -223,7 +223,10 @@ export function evalActorQueryCondition(
       const blocks = condition.doorsBlock ? withDoorBlocker(options.blocksSight, events, pointOf) : options.blocksSight;
       const light = condition.darkness ? { night: timePhaseFor(session.gameTime) === "night", ambient: options.ambient?.() } : undefined;
       const ids = condition.eventId || !condition.watchers ? [condition.eventId] : sightWatcherIds(events, condition.watchers, locations, pointOf);
-      const seen = ids.some((id) => eventSeesPlayer(pointOf(id, condition.requireFacing !== false), { x: session.x, y: session.y }, condition, locations, blocks, light));
+      const player = { x: session.x, y: session.y };
+      const seen = ids.some((id) => eventSeesPlayer(
+        pointOf(id), player, condition, locations, blocks, light, () => pointOf(id, true)?.direction,
+      ));
       return seen === (condition.value !== false);
     }
     case "hiding":

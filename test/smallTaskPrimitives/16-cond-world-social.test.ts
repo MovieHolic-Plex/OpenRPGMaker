@@ -408,6 +408,39 @@ describe("실행 중 등장 조건 판정", () => {
     expect(view(at.eventId)?.pageId).toBe("pg_test_base");
   });
 
+  it("유효 시야 밖의 관찰자는 페이지를 평가하지 않고 소리만 듣는다", () => {
+    const at = fixture(blank);
+    const guard = at.project.maps[at.mapId]!.events[1]!;
+    const guardPage = guard.pages![0]!;
+    guardPage.graphic.direction = "left";
+    guardPage.conditions = [{ kind: "switch", switchId: "switch_sight_test", value: true }];
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      watcherName: guard.name, range: 3, nightRange: 1, hearRange: 2, sameRoom: false,
+    });
+    const map = after.maps[at.mapId]!;
+    const session = Object.assign(startSession(after, 7), { x: 1, y: 4, gameTime: { ...day, hour: 23 } });
+    let resolutions = 0;
+    session.switches = {
+      ...session.switches,
+      get switch_sight_test() {
+        resolutions++;
+        return true;
+      },
+    };
+    const positions = initialRuntimeEventPositions(map.events);
+    const activePage = () => runtimeEventViewById(after, map, session, positions, at.eventId)?.pageId;
+
+    expect(activePage()).toBe("pg_test_base");
+    session.x = 2;
+    expect(activePage()).toBe(PAGE);
+    expect(resolutions).toBe(0);
+
+    session.x = 1;
+    session.gameTime.hour = 13;
+    expect(activePage()).toBe(PAGE);
+    expect(resolutions).toBe(1);
+  });
+
   it("자기 시야를 조건으로 삼는 관찰자의 페이지도 판정한다", () => {
     const at = fixture(blank);
     getEvent(at.project, at).pages![0]!.graphic.direction = "right";
