@@ -65,11 +65,11 @@ function independentBattleCommand(project: Project, site: RefSite, catalog: NonN
     && (catalog.commonEventId === undefined || command.commonEventId != null));
 }
 
-// Only fields with an unambiguous collection can rule out a same-ID match.
-const COLLECTION_BY_ID_FIELD = new Map<string, keyof Project["database"]>([
-  ["itemId", "items"], ["stateId", "states"], ["skillId", "skills"],
-  ["actorId", "actors"], ["classId", "classes"], ["troopId", "troops"],
-  ["enemyId", "enemies"], ["elementId", "elements"],
+// Shared fields can address more than one collection, such as items and equipment in the inventory.
+const COLLECTIONS_BY_ID_FIELD = new Map<string, readonly (keyof Project["database"])[]>([
+  ["itemId", ["items", "equipment"]], ["stateId", ["states"]], ["skillId", ["skills", "lifeSkills"]],
+  ["actorId", ["actors"]], ["classId", ["classes"]], ["troopId", ["troops"]],
+  ["enemyId", ["enemies"]], ["elementId", ["elements"]],
 ]);
 
 export function removedDatabaseReference(
@@ -87,8 +87,8 @@ export function removedDatabaseReference(
       const { path, asKey } = site;
       if (!asKey && path[0] === "database" && path.length === 4 && path[3] === "id") return false;
       const field = path.at(-1);
-      const referencedCollection = !asKey && typeof field === "string" ? COLLECTION_BY_ID_FIELD.get(field) : undefined;
-      if (referencedCollection && referencedCollection !== collection) return false;
+      const referencedCollections = !asKey && typeof field === "string" ? COLLECTIONS_BY_ID_FIELD.get(field) : undefined;
+      if (referencedCollections && !referencedCollections.includes(collection)) return false;
       return !catalog || !independentBattleCommand(working, site, catalog);
     });
   })) return true;

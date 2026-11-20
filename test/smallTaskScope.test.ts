@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { checkSmallTaskScope, smallTaskScopeAllowsTool, type SmallTaskScope } from "@/ai/smallTaskScope";
-import { normalizeItemRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
+import { normalizeEquipmentRecord, normalizeItemRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { discardEventDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { setLayerTileAt, setShadowAt } from "@/project/mapLayers";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import type { Command, EventPage, GameEvent, HomeDecorationTypeRecord, Project } from "@/project/types";
 
 const town = "town";
@@ -230,6 +231,24 @@ describe("작은 일 범위 검사", () => {
     const deleteItem = { kind: "dbRemove", collection: "items", id: "potion" } as const;
     expect(verify(deleteState, p => { p.database.states.pop(); }, before)).toEqual({ ok: true });
     expect(verify(deleteItem, p => { p.database.items.shift(); }, before))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
+  it("소지품 명령의 itemId가 가리키는 장비의 삭제를 막는다", () => {
+    const before = structuredClone(base);
+    const id = "event-reward-sword";
+    before.database.equipment.push(normalizeEquipmentRecord({ id, name: "보상 검" }));
+    page(before).commands.push({ kind: "changeItem", itemId: id, op: "+=", amount: 1 });
+    expect(verify({ kind: "dbRemove", collection: "equipment", id }, p => { p.database.equipment.pop(); }, before))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
+  it("생활 경험치 명령의 skillId가 가리키는 생활 스킬의 삭제를 막는다", () => {
+    const before = structuredClone(base);
+    const id = "event-cooking";
+    before.database.lifeSkills = [normalizeLifeSkillRecord({ id, name: "요리" })];
+    page(before).commands.push({ kind: "changeLifeSkillExp", skillId: id, op: "+=", amount: 1 });
+    expect(verify({ kind: "dbRemove", collection: "lifeSkills", id }, p => { p.database.lifeSkills = []; }, before))
       .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
   });
 

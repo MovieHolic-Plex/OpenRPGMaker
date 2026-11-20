@@ -32,6 +32,8 @@
 | `newMap` | 새 맵 한 장과 목록의 항목 하나. 호스트가 지정한 `sourceMapId`가 있으면 그 출발 맵과 새 맵 사이의 새 연결 하나 |
 | `projectArea` | `quests`, `switches`, `variables`, `commonEvents`, `endings`에서 `ids`에 지정한 기존 항목과 `create` 한도까지의 새 항목. `system`은 `ids`에 지정한 시스템 필드를 허용하며 `title`, `startGold`, `startParty`로 이름과 시작 상태의 대응 필드를 고를 수 있다 |
 
+자료집 삭제 검사에서 `itemId`는 아이템과 장비, `skillId`는 전투 스킬과 생활 스킬의 참조를 보호한다.
+
 범위 밖 변경은 한국어 이유와 「범위 밖」 줄로 반환한다. `runPrimitive(project, target, id, args, selection?)`은 적용한 프로젝트, 동작 문장, 변경 요약을 반환한다. 호출자가 저장 여부를 결정한다. 자료집 대상 타입은 프로젝트 자료집 컬렉션을 사용한다. 각 자료집 화면이 어떤 레코드에서 작은 일 버튼을 제공하는지는 화면이 정한다.
 
 Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 `mapRegion` 범위로 검사한다. 기존 `paint_tiles`를 비롯한 도구가 범위 밖을 바꾸면 턴의 변경을 폐기한다. 개발 및 테스트에서 `runPrimitive`는 기준 프로젝트의 중첩 데이터를 동결해 제자리 수정을 즉시 검출한다. 배포 실행에서는 동작이 바꾸는 경로만 복사한다.
