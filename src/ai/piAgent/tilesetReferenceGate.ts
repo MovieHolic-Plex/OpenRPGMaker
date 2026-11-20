@@ -73,6 +73,10 @@ export class PiTilesetReferenceGate {
     };
     visit(value);
   }
+  /** OpenAI 호환 재시도가 이미지 자리를 글로 바꿔도 도구 결과의 글은 그대로 전달된다. */
+  omitPayloadImages(): void {
+    this.outgoingImages.clear();
+  }
   complete(success: boolean): void {
     if (success) {
       this.outgoingResults.forEach(result => this.evidence.observe(result));

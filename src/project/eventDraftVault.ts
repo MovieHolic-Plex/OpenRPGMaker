@@ -1,4 +1,4 @@
-import { eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
+import { eventDraftHasUserChanges, eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
@@ -209,7 +209,11 @@ export function applyEventDraftVault(project: Project): Project {
  * Live in-flight editor edits win; vault covers drafts missing from `live`
  * (e.g. after a remote snapshot already wiped them).
  */
-export function preserveEventDraftsOnProject(incoming: Project, live: Project): Project {
+export function preserveEventDraftsOnProject(
+  incoming: Project,
+  live: Project,
+  refreshCleanDrafts: readonly { readonly mapId: MapId; readonly eventId: string }[] = [],
+): Project {
   // Refresh vault from live first so in-flight editor edits win over stale vault rows.
   for (const [mapId, map] of Object.entries(live.maps)) {
     for (const event of liveDrafts(map.events)) {
@@ -217,11 +221,15 @@ export function preserveEventDraftsOnProject(incoming: Project, live: Project): 
       rememberEventDraftVaultEntry(mapId, event);
     }
   }
-  const withLiveDrafts = projectWithLiveDrafts(incoming, live);
+  const withLiveDrafts = projectWithLiveDrafts(incoming, live, refreshCleanDrafts);
   return applyEventDraftVault(withLiveDrafts);
 }
 
-function projectWithLiveDrafts(incoming: Project, live: Project): Project {
+function projectWithLiveDrafts(
+  incoming: Project,
+  live: Project,
+  refreshCleanDrafts: readonly { readonly mapId: MapId; readonly eventId: string }[],
+): Project {
   const next = cloneKeepingDigests(incoming);
   for (const [mapId, liveMap] of Object.entries(live.maps)) {
     const targetMap = next.maps[mapId];
@@ -237,6 +245,14 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
             ? "remote-change"
             : undefined
         : undefined;
+      if (incoming && !incoming.draft && conflict === "remote-change" && !liveEvent.draft.conflict
+        && refreshCleanDrafts.some(event => event.mapId === mapId && event.eventId === liveEvent.id)
+        && !eventDraftHasUserChanges(live, mapId, liveEvent.id)) {
+        const updated = { ...incoming, draft: { ...liveEvent.draft, original: eventWithoutDraft(incoming) } };
+        targetMap.events[index] = updated;
+        rememberEventDraftVaultEntry(mapId, updated);
+        continue;
+      }
       const preserved = structuredClone(liveEvent);
       if (conflict && preserved.draft) {
         preserved.draft = { ...preserved.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
