@@ -349,7 +349,7 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
   const outside = await runPiAgent(selectedRequest, { streamFn: scripted([paint(0), paint(1)]) });
   expect(outside.stoppedEarly).toContain("선택 영역 바깥 타일");
-  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 0 });
+  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 1 });
   expect(outside.changedKeys).toEqual([]);
   expect(outside.project).toBe(project);
   expect(layerTileAt(project.maps[mapId], 2, 0)).toBe(-1);
@@ -360,6 +360,38 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   expect(inside.changedKeys).toEqual([`maps.${mapId}`]);
   expect(layerTileAt(inside.project.maps[mapId], 2, 0)).toBe(0);
   expect(layerTileAt(inside.project.maps[mapId], 2, 1)).toBe(-1);
+});
+
+test("작은 일 Pi 실행은 선택 영역이 있어도 제목을 바꾸고 영역 밖 타일 변경이 섞이면 모두 폐기한다", async () => {
+  const { request, project, mapId } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const selection = { rect: { x: 0, y: 0, w: 1, h: 1 } };
+  const selected = { ...request, smallTask: { ...request.smallTask, target, selection } };
+  const title = "달빛 아래 마을";
+  const changeTitle = apply("system.title", { title });
+  const renamed = await runPiAgent(selected, { streamFn: scripted([changeTitle]) });
+  expect(renamed.stoppedEarly).toBeUndefined();
+  expect(renamed.project.meta.title).toBe(title);
+  expect(renamed.project.maps[mapId]).toEqual(project.maps[mapId]);
+
+  const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
+  const mixed = await runPiAgent(selected, { streamFn: scripted([paint(0), changeTitle]) });
+  expect(mixed.stoppedEarly).toBeUndefined();
+  expect(mixed.project.meta.title).toBe(title);
+  expect(layerTileAt(mixed.project.maps[mapId], 2, 0)).toBe(0);
+
+  const createEvent = apply("event.tile.create", { name: "새 안내인" });
+  const mixedWithEvent = await runPiAgent(selected, { streamFn: scripted([createEvent, paint(0), changeTitle]) });
+  expect(mixedWithEvent.stoppedEarly).toBeUndefined();
+  expect(mixedWithEvent.project.meta.title).toBe(title);
+  expect(mixedWithEvent.project.maps[mapId].events.at(-1)).toMatchObject({ name: "새 안내인", x: 0, y: 0 });
+  expect(layerTileAt(mixedWithEvent.project.maps[mapId], 2, 0)).toBe(0);
+
+  const rejected = await runPiAgent(selected, { streamFn: scripted([changeTitle, paint(1),
+    apply("system.title", { title: "실행되면 안 되는 제목" })]) });
+  expect(rejected.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(rejected.stats.toolCalls).toBe(2);
+  expect(rejected.project).toBe(project);
 });
 
 test("유닛 24는 선택한 칸에 이벤트를 만들고 영역 밖 타일 변경이 있으면 전체 작업을 취소한다", async () => {

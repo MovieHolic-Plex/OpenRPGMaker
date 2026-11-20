@@ -507,7 +507,24 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         refuse(refusal);
         throw new Error(refusal);
       }
-      return tool.execute(id, args, toolSignal ?? signal);
+      const before = ctx.project;
+      const response = await tool.execute(id, args, toolSignal ?? signal);
+      if (regionScope && ctx.project !== before) {
+        const primitive = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string"
+          ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(args.id) : undefined;
+        if (primitive?.unit === "28-project-data") {
+          // Keep the map and tileset baseline, including any checked tile-event additions.
+          regionBaseline = { ...ctx.project, maps: regionBaseline.maps, tilesets: regionBaseline.tilesets };
+        } else if (primitive?.id !== "event.tile.create") {
+          const result = checkSmallTaskScope(before, ctx.project, regionScope, draftSource);
+          if (!result.ok) {
+            ctx.project = before;
+            refuse(result.reason);
+            throw new Error(result.reason);
+          }
+        }
+      }
+      return response;
     },
   }));
   const resolveFallbackTool = () => refuse(SMALL_TASK_SCOPE_REFUSAL);
