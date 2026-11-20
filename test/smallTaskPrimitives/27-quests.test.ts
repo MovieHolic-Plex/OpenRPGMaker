@@ -105,6 +105,15 @@ describe("퀘스트 원시 기능", () => {
     await expectUndoRestores(before, after, target);
   });
 
+  it("긴 이모지 제목이 있어도 목표 수정 설명은 서로게이트를 끊지 않고 80자 안에 담는다", () => {
+    const { before, target, quest } = blank();
+    const project = { ...before, quests: [{ ...quest, title: "🌨".repeat(40) }] };
+    const { sentence } = runPrimitive(project, target, "quest.objective.update", { step: 1, label: "우물 살피기" });
+    textHasNoIds(sentence);
+    expect(sentence).not.toMatch(/[\uD800-\uDFFF]/u);
+    expect(sentence).toContain("…」 정의의 1번 목표를 수정합니다.");
+  });
+
   it("마왕 예제에서는 선택한 맵의 기존 이벤트에만 새 정의를 등록한다", async () => {
     const before = loadFixture("maou");
     ensureSwitchVariableSlots(before);
@@ -436,6 +445,27 @@ describe("퀘스트 원시 기능", () => {
     expect(() => runPrimitive(project, target, "quest.objective.remove", { step: 2 }, undefined, progressDraft)).toThrow(/진행 스위치/u);
   });
 
+  it("다른 이벤트의 열린 초안에 단계 진행 쓰기가 있으면 목표 추가와 교체를 거절한다", () => {
+    const { before, target, event, objective, quest } = blank();
+    const draftQuest = { ...quest, key: "draft_well" };
+    const project = { ...before, quests: [draftQuest] };
+    const switchId = questFlagIds(draftQuest.key, 2).stepSwitches[1];
+    const progress: Command = { kind: "setSwitch", switchId, value: true };
+    const draft: GameEvent = { ...event, id: "ev_draft", pages: [], commands: [progress], draft: { kind: "new" } };
+    const live = { maps: { [target.mapId]: { events: [draft] } } };
+    const replacement = { ...objective, x: 4 };
+    expect(runPrimitive(project, target, "quest.objective.add", { objective: replacement }).after.quests)
+      .toMatchObject([{ steps: [...draftQuest.steps, replacement] }]);
+    expect(runPrimitive(project, target, "quest.objective.update", { step: 2, objective: replacement }).after.quests)
+      .toMatchObject([{ steps: [draftQuest.steps[0], replacement] }]);
+    expect(() => runPrimitive(project, target, "quest.objective.add", { objective: replacement }, undefined, live))
+      .toThrow(/플레이에 연결된 퀘스트에 목표를 추가/u);
+    expect(() => runPrimitive(project, target, "quest.objective.update", { step: 2, objective: replacement }, undefined, live))
+      .toThrow(/플레이에 연결된 목표를 교체/u);
+    expect(runPrimitive(project, target, "quest.objective.update", { step: 2, label: "새 문구" }, undefined, live).after.quests)
+      .toMatchObject([{ steps: [draftQuest.steps[0], { ...draftQuest.steps[1], label: "새 문구" }] }]);
+  });
+
   it("열린 이벤트 초안의 목표 명령에 등장하는 퀘스트 ID를 재사용하지 않는다", () => {
     const { before, target, event, objective } = blank();
     const command: Command = { kind: "m2Command", commandId: "m2-208-quest-objective", fields: { questId: "quest_2", objectiveId: "well" } };
@@ -572,6 +602,25 @@ describe("그래프 목표의 연결", () => {
       target, "quest.objective.update", args)).toThrow(/이벤트에서 값을 기록/u);
     expect(() => runPrimitive(offProject, target, "quest.objective.add", { label: "우물 확인", switchId: otherFlag }))
       .toThrow(/이벤트에서 값을 기록/u);
+  });
+
+  it("같은 완료 스위치를 다시 지정해도 이야기 플래그 연결을 보존한다", () => {
+    const { project, target, quest, otherFlag } = branched();
+    const switchId = "sw_quest_1_step0";
+    const flagId = "well_done";
+    const completesWhen = { kind: "storyFlag" as const, flagId, value: true };
+    const before = {
+      ...project,
+      storyFlags: [{ id: flagId, kind: "switch" as const, targetId: switchId, description: "우물 확인 완료" }],
+      quests: [{ ...quest, nodes: [quest.nodes[0], { ...quest.nodes[1], completesWhen }, ...quest.nodes.slice(2)] }],
+    };
+    const label = "우물에 다녀오기";
+    const { after } = runPrimitive(before, target, "quest.objective.update", { step: 2, label, switchId });
+    expect(after.quests).toMatchObject([{ nodes: [quest.nodes[0], { description: label, completesWhen }, ...quest.nodes.slice(2)] }]);
+    const changed = runPrimitive(before, target, "quest.objective.update", { step: 2, switchId: otherFlag });
+    expect(changed.after.quests).toMatchObject([{ nodes: [quest.nodes[0], {
+      completesWhen: { kind: "switch", switchId: otherFlag, value: true },
+    }, ...quest.nodes.slice(2)] }]);
   });
 
   it("선택한 이벤트의 초안을 취소한 뒤에도 남는 완료 스위치 쓰기만 인정한다", () => {

@@ -80,8 +80,7 @@ function schema(description: string, properties: Record<string, JsonSchema>, req
 
 function preview(value: unknown, fallback: string): string {
   const safe = typeof value === "string" ? displayText(value.replace(/[{}\[\]「」]/gu, " "), fallback) : fallback;
-  const chars = Array.from(safe);
-  return chars.length > 32 ? chars.slice(0, 31).join("") + "…" : safe;
+  return safe.length > 32 ? safe.slice(0, 31).replace(/[\uD800-\uDBFF]$/u, "") + "…" : safe;
 }
 
 function requiredText(value: unknown, reason: string): string {
@@ -381,9 +380,8 @@ function validateGraph(project: Project, quest: QuestGraphDef): QuestGraphDef {
   return quest;
 }
 
-function switchCondition(ctx: PrimitiveContext, args: Args, value = true) {
+function switchCondition(ctx: PrimitiveContext, switchId: string, value = true) {
   const { working, saved } = questEventViews(ctx);
-  const switchId = requiredText(args.switchId, "목표를 완료할 스위치를 골라 주세요.");
   if (!ctx.project.switches.some(entry => entry.id === switchId)) throw new PrimitiveError("목표를 완료할 스위치를 찾을 수 없어요.");
   const condition = { kind: "switch" as const, targetId: switchId, value };
   for (const view of new Set([working, saved])) {
@@ -404,7 +402,8 @@ function replaceGraphSwitch(ctx: PrimitiveContext, expression: QuestGraphConditi
     throw new PrimitiveError("현재 목표의 완료 조건을 자료집에서 먼저 확인해 주세요.");
   }
   if (previous.kind !== "switch") throw new PrimitiveError("스위치로 완료되는 목표에서만 완료 스위치를 바꿀 수 있어요.");
-  return switchCondition(ctx, args, previous.value);
+  const switchId = requiredText(args.switchId, "목표를 완료할 스위치를 골라 주세요.");
+  return switchId === previous.targetId ? expression : switchCondition(ctx, switchId, previous.value);
 }
 
 function assertSameGraphGiver(project: Project, previous: QuestGraphDef, updated: QuestGraphDef) {
@@ -450,7 +449,7 @@ function appendObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args):
     const node = {
       id: `step_${number}`,
       description: requiredText(args.label, "추가할 목표 문구를 입력해 주세요."),
-      completesWhen: switchCondition(ctx, args),
+      completesWhen: switchCondition(ctx, requiredText(args.switchId, "목표를 완료할 스위치를 골라 주세요.")),
     };
     const outgoing = new Set(quest.edges.map(edge => edge.from));
     const tails = quest.nodes.filter(previous => !outgoing.has(previous.id));
@@ -464,7 +463,7 @@ function appendObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args):
   }
   const updated = parseStepDef(withSteps(quest, [...quest.steps, structuredClone(args.objective) as QuestStep]));
   validateStepDef(project, updated, quest);
-  if (questProgressUses(project, quest.key)) {
+  if (questReferenceViews(ctx).some(view => questProgressUses(view, quest.key))) {
     throw new PrimitiveError("범위 밖: 플레이에 연결된 퀘스트에 목표를 추가하려면 완료 이벤트도 함께 바꿔야 해요.");
   }
   return updated;
@@ -504,7 +503,8 @@ function updateObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args):
   const { label: oldLabel, ...oldObjective } = quest.steps[index];
   const { label: newLabel, ...newObjective } = updated.steps[index];
   if (oldLabel !== newLabel) assertNoTextProposal(project, quest, `step${index}`);
-  if (!jsonEqual(oldObjective, newObjective) && questProgressUses(project, quest.key, step => step === index)) {
+  if (!jsonEqual(oldObjective, newObjective)
+    && questReferenceViews(ctx).some(view => questProgressUses(view, quest.key, step => step === index))) {
     throw new PrimitiveError("범위 밖: 플레이에 연결된 목표를 교체하려면 해당 이벤트도 함께 바꿔야 해요. 일지에 표시할 문구는 바꿀 수 있어요.");
   }
   return updated;
