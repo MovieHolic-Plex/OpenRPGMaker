@@ -397,7 +397,6 @@
 }
 .database-modal-backdrop .db-equipment-slot-manager .db-eq-grid.db-equipment-slot-row {
   grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 4px 8px;
 }
 .database-modal-backdrop .db-equipment-slot-manager input {
   min-width: 0;
