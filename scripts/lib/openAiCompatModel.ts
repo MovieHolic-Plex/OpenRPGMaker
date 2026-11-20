@@ -116,7 +116,7 @@ function withImageInput<M extends { id: string }>(endpoint: OpenAiCompatWorkerEn
  * 전송용 fetch. 리다이렉트를 따라가지 않고(호스트가 검증한 주소 밖으로 자격이 새는 길을 닫는다),
  * 요청 직전에 호스트가 메타데이터·링크로컬이 아닌지 다시 본다. 사용자가 고른 주소의 호스트만 받는다.
  */
-export function guardedOpenAiCompatFetch(base: typeof fetch = fetch): typeof fetch {
+export function guardedOpenAiCompatFetch(base: typeof fetch = fetch, onReplyWithoutImages?: () => void): typeof fetch {
   return (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
     const raw = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request).url;
     const check = checkOpenAiCompatBaseUrl(raw);
@@ -152,7 +152,10 @@ export function guardedOpenAiCompatFetch(base: typeof fetch = fetch): typeof fet
       const retry = await send(stripped);
       if (!retry.ok) return retry;
       const second = await inspectChatReply(retry);
-      if (!second.empty) return second.response;
+      if (!second.empty) {
+        onReplyWithoutImages?.();
+        return second.response;
+      }
     }
     return emptyReplyResponse(stripped !== null);
   }) as typeof fetch;
