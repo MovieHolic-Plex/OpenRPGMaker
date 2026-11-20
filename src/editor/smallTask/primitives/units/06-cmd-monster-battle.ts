@@ -256,27 +256,30 @@ function referencesSpawn(project: Project, map: GameMap, spawnId: string, eventI
   ]);
 }
 
-function* spawnCommandsOnMap(project: Project, map: GameMap) {
+type SpawnScan = "authored" | "active";
+
+function* spawnCommandsOnMap(project: Project, map: GameMap, scan: SpawnScan = "authored") {
   for (const event of map.events) {
-    yield* spawnCommands(event.commands);
-    for (const page of event.pages ?? []) yield* spawnCommands(page.commands);
+    yield* spawnCommands(event.commands, scan);
+    for (const page of event.pages ?? []) yield* spawnCommands(page.commands, scan);
     if (event.draft?.kind === "edit" && event.draft.original) {
-      yield* spawnCommands(event.draft.original.commands);
-      for (const page of event.draft.original.pages ?? []) yield* spawnCommands(page.commands);
+      yield* spawnCommands(event.draft.original.commands, scan);
+      for (const page of event.draft.original.pages ?? []) yield* spawnCommands(page.commands, scan);
     }
   }
-  for (const event of project.commonEvents) yield* spawnCommands(event.commands);
+  for (const event of project.commonEvents) yield* spawnCommands(event.commands, scan);
   for (const troop of project.database.troops) {
-    for (const { commands } of troopAfterBattleLists(troop)) yield* spawnCommands(commands);
+    for (const { commands } of troopAfterBattleLists(troop)) yield* spawnCommands(commands, scan);
   }
 }
 
 type SpawnCommand = Extract<BattleCommand, { kind: "spawnFieldEnemy" | "despawnFieldEnemy" }>;
 
-function* spawnCommands(commands: readonly Command[]): Generator<SpawnCommand> {
+function* spawnCommands(commands: readonly Command[], scan: SpawnScan = "authored"): Generator<SpawnCommand> {
   for (const command of commands) {
     if (command.kind === "spawnFieldEnemy" || command.kind === "despawnFieldEnemy") yield command;
-    for (const branch of nestedCommandLists(command)) yield* spawnCommands(branch);
+    if (scan === "active" && command.kind === "battleProcessing" && command.branchOnResult !== true) continue;
+    for (const branch of nestedCommandLists(command)) yield* spawnCommands(branch, scan);
   }
 }
 
@@ -299,7 +302,7 @@ function battlePagesReferenceSpawn(project: Project, id: string): boolean {
 function findPossibleSpawn(project: Project, map: GameMap, id: string): FieldSpawnDef | undefined {
   const existing = map.fieldSpawns?.find(spawn => spawn.id === id);
   if (existing) return existing;
-  for (const command of spawnCommandsOnMap(project, map)) {
+  for (const command of spawnCommandsOnMap(project, map, "active")) {
     if (command.kind === "spawnFieldEnemy" && command.spawn.id === id) return command.spawn;
   }
   return undefined;

@@ -586,6 +586,30 @@ it("부대의 전투 뒤 출현은 제거할 수 있고 전투 중 출현은 거
   expect(() => runPrimitive(duringBattle, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
 });
 
+it("꺼진 결과 분기 안에서만 출현하는 적은 제거 대상으로 쓰지 못한다", () => {
+  const { project, target } = fixture("blank", [
+    { kind: "battleProcessing", troopId: TROOP, branchOnResult: false, victoryBranch: [dynamicSpawn] },
+  ]);
+  const args = { spawnId: dynamicSpawn.spawn.id };
+  expect(() => runPrimitive(project, target, "cmd.despawnFieldEnemy.insert", args)).toThrow(/제거할 적 무리의 출현/u);
+
+  const enabled = runPrimitive(project, target, "cmd.battleProcessing.update", {
+    index: 1, expectedHash: eventCommandHash(stored(project)[1]!), branchOnResult: true,
+  }).after;
+  const { after } = runPrimitive(enabled, target, "cmd.despawnFieldEnemy.insert", args);
+  expect(stored(after).at(-1)).toEqual({ kind: "despawnFieldEnemy", ...args });
+});
+
+it("꺼진 결과 분기에서 가리키는 출현 이름을 유지한다", () => {
+  const { project, target } = fixture("blank", [dynamicSpawn, {
+    kind: "battleProcessing", troopId: TROOP, branchOnResult: false,
+    victoryBranch: [{ kind: "despawnFieldEnemy", spawnId: dynamicSpawn.spawn.id }],
+  }]);
+  expect(() => runPrimitive(project, target, "cmd.spawnFieldEnemy.update", {
+    index: 1, expectedHash: eventCommandHash(dynamicSpawn), spawnId: "spawn_renamed",
+  })).toThrow(/이 출현 이름을 쓰는 명령이나 조건/u);
+});
+
 it("이름 있는 구역을 지울 때만 직접 지정한 영역으로 바꾼다", () => {
   const anchored = { ...dynamicSpawn, spawn: { ...dynamicSpawn.spawn, locationId: "loc_trial" } };
   const { project, target } = fixture("blank", [anchored]);
