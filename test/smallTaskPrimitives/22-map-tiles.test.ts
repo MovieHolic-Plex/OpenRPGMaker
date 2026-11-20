@@ -13,7 +13,8 @@ import ja from "@/i18n/catalogs/ja.json";
 import zh from "@/i18n/catalogs/zh.json";
 import { createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
-import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureBundledTilesets, removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createSnowNorthTileset } from "@/project/defaults/snowNorth";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { canMove, isPassableLanding } from "@/project/collision";
@@ -37,8 +38,14 @@ const fixtures = new Map<Fixture, Project>();
 const rect = (x: number, y: number, w = 1, h = 1): Rect => ({ x, y, w, h });
 
 function fixture(name: Fixture, mapId?: string): { project: Project; map: GameMap } {
-  const project = fixtures.get(name) ?? loadFixture(name);
-  fixtures.set(name, project);
+  let project = fixtures.get(name);
+  if (!project) {
+    project = loadFixture(name);
+    // Apply the store's normalization before runPrimitive freezes the fixture.
+    ensureSwitchVariableSlots(project);
+    removeLegacySpriteReferences(project);
+    fixtures.set(name, project);
+  }
   const map = project.maps[mapId ?? project.startMapId];
   if (!map && name === "blank") {
     const blank = { ...createBlankMap("빈 맵", 20, 15), id: "map_blank_start" };
@@ -558,7 +565,7 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
     const { project, map, tileset } = customFixture(3);
     tileset.structureKits = [{
       kind: "section", id: "sign", name: "바닥에 붙인 표지", tileSize: map.tileSize, width: 1, height: 1,
-      rows: [{ tiles: [0], upperTiles: [2] }], learnedFrom: "test", createdAt: "2026-11-20T00:00:00Z",
+      rows: [{ tiles: [0], upperTiles: [2] }], learnedFrom: "db-authored", createdAt: "2026-11-20T00:00:00Z",
     }];
     expect(() => execute(project, map, "map.object.stamp", { objectId: "sign" }, rect(0, 0)))
       .toThrow("다른 타일이나 통행에 영향이 있어요.");
@@ -616,10 +623,12 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
     expect(() => execute(project, map, "map.tile.paint", { x: 6, y: 5, tile: 1, layer: "3" }, rect(6, 5)))
       .toThrow("칠하려면 이웃 타일도 함께");
     expect(map.upperTiles.slice(index, index + 2)).toEqual([1, -1]);
-    map.upperTiles[index] = 2;
-    map.upperTiles[index + 1] = 2;
-    expect(() => execute(project, map, "map.tile.erase", {}, rect(6, 5))).toThrow("지우려면 이웃 타일도 함께");
-    expect(map.upperTiles.slice(index, index + 2)).toEqual([2, 2]);
+    const connected = { ...map, upperTiles: map.upperTiles.slice() };
+    setLayerTileAt(connected, 3, index, 2);
+    setLayerTileAt(connected, 3, index + 1, 2);
+    expect(() => execute(withMap(project, connected), connected, "map.tile.erase", {}, rect(6, 5)))
+      .toThrow("지우려면 이웃 타일도 함께");
+    expect(connected.upperTiles.slice(index, index + 2)).toEqual([2, 2]);
   });
 });
 
@@ -633,9 +642,10 @@ describe("통행 설정 저장과 표시", () => {
     setLayerTileAt(map, 1, 0, 2);
     expect(() => execute(project, map, "map.tile.setPassability", { tile: 1, passable: true }, rect(0, 0)))
       .toThrow("다른 층의 타일이 결정해요.");
-    setLayerTileAt(map, 1, 0, 0);
-    setLayerTileAt(map, 4, 0, 2);
-    expect(() => execute(project, map, "map.tile.setPassability", { tile: 1, passable: true }, rect(0, 0)))
+    const covered = { ...map, lowerTiles: map.lowerTiles.slice(), upperOverlayTiles: map.upperOverlayTiles?.slice() };
+    setLayerTileAt(covered, 1, 0, 0);
+    setLayerTileAt(covered, 4, 0, 2);
+    expect(() => execute(withMap(project, covered), covered, "map.tile.setPassability", { tile: 1, passable: true }, rect(0, 0)))
       .toThrow("다른 층의 타일이 결정해요.");
   });
 
