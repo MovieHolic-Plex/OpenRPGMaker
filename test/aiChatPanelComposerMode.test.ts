@@ -176,7 +176,7 @@ it("shows only the raw event dock prompt in the shared chat's user bubble", asyn
   generate.click();
 
   await vi.waitFor(() => expect(sendUserMessage).toHaveBeenCalledTimes(1));
-  expect(findByTestId(panel, "ai-command-row-user")?.textContent).toBe(prompt);
+  expect(findByTestId(panel, "ai-command-row-user")?.firstChild?.textContent).toBe(prompt);
   expect(sendUserMessage.mock.calls[0]?.[0]).toBe(prompt);
   expect(sendUserMessage.mock.calls[0]?.[3]?.eventCommandScope).toMatchObject({ mapId, eventId: "dock-event", pageId: page.id });
   await vi.waitFor(() => expect(generate.disabled).toBe(false));

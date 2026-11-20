@@ -74,7 +74,7 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   await page.screenshot({ path: `${evidence}/01-request.png` });
   await editor.getByTestId("ai-event-generate").click();
   await expect(editor.getByTestId("ai-event-staged")).toBeVisible({ timeout: 120_000 });
-  expect(await page.getByTestId("ai-command-row-user").last().textContent()).toBe(instruction);
+  expect(await page.getByTestId("ai-command-row-user").last().evaluate(bubble => bubble.firstChild?.textContent)).toBe(instruction);
   await expect(editor.getByTestId("ai-event-staged")).toContainText(generated[0].body);
   const read = () => page.evaluate(async target => {
     const { store } = await import("/src/project/store.ts");
