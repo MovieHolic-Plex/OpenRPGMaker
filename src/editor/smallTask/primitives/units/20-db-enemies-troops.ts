@@ -1,3 +1,4 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { outsideRecord, referenceIndex, type RefSite } from "@/editor/tools/dbReferenceIndex";
 import type { JsonSchema } from "@/editor/tools/types";
@@ -11,7 +12,7 @@ import {
   battleCommandFields, enemyFields, nonempty, terrainFields, textField, troopFields, troopUpdateFields,
   writeBattleCommand, writeEnemy, writeTerrain, writeTroop,
 } from "./20-db-enemies-troops/records";
-import { battleCommandSlotIds } from "./20-db-enemies-troops/references";
+import { battleCommandSlotIds, troopHasEncounter } from "./20-db-enemies-troops/references";
 
 export const UNIT = "20-db-enemies-troops";
 
@@ -42,7 +43,8 @@ function selectedRow<C extends Collection>(ctx: PrimitiveContext, collection: C)
   return { rows, index, row };
 }
 
-function freshId(project: Project, rows: readonly { id: string }[], prefix: string, collection: Collection): string {
+function freshId(ctx: PrimitiveContext, rows: readonly { id: string }[], prefix: string, collection: Collection): string {
+  const project = withOpenEventDrafts(ctx.project, ctx.live);
   const used = new Set(rows.map(row => row.id));
   const slots = collection === "battleCommands" ? battleCommandSlotIds(project) : undefined;
   for (let number = 1; ; number += 1) {
@@ -151,7 +153,11 @@ function defineCollection<C extends Collection>(options: CollectionOptions<C>): 
       } else {
         if (action === "update" && !Object.keys(args).length) throw new PrimitiveError("바꿀 값을 넣어 주세요.");
         const name = args.name === undefined ? row.name : nonempty(args.name as string);
-        const id = action === "create" ? freshId(ctx.project, rows, options.idPrefix, collection) : row.id;
+        const id = action === "create" ? freshId(ctx, rows, options.idPrefix, collection) : row.id;
+        if (action === "update" && collection === "troops" && Array.isArray(args.members) && !args.members.length
+          && troopHasEncounter(ctx.project, id, ctx.live)) {
+          throw new PrimitiveError("전투에서 사용 중인 무리에는 적을 한 마리 이상 남겨 주세요.");
+        }
         const record = options.write(ctx.project, { id, name }, args, action === "update" ? row : undefined);
         if (action === "create" && collection === "terrains") validateTerrainAppend(ctx.project, rows.length + 1);
         edited = action === "create" ? [...rows, record] : rows.map((entry, i) => i === index ? record : entry);

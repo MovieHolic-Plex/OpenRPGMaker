@@ -652,3 +652,71 @@ it("사용 중인 식별자를 건너뛰고 새 명령만 자료집 끝에 붙�
   expect(after.database.battleCommands?.at(-1)).toMatchObject({ id: "cmd_small_2", name: "새 기술" });
   expect(after.database.actors).toBe(project.database.actors);
 });
+
+it("열린 이벤트의 슬롯이 사용한 전투 명령 식별자를 다시 쓰지 않는다", () => {
+  const seed = fixtureProject("built");
+  const map = seed.maps[seed.startMapId]!;
+  const draft: GameEvent = {
+    id: "event_draft_slots", name: "전투 슬롯 초안", x: 0, y: 0, trigger: { kind: "action" }, draft: { kind: "new" },
+    commands: [{ kind: "m2Command", commandId: "m2-092-change-battle-commands",
+      fields: { target: "party", operation: "set", slots: "cmd_attack, cmd_small_1" } }],
+  };
+  const live = store.replaceProject({ ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, draft] } } });
+  const target = select(live, "battleCommands", "cmd_attack");
+  const before = smallTaskBase(live, target);
+  const create = (draftSource?: Project) => runPrimitive(before, target, "db.battleCommands.create", { name: "새 명령" }, undefined, draftSource).after;
+  expect(create(live).database.battleCommands?.at(-1)?.id).toBe("cmd_small_2");
+  const after = create();
+  expect(after.database.battleCommands?.at(-1)?.id).toBe("cmd_small_1");
+  expect(() => commitSmallTask(live, before, after, target)).toThrow(/열린 이벤트/u);
+  expect(store.getCurrent()).toBe(live);
+});
+
+it("전투 명령이 사용하는 무리만 빈 명단으로 바꾸는 것을 거절한다", () => {
+  const seed = fixtureProject("built");
+  const map = seed.maps[seed.startMapId]!;
+  const id = "troop_bat_swarm";
+  const event: GameEvent = {
+    id: "event_roster_battle", name: "전투", x: 0, y: 0, trigger: { kind: "action" },
+    commands: [{ kind: "battleProcessing", troopId: id, canEscape: false, canLose: true }],
+  };
+  const project = { ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, event] } } };
+  expectRefused(project, select(project, "troops", id), "db.troops.update", { members: [] }, /한 마리 이상/u);
+  const { after } = runPrimitive(seed, select(seed, "troops", id), "db.troops.update", { members: [] });
+  expect(after.database.troops.find(troop => troop.id === id)?.enemyIds).toEqual([]);
+});
+
+it("레코드 ID로 나오는 숨은 증원 개체를 보호한다", () => {
+  const seed = fixtureProject("built");
+  const id = "troop_bat_swarm";
+  const bat = { enemyId: "enemy_cave_bat", x: 84, y: 52, hidden: false };
+  const troops = editRow(seed.database.troops, id, troop => ({
+    ...troop, enemyIds: [bat.enemyId, bat.enemyId], members: [bat, { ...bat, y: 88, hidden: true }],
+    battleEventPages: [{ id: "reveal", name: "증원", span: "battle", conditions: [], commands: [{
+      kind: "m2Command", commandId: "m2-101-enemy-encounter", fields: { target: bat.enemyId },
+    }] }],
+  }));
+  const project = { ...seed, database: { ...seed.database, troops } };
+  const target = select(project, "troops", id);
+  const slime = { enemyId: "enemy_slime" };
+  expectRefused(project, target, "db.troops.update", { members: [{ enemyId: bat.enemyId }, slime] }, /전투 명령/u);
+  const { after } = runPrimitive(project, target, "db.troops.update", { members: [{ enemyId: bat.enemyId }, { enemyId: bat.enemyId }, slime] });
+  expect(after.database.troops.find(troop => troop.id === id)?.members?.[1]).toMatchObject({ enemyId: bat.enemyId, hidden: true });
+});
+
+it("직업 명령이 카탈로그에서 상속하는 공통 이벤트의 적 대상을 보호한다", () => {
+  const seed = fixtureProject("built");
+  const id = "troop_bat_swarm";
+  const commonEvent: CommonEvent = {
+    id: "common_inherited_order", name: "두 번째 적 변경", trigger: "none",
+    commands: [{ kind: "m2Command", commandId: "m2-098-change-enemy-hp",
+      fields: { target: "enemy-2", operation: "set", value: 1 } }],
+  };
+  const inherited = { id: "cmd_inherited", name: "상속 명령", kind: "commonEvent" as const };
+  const classes = seed.database.classes.map((row, index) => index === 0 ? { ...row, battleCommands: [...row.battleCommands, inherited] } : row);
+  const battleCommands = [...seed.database.battleCommands!, { ...inherited, kind: "attack" as const, commonEventId: commonEvent.id }];
+  const project = { ...seed, commonEvents: [...seed.commonEvents, commonEvent], database: { ...seed.database, classes, battleCommands } };
+  expectRefused(project, select(project, "troops", id), "db.troops.update", {
+    members: [{ enemyId: "enemy_cave_bat" }, { enemyId: "enemy_slime" }],
+  }, /공통 이벤트/u);
+});

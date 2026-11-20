@@ -134,10 +134,7 @@ function editMembers(project: Project, args: Args, current?: TroopRecord): Troop
   }
   const enemyIds = new Set(project.database.enemies.map(enemy => enemy.id));
   if (requested.some(member => !enemyIds.has(member.enemyId))) throw new PrimitiveError("무리에 넣을 적을 찾을 수 없어요.");
-  if (current && old && !sameFormation) {
-    protectTroopTargets(project, current, old.map(member => member.enemyId), requested.map(member => member.enemyId));
-  }
-  return requested.map((member, index) => {
+  const replacement = requested.map((member, index) => {
     const previous = old?.[index];
     const matching = previous?.enemyId === member.enemyId ? previous : undefined;
     return {
@@ -148,6 +145,8 @@ function editMembers(project: Project, args: Args, current?: TroopRecord): Troop
       hidden: member.hidden ?? matching?.hidden ?? false,
     };
   });
+  if (current && old && !sameFormation) protectTroopTargets(project, current, old, replacement);
+  return replacement;
 }
 
 export function writeTroop(project: Project, key: Key, args: Args, current?: TroopRecord): TroopRecord {

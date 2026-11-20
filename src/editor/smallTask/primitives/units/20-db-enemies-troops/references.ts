@@ -1,9 +1,12 @@
 import { removedDatabaseReference, withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
+import { resolveClassBattleCommand } from "@/battle/battleCommands";
 import { parseM2BattleCommand } from "@/battle/battleM2Commands";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
+import { referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
-import type { BattleEventCondition, Command, Project, TroopRecord } from "@/project/types";
+import type { BattleEventCondition, Command, Project, TroopMemberRecord, TroopRecord } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
 import { SmallTaskError, type SmallTaskTarget } from "../../../target";
 import { PrimitiveError } from "../../errors";
 
@@ -23,9 +26,34 @@ export function battleCommandSlotIds(project: Project, live?: SmallTaskDraftSour
   return ids;
 }
 
-export function assertUnit20DraftDeletion(before: Project, after: Project, live: Project, target: Extract<SmallTaskTarget, { kind: "dbEntry" }>): void {
+export function troopHasEncounter(project: Project, id: string, live?: SmallTaskDraftSource): boolean {
+  const sites = referenceIndex(withOpenEventDrafts(project, live), new Set([id])).get(id);
+  return sites?.some(({ asKey, path }) => !asKey
+    && (path.at(-1) === "troopId" || path.at(-1) === "initialTroopId" || path.at(-2) === "troopIds")) ?? false;
+}
+
+export function assertUnit20DraftReferences(before: Project, after: Project, live: Project, target: Extract<SmallTaskTarget, { kind: "dbEntry" }>): void {
   const { collection, id } = target;
   if (collection !== "enemies" && collection !== "troops" && collection !== "battleCommands") return;
+  if (collection === "battleCommands" && after.database.battleCommands !== before.database.battleCommands) {
+    const existing = new Set(before.database.battleCommands?.map(row => row.id));
+    const added = after.database.battleCommands?.filter(row => !existing.has(row.id));
+    if (added?.length) {
+      const slots = battleCommandSlotIds(before, live);
+      const references = referenceIndex(live, new Set(added.map(row => row.id)));
+      if (added.some(row => slots.has(row.id) || references.has(row.id))) {
+        throw new SmallTaskError("열린 이벤트가 새 전투 명령의 식별자를 사용 중이에요. 연결을 먼저 확인해 주세요.");
+      }
+    }
+  }
+  if (collection === "troops") {
+    const previous = before.database.troops.find(row => row.id === id);
+    const next = after.database.troops.find(row => row.id === id);
+    if ((previous?.members?.length || previous?.enemyIds.length)
+      && next && !next.members?.length && !next.enemyIds.length && troopHasEncounter(after, id, live)) {
+      throw new SmallTaskError("열린 이벤트에서 사용 중인 무리에는 적을 한 마리 이상 남겨 주세요.");
+    }
+  }
   if (!before.database[collection]?.some(row => row.id === id) || after.database[collection]?.some(row => row.id === id)) return;
   if (removedDatabaseReference(before, after, [target], live)
     || (collection === "battleCommands" && battleCommandSlotIds(after, live).has(id))) {
@@ -34,8 +62,10 @@ export function assertUnit20DraftDeletion(before: Project, after: Project, live:
 }
 
 export function protectTroopTargets(
-  project: Project, troop: TroopRecord, before: readonly string[], after: readonly string[],
+  project: Project, troop: TroopRecord, previous: readonly TroopMemberRecord[], replacement: readonly TroopMemberRecord[],
 ): void {
+  const before = previous.map(member => member.enemyId);
+  const after = replacement.map(member => member.enemyId);
   // Battle runtime resolves both slot and record IDs to the first matching battler.
   const firstMatch = (members: readonly string[], id: string) =>
     members.findIndex((recordId, index) => recordId === id || `enemy-${index + 1}` === id);
@@ -47,6 +77,14 @@ export function protectTroopTargets(
   };
   const remainingIds = new Set(after);
   const removedIds = new Set(before.filter(id => !remainingIds.has(id)));
+  const revealChanged = (target: string): boolean => {
+    const slot = previous.findIndex((_, index) => `enemy-${index + 1}` === target);
+    const nextSlot = replacement.findIndex((_, index) => `enemy-${index + 1}` === target);
+    if (slot >= 0 || nextSlot >= 0) return slot !== nextSlot || before[slot] !== after[nextSlot];
+    const hiddenSeats = (members: readonly TroopMemberRecord[]) => members.flatMap((member, index) =>
+      member.hidden && (target === "all" || member.enemyId === target) ? [{ index, enemyId: member.enemyId }] : []);
+    return !jsonEqual(hiddenSeats(previous), hiddenSeats(replacement));
+  };
   const conditionChanged = (condition: BattleEventCondition): boolean => {
     switch (condition.kind) {
       case "all":
@@ -83,10 +121,12 @@ export function protectTroopTargets(
         case "callCommonEvent":
           if (commonEventChanged(parsed.commonEventId.trim())) return true;
           break;
+        case "enemyEncounter":
+          if (revealChanged(parsed.target)) return true;
+          break;
         case "changeEnemyHp":
         case "changeEnemyMp":
         case "changeEnemyState":
-        case "enemyEncounter":
         case "moveEnemy":
         case "showAnimation":
           if (changed(parsed.target)) return true;
@@ -101,7 +141,10 @@ export function protectTroopTargets(
     ...project.database.equipment.map(equipment => equipment.grantsCommand),
   ];
   if (troop.battleEventPages.some(page => page.commands.some(commandChanged))
-    || menuCommands.some(command => command?.kind === "commonEvent" && command.commonEventId && commonEventChanged(command.commonEventId))) {
+    || menuCommands.some(command => {
+      const commonEventId = command && resolveClassBattleCommand(project, command)?.commonEventId;
+      return commonEventId ? commonEventChanged(commonEventId) : false;
+    })) {
     throw new PrimitiveError("전투 명령이나 공통 이벤트가 가리키는 적이 바뀌거나 사라져요. 연결을 먼저 확인해 주세요.");
   }
 }
