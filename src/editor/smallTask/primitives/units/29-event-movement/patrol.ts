@@ -82,31 +82,37 @@ function protectedCells(project: Project, map: GameMap): { x: number; y: number 
 
 function routeVisits(event: GameEvent, route: MoveRoute | undefined, covers: (x: number, y: number) => boolean, page?: EventPage): boolean {
   if (!route) return false;
-  let at = { x: event.x, y: event.y };
+  let at: { x: number; y: number } | undefined = { x: event.x, y: event.y };
   let facing: Dir | undefined = page?.graphic.direction ?? "down";
   let directionFixed = page?.animationType === "fixedDirection" || page?.animationType === "fixedDirectionStep";
   function face(direction: Dir | undefined) {
     if (!directionFixed) facing = direction;
   }
   for (const move of route.moves) {
-    if (covers(at.x, at.y)) return true;
+    if (at && covers(at.x, at.y)) return true;
     switch (move.kind) {
       case "move": case "stepForward": {
         const direction: Dir | undefined = move.kind === "move" ? move.dir : facing;
-        if (!direction) return false;
-        const [dx, dy] = STEPS[direction];
-        at = { x: at.x + dx, y: at.y + dy };
+        if (at && direction) {
+          const [dx, dy] = STEPS[direction];
+          at = { x: at.x + dx, y: at.y + dy };
+        } else {
+          at = undefined;
+        }
         face(direction);
         break;
       }
       case "moveDiagonal":
-        at = { x: at.x + STEPS[move.horizontal][0], y: at.y + STEPS[move.vertical][1] };
+        if (at) at = { x: at.x + STEPS[move.horizontal][0], y: at.y + STEPS[move.vertical][1] };
         face(move.horizontal);
         break;
       case "jump":
-        if (!move.dx && !move.dy) return false;
-        at = { x: at.x + move.dx, y: at.y + move.dy };
-        face(facingForDelta(move.dx, move.dy, "down"));
+        if (!move.dx && !move.dy) {
+          at = undefined;
+        } else {
+          if (at) at = { x: at.x + move.dx, y: at.y + move.dy };
+          face(facingForDelta(move.dx, move.dy, "down"));
+        }
         break;
       case "placeAt":
         at = { x: move.x, y: move.y };
@@ -121,7 +127,7 @@ function routeVisits(event: GameEvent, route: MoveRoute | undefined, covers: (x:
         face(facing && move.turn !== "leftOrRight90" ? relativeTurn(facing, move.turn, () => 0) : undefined);
         break;
       case "turnToward":
-        face(!move.target && move.x !== undefined && move.y !== undefined
+        face(at && !move.target && move.x !== undefined && move.y !== undefined
           ? dirToward(at, { x: move.x, y: move.y }) ?? facing : undefined);
         break;
       case "turnRandom": case "turnTowardPlayer": case "turnAwayFromPlayer":
@@ -129,10 +135,12 @@ function routeVisits(event: GameEvent, route: MoveRoute | undefined, covers: (x:
         break;
       case "moveRandom": case "moveTowardPlayer": case "moveAwayFromPlayer":
       case "approach": case "exitVia": case "enterVia": case "npcTransfer":
-        return false; // 현재 플레이 상태에 따라 이후 위치가 달라진다.
+        at = undefined;
+        face(undefined);
+        break;
     }
   }
-  return covers(at.x, at.y);
+  return at !== undefined && covers(at.x, at.y);
 }
 
 function usesPatrolCell(event: GameEvent, x: number, y: number): boolean {

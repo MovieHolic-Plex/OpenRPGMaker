@@ -85,7 +85,8 @@ function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, e
     ? { ...page, movement: patch.movement }
     : { ...page, graphic: patch.graphic, ...(patch.animationType === undefined ? {} : { animationType: patch.animationType }) };
   const events = map.events.slice();
-  events[index] = { ...event, pages };
+  // Once the new page owns the commands, reference checks should see a single writer.
+  events[index] = { ...event, pages, ...(originalPages.length === 0 ? { commands: [] } : {}) };
   return { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
 }
 

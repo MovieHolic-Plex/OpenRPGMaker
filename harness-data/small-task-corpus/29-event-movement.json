@@ -1654,11 +1654,35 @@
   {
     "request": "시선 고정 풀고 처음엔 오른쪽 보게.",
     "fixture": "maou",
+    "seed": {
+      "events": [
+        {
+          "id": "ev_locked_face",
+          "x": 1,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [],
+          "pages": [
+            {
+              "id": "page_locked_face",
+              "name": "방향 고정",
+              "conditions": [],
+              "graphic": { "direction": "left" },
+              "animationType": "fixedDirection",
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": []
+            }
+          ]
+        }
+      ]
+    },
     "target": {
       "kind": "event",
       "mapId": "map_mk_park",
-      "eventId": "ev_mk_pk_kid",
-      "pageId": "ev_mk_pk_kid_p"
+      "eventId": "ev_locked_face",
+      "pageId": "page_locked_face"
     },
     "primitive": "npc.face.set",
     "args": {
@@ -1667,8 +1691,12 @@
     },
     "expect": [
       {
-        "at": "maps.map_mk_park.events[id=ev_mk_pk_kid].pages[0].graphic.direction",
+        "at": "maps.map_mk_park.events[id=ev_locked_face].pages[0].graphic.direction",
         "equals": "right"
+      },
+      {
+        "at": "maps.map_mk_park.events[id=ev_locked_face].pages[0].animationType",
+        "equals": "normal"
       }
     ]
   },

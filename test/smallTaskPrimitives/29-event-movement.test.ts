@@ -18,6 +18,7 @@ import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/project/characterMotion";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
+import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { initialRuntimeEventPositions, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -378,7 +379,7 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     const target = selected(project, map.id, guard.id);
     const { after } = runPrimitive(project, target, "move.speed.set", { speed: 5 });
     expect(after.maps[map.id].events[0]).toMatchObject({
-      ...old, pages: [{ conditions: [], commands, movement: { type: "custom", route: moveRoute, speed: 5, frequency: 3 } }],
+      ...old, commands: [], pages: [{ conditions: [], commands, movement: { type: "custom", route: moveRoute, speed: 5, frequency: 3 } }],
     });
     await expectUndoRestores(project, after, target);
 
@@ -390,12 +391,27 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
       const reader = await openLocalProjectStore({ projectDir });
       try {
         const reloaded = reader.loadSnapshot()!.project;
+        expect(reloaded.maps[map.id].events[0]!.commands).toEqual([]);
         expect(pageOf(reloaded, map.id, guard.id)).toMatchObject({ commands, movement: { type: "custom", route: moveRoute, speed: 5 } });
         expect(play(reloaded, map.id).autonomousNPCs.get(guard.id)).toMatchObject({ moves: moveRoute.moves, speedRank: 5 });
       } finally { reader.close(); }
     } finally {
       await rm(projectDir, { recursive: true, force: true });
     }
+  });
+
+  it("옛 이벤트의 이동을 바꾼 뒤에도 공용 삭제가 페이지의 마지막 스위치 쓰기를 보호합니다", () => {
+    const { project, map, guard } = blank();
+    const switchId = "sw_patrol_ready";
+    const command = { kind: "setSwitch", switchId, value: true } as const;
+    project.switches.push({ id: switchId, name: "순찰 준비" });
+    const readerPage = { ...guard.pages![0]!, conditions: [{ kind: "switch", switchId, value: true } as const] };
+    map.events[0] = { ...guard, pages: undefined, commands: [command] };
+    map.events[1] = { ...map.events[1]!, pages: [readerPage] };
+    const target = selected(project, map.id, guard.id);
+    const { after } = runPrimitive(project, target, "move.speed.set", { speed: 5 });
+    expect(pageOf(after, map.id, guard.id).commands).toEqual([command]);
+    expectRefused(after, target, "cmd.delete", { index: 0, expectedHash: eventCommandHash(command) }, /진행 값을 읽는 조건/u);
   });
 
   it("옛 이벤트의 실행 조건을 페이지 조건으로 바꿔 캐릭터를 숨기는 편집은 거절합니다", () => {
@@ -449,6 +465,20 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     };
     map.events.push({ ...guard, id: "ev_other_guard", x: guard.x + 2, y: guard.y - 1, pages: [otherPage] });
     expectRefused(project, target, "npc.patrol.set", { directions: ["right", "left"] }, /다른 이벤트나 순찰/u);
+  });
+
+  it.each([
+    { moves: [{ kind: "moveRandom" }, { kind: "placeAt", x: 7, y: 6 }] },
+    { moves: [{ kind: "moveRandom" }, { kind: "placeAt", x: 8, y: 6 }, { kind: "move", dir: "left" }] },
+  ] satisfies { moves: MoveCommand[] }[])("무작위 이동 뒤의 배치와 이어지는 걸음을 순찰 겹침 검사에 포함합니다 (%j)", ({ moves }) => {
+    const { project, target, map, guard } = blank();
+    const otherPage: EventPage = {
+      ...guard.pages![0]!, id: "page_random_guard",
+      movement: { type: "custom", speed: 3, frequency: 3, route: { repeat: false, moves } },
+    };
+    map.events.push({ ...guard, id: "ev_random_guard", x: guard.x + 3, pages: [otherPage] });
+    expectRefused(project, target, "npc.patrol.set", { directions: ["right", "left"] }, /다른 이벤트나 순찰/u);
+    expectApplies(project, target, "npc.patrol.set", { directions: ["left", "right"] });
   });
 
   it.each([
