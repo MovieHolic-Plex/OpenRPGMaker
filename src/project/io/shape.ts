@@ -651,10 +651,17 @@ function normalizeShopCommands(project: Project): void {
       if ((cmd as Record<string, unknown>).failedTransactionBranch === undefined) (cmd as Record<string, unknown>).failedTransactionBranch = [];
       // stock ↔ itemIds 이중기록 해소: stock orphan 제거 + 순서 정렬
       if (Array.isArray(cmd.stock) && Array.isArray(cmd.itemIds)) {
+        type StockRow = { itemId: string };
         const ids = new Set(cmd.itemIds as string[]);
-        const filtered = (cmd.stock as { itemId: string }[]).filter((e) => ids.has(e.itemId));
-        const byId = new Map(filtered.map((e) => [e.itemId, e] as const));
-        const ordered = (cmd.itemIds as string[]).map((id) => byId.get(id)).filter(Boolean) as typeof filtered;
+        const byId = new Map<string, StockRow[]>();
+        // 계절이 다른 재고 행도 있으므로 상품별로 여러 행을 보존한다.
+        for (const row of cmd.stock as StockRow[]) {
+          if (!ids.has(row.itemId)) continue;
+          const rows = byId.get(row.itemId);
+          if (rows) rows.push(row);
+          else byId.set(row.itemId, [row]);
+        }
+        const ordered = [...ids].flatMap(id => byId.get(id) ?? []);
         cmd.stock = ordered.length > 0 ? ordered : undefined;
       }
     }
