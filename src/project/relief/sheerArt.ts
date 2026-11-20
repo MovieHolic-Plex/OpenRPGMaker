@@ -3,7 +3,7 @@
 // 굽기 전까지 저장소는 코드로 만든 자리 표시 조각(placeholderSheerArt: 색 줄 몇 개의 단색 덩이)을 쓴다. 조각을 바꿔도 칸·걷기는 같다.
 import type { ReliefArtPatch } from "./render";
 // 구운 조각(scripts/content/sheer-terrain/bake.py — 3/4 관문 미통과 · 오너 면제 묶음 fable-terrain-2026-11-16). 굽기 전에는 빈 표 {} 다.
-import bakedSheerArt from "./sheerArt.json";
+import bakedSheerArt from "./sheerArt.json" with { type: "json" };
 
 export interface SheerArt {
   /** 단 차 1(48px) 앞면 판, 64×48. 윗테 0~15 · 몸통 16~31 · 밑동 32~47. */

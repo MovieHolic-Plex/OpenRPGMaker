@@ -7,7 +7,7 @@
 // 사본은 같은 시트의 옛 굽기로 보고, 번들 소유 칸 표(통행·층·그룹·오토타일·움직임·조립 부품)만 새 굽기로 바꾼다. 맵은 건드리지 않는다.
 // 번들 소유 = id 가 `jp-` 로 시작하는 조립 부품·오토타일 그룹·참고문서. 저자가 더한 것(다른 id)은 갱신 때 보존한다.
 // 시트 칸 수·열 수는 하드코딩하지 않고 정의 JSON 에서 읽는다.
-import sheet from "@/assets/jpCitySheet.json";
+import sheet from "@/assets/jpCitySheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`jpCitySheet.json`)에서 읽는다. */
 const data = () => {
@@ -54,9 +54,9 @@ function markSupersededBuildings(kits: StructureKitDef[]): void {
   if (!kits.some((kit) => kit.id.startsWith(NEW_BUILDING_PREFIX))) return;
   for (const kit of kits) if (kit.id.startsWith("jp-bldg-") && !kit.id.startsWith(NEW_BUILDING_PREFIX) && !HAND_ONLY_BUILDINGS.has(kit.id) && kit.ai) kit.ai.supersededBy = NEW_BUILDING_PREFIX;
 }
-import references from "@/assets/jpCityReferences.json";
-import streetCatalog from "@/assets/jpCityStreetCatalog.json";
-import forestReferences from "@/assets/jpForestReferences.json";
+import references from "@/assets/jpCityReferences.json" with { type: "json" };
+import streetCatalog from "@/assets/jpCityStreetCatalog.json" with { type: "json" };
+import forestReferences from "@/assets/jpForestReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";

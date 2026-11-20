@@ -2,7 +2,7 @@
 // 모두 2층(lowerOverlayTiles) 투명 덧그림이라 ★(통행 + 상위)다 — ★ 는 통행 판정에서 건너뛰므로 칸의 통행은 1·3층(물·물체)이 정한다.
 // ○(아래층)로 두면 2층이 1층 물의 × 를 덮어 물 위를 걷는다. 2층은 캐릭터 밑 묶음이라 상위여도 인물 아래에 그린다.
 // 마을 시공기(beodeulVillage.ts)가 translateTiles 로 버들항 시트 뒤에 이식해 쓴다. 이웃 비트 = 북서1 북2 북동4 서8 동16 남서32 남64 남동128.
-import catalog from '@/assets/beodeulNatureCatalog.json';
+import catalog from '@/assets/beodeulNatureCatalog.json' with { type: "json" };
 import type { TilesetDef } from '../types';
 
 export const BEODEUL_NATURE_ID = 'beodeul_nature';

@@ -10,7 +10,7 @@
 //  층 규칙  에디터 위층은 3층(upperTiles)·4층(upperOverlayTiles) 둘뿐이라 한 칸에 [띠 + 부착물 하나]까지만 얹는다.
 //          위 칸이 온전히 불투명이면 그 밑 칸은 안 보이므로 버린다(렌더 동일). 그래도 셋이 넘으면 DECO_CLASH.
 //  통행   칸 번호가 통행을 정한다(막힘 칸 = spec.solid). 이 조립기는 칸마다 통행을 새로 정하지 않는다.
-import spec from "@/assets/jpCityBuildingSpec.json";
+import spec from "@/assets/jpCityBuildingSpec.json" with { type: "json" };
 
 type Tid = number | null;
 

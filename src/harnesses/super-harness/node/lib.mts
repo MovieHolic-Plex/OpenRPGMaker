@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
-import spec from "../../../assets/handInteriorSpec.json";
+import spec from "../../../assets/handInteriorSpec.json" with { type: "json" };
 import { tileAt } from "../../../project/collision.ts";
 import { renderMapPng } from "../../../../scripts/qa-game/render.mts";
 import type { GameMap, Project } from "../../../project/types.ts";

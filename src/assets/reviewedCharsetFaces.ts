@@ -1,5 +1,5 @@
 import { findCharsetAsset } from "@/assets/charsetCatalog";
-import reviewedCatalog from "@/assets/sharedCharacterGraphics.json";
+import reviewedCatalog from "@/assets/sharedCharacterGraphics.json" with { type: "json" };
 
 /**
  * 걷기 그림(시트+칸) → 검토된 얼굴. **공용 대응표(sharedCharacterGraphics.json)가 유일한 정본이다.**
