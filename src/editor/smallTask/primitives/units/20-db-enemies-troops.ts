@@ -10,6 +10,7 @@ import {
   battleCommandFields, enemyFields, nonempty, terrainFields, textField, troopFields, troopUpdateFields,
   writeBattleCommand, writeEnemy, writeTerrain, writeTroop,
 } from "./20-db-enemies-troops/records";
+import { battleCommandSlotIds } from "./20-db-enemies-troops/references";
 
 export const UNIT = "20-db-enemies-troops";
 
@@ -40,31 +41,36 @@ function selectedRow<C extends Collection>(ctx: PrimitiveContext, collection: C)
   return { rows, index, row };
 }
 
-function freshId(project: Project, rows: readonly { id: string }[], prefix: string): string {
+function freshId(project: Project, rows: readonly { id: string }[], prefix: string, collection: Collection): string {
   const used = new Set(rows.map(row => row.id));
+  const slots = collection === "battleCommands" ? battleCommandSlotIds(project) : undefined;
   for (let number = 1; ; number += 1) {
     const id = `${prefix}_small_${number}`;
-    if (!used.has(id) && !referenceIndex(project, new Set([id])).has(id)) return id;
+    if (!used.has(id) && !slots?.has(id) && !referenceIndex(project, new Set([id])).has(id)) return id;
   }
 }
 
-function independentClassCommand(project: Project, site: RefSite, catalogIndex: number): boolean {
-  const [root, collection, classIndex, field, commandIndex, key] = site.path;
-  if (site.path.length !== 6 || root !== "database" || collection !== "classes" || field !== "battleCommands"
-    || key !== "id" || typeof classIndex !== "number" || typeof commandIndex !== "number") return false;
-
-  // 직업에 배치한 명령은 별도 값이다. 카탈로그에서 상속하는 값이 있으면 연결을 보호한다.
-  const command = project.database.classes[classIndex]?.battleCommands[commandIndex];
+function independentCommandCopy(project: Project, site: RefSite, catalogIndex: number): boolean {
+  const [root, collection, rowIndex, field, commandIndex, key] = site.path;
+  if (site.asKey || root !== "database" || typeof rowIndex !== "number") return false;
+  // 직업과 장비에 저장된 명령은 카탈로그에서 값을 상속할 때만 삭제의 영향을 받는다.
+  const command = collection === "classes" && site.path.length === 6 && field === "battleCommands"
+    && typeof commandIndex === "number" && key === "id"
+    ? project.database.classes[rowIndex]?.battleCommands[commandIndex]
+    : collection === "equipment" && site.path.length === 5 && field === "grantsCommand" && commandIndex === "id"
+      ? project.database.equipment[rowIndex]?.grantsCommand
+      : undefined;
   const catalog = project.database.battleCommands?.[catalogIndex];
   return Boolean(command?.name && command.kind && catalog
-    && (!catalog.skillId || command.skillId)
-    && (!catalog.skillSubsetName || command.skillSubsetName)
-    && (!catalog.commonEventId || command.commonEventId));
+    && (catalog.skillId === undefined || command.skillId != null)
+    && (catalog.skillSubsetName === undefined || command.skillSubsetName != null)
+    && (catalog.commonEventId === undefined || command.commonEventId != null));
 }
 
 function validateDelete(project: Project, collection: Collection, id: string, index: number, count: number): void {
   const uses = outsideRecord(referenceIndex(project, new Set([id])).get(id) ?? [], ["database", collection, index]);
-  if (uses.some(site => collection !== "battleCommands" || !independentClassCommand(project, site, index))) {
+  if (uses.some(site => collection !== "battleCommands" || !independentCommandCopy(project, site, index))
+    || (collection === "battleCommands" && battleCommandSlotIds(project).has(id))) {
     throw new PrimitiveError("다른 항목에서 사용 중이에요. 연결을 먼저 해제해 주세요.");
   }
   if ((collection === "terrains" || collection === "battleCommands") && count === 1) {
@@ -135,7 +141,7 @@ function defineCollection<C extends Collection>(options: CollectionOptions<C>): 
       } else {
         if (action === "update" && !Object.keys(args).length) throw new PrimitiveError("바꿀 값을 넣어 주세요.");
         const name = args.name === undefined ? row.name : nonempty(args.name as string);
-        const id = action === "create" ? freshId(ctx.project, rows, options.idPrefix) : row.id;
+        const id = action === "create" ? freshId(ctx.project, rows, options.idPrefix, collection) : row.id;
         const record = options.write(ctx.project, { id, name }, args, action === "update" ? row : undefined);
         edited = action === "create" ? [...rows, record] : rows.map((entry, i) => i === index ? record : entry);
       }

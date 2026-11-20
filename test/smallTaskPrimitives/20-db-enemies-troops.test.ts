@@ -168,6 +168,12 @@ it.each(cases)("$id 저장값, 요약, 범위와 한 번 되돌리기", async te
   const scope = primitive.scope({ project: before, target }, args);
   const outside = checkSmallTaskScope(before, { ...after, meta: { ...after.meta, title: "범위 밖 변경" } }, scope);
   expect(outside).toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
+  const rows = after.database[collection]!;
+  const sibling = rows.find(row => row.id !== targetId && originalRows?.some(original => original.id === row.id))!;
+  const changedSibling = { ...after, database: {
+    ...after.database, [collection]: rows.map(row => row === sibling ? { ...row, name: "다른 항목" } : row),
+  } };
+  expect(checkSmallTaskScope(before, changedSibling, scope)).toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
   const other = collection === "terrains" ? select(before, "battleCommands", "cmd_attack") : select(before, "terrains", "terrain_water");
   expectRefused(before, other, id, args);
   await expectUndoRestores(before, after, target);
@@ -177,10 +183,13 @@ it.each([
   ["enemies", "enemy_slime", "update", { dropItemId: "item_missing_here" }, "아이템"],
   ["enemies", "enemy_slime", "create", { name: "적", monsterResourceId: "missing-monster-art" }, "소재"],
   ["enemies", "enemy_slime", "update", { maxHp: 0 }, /[가-힣]/u],
+  ["enemies", "enemy_slime", "update", { name: "  " }, "빈 이름"],
   ["enemies", "enemy_slime", "delete", {}, "사용 중"],
   ["troops", "troop_bat_swarm", "create", { name: "무리", members: [{ enemyId: "enemy_missing_here" }] }, "넣을 적"],
   ["troops", "troop_bat_swarm", "update", { members: [{ enemyId: "enemy_cave_bat", y: 241 }] }, /[가-힣]/u],
   ["troops", "troop_bat_swarm", "update", { memberNumber: 4, x: 80 }, "순서"],
+  ["troops", "troop_bat_swarm", "update", { memberNumber: 1, x: 80, autoAlign: true }, "자동 배치"],
+  ["troops", "troop_bat_swarm", "update", { memberNumber: 1, members: [{ enemyId: "enemy_slime" }], x: 80 }, "명단"],
   ["troops", "troop_slime", "delete", {}, "사용 중"],
   ["terrains", "terrain_sand", "create", { name: "동굴", footstepSoundResourceId: "missing-footsteps" }, "발소리"],
   ["terrains", "terrain_sand", "update", { battleBackgroundResourceId: "missing-battle-background" }, "배경"],
@@ -190,6 +199,55 @@ it.each([
 ] as const)("%s %s %s 잘못된 값이나 참조 거절", (collection, id, action, args, reason) => {
   const project = fixtureProject("built");
   expect(() => runPrimitive(project, select(project, collection, id), `db.${collection}.${action}`, args)).toThrow(reason);
+});
+
+it("처음 선택했던 항목이 사라지면 같은 위치의 다른 항목을 수정하지 않는다", () => {
+  const before = fixtureProject("built");
+  const id = "enemy_slime_blue";
+  const target = select(before, "enemies", id);
+  const { after } = runPrimitive(before, target, "db.enemies.delete", {});
+  expectRefused(after, target, "db.enemies.update", { maxHp: 600 }, /선택한 자료집 항목을 찾을 수 없어요/u);
+});
+
+it("적 이름을 바꿔도 기존 무리의 적 식별자와 전투 연결을 유지한다", () => {
+  const before = fixtureProject("built");
+  const target = select(before, "enemies", "enemy_slime");
+  const { after } = runPrimitive(before, target, "db.enemies.update", { name: "새 슬라임" });
+  expect(after.database.troops).toBe(before.database.troops);
+  expect(after.maps).toBe(before.maps);
+  expect(openBattle(after, "troop_slime")).toMatchObject([{ recordId: "enemy_slime", name: "새 슬라임" }]);
+});
+
+it("존재하는 소재라도 적 그림·전투 배경·발소리 종류를 구분한다", () => {
+  const seed = fixtureProject("built");
+  const picture = { id: "test-enemy", name: "검수용 적 그림", kind: "monster", dataUrl: "", meta: {} } as const;
+  const sound = { id: "test-step", name: "검수용 발소리", kind: "sound", dataUrl: "", meta: {} } as const;
+  const project = { ...seed, assets: { ...seed.assets, uploaded: { ...seed.assets.uploaded, [picture.id]: picture, [sound.id]: sound } } };
+  const enemy = select(project, "enemies", "enemy_slime");
+  const terrain = select(project, "terrains", "terrain_water");
+  expectRefused(project, enemy, "db.enemies.update", { monsterResourceId: sound.id }, /적 그림/u);
+  expectRefused(project, terrain, "db.terrains.update", { battleBackgroundResourceId: sound.id }, /전투 배경/u);
+  expectRefused(project, terrain, "db.terrains.update", { footstepSoundResourceId: picture.id }, /발소리/u);
+  const { after } = runPrimitive(project, terrain, "db.terrains.update", {
+    battleBackgroundResourceId: "battle-scenery-field", footstepSoundResourceId: sound.id,
+  });
+  expect(after.database.terrains?.find(row => row.id === "terrain_water")).toMatchObject({
+    battleBackgroundResourceId: "battle-scenery-field", footstepSoundResourceId: sound.id,
+  });
+  expect(runPrimitive(project, enemy, "db.enemies.update", { monsterResourceId: picture.id })
+    .after.database.enemies.find(row => row.id === "enemy_slime")?.monsterResourceId).toBe(picture.id);
+});
+
+it("걷는 탈것과 수레의 추가 통행을 끄면 저장 형식을 유지한다", () => {
+  const project = fixtureProject("built");
+  const target = select(project, "terrains", "terrain_water");
+  const { after: enabled } = runPrimitive(project, target, "db.terrains.update", { chocobo: true, cart: true, raft: false });
+  const { after } = runPrimitive(enabled, target, "db.terrains.update", { chocobo: false, cart: false });
+  const row = after.database.terrains!.find(entry => entry.id === "terrain_water")!;
+  expect(row.vehiclePassage).not.toHaveProperty("chocobo");
+  expect(row.vehiclePassage).not.toHaveProperty("cart");
+  expect(row.vehiclePassage.raft).toBe(false);
+  expect(jsonEqual(row, normalizeTerrainRecords([row])[0])).toBe(true);
 });
 
 it("옛 적 무리를 편집할 때 전투 페이지와 전투 뒤 명령을 그대로 보존한다", () => {
@@ -218,6 +276,99 @@ it("카탈로그 명령을 배우 고유 목록이 쓰면 삭제를 거절한다
   } : row) };
   const project = { ...seed, database };
   expect(() => runPrimitive(project, select(project, "battleCommands", "cmd_defend"), "db.battleCommands.delete", {})).toThrow("사용 중");
+});
+
+it("공통 이벤트의 중첩된 명령이 쉼표로 기록한 전투 명령을 삭제할 수 없다", () => {
+  const seed = fixtureProject("built");
+  const switchId = seed.switches[0]!.id;
+  const commonEvent: CommonEvent = {
+    id: "common_battle_menu", name: "전투 메뉴", trigger: "none",
+    commands: [{
+      kind: "fork", condition: { kind: "switch", switchId, value: true }, then: [],
+      else: [{
+        kind: "m2Command", commandId: "m2-092-change-battle-commands",
+        fields: { target: "party", operation: "set", slots: "cmd_attack, cmd_defend , cmd_small_1" },
+      }],
+    }],
+  };
+  const project = { ...seed, commonEvents: [...seed.commonEvents, commonEvent] };
+  const target = select(project, "battleCommands", "cmd_defend");
+  expectRefused(project, target, "db.battleCommands.delete", {}, /사용 중/u);
+  const { after } = runPrimitive(project, target, "db.battleCommands.create", { name: "새 명령" });
+  expect(after.database.battleCommands?.at(-1)?.id).toBe("cmd_small_2");
+});
+
+it("장비가 사용하던 전투 명령 값을 카탈로그에서 상속할 때만 삭제를 거절한다", () => {
+  const seed = fixtureProject("built");
+  const [firstEquipment] = seed.database.equipment;
+  const id = "cmd_defend";
+  const database = {
+    ...seed.database,
+    battleCommands: editRow(seed.database.battleCommands!, id, command => ({ ...command, skillId: "skill_fire" })),
+    classes: seed.database.classes.map(klass => ({
+      ...klass, battleCommands: klass.battleCommands.map(command => command.id === id ? { ...command, skillId: "skill_fire" } : command),
+    })),
+    equipment: editRow(seed.database.equipment, firstEquipment!.id, equipment => ({
+      ...equipment, grantsCommand: { id, name: "불꽃", kind: "skill" as const },
+    })),
+  };
+  const project = { ...seed, database };
+  const target = select(project, "battleCommands", id);
+  expectRefused(project, target, "db.battleCommands.delete", {}, /사용 중/u);
+
+  const independent = { ...project, database: {
+    ...database,
+    equipment: editRow(database.equipment, firstEquipment!.id, equipment => ({
+      ...equipment, grantsCommand: { ...equipment.grantsCommand!, skillId: "skill_fire" },
+    })),
+  } };
+  const { after } = runPrimitive(independent, target, "db.battleCommands.delete", {});
+  expect(after.database.battleCommands?.some(command => command.id === id)).toBe(false);
+  expect(after.database.equipment).toBe(independent.database.equipment);
+});
+
+it("슬롯 번호가 남아 있어도 전투 조건이 가리키는 적을 바꾸지 않는다", () => {
+  const seed = fixtureProject("built");
+  const id = "troop_bat_swarm";
+  const battleEventPages: TroopRecord["battleEventPages"] = [{
+    id: "page_hp", name: "첫째 적의 체력이 반 이하일 때", span: "battle",
+    conditions: [{ kind: "enemyHpBelow", enemyId: "enemy-1", percent: 50 }], commands: [],
+  }];
+  const project = { ...seed, database: {
+    ...seed.database, troops: editRow(seed.database.troops, id, troop => ({ ...troop, battleEventPages })),
+  } };
+  const target = select(project, "troops", id);
+  expectRefused(project, target, "db.troops.update", {
+    members: [{ enemyId: "enemy_slime" }, { enemyId: "enemy_cave_bat" }],
+  }, /전투 조건/u);
+  const { after } = runPrimitive(project, target, "db.troops.update", {
+    members: [{ enemyId: "enemy_cave_bat" }, { enemyId: "enemy_slime" }],
+  });
+  expect(after.database.troops.find(troop => troop.id === id)?.battleEventPages).toBe(battleEventPages);
+});
+
+it("전투가 중첩 호출한 공통 이벤트의 적 대상까지 보호한다", () => {
+  const seed = fixtureProject("built");
+  const id = "troop_bat_swarm";
+  const battleEventPages: TroopRecord["battleEventPages"] = [{
+    id: "page_reveal", name: "숨은 적 부르기", span: "battle", conditions: [],
+    commands: [{ kind: "m2Command", commandId: "m2-106-call-common-event", fields: { value: "common_reveal_wrapper" } }],
+  }];
+  const commonEvents: CommonEvent[] = [
+    { id: "common_reveal_wrapper", name: "증원 호출", trigger: "none", commands: [{ kind: "callCommonEvent", commonEventId: "common_reveal" }] },
+    { id: "common_reveal", name: "증원", trigger: "none", commands: [{
+      kind: "fork", condition: { kind: "switch", switchId: seed.switches[0]!.id, value: true },
+      then: [{ kind: "m2Command", commandId: "m2-101-enemy-encounter", fields: { target: "enemy-2" } }],
+    }] },
+  ];
+  const project = { ...seed, commonEvents: [...seed.commonEvents, ...commonEvents], database: {
+    ...seed.database, troops: editRow(seed.database.troops, id, troop => ({ ...troop, battleEventPages })),
+  } };
+  const target = select(project, "troops", id);
+  expectRefused(project, target, "db.troops.update", { members: [{ enemyId: "enemy_cave_bat" }] }, /공통 이벤트/u);
+  const { after } = runPrimitive(project, target, "db.troops.update", { memberNumber: 2, hidden: false });
+  expect(after.commonEvents).toBe(project.commonEvents);
+  expect(after.database.troops.find(troop => troop.id === id)?.battleEventPages).toBe(battleEventPages);
 });
 
 function openBattle(project: Project, troopId: string) {

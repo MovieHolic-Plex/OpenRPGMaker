@@ -1,13 +1,14 @@
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
+import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import type { JsonSchema } from "@/editor/tools/types";
-import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { FIELD_BATTLE_BACKGROUND_ID, normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
-import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type {
   ClassBattleCommandKind, DatabaseBattleCommandRecord, DatabaseTerrainRecord, EnemyRecord,
   EnemyRewards, EnemyStats, Project, TroopMemberRecord, TroopRecord,
 } from "@/project/types";
 import { PrimitiveError } from "../../errors";
+import { protectTroopTargets } from "./references";
 
 type Args = Record<string, unknown>;
 type Key = { id: string; name: string };
@@ -27,8 +28,11 @@ function requireReference(rows: readonly { id: string }[], id: string, label: st
   if (!rows.some(row => row.id === id)) throw new PrimitiveError(`연결할 ${label}을 찾을 수 없어요.`);
 }
 
-function requireResource(project: Project, id: string, label: string): void {
-  if (!collectResourceIds(project).has(id)) throw new PrimitiveError(`${label}에 쓸 소재를 찾을 수 없어요.`);
+function requireResource(project: Project, id: string, kind: "monster" | "backdrop" | "sound", label: string): void {
+  if (kind === "backdrop" && id === FIELD_BATTLE_BACKGROUND_ID && !Object.hasOwn(project.assets.uploaded, id)) return;
+  if (!listDatabaseResourceOptions(kind, project).some(resource => resource.id === id)) {
+    throw new PrimitiveError(`${label}에 쓸 소재를 찾을 수 없어요. 알맞은 종류의 소재를 골라 주세요.`);
+  }
 }
 
 const statFields = {
@@ -64,7 +68,7 @@ export function writeEnemy(project: Project, key: Key, args: Args, current?: Ene
   const dropItemId = args.dropItemId === undefined ? undefined : nonempty(args.dropItemId as string);
   const monsterResourceId = args.monsterResourceId === undefined ? undefined : nonempty(args.monsterResourceId as string);
   if (dropItemId !== undefined) requireReference(project.database.items, dropItemId, "아이템");
-  if (monsterResourceId !== undefined) requireResource(project, monsterResourceId, "적 그림");
+  if (monsterResourceId !== undefined) requireResource(project, monsterResourceId, "monster", "적 그림");
   if (current?.rewards.drops !== undefined && (dropItemId !== undefined || args.dropRatePercent !== undefined)) {
     throw new PrimitiveError("조건별 전리품을 쓰는 적은 전리품 목록에서 바꿔 주세요.");
   }
@@ -130,8 +134,11 @@ function editMembers(project: Project, args: Args, current?: TroopRecord): Troop
     throw new PrimitiveError("본체와 부위가 연결된 무리는 기존 명단에서 위치나 숨김만 바꿀 수 있어요.");
   }
   const enemyIds = new Set(project.database.enemies.map(enemy => enemy.id));
+  if (requested.some(member => !enemyIds.has(member.enemyId))) throw new PrimitiveError("무리에 넣을 적을 찾을 수 없어요.");
+  if (current && old && !sameFormation) {
+    protectTroopTargets(project, current, old.map(member => member.enemyId), requested.map(member => member.enemyId));
+  }
   return requested.map((member, index) => {
-    if (!enemyIds.has(member.enemyId)) throw new PrimitiveError("무리에 넣을 적을 찾을 수 없어요.");
     const previous = old?.[index];
     const matching = previous?.enemyId === member.enemyId ? previous : undefined;
     return {
@@ -145,10 +152,11 @@ function editMembers(project: Project, args: Args, current?: TroopRecord): Troop
 }
 
 export function writeTroop(project: Project, key: Key, args: Args, current?: TroopRecord): TroopRecord {
-  const base = current ?? normalizeTroopRecord(key);
-  const members = editMembers(project, args, current);
   const positioned = args.x !== undefined || args.y !== undefined
     || (args.members as Partial<TroopMemberRecord>[] | undefined)?.some(member => member.x !== undefined || member.y !== undefined);
+  if (positioned && args.autoAlign === true) throw new PrimitiveError("자동 배치와 직접 지정한 위치 중 하나를 골라 주세요.");
+  const base = current ?? normalizeTroopRecord(key);
+  const members = editMembers(project, args, current);
   return {
     ...base, ...key,
     ...(members ? { members, enemyIds: members.map(member => member.enemyId) } : {}),
@@ -162,8 +170,8 @@ const vehicleFields = {
   ship: flag("큰 배가 지나갈 수 있는지 여부"),
   airshipLand: flag("비공정이 착륙할 수 있는지 여부"),
   raft: flag("뗏목이 지나갈 수 있는지 여부"),
-  chocobo: flag("걷는 탈것이 지나갈 수 있는지 여부"),
-  cart: flag("광산 수레가 지나갈 수 있는지 여부"),
+  chocobo: flag("걷는 탈것의 기존 통행 규칙에 이 지형을 추가로 허용할지 여부"),
+  cart: flag("광산 수레의 기존 통행 규칙에 이 지형을 추가로 허용할지 여부"),
 };
 export const terrainFields = {
   damage: numberField("한 칸을 걸을 때 받는 피해", 0, 9_999),
@@ -178,8 +186,8 @@ export const terrainFields = {
 export function writeTerrain(project: Project, key: Key, args: Args, current?: DatabaseTerrainRecord): DatabaseTerrainRecord {
   const battleBackgroundResourceId = args.battleBackgroundResourceId === undefined ? undefined : nonempty(args.battleBackgroundResourceId as string);
   const footstepSoundResourceId = args.footstepSoundResourceId === undefined ? undefined : nonempty(args.footstepSoundResourceId as string);
-  if (battleBackgroundResourceId !== undefined) requireResource(project, battleBackgroundResourceId, "전투 배경");
-  if (footstepSoundResourceId !== undefined) requireResource(project, footstepSoundResourceId, "발소리");
+  if (battleBackgroundResourceId !== undefined) requireResource(project, battleBackgroundResourceId, "backdrop", "전투 배경");
+  if (footstepSoundResourceId !== undefined) requireResource(project, footstepSoundResourceId, "sound", "발소리");
   const base = current ?? normalizeTerrainRecords([key])[0]!;
   const passage = selectedFields(args, vehicleFields);
   const { damage, encounterRatePercent, characterDisplay } = args as Partial<DatabaseTerrainRecord>;
@@ -190,8 +198,12 @@ export function writeTerrain(project: Project, key: Key, args: Args, current?: D
     characterDisplay: characterDisplay ?? base.characterDisplay,
     ...(battleBackgroundResourceId === undefined ? {} : { battleBackgroundResourceId }),
     ...(footstepSoundResourceId === undefined ? {} : { footstepSoundResourceId }),
-    ...(Object.keys(passage).length ? { vehiclePassage: { ...base.vehiclePassage, ...passage } } : {}),
   };
+  if (Object.keys(passage).length) {
+    edited.vehiclePassage = { ...base.vehiclePassage, ...passage };
+    if (args.chocobo === false) delete edited.vehiclePassage.chocobo;
+    if (args.cart === false) delete edited.vehiclePassage.cart;
+  }
   if (args.climbable === true) edited.climbable = true;
   if (args.climbable === false) delete edited.climbable;
   return edited;
