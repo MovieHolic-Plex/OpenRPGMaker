@@ -121,13 +121,13 @@ function recordIds(records: readonly { id: string }[] | undefined): Set<string> 
   return new Set(records?.map(record => record.id));
 }
 
-function requireVariable(project: Project, variableId: string | undefined) {
+function requireVariable(project: Readonly<Project>, variableId: string | undefined) {
   if (variableId && !project.variables.some(variable => variable.id === variableId)) {
     throw new PrimitiveError("입력을 저장할 변수를 찾을 수 없습니다.");
   }
 }
 
-function requirePortraitImage(project: Project, resourceId: string): void {
+function requirePortraitImage(project: Readonly<Project>, resourceId: string): void {
   const uploaded = Object.hasOwn(project.assets.uploaded, resourceId) ? project.assets.uploaded[resourceId] : undefined;
   const url = resolveAssetResourceUrl(resourceId, { project });
   const image = uploaded?.ref
@@ -139,7 +139,7 @@ function requirePortraitImage(project: Project, resourceId: string): void {
 }
 
 /** Validate the edited row, leaving pre-existing commands in its branches alone. */
-export function validateDialogueReferences(project: Project, command: DialogueCommand, patch: Readonly<Record<string, unknown>>) {
+export function validateDialogueReferences(project: Readonly<Project>, command: DialogueCommand, patch: Readonly<Record<string, unknown>>) {
   if (command.kind === "inputWait") requireVariable(project, command.variableId);
   if (command.kind === "enterHeroName") {
     requireVariable(project, command.stringVariableId);
@@ -201,7 +201,7 @@ function recordLabel(records: readonly { id: string; name: string }[] | undefine
   return previewText(name && name !== key ? name : "", fallback);
 }
 
-export function dialogueDetail(project: Project, command: DialogueCommand): string {
+export function dialogueDetail(project: Readonly<Project>, command: DialogueCommand): string {
   switch (command.kind) {
     case "text":
       return commandSummary({ ...command, body: previewText(command.body, "대사 문구"), speaker: previewText(command.speaker ?? "") });

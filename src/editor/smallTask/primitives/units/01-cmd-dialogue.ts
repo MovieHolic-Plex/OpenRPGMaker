@@ -8,7 +8,7 @@ import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEven
 import type { Command, EventPage, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   dialogueDetail, dialogueFields, validateDialogueReferences, type DialogueCommand, type DialogueKind,
@@ -118,7 +118,7 @@ function commandFields(kind: DialogueKind, action: Action): Record<string, JsonS
 }
 
 function nextCommand(
-  project: Project, base: DialogueCommand, action: Action, fields: Args,
+  project: Readonly<Project>, base: DialogueCommand, action: Action, fields: Args,
 ): { command: DialogueCommand; patch: Args } {
   const patch = { ...fields };
   switch (base.kind) {
@@ -179,7 +179,7 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
     }
     const expectedHash = args.expectedHash as string;
     if (!inserting && eventCommandHash(current!) !== expectedHash) {
-      throw new PrimitiveError("명령 줄이 바뀌었습니다. 그 줄을 다시 읽어 주세요.");
+      throw new PrimitiveError(STALE_COMMAND_LIST);
     }
     const expectedPageHashes = args.expectedPageHashes;
     const positioned = !inserting || args.index !== undefined || path.length > 1;
@@ -189,7 +189,7 @@ function editPrimitive(kind: DialogueKind, action: Action): SmallTaskPrimitive {
       }
       // 최상위 명령 해시는 하위 분기도 포함하므로 같은 내용의 줄로 위치가 밀려도 확인할 수 있다.
       if (!jsonEqual(page.commands.map(eventCommandHash), expectedPageHashes)) {
-        throw new PrimitiveError("페이지의 명령 목록이 바뀌었습니다. 그 페이지를 다시 읽어 주세요.");
+        throw new PrimitiveError(STALE_COMMAND_LIST);
       }
     }
     const edits = Object.fromEntries(Object.keys(fields).filter(key => Object.hasOwn(args, key)).map(key => [key, args[key]]));

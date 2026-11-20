@@ -3,6 +3,8 @@ import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { createInterpreter } from "@/player/interpreter";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
@@ -11,7 +13,7 @@ import { jsonEqual } from "@/util/structuralJson";
 import { normalizeEventPage } from "@/editor/eventPages";
 import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { getTool } from "@/editor/tools/toolRegistry";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/01-cmd-dialogue";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
@@ -140,10 +142,14 @@ const pageId = "page_dialogue_sample";
 const fixtures = new Map<Fixture, Project>();
 
 beforeAll(() => {
-  for (const fixture of ["blank", "built", "maou"] as const) {
-    fixtures.set(fixture, loadFixture(fixture));
+  for (const name of ["blank", "built", "maou"] as const) {
+    const fixture = loadFixture(name);
+    // Prepare the store's normalized data before runPrimitive freezes the baseline.
+    ensureSwitchVariableSlots(fixture);
+    removeLegacySpriteReferences(fixture);
+    fixtures.set(name, fixture);
   }
-}, 120_000);
+}, 240_000);
 
 function arrange(fixture: Fixture, commands: Command[]) {
   const base = fixtures.get(fixture)!;
@@ -179,6 +185,7 @@ it.each(cases.flatMap(shape => (["insert", "update"] as const).map(action => ({
   expect(readPage(after).commands).toStrictEqual(expected);
   expect(readPage(project).commands).toStrictEqual([original, continuation]);
   expect(readPage(after, 1)).toBe(siblingPage);
+  expect(after.database).toBe(project.database);
   expect(sentence).toBe(primitive.describe({ project, target }, args));
   expect(sentence).toMatch(/[가-힣].*합니다\.$/u);
   expectKoreanSentence(sentence, target);
@@ -225,7 +232,9 @@ it.each([
 });
 
 it("다른 페이지를 인자로 지정하거나 선택한 페이지 밖의 줄을 새로 만들 수 없다", () => {
-  const { project, target, siblingPage } = arrange("blank", [continuation]);
+  const { project, target, mapId, siblingPage } = arrange("blank", [continuation]);
+  const eventOnly = eventTarget(project, mapId, eventId);
+  expect(() => runPrimitive(project, eventOnly, "cmd.text.insert", { body: "새 대사" })).toThrow(SELECT_EVENT_PAGE);
   expect(() => runPrimitive(project, target, "cmd.text.insert", {
     body: "다른 페이지로 보냅니다.", pageId: siblingPage.id,
   })).toThrow(PrimitiveError);
@@ -250,7 +259,7 @@ it("이벤트에서 읽은 위치로 분기 안의 대사를 변경하고 오래
   const update = (expectedHash: string) => runSmallTaskPrimitiveTool(context, APPLY_SMALL_TASK_PRIMITIVE, {
     id: "cmd.text.update", args: { ...args, expectedHash },
   });
-  await expect(update("stale")).rejects.toThrow("명령 줄이 바뀌었습니다");
+  await expect(update("stale")).rejects.toThrow(STALE_COMMAND_LIST);
   expect(context.project).toBe(project);
   await expect(update(row.hash)).resolves.toMatchObject({ ok: true });
   expect(readPage(context.project).commands).toStrictEqual([{
@@ -259,13 +268,31 @@ it("이벤트에서 읽은 위치로 분기 안의 대사를 변경하고 오래
   expect(jsonEqual(readPage(project).commands, [choices])).toBe(true);
 });
 
+it("대사를 수정한 뒤 새 줄 해시로 이동하고 삭제한다", async () => {
+  const { project, target, readPage, siblingPage } = arrange("blank", [continuation, { kind: "wait", ms: 50 }]);
+  const position = updatePosition(readPage(project).commands, continuation);
+  const body = "수정한 대사를 옮깁니다.";
+  const { after: edited } = runPrimitive(project, target, "cmd.text.update", { ...position, body });
+  const { index, expectedHash } = position;
+  expect(() => runPrimitive(edited, target, "cmd.move", { index, toIndex: 1, expectedHash })).toThrow(STALE_COMMAND_LIST);
+  expect(() => runPrimitive(edited, target, "cmd.delete", { index, expectedHash })).toThrow(STALE_COMMAND_LIST);
+  const [text, wait] = readPage(edited).commands;
+  const freshHash = eventCommandHash(text!);
+  const { after: moved } = runPrimitive(edited, target, "cmd.move", { index, toIndex: 1, expectedHash: freshHash });
+  expect(readPage(moved).commands).toStrictEqual([wait, { ...continuation, body }]);
+  const { after: deleted } = runPrimitive(moved, target, "cmd.delete", { index: 1, expectedHash: freshHash });
+  expect(readPage(deleted).commands).toStrictEqual([wait]);
+  expect(readPage(deleted, 1)).toBe(siblingPage);
+  await expectUndoRestores(project, deleted, target);
+});
+
 it("같은 종류의 명령이 앞으로 끼어들면 확인값 없는 수정과 오래된 위치의 수정을 거부한다", () => {
   const preceding = { ...continuation, body: "새로 끼워 넣은 대사입니다." };
   const { project, target, readPage } = arrange("blank", [preceding, continuation]);
   const args = { index: 0, body: "두 번째 대사만 고칩니다." };
   expect(() => runPrimitive(project, target, "cmd.text.update", args)).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.text.update", { ...args, ...updatePosition([continuation], continuation) }))
-    .toThrow("명령 줄이 바뀌었습니다");
+    .toThrow(STALE_COMMAND_LIST);
   expect(readPage(project).commands).toStrictEqual([preceding, continuation]);
 });
 
@@ -274,10 +301,10 @@ it("같은 내용의 줄이 끼어들면 줄 해시가 일치해도 수정과 �
   const { project, target, readPage } = arrange("blank", [duplicate, continuation]);
   const oldPosition = updatePosition([continuation], continuation);
   const body = "조회한 줄 근처만 편집합니다.";
-  expect(() => runPrimitive(project, target, "cmd.text.update", { ...oldPosition, body })).toThrow("명령 목록이 바뀌었습니다");
+  expect(() => runPrimitive(project, target, "cmd.text.update", { ...oldPosition, body })).toThrow(STALE_COMMAND_LIST);
   expect(() => runPrimitive(project, target, "cmd.text.insert", {
     index: 0, expectedPageHashes: oldPosition.expectedPageHashes, body,
-  })).toThrow("명령 목록이 바뀌었습니다");
+  })).toThrow(STALE_COMMAND_LIST);
   expect(() => runPrimitive(project, target, "cmd.text.insert", { index: 0, body })).toThrow("명령 위치를 확인할 수 없습니다");
   const { after } = runPrimitive(project, target, "cmd.text.insert", {
     index: 1, expectedPageHashes: [duplicate, continuation].map(eventCommandHash), body,
@@ -295,10 +322,10 @@ it("분기 순서가 바뀌면 같은 내용의 하위 줄을 수정하거나 �
   const body = "조회한 분기만 편집합니다.";
   const position = updatePosition([original], continuation);
   expect(() => runPrimitive(project, target, "cmd.text.update", { ...position, branchPath: [0, 0], body }))
-    .toThrow("명령 목록이 바뀌었습니다");
+    .toThrow(STALE_COMMAND_LIST);
   expect(() => runPrimitive(project, target, "cmd.text.insert", {
     branchPath: [0, 0], expectedPageHashes: position.expectedPageHashes, body,
-  })).toThrow("명령 목록이 바뀌었습니다");
+  })).toThrow(STALE_COMMAND_LIST);
   expect(readPage(project).commands).toStrictEqual([reordered]);
 });
 
@@ -565,7 +592,8 @@ it.each(seededCases)("$request", async ({ primitive, args, fields }) => {
   const { after, sentence } = runPrimitive(project, target, primitive, {
     ...args, ...updatePosition([original!, continuation], original!, args.index),
   });
-  const expected = { ...original!, ...fields };
+  const expected: Record<string, unknown> = { ...original! };
+  Object.assign(expected, fields);
   if (primitive === "cmd.presentItem.update" && args.itemIds?.length === 0) Reflect.deleteProperty(expected, "itemIds");
   expect(jsonEqual(readPage(after).commands, [expected, continuation])).toBe(true);
   expectKoreanSentence(sentence, target);
