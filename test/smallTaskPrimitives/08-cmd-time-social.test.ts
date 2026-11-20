@@ -233,6 +233,16 @@ it("이벤트 읽기에서 받은 위치와 지문으로 선택한 분기의 한
   expect(jsonEqual(stored(project), [fork, greeting])).toBe(true);
 });
 
+it("다른 종류로 바뀐 줄은 오래된 지문을 먼저 거절한다", () => {
+  const original = { kind: "timer", action: "set", seconds: 30 } as const;
+  const replacement = { kind: "wait", ms: 100 } as const;
+  const { project, target } = setup("blank", [replacement]);
+  const args = { index: 0, seconds: 45, expectedHash: eventCommandHash(original) };
+  expect(() => runPrimitive(project, target, "cmd.timer.update", args)).toThrow(STALE_COMMAND_LIST);
+  expectRefused(project, target, "cmd.timer.update", { ...args, expectedHash: eventCommandHash(replacement) },
+    /타이머.*명령이 아니에요/u);
+});
+
 it("시간 시스템이 꺼져 있으면 작동할 수 없는 시각·날짜 명령을 거절한다", () => {
   const { project, target } = setup("blank", [greeting]);
   const disabled = { ...project, system: { ...project.system, timeSystem: { enabled: false } } };
@@ -274,6 +284,28 @@ it("시간표의 하루 길이로 일·시간·분을 합산하고 시각이 보
   expect(setTimeWithMakers(after, session, inserted as Extract<Command, { kind: "setTime" }>))
     .toMatchObject({ ok: true, time: { hour: 27, minute: 0 } });
   expect(sentence).toContain("27:00");
+});
+
+it.each([
+  { days: -1000, withinLimit: 7920, overLimit: 7921 },
+  { days: 395.9, withinLimit: 20, overLimit: 21 },
+])("저장된 일 수 $days를 플레이어와 같은 방식으로 보정해 한도를 검사한다", ({ days, withinLimit, overLimit }) => {
+  const original = { kind: "advanceTime", days } as const;
+  const { project, target } = setup("blank", [original]);
+  const timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep: false };
+  const clock = { ...project, system: { ...project.system, timeSystem } };
+  const args = { index: 0, expectedHash: eventCommandHash(original) };
+  expectRefused(clock, target, "cmd.advanceTime.update", { ...args, hours: overLimit }, /396일/u);
+  const { after } = expectApplies(clock, target, "cmd.advanceTime.update", { ...args, hours: withinLimit });
+  expect(stored(after)).toEqual([{ ...original, hours: withinLimit }]);
+});
+
+it("작물 성장 미리보기에 일일 확인 횟수와 물주기 조건을 안내한다", () => {
+  const { project, target } = setup("blank");
+  const { sentence } = expectApplies(project, target, "cmd.advanceCropGrowth.insert", { days: 5 });
+  expect(sentence).toBe("작물의 일일 성장 여부를 5번 확인하는 명령을 추가합니다.");
+  const primitive = PRIMITIVES.find(row => row.id === "cmd.advanceCropGrowth.insert");
+  expect(primitive?.args.properties?.days?.description).toContain("다시 물을 주어야");
 });
 
 it.each([

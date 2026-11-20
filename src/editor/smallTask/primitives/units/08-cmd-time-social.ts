@@ -5,7 +5,7 @@ import { timerIdLabel } from "@/editor/panels/eventEditor/options";
 import type { JsonSchema } from "@/editor/tools/types";
 import { commandGuarantee } from "@/project/commandGuaranteeRegistry";
 import {
-  EventCommandEditError, insertEventCommand, updateEventCommand,
+  EventCommandEditError, eventCommandHash, insertEventCommand, updateEventCommand,
 } from "@/project/eventCommands/singleCommandOps";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
@@ -68,7 +68,7 @@ const commands: Record<Kind, { title: string; fields: Fields; required?: readonl
   },
   advanceCropGrowth: {
     title: "작물 성장 진행",
-    fields: { days: count("작물이 자랄 날 수.", 0, MAX_ADVANCE_DAYS) },
+    fields: { days: count("일일 작물 성장 확인 횟수. 작물이 자라면 물주기 상태가 초기화되며, 다시 물을 주어야 더 자랍니다.", 0, MAX_ADVANCE_DAYS) },
   },
   setTime: {
     title: "시각 설정",
@@ -139,8 +139,10 @@ function checkCommand(project: Project, event: GameEvent, command: TimeSocialCom
       }
       if (command.kind === "advanceTime") {
         const minutesPerDay = 60 * (system.dayEndHour - system.dayStartHour);
-        const minutes = (command.hours ?? 0) * 60 + (command.minutes ?? 0);
-        if ((command.days ?? 0) + Math.ceil(minutes / minutesPerDay) > MAX_ADVANCE_DAYS) {
+        // The player clamps whole days and the combined clock minutes separately.
+        const days = Math.max(0, Math.trunc(command.days ?? 0));
+        const minutes = Math.max(0, Math.trunc((command.hours ?? 0) * 60 + (command.minutes ?? 0)));
+        if (days + Math.ceil(minutes / minutesPerDay) > MAX_ADVANCE_DAYS) {
           throw new PrimitiveError(`한 명령에서 최대 ${MAX_ADVANCE_DAYS}일을 진행할 수 있어요. 일·시간·분을 줄여 주세요.`);
         }
       } else if (command.kind === "setTime") {
@@ -222,7 +224,7 @@ function summary(project: Project, event: GameEvent, command: TimeSocialCommand)
       return `시간을 ${duration || "0분"} 진행하는`;
     }
     case "advanceCropGrowth":
-      return `작물을 ${command.days}일만큼 자라게 하는`;
+      return `작물의 일일 성장 여부를 ${Math.max(0, Math.trunc(command.days))}번 확인하는`;
     case "setTime": {
       const hour = String(command.hour).padStart(2, "0");
       const minute = String(command.minute ?? 0).padStart(2, "0");
@@ -282,6 +284,10 @@ function prepareEdit(ctx: PrimitiveContext, args: Record<string, unknown>, kind:
   const path = [...branch, index];
   const current = operation === "update" ? list?.[index] : undefined;
   if (operation === "update" && current?.kind !== kind) {
+    // This path exits before updateEventCommand can check the hash.
+    if (current && eventCommandHash(current) !== args.expectedHash) {
+      throw new EventCommandEditError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.", "stale-event-command");
+    }
     throw new PrimitiveError(`그 줄은 ‘${commands[kind].title}’ 명령이 아니에요. 고칠 줄을 다시 확인해 주세요.`);
   }
 
