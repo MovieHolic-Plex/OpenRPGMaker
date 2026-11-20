@@ -455,3 +455,15 @@
   border-color: var(--danger);
   color: var(--on-accent);
 }
+
+.event-editor-modal-window:has(> .event-editor-small-task) {
+  grid-template-rows: var(--hierarchy-header-height) auto minmax(0, 1fr) var(--hierarchy-footer-height);
+}
+
+.event-editor-modal-window > .event-editor-small-task {
+  position: static;
+  margin-block: 6px;
+  max-width: calc(100% - 16px);
+  max-height: 35dvh;
+  justify-self: start;
+}
