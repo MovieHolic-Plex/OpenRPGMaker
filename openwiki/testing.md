@@ -108,6 +108,8 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 (2026-10-07, run 37597174386). parity 는 타입체크와 같은 `/home/dev/ci/typecheck.lock` 으로 직렬화한다.
 힙을 3584MB 로 되돌리지 않는다.
 
+2026-11-20 #4842에서 공유 러너의 `ci-fast` parity 세 샤드가 두 번 연속 테스트별 15초 제한을 넘겼다. 같은 파일의 검증은 로컬에서 통과했다. `ci-fast` parity 단계에만 테스트별 60초 제한을 지정한다.
+
 ## ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
 
 `ci-full.slice` 가 12GiB 이고 러너 서비스 `NODE_OPTIONS` 가 `--max-old-space-size=4096` 이면
