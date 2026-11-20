@@ -48,15 +48,19 @@ for (const file of files) {
     const fixtures = new Map<FixtureName, Project>();
     for (const entry of cases) {
       it(entry.request, async () => {
-        let before = fixtures.get(entry.fixture);
-        if (!before) {
-          before = loadFixture(entry.fixture);
-          fixtures.set(entry.fixture, before);
+        let fixture = fixtures.get(entry.fixture);
+        if (!fixture) {
+          fixture = loadFixture(entry.fixture);
+          fixtures.set(entry.fixture, fixture);
         }
+        const before = entry.setup
+          ? { ...fixture, commonEvents: structuredClone(entry.setup.commonEvents) }
+          : fixture;
         const target = resolveTarget(before, entry.target);
         const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
         if (entry.expectRefusal) {
           expect(apply).toThrow(PrimitiveError);
+          if (entry.refusalMessage) expect(apply).toThrow(entry.refusalMessage);
           return;
         }
         const { after, sentence } = apply();

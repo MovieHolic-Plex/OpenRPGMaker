@@ -1,5 +1,7 @@
 /** @vitest-environment happy-dom */
 import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { readCheckPath, resolveTarget, type CorpusCase, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -8,11 +10,8 @@ import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectKoreanSentence, expectUndoRestores, loadFixture } from "../harness";
 
-// 공용 픽스처에는 공용 이벤트가 없으므로 이 코퍼스에서 사례별 초기 목록을 넣는다.
-type CommonEventCorpusCase = CorpusCase & { setup?: Pick<Project, "commonEvents">; refusalMessage?: string };
-
-const file = new URL("../../../harness-data/small-task-corpus/30-common-events.json", import.meta.url);
-const cases = JSON.parse(readFileSync(file, "utf8")) as CommonEventCorpusCase[];
+const file = resolve(dirname(fileURLToPath(import.meta.url)), "../../../harness-data/small-task-corpus/30-common-events.json");
+const cases = JSON.parse(readFileSync(file, "utf8")) as CorpusCase[];
 const fixtures = new Map<FixtureName, Project>();
 
 it("공용 이벤트 동작마다 한국어 요청 여덟 건 이상과 검증할 거절 사유 두 건 이상이 있다", () => {

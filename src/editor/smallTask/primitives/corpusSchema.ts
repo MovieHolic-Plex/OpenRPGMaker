@@ -21,12 +21,14 @@ export interface Check {
 export interface CorpusCase {
   request: string;
   fixture: FixtureName;
+  setup?: Pick<Project, "commonEvents">;
   target: TargetSelector;
   selection?: PrimitiveContext["selection"];
   primitive: string;
   args: Record<string, unknown>;
   expect?: Check[];
   expectRefusal?: true;
+  refusalMessage?: string;
 }
 
 export function resolveTarget(project: Project, selector: TargetSelector): SmallTaskTarget {
