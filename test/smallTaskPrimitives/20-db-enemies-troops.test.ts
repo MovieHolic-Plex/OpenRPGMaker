@@ -4,13 +4,17 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { enemyBattlers } from "@/battle/battleBattlers";
 import { battleCommandsForActor } from "@/battle/battleCommands";
 import { collectBattleRewards } from "@/battle/battleRewards";
+import { smallTaskBase } from "@/editor/smallTask/history";
 import { plainSummary } from "@/editor/smallTask/plainSummary";
+import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/20-db-enemies-troops";
 import { setLocale, t } from "@/i18n";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { startSession } from "@/project/session";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { scaledEncounterRate } from "@/project/terrainStep";
 import type { Command, CommonEvent, GameEvent, Project, TroopRecord } from "@/project/types";
@@ -34,7 +38,19 @@ const fixtures = new Map<Case["fixture"], Project>();
 function fixtureProject(fixture: Case["fixture"]): Project {
   const cached = fixtures.get(fixture);
   if (cached) return cached;
-  const project = loadFixture(fixture);
+  const seed = loadFixture(fixture);
+  const project: Project = {
+    ...seed,
+    switches: [...seed.switches],
+    variables: [...seed.variables],
+    session: {
+      ...seed.session,
+      switches: { ...seed.session.switches },
+      variables: { ...seed.session.variables },
+    },
+  };
+  // Match store initialization before the primitive freezes its baseline.
+  ensureSwitchVariableSlots(project);
   fixtures.set(fixture, project);
   return project;
 }
@@ -428,7 +444,7 @@ it("전투가 중첩 호출한 공통 이벤트의 적 대상까지 보호한다
 
 function openBattle(project: Project, troopId: string) {
   const command: Command = { kind: "battleProcessing", troopId, canEscape: false, canLose: true };
-  const step = createInterpreter([command], structuredClone(project.session), project).start();
+  const step = createInterpreter([command], startSession(project, 1), project).start();
   expect(step).toMatchObject({ kind: "battleProcessing", troopId });
   return enemyBattlers(project, project.database.troops.find(row => row.id === troopId)!);
 }
@@ -491,7 +507,7 @@ it("새 전투 명령에 연결한 공통 이벤트가 실행되어 스위치를
   const catalog = after.database.battleCommands!.at(-1)!;
   const menu = battleCommandsForActor(after, actor.id, { overrideCommandIds: [catalog.id] });
   expect(menu).toMatchObject([{ name: "신호 보내기", commonEventId: commonEvent.id }]);
-  const session = structuredClone(after.session);
+  const session = startSession(after, 1);
   session.switches[switchId] = false;
   expect(createInterpreter([{ kind: "callCommonEvent", commonEventId: menu[0]!.commonEventId! }], session, after).start()).toEqual({ kind: "done" });
   expect(session.switches[switchId]).toBe(true);
@@ -564,8 +580,16 @@ it("삭제 가드에 열린 이벤트 초안이 전달되면 초안의 전투 �
     commands: [{ kind: "battleProcessing", troopId: id, canEscape: false, canLose: true }],
     draft: { kind: "new" },
   };
-  const project = { ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, draft] } } };
-  expectRefused(project, select(project, "troops", id), "db.troops.delete", {}, /사용 중/u);
+  const live = { ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, draft] } } };
+  const target = select(live, "troops", id);
+  expectRefused(live, target, "db.troops.delete", {}, /사용 중/u);
+
+  const before = smallTaskBase(live, target);
+  expect(before.maps[map.id]?.events.some(event => event.id === draft.id)).toBe(false);
+  const remove = () => runPrimitive(before, target, "db.troops.delete", {}, undefined, live);
+  expect(remove).toThrow(PrimitiveError);
+  expect(remove).toThrow(/이벤트.*자료집 항목은 삭제할 수 없습니다/u);
+  expect(live.database.troops.some(troop => troop.id === id)).toBe(true);
 });
 
 it.each([
