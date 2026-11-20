@@ -1,4 +1,5 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
+import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
@@ -415,13 +416,16 @@ function piProviderStream(provider: string, stallLimits = modelStallLimits()): S
 /** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
 async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
   const started = Date.now();
-  const { target, maxToolCalls } = scope;
+  const { target, maxToolCalls, selection } = scope;
   const base = request.project;
-  const ctx: ToolContext = { project: base, assistantRun: true, ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }) };
+  const ctx: SmallTaskToolContext = {
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection,
+    ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
+  };
   const cli = localCliIdOf(request.provider);
   const model = cli ? undefined : options.model ?? resolvePiModel(request.provider, request.model);
   const keyForRun = () => options.providerApiKeys?.[request.provider] ?? options.apiKey;
-  const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. 대상: ${JSON.stringify(target)}`;
+  const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. list_small_task_primitives에서 맞는 동작을 찾으면 그 동작을 쓴다. 명령 줄을 고치기 전에는 get_event에서 includeCommandHashes를 켜고 줄 위치와 해시를 확인한다. 대상: ${JSON.stringify(target)}`;
   const controller = new AbortController();
   const signal = options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal;
   const toolNames = smallTaskTools(target);
@@ -434,7 +438,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     controller.abort();
     return undefined;
   };
-  const tools = createPiToolset(ctx, {
+  const registryTools = createPiToolset(ctx, {
     toolNames,
     eventAssistChat: async (_config, chat) => {
       if (cli) return { message: { role: "assistant", content: await localCliChat(cli, request.model)(chat.messages, signal) }, finishReason: "stop" };
@@ -444,14 +448,23 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
       const choice = completion.choices[0];
       return { message: { role: "assistant", content: choice?.message.content ?? "" }, finishReason: choice?.finish_reason ?? null };
     },
-  }).map(tool => ({
+  });
+  const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)).map((tool): PiToolShape => ({
+    ...tool,
+    label: tool.name,
+    async execute(_id, params) {
+      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      return { content: [{ type: "text", text: JSON.stringify(result) }] };
+    },
+  }));
+  const tools = [...registryTools, ...primitiveTools].map(tool => ({
     ...tool,
     concurrency: "exclusive" as const,
     async execute(id: string, params: unknown, toolSignal?: AbortSignal) {
       signal.throwIfAborted();
       if (++toolCalls > maxToolCalls) throw new Error("한 번에 할 수 있는 작업 수를 넘었어요.");
       const raw = params as Record<string, unknown>;
-      const args = normalizeToolArgs(tool.name, tool.name === "find_events" && target.kind === "map" && raw.mapId === undefined
+      const args = isSmallTaskPrimitiveTool(tool.name) ? raw : normalizeToolArgs(tool.name, tool.name === "find_events" && target.kind === "map" && raw.mapId === undefined
         ? { ...raw, mapId: target.mapId } : raw);
       const refusal = smallTaskRefusal(target, tool.name, args);
       if (refusal) {

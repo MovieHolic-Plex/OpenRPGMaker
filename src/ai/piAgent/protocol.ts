@@ -11,7 +11,7 @@ import type { ConstructionLog } from "@/editor/tools/constructionLog";
 // Pi 경로는 루프가 Bun 쪽에 있어 브라우저는 진행 이벤트만 받고, 마지막 `done` 에 결과
 // 프로젝트가 실린다. 적용은 브라우저의 커밋 게이트가 그대로 맡는다.
 
-import type { GameMap, Project } from "@/project/types";
+import type { GameMap, Project, Rect } from "@/project/types";
 import type { PiMapDelta } from "./mapDelta";
 import type { PiTeamSpec } from "./teamSpec";
 import { jsonEqual } from "../../util/structuralJson";
@@ -145,8 +145,12 @@ export interface PiAgentRequest {
   readonly toolDomains?: readonly string[];
   /** Initial schema candidates only; discovery may expand them. Not a permission boundary. */
   readonly initialToolNames?: readonly string[];
-  /** Host-selected narrow edit. The worker derives its tool allowlist and argument guard from this target. */
-  readonly smallTask?: { readonly target: import("@/editor/smallTask/target").SmallTaskTarget; readonly maxToolCalls: number };
+  /** Host-selected narrow edit. The worker derives its tool allowlist and argument guard from this scope. */
+  readonly smallTask?: {
+    readonly target: import("@/editor/smallTask/target").SmallTaskTarget;
+    readonly maxToolCalls: number;
+    readonly selection?: { readonly rect: Readonly<Rect> };
+  };
   /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */

@@ -134,6 +134,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   highlight_map_region: inspect("영역 표시", "selection"),
   find_layout_regions: inspect("빈 자리 찾기", "selection"),
   find_events: inspect("이벤트 찾기"),
+  list_small_task_primitives: inspect("작은 일 동작 읽기"),
+  apply_small_task_primitive: people("작은 일 동작 적용", "flag"),
   get_event: inspect("이벤트 읽기"),
   explain_event: inspect("이벤트 설명", "question"),
   read_event_run_log: inspect("실행 기록 읽기", "question"),

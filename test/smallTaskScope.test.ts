@@ -276,3 +276,111 @@ describe("작은 일 범위 검사", () => {
     }
   });
 });
+
+describe("선택 영역, 맵 속성, 새 맵과 프로젝트 항목 범위", () => {
+  const region = { kind: "mapRegion", mapId: town, rect: { x: 1, y: 0, w: 2, h: 2 } } as const;
+  const meta = { kind: "mapMeta", mapId: town } as const;
+  const newMap = { kind: "newMap", max: 1, sourceMapId: town } as const;
+  const link = (from: string, to: string) => ({
+    id: "path", from: { mapId: from, x: 0, y: 0 }, to: { mapId: to, x: 0, y: 0 }, playerEnabled: true, npcEnabled: false,
+  });
+
+  it("선택한 영역에서만 여러 층, 그림자와 타일 더미를 바꾼다", () => {
+    expect(verify(region, p => {
+      const map = p.maps[town]!;
+      setLayerTileAt(map, 1, 1, 3);
+      setLayerTileAt(map, 2, 4, 7);
+      setLayerTileAt(map, 3, 5, 8);
+      setLayerTileAt(map, 4, 2, 9);
+      setShadowAt(map, 4, 1);
+      map.upperTileStacks = { 2: [1, 2] };
+    })).toEqual({ ok: true });
+    rejects(region, p => { p.maps[town]!.lowerTiles[3] = 3; }, "선택 영역 바깥 타일");
+    rejects(region, p => { p.maps[town]!.upperTileStacks = { 7: [1] }; }, "타일 더미");
+    rejects(region, p => { p.maps[town]!.upperTiles.push(-1); }, "타일 층 크기");
+    rejects(region, p => { target(p).name = "다른 상자"; }, "보물상자");
+    rejects(region, p => { p.maps[town]!.name = "다른 마을"; }, "속성");
+    rejects(region, p => { p.maps.woods!.upperTiles[0] = 5; }, "숲");
+    rejects({ ...region, rect: { x: 1, y: 1, w: 3, h: 1 } }, () => {}, "선택 영역");
+  });
+
+  it("통행 표를 공유하는 다른 칸까지 영향을 받으면 거절한다", () => {
+    const before = structuredClone(base);
+    const map = before.maps[town]!;
+    const tileset = seed.tilesets[map.tilesetId]!;
+    before.tilesets[map.tilesetId] = { ...tileset, passability: [
+      { up: true, down: true, left: true, right: true }, { up: true, down: true, left: true, right: true },
+    ] };
+    before.maps.woods!.tilesetId = "foreign";
+    map.upperTiles[4] = 1;
+    const after = structuredClone(before);
+    after.tilesets[map.tilesetId]!.passability[1]!.up = false;
+    expect(checkSmallTaskScope(before, after, region)).toEqual({ ok: true });
+    after.maps[town]!.upperTiles[0] = 1;
+    expect(checkSmallTaskScope(before, after, region)).toMatchObject({ ok: false, reason: expect.stringContaining("타일셋") });
+  });
+
+  it("맵 속성과 조우 표, 장소, 연결, 해당 맵을 향한 시작 위치를 허용한다", () => {
+    expect(verify(meta, p => {
+      p.maps[town]!.name = "새 마을";
+      p.maps[town]!.encounterTable = [];
+      p.maps[town]!.locations = [];
+      p.mapConnections = [link(town, "woods")];
+      p.startPos = { x: 2, y: 1 };
+    })).toEqual({ ok: true });
+    rejects(meta, p => { p.maps[town]!.upperTiles[4] = 1; }, "타일");
+    rejects(meta, p => { page(p).commands.pop(); }, "보물상자");
+    rejects(meta, p => { p.maps[town]!.width++; }, "속성");
+    rejects(meta, p => { p.startMapId = "woods"; }, "프로젝트의 다른 설정");
+    rejects(meta, p => { p.mapConnections = [link("woods", "woods")]; }, "맵 연결");
+  });
+
+  it("새 맵 한 장의 목록과 지정된 출발 맵 연결만 추가한다", () => {
+    const add = (p: Project) => {
+      p.maps.field = { ...p.maps.woods!, id: "field", name: "들판" };
+      p.mapTree.children.push({ mapId: "field", children: [] });
+      p.mapConnections = [link(town, "field")];
+    };
+    expect(verify(newMap, add)).toEqual({ ok: true });
+    rejects(newMap, p => { add(p); p.maps.other = { ...p.maps.field!, id: "other" }; }, "새 맵은 한 장");
+    rejects(newMap, p => { add(p); p.mapTree.children.pop(); }, "목록 항목");
+    rejects(newMap, p => { add(p); p.mapConnections = [link("woods", "field")]; }, "맵 연결");
+    rejects(newMap, p => { add(p); p.maps[town]!.name = "바뀐 마을"; }, "속성");
+  });
+
+  it("지정된 프로젝트 행만 수정·삭제하고 허용된 수의 행을 추가한다", () => {
+    const before = structuredClone(base);
+    before.commonEvents = [
+      { id: "first", name: "인사", trigger: "none", commands: [] },
+      { id: "second", name: "작별", trigger: "none", commands: [] },
+    ];
+    const after = structuredClone(before);
+    after.commonEvents.splice(0, 1, { ...before.commonEvents[0]!, id: "third", name: "환영" });
+    const scope = { kind: "projectArea", area: "commonEvents", ids: ["first"], create: 1 } as const;
+    expect(checkSmallTaskScope(before, after, scope)).toEqual({ ok: true });
+    after.commonEvents[1]!.name = "작업 밖 인사";
+    expect(checkSmallTaskScope(before, after, scope)).toMatchObject({ ok: false, reason: expect.stringContaining("공용 이벤트") });
+    rejects({ kind: "projectArea", area: "endings", create: 0 }, p => {
+      p.endings = [{ id: "new", title: "여행의 끝" }] as Project["endings"];
+    }, "새 항목 수");
+  });
+
+  it("시스템의 이름을 지정한 필드만 바꾼다", () => {
+    const scope = { kind: "projectArea", area: "system", ids: ["title", "startGold"] } as const;
+    expect(verify(scope, p => { p.meta.title = "새 게임"; p.session.gold = 80; })).toEqual({ ok: true });
+    rejects(scope, p => { p.system.cameraZoom = 2; }, "게임 시스템 설정");
+    rejects(scope, p => { p.meta.author = "새 저자"; }, "프로젝트 정보");
+  });
+
+  it("명시적으로 골랐을 때만 페이지 조건 변경과 자료집 행 삭제를 허용한다", () => {
+    const changeCondition = (p: Project) => { page(p).conditions.push({ kind: "gold", op: ">=", amount: 1 }); };
+    const scope = { ...eventPage, field: "conditions" } as const;
+    expect(verify(scope, changeCondition)).toEqual({ ok: true });
+    rejects(eventPage, changeCondition, "보물상자");
+    rejects(scope, p => { page(p).commands.pop(); }, "보물상자");
+    const erase = (p: Project) => { p.database.items.shift(); };
+    expect(verify({ ...item, remove: true }, erase)).toEqual({ ok: true });
+    rejects(item, erase, "회복약");
+    rejects({ ...item, remove: true }, p => { p.database.items.pop(); }, "마력약");
+  });
+});

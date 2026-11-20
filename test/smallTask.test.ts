@@ -3,6 +3,7 @@ import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
 import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsule";
+import { editorState } from "@/editor/editorState";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 import { runSmallTask } from "@/editor/smallTask/run";
@@ -81,9 +82,15 @@ it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼�
   }
 });
 
-it("ChatGPT 로그인 요청을 조수의 Pi HTTP 경로로 보내고 호스트 대상과 동반 서비스 토큰을 싣는다", async () => {
+it.each([
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 } },
+  { kind: "event", selectedMapId: "another_map", rect: undefined },
+  { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
+])("작은 일 Pi HTTP 요청에 호스트 대상과 같은 맵의 선택 영역을 싣는다 ($kind, $selectedMapId)", async ({ kind, selectedMapId, rect }) => {
   const project = fixture();
-  const target = dbTarget(project, "items", "id_first")!;
+  const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
+  const previousSelection = editorState.get().selection;
+  editorState.set({ selection: { mapId: selectedMapId, x: 2, y: 3, width: 4, height: 5 } });
   const signal = new AbortController().signal;
   const config = { authMode: "chatgpt", apiKey: "", providerId: "openai-codex", model: "gpt-6.1-sol",
     roleModelsPolicyVersion: 1, roleModels: { deep: { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" } } };
@@ -93,6 +100,7 @@ it("ChatGPT 로그인 요청을 조수의 Pi HTTP 경로로 보내고 호스트 
     const body = JSON.parse(String(init.body));
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
+    expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: [], stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
@@ -106,6 +114,7 @@ it("ChatGPT 로그인 요청을 조수의 Pi HTTP 경로로 보내고 호스트 
     expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);
   } finally {
     vi.unstubAllGlobals();
+    editorState.set({ selection: previousSelection });
   }
 });
 
