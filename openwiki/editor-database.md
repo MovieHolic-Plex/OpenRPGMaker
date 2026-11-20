@@ -927,6 +927,8 @@ The equipment header's native select consumes `equipmentSlots(project)` from `sr
 
 Actor initial-equipment pickers, build previews, equipment gallery/filter labels, change-equipment event authoring/previews, and the runtime menu enumerate the same catalog. Adding boots is not an accessory label alias. Built-in hand IDs retain their engine meaning even when renamed; selecting a non-weapon slot clears the incompatible two-handed flag. Existing art, effects, skills, and permission fields are otherwise preserved. Tests: `test/customEquipmentSlots.test.ts`, `test/playerEquipmentRules.test.ts`, `test/databaseEquipmentInspector.test.ts`.
 
+작은 일의 「이걸로 작업」은 장비 부위 관리의 각 행과 속성 상세 머리줄에서 열린다. 프로젝트에 따로 저장된 행이 없는 기본 칸도 고를 수 있다. 작은 일로 추가한 자료 행에는 UUID 기반 식별자를 써서 예전 플레이 세이브에 남은 식별자가 새 상품에 붙는 일을 피한다. 스크립트가 이벤트 명령을 실행할 수 있고 착용 호환성이 줄어드는 변경은 거절한다.
+
 ## 통합 아이템·장비 카탈로그 (2026-09-05)
 
 - 파티 레일은 `아이템·장비` (`db-tab-items`) 하나다. `databaseInventoryCatalog.ts`가 두 저장 컬렉션을 합쳐 표시하며 ID/저장 구조/장착 규칙은 바꾸지 않는다. `equipment`는 `setDatabaseActiveTab`/`switchDatabaseActiveTab`/`openDatabaseModal`에서 받는 호환 경로이며 별도 버튼이 아니다. 해당 경로는 기존 `selectedRecordIdForSession("equipment")`를 유지하고 장비 필터로 선택 항목을 연다. 새 모달의 세션 초기화도 이 대상 선택을 보존한다.
