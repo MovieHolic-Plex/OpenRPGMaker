@@ -1055,7 +1055,7 @@ const listProjectCommits: ToolDefinition = {
 // "속성 id 를 조회할 기능이 없다"며 작업 3건을 건너뛰었다. 참조 대상은 반드시 조회 가능해야 한다.
 export const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
-  "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
+  "battleAnimations", "skillChoreographies", "switches", "variables", "commonEvents", "quests", "maps",
   "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
   "characterAppearances", "terrains", "battleCommands", "equipmentSlots", "fishSpecies", "schedules",
   "farmBuildingTypes", "homeDecorationTypes",
@@ -1088,7 +1088,7 @@ const SETTING_COLLECTIONS = ["system", "terms"] as const;
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {position, id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을(«#3» = 목록 3번 — 편집기의 0003) 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
+  description: "컬렉션 레코드를 반환한다. 기본은 {position, id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만, query 로 이름·id 조각을(«#3» = 목록 3번 — 편집기의 0003) 고른다. limit 을 안 주면 결과 한도에 드는 만큼 한 쪽을 주고 nextOffset 으로 다음 쪽을 읽는다. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/skillChoreographies/switches/variables/commonEvents/quests/maps/elements/terrains/battleCommands/equipmentSlots/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/fishSpecies/schedules/characterAppearances, system(게임 설정), terms(용어).",
   mode: "read",
   parameters: {
     type: "object",

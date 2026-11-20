@@ -18,6 +18,7 @@ import { battleMotionFields } from "@/editor/panels/databaseBattleMotionFields";
 import { freshChoreographyId, cloneChoreographyRecord } from "@/assets/retroChoreographyClone";
 import { filterRetroChoreographies, retroChoreographyEntries, retroFxSheetKeys, retroFxSheetMeta, type RetroChoreographyEntry } from "@/assets/retroSkillCatalog";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { numberField, selectField, textControl, toggleSwitch } from "@/editor/panels/databaseControls";
 import { RETRO_TINT_INHERIT, colorToggleField, seField, sliderField, tintChipRow, weightField } from "@/editor/panels/databaseRetroHandleFields";
 import {
@@ -380,6 +381,7 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
     subtitle: editable.sourceId ? `복제 원본: ${editable.sourceId}` : undefined,
     tags: [motionLabel(editable.motion), `층 ${editable.layers.length}`],
   });
+  hero.append(recordSmallTask("skillChoreographies", id));
   refreshLive();
   return detailPane({ hero, body: cards, testid: "db-retro-choreo-detail" });
 }
