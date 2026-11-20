@@ -6,11 +6,12 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/17-db-actors-classes";
 import type { SmallTaskTarget } from "@/editor/smallTask/target";
+import { resolveDialogueText } from "@/player/dialogue";
 import { createInterpreter } from "@/player/interpreter";
 import { createActorRecord } from "@/project/actorModel";
 import { normalizeClassRecord } from "@/project/databaseRecordModel";
 import { startSession } from "@/project/session";
-import type { Project } from "@/project/types";
+import type { Command, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
 
@@ -31,13 +32,17 @@ function projectWithRows(kind: FixtureName): Project {
       ...project.database,
       actors: [...project.database.actors, spareActor],
       classes: [...project.database.classes, spareClass],
-      characterAppearances: [...(project.database.characterAppearances ?? []), look],
+      characterAppearances: [...(project.database.characterAppearances ?? []), { id: "appearance_other", name: "평상복", description: "" }, look],
     },
   };
 }
 
 function target(collection: Collection, id: string): SmallTaskTarget {
   return { kind: "dbEntry", collection, id, label: "자료집 항목" };
+}
+
+function commonCommands(project: Project, commands: Command[]): Project {
+  return { ...project, commonEvents: [...project.commonEvents, { id: "ce_review", name: "검수", trigger: "none", commands }] };
 }
 
 const actorTarget = target("actors", spareActor.id);
@@ -98,6 +103,12 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     const scope = primitive.scope({ project: before, target: example.target }, example.args);
     const outside = checkSmallTaskScope(before, { ...after, meta: { ...after.meta, title: "요청 밖 제목" } }, scope);
     expect(outside).toMatchObject({ ok: false, reason: expect.stringContaining("범위 밖") });
+    const other = before.database[collection]!.find(row => row.id !== example.target.id)!;
+    const changedRows = after.database[collection]!.map(row => row.id === other.id ? { ...row, name: "다른 항목" } : row);
+    expect(checkSmallTaskScope(before, { ...after, database: { ...after.database, [collection]: changedRows } }, scope).ok).toBe(false);
+    const extraRows = [...after.database[collection]!, { ...other, id: "unexpected_row" }];
+    expect(checkSmallTaskScope(before, { ...after, database: { ...after.database, [collection]: extraRows } }, scope).ok).toBe(false);
+    expect(() => runPrimitive(before, target(collection, "missing_row"), example.id, example.args)).toThrow("선택한 항목을 다시 골라");
     await expectUndoRestores(before, after, example.target);
   });
 
@@ -121,6 +132,18 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(before.database.characterAppearances?.at(-1)).toBe(look);
   });
 
+  it.each([
+    [actorTarget, "db.actors.create", { name: "   " }, "이름을 입력"],
+    [actorTarget, "db.actors.update", { initialLevel: 0 }, "형식을 확인"],
+    [actorTarget, "db.actors.update", { maxLevel: 100 }, "형식을 확인"],
+    [actorTarget, "db.actors.update", { id: "actor_hero", name: "대상 바꾸기" }, "형식을 확인"],
+    [classTarget, "db.classes.update", { maxHpAtLevel99: 100_000 }, "형식을 확인"],
+    [lookTarget, "db.characterAppearances.update", { characterIndex: 8 }, "형식을 확인"],
+    [lookTarget, "db.characterAppearances.update", { charsetResourceId: "   " }, "외형에 넣을"],
+  ] as const)("%o %s 입력값 경계를 확인한다", (selected, primitive, args, reason) => {
+    expect(() => runPrimitive(projectWithRows("blank"), selected, primitive, args)).toThrow(reason);
+  });
+
   it("시작 주인공과 참조 중인 직업·외형은 삭제를 거절한다", () => {
     const before = projectWithRows("blank");
     const starter = target("actors", before.system.startActorIds[0]);
@@ -128,6 +151,132 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(() => runPrimitive(before, classTarget, "db.classes.delete", {})).toThrow("사용 중인 직업");
     const { after } = runPrimitive(before, actorTarget, "db.actors.update", { appearanceId: look.id });
     expect(() => runPrimitive(after, lookTarget, "db.characterAppearances.delete", {})).toThrow("사용 중인 캐릭터 외형");
+  });
+
+  it("공용 이벤트의 중첩 조건과 전투 실패 분기에 남은 참조를 보호한다", () => {
+    const before = projectWithRows("built");
+    const troop = before.database.troops[0];
+    const project = commonCommands(before, [{
+      kind: "battleProcessing", troopId: troop.id, canEscape: false, canLose: true, branchOnResult: true,
+      defeatBranch: [{ kind: "fork", condition: { kind: "actor", actorId: spareActor.id, present: true }, then: [
+        { kind: "changeFace", resourceId: "", appearanceId: look.id, position: "left", flipHorizontally: false },
+      ] }],
+    }]);
+    expect(() => runPrimitive(project, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
+    expect(() => runPrimitive(project, lookTarget, "db.characterAppearances.delete", {})).toThrow("사용 중인 캐릭터 외형");
+    const { after } = runPrimitive(project, actorTarget, "db.actors.update", { name: "지안" });
+    expect(after.database.actors.at(-1)?.id).toBe(spareActor.id);
+    expect(after.commonEvents).toBe(project.commonEvents);
+  });
+
+  it("전투 페이지 조건과 다른 직업의 승급 대상을 보호한다", () => {
+    const before = projectWithRows("built");
+    const troop = before.database.troops[0];
+    before.database.troops = [{ ...troop, battleEventPages: [{
+      id: "bp_review", name: "검수", span: "battle",
+      conditions: [{ kind: "actorTurn", actorId: spareActor.id, turn: 1 }], commands: [],
+    }] }, ...before.database.troops.slice(1)];
+    before.database.actors.pop();
+    const existingClass = before.database.classes[0];
+    before.database.classes[0] = { ...existingClass, promotions: [{ toClassId: spareClass.id, requires: {} }] };
+    expect(() => runPrimitive(before, classTarget, "db.classes.delete", {})).toThrow("사용 중인 직업");
+    before.database.actors.push(spareActor);
+    expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
+  });
+
+  it("앞 행을 삭제해도 전투 뒤 대사의 주인공 번호가 다른 인물을 가리키지 않게 한다", () => {
+    const before = projectWithRows("built");
+    const nextActor = { ...spareActor, id: "actor_next", name: "하루" };
+    before.database.actors.push(nextActor);
+    const troop = before.database.troops[0];
+    const body = `\\n[ ${before.database.actors.length} ] 님!`;
+    before.database.troops = [{ ...troop, afterBattle: { victory: [{ kind: "text", body }] } }, ...before.database.troops.slice(1)];
+    expect(resolveDialogueText(body, { project: before, session: { variables: {} } })).toBe("하루 님!");
+    expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("대사의 주인공 번호");
+    expect(before.database.actors.at(-2)).toBe(spareActor);
+
+    const blank = projectWithRows("blank");
+    const escapedOnly = commonCommands(blank, [{ kind: "text", body: `\\N[1], \\\\N[${blank.database.actors.length}]` }]);
+    expect(runPrimitive(escapedOnly, actorTarget, "db.actors.delete", {}).after.database.actors).not.toContain(spareActor);
+  });
+
+  it("이름으로 연결한 화자를 보호하고 ID로 연결한 외형의 이름은 바꿀 수 있다", () => {
+    const named = commonCommands(projectWithRows("blank"), [{ kind: "loop", body: [
+      { kind: "text", speaker: spareActor.name, body: "안녕" },
+      { kind: "text", speaker: look.name, body: "여행 출발" },
+    ] }]);
+    const withPortrait = runPrimitive(named, lookTarget, "db.characterAppearances.update", { faceResourceId: face }).after;
+    expect(() => runPrimitive(withPortrait, actorTarget, "db.actors.update", { name: "유진" })).toThrow("대사의 화자");
+    expect(() => runPrimitive(withPortrait, lookTarget, "db.characterAppearances.update", { name: "겨울 외투" })).toThrow("대사의 화자");
+    expect(() => runPrimitive(withPortrait, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
+
+    const byId = runPrimitive(projectWithRows("blank"), actorTarget, "db.actors.update", { appearanceId: look.id }).after;
+    const renamed = runPrimitive(byId, lookTarget, "db.characterAppearances.update", { name: "겨울 외투" }).after;
+    expect(renamed.database.characterAppearances?.at(-1)).toMatchObject({ id: look.id, name: "겨울 외투" });
+    expect(renamed.database.actors).toBe(byId.database.actors);
+  });
+
+  it("기존 이벤트가 가리키는 빈 ID를 새 주인공에게 재사용하지 않는다", () => {
+    const before = commonCommands(projectWithRows("blank"), [{ kind: "changeParty", actorId: "actor_small_task_1", action: "add" }]);
+    const { after } = runPrimitive(before, actorTarget, "db.actors.create", { name: "미나" });
+    expect(after.database.actors.at(-1)).toMatchObject({ id: "actor_small_task_2", name: "미나" });
+    expect(after.commonEvents).toBe(before.commonEvents);
+  });
+
+  it("구형 대사의 줄 배열과 에필로그의 병렬 대사에 남은 주인공 번호를 보호한다", () => {
+    const before = projectWithRows("blank");
+    const line = `\\N[${before.database.actors.length}] 님!`;
+    // 구형 저장본은 body 대신 lines를 사용한다.
+    const legacyText = { kind: "text", lines: [line] } as unknown as Command;
+    const legacy = commonCommands(before, [legacyText]);
+    expect(createInterpreter([legacyText], startSession(legacy), legacy).start()).toMatchObject({ body: line });
+    expect(() => runPrimitive(legacy, actorTarget, "db.actors.delete", {})).toThrow("대사의 주인공 번호");
+
+    const ending: NonNullable<Project["endings"]>[number] = {
+      id: "ending_review", name: "검수 엔딩", conditions: [], priority: 0,
+      epilogue: [{ kind: "parallel", beats: [{ kind: "say", lines: [line] }] }],
+    };
+    const epilogue = { ...before, endings: [ending] };
+    expect(createInterpreter([{ kind: "triggerEnding", endingId: ending.id }], startSession(epilogue), epilogue).start())
+      .toMatchObject({ body: line });
+    expect(() => runPrimitive(epilogue, actorTarget, "db.actors.delete", {})).toThrow("대사의 주인공 번호");
+  });
+
+  it("대사의 아직 빈 주인공 번호를 새 동료에게 연결하지 않는다", () => {
+    const before = projectWithRows("blank");
+    const line = `\\N[${before.database.actors.length + 1}] 님!`;
+    const project = commonCommands(before, [{ kind: "text", body: line }]);
+    expect(() => runPrimitive(project, actorTarget, "db.actors.create", { name: "미나" })).toThrow("대사의 주인공 번호");
+  });
+
+  it("제어 문자로 꾸민 화자 이름과 글자 순서로 찾는 주인공 이름을 보호한다", () => {
+    const before = projectWithRows("blank");
+    const withPortrait = runPrimitive(before, lookTarget, "db.characterAppearances.update", { faceResourceId: face }).after;
+    const portrait = commonCommands(withPortrait, [{ kind: "text", speaker: `\\C[2]${look.name}`, body: "출발" }]);
+    expect(() => runPrimitive(portrait, lookTarget, "db.characterAppearances.update", { name: "겨울 외투" })).toThrow("대사의 화자");
+    expect(() => runPrimitive(portrait, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
+
+    before.database.actors[before.database.actors.length - 1] = { ...spareActor, name: "김지후" };
+    const stage = commonCommands(before, [{ kind: "text", speaker: "김후", body: "안녕" }]);
+    expect(() => runPrimitive(stage, actorTarget, "db.actors.update", { name: "이누리" })).toThrow("대사의 화자");
+  });
+
+  it("번호를 쓰는 화자는 주인공의 바뀐 이름을 따라간다", () => {
+    const before = projectWithRows("blank");
+    const speaker = `\\N[${before.database.actors.length}]`;
+    const project = commonCommands(before, [{ kind: "text", speaker, body: "안녕" }]);
+    const { after } = runPrimitive(project, actorTarget, "db.actors.update", { name: "이누리" });
+    expect(after.commonEvents).toBe(project.commonEvents);
+    expect(resolveDialogueText(speaker, { project: after, session: { variables: {} } })).toBe("이누리");
+  });
+
+  it("실행할 때 앞뒤 공백을 떼는 구형 명령의 주인공 참조를 보호한다", () => {
+    const before = commonCommands(projectWithRows("blank"), [{
+      kind: "m2Command", commandId: "m2-078-open-menu-screen", fields: { screen: "skills", actorId: ` ${spareActor.id} ` },
+    }]);
+    expect(createInterpreter(before.commonEvents.at(-1)!.commands, startSession(before), before).start())
+      .toMatchObject({ kind: "openMenuScreen", screen: "skills", actorId: spareActor.id });
+    expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
   });
 
   it("새 동료를 게임에서 파티에 합류시킨다", () => {

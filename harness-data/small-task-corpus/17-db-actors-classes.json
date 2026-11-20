@@ -702,5 +702,29 @@
     "primitive": "db.characterAppearances.delete",
     "args": {"clearReferences":true},
     "expectRefusal": true
+  },
+  {
+    "request": "선택한 주인공을 등록할 때 이름은 공백으로만 채워 줘.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"   "},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 주인공의 최고 레벨을 100으로 설정해 줘.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"maxLevel":100},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 외형의 걷기 그림에서 아홉 번째 칸을 써 줘.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"characterIndex":8},
+    "expectRefusal": true
   }
 ]
