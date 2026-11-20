@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { primitiveScope } from "@/editor/smallTask/primitives/core/scope";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/23-map-structure";
@@ -59,7 +60,7 @@ async function expectEdit(project: Project, mapId: string, primitiveId: string, 
   expectKoreanSentence(result.sentence, target);
   expect(jsonEqual(project, snapshot)).toBe(true);
   const primitive = PRIMITIVES.find(row => row.id === primitiveId)!;
-  const scope = primitive.scope({ project, target }, args);
+  const scope = primitiveScope({ project, target }, primitive, args);
   const changed = { ...result.after, meta: { ...result.after.meta, title: "요청 범위 바깥 제목" } };
   const refused = checkSmallTaskScope(project, changed, scope);
   expect(refused.ok).toBe(false);
