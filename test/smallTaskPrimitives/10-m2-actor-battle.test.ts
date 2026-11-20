@@ -14,9 +14,10 @@ import { PRIMITIVES } from "@/editor/smallTask/primitives/units/10-m2-actor-batt
 import { ROWS, validateFields } from "@/editor/smallTask/primitives/units/10-m2-actor-battle/fields";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
-import { commandPanel } from "@/player/battleCommandDom";
+import { commandPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import { actorCommandDirectorState } from "@/player/battleDirectorDom";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
+import { normalizeEquipmentRecord } from "@/project/databaseRecordModel";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -432,6 +433,53 @@ describe("능력과 전투 명령 한 줄 저작", () => {
       runtime.cancel();
     }
     await expectUndoRestores(project, after, target);
+  });
+
+  it.each([false, true])("장비 스킬 메뉴에서 실행 가능한 기술이 있는지 확인한다 (%s)", canUseSkill => {
+    const { project: source } = fixture("built", []);
+    const skillIds = ["skill_test_rune_one", "skill_test_rune_two"];
+    const equipment = normalizeEquipmentRecord({
+      id: "equip_test_runes", name: "룬 검", slot: "weapon", equippableActorIds: [hero],
+      grantsSkillIds: skillIds, grantsCommand: { id: "cmd_test_runes", name: "룬 기술", kind: "skill" },
+    });
+    const baseSkill = source.database.skills.find(skill => skill.id === "skill_attack")!;
+    const expensive = { flat: 100_000, percentMax: 0 };
+    const project: Project = { ...source, database: {
+      ...source.database,
+      equipment: [...source.database.equipment, equipment],
+      skills: [
+        ...source.database.skills.map(skill => ({ ...skill, mpCost: expensive })),
+        ...skillIds.map((id, index) => ({ ...baseSkill, id, mpCost: canUseSkill && index === 0 ? { flat: 0, percentMax: 0 } : expensive })),
+      ],
+    } };
+    const session = startSession(project);
+    session.partyActorIds = [hero];
+    session.actorEquipment[hero] = { weapon: equipment.id };
+    session.actorBattleCommands = { [hero]: [] };
+    store.replaceProject(project);
+    const runtime = createBattleRuntime({
+      project, troopId: project.database.troops[0]!.id, sessionState: session,
+      battleFlow: "strict", canLose: true, canEscape: false, rng: () => 0.5,
+    });
+    try {
+      const snapshot = runtime.snapshot();
+      expect(snapshot.phase).toBe("actorCommand");
+      let submenu: BattleCommandSubmenu = null;
+      const panel = () => commandPanel(snapshot, {
+        runtime, submenu, setSubmenu(value) { submenu = value; }, setDirectorState() {}, render() {},
+        runActorCommand() {}, beginTargetCommand() {}, confirmTargetSelection() {},
+      });
+      const root = panel();
+      root.querySelector<HTMLButtonElement>('[data-testid="actor-command-cmd_test_runes"]')!.click();
+      expect(submenu).toMatchObject({ kind: "skill" });
+      const choices = panel();
+      expect(choices.querySelector(`[data-testid="actor-skill-${skillIds[0]}"]`)?.getAttribute("aria-disabled"))
+        .toBe(canUseSkill ? null : "true");
+      expect(choices.querySelector(`[data-testid="actor-skill-${skillIds[1]}"]`)?.getAttribute("aria-disabled")).toBe("true");
+      expect(Boolean(root.querySelector('[data-testid="actor-command-pass"]'))).toBe(!canUseSkill);
+    } finally {
+      runtime.cancel();
+    }
   });
 
   it("예전의 주인공 직접 지정 줄을 수정해도 전투 메뉴가 해당 주인공에게만 바뀐다", () => {

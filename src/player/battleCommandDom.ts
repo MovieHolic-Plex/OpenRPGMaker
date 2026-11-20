@@ -17,7 +17,7 @@ import { noEscapeInlineReason } from "@/player/emeraldBattleNarration";
 import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import type { ItemId, SkillId } from "@/project/types";
+import type { ItemId, SkillId, SkillRecord } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
 import { activeActor, predictSkillDamageFor } from "@/battle/battlePredict";
@@ -360,7 +360,8 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   }
   if (!targetMode && !snapshot.forcedSwitchActorId) {
     menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
-    if (overrideCommandIds?.length === 0 && !menu.querySelector('button:not(:disabled):not([aria-disabled="true"])')) {
+    const executableButton = 'button:not(:disabled):not([aria-disabled="true"]):not([data-no-usable-skill])';
+    if (overrideCommandIds?.length === 0 && !menu.querySelector(executableButton)) {
       menu.append(commandButton("대기", "actor-command-pass", "boot", "", () => options.runActorCommand({ kind: "pass" })));
     }
   }
@@ -471,19 +472,24 @@ function commandControl(
     case "skill": {
       const skillIds = listedSkillIds(actor, command, snapshot);
       const project = store.getCurrent();
-      const usable = skillIds.filter((skillId) => actor && !actorSkillFailure(snapshot, actor, skillId));
       const onlySkill = skillIds.length === 1 ? project.database.skills.find((skill) => skill.id === skillIds[0]) : undefined;
-      const failure = onlySkill && actor ? actorSkillFailure(snapshot, actor, onlySkill.id) : undefined;
+      const failure = skillIds.length === 1 && actor ? actorSkillFailure(snapshot, actor, skillIds[0]!) : undefined;
       const reason = failure && actor ? battleSkillUseFailureLabel(failure, onlySkill, actor, project) : skillIds.length === 0 ? "사용 가능한 스킬이 없습니다." : undefined;
-      return commandButton(label, commandTestId(command), "fire", skillIds.length === 0 ? "없음" : "", () => {
+      const button = commandButton(label, commandTestId(command), "fire", skillIds.length === 0 ? "없음" : "", () => {
         if (targetMode || skillIds.length === 0) return;
-        if ((skillIds.length === 1 || command.skillId) && usable.length === 1) {
-          options.beginTargetCommand({ kind: "skill", skillId: usable[0] });
+        if (skillIds.length === 1 && actor) {
+          options.beginTargetCommand({ kind: "skill", skillId: skillIds[0]! });
           return;
         }
         options.setSubmenu({ kind: "skill", command });
         options.render();
       }, targetMode || skillIds.length === 0 || Boolean(failure), reason);
+      // 사유를 살펴볼 수 있게 메뉴는 열어 두고, 아무 기술도 못 쓰면 대기 명령을 허용한다.
+      if (skillIds.length > 1 && !skillIds.some(skillId => !skillChoiceDisabledReason(snapshot, actor, skillId,
+        project.database.skills.find(skill => skill.id === skillId)))) {
+        button.dataset.noUsableSkill = "true";
+      }
+      return button;
     }
     case "item": {
       const items = battleItems(snapshot);
@@ -715,6 +721,8 @@ function comboCommandButton(
   }, targetMode || (ready.length === 0 && !canHold), canHold ? undefined : reason, canHold ? "차례를 미루고 동료의 차례를 기다린다 — 그때 둘 다 준비되어 연계기를 고를 수 있다." : undefined);
   button.dataset.comboReady = ready.length > 0 ? "true" : "false";
   if (canHold) button.dataset.comboHold = "true";
+  else if (!ready.some(skillId => !skillChoiceDisabledReason(snapshot, actor, skillId,
+    project.database.skills.find(skill => skill.id === skillId)))) button.dataset.noUsableSkill = "true";
   return button;
 }
 
@@ -727,12 +735,7 @@ function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   const project = store.getCurrent();
   for (const skillId of listedComboSkillIds(actor, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
-    const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    // 받을 수 있는 대상 모두에게 이미 걸린 순수 보조 기술은 쓰면 「이미 … 상태다」 한 줄로 차례만 사라진다 — 회색으로 막고 이유를 보인다.
-    const appliedStateId = !failure && skill && actor ? skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies) : undefined;
-    const reason = failure && actor
-      ? battleSkillUseFailureLabel(failure, skill, actor, project)
-      : failure ? "사용자가 없습니다." : appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
+    const reason = skillChoiceDisabledReason(snapshot, actor, skillId, skill);
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `+ ${partners}` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -832,15 +835,9 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
-  const command = options.submenu?.kind === "skill" ? options.submenu.command : undefined;
-  for (const skillId of listedSkillIds(actor, command, snapshot)) {
+  for (const skillId of listedSkillIds(actor, submenuCommand, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
-    const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    // 받을 수 있는 대상 모두에게 이미 걸린 순수 보조 기술은 쓰면 「이미 … 상태다」 한 줄로 차례만 사라진다 — 회색으로 막고 이유를 보인다.
-    const appliedStateId = !failure && skill && actor ? skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies) : undefined;
-    const reason = failure && actor
-      ? battleSkillUseFailureLabel(failure, skill, actor, project)
-      : failure ? "사용자가 없습니다." : appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
+    const reason = skillChoiceDisabledReason(snapshot, actor, skillId, skill);
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `${withJosa(partners, "와/과")} 연계` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -962,6 +959,18 @@ function appendSkillTypeBadge(
 /** 전투 메뉴의 기술 사용 가능 판정 — 연계기는 런타임과 같은 동료 준비 규칙을 쓴다. */
 function actorSkillFailure(snapshot: BattleSnapshot, actor: BattleBattlerSnapshot, skillId: SkillId) {
   return battleActorSkillFailure(store.getCurrent(), actor, skillId, comboParticipantsFromSnapshot(snapshot), snapshot.partyGauge);
+}
+
+function skillChoiceDisabledReason(
+  snapshot: BattleSnapshot, actor: BattleBattlerSnapshot | undefined, skillId: SkillId, skill: SkillRecord | undefined,
+): string | undefined {
+  if (!actor) return "사용자가 없습니다.";
+  const project = store.getCurrent();
+  const failure = actorSkillFailure(snapshot, actor, skillId);
+  if (failure) return battleSkillUseFailureLabel(failure, skill, actor, project);
+  // 모든 대상에 이미 적용된 보조 기술은 차례만 소비하므로 메뉴에서 사유를 표시한다.
+  const appliedStateId = skill && skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies);
+  return appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
 }
 
 /** 연계기면 시전자를 됼 동료 이름(·로 잇는다), 아니면 빈 문자열. */
