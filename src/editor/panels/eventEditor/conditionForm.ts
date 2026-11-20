@@ -244,8 +244,8 @@ function labeledSwitch(
   let currentSwitchId = cond.switchId;
   const sw = databasePicker("switch", cond.switchId, (switchId) => {
     currentSwitchId = switchId;
-    onChange({ kind: "switch", switchId, value: cond.value });
     syncError();
+    onChange({ kind: "switch", switchId, value: val.value === "true" });
   }, "event-condition-switch-target");
   const val = selectWithOptions(SWITCH_STATE_OPTIONS, String(cond.value), "event-condition-switch-value");
   val.addEventListener("change", () => {

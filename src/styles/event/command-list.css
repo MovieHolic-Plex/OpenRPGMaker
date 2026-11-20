@@ -211,6 +211,11 @@
   cursor: pointer;
 }
 
+.cmd-item .cmd-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
 /* editor/palette-player.css:385-392 */
 .cmd-item .cmd-drag-handle {
   user-select: none;

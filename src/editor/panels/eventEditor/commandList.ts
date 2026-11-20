@@ -53,6 +53,7 @@ type FaceState = { current: ActiveFace | undefined };
 type CachedCommandRow = {
   readonly command: Command;
   readonly row: HTMLElement;
+  readonly canMoveDown: boolean;
   readonly face: ActiveFace | undefined;
   readonly issues: readonly EventDraftIssue[];
   readonly options: CommandListRenderOptions;
@@ -121,7 +122,7 @@ export function renderCommandList(
     for (let index = 0; index < commands.length; index += 1) {
       const cmd = commands[index]!;
       const path = [...containerPath, index];
-      try { yield* renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, renderOptions); }
+      try { yield* renderCommandTree(host, cmd, path, index < commands.length - 1, actions, 0, faceState, renderOptions); }
       catch (error) {
         console.error("[event-editor] failed to render command row", path, error);
         appendCommandNode(host, renderBrokenCommandRow(cmd, path, actions));
@@ -215,7 +216,7 @@ function* renderCommandTree(
   host: HTMLElement,
   cmd: Command,
   path: number[],
-  containerPath: number[],
+  canMoveDown: boolean,
   actions: CommandListActions,
   depth: number,
   faceState: FaceState,
@@ -226,15 +227,16 @@ function* renderCommandTree(
   cache.used.add(key);
   const cached = cache.rows.get(key);
   const issues = options.issuesByPath?.get(key) ?? [];
-  if (cached && cached.command === cmd && cached.options.pickerContext === options.pickerContext && jsonEqual(cached.face, faceState.current) && jsonEqual(cached.issues, issues)) {
+  if (cached && cached.command === cmd && cached.canMoveDown === canMoveDown
+    && cached.options.pickerContext === options.pickerContext && jsonEqual(cached.face, faceState.current) && jsonEqual(cached.issues, issues)) {
     // Event handlers read this render-options object; refresh its root command tree
     // so Copy/Select All never retain the tree from before an immutable reorder.
     Object.assign(cached.options, options);
     appendCommandNode(host, cached.row);
   } else {
     const rowOptions = { ...options };
-    const row = renderCommandItem(cmd, path, containerPath, actions, depth, faceState, rowOptions);
-    cache.rows.set(key, { command: cmd, row, face: faceState.current, issues, options: rowOptions });
+    const row = renderCommandItem(cmd, path, canMoveDown, actions, depth, faceState, rowOptions);
+    cache.rows.set(key, { command: cmd, row, canMoveDown, face: faceState.current, issues, options: rowOptions });
     appendCommandNode(host, row);
   }
   yield;
@@ -245,13 +247,13 @@ function* renderCommandTree(
       flipHorizontally: cmd.flipHorizontally,
     } : undefined;
   }
-  yield* appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
+  yield* appendCommandChildren(host, cmd, path, actions, depth, faceState, options);
 }
 
 function renderCommandItem(
   cmd: Command,
   path: number[],
-  _containerPath: number[],
+  canMoveDown: boolean,
   actions: CommandListActions,
   depth: number,
   faceState: FaceState,
@@ -366,7 +368,7 @@ function renderCommandItem(
     if (!isCommandSelected(path)) showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
     handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
-  item.append(head, commandActions(path, actions));
+  item.append(head, commandActions(path, actions, canMoveDown));
   if (cmd.kind === "script") appendScriptReading(head, cmd, path);
   ensureTerminalRowHint(item, cmd);
   // 항목 자체를 드롭 타겟으로 만들어 위/아래 삽입 위치를 결정한다.
@@ -654,7 +656,6 @@ function* appendCommandChildren(
   host: HTMLElement,
   cmd: Command,
   path: number[],
-  containerPath: number[],
   actions: CommandListActions,
   depth: number,
   faceState: FaceState,
@@ -680,7 +681,7 @@ function* appendCommandChildren(
           host,
           child,
           childPath,
-          containerPath,
+          childIndex < branch.commands.length - 1,
           actions,
           depth + 1,
           faceState,
@@ -790,19 +791,23 @@ function openCommandEditModal(cmd: Command, path: number[], actions: CommandList
   });
 }
 
-function commandActions(path: number[], actions: CommandListActions): HTMLElement {
+function commandActions(path: number[], actions: CommandListActions, canMoveDown: boolean): HTMLElement {
   const wrap = el("div", { class: "cmd-actions" });
+  const up = el("button", {
+    children: [renderEditorIcon("arrowUp")],
+    attrs: { title: "위로", "aria-label": "위로", type: "button" },
+    on: { click: () => actions.moveCommand(path, -1) },
+  });
+  up.disabled = path[path.length - 1] === 0;
+  const down = el("button", {
+    children: [renderEditorIcon("arrowDown")],
+    attrs: { title: "아래로", "aria-label": "아래로", type: "button" },
+    on: { click: () => actions.moveCommand(path, 1) },
+  });
+  down.disabled = !canMoveDown;
   wrap.append(
-    el("button", {
-      children: [renderEditorIcon("arrowUp")],
-      attrs: { title: "위로", "aria-label": "위로", type: "button" },
-      on: { click: () => actions.moveCommand(path, -1) },
-    }),
-    el("button", {
-      children: [renderEditorIcon("arrowDown")],
-      attrs: { title: "아래로", "aria-label": "아래로", type: "button" },
-      on: { click: () => actions.moveCommand(path, 1) },
-    }),
+    up,
+    down,
     el("button", {
       children: [renderEditorIcon("trash")],
       attrs: { title: "삭제", "aria-label": "삭제", type: "button" },

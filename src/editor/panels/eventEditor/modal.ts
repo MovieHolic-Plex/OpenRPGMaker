@@ -1249,7 +1249,9 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
       finishCommandListMount(list);
       row = findRenderedCommand(root, snapshot.focusCommandPath);
     }
-    focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row;
+    // When history removes the focused row, keep shortcuts in the modal via the append button.
+    focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row
+      ?? (list && !list.hidden ? list.querySelector<HTMLElement>(".cmd-empty-line") : null);
   }
   if (!focusTarget) return;
   focusTarget.focus({ preventScroll: true });

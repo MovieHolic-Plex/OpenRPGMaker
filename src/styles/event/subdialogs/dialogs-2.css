@@ -719,6 +719,13 @@
   color: var(--text-inverse, var(--text-1));
 }
 
+.event-command-edit-action.primary:disabled {
+  background: var(--bg-inset);
+  border-color: var(--border-default);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
 .event-command-picker-tabs {
   background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 86%, var(--bg-raised));
   border: 1px solid var(--border-soft, var(--border-subtle));
