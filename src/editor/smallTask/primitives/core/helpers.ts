@@ -4,7 +4,7 @@ import { eventNameFromPages } from "@/project/eventDisplayName";
 import { insertEventCommand } from "@/project/eventCommands/singleCommandOps";
 import type { Command, EventPage, GameEvent, GameMap } from "@/project/types";
 import { displayText } from "../../target";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "../errors";
 import type { PrimitiveContext } from "../types";
 
 export function scopedPage(ctx: PrimitiveContext) {
@@ -12,7 +12,10 @@ export function scopedPage(ctx: PrimitiveContext) {
   if (target.kind !== "event") throw new PrimitiveError("범위 밖: 먼저 이벤트를 골라 주세요.");
   const map = project.maps[target.mapId];
   const event = map?.events.find(entry => entry.id === target.eventId);
-  const page = target.pageId ? event?.pages?.find(entry => entry.id === target.pageId) : event?.pages?.[0];
+  if (target.pageId === undefined && (event?.pages?.length ?? 0) > 1) {
+    throw new PrimitiveError(SELECT_EVENT_PAGE);
+  }
+  const page = target.pageId === undefined ? event?.pages?.[0] : event?.pages?.find(entry => entry.id === target.pageId);
   if (!map || !event || !page) throw new PrimitiveError("선택한 이벤트의 페이지를 찾을 수 없어요.");
   return { map, event, page };
 }
