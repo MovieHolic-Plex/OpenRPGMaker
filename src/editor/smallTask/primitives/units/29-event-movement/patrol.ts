@@ -1,4 +1,5 @@
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { facingForDelta, relativeTurn } from "@/player/playSceneAutonomousRouteDirection";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { canMove, isLedgeCell } from "@/project/collision";
@@ -6,6 +7,7 @@ import { eventsCutOffBy } from "@/project/eventPassageBlock";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { normalizeCharacterFootprint, normalizePassRows, passageBounds } from "@/project/footprint";
 import { defaultChasePursuit } from "@/project/npcBehavior";
+import { dirToward } from "@/project/staging/approach";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { Command, Dir, EventPage, EventPageMovement, GameEvent, GameMap, MoveCommand, MoveRoute, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
@@ -78,28 +80,54 @@ function protectedCells(project: Project, map: GameMap): { x: number; y: number 
   return cells;
 }
 
-function routeVisits(event: GameEvent, route: MoveRoute | undefined, covers: (x: number, y: number) => boolean): boolean {
+function routeVisits(event: GameEvent, route: MoveRoute | undefined, covers: (x: number, y: number) => boolean, page?: EventPage): boolean {
   if (!route) return false;
   let at = { x: event.x, y: event.y };
+  let facing: Dir | undefined = page?.graphic.direction ?? "down";
+  let directionFixed = page?.animationType === "fixedDirection" || page?.animationType === "fixedDirectionStep";
+  function face(direction: Dir | undefined) {
+    if (!directionFixed) facing = direction;
+  }
   for (const move of route.moves) {
     if (covers(at.x, at.y)) return true;
     switch (move.kind) {
-      case "move": {
-        const [dx, dy] = STEPS[move.dir];
+      case "move": case "stepForward": {
+        const direction: Dir | undefined = move.kind === "move" ? move.dir : facing;
+        if (!direction) return false;
+        const [dx, dy] = STEPS[direction];
         at = { x: at.x + dx, y: at.y + dy };
+        face(direction);
         break;
       }
       case "moveDiagonal":
         at = { x: at.x + STEPS[move.horizontal][0], y: at.y + STEPS[move.vertical][1] };
+        face(move.horizontal);
         break;
       case "jump":
         if (!move.dx && !move.dy) return false;
         at = { x: at.x + move.dx, y: at.y + move.dy };
+        face(facingForDelta(move.dx, move.dy, "down"));
         break;
       case "placeAt":
         at = { x: move.x, y: move.y };
         break;
-      case "moveRandom": case "moveTowardPlayer": case "moveAwayFromPlayer": case "stepForward":
+      case "setDirectionFix":
+        directionFixed = move.enabled;
+        break;
+      case "turn":
+        face(move.dir);
+        break;
+      case "turnRelative":
+        face(facing && move.turn !== "leftOrRight90" ? relativeTurn(facing, move.turn, () => 0) : undefined);
+        break;
+      case "turnToward":
+        face(!move.target && move.x !== undefined && move.y !== undefined
+          ? dirToward(at, { x: move.x, y: move.y }) ?? facing : undefined);
+        break;
+      case "turnRandom": case "turnTowardPlayer": case "turnAwayFromPlayer":
+        face(undefined);
+        break;
+      case "moveRandom": case "moveTowardPlayer": case "moveAwayFromPlayer":
       case "approach": case "exitVia": case "enterVia": case "npcTransfer":
         return false; // 현재 플레이 상태에 따라 이후 위치가 달라진다.
     }
@@ -121,7 +149,7 @@ function usesPatrolCell(event: GameEvent, x: number, y: number): boolean {
     };
     if (blocks && covers(event.x, event.y)) return true;
     const { route, type } = page.movement;
-    return (type === "custom" || type === "chase") && routeVisits(event, route, covers);
+    return (type === "custom" || type === "chase") && routeVisits(event, route, covers, page);
   });
 }
 

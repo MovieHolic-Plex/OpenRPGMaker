@@ -51,7 +51,7 @@ function legacyPage(event: GameEvent): EventPage {
 
 type PageMotionPatch = { movement: EventPageMovement } | { graphic: EventPageGraphic; animationType?: EventAnimationType };
 
-function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, event: GameEvent) => PageMotionPatch): Project {
+function selectedPage(ctx: PrimitiveContext) {
   const { project } = ctx;
   const target = targetEvent(ctx);
   const map = Object.hasOwn(project.maps, target.mapId) ? project.maps[target.mapId] : undefined;
@@ -69,15 +69,21 @@ function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, e
   if (originalPages.some((entry, i) => i !== pageIndex && entry.id === page.id)) {
     throw new PrimitiveError("범위 밖: 페이지를 하나로 구분할 수 없어요. 이벤트 편집기에서 확인해 주세요.");
   }
+  return { mapId: target.mapId, map, event, index, originalPages, page, pageIndex };
+}
 
+function editPage(ctx: PrimitiveContext, edit: (page: EventPage, map: GameMap, event: GameEvent) => PageMotionPatch): Project {
+  const { project } = ctx;
+  const { mapId, map, event, index, originalPages, page, pageIndex } = selectedPage(ctx);
   const patch = edit(page, map, event);
+  if ("movement" in patch && patch.movement === page.movement) return project;
   const pages = originalPages.slice();
   pages[pageIndex] = "movement" in patch
     ? { ...page, movement: patch.movement }
     : { ...page, graphic: patch.graphic, ...(patch.animationType === undefined ? {} : { animationType: patch.animationType }) };
   const events = map.events.slice();
   events[index] = { ...event, pages };
-  return { ...project, maps: { ...project.maps, [target.mapId]: { ...map, events } } };
+  return { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
 }
 
 function directionAnimation(type: EventAnimationType | undefined, fixed: boolean | undefined): EventAnimationType | undefined {
@@ -120,9 +126,13 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     id: "move.route.set",
     title: "이동 경로 바꾸기",
     args: ROUTE_SET_ARGS,
-    describe: (_ctx, args) => {
+    describe: (ctx, args) => {
       const count = (args.moves as unknown[]).length;
-      return count ? `이동 경로를 ${count}단계로 바꿉니다.` : "이동 경로를 비웁니다.";
+      if (!count) return "이동 방식은 유지하고 경로만 비웁니다.";
+      const { type } = selectedPage(ctx).page.movement;
+      if (type === "chase") return `추격을 유지하고 순찰 경로를 ${count}단계로 바꿉니다.`;
+      if (type === "custom") return `이동 경로를 ${count}단계로 바꿉니다.`;
+      return `이동 방식을 지정 경로로 바꾸고 ${count}단계를 설정합니다.`;
     },
     apply: (ctx, args) => editPage(ctx, (page, map, event) => ({ movement: editRoute(ctx.project, map, event, page, args, false) })),
   }),

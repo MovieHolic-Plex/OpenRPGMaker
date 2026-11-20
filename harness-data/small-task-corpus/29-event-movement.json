@@ -284,20 +284,16 @@
     },
     "primitive": "move.route.set",
     "args": {
-      "moves": [],
-      "repeat": false
+      "moves": []
     },
     "expect": [
       {
-        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.type",
-        "equals": "custom"
-      },
-      {
-        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement.route",
+        "at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].movement",
         "equals": {
-          "moves": [],
-          "repeat": false,
-          "skippable": false
+          "type": "custom",
+          "speed": 3,
+          "frequency": 3,
+          "moveIntervalMs": 700
         }
       }
     ]
