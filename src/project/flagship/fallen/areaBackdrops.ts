@@ -4,19 +4,19 @@
  * 트룹 배경이 맵 배경보다 먼저 잡히므로(src/battle/battleBackdrop.ts) 같은 지역 트룹의 바이옴 기본 배경도 바꾼다.
  */
 import type { Project } from "@/project/types";
-import ashField from "./backdrops/area/ash-field.json";
-import dawnwell from "./backdrops/area/dawnwell.json";
-import forest from "./backdrops/area/forest.json";
-import fortCourt from "./backdrops/area/fort-court.json";
-import fortress from "./backdrops/area/fortress.json";
-import iceLake from "./backdrops/area/ice-lake.json";
-import northForest from "./backdrops/area/north-forest.json";
-import prison from "./backdrops/area/prison.json";
-import skyTower from "./backdrops/area/sky-tower.json";
-import snowPass from "./backdrops/area/snow-pass.json";
-import snowRoad from "./backdrops/area/snow-road.json";
-import townNight from "./backdrops/area/town-night.json";
-import vault from "./backdrops/area/vault.json";
+import ashField from "./backdrops/area/ash-field.json" with { type: "json" };
+import dawnwell from "./backdrops/area/dawnwell.json" with { type: "json" };
+import forest from "./backdrops/area/forest.json" with { type: "json" };
+import fortCourt from "./backdrops/area/fort-court.json" with { type: "json" };
+import fortress from "./backdrops/area/fortress.json" with { type: "json" };
+import iceLake from "./backdrops/area/ice-lake.json" with { type: "json" };
+import northForest from "./backdrops/area/north-forest.json" with { type: "json" };
+import prison from "./backdrops/area/prison.json" with { type: "json" };
+import skyTower from "./backdrops/area/sky-tower.json" with { type: "json" };
+import snowPass from "./backdrops/area/snow-pass.json" with { type: "json" };
+import snowRoad from "./backdrops/area/snow-road.json" with { type: "json" };
+import townNight from "./backdrops/area/town-night.json" with { type: "json" };
+import vault from "./backdrops/area/vault.json" with { type: "json" };
 
 type Emitted = { readonly resource: { readonly id: string; readonly name: string; readonly kind: string; readonly dataUrl: string } };
 type Exec = (tool: string, args: Record<string, unknown>) => unknown;

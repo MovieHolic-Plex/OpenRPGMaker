@@ -25,8 +25,8 @@ export interface AcceptanceToolResult {
 /** Content checks replayed by the existing accepted-revision validation callback. */
 const isReloadCriterionKind = (kind: string): boolean => kind === "gameTitle" || isFunctionalCriterionKind(kind);
 
-type AcceptanceRecoveryPromise = AcceptancePromise & {
-    readonly baseline: Project;
+type AcceptanceRecoveryPromise<Baseline = Project> = AcceptancePromise & {
+    readonly baseline: Baseline;
     readonly source: AcceptanceSource;
     readonly refinements?: readonly AcceptanceSource[];
     readonly functionalSceneIndices?: readonly number[];
@@ -34,13 +34,13 @@ type AcceptanceRecoveryPromise = AcceptancePromise & {
   };
 
 /** Canonical contracts and original baselines only; no image, review or proof capabilities. */
-export interface AcceptanceRecoveryState {
+export interface AcceptanceRecoveryState<Baseline = Project> {
   readonly schemaVersion: 1;
   readonly id: string;
   readonly goal: string;
-  readonly baseline: Project;
-  readonly promises: readonly AcceptanceRecoveryPromise[];
-  readonly actionRequirements: readonly (AcceptancePromise & { readonly baseline: Project })[];
+  readonly baseline: Baseline;
+  readonly promises: readonly AcceptanceRecoveryPromise<Baseline>[];
+  readonly actionRequirements: readonly (AcceptancePromise & { readonly baseline: Baseline })[];
   readonly bindings: readonly (readonly [string, string])[];
   readonly stopped: boolean;
 }
@@ -61,10 +61,10 @@ export class AssistantAcceptanceLedger {
   private stopped = false;
 
   constructor(readonly id: string, readonly goal: string, baseline: Project, private readonly images = new AssistantImageEvidence(),
-    private readonly npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]) {
+    private readonly npcRewardProof?: AcceptanceEvaluation["npcRewardProof"], copyBaseline = sessionProjectCopy) {
     // 기준은 읽기만 한다 — 세션 사본과 같이 스토어가 들고 있는 타일셋·업로드 자산 항목은 객체째 공유한다(값은 structuredClone 과 같다).
     // 왜(2026-11-16 실측): 계획 하나마다 원장을 새로 열어 번들 타일셋 49개를 통째 복제했다(test/aiAppliedBudgetStop 한 건에 2번 · 약 2.4s).
-    this.baseline = sessionProjectCopy(baseline);
+    this.baseline = copyBaseline(baseline);
     this.snapshot = Object.freeze({ id, goal, status: "pending", items: Object.freeze([]) });
   }
 
@@ -74,20 +74,32 @@ export class AssistantAcceptanceLedger {
    * 형태 키는 그 변화를 보지 못하고 철회된 의무를 되살린다. 성능보다 정확한 복구가 먼저다.
    */
   exportRecovery(): AcceptanceRecoveryState {
-    return structuredClone({ schemaVersion: 1, id: this.id, goal: this.goal, baseline: this.baseline,
-      promises: [...this.promises.values()], actionRequirements: [...this.actionRequirements.values()],
-      bindings: [...this.bindings], stopped: this.stopped });
+    return structuredClone(this.recoveryView(project => project));
+  }
+
+  /** The caller snapshots this view after projecting and checking its size. */
+  recoveryView<Baseline>(project: (baseline: Project) => Baseline): AcceptanceRecoveryState<Baseline> {
+    return { schemaVersion: 1, id: this.id, goal: this.goal, baseline: project(this.baseline),
+      promises: [...this.promises.values()].map(promise => ({ ...promise, baseline: project(promise.baseline) })),
+      actionRequirements: [...this.actionRequirements.values()].map(requirement => ({ ...requirement, baseline: project(requirement.baseline) })),
+      bindings: [...this.bindings], stopped: this.stopped };
   }
 
   /** Caller validates the versioned checkpoint first. Assessments are recomputed, never imported. */
-  static restoreRecovery(state: AcceptanceRecoveryState, images = new AssistantImageEvidence(),
+  static restoreRecovery(state: AcceptanceRecoveryState, images?: AssistantImageEvidence,
     npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]): AssistantAcceptanceLedger {
     const saved = structuredClone(state);
-    const ledger = new AssistantAcceptanceLedger(saved.id, saved.goal, saved.baseline, images, npcRewardProof);
-    for (const promise of saved.promises) ledger.promises.set(promise.id, promise);
-    for (const promise of saved.actionRequirements) ledger.actionRequirements.set(promise.id, promise);
-    for (const [name, id] of saved.bindings) ledger.bindings.set(name, id);
-    ledger.stopped = saved.stopped;
+    return this.restoreOwnedRecovery(saved, images, npcRewardProof);
+  }
+
+  /** Baselines and contracts belong to this restore, including lazily decoded tilesets. */
+  static restoreOwnedRecovery(state: AcceptanceRecoveryState, images = new AssistantImageEvidence(),
+    npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]): AssistantAcceptanceLedger {
+    const ledger = new AssistantAcceptanceLedger(state.id, state.goal, state.baseline, images, npcRewardProof, project => project);
+    for (const promise of state.promises) ledger.promises.set(promise.id, promise);
+    for (const promise of state.actionRequirements) ledger.actionRequirements.set(promise.id, promise);
+    for (const [name, id] of state.bindings) ledger.bindings.set(name, id);
+    ledger.stopped = state.stopped;
     return ledger;
   }
 

@@ -1,4 +1,4 @@
-import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
+import { removedDatabaseReference, withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { eventReferenceMatches } from "@/editor/databaseEventReferences";
 import { displayText } from "@/editor/smallTask/target";
 import { outsideRecord, referenceIndex } from "@/editor/tools/dbReferenceIndex";
@@ -158,6 +158,9 @@ export function assertActorClassDraftChanges(before: Project, after: Project, co
   const added = afterRows.filter(row => !existingIds.has(row.id));
   const selected = beforeRows.find(row => row.id === id);
   const remaining = afterRows.find(row => row.id === id);
+  if (selected && !remaining && removedDatabaseReference(before, after, [{ collection, id }], live)) {
+    throw new PrimitiveError("다른 설정이나 이벤트, 스크립트에서 쓰는 자료집 항목은 삭제할 수 없습니다.");
+  }
   const nameChanged = collection !== "classes" && selected?.name.trim() !== remaining?.name.trim();
   const removedIndex = collection === "actors" && !remaining
     ? beforeRows.findIndex(row => row.id === id) : -1;

@@ -1,0 +1,716 @@
+[
+  {
+    "request": "슬라임 주는 줄 레벨만 아홉으로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"level": 9, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 9}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "받는 몬스터만 동굴박쥐로 수정 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"speciesId": "species_cave_bat", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_cave_bat", "level": 5}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "선물받는 애 별명을 말랑이로 해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"nickname": "말랑이", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5, "nickname": "말랑이"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "지급 보상을 붉은 드래곤 칠 레벨로 교체해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"speciesId": "species_ember_drake", "level": 7, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_ember_drake", "level": 7}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "선물 몬스터 이름표에 통통 적어줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"nickname": "통통", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5, "nickname": "통통"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "주던 녀석은 초원 슬라임으로, 레벨 열로 바꿔줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"speciesId": "species_king_slime", "level": 10, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "giveMonster", "speciesId": "species_king_slime", "level": 10}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "줬던 슬라임 대신 등록 안 한 유령을 주게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"speciesId": "not_registered", "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expectRefusal": true,
+    "refusalMessage": "자료집에서 몬스터 종을 찾을 수 없습니다."
+  },
+  {
+    "request": "지급 줄을 레벨 백으로 올려요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.giveMonster.update",
+    "args": {"level": 100, "index": 1, "expectedHash": "667c4f1d71f3855bcdb8d8f95f1fd6d3"},
+    "seed": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5},
+    "expectRefusal": true
+  },
+  {
+    "request": "옮기는 줄 목적지만 보관함으로.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"to": "box", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_1", "to": "box"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "이동시키는 애를 두 번째로 바꿔주세요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_2", "to": "party"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "이제 네째를 창고에 넣도록 고쳐",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"instanceId": "monster_4", "to": "box", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_4", "to": "box"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "기존 이동은 세 번째 몬스터를 꺼내는 걸로 부탁해요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"instanceId": "monster_3", "to": "party", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_3", "to": "party"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "가운데 애 말고 둘째를 보관함에 옮기게 해",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"instanceId": "monster_2", "to": "box", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_2", "to": "box"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "파티로 옮기는 대상으로 네 번째를 선택해주세요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"instanceId": "monster_4", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "moveMonster", "instanceId": "monster_4", "to": "party"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "옮길 몬스터를 자료에 없는 딱정벌레 한 마리로 고쳐.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"instanceId": "not_registered", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expectRefusal": true
+  },
+  {
+    "request": "원래 이동 명령 목적지를 빼고 낚시터로 보내세요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.moveMonster.update",
+    "args": {"to": "river", "index": 1, "expectedHash": "1895b97849a1a419685a611ec99c31dc"},
+    "seed": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"},
+    "expectRefusal": true
+  },
+  {
+    "request": "진화 결과를 초원 슬라임으로 고쳐요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"toSpeciesId": "species_king_slime", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "species_king_slime", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "첫째 대신 둘째를 진화시키자",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_2", "toSpeciesId": "", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "기존 진화 명령을 넷째가 붉은 드래곤 되는 걸로 고쳐.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"instanceId": "monster_4", "toSpeciesId": "species_ember_drake", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_4", "toSpeciesId": "species_ember_drake", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "세 번째 몬스터가 조건에 맞을 때 알아서 진화하도록 바꿔 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"instanceId": "monster_3", "toSpeciesId": "", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_3", "toSpeciesId": "", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "진화하고 나오는 몬스터만 동굴박쥐로요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"toSpeciesId": "species_cave_bat", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "species_cave_bat", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "초원슬라임으로 바뀔 애는 두번째 애로 바꿔줘",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"instanceId": "monster_2", "toSpeciesId": "species_king_slime", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_2", "toSpeciesId": "species_king_slime", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "진화 칸의 결과 종을 미등록 별고래로 바꿔.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"toSpeciesId": "not_registered", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expectRefusal": true
+  },
+  {
+    "request": "이벤트에 없는 반달이 개체를 진화 선으로 지정해 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.evolveMonster.update",
+    "args": {"instanceId": "not_registered", "index": 1, "expectedHash": "5c6a10f1b32e60b2671d048136fabd82"},
+    "seed": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "", "successBranch": [], "failureBranch": []},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 출현하는 적을 동굴박쥐 떼로 바꿔줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"troopId": "troop_bat_swarm", "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_bat_swarm", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "출현한 적이 쫓아오지 않게 고쳐주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"chase": false, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": false}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "필드 적 리스폰을 열 초 뒤로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"respawnSec": 10, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "respawnSec": 10}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "적 나오는 구역을 가로 다섯 칸으로 넓혀줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"w": 5, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 5, "h": 3}, "chase": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "동시에 두마리까지만 나오게 고쳐요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"maxAlive": 2, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "maxAlive": 2}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "몹을 남쪽이라는 출현 이름으로 옮기고 처치 수도 남겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_south_event", "persistKill": true, "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_south_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "persistKill": true}}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "출현시킬 적 무리를 없는 얼음 도마뱀 부대로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"troopId": "not_registered", "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 적 출현 이름을 이미 맵에서 쓰는 남쪽 출현 이름으로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.spawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "211637558cce60f24e6d9451fcfe8bd6"},
+    "seed": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north_event", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}},
+    "expectRefusal": true,
+    "refusalMessage": "이미 쓰는 출현 이름입니다. 다른 이름을 입력해 주세요."
+  },
+  {
+    "request": "여기서 북쪽 몹을 사라지게 해줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[-1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "남쪽 출현한 적을 없애는 줄을 추가해 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "spawn_south"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[-1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "북쪽 적 제거 코맨드 하나 넣어",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[-1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "문을 누르면 동쪽 무리가 없어지도록 제거 명령을 만들어.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "spawn_east"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[-1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "전투 전에 남쪽 몹 거둬줘요. 첫 줄에서.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "spawn_south", "index": 0},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[0]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "동쪽 출현 중지 한 줄요",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "spawn_east"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[-1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "없는 서쪽 출현도 강제로 없애 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {"spawnId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "어떤 출현인지 안 정하고 필드 적을 하나 없애.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.insert",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "적 제거는 이제 남쪽 출현으로.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "사라지는 대상을 동쪽에 나온 무리로 바꿔주세요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_east", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "북쪽 거 말고 남쪽 몹 없애게 바꿔",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "지금 있는 제거 줄의 출현 대상을 동쪽으로 다시 지정해 주시겠어요?",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_east", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "북쪽제거를 남쪽제거로 고쳐요",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_south", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_south"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "거둬들이는 건 동쪽 애들을 찍어 줘.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "spawn_east", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "despawnFieldEnemy", "spawnId": "spawn_east"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "제거할 출현을 등록되지 않은 셋째 동굴로 수정.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "not_registered", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expectRefusal": true
+  },
+  {
+    "request": "그 제거 줄 대상을 공란으로 고쳐 주세요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.despawnFieldEnemy.update",
+    "args": {"spawnId": "", "index": 1, "expectedHash": "63d343cc6dfd45d91f0c4ff83314ecf6"},
+    "seed": {"kind": "despawnFieldEnemy", "spawnId": "spawn_north"},
+    "expectRefusal": true
+  },
+  {
+    "request": "놓아주는 몬스터를 첫째로 바꿔",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "monster_1", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_1"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "이 줄은 두번째 녀석을 놓아주도록 부탁해요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "보내 주던 몬스터 대신 세 번째 몬스터를 해방해.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "monster_3", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_3"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "네째 애를 놓아주는 걸로 수정해 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "monster_4", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_4"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "놓아주기 대상은 몬스터 둘째만.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "monster_2", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "원래 방생 줄을 보관함 맨 앞 개체로 되돌려주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "removeMonster", "instanceId": ""}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "놓아줄 몬스터를 등록한 적 없는 빈털로 고쳐.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": "not_registered", "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expectRefusal": true
+  },
+  {
+    "request": "원래 방생 줄에서 세 마리를 동시에 하나의 대상으로 고쳐 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.removeMonster.update",
+    "args": {"instanceId": ["monster_1", "monster_2", "monster_3"], "index": 1, "expectedHash": "f1f561c3f6081e2cd752772568334cad"},
+    "seed": {"kind": "removeMonster", "instanceId": ""},
+    "expectRefusal": true
+  },
+  {
+    "request": "교환 받을 몹만 초원 슬라임으로 바꿔 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"toSpeciesId": "species_king_slime", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_king_slime"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "거래에서 내줄 몬스터는 붉은 드래곤으로 변경해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"fromSpeciesId": "species_ember_drake", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_ember_drake", "toSpeciesId": "species_cave_bat"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "교환해 주는 애 레벨만 열 셋으로 바꾸면 돼.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"level": 13, "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat", "level": 13}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "기존 교환으로 오는 박쥐 별명 밤손이로 지정 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"nickname": "밤손이", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat", "nickname": "밤손이"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "슬라임 대신 초원슬라임 내주고 들어오는 애는 붉은 드래곤으로 고쳐.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"fromSpeciesId": "species_king_slime", "toSpeciesId": "species_ember_drake", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_king_slime", "toSpeciesId": "species_ember_drake"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "받는 녀석은 붉은용에 이십 레벨, 별명 불꽃",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"toSpeciesId": "species_ember_drake", "level": 20, "nickname": "불꽃", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_ember_drake", "level": 20, "nickname": "불꽃"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "교환 줄에서 받는 종을 미등록 수정도깨비로 고쳐.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"toSpeciesId": "not_registered", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expectRefusal": true
+  },
+  {
+    "request": "교환 대가를 빈 종으로 바꿔서 공짜로 받아.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tradeMonster.update",
+    "args": {"fromSpeciesId": "", "index": 1, "expectedHash": "08fbe40b1fe781e72ccab74519b1d981"},
+    "seed": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expectRefusal": true
+  },
+  {
+    "request": "합성에 넣는 뒤쪽 몬스터만 셋째로 바꿔.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdB": "monster_3", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_3"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "첫 재료를 네 번째 몬스터로 고쳐 주세요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdA": "monster_4", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_4", "instanceIdB": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "지금 합성에서 둘째 재료를 넷째 애로.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdB": "monster_4", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_4"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "합성 짝을 셋째랑 넷째로 바꾸면 됩니다.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdA": "monster_3", "instanceIdB": "monster_4", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_3", "instanceIdB": "monster_4"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "첫 합성 재료를 삼번 개체로 변경해줘",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdA": "monster_3", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_3", "instanceIdB": "monster_2"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "지금 합성은 사번과 삼번을 순서대로 재료로 삼아.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdA": "monster_4", "instanceIdB": "monster_3", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_4", "instanceIdB": "monster_3"}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "합성 줄 두 칸 다 첫째로 채워.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdB": "monster_1", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expectRefusal": true
+  },
+  {
+    "request": "두 번째 재료 자리에 없는 여우를 넣어줘요.",
+    "fixture": "blank",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.fuseMonsters.update",
+    "args": {"instanceIdB": "not_registered", "index": 1, "expectedHash": "dffb8d153a5339c353603811c2ae1dfc"},
+    "seed": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expectRefusal": true
+  },
+  {
+    "request": "격자 전투 가로 열 칸으로만 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"width": 10, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": [], "width": 10}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "기존 전술전 세로를 네칸으로 줄여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"height": 4, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": [], "height": 4}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "전술 전투에서 적군만 박쥐 떼로 교체.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"troopId": "troop_bat_swarm", "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_bat_swarm", "canLose": false, "victoryBranch": [], "defeatBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "전술전에서 져도 이어가게 해줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"canLose": true, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": true, "victoryBranch": [], "defeatBranch": []}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "기존 격자는 가로 일곱 세로 아홉 칸, 상대는 초원 슬라임들.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"width": 7, "height": 9, "troopId": "troop_slime_pair", "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime_pair", "canLose": false, "victoryBranch": [], "defeatBranch": [], "width": 7, "height": 9}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "전술판 가로 열여섯 칸 세로 둘, 패배해도 계속이요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"width": 16, "height": 2, "canLose": true, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expect": [{"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands[1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": true, "victoryBranch": [], "defeatBranch": [], "width": 16, "height": 2}}, {"at": "maps.map_monster_trial.events[id=event_monster_trial].pages[0].commands", "count": 2}]
+  },
+  {
+    "request": "전술 전투 맵은 가로 열일곱 칸이 되게 고쳐.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"width": 17, "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expectRefusal": true
+  },
+  {
+    "request": "기존 전술 전투 상대를 등록 전인 호랑이 군대로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_monster_trial", "eventId": "event_monster_trial", "pageId": "page_monster_trial"},
+    "primitive": "cmd.tacticsBattle.update",
+    "args": {"troopId": "not_registered", "index": 1, "expectedHash": "66b7909162524c56140fd81c9dffdeb3"},
+    "seed": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []},
+    "expectRefusal": true
+  }
+]

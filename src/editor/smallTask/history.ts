@@ -1,10 +1,11 @@
-import { removedDatabaseReference } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { PrimitiveError } from "./primitives/errors";
 import { assertActorClassDraftChanges } from "./primitives/units/17-db-actors-classes";
+import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 function withEvent(project: Project, mapId: string, event: GameEvent): Project {
@@ -25,14 +26,19 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
-  if (target.kind === "dbEntry" && before !== live) {
-    const { collection, id } = target;
-    // The worker validates the saved project. Check unsaved references here before applying its proposal.
-    const removed = before.database[collection]?.some(row => row.id === id) && !after.database[collection]?.some(row => row.id === id);
-    if (removed && removedDatabaseReference(before, after, [{ collection, id }], live)) {
-      throw new SmallTaskError("다른 설정이나 이벤트, 스크립트에서 쓰는 자료집 항목은 삭제할 수 없습니다.");
+  if (before.commonEvents !== after.commonEvents) {
+    const remaining = new Set(after.commonEvents.map(event => event.id));
+    try {
+      for (const event of before.commonEvents) {
+        if (!remaining.has(event.id)) refuseReferencedRemoval(after, event.id, live);
+      }
+    } catch (error) {
+      if (error instanceof PrimitiveError) throw new SmallTaskError(error.message);
+      throw error;
     }
-    assertActorClassDraftChanges(before, after, collection, id, live);
+  }
+  if (target.kind === "dbEntry" && before !== live) {
+    assertActorClassDraftChanges(before, after, target.collection, target.id, live);
   }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;

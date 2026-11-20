@@ -2,7 +2,7 @@ import type { Project } from "@/project/types";
 import { terrainRecordAt, type TerrainLocation } from "@/project/terrainAt";
 import { climateBattleBackground } from "@/battle/battleBackdrop";
 import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
-import battleSceneryStills from "./battleSceneryStills.json";
+import battleSceneryStills from "./battleSceneryStills.json" with { type: "json" };
 
 export const BATTLE_SCENERY_BIOMES = ["plains", "forest", "cave", "snow", "desert"] as const;
 export type BattleSceneryBiome = typeof BATTLE_SCENERY_BIOMES[number];

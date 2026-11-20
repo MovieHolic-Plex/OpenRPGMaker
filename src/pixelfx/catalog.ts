@@ -1,7 +1,7 @@
 // pixelfx 효과 목록(편집기 고르기 창·조수 도구용). 효과 코드를 불러오지 않고 vendor 가 만든 catalog.json 만 읽는다.
 // 런타임(내보낸 게임)은 이 파일을 쓰지 않는다 — 효과 모듈의 meta 를 직접 본다.
-import catalogJson from "@/vendor/pixelfx/catalog.json";
-import customCatalogJson from "./custom/catalog.json";
+import catalogJson from "@/vendor/pixelfx/catalog.json" with { type: "json" };
+import customCatalogJson from "./custom/catalog.json" with { type: "json" };
 
 export interface PixelFxCatalogEntry {
   readonly id: string;

@@ -1,7 +1,7 @@
-import sheet from "@/assets/worldmapSelectedSheet.json";
-import references from "@/assets/worldmapSelectedReferences.json";
-import materialReferences from "@/assets/worldmapMaterialReferences.json";
-import authoringReferences from '@/assets/worldmapAuthoringReferences.json';
+import sheet from "@/assets/worldmapSelectedSheet.json" with { type: "json" };
+import references from "@/assets/worldmapSelectedReferences.json" with { type: "json" };
+import materialReferences from "@/assets/worldmapMaterialReferences.json" with { type: "json" };
+import authoringReferences from '@/assets/worldmapAuthoringReferences.json' with { type: "json" };
 import type { TilesetDef, StructureKitDef, TileGroupMetadata } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
