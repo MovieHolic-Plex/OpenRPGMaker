@@ -169,6 +169,41 @@
     "expectRefusal": true
   },
   {
+    "request": "선택한 물약 이름을 공백만 남기고 지워 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"items","id":"item_potion"},
+    "primitive": "db.items.update",
+    "args": {"name":"   "},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 물약을 상점에서 백만에 팔게 해 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"items","id":"item_potion"},
+    "primitive": "db.items.price.set",
+    "args": {"price":1000000},
+    "expectRefusal": true
+  },
+  {
+    "request": "이벤트에서 받는 깃펜을 자료집에서 삭제해 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"items","id":"item_quill"},
+    "primitive": "db.items.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "이벤트에서 받는 깃펜 이름만 얼음 깃펜으로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"items","id":"item_quill"},
+    "primitive": "db.items.update",
+    "args": {"name":"얼음 깃펜"},
+    "expect": [
+      {"at":"database.items[id=item_quill].name","equals":"얼음 깃펜"},
+      {"at":"maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[2].pages[0].commands[6].itemId","equals":"item_quill"}
+    ]
+  },
+  {
     "request": "각성초 이제 안 쓰니까 지워 줘",
     "fixture": "built",
     "target": {"kind":"dbEntry","collection":"items","id":"item_wake_herb"},
