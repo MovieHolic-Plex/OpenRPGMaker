@@ -33,10 +33,15 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
     const draft = clean ? { ...event.draft, original: eventWithoutDraft(edited) } : event.draft;
     proposal = withEvent(after, target.mapId, { ...edited, draft });
   }
+  const mapId = target.kind === "dbEntry" ? undefined : target.mapId;
+  const afterEvents = mapId ? new Map(after.maps[mapId].events.map(event => [event.id, event])) : null;
+  const refreshCleanEventDrafts = mapId ? before.maps[mapId].events
+    .filter(event => !jsonEqual(event, afterEvents?.get(event.id)))
+    .map(event => ({ mapId, eventId: event.id })) : [];
   const marker = getMapEditHistoryMarker();
   const lineage = store.getVersionToken().lineage;
   const applied = applyProjectWithHistory(proposal, `작은 일 · ${target.label}`, {
-    origin: "ai", separateStep: true, mapId: target.kind === "dbEntry" ? undefined : target.mapId,
+    origin: "ai", separateStep: true, mapId, refreshCleanEventDrafts,
     workingEvent: event?.draft && target.kind === "event" ? target : undefined,
   });
   if (!applied) return null;
@@ -50,7 +55,9 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
         onDraftConflict?.();
         return false;
       }
-      if (entry.steps === 1 && (committed === store.getCurrent() || jsonEqual(committed, store.getCurrent()))) return undoMapEdit();
+      const current = store.getCurrent();
+      if (entry.steps === 1 && (committed === current
+        || jsonEqual(projectViewWithoutEventDrafts(committed), projectViewWithoutEventDrafts(current)))) return undoMapEdit();
       const version = store.getVersionToken();
       if (!await confirmLaterEdits() || !find() || !jsonEqual(version, store.getVersionToken())) return false;
       return revertToHistoryMarker(marker);
