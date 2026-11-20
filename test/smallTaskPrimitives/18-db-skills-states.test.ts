@@ -11,10 +11,12 @@ import { applyStateEffects, clearBattleEndStates, RAGE_STATE_ID, runStateUpkeep 
 import { statesKeptAfterBattle } from "@/project/battleEndStates";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "@/project/databaseRecordModel";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
-import type { Project } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { dbTarget, mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { plainSummary } from "@/editor/smallTask/plainSummary";
@@ -52,6 +54,9 @@ function fixtureProject(fixture: Fixture): Project {
   const tilesets = Object.fromEntries(Object.entries(project.tilesets)
     .map(([id, tileset]) => [id, { ...tileset, referenceDocuments: [] }]));
   const base = { ...project, tilesets };
+  // 코퍼스처럼 편집기 정규화를 마친 뒤 기준 프로젝트로 사용한다.
+  ensureSwitchVariableSlots(base);
+  removeLegacySpriteReferences(base);
   fixtures.set(fixture, base);
   return base;
 }
@@ -172,17 +177,18 @@ it("중첩된 이벤트의 조건과 명령, 적 그룹 조건, 상태 내성 �
   const map = before.maps[before.startMapId]!;
   const troop = before.database.troops[0]!;
   const actor = before.database.actors[0]!;
+  const event: GameEvent = {
+    id: "ev_unit18", x: 0, y: 0, trigger: { kind: "action" },
+    commands: [{
+      kind: "fork", condition: { kind: "partyKnowsSkill", skillId: ids.skills },
+      then: [], else: [{ kind: "showAnimation", target: "player", animationId: ids.battleAnimations }],
+    }],
+  };
   const project: Project = {
     ...before,
     maps: {
       ...before.maps,
-      [map.id]: { ...map, events: [...map.events, {
-        id: "ev_unit18", x: 0, y: 0, trigger: "action",
-        commands: [{
-          kind: "fork", condition: { kind: "partyKnowsSkill", skillId: ids.skills },
-          then: [], else: [{ kind: "showAnimation", target: "player", animationId: ids.battleAnimations }],
-        }],
-      }] },
+      [map.id]: { ...map, events: [...map.events, event] },
     },
     database: {
       ...before.database,
@@ -221,15 +227,18 @@ it("폭주 효과와 계산된 애니메이션 연결을 삭제로 끊지 않는
   before.database.skills.at(-1)!.effect = { kind: "rage" };
   expect(() => runPrimitive(before, target("states", RAGE_STATE_ID), "db.states.delete", {})).toThrow(/폭주 스킬/u);
 
-  before.commonEvents = [{
-    id: "ce_unit18", name: "애니메이션 재생", trigger: "none",
-    commands: [{
-      kind: "script", source: "await game.showAnimation('player', game.getText('effect'));",
-      compiled: "await game.showAnimation('player', game.getText('effect'));",
-      effects: { reads: [], writes: [], calls: [], dynamic: [{ api: "showAnimation", line: 1 }] },
+  const withScript: Project = {
+    ...before,
+    commonEvents: [{
+      id: "ce_unit18", name: "애니메이션 재생", trigger: "none",
+      commands: [{
+        kind: "script", source: "await game.showAnimation('player', game.getText('effect'));",
+        compiled: "await game.showAnimation('player', game.getText('effect'));",
+        effects: { reads: [], writes: [], calls: [], dynamic: [{ api: "showAnimation", line: 1 }] },
+      }],
     }],
-  }];
-  expect(() => runPrimitive(before, target("battleAnimations"), "db.battleAnimations.delete", {})).toThrow(/스크립트/u);
+  };
+  expect(() => runPrimitive(withScript, target("battleAnimations"), "db.battleAnimations.delete", {})).toThrow(/스크립트/u);
 });
 
 it("아직 이벤트에서 불러오지 않는 공용 스크립트의 계산된 스킬 참조를 보호한다", () => {
@@ -267,11 +276,14 @@ it("대상이 없거나 식별자가 중복이면 삭제와 수정을 거절한�
     expect(() => runPrimitive(before, target("skills", id), "db.skills.delete", {})).toThrow(/범위 밖/u);
   }
   const duplicate = before.database.skills.at(-1)!;
-  before.database.skills.push(duplicate);
+  const withDuplicate: Project = {
+    ...before,
+    database: { ...before.database, skills: [...before.database.skills, duplicate] },
+  };
   for (const [edit, args] of [["update", { mpCost: 5 }], ["delete", {}]] as const) {
-    expect(() => runPrimitive(before, target("skills"), `db.skills.${edit}`, args)).toThrow(/중복/u);
+    expect(() => runPrimitive(withDuplicate, target("skills"), `db.skills.${edit}`, args)).toThrow(/중복/u);
   }
-  expect(before.database.skills.slice(-2)).toEqual([duplicate, duplicate]);
+  expect(withDuplicate.database.skills.slice(-2)).toEqual([duplicate, duplicate]);
 });
 
 it.each([
@@ -426,8 +438,14 @@ it("선고와 최대 지속 턴을 보존하고 적용할 수 있는 해제 턴�
   expect(runStateUpkeep(after, battler, () => 0).removedStateIds).toEqual([]);
   expect(runStateUpkeep(after, battler, () => 0).removedStateIds).toEqual([]);
   expect(runStateUpkeep(after, battler, () => 0).removedStateIds).toEqual([ids.states]);
-  state.runtimeEffects = { doomTurns: 4 };
-  expect(() => apply(4)).toThrow(/선고/u);
+  const withDoom: Project = {
+    ...before,
+    database: {
+      ...before.database,
+      states: [...before.database.states.slice(0, -1), { ...state, runtimeEffects: { doomTurns: 4 } }],
+    },
+  };
+  expect(() => runPrimitive(withDoom, target("states"), "db.states.recoverTurns.set", { recoverTurns: 4 })).toThrow(/선고/u);
 });
 
 it.each([
@@ -469,26 +487,34 @@ it("전투 불능의 자연 회복과 피격 해제를 거절한다", () => {
 
 it("마력 소모를 실제로 바꾸고 PP를 쓰는 스킬에서는 안내한다", () => {
   const before = withRecords("blank");
-  const apply = () => runPrimitive(before, target("skills"), "db.skills.mpCost.set", { mpCost: 3 });
+  const apply = (project: Project) => runPrimitive(project, target("skills"), "db.skills.mpCost.set", { mpCost: 3 });
   const user = battlerWithStates();
   user.mp = user.maxMp = 100;
-  expect(consumeBattleSkillResource(apply().after, user, ids.skills)).toEqual({ kind: "mp", remaining: 92 });
-  before.system = { ...before.system, battleModel: "gen1" };
-  before.database.skills.at(-1)!.maxPp = 10;
-  expect(() => apply()).toThrow(/사용 횟수/u);
-  expect(consumeBattleSkillResource(before, user, ids.skills)).toEqual({ kind: "pp", remaining: 9 });
+  expect(consumeBattleSkillResource(apply(before).after, user, ids.skills)).toEqual({ kind: "mp", remaining: 92 });
+  const { skills } = before.database;
+  const withPp: Project = {
+    ...before,
+    system: { ...before.system, battleModel: "gen1" },
+    database: { ...before.database, skills: [...skills.slice(0, -1), { ...skills.at(-1)!, maxPp: 10 }] },
+  };
+  expect(() => apply(withPp)).toThrow(/사용 횟수/u);
+  expect(consumeBattleSkillResource(withPp, user, ids.skills)).toEqual({ kind: "pp", remaining: 9 });
 });
 
 it("포켓몬식 전투가 읽는 빙결 해제 확률은 바꾸고 무시되는 회복 설정은 거절한다", () => {
   const before = withRecords("blank");
   before.system = { ...before.system, battleModel: "gen1" };
   const selected = target("states");
-  const update = (args: Record<string, unknown>) => runPrimitive(before, selected, "db.states.update", args);
-  expect(() => update({ recoverChance: 50 })).toThrow(/포켓몬식 전투/u);
-  expect(() => update({ recoverWhenHitChance: 50 })).toThrow(/포켓몬식 전투/u);
+  const update = (project: Project, args: Record<string, unknown>) => runPrimitive(project, selected, "db.states.update", args);
+  expect(() => update(before, { recoverChance: 50 })).toThrow(/포켓몬식 전투/u);
+  expect(() => update(before, { recoverWhenHitChance: 50 })).toThrow(/포켓몬식 전투/u);
   expect(() => runPrimitive(before, selected, "db.states.recoverTurns.set", { recoverTurns: 3 })).toThrow(/포켓몬식 전투/u);
-  before.database.states.at(-1)!.gen1MajorStatus = "freeze";
-  expect(update({ recoverChance: 50 }).after.database.states.at(-1)?.recoverNaturallyChance).toBe(50);
+  const { states } = before.database;
+  const withFreezeState: Project = {
+    ...before,
+    database: { ...before.database, states: [...states.slice(0, -1), { ...states.at(-1)!, gen1MajorStatus: "freeze" }] },
+  };
+  expect(update(withFreezeState, { recoverChance: 50 }).after.database.states.at(-1)?.recoverNaturallyChance).toBe(50);
 });
 
 it("추가한 애니메이션을 호출한 이벤트는 재생을 마칠 때까지 기다린다", () => {
@@ -517,8 +543,9 @@ it("전투 애니메이션과 프로젝트 도트 연출에서 선택한 항목�
   const host = document.createElement("div");
   host.setAttribute("role", "dialog");
   document.body.append(host);
-  const createElement = document.createElement.bind(document);
-  const create = vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+  const htmlDocument: { createElement(tag: string): HTMLElement } = document;
+  const createElement = htmlDocument.createElement.bind(htmlDocument);
+  const create = vi.spyOn(htmlDocument, "createElement").mockImplementation(tag => {
     const element = createElement(tag);
     if (tag === "section") element.showPopover = () => {};
     return element;
