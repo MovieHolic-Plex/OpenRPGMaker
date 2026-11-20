@@ -56,6 +56,13 @@ export class FakeNode {
   readonly childNodes: FakeNode[] = [];
   parentNode: FakeNode | null = null;
 
+  cloneNode(deep = false): FakeNode {
+    const copy = this.nodeType === FakeNode.DOCUMENT_FRAGMENT_NODE ? new FakeFragment() : new FakeNode();
+    copy.data = this.data;
+    if (deep) copy.append(...this.childNodes.map(child => child.cloneNode(true)));
+    return copy;
+  }
+
   get ownerDocument(): Document {
     return globalThis.document;
   }
@@ -399,6 +406,10 @@ export class FakeElement extends FakeNode {
   }
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
+  get title(): string { return this.getAttribute("title") ?? ""; }
+  set title(value: string) { this.setAttribute("title", value); }
+  get placeholder(): string { return this.getAttribute("placeholder") ?? ""; }
+  set placeholder(value: string) { this.setAttribute("placeholder", value); }
   tagName: string;
   /** HTMLElement 호환 — 제안 모달 open()이 빈 host 가드에 사용. */
   get childElementCount(): number {
@@ -505,6 +516,18 @@ export class FakeElement extends FakeNode {
   constructor(tagName: string) {
     super();
     this.tagName = tagName.toUpperCase();
+  }
+
+  override cloneNode(deep = false): FakeElement {
+    const copy = new FakeElement(this.tagName);
+    for (const [key, value] of Object.entries(this.attrs)) copy.setAttribute(key, value);
+    copy.className = this.className;
+    Object.assign(copy.dataset, this.dataset);
+    for (const [key, value] of Object.entries(this.style)) {
+      if (typeof value === "string") copy.style.setProperty(key, value);
+    }
+    if (deep) copy.append(...this.childNodes.map(child => child.cloneNode(true)));
+    return copy;
   }
 
   setAttribute(name: string, value: string): void {

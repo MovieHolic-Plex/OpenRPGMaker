@@ -1,3 +1,4 @@
+import { eventSmallTask } from "@/editor/smallTask/capsule";
 import "@/styles/event/index.css";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
@@ -694,6 +695,7 @@ function renderModalHeader(
       el("div", {
         class: "header-actions",
         children: [
+          eventSmallTask(mapId, eventId),
           renderEventValidationBell(),
           el("button", {
             class: "btn ghost event-editor-header-test",

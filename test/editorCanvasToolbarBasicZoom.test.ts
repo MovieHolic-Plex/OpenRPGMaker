@@ -39,9 +39,8 @@ afterEach(() => {
   restoreDom = null;
 });
 
-// 2026-11 캔버스 알약 개편: 캔버스 위 떠 있는 도구는 칠하기·사각형·채우기·화면 밀기 | 되돌리기 | 배율 하나뿐이다.
 describe("canvas tool pill", () => {
-  it("renders exactly the mock's controls in order, and nothing else", () => {
+  it("keeps canvas tools, history, zoom and the contextual small task together", () => {
     const fake = render();
     expect(fake.classList.contains("canvas-tool-pill")).toBe(true);
     expect(ids(fake)).toEqual([
@@ -52,6 +51,7 @@ describe("canvas tool pill", () => {
       "canvas-tool-pill-divider",
       "canvas-tool-undo",
       "editor-zoom-group",
+      "small-task-open",
     ]);
     for (const gone of [
       "editor-canvas-toolbar-expand",
