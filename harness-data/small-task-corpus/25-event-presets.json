@@ -727,5 +727,48 @@
     "primitive": "event.door.setLock",
     "args": {"itemId": "item_missing_key"},
     "expectRefusal": true
+  },
+  {
+    "request": "포션은 이 상점 진열대에서 내려 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.removeStock",
+    "args": {"itemId": "item_potion"},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 겨울 시장 출구에서 해독초를 팔게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_antidote"},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기서 겨울 시장 가로 9999칸에 도착하게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.transfer.place",
+    "args": {"toMapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "toX": 9999, "toY": 17},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 자리에 아무 글자도 없는 표지판 하나 놔 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.sign.place",
+    "args": {"text": "   "},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 칸에 포션을 백 개 넣은 상자를 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
+    "primitive": "event.chest.place",
+    "args": {"itemId": "item_potion", "count": 100},
+    "selection": {"rect": {"x": 25, "y": 34, "w": 1, "h": 1}},
+    "expectRefusal": true
   }
 ]

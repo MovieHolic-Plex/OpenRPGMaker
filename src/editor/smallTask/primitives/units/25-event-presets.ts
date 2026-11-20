@@ -1,17 +1,18 @@
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { displayText } from "@/editor/smallTask/target";
-import { assertEventShape, EVENT_TOOLS, resolveEventPlacement, resolveTransferEndpoint } from "@/editor/tools/eventTools";
+import { assertEventShape, placeChest, resolveEventPlacement, resolveTransferEndpoint } from "@/editor/tools/eventTools";
 import { compileSimplePage, PASSIVE_MOVEMENT, resolveGraphic, usedCharsetGraphicKeysOnMap } from "@/editor/tools/eventCompile";
-import { LOCK_DOOR_TOOLS } from "@/editor/tools/lockDoorTools";
 import { inMapBounds, type Point } from "@/editor/tools/mapHelpers";
-import { ToolError, type JsonSchema, type ToolDefinition } from "@/editor/tools/types";
-import { isPassableLanding } from "@/project/collision";
+import { ToolError, type JsonSchema } from "@/editor/tools/types";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { canMove, isPassableLanding } from "@/project/collision";
 import { GOLD_MAX } from "@/project/economyValues";
-import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
+import { footprintContains, normalizeCharacterFootprint } from "@/project/footprint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
-import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { josa, roJosa } from "@/util/josa";
+import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
@@ -20,40 +21,55 @@ export const UNIT = "25-event-presets";
 type Args = Record<string, unknown>;
 type TileScope = Extract<SmallTaskScope, { kind: "tileEvent" }>;
 
-function tileScope({ project, target, selection }: PrimitiveContext): TileScope {
-  if (target.kind === "dbEntry") throw new PrimitiveError("범위 밖 요청이에요. 맵에서 대상을 선택해 주세요.");
-  const map = project.maps[target.mapId];
-  if (!map) throw new PrimitiveError("선택한 맵을 찾을 수 없어요.");
-  if (target.kind === "event") {
-    const event = map.events.find(candidate => candidate.id === target.eventId);
-    if (!event || event.x !== target.x || event.y !== target.y
-      || (target.pageId && !event.pages?.some(page => page.id === target.pageId))) {
-      throw new PrimitiveError("범위 밖 요청이에요. 이벤트를 다시 선택해 주세요.");
-    }
-    return { kind: "tileEvent", mapId: map.id, x: event.x, y: event.y, eventId: event.id };
-  }
+function selectedMap(project: Project, mapId: string): GameMap {
+  const map = Object.hasOwn(project.maps, mapId) ? project.maps[mapId] : undefined;
+  if (!map || map.id !== mapId) throw new PrimitiveError("선택한 맵을 찾을 수 없어요.");
+  return map;
+}
+
+function placementScope({ project, target, selection }: PrimitiveContext): TileScope {
+  if (target.kind !== "map") throw new PrimitiveError("범위 밖이에요. 맵에서 배치할 칸을 골라 주세요.");
+  const map = selectedMap(project, target.mapId);
   const rect = selection?.rect;
   if (!rect || rect.w !== 1 || rect.h !== 1 || !Number.isInteger(rect.x) || !Number.isInteger(rect.y)
     || !inMapBounds(map, rect.x, rect.y)) {
-    throw new PrimitiveError("범위 밖 요청이에요. 배치할 칸 하나를 선택해 주세요.");
+    throw new PrimitiveError("범위 밖이에요. 맵 안에서 배치할 칸 하나를 골라 주세요.");
   }
   return { kind: "tileEvent", mapId: map.id, x: rect.x, y: rect.y, eventId: null };
 }
 
-function selectedEvent(ctx: PrimitiveContext): GameEvent {
-  const scope = tileScope(ctx);
-  const event = ctx.project.maps[scope.mapId].events.find(candidate => candidate.id === scope.eventId);
-  if (!event) throw new PrimitiveError("범위 밖 요청이에요. 바꿀 이벤트를 선택해 주세요.");
-  return event;
+function selectedEvent({ project, target }: PrimitiveContext): { map: GameMap; event: GameEvent; page?: EventPage } {
+  if (target.kind !== "event") throw new PrimitiveError("범위 밖이에요. 바꿀 이벤트를 골라 주세요.");
+  const map = selectedMap(project, target.mapId);
+  const events = map.events.filter(candidate => candidate.id === target.eventId);
+  const event = events[0];
+  if (events.length !== 1 || !event || event.x !== target.x || event.y !== target.y
+    || !Number.isInteger(event.x) || !Number.isInteger(event.y) || !inMapBounds(map, event.x, event.y)) {
+    throw new PrimitiveError("범위 밖이에요. 이벤트를 다시 선택해 주세요.");
+  }
+  if (target.pageId === undefined) return { map, event };
+  const pages = event.pages?.filter(page => page.id === target.pageId);
+  if (pages?.length !== 1) throw new PrimitiveError("범위 밖이에요. 이벤트 페이지를 다시 선택해 주세요.");
+  return { map, event, page: pages[0] };
+}
+
+function eventScope(map: GameMap, event: GameEvent): TileScope {
+  return { kind: "tileEvent", mapId: map.id, x: event.x, y: event.y, eventId: event.id };
+}
+
+function tileOccupied(map: GameMap, { x, y }: Point): boolean {
+  return map.events.some(event => (event.x === x && event.y === y) || event.pages?.some(page =>
+    footprintContains(event.x, event.y, normalizeCharacterFootprint(page.footprint), x, y)));
 }
 
 function blankTile(ctx: PrimitiveContext): { map: GameMap; at: Point } {
-  const scope = tileScope(ctx);
-  const map = ctx.project.maps[scope.mapId];
-  if (findEventCoveringPoint(map.events, scope.x, scope.y)) {
+  const { mapId, x, y } = placementScope(ctx);
+  const map = ctx.project.maps[mapId];
+  const at = { x, y };
+  if (tileOccupied(map, at)) {
     throw new PrimitiveError("선택한 칸에 이미 이벤트가 있어요.");
   }
-  return { map, at: { x: scope.x, y: scope.y } };
+  return { map, at };
 }
 
 function eventId(project: Project, kind: string, at: Point): string {
@@ -71,6 +87,11 @@ function appendEvent(project: Project, map: GameMap, event: GameEvent): Project 
     ...project,
     maps: { ...project.maps, [map.id]: { ...map, events: [...map.events, event] } },
   };
+}
+
+function replaceEvent(project: Project, map: GameMap, event: GameEvent, edited: GameEvent): Project {
+  const events = map.events.map(candidate => candidate === event ? edited : candidate);
+  return { ...project, maps: { ...project.maps, [map.id]: { ...map, events } } };
 }
 
 function goods(project: Project, itemId: unknown) {
@@ -95,21 +116,6 @@ function recordLabel(record: { id: string; name: string }, fallback: string): st
   return label(record.id === record.name ? "" : record.name, fallback);
 }
 
-function legacyDraft(
-  project: Project, map: GameMap, tool: ToolDefinition, args: Args, failure: string,
-): Project {
-  // These tools write events. Give them a private event list and keep the tile arrays shared.
-  const draft = { ...project, maps: { ...project.maps, [map.id]: { ...map, events: structuredClone(map.events) } } };
-  try {
-    tool.run(draft, { mapId: map.id, ...args });
-    return draft;
-  } catch (error) {
-    if (error instanceof ToolError) throw new PrimitiveError(failure);
-    throw error;
-  }
-}
-
-const existingTool = (name: string): ToolDefinition => EVENT_TOOLS.find(tool => tool.name === name)!;
 const schema = (properties: Record<string, JsonSchema>, required: string[] = []): JsonSchema => ({
   type: "object", properties, required, additionalProperties: false,
 });
@@ -137,7 +143,7 @@ const npc: SmallTaskPrimitive = {
     name: { type: "string", minLength: 1, maxLength: 60, description: "주민 이름이나 역할" },
     dialogue: { type: "string", minLength: 1, maxLength: 500, description: "말을 걸 때 들려줄 대사. 생략하면 인사해요." },
   }, ["name"]),
-  scope: tileScope,
+  scope: placementScope,
   describe: (_ctx, args) => `선택한 칸에 주민 「${label(args.name as string, "주민")}」을 놓아요.`,
   apply(ctx, args) {
     const name = textArg(args.name as string, "주민 이름을 적어 주세요.");
@@ -175,11 +181,12 @@ const chest: SmallTaskPrimitive = {
     count: { type: "integer", minimum: 1, maximum: 99, description: "아이템 개수. 생략하면 한 개예요." },
     gold: { type: "integer", minimum: 1, maximum: GOLD_MAX, description: "함께 넣을 돈의 양. 아이템 없이 돈만 넣을 수도 있어요." },
   }),
-  scope: tileScope,
+  scope: placementScope,
   describe(ctx, args) {
     const item = args.itemId === undefined ? "" : `${recordLabel(goods(ctx.project, args.itemId), "아이템")} ${args.count ?? 1}개`;
-    const money = args.gold === undefined ? "" : `돈 ${args.gold}`;
-    return `${[item, money].filter(Boolean).join("와 ")}를 담은 보물상자를 놓아요.`;
+    if (args.gold === undefined) return `${item}를 담은 보물상자를 놓아요.`;
+    const money = `금화 ${args.gold}닢`;
+    return `${item ? `${item}와 ` : ""}${money}을 담은 보물상자를 놓아요.`;
   },
   apply(ctx, args) {
     const { itemId, count, gold } = args;
@@ -187,10 +194,23 @@ const chest: SmallTaskPrimitive = {
       throw new PrimitiveError("상자에 넣을 아이템이나 돈을 정해 주세요.");
     }
     if (itemId !== undefined) goods(ctx.project, itemId);
+    const { project } = ctx;
     const { map, at } = blankTile(ctx);
-    return legacyDraft(ctx.project, map, existingTool("place_chest"), {
-      ...at, id: eventId(ctx.project, "chest", at), contents: { itemId, count, gold },
-    }, "선택한 칸에 보물상자를 놓을 수 없어요.");
+    const failure = "선택한 칸에 보물상자를 놓을 수 없어요. 조사할 수 있는 다른 칸을 골라 주세요.";
+    const id = eventId(project, "chest", at);
+    // The existing tool can relocate the chest and displace an auto-inspect event.
+    // Take only the new chest, and only when it stayed on the selected tile.
+    const draftMap = { ...map, events: map.events.slice() };
+    const draft = { ...project, maps: { ...project.maps, [map.id]: draftMap } };
+    try {
+      placeChest.run(draft, { mapId: map.id, ...at, id, contents: { itemId, count, gold } });
+    } catch (error) {
+      if (error instanceof ToolError) throw new PrimitiveError(failure);
+      throw error;
+    }
+    const event = draftMap.events.find(candidate => candidate.id === id);
+    if (!event || event.x !== at.x || event.y !== at.y) throw new PrimitiveError(failure);
+    return appendEvent(project, map, event);
   },
 };
 
@@ -204,25 +224,77 @@ function stockPrimitive(change: "add" | "remove"): SmallTaskPrimitive {
     targets: ["event"],
     args: schema({
       itemId: itemSchema,
-      ...(adding ? { price: { type: "integer", minimum: 0, maximum: GOLD_MAX, description: "직접 지정할 판매 가격. 생략하면 자료집 가격을 사용해요." } } : {}),
+      ...(adding ? { price: { type: "integer", minimum: 0, maximum: GOLD_MAX, description: "기본 판매가. 새 상품의 가격을 생략하면 자료집 가격을 사용해요." } } : {}),
     }, ["itemId"]),
-    scope: tileScope,
+    scope(ctx) {
+      const { map, event, page } = selectedEvent(ctx);
+      return page ? { kind: "eventPage", mapId: map.id, eventId: event.id, pageId: page.id } : eventScope(map, event);
+    },
     describe(ctx, args) {
       const name = recordLabel(goods(ctx.project, args.itemId), "상품");
       if (!adding) return `상점에서 「${name}」${josa(name, "을/를")} 빼요.`;
-      const price = args.price === undefined ? "" : ` ${args.price}에`;
-      return `상점에 「${name}」${josa(name, "을/를")}${price} 진열해요.`;
+      if (args.price === undefined) return `상점에 「${name}」${josa(name, "을/를")} 진열해요.`;
+      return `「${name}」의 기본 판매가를 ${args.price}골드로 정해요.`;
     },
     apply(ctx, args) {
       const item = goods(ctx.project, args.itemId);
-      const event = selectedEvent(ctx);
-      const map = ctx.project.maps[tileScope(ctx).mapId];
-      return legacyDraft(ctx.project, map, existingTool("set_shop_stock"), {
-        eventId: event.id,
-        [change]: adding ? [{ itemId: item.id, ...(args.price === undefined ? {} : { priceOverride: args.price }) }] : [item.id],
-      }, adding ? "이 이벤트에는 상품을 추가할 수 없어요." : "이 이벤트에서 뺄 상점 상품을 찾을 수 없어요.");
+      const { map, event, page } = selectedEvent(ctx);
+      const price = args.price as number | undefined;
+      let foundShop = false;
+      let changed = false;
+      const editList = (commands: Command[]): Command[] => {
+        const commandsWithEdits = structuredClone(commands);
+        const shops = commandsOfKind(commandsWithEdits, "shop");
+        foundShop ||= shops.length > 0;
+        let edited = false;
+        for (const shop of shops) {
+          const before = { itemIds: shop.itemIds, stock: shop.stock };
+          editStock(shop, item.id, adding, price);
+          edited ||= !jsonEqual(before, { itemIds: shop.itemIds, stock: shop.stock });
+        }
+        changed ||= edited;
+        // Each shop still lives in its original page and branch.
+        return edited ? commandsWithEdits : commands;
+      };
+      const pages = event.pages?.length ? event.pages.map(candidate => {
+        if (page && candidate !== page) return candidate;
+        const commands = editList(candidate.commands);
+        return commands === candidate.commands ? candidate : { ...candidate, commands };
+      }) : undefined;
+      const edited = pages ? { ...event, pages } : { ...event, commands: editList(event.commands) };
+      if (!foundShop) throw new PrimitiveError("선택한 곳에서 상점을 찾을 수 없어요.");
+      if (!changed) throw new PrimitiveError(adding ? "이미 같은 설정으로 파는 상품이에요." : "이 상점에서 팔고 있는 상품이 아니에요.");
+      return replaceEvent(ctx.project, map, event, edited);
     },
   };
+}
+
+function commandsOfKind<K extends Command["kind"]>(commands: readonly Command[], kind: K): Extract<Command, { kind: K }>[] {
+  const found: Extract<Command, { kind: K }>[] = [];
+  function visit(list: readonly Command[]): void {
+    for (const command of list) {
+      if (command.kind === kind) found.push(command as Extract<Command, { kind: K }>);
+      for (const branch of nestedCommandLists(command)) visit(branch);
+    }
+  }
+  visit(commands);
+  return found;
+}
+
+function editStock(shop: Extract<Command, { kind: "shop" }>, itemId: string, adding: boolean, price?: number): void {
+  if (!adding) {
+    shop.itemIds = shop.itemIds.filter(id => id !== itemId);
+    if (shop.stock) shop.stock = shop.stock.filter(entry => entry.itemId !== itemId);
+    return;
+  }
+  const stock = shop.stock ?? (price === undefined ? undefined : shop.itemIds.map(id => ({ itemId: id })));
+  if (!shop.itemIds.includes(itemId)) shop.itemIds = [...shop.itemIds, itemId];
+  if (!stock) return;
+  if (!stock.some(entry => entry.itemId === itemId)) {
+    shop.stock = [...stock, { itemId, ...(price === undefined ? {} : { priceOverride: price }) }];
+  } else if (price !== undefined) {
+    shop.stock = stock.map(entry => entry.itemId === itemId ? { ...entry, priceOverride: price } : entry);
+  }
 }
 
 const sign: SmallTaskPrimitive = {
@@ -234,7 +306,7 @@ const sign: SmallTaskPrimitive = {
   args: schema({
     text: { type: "string", minLength: 1, maxLength: 500, description: "표지판을 조사할 때 읽는 문구" },
   }, ["text"]),
-  scope: tileScope,
+  scope: placementScope,
   describe: (_ctx, args) => `「${label(args.text as string, "안내")}」라고 적힌 표지판을 놓아요.`,
   apply(ctx, args) {
     const text = textArg(args.text as string, "표지판에 적을 글을 입력해 주세요.");
@@ -258,35 +330,34 @@ const destinationFields = {
 
 function destination(project: Project, args: Args): { map: GameMap; at: Point } {
   const id = args.toMapId as string;
-  if (!Object.hasOwn(project.maps, id)) throw new PrimitiveError("도착할 맵을 찾을 수 없어요.");
-  const map = project.maps[id];
+  const map = Object.hasOwn(project.maps, id) ? project.maps[id] : undefined;
+  if (!map || map.id !== id) throw new PrimitiveError("도착할 맵을 찾을 수 없어요.");
   const at = { x: args.toX as number, y: args.toY as number };
-  if (!inMapBounds(map, at.x, at.y)) throw new PrimitiveError("도착 칸이 맵 범위 밖이에요.");
+  if (!Number.isInteger(at.x) || !Number.isInteger(at.y) || !inMapBounds(map, at.x, at.y)) {
+    throw new PrimitiveError("도착 칸이 맵 범위 밖이에요.");
+  }
   return { map, at };
 }
 
-function gateLanding(project: Project, map: GameMap, at: Point): Point {
-  const endpoint = resolveTransferEndpoint(project, map, { ...at, exact: true }, "A", []);
-  if (!endpoint || endpoint.gate.x !== at.x || endpoint.gate.y !== at.y) {
-    throw new PrimitiveError("이 칸에 닿을 수 있는 출입구를 놓을 수 없어요.");
+function assertGatePlacement(project: Project, map: GameMap, at: Point): void {
+  const failure = "선택한 칸에 출입구를 놓을 수 없어요. 걸어서 닿을 수 있는 다른 칸을 골라 주세요.";
+  try {
+    const endpoint = resolveTransferEndpoint(project, map, { ...at, exact: true }, "A", []);
+    if (!endpoint || endpoint.gate.x !== at.x || endpoint.gate.y !== at.y) throw new PrimitiveError(failure);
+  } catch (error) {
+    if (error instanceof ToolError) throw new PrimitiveError(failure);
+    throw error;
   }
-  return endpoint.landing;
-}
-
-function awayFrom(gate: Point, landing: Point): Dir {
-  if (gate.x !== landing.x) return gate.x < landing.x ? "right" : "left";
-  return gate.y < landing.y ? "down" : "up";
 }
 
 function transferLeg(
   project: Project, from: { map: GameMap; at: Point }, to: { map: GameMap; at: Point },
-  direction: Dir | "retain" = "retain",
 ): Project {
   const { map, at } = from;
   const id = eventId(project, "transfer", at);
   const trigger = { kind: "playerTouch" } as const;
   const defaults = newCommand("transfer") as Extract<Command, { kind: "transfer" }>;
-  const transfer = { ...defaults, mapId: to.map.id, ...to.at, direction };
+  const transfer = { ...defaults, mapId: to.map.id, ...to.at };
   const event: GameEvent = {
     ...at, id, name: "출입구", trigger, commands: [],
     pages: [{
@@ -306,7 +377,7 @@ const transfer: SmallTaskPrimitive = {
   covers: { tools: ["create_transfer_pair"] },
   targets: ["map"],
   args: schema(destinationFields, ["toMapId", "toX", "toY"]),
-  scope: tileScope,
+  scope: placementScope,
   describe(ctx, args) {
     const place = recordLabel(destination(ctx.project, args).map, "목적지");
     return `「${place}」${roJosa(place)} 가는 출입구를 놓아요.`;
@@ -317,10 +388,10 @@ const transfer: SmallTaskPrimitive = {
     const to = destination(project, args);
     if ((from.map === to.map && from.at.x === to.at.x && from.at.y === to.at.y)
       || !isPassableLanding(project, to.map, to.at.x, to.at.y)
-      || findEventCoveringPoint(to.map.events, to.at.x, to.at.y)) {
+      || tileOccupied(to.map, to.at)) {
       throw new PrimitiveError("도착할 수 있는 빈 칸을 골라 주세요.");
     }
-    gateLanding(project, from.map, from.at);
+    assertGatePlacement(project, from.map, from.at);
     return transferLeg(project, from, to);
   },
 };
@@ -332,29 +403,17 @@ const pair: SmallTaskPrimitive = {
   covers: { tools: ["create_transfer_pair"] },
   targets: ["map"],
   args: schema(destinationFields, ["toMapId", "toX", "toY"]),
-  scope(ctx, args) {
-    tileScope(ctx);
-    destination(ctx.project, args);
-    throw new PrimitiveError("범위 밖이에요. 왕복 출입구는 두 곳을 고치는 일이에요.");
-  },
+  scope: refuseTransferPair,
   describe(ctx, args) {
     const place = recordLabel(destination(ctx.project, args).map, "목적지");
     return `「${place}」${josa(place, "와/과")} 오가는 출입구를 놓아요.`;
   },
-  apply(ctx, args) {
-    const { project } = ctx;
-    const from = blankTile(ctx);
-    const to = destination(project, args);
-    if ((from.map === to.map && from.at.x === to.at.x && from.at.y === to.at.y)
-      || findEventCoveringPoint(to.map.events, to.at.x, to.at.y)) {
-      throw new PrimitiveError("서로 다른 빈 칸을 출입구로 골라 주세요.");
-    }
-    const landingFrom = gateLanding(project, from.map, from.at);
-    const landingTo = gateLanding(project, to.map, to.at);
-    const first = transferLeg(project, from, { map: to.map, at: landingTo }, awayFrom(to.at, landingTo));
-    return transferLeg(first, { ...to, map: first.maps[to.map.id] }, { map: from.map, at: landingFrom }, awayFrom(from.at, landingFrom));
-  },
+  apply: refuseTransferPair,
 };
+
+function refuseTransferPair(): never {
+  throw new PrimitiveError("범위 밖이에요. 왕복 출입구는 두 곳을 고치는 일이에요. 한쪽씩 놓아 주세요.");
+}
 
 const lock: SmallTaskPrimitive = {
   id: "event.door.setLock",
@@ -367,7 +426,10 @@ const lock: SmallTaskPrimitive = {
     switchId: { type: "string", minLength: 1, description: "켜지면 문이 열리는 스위치. 아이템과 둘 중 하나를 골라요." },
     text: { type: "string", minLength: 1, maxLength: 200, description: "문이 잠겼을 때 표시할 글. 생략하면 잠겼다는 안내가 나와요." },
   }),
-  scope: tileScope,
+  scope(ctx) {
+    const { map, event } = selectedEvent(ctx);
+    return eventScope(map, event);
+  },
   describe(ctx, args) {
     if (args.itemId !== undefined) {
       const item = ctx.project.database.items.find(record => record.id === args.itemId);
@@ -376,11 +438,13 @@ const lock: SmallTaskPrimitive = {
         return `「${name}」${josa(name, "이/가")} 있어야 문이 열리게 해요.`;
       }
     }
-    return "정해진 조건을 만족해야 문이 열리게 해요.";
+    const entry = ctx.project.switches.find(record => record.id === args.switchId);
+    const name = entry ? recordLabel(entry, "선택한 스위치") : "선택한 스위치";
+    return `「${name}」${josa(name, "이/가")} 켜져야 문이 열리게 해요.`;
   },
   apply(ctx, args) {
     const { project } = ctx;
-    const { itemId, switchId } = args;
+    const { itemId, switchId } = args as { itemId?: string; switchId?: string };
     if ((itemId === undefined) === (switchId === undefined)) {
       throw new PrimitiveError("문을 열 아이템이나 스위치를 하나 골라 주세요.");
     }
@@ -390,39 +454,97 @@ const lock: SmallTaskPrimitive = {
     if (switchId !== undefined && !project.switches.some(entry => entry.id === switchId)) {
       throw new PrimitiveError("문을 열 스위치를 찾을 수 없어요.");
     }
-    const event = selectedEvent(ctx);
-    if (!event.pages?.some(page => page.commands.some(command => command.kind === "transfer"))) {
+    const { map, event, page: selected } = selectedEvent(ctx);
+    const pages = event.pages ?? [];
+    const doors = pages.filter(page => page.commands.some(command => command.kind === "transfer"));
+    if (commandsOfKind(event.commands, "transfer").length || pages.some(page => page.commands.some(command =>
+      nestedCommandLists(command).some(branch => commandsOfKind(branch, "transfer").length > 0)))) {
+      throw new PrimitiveError("이 문은 이동 명령이 분기 안에 있거나 페이지 밖에 있어요. 이벤트 편집기에서 잠금 조건을 달아 주세요.");
+    }
+    if (doors.length === 0) {
       throw new PrimitiveError("선택한 이벤트에서 이동하는 문을 찾을 수 없어요.");
     }
-    const { mapId, x, y } = tileScope(ctx);
-    const draft = legacyDraft(project, project.maps[mapId], LOCK_DOOR_TOOLS[0]!, {
-      x, y, unlockWhen: itemId === undefined ? { switchId } : { itemId },
-      lockedText: textArg((args.text as string | undefined) ?? "문이 잠겨 있다.", "잠겼을 때 보여 줄 글을 입력해 주세요."),
-    }, "이 문에 잠금을 달 수 없어요.");
-    const updated = draft.maps[mapId].events.find(candidate => candidate.id === event.id)!;
-    const closed = updated.pages?.find(page => page.id === `${event.id}_locked`);
-    const requirement = updated.pages?.at(-1)?.conditions[0];
-    if (!closed || !requirement) throw new PrimitiveError("이 문에 잠금을 달 수 없어요.");
+    if (selected && (doors.length > 1 || selected !== doors[0])) {
+      throw new PrimitiveError("범위 밖이에요. 잠그려는 이동 페이지를 선택해 주세요. 이동 페이지가 여러 장이면 이벤트 전체를 골라 주세요.");
+    }
+    const destinations = new Set(doors.flatMap(page => commandsOfKind(page.commands, "transfer").map(command => command.mapId)));
+    if (map.events.some(candidate => candidate !== event && Math.abs(candidate.x - event.x) + Math.abs(candidate.y - event.y) <= 1
+      && [...(candidate.pages ?? []).map(page => page.commands), candidate.commands].some(commands =>
+        commandsOfKind(commands, "transfer").some(command => destinations.has(command.mapId))))) {
+      throw new PrimitiveError("범위 밖이에요. 같은 맵으로 가는 이동 칸이 붙어 있어요. 두 칸을 함께 잠가야 해요.");
+    }
 
-    // Put a locked alternative immediately after each authored transfer page so the existing
-    // page conditions and the priority of other pages stay intact.
-    const lockedId = (id: string) => `${id}_preset_locked`;
-    const pages = event.pages ?? [];
-    const transferPages = pages.filter(page => page.commands.some(command => command.kind === "transfer"));
-    const generated = new Set(transferPages.map(page => lockedId(page.id)));
-    const transfers = new Set(transferPages);
-    updated.pages = pages.filter(page => !generated.has(page.id)).flatMap(page => {
-      if (!transfers.has(page)) return [structuredClone(page)];
-      return [structuredClone(page), {
-        ...structuredClone(page), id: lockedId(page.id), name: closed.name,
-        conditions: [...structuredClone(page.conditions), { kind: "not", condition: structuredClone(requirement) }],
-        commands: structuredClone(closed.commands),
-      }];
+    const body = textArg((args.text as string | undefined) ?? "문이 잠겨 있다.", "잠겼을 때 보여 줄 글을 입력해 주세요.");
+    const requirement: Condition = itemId === undefined
+      ? { kind: "switch", switchId: switchId!, value: true }
+      : { kind: "item", itemId, present: true };
+    const byId = new Map(pages.map(page => [page.id, page]));
+    if (byId.size !== pages.length) throw new PrimitiveError("서로 구분할 수 없는 페이지가 있어 잠금을 달 수 없어요.");
+    const retreat = doorRetreat(project, map, event);
+    const replacements = new Map<EventPage, EventPage>();
+    doors.forEach(door => {
+      const commands: Command[] = [{ kind: "text", body }];
+      if (retreat && door.trigger.kind === "playerTouch" && door.priority === "below") {
+        commands.push({ kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "move", dir: retreat }], repeat: false, wait: true, skippable: true } });
+      }
+      const locked = lockedPage(door, requirement, commands);
+      const previous = byId.get(locked.id);
+      if (previous && (pages[pages.indexOf(door) + 1] !== previous || !isPresetLock(door, previous))) {
+        throw new PrimitiveError("기존 페이지와 잠금 페이지를 구분할 수 없어요. 이벤트 편집기에서 페이지를 확인해 주세요.");
+      }
+      replacements.set(door, locked);
     });
-    assertEventShape(updated);
-    return draft;
+    // The last matching page wins. Insert each alternative immediately after its own door page.
+    const updated: EventPage[] = [];
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i]!;
+      updated.push(page);
+      const locked = replacements.get(page);
+      if (!locked) continue;
+      updated.push(locked);
+      if (pages[i + 1]?.id === locked.id) i++;
+    }
+    return replaceEvent(project, map, event, { ...event, pages: updated });
   },
 };
+
+function doorRetreat(project: Project, map: GameMap, event: GameEvent): Dir | undefined {
+  const options = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]] as const;
+  const open = options.flatMap(([dir, dx, dy]) => {
+    const at = { x: event.x + dx, y: event.y + dy };
+    if (!canMove(project, map, event.x, event.y, at.x, at.y) || tileOccupied(map, at)) return [];
+    return [{ dir, depth: Math.min(at.x, at.y, map.width - 1 - at.x, map.height - 1 - at.y) }];
+  });
+  return open.sort((a, b) => b.depth - a.depth)[0]?.dir;
+}
+
+function lockedPage(door: EventPage, requirement: Condition, commands: Command[]): EventPage {
+  const { commands: _commands, ...settings } = door;
+  const page = structuredClone(settings);
+  return {
+    ...page,
+    id: `${door.id}_preset_locked`,
+    name: "잠김",
+    conditions: [...page.conditions, { kind: "not", condition: structuredClone(requirement) }],
+    commands,
+  };
+}
+
+function isPresetLock(door: EventPage, page: EventPage): boolean {
+  const requirement = page.conditions.at(-1);
+  const [text, retreat] = page.commands;
+  const move = retreat?.kind === "moveEvent" ? retreat.route.moves[0] : undefined;
+  const expectedCommands: Command[] = text?.kind === "text" ? [{ kind: "text", body: text.body }] : [];
+  if (move?.kind === "move" && retreat?.kind === "moveEvent") {
+    const skippable = retreat.route.skippable === true ? { skippable: true } : {};
+    expectedCommands.push({ kind: "moveEvent", eventId: "@player", route: { moves: [move], repeat: false, wait: true, ...skippable } });
+  }
+  return requirement?.kind === "not"
+    && ((requirement.condition.kind === "switch" && requirement.condition.value === true)
+      || (requirement.condition.kind === "item" && requirement.condition.present === true))
+    && text?.kind === "text"
+    && jsonEqual(page, lockedPage(door, requirement.condition, expectedCommands));
+}
 
 export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   npc, chest, stockPrimitive("add"), stockPrimitive("remove"), transfer, pair, sign, lock,
