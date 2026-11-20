@@ -1,5 +1,8 @@
 /** @vitest-environment happy-dom */
 import { readFileSync } from "node:fs";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import {
@@ -16,8 +19,9 @@ import { GOLD_MAX } from "@/project/economyValues";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { startSession } from "@/project/session";
-import type { Command, EventPage, GameEvent, Project } from "@/project/types";
+import type { Command, EventPage, GameEvent, Project, Season } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import { eventTarget, expectApplies, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
 
 const potion = "item_potion";
@@ -205,8 +209,9 @@ describe.each(cases)("돈·아이템·상점 명령 $kind", ({ kind, insert, ini
   });
 });
 
-function execute(project: Project, commandsOf: (p: Project) => Command[], mapId: string) {
+function execute(project: Project, commandsOf: (p: Project) => Command[], mapId: string, season?: Season) {
   const session = startSession(project, 42);
+  if (season && session.gameTime) session.gameTime = { ...session.gameTime, season };
   session.currentMapId = mapId;
   session.gold = 20;
   session.inventory = { [ether]: 1, [potion]: 1 };
@@ -259,7 +264,7 @@ it("재고가 있는 상점에 상품을 넣어도 계절 가격과 거래 분�
   });
   const command = commandsOf(after)[0];
   expect(command).toMatchObject({
-    itemIds: [potion, ether, highPotion], stock: [...stock, { itemId: highPotion }], transactionBranch: branch,
+    itemIds: [potion, ether, highPotion], stock: [stock[0], stock[2], stock[1], { itemId: highPotion }], transactionBranch: branch,
     shopType: "buyOnly", allowSell: false,
   });
   expect(execute(after, commandsOf, mapId).step).toMatchObject({
@@ -275,6 +280,72 @@ it("재고가 있는 상점에 상품을 넣어도 계절 가격과 거래 분�
   expectRefused(removed, target, "cmd.shop.update", {
     index: 0, expectedHash: eventCommandHash(commandsOf(removed)[0]), removeItemId: potion,
   }, /진열된 물건만/u);
+});
+
+it("일부 상품에만 재고 설정이 있어도 기본 가격 상품을 진열에 유지한다", async () => {
+  const detailed = { itemId: potion, priceOverride: 400 };
+  const shop: Command = { kind: "shop", itemIds: [potion, ether], stock: [detailed] };
+  const { project, target, mapId, commandsOf } = setup("blank", [shop]);
+  const update = (before: Project, args: { addItemId: string } | { removeItemId: string }) =>
+    runPrimitive(before, target, "cmd.shop.update", { index: 0, expectedHash: eventCommandHash(commandsOf(before)[0]), ...args });
+  expectRefused(project, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(shop), addItemId: ether,
+  }, /이미 진열된 상품/u);
+
+  const { after: added } = update(project, { addItemId: highPotion });
+  expect(commandsOf(added)[0]).toEqual({
+    ...shop, itemIds: [potion, ether, highPotion], stock: [detailed, { itemId: ether }, { itemId: highPotion }],
+  });
+  expect(execute(added, commandsOf, mapId).step).toMatchObject({
+    kind: "shop", items: [{ itemId: potion, price: 400 }, { itemId: ether }, { itemId: highPotion }],
+  });
+
+  const { after: removed } = update(project, { removeItemId: ether });
+  expect(commandsOf(removed)[0]).toEqual({ ...shop, itemIds: [potion] });
+  const { after: defaultOnly } = update(project, { removeItemId: potion });
+  expect(execute(defaultOnly, commandsOf, mapId).step).toMatchObject({ kind: "shop", items: [{ itemId: ether }] });
+  await expectUndoRestores(project, added, target);
+  await expectUndoRestores(project, removed, target);
+});
+
+it("전체 진열 교체 후 SQLite를 다시 열어도 봄·겨울 재고와 거래 분기를 유지한다", async () => {
+  const spring = { itemId: potion, seasons: ["spring"] as const, priceBySeason: { spring: 400 }, displayTileId: 1 };
+  const winter = { itemId: potion, seasons: ["winter"] as const, priceOverride: 450, displayTileId: 2 };
+  const shop: Command = {
+    kind: "shop", itemIds: [potion, ether], stock: [spring, winter, { itemId: ether, priceOverride: 600 }],
+    branchOnTransaction: true, transactionBranch: [closing],
+  };
+  const { project, target, mapId, commandsOf } = setup("blank", [shop]);
+  project.system.timeSystem = { enabled: true };
+  const { after } = runPrimitive(project, target, "cmd.shop.update", {
+    index: 0, expectedHash: eventCommandHash(shop), itemIds: [highPotion, potion],
+  });
+  const projectDir = await mkdtemp(join(tmpdir(), "oprn-shop-reload-"));
+  try {
+    const store = await initLocalProjectStore({ projectDir });
+    try {
+      expect((await store.saveProject(after)).kind).toBe("saved");
+    } finally {
+      store.close();
+    }
+    const reopened = await openLocalProjectStore({ projectDir });
+    try {
+      const reloaded = reopened.loadSnapshot()!.project;
+      expect(commandsOf(reloaded)[0]).toMatchObject({
+        kind: "shop", itemIds: [highPotion, potion], stock: [{ itemId: highPotion }, spring, winter],
+        branchOnTransaction: true, transactionBranch: [closing],
+      });
+      for (const [season, price] of [["spring", 400], ["winter", 450]] as const) {
+        const play = execute(reloaded, commandsOf, mapId, season);
+        expect(play.step).toMatchObject({ kind: "shop", items: [{ itemId: highPotion }, { itemId: potion, price }] });
+        expect(play.interpreter.resume(true)).toMatchObject({ kind: "text", body: closing.body });
+      }
+    } finally {
+      reopened.close();
+    }
+  } finally {
+    await rm(projectDir, { recursive: true, force: true });
+  }
 });
 
 it("숙박 요금에 연결한 변수와 회복 옵션이 게임에 전달된다", () => {
@@ -348,6 +419,33 @@ it("상점과 여관의 분기를 정확히 골라 추가하고 게임에서 그
   expectRefused(after, target, "cmd.changeGold.insert", {
     branchPath: [1, SHOP_FAILED_TRANSACTION_BRANCH_INDEX], amount: 5,
   }, /분기를 찾을 수 없어요/u);
+});
+
+it.each([
+  {
+    branch: "상점 거래 성공",
+    command: { kind: "shop", itemIds: [potion], branchOnTransaction: false, transactionBranch: [] },
+    branchPath: [0, SHOP_TRANSACTION_BRANCH_INDEX], response: true,
+  },
+  {
+    branch: "상점 거래 실패",
+    command: { kind: "shop", itemIds: [potion], failedTransactionBranch: [] },
+    branchPath: [0, SHOP_FAILED_TRANSACTION_BRANCH_INDEX], response: "failed",
+  },
+  {
+    branch: "여관 골드 부족 분기 안의 반복",
+    command: { kind: "inn", price: 40, branchOnNotEnoughGold: false, notEnoughBranch: [{ kind: "loop", body: [] }] },
+    branchPath: [0, INN_NOT_ENOUGH_BRANCH_INDEX, 0, LOOP_BODY_BRANCH_INDEX], response: "notEnough",
+  },
+])("$branch 줄은 분기가 꺼져 있으면 명령을 추가할 수 없다", ({ command, branchPath, response }) => {
+  const { project, target, commandsOf, mapId } = setup("blank", [command]);
+  expectRefused(project, target, "cmd.changeGold.insert", {
+    branchPath, amount: 7,
+  }, /꺼져 있는 상점·여관 분기/u);
+  expect(commandsOf(project)).toEqual([command]);
+  const play = execute(project, commandsOf, mapId);
+  expect(play.interpreter.resume(response).kind).toBe("done");
+  expect(play.session.gold).toBe(20);
 });
 
 it("기존 저장본에 배열이 없는 여관 분기에도 추가하고 실행하며 되돌린다", async () => {

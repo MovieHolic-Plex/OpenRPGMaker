@@ -1,6 +1,9 @@
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
-import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import {
+  INN_NOT_ENOUGH_BRANCH_INDEX, resolveCommandAtPath, resolveCommandListAtPath,
+  SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
+} from "@/editor/eventCommandPaths";
 import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor/commandSummary";
 import type { JsonSchema } from "@/editor/tools/types";
 import { craftShopRecipeIds } from "@/project/craftShop";
@@ -130,6 +133,11 @@ function replaceOperand(patch: Args, args: Args, valueKey: string, variableKey: 
   patch[valueKey] = { kind: "var", id: args[variableKey] };
 }
 
+function shopItemIds(command: Extract<Command, { kind: "shop" }>): Set<string> {
+  // 예전 명령에는 stock에만 있는 상품도 있으므로 이미 진열된 상품에 포함한다.
+  return new Set([...command.itemIds, ...(command.stock?.map(row => row.itemId) ?? [])]);
+}
+
 function shopPatch(current: Extract<Command, { kind: "shop" }>, patch: Args, args: Args): void {
   const { allowSell, shopType, addItemId, removeItemId } = args;
   // 런타임이 우선하는 거래 방식과 구 저장본의 판매 설정을 함께 맞춘다.
@@ -150,33 +158,23 @@ function shopPatch(current: Extract<Command, { kind: "shop" }>, patch: Args, arg
     throw new PrimitiveError("같은 물건을 동시에 넣고 뺄 수 없습니다.");
   }
   const { stock } = current;
-  const displayedIds = stock?.map(row => row.itemId) ?? current.itemIds;
-  if (typeof addItemId === "string" && displayedIds.includes(addItemId)) {
+  const displayedIds = shopItemIds(current);
+  if (typeof addItemId === "string" && displayedIds.has(addItemId)) {
     throw new PrimitiveError("이미 진열된 상품입니다. 추가할 다른 상품을 골라 주세요.");
   }
-  if (typeof removeItemId === "string" && !displayedIds.includes(removeItemId)) {
+  if (typeof removeItemId === "string" && !displayedIds.has(removeItemId)) {
     throw new PrimitiveError("현재 상점에 진열된 물건만 뺄 수 있습니다.");
   }
-  if (replacement !== undefined) {
-    const itemIds = [...new Set(replacement)];
-    patch.itemIds = itemIds;
-    if (stock) {
-      patch.stock = itemIds.flatMap(itemId => {
-        const old = stock.filter(row => row.itemId === itemId);
-        return old.length ? old : [{ itemId }];
-      });
-    }
-    return;
-  }
-
-  const itemIds = new Set(displayedIds.filter(id => id !== removeItemId));
-  if (typeof addItemId === "string") itemIds.add(addItemId);
-  patch.itemIds = [...itemIds];
+  if (typeof removeItemId === "string") displayedIds.delete(removeItemId);
+  if (typeof addItemId === "string") displayedIds.add(addItemId);
+  const itemIds = [...(replacement === undefined ? displayedIds : new Set(replacement))];
+  patch.itemIds = itemIds;
   if (stock) {
-    // 기존 재고 행의 순서와 계절·가격·그림 설정을 유지한다.
-    const rows = stock.filter(row => row.itemId !== removeItemId);
-    if (typeof addItemId === "string") rows.push({ itemId: addItemId });
-    patch.stock = rows;
+    // 게임은 stock이 있으면 그 목록을 읽으므로 기본 가격 상품에도 행을 채운다.
+    patch.stock = itemIds.flatMap(itemId => {
+      const rows = stock.filter(row => row.itemId === itemId);
+      return rows.length ? rows : [{ itemId }];
+    });
   }
 }
 
@@ -327,7 +325,7 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
       }
       if (typeof args.addItemId === "string") return `${name}에 ${itemName(args.addItemId)} 진열`;
       if (typeof args.removeItemId === "string") return `${name}에서 ${itemName(args.removeItemId)} 빼기`;
-      return commandSummary({ ...command, itemIds: [...new Set(command.stock?.map(row => row.itemId) ?? command.itemIds)] })
+      return commandSummary({ ...command, itemIds: [...shopItemIds(command)] })
         .replace(/^상점: /u, () => `${name} 열기 · 상품 `).replace(/·(\d+)G$/u, " · 상인 소지금 $1골드");
     }
     case "inn": {
@@ -342,7 +340,18 @@ function describeCommand(project: Project, command: EconomyCommand, args: Args):
 }
 
 function pageWithInsertBranch(page: EventPage, branchPath: readonly number[]): EventPage {
-  if (branchPath.length === 0) return page;
+  if (branchPath.length === 0 || branchPath.length % 2 !== 0) return page;
+  for (let offset = 1; offset < branchPath.length; offset += 2) {
+    const parent = resolveCommandAtPath(page.commands, branchPath.slice(0, offset));
+    const branch = branchPath[offset];
+    if (
+      (parent?.kind === "shop" && branch === SHOP_TRANSACTION_BRANCH_INDEX && parent.branchOnTransaction !== true)
+      || (parent?.kind === "shop" && branch === SHOP_FAILED_TRANSACTION_BRANCH_INDEX && parent.branchOnFailedTransaction !== true)
+      || (parent?.kind === "inn" && branch === INN_NOT_ENOUGH_BRANCH_INDEX && parent.branchOnNotEnoughGold !== true)
+    ) {
+      throw new PrimitiveError("꺼져 있는 상점·여관 분기에는 명령을 추가할 수 없습니다.");
+    }
+  }
   const path = [...branchPath, 0];
   if (resolveCommandListAtPath(page.commands, path)) return page;
   const parent = resolveCommandAtPath(page.commands, branchPath.slice(0, -1));
