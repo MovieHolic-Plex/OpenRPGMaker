@@ -403,6 +403,14 @@
     "expectRefusal": true
   },
   {
+    "request": "선택한 직업의 99레벨 최대 체력을 1로 바꿔 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"maxHpAtLevel99":1},
+    "expectRefusal": true
+  },
+  {
     "request": "주인공을 선택해 놨는데 직업 이름을 야경꾼으로 바꿔 줘",
     "fixture": "blank",
     "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},

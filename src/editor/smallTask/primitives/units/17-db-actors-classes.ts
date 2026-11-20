@@ -47,7 +47,7 @@ const actorFields = {
 } satisfies Record<string, JsonSchema>;
 const classFields = {
   name,
-  maxHpAtLevel99: { type: "integer", minimum: 1, maximum: MAX_HP, description: "시작 체력을 유지하며 성장 곡선의 99레벨 최대 체력을 지정" },
+  maxHpAtLevel99: { type: "integer", minimum: 1, maximum: MAX_HP, description: "99레벨 최대 체력을 지정. 기존 직업은 1~98레벨 값을 유지" },
 } satisfies Record<string, JsonSchema>;
 const appearanceFields = {
   name,
@@ -130,25 +130,58 @@ function dialogueUsesActorNumber(project: Project, firstChangedIndex: number): b
     && resolveDialogueText(text, { project, session }) !== resolveDialogueText(text, { project, session: { ...session, actorNames } }));
 }
 
-function dialogueUsesName(project: Project, collection: Collection, record: Records[Collection], after?: Project): boolean {
+function appearancePortraitByName(project: Project, name: string) {
+  const appearance = project.database.characterAppearances?.find(row => row.name.trim() === name);
+  return appearance && resolveAppearancePortrait(project, appearance.id, "full");
+}
+
+function stringVariableSpeakerCanMatch(text: string, project: Project, names: ReadonlySet<string>): boolean {
+  if (!/\\t\[/iu.test(text)) return false;
+  // Let the runtime parser recognize real substitutions, including escapes and inline tags.
+  const marker = "\0";
+  const stringVariables = new Proxy<Record<string, string>>({}, { get: () => marker });
+  const parts = resolveDialogueText(text, { project, session: { variables: {}, stringVariables } }).split(marker);
+  if (parts.length === 1) return false;
+  // Actor names and numeric variables in a mixed expression can change during play too.
+  if (/\\[nv]\[/iu.test(text)) return true;
+  const literals = parts.map(part => part.trim());
+  for (const name of names) {
+    if (!name.startsWith(literals[0]) || !name.endsWith(literals.at(-1)!)) continue;
+    let offset = 0;
+    if (literals.every(literal => {
+      const index = name.indexOf(literal, offset);
+      if (index < 0) return false;
+      offset = index + literal.length;
+      return true;
+    })) return true;
+  }
+  return false;
+}
+
+function dialogueUsesName(project: Project, collection: Collection, record: Records[Collection], after: Project): boolean {
   if (collection === "classes") return false;
   const oldName = record.name.trim();
-  const newName = after?.database[collection]?.find(row => row.id === record.id)?.name.trim();
+  const newName = after.database[collection]?.find(row => row.id === record.id)?.name.trim();
   if (oldName === newName) return false;
   const isActor = collection === "actors";
-  const wasPortrait = !isActor && resolveAppearancePortrait(project, record.id, "full");
-  const willBePortrait = !isActor && after && resolveAppearancePortrait(after, record.id, "full");
-  const names = new Set([isActor || wasPortrait ? oldName : undefined,
-    isActor || willBePortrait ? newName : undefined].filter(Boolean));
+  const names = new Set([oldName, newName].filter((name): name is string => Boolean(name)));
+  if (!isActor) {
+    for (const name of names) {
+      const previous = appearancePortraitByName(project, name);
+      const next = appearancePortraitByName(after, name);
+      if (previous?.resourceId === next?.resourceId && previous?.presentation === next?.presentation) names.delete(name);
+    }
+  }
   if (!names.size) return false;
   const textContext = { project, session: { variables: {} } };
   // A speaker written with this actor's number follows a rename on its own.
   const byNumber = isActor ? { ...textContext, session: { ...textContext.session, actorNames: { [record.id]: "\0" } } } : textContext;
   return someDialogue(project, (text, isSpeaker, speakerActor) => {
     if (!isSpeaker || !text.trim()) return false;
-    if (names.has(resolveDialogueSpeakerName(text, byNumber))) return true;
+    if (names.has(resolveDialogueSpeakerName(text, byNumber) ?? "")) return true;
+    if (!isActor) return stringVariableSpeakerCanMatch(text, project, names);
     // Automatic staging also considers partial and subsequence matches on the raw speaker label.
-    if (!isActor || speakerActor?.trim() || isNonActorSpeaker(text)) return false;
+    if (speakerActor?.trim() || isNonActorSpeaker(text)) return false;
     return speakerNameScore(text, oldName) !== speakerNameScore(text, newName ?? "");
   });
 }
@@ -191,15 +224,23 @@ function actorEdit(ctx: PrimitiveContext, args: Args, actor: ActorRecord): Actor
   return edited;
 }
 
-function classEdit(_ctx: PrimitiveContext, args: Args, record: ClassRecord): ClassRecord {
+function classEdit(args: Args, record: ClassRecord, creating = false): ClassRecord {
   const edited = { ...record, name: authoredName(args, record.name) };
-  if (typeof args.maxHpAtLevel99 === "number") {
-    const current = record.parameterCurves.maxHp;
-    if (args.maxHpAtLevel99 !== current[ACTOR_LEVEL_MAX - 1]) {
-      const patch = { parameterCurves: { maxHp: [current[0], args.maxHpAtLevel99] } };
-      expandShortParameterCurves(patch, "직업", []);
-      edited.parameterCurves = { ...record.parameterCurves, ...patch.parameterCurves };
-    }
+  const end = args.maxHpAtLevel99;
+  const current = record.parameterCurves.maxHp;
+  if (typeof end !== "number" || end === current[ACTOR_LEVEL_MAX - 1]) return edited;
+  if (end < current[0]) throw new PrimitiveError("99레벨 최대 체력은 1레벨 최대 체력 이상이어야 해요.");
+  if (!creating && end < current[ACTOR_LEVEL_MAX - 2]) {
+    throw new PrimitiveError("99레벨 최대 체력은 98레벨 최대 체력 이상이어야 해요.");
+  }
+  if (creating) {
+    const patch = { parameterCurves: { maxHp: [current[0], end] } };
+    expandShortParameterCurves(patch, "직업", []);
+    edited.parameterCurves = { ...record.parameterCurves, ...patch.parameterCurves };
+  } else {
+    const maxHp = current.slice();
+    maxHp[ACTOR_LEVEL_MAX - 1] = end;
+    edited.parameterCurves = { ...record.parameterCurves, maxHp };
   }
   return edited;
 }
@@ -310,10 +351,10 @@ function databaseFamily<C extends Collection>(collection: C, config: {
         if (collection === "actors" && dialogueUsesActorNumber(project, index)) {
           throw new PrimitiveError("이 주인공을 지우면 대사에 나오는 이름이 바뀌거나 사라져요. 대사의 주인공 번호를 먼저 확인해 주세요.");
         }
-        if (dialogueUsesName(project, collection, selected)) {
+        edited.splice(index, 1);
+        if (dialogueUsesName(project, collection, selected, proposed)) {
           throw new PrimitiveError(`대사에서 이름으로 사용하는 ${label} 항목이에요. 대사의 화자를 먼저 확인해 주세요.`);
         }
-        edited.splice(index, 1);
       }
       return proposed;
     },
@@ -336,9 +377,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   ...databaseFamily("classes", {
     rows: project => project.database.classes,
     fields: classFields,
-    create: (ctx, id, _selected, args) => classEdit(ctx, args, normalizeClassRecord({ id, name: "새 직업" })),
-    update: classEdit,
-    updateSentence: args => typeof args.maxHpAtLevel99 === "number" ? `99레벨 최대 체력을 ${args.maxHpAtLevel99}점으로 바꿔요.` : undefined,
+    create: (_ctx, id, _selected, args) => classEdit(args, normalizeClassRecord({ id, name: "새 직업" }), true),
+    update: (_ctx, args, record) => classEdit(args, record),
+    updateSentence: args => typeof args.maxHpAtLevel99 === "number" ? `99레벨 최대 체력만 ${args.maxHpAtLevel99}점으로 바꿔요.` : undefined,
   }),
   ...databaseFamily("characterAppearances", {
     rows: project => project.database.characterAppearances ?? [],

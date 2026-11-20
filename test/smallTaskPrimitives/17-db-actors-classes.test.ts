@@ -1,4 +1,7 @@
 /** @vitest-environment happy-dom */
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
@@ -6,13 +9,14 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/17-db-actors-classes";
 import type { SmallTaskTarget } from "@/editor/smallTask/target";
-import { resolveDialogueText } from "@/player/dialogue";
+import { resolveDialogueSpeakerName, resolveDialogueText } from "@/player/dialogue";
 import { createInterpreter } from "@/player/interpreter";
 import { createActorRecord } from "@/project/actorModel";
 import { normalizeClassRecord } from "@/project/databaseRecordModel";
 import { startSession } from "@/project/session";
 import type { Command, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import { expectApplies, expectUndoRestores, loadFixture } from "./harness";
 
 const charset = "easyrpg-charset-actor1";
@@ -49,14 +53,6 @@ const actorTarget = target("actors", spareActor.id);
 const classTarget = target("classes", spareClass.id);
 const lookTarget = target("characterAppearances", look.id);
 
-function grownHp() {
-  const start = spareClass.parameterCurves.maxHp[0];
-  return Array.from({ length: 99 }, (_, index) => {
-    const fraction = index / 98;
-    return Math.round(start + (6800 - start) * (fraction + fraction * fraction) / 2);
-  });
-}
-
 const cases = [
   { id: "db.actors.create", fixture: "blank", target: actorTarget, args: { name: "미나", initialLevel: 3 },
     expected: (p: Project) => [...p.database.actors, { ...createActorRecord("actor_small_task_1", spareClass.id), name: "미나", nickname: "", initialLevel: 3 }] },
@@ -67,7 +63,9 @@ const cases = [
   { id: "db.classes.create", fixture: "maou", target: classTarget, args: { name: "별빛술사" },
     expected: (p: Project) => [...p.database.classes, normalizeClassRecord({ id: "class_small_task_1", name: "별빛술사" })] },
   { id: "db.classes.update", fixture: "built", target: classTarget, args: { maxHpAtLevel99: 6800 },
-    expected: (p: Project) => [...p.database.classes.slice(0, -1), { ...spareClass, parameterCurves: { ...spareClass.parameterCurves, maxHp: grownHp() } }] },
+    expected: (p: Project) => [...p.database.classes.slice(0, -1), { ...spareClass, parameterCurves: {
+      ...spareClass.parameterCurves, maxHp: [...spareClass.parameterCurves.maxHp.slice(0, -1), 6800],
+    } }] },
   { id: "db.classes.delete", fixture: "blank", target: classTarget, args: {}, removeActor: true,
     expected: (p: Project) => p.database.classes.slice(0, -1) },
   { id: "db.characterAppearances.create", fixture: "built", target: lookTarget, args: { name: "축제복", faceResourceId: face },
@@ -130,6 +128,39 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(() => runPrimitive(before, lookTarget, "db.characterAppearances.update", { charsetResourceId: null, characterIndex: 2 })).toThrow("걷기 그림");
     expect(before.database.actors.at(-1)).toBe(spareActor);
     expect(before.database.characterAppearances?.at(-1)).toBe(look);
+  });
+
+  it("직업의 99레벨 체력만 수정하고 직접 만든 중간값을 보존한다", async () => {
+    const before = projectWithRows("blank");
+    const maxHp = spareClass.parameterCurves.maxHp.map((value, index) => index === 49 ? 2023 : value);
+    const curves = { ...spareClass.parameterCurves, maxHp };
+    before.database.classes[before.database.classes.length - 1] = { ...spareClass, parameterCurves: curves };
+    const { after, sentence } = runPrimitive(before, classTarget, "db.classes.update", { maxHpAtLevel99: 6800 });
+    expect(after.database.classes.at(-1)?.parameterCurves).toEqual({ ...curves, maxHp: [...maxHp.slice(0, -1), 6800] });
+    expect(sentence).toContain("99레벨 최대 체력만");
+    expect(before.database.classes.at(-1)?.parameterCurves).toBe(curves);
+    await expectUndoRestores(before, after, classTarget);
+  });
+
+  it("1레벨 체력보다 낮은 99레벨 체력은 생성과 수정에서 모두 거절한다", () => {
+    const before = projectWithRows("blank");
+    const start = spareClass.parameterCurves.maxHp[0];
+    for (const operation of ["create", "update"]) {
+      expect(() => runPrimitive(before, classTarget, `db.classes.${operation}`, { name: "성문지기", maxHpAtLevel99: start - 1 }))
+        .toThrow("99레벨 최대 체력은 1레벨 최대 체력 이상이어야 해요.");
+    }
+    const { after } = runPrimitive(before, classTarget, "db.classes.create", { name: "성문지기", maxHpAtLevel99: 6800 });
+    const curve = after.database.classes.at(-1)!.parameterCurves.maxHp;
+    expect([curve[0], curve[49], curve[98]]).toEqual([start, Math.round(start + (6800 - start) * 0.375), 6800]);
+  });
+
+  it("98레벨보다 낮은 99레벨 체력 수정은 마지막 레벨에서 체력이 떨어지므로 거절한다", () => {
+    const before = projectWithRows("blank");
+    const previous = spareClass.parameterCurves.maxHp[97];
+    expect(() => runPrimitive(before, classTarget, "db.classes.update", { maxHpAtLevel99: previous - 1 }))
+      .toThrow("99레벨 최대 체력은 98레벨 최대 체력 이상이어야 해요.");
+    const { after } = runPrimitive(before, classTarget, "db.classes.update", { maxHpAtLevel99: previous });
+    expect(after.database.classes.at(-1)?.parameterCurves.maxHp.slice(-2)).toEqual([previous, previous]);
   });
 
   it.each([
@@ -223,6 +254,17 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(after.commonEvents).toBe(before.commonEvents);
   });
 
+  it("직업과 외형을 추가할 때 기존 참조가 남아 있는 ID를 건너뛴다", () => {
+    const before = commonCommands(projectWithRows("blank"), [
+      { kind: "changeFace", resourceId: "", appearanceId: "appearance_small_task_1", position: "left", flipHorizontally: false },
+    ]);
+    before.database.actors.push({ ...spareActor, id: "actor_old", classId: "class_small_task_1" });
+    const createdClass = runPrimitive(before, classTarget, "db.classes.create", { name: "밤 경비" }).after;
+    expect(createdClass.database.classes.at(-1)?.id).toBe("class_small_task_2");
+    const createdLook = runPrimitive(before, lookTarget, "db.characterAppearances.create", { name: "여행복" }).after;
+    expect(createdLook.database.characterAppearances?.at(-1)?.id).toBe("appearance_small_task_2");
+  });
+
   it("구형 대사의 줄 배열과 에필로그의 병렬 대사에 남은 주인공 번호를 보호한다", () => {
     const before = projectWithRows("blank");
     const line = `\\N[${before.database.actors.length}] 님!`;
@@ -261,6 +303,41 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(() => runPrimitive(stage, actorTarget, "db.actors.update", { name: "이누리" })).toThrow("대사의 화자");
   });
 
+  it("문자열 변수로 고르는 화자 초상을 삭제하거나 이름을 바꾸지 않는다", () => {
+    const base = projectWithRows("blank");
+    const before = runPrimitive(base, lookTarget, "db.characterAppearances.update", { faceResourceId: face }).after;
+    const speaker = "[빠르게]여행\\t[ outfit ]";
+    const dialogue = { kind: "text", speaker, body: "출발" } as const;
+    const project = commonCommands(before, [{ kind: "loop", body: [dialogue] }]);
+    expect(resolveDialogueSpeakerName(speaker, { project, session: { variables: {}, stringVariables: { outfit: "복" } } })).toBe(look.name);
+    expect(() => runPrimitive(project, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
+    expect(() => runPrimitive(project, lookTarget, "db.characterAppearances.update", { name: "겨울 외투" })).toThrow("대사의 화자");
+
+    const numbered = runPrimitive(before, lookTarget, "db.characterAppearances.update", { name: "여행복2" }).after;
+    const mixedSpeaker = "\\T[outfit]\\V[1]";
+    const numberedDialogue = commonCommands(numbered, [{ ...dialogue, speaker: mixedSpeaker }]);
+    expect(resolveDialogueSpeakerName(mixedSpeaker, {
+      project: numberedDialogue, session: { variables: { var_0001: 2 }, stringVariables: { outfit: "여행복" } },
+    })).toBe("여행복2");
+    expect(() => runPrimitive(numberedDialogue, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
+
+    const otherSpeakers = commonCommands(before, [
+      { ...dialogue, speaker: "경비병 \\T[outfit]" },
+      { ...dialogue, speaker: "\\\\T[outfit]" },
+      { ...dialogue, speaker: undefined, body: "\\T[outfit]" },
+    ]);
+    expect(runPrimitive(otherSpeakers, lookTarget, "db.characterAppearances.delete", {}).after.database.characterAppearances)
+      .not.toContainEqual(expect.objectContaining({ id: look.id }));
+  });
+
+  it("같은 이름의 뒤쪽 외형으로 화자 초상이 바뀌는 삭제도 막는다", () => {
+    const before = projectWithRows("blank");
+    const fallback = { ...look, id: "appearance_fallback", face: { resourceId: face } };
+    const project = commonCommands(before, [{ kind: "text", speaker: "\\T[outfit]", body: "출발" }]);
+    project.database.characterAppearances = [...before.database.characterAppearances!, fallback];
+    expect(() => runPrimitive(project, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
+  });
+
   it("번호를 쓰는 화자는 주인공의 바뀐 이름을 따라간다", () => {
     const before = projectWithRows("blank");
     const speaker = `\\N[${before.database.actors.length}]`;
@@ -278,6 +355,47 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
       .toMatchObject({ kind: "openMenuScreen", screen: "skills", actorId: spareActor.id });
     expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
   });
+
+  it("전투 명령 변경의 공백 붙은 주인공 ID를 보호한다", () => {
+    const commands: Command[] = [{
+      kind: "m2Command", commandId: "m2-092-change-battle-commands",
+      fields: { target: "actor", actorId: ` ${spareActor.id} `, operation: "set", value: "attack" },
+    }];
+    const before = commonCommands(projectWithRows("blank"), commands);
+    const session = startSession(before);
+    createInterpreter(commands, session, before).start();
+    expect(session.actorBattleCommands?.[spareActor.id]).toEqual(["attack"]);
+    expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
+  });
+
+  it("사용하지 않는 주인공·직업·외형을 삭제한 뒤 SQLite에서 다시 읽는다", async () => {
+    const before = projectWithRows("built");
+    const after = [actorTarget, classTarget, lookTarget].reduce((project, selected) => {
+      if (selected.kind !== "dbEntry") throw new Error("Expected database target");
+      return runPrimitive(project, selected, `db.${selected.collection}.delete`, {}).after;
+    }, before);
+    const projectDir = await mkdtemp(join(tmpdir(), "oprn-db-primitive-"));
+    try {
+      const local = await initLocalProjectStore({ projectDir });
+      try {
+        expect((await local.saveProject(before)).kind).toBe("saved");
+        expect((await local.saveProject(after)).kind).toBe("saved");
+      } finally {
+        local.close();
+      }
+      const reopened = await openLocalProjectStore({ projectDir });
+      try {
+        const database = reopened.loadSnapshot()?.project.database;
+        for (const collection of ["actors", "classes", "characterAppearances"] as const) {
+          expect(database?.[collection]?.map(row => row.id)).toEqual(after.database[collection]?.map(row => row.id));
+        }
+      } finally {
+        reopened.close();
+      }
+    } finally {
+      await rm(projectDir, { recursive: true, force: true });
+    }
+  }, 60_000);
 
   it("새 동료를 게임에서 파티에 합류시킨다", () => {
     const before = projectWithRows("blank");

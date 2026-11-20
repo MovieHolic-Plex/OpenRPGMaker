@@ -127,6 +127,37 @@ describe("shipped catalogs", () => {
     expect(createTranslator(zh).translate("언어")).toBeTruthy();
   });
 
+  it("translates actor, class, and character appearance small-task refusals", () => {
+    const refusals = [
+      "범위 밖 요청이에요. 주인공 항목을 선택해 주세요.",
+      "범위 밖 요청이에요. 선택한 항목을 다시 골라 주세요.",
+      "이름을 입력해 주세요.",
+      "연결할 직업을 자료집에서 찾을 수 없어요.",
+      "시작 레벨은 최고 레벨 이하여야 해요.",
+      "연결할 캐릭터 외형을 찾을 수 없어요.",
+      "99레벨 최대 체력은 1레벨 최대 체력 이상이어야 해요.",
+      "99레벨 최대 체력은 98레벨 최대 체력 이상이어야 해요.",
+      "걷기 그림을 먼저 연결해 주세요.",
+      "외형에 넣을 이름, 설명이나 그림 칸을 확인해 주세요.",
+      "그림을 찾을 수 없거나 외형 칸에 맞지 않아요.",
+      "새 주인공이 대사에서 이미 쓰는 번호에 들어가요. 대사의 주인공 번호를 먼저 확인해 주세요.",
+      "바꿀 내용을 입력해 주세요.",
+      "대사에 이 이름과 연결된 화자가 있어요. 대사의 화자를 먼저 확인해 주세요.",
+      "사용 중인 직업 항목이에요. 다른 곳의 연결을 먼저 해제해 주세요.",
+      "이 주인공을 지우면 대사에 나오는 이름이 바뀌거나 사라져요. 대사의 주인공 번호를 먼저 확인해 주세요.",
+      "대사에서 이름으로 사용하는 캐릭터 외형 항목이에요. 대사의 화자를 먼저 확인해 주세요.",
+      "주인공에게 연결할 직업을 먼저 만들어 주세요.",
+    ];
+    for (const catalog of [en, ja, zh]) {
+      const translator = createTranslator(catalog);
+      for (const refusal of refusals) {
+        const message = translator.translate(refusal);
+        expect(message, refusal).toBeTruthy();
+        expect(message).not.toMatch(/[가-힣]/u);
+      }
+    }
+  });
+
   it("translates map-content shift separately from view pan and map scroll", () => {
     // 「맵 밀기」는 타일·이벤트·시작 위치를 칸 단위로 옮긴다. 화면 밀기(pan)나 맵 스크롤 명령이 아니다.
     const note = MAP_SHIFT_NOTE;
