@@ -155,8 +155,9 @@ jobs:
       # 분할은 결정적이고 네 샤드의 합집합이 test/parity 전체다(누락·중복 없음).
       # 2026-11-19 기준 9파일은 3/2/2/2로 나뉜다. 샤드 수가 파일 수보다 많으면
       # vitest 가 에러로 멈추므로 파일이 4개 미만이 되면 샤드 수를 줄인다.
+      # 공유 러너에서 겹쳐 도는 편집기 저장·로드 사례는 기본 15초를 넘길 수 있다.
       - name: parity 스위트 (샤드 ${{ matrix.shard }}/4)
-        run: npm run test:parity -- --shard=${{ matrix.shard }}/4
+        run: npm run test:parity -- --shard=${{ matrix.shard }}/4 --testTimeout=60000
 
   # 정적 검사 묶음. `fast`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
   # 각 항목은 순수 함수/정적 분석이라 다른 단계의 산출물을 쓰지 않는다(러너도 따로다).
