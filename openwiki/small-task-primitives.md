@@ -44,11 +44,11 @@ Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 
 
 화면 하네스는 `SHOTS_CASES`와 `SHOTS_OUT`이 설정되면 실행된다. 사례는 `{ fixture, setup?, target, primitive, args, label }` 배열이다. `setup`의 선택 필드 `mapName`, `events`, `database`로 화면에 열 시드를 준비하고 `rect: {x,y,w,h}`로 캔버스 영역을 선택한다. 빈 픽스처에 맵 이름, 이벤트, 영역을 제공하면 편집기의 기본 맵이 추가된다. 브라우저는 실제 작은 일 상자를 열고, Pi HTTP 요청을 받아 공용 동작 실행기로 처리한 응답을 돌려준다. 변경과 복원을 확인하며 `NN-before.png`, `NN-after.png`, `NN-summary.png`, `NN-undo.png`를 만든다. `test/piAgentSmallTask.bun.test.ts`는 모델 스트림을 고정해 실제 Pi 워커의 도구 호출과 실패 시 사본 폐기를 검증한다.
 
-아래 명령은 GitHub Actions의 Playwright 단계에서 Chromium을 설치하고 사례 파일을 준비한 뒤 실행한다. 현재 저장소 워크플로에는 이 스펙을 호출하는 단계가 없다. 로컬 촬영은 현재 요청에서 사용자가 명시한 경우에만 `OPRN_LOCAL_TESTS=1`로 실행할 수 있다.
+GitHub Actions의 기본 E2E 실행은 `parity.yml`의 `e2e` 작업에서 Chromium을 설치하고 `npm run test:e2e`를 호출한다. 그 작업에는 `SHOTS_CASES`와 `SHOTS_OUT` 설정이 없어 화면 촬영 스펙은 건너뛴다. CI에서 촬영하려면 사례 JSON을 준비한 뒤 Playwright 단계에서 아래처럼 스펙을 지정한다. 로컬 촬영은 현재 요청에서 사용자가 명시한 경우에만 `OPRN_LOCAL_TESTS=1`로 실행할 수 있다.
 
 ```sh
-DEV_SERVER_PORT=9900 SHOTS_CASES=artifacts/step2/00-core/shots.json \
-  SHOTS_OUT=artifacts/step2/00-core npx playwright test test/e2e/small-task-primitive-shots.spec.ts
+SHOTS_CASES=artifacts/step2/00-core/shots.json \
+  SHOTS_OUT=artifacts/step2/00-core npm run test:e2e -- test/e2e/small-task-primitive-shots.spec.ts
 ```
 
 첫 자료집 증거의 `dbPriceProbe`는 단위 19 합류 전에도 가격 변경을 재현하도록 해당 테스트 브라우저의 유닛 모듈에만 테스트 동작을 넣는다.
