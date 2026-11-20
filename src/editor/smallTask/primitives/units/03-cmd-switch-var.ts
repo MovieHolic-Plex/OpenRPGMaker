@@ -112,19 +112,28 @@ function isEngineFlag(flag: string): boolean {
     flag.startsWith(OPENING_STAGE_FLAG_PREFIX) || flag.startsWith("cutscene:"));
 }
 
-function validateFlagRename(project: Project, previous: string, next: string): void {
+function projectViewsWithOpenDrafts(ctx: PrimitiveContext, project: Project): Project[] {
+  const working = withOpenEventDrafts(project, ctx.live, ctx.target.kind === "event" ? ctx.target : undefined);
+  const saved = projectViewWithoutEventDrafts(working);
+  return saved === working ? [working] : [working, saved];
+}
+
+function validateFlagRename(ctx: PrimitiveContext, previous: string, next: string): void {
+  const { project } = ctx;
   const isUsedByGame = (flag: string) => Object.hasOwn(project.flags, flag) || isEngineFlag(flag);
   if (isUsedByGame(previous) || isUsedByGame(next)) {
     throw new PrimitiveError("게임이 사용하는 기억 이름은 바꾸거나 새 이름으로 쓸 수 없습니다.");
   }
-  let previousUses = 0;
-  let nextUsed = false;
-  visitProjectCommands(project, ({ command }) => {
-    if (command.kind !== "setFlag") return;
-    if (command.flag === previous) previousUses++;
-    if (command.flag === next) nextUsed = true;
-  });
-  if (previousUses > 1 || nextUsed) {
+  if (projectViewsWithOpenDrafts(ctx, project).some(view => {
+    let previousUses = 0;
+    let nextUsed = false;
+    visitProjectCommands(view, ({ command }) => {
+      if (command.kind !== "setFlag") return;
+      if (command.flag === previous) previousUses++;
+      if (command.flag === next) nextUsed = true;
+    });
+    return previousUses > 1 || nextUsed;
+  })) {
     throw new PrimitiveError("이 기억 이름을 다른 명령에서도 쓰고 있어 바꿀 수 없습니다.");
   }
 }
@@ -166,6 +175,14 @@ function matchCondition(
     }
     default: return matchLeaf(condition);
   }
+}
+
+function sharedSelfSwitchValues(states: readonly SelfSwitchValues[]): SelfSwitchValues {
+  const known = { ...states[0] };
+  for (const key of selfSwitchKeys) {
+    if (states.some(values => values[key] !== known[key])) delete known[key];
+  }
+  return known;
 }
 
 function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEvent, current: SelfSwitchCommand, next: SelfSwitchCommand): void {
@@ -245,22 +262,25 @@ function validateSelfSwitchChange(project: Project, map: GameMap, event: GameEve
       if (outcomes.length) {
         // Keep only values shared by every possible continuation of the list.
         if (command.kind !== "fork" || (forkMatch === undefined && !command.else)) outcomes.push(known);
-        known = { ...outcomes[0] };
-        for (const key of selfSwitchKeys) {
-          if (outcomes.some(values => values[key] !== known[key])) delete known[key];
-        }
+        known = sharedSelfSwitchValues(outcomes);
       }
     }
     return known;
   }
-  // 바뀌기 전 셀프 스위치 상태에서 진입할 수 있는 페이지의 쓰기만 대체로 센다.
-  const initial = { [current.key]: !current.value };
-  let canReachEarlierPage = true;
+  // The four self-switches have eight possible states before the write being replaced.
+  let remainingStates: SelfSwitchValues[] = [{ [current.key]: !current.value }];
+  for (const key of selfSwitchKeys) {
+    if (key !== current.key) remainingStates = remainingStates.flatMap(values => [
+      { ...values, [key]: false }, { ...values, [key]: true },
+    ]);
+  }
   for (const page of [...(event.pages ?? [])].reverse()) {
     linked ||= page.conditions.some(readsKey);
-    const matches = allMatch(page.conditions.map(condition => matchSelfSwitch(condition, initial)));
-    visit(page.commands, canReachEarlierPage && matches !== false, initial);
-    if (matches === true) canReachEarlierPage = false;
+    const matches = remainingStates.map(values => allMatch(page.conditions.map(condition => matchSelfSwitch(condition, values))));
+    const pageStates = remainingStates.filter((_, index) => matches[index] !== false);
+    visit(page.commands, pageStates.length > 0, sharedSelfSwitchValues(pageStates));
+    // Lower-priority pages can run only if this page might fail to match.
+    remainingStates = remainingStates.filter((_, index) => matches[index] !== true);
   }
   if (linked && !hasReplacementWrite) {
     throw new PrimitiveError(`이 이벤트의 다른 페이지나 명령에서 셀프 스위치 ${current.key}를 조건으로 써서 이 줄을 바꿀 수 없습니다.`);
@@ -286,10 +306,7 @@ function validateStateRetarget(ctx: PrimitiveContext, edited: Project, current: 
       ? { kind: "variable", id: current.variableId } as const : undefined;
   if (!previous) return;
   const { kind, id } = previous;
-  const working = withOpenEventDrafts(edited, ctx.live, ctx.target.kind === "event" ? ctx.target : undefined);
-  const saved = projectViewWithoutEventDrafts(working);
-  const views = saved === working ? [working] : [working, saved];
-  if (views.some(view => {
+  if (projectViewsWithOpenDrafts(ctx, edited).some(view => {
     const project = withoutInactiveLegacyCommands(view);
     const index = buildStoryFlagUsageIndex(project);
     const { reads, writes } = Object.hasOwn(kind === "switch" ? index.switches : index.variables, id.trim())
@@ -327,7 +344,8 @@ function validateStateRetarget(ctx: PrimitiveContext, edited: Project, current: 
   }
 }
 
-function commandFromArgs(project: Project, current: StateCommand, args: Args): StateCommand {
+function commandFromArgs(ctx: PrimitiveContext, current: StateCommand, args: Args): StateCommand {
+  const { project } = ctx;
   const { value, operandVariableId } = args;
   if (value !== undefined && operandVariableId !== undefined) {
     throw new PrimitiveError("값을 직접 입력하거나 다른 변수에서 가져오는 방법 중 하나만 골라 주세요.");
@@ -359,7 +377,7 @@ function commandFromArgs(project: Project, current: StateCommand, args: Args): S
       const flag = (args.flag as string | undefined) ?? current.flag;
       if (typeof flag !== "string" || !flag.trim()) throw new PrimitiveError("기억 이름을 입력하세요.");
       if (Object.hasOwn(Object.prototype, flag)) throw new PrimitiveError("이 이름은 기억에 사용할 수 없습니다.");
-      if (flag !== current.flag) validateFlagRename(project, current.flag, flag);
+      if (flag !== current.flag) validateFlagRename(ctx, current.flag, flag);
       if (typeof (value ?? current.value) !== "boolean") throw new PrimitiveError("기억을 켤지 끌지 지정하세요.");
       if (value !== undefined && value !== current.value && isEngineFlag(current.flag)) {
         throw new PrimitiveError("게임이 제어하는 기억의 켜짐 상태는 바꿀 수 없습니다.");
@@ -476,7 +494,7 @@ function prepareCommand(ctx: PrimitiveContext, args: Args, kind: StateKind, upda
     throw new PrimitiveError(STALE_COMMAND_LIST);
   }
   if (current?.kind !== kind) throw new PrimitiveError("선택한 줄에서 같은 종류의 명령을 찾을 수 없습니다.");
-  const command = commandFromArgs(ctx.project, current, args);
+  const command = commandFromArgs(ctx, current, args);
   validateCommand(ctx.project, command);
   return { path: [...branchPath, index], current, command };
 }
