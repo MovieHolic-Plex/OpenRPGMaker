@@ -15,7 +15,9 @@ import { applySpriteAlpha, setNpcIdleFrame } from "@/player/playSceneAutonomousS
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import { applyNpcTransfer } from "@/player/playSceneAutonomousMapActions";
 import {
+  commandDelta,
   facingForDelta,
+  jumpDelta,
   playerRelativeDirection,
   randomDirection,
   randomMoveIndex,
@@ -30,8 +32,6 @@ import {
 import { nextSessionRandom } from "@/project/session";
 import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
 import { applyDoorCue, applyPlaceAt, expandEnterVia, expandExitVia } from "@/player/playSceneDoorway";
-
-const DEFAULT_JUMP_DISTANCE = 2;
 
 export type NpcRouteCommandContext = {
   readonly scene: AutonomousNpcSceneContext;
@@ -83,7 +83,7 @@ export function movementDeltaForCommand(
     case "stepForward":
       return { ...commandDelta(context.mover.facing), face: context.mover.facing };
     case "jump": {
-      const delta = jumpDelta(context.mover, command);
+      const delta = jumpDelta(command, context.mover.facing);
       return {
         ...delta,
         face: facingForDelta(delta.x, delta.y, context.mover.facing),
@@ -275,28 +275,6 @@ function turnNpc(routeContext: NpcRouteCommandContext, target: NpcCommandTarget,
     target.view.animationType,
     target.mover.animationEnabled
   );
-}
-
-function jumpDelta(
-  mover: AutonomousMover,
-  command: Extract<MoveCommand, { kind: "jump" }>
-): { readonly x: number; readonly y: number } {
-  if (command.dx !== 0 || command.dy !== 0) return { x: command.dx, y: command.dy };
-  const delta = commandDelta(mover.facing);
-  return { x: delta.x * DEFAULT_JUMP_DISTANCE, y: delta.y * DEFAULT_JUMP_DISTANCE };
-}
-
-function commandDelta(dir: "left" | "right" | "up" | "down"): { x: number; y: number } {
-  switch (dir) {
-    case "left":
-      return { x: -1, y: 0 };
-    case "right":
-      return { x: 1, y: 0 };
-    case "up":
-      return { x: 0, y: -1 };
-    case "down":
-      return { x: 0, y: 1 };
-  }
 }
 
 function assertNever(value: never): never {

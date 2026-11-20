@@ -7,7 +7,7 @@
  * (scripts/lib/piAgentRuntime.ts). 2026-10-03 실측: 「미궁을 만들어줘」 3판 모두 쓸데없는 기물이
  * 배치 품질 수리 턴에서 들어왔고, 보물상자·함정·세이브 수정을 이벤트 없이 바닥 그림으로만 칠했다.
  */
-import bundledCards from "@/assets/conceptCards.json";
+import bundledCards from "@/assets/conceptCards.json" with { type: "json" };
 
 /** 재료 하나 — 그림(타일)으로 까는가, 동작(이벤트)으로 까는가. */
 export interface ConceptMaterial {

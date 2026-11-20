@@ -11,7 +11,7 @@
 // 1층 칸 번호(737)·3층 물체·이벤트·통행은 한 글자도 바뀌지 않는다 — 풀밭을 737 로 알아보는 도구·검사가 그대로 읽는다. 결 칸은 2층의 ★(통행 + 상위)라 통행 판정에서 건너뛴다.
 // 2층이 이미 찬 칸(그림자·물가 둑·숲 바닥·풀밭 얼룩)에는 깔지 않는다. 겉모습에 grain 이 없는 게임(옛 게임)에는 아무것도 하지 않는다.
 // 난수는 칸 좌표·씨앗 해시뿐이다(시공기의 난수 줄을 쓰지 않는다 — 결을 깔아도 나머지 배치가 달라지지 않는다).
-import forestComposer from "@/assets/beodeulForestComposer.json";
+import forestComposer from "@/assets/beodeulForestComposer.json" with { type: "json" };
 import { tilesetLookGround } from "@/assets/tilesetLooks";
 import { standGrainTile, standOverlaySource, tilesetStandTableFor, type GrassGrainCells, type GrassGrainMix } from "@/assets/tilesetStands";
 import { activeTilesetLook } from "@/project/kitLook";

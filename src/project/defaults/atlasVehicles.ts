@@ -1,4 +1,4 @@
-import saved from "@/assets/atlasVehiclesTileset.json";
+import saved from "@/assets/atlasVehiclesTileset.json" with { type: "json" };
 import type { TilesetDef } from "../types";
 
 // 탈것·장면 조각(2026-09-25) — 배(범선 셋·돛 폄/접음·뱃머리 양쪽)·비공정·마차·포장마차·손수레·뗏목·나룻배·교수대·형틀·

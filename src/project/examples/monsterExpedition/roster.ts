@@ -1,7 +1,7 @@
 import type { EnemyStats, MonsterAbility, MonsterSpeciesRecord, Project, SkillRecord, UploadedAsset } from "@/project/types";
 import { normalizeEnemyRecord, normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
-import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
+import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json" with { type: "json" };
 import { expeditionEnemyActions } from "./enemyActions";
 import { configureExpeditionFieldItems as configureExpeditionWalkItems } from "./fieldItems";
 import { harnessArtForCampaignSpecies, harnessFieldGraphicForCampaignSpecies } from "@/assets/harnessMonsterArt";

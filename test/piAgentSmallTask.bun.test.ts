@@ -96,6 +96,28 @@ test("작은 일 Pi 실행이 동작을 읽고 고른 페이지에서 cmd.delete
   expect(project.maps[mapId].events[0]!.pages![1]!.commands).toHaveLength(3);
 });
 
+test("작은 일 Pi 실행은 열린 초안이 읽는 스위치의 마지막 쓰기 재지정을 거절한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const switchId = "sw_draft_gate";
+  const nextSwitchId = "sw_other_gate";
+  project.switches = [{ id: switchId, name: "초안 문" }, { id: nextSwitchId, name: "다른 문" }];
+  const write: Command = { kind: "setSwitch", switchId, value: true };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [write] }];
+  const draft = { ...event, id: "event_draft", draft: { kind: "new" as const }, pages: [{
+    ...event.pages[1], conditions: [{ kind: "switch" as const, switchId, value: true }], commands: [],
+  }] };
+  const update = apply("cmd.setSwitch.update", { index: 0, expectedHash: eventCommandHash(write), switchId: nextSwitchId });
+  const blocked = await runPiAgent({
+    ...request, smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([update]) });
+  expect(blocked.stoppedEarly).toContain("값을 바꾸는 명령이 이 줄뿐입니다");
+  expect(blocked.project).toBe(project);
+
+  const allowed = await runPiAgent(request, { streamFn: scripted([update]) });
+  expect(allowed.stoppedEarly).toBeUndefined();
+  expect(allowed.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual([{ ...write, switchId: nextSwitchId }]);
+}, 20_000);
+
 test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", async () => {
   const { request, project, mapId } = fixture();
   const target = mapTarget(project, mapId)!;
@@ -194,6 +216,62 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   expect(layerTileAt(inside.project.maps[mapId], 2, 1)).toBe(-1);
 });
 
+test("유닛 24는 선택한 칸에 이벤트를 만들고 영역 밖 타일 변경이 있으면 전체 작업을 취소한다", async () => {
+  const { request, project, mapId } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const selection = { rect: { x: 0, y: 0, w: 1, h: 1 } };
+  const selectedRequest = { ...request, smallTask: { ...request.smallTask, target, selection } };
+  const create = apply("event.tile.create", { name: "새 안내인" });
+  const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
+
+  const inside = await runPiAgent(selectedRequest, { streamFn: scripted([create, paint(0)]) });
+  expect(inside.stoppedEarly).toBeUndefined();
+  expect(inside.changedKeys).toEqual([`maps.${mapId}`]);
+  expect(inside.project.maps[mapId].events.slice(0, -1)).toEqual(project.maps[mapId].events);
+  expect(inside.project.maps[mapId].events.at(-1)).toMatchObject({ name: "새 안내인", x: 0, y: 0 });
+  expect(layerTileAt(inside.project.maps[mapId], 2, 0)).toBe(0);
+
+  const outside = await runPiAgent(selectedRequest, { streamFn: scripted([create, paint(1)]) });
+  expect(outside.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(outside.changedKeys).toEqual([]);
+  expect(outside.project).toBe(project);
+});
+
+for (const flag of ["request", "worker"] as const) {
+  test(`작은 일 Pi 읽기 전용 실행은 이벤트 생성 도구를 노출하거나 적용하지 않는다 (${flag})`, async () => {
+    const { request, project, mapId } = fixture();
+    const target = mapTarget(project, mapId)!;
+    const seen: ModelContext[] = [];
+    const done = await runPiAgent({ ...request, readOnly: flag === "request",
+      smallTask: { ...request.smallTask, target, selection: { rect: { x: 0, y: 0, w: 1, h: 1 } } },
+    }, { readOnlyTools: flag === "worker", streamFn: scripted([apply("event.tile.create", {})], seen) });
+    const toolNames = seen[0]?.tools?.map(tool => tool.name) ?? [];
+    expect(toolNames).toContain(LIST_SMALL_TASK_PRIMITIVES);
+    for (const write of [APPLY_SMALL_TASK_PRIMITIVE, "upsert_event", "place_npc", "paint_tiles", "move_event"]) {
+      expect(toolNames).not.toContain(write);
+    }
+    expect(done.changedKeys).toEqual([]);
+    expect(done.project).toBe(project);
+  });
+}
+
+test("유닛 24의 삭제는 Pi 요청에 실린 열린 초안의 스위치 의존성을 검사한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const switchId = "sw_draft_gate";
+  project.switches.push({ id: switchId, name: "초안의 문" });
+  const original = project.maps[mapId].events[1]!;
+  const page = event.pages[1]!;
+  event.pages = [event.pages[0]!, { ...page, commands: [{ kind: "setSwitch", switchId, value: true }] }];
+  const draft: GameEvent = { ...original, draft: { kind: "edit", original },
+    pages: [{ ...page, conditions: [{ kind: "switch", switchId, value: true }] }] };
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask,
+    draftSource: { maps: { [mapId]: { events: [draft] } } },
+  } }, { streamFn: scripted([apply("event.tile.remove", {})]) });
+  expect(done.stoppedEarly).toContain("다른 곳에서 이 이벤트를 사용하고 있어요");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+});
+
 test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기까지 버린다", async () => {
   const { request, project, mapId, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
@@ -216,6 +294,27 @@ test("작은 일 동작도 호출 상한에 포함하고 상한을 넘으면 앞
   expect(done.stats.toolCalls).toBe(2);
   expect(done.changedKeys).toEqual([]);
   expect(done.project).toBe(project);
+});
+
+test("작은 일 Pi 실행은 새 이벤트 초안에서 사용하는 출현 이름을 유지한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn: Command = { kind: "spawnFieldEnemy", spawn: {
+    id: "spawn_trial", troopId: project.database.troops[0]!.id, area: { x: 0, y: 0, w: 1, h: 1 },
+  } };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [...commands, spawn] }];
+  const draft = { ...event, id: "event_draft", pages: undefined, draft: { kind: "new" } as const,
+    commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.spawn.id } satisfies Command] };
+  const rename = apply("cmd.spawnFieldEnemy.update", { index: 3, expectedHash: eventCommandHash(spawn), spawnId: "spawn_renamed" });
+  const blocked = await runPiAgent({ ...request, smallTask: {
+    ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } },
+  } }, { streamFn: scripted([rename]) });
+  expect(blocked.stoppedEarly).toContain("이 출현 이름을 쓰는 명령이나 조건");
+  expect(blocked.changedKeys).toEqual([]);
+  expect(blocked.project).toBe(project);
+
+  const allowed = await runPiAgent(request, { streamFn: scripted([rename]) });
+  expect(allowed.stoppedEarly).toBeUndefined();
+  expect(allowed.project.maps[mapId].events[0]!.pages![1]!.commands[3]).toMatchObject({ spawn: { id: "spawn_renamed" } });
 });
 
 for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"] as const) {

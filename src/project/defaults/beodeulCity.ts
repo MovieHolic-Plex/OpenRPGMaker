@@ -4,11 +4,11 @@
 //
 // Every cell of the city is a tile (lower = ground, upper = what the objects put over it); animated cells are
 // consecutive frames with animationStrips. The structure kits are the districts and houses of the city, cut from it.
-import sheet from "@/assets/beodeulCitySheet.json";
+import sheet from "@/assets/beodeulCitySheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`beodeulCitySheet.json`)에서 읽는다. */
 const data = () => bundledJson("beodeulCityTileset");
-import references from "@/assets/beodeulCityReferences.json";
+import references from "@/assets/beodeulCityReferences.json" with { type: "json" };
 import { beodeulGroundReferences } from './beodeulGround';
 import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';

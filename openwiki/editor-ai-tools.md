@@ -1178,8 +1178,11 @@ GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했�
 ## 이벤트 명령 AI 공용 도구 (2026-09-20)
 
 `event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지
-명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. `get_event`로 실제 페이지 ID를
-먼저 조회한다. 새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
+명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. 일반 조수에서는 페이지 ID를
+모를 때 `get_event`로 조회하고, 장소나 맵의 실제 배치는 `get_map_region` 등 기존 조회 도구로 확인한다.
+이벤트 편집기 도크는 ID와 페이지 요약을 이미 전달하므로
+`event_command_assist`만 노출한다. 도크의 범위 거절은 사용할 대상 ID와 모드를 안내한다.
+새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
 
 - `eventCommandAssistTool.ts`가 스키마와 대상 조회를 소유한다. `asyncToolRunner.ts`가
   `runEventCommandAssist`로 생성한 후 `runToolDefinition`의 공용 draft/lint/commit 경계를 탄다.
@@ -1199,21 +1202,17 @@ GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했�
 
 이벤트 편집기의 생성 버튼도 `sendAiAssistantMessage` → `aiChatPanel.sendText` →
 `aiTurnRunner` → `AssistantSession.sendUserMessage` 공용 경로를 사용한다.
-호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨, edit/append 모드를
-고정한다. **이 스코프가 봉인하는 것은 쓰기다** — `onlyEventPageCommandsChanged` 가 지정 페이지
-밖의 변경을 거부하므로 읽기는 넓혀도 계약이 약해지지 않는다. 쓰기는 `event_command_assist`
-하나뿐이고 다른 대상과 모드 변경은 거부한다. 이 턴에서는 자율 적용·위키 저작·NPC 자동 보완이
-금지된다.
-
-**읽기 툴은 2026-09-20 에 넓혔다.** 종전 허용은 `get_event`·`get_database_records`·`run_lint`
-뿐이라 **맵을 조회할 방법이 없었다.** 조수 세션은 `eventScopeAllowsTool` 로 툴 목록을 거르므로
-여기 없으면 노출조차 안 되고, 그래서 모델은 프롬프트에 실린 맵 한 줄
-(`이름 (가로 W × 세로 H, 밟을 수 있는 칸 예: x,y)`)만 보고 대사를 지어야 했다 — "이 마을
-광장에서"·"여관 안에서" 같은 지시를 받아도 그 자리가 어떤지 볼 수 없었다. 지금은
-`get_map_region`(시맨틱 문자 그리드 + 물 바운딩 박스)·`get_project_summary`·`find_events`·
-`find_layout_regions`·`list_resources` 가 읽기로 허용된다(모두 `mode: "read"`). 프롬프트를
-키우지 않고 모델이 필요한 만큼 파고든다. 계약: `test/eventCommandScopedSession.test.ts`
-("맵을 읽는 툴이 허용된다" + "쓰기 툴은 여전히 봉인된다").
+호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨을 고정한다.
+도크 요청에는 전용 시스템 지시, 현재 사용자 발화, 그 턴의 도구 호출과 응답만 담는다.
+이전 공용 대화는 세션 기록에 보존한다.
+`edit` 범위에선 전체 편집과 `append`가 가능하다. `append` 전용 범위에선 도구 스키마와
+실행 경계 모두 명시적인 `append`만 받는다. 다른 대상은 호출 시 거부하고,
+`checkEventCommandScope`로 생성 결과가 지정한 페이지의 명령에만 영향을 주는지 확인한다.
+첫 도구 성공에서 작성 루프를 끝낸다. 변경이 있으면 공용 검토로 넘기고, 변경이 없으면
+「변경 없음」으로 마친다. 같은 모델 응답의 남은 호출에는 보류 결과를 남긴다.
+실패한 호출은 도크 요청당 최대 세 번까지 시도하며, 상한에 도달하면 실패 원인과 다시 요청하는 방법을 표시한다.
+이 턴에서는 자율 적용·위키 저작·NPC 자동 보완이 금지된다.
+계약은 `test/eventCommandScopedSession.test.ts`에서 확인한다.
 
 공용 브리지는 바쁜 턴이나 대기 제안이 있으면 이벤트 요청을 거부한다. 생성 결과는
 `deferApply`로 공용 검토를 거친 뒤 before/after 스냅샷을 이벤트 모달에 넘기고 공용 제안을

@@ -5,7 +5,7 @@
 //   생성 건물·집 외형·마을 소품 + 파이프라인이 뽑은 tiledata/*/shared-objects.json(가구·탈것·표지물 등), 생성기 scripts/content/build-shared-object-catalog.mjs) + 이 프로젝트 타일셋의 다른 구조 킷·
 //   도안 있는 타일 그룹 → stamp_object.
 import { isRetiredInteriorPlace, isRetiredInteriorTileset } from "@/project/retiredInteriorTilesets";
-import catalog from "@/assets/sharedObjectCatalog.json";
+import catalog from "@/assets/sharedObjectCatalog.json" with { type: "json" };
 import { describeStairContract, stairContractOf } from "@/project/stairs/contract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { sharedRegionReferences } from "@/project/sharedSpatialReferences";
