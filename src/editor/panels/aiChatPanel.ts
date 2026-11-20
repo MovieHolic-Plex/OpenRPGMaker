@@ -8,7 +8,7 @@ import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
 import { describeAiFailure, mountAiFailureActions, mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { createActivityToolbar } from "./aiActivityView";
-import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
+import { checkEventCommandScope } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
 import { createAiSuggestionPeek } from "./aiSuggestionPeek";
 import { focusEditorRegion, navigateToEditorReference } from "@/editor/editorReferenceNavigation";
@@ -4451,8 +4451,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           deferredProposal = null;
           proposalApi.pendingProposalMessage = null;
           controller.session?.rebaseProject(store.getCurrent());
-          if (pending && !onlyEventPageCommandsChanged(pending.before, pending.after, sendOptions.eventCommandScope)) {
-            return { ...result, ok: false, error: "지정한 페이지 밖의 변경이 있어 초안을 거부했습니다.", pendingProposal: null };
+          if (pending) {
+            const scopeCheck = checkEventCommandScope(pending.before, pending.after, sendOptions.eventCommandScope);
+            if (!scopeCheck.ok) return { ...result, ok: false, error: scopeCheck.reason, pendingProposal: null };
           }
           setStatus(pending ? "이벤트 편집기에서 검토 대기" : "대기");
         }

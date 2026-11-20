@@ -3,6 +3,8 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { openedLoadRepairReport } from "@/project/loadRepairReport";
 import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
@@ -377,13 +379,14 @@ function eventCatalogFields(event: GameEvent): {
 // find_events는 위치만 주므로, 내용을 모른 채 덮어써 대사가 사라지는 사고를 막는다.
 const getEvent: ToolDefinition = {
   name: "get_event",
-  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다.",
+  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다. 명령 한 줄을 수정·삭제하려면 includeCommandHashes를 켠다.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       eventId: { type: "string" },
+      includeCommandHashes: { type: "boolean", description: "명령 한 줄을 수정·삭제할 때 필요한 위치와 내용 해시를 포함한다." },
     },
     required: ["mapId", "eventId"],
   },
@@ -398,10 +401,24 @@ const getEvent: ToolDefinition = {
     const pages = event.pages ?? [];
     return {
       summary: `이벤트 '${event.id}' (${event.x},${event.y}) — 페이지 ${pages.length}개`,
-      data: { event },
+      data: {
+        event,
+        ...(args.includeCommandHashes === true ? {
+          commandHashes: pages.map(page => ({ pageId: page.id, commands: commandHashes(page.commands) })),
+        } : {}),
+      },
     };
   },
 };
+
+type CommandHashEntry = { index: number; branchPath: readonly number[]; hash: string };
+
+function commandHashes(commands: readonly Command[], branchPath: readonly number[] = []): CommandHashEntry[] {
+  return commands.flatMap((command, index) => [
+    { index, branchPath, hash: eventCommandHash(command) },
+    ...eventCommandBranches(command).flatMap(branch => commandHashes(branch.commands, [...branchPath, index, branch.branchIndex])),
+  ]);
+}
 
 const findSwitchUsage: ToolDefinition = {
   name: "find_switch_usage",
