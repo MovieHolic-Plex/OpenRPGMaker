@@ -14,7 +14,7 @@ export function primitiveScope(
   ctx: PrimitiveContext, primitive: SmallTaskPrimitive, args: Record<string, unknown>,
 ): SmallTaskScope {
   const scope = primitive.scope(ctx, args);
-  const { target, project } = ctx;
+  const { target } = ctx;
   if (scope.kind === "dbEntries" || scope.kind === "dbRemove") {
     const rows = scope.kind === "dbRemove" ? [scope] : scope.entries;
     if (target.kind !== "dbEntry" || rows.some(row => row.collection !== target.collection || row.id !== target.id)) {
@@ -24,8 +24,7 @@ export function primitiveScope(
       return { kind: "dbRemove", collection: target.collection, id: target.id };
     }
     if (scope.create?.collection === "equipmentSlots" && primitive.id === "db.equipmentSlots.update"
-      && target.collection === "equipmentSlots" && BUILTIN_EQUIPMENT_SLOTS.some(slot => slot.id === target.id)
-      && !project.database.equipmentSlots?.some(slot => slot.id === target.id)) {
+      && target.collection === "equipmentSlots" && BUILTIN_EQUIPMENT_SLOTS.some(slot => slot.id === target.id)) {
       return { ...scope, create: { ...scope.create, max: 1, ids: [target.id] } };
     }
   }
