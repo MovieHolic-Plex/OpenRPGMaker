@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, toolLabelSummary } from "@/editor/panels/aiToolLabels";
 import { DECK_ICON_NAMES } from "@/editor/panels/aiDeckIcons";
 import { activeTools } from "@/editor/tools/toolRegistry";
+import { createTranslator } from "@/i18n/translator";
+import en from "@/i18n/catalogs/en.json";
+import ja from "@/i18n/catalogs/ja.json";
+import zh from "@/i18n/catalogs/zh.json";
 
 describe("aiToolLabels — 툴 이름을 사람 말로", () => {
   it("아는 툴은 한국어 라벨로 부른다", () => {
@@ -19,6 +23,16 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     // 바깥 검색이므로 돋보기 아이콘·조회 그룹이다.
     expect(toolIconKey("web_search")).toBe("search");
     expect(toolGroup("web_search")).toBe("inspect");
+  });
+
+  it.each([
+    [en, "List small-task actions", "Apply small-task action"],
+    [ja, "小さな作業の操作一覧を取得", "小さな作業の操作を適用"],
+    [zh, "列出小任务操作", "应用小任务操作"],
+  ] as const)("작은 일 동작 두 개를 표시 언어로 번역한다 (%#)", (catalog, list, apply) => {
+    const translator = createTranslator(catalog);
+    expect(translator.translate(toolLabel("list_small_task_primitives"))).toBe(list);
+    expect(translator.translate(toolLabel("apply_small_task_primitive"))).toBe(apply);
   });
 
   it("모르는 툴은 원문의 밑줄만 공백으로 푼다 — 지어내지 않는다", () => {

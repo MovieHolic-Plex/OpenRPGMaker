@@ -355,6 +355,16 @@ describe("선택 영역, 맵 속성, 새 맵과 프로젝트 항목 범위", () 
     id: "path", from: { mapId: from, x: 0, y: 0 }, to: { mapId: to, x: 0, y: 0 }, playerEnabled: true, npcEnabled: false,
   });
 
+  it("맵 속성 범위에서 월드맵 재생성 원본을 보호한다", () => {
+    const before = structuredClone(base);
+    before.maps[town]!.worldmapSource = { theme: "archipelago", ops: [] };
+    for (const scope of [meta, { ...meta, fields: ["worldmapSource"] }] as const) {
+      rejects(scope, p => { p.maps[town]!.worldmapSource!.ops.push({ kind: "test" }); }, "속성", before);
+      rejects(scope, p => { delete p.maps[town]!.worldmapSource; }, "속성", before);
+      rejects(scope, p => { p.maps[town]!.worldmapSource = { theme: "archipelago", ops: [] }; }, "속성");
+    }
+  });
+
   it("선택한 영역에서만 여러 층, 그림자와 타일 더미를 바꾼다", () => {
     expect(verify(region, p => {
       const map = p.maps[town]!;

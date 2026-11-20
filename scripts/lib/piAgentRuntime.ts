@@ -1,4 +1,5 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
+import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
 import { isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
@@ -425,7 +426,10 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const cli = localCliIdOf(request.provider);
   const model = cli ? undefined : options.model ?? resolvePiModel(request.provider, request.model);
   const keyForRun = () => options.providerApiKeys?.[request.provider] ?? options.apiKey;
-  const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. list_small_task_primitives에서 맞는 동작을 찾으면 그 동작을 쓴다. 명령 줄을 고치기 전에는 get_event에서 includeCommandHashes를 켜고 줄 위치와 해시를 확인한다. 대상: ${JSON.stringify(target)}`;
+  const regionScope = target.kind === "map" && selection?.rect
+    ? { kind: "mapRegion", mapId: target.mapId, rect: selection.rect } as const : undefined;
+  const systemPrompt = `선택한 대상의 작은 편집 하나를 맡는다. 먼저 현재 값을 읽고 요청한 것만 도구로 고친다. 기존 내용을 보존한다. list_small_task_primitives에서 맞는 동작을 찾으면 그 동작을 쓴다. 명령 줄을 고치기 전에는 get_event에서 includeCommandHashes를 켜고 줄 위치와 해시를 확인한다. 대상: ${JSON.stringify(target)}`
+    + (regionScope ? ` 타일을 바꿀 수 있는 선택 영역: ${JSON.stringify(regionScope.rect)}` : "");
   const controller = new AbortController();
   const signal = options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal;
   const toolNames = smallTaskTools(target);
@@ -517,6 +521,10 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     await local?.dispose();
   }
   options.signal?.throwIfAborted();
+  if (!failure && regionScope && ctx.project !== base) {
+    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    if (!result.ok) failure = result.reason;
+  }
   const project = failure ? base : ctx.project;
   const done: PiAgentDoneEvent = {
     type: "done", smallTask: true, project, changedKeys: changedProjectKeys(base, project),
