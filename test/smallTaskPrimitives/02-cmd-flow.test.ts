@@ -1,13 +1,14 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { CHOICE_CANCEL_BRANCH_INDEX, FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/02-cmd-flow";
 import { mapTarget } from "@/editor/smallTask/target";
 import { createInterpreter } from "@/player/interpreter";
-import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
+import { CUTSCENE_END_LABEL, isCutsceneInputLocked, isCutsceneSkippable } from "@/player/cutsceneControl";
+import { fastForwardAction } from "@/player/cutsceneFastForward";
 import { preloadScriptEngine } from "@/player/script/engine";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -178,6 +179,9 @@ describe("흐름 제어 명령", () => {
     ["script.insert", { source: 'game["adGold"](3);' }, /게임 기능/u],
     ["script.insert", { source: 'globalThis["game"]["hasItem"]("missing");' }, /연결할 대상/u],
     ["script.insert", { source: 'await game.callCommonEvent();' }, /항목을 지정/u],
+    ["script.insert", { source: 'await game.callCommonEvent(123);' }, /1번째 인자 형식/u],
+    ["script.insert", { source: 'globalThis["game"]["addGold"]("3");' }, /1번째 인자 형식/u],
+    ["script.insert", { source: 'game.setSwitch("flow-sw", 1);' }, /2번째 인자 형식/u],
   ] as const)("%s 잘못된 값 거절", (id, args, message) => {
     const { project, target } = setup([]);
     expect(() => runPrimitive(project, target, `cmd.${id}`, { index: 0, ...args })).toThrow(message);
@@ -222,6 +226,20 @@ describe("흐름 제어 명령", () => {
     expect(stored(after)).toEqual([jump, label]);
   });
 
+  it("호출 뒤에 나오는 맵 이동은 그 호출에 대한 목적지 근거가 되지 않는다", () => {
+    const { project, target } = setup([jump]);
+    const map = project.maps[fixtureMap]!;
+    map.events[0]!.pages![1]!.conditions = [branch.condition];
+    const caller: Command[] = [
+      { kind: "callMapEvent", eventId: fixtureEvent }, { kind: "transfer", mapId: fixtureMap, x: 2, y: 2 }, label,
+    ];
+    project.maps.other = { ...map, id: "other", events: [{ ...map.events[1]!, commands: caller }] };
+    project.commonEvents.find(event => event.id === "common-2")!.commands = [call];
+    expect(() => runPrimitive(project, target, "cmd.gotoLabel.update", {
+      index: 0, expectedHash: eventCommandHash(jump), name: label.name,
+    })).toThrow(/위치 표시가 없습니다/u);
+  });
+
   it("같은 목록에 중복을 만들지 않고 컷신의 건너뛰기 목적지를 보존한다", () => {
     const end: Command = { kind: "label", name: CUTSCENE_END_LABEL };
     const { project, target } = setup([{ ...cutscene, skippable: true }, label, end]);
@@ -239,6 +257,74 @@ describe("흐름 제어 명령", () => {
     expect(() => runPrimitive(project, target, "cmd.label.update", {
       index: 2, expectedHash: eventCommandHash(label), name: "도착",
     })).toThrow(/이동하는 명령/u);
+  });
+
+  it("자식이 맵을 옮긴 뒤 새 맵의 이벤트가 사용하는 위치 표시를 보존한다", () => {
+    const initial: Command[] = [common, call, wait, label, { ...wait, ms: 200 }];
+    const { project, target } = setup(initial);
+    const destinationMap = "destination";
+    const origin = project.maps[fixtureMap]!;
+    project.maps[destinationMap] = {
+      ...origin, id: destinationMap, events: [{ ...origin.events[1]!, commands: [jump] }],
+    };
+    const mover = project.commonEvents.find(event => event.id === "common-1")!;
+    mover.commands = [{ kind: "transfer", mapId: destinationMap, x: 2, y: 2 }];
+    const entry: Command = { kind: "callMapEvent", eventId: fixtureEvent };
+    project.commonEvents.find(event => event.id === "common-2")!.commands = [entry];
+    origin.events[0]!.pages![1]!.conditions = [branch.condition];
+    const session = startSession(project);
+    const player = createInterpreter([entry], session, project, { continueAfterTransfer: true });
+    expect(player.start()).toMatchObject({ kind: "transfer", mapId: destinationMap });
+    session.currentMapId = destinationMap;
+    expect(player.resume(undefined)).toEqual({ kind: "wait", ms: 200 });
+    expect(() => runPrimitive(project, target, "cmd.label.update", {
+      index: 3, expectedHash: eventCommandHash(label), name: "도착",
+    })).toThrow(/이동하는 명령/u);
+    expect(stored(project)).toEqual(initial);
+  });
+
+  it("다른 맵에서 이어진 호출의 위치 표시로 기존 이동 줄을 고칠 수 있다", async () => {
+    const { project, target } = setup([jump]);
+    const destination: Command = { kind: "label", name: "도착" };
+    const caller: Command[] = [
+      { kind: "transfer", mapId: fixtureMap, x: 2, y: 2 },
+      { kind: "callMapEvent", eventId: fixtureEvent }, wait, label, { ...wait, ms: 200 }, destination, { ...wait, ms: 300 },
+    ];
+    const map = project.maps[fixtureMap]!;
+    map.events[0]!.pages![1]!.conditions = [branch.condition];
+    const otherMap = {
+      ...map, id: "caller-map", events: [{ ...map.events[1]!, commands: caller }],
+    };
+    project.maps[otherMap.id] = otherMap;
+    const entry: Command[] = [{ kind: "callMapEvent", eventId: otherMap.events[0]!.id }];
+    project.commonEvents.find(event => event.id === "common-2")!.commands = entry;
+    expect(() => runPrimitive(project, target, "cmd.label.insert", { index: 1, name: label.name }))
+      .toThrow(/목적지가 바뀝니다/u);
+    const args = { index: 0, expectedHash: eventCommandHash(jump), name: destination.name };
+    const { after } = runPrimitive(project, target, "cmd.gotoLabel.update", args);
+    const session = startSession(after);
+    session.currentMapId = otherMap.id;
+    const player = createInterpreter(entry, session, after, { continueAfterTransfer: true });
+    expect(player.start()).toMatchObject({ kind: "transfer", mapId: fixtureMap });
+    session.currentMapId = fixtureMap;
+    expect(player.resume(undefined)).toEqual({ kind: "wait", ms: 300 });
+    expect(stored(project)).toEqual([jump]);
+    expect(after.maps[otherMap.id]).toBe(otherMap);
+    await expectUndoRestores(project, after, target);
+  });
+
+  it("맵 이동 없이 다른 맵에서 같은 이벤트 ID를 부르는 명령은 호출자로 취급하지 않는다", () => {
+    const { project, target } = setup([jump]);
+    const map = project.maps[fixtureMap]!;
+    map.events[0]!.pages![1]!.conditions = [branch.condition];
+    const lookalike = { ...map.events[0]!, pages: undefined, commands: [wait] };
+    const caller = { ...map.events[1]!, commands: [{ kind: "callMapEvent", eventId: fixtureEvent }, label] as Command[] };
+    project.maps.other = { ...map, id: "other", events: [lookalike, caller] };
+    expect(() => runPrimitive(project, target, "cmd.gotoLabel.update", {
+      index: 0, expectedHash: eventCommandHash(jump), name: label.name,
+    })).toThrow(/위치 표시가 없습니다/u);
+    const { after } = runPrimitive(project, target, "cmd.label.insert", { index: 1, name: label.name });
+    expect(stored(after)).toEqual([jump, label]);
   });
 
   it("호출된 이벤트에 자체 목적지가 있거나 참조가 다른 페이지에만 있으면 이름을 바꿀 수 있다", () => {
@@ -341,6 +427,25 @@ describe("흐름 제어 명령", () => {
     expect(player.resume()).toEqual({ kind: "done" });
   });
 
+  it.each([
+    { command: { kind: "fork", condition: branch.condition, then: [] }, slot: FORK_ELSE_BRANCH_INDEX, field: "else" },
+    { command: { kind: "choices", options: [{ text: "계속", branch: [] }], cancelBehavior: "branch" }, slot: CHOICE_CANCEL_BRANCH_INDEX, field: "cancelBranch" },
+  ] as const)("미생성 $field 분기의 첫 줄을 넣고 되돌린다", async ({ command, slot, field }) => {
+    const initial = structuredClone(command) as Command;
+    const { project, target } = setup([initial]);
+    const args = { index: 0, branchPath: [0, slot], ms: 750 };
+    expect(() => runPrimitive(project, target, "cmd.wait.insert", { ...args, index: 1 })).toThrow(/줄 위치/u);
+    expect(() => runPrimitive(project, target, "cmd.wait.update", { ...args, expectedHash: eventCommandHash(wait) })).toThrow(/분기/u);
+    const { after } = runPrimitive(project, target, "cmd.wait.insert", args);
+    expect(stored(after)).toEqual([{ ...initial, [field]: [{ ...wait, ms: 750 }] }]);
+    expect(stored(project)[0]).not.toHaveProperty(field);
+    const session = startSession(after);
+    const player = createInterpreter(stored(after), session, after);
+    const first = player.start();
+    expect(initial.kind === "choices" ? player.resume(-1) : first).toEqual({ kind: "wait", ms: 750 });
+    await expectUndoRestores(project, after, target);
+  });
+
   it("변수 대기를 고정 대기로 바꿀 때 저장돼 있던 범위 밖 시간을 쓰지 않는다", () => {
     const legacy: Command = { kind: "wait", ms: 2 ** 31, variableId: "flow-var" };
     const { project, target } = setup([legacy]);
@@ -390,6 +495,41 @@ describe("흐름 제어 명령", () => {
     const beforeGold = session.gold;
     expect(createInterpreter(stored(after), session, after).start()).toEqual({ kind: "done" });
     expect(session.gold - beforeGold).toBe(5);
+  });
+
+  it("스크립트가 프로젝트 라이브러리의 함수를 가져와 재생한다", async () => {
+    await preloadScriptEngine();
+    const { project, target } = setup([]);
+    project.scriptLibrary = [{
+      id: "reward", source: "export const coins = () => 7;", compiled: "exports.coins = () => 7;",
+    }];
+    const { after } = runPrimitive(project, target, "cmd.script.insert", {
+      index: 0, source: 'import { coins } from "@lib/reward";\ngame.addGold(coins());',
+    });
+    expect(stored(after)[0]).toMatchObject({ effects: { calls: [{ kind: "library", id: "reward" }] } });
+    const session = startSession(after);
+    const beforeGold = session.gold;
+    expect(createInterpreter(stored(after), session, after).start()).toEqual({ kind: "done" });
+    expect(session.gold - beforeGold).toBe(7);
+  });
+
+  it("새 컷신 명령이 빨리 감기 중 정산을 실행하고 종료 위치 표시에서 멈춘다", () => {
+    const { project, target } = setup([wait, { kind: "changeGold", op: "+=", amount: 3 }, { ...wait, ms: 200 }]);
+    const opened = runPrimitive(project, target, "cmd.cutsceneControl.insert", { index: 0, skippable: true }).after;
+    const marked = runPrimitive(opened, target, "cmd.label.insert", { index: 3, name: CUTSCENE_END_LABEL }).after;
+    const { after } = runPrimitive(marked, target, "cmd.cutsceneControl.insert", { index: 4, mode: "end" });
+    const session = startSession(after);
+    const beforeGold = session.gold;
+    const player = createInterpreter(stored(after), session, after);
+    const first = player.start();
+    expect(first).toEqual({ kind: "wait", ms: 500 });
+    expect(isCutsceneSkippable(session)).toBe(true);
+    expect(player.beginFastForward(CUTSCENE_END_LABEL)).toBe(true);
+    expect(first.kind !== "done" && fastForwardAction(first)).toBe("skip");
+    expect(player.skip()).toEqual({ kind: "wait", ms: 200 });
+    expect(player.isFastForwarding()).toBe(false);
+    expect(isCutsceneInputLocked(session)).toBe(false);
+    expect(session.gold - beforeGold).toBe(3);
   });
 
   it("위치 이동이 사이 명령을 건너뛴다", () => {

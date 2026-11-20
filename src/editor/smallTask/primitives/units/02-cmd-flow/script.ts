@@ -31,6 +31,44 @@ function addRef(list: ScriptRef[], ref: ScriptRef): void {
   if (!list.some(entry => entry.kind === ref.kind && entry.id === ref.id)) list.push(ref);
 }
 
+type LiteralType = "string" | "number" | "boolean" | "bigint" | "null" | "object";
+
+function literalType(node: ts.Expression): LiteralType | undefined {
+  if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)
+    || ts.isNonNullExpression(node) || ts.isSatisfiesExpression(node)) return literalType(node.expression);
+  if (ts.isStringLiteralLike(node) || ts.isTemplateExpression(node)) return "string";
+  if (ts.isNumericLiteral(node)) return "number";
+  if (ts.isBigIntLiteral(node)) return "bigint";
+  if (ts.isPrefixUnaryExpression(node)) {
+    if (node.operator === ts.SyntaxKind.ExclamationToken) return "boolean";
+    if (node.operator === ts.SyntaxKind.PlusToken) return "number";
+    if (node.operator === ts.SyntaxKind.MinusToken) {
+      return literalType(node.operand) === "bigint" ? "bigint" : ts.isNumericLiteral(node.operand) ? "number" : undefined;
+    }
+  }
+  if (node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword) return "boolean";
+  if (node.kind === ts.SyntaxKind.NullKeyword) return "null";
+  if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) return "object";
+  return undefined;
+}
+
+function validateLiteralArgs(call: ts.CallExpression, params: string): void {
+  // Read primitive parameter types from the API spec and leave inferred/structural types to the full compiler.
+  const signature = ts.createSourceFile("/game.d.ts", `declare function api(${params}): void;`, ts.ScriptTarget.ES2022);
+  const { parameters } = signature.statements[0] as ts.FunctionDeclaration;
+  for (const [index, parameter] of parameters.entries()) {
+    const declared = parameter.type?.getText(signature) ?? "";
+    const expected = /^(string|number|boolean)$/u.test(declared) ? declared : /^[A-Z]\w*Id$/u.test(declared) ? "string" : undefined;
+    const argument = call.arguments[index];
+    if (argument && ts.isSpreadElement(argument)) break;
+    const actual = argument && literalType(argument);
+    if (!expected || parameter.dotDotDotToken || (parameter.questionToken && actual === "null")) continue;
+    if ((!argument && !parameter.questionToken) || (actual !== undefined && actual !== expected)) {
+      throw new PrimitiveError(`스크립트에서 게임 기능의 ${index + 1}번째 인자 형식을 확인해 주세요.`);
+    }
+  }
+}
+
 function validateGameCalls(project: Project, source: string, effects: Record<"reads" | "writes" | "calls", ScriptRef[]>): void {
   const file = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2022, true);
   function visit(node: ts.Node): void {
@@ -58,6 +96,7 @@ function validateGameCalls(project: Project, source: string, effects: Record<"re
             }
             if (id !== undefined) addRef(effects[access === "read" ? "reads" : access === "write" ? "writes" : "calls"], { kind, id });
           }
+          validateLiteralArgs(node, api.params);
         }
       }
     }
@@ -75,16 +114,20 @@ function validateGameCalls(project: Project, source: string, effects: Record<"re
 }
 
 /** A running script can put a command or a called common event on the same interpreter stack. */
-export function scriptMayDispatchFlow(compiled: string, followsCommonEvent: (id: string) => boolean, unknownFlow = () => true): boolean {
+export function scriptMayDispatchFlow(
+  compiled: string, followsCommonEvent: (id: string) => boolean, unknownFlow = () => true,
+  transfers = (_mapId?: string) => false,
+): boolean {
   const file = ts.createSourceFile("/script.js", compiled, ts.ScriptTarget.ES2022, true, ts.ScriptKind.JS);
   function visit(node: ts.Node): boolean {
     if (ts.isIdentifier(node) && node.text === "require" && unknownFlow()) return true;
     if (isGameObject(node)) {
       const access = node.parent;
       const name = memberName(access, node);
-      if (name === "callCommonEvent") {
+      if (name === "callCommonEvent" || name === "transfer") {
         const call = access.parent;
         const id = ts.isCallExpression(call) && call.expression === access ? stringLiteral(call.arguments[0]) : undefined;
+        if (name === "transfer") return transfers(id);
         return id === undefined ? unknownFlow() : followsCommonEvent(id);
       }
       // Computed or aliased calls and game.cmd can dispatch commands selected at run time.

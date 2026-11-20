@@ -14,7 +14,7 @@ import { eventName, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { compileFlowScript } from "./02-cmd-flow/script";
-import { firstLabelIndex, validateLabelChange } from "./02-cmd-flow/labels";
+import { firstLabelIndex, hasCallerLabel, validateLabelChange } from "./02-cmd-flow/labels";
 import { referenceName, requireReference, validateForkCondition } from "./02-cmd-flow/references";
 
 export const UNIT = "02-cmd-flow";
@@ -149,11 +149,17 @@ function patchFields(kind: FlowKind, args: Args, ctx: PrimitiveContext, map: Gam
   }
 }
 
-function listsAt(commands: Command[], branchPath: readonly number[]): Command[][] {
+function listsAt(commands: Command[], branchPath: readonly number[], allowNewBranch = false): Command[][] {
   const lists = [commands];
   let list = commands;
   for (let offset = 0; offset < branchPath.length; offset += 2) {
-    const branch = resolveCommandListAtPath(list, branchPath.slice(offset, offset + 2));
+    const [row, branchIndex] = branchPath.slice(offset, offset + 2) as [number, number];
+    const parent = list[row];
+    let branch = resolveCommandListAtPath(list, [row, branchIndex]);
+    if (!branch && parent && allowNewBranch && offset + 2 === branchPath.length) {
+      // The resolver initializes optional fields on the parent. Probe a copy during validation and preview.
+      branch = resolveCommandListAtPath([{ ...parent }], [0, branchIndex], { missingBranches: "create" });
+    }
     if (!branch) throw new PrimitiveError("범위 밖입니다. 이 페이지에서 해당 분기를 찾을 수 없습니다.");
     list = branch;
     lists.push(list);
@@ -166,7 +172,7 @@ function rowPosition(commands: Command[], args: Args, kind: FlowKind, operation:
   if (branchPath.length % 2 || branchPath.some((part, offset) => !Number.isSafeInteger(part) || (offset % 2 === 0 && part < 0))) {
     throw new PrimitiveError("범위 밖입니다. 올바른 분기 위치를 골라 주세요.");
   }
-  const lists = listsAt(commands, branchPath);
+  const lists = listsAt(commands, branchPath, operation === "insert");
   const list = lists.at(-1)!;
   const index = args.index as number;
   if (!Number.isSafeInteger(index) || index < 0 || index >= list.length + Number(operation === "insert")) {
@@ -196,7 +202,8 @@ function editedPage(ctx: PrimitiveContext, args: Args, kind: FlowKind, operation
     throw new PrimitiveError("명령 줄의 위치와 내용을 확인해 주세요.");
   }
   const command = listsAt(next.commands, branchPath).at(-1)![index]!;
-  if (command.kind === "gotoLabel" && !lists.some(list => firstLabelIndex(list, command.name) >= 0)) {
+  if (command.kind === "gotoLabel" && !lists.some(list => firstLabelIndex(list, command.name) >= 0)
+    && !(operation === "update" && hasCallerLabel(ctx.project, map, lists, command.name))) {
     throw new PrimitiveError("이 줄에서 이동할 수 있는 위치 표시가 없습니다.");
   }
   if (command.kind === "label") {
