@@ -60,56 +60,58 @@ export function hasEarlierSpawn(project: Project, page: EventPage, path: readonl
   return live;
 }
 
-const EVENT_REFERENCE_FIELDS = new Set([
-  "eventId", "eventIds", "eventA", "eventB", "event", "target", "targetEventId",
-  "sourceEventId", "templateEventId", "prefabId", "hostEventId", "anchorEventId", "npcKey",
-  "mapEventId", "returnEventId", "routeTarget", "removedEventIds",
-]);
+const TEXT_FIELDS = new Set(["name", "label", "title", "text", "body", "description", "message", "summary", "source", "compiled"]);
 
 export function findSpawnUsage(
   project: Project, id: string, ownCommand: Command | undefined, kind: "declaration" | "reference" | "removalFlag",
+  includeCopies = false,
 ): boolean {
-  const removalFlag = `event-removed:${id}`;
+  const flagPrefix = "event-removed:";
+  const removalFlag = flagPrefix + id;
   const eventTarget = `event:${id}`;
-  const matches = (value: unknown) => value === id || value === eventTarget || value === removalFlag;
-  const visited = new WeakSet<object>();
-  const scriptLiterals = kind === "reference" ? [id, eventTarget, removalFlag] : [removalFlag];
-
-  function mentionsReference(source: string): boolean {
-    return scriptLiterals.some(literal => source.includes(JSON.stringify(literal))
-      || source.includes(`'${literal}'`) || source.includes(`\`${literal}\``));
+  const referencedRemovalIds = new Set<string>();
+  const copyIds = new Set<string>();
+  function matchesRemovalFlag(value: unknown): boolean {
+    if (value === removalFlag) return true;
+    if (includeCopies && typeof value === "string" && value.startsWith(flagPrefix)) {
+      referencedRemovalIds.add(value.slice(flagPrefix.length));
+    }
+    return false;
   }
+  const visited = new WeakSet<object>();
 
   function visit(value: unknown, key = ""): boolean {
-    if (kind !== "declaration" && value === removalFlag) return true;
-    if (kind === "reference" && EVENT_REFERENCE_FIELDS.has(key) && matches(value)) return true;
+    if (kind !== "declaration" && matchesRemovalFlag(value)) return true;
+    // Commands can carry event targets in old generic fields such as value or mapId.
+    if (kind === "reference" && (value === eventTarget || value === id) && !TEXT_FIELDS.has(key)) return true;
     if (!value || typeof value !== "object" || value === ownCommand) return false;
     if (visited.has(value)) return false;
     visited.add(value);
     if (Array.isArray(value)) return value.some(child => visit(child, key));
     const record = value as Record<string, unknown>;
-    if (kind === "reference" && record.kind === "event" && record.id === id) return true;
     if (kind === "reference" && key === "selfSwitches" && Object.hasOwn(record, id)) return true;
-    if (kind !== "declaration" && typeof record.source === "string" && typeof record.compiled === "string"
-      && (mentionsReference(record.source) || mentionsReference(record.compiled))) return true;
+    if (kind !== "declaration" && (record.kind === "script" || key === "scriptLibrary")
+      && typeof record.source === "string" && typeof record.compiled === "string") {
+      // game.cmd can take a computed command, including IDs or flags built at runtime.
+      // The script effects index doesn't cover arbitrary command payloads.
+      if (record.compiled.trim() || record.source.trim()) return true;
+    }
     if (record.kind === "m2Command" && record.commandId === "m2-203-spawn-event") {
       const fields = (value as Extract<Command, { kind: "m2Command" }>).fields;
       if (kind === "declaration") return spawnedEventId(fields) === id;
+      if (includeCopies && (fields.templateEventId ?? fields.prefabId) === id) copyIds.add(spawnedEventId(fields));
       return Object.entries(fields).some(([field, entry]) => field !== "eventId" && visit(entry, field));
-    }
-    if (kind === "reference" && record.kind === "m2Command" && record.commandId === "m2-041-swap-event-location") {
-      const fields = (value as Extract<Command, { kind: "m2Command" }>).fields;
-      if (matches(fields.eventB ?? fields.value ?? fields.mapId)) return true;
     }
     return Object.entries(record).some(([field, child]) => {
       // An original draft is the same declaration, but its references can reappear on cancel.
       if (field === "draft" && kind === "declaration") return false;
-      return (kind !== "declaration" && field === removalFlag) || visit(child, field);
+      return (kind !== "declaration" && matchesRemovalFlag(field)) || visit(child, field);
     });
   }
 
   // Tile sheets and resource payloads cannot carry authored event references.
   const { maps, tilesets, assets, ...authored } = project;
   return Object.values(maps).some(map => visit(map.events) || visit(map.locations) || visit(map.encounterTable))
-    || visit(authored);
+    || visit(authored)
+    || [...copyIds].some(copyId => referencedRemovalIds.has(copyId));
 }

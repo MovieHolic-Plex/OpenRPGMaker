@@ -1,4 +1,5 @@
 import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
@@ -65,13 +66,13 @@ function schemaFor(entry: M2CommandCatalogEntry, field: M2CommandFieldSpec): Jso
     const description = entry.index === 203
       ? "게임에서 생성할 이벤트의 새 식별자. 추가할 때 비우면 원본 식별자에서 정합니다."
       : entry.index === 204
-        ? "게임 중 제거할 이벤트의 식별자. 비우면 선택한 이벤트입니다."
+        ? "게임 중 제거할 이벤트의 식별자. 비우거나 this-event를 쓰면 실행 중인 이벤트 자신을 제거합니다."
         : "구역에 연결할 이벤트의 식별자. 스위치를 연결하면 생략할 수 있습니다.";
     return { type: "string", description };
   }
   if (field.key === "resourceId") return {
     type: "string",
-    description: "먼 배경 그림의 식별자. 빈 문자열에 흐름 배율을 함께 지정하면 그림을 유지하고, 배율 없이 지정하면 맵의 기본 그림으로 돌아갑니다.",
+    description: "먼 배경 그림의 식별자. 빈 문자열과 흐름 배율을 함께 지정하면 그림을 유지합니다. 빈 문자열만 지정하면 맵의 기본 그림으로 돌아가고 이 줄의 흐름 설정을 지웁니다.",
   };
   if (entry.index === 37 && (field.key === "xVariableId" || field.key === "yVariableId")) {
     return { ...FIELD_SCHEMAS[field.key], minLength: 1 };
@@ -100,7 +101,7 @@ function scopeFor(ctx: PrimitiveContext) {
   return { kind: "eventPage" as const, mapId: map.id, eventId: event.id, pageId: page.id };
 }
 
-type PageContext = ReturnType<typeof scopedPage> & { readonly project: Project };
+type PageContext = ReturnType<typeof scopedPage> & Pick<PrimitiveContext, "project" | "live">;
 type M2Command = ReturnType<typeof newM2Command>;
 
 function fieldPatch(fields: readonly M2CommandFieldSpec[], args: Record<string, unknown>): M2CommandFields {
@@ -157,10 +158,15 @@ function stringField(fields: M2CommandFields, key: string, fallback = ""): strin
   return String(fields[key] ?? fallback);
 }
 
+function explicitRemovalId(fields: M2CommandFields): string {
+  const id = stringField(fields, "eventId");
+  return id === "this-event" ? "" : id;
+}
+
 function finishPatch(ctx: PageContext, entry: M2CommandCatalogEntry, fields: M2CommandFields, patch: M2CommandFields, inserting: boolean) {
   const current = ctx.event.id;
   const resolved = effectiveFields(entry, fields);
-  for (const key of entry.index === 40 ? ["target"] : entry.index === 41 ? ["eventA", "eventB"] : entry.index === 204 ? ["eventId"] : []) {
+  for (const key of entry.index === 40 ? ["target"] : entry.index === 41 ? ["eventA", "eventB"] : []) {
     if (!inserting && !Object.hasOwn(patch, key)) continue;
     const id = stringField(resolved, key);
     if (id === "this-event" || (!id && key !== "eventB")) patch[key] = current;
@@ -175,6 +181,7 @@ function finishPatch(ctx: PageContext, entry: M2CommandCatalogEntry, fields: M2C
     const prefabId = stringField({ ...resolved, ...patch }, "prefabId");
     patch.eventId = stringField(fields, "eventId") || `${prefabId}_spawn`;
   }
+  if (entry.index === 204 && patch.eventId === "this-event") patch.eventId = "";
   if (entry.index === 69 && Object.hasOwn(patch, "resourceId")) {
     // The rich editor reads the old value field first when it is present.
     if (Object.hasOwn(fields, "value")) patch.value = patch.resourceId;
@@ -196,10 +203,12 @@ function finishPatch(ctx: PageContext, entry: M2CommandCatalogEntry, fields: M2C
   }
   if (entry.index === 205) {
     if (patch.target === "") patch.target = "this-event";
-    for (const axis of ["x", "y"]) {
+    for (const axis of ["x", "y"] as const) {
       const variableKey = `${axis}VariableId`;
       const sourceKey = `${axis}Source`;
-      if (patch[variableKey] && patch[sourceKey] === undefined) patch[sourceKey] = "variable";
+      if (patch[sourceKey] !== undefined) continue;
+      if (patch[variableKey]) patch[sourceKey] = "variable";
+      else if (patch[axis] !== undefined && coordinateAxisSpec(fields, axis).source === "variable") patch[sourceKey] = "fixed";
     }
   }
 }
@@ -280,6 +289,7 @@ function validateReferences(
     case 203: {
       const id = spawnedEventId(fields);
       const oldId = previous && spawnedEventId(previous.fields);
+      const references = withOpenEventDrafts(ctx.project, ctx.live, { mapId: ctx.map.id, eventId: ctx.event.id });
       if (!id.trim() || id.trim() !== id || Object.hasOwn(Object.prototype, id) || ["this-event", "player", PLAYER_MOVE_TARGET, "_swap"].includes(id)) {
         throw new PrimitiveError("새 이벤트에 쓸 다른 식별자를 입력해 주세요.");
       }
@@ -290,25 +300,30 @@ function validateReferences(
           throw new PrimitiveError("지정된 원본 맵에서 복제할 이벤트를 찾을 수 없습니다.");
         }
       }
-      if (projectEvent(ctx.project, id) || (oldId !== id && findSpawnUsage(ctx.project, id, previous, "declaration"))) {
+      if (projectEvent(references, id) || (oldId !== id && findSpawnUsage(references, id, previous, "declaration"))) {
         throw new PrimitiveError("같은 식별자를 쓰는 이벤트가 이미 있습니다. 다른 식별자를 입력해 주세요.");
       }
-      if (oldId && oldId !== id && findSpawnUsage(ctx.project, oldId, previous, "reference")) {
-        throw new PrimitiveError("기존 식별자를 참조하는 곳이 있어 생성할 이벤트의 식별자를 바꿀 수 없습니다.");
+      if (oldId && oldId !== id && findSpawnUsage(references, oldId, previous, "reference")) {
+        throw new PrimitiveError("기존 식별자를 참조하는 곳이 있거나 스크립트의 참조 여부를 확인할 수 없어 생성 식별자를 바꿀 수 없습니다.");
       }
       break;
     }
     case 204: {
-      const id = string("eventId") || ctx.event.id;
-      const mapId = string("mapId") || ctx.map.id;
-      const map = Object.hasOwn(ctx.project.maps, mapId) ? ctx.project.maps[mapId] : undefined;
-      if (!(map && mapEvent(map, id)) && !hasEarlierSpawn(ctx.project, ctx.page, path, id)) {
-        if (!map) throw new PrimitiveError("이벤트를 제거할 맵을 찾을 수 없습니다.");
-        throw new PrimitiveError("지정한 이벤트를 찾을 수 없습니다.");
+      const id = explicitRemovalId(fields);
+      if (id) {
+        const mapId = string("mapId") || ctx.map.id;
+        const map = Object.hasOwn(ctx.project.maps, mapId) ? ctx.project.maps[mapId] : undefined;
+        if (!(map && mapEvent(map, id)) && !hasEarlierSpawn(ctx.project, ctx.page, path, id)) {
+          if (!map) throw new PrimitiveError("이벤트를 제거할 맵을 찾을 수 없습니다.");
+          throw new PrimitiveError("지정한 이벤트를 찾을 수 없습니다.");
+        }
       }
-      const oldId = previous && stringField(previous.fields, "eventId", ctx.event.id);
-      if (oldId && oldId !== id && findSpawnUsage(ctx.project, oldId, previous, "removalFlag")) {
-        throw new PrimitiveError("이벤트가 제거되었는지 확인하는 곳이 있어 제거 대상을 바꿀 수 없습니다.");
+      const oldId = previous && explicitRemovalId(previous.fields);
+      if (oldId !== undefined && oldId !== id) {
+        const references = withOpenEventDrafts(ctx.project, ctx.live, { mapId: ctx.map.id, eventId: ctx.event.id });
+        if (findSpawnUsage(references, oldId || ctx.event.id, previous, "removalFlag", !oldId)) {
+          throw new PrimitiveError("이벤트가 제거되었는지 확인하는 곳이 있거나 스크립트의 참조 여부를 확인할 수 없어 제거 대상을 바꿀 수 없습니다.");
+        }
       }
       break;
     }
@@ -442,7 +457,7 @@ function primitive(entry: M2CommandCatalogEntry, operation: "insert" | "update")
   const number = String(entry.index).padStart(3, "0");
 
   function prepare(ctx: PrimitiveContext, args: Record<string, unknown>) {
-    const pageContext = { ...scopedPage(ctx), project: ctx.project };
+    const pageContext = { ...scopedPage(ctx), project: ctx.project, live: ctx.live };
     const { index, branchPath = [], expectedHash } = args as { index?: number; branchPath?: number[]; expectedHash?: string };
     const list = commandListAt(pageContext.page, branchPath);
     const row = index ?? list.length;
@@ -461,10 +476,6 @@ function primitive(entry: M2CommandCatalogEntry, operation: "insert" | "update")
       throw new PrimitiveError("생성할 이벤트의 식별자를 입력해 주세요.");
     }
     if (!update && entry.index === 26) patch.vehicle ??= "boat";
-    if (!update && entry.index === 69 && patch.flowPercent === undefined) {
-      delete current.fields.flowPercent;
-      delete current.fields.flowDurationMs;
-    }
     if (!update || Object.keys(patch).length > 0) {
       finishPatch(pageContext, entry, { ...current.fields, ...patch }, patch, !update);
       // Legacy commands could store boolean selects directly. Keep their meaning
@@ -482,6 +493,10 @@ function primitive(entry: M2CommandCatalogEntry, operation: "insert" | "update")
       }
     }
     const next = { ...current, fields: { ...current.fields, ...patch } };
+    if (entry.index === 69 && patch.flowPercent === undefined && (!update || patch.resourceId === "")) {
+      delete next.fields.flowPercent;
+      delete next.fields.flowDurationMs;
+    }
     return { pageContext, row, branchPath, expectedHash, current, patch, next, unchanged: update && jsonEqual(current, next) };
   }
 
