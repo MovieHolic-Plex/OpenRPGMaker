@@ -1,5 +1,5 @@
 import ts from "typescript5";
-import { analyzeScript, isGameObject, knownScriptIds, scriptMemberName, scriptStringLiteral, unwrapScriptExpression } from "@/editor/script/analyze";
+import { analyzeScript, isGameObject, knownScriptIds, scriptCallSource, scriptMemberName, scriptStringLiteral, unwrapScriptExpression } from "@/editor/script/analyze";
 import { scriptCommandFields } from "@/editor/script/compile";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
@@ -52,7 +52,7 @@ function validateLiteralArgs(call: ts.CallExpression, params: string): void {
 }
 
 function validateGameCalls(project: Project, source: string, calls: ScriptRef[]): void {
-  const file = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2022, true);
+  const { file, isEngineGameObject } = scriptCallSource(ts, source);
   function visit(node: ts.Node): void {
     let specifier: ts.Expression | undefined;
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
@@ -64,7 +64,7 @@ function validateGameCalls(project: Project, source: string, calls: ScriptRef[])
       if (callee.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(callee) && callee.text === "require")) {
         specifier = node.arguments[0];
       }
-      if ((ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) && isGameObject(ts, callee.expression)) {
+      if ((ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) && isEngineGameObject(callee.expression)) {
         const name = scriptMemberName(ts, callee, callee.expression);
         if (name !== undefined) {
           const api = SCRIPT_API_BY_NAME.get(name);

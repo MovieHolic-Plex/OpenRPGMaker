@@ -574,6 +574,29 @@ describe("흐름 제어 명령", () => {
     expect(stored(after)[0]).toMatchObject({ effects: { writes: [], dynamic: [{ api: "setSwitch", line: 2 }] } });
   });
 
+  it("지역 game 객체는 허용하고 실제 게임 기능의 참조만 기록한다", () => {
+    const { project, target } = setup([]);
+    const localCalls = `
+      function add(globalThis: { game: { addGold: (value: string) => void } }) {
+        globalThis.game.addGold("3");
+      }
+      add({ game: { addGold: () => {} } });
+      {
+        const game = { hasItem: (id: string) => id.length > 0 };
+        game.hasItem("local-item");
+      }
+      globalThis.game.setSwitch("flow-sw", true);
+    `;
+    const { after } = runPrimitive(project, target, "cmd.script.insert", { index: 0, source: localCalls });
+    expect(stored(after)[0]).toMatchObject({
+      effects: { reads: [], writes: [{ kind: "switch", id: "flow-sw" }], calls: [], dynamic: [] },
+    });
+    const localGlobal = `const globalThis = { game: { addGold: (value: string) => value } }; globalThis.game.addGold("3");`;
+    expect(() => runPrimitive(project, target, "cmd.script.insert", { index: 0, source: localGlobal })).not.toThrow();
+    const ambientGame = `declare const game: { addGold: (value: string) => void }; game.addGold("3");`;
+    expect(() => runPrimitive(project, target, "cmd.script.insert", { index: 0, source: ambientGame })).toThrow(/1번째 인자 형식/u);
+  });
+
   it("스크립트가 프로젝트 라이브러리의 함수를 가져와 재생한다", async () => {
     await preloadScriptEngine();
     const { project, target } = setup([]);

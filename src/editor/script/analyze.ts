@@ -52,11 +52,36 @@ export function scriptMemberName(ts: TypeScriptApi, access: TS.Node, object: TS.
   return undefined;
 }
 
-export function isGameObject(ts: TypeScriptApi, node: TS.Node): boolean {
-  if (ts.isIdentifier(node)) return node.text === "game";
+export function isGameObject(ts: TypeScriptApi, node: TS.Node, isGlobal = (_id: TS.Identifier) => true): boolean {
+  if (ts.isIdentifier(node)) return node.text === "game" && isGlobal(node);
   return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
     && ts.isIdentifier(node.expression) && node.expression.text === "globalThis"
-    && scriptMemberName(ts, node, node.expression) === "game";
+    && scriptMemberName(ts, node, node.expression) === "game" && isGlobal(node.expression);
+}
+
+export function scriptCallSource(ts: TypeScriptApi, source: string, fileName = "/script.ts") {
+  // The sandbox wraps each script, so declarations at the top of the file are local too.
+  const file = ts.createSourceFile(fileName, `${source}\nexport {};`, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TS);
+  let checker: TS.TypeChecker | undefined;
+  const isGlobal = (id: TS.Identifier): boolean => {
+    checker ??= ts.createProgram([fileName], { noLib: true, noResolve: true, types: [] }, {
+      getSourceFile: name => name === fileName ? file : undefined,
+      getDefaultLibFileName: () => "",
+      writeFile: () => undefined,
+      getCurrentDirectory: () => "/",
+      getCanonicalFileName: name => name,
+      useCaseSensitiveFileNames: () => true,
+      getNewLine: () => "\n",
+      fileExists: name => name === fileName,
+      readFile: name => name === fileName ? file.text : undefined,
+    }).getTypeChecker();
+    const binding = checker.resolveName(id.text, id, ts.SymbolFlags.Value | ts.SymbolFlags.Alias, false);
+    // Ambient and type-only declarations do not introduce a binding in the sandbox.
+    return !binding?.declarations?.some(declaration =>
+      (ts.getCombinedModifierFlags(declaration) & ts.ModifierFlags.Ambient) === 0
+      && !ts.isPartOfTypeOnlyImportOrExportDeclaration(declaration));
+  };
+  return { file, isEngineGameObject: (node: TS.Node) => isGameObject(ts, node, isGlobal) };
 }
 
 function levenshtein(a: string, b: string): number {
@@ -134,7 +159,7 @@ export function analyzeScript(
   source: string,
   options: { readonly project?: Project; readonly mapId?: string; readonly fileName?: string } = {}
 ): ScriptAnalysis {
-  const file = ts.createSourceFile(options.fileName ?? "/script.ts", source, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TS);
+  const { file, isEngineGameObject } = scriptCallSource(ts, source, options.fileName);
   const reads: ScriptRef[] = [];
   const writes: ScriptRef[] = [];
   const calls: ScriptRef[] = [];
@@ -238,7 +263,7 @@ export function analyzeScript(
     if (ts.isCallExpression(node)) {
       const callee = unwrapScriptExpression(ts, node.expression);
       const name = (ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee))
-        && isGameObject(ts, callee.expression) ? scriptMemberName(ts, callee, callee.expression) : undefined;
+        && isEngineGameObject(callee.expression) ? scriptMemberName(ts, callee, callee.expression) : undefined;
       const entry = name === undefined ? undefined : SCRIPT_API_BY_NAME.get(name);
       if (entry) {
         if (transferSeen && entry.awaits && entry.name !== "transfer") {
