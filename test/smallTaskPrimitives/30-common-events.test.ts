@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { normalizeEventPage } from "@/editor/eventPages";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/30-common-events";
@@ -12,9 +13,10 @@ import { getTool } from "@/editor/tools/toolRegistry";
 import { createInterpreter } from "@/player/interpreter";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap, singleNodeTree } from "@/project/defaults/defaultMaps";
-import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
 import { scriptSourceHash } from "@/project/script/types";
 import { getSwitch, getVariable, startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Command, CommonEvent, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
@@ -47,6 +49,10 @@ function seed(commands: Command[] = [], fixture: "built" | "maou" = "built"): Pr
 }
 
 function runOn(project: Project, id: string, args: Record<string, unknown>) {
+  if (id === "commonEvent.command.update" || id === "commonEvent.command.delete") {
+    const commands = project.commonEvents.find(event => event.id === args.commonEventId)?.commands ?? [];
+    return runPrimitive(project, startMapTarget(project), id, { expectedListHash: eventCommandListHash(commands), ...args });
+  }
   return runPrimitive(project, startMapTarget(project), id, args);
 }
 
@@ -95,7 +101,7 @@ describe("공용 이벤트", () => {
     const project = seed(stored.commands, id === "commonEvent.rename" ? "maou" : "built");
     const original = structuredClone(project.commonEvents);
     const target = startMapTarget(project);
-    const result = runPrimitive(project, target, id, args);
+    const result = runOn(project, id, args);
     expect(result.after.commonEvents).toEqual([...original.slice(0, -1), ...expected]);
     expect(result.after.maps).toBe(project.maps);
     expect(result.after.database).toBe(project.database);
@@ -112,7 +118,7 @@ describe("공용 이벤트", () => {
     const target = startMapTarget(project);
     const primitive = PRIMITIVES.find(row => row.id === id)!;
     const scope = primitive.scope({ project, target }, args);
-    const { after } = runPrimitive(project, target, id, args);
+    const { after } = runOn(project, id, args);
     const changedTitle = { ...after, meta: { ...after.meta, title: "다른 프로젝트 제목" } };
     expect(checkSmallTaskScope(project, changedTitle, scope)).toMatchObject({
       ok: false, reason: expect.stringContaining("범위 밖"),
@@ -188,6 +194,27 @@ describe("공용 이벤트", () => {
     const map = project.maps[project.startMapId]!;
     map.events = [...map.events, { ...original, commands: [], draft: { kind: "edit", original } }];
     expect(() => runOn(project, "commonEvent.remove", { commonEventId: eventId })).toThrow(/여관 주인.*지울 수 없습니다/u);
+  });
+
+  it("저장본에 없는 초안 호출은 실행과 반영 모두에서 공용 이벤트 삭제를 막는다", () => {
+    const project = seed();
+    const original = { id: "ev_inn_gift", name: "여관 주인", x: 0, y: 0, commands: [], trigger: { kind: "action" } } satisfies GameEvent;
+    const map = project.maps[project.startMapId];
+    map.events = [...map.events, { ...original, commands: [call], draft: { kind: "edit", original } }];
+    const prior = store.getCurrent();
+    store.replaceProject(project);
+    try {
+      const live = store.getCurrent();
+      const target = startMapTarget(live);
+      const before = smallTaskBase(live, target);
+      const args = { commonEventId: eventId };
+      expect(() => runPrimitive(before, target, "commonEvent.remove", args, undefined, live)).toThrow(/여관 주인.*지울 수 없습니다/u);
+      const { after } = runPrimitive(before, target, "commonEvent.remove", args);
+      expect(() => commitSmallTask(live, before, after, target)).toThrow(/여관 주인.*지울 수 없습니다/u);
+      expect(store.getCurrent()).toBe(live);
+    } finally {
+      store.replaceProject(prior);
+    }
   });
 
   it("자기 자신을 호출하는 공용 이벤트도 삭제할 수 없다", () => {
@@ -270,34 +297,54 @@ describe("공용 이벤트", () => {
   });
 
   it.each([
-    { title: "분기 안의 호출", source: `await game.cmd({ kind: "loop", body: [{ kind: "callCommonEvent", commonEventId: "${eventId}" }] });` },
-    { title: "다른 이름으로 꺼낸 호출", source: `const call = game.callCommonEvent; await call("${eventId}");` },
-  ])("스크립트의 $title이 기록에서 빠져도 삭제를 거부한다", ({ source }) => {
+    { title: "분기 안의 호출", source: `await game.cmd({ kind: "loop", body: [{ kind: "callCommonEvent", commonEventId: "${eventId}" }] });`, reason: /가게 판매.*지울 수 없습니다/u },
+    { title: "다른 이름으로 꺼낸 호출", source: `const call = game.callCommonEvent; await call("${eventId}");`, reason: /사용하는지 확인할 수 없습니다/u },
+    { title: "계산된 명령", source: "await game.cmd(command);", reason: /사용하는지 확인할 수 없습니다/u },
+  ])("스크립트의 $title이 기록에서 빠져도 삭제를 거부한다", ({ source, reason }) => {
     const project = seed();
     const caller = commonEvent([{
       kind: "script", source, compiled: source, effects: { calls: [], reads: [], writes: [], dynamic: [] },
     }]);
     project.commonEvents.unshift({ ...caller, id: "ce_other", name: "가게 판매" });
-    expect(() => runOn(project, "commonEvent.remove", { commonEventId: eventId })).toThrow("사용하는지 확인할 수 없습니다");
+    expect(() => runOn(project, "commonEvent.remove", { commonEventId: eventId })).toThrow(reason);
+  });
+
+  it("공용 이벤트를 부르지 않는 리터럴 game.cmd는 삭제를 허용한다", () => {
+    const project = seed();
+    const source = `await game.cmd({ kind: "changeGold", op: "+=", amount: 1 });`;
+    project.commonEvents.unshift({ ...commonEvent([{
+      kind: "script", source, compiled: source, effects: { calls: [], reads: [], writes: [], dynamic: [] },
+    }]), id: "ce_other" });
+    expect(runOn(project, "commonEvent.remove", { commonEventId: eventId }).after.commonEvents.map(event => event.id)).toEqual(["ce_other"]);
   });
 
   it("자료집에서 읽은 기존 명령으로 수정하고, 줄이 밀리면 수정과 삭제를 거부한다", async () => {
     const project = seed([wait, gold]);
     const read = getTool("get_database_records")!.run(project, { collection: "commonEvents", ids: [eventId], include: "full" });
-    const { records } = read.data as { records: CommonEvent[] };
+    const { records } = read.data as { records: (CommonEvent & { commandListHash: string })[] };
     const ctx = { project, smallTaskTarget: startMapTarget(project) };
-    const args = { commonEventId: eventId, index: 0, expectedCommand: records[0]!.commands[0], patch: { ms: 900 } };
+    const expectedListHash = records[0]!.commandListHash;
+    const args = { commonEventId: eventId, index: 0, expectedListHash, expectedCommand: records[0]!.commands[0], patch: { ms: 900 } };
     await runSmallTaskPrimitiveTool(ctx, APPLY_SMALL_TASK_PRIMITIVE, { id: "commonEvent.command.update", args });
     expect(ctx.project.commonEvents.at(-1)?.commands).toEqual([{ ...wait, ms: 900 }, gold]);
 
     const shifted = runOn(project, "commonEvent.command.insert", { commonEventId: eventId, index: 0, command: gold }).after;
     expect(() => runOn(shifted, "commonEvent.command.update", args)).toThrow(STALE_COMMAND_LIST);
-    expect(() => runOn(shifted, "commonEvent.command.delete", { commonEventId: eventId, index: 0, expectedHash: eventCommandHash(wait) }))
+    expect(() => runOn(shifted, "commonEvent.command.delete", { commonEventId: eventId, index: 0, expectedListHash, expectedHash: eventCommandHash(wait) }))
       .toThrow(STALE_COMMAND_LIST);
-    expect(() => runOn(project, "commonEvent.command.delete", { commonEventId: eventId, index: 0 }))
-      .toThrow("기존 명령을 다시 읽고");
+    expect(() => runPrimitive(project, startMapTarget(project), "commonEvent.command.delete", { commonEventId: eventId, index: 0 }))
+      .toThrow("동작에 필요한 값의 형식");
     expect(runOn(project, "commonEvent.command.delete", { commonEventId: eventId, index: 0, expectedHash: eventCommandHash(wait) })
       .after.commonEvents.at(-1)?.commands).toEqual([gold]);
+  });
+
+  it("삽입 뒤 동일한 명령을 가리키는 낡은 분기 경로의 수정과 삭제를 거부한다", () => {
+    const commands = [{ ...fork, then: [wait, gold] }, fork];
+    const project = seed(commands);
+    const args = { commonEventId: eventId, index: 0, branchPath: [1, FORK_THEN_BRANCH_INDEX], expectedListHash: eventCommandListHash(commands), expectedCommand: wait };
+    const { after } = runOn(project, "commonEvent.command.insert", { commonEventId: eventId, index: 0, command: gold });
+    expect(() => runOn(after, "commonEvent.command.update", { ...args, patch: { ms: 1000 } })).toThrow(STALE_COMMAND_LIST);
+    expect(() => runOn(after, "commonEvent.command.delete", args)).toThrow(STALE_COMMAND_LIST);
   });
 
   it("중첩 위치에서 한 줄만 추가하고 수정하고 지운다", () => {
@@ -353,6 +400,22 @@ describe("공용 이벤트", () => {
     project.commonEvents.push({ ...commonEvent([{ kind: "gotoLabel", name: label.name }]), id: calleeId });
     const args = { commonEventId: eventId, index: 1, expectedCommand: label };
     expect(() => runOn(project, "commonEvent.command.delete", args)).toThrow("이 라벨로 이동하는 명령");
+  });
+
+  it("맵 이벤트가 뒤에 정의한 라벨로 이동하는 명령을 공용 이벤트에 넣는다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const project = seed([setSwitch]);
+    const commands = [call, gold, label, count];
+    project.maps[project.startMapId].events = [{ id: "ev_caller", x: 0, y: 0, trigger: { kind: "action" }, commands }];
+    const { after } = runOn(project, "commonEvent.command.insert", {
+      commonEventId: eventId, index: 0, command: { kind: "gotoLabel", name: label.name },
+    });
+    const session = startSession(after, 1);
+    const startingGold = session.gold;
+    expect(createInterpreter(commands, session, after).start()).toEqual({ kind: "done" });
+    expect(session.gold).toBe(startingGold);
+    expect(getSwitch(session, switchId)).toBe(false);
+    expect(getVariable(session, variableId)).toBe(1);
   });
 
   it.each(["insert", "update"])("맵 이벤트의 라벨로 돌아가는 기존 이동을 가로채는 라벨 편집을 거부한다 (%s)", edit => {
@@ -432,7 +495,7 @@ describe("공용 이벤트", () => {
 
     const { after } = insert(command);
     expect(() => runPrimitive(after, target, "commonEvent.command.update", {
-      commonEventId: eventId, index: 0, expectedCommand: command, patch: { eventId: otherEvent.id },
+      commonEventId: eventId, index: 0, expectedListHash: eventCommandListHash([command]), expectedCommand: command, patch: { eventId: otherEvent.id },
     })).toThrow("작업을 시작한 맵에서 호출할 이벤트를 찾을 수 없습니다");
     const session = startSession(after, 1);
     session.currentMapId = selectedMap.id;

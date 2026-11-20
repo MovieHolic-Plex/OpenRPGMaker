@@ -1,3 +1,4 @@
+import { withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { parseM2BattleCommand } from "@/battle/battleM2Commands";
 import { projectCommonEventReferenceMessage } from "@/editor/databaseReferences";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
@@ -20,9 +21,10 @@ import { validateCommands, type ReferenceContext } from "@/project/io/commandRef
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { isPlayerMoveTarget } from "@/project/moveRouteTarget";
 import { scriptCalls, scriptHasDynamic } from "@/project/script/effects";
-import type { Command, Condition, EventPage, GameMap, Project } from "@/project/types";
+import type { Command, CommonEvent, Condition, EventPage, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../../errors";
+import { scriptCommonEventCalls } from "./scriptCalls";
 
 export function quotedName(name: string, fallback: string): string {
   const label = displayText(name, "").replace(/[{}[\]「」]/gu, "").trim();
@@ -46,15 +48,25 @@ function usesOpaqueScriptCalls(script: ScriptBody): boolean {
   return /\b(?:cmd|callCommonEvent)\b|\bgame\s*\[/u.test(otherCode);
 }
 
-export function refuseReferencedRemoval(project: Project, id: string): void {
+export function refuseReferencedRemoval(project: Project, id: string, live?: SmallTaskDraftSource): void {
   const callers = new Set<string>();
-  const mayCallDynamically = (script: ScriptBody) => usesOpaqueScriptCalls(script) ||
+  const mayCallDynamically = (script: ScriptBody) =>
     scriptHasDynamic({ ...script, kind: "script" }, "commonEvent", { access: "call", library: project.scriptLibrary });
   let dynamicCall = false;
+  const parsedScripts = new Map<string, ReturnType<typeof scriptCommonEventCalls>>();
+  const readScript = (script: ScriptBody) => {
+    let parsed = parsedScripts.get(script.compiled);
+    if (!parsed) {
+      parsed = scriptCommonEventCalls(script.compiled);
+      parsedScripts.set(script.compiled, parsed);
+    }
+    dynamicCall ||= parsed.opaque || mayCallDynamically(script);
+    return parsed.ids;
+  };
   const scan = (source: Project) => visitProjectCommands(source, ({ command, location }) => {
-    if (command.kind === "script" && mayCallDynamically(command)) dynamicCall = true;
+    const scriptIds = command.kind === "script" ? readScript(command) : undefined;
     if (commonEventCallId(command) !== id &&
-      (command.kind !== "script" || !scriptCalls(command, "commonEvent", source).includes(id))) return;
+      !scriptIds?.has(id) && (command.kind !== "script" || !scriptCalls(command, "commonEvent", source).includes(id))) return;
     switch (location.kind) {
       case "commonEvent":
         callers.add(`공용 이벤트 ${quotedName(location.commonEventName === location.commonEventId ? "" : location.commonEventName, "이름 없음")}`);
@@ -78,8 +90,10 @@ export function refuseReferencedRemoval(project: Project, id: string): void {
     }
   });
   scan(project);
-  const committed = projectViewWithoutEventDrafts(project);
-  if (committed !== project) scan(committed);
+  const working = withOpenEventDrafts(project, live);
+  if (working !== project) scan(working);
+  const committed = projectViewWithoutEventDrafts(working);
+  if (committed !== project && committed !== working) scan(committed);
   if (callers.size) {
     throw new PrimitiveError(`${[...callers].join(", ")}에서 호출 중이라 공용 이벤트를 지울 수 없습니다.`);
   }
@@ -92,11 +106,14 @@ export function refuseReferencedRemoval(project: Project, id: string): void {
   const skill = skills.find(row => row.fieldCommonEventId === id);
   if (skill) throw new PrimitiveError(`필드 스킬 ${quotedName(skill.name, "항목")}에서 사용 중이라 공용 이벤트를 지울 수 없습니다.`);
 
-  const reference = projectCommonEventReferenceMessage(project, id);
+  const reference = projectCommonEventReferenceMessage(working, id);
   if (reference) {
     throw new PrimitiveError(`공용 이벤트를 지울 수 없습니다. ${displayText(reference, "아직 쓰는 곳이 있습니다.").replaceAll("커먼 이벤트", "공용 이벤트")}`);
   }
-  if (dynamicCall || project.scriptLibrary?.some(mayCallDynamically)) {
+  if (project.scriptLibrary?.some(module => readScript(module).has(id))) {
+    throw new PrimitiveError("공용 스크립트에서 호출 중이라 공용 이벤트를 지울 수 없습니다.");
+  }
+  if (dynamicCall) {
     throw new PrimitiveError("스크립트에서 이 공용 이벤트를 사용하는지 확인할 수 없습니다. 스크립트의 호출 대상을 먼저 확인해 주세요.");
   }
 }
@@ -135,7 +152,7 @@ export function validateSingleInsert(command: Command): void {
   }
 }
 
-function calledCommandLists(project: Project, command: Command): readonly Command[][] {
+function calledCommandLists(project: Project, command: Command, callerMap?: GameMap): readonly Command[][] {
   // These calls push a new frame on the same interpreter stack. Their jumps can reach the caller's label.
   const commonLists = (eventIds: readonly string[]) =>
     project.commonEvents.filter(event => eventIds.includes(event.id)).map(event => event.commands);
@@ -149,16 +166,38 @@ function calledCommandLists(project: Project, command: Command): readonly Comman
     : command.kind === "script" ? scriptCalls(command, "event", project) : [];
   const lists: Command[][] = [];
   if (command.kind === "script") lists.push(...commonLists(scriptCalls(command, "commonEvent", project)));
-  for (const map of mapEventIds.length ? Object.values(project.maps) : []) {
+  for (const map of mapEventIds.length ? (callerMap ? [callerMap] : Object.values(project.maps)) : []) {
     for (const event of map.events) {
       if (!mapEventIds.includes(event.id)) continue;
-      for (const body of new Set([event, committedEventView(event)])) {
+      const committed = committedEventView(event);
+      for (const body of callerMap ? [committed] : new Set([event, committed])) {
         if (!body) continue;
         lists.push(body.commands, ...(body.pages ?? []).map(page => page.commands));
       }
     }
   }
   return lists;
+}
+
+function callerHasLabel(project: Project, map: GameMap, event: CommonEvent, name: string): boolean {
+  const seenWithLabel = new Set<readonly Command[]>();
+  const seenWithoutLabel = new Set<readonly Command[]>();
+  const visit = (list: readonly Command[], inherited: boolean): boolean => {
+    const hasLabel = inherited || list.some(row => row.kind === "label" && row.name === name);
+    const seen = hasLabel ? seenWithLabel : seenWithoutLabel;
+    if (seen.has(list)) return false;
+    seen.add(list);
+    return list.some(command => {
+      if (hasLabel && commonEventCallId(command) === event.id) return true;
+      const calls = command.kind === "callMapEvent" || commonEventCallId(command) !== undefined
+        ? calledCommandLists(project, command, map) : [];
+      return [...nestedCommandLists(command), ...calls].some(child => visit(child, hasLabel));
+    });
+  };
+  return map.events.some(row => {
+    const saved = committedEventView(row);
+    return saved && (saved.pages?.length ? saved.pages.some(page => visit(page.commands, false)) : visit(saved.commands, false));
+  });
 }
 
 function scriptMayJumpToLabel(project: Project, command: Extract<Command, { kind: "script" }>): boolean {
@@ -193,8 +232,9 @@ function usesLabel(project: Project, commands: readonly Command[], name: string,
 }
 
 export function validateLabelEdit(
-  project: Project, before: Command[], after: Command[], path: number[], current?: Command, next?: Command,
+  project: Project, map: GameMap, event: CommonEvent, after: Command[], path: number[], current?: Command, next?: Command,
 ): void {
+  const before = event.commands;
   if (current?.kind === "label" && (next?.kind !== "label" || current.name !== next.name)) {
     const list = resolveCommandListAtPath(before, path)!;
     if (list.find(row => row.kind === "label" && row.name === current.name) === current && usesLabel(project, list, current.name)) {
@@ -217,7 +257,7 @@ export function validateLabelEdit(
       const list = resolveCommandListAtPath(after, path.slice(0, end));
       if (list?.some(row => row.kind === "label" && row.name === next.name)) return;
     }
-    throw new PrimitiveError("이 줄에서 이동할 라벨을 찾을 수 없습니다.");
+    if (!callerHasLabel(project, map, event, next.name)) throw new PrimitiveError("이 줄에서 이동할 라벨을 찾을 수 없습니다.");
   }
 }
 

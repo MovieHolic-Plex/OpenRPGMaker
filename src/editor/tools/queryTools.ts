@@ -4,7 +4,7 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
-import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
 import { openedLoadRepairReport } from "@/project/loadRepairReport";
 import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
@@ -1102,14 +1102,21 @@ const getDatabaseRecords: ToolDefinition = {
       && (!positions || positions.has(position))
       && (!query || String(record.id).toLowerCase().includes(query) || String(record.name ?? "").toLowerCase().includes(query)));
     const offset = typeof args.offset === "number" ? args.offset : 0;
+    const readRecord = ({ record, position }: (typeof matching)[number]) => {
+      if (collection !== "commonEvents" || args.include !== "full" || !("commands" in record) || !Array.isArray(record.commands)) {
+        return { position, ...record };
+      }
+      const { commands, ...fields } = record;
+      return { position, ...fields, commandListHash: eventCommandListHash(commands), commands };
+    };
     let records: Record<string, unknown>[];
-    if (typeof args.limit === "number") records = matching.slice(offset, offset + args.limit).map(({ record, position }) => ({ position, ...record }));
+    if (typeof args.limit === "number") records = matching.slice(offset, offset + args.limit).map(readRecord);
     else {
       // 한도에 드는 만큼만 — 잘린 결과는 커서(nextOffset)를 잃는다(2026-11-16 db-review A F7 · B #4: 기본 프로젝트 스킬 id 목록만 59k 자).
       records = [];
       let used = 0;
-      for (const { record, position } of matching.slice(offset)) {
-        const row = { position, ...record };
+      for (const match of matching.slice(offset)) {
+        const row = readRecord(match);
         const size = JSON.stringify(row).length + 1;
         if (records.length > 0 && used + size > RECORD_PAGE_CHARS) break;
         records.push(row); used += size;

@@ -8,11 +8,11 @@ import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import {
-  deleteEventCommand, eventCommandHash, insertEventCommand, updateEventCommand,
+  deleteEventCommand, eventCommandHash, eventCommandListHash, insertEventCommand, updateEventCommand,
 } from "@/project/eventCommands/singleCommandOps";
 import type { Command, CommonEvent, EventPage, Project } from "@/project/types";
 import { roJosa } from "@/util/josa";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   commandForInsert, editCommands, quotedName, refuseReferencedRemoval,
@@ -34,6 +34,10 @@ const branchPath = {
   description: "바깥에서 안쪽 순으로 명령 줄과 분기 번호를 짝지어 입력합니다. 선택지는 0부터, 거래 성공 -1, 조건 참 -2, 거짓 -3, 취소 -4, 반복 -5, 승급·진화 성공 -6, 실패 -7, 숙박비 부족 -8, 전투 승리 -9, 패배 -10, 도주 -11, 거래 실패 -12, 틀린 아이템 제시 -13입니다. 바깥 목록이면 생략합니다.",
 } as const;
 const commandSnapshot = {
+  expectedListHash: {
+    type: "string", minLength: 1,
+    description: "get_database_records(collection: commonEvents, include: full)에서 읽은 commandListHash입니다.",
+  },
   expectedCommand: {
     type: "object", additionalProperties: true, required: ["kind"], properties: { kind: { type: "string", enum: COMMAND_KINDS } },
     description: "자료집에서 전체 내용(include: full)을 읽고 고른 줄의 기존 명령을 그대로 입력합니다.",
@@ -122,10 +126,12 @@ function existingCommand(event: CommonEvent, path: number[]): Command {
   return command;
 }
 
-function expectedCommandHash(args: Args): string {
+function expectedCommandHash(event: CommonEvent, path: number[], args: Args): string {
+  if (eventCommandListHash(event.commands) !== args.expectedListHash) throw new PrimitiveError(STALE_COMMAND_LIST);
   if (typeof args.expectedHash === "string" && args.expectedCommand === undefined) return args.expectedHash;
   if (args.expectedHash === undefined && args.expectedCommand !== undefined) return eventCommandHash(args.expectedCommand as Command);
-  throw new PrimitiveError("기존 명령을 다시 읽고 기존 내용이나 해시 중 하나를 입력해 주세요.");
+  if (args.expectedHash !== undefined) throw new PrimitiveError("기존 명령과 그 줄의 해시 중 하나만 입력해 주세요.");
+  return eventCommandHash(existingCommand(event, path));
 }
 
 function pageForInsert(event: CommonEvent, path: number[]): EventPage {
@@ -218,7 +224,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     (ctx, args) => `${nameOf(findEvent(ctx, args))} 항목을 공용 이벤트 목록에서 지워요.`,
     (ctx, args) => {
       const event = findEvent(ctx, args);
-      refuseReferencedRemoval(ctx.project, event.id);
+      refuseReferencedRemoval(ctx.project, event.id, ctx.live);
       return { ...ctx.project, commonEvents: ctx.project.commonEvents.filter(row => row !== event) };
     },
   ),
@@ -252,7 +258,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const inserted = existingCommand(next, path);
       validateSingleInsert(inserted);
       validateCommandReferences(ctx.project, targetMap(ctx), inserted);
-      validateLabelEdit(ctx.project, event.commands, next.commands, path, undefined, inserted);
+      validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, undefined, inserted);
       return editEvent(event, ctx.project, next);
     },
   ),
@@ -269,11 +275,12 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         },
         description: "고칠 필드와 값입니다. 선택지 문구만 고칠 때는 기존 순서대로 문구 목록을 입력합니다.",
       },
-    }, ["commonEventId", "index", "patch"]),
+    }, ["commonEventId", "index", "expectedListHash", "patch"]),
     (ctx, args) => describeCommand(ctx, args, "고쳐요"),
     (ctx, args) => {
       const event = findEvent(ctx, args);
       const path = commandPath(event, args);
+      const expectedHash = expectedCommandHash(event, path, args);
       const current = existingCommand(event, path);
       const patch = args.patch as Args;
       if (Object.keys(patch).length === 0) throw new PrimitiveError("이 명령에서 바꿀 값을 입력해 주세요.");
@@ -281,25 +288,26 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
         ? { ...patch, fields: { ...current.fields, ...patch.fields as Args } }
         : patch;
       const page = normalizeEventPage({ id: event.id, commands: event.commands });
-      const edited = editCommands(() => updateEventCommand(page, path, fields, expectedCommandHash(args)));
+      const edited = editCommands(() => updateEventCommand(page, path, fields, expectedHash));
       const next = { ...event, commands: edited.commands };
       const updated = existingCommand(next, path);
       validateCommandReferences(ctx.project, targetMap(ctx), updated, current);
-      validateLabelEdit(ctx.project, event.commands, next.commands, path, current, updated);
+      validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, current, updated);
       return editEvent(event, ctx.project, next);
     },
   ),
   createPrimitive(
     "commonEvent.command.delete", "공용 이벤트 명령 삭제",
-    argsSchema({ commonEventId: eventId, index, branchPath, ...commandSnapshot }, ["commonEventId", "index"]),
+    argsSchema({ commonEventId: eventId, index, branchPath, ...commandSnapshot }, ["commonEventId", "index", "expectedListHash"]),
     (ctx, args) => describeCommand(ctx, args, "지워요"),
     (ctx, args) => {
       const event = findEvent(ctx, args);
       const path = commandPath(event, args);
+      const expectedHash = expectedCommandHash(event, path, args);
       const current = existingCommand(event, path);
       const page = normalizeEventPage({ id: event.id, commands: event.commands });
-      const edited = editCommands(() => deleteEventCommand(page, path, expectedCommandHash(args)));
-      validateLabelEdit(ctx.project, event.commands, edited.commands, path, current);
+      const edited = editCommands(() => deleteEventCommand(page, path, expectedHash));
+      validateLabelEdit(ctx.project, targetMap(ctx), event, edited.commands, path, current);
       return editEvent(event, ctx.project, { ...event, commands: edited.commands });
     },
   ),

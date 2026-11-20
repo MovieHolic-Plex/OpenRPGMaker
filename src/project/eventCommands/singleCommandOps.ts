@@ -19,6 +19,10 @@ export function eventCommandHash(command: Command): string {
   return contentFingerprint(structuralJson(command));
 }
 
+export function eventCommandListHash(commands: readonly Command[]): string {
+  return contentFingerprint(structuralJson(commands));
+}
+
 function editTarget(page: EventPage, index: EventCommandIndex, insert = false) {
   const path = typeof index === "number" ? [index] : index;
   const row = path.at(-1);
