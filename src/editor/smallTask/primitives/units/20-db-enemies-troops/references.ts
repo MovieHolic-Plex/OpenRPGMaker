@@ -1,11 +1,13 @@
+import { removedDatabaseReference, withOpenEventDrafts, type SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import { parseM2BattleCommand } from "@/battle/battleM2Commands";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import type { BattleEventCondition, Command, Project, TroopRecord } from "@/project/types";
+import { SmallTaskError, type SmallTaskTarget } from "../../../target";
 import { PrimitiveError } from "../../errors";
 
-export function battleCommandSlotIds(project: Project): ReadonlySet<string> {
+export function battleCommandSlotIds(project: Project, live?: SmallTaskDraftSource): ReadonlySet<string> {
   const ids = new Set<string>();
   const collect = (snapshot: Project) => visitProjectCommands(snapshot, ({ command }) => {
     if (command.kind !== "m2Command" || command.commandId !== "m2-092-change-battle-commands"
@@ -14,10 +16,21 @@ export function battleCommandSlotIds(project: Project): ReadonlySet<string> {
       if (id.trim()) ids.add(id.trim());
     }
   });
-  collect(project);
-  const saved = projectViewWithoutEventDrafts(project);
-  if (saved !== project) collect(saved);
+  const working = withOpenEventDrafts(project, live);
+  collect(working);
+  const saved = projectViewWithoutEventDrafts(working);
+  if (saved !== working) collect(saved);
   return ids;
+}
+
+export function assertUnit20DraftDeletion(before: Project, after: Project, live: Project, target: Extract<SmallTaskTarget, { kind: "dbEntry" }>): void {
+  const { collection, id } = target;
+  if (collection !== "enemies" && collection !== "troops" && collection !== "battleCommands") return;
+  if (!before.database[collection]?.some(row => row.id === id) || after.database[collection]?.some(row => row.id === id)) return;
+  if (removedDatabaseReference(before, after, [target], live)
+    || (collection === "battleCommands" && battleCommandSlotIds(after, live).has(id))) {
+    throw new SmallTaskError("다른 설정이나 열린 이벤트에서 사용 중이에요. 연결을 먼저 해제해 주세요.");
+  }
 }
 
 export function protectTroopTargets(

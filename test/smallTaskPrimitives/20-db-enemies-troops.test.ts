@@ -4,7 +4,7 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { enemyBattlers } from "@/battle/battleBattlers";
 import { battleCommandsForActor } from "@/battle/battleCommands";
 import { collectBattleRewards } from "@/battle/battleRewards";
-import { smallTaskBase } from "@/editor/smallTask/history";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { plainSummary } from "@/editor/smallTask/plainSummary";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -15,6 +15,7 @@ import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEn
 import { normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { startSession } from "@/project/session";
+import { store } from "@/project/store";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { scaledEncounterRate } from "@/project/terrainStep";
 import type { Command, CommonEvent, GameEvent, Project, TroopRecord } from "@/project/types";
@@ -205,6 +206,8 @@ it.each([
   ["enemies", "enemy_slime", "delete", {}, "사용 중"],
   ["troops", "troop_bat_swarm", "create", { name: "무리", members: [{ enemyId: "enemy_missing_here" }] }, "넣을 적"],
   ["troops", "troop_bat_swarm", "update", { members: [{ enemyId: "enemy_cave_bat", y: 241 }] }, /[가-힣]/u],
+  ["troops", "troop_bat_swarm", "update", { memberNumber: 1, x: 180, y: 100 }, "형식"],
+  ["troops", "troop_bat_swarm", "create", { name: "무리", members: [{ enemyId: "enemy_slime", x: 180 }] }, "형식"],
   ["troops", "troop_bat_swarm", "update", { memberNumber: 4, x: 80 }, "순서"],
   ["troops", "troop_bat_swarm", "update", { memberNumber: 1, x: 80, autoAlign: true }, "자동 배치"],
   ["troops", "troop_bat_swarm", "update", { memberNumber: 1, members: [{ enemyId: "enemy_slime" }], x: 80 }, "명단"],
@@ -571,25 +574,49 @@ it.each(["terrains", "battleCommands"] as const)("정규화가 기본값을 다�
   expectRefused(project, select(project, collection, row.id), `db.${collection}.delete`, {}, /마지막 항목/u);
 });
 
-it("삭제 가드에 열린 이벤트 초안이 전달되면 초안의 전투 연결을 보호한다", () => {
+it("긴 구형 무리의 숨김만 바꿔도 다른 적의 전투 위치를 보존한다", () => {
   const seed = fixtureProject("built");
   const id = "troop_bat_swarm";
+  const troops = editRow(seed.database.troops, id, troop => ({
+    ...troop, members: [], enemyIds: Array<string>(7).fill("enemy_cave_bat"),
+  }));
+  const before = { ...seed, database: { ...seed.database, troops } };
+  const { after } = runPrimitive(before, select(before, "troops", id), "db.troops.update", {
+    memberNumber: 1, hidden: true,
+  });
+  const battlers = (project: Project) => enemyBattlers(project, project.database.troops.find(troop => troop.id === id)!);
+  expect(battlers(after)[0]?.hidden).toBe(true);
+  expect(battlers(after).slice(1).map(({ battleX, battleY }) => [battleX, battleY]))
+    .toEqual(battlers(before).slice(1).map(({ battleX, battleY }) => [battleX, battleY]));
+  expect(battlers(after)[6]?.battleY).toBe(268);
+});
+
+it.each<["troops" | "battleCommands", string, Command, RegExp]>([
+  ["troops", "troop_bat_swarm", {
+    kind: "battleProcessing", troopId: "troop_bat_swarm", canEscape: false, canLose: true,
+  }, /이벤트.*자료집 항목은 삭제할 수 없습니다/u],
+  ["battleCommands", "cmd_defend", {
+    kind: "m2Command", commandId: "m2-092-change-battle-commands",
+    fields: { target: "party", operation: "set", slots: "cmd_attack, cmd_defend" },
+  }, /사용 중/u],
+])("삭제 실행과 게시에서 열린 이벤트 초안의 %s 참조를 보호한다", (collection, id, command, reason) => {
+  const seed = fixtureProject("built");
   const map = seed.maps[seed.startMapId]!;
   const draft: GameEvent = {
     id: "event_draft_battle", name: "전투 초안", x: 0, y: 0, trigger: { kind: "action" },
-    commands: [{ kind: "battleProcessing", troopId: id, canEscape: false, canLose: true }],
+    commands: [command],
     draft: { kind: "new" },
   };
-  const live = { ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, draft] } } };
-  const target = select(live, "troops", id);
-  expectRefused(live, target, "db.troops.delete", {}, /사용 중/u);
-
+  const live = store.replaceProject({ ...seed, maps: { ...seed.maps, [map.id]: { ...map, events: [...map.events, draft] } } });
+  const target = select(live, collection, id);
+  const primitive = `db.${collection}.delete`;
+  expectRefused(live, target, primitive, {}, /사용 중/u);
   const before = smallTaskBase(live, target);
   expect(before.maps[map.id]?.events.some(event => event.id === draft.id)).toBe(false);
-  const remove = () => runPrimitive(before, target, "db.troops.delete", {}, undefined, live);
-  expect(remove).toThrow(PrimitiveError);
-  expect(remove).toThrow(/이벤트.*자료집 항목은 삭제할 수 없습니다/u);
-  expect(live.database.troops.some(troop => troop.id === id)).toBe(true);
+  expect(() => runPrimitive(before, target, primitive, {}, undefined, live)).toThrow(reason);
+  const { after } = runPrimitive(before, target, primitive, {});
+  expect(() => commitSmallTask(live, before, after, target)).toThrow(/열린 이벤트/u);
+  expect(store.getCurrent()).toBe(live);
 });
 
 it.each([

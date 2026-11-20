@@ -68,10 +68,10 @@ function independentCommandCopy(project: Project, site: RefSite, catalogIndex: n
     && (catalog.commonEventId === undefined || command.commonEventId != null));
 }
 
-function validateDelete(project: Project, collection: Collection, id: string, index: number, count: number): void {
+function validateDelete({ project, live }: PrimitiveContext, collection: Collection, id: string, index: number, count: number): void {
   const uses = outsideRecord(referenceIndex(project, new Set([id])).get(id) ?? [], ["database", collection, index]);
   if (uses.some(site => collection !== "battleCommands" || !independentCommandCopy(project, site, index))
-    || (collection === "battleCommands" && battleCommandSlotIds(project).has(id))) {
+    || (collection === "battleCommands" && battleCommandSlotIds(project, live).has(id))) {
     throw new PrimitiveError("다른 항목에서 사용 중이에요. 연결을 먼저 해제해 주세요.");
   }
   if ((collection === "terrains" || collection === "battleCommands") && count === 1) {
@@ -146,7 +146,7 @@ function defineCollection<C extends Collection>(options: CollectionOptions<C>): 
       const { rows, index, row } = selectedRow(ctx, collection);
       let edited: readonly Row<C>[];
       if (action === "delete") {
-        validateDelete(ctx.project, collection, row.id, index, rows.length);
+        validateDelete(ctx, collection, row.id, index, rows.length);
         edited = rows.filter((_, i) => i !== index);
       } else {
         if (action === "update" && !Object.keys(args).length) throw new PrimitiveError("바꿀 값을 넣어 주세요.");

@@ -86,7 +86,7 @@ export function writeEnemy(project: Project, key: Key, args: Args, current?: Ene
 }
 
 const positionFields = {
-  x: numberField("전투 화면 가로 위치", 0, 320),
+  x: numberField("전투 화면 가로 위치", 0, 150),
   y: numberField("전투 화면 세로 위치", 0, 240),
   hidden: flag("전투 시작 때 이 적을 숨길지 여부"),
 };
@@ -118,10 +118,9 @@ function editMembers(project: Project, args: Args, current?: TroopRecord): Troop
   }
   if (args.members === undefined && !hasPositionEdit) return undefined;
 
-  const old = current && (current.members?.length ? current.members : current.enemyIds.map<TroopMemberRecord>((enemyId, i) => {
-    const { x, y } = classicEnemyFormation(i);
-    return { enemyId, x, y: Math.min(240, y), hidden: false } satisfies TroopMemberRecord;
-  }));
+  const old = current && (current.members?.length ? current.members : current.enemyIds.map<TroopMemberRecord>((enemyId, i) => ({
+    enemyId, ...classicEnemyFormation(i), hidden: false,
+  })));
   if (hasPositionEdit) {
     const index = (args.memberNumber as number) - 1;
     if (!old?.[index]) throw new PrimitiveError("무리에서 그 순서의 적을 찾을 수 없어요.");
