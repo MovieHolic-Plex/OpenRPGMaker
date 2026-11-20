@@ -156,9 +156,12 @@ export function assertActorClassDraftChanges(before: Project, after: Project, co
   const afterRows = after.database[collection] ?? [];
   const existingIds = new Set(beforeRows.map(row => row.id));
   const added = afterRows.filter(row => !existingIds.has(row.id));
-  const removedIndex = collection === "actors" && !afterRows.some(row => row.id === id)
+  const selected = beforeRows.find(row => row.id === id);
+  const remaining = afterRows.find(row => row.id === id);
+  const nameChanged = collection !== "classes" && selected?.name.trim() !== remaining?.name.trim();
+  const removedIndex = collection === "actors" && !remaining
     ? beforeRows.findIndex(row => row.id === id) : -1;
-  if (!added.length && removedIndex === -1) return;
+  if (!added.length && removedIndex === -1 && !nameChanged) return;
   const working = withOpenEventDrafts(before, live);
   if (added.some(row => recordIdIsReferenced(working, collection, row.id))) {
     throw new PrimitiveError("열린 이벤트에서 새 항목의 식별자를 사용하고 있어요. 이벤트를 먼저 확인해 주세요.");
@@ -168,6 +171,7 @@ export function assertActorClassDraftChanges(before: Project, after: Project, co
     const firstNewIndex = afterRows.findIndex(row => row.id === added[0].id);
     assertActorCreation(withOpenEventDrafts(after, live), firstNewIndex);
   }
+  if (nameChanged && selected) assertDialogueNameChange(working, collection, selected, after, !remaining);
 }
 
 function appearancePortraitByName(project: Project, name: string) {
@@ -250,6 +254,14 @@ function dialogueUsesName(project: Project, collection: Collection, record: Reco
     if (speakerActor?.trim() || isNonActorSpeaker(text)) return false;
     return speakerNameScore(text, oldName) !== speakerNameScore(text, newName ?? "");
   });
+}
+
+function assertDialogueNameChange(project: Project, collection: Collection, record: Records[Collection], after: Project, removed: boolean): void {
+  if (!dialogueUsesName(project, collection, record, after)) return;
+  if (removed) {
+    throw new PrimitiveError(`대사에서 이름으로 사용하는 ${labels[collection]} 항목이에요. 대사의 화자를 먼저 확인해 주세요.`);
+  }
+  throw new PrimitiveError("대사에 이 이름과 연결된 화자가 있어요. 대사의 화자를 먼저 확인해 주세요.");
 }
 
 function authoredName(args: Args, fallback: string): string {
@@ -402,9 +414,7 @@ function databaseFamily<C extends Collection>(collection: C, config: {
       if (operation === "update") {
         if (!Object.keys(args).length) throw new PrimitiveError("바꿀 내용을 입력해 주세요.");
         edited[index] = config.update(ctx, args, selected);
-        if (dialogueUsesName(project, collection, selected, proposed)) {
-          throw new PrimitiveError("대사에 이 이름과 연결된 화자가 있어요. 대사의 화자를 먼저 확인해 주세요.");
-        }
+        assertDialogueNameChange(withOpenEventDrafts(project, ctx.live), collection, selected, proposed, false);
       }
       if (operation === "delete") {
         const sites = referenceIndex(project, new Set([selected.id])).get(selected.id) ?? [];
@@ -413,9 +423,7 @@ function databaseFamily<C extends Collection>(collection: C, config: {
         }
         if (collection === "actors") assertActorDeletion(withOpenEventDrafts(project, ctx.live), index);
         edited.splice(index, 1);
-        if (dialogueUsesName(project, collection, selected, proposed)) {
-          throw new PrimitiveError(`대사에서 이름으로 사용하는 ${label} 항목이에요. 대사의 화자를 먼저 확인해 주세요.`);
-        }
+        assertDialogueNameChange(withOpenEventDrafts(project, ctx.live), collection, selected, proposed, true);
       }
       return proposed;
     },
