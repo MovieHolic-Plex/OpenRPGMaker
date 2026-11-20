@@ -1,3 +1,4 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 import { freshChoreographyId } from "@/assets/retroChoreographyClone";
@@ -80,16 +81,18 @@ function withRows<K extends Collection>(project: Project, collection: K, next: R
   return { ...project, database: { ...project.database, [collection]: next } };
 }
 
-function nextId<K extends Collection>(project: Project, collection: K, prefix: string, name: string): string {
+function nextId<K extends Collection>(ctx: PrimitiveContext, collection: K, prefix: string, name: string): string {
+  const { project, live } = ctx;
   const used = new Set(rows(project, collection).map(row => row.id));
   const choreography = collection === "skillChoreographies";
   if (choreography) for (const id of bundledChoreographyIds) used.add(id);
   const base = choreography ? freshChoreographyId([], name) : prefix;
+  const referenceProject = withOpenEventDrafts(project, live);
   const candidate = (n: number) => choreography && n === 1 ? base : `${base}_${n}`;
   let n = 1;
   let id = candidate(n);
   // 새 항목이 다른 곳의 끊어진 연결에 갑자기 쓰이지 않도록 한다.
-  while (used.has(id) || referenceIndex(project, new Set([id])).has(id)) {
+  while (used.has(id) || referenceIndex(referenceProject, new Set([id])).has(id)) {
     n += 1;
     id = candidate(n);
   }
@@ -383,7 +386,7 @@ function databasePrimitives<K extends Collection>(collection: K, editor: Editor<
       const index = selectedIndex(before, id, edit, label);
       if (edit === "create") {
         const name = cleanName(args.name as string);
-        const row = editor.create(project, nextId(project, collection, editor.prefix, name), name);
+        const row = editor.create(project, nextId(ctx, collection, editor.prefix, name), name);
         return withRows(project, collection, [...before, editor.patch(project, row, args)]);
       }
       const row = before[index]!;

@@ -197,7 +197,28 @@ it.each(["skills", "battleAnimations"] as const)("열린 이벤트 작업본에�
   expect(store.getCurrent()).toBe(live);
 });
 
-it("열린 이벤트 작업본의 끊어진 스킬 연결에 새 스킬이 연결되지 않게 한다", () => {
+it("열린 이벤트 작업본이 참조하는 식별자를 건너뛰어 새 스킬을 저장한다", () => {
+  const project = withRecords("built");
+  const command: Command = {
+    kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: "skill_small_task_1",
+  };
+  const live = openEventDraft(project, command);
+  const mapId = live.startMapId;
+  const draft = live.maps[mapId]!.events.find(event => event.id === "ev_unit18_draft")!;
+  const selected = target("skills");
+  const before = smallTaskBase(live, selected);
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const { after } = runPrimitive(before, selected, "db.skills.create", { name: "새 스킬" }, undefined, draftSource);
+
+  expect(after.database.skills.at(-1)?.id).toBe("skill_small_task_2");
+  expect(after.maps).toBe(before.maps);
+  expect(commitSmallTask(live, before, after, selected)).not.toBeNull();
+  const committed = store.getCurrent();
+  expect(committed.database.skills.at(-1)?.id).toBe("skill_small_task_2");
+  expect(committed.maps[mapId]!.events.find(event => event.id === draft.id)).toEqual(draft);
+});
+
+it("작업본 없이 만든 새 스킬의 식별자가 열린 이벤트와 겹치면 게시를 막는다", () => {
   const project = withRecords("built");
   const newId = "skill_small_task_1";
   const live = openEventDraft(project, { kind: "learnSkill", actorId: project.database.actors[0]!.id, skillId: newId });
