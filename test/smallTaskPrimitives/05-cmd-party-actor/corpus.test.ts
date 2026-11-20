@@ -12,6 +12,7 @@ import { expectKoreanSentence, loadFixture } from "../harness";
 type PartyCase = CorpusCase & {
   setup?: { commands?: Command[]; lifeSkills?: LifeSkillRecord[] };
   refusalMessage?: string;
+  receiptLabel?: string;
 };
 
 const file = join(dirname(fileURLToPath(import.meta.url)), "seeded-cases.json");
@@ -44,7 +45,10 @@ it.each(cases)("$request", entry => {
     return;
   }
   const result = apply();
-  expectKoreanSentence(result.sentence, target);
+  const label = entry.receiptLabel && `「${entry.receiptLabel}」`;
+  if (label) expect(result.sentence).toContain(label);
+  expect(result.sentence.length).toBeLessThanOrEqual(80);
+  expectKoreanSentence(label ? result.sentence.replace(label, "「파티 이름」") : result.sentence, target);
   expect(entry.expect?.length).toBeGreaterThan(0);
   for (const check of entry.expect ?? []) {
     expect(readCheckPath(result.after, check.at), check.at).toEqual(check.equals);

@@ -1028,7 +1028,7 @@
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.storeParty.insert",
-    "args": {"index": 0, "partySetId": "정찰대", "x": 99999},
+    "args": {"index": 0, "partySetId": "정찰대", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 99999, "y": 0},
     "expectRefusal": true
   },
   {

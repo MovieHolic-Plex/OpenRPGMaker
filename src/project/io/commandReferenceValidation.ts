@@ -1,5 +1,6 @@
 import { actorPictureActorId } from "@/project/pictureSources";
 import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
+import { isWholePartyActorTarget } from "@/project/eventCommands/actorTarget";
 import { isBuiltinFieldFxId } from "@/project/containerFx";
 import type {
   BattleEventCondition,
@@ -68,10 +69,6 @@ export function validateBattleEventPages(pages: readonly BattleEventPageRecord[]
 
 export function validateCommands(commands: readonly Command[], context: ReferenceContext): void {
   for (const command of commands) validateCommandReferences(command, context);
-}
-
-function isWholePartyActorTarget(actorId: string): boolean {
-  return actorId === "" || actorId === "party" || actorId === "all";
 }
 
 /** 이벤트 명령 트리에서 아이템 참조를 모은다. 검증과 같은 중첩 분기 구조를 순회한다. */

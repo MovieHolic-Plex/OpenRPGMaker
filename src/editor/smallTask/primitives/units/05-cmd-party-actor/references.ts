@@ -4,9 +4,10 @@ import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { resolveActorAppearance } from "@/project/characterAppearances";
 import { equipmentSlotAccepts } from "@/project/equipmentRules";
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
-import { normalizePartySetId } from "@/project/partySets";
+import { isWholePartyActorTarget } from "@/project/eventCommands/actorTarget";
+import { isPartySetCoordinate, normalizePartySetId } from "@/project/partySets";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
-import type { Command, GameMap, LightSource, PersistedGameEvent, Project } from "@/project/types";
+import type { Command, LightSource, PersistedGameEvent, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 import type { PartyActorCommand } from "../05-cmd-party-actor";
 
@@ -16,7 +17,7 @@ export function targetsWholeParty(command: PartyActorCommand): boolean {
     case "changeExp":
     case "changeActorHp":
     case "changeActorMp":
-      return !command.actorId || command.actorId === "party" || command.actorId === "all";
+      return isWholePartyActorTarget(command.actorId);
     case "recoverAll":
       return !command.actorId;
     default:
@@ -25,7 +26,7 @@ export function targetsWholeParty(command: PartyActorCommand): boolean {
 }
 
 export function validatePartyActorCommand(
-  project: Project, eventMap: GameMap, command: PartyActorCommand, patch: Record<string, unknown>,
+  project: Project, command: PartyActorCommand, patch: Record<string, unknown>,
 ): void {
   const { database } = project;
   const actorId = "actorId" in command ? command.actorId : undefined;
@@ -88,14 +89,13 @@ export function validatePartyActorCommand(
         || command.actorIds.some(id => !database.actors.some(record => record.id === id)))) {
         throw new PrimitiveError("파티 구성원은 자료집에 있는 주인공 중에서 한 명 이상 골라 주세요.");
       }
-      const map = command.mapId === undefined
-        ? eventMap
-        : Object.hasOwn(project.maps, command.mapId) ? project.maps[command.mapId] : undefined;
-      if (!map) throw new PrimitiveError("파티를 둘 맵을 찾을 수 없어요.");
-      if (!validCoordinate(command.x, map.width) || !validCoordinate(command.y, map.height)) {
+      const { mapId } = command;
+      const map = mapId !== undefined && Object.hasOwn(project.maps, mapId) ? project.maps[mapId] : undefined;
+      if (mapId !== undefined && !map) throw new PrimitiveError("파티를 둘 맵을 찾을 수 없어요.");
+      // The event can continue after a transfer. Only a destination named in the command is known here.
+      if (!isPartySetCoordinate(command.x, map?.width) || !isPartySetCoordinate(command.y, map?.height)) {
         throw new PrimitiveError("범위 밖이에요. 파티를 맵 안에 놓아 주세요.");
       }
-      // A page can keep running after a transfer, so the current map may differ from the event's map.
       const locationEdited = ["mapId", "x", "y"].some(key => Object.hasOwn(patch, key));
       if (locationEdited && command.mapId !== undefined && (command.x === undefined || command.y === undefined)) {
         throw new PrimitiveError("파티를 둘 맵을 지정할 때는 가로와 세로 좌표를 모두 입력해 주세요.");
@@ -122,10 +122,6 @@ export function validatePartyActorCommand(
       if (command.all !== true && !command.name?.trim()) throw new PrimitiveError("떠나게 할 동행자의 이름을 입력해 주세요.");
       return;
   }
-}
-
-function validCoordinate(value: number | undefined, size: number): boolean {
-  return value === undefined || (Number.isSafeInteger(value) && value >= 0 && value < size);
 }
 
 function validatePartyName(name: string): void {

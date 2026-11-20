@@ -15,6 +15,10 @@ export function normalizePartySetId(value: string): string {
   return value.trim().slice(0, 32);
 }
 
+export function isPartySetCoordinate(value: number | undefined, size = Infinity): boolean {
+  return value === undefined || (Number.isSafeInteger(value) && value >= 0 && value < size);
+}
+
 function snapshotParty(session: Pick<PlaySession, "partyActorIds" | "currentMapId" | "x" | "y">): PartySetState {
   return { actorIds: [...session.partyActorIds], mapId: session.currentMapId, x: session.x, y: session.y };
 }
@@ -37,20 +41,25 @@ function hasPreset(preset: PartySetPreset | undefined): preset is PartySetPreset
  * 파티가 그 묶음이 아니므로 activePartySetId 를 건드리지 않는다 — 건드리면 다음 recallParty 가 지금 파티로
  * 그 묶음을 덮어 버린다(파티 나누기 준비에서 두 묶음을 미리 만든 뒤 하나를 부르는 순서).
  */
-export function storePartySet(session: PlaySession, partySetId: string, preset?: PartySetPreset): boolean {
+export function storePartySet(session: PlaySession, partySetId: string, preset?: PartySetPreset, project?: Pick<Project, "maps">): boolean {
   const id = normalizePartySetId(partySetId);
   if (!id) return false;
   const sets = session.partySets ?? {};
   if (!(id in sets) && Object.keys(sets).length >= PARTY_SET_LIMIT) return false;
   if (hasPreset(preset)) {
     const base = snapshotParty(session);
+    const mapId = preset.mapId || base.mapId;
+    if (project && (preset.x !== undefined || preset.y !== undefined)) {
+      const map = Object.hasOwn(project.maps, mapId) ? project.maps[mapId] : undefined;
+      if (!map || !isPartySetCoordinate(preset.x, map.width) || !isPartySetCoordinate(preset.y, map.height)) return false;
+    }
     const actorIds = preset.actorIds ? [...new Set(preset.actorIds.filter((actorId) => typeof actorId === "string" && actorId))] : base.actorIds;
     if (actorIds.length === 0) return false;
     session.partySets = {
       ...sets,
       [id]: {
         actorIds,
-        mapId: preset.mapId || base.mapId,
+        mapId,
         x: Number.isInteger(preset.x) ? preset.x! : base.x,
         y: Number.isInteger(preset.y) ? preset.y! : base.y,
       },

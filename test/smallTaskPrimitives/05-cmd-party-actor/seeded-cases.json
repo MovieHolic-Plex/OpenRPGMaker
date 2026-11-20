@@ -744,6 +744,7 @@
     "primitive": "cmd.recallParty.update",
     "args": {"index": 0, "partySetId": "party_a", "expectedHash": "c0b89f816c49e4a1d0c8dcedf1571945"},
     "setup": {"commands": [{"kind": "recallParty", "partySetId": "정찰대"}]},
+    "receiptLabel": "party_a",
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "recallParty", "partySetId": "party_a"}}]
   },
   {

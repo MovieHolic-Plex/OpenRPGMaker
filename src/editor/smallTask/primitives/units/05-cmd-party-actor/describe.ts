@@ -10,6 +10,11 @@ function name(value: string | undefined, fallback: string, id?: string): string 
   return displayText(value.replace(/[.?!{}\[\]"「」]/gu, " "), fallback).slice(0, 24);
 }
 
+function partySetLabel(value: string, useDefaultName: boolean): string {
+  if (useDefaultName) return "기본 파티";
+  return value.replace(/[.?!{}\[\]"「」]/gu, " ").replace(/\s+/gu, " ").trim().slice(0, 24) || "기본 파티";
+}
+
 function recordName(records: readonly { id: string; name: string }[] | undefined, id: string, fallback: string): string {
   return name(records?.find(record => record.id === id)?.name, fallback, id);
 }
@@ -26,7 +31,7 @@ function operand(project: Project, amount: VariableOperand): string {
     : `${recordName(project.variables, amount.id, "지정한 변수")}의 값`;
 }
 
-export function describePartyActorCommand(project: Project, cmd: PartyActorCommand): string {
+export function describePartyActorCommand(project: Project, cmd: PartyActorCommand, useDefaultPartyName: boolean): string {
   const { database } = project;
   const actorId = "actorId" in cmd ? cmd.actorId : undefined;
   const actor = targetsWholeParty(cmd) ? "파티 전체" : actorId ? recordName(database.actors, actorId, "주인공") : "주인공";
@@ -65,7 +70,7 @@ export function describePartyActorCommand(project: Project, cmd: PartyActorComma
       return `${withJosa(actor, "을/를")} ${adjustment}`;
     }
     case "storeParty": {
-      const label = name(cmd.partySetId, "기본 파티");
+      const label = partySetLabel(cmd.partySetId, useDefaultPartyName);
       const party = cmd.actorIds?.length ? `${cmd.actorIds.length}명으로 편성한 파티` : "현재 파티";
       const map = cmd.mapId ? name(project.maps[cmd.mapId]?.name, "지정한 맵", cmd.mapId) : "";
       const position = [map, cmd.x === undefined ? "" : `가로 ${cmd.x}`, cmd.y === undefined ? "" : `세로 ${cmd.y}`]
@@ -73,7 +78,7 @@ export function describePartyActorCommand(project: Project, cmd: PartyActorComma
       return `${withJosa(party, "을/를")} 「${label}」에 ${position ? `${position} 위치와 함께 ` : ""}저장하는`;
     }
     case "recallParty": {
-      const label = name(cmd.partySetId, "기본 파티");
+      const label = partySetLabel(cmd.partySetId, useDefaultPartyName);
       return `「${label}」${josa(label, "을/를")} 불러오는`;
     }
     case "addFollower": return `${withJosa(name(cmd.name, actorId ? actor : "동행자"), "이/가")} 따라오게 하는`;

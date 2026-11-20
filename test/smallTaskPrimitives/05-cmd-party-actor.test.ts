@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/05-cmd-party-actor";
@@ -252,7 +253,17 @@ it("선택한 페이지에 없는 줄, 다른 페이지 지정과 파티 위치 
   expect(() => runPrimitive(project, target, "cmd.changeLevel.insert", { actorId, pageId: "page_actor_other" })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId: "map_missing", x: 1, y: 1 })).toThrow(/맵/u);
   expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId, x: project.maps[mapId].width })).toThrow(/범위 밖/u);
-  expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { y: project.maps[mapId].height })).toThrow(/범위 밖/u);
+  expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { y: -1 })).toThrow(PrimitiveError);
+});
+
+it("파티 저장과 불러오기 설명에 저작한 이름과 밑줄을 표시한다", () => {
+  const { project, target } = fixture("blank", []);
+  const stored = runPrimitive(project, target, "cmd.storeParty.insert", { partySetId: "  camp_party  " });
+  const recalled = runPrimitive(project, target, "cmd.recallParty.insert", { partySetId: "scout_party" });
+  expect(stored.sentence).toContain("「camp_party」");
+  expect(recalled.sentence).toContain("「scout_party」");
+  expect(stored.sentence.length).toBeLessThanOrEqual(80);
+  expect(recalled.sentence.length).toBeLessThanOrEqual(80);
 });
 
 it.each([
@@ -449,6 +460,24 @@ it("다른 맵의 파티 저장 위치에는 두 좌표가 필요하고 불러�
   expect(session.flags.recallPartySuccess).toBe(true);
 });
 
+it("맵을 생략한 파티 저장 좌표는 이동 뒤 실제 맵에서 검사한다", () => {
+  const { project: base, target, mapId } = fixture("blank", []);
+  const x = base.maps[mapId].width;
+  const destination = createBlankMap("넓은 야영지", x + 2, 4);
+  const project = { ...base, maps: { ...base.maps, [destination.id]: destination } };
+  const { after: stored } = runPrimitive(project, target, "cmd.storeParty.insert", { partySetId: "야영조", x });
+  const { after } = runPrimitive(stored, target, "cmd.storeParty.insert", { partySetId: "맵 밖", x: destination.width });
+  const session = startSession(after, 1);
+  const arrival = { kind: "transfer", mapId: destination.id, x: 1, y: 2 } as const;
+  const commands = [arrival, ...pages(after, mapId)[1]!.commands];
+  const interpreter = createInterpreter(commands, session, after, { currentEventId: eventId, continueAfterTransfer: true });
+  expect(interpreter.start()).toMatchObject(arrival);
+  Object.assign(session, { currentMapId: arrival.mapId, x: arrival.x, y: arrival.y });
+  expect(interpreter.resume()).toEqual({ kind: "done" });
+  expect(session.partySets?.["야영조"]).toMatchObject({ mapId: destination.id, x, y: arrival.y });
+  expect(session.partySets?.["맵 밖"]).toBeUndefined();
+});
+
 function applyAndRun(edits: ReadonlyArray<readonly [string, Record<string, unknown>]>, arrange?: (session: ReturnType<typeof startSession>) => void) {
   const { project, target, mapId } = fixture("blank", []);
   project.system = { ...project.system, skillSystem: { ...project.system.skillSystem, enabled: true } };
@@ -507,6 +536,10 @@ it.each(["", "party", "all"])("파티 전체 대상 %j의 변경을 최종 적�
   const commit = commitChangeset(after, project);
   expect(commit.blocking).toEqual([]);
   expect(commit.ok).toBe(true);
+  const event = after.maps[mapId].events.find(event => event.id === eventId)!;
+  expect(validateEventDraftBody(after, mapId, event).issues).not.toContainEqual(
+    expect.objectContaining({ code: "reference.actor.missing" }),
+  );
 
   const session = startSession(after, 1);
   session.partyActorIds = [actorId, mage];
@@ -533,6 +566,18 @@ it("최종 적용에서 알 수 없는 체력 변경 대상을 거부한다", ()
   const result = commitChangeset(after, project);
   expect(result.ok).toBe(false);
   expect(result.blocking.map(issue => issue.message).join("\n")).toMatch(/changeActorHp.*actor_missing/u);
+  const event = after.maps[mapId].events.find(event => event.id === eventId)!;
+  expect(validateEventDraftBody(after, mapId, event).issues).toContainEqual(
+    expect.objectContaining({ code: "reference.actor.missing", message: expect.stringContaining("actor_missing") }),
+  );
+});
+
+it("초안에서는 개별 주인공이 필요한 레벨 변경에 파티 전체 대상을 허용하지 않는다", () => {
+  const { project, mapId } = fixture("blank", [{ kind: "changeLevel", actorId: "party", op: "+=", amount: 1 }]);
+  const event = project.maps[mapId].events.find(event => event.id === eventId)!;
+  expect(validateEventDraftBody(project, mapId, event).issues).toContainEqual(
+    expect.objectContaining({ code: "reference.actor.missing", message: expect.stringContaining("party") }),
+  );
 });
 
 it.each([4, 5])("승급 명령을 수정한 뒤 레벨 %i에 맞는 기존 분기만 실행한다", level => {

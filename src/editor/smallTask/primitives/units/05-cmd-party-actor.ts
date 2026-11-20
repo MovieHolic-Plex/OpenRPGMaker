@@ -1,6 +1,5 @@
 import { CHARSET_CHARACTER_COUNT, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { newCommand } from "@/editor/eventCommandFactory";
-import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { isCharsetSpriteTexture, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -208,13 +207,13 @@ function primitive(kind: Kind, action: Action): SmallTaskPrimitive {
     },
     describe(ctx, args) {
       const { command } = editCommand(ctx.project, scopedPage(ctx).page, kind, action, args);
-      const detail = displayText(describePartyActorCommand(ctx.project, command), title);
+      const defaultPartyName = action === "insert" && args.partySetId === undefined;
+      const detail = describePartyActorCommand(ctx.project, command, defaultPartyName);
       const ending = action === "insert" ? " 명령을 넣어요." : " 명령을 고쳐요.";
       const budget = 80 - ending.length;
       return `${detail.length <= budget ? detail : detail.slice(0, budget - 1) + "…"}${ending}`;
     },
     apply(ctx, args) {
-      const { map } = scopedPage(ctx);
       return updateScopedPage(ctx, page => {
         const { current, list, path, patch, command } = editCommand(ctx.project, page, kind, action, args);
         // The shared edit helper clones the page, which preserves aliases between branch lists.
@@ -225,7 +224,7 @@ function primitive(kind: Kind, action: Action): SmallTaskPrimitive {
           const edited = action === "insert"
             ? insertEventCommand(page, path, command)
             : updateEventCommand(page, path, patch, args.expectedHash as string);
-          validatePartyActorCommand(ctx.project, map, command, patch);
+          validatePartyActorCommand(ctx.project, command, patch);
           if (action === "update") validatePartyActorRename(ctx.project, current, command);
           return edited;
         } catch (error) {
