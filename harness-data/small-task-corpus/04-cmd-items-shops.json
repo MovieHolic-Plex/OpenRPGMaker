@@ -1,1 +1,1712 @@
-[]
+[
+  {
+    "request": "말 걸면 100골드를 건네 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"amount": 100},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 100},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "+="}
+    ]
+  },
+  {
+    "request": "격려금으로 오십 골드 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"amount": 50},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 50}
+    ]
+  },
+  {
+    "request": "입장료 30골드 차감",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"op": "-=", "amount": 30},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "-="},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 30}
+    ]
+  },
+  {
+    "request": "소지금0으로 초기화해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"op": "=", "amount": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "="},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 0}
+    ]
+  },
+  {
+    "request": "첫 번째 변수에 적힌 금액만큼 돈 보태 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"amountVariableId": "var_0001"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": {"kind": "var", "id": "var_0001"}}
+    ]
+  },
+  {
+    "request": "잔돈 열 골드만 얹어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 10},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "+="}
+    ]
+  },
+  {
+    "request": "딱 7골드 내도록 해주시겠어요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"op": "-=", "amount": 7},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeGold"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "-="},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 7}
+    ]
+  },
+  {
+    "request": "금액은 없는 변수에서 읽어 와",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeGold.insert",
+    "args": {"amountVariableId": "var_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "보상금 오백 골드를 150골드로 올려 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"amount": 150, "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 150},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "+="}
+    ]
+  },
+  {
+    "request": "돈 지급 말고 오백 골드 걷어",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"op": "-=", "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "-="},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 500}
+    ]
+  },
+  {
+    "request": "골드 보상액 0골드로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"amount": 0, "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 0}
+    ]
+  },
+  {
+    "request": "이 줄에서 소지금을 삼백으로 맞춰 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"op": "=", "amount": 300, "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "="},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 300}
+    ]
+  },
+  {
+    "request": "고정 금액 대신 첫 번째 변수만큼 더해줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"amountVariableId": "var_0001", "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": {"kind": "var", "id": "var_0001"}}
+    ]
+  },
+  {
+    "request": "수수료 5골드로 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"op": "-=", "amount": 5, "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].op", "equals": "-="},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 5}
+    ]
+  },
+  {
+    "request": "한 골드만 주도록 줄여 주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"amount": 1, "index": 6},
+    "expect": [
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].kind", "equals": "changeGold"},
+      {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest].pages[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed].commands[6].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "금액을 지워진 변수에 연결해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wchest_closed"},
+    "primitive": "cmd.changeGold.update",
+    "args": {"amountVariableId": "var_missing", "index": 6},
+    "expectRefusal": true
+  },
+  {
+    "request": "보물상자를 열면 포션 세 개 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_potion", "amount": 3},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 3},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "+="}
+    ]
+  },
+  {
+    "request": "회복약 하나 챙겨 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_potion"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "마력약 두개를 가방에서 빼 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_ether", "op": "-=", "amount": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_ether"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "-="},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 2}
+    ]
+  },
+  {
+    "request": "낡은 열쇠를 무조건 한 개만 갖게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_old_key", "op": "=", "amount": 1},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_old_key"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].op", "equals": "="},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "청동검 한 자루 넣어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "equip_sword"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "equip_sword"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "두 번째 변수만큼 상급회복약 지급",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_hi_potion", "amountVariableId": "var_0002"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_hi_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": {"kind": "var", "id": "var_0002"}}
+    ]
+  },
+  {
+    "request": "하이포션 4개 보상 추가 부탁해요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_hi_potion", "amount": 4},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "changeItem"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_hi_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].amount", "equals": 4}
+    ]
+  },
+  {
+    "request": "자료집에 없는 무지개 포션을 다섯 병 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.changeItem.insert",
+    "args": {"itemId": "item_missing", "amount": 5},
+    "expectRefusal": true
+  },
+  {
+    "request": "깃펜 세 자루으로 늘려줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"amount": 3, "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "item_quill"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": 3}
+    ]
+  },
+  {
+    "request": "받는 물건을 마력약으로 바꿔주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"itemId": "item_ether", "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "item_ether"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "깃펜 말고 하이포션 두 개",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"itemId": "item_hi_potion", "amount": 2, "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "item_hi_potion"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": 2}
+    ]
+  },
+  {
+    "request": "지급 대신 깃펜 하나 회수",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"op": "-=", "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].op", "equals": "-="},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "이제 깃펜은 정확히 두개만 가지게 해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"op": "=", "amount": 2, "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].op", "equals": "="},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": 2}
+    ]
+  },
+  {
+    "request": "한 자루 주는 청동 검으로 교체해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"itemId": "equip_sword", "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].itemId", "equals": "equip_sword"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": 1}
+    ]
+  },
+  {
+    "request": "수량은 첫 변수 값으로 고쳐줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"amountVariableId": "var_0001", "index": 6},
+    "expect": [
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].kind", "equals": "changeItem"},
+      {"at": "maps.map_c238b482-5c03-4663-8cfd-19f2e97ec7e7.events[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest].pages[id=ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed].commands[6].amount", "equals": {"kind": "var", "id": "var_0001"}}
+    ]
+  },
+  {
+    "request": "이름 없는 새 아이템으로 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_c238b482-5c03-4663-8cfd-19f2e97ec7e7", "eventId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest", "pageId": "ev_map_c238b482-5c03-4663-8cfd-19f2e97ec7e7_wchest_closed"},
+    "primitive": "cmd.changeItem.update",
+    "args": {"itemId": "item_missing", "index": 6},
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 조합을 실행해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_small_salve"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeId", "equals": "recipe_small_salve"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 레시피 돌려",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_clear_tonic"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeId", "equals": "recipe_clear_tonic"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 만들고 성공 여부를 첫 변수에 남겨줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_small_salve", "resultVariableId": "var_0001"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeId", "equals": "recipe_small_salve"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 제작 성공했는지는 두 번째 변수에 적어 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "var_0002"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeId", "equals": "recipe_clear_tonic"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "이 줄 앞에 회복약 조합 넣어줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_small_salve", "index": 0},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeId", "equals": "recipe_small_salve"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "포션 제작법 실행 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_small_salve", "resultVariableId": "var_0002"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeId", "equals": "recipe_small_salve"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 제조하고 첫 변수로 결과 받아",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "var_0001"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeId", "equals": "recipe_clear_tonic"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "삭제된 제작법 실행해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.insert",
+    "args": {"recipeId": "recipe_missing"},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약이 아니라 마력약을 만들게 수정해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"recipeId": "recipe_clear_tonic", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeId", "equals": "recipe_clear_tonic"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "제작 성공 여부를 두 번째 변수에 넣어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"resultVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeId", "equals": "recipe_small_salve"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "결과는 그대로 첫 변수에 남기고 제작법만 마력약으로 바꿔주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"recipeId": "recipe_clear_tonic", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeId", "equals": "recipe_clear_tonic"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 레시피로 교체하고 결과도 둘째 변수로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeId", "equals": "recipe_clear_tonic"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 조합은 놔두고 변수 기록 꺼 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"resultVariableId": "", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "craftRecipe", "recipeId": "recipe_small_salve"}}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약만 조합하고 결과는 남기지마",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"recipeId": "recipe_clear_tonic", "resultVariableId": "", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "craftRecipe", "recipeId": "recipe_clear_tonic"}}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "성공값은 두번째 변수로 넘겨주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"resultVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "craftRecipe"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "없는 제작식으로 다시 연결해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.craftRecipe.update",
+    "args": {"recipeId": "recipe_missing", "index": 0},
+    "setup": {"commands": [{"kind": "craftRecipe", "recipeId": "recipe_small_salve", "resultVariableId": "var_0001"}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약을 상급 회복약으로 강화해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_potion"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_potion"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 개량 명령 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_ether"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_ether"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "포션 강화하고 성공 여부는 첫 변수에 담아 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_potion", "resultVariableId": "var_0001"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 강화 결과 둘째 변수로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "var_0002"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_ether"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "초급 포션 업글하고 두 번째 변수 채워줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_potion", "resultVariableId": "var_0002"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 강화 되면 1을 첫번째 변수에 기록해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "var_0001"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_ether"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].resultVariableId", "equals": "var_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "변수 기록 없이 회복약을 상급으로 바꿔 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_potion"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].upgradeId", "equals": "upgrade_potion"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "정의되지 않은 강화법 쓰게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.insert",
+    "args": {"upgradeId": "upgrade_missing"},
+    "setup": {"system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expectRefusal": true
+  },
+  {
+    "request": "강화 대상을 마력약 쪽으로 교체해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"upgradeId": "upgrade_ether", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].upgradeId", "equals": "upgrade_ether"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 변수 대신 둘째에 강화 결과를 써 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"resultVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 강화는 그대로 두고 변수 기록 빼줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"resultVariableId": "", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion"}}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 강화로 바꾸고 둘째 변수를 써",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].upgradeId", "equals": "upgrade_ether"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 업글만 하고 기록은 끄기",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"upgradeId": "upgrade_ether", "resultVariableId": "", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "applyItemUpgrade", "upgradeId": "upgrade_ether"}}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 업그레이드 성공 여부 둘째 변수로 옮겨주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"resultVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].upgradeId", "equals": "upgrade_potion"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0002"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "강화 종류만 마력약으로 바꿔주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"upgradeId": "upgrade_ether", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "applyItemUpgrade"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].upgradeId", "equals": "upgrade_ether"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].resultVariableId", "equals": "var_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "강화 결과는 삭제된 변수에 저장해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.applyItemUpgrade.update",
+    "args": {"resultVariableId": "var_missing", "index": 0},
+    "setup": {"commands": [{"kind": "applyItemUpgrade", "upgradeId": "upgrade_potion", "resultVariableId": "var_0001"}], "system": {"itemUpgrades": [{"id": "upgrade_potion", "fromItemId": "item_potion", "toItemId": "item_hi_potion"}, {"id": "upgrade_ether", "fromItemId": "item_ether", "toItemId": "item_potion"}]}},
+    "expectRefusal": true
+  },
+  {
+    "request": "들고 있는 도구 내려놓기 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": ""},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": ""}
+    ]
+  },
+  {
+    "request": "이벤트에서 괭이를 도구로 들어요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": "item_hoe"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_hoe"}
+    ]
+  },
+  {
+    "request": "도끼을 손에 들게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": "item_axe"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_axe"}
+    ]
+  },
+  {
+    "request": "손을 비워 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": ""},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": ""}
+    ]
+  },
+  {
+    "request": "곡괭이을 지정 도구로 장착해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": "item_pickaxe"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_pickaxe"}
+    ]
+  },
+  {
+    "request": "물뿌리개을 쓸 도구로 골라줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": "item_watering_can"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": "item_watering_can"}
+    ]
+  },
+  {
+    "request": "방금 장착된 도구 해재",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": ""},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemId", "equals": ""}
+    ]
+  },
+  {
+    "request": "없는 전설 곡괭이 들게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.insert",
+    "args": {"itemId": "item_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "손에 든 괭이 내려놔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": ""}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "괭이 대신 도끼을 들게 바꿔 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "item_axe", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": "item_axe"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "지정 도구를 곡괭이으로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "item_pickaxe", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": "item_pickaxe"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "아무 도구도 안 끼도록 고쳐",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": ""}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "물뿌리개을 손에 들게 교체해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "item_watering_can", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": "item_watering_can"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "이 줄에 장착 해제만 남겨주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": ""}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "괭이 말고 물뿌리개으로요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "item_watering_can", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "equipTool"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].itemId", "equals": "item_watering_can"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "지운 도구로 바꿔서 장착",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.equipTool.update",
+    "args": {"itemId": "item_missing", "index": 0},
+    "setup": {"commands": [{"kind": "equipTool", "itemId": "item_hoe"}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "대장간 제작 상점 열기",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"title": "대장간"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "대장간"}
+    ]
+  },
+  {
+    "request": "모든 제작법이 보이는 공방 열어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"}
+    ]
+  },
+  {
+    "request": "약방이라는 공방에 회복약 조합법만 내놔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"title": "약방", "recipeIds": ["recipe_small_salve"]},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "약방"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeIds", "equals": ["recipe_small_salve"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약 레시피 한 개만 띄워주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"recipeIds": ["recipe_clear_tonic"]},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeIds", "equals": ["recipe_clear_tonic"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "주인 이름은 하늘이로 제작창 열어",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"speaker": "하늘이"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].speaker", "equals": "하늘이"}
+    ]
+  },
+  {
+    "request": "마력약 뒤에 회복약 순으로 공방 목록 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"recipeIds": ["recipe_clear_tonic", "recipe_small_salve"]},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeIds", "equals": ["recipe_clear_tonic", "recipe_small_salve"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "공방제목을 설원 공방으로 해주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"title": "설원 공방", "recipeIds": ["recipe_small_salve", "recipe_clear_tonic"]},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "설원 공방"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recipeIds", "equals": ["recipe_small_salve", "recipe_clear_tonic"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "없는 제작법만 파는 공방으로 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.insert",
+    "args": {"recipeIds": ["recipe_missing"]},
+    "setup": {"system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expectRefusal": true
+  },
+  {
+    "request": "제작 공방 이름을 대장간으로 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"title": "대장간", "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].title", "equals": "대장간"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "공방주인 이름 하늘이로 고쳐줘요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"speaker": "하늘이", "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].speaker", "equals": "하늘이"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 말고 마력약 제작법만 보여줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"recipeIds": ["recipe_clear_tonic"], "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeIds", "equals": ["recipe_clear_tonic"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "제작법 두 개 다 진열해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"recipeIds": ["recipe_small_salve", "recipe_clear_tonic"], "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeIds", "equals": ["recipe_small_salve", "recipe_clear_tonic"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력약을 맨 앞으로 빼서 보여줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"recipeIds": ["recipe_clear_tonic", "recipe_small_salve"], "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeIds", "equals": ["recipe_clear_tonic", "recipe_small_salve"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "공방 제목을 조합대라고 써주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"title": "조합대", "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].title", "equals": "조합대"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약 제작 상점 주인을 조합사로 바꿔줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"speaker": "조합사", "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openCraftShop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].speaker", "equals": "조합사"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recipeIds", "equals": ["recipe_small_salve"]}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "공방에 삭제한 레시피 붙여 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openCraftShop.update",
+    "args": {"recipeIds": ["recipe_missing"], "index": 0},
+    "setup": {"commands": [{"kind": "openCraftShop", "title": "약방", "recipeIds": ["recipe_small_salve"]}], "system": {"craftRecipes": [{"id": "recipe_small_salve", "name": "회복약 조합", "ingredients": [{"itemId": "item_ether", "count": 1}], "outputItemId": "item_potion"}, {"id": "recipe_clear_tonic", "name": "마력약 조합", "ingredients": [{"itemId": "item_potion", "count": 1}], "outputItemId": "item_ether"}]}},
+    "expectRefusal": true
+  },
+  {
+    "request": "농장 물건 넣는 상자 하나 열어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].template", "equals": "farm"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].chestId", "equals": ""}
+    ]
+  },
+  {
+    "request": "열두 칸짜리 보관 상자를 추가해주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"capacity": 12},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].capacity", "equals": 12}
+    ]
+  },
+  {
+    "request": "공동창고 양식의 상자 화면 열기",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"template": "warehouse"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].template", "equals": "warehouse"}
+    ]
+  },
+  {
+    "request": "돈도 넣는 금고 열어",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"template": "vault", "goldVault": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].template", "equals": "vault"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].goldVault", "equals": true}
+    ]
+  },
+  {
+    "request": "낡은 열쇠가 있어야 열리는 상자 만들어",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"lockItemId": "item_old_key"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].lockItemId", "equals": "item_old_key"}
+    ]
+  },
+  {
+    "request": "첫 번째 스위치가 켜지면 열 수 있는 보관함",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"lockSwitchId": "sw_0001"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].lockSwitchId", "equals": "sw_0001"}
+    ]
+  },
+  {
+    "request": "상자이름을 비밀 창고로 표시해 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"displayName": "비밀 창고", "layout": "wide"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].displayName", "equals": "비밀 창고"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].layout", "equals": "wide"}
+    ]
+  },
+  {
+    "request": "없는 스위치로 잠긴 상자 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.insert",
+    "args": {"lockSwitchId": "sw_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "보관함을 스무 칸으로 늘려 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"capacity": 20, "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].capacity", "equals": 20}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "이 창고를 금고 모양으로 바꿔줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"template": "vault", "goldVault": true, "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].template", "equals": "vault"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].goldVault", "equals": true}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "상자 이름을 모험가 창고로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"displayName": "모험가 창고", "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].displayName", "equals": "모험가 창고"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "열쇠 필요 없이 열리게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"lockItemId": "", "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0]", "equals": {"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8}}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 스위치가 켜져야 열리도록 잠가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"lockSwitchId": "sw_0001", "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].lockSwitchId", "equals": "sw_0001"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "보관창 아래쪽에 띄우도록 고쳐주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"layout": "bottom", "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].layout", "equals": "bottom"}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "정렬 막고 물건은 여러개씩 옮기게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"allowSort": false, "allowBulk": true, "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "openChest"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].allowSort", "equals": false},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].allowBulk", "equals": true}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "없는 열쇠로 잠가주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.openChest.update",
+    "args": {"lockItemId": "item_missing", "index": 0},
+    "setup": {"commands": [{"kind": "openChest", "displayName": "농장 보관함", "template": "farm", "capacity": 8, "lockItemId": "item_old_key"}]},
+    "expectRefusal": true
+  },
+  {
+    "request": "회복약과 마력약 파는 약방 열어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"title": "약방", "itemIds": ["item_potion", "item_ether"]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "약방"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemIds", "equals": ["item_potion", "item_ether"]}
+    ]
+  },
+  {
+    "request": "청동검만 파는 무기점 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"title": "무기점", "itemIds": ["equip_sword"]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "무기점"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemIds", "equals": ["equip_sword"]}
+    ]
+  },
+  {
+    "request": "손님은 물건 못 파는 구매전용 가게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"itemIds": ["item_hi_potion"], "shopType": "buyOnly", "allowSell": false},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].shopType", "equals": "buyOnly"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].allowSell", "equals": false}
+    ]
+  },
+  {
+    "request": "판매만 할 수 있는 매입 상점을 열어주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"shopType": "sellOnly"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].shopType", "equals": "sellOnly"}
+    ]
+  },
+  {
+    "request": "상인 지갑은 오백 골드로 부탁해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"merchantGold": 500},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].merchantGold", "equals": 500}
+    ]
+  },
+  {
+    "request": "포션 여러개도 살 수 있게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"itemIds": ["item_potion"], "quantityMode": "select"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemIds", "equals": ["item_potion"]},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].quantityMode", "equals": "select"}
+    ]
+  },
+  {
+    "request": "잡화점 창만 추가해주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"title": "잡화점"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].title", "equals": "잡화점"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].itemIds", "equals": []}
+    ]
+  },
+  {
+    "request": "존재하지 않는 별빛 검을 진열해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.insert",
+    "args": {"itemIds": ["equip_missing"]},
+    "expectRefusal": true
+  },
+  {
+    "request": "떠돌이 상점에 청동 검도 추가해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"addItemId": "equip_sword", "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_antidote", "item_gen2_purifying_serum", "equip_sword"]}
+    ]
+  },
+  {
+    "request": "상급 회복약은 진열에서 빼 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"removeItemId": "item_hi_potion", "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_antidote", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "진열을 마력약 한 종류로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"itemIds": ["item_ether"], "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_ether"]}
+    ]
+  },
+  {
+    "request": "상점 이름을 북문 무기점으로 고쳐 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"title": "북문 무기점", "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].title", "equals": "북문 무기점"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_hi_potion", "item_antidote", "item_gen2_purifying_serum"]}
+    ]
+  },
+  {
+    "request": "상인이 오십 골드만 쓰게 줄여줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"merchantGold": 50, "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].merchantGold", "equals": 50}
+    ]
+  },
+  {
+    "request": "이제 물건은 팔 수 없게 해 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"allowSell": false, "shopType": "buyOnly", "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].allowSell", "equals": false},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].shopType", "equals": "buyOnly"}
+    ]
+  },
+  {
+    "request": "상급 회복약 빼고 낡은 열쇠를 대신 진열",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"removeItemId": "item_hi_potion", "addItemId": "item_old_key", "index": 2},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].kind", "equals": "shop"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[2].itemIds", "equals": ["item_gen_potion_large", "item_antidote", "item_gen2_purifying_serum", "item_old_key"]}
+    ]
+  },
+  {
+    "request": "없는 마법 지팡이를 진열대에 추가해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.shop.update",
+    "args": {"addItemId": "equip_missing", "index": 2},
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 1박 오십 골드로",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"price": 50},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].price", "equals": 50}
+    ]
+  },
+  {
+    "request": "무료 숙박 넣어 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"price": 0},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].price", "equals": 0}
+    ]
+  },
+  {
+    "request": "기본 요금으로 여관 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].price", "equals": 20}
+    ]
+  },
+  {
+    "request": "한밤 쉬고 아침 되도록 여관 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"price": 30, "advanceToMorning": true},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].price", "equals": 30},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].advanceToMorning", "equals": true}
+    ]
+  },
+  {
+    "request": "체력만 차는 숙박을 스무 골드에",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"price": 20, "recoverMp": false},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].price", "equals": 20},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].recoverMp", "equals": false}
+    ]
+  },
+  {
+    "request": "숙박료는 첫 변수에 적힌 만큼 받도록 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"priceVariableId": "var_0001"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].price", "equals": {"kind": "var", "id": "var_0001"}}
+    ]
+  },
+  {
+    "request": "한박 잘래요 라는 질문 띄워주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"question": "하룻밤 묵으시겠어요?"},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[-1].question", "equals": "하룻밤 묵으시겠어요?"}
+    ]
+  },
+  {
+    "request": "여관비 영하 삼 골드로 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.insert",
+    "args": {"price": -3},
+    "expectRefusal": true
+  },
+  {
+    "request": "하룻밤 값을 칠십 골드로 올려줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"price": 70, "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].price", "equals": 70}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "앞으로 무료로 재워 주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"price": 0, "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].price", "equals": 0}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "마력은 그대로 두고 체력만 회복시켜",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"recoverMp": false, "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].recoverMp", "equals": false},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].price", "equals": 50}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "숙박하고 나면 아침으로 넘기게 바꿔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"advanceToMorning": true, "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].advanceToMorning", "equals": true}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "둘째 변수로 숙박값을 정하도록 바꾸기",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"priceVariableId": "var_0002", "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].price", "equals": {"kind": "var", "id": "var_0002"}}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "여관 인삿말을 어서 쉬어 가세요로 수정해주세여",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"note": "어서 쉬어 가세요.", "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].note", "equals": "어서 쉬어 가세요."}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "눈 뜨는 안내를 1초만 보여줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"wakeDurationMs": 1000, "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].kind", "equals": "inn"},
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_offer].commands[0].wakeDurationMs", "equals": 1000}
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "지워진 변수에서 여관 값을 읽게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.inn.update",
+    "args": {"priceVariableId": "var_missing", "index": 0},
+    "setup": {"commands": [{"kind": "inn", "price": 50}]},
+    "expectRefusal": true
+  }
+]
