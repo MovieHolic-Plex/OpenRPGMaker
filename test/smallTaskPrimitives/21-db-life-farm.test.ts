@@ -7,7 +7,8 @@ import type { Collection } from "@/editor/smallTask/primitives/units/21-db-life-
 import type { SmallTaskTarget } from "@/editor/smallTask/target";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { startSession } from "@/project/session";
@@ -103,14 +104,23 @@ type Fixture = typeof fixtureNames[number];
 const fixtures = new Map<Fixture, Project>();
 const blankMapFixture = createBlankProject();
 
+function fixtureFor(sample: Fixture): Project {
+  const cached = fixtures.get(sample);
+  if (cached) return cached;
+  const fixture = loadFixture(sample);
+  ensureSwitchVariableSlots(fixture);
+  removeLegacySpriteReferences(fixture);
+  fixtures.set(sample, fixture);
+  return fixture;
+}
+
 beforeAll(() => {
   // The flagship project can take over three minutes to build on shared workers.
-  fixtures.set("maou", loadFixture("maou"));
+  fixtureFor("maou");
 }, 300_000);
 
 function setup(collection: Collection, sample: Fixture) {
-  const original = fixtures.get(sample) ?? loadFixture(sample);
-  fixtures.set(sample, original);
+  const original = fixtureFor(sample);
   const map = original.startMapId ? original : blankMapFixture;
   const requiredItems = [
     { id: "item_potion", name: "회복약" },
@@ -401,9 +411,10 @@ it("낚시터가 요구하는 스킬과 레벨을 남기고 스킬 없이 낚시
   expectRefused(before, target, idFor("lifeSkills", "update"), { maxLevel: 2 }, /낚시터 설정/u);
   const { after } = runPrimitive(before, target, idFor("lifeSkills", "update"), { maxLevel: 3 });
   expect(after.database.lifeSkills?.[0]?.maxLevel).toBe(3);
-  before.database.lifeSkills = [];
-  before.database.fishSpecies = [{ ...fish!, skillXp: 0 }];
-  expectRefused(before, targetFor("fishSpecies"), idFor("fishSpecies", "update"), { skillXp: 2 }, /낚시터 설정/u);
+  const withoutFishingSkill: Project = {
+    ...before, database: { ...before.database, lifeSkills: [], fishSpecies: [{ ...fish!, skillXp: 0 }] },
+  };
+  expectRefused(withoutFishingSkill, targetFor("fishSpecies"), idFor("fishSpecies", "update"), { skillXp: 2 }, /낚시터 설정/u);
 });
 
 it("농장 건물과 집 장식에는 실제 그림을 연결할 수 있다", () => {
@@ -490,8 +501,10 @@ it("사라진 선택, 중복된 선택, 이미 쓰는 ID와 빈 이름의 작업
   expectRefused(before, targetFor(collection, "gone"), idFor(collection, "create"), { id: "new_monster", name: "새 종" }, /찾을 수 없어요/u);
   expectRefused(before, targetFor(collection), idFor(collection, "create"), { id: exampleId, name: "새 이름" }, /같은 ID/u);
   expectRefused(before, targetFor(collection), idFor(collection, "update"), { name: " \t " }, /값의 형식/u);
-  before.database.monsterSpecies = [row!, { ...row!, name: "같은 ID" }];
-  expectRefused(before, targetFor(collection), idFor(collection, "delete"), {}, /구별할 수 없어요/u);
+  const duplicate: Project = {
+    ...before, database: { ...before.database, monsterSpecies: [row!, { ...row!, name: "같은 ID" }] },
+  };
+  expectRefused(duplicate, targetFor(collection), idFor(collection, "delete"), {}, /구별할 수 없어요/u);
 });
 
 it("생성 범위는 한 항목 추가만 허용하고 수정과 삭제 범위는 선택한 행으로 한정한다", () => {
