@@ -9,7 +9,7 @@ import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/e
 import { createBlankProject } from "../src/project/defaults/blankProject.ts";
 import { eventCommandHash } from "../src/project/eventCommands/singleCommandOps.ts";
 import { layerTileAt } from "../src/project/mapLayers.ts";
-import type { Command, EventPage } from "../src/project/types.ts";
+import type { Command, EventPage, GameEvent } from "../src/project/types.ts";
 
 type Call = { name: string; args: Record<string, unknown> };
 type ModelContext = Parameters<StreamFn>[1];
@@ -85,7 +85,7 @@ test("작은 일 Pi 실행은 열린 이벤트 초안에서 호출하는 대사�
 
   const done = await runPiAgent({
     ...request,
-    smallTask: { ...request.smallTask, liveDrafts: { maps: { [mapId]: { events: [draft] } } } },
+    smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
   }, { streamFn: scripted([action]) });
   expect(done.stoppedEarly).toContain("다른 곳에서 이 이벤트를 호출");
   expect(done.changedKeys).toEqual([]);
@@ -107,7 +107,7 @@ test("첫 회 한정 대사는 호출하는 이벤트의 저장본과 초안이 
   commands.push({ kind: "callMapEvent", eventId: helper.id });
   const done = await runPiAgent({
     ...request,
-    smallTask: { ...request.smallTask, liveDrafts: { maps: { [mapId]: { events: [draft] } } } },
+    smallTask: { ...request.smallTask, draftSource: { maps: { [mapId]: { events: [draft] } } } },
   }, { streamFn: scripted([apply("dialogue.firstTimeOnly", { path: [0] })]) });
 
   expect(done.stoppedEarly).toBeUndefined();
@@ -150,6 +150,30 @@ test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", 
   expect(done.stoppedEarly).toContain("범위 밖");
   expect(done.changedKeys).toEqual([]);
   expect(done.project).toBe(project);
+});
+
+test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조하는 출현 명령을 보호한다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn = { id: "slimes", troopId: "troop_slime", area: { x: 1, y: 1, w: 1, h: 1 }, maxAlive: 1 };
+  const command: Command = { kind: "spawnFieldEnemy", spawn };
+  event.pages = [event.pages[0]!, { ...event.pages[1]!, commands: [command, ...commands] }];
+  const original = { id: "event_draft", x: 3, y: 3, trigger: event.trigger, commands: [] };
+  const draft: GameEvent = {
+    ...original,
+    commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.id }],
+    draft: { kind: "new", original },
+  };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const deletion = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
+    { streamFn: scripted([deletion]) });
+
+  expect(done.stoppedEarly).toContain("제거하는 명령");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+  const withoutDraft = await runPiAgent(request, { streamFn: scripted([deletion]) });
+  expect(withoutDraft.stoppedEarly).toBeUndefined();
+  expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
 });
 
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {
