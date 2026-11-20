@@ -1,4 +1,6 @@
-import type { Project } from "@/project/types";
+import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
+import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
+import type { Command, GameEvent, Project } from "@/project/types";
 import type { SmallTaskCollection, SmallTaskTarget } from "../target";
 import { dbTarget, mapTarget } from "../target";
 import { PrimitiveError } from "./errors";
@@ -21,7 +23,9 @@ export interface Check {
 export interface CorpusCase {
   request: string;
   fixture: FixtureName;
-  setup?: Pick<Project, "commonEvents">;
+  /** Per-case additions to the fixture, applied before resolving the target. */
+  seed?: CorpusSetup;
+  setup?: CorpusSetup;
   target: TargetSelector;
   selection?: PrimitiveContext["selection"];
   primitive: string;
@@ -31,11 +35,34 @@ export interface CorpusCase {
   refusalMessage?: string;
 }
 
+export interface CorpusSetup {
+  system?: Partial<Project["system"]>;
+  database?: Partial<Project["database"]>;
+  difficulties?: Project["system"]["difficulties"];
+  events?: GameEvent[];
+  commonEvents?: Project["commonEvents"];
+  variables?: Project["variables"];
+  switches?: Project["switches"];
+  endings?: Project["endings"];
+  commands?: Command[];
+}
+
+function resolvePageId(project: Project, mapId: string, eventId: string, pageId?: string): string | undefined {
+  const selector = pageId?.match(/^pages\[(\d+)\]$/u);
+  if (!selector) return pageId;
+  const pages = project.maps[mapId]?.events.find(event => event.id === eventId)?.pages;
+  return pages?.[Number(selector[1])]?.id ?? pageId;
+}
+
 export function resolveTarget(project: Project, selector: TargetSelector): SmallTaskTarget {
   const mapId = selector.kind === "dbEntry" ? undefined : selector.mapId ?? project.startMapId;
   const target = selector.kind === "dbEntry" ? dbTarget(project, selector.collection, selector.id)
-    : selector.kind === "event" ? mapTarget(project, mapId!, selector.eventId, selector.pageId)
+    : selector.kind === "event" ? mapTarget(project, mapId!, selector.eventId, resolvePageId(project, mapId!, selector.eventId, selector.pageId))
     : mapTarget(project, mapId!);
+  if (!target && selector.kind === "dbEntry" && selector.collection === "equipmentSlots") {
+    const slot = BUILTIN_EQUIPMENT_SLOTS.find(row => row.id === selector.id);
+    if (slot) return { ...selector, label: `${DATABASE_AREA_LABELS.equipmentSlots} · ${slot.label}` };
+  }
   if (!target) throw new PrimitiveError("검수 자료에서 작업 대상을 찾을 수 없어요.");
   return target;
 }

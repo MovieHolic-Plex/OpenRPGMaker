@@ -5,6 +5,7 @@ import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { editorState } from "@/editor/editorState";
 import { commitChangeset } from "@/editor/tools/changeset";
 import type { Project } from "@/project/types";
+import { SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "./primitives/errors";
 import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -25,7 +26,9 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
   }, { signal });
   signal.throwIfAborted();
   if (!result.smallTask) throw new Error("Pi worker did not acknowledge the small-task scope");
-  if (result.stoppedEarly === SMALL_TASK_SCOPE_REFUSAL) throw new SmallTaskError(result.stoppedEarly);
+  if (result.stoppedEarly === SMALL_TASK_SCOPE_REFUSAL || result.stoppedEarly === STALE_COMMAND_LIST || result.stoppedEarly === SELECT_EVENT_PAGE) {
+    throw new SmallTaskError(result.stoppedEarly);
+  }
   if (result.stoppedEarly) throw new Error(result.stoppedEarly);
   if (!result.changedKeys.length) return before;
   if (!commitChangeset(result.project, before).ok) throw new SmallTaskError("선택한 대상에 요청한 변경을 적용할 수 없어요.");
