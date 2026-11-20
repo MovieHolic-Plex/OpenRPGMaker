@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { CHARSET_FRAME_COUNT } from "@/assets/easyrpgRtp";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { mapTarget } from "@/editor/smallTask/target";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
@@ -14,6 +15,8 @@ import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
+import { openingMapViewResourceId } from "@/project/openingMapView";
+import { roguelikeRoomId } from "@/project/roguelikeRooms";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -321,6 +324,28 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
 });
 
 describe("참조 검증", () => {
+  it("페이지 외형이 선택한 캐릭터셋의 프레임 범위를 검사한다", () => {
+    const { before: original, target } = sample("blank");
+    const map = original.maps[mapId]!;
+    const [event, ...otherEvents] = map.events;
+    const [page, ...otherPages] = event.pages!;
+    const appearance = {
+      id: "appearance_unit09", name: "광장 안내인", description: "",
+      charset: { resourceId: "easyrpg-charset-actor1", characterIndex: 0 },
+    };
+    const events = [{ ...event, pages: [{ ...page, graphic: { appearanceId: appearance.id } }, ...otherPages] }, ...otherEvents];
+    const before: Project = {
+      ...original,
+      maps: { ...original.maps, [mapId]: { ...map, events } },
+      database: { ...original.database, characterAppearances: [appearance] },
+    };
+    const insert = (pattern: number) => runPrimitive(before, target, "cmd.setEventGraphicPattern.insert", { pattern });
+    expect(stored(insert(CHARSET_FRAME_COUNT - 1).after)).toEqual([
+      { kind: "setEventGraphicPattern", eventId: "", pattern: CHARSET_FRAME_COUNT - 1 },
+    ]);
+    expect(() => insert(CHARSET_FRAME_COUNT)).toThrow("대상 이벤트의 그림에 그 프레임이 없습니다");
+  });
+
   it("선택한 페이지의 업로드 스프라이트에서 실제 프레임 범위를 확인한다", () => {
     const { before: original } = sample("blank");
     const map = original.maps[mapId]!;
@@ -362,6 +387,16 @@ describe("참조 검증", () => {
     });
     expect(stored(cleared)).toStrictEqual([command]);
     await expectUndoRestores(after, cleared, target);
+  });
+
+  it("존재하는 맵은 엔딩 배경에 쓸 수 있다", () => {
+    const { before, target } = sample("blank");
+    const backgroundResourceId = openingMapViewResourceId(mapId);
+    const { after } = runPrimitive(before, target, "cmd.ending.insert", { backgroundResourceId });
+    expect(execute(after).result).toMatchObject({ kind: "returnToTitle", presentation: { backgroundResourceId } });
+    expect(() => runPrimitive(before, target, "cmd.ending.insert", {
+      backgroundResourceId: openingMapViewResourceId("missing_map"),
+    })).toThrow(PrimitiveError);
   });
 
   it.each([
@@ -409,7 +444,16 @@ describe("헤드리스 실행", () => {
   });
 
   it("탐험 명령 다섯 가지와 난이도 변경을 실제 세션에 반영한다", () => {
-    const { before, target } = sample("blank");
+    const { before: original, target } = sample("blank");
+    const defaultDifficulty = { id: "difficulty_easy_unit09", name: "쉬움" };
+    const before: Project = {
+      ...original,
+      system: {
+        ...original.system,
+        defaultDifficultyId: defaultDifficulty.id,
+        difficulties: [defaultDifficulty, ...original.system.difficulties!],
+      },
+    };
     const runActions: Args[] = [
       { mode: "start", seed: 12, startFloor: 2 },
       { mode: "advance", amount: 3 },
@@ -419,12 +463,28 @@ describe("헤드리스 실행", () => {
     ];
     const withRun = runActions.reduce((project, args) => runPrimitive(project, target, "cmd.runControl.insert", args).after, before);
     const { after } = runPrimitive(withRun, target, "cmd.setDifficulty.insert", { difficultyId });
-    const { result, session } = execute(after);
+    const session = startSession(after, 19);
+    expect(session.difficultyId).toBe(defaultDifficulty.id);
+    const result = createInterpreter(stored(after), session, after, { currentEventId: eventId }).start();
     expect(result).toEqual({ kind: "done" });
     expect(session.difficultyId).toBe(difficultyId);
     expect(session.roguelikeRun).toMatchObject({
       seed: 12, floor: 5, flags: { "보물 찾음": true }, roomResetCounts: { [mapId]: 1 }, status: "completed",
     });
+  });
+
+  it("탐험 방 초기화에서 기존 대상을 지우면 현재 방을 초기화한다", () => {
+    const fixture = fixtures.get("built")!;
+    const roomId = roguelikeRoomId(fixture.maps[fixture.startMapId]!);
+    const command: Command = { kind: "runControl", action: "resetRoom", roomId };
+    const { before, target } = sample("built", [{ kind: "runControl", action: "start" }, command]);
+    const update = (fields: Args) => runPrimitive(before, target, "cmd.runControl.update", {
+      index: 1, expectedHash: eventCommandHash(command), ...fields,
+    }).after;
+    expect(stored(update({}))[1]).toEqual(command);
+    const after = update({ roomId: "" });
+    expect(stored(after)[1]).toEqual({ kind: "runControl", action: "resetRoom" });
+    expect(execute(after).session.roguelikeRun?.roomResetCounts).toEqual({ [mapId]: 1 });
   });
 
   it("등록된 엔딩을 실행하고 엔딩 이름을 타이틀 연출로 전달한다", () => {

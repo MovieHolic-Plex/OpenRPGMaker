@@ -9,6 +9,7 @@ import { transferDirectionLabel, transferFadeLabel } from "@/editor/panels/event
 import { runResultLabel } from "@/editor/panels/eventEditor/options";
 import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
+import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { getTileset, inBounds, isPassableLanding } from "@/project/collision";
 import { difficultiesOf, difficultyDisplayName } from "@/project/difficulty";
 import {
@@ -18,6 +19,7 @@ import { gameOverName } from "@/project/gameOverLibrary";
 import { validateCommands, type ReferenceContext } from "@/project/io/commandReferenceValidation";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { openingMapViewMapId } from "@/project/openingMapView";
 import { uploadedAssetMime } from "@/project/persistence/assetAccessors";
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 import { ROGUELIKE_FLOOR_MAX } from "@/project/roguelikeRun";
@@ -57,7 +59,7 @@ const endingFields = {
   tone: choice("엔딩 분위기. 따뜻함 또는 어두움", ["warm", "dark"]),
   credits: text("엔딩에 표시할 제작진 문구"),
   musicResourceId: text("등록된 배경음악의 식별자. 빈 값은 음악 지정 해제"),
-  backgroundResourceId: text("등록된 배경 그림의 식별자. 빈 값은 배경 지정 해제"),
+  backgroundResourceId: text("등록된 배경 그림 또는 맵 배경(map-view:맵 식별자). 빈 값은 배경 지정 해제"),
 };
 const runModes = {
   start: ["seed", "runId", "startFloor"],
@@ -109,7 +111,7 @@ const specs = {
   gameOver: { title: "게임 오버", fields: { gameOverId } },
   ending: {
     title: "엔딩 화면",
-    fields: { title: text("엔딩 제목"), message: text("엔딩 본문"), ...endingFields },
+    fields: { title: text("엔딩 제목. 빈 값은 플레이어의 기본 제목"), message: text("엔딩 본문"), ...endingFields },
   },
   returnToTitle: { title: "타이틀로 돌아가기" },
   openSaveMenu: { title: "저장 메뉴 열기" },
@@ -124,7 +126,7 @@ const specs = {
       result: choice("탐험 결과. 완료, 실패, 포기", ["completed", "failed", "abandoned"]),
       flag: reference("설정할 탐험 기억의 이름"),
       value: toggle("탐험 기억을 켜거나 끄기"),
-      roomId: reference("초기화할 방의 식별자. 생략하면 현재 방"),
+      roomId: text("초기화할 방의 식별자. 빈 값은 현재 방, 수정에서 생략하면 기존 지정 유지"),
     },
   },
   setDifficulty: {
@@ -192,6 +194,7 @@ function runControl(base: Run, { mode, ...fields }: Args): Run {
   if (Object.keys(fields).some(key => !allowed.includes(key))) throw new PrimitiveError("선택한 탐험 조작에 맞는 값만 입력하세요.");
   const current = base.action === action ? base : { kind: "runControl", action };
   const command = { ...current, ...fields } as Run;
+  if (command.action === "resetRoom" && command.roomId === "") delete command.roomId;
   if (command.action === "end" && command.result === undefined) throw new PrimitiveError("탐험을 어떻게 끝낼지 골라 주세요.");
   if (command.action === "setFlag" && (!command.flag?.trim() || command.value === undefined)) {
     throw new PrimitiveError("탐험 기억의 이름과 켜짐 또는 꺼짐을 입력하세요.");
@@ -252,7 +255,9 @@ function spriteFrameCount(project: Project, spriteId: string): number | undefine
 }
 
 function validateGraphicPattern(project: Project, target: GameEvent, pages: readonly EventPage[], pattern: number): void {
-  const frameCounts = (pages.length ? pages.map(page => page.graphic.sprite ?? target.sprite) : [target.sprite])
+  const frameCounts = (pages.length
+    ? pages.map(page => resolveEventAppearanceGraphic(project, page.graphic).sprite ?? target.sprite)
+    : [target.sprite])
     .map(sprite => sprite && spriteFrameCount(project, sprite.id));
   // Another event's active page may depend on game state. Reject only when every possible sheet is known.
   if (frameCounts.every(count => count !== undefined && pattern >= count)) {
@@ -270,10 +275,12 @@ function validateEndingMedia(project: Project, command: Extract<Command, { kind:
     if (!isMusic) throw new PrimitiveError("엔딩 음악에는 배경음악 리소스를 지정하세요.");
   }
   if (backgroundResourceId && backgroundResourceId !== previous?.backgroundResourceId) {
+    const mapId = openingMapViewMapId(backgroundResourceId);
     const upload = project.assets.uploaded[backgroundResourceId];
-    const url = upload ? undefined : resolveAssetResourceUrl(backgroundResourceId, { project });
-    const isImage = upload ? uploadedAssetMime(upload).startsWith("image/")
-      : url && /^(?:data:image\/)|\.(?:png|jpe?g|gif|webp|svg|avif|bmp)(?:[?#]|$)/iu.test(url);
+    const url = mapId || upload ? undefined : resolveAssetResourceUrl(backgroundResourceId, { project });
+    const isImage = mapId ? Object.hasOwn(project.maps, mapId)
+      : upload ? uploadedAssetMime(upload).startsWith("image/")
+        : url && /^(?:data:image\/)|\.(?:png|jpe?g|gif|webp|svg|avif|bmp)(?:[?#]|$)/iu.test(url);
     if (!isImage) throw new PrimitiveError("엔딩 배경에는 그림 리소스를 지정하세요.");
   }
 }
