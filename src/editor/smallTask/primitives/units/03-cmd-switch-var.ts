@@ -12,10 +12,11 @@ import { NEW_GAME_PLUS_SESSION_FLAG } from "@/project/conditionActorQueries";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { eventCommandHash, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
+import { findShadowedPages } from "@/project/eventPageShadow";
 import { validateCommands, type ReferenceContext } from "@/project/io/commandReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { OPENING_STAGE_FLAG_PREFIX } from "@/project/openingStage";
-import { VARIABLE_MAX, VARIABLE_MIN } from "@/project/session";
+import { startStateOf, VARIABLE_MAX, VARIABLE_MIN } from "@/project/session";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { BattleEventCondition, Command, EventPage, GameEvent, GameMap, Project, SwitchDef, VariableDef } from "@/project/types";
 import { roJosa, withJosa } from "@/util/josa";
@@ -338,19 +339,27 @@ function validateStateRetarget(ctx: PrimitiveContext, edited: Project, current: 
   const { kind, id } = previous;
   if (projectViewsWithOpenDrafts(ctx, edited).some(view => {
     const project = withoutInactiveLegacyCommands(view);
+    const initial = startStateOf(project);
     const index = buildStoryFlagUsageIndex(project);
     const { reads, writes } = Object.hasOwn(kind === "switch" ? index.switches : index.variables, id.trim())
       ? usageBucketFor(index, kind, id.trim()) : { reads: [], writes: [] };
     const matchInitialValue = (leaf: BattleEventCondition): ConditionMatch => {
       if (kind === "switch" && leaf.kind === "switch" && leaf.switchId === id) {
-        return (project.session.switches?.[id] ?? false) === leaf.value;
+        return (initial.switches?.[id] ?? false) === leaf.value;
       }
       if (kind === "variable" && leaf.kind === "variable" && leaf.variableId === id) {
-        return compareVariableValue(project.session.variables?.[id] ?? 0, leaf.op, leaf.value);
+        return compareVariableValue(initial.variables?.[id] ?? 0, leaf.op, leaf.value);
       }
       return undefined;
     };
+    const matchPage = (conditions: readonly BattleEventCondition[]) =>
+      allMatch(conditions.map(condition => matchCondition(condition, matchInitialValue)));
     const hasReachableWriter = writes.some(site => {
+      if (site.source === "common-event") {
+        const common = project.commonEvents.find(event => event.id === site.commonEventId);
+        // The switch gates automatic starts. Call-only common events have no automatic start.
+        return !common?.conditionSwitchId || common.trigger === "none" || initial.switches?.[common.conditionSwitchId] === true;
+      }
       if (site.pageNumber === undefined) return true;
       const map = site.mapId === undefined ? undefined : project.maps[site.mapId];
       const event = map?.events.find(row => row.id === site.eventId);
@@ -359,7 +368,11 @@ function validateStateRetarget(ctx: PrimitiveContext, edited: Project, current: 
         ? project.database.troops.find(troop => troop.id === site.troopId)?.battleEventPages?.[pageIndex]
         : event?.pages?.[pageIndex];
       // A page that needs the flag to change first cannot supply its first write.
-      return !page?.conditions.some(condition => matchCondition(condition, matchInitialValue) === false);
+      if (page && matchPage(page.conditions) === false) return false;
+      // Map events run the highest matching page. Other conditions can still change before it runs.
+      const pages = event?.pages;
+      return !pages?.slice(pageIndex + 1).some(later => matchPage(later.conditions) === true)
+        && !findShadowedPages(pages).some(shadow => shadow.index === pageIndex);
     });
     if (hasReachableWriter) return false;
     const field = kind === "switch" ? "switchId" : "variableId";

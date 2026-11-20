@@ -258,6 +258,58 @@ it("공용 이벤트가 확인하는 스위치의 마지막 쓰기 명령을 다
   expect(commandsOn(after)).toStrictEqual([{ ...switchOn, switchId: nextSwitchId }]);
 });
 
+it.each(["auto", "parallel"] as const)("%s 공용 이벤트는 시작 스위치가 켜져야 대체 쓰기를 공급한다", trigger => {
+  const { before, target } = setup("blank", [switchOn]);
+  const nextSwitchId = "sw_state_next";
+  const map = before.maps[mapId]!;
+  const event = map.events[0]!;
+  const common = { id: "common_gate_writer", name: "잠금 설정", trigger, conditionSwitchId: switchId, commands: [switchOn] };
+  const project = {
+    ...before,
+    maps: { ...before.maps, [mapId]: { ...map, events: [{ ...event, pages: [event.pages![0]!] }] } },
+    switches: [...before.switches, { id: nextSwitchId, name: "새 잠금" }],
+    commonEvents: [...before.commonEvents, common],
+  };
+  const args = checkedUpdate(switchOn, { index: 0, switchId: nextSwitchId });
+  expectRefused(project, target, "cmd.setSwitch.update", args, /기존 스위치를 확인/);
+
+  const unlocked = { ...project, session: { ...project.session, switches: { ...project.session.switches, [switchId]: true } } };
+  expect(commandsOn(runPrimitive(unlocked, target, "cmd.setSwitch.update", args).after))
+    .toStrictEqual([{ ...switchOn, switchId: nextSwitchId }]);
+});
+
+it("높은 페이지가 선택되는 동안 가려진 페이지는 대체 쓰기를 공급하지 않는다", () => {
+  const { before, target } = setup("blank", [switchOn]);
+  const nextSwitchId = "sw_state_next";
+  const map = before.maps[mapId]!;
+  const [event, neighbor] = map.events;
+  const common = { id: "common_gate_reader", name: "잠금 감시", trigger: "parallel" as const, conditionSwitchId: switchId, commands: [wait] };
+  const writer = { ...neighbor!.pages![0]!, commands: [switchOn] };
+  const higher = { ...writer, id: "page_state_higher", commands: [wait] };
+  const withPages = (pages: EventPage[]): Project => ({
+    ...before,
+    maps: { ...before.maps, [mapId]: { ...map, events: [
+      { ...event!, pages: [event!.pages![0]!] }, { ...neighbor!, pages },
+    ] } },
+    switches: [...before.switches, { id: nextSwitchId, name: "새 잠금" }],
+    commonEvents: [...before.commonEvents, common],
+  });
+  const args = checkedUpdate(switchOn, { index: 0, switchId: nextSwitchId });
+  const gate = { kind: "switch", switchId, value: true } as const;
+  const sharedCondition = [{ kind: "switch", switchId: nextSwitchId, value: true }] as const;
+  for (const project of [
+    withPages([writer, higher]),
+    withPages([writer, { ...higher, conditions: [{ ...gate, value: false }] }]),
+    withPages([{ ...writer, conditions: [...sharedCondition] }, { ...higher, conditions: [...sharedCondition] }]),
+  ]) {
+    expectRefused(project, target, "cmd.setSwitch.update", args, /기존 스위치를 확인/);
+  }
+
+  const available = withPages([writer, { ...higher, conditions: [gate] }]);
+  expect(commandsOn(runPrimitive(available, target, "cmd.setSwitch.update", args).after))
+    .toStrictEqual([{ ...switchOn, switchId: nextSwitchId }]);
+});
+
 it.each([
   { kind: "setSwitch", writer: switchOn, destination: { switchId: "sw_state_other" },
     condition: { kind: "switch", switchId, value: true } },
