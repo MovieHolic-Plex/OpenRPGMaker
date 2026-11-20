@@ -8,8 +8,9 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { validateCondition, validateMonsterSpeciesReferences } from "@/project/io/commandReferenceValidation";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { findLocationById } from "@/project/mapNamedLocations";
-import { watchersHaveSelector } from "@/project/sightWatchers";
+import { sightWatcherIds, watchersHaveSelector } from "@/project/sightWatchers";
 import type { Condition, ConditionCompareOp, EventPage, GameMap, Project } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import * as build from "./15-cond-state-party/builders";
@@ -123,13 +124,12 @@ function indexOfRow(conditions: readonly Condition[], row: unknown): number {
 }
 
 function setCondition(conditions: readonly Condition[], next: Leaf, row: unknown): Condition[] {
-  const index = row === undefined ? conditions.findIndex(condition => condition.kind === next.kind) : indexOfRow(conditions, row);
-  if (index < 0) return [...conditions, next];
+  if (row === undefined) {
+    return conditions.some(condition => jsonEqual(condition, next)) ? [...conditions] : [...conditions, next];
+  }
+  const index = indexOfRow(conditions, row);
   if (conditions[index].kind !== next.kind) {
     throw new PrimitiveError("고른 줄의 조건 종류가 달라요.");
-  }
-  if (row === undefined && conditions.slice(index + 1).some(condition => condition.kind === next.kind)) {
-    throw new PrimitiveError("같은 종류의 조건이 여러 줄 있어요. 바꿀 줄을 골라 주세요.");
   }
   return conditions.map((condition, position) => position === index ? next : condition);
 }
@@ -209,9 +209,12 @@ function validateConditionValues(project: Project, map: GameMap, condition: Cond
     case "eventSeesPlayer": {
       if (condition.eventId) return requireEvent(project, condition.eventId, "시야 조건");
       const watchers = condition.watchers;
-      if (!watchersHaveSelector(watchers)) throw new PrimitiveError("시야 조건에서 주인공을 볼 이벤트를 골라 주세요.");
-      if (watchers?.locationId?.trim() && !findLocationById(map, watchers.locationId)) {
+      if (!watchers || !watchersHaveSelector(watchers)) throw new PrimitiveError("시야 조건에서 주인공을 볼 이벤트를 골라 주세요.");
+      if (watchers.locationId?.trim() && !findLocationById(map, watchers.locationId)) {
         throw new PrimitiveError("선택한 맵에서 시야 조건에 쓰인 장소를 찾을 수 없어요.");
+      }
+      if (sightWatcherIds(map.events, watchers, map.locations).length === 0) {
+        throw new PrimitiveError("선택한 맵에 시야 조건과 일치하는 감시 이벤트가 없어요.");
       }
       return;
     }
@@ -364,7 +367,7 @@ function leaf<A extends Record<string, unknown>>(
     targets: ["event"],
     args: schema({
       ...properties,
-      conditionNumber: rowNumber("현재 페이지의 전체 조건 목록에서 바꿀 줄 번호입니다. 첫 줄은 1번입니다. 생략하면 같은 종류가 한 줄일 때 바꾸고, 없으면 끝에 추가합니다."),
+      conditionNumber: rowNumber("기존 조건을 바꿀 때만 지정합니다. get_event로 선택한 페이지의 전체 조건 목록을 확인하세요. 첫 줄은 1번입니다. 생략하면 기존 조건을 유지하고 끝에 추가합니다. 동일한 조건이 이미 있으면 그대로 둡니다."),
     }, required),
     scope: pageScope,
     describe: (ctx, args) => pageSentence(ctx.project, fromArgs(args)),

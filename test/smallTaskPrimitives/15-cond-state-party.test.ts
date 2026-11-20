@@ -1,6 +1,8 @@
 /** @vitest-environment happy-dom */
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES, buildConditionAny, buildConditionNot } from "@/editor/smallTask/primitives/units/15-cond-state-party";
 import { createInterpreter } from "@/player/interpreter";
@@ -9,6 +11,7 @@ import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { startSession } from "@/project/session";
+import { store } from "@/project/store";
 import type { Condition, ConditionCompareOp, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import corpus from "../../harness-data/small-task-corpus/15-cond-state-party.json";
@@ -137,8 +140,8 @@ it("정확히 백 골드일 때는 닫히고 백한 골드면 물약 세 개를 
   givesReward(after, { switches: {}, variables: {}, gold: 101 }, true);
 });
 
-it("낡은 열쇠를 보유했을 때와 상자에 직접 사용했을 때를 구별한다", async () => {
-  const { before, selection } = await blankPage();
+it.each(["action", "touch", "playerTouch", "eventTouch"] as const)("%s 페이지에서 열쇠 보유와 상자에 직접 사용을 구별한다", async kind => {
+  const { before, selection } = await blankPage([], { kind });
   const { after } = runPrimitive(before, selection, "cond.itemUsed.page.set", { itemId: keyId });
   givesReward(after, { switches: {}, variables: {}, inventory: { [keyId]: 1 } }, false);
   const session = startSession(after, 15);
@@ -148,6 +151,24 @@ it("낡은 열쇠를 보유했을 때와 상자에 직접 사용했을 때를 �
   const target = useOnChest(keyId);
   expect(target?.page.id).toBe(pageId);
   expect(session.itemUsedId).toBeUndefined();
+  expect(createInterpreter(target!.page.commands, session, after, { currentEventId: eventId }).start()).toEqual({ kind: "done" });
+  expect(session.inventory[rewardId]).toBe(3);
+});
+
+it.each(["all", "any"] as const)("기존 아이템 사용 조건을 %s로 묶어도 상자에 올바른 열쇠를 쓸 수 있다", async kind => {
+  const { before, selection } = await blankPage([
+    { kind: "itemUsed", itemId: keyId },
+    { kind: "switch", switchId, value: true },
+  ], { kind: "touch" });
+  const { after } = runPrimitive(before, selection, `cond.${kind}.page.set`, { conditionNumbers: [1, 2] });
+  const session = startSession(after, 15);
+  session.switches[switchId] = kind === "all";
+  session.inventory[keyId] = 1;
+  givesReward(after, session, false);
+  const useOnChest = (itemId: string) => findFacedItemTarget(after, after.maps[mapId], session, {}, { x: 3, y: 4, facing: "up" }, itemId);
+  expect(useOnChest(rewardId)).toBeUndefined();
+  const target = useOnChest(keyId);
+  expect(target?.page.id).toBe(pageId);
   expect(createInterpreter(target!.page.commands, session, after, { currentEventId: eventId }).start()).toEqual({ kind: "done" });
   expect(session.inventory[rewardId]).toBe(3);
 });
@@ -174,12 +195,53 @@ it("범위 안에서 같은 종류의 여러 조건 중 지정한 줄만 바꾼�
   const second = { kind: "selfSwitch", key: "B", value: false } as const;
   const { before, selection } = await blankPage([first, second]);
   const run = (args: Record<string, unknown>) => runPrimitive(before, selection, "cond.selfSwitch.page.set", args);
-  expect(() => run({ key: "C" })).toThrow("여러 줄");
   expect(() => runPrimitive(before, selection, "cond.gold.page.set", { amount: 25, conditionNumber: 2 })).toThrow("조건 종류가 달라요");
   const { after } = run({ key: "C", value: true, conditionNumber: 2 });
   expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([
     first, { kind: "selfSwitch", key: "C", value: true },
   ]);
+});
+
+it("기존 스위치를 보존하고 다른 스위치를 추가하며 재호출해도 한 줄만 붙인다", async () => {
+  const oldCondition = { kind: "switch", switchId, value: true } as const;
+  const { before, selection } = await blankPage([oldCondition]);
+  const nextId = "sw_condition_reward";
+  before.switches.push({ id: nextId, name: "보상 허용" });
+  const args = { switchId: nextId, value: true };
+  const { after } = runPrimitive(before, selection, "cond.switch.page.set", args);
+  expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([oldCondition, { kind: "switch", ...args }]);
+  givesReward(after, { switches: { [nextId]: true }, variables: {} }, false);
+  givesReward(after, { switches: { [switchId]: true, [nextId]: true }, variables: {} }, true);
+
+  const retried = runPrimitive(after, selection, "cond.switch.page.set", args);
+  expect(retried.after).toEqual(after);
+});
+
+it("조건 적용을 되돌리면 저장하지 않은 수동 이벤트 편집을 복원한다", async () => {
+  const { before, selection } = await blankPage();
+  const event = getEvent(before, mapId, eventId);
+  const original = structuredClone(event);
+  event.draft = { kind: "edit", original };
+  getPage(event, pageId).commands.push({ kind: "text", body: "저장하지 않은 대사" });
+  const working = structuredClone(event);
+
+  store.replaceProject(before);
+  resetMapEditHistory();
+  try {
+    const live = store.getCurrent();
+    const base = smallTaskBase(live, selection);
+    const { after } = runPrimitive(base, selection, "cond.switch.page.set", { switchId });
+    const receipt = commitSmallTask(live, base, after, selection);
+    const current = () => getEvent(store.getCurrent(), mapId, eventId);
+    const page = getPage(current(), pageId);
+    expect(page.conditions).toEqual([{ kind: "switch", switchId, value: true }]);
+    expect(page.commands).toEqual(getPage(working, pageId).commands);
+    expect(current().draft?.original).toEqual(original);
+    expect(await receipt?.undo(async () => false)).toBe(true);
+    expect(current()).toEqual(working);
+  } finally {
+    resetMapEditHistory();
+  }
 });
 
 it("선택한 맵의 키와 레코드 ID가 달라지면 다른 맵의 페이지를 덮어쓰지 않는다", async () => {
@@ -230,11 +292,36 @@ it.each<{ condition: Condition; reason: RegExp }>([
   { condition: { kind: "eventSeesPlayer", eventId: "missing_guard" }, reason: /시야 조건.*이벤트를 찾을 수 없어요/u },
   { condition: { kind: "eventSeesPlayer", eventId: "", watchers: { locationId: "missing_room" } }, reason: /시야 조건.*장소를 찾을 수 없어요/u },
   { condition: { kind: "eventSeesPlayer", eventId: "", watchers: {} }, reason: /주인공을 볼 이벤트를 골라 주세요/u },
+  { condition: { kind: "eventSeesPlayer", eventId: "", watchers: { name: "없는 경비" } }, reason: /일치하는 감시 이벤트가 없어요/u },
+  { condition: { kind: "eventSeesPlayer", eventId: "", watchers: { characterId: "missing_guard" } }, reason: /일치하는 감시 이벤트가 없어요/u },
   { condition: { kind: "gold", op: "invalid" as ConditionCompareOp, amount: 10 }, reason: /비교 방법을 다시 골라 주세요/u },
 ])("잘못된 $condition.kind 조건을 반대로 바꿔 페이지를 열 수 없다", async ({ condition, reason }) => {
   const { before, selection } = await blankPage([{ kind: "all", conditions: [condition] }]);
   expectRefused(before, selection, "cond.not.page.set", { conditionNumber: 1 }, reason);
+  expect(getPage(getEvent(before, mapId, eventId), pageId).conditions).toEqual([{ kind: "all", conditions: [condition] }]);
   expect(() => runPrimitive(before, selection, "cond.page.remove", { conditionNumber: 1 })).not.toThrow();
+});
+
+it("시야 선택의 모든 칸에 일치하는 감시자가 있을 때만 반전할 수 있다", async () => {
+  const condition: Condition = { kind: "eventSeesPlayer", eventId: "", watchers: { name: "경비", characterId: "guard", locationId: "room" } };
+  const { before, selection } = await blankPage([condition]);
+  const map = before.maps[mapId];
+  map.locations = [{ id: "room", name: "경비실", x: 2, y: 2, w: 4, h: 4 }];
+  const guard: GameEvent = { id: "guard_event", name: "문 앞 경비", characterId: "guard", x: 0, y: 0, commands: [], trigger: { kind: "action" } };
+  const args = { conditionNumber: 1 };
+  map.events.push(guard, { ...guard, id: "fake_guard", characterId: "merchant", x: 2, y: 4 });
+  expectRefused(before, selection, "cond.not.page.set", args, /일치하는 감시 이벤트가 없어요/u);
+
+  guard.x = 2;
+  guard.y = 4;
+  const { after } = runPrimitive(before, selection, "cond.not.page.set", args);
+  const event = getEvent(after, mapId, eventId);
+  const session = startSession(after, 15);
+  const context = { locations: map.locations, mapEvents: () => map.events, eventPosition: () => guard };
+  expect(resolveEventPage(event, session, context)?.id).toBe("fallback");
+  session.x = 7;
+  session.y = 7;
+  expect(resolveEventPage(event, session, context)?.id).toBe(pageId);
 });
 
 it("다른 맵에서 올 수 있는 이벤트가 지정된 추격 조건은 묶을 수 있다", async () => {
