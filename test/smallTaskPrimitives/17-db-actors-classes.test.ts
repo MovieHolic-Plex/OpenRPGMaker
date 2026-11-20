@@ -13,6 +13,8 @@ import { resolveDialogueSpeakerName, resolveDialogueText } from "@/player/dialog
 import { createInterpreter } from "@/player/interpreter";
 import { createActorRecord } from "@/project/actorModel";
 import { normalizeClassRecord } from "@/project/databaseRecordModel";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { startSession } from "@/project/session";
 import type { Command, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -41,7 +43,7 @@ function projectWithRows(kind: FixtureName): Project {
   };
 }
 
-function target(collection: Collection, id: string): SmallTaskTarget {
+function target(collection: Collection, id: string): Extract<SmallTaskTarget, { kind: "dbEntry" }> {
   return { kind: "dbEntry", collection, id, label: "자료집 항목" };
 }
 
@@ -79,7 +81,13 @@ const cases = [
 describe("자료집 주인공·직업·외형의 작은 일", () => {
   // 마왕 편의점 데모 생성은 맵·이벤트 저작을 포함하므로 한 번만 준비한다.
   beforeAll(() => {
-    for (const name of ["blank", "built", "maou"] as const) fixtures.set(name, loadFixture(name));
+    for (const name of ["blank", "built", "maou"] as const) {
+      const fixture = loadFixture(name);
+      // 편집기에서 여는 프로젝트와 같이 정규화한 뒤 동결된 기준본으로 사용한다.
+      ensureSwitchVariableSlots(fixture);
+      removeLegacySpriteReferences(fixture);
+      fixtures.set(name, fixture);
+    }
   }, 180_000);
 
   it.each(cases)("$id 저장값·한국어 미리보기·범위·되돌리기", async example => {
@@ -211,8 +219,11 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     const existingClass = before.database.classes[0];
     before.database.classes[0] = { ...existingClass, promotions: [{ toClassId: spareClass.id, requires: {} }] };
     expect(() => runPrimitive(before, classTarget, "db.classes.delete", {})).toThrow("사용 중인 직업");
-    before.database.actors.push(spareActor);
-    expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
+    const withActor: Project = {
+      ...before,
+      database: { ...before.database, actors: [...before.database.actors, spareActor] },
+    };
+    expect(() => runPrimitive(withActor, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
   });
 
   it("앞 행을 삭제해도 전투 뒤 대사의 주인공 번호가 다른 인물을 가리키지 않게 한다", () => {
@@ -298,8 +309,14 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
     expect(() => runPrimitive(portrait, lookTarget, "db.characterAppearances.update", { name: "겨울 외투" })).toThrow("대사의 화자");
     expect(() => runPrimitive(portrait, lookTarget, "db.characterAppearances.delete", {})).toThrow("대사의 화자");
 
-    before.database.actors[before.database.actors.length - 1] = { ...spareActor, name: "김지후" };
-    const stage = commonCommands(before, [{ kind: "text", speaker: "김후", body: "안녕" }]);
+    const withRenamedActor: Project = {
+      ...before,
+      database: {
+        ...before.database,
+        actors: before.database.actors.map(actor => actor.id === spareActor.id ? { ...actor, name: "김지후" } : actor),
+      },
+    };
+    const stage = commonCommands(withRenamedActor, [{ kind: "text", speaker: "김후", body: "안녕" }]);
     expect(() => runPrimitive(stage, actorTarget, "db.actors.update", { name: "이누리" })).toThrow("대사의 화자");
   });
 
@@ -359,12 +376,12 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
   it("전투 명령 변경의 공백 붙은 주인공 ID를 보호한다", () => {
     const commands: Command[] = [{
       kind: "m2Command", commandId: "m2-092-change-battle-commands",
-      fields: { target: "actor", actorId: ` ${spareActor.id} `, operation: "set", value: "attack" },
+      fields: { target: "actor", actorId: ` ${spareActor.id} `, operation: "set", value: "cmd_attack" },
     }];
     const before = commonCommands(projectWithRows("blank"), commands);
     const session = startSession(before);
     createInterpreter(commands, session, before).start();
-    expect(session.actorBattleCommands?.[spareActor.id]).toEqual(["attack"]);
+    expect(session.actorBattleCommands?.[spareActor.id]).toEqual(["cmd_attack"]);
     expect(() => runPrimitive(before, actorTarget, "db.actors.delete", {})).toThrow("사용 중인 주인공");
   });
 
