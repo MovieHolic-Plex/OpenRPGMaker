@@ -15,7 +15,7 @@ import { ensureBeodeulPlaceableObjects } from "@/project/defaults/beodeulPlaceab
 import { deserialize, serialize } from "@/project/io";
 import { OBJECT_SPEC_PASSAGE_CHARS, validateObjectSpec } from "@/project/objectSpec";
 import { passageMarkForTile } from "@/project/tilesetPassage";
-import { prepareWebExport } from "@/project/webExport";
+import { collectWebExportAssets } from "@/project/webExportAssets";
 
 const folder = new URL("../public/assets/beodeul-objects/", import.meta.url);
 const kitId = (id: string) => BEODEUL_OBJECT_KIT_PREFIX + id;
@@ -145,7 +145,7 @@ describe("bundled Beodeul placeable objects", () => {
         expect(isPassable(ctx.project, painted, x + dx, y + dy)).toBe(mark !== "X");
       }
     }
-    const publicPaths = prepareWebExport(ctx.project).assets.flatMap(asset => asset.kind === "public" ? [asset.sourcePath] : []);
+    const publicPaths = collectWebExportAssets(ctx.project).flatMap(asset => asset.kind === "public" ? [asset.sourcePath] : []);
     expect(publicPaths).toContain(`assets/beodeul-objects/${object.id}.png`);
 
     const before = [...painted.upperTiles];
@@ -159,7 +159,7 @@ describe("bundled Beodeul placeable objects", () => {
   }, 60_000);
 
   it("extends straight dock and hedge sections on their own axes with the intended passage", () => {
-    const ctx = { project: createBlankProject() };
+    const { ctx } = projectWithObjectTileset();
     const map = Object.values(ctx.project.maps)[0]!;
     const tileset = ctx.project.tilesets[map.tilesetId]!;
     const water = tileset.tileMeta!.findIndex((meta, tile) =>
