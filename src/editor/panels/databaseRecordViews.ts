@@ -1,3 +1,4 @@
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { equipmentSlots, equipmentSlotLabel, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
@@ -124,6 +125,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     const form = recordForm(collection, record, rerender, host, onRename);
     form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
     stopSkillAnimationStagesIn(detailPane);
+    if (collection !== "battleAnimations") form.prepend(recordSmallTask(collection, record.id));
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
   };
 

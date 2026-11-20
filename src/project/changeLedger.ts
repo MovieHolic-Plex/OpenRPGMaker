@@ -11,6 +11,10 @@ import type { Project } from "./types";
 export type ChangeLedgerChange = "added" | "removed" | "changed";
 
 export interface ChangeLedgerEntry {
+  /** True when the detailed ledger uses an internal key as a fallback display name. */
+  readonly unnamed?: true;
+  /** Optional stable address for consumers that inspect the actual command lists. */
+  readonly event?: { readonly mapId: string; readonly eventId: string };
   /** 사람 말 영역 이름 — 「맵」·「이벤트 · 달빛 숲」·「데이터베이스 · 아이템」. */
   readonly area: string;
   /** 항목 이름 — 「달빛 숲」·「NPC_가드」·「포션」. */
@@ -230,7 +234,11 @@ function identify(record: unknown, index: number): Identified {
   return { id, label: name ?? id };
 }
 
-function diffRecords(area: string, beforeList: readonly unknown[], afterList: readonly unknown[], out: ChangeLedgerEntry[]): void {
+function diffRecords(area: string, beforeList: readonly unknown[], afterList: readonly unknown[], out: ChangeLedgerEntry[], eventMapId?: string): void {
+  const address = (id: string, label: string) => ({
+    ...(label === id ? { unnamed: true as const } : {}),
+    ...(eventMapId ? { event: { mapId: eventMapId, eventId: id } } : {}),
+  });
   const beforeById = new Map<string, { readonly record: unknown; readonly label: string }>();
   beforeList.forEach((record, index) => {
     const { id, label } = identify(record, index);
@@ -242,16 +250,16 @@ function diffRecords(area: string, beforeList: readonly unknown[], afterList: re
     seen.add(id);
     const prev = beforeById.get(id);
     if (!prev) {
-      out.push({ area, label, change: "added", detail: changedFields({}, asRecord(record) ?? {}, { side: "after" }) });
+      out.push({ ...address(id, label), area, label, change: "added", detail: changedFields({}, asRecord(record) ?? {}, { side: "after" }) });
       return;
     }
     const detail = changedFields(asRecord(prev.record) ?? {}, asRecord(record) ?? {});
     if (detail.length === 0) return;
-    out.push({ area, label, change: "changed", detail });
+    out.push({ ...address(id, label), area, label, change: "changed", detail });
   });
   for (const [id, entry] of beforeById) {
     if (seen.has(id)) continue;
-    out.push({ area, label: entry.label, change: "removed", detail: changedFields(asRecord(entry.record) ?? {}, {}, { side: "before" }) });
+    out.push({ ...address(id, entry.label), area, label: entry.label, change: "removed", detail: changedFields(asRecord(entry.record) ?? {}, {}, { side: "before" }) });
   }
 }
 /** 싱글톤(또는 임의 값)의 변경 — 한 항목에 `필드: 이전 → 이후` 로 모은다. */
@@ -297,17 +305,18 @@ function mapEntries(before: Project, after: Project, out: ChangeLedgerEntry[]): 
     const next = after.maps[id];
     const name = next?.name ?? prev?.name ?? id;
     const label = `${name} (${id})`;
+    const identity = { label, ...(name === id ? { unnamed: true as const } : {}) };
     if (!prev) {
       out.push({
         area: "맵",
-        label,
+        ...identity,
         change: "added",
         after: `${next!.width}×${next!.height} · 타일셋 ${next!.tilesetId} · 이벤트 ${next!.events?.length ?? 0}건`,
       });
       continue;
     }
     if (!next) {
-      out.push({ area: "맵", label, change: "removed" });
+      out.push({ area: "맵", ...identity, change: "removed" });
       continue;
     }
     const detail = changedFields(prev as unknown as Record<string, unknown>, next as unknown as Record<string, unknown>, {
@@ -328,7 +337,7 @@ function mapEntries(before: Project, after: Project, out: ChangeLedgerEntry[]): 
         return undefined;
       },
     });
-    if (detail.length > 0) out.push({ area: "맵", label, change: "changed", detail });
+    if (detail.length > 0) out.push({ area: "맵", ...identity, change: "changed", detail });
   }
 }
 
@@ -338,7 +347,7 @@ function eventEntries(before: Project, after: Project, out: ChangeLedgerEntry[])
     const prev = before.maps[mapId];
     const next = after.maps[mapId];
     const mapName = next?.name ?? prev?.name ?? mapId;
-    diffRecords(`이벤트 · ${mapName}`, prev?.events ?? [], next?.events ?? [], out);
+    diffRecords(`이벤트 · ${mapName}`, prev?.events ?? [], next?.events ?? [], out, mapId);
   }
 }
 
@@ -420,17 +429,19 @@ function tilesetEntries(before: Project, after: Project, out: ChangeLedgerEntry[
     const next = after.tilesets?.[id];
     if (same(prev, next)) continue;
     if (!prev) {
-      out.push({ area: "타일셋", label: id, change: "added" });
+      out.push({ area: "타일셋", label: id, unnamed: true, change: "added" });
       continue;
     }
     if (!next) {
-      out.push({ area: "타일셋", label: id, change: "removed" });
+      out.push({ area: "타일셋", label: id, unnamed: true, change: "removed" });
       continue;
     }
     const detail = changedFields(prev as unknown as Record<string, unknown>, next as unknown as Record<string, unknown>);
+    const name = stringField((next as unknown as Record<string, unknown>).name);
     out.push({
       area: "타일셋",
-      label: stringField((next as unknown as Record<string, unknown>).name) ?? id,
+      label: name ?? id,
+      ...(!name || name === id ? { unnamed: true as const } : {}),
       change: "changed",
       ...(detail.length > 0 ? { detail } : {}),
     });

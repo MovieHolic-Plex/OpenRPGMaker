@@ -1,3 +1,4 @@
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { addDatabaseRecord, duplicateDatabaseRecord } from "@/editor/databaseActions";
@@ -175,6 +176,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     };
     form.addEventListener("input", refreshProjection);
     form.addEventListener("change", refreshProjection);
+    form.querySelector(".db-ws-hero")?.append(recordSmallTask(entry.collection, entry.record.id));
     detail.replaceChildren(form);
   };
   const updateSubtypes = (): void => {

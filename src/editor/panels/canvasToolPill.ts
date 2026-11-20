@@ -1,5 +1,5 @@
 // editor/panels/canvasToolPill.ts
-// 캔버스 가운데 위에 뜨는 알약 하나 — 칠하기 · 사각형 · 채우기 · 화면 밀기 | 되돌리기 | 배율.
+// 캔버스 위 도구막대 — 칠하기 · 사각형 · 채우기 · 화면 밀기 | 되돌리기 | 배율 | 이걸로 작업.
 //
 // 2026-11 개편(시안 mock-editor-*.png): 캔버스 위에 떠 있는 것은 이 알약 하나다. 예전 오른쪽 위 막대의
 // 로케이션·배경 미리보기·걷기 전투·AI 빠른 작업·「더 보기」(격자·맵 PNG)와 왼쪽 아래 저작 여정은
@@ -18,6 +18,7 @@ import { layerUiLabel, toolLabel } from "@/editor/uiCopy";
 import { selectMapModeTool, selectTileTool, isTileToolbarItemActive } from "@/editor/panels/tileToolbarActions";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
+import { canvasSmallTask } from "@/editor/smallTask/capsule";
 import { clearChildren, el } from "@/util/dom";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -159,7 +160,7 @@ export function renderCanvasToolPill(container: HTMLElement): void {
     on: { click: () => { runUndoWithFeedback(); } },
   }) as HTMLButtonElement;
   undo.disabled = !canUndo;
-  container.append(undo, makeZoomControl(state.zoom, zoomMenuWasOpen));
+  container.append(undo, makeZoomControl(state.zoom, zoomMenuWasOpen), canvasSmallTask());
   installDelayedTooltips(container);
   pillRenderMemo.set(container, { key, first: container.firstElementChild });
 }

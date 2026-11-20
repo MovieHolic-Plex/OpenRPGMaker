@@ -977,6 +977,8 @@ class ProjectStore {
   replace(
     project: Project,
     options: {
+      /** A local history entry may explicitly own the working body of an open event. */
+      readonly adoptWorkingEvents?: readonly { readonly mapId: string; readonly eventId: string }[];
       readonly preserveEventDrafts?: boolean;
       readonly change?: ProjectChangeAnnotation;
       /** 맵 칸만 바뀌었을 때 전체 재렌더 대신 그 칸만 그리게 한다. */
@@ -1006,7 +1008,19 @@ class ProjectStore {
       syncEventDraftVaultFromProject(this.current);
     } else {
       // 아직 아무 프로젝트도 쥐지 않았으면 맞출 편집 초안이 없다 — 자리표시 빈 프로젝트를 지어서(번들 타일셋 49개, 약 1.2s) 바로 버리지 않는다.
-      this.current = preserveEventDraftsOnProject(project, this.currentValue ?? emptyLiveProject);
+      const live = this.currentValue ?? emptyLiveProject;
+      // A history snapshot can outlive its event window. Its canonical view keeps
+      // undo from reopening a closed draft or restoring a discarded new event.
+      const incoming = options.adoptWorkingEvents?.length ? projectViewWithoutEventDrafts(project) : project;
+      const merged = preserveEventDraftsOnProject(incoming, live);
+      for (const { mapId, eventId } of options.adoptWorkingEvents ?? []) {
+        if (!live.maps[mapId]?.events.some(e => e.id === eventId && e.draft)) continue;
+        const event = project.maps[mapId]?.events.find(e => e.id === eventId);
+        const events = merged.maps[mapId]?.events;
+        const index = events?.findIndex(e => e.id === eventId) ?? -1;
+        if (index >= 0) events.splice(index, 1, ...(event ? [structuredClone(event)] : []));
+      }
+      this.current = merged;
       syncEventDraftVaultFromProject(this.current);
     }
     const applied = this.current;
