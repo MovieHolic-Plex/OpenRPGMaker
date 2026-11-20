@@ -149,7 +149,8 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
   return ids;
 }
 
-export function collectProjectReferenceIssues(project: Project): string[] {
+/** databaseOnly skips the map/event walk when only database records were edited. */
+export function collectProjectReferenceIssues(project: Project, options?: { readonly databaseOnly?: boolean }): string[] {
   const issues: string[] = [];
   const check = (fn: () => void): void => {
     try {
@@ -245,8 +246,8 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   check(() => validateElementRates(project, issues));
   check(() => validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues));
   check(() => validateCropRecords(project, itemIds, resourceIds, issues));
-  check(() => validateLifeAuthoringRecords(project, itemIds, issues));
-  check(() => validateFarmAnimalReferences(project, itemIds, issues));
+  check(() => validateLifeAuthoringRecords(project, itemIds, switchIds, issues));
+  check(() => validateFarmAnimalReferences(project, itemIds, issues, options?.databaseOnly));
   check(() => validateSpatialReferences(project, itemIds, resourceIds, issues));
   check(() => validateTroopRecords(project, enemyIds, context, issues));
   check(() => validateScheduleReferences(project, context, issues));
@@ -254,6 +255,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   for (const terrain of project.database.terrains ?? []) {
     check(() => validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds));
     check(() => validateOptionalResource(`terrain ${terrain.id}: footstepSoundResourceId`, terrain.footstepSoundResourceId, resourceIds));
+  }
+
+  if (options?.databaseOnly) {
+    check(() => validateFishSpeciesReferences(project, itemIds, issues));
+    return issues;
   }
 
   check(() => collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues));
@@ -289,6 +295,12 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   return issues;
 }
 
+function validateFishSpeciesReferences(project: Project, itemIds: ReadonlySet<string>, issues: string[]): void {
+  for (const fish of project.database.fishSpecies ?? []) {
+    if (!itemIds.has(fish.itemId)) issues.push(`database.fishSpecies ${fish.id}: itemId does not exist: ${fish.itemId}`);
+  }
+}
+
 function validateP2SystemReferences(
   project: Project,
   itemIds: ReadonlySet<string>,
@@ -303,9 +315,7 @@ function validateP2SystemReferences(
   const fishIds = new Set((project.database.fishSpecies ?? []).map((fish) => fish.id));
   const recipeIds = new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id));
   const worldUnlockIds = new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id));
-  for (const fish of project.database.fishSpecies ?? []) {
-    if (!itemIds.has(fish.itemId)) issues.push(`database.fishSpecies ${fish.id}: itemId does not exist: ${fish.itemId}`);
-  }
+  validateFishSpeciesReferences(project, itemIds, issues);
   for (const spot of project.system.fishing?.spots ?? []) {
     const map = project.maps[spot.mapId];
     if (!mapIds.has(spot.mapId)) issues.push(`system.fishing.spots ${spot.id}: mapId does not exist: ${spot.mapId}`);
@@ -386,16 +396,6 @@ function validateP0SystemReferences(
   for (const maker of project.system.makers ?? []) {
     collectExistingIdIssues(`system.makers ${maker.id}: input itemId`, maker.inputs.map((entry) => entry.itemId), itemIds, issues);
     collectExistingIdIssues(`system.makers ${maker.id}: output itemId`, maker.outputs.map((entry) => entry.itemId), itemIds, issues);
-  }
-  for (const skill of project.database.lifeSkills ?? []) {
-    for (const reward of skill.levelUpRewards) {
-      if (reward.switchId && !switchIds.has(reward.switchId)) {
-        issues.push(`lifeSkill ${skill.id}: reward switchId does not exist: ${reward.switchId}`);
-      }
-      if (reward.recipeId && !recipeIds.has(reward.recipeId)) {
-        issues.push(`lifeSkill ${skill.id}: reward recipeId does not exist: ${reward.recipeId}`);
-      }
-    }
   }
 }
 
@@ -810,14 +810,9 @@ function validateCropRecords(
 function validateLifeAuthoringRecords(
   project: Project,
   itemIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
   issues: string[],
 ): void {
-  const seenSkills = new Set<string>();
-  for (const skill of project.database.lifeSkills ?? []) {
-    if (seenSkills.has(skill.id)) issues.push(`lifeSkill ${skill.id}: duplicate id.`);
-    seenSkills.add(skill.id);
-  }
-
   const seenRecipes = new Set<string>();
   for (const recipe of project.system.craftRecipes ?? []) {
     if (seenRecipes.has(recipe.id)) issues.push(`craftRecipe ${recipe.id}: duplicate id.`);
@@ -852,12 +847,27 @@ function validateLifeAuthoringRecords(
     seenToolActions.add(action.id);
     if (action.itemId && !itemIds.has(action.itemId)) issues.push(`toolAction ${action.id}: itemId does not exist: ${action.itemId}`);
   }
+
+  const seenSkills = new Set<string>();
+  for (const skill of project.database.lifeSkills ?? []) {
+    if (seenSkills.has(skill.id)) issues.push(`lifeSkill ${skill.id}: duplicate id.`);
+    seenSkills.add(skill.id);
+    for (const reward of skill.levelUpRewards) {
+      if (reward.switchId && !switchIds.has(reward.switchId)) {
+        issues.push(`lifeSkill ${skill.id}: reward switchId does not exist: ${reward.switchId}`);
+      }
+      if (reward.recipeId && !seenRecipes.has(reward.recipeId)) {
+        issues.push(`lifeSkill ${skill.id}: reward recipeId does not exist: ${reward.recipeId}`);
+      }
+    }
+  }
 }
 
 function validateFarmAnimalReferences(
   project: Project,
   itemIds: ReadonlySet<string>,
   issues: string[],
+  databaseOnly = false,
 ): void {
   const authoredSpecies = project.database.farmAnimalSpecies ?? [];
   collectDuplicateValuePathIssues(
@@ -875,6 +885,8 @@ function validateFarmAnimalReferences(
       issues.push(`database.farmAnimalSpecies[${index}].productItemId does not exist: ${species.productItemId}`);
     }
   }
+
+  if (databaseOnly) return;
 
   const buildings = project.system.farmAnimalBuildings ?? [];
   collectDuplicateValuePathIssues(
@@ -1016,7 +1028,6 @@ function validateSpatialReferences(
   const mapIds = new Set(Object.keys(project.maps));
   const buildingTypes = project.database.farmBuildingTypes ?? [];
   collectDuplicateValuePathIssues("database.farmBuildingTypes", "id", buildingTypes.map((row) => row.id), issues);
-  const buildingTypeById = new Map(buildingTypes.map((row) => [row.id, row] as const));
   for (const [typeIndex, type] of buildingTypes.entries()) {
     for (const [index, speciesId] of (type.animalHousing?.allowedSpeciesIds ?? []).entries()) {
       if (!project.database.farmAnimalSpecies?.some((species) => species.id === speciesId)) {
@@ -1041,7 +1052,6 @@ function validateSpatialReferences(
 
   const decorationTypes = project.database.homeDecorationTypes ?? [];
   collectDuplicateValuePathIssues("database.homeDecorationTypes", "id", decorationTypes.map((row) => row.id), issues);
-  const decorationTypeById = new Map(decorationTypes.map((row) => [row.id, row] as const));
   for (const [typeIndex, type] of decorationTypes.entries()) {
     if (!itemIds.has(type.placementItemId)) {
       issues.push(`database.homeDecorationTypes[${typeIndex}].placementItemId does not exist: ${type.placementItemId}`);
@@ -1055,8 +1065,13 @@ function validateSpatialReferences(
     }
   }
 
-  const occupied = initialSpatialOccupiedCells(project);
   const buildings = project.session.farmBuildingPlacements ?? [];
+  const decorations = project.session.homeDecorationPlacements ?? [];
+  if (!buildings.length && !decorations.length) return;
+
+  const buildingTypeById = new Map(buildingTypes.map((row) => [row.id, row] as const));
+  const decorationTypeById = new Map(decorationTypes.map((row) => [row.id, row] as const));
+  const occupied = initialSpatialOccupiedCells(project);
   collectDuplicateValuePathIssues("session.farmBuildingPlacements", "instanceId", buildings.map((row) => row.instanceId), issues);
   for (const [index, placement] of buildings.entries()) {
     const path = `session.farmBuildingPlacements[${index}]`;
@@ -1073,7 +1088,6 @@ function validateSpatialReferences(
     validateAndOccupySpatialPlacement(project, path, placement, level.footprint, type.allowedMapIds, occupied, issues);
   }
 
-  const decorations = project.session.homeDecorationPlacements ?? [];
   collectDuplicateValuePathIssues("session.homeDecorationPlacements", "instanceId", decorations.map((row) => row.instanceId), issues);
   for (const [index, placement] of decorations.entries()) {
     const path = `session.homeDecorationPlacements[${index}]`;
