@@ -24,7 +24,7 @@ import { ROGUELIKE_FLOOR_MAX } from "@/project/roguelikeRun";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
 import { commandListAt, eventName, koreanSentence, mapName, scopedPage, updateScopedPage } from "../core/helpers";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "09-cmd-move-system";
@@ -142,12 +142,17 @@ function resolveEdit(page: EventPage, args: Args, kind: Kind, edit: Edit) {
   const branchPath = (args.branchPath ?? []) as number[];
   const list = commandListAt(page, branchPath);
   const index = args.index as number | undefined ?? list.length;
-  if (!Number.isSafeInteger(index) || index < 0 || index > list.length || (edit === "update" && index === list.length)) {
+  if (!Number.isSafeInteger(index) || index < 0) {
     throw new PrimitiveError("고를 수 있는 명령 줄이 없습니다.");
   }
   const path = [...branchPath, index];
-  const current = edit === "update" ? list[index] : undefined;
-  if (edit === "update" && current?.kind !== kind) throw new PrimitiveError("선택한 줄에서 같은 종류의 명령을 고르세요.");
+  if (edit === "insert") {
+    if (index > list.length) throw new PrimitiveError("고를 수 있는 명령 줄이 없습니다.");
+    return { path, current: undefined };
+  }
+  const current = list[index];
+  if (!current || eventCommandHash(current) !== args.expectedHash) throw new PrimitiveError(STALE_COMMAND_LIST);
+  if (current.kind !== kind) throw new PrimitiveError("선택한 줄에서 같은 종류의 명령을 고르세요.");
   return { path, current };
 }
 
@@ -423,9 +428,6 @@ function primitive(kind: Kind, spec: Spec, edit: Edit): SmallTaskPrimitive {
       const { map, event, page } = scopedPage(ctx);
       const { path, current } = resolveEdit(page, args, kind, edit);
       const hash = args.expectedHash as string;
-      if (current && eventCommandHash(current) !== hash) {
-        throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 읽은 뒤 수정하세요.");
-      }
       const command = buildCommand(kind, map, args, current);
       validateReferences(ctx, map, event, page, command, current);
       let edited: EventPage;
@@ -439,7 +441,7 @@ function primitive(kind: Kind, spec: Spec, edit: Edit): SmallTaskPrimitive {
           edited = updateEventCommand(page, path, command, hash);
         }
       } catch (error) {
-        if (!(error instanceof EventCommandEditError)) throw error;
+        if (!(error instanceof EventCommandEditError) || error.code === "stale-event-command") throw error;
         throw new PrimitiveError("명령 값이나 줄 위치를 다시 확인하세요.");
       }
       return updateScopedPage(ctx, () => edited);

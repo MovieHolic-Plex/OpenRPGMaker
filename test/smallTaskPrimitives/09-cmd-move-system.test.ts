@@ -4,7 +4,7 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { mapTarget } from "@/editor/smallTask/target";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/09-cmd-move-system";
 import { getSessionCheckpoint } from "@/player/checkpoints";
@@ -75,6 +75,13 @@ function sample(fixture: Fixture, commands: Command[] = []) {
 
 function stored(project: Project) {
   return project.maps[mapId]!.events[0]!.pages![0]!.commands;
+}
+
+function withBlockedLanding(project: Project, y: number, ...xs: number[]): Project {
+  const map = project.maps[mapId]!;
+  const lowerTiles = [...map.lowerTiles];
+  for (const x of xs) lowerTiles[x + y * map.width] = -1;
+  return { ...project, maps: { ...project.maps, [mapId]: { ...map, lowerTiles } } };
 }
 
 type Example = {
@@ -188,18 +195,25 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
     const id = "cmd.checkpointSave.update";
     const args = { branchPath, index: 1, label: "언덕" };
     expect(() => runPrimitive(after, target, id, { ...args, expectedHash: eventCommandHash(wait) }))
-      .toThrow("그 줄의 내용이 바뀌었습니다");
+      .toThrow(STALE_COMMAND_LIST);
     const second = runPrimitive(after, target, id, { ...args, expectedHash: eventCommandHash({ kind: "checkpointSave", label: "샘" }) });
     expect(stored(second.after)).toStrictEqual([{ ...fork, then: [text, { kind: "checkpointSave", label: "언덕" }] }, wait]);
   });
 
-  it("지도 대상과 줄 번호로 페이지를 벗어나는 요청을 거절한다", () => {
+  it("페이지가 여러 개면 대상에서 고른 페이지에만 쓴다", () => {
     const { before, target } = sample("blank", [{ kind: "returnToTitle" }]);
-    const otherTarget = mapTarget(before, mapId)!;
-    expectRefused(before, otherTarget, "cmd.returnToTitle.insert", {});
+    const mapOnly = mapTarget(before, mapId)!;
+    const eventOnly = mapTarget(before, mapId, eventId)!;
+    expectRefused(before, mapOnly, "cmd.returnToTitle.insert", {});
+    expect(() => runPrimitive(before, eventOnly, "cmd.returnToTitle.insert", {})).toThrow(SELECT_EVENT_PAGE);
     const expectedHash = eventCommandHash({ kind: "returnToTitle" });
     expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 0, expectedHash, pageId: "page_neighbor" })).toThrow(PrimitiveError);
-    expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 1, expectedHash })).toThrow("명령 줄");
+    expect(() => runPrimitive(before, target, "cmd.returnToTitle.update", { index: 1, expectedHash })).toThrow(STALE_COMMAND_LIST);
+    const neighbor = mapTarget(before, mapId, eventId, "page_neighbor")!;
+    expect(() => runPrimitive(before, neighbor, "cmd.returnToTitle.update", { index: 0, expectedHash })).toThrow(STALE_COMMAND_LIST);
+    const { after } = runPrimitive(before, neighbor, "cmd.returnToTitle.insert", {});
+    expect(after.maps[mapId]!.events[0]!.pages![1]!.commands).toStrictEqual([wait, { kind: "returnToTitle" }]);
+    expect(stored(after)).toBe(stored(before));
   });
 
   it("없는 선택지 취소 분기를 만들어 삽입하지 않는다", () => {
@@ -220,7 +234,7 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
     const args = { branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 0, gameOverId: "" };
     expect(() => runPrimitive(before, target, id, args)).toThrow("동작에 필요한 값의 형식");
     expect(() => runPrimitive(before, target, id, { ...args, expectedHash: eventCommandHash(first) }))
-      .toThrow("그 줄의 내용이 바뀌었습니다");
+      .toThrow(STALE_COMMAND_LIST);
     expect(stored(before)).toStrictEqual([fork]);
     const { after } = runPrimitive(before, target, id, { ...args, expectedHash: eventCommandHash(shifted) });
     expect(stored(after)).toStrictEqual([{ ...fork, then: [{ kind: "killPlayer", message: shifted.message }, wait] }]);
@@ -251,10 +265,9 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
 
   it("기존에 막힌 착지점은 유지하고 방향·화면 전환만 고친다", async () => {
     const command: Command = { kind: "transfer", mapId, x: 2, y: 2, fade: "black", door: true };
-    const { before, target } = sample("blank", [command]);
+    const { before: original, target } = sample("blank", [command]);
+    const before = withBlockedLanding(original, 2, 2, 3);
     const map = before.maps[mapId]!;
-    map.lowerTiles[2 + 2 * map.width] = -1;
-    map.lowerTiles[3 + 2 * map.width] = -1;
     expect(isPassableLanding(before, map, 2, 2)).toBe(false);
     expect(isPassableLanding(before, map, 3, 2)).toBe(false);
     const args = { index: 0, expectedHash: eventCommandHash(command), direction: "left", fade: "white" };
@@ -266,10 +279,9 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
   });
 
   it("착지를 다른 칸으로 보정하지 않고 막힌 칸을 거절한다", () => {
-    const { before, target } = sample("blank");
-    const map = before.maps[mapId]!;
-    expect(isPassableLanding(before, map, 2, 2)).toBe(true);
-    map.lowerTiles[2 + 2 * map.width] = -1;
+    const { before: original, target } = sample("blank");
+    expect(isPassableLanding(original, original.maps[mapId]!, 2, 2)).toBe(true);
+    const before = withBlockedLanding(original, 2, 2);
     expect(() => runPrimitive(before, target, "cmd.transfer.insert", { mapId, x: 2, y: 2 }))
       .toThrow("도착 칸에서 걸어 나갈 수 없습니다");
   });
@@ -277,14 +289,22 @@ describe("이동·시스템·엔딩 명령 한 줄 편집", () => {
 
 describe("참조 검증", () => {
   it("선택한 페이지의 업로드 스프라이트에서 실제 프레임 범위를 확인한다", () => {
-    const { before, target } = sample("blank");
-    const event = before.maps[mapId]!.events[0]!;
+    const { before: original } = sample("blank");
+    const map = original.maps[mapId]!;
+    const [event, ...otherEvents] = map.events;
+    const [page, ...otherPages] = event.pages!;
     const spriteId = "sprite_unit09";
-    before.assets = { ...before.assets, uploaded: {
-      ...before.assets.uploaded,
-      [spriteId]: { id: spriteId, name: "문", kind: "sprite", meta: { width: 32, height: 16, frameWidth: 16, frameHeight: 16, frames: 2 } },
-    } };
-    event.pages![0]!.graphic = { sprite: { type: "uploaded", id: spriteId } };
+    const graphic: EventPage["graphic"] = { ...page.graphic, sprite: { type: "uploaded", id: spriteId } };
+    const events = [{ ...event, pages: [{ ...page, graphic }, ...otherPages] }, ...otherEvents];
+    const before: Project = {
+      ...original,
+      maps: { ...original.maps, [mapId]: { ...map, events } },
+      assets: { ...original.assets, uploaded: {
+        ...original.assets.uploaded,
+        [spriteId]: { id: spriteId, name: "문", kind: "sprite", meta: { width: 32, height: 16, frameWidth: 16, frameHeight: 16, frames: 2 } },
+      } },
+    };
+    const target = mapTarget(before, mapId, eventId, pageId)!;
     const insert = (pattern: number) => runPrimitive(before, target, "cmd.setEventGraphicPattern.insert", { pattern });
     const { after } = insert(1);
     expect(stored(after)).toStrictEqual([{ kind: "setEventGraphicPattern", eventId: "", pattern: 1 }]);
