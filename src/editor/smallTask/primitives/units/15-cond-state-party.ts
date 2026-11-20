@@ -128,12 +128,16 @@ function indexOfRow(conditions: readonly Condition[], row: unknown): number {
 
 function setCondition(conditions: readonly Condition[], next: Leaf, row: unknown): Condition[] {
   if (row === undefined) {
-    return conditions.some(condition => jsonEqual(condition, next)) ? [...conditions] : [...conditions, next];
+    const duplicate = conditions.some(condition => {
+      if (condition.kind === "timer" && next.kind === "timer") {
+        return condition.timerId === next.timerId && condition.seconds === next.seconds
+          && (condition.op ?? "<=") === (next.op ?? "<=");
+      }
+      return jsonEqual(condition, next);
+    });
+    return duplicate ? [...conditions] : [...conditions, next];
   }
   const index = indexOfRow(conditions, row);
-  if (conditions[index].kind !== next.kind) {
-    throw new PrimitiveError("고른 줄의 조건 종류가 달라요.");
-  }
   return conditions.map((condition, position) => position === index ? next : condition);
 }
 
@@ -276,6 +280,17 @@ function safeName(value: string | undefined, fallback: string): string {
   return text.length > 18 ? text.slice(0, 17) + "…" : text;
 }
 
+function comparisonLiteral(value: string): string {
+  let escaped = "";
+  for (const character of value) {
+    const next = JSON.stringify(character).slice(1, -1).replace(/[\u2028\u2029{}\[\]]/gu,
+      entry => `\\u${entry.charCodeAt(0).toString(16).padStart(4, "0")}`);
+    if (escaped.length + next.length > 19) return `"${escaped}"…`;
+    escaped += next;
+  }
+  return `"${escaped}"`;
+}
+
 function recordName(records: readonly Named[] | undefined, id: string, fallback: string): string {
   const record = records?.find(entry => entry.id === id);
   return safeName(record?.name === id ? undefined : record?.name, fallback);
@@ -305,14 +320,13 @@ function pageSentence(project: Project, condition: Leaf): string {
       detail = `이벤트의 ${memoryLabels[condition.key]} 기억 ${condition.value ? "켜짐" : "꺼짐"}`;
       break;
     case "stringVariable": {
-      const text = safeName(condition.value, "…");
       const name = safeName(condition.stringVariableId, "지정한 변수");
       if (condition.op === "empty" || condition.value === "") {
         detail = `「${name}」의 값이 ${condition.op === "!=" ? "비어 있지 않음" : "비어 있음"}`;
       } else if (condition.op === "contains") {
-        detail = `「${name}」의 값에 「${text}」 포함`;
+        detail = `「${name}」의 값에 ${comparisonLiteral(condition.value)} 포함`;
       } else {
-        detail = `「${name}」의 값이 「${text}」${condition.op === "==" ? "와 같음" : "와 다름"}`;
+        detail = `「${name}」의 값이 ${comparisonLiteral(condition.value)}${condition.op === "==" ? "와 같음" : "와 다름"}`;
       }
       break;
     }

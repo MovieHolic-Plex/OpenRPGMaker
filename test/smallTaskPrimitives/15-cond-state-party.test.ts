@@ -214,11 +214,31 @@ it("범위 안에서 같은 종류의 여러 조건 중 지정한 줄만 바꾼�
   const second = { kind: "selfSwitch", key: "B", value: false } as const;
   const { before, selection } = await blankPage([first, second]);
   const run = (args: Record<string, unknown>) => runPrimitive(before, selection, "cond.selfSwitch.page.set", args);
-  expect(() => runPrimitive(before, selection, "cond.gold.page.set", { amount: 25, conditionNumber: 2 })).toThrow("조건 종류가 달라요");
   const { after } = run({ key: "C", value: true, conditionNumber: 2 });
   expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([
     first, { kind: "selfSwitch", key: "C", value: true },
   ]);
+});
+
+it("지정한 조건 줄의 종류를 바꾸고 다른 줄은 보존한다", async () => {
+  const first = { kind: "selfSwitch", key: "A", value: true } as const;
+  const second = { kind: "switch", switchId, value: true } as const;
+  const { before, selection } = await blankPage([first, second]);
+  const { after } = runPrimitive(before, selection, "cond.gold.page.set", { amount: 25, conditionNumber: 2 });
+  expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([
+    first, { kind: "gold", amount: 25, op: ">=" },
+  ]);
+});
+
+it.each([[undefined, "<="], ["<=", undefined]] as const)("타이머의 생략된 이하 비교와 명시한 이하 비교를 같은 조건으로 본다 (%s, %s)", async (storedOp, requestedOp) => {
+  const timer = { kind: "timer", timerId: "timer2", seconds: 30 } as const;
+  const existing = storedOp === undefined ? timer : { ...timer, op: storedOp };
+  const { before, selection } = await blankPage([existing]);
+  const args = { timerId: timer.timerId, seconds: timer.seconds };
+  const { after } = runPrimitive(before, selection, "cond.timer.page.set", requestedOp === undefined ? args : { ...args, op: requestedOp });
+  expect(after).toEqual(before);
+  const changed = runPrimitive(after, selection, "cond.timer.page.set", { ...args, op: ">" }).after;
+  expect(getPage(getEvent(changed, mapId, eventId), pageId).conditions).toEqual([existing, { ...timer, op: ">" }]);
 });
 
 it("기존 스위치를 보존하고 다른 스위치를 추가하며 재호출해도 한 줄만 붙인다", async () => {
@@ -406,6 +426,18 @@ it.each([["==", true, "비어 있음"], ["!=", false, "비어 있지 않음"]] a
   const session = startSession(after, 15);
   session.stringVariables = { 암호: "열쇠" };
   givesReward(after, session, !matchesEmpty);
+});
+
+it.each([
+  ["A.B", '"A.B"'],
+  [' A\n"B" ', '" A\\n\\"B\\" "'],
+  ["12345678901234567😀끝", '"12345678901234567😀"…'],
+])("문자열 비교값의 문장 표기를 보존한다 (%s)", async (value, literal) => {
+  const { before, selection } = await blankPage();
+  const args = { stringVariableId: "암호", op: "contains", value };
+  const { after, sentence } = runPrimitive(before, selection, "cond.stringVariable.page.set", args);
+  expect(getPage(getEvent(after, mapId, eventId), pageId).conditions).toEqual([{ kind: "stringVariable", ...args }]);
+  expect(sentence).toContain(`${literal} 포함`);
 });
 
 it("나중에 조건 분기에서도 쓸 묶음 빌더가 기존 조건 객체를 보존한다", () => {
