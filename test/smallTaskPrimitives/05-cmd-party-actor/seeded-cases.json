@@ -880,5 +880,35 @@
     "args": {"index": 0, "name": "시온", "expectedHash": "e5ff784ab01d87a98aa853bba22ad764"},
     "setup": {"commands": [{"kind": "removeFollower", "name": "고양이", "all": false}]},
     "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "removeFollower", "name": "시온", "all": false}}]
+  },
+  {
+    "request": "아래 불러오기 줄은 두고 저장 이름만 정찰대에서 선발대로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.update",
+    "args": {"index": 0, "expectedHash": "2039e5072899ab3dc5b0d00d8a577049", "partySetId": "선발대"},
+    "setup": {"commands": [{"kind": "storeParty", "partySetId": "정찰대"}, {"kind": "recallParty", "partySetId": "정찰대"}]},
+    "expectRefusal": true,
+    "refusalMessage": "파티 저장 이름을 바꿀 수 없어요"
+  },
+  {
+    "request": "아래에서 시온을 떠나게 하는 줄은 두고 따라올 때 이름만 길잡이로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.update",
+    "args": {"index": 0, "expectedHash": "90139b08936b454b4c8a804f38f96839", "name": "길잡이"},
+    "setup": {"commands": [{"kind": "addFollower", "actorId": "actor_hero", "name": "시온"}, {"kind": "removeFollower", "name": "시온"}]},
+    "expectRefusal": true,
+    "refusalMessage": "이 동행자를 가리키는 다른 명령이 있어요"
+  },
+  {
+    "request": "동행 여부를 확인하는 줄은 그대로 두고 시온의 동행 이름만 길잡이로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.addFollower.update",
+    "args": {"index": 0, "expectedHash": "90139b08936b454b4c8a804f38f96839", "name": "길잡이"},
+    "setup": {"commands": [{"kind": "addFollower", "actorId": "actor_hero", "name": "시온"}, {"kind": "m2Command", "commandId": "m2-217-data-query", "fields": {"query": "followerPresent", "target": "시온", "variableId": "var_0001"}}]},
+    "expectRefusal": true,
+    "refusalMessage": "이 동행자를 가리키는 다른 명령이 있어요"
   }
 ]

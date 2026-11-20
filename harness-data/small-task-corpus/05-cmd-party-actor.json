@@ -1006,5 +1006,37 @@
     "primitive": "cmd.removeFollower.update",
     "args": {"index": 0, "expectedHash": "e5ff784ab01d87a98aa853bba22ad764", "branchPath": [0, 999]},
     "expectRefusal": true
+  },
+  {
+    "request": "이 이벤트에서 파티 전원의 체력을 절반으로 맞춰 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "", "op": "=", "amount": 50, "amountMode": "percent"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0]", "equals": {"kind": "changeActorHp", "actorId": "", "op": "=", "amount": 50, "amountMode": "percent"}}]
+  },
+  {
+    "request": "이 이벤트에 시온 체력을 최대치의 150%로 맞추는 줄 넣어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.changeActorHp.insert",
+    "args": {"index": 0, "actorId": "actor_hero", "op": "=", "amount": 150, "amountMode": "percent"},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 맵의 가로 99999칸에 정찰대를 미리 놓아 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.storeParty.insert",
+    "args": {"index": 0, "partySetId": "정찰대", "x": 99999},
+    "expectRefusal": true
+  },
+  {
+    "request": "떠날 동행자 이름은 공백으로만 적어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.removeFollower.insert",
+    "args": {"index": 0, "name": " "},
+    "expectRefusal": true
   }
 ]

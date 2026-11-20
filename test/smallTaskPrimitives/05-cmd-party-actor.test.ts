@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -213,12 +214,164 @@ it("분기 안에 넣은 줄을 고칠 때 이웃 줄과 지문으로 보호한 
   expect(() => runPrimitive(changed.after, target, "cmd.changeLevel.update", update)).toThrow(/바뀌었습니다/u);
 });
 
+it("두 분기가 같은 목록을 공유할 때 한 분기만 고치는 요청을 거부한다", () => {
+  const command: Command = { kind: "changeLevel", actorId, op: "+=", amount: 1 };
+  const branch = [command];
+  const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 }, then: branch, else: branch };
+  const { project, target, mapId } = fixture("blank", [fork]);
+  const branchPath = [0, FORK_THEN_BRANCH_INDEX];
+  expect(() => runPrimitive(project, target, "cmd.changeLevel.update", {
+    branchPath, index: 0, expectedHash: eventCommandHash(command), amount: 5,
+  })).toThrow(/선택한 분기만/u);
+  expect(() => runPrimitive(project, target, "cmd.changeLevel.insert", { branchPath, actorId })).toThrow(/선택한 분기만/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([fork]);
+  expect(branch).toEqual([{ kind: "changeLevel", actorId, op: "+=", amount: 1 }]);
+});
+
 it("선택한 페이지에 없는 줄, 다른 페이지 지정과 파티 위치 오류를 거부한다", () => {
   const { project, target, mapId } = fixture("built", [text]);
   expect(() => runPrimitive(project, target, "cmd.changeLevel.update", { index: 0, amount: 2, expectedHash: eventCommandHash(text) })).toThrow(/범위 밖/u);
   expect(() => runPrimitive(project, target, "cmd.changeLevel.insert", { actorId, pageId: "page_actor_other" })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId: "map_missing", x: 1, y: 1 })).toThrow(/맵/u);
   expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId, x: project.maps[mapId].width })).toThrow(/범위 밖/u);
+  expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { y: project.maps[mapId].height })).toThrow(/범위 밖/u);
+});
+
+it.each([
+  ["changeExp", { amount: -1 }],
+  ["changeLevel", { op: "=", amount: 0 }],
+  ["changeLevel", { op: "=", amount: 100 }],
+  ["changeLifeSkillExp", { skillId: life, amount: 1.5 }],
+  ["changeActorHp", { amount: 101, amountMode: "percent" }],
+  ["changeActorMp", { amount: Number.MAX_SAFE_INTEGER + 1 }],
+  ["changeEquipment", { slot: "helmet", equipmentId: "equip_sword" }],
+  ["changeEquipment", { equipmentId: " " }],
+  ["promoteActor", { toClassId: " " }],
+  ["addFollower", { spriteId: "speaker_sound", characterIndex: 0 }],
+  ["addFollower", { name: " " }],
+  ["removeFollower", { name: " " }],
+  ["removeFollower", { all: true, name: "길잡이" }],
+] as const)("%s 명령에 잘못된 값을 넣지 않는다 (%j)", (kind, args) => {
+  const { project, target, mapId } = fixture("blank", [text]);
+  const withActor = kind === "changeLifeSkillExp" || kind === "removeFollower" ? {} : { actorId };
+  expect(() => runPrimitive(project, target, `cmd.${kind}.insert`, { ...withActor, ...args })).toThrow(PrimitiveError);
+  expect(pages(project, mapId)[1]?.commands).toEqual([text]);
+});
+
+it("체력 변경을 백분율로 바꿀 때 기존 수치도 확인한다", () => {
+  const command: Command = { kind: "changeActorHp", actorId, op: "+=", amount: 120 };
+  const { project, target } = fixture("blank", [command]);
+  expect(() => runPrimitive(project, target, "cmd.changeActorHp.update", {
+    index: 0, expectedHash: eventCommandHash(command), amountMode: "percent",
+  })).toThrow(/0부터 100/u);
+});
+
+it("등록된 효과음을 동행자의 걷기 그림으로 쓰지 않는다", () => {
+  const { project, target } = fixture("blank", []);
+  project.assets = {
+    ...project.assets,
+    uploaded: { ...project.assets.uploaded, uploaded_sound: { id: "uploaded_sound", name: "종소리", kind: "sound", meta: {} } },
+  };
+  expect(() => runPrimitive(project, target, "cmd.addFollower.insert", { spriteId: "uploaded_sound" })).toThrow(/걷기 그림/u);
+});
+
+it("주인공의 걷기 그림과 별도로 지정한 그림을 동시에 쓰지 않는다", () => {
+  const { project, target } = fixture("blank", []);
+  expect(() => runPrimitive(project, target, "cmd.addFollower.insert", { actorId, spriteId })).toThrow(/자기 걷기 그림/u);
+});
+
+it("업로드한 걷기 그림에서 캐릭터 칸을 바꿀 때 방향과 자세를 유지한다", () => {
+  const uploadId = "uploaded_guide";
+  const oldFrame = { characterIndex: 1, direction: "left", pattern: 2 } as const;
+  const command: Command = {
+    kind: "addFollower", name: "길잡이",
+    graphic: { sprite: { type: "uploaded", id: uploadId }, direction: "left", pattern: charsetFrameIndex(oldFrame), scale: 2 },
+  };
+  const { project, target, mapId } = fixture("blank", [command]);
+  project.assets = {
+    ...project.assets,
+    uploaded: { ...project.assets.uploaded, [uploadId]: { id: uploadId, name: "길잡이 걷기", kind: "charset", meta: {} } },
+  };
+  const edit = { index: 0, expectedHash: eventCommandHash(command), characterIndex: 3 };
+  const { after } = runPrimitive(project, target, "cmd.addFollower.update", edit);
+  expect(pages(after, mapId)[1]?.commands).toEqual([
+    { ...command, graphic: { ...command.graphic, pattern: charsetFrameIndex({ ...oldFrame, characterIndex: 3 }) } },
+  ]);
+  const inserted = runPrimitive(project, target, "cmd.addFollower.insert", { spriteId: uploadId });
+  expect(pages(inserted.after, mapId)[1]?.commands[1]).toMatchObject({ graphic: { sprite: { type: "uploaded", id: uploadId } } });
+});
+
+it("캐릭터 칸만 고치면 기존 그림 식별자와 그 이름을 쓰는 명령을 보존한다", () => {
+  const alias = "easyrpg-charset-people1";
+  const graphic = { ...charsetFollowerGraphic(spriteId, 0), sprite: { type: "bundled", id: alias } } as const;
+  const command: Command = { kind: "addFollower", graphic };
+  const removal: Command = { kind: "removeFollower", name: alias };
+  const { project, target, mapId } = fixture("blank", [command, removal]);
+  const edit = { index: 0, expectedHash: eventCommandHash(command), characterIndex: 2 };
+  const { after } = runPrimitive(project, target, "cmd.addFollower.update", edit);
+  expect(pages(after, mapId)[1]?.commands).toEqual([
+    { ...command, graphic: { ...graphic, pattern: charsetFollowerGraphic(spriteId, 2).pattern } }, removal,
+  ]);
+});
+
+it("공용 이벤트의 분기가 참조하는 파티 저장 이름은 바꾸지 않는다", () => {
+  const command: Command = { kind: "storeParty", partySetId: "  정찰대 " };
+  const { project, target, mapId } = fixture("blank", [command]);
+  project.commonEvents = [...project.commonEvents, {
+    id: "ce_recall_patrol", name: "정찰대 부르기", trigger: "none", commands: [
+      { kind: "loop", body: [{ kind: "recallParty", partySetId: "정찰대" }, { kind: "breakLoop" }] },
+    ],
+  }];
+  const edit = { index: 0, expectedHash: eventCommandHash(command) };
+  expect(() => runPrimitive(project, target, "cmd.storeParty.update", { ...edit, partySetId: "후발대" })).toThrow(/불러오는 명령/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([command]);
+  const { after } = runPrimitive(project, target, "cmd.storeParty.update", { ...edit, partySetId: "정찰대" });
+  expect(pages(after, mapId)[1]?.commands).toEqual([{ ...command, partySetId: "정찰대" }]);
+  expect(after.commonEvents).toBe(project.commonEvents);
+});
+
+it("부대의 전투 후 명령이 참조하는 동행자 기본 이름을 바꾸지 않는다", () => {
+  const command: Command = { kind: "addFollower", actorId };
+  const { project, target, mapId } = fixture("built", [command]);
+  const name = project.database.actors.find(actor => actor.id === actorId)!.name;
+  const [troop, ...rest] = project.database.troops;
+  project.database.troops = [{ ...troop!, afterBattle: { victory: [{ kind: "removeFollower", name: `${name} (2)` }] } }, ...rest];
+  expect(() => runPrimitive(project, target, "cmd.addFollower.update", {
+    index: 0, expectedHash: eventCommandHash(command), actorId: "actor_mage",
+  })).toThrow(/동행자를 가리키는 다른 명령/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([command]);
+});
+
+it("다른 이벤트의 동행 확인 조건에 사용되는 이름은 바꾸지 않는다", () => {
+  const command: Command = { kind: "addFollower", actorId, name: "길잡이" };
+  const { project, target, mapId } = fixture("blank", [command]);
+  const query: Command = {
+    kind: "m2Command", commandId: "m2-217-data-query",
+    fields: { query: "followerPresent", target: "길잡이 (2)", variableId },
+  };
+  project.maps[mapId].events.push({
+    id: "ev_escort_check", x: 3, y: 2, trigger: { kind: "action" }, commands: [query],
+  });
+  expect(() => runPrimitive(project, target, "cmd.addFollower.update", {
+    index: 0, expectedHash: eventCommandHash(command), name: "새 길잡이",
+  })).toThrow(/동행자를 가리키는 다른 명령/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([command]);
+});
+
+it("광원이 주인공 식별자로 동행자를 따라가면 이름이 같아도 주인공 교체를 거부한다", () => {
+  const command: Command = { kind: "addFollower", actorId, name: "길잡이" };
+  const { project, target, mapId } = fixture("blank", [command]);
+  const light = { id: "escort_light", at: { eventId: actorId }, radius: 2 };
+  const edit = { index: 0, expectedHash: eventCommandHash(command), actorId: "actor_mage" };
+  const apply = () => runPrimitive(project, target, "cmd.addFollower.update", edit);
+  project.maps[mapId].defaultLighting = { ambient: 0.4, sources: [light] };
+  expect(apply).toThrow(/맵의 조명/u);
+  delete project.maps[mapId].defaultLighting;
+  project.commonEvents = [...project.commonEvents, {
+    id: "ce_escort_light", name: "동행자 등불", trigger: "none", commands: [{ kind: "addLight", source: light }],
+  }];
+  expect(apply).toThrow(/동행자를 가리키는 다른 명령/u);
+  expect(pages(project, mapId)[1]?.commands).toEqual([command]);
 });
 
 it("파티 저장의 사전 편성과 위치를 지우면 실행 시 편성과 위치를 다시 사용한다", () => {
@@ -232,6 +385,7 @@ it("파티 저장의 사전 편성과 위치를 지우면 실행 시 편성과 �
 
 function applyAndRun(edits: ReadonlyArray<readonly [string, Record<string, unknown>]>, arrange?: (session: ReturnType<typeof startSession>) => void) {
   const { project, target, mapId } = fixture("blank", []);
+  project.system = { ...project.system, skillSystem: { ...project.system.skillSystem, enabled: true } };
   const after = edits.reduce((draft, [id, args]) => runPrimitive(draft, target, id, args).after, project);
   const session = startSession(after, 1);
   arrange?.(session);
@@ -253,6 +407,13 @@ it("실행하면 화염을 배우고 경험치가 변수 값만큼 늘어난다"
   expect(session.actorExperience[actorId]).toBe(37);
 });
 
+it("생활 스킬 경험치가 실행 시 변수 값만큼 늘어난다", () => {
+  const session = applyAndRun([
+    ["cmd.changeLifeSkillExp.insert", { skillId: life, amountVariableId: variableId }],
+  ], session => { session.variables[variableId] = 25; });
+  expect(session.lifeSkills?.[life]?.xp).toBe(25);
+});
+
 it("완전 회복을 실행하면 파티의 체력과 마력이 최대치로 복구된다", () => {
   const session = applyAndRun([
     ["cmd.changeActorHp.insert", { actorId, op: "=", amount: 0 }],
@@ -264,6 +425,21 @@ it("완전 회복을 실행하면 파티의 체력과 마력이 최대치로 복
   expect(vitals.mp).toBe(vitals.maxMp);
   expect(vitals.maxHp).toBeGreaterThan(0);
   expect(vitals.maxMp).toBeGreaterThan(0);
+});
+
+it("파티 전체의 체력과 마력을 바꾸고 대기 멤버는 건드리지 않는다", () => {
+  const mage = "actor_mage";
+  const reserve = "actor_guardian";
+  const session = applyAndRun([
+    ["cmd.changeActorHp.insert", { actorId: "", op: "=", amount: 0 }],
+    ["cmd.changeActorMp.insert", { actorId: "all", op: "=", amount: 0 }],
+  ], session => {
+    session.partyActorIds = [actorId, mage];
+    session.actorVitals[mage]!.mp = 5;
+  });
+  expect(session.actorVitals[actorId]?.hp).toBe(0);
+  expect(session.actorVitals[mage]).toMatchObject({ hp: 0, mp: 0 });
+  expect(session.actorVitals[reserve]?.hp).toBeGreaterThan(0);
 });
 
 it("파티 저장과 불러오기가 바뀐 멤버를 되돌린다", () => {
@@ -280,7 +456,7 @@ it("이름으로 한 동행자만 제거한다", () => {
   const session = applyAndRun([
     ["cmd.addFollower.insert", { spriteId, name: "강아지" }],
     ["cmd.addFollower.insert", { spriteId, name: "고양이" }],
-    ["cmd.removeFollower.insert", { name: "강아지" }],
+    ["cmd.removeFollower.insert", { name: " 강아지 " }],
   ]);
   expect(session.followers.map(follower => follower.name)).toEqual(["고양이"]);
 });

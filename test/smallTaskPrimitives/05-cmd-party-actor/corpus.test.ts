@@ -11,6 +11,7 @@ import { expectKoreanSentence, loadFixture } from "../harness";
 
 type PartyCase = CorpusCase & {
   setup?: { commands?: Command[]; lifeSkills?: LifeSkillRecord[] };
+  refusalMessage?: string;
 };
 
 const file = join(dirname(fileURLToPath(import.meta.url)), "seeded-cases.json");
@@ -39,7 +40,7 @@ it.each(cases)("$request", entry => {
   const target = resolveTarget(before, entry.target);
   const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
   if (entry.expectRefusal) {
-    expect(apply).toThrow(PrimitiveError);
+    expect(apply).toThrow(entry.refusalMessage ?? PrimitiveError);
     return;
   }
   const result = apply();
