@@ -7,7 +7,15 @@ assertCiOnlyTests("vitest");
 
 applyLegacyEnvAliases();
 
+const localRun = process.env.OPRN_LOCAL_TESTS === "1" && process.env.CI !== "true" && process.env.CI !== "1";
+
 export default defineConfig({
+  // Worktrees often symlink node_modules. Keep their optimizer and result caches local.
+  ...(localRun && {
+    cacheDir: ".cache/vitest/vite",
+    // Bundled tilesets use default imports. Vite's SSR JSON fast path avoids parsing them as JS.
+    json: { namedExports: false, stringify: true },
+  }),
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -15,6 +23,7 @@ export default defineConfig({
     extensions: [".ts", ".js"],
   },
   test: {
+    ...(localRun && { fsModuleCachePath: ".cache/vitest/modules" }),
     environment: "node",
     include: ["test/**/*.test.ts"],
     // lakeVillageRebuildFinal은 .env.local + 라이브 LegacyDb 업서트가 필요한 저작 스크립트다.
