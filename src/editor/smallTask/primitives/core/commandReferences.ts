@@ -48,6 +48,7 @@ export function assertCommandDeletion(
   ctx: PrimitiveContext, after: Project, list: readonly Command[], command: Command,
 ): void {
   if (ctx.target.kind !== "event") return;
+  ctx.commandDeletionGuard?.(ctx, list, command);
   if (command.kind === "label") {
     if (list.find(row => row.kind === "label" && row.name === command.name) === command && usesLabel(list, command.name)) {
       throw new PrimitiveError("이 위치 표시로 이동하는 명령이 남아 있어 삭제할 수 없어요.");

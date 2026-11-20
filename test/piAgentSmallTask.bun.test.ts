@@ -170,6 +170,26 @@ test("작은 일 Pi 실행은 이동 초안이 가리키는 맵의 삭제를 거
   expect(done.project).toBe(project);
 });
 
+test("작은 일 Pi 실행은 다른 열린 이벤트가 참조하는 생성 ID를 바꾸지 않는다", async () => {
+  const { request, project, mapId, event, commands } = fixture();
+  const spawn: Command = { kind: "m2Command", commandId: "m2-203-spawn-event", fields: {
+    prefabId: event.id, eventId: "copy", x: 2, y: 3,
+  } };
+  commands[0] = spawn;
+  const other = project.maps[mapId].events[1]!;
+  const draft: GameEvent = { ...other, draft: { kind: "edit", original: other }, pages: [{
+    ...other.pages![1]!, commands: [{ kind: "m2Command", commandId: "m2-204-remove-event", fields: { eventId: "copy" } }],
+  }] };
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const rename = apply("m2.203.update", { index: 0, expectedHash: eventCommandHash(spawn), eventId: "new_copy" });
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, draftSource } },
+    { streamFn: scripted([rename]) });
+
+  expect(done.stoppedEarly).toContain("기존 식별자를 참조하는 곳이");
+  expect(done.project).toBe(project);
+  expect(done.changedKeys).toEqual([]);
+});
+
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {
   const { request, project, commands } = fixture();
   const done = await runPiAgent(request, { streamFn: scripted([
@@ -232,6 +252,62 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   expect(inside.changedKeys).toEqual([`maps.${mapId}`]);
   expect(layerTileAt(inside.project.maps[mapId], 2, 0)).toBe(0);
   expect(layerTileAt(inside.project.maps[mapId], 2, 1)).toBe(-1);
+});
+
+test("유닛 24는 선택한 칸에 이벤트를 만들고 영역 밖 타일 변경이 있으면 전체 작업을 취소한다", async () => {
+  const { request, project, mapId } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const selection = { rect: { x: 0, y: 0, w: 1, h: 1 } };
+  const selectedRequest = { ...request, smallTask: { ...request.smallTask, target, selection } };
+  const create = apply("event.tile.create", { name: "새 안내인" });
+  const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
+
+  const inside = await runPiAgent(selectedRequest, { streamFn: scripted([create, paint(0)]) });
+  expect(inside.stoppedEarly).toBeUndefined();
+  expect(inside.changedKeys).toEqual([`maps.${mapId}`]);
+  expect(inside.project.maps[mapId].events.slice(0, -1)).toEqual(project.maps[mapId].events);
+  expect(inside.project.maps[mapId].events.at(-1)).toMatchObject({ name: "새 안내인", x: 0, y: 0 });
+  expect(layerTileAt(inside.project.maps[mapId], 2, 0)).toBe(0);
+
+  const outside = await runPiAgent(selectedRequest, { streamFn: scripted([create, paint(1)]) });
+  expect(outside.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(outside.changedKeys).toEqual([]);
+  expect(outside.project).toBe(project);
+});
+
+for (const flag of ["request", "worker"] as const) {
+  test(`작은 일 Pi 읽기 전용 실행은 이벤트 생성 도구를 노출하거나 적용하지 않는다 (${flag})`, async () => {
+    const { request, project, mapId } = fixture();
+    const target = mapTarget(project, mapId)!;
+    const seen: ModelContext[] = [];
+    const done = await runPiAgent({ ...request, readOnly: flag === "request",
+      smallTask: { ...request.smallTask, target, selection: { rect: { x: 0, y: 0, w: 1, h: 1 } } },
+    }, { readOnlyTools: flag === "worker", streamFn: scripted([apply("event.tile.create", {})], seen) });
+    const toolNames = seen[0]?.tools?.map(tool => tool.name) ?? [];
+    expect(toolNames).toContain(LIST_SMALL_TASK_PRIMITIVES);
+    for (const write of [APPLY_SMALL_TASK_PRIMITIVE, "upsert_event", "place_npc", "paint_tiles", "move_event"]) {
+      expect(toolNames).not.toContain(write);
+    }
+    expect(done.changedKeys).toEqual([]);
+    expect(done.project).toBe(project);
+  });
+}
+
+test("유닛 24의 삭제는 Pi 요청에 실린 열린 초안의 스위치 의존성을 검사한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const switchId = "sw_draft_gate";
+  project.switches.push({ id: switchId, name: "초안의 문" });
+  const original = project.maps[mapId].events[1]!;
+  const page = event.pages[1]!;
+  event.pages = [event.pages[0]!, { ...page, commands: [{ kind: "setSwitch", switchId, value: true }] }];
+  const draft: GameEvent = { ...original, draft: { kind: "edit", original },
+    pages: [{ ...page, conditions: [{ kind: "switch", switchId, value: true }] }] };
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask,
+    draftSource: { maps: { [mapId]: { events: [draft] } } },
+  } }, { streamFn: scripted([apply("event.tile.remove", {})]) });
+  expect(done.stoppedEarly).toContain("다른 곳에서 이 이벤트를 사용하고 있어요");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
 });
 
 test("작은 일 Pi 실행은 다른 이벤트를 읽으려 하면 앞선 쓰기까지 버린다", async () => {

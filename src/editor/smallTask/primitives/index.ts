@@ -40,3 +40,5 @@ export const PRIMITIVE_UNITS = [
 ] as const;
 
 export const PRIMITIVES: readonly SmallTaskPrimitive[] = [...CORE_PRIMITIVES, ...PRIMITIVE_UNITS.flatMap<SmallTaskPrimitive>(unit => unit.PRIMITIVES)];
+
+export const commandDeletionGuard = unit02.assertFlowCommandDeletion;

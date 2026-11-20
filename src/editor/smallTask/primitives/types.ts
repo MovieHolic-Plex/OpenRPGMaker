@@ -2,7 +2,7 @@ import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import type { SmallTaskDraftSource } from "@/ai/smallTaskReferences";
 import type { JsonSchema } from "@/editor/tools/types";
 import type { CommandKind, ConditionKind } from "@/project/commandKindRegistry";
-import type { Project } from "@/project/types";
+import type { Command, Project } from "@/project/types";
 import type { SmallTaskTarget } from "../target";
 
 export interface PrimitiveContext {
@@ -12,6 +12,7 @@ export interface PrimitiveContext {
   readonly live?: SmallTaskDraftSource;
   readonly target: SmallTaskTarget;
   readonly selection?: { readonly rect?: { x: number; y: number; w: number; h: number } };
+  readonly commandDeletionGuard?: (ctx: PrimitiveContext, list: readonly Command[], command: Command) => void;
 }
 
 export interface PrimitiveCovers {

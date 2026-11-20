@@ -5,6 +5,7 @@ import type { Project, SkillRecord } from "@/project/types";
 import { isSystemSeCue } from "@/project/systemAudioOverrides";
 import { magicCueForElement, projectSeCue } from "@/project/seCues";
 import { playAudioCommand } from "@/player/audio";
+import { systemAudioOverride } from "@/player/systemAudioSlots";
 
 export type BattleAudioContext = { readonly project: Project; readonly session: PlaySession };
 import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
@@ -152,17 +153,21 @@ export function battleEventSeCues(event: BattleJuiceEvent): readonly string[] {
 }
 
 /**
- * 사건 하나의 저작 소리: 세션 덮어쓰기(시스템 효과음 13자리) → 프로젝트 자리 표. 자리 목록 앞이 먼저다.
+ * 사건 하나의 저작 소리: 세션 덮어쓰기 → M2 시스템 슬롯 → 프로젝트 자리 표. 자리 목록 앞이 먼저다.
  * 덮어쓰기에 빈 resourceId 가 있으면 「무음」이다 — null 을 돌려준다. 저작이 없으면 undefined.
  */
 export function authoredBattleCue(
   event: Exclude<BattleJuiceEvent, "victory">,
   project: Pick<Project, "system"> | undefined,
-  session: Pick<PlaySession, "systemAudioOverrides"> | undefined,
+  session: Pick<PlaySession, "systemAudioOverrides" | "m2Runtime"> | undefined,
 ): { readonly resourceId: string; readonly volume?: number } | null | undefined {
   for (const cue of SE_CUES[event]) {
     const override = isSystemSeCue(cue) ? session?.systemAudioOverrides?.se?.[cue] : undefined;
     if (override) return override.resourceId ? override : null;
+    if (cue === "defeat" || cue === "escape") {
+      const legacy = systemAudioOverride(session?.m2Runtime, cue);
+      if (legacy) return { resourceId: legacy };
+    }
     const authored = projectSeCue(project, cue);
     if (authored) return { resourceId: authored };
   }

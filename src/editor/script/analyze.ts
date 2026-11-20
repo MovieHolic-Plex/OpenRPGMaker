@@ -34,10 +34,63 @@ export interface ScriptAnalysis {
   readonly apis: string[];
 }
 
-function literalText(ts: TypeScriptApi, node: TS.Node | undefined): string | undefined {
+export function unwrapScriptExpression(ts: TypeScriptApi, node: TS.Expression): TS.Expression {
+  while (ts.isParenthesizedExpression(node) || ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)
+    || ts.isNonNullExpression(node) || ts.isSatisfiesExpression(node)) node = node.expression;
+  return node;
+}
+
+export function scriptStringLiteral(ts: TypeScriptApi, node: TS.Expression | undefined): string | undefined {
   if (!node) return undefined;
-  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+  const expression = unwrapScriptExpression(ts, node);
+  return ts.isStringLiteralLike(expression) ? expression.text : undefined;
+}
+
+export function scriptMemberName(ts: TypeScriptApi, access: TS.Node, object: TS.Node): string | undefined {
+  if (ts.isPropertyAccessExpression(access) && access.expression === object) return access.name.text;
+  if (ts.isElementAccessExpression(access) && access.expression === object) return scriptStringLiteral(ts, access.argumentExpression);
   return undefined;
+}
+
+function isGameObject(
+  ts: TypeScriptApi, expression: TS.Expression, isGlobal: (id: TS.Identifier) => boolean, allowComputedGlobal: boolean,
+): boolean {
+  const node = unwrapScriptExpression(ts, expression);
+  if (ts.isIdentifier(node)) return node.text === "game" && isGlobal(node);
+  if (!ts.isPropertyAccessExpression(node) && !ts.isElementAccessExpression(node)) return false;
+  const object = unwrapScriptExpression(ts, node.expression);
+  if (!ts.isIdentifier(object) || object.text !== "globalThis" || !isGlobal(object)) return false;
+  const name = scriptMemberName(ts, node, node.expression);
+  return name === "game" || (allowComputedGlobal && name === undefined);
+}
+
+export function scriptCallSource(ts: TypeScriptApi, source: string, fileName = "/script.ts", kind = ts.ScriptKind.TS) {
+  // The sandbox wraps each script, so declarations at the top of the file are local too.
+  const file = ts.createSourceFile(fileName, `${source}\nexport {};`, ts.ScriptTarget.ES2022, true, kind);
+  let checker: TS.TypeChecker | undefined;
+  const isGlobal = (id: TS.Identifier): boolean => {
+    checker ??= ts.createProgram([fileName], { noLib: true, noResolve: true, types: [], allowJs: kind === ts.ScriptKind.JS }, {
+      getSourceFile: name => name === fileName ? file : undefined,
+      getDefaultLibFileName: () => "",
+      writeFile: () => undefined,
+      getCurrentDirectory: () => "/",
+      getCanonicalFileName: name => name,
+      useCaseSensitiveFileNames: () => true,
+      getNewLine: () => "\n",
+      fileExists: name => name === fileName,
+      readFile: name => name === fileName ? file.text : undefined,
+    }).getTypeChecker();
+    const binding = checker.resolveName(id.text, id, ts.SymbolFlags.Value | ts.SymbolFlags.Alias, false);
+    // Ambient and type-only declarations do not introduce a binding in the sandbox.
+    return !binding?.declarations?.some(declaration =>
+      (ts.getCombinedModifierFlags(declaration) & ts.ModifierFlags.Ambient) === 0
+      && !ts.isPartOfTypeOnlyImportOrExportDeclaration(declaration));
+  };
+  return {
+    file,
+    isGlobal,
+    isEngineGameObject: (node: TS.Expression, allowComputedGlobal = false) => isGameObject(ts, node, isGlobal, allowComputedGlobal),
+  };
 }
 
 function levenshtein(a: string, b: string): number {
@@ -115,7 +168,7 @@ export function analyzeScript(
   source: string,
   options: { readonly project?: Project; readonly mapId?: string; readonly fileName?: string } = {}
 ): ScriptAnalysis {
-  const file = ts.createSourceFile(options.fileName ?? "/script.ts", source, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TS);
+  const { file, isGlobal, isEngineGameObject } = scriptCallSource(ts, source, options.fileName);
   const reads: ScriptRef[] = [];
   const writes: ScriptRef[] = [];
   const calls: ScriptRef[] = [];
@@ -147,10 +200,11 @@ export function analyzeScript(
 
   const visitGameCall = (node: TS.CallExpression, entry: ScriptApiEntry): void => {
     if (!apis.includes(entry.name)) apis.push(entry.name);
+    const spreadIndex = node.arguments.findIndex(ts.isSpreadElement);
     for (const ref of entry.refs ?? []) {
-      const argument = node.arguments[ref.arg];
+      const argument = node.arguments[spreadIndex >= 0 && spreadIndex <= ref.arg ? spreadIndex : ref.arg];
       if (!argument) continue;
-      const id = literalText(ts, argument);
+      const id = scriptStringLiteral(ts, argument);
       if (id === undefined) {
         dynamic.push({ api: entry.name, line: position(argument).line });
         continue;
@@ -183,14 +237,14 @@ export function analyzeScript(
       if (!ts.isPropertyAssignment(property)) continue;
       const name = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) ? property.name.text : undefined;
       if (!name) continue;
-      if (name === "kind") kind = literalText(ts, property.initializer);
+      if (name === "kind") kind = scriptStringLiteral(ts, property.initializer);
       else fields.push([name, property.initializer]);
     }
     const access = scriptCmdAccess(kind);
     for (const [name, initializer] of fields) {
       const refKind = CMD_ID_FIELDS[name];
       if (!refKind) continue;
-      const id = literalText(ts, initializer);
+      const id = scriptStringLiteral(ts, initializer);
       if (id === undefined) {
         dynamic.push({ api: `cmd.${kind ?? "?"}.${name}`, line: position(initializer).line });
         continue;
@@ -212,11 +266,14 @@ export function analyzeScript(
         diagnostics.push({ ...position(node.moduleSpecifier), message: `Scripts can only import project library modules ("@lib/<id>"), not "${specifier}".`, severity: "error", source: "analyzer" });
       }
     }
-    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "require") {
-      diagnostics.push({ ...position(node), message: "Use `import { … } from \"@lib/<id>\"` instead of require().", severity: "warning", source: "analyzer" });
-    }
-    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression) && node.expression.expression.text === "game") {
-      const entry = SCRIPT_API_BY_NAME.get(node.expression.name.text);
+    if (ts.isCallExpression(node)) {
+      const callee = unwrapScriptExpression(ts, node.expression);
+      if (ts.isIdentifier(callee) && callee.text === "require" && isGlobal(callee)) {
+        warn(node, "Use `import { … } from \"@lib/<id>\"` instead of require().");
+      }
+      const name = (ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee))
+        && isEngineGameObject(callee.expression) ? scriptMemberName(ts, callee, callee.expression) : undefined;
+      const entry = name === undefined ? undefined : SCRIPT_API_BY_NAME.get(name);
       if (entry) {
         if (transferSeen && entry.awaits && entry.name !== "transfer") {
           warn(node, "This game call comes after game.transfer(...). A transfer ends the running event, so it will not run.", "warning");
