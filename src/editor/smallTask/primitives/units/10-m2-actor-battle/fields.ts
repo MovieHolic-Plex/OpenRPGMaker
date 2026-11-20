@@ -1,7 +1,7 @@
 import { BATTLE_SCENERY_CATALOG, battleSceneryStill } from "@/assets/battleSceneryCatalog";
-import { findCharsetSemantic } from "@/assets/charsetSemantics";
-import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
-import { resolveFacesetFaceAssetUrl } from "@/assets/generatedAssetResourceResolver";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { resolveAssetResourceUrl, resolveFacesetFaceAssetUrl } from "@/assets/generatedAssetResourceResolver";
+import { findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import type { JsonSchema } from "@/editor/tools/types";
 import { parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
@@ -23,11 +23,13 @@ export type Row = {
 };
 
 const text = (description: string, minLength = 1): JsonSchema => ({ type: "string", minLength, description });
+const singleLine = (description: string, maxLength: number, minLength = 1): JsonSchema =>
+  ({ ...text(description, minLength), maxLength, pattern: "^[^\\r\\n]*$" });
 const integer = (description: string, minimum: number, maximum = Number.MAX_SAFE_INTEGER): JsonSchema =>
   ({ type: "integer", minimum, maximum, description });
 const choices = (description: string, ...values: string[]): JsonSchema => ({ type: "string", enum: values, description });
 
-const actor = text("바꿀 주인공의 자료집 항목입니다. 파티 전체는 party로 고릅니다.");
+const actor = text("바꿀 주인공의 자료집 항목입니다. 파티 전체를 바꾸려면 party를 고릅니다.");
 const enemy = text("적 자료집 항목 또는 전투 배치 번호입니다. 첫 번째 적은 enemy-1입니다.");
 const allEnemies = { ...enemy, description: enemy.description + " 모든 적은 all로 고릅니다." };
 const operation = choices("값을 맞추려면 set, 더하려면 add, 빼려면 remove를 고릅니다.", "set", "add", "remove");
@@ -36,16 +38,15 @@ const amount = integer("변화량입니다.", 0);
 const count = integer("더할 행동 횟수입니다.", 1);
 const sourceFields = {
   valueSource: choices("고정 숫자는 number, 변수에서 읽으려면 variable을 고릅니다.", "number", "variable"),
-  valueVariableId: text("변수에서 읽을 때 사용할 변수입니다. 고정 숫자라면 비울 수 있습니다.", 0),
+  valueVariableId: text("값을 읽어 올 변수입니다. 이 항목만 지정해도 변수 값을 사용합니다.", 0),
 };
 const note = text("편집기에서 이 명령을 설명할 메모입니다.", 0);
 const field = (fields: M2CommandFields, key: string) => String(fields[key] ?? "");
 
 function actorReference(project: Project, fields: M2CommandFields): void {
   const target = field(fields, "target");
-  const id = target === "actor" ? field(fields, "actorId") : target;
-  if (target !== "actor" && ["", "party", "all"].includes(id)) return;
-  requireRecord(project.database.actors, id, "주인공");
+  if (["", "party", "all"].includes(target)) return;
+  requireRecord(project.database.actors, target, "주인공");
 }
 
 function enemyReference(allowAll: boolean): Reference {
@@ -64,32 +65,42 @@ function requireRecord(records: readonly { id: string }[], id: string, title: st
 }
 
 function variableReference(project: Project, fields: M2CommandFields): void {
-  const id = field(fields, "valueVariableId");
-  if (fields.valueSource === "variable" || id) requireRecord(project.variables, id, "변수");
+  if (fields.valueSource === "variable") requireRecord(project.variables, field(fields, "valueVariableId").trim(), "변수");
+}
+
+function battleCommandRecords(project: Project, fields: M2CommandFields): readonly RecordName[] {
+  const target = field(fields, "target");
+  const actorId = target === "actor" ? field(fields, "actorId").trim() : target;
+  const actorClassId = project.database.actors.find(actor => actor.id === actorId)?.classId;
+  return [
+    ...(project.database.battleCommands ?? []),
+    ...(project.database.classes.find(record => record.id === actorClassId)?.battleCommands ?? []),
+  ];
 }
 
 function battleCommandReference(project: Project, fields: M2CommandFields): void {
-  const ids = field(fields, "operation") === "set" && field(fields, "slots")
-    ? field(fields, "slots").split(",").map(entry => entry.trim()).filter(Boolean)
-    : [field(fields, "value")];
-  for (const id of ids) requireRecord(project.database.battleCommands ?? [], id, "전투 명령");
+  if (fields.target === "actor") requireRecord(project.database.actors, field(fields, "actorId").trim(), "주인공");
+  else actorReference(project, fields);
+  const slots = fields.operation === "set" ? field(fields, "slots").split(",").map(id => id.trim()).filter(Boolean) : [];
+  const records = battleCommandRecords(project, fields);
+  for (const id of slots.length ? slots : [field(fields, "value")]) requireRecord(records, id, "전투 명령");
 }
 
 function resourceName(project: Project, id: string, kind: ResourceKind | "battleback"): string | undefined {
   const allowedKinds = kind === "battleback" ? ["backdrop", "picture"] : [kind];
   const profiles = project.resourceProfiles.filter(profile => profile.assetId === id && allowedKinds.includes(profile.kind));
   const uploaded = Object.hasOwn(project.assets.uploaded, id) ? project.assets.uploaded[id] : undefined;
-  if (uploaded && (allowedKinds.includes(uploaded.kind) || (kind === "charset" && uploaded.kind === "sprite"))) {
-    return uploaded.name;
-  }
-  if (profiles.length) return profiles[0]!.name;
+  if (uploaded && allowedKinds.includes(uploaded.kind)) return uploaded.name;
   if (kind === "charset") {
-    const sheet = EASYRPG_RTP_ASSETS.find(asset => asset.category === "charset" && asset.id === id);
-    if (sheet) return sheet.name;
-    if (Object.hasOwn(project.assets.sprites, id) || findCharsetSemantic(id, 0)) return "걷기 그림";
+    const sheet = findCharsetAsset(id);
+    return sheet ? profiles[0]?.name ?? "걷기 그림" : undefined;
   }
-  if (kind === "faceset" && typeof resolveFacesetFaceAssetUrl(id) === "string") return "얼굴 그림";
+  if (kind === "faceset") {
+    if (findSharedPortrait(id) || typeof resolveFacesetFaceAssetUrl(id) === "string") return profiles[0]?.name ?? "얼굴 그림";
+    return !uploaded && profiles[0] && resolveAssetResourceUrl(id, { project }) ? profiles[0].name : undefined;
+  }
   if (kind === "battleback") {
+    if (profiles.length) return profiles[0]!.name;
     const biome = BATTLE_SCENERY_CATALOG.find(entry => entry.resourceId === id)?.biome;
     if (biome) return { plains: "풀밭", forest: "숲", cave: "동굴", snow: "설원", desert: "사막" }[biome];
     const still = battleSceneryStill(id);
@@ -124,8 +135,11 @@ function nameOf(records: readonly RecordName[], id: string): string | undefined 
 }
 
 function prepareNumberSource(fields: M2CommandFields, patch: M2CommandFields): void {
-  if (patch.valueSource === "number") {
-    if (patch.valueVariableId) throw new PrimitiveError("고정 숫자로 바꿀 때는 변수를 비워 주세요.");
+  const fixed = patch.valueSource === "number"
+    || (patch.valueSource === undefined && patch.value !== undefined && !patch.valueVariableId);
+  if (fixed) {
+    if (patch.valueVariableId) throw new PrimitiveError("고정 숫자를 쓸 때는 값을 읽을 변수를 비워 주세요.");
+    fields.valueSource = "number";
     fields.valueVariableId = "";
   } else if (patch.valueVariableId) {
     fields.valueSource = "variable";
@@ -142,9 +156,26 @@ function prepareGraphic(fields: M2CommandFields, patch: M2CommandFields): void {
   if (patch.value !== undefined && patch.characterIndex === undefined && fields.characterIndex !== undefined) {
     fields.characterIndex = graphic.characterIndex;
   }
+  if (!graphic.resourceId && Number(fields.characterIndex ?? 0) !== 0) {
+    throw new PrimitiveError("인물 칸을 고르려면 먼저 걷기 그림을 골라 주세요.");
+  }
 }
 
 function prepareBattleCommands(fields: M2CommandFields, patch: M2CommandFields): void {
+  if (patch.target !== undefined) {
+    const target = field(patch, "target");
+    if (target === "party" || target === "all") {
+      fields.target = "party";
+      delete fields.actorId;
+    } else {
+      fields.target = "actor";
+      fields.actorId = target;
+    }
+  } else if (fields.target !== "actor" && !["", "party", "all"].includes(field(fields, "target"))) {
+    // 예전 명령의 직접 지정 방식도 편집기에서 주인공 한 명으로 열리게 저장한다.
+    fields.actorId = field(fields, "target");
+    fields.target = "actor";
+  }
   // 전투 명령 교체 목록이 남아 있으면 단일 명령의 새 값보다 먼저 쓰인다.
   if (patch.value !== undefined) delete fields.slots;
 }
@@ -166,7 +197,7 @@ export const ROWS: Readonly<Record<number, Row>> = {
     title: "능력치 변경",
     properties: {
       target: actor, parameter: choices("바꿀 능력치입니다. 최대 체력·최대 마력·공격력·방어력·정신력·민첩성 중에 고릅니다.", ...Object.keys(parameters)),
-      operation, value: amount, ...sourceFields,
+      operation, value: { ...amount, description: "고정 변화량입니다. 변수 값을 쓰려면 값을 읽을 변수를 지정합니다." }, ...sourceFields,
     },
     prepare: prepareNumberSource, references: [actorReference, variableReference],
     detail: labelFor("parameter", parameters),
@@ -178,23 +209,24 @@ export const ROWS: Readonly<Record<number, Row>> = {
   },
   21: {
     title: "피해와 회복",
-    properties: { target: actor, operation: choices("피해는 add, 회복은 remove를 고릅니다.", "add", "remove"), value: amount, ...sourceFields },
+    properties: { target: actor, operation: choices("피해는 add, 회복은 remove를 고릅니다.", "add", "remove"),
+      value: { ...amount, description: "고정 피해량 또는 회복량입니다. 변수 값을 쓰려면 값을 읽을 변수를 지정합니다." }, ...sourceFields },
     prepare: prepareNumberSource, references: [actorReference, variableReference], detail: labelFor("operation", { add: "피해", remove: "회복" }),
   },
   22: {
     title: "주인공 이름 변경",
-    properties: { target: actor, value: text("바꿀 이름입니다.") },
+    properties: { target: actor, value: singleLine("바꿀 이름입니다. 한 줄에 최대 12자까지 입력합니다.", 12) },
     required: ["value"], prepare: prepareName, references: [actorReference], detail: name,
   },
   23: {
     title: "주인공 별명 변경",
-    properties: { target: actor, value: text("바꿀 별명입니다. 별명을 지우려면 빈 글을 입력합니다.", 0) },
+    properties: { target: actor, value: singleLine("바꿀 별명입니다. 한 줄에 최대 16자까지 입력합니다. 별명을 지우려면 빈 문자열을 입력합니다.", 16, 0) },
     required: ["value"], references: [actorReference], detail: name,
   },
   24: {
     title: "주인공 모습 변경",
     properties: {
-      target: actor, value: text("걷기 그림 리소스 또는 그림 검색 결과입니다. 원래 모습으로 되돌리려면 비웁니다.", 0),
+      target: actor, value: text("걷기 그림 리소스 또는 그림 검색 결과입니다. 기본 걷기 그림을 쓰려면 비웁니다.", 0),
       characterIndex: integer("시트 안의 인물 칸입니다. 첫 칸은 0입니다.", 0, 7),
     },
     required: ["value"], prepare: prepareGraphic, references: [actorReference, resourceReference("charset")],
@@ -202,7 +234,7 @@ export const ROWS: Readonly<Record<number, Row>> = {
   },
   25: {
     title: "주인공 얼굴 변경",
-    properties: { target: actor, value: text("얼굴 그림 리소스입니다. 원래 얼굴로 되돌리려면 비웁니다.", 0) },
+    properties: { target: actor, value: text("얼굴 그림 리소스입니다. 얼굴을 숨기려면 비웁니다.", 0) },
     required: ["value"], references: [actorReference, resourceReference("faceset")],
     detail: (project, fields) => resourceName(project, field(fields, "value"), "faceset"),
   },
@@ -213,9 +245,13 @@ export const ROWS: Readonly<Record<number, Row>> = {
   },
   92: {
     title: "주인공 전투 명령 변경",
-    properties: { target: actor, operation, value: text("전투 메뉴에 넣거나 뺄 명령 자료집 항목입니다.") },
-    required: ["value"], defaults: { operation: "add" }, prepare: prepareBattleCommands, references: [actorReference, battleCommandReference],
-    detail: (project, fields) => nameOf(project.database.battleCommands ?? [], field(fields, "value")),
+    properties: {
+      target: actor,
+      operation: choices("전투 메뉴에 추가하려면 add, 빼려면 remove, 메뉴의 명령을 하나로 교체하려면 set을 고릅니다.", "add", "remove", "set"),
+      value: text("전투 명령의 자료집 항목입니다. 직업 전용 명령을 고를 때는 해당 주인공을 지정합니다."),
+    },
+    required: ["value"], defaults: { target: "party", operation: "add" }, prepare: prepareBattleCommands, references: [battleCommandReference],
+    detail: (project, fields) => nameOf(battleCommandRecords(project, fields), field(fields, "value")),
   },
   98: {
     title: "적 체력 변경", properties: { target: allEnemies, operation, value: amount },

@@ -1,14 +1,21 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { actorBattlers, enemyBattlers } from "@/battle/battleBattlers";
-import { executeM2BattleCommand } from "@/battle/battleM2CommandExecutor";
+import { HEROES_CHARSET_ASSETS } from "@/assets/heroesCharsets";
+import { SHARED_PORTRAIT_ASSETS } from "@/assets/sharedPortraitAssets";
+import { battleCommandsForActor } from "@/battle/battleCommands";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/10-m2-actor-battle";
+import { runToolAsync } from "@/editor/tools/asyncToolRunner";
+import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
+import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
+import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
+import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import type { Command, EventPage, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, runHeadless } from "./harness";
@@ -20,6 +27,7 @@ const READ_ONLY_PAGE = "pg_actor_battle_other";
 const CALLED_PAGE = "battle_page_reinforcements";
 const hero = "actor_hero";
 const original: Command = { kind: "text", body: "그대로 있는 대사." };
+const battleOnly = new Set(["098", "099", "100", "101", "102", "104", "105", "107", "108", "218"]);
 
 type M2 = Extract<Command, { kind: "m2Command" }>;
 type RowCase = {
@@ -54,7 +62,7 @@ const cases: readonly RowCase[] = [
   { number: "091", commandId: "m2-091-change-actor-class", args: { value: "class_paladin" },
     stored: { target: "", value: "class_paladin" }, patch: { value: "class_mage" }, updated: { value: "class_mage" } },
   { number: "092", commandId: "m2-092-change-battle-commands", args: { target: hero, value: "cmd_defend" },
-    stored: { target: hero, operation: "add", value: "cmd_defend" }, patch: { operation: "remove" }, updated: { operation: "remove" } },
+    stored: { target: "actor", actorId: hero, operation: "add", value: "cmd_defend" }, patch: { operation: "remove" }, updated: { operation: "remove" } },
   { number: "098", commandId: "m2-098-change-enemy-hp", args: { target: "enemy-1", operation: "remove", value: 8 },
     stored: { target: "enemy-1", operation: "remove", value: "8" },
     patch: { value: 4 }, updated: { value: "4" } },
@@ -117,6 +125,22 @@ function fixture(name: "blank" | "built" | "maou" = "built", commands: Command[]
 describe("능력과 전투 명령 한 줄 저작", () => {
   for (const row of cases) {
     const originalM2: M2 = { kind: "m2Command", commandId: row.commandId, fields: row.stored };
+    const expectedHash = eventCommandHash(originalM2);
+    if (battleOnly.has(row.number)) {
+      it(`m2.${row.number}는 맵 이벤트의 동작 목록에서 숨기고 직접 호출도 거절한다`, () => {
+        const { project, target, read } = fixture("built", [originalM2, original]);
+        const insert = `m2.${row.number}.insert`;
+        const update = `m2.${row.number}.update`;
+        const offered = primitivesForTarget(target).map(primitive => primitive.id);
+        expect(offered).not.toContain(insert);
+        expect(offered).not.toContain(update);
+        expectRefused(project, target, insert, row.args, /맵 이벤트에서 실행되지/u);
+        expectRefused(project, target, update, { index: 0, expectedHash, ...row.patch }, /맵 이벤트에서 실행되지/u);
+        expect(read(project)).toEqual([originalM2, original]);
+      });
+      continue;
+    }
+
     it(`m2.${row.number}.insert는 한 줄을 넣고 한 번에 복원한다`, async () => {
       const { project, target, read } = fixture();
       const { after, sentence } = runPrimitive(project, target, `m2.${row.number}.insert`, row.args);
@@ -128,7 +152,7 @@ describe("능력과 전투 명령 한 줄 저작", () => {
 
     it(`m2.${row.number}.update는 바꾼 필드만 갱신하고 한 번에 복원한다`, async () => {
       const { project, target, read } = fixture("built", [originalM2, original]);
-      const { after, sentence } = runPrimitive(project, target, `m2.${row.number}.update`, { index: 0, ...row.patch });
+      const { after, sentence } = runPrimitive(project, target, `m2.${row.number}.update`, { index: 0, expectedHash, ...row.patch });
       const expected = { ...originalM2, fields: { ...row.stored, ...row.updated } };
       expect(jsonEqual(read(after), [expected, original])).toBe(true);
       expect(jsonEqual(read(project), [originalM2, original])).toBe(true);
@@ -163,51 +187,133 @@ describe("능력과 전투 명령 한 줄 저작", () => {
 
   it("다른 명령 줄을 같은 명령으로 덮어쓸 수 없다", () => {
     const { project, target } = fixture();
-    expect(() => runPrimitive(project, target, "m2.022.update", { index: 0, value: "카이" }))
-      .toThrow(/같은 종류의 명령/);
+    expectRefused(project, target, "m2.022.update", { index: 0, expectedHash: eventCommandHash(original), value: "카이" }, /이 종류의 명령/u);
   });
 
-  it("해시가 오래된 수정은 같은 종류의 줄이어도 거절한다", () => {
+  it("같은 종류의 다른 줄의 해시나 해시가 없는 수정은 거절한다", () => {
     const row = cases.find(entry => entry.number === "022")!;
-    const { project, target } = fixture("built", [{ kind: "m2Command", commandId: row.commandId, fields: row.stored }]);
-    expect(() => runPrimitive(project, target, "m2.022.update", { index: 0, expectedHash: "old-hash", value: "하루" }))
-      .toThrow(/줄의 내용이 바뀌었습니다/u);
+    const first: M2 = { kind: "m2Command", commandId: row.commandId, fields: row.stored };
+    const second: M2 = { ...first, fields: { ...first.fields, value: "새봄" } };
+    const { project, target, read } = fixture("built", [first, second]);
+    const args = { index: 1, value: "하루" };
+    expectRefused(project, target, "m2.022.update", args, /값의 형식/u);
+    expectRefused(project, target, "m2.022.update", { ...args, expectedHash: eventCommandHash(first) }, /줄의 내용이 바뀌었습니다/u);
+    expectRefused(project, target, "m2.022.update", { index: 1, expectedHash: eventCommandHash(second) }, /바꿀 값을/u);
+    expect(read(project)).toEqual([first, second]);
   });
 
-  it("옛 전투 편집기가 저장한 숫자 필드를 호환 형식으로 읽고 고친다", async () => {
-    const command: M2 = {
-      kind: "m2Command", commandId: "m2-098-change-enemy-hp",
-      fields: { target: "enemy-1", operation: "remove", value: 10 },
-    };
-    const { project, target, read } = fixture("built", [command, original]);
-    const { after } = runPrimitive(project, target, "m2.098.update", { index: 0, operation: "set" });
-    expect(read(after)).toEqual([{ ...command, fields: { ...command.fields, operation: "set", value: "10" } }, original]);
-    await expectUndoRestores(project, after, target);
+  it("인자로 읽기 전용 페이지를 지정해도 선택 대상을 바꿀 수 없다", () => {
+    const { project, target } = fixture();
+    expectRefused(project, target, "m2.022.insert", { pageId: READ_ONLY_PAGE, value: "하루" }, /값의 형식/u);
   });
 
-  it("분기 안에 삽입하고 같은 위치에서 수정해도 옆 분기는 보존한다", () => {
+  it("맵 저장 키와 내부 식별자가 다르면 다른 맵에 쓰지 않는다", () => {
+    const { project, target } = fixture();
+    const map = project.maps[target.mapId]!;
+    const other = { ...map, id: "another_map" };
+    const malformed = { ...project, maps: { ...project.maps, [target.mapId]: other, [other.id]: other } };
+    expectRefused(malformed, target, "m2.022.insert", { value: "하루" }, /이벤트를 담은 맵/u);
+  });
+
+  it("이벤트 읽기에서 받은 위치와 해시로 분기 안의 줄만 고친다", async () => {
     const fork: Command = { kind: "fork", condition: { kind: "switch", switchId: "sw_0001", value: true }, then: [], else: [original] };
     const { project, target, read } = fixture("built", [fork]);
     const path = { branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 0 };
     const first = runPrimitive(project, target, "m2.022.insert", { ...path, value: "카이" }).after;
-    const next = runPrimitive(first, target, "m2.022.update", { ...path, value: "봄" }).after;
-    expect(jsonEqual(read(next), [{ ...fork, then: [{ kind: "m2Command", commandId: "m2-022-change-actor-name", fields: { target: "", value: "봄" } }] }])).toBe(true);
+    const ctx = { project: first, assistantRun: true, smallTaskTarget: target };
+    const result = await runToolAsync(ctx, "get_event", { mapId: target.mapId, eventId: target.eventId, includeCommandHashes: true });
+    expect(result.ok, result.summary).toBe(true);
+    const { commandHashes } = result.data as {
+      commandHashes: { pageId: string; commands: { index: number; branchPath: number[]; hash: string }[] }[];
+    };
+    const row = commandHashes.find(page => page.pageId === PAGE)!.commands.find(row => jsonEqual(row.branchPath, path.branchPath))!;
+    expect(row).toMatchObject(path);
+    await expect(runSmallTaskPrimitiveTool(ctx, APPLY_SMALL_TASK_PRIMITIVE, {
+      id: "m2.022.update", args: { index: row.index, branchPath: row.branchPath, expectedHash: row.hash, value: "봄" },
+    })).resolves.toMatchObject({ ok: true });
+    expect(read(ctx.project)).toEqual([{ ...fork, then: [{ kind: "m2Command", commandId: "m2-022-change-actor-name", fields: { target: "", value: "봄" } }] }]);
+  });
+
+  it.each([
+    [{ branchPath: [0] }, /분기 위치/u],
+    [{ branchPath: [0, -33] }, /명령 분기를/u],
+    [{ index: 2 }, /명령 줄을/u],
+    [{ index: Number.MAX_SAFE_INTEGER + 1 }, /값의 형식/u],
+  ] as const)("없는 명령 위치를 거절한다 (%j)", (args, reason) => {
+    const { project, target } = fixture();
+    expectRefused(project, target, "m2.022.insert", { ...args, value: "카이" }, reason);
   });
 
   it.each([
     ["m2.014.insert", { valueSource: "variable", valueVariableId: "missing_var" }, "변수"],
     ["m2.019.insert", { value: "missing_state" }, "상태"],
     ["m2.022.insert", { target: "missing_actor", value: "카이" }, "주인공"],
+    ["m2.022.insert", { target: hero, value: "  " }, "이름을 입력"],
+    ["m2.022.insert", { target: hero, value: "가".repeat(13) }, "값의 형식"],
+    ["m2.023.insert", { target: hero, value: "별명\n다음 줄" }, "값의 형식"],
     ["m2.024.insert", { value: "missing_charset" }, "그림"],
+    ["m2.024.insert", { value: "tex_easyrpg_charset_actor1#8" }, "여덟째"],
+    ["m2.024.insert", { value: "", characterIndex: 2 }, "먼저 걷기 그림"],
     ["m2.025.insert", { value: "missing_face" }, "그림"],
     ["m2.091.insert", { value: "missing_class" }, "직업"],
     ["m2.092.insert", { value: "missing_command" }, "전투 명령"],
-    ["m2.098.insert", { target: "enemy-999", value: 8 }, "적"],
-    ["m2.102.insert", { resourceId: "battle-scenery-missing" }, "그림"],
-    ["m2.104.insert", { target: "missing_battle_page" }, "전투 이벤트 페이지"],
+    ["m2.021.insert", { value: Number.MAX_SAFE_INTEGER + 1 }, "값의 형식"],
   ] as const)("%s는 유효하지 않은 참조를 거절한다", (id, args, message) => {
     const { project, target } = fixture();
     expectRefused(project, target, id, args, new RegExp(message, "u"));
+  });
+
+  it("걷기 그림으로 등록되지 않은 스프라이트를 거절한다", () => {
+    const { project, target } = fixture();
+    const id = "non_charset_sprite";
+    project.assets = { ...project.assets, uploaded: { ...project.assets.uploaded, [id]: { id, name: "다른 그림", kind: "sprite", meta: {} } } };
+    expectRefused(project, target, "m2.024.insert", { target: hero, value: id }, /그림을 찾을/u);
+  });
+
+  it("전투 명령 교체 목록이 비어 있으면 실제로 읽는 단일 명령을 검사한다", () => {
+    const command: M2 = {
+      kind: "m2Command", commandId: "m2-092-change-battle-commands",
+      fields: { target: "actor", actorId: hero, operation: "set", slots: " , ", value: "missing_command" },
+    };
+    const { project, target } = fixture("built", [command]);
+    expectRefused(project, target, "m2.092.update", { index: 0, expectedHash: eventCommandHash(command), target: hero }, /전투 명령/u);
+  });
+
+  it("주인공의 직업에만 있는 명령도 전투 메뉴에 지정할 수 있다", () => {
+    const { project, target } = fixture("built", []);
+    const actor = project.database.actors.find(record => record.id === hero)!;
+    const command = { id: "class_only_defense", name: "철벽", kind: "defend" } as const;
+    const database = {
+      ...project.database,
+      classes: project.database.classes.map(record => record.id === actor.classId
+        ? { ...record, battleCommands: [...record.battleCommands, command] } : record),
+    };
+    const { after } = runPrimitive({ ...project, database }, target, "m2.092.insert", {
+      target: hero, operation: "set", value: command.id,
+    });
+    const { session } = runHeadless(after, target.mapId, target.eventId);
+    expect(session.actorBattleCommands?.[hero]).toEqual([command.id]);
+    expect(battleCommandsForActor(after, hero, { overrideCommandIds: session.actorBattleCommands?.[hero] }))
+      .toEqual([expect.objectContaining({ id: command.id, kind: "defend" })]);
+  });
+
+  it("예전의 주인공 직접 지정 줄을 수정해도 전투 메뉴가 해당 주인공에게만 바뀐다", () => {
+    const command: M2 = {
+      kind: "m2Command", commandId: "m2-092-change-battle-commands",
+      fields: { target: hero, operation: "set", value: "", slots: "cmd_attack,cmd_item" },
+    };
+    const { project, target, read } = fixture("built", [command]);
+    const { after } = runPrimitive(project, target, "m2.092.update", {
+      index: 0, expectedHash: eventCommandHash(command), value: "cmd_defend",
+    });
+    expect(read(after)).toEqual([{ ...command, fields: { target: "actor", actorId: hero, operation: "set", value: "cmd_defend" } }]);
+    const { session } = runHeadless(after, target.mapId, target.eventId);
+    expect(session.actorBattleCommands).toEqual({ [hero]: ["cmd_defend"] });
+
+    const toParty = runPrimitive(after, target, "m2.092.update", {
+      index: 0, expectedHash: eventCommandHash(read(after)[0]!), target: "party",
+    }).after;
+    expect(read(toParty)).toEqual([{ ...command, fields: { target: "party", operation: "set", value: "cmd_defend" } }]);
   });
 });
 
@@ -218,6 +324,8 @@ describe("저장된 명령 실행", () => {
     const { session, step } = runHeadless(after, target.mapId, target.eventId);
     expect(step).toEqual({ kind: "done" });
     expect(session.actorNames?.[hero]).toBe("카이");
+    expect(after.database).toBe(project.database);
+    expect(after.commonEvents).toBe(project.commonEvents);
   });
 
   it("완성 예제에서 변수에 적힌 만큼 공격력 보정을 올린다", () => {
@@ -243,39 +351,49 @@ describe("저장된 명령 실행", () => {
     expect(session.actorVitals[firstActor]!.hp).toBe(before - 3);
   }, 180_000);
 
-  it("적 체력과 추가 행동이 실제 전투 집행기에 반영된다", () => {
+  it("변수를 쓰던 능력치 줄에 고정 숫자를 주면 플레이에서도 그 숫자를 쓴다", () => {
     const { project, target, read } = fixture("built", []);
-    const first = runPrimitive(project, target, "m2.098.insert", { target: "enemy-1", operation: "remove", value: 17 }).after;
-    const after = runPrimitive(first, target, "m2.108.insert", { target: hero, value: 3 }).after;
-    const enemies = enemyBattlers(after, after.database.troops[0]!);
-    const actors = actorBattlers(after);
-    const hp = enemies[0]!.hp;
-    const extra: { actorId: string; amount: number }[] = [];
-    for (const command of read(after)) {
-      const result = executeM2BattleCommand(command as M2, {
-        context: { turn: 1 }, enemies, actors,
-        addExtraActorAction(actorId, amount) { extra.push({ actorId, amount }); },
-      });
-      expect(result).toEqual({ handled: true, forceEscape: false });
-    }
-    expect(enemies[0]!.hp).toBe(Math.max(0, hp - 17));
-    expect(extra).toEqual([{ actorId: hero, amount: 3 }]);
+    const first = runPrimitive(project, target, "m2.014.insert", {
+      target: hero, parameter: "attack", valueVariableId: "var_0001",
+    }).after;
+    const { after } = runPrimitive(first, target, "m2.014.update", {
+      index: 0, expectedHash: eventCommandHash(read(first)[0]!), value: 12,
+    });
+    expect(read(after)[0]).toMatchObject({ fields: { value: 12, valueSource: "number", valueVariableId: "" } });
+    const { session, step } = runHeadless(after, target.mapId, target.eventId);
+    expect(step).toEqual({ kind: "done" });
+    expect(session.actorParamBonuses?.[hero]?.attack).toBe(12);
+  });
+
+  it("공용 걷기 시트와 공용 흉상을 골라 플레이에 반영한다", () => {
+    const { project, target } = fixture("built", []);
+    const sheet = HEROES_CHARSET_ASSETS[0]!;
+    const portrait = SHARED_PORTRAIT_ASSETS[0]!;
+    const first = runPrimitive(project, target, "m2.024.insert", { target: hero, value: `charset:${sheet.textureKey}:3` }).after;
+    const { after } = runPrimitive(first, target, "m2.025.insert", { target: hero, value: portrait.id });
+    const { session, step } = runHeadless(after, target.mapId, target.eventId);
+    expect(step).toEqual({ kind: "done" });
+    expect(resolvePlayerSpriteResource(after, session)).toMatchObject({ resourceId: sheet.id, characterIndex: 3 });
+    const actor = project.database.actors.find(record => record.id === hero)!;
+    expect(resolveActorFaceResourceId(session, actor, after)).toBe(portrait.id);
   });
 });
 
-function corpusFixture(entry: CorpusCase): Project {
+function corpusFixture(entry: CorpusCase) {
   const [, number, action] = entry.primitive.split(".");
   const row = cases.find(candidate => candidate.number === number)!;
   const command: M2 = { kind: "m2Command", commandId: row.commandId, fields: row.stored };
-  return fixture(entry.fixture, action === "update" ? [command, original] : [original]).project;
+  const { project } = fixture(entry.fixture, action === "update" ? [command, original] : [original]);
+  const args = action === "update" ? { expectedHash: eventCommandHash(command), ...entry.args } : entry.args;
+  return { project, args };
 }
 
 // 공용 코퍼스가 픽스처 초기화를 지원할 때 이 자료도 공용 코퍼스로 옮길 수 있다.
-describe("기존 명령과 전투 페이지를 둔 자연어 회귀 사례", () => {
+describe("기존 명령을 둔 요청과 맵에서 쓸 수 없는 전투 명령 요청", () => {
   it.each(seededCorpus as CorpusCase[])("$request", async entry => {
-    const project = corpusFixture(entry);
+    const { project, args } = corpusFixture(entry);
     const target = resolveTarget(project, entry.target);
-    const apply = () => runPrimitive(project, target, entry.primitive, entry.args);
+    const apply = () => runPrimitive(project, target, entry.primitive, args);
     if (entry.expectRefusal) {
       expect(apply).toThrow(PrimitiveError);
       return;
