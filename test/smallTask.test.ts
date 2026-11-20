@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
 import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@/editor/smallTask/target";
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
@@ -7,6 +8,7 @@ import { editorState } from "@/editor/editorState";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 import { runSmallTask } from "@/editor/smallTask/run";
+import { setLocale } from "@/i18n";
 
 const collections: SmallTaskCollection[] = ["actors", "classes", "items", "skills", "enemies", "troops", "states", "equipment"];
 function fixture(): Project {
@@ -57,7 +59,7 @@ it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼�
   vi.stubGlobal("innerWidth", window.innerWidth);
   vi.stubGlobal("innerHeight", window.innerHeight);
   const createElement = document.createElement.bind(document);
-  const create = vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+  const create = vi.spyOn<{ createElement(tag: string): HTMLElement }, "createElement">(document, "createElement").mockImplementation(tag => {
     const element = createElement(tag);
     if (tag === "section") element.showPopover = () => {};
     return element;
@@ -86,7 +88,11 @@ it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 } },
   { kind: "event", selectedMapId: "another_map", rect: undefined },
   { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
-])("작은 일 Pi HTTP 요청에 호스트 대상과 같은 맵의 선택 영역을 싣는다 ($kind, $selectedMapId)", async ({ kind, selectedMapId, rect }) => {
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
+    stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
+    stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly }) => {
   const project = fixture();
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
@@ -102,14 +108,16 @@ it.each([
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
     expect(body).not.toHaveProperty("apiKey");
-    const done = { type: "done", smallTask: true, project, changedKeys: [], stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
       headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
     });
   });
   vi.stubGlobal("fetch", fetch);
   try {
-    await expect(runSmallTask(project, target, "가격을 확인해 줘", signal)).resolves.toBe(project);
+    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal);
+    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(stoppedEarly);
+    else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);
   } finally {
@@ -142,6 +150,22 @@ describe("명세를 읽는 쉬운 말 요약", () => {
     expect(lines).toContain("대사 「안녕.」 → 「들어와.」");
     expect(lines.join(" ")).not.toMatch(/map_hidden|ev_f52|page_first/);
     expect(lines.every(line => line.length < 100)).toBe(true);
+  });
+  it.each([
+    ["ko", "대사 추가 「경비 · 좋은 아침!」"],
+    ["en", "Dialogue added 「경비 · 좋은 아침!」"],
+    ["ja", "せりふを追加 「경비 · 좋은 아침!」"],
+    ["zh", "新增对话 「경비 · 좋은 아침!」"],
+  ] as const)("%s에서 새 대사는 이전 값 없이 표시한다", async (locale, added) => {
+    try {
+      await setLocale(locale);
+      const a = fixture(), b = structuredClone(a);
+      b.maps.map_a.events[0].pages![0].commands.push({ kind: "text", speaker: "경비", body: "좋은 아침!" });
+      const lines = plainSummary(a, b).lines;
+      expect(lines.filter(line => line.includes("좋은 아침!"))).toEqual([added]);
+    } finally {
+      await setLocale("ko");
+    }
   });
   it("추가·삭제·변경과 낯선 모양도 한 줄 이상 남기고 내부 식별자를 숨긴다", () => {
     for (const change of ["added", "removed", "changed"] as const) {

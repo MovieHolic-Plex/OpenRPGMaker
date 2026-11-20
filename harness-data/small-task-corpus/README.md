@@ -8,7 +8,7 @@
   "fixture": "built",
   "target": { "kind": "event", "mapId": "map_example", "eventId": "ev_guide", "pageId": "page_hello" },
   "primitive": "cmd.delete",
-  "args": { "index": 0 },
+  "args": { "index": 0, "expectedHash": "32e14fdad43d44f5df1d5619c2d53fdb" },
   "expect": [
     { "at": "maps.map_example.events[id=ev_guide].pages[0].commands", "count": 1 },
     { "at": "maps.map_example.events[id=ev_guide].pages[0].commands[-1].kind", "equals": "text" },
@@ -17,7 +17,7 @@
 }
 ```
 
-예시의 맵, 이벤트, 페이지 이름은 각 픽스처의 실제 식별자로 바꾼다. 나머지 대상은 `{"kind":"map","mapId":"map_example"}` 또는 `{"kind":"dbEntry","collection":"items","id":"item_potion"}`처럼 쓴다. 실패를 기대하는 사례는 `"expectRefusal": true`로 표시한다.
+예시의 맵, 이벤트, 페이지 이름은 각 픽스처의 실제 식별자로 바꾼다. `cmd.delete`와 `cmd.move`에는 해당 픽스처 명령의 `eventCommandHash`를 넣는다. 나머지 대상은 `{"kind":"map","mapId":"map_example"}` 또는 `{"kind":"dbEntry","collection":"items","id":"item_potion"}`처럼 쓴다. 실패를 기대하는 사례는 `"expectRefusal": true`로 표시한다.
 
 `seed`와 `setup`은 각 사례에만 적용한다. 두 필드가 있으면 `seed`부터 적용한다. `system`과 `database`는 지정한 필드와 컬렉션을 덮어쓰고, `difficulties`는 시스템 난이도 목록을 지정한다. `events`는 선택 맵에, `switches`, `variables`, `commonEvents`, `endings`는 각 프로젝트 목록에 덧붙인다. `commands`는 선택한 이벤트 페이지의 명령 목록을 대체한다. `refusalMessage`로 한국어 거절 사유를 확인할 수 있다. 초기 데이터와 `expectRefusal`, `expect`를 모두 적으면 원래 픽스처에서 거절되고 준비한 픽스처에서 성공하는지 확인한다.
 
