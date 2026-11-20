@@ -1,1 +1,642 @@
-[]
+[
+  {
+    "request": "말 걸면 기본 슬라임 한 마리 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "슬라임 레벨 세짜리 받는 줄 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"level": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 3}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "알을 깨면 붉은 드래곤 1레벨 한마리 받게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"speciesId": "species_ember_drake", "level": 1},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "giveMonster", "speciesId": "species_ember_drake", "level": 1}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "밤송이라고 이름 붙인 동굴 박쥐를 받았으면 좋겠어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"speciesId": "species_cave_bat", "nickname": "밤송이"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "giveMonster", "speciesId": "species_cave_bat", "level": 5, "nickname": "밤송이"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "보상은 레벨 열둘 초원슬라임 한마리요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"speciesId": "species_king_slime", "level": 12},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "giveMonster", "speciesId": "species_king_slime", "level": 12}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫 줄에 다섯 살짜리 슬라임 보상 넣어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"index": 0, "level": 5},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0]", "equals": {"kind": "giveMonster", "speciesId": "species_wild_slime", "level": 5}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "자료집에 없는 무지개 용을 한 마리 내놔",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"speciesId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "슬라임 레벨을 영으로 해서 선물 줄 추가해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.giveMonster.insert",
+    "args": {"level": 0},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 몬스터를 몬스터보관함으로 보내",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_1", "to": "box"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "moveMonster", "instanceId": "monster_1", "to": "box"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "두 번째 몬스터 파티에 꺼내 줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_2", "to": "party"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "moveMonster", "instanceId": "monster_2", "to": "party"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "셋째 녀석을 창고로 옮기는 줄을 맨 끝에 붙여.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_3", "to": "box"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "moveMonster", "instanceId": "monster_3", "to": "box"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "넷째 몬스터를 동료 팀에 집어넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_4", "to": "party"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "moveMonster", "instanceId": "monster_4", "to": "party"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫째를 파티에 데려오는 줄 추가",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_1"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "moveMonster", "instanceId": "monster_1", "to": "party"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "두번째 보관함행 부탁",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_2", "to": "box"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "moveMonster", "instanceId": "monster_2", "to": "box"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "아무 몬스터나 보관함에 보내요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"to": "box"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 몬스터를 없는 탁자 보관칸으로 옮겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.moveMonster.insert",
+    "args": {"instanceId": "monster_1", "to": "table"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫째 슬라임을 초원슬라임으로 진화시켜 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_1", "toSpeciesId": "species_king_slime"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "species_king_slime", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "두번째 몬스터는 가능한 진화 아무거나 해줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_2"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_2", "toSpeciesId": "", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "세 번째를 붉은 용으로 진화 시키는 줄 추가.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_3", "toSpeciesId": "species_ember_drake"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_3", "toSpeciesId": "species_ember_drake", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "넷째는 조건 맞는 첫 진화로 설정 부탁.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_4", "toSpeciesId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_4", "toSpeciesId": "", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫 녀석을 박쥐로 진화하도록 명령 달아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_1", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_1", "toSpeciesId": "species_cave_bat", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "둘째 애가 초원 슬라임 되는 진화 명령 추가할래요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_2", "toSpeciesId": "species_king_slime"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "evolveMonster", "instanceId": "monster_2", "toSpeciesId": "species_king_slime", "successBranch": [], "failureBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫째 몬스터를 등록되지 않은 얼음용으로 진화시켜.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"instanceId": "monster_1", "toSpeciesId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "몬스터 지정 없이 초원 슬라임으로 진화해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.evolveMonster.insert",
+    "args": {"toSpeciesId": "species_king_slime"},
+    "expectRefusal": true
+  },
+  {
+    "request": "북쪽 출현 자리에서 슬라임 정찰대 나오게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_slime", "spawnId": "spawn_north"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_north", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true}}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "박쥐 떼를 필드에 딱 세 마리까지 띄워주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_bat_swarm", "maxAlive": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_new", "troopId": "troop_bat_swarm", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "maxAlive": 3}}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "초원 슬라임 둘을 여기에 꺼내되 플레이어는 쫓지 마.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_slime_pair", "chase": false},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_new", "troopId": "troop_slime_pair", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": false}}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "왼쪽에서 두 칸, 위에서 한 칸에 가로 두 세로 세 칸으로 슬라임 출현.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_slime", "x": 2, "y": 1, "w": 2, "h": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_new", "troopId": "troop_slime", "area": {"x": 2, "y": 1, "w": 2, "h": 3}, "chase": true}}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "박쥐를 동쪽 출현으로 저장하고 다시 나오는 건 5초 뒤에.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_bat_swarm", "spawnId": "spawn_east", "respawnSec": 5},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_east", "troopId": "troop_bat_swarm", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "respawnSec": 5}}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "필드에 슬라임 무리 뿌려줘요. 잡은 수 세이브에도 남겨 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_slime", "persistKill": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "spawnFieldEnemy", "spawn": {"id": "spawn_new", "troopId": "troop_slime", "area": {"x": 0, "y": 0, "w": 3, "h": 3}, "chase": true, "persistKill": true}}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "이 맵 밖 가로 구천번째 칸에 슬라임 뿌려.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "troop_slime", "x": 9000},
+    "expectRefusal": true
+  },
+  {
+    "request": "적 출현에 자료집에 없는 고블린 무리를 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.spawnFieldEnemy.insert",
+    "args": {"troopId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "보관함 첫 몬스터를 놔주는 줄 넣어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "removeMonster", "instanceId": ""}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫 몬스터 보내 줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"instanceId": "monster_1"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "removeMonster", "instanceId": "monster_1"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "보관함 처음 애 놓아주기.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"instanceId": ""},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "removeMonster", "instanceId": ""}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "두번째 몬스터를 잡았던 데로 돌려보내는 명령 추가.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"instanceId": "monster_2"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "removeMonster", "instanceId": "monster_2"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "셋째 녀석을 몬스터 목록에서 놓아줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"instanceId": "monster_3"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "removeMonster", "instanceId": "monster_3"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "맨 윗줄에 네 번째 몬스터 해방시키기 추가해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"index": 0, "instanceId": "monster_4"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0]", "equals": {"kind": "removeMonster", "instanceId": "monster_4"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "없는 몬스터 밤아지를 놓아주는 줄 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"instanceId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "보관함에 있는 첫 두 마리를 한 줄로 전부 보내.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.removeMonster.insert",
+    "args": {"instanceId": ["monster_1", "monster_2"]},
+    "expectRefusal": true
+  },
+  {
+    "request": "슬라임 주면 동굴 박쥐 주는 거래 한 줄.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_cave_bat"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "박쥐랑 레벨 아홉 붉은 드래곤을 맞바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "species_cave_bat", "toSpeciesId": "species_ember_drake", "level": 9},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_cave_bat", "toSpeciesId": "species_ember_drake", "level": 9}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "초원 슬라임을 보내고 슬라임 한 마리 받자.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "species_king_slime", "toSpeciesId": "species_wild_slime"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_king_slime", "toSpeciesId": "species_wild_slime"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "붉은드래곤을 주면 별명 말랑인 초원슬라임 받아오는 교환.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "species_ember_drake", "toSpeciesId": "species_king_slime", "nickname": "말랑"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_ember_drake", "toSpeciesId": "species_king_slime", "nickname": "말랑"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "슬라임을 내어 주면 세 레벨짜리 초원 슬라임을 받도록 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_king_slime", "level": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_wild_slime", "toSpeciesId": "species_king_slime", "level": 3}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "동굴 박쥐 주고 날개콩이라는 이름 붙인 슬라임으로 바꿔 와.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "species_cave_bat", "toSpeciesId": "species_wild_slime", "nickname": "날개콩"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tradeMonster", "fromSpeciesId": "species_cave_bat", "toSpeciesId": "species_wild_slime", "nickname": "날개콩"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "등록 안 한 수정골렘 주고 초원슬라임 받게 해줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"fromSpeciesId": "not_registered", "toSpeciesId": "species_king_slime"},
+    "expectRefusal": true
+  },
+  {
+    "request": "내줄 몬스터 종은 안 고르고 박쥐와 교환해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tradeMonster.insert",
+    "args": {"toSpeciesId": "species_cave_bat"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫째랑 둘째 같이 합성해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_1", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_2"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "세 번째랑 네 번째 몬스터를 합치는 줄 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_3", "instanceIdB": "monster_4"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_3", "instanceIdB": "monster_4"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "일번하고 삼번을 한마리로 만들자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_1", "instanceIdB": "monster_3"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_1", "instanceIdB": "monster_3"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "둘째 넷째 합체 명령 추가요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_2", "instanceIdB": "monster_4"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_2", "instanceIdB": "monster_4"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "셋 째를 재료 첫 칸에, 첫째 몬스터는 두번째 재료로.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_3", "instanceIdB": "monster_1"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_3", "instanceIdB": "monster_1"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "넷째를 둘째와 합치게 설정해주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_4", "instanceIdB": "monster_2"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "fuseMonsters", "instanceIdA": "monster_4", "instanceIdB": "monster_2"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫 몬스터를 두 번 넣어서 그 녀석만 혼자 합성해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_1", "instanceIdB": "monster_1"},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫째랑 없는 정체불명 개체를 합쳐요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.fuseMonsters.insert",
+    "args": {"instanceIdA": "monster_1", "instanceIdB": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "시험관한테 말 걸면 슬라임 정찰대랑 싸워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopId": "troop_slime"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "battleProcessing", "troopId": "troop_slime", "canEscape": true, "canLose": false}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "동굴 박쥐 떼랑 전투, 도망은 못 가게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopId": "troop_bat_swarm", "canEscape": false},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "battleProcessing", "troopId": "troop_bat_swarm", "canEscape": false, "canLose": false}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "초원슬라임 둘과 싸우지만 져도 이야기는 계속.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopId": "troop_slime_pair", "canLose": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "battleProcessing", "troopId": "troop_slime_pair", "canEscape": true, "canLose": true}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "첫 번째 변수에서 전투 상대를 읽어줘요. 도망 가능으로.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopSource": "variable", "troopVariableId": "var_0001", "canEscape": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "battleProcessing", "troopId": "", "canEscape": true, "canLose": false, "troopSource": "variable", "troopVariableId": "var_0001"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "슬라임 전투는 선제공격으로 시작하고 승패마다 분기 켜 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopId": "troop_slime", "formation": "preemptive", "branchOnResult": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "battleProcessing", "troopId": "troop_slime", "canEscape": true, "canLose": false, "victoryBranch": [], "defeatBranch": [], "escapeBranch": [], "formation": "preemptive", "branchOnResult": true}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "박쥐전은 게이지식으로 하고 져도 진행되게 부탁합니다.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopId": "troop_bat_swarm", "battleFlow": "gauge", "canLose": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "battleProcessing", "troopId": "troop_bat_swarm", "canEscape": true, "canLose": true, "battleFlow": "gauge"}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "존재하지 않는 무지개 슬라임 무리랑 싸워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "아무 변수도 선택하지 말고 변수로 전투를 시작해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.battleProcessing.insert",
+    "args": {"troopSource": "variable"},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 전투에서 져도 게임 오버 띄우지 마세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"canLose": true, "index": 2},
+    "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": true, "canLose": true}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
+  },
+  {
+    "request": "전투 적 무리를 박쥐 떼로 교체해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"troopId": "troop_bat_swarm", "index": 2},
+    "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_bat_swarm", "canEscape": true, "canLose": false}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
+  },
+  {
+    "request": "기존 전투 탈출 금지로.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"canEscape": false, "index": 2},
+    "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": false, "canLose": false}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
+  },
+  {
+    "request": "초원 슬라임들로 상대를 바꾸고 기습으로 시작해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"troopId": "troop_slime_pair", "formation": "surprise", "index": 2},
+    "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_slime_pair", "canEscape": true, "canLose": false, "formation": "surprise"}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
+  },
+  {
+    "request": "전투 진행을 엄격한 턴 방식으로 바꿔줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"battleFlow": "strict", "index": 2},
+    "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": true, "canLose": false, "battleFlow": "strict"}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
+  },
+  {
+    "request": "적 무리를 박아 두지 말고 첫번째 변수로 받아서 시작하게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"troopSource": "variable", "troopVariableId": "var_0001", "index": 2},
+    "expect": [{"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands[2]", "equals": {"kind": "battleProcessing", "troopId": "troop_path_fit_field_slime_pair", "canEscape": true, "canLose": false, "troopSource": "variable", "troopVariableId": "var_0001"}}, {"at": "maps.map_638339b3-341f-4d31-93bd-ccc90a33304a.events[id=ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1].pages[0].commands", "count": 5}]
+  },
+  {
+    "request": "싸울 상대를 자료집에 없는 암흑기사단으로 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"troopId": "not_registered", "index": 2},
+    "expectRefusal": true
+  },
+  {
+    "request": "전투에서 등록되지 않은 변수로 무리를 선택하게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
+    "primitive": "cmd.battleProcessing.update",
+    "args": {"troopSource": "variable", "troopVariableId": "not_registered", "index": 2},
+    "expectRefusal": true
+  },
+  {
+    "request": "슬라임 정찰대랑 칸 전투 한 줄 추가해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "troop_slime"},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "박쥐 떼하고 열 칸 가로, 세 칸 세로로 전술전 해 줘요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "troop_bat_swarm", "width": 10, "height": 3},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_bat_swarm", "canLose": false, "victoryBranch": [], "defeatBranch": [], "width": 10, "height": 3}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "초원슬라임 둘과 격자 전투, 져도 통과.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "troop_slime_pair", "canLose": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime_pair", "canLose": true, "victoryBranch": [], "defeatBranch": []}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "박쥐 무리와 싸우는 전술 전투를 첫줄에, 가로 열두 칸으로.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"index": 0, "troopId": "troop_bat_swarm", "width": 12},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[0]", "equals": {"kind": "tacticsBattle", "troopId": "troop_bat_swarm", "canLose": false, "victoryBranch": [], "defeatBranch": [], "width": 12}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "정찰 슬라임하고 세로 네 칸짜리 전술전투 넣어주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "troop_slime", "height": 4},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime", "canLose": false, "victoryBranch": [], "defeatBranch": [], "height": 4}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "초원 슬라임과 여덟 칸에 다섯 칸 전투판 써줘. 패배 허용.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "troop_slime_pair", "width": 8, "height": 5, "canLose": true},
+    "expect": [{"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands[-1]", "equals": {"kind": "tacticsBattle", "troopId": "troop_slime_pair", "canLose": true, "victoryBranch": [], "defeatBranch": [], "width": 8, "height": 5}}, {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[0].commands", "count": 7}]
+  },
+  {
+    "request": "일행이 없는 얼음 토끼 부대랑 전술전 하게요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "not_registered"},
+    "expectRefusal": true
+  },
+  {
+    "request": "슬라임 정찰대 격자판을 가로 두 칸으로 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_offer"},
+    "primitive": "cmd.tacticsBattle.insert",
+    "args": {"troopId": "troop_slime", "width": 2},
+    "expectRefusal": true
+  }
+]
