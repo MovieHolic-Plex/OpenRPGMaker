@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { load } from "js-yaml";
 import { isAllowedRunsOn, runsOnValues } from "./check-self-hosted-workflows.mjs";
 
 const labels = '["self-hosted","linux","x64","mdc2"]';
@@ -9,15 +10,41 @@ const sameRepo = "github.event.pull_request.head.repo.full_name == github.reposi
 const forkCheck = `github.event_name != 'pull_request' || ${sameRepo}`;
 const safeExpression = "${{ " + `${targetCheck} && (${forkCheck}) && fromJSON('${labels}') || 'ubuntu-latest' }}`;
 
-test("ci-fast routes only parity to mdc2-fast for trusted runs", () => {
-  const source = readFileSync(new URL("../.github/workflows/ci-fast.yml", import.meta.url), "utf8");
-  const runners = Object.fromEntries(runsOnValues(source).map(({ job, value }) => [job, value]));
-  const fastLabels = '["self-hosted","linux","x64","mdc2","mdc2-fast"]';
-  assert.deepEqual(runners, {
-    fast: "ubuntu-latest",
-    "fast-parity": safeExpression.replace(labels, fastLabels),
-    "fast-static": "ubuntu-latest",
-  });
+const fastRunner = safeExpression.replace(labels, labels.replace('"mdc2"', '"mdc2","mdc2-fast"'));
+const heavyRunner = fastRunner.replace("mdc2-fast", "mdc2-heavy");
+const workflowSource = (name) => readFileSync(new URL(`../.github/workflows/${name}.yml`, import.meta.url), "utf8");
+
+test("Linux CI routes trusted events to mdc2 and keeps hosted capacity for the full suite", () => {
+  for (const [workflow, jobs] of Object.entries({
+    "ci-fast": { fast: fastRunner, "fast-parity": fastRunner, "fast-static": fastRunner },
+    "ci-full": { static: heavyRunner, tests: "ubuntu-latest" },
+    "ci-vitest-files": { vitest: heavyRunner },
+    "security-audit": { audit: fastRunner },
+    "windows-worker-smoke": { build: fastRunner, smoke: "windows-latest" },
+    parity: {
+      "editor-player-parity": fastRunner, "unit-tests": "ubuntu-latest",
+      build: fastRunner, e2e: "ubuntu-latest", "ax-gates": fastRunner,
+      "css-gates": fastRunner, "surface-gates": fastRunner,
+    },
+  })) {
+    const runners = Object.fromEntries(runsOnValues(workflowSource(workflow)).map(({ job, value }) => [job, value]));
+    assert.deepEqual(runners, jobs, workflow);
+  }
+});
+
+test("desktop-release uses trusted triggers, and publishes only after upload and asset verification", () => {
+  const workflow = load(workflowSource("desktop-release"));
+  assert.deepEqual(Object.keys(workflow.on).sort(), ["release", "schedule", "workflow_dispatch"]);
+  assert.deepEqual(workflow.on.release.types, ["published"]);
+  assert.deepEqual(workflow.on.schedule, [{ cron: "*/30 * * * *" }]);
+  const packages = workflow.jobs.packages;
+  assert.equal(packages["runs-on"], heavyRunner);
+  assert.match(packages.if, /github\.repository == 'MovieHolic-Plex\/OpenRPGMaker'/);
+  const upload = packages.steps.findIndex(({ run }) => run?.includes("gh release upload"));
+  const publish = packages.steps.findIndex(({ run }) => run?.includes("-F draft=false"));
+  assert.ok(upload >= 0 && publish > upload);
+  assert.match(packages.steps[publish].run, /if \[\[ -n "\$bad" \]\]; then[\s\S]*exit 1[\s\S]*-F draft=false/);
+  assert.match(packages.steps[publish].if, /steps\.preflight\.outputs\.draft == 'true'/);
 });
 
 test("allows hosted runner labels in scalar, flow sequence, and block sequence forms", () => {

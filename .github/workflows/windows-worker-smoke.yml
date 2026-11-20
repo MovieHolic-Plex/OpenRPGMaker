@@ -23,7 +23,7 @@ on:
       - '.github/workflows/windows-worker-smoke.yml'
 
 concurrency:
-  group: windows-worker-smoke-${{ github.head_ref || github.ref_name }}
+  group: windows-worker-smoke-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -31,29 +31,16 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 24
-          cache: npm
-      # 고정판 npm 설치 — 옛 `curl -fsSL https://bun.sh/install | bash` 는 «latest» 를 GitHub 릴리스에서
-      # 받고 재시도가 없어 503·504 로 죽었다(ci-fast 에서 18/100 판, 2026-11-08 실측). 여기서도 같은 이유로
-      # 고정판을 쓰고, 컴파일러 판을 ci-fast·desktop-release 와 맞춘다.
-      - name: bun
-        env:
-          BUN_VERSION: '1.4.2'
-        run: |
-          for attempt in 1 2 3; do
-            if timeout 180 npm install -g "bun@${BUN_VERSION}"; then break; fi
-            if [ "$attempt" = 3 ]; then echo "::error::bun@${BUN_VERSION} 설치가 3회 실패했다."; exit 1; fi
-            echo "::warning::bun@${BUN_VERSION} 설치 실패 (시도 ${attempt}/3) — $((attempt * 10))초 뒤 재시도한다."
-            sleep $((attempt * 10))
-          done
-          bun --version
-      - run: npm ci --ignore-scripts
+          persist-credentials: false
+      - uses: ./.github/actions/linux-ci
+        with:
+          bun-version: '1.4.2'
+          ignore-scripts: 'true'
       - name: 워커·애드온 만들기 (릴리스와 같은 스크립트)
         run: node scripts/build-electron.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

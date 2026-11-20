@@ -55,12 +55,11 @@
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
 - `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
-  서로 의존하지 않는다. `fast` 와 `fast-static` 은 항상 GitHub 호스티드(`ubuntu-latest`)에서 돈다.
-  같은 저장소의 푸시·PR 에서는 `fast-parity` 4샤드만 mdc2 러너(`mdc2-fast`, 10대)를 쓴다.
-  포크 PR 과 `pull_request_target` 의 러너 선택은 전부 `ubuntu-latest` 다. 두 풀에 잡을 분산해 PR 이 몰릴 때 대기를 줄이고,
-  Codex 워커와 CPU 를 공유하는 mdc2 의 부하를 제한한다.
-  mdc2 샤드는 체크아웃 뒤 npm 패키지 캐시를 러너별 `$RUNNER_TEMP/npm-cache` 에 복원한다. `npm ci` 는
-  각 러너의 별도 작업공간에 `node_modules` 를 설치한다. 패리티는 Node 환경에서 실행하며 고정 포트나 X 디스플레이를 쓰지 않는다.
+  서로 의존하지 않는다. 같은 저장소의 푸시·PR 에서는 여섯 잡 모두 mdc2 러너(`mdc2-fast`, 10대)를 쓴다.
+  포크 PR 과 `pull_request_target` 의 러너 선택은 `ubuntu-latest` 다.
+  mdc2 에서는 시작 훅이 준비한 Git 미러와 러너별 `_tool/oprn-ci` 캐시를 재사용한다.
+  의존성 스냅샷은 lockfile·Node/npm 판·설치 방식에 묶고 잡 작업공간에 복사한다.
+  TypeScript 증분 자료도 러너별이다. 패리티는 Node 환경에서 실행하며 고정 포트나 X 디스플레이를 쓰지 않는다.
   수동 `ci-vitest-files` 는
   같은 선택식에 `mdc2-heavy` 라벨을 더해 mdc2 러너(10대: runner-1..4 는 MemoryMax=22G·CPUQuota=500%, runner-5..10 은 20G·400%)를 쓴다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
@@ -70,7 +69,7 @@
   초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
-  테스트 16샤드와 정적 잡은 `ubuntu-latest` 에서 돌려 mdc2 의 PR CI 자리를 비워 둔다.
+  정적 잡은 mdc2 에서 돈다. 테스트 16샤드는 `ubuntu-latest` 에서 돌려 mdc2 의 PR CI 자리를 비워 둔다.
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
 - **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
   «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의

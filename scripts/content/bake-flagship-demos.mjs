@@ -10,7 +10,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const entry = "scripts/content/bake-flagship-demos.mts";
-const cacheDir = join(root, "node_modules/.cache/oprn-bake-demos");
+const externalCacheDir = process.env.OPRN_BAKE_DEMOS_CACHE_DIR;
+const cacheDir = externalCacheDir || join(root, "node_modules/.cache/oprn-bake-demos");
 const args = process.argv.slice(2);
 const forwarded = args.filter((arg) => arg !== "--no-cache" && arg !== "--force");
 const out = forwarded.indexOf("--out");
@@ -112,6 +113,8 @@ async function computeKey() {
   try {
     await graphInputs(inputs);
   } catch (error) {
+    // Release CI needs a complete dependency graph for cross-checkout reuse.
+    if (process.env.CI) throw error;
     // 중간에 실패한 탐색 순서가 폴백 키에 영향을 주지 않게 한다.
     inputs.clear();
     console.warn(`bake:demos cache graph fallback (hashing src/**): ${error.message.split("\n")[0]}`);
@@ -157,7 +160,7 @@ function storeCache(cachePath, names) {
 
 async function main() {
   let reason;
-  if (process.env.CI) reason = "CI";
+  if (process.env.CI && !externalCacheDir) reason = "CI";
   else if (process.env.OPRN_BAKE_DEMOS_NO_CACHE === "1") reason = "OPRN_BAKE_DEMOS_NO_CACHE=1";
   else reason = args.find((arg) => ["--no-cache", "--force", "--only", "--bgm-only"].includes(arg));
   if (reason) {
