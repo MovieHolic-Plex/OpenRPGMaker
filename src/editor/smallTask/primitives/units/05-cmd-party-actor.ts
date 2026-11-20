@@ -229,8 +229,7 @@ function primitive(kind: Kind, action: Action): SmallTaskPrimitive {
           if (action === "update") validatePartyActorRename(ctx.project, current, command);
           return edited;
         } catch (error) {
-          if (!(error instanceof EventCommandEditError)) throw error;
-          if (error.code === "stale-event-command") throw new PrimitiveError("그 줄의 내용이 바뀌었습니다. 다시 확인한 뒤 수정해 주세요.");
+          if (!(error instanceof EventCommandEditError) || error.code === "stale-event-command") throw error;
           throw new PrimitiveError("명령의 위치나 입력값을 확인해 주세요.");
         }
       });

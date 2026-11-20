@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
+import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/05-cmd-party-actor";
 import { mapTarget } from "@/editor/smallTask/target";
@@ -49,7 +49,9 @@ function fixture(name: typeof fixtures[number], commands: Command[]) {
       ...source.database,
       lifeSkills: [...(source.database.lifeSkills ?? []), { id: life, name: "낚시", skillType: "fishing", maxLevel: 5, levelUpRewards: [] }],
     },
+    switches: [...source.switches],
     variables: [...source.variables, { id: variableId, name: "보상 점수" }],
+    session: { ...source.session, switches: { ...source.session.switches }, variables: { ...source.session.variables } },
   };
   ensureSwitchVariableSlots(project);
   return { project, target: mapTarget(project, mapId, eventId, pageId)!, mapId };
@@ -204,7 +206,7 @@ describe.each(cases)("$initial.kind", sample => {
   }
 });
 
-it("분기 안에 넣은 줄을 고칠 때 이웃 줄과 지문으로 보호한 내용을 보존한다", () => {
+it("분기 안에서 수정·이동·삭제할 때 현재 줄의 지문을 사용하고 이웃 줄을 보존한다", () => {
   const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 }, then: [text], else: [text] };
   const { project, target, mapId } = fixture("blank", [fork, text]);
   const branchPath = [0, FORK_THEN_BRANCH_INDEX];
@@ -213,8 +215,19 @@ it("분기 안에 넣은 줄을 고칠 때 이웃 줄과 지문으로 보호한 
   expect(pages(added.after, mapId)[1]!.commands).toEqual([{ ...fork, then: [text, command] }, text]);
   const update = { branchPath, index: 1, amount: 5, expectedHash: eventCommandHash(command) };
   const changed = runPrimitive(added.after, target, "cmd.changeLevel.update", update);
-  expect(pages(changed.after, mapId)[1]!.commands).toEqual([{ ...fork, then: [text, { ...command, amount: 5 }] }, text]);
-  expect(() => runPrimitive(changed.after, target, "cmd.changeLevel.update", update)).toThrow(/바뀌었습니다/u);
+  const updated = { ...command, amount: 5 };
+  expect(pages(changed.after, mapId)[1]!.commands).toEqual([{ ...fork, then: [text, updated] }, text]);
+  expect(() => runPrimitive(changed.after, target, "cmd.changeLevel.update", update)).toThrow(STALE_COMMAND_LIST);
+
+  const move = { branchPath, index: 1, toIndex: 0, expectedHash: update.expectedHash };
+  expect(() => runPrimitive(changed.after, target, "cmd.move", move)).toThrow(STALE_COMMAND_LIST);
+  const expectedHash = eventCommandHash(updated);
+  const moved = runPrimitive(changed.after, target, "cmd.move", { ...move, expectedHash });
+  expect(pages(moved.after, mapId)[1]!.commands).toEqual([{ ...fork, then: [updated, text] }, text]);
+  expect(() => runPrimitive(moved.after, target, "cmd.delete", { branchPath, index: 1, expectedHash })).toThrow(STALE_COMMAND_LIST);
+  const deleted = runPrimitive(moved.after, target, "cmd.delete", { branchPath, index: 0, expectedHash });
+  expect(pages(deleted.after, mapId)[1]!.commands).toEqual([fork, text]);
+  expect(pages(deleted.after, mapId)[0]).toBe(pages(project, mapId)[0]);
 });
 
 it("두 분기가 같은 목록을 공유할 때 한 분기만 고치는 요청을 거부한다", () => {
@@ -233,6 +246,8 @@ it("두 분기가 같은 목록을 공유할 때 한 분기만 고치는 요청�
 
 it("선택한 페이지에 없는 줄, 다른 페이지 지정과 파티 위치 오류를 거부한다", () => {
   const { project, target, mapId } = fixture("built", [text]);
+  const eventOnly = mapTarget(project, mapId, eventId)!;
+  expect(() => runPrimitive(project, eventOnly, "cmd.changeLevel.insert", { actorId })).toThrow(SELECT_EVENT_PAGE);
   expect(() => runPrimitive(project, target, "cmd.changeLevel.update", { index: 0, amount: 2, expectedHash: eventCommandHash(text) })).toThrow(/범위 밖/u);
   expect(() => runPrimitive(project, target, "cmd.changeLevel.insert", { actorId, pageId: "page_actor_other" })).toThrow(PrimitiveError);
   expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId: "map_missing", x: 1, y: 1 })).toThrow(/맵/u);
@@ -335,10 +350,13 @@ it("공용 이벤트의 분기가 참조하는 파티 저장 이름은 바꾸지
 
 it("부대의 전투 후 명령이 참조하는 동행자 기본 이름을 바꾸지 않는다", () => {
   const command: Command = { kind: "addFollower", actorId };
-  const { project, target, mapId } = fixture("built", [command]);
-  const name = project.database.actors.find(actor => actor.id === actorId)!.name;
-  const [troop, ...rest] = project.database.troops;
-  project.database.troops = [{ ...troop!, afterBattle: { victory: [{ kind: "removeFollower", name: `${name} (2)` }] } }, ...rest];
+  const { project: base, target, mapId } = fixture("built", [command]);
+  const name = base.database.actors.find(actor => actor.id === actorId)!.name;
+  const [troop, ...rest] = base.database.troops;
+  const project: Project = {
+    ...base,
+    database: { ...base.database, troops: [{ ...troop!, afterBattle: { victory: [{ kind: "removeFollower", name: `${name} (2)` }] } }, ...rest] },
+  };
   expect(() => runPrimitive(project, target, "cmd.addFollower.update", {
     index: 0, expectedHash: eventCommandHash(command), actorId: "actor_mage",
   })).toThrow(/동행자를 가리키는 다른 명령/u);
@@ -347,14 +365,16 @@ it("부대의 전투 후 명령이 참조하는 동행자 기본 이름을 바�
 
 it("다른 이벤트의 동행 확인 조건에 사용되는 이름은 바꾸지 않는다", () => {
   const command: Command = { kind: "addFollower", actorId, name: "길잡이" };
-  const { project, target, mapId } = fixture("blank", [command]);
+  const { project: base, target, mapId } = fixture("blank", [command]);
   const query: Command = {
     kind: "m2Command", commandId: "m2-217-data-query",
     fields: { query: "followerPresent", target: "길잡이 (2)", variableId },
   };
-  project.maps[mapId].events.push({
+  const checkEvent: GameEvent = {
     id: "ev_escort_check", x: 3, y: 2, trigger: { kind: "action" }, commands: [query],
-  });
+  };
+  const map = base.maps[mapId];
+  const project = { ...base, maps: { ...base.maps, [mapId]: { ...map, events: [...map.events, checkEvent] } } };
   expect(() => runPrimitive(project, target, "cmd.addFollower.update", {
     index: 0, expectedHash: eventCommandHash(command), name: "새 길잡이",
   })).toThrow(/동행자를 가리키는 다른 명령/u);
@@ -405,9 +425,9 @@ it("파티 저장의 사전 편성과 위치를 지우면 실행 시 편성과 �
 it("다른 맵의 파티 저장 위치에는 두 좌표가 필요하고 불러올 때 지정한 칸으로 이동한다", () => {
   const command: Command = { kind: "storeParty", partySetId: "정찰대" };
   const recall: Command = { kind: "recallParty", partySetId: "정찰대" };
-  const { project, target, mapId } = fixture("blank", [command, recall]);
+  const { project: base, target, mapId } = fixture("blank", [command, recall]);
   const destination = createBlankMap("작은 야영지", 3, 3);
-  project.maps[destination.id] = destination;
+  const project = { ...base, maps: { ...base.maps, [destination.id]: destination } };
   const location = { mapId: destination.id, x: 1, y: 2 };
   const row = { index: 0, expectedHash: eventCommandHash(command) };
   expect(() => runPrimitive(project, target, "cmd.storeParty.insert", { mapId: destination.id, x: 1 }))
@@ -522,11 +542,12 @@ it.each([4, 5])("승급 명령을 수정한 뒤 레벨 %i에 맞는 기존 분�
     successBranch: [{ kind: "setVariable", variableId, op: "=", value: 1 }],
     failureBranch: [{ kind: "setVariable", variableId, op: "=", value: -1 }],
   };
-  const { project, target, mapId } = fixture("blank", [command]);
-  const classId = project.database.actors.find(actor => actor.id === actorId)!.classId;
-  project.database.classes = project.database.classes.map(record => record.id === classId
+  const { project: base, target, mapId } = fixture("blank", [command]);
+  const classId = base.database.actors.find(actor => actor.id === actorId)!.classId;
+  const classes = base.database.classes.map(record => record.id === classId
     ? { ...record, promotions: [{ toClassId, requires: { level: 5 } }] }
     : record);
+  const project = { ...base, database: { ...base.database, classes } };
   const { after } = runPrimitive(project, target, "cmd.promoteActor.update", {
     index: 0, expectedHash: eventCommandHash(command), toClassId,
   });
