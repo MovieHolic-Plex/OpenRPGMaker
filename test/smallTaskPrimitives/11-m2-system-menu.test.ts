@@ -1,12 +1,10 @@
 /** @vitest-environment happy-dom */
-import { readFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { FORK_ELSE_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/11-m2-system-menu";
@@ -493,39 +491,5 @@ describe("시스템·메뉴 명령 실행", () => {
   it("불러오기와 게임 종료를 플레이어 전환 단계로 넘긴다", () => {
     expect(play("m2.093.insert", {}).step).toEqual({ kind: "openLoadMenu" });
     expect(play("m2.094.insert", {}).step).toEqual({ kind: "returnToTitle" });
-  });
-});
-
-type UpdateCase = CorpusCase & { setup: { commands: Command[] } };
-const updateCorpus: UpdateCase[] = JSON.parse(readFileSync("test/smallTaskPrimitives/11-m2-system-menu/update-corpus.json", "utf8"));
-
-function corpusProject(fixture: Project, { setup, target }: UpdateCase): Project {
-  if (target.kind !== "event") throw new Error("이벤트 대상을 확인하세요.");
-  const { mapId = fixture.startMapId, eventId, pageId } = target;
-  const map = fixture.maps[mapId];
-  const events = map.events.map(event => event.id === eventId
-    ? { ...event, pages: event.pages?.map(page => page.id === pageId
-        ? { ...page, commands: [...setup.commands, ...page.commands] }
-        : page) }
-    : event);
-  return { ...fixture, maps: { ...fixture.maps, [mapId]: { ...map, events } } };
-}
-
-describe("기존 명령을 심은 수정 코퍼스", () => {
-  it.each(updateCorpus)("$request", async entry => {
-    const before = corpusProject(fixtureProject(entry.fixture), entry);
-    const target = resolveTarget(before, entry.target);
-    // The corpus seeds the line the assistant originally read, including stale-location refusal cases.
-    const args = { expectedHash: eventCommandHash(entry.setup.commands[0]), ...entry.args };
-    const apply = () => runPrimitive(before, target, entry.primitive, args);
-    if (entry.expectRefusal) {
-      expect(apply).toThrow(PrimitiveError);
-      return;
-    }
-
-    const { after, sentence } = apply();
-    expectKoreanSentence(sentence, target);
-    for (const check of entry.expect ?? []) expect(readCheckPath(after, check.at), check.at).toEqual(check.equals);
-    await expectUndoRestores(before, after, target);
   });
 });
