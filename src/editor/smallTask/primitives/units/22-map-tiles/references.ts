@@ -28,8 +28,8 @@ function transferCheck(project: Project, mapId: string): CommandCheck {
   const commonEvents = new Map(project.commonEvents.map(event => [event.id, event.commands]));
   const transfers = (command: Command, visited: Set<string>): boolean => {
     if (command.kind === "transfer") return command.mapId === mapId;
-    // The active map event, a script or a chosen teleport may depend on play state.
-    if (command.kind === "callMapEvent" || command.kind === "script") return true;
+    // These commands can reach a map chosen from play state.
+    if (command.kind === "callMapEvent" || command.kind === "script" || command.kind === "recallParty") return true;
     if (command.kind === "m2Command") {
       return command.commandId === "m2-223-teleport-menu"
         && command.fields.transfer !== false && command.fields.transfer !== "false";

@@ -606,6 +606,16 @@ describe("리뷰에서 확인한 맵 타일 경계", () => {
       .toThrow("문을 여닫는 데 쓰여요.");
   });
 
+  it("다른 맵의 파티를 불러온 뒤 열 수 있는 문 타일을 보호한다", () => {
+    const { project, map } = customFixture();
+    const door: Command = { kind: "m2Command", commandId: "m2-202-screen-effect", fields: { effect: "doorOpen", value: "0,0" } };
+    const owner = { ...map, id: "owner", events: [eventAt("recall", 1, 1, [
+      { kind: "recallParty", partySetId: "reserve" }, door,
+    ])] };
+    expect(() => execute(withMap(project, owner), map, "map.tile.erase", {}, rect(0, 0)))
+      .toThrow("문을 여닫는 데 쓰여요.");
+  });
+
   it.each([
     ["m2-202-screen-effect", { effect: "doorOpen", value: "0,0" }, "문을 여닫는 데 쓰여요."],
     ["m2-042-get-terrain-id", { x: 0, y: 0, variableId: "var_terrain" }, "지형을 읽는 이벤트가 있어요."],
