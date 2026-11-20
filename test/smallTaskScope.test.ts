@@ -196,7 +196,7 @@ describe("작은 일 범위 검사", () => {
     const original = structuredClone(selected);
     const reference: Command = source === "스크립트"
       ? { kind: "script", source: "game.addItem('potion', 1);", compiled: "" }
-      : { kind: "changeItems", itemId: "potion", op: "+=", amount: 1 };
+      : { kind: "changeItem", itemId: "potion", op: "+=", amount: 1 };
     const branch: Command = { kind: "loop", body: [reference] };
     if (source === "저장된 원본") original.pages![0]!.commands.push(branch);
     else selected.pages![0]!.commands.push(branch);
@@ -467,7 +467,7 @@ describe("선택 영역, 맵 속성, 새 맵과 프로젝트 항목 범위", () 
     after.commonEvents[1]!.name = "작업 밖 인사";
     expect(checkSmallTaskScope(before, after, scope)).toMatchObject({ ok: false, reason: expect.stringContaining("공용 이벤트") });
     rejects({ kind: "projectArea", area: "endings", create: 0 }, p => {
-      p.endings = [{ id: "new", title: "여행의 끝" }] as Project["endings"];
+      p.endings = [{ id: "new", name: "여행의 끝", conditions: [], priority: 0 }];
     }, "새 항목 수");
   });
 
