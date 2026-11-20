@@ -22,6 +22,7 @@
 //             본다 → 이름 입력이 편집기 안 **첫 번째 input** 이어야 한다.
 
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import {
   farmAnimalBuildingReferenceMessage,
   farmAnimalSpeciesReferenceMessage,
@@ -226,6 +227,7 @@ function configuredWorkspace(
         number: `#${index + 1}`,
         active: record.id === selectedId,
         title: record.id,
+        testid: `db-farm-animal-species-row-${record.id}`,
         dataset: { recordId: record.id, recordKind: "species" },
         onSelect: () => select("species", record.id, rerender),
       });
@@ -303,6 +305,7 @@ function configuredWorkspace(
   ];
 
   const hero = selectedHero(species, buildings, animals, remember);
+  if (hero && selectedKind === "species" && selectedId) hero.append(recordSmallTask("farmAnimalSpecies", selectedId));
   const detail = detailPane({
     ...(hero ? { hero } : {}),
     body: editors.length > 0

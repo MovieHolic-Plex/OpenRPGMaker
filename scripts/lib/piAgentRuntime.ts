@@ -420,7 +420,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const { target, maxToolCalls, selection } = scope;
   const base = request.project;
   const ctx: SmallTaskToolContext = {
-    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection,
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, smallTaskLive: scope.live,
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);

@@ -23,6 +23,7 @@
 // 준비 상태 스트립(renderLifePanel)은 그대로 두고 workspaceShell 의 `header` 로 올린다.
 
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { duplicateInto } from "@/editor/databaseCopy";
 import { cropReferenceMessage } from "@/editor/databaseReferences";
@@ -456,20 +457,22 @@ function cropDetail(record: CropRecord, project: Project, rerender: () => void):
   const index = crops.findIndex((entry) => entry.id === record.id);
   const growthDays = record.stages.reduce((total, stage) => total + stage.days, 0);
 
+  const hero = detailHero({
+    eyebrow: "작물",
+    title: record.name || "이름 없는 작물",
+    subtitle: `${itemLabel(project, record.seedItemId)} 을(를) 심으면 ${growthDays}일 뒤 ${itemLabel(project, record.harvestItemId)} ${record.harvestCount}개를 수확합니다.`,
+    tags: [
+      `#${index + 1}`,
+      `${record.stages.length}단계 · ${growthDays}일`,
+      record.regrow ? `재수확 ${record.regrow.days}일` : "한 번만",
+      ...record.seasons.map((season) => SEASON_LABEL[season] ?? season),
+    ],
+    media: stageThumb(cropGraphicStages(record).at(-1), 56),
+    testid: "db-crop-hero",
+  });
+  hero.append(recordSmallTask("crops", record.id));
   return makeDetailPane({
-    hero: detailHero({
-      eyebrow: "작물",
-      title: record.name || "이름 없는 작물",
-      subtitle: `${itemLabel(project, record.seedItemId)} 을(를) 심으면 ${growthDays}일 뒤 ${itemLabel(project, record.harvestItemId)} ${record.harvestCount}개를 수확합니다.`,
-      tags: [
-        `#${index + 1}`,
-        `${record.stages.length}단계 · ${growthDays}일`,
-        record.regrow ? `재수확 ${record.regrow.days}일` : "한 번만",
-        ...record.seasons.map((season) => SEASON_LABEL[season] ?? season),
-      ],
-      media: stageThumb(cropGraphicStages(record).at(-1), 56),
-      testid: "db-crop-hero",
-    }),
+    hero,
     body: cropInspector(record, project, rerender),
     testid: "db-crop-detail-pane",
   });

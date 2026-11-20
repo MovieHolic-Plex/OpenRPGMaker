@@ -20,6 +20,7 @@
 // 용어 탭이 쓰는 것과 같은 계약 보존 패턴이다(workspace-modern.css 끝 주석 참고).
 
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import {
   farmBuildingTypeReferenceMessage,
   homeDecorationTypeReferenceMessage,
@@ -203,19 +204,22 @@ export function renderFarmSpatialTab(host: HTMLElement, rerender: () => void): v
   }
   if (!selection) panels.append(panelHost("db-spatial-empty-state", true, onboardingBoard(buildingTypes.length, decorationTypes.length, rerender)));
 
-  const detail = detailPane({
-    hero: detailHero({
-      eyebrow: "공간과 성장",
-      title: selection ? selectionTitle(project, selection) : "농장 건물·집 꾸미기",
-      subtitle: `건물 유형 ${buildingTypes.length} · 장식 유형 ${decorationTypes.length} · 시작 배치 ${buildingPlacements.length + decorationPlacements.length}`,
-      tags: selection ? [GROUP_LABEL[selection.kind], shortId(selection.id)] : undefined,
-      media: el("img", {
-        class: "db-spatial-hero-art",
-        attrs: { src: FARMING_LIFE_UI_ASSETS.decorating, alt: "농장 건물과 집 꾸미기", loading: "lazy" },
-        dataset: { testid: "db-spatial-hero-image" },
-      }),
-      testid: "db-spatial-hero",
+  const hero = detailHero({
+    eyebrow: "공간과 성장",
+    title: selection ? selectionTitle(project, selection) : "농장 건물·집 꾸미기",
+    subtitle: `건물 유형 ${buildingTypes.length} · 장식 유형 ${decorationTypes.length} · 시작 배치 ${buildingPlacements.length + decorationPlacements.length}`,
+    tags: selection ? [GROUP_LABEL[selection.kind], shortId(selection.id)] : undefined,
+    media: el("img", {
+      class: "db-spatial-hero-art",
+      attrs: { src: FARMING_LIFE_UI_ASSETS.decorating, alt: "농장 건물과 집 꾸미기", loading: "lazy" },
+      dataset: { testid: "db-spatial-hero-image" },
     }),
+    testid: "db-spatial-hero",
+  });
+  if (selection?.kind === "buildingType") hero.append(recordSmallTask("farmBuildingTypes", selection.id));
+  if (selection?.kind === "decorationType") hero.append(recordSmallTask("homeDecorationTypes", selection.id));
+  const detail = detailPane({
+    hero,
     body: [
       shrinkless(statStrip([
         { label: "건물 유형", value: String(buildingTypes.length), hint: "레벨·수용량·비용", tone: buildingTypes.length ? "good" : "neutral", onClick: () => { spatialFilter = "buildingType"; rerender(); }, testid: "db-spatial-stat-building-type" },

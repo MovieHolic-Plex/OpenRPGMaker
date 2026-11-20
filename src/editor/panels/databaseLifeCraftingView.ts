@@ -1,4 +1,5 @@
 import { craftRecipeReferenceMessage } from "@/editor/databaseCraftReferences";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { commandsReferenceLocations } from "@/editor/databaseCommandReferences";
 import { field as wsField, matchesNameOrId } from "@/editor/panels/databaseControls";
@@ -409,12 +410,14 @@ function configListPane(section: ConfigSection): HTMLElement {
 
 function recordDetail(section: RecordSection, record: LifeRecord, index: number, rerender: () => void): HTMLElement {
   const sub = rowSub(section, record);
+  const hero = detailHero({
+    title: labelFor(section, record, index),
+    tags: sub ? [sub] : undefined,
+    testid: `db-life-hero-${section}`,
+  });
+  if (section === "skills") hero.append(recordSmallTask("lifeSkills", recordKey(section, record, index)));
   return detailPane({
-    hero: detailHero({
-      title: labelFor(section, record, index),
-      tags: sub ? [sub] : undefined,
-      testid: `db-life-hero-${section}`,
-    }),
+    hero,
     body: recordInspector(section, record, index, rerender),
     testid: `db-life-detail-${section}`,
   });

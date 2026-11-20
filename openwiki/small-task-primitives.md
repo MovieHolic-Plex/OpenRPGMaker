@@ -38,6 +38,8 @@ Pi는 맵 대상에 선택 사각형이 있으면 턴의 최종 프로젝트를 
 
 ## 코퍼스와 화면 검수
 
+유닛 21의 몬스터 종, 작물, 생활 스킬, 가축 종, 물고기, 농장 건물 유형, 집 장식 유형, 일정표는 각 상세 화면에서 「이걸로 작업」으로 시작한다. 선택한 항목의 자료집과 ID를 작업에 전달한다.
+
 [코퍼스 규격](../harness-data/small-task-corpus/README.md)에 따라 유닛 파일을 작성한다. `test/smallTaskPrimitives/harness.ts`에서 원본 픽스처, 대상, 범위 거절, 문장, 실제 편집 기록 복원, 헤드리스 실행를 쓸 수 있다.
 
 화면 하네스는 `SHOTS_CASES`와 `SHOTS_OUT`이 설정되면 실행된다. 사례는 `{ fixture, setup?, target, primitive, args, label }` 배열이다. `setup`의 선택 필드 `mapName`, `events`, `database`로 화면에 열 시드를 준비하고 `rect: {x,y,w,h}`로 캔버스 영역을 선택한다. 빈 픽스처에 맵 이름, 이벤트, 영역을 제공하면 편집기의 기본 맵이 추가된다. 브라우저는 실제 작은 일 상자를 열고, Pi HTTP 요청을 받아 공용 동작 실행기로 처리한 응답을 돌려준다. 변경과 복원을 확인하며 `NN-before.png`, `NN-after.png`, `NN-summary.png`, `NN-undo.png`를 만든다. `test/piAgentSmallTask.bun.test.ts`는 모델 스트림을 고정해 실제 Pi 워커의 도구 호출과 실패 시 사본 폐기를 검증한다.

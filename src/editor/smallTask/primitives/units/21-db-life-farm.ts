@@ -1,3 +1,4 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import type { SmallTaskScope } from "@/ai/smallTaskScope";
 import { findBundledImageAsset } from "@/assets/bundled";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
@@ -247,6 +248,7 @@ function makePrimitive(collection: Collection, operation: Operation, shortcut?: 
     },
     apply(ctx, args) {
       const { rows, index, previous, next } = edit(ctx, args);
+      const referenceProject = withOpenEventDrafts(ctx.project, ctx.live);
       if (remove) {
         const id = previous!.id;
         const ids = new Set([id]);
@@ -255,20 +257,20 @@ function makePrimitive(collection: Collection, operation: Operation, shortcut?: 
           ids.add(`mx_seen_${id}`);
           ids.add(`mx_caught_${id}`);
         }
-        if (hasRecordReference(ctx.project, collection, index, ids)) {
+        if (hasRecordReference(referenceProject, collection, index, ids)) {
           throw new PrimitiveError("이 항목을 쓰는 곳이 있어 삭제할 수 없어요.");
         }
-        if (scriptMentionsRecord(ctx.project, collection, ids)) {
+        if (scriptMentionsRecord(referenceProject, collection, ids)) {
           throw new PrimitiveError("스크립트에서 이 항목을 쓰고 있을 수 있어요. 스크립트의 연결을 확인해 주세요.");
         }
       }
       if (previous && next && "slots" in previous && "slots" in next && previous.slots.length && !next.slots.length) {
         const ids = new Set([previous.id]);
-        if (hasRecordReference(ctx.project, collection, index, ids) || scriptMentionsRecord(ctx.project, collection, ids)) {
+        if (hasRecordReference(referenceProject, collection, index, ids) || scriptMentionsRecord(referenceProject, collection, ids)) {
           throw new PrimitiveError("이 일정표를 쓰는 곳이 있어요. 일정 칸을 하나 이상 남겨 주세요.");
         }
       }
-      if (previous && (!next || authoredName(previous) !== authoredName(next)) && hasCopiedName(ctx.project, previous, collection)) {
+      if (previous && (!next || authoredName(previous) !== authoredName(next)) && hasCopiedName(referenceProject, previous, collection)) {
         throw new PrimitiveError("기존 이름을 쓰는 곳이 있어요. 대사나 연결된 자료에서 이 이름을 확인해 주세요.");
       }
       const updated = [...rows];

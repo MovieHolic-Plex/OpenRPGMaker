@@ -12,7 +12,9 @@ import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { expect, test } from "@playwright/test";
 import type { PiAgentRequest, PiCheckpointHeavyKey } from "@/ai/piAgent/protocol";
+import type { DatabaseTab } from "@/editor/panels/database";
 import type { CorpusCase, FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
+import type { SmallTaskCollection } from "@/editor/smallTask/target";
 import type { GameEvent, Project, Rect } from "@/project/types";
 
 type ShotCase = Pick<CorpusCase, "fixture" | "target" | "primitive" | "args"> & {
@@ -29,6 +31,20 @@ const casesFile = process.env.SHOTS_CASES;
 const output = process.env.SHOTS_OUT;
 const cases: ShotCase[] = casesFile && output ? JSON.parse(readFileSync(casesFile, "utf8")) : [];
 const probeId = "db.items.price.shotProbe";
+const lifeFarmRows: Partial<Record<SmallTaskCollection, {
+  tab: DatabaseTab;
+  section?: string;
+  row: string;
+}>> = {
+  monsterSpecies: { tab: "monsterSpecies", row: "db-monster-species-row-" },
+  crops: { tab: "crops", row: "db-crop-row-" },
+  lifeSkills: { tab: "lifeCrafting", section: "db-life-section-skills", row: "db-life-row-" },
+  farmAnimalSpecies: { tab: "farmAnimals", section: "db-farm-animals-kind-species", row: "db-farm-animal-species-row-" },
+  fishSpecies: { tab: "lifeCollections", section: "db-life-collections-chip-fish", row: "db-life-collections-row-fish-" },
+  farmBuildingTypes: { tab: "farmSpatial", row: "db-spatial-building-type-" },
+  homeDecorationTypes: { tab: "farmSpatial", row: "db-spatial-decoration-type-" },
+  schedules: { tab: "schedules", row: "db-schedule-row-" },
+};
 
 if (!casesFile || !output) test.skip("작은 일 동작 화면 증거", () => {});
 
@@ -78,7 +94,8 @@ for (const [index, entry] of cases.entries()) {
     if (await guest.isVisible()) await guest.click();
     await expect(canvasTrigger).toBeVisible({ timeout: 60_000 });
 
-    const target = await page.evaluate(async ({ fixture, setup, target, overlay }) => {
+    const recordView = entry.target.kind === "dbEntry" ? lifeFarmRows[entry.target.collection] : undefined;
+    const target = await page.evaluate(async ({ fixture, setup, target, overlay, recordView }) => {
       const { store } = await import("/src/project/store.ts");
       const { editorState } = await import("/src/editor/editorState.ts");
       const { resolveTarget } = await import("/src/editor/smallTask/primitives/corpusSchema.ts");
@@ -114,7 +131,7 @@ for (const [index, entry] of cases.entries()) {
       const selected = resolveTarget(store.getCurrent(), target);
       if (selected.kind === "dbEntry") {
         const { openDatabaseModal } = await import("/src/editor/panels/databaseModal.ts");
-        openDatabaseModal(selected.collection);
+        openDatabaseModal(recordView?.tab ?? selected.collection as DatabaseTab);
       } else {
         editorState.set({ currentMapId: selected.mapId, layer: selected.kind === "event" ? "event" : "lower",
           selectedEventId: selected.kind === "event" ? selected.eventId : null });
@@ -129,7 +146,7 @@ for (const [index, entry] of cases.entries()) {
         }
       }
       return selected;
-    }, { ...entry, overlay: readOverlay(entry.fixture) });
+    }, { ...entry, overlay: readOverlay(entry.fixture), recordView });
 
     let runs = 0;
     const blobs = new Map<string, string>();
@@ -154,7 +171,7 @@ for (const [index, entry] of cases.entries()) {
         const { changedProjectKeys, slimDoneEvent } = await import("/src/ai/piAgent/protocol.ts");
         const { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES, runSmallTaskPrimitiveTool } =
           await import("/src/editor/tools/smallTaskPrimitiveTools.ts");
-        const ctx = { project, smallTaskTarget: scope.target, smallTaskSelection: scope.selection };
+        const ctx = { project, smallTaskTarget: scope.target, smallTaskSelection: scope.selection, smallTaskLive: scope.live };
         const list = await runSmallTaskPrimitiveTool(ctx, LIST_SMALL_TASK_PRIMITIVES, {});
         if (!list.data?.some(row => row.id === id)) throw new Error(`동작 목록에서 ${id}를 찾지 못했습니다.`);
         await runSmallTaskPrimitiveTool(ctx, APPLY_SMALL_TASK_PRIMITIVE, { id, args });
@@ -172,7 +189,10 @@ for (const [index, entry] of cases.entries()) {
 
     const panel = target.kind === "dbEntry" ? page.getByTestId("database-modal")
       : target.kind === "event" ? page.getByTestId("event-editor-modal") : canvas;
-    if (target.kind === "dbEntry") await panel.getByTestId(`db-record-row-${target.id}`).click();
+    if (target.kind === "dbEntry") {
+      if (recordView?.section) await panel.getByTestId(recordView.section).click();
+      await panel.getByTestId(`${recordView?.row ?? "db-record-row-"}${target.id}`).click();
+    }
     const trigger = panel.getByRole("button", { name: "이걸로 작업" });
     await expect(trigger).toBeVisible();
     const snapshot = () => page.evaluate(async () => {

@@ -445,6 +445,15 @@ it("이미 연결된 씨앗을 다른 작물에 새로 연결할 수 없다", ()
   }, /이미 다른 작물/u);
 });
 
+it("작물 이름의 길이 상한을 유니코드 코드 포인트로 센다", () => {
+  const collection = "crops";
+  const before = createRecord(setup(collection, "blank"), collection);
+  const name = "🌱".repeat(120);
+  const { after } = runPrimitive(before, targetFor(collection), idFor(collection, "update"), { name });
+  expect(after.database.crops?.find(row => row.id === exampleId)?.name).toBe(name);
+  expectRefused(before, targetFor(collection), idFor(collection, "update"), { name: name + "🌱" }, /형식/u);
+});
+
 it("사용 중인 일정표의 칸을 모두 지워 계획을 열 수 없는 상태로 만들 수 없다", () => {
   const collection = "schedules";
   const before = createRecord(setup(collection, "blank"), collection);
