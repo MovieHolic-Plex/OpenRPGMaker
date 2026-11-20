@@ -113,8 +113,8 @@ export type AiFailureSummary = {
 };
 
 const QUOTA = /\b429\b|RESOURCE_EXHAUSTED|quota|rate.?limit|한도/i;
-const AUTH = /\b40[13]\b|unauthori[sz]ed|forbidden|로그인|인증/i;
-const NETWORK = /failed to fetch|network|ECONN|ETIMEDOUT|\b50[0-4]\b|닿지 못|timeout|시간 초과/i;
+const AUTH = /\b40[13]\b|unauthori[sz]ed|forbidden|not (?:logged|signed) in|invalid[_ ]grant|(?:invalid|missing|no) api[ _-]key|api[ _-]key.{0,25}(?:required|not (?:found|set))|로그인|인증|API 키가 설정되지/i;
+const NETWORK = /failed to fetch|network|ECONN|ETIMEDOUT|\b50[0-4]\b|네트워크|연결이 끊겼|닿지 못|timeout|시간 초과/i;
 
 /** 「Resets in 67h25m0s」·「retry after 30s」 같은 꼬리에서 남은 시간을 초로 읽는다. */
 export function parseResetSeconds(raw: string): number | null {

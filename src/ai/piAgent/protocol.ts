@@ -145,6 +145,8 @@ export interface PiAgentRequest {
   readonly toolDomains?: readonly string[];
   /** Initial schema candidates only; discovery may expand them. Not a permission boundary. */
   readonly initialToolNames?: readonly string[];
+  /** Host-selected narrow edit. The worker derives its tool allowlist and argument guard from this target. */
+  readonly smallTask?: { readonly target: import("@/editor/smallTask/target").SmallTaskTarget; readonly maxToolCalls: number };
   /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */
@@ -312,6 +314,7 @@ type PiAgentEventPayload =
        * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).
        */
       readonly stoppedEarly?: string;
+      readonly smallTask?: true;
       /** 완성 뒤 대사 윤문 고리의 결과(src/ai/piAgent/dialoguePolishHook.ts) — 실행기가 센 전/후 적중 수와 고친 줄. */
       readonly dialoguePolish?: import("./dialoguePolishHook").DialoguePolishReport };
 
