@@ -345,12 +345,27 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   // ③ 움직임: 기계음 되풀이 + 미세 떨림
   playSoundEffect(opts.se, project);
   const loopEvery = 700;
-  const loop = scene.time?.addEvent({ delay: loopEvery, loop: true, callback: () => playSoundEffect(opts.se, project) });
+  let loop: Phaser.Time.TimerEvent | undefined;
+  const stopLoop = () => {
+    loop?.remove(false);
+    loop = undefined;
+  };
+  loop = scene.time?.addEvent({
+    delay: loopEvery, loop: true,
+    callback: () => {
+      if (stillActive()) playSoundEffect(opts.se, project);
+      else stopLoop();
+    },
+  });
   await tween(scene, opts.durationMs, (t) => {
+    if (!stillActive()) {
+      stopLoop();
+      return;
+    }
     state.offset = startOffset + (endOffset - startOffset) * t;
     state.jitter = t > 0.04 && t < 0.96 && Math.floor(t * opts.durationMs / 70) % 2 === 0 ? u : 0;
   });
-  loop?.remove(false);
+  stopLoop();
   if (!stillActive()) return;
   state.jitter = 0;
 
@@ -363,8 +378,9 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
 
   if (opts.mode === "move") {
     clearRidersOnly(state);
-    if (withRiders && scene.tileX === playerX && scene.tileY === playerY) {
-      placePlayerOnCurrentMap(scene, playerX, playerY + dy);
+    if (withRiders) {
+      const stillOnStart = scene.tileX === playerX && scene.tileY === playerY;
+      placePlayerOnCurrentMap(scene, scene.tileX, stillOnStart ? playerY + dy : scene.tileY);
     }
     // 발판은 새 층에 그대로 서 있다.
     state.top += travel;

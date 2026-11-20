@@ -319,7 +319,7 @@ function edit(ctx: PrimitiveContext, args: Args, entry: M2CommandCatalogEntry, r
       (row !== "052" || pictureId !== previousPictureId)) {
     throw new PrimitiveError("이 줄에서 그림을 불러옵니다. 뒤에서 쓰는 그림을 지키려면 종류와 그림 칸을 그대로 두세요.");
   }
-  if (row === "052" && (!matching || pictureId !== previousPictureId) && !hasEarlierPicture(page, path, pictureId)) {
+  if (row === "052" && (!matching || pictureId !== previousPictureId) && !hasEarlierPicture(ctx.project, map, page, path, pictureId)) {
     throw new PrimitiveError("이 줄에 도달하기 전에 같은 그림 칸을 표시하는 명령이 필요합니다.");
   }
   return { path, current, fields };

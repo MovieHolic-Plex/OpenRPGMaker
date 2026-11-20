@@ -321,6 +321,34 @@ it("뒤의 기억 줄이 재생에 쓸 값을 다시 저장하면 첫 줄을 바
   expect(commandsOf(after)).toEqual([newM2Command("m2-047-flash-screen"), remember, replay]);
 });
 
+it("이동 명령이 다음 배경 음악 기억 줄을 건너뛰면 첫 기억 줄을 유지합니다", () => {
+  const remember = newM2Command("m2-063-memorize-current-bgm");
+  const replay = newM2Command("m2-064-play-memorized-bgm");
+  const { project, target } = setup("blank", [
+    remember, { kind: "gotoLabel", name: "restore" }, remember, { kind: "label", name: "restore" }, replay,
+  ]);
+  expect(() => runPrimitive(project, target, "m2.047.update", {
+    index: 0, replaceFrom: "063", expectedHash: eventCommandHash(remember),
+  })).toThrow(/배경 음악을 다시 재생하는 명령/u);
+});
+
+it("호출한 공용 이벤트가 배경 음악을 다시 기억하면 첫 기억 줄을 바꿀 수 있습니다", () => {
+  const remember = newM2Command("m2-063-memorize-current-bgm");
+  const replay = newM2Command("m2-064-play-memorized-bgm");
+  const call: Command = { kind: "callCommonEvent", commonEventId: "ce_remember" };
+  const { project: base, target, commandsOf } = setup("blank", [remember, call, replay]);
+  const replace = (commands: Command[]) => runPrimitive({
+    ...base, commonEvents: [...base.commonEvents, { id: "ce_remember", name: "배경 음악 갱신", trigger: "none", commands }],
+  }, target, "m2.047.update", { index: 0, replaceFrom: "063", expectedHash: eventCommandHash(remember) });
+
+  const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [remember] };
+  const expected = [newM2Command("m2-047-flash-screen"), call, replay];
+  expect(commandsOf(replace([remember]).after)).toEqual(expected);
+  expect(commandsOf(replace([{ ...fork, else: [remember] }]).after)).toEqual(expected);
+  expect(() => replace([replay, remember])).toThrow(/배경 음악을 다시 재생하는 명령/u);
+  expect(() => replace([fork])).toThrow(/배경 음악을 다시 재생하는 명령/u);
+});
+
 it("다음 반복에서 재생할 배경 음악을 기억하는 줄을 유지합니다", () => {
   const remember = newM2Command("m2-063-memorize-current-bgm");
   const replay = newM2Command("m2-064-play-memorized-bgm");
@@ -381,8 +409,6 @@ it("그림 이동을 추가하거나 대상을 바꿀 때 이후 줄과 다른 �
   expect(() => runPrimitive(project, target, "m2.052.insert", fields)).toThrow(/그림 칸을 표시하는 명령/u);
   expect(() => runPrimitive(project, target, "m2.052.update", { ...fields, expectedHash: eventCommandHash(old) }))
     .toThrow(/그림 칸을 표시하는 명령/u);
-  expect(() => runPrimitive(project, target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
-    .toThrow(/그림 칸을 표시하는 명령/u);
 });
 
 it("앞서 표시한 그림이라도 실행할 수 있는 분기에서 지우면 이동을 거절합니다", () => {
@@ -391,6 +417,27 @@ it("앞서 표시한 그림이라도 실행할 수 있는 분기에서 지우면
   };
   const { project, target } = setup("blank", [picture, branch]);
   expect(() => runPrimitive(project, target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
+    .toThrow(/그림 칸을 표시하는 명령/u);
+});
+
+it("이동 명령으로 건너뛴 그림 표시는 인정하지 않습니다", () => {
+  const { project, target } = setup("blank", [
+    { kind: "gotoLabel", name: "move" }, picture, { kind: "label", name: "move" },
+  ]);
+  expect(() => runPrimitive(project, target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
+    .toThrow(/그림 칸을 표시하는 명령/u);
+});
+
+it("조건의 양쪽 분기에서 같은 그림 칸을 표시하면 뒤에서 이동할 수 있습니다", () => {
+  const branch: Command = {
+    kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [picture], else: [picture],
+  };
+  const { project, target, commandsOf } = setup("blank", [branch]);
+  const { after } = runPrimitive(project, target, "m2.052.insert", { pictureId: "pic2", x: 72 });
+  expect(commandsOf(after).at(-1)).toMatchObject({ kind: "m2Command", commandId: "m2-052-move-picture" });
+
+  const optional = setup("blank", [{ ...branch, else: undefined }]);
+  expect(() => runPrimitive(optional.project, optional.target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
     .toThrow(/그림 칸을 표시하는 명령/u);
 });
 
