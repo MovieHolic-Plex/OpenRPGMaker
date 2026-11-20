@@ -270,13 +270,11 @@ function validateReferences(project: Project, command: StagingCommand, previous:
     if (!still || !findOpeningStillScene(project, still.sceneId)) throw new PrimitiveError(message);
     return;
   }
-  const known = collectResourceIds(project).has(id);
-  const bundledMovie = command.kind === "playMovie" && id === SAMPLE_MOVIE_RESOURCE.id;
-  if (actorId || (!known && !bundledMovie) || Object.hasOwn(Object.prototype, id)) throw new PrimitiveError(message);
+  if (actorId || Object.hasOwn(Object.prototype, id) || !collectResourceIds(project).has(id)) {
+    throw new PrimitiveError(message);
+  }
   const uploaded = Object.hasOwn(project.assets.uploaded, id) ? project.assets.uploaded[id] : undefined;
   const url = resolveAssetResourceUrl(id, { project });
-  // A missing upload must not silently fall back to the sample with the same filename.
-  if (bundledMovie && !uploaded && !url) return;
   // Content-addressed uploads are also edited in hosts that have no URL resolver installed.
   const mime = uploaded?.ref && (!url || url === uploadedAssetUrl(uploaded))
     ? uploadedAssetMime(uploaded).toLowerCase()

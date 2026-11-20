@@ -23,6 +23,8 @@ import { beginEventEditDraft } from "@/project/eventDrafts";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 import { showPictureState, startSession } from "@/project/session";
+import { createStandaloneHtmlExport } from "@/project/standaloneExport";
+import { STANDALONE_ASSETS_NODE_ID } from "@/project/standaloneHtml";
 import type { Command, EventPage, GameEvent, Project, UploadedAsset } from "@/project/types";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import { jsonEqual } from "@/util/structuralJson";
@@ -598,6 +600,20 @@ it.each(["insert", "update"] as const)("번들 샘플을 %s 하면 플레이어�
     kind: "public", resourceId: SAMPLE_MOVIE_RESOURCE.id, sourcePath: path, zipPath: path,
   });
   await expectUndoRestores(project, after, target);
+});
+
+it("연출 명령의 번들 샘플 WebM을 실행형 HTML에 포함한다", async () => {
+  const { project, target } = fixture("blank", []);
+  const { id, url } = SAMPLE_MOVIE_RESOURCE;
+  const { after } = runPrimitive(project, target, "cmd.playMovie.insert", { resourceId: id });
+  const bytes = readFileSync(`public${url}`);
+  const { blob } = await createStandaloneHtmlExport(after, {
+    fetchBytes: async path => path === url ? bytes : new Uint8Array([1]),
+  });
+
+  const document = new DOMParser().parseFromString(await blob.text(), "text/html");
+  const assets = JSON.parse(document.getElementById(STANDALONE_ASSETS_NODE_ID)!.textContent!);
+  expect(assets[url.slice(1)]).toBe(`data:video/webm;base64,${bytes.toString("base64")}`);
 });
 
 it("번들 동영상과 이름이 같은 잘못된 업로드 및 확인되지 않은 파일은 거절한다", () => {
