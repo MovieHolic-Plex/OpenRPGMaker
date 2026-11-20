@@ -242,21 +242,21 @@ function labeledSwitch(
 ): HTMLElement {
   const box = el("div", { class: "event-condition-detail" });
   let currentSwitchId = cond.switchId;
-  const sw = databasePicker("switch", cond.switchId, (switchId) => {
-    currentSwitchId = switchId;
-    syncError();
-    onChange({ kind: "switch", switchId, value: val.value === "true" });
-  }, "event-condition-switch-target");
   const val = selectWithOptions(SWITCH_STATE_OPTIONS, String(cond.value), "event-condition-switch-value");
-  val.addEventListener("change", () => {
-    onChange({ kind: "switch", switchId: currentSwitchId, value: val.value === "true" });
-  });
   const error = el("p", {
     class: "event-condition-error",
     text: "대상 스위치를 선택하세요.",
     dataset: { testid: "event-condition-switch-error" },
   });
   const syncError = (): void => { error.hidden = Boolean(currentSwitchId.trim()); };
+  const sw = databasePicker("switch", cond.switchId, (switchId) => {
+    currentSwitchId = switchId;
+    syncError();
+    onChange({ kind: "switch", switchId, value: val.value === "true" });
+  }, "event-condition-switch-target");
+  val.addEventListener("change", () => {
+    onChange({ kind: "switch", switchId: currentSwitchId, value: val.value === "true" });
+  });
   syncError();
   box.append(field("대상 스위치", sw), error, field("상태", val));
   return box;

@@ -799,14 +799,14 @@ function commandActions(path: number[], actions: CommandListActions, canMoveDown
     on: { click: () => actions.moveCommand(path, -1) },
   });
   up.disabled = path[path.length - 1] === 0;
-  up.classList.toggle("btn", up.disabled);
+  up.setAttribute("aria-disabled", String(up.disabled));
   const down = el("button", {
     children: [renderEditorIcon("arrowDown")],
     attrs: { title: "아래로", "aria-label": "아래로", type: "button" },
     on: { click: () => actions.moveCommand(path, 1) },
   });
   down.disabled = !canMoveDown;
-  down.classList.toggle("btn", down.disabled);
+  down.setAttribute("aria-disabled", String(down.disabled));
   wrap.append(
     up,
     down,

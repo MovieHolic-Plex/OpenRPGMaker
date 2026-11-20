@@ -55,6 +55,7 @@ describe("event editor QA regressions", () => {
   });
 
   afterEach(async () => {
+    document.querySelector<HTMLElement>('[data-testid="event-record-picker"] .event-subdialog-close')?.click();
     document.querySelector<HTMLElement>('[data-testid="event-command-edit-cancel"]')?.click();
     document.querySelector<HTMLElement>('[data-testid="event-command-picker-cancel"]')?.click();
     document.querySelector('[data-testid="event-editor-modal"]')?.remove();
@@ -107,19 +108,26 @@ describe("event editor QA regressions", () => {
     chooseCommand("fork", "조건 분기");
     const ok = control("event-command-edit-ok");
     const error = control("event-condition-switch-error");
-    expect(ok.disabled).toBe(true);
+    const initialOkClass = ok.className;
+    expect(ok.hasAttribute("disabled")).toBe(true);
+    expect(ok.getAttribute("aria-disabled")).toBe("true");
+    expect(ok.classList.contains("btn")).toBe(false);
     expect(error.hidden).toBe(false);
     expect(error.textContent).toBe("대상 스위치를 선택하세요.");
     ok.click();
     expect(readCommands()).toEqual([oldFork]);
 
     const value = control<HTMLSelectElement>("event-condition-switch-value");
+    expect(value.value).toBe("true");
     value.value = "false";
     value.dispatchEvent(new Event("change", { bubbles: true }));
-    const target = control("event-condition-switch-target").querySelector("select")!;
-    target.value = switchId;
-    target.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(ok.disabled).toBe(false);
+    control("event-switch-picker-open").click();
+    control("event-record-picker-row-1").click();
+    control("event-record-picker-ok").click();
+    expect(value.value).toBe("false");
+    expect(ok.hasAttribute("disabled")).toBe(false);
+    expect(ok.getAttribute("aria-disabled")).toBe("false");
+    expect(ok.className).toBe(initialOkClass);
     expect(error.hidden).toBe(true);
 
     const elseToggle = control<HTMLInputElement>("event-fork-else-enabled");
@@ -164,8 +172,12 @@ describe("event editor QA regressions", () => {
     } satisfies Command;
     const buttons = (path: number[]) =>
       [...root.querySelectorAll<HTMLButtonElement>(`[data-cmd-path='${JSON.stringify(path)}'] .cmd-actions button`)];
-    const expectBounds = (path: number[], up: boolean, down: boolean) =>
-      expect(buttons(path).slice(0, 2).map(button => button.disabled)).toEqual([up, down]);
+    const expectBounds = (path: number[], up: boolean, down: boolean) => {
+      const moveButtons = buttons(path).slice(0, 2);
+      expect(moveButtons.map(button => button.hasAttribute("disabled"))).toEqual([up, down]);
+      expect(moveButtons.map(button => button.getAttribute("aria-disabled"))).toEqual([String(up), String(down)]);
+      expect(moveButtons.map(button => button.classList.contains("btn"))).toEqual([false, false]);
+    };
     const thenPath = [0, FORK_THEN_BRANCH_INDEX];
     const elsePath = [0, FORK_ELSE_BRANCH_INDEX];
     const options = { reuseImmutableRows: true };
