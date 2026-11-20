@@ -1,9 +1,13 @@
+import { removedDatabaseReference, scriptContainsLiteral } from "@/ai/smallTaskReferences";
 import { applyProjectWithHistory, getMapEditHistoryEntries, getMapEditHistoryMarker, hasRevertDraftConflict, revertToHistoryMarker, undoMapEdit } from "@/editor/mapEditHistory";
+import { referenceIndex } from "@/editor/tools/dbReferenceIndex";
 import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
+import { forEachProjectScript } from "@/project/script/effects";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "./primitives/errors";
+import { mapRemovalDraftError } from "./primitives/units/23-map-structure/maps";
 import { assertProjectDataDraftReferences } from "./primitives/units/28-project-data";
 import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
@@ -23,6 +27,28 @@ export function smallTaskBase(live: Project, target: SmallTaskTarget): Project {
   return event?.draft ? withEvent(base, target.mapId, eventWithoutDraft(event)) : base;
 }
 
+function draftReferencesNewDatabaseRows(live: Project, before: Project, after: Project, collection: keyof Project["database"]): boolean {
+  if (live.maps === before.maps) return false;
+  const beforeIds = new Set(before.database[collection]?.map(row => row.id));
+  const addedIds = new Set(after.database[collection]?.filter(row => !beforeIds.has(row.id)).map(row => row.id));
+  if (!addedIds.size) return false;
+  for (const sites of referenceIndex(live, addedIds).values()) {
+    if (sites.some(({ path: [root, mapId, field, index] }) =>
+      root === "maps" && typeof mapId === "string" && field === "events" && typeof index === "number"
+      && live.maps[mapId]?.events[index]?.draft !== undefined)) return true;
+  }
+  // Script bodies can name IDs that are absent from their indexed effects.
+  const ids = [...addedIds];
+  let found = false;
+  forEachProjectScript(live, (script, { mapId, eventId }) => {
+    if (found || mapId === undefined || eventId === undefined) return;
+    if (live.maps[mapId]?.events.some(event => event.id === eventId && event.draft)) {
+      found = ids.some(id => scriptContainsLiteral(script, id));
+    }
+  });
+  return found;
+}
+
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
@@ -38,6 +64,18 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
       throw error;
     }
   }
+  if (target.kind === "dbEntry") {
+    const { collection, id } = target;
+    // The worker saw saved events. Keep publication from breaking or redirecting open draft references.
+    if (draftReferencesNewDatabaseRows(live, before, after, collection)) {
+      throw new SmallTaskError("열린 이벤트가 새 항목과 같은 식별자를 쓰고 있어요. 이벤트의 연결을 먼저 확인해 주세요.");
+    }
+    if (before.database[collection]?.some(row => row.id === id)
+      && !after.database[collection]?.some(row => row.id === id)
+      && removedDatabaseReference(before, after, [{ collection, id }], live)) {
+      throw new SmallTaskError("이벤트 편집에서 쓰는 자료집 항목은 삭제할 수 없어요. 열린 이벤트의 연결을 확인해 주세요.");
+    }
+  }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
   if (target.kind === "event" && event?.draft) {
@@ -49,7 +87,11 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
     proposal = withEvent(after, target.mapId, { ...edited, draft });
   }
   const mapId = target.kind === "dbEntry" ? undefined : target.mapId;
-  const afterEvents = mapId ? new Map(after.maps[mapId].events.map(event => [event.id, event])) : null;
+  if (target.kind === "map" && !after.maps[target.mapId]) {
+    const error = mapRemovalDraftError(before, target.mapId, live);
+    if (error) throw new SmallTaskError(error);
+  }
+  const afterEvents = mapId ? new Map(after.maps[mapId]?.events.map(event => [event.id, event])) : null;
   const refreshCleanEventDrafts = mapId ? before.maps[mapId].events
     .filter(event => !jsonEqual(event, afterEvents?.get(event.id)))
     .map(event => ({ mapId, eventId: event.id })) : [];

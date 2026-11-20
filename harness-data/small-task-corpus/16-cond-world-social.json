@@ -1,1 +1,1835 @@
-[]
+[
+  {
+    "request": "이 상인 대사는 한밤중에만 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "night"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "night"}
+      }
+    ]
+  },
+  {
+    "request": "여기 아침에만 뜨게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "morning"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "morning"}
+      }
+    ]
+  },
+  {
+    "request": "해가 진 저녁 시간대에 이 페이지가 나오면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "evening"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "evening"}
+      }
+    ]
+  },
+  {
+    "request": "이 장면은 낮에만열리게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "day"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "day"}
+      }
+    ]
+  },
+  {
+    "request": "야간 조건 걸어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "night"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "night"}
+      }
+    ]
+  },
+  {
+    "request": "조간에는 이 장사 이벤트가 보이게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "morning"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "morning"}
+      }
+    ]
+  },
+  {
+    "request": "현재 페이지의 시간 조건을 기본 낮으로 잡아주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "timePhase", "phase": "day"}
+      }
+    ]
+  },
+  {
+    "request": "새벽 두 시 반에만 이 시간대 조건이 맞게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.timePhase.page.set",
+    "args": {"phase": "02:30"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 대사는 눈 오는 계절인 겨울에만 나오게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "winter"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "winter"}
+      }
+    ]
+  },
+  {
+    "request": "봄철 전용으로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "spring"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "spring"}
+      }
+    ]
+  },
+  {
+    "request": "한여름에만 여기 보이게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "summer"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "summer"}
+      }
+    ]
+  },
+  {
+    "request": "가을에만 장터 소문을 들을 수 있도록 이 페이지 조건을 설정해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "fall"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "fall"}
+      }
+    ]
+  },
+  {
+    "request": "겨울에만나오게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "winter"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "winter"}
+      }
+    ]
+  },
+  {
+    "request": "춘계에 여는 상점으로 걸어 둘래.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "spring"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "spring"}
+      }
+    ]
+  },
+  {
+    "request": "계절을 기본값인 봄으로 설정해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "season", "season": "spring"}
+      }
+    ]
+  },
+  {
+    "request": "계절을 장마라는 다섯 번째 계절로 잡아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.season.page.set",
+    "args": {"season": "monsoon"},
+    "expectRefusal": true
+  },
+  {
+    "request": "토요일이랑 일요일에만 떠돌이 상인을 볼 수 있게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": [6, 0]},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [0, 6]}
+      }
+    ]
+  },
+  {
+    "request": "월수금에만 이 대사.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": [1, 3, 5]},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [1, 3, 5]}
+      }
+    ]
+  },
+  {
+    "request": "화요일 한 날만 열어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": [2]},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [2]}
+      }
+    ]
+  },
+  {
+    "request": "금요일과 목요일에만 됩니다.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": [5, 4]},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [4, 5]}
+      }
+    ]
+  },
+  {
+    "request": "일욜만 뜨게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": [0]},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [0]}
+      }
+    ]
+  },
+  {
+    "request": "평일에만 이 장면이 열리면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": [1, 2, 3, 4, 5]},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [1, 2, 3, 4, 5]}
+      }
+    ]
+  },
+  {
+    "request": "기본 주말 조건 붙여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "weekday", "weekdays": [0, 6]}
+      }
+    ]
+  },
+  {
+    "request": "요일 목록이 빈 채로 저장되게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.weekday.page.set",
+    "args": {"weekdays": []},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 인물이 일할 때만 이 페이지가 나오게 해 주세요.",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "work"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "work"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "work"}
+      }
+    ]
+  },
+  {
+    "request": "휴식 상태일 때만 뜨게",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "rest"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "rest"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "rest"}
+      }
+    ]
+  },
+  {
+    "request": "잠자는 활동에만 이 대사 걸어줘",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "sleep"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "sleep"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "sleep"}
+      }
+    ]
+  },
+  {
+    "request": "장사 중일 때에만 고르는 대사로 해 주세요.",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "shop"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "shop"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "shop"}
+      }
+    ]
+  },
+  {
+    "request": "밥먹을 때만 보여줘",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "eat"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "eat"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "eat"}
+      }
+    ]
+  },
+  {
+    "request": "산책 중에 이 페이지를 보이게 해 주세요.",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "walk"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "walk"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "walk"}
+      }
+    ]
+  },
+  {
+    "request": "활동 기본값인 일로 해 줘.",
+    "fixture": "built",
+    "setup": {"events": [{
+      "id": "ev_activity_shop", "name": "일정이 있는 상인", "x": 24, "y": 33, "trigger": {"kind": "action"}, "commands": [],
+      "schedule": [{"when": {}, "at": {"mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "x": 24, "y": 33}, "activity": "work"}],
+      "pages": [{"id": "pg_activity_shop", "name": "상인과 대화", "conditions": [], "graphic": {}, "trigger": {"kind": "action"}, "priority": "same", "movement": {"type": "fixed", "speed": 3, "frequency": 3}, "commands": []}]
+    }]},
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_activity_shop", "pageId": "pg_activity_shop"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_activity_shop].pages[0].conditions[-1]",
+        "equals": {"kind": "npcActivity", "activity": "work"}
+      }
+    ]
+  },
+  {
+    "request": "일정 없는 떠돌이 상인이 일하고 있을 때만 이 페이지를 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "work"},
+    "expectRefusal": true,
+    "refusalMessage": "이 이벤트의 일정"
+  },
+  {
+    "request": "확인할 활동은 빈칸으로 두고 저장해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.npcActivity.page.set",
+    "args": {"activity": "   "},
+    "expectRefusal": true
+  },
+  {
+    "request": "마을 광장 안에 발을 들였을 때만 이 상인 대사를 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc10"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc10", "inside": true}
+      }
+    ]
+  },
+  {
+    "request": "광장 밖일때만 나오게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc10", "inside": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc10", "inside": false}
+      }
+    ]
+  },
+  {
+    "request": "벌꿀술 회관 안에서만 이 페이지 좀 열어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc2", "inside": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc2", "inside": true}
+      }
+    ]
+  },
+  {
+    "request": "플레이어가 대장간 밖에 있을 때만 보이게 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc6", "inside": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc6", "inside": false}
+      }
+    ]
+  },
+  {
+    "request": "얼어붙은 연못 안 쪽에서만 이 페이지 표시",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc12"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc12", "inside": true}
+      }
+    ]
+  },
+  {
+    "request": "주인공 대신 문이 마을 광장 안에 있을 때로 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc10", "eventId": "ev_world_gate_fr1ddn"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc10", "eventId": "ev_world_gate_fr1ddn", "inside": true}
+      }
+    ]
+  },
+  {
+    "request": "북쪽 가문비숲을 벗어나 있을 때만 이 장면이 나와야 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc9", "inside": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "insideLocation", "locationId": "loc9", "inside": false}
+      }
+    ]
+  },
+  {
+    "request": "지금 지도에는 없는 해변 구역 안에서만 나와 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.insideLocation.page.set",
+    "args": {"locationId": "loc_missing_beach"},
+    "expectRefusal": true
+  },
+  {
+    "request": "히나랑 호감도 오십 넘기 전엔 이 대화 말고 기존 페이지 쓰게. 오십부터 열어 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "hina", "value": 50},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "hina", "value": 50}
+      }
+    ]
+  },
+  {
+    "request": "리리랑 친밀도 백 이상이면 지금 페이지 보여 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "lily", "value": 100},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "lily", "value": 100}
+      }
+    ]
+  },
+  {
+    "request": "레온하고 호감도 이십만 넘어야 돼. 21부터.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "leon", "value": 21},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "leon", "value": 21}
+      }
+    ]
+  },
+  {
+    "request": "히나 호감도 삼십이상일때만",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "hina", "value": 30},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "hina", "value": 30}
+      }
+    ]
+  },
+  {
+    "request": "이 대사를 보려면 히나의 호감도를 최대치인 천까지 채워야 해요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "hina", "value": 1000},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "hina", "value": 1000}
+      }
+    ]
+  },
+  {
+    "request": "리리를 기준으로 호감도 문턱은 기본 백 점으로 해 주실래요?",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "lily"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "lily", "value": 100}
+      }
+    ]
+  },
+  {
+    "request": "히나 호감도 75부터 보여줘",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "hina", "value": 75},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "friendshipAtLeast", "npcKey": "hina", "value": 75}
+      }
+    ]
+  },
+  {
+    "request": "등록된 적 없는 세실의 호감도 스무 점을 조건으로 써 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.friendshipAtLeast.page.set",
+    "args": {"npcKey": "char_missing_cecil", "value": 20},
+    "expectRefusal": true
+  },
+  {
+    "request": "히나랑 사귀는 사이부터 이 대사를 열어 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "hina", "state": "dating"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "hina", "state": "dating"}
+      }
+    ]
+  },
+  {
+    "request": "리리하고 약혼 이상 이면 보여줘",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "lily", "state": "engaged"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "lily", "state": "engaged"}
+      }
+    ]
+  },
+  {
+    "request": "레온하고 결혼했을 때만 이 페이지를 보여 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "leon", "state": "married"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "leon", "state": "married"}
+      }
+    ]
+  },
+  {
+    "request": "히나와 결혼 상태까지 올라갔으면 이 대사.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "hina", "state": "married"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "hina", "state": "married"}
+      }
+    ]
+  },
+  {
+    "request": "리리랑 연애 시작한 뒤에는 여기 나오게 해 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "lily", "state": "dating"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "lily", "state": "dating"}
+      }
+    ]
+  },
+  {
+    "request": "히나 기준 관계 기본 문턱을 설정해 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "hina"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "hina", "state": "dating"}
+      }
+    ]
+  },
+  {
+    "request": "레온과 약혼한 다음부터 틀어 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "leon", "state": "engaged"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "relationshipAtLeast", "npcKey": "leon", "state": "engaged"}
+      }
+    ]
+  },
+  {
+    "request": "리리랑 이혼을 관계 단계 조건으로 달아줘",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.relationshipAtLeast.page.set",
+    "args": {"npcKey": "lily", "state": "divorced"},
+    "expectRefusal": true
+  },
+  {
+    "request": "마지막 전투를 이겨야 이 대사가 뜨도록 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "victory"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "victory"}
+      }
+    ]
+  },
+  {
+    "request": "졌을때만 이 페이지",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "defeat"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "defeat"}
+      }
+    ]
+  },
+  {
+    "request": "싸우다 도망쳤을 때 보여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "escape"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "escape"}
+      }
+    ]
+  },
+  {
+    "request": "직전 전투 승리면 활성화해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "victory"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "victory"}
+      }
+    ]
+  },
+  {
+    "request": "전투에서 패한 뒤에만 뜨게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "defeat"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "defeat"}
+      }
+    ]
+  },
+  {
+    "request": "전투를 이탈한 경우에만 이 반응을 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "escape"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "escape"}
+      }
+    ]
+  },
+  {
+    "request": "전투 결과를 기본 승리 조건으로 설정해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "battleResult", "result": "victory"}
+      }
+    ]
+  },
+  {
+    "request": "대결이 무승부였을 때만 표시해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.battleResult.page.set",
+    "args": {"result": "draw"},
+    "expectRefusal": true
+  },
+  {
+    "request": "탐험에 들어가 있는 동안에만 이 상인이 나오도록 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "active"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "active", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "던전 탐험 중 아닐 때 열어줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "active", "value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "active", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "탐험 기록의 층이 3층 이상이면 이 페이지가 켜지면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "floor", "value": 3},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "floor", "op": ">=", "value": 3}
+      }
+    ]
+  },
+  {
+    "request": "탐험 기록의 층이 정확히 2층일 때만 보여 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "floor", "value": 2, "op": "=="},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "floor", "value": 2, "op": "=="}
+      }
+    ]
+  },
+  {
+    "request": "탐험 기록에서 보물 찾음이 켜졌을 때만 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "flag", "flag": "보물 찾음", "value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "flag", "flag": "보물 찾음", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "탐험 완주한 뒤에 이 대화.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "result", "result": "completed"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "result", "result": "completed"}
+      }
+    ]
+  },
+  {
+    "request": "중간에 탐험을 포기한 사람한테만 나와 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "result", "result": "abandoned"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "run", "query": "result", "result": "abandoned"}
+      }
+    ]
+  },
+  {
+    "request": "탐험 층 비교를 하되 층 번호는 비워 둬.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.run.page.set",
+    "args": {"query": "floor"},
+    "expectRefusal": true
+  },
+  {
+    "request": "주인공이 북쪽을 보고 있을 때만 이 페이지가 떠야 해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"subject": "player", "dir": "up"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "player", "dir": "up"}
+      }
+    ]
+  },
+  {
+    "request": "얘가 왼쪽 볼때만",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"subject": "event", "dir": "left"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "event", "dir": "left"}
+      }
+    ]
+  },
+  {
+    "request": "플레이어가 아래를 향하면 이 대사 나오게요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"dir": "down"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "player", "dir": "down"}
+      }
+    ]
+  },
+  {
+    "request": "이 이벤트가 동쪽을 보고 있을 때만 보여줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"subject": "event", "dir": "right"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "event", "dir": "right"}
+      }
+    ]
+  },
+  {
+    "request": "주인공 시선이 서쪽일때만 표시",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"subject": "player", "dir": "left"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "player", "dir": "left"}
+      }
+    ]
+  },
+  {
+    "request": "이 캐릭터가 화면 위를 바라보는 동안만 페이지 표시해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"subject": "event", "dir": "up"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "event", "dir": "up"}
+      }
+    ]
+  },
+  {
+    "request": "방향 조건은 기본으로 잡아 둘게요. 주인공 위쪽이에요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "facing", "subject": "player", "dir": "up"}
+      }
+    ]
+  },
+  {
+    "request": "주인공이 북동쪽을 볼 때 표시해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.facing.page.set",
+    "args": {"dir": "northeast"},
+    "expectRefusal": true
+  },
+  {
+    "request": "주인공이 이 상인 등 뒤에 있을 때만 보이게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "playerBehindEvent"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "playerBehindEvent"}
+      }
+    ]
+  },
+  {
+    "request": "이 이벤트가 내 뒤에 있을때만 켜 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "eventBehindPlayer"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "eventBehindPlayer"}
+      }
+    ]
+  },
+  {
+    "request": "플레이어가 이 이벤트 쪽을 향하면 나타나게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "playerFacingEvent"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "playerFacingEvent"}
+      }
+    ]
+  },
+  {
+    "request": "상인의 뒤쪽으로 몰래 다가갔을 때만 이 페이지를 사용할 수 있게 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "playerBehindEvent"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "playerBehindEvent"}
+      }
+    ]
+  },
+  {
+    "request": "주인공 등뒤에 상인이 있을 때 나오게 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "eventBehindPlayer"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "eventBehindPlayer"}
+      }
+    ]
+  },
+  {
+    "request": "내 캐릭터가 쟤를 보는 경우에만 보여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "playerFacingEvent"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "playerFacingEvent"}
+      }
+    ]
+  },
+  {
+    "request": "상대 위치 조건 기본값으로 설정해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "relativeFacing", "relation": "playerFacingEvent"}
+      }
+    ]
+  },
+  {
+    "request": "둘이 서로 등을 돌린 경우에만 상대 자세 조건을 맞춰 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.relativeFacing.page.set",
+    "args": {"relation": "bothBackToBack"},
+    "expectRefusal": true
+  },
+  {
+    "request": "주인공이 숨었을 때만 문지기 반응을 표시해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "안 숨었을때만 나와",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "은신하고 있는 동안 이 페이지가 켜지면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "은신 풀려 있어야 이 대사 보이게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "숨어 있는 상태인 경우에만 열리게요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "숨기 조건 기본 상태 붙여 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "숨지 않은 주인공에게만 지금 반응이 떠야 합니다.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "hiding", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "다른 이벤트 페이지도 같은 숨기 조건으로 한꺼번에 바꿔줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.hiding.page.set",
+    "args": {"value": true, "pageId": "other_page"},
+    "expectRefusal": true
+  },
+  {
+    "request": "누군가 주인공을 쫓고 있을 때 이 대사만 보이게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "쫓아오는 애가 없을때 표시",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "목책 문이 추격 중이면 선택한 페이지가 나오게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"eventId": "ev_world_gate_fr1ddn"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "eventId": "ev_world_gate_fr1ddn", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "목책 문이 더는 주인공을 추적하지 않을 때 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"eventId": "ev_world_gate_fr1ddn", "value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "eventId": "ev_world_gate_fr1ddn", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "추격 받는 중에 나오는 페이지로 잡아 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "이 상인이 주인공을 쫓을 때만 이 페이지 켜 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"eventId": "ev_supply_shop", "value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "eventId": "ev_supply_shop", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "이 상인의 추적이 멈췄을 때만 이 말이 뜨면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"eventId": "ev_supply_shop", "value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "pursuitActive", "eventId": "ev_supply_shop", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "현재 맵에 없는 북쪽 경비의 추격 여부로 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.pursuitActive.page.set",
+    "args": {"eventId": "ev_missing_north"},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인이 주인공을 다섯 칸 안에서 발견했을 때만 이 페이지가 보이게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "ev_supply_shop", "range": 5, "value": true}
+      }
+    ]
+  },
+  {
+    "request": "세칸 안에 들어오면 이 상인이 보게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"range": 3},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "ev_supply_shop", "range": 3, "value": true}
+      }
+    ]
+  },
+  {
+    "request": "이 상인이 주인공을 못 볼 때만 대화가 뜨면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "ev_supply_shop", "range": 5, "value": false}
+      }
+    ]
+  },
+  {
+    "request": "목책 문이 주인공을 네 칸 안에서 보면 보이게, 밤에는 두 칸으로 줄여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"eventId": "ev_world_gate_fr1ddn", "range": 4, "nightRange": 2},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "ev_world_gate_fr1ddn", "range": 4, "value": true, "darkness": {"night": 2}}
+      }
+    ]
+  },
+  {
+    "request": "광장 안에 있는 이벤트 하나라도 주인공을 발견하면 이 페이지를 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"watcherLocationId": "loc10"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "", "range": 5, "value": true, "watchers": {"locationId": "loc10"}}
+      }
+    ]
+  },
+  {
+    "request": "상인이 앞을 안 봐도 찾게 해 줘. 범위는 두 칸.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"range": 2, "requireFacing": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "ev_supply_shop", "range": 2, "value": true, "requireFacing": false}
+      }
+    ]
+  },
+  {
+    "request": "이벤트 이름 칸에 상인이 들어가는 관찰자가 일곱 칸 안에서 봐야 나오게요. 이동 명령이 있는 문 이벤트는 시야를 가립니다.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"watcherName": "상인", "range": 7, "doorsBlock": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "eventSeesPlayer", "eventId": "", "range": 7, "value": true, "doorsBlock": true, "watchers": {"name": "상인"}}
+      }
+    ]
+  },
+  {
+    "request": "삭제된 경비 이벤트가 주인공을 보면 열리게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.eventSeesPlayer.page.set",
+    "args": {"eventId": "ev_deleted_guard"},
+    "expectRefusal": true
+  },
+  {
+    "request": "두 번 이상 클리어했을 때 이 상인한테 새 대사가 나오면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"value": 2},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": ">=", "value": 2}
+      }
+    ]
+  },
+  {
+    "request": "딱세번 깬 사람한테만 표시",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"op": "==", "value": 3},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": "==", "value": 3}
+      }
+    ]
+  },
+  {
+    "request": "한 번이라도 엔딩을 봤을 때 나오는 페이지로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": ">=", "value": 1}
+      }
+    ]
+  },
+  {
+    "request": "클리어 기록이 아예 없어야 이 말이 뜨게 해줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"op": "==", "value": 0},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": "==", "value": 0}
+      }
+    ]
+  },
+  {
+    "request": "네 번 이하로 끝낸 사람에게만 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"op": "<=", "value": 4},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": "<=", "value": 4}
+      }
+    ]
+  },
+  {
+    "request": "클리어 횟수가 두번을 넘을 때만 뜨게.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"op": ">", "value": 2},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": ">", "value": 2}
+      }
+    ]
+  },
+  {
+    "request": "완주를 열 번 못 채웠으면 보여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"op": "<", "value": 10},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "clearCount", "op": "<", "value": 10}
+      }
+    ]
+  },
+  {
+    "request": "클리어 횟수가 마이너스 한 번일 때 열어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.clearCount.page.set",
+    "args": {"op": "==", "value": -1},
+    "expectRefusal": true
+  },
+  {
+    "request": "이달의 우수 사원 엔딩을 본 뒤에만 이 대사가 보이게 해 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_best_employee"},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_best_employee", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "내일도 출근합니다 앤딩 안 봤으면 나와줘",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_tomorrow_too", "value": false},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_tomorrow_too", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "마왕 재림 결말을 본 경우에만 이 페이지를 사용하게요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_maou_returns", "value": true},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_maou_returns", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "우수 사원 엔딩은 아직 안 본 사람한테만 이 장면이 뜨게.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_best_employee", "value": false},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_best_employee", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "보통 엔딩인 내일도 출근합니다를 확인한 다음에만 열어 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_tomorrow_too", "value": true},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_tomorrow_too", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "마왕 변상 엔딩을 안깼을때만 보이게",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_maou_returns", "value": false},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_maou_returns", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "우수 사원 결말을 봤다는 기록을 이 페이지 조건으로 써 주세요.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_best_employee", "value": true},
+    "expect": [
+      {
+        "at": "maps.map_mk_konbini.events[id=ev_mk_hina].pages[2].conditions[-1]",
+        "equals": {"kind": "endingSeen", "endingId": "end_mk_best_employee", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "추가한 적 없는 달빛 엔딩을 본 다음에 이 대사 보여줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_hina", "pageId": "ev_mk_hina_p3"},
+    "primitive": "cond.endingSeen.page.set",
+    "args": {"endingId": "end_mk_missing_moon"},
+    "expectRefusal": true
+  },
+  {
+    "request": "강하게 다시 하기 모드에서만 상인한테 이 페이지가 보이게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "일반 회차에서만 나오게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "강하게다시하기 들어간 뒤에만 이 대사 떠야 해",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "강하게 다시 하기 없이 새로 시작한 플레이에서만 이 조건이 맞도록 부탁해요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "능력 물려받아 시작한 회차에만 표시해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "계승 없는 플레이 중일 때만 보여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": false},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": false}
+      }
+    ]
+  },
+  {
+    "request": "강하게 재도전 중인 경우 이 사건 페이지를 표시",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": true},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[1].conditions[-1]",
+        "equals": {"kind": "newGamePlus", "value": true}
+      }
+    ]
+  },
+  {
+    "request": "강하게 다시 하기인지 말고 정확한 재시작 번호 둘을 여기에 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.newGamePlus.page.set",
+    "args": {"value": 2},
+    "expectRefusal": true
+  },
+  {
+    "request": "어려움 난이도에서만 이 상인 대사를 보여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "hard"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "hard"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "쉬움에서만 열어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "easy"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "easy"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "난이도를 보통으로 시작한 경우에만 이 페이지를 쓰면 좋겠어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "normal"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "normal"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "어려움일때만 여기 뜨게",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "hard"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "hard"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "초보 난이도인 쉬움으로 플레이하는 사람에게만 이 말이 나오도록 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "easy"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "easy"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "난이도 평범한 보통이면 이 상황 보여 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "normal"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "normal"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "하드 모드에서만 이 페이지가 유효하게 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "hard"},
+    "expect": [
+      {
+        "at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_supply_shop].pages[id=ev_supply_shop_active].conditions[-1]",
+        "equals": {"kind": "difficulty", "difficultyId": "hard"}
+      }
+    ],
+    "expectRefusal": true
+  },
+  {
+    "request": "자료에 없는 전설 난이도일 때만 열어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
+    "primitive": "cond.difficulty.page.set",
+    "args": {"difficultyId": "legendary"},
+    "expectRefusal": true
+  }
+]
