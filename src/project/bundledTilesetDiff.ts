@@ -19,6 +19,7 @@
 //  - 내보내기(webExport·.oprn)는 자기완결이어야 하므로 통째로 싣는다(serialize 의 inlineBundledTilesets).
 //  - 되돌리기(롤백): WRITE_BUNDLED_TILESET_DIFFS 를 끄면 다음 저장부터 통째로 싣는다. 읽기는 항상 켜 둔다.
 import { bundledTilesetById, bundledTilesetDefinitionReady, preloadBundledTilesetDefinitions } from "./defaults/defaultAssets";
+import { BEODEUL_CITY_ID, createBeodeulCityTileset } from "./defaults/beodeulCity";
 import { BUNDLED_TILESET_REF } from "./bundledTilesetRefs";
 import { jsonEqual } from "@/util/structuralJson";
 import { isPendingLazyTileset, markLazyTilesetMaterialized, markPendingLazyTileset } from "./bundledTilesetLazy";
@@ -356,6 +357,18 @@ function graftTarget(value: unknown): number | undefined {
   return isRecord(value) ? finiteNumber(value.targetTile) : undefined;
 }
 
+function restoreBase(id: string, view: Record<string, unknown>): Record<string, unknown> | undefined {
+  if (id === BEODEUL_CITY_ID && Array.isArray(view.tileGrafts)) {
+    const crateFrames = new Set(view.tileGrafts.filter(graft => isRecord(graft) && graft.sourceChipset === "tex_beodeul_object_crate_stack")
+      .map(graft => graft.sourceTile));
+    // The pre-ingest base had four crate frames and no catalog entries after the first 129.
+    if (crateFrames.size === 4 && [0, 1, 2, 3].every(frame => crateFrames.has(frame))) {
+      return createBeodeulCityTileset("pre-ingest") as unknown as Record<string, unknown>;
+    }
+  }
+  return bundledTilesetById(id) as unknown as Record<string, unknown> | undefined;
+}
+
 /** 저장 때 번들의 칸 수: 칸 표 패치의 b, 없으면 머리의 count(칸 표를 하나도 안 바꾼 사본). */
 function savedBundleCount(view: Record<string, unknown>, diff: TilesetDiff): number | undefined {
   for (const patch of Object.values(diff.arrays ?? {})) if (patch.t === 1) return patch.b;
@@ -519,7 +532,7 @@ function lazyTileset(id: string, view: Record<string, unknown>): Record<string, 
   const materialize = (): void => {
     if (done) return;
     done = true;
-    const base = bundledTilesetById(id) as unknown as Record<string, unknown> | undefined;
+    const base = restoreBase(id, view);
     if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
     const full = restoreOne(id, view, base, { rebased: 0, missing: 0 });
     for (const key of Object.keys(full)) {
@@ -587,7 +600,7 @@ export function restoreBundledTilesetDiffs(data: { tilesets?: unknown }): Bundle
     let tileset = frozen ? frozenRestores.get(value) : undefined;
     if (!tileset && !frozen && lazyPolicy?.(id)) tileset = lazyTileset(id, value);
     if (!tileset) {
-      const base = bundledTilesetById(id) as unknown as Record<string, unknown> | undefined;
+      const base = restoreBase(id, value);
       if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
       tileset = restoreOne(id, value, base, counters);
       if (frozen) {

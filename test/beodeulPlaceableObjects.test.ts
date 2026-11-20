@@ -7,14 +7,17 @@ import { bundledChipsetFrameCount, bundledChipsetTileSize, bundledChipsetTilesPe
 import { comboBrushPlacement } from "@/editor/comboBrush";
 import { filterProps, recommendProps } from "@/editor/propRecommendations";
 import { runTool } from "@/editor/tools/toolRunner";
+import { bundledTilesetDiffForTest, restoreBundledTilesetDiffs } from "@/project/bundledTilesetDiff";
 import { isPassable } from "@/project/collision";
+import { createBeodeulCityTileset } from "@/project/defaults/beodeulCity";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { defaultTileset } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
-import { ensureBeodeulPlaceableObjects } from "@/project/defaults/beodeulPlaceableObjects";
+import { ensureBeodeulPlaceableObjects, upgradeBeodeulCrateStackGrafts } from "@/project/defaults/beodeulPlaceableObjects";
 import { deserialize, serialize } from "@/project/io";
 import { OBJECT_SPEC_PASSAGE_CHARS, validateObjectSpec } from "@/project/objectSpec";
 import { passageMarkForTile } from "@/project/tilesetPassage";
+import type { TilesetDef } from "@/project/types";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 
 const folder = new URL("../public/assets/beodeul-objects/", import.meta.url);
@@ -140,6 +143,39 @@ describe("bundled Beodeul placeable objects", () => {
       }
     }
     expect(ensureBeodeulPlaceableObjects(tileset)).toBe(false);
+  });
+
+  it("reuses the four painted crate slots when upgrading a two-column crate to three columns", () => {
+    const legacy = createBeodeulCityTileset("pre-ingest");
+    const crate = legacy.structureKits!.find(kit => kit.id === kitId("crate_stack"));
+    if (crate?.kind !== "section") throw new Error("Missing crate kit");
+    const textureKey = "tex_beodeul_object_crate_stack";
+    expect(crate.width).toBe(2);
+    const oldRows = crate.rows.map(row => row.upperTiles!);
+    const view = bundledTilesetDiffForTest.diff(legacy, legacy);
+    const wire = { tilesets: { [legacy.id]: structuredClone(view) } };
+    expect(restoreBundledTilesetDiffs(wire).restored).toBe(1);
+    const tileset = wire.tilesets[legacy.id] as unknown as TilesetDef;
+    expect(tileset.passability).toHaveLength(legacy.count);
+    expect(tileset.structureKits).toHaveLength(legacy.structureKits!.length);
+
+    const copied = {
+      ...tileset,
+      structureKits: [],
+      tileGrafts: tileset.tileGrafts!.filter(graft => graft.sourceChipset === textureKey),
+    };
+    expect(upgradeBeodeulCrateStackGrafts(copied)).toBe(true);
+    expect(copied.tileGrafts.map(graft => graft.sourceTile)).toEqual([0, 1, 3, 4]);
+    expect(upgradeBeodeulCrateStackGrafts(copied)).toBe(false);
+
+    expect(upgradeBeodeulCrateStackGrafts(tileset)).toBe(true);
+    expect(ensureBeodeulPlaceableObjects(tileset)).toBe(true);
+    const updated = tileset.structureKits!.find(kit => kit.id === kitId("crate_stack"));
+    if (updated?.kind !== "section") throw new Error("Missing upgraded crate kit");
+    expect(updated.width).toBe(3);
+    expect(updated.rows.map(row => row.upperTiles!.slice(0, 2))).toEqual(oldRows);
+    expect(oldRows[1]!.map(tile => passageMarkForTile(tileset, tile))).toEqual(["x", "x"]);
+    expect(upgradeBeodeulCrateStackGrafts(tileset)).toBe(false);
   });
 
   function projectWithObjectTileset() {
