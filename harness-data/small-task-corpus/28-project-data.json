@@ -1,1 +1,1809 @@
-[]
+[
+  {
+    "request": "돌문이 열렸는지 보게 ‘돌문 열림’ 스위치 하나 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "돌문 열림"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "돌문 열림"
+      }
+    ]
+  },
+  {
+    "request": "새 스위치 이름은 ‘횃불 점화’로 만들어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "횃불 점화"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "횃불 점화"
+      }
+    ]
+  },
+  {
+    "request": "문닫힘 스위치 추가",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "문닫힘"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "문닫힘"
+      }
+    ]
+  },
+  {
+    "request": "’경보 해제’라는 플래그 넣을래요. 스위치 목록에 하나만요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "경보 해제"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "경보 해제"
+      }
+    ]
+  },
+  {
+    "request": "스윗치 만들어줘 이름은 ‘보스 격파’.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "보스 격파"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "보스 격파"
+      }
+    ]
+  },
+  {
+    "request": "상자를 열었는지 표시할 ‘첫 보물 확인’ 스위치를 하나 만들어 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "첫 보물 확인"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "첫 보물 확인"
+      }
+    ]
+  },
+  {
+    "request": "새 진행 값 ‘나루터 도착’ 등록해",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "나루터 도착"
+    },
+    "expect": [
+      {
+        "at": "switches[-1].name",
+        "equals": "나루터 도착"
+      }
+    ]
+  },
+  {
+    "request": "새 스위치 이름은 띄어쓰기 세 칸으로만 만들어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.define",
+    "args": {
+      "name": "   "
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "손님 수를 셀 새 변수 ‘손님 수’를 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "손님 수"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "손님 수"
+      }
+    ]
+  },
+  {
+    "request": "‘호감’ 변수 하나 만들어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "호감"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "호감"
+      }
+    ]
+  },
+  {
+    "request": "변수추가 ‘찾은 열쇠’",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "찾은 열쇠"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "찾은 열쇠"
+      }
+    ]
+  },
+  {
+    "request": "남은 날짜를 기록할 ‘남은 날’ 숫자 칸이 필요해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "남은 날"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "남은 날"
+      }
+    ]
+  },
+  {
+    "request": "변슈 생성. 이름 ‘모은 별’.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "모은 별"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "모은 별"
+      }
+    ]
+  },
+  {
+    "request": "나중에 누적 점수로 쓰게 ‘우정 점수’라는 변수를 새로 등록해 주시겠어요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "우정 점수"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "우정 점수"
+      }
+    ]
+  },
+  {
+    "request": "‘길 잃은 횟수’ 항목 하나, 변수 목록에.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "길 잃은 횟수"
+    },
+    "expect": [
+      {
+        "at": "variables[-1].name",
+        "equals": "길 잃은 횟수"
+      }
+    ]
+  },
+  {
+    "request": "새 변수 이름은 띄어쓰기 세 칸으로만 만들어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.define",
+    "args": {
+      "name": "   "
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "등대 점화 스위치 이름을 ‘불빛 켜짐’으로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "불빛 켜짐"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "불빛 켜짐"
+      }
+    ]
+  },
+  {
+    "request": "등대 점화 스위치 이름 ‘불을 밝힘’으로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "불을 밝힘"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "불을 밝힘"
+      }
+    ]
+  },
+  {
+    "request": "등대 점화 스윗치 이름바꿈 ‘점등 완료’",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "점등 완료"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "점등 완료"
+      }
+    ]
+  },
+  {
+    "request": "등대 점화는 켜짐 상태는 그대로 두고 이름만 ‘등대 작동’으로 써 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "등대 작동"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "등대 작동"
+      }
+    ]
+  },
+  {
+    "request": "등대 점화 스위치는 앞으로 ‘등대 불빛’이라고 하자.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "등대 불빛"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "등대 불빛"
+      }
+    ]
+  },
+  {
+    "request": "등대 점화 표시 이름을 ‘등대 불 켬’으로 고쳐 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "등대 불 켬"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "등대 불 켬"
+      }
+    ]
+  },
+  {
+    "request": "등대 점화의 이름만 ‘등대에 불이 들어옴’으로 수정",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "record": "등대 점화",
+      "name": "등대에 불이 들어옴"
+    },
+    "expect": [
+      {
+        "at": "switches[id=sw_catalog_lighthouse_lit].name",
+        "equals": "등대에 불이 들어옴"
+      }
+    ]
+  },
+  {
+    "request": "선택하지도 않은 옆 스위치의 이름을 ‘다른 항목’으로 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "dbEntry",
+      "collection": "actors",
+      "id": "actor_hero"
+    },
+    "primitive": "switch.rename",
+    "args": {
+      "name": "다른 항목",
+      "record": "등대 점화"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "눈 속의 소문 진행도 변수 이름을 ‘소문 진행’으로 고쳐 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "소문 진행"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "소문 진행"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도 변수 ‘소문 진척’으로 이름 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "소문 진척"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "소문 진척"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 변슈 이름바꿔줘 ‘따라간 단서 수’",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "따라간 단서 수"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "따라간 단서 수"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도 숫자 칸을 ‘확인한 단서’라고 부르고 싶어요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "확인한 단서"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "확인한 단서"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도에서 값하고 연결은 두고 이름만 ‘눈길 진행’으로 줄여 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "눈길 진행"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "눈길 진행"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도 변슈, ‘소문 조사’로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "소문 조사"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "소문 조사"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도 변수의 이름을 ‘소문 조사 단계’로 변경",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "record": "눈 속의 소문 진행도",
+      "name": "소문 조사 단계"
+    },
+    "expect": [
+      {
+        "at": "variables[id=var_q_snow_rumor_progress].name",
+        "equals": "소문 조사 단계"
+      }
+    ]
+  },
+  {
+    "request": "선택하지도 않은 옆 변수의 이름을 ‘다른 항목’으로 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "dbEntry",
+      "collection": "actors",
+      "id": "actor_hero"
+    },
+    "primitive": "variable.rename",
+    "args": {
+      "name": "다른 항목",
+      "record": "눈 속의 소문 진행도"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "‘평화’라는 새 결말을 엔딩 목록에 추가해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "평화"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "평화"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 0
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": []
+      }
+    ]
+  },
+  {
+    "request": "엔딩 한 개 더. 이름은 ‘호수의 겨울’.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "호수의 겨울"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "호수의 겨울"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 0
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": []
+      }
+    ]
+  },
+  {
+    "request": "등대 점화 스위치가 켜져 있을 때만 열리는 ‘등대의 불빛’ 결말을 만들어 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "등대의 불빛",
+      "conditions": [
+        {
+          "kind": "switch",
+          "switchId": "등대 점화",
+          "value": true
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "등대의 불빛"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 0
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": [
+          {
+            "kind": "switch",
+            "switchId": "sw_catalog_lighthouse_lit",
+            "value": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "엔딩추가 ‘내일의 약속’ 조건은 없음",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "내일의 약속",
+      "conditions": []
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "내일의 약속"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 0
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": []
+      }
+    ]
+  },
+  {
+    "request": "‘얼음의 노래’라는 결말을 하나 추가하고 우선순위 값은 삼으로 넣어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "얼음의 노래",
+      "priority": 3
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "얼음의 노래"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 3
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": []
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도가 세 이상일 때 열릴 ‘눈 속의 소식’ 결말을 넣을래요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "눈 속의 소식",
+      "conditions": [
+        {
+          "kind": "variable",
+          "variableId": "눈 속의 소문 진행도",
+          "op": ">=",
+          "value": 3
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "눈 속의 소식"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 0
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": [
+          {
+            "kind": "variable",
+            "variableId": "var_q_snow_rumor_progress",
+            "op": ">=",
+            "value": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "강하게 다시 하기에서만 열리는 ‘두 번째 봄’ 앤딩도 등록해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "두 번째 봄",
+      "conditions": [
+        {
+          "kind": "newGamePlus",
+          "value": true
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "두 번째 봄"
+      },
+      {
+        "at": "endings[-1].priority",
+        "equals": 0
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": [
+          {
+            "kind": "newGamePlus",
+            "value": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "없는 ‘왕관 획득’ 스위치를 연결해서 ‘귀환’ 결말을 만들어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "귀환",
+      "conditions": [
+        {
+          "kind": "switch",
+          "switchId": "sw_missing_crown",
+          "value": true
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 결말 이름을 ‘봄의 노래’로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "name": "봄의 노래"
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].name",
+        "equals": "봄의 노래"
+      }
+    ]
+  },
+  {
+    "request": "봄을 기다리는 노래 앤딩 우선순위 3으로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "priority": 3
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].priority",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "봄을 기다리는 노래 결말은 등대 점화 스위치가 꺼져 있을 때만 열리게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "conditions": [
+        {
+          "kind": "switch",
+          "switchId": "등대 점화",
+          "value": false
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].conditions",
+        "equals": [
+          {
+            "kind": "switch",
+            "switchId": "sw_catalog_lighthouse_lit",
+            "value": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "봄을 기다리는 노래 엔딩 이름만 ‘봄의 마지막 편지’로 바꾸고 에필로그와 크레딧은 남겨 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "name": "봄의 마지막 편지"
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].name",
+        "equals": "봄의 마지막 편지"
+      },
+      {
+        "at": "endings[id=ending_8hw9rp].epilogue",
+        "equals": [
+          { "kind": "say", "text": "얼음 아래의 노래가 잦아들고, 호수는 다시 고요해졌다." },
+          { "kind": "say", "speaker": "이르마", "text": "이제야 마을 사람들이 편히 잠들겠구나. 고맙네." },
+          { "kind": "say", "speaker": "토르", "text": "봄이 오면 호숫가에 가장 먼저 터를 잡아야겠어." },
+          { "kind": "say", "text": "화롯불 곁에서 사람들은 봄에 다시 들을 노래를 기다렸다." }
+        ]
+      },
+      {
+        "at": "endings[id=ending_8hw9rp].presentation.credits",
+        "equals": "얼음 아래의 노래\n플레이해 주셔서 감사합니다"
+      }
+    ]
+  },
+  {
+    "request": "눈 속의 소문 진행도가 세 이상이어야 봄을 기다리는 노래 결말을 보게 해 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "conditions": [
+        {
+          "kind": "variable",
+          "variableId": "눈 속의 소문 진행도",
+          "op": ">=",
+          "value": 3
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].conditions",
+        "equals": [
+          {
+            "kind": "variable",
+            "variableId": "var_q_snow_rumor_progress",
+            "op": ">=",
+            "value": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "선택한 결말을 첫 회차 전용으로 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "conditions": [
+        {
+          "kind": "newGamePlus",
+          "value": false
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].conditions",
+        "equals": [
+          {
+            "kind": "newGamePlus",
+            "value": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "봄을 기다리는 노래엔딩 조건 지우고 우선 순위 0으로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "conditions": [],
+      "priority": 0
+    },
+    "expect": [
+      {
+        "at": "endings[id=ending_8hw9rp].conditions",
+        "equals": []
+      },
+      {
+        "at": "endings[id=ending_8hw9rp].priority",
+        "equals": 0
+      }
+    ]
+  },
+  {
+    "request": "봄을 기다리는 노래 결말에 없는 변수를 조건으로 달아 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.update",
+    "args": {
+      "record": "봄을 기다리는 노래",
+      "conditions": [
+        {
+          "kind": "variable",
+          "variableId": "var_missing_spring",
+          "op": ">=",
+          "value": 3
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "이미 마지막 장면이 부르는 ‘봄을 기다리는 노래’도 그냥 삭제해.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "봄을 기다리는 노래"
+    },
+    "expectRefusal": true,
+    "refusalMessage": "이벤트나 조건에서 쓰는 엔딩이라 삭제할 수 없어요"
+  },
+  {
+    "request": "배우 항목을 고른 상태에서 ‘봄을 기다리는 노래’ 결말을 지워 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "dbEntry",
+      "collection": "actors",
+      "id": "actor_hero"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "봄을 기다리는 노래"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "게임 제목을 ‘별이 내리는 항구’로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "별이 내리는 항구"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "별이 내리는 항구"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "별이 내리는 항구"
+      }
+    ]
+  },
+  {
+    "request": "타이틀 이름 ‘여름의 편지’로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "여름의 편지"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "여름의 편지"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "여름의 편지"
+      }
+    ]
+  },
+  {
+    "request": "겜제목 ‘도착하지 않은 열차’",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "도착하지 않은 열차"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "도착하지 않은 열차"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "도착하지 않은 열차"
+      }
+    ]
+  },
+  {
+    "request": "프로젝트랑 시작 화면에 둘 다 ‘돌문 너머’라고 써 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "돌문 너머"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "돌문 너머"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "돌문 너머"
+      }
+    ]
+  },
+  {
+    "request": "게임이름 고쳐줘 새 제목은 ‘달빛 편의점’.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "달빛 편의점"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "달빛 편의점"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "달빛 편의점"
+      }
+    ]
+  },
+  {
+    "request": "저장하는 작품 이름도 보여 주는 제목도 ‘길 위의 세 친구’로 맞춰 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "길 위의 세 친구"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "길 위의 세 친구"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "길 위의 세 친구"
+      }
+    ]
+  },
+  {
+    "request": "첫 화면 타이틀 ‘봄으로 가는 우편함’ 부탁해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "봄으로 가는 우편함"
+    },
+    "expect": [
+      {
+        "at": "meta.title",
+        "equals": "봄으로 가는 우편함"
+      },
+      {
+        "at": "system.titleScreen.title",
+        "equals": "봄으로 가는 우편함"
+      }
+    ]
+  },
+  {
+    "request": "게임 제목을 그냥 공백으로만 바꿔 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.title",
+    "args": {
+      "title": "   "
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "시작 골드 삼백으로 설정해 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 300
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 300
+      }
+    ]
+  },
+  {
+    "request": "시작골드 12",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 12
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 12
+      }
+    ]
+  },
+  {
+    "request": "처음 시작할 때 지갑을 비워 둬. 골드는 없는 상태로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 0
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 0
+      }
+    ]
+  },
+  {
+    "request": "새 게임 소지금 오십 냥만 챙겨 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 50
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 50
+      }
+    ]
+  },
+  {
+    "request": "처음에 가지고 있는 돈 천이백으로 맞춰 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 1200
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 1200
+      }
+    ]
+  },
+  {
+    "request": "시작 소지금 세 골드만.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 3
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 3
+      }
+    ]
+  },
+  {
+    "request": "게임을 새로 켰을 때 소지금이 9,999 골드면 좋겠어요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": 9999
+    },
+    "expect": [
+      {
+        "at": "session.gold",
+        "equals": 9999
+      }
+    ]
+  },
+  {
+    "request": "시작할 때 골드가 마이너스 삼백이게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startGold",
+    "args": {
+      "gold": -300
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "시작 파티는 마도사가 앞, 시온이 뒤에 서게 바꿔 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "마도사",
+        "시온"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_mage",
+          "actor_hero"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_mage",
+          "actor_hero"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "겜 시작은 수호자 혼자로 바꿔.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "수호자"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_guardian"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_guardian"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "초기파티 정찰병, 시온, 성직자 순.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "정찰병",
+        "시온",
+        "성직자"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_scout",
+          "actor_hero",
+          "actor_cleric"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_scout",
+          "actor_hero",
+          "actor_cleric"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "처음 함께할 두 명으로 성직자와 마도사를 이 순서대로 골라 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "성직자",
+        "마도사"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_cleric",
+          "actor_mage"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_cleric",
+          "actor_mage"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "시작 파티에 궁수 먼저, 수호자 다음, 마도사 마지막으로 세 명만 넣어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "궁수",
+        "수호자",
+        "마도사"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_ranger",
+          "actor_guardian",
+          "actor_mage"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_ranger",
+          "actor_guardian",
+          "actor_mage"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "첫 파티 순서는 시온이 선두, 이어서 마녀와 닌자로 만들어 주실래요?",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "시온",
+        "마녀",
+        "닌자"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_hero",
+          "actor_witch",
+          "actor_ninja"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_hero",
+          "actor_witch",
+          "actor_ninja"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "시작파티 네 명. 시온, 수호자, 마도사, 정찰병 순서로.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "시온",
+        "수호자",
+        "마도사",
+        "정찰병"
+      ]
+    },
+    "expect": [
+      {
+        "at": "system.startActorIds",
+        "equals": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_mage",
+          "actor_scout"
+        ]
+      },
+      {
+        "at": "session.partyActorIds",
+        "equals": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_mage",
+          "actor_scout"
+        ]
+      }
+    ]
+  },
+  {
+    "request": "첫 파티 두 자리에 시온을 두 번 넣어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "system.startParty",
+    "args": {
+      "actorIds": [
+        "actor_hero",
+        "actor_hero"
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "결말 목록에 없는 ‘잊힌 항구’ 결말을 삭제해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "잊힌 항구"
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "호감도가 제일 높은 사람의 호감도가 40 이상이면 ‘별의 편지’가 열리게 해 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "별의 편지",
+      "conditions": [
+        {
+          "kind": "friendshipAtLeast",
+          "npcKey": "*",
+          "value": 40
+        }
+      ]
+    },
+    "expect": [
+      {
+        "at": "endings[-1].name",
+        "equals": "별의 편지"
+      },
+      {
+        "at": "endings[-1].conditions",
+        "equals": [
+          {
+            "kind": "friendshipAtLeast",
+            "npcKey": "*",
+            "value": 40
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "request": "없는 인물 ‘별지기’의 호감도가 높으면 ‘별의 편지’를 열어 줘.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.define",
+    "args": {
+      "name": "별의 편지",
+      "conditions": [
+        {
+          "kind": "friendshipAtLeast",
+          "npcKey": "별지기",
+          "value": 40
+        }
+      ]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "가장 가까운 사람의 호감도가 7.5 이상이면 ‘별의 편지’를 열어 줘.",
+    "fixture": "built",
+    "target": { "kind": "map" },
+    "primitive": "ending.define",
+    "args": {
+      "name": "별의 편지",
+      "conditions": [{ "kind": "friendshipAtLeast", "npcKey": "*", "value": 7.5 }]
+    },
+    "expectRefusal": true
+  },
+  {
+    "request": "아무 이벤트에도 연결하지 않은 ‘남겨 둔 초안’ 결말을 지워 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "남겨 둔 초안"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "남겨 둔 초안",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "고른 엔딩 ‘임시 결말’ 삭제해.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "임시 결말"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "임시 결말",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "‘폐기한 끝’ 엔딩지워줘",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "폐기한 끝"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "폐기한 끝",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "테스트 삼아 추가한 ‘눈 오는 정류장’은 빼 주실래요? 다른 결말은 남겨 주세요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "눈 오는 정류장"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "눈 오는 정류장",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "선택한 ‘셋째 결말’만 목록에서 빼.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "셋째 결말"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "셋째 결말",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  },
+  {
+    "request": "아직 부르는 장면 없는 앤딩 ‘돌아가는 길’은 이제 필요 없어요. 삭제 부탁해요.",
+    "fixture": "built",
+    "target": {
+      "kind": "map"
+    },
+    "primitive": "ending.remove",
+    "args": {
+      "record": "돌아가는 길"
+    },
+    "expect": [
+      {
+        "at": "endings[-1].id",
+        "equals": "ending_8hw9rp"
+      },
+      {
+        "at": "endings",
+        "count": 1
+      }
+    ],
+    "seed": {
+      "endings": [
+        {
+          "id": "ending_unused",
+          "name": "돌아가는 길",
+          "conditions": [],
+          "priority": 0
+        }
+      ]
+    },
+    "expectRefusal": true,
+    "refusalMessage": "엔딩 항목을 찾을 수 없어요"
+  }
+]

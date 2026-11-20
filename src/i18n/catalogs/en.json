@@ -11873,6 +11873,8 @@
 "저장을 완료하지 못함":"Could not complete save",
 "저장하고 닫기":"Save and close",
 "저장하고 닫기: 반영하고 편집기를 닫습니다":"Save and close: applies changes and closes the editor",
+"저장하지 않은 이벤트 스크립트에 영향을 줄 수 있어 이름을 바꿀 수 없어요.":"This name can’t be changed because an unsaved event script may use it.",
+"저장하지 않은 이벤트에서 엔딩을 쓸 수 있어 삭제할 수 없어요.":"An unsaved event may use this ending, so it can’t be deleted.",
 "저장하지 않은 편집 내용도 함께 삭제됩니다.":"Unsaved edits will also be deleted.",
 "저장하지 않음: {0}":"Not saved: {0}",
 "저장한 기획":"Saved plans",

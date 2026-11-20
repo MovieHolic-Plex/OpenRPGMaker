@@ -9,6 +9,7 @@ import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "./primitives/errors";
 import { assertActorClassDraftChanges } from "./primitives/units/17-db-actors-classes";
 import { mapRemovalDraftError } from "./primitives/units/23-map-structure/maps";
+import { assertProjectDataDraftReferences } from "./primitives/units/28-project-data";
 import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -52,6 +53,7 @@ function draftReferencesNewDatabaseRows(live: Project, before: Project, after: P
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
+  if (target.kind === "map") assertProjectDataDraftReferences(live, before, after);
   if (before.commonEvents !== after.commonEvents) {
     const remaining = new Set(after.commonEvents.map(event => event.id));
     try {
