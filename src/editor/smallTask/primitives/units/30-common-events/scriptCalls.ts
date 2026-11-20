@@ -41,6 +41,8 @@ export function scriptCommonEventCalls(compiled: string): { ids: Set<string>; op
   const visit = (node: ts.Node): void => {
     if (ts.isIdentifier(node) && node.text === "game") {
       const access = node.parent;
+      if ((ts.isPropertyAssignment(access) || ts.isPropertyAccessExpression(access) || ts.isBindingElement(access)) &&
+        (ts.isBindingElement(access) ? access.propertyName : access.name) === node) return;
       if (!ts.isPropertyAccessExpression(access) || access.expression !== node) opaque = true;
       else if (access.name.text === "cmd" || access.name.text === "callCommonEvent") {
         const call = access.parent;

@@ -33,6 +33,7 @@ export const SMALL_TASK_PRIMITIVE_TOOLS = [
 export interface SmallTaskToolContext extends ToolContext {
   readonly smallTaskTarget: SmallTaskTarget;
   readonly smallTaskSelection?: PrimitiveContext["selection"];
+  readonly smallTaskCommonEvents?: { readonly initialIds: ReadonlySet<string>; createdId?: string };
 }
 
 /** Only the small-task host can supply this context. Its final changeset and history are handled by the frame. */
@@ -56,7 +57,20 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
 
   const id = args.id as string;
   if (!offered.some(row => row.id === id)) throw new PrimitiveError("범위 밖: 선택한 대상에 이 동작을 쓸 수 없어요.");
-  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, args.args as Record<string, unknown>, ctx.smallTaskSelection);
+  const primitiveArgs = args.args as Record<string, unknown>;
+  const commonEvents = ctx.smallTaskCommonEvents;
+  if (commonEvents && id.startsWith("commonEvent.")) {
+    if (id === "commonEvent.create") {
+      if (commonEvents.createdId !== undefined) throw new PrimitiveError("작은 일 한 번에 공용 이벤트를 하나만 만들 수 있어요.");
+    } else {
+      const eventId = primitiveArgs.commonEventId;
+      if (typeof eventId === "string" && (!commonEvents.initialIds.has(eventId) || eventId === commonEvents.createdId)) {
+        throw new PrimitiveError("범위 밖: 작업을 시작할 때 있던 공용 이벤트만 고칠 수 있어요.");
+      }
+    }
+  }
+  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, primitiveArgs, ctx.smallTaskSelection);
+  if (commonEvents && id === "commonEvent.create") commonEvents.createdId = result.after.commonEvents.at(-1)?.id;
   ctx.project = result.after;
   return { ok: true, summary: result.sentence };
 }

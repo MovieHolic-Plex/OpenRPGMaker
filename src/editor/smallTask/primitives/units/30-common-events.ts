@@ -32,11 +32,12 @@ const branchPath = {
   items: { type: "integer" },
   description: "바깥에서 안쪽 순으로 명령 줄과 분기 번호를 짝지어 입력합니다. 선택지는 0부터, 거래 성공 -1, 조건 참 -2, 거짓 -3, 취소 -4, 반복 -5, 승급·진화 성공 -6, 실패 -7, 숙박비 부족 -8, 전투 승리 -9, 패배 -10, 도주 -11, 거래 실패 -12, 틀린 아이템 제시 -13입니다. 바깥 목록이면 생략합니다.",
 } as const;
+const expectedListHash = {
+  type: "string", minLength: 1,
+  description: "get_database_records(collection: commonEvents, include: full)에서 읽은 commandListHash입니다. 줄 위치를 지정할 때 필요합니다.",
+} as const;
 const commandSnapshot = {
-  expectedListHash: {
-    type: "string", minLength: 1,
-    description: "get_database_records(collection: commonEvents, include: full)에서 읽은 commandListHash입니다.",
-  },
+  expectedListHash,
   expectedCommand: {
     type: "object", additionalProperties: true, required: ["kind"], properties: { kind: { type: "string", enum: COMMAND_KINDS } },
     description: "자료집에서 전체 내용(include: full)을 읽고 고른 줄의 기존 명령을 그대로 입력합니다.",
@@ -125,8 +126,12 @@ function existingCommand(event: CommonEvent, path: number[]): Command {
   return command;
 }
 
-function expectedCommandHash(event: CommonEvent, path: number[], args: Args): string {
+function verifyCommandList(event: CommonEvent, args: Args): void {
   if (eventCommandListHash(event.commands) !== args.expectedListHash) throw new PrimitiveError(STALE_COMMAND_LIST);
+}
+
+function expectedCommandHash(event: CommonEvent, path: number[], args: Args): string {
+  verifyCommandList(event, args);
   if (typeof args.expectedHash === "string" && args.expectedCommand === undefined) return args.expectedHash;
   if (args.expectedHash === undefined && args.expectedCommand !== undefined) return eventCommandHash(args.expectedCommand as Command);
   if (args.expectedHash !== undefined) throw new PrimitiveError("기존 명령과 그 줄의 해시 중 하나만 입력해 주세요.");
@@ -229,7 +234,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
   createPrimitive(
     "commonEvent.command.insert", "공용 이벤트 명령 추가",
     argsSchema({
-      commonEventId: eventId, index, branchPath,
+      commonEventId: eventId, index, branchPath, expectedListHash,
       command: {
         type: "object",
         properties: {
@@ -250,11 +255,12 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const event = findEvent(ctx, args);
       const command = commandForInsert(args.command as Command);
       const path = commandPath(event, args);
+      if (args.index !== undefined || args.expectedListHash !== undefined) verifyCommandList(event, args);
       const next = editCommands(() => insertEventCommand(eventForInsert(event, path), path, command));
       const inserted = existingCommand(next, path);
       validateSingleInsert(inserted);
       validateCommandReferences(ctx.project, targetMap(ctx), inserted);
-      validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, undefined, inserted);
+      validateLabelEdit(ctx.project, event, next.commands, path, undefined, inserted);
       return editEvent(event, ctx.project, next);
     },
   ),
@@ -286,7 +292,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const next = editCommands(() => updateEventCommand(event, path, fields, expectedHash));
       const updated = existingCommand(next, path);
       validateCommandReferences(ctx.project, targetMap(ctx), updated, current);
-      validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, current, updated);
+      validateLabelEdit(ctx.project, event, next.commands, path, current, updated);
       return editEvent(event, ctx.project, next);
     },
   ),
@@ -300,7 +306,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const expectedHash = expectedCommandHash(event, path, args);
       const current = existingCommand(event, path);
       const next = editCommands(() => deleteEventCommand(event, path, expectedHash));
-      validateLabelEdit(ctx.project, targetMap(ctx), event, next.commands, path, current);
+      validateLabelEdit(ctx.project, event, next.commands, path, current);
       return editEvent(event, ctx.project, next);
     },
   ),

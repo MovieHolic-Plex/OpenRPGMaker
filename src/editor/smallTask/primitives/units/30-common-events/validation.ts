@@ -179,25 +179,52 @@ function calledCommandLists(project: Project, command: Command, callerMap?: Game
   return lists;
 }
 
-function callerHasLabel(project: Project, map: GameMap, event: CommonEvent, name: string): boolean {
-  const seenWithLabel = new Set<readonly Command[]>();
-  const seenWithoutLabel = new Set<readonly Command[]>();
-  const visit = (list: readonly Command[], inherited: boolean): boolean => {
-    const hasLabel = inherited || list.some(row => row.kind === "label" && row.name === name);
-    const seen = hasLabel ? seenWithLabel : seenWithoutLabel;
-    if (seen.has(list)) return false;
-    seen.add(list);
-    return list.some(command => {
-      if (hasLabel && commonEventCallId(command) === event.id) return true;
-      const calls = command.kind === "callMapEvent" || commonEventCallId(command) !== undefined
-        ? calledCommandLists(project, command, map) : [];
-      return [...nestedCommandLists(command), ...calls].some(child => visit(child, hasLabel));
-    });
-  };
-  return map.events.some(row => {
-    const saved = committedEventView(row);
-    return saved && (saved.pages?.length ? saved.pages.some(page => visit(page.commands, false)) : visit(saved.commands, false));
+function callerLabels(project: Project, event: CommonEvent, name: string): { visible: boolean; missing: boolean } {
+  const standalone = new Set(project.commonEvents.filter(row => row.trigger !== "none").map(row => row.id));
+  const add = (id: string | undefined) => { if (id) standalone.add(id); };
+  add(project.system.timeSystem?.onDayEnd);
+  for (const row of project.database.battleCommands ?? []) add(row.commonEventId);
+  for (const row of project.database.classes) for (const battle of row.battleCommands ?? []) add(battle.commonEventId);
+  for (const row of project.database.equipment) add(row.grantsCommand?.commonEventId);
+  for (const row of project.database.skills) add(row.fieldCommonEventId);
+  for (const row of project.database.schedules ?? []) for (const activity of row.activities) add(activity.commonEventId);
+  const committed = projectViewWithoutEventDrafts(project);
+  let opaque = false;
+  visitProjectCommands(committed, ({ command, location }) => {
+    if (location.kind === "troopPage") add(commonEventCallId(command));
+    if (command.kind !== "script") return;
+    const parsed = scriptCommonEventCalls(command.compiled);
+    for (const id of parsed.ids) add(id);
+    for (const id of scriptCalls(command, "commonEvent", committed)) add(id);
+    opaque ||= parsed.opaque || scriptHasDynamic(command, "commonEvent", { access: "call", library: committed.scriptLibrary });
   });
+  let visible = false;
+  let missing = opaque || standalone.has(event.id);
+  for (const map of Object.values(committed.maps)) {
+    const seenWithLabel = new Set<readonly Command[]>();
+    const seenWithoutLabel = new Set<readonly Command[]>();
+    const visit = (list: readonly Command[], inherited: boolean): void => {
+      const hasLabel = inherited || list.some(row => row.kind === "label" && row.name === name);
+      const seen = hasLabel ? seenWithLabel : seenWithoutLabel;
+      if (seen.has(list)) return;
+      seen.add(list);
+      for (const command of list) {
+        const callee = commonEventCallId(command);
+        if (callee === event.id) {
+          visible ||= hasLabel;
+          missing ||= !hasLabel;
+        }
+        const calls = command.kind === "callMapEvent" || callee !== undefined ? calledCommandLists(committed, command, map) : [];
+        for (const child of [...nestedCommandLists(command), ...calls]) visit(child, hasLabel);
+      }
+    };
+    for (const row of map.events) {
+      visit(row.commands, false);
+      for (const page of row.pages ?? []) visit(page.commands, false);
+    }
+    for (const row of committed.commonEvents) if (standalone.has(row.id)) visit(row.commands, false);
+  }
+  return { visible, missing };
 }
 
 function scriptMayJumpToLabel(project: Project, command: Extract<Command, { kind: "script" }>): boolean {
@@ -218,21 +245,32 @@ function projectHasLabel(project: Project, name: string): boolean {
 
 function usesLabel(project: Project, commands: readonly Command[], name: string, hasDestination = () => true): boolean {
   const seen = new Set<readonly Command[]>();
-  let mayRedirectOpaqueJump: boolean | undefined;
+  let hadDestination: boolean | undefined;
   const visit = (list: readonly Command[]): boolean => {
     if (seen.has(list)) return false;
     seen.add(list);
-    return list.some(command => (command.kind === "gotoLabel" && command.name === name) ||
-      (command.kind === "script" && scriptMayJumpToLabel(project, command) && (mayRedirectOpaqueJump ??= hasDestination())) ||
-      [...nestedCommandLists(command), ...calledCommandLists(project, command)].some(child =>
+    return list.some(command => {
+      const jumps = (command.kind === "gotoLabel" && command.name === name) ||
+        (command.kind === "script" && scriptMayJumpToLabel(project, command));
+      if (jumps && (hadDestination ??= hasDestination())) return true;
+      return [...nestedCommandLists(command), ...calledCommandLists(project, command)].some(child =>
         !child.some(row => row.kind === "label" && row.name === name) && visit(child),
-      ));
+      );
+    });
   };
   return visit(commands);
 }
 
+function labelInCommandPath(commands: Command[], path: number[], name: string): boolean {
+  for (let end = path.length; end > 0; end -= 2) {
+    const list = resolveCommandListAtPath(commands, path.slice(0, end));
+    if (list?.some(row => row.kind === "label" && row.name === name)) return true;
+  }
+  return false;
+}
+
 export function validateLabelEdit(
-  project: Project, map: GameMap, event: CommonEvent, after: Command[], path: number[], current?: Command, next?: Command,
+  project: Project, event: CommonEvent, after: Command[], path: number[], current?: Command, next?: Command,
 ): void {
   const before = event.commands;
   if (current?.kind === "label" && (next?.kind !== "label" || current.name !== next.name)) {
@@ -248,16 +286,16 @@ export function validateLabelEdit(
     }
     // A jump can leave this command list and reach a label in a caller's frame.
     const previous = resolveCommandListAtPath(before, path);
-    if (previous && usesLabel(project, previous, next.name, () => projectHasLabel(project, next.name))) {
+    const redirects = () => labelInCommandPath(before, path, next.name) ||
+      (projectHasLabel(project, next.name) && callerLabels(project, event, next.name).visible);
+    if (previous && usesLabel(project, previous, next.name, redirects)) {
       throw new PrimitiveError("이 이름을 쓰면 기존 이동 명령이 다른 라벨로 이동합니다. 다른 이름을 골라 주세요.");
     }
   }
   if (next?.kind === "gotoLabel" && (current?.kind !== "gotoLabel" || current.name !== next.name)) {
-    for (let end = path.length; end > 0; end -= 2) {
-      const list = resolveCommandListAtPath(after, path.slice(0, end));
-      if (list?.some(row => row.kind === "label" && row.name === next.name)) return;
-    }
-    if (!callerHasLabel(project, map, event, next.name)) throw new PrimitiveError("이 줄에서 이동할 라벨을 찾을 수 없습니다.");
+    if (labelInCommandPath(after, path, next.name)) return;
+    const callers = callerLabels(project, event, next.name);
+    if (!callers.visible || callers.missing) throw new PrimitiveError("이 줄에서 이동할 라벨을 찾을 수 없습니다.");
   }
 }
 

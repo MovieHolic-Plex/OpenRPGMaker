@@ -301,7 +301,7 @@
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "commonEvent.command.insert",
-    "args": {"commonEventId": "ce_corpus_inn", "index": 0, "command": {"kind": "wait", "ms": 500}},
+    "args": {"expectedListHash": "13be8b74c0e25bbe786f7bf829aa5e0e", "commonEventId": "ce_corpus_inn", "index": 0, "command": {"kind": "wait", "ms": 500}},
     "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
     "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "wait", "ms": 500}, {"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
   },
@@ -310,7 +310,7 @@
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "commonEvent.command.insert",
-    "args": {"commonEventId": "ce_corpus_inn", "index": 1, "command": {"kind": "text", "body": "방이 비었어요."}},
+    "args": {"expectedListHash": "13be8b74c0e25bbe786f7bf829aa5e0e", "commonEventId": "ce_corpus_inn", "index": 1, "command": {"kind": "text", "body": "방이 비었어요."}},
     "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
     "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "text", "speaker": "", "body": "방이 비었어요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
   },
@@ -319,7 +319,7 @@
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "commonEvent.command.insert",
-    "args": {"commonEventId": "ce_corpus_inn", "index": 2, "command": {"kind": "setSwitch", "switchId": "sw_0002", "value": true}},
+    "args": {"expectedListHash": "13be8b74c0e25bbe786f7bf829aa5e0e", "commonEventId": "ce_corpus_inn", "index": 2, "command": {"kind": "setSwitch", "switchId": "sw_0002", "value": true}},
     "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
     "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "setSwitch", "switchId": "sw_0002", "value": true}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
   },
@@ -328,7 +328,7 @@
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "commonEvent.command.insert",
-    "args": {"commonEventId": "ce_corpus_inn", "index": 1, "branchPath": [3, -2], "command": {"kind": "wait"}},
+    "args": {"expectedListHash": "13be8b74c0e25bbe786f7bf829aa5e0e", "commonEventId": "ce_corpus_inn", "index": 1, "branchPath": [3, -2], "command": {"kind": "wait"}},
     "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
     "expect": [{"at": "commonEvents[id=ce_corpus_inn].commands", "equals": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "wait", "ms": 500}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]
   },
@@ -356,7 +356,7 @@
     "fixture": "built",
     "target": {"kind": "map", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"},
     "primitive": "commonEvent.command.insert",
-    "args": {"commonEventId": "ce_corpus_inn", "index": 99, "command": {"kind": "wait"}},
+    "args": {"expectedListHash": "13be8b74c0e25bbe786f7bf829aa5e0e", "commonEventId": "ce_corpus_inn", "index": 99, "command": {"kind": "wait"}},
     "setup": {"commonEvents": [{"id": "ce_corpus_inn", "name": "여관 안내", "trigger": "none", "conditionSwitchId": "sw_0001", "commands": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}, {"kind": "changeGold", "op": "+=", "amount": 10}, {"kind": "wait", "ms": 700}, {"kind": "fork", "condition": {"kind": "switch", "switchId": "sw_0001", "value": true}, "then": [{"kind": "text", "body": "이곳에서 쉬어 가세요."}], "else": [{"kind": "wait", "ms": 700}]}, {"kind": "setSwitch", "switchId": "sw_0001", "value": true}]}]},
     "expectRefusal": true,
     "refusalMessage": "명령 줄을 찾을 수 없습니다"

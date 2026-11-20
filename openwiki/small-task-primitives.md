@@ -15,7 +15,7 @@
 
 공용 명령 `cmd.delete`와 `cmd.move`는 `index`와 `expectedHash`를 필수로 받고 분기 안의 줄에는 `branchPath`를 받는다. `cmd.move`의 `toIndex`는 같은 목록에서 이동 후의 위치다. `get_event`에서 `includeCommandHashes`를 켜고 명령 위치와 해시를 읽는다. 줄의 해시가 달라졌으면 이벤트를 다시 읽으라는 안내를 돌려준다. 내용이 있는 분기 명령은 자식과 함께 이동할 수 있다. 자식이 남은 분기, 하위 분기에서 참조하는 위치 표시, 다른 이벤트에서 제거하는 출현 대상을 삭제하면 한국어 사유로 거절한다.
 
-유닛 30의 `commonEvent.command.update`와 `commonEvent.command.delete`는 `get_database_records`에서 `collection: "commonEvents"`, `include: "full"`로 읽은 `commandListHash`를 `expectedListHash`로 받는다. 명령이 삽입되어 같은 내용의 다른 줄로 위치가 밀린 경우에도 목록 해시가 달라지면 다시 읽도록 안내한다. 공용 이벤트 삭제는 적용 직전에 편집기의 열린 맵 이벤트 초안도 확인한다.
+유닛 30은 명령 수정·삭제와 위치를 지정한 삽입에서 `get_database_records`의 `collection: "commonEvents"`, `include: "full"`로 읽은 `commandListHash`를 `expectedListHash`로 받는다. 명령이 삽입되어 같은 내용의 다른 줄로 위치가 밀린 경우에도 목록 해시가 달라지면 다시 읽도록 안내한다. 공용 이벤트 삭제는 적용 직전에 편집기의 열린 맵 이벤트 초안도 확인한다.
 
 ## 편집 범위
 

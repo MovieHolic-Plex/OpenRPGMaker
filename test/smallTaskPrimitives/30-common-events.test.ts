@@ -49,7 +49,8 @@ function seed(commands: Command[] = [], fixture: "built" | "maou" = "built"): Pr
 }
 
 function runOn(project: Project, id: string, args: Record<string, unknown>) {
-  if (id === "commonEvent.command.update" || id === "commonEvent.command.delete") {
+  if (id === "commonEvent.command.update" || id === "commonEvent.command.delete" ||
+    (id === "commonEvent.command.insert" && args.index !== undefined)) {
     const commands = project.commonEvents.find(event => event.id === args.commonEventId)?.commands ?? [];
     return runPrimitive(project, startMapTarget(project), id, { expectedListHash: eventCommandListHash(commands), ...args });
   }
@@ -311,7 +312,7 @@ describe("공용 이벤트", () => {
 
   it("공용 이벤트를 부르지 않는 리터럴 game.cmd는 삭제를 허용한다", () => {
     const project = seed();
-    const source = `await game.cmd({ kind: "changeGold", op: "+=", amount: 1 });`;
+    const source = `const labels = { game: "Game" };\nconst title = labels.game;\nawait game.cmd({ kind: "changeGold", op: "+=", amount: 1 });`;
     project.commonEvents.unshift({ ...commonEvent([{
       kind: "script", source, compiled: source, effects: { calls: [], reads: [], writes: [], dynamic: [] },
     }]), id: "ce_other" });
@@ -338,13 +339,30 @@ describe("공용 이벤트", () => {
       .after.commonEvents.at(-1)?.commands).toEqual([gold]);
   });
 
-  it("삽입 뒤 동일한 명령을 가리키는 낡은 분기 경로의 수정과 삭제를 거부한다", () => {
+  it("한 요청에서 만든 공용 이벤트의 재편집과 두 번째 생성을 거부한다", async () => {
+    const project = seed();
+    const ctx = { project, smallTaskTarget: startMapTarget(project), smallTaskCommonEvents: { initialIds: new Set([eventId]) } };
+    const apply = (id: string, args: Record<string, unknown>) => runSmallTaskPrimitiveTool(ctx, APPLY_SMALL_TASK_PRIMITIVE, { id, args });
+    await apply("commonEvent.create", { name: "첫 이벤트" });
+    const created = ctx.project.commonEvents.at(-1)!;
+    await expect(apply("commonEvent.create", { name: "두 번째 이벤트" })).rejects.toThrow("하나만 만들 수 있어요");
+    await expect(apply("commonEvent.rename", { commonEventId: created.id, name: "새 이름" })).rejects.toThrow("작업을 시작할 때 있던");
+    await apply("commonEvent.rename", { commonEventId: eventId, name: "기존 이벤트의 새 이름" });
+    expect(ctx.project.commonEvents.at(-1)).toBe(created);
+  });
+
+  it("삽입 뒤 동일한 명령을 가리키는 낡은 분기 경로의 삽입·수정·삭제를 거부한다", () => {
     const commands = [{ ...fork, then: [wait, gold] }, fork];
     const project = seed(commands);
     const args = { commonEventId: eventId, index: 0, branchPath: [1, FORK_THEN_BRANCH_INDEX], expectedListHash: eventCommandListHash(commands), expectedCommand: wait };
     const { after } = runOn(project, "commonEvent.command.insert", { commonEventId: eventId, index: 0, command: gold });
     expect(() => runOn(after, "commonEvent.command.update", { ...args, patch: { ms: 1000 } })).toThrow(STALE_COMMAND_LIST);
     expect(() => runOn(after, "commonEvent.command.delete", args)).toThrow(STALE_COMMAND_LIST);
+    const { expectedCommand: _expectedCommand, ...position } = args;
+    expect(() => runOn(after, "commonEvent.command.insert", { ...position, command: gold })).toThrow(STALE_COMMAND_LIST);
+    expect(() => runPrimitive(project, startMapTarget(project), "commonEvent.command.insert", {
+      commonEventId: eventId, index: 0, command: gold,
+    })).toThrow(STALE_COMMAND_LIST);
   });
 
   it("중첩 위치에서 한 줄만 추가하고 수정하고 지운다", () => {
@@ -416,6 +434,27 @@ describe("공용 이벤트", () => {
     expect(session.gold).toBe(startingGold);
     expect(getSwitch(session, switchId)).toBe(false);
     expect(getVariable(session, variableId)).toBe(1);
+  });
+
+  it("호출자 중 하나에서 라벨을 찾을 수 없으면 새 이동을 거부한다", () => {
+    const project = seed();
+    const label = { kind: "label", name: "마무리" } as const;
+    project.maps[project.startMapId].events = [
+      { id: "ev_has_label", x: 0, y: 0, trigger: { kind: "action" }, commands: [call, label] },
+      { id: "ev_without_label", x: 1, y: 0, trigger: { kind: "action" }, commands: [call] },
+    ];
+    expect(() => runOn(project, "commonEvent.command.insert", {
+      commonEventId: eventId, command: { kind: "gotoLabel", name: label.name },
+    })).toThrow("이 줄에서 이동할 라벨을 찾을 수 없습니다");
+  });
+
+  it("기존 목적지가 없는 이동을 복구하는 라벨 추가를 허용한다", () => {
+    const label = { kind: "label", name: "마무리" } as const;
+    const jump = { kind: "gotoLabel", name: label.name } as const;
+    const project = seed([jump]);
+    expect(runOn(project, "commonEvent.command.insert", {
+      commonEventId: eventId, command: label,
+    }).after.commonEvents.at(-1)?.commands).toEqual([jump, label]);
   });
 
   it.each(["insert", "update"])("맵 이벤트의 라벨로 돌아가는 기존 이동을 가로채는 라벨 편집을 거부한다 (%s)", edit => {
