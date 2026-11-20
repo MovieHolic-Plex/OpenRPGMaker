@@ -156,7 +156,8 @@ UI 저장 성공 문구는 원격 저장 영수증이 아니다. 원격 완료�
 
 강제 경계는 실제 조수 `scripts/lib/piAgentRuntime.ts` + `src/ai/piAgent/toolAdapter.ts`이며
 `PiTilesetReferenceGate`를 실행당 하나 생성해 초기·발견·fallback 도구 모두에 공유한다.
-`onPayload`로 최종 제공자 요청을 관찰하고 성공한 assistant `message_end`에서만 읽기 증거를 적립한다.
+`onPayload`로 제공자 요청을 관찰하고 성공한 assistant `message_end`에서만 읽기 증거를 적립한다.
+일반 조수와 작은 일 모두 OpenAI 호환 서버의 빈 답 뒤 이미지를 빼고 재시도하면, 재시도 응답이 성공한 차례에는 도구 결과의 글만 인정한다.
 Responses/Chat Completions/Anthropic/Gemini의 실제 tool result와 image 구조를 확인한다.
 텍스트 잘림, 이미지 미지원/누락, 제공자 오류, 같은 응답의 조회+쓰기는 통과하지 않는다.
 도구 결과에 다른 글이 붙어도(v2 인자 고침의 «Fixed: …» 알림 조각·줄) 결과 JSON 만 떼어 대조한다 — 글 조각을 이어 붙여 읽던 때는
