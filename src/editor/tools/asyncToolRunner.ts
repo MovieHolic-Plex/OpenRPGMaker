@@ -28,14 +28,14 @@ export async function runToolAsync(
   } = {},
 ): Promise<ToolResult> {
   options.signal?.throwIfAborted();
+  if (options.eventCommandScope) {
+    const refusal = eventScopeRefusal(options.eventCommandScope, name, args);
+    if (refusal) return refusal;
+  }
   if (name !== EVENT_COMMAND_ASSIST_TOOL) {
     await prepareTool(name, args, ctx.project);
     options.signal?.throwIfAborted();
     return runTool(ctx, name, args, options);
-  }
-  if (options.eventCommandScope) {
-    const refusal = eventScopeRefusal(options.eventCommandScope, name, args);
-    if (refusal) return refusal;
   }
   const tool = getTool(name)!;
   const normalized = normalizeToolArgs(name, args);

@@ -23,8 +23,10 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   const { mapId } = target;
   const original = [{ kind: "text", body: "기존 인사입니다." }];
   const generated = [{ kind: "text", body: "여행자님, 마을에 오신 것을 환영합니다." }];
+  const instruction = "현재 인사를 따뜻한 환영 인사로 고쳐 줘";
   const calls: { tools: string[]; kind: string }[] = [];
   let writerRound = 0;
+  let toolCallId = 0;
   let pauseGenerator = false;
   let generatorPaused = false;
   let releaseGenerator: (() => void) | undefined;
@@ -37,13 +39,11 @@ test("event button uses shared assistant, reviews locally, applies once and undo
     let kind = "routing";
     if (tools.length) {
       kind = "shared-session";
-      expect(tools).toContain("event_command_assist");
-      expect(tools).not.toContain("upsert_event");
-      if (writerRound < 2) {
-        const name = writerRound++ === 0 ? "get_event" : "event_command_assist";
-        const args = name === "get_event" ? { mapId, eventId: target.eventId }
-          : { ...target, prompt: "현재 인사를 따뜻한 환영 인사로 고쳐 줘" };
-        tool_calls = [{ id: `browser-${writerRound}`, type: "function", function: { name, arguments: JSON.stringify({ ...args, reason: "선택한 이벤트 페이지 수정" }) } }];
+      expect(tools).toEqual(["event_command_assist"]);
+      expect(request.messages[0].content).toContain(target.pageId);
+      if (writerRound++ === 0) {
+        const args = { ...target, prompt: instruction, reason: "선택한 이벤트 페이지 수정" };
+        tool_calls = [{ id: `browser-event-assist-${++toolCallId}`, type: "function", function: { name: "event_command_assist", arguments: JSON.stringify(args) } }];
       } else content = "현재 페이지의 인사말 초안을 만들었습니다. 변경 내용을 확인해 주세요.";
     } else if (prompt.includes("당신은 브라우저 기반 2D RPG 에디터의 이벤트 명령 편집기입니다.")) {
       kind = "event-command-generator";
@@ -68,12 +68,13 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible();
   await editor.getByTestId("event-command-quick-ai").click();
-  await editor.getByTestId("ai-event-input").fill("현재 인사를 따뜻한 환영 인사로 고쳐 줘");
+  await editor.getByTestId("ai-event-input").fill(instruction);
   const evidence = "output/evidence/event-ai-shared-assistant";
   await mkdir(evidence, { recursive: true });
   await page.screenshot({ path: `${evidence}/01-request.png` });
   await editor.getByTestId("ai-event-generate").click();
   await expect(editor.getByTestId("ai-event-staged")).toBeVisible({ timeout: 120_000 });
+  expect(await page.getByTestId("ai-command-row-user").last().textContent()).toBe(instruction);
   await expect(editor.getByTestId("ai-event-staged")).toContainText(generated[0].body);
   const read = () => page.evaluate(async target => {
     const { store } = await import("/src/project/store.ts");

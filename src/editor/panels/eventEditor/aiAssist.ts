@@ -459,9 +459,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       const target = { mapId, eventId, pageId: page.id, selection,
         selectionLabel: selectedCommandName(cmdList, page.commands, options.selectionPath) ?? undefined,
         mode: scope === "append" ? "append" as const : "edit" as const };
-      const message = `${prompt}\n\n[이벤트 편집기 컨텍스트]\n${JSON.stringify(target)}\n` +
-        "get_event로 확인한 뒤 event_command_assist로 이 페이지의 명령만 수정하세요. 다른 페이지나 설정은 수정할 수 없습니다.";
-      const response = await sendAiAssistantMessage(message, { deferApply: true, eventCommandScope: target });
+      const response = await sendAiAssistantMessage(prompt, { deferApply: true, eventCommandScope: target });
       if (request.cancelled) throw new Error("중단했습니다.");
       if (!response.ok) throw new Error(response.error ?? "조수 실행에 실패했습니다.");
       const proposal = response.pendingProposal;

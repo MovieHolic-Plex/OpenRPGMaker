@@ -3,14 +3,17 @@
 // 여기서는 `runPiCommand` 를 가로채 **패널이 넘기는 값**만 본다(명령 내부는 piAgentCommandLoop 테스트가 본다).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearConversations } from "@/ai/conversationStore";
+import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderEventAiAssist } from "@/editor/panels/eventEditor/aiAssist";
 import { activeTools } from "@/editor/tools";
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
 import { runPiCommand } from "@/editor/panels/aiPiAgentCommand";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import type { EventPage } from "@/project/types";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
@@ -147,6 +150,36 @@ afterEach(async () => {
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+});
+
+it("shows only the raw event dock prompt in the shared chat's user bubble", async () => {
+  const config = { ...defaultAiConfig(), authMode: "apiKey" as const, apiKey: "sk-test",
+    baseUrl: "https://example.invalid/v1", model: "stub-model" };
+  saveAiConfig(config);
+  const sendUserMessage = vi.spyOn(AssistantSession.prototype, "sendUserMessage")
+    .mockResolvedValue({ assistantText: "초안 없음", proposedCalls: [], stoppedReason: "final" });
+  const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+  const mapId = store.getCurrent().startMapId;
+  const page: EventPage = {
+    id: "dock-page", name: "인사", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+    movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
+  };
+  const dock = renderEventAiAssist({
+    mapId, eventId: "dock-event", page,
+    cmdList: document.createElement("div"), stagedHost: document.createElement("div"),
+    refreshListVisibility: () => {}, replaceAll: () => {}, loadConfig: () => config,
+  }) as unknown as FakeElement;
+
+  const prompt = "인사말을 추가해 줘.\n마을 이름은 여울이야.";
+  findByTestId(dock, "ai-event-input")!.value = prompt;
+  const generate = findByTestId(dock, "ai-event-generate")!;
+  generate.click();
+
+  await vi.waitFor(() => expect(sendUserMessage).toHaveBeenCalledTimes(1));
+  expect(findByTestId(panel, "ai-command-row-user")?.textContent).toBe(prompt);
+  expect(sendUserMessage.mock.calls[0]?.[0]).toBe(prompt);
+  expect(sendUserMessage.mock.calls[0]?.[3]?.eventCommandScope).toMatchObject({ mapId, eventId: "dock-event", pageId: page.id });
+  await vi.waitFor(() => expect(generate.disabled).toBe(false));
 });
 
 describe("자율성 다이얼 → Pi 실행 계획", () => {

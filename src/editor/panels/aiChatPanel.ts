@@ -2021,15 +2021,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const turnScope = resolveTurnScope();
     // 보존 기획 지침은 사용자 발화 뒤·사실 줄 앞에 온다. 고른 게 없으면 빈 문자열이라 아무 것도 붙지 않는다.
     // 보낸 뒤에는 선택을 자동으로 푸는다 — 한 번 고른 재사용이 다음 턴에 조용히 또 실리면 그게 숨은 기억이다.
-    const planningGuidance = planningReuse.guidanceBlock();
+    const planningGuidance = opts?.eventCommandScope ? "" : planningReuse.guidanceBlock();
     if (planningGuidance) {
       const chosen = planningReuse.resolvedItems();
       appendBubble("system", `${describePlanningReuse(chosen.length, planningReuse.choice().mode)} — 이번 요청에 지침으로 넣습니다.`);
     }
-    const payload = [trimmed, planningGuidance, contextFooter(turnScope?.mapId)]
+    const payload = opts?.eventCommandScope ? trimmed : [trimmed, planningGuidance, contextFooter(turnScope?.mapId)]
       .filter((part) => part.length > 0)
       .join("\n\n");
-    planningReuse.reset();
+    if (!opts?.eventCommandScope) planningReuse.reset();
     const composerMode = opts?.eventCommandScope ? "do" : derivedComposerMode();
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.

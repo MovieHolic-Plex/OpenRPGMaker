@@ -1178,8 +1178,10 @@ GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했�
 ## 이벤트 명령 AI 공용 도구 (2026-09-20)
 
 `event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지
-명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. `get_event`로 실제 페이지 ID를
-먼저 조회한다. 새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
+명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. 일반 조수에서는 페이지 ID를
+모를 때 `get_event`로 조회한다. 이벤트 편집기 도크는 ID와 페이지 요약을 이미 전달하므로
+`event_command_assist`만 노출한다. 도크의 범위 거절은 사용할 대상 ID와 모드를 안내한다.
+새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
 
 - `eventCommandAssistTool.ts`가 스키마와 대상 조회를 소유한다. `asyncToolRunner.ts`가
   `runEventCommandAssist`로 생성한 후 `runToolDefinition`의 공용 draft/lint/commit 경계를 탄다.
