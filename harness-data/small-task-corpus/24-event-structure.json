@@ -106,6 +106,24 @@
     "expectRefusal": true
   },
   {
+    "request": "시장 손님이 서 있는 칸에도 새 이벤트를 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {},
+    "selection": {"rect": {"x": 22, "y": 25, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 칸에 새 이벤트를 만들되 가로 위치만 지정할게요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"x": 22},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
     "request": "여기 빈 페이지 한 장 더 붙여 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
@@ -140,9 +158,12 @@
     "args": {"position": 2, "copyFrom": 1},
     "expect": [
       {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].commands", "count": 3},
       {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].name", "equals": "페이지 3"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].graphic.pattern", "equals": 82},
       {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].commands", "count": 0},
-      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].conditions", "count": 0}
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].conditions", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].commands", "count": 2}
     ]
   },
   {
@@ -501,7 +522,7 @@
     ]
   },
   {
-    "request": "이 사람 복붙해서 지정해 둔 위쪽 칸에 놓자",
+    "request": "이 사람 복붙해서 지정해 둔 왼쪽 위 칸에 놓자",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
     "primitive": "event.tile.duplicate",

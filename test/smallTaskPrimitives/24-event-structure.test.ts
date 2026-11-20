@@ -194,7 +194,9 @@ describe("이벤트 구조 조작", () => {
     const move = PRIMITIVES.find(entry => entry.id === "event.tile.move")!;
     expect(() => move.apply(ctx, { dx: 2 })).toThrow(/범위 밖/u);
     expect(() => runPrimitive(before, target, move.id, { dx: 2 }, ctx.selection)).toThrow(/다른 칸/u);
-    expect(runPrimitive(before, target, move.id, {}, selection(2, 3)).after).toBe(before);
+    expect(runPrimitive(before, target, move.id, {}, selection(2, 3))).toMatchObject({
+      after: before, sentence: "이벤트가 이미 선택한 칸에 있어요.",
+    });
     expect(original.x).toBe(2);
     expect(original.schedule[0].at.x).toBe(2);
   });
@@ -245,6 +247,14 @@ describe("선택 범위와 입력 검증", () => {
     const before = blank();
     expect(() => runPrimitive(before, mapTarget(before, MAP)!, "event.tile.create", { x: 4, y: 3 }, selection(5, 3))).toThrow(/범위 밖/u);
     expect(() => runPrimitive(before, mapTarget(before, MAP, EVENT)!, "event.tile.duplicate", { dx: 2 }, selection(5, 3))).toThrow(/범위 밖/u);
+  });
+
+  it("복제본의 다음 상태가 맵 밖을 덮으면 빈 칸을 선택했어도 거절한다", () => {
+    const before = blank();
+    before.maps[MAP].events[0].pages![1].footprint = { width: 1, height: 2 };
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(before, target, "event.tile.duplicate", {}, selection(5, 0))).toThrow(/이벤트를 놓을 수 없어요/u);
+    expect(before.maps[MAP].events).toHaveLength(1);
   });
 
   it.each([
@@ -353,6 +363,33 @@ describe("선택 범위와 입력 검증", () => {
     expect(() => runPrimitive(before, mapTarget(before, MAP, EVENT)!, "event.page.remove", { page: 1 })).toThrow(/셀프 스위치를 켤 수 없어요/u);
   });
 
+  it("기본 페이지가 실행을 가리면 옛 이벤트 명령을 스위치의 대체 작성자로 보지 않는다", () => {
+    const before = blank();
+    const event = before.maps[MAP].events[0];
+    const [first, second] = event.pages!;
+    const switchId = "sw_gate";
+    before.switches = [{ id: switchId, name: "문 열림" }];
+    event.commands = [{ kind: "setSwitch", switchId, value: true }, { kind: "setSelfSwitch", key: "A", value: true }];
+    first.commands = [...event.commands];
+    second.conditions = [{ kind: "selfSwitch", key: "A", value: true }];
+    event.pages!.unshift({ ...first, id: "fallback", commands: [], conditions: [] });
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(before, target, "event.page.remove", { page: 2 })).toThrow(/셀프 스위치를 켤 수 없어요/u);
+    second.conditions = [{ kind: "switch", switchId, value: true }];
+    expect(() => runPrimitive(before, target, "event.page.remove", { page: 2 })).toThrow(/다른 곳에서 기다리는 스위치/u);
+  });
+
+  it("엔딩 조건이 기다리는 스위치의 마지막 작성자를 지우지 않는다", () => {
+    const before = blank();
+    const switchId = "sw_ending";
+    before.switches = [{ id: switchId, name: "엔딩 잠금 해제" }];
+    before.endings = [{ id: "end_test", name: "시험 엔딩", priority: 1, conditions: [{ kind: "switch", switchId, value: true }] }];
+    before.maps[MAP].events[0].pages![1].commands = [{ kind: "setSwitch", switchId, value: true }];
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(before, target, "event.page.remove", { page: 2 })).toThrow(/스위치/u);
+    expect(() => runPrimitive(before, target, "event.tile.remove", {})).toThrow(/스위치/u);
+  });
+
   it.each(["이벤트 명령", "페이지 조건", "공용 이벤트", "부대", "퀘스트", "맵 조명"] as const)("%s에서 가리키는 이벤트는 삭제를 거절한다", source => {
     const before = blank();
     const map = before.maps[MAP];
@@ -404,6 +441,46 @@ describe("선택 범위와 입력 검증", () => {
     expect(after.maps[MAP].events[0]).toMatchObject({ id: EVENT, name: "나무 궤짝" });
     expect(after.commonEvents).toBe(before.commonEvents);
     expect(() => runPrimitive(before, target, "event.tile.remove", {})).toThrow(/다른 곳에서 이 이벤트/u);
+    before.maps[MAP].events[0].pages![1].commands = [];
+    expect(() => runPrimitive(before, target, "event.tile.rename", { name: "나무 궤짝" })).toThrow(/목표가 이 이벤트를 이름으로/u);
+  });
+
+  it.each<Command>([
+    { kind: "text", speakerActor: EVENT, body: "왔어요." },
+    { kind: "text", addressee: EVENT, body: "들어 보세요." },
+    { kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "follow", target: `event:${EVENT}` } },
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turnToward", target: EVENT }], repeat: false } },
+  ])("중첩한 연출 명령의 이벤트 참조를 삭제 전에 검사한다 (%o)", command => {
+    const before = blank();
+    before.commonEvents = [{ id: "ce_stage", name: "연출", trigger: "none", commands: [
+      { kind: "choices", options: [{ text: "실행", branch: [] }], cancelBranch: [command] },
+    ] }];
+    expect(() => runPrimitive(before, mapTarget(before, MAP, EVENT)!, "event.tile.remove", {})).toThrow(/다른 곳에서 이 이벤트/u);
+  });
+
+  it.each<Command>([
+    { kind: "text", speaker: "보상 상자", body: "왔어요." },
+    { kind: "fork", condition: { kind: "eventSeesPlayer", eventId: "", watchers: { name: "보상 상자" } }, then: [] },
+  ])("대사나 조건이 이벤트를 이름으로 찾으면 삭제와 이름 변경을 거절한다 (%o)", command => {
+    const before = blank();
+    const map = before.maps[MAP];
+    map.events.push({ id: "ev_stage", name: "연출", x: 4, y: 4, trigger: { kind: "auto" }, commands: [command] });
+    const target = mapTarget(before, MAP, EVENT)!;
+    expect(() => runPrimitive(before, target, "event.tile.remove", {})).toThrow(/다른 곳에서 이 이벤트/u);
+    expect(() => runPrimitive(before, target, "event.tile.rename", { name: "나무 궤짝" })).toThrow(/이벤트를 이름으로/u);
+    expect(runPrimitive(before, target, "event.tile.rename", { name: "낡은 보상 상자" }).after.maps[MAP].events[0].name).toBe("낡은 보상 상자");
+  });
+
+  it("다른 이벤트의 기존 일정 오류가 배열 위치만 바뀌면 삭제를 허용한다", () => {
+    const before = blank();
+    const map = before.maps[MAP];
+    const other: GameEvent = { id: "ev_other", x: 5, y: 5, trigger: { kind: "action" }, commands: [],
+      schedule: [{ when: {}, at: { mapId: "removed_map", x: 10, y: 10 } }],
+    };
+    map.events.push(other);
+    const { after } = runPrimitive(before, mapTarget(before, MAP, EVENT)!, "event.tile.remove", {});
+    expect(after.maps[MAP].events).toEqual([other]);
+    expect(after.maps[MAP].events[0]).toBe(other);
   });
 
   it("다른 맵의 동명 ID를 가리키는 목표와 그 맵 이벤트를 보존한다", () => {

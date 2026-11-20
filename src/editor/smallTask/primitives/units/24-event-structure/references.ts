@@ -1,6 +1,9 @@
+import { getCharacterProfile } from "@/project/characterProfiles";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { scriptCalls, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
-import type { EventPage, GameEvent, Project } from "@/project/types";
+import { sightWatcherIds } from "@/project/sightWatchers";
+import { resolveSpeakerActor } from "@/project/staging/dialogueActors";
+import type { EventPage, EventSightWatchers, GameEvent, Project } from "@/project/types";
 
 type RecordNode = Record<string, unknown>;
 
@@ -14,6 +17,9 @@ function someRecord(value: unknown, test: (node: RecordNode) => boolean): boolea
 const isId = (value: unknown, id: string) => typeof value === "string" && value.trim() === id;
 const pointsTo = (map: unknown, mapId: string) => typeof map !== "string" || !map.trim() || map.trim() === mapId;
 const m2Index = (node: RecordNode) => typeof node.commandId === "string" ? m2CommandById(node.commandId)?.index : undefined;
+// These commands search across maps for their event ID.
+const globalM2Targets = new Set([40, 41, 203]);
+const moveStageTargets = new Set(["approach", "turnToward", "exitVia", "enterVia", "doorCue"]);
 
 function m2EventReference(node: RecordNode, mapId: string, id: string): boolean {
   const fields = node.fields as RecordNode | undefined;
@@ -29,7 +35,8 @@ function m2EventReference(node: RecordNode, mapId: string, id: string): boolean 
     case 40:
       return isId(fields.target, id);
     case 201:
-      return [fields.target, fields.targetEventId, fields.eventId].some(value => isId(value, id));
+      return [fields.target, fields.targetEventId, fields.eventId].some(value => isId(value, id))
+        || isId(fields.target, `event:${id}`);
     case 54: case 55: case 56: case 57:
     case 204: case 205: case 206: case 224: case 225:
       return [fields.target, fields.eventId, fields.event].some(value => isId(value, id));
@@ -38,7 +45,7 @@ function m2EventReference(node: RecordNode, mapId: string, id: string): boolean 
 }
 
 function authoredRoots(project: Project) {
-  return [project.commonEvents, project.database, project.quests, project.gameBlueprint, project.system,
+  return [project.commonEvents, project.database, project.quests, project.endings, project.gameBlueprint, project.system,
     project.session.farmAnimals, project.spatialAuthoring, project.worldAtlases, project.worldGraph,
     project.testPresets, project.meta.oprnCinematicTimelines];
 }
@@ -51,6 +58,13 @@ export function hasEventReference(project: Project, mapId: string, id: string, i
         || scriptCalls(node, "event", project).includes(id)
         || (includeDynamicScripts && scriptHasDynamic(node, "event", { library: project.scriptLibrary }));
     }
+    if (node.kind === "text" && (isId(node.speakerActor, id) || isId(node.addressee, id))) return true;
+    if (typeof node.kind === "string" && moveStageTargets.has(node.kind)
+      && (isId(node.target, id) || isId(node.actor, id) || isId(node.door, id))) return true;
+    if (node.kind === "say" && (isId(node.actor, id) || isId(node.to, id))) return true;
+    if (node.kind === "faceEachOther" && (isId(node.a, id) || isId(node.b, id))) return true;
+    if ((node.kind === "moveActor" || node.kind === "faceToward" || node.kind === "camera")
+      && (isId(node.actor, id) || isId(node.target, id))) return true;
     return pointsTo(node.mapId, mapId) && (isId(node.eventId, id) || isId(node.returnEventId, id)
       || (Array.isArray(node.eventIds) && node.eventIds.includes(id)))
       || pointsTo(node.templateMapId, mapId) && isId(node.templateEventId, id);
@@ -63,6 +77,7 @@ export function hasEventReference(project: Project, mapId: string, id: string, i
     const localIdExists = map.id !== mapId && map.events.some(event => event.id === id);
     return someRecord([map.events, map.defaultLighting, map.encounterTable, map.fieldSpawns], node => {
       if (localIdExists && node.mapId === undefined && node.targetMapId === undefined && node.templateMapId === undefined) {
+        if (node.kind === "m2Command" && globalM2Targets.has(m2Index(node) ?? -1)) return references(node);
         const fields = node.kind === "m2Command" ? node.fields as RecordNode | undefined : undefined;
         if (!fields || ![fields.targetMapId, fields.templateMapId, fields.sourceMapId].some(value => value === mapId)) return false;
       }
@@ -80,9 +95,14 @@ export function hasNamedObjective(project: Project, event: GameEvent, newName = 
   const namesEvent = (node: RecordNode) => {
     if (node.kind !== "m2Command" || m2Index(node) !== 214) return false;
     const fields = node.fields as RecordNode | undefined;
-    if (fields?.surface !== "objectiveChip" || typeof fields.message !== "string") return false;
-    if (typeof fields.targetMapId === "string" && typeof fields.targetEventId === "string"
-      && project.maps[fields.targetMapId.trim()]?.events?.some(target => isId(fields.targetEventId, target.id))) return false;
+    if (!isId(fields?.surface, "objectiveChip") || typeof fields?.message !== "string") return false;
+    if (typeof fields.targetMapId === "string") {
+      const target = project.maps[fields.targetMapId.trim()]?.events.find(candidate => isId(fields.targetEventId, candidate.id));
+      const page = target?.pages?.at(-1);
+      // The runtime falls back to the text when the ID's active page cannot be interacted with.
+      if (page && !page.conditions.length && page.commands.length
+        && ["action", "playerTouch", "eventTouch"].includes(page.trigger.kind)) return false;
+    }
     const message = objectiveName(fields.message);
     const tail = /\(([^():]+):([^()]*)\)\s*$/u.exec(fields.message);
     const tailNames = [tail?.[1], ...(tail?.[2]?.split("→").slice(1).join("·").split("·") ?? [])];
@@ -94,29 +114,58 @@ export function hasNamedObjective(project: Project, event: GameEvent, newName = 
     || Object.values(project.maps).some(map => someRecord(map.events, namesEvent));
 }
 
-export function strandsSwitch(after: Project, removed: unknown): boolean {
+export function hasNamedEventReference(project: Project, mapId: string, event: GameEvent, name?: string): boolean {
+  const map = project.maps[mapId];
+  const remaining = name === undefined ? map.events.filter(entry => entry.id !== event.id)
+    : map.events.map(entry => entry.id === event.id ? { ...entry, name } : entry);
+  const candidates = (events: readonly GameEvent[]) => events.filter(entry => entry.pages?.length
+    ? entry.pages.some(page => !page.graphic?.transparent && (page.graphic?.sprite || page.graphic?.appearanceId || entry.sprite))
+    : entry.sprite).map(entry => ({
+    id: entry.id, x: entry.x, y: entry.y,
+    names: [entry.name ?? "", getCharacterProfile(project, entry.characterId)?.displayName ?? ""],
+  }));
+  const beforeActors = candidates(map.events);
+  const afterActors = candidates(remaining);
+  const leader = project.database.actors.find(actor => actor.id === project.session.partyActorIds?.[0]) ?? project.database.actors[0];
+  const refers = (root: unknown, ownerId?: string) => someRecord(root, node => {
+    if (node.kind === "eventSeesPlayer" && !node.eventId && node.watchers) {
+      const watchers = node.watchers as EventSightWatchers;
+      return sightWatcherIds([event], watchers, map.locations).length > 0
+        && sightWatcherIds(remaining, watchers, map.locations).length === 0;
+    }
+    const fields = node.kind === "m2Command" && m2Index(node) === 209 ? node.fields as RecordNode : node;
+    if ((node.kind !== "text" && fields === node) || typeof fields?.speaker !== "string" || !fields.speaker.trim()) return false;
+    if (typeof fields.speakerActor === "string" && fields.speakerActor.trim()) return false;
+    const input = { speaker: fields.speaker, currentEventId: ownerId, playerNames: leader ? [leader.name] : [], player: null };
+    return resolveSpeakerActor({ ...input, visible: beforeActors }) === event.id
+      && resolveSpeakerActor({ ...input, visible: afterActors }) !== event.id;
+  });
+  return refers(authoredRoots(project)) || (name === undefined ? remaining : map.events).some(owner => refers(owner, owner.id));
+}
+
+export function strandsSwitch(after: Project, removed: EventPage | GameEvent): boolean {
   const enabled = new Set<string>();
   const written = (node: RecordNode) => {
     if (node.kind === "script") return scriptWrites(node, "switch", after);
     return node.kind === "setSwitch" && node.value !== false && typeof node.switchId === "string" ? [node.switchId] : [];
   };
-  someRecord(removed, node => {
+  const removedCommands = "x" in removed ? [removed.pages, legacyExecution(removed)] : removed;
+  someRecord(removedCommands, node => {
     for (const id of written(node)) enabled.add(id);
     return false;
   });
   if (!enabled.size) return false;
-  const roots = [Object.values(after.maps).map(map => map.events), after.commonEvents, after.database.troops];
-  if (someRecord(roots, node => node.kind === "script"
-    && scriptHasDynamic(node, "switch", { access: "write", library: after.scriptLibrary }))) return false;
-  someRecord(roots, node => {
+  const maps = Object.values(after.maps);
+  const eventCommands = maps.map(map => map.events.map(event => [event.pages, legacyExecution(event)]));
+  someRecord([eventCommands, ...authoredRoots(after)], node => {
     for (const id of written(node)) enabled.delete(id);
     return enabled.size === 0;
   });
-  return enabled.size > 0 && someRecord(roots, node => {
+  return enabled.size > 0 && someRecord([maps.map(map => map.events), ...authoredRoots(after)], node => {
     if (node.kind === "m2Command") {
       const fields = node.fields as RecordNode | undefined;
       return typeof fields?.target === "string" && enabled.has(fields.target)
-        && ((m2Index(node) === 206 && fields.condition === "switchOn")
+        && ((m2Index(node) === 206 && (fields.condition === "switchOn" || fields.condition === undefined))
           || (m2Index(node) === 217 && fields.query === "switch"));
     }
     return (node.kind === "switch" && node.value !== false && typeof node.switchId === "string" && enabled.has(node.switchId))
@@ -125,10 +174,15 @@ export function strandsSwitch(after: Project, removed: unknown): boolean {
   });
 }
 
+function legacyExecution(event: GameEvent) {
+  // A page that always qualifies prevents the runtime from falling back to the old event-level commands.
+  return event.pages?.some(page => page.conditions?.length === 0) ? undefined : [event.commands, event.moveRoute];
+}
+
 export function strandsSelfSwitch(event: GameEvent, removed: EventPage): boolean {
   const written = (node: RecordNode) => node.kind === "setSelfSwitch" && node.value === true && typeof node.key === "string"
     ? node.key : undefined;
-  const remaining = [event.commands, event.pages];
+  const remaining = [legacyExecution(event), event.pages];
   const keys = new Set<string>();
   someRecord(removed.commands, node => {
     const key = written(node);

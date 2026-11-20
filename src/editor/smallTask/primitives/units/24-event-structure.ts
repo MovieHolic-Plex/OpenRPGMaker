@@ -12,7 +12,7 @@ import { uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
 import type { Dir, EventPage, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
-import { hasEventReference, hasNamedObjective, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
+import { hasEventReference, hasNamedEventReference, hasNamedObjective, strandsSelfSwitch, strandsSwitch } from "./24-event-structure/references";
 
 export const UNIT = "24-event-structure";
 
@@ -31,13 +31,13 @@ const priorities = { below: "플레이어 아래", same: "플레이어와 같은
 const nameField: JsonSchema = { type: "string", minLength: 1, maxLength: 100, description: "이벤트나 페이지의 표시 이름" };
 const pageField: JsonSchema = { type: "integer", minimum: 1, description: "첫 페이지를 1로 세는 페이지 번호. 생략하면 선택한 페이지를 사용" };
 const cellFields = {
-  x: { type: "integer", description: "목적지의 가로 칸 번호. 왼쪽 끝은 0" },
-  y: { type: "integer", description: "목적지의 세로 칸 번호. 맨 위는 0" },
+  x: { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER, description: "목적지의 가로 칸 번호. 왼쪽 끝은 0" },
+  y: { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER, description: "목적지의 세로 칸 번호. 맨 위는 0" },
 } satisfies Record<string, JsonSchema>;
 const destinationFields = {
   ...cellFields,
-  dx: { type: "integer", description: "현재 자리에서 오른쪽으로 갈 칸 수. 왼쪽은 음수" },
-  dy: { type: "integer", description: "현재 자리에서 아래로 갈 칸 수. 위는 음수" },
+  dx: { type: "integer", minimum: Number.MIN_SAFE_INTEGER, maximum: Number.MAX_SAFE_INTEGER, description: "현재 자리에서 오른쪽으로 갈 칸 수. 왼쪽은 음수" },
+  dy: { type: "integer", minimum: Number.MIN_SAFE_INTEGER, maximum: Number.MAX_SAFE_INTEGER, description: "현재 자리에서 아래로 갈 칸 수. 위는 음수" },
 } satisfies Record<string, JsonSchema>;
 const schema = (properties: Record<string, JsonSchema>, required: readonly string[] = []): JsonSchema =>
   ({ type: "object", additionalProperties: false, properties, required });
@@ -202,9 +202,12 @@ function movedTo(map: GameMap, event: GameEvent, destination: Cell): GameEvent {
 }
 
 function assertPlacement(project: Project, map: GameMap, event: GameEvent): void {
-  const needsFloor = eventRequiresPassableTile(event) || pagesOf(event).some(page =>
+  const pages = pagesOf(event);
+  const needsFloor = eventRequiresPassableTile(event) || pages.some(page =>
     (page.trigger.kind === "touch" || page.trigger.kind === "playerTouch") && page.priority !== "same");
-  if (!new EventPlacementAnalysis(project, map).validDestination(event, needsFloor)) {
+  const analysis = new EventPlacementAnalysis(project, map);
+  if (!analysis.validDestination(event, needsFloor)
+    || pages.slice(1).some(page => page.footprint && !analysis.canOccupy({ ...event, pages: [page] }))) {
     throw new PrimitiveError("그 칸에 이벤트를 놓을 수 없어요. 비어 있고 접근할 수 있는 자리를 골라 주세요.");
   }
 }
@@ -303,7 +306,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     args: schema({
       name: nameField,
       copyFrom: { ...pageField, description: "그림과 실행 설정을 가져올 페이지 번호. 생략하면 첫 페이지" },
-      position: { ...pageField, description: "새 페이지가 들어갈 자리. 첫 자리는 1이며 생략하면 맨 앞. 뒤쪽 페이지가 먼저 실행됩니다." },
+      position: { ...pageField, description: "새 페이지가 들어갈 자리. 첫 자리는 1이며, 생략하면 맨 앞에 넣어요. 조건이 맞는 페이지 중 맨 뒤 한 장이 실행돼요." },
     }),
     scope: eventScope,
     describe(_ctx, args) {
@@ -420,7 +423,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     targets: eventTargets, args: schema(destinationFields),
     scope: cellScope,
     describe(ctx) {
-      return `${eventLabel(selectedEvent(ctx).event)}를 선택한 빈 칸에 복제해요.`;
+      return `선택한 빈 칸에 ${eventLabel(selectedEvent(ctx).event)}의 복제본을 만들어요.`;
     },
     apply(ctx, args) {
       const { map, event } = selectedEvent(ctx);
@@ -449,10 +452,13 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (strandsSwitch(after, event)) {
         throw new PrimitiveError("이 이벤트를 지우면 진행에 필요한 스위치를 켤 수 없어요.");
       }
-      if (hasEventReference(after, map.id, event.id) || hasNamedObjective(after, event)) {
+      if (hasEventReference(after, map.id, event.id) || hasNamedObjective(after, event)
+        || hasNamedEventReference(ctx.project, map.id, event)) {
         throw new PrimitiveError("다른 곳에서 이 이벤트를 사용하고 있어요. 연결을 먼저 확인해 주세요.");
       }
-      validateReferences(ctx.project, after, "다른 곳에서 이 이벤트를 사용하고 있어요.");
+      // Reference diagnostics may include array indexes. Keep the surviving events at the same indexes in both snapshots.
+      const baseline = replaceEvents(ctx.project, map, [...after.maps[map.id].events, event]);
+      validateReferences(baseline, after, "다른 곳에서 이 이벤트를 사용하고 있어요.");
       if (!Object.hasOwn(ctx.project.session.selfSwitches ?? {}, event.id)
         || Object.values(after.maps).some(other => other.events.some(entry => entry.id === event.id))) return after;
       const selfSwitches = { ...after.session.selfSwitches };
@@ -465,12 +471,8 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     targets: eventTargets, args: schema(destinationFields),
     // 위치 변경까지 허용하려면 칸 범위 가드가 호스트의 목적지를 함께 검증해야 한다.
     scope: eventScope,
-    describe(ctx, args) {
-      const { event } = selectedEvent(ctx);
-      const destination = requestedCell(args, event);
-      return destination
-        ? `${eventLabel(event)}를 왼쪽에서 ${destination.x + 1}번째, 위에서 ${destination.y + 1}번째 칸으로 옮겨요.`
-        : "선택한 이벤트를 선택한 칸으로 옮겨요.";
+    describe() {
+      return "이벤트가 이미 선택한 칸에 있어요.";
     },
     apply(ctx, args) {
       const { event } = selectedEvent(ctx);
@@ -493,6 +495,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (!name) throw new PrimitiveError("이름을 한 글자 이상 적어 주세요.");
       if (hasNamedObjective(ctx.project, event, name)) {
         throw new PrimitiveError("현재 목표가 이 이벤트를 이름으로 가리키고 있어요. 목표의 연결을 먼저 확인해 주세요.");
+      }
+      if (hasNamedEventReference(ctx.project, map.id, event, name)) {
+        throw new PrimitiveError("다른 곳에서 이 이벤트를 이름으로 찾고 있어요. 대사나 조건의 연결을 먼저 확인해 주세요.");
       }
       return replaceEvent(ctx.project, map, { ...event, name });
     },
