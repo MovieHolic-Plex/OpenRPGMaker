@@ -8,13 +8,14 @@ import { ToolError, type JsonSchema } from "@/editor/tools/types";
 import { fieldBoolean } from "@/player/interpreter/m2RuntimeFields";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { canMove, canMoveFootprint, isPassable, isPassableLanding } from "@/project/collision";
+import { counterReachTarget, MAX_COUNTER_REACH } from "@/project/counterTiles";
 import { doorstepArrival } from "@/project/doorEntries";
 import { GOLD_MAX } from "@/project/economyValues";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { footprintContains, normalizeCharacterFootprint, rectCells } from "@/project/footprint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { playerBodyRect, playerPassageRect, resolvePlayerBody } from "@/project/playerFootprint";
-import { findBlockingEventOverlappingRect } from "@/project/runtimeEventState";
+import { findBlockingEventOverlappingRect, findRuntimeEventAtInMap } from "@/project/runtimeEventState";
 import { startSession } from "@/project/session";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import type { Command, Condition, Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
@@ -317,6 +318,24 @@ function assertStockSurvivesReload({ itemIds, stock }: Extract<Command, { kind: 
   }
 }
 
+function hasReadableSignPosition(project: Project, map: GameMap, at: Point): boolean {
+  const { session, canStand } = placementPlayer(project, map, at);
+  const actionAt = (x: number, y: number) => findRuntimeEventAtInMap(project, map, session, {}, x, y, "action");
+  return ORTHOGONAL_STEPS.some(([, dx, dy]) => {
+    if (canStand(at.x + dx, at.y + dy)) return true;
+    // The player can also read a sign with a sprite from across a counter.
+    for (let distance = 2; distance <= MAX_COUNTER_REACH + 1; distance++) {
+      if (!canStand(at.x + dx * distance, at.y + dy * distance)) continue;
+      const front = { x: at.x + dx * (distance - 1), y: at.y + dy * (distance - 1) };
+      if (actionAt(front.x, front.y)) continue;
+      const reached = counterReachTarget(project.tilesets[map.tilesetId], map, front, { x: -dx, y: -dy },
+        (x, y) => Boolean(actionAt(x, y)?.sprite));
+      if (reached?.x === at.x && reached.y === at.y) return true;
+    }
+    return false;
+  });
+}
+
 const sign: SmallTaskPrimitive = {
   id: "event.sign.place",
   unit: UNIT,
@@ -331,14 +350,17 @@ const sign: SmallTaskPrimitive = {
   apply(ctx, args) {
     const text = textArg(args.text as string, "표지판에 적을 글을 입력해 주세요.");
     const { map, at } = blankTile(ctx);
-    assertFixedPlacement(ctx.project, map, at, "interaction", "표지판", "범위 밖이에요. 선택한 칸에서 표지판을 읽을 수 없어요.");
     const id = eventId(ctx.project, "sign", at);
     const graphic = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 0 });
     const page = compileSimplePage(`${id}_p0`, "표지판", {}, graphic, { movement: PASSIVE_MOVEMENT });
     page.commands = [{ kind: "text", body: text }];
     const event: GameEvent = { ...at, id, name: "표지판", trigger: page.trigger, commands: [], pages: [page] };
     assertEventShape(event);
-    return appendEvent(ctx.project, map, event);
+    const after = appendEvent(ctx.project, map, event);
+    if (!hasReadableSignPosition(after, after.maps[map.id], at)) {
+      throw new PrimitiveError("범위 밖이에요. 선택한 칸에서 표지판을 읽을 수 없어요.");
+    }
+    return after;
   },
 };
 
@@ -370,14 +392,7 @@ function assertGatePlacement(project: Project, map: GameMap, at: Point): void {
   }
 }
 
-function hasWalkableLanding(
-  project: Project, from: { map: GameMap; at: Point }, { map, at }: { map: GameMap; at: Point },
-): boolean {
-  const sameMap = from.map === map;
-  if ((sameMap && from.at.x === at.x && from.at.y === at.y) || tileOccupied(map, at)
-    || !isPassableLanding(project, map, at.x, at.y)
-    || (!sameMap && doorstepArrival(project, map, at.x, at.y, from.map.id)?.moved)) return false;
-
+function placementPlayer(project: Project, map: GameMap, at: Point) {
   const session = startSession(project);
   session.currentMapId = map.id;
   session.x = at.x;
@@ -391,6 +406,18 @@ function hasWalkableLanding(
       && !findBlockingEventOverlappingRect(project, map, session, {}, passage)
       && !isSpatialPlacementBlocking(project, session, map.id, passage);
   };
+  return { session, body, canStand };
+}
+
+function hasWalkableLanding(
+  project: Project, from: { map: GameMap; at: Point }, { map, at }: { map: GameMap; at: Point },
+): boolean {
+  const sameMap = from.map === map;
+  if ((sameMap && from.at.x === at.x && from.at.y === at.y) || tileOccupied(map, at)
+    || !isPassableLanding(project, map, at.x, at.y)
+    || (!sameMap && doorstepArrival(project, map, at.x, at.y, from.map.id)?.moved)) return false;
+
+  const { body, canStand } = placementPlayer(project, map, at);
   return canStand(at.x, at.y) && ORTHOGONAL_STEPS.some(([, dx, dy]) => {
     const x = at.x + dx;
     const y = at.y + dy;

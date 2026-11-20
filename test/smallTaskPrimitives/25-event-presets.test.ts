@@ -6,7 +6,7 @@ import { PRIMITIVES } from "@/editor/smallTask/primitives/units/25-event-presets
 import { mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { PASSIVE_MOVEMENT } from "@/editor/tools/eventCompile";
 import { createInterpreter } from "@/player/interpreter";
-import { isPassableLanding } from "@/project/collision";
+import { isPassable, isPassableLanding } from "@/project/collision";
 import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { doorstepArrival } from "@/project/doorEntries";
@@ -302,6 +302,53 @@ it("표지판은 그림과 안내 한 줄을 저장하고 원래 칸을 복원�
   expect(runEvent(after, sign).start()).toMatchObject({ kind: "text", body: args.text });
   expect(() => runPrimitive(project, target, id, args, invalidSelection)).toThrow("범위 밖");
   await expectUndoRestores(project, after, target);
+});
+
+it("표지판은 통행 가능한 칸도 사방이 이벤트로 막혀 있으면 거절한다", () => {
+  const project = blankWithMap();
+  const map = project.maps[project.startMapId];
+  map.events = [[1, 2], [2, 1], [2, 3], [3, 2]].map(([x, y], index) => ({
+    x, y, id: `blocker_${index}`, name: "장애물", trigger: { kind: "action" }, commands: [],
+  }));
+  const before = structuredClone(map.events);
+  expect(() => runPrimitive(project, mapTarget(project, map.id)!, "event.sign.place",
+    { text: "시장" }, selection)).toThrow("표지판을 읽을 수 없어요");
+  expect(map.events).toEqual(before);
+});
+
+it("표지판은 배치 후 주인공 통행 사각을 가리는 자리만 남으면 거절한다", () => {
+  const project = blankWithMap();
+  project.system.playerFootprint = { width: 3, height: 1 };
+  const map = project.maps[project.startMapId];
+  const floor = map.lowerTiles[0]!;
+  map.lowerTiles.fill(-1);
+  for (let x = 0; x <= 4; x++) map.lowerTiles[2 * map.width + x] = floor;
+  expect(() => runPrimitive(project, mapTarget(project, map.id)!, "event.sign.place",
+    { text: "시장" }, selection)).toThrow("표지판을 읽을 수 없어요");
+  expect(map.events).toEqual([]);
+});
+
+it.each(["벽", "카운터"])("표지판은 %s 주변에 읽을 자리가 있으면 고른 칸을 유지한다", surface => {
+  const project = blankWithMap();
+  const map = project.maps[project.startMapId];
+  const floor = map.lowerTiles[0]!;
+  map.lowerTiles.fill(-1);
+  if (surface === "벽") {
+    map.lowerTiles[2 * map.width + 3] = floor;
+  } else {
+    const tileset = project.tilesets[map.tilesetId];
+    const counter = tileset.passability.findIndex(pass => pass && !pass.up && !pass.down && !pass.left && !pass.right);
+    expect(counter).toBeGreaterThanOrEqual(0);
+    project.tilesets = { ...project.tilesets, [map.tilesetId]: { ...tileset, counterTiles: [counter] } };
+    map.lowerTiles[2 * map.width + 2] = floor;
+    map.lowerTiles[2 * map.width + 3] = counter;
+    map.lowerTiles[2 * map.width + 4] = floor;
+    expect([[1, 2], [2, 1], [2, 3], [3, 2]].some(([x, y]) => isPassable(project, map, x, y))).toBe(false);
+  }
+  const target = mapTarget(project, map.id)!;
+  const { after } = checked(project, target, "event.sign.place", { text: "시장" });
+  expect(eventAt(after)).toMatchObject({ name: "표지판", x: 2, y: 2 });
+  expect(after.maps[map.id].lowerTiles).toEqual(map.lowerTiles);
 });
 
 it("편도 출입구는 출발 칸만 쓰고 지정한 칸에 도착하며 한 번에 되돌린다", async () => {
