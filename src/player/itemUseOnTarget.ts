@@ -4,8 +4,6 @@
 // 심고, 이벤트 페이지가 **itemUsed 조건을 가진 페이지로 바뀔 때만** 그 페이지를 실행한다 — 평소 조사 페이지가
 // 떠 있는 채로 아이템을 쓰면 대사가 나오는 오작동을 막는다. 아이템 소모는 페이지가 changeItem 으로 정한다
 // (열쇠처럼 남기는 아이템과 먹이처럼 사라지는 아이템을 저자가 고른다).
-import { resolveEventPage } from "@/project/io";
-import { partySkillContext } from "@/project/partySkills";
 import { findRuntimeEventAtInMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import type { PlaySession } from "@/project/session";
 import type { Condition, Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
@@ -65,7 +63,7 @@ export function findFacedItemTarget(
       // 트리거 종류는 따지지 않는다 — 조사 이벤트든 접촉 이벤트든 «아이템을 쓰면» 발동한다.
       const view = findRuntimeEventAtInMap(project, map, session, positions, tile.x, tile.y, ["action", "touch", "playerTouch", "eventTouch"]);
       if (!view) continue;
-      const page = resolveEventPage(view.event, session, { locations: map.locations, ...partySkillContext(project, session) });
+      const page = view.page;
       if (pageAcceptsItem(page, itemId)) return { event: view.event, page };
     }
     return undefined;

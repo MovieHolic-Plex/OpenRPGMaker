@@ -44,7 +44,7 @@ function insideAnyRoom(map: GameMap, x: number, y: number): boolean {
 }
 
 /** 이 맵의 시선 차단 판정기. 칸마다 한 번 계산해 기억한다(맵·타일이 바뀌면 새로 만든다). */
-export function sightBlockerForMap(project: Project, map: GameMap): SightBlocker {
+export function sightBlockerForMap(project: Pick<Project, "tilesets">, map: GameMap): SightBlocker {
   const tileset = project.tilesets[map.tilesetId];
   const hasRooms = (map.locations?.length ?? 0) > 0;
   const memo = new Map<number, boolean>();
@@ -63,14 +63,18 @@ export function sightBlockerForMap(project: Project, map: GameMap): SightBlocker
   };
 }
 
-const blockerCache = new WeakMap<GameMap, { project: Project; blocker: SightBlocker }>();
+const blockerCache = new WeakMap<GameMap, { project: Partial<Pick<Project, "tilesets">>; blocker: SightBlocker }>();
+
+export function invalidateSightBlocker(map: GameMap): void {
+  blockerCache.delete(map);
+}
 
 /** 같은 (프로젝트, 맵) 객체면 판정기를 재사용한다. 런타임 맵 사본이 바뀌면 새로 만든다. */
-export function cachedSightBlocker(project: Project | undefined, map: GameMap | undefined): SightBlocker | undefined {
-  if (!project || !map || !Array.isArray(map.lowerTiles)) return undefined;
+export function cachedSightBlocker(project: Partial<Pick<Project, "tilesets">> | undefined, map: GameMap | undefined): SightBlocker | undefined {
+  if (!project?.tilesets || !map || !Array.isArray(map.lowerTiles)) return undefined;
   const hit = blockerCache.get(map);
   if (hit && hit.project === project) return hit.blocker;
-  const blocker = sightBlockerForMap(project, map);
+  const blocker = sightBlockerForMap({ tilesets: project.tilesets }, map);
   blockerCache.set(map, { project, blocker });
   return blocker;
 }

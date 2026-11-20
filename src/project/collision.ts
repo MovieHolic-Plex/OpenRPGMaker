@@ -16,7 +16,7 @@ export function inBounds(map: GameMap, x: number, y: number): boolean {
 }
 
 // 맵의 타일셋 정의 조회(편의).
-export function getTileset(project: Project, map: GameMap): TilesetDef | null {
+export function getTileset(project: Pick<Project, "tilesets">, map: GameMap): TilesetDef | null {
   return project.tilesets[map.tilesetId] ?? null;
 }
 
@@ -200,7 +200,7 @@ function oppositeDir(dir: Dir): Dir {
 
 // 레거시 호환: 단순 passability(방향 무시) — EditScene 표시 등에 사용.
 export function isPassable(
-  project: Project,
+  project: Pick<Project, "tilesets">,
   map: GameMap,
   x: number,
   y: number
