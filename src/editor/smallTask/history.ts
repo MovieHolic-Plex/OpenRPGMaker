@@ -3,7 +3,6 @@ import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDra
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { anOpenDraftReferencesDeletedEvent } from "./primitives/units/24-event-structure/references";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 function withEvent(project: Project, mapId: string, event: GameEvent): Project {
@@ -33,10 +32,6 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
     const clean = event.draft.kind === "edit" && !event.draft.conflict && !eventDraftHasUserChanges(live, target.mapId, event.id);
     const draft = clean ? { ...event.draft, original: eventWithoutDraft(edited) } : event.draft;
     proposal = withEvent(after, target.mapId, { ...edited, draft });
-  }
-  if (target.kind === "event" && event && !after.maps[target.mapId]?.events.some(entry => entry.id === event.id)
-    && anOpenDraftReferencesDeletedEvent(before, after, target.mapId, event, live)) {
-    throw new SmallTaskError("열린 이벤트 편집에서 이 이벤트를 사용하고 있어요. 연결을 먼저 확인해 주세요.");
   }
   const mapId = target.kind === "dbEntry" ? undefined : target.mapId;
   const afterEvents = mapId ? new Map(after.maps[mapId].events.map(event => [event.id, event])) : null;

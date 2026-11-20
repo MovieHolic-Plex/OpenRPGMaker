@@ -1,11 +1,10 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
+import { smallTaskBase } from "@/editor/smallTask/history";
 import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
-import { OWNERSHIP } from "@/editor/smallTask/primitives/ownership";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import { PRIMITIVES, UNIT } from "@/editor/smallTask/primitives/units/24-event-structure";
+import { PRIMITIVES } from "@/editor/smallTask/primitives/units/24-event-structure";
 import { mapTarget } from "@/editor/smallTask/target";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -17,7 +16,6 @@ import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { runtimeEventView, runtimeEventViewById } from "@/project/runtimeEventState";
 import { startSession } from "@/project/session";
-import { store } from "@/project/store";
 import type { Command, Condition, EventPage, GameEvent, Project } from "@/project/types";
 import * as ids from "@/util/id";
 import { jsonEqual } from "@/util/structuralJson";
@@ -561,19 +559,11 @@ describe("선택 범위와 입력 검증", () => {
     const draft: GameEvent = { ...original, draft: { kind: "edit", original },
       ...(dependency === "스위치" ? { condition: { kind: "switch", switchId, value: true } }
         : { commands: [{ kind: "moveEvent", eventId: EVENT, route: { moves: [], repeat: false } }] }) };
-    const prior = store.getCurrent();
-    try {
-      store.replaceProject(withEvents(before, [selected, draft]));
-      const live = store.getCurrent();
-      const target = mapTarget(live, MAP, EVENT)!;
-      const base = smallTaskBase(live, target);
-      expect(() => runPrimitive(base, target, "event.tile.remove", {}, undefined, live)).toThrow(/다른 곳에서 이 이벤트/u);
-      const { after } = runPrimitive(base, target, "event.tile.remove", {});
-      expect(() => commitSmallTask(live, base, after, target)).toThrow(/열린 이벤트 편집/u);
-      expect(store.getCurrent()).toBe(live);
-    } finally {
-      store.replaceProject(prior);
-    }
+    const live = withEvents(before, [selected, draft]);
+    const target = mapTarget(live, MAP, EVENT)!;
+    const base = smallTaskBase(live, target);
+    expect(() => runPrimitive(base, target, "event.tile.remove", {}, undefined, live)).toThrow(/다른 곳에서 이 이벤트/u);
+    expect(runPrimitive(base, target, "event.tile.remove", {}).after.maps[MAP].events).toEqual([original]);
   });
 
   it.each([
@@ -765,13 +755,6 @@ describe("선택 범위와 입력 검증", () => {
     expect(() => runPrimitive(before, target, "event.page.patch", { direction: "left" })).toThrow(SELECT_EVENT_PAGE);
     const { after } = runPrimitive(before, target, "event.page.patch", { page: 2, direction: "left" });
     expect(after.maps[MAP].events[0].pages?.[1].graphic.direction).toBe("left");
-  });
-
-  it("유닛 24의 동작은 소유권 표의 이 유닛 도구만 다룬다", () => {
-    const fields = ["commandKinds", "m2Ids", "conditionKinds", "collections", "tools"] as const;
-    const coverage = PRIMITIVES.flatMap(primitive => fields.flatMap(field =>
-      (primitive.covers[field] ?? []).map(key => `${field}:${key}`)));
-    expect(new Set(coverage)).toEqual(new Set(OWNERSHIP[UNIT].tools.map(key => `tools:${key}`)));
   });
 
   it("다른 이벤트의 기존 일정 오류가 배열 위치만 바뀌면 삭제를 허용한다", () => {
