@@ -8,7 +8,6 @@
 // 키는 기존 providerApiKeys 로 따로 온다. 브라우저가 보낸 값은 여기에 닿지 않는다 — 주소는 항상 호스트 저장소의 것이다.
 
 import { buildModel } from "@oh-my-pi/pi-catalog/build";
-import type { FetchImpl } from "@oh-my-pi/pi-catalog/types";
 import { lookup } from "node:dns/promises";
 import {
   checkOpenAiCompatBaseUrl,
@@ -117,9 +116,9 @@ function withImageInput<M extends { id: string }>(endpoint: OpenAiCompatWorkerEn
  * 전송용 fetch. 리다이렉트를 따라가지 않고(호스트가 검증한 주소 밖으로 자격이 새는 길을 닫는다),
  * 요청 직전에 호스트가 메타데이터·링크로컬이 아닌지 다시 본다. 사용자가 고른 주소의 호스트만 받는다.
  */
-export function guardedOpenAiCompatFetch(base: FetchImpl = fetch, onReplyWithoutImages?: () => void): FetchImpl {
-  return async (input, init) => {
-    const raw = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+export function guardedOpenAiCompatFetch(base: typeof fetch = fetch, onReplyWithoutImages?: () => void): typeof fetch {
+  return (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+    const raw = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request).url;
     const check = checkOpenAiCompatBaseUrl(raw);
     if (!check.ok) throw Object.assign(new Error(check.error ?? "허용되지 않는 주소입니다."), { status: 400 });
     const host = new URL(raw).hostname;
@@ -135,7 +134,7 @@ export function guardedOpenAiCompatFetch(base: FetchImpl = fetch, onReplyWithout
       }
     }
     const send = async (body: RequestInit["body"] | undefined): Promise<Response> => {
-      const response = await base(typeof input === "string" || input instanceof URL ? input : raw, { ...init, ...(body !== undefined ? { body } : {}), redirect: "manual" });
+      const response = await base((typeof input === "string" || input instanceof URL ? input : raw) as never, { ...init, ...(body !== undefined ? { body } : {}), redirect: "manual" });
       if (response.status >= 300 && response.status < 400) {
         throw Object.assign(new Error(`서버가 다른 주소로 넘기려 해요(${response.status}). 보안상 따라가지 않아요. 최종 주소를 기본 주소로 넣으세요.`), { status: 502 });
       }
@@ -159,7 +158,7 @@ export function guardedOpenAiCompatFetch(base: FetchImpl = fetch, onReplyWithout
       }
     }
     return emptyReplyResponse(stripped !== null);
-  };
+  }) as typeof fetch;
 }
 
 // ── 빈 답 지키기 ──────────────────────────────────────────────────────────────

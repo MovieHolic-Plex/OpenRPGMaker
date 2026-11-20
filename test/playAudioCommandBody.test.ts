@@ -35,7 +35,6 @@ describe("playAudio command body", () => {
           },
           deleteCommand: () => undefined,
           moveCommand: () => undefined,
-          moveCommandTo: () => undefined,
         },
       },
       { kind: "playAudio", resourceId: "", loop: true }
@@ -114,7 +113,6 @@ describe("playAudio command body", () => {
           },
           deleteCommand: () => undefined,
           moveCommand: () => undefined,
-          moveCommandTo: () => undefined,
         },
       },
       { kind: "playAudio", resourceId: "cc0-music-field-loop", loop: true, channel: "bgs", volume: 0.6, fadeInMs: 1500 }
@@ -146,8 +144,6 @@ describe("playAudio command body", () => {
     fade.value = "0";
     fade.dispatchEvent(new Event("change"));
     expect(replaced).toMatchObject({ volume: 40, fadeInMs: 0, channel: "bgs" });
-  });
-
   it("does not stop audio when a form that never previewed is removed", async () => {
     const body = mountedAudioBody(host);
     const stop = vi.spyOn(getAudioEngine(), "stopAll");
@@ -170,8 +166,7 @@ describe("playAudio command body", () => {
     host.remove();
     await flushMutations();
     expect(stop).toHaveBeenCalledTimes(2);
-    expect(stop).toHaveBeenLastCalledWith(false);
-  });
+    expect(stop).toHaveBeenLastCalledWith(false);  });
 });
 
 function mountedAudioBody(parent: HTMLElement): HTMLElement {
@@ -184,7 +179,6 @@ function mountedAudioBody(parent: HTMLElement): HTMLElement {
         replaceCommand: () => undefined,
         deleteCommand: () => undefined,
         moveCommand: () => undefined,
-        moveCommandTo: () => undefined,
       },
     },
     { kind: "playAudio", resourceId: "cc0-music-field-loop", loop: true }

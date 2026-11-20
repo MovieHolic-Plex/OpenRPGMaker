@@ -40,7 +40,7 @@ describe("piAgent toolAdapter", () => {
     const create = byName.get("create_map");
     expect(create).toBeTruthy();
     const ok = await create!.execute("c1", { id: "map_pi", name: "파이 마을", width: 12, height: 10 });
-    const body = JSON.parse(ok.content.find(part => part.type === "text")!.text) as { ok: boolean; summary: string };
+    const body = JSON.parse(ok.content[0]!.text) as { ok: boolean; summary: string };
     expect(body.ok).toBe(true);
     expect(ctx.project.maps.map_pi).toBeTruthy();
 
@@ -55,7 +55,7 @@ describe("piAgent toolAdapter", () => {
     const read = tools.find((tool) => tool.name === "get_database_records");
     expect(read).toBeTruthy();
     const out = await read!.execute("r1", { collection: "maps", include: "full" });
-    const body = JSON.parse(out.content.find(part => part.type === "text")!.text) as { dataTruncated?: boolean; dataPreview?: string; hint?: string };
+    const body = JSON.parse(out.content[0]!.text) as { dataTruncated?: boolean; dataPreview?: string; hint?: string };
     expect(body.dataTruncated).toBe(true);
     expect(body.dataPreview?.length).toBe(64);
     expect(body.hint).toMatch(/잘렸습니다/);
@@ -93,7 +93,7 @@ describe("piAgent toolAdapter", () => {
       const calls: string[] = [];
       const shape = resolvePiToolShape(ctx, "set_project_settings", { onCall: (record) => calls.push(record.name) });
       const out = await shape!.execute("e1", { title: "승격됨" });
-      expect(JSON.parse(out.content.find(part => part.type === "text")!.text)).toMatchObject({ ok: true });
+      expect(JSON.parse(out.content[0]!.text)).toMatchObject({ ok: true });
       expect(ctx.project.meta.title).toBe("승격됨");
       expect(calls).toEqual(["set_project_settings"]);
     });
@@ -133,7 +133,7 @@ describe("piAgent toolAdapter", () => {
       const tools = createPiToolset(ctx, { scopeMapIds: ["town"] });
       const pair = tools.find((tool) => tool.name === "create_transfer_pair")!;
       const out = await pair.execute("t2", { a: { mapId: "house", x: 6, y: 9 }, b: { mapId: "town", x: 24, y: 22 } });
-      expect(JSON.parse(out.content.find(part => part.type === "text")!.text)).toMatchObject({ ok: true });
+      expect(JSON.parse(out.content[0]!.text)).toMatchObject({ ok: true });
       const start = tools.find((tool) => tool.name === "set_start_position")!;
       await start.execute("s1", { mapId: "town", x: 5, y: 5 });
       expect(ctx.project.startMapId).toBe("town");
@@ -175,7 +175,7 @@ describe("piAgent toolAdapter", () => {
       const tools = createPiToolset(ctx, { scopeMapIds: ["town"], onCall: (record) => results.push(record.result) });
       const createMap = tools.find((tool) => tool.name === "create_map")!;
       const out = await createMap.execute("c1", { id: "house", name: "집", width: 12, height: 10 });
-      const body = JSON.parse(out.content.find(part => part.type === "text")!.text) as { ok: boolean; warnings?: string[] };
+      const body = JSON.parse(out.content[0]!.text) as { ok: boolean; warnings?: string[] };
       expect(body.ok).toBe(true);
       expect(ctx.project.maps.house).toBeTruthy();
       const warning = body.warnings?.find((w) => w.includes("house"));

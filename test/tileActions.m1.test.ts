@@ -266,8 +266,6 @@ describe("fillTile — flood fill", () => {
     expect(upperAt(map, 0, 1)).toBe(TILE.EMPTY);
     expect(at(map, 1, 1)).toBe(TILE.GRASS);
     expect(at(map, 0, 1)).toBe(TILE.WATER);
-  });
-
   it("오토타일 몸통·변·모서리를 한 재료로 채우고 다른 지형은 남긴다", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
@@ -317,8 +315,7 @@ describe("fillTile — flood fill", () => {
     expect(at(after, 3, 1)).toBe(linked);
     expect(at(after, 5, 5)).toBe(edge);
     expect(at(after, 3, 3)).toBe(corner);
-    expect(at(after, 4, 4)).toBe(outside);
-  });
+    expect(at(after, 4, 4)).toBe(outside);  });
 });
 
 describe("eraseTile", () => {
