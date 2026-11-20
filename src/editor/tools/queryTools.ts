@@ -4,6 +4,7 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { eventCommandHash, eventCommandListHash } from "@/project/eventCommands/singleCommandOps";
 import { openedLoadRepairReport } from "@/project/loadRepairReport";
 import { faceLookText } from "@/assets/faceLooks";
@@ -379,7 +380,7 @@ function eventCatalogFields(event: GameEvent): {
 // find_events는 위치만 주므로, 내용을 모른 채 덮어써 대사가 사라지는 사고를 막는다.
 const getEvent: ToolDefinition = {
   name: "get_event",
-  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다. 명령 한 줄을 수정·삭제하려면 includeCommandHashes를 켠다.",
+  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다. 명령 한 줄을 수정·삭제하려면 includeCommandHashes를 켜거나, commandHashTarget으로 한 페이지와 필요한 줄의 해시만 읽는다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -387,6 +388,15 @@ const getEvent: ToolDefinition = {
       mapId: { type: "string" },
       eventId: { type: "string" },
       includeCommandHashes: { type: "boolean", description: "명령 한 줄을 수정·삭제할 때 필요한 위치와 내용 해시를 포함한다." },
+      commandHashTarget: {
+        type: "object", description: "이벤트 본문을 생략하고 해당 페이지와 지정한 줄의 해시만 반환한다.",
+        properties: {
+          pageId: { type: "string", minLength: 1 },
+          index: { type: "integer", minimum: 0, description: "확인할 줄 번호. 페이지 해시만 필요하면 생략한다." },
+          branchPath: { type: "array", items: { type: "integer" }, description: "분기 안의 줄이면 명령과 분기 번호를 순서대로 넣는다." },
+        },
+        required: ["pageId"], additionalProperties: false,
+      },
     },
     required: ["mapId", "eventId"],
   },
@@ -399,6 +409,19 @@ const getEvent: ToolDefinition = {
       throw new ToolError(`이벤트를 찾을 수 없습니다: ${eventId} (이 맵의 이벤트: ${known})`, { code: "event-not-found", mapId: map.id });
     }
     const pages = event.pages ?? [];
+    if (args.commandHashTarget !== undefined) {
+      const { pageId, index, branchPath = [] } = args.commandHashTarget as { pageId: string; index?: number; branchPath?: number[] };
+      const page = pages.find(entry => entry.id === pageId);
+      if (!page) throw new ToolError("지정한 이벤트 페이지를 찾을 수 없습니다.", { code: "event-page-not-found", mapId: map.id });
+      const command = index === undefined ? undefined : resolveCommandListAtPath(page.commands, [...branchPath, index])?.[index];
+      if (index !== undefined && (branchPath.length % 2 !== 0 || !command)) {
+        throw new ToolError("지정한 페이지의 명령 줄을 찾을 수 없습니다.", { code: "event-command-not-found", mapId: map.id });
+      }
+      return {
+        summary: "선택한 이벤트 페이지의 명령 해시를 읽었습니다.",
+        data: { pageId, expectedPageHash: eventCommandListHash(page.commands), ...(command && { expectedHash: eventCommandHash(command) }) },
+      };
+    }
     return {
       summary: `이벤트 '${event.id}' (${event.x},${event.y}) — 페이지 ${pages.length}개`,
       data: {

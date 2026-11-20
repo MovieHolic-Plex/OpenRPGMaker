@@ -118,6 +118,44 @@ test("작은 일 Pi 실행은 열린 초안이 읽는 스위치의 마지막 쓰
   expect(allowed.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual([{ ...write, switchId: nextSwitchId }]);
 }, 20_000);
 
+test("작은 일 Pi 실행은 큰 이벤트에서도 대상 줄과 페이지 해시를 읽어 대사를 수정한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const page = event.pages[1]!;
+  page.commands = Array.from({ length: 30 }, (_, index) => ({
+    kind: "text", body: `줄 ${index} ${"가".repeat(500)}`,
+  }));
+  const originalCommands = structuredClone(page.commands);
+  const target = { pageId: page.id, index: 0 };
+  const body = "긴 이벤트에서 고른 대사만 고쳤습니다.";
+  const calls: Call[] = [
+    { name: "get_event", args: { mapId, eventId: event.id, includeCommandHashes: true } },
+    { name: "get_event", args: { mapId, eventId: event.id, commandHashTarget: target } },
+  ];
+  const seen: ModelContext[] = [];
+  const stream = scripted(calls, seen);
+  const streamFn: StreamFn = (model, context, options) => {
+    if (seen.length === calls.length && calls.length === 2) {
+      const outputs = context.messages.flatMap(message => message.role === "toolResult" && message.toolName === "get_event"
+        ? message.content.flatMap(part => part.type === "text" ? [JSON.parse(part.text)] : [])
+        : []);
+      expect(outputs[0]).toMatchObject({ ok: true, dataTruncated: true });
+      expect(outputs[1]).toMatchObject({ ok: true, data: { pageId: page.id } });
+      const { expectedPageHash, expectedHash } = outputs[1].data;
+      expect(expectedPageHash).toMatch(/^[a-f0-9]{32}$/u);
+      expect(expectedHash).toBe(eventCommandHash(originalCommands[0]!));
+      calls.push(apply("cmd.text.update", { index: target.index, expectedPageHash, expectedHash, body }));
+    }
+    return stream(model, context, options);
+  };
+
+  const done = await runPiAgent(request, { streamFn });
+  expect(done.stoppedEarly).toBeUndefined();
+  expect(done.stats).toMatchObject({ toolCalls: 3, toolErrors: 0 });
+  expect(done.project.maps[mapId].events[0]!.pages![1]!.commands)
+    .toEqual([{ kind: "text", body }, ...originalCommands.slice(1)]);
+  expect(project.maps[mapId].events[0]!.pages![1]!.commands).toEqual(originalCommands);
+});
+
 test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", async () => {
   const { request, project, mapId } = fixture();
   const target = mapTarget(project, mapId)!;
