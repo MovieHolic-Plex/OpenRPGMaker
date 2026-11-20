@@ -95,23 +95,35 @@ jobs:
       # object-gen 도 char-gen·tile-gen 과 같이 비공개라 호스티드 러너는 복제할 수 없다(2026-10-22 실측:
       # git clone 이 Username 을 묻다 실패하고, 그 뒤의 타입체크·패리티가 시작도 못 했다).
       # 공개로 바뀌기 전에는 이 워크플로에 넣지 않는다. 자격 없는 러너에 비공개 지시문을 받지 않는다.
-      - name: 캐릭터 하네스 계약
-        run: |
-          venv="$RUNNER_TEMP/charset-harness-venv"
-          python3 -m venv "$venv"
-          "$venv/bin/pip" install 'Pillow>=10,<14'
-          "$venv/bin/python" src/harnesses/charset-actor/verify.py
-
       # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 죽었다.
-      - name: 타입체크 (src 만)
+      # Python 하네스는 타입체크와 파일이나 산출물을 공유하지 않는다.
+      - name: 타입체크 (src 만) 및 캐릭터 하네스 계약
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: |
-          if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
-            npm run typecheck:app -- --tsBuildInfoFile "$OPRN_CI_CACHE/app.tsbuildinfo"
-          else
-            npm run typecheck:app
-          fi
+          set -euo pipefail
+          charset() {
+            local venv="$RUNNER_TEMP/charset-harness-venv"
+            python3 -m venv "$venv"
+            "$venv/bin/pip" install 'Pillow>=10,<14'
+            "$venv/bin/python" src/harnesses/charset-actor/verify.py
+          }
+          check_types() {
+            if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
+              npm run typecheck:app -- --tsBuildInfoFile "$OPRN_CI_CACHE/app.tsbuildinfo"
+            else
+              npm run typecheck:app
+            fi
+          }
+          TIMEFORMAT='캐릭터 하네스: %3Rs'
+          (time charset) > "$RUNNER_TEMP/charset.log" 2>&1 &
+          charset_pid=$!
+          TIMEFORMAT='앱 타입체크: %3Rs'
+          status=0
+          time check_types || status=$?
+          wait "$charset_pid" || status=$?
+          cat "$RUNNER_TEMP/charset.log"
+          exit "$status"
 
       # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
       - name: 앱 빌드
@@ -191,25 +203,22 @@ jobs:
       # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
       # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
       # vite-node 기본 힙(약 2GB)을 넘겼던 검사에 6GB 힙을 준다(2026-11-20, fast-static exit 134).
-      - name: 런타임 에셋 존재
+      # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes)도 확인한다.
+      # verify-gates 의 cssGate 가 실패한 하위 기준선을 다시 뜨는 명령을 ::error:: 로 찍는다.
+      - name: 런타임 에셋 존재, CSS 래칫 및 openwiki 색인 생성기
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: npm run check:runtime-assets
-
-      # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes). 몇 초면 끝난다.
-      # 왜 (2026-10-26): ci-full 에만 있어서 머지마다 드리프트가 쌓였다 — #3541·#3611 로 두 번 다시 올렸는데
-      # 그 사이 #3628 이 hex 1개·표면 밖 선택자 1개를 또 넣었다. PR 에서 막는다.
-      #
-      # 실패 14건의 원인 (2026-11-08 실측): 12건이 «PR 이 시트를 고쳤는데 css-winners 기준선을 다시 뜨지
-      # 않은 것», 1건이 같은 이유의 surfaces, 1건이 hex 신규 1건이었다. 게이트 자체는 결정적이다 —
-      # 깨끗한 origin/main 에서 두 번 돌려 출력 md5 가 같았다. 그래서 판정은 그대로 두고,
-      # **어느 기준선을 어떻게 다시 뜨는지**를 한 줄로 알려 준다(verify-gates 의 cssGate 가
-      # `::error::` 로 `npm run gates:css:save` 를 찍는다).
-      - name: CSS 래칫
-        run: node scripts/verify-gates.mjs --only css
-
-      # openwiki/INDEX.md 는 생성 파일이고 커밋하지 않는다(.gitignore, 2026-11-11). 전에는 커밋해 두고 「최신인가」를
-      # 여기서 대조했는데, 문서를 건드리는 PR 이 저마다 그 파일을 다시 써서 main 에 문서 PR 하나가 들어갈 때마다
-      # 열려 있는 문서 PR 전부가 충돌했다. 이제는 생성기가 도는지만 본다(생성기가 깨지면 에이전트가 목차를 못 만든다).
-      - name: openwiki 색인 생성기 동작
-        run: node scripts/openwiki-index.mjs
+        run: |
+          set -euo pipefail
+          # 런타임 에셋 검사 중 독립적인 CSS 래칫과 생성기 검사를 끝낸다.
+          TIMEFORMAT='런타임 에셋: %3Rs'
+          (time npm run check:runtime-assets) > "$RUNNER_TEMP/runtime-assets.log" 2>&1 &
+          assets_pid=$!
+          status=0
+          TIMEFORMAT='CSS 래칫: %3Rs'
+          time node scripts/verify-gates.mjs --only css || status=$?
+          TIMEFORMAT='openwiki 색인: %3Rs'
+          time node scripts/openwiki-index.mjs || status=$?
+          wait "$assets_pid" || status=$?
+          cat "$RUNNER_TEMP/runtime-assets.log"
+          exit "$status"
