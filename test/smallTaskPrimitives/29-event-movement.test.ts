@@ -7,6 +7,7 @@ import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp"
 import { beginExistingEventDraft } from "@/editor/eventDraftActions";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
+import { SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -74,8 +75,8 @@ const cases: Record<string, () => EditCase> = {
   },
   "move.route.append": () => {
     const project = loadFixture("built");
-    const target = selected(project, CAVE_MAP, CAVE_FOE);
-    const old = pageOf(project, CAVE_MAP, CAVE_FOE).movement;
+    const { id: pageId, movement: old } = pageOf(project, CAVE_MAP, CAVE_FOE);
+    const target = selected(project, CAVE_MAP, CAVE_FOE, pageId);
     const moves = [{ kind: "turn", dir: "left" }] as const;
     return {
       project, target, args: { moves }, sentence: "이동 경로 끝에 1단계를 더합니다.",
@@ -98,8 +99,8 @@ const cases: Record<string, () => EditCase> = {
   },
   "move.frequency.set": () => {
     const project = loadFixture("built");
-    const target = selected(project, CAVE_MAP, CAVE_FOE);
-    const route = pageOf(project, CAVE_MAP, CAVE_FOE).movement.route!;
+    const { id: pageId, movement: { route } } = pageOf(project, CAVE_MAP, CAVE_FOE);
+    const target = selected(project, CAVE_MAP, CAVE_FOE, pageId);
     return {
       project, target, args: { frequency: 8 }, sentence: "이동 빈도를 8단계로 바꿉니다.",
       pagePatch: { movement: { speed: 3, frequency: 8, type: "custom", route } },
@@ -131,7 +132,7 @@ const cases: Record<string, () => EditCase> = {
 };
 
 describe("선택한 이벤트 페이지의 이동 편집", () => {
-  it.for(Object.entries(cases))("%s 저장값, 한국어 미리보기, 범위, 되돌리기", async ([id, setup]) => {
+  it.for(Object.entries(cases))("%s 저장값, 한국어 미리보기, 범위, 되돌리기", { timeout: 120_000 }, async ([id, setup]) => {
     const { project, target, args, sentence, pagePatch } = setup();
     const beforeMap = project.maps[target.mapId];
     const beforeEvent = beforeMap.events.find(event => event.id === target.eventId)!;
@@ -151,7 +152,7 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     })).toBe(true);
     expectRefused(project, { ...target, x: target.x - 1 }, id, args);
     await expectUndoRestores(project, result.after, target);
-  }, 120_000);
+  });
 
   it.for([
     [{ kind: "setSwitch", switchId: "sw_missing", value: true }, /스위치/u],
@@ -217,9 +218,11 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
       }
     }
     expect(guard.pages![0]!.movement.route).toEqual({ moves: [{ kind: "wait" }], repeat: true });
-    route.moves.push({ kind: "setSwitch", switchId, value: true });
-    const { after } = expectApplies(project, target, "move.route.append", { moves: [{ kind: "wait" }] });
-    expect(pageOf(after, map.id, guard.id).movement.route?.moves).toEqual([...route.moves, { kind: "wait" }]);
+    const storedMoves: MoveCommand[] = [...route.moves, { kind: "setSwitch", switchId, value: true }];
+    const existing = blank({ movement: { ...guard.pages![0]!.movement, route: { ...route, moves: storedMoves } } });
+    existing.project.switches.push({ id: switchId, name: "문 열림" });
+    const { after } = expectApplies(existing.project, existing.target, "move.route.append", { moves: [{ kind: "wait" }] });
+    expect(pageOf(after, map.id, guard.id).movement.route?.moves).toEqual([...storedMoves, { kind: "wait" }]);
   });
 
   it("경로 참조와 페이지 선택 오류를 세 편집기 언어로 번역합니다", () => {
@@ -248,17 +251,18 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
   });
 
   it("도착 맵에서 같은 자율 이동 경로가 다시 시작되는 맵 이동을 거절합니다", () => {
-    const { project, target, map, guard } = blank();
+    const { project, target } = blank();
     const other = { ...createBlankMap("다음 지역", 5, 5), id: "map_route_destination" };
     project.maps[other.id] = other;
     const transfer = { kind: "npcTransfer", mapId: other.id, x: 1, y: 1 } as const;
     const wait = { kind: "wait" } as const;
     expectRefused(project, target, "move.route.set", { moves: [{ ...transfer, x: 5 }] }, /맵 범위/u);
     expectRefused(project, target, "move.route.set", { moves: [wait, transfer], repeat: false }, /도착한 맵에서도/u);
-    const movement = guard.pages![0]!.movement;
-    guard.pages![0]!.movement = { ...movement, type: "custom", route: { moves: [wait, transfer], repeat: false } };
-    expectRefused(project, target, "move.route.append", { moves: [wait] }, /기존 경로에 맵 이동/u);
-    const arrival = play(project, other.id);
+    const existing = blank({ movement: { type: "custom", speed: 3, frequency: 3, route: { moves: [wait, transfer], repeat: false } } });
+    existing.project.maps[other.id] = other;
+    expectRefused(existing.project, existing.target, "move.route.append", { moves: [wait] }, /기존 경로에 맵 이동/u);
+    const arrival = play(existing.project, other.id);
+    const { guard } = existing;
     arrival.session.currentMapId = other.id;
     arrival.session.eventLocations = { [guard.id]: { mapId: other.id, x: 1, y: 1 } };
     registerPageMoveRoutes(arrival);
@@ -266,17 +270,32 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
   });
 
   it("선택한 칸이나 페이지가 바뀌었거나 같은 ID가 두 개면 거절합니다", () => {
-    const { project, target, map, guard } = blank();
+    const { project, target } = blank();
     const id = "move.speed.set";
     const args = { speed: 5 };
     expectRefused(project, { ...target, pageId: "page_deleted" }, id, args, /범위 밖.*페이지/u);
     expectRefused(project, { ...target, eventId: "ev_deleted" }, id, args, /범위 밖.*이벤트/u);
     expectRefused(project, { ...target, x: 6.5 }, id, args, /범위 밖.*칸/u);
-    map.events.push({ ...guard, x: 8 });
-    expectRefused(project, target, id, args, /범위 밖.*칸/u);
-    map.events.pop();
-    guard.pages!.push({ ...guard.pages![0]! });
-    expectRefused(project, target, id, args, /범위 밖.*페이지/u);
+    const duplicateEvent = blank();
+    duplicateEvent.map.events.push({ ...duplicateEvent.guard, x: 8 });
+    expectRefused(duplicateEvent.project, duplicateEvent.target, id, args, /범위 밖.*칸/u);
+
+    const duplicatePage = blank();
+    const page = duplicatePage.guard.pages![0]!;
+    duplicatePage.guard.pages!.push({ ...page });
+    expectRefused(duplicatePage.project, { ...duplicatePage.target, pageId: page.id }, id, args, /범위 밖.*페이지/u);
+  });
+
+  it("페이지가 여러 개면 페이지를 선택해야 하며 선택한 페이지만 바꿉니다", () => {
+    const { project, target, map, guard } = blank();
+    const first = guard.pages![0]!;
+    const second = { ...first, id: "page_guard_second" };
+    guard.pages!.push(second);
+    const args = { speed: 5 };
+    expect(() => runPrimitive(project, target, "move.speed.set", args)).toThrow(SELECT_EVENT_PAGE);
+    const { after } = expectApplies(project, { ...target, pageId: second.id }, "move.speed.set", args);
+    expect(pageOf(after, map.id, guard.id)).toBe(first);
+    expect(pageOf(after, map.id, guard.id, 1).movement.speed).toBe(5);
   });
 
   it("저장된 경로에 덧붙일 때 정지 상태와 반복, 대기, 건너뛰기 설정을 보존합니다", () => {
@@ -298,13 +317,13 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
   });
 
   it("경로를 비울 때 무작위 이동을 유지하며 경로가 없으면 편집하지 않습니다", () => {
-    const { project, target, map, guard } = blank({ movement: { type: "random", speed: 2, frequency: 4 } });
-    const page = guard.pages![0]!;
+    const movement = { type: "random", speed: 2, frequency: 4 } as const;
+    const { project, target, map, guard } = blank({ movement });
     const args = { moves: [] };
     expect(runPrimitive(project, target, "move.route.set", args).after).toBe(project);
-    page.movement.route = { moves: [{ kind: "wait" }], repeat: false };
-    const { after } = expectApplies(project, target, "move.route.set", args);
-    expect(pageOf(after, map.id, guard.id).movement).toEqual({ type: "random", speed: 2, frequency: 4 });
+    const routed = blank({ movement: { ...movement, route: { moves: [{ kind: "wait" }], repeat: false } } });
+    const { after } = expectApplies(routed.project, routed.target, "move.route.set", args);
+    expect(pageOf(after, map.id, guard.id).movement).toEqual(movement);
     expect(play(after, map.id).autonomousNPCs.get(guard.id)?.strategy).toBe("random");
   });
 
@@ -398,8 +417,8 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
   it("순찰은 출발점으로 돌아와야 하며 시작점 가까이 지나갈 수 없습니다", () => {
     const { project, target, guard } = blank();
     expect(() => runPrimitive(project, target, "npc.patrol.set", { directions: ["left", "left"] })).toThrow(/출발점/u);
-    project.startPos = { x: guard.x + 1, y: guard.y };
-    expect(() => runPrimitive(project, target, "npc.patrol.set", { directions: ["left", "right"] })).toThrow(/시작점/u);
+    const nearStart = { ...project, startPos: { x: guard.x + 1, y: guard.y } };
+    expect(() => runPrimitive(nearStart, target, "npc.patrol.set", { directions: ["left", "right"] })).toThrow(/시작점/u);
   });
 
   it("분기 안에서 공용 이벤트를 호출하는 옛 출입구 근처에는 순찰을 놓지 않습니다", () => {
@@ -471,12 +490,12 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     const patrol = { directions: ["right", "left"] };
     expectRefused(project, target, "npc.patrol.set", patrol, /출입구/u);
 
-    project.mapConnections = [];
-    project.database.troops = [{
+    const troops: Project["database"]["troops"] = [{
       id: "troop_movement_test", name: "길 지킴이", enemyIds: [], autoAlign: true, battleEventPages: [],
       afterBattle: { victory: [{ kind: "transfer", ...to }] },
     }];
-    expectRefused(project, target, "npc.patrol.set", patrol, /출입구/u);
+    const withBattle = { ...project, mapConnections: [], database: { ...project.database, troops } };
+    expectRefused(withBattle, target, "npc.patrol.set", patrol, /출입구/u);
   });
 
   it("실제로 불러올 수 없는 걷기 그림에는 순찰을 설정하지 않습니다", () => {

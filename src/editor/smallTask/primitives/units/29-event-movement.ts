@@ -6,7 +6,7 @@ import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { inBounds } from "@/project/collision";
 import type { Dir, EventAnimationType, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";
-import { PrimitiveError } from "../errors";
+import { PrimitiveError, SELECT_EVENT_PAGE } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { editPatrol } from "./29-event-movement/patrol";
 import { DIRECTION_LABELS, DIRECTION_SCHEMA, editRoute, objectArgs, ROUTE_APPEND_ARGS, ROUTE_SET_ARGS } from "./29-event-movement/route";
@@ -63,6 +63,9 @@ function selectedPage(ctx: PrimitiveContext) {
     throw new PrimitiveError("범위 밖: 작업할 칸의 이벤트를 다시 선택해 주세요.");
   }
   const originalPages = event.pages ?? [];
+  if (target.pageId === undefined && originalPages.length > 1) {
+    throw new PrimitiveError(SELECT_EVENT_PAGE);
+  }
   const pageIndex = target.pageId === undefined ? 0 : originalPages.findIndex(page => page.id === target.pageId);
   const page = originalPages[pageIndex] ?? (pageIndex === 0 && !originalPages.length ? legacyPage(event) : undefined);
   if (!page) throw new PrimitiveError("범위 밖: 선택한 이벤트 페이지를 찾을 수 없어요.");
