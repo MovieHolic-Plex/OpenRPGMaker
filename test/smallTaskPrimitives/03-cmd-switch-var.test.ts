@@ -1,14 +1,15 @@
 /** @vitest-environment happy-dom */
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/03-cmd-switch-var";
 import { createInterpreter } from "@/player/interpreter";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
-import { startSession } from "@/project/session";
+import { openingStageEventId, openingStageFlag } from "@/project/openingStage";
+import { startSession, VARIABLE_MAX, VARIABLE_MIN } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
@@ -39,7 +40,7 @@ function setup(fixture: Fixture, commands: Command[], selection = pageId) {
     pages: [page, { ...page, id: otherPageId, name: "옆 페이지", commands: [wait] }],
   };
   map.id = mapId;
-  map.events = [event, { ...event, id: "ev_state_neighbor", name: "옆 상자" }];
+  map.events = [event, { ...event, id: "ev_state_neighbor", name: "옆 상자", pages: [{ ...page, commands: [wait] }] }];
   const before: Project = {
     ...project, maps: { ...project.maps, [mapId]: map },
     startMapId: starter ? project.startMapId : mapId,
@@ -61,27 +62,31 @@ const variableSet: Command = { kind: "setVariable", variableId, op: "=", value: 
 const selfOn: Command = { kind: "setSelfSwitch", key: "A", value: true };
 const flagOn: Command = { kind: "setFlag", flag, value: true };
 
+function checkedUpdate(command: Command, args: Record<string, unknown>) {
+  return { expectedHash: eventCommandHash(command), ...args };
+}
+
 const cases: {
   id: string; fixture: Fixture; initial?: Command; args: Record<string, unknown>;
   stored: Command; sentence: string;
 }[] = [
   { id: "cmd.setSwitch.insert", fixture: "blank", args: { switchId: " 문 잠금 ", index: 1 }, stored: switchOn, sentence: "『문 잠금』 스위치를 켭니다." },
   { id: "cmd.setSwitch.update", fixture: "built", initial: switchOn,
-    args: { index: 1, value: "toggle", expectedHash: eventCommandHash(switchOn) },
-    stored: { ...switchOn, value: "toggle" }, sentence: "『문 잠금』 스위치를 반전합니다." },
+    args: checkedUpdate(switchOn, { index: 1, value: "toggle" }),
+    stored: { ...switchOn, value: "toggle" }, sentence: "『문 잠금』 스위치를 현재 상태와 반대로 바꿉니다." },
   { id: "cmd.setVariable.insert", fixture: "maou", args: { variableId: "획득 개수", index: 1 }, stored: variableSet,
     sentence: "『획득 개수』 변수에 0을 저장합니다." },
   { id: "cmd.setVariable.update", fixture: "built", initial: variableSet,
-    args: { index: 1, op: "+=", operandVariableId: "보상 개수" },
+    args: checkedUpdate(variableSet, { index: 1, op: "+=", operandVariableId: "보상 개수" }),
     stored: { ...variableSet, op: "+=", value: { kind: "var", id: sourceId } },
     sentence: "『획득 개수』 변수 값에 『보상 개수』 값을 더합니다." },
   { id: "cmd.setSelfSwitch.insert", fixture: "blank", args: { index: 1 }, stored: selfOn,
     sentence: "이 이벤트의 셀프 스위치 A를 켭니다." },
-  { id: "cmd.setSelfSwitch.update", fixture: "built", initial: selfOn, args: { index: 1, value: false },
+  { id: "cmd.setSelfSwitch.update", fixture: "built", initial: selfOn, args: checkedUpdate(selfOn, { index: 1, value: false }),
     stored: { ...selfOn, value: false }, sentence: "이 이벤트의 셀프 스위치 A를 끕니다." },
   { id: "cmd.setFlag.insert", fixture: "blank", args: { index: 1, switchId, value: false },
     stored: { ...switchOn, value: false }, sentence: "『문 잠금』 스위치를 끕니다." },
-  { id: "cmd.setFlag.update", fixture: "built", initial: flagOn, args: { index: 1, value: false },
+  { id: "cmd.setFlag.update", fixture: "built", initial: flagOn, args: checkedUpdate(flagOn, { index: 1, value: false }),
     stored: { ...flagOn, value: false }, sentence: "이전 방식의 기억을 끕니다." },
 ];
 
@@ -115,7 +120,7 @@ it.each(cases)("$id 저장 결과, 미리보기, 선택 범위와 되돌리기",
 it.each([
   { id: "cmd.setSwitch.insert", args: { switchId: "새 스위치" } },
   { id: "cmd.setVariable.insert", args: { variableId: "새 변수", value: 2 } },
-  { id: "cmd.setSwitch.update", args: { index: 0, operandVariableId: "없는 원본 변수" } },
+  { id: "cmd.setSwitch.update", args: checkedUpdate(switchOn, { index: 0, operandVariableId: "없는 원본 변수" }) },
 ])("$id 명령 밖에서 정의가 필요한 요청을 거절한다", ({ id, args }) => {
   const { before, target } = setup("blank", [switchOn]);
   expectRefused(before, target, id, args);
@@ -128,25 +133,211 @@ it("동명 정의, 이미 바뀐 줄, 맞지 않는 명령 종류와 두 값 출
   const ambiguous = { ...before, switches: [...before.switches, { id: "sw_another", name: "문 잠금" }] };
   expect(() => runPrimitive(ambiguous, target, "cmd.setSwitch.insert", { switchId: "문 잠금" })).toThrow(/여럿/);
   expect(() => runPrimitive(before, target, "cmd.setSwitch.update", { index: 0, value: false, expectedHash: "outdated" })).toThrow(/내용이 바뀌었습니다/);
-  expect(() => runPrimitive(before, target, "cmd.setSwitch.update", { index: 1, value: false })).toThrow(/같은 종류/);
-  expect(() => runPrimitive(before, target, "cmd.setSwitch.update", { index: 0, value: false, operandVariableId: sourceId })).toThrow(/하나만/);
+  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(text, { index: 1, value: false }), /같은 종류/);
+  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { index: 0, value: false, operandVariableId: sourceId }), /하나만/);
+});
+
+it("같은 종류의 줄이 들어선 이전 위치와 확인값을 생략한 수정을 모두 거절한다", () => {
+  const otherSwitch = { ...switchOn, value: "toggle" } satisfies Command;
+  const { before, target } = setup("blank", [otherSwitch, switchOn]);
+  expectRefused(before, target, "cmd.setSwitch.update", { index: 0, value: false }, /값의 형식/);
+  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { index: 0, value: false }), /내용이 바뀌었습니다/);
+});
+
+it("같은 식별자를 쓰는 페이지와 이벤트를 각각 거절한다", () => {
+  const { before, target } = setup("blank", [switchOn]);
+  const map = before.maps[mapId]!;
+  const event = map.events[0]!;
+  const duplicatePage = { ...event, pages: [...event.pages!, { ...event.pages![0]!, name: "다른 페이지" }] };
+  for (const events of [[duplicatePage], [event, event]]) {
+    const project = { ...before, maps: { ...before.maps, [mapId]: { ...map, events } } };
+    expectRefused(project, target, "cmd.setSelfSwitch.insert", {}, /식별자가 겹쳐/);
+    expect(commandsOn(project)).toStrictEqual([switchOn]);
+  }
+});
+
+it("선택한 지도와 저장 키가 다르면 다른 지도를 덮어쓰지 않는다", () => {
+  const { before, target } = setup("blank", [switchOn]);
+  const map = before.maps[mapId]!;
+  const wrongId = "map_state_other";
+  const other = { ...map, id: wrongId, events: [] };
+  const project = { ...before, maps: { ...before.maps, [mapId]: { ...map, id: wrongId }, [wrongId]: other } };
+  expectRefused(project, target, "cmd.setSwitch.insert", { switchId }, /지도 정보를 확인/);
+  expect(project.maps[wrongId]).toBe(other);
+});
+
+it("자료집에서 식별자가 중복된 변수는 새 쓰기나 값의 출처로 선택할 수 없다", () => {
+  const { before, target } = setup("blank", [variableSet]);
+  const project = { ...before, variables: [...before.variables, { id: variableId, name: "중복 변수" }] };
+  expectRefused(project, target, "cmd.setVariable.insert", { variableId }, /식별자가 겹치지 않는지/);
+  expectRefused(project, target, "cmd.setSwitch.insert", { switchId, operandVariableId: "중복 변수" }, /식별자가 겹치지 않는지/);
+  expectRefused(project, target, "cmd.setVariable.update", checkedUpdate(variableSet, { index: 0, value: 2 }), /식별자가 겹치지 않는지/);
 });
 
 it("없는 변수 참조를 물려받는 부분 수정은 거절하고, 해당 참조를 고치는 요청은 적용한다", () => {
   const orphan: Command = { ...variableSet, value: { kind: "var", id: "var_gone" } };
   const { before, target } = setup("blank", [orphan]);
-  expect(() => runPrimitive(before, target, "cmd.setVariable.update", { index: 0, op: "+=" })).toThrow(/자료집에서 찾을 수 없습니다/);
-  const { after } = runPrimitive(before, target, "cmd.setVariable.update", { index: 0, value: 3 });
+  expectRefused(before, target, "cmd.setVariable.update", checkedUpdate(orphan, { index: 0, op: "+=" }), /자료집에서 찾을 수 없습니다/);
+  const { after } = runPrimitive(before, target, "cmd.setVariable.update", checkedUpdate(orphan, { index: 0, value: 3 }));
   expect(commandsOn(after)).toStrictEqual([{ ...orphan, value: 3 }]);
 });
 
-it("선택한 분기 안의 한 줄을 수정하고, 없는 분기는 거절한다", () => {
-  const fork: Command = { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [text, switchOn] };
+it("공용 이벤트가 확인하는 스위치의 마지막 쓰기 명령을 다른 스위치로 돌리지 않는다", () => {
+  const { before, target } = setup("blank", [switchOn]);
+  const nextSwitchId = "sw_state_next";
+  const common = { id: "common_gate", name: "잠금 감시", trigger: "parallel" as const, conditionSwitchId: switchId, commands: [wait] };
+  const project = {
+    ...before,
+    switches: [...before.switches, { id: nextSwitchId, name: "새 잠금" }],
+    commonEvents: [...before.commonEvents, common],
+  };
+  const args = checkedUpdate(switchOn, { index: 0, switchId: nextSwitchId });
+  const map = project.maps[mapId]!;
+  const neighbor = map.events[1]!;
+  const events = [map.events[0]!, { ...neighbor, pages: [{ ...neighbor.pages![0]!, commands: [text] }] }];
+  const loneWriter = { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
+  expectRefused(loneWriter, target, "cmd.setSwitch.update", args, /기존 스위치를 확인/);
+  const anotherWriter = { ...neighbor, pages: [{ ...neighbor.pages![0]!, commands: [switchOn] }] };
+  const sharedWriter = { ...project, maps: { ...project.maps, [mapId]: { ...map, events: [map.events[0]!, anotherWriter] } } };
+  const { after } = runPrimitive(sharedWriter, target, "cmd.setSwitch.update", args);
+  expect(commandsOn(after)).toStrictEqual([{ ...switchOn, switchId: nextSwitchId }]);
+});
+
+it("엔딩 조건이나 맵 인카운터가 읽는 스위치의 마지막 쓰기를 보호한다", () => {
+  const { before, target } = setup("blank", [switchOn]);
+  const nextSwitchId = "sw_state_next";
+  const map = before.maps[mapId]!;
+  const project = {
+    ...before,
+    maps: { ...before.maps, [mapId]: { ...map, events: [map.events[0]!] } },
+    switches: [...before.switches, { id: nextSwitchId, name: "다른 스위치" }],
+  };
+  const args = checkedUpdate(switchOn, { index: 0, switchId: nextSwitchId });
+  const endings: Project["endings"] = [{ id: "end_state", name: "도착", priority: 1, conditions: [{ kind: "switch", switchId, value: true }] }];
+  expectRefused({ ...project, endings }, target, "cmd.setSwitch.update", args, /기존 스위치를 확인/);
+  const encounterTable = [{ troopId: "troop_state", weight: 1, conditions: { switchId } }];
+  expectRefused({ ...project, maps: { ...project.maps, [mapId]: { ...project.maps[mapId]!, encounterTable } } }, target,
+    "cmd.setSwitch.update", args, /기존 스위치를 확인/);
+});
+
+it("자료집 성장 보너스와 부대의 변수 읽기를 보호한다", () => {
+  const { before, target } = setup("blank", [variableSet]);
+  const map = before.maps[mapId]!;
+  const project = { ...before, maps: { ...before.maps, [mapId]: { ...map, events: [map.events[0]!] } } };
+  const args = checkedUpdate(variableSet, { index: 0, variableId: sourceId });
+  const growth = { initialPoints: 0, pointsPerLevel: 1, bonusVariableId: variableId, classPositions: {}, skillTrees: [] };
+  expectRefused({ ...project, growth }, target, "cmd.setVariable.update", args, /기존 변수 값을 읽/);
+  const troop = loadFixture("built").database.troops[0]!;
+  const afterBattle = { victory: [{ kind: "wait", variableId, ms: 0 }] satisfies Command[] };
+  expectRefused({ ...project, database: { ...project.database, troops: [{ ...troop, afterBattle }] } }, target,
+    "cmd.setVariable.update", args, /기존 변수 값을 읽/);
+  expect(commandsOn(runPrimitive(project, target, "cmd.setVariable.update", args).after)).toStrictEqual([{ ...variableSet, variableId: sourceId }]);
+});
+
+it("셀프 스위치 A로 열리는 다음 페이지나 중첩 조건의 마지막 쓰기 명령을 보호한다", () => {
+  const { before, target } = setup("blank", [selfOn]);
+  const map = before.maps[mapId]!;
+  const event = map.events[0]!;
+  const [first, second] = event.pages!;
+  const fork: Command = { kind: "fork", condition: { kind: "not", condition: { kind: "selfSwitch", key: "A", value: true } }, then: [text] };
+  for (const page of [
+    { ...second!, conditions: [{ kind: "selfSwitch", key: "A", value: true }] } satisfies EventPage,
+    { ...second!, commands: [fork] },
+  ]) {
+    const project = { ...before, maps: { ...before.maps, [mapId]: { ...map, events: [{ ...event, pages: [first!, page] }] } } };
+    expectRefused(project, target, "cmd.setSelfSwitch.update", checkedUpdate(selfOn, { index: 0, key: "B" }), /셀프 스위치 A를 조건으로/);
+    expectRefused(project, target, "cmd.setSelfSwitch.update", checkedUpdate(selfOn, { index: 0, value: false }), /셀프 스위치 A를 조건으로/);
+  }
+  const { after } = runPrimitive(before, target, "cmd.setSelfSwitch.update", checkedUpdate(selfOn, { index: 0, key: "B" }));
+  expect(commandsOn(after)).toStrictEqual([{ ...selfOn, key: "B" }]);
+});
+
+it("연달아 호출한 공용 이벤트에서 읽는 셀프 스위치를 보호한다", () => {
+  const call: Command = { kind: "callCommonEvent", commonEventId: "common_read_self" };
+  const { before, target } = setup("blank", [selfOn, call]);
+  const commonEvents: Project["commonEvents"] = [
+    { id: "common_read_self", name: "알림", trigger: "none", commands: [{ ...call, commonEventId: "common_nested_self" }] },
+    { id: "common_nested_self", name: "상자 확인", trigger: "none", commands: [
+      call, { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [text] },
+    ] },
+  ];
+  expectRefused({ ...before, commonEvents }, target, "cmd.setSelfSwitch.update", checkedUpdate(selfOn, { index: 0, key: "B" }), /셀프 스위치 A를 조건으로/);
+});
+
+it("전투를 시작한 이벤트의 셀프 스위치를 부대 조건이 읽으면 기존 쓰기를 보호한다", () => {
+  const troop = loadFixture("built").database.troops[0]!;
+  const battle: Command = { kind: "battleProcessing", troopId: troop.id, canEscape: true, canLose: true };
+  const { before, target } = setup("blank", [selfOn, battle]);
+  const gate = { id: "battle_state_gate", name: "상자 확인", conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+    span: "battle", commands: [text] } satisfies (typeof troop.battleEventPages)[number];
+  const unrelated = { ...troop, id: "troop_unrelated", battleEventPages: [gate] };
+  const project = { ...before, database: { ...before.database, troops: [{ ...troop, battleEventPages: [gate] }, unrelated] } };
+  const args = checkedUpdate(selfOn, { index: 0, key: "B" });
+  expectRefused(project, target, "cmd.setSelfSwitch.update", args, /셀프 스위치 A를 조건으로/);
+  const otherBattle = { ...project, database: { ...project.database, troops: [{ ...troop, battleEventPages: [] }, unrelated] } };
+  expect(commandsOn(runPrimitive(otherBattle, target, "cmd.setSelfSwitch.update", args).after)[0]).toStrictEqual({ ...selfOn, key: "B" });
+});
+
+it("다른 맵의 같은 식별자가 셀프 스위치 상태를 공유하면 쓰기를 막는다", () => {
+  const { before, target } = setup("blank", [selfOn]);
+  const map = before.maps[mapId]!;
+  const other = { ...map, id: "map_other_state" };
+  const project = { ...before, maps: { ...before.maps, [other.id]: other } };
+  expectRefused(project, target, "cmd.setSelfSwitch.insert", { key: "A" }, /두 이벤트의 셀프 스위치가 함께 바뀝니다/);
+  expectRefused(project, target, "cmd.setSelfSwitch.update", checkedUpdate(selfOn, { index: 0, value: false }), /두 이벤트의 셀프 스위치가 함께 바뀝니다/);
+  expect(commandsOn(runPrimitive(project, target, "cmd.setSwitch.insert", { switchId }).after)).toStrictEqual([selfOn, switchOn]);
+});
+
+it("중첩 분기 안의 한 줄을 수정하고 다른 분기와 원본은 보존한다", () => {
+  const loop: Command = { kind: "loop", body: [text, switchOn] };
+  const fork: Command = { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [loop], else: [switchOn] };
   const { before, target } = setup("blank", [fork, wait]);
-  const { after } = runPrimitive(before, target, "cmd.setSwitch.update", { branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 1, value: false });
-  expect(commandsOn(after)).toStrictEqual([{ ...fork, then: [text, { ...switchOn, value: false }] }, wait]);
+  const branchPath = [0, FORK_THEN_BRANCH_INDEX, 0, LOOP_BODY_BRANCH_INDEX];
+  const { after } = runPrimitive(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { branchPath, index: 1, value: false }));
+  expect(commandsOn(after)).toStrictEqual([{ ...fork, then: [{ ...loop, body: [text, { ...switchOn, value: false }] }] }, wait]);
   expect(jsonEqual(commandsOn(before), [fork, wait])).toBe(true);
-  expect(() => runPrimitive(before, target, "cmd.setSelfSwitch.insert", { branchPath: [0, FORK_ELSE_BRANCH_INDEX] })).toThrow(/분기를 찾을 수 없어요/);
+  expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath: [0, FORK_THEN_BRANCH_INDEX, 0, FORK_ELSE_BRANCH_INDEX] }, /분기를 찾을 수 없어요/);
+  expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath: [...branchPath, 0] }, /분기 위치/);
+  expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath, index: 3 }, /명령 줄을 찾을 수 없습니다/);
+  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { branchPath, index: 2, value: false }), /명령 줄을 찾을 수 없습니다/);
+});
+
+it("두 분기가 명령 배열 하나를 공유하면 추가와 수정을 거절한다", () => {
+  const shared = [switchOn];
+  const fork: Command = { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: shared, else: shared };
+  const { before, target } = setup("blank", [fork, wait]);
+  expectRefused(before, target, "cmd.setSelfSwitch.insert", { branchPath: [0, FORK_THEN_BRANCH_INDEX] }, /같은 명령 목록/);
+  expectRefused(before, target, "cmd.setSwitch.update", checkedUpdate(switchOn, { branchPath: [0, FORK_ELSE_BRANCH_INDEX], index: 0, value: false }), /같은 명령 목록/);
+  expect(shared).toStrictEqual([switchOn]);
+});
+
+it("빈 이름, 범위 밖 숫자, 0으로 나누기를 거절하고 경계값은 보존한다", () => {
+  const { before, target } = setup("blank", [variableSet]);
+  expectRefused(before, target, "cmd.setSwitch.insert", { switchId: "  " }, /이름을 입력/);
+  expectRefused(before, target, "cmd.setVariable.insert", { variableId, operandVariableId: "  " }, /이름을 입력/);
+  const invalidRecord = { ...before, variables: [...before.variables, { id: "", name: "빈 주소" }] };
+  expectRefused(invalidRecord, target, "cmd.setVariable.insert", { variableId: "빈 주소" }, /등록된 변수 항목/);
+  for (const value of [VARIABLE_MIN - 1, VARIABLE_MAX + 1]) {
+    expectRefused(before, target, "cmd.setVariable.insert", { variableId, value }, /9,999,999까지/);
+  }
+  for (const value of [NaN, Infinity]) {
+    expectRefused(before, target, "cmd.setVariable.insert", { variableId, value }, /값의 형식/);
+  }
+  for (const value of [VARIABLE_MIN, VARIABLE_MAX, 0.5]) {
+    const { after } = runPrimitive(before, target, "cmd.setVariable.insert", { variableId, value });
+    expect(commandsOn(after).at(-1)).toEqual({ ...variableSet, value });
+  }
+  expectRefused(before, target, "cmd.setVariable.insert", { variableId, op: "/=", value: 0 }, /0으로 나눌 수 없습니다/);
+  expectRefused(before, target, "cmd.setVariable.update", checkedUpdate(variableSet, { index: 0, op: "/=" }), /0으로 나눌 수 없습니다/);
+  const { sentence } = runPrimitive(before, target, "cmd.setVariable.insert", { variableId, op: "/=", value: 3 });
+  expect(sentence).toBe("『획득 개수』 변수 값을 3으로 나눕니다.");
+});
+
+it("기존에 저장된 큰 피연산자는 다른 필드만 고칠 때 보존한다", () => {
+  const initial = { ...variableSet, op: "+=", value: VARIABLE_MAX + 1 } satisfies Command;
+  const { before, target } = setup("blank", [initial]);
+  const { after } = runPrimitive(before, target, "cmd.setVariable.update", checkedUpdate(initial, { index: 0, op: "-=" }));
+  expect(commandsOn(after)).toStrictEqual([{ ...initial, op: "-=" }]);
 });
 
 it("미리보기에서 원래 이름에 포함된 식별자와 긴 변수 이름을 줄인다", () => {
@@ -181,7 +372,7 @@ it("실행 시 원본 변수의 0과 0이 아닌 값에 따라 스위치를 끄�
 
 it("실행 시 현재 변수 값에 세 개를 더한다", () => {
   const { before, target } = setup("blank", [variableSet]);
-  const { after } = runPrimitive(before, target, "cmd.setVariable.update", { index: 0, op: "+=", value: 3 });
+  const { after } = runPrimitive(before, target, "cmd.setVariable.update", checkedUpdate(variableSet, { index: 0, op: "+=", value: 3 }));
   expect(play(after, session => { session.variables[variableId] = 4; }).variables[variableId]).toBe(7);
 });
 
@@ -195,7 +386,7 @@ it("실행 시 선택한 이벤트의 셀프 스위치만 바뀐다", () => {
 
 it("기존 기억을 고치면 실행 시 스위치가 아닌 기억 상태에 반영한다", () => {
   const { before, target } = setup("blank", [flagOn]);
-  const { after } = runPrimitive(before, target, "cmd.setFlag.update", { index: 0, value: false });
+  const { after } = runPrimitive(before, target, "cmd.setFlag.update", checkedUpdate(flagOn, { index: 0, value: false }));
   const session = play(after, state => { state.flags[flag] = true; });
   expect(session.flags[flag]).toBe(false);
   expect(session.switches).not.toHaveProperty(flag);
@@ -211,8 +402,9 @@ const legacyRequests = [
 ];
 
 it.each(legacyRequests)("$request", ({ before: valueBefore, args, value, name }) => {
-  const { before, target } = setup("blank", [text, { ...flagOn, value: valueBefore }, wait]);
-  const { after, sentence } = runPrimitive(before, target, "cmd.setFlag.update", { index: 1, ...args });
+  const initial = { ...flagOn, value: valueBefore };
+  const { before, target } = setup("blank", [text, initial, wait]);
+  const { after, sentence } = runPrimitive(before, target, "cmd.setFlag.update", checkedUpdate(initial, { index: 1, ...args }));
   expect(commandsOn(after)).toStrictEqual([text, { kind: "setFlag", flag: name, value }, wait]);
   expectKoreanSentence(sentence, target);
   if (name !== flag) {
@@ -220,6 +412,28 @@ it.each(legacyRequests)("$request", ({ before: valueBefore, args, value, name })
       ? "이전 방식의 기억 이름을 바꿉니다."
       : `이전 방식의 기억 이름을 바꾸고 ${value ? "켭니다." : "끕니다."}`);
   }
+});
+
+it("오프닝 종료에 연결된 기억의 이름 변경을 거절하고 기존 명령으로 무대를 끝낸다", () => {
+  const stageFlag = openingStageFlag(mapId, eventId);
+  const stageEnd = { ...flagOn, flag: stageFlag, value: false };
+  const { before, target } = setup("blank", [stageEnd]);
+  expectRefused(before, target, "cmd.setFlag.update", checkedUpdate(stageEnd, { index: 0, flag: "무대 끝" }), /게임이 사용하는 기억 이름/);
+  const session = play(before, state => { state.flags[stageFlag] = true; });
+  expect(openingStageEventId(session.flags, mapId)).toBeUndefined();
+});
+
+it("시작 상태나 공용 이벤트·부대에서 쓰는 기억 이름을 떼거나 가져오기를 거절한다", () => {
+  const { before, target } = setup("blank", [flagOn]);
+  const troop = loadFixture("built").database.troops[0]!;
+  const common = { id: "common_memory", name: "공용 기억", trigger: "none" as const, commands: [{ ...flagOn }] };
+  const sharedInCommon = { ...before, commonEvents: [...before.commonEvents, common] };
+  const sharedInTroop = { ...before, database: { ...before.database, troops: [{ ...troop, afterBattle: { victory: [{ ...flagOn, flag: "부대 기억" }] } }] } };
+  expectRefused({ ...before, flags: { ...before.flags, [flag]: false } }, target, "cmd.setFlag.update", checkedUpdate(flagOn, { index: 0, flag: "새 이름" }), /게임이 사용하는 기억 이름/);
+  expectRefused(sharedInCommon, target, "cmd.setFlag.update", checkedUpdate(flagOn, { index: 0, flag: "새 이름" }), /다른 명령에서도/);
+  expectRefused(sharedInTroop, target, "cmd.setFlag.update", checkedUpdate(flagOn, { index: 0, flag: "부대 기억" }), /다른 명령에서도/);
+  expectRefused(before, target, "cmd.setFlag.update", checkedUpdate(flagOn, { index: 0, flag: "ngplus" }), /게임이 사용하는 기억 이름/);
+  expectRefused(before, target, "cmd.setFlag.update", checkedUpdate(flagOn, { index: 0, flag: "  " }), /기억 이름을 입력/);
 });
 
 it("기존 기억 명령은 공용 한 줄 삭제로 제거하고 되돌릴 수 있다", async () => {
