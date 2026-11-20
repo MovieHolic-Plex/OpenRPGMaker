@@ -1,4 +1,4 @@
-import { referenceIndex } from "@/editor/tools/dbReferenceIndex";
+import { referenceIndex, type RefSite } from "@/editor/tools/dbReferenceIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { questDefId } from "@/project/quest/questDef";
 import { forEachProjectScript } from "@/project/script/effects";
@@ -35,16 +35,39 @@ export function scriptContainsLiteral(script: { readonly source: string; readonl
     && (kind === undefined || source.includes(kind)) && literal.test(source));
 }
 
+function independentBattleCommand(project: Project, site: RefSite, catalog: NonNullable<Project["database"]["battleCommands"]>[number]): boolean {
+  const [root, collection, rowIndex, field, commandIndex, key] = site.path;
+  if (site.asKey || root !== "database" || typeof rowIndex !== "number") return false;
+  const command = collection === "classes" && site.path.length === 6 && field === "battleCommands"
+    && typeof commandIndex === "number" && key === "id"
+    ? project.database.classes[rowIndex]?.battleCommands[commandIndex]
+    : collection === "equipment" && site.path.length === 5 && field === "grantsCommand" && commandIndex === "id"
+      ? project.database.equipment[rowIndex]?.grantsCommand
+      : undefined;
+  // Class and equipment records may store a complete command with the catalog ID.
+  return Boolean(command?.name && command.kind
+    && (catalog.skillId === undefined || command.skillId != null)
+    && (catalog.skillSubsetName === undefined || command.skillSubsetName != null)
+    && (catalog.commonEventId === undefined || command.commonEventId != null));
+}
+
 export function removedDatabaseReference(
-  after: Project, removed: readonly { readonly id: string }[], live?: SmallTaskDraftSource,
+  before: Project, after: Project, removed: readonly { readonly collection: keyof Project["database"]; readonly id: string }[],
+  live?: SmallTaskDraftSource,
 ): boolean {
   if (!removed.length) return false;
   const ids = new Set(removed.map(row => row.id));
   // The index also descends into draft originals, branches, and saved script effects.
   const working = withOpenEventDrafts(after, live);
   const references = referenceIndex(working, ids);
-  if ([...ids].some(id => references.get(id)?.some(({ path, asKey }) =>
-    asKey || !(path[0] === "database" && path.length === 4 && path[3] === "id")))) return true;
+  if (removed.some(({ collection, id }) => {
+    const catalog = collection === "battleCommands" ? before.database.battleCommands?.find(row => row.id === id) : undefined;
+    return references.get(id)?.some(site => {
+      const { path, asKey } = site;
+      if (!asKey && path[0] === "database" && path.length === 4 && path[3] === "id") return false;
+      return !catalog || !independentBattleCommand(working, site, catalog);
+    });
+  })) return true;
 
   // Older scripts, and fields of game.cmd the analyzer does not index, can still name a record literally.
   const namesRemoved = (script: { readonly source: string; readonly compiled: string }) =>

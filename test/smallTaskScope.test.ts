@@ -207,6 +207,20 @@ describe("작은 일 범위 검사", () => {
       .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
   });
 
+  it("직업에 완전히 복사된 전투 명령은 남겨 두고 카탈로그 행을 삭제한다", () => {
+    const before = structuredClone(base);
+    const catalog = { id: "catalog_skill", name: "특수 기술", kind: "skill", skillId: before.database.skills[0]!.id } as const;
+    before.database.battleCommands = [catalog];
+    before.database.classes[0]!.battleCommands = [{ ...catalog }];
+    const remove = { kind: "dbRemove", collection: "battleCommands", id: catalog.id } as const;
+    const after = { ...before, database: { ...before.database, battleCommands: [] } };
+    expect(checkSmallTaskScope(before, after, remove)).toEqual({ ok: true });
+    delete before.database.classes[0]!.battleCommands[0]!.skillId;
+    expect(checkSmallTaskScope(before, after, remove)).toMatchObject({
+      ok: false, reason: expect.stringContaining("삭제할 수 없습니다"),
+    });
+  });
+
   it("취소할 수 있는 새 이벤트에 의뢰 등록을 막고, 저장된 이벤트에는 등록할 수 있다", () => {
     const live = structuredClone(base);
     const original = event("new-giver", "의뢰인", 2);

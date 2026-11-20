@@ -629,7 +629,7 @@ export function checkSmallTaskScope(
   if (databaseScope?.remove && !outside.size && changedEntries.size) {
     const removed = databaseScope.entries.filter(({ collection, id }) =>
       before.database[collection]?.some(row => row.id === id) && !after.database[collection]?.some(row => row.id === id));
-    if (removedDatabaseReference(after, removed, live)) {
+    if (removedDatabaseReference(before, after, removed, live)) {
       explanation = "다른 설정이나 이벤트, 스크립트에서 쓰는 자료집 항목은 삭제할 수 없습니다.";
       for (const label of changedEntries) report(`${label}의 참조`);
     }
