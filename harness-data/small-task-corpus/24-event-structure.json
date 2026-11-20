@@ -1,1 +1,818 @@
-[]
+[
+  {
+    "request": "선택한 빈 칸에 우물 표시용 이벤트 하나 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"name": "우물", "x": 18, "y": 24},
+    "selection": {"rect": {"x": 18, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 18},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].trigger.kind", "equals": "action"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "우물"}
+    ]
+  },
+  {
+    "request": "여기다 빈 이벤트 하나 만들어",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {},
+    "selection": {"rect": {"x": 19, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 19},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].trigger.kind", "equals": "action"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].commands", "count": 0}
+    ]
+  },
+  {
+    "request": "이 칸에 조사할 장부 자리를 만들어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"name": "장부"},
+    "selection": {"rect": {"x": 20, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 20},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].trigger.kind", "equals": "action"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "장부"}
+    ]
+  },
+  {
+    "request": "여기 빈 이밴트 하나 추가해줘",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"x": 21, "y": 24},
+    "selection": {"rect": {"x": 21, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 21},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].trigger.kind", "equals": "action"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].commands", "count": 0}
+    ]
+  },
+  {
+    "request": "선택한 자리에 안내판이란 이름으로 새 이벤트를 놓아 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"name": "안내판"},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 22},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].trigger.kind", "equals": "action"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "안내판"}
+    ]
+  },
+  {
+    "request": "이 칸에 나중에 쓸 ‘마차’ 이벤트 만들어 두자.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"name": "마차", "x": 23, "y": 24},
+    "selection": {"rect": {"x": 23, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 23},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].trigger.kind", "equals": "action"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages[0].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "마차"}
+    ]
+  },
+  {
+    "request": "지정한 칸 말고 그 옆 칸에 하나 만들어.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {"x": 23, "y": 24},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 두 칸에 새 이벤트 하나 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.create",
+    "args": {},
+    "selection": {"rect": {"x": 20, "y": 24, "w": 2, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기 빈 페이지 한 장 더 붙여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].name", "equals": "페이지 3"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].conditions", "count": 0}
+    ]
+  },
+  {
+    "request": "첫 장 바로 앞에 ‘아침’ 페이지를 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"name": "아침", "position": 1},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].name", "equals": "아침"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].conditions", "count": 0}
+    ]
+  },
+  {
+    "request": "두번째 자리에 첫 장 그림을 가져와 빈 페이지 만들어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"position": 2, "copyFrom": 1},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].name", "equals": "페이지 3"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].conditions", "count": 0}
+    ]
+  },
+  {
+    "request": "맨 뒤에 저녁용 페이지 한 장만 넣어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"name": "저녁"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].name", "equals": "저녁"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].conditions", "count": 0}
+    ]
+  },
+  {
+    "request": "두 번째의 실행 설정을 가져와서 끝에 하나 더해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"copyFrom": 2},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].name", "equals": "페이지 3"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[2].conditions", "count": 0}
+    ]
+  },
+  {
+    "request": "첫 장 다음에 빈 패이지 끼워넣어 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"position": 2},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 3},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].name", "equals": "페이지 3"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].commands", "count": 0},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].conditions", "count": 0}
+    ]
+  },
+  {
+    "request": "열한 번째로 새 페이지를 넣어 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"position": 11},
+    "expectRefusal": true
+  },
+  {
+    "request": "다섯 번째 페이지의 설정으로 빈 장을 붙여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.add",
+    "args": {"copyFrom": 5},
+    "expectRefusal": true
+  },
+  {
+    "request": "손님이 왼쪽을 보게 해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.patch",
+    "args": {"direction": "left"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].graphic.direction", "equals": "left"}
+    ]
+  },
+  {
+    "request": "선택한 두 번째 장에서 밟으면 실행되게 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"},
+    "primitive": "event.page.patch",
+    "args": {"trigger": "playerTouch", "priority": "below", "through": true},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].trigger.kind", "equals": "playerTouch"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].priority", "equals": "below"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].overlapForbidden", "equals": false}
+    ]
+  },
+  {
+    "request": "이 페이지는 결정키 대신 자동으로 시작하게 해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
+    "primitive": "event.page.patch",
+    "args": {"trigger": "auto"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].trigger.kind", "equals": "auto"}
+    ]
+  },
+  {
+    "request": "그림을 치워서 투명하게 표시해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
+    "primitive": "event.page.patch",
+    "args": {"graphic": null},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].graphic.transparent", "equals": true}
+    ]
+  },
+  {
+    "request": "첫 장의 그림을 다른 인물 그림으로 갈고 위쪽 바라보게 해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.patch",
+    "args": {"graphic": {"type": "bundled", "id": "tex_easyrpg_charset_actor1"}, "direction": "up"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].graphic.sprite.id", "equals": "tex_easyrpg_charset_actor1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].graphic.direction", "equals": "up"}
+    ]
+  },
+  {
+    "request": "토르의 네번째 장은 플레이어 위쪽에 그려줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.patch",
+    "args": {"page": 4, "priority": "above"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].priority", "equals": "above"}
+    ]
+  },
+  {
+    "request": "지워진 옛날 그림으로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.patch",
+    "args": {"graphic": {"type": "bundled", "id": "missing_sprite"}},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 장을 선택했지만 두번째 장 방향을 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
+    "primitive": "event.page.patch",
+    "args": {"page": 2, "direction": "right"},
+    "expectRefusal": true
+  },
+  {
+    "request": "두 번째 페이지를 삭제해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.remove",
+    "args": {"page": 2},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 1},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"}
+    ]
+  },
+  {
+    "request": "선택된 장만 빼 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"},
+    "primitive": "event.page.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 1},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"}
+    ]
+  },
+  {
+    "request": "맨앞 페이지 지워",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.remove",
+    "args": {"page": 1},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 1},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"}
+    ]
+  },
+  {
+    "request": "토르의 네 번째 장을 없애 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.remove",
+    "args": {"page": 4},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages", "count": 6},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[0].id", "equals": "pages[0]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[1].id", "equals": "pages[1]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[2].id", "equals": "pages[2]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talkdone0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[4].id", "equals": "ev_chain_kehegd7_2_q_hearth_talk1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[5].id", "equals": "ev_chain_kehegd7_2_q_hearth_talkdone1"}
+    ]
+  },
+  {
+    "request": "토르 첫장만 지워주세요",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.remove",
+    "args": {"page": 1},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages", "count": 6},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[0].id", "equals": "pages[1]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[1].id", "equals": "pages[2]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[2].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talk0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talkdone0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[4].id", "equals": "ev_chain_kehegd7_2_q_hearth_talk1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[5].id", "equals": "ev_chain_kehegd7_2_q_hearth_talkdone1"}
+    ]
+  },
+  {
+    "request": "토르 두번쨰 페이지 없애 줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.remove",
+    "args": {"page": 2},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages", "count": 6},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[0].id", "equals": "pages[0]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[1].id", "equals": "pages[2]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[2].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talk0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talkdone0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[4].id", "equals": "ev_chain_kehegd7_2_q_hearth_talk1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[5].id", "equals": "ev_chain_kehegd7_2_q_hearth_talkdone1"}
+    ]
+  },
+  {
+    "request": "다섯 번째 장은 필요 없으니 없애 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.remove",
+    "args": {"page": 5},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택상태는 그대로 두고 옆 페이지를 지워.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
+    "primitive": "event.page.remove",
+    "args": {"page": 2},
+    "expectRefusal": true
+  },
+  {
+    "request": "두 번째 페이지를 맨 앞으로 보내 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 2, "to": 1},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"}
+    ]
+  },
+  {
+    "request": "첫 페이지를 제일 뒤로 보내줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 1, "to": 2},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"}
+    ]
+  },
+  {
+    "request": "선택한 장을 첫 번째 자리로 옮겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"},
+    "primitive": "event.page.reorder",
+    "args": {"to": 1},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[0].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages[1].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"}
+    ]
+  },
+  {
+    "request": "토르 세 번째 페이지를 네 번째로 옮겨 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 3, "to": 4},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[0].id", "equals": "pages[0]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[1].id", "equals": "pages[1]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[2].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talk0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].id", "equals": "pages[2]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[4].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talkdone0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[5].id", "equals": "ev_chain_kehegd7_2_q_hearth_talk1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[6].id", "equals": "ev_chain_kehegd7_2_q_hearth_talkdone1"}
+    ]
+  },
+  {
+    "request": "토르 맨 앞 장을 여섯번째로 내려.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 1, "to": 6},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[0].id", "equals": "pages[1]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[1].id", "equals": "pages[2]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[2].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talk0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talkdone0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[4].id", "equals": "ev_chain_kehegd7_2_q_hearth_talk1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[5].id", "equals": "pages[0]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[6].id", "equals": "ev_chain_kehegd7_2_q_hearth_talkdone1"}
+    ]
+  },
+  {
+    "request": "토르 4번째 페이지를 두번쨰 자리로 올려줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_chain_kehegd7_2"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 4, "to": 2},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[0].id", "equals": "pages[0]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[1].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talk0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[2].id", "equals": "pages[1]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[3].id", "equals": "pages[2]"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[4].id", "equals": "ev_chain_kehegd7_2_q_snow_rumor_talkdone0"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[5].id", "equals": "ev_chain_kehegd7_2_q_hearth_talk1"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_chain_kehegd7_2].pages[6].id", "equals": "ev_chain_kehegd7_2_q_hearth_talkdone1"}
+    ]
+  },
+  {
+    "request": "두 장뿐이어도 세 번째 자리로 올려 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 2, "to": 3},
+    "expectRefusal": true
+  },
+  {
+    "request": "첫 장 골랐는데 둘째 장을 앞으로 옮겨 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8", "pageId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8_p0"},
+    "primitive": "event.page.reorder",
+    "args": {"page": 2, "to": 1},
+    "expectRefusal": true
+  },
+  {
+    "request": "시장 손님을 선택한 옆 칸에 그대로 복제해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "시장 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 22},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages", "count": 2},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].x", "equals": 22}
+    ]
+  },
+  {
+    "request": "한 칸 위로 똑같은 거 하나 복사해.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {"dy": -1},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "시장 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 22},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages", "count": 2},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].x", "equals": 22}
+    ]
+  },
+  {
+    "request": "이 사람 복붙해서 지정해 둔 위쪽 칸에 놓자",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {"x": 21, "y": 24},
+    "selection": {"rect": {"x": 21, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "시장 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 21},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages", "count": 2},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].x", "equals": 22}
+    ]
+  },
+  {
+    "request": "같은 이벤트를 왼쪽 한 칸 위 한 칸에 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {"dx": -1, "dy": -1},
+    "selection": {"rect": {"x": 21, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "시장 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 21},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages", "count": 2},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].x", "equals": 22}
+    ]
+  },
+  {
+    "request": "위로 한 칸 가서 오른쪽으로 한 칸인 자리에 사본을 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {"dx": 1, "dy": -1},
+    "selection": {"rect": {"x": 23, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "시장 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 23},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages", "count": 2},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].x", "equals": 22}
+    ]
+  },
+  {
+    "request": "시장 손님 복제본 선택한 자리로 넣어줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {},
+    "selection": {"rect": {"x": 24, "y": 24, "w": 1, "h": 1}},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].name", "equals": "시장 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].x", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].y", "equals": 24},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_small_task_1].pages", "count": 2},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].x", "equals": 22}
+    ]
+  },
+  {
+    "request": "칸 선택 없이 그냥 옆에 복사해줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {"dx": 1},
+    "expectRefusal": true
+  },
+  {
+    "request": "같은 자리 위에 복제본 하나 더 만들어.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.duplicate",
+    "args": {},
+    "selection": {"rect": {"x": 22, "y": 25, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 시장 손님 이벤트 하나만 삭제해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354].id", "equals": "ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354"}
+    ]
+  },
+  {
+    "request": "이 손님 이벤트 아예 지워",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354].id", "equals": "ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354"}
+    ]
+  },
+  {
+    "request": "장터 주민을 맵에서 빼 줘. 모피 상인은 그대로 둬.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"}
+    ]
+  },
+  {
+    "request": "선택한 장터 주민 이밴트 없애줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"}
+    ]
+  },
+  {
+    "request": "모피 상인 이벤트 전체를 지우고 싶어요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"}
+    ]
+  },
+  {
+    "request": "이 상인 이제 안 나오게 이벤트를 없애 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events", "count": 5},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].id", "equals": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"}
+    ]
+  },
+  {
+    "request": "참조하는 이벤트까지 같이 지워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.remove",
+    "args": {"includeLinked": true},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 맵에서 이름 없는 것들을 한꺼번에 다 지워.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.remove",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "시장 손님을 오른쪽으로 두 칸 옮겨 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"dx": 2},
+    "selection": {"rect": {"x": 24, "y": 25, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "표시한 빈칸으로 이동시켜 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "여기서 한 칸 위로만 올려.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"dy": -1},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "왼쪽 한칸, 위 한칸으로 옴겨줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"dx": -1, "dy": -1},
+    "selection": {"rect": {"x": 21, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "시장 손님은 가로 스물셋, 세로 스물넷 칸에 세워 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"x": 23, "y": 24},
+    "selection": {"rect": {"x": 23, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "조금 왼쪽 둘 위 하나로 옮기자.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"dx": -2, "dy": -1},
+    "selection": {"rect": {"x": 20, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 칸 말고 오른쪽으로 세 칸 옮겨.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"dx": 3},
+    "selection": {"rect": {"x": 22, "y": 24, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "맵 가장자리 밖으로 내보내 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.move",
+    "args": {"x": -1, "y": 4},
+    "selection": {"rect": {"x": -1, "y": 4, "w": 1, "h": 1}},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 이벤트 이름을 우물로 바꿔 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "우물"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].name", "equals": "우물"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 2}
+    ]
+  },
+  {
+    "request": "시장 손님 대신 ‘나그네’로 이름 바꿔.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "나그네"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].name", "equals": "나그네"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 2}
+    ]
+  },
+  {
+    "request": "표시 이름만 겨울 손님으로 고쳐 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "겨울 손님"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].name", "equals": "겨울 손님"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8].pages", "count": 2}
+    ]
+  },
+  {
+    "request": "모피 상인 일므을 털가죽 장수로 바꿔줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "털가죽 장수"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].name", "equals": "털가죽 장수"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].pages", "count": 2}
+    ]
+  },
+  {
+    "request": "목록에서 점원이라고 보이게 해 주실래요?",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "점원"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].name", "equals": "점원"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].pages", "count": 2}
+    ]
+  },
+  {
+    "request": "이 상인 표시명은 앞으로 야시장 상인이야.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "야시장 상인"},
+    "expect": [
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].name", "equals": "야시장 상인"},
+      {"at": "maps.map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c.events[id=ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212].pages", "count": 2}
+    ]
+  },
+  {
+    "request": "이 이벤트 이름을 공백만 넣어서 지워줘",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "   "},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 맵을 편의점이라고 이름 붙여 주세요.",
+    "fixture": "built",
+    "target": {"kind": "map", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c"},
+    "primitive": "event.tile.rename",
+    "args": {"name": "편의점"},
+    "expectRefusal": true
+  }
+]
