@@ -245,18 +245,16 @@ function applyFields(ctx: PrimitiveContext, map: GameMap, row: string, fields: M
       if (!se) throw new PrimitiveError("승강 발판의 기계음을 끄는 기능은 아직 지원하지 않습니다.");
       fields.se = se;
     }
-    const x = Number(fields.x ?? -1);
-    const y = Number(fields.y ?? -1);
-    if (x !== -1) {
-      requireMapTile(map, x, 0);
-      requireMapTile(map, x + Number(fields.width ?? 2) - 1, 0);
+    const lift = normalizeLiftRide(fields);
+    if (lift.x !== undefined) {
+      requireMapTile(map, lift.x, 0);
+      requireMapTile(map, lift.x + lift.width - 1, 0);
     }
-    if (y !== -1) {
-      requireMapTile(map, 0, y);
-      requireMapTile(map, 0, y + Number(fields.depth ?? 2) - 1);
-      const lift = normalizeLiftRide(fields);
+    if (lift.y !== undefined) {
+      requireMapTile(map, 0, lift.y);
+      requireMapTile(map, 0, lift.y + lift.depth - 1);
       if (lift.mode === "move") {
-        const landingY = y + (lift.direction === "up" ? -lift.distance : lift.distance);
+        const landingY = lift.y + (lift.direction === "up" ? -lift.distance : lift.distance);
         requireMapTile(map, 0, landingY);
         requireMapTile(map, 0, landingY + lift.depth - 1);
       }

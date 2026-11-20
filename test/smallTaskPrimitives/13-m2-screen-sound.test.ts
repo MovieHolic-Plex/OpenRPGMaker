@@ -358,6 +358,28 @@ it("다음 반복에서 재생할 배경 음악을 기억하는 줄을 유지합
   })).toThrow(/배경 음악을 다시 재생하는 명령/u);
 });
 
+it("현재 이벤트나 호출한 공용 이벤트가 실행을 끝내면 그 뒤의 BGM 재생은 교체를 막지 않습니다", () => {
+  const remember = newM2Command("m2-063-memorize-current-bgm");
+  const replay = newM2Command("m2-064-play-memorized-bgm");
+  const end = newM2Command("m2-085-end-event-processing");
+  const args = { index: 0, replaceFrom: "063", expectedHash: eventCommandHash(remember) };
+
+  const direct = setup("blank", [remember, end, replay]);
+  expect(() => runPrimitive(direct.project, direct.target, "m2.047.update", args)).not.toThrow();
+  const beforeEnd = setup("blank", [remember, replay, end]);
+  expect(() => runPrimitive(beforeEnd.project, beforeEnd.target, "m2.047.update", args))
+    .toThrow(/배경 음악을 다시 재생하는 명령/u);
+
+  const called = setup("blank", [remember, { kind: "callCommonEvent", commonEventId: "ce_end" }, replay]);
+  const project: Project = {
+    ...called.project, commonEvents: [...called.project.commonEvents, { id: "ce_end", name: "실행 종료", trigger: "none", commands: [end] }],
+  };
+  const session = startSession(project);
+  session.audio = { bgm: { resourceId: SOUND, loop: true } };
+  expect(createInterpreter(called.commandsOf(project), session, project).start()).toEqual({ kind: "done" });
+  expect(() => runPrimitive(project, called.target, "m2.047.update", args)).not.toThrow();
+});
+
 it("카메라를 주인공에게 돌려놓으면 이전 이벤트 참조와 좌표를 지웁니다", () => {
   const old = { ...newM2Command("m2-201-camera-control"), fields: {
     mode: "follow", target: "this-event", targetEventId: "ev_stage_boss", x: 3, y: 4, zoom: 2, wait: false,
@@ -386,6 +408,15 @@ it("검은 띠를 날씨 효과로 바꿀 때 이전 효과의 숫자를 재사�
 it("승강 발판의 기준점만 맵 안에 있을 때는 거절합니다", () => {
   const { project, target, mapId } = setup("blank");
   expect(() => runPrimitive(project, target, "m2.226.insert", { x: project.maps[mapId]!.width - 1, y: 0, width: 2 })).toThrow(/범위 밖/u);
+});
+
+it("옛 승강 발판의 치수는 실행 값으로 검사하고 저장값을 보존합니다", () => {
+  const old = { ...newM2Command("m2-226-lift-ride"), fields: { x: 2, y: 2, width: 1.5, depth: 1.5, wait: true } };
+  const { project, target, commandsOf } = setup("blank", [old]);
+  const args = { index: 0, expectedHash: eventCommandHash(old), wait: false };
+  const { after } = runPrimitive(project, target, "m2.226.update", args);
+  expect(commandsOf(after)).toEqual([{ ...old, fields: { ...old.fields, wait: false } }]);
+  expect(() => runPrimitive(project, target, "m2.226.update", { ...args, width: 1.5 })).toThrow(PrimitiveError);
 });
 
 it.each(["party", "none"])("%s 승강 발판의 도착 영역 전체가 맵 안에 있어야 합니다", riders => {
@@ -439,6 +470,28 @@ it("조건의 양쪽 분기에서 같은 그림 칸을 표시하면 뒤에서 �
   const optional = setup("blank", [{ ...branch, else: undefined }]);
   expect(() => runPrimitive(optional.project, optional.target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
     .toThrow(/그림 칸을 표시하는 명령/u);
+});
+
+it("반복 중 그림이 지워지면 매회 다시 표시한 뒤에만 이동할 수 있습니다", () => {
+  const erase: Command = { kind: "erasePicture", pictureId: "pic2" };
+  const move = { branchPath: [1, LOOP_BODY_BRANCH_INDEX], pictureId: "pic2", x: 72 };
+  const missing = setup("blank", [picture, { kind: "loop", body: [erase] }]);
+  expect(() => runPrimitive(missing.project, missing.target, "m2.052.insert", { ...move, index: 0 }))
+    .toThrow(/그림 칸을 표시하는 명령/u);
+
+  const redisplayed = setup("blank", [picture, { kind: "loop", body: [picture, erase] }]);
+  expect(() => runPrimitive(redisplayed.project, redisplayed.target, "m2.052.insert", { ...move, index: 1 })).not.toThrow();
+});
+
+it("반복문을 빠져나간 뒤에는 탈출 전에 표시한 그림만 이동할 수 있습니다", () => {
+  const erase: Command = { kind: "erasePicture", pictureId: "pic2" };
+  const stop: Command = { kind: "breakLoop" };
+  const move = { pictureId: "pic2", x: 72 };
+  const missing = setup("blank", [picture, { kind: "loop", body: [erase, stop, picture] }]);
+  expect(() => runPrimitive(missing.project, missing.target, "m2.052.insert", move)).toThrow(/그림 칸을 표시하는 명령/u);
+
+  const displayed = setup("blank", [{ kind: "loop", body: [picture, stop, erase] }]);
+  expect(() => runPrimitive(displayed.project, displayed.target, "m2.052.insert", move)).not.toThrow();
 });
 
 describe("저장한 연출 명령의 헤드리스 실행", () => {
