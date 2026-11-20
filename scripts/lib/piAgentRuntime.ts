@@ -390,7 +390,7 @@ function trimText(value: unknown, max: number): string {
 /** 몬스터 자산이 막힌 프로젝트의 게임 시스템 저작 지침 — 몬스터 수집 낱말(configure_monster_system·gen1·collector·도감·배지)을 싣지 않는다. */
 const GAME_SYSTEM_PROMPT_GENERIC = '[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·지도·음악을 함께 확인한다. configure_field_menu로 실제 기능 ID를 설정한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.';
 
-function piProviderStream(provider: string, stallLimits = modelStallLimits()): StreamFn | undefined {
+function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGate, stallLimits = modelStallLimits()): StreamFn | undefined {
   const stallEnvSet = process.env.OPRN_MODEL_FIRST_EVENT_TIMEOUT_MS !== undefined || process.env.OPRN_MODEL_IDLE_TIMEOUT_MS !== undefined;
   const compatStall = (model: unknown) => {
     const compat = (model as { compat?: { streamFirstEventTimeoutMs?: number; streamIdleTimeoutMs?: number } } | undefined)?.compat;
@@ -405,7 +405,7 @@ function piProviderStream(provider: string, stallLimits = modelStallLimits()): S
     const shaped = shapeOpenAiCompatCall(provider, model, { ...options });
     return streamSimple(shaped.model as typeof model, context, {
       ...withModelStallLimits(shaped.options, compatStall(shaped.model), stallLimits),
-      fetch: guardedOpenAiCompatFetch(options?.fetch ?? fetch),
+      fetch: guardedOpenAiCompatFetch(options?.fetch ?? fetch, () => referenceGate.omitPayloadImages()),
     });
   }) as StreamFn;
   if (stallEnvSet) return ((model, context, options) => streamSimple(model, context, stallOptions(model, options))) as StreamFn;
@@ -478,7 +478,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const agent: PiLoopDriver = local ?? new Agent({
     initialState: { model: model as never, systemPrompt, tools: tools as never, thinkingLevel: normalizePiThinkingLevel(request.provider, effort) },
     getApiKey: keyForRun,
-    streamFn: options.streamFn ?? piProviderStream(request.provider),
+    streamFn: options.streamFn ?? piProviderStream(request.provider, referenceGate),
     onPayload,
     resolveFallbackTool,
   }) as unknown as PiLoopDriver;
@@ -1615,7 +1615,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     // 요청마다 다시 읽는다 — 긴 실행 도중 호스트가 갱신한 키가 providerApiKeys 에 들어온다(piWorkerKeys.ts).
     ...(apiKey ? { getApiKey: () => ((options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? apiKey) as never } : {}),
-    streamFn: options.streamFn ?? piProviderStream(request.provider, stallLimits),
+    streamFn: options.streamFn ?? piProviderStream(request.provider, referenceGate, stallLimits),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
