@@ -534,7 +534,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   }
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
-    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    const result = checkSmallTaskScope(base, ctx.project, regionScope, draftSource);
     if (!result.ok) failure = result.reason;
   }
   const project = failure ? base : ctx.project;

@@ -49,10 +49,16 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
   const target = ctx.smallTaskTarget;
   const offered = primitivesForTarget(target);
   if (tool.name === LIST_SMALL_TASK_PRIMITIVES) {
+    const event = target.kind === "event"
+      ? ctx.project.maps[target.mapId]?.events.find(row => row.id === target.eventId)
+      : undefined;
+    const available = target.kind === "event" && !event?.pages?.length
+      ? offered.filter(row => !["cmd.delete", "cmd.move"].includes(getPrimitive(row.id)!.id))
+      : offered;
     return {
       ok: true,
       summary: "선택한 대상에 쓸 수 있는 동작을 읽었어요.",
-      data: offered.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
+      data: available.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
     };
   }
 
