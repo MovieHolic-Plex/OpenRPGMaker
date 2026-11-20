@@ -1,3 +1,7 @@
+import {
+  BEODEUL_OBJECT_GROUPS, BEODEUL_OBJECT_PACK_TAG, beodeulObjectGroup, beodeulPlaceableObjectForKit,
+  type BeodeulPlaceableObject,
+} from "@/assets/beodeulPlaceableObjects";
 import { t } from "@/i18n";
 import { isDefaultTilesetTexture } from "@/editor/chipsetComposition";
 import { comboBrushStampFromCatalog, curatedComboBrushesForTileset } from "@/editor/comboBrushCatalog";
@@ -39,7 +43,8 @@ export interface PropChoice {
   readonly terms: readonly string[];
   readonly preference: number;
   readonly family: string;
-  readonly category: PropCategoryId;
+  readonly category?: PropCategoryId;
+  readonly beodeul?: BeodeulPlaceableObject;
 }
 
 export interface PropRecommendation {
@@ -93,13 +98,15 @@ export function propsForTileset(tileset: TilesetDef): readonly PropChoice[] {
     } else if (entry.kit.kind === "section") {
       const kit = entry.kit;
       if (kit.tileSize !== undefined && kit.tileSize !== tileset.tileSize) continue;
+      const beodeul = beodeulPlaceableObjectForKit(kit.id);
       choices.push({
-        id: kit.id, name: kit.name ?? kit.id,
+        id: kit.id, name: beodeul?.nameKo ?? kit.name ?? kit.id,
         description: kit.ai?.placementRules || kit.ai?.description || "",
-        terms: [kit.name ?? "", kit.ai?.description ?? "", ...(kit.ai?.themes ?? []), ...(kit.ai?.tags ?? [])],
+        terms: beodeul ? [beodeul.nameKo, BEODEUL_OBJECT_PACK_TAG, ...beodeul.tags]
+          : [kit.name ?? "", kit.ai?.description ?? "", ...(kit.ai?.themes ?? []), ...(kit.ai?.tags ?? [])],
         preference: kit.ai?.role === "prop" || kit.ai?.repeatability === "fixed" ? 2 : 0,
         family: kit.ai?.tags?.join("|") || kit.id,
-        category: propCategory(kit.name ?? "", kit.id, kit.ai?.tags ?? [], kit.ai?.role),
+        ...(beodeul ? { beodeul } : { category: propCategory(kit.name ?? "", kit.id, kit.ai?.tags ?? [], kit.ai?.role) }),
         stamp: paletteStampFromKit(kit),
       });
     }
@@ -111,7 +118,9 @@ export function propsForTileset(tileset: TilesetDef): readonly PropChoice[] {
     return true;
   }).map(choice => ({
     ...choice,
-    terms: [...choice.terms, choice.category, PROP_CATEGORIES.find(category => category.id === choice.category)!.label],
+    terms: choice.category
+      ? [...choice.terms, choice.category, PROP_CATEGORIES.find(category => category.id === choice.category)!.label]
+      : choice.terms,
     stamp: { ...choice.stamp, label: choice.name, source: { ...choice.stamp.source, tilesetId: tileset.id, tileSize: tileset.tileSize } },
   }));
   catalogs.set(tileset, valid);
@@ -125,14 +134,38 @@ export function propRecommendationContext(map: GameMap): string {
 
 /** Filter the full compatible catalog before pagination, so unopened cards remain searchable. */
 export function filterProps(entries: readonly PropRecommendation[], category: PropCategoryId | undefined, query: string): readonly PropRecommendation[] {
-  const tokens = query.normalize("NFKC").toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  const tokens = query.normalize("NFKC").toLowerCase().trim().split(/\s+/).filter(Boolean);
   return entries.filter(({ choice }) => {
     if (category && choice.category !== category) return false;
-    // 현재 언어로 보이는 이름·종류 라벨도 색인한다 — 자리표시가 현지어 검색을 안내한다.
-    const kindLabel = PROP_CATEGORIES.find(kind => kind.id === choice.category)?.label ?? "";
-    const text = [choice.name, t(choice.name), t(kindLabel), choice.id, ...choice.terms].join(" ").normalize("NFKC").toLocaleLowerCase();
+    if (!tokens.length) return true;
+    const object = choice.beodeul;
+    const fields = object
+      ? [object.nameKo, object.id, choice.id, object.category, beodeulObjectGroup(object.group)?.labelKo ?? "", ...choice.terms]
+      : [choice.name, t(choice.name), t(PROP_CATEGORIES.find(kind => kind.id === choice.category)?.label ?? ""), choice.id, ...choice.terms];
+    const text = fields.join(" ").normalize("NFKC").toLowerCase();
     return tokens.every(token => text.includes(token));
   });
+}
+
+/** Preserve the ranked order within each group; use manifest order for the group headings. */
+export function groupProps(entries: readonly PropRecommendation[]) {
+  const byGroup = new Map<string, PropRecommendation[]>();
+  const ungrouped: PropRecommendation[] = [];
+  for (const entry of entries) {
+    const group = entry.choice.beodeul?.group;
+    if (!group) {
+      ungrouped.push(entry);
+      continue;
+    }
+    const matches = byGroup.get(group);
+    if (matches) matches.push(entry);
+    else byGroup.set(group, [entry]);
+  }
+  const groups = BEODEUL_OBJECT_GROUPS.flatMap(group => {
+    const matches = byGroup.get(group.id);
+    return matches ? [{ group, entries: matches }] : [];
+  });
+  return { groups, ungrouped };
 }
 
 export function recommendProps(map: GameMap, tileset: TilesetDef): readonly PropRecommendation[] {

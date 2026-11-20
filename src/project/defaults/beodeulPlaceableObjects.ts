@@ -1,4 +1,4 @@
-import { BEODEUL_OBJECT_IMAGE_ASSETS, BEODEUL_OBJECT_KIT_PREFIX, BEODEUL_OBJECT_TILE_SIZE, BEODEUL_PLACEABLE_OBJECTS } from "@/assets/beodeulPlaceableObjects";
+import { BEODEUL_OBJECT_IMAGE_ASSETS, BEODEUL_OBJECT_KIT_PREFIX, BEODEUL_OBJECT_PACK_TAG, BEODEUL_OBJECT_TILE_SIZE, BEODEUL_PLACEABLE_OBJECTS, beodeulObjectSetRole } from "@/assets/beodeulPlaceableObjects";
 import { jsonEqual } from "@/util/structuralJson";
 import { translateTiles } from "../objectStamp";
 import { OBJECT_SPEC_SCHEMA, type ObjectSpecCategory } from "../objectSpec";
@@ -15,13 +15,13 @@ function sourceKits(target: TilesetDef) {
   const tileMeta: NonNullable<TilesetDef["tileMeta"]> = [];
   const tileGrafts: NonNullable<TilesetDef["tileGrafts"]> = [];
   const kits = BEODEUL_PLACEABLE_OBJECTS.map((object, index): SectionStructureKitDef => {
-    const { widthTiles: width, heightTiles: height, footprint, group, growthAxis, surface } = object;
+    const { widthTiles: width, heightTiles: height, footprint, set, growthAxis, surface } = object;
     const id = BEODEUL_OBJECT_KIT_PREFIX + object.id;
     const description = object.nameKo;
-    const tags = ["버들항 기본 기물", ...object.tags];
+    const tags = [BEODEUL_OBJECT_PACK_TAG, ...object.tags];
     const repeat = growthAxis ? "repeat" : "fixed";
-    const role: TileGroupRole = group === "hedge" ? "fence" : group === "dock" ? "water"
-      : object.category === "structure" ? "building" : "prop";
+    const role: TileGroupRole = (set && beodeulObjectSetRole(set.id))
+      ?? (object.category === "structure" ? "building" : "prop");
     const placementRules = surface === "water" ? "물 위에 놓는다."
       : surface === "wall" ? "벽면에 붙인다." : "바닥에 놓고 길과 출입구를 비워 둔다.";
     const rows = footprint.map((row, dy) => ({
@@ -67,7 +67,7 @@ function sourceKits(target: TilesetDef) {
   });
   // A virtual sheet used only for translation. Every populated slot resolves through its PNG graft.
   const source: TilesetDef = {
-    id: "beodeul-placeable-objects", name: "버들항 기본 기물", image: target.image,
+    id: "beodeul-placeable-objects", name: BEODEUL_OBJECT_PACK_TAG, image: target.image,
     tileSize: BEODEUL_OBJECT_TILE_SIZE, tilesPerRow: target.tilesPerRow, count: tileGrafts.length,
     passability, priority, tileMeta, tileGrafts, terrain: Array<number>(tileGrafts.length).fill(0),
   };

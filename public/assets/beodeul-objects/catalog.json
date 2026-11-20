@@ -14750,6 +14750,7 @@
     "id": "anchor_decor",
     "nameKo": "닻 장식",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "anchor_decor_r2.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -14768,6 +14769,7 @@
     "id": "anvil_and_forge_small",
     "nameKo": "모루와 작은 대장간 화덕",
     "category": "prop",
+    "group": "village",
     "sourceFile": "anvil_and_forge_small_r2.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -14788,6 +14790,7 @@
     "id": "apple_basket_pair",
     "nameKo": "사과 바구니 두 개",
     "category": "prop",
+    "group": "market",
     "sourceFile": "apple_basket_pair.png",
     "widthPx": 32,
     "heightPx": 16,
@@ -14805,6 +14808,7 @@
     "id": "barrel_cluster_3",
     "nameKo": "나무통 세 개",
     "category": "prop",
+    "group": "market",
     "sourceFile": "barrel_cluster_3.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -14824,6 +14828,7 @@
     "id": "barrel_fish_salted",
     "nameKo": "절인 생선 통",
     "category": "prop",
+    "group": "market",
     "sourceFile": "barrel_fish_salted.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -14843,6 +14848,7 @@
     "id": "barrel_indoor_tap",
     "nameKo": "꼭지 달린 나무통",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "barrel_indoor_tap.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -14863,6 +14869,7 @@
     "id": "bathtub_wooden",
     "nameKo": "나무 욕조",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "bathtub_wooden.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -14883,6 +14890,7 @@
     "id": "bed_double",
     "nameKo": "더블 침대",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "bed_double.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -14904,6 +14912,7 @@
     "id": "bed_single",
     "nameKo": "싱글 침대",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "bed_single.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -14925,6 +14934,7 @@
     "id": "beehive_box",
     "nameKo": "나무 상자 벌통",
     "category": "prop",
+    "group": "village",
     "sourceFile": "beehive_box_r2.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -14943,6 +14953,7 @@
     "id": "bell_post_harbor",
     "nameKo": "항구 종틀",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "bell_post_harbor.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -14962,6 +14973,7 @@
     "id": "birch_tree",
     "nameKo": "자작나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "birch_tree_v2.png",
     "widthPx": 64,
     "heightPx": 96,
@@ -14986,6 +14998,7 @@
     "id": "bird_bath",
     "nameKo": "새 목욕 분수대",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "bird_bath.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15004,6 +15017,7 @@
     "id": "bookshelf_tall",
     "nameKo": "높은 책장",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "bookshelf_tall.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -15025,6 +15039,7 @@
     "id": "bread_oven_outdoor",
     "nameKo": "야외 빵 화덕",
     "category": "prop",
+    "group": "market",
     "sourceFile": "bread_oven_outdoor.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -15044,6 +15059,7 @@
     "id": "bush_small_round",
     "nameKo": "작은 둥근 관목",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "bush_small_round_v2.png",
     "widthPx": 20,
     "heightPx": 16,
@@ -15063,6 +15079,7 @@
     "id": "campfire",
     "nameKo": "모닥불",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "campfire.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15081,6 +15098,7 @@
     "id": "candle_stand",
     "nameKo": "받침대 달린 촛불",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "candle_stand.png",
     "widthPx": 16,
     "heightPx": 32,
@@ -15101,6 +15119,7 @@
     "id": "cart_with_hay",
     "nameKo": "건초 수레",
     "category": "prop",
+    "group": "village",
     "sourceFile": "cart_with_hay_r2.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15119,6 +15138,7 @@
     "id": "cattails_pond_edge",
     "nameKo": "연못가 부들",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "cattails_pond_edge.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15139,6 +15159,7 @@
     "id": "chicken_coop_small",
     "nameKo": "작은 닭장",
     "category": "prop",
+    "group": "village",
     "sourceFile": "chicken_coop_small.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -15158,6 +15179,7 @@
     "id": "clay_pots_group",
     "nameKo": "토기 항아리 모음",
     "category": "prop",
+    "group": "village",
     "sourceFile": "clay_pots_group.png",
     "widthPx": 32,
     "heightPx": 16,
@@ -15176,6 +15198,7 @@
     "id": "crab_trap_pile",
     "nameKo": "게 통발 더미",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "crab_trap_pile.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15194,6 +15217,7 @@
     "id": "crate_stack",
     "nameKo": "나무 상자 더미",
     "category": "prop",
+    "group": "market",
     "sourceFile": "crate_stack_v3.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15213,6 +15237,7 @@
     "id": "cupboard_dishes",
     "nameKo": "그릇 찬장",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "cupboard_dishes.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -15234,6 +15259,7 @@
     "id": "dock_corner_ne",
     "nameKo": "나무 부두 · 북동 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_corner_ne.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15247,13 +15273,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "corner_ne"
+    },
     "surface": "water"
   },
   {
     "id": "dock_corner_nw",
     "nameKo": "나무 부두 · 북서 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_corner_nw.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15267,13 +15297,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "corner_nw"
+    },
     "surface": "water"
   },
   {
     "id": "dock_corner_se",
     "nameKo": "나무 부두 · 남동 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_corner_se.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15287,13 +15321,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "corner_se"
+    },
     "surface": "water"
   },
   {
     "id": "dock_corner_sw",
     "nameKo": "나무 부두 · 남서 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_corner_sw.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15307,13 +15345,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "corner_sw"
+    },
     "surface": "water"
   },
   {
     "id": "dock_end_e",
     "nameKo": "나무 부두 · 동쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_end_e.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15327,13 +15369,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "end_e"
+    },
     "surface": "water"
   },
   {
     "id": "dock_end_n",
     "nameKo": "나무 부두 · 북쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_end_n.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15347,13 +15393,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "end_n"
+    },
     "surface": "water"
   },
   {
     "id": "dock_end_s",
     "nameKo": "나무 부두 · 남쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_end_s.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15367,13 +15417,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "end_s"
+    },
     "surface": "water"
   },
   {
     "id": "dock_end_w",
     "nameKo": "나무 부두 · 서쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_end_w.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15387,13 +15441,17 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "end_w"
+    },
     "surface": "water"
   },
   {
     "id": "dock_h_straight",
     "nameKo": "나무 부두 · 가로 직선",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_h_straight.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15407,7 +15465,10 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "h_straight"
+    },
     "surface": "water",
     "growthAxis": "horizontal"
   },
@@ -15415,6 +15476,7 @@
     "id": "dock_mooring_h",
     "nameKo": "나무 부두 · 가로 계류 구간",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_mooring_h.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15429,13 +15491,17 @@
       "계류",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "mooring_h"
+    },
     "surface": "water"
   },
   {
     "id": "dock_mooring_v",
     "nameKo": "나무 부두 · 세로 계류 구간",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_mooring_v.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15450,13 +15516,17 @@
       "계류",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "mooring_v"
+    },
     "surface": "water"
   },
   {
     "id": "dock_v_straight",
     "nameKo": "나무 부두 · 세로 직선",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "dock_v_straight.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15470,7 +15540,10 @@
       "항구",
       "물 위"
     ],
-    "group": "dock",
+    "set": {
+      "id": "dock",
+      "piece": "v_straight"
+    },
     "surface": "water",
     "growthAxis": "vertical"
   },
@@ -15478,6 +15551,7 @@
     "id": "fallen_log",
     "nameKo": "쓰러진 통나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "fallen_log.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15498,6 +15572,7 @@
     "id": "fireplace_stone",
     "nameKo": "돌 벽난로",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "fireplace_stone.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -15519,6 +15594,7 @@
     "id": "fish_drying_rack",
     "nameKo": "생선 건조대",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "fish_drying_rack.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15537,6 +15613,7 @@
     "id": "fishing_boat_small",
     "nameKo": "소형 어선",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "fishing_boat_small.png",
     "widthPx": 64,
     "heightPx": 32,
@@ -15558,6 +15635,7 @@
     "id": "fishing_net_rack",
     "nameKo": "어망 건조 거치대",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "fishing_net_rack.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15577,6 +15655,7 @@
     "id": "fishing_rod_rack",
     "nameKo": "낚싯대 거치대",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "fishing_rod_rack.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15595,6 +15674,7 @@
     "id": "flower_bed_long",
     "nameKo": "긴 꽃 화단",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "flower_bed_long.png",
     "widthPx": 48,
     "heightPx": 16,
@@ -15615,6 +15695,7 @@
     "id": "flower_bush_round",
     "nameKo": "꽃이 핀 둥근 관목",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "flower_bush_round.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15636,6 +15717,7 @@
     "id": "flower_cart",
     "nameKo": "꽃 수레",
     "category": "prop",
+    "group": "market",
     "sourceFile": "flower_cart_r2.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15654,6 +15736,7 @@
     "id": "flower_planter_box",
     "nameKo": "꽃 화분 상자",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "flower_planter_box.png",
     "widthPx": 32,
     "heightPx": 16,
@@ -15674,6 +15757,7 @@
     "id": "flower_pot_row",
     "nameKo": "화분 줄",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "flower_pot_row.png",
     "widthPx": 48,
     "heightPx": 16,
@@ -15694,6 +15778,7 @@
     "id": "flowering_bush_pink",
     "nameKo": "분홍꽃 관목",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "flowering_bush_pink_v2.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15715,6 +15800,7 @@
     "id": "fruit_cart",
     "nameKo": "과일 수레",
     "category": "prop",
+    "group": "market",
     "sourceFile": "fruit_cart_r2.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15733,6 +15819,7 @@
     "id": "fruit_tree_apple",
     "nameKo": "사과나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "fruit_tree_apple_v2.png",
     "widthPx": 64,
     "heightPx": 64,
@@ -15756,6 +15843,7 @@
     "id": "garden_vegetable_patch",
     "nameKo": "텃밭",
     "category": "prop",
+    "group": "village",
     "sourceFile": "garden_vegetable_patch.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -15775,6 +15863,7 @@
     "id": "hay_stack_cone",
     "nameKo": "원뿔형 건초 더미",
     "category": "prop",
+    "group": "village",
     "sourceFile": "hay_stack_cone.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -15793,6 +15882,7 @@
     "id": "hedge_corner_ne",
     "nameKo": "생울타리 · 북동 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_corner_ne.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15805,12 +15895,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "corner_ne"
+    }
   },
   {
     "id": "hedge_corner_nw",
     "nameKo": "생울타리 · 북서 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_corner_nw.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15823,12 +15917,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "corner_nw"
+    }
   },
   {
     "id": "hedge_corner_se",
     "nameKo": "생울타리 · 남동 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_corner_se.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15841,12 +15939,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "corner_se"
+    }
   },
   {
     "id": "hedge_corner_sw",
     "nameKo": "생울타리 · 남서 모서리",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_corner_sw.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15859,12 +15961,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "corner_sw"
+    }
   },
   {
     "id": "hedge_end_e",
     "nameKo": "생울타리 · 동쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_end_e.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15877,12 +15983,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "end_e"
+    }
   },
   {
     "id": "hedge_end_n",
     "nameKo": "생울타리 · 북쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_end_n.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15895,12 +16005,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "end_n"
+    }
   },
   {
     "id": "hedge_end_s",
     "nameKo": "생울타리 · 남쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_end_s.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15913,12 +16027,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "end_s"
+    }
   },
   {
     "id": "hedge_end_w",
     "nameKo": "생울타리 · 서쪽 끝",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_end_w.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15931,12 +16049,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "end_w"
+    }
   },
   {
     "id": "hedge_gate_h",
     "nameKo": "생울타리 · 가로 닫힌 문",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_gate_h.png",
     "widthPx": 32,
     "heightPx": 16,
@@ -15949,12 +16071,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "gate_h"
+    }
   },
   {
     "id": "hedge_h_straight",
     "nameKo": "생울타리 · 가로 직선",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_h_straight.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15967,13 +16093,17 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge",
+    "set": {
+      "id": "hedge",
+      "piece": "h_straight"
+    },
     "growthAxis": "horizontal"
   },
   {
     "id": "hedge_t_n",
     "nameKo": "생울타리 · 북쪽 갈림",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_t_n.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -15986,12 +16116,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "t_n"
+    }
   },
   {
     "id": "hedge_t_s",
     "nameKo": "생울타리 · 남쪽 갈림",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_t_s.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -16004,12 +16138,16 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge"
+    "set": {
+      "id": "hedge",
+      "piece": "t_s"
+    }
   },
   {
     "id": "hedge_v_straight",
     "nameKo": "생울타리 · 세로 직선",
     "category": "structure",
+    "group": "structures",
     "sourceFile": "hedge_v_straight.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -16022,13 +16160,17 @@
       "hedge",
       "정원"
     ],
-    "group": "hedge",
+    "set": {
+      "id": "hedge",
+      "piece": "v_straight"
+    },
     "growthAxis": "vertical"
   },
   {
     "id": "horse_hitching_post",
     "nameKo": "말 매는 말뚝",
     "category": "prop",
+    "group": "village",
     "sourceFile": "horse_hitching_post.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -16047,6 +16189,7 @@
     "id": "lantern_post",
     "nameKo": "등불 기둥",
     "category": "prop",
+    "group": "village",
     "sourceFile": "lantern_post.png",
     "widthPx": 16,
     "heightPx": 48,
@@ -16066,6 +16209,7 @@
     "id": "laundry_line_with_clothes",
     "nameKo": "옷을 넌 빨랫줄",
     "category": "prop",
+    "group": "village",
     "sourceFile": "laundry_line_with_clothes.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -16084,6 +16228,7 @@
     "id": "laundry_tub",
     "nameKo": "빨래 대야",
     "category": "prop",
+    "group": "village",
     "sourceFile": "laundry_tub_r2.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -16101,6 +16246,7 @@
     "id": "lighthouse_small",
     "nameKo": "작은 등대",
     "category": "structure",
+    "group": "harbor",
     "sourceFile": "lighthouse_small_r2.png",
     "widthPx": 64,
     "heightPx": 112,
@@ -16124,6 +16270,7 @@
     "id": "lily_pad_cluster",
     "nameKo": "수련 잎 무리",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "lily_pad_cluster.png",
     "widthPx": 48,
     "heightPx": 16,
@@ -16145,6 +16292,7 @@
     "id": "loom_weaving",
     "nameKo": "베틀",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "loom_weaving.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16166,6 +16314,7 @@
     "id": "mailbox_post",
     "nameKo": "우편함 말뚝",
     "category": "prop",
+    "group": "village",
     "sourceFile": "mailbox_post.png",
     "widthPx": 16,
     "heightPx": 32,
@@ -16184,6 +16333,7 @@
     "id": "market_stall_bread",
     "nameKo": "빵 노점",
     "category": "prop",
+    "group": "market",
     "sourceFile": "market_stall_bread.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16203,6 +16353,7 @@
     "id": "market_stall_fish",
     "nameKo": "생선 노점",
     "category": "prop",
+    "group": "market",
     "sourceFile": "market_stall_fish.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16222,6 +16373,7 @@
     "id": "merchant_stall_red",
     "nameKo": "붉은 차양 노점",
     "category": "prop",
+    "group": "market",
     "sourceFile": "merchant_stall_red.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16241,6 +16393,7 @@
     "id": "mirror_standing",
     "nameKo": "스탠드 거울",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "mirror_standing.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -16262,6 +16415,7 @@
     "id": "mushroom_cluster",
     "nameKo": "버섯 무리",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "mushroom_cluster.png",
     "widthPx": 32,
     "heightPx": 16,
@@ -16281,6 +16435,7 @@
     "id": "notice_board_town_hall",
     "nameKo": "마을회관 게시판",
     "category": "prop",
+    "group": "village",
     "sourceFile": "notice_board_town_hall.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16300,6 +16455,7 @@
     "id": "oak_tree_large",
     "nameKo": "큰 참나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "oak_tree_large_v2.png",
     "widthPx": 96,
     "heightPx": 96,
@@ -16324,6 +16480,7 @@
     "id": "palm_tree_coastal",
     "nameKo": "해안 야자나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "palm_tree_coastal_v2.png",
     "widthPx": 64,
     "heightPx": 96,
@@ -16348,6 +16505,7 @@
     "id": "pine_tree",
     "nameKo": "소나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "pine_tree_v2.png",
     "widthPx": 64,
     "heightPx": 96,
@@ -16372,6 +16530,7 @@
     "id": "potted_plant_indoor",
     "nameKo": "실내 화분",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "potted_plant_indoor.png",
     "widthPx": 16,
     "heightPx": 32,
@@ -16392,6 +16551,7 @@
     "id": "pumpkin_pile",
     "nameKo": "호박 더미",
     "category": "prop",
+    "group": "village",
     "sourceFile": "pumpkin_pile.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16411,6 +16571,7 @@
     "id": "reeds_waterside",
     "nameKo": "물가 갈대",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "reeds_waterside.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16431,6 +16592,7 @@
     "id": "rope_coil_and_buoy",
     "nameKo": "감은 밧줄과 부표",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "rope_coil_and_buoy_r2.png",
     "widthPx": 32,
     "heightPx": 16,
@@ -16448,6 +16610,7 @@
     "id": "rowboat_beached",
     "nameKo": "물가에 끌어올린 나룻배",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "rowboat_beached.png",
     "widthPx": 64,
     "heightPx": 32,
@@ -16466,6 +16629,7 @@
     "id": "rug_round",
     "nameKo": "둥근 러그",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "rug_round.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -16486,6 +16650,7 @@
     "id": "sack_pile",
     "nameKo": "자루 더미",
     "category": "prop",
+    "group": "market",
     "sourceFile": "sack_pile.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16504,6 +16669,7 @@
     "id": "scale_merchant",
     "nameKo": "상인의 저울",
     "category": "prop",
+    "group": "market",
     "sourceFile": "scale_merchant.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16522,6 +16688,7 @@
     "id": "scarecrow",
     "nameKo": "허수아비",
     "category": "prop",
+    "group": "village",
     "sourceFile": "scarecrow.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16540,6 +16707,7 @@
     "id": "seagull_post",
     "nameKo": "갈매기가 앉은 말뚝",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "seagull_post_r2.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16558,6 +16726,7 @@
     "id": "shelf_with_jars",
     "nameKo": "단지 선반",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "shelf_with_jars.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16578,6 +16747,7 @@
     "id": "signboard_hanging_shop",
     "nameKo": "상점의 매달린 간판",
     "category": "prop",
+    "group": "market",
     "sourceFile": "signboard_hanging_shop.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16596,6 +16766,7 @@
     "id": "small_market_tent_blue",
     "nameKo": "파란 차양 노점",
     "category": "prop",
+    "group": "market",
     "sourceFile": "small_market_tent_blue_r2.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16615,6 +16786,7 @@
     "id": "small_shrine",
     "nameKo": "작은 사당",
     "category": "structure",
+    "group": "village",
     "sourceFile": "small_shrine.png",
     "widthPx": 64,
     "heightPx": 64,
@@ -16635,6 +16807,7 @@
     "id": "statue_small_fountain_plaza",
     "nameKo": "광장 석상 분수",
     "category": "prop",
+    "group": "village",
     "sourceFile": "statue_small_fountain_plaza.png",
     "widthPx": 64,
     "heightPx": 64,
@@ -16655,6 +16828,7 @@
     "id": "stepping_stones",
     "nameKo": "낮은 징검돌",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "stepping_stones_r2.png",
     "widthPx": 48,
     "heightPx": 16,
@@ -16672,6 +16846,7 @@
     "id": "stone_well_round",
     "nameKo": "둥근 돌우물",
     "category": "prop",
+    "group": "village",
     "sourceFile": "stone_well_round.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16691,6 +16866,7 @@
     "id": "street_lamp_iron",
     "nameKo": "철제 가로등",
     "category": "prop",
+    "group": "village",
     "sourceFile": "street_lamp_iron.png",
     "widthPx": 16,
     "heightPx": 48,
@@ -16710,6 +16886,7 @@
     "id": "street_notice_board",
     "nameKo": "거리 게시판",
     "category": "prop",
+    "group": "village",
     "sourceFile": "street_notice_board.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16728,6 +16905,7 @@
     "id": "stump_with_axe",
     "nameKo": "도끼를 꽂은 나무 밑동",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "stump_with_axe.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16748,6 +16926,7 @@
     "id": "tall_grass_clump",
     "nameKo": "키 큰 풀 무리",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "tall_grass_clump.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16768,6 +16947,7 @@
     "id": "tent_canvas_small",
     "nameKo": "작은 천막",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "tent_canvas_small.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16787,6 +16967,7 @@
     "id": "treasure_chest_closed",
     "nameKo": "닫힌 보물상자",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "treasure_chest_closed.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16805,6 +16986,7 @@
     "id": "treasure_chest_open",
     "nameKo": "열린 보물상자",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "treasure_chest_open.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -16823,6 +17005,7 @@
     "id": "tree_stump",
     "nameKo": "잘린 나무 밑동",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "tree_stump_r2.png",
     "widthPx": 16,
     "heightPx": 16,
@@ -16842,6 +17025,7 @@
     "id": "wall_clock",
     "nameKo": "벽걸이 괘종시계",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "wall_clock.png",
     "widthPx": 16,
     "heightPx": 32,
@@ -16863,6 +17047,7 @@
     "id": "wardrobe",
     "nameKo": "옷장",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "wardrobe.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -16884,6 +17069,7 @@
     "id": "water_trough",
     "nameKo": "물 먹이통",
     "category": "prop",
+    "group": "village",
     "sourceFile": "water_trough.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -16902,6 +17088,7 @@
     "id": "well_bucket_crank",
     "nameKo": "도르래 우물",
     "category": "prop",
+    "group": "village",
     "sourceFile": "well_bucket_crank.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16921,6 +17108,7 @@
     "id": "well_wooden_roof",
     "nameKo": "나무 지붕 우물",
     "category": "prop",
+    "group": "village",
     "sourceFile": "well_wooden_roof.png",
     "widthPx": 48,
     "heightPx": 48,
@@ -16940,6 +17128,7 @@
     "id": "wheelbarrow",
     "nameKo": "외바퀴 손수레",
     "category": "prop",
+    "group": "village",
     "sourceFile": "wheelbarrow_r2.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -16958,6 +17147,7 @@
     "id": "willow_tree",
     "nameKo": "버드나무",
     "category": "nature",
+    "group": "nature",
     "sourceFile": "willow_tree_v2.png",
     "widthPx": 64,
     "heightPx": 96,
@@ -16982,6 +17172,7 @@
     "id": "wood_pile",
     "nameKo": "장작 더미",
     "category": "prop",
+    "group": "village",
     "sourceFile": "wood_pile_v3.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -17000,6 +17191,7 @@
     "id": "wooden_gate",
     "nameKo": "닫힌 나무 대문",
     "category": "structure",
+    "group": "village",
     "sourceFile": "wooden_gate.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -17018,6 +17210,7 @@
     "id": "wooden_signpost_double",
     "nameKo": "양방향 나무 이정표",
     "category": "prop",
+    "group": "village",
     "sourceFile": "wooden_signpost_double.png",
     "widthPx": 16,
     "heightPx": 32,
@@ -17036,6 +17229,7 @@
     "id": "writing_desk_with_book",
     "nameKo": "책을 펼친 책상",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "writing_desk_with_book.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -17056,6 +17250,7 @@
     "id": "butcher_block_table",
     "nameKo": "정육 작업대",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "butcher_block_table_r2.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -17076,6 +17271,7 @@
     "id": "cooking_pot_on_hook",
     "nameKo": "걸이 솥",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "cooking_pot_on_hook_r2.png",
     "widthPx": 32,
     "heightPx": 48,
@@ -17097,6 +17293,7 @@
     "id": "dining_table_4seat",
     "nameKo": "의자 네 개가 있는 식탁",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "dining_table_4seat_r2.png",
     "widthPx": 64,
     "heightPx": 48,
@@ -17118,6 +17315,7 @@
     "id": "flag_pole_banner",
     "nameKo": "깃발 기둥",
     "category": "prop",
+    "group": "village",
     "sourceFile": "flag_pole_banner_r2.png",
     "widthPx": 16,
     "heightPx": 64,
@@ -17138,6 +17336,7 @@
     "id": "kitchen_stove_iron",
     "nameKo": "철제 조리 화덕",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "kitchen_stove_iron_r2.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -17158,6 +17357,7 @@
     "id": "net_pile_with_floats",
     "nameKo": "부표 달린 어망 더미",
     "category": "prop",
+    "group": "harbor",
     "sourceFile": "net_pile_with_floats_r3.png",
     "widthPx": 48,
     "heightPx": 32,
@@ -17176,6 +17376,7 @@
     "id": "potters_wheel",
     "nameKo": "도공의 물레",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "potters_wheel_r2.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -17196,6 +17397,7 @@
     "id": "wood_pile_with_axe",
     "nameKo": "도끼와 장작 더미",
     "category": "prop",
+    "group": "village",
     "sourceFile": "wood_pile_with_axe_r3.png",
     "widthPx": 32,
     "heightPx": 32,
@@ -17214,6 +17416,7 @@
     "id": "wooden_bench_long",
     "nameKo": "긴 나무 벤치",
     "category": "prop",
+    "group": "outdoor",
     "sourceFile": "wooden_bench_long_r3.png",
     "widthPx": 48,
     "heightPx": 16,
@@ -17231,6 +17434,7 @@
     "id": "wooden_chair",
     "nameKo": "나무 의자",
     "category": "indoor",
+    "group": "indoor",
     "sourceFile": "wooden_chair_r2.png",
     "widthPx": 16,
     "heightPx": 32,

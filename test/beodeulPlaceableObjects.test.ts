@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { PNG } from "pngjs";
 import { describe, expect, it } from "vitest";
 import { buildStampObjectIndex } from "@/ai/stampObjects";
-import { BEODEUL_OBJECT_CATEGORIES, BEODEUL_OBJECT_IMAGE_ASSETS, BEODEUL_OBJECT_KIT_PREFIX, BEODEUL_OBJECT_TILE_SIZE, BEODEUL_PLACEABLE_OBJECTS } from "@/assets/beodeulPlaceableObjects";
+import { BEODEUL_OBJECT_IMAGE_ASSETS, BEODEUL_OBJECT_KIT_PREFIX, BEODEUL_OBJECT_TILE_SIZE, BEODEUL_PLACEABLE_OBJECTS, parseBeodeulObjectCatalog } from "@/assets/beodeulPlaceableObjects";
 import { bundledChipsetFrameCount, bundledChipsetTileSize, bundledChipsetTilesPerRow, findBundledImageAsset } from "@/assets/bundled";
 import { comboBrushPlacement } from "@/editor/comboBrush";
 import { filterProps, recommendProps } from "@/editor/propRecommendations";
@@ -20,25 +20,63 @@ import { collectWebExportAssets } from "@/project/webExportAssets";
 const folder = new URL("../public/assets/beodeul-objects/", import.meta.url);
 const kitId = (id: string) => BEODEUL_OBJECT_KIT_PREFIX + id;
 
+describe("Beodeul object catalog schema", () => {
+  const object = {
+    id: "test_tree", nameKo: "시험 나무", category: "nature", group: "nature",
+    sourceFile: "test_tree.png", widthPx: 20, heightPx: 16, widthTiles: 2, heightTiles: 1,
+    footprint: ["XX"], tags: ["나무", "test"],
+  };
+  const piece = { ...object, id: "test_fence", nameKo: "시험 울타리", category: "structure",
+    sourceFile: "test_fence.png", group: "structures", set: { id: "fence", piece: "end_e" } };
+  const groups = [
+    { id: "structures", labelKo: "구조물 세트", order: 20 },
+    { id: "nature", labelKo: "자연", order: 10 },
+  ];
+  const manifest = { groups, sets: [{ id: "fence", role: "fence", requiredPieces: ["end_e"] }] };
+
+  it("loads new groups and sets from data and sorts group headings by order", () => {
+    const parsed = parseBeodeulObjectCatalog([object, piece], manifest);
+    expect(parsed.objects).toEqual([object, piece]);
+    expect(parsed.groups.map(group => group.id)).toEqual(["nature", "structures"]);
+    expect(parsed.setsById.get("fence")?.role).toBe("fence");
+  });
+
+  it.each([
+    [{ tags: ["  "] }, /tags/u],
+    [{ nameKo: "test tree" }, /nameKo/u],
+    [{ group: "unknown" }, /unknown Beodeul object group/u],
+    [{ sourceFile: "wrong_tree.png" }, /sourceFile must match/u],
+    [{ widthTiles: 1 }, /tile size does not match/u],
+    [{ footprint: ["X"] }, /footprint must match/u],
+    [{ footprint: [" X", "XX"] }, /footprint must match/u],
+    [{ footprint: ["X?"] }, /footprint/u],
+    [{ footprint: ["  "] }, /occupied cell/u],
+  ])("rejects an invalid entry (%j)", (patch, error) => {
+    expect(() => parseBeodeulObjectCatalog([{ ...object, ...patch }], { groups, sets: [] })).toThrow(error);
+  });
+
+  it("rejects duplicate objects and broken set membership", () => {
+    expect(() => parseBeodeulObjectCatalog([object, object, piece], manifest)).toThrow(/Duplicate Beodeul object id/u);
+    expect(() => parseBeodeulObjectCatalog([object], manifest)).toThrow(/fence: missing required set pieces: end_e/u);
+    expect(() => parseBeodeulObjectCatalog([{ ...piece, set: { id: "unknown", piece: "end_e" } }], manifest)).toThrow(/unknown Beodeul object set/u);
+    expect(() => parseBeodeulObjectCatalog([piece, {
+      ...piece, id: "test_fence_variant", sourceFile: "test_fence_variant.png",
+    }], manifest)).toThrow(/duplicate piece fence\/end_e/u);
+  });
+});
+
 describe("bundled Beodeul placeable objects", () => {
   it("has a one-to-one match between the catalog entries and the PNGs on disk", () => {
     const ids = BEODEUL_PLACEABLE_OBJECTS.map(({ id }) => id);
     expect(ids.length).toBeGreaterThan(0);
+    expect(new Set(ids).size).toBe(ids.length);
     const pngs = readdirSync(folder).filter(name => /\.png$/iu.test(name));
     expect(pngs.sort()).toEqual(ids.map(id => `${id}.png`).sort());
   });
 
   it("describes the source PNG's dimensions, 16px grid coverage, and occupied cells", () => {
     for (const object of BEODEUL_PLACEABLE_OBJECTS) {
-      const { id, nameKo, sourceFile, widthPx, heightPx, widthTiles, heightTiles, footprint, tags } = object;
-      expect(id).toMatch(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/u);
-      expect(id).not.toMatch(/_(?:[rv][23])$/u);
-      expect(sourceFile.replace(/(?:_(?:[rv][23]))?\.png$/u, "")).toBe(id);
-      expect(nameKo).toMatch(/[가-힣]/u);
-      expect(BEODEUL_OBJECT_CATEGORIES).toContain(object.category);
-      expect(tags.length).toBeGreaterThan(0);
-      expect(tags.every(tag => typeof tag === "string" && tag.trim())).toBe(true);
-
+      const { id, widthPx, heightPx, widthTiles, heightTiles, footprint } = object;
       const tileSize = BEODEUL_OBJECT_TILE_SIZE;
       const image = PNG.sync.read(readFileSync(new URL(`${id}.png`, folder)));
       expect([image.width, image.height]).toEqual([widthPx, heightPx]);
@@ -68,7 +106,9 @@ describe("bundled Beodeul placeable objects", () => {
 
   it("offers every object as a default map brush, with the correct sprite cells and passage", () => {
     const tileset = defaultTileset();
-    const map = createBlankMap("버들항", 20, 20, tileset.id);
+    const width = Math.max(...BEODEUL_PLACEABLE_OBJECTS.map(object => object.widthTiles));
+    const height = Math.max(...BEODEUL_PLACEABLE_OBJECTS.map(object => object.heightTiles));
+    const map = createBlankMap("버들항", width, height, tileset.id);
     const entries = filterProps(recommendProps(map, tileset), undefined, "버들항 기본 기물");
     const grafts = new Map(tileset.tileGrafts?.map(graft => [graft.targetTile, graft]));
     expect(new Set(entries.map(({ choice }) => choice.id))).toEqual(new Set(BEODEUL_PLACEABLE_OBJECTS.map(({ id }) => kitId(id))));
@@ -88,7 +128,7 @@ describe("bundled Beodeul placeable objects", () => {
       expect(stamp.cells).toHaveLength(object.footprint.join("").replaceAll(" ", "").length);
       const anchor = { dx: Math.floor(object.widthTiles / 2), dy: object.heightTiles - 1 };
       expect(stamp.anchor).toEqual(anchor);
-      const click = { x: object.widthTiles, y: object.heightTiles };
+      const click = { x: anchor.dx, y: anchor.dy };
       const placement = comboBrushPlacement({ bounds: map, stamp, ...click });
       expect(placement.cells.every(({ cell, x, y }) => x === click.x + cell.dx - anchor.dx
         && y === click.y + cell.dy - anchor.dy)).toBe(true);
@@ -126,11 +166,14 @@ describe("bundled Beodeul placeable objects", () => {
         placement: object.surface ?? "floor", indoor: object.category === "indoor",
       });
     }
-    const shared = runTool(ctx, "list_spatial_designs", { kind: "object", query, limit: 200 });
-    expect(shared.ok, shared.summary).toBe(true);
-    expect(shared.data).toMatchObject({ shared: { rows: expected.map(entry => ({
-      ...entry, id: `kit:${tilesetId}/${entry.id}`,
-    })) } });
+    const limit = 200;
+    for (let offset = 0; offset < expected.length; offset += limit) {
+      const shared = runTool(ctx, "list_spatial_designs", { kind: "object", query, limit, offset });
+      expect(shared.ok, shared.summary).toBe(true);
+      expect(shared.data).toMatchObject({ shared: { total: expected.length, rows: expected.slice(offset, offset + limit).map(entry => ({
+        ...entry, id: `kit:${tilesetId}/${entry.id}`,
+      })) } });
+    }
   });
 
   it("preserves stamped collision through serialization and includes the painted asset in web export", () => {
