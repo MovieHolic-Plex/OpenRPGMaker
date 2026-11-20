@@ -1539,7 +1539,7 @@ function changeTilesetBody(context: CommandEditContext, cmd: M2Command): HTMLEle
 function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "change-parallax-back-command-body");
   const project = store.getCurrent();
-  let resourceId = String(cmd.fields.value ?? cmd.fields.resourceId ?? "").trim();
+  let resourceId = String(cmd.fields.resourceId ?? cmd.fields.value ?? "").trim();
   const resourceSelect = resourceIdSelect(resourceId, "change-parallax-back-resource-select", "backdrop");
   const pickBtn = el("button", {
     class: "btn small",
@@ -1581,12 +1581,10 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
   const commit = () => {
     resourceId = resourceSelect.value.trim();
     replaceFields(context, cmd, {
-      target: resourceId,
       operation: "set",
-      value: resourceId,
       resourceId,
       ...readFlow(),
-    });
+    }, ["target", "value"]);
     renderPreview();
   };
   const renderPreview = () => {

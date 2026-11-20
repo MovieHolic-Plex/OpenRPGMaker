@@ -29,27 +29,26 @@ export function hasEarlierSpawn(project: Project, page: EventPage, path: readonl
     return nestedCommandLists(command);
   }
 
-  const jumpTargets = new Map<readonly Command[], Set<number>>();
-  const frames: (readonly Command[])[] = [];
-  function collectJumps(commands: readonly Command[]) {
-    if (frames.includes(commands)) return;
-    frames.push(commands);
-    for (const command of commands) {
-      if (command.kind === "gotoLabel") {
-        // The interpreter jumps to the first match in the nearest active frame.
-        for (let i = frames.length - 1; i >= 0; i--) {
-          const frame = frames[i]!;
-          const row = frame.findIndex(candidate => candidate.kind === "label" && candidate.name === command.name);
-          if (row === -1) continue;
-          const targets = jumpTargets.get(frame) ?? new Set<number>();
-          targets.add(row);
-          jumpTargets.set(frame, targets);
-          break;
-        }
-      }
-      for (const branch of executionLists(command)) collectJumps(branch);
+  const outwardJumps = new Map<string, Map<readonly Command[], boolean>>();
+  function jumpsTo(command: Command, name: string): boolean {
+    const cached = outwardJumps.get(name) ?? new Map<readonly Command[], boolean>();
+    outwardJumps.set(name, cached);
+    function escapes(list: readonly Command[], seen: Set<readonly Command[]>): boolean {
+      if (seen.has(list)) return false;
+      seen.add(list);
+      const known = cached.get(list);
+      if (known !== undefined) return known;
+      // A label in a nearer frame catches the jump before it reaches the caller.
+      return !list.some(child => child.kind === "label" && child.name === name)
+        && list.some(child => child.kind === "gotoLabel" && child.name === name
+          || executionLists(child).some(branch => escapes(branch, seen)));
     }
-    frames.pop();
+    return command.kind === "gotoLabel" && command.name === name || executionLists(command).some(list => {
+      const result = escapes(list, new Set());
+      // Cache only complete searches so cycles do not cache a partial negative result.
+      cached.set(list, result);
+      return result;
+    });
   }
   function mayRemove(command: Command, seen: Set<Command>): boolean {
     if (seen.has(command)) return false;
@@ -59,14 +58,24 @@ export function hasEarlierSpawn(project: Project, page: EventPage, path: readonl
     if (command.kind === "m2Command" && command.commandId === "m2-204-remove-event" && String(command.fields.eventId ?? "") === id) return true;
     return executionLists(command).some(branch => branch.some(child => mayRemove(child, seen)));
   }
-  collectJumps(page.commands);
   let live = false;
   for (let depth = 0; depth < path.length; depth += 2) {
     const list = resolveCommandListAtPath(page.commands, path.slice(0, depth + 1))!;
-    for (let row = 0; row < path[depth]!; row++) {
+    const stop = path[depth]!;
+    const labels = new Set<string>();
+    let spawnRow = 0;
+    for (let row = 0; row < stop; row++) {
       const command = list[row]!;
-      if (spawnsEvent(command)) live = true;
-      if (jumpTargets.get(list)?.has(row)) live = false;
+      if (spawnsEvent(command)) {
+        live = true;
+        spawnRow = row;
+      }
+      if (command.kind === "label" && !labels.has(command.name)) {
+        labels.add(command.name);
+        // A jump can bypass creation, or repeat the new removal after it has run once.
+        if (live && (list.slice(0, spawnRow).some(origin => jumpsTo(origin, command.name))
+          || list.slice(stop).some(origin => jumpsTo(origin, command.name)))) live = false;
+      }
       if (live && mayRemove(command, new Set())) live = false;
     }
     if (path[depth + 1] === LOOP_BODY_BRANCH_INDEX) live = false;
@@ -109,12 +118,13 @@ export function findSpawnUsage(
   const visited = new WeakSet<object>();
 
   function visit(value: unknown, key = ""): boolean {
-    if (kind !== "declaration" && matchesRemovalFlag(value)) return true;
     if (!value || typeof value !== "object" || value === ownCommand) return false;
     if (visited.has(value)) return false;
     visited.add(value);
     if (Array.isArray(value)) return value.some(child => visit(child, key));
     const record = value as Record<string, unknown>;
+    if (kind !== "declaration" && (record.kind === "flag" || record.kind === "setFlag"
+      || (record.kind === "runControl" && record.action === "setFlag")) && matchesRemovalFlag(record.flag)) return true;
     if (kind === "reference" && key === "selfSwitches" && Object.hasOwn(record, id)) return true;
     if (kind === "reference") {
       if (record.kind === "m2Command") {
@@ -135,13 +145,12 @@ export function findSpawnUsage(
         if (kind === "declaration") return spawnedEventId(fields) === id;
         if (includeCopies && (fields.templateEventId ?? fields.prefabId) === id) copyIds.add(spawnedEventId(fields));
       }
-      return kind !== "declaration"
-        && Object.entries(fields).some(([field, entry]) => matchesRemovalFlag(field) || matchesRemovalFlag(entry));
+      return false;
     }
     return Object.entries(record).some(([field, child]) => {
       // An original draft is the same declaration, but its references can reappear on cancel.
       if (field === "draft" && kind === "declaration") return false;
-      return (kind !== "declaration" && matchesRemovalFlag(field)) || visit(child, field);
+      return visit(child, field);
     });
   }
 
@@ -149,5 +158,6 @@ export function findSpawnUsage(
   const { maps, tilesets, assets, ...authored } = project;
   return Object.values(maps).some(map => visit(map.events) || visit(map.locations) || visit(map.encounterTable))
     || visit(authored)
+    || (kind !== "declaration" && Object.keys(project.flags).some(matchesRemovalFlag))
     || [...copyIds].some(copyId => referencedRemovalIds.has(copyId));
 }

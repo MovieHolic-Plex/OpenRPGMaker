@@ -415,7 +415,7 @@ it("흐름이 있던 먼 배경 줄을 기본 그림으로 고치고 흐름 설�
   const args = { index: 0, expectedHash: eventCommandHash(command), resourceId: "" };
   const { after, sentence } = runPrimitive(project, target, "m2.069.update", args);
   expect(sentence).toContain("맵에 설정한 먼 배경 그림");
-  expect(commandsOf(after)).toEqual([{ ...command, fields: { value: "", target: "", resourceId: "" } }]);
+  expect(commandsOf(after)).toEqual([{ ...command, fields: { resourceId: "" } }]);
   const session = startSession(project, 7);
   expect(createInterpreter([command], session, project).start().kind).toBe("done");
   expect(session.m2Runtime?.map.parallax_override.value).toBe(BACKDROP);
@@ -495,7 +495,10 @@ const spawnReferenceSites: Record<string, (project: Project) => void> = {
 };
 
 it("변수 ID와 맵 ID가 생성 ID와 같아도 이름을 바꿀 수 있다", () => {
-  const { project, target } = seed("blank", [SPAWN, { ...newM2Command("m2-039-set-vehicle-location"), fields: { mapId: COPY } }]);
+  const { project, target } = seed("blank", [
+    SPAWN, { ...newM2Command("m2-039-set-vehicle-location"), fields: { mapId: COPY } },
+    { kind: "text", body: `event-removed:${COPY}` },
+  ]);
   project.variables.push({ id: COPY, name: "시험 변수" });
   const { after } = runPrimitive(project, target, "m2.203.update", { index: 0, expectedHash: eventCommandHash(SPAWN), eventId: "new_copy" });
   expect(commandsOf(after)[0]).toMatchObject({ fields: { eventId: "new_copy" } });
@@ -626,10 +629,18 @@ it("공용 이벤트가 복제본을 제거할 수 있거나 반복을 돌며 �
 
 it("공용 이벤트의 같은 이름 라벨은 호출자에서 이미 생성한 복제본에 영향을 주지 않는다", () => {
   const label = { kind: "label", name: "계속" } as const;
-  const { project, target } = seed("blank", [SPAWN, { kind: "callCommonEvent", commonEventId: "jump" }, label]);
-  project.commonEvents = [{ id: "jump", name: "위치 이동", trigger: "none", commands: [
-    { kind: "gotoLabel", name: label.name }, { ...label },
-  ] }];
+  const call = (depth: number): Command => ({ kind: "callCommonEvent", commonEventId: `jump_${depth}` });
+  const { project, target } = seed("blank", [call(0), SPAWN, label]);
+  project.commonEvents = Array.from({ length: 24 }, (_, depth) => ({
+    id: `jump_${depth}`, name: "위치 이동", trigger: "none",
+    commands: depth === 23 ? [{ kind: "gotoLabel", name: label.name }, { ...label }] : [call(depth + 1), call(depth + 1)],
+  }));
+  const { after } = runPrimitive(project, target, "m2.204.insert", { eventId: COPY });
+  expect(commandsOf(after).at(-1)).toMatchObject(REMOVE);
+});
+
+it("생성 다음에 대사만 건너뛰면 복제본 제거를 추가할 수 있다", () => {
+  const { project, target } = seed("blank", [SPAWN, { kind: "gotoLabel", name: "계속" }, TAIL, { kind: "label", name: "계속" }]);
   const { after } = runPrimitive(project, target, "m2.204.insert", { eventId: COPY });
   expect(commandsOf(after).at(-1)).toMatchObject(REMOVE);
 });
@@ -790,14 +801,16 @@ it.each(["생략", "빈 문자열", "this-event"] as const)("자기 제거 대�
 it("다른 맵으로 옮겨진 이벤트는 저장된 this-event 제거를 원래 맵에 기록한다", () => {
   const command = { ...REMOVE, fields: { eventId: "this-event", mapId: "remote" } };
   const { project, map } = seed("blank", [command]);
-  project.maps.remote = { ...map, id: "remote", events: [] };
+  const remote = { ...map, id: "remote", events: [] };
+  project.maps.remote = remote;
   const session = startSession(project, 7);
   session.currentMapId = "remote";
   session.eventLocations = { [HOST]: { mapId: "remote", x: 1, y: 1 } };
+  expect(runtimeEventViewById(project, remote, session, {}, HOST)).toBeDefined();
   expect(createInterpreter(commandsOf(project), session, project, { currentEventId: HOST }).start())
     .toEqual({ kind: "removeEvent", eventId: HOST });
   expect(session.removedEventIds?.[map.id]).toEqual([HOST]);
-  expect(runtimeEventViewById(project, map, session, {}, HOST)).toBeUndefined();
+  expect(runtimeEventViewById(project, remote, session, {}, HOST)).toBeUndefined();
 });
 
 it("저작 맵을 조회할 수 없으면 자기 제거에 저장된 맵을 사용한다", () => {

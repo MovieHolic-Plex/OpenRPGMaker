@@ -179,11 +179,6 @@ function finishPatch(ctx: PageContext, entry: M2CommandCatalogEntry, fields: M2C
     patch.eventId = stringField(fields, "eventId") || `${prefabId}_spawn`;
   }
   if (entry.index === 204 && patch.eventId === "this-event") patch.eventId = "";
-  if (entry.index === 69 && Object.hasOwn(patch, "resourceId")) {
-    // The rich editor reads the old value field first when it is present.
-    if (Object.hasOwn(fields, "value")) patch.value = patch.resourceId;
-    if (Object.hasOwn(fields, "target")) patch.target = patch.resourceId;
-  }
   if (entry.index === 49) {
     if (Object.hasOwn(patch, "mode")) {
       if (Object.hasOwn(fields, "return")) patch.return = patch.mode === "return";
@@ -493,6 +488,10 @@ function primitive(entry: M2CommandCatalogEntry, operation: "insert" | "update")
       }
     }
     const next = { ...current, fields: { ...current.fields, ...patch } };
+    if (entry.index === 69 && patch.resourceId !== undefined) {
+      delete next.fields.value;
+      delete next.fields.target;
+    }
     if (entry.index === 69 && patch.flowPercent === undefined && (!update || patch.resourceId === "")) {
       delete next.fields.flowPercent;
       delete next.fields.flowDurationMs;
