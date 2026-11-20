@@ -175,7 +175,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
       ]);
       owner.signal.throwIfAborted();
       const before = smallTaskBase(live, target);
-      const after = await runSmallTask(before, target, request, owner.signal);
+      const after = await runSmallTask(before, target, request, owner.signal, live);
       owner.signal.throwIfAborted();
       if (!box.isConnected) { close(); return; }
       const summary = plainSummary(before, after);

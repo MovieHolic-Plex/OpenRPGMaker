@@ -12,6 +12,7 @@ import { mapTarget as makeTarget } from "@/editor/smallTask/target";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { openingStageFlag } from "@/project/openingStage";
+import type { QuestGraphConditionExpression } from "@/project/quest/questDef";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
@@ -115,6 +116,27 @@ describe("명령 한 줄", () => {
     expectRefused(before, target, "cmd.delete", { index: 2, expectedHash: eventCommandHash(page.commands[2]) }, /오프닝을 마치는/u);
   });
 
+  it.each<{ completesWhen: QuestGraphConditionExpression }>([
+    { completesWhen: { kind: "switch", switchId: "sw_done", value: true } },
+    { completesWhen: { all: [{ kind: "switch", storyFlagId: "quest-done" }] } },
+    { completesWhen: [{ kind: "storyFlag", flagId: "quest-done" }] },
+  ])("퀘스트 완료 조건이 읽는 스위치의 마지막 쓰기만 보호한다 (%j)", ({ completesWhen }) => {
+    const write: Command = { kind: "setSwitch", switchId: "sw_done", value: true };
+    const { before, target, read } = fixture([write]);
+    before.switches.push({ id: "sw_done", name: "퀘스트 완료" });
+    before.storyFlags = [{ id: "quest-done", kind: "switch", targetId: "sw_done", description: "완료 표시" }];
+    const args = { index: 0, expectedHash: eventCommandHash(write) };
+    expect(read(expectApplies(structuredClone(before), target, "cmd.delete", args).after)).toEqual([]);
+
+    before.quests = [{
+      kind: "graph", id: "quest", title: "완료 확인", edges: [],
+      nodes: [{ id: "done", description: "완료", completesWhen }],
+    }];
+    expectRefused(structuredClone(before), target, "cmd.delete", args, /진행 값을 읽는 조건/u);
+    before.maps[target.mapId].events[1].pages![0].commands.push(write);
+    expect(read(expectApplies(before, target, "cmd.delete", args).after)).toEqual([]);
+  });
+
   it("다른 대상, 잘못된 인자, 없는 도착 위치, 오래된 이동 해시를 거절한다", () => {
     const { before, target, map, page } = fixture();
     const args = { index: 0, expectedHash: eventCommandHash(page.commands[0]) };
@@ -175,7 +197,7 @@ describe("명령 한 줄", () => {
   });
 });
 
-it("자료집 범위를 호스트의 레코드에 고정하고 기본 장비 칸 첫 저장 ID를 제한한다", () => {
+it("자료집 범위를 호스트의 레코드에 고정하고 기본 장비 칸 저장 ID를 제한한다", () => {
   const { before } = fixture();
   delete before.database.equipmentSlots;
   const target = { kind: "dbEntry", collection: "equipmentSlots", id: "weapon", label: "무기" } as const;
@@ -183,11 +205,37 @@ it("자료집 범위를 호스트의 레코드에 고정하고 기본 장비 칸
   const update = { ...CORE_PRIMITIVES[0]!, id: "db.equipmentSlots.update",
     scope: () => ({ kind: "dbEntries", entries: [], create: { collection: "equipmentSlots", max: 1 } } as const) };
   expect(primitiveScope(ctx, update, { label: "무기 손" })).toMatchObject({ create: { ids: ["weapon"] } });
+  before.database.equipmentSlots = [{ id: "weapon", label: "무기" }];
+  expect(primitiveScope(ctx, update, { label: "무기 손" })).toMatchObject({ create: { ids: ["weapon"] } });
   const wrongRow = { ...update, scope: () => ({ kind: "dbRemove", collection: "equipmentSlots", id: "helmet" } as const) };
   expect(() => primitiveScope(ctx, wrongRow, {})).toThrow(/선택한 자료집 항목/u);
 });
 
 describe("등록과 호스트 도구", () => {
+  it("호스트 도구는 작업 사본 바깥의 초안이 사용하는 출현 명령을 보호한다", async () => {
+    const spawn = { id: "slimes", troopId: "troop_slime", area: { x: 1, y: 1, w: 1, h: 1 }, maxAlive: 1 };
+    const command = { kind: "spawnFieldEnemy", spawn } as const;
+    const { before: live, target, map } = fixture([command]);
+    const original = map.events[1]!;
+    map.events[1] = { ...original, pages: undefined, commands: [{ kind: "despawnFieldEnemy", spawnId: spawn.id }],
+      draft: { kind: "new", original } };
+    const project = smallTaskBase(live, target);
+    const ctx = { project, smallTaskTarget: target, smallTaskDraftSource: live };
+    await expect(runSmallTaskPrimitiveTool(ctx, "apply_small_task_primitive", {
+      id: "cmd.delete", args: { index: 0, expectedHash: eventCommandHash(command) },
+    })).rejects.toThrow(/제거하는 명령/u);
+    expect(ctx.project).toBe(project);
+  });
+
+  it("페이지가 없는 기존 이벤트에는 명령 삭제와 이동을 제안하지 않는다", async () => {
+    const { before, event } = fixture();
+    delete event.pages;
+    const target = eventTarget(before, before.startMapId, event.id);
+    const { data } = await runSmallTaskPrimitiveTool({ project: before, smallTaskTarget: target }, "list_small_task_primitives", {});
+    expect(data?.map(row => row.id)).not.toContain("cmd.delete");
+    expect(data?.map(row => row.id)).not.toContain("cmd.move");
+  });
+
   it("별칭을 호출 시 해석하고 숨긴 행과 아직 등록되지 않은 별칭을 제안하지 않는다", () => {
     const [base] = CORE_PRIMITIVES;
     const alias = { ...base, id: "m2.000.insert", aliasOf: base.id };

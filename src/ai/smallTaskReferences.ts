@@ -1,3 +1,4 @@
+import { createSourceFile, forEachChild, isIdentifier, isStringLiteralLike, ScriptKind, ScriptTarget, type Node } from "typescript5";
 import { referenceIndex, type RefSite } from "@/editor/tools/dbReferenceIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { questDefId } from "@/project/quest/questDef";
@@ -30,9 +31,22 @@ export function withOpenEventDrafts(project: Project, live?: SmallTaskDraftSourc
 }
 
 export function scriptContainsLiteral(script: { readonly source: string; readonly compiled: string }, id: string, kind?: string): boolean {
-  const literal = new RegExp(`(["'\x60])${id.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}\\1`, "u");
-  return [script.source, script.compiled].some(source => typeof source === "string"
-    && (kind === undefined || source.includes(kind)) && literal.test(source));
+  return [script.source, script.compiled].some((source, index) => {
+    if (typeof source !== "string" || !source) return false;
+    const file = createSourceFile("event", source, ScriptTarget.Latest, false, index === 0 ? ScriptKind.TS : ScriptKind.JS);
+    let hasLiteral = false;
+    let hasKind = kind === undefined;
+    function visit(node: Node): true | undefined {
+      if (isStringLiteralLike(node)) {
+        hasLiteral ||= node.text === id;
+        hasKind ||= node.text === kind;
+      } else if (isIdentifier(node)) {
+        hasKind ||= node.text === kind;
+      }
+      return hasLiteral && hasKind ? true : forEachChild(node, visit);
+    }
+    return visit(file) === true;
+  });
 }
 
 function independentBattleCommand(project: Project, site: RefSite, catalog: NonNullable<Project["database"]["battleCommands"]>[number]): boolean {
@@ -51,6 +65,13 @@ function independentBattleCommand(project: Project, site: RefSite, catalog: NonN
     && (catalog.commonEventId === undefined || command.commonEventId != null));
 }
 
+// Shared fields can address more than one collection, such as items and equipment in the inventory.
+const COLLECTIONS_BY_ID_FIELD = new Map<string, readonly (keyof Project["database"])[]>([
+  ["itemId", ["items", "equipment"]], ["stateId", ["states"]], ["skillId", ["skills", "lifeSkills"]],
+  ["actorId", ["actors"]], ["classId", ["classes"]], ["troopId", ["troops"]],
+  ["enemyId", ["enemies"]], ["elementId", ["elements"]],
+]);
+
 export function removedDatabaseReference(
   before: Project, after: Project, removed: readonly { readonly collection: keyof Project["database"]; readonly id: string }[],
   live?: SmallTaskDraftSource,
@@ -65,6 +86,9 @@ export function removedDatabaseReference(
     return references.get(id)?.some(site => {
       const { path, asKey } = site;
       if (!asKey && path[0] === "database" && path.length === 4 && path[3] === "id") return false;
+      const field = path.at(-1);
+      const referencedCollections = !asKey && typeof field === "string" ? COLLECTIONS_BY_ID_FIELD.get(field) : undefined;
+      if (referencedCollections && !referencedCollections.includes(collection)) return false;
       return !catalog || !independentBattleCommand(working, site, catalog);
     });
   })) return true;
