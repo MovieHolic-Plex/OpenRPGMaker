@@ -371,13 +371,13 @@ it("작업본과 저장 원본의 참조를 보호하고 원격 삭제 충돌을
   expect(after.database.monsterSpecies).toEqual([]);
 });
 
-it("대사에 이전 이름을 따로 적어 둔 항목은 이름 변경과 삭제를 거절한다", () => {
+it.each(["반딧불을 찾아보세요.", "반딧불의 서식지입니다."])("대사 ‘%s’가 이전 이름을 쓰면 이름 변경과 삭제를 거절한다", body => {
   const collection = "monsterSpecies";
   const before = createRecord(setup(collection, "blank"), collection);
   before.commonEvents = [{
     id: "ce_monster_text", name: "도감 안내", trigger: "none",
     commands: [{ kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [],
-      else: [{ kind: "text", body: "반딧불을 찾아보세요." }] }],
+      else: [{ kind: "text", body }] }],
   }];
   expectRefused(before, targetFor(collection), idFor(collection, "update"), { name: "빛벌레" }, /기존 이름을 쓰는 곳/u);
   expectRefused(before, targetFor(collection), idFor(collection, "delete"), {}, /기존 이름을 쓰는 곳/u);

@@ -154,7 +154,7 @@ function hasCopiedName(project: Project, record: LifeFarmRecord, collection: Col
   const name = authoredName(record).trim();
   if (!name) return false;
   const boundary = "[^\\p{L}\\p{N}_]";
-  const pattern = new RegExp(`(?:^|${boundary})${escapePattern(name)}(?:으로|에서|에게|처럼|까지|이|가|은|는|을|를|과|와|로|도|만)?(?=$|${boundary})`, "u");
+  const pattern = new RegExp(`(?:^|${boundary})${escapePattern(name)}(?:으로|에서|에게|처럼|까지|이|가|은|는|을|를|과|와|로|도|만|의)?(?=$|${boundary})`, "u");
   const hasText = (value: unknown, display = false): boolean => {
     if (typeof value === "string") return display && pattern.test(value);
     if (Array.isArray(value)) return value.some(entry => hasText(entry, display));
