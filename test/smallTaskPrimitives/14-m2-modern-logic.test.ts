@@ -342,9 +342,27 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     const read = { ...submit, fields: { scoreId: "경주", action: "read", resultVariableId: VAR } };
     const commands = [submit, read, submit];
     const { project, target } = scenario("blank", commands);
+    project.variables = [{ id: VAR, name: "경주 점수" }];
     expectRefused(project, target, "m2.222.update", editArgs(commands, 0, { scoreId: "걷기" }), /점수를 올리는 마지막 명령/u);
     expectRefused(project, target, "cmd.delete", editArgs(commands, 0, {}), /점수를 올리는 마지막 명령/u);
     expect(() => runPrimitive(project, target, "m2.222.update", editArgs(commands, 2, { scoreId: "걷기" }))).not.toThrow();
+  });
+
+  it("반대쪽 분기의 점수 제출은 읽기를 보호할 수 없다", () => {
+    const submit = { ...newM2Command("m2-222-high-score"), fields: { scoreId: "경주", action: "submit", valueVariableId: VAR } };
+    const read = { ...submit, fields: { scoreId: "경주", action: "read", resultVariableId: VAR } };
+    const fork: Command = { kind: "fork", condition: { kind: "switch", switchId: SW, value: true }, then: [read], else: [submit] };
+    const commands = [submit, fork];
+    const { project, target } = scenario("blank", commands);
+    project.variables = [{ id: VAR, name: "경주 점수" }];
+    expectRefused(project, target, "cmd.delete", editArgs(commands, 0, {}), /점수를 올리는 마지막 명령/u);
+    expectRefused(project, target, "m2.222.update", editArgs(commands, 0, { scoreId: "걷기" }), /점수를 올리는 마지막 명령/u);
+
+    for (const replacement of [[submit, submit, fork], [submit, { ...fork, then: [submit, read] }]]) {
+      const { project, target, findEvent } = scenario("blank", replacement);
+      const { after } = runPrimitive(project, target, "cmd.delete", editArgs(replacement, 0, {}));
+      expect(findEvent(after).pages![0]!.commands).toEqual(replacement.slice(1));
+    }
   });
 
   it.each([
@@ -428,6 +446,18 @@ describe("다른 명령이 사용하는 기록 이름표", () => {
     const { project, target } = scenario("blank", commands);
     expectRefused(project, target, "m2.227.update", editArgs(commands, 1, { lineId: "prologue" }), /자동으로 이름표/u);
     expect(() => runPrimitive(project, target, "m2.227.update", editArgs(commands, 1, { text: "수정한 기록" }))).not.toThrow();
+  });
+
+  it.each(["erase", "reread"])("자동 일지 줄을 %s로 참조할 때 앞에 쓰기 명령을 끼워 넣지 않는다", action => {
+    const write = newM2Command("m2-227-journal-line");
+    const automatic = { ...write, fields: { text: "첫 기록" } };
+    const reader = { ...write, fields: { action, lineId: "line-1" } };
+    const commands = [automatic, reader];
+    const { project, target, findEvent } = scenario("blank", commands);
+    expectRefused(project, target, "m2.227.insert", { index: 0, text: "새 기록" }, /자동으로 이름표/u);
+    expectRefused(project, target, "m2.227.insert", { index: 0, lineId: "머리말", text: "새 기록" }, /자동으로 이름표/u);
+    const { after } = runPrimitive(project, target, "m2.227.insert", { text: "새 기록" });
+    expect(findEvent(after).pages![0]!.commands).toMatchObject([...commands, { fields: { text: "새 기록" } }]);
   });
 });
 

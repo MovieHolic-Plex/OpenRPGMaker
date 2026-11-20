@@ -36,7 +36,9 @@ export interface SmallTaskToolContext extends ToolContext {
 }
 
 /** Only the small-task host can supply this context. Its final changeset and history are handled by the frame. */
-export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name: string, args: Record<string, unknown>) {
+export async function runSmallTaskPrimitiveTool(
+  ctx: SmallTaskToolContext, name: string, args: Record<string, unknown>, live?: PrimitiveContext["live"],
+) {
   // 등록 초기화가 끝난 뒤 유닛을 읽는다. 유닛과 범위 검사도 공용 도구를 참조할 수 있다.
   const [{ PrimitiveError }, { getPrimitive, primitivesForTarget }, { matchesPrimitiveSchema, runPrimitive }] = await Promise.all([
     import("@/editor/smallTask/primitives/errors"),
@@ -56,7 +58,7 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
 
   const id = args.id as string;
   if (!offered.some(row => row.id === id)) throw new PrimitiveError("범위 밖: 선택한 대상에 이 동작을 쓸 수 없어요.");
-  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, args.args as Record<string, unknown>, ctx.smallTaskSelection);
+  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, args.args as Record<string, unknown>, ctx.smallTaskSelection, live);
   ctx.project = result.after;
   return { ok: true, summary: result.sentence };
 }

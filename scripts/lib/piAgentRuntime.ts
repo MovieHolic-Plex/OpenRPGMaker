@@ -464,7 +464,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     ...tool,
     label: tool.name,
     async execute(_id, params) {
-      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>, scope.live);
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
   }));

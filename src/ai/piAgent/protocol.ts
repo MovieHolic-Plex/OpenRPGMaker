@@ -150,6 +150,8 @@ export interface PiAgentRequest {
     readonly target: import("@/editor/smallTask/target").SmallTaskTarget;
     readonly maxToolCalls: number;
     readonly selection?: { readonly rect: Readonly<Rect> };
+    /** Other open events, available only to the worker's reference checks. */
+    readonly live?: import("../smallTaskReferences").SmallTaskDraftSource;
   };
   /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
   readonly team?: PiTeamSpec;

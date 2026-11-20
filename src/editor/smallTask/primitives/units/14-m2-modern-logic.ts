@@ -65,7 +65,7 @@ function commandEdit(entry: M2CommandCatalogEntry, row: ModernLogicRow, update: 
     const command = newM2Command(entry.id);
     if (!update) {
       const fields = { ...command.fields, ...editFields };
-      return { path, hash: undefined, command: { ...command, fields }, validationFields: fields };
+      return { path, hash: undefined, list, command: { ...command, fields }, validationFields: fields };
     }
     const current = list[index];
     if (current?.kind !== "m2Command" || current.commandId !== entry.id) {
@@ -114,7 +114,7 @@ function commandEdit(entry: M2CommandCatalogEntry, row: ModernLogicRow, update: 
       const { command, path, hash, current, list, validationFields } = edit(ctx, args);
       row.validate?.(ctx, validationFields, args);
       const fields = row.prepare?.(command.fields, validationFields, args) ?? command.fields;
-      if (current) validateRecordEdit(ctx.project, current, fields, list, path.at(-1)!);
+      validateRecordEdit(ctx, command.commandId, list, path.at(-1)!, current, fields);
       try {
         return updateScopedPage(ctx, page => hash === undefined
           ? insertEventCommand(page, path, { ...command, fields })

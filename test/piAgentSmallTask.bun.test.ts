@@ -9,7 +9,7 @@ import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/e
 import { createBlankProject } from "../src/project/defaults/blankProject.ts";
 import { eventCommandHash } from "../src/project/eventCommands/singleCommandOps.ts";
 import { layerTileAt } from "../src/project/mapLayers.ts";
-import type { Command, EventPage } from "../src/project/types.ts";
+import type { Command, EventPage, GameEvent } from "../src/project/types.ts";
 
 type Call = { name: string; args: Record<string, unknown> };
 type ModelContext = Parameters<StreamFn>[1];
@@ -104,6 +104,29 @@ test("작은 일 Pi 실행은 맵 대상에 cmd.delete를 쓰면 거절한다", 
   expect(done.stoppedEarly).toContain("범위 밖");
   expect(done.changedKeys).toEqual([]);
   expect(done.project).toBe(project);
+});
+
+test("작은 일 Pi 실행은 다른 이벤트의 열린 초안이 읽는 현대 명령 기록을 보호한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const variableId = project.variables[0]!.id;
+  const submit = {
+    kind: "m2Command", commandId: "m2-222-high-score",
+    fields: { action: "submit", scoreId: "경주", valueVariableId: variableId },
+  } satisfies Command;
+  const read = { ...submit, fields: { action: "read", scoreId: "경주", resultVariableId: variableId } };
+  event.pages[1]!.commands = [submit];
+  const original = project.maps[mapId].events[1]!;
+  const draft: GameEvent = {
+    ...original, pages: [{ ...original.pages![0]!, commands: [read] }], draft: { kind: "edit", original },
+  };
+  const draftRequest = { ...request, smallTask: { ...request.smallTask, live: { maps: { [mapId]: { events: [draft] } } } } };
+  const args = { index: 0, expectedHash: eventCommandHash(submit) };
+  for (const call of [apply("cmd.delete", args), apply("m2.222.update", { ...args, scoreId: "걷기" })]) {
+    const done = await runPiAgent(draftRequest, { streamFn: scripted([call]) });
+    expect(done.stoppedEarly).toContain("점수를 올리는 마지막 명령");
+    expect(done.changedKeys).toEqual([]);
+    expect(done.project).toBe(project);
+  }
 });
 
 test("작은 일 Pi 실행은 범위 밖 줄로 이동하면 앞선 삭제도 버린다", async () => {

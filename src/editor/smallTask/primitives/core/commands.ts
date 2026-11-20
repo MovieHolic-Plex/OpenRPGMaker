@@ -37,7 +37,7 @@ export const CORE_PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const after = updateScopedPage(ctx, page =>
         deleteEventCommand(page, [...branchPath, index], expectedHash));
       assertCommandDeletion(ctx, after, list, command);
-      if (command.kind === "m2Command") validateRecordEdit(ctx.project, command, undefined, list, index);
+      if (command.kind === "m2Command") validateRecordEdit(ctx, command.commandId, list, index, command, undefined);
       return after;
     },
   },

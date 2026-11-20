@@ -88,13 +88,21 @@ it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 } },
   { kind: "event", selectedMapId: "another_map", rect: undefined },
   { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, withDraft: true },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly }) => {
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly, withDraft }) => {
   const project = fixture();
   const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
+  const live = structuredClone(project);
+  const selected = live.maps.map_a.events[0]!;
+  const otherDraft: GameEvent = { ...selected, id: "ev_other", draft: { kind: "new" } };
+  if (withDraft) {
+    selected.draft = { kind: "edit", original: project.maps.map_a.events[0]! };
+    live.maps.map_a.events.push(otherDraft);
+  }
   const previousSelection = editorState.get().selection;
   editorState.set({ selection: { mapId: selectedMapId, x: 2, y: 3, width: 4, height: 5 } });
   const signal = new AbortController().signal;
@@ -107,6 +115,8 @@ it.each([
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
+    expect(body.smallTask.live).toEqual(withDraft ? { maps: { map_a: { events: [otherDraft] } } } : undefined);
+    expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     expect(body).not.toHaveProperty("apiKey");
     const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
@@ -115,7 +125,7 @@ it.each([
   });
   vi.stubGlobal("fetch", fetch);
   try {
-    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal);
+    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal, live);
     if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
