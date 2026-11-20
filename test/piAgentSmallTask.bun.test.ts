@@ -3,6 +3,7 @@ import type { StreamFn } from "@oh-my-pi/pi-agent-core";
 import { createAssistantMessageEventStream, type AssistantMessage } from "@oh-my-pi/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
+import { MAP_REMOVAL_DRAFT_REFUSAL } from "../src/editor/smallTask/primitives/errors.ts";
 import { mapTarget } from "../src/editor/smallTask/target.ts";
 import { SMALL_TASK_SCOPE_REFUSAL } from "../src/editor/smallTask/tools.ts";
 import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/editor/tools/smallTaskPrimitiveTools.ts";
@@ -188,6 +189,23 @@ test("작은 일 Pi 실행은 요청에 포함된 새 이벤트 초안이 참조
   const withoutDraft = await runPiAgent(request, { streamFn: scripted([deletion]) });
   expect(withoutDraft.stoppedEarly).toBeUndefined();
   expect(withoutDraft.project.maps[mapId].events[0]?.pages?.[1]?.commands).toEqual(commands);
+});
+
+test("작은 일 Pi 실행은 이동 초안이 가리키는 맵의 삭제를 거절한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const removableId = "map_removable";
+  project.maps[removableId] = { ...project.maps[mapId], id: removableId, name: "삭제 대상 맵", events: [] };
+  project.mapTree.children.push({ mapId: removableId, children: [] });
+  const original = { id: "draft_door", name: "미저장 출입구", x: 3, y: 3, trigger: event.trigger, commands: [] };
+  const draft: GameEvent = { ...original, commands: [{ kind: "transfer", mapId: removableId, x: 1, y: 1 }],
+    draft: { kind: "new", original } };
+  const target = mapTarget(project, removableId)!;
+  const draftSource = { maps: { [mapId]: { events: [draft] } } };
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, target, draftSource } },
+    { streamFn: scripted([apply("map.structure.remove", {})]) });
+  expect(done.stoppedEarly).toBe(`${MAP_REMOVAL_DRAFT_REFUSAL}『미저장 출입구』에서 이 맵을 사용하고 있어 삭제할 수 없어요.`);
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
 });
 
 test("작은 일 Pi 실행은 다른 이벤트의 열린 초안이 읽는 현대 명령 기록을 보호한다", async () => {
