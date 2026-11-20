@@ -4,6 +4,8 @@ import { eventDraftHasUserChanges, eventWithoutDraft, projectViewWithoutEventDra
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { PrimitiveError } from "./primitives/errors";
+import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 function withEvent(project: Project, mapId: string, event: GameEvent): Project {
@@ -29,6 +31,17 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
     && !after.database[target.collection]?.some(row => row.id === target.id)
     && removedDatabaseReference(before, after, [target], live)) {
     throw new SmallTaskError("다른 설정이나 이벤트, 스크립트에서 사용 중인 자료집 항목은 삭제할 수 없어요.");
+  }
+  if (before.commonEvents !== after.commonEvents) {
+    const remaining = new Set(after.commonEvents.map(event => event.id));
+    try {
+      for (const event of before.commonEvents) {
+        if (!remaining.has(event.id)) refuseReferencedRemoval(after, event.id, live);
+      }
+    } catch (error) {
+      if (error instanceof PrimitiveError) throw new SmallTaskError(error.message);
+      throw error;
+    }
   }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;

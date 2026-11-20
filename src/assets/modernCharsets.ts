@@ -5,7 +5,7 @@
 // 칸 번호는 덧붙이기 전용이다. 명단의 desc 가 조수가 찾는 외형 문장이다. 베이스 칩 출처 크레딧: public/assets/ATTRIBUTION.md 「Modern1~3」.
 import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import type { CharsetAge, CharsetGender, CharsetSemanticEntry } from "@/assets/charsetSemantics";
-import roster from "@/assets/modernCharsets.json";
+import roster from "@/assets/modernCharsets.json" with { type: "json" };
 
 interface ModernCharacter {
   id: string; name: string; desc: string; genre: string; role: string;

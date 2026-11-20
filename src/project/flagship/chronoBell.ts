@@ -52,7 +52,7 @@ import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpe
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
-import handInteriorSpec from "@/assets/handInteriorSpec.json";
+import handInteriorSpec from "@/assets/handInteriorSpec.json" with { type: "json" };
 
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";

@@ -3,7 +3,7 @@
 // 시트와 명단(src/assets/wizardingCharsets.json)은 scripts/content/wizarding/bake_wz.py 가 검수 통과분만 굽는다. 명단의 desc 가 조수가 찾는 외형 문장이다.
 import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import type { CharsetSemanticEntry } from "@/assets/charsetSemantics";
-import roster from "@/assets/wizardingCharsets.json";
+import roster from "@/assets/wizardingCharsets.json" with { type: "json" };
 
 interface WizardingCharacter { id: string; name: string; space: string; spaceName: string; desc: string; sheet: number; index: number; source: string }
 const CHARACTERS = (roster as { characters: WizardingCharacter[] }).characters;

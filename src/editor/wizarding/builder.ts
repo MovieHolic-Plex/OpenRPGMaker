@@ -9,7 +9,7 @@
 //  불변식: 조각이 덮지 않은 걸을 수 있는 칸은 모두 한 덩이이고, 모든 출입구 칸과 시작 칸이 그 안에 있다.
 //         (조각 안에만 갇힌 ★ 칸 — 벽에 건 서가 윗줄 같은 것 — 은 덩이 수에서 뺀다.)
 //  오류가 하나라도 있으면 issues 에 담는다 — 도구는 그때 맵을 바꾸지 않는다.
-import spec from "@/assets/wizardingSpaceSpec.json";
+import spec from "@/assets/wizardingSpaceSpec.json" with { type: "json" };
 import { passabilityOf } from "@/project/collision";
 import { stairContractForKit } from "@/project/stairs/contract";
 import type { AutotileGroup, TilesetDef } from "@/project/types";

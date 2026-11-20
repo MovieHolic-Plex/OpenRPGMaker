@@ -1,5 +1,5 @@
-import bank from './interviewSceneBank.json';
-import data from './projectInterviewScenes.json';
+import bank from './interviewSceneBank.json' with { type: "json" };
+import data from './projectInterviewScenes.json' with { type: "json" };
 import type { GameInterview } from '@/project/gameInterview';
 import type { GameDesignAnswers } from '@/project/gameDesignBrief';
 import { INTERVIEW_SCENE_CATALOG_SIGNATURE, INTERVIEW_SCENE_SLOTS, INTERVIEW_SCENE_STYLE_VERSION, interviewSceneKey } from './interviewScenePlan';
