@@ -373,8 +373,8 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       })) {
         throw new PrimitiveError("자료집에 이 엔딩의 문장 수정 제안이 남아 있어 삭제할 수 없어요.");
       }
-      if (blueprintEnding(project, endings)?.id === ending.id) {
-        throw new PrimitiveError("게임 청사진에서 쓰는 엔딩이라 삭제할 수 없어요.");
+      if (blueprintEnding(project, endings)?.id !== blueprintEnding(project, remaining)?.id) {
+        throw new PrimitiveError("삭제하면 게임 청사진의 엔딩 연결이 바뀌어서 삭제할 수 없어요.");
       }
       return { ...project, endings: remaining };
     },

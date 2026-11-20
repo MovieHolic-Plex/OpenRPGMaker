@@ -428,6 +428,11 @@ it("청사진이 이름으로 가리키는 결말을 지우거나 연결이 끊�
   const target = mapTarget(project);
   expectRefused(project, target, "ending.remove", { record: unusedEnding.id }, /게임 청사진/u);
   expectRefused(project, target, "ending.update", { record: unusedEnding.id, name: "봄의 소식" }, /게임 청사진/u);
+  expect(runPrimitive(project, target, "ending.remove", { record: "ending_other" }).after.endings).toEqual([unusedEnding]);
+
+  const second = project.endings![1]!;
+  const unlinked = { ...project, endings: [{ ...unusedEnding, name: "옛 결말" }, second] };
+  expectRefused(unlinked, target, "ending.remove", { record: second.id }, /게임 청사진/u);
 
   const fallback = { ...project, endings: [{ ...unusedEnding, name: "옛 결말" }] };
   expectRefused(fallback, target, "ending.define", { name: "또 다른 결말" }, /게임 청사진/u);
@@ -558,7 +563,8 @@ it.each([
 
 it("이름 조회와 무관한 간접 API와 고정 명령은 스위치·변수 이름 변경을 막지 않아요", async () => {
   const source = 'const log = game.log; const config = { "game": "demo" }; log(config["game"]); game["gold"]();\n'
-    + 'await game.cmd({ kind: "changeGold", op: "+=", amount: 1 });';
+    + 'const labels = { eval: "preview", Function: "show" }; log(labels);\n'
+    + 'await game.cmd({ kind: "changeGold", op: "+=", amount: game.gold() });';
   const { ok, compiled, effects } = await compileScriptAsync(source, { typeCheck: false });
   expect(ok).toBe(true);
   const project: Project = {
@@ -576,7 +582,7 @@ it("이름 조회와 무관한 간접 API와 고정 명령은 스위치·변수 
 it("다른 엔딩만 부르는 고정 명령과 엔딩과 무관한 game.cmd는 삭제를 막지 않아요", async () => {
   const other = { ...unusedEnding, id: "ending_other", name: "다른 결말" };
   const source = 'const config = { game: "demo" }; const label = config.game; game.log(label);\n'
-    + 'await game.cmd({ kind: "changeGold", op: "+=", amount: -1 });\n'
+    + 'await game.cmd({ kind: "changeGold", op: "+=", amount: game.gold() });\n'
     + `await game["cmd"]({ kind: "triggerEnding", endingId: "${other.id}" });`;
   const { ok, compiled, effects } = await compileScriptAsync(source, { typeCheck: false });
   expect(ok).toBe(true);

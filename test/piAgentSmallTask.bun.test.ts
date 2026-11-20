@@ -157,7 +157,7 @@ test("작은 일 Pi 실행은 기존 paint_tiles 결과에서 선택 영역 밖�
   const paint = (x: number): Call => ({ name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x, y: 0 }] } });
   const outside = await runPiAgent(selectedRequest, { streamFn: scripted([paint(0), paint(1)]) });
   expect(outside.stoppedEarly).toContain("선택 영역 바깥 타일");
-  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 0 });
+  expect(outside.stats).toMatchObject({ toolCalls: 2, toolErrors: 1 });
   expect(outside.changedKeys).toEqual([]);
   expect(outside.project).toBe(project);
   expect(layerTileAt(project.maps[mapId], 2, 0)).toBe(-1);
@@ -184,8 +184,9 @@ test("작은 일 Pi 실행은 선택 영역이 있어도 제목을 바꾸고 영
 
   const rejected = await runPiAgent(selected, { streamFn: scripted([changeTitle, {
     name: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: 0, cells: [{ x: 1, y: 0 }] },
-  }]) });
+  }, apply("system.title", { title: "실행되면 안 되는 제목" })]) });
   expect(rejected.stoppedEarly).toContain("선택 영역 바깥 타일");
+  expect(rejected.stats.toolCalls).toBe(2);
   expect(rejected.project).toBe(project);
 });
 

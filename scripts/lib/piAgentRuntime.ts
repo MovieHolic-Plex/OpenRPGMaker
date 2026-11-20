@@ -443,7 +443,6 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   let toolErrors = 0;
   let turns = 0;
   let failure: string | undefined;
-  let regionFailure: string | undefined;
   const refuse = (message: string): undefined => {
     failure ??= message;
     controller.abort();
@@ -485,13 +484,17 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
       }
       const before = ctx.project;
       const response = await tool.execute(id, args, toolSignal ?? signal);
-      if (regionScope && !regionFailure && ctx.project !== before) {
+      if (regionScope && ctx.project !== before) {
         const primitive = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string"
           ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(args.id) : undefined;
         // Unit 28 is already checked against its project-area scope by runPrimitive.
         if (primitive?.unit !== "28-project-data") {
           const result = checkSmallTaskScope(before, ctx.project, regionScope);
-          if (!result.ok) regionFailure = result.reason;
+          if (!result.ok) {
+            ctx.project = before;
+            refuse(result.reason);
+            throw new Error(result.reason);
+          }
         }
       }
       return response;
@@ -545,7 +548,6 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     await local?.dispose();
   }
   options.signal?.throwIfAborted();
-  failure ??= regionFailure;
   const project = failure ? base : ctx.project;
   const done: PiAgentDoneEvent = {
     type: "done", smallTask: true, project, changedKeys: changedProjectKeys(base, project),

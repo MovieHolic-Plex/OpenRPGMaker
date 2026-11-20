@@ -68,8 +68,9 @@ export function scriptMayUseGameApi(
       if (node.text === "globalThis" && !(ts.isPropertyAccessExpression(member) && member.name === node)) {
         if (!propertyAccess(member, receiver) || propertyName(member) === undefined) return true;
       }
-      if (node.text === "eval" || node.text === "Function") return true;
-      if (node.text === "game" && !((ts.isPropertyAccessExpression(member) || ts.isPropertyAssignment(member)) && member.name === node)) {
+      const dataKey = ts.isPropertyAssignment(member) && member.name === node;
+      if ((node.text === "eval" || node.text === "Function") && !dataKey) return true;
+      if (node.text === "game" && !dataKey && !(ts.isPropertyAccessExpression(member) && member.name === node)) {
         if (gameObjectMayMatch(receiver)) return true;
       }
     }
@@ -131,6 +132,18 @@ function commandLiteral(node: ts.Expression | undefined, depth = 0): unknown {
 }
 
 export function scriptCmdMayMatch(call: ts.CallExpression | undefined, matches: (command: unknown) => boolean): boolean {
-  const command = commandLiteral(call?.arguments[0]);
-  return command === undefined || matches(command);
+  let argument = call?.arguments[0];
+  while (argument && ts.isParenthesizedExpression(argument)) argument = argument.expression;
+  const command = commandLiteral(argument);
+  if (command !== undefined) return matches(command);
+  if (!argument || !ts.isObjectLiteralExpression(argument)) return true;
+  // A gold change cannot execute nested commands, and its variable operand looks up an ID.
+  const fields = new Map<string, ts.Expression>();
+  for (const property of argument.properties) {
+    if (!ts.isPropertyAssignment(property) || !(ts.isIdentifier(property.name) || ts.isStringLiteral(property.name))) return true;
+    const name = property.name.text;
+    if (fields.has(name) || !["kind", "op", "amount"].includes(name)) return true;
+    fields.set(name, property.initializer);
+  }
+  return stringValue(fields.get("kind")) !== "changeGold";
 }
