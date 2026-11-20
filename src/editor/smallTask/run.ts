@@ -37,7 +37,7 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
     throw new SmallTaskError(result.stoppedEarly);
   }
   if (result.stoppedEarly) throw new Error(result.stoppedEarly);
-  if (!result.changedKeys.length) return before;
+  if ((result.changedKeys?.length ?? 0) === 0) return before;
   if (!commitChangeset(result.project, before).ok) throw new SmallTaskError("선택한 대상에 요청한 변경을 적용할 수 없어요.");
   return result.project;
 }
