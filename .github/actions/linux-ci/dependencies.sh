@@ -13,7 +13,9 @@ fi
 cache="$(dirname "$RUNNER_TEMP")/_tool/oprn-ci"
 mkdir -p "$cache"
 export npm_config_cache="$cache/npm" NPM_CONFIG_CACHE="$cache/npm"
-printf '%s\n' "OPRN_CI_CACHE=$cache" "npm_config_cache=$cache/npm" "NPM_CONFIG_CACHE=$cache/npm" >> "$GITHUB_ENV"
+export XDG_CACHE_HOME="$cache" ELECTRON_CACHE="$cache/electron"
+printf '%s\n' "OPRN_CI_CACHE=$cache" "npm_config_cache=$cache/npm" "NPM_CONFIG_CACHE=$cache/npm" \
+  "XDG_CACHE_HOME=$cache" "ELECTRON_CACHE=$cache/electron" "BUN_INSTALL_CACHE_DIR=$cache/bun-cache" >> "$GITHUB_ENV"
 
 key=$( { sha256sum package.json package-lock.json; node -p '[process.version, process.arch, process.platform].join(":")'; npm --version; } | sha256sum | cut -d ' ' -f 1)
 slot="$cache/deps-$IGNORE_SCRIPTS"

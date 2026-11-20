@@ -175,6 +175,7 @@ jobs:
           mkdir -p "$cache"/{electron,electron-builder,npm,demos}
           export npm_config_cache="$cache/npm" NPM_CONFIG_CACHE="$cache/npm"
           printf '%s\n' "ELECTRON_CACHE=$cache/electron" "ELECTRON_BUILDER_CACHE=$cache/electron-builder" \
+            "XDG_CACHE_HOME=$cache" "BUN_INSTALL_CACHE_DIR=$cache/bun-cache" \
             "OPRN_BAKE_DEMOS_CACHE_DIR=$cache/demos" "npm_config_cache=$cache/npm" "NPM_CONFIG_CACHE=$cache/npm" >> "$GITHUB_ENV"
           node --version
           if [[ "$(bun --version 2>/dev/null || true)" == "$BUN_VERSION" ]]; then
