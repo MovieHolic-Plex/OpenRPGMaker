@@ -8,9 +8,10 @@ import type { SmallTaskTarget } from "@/editor/smallTask/target";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults/blankProject";
+import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { startSession } from "@/project/session";
-import type { Project } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { testSeededCorpus } from "./21-db-life-farm/corpus";
 import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
@@ -103,9 +104,9 @@ const fixtures = new Map<Fixture, Project>();
 const blankMapFixture = createBlankProject();
 
 beforeAll(() => {
-  // Building the flagship demo under parallel load can take longer than a record edit.
+  // The flagship project can take over three minutes to build on shared workers.
   fixtures.set("maou", loadFixture("maou"));
-}, 180_000);
+}, 300_000);
 
 function setup(collection: Collection, sample: Fixture) {
   const original = fixtures.get(sample) ?? loadFixture(sample);
@@ -337,12 +338,12 @@ it("스크립트가 몬스터 종의 ID를 계산해서 지급할 수 있으면 
   expectRefused(before, targetFor(collection), idFor(collection, "delete"), {}, /스크립트에서/u);
 });
 
-it("작업본과 저장 원본의 참조를 보호하고 이미 원격에서 삭제된 원본은 건너뛴다", () => {
+it("작업본과 저장 원본의 참조를 보호하고 원격 삭제 충돌을 닫은 뒤에는 삭제할 수 있다", () => {
   const collection = "monsterSpecies";
   const before = createRecord(setup(collection, "blank"), collection);
   const map = before.maps[before.startMapId]!;
-  const event = { id: "ev_gift", x: 1, y: 1, trigger: "action" as const, commands: [] };
-  const original = { ...event, commands: [{ kind: "giveMonster" as const, speciesId: exampleId, level: 3 }] };
+  const event: GameEvent = { id: "ev_gift", x: 1, y: 1, trigger: { kind: "action" }, commands: [] };
+  const original: GameEvent = { ...event, commands: [{ kind: "giveMonster", speciesId: exampleId, level: 3 }] };
   const edit = { ...event, draft: { kind: "edit" as const, original } };
   const target = targetFor(collection);
   const deletion = idFor(collection, "delete");
@@ -353,7 +354,10 @@ it("작업본과 저장 원본의 참조를 보호하고 이미 원격에서 삭
   const conflict = { kind: "remote-delete" as const, detectedAt: 1 };
   expectRefused(projectWithEvent({ ...edit, commands: original.commands, draft: { ...edit.draft, conflict } }),
     target, deletion, {}, /이 항목을 쓰는 곳/u);
-  const { after } = runPrimitive(projectWithEvent({ ...edit, draft: { ...edit.draft, conflict } }), target, deletion, {});
+  const live = projectWithEvent({ ...edit, draft: { ...edit.draft, conflict } });
+  const saved = projectViewWithoutEventDrafts(live);
+  expect(() => runPrimitive(saved, target, deletion, {}, undefined, live)).toThrow(/삭제할 수 없습니다/u);
+  const { after } = runPrimitive(saved, target, deletion, {});
   expect(after.database.monsterSpecies).toEqual([]);
 });
 
