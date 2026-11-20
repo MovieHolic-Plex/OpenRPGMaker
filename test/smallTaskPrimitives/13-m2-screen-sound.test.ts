@@ -2,7 +2,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { newM2Command } from "@/editor/eventCommandFactory";
-import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
@@ -11,7 +11,7 @@ import { createInterpreter } from "@/player/interpreter";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { DEPRECATED_M2_COMMAND_IDS } from "@/project/eventCommands/m2CatalogData";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
-import { startSession } from "@/project/session";
+import { showPictureState, startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
@@ -97,11 +97,12 @@ describe.each(cases)("화면·소리 명령 $row", sample => {
   const fixture = (["blank", "built", "maou"] as const)[offset % 3]!;
 
   it("선택한 페이지에 한 줄을 추가하고 한 번에 되돌립니다", async () => {
-    const { project, target, commandsOf, event, mapId } = setup(fixture);
+    const commands = sample.row === "052" ? [prefix, picture] : [prefix];
+    const { project, target, commandsOf, event, mapId } = setup(fixture, commands);
     const originalMaps = structuredClone(project.maps);
     const result = runPrimitive(project, target, `m2.${sample.row}.insert`, sample.fields);
 
-    expect(commandsOf(result.after)).toEqual([prefix, expectedInsert(sample)]);
+    expect(commandsOf(result.after)).toEqual([...commands, expectedInsert(sample)]);
     expectKoreanSentence(result.sentence);
     expect(jsonEqual(project.maps, originalMaps)).toBe(true);
     await expectUndoRestores(project, result.after, target);
@@ -117,14 +118,15 @@ describe.each(cases)("화면·소리 명령 $row", sample => {
   it("한 줄만 수정해 기존 필드를 보존하고 한 번에 되돌립니다", async () => {
     const baseRow = newM2Command(sample.swap ?? sample.id);
     if (!sample.swap) baseRow.fields = { ...baseRow.fields, duration: 900, ...sample.prior };
-    const { project, target, commandsOf } = setup(fixture, [prefix, baseRow, prefix]);
+    const preceding = sample.row === "052" ? picture : prefix;
+    const { project, target, commandsOf } = setup(fixture, [preceding, baseRow, prefix]);
     const values = { ...sample.fields, index: 1, expectedHash: eventCommandHash(baseRow) };
     const originalMaps = structuredClone(project.maps);
     const result = runPrimitive(project, target, `m2.${sample.row}.update`, values);
 
     const fields = { ...baseRow.fields, ...sample.fields, ...sample.expected };
     if (sample.row === "224") delete fields.eventId;
-    expect(commandsOf(result.after)).toEqual([prefix, sample.swap ? expectedInsert(sample) : { ...baseRow, fields }, prefix]);
+    expect(commandsOf(result.after)).toEqual([preceding, sample.swap ? expectedInsert(sample) : { ...baseRow, fields }, prefix]);
     expectKoreanSentence(result.sentence);
     expect(jsonEqual(project.maps, originalMaps)).toBe(true);
     expect(() => runPrimitive(project, target, `m2.${sample.row}.update`, { ...values, index: 0 })).toThrow(/범위 밖/u);
@@ -226,9 +228,13 @@ it("같은 식별자를 가진 페이지를 골랐으면 편집을 거절합니�
 });
 
 it.each(["030", "056"])("재생 경로가 없는 연출 %s을 숨기고 직접 호출도 거절합니다", row => {
-  const { project, target } = setup("blank");
+  const old = newM2Command("m2-047-flash-screen");
+  const { project, target } = setup("blank", [old]);
   expect(primitivesForTarget(target).some(p => p.id.startsWith(`m2.${row}.`))).toBe(false);
   expect(() => runPrimitive(project, target, `m2.${row}.insert`, {})).toThrow(/게임에서 지원하지 않습니다/u);
+  expect(() => runPrimitive(project, target, `m2.${row}.update`, {
+    index: 0, expectedHash: eventCommandHash(old), replaceFrom: "047",
+  })).toThrow(/게임에서 지원하지 않습니다/u);
 });
 
 it("그림을 직접 불러오는 옛 이동 줄은 교체하거나 다른 그림 칸으로 바꿀 수 없습니다", () => {
@@ -239,15 +245,57 @@ it("그림을 직접 불러오는 옛 이동 줄은 교체하거나 다른 그�
   expect(() => runPrimitive(project, target, "m2.052.update", { ...args, pictureId: "pic2" })).toThrow(/그림을 불러옵니다/u);
 });
 
-it("공용 이벤트에서 기억한 음악을 다시 재생하면 배경 음악 기억 줄을 유지합니다", () => {
+it("뒤에서 호출한 공용 이벤트의 재생이 읽는 배경 음악 기억 줄을 유지합니다", () => {
   const old = newM2Command("m2-063-memorize-current-bgm");
-  const { project, target } = setup("blank", [old]);
+  const call: Command = { kind: "callCommonEvent", commonEventId: "ce_replay" };
+  const branch: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 }, then: [old] };
+  const { project, target, commandsOf } = setup("blank", [branch, call]);
   project.commonEvents = [...project.commonEvents, {
     id: "ce_replay", name: "배경 음악 복원", trigger: "none",
     commands: [newM2Command("m2-064-play-memorized-bgm")],
   }];
   expect(() => runPrimitive(project, target, "m2.064.update", {
-    index: 0, expectedHash: eventCommandHash(old),
+    branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 0, expectedHash: eventCommandHash(old),
+  })).toThrow(/배경 음악을 다시 재생하는 명령/u);
+
+  const session = startSession(project);
+  session.audio = { bgm: { resourceId: SOUND, loop: true, volume: 65 } };
+  expect(createInterpreter(commandsOf(project), session, project).start()).toMatchObject({
+    kind: "playAudio", channel: "bgm", resourceId: SOUND, volume: 65,
+  });
+});
+
+it("다른 맵이나 호출하지 않은 공용 이벤트의 배경 음악 재생은 교체를 막지 않습니다", async () => {
+  const old = newM2Command("m2-063-memorize-current-bgm");
+  const replay = newM2Command("m2-064-play-memorized-bgm");
+  const { project, target, mapId, event, commandsOf } = setup("blank", [old]);
+  project.commonEvents = [...project.commonEvents, { id: "ce_other", name: "다른 음악", trigger: "none", commands: [replay] }];
+  project.maps.other_map = {
+    ...project.maps[mapId]!, id: "other_map", events: [{ ...event, pages: [stagePage("other_page", [replay])] }],
+  };
+  const { after } = runPrimitive(project, target, "m2.064.update", { index: 0, expectedHash: eventCommandHash(old) });
+  expect(commandsOf(after)).toEqual([replay]);
+  expect(after.commonEvents).toBe(project.commonEvents);
+  expect(after.maps.other_map).toBe(project.maps.other_map);
+  await expectUndoRestores(project, after, target);
+});
+
+it("뒤의 기억 줄이 재생에 쓸 값을 다시 저장하면 첫 줄을 바꿀 수 있습니다", () => {
+  const remember = newM2Command("m2-063-memorize-current-bgm");
+  const replay = newM2Command("m2-064-play-memorized-bgm");
+  const { project, target, commandsOf } = setup("blank", [remember, remember, replay]);
+  const { after } = runPrimitive(project, target, "m2.047.update", {
+    index: 0, replaceFrom: "063", expectedHash: eventCommandHash(remember),
+  });
+  expect(commandsOf(after)).toEqual([newM2Command("m2-047-flash-screen"), remember, replay]);
+});
+
+it("다음 반복에서 재생할 배경 음악을 기억하는 줄을 유지합니다", () => {
+  const remember = newM2Command("m2-063-memorize-current-bgm");
+  const replay = newM2Command("m2-064-play-memorized-bgm");
+  const { project, target } = setup("blank", [{ kind: "loop", body: [replay, remember] }]);
+  expect(() => runPrimitive(project, target, "m2.064.update", {
+    branchPath: [0, LOOP_BODY_BRANCH_INDEX], index: 1, expectedHash: eventCommandHash(remember),
   })).toThrow(/배경 음악을 다시 재생하는 명령/u);
 });
 
@@ -279,6 +327,40 @@ it("검은 띠를 날씨 효과로 바꿀 때 이전 효과의 숫자를 재사�
 it("승강 발판의 기준점만 맵 안에 있을 때는 거절합니다", () => {
   const { project, target, mapId } = setup("blank");
   expect(() => runPrimitive(project, target, "m2.226.insert", { x: project.maps[mapId]!.width - 1, y: 0, width: 2 })).toThrow(/범위 밖/u);
+});
+
+it.each(["party", "none"])("%s 승강 발판의 도착 영역 전체가 맵 안에 있어야 합니다", riders => {
+  const { project, target, mapId } = setup("blank");
+  const height = project.maps[mapId]!.height;
+  const apply = (y: number, direction: "up" | "down") => runPrimitive(project, target, "m2.226.insert", {
+    mode: "move", riders, direction, distance: 1, x: 0, y, depth: 2,
+  });
+  expect(() => apply(0, "up")).toThrow(/범위 밖/u);
+  expect(() => apply(height - 2, "down")).toThrow(/범위 밖/u);
+  expect(() => apply(height - 3, "down")).not.toThrow();
+});
+
+it("그림 이동을 추가하거나 대상을 바꿀 때 이후 줄과 다른 분기의 표시는 인정하지 않습니다", () => {
+  const old = { ...newM2Command("m2-052-move-picture"), fields: { pictureId: "old" } };
+  const branch: Command = {
+    kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [picture], else: [old, picture],
+  };
+  const { project, target } = setup("blank", [branch]);
+  const fields = { branchPath: [0, FORK_ELSE_BRANCH_INDEX], index: 0, pictureId: "pic2", x: 72 };
+  expect(() => runPrimitive(project, target, "m2.052.insert", fields)).toThrow(/그림 칸을 표시하는 명령/u);
+  expect(() => runPrimitive(project, target, "m2.052.update", { ...fields, expectedHash: eventCommandHash(old) }))
+    .toThrow(/그림 칸을 표시하는 명령/u);
+  expect(() => runPrimitive(project, target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
+    .toThrow(/그림 칸을 표시하는 명령/u);
+});
+
+it("앞서 표시한 그림이라도 실행할 수 있는 분기에서 지우면 이동을 거절합니다", () => {
+  const branch: Command = {
+    kind: "fork", condition: { kind: "gold", op: ">=", amount: 1 }, then: [{ kind: "erasePicture", pictureId: "pic2" }],
+  };
+  const { project, target } = setup("blank", [picture, branch]);
+  expect(() => runPrimitive(project, target, "m2.052.insert", { pictureId: "pic2", x: 72 }))
+    .toThrow(/그림 칸을 표시하는 명령/u);
 });
 
 describe("저장한 연출 명령의 헤드리스 실행", () => {
@@ -345,12 +427,18 @@ describe("저장한 연출 명령의 헤드리스 실행", () => {
   });
 
   it("그림을 가로로 옮겨도 세로 위치와 크기, 투명도가 이어집니다", () => {
-    const { after, commands } = insert("052", { pictureId: "pic2", x: 72, durationMs: 900, waitForPicture: true });
+    const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 0 }, then: [] };
+    const { project, target, commandsOf } = setup("blank", [picture, fork]);
+    const { after } = runPrimitive(project, target, "m2.052.insert", {
+      branchPath: [1, FORK_THEN_BRANCH_INDEX], pictureId: "pic2", x: 72, durationMs: 900, waitForPicture: true,
+    });
     const session = startSession(after);
-    session.pictures = {
-      pic2: { pictureId: "pic2", resourceId: "무대 그림", x: 18, y: 20, scale: 60, opacity: 100 },
-    };
-    expect(createInterpreter(commands, session).start()).toMatchObject({
+    const interpreter = createInterpreter(commandsOf(after), session);
+    const display = interpreter.start();
+    expect(display).toMatchObject({ kind: "showPicture", x: 18 });
+    if (display.kind !== "showPicture") throw new Error("그림 표시를 재생하지 않았습니다.");
+    showPictureState(session, display);
+    expect(interpreter.resume(undefined)).toMatchObject({
       kind: "showPicture", pictureId: "pic2", resourceId: "무대 그림", x: 72, y: 20, scale: 60, opacity: 100, durationMs: 900,
     });
   });

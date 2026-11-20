@@ -1,7 +1,6 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { isBgmCatalogResourceId } from "@/assets/bgmCatalogRuntime";
 import { newM2Command } from "@/editor/eventCommandFactory";
-import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import type { JsonSchema } from "@/editor/tools/types";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { isScreenColorName } from "@/player/interpreter/commandCatalog";
@@ -9,14 +8,16 @@ import { FREEZE_STYLES } from "@/player/interpreter/screenEffectPlan";
 import { isRecognizedTintValue } from "@/player/screen/tintModel";
 import { LETTERBOX_LIMITS } from "@/project/eventCommands/cinematicStaging";
 import { parseDoorValue } from "@/project/eventCommands/doorAnimation";
+import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
 import { M2_COMMAND_CATALOG, type M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { SCREEN_DISTORTION_LIMITS } from "@/project/eventCommands/screenDistortion";
 import { eventCommandHash, EventCommandEditError, insertEventCommand, updateEventCommand } from "@/project/eventCommands/singleCommandOps";
-import type { Command, GameMap, M2CommandFields, Project } from "@/project/types";
+import type { Command, GameMap, M2CommandFields } from "@/project/types";
 import { commandListAt, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { COMMAND_TITLES, modelFields } from "./13-m2-screen-sound/catalog";
+import { hasDependentBgmReplay, hasEarlierPicture, memorizeBgmId, movePictureId } from "./13-m2-screen-sound/commandOrder";
 
 export const UNIT = "13-m2-screen-sound";
 
@@ -32,10 +33,6 @@ const unavailable: Readonly<Record<string, string>> = {
   "030": "다음 화면 전환을 미리 예약하는 기능은 아직 게임에서 지원하지 않습니다.",
   "056": "이벤트에만 섬광을 표시하는 기능은 아직 게임에서 지원하지 않습니다.",
 };
-const pictureCommands = new Set(["m2-051-show-picture", "m2-052-move-picture"]);
-const memorizeBgmId = "m2-063-memorize-current-bgm";
-const replayBgmId = "m2-064-play-memorized-bgm";
-
 const spriteLookFields = ["pose", "tint", "tintHex", "tintFill", "flip", "afterimage", "angle", "opacity"] as const;
 
 function uniqueScopedPage(ctx: PrimitiveContext) {
@@ -82,21 +79,6 @@ function requireAudio(ctx: PrimitiveContext, resourceId: string, soundOnly: bool
   if (resolveAudioSource(resourceId, ctx.project) &&
       kinds.some(kind => listAudioResources(kind, ctx.project).some(resource => resource.id === resourceId))) return;
   throw new PrimitiveError(soundOnly ? "기계음에 쓸 효과음을 찾을 수 없습니다." : "재생할 소리 자료를 찾을 수 없습니다.");
-}
-
-function hasProjectCommand(project: Project, matches: (command: Command) => boolean): boolean {
-  let found = false;
-  visitProjectCommands(project, ({ command }) => {
-    if (!found && matches(command)) found = true;
-  });
-  return found;
-}
-
-function hasPictureSource(project: Project, pictureId: string): boolean {
-  return hasProjectCommand(project, command => command.kind === "showPicture"
-    ? command.pictureId === pictureId && Boolean(command.resourceId.trim())
-    : command.kind === "m2Command" && pictureCommands.has(command.commandId) &&
-      String(command.fields.pictureId ?? "pic1") === pictureId && Boolean(textField(command.fields, "resourceId")));
 }
 
 function requireEffectValue(effect: string, value: string, map: GameMap): void {
@@ -272,6 +254,12 @@ function applyFields(ctx: PrimitiveContext, map: GameMap, row: string, fields: M
     if (y !== -1) {
       requireMapTile(map, 0, y);
       requireMapTile(map, 0, y + Number(fields.depth ?? 2) - 1);
+      const lift = normalizeLiftRide(fields);
+      if (lift.mode === "move") {
+        const landingY = y + (lift.direction === "up" ? -lift.distance : lift.distance);
+        requireMapTile(map, 0, landingY);
+        requireMapTile(map, 0, landingY + lift.depth - 1);
+      }
     }
   }
 }
@@ -324,17 +312,17 @@ function edit(ctx: PrimitiveContext, args: Args, entry: M2CommandCatalogEntry, r
   }
   applyFields(ctx, map, row, fields, patch);
   if (current?.commandId === memorizeBgmId && entry.id !== memorizeBgmId &&
-      hasProjectCommand(ctx.project, command => command.kind === "m2Command" && command.commandId === replayBgmId)) {
+      hasDependentBgmReplay(ctx.project, map, page, path)) {
     throw new PrimitiveError("기억한 배경 음악을 다시 재생하는 명령이 있습니다. 이 배경 음악 기억 줄은 바꿀 수 없습니다.");
   }
   const previousPictureId = String(current?.fields.pictureId ?? "pic1");
   const pictureId = String(fields.pictureId ?? "pic1");
-  if (current?.commandId === "m2-052-move-picture" && textField(current.fields, "resourceId") &&
+  if (current?.commandId === movePictureId && textField(current.fields, "resourceId") &&
       (row !== "052" || pictureId !== previousPictureId)) {
     throw new PrimitiveError("이 줄에서 그림을 불러옵니다. 뒤에서 쓰는 그림을 지키려면 종류와 그림 칸을 그대로 두세요.");
   }
-  if (row === "052" && (!matching || pictureId !== previousPictureId) && !hasPictureSource(ctx.project, pictureId)) {
-    throw new PrimitiveError("이 그림 칸을 표시하는 명령을 프로젝트에서 찾을 수 없습니다.");
+  if (row === "052" && (!matching || pictureId !== previousPictureId) && !hasEarlierPicture(page, path, pictureId)) {
+    throw new PrimitiveError("이 줄에 도달하기 전에 같은 그림 칸을 표시하는 명령이 필요합니다.");
   }
   return { path, current, fields };
 }
