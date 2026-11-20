@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { checkSmallTaskScope, smallTaskScopeAllowsTool, type SmallTaskScope } from "@/ai/smallTaskScope";
-import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { normalizeEquipmentRecord, normalizeItemRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { discardEventDraft, projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { setLayerTileAt, setShadowAt } from "@/project/mapLayers";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import type { Command, EventPage, GameEvent, HomeDecorationTypeRecord, Project } from "@/project/types";
 
 const town = "town";
@@ -221,6 +223,46 @@ describe("작은 일 범위 검사", () => {
     });
   });
 
+  it("아이템을 가리키는 명령은 같은 ID가 붙은 상태의 삭제를 막지 않는다", () => {
+    const before = structuredClone(base);
+    before.database.states.push(normalizeStateRecord({ id: "potion", name: "독" }));
+    page(before).commands.push({ kind: "changeItem", itemId: "potion", op: "+=", amount: 1 });
+    const deleteState = { kind: "dbRemove", collection: "states", id: "potion" } as const;
+    const deleteItem = { kind: "dbRemove", collection: "items", id: "potion" } as const;
+    expect(verify(deleteState, p => { p.database.states.pop(); }, before)).toEqual({ ok: true });
+    expect(verify(deleteItem, p => { p.database.items.shift(); }, before))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
+  it("소지품 명령의 itemId가 가리키는 장비의 삭제를 막는다", () => {
+    const before = structuredClone(base);
+    const id = "event-reward-sword";
+    before.database.equipment.push(normalizeEquipmentRecord({ id, name: "보상 검" }));
+    page(before).commands.push({ kind: "changeItem", itemId: id, op: "+=", amount: 1 });
+    expect(verify({ kind: "dbRemove", collection: "equipment", id }, p => { p.database.equipment.pop(); }, before))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
+  it("생활 경험치 명령의 skillId가 가리키는 생활 스킬의 삭제를 막는다", () => {
+    const before = structuredClone(base);
+    const id = "event-cooking";
+    before.database.lifeSkills = [normalizeLifeSkillRecord({ id, name: "요리" })];
+    page(before).commands.push({ kind: "changeLifeSkillExp", skillId: id, op: "+=", amount: 1 });
+    expect(verify({ kind: "dbRemove", collection: "lifeSkills", id }, p => { p.database.lifeSkills = []; }, before))
+      .toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
+  it("스크립트 주석 속 ID는 건너뛰고 실행 코드에 있는 ID는 보호한다", () => {
+    const before = structuredClone(base);
+    const script = { kind: "script", source: '// game.addItem("potion", 1)', compiled: '/* "potion" */' } as const;
+    page(before).commands.push(script);
+    const remove = { kind: "dbRemove", collection: "items", id: "potion" } as const;
+    const deleteItem = (project: Project) => { project.database.items.shift(); };
+    expect(verify(remove, deleteItem, before)).toEqual({ ok: true });
+    page(before).commands.push({ ...script, compiled: 'game.addItem("potion", 1);' });
+    expect(verify(remove, deleteItem, before)).toMatchObject({ ok: false, reason: expect.stringContaining("삭제할 수 없습니다") });
+  });
+
   it("취소할 수 있는 새 이벤트에 의뢰 등록을 막고, 저장된 이벤트에는 등록할 수 있다", () => {
     const live = structuredClone(base);
     const original = event("new-giver", "의뢰인", 2);
@@ -237,7 +279,9 @@ describe("작은 일 범위 검사", () => {
     discardEventDraft(live, town, original.id);
     expect(live.maps[town]!.events.some(row => row.id === original.id)).toBe(false);
     expect(live.quests).toEqual(base.quests);
-    expect(checkSmallTaskScope(before, after, scope)).toEqual({ ok: true });
+    live.maps[town]!.events.push(original);
+    const committed = projectViewWithoutEventDrafts(live);
+    expect(checkSmallTaskScope(committed, { ...committed, quests: after.quests }, scope, live)).toEqual({ ok: true });
   });
 
   it("다른 자료집 항목, 초과 생성, 삭제, 중복 ID와 이벤트 변경을 차단한다", () => {
@@ -438,7 +482,18 @@ describe("선택 영역, 맵 속성, 새 맵과 프로젝트 항목 범위", () 
     const remove = { kind: "mapRemove", mapId: "woods" } as const;
     const removed = { ...before, maps: { [town]: before.maps[town]! }, mapTree: { mapId: town, children: [] } };
     expect(checkSmallTaskScope(before, removed, remove)).toEqual({ ok: true });
+    expect(checkSmallTaskScope(before, { ...removed, mapTree: before.mapTree }, remove)).toMatchObject({ ok: false });
     expect(checkSmallTaskScope(before, { ...removed, startPos: { x: 1, y: 1 } }, remove)).toMatchObject({ ok: false });
+  });
+
+  it("가로와 세로 모두 공용 맵 크기 상한을 지킨다", () => {
+    const resize = { kind: "mapResize", mapId: town } as const;
+    const resized = (width: number, height: number) => verify(resize, p => {
+      Object.assign(p.maps[town]!, { width, height, lowerTiles: Array(width * height).fill(0), upperTiles: Array(width * height).fill(-1) });
+    });
+    expect(resized(MAX_TOOL_MAP_DIMENSION, 1)).toEqual({ ok: true });
+    expect(resized(MAX_TOOL_MAP_DIMENSION + 1, 1)).toMatchObject({ ok: false });
+    expect(resized(1, MAX_TOOL_MAP_DIMENSION + 1)).toMatchObject({ ok: false });
   });
 
   it("새 맵 한 장의 목록과 지정된 출발 맵 연결만 추가한다", () => {
