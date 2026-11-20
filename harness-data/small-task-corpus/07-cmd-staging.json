@@ -122,7 +122,7 @@
     ]
   },
   {
-    "request": "기다라지 말고 바로 다음 줄 타게 해 줘.",
+    "request": "연출을 기다리지 말고 바로 다음 줄로 넘어가게 해 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showAnimation.update",
@@ -311,7 +311,7 @@
     ]
   },
   {
-    "request": "지금 이미 있는 이모트를 하투로 바꿔줘.",
+    "request": "지금 있는 감정 표시를 하트로 바꿔 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a", "eventId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1", "pageId": "ev_map_638339b3-341f-4d31-93bd-ccc90a33304a_wfoe1_fight"},
     "primitive": "cmd.showEmote.update",
@@ -354,23 +354,23 @@
   },
 
   {
-    "request": "버들항 타일 그림을 세 번째 자리에 놓아 주세요.",
+    "request": "들판 배경 그림을 세 번째 자리에 놓아 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "pictureId": "pic3"},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "pictureId": "pic3"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"},
-      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "tex_beodeul_city"}
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].resourceId", "equals": "oprn-title-field"}
     ]
   },
   {
-    "request": "버들항 그림 가로 마흔 세로 스무에 띄워.",
+    "request": "들판 그림 가로 마흔 세로 스무에 띄워.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "x": 40, "y": 20},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "x": 40, "y": 20},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].x", "equals": 40},
@@ -378,11 +378,11 @@
     ]
   },
   {
-    "request": "자리 둘에 버들항 그림 반 정도 투명하게 넣어줘.",
+    "request": "자리 둘에 들판 그림 반 정도 투명하게 넣어줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "pictureId": "pic2", "opacity": 128},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "pictureId": "pic2", "opacity": 128},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic2"},
@@ -390,11 +390,11 @@
     ]
   },
   {
-    "request": "버들항 그림을 절반 크기로, 다 뜨고 나서 다음 줄로 가 주세요.",
+    "request": "들판 그림을 절반 크기로, 다 뜨고 나서 다음 줄로 가 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "scale": 50, "waitForPicture": true},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "scale": 50, "waitForPicture": true},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].scale", "equals": 50},
@@ -402,33 +402,33 @@
     ]
   },
   {
-    "request": "버들항 그림 왼쪽으로 열두만큼 밖에 걸치게 해.",
+    "request": "들판 그림 왼쪽으로 열두만큼 밖에 걸치게 해.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "x": -12},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "x": -12},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].x", "equals": -12}
     ]
   },
   {
-    "request": "버들항 그림을 갤러리에도 남겨 주세요.",
+    "request": "들판 그림을 갤러리에도 남겨 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "recordInGallery": true},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "recordInGallery": true},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].recordInGallery", "equals": true}
     ]
   },
   {
-    "request": "타일 그림을 화면에 한초 동안 천천히 들여보내.",
+    "request": "들판 그림을 화면에 1초 동안 천천히 띄워 줘.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.showPicture.insert",
-    "args": {"index": 0, "resourceId": "tex_beodeul_city", "durationMs": 1000, "easing": "easeOut"},
+    "args": {"index": 0, "resourceId": "oprn-title-field", "durationMs": 1000, "easing": "easeOut"},
     "expect": [
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].kind", "equals": "showPicture"},
       {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].durationMs", "equals": 1000},
@@ -456,7 +456,7 @@
     ]
   },
   {
-    "request": "이미 띄운 엔딩 그림을 자리 세 번으로 바꿔 주세요.",
+    "request": "이미 띄운 엔딩 그림을 3번 자리로 바꿔 주세요.",
     "fixture": "maou",
     "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
     "primitive": "cmd.showPicture.update",
@@ -1950,6 +1950,48 @@
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
     "primitive": "cmd.setWeather.update",
     "args": {"index": 0, "intensity": 2},
+    "expectRefusal": true
+  },
+  {
+    "request": "비로 바뀌는 데 9007199254740992밀리초가 걸리게 해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.setWeather.insert",
+    "args": {"index": 0, "weather": "rain", "transitionMs": 9007199254740992},
+    "expectRefusal": true
+  },
+  {
+    "request": "예전 기본 타이틀 그림을 이 이벤트 첫 줄에서 띄워 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "easyrpg-title-title1"},
+    "expectRefusal": true
+  },
+  {
+    "request": "엔딩 선택지 안의 그림을 방금 읽었던 줄 기준으로 조금 오른쪽에 옮겨 줘.",
+    "fixture": "maou",
+    "target": {"kind": "event", "mapId": "map_mk_konbini", "eventId": "ev_mk_ctrl_end", "pageId": "ev_mk_ctrl_end_p7"},
+    "primitive": "cmd.showPicture.update",
+    "args": {"index": 47, "x": 20, "branchPath": [51, 0], "expectedHash": "stale"},
+    "expectRefusal": true
+  },
+  {
+    "request": "들판 그림을 3번 자리에 넣어 줘. 자리 이름 앞뒤의 공백은 빼 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "pictureId": " pic3 "},
+    "expect": [
+      {"at": "maps.map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d.events[id=ev_world_gate_fr1ddn].pages[0].commands[0].pictureId", "equals": "pic3"}
+    ]
+  },
+  {
+    "request": "들판 그림이 60초를 넘겨서 나타나게 설정해 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_world_gate_fr1ddn", "pageId": "ev_world_gate_fr1ddn_page_order"},
+    "primitive": "cmd.showPicture.insert",
+    "args": {"index": 0, "resourceId": "oprn-title-field", "durationMs": 60001},
     "expectRefusal": true
   }
 ]

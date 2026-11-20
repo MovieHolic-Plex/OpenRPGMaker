@@ -4,13 +4,15 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
-import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/07-cmd-staging";
 import { mapTarget } from "@/editor/smallTask/target";
 import { createInterpreter } from "@/player/interpreter";
+import { resolvePictureSource } from "@/player/pictures/pictureResources";
+import { resolveMovieResourceUrl } from "@/player/playSceneMovies";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { startSession } from "@/project/session";
@@ -26,7 +28,7 @@ const MOVIE: UploadedAsset = {
   meta: {},
 };
 const AUDIO = "cc0-se-osx-wooded-box-open";
-const PICTURE = "tex_beodeul_city";
+const PICTURE = "oprn-title-field";
 const PAGE = "test_staging_page";
 const EVENT = "test_staging_event";
 const OTHER = "test_other_actor";
@@ -223,6 +225,41 @@ it("분기 안 한 줄을 끼워 넣고 해시로 오래된 수정 요청을 거
   expect(selectedPage(updated.after, mapId).commands).toStrictEqual([LINE, { ...loop, body: [{ ...current, emote: "idea" }, WAIT] }]);
 });
 
+it("없는 분기와 줄에 쓰지 않고, 비어 있는 분기에는 끝에 추가한다", () => {
+  const loop: Command = { kind: "loop", body: [] };
+  const { project, target, mapId } = fixture("blank", [LINE, loop]);
+  const id = "cmd.showEmote.insert";
+  expectRefused(project, target, id, { branchPath: [1] }, /분기 위치/u);
+  expectRefused(project, target, id, { branchPath: [1, FORK_ELSE_BRANCH_INDEX] }, /명령 분기를 찾을 수 없어요/u);
+  expectRefused(project, target, id, { branchPath: [1, LOOP_BODY_BRANCH_INDEX], index: 1 }, /줄이 없습니다/u);
+  expectRefused(project, target, "cmd.showEmote.update", { index: 0, emote: "heart" }, /같은 종류/u);
+  const { after } = runPrimitive(project, target, id, { branchPath: [1, LOOP_BODY_BRANCH_INDEX] });
+  expect(selectedPage(after, mapId).commands).toStrictEqual([
+    LINE, { ...loop, body: [{ kind: "showEmote", emote: "heart", target: { eventId: "" } }] },
+  ]);
+  const beforeMap = project.maps[mapId]!;
+  const eventIndex = beforeMap.events.findIndex(event => event.id === EVENT);
+  const afterMap = after.maps[mapId]!;
+  expect(afterMap.events[eventIndex]!.pages![0]).toBe(beforeMap.events[eventIndex]!.pages![0]);
+  expect(afterMap.events.find(event => event.id === OTHER)).toBe(beforeMap.events.find(event => event.id === OTHER));
+});
+
+it.each(["insert", "update"] as const)("같은 배열을 쓰는 두 분기에서도 선택한 분기에만 %s 한다", mode => {
+  const emote: Command = { kind: "showEmote", target: "player", emote: "heart", durationMs: undefined };
+  const shared = [emote];
+  const fork: Command = { kind: "fork", condition: { kind: "gold", op: ">=", amount: 3 }, then: shared, else: shared };
+  const { project, target, page, mapId } = fixture("blank", [fork]);
+  const { after } = runPrimitive(project, target, `cmd.showEmote.${mode}`, {
+    branchPath: [0, FORK_THEN_BRANCH_INDEX], index: 0, emote: "smile",
+    ...(mode === "update" ? { expectedHash: eventCommandHash(emote) } : {}),
+  });
+  const next = mode === "insert" ? [{ kind: "showEmote", target: { eventId: "" }, emote: "smile" }, emote]
+    : [{ ...emote, emote: "smile" }];
+  expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...fork, then: next, else: [emote] }]);
+  expect(page.commands).toStrictEqual([fork]);
+  expect(shared).toStrictEqual([emote]);
+});
+
 it("그림 합성을 보통으로 돌리면 합성 설정만 지운다", () => {
   const picture: Command = { kind: "showPicture", resourceId: PICTURE, pictureId: "pic1", x: 0, y: 0, opacity: 128 };
   const { project, target, mapId } = fixture("blank", [{ ...picture, blendMode: "screen" }]);
@@ -230,11 +267,91 @@ it("그림 합성을 보통으로 돌리면 합성 설정만 지운다", () => {
   expect(selectedPage(after, mapId).commands).toStrictEqual([picture]);
 });
 
+const slotPicture: Command = { kind: "showPicture", resourceId: PICTURE, pictureId: "title_card", x: 0, y: 0 };
+const slotLight: Command = { kind: "addLight", source: { id: "door_lamp", at: "player", radius: 3 } };
+
+it("같은 페이지의 다른 분기에서 지우는 그림은 자리를 바꿀 수 없다", () => {
+  const remove: Command = { kind: "erasePicture", pictureId: "title_card" };
+  const { project, target, page } = fixture("blank", [slotPicture, { kind: "loop", body: [remove] }]);
+  const before = structuredClone(page.commands);
+  expectRefused(project, target, "cmd.showPicture.update", {
+    index: 0, pictureId: "new_card", expectedHash: eventCommandHash(slotPicture),
+  }, /그림 자리를 바꿀 수 없습니다/u);
+  expect(page.commands).toStrictEqual(before);
+});
+
+it("공용 이벤트에서 이동시키는 그림은 자리를 바꿀 수 없다", () => {
+  const { project, target } = fixture("blank", [slotPicture]);
+  const move: Command = { kind: "m2Command", commandId: "m2-052-move-picture", fields: { pictureId: "title_card" } };
+  project.commonEvents = [{ id: "move_card", name: "그림 옮기기", trigger: "none", commands: [move] }];
+  expectRefused(project, target, "cmd.showPicture.update", { index: 0, pictureId: "new_card" }, /그림 자리를 바꿀 수 없습니다/u);
+});
+
+it("그림 자리를 생략한 M2 이동 명령의 기본 자리도 보호한다", () => {
+  const { project, target } = fixture("blank", [{ ...slotPicture, pictureId: "pic1" }]);
+  project.commonEvents = [{
+    id: "move_card", name: "그림 옮기기", trigger: "none",
+    commands: [{ kind: "m2Command", commandId: "m2-052-move-picture", fields: { x: 40 } }],
+  }];
+  expectRefused(project, target, "cmd.showPicture.update", { index: 0, pictureId: "pic2" }, /그림 자리를 바꿀 수 없습니다/u);
+});
+
+it("공용 스크립트가 광원을 끄는 경우에는 이름만 보호한다", () => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  const code = 'await game.cmd({ "kind": "removeLight", id: "door_lamp" })';
+  project.scriptLibrary = [{ id: "staging_light", source: code, compiled: code }];
+  expectRefused(project, target, "cmd.addLight.update", { index: 0, id: "new_lamp" }, /스크립트/u);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", { index: 0, radius: 5 });
+  expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...slotLight, source: { ...slotLight.source, radius: 5 } }]);
+  expect(after.scriptLibrary).toBe(project.scriptLibrary);
+});
+
+it("맵의 기본 광원을 갱신하는 명령은 이름을 바꿀 수 없다", () => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  project.maps[mapId]!.defaultLighting = { ambient: 0.5, sources: [{ ...slotLight.source, id: " door_lamp ", radius: 1 }] };
+  expectRefused(project, target, "cmd.addLight.update", { index: 0, id: "new_lamp" }, /맵의 기본 광원/u);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", { index: 0, radius: 5 });
+  expect(after.maps[mapId]!.defaultLighting).toBe(project.maps[mapId]!.defaultLighting);
+  const session = startSession(after, 7);
+  const commands = selectedPage(after, mapId).commands;
+  expect(createInterpreter(commands, session, after).start().kind).toBe("done");
+  expect(session.lighting?.sources).toEqual([{ ...slotLight.source, radius: 5 }]);
+});
+
+it.each(["battlePage", "afterBattle"] as const)("적 그룹의 %s 명령에서 끄는 광원은 이름을 바꿀 수 없다", context => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  const remove: Command = { kind: "removeLight", id: "door_lamp" };
+  const commands: Command[] = [{ kind: "loop", body: [remove] }];
+  project.database = {
+    ...project.database,
+    troops: [{
+      id: "staging_troop", name: "광원 테스트", enemyIds: [], autoAlign: false,
+      battleEventPages: context === "battlePage" ? [{ id: "staging_troop_page", name: "첫 줄", conditions: [], span: "battle", commands }] : [],
+      afterBattle: context === "afterBattle" ? { victory: commands } : undefined,
+    }],
+  };
+  expectRefused(project, target, "cmd.addLight.update", { index: 0, id: "new_lamp" }, /광원 이름을 바꿀 수 없습니다/u);
+  const { after } = runPrimitive(project, target, "cmd.addLight.update", { index: 0, radius: 7 });
+  expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...slotLight, source: { ...slotLight.source, radius: 7 } }]);
+  expect(after.database.troops).toBe(project.database.troops);
+});
+
+it("사용 중인 명령이 없으면 그림 자리와 광원 이름을 바꾼다", () => {
+  const { project, target, mapId } = fixture("blank", [slotPicture, slotLight]);
+  const picture = runPrimitive(project, target, "cmd.showPicture.update", { index: 0, pictureId: "new_card" }).after;
+  const light = runPrimitive(picture, target, "cmd.addLight.update", { index: 1, id: "new_lamp" }).after;
+  expect(selectedPage(light, mapId).commands).toStrictEqual([
+    { ...slotPicture, pictureId: "new_card" }, { ...slotLight, source: { ...slotLight.source, id: "new_lamp" } },
+  ]);
+});
+
 it.each([
   ["showAnimation", { animationId: "never_registered" }, "애니메이션"],
   ["showAnimation", { animationId: "fx:popup:item:never_registered" }, "아이템"],
   ["showPicture", { resourceId: "actor:never_registered" }, "그림"],
   ["showPicture", { resourceId: AUDIO }, "그림"],
+  ["showPicture", { resourceId: "tex_beodeul_city" }, "그림"],
+  ["showPicture", { resourceId: "easyrpg-title-title1" }, "그림"],
   ["playAudio", { resourceId: "never_registered" }, "소리"],
   ["playAudio", { resourceId: PICTURE }, "소리"],
   ["playMovie", { resourceId: PICTURE }, "동영상"],
@@ -245,13 +362,104 @@ it.each([
   expect(action).toThrow(new RegExp(`^프로젝트에서 .*${message}|^연출에 쓸 ${message}`, "u"));
 });
 
+it("내장 연출의 잘못된 동전 개수와 남는 식별자 조각을 거절한다", () => {
+  const { project, target } = fixture("blank", []);
+  for (const animationId of ["fx:popup:gold:-1", "fx:popup:gold:2.5", "fx:container:chest:unknown"]) {
+    expectRefused(project, target, "cmd.showAnimation.insert", { animationId }, /내장 연출/u);
+  }
+});
+
+it("기존 명령이 있는 줄에서도 다른 맵의 이벤트와 맵 밖 위치를 거절한다", () => {
+  const animation: Command = { kind: "showAnimation", target: "player", animationId: "fx:door-open" };
+  const { project, target, mapId } = fixture("blank", [animation]);
+  const id = "cmd.showAnimation.update";
+  expectRefused(project, target, id, { index: 0, targetEventId: "absent_event" }, /현재 맵에서 연출할 이벤트/u);
+  expectRefused(project, target, id, { index: 0, x: project.maps[mapId]!.width, y: 0 }, /현재 맵 안에서 연출할 칸/u);
+});
+
+it("예전 연출의 사라진 참조를 그대로 두고 대기 설정만 수정한다", () => {
+  const animation: Command = { kind: "showAnimation", target: { eventId: "old_actor" }, animationId: "old_effect", wait: true };
+  const { project, target, mapId } = fixture("blank", [animation]);
+  const { after } = runPrimitive(project, target, "cmd.showAnimation.update", { index: 0, wait: false });
+  expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...animation, wait: false }]);
+});
+
+it("자료집에 이름만 있는 소리와 종류만 동영상인 그림을 거절한다", () => {
+  const { project, target } = fixture("blank", []);
+  const resourceId = "sound_without_file";
+  project.resourceProfiles = [...project.resourceProfiles, { kind: "sound", assetId: resourceId, name: "파일 없는 소리" }];
+  project.assets.uploaded[MOVIE.id] = { ...MOVIE, dataUrl: "data:image/png;base64,AAAA" };
+  expectRefused(project, target, "cmd.playAudio.insert", { resourceId }, /재생할 수 있는 소리/u);
+  expectRefused(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id }, /재생할 수 있는 동영상/u);
+});
+
+it("동영상 검증은 업로드 형식과 실제 재생기가 고르는 리소스를 확인한다", () => {
+  const { project, target, mapId } = fixture("blank", []);
+  project.assets.uploaded[MOVIE.id] = { ...MOVIE, dataUrl: "data:video/webm,GkXfow==" };
+  project.assets.uploaded[AUDIO] = { ...MOVIE, id: AUDIO };
+  expectRefused(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id }, /재생할 수 있는 동영상/u);
+  expectRefused(project, target, "cmd.playMovie.insert", { resourceId: AUDIO }, /재생할 수 있는 동영상/u);
+
+  project.assets.uploaded[MOVIE.id] = {
+    ...MOVIE, dataUrl: undefined, ref: { sha256: "a".repeat(64), mime: "video/webm", bytes: 4, extension: "webm" },
+  };
+  const { after } = runPrimitive(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id });
+  expect(selectedPage(after, mapId).commands[0]).toMatchObject({ kind: "playMovie", resourceId: MOVIE.id });
+});
+
+it("기존 자료를 건드리지 않는 영상 설정 수정은 허용한다", () => {
+  const movie: Command = { kind: "playMovie", resourceId: "old_movie_file", wait: true };
+  const { project, target, mapId } = fixture("blank", [movie]);
+  const { after, sentence } = runPrimitive(project, target, "cmd.playMovie.update", { index: 0, wait: false });
+  expect(selectedPage(after, mapId).commands).toStrictEqual([{ ...movie, wait: false }]);
+  expect(sentence).toContain("바로 다음 줄로 · 건너뛰기 허용");
+});
+
+it("광원 이름 앞뒤 공백을 일치시켜 실제로 같은 빛을 끈다", () => {
+  const { project, target, mapId } = fixture("blank", [slotLight]);
+  const { after } = runPrimitive(project, target, "cmd.removeLight.insert", { id: " door_lamp " });
+  const commands = selectedPage(after, mapId).commands;
+  expect(commands).toStrictEqual([slotLight, { kind: "removeLight", id: "door_lamp" }]);
+  const session = startSession(after, 7);
+  expect(createInterpreter(commands, session, after).start().kind).toBe("done");
+  expect(session.lighting?.sources).toEqual([]);
+});
+
 function runtime(kind: string, args: Fields) {
   const { project, target, mapId } = fixture("blank", []);
   const { after } = runPrimitive(project, target, `cmd.${kind}.insert`, args);
   const session = startSession(after, 7);
   const interpreter = createInterpreter(selectedPage(after, mapId).commands, session, after, { currentEventId: EVENT });
-  return { step: interpreter.start(), session };
+  return { step: interpreter.start(), session, project: after };
 }
+
+it("그림 명령이 실행기에 넘긴 리소스를 게임에서 해석할 수 있다", () => {
+  const { step, project } = runtime("showPicture", { resourceId: PICTURE, pictureId: "pic3" });
+  expect(step).toMatchObject({ kind: "showPicture", resourceId: PICTURE, pictureId: "pic3" });
+  expect(resolvePictureSource(PICTURE, project)).toBe("/assets/generated/title/oprn-title-field.png");
+});
+
+it("그림 자리의 공백을 정리하고 요약에 바뀐 그림 크기를 보여 준다", () => {
+  const { project, target, mapId } = fixture("blank", [slotPicture]);
+  const moved = runPrimitive(project, target, "cmd.showPicture.update", { index: 0, pictureId: " pic3 ", scale: 25 });
+  const erased = runPrimitive(moved.after, target, "cmd.erasePicture.insert", { pictureId: " pic3 " });
+  expect(selectedPage(erased.after, mapId).commands).toStrictEqual([
+    { ...slotPicture, pictureId: "pic3", scale: 25 }, { kind: "erasePicture", pictureId: "pic3" },
+  ]);
+  expect(moved.sentence).toContain("3번 자리 · 크기 25%");
+  expect(erased.sentence).toContain("3번 자리");
+});
+
+it("그림의 전환 시간 상한을 적용하고 잘못된 좌표와 이름을 거절한다", () => {
+  const { project, target, mapId } = fixture("blank", []);
+  const id = "cmd.showPicture.insert";
+  const { after } = runPrimitive(project, target, id, { resourceId: PICTURE, durationMs: 60_000 });
+  expect(selectedPage(after, mapId).commands[0]).toMatchObject({ kind: "showPicture", durationMs: 60_000 });
+  for (const invalid of [{ durationMs: 60_001 }, { x: Number.MAX_SAFE_INTEGER + 1 }, { pictureId: "  " }]) {
+    expectRefused(project, target, id, { resourceId: PICTURE, ...invalid }, /값의 형식/u);
+  }
+  expectRefused(project, target, id, { resourceId: PICTURE, pictureId: " __proto__ " }, /그림 자리 이름/u);
+});
 
 it("실행기가 이 이벤트의 머리 위에 느낌표를 띄울 단계를 전달한다", () => {
   expect(runtime("showEmote", { emote: "exclamation", durationMs: 700 }).step).toEqual({
@@ -260,9 +468,11 @@ it("실행기가 이 이벤트의 머리 위에 느낌표를 띄울 단계를 �
 });
 
 it("실행기가 동영상의 대기와 건너뛰기 설정을 전달한다", () => {
-  expect(runtime("playMovie", { resourceId: MOVIE.id, wait: false, skippable: false }).step).toEqual({
+  const { step, project } = runtime("playMovie", { resourceId: MOVIE.id, wait: false, skippable: false });
+  expect(step).toEqual({
     kind: "playMovie", resourceId: MOVIE.id, wait: false, skippable: false,
   });
+  expect(resolveMovieResourceUrl(MOVIE.id, project)).toBe(MOVIE.dataUrl);
 });
 
 it("실행기가 눈 효과와 전환 시간을 전달한다", () => {
