@@ -6,7 +6,7 @@ import { normalizeTeamUrl } from "../serve/localNetwork";
 import { basename, join, resolve } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
-import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
+import { allowFolderSwitch, folderSwitchFlushOk, isAppRendererFrame, type FolderSwitchFlush } from "../shared/folderSwitch";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
 import { PRODUCT_BRAND } from "../../src/brand";
@@ -188,9 +188,12 @@ function beginReloadFlush(window: BrowserWindow, hard: boolean, becauseDirty = f
 /** 편집기가 파일 메뉴의 폴더 교체 저장을 받을 수 있다. 문서를 떠나면 지운다. createWindow 보다 위에 둔다. */
 const replaceFlushReady = new Set<number>();
 /** 그 저장의 보고를 기다리는 창. */
-const replaceFlushWaiters = new Map<number, (payload: unknown) => void>();
+let nextReplaceRequestId = 0;
+const replaceFlushWaiters = new Map<number, (requestId: unknown, payload: unknown) => void>();
 /** 같은 창에서 폴더 대화상자를 두 번 열지 않는다. */
 const folderSwitching = new Set<number>();
+const replacingDocument = new Set<number>();
+const replacementEditHolds = new Map<number, number>();
 const recentFolderChanges = new Set<string>();
 
 function destroyAuxiliaryChildren(): void {
@@ -472,6 +475,8 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("minimize", broadcastState);
   window.on("closed", () => {
     revealOnStartReady.delete(id);
+    replacingDocument.delete(id);
+    replacementEditHolds.delete(id);
     replaceFlushReady.delete(id);
     appWindows.delete(window);
     explicitProjectDir.delete(window);
@@ -485,11 +490,22 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     reloadHard.delete(id);
   });
   // beforeunload로 이동이 취소되면 기존 문서의 저장 리스너는 계속 살아 있다.
-  window.webContents.on("did-navigate", () => { flushReady.delete(id); });
+  window.webContents.on("did-navigate", () => {
+    flushReady.delete(id);
+    replaceFlushReady.delete(id);
+    replacingDocument.delete(id);
+    replacementEditHolds.delete(id);
+  });
   // 개발자 도구의 새로고침은 메뉴를 타지 않는다. 렌더러가 미저장으로 막으면 저장한 뒤 다시 연다.
   // 저장을 마친 reload() 가 다른 beforeunload(미적용 초안)에 막히면 그 새로고침은 그대로 진행한다.
   window.webContents.on("will-prevent-unload", (event) => {
     const webContentsId = window.webContents.id;
+    // 새 폴더를 이미 열었다. 이전 문서의 beforeunload가 새 세션에 저장을 요청하지 않게 한다.
+    if (replacingDocument.delete(webContentsId)) {
+      unsavedReloadBlock.delete(webContentsId);
+      event.preventDefault();
+      return;
+    }
     if (closing.has(webContentsId)) {
       unsavedReloadBlock.delete(webContentsId);
       return;
@@ -504,13 +520,6 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (!reloadArmed.has(webContentsId)) return;
     reloadArmed.delete(webContentsId);
     event.preventDefault();
-  });
-  // 폴더 교체 저장도 새 문서가 준비됐다고 알릴 때까지 기다리지 않는다 — 부팅 중에는 저장할 변경이 없다.
-  window.webContents.on("did-start-navigation", (details) => {
-    if (details.isMainFrame && !details.isSameDocument) {
-      markEditorLeft(id);
-      replaceFlushReady.delete(id);
-    }
   });
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
@@ -588,13 +597,24 @@ function rendererEntryUrl(): string {
 /** 폴더를 이 창의 세션으로 열고 편집기 문서로 넘긴다. 파일 메뉴가 쓰는 경로. */
 async function adoptFolder(window: BrowserWindow, projectDir: string, title?: string): Promise<void> {
   const webContentsId = window.webContents.id;
+  const previousDir = sessions.get(webContentsId)?.projectDir;
   const session = await openWindowSession(webContentsId, projectDir);
   if (!session || window.isDestroyed()) {
     if (session) sessions.close(webContentsId);
     return;
   }
   recordRecentProject(session.projectDir, title ?? session.store.info().title ?? session.projectDir);
-  void window.loadURL(rendererEntryUrl());
+  replacingDocument.add(webContentsId);
+  try {
+    await window.loadURL(rendererEntryUrl());
+  } catch (error) {
+    // A failed navigation can leave the old editor alive. Restore its folder before unlocking it.
+    if (!window.isDestroyed() && replacementEditHolds.has(webContentsId) && previousDir) {
+      await openWindowSession(webContentsId, previousDir);
+      replacingDocument.delete(webContentsId);
+    }
+    throw error;
+  }
 }
 
 function dismissSplash(): void {
@@ -685,8 +705,6 @@ function trustedRendererSender(event: {
   return isAppRendererFrame(url, process.env.ELECTRON_RENDERER_URL);
 }
 
-type FolderSwitchFlush = "ok" | "blocked" | "timeout" | "closed" | "skip";
-
 /**
  * 이 창에 열린 프로젝트가 있고 편집기가 저장 요청을 받을 준비가 됐으면 flush 를 기다린다.
  * 시작 화면·부팅 전은 skip — 아직 렌더러에 저장할 변경이 없다.
@@ -697,6 +715,7 @@ function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFl
   if (sessions.get(id) === null || !replaceFlushReady.has(id)) return Promise.resolve("skip");
   return new Promise((resolve) => {
     let settled = false;
+    let locked = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const finish = (result: FolderSwitchFlush): void => {
       if (settled) return;
@@ -706,17 +725,51 @@ function waitForFolderSwitchFlush(window: BrowserWindow): Promise<FolderSwitchFl
       if (replaceFlushWaiters.get(id) === onDone) replaceFlushWaiters.delete(id);
       resolve(result);
     };
-    const onDone = (payload: unknown): void => finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
+    const requestId = ++nextReplaceRequestId;
+    const onDone = (replyId: unknown, payload: unknown): void => {
+      if (replyId !== requestId) return;
+      if ((payload as { kind?: unknown } | null)?.kind === "locked") locked = true;
+      else if (locked) finish(folderSwitchFlushOk(payload) ? "ok" : "blocked");
+    };
     const onClosed = (): void => finish("closed");
-    timer = setTimeout(() => finish("timeout"), NAVIGATION_FLUSH_TIMEOUT_MS);
+    // Without the renderer's lock acknowledgment, even discard cannot authorize replacement.
+    timer = setTimeout(() => finish(locked ? "timeout" : "unavailable"), NAVIGATION_FLUSH_TIMEOUT_MS);
     replaceFlushWaiters.set(id, onDone);
     window.once("closed", onClosed);
     if (window.webContents.isDestroyed()) finish("closed");
-    else window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReplace);
+    else {
+      replacementEditHolds.set(id, requestId);
+      window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeReplace, requestId);
+    }
   });
 }
 
-/** 파일 메뉴의 새 프로젝트·폴더 열기. 열린 프로젝트는 저장이 끝난 뒤에만 바꾼다. 실패는 창으로 보여 준다. */
+function releaseFolderSwitchEdits(window: BrowserWindow, id: number): void {
+  const requestId = replacementEditHolds.get(id);
+  replacementEditHolds.delete(id);
+  if (requestId !== undefined && !window.isDestroyed() && !window.webContents.isDestroyed()) {
+    window.webContents.send(OPRN_CHANNELS.lifecycleReleaseReplace, requestId);
+  }
+}
+
+async function mayReplaceFolder(window: BrowserWindow): Promise<boolean> {
+  const result = await waitForFolderSwitchFlush(window);
+  if (window.isDestroyed() || closing.has(window.webContents.id)) return false;
+  const allowed = await allowFolderSwitch(result, async reason => {
+    const { response } = await dialog.showMessageBox(window, {
+      type: "warning",
+      message: reason === "timeout" ? "저장이 시간 안에 끝나지 않았습니다." : "현재 프로젝트를 저장하지 못했습니다.",
+      detail: "다른 폴더로 이동하면 저장하지 않은 변경 사항은 사라집니다.",
+      buttons: ["현재 프로젝트에 머무르기", "변경 사항 버리고 폴더 열기"],
+      defaultId: 0,
+      cancelId: 0,
+    });
+    return response === 1;
+  });
+  return allowed && !window.isDestroyed() && !closing.has(window.webContents.id);
+}
+
+/** 파일 메뉴의 새 프로젝트·폴더 열기. 저장하거나 변경을 버리기로 확인한 뒤 폴더를 바꾼다. 실패는 창으로 보여 준다. */
 function openChosenFolder(window: BrowserWindow, options: {
   readonly title: string;
   readonly createDirectory?: boolean;
@@ -730,17 +783,7 @@ function openChosenFolder(window: BrowserWindow, options: {
     try {
       const picked = await askForDirectory(window, options.title, options.createDirectory === true);
       if (!picked || window.isDestroyed()) return;
-      const flushed = await waitForFolderSwitchFlush(window);
-      if (flushed === "closed" || window.isDestroyed() || closing.has(window.webContents.id)) return;
-      if (flushed === "blocked" || flushed === "timeout") {
-        const detail = flushed === "timeout"
-          ? "저장이 시간 안에 끝나지 않았습니다. 이 프로젝트는 그대로 두었습니다."
-          : "저장하지 못한 변경이 남아 있습니다. 이 프로젝트는 그대로 두었습니다.";
-        await dialog.showMessageBox(window, { type: "warning", message: "폴더를 바꾸지 않았습니다", detail }).catch((dialogError: unknown) => {
-          console.warn("[project] 오류 창을 띄우지 못했습니다:", dialogError);
-        });
-        return;
-      }
+      if (!(await mayReplaceFolder(window))) return;
       const dir = acceptMenuFolder(picked, options.createDirectory === true ? "new" : "open");
       await adoptFolder(window, dir, options.recentTitle);
     } catch (error) {
@@ -751,6 +794,7 @@ function openChosenFolder(window: BrowserWindow, options: {
         console.warn("[project] 오류 창을 띄우지 못했습니다:", dialogError);
       });
     } finally {
+      if (!replacingDocument.has(id)) releaseFolderSwitchEdits(window, id);
       folderSwitching.delete(id);
     }
   })();
@@ -1046,9 +1090,9 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.on(OPRN_CHANNELS.companionToken, (event) => {
     event.returnValue = companionServer?.token ?? null;
   });
-  ipcMain.on(OPRN_CHANNELS.lifecycleFlushReplaceDone, (event, payload: unknown) => {
+  ipcMain.on(OPRN_CHANNELS.lifecycleFlushReplaceDone, (event, requestId: unknown, payload: unknown) => {
     if (!trustedRendererSender(event)) return;
-    replaceFlushWaiters.get(event.sender.id)?.(payload);
+    replaceFlushWaiters.get(event.sender.id)?.(requestId, payload);
   });
   ipcMain.on(OPRN_CHANNELS.lifecycleFlushReplaceReady, (event) => {
     if (!trustedRendererSender(event)) return;
@@ -1161,19 +1205,17 @@ export async function startApp(boot: BootContext): Promise<void> {
         : inspectProjectFolder(requested);
       if (!dir && requested !== undefined) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
       if (!dir || owner.isDestroyed()) return null;
-      const flushed = await waitForFolderSwitchFlush(owner);
-      if (flushed === "closed" || owner.isDestroyed() || closing.has(id)) return null;
-      if (flushed === "blocked" || flushed === "timeout") {
-        throw new Error("저장이 끝나지 않았습니다. 현재 프로젝트를 저장한 뒤 다시 열어 주세요.");
-      }
+      if (!(await mayReplaceFolder(owner))) return null;
       if (requested !== undefined && inspectProjectFolder(requested) !== dir) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
       // 폴더 선택 창에서 직접 고른 폴더는 기존 초기화 동작도 지원한다.
       const isNew = !sessions.directoryExists(dir);
       const session = await openWindowSession(id, dir);
       if (!session) return null;
+      replacingDocument.add(id);
       recordRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
       return { projectDir: session.projectDir, isNew, projectId: session.store.projectId };
     } finally {
+      if (!replacingDocument.has(id)) releaseFolderSwitchEdits(owner, id);
       folderSwitching.delete(id);
     }
   });
@@ -1290,23 +1332,37 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
-    let dir: string;
-    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 경로가 없으면 대화상자를 연다.
-    // 어느 쪽이든 파일이 있는 폴더는 거절한다.
-    if (typeof input?.projectDir === "string" && input.projectDir) {
-      dir = prepareNewProjectDir(input.projectDir);
-    } else {
-      const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
-      if (!picked || event.sender.isDestroyed()) return null;
-      dir = acceptMenuFolder(picked, "new");
+    if (folderSwitching.has(senderId)) return null;
+    folderSwitching.add(senderId);
+    const staging = `create:${senderId}`;
+    try {
+      let dir: string;
+      // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 경로가 없으면 대화상자를 연다.
+      // 어느 쪽이든 파일이 있는 폴더는 거절한다.
+      if (typeof input?.projectDir === "string" && input.projectDir) {
+        dir = prepareNewProjectDir(input.projectDir);
+      } else {
+        const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
+        if (!picked || event.sender.isDestroyed()) return null;
+        dir = acceptMenuFolder(picked, "new");
+      }
+      // 씨앗 검증·저장 실패 시 현재 편집기가 여전히 원래 폴더를 가리켜야 한다.
+      if (typeof input.seed === "string" && input.seed.length > 0) {
+        const target = await sessions.open(staging, dir);
+        const saved = await target.store.saveSerialized(input.seed, null);
+        if (saved.kind !== "saved") throw new Error("새 프로젝트 폴더에 시작 데이터를 저장하지 못했습니다.");
+      }
+      if (event.sender.isDestroyed()) return null;
+      const session = await openWindowSession(senderId, dir);
+      if (!session) return null;
+      replacingDocument.add(senderId);
+      recordRecentProject(session.projectDir, input.title ?? "새 프로젝트");
+      // 세션이 정규화한 경로(realpath)를 돌려준다 — 시작 화면 인계가 편집기가 연 폴더와 같은 문자열로 비교한다.
+      return { projectDir: session.projectDir, projectId: session.store.projectId };
+    } finally {
+      sessions.close(staging);
+      folderSwitching.delete(senderId);
     }
-    const session = await openWindowSession(senderId, dir);
-    if (!session) return null;
-    // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
-    if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
-    recordRecentProject(session.projectDir, input.title ?? "새 프로젝트");
-    // 세션이 정규화한 경로(realpath)를 돌려준다 — 시작 화면 인계가 편집기가 연 폴더와 같은 문자열로 비교한다.
-    return { projectDir: session.projectDir, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startImportFile, async (event: IpcMainInvokeEvent, payload: unknown) => {
     return { projectDir: null, imported: false };

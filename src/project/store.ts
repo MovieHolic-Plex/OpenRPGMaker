@@ -306,6 +306,7 @@ class ProjectStore {
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
   // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
   private dirtySinceLastPersist = false;
+  private projectEditHolds = 0;
   private externalConflict: readonly string[] | null = null;
   /** Bumps on every local edit. Used so in-flight remote saves cannot rewind paint. */
   private mutationGeneration = 0;
@@ -734,6 +735,37 @@ class ProjectStore {
     return this.dirtySinceLastPersist;
   }
 
+  /** Hold authored edits while the current document is being saved or replaced. */
+  holdProjectEdits(): () => void {
+    this.projectEditHolds += 1;
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      this.projectEditHolds -= 1;
+    };
+  }
+
+  private canEditProject(): boolean {
+    return this.projectEditHolds === 0 && canWriteTeamProject();
+  }
+
+  /** 새 폴더가 열렸거나 확인한 예제로 이동하는 순간, 이전 문서의 저장·재시도 권한을 끝낸다. */
+  leaveProjectSession(): void {
+    this.contentLineage += 1;
+    this.loaded = false;
+    this.remotePersistenceEnabled = false;
+    this.remotePersistenceDisabledReason = null;
+    this.writeAuthority = null;
+    this.deferredBootNormalization = null;
+    this.persistedBaseline = null;
+    this.dirtySinceLastPersist = false;
+    if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    this.autoSaveTimer = null;
+    this.clearAutoSaveRetry();
+    this.stopHealthCheck();
+  }
+
   subscribeAutoSave(listener: AutoSaveListener): () => void {
     this.autoSaveListeners.add(listener);
     return () => this.autoSaveListeners.delete(listener);
@@ -955,7 +987,7 @@ class ProjectStore {
       readonly commitHistory?: () => void;
     } = {},
   ): Project {
-    if (!canWriteTeamProject()) return this.current;
+    if (!this.canEditProject()) return this.current;
     assertCanonicalReplacement(project, this.writeAuthority);
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
@@ -995,7 +1027,7 @@ class ProjectStore {
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
   replaceProject(project: Project, change?: ProjectChangeAnnotation, onApplied?: (project: Project) => void): Project {
-    if (!canWriteTeamProject()) return this.current;
+    if (!this.canEditProject()) return this.current;
     assertCanonicalReplacement(project, this.writeAuthority);
     clearEventDraftVault();
     clearCopiedEventPage();
@@ -1009,7 +1041,7 @@ class ProjectStore {
   }
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     // 타일셋·맵·DB·spatialAuthoring 은 변경기가 읽는 것만 복제하고, 안 바뀐 것은 이전 객체를 그대로 둔다(projectClone 머리말).
     // 실측(2026-09-30, 큰 프로젝트): 전체 복제 약 55ms + 전체 순회 정리 25~41ms 가 update 1회 121ms 의 대부분이었다.
     const draft: Project = cloneProjectForUpdate(this.current);
@@ -1039,7 +1071,7 @@ class ProjectStore {
    * The callback cannot reach shared grids, other events, or project roots. */
   updateEvent(mapId: MapId, eventId: string, mutator: (event: GameEvent) => void,
     change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const original = this.current.maps[mapId]?.events.find(event => event.id === eventId);
     if (!original) return;
     const event = structuredClone(original);
@@ -1052,7 +1084,7 @@ class ProjectStore {
   /** Add/delete one event without exposing shared map branches to mutation. */
   replaceEvent(mapId: MapId, eventId: string, event: GameEvent | null,
     change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const copy = event === null ? null : structuredClone(event);
     if (copy && copy.id !== eventId) throw new Error("Event revision ID mismatch");
     if (copy) removeLegacySpriteReferences(copy);
@@ -1063,7 +1095,7 @@ class ProjectStore {
    * being replaced. Undo/redo and batch insertion retain immutable old revisions. */
   replaceEventCommands(mapId: MapId, eventId: string, pageId: string, commands: readonly Command[],
     change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const event = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId);
     const page = event?.pages?.find(candidate => candidate.id === pageId);
     if (!event || !page || jsonEqual(page.commands, commands)) return;
@@ -1079,7 +1111,7 @@ class ProjectStore {
   reorderEventCommands(mapId: MapId, eventId: string, pageId: string,
     sourcePath: readonly number[], targetPath: readonly number[], toIndex: number,
     change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
-    if (!canWriteTeamProject() || !Number.isInteger(toIndex) || sourcePath.length % 2 !== 1
+    if (!this.canEditProject() || !Number.isInteger(toIndex) || sourcePath.length % 2 !== 1
       || targetPath.length % 2 !== 0 || !sourcePath.every(Number.isInteger) || !targetPath.every(Number.isInteger)
       || isContainerInsideCommand(sourcePath, targetPath)) return;
     const event = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId);
@@ -1145,7 +1177,7 @@ class ProjectStore {
     databaseMutator: (draft: Project["database"]) => void,
     change: ProjectChangeDescriptor = { scope: "project" },
   ): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const database: Project["database"] = {
       ...this.current.database,
       [collection]: structuredClone(this.current.database[collection]),
@@ -1167,7 +1199,7 @@ class ProjectStore {
     mapMutator: (draft: GameMap) => void,
     change: { readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation = {}
   ): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const currentMap = this.current.maps[mapId];
     if (!currentMap) return;
     const draftMap: GameMap = structuredClone(currentMap);
@@ -1204,7 +1236,7 @@ class ProjectStore {
     mapMutator: (draft: GameMap) => void,
     change: { readonly cells?: readonly ProjectChangeCell[]; readonly relief?: true } & ProjectChangeAnnotation & ReliefCellChange = {},
   ): void {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const currentMap = this.current.maps[mapId];
     if (!currentMap) return;
     const draftMap: GameMap = {
@@ -1374,9 +1406,10 @@ class ProjectStore {
   }
 
   async clearAll(): Promise<void> {
-    if (!canWriteTeamProject()) return;
+    if (!this.canEditProject()) return;
     const definitions = preloadAllBundledTilesetDefinitions();
     if (definitions) await definitions;
+    if (!this.canEditProject()) return;
     assertCanonicalReplacement(createBlankProject(), this.writeAuthority);
     clearEventDraftVault();
     clearCopiedEventPage();
@@ -1397,7 +1430,7 @@ class ProjectStore {
    * Used by the event editor when a store race briefly drops the event mid-edit.
    */
   restoreEventDraftFromVault(mapId: MapId, eventId: string): boolean {
-    if (!canWriteTeamProject()) return false;
+    if (!this.canEditProject()) return false;
     if (this.current.maps[mapId]?.events.some((entry) => entry.id === eventId)) return true;
     const withVault = applyEventDraftVault(structuredClone(this.current));
     if (!withVault.maps[mapId]?.events.some((entry) => entry.id === eventId)) return false;

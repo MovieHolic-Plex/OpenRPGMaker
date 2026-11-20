@@ -99,3 +99,40 @@ describe("bundled tilesets are stored as diffs against the bundle", () => {
     expect(Object.values(wire.tilesets).some((tileset) => tileset[BUNDLED_TILESET_DIFF])).toBe(false);
   });
 });
+
+it("applies a legacy list delta by position, including a moved category in its tail", () => {
+  const base = bundledTilesetById("beodeul_city")!;
+  const docs = base.referenceDocuments!;
+  const moved = docs[docs.length - 2]!;
+  const edited = { ...base, referenceDocuments: [...docs.filter(doc => doc.id !== moved.id), { ...moved, name: "편집한 항목" }, { ...moved, id: "author", name: "새 항목" }] };
+  const view = bundledTilesetDiffForTest.diff(edited, base)!;
+  const saved = JSON.parse(JSON.stringify(view));
+  delete saved.bundledTilesetDiff.arrays.referenceDocuments.ids;
+  const restored = bundledTilesetDiffForTest.restore(base.id, saved, base).tileset;
+  expect(restored.referenceDocuments).toEqual(edited.referenceDocuments);
+});
+
+it("rebases a changed page by ID when a later bundle reorders the same number of categories", () => {
+  const base = bundledTilesetById("beodeul_city")!;
+  const docs = base.referenceDocuments!;
+  const edited = { ...base, referenceDocuments: docs.map((doc, index) => index === 0 ? { ...doc, name: "내 편집" } : doc) };
+  const view = bundledTilesetDiffForTest.diff(edited, base)!;
+  const later = { ...base, referenceDocuments: [...docs.slice(1), docs[0]!] };
+  const restored = bundledTilesetDiffForTest.restore(base.id, view, later).tileset as unknown as TilesetDef;
+  expect(restored.referenceDocuments!.map(doc => doc.id)).toEqual(later.referenceDocuments.map(doc => doc.id));
+  expect(restored.referenceDocuments!.at(-1)?.name).toBe("내 편집");
+});
+
+it.each([false, true])("preserves a saved deletion when rebasing reordered categories (new category: %s)", (added) => {
+  const bundle = bundledTilesetById("beodeul_city")!;
+  const docs = bundle.referenceDocuments!.slice(0, 3);
+  const base = { ...bundle, referenceDocuments: docs };
+  const edited = { ...base, referenceDocuments: docs.slice(1) };
+  const view = bundledTilesetDiffForTest.diff(edited, base)!;
+  const reordered = [docs[2]!, docs[0]!, docs[1]!];
+  if (added) reordered.splice(2, 0, { ...docs[0]!, id: "added-by-bundle" });
+  const later = { ...base, referenceDocuments: reordered };
+  const restored = bundledTilesetDiffForTest.restore(base.id, view, later).tileset;
+
+  expect(restored.referenceDocuments).toEqual(reordered.filter(doc => doc.id !== docs[0]!.id));
+});

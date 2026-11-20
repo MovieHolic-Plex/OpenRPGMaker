@@ -71,6 +71,39 @@ describe("editor make", () => {
     expect(made).toHaveBeenCalledWith(concept.slug);
   });
 
+  it("keeps a failed-save project on cancel and opens the new folder on discard", async () => {
+    vi.doMock("@/project/store", () => ({ store: {
+      hasUnsavedChanges: () => true, isSharedDemoSession: () => false, getAutoSaveState: () => ({ kind: "error" }),
+      holdProjectEdits: () => () => {},
+    } }));
+    vi.doMock("@/editor/projectStartSeed", () => ({ createProjectStartSeed: async () => ({}) }));
+    const create = vi.fn(async () => true);
+    const save = vi.fn();
+    const confirm = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    vi.doMock("@/editor/projectFolderActions", () => ({ createProjectFolderWithSeed: create }));
+    vi.doMock("@/editor/saveActions", () => ({ saveProjectNow: save }));
+    vi.doMock("@/editor/ui/modal", () => ({ showConfirm: confirm }));
+    try {
+      const { menuMakeHandler } = await import("@/editor/conceptMake");
+      const reload = vi.fn();
+      const make = menuMakeHandler({ ensureAiConnected: async () => true, made: vi.fn(), reload });
+      expect(await make(concept, "")).toBe(false);
+      expect(create).not.toHaveBeenCalled();
+      expect(reload).not.toHaveBeenCalled();
+      expect(await make(concept, "")).toBe(true);
+      expect(confirm).toHaveBeenCalledTimes(2);
+      expect(save).not.toHaveBeenCalled();
+      expect(create).toHaveBeenCalledOnce();
+      expect(reload).toHaveBeenCalledOnce();
+    } finally {
+      vi.doUnmock("@/project/store");
+      vi.doUnmock("@/editor/projectStartSeed");
+      vi.doUnmock("@/editor/projectFolderActions");
+      vi.doUnmock("@/editor/saveActions");
+      vi.doUnmock("@/editor/ui/modal");
+    }
+  });
+
   it("menu writes a new folder seed carrying the brief and reloads", async () => {
     const createProjectFolderWithSeed = vi.fn(async () => true);
     vi.doMock("@/editor/projectFolderActions", () => ({ createProjectFolderWithSeed }));

@@ -103,20 +103,21 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
 async function createBlankFromMenu(): Promise<boolean> {
   const { toast } = await import("@/util/toast");
   try {
-    const { store } = await import("@/project/store");
-    const { saveProjectNow } = await import("@/editor/saveActions");
-    if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return false;
-    const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
-    const title = "새 프로젝트";
-    const seed = await createProjectStartSeed(null, title, "blank", "wide");
-    const suggested = await window.oprn?.start?.suggestProjectDir?.({ title }).catch(() => null);
-    const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
-    if (!(await createProjectFolderWithSeed(title, seed, suggested?.projectDir))) {
-      toast("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.", "error");
-      return false;
-    }
-    window.location.reload();
-    return true;
+    const { saveOrConfirmLeave, withFolderSwitchEditsHeld } = await import("@/editor/leaveProject");
+    return await withFolderSwitchEditsHeld(async () => {
+      if (!(await saveOrConfirmLeave("새 프로젝트 만들기"))) return false;
+      const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
+      const title = "새 프로젝트";
+      const seed = await createProjectStartSeed(null, title, "blank", "wide");
+      const suggested = await window.oprn?.start?.suggestProjectDir?.({ title }).catch(() => null);
+      const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
+      if (!(await createProjectFolderWithSeed(title, seed, suggested?.projectDir))) {
+        toast("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.", "error");
+        return false;
+      }
+      window.location.reload();
+      return true;
+    });
   } catch (error) {
     toast(`새 프로젝트를 만들지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error");
     return false;

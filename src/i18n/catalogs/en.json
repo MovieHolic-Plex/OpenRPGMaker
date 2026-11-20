@@ -18362,6 +18362,7 @@
 "앱에 포함된 예제 데이터를 불러오지 못했습니다.":"Couldn't load the sample files included with the app.",
 "예제를 새 프로젝트 폴더로 복사하지 못했습니다. 현재 작업의 저장 상태와 새 폴더의 쓰기 권한을 확인해 주세요.":"Couldn't copy the sample to a new project folder. Check that your current project is saved and that you can write to the new folder.",
 "예제 목록으로 돌아가기":"Back to sample projects",
+"현재 프로젝트에서 저장하지 않은 변경 사항은 사라집니다. 계속할까요?":"Unsaved changes to this project will be lost. Continue?",
 "저장 없이 예제 열기":"Open sample without saving",
 "현재 작업을 저장한 뒤 예제를 열어 주세요.":"Save your current project before opening the sample.",
 "조건에 맞는 맵이 없습니다.":"No maps match the filter.",

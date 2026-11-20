@@ -45,8 +45,8 @@ export function presentSharedDemoSaveHint(): void {
 export async function forkSharedDemoToEditableCopy(): Promise<boolean> {
   toast("편집용 사본을 새 폴더에 만드는 중...", { kind: "info", durationMs: 8000 });
   try {
-    const source = structuredClone(store.getCurrent());
     const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
+    const source = structuredClone(store.getCurrent());
     const created = await createProjectFolderWithSeed(source.meta?.title ?? "내 사본", source);
     if (!created) throw new Error("새 폴더는 데스크톱 앱에서만 만들 수 있습니다.");
     toast("내 사본 폴더를 열었습니다 — 이제 자유롭게 편집하세요.", { kind: "ok", durationMs: 6000 });

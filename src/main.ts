@@ -34,6 +34,7 @@ import { hasElectronBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject } from "@/project/persistence/repository";
 import { initI18n } from "@/i18n";
 import { configureProjectInterviewBootPreparation } from "@/editor/projectInterviewBootPreparation";
+import { holdEditsForFolderSwitch } from "@/editor/leaveProject";
 
 // 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
@@ -110,15 +111,32 @@ if (typeof window !== "undefined" && window.location) {
         },
       );
     });
-    // 파일 → 새 프로젝트·폴더 열기. flush 가 끝나고 남은 변경이 없을 때만 메인이 폴더를 바꾼다.
-    window.oprn.lifecycle.onFlushBeforeReplace?.(() => {
+    // 폴더 교체가 끝날 때까지 편집을 멈춘다. 취소하면 메인이 해제 신호를 보낸다.
+    const replacementHolds = new Map<number, () => void>();
+    lifecycle.onReleaseReplace?.((requestId) => {
+      replacementHolds.get(requestId)?.();
+      replacementHolds.delete(requestId);
+    });
+    window.oprn.lifecycle.onFlushBeforeReplace?.((requestId) => {
+      const release = holdEditsForFolderSwitch();
+      const bodyWasInert = document.body.inert;
+      document.body.inert = true;
+      replacementHolds.set(requestId, () => {
+        document.body.inert = bodyWasInert;
+        release();
+      });
+      lifecycle.flushReplaceDone?.(requestId, { kind: "locked", dirty: store.hasUnsavedChanges() });
+      if (store.getAutoSaveState().kind === "error" && store.hasUnsavedChanges()) {
+        window.oprn?.lifecycle.flushReplaceDone?.(requestId, { kind: "error", dirty: true });
+        return;
+      }
       void store.flush().then(
         (result) => {
-          window.oprn?.lifecycle.flushReplaceDone?.({ kind: result.kind, dirty: store.hasUnsavedChanges() });
+          window.oprn?.lifecycle.flushReplaceDone?.(requestId, { kind: result.kind, dirty: store.hasUnsavedChanges() });
         },
         (error: unknown) => {
           console.error("[store] 폴더를 바꾸기 전에 저장하지 못했습니다:", error);
-          window.oprn?.lifecycle.flushReplaceDone?.({ kind: "error", dirty: true });
+          window.oprn?.lifecycle.flushReplaceDone?.(requestId, { kind: "error", dirty: true });
         },
       );
     });
