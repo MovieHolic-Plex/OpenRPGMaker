@@ -1,8 +1,8 @@
 name: ci-full
 
 # 전체 게이트 — 4시간마다 main(cron) + 수동.
-# 다른 브랜치의 푸시마다 돌리지는 않는다. GitHub 호스티드 러너(ubuntu-latest)에서 돈다.
-# 테스트 16샤드와 정적 잡을 mdc2 두 대에 몰면 몇 시간 동안 PR CI 의 러너 자리까지 막힌다.
+# 정적 잡은 mdc2 에서 돌린다. 전체 테스트 16샤드는 병렬로 호스티드에서 실행해
+# 몇 시간씩 mdc2 PR 잡을 대기시키는 일을 피한다.
 #
 # 왜 테스트를 샤드로 나누는가 (2026-10-12, run 38238570454):
 #   ubuntu-latest 는 4코어/16GB 이고 cgroup 은 max 라 run-vitest 가 VM 크기로 예산을 잡는다.
@@ -50,15 +50,14 @@ concurrency:
 
 jobs:
   static:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-heavy"]') || 'ubuntu-latest' }}
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 24
-          cache: npm
+          persist-credentials: false
+      - uses: ./.github/actions/linux-ci
 
       - name: 환경 확인 (cgroup 예산이 실제로 걸려 있는지)
         run: |
@@ -81,10 +80,15 @@ jobs:
             }
           '
 
-      - run: npm ci
-
       - name: Playwright 브라우저
-        run: npx playwright install --with-deps chromium
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH="${OPRN_CI_CACHE:-$RUNNER_TEMP}/playwright"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH" >> "$GITHUB_ENV"
+          if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
+            npx playwright install chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
 
       - name: 자원 스냅샷 (시작)
         run: node scripts/ci-resource-report.mjs start
