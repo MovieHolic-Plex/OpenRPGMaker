@@ -4,7 +4,7 @@
 // 물건은 달라져도 마을의 «생업» 이 없다. 종류 하나는 급(외딴 마을·마을·읍) · 어울리는 터(물·단·숲·성벽) · 모이는 곳 · 장면 몇(서너 ~ 여덟 가지가
 // 한 자리에 모인 무더기) · 집 곁·물 위·들 물건이다. 표는 src/assets/beodeulVillageKinds.json(고치는 곳: scripts/content/beodeul-village-kinds/).
 // 요청 낱말은 보지 않는다 — 고르는 데 쓰는 것은 빌더가 이미 가진 사실(물·단·숲·집 수·성벽·항구·광장을 청했는가)과 게임 열쇠·마을 씨앗뿐이다.
-import table from "@/assets/beodeulVillageKinds.json";
+import table from "@/assets/beodeulVillageKinds.json" with { type: "json" };
 import { lookHash } from "@/project/kitLook";
 import type { SettlementRank } from "./beodeulSettlementRank";
 import { SCENE_ANCHORS, type SceneAnchor, type ScenePiece, type VillageScene } from "./beodeulVillageScenes";

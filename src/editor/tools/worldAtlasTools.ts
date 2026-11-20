@@ -1,6 +1,6 @@
 import { inspectWorldAtlas } from '@/project/worldAtlasAudit';
 import { authorWorldAtlas } from '@/editor/worldmap/atlasAuthoring';
-import atlasExamples from '@/assets/worldAtlasExamples.json';
+import atlasExamples from '@/assets/worldAtlasExamples.json' with { type: "json" };
 import { WORLD_ATLAS_CATALOG, WORLD_ATLAS_STRUCTURES } from '@/project/worldAtlas';
 import { WORLD_MAP_MODES, preferredWorldmapMode } from '@/project/worldmapModes';
 import { resolveReferenceImageDataUrl } from '@/project/bundledReferenceImages';

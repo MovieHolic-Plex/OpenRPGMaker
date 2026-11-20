@@ -2,7 +2,7 @@ import { FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS } from "@/assets/facese
 import { findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { sharedFaceRow } from "./sharedCharacterFaceResolver";
 import type { Project } from "./types";
-import previousNames from "@/assets/previousFaceReferenceNames.json";
+import previousNames from "@/assets/previousFaceReferenceNames.json" with { type: "json" };
 import { faceLookText } from "@/assets/faceLooks";
 
 type FaceProject = Pick<Project, "assets" | "resourceProfiles">;

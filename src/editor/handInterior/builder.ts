@@ -10,14 +10,14 @@
 //  문(door, jp_city): 가로 칸막이의 1칸 틈 (x,y) 에 단다 — 틈 칸 = 인방 ★, 그 아래 벽면 높이 두 줄 = 열린 문틀(윗줄 ★ · 아랫줄 2층). 통로는 막지 않는다.
 //  옆문(sidedoor): 세로 칸막이 3줄 틈의 통로 칸 (x,y) 에 단다 — 위 두 칸(칸막이 끝 벽면) ★ + 통로 칸 2층.
 import { isTatamiFloor, layTatami } from "./tatami";
-import spec from "@/assets/handInteriorSpec.json";
-import jpSpec from "@/assets/jpInteriorSpec.json";
-import wizardingSpec from "@/assets/wizardingRoomSpec.json";
-import sengokuSpec from "@/assets/sengokuEdoRoomSpec.json";
-import campusSpec from "@/assets/modernCampusRoomSpec.json";
-import gothicSpec from "@/assets/gothicManorRoomSpec.json";
-import modernCitySpec from "@/assets/modernCityRoomSpec.json";
-import beodeulSpec from "@/assets/beodeulInteriorSpec.json";
+import spec from "@/assets/handInteriorSpec.json" with { type: "json" };
+import jpSpec from "@/assets/jpInteriorSpec.json" with { type: "json" };
+import wizardingSpec from "@/assets/wizardingRoomSpec.json" with { type: "json" };
+import sengokuSpec from "@/assets/sengokuEdoRoomSpec.json" with { type: "json" };
+import campusSpec from "@/assets/modernCampusRoomSpec.json" with { type: "json" };
+import gothicSpec from "@/assets/gothicManorRoomSpec.json" with { type: "json" };
+import modernCitySpec from "@/assets/modernCityRoomSpec.json" with { type: "json" };
+import beodeulSpec from "@/assets/beodeulInteriorSpec.json" with { type: "json" };
 import { passabilityOf } from "@/project/collision";
 import { stairArrivalFacing, stairContractForKit, stairContractForSpecObject, type StairContract } from "@/project/stairs/contract";
 import type { TilesetDef } from "@/project/types";

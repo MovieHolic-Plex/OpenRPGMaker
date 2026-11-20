@@ -6,11 +6,11 @@
 // 참고문서 src/assets/desertEastReferences.json(scripts/content/desert-east/bake_refs_de.py) — 그림은 public/assets/desert-east-references/ 경로만(바이트 없음). 위키 openwiki/desert-east.md.
 //
 // 칸 번호는 덧붙이기 전용이다(자리 키 핀 tiledata/desert-east/bake-pins.json). 번들 소유 = id 가 `de-` 로 시작하는 조립 부품·참고문서. 구조는 modernCampus.ts·jpCity.ts 와 같다.
-import sheet from "@/assets/desertEastSheet.json";
+import sheet from "@/assets/desertEastSheet.json" with { type: "json" };
 import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`desertEastSheet.json`)에서 읽는다. */
 const data = () => bundledJson("desertEastTileset");
-import references from "@/assets/desertEastReferences.json";
+import references from "@/assets/desertEastReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";

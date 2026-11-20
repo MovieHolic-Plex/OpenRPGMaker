@@ -6,7 +6,7 @@
 import type { HandInteriorConnect, HandInteriorExit } from "./rooms";
 import { hashText, mixHash } from "./vignettes";
 // 버들항 집 안의 크기 단 구성 표 — scripts/content/beodeul-interiors/rooms.mts 가 tiers.mts 에서 굽는다.
-import beodeulTiers from "@/assets/beodeulInteriorTiers.json";
+import beodeulTiers from "@/assets/beodeulInteriorTiers.json" with { type: "json" };
 
 export type TierName = "medium" | "large" | "xlarge";
 /** at = "<쪽>:<기준 방>:<맞춤>[:<밀기>]" — 쪽 N·E·S·W, 맞춤 start(위·왼 끝)·center·end(아래·오른 끝), 밀기 = 맞춤 축으로 더 옮길 칸. 첫 방은 at 없음. */

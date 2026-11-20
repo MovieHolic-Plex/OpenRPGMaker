@@ -1,6 +1,6 @@
 // 피드가 컨셉을 받는 곳. 데스크톱 앱이면 스토어(Electron 메인 중계)에서 24개씩, 안 되면 앱 번들 비상용으로 대신한다.
 // 스토어가 한 번 실패해도 붙들지 않는다 — 다음 쪽 요청마다 다시 시도한다(잠깐 끊긴 네트워크로 세션 내내 비상용만 보이지 않게).
-import bundled from "@/assets/bundledConcepts.json";
+import bundled from "@/assets/bundledConcepts.json" with { type: "json" };
 import type { OprnStoreBridge } from "@/assetStore/bridgeTypes";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import type { GamePresetId } from "@/project/gameDesignIds";
