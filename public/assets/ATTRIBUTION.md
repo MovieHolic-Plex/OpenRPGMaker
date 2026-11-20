@@ -551,6 +551,6 @@ No image-generation output and no third-party art other than the Scarloxy chip b
 
 ## Beodeul placeable objects
 
-- Files: the 261 placeable PNGs in [the Beodeul catalog](beodeul-objects/catalog.json). Each entry records the approved source filename. The existing Beodeul reference illustrations are under `beodeul-object-references/`.
+- Files: the 283 placeable PNGs in [the Beodeul catalog](beodeul-objects/catalog.json). Each entry records the approved source filename. The existing Beodeul reference illustrations are under `beodeul-object-references/`.
 - Artwork: OPRN Studio · ChatGPT dots, in the Beodeul style.
 - License: OPRN-GAME ([OPRN Game Use License](../../ASSET-LICENSE.md)).
