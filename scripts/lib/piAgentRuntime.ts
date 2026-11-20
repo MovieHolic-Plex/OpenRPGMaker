@@ -417,10 +417,10 @@ function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGat
 /** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
 async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
   const started = Date.now();
-  const { target, maxToolCalls, selection } = scope;
+  const { target, maxToolCalls, selection, live } = scope;
   const base = request.project;
   const ctx: SmallTaskToolContext = {
-    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection,
+    project: base, assistantRun: true, smallTaskTarget: target, smallTaskSelection: selection, live,
     ...(target.kind === "dbEntry" ? {} : { currentMapId: target.mapId }),
   };
   const cli = localCliIdOf(request.provider);
@@ -460,11 +460,14 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
       return { message: { role: "assistant", content: choice?.message.content ?? "" }, finishReason: choice?.finish_reason ?? null };
     },
   });
+  let scopedQuests = base.quests;
   const primitiveTools = SMALL_TASK_PRIMITIVE_TOOLS.filter(tool => toolNames.includes(tool.name)).map((tool): PiToolShape => ({
     ...tool,
     label: tool.name,
     async execute(_id, params) {
+      const questsWereScoped = ctx.project.quests === scopedQuests;
       const result = await runSmallTaskPrimitiveTool(ctx, tool.name, params as Record<string, unknown>);
+      if (questsWereScoped) scopedQuests = ctx.project.quests;
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
   }));
@@ -534,7 +537,10 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   }
   options.signal?.throwIfAborted();
   if (!failure && regionScope && ctx.project !== base) {
-    const result = checkSmallTaskScope(base, ctx.project, regionScope);
+    // Quest changes that passed their primitive scope are independent of the tile rectangle.
+    const regionAfter = ctx.project.quests === scopedQuests && scopedQuests !== base.quests
+      ? { ...ctx.project, quests: base.quests } : ctx.project;
+    const result = checkSmallTaskScope(base, regionAfter, regionScope);
     if (!result.ok) failure = result.reason;
   }
   const project = failure ? base : ctx.project;

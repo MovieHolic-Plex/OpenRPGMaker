@@ -404,6 +404,37 @@ describe("퀘스트 원시 기능", () => {
     expect(project.quests).toEqual([draft]);
   });
 
+  it.each([true, false])("세션에만 남은 단계 스위치가 켜져 있을 때만 퀘스트를 보호한다 (%s)", on => {
+    const { before, target, quest } = blank();
+    const draft = { ...quest, key: "draft_well" };
+    const switchId = questFlagIds(draft.key, 2).stepSwitches[1];
+    const project = { ...before, quests: [draft], session: { ...before.session, switches: { [switchId]: on } } };
+    const remove = () => runPrimitive(project, target, "quest.remove", {});
+    if (on) expect(remove).toThrow(/진행 스위치/u);
+    else expect(remove().after.quests).toEqual([]);
+  });
+
+  it("다른 이벤트의 열린 초안이 참조하는 퀘스트를 삭제하지 않는다", () => {
+    const { before, target, event, quest } = blank();
+    const draft = { ...quest, key: "draft_well" };
+    const project = { ...before, quests: [draft] };
+    const command: Command = { kind: "m2Command", commandId: "m2-208-quest-objective", fields: { questId: draft.key, objectiveId: "well", state: "start" } };
+    const working: GameEvent = { ...event, id: "ev_draft", commands: [command], draft: { kind: "new" } };
+    const live = { maps: { [target.mapId]: { events: [working] } } };
+    expect(() => runPrimitive(project, target, "quest.remove", {}, undefined, live)).toThrow(/이벤트 명령/u);
+    expect(runPrimitive(project, target, "quest.remove", {}).after.quests).toEqual([]);
+  });
+
+  it("진행에 연결되지 않은 퀘스트도 아이템 보상의 상한을 검증한다", () => {
+    const { before, target, quest } = blank();
+    const item = createBlankProject().database.items.find(entry => entry.id === "item_potion")!;
+    const project = { ...before, database: { ...before.database, items: [item] }, quests: [{ ...quest, key: "draft_well" }] };
+    expect(() => runPrimitive(project, target, "quest.reward.set", { items: [{ itemId: item.id, count: 1_000_000 }] }))
+      .toThrow(/수량/u);
+    expect(runPrimitive(project, target, "quest.reward.set", { items: [{ itemId: item.id, count: 999_999 }] }).after.quests)
+      .toMatchObject([{ rewards: { items: [{ itemId: item.id, count: 999_999 }] } }]);
+  });
+
   it("자료집 윤문 제안과 연결된 제목·목표·퀘스트의 변경을 거절한다", () => {
     const { before, target, quest } = blank();
     const draft = { ...quest, key: "draft_well" };
@@ -473,10 +504,15 @@ describe("그래프 목표의 연결", () => {
   });
 
   it("완료 스위치를 바꿔도 꺼짐 조건을 유지하고 여러 조건을 덮어쓰지 않는다", () => {
-    const { project, target, quest, otherFlag } = branched();
+    const { project, target, quest, otherFlag, other } = branched();
+    const map = project.maps[target.mapId];
+    const off: Command = { kind: "setSwitch", switchId: otherFlag, value: false };
+    const offProject = { ...project, maps: { ...project.maps, [map.id]: {
+      ...map, events: map.events.map(event => event === other ? { ...event, commands: [off] } : event),
+    } } };
     const condition = { kind: "switch" as const, switchId: "sw_quest_1_step0", value: false };
     const withCondition = (completesWhen: QuestGraphDef["nodes"][number]["completesWhen"]) => ({
-      ...project, quests: [{ ...quest, nodes: [quest.nodes[0], { ...quest.nodes[1], completesWhen }, ...quest.nodes.slice(2)] }],
+      ...offProject, quests: [{ ...quest, nodes: [quest.nodes[0], { ...quest.nodes[1], completesWhen }, ...quest.nodes.slice(2)] }],
     });
     const args = { step: 2, switchId: otherFlag };
     const { after } = runPrimitive(withCondition(condition), target, "quest.objective.update", args);
@@ -485,6 +521,29 @@ describe("그래프 목표의 연결", () => {
     ] });
     expect(() => runPrimitive(withCondition({ all: [condition, { ...condition, switchId: otherFlag, value: true }] }),
       target, "quest.objective.update", args)).toThrow(/여러 조건/u);
+    expect(() => runPrimitive({ ...project, quests: withCondition(condition).quests },
+      target, "quest.objective.update", args)).toThrow(/이벤트에서 값을 기록/u);
+    expect(() => runPrimitive(offProject, target, "quest.objective.add", { label: "우물 확인", switchId: otherFlag }))
+      .toThrow(/이벤트에서 값을 기록/u);
+  });
+
+  it("선택한 이벤트의 초안을 취소한 뒤에도 남는 완료 스위치 쓰기만 인정한다", () => {
+    const { project, target } = branched();
+    const map = project.maps[target.mapId];
+    const selected = map.events[0]!;
+    const switchId = "sw_draft_finish";
+    const writer: Command = { kind: "setSwitch", switchId, value: true };
+    const working = { ...selected, commands: [...selected.commands, writer] };
+    const before = {
+      ...project, switches: [...project.switches, { id: switchId, name: "초안 완료" }],
+      maps: { ...project.maps, [map.id]: { ...map, events: [working, ...map.events.slice(1)] } },
+    };
+    const args = { label: "완료 확인", switchId };
+    const live = (original: GameEvent) => ({ maps: { [map.id]: { events: [{ ...working, draft: { kind: "edit" as const, original } }] } } });
+    expect(() => runPrimitive(before, target, "quest.objective.add", args, undefined, live(selected)))
+      .toThrow(/이벤트에서 값을 기록/u);
+    expect(runPrimitive(before, target, "quest.objective.add", args, undefined, live(working)).after.quests)
+      .toMatchObject([{ nodes: expect.arrayContaining([{ id: "step_1", description: args.label, completesWhen: { kind: "switch", switchId, value: true } }]) }]);
   });
 
   it("첫 목표를 바꿔 다른 시작 이벤트를 연결하거나 시작 이벤트가 모호한 그래프를 고치지 않는다", () => {

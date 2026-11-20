@@ -353,7 +353,7 @@ function groupConditionsByWriteSite(
   return [...groups.values()];
 }
 
-function selectWriteSite(
+export function selectWriteSite(
   project: Project,
   usageIndex: ReturnType<typeof buildStoryFlagUsageIndex>,
   condition: ResolvedQuestCondition
@@ -363,10 +363,10 @@ function selectWriteSite(
 }
 
 function writeKnownNotToSatisfy(project: Project, site: StoryFlagUsageSite, condition: ResolvedQuestCondition): boolean {
+  if (condition.kind === "switch") return site.switchValue !== undefined && site.switchValue !== condition.value;
   const command = commandForSite(project, site);
   if (!command) return false;
-  if (condition.kind === "switch" && command.kind === "setSwitch") return command.value !== condition.value;
-  if (condition.kind === "variable" && command.kind === "setVariable" && command.op === "=" && typeof command.value === "number") {
+  if (command.kind === "setVariable" && command.op === "=" && typeof command.value === "number") {
     return !compareVariableValue(command.value, condition.op, condition.value);
   }
   return false;

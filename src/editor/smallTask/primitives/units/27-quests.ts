@@ -1,13 +1,15 @@
+import { withOpenEventDrafts } from "@/ai/smallTaskReferences";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { parseQuestDef, QUEST_DEF_SCHEMA } from "@/editor/tools/questToolSchemas";
 import type { JsonSchema } from "@/editor/tools/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { locationCenter, resolveLocationAnchorRect } from "@/project/locationAnchors";
 import {
   isQuestGraphDef, questDefId, questFlagIds,
   type AnyQuestDef, type EventRef, type QuestDef, type QuestGraphConditionExpression, type QuestGraphDef, type QuestReward, type QuestStep,
 } from "@/project/quest/questDef";
-import { extractQuestGraphConditions, resolveQuestGraphCondition, validateQuestGraph } from "@/project/quest/questGraph";
+import { extractQuestGraphConditions, resolveQuestGraphCondition, selectWriteSite, validateQuestGraph } from "@/project/quest/questGraph";
 import { questPresetIssue } from "@/project/quest/questPresets";
 import { validateQuestReferences } from "@/project/quest/questValidation";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
@@ -240,6 +242,7 @@ function questProgressUses(project: Project, key: string, stepMatches?: (index: 
   };
   if (project.switches.some(entry => matches(entry.id, "switch"))
     || Object.keys(project.flags).some(id => matches(id, "switch"))
+    || Object.entries(project.session.switches).some(([id, on]) => on && matches(id, "switch"))
     || project.variables.some(entry => matches(entry.id, "variable"))
     || project.storyFlags?.some(flag => matches(flag.targetId, flag.kind))
     || project.endings?.some(ending => ending.conditions.some(condition =>
@@ -359,26 +362,27 @@ function validateGraph(project: Project, quest: QuestGraphDef): QuestGraphDef {
   return quest;
 }
 
-function switchCondition(project: Project, args: Args) {
+function switchCondition(ctx: PrimitiveContext, args: Args, value = true) {
+  const project = projectViewWithoutEventDrafts(withOpenEventDrafts(ctx.project, ctx.live));
   const switchId = requiredText(args.switchId, "목표를 완료할 스위치를 골라 주세요.");
   if (!project.switches.some(entry => entry.id === switchId)) throw new PrimitiveError("목표를 완료할 스위치를 찾을 수 없어요.");
-  if (!usageBucketFor(buildStoryFlagUsageIndex(project), "switch", switchId).writes.length) {
+  if (!selectWriteSite(project, buildStoryFlagUsageIndex(project), { kind: "switch", targetId: switchId, value })) {
     throw new PrimitiveError("이벤트에서 값을 기록하는 완료 스위치를 골라 주세요.");
   }
-  return { kind: "switch" as const, switchId, value: true };
+  return { kind: "switch" as const, switchId, value };
 }
 
-function replaceGraphSwitch(project: Project, expression: QuestGraphConditionExpression, args: Args) {
+function replaceGraphSwitch(ctx: PrimitiveContext, expression: QuestGraphConditionExpression, args: Args) {
   const conditions = extractQuestGraphConditions(expression);
   if (conditions.length !== 1) throw new PrimitiveError("여러 조건이 걸린 목표는 여기서 완료 스위치를 바꿀 수 없어요.");
   let previous;
   try {
-    previous = resolveQuestGraphCondition(project, conditions[0]);
+    previous = resolveQuestGraphCondition(ctx.project, conditions[0]);
   } catch {
     throw new PrimitiveError("현재 목표의 완료 조건을 자료집에서 먼저 확인해 주세요.");
   }
   if (previous.kind !== "switch") throw new PrimitiveError("스위치로 완료되는 목표에서만 완료 스위치를 바꿀 수 있어요.");
-  return { ...switchCondition(project, args), value: previous.value };
+  return switchCondition(ctx, args, previous.value);
 }
 
 function assertSameGraphGiver(project: Project, previous: QuestGraphDef, updated: QuestGraphDef) {
@@ -411,7 +415,8 @@ function withSteps(quest: QuestDef, steps: readonly QuestStep[]): QuestDef {
   return { ...quest, steps, ...(quest.blueprint ? { blueprint: steps.map(step => step.kind) } : {}) };
 }
 
-function appendObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQuestDef {
+function appendObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args): AnyQuestDef {
+  const { project } = ctx;
   if (isQuestGraphDef(quest)) {
     if (args.objective !== undefined) throw new PrimitiveError("그래프 목표에는 문구와 완료 스위치를 입력해 주세요.");
     const used = new Set(quest.nodes.map(node => node.id));
@@ -423,7 +428,7 @@ function appendObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQ
     const node = {
       id: `step_${number}`,
       description: requiredText(args.label, "추가할 목표 문구를 입력해 주세요."),
-      completesWhen: switchCondition(project, args),
+      completesWhen: switchCondition(ctx, args),
     };
     const outgoing = new Set(quest.edges.map(edge => edge.from));
     const tails = quest.nodes.filter(previous => !outgoing.has(previous.id));
@@ -443,7 +448,8 @@ function appendObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQ
   return updated;
 }
 
-function updateObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQuestDef {
+function updateObjective(ctx: PrimitiveContext, quest: AnyQuestDef, args: Args): AnyQuestDef {
+  const { project } = ctx;
   if (isQuestGraphDef(quest)) {
     if (args.objective !== undefined || (args.label === undefined && args.switchId === undefined)) {
       throw new PrimitiveError("그래프 목표에서 바꿀 문구나 완료 스위치를 입력해 주세요.");
@@ -454,7 +460,7 @@ function updateObjective(project: Project, quest: AnyQuestDef, args: Args): AnyQ
     const nodes = quest.nodes.map((node, i) => i === index ? {
       ...node,
       description: label,
-      ...(args.switchId !== undefined ? { completesWhen: replaceGraphSwitch(project, node.completesWhen, args) } : {}),
+      ...(args.switchId !== undefined ? { completesWhen: replaceGraphSwitch(ctx, node.completesWhen, args) } : {}),
     } : node);
     const updated = { ...quest, nodes };
     if (args.switchId === undefined) return updated;
@@ -597,7 +603,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply(ctx, args) {
       const { project } = ctx;
       const quest = questFor(ctx, args);
-      return replaceQuest(project, quest, appendObjective(project, quest, args));
+      return replaceQuest(project, quest, appendObjective(ctx, quest, args));
     },
   }),
   primitive("quest.objective.update", "퀘스트 목표 수정", {
@@ -611,7 +617,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     apply(ctx, args) {
       const { project } = ctx;
       const quest = questFor(ctx, args);
-      return replaceQuest(project, quest, updateObjective(project, quest, args));
+      return replaceQuest(project, quest, updateObjective(ctx, quest, args));
     },
   }),
   primitive("quest.objective.remove", "퀘스트 목표 삭제", {
@@ -656,8 +662,12 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       if (questDialogueRef(project, id, () => true) || project.dialogueDesk?.sceneNotes?.some(note => note.sceneId === `qs/${id}`)) {
         throw new PrimitiveError("범위 밖: 자료집에 이 퀘스트의 윤문 제안이나 장면 메모가 있어요.");
       }
-      for (const fields of questCommands(project)) {
-        if (commandId(fields.questId, "quest") === id) throw new PrimitiveError("범위 밖: 이벤트 명령에서 이 퀘스트를 사용하고 있어요.");
+      const working = withOpenEventDrafts(project, ctx.live);
+      const saved = projectViewWithoutEventDrafts(working);
+      for (const view of new Set([project, working, saved])) {
+        for (const fields of questCommands(view)) {
+          if (commandId(fields.questId, "quest") === id) throw new PrimitiveError("범위 밖: 이벤트 명령에서 이 퀘스트를 사용하고 있어요.");
+        }
       }
       if (!isQuestGraphDef(quest) && questProgressUses(project, id)) {
         throw new PrimitiveError("범위 밖: 이 퀘스트에 연결된 진행 스위치나 변수를 먼저 정리해야 해요.");

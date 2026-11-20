@@ -32,6 +32,8 @@ describe("퀘스트 한국어 회귀 요청", () => {
       const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
       if (entry.expectRefusal) {
         expect(apply).toThrow(PrimitiveError);
+        expect(entry.refusalMessage).toBeTruthy();
+        expect(apply).toThrow(new RegExp(entry.refusalMessage!, "u"));
         expect(before.quests).toEqual(originalQuests);
         return;
       }

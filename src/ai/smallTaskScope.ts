@@ -7,6 +7,7 @@ import { questDefId } from "@/project/quest/questDef";
 import type { GameEvent, GameMap, MapConnection, MapTreeNode, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { SAVE_QUEST_EVENT_FIRST } from "@/editor/smallTask/primitives/errors";
 import { onlyDialogueChanged } from "./smallTaskDialogueScope";
 import { questDependsOnDraft, removedDatabaseReference, type SmallTaskDraftSource } from "./smallTaskReferences";
 
@@ -625,7 +626,7 @@ export function checkSmallTaskScope(
   describeOutsideChanges(before, normalized, report);
 
   if (scope.kind === "projectArea" && scope.area === "quests" && questDependsOnDraft(before, after, live)) {
-    explanation = "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.";
+    explanation = SAVE_QUEST_EVENT_FIRST;
     report("퀘스트가 사용하는 미저장 이벤트");
   }
   if (databaseScope?.remove && !outside.size && changedEntries.size) {

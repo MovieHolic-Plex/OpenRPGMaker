@@ -9,7 +9,7 @@ import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/e
 import { createBlankProject } from "../src/project/defaults/blankProject.ts";
 import { eventCommandHash } from "../src/project/eventCommands/singleCommandOps.ts";
 import { layerTileAt } from "../src/project/mapLayers.ts";
-import type { Command, EventPage } from "../src/project/types.ts";
+import type { Command, EventPage, GameEvent } from "../src/project/types.ts";
 
 type Call = { name: string; args: Record<string, unknown> };
 type ModelContext = Parameters<StreamFn>[1];
@@ -247,4 +247,62 @@ for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection"
       expect(done.project).toBe(project);
     }
   }, 20_000);
+}
+
+test("작은 일 Pi 실행은 타일 영역이 선택된 맵에서도 퀘스트 정의를 등록한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const target = mapTarget(project, mapId)!;
+  const args = { title: "길 안내", giverEventId: event.id, objective: { kind: "reach", mapId, x: 1, y: 1 } };
+  const done = await runPiAgent({
+    ...request, smallTask: { ...request.smallTask, target, selection: { rect: { x: 0, y: 0, w: 1, h: 1 } } },
+  }, { streamFn: scripted([apply("quest.create", args)]) });
+
+  expect(done.stoppedEarly).toBeUndefined();
+  expect(done.changedKeys).toEqual(["quests"]);
+  expect(done.project.quests).toMatchObject([{ title: args.title, giver: { mapId, eventId: event.id } }]);
+  expect(done.project.maps).toBe(project.maps);
+});
+
+for (const draftKind of ["new", "edit"] as const) {
+  test(`작은 일 Pi 실행은 퀘스트 의뢰 이벤트의 저장 여부를 확인한다 (${draftKind})`, async () => {
+    const { request, project, mapId, event } = fixture();
+    const working: GameEvent = { ...event, draft: { kind: draftKind, original: event } };
+    const live = { maps: { [mapId]: { events: [working] } } };
+    const args = { title: "길 안내", objective: { kind: "reach", mapId, x: 1, y: 1 } };
+    const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, live } },
+      { streamFn: scripted([apply("quest.create", args)]) });
+
+    if (draftKind === "new") {
+      expect(done.stoppedEarly).toContain("퀘스트에 연결할 이벤트를 먼저 저장해 주세요");
+      expect(done.project).toBe(project);
+    } else {
+      expect(done.stoppedEarly).toBeUndefined();
+      expect(done.project.quests).toMatchObject([{ title: args.title }]);
+      expect(done.project.maps).toBe(project.maps);
+    }
+  });
+}
+
+for (const writer of ["native", "script"] as const) {
+  test(`작은 일 Pi 실행은 그래프 목표의 마지막 완료 스위치 쓰기를 보호한다 (${writer})`, async () => {
+    const { request, project, mapId, event } = fixture();
+    const switchId = "sw_quest_graph";
+    const command: Command = writer === "native" ? { kind: "setSwitch", switchId, value: true } : {
+      kind: "script", source: `game.setSwitch('${switchId}', true);`, compiled: "",
+      effects: { reads: [], writes: [{ kind: "switch", id: switchId }], calls: [], dynamic: [] },
+    };
+    const commands = event.pages[1]!.commands;
+    commands.splice(0, commands.length, command, { kind: "setSwitch", switchId, value: false });
+    event.pages[0]!.commands = [];
+    project.maps[mapId].events = [event];
+    project.switches.push({ id: switchId, name: "의뢰 완료" });
+    project.quests = [{
+      kind: "graph", id: "q_graph", title: "길 안내", edges: [],
+      nodes: [{ id: "finish", description: "완료", completesWhen: { kind: "switch", switchId, value: true } }],
+    }];
+    const remove = apply("cmd.delete", { index: 0, expectedHash: eventCommandHash(command) });
+    const done = await runPiAgent(request, { streamFn: scripted([remove]) });
+    expect(done.stoppedEarly).toContain("진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요");
+    expect(done.project).toBe(project);
+  });
 }
