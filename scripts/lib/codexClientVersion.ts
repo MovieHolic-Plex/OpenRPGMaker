@@ -1,3 +1,5 @@
+import type { FetchImpl } from "@oh-my-pi/pi-catalog/types";
+
 /**
  * Codex 백엔드는 요청 헤더 `version`(클라이언트 버전)으로 모델 목록을 거른다. 설치된 pi-catalog 17.4 는
  * `0.144.1` 을 박아 보내며, 이 값은 상수라 바꿀 수 없다. 실측(2026-10-07, 같은 ChatGPT 계정):
@@ -12,7 +14,7 @@
  */
 export const OPRN_CODEX_CLIENT_VERSION = "0.170.0";
 
-function isCodexBackend(input: Parameters<typeof fetch>[0]): boolean {
+function isCodexBackend(input: Parameters<FetchImpl>[0]): boolean {
   const raw = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
   try {
     const url = new URL(raw);
@@ -23,12 +25,12 @@ function isCodexBackend(input: Parameters<typeof fetch>[0]): boolean {
 }
 
 /** Codex 백엔드로 가는 요청에만 새 클라이언트 버전을 싣는다. 다른 주소는 그대로 통과시킨다. */
-export function codexVersionFetch(base: typeof fetch = fetch): typeof fetch {
-  const wrapped = (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+export function codexVersionFetch(base: FetchImpl = fetch): FetchImpl {
+  const wrapped: FetchImpl = (input, init) => {
     if (!isCodexBackend(input)) return base(input, init);
     const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
     headers.set("version", OPRN_CODEX_CLIENT_VERSION);
     return base(input, { ...init, headers });
   };
-  return Object.assign(wrapped, base) as typeof fetch;
+  return Object.assign(wrapped, base);
 }

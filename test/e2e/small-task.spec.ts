@@ -55,17 +55,8 @@ test.beforeEach(async ({ page }) => {
   await expect(trigger).toBeVisible({ timeout: 60_000 });
 });
 
-test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되돌리기", async ({ page }) => {
-  let calls = 0;
-  let mapId = "";
-  await mockPiRun(page, body => {
-    expect(body.smallTask!.target).toMatchObject({ kind: "event", mapId, eventId: "ev_greeting" });
-    const event = body.project.maps[mapId].events.find(event => event.id === "ev_greeting")!;
-    event.pages![0].commands = [{ kind: "text", body: ++calls === 1 ? "어서 오세요!" : "안녕하세요!" }];
-    return [`maps.${mapId}`];
-  });
-  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
-  const fixture = await page.evaluate(async () => {
+function seedGreeting(page: Page) {
+  return page.evaluate(async () => {
     const { store } = await import("/src/project/store.ts");
     const { editorState } = await import("/src/editor/editorState.ts");
     const mapId = store.getCurrent().startMapId;
@@ -79,7 +70,29 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
     editorState.set({ currentMapId: mapId, layer: "event", tool: "event", selectedEventId: null });
     return { mapId, event, x, y };
   });
-  mapId = fixture.mapId;
+}
+
+async function openGreetingEditor(page: Page, mapId: string, eventId: string) {
+  await page.evaluate(async ({ mapId, eventId }) => {
+    const { openEventEditorModal } = await import("/src/editor/panels/eventEditor/modal.ts");
+    openEventEditorModal(mapId, eventId);
+  }, { mapId, eventId });
+  const editor = page.getByTestId("event-editor-modal");
+  await expect(editor.locator(".event-editor-commands-column")).toBeVisible();
+  return editor;
+}
+
+test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되돌리기", async ({ page }) => {
+  let calls = 0;
+  const fixture = await seedGreeting(page);
+  const { mapId } = fixture;
+  await mockPiRun(page, body => {
+    expect(body.smallTask!.target).toMatchObject({ kind: "event", mapId, eventId: "ev_greeting" });
+    const event = body.project.maps[mapId].events.find(event => event.id === "ev_greeting")!;
+    event.pages![0].commands = [{ kind: "text", body: ++calls === 1 ? "어서 오세요!" : "안녕하세요!" }];
+    return [`maps.${mapId}`];
+  });
+  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
   await page.getByTestId("edit-canvas").locator("canvas").click({ position: await pointAtTile(page, fixture) });
   const depth = () => page.evaluate(async () => (await import("/src/editor/mapEditHistory.ts")).getMapEditHistoryDepth());
   const beforeDepth = await depth();
@@ -93,7 +106,7 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
   await expect(box.locator("strong")).toHaveText("대사 1줄 수정 · 이벤트 1개", { timeout: 90_000 });
   await expect(box).toContainText("「안녕.」 → 「어서 오세요!」");
   const readEvent = () => page.evaluate(async id => (await import("/src/project/store.ts")).store.getCurrent().maps[id].events[0], mapId);
-  expect((await readEvent()).pages[0].commands[0].body).toBe("어서 오세요!");
+  expect((await readEvent()).pages?.[0]?.commands[0]).toMatchObject({ kind: "text", body: "어서 오세요!" });
   expect(await depth()).toBe(beforeDepth + 1);
   await box.getByRole("button", { name: "되돌리기" }).click();
   await expect(box.getByRole("status")).toHaveText("되돌렸어요.");
@@ -102,22 +115,30 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
   await page.keyboard.press("Escape");
   await expect(box).toBeHidden();
 
-  await page.evaluate(async ({ mapId, eventId }) => {
-    const { openEventEditorModal } = await import("/src/editor/panels/eventEditor/modal.ts");
-    openEventEditorModal(mapId, eventId);
-  }, { mapId, eventId: fixture.event.id });
-  const eventEditor = page.getByTestId("event-editor-modal");
-  await eventEditor.getByRole("button", { name: "이걸로 작업" }).click();
+  const eventEditor = await openGreetingEditor(page, mapId, fixture.event.id);
+  const eventTrigger = eventEditor.getByRole("button", { name: "이걸로 작업" });
+  await eventTrigger.click();
   await expect(box).toContainText("이벤트 · 안내인");
-  const capsuleTop = (await box.boundingBox())!.y;
-  for (const selector of [".event-editor-pagebar", ".event-editor-command-toolbar"]) {
-    const row = (await eventEditor.locator(selector).boundingBox())!;
-    expect(capsuleTop).toBeGreaterThanOrEqual(row.y + row.height);
+  for (const viewport of [{ width: 1440, height: 980 }, { width: 760, height: 720 }]) {
+    await page.setViewportSize(viewport);
+    const anchor = (await eventTrigger.boundingBox())!;
+    const capsule = (await box.boundingBox())!;
+    expect(capsule.y).toBeGreaterThanOrEqual(anchor.y + anchor.height);
+    expect(capsule.x).toBeGreaterThanOrEqual(0);
+    expect(capsule.x + capsule.width).toBeLessThanOrEqual(viewport.width);
+    for (const selector of [".event-editor-pagebar", ".event-editor-commands-column", ".event-editor-inspector-column"]) {
+      const column = eventEditor.locator(selector);
+      if (await column.isVisible()) expect((await column.boundingBox())!.y).toBeGreaterThanOrEqual(capsule.y + capsule.height);
+    }
   }
+  await page.setViewportSize({ width: 1440, height: 980 });
   await input.fill("인사를 고쳐 줘");
   await input.press("Enter");
   await expect(box).toContainText("「안녕.」 → 「안녕하세요!」", { timeout: 90_000 });
-  expect((await readEvent()).pages[0].commands[0].body).toBe("안녕하세요!");
+  expect((await readEvent()).pages?.[0]?.commands[0]).toMatchObject({ kind: "text", body: "안녕하세요!" });
+  await box.getByRole("button", { name: "되돌리기" }).click();
+  await expect(box.getByRole("status")).toHaveText("되돌렸어요.");
+  await expect(eventEditor.locator(".event-editor-commands-column")).toContainText("안녕.");
   await page.keyboard.press("Escape");
   await expect(box).toBeHidden();
   await expect(eventEditor).toBeVisible();
@@ -128,6 +149,75 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
   await trigger.click();
   await expect(box).toContainText("무엇을 고칠지 먼저 고르세요");
   await expect(box.getByRole("button", { name: "실행" })).toBeDisabled();
+});
+
+test("작은 일을 되돌릴 때 열린 초안은 손편집 여부를 따르고 취소 확인 한 번으로 닫힌다", async ({ page }) => {
+  const { mapId, event, x, y } = await seedGreeting(page);
+  await mockPiRun(page, body => {
+    const target = body.project.maps[mapId].events.find(entry => entry.id === event.id)!;
+    target.pages![0].commands.push({ kind: "text", body: "AI가 추가한 대사." });
+    return [`maps.${mapId}`];
+  });
+  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
+  const box = page.getByRole("dialog", { name: "작은 일" });
+  const run = async (open: typeof trigger) => {
+    await open.click();
+    const input = box.getByRole("textbox");
+    await input.fill("대사를 한 줄 추가해 줘");
+    await input.press("Enter");
+    await expect(box).toContainText("대사 추가 「AI가 추가한 대사.」", { timeout: 90_000 });
+  };
+  await page.getByTestId("edit-canvas").locator("canvas").click({ position: await pointAtTile(page, { x, y }) });
+  await run(trigger);
+  await box.getByRole("button", { name: "닫기" }).click();
+  const editor = await openGreetingEditor(page, mapId, event.id);
+  const commands = editor.locator(".event-editor-commands-column");
+  const status = editor.getByTestId("event-editor-draft-status");
+  await expect(commands).toContainText("AI가 추가한 대사.");
+  // The history command also runs when the event window is open.
+  await page.evaluate(async () => (await import("/src/editor/mapEditHistory.ts")).undoMapEdit());
+  await expect(commands).not.toContainText("AI가 추가한 대사.");
+  await expect(status).toHaveAttribute("data-state", "session");
+  await editor.getByTestId("event-editor-apply").click();
+  const savedCommands = () => page.evaluate(async ({ mapId, eventId }) => {
+    const { store } = await import("/src/project/store.ts");
+    const { committedEventView } = await import("/src/project/eventDrafts.ts");
+    const event = store.getCurrent().maps[mapId].events.find(entry => entry.id === eventId)!;
+    return committedEventView(event)?.pages?.[0].commands;
+  }, { mapId, eventId: event.id });
+  expect(await savedCommands()).toEqual(event.pages[0].commands);
+
+  await editor.getByTestId("event-editor-cancel").click();
+  await expect(editor).toBeHidden();
+  await page.getByTestId("edit-canvas").locator("canvas").click({ position: await pointAtTile(page, { x, y }) });
+  await run(trigger);
+  await box.getByRole("button", { name: "닫기" }).click();
+  await openGreetingEditor(page, mapId, event.id);
+
+  // Undo with a hand edit in the open draft. The working body stays put.
+  const name = editor.getByTestId("event-editor-name");
+  await name.fill("직접 고친 이름");
+  await name.press("Tab");
+  await page.evaluate(async () => (await import("/src/editor/mapEditHistory.ts")).undoMapEdit());
+  await expect(status).toHaveAttribute("data-state", "conflict");
+  await expect(name).toHaveValue("직접 고친 이름");
+  await expect(commands).toContainText("AI가 추가한 대사.");
+  expect(await savedCommands()).toEqual(event.pages[0].commands);
+  await editor.getByTestId("event-editor-cancel").click();
+  await page.getByRole("button", { name: "버리고 닫기", exact: true }).click();
+  await expect(editor).toBeHidden();
+
+  const reopened = await openGreetingEditor(page, mapId, event.id);
+  await run(reopened.getByRole("button", { name: "이걸로 작업" }));
+  // Leave the result card open. The same Cancel click should dismiss it and open the guard.
+  await reopened.getByTestId("event-editor-name").fill("두 번째 직접 편집");
+  await reopened.getByTestId("event-editor-name").press("Tab");
+  await expect(box).toBeVisible();
+  await page.evaluate(async () => (await import("/src/i18n/index.ts")).setLocale("en"));
+  await reopened.getByTestId("event-editor-cancel").click();
+  await expect(page.getByRole("dialog", { name: "Small task" })).toBeHidden();
+  await page.getByRole("button", { name: "Discard and close", exact: true }).click();
+  await expect(reopened).toBeHidden();
 });
 
 test("자료집에서 고른 물건의 가격을 고치고 범위 거절 메시지를 표시한다", async ({ page }) => {
@@ -186,4 +276,6 @@ test("자료집에서 고른 물건의 가격을 고치고 범위 거절 메시�
   await englishInput.fill("Change the price");
   await englishInput.press("Enter");
   await expect(english.getByRole("status")).toHaveText("Your AI sign-in expired or is disconnected. Sign in again in Settings.", { timeout: 90_000 });
+  const logs = await page.evaluate(async () => (await import("/src/util/logger.ts")).getLogEntries({ ns: "small-task", minLevel: "error" }));
+  expect(logs[0]).toMatchObject({ ns: "small-task", level: "error", message: "Request failed" });
 });
