@@ -5,18 +5,23 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/22-map-tiles";
 import { mapTarget } from "@/editor/smallTask/target";
+import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { canMove } from "@/project/collision";
+import { deserialize, serialize } from "@/project/io";
 import { cellLayerTiles, shadowAt } from "@/project/mapLayers";
-import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { captureStructureTiles, makeStructurePlacement } from "@/project/structurePlacements";
+import type { Command, GameMap, Project, TilesetDef } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { expectUndoRestores, loadFixture } from "./harness";
+import { startOnRetiredCombinedTown } from "../support/retiredEasyRpgTilesets";
 
 type Selection = NonNullable<Parameters<typeof runPrimitive>[4]>;
 type Rect = NonNullable<Selection["rect"]>;
 type Fixture = Parameters<typeof loadFixture>[0];
 
 const BUILT_MAP = "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d";
+const WINTER_MARKET = "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c";
 const fixtures = new Map<Fixture, Project>();
 const rect = (x: number, y: number, w = 1, h = 1): Rect => ({ x, y, w, h });
 
@@ -37,8 +42,8 @@ function withMap(project: Project, map: GameMap): Project {
   return { ...project, maps: { ...project.maps, [map.id]: map } };
 }
 
-function prepared() {
-  const { project, map } = fixture("built", BUILT_MAP);
+function prepared(mapId = BUILT_MAP) {
+  const { project, map } = fixture("built", mapId);
   const index = map.width * 5 + 4;
   const lowerOverlayTiles = new Array(map.width * map.height).fill(-1);
   const upperOverlayTiles = lowerOverlayTiles.slice();
@@ -49,6 +54,21 @@ function prepared() {
   const lowerTileStacks = { [index]: [1, 2] };
   const next = { ...map, lowerOverlayTiles, upperOverlayTiles, shadowBits, lowerTileStacks };
   return { project: withMap(project, next), map: next, index };
+}
+
+function customFixture(count = 2) {
+  const { project, map } = fixture("blank");
+  const id = "custom_test_tiles";
+  const tileset: TilesetDef = {
+    id, name: "검수용 타일셋", image: { type: "uploaded", id: "test_sheet" },
+    tileSize: map.tileSize, tilesPerRow: count, count,
+    passability: Array.from({ length: count }, () => ({ up: true, down: true, left: true, right: true })),
+    priority: new Array(count).fill("lower"), terrain: new Array(count).fill(0),
+  };
+  const upperTiles = map.upperTiles.map(() => -1);
+  upperTiles[0] = 1;
+  const source = { ...map, tilesetId: id, lowerTiles: map.lowerTiles.map(() => 0), upperTiles };
+  return { project: { ...withMap(project, source), tilesets: { ...project.tilesets, [id]: tileset } }, map: source, tileset };
 }
 
 async function applied(
@@ -142,37 +162,42 @@ describe("맵 타일 적용과 한 번의 실행 취소", () => {
   });
 
   it("맵 전체에서는 타일과 그림자만 오른쪽 두 칸으로 민다", async () => {
-    const { project, map, index } = prepared();
+    const { project, map, index } = prepared(WINTER_MARKET);
     await applied(project, map, "map.tile.shift", { dx: 2, dy: 0 }, undefined, after => {
-      expect(cellLayerTiles(after, index + 2)).toEqual([1, 2, 399, 454]);
+      expect(cellLayerTiles(after, index + 2)).toEqual([1, 2, -1, 454]);
       expect(shadowAt(after, index + 2)).toBe(1);
       expect(after.lowerTiles[5 * map.width]).toBe(727);
     });
   });
 
   it("작은 커스텀 타일셋의 빈 바닥을 밀 때 다른 타일셋의 칸 번호를 쓰지 않는다", () => {
-    const { project, map } = fixture("blank");
-    const id = "custom_test_tiles";
-    const tileset: TilesetDef = {
-      id, name: "타일 한 칸", image: project.tilesets[map.tilesetId].image,
-      tileSize: map.tileSize, tilesPerRow: 1, count: 1,
-      passability: [{ up: true, down: true, left: true, right: true }], priority: ["lower"], terrain: [0],
-    };
-    const upperTiles = map.upperTiles.slice();
-    upperTiles[0] = 0;
-    const source = { ...map, tilesetId: id, lowerTiles: map.lowerTiles.map(() => -1), upperTiles };
-    const before = { ...withMap(project, source), tilesets: { ...project.tilesets, [id]: tileset } };
+    const { project, map } = customFixture();
+    const source = { ...map, lowerTiles: map.lowerTiles.map(() => -1) };
+    const before = withMap(project, source);
     const { after } = runPrimitive(before, mapTarget(before, map.id)!, "map.tile.shift", { dx: 1, dy: 0 });
     expect(after.maps[map.id].lowerTiles.slice(0, 2)).toEqual([-1, -1]);
-    expect(after.maps[map.id].upperTiles.slice(0, 2)).toEqual([-1, 0]);
+    expect(after.maps[map.id].upperTiles.slice(0, 2)).toEqual([-1, 1]);
   });
 
-  it("선택 안에서만 쓰이는 타일의 네 방향 통행을 바꾼다", async () => {
-    const { project, map } = fixture("built", BUILT_MAP);
-    await applied(project, map, "map.tile.setPassability", { tile: 702, passable: false }, rect(16, 17), (after, result) => {
+  it("타일 번호 240이 있는 커스텀 타일셋도 빈 바닥을 임의로 채우지 않는다", () => {
+    const { project, map } = customFixture(300);
+    const source = { ...map, lowerTiles: map.lowerTiles.map(() => -1) };
+    const before = withMap(project, source);
+    const { after } = runPrimitive(before, mapTarget(before, map.id)!, "map.tile.shift", { dx: 1, dy: 0 });
+    expect(after.maps[map.id].lowerTiles[0]).toBe(-1);
+    expect(after.maps[map.id].upperTiles[1]).toBe(1);
+  });
+
+  it("선택 안에서만 쓰이는 타일의 네 방향 통행을 바꾸고 불러오기 정규화에서도 유지한다", async () => {
+    const { project, map, tileset } = customFixture();
+    await applied(project, map, "map.tile.setPassability", { tile: 1, passable: false }, rect(0, 0), (after, result) => {
       expect(after).toBe(map);
-      expect(result.tilesets[map.tilesetId].passability[702]).toEqual({ up: false, down: false, left: false, right: false });
-      expect(result.tilesets[map.tilesetId].passability[1]).toBe(project.tilesets[map.tilesetId].passability[1]);
+      const changed = result.tilesets[map.tilesetId];
+      expect(changed.passability[1]).toEqual({ up: false, down: false, left: false, right: false });
+      expect(changed.passability[0]).toBe(tileset.passability[0]);
+      const reloaded = deserialize(serialize({ ...result, tilesets: { [map.tilesetId]: changed } }));
+      ensureBundledTilesets(reloaded);
+      expect(reloaded.tilesets[map.tilesetId].passability[1]).toEqual(changed.passability[1]);
     });
   });
 });
@@ -200,12 +225,40 @@ describe("선택 범위 검증", () => {
     const target = mapTarget(project, map.id)!;
     const primitive = PRIMITIVES.find(p => p.id === "map.tile.paint")!;
     const args = { x: 0, y: 0, tile: 4 };
-    const scope = primitive.scope({ project, target, selection: { rect: rect(0, 0) } }, args);
+    const scope = primitive.scope({ project, target, selection: { rect: rect(0, 0, 3) } }, args);
+    expect(scope).toEqual({ kind: "mapRegion", mapId: map.id, rect: rect(0, 0) });
     const lowerTiles = map.lowerTiles.slice();
     lowerTiles[1] = 4;
-    const result = checkSmallTaskScope(project, withMap(project, { ...map, lowerTiles, name: "바뀐 이름" }), scope);
-    expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.reason).toMatch(/범위 밖/u);
+    expect(checkSmallTaskScope(project, withMap(project, { ...map, lowerTiles }), scope).ok).toBe(false);
+    expect(checkSmallTaskScope(project, withMap(project, { ...map, name: "바뀐 이름" }), scope).ok).toBe(false);
+  });
+
+  it("복사의 원본과 찍을 물건 바깥 칸은 쓰기 범위에 들어가지 않는다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    const ctx = { project, target: mapTarget(project, map.id)!, selection: { rect: rect(0, 0, 8, 8) } };
+    const copy = PRIMITIVES.find(p => p.id === "map.region.copy")!;
+    const stamp = PRIMITIVES.find(p => p.id === "map.object.stamp")!;
+    expect(copy.scope(ctx, { ...rect(0, 0, 1, 2), dx: 2, dy: 0 })).toEqual({ kind: "mapRegion", mapId: map.id, rect: rect(2, 0, 1, 2) });
+    expect(stamp.scope(ctx, { objectId: "sn-bench", x: 5, y: 6 })).toEqual({ kind: "mapRegion", mapId: map.id, rect: rect(5, 6, 2) });
+  });
+
+  it("떨어진 이동 원본과 목적지 사이의 타일은 그대로 둔다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    const after = execute(project, map, "map.region.move", { ...rect(0, 0), dx: 4, dy: 0 }, rect(0, 0, 6));
+    expect(after.maps[map.id].upperTiles.slice(0, 6))
+      .toEqual([-1, ...map.upperTiles.slice(1, 4), map.upperTiles[0], map.upperTiles[5]]);
+  });
+
+  it("한 칸 칠하기가 선택한 다른 칸에 동반 타일을 놓으려 하면 거부한다", () => {
+    const { project, map: blank } = fixture("blank");
+    const before = startOnRetiredCombinedTown(
+      { ...withMap(project, { ...blank }), tilesets: { ...project.tilesets } },
+      { interiorHarness: false },
+    );
+    const map = before.maps[before.startMapId];
+    expect(() => execute(before, map, "map.tile.paint", { x: 5, y: 5, tile: 290, layer: "3" }, rect(5, 4, 1, 2)))
+      .toThrow(/범위 밖/u);
+    expect(map.upperTiles[4 * map.width + 5]).toBe(-1);
   });
 
   it("없는 타일과 없는 물건을 한국어 오류로 거부한다", () => {
@@ -221,6 +274,116 @@ describe("선택 범위 검증", () => {
     const next = { ...map, terrainDesign: { ...map.terrainDesign, lockedCells: [0] } };
     expect(() => execute(withMap(project, next), next, "map.tile.paint", { x: 0, y: 0, tile: 4 }, rect(0, 0)))
       .toThrow(/범위 밖.*보호된 타일/u);
+  });
+
+  it("공백 물건 이름, 좌표 하나만 있는 배치, 소수 좌표를 거부한다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    expect(() => execute(project, map, "map.object.stamp", { objectId: "  " }, rect(2, 6)))
+      .toThrow("놓을 물건을 골라 주세요.");
+    expect(() => execute(project, map, "map.object.stamp", { objectId: "sn-logs", x: 2 }, rect(2, 6)))
+      .toThrow("가로와 세로 위치를 함께");
+    expect(() => execute(project, map, "map.tile.paint", { x: 0.5, y: 0, tile: 4 }, rect(0, 0)))
+      .toThrow("형식을 확인해 주세요.");
+  });
+});
+
+describe("맵 타일에 연결된 기존 콘텐츠", () => {
+  it("부대 전투 뒤 분기가 조작하는 타일은 지우거나 옮길 수 없다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    const change: Command = { kind: "changeTile", mapId: map.id, x: 0, y: 0, layer: "upper", tile: -1 };
+    const before = { ...project, database: { ...project.database, troops: [{
+      ...project.database.troops[0], battleEventPages: [], afterBattle: { victory: [{ kind: "loop" as const, body: [change] }] },
+    }] } };
+    expect(() => execute(before, map, "map.tile.erase", {}, rect(0, 0))).toThrow("타일을 바꾸는 이벤트가 있어요.");
+    expect(() => execute(before, map, "map.region.move", { ...rect(0, 0), dx: 1, dy: 0 }, rect(0, 0, 2)))
+      .toThrow("타일을 바꾸는 이벤트가 있어요.");
+    expect(execute(before, map, "map.tile.paint", { x: 0, y: 0, tile: 4 }, rect(0, 0)).maps[map.id].lowerTiles[0]).toBe(4);
+    expect(before.maps[map.id].upperTiles[0]).toBe(399);
+  });
+
+  it("배치 기록이나 묶음이 가리키는 타일을 그대로 보존한다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    const area = rect(0, 0);
+    const placement = makeStructurePlacement(map, { kitId: "tree", rect: area, before: captureStructureTiles(map, area) });
+    const placed = { ...map, structurePlacements: [placement] };
+    expect(() => execute(withMap(project, placed), placed, "map.tile.erase", {}, area)).toThrow("배치한 구조물의 일부");
+    const grouped = { ...map, doodadGroups: [{ id: "trees", label: "나무", kitId: "tree", cells: [{ index: 0, tile: 399, before: -1 }] }] };
+    expect(() => execute(withMap(project, grouped), grouped, "map.tile.erase", {}, area)).toThrow("묶어 놓은 물건의 일부");
+  });
+
+  it("문 설정과 공용 이벤트의 문 연출이 읽는 그림을 지울 수 없다", () => {
+    const { project, map } = customFixture();
+    const withDoor = { ...map, doors: [{ ...rect(0, 0), style: "slide" as const, hinge: "left" as const }] };
+    expect(() => execute(withMap(project, withDoor), withDoor, "map.tile.erase", {}, rect(0, 0)))
+      .toThrow("문을 여닫는 데 쓰여요.");
+    const command: Command = { kind: "m2Command", commandId: "m2-202-screen-effect", fields: { effect: "doorOpen", value: "0,0" } };
+    const commonEvent = { id: "ce_door", name: "문 열기", trigger: "none" as const, commands: [command] };
+    const before = { ...project, commonEvents: [...project.commonEvents, commonEvent] };
+    expect(() => execute(before, map, "map.tile.erase", {}, rect(0, 0))).toThrow("문을 여닫는 데 쓰여요.");
+  });
+
+  it("열린 이벤트 초안을 취소해도 원래 명령이 조작할 타일을 보존한다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    const change: Command = { kind: "changeTile", mapId: map.id, x: 0, y: 0, layer: "upper", tile: -1 };
+    const original = { ...map.events[0]!, commands: [change], pages: [] };
+    const event = { ...original, commands: [], draft: { kind: "edit" as const, original } };
+    const source = { ...map, events: [event] };
+    expect(() => execute(withMap(project, source), source, "map.tile.erase", {}, rect(0, 0)))
+      .toThrow("타일을 바꾸는 이벤트가 있어요.");
+  });
+
+  it("엔딩 다음 막의 시작 칸을 막는 통행 설정을 거부한다", () => {
+    const { project, map } = customFixture();
+    const before = { ...project, endings: [{
+      id: "next", name: "다음 막", conditions: [], priority: 0, continueTo: { mapId: map.id, x: 0, y: 0 },
+    }] };
+    expect(() => execute(before, map, "map.tile.setPassability", { tile: 1, passable: false }, rect(0, 0)))
+      .toThrow("엔딩 뒤에 이어지는 칸에서 움직일 수 없게 돼요.");
+  });
+
+  it("공용 이벤트가 읽는 지형 번호가 바뀌는 편집을 거부한다", () => {
+    const { project, map, tileset } = customFixture();
+    const command: Command = { kind: "m2Command", commandId: "m2-042-get-terrain-id",
+      fields: { mapId: map.id, x: "0", y: "0", variableId: "var_terrain" } };
+    const commonEvent = { id: "ce_read_terrain", name: "지형 확인", trigger: "none" as const, commands: [command] };
+    const before = { ...project, commonEvents: [...project.commonEvents, commonEvent],
+      tilesets: { ...project.tilesets, [map.tilesetId]: { ...tileset, terrain: [0, 1] } } };
+    expect(() => execute(before, map, "map.tile.paint", { x: 0, y: 0, tile: 1 }, rect(0, 0)))
+      .toThrow("이 칸의 지형을 읽는 이벤트가 있어요.");
+  });
+
+  it("순간이동 지점으로 등록한 칸을 막는 통행 설정을 거부한다", () => {
+    const { project, map } = customFixture();
+    const command: Command = { kind: "m2Command", commandId: "m2-072-set-teleportation-point",
+      fields: { mapId: map.id, x: 0, y: 0 } };
+    const pointEvent = { id: "ce_teleport", name: "순간이동 지점", trigger: "none" as const, commands: [command] };
+    const before = { ...project, commonEvents: [...project.commonEvents, pointEvent] };
+    expect(() => execute(before, map, "map.tile.setPassability", { tile: 1, passable: false }, rect(0, 0)))
+      .toThrow("이벤트가 지정한 순간이동 칸에서 움직일 수 없게 돼요.");
+  });
+
+  it("공용 이벤트가 선택 밖에 같은 타일을 놓을 때 통행 변경을 거부한다", () => {
+    const { project, map } = customFixture();
+    const change: Command = { kind: "changeTile", mapId: map.id, x: 1, y: 1, layer: "upper2", tile: 1 };
+    const commonEvent = { id: "ce_tile", name: "타일 장치", trigger: "none" as const, commands: [change] };
+    const before = { ...project, commonEvents: [...project.commonEvents, commonEvent] };
+    expect(() => execute(before, map, "map.tile.setPassability", { tile: 1, passable: false }, rect(0, 0)))
+      .toThrow("이벤트가 선택 영역 밖에서도 이 타일을 써요.");
+  });
+
+  it("통행 값이 같아도 다른 맵에서 쓰이는 타일이나 선택에 없는 타일은 거부한다", () => {
+    const { project, map } = customFixture(3);
+    const other = { ...map, id: "other_map" };
+    expect(() => execute(withMap(project, other), map, "map.tile.setPassability", { tile: 1, passable: true }, rect(0, 0)))
+      .toThrow("선택한 영역 밖에서도 같은 타일을 써요.");
+    expect(() => execute(project, map, "map.tile.setPassability", { tile: 2, passable: true }, rect(0, 0)))
+      .toThrow("선택한 영역에 이 타일이 없어요.");
+  });
+
+  it("북방 설원 번들이 다시 열 때 되돌리는 통행 변경을 거부한다", () => {
+    const { project, map } = fixture("built", BUILT_MAP);
+    expect(() => execute(project, map, "map.tile.setPassability", { tile: 702, passable: false }, rect(16, 17)))
+      .toThrow("프로젝트를 다시 열 때 통행 설정이 원래대로 돌아가요.");
   });
 });
 
@@ -242,10 +405,10 @@ describe("플레이 이동 판정", () => {
   });
 
   it("통행 설정이 이웃 칸에서 드나드는 플레이 이동 양쪽에 적용된다", () => {
-    const { project, map } = fixture("built", BUILT_MAP);
-    expect(canMove(project, map, 17, 17, 16, 17)).toBe(true);
-    const edited = execute(project, map, "map.tile.setPassability", { tile: 702, passable: false }, rect(16, 17));
-    expect(canMove(edited, edited.maps[map.id], 17, 17, 16, 17)).toBe(false);
-    expect(canMove(edited, edited.maps[map.id], 16, 17, 17, 17)).toBe(false);
+    const { project, map } = customFixture();
+    expect(canMove(project, map, 1, 0, 0, 0)).toBe(true);
+    const edited = execute(project, map, "map.tile.setPassability", { tile: 1, passable: false }, rect(0, 0));
+    expect(canMove(edited, edited.maps[map.id], 1, 0, 0, 0)).toBe(false);
+    expect(canMove(edited, edited.maps[map.id], 0, 0, 1, 0)).toBe(false);
   });
 });

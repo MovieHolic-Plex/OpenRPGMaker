@@ -1,9 +1,9 @@
-import { isPassable } from "@/project/collision";
 import { compactMapLayers, EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
 import { jsonEqual } from "@/util/structuralJson";
 import type { GameMap, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
 import type { PrimitiveContext } from "../../types";
+import { assertTileReferencesPreserved } from "./references";
 
 export type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 type Point = Pick<Rect, "x" | "y">;
@@ -16,6 +16,7 @@ export function hostRegion(ctx: PrimitiveContext, wholeMap = false): { map: Game
     throw new PrimitiveError("맵을 찾을 수 없어요.");
   }
   const map = ctx.project.maps[target.mapId]!;
+  if (map.id !== target.mapId) throw new PrimitiveError("선택한 맵을 다시 열어 주세요.");
   const bounds = { x: 0, y: 0, w: map.width, h: map.height };
   const rect = ctx.selection?.rect ?? (wholeMap ? bounds : undefined);
   if (!rect) throw new PrimitiveError("작업할 맵 영역을 먼저 선택해 주세요.");
@@ -62,6 +63,12 @@ function copyTileMap(map: GameMap): GameMap {
   return copy;
 }
 
+export function tileCellChanged(before: GameMap, after: GameMap, index: number): boolean {
+  return TILE_LAYER_NOS.some(layer => layerTileAt(before, layer, index) !== layerTileAt(after, layer, index))
+    || shadowAt(before, index) !== shadowAt(after, index)
+    || STACK_KEYS.some(key => !jsonEqual(before[key]?.[index], after[key]?.[index]));
+}
+
 export function editTiles(
   project: Project, map: GameMap, edit: (draft: Project, next: GameMap) => void,
 ): Project {
@@ -69,18 +76,11 @@ export function editTiles(
   const draft = { ...project, maps: { ...project.maps, [map.id]: next } };
   edit(draft, next);
   for (const index of map.terrainDesign?.lockedCells ?? []) {
-    if (TILE_LAYER_NOS.some(layer => layerTileAt(map, layer, index) !== layerTileAt(next, layer, index))
-        || shadowAt(map, index) !== shadowAt(next, index)
-        || STACK_KEYS.some(key => !jsonEqual(map[key]?.[index], next[key]?.[index]))) {
+    if (tileCellChanged(map, next, index)) {
       throw new PrimitiveError("범위 밖: 보호된 타일이 포함되어 있어요.");
     }
   }
-  if (project.startMapId === map.id) {
-    const { x, y } = project.startPos;
-    if (isPassable(project, map, x, y) && !isPassable(draft, next, x, y)) {
-      throw new PrimitiveError("게임 시작 칸의 통행을 막을 수 없어요.");
-    }
-  }
+  assertTileReferencesPreserved(project, draft, map, next);
   compactMapLayers(next);
   // 이전 저장본이 갖고 있던 빈 선택 배열은 편집 여부와 관계없이 보존한다.
   for (const key of EXTRA_LAYER_KEYS) {
