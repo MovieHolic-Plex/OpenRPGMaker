@@ -1,5 +1,6 @@
 import { actorPictureActorId } from "@/project/pictureSources";
 import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
+import { isWholePartyActorTarget } from "@/project/eventCommands/actorTarget";
 import { isBuiltinFieldFxId } from "@/project/containerFx";
 import type {
   BattleEventCondition,
@@ -306,13 +307,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       validateCommands(command.escapeBranch ?? [], context);
       return;
     case "learnSkill":
-      if ((command.actorId ?? "").trim().length > 0) {
+      if ((command.actorId ?? "").trim().length > 0 && !isWholePartyActorTarget(command.actorId)) {
         assert(context.actorIds.has(command.actorId), `learnSkill: actorId가 존재하지 않습니다: ${command.actorId}`);
       }
       assert(context.skillIds.has(command.skillId), `learnSkill: skillId가 존재하지 않습니다: ${command.skillId}`);
       return;
     case "changeExp":
-      if ((command.actorId ?? "").trim().length > 0) {
+      if ((command.actorId ?? "").trim().length > 0 && !isWholePartyActorTarget(command.actorId)) {
         assert(context.actorIds.has(command.actorId), `changeExp: actorId가 존재하지 않습니다: ${command.actorId}`);
       }
       if (typeof command.amount !== "number") {
@@ -338,10 +339,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       }
       return;
     case "changeActorHp":
-      assert(context.actorIds.has(command.actorId), `changeActorHp: actorId가 존재하지 않습니다: ${command.actorId}`);
-      return;
     case "changeActorMp":
-      assert(context.actorIds.has(command.actorId), `changeActorMp: actorId가 존재하지 않습니다: ${command.actorId}`);
+      assert(isWholePartyActorTarget(command.actorId) || context.actorIds.has(command.actorId),
+        `${command.kind}: actorId가 존재하지 않습니다: ${command.actorId}`);
       return;
     case "recoverAll":
       if ((command.actorId ?? "").trim().length > 0) {

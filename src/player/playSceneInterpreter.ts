@@ -451,7 +451,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
 }
 
 function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController): Promise<void> {
-  const duration = Number.isFinite(ms) ? Math.max(0, Math.round(ms)) : 0;
+  const duration = Number.isFinite(ms) ? Math.min(2 ** 31 - 1, Math.max(0, Math.round(ms))) : 0;
   if (duration === 0) return Promise.resolve();
   return Promise.race([
     new Promise<void>((resolve) => window.setTimeout(resolve, duration)),

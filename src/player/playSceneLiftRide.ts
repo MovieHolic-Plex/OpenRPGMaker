@@ -6,7 +6,7 @@ import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { playSoundEffect } from "@/player/audio";
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
-import { isPassable } from "@/project/collision";
+import { inBounds, isPassable } from "@/project/collision";
 
 /**
  * 승강 장치 타기(«Lift Ride») — 발판 · 레일 · 사슬을 그리고 파티를 태워 위/아래로 움직인다.
@@ -240,24 +240,33 @@ function wait(scene: PlaySceneContext, ms: number): Promise<void> {
 
 /** 승강 장치 한 번. wait 이면 흐름이 끝까지 기다린다. */
 export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Promise<void> {
-  clearLift(scene);
-  const size = mapTileSize(scene.map);
+  const map = scene.map;
+  const session = scene.session;
+  const { tileX: playerX, tileY: playerY } = scene;
+  const size = mapTileSize(map);
   const u = size / 16;
   const opts = step;
-  const sign = opts.direction === "up" ? -1 : 1;
-  const travel = opts.distance * size * sign;
+  const dy = opts.direction === "up" ? -opts.distance : opts.distance;
+  const travel = dy * size;
   // 발판 자리: 주어지지 않으면 주인공 칸이 왼쪽 위.
-  const cellX = opts.x ?? scene.tileX;
-  const cellY = opts.y ?? scene.tileY;
+  const cellX = opts.x ?? playerX;
+  const cellY = opts.y ?? playerY;
+  const withRiders = opts.riders !== "none";
+  if (opts.mode === "move" && (
+    !inBounds(map, cellX, cellY + dy) ||
+    !inBounds(map, cellX + opts.width - 1, cellY + dy + opts.depth - 1) ||
+    (withRiders && !inBounds(map, playerX, playerY + dy))
+  )) return;
+
+  clearLift(scene);
   const left = cellX * size;
   const top = cellY * size;
   const widthPx = opts.width * size;
   const depthPx = opts.depth * size;
   const project = store.getCurrent();
-  const withRiders = opts.riders !== "none";
   const clip = opts.mode === "move"
     ? { top: -Infinity, bottom: Infinity }
-    : shaftClip(scene, cellX, cellY, opts.width, opts.depth, size, opts.mode === "arrive" && sign < 0);
+    : shaftClip(scene, cellX, cellY, opts.width, opts.depth, size, opts.mode === "arrive" && dy < 0);
 
   const pit = scene.add.graphics().setDepth(PIT_DEPTH);
   const rails = scene.add.graphics().setDepth(RAIL_DEPTH);
@@ -274,7 +283,7 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   // 바닥 구멍 — 출발 칸, 또는 아래에서 솟는 도착 칸.
   if (opts.mode !== "arrive" || Number.isFinite(clip.bottom)) drawPit(pit, left, top, widthPx, depthPx, u, true);
   const state: LiftState = {
-    mapId: scene.map.id,
+    mapId: map.id,
     platform, rails, pit,
     riders: [],
     left, top, widthPx, depthPx, chainTop,
@@ -284,6 +293,12 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
     riding: true,
   };
   states.set(scene, state);
+  const stillActive = () => {
+    if (states.get(scene) !== state) return false;
+    if (scene.map === map && scene.session === session) return true;
+    clearLift(scene);
+    return false;
+  };
   redrawPlatform(state, u);
 
   // ① 파티를 발판에 모은다. 주인공은 이미 발판 위(밟아서 탄다). 동료는 빈 칸으로 짧게 걸어 온다.
@@ -305,11 +320,13 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
     applyRiders(state);
   } else if (gathers.length > 0) {
     await tween(scene, 360, (t) => {
+      if (!stillActive()) return;
       for (const g of gathers) {
         g.sprite.x = g.fromX + (g.toX - g.fromX) * t;
         g.sprite.y = g.fromY + (g.toY - g.fromY) * t;
       }
     });
+    if (!stillActive()) return;
     for (const g of gathers) state.riders.push({ sprite: g.sprite, baseX: g.toX, baseY: g.toY });
   }
   for (const rider of state.riders) {
@@ -323,16 +340,33 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   playSoundEffect(DEFAULT_STOP_SE, project);
   scene.cameras?.main?.shake(220, 0.004);
   await wait(scene, 260);
+  if (!stillActive()) return;
 
   // ③ 움직임: 기계음 되풀이 + 미세 떨림
   playSoundEffect(opts.se, project);
   const loopEvery = 700;
-  const loop = scene.time?.addEvent({ delay: loopEvery, loop: true, callback: () => playSoundEffect(opts.se, project) });
+  let loop: Phaser.Time.TimerEvent | undefined;
+  const stopLoop = () => {
+    loop?.remove(false);
+    loop = undefined;
+  };
+  loop = scene.time?.addEvent({
+    delay: loopEvery, loop: true,
+    callback: () => {
+      if (stillActive()) playSoundEffect(opts.se, project);
+      else stopLoop();
+    },
+  });
   await tween(scene, opts.durationMs, (t) => {
+    if (!stillActive()) {
+      stopLoop();
+      return;
+    }
     state.offset = startOffset + (endOffset - startOffset) * t;
     state.jitter = t > 0.04 && t < 0.96 && Math.floor(t * opts.durationMs / 70) % 2 === 0 ? u : 0;
   });
-  loop?.remove(false);
+  stopLoop();
+  if (!stillActive()) return;
   state.jitter = 0;
 
   // ④ 도착 덜컹
@@ -340,11 +374,14 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   scene.cameras?.main?.shake(200, 0.005);
   state.riding = false;
   await wait(scene, 220);
+  if (!stillActive()) return;
 
   if (opts.mode === "move") {
-    const dy = Math.round(travel / size);
     clearRidersOnly(state);
-    placePlayerOnCurrentMap(scene, scene.tileX, scene.tileY + dy);
+    if (withRiders) {
+      const stillOnStart = scene.tileX === playerX && scene.tileY === playerY;
+      placePlayerOnCurrentMap(scene, scene.tileX, stillOnStart ? playerY + dy : scene.tileY);
+    }
     // 발판은 새 층에 그대로 서 있다.
     state.top += travel;
     state.offset = 0;

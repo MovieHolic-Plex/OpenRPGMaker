@@ -126,7 +126,7 @@ let restoreDom: (() => void) | null = null;
 let previousProject: Project | null = null;
 
 beforeEach(() => {
-  restoreDom = installFakeDom({ animationFrames: "manual" });
+  restoreDom = installFakeDom({ animationFrames: "manual", window: true });
   previousProject = store.getCurrent();
   vi.spyOn(performance, "now").mockReturnValue(1_000);
   cameraControl.mockReset();
@@ -236,6 +236,16 @@ describe("skippable cutscene skip hint", () => {
 });
 
 describe("skippable cutscene blocking waits", () => {
+  it("caps a variable wait at the browser timer limit and still lets the player skip", async () => {
+    const fixture = createFixture();
+    fixture.scene.session.variables.delay = 3_000_000_000;
+    const schedule = vi.spyOn(window as Window, "setTimeout").mockReturnValue(1);
+
+    await expectDoubleEscapeSkips(fixture, skippableCutscene({ kind: "wait", ms: 0, variableId: "delay" }));
+
+    expect(schedule).toHaveBeenCalledWith(expect.any(Function), 2 ** 31 - 1);
+  });
+
   it("skips a camera wait on double Escape", async () => {
     // Given: a skippable cutscene blocked on camera completion.
     const fixture = createFixture();
