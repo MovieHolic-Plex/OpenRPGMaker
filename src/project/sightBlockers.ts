@@ -65,6 +65,10 @@ export function sightBlockerForMap(project: Pick<Project, "tilesets">, map: Game
 
 const blockerCache = new WeakMap<GameMap, { project: Partial<Pick<Project, "tilesets">>; blocker: SightBlocker }>();
 
+export function invalidateSightBlocker(map: GameMap): void {
+  blockerCache.delete(map);
+}
+
 /** 같은 (프로젝트, 맵) 객체면 판정기를 재사용한다. 런타임 맵 사본이 바뀌면 새로 만든다. */
 export function cachedSightBlocker(project: Partial<Pick<Project, "tilesets">> | undefined, map: GameMap | undefined): SightBlocker | undefined {
   if (!project?.tilesets || !map || !Array.isArray(map.lowerTiles)) return undefined;

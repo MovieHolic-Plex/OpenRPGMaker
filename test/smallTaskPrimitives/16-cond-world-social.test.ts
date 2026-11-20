@@ -16,8 +16,10 @@ import { resolveEventPage } from "@/project/io/pageResolution";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { endRoguelikeRun, startRoguelikeRun } from "@/project/roguelikeRun";
-import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
-import { startSession, type PlaySession } from "@/project/session";
+import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
+import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
+import { setMapTileOverride, startSession, type PlaySession } from "@/project/session";
+import { cachedSightBlocker } from "@/project/sightBlockers";
 import type { Condition, DifficultyRecord, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import corpus from "../../harness-data/small-task-corpus/16-cond-world-social.json";
@@ -189,6 +191,9 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
     expect(getPage(updated.after, at).conditions[1]).toEqual({
       ...direct, eventId: "ev_test_guard", range: 3, darkness: { night: 2, dark: 1, darkAmbient: 0.7 },
     });
+    const overrides = runPrimitive(updated.after, at.target, id, { nightRange: 1, darkRange: 0 });
+    expect(overrides.sentence).toContain("밤 1칸");
+    expect(overrides.sentence).toContain("어둠 0칸");
   });
 
   it("선택한 인물의 일정에 없는 활동은 다른 인물에게 등록돼 있어도 거부한다", () => {
@@ -380,6 +385,93 @@ describe("실행 중 등장 조건 판정", () => {
       expect(createInterpreter([command], session, after, { eventPositions }).start().kind).toBe("done");
       expect(session.gold - priorGold).toBe(matches ? 3 : 0);
     }
+  });
+
+  it("다른 맵에서 옮겨 온 관찰자를 포함하고 원본 맵에서 제거되면 제외한다", () => {
+    const at = fixture(blank);
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 3,
+    });
+    const map = after.maps[at.mapId]!;
+    const guard = map.events.find((event) => event.id === "ev_test_guard")!;
+    const source = { ...createBlankMap("경비실", 8, 8), id: "guard_room", events: [guard] };
+    const current = { ...map, events: map.events.filter((event) => event.id !== guard.id) };
+    const project = { ...after, maps: { ...after.maps, [at.mapId]: current, [source.id]: source } };
+    const session = Object.assign(startSession(project, 7), { x: 2, y: 4 });
+    session.eventLocations = { [guard.id]: { mapId: at.mapId, x: 4, y: 4, direction: "left" } };
+    const activePage = () => runtimeEventViewById(project, current, session, {}, at.eventId)?.pageId;
+    expect(activePage()).toBe(PAGE);
+    session.removedEventIds = { [source.id]: [guard.id] };
+    expect(activePage()).toBe("pg_test_base");
+  });
+
+  it.each(["실시간 위치", "이동 기록", "저작 위치"] as const)("이름을 지정한 관찰자가 지워지면 %s에서 제외한다", (source) => {
+    const at = fixture(blank);
+    const guardId = "ev_test_guard";
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      eventId: guardId, range: 3, requireFacing: false,
+    });
+    const session = Object.assign(startSession(after, 7), { x: 2, y: 4 });
+    const position = { x: 4, y: 4, direction: "left" as const };
+    const positions: RuntimeEventPositions = source === "실시간 위치" ? { [guardId]: position } : {};
+    if (source === "이동 기록") session.eventLocations = { [guardId]: { ...position, mapId: at.mapId } };
+    const activePage = () => runtimeEventViewById(after, after.maps[at.mapId]!, session, positions, at.eventId)?.pageId;
+    expect(activePage()).toBe(PAGE);
+    session.erasedEventIds = [guardId];
+    expect(activePage()).toBe("pg_test_base");
+  });
+
+  it.each([
+    ["facing", { subject: "event", dir: "left" }],
+    ["relativeFacing", { relation: "playerBehindEvent" }],
+  ] as const)("%s 페이지가 실시간 방향과 같은 맵의 이동 기록을 읽는다", (kind, args) => {
+    const at = fixture(blank);
+    const { after } = runPrimitive(at.project, at.target, `cond.${kind}.page.set`, args);
+    const map = after.maps[at.mapId]!;
+    const session = Object.assign(startSession(after, 7), { x: 4, y: 2 });
+    const atHost = { x: 3, y: 2 };
+    const activePage = (direction?: "left" | "right") => runtimeEventViewById(after, map, session, {
+      [at.eventId]: { ...atHost, direction },
+    }, at.eventId)?.pageId;
+    expect(activePage()).toBe("pg_test_base");
+    expect(activePage("left")).toBe(PAGE);
+    expect(activePage("right")).toBe("pg_test_base");
+    session.eventLocations = { [at.eventId]: { ...atHost, mapId: at.mapId, direction: "left" } };
+    expect(activePage()).toBe(PAGE);
+    session.eventLocations[at.eventId] = { ...atHost, mapId: "elsewhere", direction: "left" };
+    expect(activePage("left")).toBeUndefined();
+  });
+
+  it("하층 타일 변경과 복원이 캐시된 시야 판정과 맵 이벤트 호출에 반영된다", () => {
+    const at = fixture(blank);
+    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
+      eventId: "ev_test_guard", range: 3,
+    });
+    const map = structuredClone(after.maps[at.mapId]!);
+    const session = Object.assign(startSession(after, 7), { x: 2, y: 4 });
+    const positions = { ev_test_guard: { x: 4, y: 4, direction: "left" as const } };
+    const index = 4 * map.width + 3;
+    const floor = map.lowerTiles[index]!;
+    const activePage = () => runtimeEventViewById(after, map, session, positions, at.eventId)?.pageId;
+    const earned = () => {
+      const gold = session.gold;
+      const commands = [{ kind: "callMapEvent", eventId: at.eventId }] as const;
+      expect(createInterpreter([...commands], session, after, { eventPositions: positions }).start().kind).toBe("done");
+      return session.gold - gold;
+    };
+    expect(activePage()).toBe(PAGE);
+    const initialBlocker = cachedSightBlocker(after, map);
+    setMapTileOverride(session, map.id, "upper", index, floor);
+    applyRuntimeMapOverrides(map, session);
+    expect(cachedSightBlocker(after, map)).toBe(initialBlocker);
+    setMapTileOverride(session, map.id, "lower", index, -1);
+    applyRuntimeMapOverrides(map, session);
+    expect(activePage()).toBe("pg_test_base");
+    expect(earned()).toBe(0);
+    setMapTileOverride(session, map.id, "lower2", index, floor);
+    applyRuntimeMapOverrides(map, session);
+    expect(activePage()).toBe(PAGE);
+    expect(earned()).toBe(3);
   });
 
   it("아이템을 사용할 때에도 실제 관찰자로 등장 페이지를 고른다", () => {

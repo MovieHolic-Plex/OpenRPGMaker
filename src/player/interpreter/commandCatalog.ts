@@ -46,6 +46,7 @@ import {
 import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import { resolveEventPage } from "@/project/io";
 import { runtimePageContext } from "@/project/runtimeEventState";
+import { runtimeMap } from "@/project/runtimeMap";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
@@ -130,7 +131,7 @@ function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): C
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = resolveEventPage(event, state.session, runtimePageContext(project, map, state.session, state.eventPositions));
+  const page = resolveEventPage(event, state.session, runtimePageContext(project, runtimeMap(map, state.session), state.session, state.eventPositions));
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };

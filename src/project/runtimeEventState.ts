@@ -167,14 +167,29 @@ export function runtimePageContext(
     locations: map.locations,
     ...partySkillContext(project, session),
     blocksSight: cachedSightBlocker(project, map),
-    mapEvents: () => mapEvents ??= map.events.filter((event) => {
-      const location = session.eventLocations?.[event.id];
-      return !runtimeEventGone(session, map.id, event.id) && (!location || location.mapId === map.id);
-    }),
+    mapEvents: () => {
+      if (mapEvents) return mapEvents;
+      const events = map.events.filter((event) => {
+        const location = session.eventLocations?.[event.id];
+        return !runtimeEventGone(session, map.id, event.id) && (!location || location.mapId === map.id);
+      });
+      const included = new Set(events.map((event) => event.id));
+      forEachIncomingEvent(project, map.id, session, included, idSet(session.erasedEventIds), (event) => {
+        events.push(event);
+        return false;
+      });
+      return mapEvents = events;
+    },
     eventPosition: (id) => {
       const location = session.eventLocations?.[id];
-      if (location) return location.mapId === map.id ? location : undefined;
-      return positions?.[id] ?? firstEventById(map.events, id);
+      const position = positions?.[id];
+      if (location) {
+        if (location.mapId !== map.id) return undefined;
+        return location.direction === undefined && position?.direction !== undefined
+          ? { ...location, direction: position.direction }
+          : location;
+      }
+      return position ?? firstEventById(map.events, id);
     },
   };
 }
@@ -225,28 +240,8 @@ function forEachRuntimeEventView(
     if (near && !anchorMayOverlap(location ?? positions[event.id] ?? event, near)) continue;
     if (admit(event)) return;
   }
-  // 다른 맵의 이벤트는 **이 맵으로 옮겨진 것만** 후보다. 옮겨진 이벤트가 없으면
-  // 맵 전체 순회를 건너뛴다(대부분의 프레임이 여기에 해당한다). 후보 집합은 다른 맵이
-  // 실제로 있을 때만 만든다 — 맵이 하나뿐인 프로젝트에서 헛일이 되지 않게.
-  let incoming: ReadonlySet<string> | undefined;
-  let incomingResolved = false;
-  for (const sourceMap of Object.values(project.maps)) {
-    if (sourceMap.id === map.id) continue;
-    if (!incomingResolved) {
-      incomingResolved = true;
-      incoming = incomingEventIds(locations, map.id, included, erased);
-    }
-    if (!incoming) break;
-    const removedOnSourceMap = removedEventSet(session, sourceMap.id);
-    for (const event of sourceMap.events) {
-      if (!incoming.has(event.id)) continue;
-      if (included.has(event.id)) continue;
-      if (removedOnSourceMap?.has(event.id)) continue;
-      included.add(event.id);
-      if (near && !anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) continue;
-      if (admit(event)) return;
-    }
-  }
+  if (forEachIncomingEvent(project, map.id, session, included, erased, (event) =>
+    (!near || anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) && admit(event))) return;
   const spawned = session.spawnedEvents;
   if (!spawned) return;
   for (const spawnedEventId in spawned) {
@@ -390,6 +385,31 @@ function runtimeAppearanceProject(
   project: Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets">>,
 ): Pick<Project, "database" | "assets"> | undefined {
   return project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
+}
+
+/** 다른 맵에서 옮겨 온 이벤트 정의만 방문한다. 페이지 조건을 다시 평가하지 않는다. */
+function forEachIncomingEvent(
+  project: Pick<Project, "maps">,
+  mapId: string,
+  session: PlaySessionLike,
+  included: Set<string>,
+  erased: ReadonlySet<string> | undefined,
+  visit: (event: GameEvent) => boolean,
+): boolean {
+  if (!session.eventLocations) return false;
+  let incoming: ReadonlySet<string> | undefined;
+  for (const sourceMap of Object.values(project.maps)) {
+    if (sourceMap.id === mapId) continue;
+    incoming ??= incomingEventIds(session.eventLocations, mapId, included, erased);
+    if (!incoming) return false;
+    const removed = removedEventSet(session, sourceMap.id);
+    for (const event of sourceMap.events) {
+      if (!incoming.has(event.id) || included.has(event.id) || removed?.has(event.id)) continue;
+      included.add(event.id);
+      if (visit(event)) return true;
+    }
+  }
+  return false;
 }
 
 /** 이 맵으로 옮겨졌고 아직 방문되지 않은 이벤트 id. 없으면 undefined. */

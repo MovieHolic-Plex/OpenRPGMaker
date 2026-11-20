@@ -208,7 +208,7 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 | `actorStat` | 배우(또는 `leader`)의 level·hp·mp·hpPercent·mpPercent | 파티에 없으면 거짓 |
 | `actorState` | 배우(`anyone`·`leader`·id)의 상태 보유 | — |
 | `partyLeader` · `partySize` | 선두 배우 · 인원 | 빈 파티면 선두 거짓 |
-| `facing` | 주인공(`session.playerFacing`) 또는 이 이벤트의 방향 | 이벤트 위치 모르면 거짓 |
+| `facing` | 주인공(`session.playerFacing`) 또는 이 이벤트의 실시간 방향 | 이동 기록과 현재 위치에 방향이 없으면 이벤트 방향 조건은 거짓 |
 | `relativeFacing` | 주인공이 이벤트를 봄 / 이벤트 등 뒤 / 이벤트가 주인공 등 뒤 | 같은 칸은 거짓 |
 | `hiding` · `pursuitActive` | 숨는 중 · 추격 중(`session.horror`) | — |
 | `eventSeesPlayer` | 이벤트 `eventId` 가 지금 주인공을 보는가. `range`(기본 5칸, 체비셰프) · 같은 방(`GameMap.locations`; 방 밖 문틀 칸은 맞닿은 방 모두에 속함, 맵에 방이 없으면 방 판정 생략) · **벽 시선 광선**(`src/project/sightBlockers.ts` — 하층 벽면·천장·빈 칸, 방 사이 못 걷는 칸; 가구는 안 막음) · 바라보는 90° 부채꼴(바로 옆 칸은 방향 무관). `sameRoom:false` = 방·벽 무관 가까움(옆방 기척). `hearRange` = 소리로 알아차리는 거리(벽 칸마다 +3) — 시끄러운 행동에만, `range:0` 과 함께 쓰면 「들음」만. `value:false` 면 못 볼 때. 실시간 위치는 `state.eventPositions`. 순수 함수 `src/project/conditionEventSight.ts`, 판정기는 `commandCatalog.locationEvalContext` 가 `cachedSightBlocker` 로 넘긴다. 수납 패턴 `src/project/containerSearchPattern.ts` | — **선택 칸(2026-11-07, 생략=위와 같음):** `watchers{characterId?,name?,locationId?}` — `eventId` 가 비었을 때 이 맵에서 맞는 이벤트 누구든(못 봄은 아무도 못 볼 때), `doorsBlock:true` — 문 이벤트(transfer·callMapEvent 를 가진 이벤트) 칸도 막음, `darkness{night?,dark?,darkAmbient?}` — 밤 시간대·조명 어둠(ambient≥0.6)에서 시야 거리, 듣기는 안 줄임. 판정 `src/project/sightWatchers.ts`·`conditionEventSight.effectiveSightRange`. lint `eventSeesPlayer.watchers-empty`·`eventSeesPlayer.watcher-missing`(warning). |
@@ -956,7 +956,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 작은 일의 페이지 활동 조건은 선택한 이벤트의 일정에서 활동 키를 확인한다. 페이지 시야 조건은 플레이의
 맵 이벤트 조회, 맵 이벤트 호출, 아이템 사용에서 실시간 위치, 관찰자 후보, 벽·문 차단 정보를 받는다.
 같은 방 제한을 끈 상태에서 문으로 시야를 막으려는 입력은 작은 일에서 거부한다. 구역 관찰자는 플레이 중
-들어오거나 나갈 수 있다. 관찰자가 없을 때 「아무도 발견하지 못함」은 참이다.
+들어오거나 나갈 수 있으며, 다른 맵에서 옮겨 온 이벤트도 관찰자가 된다. 지워진 이벤트는 ID로 지정해도
+시야 판정에서 빠진다. 관찰자가 없을 때 「아무도 발견하지 못함」은 참이다.
 
 **셋이 갈라져 있었다(실측).** `npcActivity` 는 전투에서 하드코딩 `false` 였고,
 `friendshipAtLeast` 는 빈 `npcKey` 를 소유 이벤트 `characterId` 로 해석하지 않아 항상 거짓이었다.

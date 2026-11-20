@@ -264,11 +264,20 @@ function prepareSight(
   const observer = watchers && !sees ? `${shortWho} 중 아무도` : `${shortWho}가`;
   const detection = hearRange && hearRange > 0 ? "알아차릴" : "볼";
   const distance = range ?? DEFAULT_SIGHT_RANGE;
-  const distanceLabel = hearRange && hearRange > 0 ? `시야 ${distance}칸·소리 ${hearRange}칸에서` : `${distance}칸 안에서`;
+  const overrides = [
+    ...(nightRange === undefined ? [] : [`밤 ${nightRange}칸`]),
+    ...(darkRange === undefined ? [] : [`어둠 ${darkRange}칸`]),
+  ].join("·");
+  const sight = `${distance}칸${overrides ? `(${overrides})` : ""}`;
+  const distanceLabel = hearRange && hearRange > 0 ? `시야 ${sight}·소리 ${hearRange}칸에서` : `${sight} 안에서`;
   const clause = `${observer} 주인공을 ${distanceLabel} ${detection} 수 ${sees ? "있을" : "없을"} 때`;
+  const shortObserver = watchers && !sees ? "관찰자 중 아무도" : "관찰자가";
+  const shortClause = overrides
+    ? `${overrides}에서 ${shortObserver} ${detection} 수 ${sees ? "있을" : "없을"} 때`
+    : `${shortObserver} 주인공을 ${detection} 수 ${sees ? "있을" : "없을"} 때`;
   return {
     condition,
-    clause: clause.length <= 63 ? clause : `${watchers && !sees ? "지정한 관찰자 중 아무도" : "지정한 관찰자가"} 주인공을 ${detection} 수 ${sees ? "있을" : "없을"} 때`,
+    clause: clause.length <= 63 ? clause : shortClause,
   };
 }
 

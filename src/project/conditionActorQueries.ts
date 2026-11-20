@@ -23,6 +23,7 @@ export interface ActorQuerySession {
   readonly y: number;
   readonly playerFacing?: Dir;
   readonly eventLocations?: Readonly<Record<string, { readonly x: number; readonly y: number; readonly direction?: Dir; readonly mapId: string }>>;
+  readonly erasedEventIds?: readonly string[];
   readonly horror?: { readonly hiding?: unknown; readonly pursuits: Readonly<Record<string, { readonly active: boolean }>> };
   readonly flags: Readonly<Record<string, boolean>>;
   /** 게임 스위치(badgeCount 가 배지 스위치를 센다). PlaySession·페이지 세션이 구조적으로 가진다. */
@@ -98,12 +99,15 @@ function isInFront(from: { x: number; y: number }, dir: Dir, to: { x: number; y:
   return dot > 0;
 }
 
-function hostPosition(session: ActorQuerySession, host: ActorQueryHost | undefined): { x: number; y: number; direction?: Dir } | undefined {
+function hostPosition(session: ActorQuerySession, host: ActorQueryHost | undefined, options: ActorQueryOptions): SightPoint | undefined {
   if (!host) return undefined;
   if (host.x !== undefined && host.y !== undefined) return { x: host.x, y: host.y, direction: host.direction };
-  const loc = host.eventId ? session.eventLocations?.[host.eventId] : undefined;
-  if (!loc || loc.mapId !== session.currentMapId) return undefined;
-  return { x: loc.x, y: loc.y, direction: host.direction ?? loc.direction };
+  if (!host.eventId) return undefined;
+  const loc = session.eventLocations?.[host.eventId];
+  if (loc && loc.mapId !== session.currentMapId) return undefined;
+  const position = options.eventPosition?.(host.eventId) ?? loc;
+  if (!position) return undefined;
+  return { x: position.x, y: position.y, direction: host.direction ?? position.direction ?? loc?.direction };
 }
 
 /** 게임 달력의 절대 일수(1년 = 4계절). 시계가 없으면 undefined. */
@@ -136,7 +140,7 @@ export interface ActorQueryOptions {
   /** eventSeesPlayer: 현재 맵의 명명 로케이션(방 사각형). 호출측이 맵으로 넘긴다. 생략하면 같은 방 판정은 거짓. */
   readonly locations?: () => readonly SightLocation[] | undefined;
   /**
-   * eventSeesPlayer: 이벤트의 런타임 위치. 걷는 NPC 의 실시간 칸은 장면의 eventPositions 에 있어
+   * 방향·시야 조건에 쓰는 이벤트의 런타임 위치. 걷는 NPC 의 실시간 칸은 장면의 eventPositions 에 있어
    * 세션 eventLocations 만으로는 모른다 — 호출측이 장면 위치를 넘긴다. 생략하면 eventLocations 를 본다.
    */
   readonly eventPosition?: (eventId: string) => SightPoint | undefined;
@@ -188,11 +192,11 @@ export function evalActorQueryCondition(
       return compareVariableValue(partySizeOf(session), condition.op, condition.value);
     case "facing": {
       if (condition.subject === "player") return (session.playerFacing ?? "down") === condition.dir;
-      const pos = hostPosition(session, host);
+      const pos = hostPosition(session, host, options);
       return pos?.direction === condition.dir;
     }
     case "relativeFacing": {
-      const pos = hostPosition(session, host);
+      const pos = hostPosition(session, host, options);
       if (!pos) return false;
       const player = { x: session.x, y: session.y };
       const playerDir = session.playerFacing ?? "down";
@@ -208,6 +212,7 @@ export function evalActorQueryCondition(
     }
     case "eventSeesPlayer": {
       const pointOf = (eventId: string): SightPoint | undefined => {
+        if (session.erasedEventIds?.includes(eventId)) return undefined;
         const live = options.eventPosition?.(eventId);
         const loc = session.eventLocations?.[eventId];
         return live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
