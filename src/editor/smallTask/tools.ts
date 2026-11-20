@@ -1,4 +1,5 @@
 import { DB_UPSERT_TOOLS } from "@/editor/tools/dbUpsertEnvelope";
+import { TILESET_REFERENCE_READ_TOOLS } from "@/editor/tools/tilesetReferenceTools";
 import type { SmallTaskTarget } from "./target";
 
 const eventTools = ["get_event", "get_map_region", "patch_event_page", "event_command_assist"];
@@ -7,7 +8,8 @@ export function smallTaskTools(target: SmallTaskTarget): string[] {
     ...Object.keys(DB_UPSERT_TOOLS).filter(name => DB_UPSERT_TOOLS[name].collection === target.collection)];
   const common = [...eventTools, "get_database_records", "list_resources"];
   if (target.kind === "event") return target.pageId ? common : [...common, "upsert_event", "move_event"];
-  return [...common, "find_events", "place_npc", "upsert_event", "move_event", "paint_tiles", "set_map_properties"];
+  return [...common, "find_events", "place_npc", "upsert_event", "move_event", "paint_tiles", "set_map_properties",
+    ...TILESET_REFERENCE_READ_TOOLS];
 }
 
 export const SMALL_TASK_SCOPE_REFUSAL = "선택한 대상만 고칠 수 있어요.";

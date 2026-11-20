@@ -4,8 +4,10 @@ import { showConfirm } from "@/editor/ui/modal";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { createLogger } from "@/util/logger";
 import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection, type SmallTaskTarget } from "./target";
 
+const log = createLogger("small-task");
 const hint = "무엇을 고칠지 먼저 고르세요";
 function example(target: SmallTaskTarget | null): string {
   if (!target) return hint;
@@ -50,7 +52,12 @@ function smallTaskButton(readTarget: () => SmallTaskTarget | null): HTMLButtonEl
 function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null): void {
   dismiss?.();
   const owner = new AbortController();
-  const box = el("section", { class: "small-task", attrs: { role: "dialog", "aria-label": "작은 일", popover: "manual" } });
+  const dialog = anchor.closest('[role="dialog"]');
+  const eventHeader = anchor.closest(".event-editor-modal-header");
+  const box = el("section", {
+    class: eventHeader ? "small-task event-editor-small-task" : "small-task",
+    attrs: { role: "dialog", "aria-label": "작은 일", ...(eventHeader ? {} : { popover: "manual" }) },
+  });
   const title = el("strong", { text: target?.label ?? hint });
   const input = el("input", { attrs: { type: "text", placeholder: example(target), "aria-label": "한 줄 요청", autocomplete: "off" } });
   const send = el("button", { text: "실행", attrs: { type: "submit" } });
@@ -58,20 +65,22 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   const status = el("div", { class: "small-task-status", attrs: { role: "status", "aria-live": "polite" } });
   const closeButton = el("button", { text: "닫기", attrs: { type: "button" } });
   box.append(el("header", { children: [title, closeButton] }), form, status);
-  const dialog = anchor.closest('[role="dialog"]');
   const toolbar = anchor.closest(".canvas-toolbar");
-  (dialog ?? document.body).append(box);
-  box.showPopover();
+  if (eventHeader) eventHeader.after(box);
+  else {
+    (dialog ?? document.body).append(box);
+    box.showPopover();
+  }
   const place = () => {
     if (!anchor.isConnected) return;
     const r = anchor.getBoundingClientRect();
-    const eventChrome = dialog?.querySelectorAll(".event-editor-pagebar, .event-editor-command-toolbar");
-    const controlsBottom = Math.max(r.bottom, ...Array.from(eventChrome ?? [], row => row.getBoundingClientRect().bottom));
-    const top = controlsBottom + 6;
-    // Keep event page and command controls above the popover even as its result grows.
-    if (eventChrome?.length) box.style.maxHeight = `${Math.max(0, innerHeight - top - 8)}px`;
+    if (eventHeader && dialog) {
+      const bounds = dialog.getBoundingClientRect();
+      box.style.marginLeft = `${Math.max(8, Math.min(bounds.width - box.offsetWidth - 8, r.left - bounds.left))}px`;
+      return;
+    }
     box.style.left = `${Math.max(8, Math.min(innerWidth - box.offsetWidth - 8, r.left))}px`;
-    box.style.top = `${Math.max(8, eventChrome?.length ? top : Math.min(innerHeight - box.offsetHeight - 8, top))}px`;
+    box.style.top = `${Math.max(8, Math.min(innerHeight - box.offsetHeight - 8, r.bottom + 6))}px`;
   };
   place();
   window.addEventListener("resize", place, { signal: owner.signal });
@@ -79,23 +88,29 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   if (typeof ResizeObserver !== "undefined") {
     const resize = new ResizeObserver(place);
     resize.observe(box);
+    if (eventHeader) resize.observe(eventHeader);
     owner.signal.addEventListener("abort", () => resize.disconnect(), { once: true });
   }
-  const close = () => {
+  const close = (restoreFocus = true) => {
     if (owner.signal.aborted) return;
     owner.abort();
     unregisterModal(box);
     unsubscribe();
     box.remove();
     dismiss = undefined;
+    if (!restoreFocus) return;
     if (anchor.isConnected) anchor.focus({ preventScroll: true });
     else if (toolbar) {
       const host = toolbar.isConnected ? toolbar : document.querySelector(".canvas-toolbar");
       host?.querySelector<HTMLElement>('[data-testid="small-task-open"]')?.focus({ preventScroll: true });
     }
   };
-  document.addEventListener("pointerdown", event => {
-    if (!input.disabled && form.isConnected && event.target instanceof Node && !box.contains(event.target)) close();
+  let confirmingUndo = false;
+  document.addEventListener("click", event => {
+    if (!confirmingUndo && !status.classList.contains("is-working") && event.target instanceof Node && !box.contains(event.target)) {
+      // Let the outside control receive the same gesture that dismissed the card.
+      close(false);
+    }
   }, { capture: true, signal: owner.signal });
   registerModal(box, close);
   const unsubscribe = store.subscribe((_project, change) => { if (change.projectSwitch) close(); });
@@ -108,7 +123,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
     owner.signal.addEventListener("abort", () => observer.disconnect(), { once: true });
   }
   dismiss = close;
-  closeButton.onclick = close;
+  closeButton.onclick = () => close();
   input.disabled = !target;
   send.disabled = true;
   if (target) input.focus();
@@ -145,11 +160,15 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
           let message = "현재 편집을 유지했어요.";
           // 기본 확인 창이 팝오버보다 앞에서 키보드와 포인터를 받게 한다.
           const done = await receipt.undo(async () => {
-            box.hidePopover();
+            confirmingUndo = true;
+            if (!eventHeader) box.hidePopover();
             try {
               return await showConfirm({ title: "뒤에 고친 내용이 있어요", message: "이 작업 뒤의 편집도 함께 되돌릴까요?",
                 confirmLabel: "함께 되돌리기", cancelLabel: "유지하기" });
-            } finally { if (box.isConnected) box.showPopover(); }
+            } finally {
+              confirmingUndo = false;
+              if (!eventHeader && box.isConnected) box.showPopover();
+            }
           }, () => {
             message = "이 이벤트를 작업 뒤에 직접 고쳐서 되돌리지 않았어요. 창에서 먼저 저장하거나 취소해 주세요.";
           });
@@ -163,7 +182,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
       } else status.textContent = "바뀐 내용이 없어요.";
     } catch (error) {
       if (!owner.signal.aborted) {
-        console.error("[small-task] Request failed", error);
+        log.error("Request failed", error);
         status.textContent = smallTaskErrorMessage(error);
       }
     } finally {
