@@ -729,6 +729,22 @@
     "expectRefusal": true
   },
   {
+    "request": "지금 보고 있는 이동 페이지에 낡은 열쇠 잠금을 달아 줘.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c", "eventId": "ev_world_gate_1o6qiz7", "pageId": "ev_world_gate_1o6qiz7_page"},
+    "primitive": "event.door.setLock",
+    "args": {"itemId": "item_old_key"},
+    "expectRefusal": true
+  },
+  {
+    "request": "보급 상점에 포션을 백만 골드에 진열해 주세요.",
+    "fixture": "built",
+    "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},
+    "primitive": "event.shop.addStock",
+    "args": {"itemId": "item_potion", "price": 1000000},
+    "expectRefusal": true
+  },
+  {
     "request": "포션은 이 상점 진열대에서 내려 주세요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop"},

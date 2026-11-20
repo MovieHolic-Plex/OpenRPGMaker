@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { GOLD_MAX } from "@/project/economyValues";
 import { resolveEventPage } from "@/project/io/pageResolution";
+import { deserialize, serialize } from "@/project/io/serialize";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
@@ -103,6 +104,13 @@ it("주민을 선택 칸에 세우고 대사를 실행한 뒤 한 번에 되돌�
   await expectUndoRestores(project, after, target);
 });
 
+it("받침이 없는 주민 이름에는 '를'을 붙인다", () => {
+  const project = blankWithMap();
+  const target = mapTarget(project, project.startMapId)!;
+  const npc = PRIMITIVES.find(primitive => primitive.id === "event.npc.place")!;
+  expect(npc.describe({ project, target, selection }, { name: "루나" })).toBe("선택한 칸에 주민 「루나」를 놓아요.");
+});
+
 it("상자는 포션 세 개를 한 번만 지급하고 한 작업으로 되돌린다", async () => {
   const project = blankWithMap();
   const target = mapTarget(project, project.startMapId)!;
@@ -135,7 +143,7 @@ it.each(["addStock", "removeStock"] as const)("상점 상품 %s는 나머지 설
   const id = `event.shop.${operation}`;
   const args = adding ? { itemId, price: 21 } : { itemId: eq.id };
   const { after, sentence } = checked(project, target, id, args);
-  expect(sentence).toContain(adding ? "21골드로 정해요" : "빼요");
+  expect(sentence).toContain(adding ? "기본 판매가 21골드로 진열해요" : "빼요");
   const saved = after.maps[after.startMapId].events.find(event => event.id === merchant.id)!;
   const itemIds = adding ? [eq.id, itemId] : [];
   expect(saved.commands).toEqual([
@@ -150,6 +158,44 @@ it.each(["addStock", "removeStock"] as const)("상점 상품 %s는 나머지 설
   expect(interpreter.resume()).toMatchObject({ kind: "shop", itemIds });
   expect(() => runPrimitive(project, { ...target, x: 3 }, id, args)).toThrow("범위 밖");
   await expectUndoRestores(project, after, target);
+});
+
+it("상점 가격 상한은 저장 형식과 맞고, 초과하면 원본을 보존한다", () => {
+  const { project, merchant, eq, target } = stockScenario();
+  const id = "event.shop.addStock";
+  const max = 999_999;
+  const args = { itemId, price: max };
+  const original = structuredClone(merchant.commands);
+  expect(() => runPrimitive(project, target, id, { ...args, price: max + 1 })).toThrow(PrimitiveError);
+  expect(merchant.commands).toEqual(original);
+
+  const { after } = runPrimitive(project, target, id, args);
+  const reloaded = deserialize(serialize(after));
+  const saved = reloaded.maps[reloaded.startMapId].events.find(event => event.id === merchant.id)!;
+  const interpreter = runEvent(reloaded, saved);
+  interpreter.start();
+  expect(interpreter.resume()).toMatchObject({ kind: "shop", items: [
+    { itemId: eq.id }, { itemId, price: max },
+  ] });
+});
+
+it("마지막 진열 상품을 빼면 저장 후 다른 상품이 되살아나는 경우 거절한다", () => {
+  const { project, merchant, eq, target } = stockScenario();
+  const shop = merchant.commands[1] as Extract<Command, { kind: "shop" }>;
+  shop.itemIds.push(itemId);
+  const page: EventPage = {
+    id: "p_preset_stock", name: "상점", conditions: [], graphic: { transparent: true },
+    trigger: merchant.trigger, priority: "same", commands: merchant.commands,
+  };
+  merchant.pages = [page];
+  merchant.commands = [];
+  const original = structuredClone(page.commands);
+  const interpreter = runEvent(project, merchant);
+  interpreter.start();
+  expect(interpreter.resume()).toMatchObject({ kind: "shop", items: [{ itemId: eq.id }] });
+  expect(() => runPrimitive(project, target, "event.shop.removeStock", { itemId: eq.id }))
+    .toThrow("상품 목록과 진열 설정이 서로 달라요");
+  expect(page.commands).toEqual(original);
 });
 
 it("선택한 상점 페이지의 여러 분기를 편집하고 기존 가격·계절·다른 페이지를 보존한다", async () => {
@@ -345,7 +391,7 @@ it("문을 다시 잠글 때 앞뒤 페이지와 기존 명령을 보존하고 �
   };
   door.pages!.push(later);
   const id = "event.door.setLock";
-  const target = mapTarget(project, project.startMapId, door.id, original.id)!;
+  const target = mapTarget(project, project.startMapId, door.id)!;
   const after = runPrimitive(project, target, id, { itemId }).after;
   const replaced = runPrimitive(after, target, id, { switchId, text: "문이 굳게 닫혔어요." }).after;
   const pages = eventAt(replaced).pages!;
@@ -374,18 +420,58 @@ it("기존 잠금 페이지와 식별자가 겹치거나 분기에서 이동하�
     ...original, id: "p_branch", commands: [{ kind: "choices", options: [{ text: "나가기", branch: original.commands }], cancelBehavior: "disallow" }],
   };
   door.pages = [original, branched];
-  expect(() => runPrimitive(project, target, id, { itemId })).toThrow("분기 안에 있거나");
+  expect(() => runPrimitive(project, target, id, { itemId })).toThrow("분기, 다른 이벤트 호출, 페이지 밖 명령");
   expect(door.pages).toEqual([original, branched]);
 });
 
-it("페이지 하나를 골랐을 때는 선택하지 않은 이동 페이지에 잠금을 달지 않는다", () => {
-  const { project, door } = doorScenario();
+it("페이지 하나를 골랐을 때는 다른 페이지를 추가하거나 이미 있는 잠금을 바꾸지 않는다", () => {
+  const { project, door, target: eventTarget } = doorScenario();
   const first = door.pages![0]!;
-  const second = { ...first, id: "p_other_transfer" };
-  door.pages!.push(second);
   const target = mapTarget(project, project.startMapId, door.id, first.id)!;
-  expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("범위 밖");
-  expect(door.pages).toEqual([first, second]);
+  const id = "event.door.setLock";
+  expect(() => runPrimitive(project, target, id, { itemId })).toThrow("맵에서 문 이벤트 전체를 골라 주세요");
+  expect(door.pages).toEqual([first]);
+
+  const { after } = runPrimitive(project, eventTarget, id, { itemId });
+  const pages = structuredClone(eventAt(after).pages);
+  expect(() => runPrimitive(after, target, id, { itemId, text: "새 잠금 안내" })).toThrow("범위 밖");
+  expect(eventAt(after).pages).toEqual(pages);
+});
+
+it("다른 페이지가 공용 이벤트와 맵 이벤트를 거쳐서 이동하면 잠금을 거절한다", () => {
+  const { project, door, target } = doorScenario();
+  const open = door.pages![0]!;
+  const relayId = "ev_preset_relay";
+  const commonId = "ce_preset_relay";
+  const relay: GameEvent = {
+    id: relayId, name: "이동 중계", x: 6, y: 6, trigger: { kind: "action" }, commands: [...open.commands],
+  };
+  project.maps[project.startMapId].events.push(relay);
+  project.commonEvents.push({
+    id: commonId, name: "문 이동", trigger: "none",
+    commands: [{ kind: "callMapEvent", eventId: relayId }, { kind: "callCommonEvent", commonEventId: commonId }],
+  });
+  const later: EventPage = {
+    ...open, id: "p_preset_indirect_transfer", commands: [{ kind: "callCommonEvent", commonEventId: commonId }],
+  };
+  door.pages!.push(later);
+  const original = structuredClone(project.maps[project.startMapId].events);
+  expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("다른 이벤트 호출");
+  expect(project.maps[project.startMapId].events).toEqual(original);
+});
+
+it("다른 페이지에서 저장한 위치로도 이동할 수 있으면 잠금을 거절한다", () => {
+  const { project, door, target } = doorScenario();
+  door.pages!.push({ ...door.pages![0]!, id: "p_return", commands: [{ kind: "recallParty", partySetId: "return" }] });
+  expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("이동할 수 있어요");
+});
+
+it.each(["auto", "parallel"] as const)("자동 이동(%s)은 잠금 안내가 반복될 수 있어 거절한다", kind => {
+  const { project, door, target } = doorScenario();
+  door.pages![0]!.trigger = { kind };
+  const pages = structuredClone(door.pages);
+  expect(() => runPrimitive(project, target, "event.door.setLock", { itemId })).toThrow("잠금 안내가 반복될 수 있으니");
+  expect(door.pages).toEqual(pages);
 });
 
 it("마왕 프로젝트의 여러 칸짜리 출구 잠금은 다른 이벤트까지 바꾸므로 거절한다", () => {

@@ -8,6 +8,7 @@ import { ToolError, type JsonSchema } from "@/editor/tools/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { canMove, isPassableLanding } from "@/project/collision";
 import { GOLD_MAX } from "@/project/economyValues";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { footprintContains, normalizeCharacterFootprint } from "@/project/footprint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import type { Command, Condition, Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
@@ -120,6 +121,8 @@ const schema = (properties: Record<string, JsonSchema>, required: string[] = [])
   type: "object", properties, required, additionalProperties: false,
 });
 const itemSchema: JsonSchema = { type: "string", minLength: 1, description: "자료집에서 선택한 아이템이나 장비" };
+// The persisted shop command uses a lower maximum than the player's gold balance.
+const SHOP_PRICE_MAX = 999_999;
 
 function assertFixedPlacement(
   project: Project, map: GameMap, at: Point, kind: "character" | "interaction", name: string, failure: string,
@@ -144,7 +147,10 @@ const npc: SmallTaskPrimitive = {
     dialogue: { type: "string", minLength: 1, maxLength: 500, description: "말을 걸 때 들려줄 대사. 생략하면 인사해요." },
   }, ["name"]),
   scope: placementScope,
-  describe: (_ctx, args) => `선택한 칸에 주민 「${label(args.name as string, "주민")}」을 놓아요.`,
+  describe(_ctx, args) {
+    const name = label(args.name as string, "주민");
+    return `선택한 칸에 주민 「${name}」${josa(name, "을/를")} 놓아요.`;
+  },
   apply(ctx, args) {
     const name = textArg(args.name as string, "주민 이름을 적어 주세요.");
     const line = textArg((args.dialogue as string | undefined) ?? `${name}입니다. 안녕하세요.`, "주민이 말할 대사를 적어 주세요.");
@@ -224,7 +230,7 @@ function stockPrimitive(change: "add" | "remove"): SmallTaskPrimitive {
     targets: ["event"],
     args: schema({
       itemId: itemSchema,
-      ...(adding ? { price: { type: "integer", minimum: 0, maximum: GOLD_MAX, description: "기본 판매가. 새 상품의 가격을 생략하면 자료집 가격을 사용해요." } } : {}),
+      ...(adding ? { price: { type: "integer", minimum: 0, maximum: SHOP_PRICE_MAX, description: "기본 판매가(0~999,999골드). 새 상품의 가격을 생략하면 자료집 가격을 사용해요." } } : {}),
     }, ["itemId"]),
     scope(ctx) {
       const { map, event, page } = selectedEvent(ctx);
@@ -234,7 +240,7 @@ function stockPrimitive(change: "add" | "remove"): SmallTaskPrimitive {
       const name = recordLabel(goods(ctx.project, args.itemId), "상품");
       if (!adding) return `상점에서 「${name}」${josa(name, "을/를")} 빼요.`;
       if (args.price === undefined) return `상점에 「${name}」${josa(name, "을/를")} 진열해요.`;
-      return `「${name}」의 기본 판매가를 ${args.price}골드로 정해요.`;
+      return `상점에 「${name}」${josa(name, "을/를")} 기본 판매가 ${args.price}골드로 진열해요.`;
     },
     apply(ctx, args) {
       const item = goods(ctx.project, args.itemId);
@@ -283,8 +289,14 @@ function commandsOfKind<K extends Command["kind"]>(commands: readonly Command[],
 
 function editStock(shop: Extract<Command, { kind: "shop" }>, itemId: string, adding: boolean, price?: number): void {
   if (!adding) {
-    shop.itemIds = shop.itemIds.filter(id => id !== itemId);
-    if (shop.stock) shop.stock = shop.stock.filter(entry => entry.itemId !== itemId);
+    const itemIds = shop.itemIds.filter(id => id !== itemId);
+    const stock = shop.stock?.filter(entry => entry.itemId !== itemId);
+    // Loading an empty stock table falls back to itemIds, which can put other goods on sale.
+    if (shop.stock?.length && stock?.length === 0 && itemIds.length > 0) {
+      throw new PrimitiveError("상점의 상품 목록과 진열 설정이 서로 달라요. 상점 편집기에서 목록을 확인한 뒤 빼 주세요.");
+    }
+    shop.itemIds = itemIds;
+    if (stock) shop.stock = stock;
     return;
   }
   const stock = shop.stock ?? (price === undefined ? undefined : shop.itemIds.map(id => ({ itemId: id })));
@@ -427,7 +439,7 @@ const lock: SmallTaskPrimitive = {
     text: { type: "string", minLength: 1, maxLength: 200, description: "문이 잠겼을 때 표시할 글. 생략하면 잠겼다는 안내가 나와요." },
   }),
   scope(ctx) {
-    const { map, event } = selectedEvent(ctx);
+    const { map, event } = selectedDoor(ctx);
     return eventScope(map, event);
   },
   describe(ctx, args) {
@@ -454,23 +466,23 @@ const lock: SmallTaskPrimitive = {
     if (switchId !== undefined && !project.switches.some(entry => entry.id === switchId)) {
       throw new PrimitiveError("문을 열 스위치를 찾을 수 없어요.");
     }
-    const { map, event, page: selected } = selectedEvent(ctx);
+    const { map, event } = selectedDoor(ctx);
     const pages = event.pages ?? [];
     const doors = pages.filter(page => page.commands.some(command => command.kind === "transfer"));
-    if (commandsOfKind(event.commands, "transfer").length || pages.some(page => page.commands.some(command =>
-      nestedCommandLists(command).some(branch => commandsOfKind(branch, "transfer").length > 0)))) {
-      throw new PrimitiveError("이 문은 이동 명령이 분기 안에 있거나 페이지 밖에 있어요. 이벤트 편집기에서 잠금 조건을 달아 주세요.");
+    const otherCommands = pages.map(page => page.commands.filter(command => command.kind !== "transfer"));
+    if (transferDestinations(project, map, [event.commands, ...otherCommands]).size) {
+      throw new PrimitiveError("이 문은 분기, 다른 이벤트 호출, 페이지 밖 명령 등으로도 이동할 수 있어요. 이벤트 편집기에서 잠금 조건을 달아 주세요.");
     }
     if (doors.length === 0) {
       throw new PrimitiveError("선택한 이벤트에서 이동하는 문을 찾을 수 없어요.");
     }
-    if (selected && (doors.length > 1 || selected !== doors[0])) {
-      throw new PrimitiveError("범위 밖이에요. 잠그려는 이동 페이지를 선택해 주세요. 이동 페이지가 여러 장이면 이벤트 전체를 골라 주세요.");
+    if (doors.some(page => page.trigger.kind === "auto" || page.trigger.kind === "parallel")) {
+      throw new PrimitiveError("자동으로 실행되는 이동 이벤트예요. 잠금 안내가 반복될 수 있으니 이벤트 편집기에서 조건을 달아 주세요.");
     }
-    const destinations = new Set(doors.flatMap(page => commandsOfKind(page.commands, "transfer").map(command => command.mapId)));
+    const destinations = new Set(doors.flatMap(page => page.commands.flatMap(command =>
+      command.kind === "transfer" ? [command.mapId] : [])));
     if (map.events.some(candidate => candidate !== event && Math.abs(candidate.x - event.x) + Math.abs(candidate.y - event.y) <= 1
-      && [...(candidate.pages ?? []).map(page => page.commands), candidate.commands].some(commands =>
-        commandsOfKind(commands, "transfer").some(command => destinations.has(command.mapId))))) {
+      && [...transferDestinations(project, map, eventCommandLists(candidate))].some(mapId => mapId !== null && destinations.has(mapId)))) {
       throw new PrimitiveError("범위 밖이에요. 같은 맵으로 가는 이동 칸이 붙어 있어요. 두 칸을 함께 잠가야 해요.");
     }
 
@@ -507,6 +519,47 @@ const lock: SmallTaskPrimitive = {
     return replaceEvent(project, map, event, { ...event, pages: updated });
   },
 };
+
+function selectedDoor(ctx: PrimitiveContext) {
+  const selected = selectedEvent(ctx);
+  if (selected.page) {
+    throw new PrimitiveError("범위 밖이에요. 잠금을 달려면 잠김 페이지를 따로 만들어야 해요. 맵에서 문 이벤트 전체를 골라 주세요.");
+  }
+  return selected;
+}
+
+function eventCommandLists(event: GameEvent): readonly Command[][] {
+  return [event.commands, ...(event.pages ?? []).map(page => page.commands)];
+}
+
+function transferDestinations(project: Project, map: GameMap, lists: readonly (readonly Command[])[]): Set<string | null> {
+  // null means the destination can be chosen or looked up only while playing.
+  const destinations = new Set<string | null>();
+  const seen = new Set<readonly Command[]>();
+  const pending = [...lists];
+  while (pending.length) {
+    const commands = pending.pop()!;
+    if (seen.has(commands)) continue;
+    seen.add(commands);
+    for (const command of commands) {
+      pending.push(...nestedCommandLists(command));
+      if (command.kind === "transfer") destinations.add(command.mapId);
+      if (command.kind === "script" || command.kind === "runSchedule" || command.kind === "recallParty"
+        || (command.kind === "m2Command" && m2CommandById(command.commandId)?.title === "Teleport Menu" && command.fields.transfer !== false)) {
+        destinations.add(null);
+      }
+      if (command.kind === "callCommonEvent") {
+        const called = project.commonEvents.find(event => event.id === command.commonEventId);
+        if (called) pending.push(called.commands);
+      }
+      if (command.kind === "callMapEvent") {
+        const called = map.events.find(event => event.id === command.eventId);
+        if (called) pending.push(...eventCommandLists(called));
+      }
+    }
+  }
+  return destinations;
+}
 
 function doorRetreat(project: Project, map: GameMap, event: GameEvent): Dir | undefined {
   const options = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]] as const;
