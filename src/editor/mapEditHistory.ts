@@ -39,6 +39,7 @@ type WorkingEvent = { readonly mapId: string; readonly eventId: string };
 
 type ProjectSnapshot = {
   readonly workingEvents?: readonly WorkingEventAdoption[];
+  readonly refreshCleanEventDrafts?: readonly WorkingEvent[];
   readonly kind: "project";
   readonly before: Project;
 };
@@ -227,14 +228,19 @@ function applyHistorySnapshots(base: Project, snapshots: readonly HistorySnapsho
 }
 
 function workingEventsIn(snapshots: readonly HistorySnapshot[]) {
-  const owned = new Map<string, { adoption: WorkingEventAdoption; source: Project }>();
+  const owned = new Map<string, { adoption: WorkingEventAdoption; source: readonly GameEvent[] }>();
   for (const snapshot of snapshots) {
-    if (snapshot.kind !== "project") continue;
-    for (const event of snapshot.workingEvents ?? []) {
-      const key = JSON.stringify([event.mapId, event.eventId]);
-      // Traversal starts at the live end. The first owner guards that end;
-      // the last owner supplies the working copy at the destination.
-      owned.set(key, { adoption: owned.get(key)?.adoption ?? event, source: snapshot.before });
+    // The first working-copy owner guards the live end. A later draft-bearing
+    // map or project snapshot can supply its working copy at the destination.
+    if (snapshot.kind === "project") {
+      for (const event of snapshot.workingEvents ?? []) {
+        const key = JSON.stringify([event.mapId, event.eventId]);
+        owned.set(key, { adoption: owned.get(key)?.adoption ?? event, source: snapshot.before.maps[event.mapId]?.events ?? [] });
+      }
+    } else if (snapshot.includeEventDrafts) {
+      for (const entry of owned.values()) {
+        if (entry.adoption.mapId === snapshot.mapId) entry.source = snapshot.before.events;
+      }
     }
   }
   return [...owned.values()];
@@ -244,22 +250,25 @@ function applyHistoryJump(snapshots: readonly HistorySnapshot[], commit: (before
   const live = store.getCurrent();
   const owned = workingEventsIn(snapshots);
   const adoptions = owned.map(({ adoption }) => adoption);
+  const refreshCleanEventDrafts = snapshots.flatMap(snapshot => snapshot.kind === "project" ? snapshot.refreshCleanEventDrafts ?? [] : []);
   const project = applyHistorySnapshots(live, snapshots);
   for (const { adoption: { mapId, eventId }, source } of owned) {
     if (!live.maps[mapId]?.events.some(event => event.id === eventId && event.draft)) continue;
     const events = project.maps[mapId]?.events;
     if (!events) continue;
-    const sourceEvents = source.maps[mapId]?.events ?? [];
-    const event = sourceEvents.find(item => item.id === eventId);
-    if (event) copyWorkingEvent(events, sourceEvents, event);
+    const event = source.find(item => item.id === eventId);
+    if (event) copyWorkingEvent(events, source, event);
     else {
       const index = events.findIndex(item => item.id === eventId);
       if (index >= 0) events.splice(index, 1);
     }
   }
-  const before = projectSnapshot(live, adoptions);
+  const before: ProjectSnapshot = {
+    ...projectSnapshot(live, adoptions),
+    ...(refreshCleanEventDrafts.length ? { refreshCleanEventDrafts } : {}),
+  };
   let applied = false;
-  store.replace(project, { adoptWorkingEvents: adoptions, commitHistory: () => {
+  store.replace(project, { adoptWorkingEvents: adoptions, refreshCleanEventDrafts, commitHistory: () => {
     commit(withWorkingEventExpectations(before, adoptions));
     lastCoalesceKey = null;
     applied = true;
@@ -419,20 +428,29 @@ export function recordProjectSnapshot(label?: string, mapId?: string | null, opt
 /** Commit an already validated project proposal; rejected store writes never alter history. */
 export function applyProjectWithHistory(project: Project, label: string, options: {
   readonly workingEvent?: WorkingEvent;
+  readonly refreshCleanEventDrafts?: readonly WorkingEvent[];
   readonly separateStep?: boolean;
   readonly origin?: ProjectChangeAnnotation["origin"];
   readonly mapId?: MapId;
 } = {}): boolean {
   const workingEvents = options.workingEvent ? [options.workingEvent] : [];
-  const snapshot = projectSnapshot(store.getCurrent(), workingEvents);
+  const snapshot: ProjectSnapshot = {
+    ...projectSnapshot(store.getCurrent(), workingEvents),
+    ...(options.refreshCleanEventDrafts?.length ? { refreshCleanEventDrafts: options.refreshCleanEventDrafts } : {}),
+  };
   const next = options.workingEvent ? projectSnapshot(project, workingEvents).before : projectViewWithoutEventDrafts(project);
   if (jsonEqual(snapshot.before, next)) return false;
   let applied = false;
-  store.replace(project, { change: { label, origin: options.origin, eventId: options.workingEvent?.eventId }, adoptWorkingEvents: workingEvents, commitHistory: () => {
-    lastCoalesceKey = null;
-    pushSnapshot(withWorkingEventExpectations(snapshot, workingEvents), label, options.mapId, options.separateStep);
-    applied = true;
-  } });
+  store.replace(project, {
+    change: { label, origin: options.origin, eventId: options.workingEvent?.eventId },
+    adoptWorkingEvents: workingEvents,
+    refreshCleanEventDrafts: options.refreshCleanEventDrafts,
+    commitHistory: () => {
+      lastCoalesceKey = null;
+      pushSnapshot(withWorkingEventExpectations(snapshot, workingEvents), label, options.mapId, options.separateStep);
+      applied = true;
+    },
+  });
   return applied;
 }
 
@@ -515,7 +533,9 @@ export function recordCoalescedSnapshot(
 export function undoMapEdit(): boolean {
   if (!canWriteTeamProject()) return false;
   const snapshot = undoStack.at(-1)?.snapshot;
-  if (snapshot?.kind === "project" && snapshot.workingEvents?.length) return revertToHistoryIndex(undoStack.length - 1);
+  if (snapshot?.kind === "project" && (snapshot.workingEvents?.length || snapshot.refreshCleanEventDrafts?.length)) {
+    return revertToHistoryIndex(undoStack.length - 1);
+  }
   const previous = undoStack.pop();
   if (!previous) return false;
   const currentSnapshot = makeCurrentSnapshotForEntry(previous);
@@ -538,7 +558,9 @@ export function undoMapEdit(): boolean {
 export function redoMapEdit(): boolean {
   if (!canWriteTeamProject()) return false;
   const snapshot = redoStack.at(-1)?.snapshot;
-  if (snapshot?.kind === "project" && snapshot.workingEvents?.length) return redoToHistoryIndex(redoStack.length - 1);
+  if (snapshot?.kind === "project" && (snapshot.workingEvents?.length || snapshot.refreshCleanEventDrafts?.length)) {
+    return redoToHistoryIndex(redoStack.length - 1);
+  }
   const next = redoStack.pop();
   if (!next) return false;
   const currentSnapshot = makeCurrentSnapshotForEntry(next);
