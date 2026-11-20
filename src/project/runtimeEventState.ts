@@ -174,7 +174,12 @@ export function runtimePageContext(
         return !runtimeEventGone(session, map.id, event.id) && (!location || location.mapId === map.id);
       });
       const included = new Set(events.map((event) => event.id));
-      forEachIncomingEvent(project, map.id, session, included, idSet(session.erasedEventIds), (event) => {
+      const erased = idSet(session.erasedEventIds);
+      forEachIncomingEvent(project, map.id, session, included, erased, (event) => {
+        events.push(event);
+        return false;
+      });
+      forEachSpawnedEvent(project, map.id, session, included, erased, (event) => {
         events.push(event);
         return false;
       });
@@ -189,7 +194,8 @@ export function runtimePageContext(
           ? { ...location, direction: position.direction }
           : location;
       }
-      return position ?? firstEventById(map.events, id);
+      const spawn = session.spawnedEvents?.[id];
+      return position ?? firstEventById(map.events, id) ?? (spawn?.mapId === map.id ? spawn : undefined);
     },
   };
 }
@@ -242,21 +248,7 @@ function forEachRuntimeEventView(
   }
   if (forEachIncomingEvent(project, map.id, session, included, erased, (event) =>
     (!near || anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) && admit(event))) return;
-  const spawned = session.spawnedEvents;
-  if (!spawned) return;
-  for (const spawnedEventId in spawned) {
-    const spawn = spawned[spawnedEventId];
-    if (!spawn || spawn.mapId !== map.id) continue;
-    if (included.has(spawnedEventId)) continue;
-    if (near && !anchorMayOverlap(locations?.[spawnedEventId] ?? positions[spawnedEventId] ?? spawn, near)) {
-      included.add(spawnedEventId);
-      continue;
-    }
-    const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
-    if (!event) continue;
-    included.add(spawnedEventId);
-    if (admit(event)) return;
-  }
+  forEachSpawnedEvent(project, map.id, session, included, erased, admit, positions, near);
 }
 
 /** 몸 사각이 앵커에서 벗어날 수 있는 최대 칸 수(footprintBounds 와 축 상한에서 파생). */
@@ -343,7 +335,7 @@ export function runtimeEventViewById(
     }
   }
   const spawn = session.spawnedEvents?.[eventId];
-  if (!spawn || spawn.mapId !== map.id) return undefined;
+  if (!spawn || spawn.mapId !== map.id || erased?.includes(eventId)) return undefined;
   const event = materializeSpawnedEvent(project, eventId, spawn);
   return event ? runtimeEventView(event, session, positions, appearanceProject, pageContext) : undefined;
 }
@@ -410,6 +402,29 @@ function forEachIncomingEvent(
     }
   }
   return false;
+}
+
+function forEachSpawnedEvent(
+  project: Pick<Project, "maps">,
+  mapId: string,
+  session: PlaySessionLike,
+  included: Set<string>,
+  erased: ReadonlySet<string> | undefined,
+  visit: (event: GameEvent) => boolean,
+  positions?: RuntimeEventPositions,
+  near?: FootprintRect,
+): void {
+  const spawned = session.spawnedEvents;
+  if (!spawned) return;
+  for (const eventId in spawned) {
+    const spawn = spawned[eventId];
+    if (!spawn || spawn.mapId !== mapId || included.has(eventId) || erased?.has(eventId)) continue;
+    if (near && !anchorMayOverlap(session.eventLocations?.[eventId] ?? positions?.[eventId] ?? spawn, near)) continue;
+    const event = materializeSpawnedEvent(project, eventId, spawn);
+    if (!event) continue;
+    included.add(eventId);
+    if (visit(event)) return;
+  }
 }
 
 /** 이 맵으로 옮겨졌고 아직 방문되지 않은 이벤트 id. 없으면 undefined. */

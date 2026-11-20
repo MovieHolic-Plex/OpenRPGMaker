@@ -862,7 +862,7 @@
     ]
   },
   {
-    "request": "탐험 세 번째 층 이상에서 이 페이지가 켜지면 좋겠어요.",
+    "request": "탐험 기록의 층이 3층 이상이면 이 페이지가 켜지면 좋겠어요.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
     "primitive": "cond.run.page.set",
@@ -875,7 +875,7 @@
     ]
   },
   {
-    "request": "탐험 둘째층에서만 보여 줘",
+    "request": "탐험 기록의 층이 정확히 2층일 때만 보여 줘",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
     "primitive": "cond.run.page.set",
@@ -1409,7 +1409,7 @@
     ]
   },
   {
-    "request": "이름에 상인이 들어가는 이벤트가 일곱 칸 안에서 봐야 나오게요. 닫힌 문은 시야를 가립니다.",
+    "request": "이벤트 이름 칸에 상인이 들어가는 관찰자가 일곱 칸 안에서 봐야 나오게요. 이동 명령이 있는 문 이벤트는 시야를 가립니다.",
     "fixture": "built",
     "target": {"kind": "event", "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d", "eventId": "ev_supply_shop", "pageId": "ev_supply_shop_active"},
     "primitive": "cond.eventSeesPlayer.page.set",

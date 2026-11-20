@@ -3,7 +3,7 @@ import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { findCharacterIdEntry } from "@/project/characterIdIndex";
 import { WEEKDAY_LABELS } from "@/project/conditionActorQueries";
-import { DEFAULT_SIGHT_RANGE } from "@/project/conditionEventSight";
+import { DEFAULT_SIGHT_RANGE, effectiveSightRange } from "@/project/conditionEventSight";
 import { difficultiesOf } from "@/project/difficulty";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { SEASONS, TIME_PHASES } from "@/project/gameTime";
@@ -215,7 +215,7 @@ function prepareSight(
   const newFilter = [watcherCharacterId, watcherName, watcherLocationId].some((entry) => entry !== undefined);
   if (eventId !== undefined && newFilter) throw new PrimitiveError("보는 이벤트와 관찰자 조건 중 하나를 골라 주세요.");
   if (sameRoom === false && doorsBlock === true) {
-    throw new PrimitiveError("닫힌 문으로 시야를 막으려면 같은 방 제한을 켜 주세요.");
+    throw new PrimitiveError("문 이벤트로 시야를 막으려면 같은 방 제한을 켜 주세요.");
   }
   const watchers = newFilter ? {
     ...(watcherCharacterId === undefined ? {} : { characterId: nonempty(watcherCharacterId, "시야를 확인할 인물을 지정해 주세요.") }),
@@ -228,15 +228,15 @@ function prepareSight(
   let characterName: string | undefined;
   if (characterId !== undefined) {
     const character = findCharacterIdEntry(project, characterId);
-    if (!character?.hosts.some((host) => host.mapId === map.id)) {
+    if (newFilter && !character?.hosts.some((host) => host.mapId === map.id)) {
       throw new PrimitiveError("이 맵에서 시야를 확인할 인물을 찾을 수 없습니다.");
     }
     const host = map.events.find((entry) => entry.characterId === characterId);
-    characterName = conditionLabel(character.profile?.displayName || host?.name, characterId, "지정 인물");
+    characterName = conditionLabel(character?.profile?.displayName || host?.name, characterId, "지정 인물");
   }
   // A location can gain watchers during play. Only check the static identity filters here.
-  if (name && sightWatcherIds(map.events, { characterId, name }, undefined).length === 0) {
-    throw new PrimitiveError("이 맵에서 지정한 조건에 맞는 관찰자를 찾을 수 없습니다.");
+  if (newFilter && name && sightWatcherIds(map.events, { characterId, name }, undefined).length === 0) {
+    throw new PrimitiveError("이 맵에서 저작된 이벤트 이름과 일치하는 관찰자를 찾을 수 없습니다.");
   }
   const who = watchers
     ? [locationName && `「${locationName}」 안의`, characterName && `「${characterName}」인`, name && `이름에 「${conditionLabel(name, "", "지정한 말")}」이 든`, "이벤트"].filter(Boolean).join(" ")
@@ -265,8 +265,8 @@ function prepareSight(
   const detection = hearRange && hearRange > 0 ? "알아차릴" : "볼";
   const distance = range ?? DEFAULT_SIGHT_RANGE;
   const overrides = [
-    ...(nightRange === undefined ? [] : [`밤 ${nightRange}칸`]),
-    ...(darkRange === undefined ? [] : [`어둠 ${darkRange}칸`]),
+    ...(nightRange === undefined ? [] : [`밤 ${effectiveSightRange(condition, { night: true })}칸`]),
+    ...(darkRange === undefined ? [] : [`어둠 ${effectiveSightRange(condition, { night: false, ambient: 1 })}칸`]),
   ].join("·");
   const sight = `${distance}칸${overrides ? `(${overrides})` : ""}`;
   const distanceLabel = hearRange && hearRange > 0 ? `시야 ${sight}·소리 ${hearRange}칸에서` : `${sight} 안에서`;
@@ -389,9 +389,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     hearRange: count(0, SIGHT_DISTANCE_MAX, "소리를 알아차리는 거리이며 단위는 칸입니다. 0이나 새 조건에서 생략하면 듣지 않습니다."),
     value: yesNo("참이면 주인공을 발견할 때, 거짓이면 발견하지 못할 때입니다. 새 조건에서 생략하면 참입니다."),
     watcherCharacterId: wording("보는 쪽을 고를 때 쓸 같은 맵 인물의 식별자입니다. 관찰자를 새로 고를 때는 사용할 필터를 모두 지정합니다."),
-    watcherName: wording("보는 쪽의 이벤트 이름에 포함될 말입니다."),
+    watcherName: wording("편집기의 이벤트 이름 칸에 저작한 이름에 포함될 말입니다. 페이지에서 빌린 표시 이름은 제외합니다."),
     watcherLocationId: wording("보는 쪽이 서 있어야 하는 같은 맵 구역의 식별자입니다."),
-    doorsBlock: yesNo("닫힌 문이 시야를 막으려면 같은 방 제한도 켜야 합니다. 새 조건에서 생략하면 문이 시야를 막지 않습니다."),
+    doorsBlock: yesNo("이벤트 본문 또는 페이지에 장소 이동이나 맵 이벤트 호출이 있으면 그 칸이 시야를 막습니다. 같은 방 제한을 켜야 합니다. 새 조건에서 생략하면 꺼집니다."),
     nightRange: count(0, SIGHT_DISTANCE_MAX, "밤의 시야 거리이며 단위는 칸입니다. 새 조건에서 생략하면 기본 거리를 씁니다."),
     darkRange: count(0, SIGHT_DISTANCE_MAX, "어두울 때 시야 거리이며 단위는 칸입니다. 새 조건에서 생략하면 조명이 거리에 영향을 주지 않습니다."),
     darkAmbient: { type: "number", minimum: 0, maximum: 1, description: "어두울 때 시야 거리를 설정한 경우 어둡다고 보는 조명 값입니다. 새 조건에서 생략하면 0.6입니다." },

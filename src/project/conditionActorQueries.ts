@@ -92,11 +92,10 @@ export function dirIndex(dir: Dir): number {
   return ({ down: 2, left: 4, right: 6, up: 8 } as const)[dir];
 }
 
-/** from 이 dir 을 볼 때 to 가 그 반평면(정면 쪽)에 있는가. 같은 칸은 거짓. */
-function isInFront(from: { x: number; y: number }, dir: Dir, to: { x: number; y: number }): boolean {
+/** 정면이면 양수, 등 뒤면 음수, 옆줄 또는 같은 칸이면 0이다. */
+function forwardDistance(from: { x: number; y: number }, dir: Dir, to: { x: number; y: number }): number {
   const d = DIR_DELTA[dir];
-  const dot = (to.x - from.x) * d.dx + (to.y - from.y) * d.dy;
-  return dot > 0;
+  return (to.x - from.x) * d.dx + (to.y - from.y) * d.dy;
 }
 
 function hostPosition(session: ActorQuerySession, host: ActorQueryHost | undefined, options: ActorQueryOptions): SightPoint | undefined {
@@ -202,11 +201,11 @@ export function evalActorQueryCondition(
       const playerDir = session.playerFacing ?? "down";
       switch (condition.relation) {
         case "playerFacingEvent":
-          return isInFront(player, playerDir, pos);
+          return forwardDistance(player, playerDir, pos) > 0;
         case "playerBehindEvent":
-          return pos.direction !== undefined && !isInFront(pos, pos.direction, player) && !(pos.x === player.x && pos.y === player.y);
+          return pos.direction !== undefined && forwardDistance(pos, pos.direction, player) < 0;
         case "eventBehindPlayer":
-          return !isInFront(player, playerDir, pos) && !(pos.x === player.x && pos.y === player.y);
+          return forwardDistance(player, playerDir, pos) < 0;
       }
       return false;
     }

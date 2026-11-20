@@ -194,6 +194,10 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
     const overrides = runPrimitive(updated.after, at.target, id, { nightRange: 1, darkRange: 0 });
     expect(overrides.sentence).toContain("밤 1칸");
     expect(overrides.sentence).toContain("어둠 0칸");
+    const capped = runPrimitive(updated.after, at.target, id, { range: 0 });
+    expect(capped.sentence).toContain("밤 0칸");
+    expect(capped.sentence).toContain("어둠 0칸");
+    expect(getPage(capped.after, at).conditions[1]).toMatchObject({ range: 0, darkness: { night: 2, dark: 1 } });
   });
 
   it("선택한 인물의 일정에 없는 활동은 다른 인물에게 등록돼 있어도 거부한다", () => {
@@ -387,21 +391,33 @@ describe("실행 중 등장 조건 판정", () => {
     }
   });
 
-  it("다른 맵에서 옮겨 온 관찰자를 포함하고 원본 맵에서 제거되면 제외한다", () => {
+  it.each(["이동", "소환"] as const)("%s한 관찰자는 기존 필터를 유지하고 사라지면 제외한다", (arrival) => {
     const at = fixture(blank);
-    const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
-      watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 3,
+    const id = "cond.eventSeesPlayer.page.set";
+    const { after } = runPrimitive(at.project, at.target, id, {
+      watcherCharacterId: "guard_test", watcherName: "문지기", watcherLocationId: "loc_test_shop", range: 1, requireFacing: false,
     });
     const map = after.maps[at.mapId]!;
     const guard = map.events.find((event) => event.id === "ev_test_guard")!;
     const source = { ...createBlankMap("경비실", 8, 8), id: "guard_room", events: [guard] };
     const current = { ...map, events: map.events.filter((event) => event.id !== guard.id) };
     const project = { ...after, maps: { ...after.maps, [at.mapId]: current, [source.id]: source } };
-    const session = Object.assign(startSession(project, 7), { x: 2, y: 4 });
-    session.eventLocations = { [guard.id]: { mapId: at.mapId, x: 4, y: 4, direction: "left" } };
-    const activePage = () => runtimeEventViewById(project, current, session, {}, at.eventId)?.pageId;
+    const edited = runPrimitive(project, at.target, id, { range: 3 }).after;
+    expect(getPage(edited, at).conditions[0]).toMatchObject({
+      range: 3, watchers: { characterId: "guard_test", name: "문지기", locationId: "loc_test_shop" },
+    });
+    expectRefused(edited, at.target, id, { watcherName: "문지기" }, /관찰자/u);
+    const session = Object.assign(startSession(edited, 7), { x: 2, y: 4 });
+    const position = { mapId: at.mapId, x: 4, y: 4 };
+    if (arrival === "이동") {
+      session.eventLocations = { [guard.id]: position };
+    } else {
+      session.spawnedEvents = { runtime_guard: { ...position, templateMapId: source.id, templateEventId: guard.id } };
+    }
+    const activePage = () => runtimeEventViewById(edited, edited.maps[at.mapId]!, session, {}, at.eventId)?.pageId;
     expect(activePage()).toBe(PAGE);
-    session.removedEventIds = { [source.id]: [guard.id] };
+    if (arrival === "이동") session.removedEventIds = { [source.id]: [guard.id] };
+    else session.erasedEventIds = ["runtime_guard"];
     expect(activePage()).toBe("pg_test_base");
   });
 
@@ -442,6 +458,18 @@ describe("실행 중 등장 조건 판정", () => {
     expect(activePage("left")).toBeUndefined();
   });
 
+  it.each(["playerBehindEvent", "eventBehindPlayer"] as const)("%s 조건은 정면과 옆 줄, 같은 칸을 제외한다", (relation) => {
+    const at = fixture(blank);
+    const { after } = runPrimitive(at.project, at.target, "cond.relativeFacing.page.set", { relation });
+    const map = after.maps[at.mapId]!;
+    const session = Object.assign(startSession(after, 7), { playerFacing: "up" as const });
+    const positions = { [at.eventId]: { x: 4, y: 4, direction: "up" as const } };
+    for (const [x, y, behind] of [[5, 4, false], [4, 4, false], [4, 3, relation === "eventBehindPlayer"], [4, 5, relation === "playerBehindEvent"]] as const) {
+      Object.assign(session, { x, y });
+      expect(runtimeEventViewById(after, map, session, positions, at.eventId)?.pageId).toBe(behind ? PAGE : "pg_test_base");
+    }
+  });
+
   it("하층 타일 변경과 복원이 캐시된 시야 판정과 맵 이벤트 호출에 반영된다", () => {
     const at = fixture(blank);
     const { after } = runPrimitive(at.project, at.target, "cond.eventSeesPlayer.page.set", {
@@ -460,10 +488,6 @@ describe("실행 중 등장 조건 판정", () => {
       return session.gold - gold;
     };
     expect(activePage()).toBe(PAGE);
-    const initialBlocker = cachedSightBlocker(after, map);
-    setMapTileOverride(session, map.id, "upper", index, floor);
-    applyRuntimeMapOverrides(map, session);
-    expect(cachedSightBlocker(after, map)).toBe(initialBlocker);
     setMapTileOverride(session, map.id, "lower", index, -1);
     applyRuntimeMapOverrides(map, session);
     expect(activePage()).toBe("pg_test_base");
@@ -472,6 +496,26 @@ describe("실행 중 등장 조건 판정", () => {
     applyRuntimeMapOverrides(map, session);
     expect(activePage()).toBe(PAGE);
     expect(earned()).toBe(3);
+  });
+
+  it.each(["upper", "upper2"] as const)("방 밖의 %s 타일 변경은 캐시된 시야를 갱신한다", (layer) => {
+    const { project, mapId } = fixture(blank);
+    const map = project.maps[mapId]!;
+    const tileset = project.tilesets[map.tilesetId]!;
+    const blockedTile = tileset.passability.length;
+    const withBlockedTile = { ...tileset, passability: [...tileset.passability, { up: false, down: false, left: false, right: false }] };
+    const withTileset = { ...project, tilesets: { ...project.tilesets, [map.tilesetId]: withBlockedTile } };
+    const session = startSession(withTileset, 7);
+    const x = 1, y = 3;
+    const index = y * map.width + x;
+    const blocked = () => cachedSightBlocker(withTileset, map)?.(x, y);
+    expect(blocked()).toBe(false);
+    setMapTileOverride(session, map.id, layer, index, blockedTile);
+    applyRuntimeMapOverrides(map, session);
+    expect(blocked()).toBe(true);
+    setMapTileOverride(session, map.id, layer, index, -1);
+    applyRuntimeMapOverrides(map, session);
+    expect(blocked()).toBe(false);
   });
 
   it("아이템을 사용할 때에도 실제 관찰자로 등장 페이지를 고른다", () => {
@@ -489,7 +533,7 @@ describe("실행 중 등장 조건 판정", () => {
     expect(session.itemUsedId).toBeUndefined();
   });
 
-  it("플레이에서 닫힌 문, 밤과 어두운 조명, 문을 통과한 소리를 판정한다", () => {
+  it("플레이에서 문 이벤트, 밤과 어두운 조명, 문을 통과한 소리를 판정한다", () => {
     const at = fixture(blank);
     const map = at.project.maps[at.mapId]!;
     map.events.push({

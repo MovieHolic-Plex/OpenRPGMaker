@@ -31,7 +31,8 @@ export function applyRuntimeMapOverrides(map: GameMap, session: Pick<PlaySession
       const index = Number(key);
       if (Number.isInteger(index) && index >= 0 && index < map.width * map.height) {
         const changed = tile !== layerTileAt(map, layer, index);
-        if (changed && layer <= 2) sightChanged = true;
+        // 방 사이에서는 네 층의 통행 판정이 시야에도 쓰인다.
+        if (changed) sightChanged = true;
         if (layer === 1 && changed && map.terrainDesign?.waterDepth?.[index]) {
           if (!copiedWater) { map.terrainDesign = cloneTerrainDesign(map.terrainDesign)!; copiedWater = true; }
           map.terrainDesign.waterDepth![index] = 0;
