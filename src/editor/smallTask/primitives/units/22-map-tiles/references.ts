@@ -5,6 +5,7 @@ import { parseDoorValue, type DoorSpec } from "@/project/eventCommands/doorAnima
 import { layerTileAt, TILE_LAYER_NOS, type TileLayerNo } from "@/project/mapLayers";
 import { structurePlacementIsOverpainted } from "@/project/structurePlacements";
 import { terrainTagAt } from "@/project/terrainAt";
+import { terrainReachability } from "@/project/terrainReachability";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { Command, GameMap, Project } from "@/project/types";
 import { PrimitiveError } from "../../errors";
@@ -13,31 +14,68 @@ const CHANGE_TILE_LAYER: Record<Extract<Command, { kind: "changeTile" }>["layer"
   lower: 1, lower2: 2, upper: 3, upper2: 4,
 };
 
-function* mapTileCommands(commands: readonly Command[]): Iterable<Command> {
-  for (const command of commands) {
-    yield command;
-    for (const branch of nestedCommandLists(command)) yield* mapTileCommands(branch);
-  }
+type LocatedCommand = { command: Command; onMap: boolean };
+
+type TransferCheck = (command: Command) => boolean;
+
+function mayEnterMap(commands: readonly Command[], mayTransfer: TransferCheck): boolean {
+  return commands.some(command => mayTransfer(command) ||
+    nestedCommandLists(command).some(branch => mayEnterMap(branch, mayTransfer)));
 }
 
-function* commandsInProject(project: Project): Iterable<{ command: Command; mapId?: string }> {
+function transferCheck(project: Project, mapId: string): TransferCheck {
+  const commonEvents = new Map(project.commonEvents.map(event => [event.id, event.commands]));
+  const transfers = (command: Command, visited: Set<string>): boolean => {
+    if (command.kind === "transfer") return command.mapId === mapId;
+    // The active map event, a script or a chosen teleport may depend on play state.
+    if (command.kind === "callMapEvent" || command.kind === "script") return true;
+    if (command.kind === "m2Command") {
+      return command.commandId === "m2-223-teleport-menu"
+        && command.fields.transfer !== false && command.fields.transfer !== "false";
+    }
+    if (command.kind !== "callCommonEvent" || visited.has(command.commonEventId)) return false;
+    visited.add(command.commonEventId);
+    const commands = commonEvents.get(command.commonEventId);
+    return !!commands && mayEnterMap(commands, next => transfers(next, visited));
+  };
+  return command => transfers(command, new Set());
+}
+
+function* mapTileCommands(
+  commands: readonly Command[], mayTransfer: TransferCheck, onMap: boolean,
+): Generator<LocatedCommand, boolean> {
+  if (!onMap && commands.some(command => command.kind === "gotoLabel")) {
+    onMap = mayEnterMap(commands, mayTransfer);
+  }
+  for (const command of commands) {
+    yield { command, onMap };
+    let branchCanEnter = false;
+    for (const branch of nestedCommandLists(command)) {
+      // A later iteration can start on the map reached by an earlier iteration.
+      const branchStartsHere = onMap || (command.kind === "loop" && mayEnterMap(branch, mayTransfer));
+      if (yield* mapTileCommands(branch, mayTransfer, branchStartsHere)) branchCanEnter = true;
+    }
+    // A transfer can fail, so even a specified destination does not rule out the previous map.
+    onMap ||= branchCanEnter || mayTransfer(command);
+  }
+  return onMap;
+}
+
+function* commandsInProject(project: Project, mapId: string): Iterable<LocatedCommand> {
+  const mayTransfer = transferCheck(project, mapId);
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       const original = event.draft?.kind === "edit" ? event.draft.original : undefined;
       for (const record of original ? [event, original] : [event]) {
-        for (const command of mapTileCommands(record.commands)) yield { command, mapId: map.id };
-        for (const page of record.pages ?? []) {
-          for (const command of mapTileCommands(page.commands)) yield { command, mapId: map.id };
-        }
+        yield* mapTileCommands(record.commands, mayTransfer, map.id === mapId);
+        for (const page of record.pages ?? []) yield* mapTileCommands(page.commands, mayTransfer, map.id === mapId);
       }
     }
   }
-  for (const event of project.commonEvents) {
-    for (const command of mapTileCommands(event.commands)) yield { command };
-  }
+  for (const event of project.commonEvents) yield* mapTileCommands(event.commands, mayTransfer, true);
   for (const troop of project.database.troops) {
     for (const page of [...troop.battleEventPages, ...troopAfterBattleLists(troop)]) {
-      for (const command of mapTileCommands(page.commands)) yield { command };
+      yield* mapTileCommands(page.commands, mayTransfer, true);
     }
   }
 }
@@ -55,12 +93,12 @@ function assertDoorTilesPreserved(map: GameMap, next: GameMap, door: DoorSpec): 
 
 function assertM2TileReferencePreserved(
   before: Project, after: Project, map: GameMap, next: GameMap,
-  command: Extract<Command, { kind: "m2Command" }>, ownerMapId: string | undefined,
+  command: Extract<Command, { kind: "m2Command" }>, onMap: boolean,
   lostLanding: (x: number, y: number) => boolean,
 ): void {
   const { commandId, fields } = command;
   if (commandId === "m2-202-screen-effect") {
-    if (map === next || (ownerMapId !== undefined && ownerMapId !== map.id)) return;
+    if (map === next || !onMap) return;
     if (typeof fields.value === "string" && (fields.effect === "doorOpen" || fields.effect === "doorClose")) {
       const door = parseDoorValue(fields.value);
       if (door) assertDoorTilesPreserved(map, next, door);
@@ -69,18 +107,59 @@ function assertM2TileReferencePreserved(
   }
   if (commandId !== "m2-042-get-terrain-id" && commandId !== "m2-072-set-teleportation-point") return;
   const explicitMapId = fields.mapId === undefined ? "" : fieldString(fields, "mapId", "");
-  const targetMapId = explicitMapId || ownerMapId;
-  if (targetMapId !== undefined && targetMapId !== map.id) return;
+  if (explicitMapId ? explicitMapId !== map.id : !onMap) return;
   const fallback = explicitMapId || commandId === "m2-042-get-terrain-id" ? 0 : NaN;
   const x = Math.trunc(fields.x === undefined ? fallback : fieldNumber(fields, "x", fallback));
   const y = Math.trunc(fields.y === undefined ? fallback : fieldNumber(fields, "y", fallback));
-  if (!inBounds(map, x, y)) return;
   if (commandId === "m2-072-set-teleportation-point") {
-    if (lostLanding(x, y)) throw new PrimitiveError("이벤트가 지정한 순간이동 칸에서 움직일 수 없게 돼요.");
-  } else if (map !== next && fields.variableId) {
+    // Omitted coordinates use the player's position at runtime.
+    const minX = Number.isNaN(x) ? 0 : Math.max(0, x);
+    const minY = Number.isNaN(y) ? 0 : Math.max(0, y);
+    const maxX = Number.isNaN(x) ? map.width : Math.min(map.width, x + 1);
+    const maxY = Number.isNaN(y) ? map.height : Math.min(map.height, y + 1);
+    for (let row = minY; row < maxY; row++) {
+      for (let column = minX; column < maxX; column++) {
+        if (lostLanding(column, row)) throw new PrimitiveError("이벤트가 지정한 순간이동 칸에서 움직일 수 없게 돼요.");
+      }
+    }
+  } else if (map !== next && inBounds(map, x, y) && fields.variableId !== undefined && fieldString(fields, "variableId", "")) {
     const location = { mapId: map.id, x, y };
     if (terrainTagAt(before, location) !== terrainTagAt(after, location)) {
       throw new PrimitiveError("이 칸의 지형을 읽는 이벤트가 있어요. 이벤트 명령을 먼저 확인해 주세요.");
+    }
+  }
+}
+
+type Point = { x: number; y: number };
+const APPROACH = [[0, 0], [0, -1], [0, 1], [-1, 0], [1, 0]] as const;
+
+function assertRoutesPreserved(
+  before: Project, after: Project, map: GameMap, next: GameMap, landings: readonly Point[], exits: readonly Point[],
+): void {
+  // Solid NPCs and doors are reached from an adjacent walkable cell. Connections
+  // require a walkable path to their exact cell (checked with both endpoints below).
+  const targets = [
+    ...exits.map(point => ({ point, offsets: [[0, 0]] as const })),
+    ...map.events.filter(event => event.commands.length || event.pages?.some(page => page.commands.length))
+      .map(point => ({ point, offsets: APPROACH })),
+  ];
+  if (!targets.length) return;
+  const seen = new Set<number>();
+  for (const { x, y } of landings) {
+    const index = y * map.width + x;
+    if (!inBounds(map, x, y) || seen.has(index)) continue;
+    seen.add(index);
+    const oldReach = terrainReachability(before, map, { x, y });
+    const newReach = terrainReachability(after, next, { x, y });
+    for (const { point, offsets } of targets) {
+      const accessible = (reached: Uint8Array) => offsets.some(([dx, dy]) => {
+        const x = point.x + dx;
+        const y = point.y + dy;
+        return inBounds(map, x, y) && reached[y * map.width + x] === 1;
+      });
+      if (accessible(oldReach) && !accessible(newReach)) {
+        throw new PrimitiveError("착지 칸에서 기존 이벤트나 출구로 가는 길이 끊겨요.");
+      }
     }
   }
 }
@@ -91,30 +170,40 @@ export function assertTileReferencesPreserved(
 ): void {
   const lostLanding = (x: number, y: number) =>
     isPassableLanding(before, map, x, y) && !isPassableLanding(after, next, x, y);
-  if (before.startMapId === map.id && lostLanding(before.startPos.x, before.startPos.y)) {
-    throw new PrimitiveError("게임 시작 칸에서 이동할 수 없게 돼요.");
+  const landings: Point[] = [];
+  const exits: Point[] = [];
+  if (before.startMapId === map.id) {
+    if (lostLanding(before.startPos.x, before.startPos.y)) {
+      throw new PrimitiveError("게임 시작 칸에서 이동할 수 없게 돼요.");
+    }
+    landings.push(before.startPos);
   }
   for (const connection of before.mapConnections ?? []) {
     if (!(connection.playerEnabled || connection.npcEnabled)) continue;
+    if (connection.playerEnabled) {
+      if (connection.from.mapId === map.id) exits.push(connection.from);
+      if (connection.to.mapId === map.id) landings.push(connection.to);
+    }
     if ([connection.from, connection.to].some(point => point.mapId === map.id && lostLanding(point.x, point.y))) {
       throw new PrimitiveError("다른 맵과 이어지는 칸에서 움직일 수 없게 돼요.");
     }
   }
   for (const ending of before.endings ?? []) {
     const point = ending.continueTo;
-    if (point?.mapId === map.id && lostLanding(point.x, point.y)) {
-      throw new PrimitiveError("엔딩 뒤에 이어지는 칸에서 움직일 수 없게 돼요.");
-    }
+    if (point?.mapId !== map.id) continue;
+    if (lostLanding(point.x, point.y)) throw new PrimitiveError("엔딩 뒤에 이어지는 칸에서 움직일 수 없게 돼요.");
+    landings.push(point);
   }
-  for (const { command, mapId } of commandsInProject(before)) {
+  for (const { command, onMap } of commandsInProject(before, map.id)) {
     if (command.kind === "transfer") {
-      if (command.mapId === map.id && lostLanding(command.x, command.y)) {
-        throw new PrimitiveError("이벤트가 이동해 오는 칸에서 움직일 수 없게 돼요.");
+      if (command.mapId === map.id) {
+        if (lostLanding(command.x, command.y)) throw new PrimitiveError("이벤트가 이동해 오는 칸에서 움직일 수 없게 돼요.");
+        landings.push(command);
       }
       continue;
     }
     if (command.kind === "m2Command") {
-      assertM2TileReferencePreserved(before, after, map, next, command, mapId, lostLanding);
+      assertM2TileReferencePreserved(before, after, map, next, command, onMap, lostLanding);
       continue;
     }
     if (command.kind !== "changeTile") continue;
@@ -130,6 +219,7 @@ export function assertTileReferencesPreserved(
       throw new PrimitiveError("이 칸의 타일을 바꾸는 이벤트가 있어요. 이벤트 명령을 먼저 확인해 주세요.");
     }
   }
+  assertRoutesPreserved(before, after, map, next, landings, exits);
   if (map === next) return;
   for (const door of map.doors ?? []) assertDoorTilesPreserved(map, next, door);
   for (const group of map.doodadGroups ?? []) {

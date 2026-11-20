@@ -3,16 +3,18 @@ import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { resolveObject, SHARED_OBJECT_TOOLS } from "@/editor/tools/sharedObjectTools";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
 import { ToolError, type JsonSchema, type ToolExecResult } from "@/editor/tools/types";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
 import { withKitSite } from "@/project/kitLook";
-import { layerTileAt, TILE_LAYER_NOS } from "@/project/mapLayers";
+import { layerTileAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
-  assertInside, editTiles, forEachCell, getTileset, hostRegion, includesCell, offsetRect, requireTile, tileCellChanged, writeTileCell, type Rect,
+  assertInside, assertTileChangesInside, editTiles, forEachCell, getTileset, hostRegion, includesCell, offsetRect, requireTile, tileCellChanged, writeTileCell, type Rect,
 } from "./22-map-tiles/region";
+import { assertNoNewHardClusterViolations, assertWholeKits } from "./22-map-tiles/objects";
 import { setRegionPassability } from "./22-map-tiles/passability";
 
 export const UNIT = "22-map-tiles";
@@ -87,7 +89,7 @@ function paint(ctx: PrimitiveContext, args: Record<string, unknown>, area?: Rect
   assertInside(rect, paintArea);
   const cells: { x: number; y: number }[] = [];
   forEachCell(paintArea, (x, y) => cells.push({ x, y }));
-  return editTiles(ctx.project, map, draft => {
+  return editTiles(ctx.project, map, (draft, next) => {
     let result: ToolExecResult;
     try {
       result = byName(MAP_TOOLS, "paint_tiles").run(draft, { mapId: map.id, layer: args.layer ?? "1", mode: "cells", tile, cells });
@@ -96,6 +98,7 @@ function paint(ctx: PrimitiveContext, args: Record<string, unknown>, area?: Rect
     }
     const data = result.data as { skippedClusterCells?: number } | undefined;
     if (data?.skippedClusterCells) throw new PrimitiveError("범위 밖: 타일에 딸린 조각을 모두 놓을 수 없어요.");
+    assertTileChangesInside(map, next, paintArea, "범위 밖: 칠하려면 이웃 타일도 함께 바꿔야 해요.");
   });
 }
 
@@ -117,6 +120,7 @@ function erase(ctx: PrimitiveContext, args: Record<string, unknown>) {
       if (layer === "3" || layer === "all") clearTileStack(next, "upper", i);
       if (layer === "1" || layer === "all") clearTileStack(next, "lower", i);
     });
+    assertTileChangesInside(map, next, rect, "범위 밖: 지우려면 이웃 타일도 함께 바꿔야 해요.");
   });
 }
 
@@ -157,13 +161,19 @@ function stamp(ctx: PrimitiveContext, args: Record<string, unknown>) {
   const { map, objectId, object, area } = stampPlacement(ctx, args);
   const { x, y, w } = area;
   return editTiles(ctx.project, map, (draft, next) => {
+    let result: ToolExecResult;
     try {
-      byName(SHARED_OBJECT_TOOLS, "stamp_object").run(draft, { mapId: map.id, objectId, x, y });
+      result = byName(SHARED_OBJECT_TOOLS, "stamp_object").run(draft, { mapId: map.id, objectId, x, y });
     } catch (cause) {
       userError(cause, "이 자리에 물건을 놓을 수 없어요.");
     }
     if (draft.startPos !== ctx.project.startPos) {
       throw new PrimitiveError("게임 시작 위치를 옮겨야 하는 자리예요. 다른 자리를 골라 주세요.");
+    }
+    // This tool can remove a whole overlapping furnishing even in its default mode.
+    // In that case its warning may be the only trace left after the new pattern is written.
+    if (result.warnings?.length) {
+      throw new PrimitiveError("이 자리에 물건을 놓으면 다른 타일이나 통행에 영향이 있어요.");
     }
     forEachCell(area, (column, row) => {
       const index = row * map.width + column;
@@ -207,7 +217,8 @@ function transferScope(ctx: PrimitiveContext, args: Record<string, unknown>, mov
 
 function copyOrMove(ctx: PrimitiveContext, args: Record<string, unknown>, move: boolean) {
   const { map, from, to, dx, dy } = regionTransfer(ctx, args);
-  return editTiles(ctx.project, map, (_draft, next) => {
+  assertWholeKits(ctx.project, map, from);
+  return editTiles(ctx.project, map, (draft, next) => {
     if (move) {
       forEachCell(from, (x, y) => {
         if (!includesCell(to, x, y)) writeTileCell(map, -1, next, y * map.width + x);
@@ -216,6 +227,8 @@ function copyOrMove(ctx: PrimitiveContext, args: Record<string, unknown>, move: 
     forEachCell(to, (x, y) => {
       writeTileCell(map, (y - dy) * map.width + x - dx, next, y * map.width + x);
     });
+    assertWholeKits(ctx.project, map, to, { next, ...(move ? { movingFrom: from } : {}) });
+    assertNoNewHardClusterViolations(ctx.project, draft, map.id);
     // The core checks the enclosing rectangle. Check the gap here as well.
     if (move) forEachCell(moveBounds(from, to, dx, dy), (x, y) => {
       if (!includesCell(from, x, y) && !includesCell(to, x, y) && tileCellChanged(map, next, y * map.width + x)) {
@@ -231,12 +244,14 @@ function mirror(ctx: PrimitiveContext, args: Record<string, unknown>) {
   const shadow = horizontal
     ? (bits: number) => ((bits & 0b0101) << 1) | ((bits & 0b1010) >> 1)
     : (bits: number) => ((bits & 0b0011) << 2) | ((bits & 0b1100) >> 2);
-  return editTiles(ctx.project, map, (_draft, next) => {
+  return editTiles(ctx.project, map, (draft, next) => {
     forEachCell(rect, (x, y) => {
       const sx = horizontal ? 2 * rect.x + rect.w - 1 - x : x;
       const sy = horizontal ? y : 2 * rect.y + rect.h - 1 - y;
       writeTileCell(map, sy * map.width + sx, next, y * map.width + x, { shadow });
     });
+    assertWholeKits(ctx.project, map, rect, { next, mirror: horizontal ? "horizontal" : "vertical" });
+    assertNoNewHardClusterViolations(ctx.project, draft, map.id);
   });
 }
 
@@ -249,7 +264,32 @@ function shift(ctx: PrimitiveContext, args: Record<string, unknown>) {
     throw new PrimitiveError("범위 밖: 타일이 맵 밖으로 모두 밀려나요.");
   }
   const tileset = getTileset(ctx.project, map);
-  const isFeature = groundFeaturePredicate(map, ctx.project.tilesets);
+  const autotiles = new Set(autotileGroupsForTileset(tileset)
+    .filter(group => group.layer !== "upper").flatMap(group => group.memberTileIds));
+  const legacyFeature = tileset.image.type === "bundled" && tileset.kind !== "custom"
+    ? groundFeaturePredicate(map, ctx.project.tilesets) : undefined;
+  const isFeature = (tile: number) => autotiles.has(tile) || legacyFeature?.(tile) === true;
+  if (map.events.length || map.locations?.length || map.relief?.levels.some(Boolean)
+    || map.relief?.ramps?.some(Boolean) || map.relief?.wallDecor?.length || map.relief?.falls?.length
+    || map.terrainDesign?.waterDepth?.some(Boolean) || map.terrainDesign?.features?.length) {
+    throw new PrimitiveError("이 맵에는 타일과 함께 옮겨야 할 이벤트나 장소, 지형이 있어요.");
+  }
+  const kept = { x: Math.max(0, -dx), y: Math.max(0, -dy), w: rect.w - Math.abs(dx), h: rect.h - Math.abs(dy) };
+  forEachCell(rect, (x, y) => {
+    if (includesCell(kept, x, y)) return;
+    const index = y * map.width + x;
+    const edgeX = Math.max(kept.x, Math.min(x, kept.x + kept.w - 1));
+    const edgeY = Math.max(kept.y, Math.min(y, kept.y + kept.h - 1));
+    const lower = layerTileAt(map, 1, index);
+    const passes = tileset.passability[lower];
+    const sameGround = !isFeature(lower) && tileset.priority[lower] !== "upper"
+      && passes && passes.up && passes.down && passes.left && passes.right
+      && lower === layerTileAt(map, 1, edgeY * map.width + edgeX);
+    if ((lower >= 0 && !sameGround) || TILE_LAYER_NOS.some(layer => layer > 1 && layerTileAt(map, layer, index) >= 0)
+      || shadowAt(map, index) || map.lowerTileStacks?.[index]?.length || map.upperTileStacks?.[index]?.length) {
+      throw new PrimitiveError("맵 가장자리의 타일이나 그림자가 맵 밖으로 밀려나요.");
+    }
+  });
   const validGround = (tile: number) => Number.isSafeInteger(tile) && tile >= 0 && tile < tileset.count && !isFeature(tile);
   const ground = map.lowerTiles.some(validGround)
     ? extendedLowerTiles(map, rect.w, rect.h, tile => !validGround(tile), dx, dy)

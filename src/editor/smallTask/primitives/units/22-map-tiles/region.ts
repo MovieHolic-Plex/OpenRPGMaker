@@ -69,6 +69,14 @@ export function tileCellChanged(before: GameMap, after: GameMap, index: number):
     || STACK_KEYS.some(key => !jsonEqual(before[key]?.[index], after[key]?.[index]));
 }
 
+export function assertTileChangesInside(before: GameMap, after: GameMap, rect: Rect, message: string): void {
+  for (let index = 0; index < before.width * before.height; index++) {
+    if (!includesCell(rect, index % before.width, Math.floor(index / before.width)) && tileCellChanged(before, after, index)) {
+      throw new PrimitiveError(message);
+    }
+  }
+}
+
 export function editTiles(
   project: Project, map: GameMap, edit: (draft: Project, next: GameMap) => void,
 ): Project {
