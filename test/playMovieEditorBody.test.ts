@@ -95,6 +95,14 @@ describe("playMovie 편집기 본문", () => {
     expect(resolveMovieResourceUrl("", project)).toBeNull();
   });
 
+  it("번들 오디오와 같은 ID의 업로드는 동영상 선택에서 제외한다", () => {
+    const project = store.getCurrent();
+    const id = "cc0-se-osx-wooded-box-open";
+    project.assets.uploaded[id] = { id, name: "충돌 영상", kind: "movie", dataUrl: WEBM_DATA_URL, meta: {} };
+    expect(listMovieResources(project).map(entry => entry.id)).toEqual(["movie-ending", "movie-opening"]);
+    expect(resolveMovieResourceUrl(id, project)).toBeNull();
+  });
+
   it("본문이 동영상 픽커와 항목을 그린다", () => {
     const body = movieBody({ kind: "playMovie", resourceId: "movie-opening" });
 
@@ -125,6 +133,18 @@ describe("playMovie 편집기 본문", () => {
 
     expect(findByTestId(body, "play-movie-preview-video")?.getAttribute("src")).toBe(SAMPLE_MOVIE_RESOURCE.url);
     expect(findByTestId(body, "play-movie-sample-note")?.textContent).toContain("샘플");
+  });
+
+  it("명령에 지정된 번들 동영상은 대기 설정을 바꿔도 유지한다", () => {
+    const replaceCommand = vi.fn();
+    const body = movieBody({ kind: "playMovie", resourceId: SAMPLE_MOVIE_RESOURCE.id }, replaceCommand);
+    const wait = findByTestId(body, "play-movie-wait-select") as FakeElement;
+    wait.value = "false";
+    wait.dispatchEvent(new Event("change"));
+
+    expect(lastCommand(replaceCommand)).toMatchObject({ resourceId: SAMPLE_MOVIE_RESOURCE.id, wait: false });
+    expect(findByTestId(body, "play-movie-preview-video")?.getAttribute("src")).toBe(SAMPLE_MOVIE_RESOURCE.url);
+    expect(findByTestId(body, "play-movie-sample-note")).toBeNull();
   });
 
   it("픽커 선택이 명령의 resourceId 를 갱신한다", () => {

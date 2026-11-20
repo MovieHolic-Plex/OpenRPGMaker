@@ -157,6 +157,7 @@ export function eventSightOnly(
   locations: readonly SightLocation[] | undefined,
   blocks?: SightBlocker,
   light?: SightLight,
+  resolveDirection?: () => Dir | undefined,
 ): boolean {
   const range = effectiveSightRange(spec, light);
   const distance = Math.max(Math.abs(eventPoint.x - player.x), Math.abs(eventPoint.y - player.y));
@@ -165,7 +166,10 @@ export function eventSightOnly(
     if ((locations?.length ?? 0) > 0 && !shareRoom(locations, eventPoint, player)) return false;
     if (!hasClearSight(eventPoint, player, blocks)) return false;
   }
-  if (spec.requireFacing !== false && distance > 1) return inViewCone(eventPoint, eventPoint.direction ?? "down", player);
+  if (spec.requireFacing !== false && distance > 1) {
+    const direction = eventPoint.direction ?? resolveDirection?.() ?? "down";
+    return inViewCone(eventPoint, direction, player);
+  }
   return true;
 }
 
@@ -182,9 +186,10 @@ export function eventSeesPlayer(
   locations: readonly SightLocation[] | undefined,
   blocks?: SightBlocker,
   light?: SightLight,
+  resolveDirection?: () => Dir | undefined,
 ): boolean {
   if (!eventPoint) return false;
-  if (eventSightOnly(eventPoint, player, spec, locations, blocks, light)) return true;
+  if (eventSightOnly(eventPoint, player, spec, locations, blocks, light, resolveDirection)) return true;
   const hear = Math.max(0, spec.hearRange ?? 0);
   return hear > 0 && hearingDistance(eventPoint, player, blocks) <= hear;
 }

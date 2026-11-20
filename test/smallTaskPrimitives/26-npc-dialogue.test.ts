@@ -248,6 +248,16 @@ describe("선택한 인물의 대사 편집", () => {
         mapId: map.id, eventId: event.id, includeCommandHashes: true,
       });
       expect(read.ok).toBe(true);
+      const currentEvent = current.maps[map.id]!.events[0]!;
+      expect(read.data).toMatchObject({
+        event: currentEvent,
+        commandHashes: currentEvent.pages!.map(page => ({
+          pageId: page.id,
+          commands: page.commands.map((command, index) => ({
+            index, branchPath: [], hash: eventCommandHash(command),
+          })),
+        })),
+      });
       const hashes = (read.data as { pageHashes: { pageId: string; pageHash: string }[] }).pageHashes;
       const pageHash = hashes.find(entry => entry.pageId === pageId)!.pageHash;
       expect(JSON.parse(formatPiToolSuccess(read, 200))).toMatchObject({

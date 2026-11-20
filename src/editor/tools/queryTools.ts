@@ -386,7 +386,7 @@ const getEvent: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       eventId: { type: "string" },
-      includeCommandHashes: { type: "boolean", description: "명령 한 줄을 수정·삭제할 때 필요한 위치와 명령·페이지 해시를 포함한다." },
+      includeCommandHashes: { type: "boolean", description: "명령 한 줄을 수정·삭제할 때 필요한 위치와 내용 해시를 포함한다." },
     },
     required: ["mapId", "eventId"],
   },
@@ -401,11 +401,15 @@ const getEvent: ToolDefinition = {
     const pages = event.pages ?? [];
     return {
       summary: `이벤트 '${event.id}' (${event.x},${event.y}) — 페이지 ${pages.length}개`,
-      data: args.includeCommandHashes === true ? {
-        pageHashes: pages.map(page => ({ pageId: page.id, pageHash: eventCommandListHash(page.commands) })),
+      data: {
+        ...(args.includeCommandHashes === true ? {
+          pageHashes: pages.map(page => ({ pageId: page.id, pageHash: eventCommandListHash(page.commands) })),
+        } : {}),
         event,
-        commandHashes: pages.map(page => ({ pageId: page.id, commands: commandHashes(page.commands) })),
-      } : { event },
+        ...(args.includeCommandHashes === true ? {
+          commandHashes: pages.map(page => ({ pageId: page.id, commands: commandHashes(page.commands) })),
+        } : {}),
+      },
     };
   },
 };
