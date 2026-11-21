@@ -7103,5 +7103,1763 @@
       "횡단보도 깃발",
       "안전 깃발"
     ]
+  },
+  {
+    "id": "city_apt_bicycle_rack",
+    "nameKo": "아파트 자전거 보관대",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_bicycle_rack.png",
+    "widthPx": 64,
+    "heightPx": 32,
+    "widthTiles": 4,
+    "heightTiles": 2,
+    "footprint": [
+      "****",
+      "XXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "bicycle rack",
+      "자전거 거치대",
+      "자전거 주차"
+    ]
+  },
+  {
+    "id": "city_apt_curb_bed_corner_ne",
+    "nameKo": "아파트 화단 경계 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "북동 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_corner_nw",
+    "nameKo": "아파트 화단 경계 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "북서 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_corner_se",
+    "nameKo": "아파트 화단 경계 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "남동 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_corner_sw",
+    "nameKo": "아파트 화단 경계 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "남서 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_h",
+    "nameKo": "아파트 화단 경계 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "가로 직선"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_apt_curb_bed_v",
+    "nameKo": "아파트 화단 경계 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "세로 직선"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_apt_discarded_couch",
+    "nameKo": "버려진 소파",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_discarded_couch.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "discarded couch",
+      "폐가구",
+      "대형 폐기물"
+    ]
+  },
+  {
+    "id": "city_apt_entrance_bollard_row",
+    "nameKo": "아파트 입구 차단 말뚝 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_entrance_bollard_row.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "entrance bollard row",
+      "볼라드",
+      "차량 진입 방지"
+    ]
+  },
+  {
+    "id": "city_apt_food_waste_bin",
+    "nameKo": "음식물 쓰레기 수거함",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_food_waste_bin.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "food waste bin",
+      "음식물통",
+      "분리배출"
+    ]
+  },
+  {
+    "id": "city_apt_parcel_cart",
+    "nameKo": "택배 상자 운반 카트",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_parcel_cart.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "parcel cart",
+      "택배 손수레",
+      "배송"
+    ]
+  },
+  {
+    "id": "city_apt_recycling_bins",
+    "nameKo": "재활용 분리수거함 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_recycling_bins.png",
+    "widthPx": 64,
+    "heightPx": 32,
+    "widthTiles": 4,
+    "heightTiles": 2,
+    "footprint": [
+      "****",
+      "XXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "recycling bins",
+      "재활용",
+      "분리배출"
+    ]
+  },
+  {
+    "id": "city_apt_reflexology_pad",
+    "nameKo": "발 지압판",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_reflexology_pad.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "reflexology pad",
+      "지압 발판",
+      "산책로"
+    ]
+  },
+  {
+    "id": "city_apt_sand_rinse_tap",
+    "nameKo": "모래 씻는 수도",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_sand_rinse_tap.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "sand rinse tap",
+      "수도꼭지",
+      "놀이터"
+    ]
+  },
+  {
+    "id": "city_apt_tall_planters_pair",
+    "nameKo": "키 큰 화분 두 개",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_apt_tall_planters_pair.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "tall planters pair",
+      "화분",
+      "플랜터"
+    ]
+  },
+  {
+    "id": "city_cons_barrier_corner_ne",
+    "nameKo": "공사장 차단벽 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_cons_barrier_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "construction barrier",
+      "공사장 차단벽",
+      "북동 모서리"
+    ],
+    "set": {
+      "id": "city_cons_barrier",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_cons_barrier_corner_nw",
+    "nameKo": "공사장 차단벽 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_cons_barrier_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "construction barrier",
+      "공사장 차단벽",
+      "북서 모서리"
+    ],
+    "set": {
+      "id": "city_cons_barrier",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_cons_barrier_corner_se",
+    "nameKo": "공사장 차단벽 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_cons_barrier_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "construction barrier",
+      "공사장 차단벽",
+      "남동 모서리"
+    ],
+    "set": {
+      "id": "city_cons_barrier",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_cons_barrier_corner_sw",
+    "nameKo": "공사장 차단벽 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_cons_barrier_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "construction barrier",
+      "공사장 차단벽",
+      "남서 모서리"
+    ],
+    "set": {
+      "id": "city_cons_barrier",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_cons_barrier_h",
+    "nameKo": "공사장 차단벽 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_cons_barrier_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "construction barrier",
+      "공사장 차단벽",
+      "가로 직선"
+    ],
+    "set": {
+      "id": "city_cons_barrier",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_cons_barrier_v",
+    "nameKo": "공사장 차단벽 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_cons_barrier_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "construction barrier",
+      "공사장 차단벽",
+      "세로 직선"
+    ],
+    "set": {
+      "id": "city_cons_barrier",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_cons_beacon_drum",
+    "nameKo": "경광등 달린 안전 드럼통",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_beacon_drum.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "beacon drum",
+      "경광등",
+      "공사 안전"
+    ]
+  },
+  {
+    "id": "city_cons_brick_pallet",
+    "nameKo": "벽돌을 쌓은 팔레트",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_brick_pallet.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "brick pallet",
+      "벽돌 더미",
+      "건축 자재"
+    ]
+  },
+  {
+    "id": "city_cons_cable_reel",
+    "nameKo": "전선 릴",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_cable_reel.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "cable reel",
+      "케이블 릴",
+      "전선 드럼"
+    ]
+  },
+  {
+    "id": "city_cons_cement_mixer",
+    "nameKo": "콘크리트 믹서",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_cement_mixer.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "cement mixer",
+      "시멘트 믹서",
+      "혼합기"
+    ]
+  },
+  {
+    "id": "city_cons_cement_sacks",
+    "nameKo": "시멘트 포대 더미",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_cement_sacks.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "cement sacks",
+      "시멘트 자루",
+      "건축 자재"
+    ]
+  },
+  {
+    "id": "city_cons_portable_generator",
+    "nameKo": "이동식 발전기",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_portable_generator.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "portable generator",
+      "휴대용 발전기",
+      "공사 장비"
+    ]
+  },
+  {
+    "id": "city_cons_pvc_pipe_stack",
+    "nameKo": "PVC 파이프 묶음",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_pvc_pipe_stack.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "pvc pipe stack",
+      "배관",
+      "플라스틱 관"
+    ]
+  },
+  {
+    "id": "city_cons_rebar_bundle",
+    "nameKo": "철근 묶음",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_rebar_bundle.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "rebar bundle",
+      "철근 더미",
+      "건축 자재"
+    ]
+  },
+  {
+    "id": "city_cons_sandbag_pile",
+    "nameKo": "모래주머니 더미",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_sandbag_pile.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "sandbag pile",
+      "모래 포대",
+      "샌드백"
+    ]
+  },
+  {
+    "id": "city_cons_scaffold_pipe_bundle",
+    "nameKo": "비계 파이프 묶음",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_scaffold_pipe_bundle.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "scaffold pipe bundle",
+      "강관",
+      "비계 자재"
+    ]
+  },
+  {
+    "id": "city_cons_toolbox",
+    "nameKo": "공구 상자",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_toolbox.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "toolbox",
+      "공구통",
+      "연장통"
+    ]
+  },
+  {
+    "id": "city_cons_wheelbarrow",
+    "nameKo": "공사용 외바퀴 손수레",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_cons_wheelbarrow.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "공사 현장",
+      "wheelbarrow",
+      "외발 수레",
+      "운반 도구"
+    ]
+  },
+  {
+    "id": "city_market_blue_plastic_crate_stack",
+    "nameKo": "파란 플라스틱 상자 더미",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_blue_plastic_crate_stack.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "blue plastic crate stack",
+      "운반 상자",
+      "파란 박스"
+    ]
+  },
+  {
+    "id": "city_market_boxed_sesame_oil",
+    "nameKo": "참기름 상자",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_boxed_sesame_oil.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "boxed sesame oil",
+      "참기름병",
+      "기름 진열"
+    ]
+  },
+  {
+    "id": "city_market_drying_chili_mat",
+    "nameKo": "고추를 말리는 멍석",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_drying_chili_mat.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "XXX",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "drying chili mat",
+      "고추 건조",
+      "말린 고추"
+    ]
+  },
+  {
+    "id": "city_market_drying_fish_display_rack",
+    "nameKo": "말린 생선 진열대",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_drying_fish_display_rack.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "drying fish display rack",
+      "건어물",
+      "생선 건조대"
+    ]
+  },
+  {
+    "id": "city_market_folding_produce_table",
+    "nameKo": "접이식 채소 매대",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_folding_produce_table.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "folding produce table",
+      "좌판",
+      "야채 진열대"
+    ]
+  },
+  {
+    "id": "city_market_fruit_handcart",
+    "nameKo": "과일 손수레",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_fruit_handcart.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "fruit handcart",
+      "과일 수레",
+      "과일 노점"
+    ]
+  },
+  {
+    "id": "city_market_garlic_onion_mesh_sacks",
+    "nameKo": "마늘·양파 망 자루",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_garlic_onion_mesh_sacks.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "garlic onion mesh sacks",
+      "양파망",
+      "마늘망"
+    ]
+  },
+  {
+    "id": "city_market_market_basket_cart",
+    "nameKo": "바퀴 달린 장바구니",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_market_basket_cart.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "market basket cart",
+      "장보기 카트",
+      "시장 손수레"
+    ]
+  },
+  {
+    "id": "city_market_needle_scale",
+    "nameKo": "바늘 저울",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_needle_scale.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "needle scale",
+      "아날로그 저울",
+      "계량기"
+    ]
+  },
+  {
+    "id": "city_market_red_rubber_fish_tub",
+    "nameKo": "빨간 생선 고무 대야",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_red_rubber_fish_tub.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "red rubber fish tub",
+      "수산물",
+      "생선 대야"
+    ]
+  },
+  {
+    "id": "city_market_rice_cake_tray",
+    "nameKo": "떡 진열 쟁반",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_rice_cake_tray.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "rice cake tray",
+      "떡집",
+      "떡판"
+    ]
+  },
+  {
+    "id": "city_market_stacked_egg_cartons",
+    "nameKo": "달걀판 더미",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_stacked_egg_cartons.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "stacked egg cartons",
+      "계란판",
+      "달걀 진열"
+    ]
+  },
+  {
+    "id": "city_market_vendor_parasol",
+    "nameKo": "노점 파라솔",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_market_vendor_parasol.png",
+    "widthPx": 48,
+    "heightPx": 48,
+    "widthTiles": 3,
+    "heightTiles": 3,
+    "footprint": [
+      "***",
+      "***",
+      " X*"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "전통시장",
+      "vendor parasol",
+      "시장 양산",
+      "그늘막"
+    ]
+  },
+  {
+    "id": "city_rside_bike_racks_u",
+    "nameKo": "U자형 자전거 거치대 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_bike_racks_u.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "bike racks u",
+      "자전거 보관대",
+      "자전거 주차"
+    ]
+  },
+  {
+    "id": "city_rside_delineator_row",
+    "nameKo": "차선 규제봉 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_delineator_row.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "delineator row",
+      "시선 유도봉",
+      "탄력봉"
+    ]
+  },
+  {
+    "id": "city_rside_direction_sign_blue",
+    "nameKo": "파란 도로 방향 표지판",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_direction_sign_blue.png",
+    "widthPx": 48,
+    "heightPx": 48,
+    "widthTiles": 3,
+    "heightTiles": 3,
+    "footprint": [
+      "***",
+      "***",
+      "X*X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "direction sign blue",
+      "도로 안내판",
+      "방향 표지"
+    ]
+  },
+  {
+    "id": "city_rside_drain_cover",
+    "nameKo": "도로 배수구 덮개",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_drain_cover.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "drain cover",
+      "빗물받이",
+      "배수 격자"
+    ]
+  },
+  {
+    "id": "city_rside_fire_hydrant",
+    "nameKo": "길가 소화전",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_fire_hydrant.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "fire hydrant",
+      "지상식 소화전",
+      "소방 설비"
+    ]
+  },
+  {
+    "id": "city_rside_granite_bollard_pair",
+    "nameKo": "화강암 차단 말뚝 두 개",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_granite_bollard_pair.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "granite bollard pair",
+      "돌 볼라드",
+      "차량 진입 방지"
+    ]
+  },
+  {
+    "id": "city_rside_guardrail_corner_ne",
+    "nameKo": "도로 가드레일 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "북동 모서리"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_rside_guardrail_corner_nw",
+    "nameKo": "도로 가드레일 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "북서 모서리"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_rside_guardrail_corner_se",
+    "nameKo": "도로 가드레일 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "남동 모서리"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_rside_guardrail_corner_sw",
+    "nameKo": "도로 가드레일 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "남서 모서리"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_rside_guardrail_end_e",
+    "nameKo": "도로 가드레일 동쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_end_e.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "동쪽 끝"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "end_e"
+    }
+  },
+  {
+    "id": "city_rside_guardrail_end_w",
+    "nameKo": "도로 가드레일 서쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_end_w.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "서쪽 끝"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "end_w"
+    }
+  },
+  {
+    "id": "city_rside_guardrail_h",
+    "nameKo": "도로 가드레일 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "가로 직선"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_rside_guardrail_v",
+    "nameKo": "도로 가드레일 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_rside_guardrail_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "road guardrail",
+      "도로 가드레일",
+      "세로 직선"
+    ],
+    "set": {
+      "id": "city_rside_guardrail",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_rside_reflective_stud_row",
+    "nameKo": "도로 반사 표지병 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_reflective_stud_row.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "reflective stud row",
+      "노면 표지병",
+      "차선 반사판"
+    ]
+  },
+  {
+    "id": "city_rside_speed_camera_post",
+    "nameKo": "과속 단속 카메라 기둥",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_speed_camera_post.png",
+    "widthPx": 16,
+    "heightPx": 64,
+    "widthTiles": 1,
+    "heightTiles": 4,
+    "footprint": [
+      "*",
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "speed camera post",
+      "과속 카메라",
+      "교통 단속"
+    ]
+  },
+  {
+    "id": "city_school_ball_basket_cart",
+    "nameKo": "공 바구니 카트",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_ball_basket_cart.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "ball basket cart",
+      "체육 공",
+      "이동식 공 보관함"
+    ]
+  },
+  {
+    "id": "city_school_bleachers",
+    "nameKo": "운동장 계단식 관람석",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_school_bleachers.png",
+    "widthPx": 64,
+    "heightPx": 32,
+    "widthTiles": 4,
+    "heightTiles": 2,
+    "footprint": [
+      "****",
+      "XXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "bleachers",
+      "스탠드",
+      "관중석"
+    ]
+  },
+  {
+    "id": "city_school_clock_post",
+    "nameKo": "운동장 시계 기둥",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_clock_post.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "clock post",
+      "야외 시계",
+      "학교 시계"
+    ]
+  },
+  {
+    "id": "city_school_cone_markers",
+    "nameKo": "체육용 마커콘 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_cone_markers.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "cone markers",
+      "훈련 콘",
+      "운동장 표시"
+    ]
+  },
+  {
+    "id": "city_school_hurdles_pair",
+    "nameKo": "육상 허들 두 개",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_hurdles_pair.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "hurdles pair",
+      "장애물 달리기",
+      "체육 기구"
+    ]
+  },
+  {
+    "id": "city_school_pa_speaker_post",
+    "nameKo": "운동장 방송 스피커 기둥",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_pa_speaker_post.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "pa speaker post",
+      "야외 스피커",
+      "방송 설비"
+    ]
+  },
+  {
+    "id": "city_school_soccer_goal",
+    "nameKo": "축구 골대",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_school_soccer_goal.png",
+    "widthPx": 64,
+    "heightPx": 32,
+    "widthTiles": 4,
+    "heightTiles": 2,
+    "footprint": [
+      "****",
+      "XXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "soccer goal",
+      "축구 골망",
+      "축구장"
+    ]
+  },
+  {
+    "id": "city_school_sports_handcart",
+    "nameKo": "체육용품 운반 손수레",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_sports_handcart.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "sports handcart",
+      "체육 카트",
+      "운동 기구 운반"
+    ]
+  },
+  {
+    "id": "city_school_tug_of_war_rope",
+    "nameKo": "감아 놓은 줄다리기 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_tug_of_war_rope.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "tug of war rope",
+      "밧줄",
+      "운동회"
+    ]
+  },
+  {
+    "id": "city_school_vaulting_box",
+    "nameKo": "뜀틀",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_school_vaulting_box.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "vaulting box",
+      "기계 체조",
+      "체육 기구"
+    ]
+  },
+  {
+    "id": "city_school_volleyball_net",
+    "nameKo": "배구 네트",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_school_volleyball_net.png",
+    "widthPx": 64,
+    "heightPx": 32,
+    "widthTiles": 4,
+    "heightTiles": 2,
+    "footprint": [
+      "****",
+      "X**X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "volleyball net",
+      "배구장",
+      "운동장 네트"
+    ]
+  },
+  {
+    "id": "city_school_wash_basin",
+    "nameKo": "운동장 공동 세면대",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_school_wash_basin.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "학교 운동장",
+      "wash basin",
+      "손 씻는 곳",
+      "학교 수도"
+    ]
   }
 ]

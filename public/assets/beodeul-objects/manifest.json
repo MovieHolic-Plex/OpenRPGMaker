@@ -171,6 +171,44 @@
         "h_straight",
         "v_straight"
       ]
+    },
+    {
+      "id": "city_apt_curb_bed",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_cons_barrier",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_rside_guardrail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
     }
   ]
 }
