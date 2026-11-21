@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-21T04:57:45.175Z",
+ "generatedAt": "2026-11-21T05:17:03.536Z",
  "note": "키는 sha1(선택자|속성|조건) 앞 12자리. 값은 `files layers values` 색인 3개. 줄 번호는 일부러 뺐다 — 줄이 밀리는 것만으로 대량 오보가 난다. 갱신: node scripts/check-css-winners.mjs --save-baseline",
  "discovery": "scan",
  "files": [
@@ -10604,7 +10604,9 @@
   "calc(12px + var(--window-inset-left, 0px))",
   "calc(8px + var(--window-inset-left, 0px))",
   "calc(12px + var(--window-inset-right, 0px))",
-  "calc(8px + var(--window-inset-right, 0px))"
+  "calc(8px + var(--window-inset-right, 0px))",
+  "600 12px/1.45 var(--font-ui, system-ui, sans-serif)",
+  "inset 0 0 0 1px var(--danger)"
  ],
  "entries": {
   "src/editor/panels/aiAuthoring/style.css": {
@@ -104964,7 +104966,20 @@
     "7b59c371d919": "360 11 81",
     "9d513a0ff248": "360 11 5",
     "53086aa34100": "289 0 5558",
-    "713a469ea5d3": "289 0 142"
+    "713a469ea5d3": "289 0 142",
+    "f07d44f636cf": "344 9 5",
+    "14b4fa7f33bd": "344 9 36",
+    "382e899f4aa5": "344 9 4213",
+    "7af7f00d4849": "344 9 232",
+    "767f98ac89e1": "344 9 7",
+    "5d31bd82171e": "344 9 9169",
+    "8619e4b0be17": "344 9 19",
+    "9e44e40fd243": "344 9 10151",
+    "6e39fc5d1ed6": "344 9 29",
+    "a01ba8297bfd": "344 9 5",
+    "de6857f102e3": "344 9 343",
+    "dc3d00e3f068": "344 9 105",
+    "8d38fcaf24b2": "344 9 10152"
    }
   },
   "src/styles/map/delayed-tooltip.css": {
