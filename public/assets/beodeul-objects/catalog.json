@@ -5846,30 +5846,6 @@
     ]
   },
   {
-    "id": "city_alley_clothing_bin",
-    "nameKo": "의류 수거함",
-    "category": "prop",
-    "group": "city",
-    "sourceFile": "city_alley_clothing_bin.png",
-    "widthPx": 32,
-    "heightPx": 48,
-    "widthTiles": 2,
-    "heightTiles": 3,
-    "footprint": [
-      "**",
-      "**",
-      "XX"
-    ],
-    "tags": [
-      "city",
-      "현대",
-      "골목",
-      "clothing donation bin",
-      "헌옷 수거함",
-      "재활용"
-    ]
-  },
-  {
     "id": "city_alley_convex_mirror",
     "nameKo": "도로 반사경",
     "category": "prop",
@@ -5981,52 +5957,6 @@
       "LPG tanks",
       "가스통",
       "가스 용기"
-    ]
-  },
-  {
-    "id": "city_alley_no_dumping",
-    "nameKo": "무단 투기 금지 표지판",
-    "category": "prop",
-    "group": "city",
-    "sourceFile": "city_alley_no_dumping.png",
-    "widthPx": 16,
-    "heightPx": 32,
-    "widthTiles": 1,
-    "heightTiles": 2,
-    "footprint": [
-      "*",
-      "X"
-    ],
-    "tags": [
-      "city",
-      "현대",
-      "골목",
-      "no dumping sign",
-      "쓰레기 무단투기",
-      "안내판"
-    ]
-  },
-  {
-    "id": "city_alley_no_parking_chair",
-    "nameKo": "주차 금지 의자",
-    "category": "prop",
-    "group": "city",
-    "sourceFile": "city_alley_no_parking_chair.png",
-    "widthPx": 16,
-    "heightPx": 32,
-    "widthTiles": 1,
-    "heightTiles": 2,
-    "footprint": [
-      "*",
-      "X"
-    ],
-    "tags": [
-      "city",
-      "현대",
-      "골목",
-      "no parking chair",
-      "주차 금지",
-      "입간판"
     ]
   },
   {
@@ -6167,29 +6097,6 @@
       "parking barrier gate",
       "차단기",
       "차단봉"
-    ]
-  },
-  {
-    "id": "city_park3_bay_number_post",
-    "nameKo": "주차 구역 번호 표지",
-    "category": "prop",
-    "group": "city",
-    "sourceFile": "city_park3_bay_number_post.png",
-    "widthPx": 16,
-    "heightPx": 32,
-    "widthTiles": 1,
-    "heightTiles": 2,
-    "footprint": [
-      "*",
-      "X"
-    ],
-    "tags": [
-      "city",
-      "현대",
-      "주차장",
-      "parking bay number post",
-      "주차 구역",
-      "번호 표지"
     ]
   },
   {
@@ -6407,30 +6314,6 @@
       "보행 신호",
       "음향신호기",
       "횡단보도"
-    ]
-  },
-  {
-    "id": "city_park3_slow_led_sign",
-    "nameKo": "서행 안내 전광판",
-    "category": "prop",
-    "group": "city",
-    "sourceFile": "city_park3_slow_led_sign.png",
-    "widthPx": 48,
-    "heightPx": 32,
-    "widthTiles": 3,
-    "heightTiles": 2,
-    "footprint": [
-      "***",
-      "XXX"
-    ],
-    "tags": [
-      "city",
-      "현대",
-      "주차장",
-      "slow LED sign",
-      "서행",
-      "전광판",
-      "교통 표지판"
     ]
   },
   {
