@@ -137,9 +137,9 @@ export type LocationChange =
   | { readonly ok: true; readonly location: MapNamedLocation }
   | { readonly ok: false; readonly error: string };
 
-/** 새 ID. 저작 순서를 읽을 수 있게 `loc1`, `loc2` … 로 매기고 충돌 시 뒤로 밀린다(맵 안에서만 유일). */
+/** 새 ID. `loc1`, `loc2` … 로 매기며 같은 맵의 기존 ID와 표시명을 피한다. */
 export function nextLocationId(map: GameMap): string {
-  const used = new Set(mapLocations(map).map((location) => location.id));
+  const used = new Set(mapLocations(map).flatMap((location) => [location.id, normalizeName(location.name)]));
   for (let index = 1; index <= used.size + 1; index += 1) {
     const candidate = `loc${index}`;
     if (!used.has(candidate)) return candidate;

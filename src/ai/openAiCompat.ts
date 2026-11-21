@@ -96,10 +96,15 @@ export interface OpenAiCompatPreset {
   readonly supportsImages?: boolean;
   /** 그림을 실제로 보는 모델 패턴(최종 모델 ID 기준). 비우면 supportsImages 가 엔드포인트 전체에 적용된다. */
   readonly imageModels?: readonly string[];
+  /** 프리셋을 고르면 모델 칸에 채워 주는 ID. 사용자는 목록을 받은 뒤 바꿀 수 있다. */
+  readonly suggestedModel?: string;
 }
 
 /** 폼의 「프리셋」 — 주소·허용 패턴의 출발값일 뿐이고 모두 바꿀 수 있다. */
 export const OPENAI_COMPAT_PRESETS: readonly OpenAiCompatPreset[] = [
+  { id: "opendesign", label: "OpenDesign", name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1",
+    hint: "OpenDesign 키(sk-amr-…)가 필요해요. 브라우저는 이 주소를 직접 부르지 않고, 앱 서버가 /v1 로 대신 호출해요. 모델 예: deepseek-v4.1-flash-eco. 응답의 reasoning_details 는 그대로 두거나 없어도 다음 도구 호출이 됩니다.",
+    suggestedModel: "deepseek-v4.1-flash-eco", reasoningMode: "none" },
   { id: "cliproxy-argon", label: "CLIProxyAPI · mdc-server (Argon 만)", name: "CLIProxyAPI Argon", baseUrl: "http://mdc-server:8318/v1",
     hint: "API 키가 필요해요(서버 설정의 api-keys 값) — 비워 두면 「Missing API key」(401)로 거절돼요. gemini-4-argon 계열만 허용하고 claude-* 같은 비싼 모델은 목록에서 숨기고 호출도 거절해요. 패턴은 아래에서 바꿀 수 있어요.",
     // 2026-10-25 실측: 이 프록시에서 그림을 실제로 보는 것은 gemini-4-argon-high 뿐이다(argon·flash 는 빈 답, argon-medium 은 400).

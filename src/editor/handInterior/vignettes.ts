@@ -16,7 +16,7 @@ import { notchRect } from "./rooms";
 import type { LayoutRoom } from "./layout";
 import { roomTemplates, templateStyle, type InteriorRoomTemplate, type InteriorTemplateItem } from "./templates";
 import { doorwayCells } from "./furnish";
-import data from "@/assets/interiorVignettes.json";
+import data from "@/assets/interiorVignettes.json" with { type: "json" };
 import type { TilesetDef } from "@/project/types";
 
 export type VignetteWall = "N" | "S" | "W" | "E" | "C";

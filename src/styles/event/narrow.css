@@ -129,3 +129,28 @@
     grid-column: auto;
   }
 }
+
+/* 페이지 탭이 9개 이상이면 줄의 min-content 가 창을 밀어 오른쪽 페이지 조작이 잘렸다.
+ * 페이지바는 모달 창의 직접 자식이 아니라 .event-editor 안이다. 여기서 폭을 잡고
+ * 탭 줄만 가로로 스크롤한다. 조작 버튼은 줄어들지 않는다. */
+.event-editor-modal-window .event-editor {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.event-editor-modal-window .event-editor > .event-editor-pagebar {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.event-editor-modal-window .event-editor > .event-editor-pagebar > .evt-page-segments {
+  flex: 1 1 0%;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.event-editor-modal-window .event-editor > .event-editor-pagebar > .event-page-tabs {
+  flex: 0 0 auto;
+}

@@ -90,6 +90,8 @@ export async function loadSharedTileReferences(): Promise<boolean> {
     if (response.status === 304 && cached) wire = cached.value;
     else {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const type = response.headers.get('content-type') ?? '';
+      if (type.includes('text/html')) throw new Error('공용 타일 참고문서가 JSON 이 아닌 HTML 로 왔다');
       wire = await response.json() as WireSnapshot;
       const etag = response.headers.get('etag');
       if (etag) void writeSharedContentCache('tile-references', etag, wire);

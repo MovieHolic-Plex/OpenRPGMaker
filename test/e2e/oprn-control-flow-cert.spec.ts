@@ -28,7 +28,7 @@ test("loop7 certifies variable operand wait timer and label flow", async ({ page
   await variableTargetCommand.getByTestId("event-command-variable-operand").locator("select").selectOption("var_source");
   await openCommandEditor(page.getByTestId("event-command-setVariable").nth(1));
   await screenshot(page, "002-editor-variable-operand-wait-timer-label.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertControlExport(editorExport);
   await writeJson("003-editor-export.json", editorExport);

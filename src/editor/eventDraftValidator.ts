@@ -3,6 +3,7 @@ import { actorQueryConditionProblems } from "@/editor/panels/eventEditor/actorQu
 import { sightWatcherIds, watchersHaveSelector } from "@/project/sightWatchers";
 import { isBuiltinFieldFxId } from "@/project/containerFx";
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
+import { isWholePartyActorTarget } from "@/project/eventCommands/actorTarget";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import {
   coordinateAxisSpec,
@@ -1086,11 +1087,21 @@ function validateCommand(
         });
       }
       return;
-    case "learnSkill": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); require("reference.skill.missing", "스킬", command.skillId, refs.skills); return;
-    case "changeExp": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); variableOperand(command.amount, "경험치 변수"); return;
+    case "learnSkill":
+      if (!isWholePartyActorTarget(command.actorId)) require("reference.actor.missing", "배우", command.actorId, refs.actors, true);
+      require("reference.skill.missing", "스킬", command.skillId, refs.skills);
+      return;
+    case "changeExp":
+      if (!isWholePartyActorTarget(command.actorId)) require("reference.actor.missing", "배우", command.actorId, refs.actors, true);
+      variableOperand(command.amount, "경험치 변수");
+      return;
     case "changeLevel":
+      require("reference.actor.missing", "배우", command.actorId, refs.actors);
+      return;
     case "changeActorHp":
-    case "changeActorMp": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
+    case "changeActorMp":
+      if (!isWholePartyActorTarget(command.actorId)) require("reference.actor.missing", "배우", command.actorId, refs.actors);
+      return;
     case "changeParty":
       require("reference.actor.missing", "배우", command.actorId, refs.actors);
       if (command.action !== "add" && command.action !== "remove" && command.action !== "lead") issues.push({
@@ -1396,6 +1407,9 @@ function m2ReferenceFieldApplies(
   if (entry.title === "Remove Event" && fieldKey === "eventId") {
     // The blank value means the currently running event, and an explicit value
     // may identify an event created earlier by Spawn Event rather than project data.
+    return false;
+  }
+  if (entry.title === "Swap Event Location" && (fieldKey === "eventA" || fieldKey === "eventB") && value === "this-event") {
     return false;
   }
   if (entry.title === "Region Trigger" && (fieldKey === "eventId" || fieldKey === "switchId")) {

@@ -32,7 +32,7 @@ test("loop8 certifies editor authored moveEvent and changeTile runtime effects",
     await command.getByTestId("move-route-add-move-right").click();
   });
   await screenshot(page, "002-editor-move-event-change-tile.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertMapMutationExport(editorExport);
   await writeJson("003-editor-export.json", editorExport);

@@ -1,7 +1,7 @@
 import { newCommand } from "@/editor/eventActions";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
-import type { Command } from "@/project/types";
+import type { Command, Condition } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
 import { SCRIPT_UNWRAP_EVENT } from "./commandBodyScript";
@@ -49,6 +49,8 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       });
       const previewSimState: PreviewSimState = createPreviewSimState();
       const renderPreview = () => {
+        ok.disabled = stagedCommand.kind === "fork" && hasUnselectedSwitch(stagedCommand.condition);
+        ok.setAttribute("aria-disabled", String(ok.disabled));
         clearChildren(previewHost);
         // 새 애니메이션 표시면은 편집 본문이 재생기를 직접 갖는다. 여기서 한 번 더 그리면
         // 같은 연출이 한 모달에 둘 생긴다 — 표시면은 하나만 둔다.
@@ -162,7 +164,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         dataset: { testid: "event-command-edit-ok" },
         on: {
           click: () => {
-            if (!validateWeightedBranchForm(formHost) || !validateBattleProcessingForm(formHost, stagedCommand)) return;
+            if (ok.disabled || !validateWeightedBranchForm(formHost) || !validateBattleProcessingForm(formHost, stagedCommand)) return;
             request.onApply(structuredClone(stagedCommand));
             close();
           },
@@ -209,6 +211,16 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       }
     },
   });
+}
+
+function hasUnselectedSwitch(condition: Condition): boolean {
+  switch (condition.kind) {
+    case "switch": return !condition.switchId.trim();
+    case "all":
+    case "any": return condition.conditions.some(hasUnselectedSwitch);
+    case "not": return hasUnselectedSwitch(condition.condition);
+    default: return false;
+  }
 }
 
 function createShopPreviewFooterToggle(editor: HTMLElement): HTMLElement {
@@ -260,6 +272,9 @@ function commandEditTitle(command: Command): string {
 /** 종류 변경 또는 폼 DOM 구조가 바뀌는 필드 변경이면 true — 프리뷰-only 갱신으로는 부족. */
 export function shouldRerenderCommandForm(prev: Command, next: Command): boolean {
   if (prev.kind !== next.kind) return true;
+  if (prev.kind === "m2Command" && next.kind === "m2Command" && prev.commandId === "m2-027-change-system-bgm") {
+    return (prev.fields.cue === undefined) !== (next.fields.cue === undefined);
+  }
   // The shop owns its mounted list, inspector, and conditional settings. Rebuilding here
   // would discard the selected tab and detach the active input during a goods edit.
   if (prev.kind === "shop" && next.kind === "shop") return false;

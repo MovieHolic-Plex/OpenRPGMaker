@@ -6,24 +6,24 @@
 // 이 파일 그대로라 예전과 똑같이 동기로 갖는다.
 // 왜(2026-10-20 실측, 편집기 웜 부팅): 이 JSON 이 편집기 진입 청크 63MB 의 대부분이었고, 열린 프로젝트는 보통 그중 몇 개만 쓴다.
 // 읽는 곳은 bundledJson.ts 하나다 — 다른 곳에서 이 모듈을 직접 가져오지 말 것(바꿔 끼우기가 빗나간다).
-import jpCityTileset from "@/assets/jpCityTileset.json";
-import beodeulCityTileset from "@/assets/beodeulCityTileset.json";
-import modernCityTileset from "@/assets/modernCityTileset.json";
-import joseonBaramTileset from "@/assets/joseonBaramTileset.json";
-import atlasBiomeInteriorTileset from "@/assets/atlasBiomeInteriorTileset.json";
-import wizardingWorldTileset from "@/assets/wizardingWorldTileset.json";
-import gothicManorTileset from "@/assets/gothicManorTileset.json";
-import pirateIslesTileset from "@/assets/pirateIslesTileset.json";
-import sfStationTileset from "@/assets/sfStationTileset.json";
-import wastelandRuinsTileset from "@/assets/wastelandRuinsTileset.json";
-import sengokuEdoTileset from "@/assets/sengokuEdoTileset.json";
-import modernCampusTileset from "@/assets/modernCampusTileset.json";
-import steampunkCityTileset from "@/assets/steampunkCityTileset.json";
-import snowNorthTileset from "@/assets/snowNorthTileset.json";
-import desertEastTileset from "@/assets/desertEastTileset.json";
-import prehistoricTileset from "@/assets/prehistoricTileset.json";
-import skyIslandTileset from "@/assets/skyIslandTileset.json";
-import beodeulWavePlacesTileset from "@/assets/beodeulWavePlacesTileset.json";
+import jpCityTileset from "@/assets/jpCityTileset.json" with { type: "json" };
+import beodeulCityTileset from "@/assets/beodeulCityTileset.json" with { type: "json" };
+import modernCityTileset from "@/assets/modernCityTileset.json" with { type: "json" };
+import joseonBaramTileset from "@/assets/joseonBaramTileset.json" with { type: "json" };
+import atlasBiomeInteriorTileset from "@/assets/atlasBiomeInteriorTileset.json" with { type: "json" };
+import wizardingWorldTileset from "@/assets/wizardingWorldTileset.json" with { type: "json" };
+import gothicManorTileset from "@/assets/gothicManorTileset.json" with { type: "json" };
+import pirateIslesTileset from "@/assets/pirateIslesTileset.json" with { type: "json" };
+import sfStationTileset from "@/assets/sfStationTileset.json" with { type: "json" };
+import wastelandRuinsTileset from "@/assets/wastelandRuinsTileset.json" with { type: "json" };
+import sengokuEdoTileset from "@/assets/sengokuEdoTileset.json" with { type: "json" };
+import modernCampusTileset from "@/assets/modernCampusTileset.json" with { type: "json" };
+import steampunkCityTileset from "@/assets/steampunkCityTileset.json" with { type: "json" };
+import snowNorthTileset from "@/assets/snowNorthTileset.json" with { type: "json" };
+import desertEastTileset from "@/assets/desertEastTileset.json" with { type: "json" };
+import prehistoricTileset from "@/assets/prehistoricTileset.json" with { type: "json" };
+import skyIslandTileset from "@/assets/skyIslandTileset.json" with { type: "json" };
+import beodeulWavePlacesTileset from "@/assets/beodeulWavePlacesTileset.json" with { type: "json" };
 
 const ALL = {
   jpCityTileset,

@@ -1,10 +1,11 @@
 import { DatabaseSync } from 'node:sqlite';
 import { existsSync } from 'node:fs';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { validateTilesetReferences } from '../../src/project/tilesetReferences';
-import { SHARED_LIBRARY_REF, sharedTileReferenceKits, type SharedTileReferenceSnapshot } from '../../src/project/sharedTileReferences';
+import { SHARED_LIBRARY_REF, SHARED_TILE_REFERENCES_ENDPOINT, sharedTileReferenceKits, type SharedTileReferenceSnapshot } from '../../src/project/sharedTileReferences';
 import type { Project } from '../../src/project/types';
 import type { SharedSpatialReferences } from '../../src/project/sharedSpatialReferences';
 import { gunzipSync, gzipSync } from 'node:zlib';
@@ -134,6 +135,25 @@ export function sharedTileReferencesBody(acceptEncoding: string | undefined, ifN
   return { body: gzip ? encoded.gzip : gunzipSync(encoded.gzip), gzip, etag, notModified: false };
 }
 /** 카탈로그 판본(행 판본의 해시). payload 를 읽지 않는다. `readSharedTileReferences` 의 revision 과 같은 값이다. */
+/** Vite 가 이 경로를 모르면 index.html 을 200 으로 준다. 편집기는 그걸 JSON 으로 읽다 실패한다. */
+export function sharedTileReferencesMiddleware(req: IncomingMessage, res: ServerResponse, next: (error?: unknown) => void): void {
+  const url = new URL(req.url ?? '/', 'http://localhost');
+  if (url.pathname !== SHARED_TILE_REFERENCES_ENDPOINT) { next(); return; }
+  if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405).end(); return; }
+  try {
+    const accept = typeof req.headers['accept-encoding'] === 'string' ? req.headers['accept-encoding'] : undefined;
+    const inm = typeof req.headers['if-none-match'] === 'string' ? req.headers['if-none-match'] : undefined;
+    const result = sharedTileReferencesBody(accept, inm);
+    const headers: Record<string, string | number> = { 'cache-control': 'no-store', etag: result.etag, vary: 'accept-encoding' };
+    if (result.notModified) { res.writeHead(304, headers).end(); return; }
+    headers['content-type'] = 'application/json; charset=utf-8';
+    headers['content-length'] = result.body.length;
+    if (result.gzip) headers['content-encoding'] = 'gzip';
+    res.writeHead(200, headers);
+    res.end(req.method === 'HEAD' ? undefined : result.body);
+  } catch (error) { next(error); }
+}
+
 export function sharedTileReferencesRevision(file = defaultFile()): string {
   if (!existsSync(file)) return '';
   const db = new DatabaseSync(file, { readOnly: true });

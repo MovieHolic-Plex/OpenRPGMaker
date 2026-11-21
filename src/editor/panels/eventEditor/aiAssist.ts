@@ -1,6 +1,5 @@
 // editor/panels/eventEditor/aiAssist.ts
-// 이벤트 에디터 AI 명령 작성 모달. 자연어 요청 → 초안 검토·수정 → 한 번에 적용.
-// 초안은 모달 안에만 표시하고, 적용 전에는 중앙의 저작 명령을 유지한다.
+// 이벤트 편집기 명령 목록 위의 AI 작성 패널. 목록 자리에서 초안을 검토한 뒤 한 번에 적용한다.
 // LLM 설정은 loadAiConfig 재사용.
 //
 // 왜 「삽입」이 아니라 「고치기」인가 —
@@ -18,23 +17,19 @@ import { eventCommandGateNotice } from "@/ai/aiGateNotice";
 import { consumeEventAiDockOpen } from "./aiDockOpenRequest";
 import { sendAiAssistantMessage, getAiAssistantStatus, abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { checkEventCommandScope } from "@/ai/eventCommandScope";
-import { resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
-import { showAiGateNotice } from "@/editor/ui/aiGateModal";
+import { resolveAssistScope } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
-import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { openEventCommandEditDialog } from "./commandEditDialog";
-import { attachEventAiModal } from "./eventAiModal";
 import { renderEditorIcon } from "./editorIcons";
 import { auxCompositeKey } from "./auxOpenController";
 import { commandSummaryParts } from "./commandSummary";
 import {
   applyCommandDiff,
-  countCommandDiff,
   diffCommandLists,
   hasCommandDiffChanges,
   type CommandDiffRow,
@@ -49,10 +44,10 @@ export interface EventAiAssistOptions {
   readonly cmdList: HTMLElement;
   // Lazy command views can supply the editor's native selection without list rows.
   readonly selectionPath?: () => readonly number[] | undefined;
-  // 모달 안에서 초안을 검토·수정할 컨테이너.
+  // 저작 명령과 같은 스크롤 영역에서 초안을 보여 준다.
   readonly stagedHost: HTMLElement;
   // 초안 갱신 뒤 저작 표면의 상태를 동기화한다.
-  readonly refreshListVisibility: () => void;
+  readonly refreshListVisibility: (reviewing: boolean) => void;
   // 목록 전체를 되돌리기 한 칸으로 교체(commandToolbarHistory.replaceAll).
   readonly replaceAll: (commands: readonly Command[]) => void;
   // 테스트 주입용 설정 로더(생략 시 loadAiConfig).
@@ -64,7 +59,6 @@ type StatusKind = "" | "error" | "busy";
 type StagedDraft = {
   readonly rows: readonly CommandDiffRow[];
   readonly excluded: Set<string>;
-  readonly scope: AssistScope;
   /** Exact command list used to compute the diff; apply must rebase if it changed. */
   readonly baseCommands: readonly Command[];
 };
@@ -77,17 +71,14 @@ type PanelState = {
   status: string;
   statusKind: StatusKind;
   // 마지막 초안을 목록에 반영했고 그 뒤로 입력을 고치지 않았다. 칩이 「반영됨」을 말하는 근거.
-  applied: boolean;
+  appliedCommands: readonly Command[] | null;
 };
 
 const panelStates = new Map<string, PanelState>();
 let panelStatesProjectKey = "";
-let currentDockRoot: HTMLDetailsElement | null = null;
-let registeredDockRoot: HTMLDetailsElement | null = null;
-let currentModalTeardown: (() => void) | null = null;
 let currentSelectionTeardown: (() => void) | null = null;
 let panelInstanceId = 0;
-let activeRequest: { key: string; cancelled: boolean } | null = null;
+let activeRequest: { key: string; cancelled: boolean; startedAt: number } | null = null;
 function stopEventRequest(): void {
   if (!activeRequest) return;
   activeRequest.cancelled = true;
@@ -98,8 +89,10 @@ function stopEventRequest(): void {
 // stagedHost 에 그리면 화면엔 아무것도 안 나온다 — 목록은 초안이 있다고 숨고, 초안은 없는 상태.
 let liveDock: {
   key: string;
+  root: HTMLDetailsElement;
   /** 이 도크를 펼치고 입력창으로 초점을 준다. 자기 페이지 키를 스스로 알고 있다. */
   open: () => boolean;
+  collapseOnEscape: () => boolean;
   renderStaged: () => void;
   setStatus: (text: string, kind?: StatusKind) => void;
   setGenerating: (busy: boolean) => void;
@@ -109,8 +102,8 @@ let liveDock: {
 export function clearEventAiLiveDock(): void {
   stopEventRequest();
   liveDock = null;
-  currentModalTeardown?.();
-  currentModalTeardown = null;
+  currentSelectionTeardown?.();
+  currentSelectionTeardown = null;
 }
 
 /**
@@ -131,6 +124,11 @@ export function focusEventAiDockInOpenEditor(): boolean {
   if (!dock) return false;
   return dock.open();
 }
+/** 이벤트 편집기의 Escape 처리에서 입력 및 초안 행의 접기를 위임한다. */
+export function collapseFocusedEventAiAssist(): boolean {
+  return liveDock?.collapseOnEscape() ?? false;
+}
+
 const TARGET_NAME_MAX = 18;
 
 // 예시는 입력을 채우기만 한다 — 누른 즉시 LLM 을 호출하면 의도와 다른 초안에 돈을 쓴다.
@@ -171,14 +169,13 @@ function stateOf(projectKey: string, key: string): PanelState {
   }
   const existing = panelStates.get(key);
   if (existing) return existing;
-  const fresh: PanelState = { open: false, draft: "", staged: null, status: "", statusKind: "", applied: false };
+  const fresh: PanelState = { open: false, draft: "", staged: null, status: "", statusKind: "", appliedCommands: null };
   panelStates.set(key, fresh);
   return fresh;
 }
 
 /**
- * 이 페이지에 적용 대기 중인 AI 초안이 있는가. content.ts 의 applyViewMode 가 목록을 숨기고
- * 초안을 보일지 결정할 때 읽는다(렌더 순서에 상관없이 같은 답을 내야 하므로 모듈 상태를 본다).
+ * 이 페이지에 적용 대기 중인 AI 초안이 있는가.
  */
 export function hasEventAiStagedDraft(mapId: MapId, eventId: string, pageId: string): boolean {
   return eventAiStagedCommands(mapId, eventId, pageId) !== null;
@@ -201,7 +198,7 @@ function chipStatusOf(state: PanelState): { text: string; kind: string; quiet: b
     return { text: stagedDiffSummary(state.staged.rows, state.staged.excluded), kind: "ready", quiet: false };
   }
   // 반영 직후 입력이 그대로 남아 있다고 「작성 중」이라 말하면 거짓이다 — 방금 한 일을 말한다.
-  if (state.applied) return { text: "반영됨", kind: "applied", quiet: false };
+  if (state.appliedCommands) return { text: "반영됨", kind: "applied", quiet: false };
   if (state.draft.trim().length > 0) return { text: "작성 중", kind: "idle", quiet: false };
   return { text: "", kind: "idle", quiet: true };
 }
@@ -210,6 +207,10 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   const { mapId, eventId, page, cmdList, stagedHost, refreshListVisibility, replaceAll } = options;
   const { projectKey, key } = stateKeyOf(mapId, eventId, page.id);
   const state = stateOf(projectKey, key);
+  if (state.appliedCommands && JSON.stringify(state.appliedCommands) !== JSON.stringify(page.commands)) {
+    state.appliedCommands = null;
+    state.status = "";
+  }
   // 우클릭 「AI 로 이벤트 …」가 남긴 예약을 여기서 **한 번만** 소비한다. 소비하면 예약이 사라져
   // 이후 재렌더는 기본값(닫힘)으로 돌아가고, 사용자가 접은 도크를 렌더가 도로 펼치지 않는다.
   // `state.open` 을 세우는 이유: 이 값이 다음 렌더의 초기값이라, 예약을 지우면서 열어 두지
@@ -218,13 +219,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   if (openedByRequest) state.open = true;
   const scope = resolveAssistScope(page);
   const instanceId = ++panelInstanceId;
-  const headingId = `event-ai-heading-${instanceId}`;
   const inputId = `event-ai-input-${instanceId}`;
-  const promptHelpId = `event-ai-prompt-help-${instanceId}`;
+  const panelId = `event-ai-panel-${instanceId}`;
   const resultTitleId = `event-ai-result-title-${instanceId}`;
 
   const root = el("details", {
     class: "ai-event-assist",
+    attrs: { id: panelId },
     dataset: { testid: "ai-event-assist" },
   }) as HTMLDetailsElement;
   root.open = state.open;
@@ -233,11 +234,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     class: "ai-event-input",
     attrs: {
       id: inputId,
-      rows: "3",
-      "aria-describedby": promptHelpId,
-      placeholder: page.commands.length > 0
-        ? "예) 이미 열었으면 «비어 있다»고 말하게 고쳐 줘"
-        : "예) 열면 회복약 2개를 주고, 이미 열었으면 «비어 있다»고 말한다",
+      rows: "2",
+      placeholder: "예: 말을 걸면 ‘안녕하세요’라고 말하고 스위치 1번을 켜요",
     },
     dataset: { testid: "ai-event-input" },
   });
@@ -249,6 +247,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     attrs: { role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-event-status" },
   });
+  const elapsed = el("span", { class: "ai-event-elapsed" });
+  const updateElapsed = (): void => {
+    if (activeRequest?.key === key) {
+      elapsed.textContent = `${Math.floor((performance.now() - activeRequest.startedAt) / 1000)}초`;
+    }
+  };
+
   const chip = chipStatusOf(state);
   const chipStatus = el("span", {
     class: "event-aux-chip-status",
@@ -267,11 +272,17 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     else chipStatus.removeAttribute("aria-hidden");
   };
 
+  let renderedStatus = state.status;
   const setStatus = (text: string, kind: StatusKind = ""): void => {
     state.status = text;
     state.statusKind = kind;
-    status.textContent = text;
-    status.className = `ai-event-status${kind ? ` ${kind}` : ""}`;
+    if (renderedStatus !== text) {
+      renderedStatus = text;
+      status.textContent = text;
+    }
+    if (kind === "busy") updateElapsed();
+    const className = `ai-event-status${kind ? ` ${kind}` : ""}`;
+    if (status.className !== className) status.className = className;
     refreshChip();
   };
 
@@ -298,21 +309,27 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       : "페이지가 길어 맨 아래에 새로 넣기만 합니다";
   };
   refreshTarget();
-  bindCurrentDockRoot(root, cmdList, refreshTarget);
-  currentModalTeardown = attachEventAiModal(root);
+  currentSelectionTeardown?.();
+  const Observer = globalThis.MutationObserver;
+  if (Observer) {
+    const observer = new Observer(refreshTarget);
+    observer.observe(cmdList, { attributeFilter: ["class"], attributes: true, subtree: true });
+    currentSelectionTeardown = () => observer.disconnect();
+  }
 
   input.addEventListener("input", () => {
     state.draft = input.value;
-    state.applied = false;
+    const wasApplied = state.appliedCommands !== null;
+    state.appliedCommands = null;
     // 사용자가 고치는 중이면 지난 오류는 유효하지 않다. 예전에는 «생성할 내용을
     // 입력하세요» 가 입력을 다 쓴 뒤에도 빨간 글씨로 남아 있었다.
-    if (state.statusKind === "error") setStatus("");
+    if (state.statusKind === "error" || wasApplied) setStatus("");
     else refreshChip();
   });
 
   // ── 초안(목록 자리에 겹쳐 보이는 diff) ────────────────────────────────────
 
-  const applyBtn = button("이대로 하기", "ai-event-apply", "primary");
+  const applyBtn = button("적용", "ai-event-apply", "primary");
   const cancelBtn = button("취소", "ai-event-discard");
   const resultMeta = el("span", { class: "ai-event-result-meta", dataset: { testid: "ai-event-result-meta" } });
   const resultTitle = el("h4", {
@@ -325,29 +342,29 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     class: "ai-event-result",
     attrs: { role: "region", "aria-labelledby": resultTitleId },
     dataset: { testid: "ai-event-result" },
-    children: [
-      el("div", { class: "ai-event-result-header", children: [resultTitle, resultMeta] }),
-      stagedHost,
-      el("div", { class: "ai-event-preview-actions", children: [applyBtn, cancelBtn] }),
-    ],
+    children: [resultTitle, resultMeta],
   });
-
+  const previewActions = el("div", { class: "ai-event-preview-actions", children: [cancelBtn, applyBtn] });
+  const syncReviewVisibility = (): void => {
+    const reviewing = root.open && state.staged !== null;
+    stagedHost.hidden = !reviewing;
+    refreshListVisibility(reviewing);
+  };
   const renderStaged = (): void => {
+    const focus = document.activeElement;
+    const focusedTestId = focus instanceof HTMLElement && stagedHost.contains(focus) ? focus.dataset.testid : undefined;
     stagedHost.replaceChildren();
     const staged = state.staged;
+    resultSection.hidden = !staged;
+    previewActions.hidden = !staged;
     if (!staged) {
-      resultSection.hidden = false;
-      resultTitle.textContent = "명령 초안";
-      resultMeta.textContent = "적용 전까지 기존 명령은 유지됩니다.";
-      stagedHost.append(el("p", { class: "empty-hint", text: "초안을 만들면 여기에서 명령을 검토하고 수정할 수 있습니다." }));
       applyBtn.disabled = true;
       cancelBtn.disabled = true;
+      refreshGenerateLabel();
       refreshChip();
-      refreshListVisibility();
+      syncReviewVisibility();
       return;
     }
-    resultSection.hidden = false;
-    cancelBtn.disabled = false;
     stagedHost.append(renderStagedDiff({
       rows: staged.rows,
       excluded: staged.excluded,
@@ -376,19 +393,17 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
         renderStaged();
       },
     }));
-    const counts = countCommandDiff(staged.rows, staged.excluded);
-    const changing = hasCommandDiffChanges(staged.rows, staged.excluded);
-    // 요약 숫자는 칩이 이미 말한다. 여기서는 「지금 무엇을 할 수 있는가」만 — 세 곳이 같은 숫자를
-    // 되풀이하던 것을 걷어냈다.
-    resultTitle.textContent = staged.scope === "page" ? "수정 후 명령 목록" : "추가할 명령 미리보기";
-    resultMeta.textContent = changing
-      ? `${stagedDiffSummary(staged.rows, staged.excluded)} · 빼고 싶은 줄은 「빼기」로 제외할 수 있어요`
-      : "적용할 것을 모두 뺐어요";
-    applyBtn.disabled = !changing;
-    applyBtn.textContent = counts.removed > 0 ? "이대로 하기(지우는 것 포함)" : "이대로 하기";
+    syncDraftActions();
+    resultMeta.textContent = hasCommandDiffChanges(staged.rows, staged.excluded)
+      ? "빼고 싶은 변경은 해당 줄에서 「빼기」를 누르세요."
+      : "적용할 변경이 없어요.";
     refreshGenerateLabel();
     refreshChip();
-    refreshListVisibility();
+    syncReviewVisibility();
+    if (focusedTestId) {
+      Array.from(stagedHost.querySelectorAll<HTMLElement>("button")).find(button =>
+        button.dataset.testid === focusedTestId)?.focus({ preventScroll: true });
+    }
   };
 
   const generateLabel = el("span", {
@@ -396,29 +411,38 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     text: state.staged ? "다시 만들기" : "초안 만들기",
   });
   const generateSpinner = el("span", { class: "ai-event-spinner", attrs: { "aria-hidden": "true" } });
-  generateSpinner.hidden = true;
   const generateBtn = el("button", {
-    class: "ai-event-btn primary ai-event-generate",
-    attrs: { type: "button", title: "초안 만들기 (Ctrl+Enter)" },
+    class: "ai-event-btn ai-event-generate",
+    attrs: { type: "button", "aria-keyshortcuts": "Control+Enter Meta+Enter" },
     dataset: { testid: "ai-event-generate" },
-    children: [generateSpinner, generateLabel, el("kbd", { class: "ai-event-kbd", text: "Ctrl↵" })],
+    children: [generateLabel, el("kbd", { class: "ai-event-kbd", text: "Ctrl+Enter", attrs: { "aria-hidden": "true" } })],
   }) as HTMLButtonElement;
   // 초안이 생기면 같은 버튼이 「다시 만들기」가 된다. 예전엔 렌더 시점에만 정해져 생성 뒤에도
   // 「초안 만들기」로 남았다.
   const refreshGenerateLabel = (): void => {
     generateLabel.textContent = state.staged ? "다시 만들기" : "초안 만들기";
+    generateBtn.classList.toggle("primary", !state.staged);
   };
   const stopBtn = button("중단", "ai-event-stop");
+  const progressIndicator = el("span", { class: "ai-event-progress", children: [generateSpinner, elapsed] });
+  progressIndicator.hidden = true;
   stopBtn.hidden = true;
-  stopBtn.style.display = "none";
   stopBtn.addEventListener("click", stopEventRequest);
+  const syncDraftActions = (): void => {
+    const staged = state.staged;
+    const busy = generateBtn.disabled;
+    applyBtn.disabled = busy || !staged || !hasCommandDiffChanges(staged.rows, staged.excluded);
+    cancelBtn.disabled = busy || !staged;
+    stagedHost.inert = busy;
+  };
   const setGenerating = (busy: boolean): void => {
     stopBtn.hidden = !busy;
-    stopBtn.style.display = busy ? "" : "none";
     generateBtn.disabled = busy;
     generateBtn.setAttribute("aria-busy", String(busy));
-    generateSpinner.hidden = !busy;
+    progressIndicator.hidden = !busy;
     root.classList.toggle("is-generating", busy);
+    if (busy) updateElapsed();
+    syncDraftActions();
   };
 
   const generate = async (): Promise<void> => {
@@ -443,28 +467,37 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       setStatus("조수의 진행 중인 작업을 먼저 마무리하세요.", "error");
       return;
     }
-    const request = { key, cancelled: false };
+    const request = { key, cancelled: false, startedAt: performance.now() };
     activeRequest = request;
     const progress = setInterval(() => {
       if (request.cancelled || liveDock?.key !== key) return;
       const status = getAiAssistantStatus();
-      if (status.turnBusy) liveDock.setStatus(status.lastStatus || "조수가 명령을 만들고 있어요…", "busy");
+      const step = status.turnBusy && status.lastStatus !== "대기" ? status.lastStatus : "";
+      // The shared status line can already include the chat timer.
+      liveDock.setStatus(step.replace(/(?: · | )\d+초(?= · |$)/u, "") || "명령 초안을 만들고 있어요…", "busy");
     }, 250);
     setGenerating(true);
-    state.applied = false;
+    state.appliedCommands = null;
     setStatus("명령 초안을 만들고 있어요…", "busy");
-    const beforeCommands = JSON.stringify(page.commands);
     try {
+      const beforeCommands = JSON.stringify(page.commands);
       const selection = selectedCommandPath(cmdList, options.selectionPath);
       const target = { mapId, eventId, pageId: page.id, selection,
         selectionLabel: selectedCommandName(cmdList, page.commands, options.selectionPath) ?? undefined,
         mode: scope === "append" ? "append" as const : "edit" as const };
-      const message = `${prompt}\n\n[이벤트 편집기 컨텍스트]\n${JSON.stringify(target)}\n` +
-        "get_event로 확인한 뒤 event_command_assist로 이 페이지의 명령만 수정하세요. 다른 페이지나 설정은 수정할 수 없습니다.";
-      const response = await sendAiAssistantMessage(message, { deferApply: true, eventCommandScope: target });
+      const response = await sendAiAssistantMessage(prompt, { deferApply: true, eventCommandScope: target });
       if (request.cancelled) throw new Error("중단했습니다.");
       if (!response.ok) throw new Error(response.error ?? "조수 실행에 실패했습니다.");
       const proposal = response.pendingProposal;
+      if (!proposal && response.runOutcome?.execution === "response-final" && response.runOutcome.delivery === "no-change" && response.lastAssistantText) {
+        state.staged = null;
+        state.status = response.lastAssistantText;
+        state.statusKind = "";
+        const activeDock = liveDock && liveDock.key === key ? liveDock : null;
+        activeDock?.setStatus(state.status);
+        activeDock?.renderStaged();
+        return;
+      }
       if (!proposal) throw new Error(response.lastAssistantText || "조수가 검토할 명령 초안을 만들지 못했습니다.");
       const scopeCheck = checkEventCommandScope(proposal.before, proposal.after, target);
       if (!scopeCheck.ok) throw new Error(scopeCheck.reason);
@@ -490,12 +523,10 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       state.staged = {
         rows,
         excluded: new Set<string>(),
-        scope,
         baseCommands: structuredClone(liveBefore),
       };
-      // 숫자는 칩과 결과 줄이 말한다 — 상태줄은 다음 행동만.
       state.status = hasCommandDiffChanges(rows)
-        ? "초안을 만들었어요. 이 창에서 확인하고 「이대로 하기」를 누르세요."
+        ? ""
         : "바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.";
       state.statusKind = "";
       const settled = liveDock && liveDock.key === key ? liveDock : null;
@@ -506,18 +537,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
       const detail = cause instanceof Error ? cause.message : String(cause);
+      const notice = eventCommandGateNotice({ message: detail, scope, commandCount: page.commands.length });
       state.status = request.cancelled ? "명령 만들기를 중단했어요."
-        : `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`;
-      state.statusKind = "error";
+        : [notice.title, ...notice.reasons, notice.nextSteps[0]].join("\n");
+      state.statusKind = request.cancelled ? "" : "error";
       const activeDock = liveDock && liveDock.key === key ? liveDock : null;
-      activeDock?.setStatus(state.status, "error");
-      // 한 줄 상태 텍스트는 검증기 원문이 붙으면 끝이 잘린다. append scope 에서는 애초에
-      // 지우기·고치기가 표현 불가라는 사실도 여기서만 말할 수 있다 — 모달로 올린다.
-      if (!request.cancelled) showAiGateNotice(eventCommandGateNotice({
-        message: detail,
-        scope,
-        commandCount: page.commands.length,
-      }));
+      activeDock?.setStatus(state.status, state.statusKind);
     } finally {
       clearInterval(progress);
       if (activeRequest === request) activeRequest = null;
@@ -542,7 +567,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
 
   applyBtn.addEventListener("click", () => {
     const staged = state.staged;
-    if (!staged || !hasCommandDiffChanges(staged.rows, staged.excluded)) return;
+    if (applyBtn.disabled || !staged) return;
     const livePage = store.getCurrent().maps[mapId]?.events
       .find((entry) => entry.id === eventId)
       ?.pages?.find((entry) => entry.id === page.id);
@@ -554,22 +579,35 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }
     const commands = applyCommandDiff(staged.rows, staged.excluded);
     const summary = stagedDiffSummary(staged.rows, staged.excluded);
-    // 적용 전에 초안을 비워, 스토어 갱신으로 재생성될 패널이 목록을 다시 보이게 한다.
+    // 명령 목록 전체를 교체해 되돌리기 한 칸으로 기록한다.
+    try {
+      replaceAll(commands);
+    } catch (cause) {
+      const detail = cause instanceof Error ? cause.message : String(cause);
+      state.status = `변경 내용을 적용하지 못했어요. — ${detail}`;
+      state.statusKind = "error";
+      if (liveDock?.key === key) liveDock.setStatus(state.status, "error");
+      return;
+    }
     state.staged = null;
-    state.open = false;
-    root.open = false;
-    state.applied = true;
-    state.status = `${summary} 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.`;
+    state.appliedCommands = commands;
+    const appliedStatus = `${summary} 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.`;
+    state.status = appliedStatus;
     state.statusKind = "";
-    // 명령 하나씩 넣지 않고 목록을 통째로 교체한다 — 되돌리기 스냅샷이 정확히 한 칸 쌓인다.
-    replaceAll(commands);
-    renderStaged();
-    setStatus(state.status);
+    // replaceAll 이 스토어를 갱신하면 이 클로저의 도크는 문서에서 떨어진다.
+    // 패널은 접지 않고, 살아 있는 도크에 반영 상태를 그린 뒤 입력으로 초점을 돌린다.
+    const dock = liveDock?.key === key ? liveDock : null;
+    if (dock) {
+      dock.setStatus(appliedStatus);
+      dock.renderStaged();
+      dock.root.querySelector<HTMLButtonElement>('[data-testid="ai-event-generate"]')?.focus({ preventScroll: true });
+    }
   });
 
   cancelBtn.addEventListener("click", () => {
     state.staged = null;
     setStatus("초안을 버렸어요.");
+    generateBtn.focus({ preventScroll: true });
     renderStaged();
   });
 
@@ -586,9 +624,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       on: {
         click: () => {
           input.value = example.prompt;
-          state.draft = example.prompt;
-          if (state.statusKind === "error") setStatus("");
-          else refreshChip();
+          input.dispatchEvent(new Event("input"));
           input.focus();
           input.setSelectionRange(example.prompt.length, example.prompt.length);
         },
@@ -596,28 +632,30 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     })),
   });
 
-  // Escape 는 모달 스택 최상단만 닫는다. 도크가 열려 있으면 도크가 최상단이므로
-  // 예전처럼 «프롬프트 쓰다가 Escape → 이벤트 에디터 전체가 닫힘» 이 나지 않는다.
+  const toggleButton = (): HTMLElement | null =>
+    root.closest(".event-contents-fieldset")?.querySelector<HTMLElement>('[data-testid="event-command-quick-ai"]') ?? null;
+
   root.addEventListener("toggle", () => {
-    // A queued toggle from a detached pre-rerender root must never replace the
-    // registration belonging to the current dock instance.
-    if (!root.isConnected) {
-      unregisterModal(root);
+    if (!root.isConnected) return;
+    state.open = root.open;
+    syncReviewVisibility();
+    if (!root.open) {
+      if (activeRequest?.key === key) stopEventRequest();
+      // The native disclosure has just hidden the focused input or summary.
+      if (root.contains(document.activeElement) || stagedHost.contains(document.activeElement)
+        || document.activeElement === document.body) {
+        toggleButton()?.focus({ preventScroll: true });
+      }
       return;
     }
-    state.open = root.open;
-    if (!root.open && activeRequest?.key === key) stopEventRequest();
-    syncDockModalRegistration(root);
-    if (root.open) {
-      refreshTarget();
-      input.focus();
-    }
+    refreshTarget();
+    if (document.activeElement === toggleButton() || root.contains(document.activeElement)) input.focus();
   });
-  queueMicrotask(() => syncDockModalRegistration(root));
 
   root.append(
     el("summary", {
       class: "ai-event-assist-summary event-aux-chip-summary",
+      dataset: { testid: "ai-event-assist-summary" },
       children: [
         el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("spark")] }),
         el("span", { class: "event-aux-chip-label", text: "AI로 명령 만들기" }),
@@ -627,38 +665,17 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }),
     el("div", {
       class: "ai-event-assist-body",
-      attrs: { role: "dialog", "aria-modal": "true", "aria-label": "AI로 명령 만들기" },
       children: [
-        el("div", { class: "ai-event-modal-header", children: [
-          el("h2", { text: "AI로 명령 만들기" }),
-          el("button", { class: "btn", text: "닫기", attrs: { type: "button", "aria-label": "AI 명령 작성 닫기" }, on: { click: () => { root.open = false; } } }),
-        ] }),
-        el("div", {
-          class: "ai-event-compose",
-          children: [
-            el("label", {
-              class: "ai-event-prompt-label",
-              text: page.commands.length > 0
-                ? "이 페이지를 어떻게 고치면 되나요?"
-                : "이 페이지가 무엇을 하면 되나요?",
-              attrs: { for: inputId, id: headingId },
-              dataset: { testid: "ai-event-prompt-label" },
-            }),
-            input,
-            el("div", {
-              class: "ai-event-hintrow",
-              children: [
-                el("span", {
-                  class: "ai-event-prompt-help",
-                  text: "고칠 점·지울 것·새로 넣을 것을 한 문장으로 적어도 됩니다.",
-                  attrs: { id: promptHelpId },
-                }),
-                examples,
-              ],
-            }),
-            el("div", { class: "ai-event-generate-row", children: [target, status, generateBtn, stopBtn] }),
-          ],
+        el("label", {
+          class: "ai-event-prompt-label",
+          text: "어떤 명령을 만들까요?",
+          attrs: { for: inputId },
+          dataset: { testid: "ai-event-prompt-label" },
         }),
+        input,
+        el("div", { class: "ai-event-hintrow", children: [examples, target] }),
+        el("div", { class: "ai-event-generate-row", children: [generateBtn, stopBtn, previewActions] }),
+        el("div", { class: "ai-event-feedback", children: [progressIndicator, status] }),
         resultSection,
       ],
     })
@@ -669,6 +686,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   if (state.statusKind === "busy") setGenerating(true);
   liveDock = {
     key,
+    root,
     open: () => {
       if (!root.isConnected) return false;
       // `state.open` 을 함께 세운다. `details.open` 만 켜면 `toggle` 이벤트에 기대게 되는데
@@ -681,6 +699,15 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       } catch {
         // headless DOM 에서 focus 미지원은 펼침 자체를 막지 않는다.
       }
+      return true;
+    },
+    collapseOnEscape: () => {
+      const focused = document.activeElement;
+      if (!root.open || !root.isConnected || !focused
+        || (!root.contains(focused) && !stagedHost.contains(focused) && focused !== toggleButton())) return false;
+      state.open = false;
+      root.open = false;
+      toggleButton()?.focus({ preventScroll: true });
       return true;
     },
     renderStaged,
@@ -699,57 +726,11 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   return root;
 }
 
-export function eventAiDockModalStackForTest(): { readonly entries: number; readonly live: number } {
-  return {
-    entries: modalStackEntryCountForTest(),
-    live: modalStackDepthForTest(),
-  };
-}
-
 /** 테스트용: 이 페이지의 초안 상태를 비운다. */
 export function resetEventAiStagedForTest(): void {
   panelStates.clear();
   panelStatesProjectKey = "";
   clearEventAiLiveDock();
-}
-
-function bindCurrentDockRoot(
-  root: HTMLDetailsElement,
-  cmdList: HTMLElement,
-  refreshTarget: () => void,
-): void {
-  if (currentDockRoot !== root) {
-    currentModalTeardown?.();
-    currentModalTeardown = null;
-    currentSelectionTeardown?.();
-    currentSelectionTeardown = null;
-    if (registeredDockRoot) unregisterModal(registeredDockRoot);
-    registeredDockRoot = null;
-    currentDockRoot = root;
-  }
-  const Observer = globalThis.MutationObserver;
-  if (!Observer) return;
-  const selectionObserver = new Observer(refreshTarget);
-  selectionObserver.observe(cmdList, { attributeFilter: ["class"], attributes: true, subtree: true });
-  currentSelectionTeardown = () => selectionObserver.disconnect();
-}
-
-function syncDockModalRegistration(root: HTMLDetailsElement): void {
-  if (!root.isConnected) return;
-  // A nested store refresh can finish before its outer render. Only attached DOM owns Escape.
-  currentDockRoot = root;
-  if (!root.open) {
-    unregisterModal(root);
-    if (registeredDockRoot === root) registeredDockRoot = null;
-    return;
-  }
-  if (registeredDockRoot === root) return;
-  if (registeredDockRoot) unregisterModal(registeredDockRoot);
-  registeredDockRoot = root;
-  registerModal(root, () => {
-    if (registeredDockRoot === root) registeredDockRoot = null;
-    root.open = false;
-  });
 }
 
 // 현재 선택된 커맨드의 경로(.cmd-item.selected → data-cmd-path). 없으면 null.

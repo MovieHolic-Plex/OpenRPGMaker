@@ -205,7 +205,7 @@ async function fillAndChange(locator: Locator, value: string): Promise<void> {
 }
 
 async function applyAndClose(page: Page): Promise<void> {
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await closeEditor(page);
 }
 

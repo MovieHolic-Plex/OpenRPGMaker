@@ -10,6 +10,7 @@ import { store } from "@/project/store";
 import { importWithRetry } from "@/util/dynamicImport";
 import { installRuntimeQaFrames } from "@/player/runtimeQaFrames";
 import { PLAY_PIXEL_DENSITY_KEY } from "@/player/runtimeViewScale";
+import { installChipsetUploadGuard } from "@/assets/chipsetTextureBands";
 
 export type PlayGameBootOptions = {
   /** Build textures/map behind the opening without advancing gameplay or audio. */
@@ -26,34 +27,6 @@ export type PlayGameBootOptions = {
   /** Fired when PlayScene.create finishes. */
   readonly onPlaySceneReady?: () => void;
 };
-
-/**
- * Phaser 의 XHR 그림 처리(ImageFile.onProcess)는 <img>.onload 에서 곧바로 텍스처를 올린다. onload 는 디코드를 기다리지 않아
- * texImage2D 가 메인 스레드에서 큰 칩셋(2048×4256 등)을 풀며 0.4~1초씩 멈췄다 — 오프닝 위에서 그대로 보인 끊김(2026-11-05 폴른 스타·첫사랑 실측).
- * decode() 는 디코드를 다른 스레드에서 끝내 두므로, 끝난 뒤에 올리면 업로드만 남는다. 한 번만 깔다.
- */
-function decodeImagesBeforeUpload(PhaserRuntime: typeof Phaser): void {
-  type ImageFileProto = { onProcess: () => void; onProcessComplete: () => void; onProcessError: () => void; data: HTMLImageElement; xhrLoader: XMLHttpRequest; crossOrigin?: string; state: number; __oprnDecode?: true };
-  const proto = (PhaserRuntime.Loader.FileTypes.ImageFile as unknown as { prototype: ImageFileProto }).prototype;
-  if (proto.__oprnDecode) return;
-  proto.__oprnDecode = true;
-  const PROCESSING = PhaserRuntime.Loader.FILE_PROCESSING;
-  proto.onProcess = function (this: ImageFileProto): void {
-    this.state = PROCESSING;
-    const image = new Image();
-    if (this.crossOrigin !== undefined) image.crossOrigin = this.crossOrigin;
-    this.data = image;
-    const url = URL.createObjectURL(this.xhrLoader.response as Blob);
-    image.src = url;
-    const finish = (ok: boolean): void => { URL.revokeObjectURL(url); if (ok) this.onProcessComplete(); else this.onProcessError(); };
-    // WebKit 등은 멀쩡한 큰 그림에도 decode() 를 거절한다 — 그때는 예전처럼 load 를 기다려 텍스처가 빠지지 않게 한다.
-    image.decode().then(() => finish(true), () => {
-      if (image.complete) { finish(image.naturalWidth > 0); return; }
-      image.onload = () => finish(true);
-      image.onerror = () => finish(false);
-    });
-  };
-}
 
 /**
  * Phaser 3 의 setTextureFilter 는 필터만 바꿔도 텍스처 전체를 texImage2D 로 다시 올린다. antialias:false 면 모든 그림이
@@ -83,7 +56,7 @@ let runtimeWarmup: Promise<{ PhaserRuntime: typeof Phaser; PlayScene: typeof imp
 function preparePlayRuntime() {
   // PlayScene reads getLoadedPhaser() during module evaluation; this dependency is ordered.
   return runtimeWarmup ??= ensurePhaser().then(async PhaserRuntime => {
-      decodeImagesBeforeUpload(PhaserRuntime);
+      installChipsetUploadGuard(PhaserRuntime);
       skipFilterReupload(PhaserRuntime);
       const { PlayScene } = await importWithRetry(() => import('@/player/PlayScene'));
       return { PhaserRuntime, PlayScene };

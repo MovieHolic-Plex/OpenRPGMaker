@@ -6,6 +6,7 @@ import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/proje
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { editorState } from "@/editor/editorState";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { store } from "@/project/store";
 import { cellTransformFields } from "@/project/databaseAnimationRecordModel";
 import type {
@@ -88,6 +89,7 @@ export function renderBattleAnimationRecordForm(
   };
 
   form.classList.add("animation-detail-form", "db-battle-studio-surface");
+  form.append(recordSmallTask("battleAnimations", animation.id));
   if (animation.pixelFx) {
     form.append(
       battleStudioHeading("animations", animation.name, "코드로 그리는 픽셀 효과(pixelfx)입니다. 시트 없이 게임 해상도에서 바로 그리며, 도트 측면 전투에서도 기술의 연출로 보입니다."),

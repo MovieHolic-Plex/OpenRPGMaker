@@ -36,45 +36,6 @@
 .event-editor-command-focused .event-editor-inspector-column .event-page-preview { min-height: 0; }
 .event-editor-command-focused .event-script-live-stage { min-width: 0; }
 .event-editor-command-focused .event-editor-inspector-column .event-inspector-preview { padding: 0; }
-.event-editor-command-focused .ai-event-assist:not([open]) { display: none; }
-.event-editor-command-focused .ai-event-assist[open] {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgb(15 23 42 / 48%);
-  border: 0;
-  margin: 0;
-}
-.event-editor-command-focused .ai-event-assist > summary { display: none; }
-.event-editor-command-focused .ai-event-assist[open] > .ai-event-assist-body {
-  display: grid;
-  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(980px, calc(100vw - 48px));
-  max-height: calc(100dvh - 80px);
-  overflow: auto;
-  border: 1px solid var(--border-default);
-  border-radius: 12px;
-  background: var(--bg-surface);
-  box-shadow: 0 20px 70px rgb(0 0 0 / 24%);
-  padding: 20px;
-  gap: 18px;
-}
-.event-editor-command-focused .ai-event-modal-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.event-editor-command-focused .ai-event-modal-header h2 { margin: 0; font-size: 19px; }
-.event-editor-command-focused .ai-event-compose { padding: 0; }
-.event-editor-command-focused .ai-event-result { min-width: 0; padding: 0; }
-.event-editor-command-focused .ai-event-input { min-height: 160px; }
-.event-editor-command-focused .cmd-staged-host { min-width: 0; max-height: 48vh; overflow: auto; }
-.event-editor-command-focused .cmd-staged-head { flex-wrap: wrap; }
-.event-editor-command-focused .ai-event-result[hidden] { display: none; }
 /* 좁은 창 미리보기 단추 — 넓은 창에서는 없다. */
 .event-editor-modal-window .event-editor-preview-toggle { display: none; }
 
@@ -142,12 +103,8 @@
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-column-resizer { display: none; }
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench > .event-editor-commands-column { grid-column: 1; grid-row: 2; min-height: 320px; }
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench > .event-editor-inspector-column { grid-column: 1; grid-row: 3; min-height: 240px; }
-  .event-editor-command-focused .ai-event-assist[open] > .ai-event-assist-body { grid-template-columns: minmax(0, 1fr); }
 }
 
-.event-editor-command-focused .ai-event-result { display: flex; flex-direction: column; gap: 12px; }
-.event-editor-command-focused .ai-event-result-header { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.event-editor-command-focused .ai-event-preview-actions { margin-top: auto; justify-content: flex-end; }
 /* Keep command rows in one scroll surface. */
 .event-editor-command-focused .event-contents-fieldset { display: block; height: auto; overflow: auto; }
 /* 툴바는 한 줄이 계약이다 — wrap 이 켜지면 보기 전환·AI 버튼이 둘째 줄로 떨어지고

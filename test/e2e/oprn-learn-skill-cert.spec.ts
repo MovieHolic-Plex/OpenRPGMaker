@@ -33,7 +33,7 @@ test("loop9 certifies learnSkill runtime state status menu and save persistence"
     await command.getByTestId("learn-skill-skill-select").selectOption(skill.id);
   });
   await screenshot(page, "002-editor-learn-skill.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertLearnSkillExport(editorExport, actor.id, skill.id);
   await writeJson("003-editor-export.json", editorExport);

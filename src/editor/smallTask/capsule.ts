@@ -1,7 +1,7 @@
-import { describeAiFailure } from "@/editor/panels/assistantErrorDetail";
+import { AI_RUNTIME_UNAVAILABLE_SUMMARY, describeAiFailure, isAiRuntimeUnavailable } from "@/editor/panels/assistantErrorDetail";
 import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
@@ -20,8 +20,11 @@ export function smallTaskErrorMessage(error: unknown): string {
   if (error instanceof SmallTaskError) return error.message;
   const status = error && typeof error === "object" && "status" in error ? error.status : undefined;
   const reason = error instanceof Error ? error.message : String(error);
+  // 409(heavy-missing 재시도) 뒤의 500 은 Bun 이 없어 워커가 못 뜬 것이다. 본문에 「로그인」이 있어도 로그인 만료가 아니다.
+  if (isAiRuntimeUnavailable(reason)) return AI_RUNTIME_UNAVAILABLE_SUMMARY;
   const { kind } = describeAiFailure(reason);
-  if (status === 401 || status === 403 || (status !== 404 && kind === "auth")) {
+  const http = typeof status === "number" ? status : undefined;
+  if (http === 401 || http === 403 || (http !== 404 && http !== 409 && http !== 500 && kind === "auth")) {
     return "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요.";
   }
   if (status === 0 || kind === "network") return "인터넷 연결을 확인하고 다시 시도해 주세요.";
@@ -56,6 +59,7 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   const eventHeader = anchor.closest(".event-editor-modal-header");
   const box = el("section", {
     class: eventHeader ? "small-task event-editor-small-task" : "small-task",
+    dataset: { ownsCtrlEnter: "" },
     attrs: { role: "dialog", "aria-label": "작은 일", ...(eventHeader ? {} : { popover: "manual" }) },
   });
   const title = el("strong", { text: target?.label ?? hint });
@@ -129,7 +133,32 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   if (target) input.focus();
   else closeButton.focus();
   input.addEventListener("input", () => { send.disabled = !target || !input.value.trim(); });
-  input.addEventListener("keydown", e => { if (e.key === "Enter" && e.isComposing) e.preventDefault(); });
+  input.addEventListener("keydown", e => {
+    // 이 칸은 Ctrl/Cmd+Enter 만 가진다. Ctrl/Cmd+S 는 편집기 「적용」이다.
+    // 캡슐이 맨 위일 때만 처리한다. 그 위에 다른 창이 있으면 그 창의 단축키를 건드리지 않는다.
+    if (
+      (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === "s"
+      && !e.isComposing && !e.defaultPrevented && isTopModal(box)
+    ) {
+      const apply = box.closest('[data-testid="event-editor-modal"]')
+        ?.querySelector<HTMLButtonElement>('[data-testid="event-editor-apply"]');
+      if (apply && !apply.disabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        input.blur();
+        apply.click();
+        return;
+      }
+    }
+    if (e.key !== "Enter") return;
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!e.isComposing && !send.disabled) form.requestSubmit(send);
+    } else if (e.isComposing) {
+      e.preventDefault();
+    }
+  });
   form.addEventListener("submit", async e => {
     e.preventDefault();
     if (!target || send.disabled || owner.signal.aborted) return;

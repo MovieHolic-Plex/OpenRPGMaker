@@ -8,7 +8,7 @@
 import type { GameMap, Project } from "@/project/types";
 import { LEGACY_CAMPAIGN_PLAN, retellForGymCount } from "./campaignPlan";
 import { removeFromTree } from "@/project/mapTree";
-import templateData from "./mapTemplates.json";
+import templateData from "./mapTemplates.json" with { type: "json" };
 
 type Template = { width: number; height: number; tilesetId: string; names: Record<string, number>; buildings: { name: string; width: number; height: number; rowsLower: number[][]; rowsUpper: number[][] }[] };
 const templates = templateData as unknown as Record<string, Template>;

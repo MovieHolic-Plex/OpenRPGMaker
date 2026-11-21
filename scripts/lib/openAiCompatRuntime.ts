@@ -529,6 +529,13 @@ export interface OpenAiCompatConnectInput {
   readonly baseUrl?: unknown;
   readonly apiKey?: unknown;
   readonly model?: unknown;
+  /** 프리셋이 정한 추론 전달 방식. 없으면 저장 기본(보내지 않음)이다. */
+  readonly reasoningMode?: unknown;
+  /** 빼면 저장된 허용·차단·그림 설정을 유지한다. 빈 배열을 보내면 그 목록을 비운다. */
+  readonly allowModels?: unknown;
+  readonly blockModels?: unknown;
+  readonly supportsImages?: unknown;
+  readonly imageModels?: unknown;
 }
 
 export interface OpenAiCompatConnectResult {
@@ -554,7 +561,23 @@ export async function connectOpenAiCompat(input: OpenAiCompatConnectInput, fetch
   if (!model) return reject("invalid", "쓸 모델 ID 를 넣어 주세요.");
   const check = checkOpenAiCompatBaseUrl(openRouter ? OPENROUTER_BASE_URL : input.baseUrl);
   if (!check.ok || !check.url) return reject("invalid", check.error ?? "기본 주소가 올바르지 않아요.");
-  return connectOpenAiCompatTested({ name, baseUrl: check.url, apiKey, model, ...(openRouter ? { reasoningMode: "field" } : {}) }, fetchImpl);
+  const reasoningMode = openRouter ? "field" as const
+    : input.reasoningMode === "none" || input.reasoningMode === "field" || input.reasoningMode === "suffix" ? input.reasoningMode : undefined;
+  const stringList = (value: unknown): readonly string[] | undefined => Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map((item) => item.trim())
+    : undefined;
+  const allowModels = stringList(input.allowModels);
+  const blockModels = stringList(input.blockModels);
+  const imageModels = stringList(input.imageModels);
+  const supportsImages = typeof input.supportsImages === "boolean" ? input.supportsImages : undefined;
+  return connectOpenAiCompatTested({
+    name, baseUrl: check.url, apiKey, model,
+    ...(reasoningMode ? { reasoningMode } : {}),
+    ...(allowModels !== undefined ? { allowModels } : {}),
+    ...(blockModels !== undefined ? { blockModels } : {}),
+    ...(supportsImages !== undefined ? { supportsImages } : {}),
+    ...(imageModels !== undefined ? { imageModels } : {}),
+  }, fetchImpl);
 }
 
 /** 이미 검증한 주소·이름으로 시험(도구 달린 채팅)하고 통과하면 저장한다. 빠른 연결과 키 입양(detectedKeys.ts)이 같이 쓴다. */
@@ -567,6 +590,10 @@ export interface OpenAiCompatTestedConnect {
   readonly reasoningMode?: OpenAiCompatReasoningMode;
   readonly contextWindow?: number;
   readonly maxOutputTokens?: number;
+  readonly allowModels?: readonly string[];
+  readonly blockModels?: readonly string[];
+  readonly supportsImages?: boolean;
+  readonly imageModels?: readonly string[];
 }
 
 export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect, fetchImpl: FetchLike = fetch): Promise<OpenAiCompatConnectResult> {
@@ -574,24 +601,37 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
   const reject = (code: string, message: string, test?: OpenAiCompatTestResult): OpenAiCompatConnectResult => ({
     ok: false, code, message, model, endpoints: listOpenAiCompatPublic(), ...(test ? { test } : {}),
   });
-  const test = await testOpenAiCompat({ name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true }, fetchImpl);
+  // 시험은 id 가 없으면 저장된 패턴을 모른다. 다시 연결할 때 패턴을 빼면 같은 주소의 저장값을 쓴다.
+  // 빈 배열은 «목록을 비워라»이므로 저장값으로 되돌리지 않는다.
+  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
+  const allowModels = input.allowModels ?? existing?.row.allowModels;
+  const blockModels = input.blockModels ?? existing?.row.blockModels;
+  const test = await testOpenAiCompat({
+    name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true,
+    ...(allowModels !== undefined ? { allowModels } : {}),
+    ...(blockModels !== undefined ? { blockModels } : {}),
+  }, fetchImpl);
   if (test.chat && !test.chat.ok) return reject(test.code === "ok" ? "chat" : test.code, test.chat.message || test.message, test);
   if (!test.ok || !test.chat?.ok) return reject(test.code, test.message, test);
   if (test.toolsOk !== true) {
     return reject("tools", `${name} 의 「${model}」 은(는) 대답은 하지만 도구 호출을 못 해요. 조수는 도구로 맵을 고치므로 도구를 지원하는 모델을 골라 주세요. 저장하지 않았어요.`, test);
   }
 
-  // 같은 주소의 엔드포인트가 있으면 고친다 — 다시 연결할 때마다 「OpenRouter 2」 가 생기지 않게.
-  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
+  // 시험이 도는 동안 같은 주소의 다른 연결이 줄을 만들었을 수 있다. 저장 직전에 다시 찾는다.
+  const saved = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
   const endpoint = saveOpenAiCompat({
-    ...(existing ? { id: existing.id } : {}),
-    name: existing?.row.name ?? name,
+    ...(saved ? { id: saved.id } : {}),
+    name: saved?.row.name ?? name,
     baseUrl,
     apiKey,
     defaultModel: model,
     ...(input.reasoningMode ? { reasoningMode: input.reasoningMode } : {}),
     ...(input.contextWindow ? { contextWindow: input.contextWindow } : {}),
     ...(input.maxOutputTokens ? { maxOutputTokens: input.maxOutputTokens } : {}),
+    ...(input.allowModels !== undefined ? { allowModels: input.allowModels } : {}),
+    ...(input.blockModels !== undefined ? { blockModels: input.blockModels } : {}),
+    ...(input.supportsImages !== undefined ? { supportsImages: input.supportsImages } : {}),
+    ...(input.imageModels !== undefined ? { imageModels: input.imageModels } : {}),
   });
   openAiCompatStore.recordTest(endpoint.id, {
     models: test.models,

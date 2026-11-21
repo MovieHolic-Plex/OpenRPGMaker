@@ -789,7 +789,7 @@ export type Command =
   | { kind: "ending"; title: string; message: string; presentation?: import("../cinematicSettings").EndingPresentation }
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
-  | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }
+  | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean; skipDuringFastForward?: boolean }
   | { kind: "m2Command"; commandId: string; fields: M2CommandFields }
   /** 난이도 변경(system.difficulties 의 id). 없는 id 는 무시한다. */
   | { kind: "setDifficulty"; difficultyId: string }
@@ -797,6 +797,7 @@ export type Command =
    * 현재 파티(구성원·위치)를 이름 붙은 파티 묶음으로 저장한다. 같은 이름은 덮어쓴다.
    * actorIds·mapId·x·y 를 주면 지금 파티 대신 그 구성원·자리로 묶음을 미리 만든다(파티 나누기 준비 —
    * 지금 조작 중인 파티는 바뀌지 않는다). 빠진 칸은 지금 파티·자리로 채운다.
+   * 저장 결과를 flags.storePartySuccess에 기록하고, 실패하면 현재 이벤트 실행을 끝낸다.
    */
   | { kind: "storeParty"; partySetId: string; actorIds?: ActorId[]; mapId?: MapId; x?: number; y?: number }
   /**

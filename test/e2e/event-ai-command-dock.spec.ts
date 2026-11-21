@@ -1,8 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { createBlankProject } from "@/project/defaults";
-import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectForEditor } from "./projectSeed";
+import type { Command, Project } from "@/project/types";
+import { eventDockProject, mockDockModel, openEventDockFixture } from "./eventAiDockFixture";
 
 /**
  * 「AI로 명령 만들기」 도크의 사용 계약. LLM 엔드포인트를 목으로 갈아끼워 생성 → 목록 자리에서
@@ -26,21 +25,6 @@ const MOCK_ADDED: readonly Command[] = [
 /** 기존 두 줄 + 새 세 줄 = 최종 목록. diff 는 keep 2 + add 3 이 된다. */
 const MOCK_FINAL: readonly Command[] = [...EXISTING_COMMANDS, ...MOCK_ADDED];
 
-async function mockLlm(page: Page, commands: readonly Command[]): Promise<() => number> {
-  let calls = 0;
-  await page.route("**/v1/chat/completions", async (route) => {
-    calls += 1;
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        choices: [{ message: { role: "assistant", content: JSON.stringify(commands) } }],
-      }),
-    });
-  });
-  return () => calls;
-}
-
 test.setTimeout(180_000);
 
 test.beforeEach(async ({ page }) => {
@@ -53,30 +37,11 @@ test.beforeEach(async ({ page }) => {
 });
 
 function probeProject(): Project {
-  const project = createBlankProject();
-  const map = project.maps[project.startMapId];
-  if (!map) throw new Error("blank project has no start map");
-  const commands: Command[] = structuredClone(EXISTING_COMMANDS) as Command[];
-  const page: EventPage = {
-    id: "p1",
-    name: "상자",
-    conditions: [],
-    graphic: {},
-    trigger: { kind: "action" },
-    priority: "same",
-    movement: { type: "fixed", speed: 3, frequency: 3 },
-    commands,
-  };
-  map.events = [{ id: "ev_ai_dock", x: 4, y: 4, pages: [page], commands } as (typeof map.events)[number]];
-  return project;
+  return eventDockProject(EXISTING_COMMANDS);
 }
 
 async function openDock(page: Page, project: Project): Promise<Locator> {
-  await seedProjectForEditor(page, project);
-  await page.evaluate(async (mapId) => {
-    const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
-    modalModule.openEventEditorModal(mapId, "ev_ai_dock");
-  }, project.startMapId);
+  await openEventDockFixture(page, project);
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible();
   await editor.getByTestId("event-view-toggle-list").click();
@@ -86,7 +51,7 @@ async function openDock(page: Page, project: Project): Promise<Locator> {
   return editor;
 }
 
-test("열린 도크는 반복 재렌더 뒤에도 단일 스택 항목과 선택 삽입 대상을 유지한다", async ({ page }) => {
+test("열린 패널은 반복 재렌더 뒤에도 명령 목록 안에 있고 별도 창을 만들지 않는다", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const project = probeProject();
   const editor = await openDock(page, project);
@@ -103,12 +68,14 @@ test("열린 도크는 반복 재렌더 뒤에도 단일 스택 항목과 선택
     await expect(editor.getByTestId("ai-event-target")).toHaveText("이 페이지의 명령 목록을 고칩니다");
   }
 
+  const commandArea = editor.getByTestId("event-script-canvas");
+  await expect(commandArea.getByTestId("ai-event-assist")).toHaveCount(1);
+  await expect(commandArea.locator('[role="dialog"]')).toHaveCount(0);
   const stack = await page.evaluate(async () => {
-    const aiAssist = await import("/src/editor/panels/eventEditor/aiAssist.ts");
-    return aiAssist.eventAiDockModalStackForTest();
+    const modalStack = await import("/src/editor/ui/modalStack.ts");
+    return { entries: modalStack.modalStackEntryCountForTest(), live: modalStack.modalStackDepthForTest() };
   });
-  expect(stack).toEqual({ entries: 2, live: 2 });
-  console.info(`event-ai-dock stack measurement: ${JSON.stringify(stack)}`);
+  expect(stack).toEqual({ entries: 1, live: 1 });
 });
 
 test("툴바 버튼, 도크 summary, Escape 모두 aria-expanded를 실제 상태와 맞춘다", async ({ page }) => {
@@ -121,7 +88,7 @@ test("툴바 버튼, 도크 summary, Escape 모두 aria-expanded를 실제 상�
   await expect(dock).toHaveJSProperty("open", false);
   await expect(button).toHaveAttribute("aria-expanded", "false");
 
-  await dock.locator(":scope > summary").click();
+  await button.click();
   await expect(dock).toHaveJSProperty("open", true);
   await expect(button).toHaveAttribute("aria-expanded", "true");
 
@@ -151,7 +118,7 @@ test("같은 map/event/page ids를 가진 새 프로젝트에 이전 초안과 �
       import("/src/project/store.ts"),
       import("/src/editor/panels/eventEditor/modal.ts"),
     ]);
-    await store.loadNewRemoteProject(project, { title: project.meta.title });
+    store.replaceProject(project);
     modalModule.openEventEditorModal(mapId, "ev_ai_dock");
   }, { project: projectB, mapId: projectB.startMapId });
 
@@ -167,7 +134,7 @@ test("같은 map/event/page ids를 가진 새 프로젝트에 이전 초안과 �
 
 test("초안은 목록 자리에 유령 행으로 보이고, 적용은 되돌리기 한 번으로 끝난다", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  const llmCalls = await mockLlm(page, MOCK_FINAL);
+  const llmCalls = await mockDockModel(page, MOCK_FINAL);
 
   const project = probeProject();
   const editor = await openDock(page, project);
@@ -180,7 +147,11 @@ test("초안은 목록 자리에 유령 행으로 보이고, 적용은 되돌리
   await editor.getByTestId("ai-event-input").press("Control+Enter");
 
   // 초안이 뜨면 목록 자리를 초안이 차지한다 — 별도 카드가 아니라 같은 자리, 같은 카드 모양.
-  await expect(editor.getByTestId("ai-event-staged-host")).toBeVisible();
+  const stagedHost = editor.getByTestId("event-script-canvas").getByTestId("ai-event-staged-host");
+  await expect(stagedHost).toBeVisible();
+  await expect(editor.getByTestId("ai-event-result").getByTestId("ai-event-staged")).toHaveCount(0);
+  await expect(editor.getByTestId("ai-event-apply")).toHaveText("적용");
+  await expect(editor.getByTestId("ai-event-generate")).toContainText("다시 만들기");
   await expect(editor.locator(".event-contents-fieldset .cmd-list")).toBeHidden();
   await expect(stagedRows).toHaveCount(MOCK_FINAL.length);
   await expect(editor.locator('[data-staged-status="add"][data-staged-id]')).toHaveCount(MOCK_ADDED.length);
@@ -205,7 +176,7 @@ test("«고쳐 달라»는 요청은 덧붙이지 않고 그 줄을 바뀜으로
     structuredClone(EXISTING_COMMANDS[0]) as Command,
     { kind: "text", body: "굳게 잠겨 있다.", speaker: "" } as Command,
   ];
-  await mockLlm(page, edited);
+  await mockDockModel(page, edited);
 
   const editor = await openDock(page, probeProject());
   const rows = editor.locator(".event-contents-fieldset .cmd-list [data-cmd-path]");
@@ -227,7 +198,7 @@ test("«고쳐 달라»는 요청은 덧붙이지 않고 그 줄을 바뀜으로
 
 test("행마다 «이건 빼기»로 골라 적용할 수 있다", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await mockLlm(page, MOCK_FINAL);
+  await mockDockModel(page, MOCK_FINAL);
 
   const editor = await openDock(page, probeProject());
   const rows = editor.locator(".event-contents-fieldset .cmd-list [data-cmd-path]");
@@ -248,7 +219,7 @@ test("행마다 «이건 빼기»로 골라 적용할 수 있다", async ({ page
 
 test("제외 토글 뒤 배지와 적용 예정 행 번호가 같은 결과를 말한다", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await mockLlm(page, MOCK_FINAL);
+  await mockDockModel(page, MOCK_FINAL);
 
   const editor = await openDock(page, probeProject());
   await editor.getByTestId("ai-event-input").fill("상자를 열면 잠금 기억을 켠다");

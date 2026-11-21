@@ -12,7 +12,7 @@
 // 계약: 실패·충돌은 톱바에 뜨고, saved 로 돌아가면 사라지고, 톱바 재렌더가 구독을 누적시키지 않는다.
 //
 // 2026-11 개편: 따로 뜨던 실패 칩(topbar-save-status)과 상태 줄은 걷었다. 오른쪽의 저장 글자 단추
-// (toolbar-save, 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」) 하나가 상태를 말하고, 실패면
+// (toolbar-save, 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 됨 · 이 탭만」) 하나가 상태를 말하고, 실패면
 // 위험색이 되며, 누르면 다시 저장한다. 아래 단언은 같은 계약을 그 단추에 건다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";

@@ -111,7 +111,7 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
   await page.getByTestId("event-page-name-input").blur();
   await addTextCommand(page, "마을 주민", "어서 와. 몬스터는 북쪽 숲에 있어.");
   await addBattleProcessingCommand(page);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 
   await expect.poll(async () => {
     const state = await debugState(page);

@@ -210,7 +210,7 @@ async function editCommand(page: Page, kind: Command["kind"], action: (command: 
 }
 
 async function applyAndClose(page: Page): Promise<void> {
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.getByTestId("event-editor-modal-close").click();
 }
 

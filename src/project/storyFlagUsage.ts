@@ -25,6 +25,8 @@ export interface StoryFlagUsageSite {
   readonly troopId?: string;
   readonly commandPath?: string;
   readonly conditionPath?: string;
+  /** A literal value assigned directly to this switch or variable. */
+  readonly assignedValue?: boolean | number;
   readonly label: string;
   readonly detail: string;
 }
@@ -58,6 +60,7 @@ type UsageOwner = {
 type UsageLocation = UsageOwner & {
   readonly commandPath?: string;
   readonly conditionPath?: string;
+  readonly assignedValue?: boolean | number;
   readonly detail: string;
 };
 
@@ -85,6 +88,7 @@ export function buildStoryFlagUsageIndex(project: Project): StoryFlagUsageIndex 
       troopId: location.troopId,
       commandPath: location.commandPath,
       conditionPath: location.conditionPath,
+      ...(location.assignedValue !== undefined ? { assignedValue: location.assignedValue } : {}),
       label: usageLabel(location),
       detail: location.detail,
     };
@@ -221,13 +225,18 @@ function scanCommand(
 ): void {
   switch (command.kind) {
     case "setSwitch":
-      add("write", "switch", command.switchId, { ...owner, commandPath, detail: "setSwitch" });
+      add("write", "switch", command.switchId, {
+        ...owner, commandPath, detail: "setSwitch", assignedValue: typeof command.value === "boolean" ? command.value : undefined,
+      });
       if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
         add("read", "variable", command.value.id, { ...owner, commandPath: `${commandPath}.value`, detail: "setSwitch operand" });
       }
       break;
     case "setVariable":
-      add("write", "variable", command.variableId, { ...owner, commandPath, detail: "setVariable" });
+      add("write", "variable", command.variableId, {
+        ...owner, commandPath, detail: "setVariable",
+        assignedValue: command.op === "=" && typeof command.value === "number" ? command.value : undefined,
+      });
       if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
         add("read", "variable", command.value.id, { ...owner, commandPath: `${commandPath}.value`, detail: "setVariable operand" });
       }
@@ -330,6 +339,7 @@ function scanMoveRoute(
       ...location,
       commandPath: `${location.commandPath}.moves[${index}]`,
       detail: "move route setSwitch",
+      assignedValue: move.value,
     });
   }
 }

@@ -61,6 +61,8 @@ test("event preview paint surfaces at 1024/1440 normal and max", async ({ page }
       const full = editor.getByTestId("event-editor-window-fullscreen");
       const pressed = await full.getAttribute("aria-pressed");
       if ((pressed === "true") !== maximized) {
+        const more = editor.getByTestId("event-editor-header-more");
+        if ((await more.getAttribute("open")) === null) await more.locator(":scope > summary").click();
         await full.click();
         await expect(full).toHaveAttribute("aria-pressed", maximized ? "true" : "false");
       }
@@ -73,6 +75,8 @@ test("event preview paint surfaces at 1024/1440 normal and max", async ({ page }
   await page.setViewportSize({ width: 1440, height: 900 });
   const full = editor.getByTestId("event-editor-window-fullscreen");
   if ((await full.getAttribute("aria-pressed")) === "true") {
+    const more = editor.getByTestId("event-editor-header-more");
+    if ((await more.getAttribute("open")) === null) await more.locator(":scope > summary").click();
     await full.click();
     await expect(full).toHaveAttribute("aria-pressed", "false");
   }

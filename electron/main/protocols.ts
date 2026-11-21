@@ -1,4 +1,5 @@
 import { SHARED_CONTENT_PREVIEW_CACHE, sharedContentPreviewResponse, sharedContentResponse, sharedReferenceImageResponse } from '../../scripts/lib/sharedContentSqlite';
+import { sharedTileReferencesBody } from '../../scripts/lib/sharedTileReferencesSqlite';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT } from '../../src/project/sharedContentSchema';
 import { SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 import { existsSync, readFileSync } from "node:fs";
@@ -107,6 +108,19 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
     if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT || url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) {
       const r = url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT ? sharedContentPreviewResponse(request.method, url) : sharedReferenceImageResponse(request.method, url);
       return r.bytes ? new Response(new Uint8Array(r.bytes), { headers: { 'content-type': r.mime!, 'cache-control': SHARED_CONTENT_PREVIEW_CACHE } }) : new Response(null, { status: r.status });
+    }
+    if (url.pathname === "/__oprn/shared-tile-references") {
+      if (request.method !== "GET" && request.method !== "HEAD") return new Response(null, { status: 405 });
+      try {
+        // app:// 는 content-encoding 해제가 확인되지 않았다. 압축하지 않은 JSON 을 준다.
+        const result = sharedTileReferencesBody(undefined, request.headers.get("if-none-match") ?? undefined);
+        const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", etag: result.etag };
+        if (result.notModified) return new Response(null, { status: 304, headers: { "cache-control": "no-store", etag: result.etag } });
+        if (request.method === "HEAD") return new Response(null, { status: 200, headers });
+        return new Response(new Uint8Array(result.body), { status: 200, headers });
+      } catch {
+        return Response.json({ revision: "", entries: [] }, { status: 200, headers: { "cache-control": "no-store" } });
+      }
     }
     if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
       if (request.method === "POST" && (request.headers.get("x-oprn-shared-catalog") !== "1" || Number(request.headers.get("content-length") ?? 0) > 2 * 1024 * 1024)) return new Response(null, { status: 403 });

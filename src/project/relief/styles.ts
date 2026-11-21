@@ -8,7 +8,7 @@
 // 렌더(render.ts renderRelief)는 벽 화소마다 입술(윗면 바로 밑 줄) → 몸통(화면 좌표로 이어지는 무늬) → 덧그림(윗단 밑에 매달림) 순서로 고른다.
 
 import type { ReliefRampArt } from "./render";
-import rampArt from "./rampArt.json";
+import rampArt from "./rampArt.json" with { type: "json" };
 export type ReliefWallFamily = "earth" | "strata" | "snow" | "masonry" | "basalt" | "crystal" | "peat";
 
 export interface ReliefWallArt {

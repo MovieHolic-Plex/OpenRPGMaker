@@ -35,11 +35,18 @@ test("loop5 certifies editor page, command, choice branch, cancel branch, and fo
   await page.getByTestId("event-page-tab-add").click();
   await expect(page.getByTestId("event-page-tab-3")).toBeVisible();
   await screenshot(page, "003-editor-page-added.png");
+  const openPageMenu = async () => {
+    const more = page.getByTestId("event-page-more");
+    if ((await more.getAttribute("open")) === null) await more.locator("summary").click();
+  };
+  await openPageMenu();
   await page.getByTestId("event-page-copy").click();
+  await openPageMenu();
   await page.getByTestId("event-page-paste").click();
   await expect(page.getByTestId("event-page-tab-4")).toBeVisible();
   await screenshot(page, "004-editor-page-pasted.png");
   page.once("dialog", (dialog) => dialog.accept());
+  await openPageMenu();
   await page.getByTestId("event-page-delete").click();
   await expect(page.getByTestId("event-page-tab-4")).toHaveCount(0);
   await expect(page.getByTestId("event-page-tab-3")).toBeVisible();
@@ -98,7 +105,7 @@ test("loop5 certifies editor page, command, choice branch, cancel branch, and fo
   await page.getByTestId("event-command-fork").scrollIntoViewIfNeeded();
   await screenshot(page, "008-editor-fork-then-else-branches.png");
 
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertStructureExport(editorExport);
   await writeJson("009-editor-structure-export.json", editorExport);

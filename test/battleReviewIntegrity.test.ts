@@ -9,7 +9,7 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { applyBattleTimerWrites, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { startSession } from "@/project/session";
-import type { Command } from "@/project/types";
+import type { Command, M2CommandFields } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import fixture from "./fixtures/projects/battle-v3.json";
 
@@ -95,11 +95,15 @@ describe("battle review integrity boundaries", () => {
 
   it.each(["rich", "legacy", "party"])("addresses actual actors for %s m2-092 targets", (mode) => {
     const project = deserialize(JSON.stringify(fixture));
+    project.database.battleCommands = [
+      ...(project.database.battleCommands ?? []),
+      { id: "defend", name: "방어", kind: "defend" },
+    ];
     const session = startSession(project);
     const actorId = session.partyActorIds[0];
     const commandId = "m2-092-change-battle-commands";
     const entry = m2CommandById(commandId)!;
-    const fields = mode === "rich" ? { target: "actor", actorId }
+    const fields: M2CommandFields = mode === "rich" ? { target: "actor", actorId }
       : { target: mode === "party" ? "party" : actorId };
     executeM2RuntimeCommand(session, entry, {
       commandId, fields: { ...fields, operation: "set", value: "defend" },

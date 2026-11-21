@@ -2,42 +2,43 @@ import { MONSTER_KIT_CHIPSET_ASSETS, monsterKitSheet } from "./monsterKitAssets"
 import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from './cc0IconAssets';
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
-import atlasVehicles from "./atlasVehiclesTileset.json";
-import beodeulCitySheet from "./beodeulCitySheet.json";
-import beodeulGroundCatalog from './beodeulGroundCatalog.json';
-import beodeulForestTrunksCatalog from './beodeulForestTrunks.json';
-import beodeulNatureCatalog from './beodeulNatureCatalog.json';
+import atlasVehicles from "./atlasVehiclesTileset.json" with { type: "json" };
+import beodeulCitySheet from "./beodeulCitySheet.json" with { type: "json" };
+import beodeulGroundCatalog from './beodeulGroundCatalog.json' with { type: "json" };
+import beodeulForestTrunksCatalog from './beodeulForestTrunks.json' with { type: "json" };
+import beodeulNatureCatalog from './beodeulNatureCatalog.json' with { type: "json" };
 import { tilesetLookSheetCount } from './tilesetLooks';
 import { houseSetSheetCount } from './houseSets';
 import { tilesetStandSheetCount } from './tilesetStands';
 import { tilesetWaterSheetCount } from './tilesetWater';
-import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
-import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
-import beodeulFormsCatalog from './beodeulFormsCatalog.json';
-import beodeulOrganicCatalog from './beodeulOrganicCatalog.json';
-import beodeulSpiritCatalog from './beodeulSpiritCatalog.json';
-import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
-import beodeulMassingCatalog from './beodeulMassingCatalog.json';
-import joseonBaramSheet from "./joseonBaramSheet.json";
-import modernCitySheet from "./modernCitySheet.json";
-import jpCitySheet from "./jpCitySheet.json";
-import wizardingWorldSheet from "./wizardingWorldSheet.json";
-import pirateIslesSheet from "./pirateIslesSheet.json";
-import sengokuEdoSheet from "./sengokuEdoSheet.json";
-import skyIslandSheet from "./skyIslandSheet.json";
-import beodeulWavePlacesSheet from "./beodeulWavePlacesSheet.json";
-import steampunkCitySheet from "./steampunkCitySheet.json";
-import modernCampusSheet from "./modernCampusSheet.json";
-import sfStationSheet from "./sfStationSheet.json";
-import wastelandRuinsSheet from "./wastelandRuinsSheet.json";
-import gothicManorSheet from "./gothicManorSheet.json";
-import prehistoricSheet from "./prehistoricSheet.json";
-import desertEastSheet from "./desertEastSheet.json";
-import snowNorthSheet from "./snowNorthSheet.json";
-import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
-import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
-import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
+import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json' with { type: "json" };
+import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json' with { type: "json" };
+import beodeulFormsCatalog from './beodeulFormsCatalog.json' with { type: "json" };
+import beodeulOrganicCatalog from './beodeulOrganicCatalog.json' with { type: "json" };
+import beodeulSpiritCatalog from './beodeulSpiritCatalog.json' with { type: "json" };
+import beodeulReviewedCatalog from './beodeulReviewedCatalog.json' with { type: "json" };
+import beodeulMassingCatalog from './beodeulMassingCatalog.json' with { type: "json" };
+import joseonBaramSheet from "./joseonBaramSheet.json" with { type: "json" };
+import modernCitySheet from "./modernCitySheet.json" with { type: "json" };
+import jpCitySheet from "./jpCitySheet.json" with { type: "json" };
+import wizardingWorldSheet from "./wizardingWorldSheet.json" with { type: "json" };
+import pirateIslesSheet from "./pirateIslesSheet.json" with { type: "json" };
+import sengokuEdoSheet from "./sengokuEdoSheet.json" with { type: "json" };
+import skyIslandSheet from "./skyIslandSheet.json" with { type: "json" };
+import beodeulWavePlacesSheet from "./beodeulWavePlacesSheet.json" with { type: "json" };
+import steampunkCitySheet from "./steampunkCitySheet.json" with { type: "json" };
+import modernCampusSheet from "./modernCampusSheet.json" with { type: "json" };
+import sfStationSheet from "./sfStationSheet.json" with { type: "json" };
+import wastelandRuinsSheet from "./wastelandRuinsSheet.json" with { type: "json" };
+import gothicManorSheet from "./gothicManorSheet.json" with { type: "json" };
+import prehistoricSheet from "./prehistoricSheet.json" with { type: "json" };
+import desertEastSheet from "./desertEastSheet.json" with { type: "json" };
+import snowNorthSheet from "./snowNorthSheet.json" with { type: "json" };
+import worldmapSelectedSheet from "./worldmapSelectedSheet.json" with { type: "json" };
+import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json" with { type: "json" };
+import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json" with { type: "json" };
 import { withInlineAsset } from "@/assets/inlineAssetStore";
+import { applyRememberedChipsetBands, frameOriginForTexture, markChipsetTextureKey } from "@/assets/chipsetTextureBands";
 import { loadUploadedTilesets, registerUploadedTilesets } from "./uploadedTilesets";
 import type Phaser from "phaser";
 import { BUILTIN_SPRITE_SLICING, RESOURCE_SLICING } from "@/assets/resourceSlicing";
@@ -313,14 +314,19 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
   loadUploadedTilesets(scene, project, options);
   loadUploadedEventSprites(scene, project, project ? collectPlayReferencedStrings(project) : undefined);
+  markChipsetTextureKey(TEX_TILESET, bundledChipsetTileSize(TEX_TILESET));
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
-    scene.load.image(chipsetLoadTextureKey(asset.textureKey), withInlineAsset(asset.path));
+    const loadKey = chipsetLoadTextureKey(asset.textureKey);
+    markChipsetTextureKey(loadKey, bundledChipsetTileSize(asset.textureKey));
+    scene.load.image(loadKey, withInlineAsset(asset.path));
   }
   for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
-    scene.load.image(chipsetLoadTextureKey(asset.textureKey), withInlineAsset(asset.path));
+    const loadKey = chipsetLoadTextureKey(asset.textureKey);
+    markChipsetTextureKey(loadKey, bundledChipsetTileSize(asset.textureKey));
+    scene.load.image(loadKey, withInlineAsset(asset.path));
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
@@ -628,6 +634,7 @@ export function ensureBundledProjectTextures(
     if (!used.has(asset.textureKey) || scene.textures.exists(asset.textureKey)) continue;
     const loadKey = chipsetLoadTextureKey(asset.textureKey);
     if (scene.textures.exists(loadKey) || inFlight.has(loadKey)) continue;
+    markChipsetTextureKey(loadKey, bundledChipsetTileSize(asset.textureKey));
     queue(loadKey, asset.path);
     chipsets.push(asset);
   }
@@ -848,12 +855,12 @@ function installLazyTileFrames(tex: Phaser.Textures.Texture, frameCount: number,
     if (!match) return;
     const index = Number(match[1]);
     if (index >= (lazy.__oprnLazyTiles ?? 0)) return;
-    const { sx, sy } = tileSourceXY(index, tilesPerRow, tileSize);
+    const origin = frameOriginForTexture(tex, index, tilesPerRow, tileSize);
     adding = true;
     try {
-      if (!frames[`tile_${index}`]) tex.add(`tile_${index}`, 0, sx, sy, tileSize, tileSize);
+      if (!frames[`tile_${index}`]) tex.add(`tile_${index}`, origin.sourceIndex, origin.x, origin.y, tileSize, tileSize);
       for (const [quarter, dx, dy] of [["nw", 0, 0], ["ne", half, 0], ["sw", 0, half], ["se", half, half]] as const) {
-        if (!frames[`tile_${index}_${quarter}`]) tex.add(`tile_${index}_${quarter}`, 0, sx + dx, sy + dy, half, half);
+        if (!frames[`tile_${index}_${quarter}`]) tex.add(`tile_${index}_${quarter}`, origin.sourceIndex, origin.x + dx, origin.y + dy, half, half);
       }
     } finally { adding = false; }
   };
@@ -878,6 +885,7 @@ function registerTileFrames(
     { name: "se", dx: quarterSize, dy: quarterSize },
   ] as const;
   const tex = scene.textures.get(textureKey);
+  applyRememberedChipsetBands(tex);
   if (frameCount > LAZY_TILE_FRAME_THRESHOLD) {
     installLazyTileFrames(tex, frameCount, tileSize, tilesPerRow);
     return;
@@ -887,14 +895,14 @@ function registerTileFrames(
   // 마지막 프레임까지 이미 있으면 완료 — 확장 타일셋(frameCount > 480)은 확장분만 이어서 등록한다.
   if (existing.has("tile_0") && existing.has("tile_0_nw") && existing.has(`tile_${frameCount - 1}_se`)) return;
   for (let i = 0; i < frameCount; i++) {
-    const { sx, sy } = tileSourceXY(i, tilesPerRow, tileSize);
+    const origin = frameOriginForTexture(tex, i, tilesPerRow, tileSize);
     if (!existing.has(`tile_${i}`)) {
-      tex.add(`tile_${i}`, 0, sx, sy, tileSize, tileSize);
+      tex.add(`tile_${i}`, origin.sourceIndex, origin.x, origin.y, tileSize, tileSize);
     }
     for (const quarter of quarters) {
       const frameName = `tile_${i}_${quarter.name}`;
       if (!existing.has(frameName)) {
-        tex.add(frameName, 0, sx + quarter.dx, sy + quarter.dy, quarterSize, quarterSize);
+        tex.add(frameName, origin.sourceIndex, origin.x + quarter.dx, origin.y + quarter.dy, quarterSize, quarterSize);
       }
     }
   }

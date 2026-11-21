@@ -9,10 +9,12 @@ import * as adapter from "@/editor/tools/applyChangesetToStore";
 import * as commits from "@/project/projectCommitLog";
 import { AI_RECORD_STORES, readAllAiRecords, resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
 import * as checkpoints from "@/ai/runCheckpointStore";
+import * as recovery from "@/ai/runRecovery";
 import { readLatestRunCheckpoint, type RunCheckpoint } from "@/ai/runCheckpointStore";
 import { getTool, runTool } from "@/editor/tools";
 import { store } from "@/project/store";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject, createStarterBlankProject } from "@/project/defaults";
+import { BUNDLED_TILESET_DIFF } from "@/project/bundledTilesetDiff";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { getAiAssistantStatus } from "@/editor/aiAssistantBridge";
@@ -73,6 +75,61 @@ async function recreate(image: Awaited<ReturnType<typeof crashImage>>) {
   await writeAiRecords(AI_RECORD_STORES.runCheckpoints, image.checkpoints);
   store.replace(image.project); resetMapEditHistory();
 }
+
+it("keeps event editor tool checkpoints compact on a fresh project with all bundled tilesets", async () => {
+  const project = createStarterBlankProject();
+  const mapId = project.startMapId;
+  const map = project.maps[mapId]!;
+  const scope = { mapId, eventId: "checkpoint-event", pageId: "checkpoint-page" };
+  map.events.push({ id: scope.eventId, x: 2, y: 2, trigger: { kind: "action" }, commands: [], pages: [{
+    id: scope.pageId, name: "Marker", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" },
+    priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
+  }] });
+  expect(Object.keys(project.tilesets).length).toBeGreaterThan(20);
+  store.replace(project);
+  const identity = vi.spyOn(recovery, "checkpointContentIdentity");
+  const responses = [tool("get_project_summary", {}), tool("get_map_region", { mapId, x: 0, y: 0, w: 4, h: 4 }),
+    tool("find_events", { mapId }), final];
+  const captured: RunCheckpoint[] = [];
+  let round = 0;
+  const session: AssistantSession = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
+    declareIntent: fixedDeclarer({ mode: "other" }),
+    chat: reviewingChat(async () => {
+      if (round > 0) {
+        await session.whenCheckpointed();
+        captured.push(await checkpoint());
+      }
+      return responses[round++] ?? final;
+    }) });
+  const identityCounts: number[] = [];
+  const observedTools: string[] = [];
+  try {
+    const result = await bounded(session.sendUserMessage("Add a Show Text command saying hello", event => {
+      if (event.type !== "tool_call") return;
+      observedTools.push(event.name);
+      identityCounts.push(identity.mock.calls.length);
+    }, undefined, { eventCommandScope: scope, goalAction: "new-goal" }));
+    expect(result.stoppedReason).toBe("final");
+    expect(observedTools).toEqual(["get_project_summary", "get_map_region", "find_events"]);
+    expect(captured).toHaveLength(3);
+    expect(identityCounts).toEqual([identityCounts[0], identityCounts[0], identityCounts[0]]);
+    expect(identityCounts[0]).toBeLessThanOrEqual(3); // Live content and at most two request baseline instances.
+    for (const row of captured) {
+      expect(row.currentContentIdentity).toMatch(/^[a-f0-9]{64}$/);
+      expect(row.runtime?.eventEditor).toBe(true);
+      expect(JSON.stringify(row).length).toBeLessThan(4 * 1024 * 1024);
+      const tileset = row.runtime?.requestBaseline?.tilesets[map.tilesetId];
+      expect(tileset).toHaveProperty(BUNDLED_TILESET_DIFF);
+      expect(tileset).not.toHaveProperty("tileMeta");
+      expect(tileset).not.toHaveProperty("referenceDocuments");
+      expect(recovery.reconcileRunCheckpoint({ kind: "found", checkpoint: row, durable: true }, store.getCurrent()))
+        .toMatchObject({ kind: "needs-reconciliation", reason: "event-editor-draft" });
+    }
+  } finally {
+    session.retireRun();
+    await bounded(session.whenCheckpointed());
+  }
+});
 
 it("crashes after a real applied create before final transcript persistence; recreated panel Continue creates/applies nothing", async () => {
   const createTool = getTool("upsert_event"); if (!createTool) throw new Error("Missing native event tool");

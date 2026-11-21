@@ -105,4 +105,19 @@ describe("database battle studio", () => {
     expect(requireTestId(panelRoot, "db-tab-spatial-tiles").classList.contains("active")).toBe(true);
     expect(requireTestId(panelRoot, "db-battle-studio-nav-terrain").attrs["aria-current"]).toBe("page");
   }, 60_000);
+
+  it("offers small tasks for the selected terrain and each battle command editor", () => {
+    const terrain = renderHost(renderTerrainTab);
+    const original = requireTestId(requireTestId(terrain, "db-terrain-hero"), "small-task-open");
+    requireTestId(terrain, "db-terrain-preset-1").click();
+    const selected = requireTestId(requireTestId(terrain, "db-terrain-hero"), "small-task-open");
+    expect(selected).not.toBe(original);
+    expect(terrain.querySelectorAll('[data-testid="small-task-open"]')).toHaveLength(1);
+    requireTestId(terrain, "db-terrain-preset-0").click();
+
+    const commands = renderHost(renderBattleCommandsTab);
+    for (const index of store.getCurrent().database.battleCommands!.keys()) {
+      requireTestId(requireTestId(commands, `db-battle-command-editor-${index}`), "small-task-open");
+    }
+  });
 });

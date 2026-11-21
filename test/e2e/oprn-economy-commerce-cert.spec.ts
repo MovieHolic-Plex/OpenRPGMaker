@@ -50,7 +50,7 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
   });
   await editCommand(page, "inn", async (command) => fillAndChange(command.getByTestId("inn-price-input"), "25"));
   await screenshot(page, "002-editor-economy-commerce.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertEconomyExport(editorExport);
   await writeJson("003-editor-export.json", editorExport);

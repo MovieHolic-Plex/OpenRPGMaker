@@ -1,5 +1,5 @@
-import catalog from '../../assets/beodeulReviewedCatalog.json';
-import references from '../../assets/beodeulReviewedReferences.json';
+import catalog from '../../assets/beodeulReviewedCatalog.json' with { type: "json" };
+import references from '../../assets/beodeulReviewedReferences.json' with { type: "json" };
 import {defineBuildingBundle,type BuildingCatalog} from './buildingBundle';
 
 /**

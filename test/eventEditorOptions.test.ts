@@ -5,7 +5,8 @@ describe("event editor trigger options", () => {
   it("shows parallel as an implemented trigger option", () => {
     const parallelOption = TRIGGER_OPTIONS.find((option) => option.value === "parallel");
 
-    expect(parallelOption).toEqual({ value: "parallel", label: "뒤에서 계속 실행" });
+    expect(parallelOption).toMatchObject({ value: "parallel", label: "뒤에서 계속 실행" });
+    expect(parallelOption?.description).toContain("반복");
   });
 
   it("shows RM2003 player and event touch triggers separately without the legacy touch alias", () => {
@@ -17,6 +18,10 @@ describe("event editor trigger options", () => {
       "parallel",
       "locationTransition",
     ]);
+    for (const option of TRIGGER_OPTIONS) {
+      expect(option.description, option.label).toBeTruthy();
+      expect(option.description).not.toBe(option.label);
+    }
   });
 });
 

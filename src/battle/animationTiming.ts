@@ -2,8 +2,8 @@
 // 플레이어 층의 `battleAnimationPlayback.ts` 는 여기를 재수출한다(기존 import 경로 유지).
 import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
 import { generatedEffectFrameDurationMs } from "@/assets/generatedEffectSheets";
-import pixelFxTiming from "@/vendor/pixelfx/timing.json";
-import customPixelFxCatalog from "@/pixelfx/custom/catalog.json";
+import pixelFxTiming from "@/vendor/pixelfx/timing.json" with { type: "json" };
+import customPixelFxCatalog from "@/pixelfx/custom/catalog.json" with { type: "json" };
 
 export const BATTLE_ANIMATION_FRAME_MS = 120;
 export const DEFAULT_BATTLE_ANIMATION_DURATION_MS = 360;

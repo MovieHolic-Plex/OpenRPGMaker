@@ -1783,6 +1783,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return !(gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined));
       case "defend":
         return true;
+      case "pass":
+        return battleEventState.actorBattleCommands?.[actor.recordId]?.length === 0;
       case "commonEvent":
         return options.project.commonEvents.some((entry) => entry.id === command.commonEventId);
       case "escape":
@@ -1810,9 +1812,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
     if (!actorCommandLegality(actor, command)) return false;
-    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch/commonEvent 는 적법성만으로 결정된다.
+    // 대상 해결 검사는 대상을 쓰는 명령에만 적용한다.
     switch (command.kind) {
       case "defend":
+      case "pass":
       case "escape":
       case "switch":
       case "commonEvent":
@@ -1891,6 +1894,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "defend":
         actor.defending = true;
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, userId: actor.id, targetId: actor.id, commandKind: "defend" });
+        applyGen1Residual(actor);
+        break;
+      case "pass":
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, userId: actor.id, commandKind: "pass" });
         applyGen1Residual(actor);
         break;
       case "escape":
@@ -2158,6 +2165,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!actorCommandLegality(actor, command)) return;
     switch (command.kind) {
       case "defend":
+      case "pass":
       case "escape":
       case "switch":
       case "commonEvent":

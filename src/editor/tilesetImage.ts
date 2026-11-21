@@ -9,6 +9,7 @@ import {
 import { graftedTilesetImageUrl, setUploadedGraftSourceUrlResolver } from "@/assets/tileGraftImageCache";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { activeTileGrafts, setUploadedGraftGeometryResolver, tileGraftsTextureSuffix, uploadedGraftGeometryIn } from "@/assets/tileGrafts";
+import { sliceChipsetBandSources } from "@/assets/chipsetTextureBands";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { rawChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -77,10 +78,15 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
   if (!canvas) return baseKey;
 
-  // addCanvas 는 CanvasTexture 를 만들며 캔버스 전체를 getImageData 로 읽는다(버들항 시트 40MB, 소프트웨어 GL 0.3~0.9초).
-  // 아틀라스는 그 픽셀 사본을 쓰지 않으므로 그림 텍스처로 올린다(원본은 캔버스 그대로 — getPixel·drawImage 는 같다).
-  const texture = scene.textures.addImage(textureKey, canvas as unknown as HTMLImageElement);
+  // addCanvas 는 캔버스 전체를 getImageData 로 읽는다. 한 장으로 addImage 하면 2048 을 넘는 시트
+  // (버들항 2048×7664, 이식 꼬리까지 더 김)가 GL 한도에 걸려 칸 전체가 빈다. 2048 이하 띠로 나눠 올린다.
+  const sliced = sliceChipsetBandSources(canvas, tileset.tileSize);
+  const bands = sliced && sliced.canvases.length > 1 ? sliced.canvases : null;
+  const texture = bands
+    ? scene.textures.create(textureKey, bands)
+    : scene.textures.addImage(textureKey, canvas as unknown as HTMLImageElement);
   if (!texture) return baseKey;
+  if (bands && sliced) (texture as { __oprnBandCols?: number }).__oprnBandCols = sliced.columns;
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
   if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset, textureKey);

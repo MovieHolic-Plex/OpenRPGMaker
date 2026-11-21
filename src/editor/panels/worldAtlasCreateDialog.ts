@@ -1,4 +1,4 @@
-import themeCatalog from '@/assets/worldmapThemeCatalog.json';
+import themeCatalog from '@/assets/worldmapThemeCatalog.json' with { type: "json" };
 import { WORLD_MAP_MODES, preferredWorldmapMode, worldmapAuthoringRequest, type WorldmapMode } from '@/project/worldmapModes';
 import { store } from '@/project/store';
 import { getTool } from '@/editor/tools';
