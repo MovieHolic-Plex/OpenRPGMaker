@@ -37,7 +37,7 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
     await expect(editor.getByTestId(testId), testId).toBeVisible();
   }
   await expect(editor.getByTestId("event-editor-draft-status")).toContainText("취소 시 삭제");
-  await expect(editor.getByTestId("event-editor-draft-status")).toContainText("자동 저장");
+  await expect(editor.getByTestId("event-editor-draft-status")).toContainText("임시 보관");
   await expect(editor.getByTestId("event-editor-remote-status")).toContainText("임시 세션");
 
   await editor.getByTestId("event-template-transfer").click();
@@ -84,17 +84,17 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   await editor.getByTestId("event-command-text").locator(".cmd-head").press("Delete");
   await expect(editor.getByTestId("event-command-empty-experience")).toBeVisible();
   await editor.getByTestId("event-template-shop").click();
-  // 체크 해제가 유일한 빼기 경로다. 해제하면 행이 안 담음 그룹으로 옮겨 가므로
-  // 매번 판매 중 그룹을 다시 조회해야 한다(목록이 통째로 재빌드된다).
+  // 진열에서 빼기는 행을 고른 뒤 「진열에서 빼기」다. 목록은 빼기마다 다시 그려진다.
   const rows = saleListRows(page);
   for (let guard = 0; guard < 20 && (await rows.count()) > 0; guard += 1) {
-    await rows.first().locator('input[type="checkbox"]').uncheck();
+    await rows.first().click();
+    await page.getByTestId("shop-remove-goods").click();
   }
   await expect(rows).toHaveCount(0);
   await page.getByTestId("event-command-edit-ok").click();
   await expect(editor.getByTestId("event-command-shop")).toBeVisible();
 
-  await editor.getByTestId("event-editor-apply").click();
+  await editor.page().keyboard.press("Control+s");
   await expect(editor).toBeVisible();
   const validation = editor.getByTestId("event-draft-validation");
   await validation.locator(":scope > summary").click();
@@ -118,7 +118,7 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   await expect(page.getByTestId("test-play-window-title")).toContainText("이벤트 테스트");
   await expect(page.getByTestId("dialogue-box")).toBeVisible({ timeout: 15_000 });
   await page.screenshot({ path: testInfo.outputPath("selected-event-runtime.png"), fullPage: true });
-  await page.getByTestId("test-play-window-close").click();
+  await page.getByTestId("test-play-window").getByRole("button", { name: "편집기로 돌아가기" }).click();
   await expect(testWindow).toBeHidden();
   await expect(editor).toBeVisible();
 

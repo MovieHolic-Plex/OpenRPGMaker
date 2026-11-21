@@ -18,6 +18,7 @@ describe("editor-added item persistence", () => {
     await store.load();
     expect(store.getCurrent().switches.length).toBeGreaterThan(0);
     expect(store.hasUnsavedChanges()).toBe(false);
+    expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
 
     const itemId = addDatabaseRecord("items");
 
@@ -32,6 +33,7 @@ describe("editor-added item persistence", () => {
 
     await store.load();
     expect(store.getCurrent().database.items.some((item) => item.id === itemId)).toBe(false);
+    expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
     expect(freshProjectStorage.length).toBe(0);
   });
 });

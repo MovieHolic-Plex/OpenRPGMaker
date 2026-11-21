@@ -4,7 +4,7 @@
 // 왜 별도 렌더러인가: commandList.ts 의 행은 드래그·편집창·삭제 버튼이 달린 상호작용 행이다.
 // 아직 적용하지 않은 초안을 그 행으로 그리면 "누르면 뭐가 되는지" 가 모호해진다. 그래서
 // 클래스(.cmd-item / .cmd-kind / .cmd-summary-token / .cmd-line-marker)만 공유해 **같은 모양**을
-// 유지하고, 상호작용은 「제외」 토글 하나로 줄인다.
+// 유지한다. 「빼기」와 「수정」은 초안에만 영향을 준다.
 //
 // 초안을 도크 안의 별도 카드에 monospace 로 그리던 예전 방식은 목록과 시각 언어가 달라
 // "넣으면 어떻게 보일지" 예측이 안 됐고, 8개 중 1개만 틀렸을 때 전부 버리거나 전부 받는
@@ -31,7 +31,7 @@ export type StagedDiffViewOptions = {
 
 const STATUS_MARK: Readonly<Record<CommandDiffStatus, string>> = {
   keep: "",
-  add: "＋",
+  add: "+",
   remove: "−",
   change: "→",
 };

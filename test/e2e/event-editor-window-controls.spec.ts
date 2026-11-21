@@ -31,6 +31,11 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800
     expect(normal.y).toBeGreaterThan(0);
     expect(normal.width).toBeLessThan(viewport.width);
     expect(normal.height).toBeLessThan(viewport.height);
+    const openHeaderMenu = async () => {
+      const more = modal.getByTestId("event-editor-header-more");
+      if ((await more.getAttribute("open")) === null) await more.locator(":scope > summary").click();
+    };
+    await openHeaderMenu();
     for (const control of [minimize, fullscreen, close]) {
       const bounds = await control.boundingBox();
       if (!bounds) throw new Error("Missing window control");
@@ -74,9 +79,9 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("app-confirm-modal")).toHaveCount(0);
     await page.getByTestId("layer-lower").click();
-    await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
+    await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-checked", "true");
     await page.keyboard.press("F7");
-    await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-current", "true");
+    await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-checked", "true");
     await expect(modal).toBeHidden();
     await page.screenshot({ path: testInfo.outputPath("minimized.png") });
     await restore.press("Enter");
@@ -111,6 +116,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800
     const resized = await windowEl.boundingBox();
     if (!resized) throw new Error("Missing resized geometry");
     expect(resized.width).toBeLessThan(normal.width);
+    await openHeaderMenu();
     await minimize.click();
     await restore.click();
     expect(await windowEl.boundingBox()).toEqual(resized);

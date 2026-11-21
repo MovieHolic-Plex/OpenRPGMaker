@@ -1,1 +1,738 @@
-[]
+[
+  {
+    "request": "새 동료 미나 추가해 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"미나"},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"미나"},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":1},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":99}
+    ]
+  },
+  {
+    "request": "플레이할 캐릭터 태오를 등록해 주세요. 시작 레벨은 세 번째 단계로요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"태오","initialLevel":3},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"태오"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":3},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":99}
+    ]
+  },
+  {
+    "request": "하린이란이름으로 주인공 하나 추가",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"하린"},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"하린"},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":1},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":99}
+    ]
+  },
+  {
+    "request": "별명이 바람인 떠돌이 루아를 새 파티원 후보로 만들어 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"루아","nickname":"바람"},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"루아"},
+      {"at":"database.actors[id=actor_small_task_1].nickname","equals":"바람"},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":1},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":99}
+    ]
+  },
+  {
+    "request": "동료 해준, 처음은 다섯 렙이고 최대는 스무 렙.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"해준","initialLevel":5,"maxLevel":20},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"해준"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":5},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":20},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"}
+    ]
+  },
+  {
+    "request": "전직 같은 거 없이 기본 직업으로 수아라는 새 주인공을 하나 만들어 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"수아"},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"수아"},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":1},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":99}
+    ]
+  },
+  {
+    "request": "신규 아군 솔 등록, 최고렙 30",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"솔","maxLevel":30},
+    "expect": [
+      {"at":"database.actors[id=actor_small_task_1].name","equals":"솔"},
+      {"at":"database.actors[id=actor_small_task_1].maxLevel","equals":30},
+      {"at":"database.actors[id=actor_small_task_1].classId","equals":"class_hero"},
+      {"at":"database.actors[id=actor_small_task_1].initialLevel","equals":1}
+    ]
+  },
+  {
+    "request": "있는 자료집에 없는 달빛학자 직업으로 누리라는 동료 만들어",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"누리","classId":"class_missing"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 주인공 시작렙 삼으로 해줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"initialLevel":3},
+    "expect": [
+      {"at":"database.actors[id=actor_hero].initialLevel","equals":3}
+    ]
+  },
+  {
+    "request": "선택한 캐릭터 이름을 연화로 바꿔 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"name":"연화"},
+    "expect": [
+      {"at":"database.actors[id=actor_hero].name","equals":"연화"}
+    ]
+  },
+  {
+    "request": "호칭 부분만 ‘길잡이’로 바꿔줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"nickname":"길잡이"},
+    "expect": [
+      {"at":"database.actors[id=actor_hero].nickname","equals":"길잡이"}
+    ]
+  },
+  {
+    "request": "성장 한도를 스물다섯으로 낮춰 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"maxLevel":25},
+    "expect": [
+      {"at":"database.actors[id=actor_hero].maxLevel","equals":25}
+    ]
+  },
+  {
+    "request": "이 친구 처음 레벨은 일곱, 만렙은 마흔으로 조정해.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"initialLevel":7,"maxLevel":40},
+    "expect": [
+      {"at":"database.actors[id=actor_hero].initialLevel","equals":7},
+      {"at":"database.actors[id=actor_hero].maxLevel","equals":40}
+    ]
+  },
+  {
+    "request": "주잉공 본명 하루, 별명 새벽으로 수정 부탁해요",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"name":"하루","nickname":"새벽"},
+    "expect": [
+      {"at":"database.actors[id=actor_hero].name","equals":"하루"},
+      {"at":"database.actors[id=actor_hero].nickname","equals":"새벽"}
+    ]
+  },
+  {
+    "request": "시작은 열인데 최고 레벨은 다섯으로 고쳐 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"initialLevel":10,"maxLevel":5},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 고른 직업 화면에서 주인공 이름을 은솔로 바꿔 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.actors.update",
+    "args": {"name":"은솔"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 예비 동료는 지워줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_valkyrie"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expect": [
+      {"at":"database.actors","count":135}
+    ]
+  },
+  {
+    "request": "지금 고른 주인공 항목만 자료집에서 삭제해 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_valkyrie"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expect": [
+      {"at":"database.actors","count":135}
+    ]
+  },
+  {
+    "request": "안 쓰는 아군 레코드 이거 하나 빼",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_valkyrie"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expect": [
+      {"at":"database.actors","count":135}
+    ]
+  },
+  {
+    "request": "이 캐릭터는 기획에서 빠졌어요. 자료집에서도 없애 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_valkyrie"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expect": [
+      {"at":"database.actors","count":135}
+    ]
+  },
+  {
+    "request": "선택한 주잉공 삭재",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_valkyrie"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expect": [
+      {"at":"database.actors","count":135}
+    ]
+  },
+  {
+    "request": "목록에 남은 이 조연을 지워 주시면 돼요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_valkyrie"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expect": [
+      {"at":"database.actors","count":135}
+    ]
+  },
+  {
+    "request": "첫 파티에서 쓰고 있더라도 이 주인공 목록에서 지워",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "직업을 선택해 둔 상태에서 주인공을 하나 지워 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.actors.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "직업 별술사 하나 만들어 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"별술사"},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"별술사"}
+    ]
+  },
+  {
+    "request": "새 직업을 등록해 주세요. 이름은 수호기사입니다.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"수호기사"},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"수호기사"}
+    ]
+  },
+  {
+    "request": "연금장이 직업추가",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"연금장이"},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"연금장이"}
+    ]
+  },
+  {
+    "request": "탐험대에 쓸 ‘지도공’이라는 클래스를 새로 만들어 줘.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"지도공"},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"지도공"}
+    ]
+  },
+  {
+    "request": "사막 안내인 직업을 넣고 구십구 레벨 체력을 칠천으로 잡아 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"사막 안내인","maxHpAtLevel99":7000},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"사막 안내인"},
+      {"at":"database.classes[id=class_small_task_1].parameterCurves.maxHp[98]","equals":7000}
+    ]
+  },
+  {
+    "request": "일단 이름만 물결치유사로 두고 새 직업 만들어",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"물결치유사"},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"물결치유사"}
+    ]
+  },
+  {
+    "request": "직업 자료집에 겨울 궁수를 추가하고 마지막 레벨 최대 체력은 육천이백으로 해 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"겨울 궁수","maxHpAtLevel99":6200},
+    "expect": [
+      {"at":"database.classes[id=class_small_task_1].name","equals":"겨울 궁수"},
+      {"at":"database.classes[id=class_small_task_1].parameterCurves.maxHp[98]","equals":6200}
+    ]
+  },
+  {
+    "request": "이름은 공백만 넣어서 직업 하나 만들어 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.create",
+    "args": {"name":"   "},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 전사 직업의 99레벨 체력을 육천팔백으로 높여",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"maxHpAtLevel99":6800},
+    "expect": [
+      {"at":"database.classes[id=class_hero].parameterCurves.maxHp[98]","equals":6800}
+    ]
+  },
+  {
+    "request": "이 직업 이름을 성문지기로 바꿔 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"name":"성문지기"},
+    "expect": [
+      {"at":"database.classes[id=class_hero].name","equals":"성문지기"}
+    ]
+  },
+  {
+    "request": "이클래스 이름 달빛전사로 수정",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"name":"달빛전사"},
+    "expect": [
+      {"at":"database.classes[id=class_hero].name","equals":"달빛전사"}
+    ]
+  },
+  {
+    "request": "처음 체력은 그대로 두고 이 직업의 만렙 체력을 오천으로 맞춰 줘.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"maxHpAtLevel99":5000},
+    "expect": [
+      {"at":"database.classes[id=class_hero].parameterCurves.maxHp[98]","equals":5000}
+    ]
+  },
+  {
+    "request": "직업 이름을 장창병으로 하고 99레벨의 최대 체력은 7200으로 해 주세요.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"name":"장창병","maxHpAtLevel99":7200},
+    "expect": [
+      {"at":"database.classes[id=class_hero].name","equals":"장창병"},
+      {"at":"database.classes[id=class_hero].parameterCurves.maxHp[98]","equals":7200}
+    ]
+  },
+  {
+    "request": "끝렙 체력만 구천구백구십구 맞춰줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"maxHpAtLevel99":9999},
+    "expect": [
+      {"at":"database.classes[id=class_hero].parameterCurves.maxHp[98]","equals":9999}
+    ]
+  },
+  {
+    "request": "만렙 체력이 영이 되게 수정해",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"maxHpAtLevel99":0},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 직업의 99레벨 최대 체력을 1로 바꿔 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.update",
+    "args": {"maxHpAtLevel99":1},
+    "expectRefusal": true
+  },
+  {
+    "request": "주인공을 선택해 놨는데 직업 이름을 야경꾼으로 바꿔 줘",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.classes.update",
+    "args": {"name":"야경꾼"},
+    "expectRefusal": true
+  },
+  {
+    "request": "지금 주인공의 직업을 자료집에서 지워 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "장비가 아직 참조하는 이 직업, 그냥 삭제해 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 클래쓰 당장 없애 줘. 배정된 캐릭터는 그대로 두고.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "사용처 남아 있어도 직업 목록에서 이거 빼 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택 직업 삭재, 주인공은 손대지마",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "아직 이 직업으로 시작하는 파티가 있어도 선택한 항목을 없애 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "주인공 화면에서 직업 레코드를 지워 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.classes.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 직업이랑 연결된 장비 목록도 전부 걷어 내며 삭제해 줘.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.classes.delete",
+    "args": {"clearReferences":true},
+    "expectRefusal": true
+  },
+  {
+    "request": "새 외형으로 겨울 교복 추가 부탁해요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"겨울 교복"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"겨울 교복"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":""}
+    ]
+  },
+  {
+    "request": "외형 하나만 새로 만들자. 이름은 축제복.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"축제복"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"축제복"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":""}
+    ]
+  },
+  {
+    "request": "캐릭터외형 새항목 잠옷",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"잠옷"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"잠옷"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":""}
+    ]
+  },
+  {
+    "request": "빗길 복장이라는 외형을 등록하고 설명에 파란 우비라고 적어 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"빗길 복장","description":"파란 우비"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"빗길 복장"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":"파란 우비"}
+    ]
+  },
+  {
+    "request": "기본 첫 번째 걷기 시트의 셋째 칸으로 여행자 외형 추가해 줘.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"여행자","charsetResourceId":"easyrpg-charset-actor1","characterIndex":2},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"여행자"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].charset.resourceId","equals":"easyrpg-charset-actor1"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].charset.characterIndex","equals":2},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":""}
+    ]
+  },
+  {
+    "request": "그림은 나중에 넣을 테니 ‘분장복’ 외형 이름만 등록해 둬.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"분장복"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"분장복"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":""}
+    ]
+  },
+  {
+    "request": "기본 첫 번째 얼굴 묶음의 네 번째 얼굴을 연결해서 교대복을 만들어 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"교대복","faceResourceId":"easyrpg-faceset-actor1-03"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_small_task_1].name","equals":"교대복"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].face.resourceId","equals":"easyrpg-faceset-actor1-03"},
+      {"at":"database.characterAppearances[id=appearance_small_task_1].description","equals":""}
+    ]
+  },
+  {
+    "request": "아직 등록 안 한 걷기 그림을 연결해서 등산복 외형을 추가해 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.create",
+    "args": {"name":"등산복","charsetResourceId":"missing_charset"},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 캐릭터 외형 이름만 ‘눈길 외투’로 바꿔",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"name":"눈길 외투"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa].name","equals":"눈길 외투"}
+    ]
+  },
+  {
+    "request": "선택한 외형 설명을 ‘털이 달린 후드’로 바꾸어 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"description":"털이 달린 후드"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa].description","equals":"털이 달린 후드"}
+    ]
+  },
+  {
+    "request": "걷기시트는 그대로 두고 네번째칸으로 바꿔줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"characterIndex":3},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa].charset.characterIndex","equals":3}
+    ]
+  },
+  {
+    "request": "이 외형의 설명란을 비워 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"description":""},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa].description","equals":""}
+    ]
+  },
+  {
+    "request": "지금 연결된 걷기 그림은 떼 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"charsetResourceId":null},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa]","equals":{"id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa","name":"떠돌이 상인","description":"middle-aged adult (not a child or teenager), merchant with a coin purse and a vest, friendly shopkeeper look. Name: 떠돌이 상인."}}
+    ]
+  },
+  {
+    "request": "선택 외형 이름 눈사람, 설명은 눈 축제용으로 수정 부탁해",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"name":"눈사람","description":"눈 축제용"},
+    "expect": [
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa].name","equals":"눈사람"},
+      {"at":"database.characterAppearances[id=appearance_01dfcdaa-304a-4329-be68-79018653c6aa].description","equals":"눈 축제용"}
+    ]
+  },
+  {
+    "request": "걷기 그림을 연결 해제하고 거기서 다섯째 칸을 골라 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"charsetResourceId":null,"characterIndex":4},
+    "expectRefusal": true
+  },
+  {
+    "request": "직업 자료집을 열어 뒀는데 외형 이름을 방한복으로 바꿔 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"name":"방한복"},
+    "expectRefusal": true
+  },
+  {
+    "request": "맵에서 쓰는 외형이지만 목록에서 지워줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_9cedb825-7bf3-412e-8113-fd616c9410b8"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "대사에서 쓰는 이 얼굴 설정을 외형 자료집에서 삭제해 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "상인이 사용중인 외형없애기",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_9cedb825-7bf3-412e-8113-fd616c9410b8"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 외형은 이벤트에서 아직 골라져 있어요. 자료집 쪽 항목만 삭제해 주세요.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "맵 캐릭터가 쓰는 거 알아. 선택 외형 한 건만 삭제",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_9cedb825-7bf3-412e-8113-fd616c9410b8"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "이벤트는 그대로 두고 이 캐릭터 겉모습 설정만 없애 줘.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "직업 항목을 골라 놨는데 캐릭터 외형 하나 지워 줘",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"classes","id":"class_hero"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {},
+    "expectRefusal": true
+  },
+  {
+    "request": "걸려 있는 이벤트 연결도 같이 지우면서 외형 없애 줘.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.delete",
+    "args": {"clearReferences":true},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 주인공을 등록할 때 이름은 공백으로만 채워 줘.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.create",
+    "args": {"name":"   "},
+    "expectRefusal": true
+  },
+  {
+    "request": "이 주인공의 최고 레벨을 100으로 설정해 줘.",
+    "fixture": "blank",
+    "target": {"kind":"dbEntry","collection":"actors","id":"actor_hero"},
+    "primitive": "db.actors.update",
+    "args": {"maxLevel":100},
+    "expectRefusal": true
+  },
+  {
+    "request": "선택한 외형의 걷기 그림에서 아홉 번째 칸을 써 줘.",
+    "fixture": "built",
+    "target": {"kind":"dbEntry","collection":"characterAppearances","id":"appearance_01dfcdaa-304a-4329-be68-79018653c6aa"},
+    "primitive": "db.characterAppearances.update",
+    "args": {"characterIndex":8},
+    "expectRefusal": true
+  }
+]

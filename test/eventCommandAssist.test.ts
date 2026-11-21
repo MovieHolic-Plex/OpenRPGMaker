@@ -47,6 +47,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, Project } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import { parseAudioPrompt } from "./support/audioPrompt";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CONFIG: AiConfig = {
   authMode: "apiKey",
@@ -330,7 +331,7 @@ describe("parseAndValidate", () => {
   });
 
   it("isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다", () => {
-    const project = testProject();
+    const project = startOnRetiredCombinedTown(testProject(), { interiorHarness: false });
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(306);
     map.upperTiles.fill(-1);
@@ -582,11 +583,11 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     readonly eventId: string;
   };
 
-  function renderPanel(apiKey = "sk-test", page: EventPage = testPage()): Harness {
-    return renderPanelFor("event-1", apiKey, page);
+  function renderPanel(apiKey = "sk-test", page: EventPage = testPage(), beforeReplace?: () => void): Harness {
+    return renderPanelFor("event-1", apiKey, page, beforeReplace);
   }
 
-  function renderPanelFor(eventId: string, apiKey = "sk-test", page: EventPage = testPage()): Harness {
+  function renderPanelFor(eventId: string, apiKey = "sk-test", page: EventPage = testPage(), beforeReplace?: () => void): Harness {
     const cmdList = new FakeElement("div") as unknown as HTMLElement;
     const stagedHost = new FakeElement("div");
     const commandCount = new FakeElement("span");
@@ -612,7 +613,10 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
       cmdList,
       stagedHost: stagedHost as unknown as HTMLElement,
       refreshListVisibility: refreshCommandCount,
-      replaceAll: (commands) => void replaced.push(structuredClone(commands) as Command[]),
+      replaceAll: (commands) => {
+        beforeReplace?.();
+        replaced.push(structuredClone(commands) as Command[]);
+      },
       loadConfig: () => ({ ...CONFIG, apiKey }),
     }) as unknown as FakeElement;
     return { panel, stagedHost, commandCount, replaced, page, eventId };
@@ -702,6 +706,29 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(harness.panel.textContent).toContain("↶ 되돌리기 한 번");
   });
 
+  it("keeps the reviewed draft and its exclusions when replacing the command list throws", async () => {
+    const commands: Command[] = [{ kind: "text", body: "첫 대사" }, { kind: "text", body: "두 번째 대사" }];
+    mockFetchSequence(JSON.stringify(commands));
+    const beforeReplace = vi.fn().mockImplementationOnce(() => { throw new Error("목록 교체 실패"); });
+    const harness = renderPanel("sk-test", testPage(), beforeReplace);
+    const mapId = store.getCurrent().startMapId;
+    await generate(harness, "대사 두 줄을 만들어 줘");
+    const firstAdd = findByTestId(harness.stagedHost, "ai-event-staged-row-add")!;
+    findByTestId(firstAdd, `ai-event-staged-toggle-${firstAdd.dataset.stagedId}`)!.click();
+
+    const apply = findByTestId(harness.panel, "ai-event-apply")!;
+    apply.click();
+
+    expect(harness.replaced).toEqual([]);
+    expect(eventAiStagedCommands(mapId, harness.eventId, harness.page.id)).toEqual([commands[1]]);
+    expect(findByTestId(harness.panel, "ai-event-status")!.textContent).toContain("목록 교체 실패");
+    expect(apply.disabled).toBe(false);
+
+    apply.click();
+    expect(harness.replaced).toEqual([[commands[1]]]);
+    expect(hasEventAiStagedDraft(mapId, harness.eventId, harness.page.id)).toBe(false);
+  });
+
   it("기존 명령이 있는 페이지에서 «고쳐 달라»고 하면 덧붙이지 않고 바뀜으로 표시한다", async () => {
     // 모델이 최종 목록을 돌려준다: 대사 문구만 달라졌다.
     mockFetchSequence(JSON.stringify([{ kind: "text", body: "낡은 상자다" }]));
@@ -733,7 +760,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     toggle.click();
 
     // 전부 뺐으므로 적용할 것이 없다.
-    expect(findByTestId(harness.panel, "ai-event-result-meta")!.textContent).toContain("모두 뺐어요");
+    expect(findByTestId(harness.panel, "ai-event-result-meta")!.textContent).toContain("적용할 변경이 없어요");
     expect((findByTestId(harness.panel, "ai-event-apply") as unknown as HTMLButtonElement).disabled).toBe(true);
   });
 

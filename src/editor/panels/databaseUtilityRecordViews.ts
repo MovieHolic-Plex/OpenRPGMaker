@@ -32,6 +32,7 @@ import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDia
 import { battleBackdropPreviewUrl, battleSceneryField, customPickerResourceId } from "@/editor/panels/battleSceneryPicker";
 import { battleMethodOf } from "@/project/battleMethod";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 export { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import {
   isBattleCommandKind,
@@ -180,18 +181,20 @@ function terrainDetailPane(
       testid: "db-terrain-inspector",
     });
   }
+  const hero = detailHero({
+    eyebrow: "지형 효과",
+    title: selected.name,
+    subtitle: `태그 ${selectedIndex + 1} · ${selected.id}`,
+    tags: [
+      `조우율 ${selected.encounterRatePercent}%`,
+      selected.damage > 0 ? `걸을 때 ${selected.damage} 피해` : "걸을 때 피해 없음",
+      selected.characterDisplay === "transparent" ? "캐릭터 투명" : "캐릭터 일반",
+    ],
+    testid: "db-terrain-hero",
+  });
+  hero.append(recordSmallTask("terrains", selected.id));
   return detailPane({
-    hero: detailHero({
-      eyebrow: "지형 효과",
-      title: selected.name,
-      subtitle: `태그 ${selectedIndex + 1} · ${selected.id}`,
-      tags: [
-        `조우율 ${selected.encounterRatePercent}%`,
-        selected.damage > 0 ? `걸을 때 ${selected.damage} 피해` : "걸을 때 피해 없음",
-        selected.characterDisplay === "transparent" ? "캐릭터 투명" : "캐릭터 일반",
-      ],
-      testid: "db-terrain-hero",
-    }),
+    hero,
     body: [
       terrainPreviewStage(selected),
       statStrip([
@@ -584,6 +587,7 @@ function battleCommandCard(
           el("div", {
             class: "db-cmd-card-actions",
             children: [
+              recordSmallTask("battleCommands", command.id),
               commandActionButton("↑", `db-battle-command-up-${index}`, "한 칸 위로", index === 0, () => moveBattleCommand(index, -1, rerender)),
               commandActionButton("↓", `db-battle-command-down-${index}`, "한 칸 아래로", index === total - 1, () => moveBattleCommand(index, 1, rerender)),
               commandActionButton("복제", `db-battle-command-duplicate-${index}`, "이 명령을 복제", false, () => duplicateBattleCommand(index, rerender)),

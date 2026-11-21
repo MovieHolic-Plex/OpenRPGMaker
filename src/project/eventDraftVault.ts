@@ -1,8 +1,10 @@
+import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { eventDraftHasUserChanges, eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 import { shareUploadedAssets, withoutSharedDictionaries } from "@/project/projectClone";
+import { randomUuid } from "@/util/id";
 
 /**
  * 스토어가 적용마다 만드는 복제. 이 파일은 맵의 이벤트만 고치므로 타일셋은 복제하지 않고 같은 객체를
@@ -59,6 +61,12 @@ export function hasEventDraftVaultEntries(): boolean { return vault.size > 0; }
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 let persistTimerProjectId: string | null = null;
 const PERSIST_DELAY_MS = 250;
+const SESSION_ID_KEY = "oprn:event-draft-session";
+/** Blank/fresh 탭의 맵 이벤트 전체. 붙여넣기는 draft 가 없어서 초안 금고만으로는 새로고침을 못 견딘다. */
+let sessionEventsJson: string | null = null;
+/** 타일 칠하기는 이벤트 배열 정체성을 유지한다. 같으면 명령 트리를 다시 직렬화하지 않는다. */
+let sessionEventIdentity: readonly (readonly [string, readonly GameEvent[]])[] | null = null;
+let memorySessionId: string | null = null;
 
 export function eventDraftVaultKey(mapId: MapId, eventId: string): string {
   return `${mapId}::${eventId}`;
@@ -66,6 +74,8 @@ export function eventDraftVaultKey(mapId: MapId, eventId: string): string {
 
 export function clearEventDraftVault(): void {
   clearVaultEntries();
+  sessionEventsJson = null;
+  sessionEventIdentity = null;
   scheduleEventDraftVaultPersist();
 }
 
@@ -120,6 +130,7 @@ export function syncEventDraftVaultFromProject(project: Project): void {
   }
   // Do not drop vault entries that are only temporarily missing from project —
   // reapply path restores them. Explicit forget/clear handles intentional discard.
+  if (captureSessionEvents(project)) changed = true;
   if (changed) scheduleEventDraftVaultPersist();
 }
 
@@ -296,14 +307,18 @@ export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): 
   const localStorage = browserLocalStorage();
   if (!localStorage) return false;
   const key = eventDraftVaultStorageKey(projectId);
+  const includeSession = projectId.startsWith("session:") && sessionEventsJson !== null;
   try {
-    if (vault.size === 0) {
+    if (vault.size === 0 && !includeSession) {
       serializedVaultEntries = "";
       serializedRevision = vaultRevision;
       localStorage.removeItem(key);
       return true;
     }
-    if (serializedRevision !== vaultRevision) {
+    if (vault.size === 0) {
+      serializedVaultEntries = "";
+      serializedRevision = vaultRevision;
+    } else if (serializedRevision !== vaultRevision) {
       serializedVaultEntries = [...vault.values()].map(entry => {
         let text = serializedEntries.get(entry);
         if (text === undefined) { text = JSON.stringify(entry); serializedEntries.set(entry, text); }
@@ -313,7 +328,8 @@ export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): 
     }
     // Entries are privately owned immutable copies. Public reads still clone;
     // persistence can reuse their JSON without cloning all command trees again.
-    localStorage.setItem(key, `{"version":1,"savedAt":${Date.now()},"entries":[${serializedVaultEntries}]}`);
+    const sessionPart = includeSession ? `,"sessionEvents":${sessionEventsJson}` : "";
+    localStorage.setItem(key, `{"version":1,"savedAt":${Date.now()},"entries":[${serializedVaultEntries}]${sessionPart}}`);
     return true;
   } catch (error) {
     console.warn("[eventDraftVault] localStorage persist failed:", error);
@@ -325,12 +341,23 @@ export function loadEventDraftVaultFromLocalStorage(projectId = resolveVaultProj
   const localStorage = browserLocalStorage();
   if (!localStorage) return 0;
   const raw = localStorage.getItem(eventDraftVaultStorageKey(projectId));
-  if (!raw) return 0;
+  if (!raw) {
+    if (projectId.startsWith("session:")) {
+      sessionEventsJson = null;
+      sessionEventIdentity = null;
+    }
+    return 0;
+  }
   try {
     const parsed = JSON.parse(raw) as {
       version?: number;
       entries?: Array<{ mapId?: string; event?: GameEvent; updatedAt?: number }>;
+      sessionEvents?: unknown;
     };
+    if (projectId.startsWith("session:")) {
+      sessionEventsJson = Array.isArray(parsed.sessionEvents) ? JSON.stringify(parsed.sessionEvents) : null;
+      sessionEventIdentity = null;
+    }
     if (!Array.isArray(parsed.entries)) return 0;
     let loaded = 0;
     for (const item of parsed.entries) {
@@ -379,6 +406,8 @@ function browserLocalStorage(): Storage | null {
 /** @internal */
 export function _resetEventDraftVaultForTest(): void {
   clearVaultEntries();
+  sessionEventsJson = null;
+  sessionEventIdentity = null;
   if (persistTimer) {
     clearTimeout(persistTimer);
     persistTimer = null;
@@ -386,6 +415,88 @@ export function _resetEventDraftVaultForTest(): void {
   }
 }
 
+function sessionScopedVault(): boolean {
+  return isSaveSkippedLocation();
+}
+
+function browserSessionStorage(): Storage | null {
+  try {
+    const storage = (globalThis as { sessionStorage?: Storage }).sessionStorage;
+    return storage ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function sessionVaultId(): string {
+  const storage = browserSessionStorage();
+  const existing = storage?.getItem(SESSION_ID_KEY);
+  if (existing) return existing;
+  if (!memorySessionId) memorySessionId = randomUuid();
+  try { storage?.setItem(SESSION_ID_KEY, memorySessionId); } catch { /* private mode */ }
+  return memorySessionId;
+}
+
 function resolveVaultProjectId(): string {
-  return projectRepository().currentTarget()?.projectId ?? "local";
+  const projectId = projectRepository().currentTarget()?.projectId;
+  if (projectId) return projectId;
+  // 임시 세션은 탭마다 다른 열쇠를 쓴다. 공유 `local` 열쇠의 옛 초안을 읽지 않는다.
+  if (sessionScopedVault()) return `session:${sessionVaultId()}`;
+  return "local";
+}
+
+function captureSessionEvents(project: Project): boolean {
+  if (!sessionScopedVault()) return false;
+  const identity = Object.entries(project.maps).map(([mapId, map]) => [mapId, map.events] as const);
+  if (sessionEventIdentity
+    && sessionEventIdentity.length === identity.length
+    && sessionEventIdentity.every((item, index) => item[0] === identity[index]![0] && item[1] === identity[index]![1])) {
+    return false;
+  }
+  const next = JSON.stringify(identity.map(([mapId, events]) => ({ mapId, events })));
+  sessionEventIdentity = identity;
+  if (next === sessionEventsJson) return false;
+  sessionEventsJson = next;
+  return true;
+}
+
+function recoverableSessionEvents(events: unknown): GameEvent[] | null {
+  if (!Array.isArray(events)) return null;
+  const recovered: GameEvent[] = [];
+  for (const event of events) {
+    if (!event || typeof event !== "object" || Array.isArray(event)) return null;
+    const record = event as { id?: unknown; commands?: unknown; pages?: unknown };
+    if (typeof record.id !== "string" || record.id.length === 0) return null;
+    if (record.commands !== undefined && !Array.isArray(record.commands)) return null;
+    if (record.pages !== undefined && !Array.isArray(record.pages)) return null;
+    recovered.push(structuredClone(event as GameEvent));
+  }
+  return recovered;
+}
+
+/**
+ * 임시 세션을 다시 열 때, 초안 금고를 적용한 뒤 맵 이벤트 목록을 그 탭의 스냅샷으로 바꾼다.
+ * 붙여넣은 이벤트는 draft 가 없어도 이 목록에 있다. 스냅샷이 없으면 프로젝트를 그대로 둔다.
+ */
+export function applySessionEvents(project: Project): Project {
+  if (!sessionEventsJson) return project;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(sessionEventsJson);
+  } catch {
+    return project;
+  }
+  if (!Array.isArray(parsed)) return project;
+  const next = cloneKeepingDigests(project);
+  let applied = false;
+  for (const item of parsed) {
+    if (!item || typeof item !== "object") continue;
+    const mapId = (item as { mapId?: unknown }).mapId;
+    const events = (item as { events?: unknown }).events;
+    const recovered = recoverableSessionEvents(events);
+    if (typeof mapId !== "string" || !next.maps[mapId] || !recovered) continue;
+    next.maps[mapId].events = recovered;
+    applied = true;
+  }
+  return applied ? next : project;
 }

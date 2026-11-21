@@ -7,7 +7,6 @@ import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
-import { partySkillContext } from "@/project/partySkills";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
 import { showRelationshipPulse } from "@/player/playSceneRelationshipPulse";
@@ -65,7 +64,7 @@ import { applyEventRelocationStep, placePlayerOnCurrentMap } from "@/player/play
 import { recoverPlayerFromTerrain } from "@/project/terrainLandingRecovery";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { recordSceneSafetyStop } from "@/player/playSceneSafetyStop";
-import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
+import { runtimeEventViewsForMap, runtimePageContext, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
   isCutsceneSkippable,
@@ -125,7 +124,7 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     .find((entry) => entry.event.id === eventId);
   if (!view) return;
   const event = view.event;
-  const page = view.page ?? resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
+  const page = view.page;
   if (!page && event.condition && !evalCondition(scene.session, event.condition, undefined, { map: scene.map })) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
@@ -209,7 +208,7 @@ async function runTalkPath(
   if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
   if (!isTalkFriendshipEnabled(event)) return;
-  const page = resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
+  const page = resolveEventPage(event, scene.session, runtimePageContext(store.getCurrent(), scene.map, scene.session, scene.eventPositions));
   const trigger = page?.trigger ?? event.trigger;
   if (trigger.kind !== "action") return;
   const result = trySocialTalk(scene.session, event, store.getCurrent());
@@ -451,7 +450,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
 }
 
 function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController): Promise<void> {
-  const duration = Number.isFinite(ms) ? Math.max(0, Math.round(ms)) : 0;
+  const duration = Number.isFinite(ms) ? Math.min(2 ** 31 - 1, Math.max(0, Math.round(ms))) : 0;
   if (duration === 0) return Promise.resolve();
   return Promise.race([
     new Promise<void>((resolve) => window.setTimeout(resolve, duration)),

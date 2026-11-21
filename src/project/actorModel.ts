@@ -134,7 +134,7 @@ export function createActorRecord(id: string, classId: ClassId, defaults: ActorR
   return normalizeActorRecord({
     id,
     name: "새 주인공",
-    nickname: "None",
+    nickname: "",
     classId,
     initialLevel: ACTOR_LEVEL_MIN,
     maxLevel: ACTOR_LEVEL_MAX,
@@ -158,7 +158,7 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     ...(normalizeCharacterMotion(actor.battleMotion) ? {battleMotion:normalizeCharacterMotion(actor.battleMotion)} : {}),
     ...(actor.appearanceId !== undefined ? { appearanceId: actor.appearanceId } : {}),
     name: actor.name,
-    nickname: actor.nickname ?? "None",
+    nickname: actor.nickname ?? "",
     classId: actor.classId,
     initialLevel,
     maxLevel,

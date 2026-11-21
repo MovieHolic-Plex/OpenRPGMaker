@@ -10,11 +10,11 @@ import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
 import { effectiveActorClassId } from "@/project/growth/lineage";
-import { baseBattleCommandIds } from "@/battle/battleCommands";
+import { baseBattleCommandIds, findBattleCommandRecord } from "@/battle/battleCommands";
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
-import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { fieldBoolean, fieldNumber, fieldString, optionalFieldNumber, optionalFieldString } from "./m2RuntimeFields";
 import { terrainTagAt } from "@/project/terrainAt";
 import { boardedVehicleId, isVehicleId, setParkedVehicleLocation } from "@/project/vehicles";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
@@ -84,7 +84,7 @@ function executeByTitle(
   }
   if (title === "Tint Screen") {
     // color 필드(색 이름)를 우선 사용하고, value(r,g,b / hex)가 있으면 그것을 사용.
-    const explicit = fieldString(fields, "value", "");
+    const explicit = optionalFieldString(fields, "value", "");
     runtime.screen.tint = explicit || fieldString(fields, "color", "neutral");
     // New commands use durationMs. Keep the old duration field readable for
     // imported projects, where small values were authored in seconds.
@@ -96,15 +96,15 @@ function executeByTitle(
     return;
   }
   if (title === "Flash Screen") {
-    runtime.screen.flash = fieldString(fields, "value", "flash");
+    runtime.screen.flash = optionalFieldString(fields, "value", "flash");
     return;
   }
   if (title === "Shake Screen") {
-    runtime.screen.shake = fieldNumber(fields, "value", 1);
+    runtime.screen.shake = optionalFieldNumber(fields, "value", 1);
     return;
   }
   if (title === "Set Weather Effects") {
-    const value = fieldString(fields, "value", "none");
+    const value = optionalFieldString(fields, "value", "none");
     runtime.screen.weather = fields.intensity === undefined ? value : weatherToRuntimeString(normalizeWeatherParams({
       kind: parseWeather(value).kind,
       intensity: fieldNumber(fields, "intensity", 0.5),
@@ -262,26 +262,29 @@ function executeByTitle(
     return;
   }
   if (title === "Change System BGM" || title === "Change System SE") {
-    const key = title === "Change System BGM" ? "system_bgm" : "system_se";
-    // Cue-less legacy commands remain metadata-only, including explicit empty resources.
+    const bgm = title === "Change System BGM";
     if (fields.cue !== undefined) {
       const cue = fields.cue;
+      if (typeof cue !== "string") return;
       const operation = fieldString(fields, "operation", "set");
       if (operation !== "set" && operation !== "reset") return;
+      if (operation === "reset") {
+        // Restoring a default also clears a legacy slot for the same cue.
+        if (clearSystemAudioCue(session, bgm, cue) && isSystemAudioSlot(cue)) {
+          delete runtime.system[systemAudioOverrideKey(cue)];
+        }
+        return;
+      }
       const volume = Math.min(100, Math.max(0, fieldNumber(fields, "volume", 100)));
       const value = { resourceId: commandResourceId(fields), volume };
-      if (title === "Change System BGM" && isSystemBgmCue(cue)) {
-        if (operation === "reset") delete session.systemAudioOverrides?.bgm?.[cue];
-        else (session.systemAudioOverrides ??= {}).bgm = { ...session.systemAudioOverrides?.bgm, [cue]: value };
-      } else if (title === "Change System SE" && isSystemSeCue(cue)) {
-        if (operation === "reset") delete session.systemAudioOverrides?.se?.[cue];
-        else (session.systemAudioOverrides ??= {}).se = { ...session.systemAudioOverrides?.se, [cue]: value };
+      if (bgm && isSystemBgmCue(cue)) {
+        (session.systemAudioOverrides ??= {}).bgm = { ...session.systemAudioOverrides?.bgm, [cue]: value };
+      } else if (!bgm && isSystemSeCue(cue)) {
+        (session.systemAudioOverrides ??= {}).se = { ...session.systemAudioOverrides?.se, [cue]: value };
       }
       return;
     }
-    // The slot picker's choice must reach mapBgm/battleAudio, which read runtime.system by slot key.
-    recordSystemAudioChange(runtime, title, fields);
-    if (fields.volume !== undefined) runtime.system[`${key}_volume`] = fieldNumber(fields, "volume", 100);
+    recordSystemAudioChange(session, runtime, bgm, fields);
     return;
   }
   if (title === "Change System Graphic") {
@@ -372,13 +375,28 @@ function toDurationMs(value: number): number {
   return value <= 60 ? Math.round(value * 1000) : Math.round(value);
 }
 
-// The picker writes resourceId; older commands may still carry value.
-function recordSystemAudioChange(runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
-  const bgm = title === "Change System BGM";
-  const resourceId = fieldString(fields, "resourceId", fieldString(fields, "value", ""));
+function clearSystemAudioCue(session: PlaySessionLike, bgm: boolean, cue: string): boolean {
+  if (bgm && isSystemBgmCue(cue)) {
+    delete session.systemAudioOverrides?.bgm?.[cue];
+    return true;
+  }
+  if (!bgm && isSystemSeCue(cue)) {
+    delete session.systemAudioOverrides?.se?.[cue];
+    return true;
+  }
+  return false;
+}
+
+function recordSystemAudioChange(session: PlaySessionLike, runtime: M2RuntimeState, bgm: boolean, fields: M2CommandFields): void {
+  const resourceId = commandResourceId(fields);
   const slot = fieldString(fields, "slot", bgm ? "battle" : "defeat");
-  runtime.system[bgm ? "system_bgm" : "system_se"] = resourceId;
-  if (isSystemAudioSlot(slot)) runtime.system[systemAudioOverrideKey(slot)] = resourceId;
+  const key = bgm ? "system_bgm" : "system_se";
+  runtime.system[key] = resourceId;
+  if (fields.volume !== undefined) runtime.system[`${key}_volume`] = fieldNumber(fields, "volume", 100);
+  if (isSystemAudioSlot(slot)) {
+    runtime.system[systemAudioOverrideKey(slot)] = resourceId;
+    if (!resourceId.trim()) clearSystemAudioCue(session, bgm, slot);
+  }
 }
 
 const MEMORIZED_BGM_FADE_LIMIT_MS = 60_000;
@@ -501,20 +519,29 @@ function mutateActorState(
       .split(",")
       .map((entry) => entry.trim())
       .filter(Boolean);
+    const requested = operation === "set" && slots.length > 0 ? slots : commandId ? [commandId] : [];
+    const project = context.project;
     actor.battleCommands = commandId;
     session.actorBattleCommands ??= {};
     for (const targetActorId of resolveActorTargets(session, actorId)) {
-      // 아직 바꾼 적 없는 배우는 지금 메뉴(배우 고유 목록 > 직업 명령)에서 더하고 뺀다.
-      const current = session.actorBattleCommands[targetActorId]
-        ?? (context.project ? baseBattleCommandIds(context.project, targetActorId, effectiveActorClassId(context.project, session, targetActorId)) : []);
+      const classId = project && effectiveActorClassId(project, session, targetActorId);
+      const available = (id: string) => !project || findBattleCommandRecord(project, classId, id) !== undefined;
+      const override = session.actorBattleCommands[targetActorId];
+      const usableOverride = override?.filter(available);
+      // 전직 뒤에도 유효한 명령은 유지한다. 전부 이전 직업 명령이면 현재 메뉴에서 시작한다.
+      const current = usableOverride && (override?.length === 0 || usableOverride.length > 0)
+        ? usableOverride
+        : project ? baseBattleCommandIds(project, targetActorId, classId) : [];
       if (operation === "remove") {
-        session.actorBattleCommands[targetActorId] = current.filter((id) => id !== commandId);
+        if (current.includes(commandId)) {
+          session.actorBattleCommands[targetActorId] = current.filter(id => id !== commandId);
+        }
       } else if (operation === "set") {
-        session.actorBattleCommands[targetActorId] = slots.length > 0 ? slots : (commandId ? [commandId] : []);
-      } else if (commandId && !current.includes(commandId)) {
-        session.actorBattleCommands[targetActorId] = [...current, commandId];
-      } else {
-        session.actorBattleCommands[targetActorId] = current.length ? current : (commandId ? [commandId] : []);
+        const commands = requested.filter(available);
+        if (commands.length > 0) session.actorBattleCommands[targetActorId] = commands;
+        else if (requested.length === 0) delete session.actorBattleCommands[targetActorId];
+      } else if (commandId && available(commandId)) {
+        session.actorBattleCommands[targetActorId] = current.includes(commandId) ? current : [...current, commandId];
       }
     }
     return;
@@ -643,14 +670,17 @@ export function relocateM2Events(
   session: PlaySessionLike,
   title: "Set Event Location" | "Swap Event Location",
   fields: M2CommandFields,
-  context: { readonly project?: Project; readonly eventPositions?: RuntimeEventPositions }
+  context: { readonly currentEventId?: string; readonly project?: Project; readonly eventPositions?: RuntimeEventPositions }
 ): string[] {
   const runtime = ensureM2Runtime(session);
-  const eventA = fieldString(fields, title === "Set Event Location" || fields.eventA === undefined ? "target" : "eventA", "");
+  const resolve = (id: string) => id === "this-event" ? context.currentEventId ?? "" : id;
+  const eventA = resolve(fieldString(fields, title === "Set Event Location" || fields.eventA === undefined ? "target" : "eventA", ""));
   const eventB = title === "Swap Event Location"
-    ? fieldString(fields, fields.eventB !== undefined ? "eventB" : fields.value !== undefined ? "value" : "mapId", "") : "";
-  if (title === "Set Event Location") recordMapOrEventState(runtime, title, fields);
-  else runtime.events._swap = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
+    ? resolve(fieldString(fields, fields.eventB !== undefined ? "eventB" : fields.value !== undefined ? "value" : "mapId", "")) : "";
+  if (title === "Set Event Location") {
+    if (fields.target !== "this-event") recordMapOrEventState(runtime, title, fields);
+    else if (eventA) recordMapOrEventState(runtime, title, { ...fields, target: eventA });
+  } else runtime.events._swap = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
 
   const project = context.project;
   if (!project) return [];
@@ -694,7 +724,8 @@ function recordMapOrEventState(runtime: M2RuntimeState, title: string, fields: M
     mapId: fieldString(fields, "mapId", ""),
     x: fieldNumber(fields, "x", 0),
     y: fieldNumber(fields, "y", 0),
-    value: fieldString(fields, "value", ""),
+    // 위치 명령은 x·y 만 적는다. value 는 옛 기록용 칸이라 없어도 경고하지 않는다.
+    value: optionalFieldString(fields, "value", ""),
   };
   if (title.includes("Event")) {
     runtime.events[target] = { ...runtime.events[target], ...state };

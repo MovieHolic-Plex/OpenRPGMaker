@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
-test.setTimeout(90_000);
+test.setTimeout(150_000);
 
 async function settle(page: Page, ms = 700): Promise<void> {
   await page.waitForTimeout(ms);
@@ -15,7 +15,8 @@ async function settle(page: Page, ms = 700): Promise<void> {
 
 async function waitForCanvasReady(page: Page): Promise<void> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
-  await expect(canvas).toBeVisible();
+  // 빈 프로젝트 부팅 스플래시가 캔버스보다 오래 남는다. 5초는 그 화면에서 끊긴다.
+  await expect(canvas).toBeVisible({ timeout: 60_000 });
   await page.waitForFunction(() => {
     const c = document.querySelector("[data-testid='edit-canvas'] canvas") as HTMLCanvasElement | null;
     return !!c && c.width > 0 && c.height > 0;
@@ -23,35 +24,41 @@ async function waitForCanvasReady(page: Page): Promise<void> {
   await settle(page, 1200);
 }
 
-async function expandDetails(page: Page, testid: string): Promise<void> {
-  await page.evaluate((id) => {
-    const node = document.querySelector(`[data-testid='${id}']`);
-    if (node instanceof HTMLDetailsElement) node.open = true;
-  }, testid);
+async function openRail(page: Page, slug: string): Promise<void> {
+  const group = page.getByTestId(`evt-rail-group-${slug}`);
+  const open = await group.evaluate((node) => node.classList.contains("is-open"));
+  if (!open) {
+    await group.locator(".event-editor-settings-accordion-header").evaluate((node: HTMLElement) => {
+      node.scrollIntoView({ block: "center", inline: "nearest" });
+      node.click();
+    });
+  }
+  await expect(group).toHaveClass(/is-open/);
 }
 
-// 캔버스 더블클릭으로 이벤트 에디터를 연다. 빈 칸일 수 있으므로 여러 후보 좌표를 시도.
-async function openEventEditor(page: Page): Promise<boolean> {
-  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+// 이벤트 레이어에서 빈 칸을 더블클릭해야 편집기가 열린다. 바닥 레이어의 더블클릭은 타일을 칠 뿐이다.
+async function openEventEditor(page: Page): Promise<void> {
+  await page.getByTestId("layer-event").click();
+  const canvas = page.getByTestId("edit-canvas").locator("canvas").last();
   const box = await canvas.boundingBox();
-  if (!box) return false;
+  if (!box) throw new Error("missing edit canvas");
   const candidates = [
+    { x: 0.5, y: 0.5 },
     { x: 0.2, y: 0.45 },
     { x: 0.25, y: 0.75 },
     { x: 0.35, y: 0.72 },
     { x: 0.18, y: 0.62 },
-    { x: 0.5, y: 0.5 },
   ];
   for (const c of candidates) {
     await canvas.dblclick({ position: { x: Math.floor(box.width * c.x), y: Math.floor(box.height * c.y) } });
     try {
-      await page.getByTestId("event-page-tabs").waitFor({ state: "visible", timeout: 1200 });
-      return true;
+      await page.getByTestId("event-editor-modal").waitFor({ state: "visible", timeout: 4_000 });
+      return;
     } catch {
       /* try next */
     }
   }
-  return false;
+  throw new Error("event editor did not open");
 }
 
 test("capture event editor help images", async ({ page }) => {
@@ -59,58 +66,50 @@ test("capture event editor help images", async ({ page }) => {
   await page.goto("/?freshProject=1");
   await waitForCanvasReady(page);
 
-  const opened = await openEventEditor(page);
-  if (!opened) {
-    // 이벤트 에디터를 열지 못하면 스킵 — 캡처는 최선의 노력이다.
-    test.skip();
-    return;
-  }
+  await openEventEditor(page);
   await settle(page, 600);
+  const modal = page.getByTestId("event-editor-modal");
 
   // 1) 페이지 탭 + 페이지 속성 전체
+  await expect(modal.getByTestId("evt-page-segment-1")).toBeVisible();
   await page.screenshot({ path: "public/assets/help/event-editor/pages.png" });
 
-  // 2) 실행 조건 영역 — details 펼치기 후 스크롤
-  await expandDetails(page, "event-classic-conditions");
-  const pageProps = page.getByTestId("event-page-props");
-  if (await pageProps.isVisible().catch(() => false)) {
-    await pageProps.scrollIntoViewIfNeeded().catch(() => {});
-    await settle(page, 500);
-  }
+  // 2) 실행 조건 — 「언제 보이나요」는 레일 본문이 아니라 조건 창이다.
+  await openRail(page, "when");
+  const conditions = page.getByTestId("event-condition-modal");
+  await expect(conditions).toBeVisible();
+  await settle(page, 400);
   await page.screenshot({ path: "public/assets/help/event-editor/conditions.png" });
+  await page.getByTestId("event-condition-modal-done").click();
+  await expect(conditions).toBeHidden();
 
-  // 3) 명령 피커 — 빈 명령 줄 더블클릭으로 열기
-  const emptyLine = page.getByTestId("event-command-empty-line");
-  if (await emptyLine.isVisible().catch(() => false)) {
-    await emptyLine.dblclick().catch(() => {});
-    try {
-      await page.getByTestId("event-command-picker").waitFor({ state: "visible", timeout: 1500 });
-      await settle(page, 500);
-      await page.screenshot({ path: "public/assets/help/event-editor/commands.png" });
-    } catch {
-      /* picker did not open */
-    }
-    await page.keyboard.press("Escape");
-    await settle(page, 300);
-  }
+  // 3) 명령 피커 — 빈 줄 클릭 한 번. 두 번째는 방금 열린 피커를 닫는다.
+  const emptyLine = modal.getByTestId("event-command-empty-line");
+  await expect(emptyLine).toBeVisible();
+  await emptyLine.click();
+  const picker = page.getByTestId("event-command-picker");
+  await expect(picker).toBeVisible();
+  await settle(page, 400);
+  await page.screenshot({ path: "public/assets/help/event-editor/commands.png" });
+  await page.keyboard.press("Escape");
+  await expect(picker).toBeHidden();
 
-  // 4) 그래픽 선택기 — 페이지 속성의 그래픽 설정 버튼
-  const graphicSet = page.getByTestId("event-page-graphic-set");
-  if (await graphicSet.isVisible().catch(() => false)) {
-    await graphicSet.scrollIntoViewIfNeeded().catch(() => {});
-    await graphicSet.click().catch(() => {});
-    await settle(page, 600);
-    await page.screenshot({ path: "public/assets/help/event-editor/graphics.png" });
-    await page.keyboard.press("Escape");
-    await settle(page, 300);
-  }
+  // 4) 그래픽 선택기
+  await openRail(page, "look-talk");
+  await modal.getByTestId("event-page-graphic-set").click();
+  const graphic = page.getByTestId("event-graphic-dialog");
+  await expect(graphic).toBeVisible();
+  await settle(page, 400);
+  await page.screenshot({ path: "public/assets/help/event-editor/graphics.png" });
+  await page.keyboard.press("Escape");
+  await expect(graphic).toBeHidden();
 
-  // 5) 이동 경로 — details 펼치기 후 스크롤
-  await expandDetails(page, "event-classic-movement-section");
-  const movement = page.getByTestId("event-page-movement");
-  if (await movement.isVisible().catch(() => false)) {
-    await movement.scrollIntoViewIfNeeded().catch(() => {});
-    await settle(page, 500);
-    await page.screenshot({ path: "public/assets/help/event-editor/move-route.png" });
-  }
+  // 5) 이동 경로 편집기
+  await openRail(page, "move");
+  await modal.getByTestId("event-page-movement-type").selectOption("custom");
+  await modal.getByTestId("event-page-custom-route").click();
+  const route = page.getByTestId("event-page-move-route-dialog");
+  await expect(route).toBeVisible();
+  await settle(page, 400);
+  await page.screenshot({ path: "public/assets/help/event-editor/move-route.png" });
 });

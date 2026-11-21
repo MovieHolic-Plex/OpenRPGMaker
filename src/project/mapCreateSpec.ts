@@ -75,7 +75,49 @@ function firstTilesetId(project: Project): string {
 // 상한은 mapSizeLimits 한 곳에서만 선언한다 — 여기 숫자를 따로 적어 두면 생성 툴·lint 와
 // 어긋난다(OPRN-OUT-018). 이 함수는 빈칸/NaN 입력을 기본값으로 되돌리는 입력 정리용이고,
 // 상한 초과는 호출자가 명시적으로 거부한다(조용한 클램프는 왜 작아졌는지를 숨긴다).
+/** 새 맵·크기 적용이 받는 가장 작은 가로·세로. 이보다 작은 값은 만들지 않는다. */
+export const MIN_MAP_DIMENSION = 4;
+
 export function clampMapSize(value: number, fallback: number): number {
   if (!Number.isFinite(value)) return fallback;
-  return Math.max(4, Math.min(MAX_TOOL_MAP_DIMENSION, Math.floor(value)));
+  return Math.max(MIN_MAP_DIMENSION, Math.min(MAX_TOOL_MAP_DIMENSION, Math.floor(value)));
+}
+
+export type MapDimensionIssue =
+  | { readonly kind: "empty" }
+  | { readonly kind: "not-integer"; readonly raw: string }
+  | { readonly kind: "too-small"; readonly value: number }
+  | { readonly kind: "too-big"; readonly value: number };
+
+export type MapCreateIssues = {
+  readonly nameBlank: boolean;
+  readonly width: MapDimensionIssue | null;
+  readonly height: MapDimensionIssue | null;
+};
+
+/** 대화창에 적힌 가로·세로 원문. 범위 안 정수만 통과하고, 그 밖은 이유와 함께 돌려준다. */
+export function inspectMapDimension(raw: string): MapDimensionIssue | null {
+  const text = raw.trim();
+  if (text === "") return { kind: "empty" };
+  const value = Number(text);
+  if (!Number.isFinite(value) || !Number.isInteger(value)) return { kind: "not-integer", raw: text };
+  if (value < MIN_MAP_DIMENSION) return { kind: "too-small", value };
+  if (value > MAX_TOOL_MAP_DIMENSION) return { kind: "too-big", value };
+  return null;
+}
+
+export function inspectMapCreateInput(input: {
+  readonly name: string;
+  readonly width: string;
+  readonly height: string;
+}): MapCreateIssues {
+  return {
+    nameBlank: input.name.trim() === "",
+    width: inspectMapDimension(input.width),
+    height: inspectMapDimension(input.height),
+  };
+}
+
+export function mapCreateInputOk(issues: MapCreateIssues): boolean {
+  return !issues.nameBlank && issues.width === null && issues.height === null;
 }

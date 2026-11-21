@@ -42,6 +42,7 @@ import { projectWireView } from "./io/serialize";
 import { forgetBundledTilesetDiffViews, primeBundledTilesetDiffViews } from "./bundledTilesetDiff";
 import {
   applyEventDraftVault,
+  applySessionEvents,
   clearEventDraftVault,
   loadEventDraftVaultFromLocalStorage,
   persistEventDraftVaultNow,
@@ -455,6 +456,8 @@ class ProjectStore {
     // Canonical targets keep it for the authority-owned flush path.
     if (this.dirtySinceLastPersist) this.scheduleAutoSave();
     else if (this.writeAuthority?.mode !== "canonical") this.dirtySinceLastPersist = false;
+    // blank/fresh 는 아직 한 글자도 안 고쳤어도 저장된 적이 없다. idle 을 「저장됨」으로 그리지 않는다.
+    if (!this.dirtySinceLastPersist && this.tabOnlySession()) this.setAutoSaveState(nonPersistentSessionAutoSaveState());
     this.emit({ scope: "project" });
     return this.current;
   }
@@ -1423,6 +1426,12 @@ class ProjectStore {
       return { kind: "not-configured" };
     }
     // Clean flush: skip network/serialize when nothing changed since last successful persist.
+    // 이 탭만의 세션은 깨끗해도 저장본이 없다. 「저장됨」으로 바꾸거나 written 을 생략하지 않는다.
+    if (!this.dirtySinceLastPersist && this.tabOnlySession()) {
+      const state = this.autoSaveState;
+      if (state.kind !== "error" || state.code !== "session-not-persisted") this.setAutoSaveState(nonPersistentSessionAutoSaveState());
+      return { kind: "saved-local", written: false };
+    }
     if (!this.dirtySinceLastPersist && this.autoSaveState.kind !== "error") {
       if (this.remotePersistenceEnabled) {
         const receipt = this.lastPersistenceReceipt;
@@ -1562,6 +1571,11 @@ class ProjectStore {
     if (state.kind === "saved") this.lastSavedAt = state.at;
     this.autoSaveState = state;
     this.emitAutoSave();
+  }
+
+  /** `?blankProject=1` / `?freshProject=1` — 이 탭을 닫으면 사라지는 세션. `?devProject=1` 은 브라우저에 남는다. */
+  private tabOnlySession(): boolean {
+    return this.remotePersistenceDisabledReason === "dev-showcase" && !canSaveDevProjectOverride();
   }
 
   private scheduleAutoSave(republishPending = true): void {
@@ -1720,13 +1734,7 @@ class ProjectStore {
         }
         if (target && !sameProjectTarget(target, this.repository.currentTarget())) return result;
         if (this.contentLineage === lineage) {
-          this.setAutoSaveState(autoSaveStateForFlushResult(
-            result,
-            this.remotePersistenceDisabledReason === "dev-showcase"
-              && !canSaveDevProjectOverride()
-              && this.dirtySinceLastPersist,
-            lastSavedAt,
-          ));
+          this.setAutoSaveState(autoSaveStateForFlushResult(result, this.tabOnlySession(), lastSavedAt));
           this.autoSaveRetryCount = 0;
           this.stopHealthCheck();
         }
@@ -1939,7 +1947,8 @@ class ProjectStore {
     clearCopiedEventPage();
     if (options.restoreVault && canWriteTeamProject()) {
       loadEventDraftVaultFromLocalStorage();
-      this.current = applyEventDraftVault(project);
+      // 세션 스냅샷이 초안 금고보다 뒤다. 붙여넣기는 초안이 아니라서, 옛 초안이 목록을 이기면 안 된다.
+      this.current = applySessionEvents(applyEventDraftVault(project));
     } else {
       this.current = project;
     }
@@ -2190,7 +2199,7 @@ function nonPersistentSessionAutoSaveState(): AutoSaveState {
   return {
     kind: "error",
     code: "session-not-persisted",
-    message: "이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요.",
+    message: "이 탭에만 있어요. 저장되지 않습니다.",
   };
 }
 

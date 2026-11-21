@@ -1,5 +1,6 @@
 // Phaser 텍스처용 타일셋 베이크(투명색 + 타일 이식 합성).
 // 에디터와 export 플레이어가 동일한 tilesetImage.ts 의 ensureTilesetTexture 를 공유한다.
+import { rememberedChipsetImage } from "@/assets/chipsetTextureBands";
 import {
   createTransparentColorKeyCanvas,
   isColorKeyedChipsetTextureKey,
@@ -43,13 +44,13 @@ export function bakeTilesetTextureCanvas(
 // 없으면 이미 처리된 텍스처(색상키 타일 그림판 포함)를 그대로 쓴다.
 function resolveBakeBase(scene: Phaser.Scene, tileset: TilesetDef, baseKey: string): BakeSource | null {
   if (normalizeRgbHexColor(tileset.transparentColor ?? "")) {
-    const source = sceneSourceImage(scene, preferRawTextureKey(scene, baseKey));
+    const source = fullSheetImage(scene, preferRawTextureKey(scene, baseKey));
     if (!source) return null;
     return createTransparentColorKeyCanvas(tileset, source);
   }
-  const processed = sceneSourceImage(scene, baseKey);
+  const processed = fullSheetImage(scene, baseKey);
   if (processed) return processed;
-  const raw = sceneSourceImage(scene, rawChipsetTextureKey(baseKey));
+  const raw = fullSheetImage(scene, rawChipsetTextureKey(baseKey));
   if (!raw) return null;
   if (isColorKeyedChipsetTextureKey(baseKey)) {
     return createTransparentColorKeyCanvas(baseKey, raw) ?? raw;
@@ -59,9 +60,9 @@ function resolveBakeBase(scene: Phaser.Scene, tileset: TilesetDef, baseKey: stri
 
 // graft 소스 타일 그림판 이미지: 처리된 텍스처 우선, 없으면 raw 에 타일 그림판 색상키를 적용해 사용.
 function resolveGraftSourceImage(scene: Phaser.Scene, sourceChipset: string): BakeSource | null {
-  const processed = sceneSourceImage(scene, sourceChipset);
+  const processed = fullSheetImage(scene, sourceChipset);
   if (processed) return processed;
-  const raw = sceneSourceImage(scene, rawChipsetTextureKey(sourceChipset));
+  const raw = fullSheetImage(scene, rawChipsetTextureKey(sourceChipset));
   if (!raw) return null;
   if (isColorKeyedChipsetTextureKey(sourceChipset)) {
     return createTransparentColorKeyCanvas(sourceChipset, raw) ?? raw;
@@ -71,6 +72,16 @@ function resolveGraftSourceImage(scene: Phaser.Scene, sourceChipset: string): Ba
 
 function preferRawTextureKey(scene: Phaser.Scene, baseKey: string): string {
   return scene.textures.exists(rawChipsetTextureKey(baseKey)) ? rawChipsetTextureKey(baseKey) : baseKey;
+}
+
+function rememberedSheet(textureKey: string): BakeSource | null {
+  const image = rememberedChipsetImage(textureKey);
+  return image instanceof HTMLImageElement || image instanceof HTMLCanvasElement ? image : null;
+}
+
+// GL 에 올라간 소스는 첫 띠일 수 있다. 로더가 기억한 시트 전체가 있으면 이식으로 그 그림을 쓴다.
+function fullSheetImage(scene: Phaser.Scene, textureKey: string): BakeSource | null {
+  return rememberedSheet(textureKey) ?? sceneSourceImage(scene, textureKey);
 }
 
 function sceneSourceImage(scene: Phaser.Scene, textureKey: string): BakeSource | null {

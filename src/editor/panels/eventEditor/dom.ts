@@ -16,8 +16,13 @@ export function selectWithOptions<T extends string>(
   const select = el("select", {
     dataset: testId ? { testid: testId } : undefined,
   }) as HTMLSelectElement;
-  for (const option of options) {
-    select.append(el("option", { text: option.label, attrs: { value: option.value } }));
+  for (const entry of options) {
+    const option = el("option", { text: entry.label, attrs: { value: entry.value } });
+    if (entry.description) {
+      option.title = entry.description;
+      option.dataset.description = entry.description;
+    }
+    select.append(option);
   }
   select.value = value;
   return select;

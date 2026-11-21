@@ -21,6 +21,11 @@ export const DEFAULT_RUNTIME_BATTLE_COMMANDS: readonly RuntimeBattleCommand[] = 
   { id: "cmd_escape", name: "도주", kind: "escape" },
 ];
 
+export function findBattleCommandRecord(project: Project, classId: string | undefined, id: string): ClassBattleCommand | undefined {
+  return project.database.classes.find(record => record.id === classId)?.battleCommands?.find(command => command.id === id)
+    ?? project.database.battleCommands?.find(record => record.id === id);
+}
+
 /**
  * 이벤트로 명령을 바꾸기 전 이 배우의 메뉴 id(배우 고유 목록 > 직업 명령). 「전투 명령 변경」의 더하기·빼기는
  * 이 목록 위에서 한다 — 빈 목록에서 시작하면 「더하기」 한 번에 공격·스킬이 모두 사라졌다(2026-10-02).
@@ -52,22 +57,14 @@ export function battleCommandsForActor(
   // 우선순위: 전투 중 이벤트로 바꾼 명령 > 배우 고유 명령(ActorRecord.battleCommandIds, RM2003 배우별 명령) > 직업 명령.
   // 배우 고유 목록은 전역·직업 목록에 있는 id 만 쓴다(지운 명령이 「공격」으로 둔갑하지 않게).
   const actorIds = actor?.battleCommandIds?.length ? baseBattleCommandIds(project, actor.id, klass?.id) : undefined;
-  const overrideIds = options.overrideCommandIds?.length ? options.overrideCommandIds : actorIds;
-  let source: readonly ClassBattleCommand[] = klass?.battleCommands ?? [];
-  if (overrideIds && overrideIds.length > 0) {
-    source = overrideIds.map((id) => {
-      const global = project.database.battleCommands?.find((record) => record.id === id);
-      const fromClass = klass?.battleCommands.find((entry) => entry.id === id);
-      return {
-        id,
-        name: fromClass?.name ?? global?.name ?? id,
-        kind: fromClass?.kind ?? global?.kind ?? "attack",
-        skillSubsetName: fromClass?.skillSubsetName ?? global?.skillSubsetName,
-        skillId: fromClass?.skillId ?? global?.skillId,
-        commonEventId: fromClass?.commonEventId ?? global?.commonEventId,
-      } satisfies ClassBattleCommand;
-    });
-  }
+  const explicitEmpty = options.overrideCommandIds?.length === 0;
+  const records = (ids: readonly string[] = []) => ids.flatMap(id => {
+    const command = findBattleCommandRecord(project, klass?.id, id);
+    return command ? [command] : [];
+  });
+  const overrides = records(options.overrideCommandIds);
+  const inherited = actorIds?.length ? records(actorIds) : klass?.battleCommands ?? [];
+  const source = explicitEmpty || overrides.length ? overrides : inherited;
   const commands = source
     .map((command) => resolveClassBattleCommand(project, command))
     .filter((command): command is RuntimeBattleCommand => command !== undefined)
@@ -77,12 +74,15 @@ export function battleCommandsForActor(
     .map((command) => resolveClassBattleCommand(project, command))
     .filter((command): command is RuntimeBattleCommand => command !== undefined && command.kind !== "switch" && command.kind !== "capture")
     .filter((command) => !commands.some((existing) => existing.id === command.id));
-  const base = withMonsterCaptureCommand(project, [...(commands.length > 0 ? commands : defaultRuntimeBattleCommands(project)), ...granted]);
+  const base = withMonsterCaptureCommand(project, [
+    ...(commands.length > 0 || explicitEmpty ? commands : defaultRuntimeBattleCommands(project)),
+    ...granted,
+  ]);
   if (!options.includeSwitch || base.some((command) => command.kind === "switch")) return base;
   return [...base, switchCommand()];
 }
 
-function resolveClassBattleCommand(project: Project, command: ClassBattleCommand): RuntimeBattleCommand | undefined {
+export function resolveClassBattleCommand(project: Project, command: ClassBattleCommand): RuntimeBattleCommand | undefined {
   const global = project.database.battleCommands?.find((record) => record.id === command.id);
   const kind = runtimeKind(command.kind, global?.kind);
   if (!kind) return undefined;

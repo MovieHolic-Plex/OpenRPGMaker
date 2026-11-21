@@ -109,7 +109,7 @@ try {
 
   await seed();
   await editName("Applied name");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   assert.equal((await snapshot()).canonicalName, "Applied name");
   assert.equal((await snapshot()).historyCount, 1);
   await editName("Discarded after Apply");

@@ -96,7 +96,7 @@ test("transfer command opens an RPG Maker style Transfer Player picker", async (
   await expect(command.getByTestId("transfer-command-summary")).toContainText("None");
   await page.screenshot({ path: `${EVIDENCE_DIR}/transfer-command-inline.png`, fullPage: true });
 
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const exported = await projectExport(page);
   const text = JSON.stringify(exported);
   expect(text).toContain("map_starter_house_interior");

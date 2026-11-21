@@ -183,7 +183,7 @@ async function authorM2Comment(page: Page): Promise<void> {
   await dialog.getByTestId("event-command-text-body").fill(RUNTIME_TEXT);
   await dialog.getByTestId("event-command-edit-ok").click();
   await expect(dialog).toHaveCount(0);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.getByTestId("event-editor-modal-close").click();
 }
 

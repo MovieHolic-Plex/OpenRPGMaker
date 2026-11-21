@@ -51,6 +51,19 @@ async function closeSubdialog(dialog: Locator): Promise<void> {
   await expect(dialog).toBeHidden();
 }
 
+async function openSettingsRail(modal: Locator, slug: string): Promise<void> {
+  const group = modal.getByTestId(`evt-rail-group-${slug}`);
+  const open = await group.evaluate((node) => node.classList.contains("is-open"));
+  if (!open) {
+    // 넓은 설정 열은 그룹을 display:contents 로 놓아 Playwright 가 헤더를 보이지 않는 것으로 본다.
+    await group.locator(".event-editor-settings-accordion-header").evaluate((node: HTMLElement) => {
+      node.scrollIntoView({ block: "center", inline: "nearest" });
+      node.click();
+    });
+  }
+  await expect(group).toHaveClass(/is-open/);
+}
+
 async function assertSubdialogButton(
   modal: Locator,
   opener: Locator,
@@ -89,10 +102,9 @@ test("all event-editor button families keep visible background context", async (
   // Generated command buttons share this picker/subdialog path; one representative guards the family.
   await assertSubdialogButton(modal, modal.getByTestId("event-command-toolbar-add").first(), page, "event-command-picker");
   await assertSubdialogButton(modal, modal.getByTestId("event-page-graphic-set"), page, "event-graphic-dialog");
-  await assertSubdialogButton(modal, modal.getByTestId("event-character-id-connect"), page, "event-character-id-picker");
+  // 「NPC와 일정」 묶음은 편집기에서 일부러 감춘다(pages-4.css). 보이는 단추 가족이 아니다.
 
-  const movementSection = modal.getByTestId("event-classic-movement-section");
-  await movementSection.locator(":scope > summary").click();
+  await openSettingsRail(modal, "move");
   await modal.getByTestId("event-page-movement-type").selectOption("custom");
   await expectOriginalEditorBackdrop(modal);
   await assertSubdialogButton(modal, modal.getByTestId("event-page-custom-route"), page, "event-page-move-route-dialog");
@@ -106,7 +118,7 @@ test("all event-editor button families keep visible background context", async (
   const shellButtons = [
     modal.getByTestId("event-view-toggle-list"),
     modal.getByTestId("event-view-toggle-storyboard"),
-    modal.locator("[data-testid^='event-page-tab-']").first(),
+    modal.getByTestId("evt-page-segment-1"),
     modal.locator("[data-testid^='event-storyboard-card-']").first(),
   ];
   for (const button of shellButtons) {
@@ -115,30 +127,33 @@ test("all event-editor button families keep visible background context", async (
     await expectOriginalEditorBackdrop(modal);
   }
 
-  const footerMore = modal.locator(".event-editor-footer-more");
-  await footerMore.locator(":scope > summary").click();
-  await expectOriginalEditorBackdrop(modal);
+  // 도움말은 헤더의 보이는 ? 다. 전체 보기는 ⋯ 메뉴 안에 있다.
   await modal.getByTestId("event-editor-help").click();
   const help = page.getByTestId("event-editor-help-modal");
   await expectTranslucentScrim(help);
   await page.getByTestId("event-editor-help-close").click();
   await expectOriginalEditorBackdrop(modal);
 
+  await modal.getByTestId("event-editor-header-more").locator(":scope > summary").click();
   const fullscreen = modal.getByTestId("event-editor-window-fullscreen");
   await fullscreen.click();
-  await expectOriginalEditorBackdrop(modal);
+  // 전체 보기는 같은 backdrop 노드를 유지하고 창을 뷰포트까지 늘린다. 그때 스크림은 불투명 바탕이 된다.
+  await expect(modal).toHaveAttribute("data-backdrop-witness", "original");
+  await expect(modal).toHaveClass(/is-fullscreen/);
+  await expect(fullscreen).toHaveAttribute("aria-pressed", "true");
   const fullscreenGeometry = await modal.evaluate((backdrop) => {
     const windowElement = backdrop.querySelector<HTMLElement>(".event-editor-modal-window");
     const outer = backdrop.getBoundingClientRect();
     const inner = windowElement?.getBoundingClientRect();
     return inner ? {
-      visibleScrimEdge: inner.left > outer.left || inner.top > outer.top || inner.right < outer.right || inner.bottom < outer.bottom,
-      outer: { left: outer.left, top: outer.top, right: outer.right, bottom: outer.bottom },
-      inner: { left: inner.left, top: inner.top, right: inner.right, bottom: inner.bottom },
+      coversViewport: inner.width >= outer.width - 16 && inner.height >= outer.height - 16,
+      outer: { width: outer.width, height: outer.height },
+      inner: { width: inner.width, height: inner.height },
     } : null;
   });
-  expect(fullscreenGeometry?.visibleScrimEdge, JSON.stringify(fullscreenGeometry)).toBe(true);
+  expect(fullscreenGeometry?.coversViewport, JSON.stringify(fullscreenGeometry)).toBe(true);
   await fullscreen.click();
+  await expect(fullscreen).toHaveAttribute("aria-pressed", "false");
   await expectOriginalEditorBackdrop(modal);
 
   await modal.screenshot({ path: `${EVIDENCE_DIR}/button-family-tour.png` });

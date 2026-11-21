@@ -1,7 +1,18 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
 import { expect, test, type Page } from "@playwright/test";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { createBlankProject } from "@/project/defaults";
+import type { Command, EventPage, GameEvent, Project } from "@/project/types";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
+
+// 제품은 시작 마을 NPC 를 더 이상 심지 않는다. 대화 상자 회귀는 빈 맵의 보이는 칸에
+// 직접 심은 이벤트(event_play_control_talk)로 확인한다.
+const TALK_EVENT_ID = "event_play_control_talk";
+const TALK_SPEAKER = "미나";
+const TALK_BODY = "어서 와요. 이 마을의 이벤트는 모두 이 에디터 안에서 만들어졌어요.";
 
 const EVIDENCE_DIR = ".omo/ulw-loop/dialogue-90-match/evidence";
 const SCREENSHOT_PATH = `${EVIDENCE_DIR}/play-screen-green.png`;
@@ -38,9 +49,10 @@ type DialogueMetrics = {
   readonly structuralSimilarityScore: number;
 };
 
-async function startFreshPlay(page: Page): Promise<void> {
+async function startFreshPlay(page: Page, project?: Project): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/?freshProject=1");
+  if (project) await seedProjectForEditor(page, project);
+  else await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await expect(page.getByTestId("mode-play")).toBeVisible();
   await page.getByTestId("mode-play").click();
@@ -60,7 +72,9 @@ async function startFreshPlay(page: Page): Promise<void> {
 }
 
 async function runtimeState(page: Page): Promise<RuntimeState> {
-  const text = await page.getByTestId("runtime-state-json").textContent();
+  // textContent 는 읽는 순간에만 스냅샷을 만드는 메인 월드 getter 다.
+  // locator.textContent() 는 유틸리티 월드라 빈 폴백 "{}" 만 본다.
+  const text = await page.getByTestId("runtime-state-json").evaluate((node) => node.textContent ?? "");
   if (!text) throw new Error("missing runtime state");
   const parsed: unknown = JSON.parse(text);
   if (!isRuntimeState(parsed)) throw new Error("malformed runtime state");
@@ -90,10 +104,13 @@ test("held ArrowRight moves continuously before OS key repeat", async ({ page })
   expect(after.player.x).toBeGreaterThan(before.player.x);
 });
 
-test("starter NPC dialogue uses a compact bottom panel and does not reopen while confirm is held", async ({ page }) => {
-  await startFreshPlay(page);
+test("seeded NPC dialogue uses a compact bottom panel and does not reopen while confirm is held", async ({ page }) => {
+  test.setTimeout(120_000);
+  await startFreshPlay(page, dialogueProbeProject());
 
-  await page.getByTestId("event-event_starter_mina").click();
+  // 플레이 화면은 실제 마우스 click(detail >= 1)을 막는다. 마커의 리스너는
+  // 테스트용 합성 click(detail 0, HTMLElement.click)만 받는다.
+  await page.getByTestId(`event-${TALK_EVENT_ID}`).evaluate((node: HTMLElement) => node.click());
   const dialogue = page.getByTestId("dialogue-box");
   await expect(dialogue).toContainText("미나");
   await expect(dialogue).toContainText("어서 와요. 이 마을의 이벤트는 모두 이 에디터 안에서 만들어졌어요.");
@@ -186,4 +203,44 @@ async function dialogueMetrics(page: Page): Promise<DialogueMetrics> {
   });
   if (!metrics) throw new Error("missing dialogue metrics");
   return metrics;
+}
+
+/** 빈 프로젝트의 시작 맵에 얼굴 대사가 있는 NPC 하나를 심는다. 제품 기본 맵에는 없다. */
+function dialogueProbeProject(): Project {
+  const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  if (!map) throw new Error("missing blank project start map");
+  const spriteId = "tex_easyrpg_charset_people1";
+  const face = reviewedFaceIdForCharset(spriteId, 0);
+  if (!face) throw new Error(`missing reviewed face for ${spriteId}#0`);
+  const commands: Command[] = [
+    { kind: "changeFace", resourceId: face, position: "left", flipHorizontally: false },
+    { kind: "text", speaker: TALK_SPEAKER, body: TALK_BODY },
+  ];
+  const eventPage: EventPage = {
+    id: `${TALK_EVENT_ID}_page`,
+    name: TALK_SPEAKER,
+    conditions: [],
+    graphic: {
+      sprite: { type: "bundled", id: spriteId },
+      direction: "down",
+      pattern: charsetFrameIndex({ characterIndex: 0, pattern: 1, direction: "down" }),
+    },
+    trigger: { kind: "action" },
+    priority: "same",
+    overlapForbidden: true,
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+    commands,
+  };
+  const event: GameEvent = {
+    id: TALK_EVENT_ID,
+    name: TALK_SPEAKER,
+    x: 12,
+    y: 7,
+    trigger: { kind: "action" },
+    commands,
+    pages: [eventPage],
+  };
+  map.events = [event];
+  return project;
 }

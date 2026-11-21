@@ -21,19 +21,54 @@ type DebugState = {
   };
 };
 
+let nativeDialogs = 0;
+
 async function seedProject(page: Page): Promise<void> {
-  // Delete-key paths call window.confirm — auto-accept so the assertion is about deletion, not the dialog.
+  nativeDialogs = 0;
+  // 이벤트 삭제는 앱의 확인 창(취소/삭제)을 쓴다. 브라우저 confirm 이 뜨면 테스트가 실패한다.
   page.on("dialog", (dialog) => {
-    void dialog.accept();
+    nativeDialogs += 1;
+    void dialog.dismiss();
   });
   await seedProjectForEditor(page, projectWithPlacedEvent());
 }
 
+async function confirmEventDeletion(page: Page): Promise<void> {
+  const dialog = page.getByTestId("app-confirm-modal");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByTestId("app-modal-cancel")).toHaveText("취소");
+  await expect(dialog.getByTestId("app-modal-confirm")).toHaveText("삭제");
+  await dialog.getByTestId("app-modal-confirm").click();
+  await expect(dialog).toHaveCount(0);
+  expect(nativeDialogs).toBe(0);
+}
+
 async function debugState(page: Page): Promise<DebugState> {
-  const text = await page.getByTestId("project-export-json").textContent();
-  if (!text) throw new Error("missing project export");
-  const parsed: unknown = JSON.parse(text);
-  if (!isDebugState(parsed)) throw new Error("project export has unexpected shape");
+  // 미러는 페이지 쪽 textContent 게터로 프로젝트 전체를 직렬화한다(수십 MB).
+  // 그 문자열을 노드로 넘기면 테스트가 시간 초과하므로, 필요한 맵·이벤트 id 만 페이지 안에서 고른다.
+  const parsed: unknown = await page.evaluate(() => {
+    const node = document.querySelector("[data-testid='project-export-json']");
+    const text = node?.textContent ?? "";
+    if (!text) return null;
+    const full = JSON.parse(text) as {
+      project?: {
+        startMapId?: string;
+        maps?: Record<string, { width?: number; height?: number; events?: { id?: string }[] }>;
+      };
+    };
+    const project = full.project;
+    if (!project?.maps || typeof project.startMapId !== "string") return null;
+    const maps: Record<string, { width: number; height: number; events: { id: string }[] }> = {};
+    for (const [id, map] of Object.entries(project.maps)) {
+      maps[id] = {
+        width: map.width ?? 0,
+        height: map.height ?? 0,
+        events: (map.events ?? []).flatMap((event) => (typeof event.id === "string" ? [{ id: event.id }] : [])),
+      };
+    }
+    return { project: { startMapId: project.startMapId, maps } };
+  });
+  if (!isDebugState(parsed)) throw new Error("missing project export");
   return parsed;
 }
 
@@ -149,6 +184,7 @@ test("event editor list deletes the selected event with Delete", async ({ page }
   await page.getByTestId("layer-event").click();
   await page.getByTestId("event-list-row-ev_delete").click();
   await page.keyboard.press("Delete");
+  await confirmEventDeletion(page);
 
   await expect(page.getByTestId("event-list-row-ev_delete")).toHaveCount(0);
   expect((await debugState(page)).project.maps.map_delete?.events).toEqual([]);
@@ -159,9 +195,9 @@ test("event layer canvas deletes the clicked event with Delete", async ({ page }
   await seedProject(page);
 
   await page.getByTestId("layer-event").click();
-  await page.getByTestId("tool-event").click();
   await clickMapTile(page, 2, 2);
   await page.keyboard.press("Delete");
+  await confirmEventDeletion(page);
 
   await expect(page.getByTestId("event-list-row-ev_delete")).toHaveCount(0);
   expect((await debugState(page)).project.maps.map_delete?.events).toEqual([]);
@@ -174,8 +210,10 @@ test("event editor modal deletes the open event with Delete", async ({ page }) =
   await page.getByTestId("layer-event").click();
   await clickMapTile(page, 2, 2, 2);
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
-  await page.getByTestId("event-editor-modal-close").focus();
-  await page.keyboard.press("Delete");
+  // 편집기 안에서의 Delete 는 이벤트를 지우지 않는다. 헤더 ⋯ 의 「이벤트 삭제」가 확인 창을 연다.
+  await page.getByTestId("event-editor-header-more").locator(":scope > summary").click();
+  await page.getByTestId("event-delete").click();
+  await confirmEventDeletion(page);
 
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
   expect((await debugState(page)).project.maps.map_delete?.events).toEqual([]);

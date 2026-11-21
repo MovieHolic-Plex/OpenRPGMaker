@@ -49,12 +49,33 @@ export function prepareReliefRead(map: GameMap): void {
   });
 }
 
+type SheetImage = HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+type BandedSheet = { readonly parts: readonly SheetImage[]; readonly columns: number; readonly edge: number; readonly width: number; readonly height: number };
+
+function bandedSheet(image: unknown): BandedSheet | null {
+  const texture = image as { source?: { image?: unknown; height?: number }[]; __oprnBandCols?: number } | null;
+  const source = texture?.source;
+  if (!Array.isArray(source) || source.length < 2) return null;
+  const parts = source.map((entry) => entry.image).filter(isImage);
+  if (parts.length !== source.length) return null;
+  const columns = Math.max(1, texture?.__oprnBandCols ?? 1);
+  const edge = source[0]?.height || parts[0]!.height;
+  let width = 0;
+  for (let column = 0; column < columns; column += 1) width += parts[column]?.width ?? 0;
+  let height = 0;
+  for (let row = 0; row < parts.length; row += columns) height += parts[row]?.height ?? 0;
+  if (width <= 0 || height <= 0 || edge <= 0) return null;
+  return { parts, columns, edge, width, height };
+}
+
 export function reliefGroundAvailable(map: GameMap, image: unknown): boolean {
   prepareReliefRead(map);
-  return isImage(image) && hasRelief(map.relief);
+  return (isImage(image) || bandedSheet(image) !== null) && hasRelief(map.relief);
 }
 export function reliefTilesetImage(textures: { get?(key: string): unknown } | undefined, key: string): unknown {
-  return (textures?.get?.(key) as { getSourceImage?(): unknown } | undefined)?.getSourceImage?.();
+  const texture = textures?.get?.(key) as { source?: unknown[]; getSourceImage?(): unknown } | undefined;
+  if ((texture?.source?.length ?? 0) > 1) return texture;
+  return texture?.getSourceImage?.();
 }
 const mix = (h: number, v: number) => Math.imul(h ^ v, 0x01000193);
 const fingerprint = (map: GameMap, i: number) => {
@@ -139,31 +160,68 @@ export function createReliefGroundSurface(map: GameMap, tileset: TilesetDef, atl
   return surface;
 }
 
+function paintSheetRows(ctx: CanvasRenderingContext2D, sheet: BandedSheet | SheetImage, y0: number, rows: number, width: number): void {
+  const bands = isImage(sheet) ? null : sheet;
+  if (!bands) {
+    ctx.drawImage(sheet as SheetImage, 0, y0, width, rows, 0, 0, width, rows);
+    return;
+  }
+  let left = rows;
+  let y = y0;
+  let dest = 0;
+  const rowCount = Math.ceil(bands.parts.length / bands.columns);
+  while (left > 0) {
+    const row = Math.min(Math.floor(y / bands.edge), rowCount - 1);
+    const local = y - row * bands.edge;
+    const part = bands.parts[row * bands.columns];
+    if (!part) break;
+    const room = Math.min(left, part.height - local);
+    if (room <= 0) break;
+    let dx = 0;
+    for (let column = 0; column < bands.columns; column += 1) {
+      const piece = bands.parts[row * bands.columns + column];
+      if (!piece) break;
+      ctx.drawImage(piece, 0, local, piece.width, room, dx, dest, piece.width, room);
+      dx += piece.width;
+    }
+    y += room;
+    dest += room;
+    left -= room;
+  }
+}
+
 /** Read the already loaded, color-keyed/grafted Phaser image once. */
 export function reliefGroundFromImage(map: GameMap, tileset: TilesetDef, image: unknown): ReliefGroundSurface | undefined {
   prepareReliefRead(map);
-  if (!isImage(image) || !reliefGroundAvailable(map, image)) return undefined;
-  let raster = imageRasters.get(image);
+  const bands = bandedSheet(image);
+  const single = !bands && isImage(image) ? image : undefined;
+  if (!bands && !single) return undefined;
+  if (!hasRelief(map.relief)) return undefined;
+  const cacheKey = (bands ? image : single) as object;
+  let raster = imageRasters.get(cacheKey);
   if (!raster) {
     // 시트 전체가 아니라 맵이 실제로 쓰는 칸이 든 16줄 띠만 처음 쓸 때 읽는다.
-    const canvas = document.createElement("canvas"); canvas.width = image.width; canvas.height = RASTER_BAND_ROWS;
+    // 소스가 2048px 띠 여러 장이면 그 띠에서 읽는다(한 장의 getSourceImage 는 맨 위 2048 뿐이다).
+    const width = bands ? bands.width : single!.width;
+    const height = bands ? bands.height : single!.height;
+    const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = RASTER_BAND_ROWS;
     const ctx = canvas.getContext("2d", { willReadFrequently: true }); if (!ctx) return undefined;
-    const width = image.width, height = image.height;
-    const bands = new Map<number, Uint8ClampedArray>();
+    const strips = new Map<number, Uint8ClampedArray>();
+    const sheet = bands ?? single!;
     raster = { width, height, band(y) {
       if (y < 0 || y >= height) return undefined;
       const y0 = Math.floor(y / RASTER_BAND_ROWS) * RASTER_BAND_ROWS;
-      let data = bands.get(y0);
+      let data = strips.get(y0);
       if (!data) {
         const rows = Math.min(RASTER_BAND_ROWS, height - y0);
         ctx.clearRect(0, 0, width, RASTER_BAND_ROWS);
-        ctx.drawImage(image, 0, y0, width, rows, 0, 0, width, rows);
+        paintSheetRows(ctx, sheet, y0, rows, width);
         data = ctx.getImageData(0, 0, width, rows).data;
-        bands.set(y0, data);
+        strips.set(y0, data);
       }
       return { y0, data };
     } };
-    imageRasters.set(image, raster);
+    imageRasters.set(cacheKey, raster);
   }
   return createReliefGroundSurface(map, tileset, raster);
 }
