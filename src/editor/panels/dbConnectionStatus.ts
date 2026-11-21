@@ -159,7 +159,7 @@ function autoSaveStatusText(state: ReturnType<typeof store.getAutoSaveState>): s
     case "error":
       // 진짜 저장 실패와 "이 자리는 원래 저장하지 않는다" 는 다른 사건이다.
       // 후자를 "실패" 로 적으면 다시 시도하면 될 줄 알게 된다 — 이 위치에서는 몇 번을 눌러도 저장되지 않는다.
-      if (state.code === "session-not-persisted") return "이 세션은 저장 안 됨";
+      if (state.code === "session-not-persisted") return "저장 안 됨 · 이 탭만";
       return state.retryCount ? `저장 실패 · 다시 시도 ${state.retryCount}회` : "저장 실패";
   }
 }
@@ -176,7 +176,7 @@ function autoSaveStatusTitle(state: ReturnType<typeof store.getAutoSaveState>): 
       return `${formatAutoSaveTime(state.at)}에 저장했습니다.`;
     case "error":
       if (state.code === "session-not-persisted") {
-        return "이 주소는 예제·새 프로젝트 세션이라 변경을 살려 두지 않습니다. 보존하려면 프로젝트를 내보내거나 정상 주소로 여세요.";
+        return "이 탭에만 있어요. 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요.";
       }
       return "변경 내용을 저장하지 못했습니다. 다시 저장하거나 잠시 후 다시 시도하세요.";
   }

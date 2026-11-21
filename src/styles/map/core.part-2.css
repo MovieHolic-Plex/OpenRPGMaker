@@ -444,6 +444,54 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 /* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
 
+/* ChatGPT 로그인 안내. 숨김은 자리를 차지하지 않고, 보일 때는 줌 알약보다 위에 있어
+   높이 측정이 한 프레임 늦어도 「AI 설정 열기」가 클릭된다. */
+.image-generation-notice {
+  align-items: center;
+  background: var(--bg-inset);
+  box-sizing: border-box;
+  color: var(--text-1);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 8px 12px;
+  justify-content: center;
+  line-height: 1.4;
+  padding: 6px 12px;
+  position: relative;
+  z-index: 30;
+}
+
+.image-generation-notice[hidden] {
+  display: none !important;
+}
+
+.image-generation-notice-text {
+  min-width: 0;
+}
+
+.image-generation-notice-action {
+  align-items: center;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: inherit;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.image-generation-notice-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* 빈 이벤트 목록에는 「새 이벤트」 단추가 붙는다(tilePalette.ts). */
 .event-list-empty .event-list-new {
   margin-top: var(--space-2);

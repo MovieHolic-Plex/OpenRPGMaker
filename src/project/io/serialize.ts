@@ -84,9 +84,8 @@ export function deserialize(raw: string): Project {
   try {
     parsed = JSON.parse(raw) as unknown;
   } catch (cause) {
-    throw new ProjectFormatError(
-      cause instanceof Error ? `JSON 파싱 실패: ${cause.message}` : "JSON 파싱 실패"
-    );
+    // 파서 원문(Unexpected token …)은 영어 한 줄이라 토스트 끝에 그대로 붙었다. 원인은 cause 에만 남긴다.
+    throw new ProjectFormatError("이 파일은 프로젝트 JSON이 아닙니다.", { cause });
   }
   return deserializeParsed(parsed);
 }

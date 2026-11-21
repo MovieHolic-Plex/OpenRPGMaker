@@ -287,12 +287,18 @@ export function renderEditor(main: HTMLElement): void {
   void imageGenerationNotice.sync();
   // 조수 패널이 도킹해 캠버스 열이 좁아지면 배너가 두 줄로 접힌다 — 떠 있는 캠버스 도구 막대의 top 이 그 높이를 따라간다.
   persistenceBannerObserver?.disconnect();
+  const syncCanvasChromeOffsets = (): void => {
+    canvasArea.style.setProperty("--persistence-banner-height", `${Math.round(bannerHost.getBoundingClientRect().height)}px`);
+    const notice = imageGenerationNotice.element;
+    const noticeHeight = notice.hidden ? 0 : Math.round(notice.getBoundingClientRect().height);
+    canvasArea.style.setProperty("--image-generation-notice-height", `${noticeHeight}px`);
+  };
   persistenceBannerObserver = typeof ResizeObserver === "function"
-    ? new ResizeObserver(() => {
-      canvasArea.style.setProperty("--persistence-banner-height", `${Math.round(bannerHost.getBoundingClientRect().height)}px`);
-    })
+    ? new ResizeObserver(() => syncCanvasChromeOffsets())
     : null;
   persistenceBannerObserver?.observe(bannerHost);
+  persistenceBannerObserver?.observe(imageGenerationNotice.element);
+  syncCanvasChromeOffsets();
   paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, canvasStatus, cursorDiagnostics);
   // 「지형」 막대·지형지물 팝업 — 지형 도구일 때만 보인다(reliefToolbar.ts).

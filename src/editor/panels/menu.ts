@@ -284,7 +284,7 @@ export function autosaveStripText(state: AutoSaveState): string {
     case "saving":
       return "저장 중";
     case "error":
-      return state.code === "session-not-persisted" ? "저장 안 함(임시)" : "저장 실패";
+      return state.code === "session-not-persisted" ? "저장 안 됨 · 이 탭만" : "저장 실패";
     default:
       return "저장됨";
   }
@@ -373,7 +373,7 @@ function watchProjectMenuLabel(button: HTMLElement): () => void {
 }
 
 /**
- * 저장 = 오른쪽의 연한 글자 단추 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」(2026-11 개편).
+ * 저장 = 오른쪽의 연한 글자 단추 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 됨 · 이 탭만」(2026-11 개편).
  * 예전에는 디스크 아이콘 + 7px 점, 실패 칩(topbar-save-status), 상태 줄 저장 칸 셋이 같은 상태를 나눠 말했다.
  * 평소에는 누르면 저장하고, 실패하면 같은 자리에서 상세와 재시도 동작을 연다.
  */
@@ -411,7 +411,7 @@ function renderSaveButton(): HTMLElement {
     else if (state.kind === "saved" || state.kind === "idle" || notPersisted) failureDetail = null;
     if ((state.kind === "error" && !notPersisted) || blocked) saveFailureEpisode = true;
     else if (state.kind === "saved" || state.kind === "idle" || notPersisted) saveFailureEpisode = false;
-    // 저장하지 않는 세션은 실패가 아니다 — 빨간 글자 대신 회색 「저장 안 함(임시)」(배너가 이유를 말한다).
+    // 저장하지 않는 세션은 실패가 아니다 — 빨간 「저장 실패」 대신 회색 「저장 안 됨 · 이 탭만」(배너가 이유를 말한다).
     button.dataset.autosaveKind = notPersisted ? "unsaved-session" : state.kind;
     button.classList.toggle("is-failing", saveFailureEpisode);
     const text = blocked ? "저장 실패" : autosaveStripText(state);
@@ -502,7 +502,7 @@ export function autosaveStatusText(state: AutoSaveState): string {
     case "saving":
       return "저장 중";
     case "error":
-      return state.code === "session-not-persisted" ? "이 세션은 저장 안 됨" : "자동 저장 실패";
+      return state.code === "session-not-persisted" ? "저장 안 됨 · 이 탭에만 있어요" : "자동 저장 실패";
     default:
       return "변경 없음";
   }

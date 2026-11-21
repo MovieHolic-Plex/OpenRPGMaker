@@ -115,6 +115,15 @@ export type AiFailureSummary = {
 const QUOTA = /\b429\b|RESOURCE_EXHAUSTED|quota|rate.?limit|한도/i;
 const AUTH = /\b40[13]\b|unauthori[sz]ed|forbidden|not (?:logged|signed) in|invalid[_ ]grant|(?:invalid|missing|no) api[ _-]key|api[ _-]key.{0,25}(?:required|not (?:found|set))|로그인|인증|API 키가 설정되지/i;
 const NETWORK = /failed to fetch|network|ECONN|ETIMEDOUT|\b50[0-4]\b|네트워크|연결이 끊겼|닿지 못|timeout|시간 초과/i;
+// 「bun 이 필요합니다. … 로그인/전송은 Bun 에서만」은 로그인 만료가 아니다. AUTH 의 「로그인」보다 먼저 가른다.
+const RUNTIME_UNAVAILABLE = /bun 이 필요|bun is required|oh-my-pi worker|worker exited|worker start timed out/i;
+
+export const AI_RUNTIME_UNAVAILABLE_SUMMARY =
+  "AI 실행 환경을 쓸 수 없어요. Bun 런타임이 설치되지 않았거나 시작되지 않았습니다.";
+
+export function isAiRuntimeUnavailable(reason: string): boolean {
+  return RUNTIME_UNAVAILABLE.test(reason);
+}
 
 /** 「Resets in 67h25m0s」·「retry after 30s」 같은 꼬리에서 남은 시간을 초로 읽는다. */
 export function parseResetSeconds(raw: string): number | null {
@@ -148,6 +157,7 @@ export function formatWaitKo(seconds: number): string {
  */
 export function describeAiFailure(reason: string, now: Date = new Date()): AiFailureSummary {
   const raw = reason.trim();
+  if (isAiRuntimeUnavailable(raw)) return { kind: "other", summary: AI_RUNTIME_UNAVAILABLE_SUMMARY, raw };
   const kind: AiFailureKind = QUOTA.test(raw) ? "quota" : AUTH.test(raw) ? "auth" : NETWORK.test(raw) ? "network" : "other";
   if (kind === "quota") {
     const wait = parseResetSeconds(raw);
