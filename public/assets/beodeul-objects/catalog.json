@@ -5845,5 +5845,637 @@
       "놀이터",
       "강변 공원"
     ]
+  },
+  {
+    "id": "city_alley_cat_feeding_station",
+    "nameKo": "길고양이 급식소",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_cat_feeding_station.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "cat feeding station",
+      "길고양이",
+      "고양이 밥그릇"
+    ]
+  },
+  {
+    "id": "city_alley_clothing_bin",
+    "nameKo": "의류 수거함",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_clothing_bin.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "clothing donation bin",
+      "헌옷 수거함",
+      "재활용"
+    ]
+  },
+  {
+    "id": "city_alley_convex_mirror",
+    "nameKo": "도로 반사경",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_convex_mirror.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "convex traffic mirror",
+      "볼록거울",
+      "교통안전"
+    ]
+  },
+  {
+    "id": "city_alley_foam_planters",
+    "nameKo": "스티로폼 상자 화분",
+    "category": "nature",
+    "group": "city",
+    "sourceFile": "city_alley_foam_planters.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "foam planters",
+      "스티로폼 화분",
+      "텃밭"
+    ]
+  },
+  {
+    "id": "city_alley_folding_laundry_rack",
+    "nameKo": "접이식 빨래 건조대",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_folding_laundry_rack.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "folding laundry rack",
+      "빨래",
+      "건조대"
+    ]
+  },
+  {
+    "id": "city_alley_hose_reel",
+    "nameKo": "호스 릴",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_hose_reel.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "hose reel",
+      "물호스",
+      "관수"
+    ]
+  },
+  {
+    "id": "city_alley_lpg_tanks",
+    "nameKo": "LPG 가스통 2개",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_lpg_tanks.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "LPG tanks",
+      "가스통",
+      "가스 용기"
+    ]
+  },
+  {
+    "id": "city_alley_no_dumping",
+    "nameKo": "무단 투기 금지 표지판",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_no_dumping.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "no dumping sign",
+      "쓰레기 무단투기",
+      "안내판"
+    ]
+  },
+  {
+    "id": "city_alley_no_parking_chair",
+    "nameKo": "주차 금지 의자",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_no_parking_chair.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "no parking chair",
+      "주차 금지",
+      "입간판"
+    ]
+  },
+  {
+    "id": "city_alley_onggi_jars",
+    "nameKo": "옹기 항아리 모음",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_onggi_jars.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "onggi jars",
+      "장독",
+      "장독대"
+    ]
+  },
+  {
+    "id": "city_alley_paper_handcart",
+    "nameKo": "폐지 수거 손수레",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_paper_handcart.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "paper handcart",
+      "폐지",
+      "리어카",
+      "재활용"
+    ]
+  },
+  {
+    "id": "city_alley_stair_handrail",
+    "nameKo": "계단 손잡이 난간",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_alley_stair_handrail.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "stair handrail",
+      "계단",
+      "손잡이",
+      "난간"
+    ]
+  },
+  {
+    "id": "city_alley_wooden_platform",
+    "nameKo": "나무 평상",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_alley_wooden_platform.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "골목",
+      "wooden platform",
+      "평상",
+      "야외 좌석"
+    ]
+  },
+  {
+    "id": "city_park3_arrow_trailer",
+    "nameKo": "이동식 화살표 전광판",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_park3_arrow_trailer.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "arrow board trailer",
+      "화살표",
+      "전광판",
+      "교통 안내"
+    ]
+  },
+  {
+    "id": "city_park3_barrier_gate",
+    "nameKo": "주차장 차단기",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_barrier_gate.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking barrier gate",
+      "차단기",
+      "차단봉"
+    ]
+  },
+  {
+    "id": "city_park3_bay_number_post",
+    "nameKo": "주차 구역 번호 표지",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_park3_bay_number_post.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking bay number post",
+      "주차 구역",
+      "번호 표지"
+    ]
+  },
+  {
+    "id": "city_park3_fire_inlet",
+    "nameKo": "소방용 송수구",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_park3_fire_inlet.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "fire department inlet",
+      "쌍구형 송수구",
+      "소방 설비"
+    ]
+  },
+  {
+    "id": "city_park3_median_end_e",
+    "nameKo": "화단형 중앙분리대 · 동쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_e.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_e"
+    }
+  },
+  {
+    "id": "city_park3_median_end_n",
+    "nameKo": "화단형 중앙분리대 · 북쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_n.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_n"
+    }
+  },
+  {
+    "id": "city_park3_median_end_s",
+    "nameKo": "화단형 중앙분리대 · 남쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_s.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_s"
+    }
+  },
+  {
+    "id": "city_park3_median_end_w",
+    "nameKo": "화단형 중앙분리대 · 서쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_w.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_w"
+    }
+  },
+  {
+    "id": "city_park3_median_h",
+    "nameKo": "화단형 중앙분리대 · 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_park3_median_v",
+    "nameKo": "화단형 중앙분리대 · 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_park3_ped_audio_button",
+    "nameKo": "보행자 음성 안내 버튼",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_park3_ped_audio_button.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "pedestrian push button",
+      "보행 신호",
+      "음향신호기",
+      "횡단보도"
+    ]
+  },
+  {
+    "id": "city_park3_slow_led_sign",
+    "nameKo": "서행 안내 전광판",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_park3_slow_led_sign.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "slow LED sign",
+      "서행",
+      "전광판",
+      "교통 표지판"
+    ]
+  },
+  {
+    "id": "city_park3_wheel_stop",
+    "nameKo": "주차 고임턱",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_wheel_stop.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking wheel stop",
+      "주차 블록",
+      "카스토퍼"
+    ]
   }
 ]

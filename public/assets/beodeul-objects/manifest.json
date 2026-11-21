@@ -147,6 +147,18 @@
         "h_straight",
         "v_straight"
       ]
+    },
+    {
+      "id": "city_park3_median",
+      "role": "fence",
+      "requiredPieces": [
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
     }
   ]
 }
