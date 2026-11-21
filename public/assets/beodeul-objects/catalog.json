@@ -1,0 +1,1348 @@
+[
+  {
+    "id": "city_apt_curb_bed_corner_ne",
+    "nameKo": "아파트 화단 경계 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "북동 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_corner_nw",
+    "nameKo": "아파트 화단 경계 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "북서 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_corner_se",
+    "nameKo": "아파트 화단 경계 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "남동 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_corner_sw",
+    "nameKo": "아파트 화단 경계 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "남서 모서리"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_apt_curb_bed_h",
+    "nameKo": "아파트 화단 경계 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "가로 직선"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_apt_curb_bed_v",
+    "nameKo": "아파트 화단 경계 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_apt_curb_bed_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "아파트 단지",
+      "curb bed",
+      "아파트 화단 경계",
+      "세로 직선"
+    ],
+    "set": {
+      "id": "city_apt_curb_bed",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_park2_hedge_corner_ne",
+    "nameKo": "공원 생울타리 · 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "northeast hedge corner",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_park2_hedge_corner_nw",
+    "nameKo": "공원 생울타리 · 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "northwest hedge corner",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_park2_hedge_corner_se",
+    "nameKo": "공원 생울타리 · 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "southeast hedge corner",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_park2_hedge_corner_sw",
+    "nameKo": "공원 생울타리 · 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "southwest hedge corner",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_park2_hedge_end_e",
+    "nameKo": "공원 생울타리 · 동쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_end_e.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "east hedge end",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "end_e"
+    }
+  },
+  {
+    "id": "city_park2_hedge_end_w",
+    "nameKo": "공원 생울타리 · 서쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_end_w.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "west hedge end",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "end_w"
+    }
+  },
+  {
+    "id": "city_park2_hedge_h",
+    "nameKo": "공원 생울타리 · 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "horizontal hedge",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_park2_hedge_v",
+    "nameKo": "공원 생울타리 · 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "vertical hedge",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_park2_hedge",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_park3_median_end_e",
+    "nameKo": "화단형 중앙분리대 · 동쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_e.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_e"
+    }
+  },
+  {
+    "id": "city_park3_median_end_n",
+    "nameKo": "화단형 중앙분리대 · 북쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_n.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_n"
+    }
+  },
+  {
+    "id": "city_park3_median_end_s",
+    "nameKo": "화단형 중앙분리대 · 남쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_s.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_s"
+    }
+  },
+  {
+    "id": "city_park3_median_end_w",
+    "nameKo": "화단형 중앙분리대 · 서쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_end_w.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "end_w"
+    }
+  },
+  {
+    "id": "city_park3_median_h",
+    "nameKo": "화단형 중앙분리대 · 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_park3_median_v",
+    "nameKo": "화단형 중앙분리대 · 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_median_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking median",
+      "중앙분리대",
+      "교통섬",
+      "연석",
+      "화단"
+    ],
+    "set": {
+      "id": "city_park3_median",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_park3_wheel_stop",
+    "nameKo": "주차 고임턱",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park3_wheel_stop.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "주차장",
+      "parking wheel stop",
+      "주차 블록",
+      "카스토퍼"
+    ]
+  },
+  {
+    "id": "city_plaza_log_fence_corner_ne",
+    "nameKo": "광장 통나무 울타리 · 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_plaza_log_fence_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "광장",
+      "log fence",
+      "통나무 울타리",
+      "공원",
+      "나무 울타리"
+    ],
+    "set": {
+      "id": "city_plaza_log_fence",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_plaza_log_fence_corner_nw",
+    "nameKo": "광장 통나무 울타리 · 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_plaza_log_fence_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "광장",
+      "log fence",
+      "통나무 울타리",
+      "공원",
+      "나무 울타리"
+    ],
+    "set": {
+      "id": "city_plaza_log_fence",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_plaza_log_fence_corner_se",
+    "nameKo": "광장 통나무 울타리 · 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_plaza_log_fence_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "광장",
+      "log fence",
+      "통나무 울타리",
+      "공원",
+      "나무 울타리"
+    ],
+    "set": {
+      "id": "city_plaza_log_fence",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_plaza_log_fence_corner_sw",
+    "nameKo": "광장 통나무 울타리 · 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_plaza_log_fence_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "광장",
+      "log fence",
+      "통나무 울타리",
+      "공원",
+      "나무 울타리"
+    ],
+    "set": {
+      "id": "city_plaza_log_fence",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_plaza_log_fence_h",
+    "nameKo": "광장 통나무 울타리 · 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_plaza_log_fence_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "광장",
+      "log fence",
+      "통나무 울타리",
+      "공원",
+      "나무 울타리"
+    ],
+    "set": {
+      "id": "city_plaza_log_fence",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_plaza_log_fence_v",
+    "nameKo": "광장 통나무 울타리 · 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_plaza_log_fence_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "광장",
+      "log fence",
+      "통나무 울타리",
+      "공원",
+      "나무 울타리"
+    ],
+    "set": {
+      "id": "city_plaza_log_fence",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_prom_rail_corner_ne",
+    "nameKo": "해안 산책로 난간 · 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_prom_rail_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "해안 산책로",
+      "railing",
+      "난간",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_prom_rail",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_prom_rail_corner_nw",
+    "nameKo": "해안 산책로 난간 · 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_prom_rail_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "해안 산책로",
+      "railing",
+      "난간",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_prom_rail",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_prom_rail_corner_se",
+    "nameKo": "해안 산책로 난간 · 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_prom_rail_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "해안 산책로",
+      "railing",
+      "난간",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_prom_rail",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_prom_rail_corner_sw",
+    "nameKo": "해안 산책로 난간 · 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_prom_rail_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "해안 산책로",
+      "railing",
+      "난간",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_prom_rail",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_prom_rail_h",
+    "nameKo": "해안 산책로 난간 · 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_prom_rail_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "해안 산책로",
+      "railing",
+      "난간",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_prom_rail",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_prom_rail_v",
+    "nameKo": "해안 산책로 난간 · 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_prom_rail_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "해안 산책로",
+      "railing",
+      "난간",
+      "울타리"
+    ],
+    "set": {
+      "id": "city_prom_rail",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_rain_wet_round_manhole",
+    "nameKo": "젖은 원형 맨홀",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rain_wet_round_manhole.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "비 오는 거리",
+      "rainy street",
+      "wet round manhole",
+      "맨홀 뚜껑",
+      "빗길 바닥"
+    ]
+  },
+  {
+    "id": "city_road2_driveway_wide",
+    "nameKo": "넓은 진입로",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_road2_driveway_wide.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "..",
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로",
+      "wide driveway",
+      "진입로",
+      "포장"
+    ]
+  },
+  {
+    "id": "city_road2_manhole_road",
+    "nameKo": "도로 맨홀",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_road2_manhole_road.png",
+    "widthPx": 32,
+    "heightPx": 64,
+    "widthTiles": 2,
+    "heightTiles": 4,
+    "footprint": [
+      "..",
+      "..",
+      "..",
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로",
+      "road manhole",
+      "맨홀",
+      "뚜껑"
+    ]
+  },
+  {
+    "id": "city_road2_tactile_linear",
+    "nameKo": "점자 블록 직선",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_road2_tactile_linear.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로",
+      "tactile paving",
+      "점자 블록",
+      "선형"
+    ]
+  },
+  {
+    "id": "city_road2_tactile_stop",
+    "nameKo": "점자 블록 정지",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_road2_tactile_stop.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로",
+      "tactile stop",
+      "점자 블록",
+      "경고 블록"
+    ]
+  },
+  {
+    "id": "city_rside_drain_cover",
+    "nameKo": "도로 배수구 덮개",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_drain_cover.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "drain cover",
+      "빗물받이",
+      "배수 격자"
+    ]
+  },
+  {
+    "id": "city_rside_reflective_stud_row",
+    "nameKo": "도로 반사 표지병 줄",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_rside_reflective_stud_row.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "도로변",
+      "reflective stud row",
+      "노면 표지병",
+      "차선 반사판"
+    ]
+  },
+  {
+    "id": "city_street_drain_grate",
+    "nameKo": "가로 배수 격자",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_street_drain_grate.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "거리",
+      "drain grate",
+      "배수구",
+      "격자 뚜껑"
+    ]
+  },
+  {
+    "id": "city_street_manhole",
+    "nameKo": "가로 맨홀",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_street_manhole.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "거리",
+      "manhole",
+      "맨홀 뚜껑"
+    ]
+  },
+  {
+    "id": "city_street_work_fence_straight",
+    "nameKo": "공사 펜스 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_street_work_fence_straight.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "거리",
+      "work fence",
+      "공사 펜스",
+      "임시 울타리"
+    ],
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_strm_stepping_stones_straight",
+    "nameKo": "하천 징검돌 직선",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_strm_stepping_stones_straight.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "straight stepping stones",
+      "디딤돌",
+      "징검다리"
+    ]
+  },
+  {
+    "id": "city_strm_stone_railing_corner_ne",
+    "nameKo": "하천 돌난간 북동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_strm_stone_railing_corner_ne.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "stone railing NE corner",
+      "난간",
+      "돌 울타리"
+    ],
+    "set": {
+      "id": "city_strm_stone_railing",
+      "piece": "corner_ne"
+    }
+  },
+  {
+    "id": "city_strm_stone_railing_corner_nw",
+    "nameKo": "하천 돌난간 북서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_strm_stone_railing_corner_nw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "stone railing NW corner",
+      "난간",
+      "돌 울타리"
+    ],
+    "set": {
+      "id": "city_strm_stone_railing",
+      "piece": "corner_nw"
+    }
+  },
+  {
+    "id": "city_strm_stone_railing_corner_se",
+    "nameKo": "하천 돌난간 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_strm_stone_railing_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "stone railing SE corner",
+      "난간",
+      "돌 울타리"
+    ],
+    "set": {
+      "id": "city_strm_stone_railing",
+      "piece": "corner_se"
+    }
+  },
+  {
+    "id": "city_strm_stone_railing_corner_sw",
+    "nameKo": "하천 돌난간 남서 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_strm_stone_railing_corner_sw.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "stone railing SW corner",
+      "난간",
+      "돌 울타리"
+    ],
+    "set": {
+      "id": "city_strm_stone_railing",
+      "piece": "corner_sw"
+    }
+  },
+  {
+    "id": "city_strm_stone_railing_h",
+    "nameKo": "하천 돌난간 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_strm_stone_railing_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "horizontal stone railing",
+      "난간",
+      "돌 울타리"
+    ],
+    "set": {
+      "id": "city_strm_stone_railing",
+      "piece": "h_straight"
+    },
+    "growthAxis": "horizontal"
+  },
+  {
+    "id": "city_strm_stone_railing_v",
+    "nameKo": "하천 돌난간 세로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_strm_stone_railing_v.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "X",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "하천",
+      "vertical stone railing",
+      "난간",
+      "돌 울타리"
+    ],
+    "set": {
+      "id": "city_strm_stone_railing",
+      "piece": "v_straight"
+    },
+    "growthAxis": "vertical"
+  },
+  {
+    "id": "city_subw_tactile_corner",
+    "nameKo": "지하철 점자 블록 모서리",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_subw_tactile_corner.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "지하철",
+      "tactile corner",
+      "점자 블록",
+      "모서리"
+    ]
+  },
+  {
+    "id": "city_subw_tactile_straight",
+    "nameKo": "지하철 점자 블록 직선",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_subw_tactile_straight.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "지하철",
+      "tactile straight",
+      "점자 블록",
+      "선형"
+    ]
+  }
+]

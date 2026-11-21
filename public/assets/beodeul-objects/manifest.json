@@ -1,0 +1,85 @@
+{
+  "groups": [
+    {
+      "id": "city",
+      "labelKo": "현대 도시",
+      "order": 80
+    }
+  ],
+  "sets": [
+    {
+      "id": "city_apt_curb_bed",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_park2_hedge",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_park3_median",
+      "role": "fence",
+      "requiredPieces": [
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_plaza_log_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_prom_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_strm_stone_railing",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    }
+  ]
+}
