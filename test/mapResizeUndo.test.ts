@@ -155,6 +155,11 @@ describe("맵 크기 변경은 잘린 칸까지 되돌린다", () => {
     expect(map().width).toBe(12);
     expect(map().height).toBe(10);
     expect(store.getCurrent().startPos).toEqual({ x: 11, y: 9 });
+
+    expect(undoMapEdit()).toBe(true);
+    expect(map().width).toBe(20);
+    expect(map().height).toBe(15);
+    expect(store.getCurrent().startPos).toEqual({ x: 18, y: 12 });
   });
 
   it("같은 크기와 상한 밖 크기는 되돌리기 칸을 만들지 않는다", () => {
