@@ -79,6 +79,26 @@
       "id": "city_logistics",
       "labelKo": "택배·물류",
       "order": 230
+    },
+    {
+      "id": "city_harbor",
+      "labelKo": "항구·수산시장",
+      "order": 240
+    },
+    {
+      "id": "city_laundry",
+      "labelKo": "세탁방·빨래",
+      "order": 250
+    },
+    {
+      "id": "city_maintenance",
+      "labelKo": "도시 설비·정비",
+      "order": 260
+    },
+    {
+      "id": "city_beach",
+      "labelKo": "해변·물놀이",
+      "order": 270
     }
   ],
   "sets": [
@@ -192,6 +212,90 @@
         "end_w",
         "h_straight",
         "v_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_bamboo_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_block_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_brick_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "corner",
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_chainlink_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_flowerbed_edge",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_hedge",
+      "role": "fence",
+      "requiredPieces": [
+        "corner",
+        "end_round",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_iron_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_low_stone_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_wood_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "gate",
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_stair_handrail",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_stair_overpass_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner",
+        "h_straight"
       ]
     }
   ]
