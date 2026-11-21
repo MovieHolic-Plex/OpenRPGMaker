@@ -187,7 +187,7 @@ function tableCell(text: string, role: "gridcell" | "columnheader", className = 
 // (이름과 섞여 보여 노이즈였다 — 2026-10 UI/UX VQA F14). id 는 행 title 과 상세 「ID」 줄에 남는다.
 // 예제 데이터의 칭호는 빈 문자열 대신 "없음"/"-" 같은 자리표시 값으로 들어오는 경우가 있어
 // 그대로 쓰면 목록에 "없음"이 칭호처럼 박힌다 — 자리표시 값은 칭호 없음으로 취급한다.
-const NICKNAME_PLACEHOLDERS: ReadonlySet<string> = new Set(["없음", "-", "—", "미정", "무"]);
+const NICKNAME_PLACEHOLDERS: ReadonlySet<string> = new Set(["없음", "-", "—", "미정", "무", "None"]);
 
 // 직업은 따로 열을 두지 않는다 — 기본 예제는 거의 모두 이름과 직업이 같아(「수호자 / 수호자」) 행마다 같은 사실이
 // 두 번 보였다(V-database-23). 이름과 다를 때만 둘째 줄 앞에 붙인다. 전체 직업은 상세 「시작 직업」에 있다.

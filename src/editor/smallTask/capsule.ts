@@ -1,4 +1,4 @@
-import { describeAiFailure } from "@/editor/panels/assistantErrorDetail";
+import { AI_RUNTIME_UNAVAILABLE_SUMMARY, describeAiFailure, isAiRuntimeUnavailable } from "@/editor/panels/assistantErrorDetail";
 import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
@@ -20,8 +20,11 @@ export function smallTaskErrorMessage(error: unknown): string {
   if (error instanceof SmallTaskError) return error.message;
   const status = error && typeof error === "object" && "status" in error ? error.status : undefined;
   const reason = error instanceof Error ? error.message : String(error);
+  // 409(heavy-missing 재시도) 뒤의 500 은 Bun 이 없어 워커가 못 뜬 것이다. 본문에 「로그인」이 있어도 로그인 만료가 아니다.
+  if (isAiRuntimeUnavailable(reason)) return AI_RUNTIME_UNAVAILABLE_SUMMARY;
   const { kind } = describeAiFailure(reason);
-  if (status === 401 || status === 403 || (status !== 404 && kind === "auth")) {
+  const http = typeof status === "number" ? status : undefined;
+  if (http === 401 || http === 403 || (http !== 404 && http !== 409 && http !== 500 && kind === "auth")) {
     return "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요.";
   }
   if (status === 0 || kind === "network") return "인터넷 연결을 확인하고 다시 시도해 주세요.";
