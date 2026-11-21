@@ -20,11 +20,13 @@ vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
 }));
 
 const fetchChatGptAuthStatus = vi.fn();
+const connectOpenAiCompatEndpoint = vi.fn();
 vi.mock("@/ai/chatgptOAuthClient", async () => {
   const actual = await import("@/ai/chatgptOAuthClient");
   return {
     ...actual,
     fetchChatGptAuthStatus: (...args: unknown[]) => fetchChatGptAuthStatus(...args),
+    connectOpenAiCompatEndpoint: (...args: unknown[]) => connectOpenAiCompatEndpoint(...args),
     startChatGptLogin: vi.fn(),
     saveCompanionApiKey: vi.fn(),
     refreshCompanionAuth: vi.fn(),
@@ -112,6 +114,38 @@ describe("저장되는 blob 에 비밀이 남지 않는다", () => {
     expect(stored.apiKey).toBe("");
     expect(stored.baseUrl).toBe("");
     expect(stored.authMode).toBe("chatgpt");
+    dispose();
+  });
+
+  it("직접 연결은 저장된 로컬 CLI 엔진을 끄고 그 엔드포인트를 남긴다", async () => {
+    storage.set("oprn:assistant-engine", JSON.stringify({
+      kind: "local-cli", cli: "claude", routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium", policyVersion: 2,
+    }));
+    connectOpenAiCompatEndpoint.mockResolvedValueOnce({
+      ok: true, code: "ok", message: "연결됐어요", model: "deepseek-v4.1-flash-eco",
+      endpoint: {
+        id: "openai-compat:opendesign", name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1",
+        hasKey: true, headerNames: [], reasoningMode: "none", allowModels: [], blockModels: [],
+        supportsImages: false, maxOutputTokens: 16384, contextWindow: 128000, firstTokenTimeoutSec: 180,
+        allowInsecurePublic: false, models: ["deepseek-v4.1-flash-eco"], defaultModel: "deepseek-v4.1-flash-eco",
+      },
+    });
+    const { root, dispose } = await renderForm();
+    const preset = findByTestId(root, "ai-openai-direct-preset");
+    const key = findByTestId(root, "ai-openai-direct-key");
+    const use = findByTestId(root, "ai-openai-direct-use");
+    if (!preset || !key || !use) throw new Error("직접 입력 칸이 없다");
+    preset.value = "opendesign";
+    preset.dispatchEvent(new Event("change"));
+    key.value = "sk-test-secret-123";
+    use.click();
+    for (let i = 0; i < 12; i += 1) await Promise.resolve();
+    expect(storage.has("oprn:assistant-engine")).toBe(false);
+    const stored = JSON.parse(storage.get(AI_CONFIG_KEY) ?? "{}");
+    expect(stored.providerId).toBe("openai-compat:opendesign");
+    expect(stored.model).toBe("deepseek-v4.1-flash-eco");
+    expect(stored.apiKey).toBe("");
+    expect(JSON.stringify(stored)).not.toContain("sk-test-secret-123");
     dispose();
   });
 
