@@ -142,7 +142,7 @@ export function applyMapEdgeDrag(
   if (shrinkLeft !== 0 || shrinkUp !== 0) shiftMapContent(mapId, { dx: shrinkLeft, dy: shrinkUp });
   if (shrinkW !== 0 || shrinkH !== 0) {
     const cur = store.getCurrent().maps[mapId];
-    if (cur) resizeMap(mapId, cur.width + shrinkW, cur.height + shrinkH);
+    if (cur) resizeMap(mapId, cur.width + shrinkW, cur.height + shrinkH, { recordHistory: false });
   }
   const growLeft = Math.max(0, dLeft);
   const growUp = Math.max(0, dUp);
@@ -150,7 +150,7 @@ export function applyMapEdgeDrag(
   const growH = growUp + Math.max(0, dDown);
   if (growW !== 0 || growH !== 0) {
     const cur = store.getCurrent().maps[mapId];
-    if (cur) resizeMap(mapId, cur.width + growW, cur.height + growH);
+    if (cur) resizeMap(mapId, cur.width + growW, cur.height + growH, { recordHistory: false });
   }
   if (growLeft !== 0 || growUp !== 0) shiftMapContent(mapId, { dx: growLeft, dy: growUp });
   return { dx: dLeft, dy: dUp };
