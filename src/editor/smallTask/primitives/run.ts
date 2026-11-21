@@ -30,7 +30,8 @@ export function matchesPrimitiveSchema(schema: JsonSchema, value: unknown): bool
   if (schema.enum && !schema.enum.includes(value as string | number)) return false;
   if (schema.oneOf && schema.oneOf.filter(choice => matchesPrimitiveSchema(choice, value)).length !== 1) return false;
   if (typeof value === "string") {
-    return value.length >= (schema.minLength ?? 0) && value.length <= (schema.maxLength ?? Infinity)
+    const length = [...value].length;
+    return length >= (schema.minLength ?? 0) && length <= (schema.maxLength ?? Infinity)
       && (schema.pattern === undefined || new RegExp(schema.pattern, "u").test(value));
   }
   if (typeof value === "number") {

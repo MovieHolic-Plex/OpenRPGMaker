@@ -117,6 +117,7 @@ describe("database crop view", () => {
 
     expect(store.getCurrent().database.crops).toHaveLength(1);
     expect(findByTestId(host, "db-crop-name")).toBeTruthy();
+    expect(findByTestId(host, "small-task-open")?.textContent).toBe("이걸로 작업");
   });
 
   // Break caught: the crop tab exposes raw fields but not whether time/farmable-map wiring is ready.

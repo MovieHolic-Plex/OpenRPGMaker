@@ -19,6 +19,7 @@
 // 생성한다. 검색·분류 변경은 목록만 갱신하며 상세 폼을 유지한다.
 
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
+import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { field, matchesNameOrId, numberField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { renderLifePanel } from "@/editor/panels/databaseLifeUi";
@@ -168,7 +169,9 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
   panels.style.flexShrink = "0";
   if (selection?.kind === "fish") {
     const record = fish.find((record) => record.id === selection.id)!;
-    panels.append(panelHost(`db-life-collections-panel-fish-${record.id}`, fishInspector(record, rerender)));
+    const inspector = fishInspector(record, rerender);
+    inspector.prepend(recordSmallTask("fishSpecies", record.id));
+    panels.append(panelHost(`db-life-collections-panel-fish-${record.id}`, inspector));
   } else if (selection?.kind === "fishing") {
     const record = spots.find((record) => record.id === selection.id)!;
     panels.append(panelHost(`db-life-collections-panel-fishing-${record.id}`, spotInspector(record, project, rerender)));

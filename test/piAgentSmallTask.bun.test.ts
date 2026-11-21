@@ -4,7 +4,7 @@ import { createAssistantMessageEventStream, type AssistantMessage } from "@oh-my
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { MAP_REMOVAL_DRAFT_REFUSAL } from "../src/editor/smallTask/primitives/errors.ts";
-import { mapTarget } from "../src/editor/smallTask/target.ts";
+import { dbTarget, mapTarget } from "../src/editor/smallTask/target.ts";
 import { SMALL_TASK_SCOPE_REFUSAL } from "../src/editor/smallTask/tools.ts";
 import { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES } from "../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { createBlankProject } from "../src/project/defaults/blankProject.ts";
@@ -70,6 +70,26 @@ function fixture() {
 }
 
 const apply = (id: string, args: Call["args"]): Call => ({ name: APPLY_SMALL_TASK_PRIMITIVE, args: { id, args } });
+
+test("작은 일 Pi 실행은 열린 이벤트 초안이 쓰는 일정표를 삭제하지 않는다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const schedule = { id: "schedule_test", title: "주간 일정", slots: [{ label: "월" }], activities: [] };
+  project.database.schedules = [schedule];
+  const target = dbTarget(project, "schedules", schedule.id)!;
+  const other = project.maps[mapId].events[1]!;
+  const draft = {
+    ...other, commands: [{ kind: "planSchedule", scheduleId: schedule.id } satisfies Command], pages: undefined,
+    draft: { kind: "edit" as const, original: { ...event, id: other.id } },
+  };
+  const done = await runPiAgent({
+    ...request, mapIds: [],
+    smallTask: { ...request.smallTask, target, draftSource: { maps: { [mapId]: { events: [draft] } } } },
+  }, { streamFn: scripted([apply("db.schedules.delete", {})]) });
+
+  expect(done.stoppedEarly).toContain("삭제할 수 없");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+});
 
 test("작은 일 Pi 실행은 열린 이벤트 초안에서 호출하는 대사의 첫 회 한정 처리를 거절한다", async () => {
   const { request, project, mapId, event, commands } = fixture();
