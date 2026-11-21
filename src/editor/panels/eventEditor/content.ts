@@ -65,6 +65,13 @@ import {
   showCommandInspector,
 } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
+import {
+  canRedoEventPageDeletion,
+  canUndoEventPageDeletion,
+  pageDeletionIsNewerThanCommands,
+  redoEventPageDeletion,
+  undoEventPageDeletion,
+} from "./pageDeleteHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { defaultInsertionPath, describeInsertionPath } from "./commandInspector";
 import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
@@ -842,6 +849,23 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     applySearch();
   });
 
+  const canUndoEditorStep = (): boolean =>
+    commandHistory.canUndo() || canUndoEventPageDeletion(mapId, eventId);
+  const canRedoEditorStep = (): boolean =>
+    commandHistory.canRedo() || canRedoEventPageDeletion(mapId, eventId);
+  const undoEditorStep = (): void => {
+    if (pageDeletionIsNewerThanCommands(mapId, eventId) && undoEventPageDeletion(mapId, eventId)) return;
+    if (commandHistory.canUndo()) {
+      commandHistory.undo();
+      return;
+    }
+    undoEventPageDeletion(mapId, eventId);
+  };
+  const redoEditorStep = (): void => {
+    if (commandHistory.canRedo()) commandHistory.redo();
+    else redoEventPageDeletion(mapId, eventId);
+  };
+
   const element = el("div", {
     class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
@@ -854,8 +878,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
         class: "event-editor-command-search-field",
         children: [commandSearch, searchClear, searchCount],
       }),
-      toolbarButton("undo", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-      toolbarButton("redo", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
+      toolbarButton("undo", "되돌리기", "event-command-toolbar-undo", () => undoEditorStep(), !canUndoEditorStep()),
+      toolbarButton("redo", "다시 실행", "event-command-toolbar-redo", () => redoEditorStep(), !canRedoEditorStep()),
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
@@ -865,8 +889,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   const syncHistoryButtons = (): void => {
     const undo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-undo"]');
     const redo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-redo"]');
-    if (undo) setDisabled(undo, !commandHistory.canUndo());
-    if (redo) setDisabled(redo, !commandHistory.canRedo());
+    if (undo) setDisabled(undo, !canUndoEditorStep());
+    if (redo) setDisabled(redo, !canRedoEditorStep());
   };
   return {
     element,
@@ -1042,11 +1066,22 @@ function pageCommandHistory(mapId: MapId, eventId: string, pageId: string): Comm
 }
 
 export function undoActiveEventCommands(mapId: MapId, eventId: string, redo = false): void {
+  if (redo) {
+    const pageId = activePageIdOf(mapId, eventId);
+    if (pageId && pageCommandHistory(mapId, eventId, pageId).canRedo()) {
+      pageCommandHistory(mapId, eventId, pageId).redo();
+      return;
+    }
+    redoEventPageDeletion(mapId, eventId);
+    return;
+  }
+  if (pageDeletionIsNewerThanCommands(mapId, eventId) && undoEventPageDeletion(mapId, eventId)) return;
   const pageId = activePageIdOf(mapId, eventId);
-  if (!pageId) return;
-  const history = pageCommandHistory(mapId, eventId, pageId);
-  if (redo) history.redo();
-  else history.undo();
+  if (pageId && pageCommandHistory(mapId, eventId, pageId).canUndo()) {
+    pageCommandHistory(mapId, eventId, pageId).undo();
+    return;
+  }
+  undoEventPageDeletion(mapId, eventId);
 }
 
 function activePageCommands(mapId: MapId, eventId: string, pageId: string): Command[] {

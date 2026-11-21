@@ -42,6 +42,7 @@ import { projectWireView } from "./io/serialize";
 import { forgetBundledTilesetDiffViews, primeBundledTilesetDiffViews } from "./bundledTilesetDiff";
 import {
   applyEventDraftVault,
+  applySessionEvents,
   clearEventDraftVault,
   loadEventDraftVaultFromLocalStorage,
   persistEventDraftVaultNow,
@@ -1939,7 +1940,8 @@ class ProjectStore {
     clearCopiedEventPage();
     if (options.restoreVault && canWriteTeamProject()) {
       loadEventDraftVaultFromLocalStorage();
-      this.current = applyEventDraftVault(project);
+      // 세션 스냅샷이 초안 금고보다 뒤다. 붙여넣기는 초안이 아니라서, 옛 초안이 목록을 이기면 안 된다.
+      this.current = applySessionEvents(applyEventDraftVault(project));
     } else {
       this.current = project;
     }

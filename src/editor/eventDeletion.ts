@@ -1,6 +1,7 @@
 import { deleteEvent } from "@/editor/eventActions";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
+import { showConfirm } from "@/editor/ui/modal";
 import { forgetEventDraftVaultEntry, persistEventDraftVaultNow } from "@/project/eventDraftVault";
 import { eventDraftHasUserChanges } from "@/project/eventDrafts";
 import { store } from "@/project/store";
@@ -46,11 +47,23 @@ export function deleteEditorEvent(mapId: MapId, eventId: string, options: { read
   return true;
 }
 
-export function requestEditorEventDeletion(mapId: MapId, eventId: string): boolean {
+let deletionConfirm: Promise<boolean> | null = null;
+
+export function requestEditorEventDeletion(mapId: MapId, eventId: string): Promise<boolean> {
   const map = store.getCurrent().maps[mapId];
-  if (!map?.events.some((event) => event.id === eventId)) return false;
-  if (!confirmEventDeletion(mapId, eventId)) return false;
-  return deleteEditorEvent(mapId, eventId);
+  if (!map?.events.some((event) => event.id === eventId)) return Promise.resolve(false);
+  if (deletionConfirm) return deletionConfirm;
+  const flight: { current: Promise<boolean> | null } = { current: null };
+  const pending = confirmEventDeletion(mapId, eventId).then((confirmed) => {
+    if (!confirmed) return false;
+    return deleteEditorEvent(mapId, eventId);
+  });
+  flight.current = pending.finally(() => {
+    if (deletionConfirm === flight.current) deletionConfirm = null;
+  });
+  if (!flight.current) return Promise.resolve(false);
+  deletionConfirm = flight.current;
+  return flight.current;
 }
 
 export function deleteSelectedEditorEvent(): boolean {
@@ -58,17 +71,25 @@ export function deleteSelectedEditorEvent(): boolean {
   const eventId = state.selectedEventId;
   if (!eventId) return false;
   const mapId = state.currentMapId ?? store.getCurrent().startMapId;
-  return requestEditorEventDeletion(mapId, eventId);
+  if (!store.getCurrent().maps[mapId]?.events.some((event) => event.id === eventId)) return false;
+  // 대화상자가 열리는 즉시 Delete 를 소비한다. false 를 돌려주면 같은 키가 타일 선택까지 지운다.
+  void requestEditorEventDeletion(mapId, eventId);
+  return true;
 }
 
-function confirmEventDeletion(mapId: MapId, eventId: string): boolean {
-  if (typeof globalThis.confirm !== "function") return false;
+function confirmEventDeletion(mapId: MapId, eventId: string): Promise<boolean> {
   const map = store.getCurrent().maps[mapId];
   const event = map?.events.find((entry) => entry.id === eventId);
   const label = event ? eventLabel(event) : eventId;
   const hasDraftChanges = eventDraftHasUserChanges(store.getCurrent(), mapId, eventId);
   const draftWarning = hasDraftChanges ? "\n저장하지 않은 편집 내용도 함께 삭제됩니다." : "";
-  return globalThis.confirm(`「${label}」 이벤트를 삭제할까요?${draftWarning}\n삭제 후 토스트의 「복구」 또는 Ctrl+Z로 되돌릴 수 있습니다.`);
+  return showConfirm({
+    title: "이벤트 삭제",
+    message: `「${label}」 이벤트를 삭제할까요?${draftWarning}\n삭제 후 토스트의 「복구」 또는 Ctrl+Z로 되돌릴 수 있습니다.`,
+    confirmLabel: "삭제",
+    cancelLabel: "취소",
+    danger: true,
+  });
 }
 
 function eventLabel(event: { readonly id: string; readonly pages?: readonly { readonly name?: string }[] }): string {

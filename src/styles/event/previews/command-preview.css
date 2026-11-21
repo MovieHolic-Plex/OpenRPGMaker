@@ -578,6 +578,21 @@
 
 .ecp-message-body { white-space: pre-wrap; word-break: break-word; }
 
+/* 긴 본문(수천 자)이 창을 키워 화자 이름표를 덮지 않게 본문만 자른다.
+ * .ecp-message-window 자체에 max-height 를 주면 top:-9px 인 이름표까지 잘린다. */
+.ecp-message-window .dialogue-content {
+  overflow: hidden;
+  max-height: 132px;
+}
+
+.ecp-message-window .ecp-message-body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
 .ecp-message-body.muted { color: var(--text-1); font-size: 12px; }
 
 /* changeFace play mock — larger face crop, no editor meta chrome inside the window */

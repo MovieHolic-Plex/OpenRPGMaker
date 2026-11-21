@@ -1,3 +1,4 @@
+import { noteCommandToolbarEdit } from "@/editor/panels/eventEditor/pageDeleteHistory";
 import { jsonEqual } from "@/util/structuralJson";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
@@ -147,6 +148,7 @@ export function recordCommandToolbarChange(
       entry.future.push(...future);
     } else {
       if (entry.past.length > HISTORY_LIMIT) entry.past.shift();
+      noteCommandToolbarEdit();
       if (structural || !jsonEqual(authoredCommandPaths(before), authoredCommandPaths(readCommands()))) clearCommandInspector();
     }
     notifyCommandSelectionChanged();

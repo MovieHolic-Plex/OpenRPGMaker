@@ -71,8 +71,9 @@ function devProjectStorageKey(): string | null {
 }
 
 function isFreshProjectLocation(): boolean {
-  if (typeof window === "undefined") return false;
-  const params = new URLSearchParams(window.location.search);
+  // 테스트 창 스텁은 window 만 두고 location 이 없다. 그건 빈 세션이 아니다.
+  if (typeof window === "undefined" || !window.location) return false;
+  const params = new URLSearchParams(window.location.search ?? "");
   return params.has("freshProject") || params.has("blankProject");
 }
 
