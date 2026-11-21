@@ -11,6 +11,7 @@ import {
   ChatGptCompanionResponseError,
   connectOpenAiCompatEndpoint,
   testOpenAiCompatEndpoint,
+  type OpenAiCompatConnectRequest,
   type OpenAiCompatTestResponse,
 } from "@/ai/chatgptOAuthClient";
 import { isLegacyTerraModel } from "@/ai/chatgptDefault";
@@ -20,7 +21,6 @@ import {
   checkOpenAiCompatBaseUrl,
   type OpenAiCompatEndpointPublic,
   type OpenAiCompatPreset,
-  type OpenAiCompatReasoningMode,
 } from "@/ai/openAiCompat";
 import { el } from "@/util/dom";
 
@@ -70,6 +70,18 @@ export function redactOpenAiDirectSecrets(text: string, secrets: readonly string
     out = out.split(value).join(KEY_MASK);
   }
   return out;
+}
+
+/** 프리셋이 적어 둔 정책만 붙인다. 없는 칸은 보내지 않아 이미 저장된 허용·그림 설정을 빈 값으로 덮지 않는다. */
+function presetRequest(entry: OpenAiCompatPreset | undefined): Pick<OpenAiCompatConnectRequest, "reasoningMode" | "allowModels" | "blockModels" | "supportsImages" | "imageModels"> {
+  if (!entry) return {};
+  return {
+    ...(entry.reasoningMode ? { reasoningMode: entry.reasoningMode } : {}),
+    ...(entry.allowModels?.length ? { allowModels: [...entry.allowModels] } : {}),
+    ...(entry.blockModels?.length ? { blockModels: [...entry.blockModels] } : {}),
+    ...(entry.supportsImages !== undefined ? { supportsImages: entry.supportsImages } : {}),
+    ...(entry.imageModels?.length ? { imageModels: [...entry.imageModels] } : {}),
+  };
 }
 
 function field(label: string, control: HTMLElement, hint?: HTMLElement): HTMLElement {
@@ -171,6 +183,8 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
   const setBusy = (next: boolean): void => {
     busy = next;
     for (const button of [loadButton, testButton, useButton]) button.disabled = next;
+    // 응답이 오기 전에 프리셋을 바꾸면, 끝난 요청이 다른 주소의 목록을 채우거나 방금 넣은 키를 지운다.
+    for (const control of [preset, baseUrl, apiKey, model, modelList]) control.disabled = next;
     root.setAttribute("aria-busy", next ? "true" : "false");
   };
   const requireBase = (): string | null => {
@@ -240,6 +254,7 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
     const url = requireBase();
     if (!url) return;
     const entry = selectedPreset();
+    const policy = presetRequest(entry);
     setBusy(true);
     setStatus("서버에서 모델 목록을 가져오는 중…", "busy");
     // 모델 ID 를 보내지 않으면 동반 서비스는 GET {base}/models 만 한다. 채팅은 나가지 않는다.
@@ -247,6 +262,8 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
       name: entry?.name ?? "OpenAI 호환",
       baseUrl: url,
       ...(apiKey.value.trim() ? { apiKey: apiKey.value.trim() } : {}),
+      ...(policy.allowModels ? { allowModels: policy.allowModels } : {}),
+      ...(policy.blockModels ? { blockModels: policy.blockModels } : {}),
     }).then((response) => {
       if (disposed) return;
       showTest(response, false);
@@ -261,6 +278,7 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
     const id = url ? requireModel() : null;
     if (!url || !id) return;
     const entry = selectedPreset();
+    const policy = presetRequest(entry);
     setBusy(true);
     setStatus("채팅과 도구 호출을 시험하는 중…", "busy");
     void testOpenAiCompatEndpoint({
@@ -269,6 +287,8 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
       ...(apiKey.value.trim() ? { apiKey: apiKey.value.trim() } : {}),
       model: id,
       probeTools: true,
+      ...(policy.allowModels ? { allowModels: policy.allowModels } : {}),
+      ...(policy.blockModels ? { blockModels: policy.blockModels } : {}),
     }).then((response) => {
       if (disposed) return;
       showTest(response, true);
@@ -283,7 +303,6 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
     const id = url ? requireModel() : null;
     if (!url || !id) return;
     const entry = selectedPreset();
-    const reasoningMode: OpenAiCompatReasoningMode | undefined = entry?.reasoningMode;
     setBusy(true);
     setStatus("도구 호출을 확인하고 이 PC에 저장하는 중…", "busy");
     void connectOpenAiCompatEndpoint({
@@ -292,7 +311,7 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
       baseUrl: url,
       model: id,
       ...(apiKey.value.trim() ? { apiKey: apiKey.value.trim() } : {}),
-      ...(reasoningMode ? { reasoningMode } : {}),
+      ...presetRequest(entry),
     }).then(async (result) => {
       if (disposed) return;
       if (!result.ok || !result.endpoint) {

@@ -108,10 +108,71 @@ describe("OpenAI 호환 API 직접 입력", () => {
       kind: "custom", name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1",
       model: "deepseek-v4.1-flash-eco", apiKey: KEY, reasoningMode: "none",
     }));
+    const sent = connectEndpoint.mock.calls[0][0] as Record<string, unknown>;
+    expect(sent.allowModels).toBeUndefined();
+    expect(sent.blockModels).toBeUndefined();
+    expect(sent.supportsImages).toBeUndefined();
+    expect(sent.imageModels).toBeUndefined();
     expect(used).toEqual([{ id: "openai-compat:opendesign", model: "deepseek-v4.1-flash-eco" }]);
     expect(key.value).toBe("");
     expect(root.textContent).not.toContain(KEY);
     expect(JSON.stringify(used)).not.toContain(KEY);
+    view.dispose();
+  });
+
+  it("Argon 프리셋의 모델 정책과 그림 입력을 보내고, 요청 중에는 칸을 잠근다", async () => {
+    const { renderAiOpenAiDirectSettings } = await import("@/editor/panels/aiOpenAiDirectSettings");
+    const view = renderAiOpenAiDirectSettings({ onUse: () => undefined });
+    const root = view.element as unknown as FakeElement;
+    const preset = findByTestId(root, "ai-openai-direct-preset")!;
+    const baseUrl = findByTestId(root, "ai-openai-direct-baseurl")!;
+    const key = findByTestId(root, "ai-openai-direct-key")!;
+    const model = findByTestId(root, "ai-openai-direct-model")!;
+    const modelList = findByTestId(root, "ai-openai-direct-model-list")!;
+    preset.value = "cliproxy-argon";
+    preset.dispatchEvent(new Event("change"));
+    expect(baseUrl.value).toBe("http://mdc-server:8318/v1");
+    key.value = KEY;
+
+    let release: (value: unknown) => void = () => undefined;
+    testEndpoint.mockReturnValueOnce(new Promise((resolve) => { release = resolve; }));
+    findByTestId(root, "ai-openai-direct-load-models")!.click();
+    expect(preset.disabled).toBe(true);
+    expect(baseUrl.disabled).toBe(true);
+    expect(key.disabled).toBe(true);
+    expect(model.disabled).toBe(true);
+    expect(modelList.disabled).toBe(true);
+    expect(testEndpoint).toHaveBeenCalledWith(expect.objectContaining({
+      baseUrl: "http://mdc-server:8318/v1",
+      allowModels: ["gemini-4-argon*"],
+      blockModels: ["claude-*"],
+    }));
+    expect((testEndpoint.mock.calls[0][0] as Record<string, unknown>).supportsImages).toBeUndefined();
+    release({
+      ok: true, code: "ok", message: "목록", models: ["gemini-4-argon-high"],
+      modelsAvailable: true, hiddenModels: 1, toolsOk: null, latencyMs: 1, warnings: [],
+    });
+    await flush();
+    expect(preset.disabled).toBe(false);
+    expect(key.disabled).toBe(false);
+
+    model.value = "gemini-4-argon-high";
+    connectEndpoint.mockResolvedValueOnce({
+      ok: true, code: "ok", message: "저장", model: "gemini-4-argon-high",
+      endpoint: { ...ENDPOINT, id: "openai-compat:cliproxyapi-argon", name: "CLIProxyAPI Argon", supportsImages: true, imageModels: ["gemini-4-argon-high"] },
+    });
+    findByTestId(root, "ai-openai-direct-use")!.click();
+    await flush();
+    expect(connectEndpoint).toHaveBeenCalledWith(expect.objectContaining({
+      kind: "custom",
+      baseUrl: "http://mdc-server:8318/v1",
+      model: "gemini-4-argon-high",
+      allowModels: ["gemini-4-argon*"],
+      blockModels: ["claude-*"],
+      supportsImages: true,
+      imageModels: ["gemini-4-argon-high"],
+    }));
+    expect(key.value).toBe("");
     view.dispose();
   });
 });

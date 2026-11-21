@@ -733,6 +733,8 @@ export function renderAiSettingsForm(options: {
     void refreshAiConnectionStatus(updateReadiness);
   };
   applyDirectConnection = (endpointId, model) => {
+    // 로컬 CLI 엔진이 남아 있으면 loadAiConfig 가 방금 고른 엔드포인트를 그 CLI 로 덮어 쓴다.
+    saveEngineChoice(null);
     authSettings.selectProvider(endpointId, { focus: false });
     for (const slot of AI_COMPAT_ROLE_SLOTS) assignCompatRole(slot.id, endpointId, model);
     compatSettings.refresh();

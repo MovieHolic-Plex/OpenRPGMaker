@@ -90,4 +90,45 @@ describe("connectOpenAiCompat", () => {
     expect(JSON.stringify(exported)).not.toContain(KEY);
     expect(JSON.stringify(result.endpoint)).not.toContain(KEY);
   });
+
+  test("프리셋의 허용·차단·그림 설정을 저장하고, 다음 연결에서 빼면 유지한다", async () => {
+    const base = "http://127.0.0.1:8318/v1";
+    let chats = 0;
+    const fetchImpl = (async (url: string | URL | Request, init?: RequestInit) => {
+      const path = String(url);
+      if (path.endsWith("/models")) {
+        return new Response(JSON.stringify({ data: [{ id: "gemini-4-argon-high" }, { id: "claude-sonnet" }] }), { status: 200 });
+      }
+      chats += 1;
+      const body = JSON.parse(String(init?.body ?? "{}")) as { model?: string };
+      expect(body.model).toBe("gemini-4-argon-high");
+      return new Response(JSON.stringify({ choices: [{ message: { role: "assistant", content: "pong" } }] }), { status: 200 });
+    }) as typeof fetch;
+    const first = await connectOpenAiCompat({
+      kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "gemini-4-argon-high",
+      allowModels: ["gemini-4-argon*"], blockModels: ["claude-*"],
+      supportsImages: true, imageModels: ["gemini-4-argon-high"],
+    }, fetchImpl);
+    expect(first.ok).toBe(true);
+    expect(first.endpoint?.allowModels).toEqual(["gemini-4-argon*"]);
+    expect(first.endpoint?.blockModels).toEqual(["claude-*"]);
+    expect(first.endpoint?.supportsImages).toBe(true);
+    expect(first.endpoint?.imageModels).toEqual(["gemini-4-argon-high"]);
+    expect(first.test?.models).toContain("gemini-4-argon-high");
+    expect(first.test?.models).not.toContain("claude-sonnet");
+    expect(chats).toBe(1);
+
+    chats = 0;
+    const again = await connectOpenAiCompat({
+      kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "gemini-4-argon-high",
+    }, fetchImpl);
+    expect(again.ok).toBe(true);
+    expect(again.endpoint?.id).toBe(first.endpoint?.id);
+    expect(again.endpoint?.allowModels).toEqual(["gemini-4-argon*"]);
+    expect(again.endpoint?.blockModels).toEqual(["claude-*"]);
+    expect(again.endpoint?.supportsImages).toBe(true);
+    expect(again.endpoint?.imageModels).toEqual(["gemini-4-argon-high"]);
+    expect(again.endpoint?.models).not.toContain("claude-sonnet");
+    expect(chats).toBe(1);
+  });
 });

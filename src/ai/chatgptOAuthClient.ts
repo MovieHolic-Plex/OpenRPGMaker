@@ -570,6 +570,11 @@ export interface OpenAiCompatConnectRequest {
   readonly model?: string;
   /** 프리셋의 추론 전달 방식. 키와 함께 서버로만 가고 브라우저 저장소에는 남지 않는다. */
   readonly reasoningMode?: "none" | "field" | "suffix";
+  /** 프리셋의 모델 정책. 빼면 서버가 이미 저장된 패턴을 유지한다. */
+  readonly allowModels?: readonly string[];
+  readonly blockModels?: readonly string[];
+  readonly supportsImages?: boolean;
+  readonly imageModels?: readonly string[];
 }
 
 export interface OpenAiCompatConnectResponse {

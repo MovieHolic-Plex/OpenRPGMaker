@@ -531,6 +531,11 @@ export interface OpenAiCompatConnectInput {
   readonly model?: unknown;
   /** 프리셋이 정한 추론 전달 방식. 없으면 저장 기본(보내지 않음)이다. */
   readonly reasoningMode?: unknown;
+  /** 빼면 저장된 허용·차단·그림 설정을 유지한다. 빈 배열을 보내면 그 목록을 비운다. */
+  readonly allowModels?: unknown;
+  readonly blockModels?: unknown;
+  readonly supportsImages?: unknown;
+  readonly imageModels?: unknown;
 }
 
 export interface OpenAiCompatConnectResult {
@@ -558,7 +563,21 @@ export async function connectOpenAiCompat(input: OpenAiCompatConnectInput, fetch
   if (!check.ok || !check.url) return reject("invalid", check.error ?? "기본 주소가 올바르지 않아요.");
   const reasoningMode = openRouter ? "field" as const
     : input.reasoningMode === "none" || input.reasoningMode === "field" || input.reasoningMode === "suffix" ? input.reasoningMode : undefined;
-  return connectOpenAiCompatTested({ name, baseUrl: check.url, apiKey, model, ...(reasoningMode ? { reasoningMode } : {}) }, fetchImpl);
+  const stringList = (value: unknown): readonly string[] | undefined => Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map((item) => item.trim())
+    : undefined;
+  const allowModels = stringList(input.allowModels);
+  const blockModels = stringList(input.blockModels);
+  const imageModels = stringList(input.imageModels);
+  const supportsImages = typeof input.supportsImages === "boolean" ? input.supportsImages : undefined;
+  return connectOpenAiCompatTested({
+    name, baseUrl: check.url, apiKey, model,
+    ...(reasoningMode ? { reasoningMode } : {}),
+    ...(allowModels !== undefined ? { allowModels } : {}),
+    ...(blockModels !== undefined ? { blockModels } : {}),
+    ...(supportsImages !== undefined ? { supportsImages } : {}),
+    ...(imageModels !== undefined ? { imageModels } : {}),
+  }, fetchImpl);
 }
 
 /** 이미 검증한 주소·이름으로 시험(도구 달린 채팅)하고 통과하면 저장한다. 빠른 연결과 키 입양(detectedKeys.ts)이 같이 쓴다. */
@@ -571,6 +590,10 @@ export interface OpenAiCompatTestedConnect {
   readonly reasoningMode?: OpenAiCompatReasoningMode;
   readonly contextWindow?: number;
   readonly maxOutputTokens?: number;
+  readonly allowModels?: readonly string[];
+  readonly blockModels?: readonly string[];
+  readonly supportsImages?: boolean;
+  readonly imageModels?: readonly string[];
 }
 
 export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect, fetchImpl: FetchLike = fetch): Promise<OpenAiCompatConnectResult> {
@@ -578,7 +601,11 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
   const reject = (code: string, message: string, test?: OpenAiCompatTestResult): OpenAiCompatConnectResult => ({
     ok: false, code, message, model, endpoints: listOpenAiCompatPublic(), ...(test ? { test } : {}),
   });
-  const test = await testOpenAiCompat({ name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true }, fetchImpl);
+  const test = await testOpenAiCompat({
+    name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true,
+    ...(input.allowModels !== undefined ? { allowModels: input.allowModels } : {}),
+    ...(input.blockModels !== undefined ? { blockModels: input.blockModels } : {}),
+  }, fetchImpl);
   if (test.chat && !test.chat.ok) return reject(test.code === "ok" ? "chat" : test.code, test.chat.message || test.message, test);
   if (!test.ok || !test.chat?.ok) return reject(test.code, test.message, test);
   if (test.toolsOk !== true) {
@@ -596,6 +623,10 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
     ...(input.reasoningMode ? { reasoningMode: input.reasoningMode } : {}),
     ...(input.contextWindow ? { contextWindow: input.contextWindow } : {}),
     ...(input.maxOutputTokens ? { maxOutputTokens: input.maxOutputTokens } : {}),
+    ...(input.allowModels !== undefined ? { allowModels: input.allowModels } : {}),
+    ...(input.blockModels !== undefined ? { blockModels: input.blockModels } : {}),
+    ...(input.supportsImages !== undefined ? { supportsImages: input.supportsImages } : {}),
+    ...(input.imageModels !== undefined ? { imageModels: input.imageModels } : {}),
   });
   openAiCompatStore.recordTest(endpoint.id, {
     models: test.models,
