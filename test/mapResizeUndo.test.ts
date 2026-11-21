@@ -143,6 +143,20 @@ describe("맵 크기 변경은 잘린 칸까지 되돌린다", () => {
     expect(map().events.find((event) => event.id === outsideId)).toMatchObject({ x: 11, y: 9 });
   });
 
+  it("줄인 시작 맵을 되돌린 뒤 밖 칸을 시작 위치로 두고 다시 실행해도 시작 위치는 맵 안에 남는다", () => {
+    setStartPos(1, 1);
+    resetMapEditHistory();
+    resizeMap(mapId(), 12, 10);
+    expect(undoMapEdit()).toBe(true);
+    expect(map().width).toBe(20);
+    setStartPos(18, 12);
+
+    expect(redoMapEdit()).toBe(true);
+    expect(map().width).toBe(12);
+    expect(map().height).toBe(10);
+    expect(store.getCurrent().startPos).toEqual({ x: 11, y: 9 });
+  });
+
   it("같은 크기와 상한 밖 크기는 되돌리기 칸을 만들지 않는다", () => {
     const id = mapId();
     const before = { width: map().width, height: map().height };
