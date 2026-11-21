@@ -66,21 +66,27 @@ function imageSize(image: SizedImage): { width: number; height: number } {
   return { width: image.naturalWidth || image.width || 0, height: image.naturalHeight || image.height || 0 };
 }
 
+function cropChipsetBand(image: SizedImage, rect: { x: number; y: number; width: number; height: number }): HTMLCanvasElement | null {
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  context.imageSmoothingEnabled = false;
+  context.drawImage(image, rect.x, rect.y, rect.width, rect.height, 0, 0, rect.width, rect.height);
+  return canvas;
+}
+
 /** 2D 캔버스로 자른 띠. document 가 없거나 한 장이면 null. */
 export function sliceChipsetBandSources(image: SizedImage, tileSize = 16): { canvases: HTMLCanvasElement[]; columns: number } | null {
-  if (typeof document === "undefined") return null;
   const { width, height } = imageSize(image);
   const rects = chipsetBandRects(width, height, tileSize);
   if (!rects || rects.length < 2) return null;
   const canvases: HTMLCanvasElement[] = [];
   for (const rect of rects) {
-    const canvas = document.createElement("canvas");
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-    const context = canvas.getContext("2d");
-    if (!context) return null;
-    context.imageSmoothingEnabled = false;
-    context.drawImage(image, rect.x, rect.y, rect.width, rect.height, 0, 0, rect.width, rect.height);
+    const canvas = cropChipsetBand(image, rect);
+    if (!canvas) return null;
     canvases.push(canvas);
   }
   return { canvases, columns: rects[0]!.columns };
@@ -176,11 +182,12 @@ type UploadRuntime = {
 function keepFirstBand(file: ImageFileProto, image: SizedImage): void {
   if (!chipsetTextureKeys.has(file.key)) return;
   try {
-    const bands = sliceChipsetBands(image, tileSizeForKey(file.key));
-    if (bands && bands.length > 1) {
-      rememberChipsetImage(file.key, image);
-      file.data = bands[0]!;
-    }
+    const { width, height } = imageSize(image);
+    const rects = chipsetBandRects(width, height, tileSizeForKey(file.key));
+    const first = rects && rects.length > 1 ? cropChipsetBand(image, rects[0]!) : null;
+    if (!first) return;
+    rememberChipsetImage(file.key, image);
+    file.data = first;
   } catch (error) {
     console.warn(`[chipset] 시트 띠 나누기 실패: ${file.key}`, error);
   }

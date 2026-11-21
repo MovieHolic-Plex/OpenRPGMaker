@@ -26,15 +26,22 @@ function currentUid(): number | undefined {
   return typeof process.getuid === "function" ? process.getuid() : undefined;
 }
 
+/**
+ * 캐시 디렉터리로 쓸 수 있는지. 심볼릭 링크는 디렉터리가 아니다.
+ * Windows 의 mode 는 실제 ACL 이 아니라 쓰기 가능하면 그룹·기타 쓰기 비트가 켜진 합성값이라, POSIX 마스크를 씌우면 정상 캐시도 거절된다.
+ */
+export function cacheDirectoryAccepted(info: { isDirectory(): boolean; uid: number; mode: number }, platform: NodeJS.Platform, uid: number | undefined): boolean {
+  if (!info.isDirectory()) return false;
+  if (platform === "win32") return true;
+  if (uid !== undefined && info.uid !== uid) return false;
+  return (info.mode & 0o022) === 0;
+}
+
 /** 다른 계정이 만든 디렉터리·그룹에 쓰는 디렉터리·심볼릭 링크는 캐시로 쓰지 않는다. */
 function ownedCacheDir(cacheDir: string): boolean {
   try {
     mkdirSync(cacheDir, { recursive: true, mode: 0o700 });
-    const info = lstatSync(cacheDir);
-    if (!info.isDirectory()) return false;
-    const uid = currentUid();
-    if (uid !== undefined && info.uid !== uid) return false;
-    return (info.mode & 0o022) === 0;
+    return cacheDirectoryAccepted(lstatSync(cacheDir), process.platform, currentUid());
   } catch {
     return false;
   }
@@ -78,10 +85,24 @@ export function ensureCachedTrack(track: Track, cacheDir: string, fetchImpl: typ
       }
       const partial = `${target}.${process.pid}.${Date.now()}.part`;
       const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0);
-      const fd = openSync(partial, flags, 0o600);
-      try { writeFileSync(fd, bytes); } finally { closeSync(fd); }
-      renameSync(partial, target);
-      return ownedRegularFile(target) ? target : null;
+      let fd: number | undefined;
+      let renamed = false;
+      try {
+        fd = openSync(partial, flags, 0o600);
+        writeFileSync(fd, bytes);
+        closeSync(fd);
+        fd = undefined;
+        renameSync(partial, target);
+        renamed = true;
+        return ownedRegularFile(target) ? target : null;
+      } finally {
+        if (fd !== undefined) {
+          try { closeSync(fd); } catch { /* 이미 닫힌 서술자 */ }
+        }
+        if (!renamed) {
+          try { unlinkSync(partial); } catch { /* 만들기 전에 실패한 임시 파일 */ }
+        }
+      }
     } catch {
       return null;
     } finally {
