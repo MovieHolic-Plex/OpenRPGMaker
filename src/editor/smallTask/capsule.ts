@@ -1,7 +1,7 @@
 import { AI_RUNTIME_UNAVAILABLE_SUMMARY, describeAiFailure, isAiRuntimeUnavailable } from "@/editor/panels/assistantErrorDetail";
 import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
@@ -134,6 +134,22 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
   else closeButton.focus();
   input.addEventListener("input", () => { send.disabled = !target || !input.value.trim(); });
   input.addEventListener("keydown", e => {
+    // 이 칸은 Ctrl/Cmd+Enter 만 가진다. Ctrl/Cmd+S 는 편집기 「적용」이다.
+    // 캡슐이 맨 위일 때만 처리한다. 그 위에 다른 창이 있으면 그 창의 단축키를 건드리지 않는다.
+    if (
+      (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === "s"
+      && !e.isComposing && !e.defaultPrevented && isTopModal(box)
+    ) {
+      const apply = box.closest('[data-testid="event-editor-modal"]')
+        ?.querySelector<HTMLButtonElement>('[data-testid="event-editor-apply"]');
+      if (apply && !apply.disabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        input.blur();
+        apply.click();
+        return;
+      }
+    }
     if (e.key !== "Enter") return;
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
       e.preventDefault();

@@ -10,7 +10,7 @@ import { eventNameFromPages } from "@/project/eventDisplayName";
 import { ensureEventPages } from "@/editor/eventPages";
 import { announceEventEditorClosed, announceEventEditorOpened } from "@/editor/eventEditorLifecycleEvents";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
-import { bindDetailsEscape } from "./detailsPopover";
+import { bindDetailsEscape, closeDetailsLayerNow } from "./detailsPopover";
 import {
   beginExistingEventDraft,
   checkpointEventDraft,
@@ -1033,7 +1033,7 @@ function dismissTopDetailsLayer(root: HTMLElement): void {
       }
     }
     if (!top) return;
-    top.open = false;
+    closeDetailsLayerNow(top);
   }
 }
 
