@@ -2,7 +2,7 @@ import { stageEventDraftAuthoredWrite } from "@/project/eventDraftAuthored";
 import { editorState } from "@/editor/editorState";
 import { createDefaultGameEvent } from "@/editor/eventActions";
 import { describeEventDiff, eventDiffFields } from "@/editor/eventDiffLabel";
-import { clearEventPageDeletionHistory, sealDeletedPagesIntoDraft } from "@/editor/panels/eventEditor/pageDeleteHistory";
+import { clearEventPageDeletionHistory } from "@/editor/panels/eventEditor/pageDeleteHistory";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
@@ -100,9 +100,6 @@ export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null 
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event?.draft) return null;
   const preferredPageId = editorState.get().selectedEventPageId;
-  // 맵 스냅샷은 draft.original 을 찍는다. 이 세션에서 지운 페이지의 트리거·조건·명령을
-  // 그 원본에 먼저 넣어야, 나중에 맵 Ctrl+Z 가 빈 auto 페이지를 되살리지 않는다.
-  sealDeletedPagesIntoDraft(mapId, eventId);
   // diff 를 **커밋 전에** 읽는다. commitEventDraft 는 draft 를 지우므로 그 뒤에는 계산할 수 없고,
   // recordProjectSnapshot 은 이 시점에 라벨을 확정해야 한다(전에는 상수 "이벤트 편집" 이었다).
   const preview = eventDraftDiffById(store.getCurrent(), mapId, eventId);

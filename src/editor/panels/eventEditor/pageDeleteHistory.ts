@@ -1,8 +1,7 @@
 // 페이지 삭제는 명령 툴바 히스토리에 안 남는다. 그 히스토리는 페이지 안의 명령만 기억해서,
-// 페이지를 지우면 되돌리기 버튼이 꺼지고, 적용 뒤 맵 Ctrl+Z 는 열 때의 draft.original
-// (트리거 auto · 명령 0개짜리 껍데기)만 되살렸다.
-// 여기서는 지운 페이지 전체(트리거·조건·명령)를 편집기 되돌리기에 넣고,
-// 적용 직전 그 사본을 draft.original 에 봉해서 맵 되돌리기도 같은 본문을 복원하게 한다.
+// 페이지를 지우면 편집기 되돌리기 버튼이 꺼진다.
+// 여기서는 지운 순간의 페이지(세션 안에서 고친 트리거·조건·명령)를 편집기 되돌리기에만 넣는다.
+// draft.original 은 열 때의 사건 그대로 둔다. 적용 뒤 맵 Ctrl+Z 는 그 세션 전 이벤트로 돌아간다.
 
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
@@ -112,39 +111,6 @@ export function redoEventPageDeletion(mapId: MapId, eventId: string): boolean {
   const nextIndex = Math.min(entry.index, Math.max(0, pages.length - 1));
   editorState.set({ selectedEventPageId: pages[nextIndex]?.id ?? entry.selectedPageId });
   return true;
-}
-
-/**
- * 적용 스냅샷은 draft.original 이다. 이 세션에서 고친 뒤 지운 페이지를 그 원본에 넣어 두지 않으면
- * 맵 Ctrl+Z 가 열 때의 빈 페이지(트리거 auto, 명령 없음)를 되살린다.
- */
-export function sealDeletedPagesIntoDraft(mapId: MapId, eventId: string): void {
-  const entries = histories.get(key(mapId, eventId))?.past ?? [];
-  if (entries.length === 0) return;
-  store.updateEvent(mapId, eventId, (event) => {
-    if (event.draft?.kind !== "edit" || !event.draft.original) return;
-    const pages = [...(event.draft.original.pages ?? [])];
-    const present = entries.filter((entry) => pages.some((page) => page.id === entry.page.id));
-    const missing = entries
-      .filter((entry) => !pages.some((page) => page.id === entry.page.id))
-      .slice()
-      .sort((a, b) => a.index - b.index);
-    for (const entry of present) {
-      const index = pages.findIndex((page) => page.id === entry.page.id);
-      if (index >= 0) pages[index] = structuredClone(entry.page);
-    }
-    for (const entry of missing) {
-      const index = Math.max(0, Math.min(entry.index, pages.length));
-      pages.splice(index, 0, structuredClone(entry.page));
-    }
-    event.draft.original.pages = pages;
-  }, {
-    scope: "map",
-    mapId,
-    eventId,
-    origin: "system",
-    label: "페이지 삭제 기준 보관",
-  });
 }
 
 export function clearEventPageDeletionHistory(mapId: MapId, eventId: string): void {

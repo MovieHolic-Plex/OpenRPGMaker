@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createDefaultGameEvent } from "@/editor/eventActions";
 import { beginExistingEventDraft, saveEventDraft } from "@/editor/eventDraftActions";
 import { undoFeedbackText } from "@/editor/eventDiffLabel";
-import { deleteEventPage, updateEventPage } from "@/editor/eventPages";
+import { addEventPage, deleteEventPage, updateEventPage } from "@/editor/eventPages";
 import { runUndoWithFeedback } from "@/editor/hotkeys";
 import { recordProjectSnapshot, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -97,7 +97,32 @@ describe("event editor QA fixes", () => {
     expect(restored?.commands).toEqual([{ kind: "text", body: "keep me" }]);
   });
 
-  it("map undo after apply restores the edited page instead of an empty auto stub", () => {
+  it("map undo after apply restores a deleted pre-existing page", () => {
+    const before = page(
+      "gone",
+      "지울 페이지",
+      { kind: "touch" },
+      [{ kind: "text", body: "before the session" }],
+      [{ kind: "switch", switchId: "sw_0001", value: true }],
+    );
+    const { mapId, eventId } = seedEvent([
+      page("keep", "남는 페이지", { kind: "action" }, []),
+      before,
+    ]);
+    beginExistingEventDraft(mapId, eventId);
+    expect(deleteEventPage(mapId, eventId, "gone")).toBe(true);
+    saveEventDraft(mapId, eventId);
+
+    expect(undoMapEdit()).toBe(true);
+    const gone = findPage(mapId, eventId, "gone");
+    expect(gone?.trigger).toEqual(before.trigger);
+    expect(gone?.conditions).toEqual(before.conditions);
+    expect(gone?.commands).toEqual(before.commands);
+  });
+
+  it("map undo after apply restores the pre-session page, not the in-session edit", () => {
+    // 자동 실행·명령 0개는 캡처가 틀린 게 아니다. 이벤트 뿌리의 trigger/commands 를
+    // createDefaultEventPage 가 첫 페이지로 복사하고, 세션에서 고친 명령은 작업 본문에만 있다.
     const { mapId, eventId } = seedEvent([
       page("keep", "남는 페이지", { kind: "action" }, []),
       page("gone", "지울 페이지", { kind: "auto" }, []),
@@ -106,18 +131,46 @@ describe("event editor QA fixes", () => {
     updateEventPage(mapId, eventId, "gone", {
       trigger: { kind: "action" },
       conditions: [{ kind: "switch", switchId: "sw_0001", value: true }],
-      commands: [{ kind: "text", body: "keep me" }],
+      commands: [{ kind: "text", body: "written in this session" }],
     });
+    expect(deleteEventPage(mapId, eventId, "gone")).toBe(true);
+    expect(undoEventPageDeletion(mapId, eventId)).toBe(true);
+    const inSession = findPage(mapId, eventId, "gone");
+    expect(inSession?.trigger).toEqual({ kind: "action" });
+    expect(inSession?.commands).toEqual([{ kind: "text", body: "written in this session" }]);
     expect(deleteEventPage(mapId, eventId, "gone")).toBe(true);
     saveEventDraft(mapId, eventId);
 
     expect(undoMapEdit()).toBe(true);
-    const restored = store.getCurrent().maps[mapId]!.events.find((event) => event.id === eventId);
-    const gone = restored?.pages?.find((entry) => entry.id === "gone");
-    expect(gone?.trigger).toEqual({ kind: "action" });
-    expect(gone?.conditions).toEqual([{ kind: "switch", switchId: "sw_0001", value: true }]);
-    expect(gone?.commands).toEqual([{ kind: "text", body: "keep me" }]);
-    expect(gone?.commands).not.toEqual([]);
+    const gone = findPage(mapId, eventId, "gone");
+    expect(gone?.trigger).toEqual({ kind: "auto" });
+    expect(gone?.conditions).toEqual([]);
+    expect(gone?.commands).toEqual([]);
+  });
+
+  it("map undo after apply does not restore a page created in this session", () => {
+    const { mapId, eventId } = seedEvent([
+      page("keep", "남는 페이지", { kind: "action" }, [{ kind: "text", body: "stay" }]),
+    ]);
+    beginExistingEventDraft(mapId, eventId);
+    const created = addEventPage(mapId, eventId);
+    updateEventPage(mapId, eventId, created, {
+      trigger: { kind: "touch" },
+      conditions: [{ kind: "switch", switchId: "sw_0001", value: true }],
+      commands: [{ kind: "text", body: "created in this session" }],
+    });
+    expect(deleteEventPage(mapId, eventId, created)).toBe(true);
+    expect(undoEventPageDeletion(mapId, eventId)).toBe(true);
+    const inSession = findPage(mapId, eventId, created);
+    expect(inSession?.trigger).toEqual({ kind: "touch" });
+    expect(inSession?.commands).toEqual([{ kind: "text", body: "created in this session" }]);
+    expect(deleteEventPage(mapId, eventId, created)).toBe(true);
+    saveEventDraft(mapId, eventId);
+
+    expect(undoMapEdit()).toBe(true);
+    const event = store.getCurrent().maps[mapId]!.events.find((entry) => entry.id === eventId);
+    expect(event?.pages?.map((entry) => entry.id)).toEqual(["keep"]);
+    expect(event?.pages?.[0]?.commands).toEqual([{ kind: "text", body: "stay" }]);
   });
 
   it("enables the editor undo button after a page delete and restores the page", async () => {
@@ -229,6 +282,10 @@ describe("event editor QA fixes", () => {
     expect(undoFeedbackText("타일 칠하기", before, after)).toBe("되돌렸습니다 — 타일 칠하기");
   });
 });
+
+function findPage(mapId: string, eventId: string, pageId: string): EventPage | undefined {
+  return store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId)?.pages?.find((entry) => entry.id === pageId);
+}
 
 function viWaitForButton<T>(read: () => T | null | undefined): Promise<T> {
   return new Promise((resolve, reject) => {
