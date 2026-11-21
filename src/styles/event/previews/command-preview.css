@@ -579,8 +579,9 @@
 .ecp-message-body { white-space: pre-wrap; word-break: break-word; }
 
 /* 긴 본문(수천 자)이 창을 키워 화자 이름표를 덮지 않게 본문만 자른다.
- * .ecp-message-window 자체에 max-height 를 주면 top:-9px 인 이름표까지 잘린다. */
-.ecp-message-window .dialogue-content {
+ * .ecp-message-window 자체에 max-height 를 주면 top:-9px 인 이름표까지 잘린다.
+ * 본문 칸은 dialogue-content 와 ecp-message-content 를 같이 쓴다. 이 시트는 ecp- 만 고른다. */
+.ecp-message-window .ecp-message-content {
   overflow: hidden;
   max-height: 132px;
 }
