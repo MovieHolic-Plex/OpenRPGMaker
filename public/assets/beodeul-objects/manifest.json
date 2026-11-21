@@ -221,6 +221,18 @@
         "h_straight",
         "v_straight"
       ]
+    },
+    {
+      "id": "city_strm_stone_railing",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
     }
   ]
 }
