@@ -8946,5 +8946,5804 @@
       "현대 도시",
       "city"
     ]
+  },
+  {
+    "id": "city_acc_antislip_step",
+    "nameKo": "미끄럼 방지 발판",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_antislip_step_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "미끄럼 방지 발판",
+      "antislip step",
+      "논슬립",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_armrest_seat",
+    "nameKo": "팔걸이 의자",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_armrest_seat_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "팔걸이 의자",
+      "armrest seat",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_low_drinking_fountain",
+    "nameKo": "낮은 음수대",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_low_drinking_fountain_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "낮은 음수대",
+      "low drinking fountain",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_low_handrail",
+    "nameKo": "낮은 손잡이 난간",
+    "category": "structure",
+    "group": "city_access",
+    "sourceFile": "city_acc_low_handrail_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "낮은 손잡이 난간",
+      "low handrail",
+      "안전 손잡이",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_portable_wheelchair_ramp",
+    "nameKo": "이동식 휠체어 경사로",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_portable_wheelchair_ramp_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "이동식 휠체어 경사로",
+      "portable wheelchair ramp",
+      "장애인 편의시설",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_powerchair_charger",
+    "nameKo": "전동 휠체어 충전기",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_powerchair_charger_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "전동 휠체어 충전기",
+      "powerchair charger",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_priority_bench",
+    "nameKo": "교통약자 우선 벤치",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_priority_bench_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "교통약자 우선 벤치",
+      "priority bench",
+      "우선석",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_acc_raised_icon_board",
+    "nameKo": "촉각 그림 안내판",
+    "category": "prop",
+    "group": "city_access",
+    "sourceFile": "city_acc_raised_icon_board_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "접근성",
+      "accessibility",
+      "촉각 그림 안내판",
+      "raised icon board",
+      "돌출 픽토그램",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_air_luggage_trolley",
+    "nameKo": "공항 짐수레",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_air_luggage_trolley_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "공항",
+      "airport",
+      "공항 짐수레",
+      "luggage trolley",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_air_trolley_return_station",
+    "nameKo": "공항 짐수레 반납대",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_air_trolley_return_station_hq3.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "공항",
+      "airport",
+      "공항 짐수레 반납대",
+      "trolley return station",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alley_cat_feeding_station",
+    "nameKo": "길고양이 급식대",
+    "category": "prop",
+    "group": "city_residential",
+    "sourceFile": "city_alley_cat_feeding_station_hq2.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "골목",
+      "alley",
+      "길고양이 급식대",
+      "cat feeding station",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alley_lpg_tanks",
+    "nameKo": "LPG 가스통 두 개",
+    "category": "prop",
+    "group": "city_residential",
+    "sourceFile": "city_alley_lpg_tanks_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "골목",
+      "alley",
+      "LPG 가스통 두 개",
+      "lpg tanks",
+      "가스 실린더",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_cabbage_row",
+    "nameKo": "배추가 줄지어 선 밭",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_cabbage_row_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "배추가 줄지어 선 밭",
+      "cabbage row",
+      "배추밭",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_compost_box",
+    "nameKo": "퇴비 상자",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_compost_box_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "퇴비 상자",
+      "compost box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_harvest_basket",
+    "nameKo": "수확물 바구니",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_harvest_basket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "수확물 바구니",
+      "harvest basket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_hose_sprinkler",
+    "nameKo": "호스와 스프링클러",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_hose_sprinkler_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "호스와 스프링클러",
+      "hose sprinkler",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_long_furrow",
+    "nameKo": "긴 밭고랑",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_long_furrow_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "..."
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "긴 밭고랑",
+      "long furrow",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_low_garden_stool",
+    "nameKo": "텃밭 낮은 의자",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_low_garden_stool_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "텃밭 낮은 의자",
+      "low garden stool",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_plastic_hoop_tunnel",
+    "nameKo": "터널형 비닐 덮개",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_plastic_hoop_tunnel_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "터널형 비닐 덮개",
+      "plastic hoop tunnel",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_seedling_crate_stack",
+    "nameKo": "모종 상자 더미",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_seedling_crate_stack_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "모종 상자 더미",
+      "seedling crate stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_tomato_trellis",
+    "nameKo": "토마토 지지대",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_tomato_trellis_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "토마토 지지대",
+      "tomato trellis",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_alot_wood_garden_frame",
+    "nameKo": "나무 틀 텃밭",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_alot_wood_garden_frame_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "텃밭",
+      "allotment",
+      "나무 틀 텃밭",
+      "wood garden frame",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_apt_discarded_mattress",
+    "nameKo": "버려진 매트리스",
+    "category": "prop",
+    "group": "city_residential",
+    "sourceFile": "city_apt_discarded_mattress_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "아파트 단지",
+      "apartment",
+      "버려진 매트리스",
+      "discarded mattress",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_battery_charger_cart",
+    "nameKo": "자동차 배터리 충전 수레",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_battery_charger_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "자동차 배터리 충전 수레",
+      "battery charger cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_breakdown_triangle_stand",
+    "nameKo": "차량 고장 삼각대",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_breakdown_triangle_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "차량 고장 삼각대",
+      "breakdown triangle stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_coiled_jumper_cables",
+    "nameKo": "감아 둔 점프 케이블",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_coiled_jumper_cables_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "."
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "감아 둔 점프 케이블",
+      "coiled jumper cables",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_mobile_floor_jack",
+    "nameKo": "이동식 차량 잭",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_mobile_floor_jack_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "이동식 차량 잭",
+      "mobile floor jack",
+      "플로어 잭",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_oil_cans_metal_tray",
+    "nameKo": "오일통을 담은 금속 쟁반",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_oil_cans_metal_tray_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "오일통을 담은 금속 쟁반",
+      "oil cans metal tray",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_oil_drain_pan",
+    "nameKo": "폐오일 받이",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_oil_drain_pan_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "폐오일 받이",
+      "oil drain pan",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_portable_worklamp",
+    "nameKo": "이동식 작업등",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_portable_worklamp_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "이동식 작업등",
+      "portable worklamp",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_spare_parts_box_stack",
+    "nameKo": "예비 부품 상자 더미",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_spare_parts_box_stack_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "예비 부품 상자 더미",
+      "spare parts box stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_tire_pressure_gauge_stand",
+    "nameKo": "타이어 공기압 측정대",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_tire_pressure_gauge_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "타이어 공기압 측정대",
+      "tire pressure gauge",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_auto_waste_oil_drums_pair",
+    "nameKo": "폐오일 드럼통 두 개",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_auto_waste_oil_drums_pair_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "자동차 정비",
+      "auto repair",
+      "폐오일 드럼통 두 개",
+      "waste oil drums pair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_backless_wood_bench",
+    "nameKo": "등받이 없는 목욕탕 벤치",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_backless_wood_bench_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "등받이 없는 목욕탕 벤치",
+      "backless wood bench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_cold_water_basin",
+    "nameKo": "찬물 대야",
+    "category": "indoor",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_cold_water_basin_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "찬물 대야",
+      "cold water basin",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_herbs_drying_stand",
+    "nameKo": "약초 건조대",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_herbs_drying_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "약초 건조대",
+      "herbs drying stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_long_wood_footbath",
+    "nameKo": "긴 나무 족욕조",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_long_wood_footbath_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "긴 나무 족욕조",
+      "long wood footbath",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_round_wood_bathtub",
+    "nameKo": "둥근 나무 욕조",
+    "category": "indoor",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_round_wood_bathtub_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "둥근 나무 욕조",
+      "round wood bathtub",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_scoop_bucket",
+    "nameKo": "물바가지와 양동이",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_scoop_bucket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "물바가지와 양동이",
+      "scoop bucket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_steaming_hot_spring_rocks",
+    "nameKo": "김이 오르는 온천 바위",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_steaming_hot_spring_rocks_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "김이 오르는 온천 바위",
+      "hot spring rocks",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_stepping_stones_triple",
+    "nameKo": "목욕탕 징검돌 세 개",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_stepping_stones_triple_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "목욕탕 징검돌 세 개",
+      "stepping stones triple",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bath_wood_drain_footboard",
+    "nameKo": "나무 배수 발판",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_bath_wood_drain_footboard_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "목욕탕",
+      "bathhouse",
+      "나무 배수 발판",
+      "wood drain footboard",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bfix_gear_workbench",
+    "nameKo": "자전거 기어 정비 작업대",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_bfix_gear_workbench_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "자전거 수리",
+      "bicycle repair",
+      "자전거 기어 정비 작업대",
+      "gear workbench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bfix_leaned_wheel",
+    "nameKo": "기대 놓은 자전거 바퀴",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_bfix_leaned_wheel_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "자전거 수리",
+      "bicycle repair",
+      "기대 놓은 자전거 바퀴",
+      "leaned wheel",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bfix_lift_repair_stand",
+    "nameKo": "자전거 정비 거치대",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_bfix_lift_repair_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "자전거 수리",
+      "bicycle repair",
+      "자전거 정비 거치대",
+      "lift repair stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bfix_low_waiting_stool",
+    "nameKo": "자전거 수리점 낮은 의자",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_bfix_low_waiting_stool_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "자전거 수리",
+      "bicycle repair",
+      "자전거 수리점 낮은 의자",
+      "low waiting stool",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bldr_brushwork_stool",
+    "nameKo": "도장 작업용 의자",
+    "category": "prop",
+    "group": "city_construction",
+    "sourceFile": "city_bldr_brushwork_stool_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "목공 실습",
+      "construction",
+      "도장 작업용 의자",
+      "brushwork stool",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_bldr_low_timber_practice_beam",
+    "nameKo": "낮은 목재 연습 보",
+    "category": "prop",
+    "group": "city_construction",
+    "sourceFile": "city_bldr_low_timber_practice_beam_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "목공 실습",
+      "construction",
+      "낮은 목재 연습 보",
+      "low timber practice beam",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_btl_beverage_glass_crate",
+    "nameKo": "음료 유리병 상자",
+    "category": "prop",
+    "group": "city_recycling",
+    "sourceFile": "city_btl_beverage_glass_crate_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "재활용",
+      "recycling",
+      "음료 유리병 상자",
+      "beverage glass crate",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_btl_bottle_carrying_basket",
+    "nameKo": "빈 병 운반 바구니",
+    "category": "prop",
+    "group": "city_recycling",
+    "sourceFile": "city_btl_bottle_carrying_basket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "재활용",
+      "recycling",
+      "빈 병 운반 바구니",
+      "bottle carrying basket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_btl_bottle_return_machine",
+    "nameKo": "빈 병 반납기",
+    "category": "prop",
+    "group": "city_recycling",
+    "sourceFile": "city_btl_bottle_return_machine_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "재활용",
+      "recycling",
+      "빈 병 반납기",
+      "bottle return machine",
+      "공병 반납",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_btl_glass_color_bins",
+    "nameKo": "유리병 색상별 수거함",
+    "category": "prop",
+    "group": "city_recycling",
+    "sourceFile": "city_btl_glass_color_bins_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "재활용",
+      "recycling",
+      "유리병 색상별 수거함",
+      "glass color bins",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_btl_pedal_can_press",
+    "nameKo": "발로 누르는 캔 압축기",
+    "category": "prop",
+    "group": "city_recycling",
+    "sourceFile": "city_btl_pedal_can_press_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "재활용",
+      "recycling",
+      "발로 누르는 캔 압축기",
+      "pedal can press",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busd_tire_inflator",
+    "nameKo": "버스 차고지 타이어 공기 주입기",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_busd_tire_inflator_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "버스 차고지",
+      "bus depot",
+      "버스 차고지 타이어 공기 주입기",
+      "tire inflator",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_acoustic_guitar_stand",
+    "nameKo": "통기타와 거치대",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_acoustic_guitar_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "통기타와 거치대",
+      "acoustic guitar stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_amplifier",
+    "nameKo": "버스킹 앰프",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_amplifier_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "버스킹 앰프",
+      "amplifier",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_audience_chairs_pair",
+    "nameKo": "관객용 의자 두 개",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_audience_chairs_pair_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "관객용 의자 두 개",
+      "audience chairs pair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_cajon",
+    "nameKo": "카혼",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_cajon_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "카혼",
+      "cajon",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_camcorder_tripod",
+    "nameKo": "캠코더와 삼각대",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_camcorder_tripod_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "캠코더와 삼각대",
+      "camcorder tripod",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_coin_case",
+    "nameKo": "공연 팁 상자",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_coin_case_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "공연 팁 상자",
+      "coin case",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_light_stand",
+    "nameKo": "버스킹 조명대",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_light_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "버스킹 조명대",
+      "light stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_loudspeaker",
+    "nameKo": "버스킹 스피커",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_loudspeaker_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "버스킹 스피커",
+      "loudspeaker",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_mic_stand",
+    "nameKo": "마이크 스탠드",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_mic_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "마이크 스탠드",
+      "mic stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_music_stand",
+    "nameKo": "보면대",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_music_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "보면대",
+      "music stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_strings_picks_box",
+    "nameKo": "기타 줄과 피크 상자",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_strings_picks_box_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "기타 줄과 피크 상자",
+      "strings picks box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_tambourine_shaker_box",
+    "nameKo": "탬버린과 셰이커 상자",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_tambourine_shaker_box_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "탬버린과 셰이커 상자",
+      "tambourine shaker box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_busk_wooden_platform",
+    "nameKo": "나무 공연 단상",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_busk_wooden_platform_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "거리 공연",
+      "busking",
+      "나무 공연 단상",
+      "wooden platform",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_camp_club_table_board",
+    "nameKo": "동아리 홍보 테이블",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_camp_club_table_board_hq2.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "대학 캠퍼스",
+      "campus",
+      "동아리 홍보 테이블",
+      "club table board",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_camp_student_lockers",
+    "nameKo": "학생 사물함",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_camp_student_lockers_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "대학 캠퍼스",
+      "campus",
+      "학생 사물함",
+      "student lockers",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_camp_umbrella_rental",
+    "nameKo": "캠퍼스 우산 대여함",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_camp_umbrella_rental_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "대학 캠퍼스",
+      "campus",
+      "캠퍼스 우산 대여함",
+      "umbrella rental",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_camp_uncovered_bike_storage",
+    "nameKo": "야외 자전거 거치대",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_camp_uncovered_bike_storage_hq2.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "XXX",
+      "XXX"
+    ],
+    "tags": [
+      "대학 캠퍼스",
+      "campus",
+      "야외 자전거 거치대",
+      "uncovered bike storage",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_car2_motorcycle",
+    "nameKo": "오토바이",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_car2_motorcycle_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "탈것",
+      "vehicle",
+      "오토바이",
+      "motorcycle",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_cart_coffee_handcart",
+    "nameKo": "이동식 커피 손수레",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_cart_coffee_handcart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "노점",
+      "street food",
+      "이동식 커피 손수레",
+      "coffee handcart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_cart_folding_cup_stand",
+    "nameKo": "접이식 컵 받침대",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_cart_folding_cup_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "노점",
+      "street food",
+      "접이식 컵 받침대",
+      "folding cup stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_cart_hotdog_cart",
+    "nameKo": "핫도그 판매 수레",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_cart_hotdog_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "노점",
+      "street food",
+      "핫도그 판매 수레",
+      "hotdog cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_cart_ice_cream_bicycle",
+    "nameKo": "아이스크림 판매 자전거",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_cart_ice_cream_bicycle_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "노점",
+      "street food",
+      "아이스크림 판매 자전거",
+      "ice cream bicycle",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_cart_picture_menu_board",
+    "nameKo": "그림 메뉴판",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_cart_picture_menu_board_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "노점",
+      "street food",
+      "그림 메뉴판",
+      "picture menu board",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_cart_smoothie_blender_cart",
+    "nameKo": "스무디 믹서 수레",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_cart_smoothie_blender_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "노점",
+      "street food",
+      "스무디 믹서 수레",
+      "smoothie blender cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_clinic_folded_stretcher",
+    "nameKo": "접이식 들것",
+    "category": "prop",
+    "group": "city_clinic",
+    "sourceFile": "city_clinic_folded_stretcher_hq2.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "병원",
+      "clinic",
+      "접이식 들것",
+      "folded stretcher",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_clinic_shuttle_bench",
+    "nameKo": "병원 셔틀 대기 벤치",
+    "category": "prop",
+    "group": "city_clinic",
+    "sourceFile": "city_clinic_shuttle_bench_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "병원",
+      "clinic",
+      "병원 셔틀 대기 벤치",
+      "shuttle bench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_clinic_wheelchairs",
+    "nameKo": "휠체어 두 대",
+    "category": "prop",
+    "group": "city_clinic",
+    "sourceFile": "city_clinic_wheelchairs_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "병원",
+      "clinic",
+      "휠체어 두 대",
+      "wheelchairs",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_dpark_horizontal_bars_two_level",
+    "nameKo": "높이가 다른 철봉 두 개",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_dpark_horizontal_bars_two_level_hq3.png",
+    "widthPx": 48,
+    "heightPx": 48,
+    "widthTiles": 3,
+    "heightTiles": 3,
+    "footprint": [
+      "***",
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "반려견 공원",
+      "dog park",
+      "높이가 다른 철봉 두 개",
+      "two-level pull-up bars",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_dpark_parallel_bars",
+    "nameKo": "평행봉",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_dpark_parallel_bars_hq3.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "반려견 공원",
+      "dog park",
+      "평행봉",
+      "parallel bars",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fest_stage_speaker_pair",
+    "nameKo": "무대 스피커 두 대",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_fest_stage_speaker_pair_hq3.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "축제",
+      "festival",
+      "무대 스피커 두 대",
+      "stage speaker pair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_boom_microphone_stand",
+    "nameKo": "붐 마이크 스탠드",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_boom_microphone_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "붐 마이크 스탠드",
+      "boom microphone stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_camera_tripod",
+    "nameKo": "촬영 카메라와 삼각대",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_camera_tripod_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "촬영 카메라와 삼각대",
+      "camera tripod",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_director_folding_chair",
+    "nameKo": "감독용 접이식 의자",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_director_folding_chair_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "감독용 접이식 의자",
+      "director folding chair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_dolly_track_section",
+    "nameKo": "카메라 돌리 레일",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_dolly_track_section_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "..."
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "카메라 돌리 레일",
+      "dolly track section",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_led_panel_light_stand",
+    "nameKo": "LED 패널 조명대",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_led_panel_light_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "LED 패널 조명대",
+      "led panel light stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_light_stand_sandbag",
+    "nameKo": "조명대 고정 모래주머니",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_light_stand_sandbag_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "조명대 고정 모래주머니",
+      "light stand sandbag",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_makeup_kit",
+    "nameKo": "분장 도구 상자",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_makeup_kit_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "분장 도구 상자",
+      "makeup kit",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_monitor_cart",
+    "nameKo": "촬영 모니터 수레",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_monitor_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "촬영 모니터 수레",
+      "monitor cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_outdoor_costume_rack",
+    "nameKo": "야외 촬영 의상 걸이",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_outdoor_costume_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "야외 촬영 의상 걸이",
+      "outdoor costume rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_reflector_stand",
+    "nameKo": "촬영 반사판 스탠드",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_reflector_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "촬영 반사판 스탠드",
+      "reflector stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_film_striped_clapperboard",
+    "nameKo": "줄무늬 슬레이트",
+    "category": "prop",
+    "group": "city_performance",
+    "sourceFile": "city_film_striped_clapperboard_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "촬영장",
+      "film set",
+      "줄무늬 슬레이트",
+      "striped clapperboard",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_bucket_pump",
+    "nameKo": "양동이 펌프",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_bucket_pump_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "양동이 펌프",
+      "bucket pump",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_fire_axe_mount",
+    "nameKo": "소방 도끼 걸이",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_fire_axe_mount_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소방 도끼 걸이",
+      "fire axe mount",
+      "현대 도시",
+      "city"
+    ],
+    "surface": "wall"
+  },
+  {
+    "id": "city_fire_fire_blanket_box",
+    "nameKo": "소방포 보관함",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_fire_blanket_box_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소방포 보관함",
+      "fire blanket box",
+      "방화 담요",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_fire_sand_bucket",
+    "nameKo": "소화용 모래 양동이",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_fire_sand_bucket_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소화용 모래 양동이",
+      "fire sand bucket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_helmet_shelf",
+    "nameKo": "소방 헬멧 선반",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_helmet_shelf_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소방 헬멧 선반",
+      "helmet shelf",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_hose_drying_rack",
+    "nameKo": "소방 호스 건조대",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_hose_drying_rack_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소방 호스 건조대",
+      "hose drying rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_hose_reel_cart",
+    "nameKo": "소방 호스 릴 수레",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_hose_reel_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소방 호스 릴 수레",
+      "hose reel cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_mobile_light_tower",
+    "nameKo": "이동식 조명 타워",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_mobile_light_tower_hq.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "이동식 조명 타워",
+      "mobile light tower",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_portable_water_tank",
+    "nameKo": "이동식 소방 물탱크",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_portable_water_tank_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "이동식 소방 물탱크",
+      "portable water tank",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fire_training_metal_basket",
+    "nameKo": "소방 훈련용 금속 바구니",
+    "category": "prop",
+    "group": "city_fire_service",
+    "sourceFile": "city_fire_training_metal_basket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "소방서",
+      "fire station",
+      "소방 훈련용 금속 바구니",
+      "training metal basket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fish_cooler_seat",
+    "nameKo": "낚시용 아이스박스 의자",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_fish_cooler_seat_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "낚시터",
+      "fishing",
+      "낚시용 아이스박스 의자",
+      "cooler seat",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fish_deck_ladder",
+    "nameKo": "낚시 데크 사다리",
+    "category": "structure",
+    "group": "city_harbor",
+    "sourceFile": "city_fish_deck_ladder_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "낚시터",
+      "fishing",
+      "낚시 데크 사다리",
+      "deck ladder",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fish_folding_fishing_chair",
+    "nameKo": "접이식 낚시 의자",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_fish_folding_fishing_chair_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "낚시터",
+      "fishing",
+      "접이식 낚시 의자",
+      "folding fishing chair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fish_keepnet_stand",
+    "nameKo": "낚시 살림망 거치대",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_fish_keepnet_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "낚시터",
+      "fishing",
+      "낚시 살림망 거치대",
+      "keepnet stand",
+      "고기망",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fish_measuring_board",
+    "nameKo": "물고기 길이 측정판",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_fish_measuring_board_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "낚시터",
+      "fishing",
+      "물고기 길이 측정판",
+      "measuring board",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fish_short_fishing_platform",
+    "nameKo": "짧은 낚시 발판",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_fish_short_fishing_platform_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "..."
+    ],
+    "tags": [
+      "낚시터",
+      "fishing",
+      "짧은 낚시 발판",
+      "short fishing platform",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_front_barber_pole",
+    "nameKo": "이발소 회전 간판",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_front_barber_pole_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "상점 앞",
+      "storefront",
+      "이발소 회전 간판",
+      "barber pole",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_front_fish_ice_foam_box",
+    "nameKo": "얼음과 생선이 든 스티로폼 상자",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_front_fish_ice_foam_box_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "상점 앞",
+      "storefront",
+      "얼음과 생선이 든 스티로폼 상자",
+      "fish ice foam box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_fun_bouncy_castle",
+    "nameKo": "공기 주입식 놀이 성",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_fun_bouncy_castle_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "놀이공원",
+      "amusement park",
+      "공기 주입식 놀이 성",
+      "bouncy castle",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_distance_post",
+    "nameKo": "그라운드골프 거리 표지",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_distance_post_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "그라운드골프 거리 표지",
+      "distance post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_folding_chairs",
+    "nameKo": "그라운드골프 접이식 의자 두 개",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_folding_chairs_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "그라운드골프 접이식 의자 두 개",
+      "folding chairs",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_goal_post",
+    "nameKo": "그라운드골프 홀 포스트",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_goal_post_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "그라운드골프 홀 포스트",
+      "goal post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_low_bench",
+    "nameKo": "그라운드골프 낮은 벤치",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_low_bench_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "그라운드골프 낮은 벤치",
+      "low bench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_putting_mat",
+    "nameKo": "퍼팅 연습 매트",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_putting_mat_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "퍼팅 연습 매트",
+      "putting mat",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_referee_color_flag",
+    "nameKo": "심판용 색 깃발",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_referee_color_flag_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "심판용 색 깃발",
+      "referee color flag",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_score_block_board",
+    "nameKo": "그라운드골프 점수판",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_score_block_board_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "그라운드골프 점수판",
+      "score block board",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_gball_stick_rack",
+    "nameKo": "그라운드골프 클럽 거치대",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_gball_stick_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "그라운드골프",
+      "ground golf",
+      "그라운드골프 클럽 거치대",
+      "stick rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_crab_trap_stack",
+    "nameKo": "게 통발 더미",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_crab_trap_stack_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "게 통발 더미",
+      "crab trap stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_dock_ladder",
+    "nameKo": "부두 사다리",
+    "category": "structure",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_dock_ladder_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "부두 사다리",
+      "dock ladder",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_dock_winch",
+    "nameKo": "부두 윈치",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_dock_winch_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "부두 윈치",
+      "dock winch",
+      "권양기",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_drying_fishnet_rack",
+    "nameKo": "그물 건조대",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_drying_fishnet_rack_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "그물 건조대",
+      "drying fishnet rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_fish_cleaning_workstation",
+    "nameKo": "생선 손질 작업대",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_fish_cleaning_workstation_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "생선 손질 작업대",
+      "fish cleaning station",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_hanging_rubber_fender",
+    "nameKo": "걸이형 고무 방현재",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_hanging_rubber_fender_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "걸이형 고무 방현재",
+      "hanging rubber fender",
+      "선박 완충재",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_ice_fish_crate",
+    "nameKo": "얼음에 재운 생선 상자",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_ice_fish_crate_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "얼음에 재운 생선 상자",
+      "ice fish crate",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_lifering_holder",
+    "nameKo": "구명환 거치대",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_lifering_holder_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "구명환 거치대",
+      "lifering holder",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_light_buoy_decor",
+    "nameKo": "장식용 등부표",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_light_buoy_decor_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "장식용 등부표",
+      "light buoy decor",
+      "현대 도시",
+      "city"
+    ],
+    "surface": "water"
+  },
+  {
+    "id": "city_harb_mooring_bollard_large",
+    "nameKo": "큰 계선주",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_mooring_bollard_large_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "큰 계선주",
+      "mooring bollard large",
+      "계류 말뚝",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_mooring_rope_coil",
+    "nameKo": "감아 놓은 계류 밧줄",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_mooring_rope_coil_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "."
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "감아 놓은 계류 밧줄",
+      "mooring rope coil",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_harb_wooden_crates_stack",
+    "nameKo": "부두 나무 상자 더미",
+    "category": "prop",
+    "group": "city_harbor",
+    "sourceFile": "city_harb_wooden_crates_stack_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "항구",
+      "harbor",
+      "부두 나무 상자 더미",
+      "wooden crates stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_compact_heater",
+    "nameKo": "빙상장 소형 난방기",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_compact_heater_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "빙상장 소형 난방기",
+      "compact heater",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_gloves_hats_box",
+    "nameKo": "장갑과 모자 상자",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_gloves_hats_box_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "장갑과 모자 상자",
+      "gloves hats box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_low_gate_door",
+    "nameKo": "빙상장 낮은 출입문",
+    "category": "structure",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_low_gate_door_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "빙상장 낮은 출입문",
+      "low gate door",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_low_hockey_goal",
+    "nameKo": "낮은 아이스하키 골대",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_low_hockey_goal_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "낮은 아이스하키 골대",
+      "low hockey goal",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_maintenance_shovel",
+    "nameKo": "빙상장 정비용 삽",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_maintenance_shovel_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "빙상장 정비용 삽",
+      "maintenance shovel",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_plastic_rink_border",
+    "nameKo": "빙상장 플라스틱 경계판",
+    "category": "structure",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_plastic_rink_border_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "빙상장 플라스틱 경계판",
+      "plastic rink border",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_scoreboard_icon",
+    "nameKo": "빙상장 그림 점수판",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_scoreboard_icon_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "빙상장 그림 점수판",
+      "scoreboard icon",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_skate_boot_bench",
+    "nameKo": "스케이트화 착용 벤치",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_skate_boot_bench_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "스케이트화 착용 벤치",
+      "skate boot bench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_skate_rental_rack",
+    "nameKo": "대여용 스케이트화 선반",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_skate_rental_rack_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "대여용 스케이트화 선반",
+      "skate rental rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_ice_training_cones_row",
+    "nameKo": "빙상장 훈련용 콘 줄",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_ice_training_cones_row_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "빙상장",
+      "ice rink",
+      "빙상장 훈련용 콘 줄",
+      "training cones row",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_animal_trash_bin",
+    "nameKo": "동물 모양 쓰레기통",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_kndr_animal_trash_bin_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "동물 모양 쓰레기통",
+      "animal trash bin",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_bell_ringing_post",
+    "nameKo": "유치원 종 기둥",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_kndr_bell_ringing_post_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "유치원 종 기둥",
+      "bell ringing post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_clothespin_toy_line",
+    "nameKo": "집게로 장난감을 매단 줄",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_kndr_clothespin_toy_line_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "집게로 장난감을 매단 줄",
+      "clothespin toy line",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_low_teacher_table",
+    "nameKo": "유치원 교사용 낮은 탁자",
+    "category": "indoor",
+    "group": "city_school",
+    "sourceFile": "city_kndr_low_teacher_table_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "유치원 교사용 낮은 탁자",
+      "low teacher table",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_nap_mats_stack",
+    "nameKo": "낮잠 매트 더미",
+    "category": "indoor",
+    "group": "city_school",
+    "sourceFile": "city_kndr_nap_mats_stack_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "낮잠 매트 더미",
+      "nap mats stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_sand_toy_bucket",
+    "nameKo": "모래놀이 양동이",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_kndr_sand_toy_bucket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "모래놀이 양동이",
+      "sand toy bucket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_shoe_basket_shelf",
+    "nameKo": "신발 바구니 선반",
+    "category": "indoor",
+    "group": "city_school",
+    "sourceFile": "city_kndr_shoe_basket_shelf_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "신발 바구니 선반",
+      "shoe basket shelf",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_snack_box",
+    "nameKo": "유치원 간식 상자",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_kndr_snack_box_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "유치원 간식 상자",
+      "snack box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_kndr_towel_hook_rack",
+    "nameKo": "유치원 수건 걸이",
+    "category": "indoor",
+    "group": "city_school",
+    "sourceFile": "city_kndr_towel_hook_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "유치원",
+      "kindergarten",
+      "유치원 수건 걸이",
+      "towel hook rack",
+      "현대 도시",
+      "city"
+    ],
+    "surface": "wall"
+  },
+  {
+    "id": "city_kprop_gas_meter",
+    "nameKo": "가스 계량기",
+    "category": "prop",
+    "group": "city_residential",
+    "sourceFile": "city_kprop_gas_meter_hq3.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "한국 골목",
+      "korean street",
+      "가스 계량기",
+      "gas meter",
+      "현대 도시",
+      "city"
+    ],
+    "surface": "wall"
+  },
+  {
+    "id": "city_laun_apron_hanger",
+    "nameKo": "앞치마 걸이",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_apron_hanger_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "앞치마 걸이",
+      "apron hanger",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_basin_stack",
+    "nameKo": "빨래 대야 더미",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_basin_stack_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "빨래 대야 더미",
+      "basin stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_clothesline_posts",
+    "nameKo": "빨랫줄 기둥 두 개",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_clothesline_posts_hq.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "***",
+      "XXX"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "빨랫줄 기둥 두 개",
+      "clothesline posts",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_clothespin_basket",
+    "nameKo": "빨래집게 바구니",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_clothespin_basket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "빨래집게 바구니",
+      "clothespin basket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_duvet_beater_holder",
+    "nameKo": "이불 털이채 거치대",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_duvet_beater_holder_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "이불 털이채 거치대",
+      "duvet beater holder",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_folded_ironing_board",
+    "nameKo": "접어 둔 다리미판",
+    "category": "indoor",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_folded_ironing_board_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "접어 둔 다리미판",
+      "folded ironing board",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_folding_drying_rack",
+    "nameKo": "접이식 빨래 건조대",
+    "category": "indoor",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_folding_drying_rack_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "접이식 빨래 건조대",
+      "folding drying rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_full_laundry_basket",
+    "nameKo": "빨래가 든 바구니",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_full_laundry_basket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "빨래가 든 바구니",
+      "full laundry basket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_hanging_peg_pocket",
+    "nameKo": "걸이형 빨래집게 주머니",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_hanging_peg_pocket_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "걸이형 빨래집게 주머니",
+      "hanging peg pocket",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_laundry_cart",
+    "nameKo": "빨래 운반 수레",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_laundry_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "빨래 운반 수레",
+      "laundry cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_laundry_soap_box",
+    "nameKo": "빨랫비누 상자",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_laundry_soap_box_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "빨랫비누 상자",
+      "laundry soap box",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_laun_rotary_drying_stand",
+    "nameKo": "회전식 빨래 건조대",
+    "category": "prop",
+    "group": "city_bath_laundry",
+    "sourceFile": "city_laun_rotary_drying_stand_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "빨래터",
+      "laundry",
+      "회전식 빨래 건조대",
+      "rotary drying stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_logi_barcode_scanner",
+    "nameKo": "물류용 바코드 스캐너",
+    "category": "prop",
+    "group": "city_logistics",
+    "sourceFile": "city_logi_barcode_scanner_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "물류 창고",
+      "logistics",
+      "물류용 바코드 스캐너",
+      "barcode scanner",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_logi_conveyor",
+    "nameKo": "물류 컨베이어 벨트",
+    "category": "prop",
+    "group": "city_logistics",
+    "sourceFile": "city_logi_conveyor_hq2.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "물류 창고",
+      "logistics",
+      "물류 컨베이어 벨트",
+      "conveyor",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_market_garlic_onion_mesh_sacks",
+    "nameKo": "마늘과 양파가 든 그물망",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_market_garlic_onion_mesh_sacks_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "시장",
+      "market",
+      "마늘과 양파가 든 그물망",
+      "garlic onion mesh sacks",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_nurs_mini_scarecrow",
+    "nameKo": "꼬마 허수아비",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_nurs_mini_scarecrow_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "화훼 농원",
+      "plant nursery",
+      "꼬마 허수아비",
+      "mini scarecrow",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_nurs_moss_terrariums",
+    "nameKo": "이끼 테라리움 두 개",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_nurs_moss_terrariums_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "화훼 농원",
+      "plant nursery",
+      "이끼 테라리움 두 개",
+      "moss terrariums",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_nurs_pot_cart",
+    "nameKo": "화분 운반 수레",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_nurs_pot_cart_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "화훼 농원",
+      "plant nursery",
+      "화분 운반 수레",
+      "pot cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_nurs_tool_shelf",
+    "nameKo": "원예 도구 선반",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_nurs_tool_shelf_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "화훼 농원",
+      "plant nursery",
+      "원예 도구 선반",
+      "tool shelf",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_nurs_water_lily_basin",
+    "nameKo": "수련이 든 물그릇",
+    "category": "prop",
+    "group": "city_garden",
+    "sourceFile": "city_nurs_water_lily_basin_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "화훼 농원",
+      "plant nursery",
+      "수련이 든 물그릇",
+      "water lily basin",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pa_amp_cart",
+    "nameKo": "이동식 방송 앰프",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_pa_amp_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "공공 안내",
+      "public address",
+      "이동식 방송 앰프",
+      "amp cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pa_call_button",
+    "nameKo": "공공 호출 버튼",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_pa_call_button_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "공공 안내",
+      "public address",
+      "공공 호출 버튼",
+      "call button",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pa_clock_post",
+    "nameKo": "공공 시계 기둥",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_pa_clock_post_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "공공 안내",
+      "public address",
+      "공공 시계 기둥",
+      "clock post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pa_colored_banner",
+    "nameKo": "색색의 깃발",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_pa_colored_banner_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "공공 안내",
+      "public address",
+      "색색의 깃발",
+      "colored banner",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pa_community_board",
+    "nameKo": "주민 게시판",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_pa_community_board_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "공공 안내",
+      "public address",
+      "주민 게시판",
+      "community board",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pa_double_loudspeaker_pole",
+    "nameKo": "확성기 두 대가 달린 기둥",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_pa_double_loudspeaker_pole_hq.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "공공 안내",
+      "public address",
+      "확성기 두 대가 달린 기둥",
+      "double loudspeaker pole",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_park2_clock_pillar",
+    "nameKo": "공원 시계 기둥",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_park2_clock_pillar_hq2.png",
+    "widthPx": 16,
+    "heightPx": 64,
+    "widthTiles": 1,
+    "heightTiles": 4,
+    "footprint": [
+      "*",
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "공원",
+      "park",
+      "공원 시계 기둥",
+      "clock pillar",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_park2_seesaw",
+    "nameKo": "시소",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_park2_seesaw_hq2.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "공원",
+      "park",
+      "시소",
+      "seesaw",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_park2_waist_twister",
+    "nameKo": "허리 돌리기 운동기구",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_park2_waist_twister_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "공원",
+      "park",
+      "허리 돌리기 운동기구",
+      "waist twister",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pho_empty_photo_frame_stand",
+    "nameKo": "포토존 대형 사진 액자",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_pho_empty_photo_frame_stand_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "포토존",
+      "photo booth",
+      "포토존 대형 사진 액자",
+      "empty photo frame stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pho_floral_crown_hanger",
+    "nameKo": "꽃 화관 걸이",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_pho_floral_crown_hanger_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "포토존",
+      "photo booth",
+      "꽃 화관 걸이",
+      "floral crown hanger",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pho_handheld_heart_prop",
+    "nameKo": "손에 드는 하트 소품",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_pho_handheld_heart_prop_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "포토존",
+      "photo booth",
+      "손에 드는 하트 소품",
+      "handheld heart prop",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pho_small_mirror_stand",
+    "nameKo": "포토존 작은 거울 스탠드",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_pho_small_mirror_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "포토존",
+      "photo booth",
+      "포토존 작은 거울 스탠드",
+      "small mirror stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pho_two_person_photo_bench",
+    "nameKo": "포토존 2인용 벤치",
+    "category": "prop",
+    "group": "city_festival",
+    "sourceFile": "city_pho_two_person_photo_bench_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "포토존",
+      "photo booth",
+      "포토존 2인용 벤치",
+      "two person photo bench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_colorful_swim_tube_stack",
+    "nameKo": "색색의 물놀이 튜브 더미",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_colorful_swim_tube_stack_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "색색의 물놀이 튜브 더미",
+      "colorful swim tube stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_folded_towel_rack",
+    "nameKo": "접은 수건 선반",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_folded_towel_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "접은 수건 선반",
+      "folded towel rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_lane_buoy_line",
+    "nameKo": "수영 레인 부표 줄",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_lane_buoy_line_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "수영 레인 부표 줄",
+      "lane buoy line",
+      "현대 도시",
+      "city"
+    ],
+    "surface": "water"
+  },
+  {
+    "id": "city_pool_life_jacket_rack",
+    "nameKo": "구명조끼 걸이",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_life_jacket_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "구명조끼 걸이",
+      "life jacket rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_lifeguard_chair",
+    "nameKo": "안전요원 감시 의자",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_lifeguard_chair_hq.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "안전요원 감시 의자",
+      "lifeguard chair",
+      "인명구조원",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_pool_cleaning_cart",
+    "nameKo": "수영장 청소 수레",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_pool_cleaning_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "수영장 청소 수레",
+      "pool cleaning cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_pool_skimmer_net_holder",
+    "nameKo": "수영장 뜰채 거치대",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_pool_skimmer_net_holder_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "수영장 뜰채 거치대",
+      "pool skimmer net holder",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_shallow_footwash_platform",
+    "nameKo": "얕은 발 씻는 발판",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_shallow_footwash_platform_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "얕은 발 씻는 발판",
+      "footwash platform",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_single_sunlounger",
+    "nameKo": "1인용 선베드",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_single_sunlounger_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "1인용 선베드",
+      "single sunlounger",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_start_block",
+    "nameKo": "수영 출발대",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_start_block_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "수영 출발대",
+      "start block",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_sun_shaped_decorative_tube",
+    "nameKo": "해 모양 장식 튜브",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_sun_shaped_decorative_tube_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "해 모양 장식 튜브",
+      "sun-shaped float",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_pool_white_kickboard_stack",
+    "nameKo": "흰 수영 킥판 더미",
+    "category": "prop",
+    "group": "city_aquatic",
+    "sourceFile": "city_pool_white_kickboard_stack_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "수영장",
+      "pool",
+      "흰 수영 킥판 더미",
+      "white kickboard stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_prom_rescue_float_pile",
+    "nameKo": "구조용 부력 링 더미",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_prom_rescue_float_pile_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "해변 산책로",
+      "seaside promenade",
+      "구조용 부력 링 더미",
+      "rescue float pile",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_prom_shell_flower_bed",
+    "nameKo": "조개껍데기 화단",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_prom_shell_flower_bed_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "해변 산책로",
+      "seaside promenade",
+      "조개껍데기 화단",
+      "shell flower bed",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_qtrial_oil_drum_cluster",
+    "nameKo": "오일 드럼통 무더기",
+    "category": "prop",
+    "group": "city_construction",
+    "sourceFile": "city_qtrial_oil_drum_cluster_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "작업장",
+      "work yard",
+      "오일 드럼통 무더기",
+      "oil drum cluster",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rain_open_rain_drain",
+    "nameKo": "열린 빗물 배수로",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_rain_open_rain_drain_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "빗길",
+      "rain",
+      "열린 빗물 배수로",
+      "open rain drain",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rain_raindrop_flowerbed",
+    "nameKo": "빗방울 무늬 화단",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_rain_raindrop_flowerbed_hq2.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "빗길",
+      "rain",
+      "빗방울 무늬 화단",
+      "raindrop flowerbed",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_keychain_rack",
+    "nameKo": "열쇠고리 진열대",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_keychain_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "열쇠고리 진열대",
+      "keychain rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_low_sewing_machine_cart",
+    "nameKo": "낮은 재봉틀 수레",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_low_sewing_machine_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "낮은 재봉틀 수레",
+      "low sewing machine cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_open_key_copying_cart",
+    "nameKo": "열쇠 복제 작업 수레",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_open_key_copying_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "열쇠 복제 작업 수레",
+      "open key copying cart",
+      "열쇠 복사",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_shoe_polish_cloth_hanger",
+    "nameKo": "구두 닦는 천 걸이",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_shoe_polish_cloth_hanger_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "구두 닦는 천 걸이",
+      "shoe polish cloth hanger",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_shoe_repair_open_cart",
+    "nameKo": "구두 수선 작업 수레",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_shoe_repair_open_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "구두 수선 작업 수레",
+      "shoe repair open cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_single_waiting_chair",
+    "nameKo": "수리점 대기 의자",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_single_waiting_chair_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "수리점 대기 의자",
+      "single waiting chair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_small_freehand_bell",
+    "nameKo": "작은 손종",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_small_freehand_bell_hq.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "작은 손종",
+      "small freehand bell",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_umbrella_repair_clamp",
+    "nameKo": "우산 수리 고정대",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_umbrella_repair_clamp_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "우산 수리 고정대",
+      "umbrella repair clamp",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rep_watch_battery_service_table",
+    "nameKo": "시계 배터리 교체 작업대",
+    "category": "prop",
+    "group": "city_market",
+    "sourceFile": "city_rep_watch_battery_service_table_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "골목 수리점",
+      "repair shop",
+      "시계 배터리 교체 작업대",
+      "watch battery service",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_river_sit_up_bench",
+    "nameKo": "윗몸 일으키기 벤치",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_river_sit_up_bench_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "강변",
+      "riverside",
+      "윗몸 일으키기 벤치",
+      "sit up bench",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_river_spring_horse",
+    "nameKo": "스프링 목마",
+    "category": "prop",
+    "group": "city_parks",
+    "sourceFile": "city_river_spring_horse_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "강변",
+      "riverside",
+      "스프링 목마",
+      "spring horse",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_roof_cat_shelter",
+    "nameKo": "옥상 고양이 쉼터",
+    "category": "prop",
+    "group": "city_construction",
+    "sourceFile": "city_roof_cat_shelter_hq2.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "옥상",
+      "rooftop",
+      "옥상 고양이 쉼터",
+      "cat shelter",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_roof_chimney_vent",
+    "nameKo": "굴뚝형 환기구",
+    "category": "prop",
+    "group": "city_construction",
+    "sourceFile": "city_roof_chimney_vent_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "옥상",
+      "rooftop",
+      "굴뚝형 환기구",
+      "chimney vent",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_roof_safety_rail",
+    "nameKo": "옥상 안전 난간",
+    "category": "structure",
+    "group": "city_construction",
+    "sourceFile": "city_roof_safety_rail_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "옥상",
+      "rooftop",
+      "옥상 안전 난간",
+      "safety rail",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_rside_speed_camera_post",
+    "nameKo": "과속 단속 카메라 기둥",
+    "category": "prop",
+    "group": "city_street",
+    "sourceFile": "city_rside_speed_camera_post_hq2.png",
+    "widthPx": 16,
+    "heightPx": 64,
+    "widthTiles": 1,
+    "heightTiles": 4,
+    "footprint": [
+      "*",
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "도로변",
+      "roadside",
+      "과속 단속 카메라 기둥",
+      "speed camera post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_school_high_jump_mat",
+    "nameKo": "높이뛰기 매트",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_school_high_jump_mat_hq2.png",
+    "widthPx": 48,
+    "heightPx": 32,
+    "widthTiles": 3,
+    "heightTiles": 2,
+    "footprint": [
+      "...",
+      "..."
+    ],
+    "tags": [
+      "학교 운동장",
+      "school sports",
+      "높이뛰기 매트",
+      "high jump mat",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_school_hurdles_pair",
+    "nameKo": "허들 두 개",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_school_hurdles_pair_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "학교 운동장",
+      "school sports",
+      "허들 두 개",
+      "hurdles pair",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_school_sports_handcart",
+    "nameKo": "학교 운동용품 손수레",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_school_sports_handcart_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "학교 운동장",
+      "school sports",
+      "학교 운동용품 손수레",
+      "sports handcart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sfront_slush_cart",
+    "nameKo": "슬러시 판매 수레",
+    "category": "prop",
+    "group": "city_school",
+    "sourceFile": "city_sfront_slush_cart_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "학교 앞",
+      "school storefront",
+      "슬러시 판매 수레",
+      "slush cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sk8_low_funbox",
+    "nameKo": "낮은 스케이트보드 펀박스",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sk8_low_funbox_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "스케이트보드 공원",
+      "skate park",
+      "낮은 스케이트보드 펀박스",
+      "low funbox",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sk8_low_grind_rail",
+    "nameKo": "낮은 그라인드 레일",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sk8_low_grind_rail_hq.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "스케이트보드 공원",
+      "skate park",
+      "낮은 그라인드 레일",
+      "low grind rail",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sk8_pyramid_obstacle",
+    "nameKo": "피라미드형 스케이트보드 장애물",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sk8_pyramid_obstacle_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "..",
+      ".."
+    ],
+    "tags": [
+      "스케이트보드 공원",
+      "skate park",
+      "피라미드형 스케이트보드 장애물",
+      "pyramid obstacle",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sk8_skateboard_rack",
+    "nameKo": "스케이트보드 거치대",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sk8_skateboard_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "스케이트보드 공원",
+      "skate park",
+      "스케이트보드 거치대",
+      "skateboard rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sport_folding_tactics_easel",
+    "nameKo": "접이식 전술판",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sport_folding_tactics_easel_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "체육시설",
+      "sports",
+      "접이식 전술판",
+      "folding tactics easel",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sport_outdoor_shower_station",
+    "nameKo": "야외 샤워기",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sport_outdoor_shower_station_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "체육시설",
+      "sports",
+      "야외 샤워기",
+      "outdoor shower station",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_sport_sports_bag_stack",
+    "nameKo": "운동 가방 더미",
+    "category": "prop",
+    "group": "city_sports",
+    "sourceFile": "city_sport_sports_bag_stack_hq2.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "체육시설",
+      "sports",
+      "운동 가방 더미",
+      "sports bag stack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_stray_bird_feeder_post",
+    "nameKo": "기둥형 새 모이통",
+    "category": "prop",
+    "group": "city_residential",
+    "sourceFile": "city_stray_bird_feeder_post_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "동네 동물",
+      "neighborhood animals",
+      "기둥형 새 모이통",
+      "bird feeder post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_stray_scratching_post",
+    "nameKo": "고양이 스크래처 기둥",
+    "category": "prop",
+    "group": "city_residential",
+    "sourceFile": "city_stray_scratching_post_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "동네 동물",
+      "neighborhood animals",
+      "고양이 스크래처 기둥",
+      "scratching post",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_terr_menu_chalkboard",
+    "nameKo": "분필 메뉴판",
+    "category": "prop",
+    "group": "city_terrace",
+    "sourceFile": "city_terr_menu_chalkboard_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "테라스",
+      "terrace",
+      "분필 메뉴판",
+      "menu chalkboard",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_terr_outdoor_cushion_shelf",
+    "nameKo": "야외 방석 선반",
+    "category": "prop",
+    "group": "city_terrace",
+    "sourceFile": "city_terr_outdoor_cushion_shelf_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "테라스",
+      "terrace",
+      "야외 방석 선반",
+      "outdoor cushion shelf",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_terr_parcel_locker",
+    "nameKo": "무인 택배 보관함",
+    "category": "prop",
+    "group": "city_terrace",
+    "sourceFile": "city_terr_parcel_locker_hq2.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "테라스",
+      "terrace",
+      "무인 택배 보관함",
+      "parcel locker",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_terr_ramen_standing_counter",
+    "nameKo": "서서 먹는 라멘 가판대",
+    "category": "prop",
+    "group": "city_terrace",
+    "sourceFile": "city_terr_ramen_standing_counter_hq2.png",
+    "widthPx": 48,
+    "heightPx": 16,
+    "widthTiles": 3,
+    "heightTiles": 1,
+    "footprint": [
+      "XXX"
+    ],
+    "tags": [
+      "테라스",
+      "terrace",
+      "서서 먹는 라멘 가판대",
+      "ramen standing counter",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_terr_warm_drink_cabinet",
+    "nameKo": "온장 음료 진열장",
+    "category": "prop",
+    "group": "city_terrace",
+    "sourceFile": "city_terr_warm_drink_cabinet_hq2.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "테라스",
+      "terrace",
+      "온장 음료 진열장",
+      "warm drink cabinet",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_direction_totem",
+    "nameKo": "트램 방향 안내 기둥",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_direction_totem_hq.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 방향 안내 기둥",
+      "direction totem",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_miniature_tram",
+    "nameKo": "트램 모형",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_miniature_tram_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 모형",
+      "miniature tram",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_paired_planters",
+    "nameKo": "트램 정류장 화분 두 개",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_paired_planters_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 정류장 화분 두 개",
+      "paired planters",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_stamper",
+    "nameKo": "트램 승차권 개찰기",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_stamper_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 승차권 개찰기",
+      "stamper",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_stop_sign_pole",
+    "nameKo": "트램 정류장 표지판",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_stop_sign_pole_hq.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 정류장 표지판",
+      "stop sign pole",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_ticket_validator",
+    "nameKo": "트램 승차권 검표기",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_ticket_validator_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 승차권 검표기",
+      "ticket validator",
+      "교통카드 단말기",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_tram_wire_mast",
+    "nameKo": "트램 전차선 기둥",
+    "category": "prop",
+    "group": "city_transport",
+    "sourceFile": "city_tram_wire_mast_hq.png",
+    "widthPx": 16,
+    "heightPx": 48,
+    "widthTiles": 1,
+    "heightTiles": 3,
+    "footprint": [
+      "*",
+      "*",
+      "X"
+    ],
+    "tags": [
+      "트램 정류장",
+      "tram stop",
+      "트램 전차선 기둥",
+      "wire mast",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_coin_machine",
+    "nameKo": "셀프 세차장 동전 투입기",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_coin_machine_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "셀프 세차장 동전 투입기",
+      "coin machine",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_detergent_bottle_tray",
+    "nameKo": "세차 세제 병 받침대",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_detergent_bottle_tray_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "세차 세제 병 받침대",
+      "detergent bottle tray",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_foam_lance_stand",
+    "nameKo": "거품 분사기 거치대",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_foam_lance_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "거품 분사기 거치대",
+      "foam lance stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_folded_towel_rack",
+    "nameKo": "세차 수건 선반",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_folded_towel_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "세차 수건 선반",
+      "folded towel rack",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_outdoor_vacuum_stand",
+    "nameKo": "셀프 세차장 진공청소기",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_outdoor_vacuum_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "셀프 세차장 진공청소기",
+      "outdoor vacuum stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_portable_wash_cart",
+    "nameKo": "이동식 세차 수레",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_portable_wash_cart_hq.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "이동식 세차 수레",
+      "portable wash cart",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_pressure_hose_reel",
+    "nameKo": "고압 호스 릴",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_pressure_hose_reel_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "고압 호스 릴",
+      "pressure hose reel",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_sprayer_stand",
+    "nameKo": "세차 분사기 스탠드",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_sprayer_stand_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "세차 분사기 스탠드",
+      "sprayer stand",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_squeegee_rack",
+    "nameKo": "물기 제거용 스퀴지 걸이",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_squeegee_rack_hq.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "물기 제거용 스퀴지 걸이",
+      "squeegee rack",
+      "고무 밀대",
+      "현대 도시",
+      "city"
+    ]
+  },
+  {
+    "id": "city_wash_yellow_antislip_mat",
+    "nameKo": "노란 미끄럼 방지 매트",
+    "category": "prop",
+    "group": "city_auto_service",
+    "sourceFile": "city_wash_yellow_antislip_mat_hq.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      ".."
+    ],
+    "tags": [
+      "셀프 세차장",
+      "car wash",
+      "노란 미끄럼 방지 매트",
+      "yellow antislip mat",
+      "현대 도시",
+      "city"
+    ]
   }
 ]

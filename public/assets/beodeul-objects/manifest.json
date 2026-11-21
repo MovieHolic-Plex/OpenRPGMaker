@@ -79,6 +79,46 @@
       "id": "city_logistics",
       "labelKo": "택배·물류",
       "order": 230
+    },
+    {
+      "id": "city_access",
+      "labelKo": "배리어프리·접근성",
+      "order": 240
+    },
+    {
+      "id": "city_auto_service",
+      "labelKo": "정비소·주유소·세차장",
+      "order": 250
+    },
+    {
+      "id": "city_bath_laundry",
+      "labelKo": "목욕탕·빨래터",
+      "order": 260
+    },
+    {
+      "id": "city_recycling",
+      "labelKo": "분리수거·재활용",
+      "order": 270
+    },
+    {
+      "id": "city_performance",
+      "labelKo": "거리 공연·촬영장",
+      "order": 280
+    },
+    {
+      "id": "city_fire_service",
+      "labelKo": "소방·안전",
+      "order": 290
+    },
+    {
+      "id": "city_harbor",
+      "labelKo": "항구·낚시터",
+      "order": 300
+    },
+    {
+      "id": "city_aquatic",
+      "labelKo": "수영장·빙상장",
+      "order": 310
     }
   ],
   "sets": [
