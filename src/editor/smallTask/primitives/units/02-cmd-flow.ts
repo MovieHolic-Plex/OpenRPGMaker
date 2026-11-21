@@ -14,11 +14,12 @@ import { eventName, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError } from "../errors";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { compileFlowScript } from "./02-cmd-flow/script";
-import { firstLabelIndex, hasCallerLabel, labelReferenceViews, validateLabelChange } from "./02-cmd-flow/labels";
+import { assertFlowCommandDeletion, firstLabelIndex, hasCallerLabel, labelReferenceViews, validateLabelChange } from "./02-cmd-flow/labels";
 import { referenceName, requireReference, validateForkCondition } from "./02-cmd-flow/references";
+import type { SmallTaskUnitHost } from "../host";
 
 export const UNIT = "02-cmd-flow";
-export { assertFlowCommandDeletion } from "./02-cmd-flow/labels";
+export const host: SmallTaskUnitHost = { commandDeletionGuard: assertFlowCommandDeletion };
 
 type Args = Record<string, unknown>;
 type Operation = "insert" | "update";

@@ -19,9 +19,18 @@ import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type { ActorRecord, CharacterAppearanceRecord, ClassRecord, Command, Project } from "@/project/types";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError } from "../errors";
+import type { SmallTaskUnitHost } from "../host";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 
 export const UNIT = "17-db-actors-classes";
+
+export const host: SmallTaskUnitHost = {
+  commit: {
+    beforeDbEntryGuards(before, after, target, live) {
+      assertActorClassDraftChanges(before, after, target.collection, target.id, live);
+    },
+  },
+};
 
 type Records = {
   actors: ActorRecord;

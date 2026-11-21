@@ -517,31 +517,12 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
     label: tool.name,
     async execute(_id, params) {
       const args = params as Record<string, unknown>;
-      if (tool.name === APPLY_SMALL_TASK_PRIMITIVE && target.kind === "map"
-        && (args.id === "map.tile.paint" || args.id === "map.region.fill")) {
-        const referencePurpose = (args.args as { referencePurpose?: unknown } | undefined)?.referencePurpose;
-        const gate = referenceGate.beforeWrite(ctx.project, "paint_tiles", { mapId: target.mapId, referencePurpose });
-        if (gate) throw new Error(formatPiToolFailure(gate));
-      }
-      const before = ctx.project;
       let result: Awaited<ReturnType<typeof runSmallTaskPrimitiveTool>>;
       try {
         result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
       } catch (error) {
         if (error instanceof PrimitiveError) primitiveRefusal = error.message;
         throw error;
-      }
-      if (regionScope && tool.name === APPLY_SMALL_TASK_PRIMITIVE && args.id === "event.tile.create") {
-        // The primitive already checked tileEvent. Allow that exact addition in the final mapRegion check.
-        const { mapId } = regionScope;
-        const previousIds = new Set(before.maps[mapId].events.map(event => event.id));
-        const added = ctx.project.maps[mapId].events.find(event => !previousIds.has(event.id));
-        if (added) {
-          const map = regionBaseline.maps[mapId];
-          regionBaseline = { ...regionBaseline, maps: { ...regionBaseline.maps, [mapId]: {
-            ...map, events: [...map.events, structuredClone(added)],
-          } } };
-        }
       }
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
     },
@@ -561,17 +542,22 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         throw new Error(refusal);
       }
       const before = ctx.project;
+      const primitiveId = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string" ? args.id : undefined;
+      const primitive = primitiveId
+        ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(primitiveId)
+        : undefined;
+      if (primitive?.referenceGateTool && target.kind === "map") {
+        const referencePurpose = (args.args as { referencePurpose?: unknown } | undefined)?.referencePurpose;
+        const gate = referenceGate.beforeWrite(ctx.project, primitive.referenceGateTool, {
+          mapId: target.mapId, referencePurpose,
+        });
+        if (gate) throw new Error(formatPiToolFailure(gate));
+      }
       const response = await tool.execute(id, args, toolSignal ?? signal);
       if (regionScope && ctx.project !== before) {
-        const primitive = tool.name === APPLY_SMALL_TASK_PRIMITIVE && typeof args.id === "string"
-          ? (await import("../../src/editor/smallTask/primitives/registry.ts")).getPrimitive(args.id) : undefined;
-        if (primitive?.unit === "28-project-data") {
-          // Keep the map and tileset baseline, including any checked tile-event additions.
-          regionBaseline = { ...ctx.project, maps: regionBaseline.maps, tilesets: regionBaseline.tilesets };
-        } else if (primitive?.unit === "27-quests") {
-          // The primitive checked the quest changes independently of the tile rectangle.
-          regionBaseline = { ...regionBaseline, quests: ctx.project.quests };
-        } else if (primitive?.id !== "event.tile.create") {
+        if (primitive?.reviseRegionBaseline) {
+          regionBaseline = primitive.reviseRegionBaseline(regionBaseline, ctx.project, before, regionScope.mapId);
+        } else {
           const { mapId, rect } = regionScope;
           const additions = newEventsInRect(before, ctx.project, mapId, rect);
           const checkBefore = baselineWithPlacedEvents(base, before, ctx.project, mapId, rect);

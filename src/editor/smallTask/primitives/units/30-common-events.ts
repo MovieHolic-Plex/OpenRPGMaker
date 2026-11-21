@@ -13,6 +13,7 @@ import {
 import type { Command, CommonEvent, Project } from "@/project/types";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
+import type { SmallTaskUnitHost } from "../host";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   commandForInsert, editCommands, quotedName, refuseReferencedRemoval,
@@ -22,8 +23,11 @@ import {
 
 export const UNIT = "30-common-events";
 
+export const host: SmallTaskUnitHost = {
+  commit: { onRemovedCommonEvent: refuseReferencedRemoval },
+};
+
 type Args = Record<string, unknown>;
-type Scope = ReturnType<SmallTaskPrimitive["scope"]>;
 
 const eventId = { type: "string", minLength: 1, description: "get_database_records(collection: commonEvents)에서 확인한 공용 이벤트의 식별자입니다." } as const;
 const eventName = { type: "string", minLength: 1, description: "공용 이벤트에 붙일 이름입니다." } as const;
@@ -64,11 +68,15 @@ function targetMap(ctx: PrimitiveContext) {
   return ctx.project.maps[ctx.target.mapId];
 }
 
-function projectScope(ctx: PrimitiveContext, args?: Args): Scope {
+function boundScope(bound: { fields?: readonly string[]; remove?: true }): SmallTaskPrimitive["scope"] {
+  return (ctx, args) => ({ ...projectScope(ctx, args), ...bound });
+}
+
+function projectScope(ctx: PrimitiveContext, args?: Args) {
   targetMap(ctx);
   return args
-    ? { kind: "projectArea", area: "commonEvents", ids: [findEvent(ctx, args).id] }
-    : { kind: "projectArea", area: "commonEvents", ids: [], create: 1 };
+    ? { kind: "projectArea" as const, area: "commonEvents" as const, ids: [findEvent(ctx, args).id] }
+    : { kind: "projectArea" as const, area: "commonEvents" as const, ids: [] as const, create: 1 as const };
 }
 
 function findEvent(ctx: PrimitiveContext, args: Args): CommonEvent {
@@ -189,6 +197,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       const event = findEvent(ctx, args);
       return editEvent(event, ctx.project, { ...event, name: nameFromArgs(args) });
     },
+    boundScope({ fields: ["name"] }),
   ),
   createPrimitive(
     "commonEvent.trigger.set", "공용 이벤트 실행 조건 설정",
@@ -230,6 +239,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       else delete next.conditionSwitchId;
       return editEvent(event, ctx.project, next);
     },
+    boundScope({ fields: ["trigger", "conditionSwitchId"] }),
   ),
   createPrimitive(
     "commonEvent.remove", "공용 이벤트 삭제",
@@ -241,6 +251,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       refuseReferencedRemoval(after, event.id, ctx.live);
       return after;
     },
+    boundScope({ remove: true }),
   ),
   createPrimitive(
     "commonEvent.command.insert", "공용 이벤트 명령 추가",
@@ -276,6 +287,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       validateCallEdit(after, next, path, inserted);
       return after;
     },
+    boundScope({ fields: ["commands"] }),
   ),
   createPrimitive(
     "commonEvent.command.update", "공용 이벤트 명령 수정",
@@ -310,6 +322,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       validateCallEdit(after, next, path, updated, current);
       return after;
     },
+    boundScope({ fields: ["commands"] }),
   ),
   createPrimitive(
     "commonEvent.command.delete", "공용 이벤트 명령 삭제",
@@ -324,5 +337,6 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       validateLabelEdit(ctx.project, event, next.commands, path, current);
       return editEvent(event, ctx.project, next);
     },
+    boundScope({ fields: ["commands"] }),
   ),
 ];

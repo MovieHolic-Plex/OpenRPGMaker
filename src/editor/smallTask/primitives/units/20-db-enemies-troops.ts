@@ -7,14 +7,19 @@ import { terrainTagAt } from "@/project/terrainAt";
 import type { Project } from "@/project/types";
 import { displayText } from "../../target";
 import { PrimitiveError } from "../errors";
+import type { SmallTaskUnitHost } from "../host";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   battleCommandFields, enemyFields, nonempty, terrainFields, textField, troopFields, troopUpdateFields,
   writeBattleCommand, writeEnemy, writeTerrain, writeTroop,
 } from "./20-db-enemies-troops/records";
-import { battleCommandSlotIds, troopHasEncounter } from "./20-db-enemies-troops/references";
+import { assertUnit20DraftReferences, battleCommandSlotIds, troopHasEncounter } from "./20-db-enemies-troops/references";
 
 export const UNIT = "20-db-enemies-troops";
+
+export const host: SmallTaskUnitHost = {
+  commit: { afterDbEntryGuards: assertUnit20DraftReferences },
+};
 
 type Collection = "enemies" | "troops" | "terrains" | "battleCommands";
 type Row<C extends Collection> = NonNullable<Project["database"][C]>[number];

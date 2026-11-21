@@ -18,14 +18,31 @@ import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
 import { spatialPortLanding } from "@/project/spatial/overview";
 import type { Dir, GameMap, MapConnection, MapNamedLocation, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { LOCATION_DELETION_DRAFT_REFUSAL, PrimitiveError } from "../errors";
+import {
+  LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL, PrimitiveError,
+} from "../errors";
+import type { SmallTaskUnitHost } from "../host";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import {
   assertReferencesPreserved, changesBlueprintPlaces, duplicateMap, freeId, label, locationDeletionDraftError,
-  mapDraft, mapLabel, nextMapId, removeMap, requiredName, resizeMap, runMapTool, selectedMap, usesLocation,
+  mapDraft, mapLabel, mapRemovalDraftError, mapRemovalReferenceError, nextMapId, removeMap, requiredName, resizeMap,
+  runMapTool, selectedMap, usesLocation,
 } from "./23-map-structure/maps";
 
 export const UNIT = "23-map-structure";
+
+export const host: SmallTaskUnitHost = {
+  commit: { onRemovedMap: mapRemovalDraftError },
+  explainRefusal({ stoppedEarly, before, target, live }) {
+    if (target.kind !== "map") return undefined;
+    if (stoppedEarly.startsWith(MAP_REMOVAL_REFERENCE_REFUSAL)) return mapRemovalReferenceError(before, target.mapId);
+    if (live && stoppedEarly.startsWith(MAP_REMOVAL_DRAFT_REFUSAL)) return mapRemovalDraftError(before, target.mapId, live);
+    const locationId = live && stoppedEarly.startsWith(LOCATION_DELETION_DRAFT_REFUSAL)
+      ? stoppedEarly.match(/\n([\s\S]+)$/u)?.[1]
+      : undefined;
+    return locationId ? locationDeletionDraftError(before, target.mapId, locationId, live) : undefined;
+  },
+};
 
 type Args = Record<string, unknown>;
 type MapOperation = (project: Project, map: GameMap, args: Args, ctx: PrimitiveContext) => Project;

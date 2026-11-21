@@ -16,15 +16,25 @@ import type { EndingCondition, EndingDef, PersistedGameEvent, Project } from "@/
 import { genId } from "@/util/id";
 import { roJosa } from "@/util/josa";
 import { PrimitiveError } from "../errors";
+import type { SmallTaskUnitHost } from "../host";
 import type { SmallTaskPrimitive } from "../types";
 import { scriptCmdMayMatch, scriptMayUseGameApi, scriptStringArg } from "./28-project-data/scriptReferences";
 
 export const UNIT = "28-project-data";
 
+export const host: SmallTaskUnitHost = {
+  commit: {
+    beforeCommonEvents(live, before, after, target) {
+      if (target.kind === "map") assertProjectDataDraftReferences(live, before, after);
+    },
+  },
+};
+
 type FlagArea = "switches" | "variables";
 type Area = FlagArea | "endings" | "system";
 type Args = Record<string, unknown>;
-type Operation = Pick<SmallTaskPrimitive, "args" | "describe" | "apply">;
+type AreaBound = { readonly fields?: readonly string[]; readonly remove?: true };
+type Operation = Pick<SmallTaskPrimitive, "args" | "describe" | "apply"> & { readonly bound?: AreaBound };
 type Mode = "create" | "edit" | readonly string[] | ((project: Project, args: Args) => readonly string[]);
 type NamedRecord = { readonly id: string; readonly name: string };
 const RECORD_LABELS = { switches: "스위치", variables: "변수", endings: "엔딩" };
@@ -50,6 +60,7 @@ function quotedTo(value: string, fallback: string): string {
 }
 
 function primitive(id: string, title: string, area: Area, mode: Mode, operation: Operation): SmallTaskPrimitive {
+  const { bound, ...behavior } = operation;
   return {
     id, unit: UNIT, title, covers: { tools: [id] }, targets: ["map"],
     scope({ project, target }, args) {
@@ -59,12 +70,13 @@ function primitive(id: string, title: string, area: Area, mode: Mode, operation:
       if (mode === "create") return { kind: "projectArea", area, create: 1 };
       if (mode === "edit" && area !== "system") {
         const record = namedRecord(project[area] ?? [], args.record, RECORD_LABELS[area]);
-        return { kind: "projectArea", area, ids: [record.id] };
+        return { kind: "projectArea", area, ids: [record.id], ...bound };
       }
       const ids = typeof mode === "function" ? mode(project, args) : mode === "edit" ? [] : mode;
       return { kind: "projectArea", area, ids };
     },
-    ...operation,
+    ...behavior,
+    reviseRegionBaseline: (baseline, applied) => ({ ...applied, maps: baseline.maps, tilesets: baseline.tilesets }),
   };
 }
 
@@ -123,6 +135,7 @@ function flagScriptLookupChanges(script: ScriptEffectSource, before: Project, af
 
 function renameFlag(area: FlagArea, label: string): Operation {
   return {
+    bound: { fields: ["name"] },
     args: object({ record: text(`이름을 바꿀 기존 ${label}의 이름 또는 식별자`), name: text(`새 ${label} 이름`) }, ["record", "name"]),
     describe(_ctx, args) {
       return `${label} 이름을 ${quotedTo(String(args.name), "새 이름")} 바꿔요.`;
@@ -327,6 +340,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
   }),
   primitive("ending.update", "엔딩 수정", "endings", "edit", {
+    bound: { fields: ["name", "priority", "conditions"] },
     args: object({ record: endingRecord, ...endingFields }, ["record"]),
     describe(ctx, args) {
       const ending = namedRecord(ctx.project.endings ?? [], args.record, "엔딩");
@@ -348,6 +362,7 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
     },
   }),
   primitive("ending.remove", "엔딩 삭제", "endings", "edit", {
+    bound: { remove: true },
     args: object({ record: endingRecord }, ["record"]),
     describe(ctx, args) {
       const ending = namedRecord(ctx.project.endings ?? [], args.record, "엔딩");

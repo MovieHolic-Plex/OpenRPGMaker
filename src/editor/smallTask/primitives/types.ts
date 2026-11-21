@@ -13,6 +13,10 @@ export interface PrimitiveContext {
   readonly target: SmallTaskTarget;
   readonly selection?: { readonly rect?: { x: number; y: number; w: number; h: number } };
   readonly commandDeletionGuard?: (ctx: PrimitiveContext, list: readonly Command[], command: Command) => void;
+  /** Unit checks invoked when core deletes one m2 command row. */
+  readonly m2CommandDeleteGuards?: readonly ((
+    ctx: PrimitiveContext, commandId: string, list: readonly Command[], index: number, command: Command,
+  ) => void)[];
 }
 
 export interface PrimitiveCovers {
@@ -35,4 +39,11 @@ export interface SmallTaskPrimitive<A extends Record<string, unknown> = Record<s
   scope(ctx: PrimitiveContext, args: A): SmallTaskScope;
   describe(ctx: PrimitiveContext, args: A): string;
   apply(ctx: PrimitiveContext, args: A): Project;
+  /**
+   * When set, applying this primitive replaces the worker's map-region baseline
+   * and skips the rectangle check. `before` is the project immediately before this call.
+   */
+  reviseRegionBaseline?(baseline: Project, applied: Project, before: Project, mapId: string): Project;
+  /** Tool name for the tileset reference gate, run before this primitive on a map target. */
+  readonly referenceGateTool?: string;
 }

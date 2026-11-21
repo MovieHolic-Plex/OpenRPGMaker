@@ -29,6 +29,7 @@
     "gates:css:live": "node scripts/check-css-live-classes.mjs",
     "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
     "gates:barrel": "node scripts/check-barrel-imports.mjs",
+    "gates:small-task-layering": "node scripts/check-small-task-layering.mjs",
     "gates:self-hosted": "node scripts/check-self-hosted-workflows.mjs",
     "merge-pr": "node scripts/merge-pr.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
