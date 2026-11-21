@@ -29,7 +29,7 @@ import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { renderEventIdReadout } from "./eventIdReadout";
 import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
-import { clearEventAiLiveDock, focusEventAiDockInOpenEditor } from "./aiAssist";
+import { clearEventAiLiveDock, collapseFocusedEventAiAssist, focusEventAiDockInOpenEditor } from "./aiAssist";
 import { clearEventAiDockOpenRequest, requestEventAiDockOpen } from "./aiDockOpenRequest";
 import {
   openActiveEventCommandPicker,
@@ -304,7 +304,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     // modalStack removes its entry before calling us, even if closing is declined.
     unregisterModal(backdrop);
     registerModal(backdrop, requestModalEscape);
-    if (exitWindowFullscreen()) {
+    if (collapseFocusedEventAiAssist() || exitWindowFullscreen()) {
       return;
     }
     requestClose();

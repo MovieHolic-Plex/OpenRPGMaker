@@ -760,7 +760,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     toggle.click();
 
     // 전부 뺐으므로 적용할 것이 없다.
-    expect(findByTestId(harness.panel, "ai-event-result-meta")!.textContent).toContain("모두 뺐어요");
+    expect(findByTestId(harness.panel, "ai-event-result-meta")!.textContent).toContain("적용할 변경이 없어요");
     expect((findByTestId(harness.panel, "ai-event-apply") as unknown as HTMLButtonElement).disabled).toBe(true);
   });
 
