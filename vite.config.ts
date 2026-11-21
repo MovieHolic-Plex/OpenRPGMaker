@@ -213,6 +213,56 @@ function codexOAuthPlugin(): Plugin {
  * 개발용 서버는 건드리지 않는다. `reuseExistingServer: true` 라서 이미 떠 있는 서버를
  * 재사용하면 이 플래그는 안 걸린다 — 그때는 소스가 조용할 때 증거를 잡는 수밖에 없다.
  */
+type SharedTileReferencesModule = {
+  sharedTileReferencesMiddleware(req: import("node:http").IncomingMessage, res: import("node:http").ServerResponse, next: (error?: unknown) => void): void;
+};
+
+/** Vite 설정 로더는 `@/` 를 모른다. 개발 서버는 ssrLoadModule 로, preview 는 esbuild 가 별칭을 푼 묶음으로 불러온다. 경로는 SHARED_TILE_REFERENCES_ENDPOINT 와 같다. */
+function sharedTileReferencesPlugin(): Plugin {
+  const mount = (server: { middlewares: ViteDevServer["middlewares"] }, load: () => Promise<SharedTileReferencesModule>) => {
+    let loading: Promise<SharedTileReferencesModule> | undefined;
+    server.middlewares.use((req, res, next) => {
+      const path = (req.url ?? "").split("?", 1)[0];
+      if (path !== "/__oprn/shared-tile-references") { next(); return; }
+      loading ??= load();
+      loading.then((mod) => mod.sharedTileReferencesMiddleware(req, res, next)).catch(next);
+    });
+  };
+  return {
+    name: "oprn-shared-tile-references",
+    configureServer(server) {
+      mount(server, () => server.ssrLoadModule("/scripts/lib/sharedTileReferencesSqlite.ts") as Promise<SharedTileReferencesModule>);
+    },
+    configurePreviewServer(server) {
+      mount(server, loadSharedTileReferencesForPreview);
+    },
+  };
+}
+
+/** PreviewServer 에는 ssrLoadModule 이 없다. 같은 미들웨어를 별칭이 풀린 노드 묶음으로 한 번만 만든다. */
+function loadSharedTileReferencesForPreview(): Promise<SharedTileReferencesModule> {
+  const root = fileURLToPath(new URL(".", import.meta.url));
+  return import("esbuild").then(async ({ build }) => {
+    const { mkdtempSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const { pathToFileURL } = await import("node:url");
+    const outfile = join(mkdtempSync(join(tmpdir(), "oprn-tile-ref-")), "middleware.mjs");
+    await build({
+      absWorkingDir: root,
+      entryPoints: [join(root, "scripts/lib/sharedTileReferencesSqlite.ts")],
+      bundle: true,
+      platform: "node",
+      format: "esm",
+      outfile,
+      alias: { "@": join(root, "src") },
+      packages: "external",
+      logLevel: "silent",
+    });
+    return import(pathToFileURL(outfile).href) as Promise<SharedTileReferencesModule>;
+  });
+}
+
 const freezeDevServer = () => process.env.E2E_FREEZE_DEV_SERVER === "1";
 
 // 번들 타일셋 정의 JSON 지연 출처 — scripts/lib/bundledJsonLazy.mjs(플레이어 빌드도 같은 플러그인을 쓴다).
@@ -246,7 +296,7 @@ export default defineConfig(({ mode }) => {
   // (npm run dev · dev:worktree · playwright webServer)는 공유 node_modules 를 보면 스스로
   // `<체크아웃>/.vite-cache/dev` 를 넣는다(scripts/lib/viteCacheDir.mjs). vite 를 직접 부르면 안 걸린다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), stillPackDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin(), normalizerFingerprintPlugin(), genKitsDriftPlugin(), deferStylesheetsPlugin(), jsonParseModulesPlugin(), bundledJsonLazyPlugin(), referenceLimitsGuardPlugin()],
+  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, sharedTileReferencesPlugin(), { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), stillPackDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin(), normalizerFingerprintPlugin(), genKitsDriftPlugin(), deferStylesheetsPlugin(), jsonParseModulesPlugin(), bundledJsonLazyPlugin(), referenceLimitsGuardPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서

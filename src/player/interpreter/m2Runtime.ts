@@ -14,7 +14,7 @@ import { baseBattleCommandIds, findBattleCommandRecord } from "@/battle/battleCo
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
-import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { fieldBoolean, fieldNumber, fieldString, optionalFieldNumber, optionalFieldString } from "./m2RuntimeFields";
 import { terrainTagAt } from "@/project/terrainAt";
 import { boardedVehicleId, isVehicleId, setParkedVehicleLocation } from "@/project/vehicles";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
@@ -84,7 +84,7 @@ function executeByTitle(
   }
   if (title === "Tint Screen") {
     // color 필드(색 이름)를 우선 사용하고, value(r,g,b / hex)가 있으면 그것을 사용.
-    const explicit = fieldString(fields, "value", "");
+    const explicit = optionalFieldString(fields, "value", "");
     runtime.screen.tint = explicit || fieldString(fields, "color", "neutral");
     // New commands use durationMs. Keep the old duration field readable for
     // imported projects, where small values were authored in seconds.
@@ -96,15 +96,15 @@ function executeByTitle(
     return;
   }
   if (title === "Flash Screen") {
-    runtime.screen.flash = fieldString(fields, "value", "flash");
+    runtime.screen.flash = optionalFieldString(fields, "value", "flash");
     return;
   }
   if (title === "Shake Screen") {
-    runtime.screen.shake = fieldNumber(fields, "value", 1);
+    runtime.screen.shake = optionalFieldNumber(fields, "value", 1);
     return;
   }
   if (title === "Set Weather Effects") {
-    const value = fieldString(fields, "value", "none");
+    const value = optionalFieldString(fields, "value", "none");
     runtime.screen.weather = fields.intensity === undefined ? value : weatherToRuntimeString(normalizeWeatherParams({
       kind: parseWeather(value).kind,
       intensity: fieldNumber(fields, "intensity", 0.5),
@@ -724,7 +724,8 @@ function recordMapOrEventState(runtime: M2RuntimeState, title: string, fields: M
     mapId: fieldString(fields, "mapId", ""),
     x: fieldNumber(fields, "x", 0),
     y: fieldNumber(fields, "y", 0),
-    value: fieldString(fields, "value", ""),
+    // 위치 명령은 x·y 만 적는다. value 는 옛 기록용 칸이라 없어도 경고하지 않는다.
+    value: optionalFieldString(fields, "value", ""),
   };
   if (title.includes("Event")) {
     runtime.events[target] = { ...runtime.events[target], ...state };

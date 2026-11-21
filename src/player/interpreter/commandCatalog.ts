@@ -389,7 +389,7 @@ function executeM2Command(
     if (effect === "fadeIn" || effect === "fadeOut") state.onScreenFade?.();
     const plan = planScreenEffect(
       effect,
-      fieldString(command.fields, "value", ""),
+      hasM2Field(command.fields, "value") ? fieldString(command.fields, "value", "") : "",
       fieldNumber(command.fields, "durationMs", 300)
     );
     if (plan.kind !== "flash") return resumeNext(frame);
@@ -437,10 +437,10 @@ function executeM2Command(
     return pause("scrollMap", {
       kind: "scrollMap",
       direction: scrollDirection(fieldString(command.fields, "direction", fieldString(command.fields, "target", "down"))),
-      distanceTiles: Math.max(0, fieldNumber(command.fields, "distance", fieldNumber(command.fields, "value", 0))),
+      distanceTiles: Math.max(0, hasM2Field(command.fields, "distance") ? fieldNumber(command.fields, "distance", 0) : hasM2Field(command.fields, "value") ? fieldNumber(command.fields, "value", 0) : 0),
       durationMs: scrollDurationMs(command.fields),
       wait: fieldBoolean(command.fields, "wait", true),
-      returnToPlayer: fieldBoolean(command.fields, "return", false) || fieldString(command.fields, "mode", "") === "return",
+      returnToPlayer: (hasM2Field(command.fields, "return") && fieldBoolean(command.fields, "return", false)) || (hasM2Field(command.fields, "mode") && fieldString(command.fields, "mode", "") === "return"),
       lock: fieldBoolean(command.fields, "lock", false) || fieldString(command.fields, "mode", "") === "lock",
     });
   }
@@ -1361,9 +1361,9 @@ function scrollDirection(value: string): "down" | "left" | "right" | "up" {
 }
 
 function scrollDurationMs(fields: M2CommandFields): number {
-  const explicit = fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 0));
+  const explicit = hasM2Field(fields, "durationMs") ? fieldNumber(fields, "durationMs", 0) : hasM2Field(fields, "duration") ? fieldNumber(fields, "duration", 0) : 0;
   if (explicit > 0) return clampMs(explicit);
-  const distance = Math.max(0, fieldNumber(fields, "distance", fieldNumber(fields, "value", 0)));
+  const distance = Math.max(0, hasM2Field(fields, "distance") ? fieldNumber(fields, "distance", 0) : hasM2Field(fields, "value") ? fieldNumber(fields, "value", 0) : 0);
   const speed = Math.max(1, Math.min(6, fieldNumber(fields, "speed", 4)));
   return clampMs(distance * (700 - speed * 80));
 }
@@ -1377,9 +1377,9 @@ function cameraControlStep(
     kind: "cameraControl",
     mode,
     target: cameraTarget(fields, currentEventId, mode),
-    durationMs: cameraDurationMs(fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 300))),
+    durationMs: cameraDurationMs(hasM2Field(fields, "durationMs") ? fieldNumber(fields, "durationMs", 300) : hasM2Field(fields, "duration") ? fieldNumber(fields, "duration", 300) : 300),
     wait: fieldBoolean(fields, "wait", true),
-    returnToPlayer: mode === "return" || fieldBoolean(fields, "return", false),
+    returnToPlayer: mode === "return" || (hasM2Field(fields, "return") ? fieldBoolean(fields, "return", false) : false),
     offsetX: optionalNumberField(fields, "offsetX"),
     offsetY: optionalNumberField(fields, "offsetY"),
     zoom: optionalNumberField(fields, "zoom"),
@@ -1412,9 +1412,9 @@ function cameraTarget(
   mode: Extract<StepResult, { kind: "cameraControl" }>["mode"]
 ): RuntimeCameraTarget {
   if (mode === "return") return { kind: "player" };
-  const target = fieldString(fields, "target", "player");
-  const x = fieldNumber(fields, "x", 0);
-  const y = fieldNumber(fields, "y", 0);
+  const target = hasM2Field(fields, "target") ? fieldString(fields, "target", "player") : "player";
+  const x = hasM2Field(fields, "x") ? fieldNumber(fields, "x", 0) : 0;
+  const y = hasM2Field(fields, "y") ? fieldNumber(fields, "y", 0) : 0;
   if (usesCoordinateTarget(fields, target, mode, x, y)) return { kind: "position", x, y };
   const eventId = explicitCameraEventId(fields, target, currentEventId);
   if (eventId) return { kind: "event", eventId };
@@ -1437,7 +1437,7 @@ function explicitCameraEventId(
   target: string,
   currentEventId: string | undefined
 ): string {
-  const fieldEventId = fieldString(fields, "targetEventId", fieldString(fields, "eventId", ""));
+  const fieldEventId = hasM2Field(fields, "targetEventId") ? fieldString(fields, "targetEventId", "") : hasM2Field(fields, "eventId") ? fieldString(fields, "eventId", "") : "";
   if (fieldEventId) return fieldEventId;
   if (target === "this-event") return currentEventId ?? "";
   if (target.startsWith("event:")) return target.slice("event:".length);
