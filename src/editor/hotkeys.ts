@@ -18,6 +18,7 @@ import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Too
 import { store } from "@/project/store";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
+import { describeRestoredEventIdentity, undoFeedbackText } from "@/editor/eventDiffLabel";
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { toast } from "@/util/toast";
 
@@ -208,11 +209,23 @@ export function handleHistoryHotkey(event: KeyboardEvent): boolean {
  */
 export function runUndoWithFeedback(): boolean {
   const label = pendingHistoryLabels().undo;
+  const before = store.getCurrent();
   if (!undoMapEdit()) {
     toast("되돌릴 작업이 없습니다", "info");
     return false;
   }
-  toast(label ? `되돌렸습니다 — ${label}` : "되돌렸습니다", "ok");
+  const after = store.getCurrent();
+  const message = undoFeedbackText(label, before, after);
+  toast(message, "ok");
+  const restored = describeRestoredEventIdentity(before, after);
+  if (restored && label?.includes("변경 없음") && typeof document !== "undefined") {
+    const rewrite = (): void => {
+      const status = document.querySelector<HTMLElement>("[data-testid='event-editor-draft-status']");
+      if (status?.textContent?.includes("변경 없음")) status.textContent = `되돌림 — ${restored}`;
+    };
+    rewrite();
+    queueMicrotask(rewrite);
+  }
   return true;
 }
 

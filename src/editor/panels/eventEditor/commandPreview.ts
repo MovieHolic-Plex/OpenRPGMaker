@@ -534,6 +534,7 @@ function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HT
   if (!wrote) {
     bodyEl.append(document.createTextNode(body.trim() ? "" : "..."));
   }
+  if (body.length > 240) bodyEl.title = body;
   return bodyEl;
 }
 

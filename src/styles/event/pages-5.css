@@ -126,13 +126,27 @@
   color: var(--text-1);
 }
 
+/* field-sizing:content 는 긴 이름 입력칸을 글자 폭으로 늘린다. 헤더는 높이가 고정이고
+ * overflow 가 보이며 페이지바보다 쌓임이 높아서, 그 칸이 페이지 탭과 헤더 버튼을 덮었다.
+ * 폭을 제한해 말줄임하고, 버튼 묶음은 그 위에 둔다. 헤더 전체는 가리지 않는다 —
+ * 검증 팝오버가 헤더 밖으로 나와야 한다. */
 .event-editor-modal-window .event-editor-modal-header .event-name {
-  field-sizing: content;
-  flex: 0 1 auto;
-  min-width: 80px;
+  field-sizing: fixed;
+  flex: 1 1 8rem;
+  min-width: 0;
+  width: 12rem;
+  max-width: min(28rem, 46%);
+  overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-editor-modal-window .event-editor-modal-header .event-name:focus {
-  text-overflow: clip;
+  text-overflow: ellipsis;
+}
+
+.event-editor-modal-window .event-editor-modal-header > .header-actions {
+  position: relative;
+  z-index: 2;
+  background: var(--bg-raised);
 }

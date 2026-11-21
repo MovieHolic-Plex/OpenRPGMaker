@@ -392,7 +392,7 @@ export function renderClassicPageTabStrip(
         click: () => {
           const pageId = addEventPage(mapId, ev.id);
           if (pageId) {
-            toast("조건 없는 새 페이지를 기존 승자보다 낮은 우선순위로 추가했어요.", "info");
+            toast("조건 없는 새 페이지를 기존 승자보다 낮은 우선순위로 추가했어요.", { kind: "info", dedupe: true });
             queueMicrotask(() => focusRenderedPageTab(pageId));
           }
         },

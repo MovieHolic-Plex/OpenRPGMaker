@@ -2,6 +2,7 @@ import { stageEventDraftAuthoredWrite } from "@/project/eventDraftAuthored";
 import { editorState } from "@/editor/editorState";
 import { createDefaultGameEvent } from "@/editor/eventActions";
 import { describeEventDiff, eventDiffFields } from "@/editor/eventDiffLabel";
+import { clearEventPageDeletionHistory } from "@/editor/panels/eventEditor/pageDeleteHistory";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
@@ -121,6 +122,7 @@ export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null 
 }
 
 export function discardEventDraft(mapId: MapId, eventId: string): boolean {
+  clearEventPageDeletionHistory(mapId, eventId);
   const event = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId);
   if (!event?.draft) {
     forgetEventDraftVaultEntry(mapId, eventId);

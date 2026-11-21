@@ -23,6 +23,8 @@ export type ToastOptions = {
   readonly kind?: ToastKind;
   readonly durationMs?: number;
   readonly action?: ToastAction;
+  /** 같은 문구의 보이는 토스트가 있으면 또 쌓지 않는다. */
+  readonly dedupe?: boolean;
 };
 
 const MAX_STACK = 4;
@@ -30,6 +32,7 @@ const MAX_PERSISTENT_STACK = 3;
 
 type ToastEntry = {
   readonly key?: symbol;
+  readonly message: string;
   readonly element: HTMLElement;
   readonly persistent: boolean;
   timer: ReturnType<typeof setTimeout> | null;
@@ -126,6 +129,9 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
   const kind: ToastKind = options.kind ?? "info";
 
   const stack = ensureStack();
+  if (options.dedupe && entries.some((entry) => entry.message === message && entry.element.classList.contains("show"))) {
+    return;
+  }
 
   // 이미 사라진(만료된) 최신 토스트는 자리를 비켜준다 — 남겨두는 건 계약용이지 표시용이 아니다.
   const previous = entries[entries.length - 1];
@@ -133,7 +139,7 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
 
   // 표시 시간을 지정하지 않은 동작 있는 오류만 직접 닫을 때까지 남긴다.
   const persistent = kind === "error" && !!options.action && options.durationMs === undefined;
-  const entry: ToastEntry = { element: null as unknown as HTMLElement, persistent, timer: null };
+  const entry: ToastEntry = { message, element: null as unknown as HTMLElement, persistent, timer: null };
   const element = buildElement(message, kind, options.action, entry);
   Object.assign(entry, { element, key: options.key });
 

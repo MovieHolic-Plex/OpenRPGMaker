@@ -47,6 +47,17 @@ function keyEvent(key: string, target?: EventTarget | null): KeyboardEvent {
 
 describe("event command Delete safety", () => {
   let restoreDom: (() => void) | undefined;
+  let restoreWindow: (() => void) | undefined;
+
+  function installWindowShim(): void {
+    const hadWindow = "window" in globalThis;
+    const previous = (globalThis as { window?: unknown }).window;
+    Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: {} });
+    restoreWindow = () => {
+      if (hadWindow) (globalThis as { window?: unknown }).window = previous;
+      else Reflect.deleteProperty(globalThis, "window");
+    };
+  }
 
   beforeEach(() => {
     _resetEventDraftVaultForTest();
@@ -55,8 +66,11 @@ describe("event command Delete safety", () => {
   });
 
   afterEach(() => {
+    document.querySelector<HTMLElement>('[data-testid="app-modal-cancel"]')?.click();
     document.querySelector('[data-testid="event-editor-modal"]')?.remove();
     document.querySelector('[data-testid="toast"]')?.remove();
+    restoreWindow?.();
+    restoreWindow = undefined;
     restoreDom?.();
     vi.unstubAllGlobals();
   });
@@ -145,7 +159,8 @@ describe("event command Delete safety", () => {
     expect(store.getCurrent().maps[project.startMapId]!.events.some((e) => e.id === "event-1")).toBe(true);
   });
 
-  it("requestEditorEventDeletion asks for confirmation before mutating", () => {
+  it("requestEditorEventDeletion asks for confirmation before mutating", async () => {
+    installWindowShim();
     const project = createBlankProject();
     const map = project.maps[project.startMapId]!;
     map.events = [gameEvent(eventPage())];
@@ -153,19 +168,30 @@ describe("event command Delete safety", () => {
     const confirmDeletion = vi.fn(() => false);
     vi.stubGlobal("confirm", confirmDeletion);
 
-    expect(requestEditorEventDeletion(project.startMapId, "event-1")).toBe(false);
-    expect(confirmDeletion).toHaveBeenCalledOnce();
+    const pending = requestEditorEventDeletion(project.startMapId, "event-1");
+    const cancel = document.querySelector<HTMLButtonElement>('[data-testid="app-modal-cancel"]');
+    const confirmButton = document.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]');
+    expect(cancel?.textContent).toBe("취소");
+    expect(confirmButton?.textContent).toBe("삭제");
+    cancel?.click();
+    expect(await pending).toBe(false);
+    expect(confirmDeletion).not.toHaveBeenCalled();
     expect(store.getCurrent().maps[project.startMapId]!.events).toHaveLength(1);
   });
 
-  it("Ctrl+Z restores after confirmed event delete", () => {
+  it("Ctrl+Z restores after confirmed event delete", async () => {
+    installWindowShim();
     const project = createBlankProject();
     const map = project.maps[project.startMapId]!;
     map.events = [gameEvent(eventPage())];
     store.replace(project);
-    vi.stubGlobal("confirm", vi.fn(() => true));
+    const confirmDeletion = vi.fn(() => true);
+    vi.stubGlobal("confirm", confirmDeletion);
 
-    expect(requestEditorEventDeletion(project.startMapId, "event-1")).toBe(true);
+    const pending = requestEditorEventDeletion(project.startMapId, "event-1");
+    document.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]')?.click();
+    expect(await pending).toBe(true);
+    expect(confirmDeletion).not.toHaveBeenCalled();
     expect(store.getCurrent().maps[project.startMapId]!.events).toEqual([]);
     expect(undoMapEdit()).toBe(true);
     expect(store.getCurrent().maps[project.startMapId]!.events.some((e) => e.id === "event-1")).toBe(true);
