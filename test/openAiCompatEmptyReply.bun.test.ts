@@ -41,6 +41,25 @@ describe("inspectChatReply", () => {
     expect((await inspectChatReply(json({ choices: [{ message: { role: "assistant", content: null }, finish_reason: "stop" }] }))).empty).toBe(true);
     expect((await inspectChatReply(json({ choices: [{ message: { role: "assistant", content: "ok" } }] }))).empty).toBe(false);
   });
+  test("reasoning_details 와 도구 호출은 빈 답이 아니고 원문 그대로 넘긴다", async () => {
+    const body = { choices: [{ message: { role: "assistant", content: null, reasoning_details: [{ type: "summary", summary: "think" }], tool_calls: [{ id: "c", type: "function", function: { name: "add_note", arguments: "{\"text\":\"hi\"}" } }] }, finish_reason: "tool_calls" }] };
+    const { empty, response } = await inspectChatReply(new Response(JSON.stringify(body), { headers: { "content-type": "application/json" } }));
+    expect(empty).toBe(false);
+    const text = await response.text();
+    expect(text).toContain("reasoning_details");
+    expect(text).toContain("add_note");
+  });
+  test("스트림의 reasoning 조각 뒤에 도구 호출이 오면 둘 다 그대로 흘려보낸다", async () => {
+    const { empty, response } = await inspectChatReply(sse(
+      '{"choices":[{"delta":{"reasoning":"think"}}]}',
+      '{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c","function":{"name":"add_note","arguments":"{}"}}]}}]}',
+      "[DONE]",
+    ));
+    expect(empty).toBe(false);
+    const text = await response.text();
+    expect(text).toContain("reasoning");
+    expect(text).toContain("add_note");
+  });
   test("200 이 아니면 건드리지 않는다", async () => {
     const response = new Response('{"error":"Missing API key"}', { status: 401 });
     const result = await inspectChatReply(response);

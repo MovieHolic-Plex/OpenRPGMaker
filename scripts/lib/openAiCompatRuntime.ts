@@ -529,6 +529,8 @@ export interface OpenAiCompatConnectInput {
   readonly baseUrl?: unknown;
   readonly apiKey?: unknown;
   readonly model?: unknown;
+  /** 프리셋이 정한 추론 전달 방식. 없으면 저장 기본(보내지 않음)이다. */
+  readonly reasoningMode?: unknown;
 }
 
 export interface OpenAiCompatConnectResult {
@@ -554,7 +556,9 @@ export async function connectOpenAiCompat(input: OpenAiCompatConnectInput, fetch
   if (!model) return reject("invalid", "쓸 모델 ID 를 넣어 주세요.");
   const check = checkOpenAiCompatBaseUrl(openRouter ? OPENROUTER_BASE_URL : input.baseUrl);
   if (!check.ok || !check.url) return reject("invalid", check.error ?? "기본 주소가 올바르지 않아요.");
-  return connectOpenAiCompatTested({ name, baseUrl: check.url, apiKey, model, ...(openRouter ? { reasoningMode: "field" } : {}) }, fetchImpl);
+  const reasoningMode = openRouter ? "field" as const
+    : input.reasoningMode === "none" || input.reasoningMode === "field" || input.reasoningMode === "suffix" ? input.reasoningMode : undefined;
+  return connectOpenAiCompatTested({ name, baseUrl: check.url, apiKey, model, ...(reasoningMode ? { reasoningMode } : {}) }, fetchImpl);
 }
 
 /** 이미 검증한 주소·이름으로 시험(도구 달린 채팅)하고 통과하면 저장한다. 빠른 연결과 키 입양(detectedKeys.ts)이 같이 쓴다. */

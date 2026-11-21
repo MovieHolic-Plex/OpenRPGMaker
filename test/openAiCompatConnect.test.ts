@@ -46,6 +46,24 @@ describe("connectOpenAiCompat", () => {
     expect(listOpenAiCompatPublic()).toHaveLength(0);
   });
 
+  test("모델 목록만 물을 때는 채팅을 보내지 않고 키를 문장에 싣지 않는다", async () => {
+    const { testOpenAiCompat } = await import("../scripts/lib/openAiCompatRuntime.ts");
+    let chats = 0;
+    const result = await testOpenAiCompat({
+      name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1", apiKey: KEY,
+    }, (async (url: string | URL | Request, init?: RequestInit) => {
+      const path = String(url);
+      expect(path).toBe("https://amr-link.open-design.ai/v1/models");
+      expect(new Headers(init?.headers).get("authorization")).toBe(`Bearer ${KEY}`);
+      if (!path.endsWith("/models")) chats += 1;
+      return new Response(JSON.stringify({ data: [{ id: "deepseek-v4.1-flash-eco" }, { id: "glm-5.3-flash" }] }), { status: 200 });
+    }) as typeof fetch);
+    expect(chats).toBe(0);
+    expect(result.ok).toBe(true);
+    expect(result.models).toContain("deepseek-v4.1-flash-eco");
+    expect(JSON.stringify(result)).not.toContain(KEY);
+  });
+
   test("통과하면 기본 모델과 함께 저장하고, 다시 연결해도 한 줄만 남는다", async () => {
     const first = await connectOpenAiCompat({ kind: "custom", baseUrl: BASE, apiKey: KEY, model: "m1" }, fakeFetch(() => ok));
     expect(first.ok).toBe(true);
@@ -56,5 +74,20 @@ describe("connectOpenAiCompat", () => {
     expect(again.endpoint?.id).toBe(first.endpoint?.id);
     expect(listOpenAiCompatPublic()).toHaveLength(1);
     expect(JSON.stringify(listOpenAiCompatPublic())).not.toContain(KEY);
+  });
+
+  test("OpenDesign 프리셋 주소와 추론 방식을 저장하고 공개 보기에는 키가 없다", async () => {
+    const result = await connectOpenAiCompat({
+      kind: "custom", name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1",
+      apiKey: KEY, model: "deepseek-v4.1-flash-eco", reasoningMode: "none",
+    }, fakeFetch(() => ok));
+    expect(result.ok).toBe(true);
+    expect(result.endpoint?.baseUrl).toBe("https://amr-link.open-design.ai/v1");
+    expect(result.endpoint?.defaultModel).toBe("deepseek-v4.1-flash-eco");
+    expect(result.endpoint?.reasoningMode).toBe("none");
+    expect(result.endpoint?.hasKey).toBe(true);
+    const exported = { project: { name: "demo" }, ai: { providerId: result.endpoint?.id, apiKey: "", baseUrl: "" } };
+    expect(JSON.stringify(exported)).not.toContain(KEY);
+    expect(JSON.stringify(result.endpoint)).not.toContain(KEY);
   });
 });

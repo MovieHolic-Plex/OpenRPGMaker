@@ -568,6 +568,8 @@ export interface OpenAiCompatConnectRequest {
   readonly baseUrl?: string;
   readonly name?: string;
   readonly model?: string;
+  /** 프리셋의 추론 전달 방식. 키와 함께 서버로만 가고 브라우저 저장소에는 남지 않는다. */
+  readonly reasoningMode?: "none" | "field" | "suffix";
 }
 
 export interface OpenAiCompatConnectResponse {
