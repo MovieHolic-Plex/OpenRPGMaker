@@ -8,14 +8,18 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: security-audit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   audit:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
       # Report file names only. Never print a suspected credential to the Actions log.
       - name: Scan tracked files for credential patterns
@@ -32,7 +36,9 @@ jobs:
           fi
 
       - name: Audit production dependencies
-        run: npm ci --ignore-scripts
+        uses: ./.github/actions/linux-ci
+        with:
+          ignore-scripts: 'true'
 
       - name: Check production dependency advisories
         run: npm audit --omit=dev --audit-level=high

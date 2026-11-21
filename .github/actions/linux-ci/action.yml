@@ -1,0 +1,44 @@
+name: Linux CI dependencies
+description: Set up Node and restore isolated mdc2 dependencies
+inputs:
+  bun-version:
+    description: Pinned Bun version, when the job needs Bun
+    required: false
+  ignore-scripts:
+    description: Skip npm lifecycle scripts for the security audit
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      if: runner.environment == 'github-hosted'
+      with:
+        node-version: 24
+        cache: npm
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      if: runner.environment == 'self-hosted'
+      with:
+        node-version: 24
+    - name: npm 의존성
+      shell: bash
+      env:
+        IGNORE_SCRIPTS: ${{ inputs.ignore-scripts }}
+        RUNNER_ENVIRONMENT: ${{ runner.environment }}
+      run: bash "$GITHUB_ACTION_PATH/dependencies.sh"
+    - name: bun 설치
+      if: inputs.bun-version != ''
+      shell: bash
+      env:
+        BUN_VERSION: ${{ inputs.bun-version }}
+      run: |
+        set -euo pipefail
+        if [[ "$(bun --version 2>/dev/null || true)" == "$BUN_VERSION" ]]; then exit 0; fi
+        prefix="${OPRN_CI_CACHE:-$RUNNER_TEMP}/bun-$BUN_VERSION"
+        for attempt in 1 2 3; do
+          if [[ "$("$prefix/bin/bun" --version 2>/dev/null || true)" == "$BUN_VERSION" ]]; then break; fi
+          if timeout 180 npm install --global --prefix "$prefix" "bun@$BUN_VERSION"; then break; fi
+          if [[ "$attempt" == 3 ]]; then exit 1; fi
+          sleep "$((attempt * 10))"
+        done
+        [[ "$("$prefix/bin/bun" --version)" == "$BUN_VERSION" ]]
+        echo "$prefix/bin" >> "$GITHUB_PATH"
