@@ -79,6 +79,21 @@
       "id": "city_logistics",
       "labelKo": "택배·물류",
       "order": 230
+    },
+    {
+      "id": "city_harbor",
+      "labelKo": "항구·수산시장",
+      "order": 240
+    },
+    {
+      "id": "city_laundry",
+      "labelKo": "세탁방·빨래",
+      "order": 250
+    },
+    {
+      "id": "city_maintenance",
+      "labelKo": "도시 설비·정비",
+      "order": 260
     }
   ],
   "sets": [
