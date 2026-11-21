@@ -27,6 +27,10 @@
   .small-task header, .small-task form { display: flex; gap: var(--space-2); align-items: center; justify-content: space-between; }
   .small-task header strong { overflow-wrap: anywhere; }
   .small-task form { margin-top: 10px; }
+  .small-task form[hidden] { display: none; }
+  .small-task-preview-actions { display: flex; justify-content: flex-end; gap: var(--space-2); }
+  .small-task button.small-task-apply { background: var(--accent); color: var(--on-accent); }
+  .small-task button.small-task-apply:hover { background: var(--accent-hover); }
   .small-task input {
     flex: 1; min-width: 0; border: 1px solid var(--border-subtle);
     padding: 9px 11px; background: var(--bg-inset); color: inherit;

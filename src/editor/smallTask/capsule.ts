@@ -5,6 +5,7 @@ import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalSta
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
+import { readSmallTaskPreviewPreference } from "./previewPreference";
 import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection, type SmallTaskTarget } from "./target";
 
 const log = createLogger("small-task");
@@ -62,7 +63,8 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
     dataset: { ownsCtrlEnter: "" },
     attrs: { role: "dialog", "aria-label": "작은 일", ...(eventHeader ? {} : { popover: "manual" }) },
   });
-  const title = el("strong", { text: target?.label ?? hint });
+  const targetLabel = target?.label ?? hint;
+  const title = el("strong", { text: targetLabel });
   const input = el("input", { attrs: { type: "text", placeholder: example(target), "aria-label": "한 줄 요청", autocomplete: "off" } });
   const send = el("button", { text: "실행", attrs: { type: "submit" } });
   const form = el("form", { children: [input, send] });
@@ -159,11 +161,39 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
       e.preventDefault();
     }
   });
+  function confirmPreview(summary: { headline: string; lines: string[] }): Promise<boolean> {
+    title.setAttribute("data-i18n-skip", "");
+    title.textContent = summary.headline;
+    form.hidden = true;
+    closeButton.textContent = "닫기";
+    status.classList.remove("is-working");
+    const cancel = el("button", { text: "취소", attrs: { type: "button" } });
+    const apply = el("button", { class: "small-task-apply", text: "적용", attrs: { type: "button" } });
+    const actions = el("div", { class: "small-task-preview-actions", children: [cancel, apply] });
+    status.replaceChildren(el("ul", { children: summary.lines.map(text => el("li", { text, attrs: { "data-i18n-skip": "" } })) }), actions);
+    place();
+    return new Promise(resolve => {
+      const finish = (approved: boolean) => {
+        unregisterModal(actions);
+        owner.signal.removeEventListener("abort", discard);
+        resolve(approved);
+      };
+      const discard = () => finish(false);
+      cancel.onclick = discard;
+      apply.onclick = () => finish(true);
+      // Escape discards this preview layer first and leaves the request box open.
+      registerModal(actions, discard);
+      owner.signal.addEventListener("abort", discard, { once: true });
+      cancel.focus();
+    });
+  }
+
   form.addEventListener("submit", async e => {
     e.preventDefault();
     if (!target || send.disabled || owner.signal.aborted) return;
     const request = input.value.trim();
     const live = store.getCurrent();
+    const shouldPreview = readSmallTaskPreviewPreference();
     send.disabled = input.disabled = true;
     closeButton.textContent = "취소";
     status.textContent = "작업 중…";
@@ -178,6 +208,18 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
       owner.signal.throwIfAborted();
       if (!box.isConnected) { close(); return; }
       const summary = plainSummary(before, after);
+      if (shouldPreview) {
+        if (!summary.lines.length) {
+          status.textContent = "바뀐 내용이 없어요.";
+          return;
+        }
+        const approved = await confirmPreview(summary);
+        owner.signal.throwIfAborted();
+        if (!approved) {
+          status.textContent = "취소했어요.";
+          return;
+        }
+      }
       const receipt = commitSmallTask(live, before, after, target);
       if (receipt) {
         form.remove();
@@ -220,6 +262,13 @@ function openCapsule(anchor: HTMLButtonElement, target: SmallTaskTarget | null):
         closeButton.textContent = "닫기";
         input.disabled = false;
         send.disabled = !input.value.trim();
+        if (form.hidden && form.isConnected) {
+          title.removeAttribute("data-i18n-skip");
+          title.textContent = targetLabel;
+          form.hidden = false;
+          input.focus();
+          place();
+        }
       }
     }
   });

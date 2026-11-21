@@ -4,6 +4,7 @@ import { AI_CONNECTION_STATUS_CHANGED_EVENT } from "@/editor/panels/aiConnection
 import { deckIcon } from "@/editor/panels/aiDeckIcons";
 import { installAiModalFocus } from "@/editor/panels/aiModalFocus";
 import { renderAiSettingsForm } from "@/editor/panels/aiSettingsModal";
+import { readSmallTaskPreviewPreference, writeSmallTaskPreviewPreference } from "@/editor/smallTask/previewPreference";
 import { modalCloseButton } from "@/editor/ui/modal";
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
@@ -117,10 +118,14 @@ function renderGeneral(): HTMLElement {
   });
   select.value = getLocale();
   select.addEventListener("change", () => void setLocale(select.value as SupportedLocale));
+  const preview = el("input", { attrs: { type: "checkbox" } });
+  preview.checked = readSmallTaskPreviewPreference();
+  preview.addEventListener("change", () => writeSmallTaskPreviewPreference(preview.checked));
   return el("div", { class: "st-info ai-settings-content", children: [
     el("h3", { text: "언어" }),
     el("p", { text: "편집기와 이 화면의 글자 언어예요. 만든 게임 안의 글자는 바뀌지 않아요." }),
     select,
+    el("p", { children: [el("label", { class: "ai-compat-toggle", children: [preview, "AI가 고친 내용을 적용 전에 보기"] })] }),
   ] });
 }
 
