@@ -4615,5 +4615,566 @@
     "heightTiles": 3,
     "footprint": ["**", "XX", "XX"],
     "tags": ["city", "현대", "taxi", "자동차", "차량", "교통"]
+  },
+  {
+    "id": "city_car2_ambulance",
+    "nameKo": "구급차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_ambulance.png",
+    "widthPx": 32,
+    "heightPx": 64,
+    "widthTiles": 2,
+    "heightTiles": 4,
+    "footprint": [
+      "**",
+      "XX",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "ambulance",
+      "응급차",
+      "119",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_city_bus",
+    "nameKo": "시내버스",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_city_bus.png",
+    "widthPx": 32,
+    "heightPx": 96,
+    "widthTiles": 2,
+    "heightTiles": 6,
+    "footprint": [
+      "**",
+      "XX",
+      "XX",
+      "XX",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "city bus",
+      "도시 버스",
+      "대중교통",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_compact_car",
+    "nameKo": "경차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_compact_car.png",
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
+    "footprint": [
+      "**",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "compact car",
+      "소형차",
+      "승용차",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_delivery_truck",
+    "nameKo": "택배 트럭",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_delivery_truck.png",
+    "widthPx": 32,
+    "heightPx": 64,
+    "widthTiles": 2,
+    "heightTiles": 4,
+    "footprint": [
+      "**",
+      "XX",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "delivery truck",
+      "배송차",
+      "화물차",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_fire_truck",
+    "nameKo": "소방차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_fire_truck.png",
+    "widthPx": 32,
+    "heightPx": 96,
+    "widthTiles": 2,
+    "heightTiles": 6,
+    "footprint": [
+      "**",
+      "XX",
+      "XX",
+      "XX",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "fire truck",
+      "소방차량",
+      "119",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_ladder_truck",
+    "nameKo": "사다리 소방차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_ladder_truck.png",
+    "widthPx": 32,
+    "heightPx": 80,
+    "widthTiles": 2,
+    "heightTiles": 5,
+    "footprint": [
+      "**",
+      "XX",
+      "XX",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "ladder truck",
+      "고가사다리차",
+      "소방차",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_motorcycle",
+    "nameKo": "오토바이",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_motorcycle.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "motorcycle",
+      "이륜차",
+      "바이크",
+      "차량",
+      "교통"
+    ]
+  },
+  {
+    "id": "city_car2_police_car",
+    "nameKo": "경찰차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_police_car.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "police car",
+      "순찰차",
+      "경찰",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_school_van",
+    "nameKo": "통학 승합차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_school_van.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "school van",
+      "통학차",
+      "스쿨버스",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_sedan_rear",
+    "nameKo": "세단 · 뒷모습",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_sedan_rear.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "rear view sedan",
+      "승용차",
+      "자동차 뒷모습",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_suv",
+    "nameKo": "스포츠유틸리티차",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_suv.png",
+    "widthPx": 32,
+    "heightPx": 48,
+    "widthTiles": 2,
+    "heightTiles": 3,
+    "footprint": [
+      "**",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "SUV",
+      "스포츠유틸리티 차량",
+      "다목적 차량",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_car2_village_bus",
+    "nameKo": "마을버스",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_car2_village_bus.png",
+    "widthPx": 32,
+    "heightPx": 64,
+    "widthTiles": 2,
+    "heightTiles": 4,
+    "footprint": [
+      "**",
+      "XX",
+      "XX",
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "village bus",
+      "동네 버스",
+      "대중교통",
+      "차량",
+      "교통",
+      "자동차"
+    ]
+  },
+  {
+    "id": "city_home2_mailbox_doorbell",
+    "nameKo": "우편함과 초인종 기둥",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_home2_mailbox_doorbell.png",
+    "widthPx": 16,
+    "heightPx": 32,
+    "widthTiles": 1,
+    "heightTiles": 2,
+    "footprint": [
+      "*",
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "mailbox with doorbell",
+      "우편함",
+      "초인종",
+      "현관"
+    ]
+  },
+  {
+    "id": "city_home2_rooftop_room_house",
+    "nameKo": "옥탑방이 있는 주택",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_home2_rooftop_room_house.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      "****  ",
+      "******",
+      "******",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "rooftop room house",
+      "옥탑방",
+      "평지붕",
+      "주택",
+      "주거"
+    ]
+  },
+  {
+    "id": "city_home2_semi_basement_house",
+    "nameKo": "반지하가 있는 주택",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_home2_semi_basement_house.png",
+    "widthPx": 80,
+    "heightPx": 80,
+    "widthTiles": 5,
+    "heightTiles": 5,
+    "footprint": [
+      "*****",
+      "*****",
+      "*****",
+      "XXXXX",
+      "XXXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "semi-basement house",
+      "반지하",
+      "벽돌집",
+      "주택",
+      "주거"
+    ]
+  },
+  {
+    "id": "city_home2_villa_piloti",
+    "nameKo": "필로티 빌라",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_home2_villa_piloti.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      "******",
+      "******",
+      "******",
+      "******",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "piloti villa",
+      "필로티 주차장",
+      "다세대 주택",
+      "주택",
+      "주거"
+    ]
+  },
+  {
+    "id": "city_home2_wall_planter_row",
+    "nameKo": "벽걸이 화분 상자",
+    "category": "prop",
+    "group": "city",
+    "sourceFile": "city_home2_wall_planter_row.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "**"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "wall planter",
+      "벽걸이 화분",
+      "플랜터",
+      "조경"
+    ],
+    "surface": "wall"
+  },
+  {
+    "id": "city_park2_hedge_corner_se",
+    "nameKo": "공원 생울타리 · 남동 모서리",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_corner_se.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "southeast hedge corner",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "hedge",
+      "piece": "corner_se_city_park2"
+    }
+  },
+  {
+    "id": "city_park2_hedge_end_e",
+    "nameKo": "공원 생울타리 · 동쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_end_e.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "east hedge end",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "hedge",
+      "piece": "end_e_city_park2"
+    }
+  },
+  {
+    "id": "city_park2_hedge_end_w",
+    "nameKo": "공원 생울타리 · 서쪽 끝",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_end_w.png",
+    "widthPx": 16,
+    "heightPx": 16,
+    "widthTiles": 1,
+    "heightTiles": 1,
+    "footprint": [
+      "X"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "west hedge end",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "hedge",
+      "piece": "end_w_city_park2"
+    }
+  },
+  {
+    "id": "city_park2_hedge_h",
+    "nameKo": "공원 생울타리 · 가로 직선",
+    "category": "structure",
+    "group": "city",
+    "sourceFile": "city_park2_hedge_h.png",
+    "widthPx": 32,
+    "heightPx": 16,
+    "widthTiles": 2,
+    "heightTiles": 1,
+    "footprint": [
+      "XX"
+    ],
+    "tags": [
+      "city",
+      "현대",
+      "hedge",
+      "horizontal hedge",
+      "공원",
+      "정원",
+      "울타리"
+    ],
+    "set": {
+      "id": "hedge",
+      "piece": "h_straight_city_park2"
+    },
+    "growthAxis": "horizontal"
   }
 ]
