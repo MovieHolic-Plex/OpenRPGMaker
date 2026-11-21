@@ -272,6 +272,9 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     announceEventEditorClosed({ mapId: request.mapId, eventId: request.eventId, saved: saved === true });
   };
   const requestClose = (): void => {
+    // 포인터로 닫으면 바깥 pointerdown 이 ⋯ 메뉴를 먼저 접는다. Enter/Space 는 그 단계가
+    // 없어서, 메뉴가 맨 위 층인 채로는 닫기가 그냥 돌아간다.
+    dismissTopDetailsLayer(backdrop);
     if (closed || closeGuardOpen || minimized || !isTopModal(backdrop)) return;
     flushPendingModalField(backdrop);
     if (!eventDraftHasUserChanges(store.getCurrent(), request.mapId, request.eventId)) {
@@ -1019,6 +1022,21 @@ function withConfirmShortcut(button: HTMLButtonElement): HTMLButtonElement {
   return button;
 }
 
+/** 열린 `<details>` 가 모달 맨 위면 접는다. 도움말·확인 창처럼 다른 층은 건드리지 않는다. */
+function dismissTopDetailsLayer(root: HTMLElement): void {
+  for (let guard = 0; guard < 8; guard += 1) {
+    let top: HTMLDetailsElement | null = null;
+    for (const node of root.querySelectorAll("details[open]")) {
+      if (node instanceof HTMLDetailsElement && isTopModal(node)) {
+        top = node;
+        break;
+      }
+    }
+    if (!top) return;
+    top.open = false;
+  }
+}
+
 function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorRequest): void {
   if (event.key === "Escape") return;
   // Ctrl/Cmd+Enter = 「저장하고 닫기」. 안쪽 입력이 소유하거나 처리한 키와 IME 조합 중인 키는 건드리지 않는다.
@@ -1037,9 +1055,9 @@ function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorReques
     return;
   }
   // Ctrl/Cmd+S = 「적용」(닫지 않고 저장). ⋯ 메뉴 안의 같은 버튼을 누른다.
+  // data-owns-ctrl-enter 는 Ctrl/Cmd+Enter(저장하고 닫기)만 양보한다. S 는 그 칸도 적용이다.
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "s") {
     if (event.defaultPrevented || event.isComposing) return;
-    if (event.target instanceof Element && event.target.closest("[data-owns-ctrl-enter]")) return;
     const root = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
     const apply = root?.querySelector<HTMLButtonElement>('[data-testid="event-editor-apply"]');
     if (!root || !apply || apply.disabled) return;

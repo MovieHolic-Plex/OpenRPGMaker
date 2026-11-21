@@ -92,6 +92,41 @@ describe("event editor QA regressions", () => {
     expect(modal.isConnected).toBe(true);
   });
 
+  it("closes the editor from the close button while the header menu is open", async () => {
+    await openEditor();
+    const modal = control("event-editor-modal");
+    const menu = control<HTMLDetailsElement>("event-editor-header-more");
+    menu.open = true;
+    expect(menu.open).toBe(true);
+    control("event-editor-modal-close").click();
+    expect(modal.isConnected).toBe(false);
+  });
+
+  it.each(["ctrlKey", "metaKey"] as const)("applies on %s+S inside a field that owns Ctrl+Enter", async (modifier) => {
+    await openEditor();
+    const modal = control("event-editor-modal");
+    const input = control<HTMLInputElement>("event-editor-name");
+    input.setAttribute("data-owns-ctrl-enter", "");
+    input.focus();
+    const apply = vi.spyOn(control("event-editor-apply"), "click");
+    const save = vi.spyOn(control("event-editor-save"), "click");
+    const key = new KeyboardEvent("keydown", {
+      key: "s", [modifier]: true, bubbles: true, cancelable: true,
+    });
+    input.dispatchEvent(key);
+    expect(key.defaultPrevented).toBe(true);
+    expect(apply).toHaveBeenCalledTimes(1);
+    expect(save).not.toHaveBeenCalled();
+    expect(modal.isConnected).toBe(true);
+
+    const enter = new KeyboardEvent("keydown", {
+      key: "Enter", [modifier]: true, bubbles: true, cancelable: true,
+    });
+    input.dispatchEvent(enter);
+    expect(enter.defaultPrevented).toBe(false);
+    expect(save).not.toHaveBeenCalled();
+  });
+
   it("leaves Ctrl+Enter to inputs that own the shortcut", async () => {
     await openEditor();
     const input = control<HTMLInputElement>("event-editor-name");
