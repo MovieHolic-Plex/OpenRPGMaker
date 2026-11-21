@@ -4,6 +4,61 @@
       "id": "city",
       "labelKo": "현대 도시",
       "order": 80
+    },
+    {
+      "id": "city_transport",
+      "labelKo": "공항·교통",
+      "order": 90
+    },
+    {
+      "id": "city_construction",
+      "labelKo": "공사장·옥상",
+      "order": 100
+    },
+    {
+      "id": "city_parks",
+      "labelKo": "공원·물가",
+      "order": 110
+    },
+    {
+      "id": "city_festival",
+      "labelKo": "축제·놀이공원",
+      "order": 120
+    },
+    {
+      "id": "city_garden",
+      "labelKo": "꽃집·원예",
+      "order": 130
+    },
+    {
+      "id": "city_market",
+      "labelKo": "시장·상점",
+      "order": 140
+    },
+    {
+      "id": "city_street",
+      "labelKo": "거리·우천 소품",
+      "order": 150
+    },
+    {
+      "id": "city_school",
+      "labelKo": "학교·학교 앞",
+      "order": 160
+    },
+    {
+      "id": "city_sports",
+      "labelKo": "체육시설",
+      "order": 170
+    },
+    {
+      "id": "city_shrine",
+      "labelKo": "사당·기도터",
+      "order": 180
+    },
+    {
+      "id": "city_terrace",
+      "labelKo": "테라스·야외 카페",
+      "order": 190
     }
   ],
   "sets": [
@@ -71,6 +126,18 @@
     },
     {
       "id": "city_strm_stone_railing",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_cons_barrier",
       "role": "fence",
       "requiredPieces": [
         "corner_ne",
