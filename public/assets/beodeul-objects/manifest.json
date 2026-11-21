@@ -154,6 +154,21 @@
       "id": "city_aquatic",
       "labelKo": "수영장·빙상장",
       "order": 310
+    },
+    {
+      "id": "city_camping",
+      "labelKo": "야영·캠핑",
+      "order": 320
+    },
+    {
+      "id": "city_vehicles",
+      "labelKo": "차량·정비",
+      "order": 330
+    },
+    {
+      "id": "city_workshops",
+      "labelKo": "생활·작업장",
+      "order": 340
     }
   ],
   "sets": [
