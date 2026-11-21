@@ -25,6 +25,9 @@ import type {
 } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { partySkillContext } from "@/project/partySkills";
+import { cachedSightBlocker } from "@/project/sightBlockers";
+
+type RuntimeEventProject = Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets" | "tilesets">>;
 
 const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
   type: "fixed",
@@ -153,6 +156,73 @@ export function runtimeEventView(
   };
 }
 
+export function runtimePageContext(
+  project: RuntimeEventProject,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions | undefined,
+): EventPageLocationContext {
+  let mapEvents: readonly GameEvent[] | undefined;
+  let resolvingSightDirections: Set<string> | undefined;
+  let resolvedSightDirections: Map<string, Dir | undefined> | undefined;
+  const context = {
+    locations: map.locations,
+    ...partySkillContext(project, session),
+    blocksSight: cachedSightBlocker(project, map),
+    mapEvents: () => {
+      if (mapEvents) return mapEvents;
+      const events = map.events.filter((event) => {
+        const location = session.eventLocations?.[event.id];
+        return !runtimeEventGone(session, map.id, event.id) && (!location || location.mapId === map.id);
+      });
+      const included = new Set(events.map((event) => event.id));
+      const erased = idSet(session.erasedEventIds);
+      forEachIncomingEvent(project, map.id, session, included, erased, (event) => {
+        events.push(event);
+        return false;
+      });
+      forEachSpawnedEvent(project, map.id, session, included, erased, (event) => {
+        events.push(event);
+        return false;
+      });
+      return mapEvents = events;
+    },
+    eventPosition: (id, usePageDirection): RuntimeEventPosition | undefined => {
+      const location = session.eventLocations?.[id];
+      if (location && location.mapId !== map.id) return undefined;
+      const position = positions?.[id];
+      if (location && location.direction === undefined && position?.direction !== undefined) {
+        return { ...location, direction: position.direction };
+      }
+      const spawn = session.spawnedEvents?.[id];
+      const local = location || position ? undefined : firstEventById(map.events, id);
+      const point: RuntimeEventPosition | undefined = location ?? position ?? local ?? (spawn?.mapId === map.id ? spawn : undefined);
+      if (!point || !usePageDirection || point.direction !== undefined || resolvingSightDirections?.has(id)) return point;
+      if (resolvedSightDirections?.has(id)) {
+        const direction = resolvedSightDirections.get(id);
+        return direction === undefined ? point : { ...point, direction };
+      }
+      const authored = local ?? firstEventById(map.events, id);
+      const observer = authored && !runtimeEventGone(session, map.id, id)
+        ? authored
+        : (location || spawn) ? firstEventById(context.mapEvents(), id) : undefined;
+      if (!observer) return point;
+
+      // If page sight conditions refer back to this observer, use its position with the default facing.
+      const resolving = resolvingSightDirections ??= new Set();
+      resolving.add(id);
+      try {
+        const direction = resolveEventPage(observer, session, context)?.graphic.direction;
+        (resolvedSightDirections ??= new Map()).set(id, direction);
+        return direction === undefined ? point : { ...point, direction };
+      } finally {
+        resolving.delete(id);
+      }
+    },
+  } satisfies EventPageLocationContext;
+  return context;
+}
+
 /**
  * 이 맵에 있는 런타임 이벤트 뷰를 순서대로 방문한다 — 이 파일의 유일한 순회 원본.
  * visit 이 true 를 내면 즉시 멈춘다(찾기 질의는 배열을 만들지 않는다).
@@ -162,7 +232,7 @@ export function runtimeEventView(
  * 1~3회 불려 O(N²) 가 됐다(실측 0.04~0.16ms/호출).
  */
 function forEachRuntimeEventView(
-  project: Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets">>,
+  project: RuntimeEventProject,
   map: GameMap,
   session: PlaySessionLike,
   positions: RuntimeEventPositions,
@@ -181,7 +251,7 @@ function forEachRuntimeEventView(
   includeEvent?: (event: GameEvent) => boolean,
 ): void {
   const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
-  const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
+  const pageContext = runtimePageContext(project, map, session, positions);
   const erased = idSet(session.erasedEventIds);
   const removedOnCurrentMap = removedEventSet(session, map.id);
   const locations = session.eventLocations;
@@ -199,43 +269,9 @@ function forEachRuntimeEventView(
     if (near && !anchorMayOverlap(location ?? positions[event.id] ?? event, near)) continue;
     if (admit(event)) return;
   }
-  // 다른 맵의 이벤트는 **이 맵으로 옮겨진 것만** 후보다. 옮겨진 이벤트가 없으면
-  // 맵 전체 순회를 건너뛴다(대부분의 프레임이 여기에 해당한다). 후보 집합은 다른 맵이
-  // 실제로 있을 때만 만든다 — 맵이 하나뿐인 프로젝트에서 헛일이 되지 않게.
-  let incoming: ReadonlySet<string> | undefined;
-  let incomingResolved = false;
-  for (const sourceMap of Object.values(project.maps)) {
-    if (sourceMap.id === map.id) continue;
-    if (!incomingResolved) {
-      incomingResolved = true;
-      incoming = incomingEventIds(locations, map.id, included, erased);
-    }
-    if (!incoming) break;
-    const removedOnSourceMap = removedEventSet(session, sourceMap.id);
-    for (const event of sourceMap.events) {
-      if (!incoming.has(event.id)) continue;
-      if (included.has(event.id)) continue;
-      if (removedOnSourceMap?.has(event.id)) continue;
-      included.add(event.id);
-      if (near && !anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) continue;
-      if (admit(event)) return;
-    }
-  }
-  const spawned = session.spawnedEvents;
-  if (!spawned) return;
-  for (const spawnedEventId in spawned) {
-    const spawn = spawned[spawnedEventId];
-    if (!spawn || spawn.mapId !== map.id) continue;
-    if (included.has(spawnedEventId)) continue;
-    if (near && !anchorMayOverlap(locations?.[spawnedEventId] ?? positions[spawnedEventId] ?? spawn, near)) {
-      included.add(spawnedEventId);
-      continue;
-    }
-    const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
-    if (!event) continue;
-    included.add(spawnedEventId);
-    if (admit(event)) return;
-  }
+  if (forEachIncomingEvent(project, map.id, session, included, erased, (event) =>
+    (!near || anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) && admit(event))) return;
+  forEachSpawnedEvent(project, map.id, session, included, erased, admit, positions, near);
 }
 
 /** 몸 사각이 앵커에서 벗어날 수 있는 최대 칸 수(footprintBounds 와 축 상한에서 파생). */
@@ -302,7 +338,7 @@ export function runtimeEventViewById(
   // 전에 맵의 모든 이벤트 뷰(페이지 조건 평가 포함)를 만들었다 — NPC 마다 프레임당 1~3회 불려
   // NPC 수의 제곱으로 커졌다. 순서·중복 규칙은 순회 원본과 같다: 현재 맵 → 옮겨 온 이벤트 → 소환.
   const appearanceProject = runtimeAppearanceProject(project);
-  const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
+  const pageContext = runtimePageContext(project, map, session, positions);
   const erased = session.erasedEventIds;
   const location = session.eventLocations?.[eventId];
   // 거르는 조건이 전부 id·세션으로만 정해져서, 같은 id 가 여럿이어도 답은 **첫** 이벤트가 정한다(예전 선형
@@ -322,7 +358,7 @@ export function runtimeEventViewById(
     }
   }
   const spawn = session.spawnedEvents?.[eventId];
-  if (!spawn || spawn.mapId !== map.id) return undefined;
+  if (!spawn || spawn.mapId !== map.id || erased?.includes(eventId)) return undefined;
   const event = materializeSpawnedEvent(project, eventId, spawn);
   return event ? runtimeEventView(event, session, positions, appearanceProject, pageContext) : undefined;
 }
@@ -364,6 +400,54 @@ function runtimeAppearanceProject(
   project: Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets">>,
 ): Pick<Project, "database" | "assets"> | undefined {
   return project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
+}
+
+/** 다른 맵에서 옮겨 온 이벤트 정의만 방문한다. 페이지 조건을 다시 평가하지 않는다. */
+function forEachIncomingEvent(
+  project: Pick<Project, "maps">,
+  mapId: string,
+  session: PlaySessionLike,
+  included: Set<string>,
+  erased: ReadonlySet<string> | undefined,
+  visit: (event: GameEvent) => boolean,
+): boolean {
+  if (!session.eventLocations) return false;
+  let incoming: ReadonlySet<string> | undefined;
+  for (const sourceMap of Object.values(project.maps)) {
+    if (sourceMap.id === mapId) continue;
+    incoming ??= incomingEventIds(session.eventLocations, mapId, included, erased);
+    if (!incoming) return false;
+    const removed = removedEventSet(session, sourceMap.id);
+    for (const event of sourceMap.events) {
+      if (!incoming.has(event.id) || included.has(event.id) || removed?.has(event.id)) continue;
+      included.add(event.id);
+      if (visit(event)) return true;
+    }
+  }
+  return false;
+}
+
+function forEachSpawnedEvent(
+  project: Pick<Project, "maps">,
+  mapId: string,
+  session: PlaySessionLike,
+  included: Set<string>,
+  erased: ReadonlySet<string> | undefined,
+  visit: (event: GameEvent) => boolean,
+  positions?: RuntimeEventPositions,
+  near?: FootprintRect,
+): void {
+  const spawned = session.spawnedEvents;
+  if (!spawned) return;
+  for (const eventId in spawned) {
+    const spawn = spawned[eventId];
+    if (!spawn || spawn.mapId !== mapId || included.has(eventId) || erased?.has(eventId)) continue;
+    if (near && !anchorMayOverlap(session.eventLocations?.[eventId] ?? positions?.[eventId] ?? spawn, near)) continue;
+    const event = materializeSpawnedEvent(project, eventId, spawn);
+    if (!event) continue;
+    included.add(eventId);
+    if (visit(event)) return;
+  }
 }
 
 /** 이 맵으로 옮겨졌고 아직 방문되지 않은 이벤트 id. 없으면 undefined. */

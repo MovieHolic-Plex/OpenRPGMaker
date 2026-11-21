@@ -1,0 +1,146 @@
+[
+  {
+    "request": "물건을 고르는 창에서 ‘증거를 내세요’라고 안내해 주세요.",
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "prompt": "증거를 내세요"},
+    "fields": {"prompt": "증거를 내세요"}
+  },
+  {
+    "request": "제시 목록은 회복약만 나오도록 고쳐줘.",
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "itemIds": ["item_potion"]},
+    "fields": {"itemIds": ["item_potion"]}
+  },
+  {
+    "request": "정답 물건을 보일 때 소지품에서 한 개 빠지게 해.",
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "consume": true},
+    "fields": {"consume": true}
+  },
+  {
+    "request": "이 물건 고르기 창의 문구는 ‘무얼 가져왔나’로요.",
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "prompt": "무얼 가져왔나"},
+    "fields": {"prompt": "무얼 가져왔나"}
+  },
+  {
+    "request": "아이템 제시 목록에서 마력약을 회복약보다 먼저 보여 주세요.",
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "itemIds": ["item_ether", "item_potion"]},
+    "fields": {"itemIds": ["item_ether", "item_potion"]}
+  },
+  {
+    "request": "제시 물건을 제한하지 말고 기본 후보를 다시 보여줘",
+    "primitive": "cmd.presentItem.update",
+    "args": {"index": 0, "itemIds": []},
+    "fields": {}
+  },
+  {
+    "request": "키 입력 대기 결과를 두 번째 변수에 적도록 바꿔.",
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": "var_0002"},
+    "fields": {"variableId": "var_0002"}
+  },
+  {
+    "request": "이 입력대기는 기다리기만 하고 기록은 하지 마세요.",
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": ""},
+    "fields": {"variableId": ""}
+  },
+  {
+    "request": "셋째 변수로 누른 키 번호를 보내 줘.",
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": "var_0003"},
+    "fields": {"variableId": "var_0003"}
+  },
+  {
+    "request": "키 번호는 두번째 변수로 옮겨주실래요?",
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": "var_0002"},
+    "fields": {"variableId": "var_0002"}
+  },
+  {
+    "request": "버튼대기에서 뭘 눌렀는진 저장하지 마.",
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": ""},
+    "fields": {"variableId": ""}
+  },
+  {
+    "request": "지금 키 입력 줄의 결과 저장 칸만 네 번째 변수로요.",
+    "primitive": "cmd.inputWait.update",
+    "args": {"index": 0, "variableId": "var_0004"},
+    "fields": {"variableId": "var_0004"}
+  },
+  {
+    "request": "비밀번호 입력 창이 세 자리까지 받게 늘려 주세요.",
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "digits": 3},
+    "fields": {"digits": 3}
+  },
+  {
+    "request": "숫자 입력 안내를 ‘얼마예요?’로 바꿔.",
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "prompt": "얼마예요?"},
+    "fields": {"prompt": "얼마예요?"}
+  },
+  {
+    "request": "숫자 입력창에서 키패드는 빼줘.",
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "showPad": false},
+    "fields": {"showPad": false}
+  },
+  {
+    "request": "숫자 입력 결과를 둘째 변수에 저장해 주실래요?",
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "variableId": "var_0002"},
+    "fields": {"variableId": "var_0002"}
+  },
+  {
+    "request": "암호창은 여섯자리까지 받고 키패드는 숨기게.",
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "digits": 6, "showPad": false},
+    "fields": {"digits": 6, "showPad": false}
+  },
+  {
+    "request": "‘수량을 입력하세요’라는 안내로 두자리 숫자만 받아.",
+    "primitive": "cmd.inputNumber.update",
+    "args": {"index": 0, "digits": 2, "prompt": "수량을 입력하세요"},
+    "fields": {"digits": 2, "prompt": "수량을 입력하세요"}
+  },
+  {
+    "request": "이름 입력에서 여덟 글자까지 받도록 해 주세요.",
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "maxLength": 8},
+    "fields": {"maxLength": 8}
+  },
+  {
+    "request": "이름 입력칸을 열 때 예전 이름은 미리 쓰지 말아 줘.",
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "showInitialName": false},
+    "fields": {"showInitialName": false}
+  },
+  {
+    "request": "이름창을 별빛 연출로 바꿔줘",
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "presentation": "showcase"},
+    "fields": {"presentation": "showcase"}
+  },
+  {
+    "request": "이름 바꾸는 대신 입력한 글자를 첫째 변수에 넣어.",
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "stringVariableId": "var_0001"},
+    "fields": {"stringVariableId": "var_0001"}
+  },
+  {
+    "request": "이름을 바꿀 배우만 주인공에서 경비로 변경해 주시겠어요?",
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "actorId": "actor_guardian"},
+    "fields": {"actorId": "actor_guardian"}
+  },
+  {
+    "request": "이름 짓는 건 취소. ‘별명을 써요’라고 표시하고 셋째 변수로 받아.",
+    "primitive": "cmd.enterHeroName.update",
+    "args": {"index": 0, "stringVariableId": "var_0003", "prompt": "별명을 써요"},
+    "fields": {"stringVariableId": "var_0003", "prompt": "별명을 써요"}
+  }
+]

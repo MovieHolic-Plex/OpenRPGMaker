@@ -52,7 +52,8 @@ import { dismissToastsByKey, toast } from "@/util/toast";
 
 const INVALID_MODEL_TOAST_KEY = Symbol("ai-settings-invalid-model");
 import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSettings";
-import { renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
+import { AI_COMPAT_ROLE_SLOTS, renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
+import { renderAiOpenAiDirectSettings } from "./aiOpenAiDirectSettings";
 import { renderAiQuickConnect } from "./aiQuickConnect";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { fetchConnectedRoutes, renderAiRoleMatrixSettings } from "./aiRoleMatrixSettings";
@@ -443,6 +444,11 @@ export function renderAiSettingsForm(options: {
       compatSettings.refresh();
     },
   });
+  // 연결 탭에 바로 보이는 직접 입력. 저장된 뒤 모든 역할 칸을 그 모델로 맞춘다.
+  let applyDirectConnection: (endpointId: string, model: string) => void = () => undefined;
+  const directSettings = renderAiOpenAiDirectSettings({
+    onUse: (endpoint, model) => applyDirectConnection(endpoint.id, model),
+  });
   const quickConnectSection = settingsSection("quick-connect", "빠른 연결", "처음이라면 여기서 시작하세요.", [quickConnect.element]);
   const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
   const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
@@ -725,6 +731,13 @@ export function renderAiSettingsForm(options: {
     persist(false);
     updateReadiness();
     void refreshAiConnectionStatus(updateReadiness);
+  };
+  applyDirectConnection = (endpointId, model) => {
+    // 로컬 CLI 엔진이 남아 있으면 loadAiConfig 가 방금 고른 엔드포인트를 그 CLI 로 덮어 쓴다.
+    saveEngineChoice(null);
+    authSettings.selectProvider(endpointId, { focus: false });
+    for (const slot of AI_COMPAT_ROLE_SLOTS) assignCompatRole(slot.id, endpointId, model);
+    compatSettings.refresh();
   };
   // 엔드포인트를 만들고 지우면 제공자 선택지와 모델 목록을 다시 채운다.
   const onCompatChanged = (): void => {
@@ -1194,7 +1207,7 @@ export function renderAiSettingsForm(options: {
   const alternativeSummary = el("summary", {
     class: "ai-settings-row",
     dataset: { testid: "ai-settings-other-ways" },
-    children: [rowCopy("다른 방법으로 연결", "Claude, Google, OpenRouter / API 키"), chevron()],
+    children: [rowCopy("다른 방법으로 연결", "Claude, Google, 다른 계정"), chevron()],
   });
   const alternatives = el("details", {
     class: "ai-settings-alternatives",
@@ -1271,7 +1284,9 @@ export function renderAiSettingsForm(options: {
 
   const panes = {
     connection: settingsPane("connection", [
-      hero, accountRow, accountChecking, accountCheckError, qualitySection, primaryFeedback, disconnectError, alternatives,
+      hero, accountRow, accountChecking, accountCheckError, qualitySection, primaryFeedback, disconnectError,
+      settingsSection("openai-direct", "OpenAI 호환 API (직접 입력)", "기본 주소, API 키, 모델을 넣으면 조수가 그 서버를 씁니다.", [directSettings.element]),
+      alternatives,
     ]),
     behavior: settingsPane("behavior", [
       el("div", { class: "ai-settings-inset", dataset: { testid: "ai-settings-section-behavior" },
@@ -1352,6 +1367,7 @@ export function renderAiSettingsForm(options: {
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, reloadConnectedRoutes);
       win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
       window.removeEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
+      directSettings.dispose();
       compatSettings.dispose();
       routeStatusRequests.abort();
       if (autoSaveTimer !== null) {
@@ -1363,8 +1379,7 @@ export function renderAiSettingsForm(options: {
     },
     focusFirstInput: () => tabs.connection.focus(),
     focusApiKey: () => {
-      alternatives.setAttribute("open", "");
-      quickConnect.focus();
+      directSettings.focusKey();
     },
   };
 }

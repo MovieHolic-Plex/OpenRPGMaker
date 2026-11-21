@@ -15,7 +15,7 @@
 import { applyShitamachiLore } from "./shitamachiLore";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import modernCityRoomSpec from "@/assets/modernCityRoomSpec.json";
+import modernCityRoomSpec from "@/assets/modernCityRoomSpec.json" with { type: "json" };
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";

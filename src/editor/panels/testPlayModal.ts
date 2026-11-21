@@ -437,7 +437,7 @@ function openTestPlayShell(
   // 게임 메뉴가 열려 있는 동안만 보이는 상태 칩. 메뉴가 열리면 플레이어 조작이 멈춘다는 것을 막대에서도 읽는다(IS-085).
   const pauseChip = el("span", {
     class: "test-play-pause",
-    text: "조작 일시 정지 · Esc로 계속",
+    text: "필드 조작 일시 정지 · 메뉴는 그대로 · Esc로 계속",
     attrs: { role: "status", hidden: "" },
     dataset: { testid: "test-play-pause" },
   });

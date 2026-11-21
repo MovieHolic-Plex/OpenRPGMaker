@@ -396,7 +396,13 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
   await page.getByTestId("event-page-item-condition-input").blur();
   await addTextCommand(page, "Page two");
 
+  const openPageMenu = async () => {
+    const more = page.getByTestId("event-page-more");
+    if ((await more.getAttribute("open")) === null) await more.locator("summary").click();
+  };
+  await openPageMenu();
   await page.getByTestId("event-page-copy").click();
+  await openPageMenu();
   await page.getByTestId("event-page-paste").click();
   await expect(page.getByTestId("event-page-tab-3")).toBeVisible();
   await page.getByTestId("event-editor-modal").getByRole("button", { name: "Apply" }).click();

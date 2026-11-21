@@ -95,7 +95,7 @@ for (const [index, entry] of cases.entries()) {
     await expect(canvasTrigger).toBeVisible({ timeout: 60_000 });
 
     const recordView = entry.target.kind === "dbEntry" ? lifeFarmRows[entry.target.collection] : undefined;
-    const target = await page.evaluate(async ({ fixture, setup, target, overlay, recordView }) => {
+    const { target, utilityRowIndex } = await page.evaluate(async ({ fixture, setup, target, overlay, recordView }) => {
       const { store } = await import("/src/project/store.ts");
       const { editorState } = await import("/src/editor/editorState.ts");
       const { resolveTarget } = await import("/src/editor/smallTask/primitives/corpusSchema.ts");
@@ -145,7 +145,11 @@ for (const [index, entry] of cases.entries()) {
           if (selected.pageId) editorState.set({ selectedEventPageId: selected.pageId });
         }
       }
-      return selected;
+      const utilityRowIndex = selected.kind === "dbEntry"
+        && (selected.collection === "terrains" || selected.collection === "battleCommands")
+        ? store.getCurrent().database[selected.collection]?.findIndex(row => row.id === selected.id)
+        : undefined;
+      return { target: selected, utilityRowIndex };
     }, { ...entry, overlay: readOverlay(entry.fixture), recordView });
 
     let runs = 0;
@@ -171,7 +175,9 @@ for (const [index, entry] of cases.entries()) {
         const { changedProjectKeys, slimDoneEvent } = await import("/src/ai/piAgent/protocol.ts");
         const { APPLY_SMALL_TASK_PRIMITIVE, LIST_SMALL_TASK_PRIMITIVES, runSmallTaskPrimitiveTool } =
           await import("/src/editor/tools/smallTaskPrimitiveTools.ts");
-        const ctx = { project, smallTaskTarget: scope.target, smallTaskSelection: scope.selection, smallTaskLive: scope.live };
+        const ctx = {
+          project, smallTaskTarget: scope.target, smallTaskSelection: scope.selection, smallTaskDraftSource: scope.draftSource,
+        };
         const list = await runSmallTaskPrimitiveTool(ctx, LIST_SMALL_TASK_PRIMITIVES, {});
         if (!list.data?.some(row => row.id === id)) throw new Error(`동작 목록에서 ${id}를 찾지 못했습니다.`);
         await runSmallTaskPrimitiveTool(ctx, APPLY_SMALL_TASK_PRIMITIVE, { id, args });
@@ -189,11 +195,21 @@ for (const [index, entry] of cases.entries()) {
 
     const panel = target.kind === "dbEntry" ? page.getByTestId("database-modal")
       : target.kind === "event" ? page.getByTestId("event-editor-modal") : canvas;
+    let triggerHost = panel;
     if (target.kind === "dbEntry") {
-      if (recordView?.section) await panel.getByTestId(recordView.section).click();
-      await panel.getByTestId(`${recordView?.row ?? "db-record-row-"}${target.id}`).click();
+      if (target.collection === "battleCommands") {
+        triggerHost = panel.getByTestId(`db-battle-command-editor-${utilityRowIndex}`);
+      } else if (target.collection === "terrains") {
+        await panel.getByTestId(`db-terrain-preset-${utilityRowIndex}`).click();
+        triggerHost = panel.getByTestId("db-terrain-hero");
+      } else if (recordView) {
+        if (recordView.section) await panel.getByTestId(recordView.section).click();
+        await panel.getByTestId(`${recordView.row}${target.id}`).click();
+      } else {
+        await panel.getByTestId(`db-record-row-${target.id}`).click();
+      }
     }
-    const trigger = panel.getByRole("button", { name: "이걸로 작업" });
+    const trigger = triggerHost.getByRole("button", { name: "이걸로 작업" });
     await expect(trigger).toBeVisible();
     const snapshot = () => page.evaluate(async () => {
       const { store } = await import("/src/project/store.ts");

@@ -6,6 +6,7 @@ import { transitionActorEquipment, type EquipmentTransitionResult } from "@/proj
 import { recoverMonsterInstance } from "@/project/monsterCollection";
 import { getCharacterAppearance } from "./characterAppearances";
 import { floorActorExperience } from "@/project/actorModel";
+import { isWholePartyActorTarget } from "@/project/eventCommands/actorTarget";
 
 type ActorVitalKind = "hp" | "mp";
 type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActorMp" }>;
@@ -138,7 +139,7 @@ function vitalKind(command: ActorVitalCommand): ActorVitalKind {
 }
 
 function resolveExperienceTargets(session: PlaySessionLike, actorId: string | undefined): readonly string[] {
-  if (!actorId || actorId === "party" || actorId === "all") {
+  if (isWholePartyActorTarget(actorId)) {
     return session.partyActorIds ?? [];
   }
   return [actorId];

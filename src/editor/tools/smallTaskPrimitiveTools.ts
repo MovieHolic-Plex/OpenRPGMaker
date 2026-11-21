@@ -33,7 +33,8 @@ export const SMALL_TASK_PRIMITIVE_TOOLS = [
 export interface SmallTaskToolContext extends ToolContext {
   readonly smallTaskTarget: SmallTaskTarget;
   readonly smallTaskSelection?: PrimitiveContext["selection"];
-  readonly smallTaskLive?: PrimitiveContext["live"];
+  readonly smallTaskDraftSource?: PrimitiveContext["live"];
+  readonly smallTaskCommonEvents?: { readonly initialIds: ReadonlySet<string>; createdId?: string };
 }
 
 /** Only the small-task host can supply this context. Its final changeset and history are handled by the frame. */
@@ -46,18 +47,41 @@ export async function runSmallTaskPrimitiveTool(ctx: SmallTaskToolContext, name:
   ]);
   const tool = SMALL_TASK_PRIMITIVE_TOOLS.find(tool => tool.name === name);
   if (!tool || !matchesPrimitiveSchema(tool.parameters, args)) throw new PrimitiveError("동작에 필요한 값의 형식을 확인해 주세요.");
-  const offered = primitivesForTarget(ctx.smallTaskTarget);
+  const target = ctx.smallTaskTarget;
+  const offered = primitivesForTarget(target);
   if (tool.name === LIST_SMALL_TASK_PRIMITIVES) {
+    const event = target.kind === "event"
+      ? ctx.project.maps[target.mapId]?.events.find(row => row.id === target.eventId)
+      : undefined;
+    const available = target.kind === "event" && !event?.pages?.length
+      ? offered.filter(row => !["cmd.delete", "cmd.move"].includes(getPrimitive(row.id)!.id))
+      : offered;
     return {
       ok: true,
       summary: "선택한 대상에 쓸 수 있는 동작을 읽었어요.",
-      data: offered.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
+      data: available.map(({ id, title }) => ({ id, title, args: getPrimitive(id)!.args })),
     };
   }
 
   const id = args.id as string;
   if (!offered.some(row => row.id === id)) throw new PrimitiveError("범위 밖: 선택한 대상에 이 동작을 쓸 수 없어요.");
-  const result = runPrimitive(ctx.project, ctx.smallTaskTarget, id, args.args as Record<string, unknown>, ctx.smallTaskSelection, ctx.smallTaskLive);
+  const primitiveArgs = args.args as Record<string, unknown>;
+  const commonEvents = ctx.smallTaskCommonEvents;
+  if (ctx.smallTaskSelection?.rect && id.startsWith("commonEvent.")) {
+    throw new PrimitiveError("맵의 선택 영역을 해제한 뒤 공용 이벤트를 편집해 주세요.");
+  }
+  if (commonEvents && id.startsWith("commonEvent.")) {
+    if (id === "commonEvent.create") {
+      if (commonEvents.createdId !== undefined) throw new PrimitiveError("작은 일 한 번에 공용 이벤트를 하나만 만들 수 있어요.");
+    } else {
+      const eventId = primitiveArgs.commonEventId;
+      if (typeof eventId === "string" && (!commonEvents.initialIds.has(eventId) || eventId === commonEvents.createdId)) {
+        throw new PrimitiveError("범위 밖: 작업을 시작할 때 있던 공용 이벤트만 고칠 수 있어요.");
+      }
+    }
+  }
+  const result = runPrimitive(ctx.project, target, id, primitiveArgs, ctx.smallTaskSelection, ctx.smallTaskDraftSource);
+  if (commonEvents && id === "commonEvent.create") commonEvents.createdId = result.after.commonEvents.at(-1)?.id;
   ctx.project = result.after;
   return { ok: true, summary: result.sentence };
 }

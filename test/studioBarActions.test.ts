@@ -302,7 +302,8 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(save?.className).toContain("is-failing");
     listener?.({ kind: "error", message: "임시", code: "session-not-persisted" });
     expect(save?.dataset.autosaveKind).toBe("unsaved-session");
-    expect(save?.textContent).toBe("저장 안 함(임시)");
+    expect(save?.textContent).toBe("저장 안 됨 · 이 탭만");
+    expect(findByTestId(topbar, "toolbar-save-autosave")?.textContent).toBe("저장 안 됨 · 이 탭에만 있어요");
     expect(save?.className).not.toContain("is-failing");
     expect(autosaveStatusText({ kind: "pending" })).toBe("저장 중");
   });

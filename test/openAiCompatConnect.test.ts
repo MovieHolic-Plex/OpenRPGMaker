@@ -46,6 +46,24 @@ describe("connectOpenAiCompat", () => {
     expect(listOpenAiCompatPublic()).toHaveLength(0);
   });
 
+  test("모델 목록만 물을 때는 채팅을 보내지 않고 키를 문장에 싣지 않는다", async () => {
+    const { testOpenAiCompat } = await import("../scripts/lib/openAiCompatRuntime.ts");
+    let chats = 0;
+    const result = await testOpenAiCompat({
+      name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1", apiKey: KEY,
+    }, (async (url: string | URL | Request, init?: RequestInit) => {
+      const path = String(url);
+      expect(path).toBe("https://amr-link.open-design.ai/v1/models");
+      expect(new Headers(init?.headers).get("authorization")).toBe(`Bearer ${KEY}`);
+      if (!path.endsWith("/models")) chats += 1;
+      return new Response(JSON.stringify({ data: [{ id: "deepseek-v4.1-flash-eco" }, { id: "glm-5.3-flash" }] }), { status: 200 });
+    }) as typeof fetch);
+    expect(chats).toBe(0);
+    expect(result.ok).toBe(true);
+    expect(result.models).toContain("deepseek-v4.1-flash-eco");
+    expect(JSON.stringify(result)).not.toContain(KEY);
+  });
+
   test("통과하면 기본 모델과 함께 저장하고, 다시 연결해도 한 줄만 남는다", async () => {
     const first = await connectOpenAiCompat({ kind: "custom", baseUrl: BASE, apiKey: KEY, model: "m1" }, fakeFetch(() => ok));
     expect(first.ok).toBe(true);
@@ -57,4 +75,119 @@ describe("connectOpenAiCompat", () => {
     expect(listOpenAiCompatPublic()).toHaveLength(1);
     expect(JSON.stringify(listOpenAiCompatPublic())).not.toContain(KEY);
   });
+
+  test("OpenDesign 프리셋 주소와 추론 방식을 저장하고 공개 보기에는 키가 없다", async () => {
+    const result = await connectOpenAiCompat({
+      kind: "custom", name: "OpenDesign", baseUrl: "https://amr-link.open-design.ai/v1",
+      apiKey: KEY, model: "deepseek-v4.1-flash-eco", reasoningMode: "none",
+    }, fakeFetch(() => ok));
+    expect(result.ok).toBe(true);
+    expect(result.endpoint?.baseUrl).toBe("https://amr-link.open-design.ai/v1");
+    expect(result.endpoint?.defaultModel).toBe("deepseek-v4.1-flash-eco");
+    expect(result.endpoint?.reasoningMode).toBe("none");
+    expect(result.endpoint?.hasKey).toBe(true);
+    const exported = { project: { name: "demo" }, ai: { providerId: result.endpoint?.id, apiKey: "", baseUrl: "" } };
+    expect(JSON.stringify(exported)).not.toContain(KEY);
+    expect(JSON.stringify(result.endpoint)).not.toContain(KEY);
+  });
+
+  test("프리셋의 허용·차단·그림 설정을 저장하고, 다음 연결에서 빼면 유지한다", async () => {
+    const base = "http://127.0.0.1:8318/v1";
+    let chats = 0;
+    const fetchImpl = (async (url: string | URL | Request, init?: RequestInit) => {
+      const path = String(url);
+      if (path.endsWith("/models")) {
+        return new Response(JSON.stringify({ data: [{ id: "gemini-4-argon-high" }, { id: "claude-sonnet" }] }), { status: 200 });
+      }
+      chats += 1;
+      const body = JSON.parse(String(init?.body ?? "{}")) as { model?: string };
+      expect(body.model).toBe("gemini-4-argon-high");
+      return new Response(JSON.stringify({ choices: [{ message: { role: "assistant", content: "pong" } }] }), { status: 200 });
+    }) as typeof fetch;
+    const first = await connectOpenAiCompat({
+      kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "gemini-4-argon-high",
+      allowModels: ["gemini-4-argon*"], blockModels: ["claude-*"],
+      supportsImages: true, imageModels: ["gemini-4-argon-high"],
+    }, fetchImpl);
+    expect(first.ok).toBe(true);
+    expect(first.endpoint?.allowModels).toEqual(["gemini-4-argon*"]);
+    expect(first.endpoint?.blockModels).toEqual(["claude-*"]);
+    expect(first.endpoint?.supportsImages).toBe(true);
+    expect(first.endpoint?.imageModels).toEqual(["gemini-4-argon-high"]);
+    expect(first.test?.models).toContain("gemini-4-argon-high");
+    expect(first.test?.models).not.toContain("claude-sonnet");
+    expect(chats).toBe(1);
+
+    chats = 0;
+    const again = await connectOpenAiCompat({
+      kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "gemini-4-argon-high",
+    }, fetchImpl);
+    expect(again.ok).toBe(true);
+    expect(again.endpoint?.id).toBe(first.endpoint?.id);
+    expect(again.endpoint?.allowModels).toEqual(["gemini-4-argon*"]);
+    expect(again.endpoint?.blockModels).toEqual(["claude-*"]);
+    expect(again.endpoint?.supportsImages).toBe(true);
+    expect(again.endpoint?.imageModels).toEqual(["gemini-4-argon-high"]);
+    expect(again.endpoint?.models).not.toContain("claude-sonnet");
+    expect(again.test?.models).not.toContain("claude-sonnet");
+    expect(chats).toBe(1);
+  });
+
+  test("다시 연결할 때 저장된 차단 목록만으로도 그 모델에 채팅을 보내지 않는다", async () => {
+    const base = "http://127.0.0.1:8320/v1";
+    const seen = await reconnectWithoutPolicy(base, { allowModels: [], blockModels: ["claude-*"] });
+    expect(seen.chats).toBe(0);
+    expect(seen.result.ok).toBe(false);
+    expect(seen.result.message).toContain("호출하지 않았어요");
+    expect(seen.result.message).not.toContain(KEY);
+    expect(listOpenAiCompatPublic().find((row) => row.baseUrl === base)?.blockModels).toEqual(["claude-*"]);
+    expect(listOpenAiCompatPublic().find((row) => row.baseUrl === base)?.defaultModel).toBe("gemini-4-argon-high");
+
+    const cleared = await connectOpenAiCompat({
+      kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "claude-sonnet",
+      allowModels: [], blockModels: [],
+    }, seen.fetchImpl);
+    expect(cleared.ok).toBe(true);
+    expect(seen.chats).toBe(1);
+    expect(cleared.endpoint?.allowModels).toEqual([]);
+    expect(cleared.endpoint?.blockModels).toEqual([]);
+    expect(cleared.endpoint?.defaultModel).toBe("claude-sonnet");
+  });
+
+  test("다시 연결할 때 저장된 허용 목록만으로도 그 밖의 모델에 채팅을 보내지 않는다", async () => {
+    const base = "http://127.0.0.1:8321/v1";
+    const seen = await reconnectWithoutPolicy(base, { allowModels: ["gemini-4-argon*"], blockModels: [] });
+    expect(seen.chats).toBe(0);
+    expect(seen.result.ok).toBe(false);
+    expect(seen.result.message).toContain("호출하지 않았어요");
+    expect(listOpenAiCompatPublic().find((row) => row.baseUrl === base)?.allowModels).toEqual(["gemini-4-argon*"]);
+    expect(listOpenAiCompatPublic().find((row) => row.baseUrl === base)?.blockModels).toEqual([]);
+  });
 });
+
+async function reconnectWithoutPolicy(base: string, policy: { allowModels: string[]; blockModels: string[] }): Promise<{
+  chats: number;
+  result: Awaited<ReturnType<typeof connectOpenAiCompat>>;
+  fetchImpl: typeof fetch;
+}> {
+  const state = { chats: 0 };
+  const fetchImpl = (async (url: string | URL | Request) => {
+    const path = String(url);
+    if (path.endsWith("/models")) {
+      return new Response(JSON.stringify({ data: [{ id: "gemini-4-argon-high" }, { id: "claude-sonnet" }] }), { status: 200 });
+    }
+    state.chats += 1;
+    return new Response(JSON.stringify({ choices: [{ message: { role: "assistant", content: "pong" } }] }), { status: 200 });
+  }) as typeof fetch;
+  const first = await connectOpenAiCompat({
+    kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "gemini-4-argon-high",
+    allowModels: policy.allowModels, blockModels: policy.blockModels,
+  }, fetchImpl);
+  expect(first.ok).toBe(true);
+  expect(state.chats).toBe(1);
+  state.chats = 0;
+  const result = await connectOpenAiCompat({
+    kind: "custom", name: "CLIProxyAPI Argon", baseUrl: base, apiKey: KEY, model: "claude-sonnet",
+  }, fetchImpl);
+  return { get chats() { return state.chats; }, result, fetchImpl };
+}

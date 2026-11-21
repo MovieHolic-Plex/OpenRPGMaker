@@ -14,7 +14,7 @@ describe("database save feedback", () => {
     const writeStatus = vi.fn();
 
     expect(await applyDatabaseChanges(writeStatus)).toBe(false);
-    expect(writeStatus).toHaveBeenCalledWith({ kind: "error", text: expect.stringContaining("기록하지 않았습니다") });
+    expect(writeStatus).toHaveBeenCalledWith({ kind: "info", text: "이 탭에만 있어요. 저장되지 않습니다." });
     expect(toast).not.toHaveBeenCalledWith(expect.any(String), "ok");
   });
 

@@ -206,7 +206,8 @@
   align-items: center;
   display: inline-flex;
   flex: 0 1 auto;
-  max-inline-size: 11rem;
+  /* 「Not saved · this tab only」가 11rem 에서 말줄임됐다. 탭 전용 문구가 영어에서도 통째로 보이게 둔다. */
+  max-inline-size: 18rem;
   min-inline-size: 0;
 }
 

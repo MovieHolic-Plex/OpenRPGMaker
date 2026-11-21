@@ -9,7 +9,7 @@ import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §3.
 
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordMapEditIfChanged, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { switchVariableReferenceMessage } from "@/editor/databaseReferences";
 import { editorState } from "@/editor/editorState";
 import type { DeleteResult } from "@/editor/databaseActions";
@@ -234,9 +234,45 @@ export function renameMap(mapId: MapId, name: string): void {
   }, { scope: "map", mapId });
 }
 
-export function resizeMap(mapId: MapId, width: number, height: number): void {
+export type ResizeMapOptions = {
+  /**
+   * 호출자가 이미 이 크기 변경을 포함한 되돌리기 한 단계를 남겼으면 false.
+   * 테두리 드래그는 드래그 시작 스냅샷 하나로 밀기·크기 변경을 묶으므로, 여기서 다시 남기면
+   * Ctrl+Z 가 드래그 절반만 되돌린다.
+   */
+  readonly recordHistory?: boolean;
+};
+
+export function resizeMap(mapId: MapId, width: number, height: number, options?: ResizeMapOptions): void {
   if (!allowMapMutation(mapId)) return;
   if (!allowMapSize(width, height)) return;
+  const beforeProject = store.getCurrent();
+  const beforeMap = beforeProject.maps[mapId];
+  if (!beforeMap || (beforeMap.width === width && beforeMap.height === height)) return;
+  const apply = (): void => {
+    applyResizeMap(mapId, width, height);
+  };
+  if (options?.recordHistory === false) {
+    apply();
+    return;
+  }
+  // 축소는 범위 밖 타일·레이어를 버리고 밖 이벤트를 안쪽으로 옮긴다. 그 전 맵을 남기지 않으면
+  // Ctrl+Z 가 「되돌릴 작업이 없습니다」가 되고 잘린 칸은 되살릴 수 없다.
+  const label = `맵 크기 ${beforeMap.width}×${beforeMap.height} → ${width}×${height}`;
+  const nextStartX = Math.min(beforeProject.startPos.x, width - 1);
+  const nextStartY = Math.min(beforeProject.startPos.y, height - 1);
+  const startMoves = beforeProject.startMapId === mapId
+    && (nextStartX !== beforeProject.startPos.x || nextStartY !== beforeProject.startPos.y);
+  if (startMoves) {
+    // 시작 좌표는 맵이 아니라 프로젝트에 있다. 맵 스냅샷만 되돌리면 크기는 돌아오고 시작점은 잘린 채로 남는다.
+    recordProjectSnapshot(label, mapId);
+    apply();
+    return;
+  }
+  recordMapEditIfChanged(mapId, apply, { label });
+}
+
+function applyResizeMap(mapId: MapId, width: number, height: number): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;

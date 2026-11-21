@@ -6,8 +6,8 @@
 //   · 2층이 이미 찬 칸(물가 둑·집 그림자·길 가장자리)은 건너뛴다. 숲 바닥만 나무·밑풀 그림자 칸을 «그 그림자를 얹은 바닥 칸» 으로 바꿔 덮는다.
 //   · 덩이 가장자리는 꼭짓점 넷의 안팎 15꼴(그림판이 들쭉날쭉하게 깎아 둔 칸)이라 네모 판이 서지 않는다. 덩이는 높이 단을 넘지 않는다.
 // 겉모습에 stand·meadow·grain 이 없는 게임(옛 게임 포함)에서는 아무것도 하지 않는다. 풀 결(grain — 기본 풀 바닥의 통칸 변형·짙고 옅은 결·풀 포기)은 beodeulGrassGrain.ts. 난수는 칸 좌표·씨앗 해시뿐이다(시공기의 난수 줄을 쓰지 않는다).
-import groundCatalog from "@/assets/beodeulGroundCatalog.json";
-import forestComposer from "@/assets/beodeulForestComposer.json";
+import groundCatalog from "@/assets/beodeulGroundCatalog.json" with { type: "json" };
+import forestComposer from "@/assets/beodeulForestComposer.json" with { type: "json" };
 import { standOverlaySource, tilesetStandTableFor, type GroundOverlay } from "@/assets/tilesetStands";
 import { tilesetLookGround } from "@/assets/tilesetLooks";
 import { layBeodeulGrassGrain } from "./beodeulGrassGrain";

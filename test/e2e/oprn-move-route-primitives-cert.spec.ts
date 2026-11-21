@@ -37,7 +37,7 @@ test("loop17 certifies move route primitive authoring persistence and runtime ef
   await configureRoute(page);
   await openCommandEditor(routeCommand(page));
   await screenshot(page, "002-editor-move-route-primitives-authoring.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertRouteExport(editorExport);
   await writeJson("003-editor-export.json", editorExport);

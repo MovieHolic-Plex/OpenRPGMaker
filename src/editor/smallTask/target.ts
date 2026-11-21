@@ -1,4 +1,5 @@
 import { DATABASE_AREA_LABELS } from "@/project/changeLedger";
+import { equipmentSlots } from "@/project/equipmentSlots";
 import { eventNameFromPages } from "@/project/eventDisplayName";
 import type { Project } from "@/project/types";
 
@@ -36,7 +37,8 @@ export function mapTarget(project: Project, mapId: string | null, eventId?: stri
 }
 
 export function dbTarget(project: Project, collection: SmallTaskCollection, id: string): SmallTaskTarget | null {
-  const record = project.database[collection]?.find(candidate => candidate.id === id);
+  const records = collection === "equipmentSlots" ? equipmentSlots(project) : project.database[collection];
+  const record = records?.find(candidate => candidate.id === id);
   if (!record) return null;
   const kindLabel = DATABASE_AREA_LABELS[collection] ?? "자료집 항목";
   const authoredName = "name" in record ? record.name : "title" in record ? record.title : "label" in record ? record.label : "";

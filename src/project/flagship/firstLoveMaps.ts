@@ -13,7 +13,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { carLaneCells } from "@/editor/tools/streetWalkersTool";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import type { GameMap, LightSource, Project } from "@/project/types";
-import roomsJson from "./firstLoveRooms.json";
+import roomsJson from "./firstLoveRooms.json" with { type: "json" };
 import { clearMapCellForBackground } from "@/project/mapBackgroundVisibility";
 import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 

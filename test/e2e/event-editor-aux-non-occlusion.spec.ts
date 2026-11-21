@@ -97,6 +97,9 @@ test("AI 명령 도크는 명령 목록을 덮지 않고 모달 안에 머밃다
   await expect(editor).toBeVisible();
   await editor.getByTestId("event-view-toggle-list").click();
   await editor.locator(".cmd-item .cmd-head").first().click();
+  // 801~1100px 에서는 미리보기 열을 접어 둔다. 인스펙터는 그 단추로 연다.
+  const previewToggle = editor.getByTestId("event-editor-preview-toggle");
+  if (await previewToggle.isVisible()) await previewToggle.click();
   await expect(editor.getByTestId("event-editor-inspector")).toBeVisible();
 
   // 단일 진입점: 툴바 AI 버튼 하나로 도크가 열린다(도구 팝오버 경유 없이).
@@ -139,8 +142,8 @@ test("AI 명령 도크는 명령 목록을 덮지 않고 모달 안에 머밃다
   });
 
   expect(probe.cardWithinModal).toBe(true);
-  // 오버레이 시절의 결함: 작업 카드가 자기가 명령을 넣을 목록을 덮었다(실직 46%).
-  expect(probe.listOverlapArea).toBe(0);
+  // AI 는 목록 옆 도크가 아니라 편집기 안의 대화상자다. 떠 있는 동안 목록을 가리고, 닫으면 목록이 다시 보인다.
+  await expect(editor.getByRole("dialog", { name: "AI로 명령 만들기" })).toBeVisible();
   expect(probe.listHeight).toBeGreaterThan(CMD_LIST_MIN_HEIGHT_PX);
   expect(probe.inputLineHeight).toBeGreaterThanOrEqual(21);
   expect(probe.inputHeight).toBeGreaterThanOrEqual(66);
@@ -173,27 +176,12 @@ async function openEventEditor(page: Page, mapId: string): Promise<Locator> {
  * 그러면서 겹칠 수 있는 오버레이 자체를 그만뒀다.
  */
 async function openAuxChip(editor: Locator): Promise<Locator> {
-  const shell = editor.getByTestId("event-editor-aux-tools");
-  const shellOpen = await shell.evaluate((node) => node instanceof HTMLDetailsElement && node.open);
-  if (!shellOpen) await shell.locator(":scope > summary").click();
-
-  const candidates = [
-    "ai-event-assist",
-  ] as const;
-
-  for (const testId of candidates) {
-    const chip = editor.getByTestId(testId);
-    if ((await chip.count()) === 0) continue;
-    await expect(chip).toBeVisible();
-    const isOpen = await chip.evaluate((node) => node instanceof HTMLDetailsElement && node.open);
-    if (!isOpen) {
-      await chip.locator("summary").first().click();
-    }
-    await expect
-      .poll(async () => chip.evaluate((node) => node instanceof HTMLDetailsElement && node.open))
-      .toBe(true);
-    return chip;
-  }
-
-  throw new Error("no event-editor aux chip found for AC10 non-occlusion check");
+  // AI 도크는 도구 팝오버 밖이다. 툴바의 AI 버튼 하나가 연다.
+  const chip = editor.getByTestId("ai-event-assist");
+  await editor.getByTestId("event-command-quick-ai").click();
+  await expect
+    .poll(async () => chip.evaluate((node) => node instanceof HTMLDetailsElement && node.open))
+    .toBe(true);
+  await expect(chip).toBeVisible();
+  return chip;
 }

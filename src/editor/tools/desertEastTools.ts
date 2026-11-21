@@ -2,7 +2,7 @@
 // link_desert_east_interior(건물 문 ↔ 실내 맵). 배치는 구성기 src/project/desertEastComposer.ts 가 짠다(계획 → 땅 → 건물 → 소품, 씨앗마다 다른 배치).
 // 이 도구는 결과를 맵에 쓰고, 문 칸은 막힘·접근칸은 걸을 수 있음·시작 칸에서 모든 접근칸에 닿는지를 엔진 통행(isPassable)으로 다시 확인한다. 실패하면 맵을 바꾸지 않는다.
 import { isDesertEastTilesetDef } from "@/ai/desertEastPolicy";
-import pieces from "@/assets/desertEastPieces.json";
+import pieces from "@/assets/desertEastPieces.json" with { type: "json" };
 import { isPassable } from "@/project/collision";
 import { EXIT_SIDES_SCHEMA, exitSidesArg } from "@/project/composerExitRoads";
 import { setLayerTileAt } from "@/project/mapLayers";

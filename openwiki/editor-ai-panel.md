@@ -3112,6 +3112,22 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 ## 제안 적용 · 복구 · 완성도 린트
 
+### 이벤트 편집기 실행 복구 기록의 메모리 상한
+
+v0.413.0에서 「AI로 명령 만들기」의 도구 결과마다 약 78MB 프로젝트의 기준선과
+내용 비교 문자열을 IndexedDB 쓰기 큐에 복제했다. 새 프로젝트에서 읽기 도구 몇 번만
+호출해도 여러 복제본이 겹쳐 렌더러 메모리가 부족해졌다.
+
+- 실행 런타임 v2는 번들 타일셋의 사용자 변경분을 담는 프로젝트 저장 보기로 기준선을
+  보존한다. 기준선은 복구할 때 읽고 검증한다. 런타임 v1 기록은 대화에서 열 수 있다.
+- 적용 직전에는 현재 기준과 예상 결과의 SHA-256을 기록한다. 재개는 현재 프로젝트에
+  이미 들어간 결과를 확인한 뒤 남은 작업을 이어 간다. 검토 대기 초안은 재조정이 필요하다.
+- 행 복제 전에 16MiB 예산을 확인하고, 진행 중인 쓰기 뒤에는 최신 스냅샷 하나를 둔다.
+  쓰기 실패와 용량 초과는 `agent_run:checkpoint-write-failed` 감사 상태로 남긴다.
+  턴과 프로젝트 적용·저장·증명은 계속 진행한다.
+- 이벤트 명령 초안은 도크가 소유한다. 중단된 기록은 채팅에서 실행 재개를 제안하지 않는다.
+  실패와 취소는 현재 도크의 상태줄에 표시한다.
+
 - **제안은 승인 없이 바로 적용된다 — 복구는 되돌리기다 (2026-08-28 갱신):** 턴이 만든 변경을 어떻게 처리하는지는 `resolveProposalApplyMode`(`src/ai/approvalPolicy.ts`) 한 곳이 정한다: 쓰기 툴콜이 1건이라도 있으면 `apply-now`, 0건이면 `no-changes`. **입력은 `callCount` 하나뿐이다** — 파괴 여부·재료 합의·규칙 귀속·오류 종료·"자동 적용" 설정은 전부 입력에서 뺐고 `classifyApproval` 은 삭제했다. 승인 UI([이 맵에 넣기] · [선택 N개 이 맵에 넣기] · [맵 적용 + 재료 합의] · [앞으로 자동 적용] · 검토 모달 · 명령행 핀 · '나중에' pill)는 조수 창에서 전부 제거됐고 설정의 `안전한 맵 꾸미기 자동 적용`(`autoApprove`) 필드도 `AiConfig` 에서 사라졌다(감독 지시 2026-08-28: "이런 flow 가 필요없다. AI 는 자율적으로 전부 진행하고 사용자는 되돌리기에 의존하면 그만이다"). 복구 경로의 정확한 깊이 계약: 적용 1회마다 `applyProposedProject` 안의 `recordProjectSnapshot` 이 **프로젝트 전체 스냅샷 1개**를 undo 스택에 쌓는다(`mapEditHistory` 는 옵션 없이 부르면 `kind:"project"`). 따라서 **되돌리기 1회는 마지막으로 적용된 마일스톤 1개만 복원하며, 여러 마일스톤으로 된 자율 실행 전체를 한 번에 되돌리지 않는다.** 히스토리는 기본 50개다. 프로젝트 스냅샷의 대형 여부는 `project.maps`의 **첫 번째 맵만 표본으로 삼아** 그 맵이 10,000타일 이상인지 보거나, 전체 맵 수가 12개를 초과하는지로 판정하며, 대형이면 25개로 제한된다. 맵 삭제·`reset_project`도 해당 적용 단위 안에서는 Ctrl+Z / 조수 창 [되돌리기]로 원복된다. 안전 분류(`classifyProposalSafety`)와 완성도 린트 경고는 게이트가 아니라 로그 줄이다. 다만 파괴 표시·파괴성 툴·새 맵 추가·대량 쓰기(6건 이상, 타일 400칸 이상, 이벤트 10개 이상)는 적용 직전 `showConfirm` 중간 확인을 한 번 거친다(`src/ai/overInsertionReview.ts` 판정). 승인 메타데이터(`requiresApproval`·`approvalWarning` — 재료 합의·규칙 쓰기)는 판정에 쓰지 않는다. 취소는 저장소를 건드리지 않고 세션 초안을 `rebaseProject`로 버리며 고스트를 치우고, 턴러너는 취소를 "적용 실패"로 덮어쓰지 않는다(`ProposalApplyOutcome` 3값). 일반 1건 타일 쓰기는 확인 없이 그대로 적용된다. Node 헤드리스(window/document 없음)에서는 `showConfirm`이 자동 통과하지만, DOM이 있는 e2e/브라우저에서는 확인 모달이 실제로 뜬다. Owner: `src/ai/approvalPolicy.ts`, `src/ai/overInsertionReview.ts`, `src/editor/panels/aiProposalCard.ts`. Tests: `test/proposalApplyMode.test.ts`, `test/overInsertionReview.test.ts`.
 
 - **캔버스 AI 만들기 집·마을 (2026-08-25):** 우측 상단 `만들기`는 영역 선택용 건축 팔레트를 열지만, 그 안의 `집`과 `마을`은 로컬 결정론적 primitive를 즉시 적용하지 않는다. 두 버튼 모두 선택 영역과 구체적인 자연어 지시를 `openRegionTaskModal({ autoRun:true })`로 보내 실제 LLM 영역 작업과 분리된 미리보기/적용 검토를 시작한다. 강·길·지붕·NPC·나무·소품은 기존 로컬 도구이며, `AI로 채우기`는 지시 편집 후 사용자가 실행하는 기존 경로다. 회귀 테스트: `test/buildPaletteToggle.test.ts`.
@@ -3373,6 +3389,8 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **Same-origin companion (2026-08-27):** 브라우저 LLM 엔드포인트는 항상 페이지 오리진의 `/v1` 이다. `127.0.0.1:17832` 은 oh-my-pi 단독 동반 서비스(`npm run ai:oauth`)가 **그 머신 루프백**에서 듣는 주소이지, 원격 preview 탭이 치면 안 된다. `vite.config.ts` `codexOAuthPlugin` 이 `configureServer` 와 `configurePreviewServer` 둘 다에 `/auth`·`/v1` 을 붙인다. `npm start`(mdc-server:9888 Tailscale) 는 같은 오리진으로 Gemini 완결을 보낸다.
 
 - **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `OPRN_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. Antigravity·Codex 브라우저 로그인은 `/launch` 가 아니라 Google/OpenAI 인가 URL을 바로 연다. 그 URL의 `redirect_uri`가 루프백 콜백이면 원격 origin에서 `pasteCallback`을 켠다. 편집기는 이 화면으로 돌아오면 클립보드의 localhost 주소를 읽어 버튼 없이 연결하고, 붙여넣기만 해도 바로 넘긴다. env 키는 `.env.local` 의 `OPRN_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
+
+- **OpenAI 호환 API 직접 입력 (2026-11-21).** 연결 탭의 「OpenAI 호환 API (직접 입력)」(`ai-openai-direct`, `src/editor/panels/aiOpenAiDirectSettings.ts`)에 프리셋·기본 주소·API 키(password)·모델을 둔다. OpenDesign 프리셋은 `https://amr-link.open-design.ai/v1` 과 모델 예 `deepseek-v4.1-flash-eco` 를 채운다. 「모델 불러오기」는 동반 서비스 `POST /auth/openai-compat/test` 에 모델 없이 보내 GET `{base}/models` 만 하게 하고, 「연결 시험」은 그 모델로 도구 호출까지 본다. 「이 연결로 조수 사용」은 `POST /auth/openai-compat/connect` 가 도구 시험을 통과할 때만 `~/.oprn/openai-compat-endpoints.json`(0600)에 키를 넣고, 계획·실행·시각·작문·시공 칸을 그 모델로 맞춘다. 브라우저는 사용자 주소를 직접 부르지 않는다(OpenDesign 은 브라우저 CORS 사전 요청을 405 로 거절한다). 키는 상태 문장에서 지우고, 성공하면 입력칸을 비운다. localStorage `oprn:ai-config` 의 `apiKey`·`baseUrl` 은 빈 값이다. 응답의 `reasoning_details` 는 빈 답으로 보지 않고 원문 그대로 조수 파서에 넘긴다. 추론 방식 기본은 「보내지 않음」이다. 목록·시험·저장이 진행되는 동안 프리셋·주소·키·모델 칸을 잠근다. 프리셋에 허용·차단 패턴이나 그림 입력이 있으면 그 값을 시험과 저장에 함께 보내고, 요청에 그 칸이 없으면 이미 저장된 값을 유지한다. 다시 연결하는 시험도 그 저장된 패턴으로 차단 모델을 부르지 않는다. 빈 배열을 보내면 그 목록을 비운다. 이 연결을 조수에 꽂을 때는 저장돼 있던 로컬 CLI 엔진을 먼저 끈다.
 
 - **AI 설정은 연결·동작 레일과 고급 시트를 쓴다 (2026-11-19).** 연결 첫 화면은 ChatGPT 로그인이나 계정 행을 보여 준다. 로그인·해제·대기 안내는 `aiAuthSettings.ts`의 기존 OAuth 경로를 공유한다. 「다른 방법으로 연결」(`ai-settings-other-ways`)에는 제공자 선택, 빠른 키 연결, 사용자 지정 서버, 상태 재확인을 모았다.
   - 로그인 후 「품질」의 균형과 최고 품질은 계획·실행·시공·작문·시각 역할을 GPT-6.2 Sol의 medium 또는 high로 맞춘다. 역할별 조합이 다르면 선택 표시를 해제한다. 명시한 실행·시공 강도는 자율성 다이얼의 강도보다 우선하며, Sol 제작 요청은 medium 이상을 쓴다.

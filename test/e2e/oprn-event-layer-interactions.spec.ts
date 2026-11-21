@@ -534,7 +534,7 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
   expect(cardBox?.width).toBe(CHARSET_FRAME_WIDTH * 2 + 6);
   expect(cardBox?.height).toBe(CHARSET_FRAME_HEIGHT * 2 + 6);
 
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const savedGraphic = eventGraphic(await debugState(page), "ev_layer");
   expect(savedGraphic.direction).toBe("up");
   expect(savedGraphic.sprite?.id).toBe("tex_easyrpg_charset_actor1");

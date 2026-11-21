@@ -9,6 +9,7 @@
  * API 는 원본과 같아야 한다 — 호출부는 어느 쪽이 붙었는지 몰라야 한다.
  */
 import Phaser from "phaser";
+import { installChipsetUploadGuard } from "@/assets/chipsetTextureBands";
 
 declare global {
   interface Window {
@@ -20,6 +21,7 @@ declare global {
 window.Phaser = Phaser;
 
 export function ensurePhaser(): Promise<typeof Phaser> {
+  installChipsetUploadGuard(Phaser);
   return Promise.resolve(Phaser);
 }
 

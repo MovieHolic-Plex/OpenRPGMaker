@@ -111,7 +111,7 @@ async function authorChoicesAndOpenRuntime(
   await expect(page.getByTestId("event-command-choices-dialog")).toHaveCount(0);
   if (shouldCaptureEditor) await page.screenshot({ path: EDITOR_SCREENSHOT, fullPage: true });
 
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const eventId = await authoredChoicesEventId(page, choices);
   await page.getByTestId("event-editor-modal-close").click();
   await page.getByTestId("mode-play").click();

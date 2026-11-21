@@ -4,7 +4,7 @@ import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTy
 import { nextSessionRandom, setAudioState, type AudioChannel, type AudioTrackState } from "@/project/session";
 import { isLoopingChannel } from "@/player/audio/audioResources";
 import { evaluateM2Expression } from "./m2Expression";
-import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { fieldBoolean, fieldNumber, fieldString, optionalFieldNumber, optionalFieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
@@ -25,11 +25,11 @@ export function executeModernCommand(
   switch (title) {
     case "Camera Control":
       runtime.camera.mode = fieldString(fields, "mode", "panTo");
-      runtime.camera.target = fieldString(fields, "target", "player");
-      runtime.camera.x = fieldNumber(fields, "x", 0);
-      runtime.camera.y = fieldNumber(fields, "y", 0);
-      runtime.camera.zoom = fieldNumber(fields, "zoom", 1);
-      runtime.camera.durationMs = fieldNumber(fields, "durationMs", 300);
+      runtime.camera.target = optionalFieldString(fields, "target", "player");
+      runtime.camera.x = optionalFieldNumber(fields, "x", 0);
+      runtime.camera.y = optionalFieldNumber(fields, "y", 0);
+      runtime.camera.zoom = optionalFieldNumber(fields, "zoom", 1);
+      runtime.camera.durationMs = optionalFieldNumber(fields, "durationMs", 300);
       session.flags[`camera:${runtime.camera.mode}`] = true;
       return true;
     case "Screen Effect":
@@ -203,7 +203,7 @@ function recordUiCommand(session: PlaySessionLike, runtime: M2RuntimeState, fiel
  */
 function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): boolean {
   const effect = fieldString(fields, "effect", "fadeIn");
-  const value = fieldString(fields, "value", "");
+  const value = optionalFieldString(fields, "value", "");
   const durationMs = fieldNumber(fields, "durationMs", 300);
 
   // 기존 계약 유지: 상태 조회기·증거 스펙이 이 큐와 플래그를 읽는다.
@@ -277,20 +277,34 @@ function recordSpawnEvent(session: PlaySessionLike, runtime: M2RuntimeState, fie
   session.eventLocations[eventId] = { mapId, x, y };
 }
 
+export function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
+  const target = String(fields.eventId ?? "");
+  return target && target !== "this-event" ? target : currentEventId ?? "";
+}
+
 function recordRemoveEvent(
   session: PlaySessionLike,
   runtime: M2RuntimeState,
   fields: M2CommandFields,
-  context: { readonly currentEventId?: string }
+  context: M2ModernRuntimeContext
 ): void {
-  const eventId = fieldString(fields, "eventId", context.currentEventId ?? "");
+  const target = removeEventId(fields, undefined);
+  const eventId = target || context.currentEventId;
   if (!eventId) return;
   const spawned = session.spawnedEvents?.[eventId];
-  const mapId = spawned?.mapId ?? (fieldString(fields, "mapId", session.currentMapId) || session.currentMapId);
   runtime.events[eventId] = { ...(runtime.events[eventId] ?? {}), removed: true };
   if (spawned) {
     delete session.spawnedEvents?.[eventId];
   } else {
+    let mapId = String(fields.mapId ?? "") || session.currentMapId;
+    if (!target) {
+      // Persistent removal is keyed by the authoring map, even after this event moves.
+      const maps = context.project?.maps;
+      const local = maps?.[session.currentMapId];
+      const source = local?.events.some(event => event.id === eventId) ? local
+        : Object.values(maps ?? {}).find(map => map.events.some(event => event.id === eventId));
+      if (source) mapId = source.id;
+    }
     session.removedEventIds ??= {};
     const removed = new Set(session.removedEventIds[mapId] ?? []);
     removed.add(eventId);

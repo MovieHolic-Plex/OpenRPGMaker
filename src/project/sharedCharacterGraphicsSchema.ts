@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { CharacterGraphicsDocument } from "./characterGraphics";
-import reviewedCatalog from "../assets/sharedCharacterGraphics.json";
-import corrections from "../assets/characterReferenceCorrections.json";
+import reviewedCatalog from "../assets/sharedCharacterGraphics.json" with { type: "json" };
+import corrections from "../assets/characterReferenceCorrections.json" with { type: "json" };
 
 export const SHARED_CHARACTER_GRAPHICS_ENDPOINT = "/__oprn/shared-character-graphics";
 const text = z.string().max(2000);

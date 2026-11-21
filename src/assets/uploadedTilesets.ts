@@ -1,6 +1,8 @@
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type Phaser from "phaser";
 import { withInlineAsset } from "./inlineAssetStore";
+import { applyRememberedChipsetBands, frameOriginForTexture, markChipsetTextureKey } from "@/assets/chipsetTextureBands";
+import { bundledChipsetTileSize } from "@/assets/bundledChipsetGeometry";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
@@ -88,11 +90,12 @@ export function loadUploadedTilesets(
     const key = uploadedTilesetTextureKey(tileset);
     if (queued.has(key)) continue;
     queued.add(key);
+    markChipsetTextureKey(key, tileset.tileSize);
     scene.load.image(key, withInlineAsset(imageUrl));
   }
   for (const id of uploadedGraftSourceIds(project)) {
     const imageUrl = uploadedAssetUrl(project!.assets.uploaded[id]!);
-    if (imageUrl && !queued.has(id)) { queued.add(id); scene.load.image(id, withInlineAsset(imageUrl)); }
+    if (imageUrl && !queued.has(id)) { queued.add(id); markChipsetTextureKey(id, sheetTileSize(project, id)); scene.load.image(id, withInlineAsset(imageUrl)); }
   }
 }
 
@@ -103,13 +106,14 @@ export function registerUploadedTilesetFrames(
 ): void {
   if (!scene.textures.exists(key)) return;
   const texture = scene.textures.get(key);
+  applyRememberedChipsetBands(texture);
   const existing = new Set(texture.getFrameNames());
   for (let tile = 0; tile < tileset.count; tile++) {
     const name = `tile_${tile}`;
-    if (!existing.has(name)) texture.add(name, 0,
-      tile % tileset.tilesPerRow * tileset.tileSize,
-      Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize,
-      tileset.tileSize, tileset.tileSize);
+    if (!existing.has(name)) {
+      const origin = frameOriginForTexture(texture, tile, tileset.tilesPerRow, tileset.tileSize);
+      texture.add(name, origin.sourceIndex, origin.x, origin.y, tileset.tileSize, tileset.tileSize);
+    }
   }
   registerTilesetStripAnimations(scene, tileset, key);
 }
@@ -123,6 +127,17 @@ export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project)
     // 번들 시트의 저작 스트립: 텍스처 키가 곧 image.id 다(이식·투명색으로 구운 사본은 ensureTilesetTexture 가 맡는다).
     else if (tileset.animationStrips?.length) registerTilesetStripAnimations(scene, tileset, tileset.image.id);
   }
+}
+
+function sheetTileSize(project: Project | undefined, assetId: string): number {
+  const tilesets = Object.values(project?.tilesets ?? {});
+  const owner = tilesets.find((tileset) => tileset.image.type === "uploaded" && tileset.image.id === assetId);
+  if (owner) return owner.tileSize;
+  for (const tileset of tilesets) {
+    const graft = tileset.tileGrafts?.find((item) => item.sourceChipset === assetId);
+    if (graft?.sourceTileSize) return graft.sourceTileSize;
+  }
+  return bundledChipsetTileSize(assetId);
 }
 
 const pendingSceneTilesets = new WeakMap<Phaser.Scene, Set<string>>();
@@ -150,6 +165,7 @@ export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Proj
     const url = asset ? uploadedAssetUrl(asset) : "";
     if (!url) continue;
     pending.add(key);
+    markChipsetTextureKey(key, tileset.tileSize);
     void ensureSceneImageTexture(scene, key, withInlineAsset(url)).then(loaded => {
       pending.delete(key);
       if (!loaded || !scene.sys.isActive()) return;
@@ -163,6 +179,7 @@ export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Proj
     const url = uploadedAssetUrl(project.assets.uploaded[id]!);
     if (!url) continue;
     pending.add(id);
+    markChipsetTextureKey(id, sheetTileSize(project, id));
     void ensureSceneImageTexture(scene, id, withInlineAsset(url)).then(loaded => {
       pending.delete(id);
       if (loaded && scene.sys.isActive()) onReady();

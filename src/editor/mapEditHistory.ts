@@ -194,6 +194,39 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
   return projectSnapshot(current);
 }
 
+/** 맵 스냅샷을 되돌리면 시작 좌표가 그 맵 밖으로 밀리는지. 그때만 반대 기록에 좌표를 담는다. */
+function restoringStartMapWouldClamp(snapshot: HistorySnapshot): boolean {
+  if (snapshot.kind !== "map" || snapshot.mapId !== store.getCurrent().startMapId) return false;
+  const map = snapshot.before;
+  if (map.width < 1 || map.height < 1) return false;
+  const start = store.getCurrent().startPos;
+  return start.x > map.width - 1 || start.y > map.height - 1;
+}
+
+/**
+ * 크기만 되돌릴 때는 맵 스냅샷으로 충분하다. 그 복원이 시작 좌표를 안쪽으로 붙이게 되면
+ * 붙이기 전 좌표는 맵 스냅샷에 없으므로, 반대 방향 기록만 프로젝트 스냅샷으로 남긴다.
+ */
+function inverseSnapshotForRestore(entry: HistoryEntry): HistorySnapshot | null {
+  const current = makeCurrentSnapshotForEntry(entry);
+  if (!current || current.kind !== "map" || !restoringStartMapWouldClamp(entry.snapshot)) return current;
+  return projectSnapshot(store.getCurrent());
+}
+
+/**
+ * 맵 스냅샷은 시작 좌표를 담지 않는다. 되돌린 뒤 시작 위치를 옮기고 다시 실행하면
+ * 줄어든 시작 맵만 돌아오고 좌표는 그 맵 밖에 남을 수 있다. 저장본이 그 상태를 갖지 않게
+ * 복원된 시작 맵의 안쪽 끝으로 붙인다. 프로젝트 스냅샷은 좌표까지 그 시점 그대로 되돌린다.
+ */
+function keepStartInsideRestoredMap(project: Project): void {
+  const map = project.maps[project.startMapId];
+  if (!map || map.width < 1 || map.height < 1) return;
+  const x = Math.min(project.startPos.x, map.width - 1);
+  const y = Math.min(project.startPos.y, map.height - 1);
+  if (x === project.startPos.x && y === project.startPos.y) return;
+  project.startPos = { x, y };
+}
+
 function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Project {
   // 타일셋·업로드 항목은 store의 쓰기 시 복제 계약을 따른다. 매 undo/redo마다
   // 전체 사전을 깊게 복제하면 기본 프로젝트에서도 Chromium 탭이 죽는다.
@@ -201,6 +234,7 @@ function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Proje
   const next = cloneProjectSharingSharedDictionaries(base);
   next.maps[snapshot.mapId] = structuredClone(snapshot.before);
   if (snapshot.beforeTilesets) next.tilesets = structuredClone(snapshot.beforeTilesets);
+  if (snapshot.mapId === next.startMapId) keepStartInsideRestoredMap(next);
   return next;
 }
 
@@ -224,6 +258,7 @@ function applyHistorySnapshots(base: Project, snapshots: readonly HistorySnapsho
   const next = cloneProjectSharingSharedDictionaries(source);
   for (const [mapId, snapshot] of maps) next.maps[mapId] = structuredClone(snapshot.before);
   if (tilesets) next.tilesets = structuredClone(tilesets);
+  if (maps.has(next.startMapId)) keepStartInsideRestoredMap(next);
   return next;
 }
 
@@ -538,7 +573,7 @@ export function undoMapEdit(): boolean {
   }
   const previous = undoStack.pop();
   if (!previous) return false;
-  const currentSnapshot = makeCurrentSnapshotForEntry(previous);
+  const currentSnapshot = inverseSnapshotForRestore(previous);
   if (!currentSnapshot) {
     undoStack.push(previous);
     return false;
@@ -563,7 +598,7 @@ export function redoMapEdit(): boolean {
   }
   const next = redoStack.pop();
   if (!next) return false;
-  const currentSnapshot = makeCurrentSnapshotForEntry(next);
+  const currentSnapshot = inverseSnapshotForRestore(next);
   if (!currentSnapshot) {
     redoStack.push(next);
     return false;

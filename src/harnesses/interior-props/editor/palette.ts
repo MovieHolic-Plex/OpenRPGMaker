@@ -4,7 +4,7 @@
  */
 import { collectOpaqueColors, colorId, makePalette } from "@/harnesses/_core/workshop/grid";
 import type { Palette, PaletteEntry, Rgba, RgbaImage } from "@/harnesses/_core/workshop/types";
-import ramps from "./v5Palette.json";
+import ramps from "./v5Palette.json" with { type: "json" };
 
 export const V5_RAMPS: readonly { name: string; colors: readonly string[] }[] = ramps;
 

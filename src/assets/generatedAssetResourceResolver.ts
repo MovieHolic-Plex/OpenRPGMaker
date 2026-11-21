@@ -74,6 +74,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   // 『첫사랑』 오프닝 몽타주 배경(게임 맵을 1:1 로 구운 그림).
   ...FIRST_LOVE_OPENING_BACKDROP_URLS,
   hero: null,
+  "sample-movie.webm": "/assets/movies/sample-movie.webm",
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",

@@ -192,7 +192,9 @@
         "selected-tile-",
         "sidebar-map-",
         "sidebar-layer-",
-        "zoom-stepper-"
+        "zoom-stepper-",
+        "image-generation-notice-",
+        "persistence-mode-banner-"
       ],
       "roots": [
         ".editor-layout"
@@ -236,6 +238,7 @@
         "companion-",
         "emote-swatch-",
         "evt-page-",
+        "image-generation-notice-",
         "faceset-crop-",
         "follower-preset-",
         "fork-branch-",

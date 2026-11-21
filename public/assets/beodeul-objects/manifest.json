@@ -1,0 +1,238 @@
+{
+  "groups": [
+    {
+      "id": "city",
+      "labelKo": "현대 도시",
+      "order": 80
+    },
+    {
+      "id": "city_transport",
+      "labelKo": "공항·교통",
+      "order": 90
+    },
+    {
+      "id": "city_construction",
+      "labelKo": "공사장·옥상",
+      "order": 100
+    },
+    {
+      "id": "city_parks",
+      "labelKo": "공원·물가",
+      "order": 110
+    },
+    {
+      "id": "city_festival",
+      "labelKo": "축제·놀이공원",
+      "order": 120
+    },
+    {
+      "id": "city_garden",
+      "labelKo": "꽃집·원예",
+      "order": 130
+    },
+    {
+      "id": "city_market",
+      "labelKo": "시장·상점",
+      "order": 140
+    },
+    {
+      "id": "city_street",
+      "labelKo": "거리·우천 소품",
+      "order": 150
+    },
+    {
+      "id": "city_school",
+      "labelKo": "학교·학교 앞",
+      "order": 160
+    },
+    {
+      "id": "city_sports",
+      "labelKo": "체육시설",
+      "order": 170
+    },
+    {
+      "id": "city_shrine",
+      "labelKo": "사당·기도터",
+      "order": 180
+    },
+    {
+      "id": "city_terrace",
+      "labelKo": "테라스·야외 카페",
+      "order": 190
+    },
+    {
+      "id": "city_residential",
+      "labelKo": "골목·주거지",
+      "order": 200
+    },
+    {
+      "id": "city_clinic",
+      "labelKo": "병원·의원",
+      "order": 210
+    },
+    {
+      "id": "city_fuel",
+      "labelKo": "주유소·충전소",
+      "order": 220
+    },
+    {
+      "id": "city_logistics",
+      "labelKo": "택배·물류",
+      "order": 230
+    },
+    {
+      "id": "city_access",
+      "labelKo": "배리어프리·접근성",
+      "order": 240
+    },
+    {
+      "id": "city_auto_service",
+      "labelKo": "정비소·주유소·세차장",
+      "order": 250
+    },
+    {
+      "id": "city_bath_laundry",
+      "labelKo": "목욕탕·빨래터",
+      "order": 260
+    },
+    {
+      "id": "city_recycling",
+      "labelKo": "분리수거·재활용",
+      "order": 270
+    },
+    {
+      "id": "city_performance",
+      "labelKo": "거리 공연·촬영장",
+      "order": 280
+    },
+    {
+      "id": "city_fire_service",
+      "labelKo": "소방·안전",
+      "order": 290
+    },
+    {
+      "id": "city_harbor",
+      "labelKo": "항구·낚시터",
+      "order": 300
+    },
+    {
+      "id": "city_aquatic",
+      "labelKo": "수영장·빙상장",
+      "order": 310
+    }
+  ],
+  "sets": [
+    {
+      "id": "city_apt_curb_bed",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_park2_hedge",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_park3_median",
+      "role": "fence",
+      "requiredPieces": [
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_plaza_log_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_prom_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_strm_stone_railing",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_cons_barrier",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_river_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_rside_guardrail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_w",
+        "h_straight",
+        "v_straight"
+      ]
+    }
+  ]
+}

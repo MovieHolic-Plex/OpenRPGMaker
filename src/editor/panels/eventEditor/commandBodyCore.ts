@@ -1221,7 +1221,7 @@ function setSelfSwitchBody(context: CommandEditContext, cmd: Extract<Command, { 
   const wrap = el("span", {});
   wrap.append(
     selfSwitchControl(cmd.key, cmd.value, (key, value) => {
-      context.actions.replaceCommand(context.path, { kind: "setSelfSwitch", key, value });
+      context.actions.replaceCommand(context.path, { ...cmd, key, value });
     }, {
       keyTestId: "event-command-self-switch-key",
       valueTestId: "event-command-self-switch-value",

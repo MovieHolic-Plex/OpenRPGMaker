@@ -45,6 +45,8 @@ import {
 } from "@/project/eventCommands/coordinateDestination";
 import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import { resolveEventPage } from "@/project/io";
+import { runtimePageContext } from "@/project/runtimeEventState";
+import { runtimeMap } from "@/project/runtimeMap";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
@@ -54,7 +56,7 @@ import { presentableItems } from "@/player/interpreter/presentItem";
 import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { recordSoundLayer, removeEventId, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -122,13 +124,14 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
 // 맵 이벤트 호출: 현재 맵의 eventId 이벤트를 찾아 활성 페이지의 commands 를 실행한다.
 // 페이지가 없는 레거시 이벤트는 최상위 commands 로 폴백한다(RM2K3 "Call Event" 동작).
 function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): CommandExecution {
-  const map = state.project?.maps[state.session.currentMapId];
+  const project = state.project;
+  const map = project?.maps[state.session.currentMapId];
   const event = map?.events.find((entry) => entry.id === eventId);
-  if (!event) {
+  if (!project || !map || !event) {
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations, ...partySkillContext(state.project, state.session) }) : undefined;
+  const page = resolveEventPage(event, state.session, runtimePageContext(project, runtimeMap(map, state.session), state.session, state.eventPositions));
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };
@@ -386,7 +389,7 @@ function executeM2Command(
     if (effect === "fadeIn" || effect === "fadeOut") state.onScreenFade?.();
     const plan = planScreenEffect(
       effect,
-      fieldString(command.fields, "value", ""),
+      hasM2Field(command.fields, "value") ? fieldString(command.fields, "value", "") : "",
       fieldNumber(command.fields, "durationMs", 300)
     );
     if (plan.kind !== "flash") return resumeNext(frame);
@@ -434,10 +437,10 @@ function executeM2Command(
     return pause("scrollMap", {
       kind: "scrollMap",
       direction: scrollDirection(fieldString(command.fields, "direction", fieldString(command.fields, "target", "down"))),
-      distanceTiles: Math.max(0, fieldNumber(command.fields, "distance", fieldNumber(command.fields, "value", 0))),
+      distanceTiles: Math.max(0, hasM2Field(command.fields, "distance") ? fieldNumber(command.fields, "distance", 0) : hasM2Field(command.fields, "value") ? fieldNumber(command.fields, "value", 0) : 0),
       durationMs: scrollDurationMs(command.fields),
       wait: fieldBoolean(command.fields, "wait", true),
-      returnToPlayer: fieldBoolean(command.fields, "return", false) || fieldString(command.fields, "mode", "") === "return",
+      returnToPlayer: (hasM2Field(command.fields, "return") && fieldBoolean(command.fields, "return", false)) || (hasM2Field(command.fields, "mode") && fieldString(command.fields, "mode", "") === "return"),
       lock: fieldBoolean(command.fields, "lock", false) || fieldString(command.fields, "mode", "") === "lock",
     });
   }
@@ -1251,6 +1254,8 @@ export function executeCommand(
       state.session.flags[command.flag] = command.value;
       return resumeNext(frame);
     case "setSelfSwitch": {
+      // A first-time dialogue writes its receipt after the text, only when it was played.
+      if (command.skipDuringFastForward && state.fastForwardLabel !== undefined) return resumeNext(frame);
       const eventId = state.currentEventId;
       if (eventId) {
         state.session.selfSwitches ??= {};
@@ -1264,9 +1269,12 @@ export function executeCommand(
     case "setDifficulty":
       if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
       return resumeNext(frame);
-    case "storeParty":
-      storePartySet(state.session as PlaySession, command.partySetId, command);
-      return resumeNext(frame);
+    case "storeParty": {
+      const saved = storePartySet(state.session as PlaySession, command.partySetId, command, state.project);
+      state.session.flags.storePartySuccess = saved;
+      // A subsequent recall could otherwise load an older snapshot for this slot.
+      return saved ? resumeNext(frame) : { kind: "done" };
+    }
     case "recallParty": {
       if (!state.project) return resumeNext(frame);
       const recalled = recallPartySet(state.project, state.session as PlaySession, command.partySetId);
@@ -1353,9 +1361,9 @@ function scrollDirection(value: string): "down" | "left" | "right" | "up" {
 }
 
 function scrollDurationMs(fields: M2CommandFields): number {
-  const explicit = fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 0));
+  const explicit = hasM2Field(fields, "durationMs") ? fieldNumber(fields, "durationMs", 0) : hasM2Field(fields, "duration") ? fieldNumber(fields, "duration", 0) : 0;
   if (explicit > 0) return clampMs(explicit);
-  const distance = Math.max(0, fieldNumber(fields, "distance", fieldNumber(fields, "value", 0)));
+  const distance = Math.max(0, hasM2Field(fields, "distance") ? fieldNumber(fields, "distance", 0) : hasM2Field(fields, "value") ? fieldNumber(fields, "value", 0) : 0);
   const speed = Math.max(1, Math.min(6, fieldNumber(fields, "speed", 4)));
   return clampMs(distance * (700 - speed * 80));
 }
@@ -1369,9 +1377,9 @@ function cameraControlStep(
     kind: "cameraControl",
     mode,
     target: cameraTarget(fields, currentEventId, mode),
-    durationMs: cameraDurationMs(fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 300))),
+    durationMs: cameraDurationMs(hasM2Field(fields, "durationMs") ? fieldNumber(fields, "durationMs", 300) : hasM2Field(fields, "duration") ? fieldNumber(fields, "duration", 300) : 300),
     wait: fieldBoolean(fields, "wait", true),
-    returnToPlayer: mode === "return" || fieldBoolean(fields, "return", false),
+    returnToPlayer: mode === "return" || (hasM2Field(fields, "return") ? fieldBoolean(fields, "return", false) : false),
     offsetX: optionalNumberField(fields, "offsetX"),
     offsetY: optionalNumberField(fields, "offsetY"),
     zoom: optionalNumberField(fields, "zoom"),
@@ -1404,9 +1412,9 @@ function cameraTarget(
   mode: Extract<StepResult, { kind: "cameraControl" }>["mode"]
 ): RuntimeCameraTarget {
   if (mode === "return") return { kind: "player" };
-  const target = fieldString(fields, "target", "player");
-  const x = fieldNumber(fields, "x", 0);
-  const y = fieldNumber(fields, "y", 0);
+  const target = hasM2Field(fields, "target") ? fieldString(fields, "target", "player") : "player";
+  const x = hasM2Field(fields, "x") ? fieldNumber(fields, "x", 0) : 0;
+  const y = hasM2Field(fields, "y") ? fieldNumber(fields, "y", 0) : 0;
   if (usesCoordinateTarget(fields, target, mode, x, y)) return { kind: "position", x, y };
   const eventId = explicitCameraEventId(fields, target, currentEventId);
   if (eventId) return { kind: "event", eventId };
@@ -1429,7 +1437,7 @@ function explicitCameraEventId(
   target: string,
   currentEventId: string | undefined
 ): string {
-  const fieldEventId = fieldString(fields, "targetEventId", fieldString(fields, "eventId", ""));
+  const fieldEventId = hasM2Field(fields, "targetEventId") ? fieldString(fields, "targetEventId", "") : hasM2Field(fields, "eventId") ? fieldString(fields, "eventId", "") : "";
   if (fieldEventId) return fieldEventId;
   if (target === "this-event") return currentEventId ?? "";
   if (target.startsWith("event:")) return target.slice("event:".length);
@@ -1453,10 +1461,6 @@ function shouldWaitForPicture(fields: M2CommandFields): boolean {
 function spawnEventId(fields: M2CommandFields): string {
   const templateEventId = fieldString(fields, "templateEventId", fieldString(fields, "prefabId", ""));
   return fieldString(fields, "eventId", templateEventId ? `${templateEventId}_spawn` : "spawned-event");
-}
-
-function removeEventId(fields: M2CommandFields, currentEventId: string | undefined): string {
-  return fieldString(fields, "eventId", currentEventId ?? "");
 }
 
 function hasM2Field(fields: M2CommandFields, key: string): boolean {

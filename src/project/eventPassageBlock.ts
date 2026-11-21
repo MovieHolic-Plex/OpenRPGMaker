@@ -64,16 +64,27 @@ export function entryCells(project: Project, map: GameMap): { x: number; y: numb
 const touches = (cells: ReadonlySet<string>, x: number, y: number): boolean =>
   cells.has(`${x},${y}`) || cells.has(`${x + 1},${y}`) || cells.has(`${x - 1},${y}`) || cells.has(`${x},${y + 1}`) || cells.has(`${x},${y - 1}`);
 
-/** 이 이벤트가 서 있어서 입구에서 닿지 못하게 된 다른 이벤트들. 비어 있으면 통로를 막지 않는다. */
-export function eventsCutOffBy(project: Project, map: GameMap, event: GameEvent): GameEvent[] {
+/** 이 이벤트가 서 있어서 입구에서 닿지 못하게 된 다른 이벤트들. fromEachEntry를 주면 각 입구에서 따로 검사한다. */
+export function eventsCutOffBy(
+  project: Project, map: GameMap, event: GameEvent,
+  options?: { fromEachEntry: readonly { x: number; y: number }[] },
+): GameEvent[] {
   if (!eventAlwaysBlocks(event)) return [];
-  const seeds = entryCells(project, map);
+  const seeds = options?.fromEachEntry ?? entryCells(project, map);
   if (seeds.length === 0) return [];
   const others = (map.events ?? []).filter((other) => other.id !== event.id);
   const otherBlocked = new Set(others.filter(eventAlwaysBlocks).map((other) => `${other.x},${other.y}`));
-  const without = walk(project, map, seeds, otherBlocked);
-  const withIt = walk(project, map, seeds, new Set([...otherBlocked, `${event.x},${event.y}`]));
-  return others.filter((other) => touches(without, other.x, other.y) && !touches(withIt, other.x, other.y));
+  const blockedWithEvent = new Set([...otherBlocked, `${event.x},${event.y}`]);
+  function cutOffFrom(entries: typeof seeds): GameEvent[] {
+    const without = walk(project, map, entries, otherBlocked);
+    const withIt = walk(project, map, entries, blockedWithEvent);
+    return others.filter((other) => touches(without, other.x, other.y) && !touches(withIt, other.x, other.y));
+  }
+
+  if (!options) return cutOffFrom(seeds);
+  const distinctEntries = new Map(seeds.map(entry => [`${entry.x},${entry.y}`, entry]));
+  const cutOff = new Set([...distinctEntries.values()].flatMap(entry => cutOffFrom([entry])));
+  return others.filter(other => cutOff.has(other));
 }
 
 const DOOR_COMMANDS = new Set(["transfer", "callMapEvent"]);

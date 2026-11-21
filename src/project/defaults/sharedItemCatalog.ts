@@ -1,6 +1,6 @@
 import type { ItemRecord } from "../types";
 import { normalizeItemRecord } from "../databaseRecordModel";
-import catalog from "./sharedItemCatalog.json";
+import catalog from "./sharedItemCatalog.json" with { type: "json" };
 
 export const DEFAULT_SHARED_ITEM_COUNT = 1000;
 

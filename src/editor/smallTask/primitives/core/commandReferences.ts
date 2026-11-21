@@ -3,6 +3,8 @@ import { visitProjectCommands } from "@/editor/tools/commandTraversal";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { openingStageFlag } from "@/project/openingStage";
+import { isQuestGraphDef } from "@/project/quest/questDef";
+import { extractQuestGraphConditions, resolveQuestGraphCondition } from "@/project/quest/questGraph";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { Command, Project } from "@/project/types";
 import { PrimitiveError } from "../errors";
@@ -29,10 +31,24 @@ function lastSpawnStillUsed(project: Project, mapId: string, id: string): boolea
   return used && !defined;
 }
 
+function questReadsSwitch(project: Project, id: string): boolean {
+  return project.quests?.some(quest => isQuestGraphDef(quest) && quest.nodes.some(node =>
+    extractQuestGraphConditions(node.completesWhen).some(condition => {
+      try {
+        const resolved = resolveQuestGraphCondition(project, condition);
+        return resolved.kind === "switch" && resolved.targetId === id;
+      } catch {
+        // An unrelated invalid condition in a saved quest cannot resolve to a runtime reader.
+        return false;
+      }
+    }))) ?? false;
+}
+
 export function assertCommandDeletion(
   ctx: PrimitiveContext, after: Project, list: readonly Command[], command: Command,
 ): void {
   if (ctx.target.kind !== "event") return;
+  ctx.commandDeletionGuard?.(ctx, list, command);
   if (command.kind === "label") {
     if (list.find(row => row.kind === "label" && row.name === command.name) === command && usesLabel(list, command.name)) {
       throw new PrimitiveError("이 위치 표시로 이동하는 명령이 남아 있어 삭제할 수 없어요.");
@@ -65,7 +81,7 @@ export function assertCommandDeletion(
       const kind = command.kind === "setSwitch" ? "switch" : "variable";
       const id = command.kind === "setSwitch" ? command.switchId : command.variableId;
       const usage = usageBucketFor(buildStoryFlagUsageIndex(project), kind, id);
-      return usage.reads.length > 0 && usage.writes.length === 0;
+      return usage.writes.length === 0 && (usage.reads.length > 0 || (kind === "switch" && questReadsSwitch(project, id)));
     })) {
       throw new PrimitiveError("이 명령이 설정하는 진행 값을 읽는 조건이 남아 있어 삭제할 수 없어요.");
     }

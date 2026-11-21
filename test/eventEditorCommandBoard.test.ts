@@ -1,5 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as assistantBridge from "@/editor/aiAssistantBridge";
+import type { Command } from "@/project/types";
 import { editorState } from "@/editor/editorState";
 import { eventAiStagedCommands, resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
@@ -81,6 +83,19 @@ function seedNestedProject(): string {
   store.replace(project);
   editorState.set({ currentMapId: mapId, selectedEventId: NESTED_EVENT_ID, selectedEventPageId: "p1" });
   return mapId;
+}
+
+function mockDraft(mapId: string, commands: Command[]): void {
+  const before = store.getCurrent();
+  const after = structuredClone(before);
+  after.maps[mapId]!.events[0]!.pages![0]!.commands = commands;
+  vi.spyOn(assistantBridge, "sendAiAssistantMessage").mockResolvedValue({
+    ok: true,
+    pendingProposal: { before, after, callCount: 1, summary: "초안" },
+    status: assistantBridge.getAiAssistantStatus(),
+    audit: [],
+    harness: null,
+  });
 }
 
 describe("event editor command board", () => {
@@ -173,11 +188,10 @@ describe("event editor command board", () => {
     const mapId = seedNestedProject();
     const page = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!;
     page.commands = [{ kind: "text", body: "A" }, { kind: "text", body: "B" }];
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
-      choices: [{ message: { content: JSON.stringify([{ kind: "text", body: "B" }]) } }],
-    }), { status: 200, headers: { "Content-Type": "application/json" } })));
+    mockDraft(mapId, [{ kind: "text", body: "B" }]);
 
     renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
+    host.querySelector<HTMLButtonElement>('[data-testid="event-command-quick-ai"]')!.click();
     const input = host.querySelector<HTMLTextAreaElement>('[data-testid="ai-event-input"]')!;
     input.value = "첫 대사를 지워 줘";
     host.querySelector<HTMLButtonElement>('[data-testid="ai-event-generate"]')!.click();
@@ -197,16 +211,14 @@ describe("event editor command board", () => {
     const mapId = seedNestedProject();
     const page = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!;
     page.commands = [{ kind: "text", body: "A" }];
-    const after = [
+    mockDraft(mapId, [
       { kind: "text", body: "A" },
       { kind: "text", body: "new" },
       { kind: "wait", ms: 500 },
-    ];
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
-      choices: [{ message: { content: JSON.stringify(after) } }],
-    }), { status: 200, headers: { "Content-Type": "application/json" } })));
+    ]);
 
     renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
+    host.querySelector<HTMLButtonElement>('[data-testid="event-command-quick-ai"]')!.click();
     const input = host.querySelector<HTMLTextAreaElement>('[data-testid="ai-event-input"]')!;
     input.value = "두 명령을 더해 줘";
     host.querySelector<HTMLButtonElement>('[data-testid="ai-event-generate"]')!.click();

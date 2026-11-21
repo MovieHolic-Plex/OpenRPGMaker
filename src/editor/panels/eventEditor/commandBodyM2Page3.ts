@@ -373,7 +373,7 @@ function setVehicleLocationBody(context: CommandEditContext, cmd: M2Command): HT
 function setEventLocationBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "set-event-location-command-body");
   const project = store.getCurrent();
-  const events = eventRecords(project);
+  const events = [{ id: "this-event", name: "이 이벤트" }, ...eventRecords(project)];
   const event = recordPickerWithPreview({
     records: events,
     selectedId: String(cmd.fields.target ?? ""),
@@ -416,7 +416,7 @@ function setEventLocationBody(context: CommandEditContext, cmd: M2Command): HTML
 function swapEventLocationBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "swap-event-location-command-body");
   const project = store.getCurrent();
-  const events = eventRecords(project);
+  const events = [{ id: "this-event", name: "이 이벤트" }, ...eventRecords(project)];
   const a = recordPickerWithPreview({
     records: events,
     selectedId: String(cmd.fields.eventA ?? cmd.fields.target ?? ""),
@@ -1539,7 +1539,7 @@ function changeTilesetBody(context: CommandEditContext, cmd: M2Command): HTMLEle
 function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "change-parallax-back-command-body");
   const project = store.getCurrent();
-  let resourceId = String(cmd.fields.value ?? cmd.fields.resourceId ?? "").trim();
+  let resourceId = String(cmd.fields.resourceId ?? cmd.fields.value ?? "").trim();
   const resourceSelect = resourceIdSelect(resourceId, "change-parallax-back-resource-select", "backdrop");
   const pickBtn = el("button", {
     class: "btn small",
@@ -1581,12 +1581,10 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
   const commit = () => {
     resourceId = resourceSelect.value.trim();
     replaceFields(context, cmd, {
-      target: resourceId,
       operation: "set",
-      value: resourceId,
       resourceId,
       ...readFlow(),
-    });
+    }, ["target", "value"]);
     renderPreview();
   };
   const renderPreview = () => {

@@ -10,6 +10,7 @@ import { eventNameFromPages } from "@/project/eventDisplayName";
 import { ensureEventPages } from "@/editor/eventPages";
 import { announceEventEditorClosed, announceEventEditorOpened } from "@/editor/eventEditorLifecycleEvents";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
+import { bindDetailsEscape, closeDetailsLayerNow } from "./detailsPopover";
 import {
   beginExistingEventDraft,
   checkpointEventDraft,
@@ -29,7 +30,7 @@ import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { renderEventIdReadout } from "./eventIdReadout";
 import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
-import { clearEventAiLiveDock, focusEventAiDockInOpenEditor } from "./aiAssist";
+import { clearEventAiLiveDock, collapseFocusedEventAiAssist, focusEventAiDockInOpenEditor } from "./aiAssist";
 import { clearEventAiDockOpenRequest, requestEventAiDockOpen } from "./aiDockOpenRequest";
 import {
   openActiveEventCommandPicker,
@@ -46,6 +47,7 @@ import {
 } from "./validationBell";
 import { finishCommandListMount } from "./commandList";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
+import { clearEventPageDeletionHistory } from "./pageDeleteHistory";
 import { clearCommandInspector, setCommandInspectorHost, setCommandSelectionListener } from "./commandInspector";
 import { resetEventViewSession } from "./storyboardView";
 import { installEventEditorCustomSelects } from "./customSelect";
@@ -167,6 +169,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   // 그래픽/얼굴 피커는 이 모달 안에서 열린다 — 여는 순간이 아니라 지금 받아 둔다.
   void warmEditorPickerAssets();
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+  clearEventPageDeletionHistory(request.mapId, request.eventId);
   // 리스너를 먼저 떼고 비운다 — 지난 렌더의 툴바를 다시 계산하려 들지 않게.
   setCommandSelectionListener(undefined);
   clearCommandInspector();
@@ -269,6 +272,9 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     announceEventEditorClosed({ mapId: request.mapId, eventId: request.eventId, saved: saved === true });
   };
   const requestClose = (): void => {
+    // 포인터는 바깥 pointerdown이 메뉴의 open만 먼저 끈다. toggle이 오기 전에는 층이 남는다.
+    // Enter/Space는 그 pointerdown이 없다. 둘 다 층을 바로 걷고 닫는다.
+    dismissTopDetailsLayer(backdrop);
     if (closed || closeGuardOpen || minimized || !isTopModal(backdrop)) return;
     flushPendingModalField(backdrop);
     if (!eventDraftHasUserChanges(store.getCurrent(), request.mapId, request.eventId)) {
@@ -284,7 +290,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
         ? "만들던 새 이벤트가 아직 프로젝트에 반영되지 않았어요.\n버리고 닫을까요?"
         // 문구가 가리키는 버튼은 실제 푸터 버튼 이름과 같아야 한다 — 예전 문구는 존재하지 않는
         // [반영하고 계속]·[반영하고 닫기] 를 가리켰다(2026-09-03 실측, 제안서 §4).
-        : "적용하지 않은 변경이 있어요. 버리고 닫을까요?\n반영하려면 [계속 편집]을 누른 뒤 아래 [적용] 또는 [저장하고 닫기]를 누르세요.",
+        : "적용하지 않은 변경이 있어요. 버리고 닫을까요?\n반영하려면 [계속 편집]을 누른 뒤 ⋯ 메뉴의 [적용]이나 Ctrl+S, 또는 [저장하고 닫기]를 누르세요.",
       confirmLabel: "버리고 닫기",
       cancelLabel: "계속 편집",
       danger: true,
@@ -304,7 +310,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     // modalStack removes its entry before calling us, even if closing is declined.
     unregisterModal(backdrop);
     registerModal(backdrop, requestModalEscape);
-    if (exitWindowFullscreen()) {
+    if (collapseFocusedEventAiAssist() || exitWindowFullscreen()) {
       return;
     }
     requestClose();
@@ -314,7 +320,9 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   header.querySelector('[data-testid="event-editor-window-minimize"]')?.addEventListener("click", minimizeWindow);
   // Pointer activation must not blur/rebuild the active command field before
   // minimize can retain it. Keyboard activation uses the remembered editing focus.
-  header.querySelector(".event-editor-window-controls")?.addEventListener("pointerdown", (event) => event.preventDefault());
+  header.querySelectorAll(".event-editor-window-controls").forEach((controls) => {
+    controls.addEventListener("pointerdown", (event) => event.preventDefault());
+  });
   attachWindowDrag(header, windowEl);
   const fullscreenButton = header.querySelector<HTMLButtonElement>("[data-testid='event-editor-window-fullscreen']");
   if (fullscreenButton) {
@@ -487,6 +495,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+    clearEventPageDeletionHistory(request.mapId, request.eventId);
     clearEventAiLiveDock();
     // 예약은 "태어날 때 한 번" 소비된다. 도크가 그려지기 전에 편집기가 닫혔다면(본문 렌더가
     // 던졌거나 즉시 닫힘) 예약이 남아, 훗날 같은 이벤트를 열 때 도크가 저절로 펼쳐진다.
@@ -606,7 +615,7 @@ function renderModalHeader(
       type: "text",
       // 이름을 아직 짓지 않은 옛 저작물은 빌려 쓰는 페이지 이름을 placeholder 로 보인다 — 맵이 부르는 이름이
       // 상자에 있어야 「이 상자가 그 이름을 정한다」가 읽힌다. 새 이벤트는 예시로 용도를 말한다.
-      placeholder: borrowedName || (ev?.draft?.kind === "new" ? "이벤트 이름 (예: 촌장 할아버지)" : "이벤트 이름"),
+      placeholder: "이벤트 이름 (예: 촌장 할아버지)",
       "aria-label": "이벤트 이름",
       title: authoredName || borrowedName,
     },
@@ -627,92 +636,76 @@ function renderModalHeader(
     toast("이벤트 변경을 프로젝트에 반영했습니다.", "ok");
   };
 
-  const header = el("header", {
-    class: "event-editor-modal-header",
-    dataset: { testid: "event-editor-titlebar" },
+  const applyRequest: OpenEventEditorRequest = { mapId, eventId };
+  const applyButton = footerButton("적용", "event-editor-apply", () => {
+    if (!commitValidatedEventDraft(applyRequest, "적용")) return;
+    const footer = nameInput.closest(".event-editor-modal-window")?.querySelector<HTMLElement>(".event-editor-modal-footer");
+    if (!footer) return;
+    footer.dataset.applied = "true";
+    beginExistingEventDraft(mapId, eventId);
+    refreshModalFooterStatus(footer, applyRequest);
+  });
+  applyButton.title = "닫지 않고 저장 (Ctrl+S)";
+  applyButton.setAttribute("aria-keyshortcuts", "Control+s Meta+s");
+
+  // 맵·좌표·NPC·ID 는 제목 줄에서 빼고 ⋯ 안에 둔다. 노드는 그대로라 헤더 조회 테스트가 찾는다.
+  const meta = el("div", {
+    class: "meta",
     children: [
-      nameInput,
-      el("div", {
-        class: "meta",
-        children: [
-          // 이벤트 정체성은 «이름 + 좌표» 다(DESIGN.md §5). 예전엔 여기에 `0007` 이 있었는데
-          // 그건 ID 가 아니라 **맵 events 배열의 순번**(findIndex+1)이었다 — 앞 이벤트를 지우면
-          // 번호가 밀린다. 4자리 제로패딩이 "안정적인 식별자"라고 약속하고 지키지 않았다.
-          //
-          // 이름을 아직 짓지 않은 이벤트는 페이지 이름을 빌려 표시된다 — 그 사실을 상자 옆에서
-          // 말한다(`name` 필드가 없던 시절의 저작물). 지은 이름이 있으면 상자 값이 곧 표시 이름이라
-          // 같은 문자열을 두 번 보여주지 않는다.
-          ...(!authoredName && borrowedName
-            ? [
-                el("span", {
-                  class: "event-editor-identity",
-                  text: `표시 이름: ${eventIdentity} (페이지 이름에서)`,
-                  attrs: { title: eventIdentity },
-                  dataset: { testid: "event-editor-identity" },
-                }),
-                el("span", { class: "dot-sep" }),
-              ]
-            : []),
-          // 좌표만으로는 어느 맵인지 알 수 없다 — 맵 이름을 좌표 앞에 둔다(2026-09-03 제안서 §6).
-          ...(mapName
-            ? [
-                el("span", { class: "event-editor-map-name", text: mapName, attrs: { title: mapName, translate: "no" }, dataset: { testid: "event-editor-map-name" } }),
-                el("span", { class: "dot-sep" }),
-              ]
-            : []),
-          el("span", { text: coordStr, dataset: { testid: "event-editor-coords" } }),
-          // NPC 칩은 연결됐을 때만 — 「NPC 없음」이라는 부정 상태를 제목 줄에서 반복하지 않는다.
-          ...(profileName
-            ? [
-                el("span", { class: "dot-sep" }),
-                el("span", {
-                  class: "npc",
-                  dataset: { testid: "event-editor-npc-chip" },
-                  children: [
-                    el("span", { class: "face" }),
-                    el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
-                  ],
-                }),
-              ]
-            : []),
-          // 위 주석이 말한 `0007` 의 **올바른 대체물**. 저장된 `event.id` 를 읽기 전용으로
-          // 세운다 — 순번이 아니라 정본이라 앞 이벤트를 지워도 변하지 않는다(OPRN-OUT-014).
-          // 줄 끝에 두는 이유: 값 길이가 가변(레거시 `EV003` ~ `ev_`+UUID 39자)이라
-          // 남는 폭을 흡수하는 자리에 있어야 앞의 이름·맵·좌표가 밀리지 않는다.
-          ...(ev
-            ? [
-                el("span", { class: "dot-sep" }),
-                renderEventIdReadout(ev.id, { scope: "event-editor", variant: "chip" }),
-              ]
-            : []),
-        ],
+      ...(!authoredName && borrowedName
+        ? [
+            el("span", {
+              class: "event-editor-identity",
+              text: `표시 이름: ${eventIdentity} (페이지 이름에서)`,
+              attrs: { title: eventIdentity },
+              dataset: { testid: "event-editor-identity" },
+            }),
+            el("span", { class: "dot-sep" }),
+          ]
+        : []),
+      ...(mapName
+        ? [
+            el("span", { class: "event-editor-map-name", text: mapName, attrs: { title: mapName, translate: "no" }, dataset: { testid: "event-editor-map-name" } }),
+            el("span", { class: "dot-sep" }),
+          ]
+        : []),
+      el("span", { text: coordStr, dataset: { testid: "event-editor-coords" } }),
+      ...(profileName
+        ? [
+            el("span", { class: "dot-sep" }),
+            el("span", {
+              class: "npc",
+              dataset: { testid: "event-editor-npc-chip" },
+              children: [
+                el("span", { class: "face" }),
+                el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
+              ],
+            }),
+          ]
+        : []),
+      ...(ev
+        ? [
+            el("span", { class: "dot-sep" }),
+            renderEventIdReadout(ev.id, { scope: "event-editor", variant: "chip" }),
+          ]
+        : []),
+    ],
+  });
+
+  const headerMore = el("details", {
+    class: "event-editor-header-more",
+    dataset: { testid: "event-editor-header-more" },
+    children: [
+      el("summary", {
+        text: "⋯",
+        attrs: { "aria-label": "더보기" },
       }),
       el("div", {
-        class: "event-editor-header-save-state",
-        attrs: { style: "display: none;" },
-        dataset: { testid: "event-editor-header-save-state" },
-      }),
-      el("div", {
-        class: "header-actions",
+        class: "event-editor-header-more-panel",
+        dataset: { testid: "event-editor-header-more-panel" },
         children: [
           eventSmallTask(mapId, eventId),
-          renderEventValidationBell(),
-          el("button", {
-            class: "btn ghost event-editor-header-test",
-            text: "테스트",
-            attrs: { type: "button" },
-            dataset: { testid: "event-editor-test" },
-            on: { click: () => {
-              const validation = validateForModalAction({ mapId, eventId }, "테스트");
-              if (!validation.canCommit) return;
-              void openSelectedEventTestModal(mapId, eventId);
-            }},
-          }),
-          el("button", {
-            attrs: { type: "button", style: "display: none;" },
-            dataset: { testid: "event-editor-ok" },
-            on: { click: saveAction },
-          }),
+          applyButton,
           el("div", {
             class: "event-editor-window-controls",
             attrs: { role: "group", "aria-label": "이벤트 편집 창" },
@@ -735,6 +728,72 @@ function renderModalHeader(
                 },
                 dataset: { testid: "event-editor-window-fullscreen" },
               }),
+            ],
+          }),
+          footerButton("이벤트 삭제", "event-delete", () => {
+            void requestEditorEventDeletion(mapId, eventId).then((deleted) => {
+              if (deleted) close(true);
+            });
+          }, false, "ghost"),
+          meta,
+        ],
+      }),
+    ],
+  }) as HTMLDetailsElement;
+  bindDetailsEscape(headerMore);
+
+  const header = el("header", {
+    class: "event-editor-modal-header",
+    dataset: { testid: "event-editor-titlebar" },
+    children: [
+      el("label", {
+        class: "event-editor-name-field",
+        children: [
+          el("span", {
+            class: "event-editor-name-pencil",
+            attrs: { "aria-hidden": "true" },
+            children: [renderEditorIcon("pencil")],
+          }),
+          nameInput,
+        ],
+      }),
+      el("div", {
+        class: "event-editor-header-save-state",
+        attrs: { style: "display: none;" },
+        dataset: { testid: "event-editor-header-save-state" },
+      }),
+      el("div", {
+        class: "header-actions",
+        children: [
+          renderEventValidationBell(),
+          el("button", {
+            class: "btn ghost event-editor-header-test",
+            text: "테스트",
+            attrs: { type: "button" },
+            dataset: { testid: "event-editor-test" },
+            on: { click: () => {
+              const validation = validateForModalAction({ mapId, eventId }, "테스트");
+              if (!validation.canCommit) return;
+              void openSelectedEventTestModal(mapId, eventId);
+            }},
+          }),
+          el("button", {
+            class: "event-editor-window-control event-editor-header-help",
+            text: "?",
+            attrs: { type: "button", title: "도움말", "aria-label": "도움말" },
+            dataset: { testid: "event-editor-help" },
+            on: { click: () => openEventEditorHelp() },
+          }),
+          headerMore,
+          el("button", {
+            attrs: { type: "button", style: "display: none;" },
+            dataset: { testid: "event-editor-ok" },
+            on: { click: saveAction },
+          }),
+          el("div", {
+            class: "event-editor-window-controls",
+            attrs: { role: "group", "aria-label": "닫기" },
+            children: [
               el("button", {
                 class: "event-editor-window-control event-editor-modal-close",
                 children: [renderEditorIcon("close")],
@@ -769,43 +828,27 @@ function renderModalFooter(
   const footer = el("footer", {
     class: "event-editor-modal-footer",
     children: [
-      // 파괴적 동작은 저장 버튼 군에서 **물리적으로 떼어 놓는다**.
-      //
-      // 예전 배치: `삭제 · 취소 · 적용 · 저장하고 닫기` 가 오른쪽에 한 덩어리였다. 이벤트를
-      // 통째로 지우는 버튼이 «저장하고 닫기» 에서 두 칸 거리였고, 라벨이 그냥 `삭제` 라
-      // 우상단 페이지 툴바의 `삭제`(=페이지 1개)와 글자까지 같았다. 둘은 폭발 반경이 다르다.
-      // 이제 이벤트 삭제는 푸터 왼쪽 끝, 저장 군은 오른쪽 끝이고 라벨이 대상을 말한다.
+      // 상태 문구는 화면에서 빼고 저장 버튼의 점으로 바꾼다. 노드·data-state·문장은 그대로라
+      // 기존 단정이 textContent 로 읽는다.
+      el("span", {
+        class: "event-editor-remote-status",
+        attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+        dataset: { testid: "event-editor-remote-status" },
+      }),
       el("div", {
-        class: "event-editor-footer-leading",
+        class: "event-editor-status-sr",
         children: [
-          footerButton("이벤트 삭제", "event-delete", () => {
-            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
-          }, false, "ghost"),
           el("span", {
-            class: "event-editor-remote-status",
+            class: "issue event-editor-draft-status",
             attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
-            dataset: { testid: "event-editor-remote-status" },
+            dataset: { testid: "event-editor-draft-status" },
           }),
         ],
       }),
       el("div", {
         class: "actions event-editor-footer-actions",
         children: [
-          // 「변경 있음/없음」은 판단이고 「적용」은 실행이다. 예전엔 이 둘이 푸터 양 끝으로
-          // 갈라져 넓은 화면에서 2,000px 넘게 떨어졌다 — 상태 표시가 사실상 안 읽혔다.
-          el("span", {
-            class: "issue event-editor-draft-status",
-            attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
-            dataset: { testid: "event-editor-draft-status" },
-          }),
-          footerButton("도움말", "event-editor-help", () => openEventEditorHelp(), false, "ghost"),
           footerButton("취소", "event-editor-cancel", () => requestClose(), false, "ghost"),
-          footerButton("적용", "event-editor-apply", () => {
-            if (!commitValidatedEventDraft(request, "적용")) return;
-            footer.dataset.applied = "true";
-            beginExistingEventDraft(request.mapId, request.eventId);
-            refreshModalFooterStatus(footer, request);
-          }),
           withConfirmShortcut(footerButton("저장하고 닫기", "event-editor-save", () => {
             if (!commitValidatedEventDraft(request, "저장하고 닫기")) return;
             close(true);
@@ -854,7 +897,7 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   const project = store.getCurrent();
   const event = project.maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
   const cancelDeletesNewEvent = event?.draft?.kind === "new";
-  cancel.textContent = cancelDeletesNewEvent ? "취소(삭제)" : "취소";
+  cancel.textContent = "취소";
   cancel.setAttribute("aria-label", cancelDeletesNewEvent ? "취소: 새 이벤트 삭제" : footerButtonAccessibleName("취소"));
 
   const changed = eventDraftHasUserChanges(project, request.mapId, request.eventId);
@@ -891,6 +934,16 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
     remote.textContent = remoteStatus.text;
     remote.title = remoteStatus.text;
     remote.dataset.state = remoteStatus.state;
+  }
+  const save = footer.querySelector<HTMLButtonElement>('[data-testid="event-editor-save"]');
+  const dirty = local.dataset.state === "working" || local.dataset.state === "conflict" || local.dataset.state === "new-pristine";
+  const remoteFailed = remote?.dataset.state === "error";
+  save?.classList.toggle("is-dirty", dirty);
+  save?.classList.toggle("is-remote-error", remoteFailed);
+  if (save) {
+    save.title = remoteFailed
+      ? (remote?.textContent || "저장 실패")
+      : "저장하고 닫기 (Ctrl+Enter)";
   }
 }
 
@@ -969,12 +1022,29 @@ function withConfirmShortcut(button: HTMLButtonElement): HTMLButtonElement {
   return button;
 }
 
+/** 맨 위 층이 이 창의 `<details>` 메뉴면 바로 걷는다. open이 이미 꺼져 있어도 포함한다.
+ *  도움말·확인 창처럼 다른 층은 건드리지 않는다. */
+function dismissTopDetailsLayer(root: HTMLElement): void {
+  for (let guard = 0; guard < 8; guard += 1) {
+    let top: HTMLDetailsElement | null = null;
+    for (const node of root.querySelectorAll("details")) {
+      if (node instanceof HTMLDetailsElement && isTopModal(node)) {
+        top = node;
+        break;
+      }
+    }
+    if (!top) return;
+    closeDetailsLayerNow(top);
+  }
+}
+
 function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorRequest): void {
   if (event.key === "Escape") return;
-  // Ctrl/Cmd+Enter = 「저장하고 닫기」. 안쪽 입력(조수 초안 상자 등)이 이미 처리한 키와 IME 조합 중인 키는
-  // 건드리지 않는다. 포커스된 입력을 먼저 blur 해 그 change(이벤트 이름 등)를 커밋한 뒤 같은 버튼 경로로 저장한다.
+  // Ctrl/Cmd+Enter = 「저장하고 닫기」. 안쪽 입력이 소유하거나 처리한 키와 IME 조합 중인 키는 건드리지 않는다.
+  // 포커스된 입력을 먼저 blur 해 그 change(이벤트 이름 등)를 커밋한 뒤 같은 버튼 경로로 저장한다.
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key === "Enter") {
     if (event.defaultPrevented || event.isComposing) return;
+    if (event.target instanceof Element && event.target.closest("[data-owns-ctrl-enter]")) return;
     const root = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
     const save = root?.querySelector<HTMLButtonElement>('[data-testid="event-editor-save"]');
     if (!root || !save || save.disabled) return;
@@ -983,6 +1053,20 @@ function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorReques
     const active = root.ownerDocument.activeElement;
     if (active instanceof HTMLElement && root.contains(active)) active.blur();
     save.click();
+    return;
+  }
+  // Ctrl/Cmd+S = 「적용」(닫지 않고 저장). ⋯ 메뉴 안의 같은 버튼을 누른다.
+  // data-owns-ctrl-enter 는 Ctrl/Cmd+Enter(저장하고 닫기)만 양보한다. S 는 그 칸도 적용이다.
+  if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "s") {
+    if (event.defaultPrevented || event.isComposing) return;
+    const root = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+    const apply = root?.querySelector<HTMLButtonElement>('[data-testid="event-editor-apply"]');
+    if (!root || !apply || apply.disabled) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const active = root.ownerDocument.activeElement;
+    if (active instanceof HTMLElement && root.contains(active)) active.blur();
+    apply.click();
     return;
   }
   if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "k") {
@@ -1010,7 +1094,7 @@ function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorReques
   // 페이지 탭을 클릭해 포커스가 거기 있는 상태에서 「명령 하나 지우려고」 Delete 를 누르면
   // 이벤트가 사라졌다. 파괴 반경이 큰 동작일수록 우연히 닿는 표면이 넓으면 안 된다.
   //
-  // 이벤트 삭제의 입구는 라벨이 붙은 푸터 버튼 하나다. 명령 삭제는 명령 줄이 자기 키다운에서
+  // 이벤트 삭제의 입구는 헤더 ⋯ 메뉴의 「이벤트 삭제」다. 명령 삭제는 명령 줄이 자기 키다운에서
   // 처리하고 stopPropagation 하므로(commandListContextMenu.ts) 여기까지 오지 않는다.
   // 여기 닿은 Delete 는 삼킨다 — 흘려보내면 브라우저 기본 동작이나 상위 리스너에 닿는다.
   event.preventDefault();
@@ -1249,7 +1333,9 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
       finishCommandListMount(list);
       row = findRenderedCommand(root, snapshot.focusCommandPath);
     }
-    focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row;
+    // When history removes the focused row, keep shortcuts in the modal via the append button.
+    focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row
+      ?? (list && !list.hidden ? list.querySelector<HTMLElement>(".cmd-empty-line") : null);
   }
   if (!focusTarget) return;
   focusTarget.focus({ preventScroll: true });

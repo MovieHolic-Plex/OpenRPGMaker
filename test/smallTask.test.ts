@@ -4,6 +4,7 @@ import { dbTarget, mapTarget, SmallTaskError, type SmallTaskCollection } from "@
 import { smallTaskRefusal } from "@/editor/smallTask/tools";
 import { ledgerLines, plainSummary } from "@/editor/smallTask/plainSummary";
 import { canvasSmallTask, smallTaskErrorMessage } from "@/editor/smallTask/capsule";
+import { LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL } from "@/editor/smallTask/primitives/errors";
 import { editorState } from "@/editor/editorState";
 import type { GameEvent, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -86,15 +87,59 @@ it("캔버스 도구막대가 다시 그려져도 닫을 때 새 작업 버튼�
 
 it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 } },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, omitChangedKeys: true },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, withSpawnDraft: true },
   { kind: "event", selectedMapId: "another_map", rect: undefined },
   { kind: "dbEntry", selectedMapId: "map_a", rect: undefined },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, selectedDraft: true },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, noDraft: true },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "명령 목록이 바뀌었어요. 이벤트를 다시 읽어 주세요." },
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "이벤트 페이지가 여러 개예요. 고칠 페이지를 선택해 주세요." },
-])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({ kind, selectedMapId, rect, stoppedEarly }) => {
+  { kind: "map", selectedMapId: "another_map", rect: undefined,
+    stoppedEarly: `${MAP_REMOVAL_DRAFT_REFUSAL}워커 문구`, shownMessage: "『미저장 출입구』의 편집을 먼저 저장하거나 취소해 주세요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, savedMapReference: true, noDraft: true,
+    stoppedEarly: `${MAP_REMOVAL_REFERENCE_REFUSAL}워커 문구`, shownMessage: "『North Gate』에서 이 맵을 사용하고 있어 삭제할 수 없어요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
+    stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc1`,
+    shownMessage: "미저장 이벤트 『미저장 출입구』에서 이 장소를 사용하고 있어 삭제할 수 없어요." },
+  { kind: "map", selectedMapId: "another_map", rect: undefined, draftLocationId: "loc1",
+    stoppedEarly: `${LOCATION_DELETION_DRAFT_REFUSAL}워커 문구\nloc2`,
+    shownMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, dialogueCaller: true },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
+    stoppedEarly: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.\n범위 밖: 퀘스트가 사용하는 미저장 이벤트",
+    shownMessage: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요." },
+])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
+  kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft,
+  shownMessage, savedMapReference, draftLocationId, dialogueCaller,
+}) => {
   const project = fixture();
-  const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
+  if (savedMapReference) {
+    const gate: GameEvent = { id: "north_gate", name: "North Gate", x: 1, y: 1, trigger: { kind: "action" },
+      commands: [{ kind: "transfer", mapId: "map_a", x: 2, y: 3 }] };
+    project.maps.map_b = { ...project.maps.map_a, id: "map_b", events: [gate] };
+    project.commonEvents = [];
+  }
+  const live = structuredClone(project);
+  const original = project.maps.map_a.events[0]!;
+  const draft: GameEvent = {
+    ...original, id: "draft_event", draft: { kind: "new", original },
+    ...(kind === "map" ? { name: "미저장 출입구" } : {}),
+    ...(draftLocationId ? { condition: { kind: "insideLocation", locationId: draftLocationId, inside: true } } : {}),
+    ...(dialogueCaller ? { pages: original.pages!.map(page => ({
+      ...page, commands: [{ kind: "callMapEvent", eventId: original.id }],
+    })) } : {}),
+  };
+  const selected = live.maps.map_a.events[0]!;
+  const spawnDraft: GameEvent = { ...original, id: "ev_spawn_draft", draft: { kind: "new" }, pages: [],
+    commands: [{ kind: "despawnFieldEnemy", spawnId: "spawn_trial" }] };
+  if (selectedDraft) selected.draft = { kind: "edit", original };
+  if (!noDraft) live.maps.map_a.events.push(draft);
+  if (withSpawnDraft) live.maps.map_a.events.push(spawnDraft);
+  const target = kind === "dbEntry" ? dbTarget(project, "items", "id_first")!
+    : kind === "map" ? mapTarget(project, "map_a")! : mapTarget(project, "map_a", "ev_f52", "page_first")!;
   const previousSelection = editorState.get().selection;
   editorState.set({ selection: { mapId: selectedMapId, x: 2, y: 3, width: 4, height: 5 } });
   const signal = new AbortController().signal;
@@ -107,16 +152,25 @@ it.each([
     expect(new Headers(init.headers).get("x-oprn-companion-token")).toBe("test-companion-token");
     expect(body).toMatchObject({ mode: "single", model: "gpt-6.2-sol", thinkingLevel: "medium", smallTask: { target } });
     expect(body.smallTask.selection).toEqual(rect ? { rect } : undefined);
+    const drafts = [
+      ...(selectedDraft ? [selected] : []),
+      ...(noDraft ? [] : [draft]),
+      ...(withSpawnDraft ? [spawnDraft] : []),
+    ];
+    expect(body.smallTask.draftSource).toEqual(drafts.length ? { maps: { map_a: { events: drafts } } } : undefined);
+    expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
+    if (dialogueCaller) expect(body.task).toBe("고른 대사를 첫 대화에만 보여 줘");
     expect(body).not.toHaveProperty("apiKey");
-    const done = { type: "done", smallTask: true, project, changedKeys: [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
       headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
     });
   });
   vi.stubGlobal("fetch", fetch);
   try {
-    const run = runSmallTask(project, target, "고른 대상을 확인해 줘", signal);
-    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(stoppedEarly);
+    const request = dialogueCaller ? "고른 대사를 첫 대화에만 보여 줘" : "고른 대상을 확인해 줘";
+    const run = runSmallTask(project, target, request, signal, live);
+    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(shownMessage ?? stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);
@@ -131,6 +185,8 @@ it.each([
   [new Error("No API key found"), "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요."],
   [new TypeError("Failed to fetch"), "인터넷 연결을 확인하고 다시 시도해 주세요."],
   [new Error("400: Invalid tools schema"), "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요."],
+  [Object.assign(new Error("Pi 에이전트 실행 실패: bun 이 필요합니다. oh-my-pi 제공자 로그인/전송은 Bun 에서만 로드됩니다."), { status: 500 }), "AI 실행 환경을 쓸 수 없어요. Bun 런타임이 설치되지 않았거나 시작되지 않았습니다."],
+  [Object.assign(new Error("oh-my-pi worker 409"), { status: 409 }), "AI 실행 환경을 쓸 수 없어요. Bun 런타임이 설치되지 않았거나 시작되지 않았습니다."],
   [new SmallTaskError("선택한 대상만 고칠 수 있어요."), "선택한 대상만 고칠 수 있어요."],
 ])("작은 일이 실패하면 내부 오류 대신 대응하는 안내를 표시한다 (%s)", (error, message) => {
   expect(smallTaskErrorMessage(error)).toBe(message);

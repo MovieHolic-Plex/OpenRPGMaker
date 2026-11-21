@@ -6,7 +6,7 @@ import { plainSummary } from "../plainSummary";
 import type { SmallTaskTarget } from "../target";
 import { primitiveScope } from "./core/scope";
 import { PrimitiveError, STALE_COMMAND_LIST } from "./errors";
-import { PRIMITIVES } from "./index";
+import { commandDeletionGuard, PRIMITIVES } from "./index";
 import { getPrimitive } from "./registry";
 import type { PrimitiveContext } from "./types";
 
@@ -73,7 +73,7 @@ export function runPrimitive(
 
   // Primitives copy the paths they edit. Check that contract before computing the diff in dev and tests.
   if (freezeBaseline) deepFreezeProject(project);
-  const ctx: PrimitiveContext = { project, target, selection, live };
+  const ctx: PrimitiveContext = { project, target, selection, live, commandDeletionGuard };
   try {
     const scope = primitiveScope(ctx, primitive, args);
     const after = primitive.apply(ctx, args);

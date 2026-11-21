@@ -3,10 +3,12 @@ import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { compactMapLayers, EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
+import { exceedsMapDimensionLimit } from "@/project/mapSizeLimits";
 import { questDefId } from "@/project/quest/questDef";
 import type { GameEvent, GameMap, MapConnection, MapTreeNode, Project, Rect } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { SAVE_QUEST_EVENT_FIRST } from "@/editor/smallTask/primitives/errors";
 import { onlyDialogueChanged } from "./smallTaskDialogueScope";
 import { questDependsOnDraft, removedDatabaseReference, type SmallTaskDraftSource } from "./smallTaskReferences";
 
@@ -443,6 +445,10 @@ function normalizeMapResize(before: Project, after: Project, mapId: string, repo
     return after;
   }
   if (original.width === map.width && original.height === map.height) return after;
+  if (exceedsMapDimensionLimit(map.width, map.height)) {
+    report(`${mapLabel(map, mapId)}의 크기`);
+    return after;
+  }
   const size = map.width * map.height;
   if (map.lowerTiles.length !== size || map.upperTiles.length !== size
     || EXTRA_LAYER_KEYS.some(key => map[key] !== undefined && map[key]?.length !== size)) {
@@ -466,9 +472,13 @@ function normalizeMapRemove(before: Project, after: Project, mapId: string, repo
   const [newRoot, ...others] = Object.keys(before.maps).filter(id => id !== mapId);
   const expectedTree = first ? { ...first, children: [...first.children, ...siblings] }
     : { mapId: newRoot, children: others.map(id => ({ mapId: id, children: [] })) };
+  if (!jsonEqual(after.mapTree, expectedTree)) {
+    report(`${mapLabel(map, mapId)}의 맵 목록`);
+    return after;
+  }
   return {
     ...after, maps: { ...after.maps, [mapId]: map },
-    mapTree: jsonEqual(after.mapTree, expectedTree) ? before.mapTree : after.mapTree,
+    mapTree: before.mapTree,
   };
 }
 
@@ -625,7 +635,7 @@ export function checkSmallTaskScope(
   describeOutsideChanges(before, normalized, report);
 
   if (scope.kind === "projectArea" && scope.area === "quests" && questDependsOnDraft(before, after, live)) {
-    explanation = "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.";
+    explanation = SAVE_QUEST_EVENT_FIRST;
     report("퀘스트가 사용하는 미저장 이벤트");
   }
   if (databaseScope?.remove && !outside.size && changedEntries.size) {

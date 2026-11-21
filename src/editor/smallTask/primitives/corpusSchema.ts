@@ -23,7 +23,7 @@ export interface Check {
 export interface CorpusCase {
   request: string;
   fixture: FixtureName;
-  /** Per-case additions to the fixture, applied before resolving the target. */
+  /** Applied before setup. Each block resolves its commands target after adding its own records. */
   seed?: CorpusSetup;
   setup?: CorpusSetup;
   target: TargetSelector;
@@ -44,6 +44,7 @@ export interface CorpusSetup {
   variables?: Project["variables"];
   switches?: Project["switches"];
   endings?: Project["endings"];
+  uploaded?: Project["assets"]["uploaded"];
   commands?: Command[];
 }
 
