@@ -3,12 +3,17 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createDefaultGameEvent } from "@/editor/eventActions";
 import { beginExistingEventDraft, saveEventDraft } from "@/editor/eventDraftActions";
 import { undoFeedbackText } from "@/editor/eventDiffLabel";
-import { addEventPage, deleteEventPage, updateEventPage } from "@/editor/eventPages";
+import { requestEditorEventDeletion } from "@/editor/eventDeletion";
+import { addEventPage, deleteEventPage, replaceEventPageCommands, updateEventPage } from "@/editor/eventPages";
+import { editorState } from "@/editor/editorState";
 import { runUndoWithFeedback } from "@/editor/hotkeys";
 import { recordProjectSnapshot, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { clearCommandToolbarHistories, createCommandToolbarHistory } from "@/editor/panels/eventEditor/commandToolbarHistory";
+import { undoActiveEventCommands } from "@/editor/panels/eventEditor/content";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
   _resetEventPageDeletionHistoryForTest,
+  canRedoEventPageDeletion,
   canUndoEventPageDeletion,
   undoEventPageDeletion,
 } from "@/editor/panels/eventEditor/pageDeleteHistory";
@@ -57,6 +62,7 @@ describe("event editor QA fixes", () => {
   beforeEach(() => {
     _resetEventDraftVaultForTest();
     _resetEventPageDeletionHistoryForTest();
+    clearCommandToolbarHistories("");
     resetMapEditHistory();
     document.querySelector("[data-testid='toast-stack']")?.remove();
     localStorage.clear();
@@ -70,7 +76,9 @@ describe("event editor QA fixes", () => {
     window.history.replaceState(null, "", "/");
     _resetEventDraftVaultForTest();
     _resetEventPageDeletionHistoryForTest();
+    clearCommandToolbarHistories("");
     resetMapEditHistory();
+    document.querySelector("[data-testid='app-confirm-modal']")?.remove();
   });
 
   it("undoes a page delete with its trigger, conditions, and commands", () => {
@@ -280,6 +288,138 @@ describe("event editor QA fixes", () => {
     after.maps[after.startMapId]!.events = [renamed];
     expect(undoFeedbackText("이벤트 편집 — 변경 없음", before, after)).toBe("되돌렸습니다 — 이벤트 이름, 페이지 수");
     expect(undoFeedbackText("타일 칠하기", before, after)).toBe("되돌렸습니다 — 타일 칠하기");
+  });
+
+  it("undoes a page deletion that sits between two command edits, then redoes in that order", () => {
+    const { mapId, eventId } = seedEvent([
+      page("keep", "남는 페이지", { kind: "action" }, [{ kind: "text", body: "stay" }]),
+      page("gone", "지울 페이지", { kind: "touch" }, [{ kind: "text", body: "old" }]),
+    ]);
+    beginExistingEventDraft(mapId, eventId);
+    editorState.set({ selectedEventPageId: "keep" });
+    const history = createCommandToolbarHistory({
+      key: `${mapId}:${eventId}:keep`,
+      editScope: { mapId, eventId },
+      immutableSnapshots: true,
+      readCommands: () => findPage(mapId, eventId, "keep")?.commands ?? [],
+      replaceCommands: (commands) => replaceEventPageCommands(mapId, eventId, "keep", commands),
+    });
+    history.replaceAll([{ kind: "text", body: "first" }]);
+    expect(deleteEventPage(mapId, eventId, "gone")).toBe(true);
+    history.replaceAll([{ kind: "text", body: "second" }]);
+
+    undoActiveEventCommands(mapId, eventId);
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "first" }]);
+    expect(findPage(mapId, eventId, "gone")).toBeUndefined();
+
+    undoActiveEventCommands(mapId, eventId);
+    expect(findPage(mapId, eventId, "gone")?.commands).toEqual([{ kind: "text", body: "old" }]);
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "first" }]);
+
+    undoActiveEventCommands(mapId, eventId, true);
+    expect(findPage(mapId, eventId, "gone")).toBeUndefined();
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "first" }]);
+    undoActiveEventCommands(mapId, eventId, true);
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "second" }]);
+  });
+
+  it("drops page-deletion redo after a command edit and command redo after a page deletion", () => {
+    const { mapId, eventId } = seedEvent([
+      page("keep", "남는 페이지", { kind: "action" }, [{ kind: "text", body: "stay" }]),
+      page("gone", "지울 페이지", { kind: "touch" }, [{ kind: "text", body: "old" }]),
+    ]);
+    beginExistingEventDraft(mapId, eventId);
+    editorState.set({ selectedEventPageId: "keep" });
+    const history = createCommandToolbarHistory({
+      key: `${mapId}:${eventId}:keep`,
+      editScope: { mapId, eventId },
+      immutableSnapshots: true,
+      readCommands: () => findPage(mapId, eventId, "keep")?.commands ?? [],
+      replaceCommands: (commands) => replaceEventPageCommands(mapId, eventId, "keep", commands),
+    });
+    expect(deleteEventPage(mapId, eventId, "gone")).toBe(true);
+    expect(undoEventPageDeletion(mapId, eventId)).toBe(true);
+    history.replaceAll([{ kind: "text", body: "new" }]);
+    expect(canRedoEventPageDeletion(mapId, eventId)).toBe(false);
+    undoActiveEventCommands(mapId, eventId, true);
+    expect(findPage(mapId, eventId, "gone")?.commands).toEqual([{ kind: "text", body: "old" }]);
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "new" }]);
+
+    history.undo();
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "stay" }]);
+    expect(history.canRedo()).toBe(true);
+    expect(deleteEventPage(mapId, eventId, "gone")).toBe(true);
+    expect(history.canRedo()).toBe(false);
+    undoActiveEventCommands(mapId, eventId, true);
+    expect(findPage(mapId, eventId, "keep")?.commands).toEqual([{ kind: "text", body: "stay" }]);
+    expect(findPage(mapId, eventId, "gone")).toBeUndefined();
+  });
+
+  it("does not delete the replacement project's event when confirmation outlives the switch", async () => {
+    const { mapId, eventId } = seedEvent([
+      page("keep", "남는 페이지", { kind: "action" }, []),
+      page("gone", "지울 페이지", { kind: "action" }, []),
+    ]);
+    const pending = requestEditorEventDeletion(mapId, eventId);
+    const replacement = createBlankProject();
+    const survivor = createDefaultGameEvent(3, 3);
+    survivor.id = eventId;
+    survivor.name = "다른 문서";
+    replacement.maps[replacement.startMapId]!.events = [survivor];
+    store.replaceProject(replacement);
+
+    document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']")?.click();
+    await expect(pending).resolves.toBe(false);
+    const events = store.getCurrent().maps[replacement.startMapId]!.events;
+    expect(events.map((event) => event.id)).toEqual([eventId]);
+    expect(events[0]?.name).toBe("다른 문서");
+  });
+
+  it("leaves a map's events in place when the recovered session snapshot is not a list of events", () => {
+    window.history.replaceState(null, "", "/?blankProject=1");
+    sessionStorage.setItem("oprn:event-draft-session", "tab-a");
+    const project = createBlankProject();
+    const keep = createDefaultGameEvent(1, 1);
+    keep.id = "keep";
+    keep.name = "살아 있는 이벤트";
+    project.maps[project.startMapId]!.events = [keep];
+    localStorage.setItem(eventDraftVaultStorageKey(), JSON.stringify({
+      version: 1,
+      entries: [],
+      sessionEvents: [{ mapId: project.startMapId, events: [null] }],
+    }));
+    expect(loadEventDraftVaultFromLocalStorage()).toBe(0);
+    const restored = applySessionEvents(project);
+    expect(restored.maps[project.startMapId]!.events.map((event) => event.id)).toEqual(["keep"]);
+  });
+
+  it("keeps the previous session snapshot while event arrays are unchanged", () => {
+    window.history.replaceState(null, "", "/?blankProject=1");
+    sessionStorage.setItem("oprn:event-draft-session", "tab-a");
+    const project = createBlankProject();
+    const event = createDefaultGameEvent(1, 1);
+    event.id = "pasted";
+    event.commands = [{ kind: "text", body: "old" }];
+    project.maps[project.startMapId]!.events = [event];
+    syncEventDraftVaultFromProject(project);
+    persistEventDraftVaultNow();
+
+    event.commands = [{ kind: "text", body: "mutated in place" }];
+    syncEventDraftVaultFromProject(project);
+    persistEventDraftVaultNow();
+    const stale = JSON.parse(localStorage.getItem(eventDraftVaultStorageKey()) ?? "{}") as {
+      sessionEvents?: Array<{ events?: Array<{ commands?: Array<{ body?: string }> }> }>;
+    };
+    expect(stale.sessionEvents?.[0]?.events?.[0]?.commands?.[0]?.body).toBe("old");
+
+    project.maps[project.startMapId]!.events = [structuredClone(event)];
+    project.maps[project.startMapId]!.events[0]!.commands = [{ kind: "text", body: "replaced" }];
+    syncEventDraftVaultFromProject(project);
+    persistEventDraftVaultNow();
+    const next = JSON.parse(localStorage.getItem(eventDraftVaultStorageKey()) ?? "{}") as {
+      sessionEvents?: Array<{ events?: Array<{ commands?: Array<{ body?: string }> }> }>;
+    };
+    expect(next.sessionEvents?.[0]?.events?.[0]?.commands?.[0]?.body).toBe("replaced");
   });
 });
 

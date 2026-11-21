@@ -69,6 +69,7 @@ import {
   canRedoEventPageDeletion,
   canUndoEventPageDeletion,
   pageDeletionIsNewerThanCommands,
+  pageDeletionRedoSeq,
   redoEventPageDeletion,
   undoEventPageDeletion,
 } from "./pageDeleteHistory";
@@ -853,18 +854,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     commandHistory.canUndo() || canUndoEventPageDeletion(mapId, eventId);
   const canRedoEditorStep = (): boolean =>
     commandHistory.canRedo() || canRedoEventPageDeletion(mapId, eventId);
-  const undoEditorStep = (): void => {
-    if (pageDeletionIsNewerThanCommands(mapId, eventId) && undoEventPageDeletion(mapId, eventId)) return;
-    if (commandHistory.canUndo()) {
-      commandHistory.undo();
-      return;
-    }
-    undoEventPageDeletion(mapId, eventId);
-  };
-  const redoEditorStep = (): void => {
-    if (commandHistory.canRedo()) commandHistory.redo();
-    else redoEventPageDeletion(mapId, eventId);
-  };
+  const undoEditorStep = (): void => undoMixedEditorStep(mapId, eventId, commandHistory);
+  const redoEditorStep = (): void => redoMixedEditorStep(mapId, eventId, commandHistory);
 
   const element = el("div", {
     class: "toolbar event-editor-command-toolbar",
@@ -1059,29 +1050,40 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
 function pageCommandHistory(mapId: MapId, eventId: string, pageId: string): CommandToolbarHistory {
   return createCommandToolbarHistory({
     key: `${mapId}:${eventId}:${pageId}`,
+    editScope: { mapId, eventId },
     immutableSnapshots: true,
     readCommands: () => activePageCommands(mapId, eventId, pageId),
     replaceCommands: commands => replaceEventPageCommands(mapId, eventId, pageId, commands),
   });
 }
 
-export function undoActiveEventCommands(mapId: MapId, eventId: string, redo = false): void {
-  if (redo) {
-    const pageId = activePageIdOf(mapId, eventId);
-    if (pageId && pageCommandHistory(mapId, eventId, pageId).canRedo()) {
-      pageCommandHistory(mapId, eventId, pageId).redo();
-      return;
-    }
-    redoEventPageDeletion(mapId, eventId);
-    return;
-  }
-  if (pageDeletionIsNewerThanCommands(mapId, eventId) && undoEventPageDeletion(mapId, eventId)) return;
-  const pageId = activePageIdOf(mapId, eventId);
-  if (pageId && pageCommandHistory(mapId, eventId, pageId).canUndo()) {
-    pageCommandHistory(mapId, eventId, pageId).undo();
+function undoMixedEditorStep(mapId: MapId, eventId: string, history: CommandToolbarHistory | null): void {
+  const commandSeq = history?.undoSeq() ?? 0;
+  if (pageDeletionIsNewerThanCommands(mapId, eventId, commandSeq) && undoEventPageDeletion(mapId, eventId)) return;
+  if (history?.canUndo()) {
+    history.undo();
     return;
   }
   undoEventPageDeletion(mapId, eventId);
+}
+
+function redoMixedEditorStep(mapId: MapId, eventId: string, history: CommandToolbarHistory | null): void {
+  const pageSeq = pageDeletionRedoSeq(mapId, eventId);
+  const commandSeq = history?.redoSeq() ?? 0;
+  // 되돌린 순서의 역이다. 더 작은 순서가 나중에 되돌린 단계라 먼저 다시 실행한다.
+  if (pageSeq > 0 && (commandSeq === 0 || pageSeq < commandSeq)) {
+    redoEventPageDeletion(mapId, eventId);
+    return;
+  }
+  if (history?.canRedo()) history.redo();
+  else redoEventPageDeletion(mapId, eventId);
+}
+
+export function undoActiveEventCommands(mapId: MapId, eventId: string, redo = false): void {
+  const pageId = activePageIdOf(mapId, eventId);
+  const history = pageId ? pageCommandHistory(mapId, eventId, pageId) : null;
+  if (redo) redoMixedEditorStep(mapId, eventId, history);
+  else undoMixedEditorStep(mapId, eventId, history);
 }
 
 function activePageCommands(mapId: MapId, eventId: string, pageId: string): Command[] {

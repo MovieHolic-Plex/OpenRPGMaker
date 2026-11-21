@@ -10,7 +10,7 @@ import {
   resolveCommandListAtPath,
 } from "@/editor/eventCommandPaths";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
-import { recordCommandToolbarChange } from "@/editor/panels/eventEditor/commandToolbarHistory";
+import { clearCommandToolbarRedo, recordCommandToolbarChange } from "@/editor/panels/eventEditor/commandToolbarHistory";
 import { recordEventPageDeletion } from "@/editor/panels/eventEditor/pageDeleteHistory";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, SimpleTriggerKind, Trigger } from "@/project/types";
@@ -239,6 +239,7 @@ export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): 
     // 스토어 알림이 이 뮤테이터가 끝난 뒤 바로 툴바를 다시 그린다. 그 전에 기록을 남겨야
     // 되돌리기 버튼이 켜진 채로 그려진다.
     recordEventPageDeletion(mapId, eventId, { page: removed, index, selectedPageId });
+    clearCommandToolbarRedo(`${mapId}:${eventId}:`);
   }, pageChange(mapId, eventId, `페이지 삭제: ${removedName}`));
   // 삭제가 실제로 일어났을 때만 선택을 업데이트한다.
   // 전역 맵 스냅샷은 남기지 않는다. 편집기 되돌리기가 지운 페이지 전체를 기억한다.
@@ -343,7 +344,7 @@ export function addEventPageCommand(
     const page = event.pages?.find((item) => item.id === pageId);
     if (!page) return;
     page.commands.push(structuredClone(command));
-  }, pageChange(mapId, eventId, `커맨드 추가: ${commandKindLabel(command.kind)} (#${slot})`)));
+  }, pageChange(mapId, eventId, `커맨드 추가: ${commandKindLabel(command.kind)} (#${slot})`)), true, { mapId, eventId });
 }
 
 export function addEventPageCommandAt(

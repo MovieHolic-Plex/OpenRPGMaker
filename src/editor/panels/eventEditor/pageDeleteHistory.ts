@@ -22,7 +22,6 @@ type PageDeletionHistory = {
 const HISTORY_LIMIT = 50;
 const histories = new Map<string, PageDeletionHistory>();
 let editSeq = 0;
-let lastCommandSeq = 0;
 
 function key(mapId: MapId, eventId: string): string {
   return `${mapId}:${eventId}`;
@@ -36,9 +35,15 @@ function historyFor(id: string): PageDeletionHistory {
   return created;
 }
 
-/** 명령 툴바 편집이 실제로 남았을 때. 그 뒤에 한 페이지 삭제가 더 최근이면 페이지를 먼저 되돌린다. */
-export function noteCommandToolbarEdit(): void {
-  lastCommandSeq = ++editSeq;
+/** 명령 편집과 페이지 삭제가 같은 순서를 쓴다. 되돌리기는 지금 후보의 순서를 비교한다. */
+export function allocateEditorEditSeq(): number {
+  return ++editSeq;
+}
+
+/** 명령 편집이 실제로 남으면, 그 사이에 있던 페이지 삭제 다시 실행은 더 이상 유효하지 않다. */
+export function invalidatePageDeletionRedo(mapId: MapId, eventId: string): void {
+  const history = histories.get(key(mapId, eventId));
+  if (history) history.future.length = 0;
 }
 
 export function recordEventPageDeletion(
@@ -65,10 +70,14 @@ export function canRedoEventPageDeletion(mapId: MapId, eventId: string): boolean
   return (histories.get(key(mapId, eventId))?.future.length ?? 0) > 0;
 }
 
-/** 가장 최근 편집이 페이지 삭제이면 명령 되돌리기보다 앞선다. */
-export function pageDeletionIsNewerThanCommands(mapId: MapId, eventId: string): boolean {
+/** 페이지 삭제 후보가 지금 되돌릴 명령 편집보다 나중이면 페이지를 먼저 되돌린다. */
+export function pageDeletionIsNewerThanCommands(mapId: MapId, eventId: string, commandUndoSeq = 0): boolean {
   const latest = histories.get(key(mapId, eventId))?.past.at(-1)?.seq ?? 0;
-  return latest > lastCommandSeq;
+  return latest > commandUndoSeq;
+}
+
+export function pageDeletionRedoSeq(mapId: MapId, eventId: string): number {
+  return histories.get(key(mapId, eventId))?.future.at(-1)?.seq ?? 0;
 }
 
 export function undoEventPageDeletion(mapId: MapId, eventId: string): boolean {
@@ -121,5 +130,4 @@ export function clearEventPageDeletionHistory(mapId: MapId, eventId: string): vo
 export function _resetEventPageDeletionHistoryForTest(): void {
   histories.clear();
   editSeq = 0;
-  lastCommandSeq = 0;
 }

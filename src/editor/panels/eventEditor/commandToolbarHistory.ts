@@ -1,10 +1,12 @@
-import { noteCommandToolbarEdit } from "@/editor/panels/eventEditor/pageDeleteHistory";
+import { allocateEditorEditSeq, invalidatePageDeletionRedo } from "@/editor/panels/eventEditor/pageDeleteHistory";
 import { jsonEqual } from "@/util/structuralJson";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
-import type { Command } from "@/project/types";
+import type { Command, MapId } from "@/project/types";
 import { copyEventCommandsToClipboard } from "./commandClipboard";
 import { authoredCommandPaths, clearCommandInspector, isCommandSelected, notifyCommandSelectionChanged, selectedCommandPaths, selectedCommandRoots } from "./commandInspector";
 import type { CommandListActions } from "./types";
+
+type EditorEditScope = { readonly mapId: MapId; readonly eventId: string };
 
 type CommandToolbarHistoryOptions = {
   /** Opt in only for hosts whose updates never mutate published commands. */
@@ -12,11 +14,18 @@ type CommandToolbarHistoryOptions = {
   readonly key: string;
   readonly readCommands: () => Command[];
   readonly replaceCommands: (commands: Command[]) => void;
+  /** 이 편집이 남으면 같은 이벤트의 페이지 삭제 다시 실행을 버린다. */
+  readonly editScope?: EditorEditScope;
+};
+
+type CommandSnapshot = {
+  commands: Command[];
+  seq: number;
 };
 
 type CommandHistory = {
-  readonly past: Command[][];
-  readonly future: Command[][];
+  readonly past: CommandSnapshot[];
+  readonly future: CommandSnapshot[];
   changing: boolean;
   immutableSnapshots: boolean;
 };
@@ -35,6 +44,10 @@ export type CommandToolbarHistory = {
   readonly redo: () => void;
   readonly canUndo: () => boolean;
   readonly canRedo: () => boolean;
+  /** 지금 되돌릴 명령 편집의 순서. 없으면 0. */
+  readonly undoSeq: () => number;
+  /** 지금 다시 실행할 명령 편집의 순서. 없으면 0. */
+  readonly redoSeq: () => number;
 };
 
 const HISTORY_LIMIT = 50;
@@ -47,12 +60,19 @@ export function clearCommandToolbarHistories(prefix: string): void {
   }
 }
 
+/** 페이지 삭제처럼 이벤트 전체 편집이 명령을 다시 실행하면 안 될 때, 그 이벤트의 다시 실행만 버린다. */
+export function clearCommandToolbarRedo(prefix: string): void {
+  for (const [key, history] of histories) {
+    if (key.startsWith(prefix)) history.future.length = 0;
+  }
+}
+
 
 export function createCommandToolbarHistory(options: CommandToolbarHistoryOptions): CommandToolbarHistory {
   historyFor(options.key).immutableSnapshots = options.immutableSnapshots === true;
   const history = () => historyFor(options.key);
   const change = (run: () => void, structural = true) =>
-    recordCommandToolbarChange(options.key, options.readCommands, run, structural);
+    recordCommandToolbarChange(options.key, options.readCommands, run, structural, options.editScope);
   const pathsFor = (path: readonly number[]) => selectedCommandRoots(
     isCommandSelected(path) ? selectedCommandPaths() : [path]);
   const copy = (path: readonly number[]) => {
@@ -123,12 +143,14 @@ export function createCommandToolbarHistory(options: CommandToolbarHistoryOption
     redo: () => restoreNext(options, history()),
     canUndo: () => history().past.length > 0,
     canRedo: () => history().future.length > 0,
+    undoSeq: () => history().past.at(-1)?.seq ?? 0,
+    redoSeq: () => history().future.at(-1)?.seq ?? 0,
   };
 }
 
 /** Legacy page catalog callers join an existing editor session, never create map history. */
 export function recordCommandToolbarChange(
-  key: string, readCommands: () => Command[], run: () => void, structural = true,
+  key: string, readCommands: () => Command[], run: () => void, structural = true, scope?: EditorEditScope,
 ): void {
   const entry = histories.get(key);
   if (!entry || entry.changing) { run(); return; }
@@ -137,7 +159,7 @@ export function recordCommandToolbarChange(
   const future = [...entry.future];
   // Publish before the synchronous store render so its toolbar sees the new history.
   entry.changing = true;
-  entry.past.push(before);
+  entry.past.push({ commands: before, seq: allocateEditorEditSeq() });
   entry.future.length = 0;
   try {
     run();
@@ -148,7 +170,7 @@ export function recordCommandToolbarChange(
       entry.future.push(...future);
     } else {
       if (entry.past.length > HISTORY_LIMIT) entry.past.shift();
-      noteCommandToolbarEdit();
+      if (scope) invalidatePageDeletionRedo(scope.mapId, scope.eventId);
       if (structural || !jsonEqual(authoredCommandPaths(before), authoredCommandPaths(readCommands()))) clearCommandInspector();
     }
     notifyCommandSelectionChanged();
@@ -159,16 +181,22 @@ function restorePrevious(options: CommandToolbarHistoryOptions, history: Command
   const previous = history.past.pop();
   if (!previous) return;
   clearCommandInspector();
-  history.future.push(history.immutableSnapshots ? options.readCommands() : cloneCommands(options.readCommands()));
-  options.replaceCommands(previous);
+  history.future.push({
+    commands: history.immutableSnapshots ? options.readCommands() : cloneCommands(options.readCommands()),
+    seq: previous.seq,
+  });
+  options.replaceCommands(previous.commands);
 }
 
 function restoreNext(options: CommandToolbarHistoryOptions, history: CommandHistory): void {
   const next = history.future.pop();
   if (!next) return;
   clearCommandInspector();
-  history.past.push(history.immutableSnapshots ? options.readCommands() : cloneCommands(options.readCommands()));
-  options.replaceCommands(next);
+  history.past.push({
+    commands: history.immutableSnapshots ? options.readCommands() : cloneCommands(options.readCommands()),
+    seq: next.seq,
+  });
+  options.replaceCommands(next.commands);
 }
 
 function historyFor(key: string): CommandHistory {

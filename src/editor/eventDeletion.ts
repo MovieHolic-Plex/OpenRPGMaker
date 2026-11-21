@@ -53,9 +53,13 @@ export function requestEditorEventDeletion(mapId: MapId, eventId: string): Promi
   const map = store.getCurrent().maps[mapId];
   if (!map?.events.some((event) => event.id === eventId)) return Promise.resolve(false);
   if (deletionConfirm) return deletionConfirm;
+  const lineage = store.getVersionToken().lineage;
   const flight: { current: Promise<boolean> | null } = { current: null };
   const pending = confirmEventDeletion(mapId, eventId).then((confirmed) => {
     if (!confirmed) return false;
+    // 확인 창이 열린 채 프로젝트가 바뀌면, 같은 맵·이벤트 id 라도 그 문서를 지우지 않는다.
+    if (store.getVersionToken().lineage !== lineage) return false;
+    if (!store.getCurrent().maps[mapId]?.events.some((event) => event.id === eventId)) return false;
     return deleteEditorEvent(mapId, eventId);
   });
   flight.current = pending.finally(() => {

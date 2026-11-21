@@ -64,6 +64,8 @@ const PERSIST_DELAY_MS = 250;
 const SESSION_ID_KEY = "oprn:event-draft-session";
 /** Blank/fresh 탭의 맵 이벤트 전체. 붙여넣기는 draft 가 없어서 초안 금고만으로는 새로고침을 못 견딘다. */
 let sessionEventsJson: string | null = null;
+/** 타일 칠하기는 이벤트 배열 정체성을 유지한다. 같으면 명령 트리를 다시 직렬화하지 않는다. */
+let sessionEventIdentity: readonly (readonly [string, readonly GameEvent[]])[] | null = null;
 let memorySessionId: string | null = null;
 
 export function eventDraftVaultKey(mapId: MapId, eventId: string): string {
@@ -73,6 +75,7 @@ export function eventDraftVaultKey(mapId: MapId, eventId: string): string {
 export function clearEventDraftVault(): void {
   clearVaultEntries();
   sessionEventsJson = null;
+  sessionEventIdentity = null;
   scheduleEventDraftVaultPersist();
 }
 
@@ -339,7 +342,10 @@ export function loadEventDraftVaultFromLocalStorage(projectId = resolveVaultProj
   if (!localStorage) return 0;
   const raw = localStorage.getItem(eventDraftVaultStorageKey(projectId));
   if (!raw) {
-    if (projectId.startsWith("session:")) sessionEventsJson = null;
+    if (projectId.startsWith("session:")) {
+      sessionEventsJson = null;
+      sessionEventIdentity = null;
+    }
     return 0;
   }
   try {
@@ -350,6 +356,7 @@ export function loadEventDraftVaultFromLocalStorage(projectId = resolveVaultProj
     };
     if (projectId.startsWith("session:")) {
       sessionEventsJson = Array.isArray(parsed.sessionEvents) ? JSON.stringify(parsed.sessionEvents) : null;
+      sessionEventIdentity = null;
     }
     if (!Array.isArray(parsed.entries)) return 0;
     let loaded = 0;
@@ -400,6 +407,7 @@ function browserLocalStorage(): Storage | null {
 export function _resetEventDraftVaultForTest(): void {
   clearVaultEntries();
   sessionEventsJson = null;
+  sessionEventIdentity = null;
   if (persistTimer) {
     clearTimeout(persistTimer);
     persistTimer = null;
@@ -439,14 +447,31 @@ function resolveVaultProjectId(): string {
 
 function captureSessionEvents(project: Project): boolean {
   if (!sessionScopedVault()) return false;
-  const snapshot = Object.entries(project.maps).map(([mapId, map]) => ({
-    mapId,
-    events: map.events,
-  }));
-  const next = JSON.stringify(snapshot);
+  const identity = Object.entries(project.maps).map(([mapId, map]) => [mapId, map.events] as const);
+  if (sessionEventIdentity
+    && sessionEventIdentity.length === identity.length
+    && sessionEventIdentity.every((item, index) => item[0] === identity[index]![0] && item[1] === identity[index]![1])) {
+    return false;
+  }
+  const next = JSON.stringify(identity.map(([mapId, events]) => ({ mapId, events })));
+  sessionEventIdentity = identity;
   if (next === sessionEventsJson) return false;
   sessionEventsJson = next;
   return true;
+}
+
+function recoverableSessionEvents(events: unknown): GameEvent[] | null {
+  if (!Array.isArray(events)) return null;
+  const recovered: GameEvent[] = [];
+  for (const event of events) {
+    if (!event || typeof event !== "object" || Array.isArray(event)) return null;
+    const record = event as { id?: unknown; commands?: unknown; pages?: unknown };
+    if (typeof record.id !== "string" || record.id.length === 0) return null;
+    if (record.commands !== undefined && !Array.isArray(record.commands)) return null;
+    if (record.pages !== undefined && !Array.isArray(record.pages)) return null;
+    recovered.push(structuredClone(event as GameEvent));
+  }
+  return recovered;
 }
 
 /**
@@ -468,8 +493,9 @@ export function applySessionEvents(project: Project): Project {
     if (!item || typeof item !== "object") continue;
     const mapId = (item as { mapId?: unknown }).mapId;
     const events = (item as { events?: unknown }).events;
-    if (typeof mapId !== "string" || !next.maps[mapId] || !Array.isArray(events)) continue;
-    next.maps[mapId].events = events.map((event) => structuredClone(event as GameEvent));
+    const recovered = recoverableSessionEvents(events);
+    if (typeof mapId !== "string" || !next.maps[mapId] || !recovered) continue;
+    next.maps[mapId].events = recovered;
     applied = true;
   }
   return applied ? next : project;
