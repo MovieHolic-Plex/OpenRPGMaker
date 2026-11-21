@@ -6,7 +6,7 @@ import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { runSmallTask } from "@/editor/smallTask/run";
-import { resetModalStackForTest } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal, resetModalStackForTest, unregisterModal } from "@/editor/ui/modalStack";
 import { createBlankProject } from "@/project/defaults";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { deserialize, serialize } from "@/project/io";
@@ -92,14 +92,28 @@ describe("event editor QA regressions", () => {
     expect(modal.isConnected).toBe(true);
   });
 
-  it("closes the editor from the close button while the header menu is open", async () => {
+  it("closes the editor from the close button while the header menu is the top layer", async () => {
     await openEditor();
     const modal = control("event-editor-modal");
     const menu = control<HTMLDetailsElement>("event-editor-header-more");
     menu.open = true;
-    expect(menu.open).toBe(true);
-    control("event-editor-modal-close").click();
-    expect(modal.isConnected).toBe(false);
+    await Promise.resolve();
+    expect(isTopModal(menu)).toBe(true);
+    // 브라우저의 toggle 은 태스크로 늦게 온다. 그 이벤트가 오기 전에 닫기를 눌러도 창이 닫혀야 한다.
+    const dispatch = menu.dispatchEvent.bind(menu);
+    menu.dispatchEvent = (event: Event) => {
+      if (event.type === "toggle") return true;
+      return dispatch(event);
+    };
+    const removeListener = vi.spyOn(document, "removeEventListener");
+    try {
+      control("event-editor-modal-close").click();
+      expect(modal.isConnected).toBe(false);
+      expect(isTopModal(menu)).toBe(false);
+      expect(removeListener).toHaveBeenCalledWith("pointerdown", expect.any(Function), true);
+    } finally {
+      removeListener.mockRestore();
+    }
   });
 
   it.each(["ctrlKey", "metaKey"] as const)("applies on %s+S inside a field that owns Ctrl+Enter", async (modifier) => {
@@ -125,6 +139,49 @@ describe("event editor QA regressions", () => {
     input.dispatchEvent(enter);
     expect(enter.defaultPrevented).toBe(false);
     expect(save).not.toHaveBeenCalled();
+  });
+
+  it.each(["ctrlKey", "metaKey"] as const)("applies on %s+S from the open small-task input", async (modifier) => {
+    await openEditor();
+    const modal = control("event-editor-modal");
+    control("small-task-open").click();
+    const box = modal.querySelector<HTMLElement>(".event-editor-small-task");
+    const input = box?.querySelector("input");
+    if (!box || !input) throw new Error("missing small-task input");
+    expect(isTopModal(box)).toBe(true);
+    input.focus();
+    const apply = vi.spyOn(control("event-editor-apply"), "click");
+    const save = vi.spyOn(control("event-editor-save"), "click");
+    const key = new KeyboardEvent("keydown", {
+      key: "s", [modifier]: true, bubbles: true, cancelable: true,
+    });
+    input.dispatchEvent(key);
+    expect(key.defaultPrevented).toBe(true);
+    expect(apply).toHaveBeenCalledTimes(1);
+    expect(save).not.toHaveBeenCalled();
+    expect(modal.isConnected).toBe(true);
+  });
+
+  it("leaves Ctrl+S to a dialog stacked above the small-task input", async () => {
+    await openEditor();
+    const modal = control("event-editor-modal");
+    control("small-task-open").click();
+    const input = modal.querySelector<HTMLInputElement>(".event-editor-small-task input");
+    if (!input) throw new Error("missing small-task input");
+    const shield = document.createElement("div");
+    document.body.append(shield);
+    registerModal(shield, () => undefined);
+    const apply = vi.spyOn(control("event-editor-apply"), "click");
+    try {
+      const key = new KeyboardEvent("keydown", { key: "s", ctrlKey: true, bubbles: true, cancelable: true });
+      input.dispatchEvent(key);
+      expect(key.defaultPrevented).toBe(false);
+      expect(apply).not.toHaveBeenCalled();
+      expect(modal.isConnected).toBe(true);
+    } finally {
+      unregisterModal(shield);
+      shield.remove();
+    }
   });
 
   it("leaves Ctrl+Enter to inputs that own the shortcut", async () => {
