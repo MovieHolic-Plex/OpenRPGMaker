@@ -135,7 +135,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await innCommand.getByTestId("event-command-edit-ok").click();
   await expect(innCommand).toHaveCount(0);
   await expect(page.getByTestId("event-command-picker")).toHaveCount(0);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.screenshot({ path: testInfo.outputPath("shop-inn-editor-readable.png"), fullPage: true });
   const authoredCommands = Object.values((await exportedProject(page)).maps).flatMap((map) =>
     map.events.flatMap((event) => [
@@ -171,7 +171,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await shopEditDialog.getByTestId("shop-add-transaction-branch-command").click();
   await shopEditDialog.getByTestId("event-command-edit-ok").click();
   await expect(shopEditDialog).toHaveCount(0);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const authoredCommerceCommands = Object.values((await exportedProject(page)).maps).flatMap((map) =>
     map.events.flatMap((event) => [
       ...(event.commands ?? []),

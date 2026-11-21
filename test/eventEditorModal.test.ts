@@ -412,13 +412,14 @@ describe("RPG Maker style event editor entry points", () => {
 
     openEventEditorModal(project.startMapId, "event-1");
     const del = document.querySelector<HTMLElement>('[data-testid="event-delete"]');
-    if (!del) throw new Error("Expected the footer event-delete button");
+    if (!del) throw new Error("Expected the event-delete button");
 
-    // 우상단 페이지 툴바의 `삭제`(=페이지 1개)와 글자가 같으면 안 된다 — 폭발 반경이 다르다.
+    // 페이지 메뉴의 `삭제`와 글자가 같으면 안 된다 — 폭발 반경이 다르다.
+    // 이벤트 삭제는 헤더 ⋯ 안에 있고, 하단 저장 묶음에는 없다.
     expect(del.textContent).toBe("이벤트 삭제");
     expect(del.getAttribute("aria-label")).toContain("모든 페이지");
     expect(del.closest(".event-editor-footer-actions")).toBeNull();
-    expect(del.closest(".event-editor-footer-leading")).not.toBeNull();
+    expect(del.closest("[data-testid='event-editor-header-more']")).not.toBeNull();
   });
 
   it("keeps the event and active draft when delete confirmation is canceled", () => {
@@ -526,7 +527,10 @@ describe("RPG Maker style event editor entry points", () => {
     expect(modal?.querySelector('[data-testid="event-editor-coords"]')?.textContent).toBe("77, 17");
     // NPC 가 연결되지 않은 이벤트는 「NPC 없음」 칩을 그리지 않는다.
     expect(modal?.querySelector('[data-testid="event-editor-npc-chip"]')).toBeNull();
-    expect(document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value).toBe("");
+    const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
+    expect(nameInput?.value).toBe("");
+    expect(nameInput?.placeholder).toBe("이벤트 이름 (예: 촌장 할아버지)");
+    expect(nameInput?.closest(".event-editor-name-field")).not.toBeNull();
   });
 
 });

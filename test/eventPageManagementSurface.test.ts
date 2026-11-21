@@ -82,9 +82,10 @@ describe("페이지 관리 작업면", () => {
     expect(button(host, "event-page-delete").title).toContain("하나뿐");
     expect(button(host, "event-page-move-back").disabled).toBe(true);
     expect(button(host, "event-page-move-forward").disabled).toBe(true);
-    // 접힘 없음: details/summary 가 아니라 평평한 줄이다.
-    expect(host.querySelector("details")).toBeNull();
-    expect(host.querySelector("summary")).toBeNull();
+    // 여섯 버튼은 ⋯ 메뉴 안에 있지만 항상 마운트된다. 닫힌 details 여도 .click() 은 동작한다.
+    const menu = host.querySelector("details");
+    expect(menu?.querySelector("summary")?.getAttribute("aria-label")).toBe("페이지 메뉴");
+    expect(menu?.querySelectorAll("button")).toHaveLength(ids.length);
   });
 
   it("복제는 원본 바로 앞의 낮은 우선순위에 꽂는다 — 원본 뒤면 런타임 승자가 바뀐다 (D3)", () => {

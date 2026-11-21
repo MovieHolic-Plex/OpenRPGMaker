@@ -77,7 +77,7 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await page.screenshot({ path: `${EVIDENCE_DIR}/controls-1-3-5-6-editor-proof.png`, fullPage: true });
   await routeDialog.getByTestId("event-page-move-route-ok").click();
   await expect(routeDialog).toBeHidden();
-  await editor.getByTestId("event-editor-apply").click();
+  await editor.page().keyboard.press("Control+s");
 
   const savedPage = await authoredPage(page, ids);
   expect(savedPage?.overlapForbidden).toBe(false);

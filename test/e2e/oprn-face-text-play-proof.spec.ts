@@ -510,7 +510,7 @@ test("editor-authored face graphic and show text render together in actual play 
   await expect(page.getByTestId("event-command-text")).toHaveCount(0);
   await addFaceCommand(page);
   await addTextCommand(page);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 
   const eventId = await authoredEventId(page);
   await page.getByTestId("event-editor-modal-close").click();
@@ -544,7 +544,7 @@ test("editor-authored display text settings render as a top transparent message 
   await openCommandEdit(page, "displayTextSettings");
   await page.screenshot({ path: DISPLAY_TEXT_SETTINGS_EDITOR_SCREENSHOT, fullPage: true });
   await confirmCommandEdit(page);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 
   const eventId = await authoredDisplayTextSettingsEventId(page);
   await page.getByTestId("event-editor-modal-close").click();
@@ -568,7 +568,7 @@ test("display text options faceset and choices apply to real gameplay from the e
   await addFlippedFaceCommand(page);
   await addTextCommand(page, DISPLAY_OPTIONS_FACESET_BODY);
   await addChoicesCommand(page);
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 
   const eventId = await authoredDisplayOptionsFacesetChoicesEventId(page);
   await page.getByTestId("event-editor-modal-close").click();

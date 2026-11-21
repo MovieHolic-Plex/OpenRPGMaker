@@ -29,7 +29,7 @@ test("loop16 certifies timer set start stop countdown hud and state", async ({ p
   await configureTimerCommand(page.getByTestId("event-command-timer").nth(2), "stop", "0");
   await openCommandEditor(page.getByTestId("event-command-timer").nth(1));
   await screenshot(page, "002-editor-timer-set-start-stop-authoring.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertTimerCommands(editorExport);
   await writeJson("003-editor-export.json", editorExport);

@@ -62,13 +62,13 @@ test("low-level editor parts can author and run a quest-like switch/variable flo
   await page.getByTestId("event-page-tab-3").click();
   await fillAndCommit(page.getByTestId("event-page-switch-condition-input"), COMPLETE_SWITCH);
   await screenshot(page, "04-editor-quest-giver-page3-complete-condition.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.getByTestId("event-editor-modal-close").click();
 
   await openEventEditor(page, "quest-herb");
   await editSetVariableCommand(page, HERB_VARIABLE, "+=", "1");
   await screenshot(page, "05-editor-herb-progress-command.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.getByTestId("event-editor-modal-close").click();
 
   const editorExport = await debugState(page);

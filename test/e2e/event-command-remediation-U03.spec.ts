@@ -94,7 +94,7 @@ test("G1-F20 real editor restores A, preserves transition, and isolates Cancel t
     traces.push(await direction(page, "right"));
     await cancelCommand(page, savedUp);
     traces.push(await observeEditorAction(page, { observe: [projectObservation(path, up)], mutation: '[data-testid="project-export-json"]', timeoutMs: 10_000 },
-      () => page.getByTestId("event-editor-apply").click()));
+      () => page.keyboard.press("Control+s")));
     assert.deepEqual(await readEditorProject(page), savedUp);
     await page.getByTestId("event-editor-modal-close").click();
     await reimportProject(page, savedUp);
