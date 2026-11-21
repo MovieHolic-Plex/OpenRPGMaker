@@ -187,6 +187,8 @@ async function editCommand(page: Page, kind: string, action: (dialog: Locator) =
 async function applyEventEditor(page: Page): Promise<void> {
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();
+  // 포커스가 모달 밖에 있으면 Ctrl+S 가 편집기 리스너까지 올라가지 않는다.
+  await modal.getByTestId("event-editor-name").focus();
   await page.keyboard.press("Control+s");
   await expect(page.getByTestId("event-editor-draft-status")).toContainText("적용됨");
 }

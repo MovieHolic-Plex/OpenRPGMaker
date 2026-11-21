@@ -34,7 +34,7 @@ export const TRIGGER_OPTIONS = [
   { value: "action", label: "말을 걸면", description: "눈앞의 사람에게 말을 걸면 실행해요" },
   { value: "playerTouch", label: "플레이어가 닿으면", description: "플레이어가 이 칸에 부딪히면 실행해요" },
   { value: "eventTouch", label: "이벤트가 닿으면", description: "이 이벤트가 움직이다가 플레이어에게 닿으면 실행해요" },
-  { value: "auto", label: "나타나면 바로 실행", description: "이 페이지가 켜지는 순간 한 번 실행해요" },
+  { value: "auto", label: "나타나면 바로 실행", description: "이 맵에서 한 번만 바로 실행해요. 타이머 조건은 다시 맞으면 또 실행해요" },
   { value: "parallel", label: "뒤에서 계속 실행", description: "이 페이지가 켜진 동안 뒤에서 계속 반복해요" },
   // 구역(로케이션) 드나듦. 이 하나만 추가 필드(구역 · 들어옴/나감)를 갖고,
   // 그 필드 DOM 은 `editor/locationTriggerAuthoring.ts` 가 소유한다.

@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { registerModal } from "@/editor/ui/modalStack";
 
 const SKIP_SELECT_CLASSES = [
@@ -238,7 +239,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
   const filterMenu = (menu: OpenMenu, query: string): void => {
     const normalized = query.trim().toLocaleLowerCase();
     for (const entry of menu.options) {
-      const label = `${entry.option.label || entry.option.textContent || entry.option.value} ${entry.option.dataset.description ?? ""}`;
+      const label = `${entry.option.label || entry.option.textContent || entry.option.value} ${shownDescription(entry.option)}`;
       entry.button.hidden = normalized.length > 0 && !label.toLocaleLowerCase().includes(normalized);
     }
     const groups = new Set(menu.options.map((entry) => entry.group).filter((group): group is HTMLElement => group !== null));
@@ -383,7 +384,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     if (!current) return;
     const match = current.options.findIndex((entry) => {
       const label = (entry.option.label || entry.option.textContent || entry.option.value).toLocaleLowerCase();
-      const description = (entry.option.dataset.description ?? "").toLocaleLowerCase();
+      const description = shownDescription(entry.option).toLocaleLowerCase();
       return !entry.button.disabled && (label.startsWith(typeahead) || description.startsWith(typeahead));
     });
     if (match >= 0) setActiveOption(current, match);
@@ -550,6 +551,11 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
       instances.clear();
     },
   };
+}
+
+function shownDescription(option: HTMLOptionElement): string {
+  const source = option.dataset.description ?? "";
+  return source ? t(source) : "";
 }
 
 function shouldSkipSelect(select: HTMLSelectElement): boolean {

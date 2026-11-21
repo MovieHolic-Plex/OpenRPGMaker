@@ -68,6 +68,7 @@ import { relationshipStateName } from "@/project/relationshipState";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
 import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
 import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { bindDetailsEscape } from "./detailsPopover";
 import { appearanceBindingControl } from "../appearanceBindingControl";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { insideLocationSentence, mapLocationLabel } from "@/editor/mapLocationLabels";
@@ -263,35 +264,35 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
     ),
   ];
 
-  wrap.append(
-    el("details", {
-      class: "event-editor-page-more",
-      dataset: { testid: "event-page-more" },
-      children: [
-        el("summary", {
-          text: "⋯",
-          attrs: { "aria-label": "페이지 메뉴" },
-        }),
-        el("div", {
-          class: "event-editor-page-more-panel",
-          children: [
-            el("span", {
-              class: "event-page-actions-label",
-              text: "페이지",
-              attrs: { "aria-hidden": "true" },
-              dataset: { testid: "event-classic-page-controls" },
-            }),
-            el("div", {
-              class: "event-page-action-buttons",
-              attrs: { role: "group", "aria-label": "페이지 관리" },
-              dataset: { count: String(actions.length) },
-              children: actions,
-            }),
-          ],
-        }),
-      ],
-    })
-  );
+  const pageMore = el("details", {
+    class: "event-editor-page-more",
+    dataset: { testid: "event-page-more" },
+    children: [
+      el("summary", {
+        text: "⋯",
+        attrs: { "aria-label": "페이지 메뉴" },
+      }),
+      el("div", {
+        class: "event-editor-page-more-panel",
+        children: [
+          el("span", {
+            class: "event-page-actions-label",
+            text: "페이지",
+            attrs: { "aria-hidden": "true" },
+            dataset: { testid: "event-classic-page-controls" },
+          }),
+          el("div", {
+            class: "event-page-action-buttons",
+            attrs: { role: "group", "aria-label": "페이지 관리" },
+            dataset: { count: String(actions.length) },
+            children: actions,
+          }),
+        ],
+      }),
+    ],
+  }) as HTMLDetailsElement;
+  bindDetailsEscape(pageMore);
+  wrap.append(pageMore);
   return wrap;
 }
 

@@ -61486,7 +61486,8 @@
     "0e75ed1dea95": ".transfer-player-zoom-button|background  (경쟁 2)",
     "1f48f512b787": ".transfer-player-zoom-button|border  (경쟁 2)",
     "cfbbac3391a4": ".weighted-branch-command-body .weighted-branch-chance-input|font  (경쟁 2)",
-    "1d1136737ee0": ".weighted-branch-rows|gap  (경쟁 2)"
+    "1d1136737ee0": ".weighted-branch-rows|gap  (경쟁 2)",
+    "3662b86218a6": ".event-editor-modal-footer [data-testid=\"event-editor-save\"].is-remote-error::before|background  (경쟁 2)"
    },
    "winners": {
     "41db3a1b7e3c": "220 10 37",
@@ -77127,7 +77128,20 @@
     "75bafed63bb3": "430 10 36",
     "48b3ae7bc98b": "430 10 36",
     "787d2cb53b86": "430 10 36",
-    "f4283f51a45f": "430 10 36"
+    "f4283f51a45f": "430 10 36",
+    "3662b86218a6": "430 10 105",
+    "6759f73e15a3": "430 10 141",
+    "6b0b71562936": "430 10 355",
+    "4f9851043796": "430 10 359",
+    "b50d0124670d": "430 10 97",
+    "397f48fa827a": "430 10 7",
+    "f4df923a8cf6": "430 10 112",
+    "e65410f54a38": "430 10 97",
+    "7a0dd330b1f7": "430 10 36",
+    "d627067a2131": "430 10 105",
+    "637020626999": "430 10 14",
+    "4ca7b4d18b2d": "430 10 4998",
+    "0b8045ea8e8c": "430 10 139"
    }
   },
   "src/styles/index.css": {

@@ -10,6 +10,7 @@ import { eventNameFromPages } from "@/project/eventDisplayName";
 import { ensureEventPages } from "@/editor/eventPages";
 import { announceEventEditorClosed, announceEventEditorOpened } from "@/editor/eventEditorLifecycleEvents";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
+import { bindDetailsEscape } from "./detailsPopover";
 import {
   beginExistingEventDraft,
   checkpointEventDraft,
@@ -688,6 +689,56 @@ function renderModalHeader(
     ],
   });
 
+  const headerMore = el("details", {
+    class: "event-editor-header-more",
+    dataset: { testid: "event-editor-header-more" },
+    children: [
+      el("summary", {
+        text: "⋯",
+        attrs: { "aria-label": "더보기" },
+      }),
+      el("div", {
+        class: "event-editor-header-more-panel",
+        dataset: { testid: "event-editor-header-more-panel" },
+        children: [
+          eventSmallTask(mapId, eventId),
+          applyButton,
+          el("div", {
+            class: "event-editor-window-controls",
+            attrs: { role: "group", "aria-label": "이벤트 편집 창" },
+            children: [
+              el("button", {
+                class: "event-editor-window-control",
+                children: [renderEditorIcon("minimize")],
+                attrs: { type: "button", title: "최소화", "aria-label": "이벤트 편집 창 최소화" },
+                dataset: { testid: "event-editor-window-minimize" },
+              }),
+              el("button", {
+                class: "event-editor-window-control event-editor-window-fullscreen",
+                children: [renderEditorIcon("expand")],
+                attrs: {
+                  type: "button",
+                  title: "전체 보기 (Alt+Enter)",
+                  "aria-label": "전체 보기",
+                  "aria-keyshortcuts": "Alt+Enter",
+                  "aria-pressed": "false",
+                },
+                dataset: { testid: "event-editor-window-fullscreen" },
+              }),
+            ],
+          }),
+          footerButton("이벤트 삭제", "event-delete", () => {
+            void requestEditorEventDeletion(mapId, eventId).then((deleted) => {
+              if (deleted) close(true);
+            });
+          }, false, "ghost"),
+          meta,
+        ],
+      }),
+    ],
+  }) as HTMLDetailsElement;
+  bindDetailsEscape(headerMore);
+
   const header = el("header", {
     class: "event-editor-modal-header",
     dataset: { testid: "event-editor-titlebar" },
@@ -730,54 +781,7 @@ function renderModalHeader(
             dataset: { testid: "event-editor-help" },
             on: { click: () => openEventEditorHelp() },
           }),
-          el("details", {
-            class: "event-editor-header-more",
-            dataset: { testid: "event-editor-header-more" },
-            children: [
-              el("summary", {
-                text: "⋯",
-                attrs: { "aria-label": "더보기" },
-              }),
-              el("div", {
-                class: "event-editor-header-more-panel",
-                dataset: { testid: "event-editor-header-more-panel" },
-                children: [
-                  eventSmallTask(mapId, eventId),
-                  applyButton,
-                  el("div", {
-                    class: "event-editor-window-controls",
-                    attrs: { role: "group", "aria-label": "이벤트 편집 창" },
-                    children: [
-                      el("button", {
-                        class: "event-editor-window-control",
-                        children: [renderEditorIcon("minimize")],
-                        attrs: { type: "button", title: "최소화", "aria-label": "이벤트 편집 창 최소화" },
-                        dataset: { testid: "event-editor-window-minimize" },
-                      }),
-                      el("button", {
-                        class: "event-editor-window-control event-editor-window-fullscreen",
-                        children: [renderEditorIcon("expand")],
-                        attrs: {
-                          type: "button",
-                          title: "전체 보기 (Alt+Enter)",
-                          "aria-label": "전체 보기",
-                          "aria-keyshortcuts": "Alt+Enter",
-                          "aria-pressed": "false",
-                        },
-                        dataset: { testid: "event-editor-window-fullscreen" },
-                      }),
-                    ],
-                  }),
-                  footerButton("이벤트 삭제", "event-delete", () => {
-                    void requestEditorEventDeletion(mapId, eventId).then((deleted) => {
-                      if (deleted) close(true);
-                    });
-                  }, false, "ghost"),
-                  meta,
-                ],
-              }),
-            ],
-          }),
+          headerMore,
           el("button", {
             attrs: { type: "button", style: "display: none;" },
             dataset: { testid: "event-editor-ok" },
@@ -823,14 +827,14 @@ function renderModalFooter(
     children: [
       // 상태 문구는 화면에서 빼고 저장 버튼의 점으로 바꾼다. 노드·data-state·문장은 그대로라
       // 기존 단정이 textContent 로 읽는다.
+      el("span", {
+        class: "event-editor-remote-status",
+        attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+        dataset: { testid: "event-editor-remote-status" },
+      }),
       el("div", {
         class: "event-editor-status-sr",
         children: [
-          el("span", {
-            class: "event-editor-remote-status",
-            attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
-            dataset: { testid: "event-editor-remote-status" },
-          }),
           el("span", {
             class: "issue event-editor-draft-status",
             attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
@@ -922,14 +926,21 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
     local.title = "프로젝트에 저장된 상태입니다.";
     local.dataset.state = "project";
   }
-  const save = footer.querySelector<HTMLButtonElement>('[data-testid="event-editor-save"]');
-  const dirty = local.dataset.state === "working" || local.dataset.state === "conflict" || local.dataset.state === "new-pristine";
-  save?.classList.toggle("is-dirty", dirty);
   if (remote) {
     const remoteStatus = remotePersistenceLabel(store.getAutoSaveState());
     remote.textContent = remoteStatus.text;
     remote.title = remoteStatus.text;
     remote.dataset.state = remoteStatus.state;
+  }
+  const save = footer.querySelector<HTMLButtonElement>('[data-testid="event-editor-save"]');
+  const dirty = local.dataset.state === "working" || local.dataset.state === "conflict" || local.dataset.state === "new-pristine";
+  const remoteFailed = remote?.dataset.state === "error";
+  save?.classList.toggle("is-dirty", dirty);
+  save?.classList.toggle("is-remote-error", remoteFailed);
+  if (save) {
+    save.title = remoteFailed
+      ? (remote?.textContent || "저장 실패")
+      : "저장하고 닫기 (Ctrl+Enter)";
   }
 }
 
