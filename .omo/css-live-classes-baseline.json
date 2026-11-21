@@ -15843,7 +15843,6 @@
     "width:min(var(--balanced-inspector-width), 62%)",
     "z-index:1",
     "z-index:16",
-    "z-index:18",
     "z-index:2",
     "z-index:3",
     "z-index:4",
@@ -16831,6 +16830,7 @@
     "border-color",
     "color",
     "display",
+    "flex",
     "flex-shrink",
     "min-width",
     "order",
@@ -16842,10 +16842,11 @@
     "color:var(--mk-t1)",
     "display:none",
     "flex-shrink:0",
+    "flex:1 0 100%",
     "min-width:0",
     "order:3",
     "overflow:visible",
-    "position:static"
+    "position:relative"
    ],
    "sheets": [
     "src/styles/event/command-list-2.css",
@@ -16859,10 +16860,9 @@
     "border-radius",
     "box-shadow",
     "display",
+    "margin-top",
     "padding",
     "position",
-    "right",
-    "top",
     "width",
     "z-index"
    ],
@@ -16872,12 +16872,11 @@
     "border:1px solid var(--mk-line)",
     "box-shadow:0 12px 28px var(--shadow-pop)",
     "display:none",
+    "margin-top:5px",
     "padding:8px",
-    "position:absolute",
-    "right:0",
-    "top:calc(100% + 5px)",
+    "position:static",
     "width:min(620px, 100%)",
-    "z-index:18"
+    "z-index:1"
    ],
    "sheets": [
     "src/styles/event/command-list-2.css"
