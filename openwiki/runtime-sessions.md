@@ -960,8 +960,9 @@ vm3/vm4 판정 「대사 한 글자씩 느리게」「엔딩 뒤 크레딧 대�
   남은 비용은 그림판 굽기(`bakeTilesetTextureCanvas`·`texImage2D` ~0.5s)와 `renderReliefLayer`(~0.8s, relief 렌더 자체)다.
 - **칩셋 GL 업로드는 2048px 띠 (2026-11-21)** — 지금 버들항 시트는 61,312칸 · 2048×7664 이다. 이 높이를 텍스처 한 장으로 올리면
   `MAX_TEXTURE_SIZE` 가 4096 인 기기에서는 업로드 전체가 실패하고(잔디가 시트 맨 위에 있어도), 소프트웨어 GL 은 그 업로드에서 멈춘다.
-  팔레트는 CSS 가 PNG 를 직접 그리므로 멀쩡하다. `src/assets/chipsetTextureBands.ts` 가 표시된 칩셋만 2048(타일 128줄) 이하로 잘라
-  Phaser 소스 여러 장에 올리고, 게으른 `tile_N` 프레임은 그 소스 인덱스를 쓴다. 이식 굽기(`ensureTilesetTexture`)와 높이 지면 샘플도 같은 띠를 본다.
+  팔레트는 CSS 가 PNG 를 직접 그리므로 멀쩡하다. `src/assets/chipsetTextureBands.ts` 가 표시된 칩셋만 2048 이하로, 그 타일셋의 칸 크기에 맞춰 자른다
+  (16px 는 2048, 48px 는 2016 — 칸이 두 소스에 걸치지 않는다). data URL 로 실리는 단독 플레이어도 `onProcessImage` 에서 같은 띠를 쓴다.
+  게으른 `tile_N` 프레임은 그 소스 인덱스를 쓴다. 이식 굽기(`ensureTilesetTexture`)와 높이 지면 샘플도 같은 띠를 본다.
   칸 번호는 바꾸지 않는다. 초상·그림 파일은 자르지 않는다.
 - **HUD 목표 줄 「…푼다 (」 잘림 (런타임 결함 아님)** — `hud-objective-long.scenario.mjs` 로 vm3 argon jrpg 를 재현하면 긴 목표
   「동굴 입구를 막고 있는 결계를 푼다 (마왕의 동굴 입구: 동쪽 → 결계 해제 / 회복의 샘: 시작 마을 서쪽)」가 오른쪽 위 상자(최대 폭 40%)에 세 줄로 다 보이고 넘침 0이다.

@@ -80,7 +80,7 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
 
   // addCanvas 는 캔버스 전체를 getImageData 로 읽는다. 한 장으로 addImage 하면 2048 을 넘는 시트
   // (버들항 2048×7664, 이식 꼬리까지 더 김)가 GL 한도에 걸려 칸 전체가 빈다. 2048 이하 띠로 나눠 올린다.
-  const sliced = sliceChipsetBandSources(canvas);
+  const sliced = sliceChipsetBandSources(canvas, tileset.tileSize);
   const bands = sliced && sliced.canvases.length > 1 ? sliced.canvases : null;
   const texture = bands
     ? scene.textures.create(textureKey, bands)

@@ -372,6 +372,7 @@ describe("m2 event command catalog", () => {
     };
 
     const follow = run(m2(cameraId, { mode: "follow", targetEventId: "ev_middle", durationMs: "900", wait: "true" }));
+    const bare = run(m2(cameraId, { mode: "return", wait: "true" }));
     const back = run(m2(cameraId, { mode: "return", durationMs: "1000", wait: "true" }));
     const pan = run(m2(cameraId, { mode: "panTo", target: "screen", x: "12", y: "8", durationMs: "1400", wait: "true" }));
     const tint = run(m2(tintId, { color: "neutral", durationMs: "400" }));
@@ -388,6 +389,10 @@ describe("m2 event command catalog", () => {
     expect(back).toMatchObject({
       kind: "pause",
       step: { kind: "cameraControl", mode: "return", durationMs: 1000, returnToPlayer: true, target: { kind: "player" } },
+    });
+    expect(bare).toMatchObject({
+      kind: "pause",
+      step: { kind: "cameraControl", mode: "return", durationMs: 300, returnToPlayer: true, target: { kind: "player" } },
     });
     expect(pan).toMatchObject({
       kind: "pause",

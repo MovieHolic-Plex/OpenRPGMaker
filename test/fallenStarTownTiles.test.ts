@@ -142,4 +142,22 @@ describe("폴른 스타 왕도 아스텔 tiles", () => {
     expect(added).toContainEqual([`tile_${tile}`, origin.sourceIndex, origin.x, origin.y, TILE, TILE]);
     expect(origin.sourceIndex).toBeGreaterThanOrEqual(1);
   });
+
+  it("keeps a 48px tile on one side of the band boundary", () => {
+    const tile = 48;
+    const perRow = 16;
+    const width = perRow * tile;
+    const height = 48 * tile;
+    const rects = chipsetBandRects(width, height, tile);
+    expect(rects).not.toBeNull();
+    expect(rects![0]).toMatchObject({ x: 0, y: 0, width, height: 42 * tile });
+    expect(rects![1]?.y).toBe(42 * tile);
+    const index = 42 * perRow;
+    const origin = tileFrameOrigin(index, perRow, tile, rects!.length, rects![0]!.width, rects![0]!.height, rects![0]!.columns);
+    expect(origin).toMatchObject({ sourceIndex: 1, y: 0 });
+    expect(origin.y + tile).toBeLessThanOrEqual(rects![1]!.height);
+    const before = tileFrameOrigin(index - perRow, perRow, tile, rects!.length, rects![0]!.width, rects![0]!.height, rects![0]!.columns);
+    expect(before.sourceIndex).toBe(0);
+    expect(before.y + tile).toBeLessThanOrEqual(rects![0]!.height);
+  });
 });

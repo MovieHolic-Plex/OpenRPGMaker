@@ -17,27 +17,41 @@ type BandTexture = {
 };
 
 const chipsetTextureKeys = new Set<string>();
+const chipsetTileSizes = new Map<string, number>();
 const fullSheets = new Map<string, SizedImage>();
 
-/** 로더가 이 키를 칩셋으로 알게 한다. 초상·그림은 자르지 않는다. */
-export function markChipsetTextureKey(key: string): void {
-  if (key) chipsetTextureKeys.add(key);
+/** 로더가 이 키를 칩셋으로 알게 한다. 초상·그림은 자르지 않는다. tileSize 는 띠 경계가 칸을 가로지르지 않게 한다. */
+export function markChipsetTextureKey(key: string, tileSize = 16): void {
+  if (!key) return;
+  chipsetTextureKeys.add(key);
+  if (tileSize > 0) chipsetTileSizes.set(key, tileSize);
+}
+
+function tileSizeForKey(key: string | undefined): number {
+  return (key && chipsetTileSizes.get(key)) || 16;
 }
 
 export function chipsetNeedsBands(width: number, height: number): boolean {
   return width > CHIPSET_TEXTURE_MAX_EDGE || height > CHIPSET_TEXTURE_MAX_EDGE;
 }
 
-export function chipsetBandColumns(width: number): number {
-  if (width <= 0) return 1;
-  return Math.max(1, Math.ceil(width / CHIPSET_TEXTURE_MAX_EDGE));
+/** 2048 이하이면서 칸 크기의 배수. 48px 칸은 2048 이 배수가 아니라 2016 에서 자른다. */
+export function chipsetBandEdge(tileSize = 16): number {
+  const step = Number.isFinite(tileSize) && tileSize > 0 && tileSize <= CHIPSET_TEXTURE_MAX_EDGE ? Math.floor(tileSize) : CHIPSET_TEXTURE_MAX_EDGE;
+  return Math.max(step, Math.floor(CHIPSET_TEXTURE_MAX_EDGE / step) * step);
 }
 
-/** 시트를 덮는 2048 이하 칸. 필요 없으면 null. */
-export function chipsetBandRects(width: number, height: number): { x: number; y: number; width: number; height: number; columns: number }[] | null {
+export function chipsetBandColumns(width: number, tileSize = 16): number {
+  if (width <= 0) return 1;
+  return Math.max(1, Math.ceil(width / chipsetBandEdge(tileSize)));
+}
+
+/** 시트를 덮는 2048 이하 칸. 경계는 타일 줄에 맞춘다. 필요 없으면 null. */
+export function chipsetBandRects(width: number, height: number, tileSize = 16): { x: number; y: number; width: number; height: number; columns: number }[] | null {
   if (!chipsetNeedsBands(width, height) || width <= 0 || height <= 0) return null;
-  const bandW = Math.min(width, CHIPSET_TEXTURE_MAX_EDGE);
-  const bandH = Math.min(height, CHIPSET_TEXTURE_MAX_EDGE);
+  const edge = chipsetBandEdge(tileSize);
+  const bandW = Math.min(width, edge);
+  const bandH = Math.min(height, edge);
   const columns = Math.ceil(width / bandW);
   const rects: { x: number; y: number; width: number; height: number; columns: number }[] = [];
   for (let y = 0; y < height; y += bandH) {
@@ -53,10 +67,10 @@ function imageSize(image: SizedImage): { width: number; height: number } {
 }
 
 /** 2D 캔버스로 자른 띠. document 가 없거나 한 장이면 null. */
-export function sliceChipsetBandSources(image: SizedImage): { canvases: HTMLCanvasElement[]; columns: number } | null {
+export function sliceChipsetBandSources(image: SizedImage, tileSize = 16): { canvases: HTMLCanvasElement[]; columns: number } | null {
   if (typeof document === "undefined") return null;
   const { width, height } = imageSize(image);
-  const rects = chipsetBandRects(width, height);
+  const rects = chipsetBandRects(width, height, tileSize);
   if (!rects || rects.length < 2) return null;
   const canvases: HTMLCanvasElement[] = [];
   for (const rect of rects) {
@@ -72,8 +86,8 @@ export function sliceChipsetBandSources(image: SizedImage): { canvases: HTMLCanv
   return { canvases, columns: rects[0]!.columns };
 }
 
-export function sliceChipsetBands(image: SizedImage): HTMLCanvasElement[] | null {
-  return sliceChipsetBandSources(image)?.canvases ?? null;
+export function sliceChipsetBands(image: SizedImage, tileSize = 16): HTMLCanvasElement[] | null {
+  return sliceChipsetBandSources(image, tileSize)?.canvases ?? null;
 }
 
 export function rememberChipsetImage(key: string, image: SizedImage): void {
@@ -89,7 +103,7 @@ export function rememberedChipsetImage(key: string): SizedImage | null {
 export function applyRememberedChipsetBands(texture: BandTexture): void {
   const image = texture.key ? fullSheets.get(texture.key) : undefined;
   if (!image || !texture.setSource || (texture.source?.length ?? 0) > 1) return;
-  const sliced = sliceChipsetBandSources(image);
+  const sliced = sliceChipsetBandSources(image, tileSizeForKey(texture.key));
   if (!sliced || sliced.canvases.length < 2) return;
   texture.setSource(sliced.canvases, 0, true);
   texture[BAND_COLUMNS] = sliced.columns;
@@ -136,6 +150,7 @@ export function frameOriginForTexture(
 
 type ImageFileProto = {
   onProcess: () => void;
+  onProcessImage: () => void;
   onProcessComplete: () => void;
   onProcessError: () => void;
   data: CanvasImageSource;
@@ -149,13 +164,28 @@ type ImageFileProto = {
 type UploadRuntime = {
   Loader: {
     FILE_PROCESSING: number;
+    FILE_LOADED: number;
     FileTypes: { ImageFile: { prototype: ImageFileProto } };
   };
 };
 
+function keepFirstBand(file: ImageFileProto, image: SizedImage): void {
+  if (!chipsetTextureKeys.has(file.key)) return;
+  try {
+    const bands = sliceChipsetBands(image, tileSizeForKey(file.key));
+    if (bands && bands.length > 1) {
+      rememberChipsetImage(file.key, image);
+      file.data = bands[0]!;
+    }
+  } catch (error) {
+    console.warn(`[chipset] 시트 띠 나누기 실패: ${file.key}`, error);
+  }
+}
+
 /**
  * 그림 디코드를 업로드 앞에 두고, 표시된 칩셋이 2048 을 넘으면 첫 띠만 올린다.
  * 나머지 띠는 프레임 등록 때 `applyRememberedChipsetBands` 가 붙인다.
+ * data URL 은 인스턴스가 `onProcessImage` 를 쓰므로 그 경로도 같이 자른다.
  * 한 번만 깔린다(`__oprnDecode`).
  */
 export function installChipsetUploadGuard(PhaserRuntime: UploadRuntime): void {
@@ -163,6 +193,14 @@ export function installChipsetUploadGuard(PhaserRuntime: UploadRuntime): void {
   if (proto.__oprnDecode) return;
   proto.__oprnDecode = true;
   const PROCESSING = PhaserRuntime.Loader.FILE_PROCESSING;
+  const LOADED = PhaserRuntime.Loader.FILE_LOADED;
+  proto.onProcessImage = function (this: ImageFileProto): void {
+    const loaded = this.state === LOADED;
+    this.state = PROCESSING;
+    if (!loaded) { this.onProcessError(); return; }
+    keepFirstBand(this, this.data as SizedImage);
+    this.onProcessComplete();
+  };
   proto.onProcess = function (this: ImageFileProto): void {
     this.state = PROCESSING;
     const image = new Image();
@@ -178,17 +216,7 @@ export function installChipsetUploadGuard(PhaserRuntime: UploadRuntime): void {
       else this.onProcessError();
     };
     const accept = (): void => {
-      if (chipsetTextureKeys.has(this.key)) {
-        try {
-          const bands = sliceChipsetBands(image);
-          if (bands && bands.length > 1) {
-            rememberChipsetImage(this.key, image);
-            this.data = bands[0]!;
-          }
-        } catch (error) {
-          console.warn(`[chipset] 시트 띠 나누기 실패: ${this.key}`, error);
-        }
-      }
+      keepFirstBand(this, image);
       finish(true);
     };
     // WebKit 등은 멀쩡한 큰 그림에도 decode() 를 거절한다 — 그때는 load 를 기다려 텍스처가 빠지지 않게 한다.

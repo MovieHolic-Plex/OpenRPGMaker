@@ -29,7 +29,7 @@ export function executeModernCommand(
       runtime.camera.x = optionalFieldNumber(fields, "x", 0);
       runtime.camera.y = optionalFieldNumber(fields, "y", 0);
       runtime.camera.zoom = optionalFieldNumber(fields, "zoom", 1);
-      runtime.camera.durationMs = fieldNumber(fields, "durationMs", 300);
+      runtime.camera.durationMs = optionalFieldNumber(fields, "durationMs", 300);
       session.flags[`camera:${runtime.camera.mode}`] = true;
       return true;
     case "Screen Effect":

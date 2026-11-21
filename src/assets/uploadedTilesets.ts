@@ -2,6 +2,7 @@ import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type Phaser from "phaser";
 import { withInlineAsset } from "./inlineAssetStore";
 import { applyRememberedChipsetBands, frameOriginForTexture, markChipsetTextureKey } from "@/assets/chipsetTextureBands";
+import { bundledChipsetTileSize } from "@/assets/bundledChipsetGeometry";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
@@ -89,12 +90,12 @@ export function loadUploadedTilesets(
     const key = uploadedTilesetTextureKey(tileset);
     if (queued.has(key)) continue;
     queued.add(key);
-    markChipsetTextureKey(key);
+    markChipsetTextureKey(key, tileset.tileSize);
     scene.load.image(key, withInlineAsset(imageUrl));
   }
   for (const id of uploadedGraftSourceIds(project)) {
     const imageUrl = uploadedAssetUrl(project!.assets.uploaded[id]!);
-    if (imageUrl && !queued.has(id)) { queued.add(id); markChipsetTextureKey(id); scene.load.image(id, withInlineAsset(imageUrl)); }
+    if (imageUrl && !queued.has(id)) { queued.add(id); markChipsetTextureKey(id, sheetTileSize(project, id)); scene.load.image(id, withInlineAsset(imageUrl)); }
   }
 }
 
@@ -128,6 +129,17 @@ export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project)
   }
 }
 
+function sheetTileSize(project: Project | undefined, assetId: string): number {
+  const tilesets = Object.values(project?.tilesets ?? {});
+  const owner = tilesets.find((tileset) => tileset.image.type === "uploaded" && tileset.image.id === assetId);
+  if (owner) return owner.tileSize;
+  for (const tileset of tilesets) {
+    const graft = tileset.tileGrafts?.find((item) => item.sourceChipset === assetId);
+    if (graft?.sourceTileSize) return graft.sourceTileSize;
+  }
+  return bundledChipsetTileSize(assetId);
+}
+
 const pendingSceneTilesets = new WeakMap<Phaser.Scene, Set<string>>();
 
 /**
@@ -153,6 +165,7 @@ export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Proj
     const url = asset ? uploadedAssetUrl(asset) : "";
     if (!url) continue;
     pending.add(key);
+    markChipsetTextureKey(key, tileset.tileSize);
     void ensureSceneImageTexture(scene, key, withInlineAsset(url)).then(loaded => {
       pending.delete(key);
       if (!loaded || !scene.sys.isActive()) return;
@@ -166,6 +179,7 @@ export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Proj
     const url = uploadedAssetUrl(project.assets.uploaded[id]!);
     if (!url) continue;
     pending.add(id);
+    markChipsetTextureKey(id, sheetTileSize(project, id));
     void ensureSceneImageTexture(scene, id, withInlineAsset(url)).then(loaded => {
       pending.delete(id);
       if (loaded && scene.sys.isActive()) onReady();

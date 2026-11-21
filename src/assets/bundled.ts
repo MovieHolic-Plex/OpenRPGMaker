@@ -314,18 +314,18 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
   loadUploadedTilesets(scene, project, options);
   loadUploadedEventSprites(scene, project, project ? collectPlayReferencedStrings(project) : undefined);
-  markChipsetTextureKey(TEX_TILESET);
+  markChipsetTextureKey(TEX_TILESET, bundledChipsetTileSize(TEX_TILESET));
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     const loadKey = chipsetLoadTextureKey(asset.textureKey);
-    markChipsetTextureKey(loadKey);
+    markChipsetTextureKey(loadKey, bundledChipsetTileSize(asset.textureKey));
     scene.load.image(loadKey, withInlineAsset(asset.path));
   }
   for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     const loadKey = chipsetLoadTextureKey(asset.textureKey);
-    markChipsetTextureKey(loadKey);
+    markChipsetTextureKey(loadKey, bundledChipsetTileSize(asset.textureKey));
     scene.load.image(loadKey, withInlineAsset(asset.path));
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
@@ -634,7 +634,7 @@ export function ensureBundledProjectTextures(
     if (!used.has(asset.textureKey) || scene.textures.exists(asset.textureKey)) continue;
     const loadKey = chipsetLoadTextureKey(asset.textureKey);
     if (scene.textures.exists(loadKey) || inFlight.has(loadKey)) continue;
-    markChipsetTextureKey(loadKey);
+    markChipsetTextureKey(loadKey, bundledChipsetTileSize(asset.textureKey));
     queue(loadKey, asset.path);
     chipsets.push(asset);
   }

@@ -1,5 +1,5 @@
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { lstat, stat } from "node:fs/promises";
 import type { ServerResponse } from "node:http";
 import { tmpdir } from "node:os";
 import { join, resolve, relative, extname } from "node:path";
@@ -93,9 +93,8 @@ export function audioDeliveryPlugin(): Plugin {
       if (track) {
         const cached = await ensureCachedTrack(track, join(tmpdir(), "oprn-bgm-catalog"));
         if (cached) {
-          const info = await stat(cached);
-          await serveFile(cached, info.size, request, response);
-          return;
+          const info = await lstat(cached);
+          if (info.isFile()) { await serveFile(cached, info.size, request, response); return; }
         }
       }
       response.statusCode = 404;
