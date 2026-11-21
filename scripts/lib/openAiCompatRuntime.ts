@@ -601,10 +601,15 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
   const reject = (code: string, message: string, test?: OpenAiCompatTestResult): OpenAiCompatConnectResult => ({
     ok: false, code, message, model, endpoints: listOpenAiCompatPublic(), ...(test ? { test } : {}),
   });
+  // 시험은 id 가 없으면 저장된 패턴을 모른다. 다시 연결할 때 패턴을 빼면 같은 주소의 저장값을 쓴다.
+  // 빈 배열은 «목록을 비워라»이므로 저장값으로 되돌리지 않는다.
+  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
+  const allowModels = input.allowModels ?? existing?.row.allowModels;
+  const blockModels = input.blockModels ?? existing?.row.blockModels;
   const test = await testOpenAiCompat({
     name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true,
-    ...(input.allowModels !== undefined ? { allowModels: input.allowModels } : {}),
-    ...(input.blockModels !== undefined ? { blockModels: input.blockModels } : {}),
+    ...(allowModels !== undefined ? { allowModels } : {}),
+    ...(blockModels !== undefined ? { blockModels } : {}),
   }, fetchImpl);
   if (test.chat && !test.chat.ok) return reject(test.code === "ok" ? "chat" : test.code, test.chat.message || test.message, test);
   if (!test.ok || !test.chat?.ok) return reject(test.code, test.message, test);
@@ -613,7 +618,6 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
   }
 
   // 같은 주소의 엔드포인트가 있으면 고친다 — 다시 연결할 때마다 「OpenRouter 2」 가 생기지 않게.
-  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
   const endpoint = saveOpenAiCompat({
     ...(existing ? { id: existing.id } : {}),
     name: existing?.row.name ?? name,
