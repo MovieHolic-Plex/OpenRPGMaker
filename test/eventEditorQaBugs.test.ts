@@ -116,6 +116,32 @@ describe("event editor QA regressions", () => {
     }
   });
 
+  it("closes the editor after an outside pointerdown while the menu toggle is still pending", async () => {
+    await openEditor();
+    const modal = control("event-editor-modal");
+    const menu = control<HTMLDetailsElement>("event-editor-header-more");
+    const close = control("event-editor-modal-close");
+    menu.open = true;
+    expect(isTopModal(menu)).toBe(true);
+    const dispatch = menu.dispatchEvent.bind(menu);
+    menu.dispatchEvent = (event: Event) => {
+      if (event.type === "toggle") return true;
+      return dispatch(event);
+    };
+    close.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+    expect(menu.open).toBe(false);
+    expect(isTopModal(menu)).toBe(true);
+    const removeListener = vi.spyOn(document, "removeEventListener");
+    try {
+      close.click();
+      expect(modal.isConnected).toBe(false);
+      expect(isTopModal(menu)).toBe(false);
+      expect(removeListener).toHaveBeenCalledWith("pointerdown", expect.any(Function), true);
+    } finally {
+      removeListener.mockRestore();
+    }
+  });
+
   it.each(["ctrlKey", "metaKey"] as const)("applies on %s+S inside a field that owns Ctrl+Enter", async (modifier) => {
     await openEditor();
     const modal = control("event-editor-modal");
