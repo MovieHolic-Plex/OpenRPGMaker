@@ -5317,29 +5317,6 @@
     ]
   },
   {
-    "id": "city_kprop_extinguisher_cabinet",
-    "nameKo": "벽걸이 소화기함",
-    "category": "prop",
-    "group": "city",
-    "sourceFile": "city_kprop_extinguisher_cabinet.png",
-    "widthPx": 16,
-    "heightPx": 32,
-    "widthTiles": 1,
-    "heightTiles": 2,
-    "footprint": [
-      "*",
-      "*"
-    ],
-    "tags": [
-      "city",
-      "현대",
-      "extinguisher cabinet",
-      "소화기 보관함",
-      "소방 설비"
-    ],
-    "surface": "wall"
-  },
-  {
     "id": "city_kprop_flyer_display",
     "nameKo": "전단지 안내판",
     "category": "prop",
