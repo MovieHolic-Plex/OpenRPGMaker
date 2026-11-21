@@ -59,6 +59,21 @@
       "id": "city_terrace",
       "labelKo": "테라스·야외 카페",
       "order": 190
+    },
+    {
+      "id": "city_camping",
+      "labelKo": "야영·캠핑",
+      "order": 200
+    },
+    {
+      "id": "city_vehicles",
+      "labelKo": "차량·정비",
+      "order": 210
+    },
+    {
+      "id": "city_workshops",
+      "labelKo": "생활·작업장",
+      "order": 220
     }
   ],
   "sets": [
