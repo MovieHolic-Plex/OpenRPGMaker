@@ -10482,29 +10482,6 @@
     ]
   },
   {
-    "id": "city_camp_lawn_parasol_bench",
-    "nameKo": "잔디밭 파라솔 벤치",
-    "category": "prop",
-    "group": "city_school",
-    "sourceFile": "city_camp_lawn_parasol_bench_hq2.png",
-    "widthPx": 32,
-    "heightPx": 32,
-    "widthTiles": 2,
-    "heightTiles": 2,
-    "footprint": [
-      "**",
-      "XX"
-    ],
-    "tags": [
-      "대학 캠퍼스",
-      "campus",
-      "잔디밭 파라솔 벤치",
-      "lawn parasol bench",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
     "id": "city_camp_student_lockers",
     "nameKo": "학생 사물함",
     "category": "prop",
@@ -10574,33 +10551,6 @@
     ]
   },
   {
-    "id": "city_car2_city_bus_rear",
-    "nameKo": "시내버스 뒷모습",
-    "category": "prop",
-    "group": "city_transport",
-    "sourceFile": "city_car2_city_bus_rear_hq2.png",
-    "widthPx": 32,
-    "heightPx": 96,
-    "widthTiles": 2,
-    "heightTiles": 6,
-    "footprint": [
-      "XX",
-      "XX",
-      "XX",
-      "XX",
-      "XX",
-      "XX"
-    ],
-    "tags": [
-      "탈것",
-      "vehicle",
-      "시내버스 뒷모습",
-      "city bus rear",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
     "id": "city_car2_motorcycle",
     "nameKo": "오토바이",
     "category": "prop",
@@ -10619,105 +10569,6 @@
       "vehicle",
       "오토바이",
       "motorcycle",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_car2_pickup",
-    "nameKo": "픽업트럭",
-    "category": "prop",
-    "group": "city_transport",
-    "sourceFile": "city_car2_pickup_hq2.png",
-    "widthPx": 32,
-    "heightPx": 64,
-    "widthTiles": 2,
-    "heightTiles": 4,
-    "footprint": [
-      "XX",
-      "XX",
-      "XX",
-      "XX"
-    ],
-    "tags": [
-      "탈것",
-      "vehicle",
-      "픽업트럭",
-      "pickup",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_car2_school_van",
-    "nameKo": "통학 승합차",
-    "category": "prop",
-    "group": "city_transport",
-    "sourceFile": "city_car2_school_van_hq2.png",
-    "widthPx": 32,
-    "heightPx": 48,
-    "widthTiles": 2,
-    "heightTiles": 3,
-    "footprint": [
-      "XX",
-      "XX",
-      "XX"
-    ],
-    "tags": [
-      "탈것",
-      "vehicle",
-      "통학 승합차",
-      "school van",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_car2_suv",
-    "nameKo": "SUV 차량",
-    "category": "prop",
-    "group": "city_transport",
-    "sourceFile": "city_car2_suv_hq2.png",
-    "widthPx": 32,
-    "heightPx": 48,
-    "widthTiles": 2,
-    "heightTiles": 3,
-    "footprint": [
-      "XX",
-      "XX",
-      "XX"
-    ],
-    "tags": [
-      "탈것",
-      "vehicle",
-      "SUV 차량",
-      "suv",
-      "스포츠유틸리티차",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_car2_village_bus",
-    "nameKo": "마을버스",
-    "category": "prop",
-    "group": "city_transport",
-    "sourceFile": "city_car2_village_bus_hq2.png",
-    "widthPx": 32,
-    "heightPx": 64,
-    "widthTiles": 2,
-    "heightTiles": 4,
-    "footprint": [
-      "XX",
-      "XX",
-      "XX",
-      "XX"
-    ],
-    "tags": [
-      "탈것",
-      "vehicle",
-      "마을버스",
-      "village bus",
       "현대 도시",
       "city"
     ]
@@ -10879,30 +10730,6 @@
       "clinic",
       "접이식 들것",
       "folded stretcher",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_clinic_medical_waste_bin",
-    "nameKo": "의료 폐기물 수거함",
-    "category": "prop",
-    "group": "city_clinic",
-    "sourceFile": "city_clinic_medical_waste_bin_hq2.png",
-    "widthPx": 16,
-    "heightPx": 32,
-    "widthTiles": 1,
-    "heightTiles": 2,
-    "footprint": [
-      "*",
-      "X"
-    ],
-    "tags": [
-      "병원",
-      "clinic",
-      "의료 폐기물 수거함",
-      "medical waste bin",
-      "의료폐기물",
       "현대 도시",
       "city"
     ]
@@ -11571,29 +11398,6 @@
     ]
   },
   {
-    "id": "city_fish_folding_shade",
-    "nameKo": "접이식 낚시 그늘막",
-    "category": "prop",
-    "group": "city_harbor",
-    "sourceFile": "city_fish_folding_shade_hq.png",
-    "widthPx": 32,
-    "heightPx": 32,
-    "widthTiles": 2,
-    "heightTiles": 2,
-    "footprint": [
-      "**",
-      "XX"
-    ],
-    "tags": [
-      "낚시터",
-      "fishing",
-      "접이식 낚시 그늘막",
-      "folding shade",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
     "id": "city_fish_keepnet_stand",
     "nameKo": "낚시 살림망 거치대",
     "category": "prop",
@@ -11702,29 +11506,6 @@
       "storefront",
       "얼음과 생선이 든 스티로폼 상자",
       "fish ice foam box",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_fuel_trash_mop_bucket",
-    "nameKo": "주유소 쓰레기통과 대걸레 양동이",
-    "category": "prop",
-    "group": "city_auto_service",
-    "sourceFile": "city_fuel_trash_mop_bucket_hq2.png",
-    "widthPx": 32,
-    "heightPx": 32,
-    "widthTiles": 2,
-    "heightTiles": 2,
-    "footprint": [
-      "**",
-      "XX"
-    ],
-    "tags": [
-      "주유소",
-      "gas station",
-      "주유소 쓰레기통과 대걸레 양동이",
-      "trash mop bucket",
       "현대 도시",
       "city"
     ]
@@ -12543,29 +12324,6 @@
       "kindergarten",
       "낮잠 매트 더미",
       "nap mats stack",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_kndr_parasol_sandbox_stool",
-    "nameKo": "모래 놀이터 파라솔 의자",
-    "category": "prop",
-    "group": "city_school",
-    "sourceFile": "city_kndr_parasol_sandbox_stool_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
-    "footprint": [
-      "X"
-    ],
-    "tags": [
-      "유치원",
-      "kindergarten",
-      "모래 놀이터 파라솔 의자",
-      "parasol sandbox stool",
-      "모래밭 그늘막",
       "현대 도시",
       "city"
     ]
@@ -13728,52 +13486,6 @@
       "pool",
       "흰 수영 킥판 더미",
       "white kickboard stack",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_pool_white_plastic_parasol_table",
-    "nameKo": "흰 플라스틱 파라솔 테이블",
-    "category": "prop",
-    "group": "city_aquatic",
-    "sourceFile": "city_pool_white_plastic_parasol_table_hq.png",
-    "widthPx": 32,
-    "heightPx": 32,
-    "widthTiles": 2,
-    "heightTiles": 2,
-    "footprint": [
-      "**",
-      "XX"
-    ],
-    "tags": [
-      "수영장",
-      "pool",
-      "흰 플라스틱 파라솔 테이블",
-      "parasol table",
-      "현대 도시",
-      "city"
-    ]
-  },
-  {
-    "id": "city_prom_beach_trash",
-    "nameKo": "해변 쓰레기통",
-    "category": "prop",
-    "group": "city_parks",
-    "sourceFile": "city_prom_beach_trash_hq2.png",
-    "widthPx": 16,
-    "heightPx": 32,
-    "widthTiles": 1,
-    "heightTiles": 2,
-    "footprint": [
-      "*",
-      "X"
-    ],
-    "tags": [
-      "해변 산책로",
-      "seaside promenade",
-      "해변 쓰레기통",
-      "beach trash",
       "현대 도시",
       "city"
     ]
