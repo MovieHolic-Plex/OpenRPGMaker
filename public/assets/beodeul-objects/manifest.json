@@ -116,6 +116,25 @@
         "t_s",
         "v_straight"
       ]
+    },
+    {
+      "id": "city_parking_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "h_short_e",
+        "h_short_w",
+        "h_straight",
+        "v_e",
+        "v_w"
+      ]
+    },
+    {
+      "id": "city_yard_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "h_straight",
+        "v_straight"
+      ]
     }
   ]
 }
