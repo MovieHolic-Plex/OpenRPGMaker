@@ -601,10 +601,15 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
   const reject = (code: string, message: string, test?: OpenAiCompatTestResult): OpenAiCompatConnectResult => ({
     ok: false, code, message, model, endpoints: listOpenAiCompatPublic(), ...(test ? { test } : {}),
   });
+  // 시험은 id 가 없으면 저장된 패턴을 모른다. 다시 연결할 때 패턴을 빼면 같은 주소의 저장값을 쓴다.
+  // 빈 배열은 «목록을 비워라»이므로 저장값으로 되돌리지 않는다.
+  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
+  const allowModels = input.allowModels ?? existing?.row.allowModels;
+  const blockModels = input.blockModels ?? existing?.row.blockModels;
   const test = await testOpenAiCompat({
     name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true,
-    ...(input.allowModels !== undefined ? { allowModels: input.allowModels } : {}),
-    ...(input.blockModels !== undefined ? { blockModels: input.blockModels } : {}),
+    ...(allowModels !== undefined ? { allowModels } : {}),
+    ...(blockModels !== undefined ? { blockModels } : {}),
   }, fetchImpl);
   if (test.chat && !test.chat.ok) return reject(test.code === "ok" ? "chat" : test.code, test.chat.message || test.message, test);
   if (!test.ok || !test.chat?.ok) return reject(test.code, test.message, test);
@@ -612,11 +617,11 @@ export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect
     return reject("tools", `${name} 의 「${model}」 은(는) 대답은 하지만 도구 호출을 못 해요. 조수는 도구로 맵을 고치므로 도구를 지원하는 모델을 골라 주세요. 저장하지 않았어요.`, test);
   }
 
-  // 같은 주소의 엔드포인트가 있으면 고친다 — 다시 연결할 때마다 「OpenRouter 2」 가 생기지 않게.
-  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
+  // 시험이 도는 동안 같은 주소의 다른 연결이 줄을 만들었을 수 있다. 저장 직전에 다시 찾는다.
+  const saved = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
   const endpoint = saveOpenAiCompat({
-    ...(existing ? { id: existing.id } : {}),
-    name: existing?.row.name ?? name,
+    ...(saved ? { id: saved.id } : {}),
+    name: saved?.row.name ?? name,
     baseUrl,
     apiKey,
     defaultModel: model,
