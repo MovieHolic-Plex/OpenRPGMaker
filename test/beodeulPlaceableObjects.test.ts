@@ -41,6 +41,16 @@ describe("Beodeul object catalog schema", () => {
     expect(parsed.setsById.get("fence")?.role).toBe("fence");
   });
 
+  it.each(["r2", "v3", "hq", "hq2"])("preserves the approved filename with the %s revision suffix", suffix => {
+    const id = `${object.id}_${suffix}`;
+    const sourceFile = `${id}.png`;
+    const manifest = { groups, sets: [] };
+    expect(parseBeodeulObjectCatalog([{ ...object, sourceFile }], manifest).objects[0]).toMatchObject({
+      id: object.id, sourceFile,
+    });
+    expect(() => parseBeodeulObjectCatalog([{ ...object, id, sourceFile }], manifest)).toThrow(/base object id/u);
+  });
+
   it.each([
     [{ tags: ["  "] }, /tags/u],
     [{ nameKo: "test tree" }, /nameKo/u],
@@ -119,7 +129,7 @@ describe("bundled Beodeul placeable objects", () => {
       expect(bundledChipsetTilesPerRow(asset.textureKey)).toBe(object.widthTiles);
       expect(bundledChipsetFrameCount(asset.textureKey)).toBe(object.widthTiles * object.heightTiles);
       const kit = tileset.structureKits?.find(kit => kit.id === kitId(object.id));
-      expect(validateObjectSpec(kit?.spec).ok).toBe(true);
+      expect(validateObjectSpec(kit?.spec), object.id).toMatchObject({ ok: true });
       if (object.category === "indoor") expect(kit?.spec?.category).toBe("furniture");
       if (object.category === "nature") expect(kit?.spec?.category).toBe("nature");
       expect(kit?.ai?.growthAxis).toBe(object.growthAxis);

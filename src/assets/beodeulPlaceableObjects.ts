@@ -7,6 +7,7 @@ export const BEODEUL_OBJECT_KIT_PREFIX = "bd-object:";
 export const BEODEUL_OBJECT_PACK_TAG = "버들항 기본 기물";
 
 const key = z.string().regex(/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/u);
+const revisionSuffix = /_(?:[rv]\d+|hq\d*)$/u;
 const koreanLabel = z.string().regex(/[가-힣]/u);
 const size = z.number().int().positive();
 const groupSchema = z.strictObject({ id: key, labelKo: koreanLabel, order: z.number().int().nonnegative() });
@@ -55,7 +56,7 @@ export function parseBeodeulObjectCatalog(catalogInput: unknown, manifestInput: 
     if (ids.has(id)) throw new Error(`Duplicate Beodeul object id: ${id}`);
     ids.add(id);
     if (!groupIds.has(group)) throw new Error(`${id}: unknown Beodeul object group ${group}`);
-    if (/_[rv]\d+$/u.test(id) || sourceFile.replace(/(?:_[rv]\d+)?\.png$/u, "") !== id) {
+    if (revisionSuffix.test(id) || sourceFile.slice(0, -".png".length).replace(revisionSuffix, "") !== id) {
       throw new Error(`${id}: sourceFile must match the base object id`);
     }
     if (widthTiles !== Math.ceil(widthPx / BEODEUL_OBJECT_TILE_SIZE) || heightTiles !== Math.ceil(heightPx / BEODEUL_OBJECT_TILE_SIZE)) {
