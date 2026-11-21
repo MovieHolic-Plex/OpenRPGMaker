@@ -8,7 +8,7 @@ import manifest from "../public/assets/beodeul-objects/manifest.json" with { typ
 const folder = new URL("../public/assets/beodeul-objects/", import.meta.url);
 const assetId = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/u;
 const assetFilename = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*\.png$/u;
-const revisionSuffix = /_(?:[rv]\d+|hq\d*)$/u;
+const revisionSuffix = /_(?:[rv]\d+|hq\d*|sz)$/u;
 const tileSize = 16;
 
 describe("Beodeul placeable object data", () => {
