@@ -67,7 +67,11 @@ function authorProject(specs: readonly RouteSpec[], buildMap?: (map: GameMap) =>
   // 저장 검사(validateProjectReferences)는 setSwitch 대상이 선언돼 있어야 통과시킨다.
   draft.switches = [...draft.switches, { id: DONE_SWITCH, name: "루트 완료" }];
   const draftMap = draft.maps[draft.startMapId]!;
-  draftMap.lowerTiles.fill(TILE.GRASS);
+  // TILE.GRASS(240)·TILE.WALL(306) 은 합본 마을 칸 번호다. 빈 프로젝트의 기본 칩셋은
+  // 버들항이라 그 번호는 둘 다 통행 불가 벽이다(constants.ts). 바닥은 그 칩셋의 빈 풀밭,
+  // 벽은 통행이 네 방향 모두 닫힌 칸으로 깐다.
+  blockedTileId = blockingTile(draft, draftMap);
+  draftMap.lowerTiles.fill(blankFillTileFor(draftMap.tilesetId));
   draftMap.upperTiles.fill(TILE.EMPTY);
   draftMap.encounterRate = 0;
   draftMap.events = [];
@@ -160,6 +164,8 @@ function routeHarness(map: GameMap): RouteHarness {
     },
     session,
     map,
+    // PlayScene.getMapId 와 같다. transferTo 가 월드 지도 이동 가능 여부를 이 값으로 본다.
+    getMapId: () => session.currentMapId,
     input_: {
       update: () => held,
       resetEdges: () => undefined,
@@ -259,8 +265,22 @@ async function playCommands(harness: RouteHarness, commands: readonly Command[],
   await pending;
 }
 
+let blockedTileId = 0;
+
+/** 바닥 칸이 아닌, 네 방향이 모두 막힌 칸. 칩셋 번호(TILE.WALL)에 묶지 않는다. */
+function blockingTile(project: ReturnType<typeof createBlankProject>, map: GameMap): number {
+  const ground = blankFillTileFor(map.tilesetId);
+  const passability = project.tilesets[map.tilesetId]?.passability ?? [];
+  for (let index = 0; index < passability.length; index += 1) {
+    if (index === ground) continue;
+    const flag = passability[index];
+    if (flag && !flag.up && !flag.down && !flag.left && !flag.right) return index;
+  }
+  throw new Error(`no fully blocked tile on ${map.tilesetId}`);
+}
+
 function wall(map: GameMap, x: number, y: number): void {
-  map.lowerTiles[y * map.width + x] = TILE.WALL;
+  map.lowerTiles[y * map.width + x] = blockedTileId;
 }
 
 afterEach(() => {
