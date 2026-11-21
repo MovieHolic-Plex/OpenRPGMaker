@@ -17,7 +17,6 @@ type BridgeProbe = {
   readonly savedKind: string;
   readonly revisionAfter: number;
   readonly commits: number;
-  readonly syncCommits: number;
   readonly assetUrlProjectId: string;
 };
 
@@ -75,8 +74,8 @@ async function probeThroughBridge(page: Page, projectDir: string): Promise<Bridg
       expectedSha: loaded.sha256,
     });
     const after = await bridge.project.load();
+    // 브리지 동기 listSync 는 0.4.0(#874, 3ed8fea)에서 뺐다. 렌더러는 commits.list 만 부른다.
     const commits = await bridge.commits.list({ projectDir: dir, limit: 5 });
-    const syncCommits = bridge.commits.listSync({ projectDir: dir, limit: 5 });
     return {
       projectId: String(opened.projectId),
       sha256Before: String(loaded.sha256),
@@ -84,7 +83,6 @@ async function probeThroughBridge(page: Page, projectDir: string): Promise<Bridg
       savedKind: String(saved.kind),
       revisionAfter: Number(after.revision),
       commits: Array.isArray(commits) ? commits.length : -1,
-      syncCommits: Array.isArray(syncCommits) ? syncCommits.length : -1,
       assetUrlProjectId: String(opened.projectId),
     };
   }, projectDir);
@@ -98,7 +96,7 @@ test("bridge opens a real folder, saves through the store, and reloads after res
   expect(before.projectId).toMatch(/^[0-9a-f-]{36}$/);
   expect(before.savedKind).toBe("saved");
   expect(before.revisionAfter).toBeGreaterThan(before.revisionBefore);
-  expect(before.syncCommits).toBe(before.commits);
+  expect(before.commits).toBeGreaterThanOrEqual(0);
 
   const second = await launch();
   const after = await second.page.evaluate(async (dir: string) => {
