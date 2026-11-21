@@ -451,7 +451,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   background: var(--bg-inset);
   box-sizing: border-box;
   color: var(--text-1);
-  display: flex;
   flex-wrap: wrap;
   font-size: 12px;
   gap: 8px 12px;
@@ -462,8 +461,8 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   z-index: 30;
 }
 
-.image-generation-notice[hidden] {
-  display: none !important;
+.image-generation-notice:not([hidden]) {
+  display: flex;
 }
 
 .image-generation-notice-text {
