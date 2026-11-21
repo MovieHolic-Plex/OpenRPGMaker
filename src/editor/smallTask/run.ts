@@ -36,9 +36,6 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
   }, { signal });
   signal.throwIfAborted();
   if (!result.smallTask) throw new Error("Pi worker did not acknowledge the small-task scope");
-  if (result.stoppedEarly === SMALL_TASK_SCOPE_REFUSAL || result.stoppedEarly === STALE_COMMAND_LIST || result.stoppedEarly === SELECT_EVENT_PAGE) {
-    throw new SmallTaskError(result.stoppedEarly);
-  }
   const savedMapRefusal = result.stoppedEarly?.startsWith(MAP_REMOVAL_REFERENCE_REFUSAL);
   const mapDraftRefusal = live && result.stoppedEarly?.startsWith(MAP_REMOVAL_DRAFT_REFUSAL);
   const locationRefusal = live && result.stoppedEarly?.startsWith(LOCATION_DELETION_DRAFT_REFUSAL) ? result.stoppedEarly : undefined;
@@ -53,6 +50,10 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
     if (message) throw new SmallTaskError(message);
   }
   if (result.stoppedEarly?.split("\n", 1)[0] === SAVE_QUEST_EVENT_FIRST) throw new SmallTaskError(SAVE_QUEST_EVENT_FIRST);
+  if (result.stoppedEarly && (result.smallTaskPrimitiveRefused || result.stoppedEarly === SMALL_TASK_SCOPE_REFUSAL
+    || result.stoppedEarly === STALE_COMMAND_LIST || result.stoppedEarly === SELECT_EVENT_PAGE)) {
+    throw new SmallTaskError(result.stoppedEarly);
+  }
   if (result.stoppedEarly) throw new Error(result.stoppedEarly);
   if ((result.changedKeys?.length ?? 0) === 0) return before;
   if (!commitChangeset(result.project, before).ok) throw new SmallTaskError("선택한 대상에 요청한 변경을 적용할 수 없어요.");

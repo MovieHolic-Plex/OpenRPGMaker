@@ -1,5 +1,7 @@
 import { SMALL_TASK_SCOPE_REFUSAL, smallTaskRefusal, smallTaskTools } from "../../src/editor/smallTask/tools.ts";
 import { checkSmallTaskScope } from "../../src/ai/smallTaskScope.ts";
+import { PrimitiveError } from "../../src/editor/smallTask/primitives/errors.ts";
+import { jsonEqual } from "../../src/util/structuralJson.ts";
 import { APPLY_SMALL_TASK_PRIMITIVE, isSmallTaskPrimitiveTool, runSmallTaskPrimitiveTool, SMALL_TASK_PRIMITIVE_TOOLS, type SmallTaskToolContext } from "../../src/editor/tools/smallTaskPrimitiveTools.ts";
 import { normalizeToolArgs } from "../../src/editor/tools/toolRunner.ts";
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
@@ -106,7 +108,7 @@ import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { mergeConstructionLogs } from "../../src/editor/tools/constructionLog.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
-import type { GameMap, Project } from "../../src/project/types.ts";
+import type { GameEvent, GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { ITEM_ICON_AUTO_WALL_MS, ITEM_ICON_MAX_ATTEMPTS, ITEM_ICON_RUN_BUDGET, ITEM_ICON_TOOL, iconRecordOf, livePlaceholderIcons, prepareItemIconTargets } from '../../src/editor/tools/itemIconTools.ts';
@@ -415,6 +417,50 @@ function piProviderStream(provider: string, referenceGate: PiTilesetReferenceGat
   return undefined;
 }
 
+type RegionRect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+
+function eventInsideRect(event: GameEvent, rect: RegionRect): boolean {
+  return Number.isSafeInteger(event.x) && Number.isSafeInteger(event.y)
+    && event.x >= rect.x && event.x < rect.x + rect.w && event.y >= rect.y && event.y < rect.y + rect.h;
+}
+
+/** Hide a new in-rect event, and later edits of events added in this turn, from the immediate mapRegion check. */
+function baselineWithPlacedEvents(original: Project, before: Project, after: Project, mapId: string, rect: RegionRect): Project {
+  const originalIds = new Set((original.maps[mapId]?.events ?? []).map(event => event.id));
+  const beforeEvents = before.maps[mapId]?.events;
+  const afterEvents = after.maps[mapId]?.events;
+  const map = before.maps[mapId];
+  if (!beforeEvents || !afterEvents || !map) return before;
+  const beforeById = new Map(beforeEvents.map(event => [event.id, event]));
+  const afterById = new Map(afterEvents.map(event => [event.id, event]));
+  if (beforeById.size !== beforeEvents.length || afterById.size !== afterEvents.length) return before;
+  for (const event of beforeEvents) {
+    const next = afterById.get(event.id);
+    if (originalIds.has(event.id)) {
+      if (!next || !jsonEqual(event, next)) return before;
+    } else if (!next) return before;
+  }
+  const originalOrder = (events: readonly GameEvent[]) => events.filter(event => originalIds.has(event.id)).map(event => event.id).join("\0");
+  if (originalOrder(beforeEvents) !== originalOrder(afterEvents)) return before;
+  if (afterEvents.some(event => !beforeById.has(event.id) && (originalIds.has(event.id) || !eventInsideRect(event, rect)))) return before;
+  return { ...before, maps: { ...before.maps, [mapId]: { ...map, events: afterEvents.slice() } } };
+}
+
+function newEventsInRect(before: Project, after: Project, mapId: string, rect: RegionRect): GameEvent[] {
+  const seen = new Set(before.maps[mapId]?.events.map(event => event.id));
+  return (after.maps[mapId]?.events ?? []).filter(event => !seen.has(event.id) && eventInsideRect(event, rect));
+}
+
+function rememberPlacedEvents(baseline: Project, mapId: string, events: readonly GameEvent[]): Project {
+  const map = baseline.maps[mapId];
+  const seen = new Set(map.events.map(event => event.id));
+  const added = events.filter(event => !seen.has(event.id));
+  if (!added.length) return baseline;
+  return { ...baseline, maps: { ...baseline.maps, [mapId]: {
+    ...map, events: [...map.events, ...added.map(event => structuredClone(event))],
+  } } };
+}
+
 /** The capsule uses the same Pi engines with a fixed catalog and a private draft. */
 async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgentRequest["smallTask"]>, options: RunPiAgentOptions): Promise<PiAgentDoneEvent> {
   const started = Date.now();
@@ -446,6 +492,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   let toolErrors = 0;
   let turns = 0;
   let failure: string | undefined;
+  let primitiveRefusal: string | undefined;
   const refuse = (message: string): undefined => {
     failure ??= message;
     controller.abort();
@@ -477,7 +524,13 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
         if (gate) throw new Error(formatPiToolFailure(gate));
       }
       const before = ctx.project;
-      const result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
+      let result: Awaited<ReturnType<typeof runSmallTaskPrimitiveTool>>;
+      try {
+        result = await runSmallTaskPrimitiveTool(ctx, tool.name, args);
+      } catch (error) {
+        if (error instanceof PrimitiveError) primitiveRefusal = error.message;
+        throw error;
+      }
       if (regionScope && tool.name === APPLY_SMALL_TASK_PRIMITIVE && args.id === "event.tile.create") {
         // The primitive already checked tileEvent. Allow that exact addition in the final mapRegion check.
         const { mapId } = regionScope;
@@ -519,12 +572,16 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
           // The primitive checked the quest changes independently of the tile rectangle.
           regionBaseline = { ...regionBaseline, quests: ctx.project.quests };
         } else if (primitive?.id !== "event.tile.create") {
-          const result = checkSmallTaskScope(before, ctx.project, regionScope, draftSource);
+          const { mapId, rect } = regionScope;
+          const additions = newEventsInRect(before, ctx.project, mapId, rect);
+          const checkBefore = baselineWithPlacedEvents(base, before, ctx.project, mapId, rect);
+          const result = checkSmallTaskScope(checkBefore, ctx.project, regionScope, draftSource);
           if (!result.ok) {
             ctx.project = before;
             refuse(result.reason);
             throw new Error(result.reason);
           }
+          if (additions.length) regionBaseline = rememberPlacedEvents(regionBaseline, mapId, additions);
         }
       }
       return response;
@@ -585,7 +642,7 @@ async function runPiSmallTask(request: PiAgentRequest, scope: NonNullable<PiAgen
   const project = failure ? base : ctx.project;
   const done: PiAgentDoneEvent = {
     type: "done", smallTask: true, project, changedKeys: changedProjectKeys(base, project),
-    ...(failure ? { stoppedEarly: failure } : {}),
+    ...(failure ? { stoppedEarly: failure, ...(failure === primitiveRefusal ? { smallTaskPrimitiveRefused: true } : {}) } : {}),
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors },
   };
   options.onEvent?.(slimDoneEvent(done, base));

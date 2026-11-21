@@ -495,6 +495,39 @@ test("작은 일 Pi 실행은 새 이벤트 초안에서 사용하는 출현 이
   expect(allowed.project.maps[mapId].events[0]!.pages![1]!.commands[3]).toMatchObject({ spawn: { id: "spawn_renamed" } });
 });
 
+test("작은 일은 선택 칸에 편도 출입구를 놓고 원래 이벤트를 보존한다", async () => {
+  const { request, project, mapId } = fixture();
+  const selection = { rect: { x: 4, y: 4, w: 1, h: 1 } };
+  const selectedRequest = { ...request, smallTask: { ...request.smallTask, target: mapTarget(project, mapId)!, selection } };
+  const transfer = apply("event.transfer.place", { toMapId: mapId, toX: 7, toY: 7 });
+  const done = await runPiAgent(selectedRequest, { streamFn: scripted([transfer]) });
+  expect(done.stoppedEarly).toBeUndefined();
+  expect(done.changedKeys).toEqual([`maps.${mapId}`]);
+  const events = done.project.maps[mapId].events;
+  expect(events.slice(0, -1)).toEqual(project.maps[mapId].events);
+  expect(events.at(-1)).toMatchObject({ x: 4, y: 4, pages: [{ commands: [{ kind: "transfer", mapId, x: 7, y: 7 }] }] });
+
+  const moved = await runPiAgent(selectedRequest, { streamFn: scripted([transfer, {
+    name: "move_event", args: { mapId, eventId: events.at(-1)!.id, x: 5, y: 4 },
+  }]) });
+  expect(moved.stats.toolErrors).toBe(0);
+  expect(moved.stoppedEarly).toContain("범위 밖");
+  expect(moved.changedKeys).toEqual([]);
+  expect(moved.project).toBe(project);
+});
+
+test("작은 일은 도구의 착지 거절을 화면에 전달하고 프로젝트를 보존한다", async () => {
+  const { request, project, mapId, event } = fixture();
+  const selection = { rect: { x: 4, y: 4, w: 1, h: 1 } };
+  const done = await runPiAgent({ ...request, smallTask: { ...request.smallTask, target: mapTarget(project, mapId)!, selection } }, {
+    streamFn: scripted([apply("event.transfer.place", { toMapId: mapId, toX: event.x, toY: event.y })]),
+  });
+  expect(done.smallTaskPrimitiveRefused).toBe(true);
+  expect(done.stoppedEarly).toContain("도착할 수 있는 빈 칸을 골라 주세요");
+  expect(done.changedKeys).toEqual([]);
+  expect(done.project).toBe(project);
+});
+
 for (const delivery of ["delivered", "omitted", "same-turn", "outside-selection", "quest-before-paint"] as const) {
   test(`작은 일의 타일 칠하기는 먼저 전달된 참고문서가 필요하다 (${delivery})`, async () => {
     const project = createBlankProject();

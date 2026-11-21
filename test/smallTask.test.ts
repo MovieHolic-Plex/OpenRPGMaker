@@ -111,9 +111,13 @@ it.each([
   { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
     stoppedEarly: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요.\n범위 밖: 퀘스트가 사용하는 미저장 이벤트",
     shownMessage: "퀘스트에 연결할 이벤트를 먼저 저장해 주세요." },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 }, smallTaskPrimitiveRefused: true,
+    stoppedEarly: "도착할 수 있는 빈 칸을 골라 주세요. 주인공이 정확히 도착해 걸어서 나갈 수 있어야 해요." },
+  { kind: "event", selectedMapId: "map_a", rect: { x: 2, y: 3, w: 4, h: 5 },
+    stoppedEarly: "임시 워커 오류", expectedMessage: "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요." },
 ])("작은 일 Pi HTTP 요청은 대상과 선택 영역을 보내고 안내를 받는다 ($kind, $selectedMapId, $#)", async ({
   kind, selectedMapId, rect, stoppedEarly, omitChangedKeys, selectedDraft, noDraft, withSpawnDraft,
-  shownMessage, savedMapReference, draftLocationId, dialogueCaller,
+  shownMessage, savedMapReference, draftLocationId, dialogueCaller, smallTaskPrimitiveRefused, expectedMessage,
 }) => {
   const project = fixture();
   if (savedMapReference) {
@@ -161,7 +165,8 @@ it.each([
     expect(body.project.maps.map_a.events).toEqual(project.maps.map_a.events);
     if (dialogueCaller) expect(body.task).toBe("고른 대사를 첫 대화에만 보여 줘");
     expect(body).not.toHaveProperty("apiKey");
-    const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    const done = { type: "done", smallTask: true, project, changedKeys: omitChangedKeys ? undefined : [], stoppedEarly, smallTaskPrimitiveRefused,
+      stats: { ms: 0, turns: 1, toolCalls: 0, toolErrors: 0 } };
     return new Response(JSON.stringify(done) + "\n", {
       headers: { "Content-Type": "application/x-ndjson", "X-Oprn-Run-Id": body.runId },
     });
@@ -170,7 +175,7 @@ it.each([
   try {
     const request = dialogueCaller ? "고른 대사를 첫 대화에만 보여 줘" : "고른 대상을 확인해 줘";
     const run = runSmallTask(project, target, request, signal, live);
-    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(shownMessage ?? stoppedEarly);
+    if (stoppedEarly) await expect(run.catch(smallTaskErrorMessage)).resolves.toBe(shownMessage ?? expectedMessage ?? stoppedEarly);
     else await expect(run).resolves.toBe(project);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0][0]).toMatch(/^http:\/\/127\.0\.0\.1:12345\/v1\/agent\/run\?provider=openai-codex&reader=/u);

@@ -7,15 +7,18 @@
 // 여기서는 Studio 가 쓴 커맨드를 직렬화 왕복(저장·로드)시킨 뒤 인터프리터로 dispatch 하고,
 // 실제 updatePlayScene 프레임으로 걷게 해서 **좌표**로 판정한다.
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { runPrimitive } from "@/editor/smallTask/primitives/run";
+import { mapTarget } from "@/editor/smallTask/target";
 import type { InputState } from "@/player/input";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
-import { runCommands } from "@/player/playSceneInterpreter";
+import { runCommands, runEvent } from "@/player/playSceneInterpreter";
 import { transferTo } from "@/player/playSceneMapCommands";
 import { updatePlayScene } from "@/player/playSceneMovement";
 import { applyNonBlockingStep, registerAutonomousMover } from "@/player/playSceneSchedulers";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
 import { createBlankProject, TILE } from "@/project/defaults";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { deserialize, serialize } from "@/project/io";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { initialRuntimeEventPositions } from "@/project/runtimeEventState";
@@ -263,6 +266,42 @@ function wall(map: GameMap, x: number, y: number): void {
 afterEach(() => {
   vi.restoreAllMocks();
   pendingFrames.clear();
+});
+
+it("작은 일로 잠근 출입구에서 안내를 닫으면 주인공이 한 칸 물러난다", async () => {
+  installManualFrames();
+  const { map } = authorProject([], room => {
+    room.lowerTiles.fill(blankFillTileFor(room.tilesetId));
+    room.lowerTiles[4 * room.width + 5] = TILE.EMPTY;
+    room.lowerTiles[5 * room.width + 4] = TILE.EMPTY;
+    room.lowerTiles[5 * room.width + 6] = TILE.EMPTY;
+  });
+  const project = store.getCurrent();
+  const { after: placed } = runPrimitive(project, mapTarget(project, map.id)!, "event.transfer.place", {
+    toMapId: map.id, toX: 8, toY: 8,
+  }, { rect: { x: 5, y: 5, w: 1, h: 1 } });
+  const gate = placed.maps[map.id].events[0]!;
+  const { after: locked } = runPrimitive(placed, mapTarget(placed, map.id, gate.id)!, "event.door.setLock", {
+    switchId: DONE_SWITCH, text: "문이 잠겨 있다.",
+  });
+  const reloaded = store.replace(deserialize(serialize(locked)));
+  const harness = routeHarness(reloaded.maps[map.id]);
+  const dialogue = harness.scene.game.registry.get("dialogue") as { showText: ReturnType<typeof vi.fn> };
+  let dismissText!: () => void;
+  dialogue.showText.mockImplementationOnce(() => new Promise<void>(resolve => { dismissText = resolve; }));
+
+  const pending = runEvent(harness.scene, gate.id);
+  expect(dialogue.showText).toHaveBeenCalledWith(expect.objectContaining({ body: "문이 잠겨 있다." }));
+  harness.step(STEP_FRAMES);
+  expect(harness.scene.session).toMatchObject({ currentMapId: map.id, x: 5, y: 5 });
+  dismissText();
+  for (let frame = 0; frame < STEP_FRAMES * 2; frame++) {
+    await Promise.resolve();
+    harness.step();
+  }
+  expect(harness.scene.session).toMatchObject({ currentMapId: map.id, x: 5, y: 6 });
+  expect(harness.scene.playerRoute).toBeNull();
+  await pending;
 });
 
 describe("주인공 이동 경로의 통과 ON/OFF (OPRN-OUT-016)", () => {
