@@ -150,7 +150,6 @@ export function frameOriginForTexture(
 
 type ImageFileProto = {
   onProcess: () => void;
-  onProcessImage: () => void;
   onProcessComplete: () => void;
   onProcessError: () => void;
   data: CanvasImageSource;
@@ -159,6 +158,11 @@ type ImageFileProto = {
   state: number;
   key: string;
   __oprnDecode?: true;
+};
+
+/** `onProcessImage` 는 런타임 프로토타입에 있으나 phaser.d.ts 에는 없다. */
+type ImageFileRuntime = ImageFileProto & {
+  onProcessImage: (this: ImageFileProto) => void;
 };
 
 type UploadRuntime = {
@@ -189,7 +193,7 @@ function keepFirstBand(file: ImageFileProto, image: SizedImage): void {
  * 한 번만 깔린다(`__oprnDecode`).
  */
 export function installChipsetUploadGuard(PhaserRuntime: UploadRuntime): void {
-  const proto = PhaserRuntime.Loader.FileTypes.ImageFile.prototype;
+  const proto = PhaserRuntime.Loader.FileTypes.ImageFile.prototype as ImageFileRuntime;
   if (proto.__oprnDecode) return;
   proto.__oprnDecode = true;
   const PROCESSING = PhaserRuntime.Loader.FILE_PROCESSING;
