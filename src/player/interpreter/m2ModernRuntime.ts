@@ -4,7 +4,7 @@ import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTy
 import { nextSessionRandom, setAudioState, type AudioChannel, type AudioTrackState } from "@/project/session";
 import { isLoopingChannel } from "@/player/audio/audioResources";
 import { evaluateM2Expression } from "./m2Expression";
-import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { fieldBoolean, fieldNumber, fieldString, optionalFieldNumber, optionalFieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
@@ -25,10 +25,10 @@ export function executeModernCommand(
   switch (title) {
     case "Camera Control":
       runtime.camera.mode = fieldString(fields, "mode", "panTo");
-      runtime.camera.target = fieldString(fields, "target", "player");
-      runtime.camera.x = fieldNumber(fields, "x", 0);
-      runtime.camera.y = fieldNumber(fields, "y", 0);
-      runtime.camera.zoom = fieldNumber(fields, "zoom", 1);
+      runtime.camera.target = optionalFieldString(fields, "target", "player");
+      runtime.camera.x = optionalFieldNumber(fields, "x", 0);
+      runtime.camera.y = optionalFieldNumber(fields, "y", 0);
+      runtime.camera.zoom = optionalFieldNumber(fields, "zoom", 1);
       runtime.camera.durationMs = fieldNumber(fields, "durationMs", 300);
       session.flags[`camera:${runtime.camera.mode}`] = true;
       return true;
@@ -203,7 +203,7 @@ function recordUiCommand(session: PlaySessionLike, runtime: M2RuntimeState, fiel
  */
 function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): boolean {
   const effect = fieldString(fields, "effect", "fadeIn");
-  const value = fieldString(fields, "value", "");
+  const value = optionalFieldString(fields, "value", "");
   const durationMs = fieldNumber(fields, "durationMs", 300);
 
   // 기존 계약 유지: 상태 조회기·증거 스펙이 이 큐와 플래그를 읽는다.

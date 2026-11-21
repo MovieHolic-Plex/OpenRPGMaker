@@ -189,7 +189,10 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
   stay in sync — a mismatch 404s all 281 tracks.
 - Unset (or a non-`http(s)` value) uses `/assets/cc0/audio/catalog/<file>`, including the
   installed release pack. `audioDeliveryPlugin` returns real missing-media 404s in Vite
-  dev and preview before SPA fallback. Other deployment hosts must keep the same rule.
+  dev and preview before SPA fallback. A path that is in `assets/bgm-release-v1.json` and is
+  not on disk is fetched once from the public per-track CDN, checked (size and SHA-256), and
+  served from the OS temp catalog cache — the same check as the desktop app. Files that are
+  not in the manifest still 404 and do not touch the network. Other deployment hosts must keep the same rule.
 - Vite snapshots installed, nonempty pack filenames at startup/build into the existing
   shared editor catalog. Without a CDN, only installed pack entries are advertised in
   pickers/search; the three starters remain available on a normal checkout. Install the
@@ -208,7 +211,7 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 The desktop app ships without the pack. Before this, Fallen Star played 3 of its 27 tracks there, Shitamachi 5 of 8 and First Love 6 of 12.
 
 - `bake:demos` (`scripts/content/bake-flagship-demos.mts`) copies every catalog track the baked demos reference into `<out>/assets/cc0/audio/catalog/`. It takes the file from `public/` when it is installed and the SHA-256 matches. Otherwise it downloads that one file from the per-track public CDN (`RELEASE.cdn`) and checks the hash. The demos therefore play offline.
-- Desktop `app://` requests for a catalog file that is not in the app go to `electron/main/bgmOnDemand.ts`. It downloads the file once from the same CDN, checks the size and SHA-256 against `assets/bgm-release-v1.json`, and caches it in `<userData>/bgm-catalog/`. The renderer always uses the local path.
+- Desktop `app://` requests for a catalog file that is not in the app go to `electron/main/bgmOnDemand.ts`. It downloads the file once from the same CDN, checks the size and SHA-256 against `assets/bgm-release-v1.json`, and caches it in `<userData>/bgm-catalog/`. The renderer always uses the local path. Browser dev and preview use that same download from `scripts/lib/audioDelivery.ts`, cached under the OS temp directory instead of the repo.
 - Desktop renderer builds set `OPRN_ASSUME_ALL_BGM_INSTALLED=1`, so the editor and the assistant treat all 281 tracks as usable (`desktop-release.yml`, `release-desktop.mjs`).
 
 ## How authors reach the tracks

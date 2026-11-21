@@ -1,5 +1,18 @@
 import type { M2CommandValue } from "@/project/types";
 
+/** 키가 없으면 기본값을 쓰고 경고하지 않는다. 적힌 값이 이상하면 field* 가 그대로 폴백한다. */
+export function hasCommandField(fields: Record<string, unknown>, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
+}
+
+export function optionalFieldString(fields: Record<string, unknown>, key: string, fallback: string): string {
+  return hasCommandField(fields, key) ? fieldString(fields, key, fallback) : fallback;
+}
+
+export function optionalFieldNumber(fields: Record<string, M2CommandValue>, key: string, fallback: number): number {
+  return hasCommandField(fields, key) ? fieldNumber(fields, key, fallback) : fallback;
+}
+
 export function fieldString(fields: Record<string, unknown>, key: string, fallback: string): string {
   if (!(key in fields)) console.warn(`[m2] missing field: ${key}`);
   const value = fields[key];

@@ -12,6 +12,7 @@ import { newM2Command } from "@/editor/eventCommandFactory";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import type { Frame, InterpreterState } from "@/player/interpreter/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
+import type { Command } from "@/project/types";
 
 describe("m2 event command catalog", () => {
   it("covers every non-front-matter PDF command row with stable ids", () => {
@@ -349,6 +350,52 @@ describe("m2 event command catalog", () => {
       allowEventMovementDuringWait: false,
     });
     warn.mockRestore();
+  });
+
+  it("does not warn when Fallen Star camera and screen commands omit optional fields", () => {
+    const cameraId = requireEntry("Camera Control").id;
+    const tintId = requireEntry("Tint Screen").id;
+    const effectId = requireEntry("Screen Effect").id;
+    const m2 = (commandId: string, fields: Record<string, string>): Command => ({ kind: "m2Command", commandId, fields }) as Command;
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const run = (command: Command) => {
+      const frame: Frame = { commands: [command], pc: 0 };
+      const state: InterpreterState = {
+        stack: [frame],
+        session: createSession(),
+        maxStackDepth: 8,
+        maxLoopIterations: 8,
+        instructionsExecuted: 0,
+        maxInstructions: 100,
+      };
+      return executeCommand(state, frame, command);
+    };
+
+    const follow = run(m2(cameraId, { mode: "follow", targetEventId: "ev_middle", durationMs: "900", wait: "true" }));
+    const back = run(m2(cameraId, { mode: "return", durationMs: "1000", wait: "true" }));
+    const pan = run(m2(cameraId, { mode: "panTo", target: "screen", x: "12", y: "8", durationMs: "1400", wait: "true" }));
+    const tint = run(m2(tintId, { color: "neutral", durationMs: "400" }));
+    const fade = run(m2(effectId, { effect: "fadeIn", durationMs: "300" }));
+    const place = run(m2(requireEntry("Set Event Location").id, { target: "ev_fs_kid", mapId: "fs_hub", x: "33", y: "24" }));
+
+    const missing = warn.mock.calls.map((call) => String(call[0])).filter((line) => line.includes("[m2] missing field"));
+    warn.mockRestore();
+    expect(missing).toEqual([]);
+    expect(follow).toMatchObject({
+      kind: "pause",
+      step: { kind: "cameraControl", mode: "follow", durationMs: 900, returnToPlayer: false, target: { kind: "event", eventId: "ev_middle" } },
+    });
+    expect(back).toMatchObject({
+      kind: "pause",
+      step: { kind: "cameraControl", mode: "return", durationMs: 1000, returnToPlayer: true, target: { kind: "player" } },
+    });
+    expect(pan).toMatchObject({
+      kind: "pause",
+      step: { kind: "cameraControl", mode: "pan", durationMs: 1400, returnToPlayer: false, zoom: undefined, target: { kind: "position", x: 12, y: 8 } },
+    });
+    expect(tint).toEqual({ kind: "continue" });
+    expect(fade).toEqual({ kind: "continue" });
+    expect(place.kind === "pause" || place.kind === "continue").toBe(true);
   });
 });
 

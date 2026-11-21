@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { installChipsetUploadGuard } from "@/assets/chipsetTextureBands";
 
 declare global {
   interface Window {
@@ -36,7 +37,13 @@ function loadPhaserOnce(): Promise<typeof Phaser> {
 }
 
 export async function ensurePhaser(): Promise<typeof Phaser> {
-  if (window.Phaser) return Promise.resolve(window.Phaser);
+  const phaser = await loadPhaserForEditor();
+  installChipsetUploadGuard(phaser);
+  return phaser;
+}
+
+async function loadPhaserForEditor(): Promise<typeof Phaser> {
+  if (window.Phaser) return window.Phaser;
   try {
     return await loadPhaserOnce();
   } catch (first) {

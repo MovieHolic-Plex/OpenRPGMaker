@@ -1,6 +1,7 @@
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type Phaser from "phaser";
 import { withInlineAsset } from "./inlineAssetStore";
+import { applyRememberedChipsetBands, frameOriginForTexture, markChipsetTextureKey } from "@/assets/chipsetTextureBands";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
@@ -88,11 +89,12 @@ export function loadUploadedTilesets(
     const key = uploadedTilesetTextureKey(tileset);
     if (queued.has(key)) continue;
     queued.add(key);
+    markChipsetTextureKey(key);
     scene.load.image(key, withInlineAsset(imageUrl));
   }
   for (const id of uploadedGraftSourceIds(project)) {
     const imageUrl = uploadedAssetUrl(project!.assets.uploaded[id]!);
-    if (imageUrl && !queued.has(id)) { queued.add(id); scene.load.image(id, withInlineAsset(imageUrl)); }
+    if (imageUrl && !queued.has(id)) { queued.add(id); markChipsetTextureKey(id); scene.load.image(id, withInlineAsset(imageUrl)); }
   }
 }
 
@@ -103,13 +105,14 @@ export function registerUploadedTilesetFrames(
 ): void {
   if (!scene.textures.exists(key)) return;
   const texture = scene.textures.get(key);
+  applyRememberedChipsetBands(texture);
   const existing = new Set(texture.getFrameNames());
   for (let tile = 0; tile < tileset.count; tile++) {
     const name = `tile_${tile}`;
-    if (!existing.has(name)) texture.add(name, 0,
-      tile % tileset.tilesPerRow * tileset.tileSize,
-      Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize,
-      tileset.tileSize, tileset.tileSize);
+    if (!existing.has(name)) {
+      const origin = frameOriginForTexture(texture, tile, tileset.tilesPerRow, tileset.tileSize);
+      texture.add(name, origin.sourceIndex, origin.x, origin.y, tileset.tileSize, tileset.tileSize);
+    }
   }
   registerTilesetStripAnimations(scene, tileset, key);
 }

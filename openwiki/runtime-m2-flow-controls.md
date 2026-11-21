@@ -166,6 +166,10 @@ Evidence: `scripts/qa/quest-library.mjs` and the shipped-player `quest-library` 
   없을 수 있고, 그걸 `fieldNumber` 로 읽으면 실행마다 `[m2] missing field: x/y` 가
   콘솔을 도배한다(출하 플레이어 QA 실측). `m2ModernRuntime` 은 `resolveDestination` 으로
   기록하며, 고정 좌표 명령의 기록은 바이트 단위로 이전과 같다.
+- **기본값이 있는 칸은 빠졌다고 경고하지 않는다 (2026-11-21).** `fieldNumber(fields, "durationMs", fieldNumber(fields, "duration", 300))` 처럼
+  폴백을 인자로 넣으면, `durationMs` 가 있어도 `duration` 읽기가 먼저 실행되어 경고가 난다. 카메라(`zoom`/`x`/`y`/`duration`/`return`)와
+  화면 효과의 `value`(색조·섬광·흔들림·날씨·Screen Effect)는 키가 없을 때 문서에 적힌 기본값을 쓰고 경고하지 않는다.
+  키가 있는데 값이 깨진 경우와, 기본값이 없는 필수 칸은 예전처럼 경고한다.
 - 회귀: `test/coordinateDestinationMove.test.ts` (38건 — 순수 해석기·인터프리터·씬 재생·
   병렬 이벤트·지속성). 기존 `runtimeMovementStability` 의 재지정/큐 사례와
   `commandContracts/m2Command`·`interpreter` 의 단계/기록 모양 계약은 그대로 초록이다.

@@ -1,9 +1,11 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import type { ServerResponse } from "node:http";
-import { resolve, relative, extname } from "node:path";
+import { tmpdir } from "node:os";
+import { join, resolve, relative, extname } from "node:path";
 import { pipeline } from "node:stream/promises";
 import type { Connect, Plugin } from "vite";
+import { catalogTrackForPath, ensureCachedTrack } from "../../electron/main/bgmOnDemand";
 import { CATALOG_RELATIVE_DIR, listInstalledCatalogFiles } from "./bgmCatalogDir";
 
 function missing(error: unknown): boolean {
@@ -86,6 +88,15 @@ export function audioDeliveryPlugin(): Plugin {
           const info = await stat(fallback);
           if (info.isFile()) { await serveFile(fallback, info.size, request, response); return; }
         } catch (error) { if (!missing(error)) { next(error); return; } }
+      }
+      const track = catalogTrackForPath(path.replace(/^\//, ""));
+      if (track) {
+        const cached = await ensureCachedTrack(track, join(tmpdir(), "oprn-bgm-catalog"));
+        if (cached) {
+          const info = await stat(cached);
+          await serveFile(cached, info.size, request, response);
+          return;
+        }
       }
       response.statusCode = 404;
       response.setHeader("Content-Type", "text/plain; charset=utf-8");
