@@ -59,6 +59,26 @@
       "id": "city_terrace",
       "labelKo": "테라스·야외 카페",
       "order": 190
+    },
+    {
+      "id": "city_residential",
+      "labelKo": "골목·주거지",
+      "order": 200
+    },
+    {
+      "id": "city_clinic",
+      "labelKo": "병원·의원",
+      "order": 210
+    },
+    {
+      "id": "city_fuel",
+      "labelKo": "주유소·충전소",
+      "order": 220
+    },
+    {
+      "id": "city_logistics",
+      "labelKo": "택배·물류",
+      "order": 230
     }
   ],
   "sets": [
@@ -144,6 +164,32 @@
         "corner_nw",
         "corner_se",
         "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_river_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_rside_guardrail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_w",
         "h_straight",
         "v_straight"
       ]
