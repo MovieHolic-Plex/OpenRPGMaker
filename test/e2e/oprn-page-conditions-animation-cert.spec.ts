@@ -37,13 +37,13 @@ test("loop6 certifies second switch timer page conditions and animation type aut
   await page.getByTestId("event-page-timer2-condition-seconds").fill("3");
   await dispatchChange(page.getByTestId("event-page-timer2-condition-seconds"));
   await screenshot(page, "002-editor-second-switch-and-timer-conditions.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.getByTestId("event-editor-modal-close").click();
 
   await openEventEditor(page, "ev_anim");
   await page.getByTestId("event-page-animation-type").selectOption("fixedGraphic");
   await screenshot(page, "003-editor-animation-type-fixed-graphic.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   const editorExport = await debugState(page);
   assertLoop6Export(editorExport);
   await writeJson("004-editor-export.json", editorExport);

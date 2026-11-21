@@ -264,17 +264,32 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
   ];
 
   wrap.append(
-    el("span", {
-      class: "event-page-actions-label",
-      text: "페이지",
-      attrs: { "aria-hidden": "true" },
-      dataset: { testid: "event-classic-page-controls" },
-    }),
-    el("div", {
-      class: "event-page-action-buttons",
-      attrs: { role: "group", "aria-label": "페이지 관리" },
-      dataset: { count: String(actions.length) },
-      children: actions,
+    el("details", {
+      class: "event-editor-page-more",
+      dataset: { testid: "event-page-more" },
+      children: [
+        el("summary", {
+          text: "⋯",
+          attrs: { "aria-label": "페이지 메뉴" },
+        }),
+        el("div", {
+          class: "event-editor-page-more-panel",
+          children: [
+            el("span", {
+              class: "event-page-actions-label",
+              text: "페이지",
+              attrs: { "aria-hidden": "true" },
+              dataset: { testid: "event-classic-page-controls" },
+            }),
+            el("div", {
+              class: "event-page-action-buttons",
+              attrs: { role: "group", "aria-label": "페이지 관리" },
+              dataset: { count: String(actions.length) },
+              children: actions,
+            }),
+          ],
+        }),
+      ],
     })
   );
   return wrap;
@@ -385,9 +400,12 @@ export function renderClassicPageTabStrip(
   pageButtons.append(
     el("button", {
       class: "btn evt-page-segment-add",
-      text: "+",
       attrs: { type: "button", title: "새 페이지 추가", "aria-label": "새 페이지 추가" },
       dataset: { testid: "evt-page-add" },
+      children: [
+        el("span", { class: "evt-page-add-icon", text: "+", attrs: { "aria-hidden": "true" } }),
+        el("span", { class: "evt-page-add-label", text: "페이지 추가" }),
+      ],
       on: {
         click: () => {
           const pageId = addEventPage(mapId, ev.id);
@@ -1061,14 +1079,14 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
         ],
       }),
     }),
-    rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    withBeginnerHeading(rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"), "누구(모습)", "event-editor-beginner-who"),
     rm2k3Fieldset("상시 효과", renderPagePixelFxControl(mapId, eventId, page), "event-classic-pixel-fx"),
     rm2k3Fieldset("크기와 통행", renderPageFootprint(mapId, eventId, page), "event-classic-footprint"),
     el("div", {
       class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
-        rm2k3Fieldset("시작 방식", triggerBody, "event-classic-trigger"),
+        withBeginnerHeading(rm2k3Fieldset("시작 방식", triggerBody, "event-classic-trigger"), "언제(시작 방식)", "event-editor-beginner-when"),
         renderEventPageSafetyWarning(page),
       ],
     }),
@@ -1805,6 +1823,15 @@ function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
     text: "조건 없는 자동/병렬 이벤트는 반복 실행될 수 있습니다.",
     dataset: { testid: "event-page-safety-warning" },
   });
+}
+
+function withBeginnerHeading(node: HTMLElement, text: string, testId: string): HTMLElement {
+  node.prepend(el("p", {
+    class: "event-editor-beginner-heading",
+    text,
+    dataset: { testid: testId },
+  }));
+  return node;
 }
 
 function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HTMLElement {

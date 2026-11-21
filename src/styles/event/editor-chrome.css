@@ -1,0 +1,359 @@
+/* 이벤트 편집기 초보 크롬 (2026-11-21).
+   헤더를 이름 입력 한 칸으로 읽고, 페이지 동작·고급 설정은 ⋯ 와 접힘 뒤로 보낸다.
+   노드는 지우지 않는다 — 고급에서 다시 보이고, 단위 테스트는 숨은 버튼도 누른다. */
+
+.event-editor-modal-header .event-editor-name-field {
+  align-items: center;
+  display: flex;
+  flex: 0 1 360px;
+  gap: 6px;
+  max-width: 42%;
+  min-width: 0;
+}
+
+.event-editor-modal-header .event-editor-name-pencil {
+  color: var(--text-3);
+  display: inline-flex;
+  flex: 0 0 auto;
+  pointer-events: none;
+}
+
+.event-editor-modal-header .event-editor-name-field .event-name {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--text-1);
+  font-size: 14px;
+  font-weight: 500;
+  height: 32px;
+  letter-spacing: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.event-editor-modal-header .event-editor-name-field .event-name::placeholder {
+  color: var(--text-3);
+  font-weight: 400;
+  opacity: 1;
+}
+
+.event-editor-modal-header .event-editor-name-field .event-name:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.event-editor-modal-header .event-editor-header-help,
+.event-editor-modal-header .event-editor-header-more > summary {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 32px;
+  font: 600 16px/1 var(--font-ui);
+  height: 32px;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  width: 32px;
+}
+
+.event-editor-modal-header .event-editor-header-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor-modal-header .event-editor-header-help:hover,
+.event-editor-modal-header .event-editor-header-more > summary:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.event-editor-header-more,
+.event-editor-page-more {
+  position: relative;
+}
+
+.event-editor-header-more-panel,
+.event-editor-page-more-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  box-sizing: border-box;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 40;
+}
+
+.event-editor-header-more-panel {
+  min-width: 240px;
+  right: 0;
+  top: calc(100% + 6px);
+}
+
+.event-editor-page-more-panel {
+  min-width: 220px;
+  right: 0;
+  top: calc(100% + 4px);
+}
+
+.event-editor-header-more:not([open]) > .event-editor-header-more-panel,
+.event-editor-page-more:not([open]) > .event-editor-page-more-panel {
+  display: none;
+}
+
+.event-editor-header-more-panel .small-task-trigger,
+.event-editor-header-more-panel [data-testid="event-editor-apply"],
+.event-editor-header-more-panel [data-testid="event-delete"] {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.event-editor-header-more-panel .meta {
+  flex-wrap: wrap;
+  max-width: 280px;
+}
+
+.event-editor-header-more-panel .event-editor-window-controls {
+  justify-content: flex-start;
+  margin-left: 0;
+}
+
+.event-editor > .event-editor-pagebar:has(.event-editor-page-more[open]) {
+  overflow: visible;
+  position: relative;
+  z-index: 6;
+}
+
+.event-editor-page-more > summary {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 700 16px/1 var(--font-ui);
+  height: 30px;
+  justify-content: center;
+  list-style: none;
+  min-width: 32px;
+  padding: 0 8px;
+}
+
+.event-editor-page-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor-page-more-panel .event-page-action-buttons {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.event-editor-page-more-panel .event-page-actions-label {
+  color: var(--text-3);
+  font: 600 11px/1.3 var(--font-ui);
+}
+
+.evt-page-add-label {
+  display: none;
+}
+
+.event-editor-modal-window .event-editor .event-editor-pagebar[data-page-count="1"] .evt-page-segments > .btn.evt-page-segment {
+  display: none;
+}
+
+.event-editor-modal-window .event-editor .event-editor-pagebar[data-page-count="1"] .evt-page-add-label {
+  display: inline;
+}
+
+.event-editor-modal-window .event-editor .event-editor-pagebar[data-page-count="1"] > .evt-page-segments {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.event-editor-modal-window .event-editor .event-editor-pagebar[data-page-count="1"] .evt-page-segment-add {
+  font-size: 12px;
+  gap: 4px;
+  padding: 0 10px;
+  width: auto;
+}
+
+.event-editor-advanced-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 12px/1.3 var(--font-ui);
+  padding: 4px 2px;
+  white-space: nowrap;
+}
+
+.event-editor-advanced-toggle:hover {
+  text-decoration: underline;
+}
+
+.event-editor-beginner-heading {
+  display: none;
+  margin: 0;
+}
+
+.event-editor.is-beginner .event-editor-beginner-heading {
+  color: var(--text-1);
+  display: block;
+  font: 700 13px/1.3 var(--font-ui);
+  grid-column: 1 / -1;
+  margin: 0 0 6px;
+}
+
+.event-editor.is-beginner .event-editor-column-label-settings,
+.event-editor.is-beginner .event-editor-column-label-commands .event-editor-column-title,
+.event-editor.is-beginner .event-editor-column-label-commands .event-editor-column-hint,
+.event-editor.is-beginner [data-rail-group]:not([data-rail-group="look-talk"]),
+.event-editor.is-beginner [data-rail-group="look-talk"] > .event-editor-settings-accordion-header,
+.event-editor.is-beginner .presence,
+.event-editor.is-beginner [data-testid="event-classic-pixel-fx"],
+.event-editor.is-beginner [data-testid="event-classic-name"],
+.event-editor.is-beginner [data-testid="event-page-fact-overlap"],
+.event-editor.is-beginner [data-testid="event-page-safety-warning"],
+.event-editor.is-beginner [data-testid="event-classic-graphic"] > legend,
+.event-editor.is-beginner [data-testid="event-classic-trigger"] > legend,
+.event-editor.is-beginner .event-editor-command-search-field,
+.event-editor.is-beginner [data-testid="event-command-toolbar-undo"],
+.event-editor.is-beginner [data-testid="event-command-toolbar-redo"],
+.event-editor.is-beginner .event-editor-command-edit-menu,
+.event-editor.is-beginner .event-editor-command-tools-menu,
+.event-editor.is-beginner .event-view-toggle,
+.event-editor.is-beginner .event-editor-command-aux-group,
+.event-editor.is-beginner .event-editor-preview-toggle {
+  display: none;
+}
+
+/* 필드셋은 레일 시트가 display:grid 로 더 세게 그린다. 초보에서 빼는 상시 효과는 그 규칙보다 세야 한다. */
+.event-editor-modal-window .event-editor.is-beginner [data-testid="event-classic-pixel-fx"],
+.event-editor-modal-window .event-editor.is-beginner .presence,
+.event-editor-modal-window .event-editor.is-beginner [data-testid="event-classic-name"],
+.event-editor-modal-window .event-editor.is-beginner [data-testid="event-page-fact-overlap"],
+.event-editor-modal-window .event-editor.is-beginner [data-testid="event-page-safety-warning"] {
+  display: none;
+}
+
+.event-editor-modal-window .event-editor.is-beginner [data-rail-group="look-talk"] > .event-editor-settings-accordion-body {
+  display: block;
+}
+
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner .event-editor-workbench,
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner .event-editor-workbench.has-command-inspector,
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner .event-editor-workbench.is-preview-open,
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+  grid-template-columns: minmax(220px, 300px) 6px minmax(0, 1fr);
+}
+
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner .event-editor-workbench > .event-editor-inspector-column {
+  display: none;
+}
+
+.event-editor-status-sr {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.event-editor-modal-footer {
+  position: relative;
+}
+
+.event-editor-modal-footer .event-editor-footer-actions {
+  grid-column: 1 / -1;
+}
+
+.event-editor-modal-footer [data-testid="event-editor-save"].is-dirty::before {
+  background: var(--warning);
+  border-radius: 50%;
+  content: "";
+  display: inline-block;
+  height: 7px;
+  margin-right: 6px;
+  vertical-align: 1px;
+  width: 7px;
+}
+
+/* 상시 효과: 좁은 필드셋에서 「효과 고르기…」가 「없음」 위에 겹쳤다.
+   이름 한 줄, 그 아래 단추·층이 따로 서게 한다. */
+.event-editor-modal-window .event-editor .event-page-pixel-fx {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  position: static;
+}
+
+.event-editor-modal-window .event-editor .event-page-pixel-fx > [data-testid="event-page-pixel-fx-current"] {
+  display: block;
+  flex: 0 0 auto;
+  position: static;
+  width: 100%;
+}
+
+.event-editor-modal-window .event-editor .event-page-pixel-fx > .btn.small {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  position: static;
+}
+
+.event-editor-modal-window .event-editor .event-page-pixel-fx > select,
+.event-editor-modal-window .event-editor .event-page-pixel-fx > .event-custom-select {
+  flex: 0 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  position: static;
+  width: 100%;
+}
+
+.event-custom-select-option-label:has(.event-custom-select-option-desc) {
+  display: grid;
+  gap: 1px;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+}
+
+.event-custom-select-option-desc {
+  color: var(--text-3);
+  font: 400 11px/1.35 var(--font-ui);
+  white-space: normal;
+}
+
+.event-custom-select-option:has(.event-custom-select-option-desc) {
+  align-items: start;
+  min-height: 44px;
+}
+
+/* 모달이 열려 있는 동안 그림 안내 띠(z 30)가 캔버스 툴바(z 20) 위를 덮지 않게 한다.
+   모달을 닫으면 안내의 「AI 설정 열기」가 다시 툴바보다 위에 있다. */
+body.event-editor-modal-open .image-generation-notice {
+  z-index: 1;
+}
+
+body.event-editor-modal-open .canvas-toolbar {
+  z-index: 40;
+}

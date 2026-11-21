@@ -210,7 +210,8 @@ test("event editor modal deletes the open event with Delete", async ({ page }) =
   await page.getByTestId("layer-event").click();
   await clickMapTile(page, 2, 2, 2);
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
-  // 편집기 안에서의 Delete 는 이벤트를 지우지 않는다. 푸터의 「이벤트 삭제」가 확인 창을 연다.
+  // 편집기 안에서의 Delete 는 이벤트를 지우지 않는다. 헤더 ⋯ 의 「이벤트 삭제」가 확인 창을 연다.
+  await page.getByTestId("event-editor-header-more").locator(":scope > summary").click();
   await page.getByTestId("event-delete").click();
   await confirmEventDeletion(page);
 

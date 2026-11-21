@@ -127,13 +127,14 @@ test("all event-editor button families keep visible background context", async (
     await expectOriginalEditorBackdrop(modal);
   }
 
-  // 푸터 「더보기」 disclosure 는 빠졌다. 도움말은 푸터의 보이는 단추다.
+  // 도움말은 헤더의 보이는 ? 다. 전체 보기는 ⋯ 메뉴 안에 있다.
   await modal.getByTestId("event-editor-help").click();
   const help = page.getByTestId("event-editor-help-modal");
   await expectTranslucentScrim(help);
   await page.getByTestId("event-editor-help-close").click();
   await expectOriginalEditorBackdrop(modal);
 
+  await modal.getByTestId("event-editor-header-more").locator(":scope > summary").click();
   const fullscreen = modal.getByTestId("event-editor-window-fullscreen");
   await fullscreen.click();
   // 전체 보기는 같은 backdrop 노드를 유지하고 창을 뷰포트까지 늘린다. 그때 스크림은 불투명 바탕이 된다.

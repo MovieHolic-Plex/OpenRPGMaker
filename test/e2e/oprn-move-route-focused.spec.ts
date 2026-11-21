@@ -94,7 +94,7 @@ test("custom page movement route dialog adds every Korean command button and per
 
   await dialog.getByTestId("event-page-move-route-ok").click();
   await expect(dialog).toBeHidden();
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 
   const moves = await exportedMoves(page);
   expect(moves).toHaveLength(44);
@@ -165,7 +165,7 @@ test("hop parameters reach the saved route from the page movement dialog", async
 
   await dialog.getByTestId("event-page-move-route-ok").click();
   await expect(dialog).toBeHidden();
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 
   const moves = await exportedMoves(page);
   expect(moves).toEqual([

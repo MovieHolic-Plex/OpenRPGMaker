@@ -58,7 +58,7 @@ test("loop4 certifies quest-grade low-level event parts in editor and runtime", 
   await screenshot(page, "006-editor-set-flag-body.png");
   await openInlineEditor(page.getByTestId("event-command-callCommonEvent"));
   await screenshot(page, "007-editor-common-event-call-body.png");
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await page.getByTestId("event-editor-modal-close").click();
 
   const editorExport = await debugState(page);

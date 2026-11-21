@@ -145,7 +145,7 @@ async function authorAndEditTextCommand(page: Page): Promise<void> {
   await screenshot(page, "02-editor-text-edit-same-popup.png");
   await dialog.getByTestId("event-command-edit-ok").click();
   await expect(dialog).toBeHidden();
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 }
 
 async function authorTransferCommand(page: Page): Promise<void> {
@@ -176,7 +176,7 @@ async function authorTransferCommand(page: Page): Promise<void> {
   await dialog.getByTestId("transfer-player-ok").click();
   await commandDialog.getByTestId("event-command-edit-ok").click();
   await expect(commandDialog).toBeHidden();
-  await page.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
 }
 
 async function waitReady(page: Page): Promise<void> {

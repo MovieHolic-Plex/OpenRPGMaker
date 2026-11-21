@@ -185,7 +185,17 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
 
       const label = document.createElement("span");
       label.className = "event-custom-select-option-label";
-      label.textContent = option.label || option.textContent || option.value;
+      const name = document.createElement("span");
+      name.className = "event-custom-select-option-name";
+      name.textContent = option.label || option.textContent || option.value;
+      label.append(name);
+      const description = option.dataset.description ?? "";
+      if (description) {
+        const desc = document.createElement("span");
+        desc.className = "event-custom-select-option-desc";
+        desc.textContent = description;
+        label.append(desc);
+      }
       const check = document.createElement("span");
       check.className = "event-custom-select-option-check";
       check.setAttribute("aria-hidden", "true");
@@ -228,7 +238,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
   const filterMenu = (menu: OpenMenu, query: string): void => {
     const normalized = query.trim().toLocaleLowerCase();
     for (const entry of menu.options) {
-      const label = entry.option.label || entry.option.textContent || entry.option.value;
+      const label = `${entry.option.label || entry.option.textContent || entry.option.value} ${entry.option.dataset.description ?? ""}`;
       entry.button.hidden = normalized.length > 0 && !label.toLocaleLowerCase().includes(normalized);
     }
     const groups = new Set(menu.options.map((entry) => entry.group).filter((group): group is HTMLElement => group !== null));
@@ -372,8 +382,9 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     const current = openMenu?.owner === instance ? openMenu : null;
     if (!current) return;
     const match = current.options.findIndex((entry) => {
-      const label = entry.option.label || entry.option.textContent || entry.option.value;
-      return !entry.button.disabled && label.toLocaleLowerCase().startsWith(typeahead);
+      const label = (entry.option.label || entry.option.textContent || entry.option.value).toLocaleLowerCase();
+      const description = (entry.option.dataset.description ?? "").toLocaleLowerCase();
+      return !entry.button.disabled && (label.startsWith(typeahead) || description.startsWith(typeahead));
     });
     if (match >= 0) setActiveOption(current, match);
   };
@@ -414,8 +425,9 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     const sync = (): void => {
       const selected = select.options[select.selectedIndex] ?? select.selectedOptions[0];
       const text = selected?.label || selected?.textContent || select.getAttribute("placeholder") || "선택";
+      const description = selected?.dataset.description;
       valueLabel.textContent = text;
-      trigger.title = text;
+      trigger.title = description ? `${text} — ${description}` : text;
       trigger.setAttribute("aria-label", `${accessibleSelectName(select)}: ${text}`);
       trigger.disabled = select.disabled || select.options.length === 0;
       wrapper.classList.toggle("is-disabled", trigger.disabled);

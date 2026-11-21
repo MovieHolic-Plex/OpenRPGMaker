@@ -187,7 +187,7 @@ async function editCommand(page: Page, kind: string, action: (dialog: Locator) =
 async function applyEventEditor(page: Page): Promise<void> {
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();
-  await modal.getByTestId("event-editor-apply").click();
+  await page.keyboard.press("Control+s");
   await expect(page.getByTestId("event-editor-draft-status")).toContainText("적용됨");
 }
 

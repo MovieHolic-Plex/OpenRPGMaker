@@ -94,7 +94,7 @@ test("event editor draft, validation, picker, and runtime test form one trustwor
   await page.getByTestId("event-command-edit-ok").click();
   await expect(editor.getByTestId("event-command-shop")).toBeVisible();
 
-  await editor.getByTestId("event-editor-apply").click();
+  await editor.page().keyboard.press("Control+s");
   await expect(editor).toBeVisible();
   const validation = editor.getByTestId("event-draft-validation");
   await validation.locator(":scope > summary").click();

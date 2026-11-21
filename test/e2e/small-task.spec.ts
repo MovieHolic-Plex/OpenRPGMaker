@@ -116,14 +116,15 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
   await expect(box).toBeHidden();
 
   const eventEditor = await openGreetingEditor(page, mapId, fixture.event.id);
+  await eventEditor.getByTestId("event-editor-header-more").locator(":scope > summary").click();
   const eventTrigger = eventEditor.getByRole("button", { name: "이걸로 작업" });
   await eventTrigger.click();
   await expect(box).toContainText("이벤트 · 안내인");
   for (const viewport of [{ width: 1440, height: 980 }, { width: 760, height: 720 }]) {
     await page.setViewportSize(viewport);
-    const anchor = (await eventTrigger.boundingBox())!;
+    const titlebar = (await eventEditor.getByTestId("event-editor-titlebar").boundingBox())!;
     const capsule = (await box.boundingBox())!;
-    expect(capsule.y).toBeGreaterThanOrEqual(anchor.y + anchor.height);
+    expect(capsule.y).toBeGreaterThanOrEqual(titlebar.y + titlebar.height - 1);
     expect(capsule.x).toBeGreaterThanOrEqual(0);
     expect(capsule.x + capsule.width).toBeLessThanOrEqual(viewport.width);
     for (const selector of [".event-editor-pagebar", ".event-editor-commands-column", ".event-editor-inspector-column"]) {
@@ -178,7 +179,7 @@ test("작은 일을 되돌릴 때 열린 초안은 손편집 여부를 따르고
   await page.evaluate(async () => (await import("/src/editor/mapEditHistory.ts")).undoMapEdit());
   await expect(commands).not.toContainText("AI가 추가한 대사.");
   await expect(status).toHaveAttribute("data-state", "session");
-  await editor.getByTestId("event-editor-apply").click();
+  await editor.page().keyboard.press("Control+s");
   const savedCommands = () => page.evaluate(async ({ mapId, eventId }) => {
     const { store } = await import("/src/project/store.ts");
     const { committedEventView } = await import("/src/project/eventDrafts.ts");
@@ -208,6 +209,7 @@ test("작은 일을 되돌릴 때 열린 초안은 손편집 여부를 따르고
   await expect(editor).toBeHidden();
 
   const reopened = await openGreetingEditor(page, mapId, event.id);
+  await reopened.getByTestId("event-editor-header-more").locator(":scope > summary").click();
   await run(reopened.getByRole("button", { name: "이걸로 작업" }));
   // Leave the result card open. The same Cancel click should dismiss it and open the guard.
   await reopened.getByTestId("event-editor-name").fill("두 번째 직접 편집");

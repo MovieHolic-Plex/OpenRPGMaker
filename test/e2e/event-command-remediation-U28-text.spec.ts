@@ -124,7 +124,7 @@ export async function proveEditor(page: Page, url: string, options: { readonly o
     assert.equal(await body(page).inputValue(), finalBody);
     await body(page).fill("Discard this different edit"); await cancelCommand(page, saved);
     await observeEditorAction(page, { timeoutMs: 10_000, mutation: dom("project-export-json"),
-      observe: [projectObservation(commandPath, expected)] }, () => page.getByTestId("event-editor-apply").click());
+      observe: [projectObservation(commandPath, expected)] }, () => page.keyboard.press("Control+s"));
     assert.deepEqual(await readEditorProject(page), saved);
     await page.getByTestId("event-editor-modal-close").click();
     // Then: the real downloaded package and filechooser import preserve all metadata and unrelated data.

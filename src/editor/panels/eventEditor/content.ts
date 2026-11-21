@@ -77,6 +77,7 @@ import { openEventCommandPicker } from "./commandPicker";
 import { defaultInsertionPath, describeInsertionPath } from "./commandInspector";
 import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
+import { eventEditorAdvancedOpen, setEventEditorAdvancedOpen } from "./beginnerChrome";
 import {
   appendEventRailGroup,
   renderClassicPageTabStrip,
@@ -169,7 +170,9 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
 }
 
 export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, eventId: string): void {
+  const advancedOpen = eventEditorAdvancedOpen();
   const section = el("div", { class: "panel-section event-editor event-editor-command-focused", dataset: { testid: "event-editor-content" } });
+  section.classList.add(advancedOpen ? "is-advanced" : "is-beginner");
   const map = store.getCurrent().maps[mapId];
   if (!map) {
     section.append(el("div", { class: "empty-hint", text: "맵을 찾을 수 없습니다." }));
@@ -278,7 +281,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-page-flow-host" },
   });
   let reviewingAiDraft = false;
-  let currentMode: StoryboardMode = storyboardMode === "preview" ? "list" : storyboardMode;
+  let rememberedMode: StoryboardMode = storyboardMode === "preview" ? "list" : storyboardMode;
+  // 초보 화면은 명령 목록만 보여 준다. 저장해 둔 스토리/플로우는 고급을 다시 열 때 돌아온다.
+  let currentMode: StoryboardMode = advancedOpen ? rememberedMode : "list";
   // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
   // 곧바로 편집 모달을 열어서, 기본 보기인 스토리에서는 오른쪽 「선택한 명령」 칼럼이
   // 영원히 비어 있고 툴바의 이동/복사가 대상을 찾지 못했다.
@@ -337,6 +342,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   let storyboardRendered = false;
   const changeMode = (next: StoryboardMode): void => {
     currentMode = next;
+    rememberedMode = next;
     setStoryboardMode(next);
     applyViewMode();
   };
@@ -512,10 +518,33 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   applyStoredSettingsColumnWidth(workbench);
   attachColumnResize(columnResizer, workbench);
 
+  const advancedToggle = el("button", {
+    class: "event-editor-advanced-toggle",
+    text: advancedOpen ? "고급 설정 접기" : "고급 설정 펼치기",
+    attrs: { type: "button", "aria-expanded": advancedOpen ? "true" : "false" },
+    dataset: { testid: "event-editor-advanced-toggle" },
+    on: {
+      click: () => {
+        const next = !section.classList.contains("is-advanced");
+        section.classList.toggle("is-advanced", next);
+        section.classList.toggle("is-beginner", !next);
+        setEventEditorAdvancedOpen(next);
+        advancedToggle.textContent = next ? "고급 설정 접기" : "고급 설정 펼치기";
+        advancedToggle.setAttribute("aria-expanded", next ? "true" : "false");
+        currentMode = next ? rememberedMode : "list";
+        applyViewMode();
+      },
+    },
+  });
   section.append(
     el("div", {
       class: "event-editor-pagebar",
-      children: [renderClassicPageTabStrip(mapId, evForRender, activePage), renderPageActions(mapId, evForRender, activePage)],
+      dataset: { pageCount: String(pages.length), testid: "event-editor-pagebar" },
+      children: [
+        advancedToggle,
+        renderClassicPageTabStrip(mapId, evForRender, activePage),
+        renderPageActions(mapId, evForRender, activePage),
+      ],
     }),
     workbench,
   );
@@ -577,6 +606,13 @@ function columnLabel(
     class: `event-editor-column-label event-editor-column-label-${slot}`,
     dataset: { testid: `event-editor-column-label-${slot}` },
     children: [
+      ...(slot === "commands"
+        ? [el("span", {
+            class: "event-editor-beginner-heading",
+            text: "무엇을(명령 목록)",
+            dataset: { testid: "event-editor-beginner-commands" },
+          })]
+        : []),
       el("span", { class: "event-editor-column-title", text: title }),
       el("span", { class: "event-editor-column-hint", text: hint }),
       ...(trailing ? [trailing] : []),

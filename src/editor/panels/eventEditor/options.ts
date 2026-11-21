@@ -17,6 +17,8 @@ export function collectNpcActivitySuggestions(project: Project): readonly string
 export type SelectOption<T extends string> = {
   readonly value: T;
   readonly label: string;
+  /** 드롭다운을 펼쳤을 때 라벨 아래에 한 줄로 붙는 설명. 닫힌 칸에는 라벨만 보인다. */
+  readonly description?: string;
 };
 export type EventEditorTriggerKind = Exclude<Trigger["kind"], "touch">;
 
@@ -28,14 +30,15 @@ export type PageCommandButton = {
 
 export const TRIGGER_OPTIONS = [
   // "결정키"는 게임패드 세대 용어라 초보가 못 알아듣는다 — 플레이어 행동 기준으로 서술.
-  { value: "action", label: "말을 걸면" },
-  { value: "playerTouch", label: "플레이어가 닿으면" },
-  { value: "eventTouch", label: "이벤트가 닿으면" },
-  { value: "auto", label: "나타나면 바로 실행" },
-  { value: "parallel", label: "뒤에서 계속 실행" },
+  // description 은 펼친 목록의 한 줄 설명이다. 닫힌 칸과 <option> 텍스트는 label 만 쓴다.
+  { value: "action", label: "말을 걸면", description: "눈앞의 사람에게 말을 걸면 실행해요" },
+  { value: "playerTouch", label: "플레이어가 닿으면", description: "플레이어가 이 칸에 부딪히면 실행해요" },
+  { value: "eventTouch", label: "이벤트가 닿으면", description: "이 이벤트가 움직이다가 플레이어에게 닿으면 실행해요" },
+  { value: "auto", label: "나타나면 바로 실행", description: "이 페이지가 켜지는 순간 한 번 실행해요" },
+  { value: "parallel", label: "뒤에서 계속 실행", description: "이 페이지가 켜진 동안 뒤에서 계속 반복해요" },
   // 구역(로케이션) 드나듦. 이 하나만 추가 필드(구역 · 들어옴/나감)를 갖고,
   // 그 필드 DOM 은 `editor/locationTriggerAuthoring.ts` 가 소유한다.
-  { value: "locationTransition", label: LOCATION_TRANSITION_TRIGGER_LABEL },
+  { value: "locationTransition", label: LOCATION_TRANSITION_TRIGGER_LABEL, description: "지정한 구역에 들어가거나 나올 때 실행해요" },
 ] as const satisfies readonly SelectOption<EventEditorTriggerKind>[];
 
 export const COMMAND_KIND_OPTIONS = [
