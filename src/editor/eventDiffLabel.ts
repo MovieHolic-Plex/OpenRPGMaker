@@ -12,6 +12,7 @@
 
 import type { EditActivityField } from "@/editor/editActivityLog";
 import type { EventDiff, EventFieldDiff } from "@/project/eventDrafts";
+import type { Project } from "@/project/types";
 
 /** 라벨에 나열할 필드 경로 최대 개수 — 넘으면 "외 N건" 으로 접는다. */
 const MAX_LABELED_PATHS = 3;
@@ -59,6 +60,48 @@ export function describeEventDiff(diff: EventDiff | null, eventName?: string): s
   const shown = paths.slice(0, MAX_LABELED_PATHS).join(", ");
   const rest = paths.length > MAX_LABELED_PATHS ? ` 외 ${paths.length - MAX_LABELED_PATHS}건` : "";
   return `이벤트 편집${subject} — ${shown}${rest}`;
+}
+
+function eventIdentity(project: Project): Map<string, { readonly name: string; readonly pages: number }> {
+  const identities = new Map<string, { readonly name: string; readonly pages: number }>();
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    for (const event of map.events) {
+      identities.set(`${mapId}:${event.id}`, {
+        name: event.name?.trim() ?? "",
+        pages: event.pages?.length ?? 0,
+      });
+    }
+  }
+  return identities;
+}
+
+/**
+ * 되돌리기 전후의 이벤트 이름·페이지 수. 히스토리 라벨이 빈 diff 의 「변경 없음」으로
+ * 남아 있어도, 이름이나 페이지 수가 실제로 바뀌었으면 그 사실을 알린다.
+ */
+export function describeRestoredEventIdentity(before: Project, after: Project): string | null {
+  const previous = eventIdentity(before);
+  const next = eventIdentity(after);
+  let nameChanged = false;
+  let pageChanged = false;
+  for (const id of new Set([...previous.keys(), ...next.keys()])) {
+    const left = previous.get(id);
+    const right = next.get(id);
+    if ((left?.name ?? "") !== (right?.name ?? "")) nameChanged = true;
+    if ((left?.pages ?? 0) !== (right?.pages ?? 0)) pageChanged = true;
+  }
+  if (nameChanged && pageChanged) return "이벤트 이름, 페이지 수";
+  if (nameChanged) return "이벤트 이름";
+  if (pageChanged) return "페이지 수";
+  return null;
+}
+
+/** Ctrl+Z 토스트. 라벨이 비었거나 「변경 없음」인데 이름·페이지 수가 바뀌었으면 그 변화를 말한다. */
+export function undoFeedbackText(label: string | null, before: Project, after: Project): string {
+  const identity = describeRestoredEventIdentity(before, after);
+  const stale = !label || label.includes("변경 없음");
+  const shown = stale && identity ? identity : label;
+  return shown ? `되돌렸습니다 — ${shown}` : "되돌렸습니다";
 }
 
 /**

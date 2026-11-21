@@ -185,6 +185,8 @@ it.each([
   [new Error("No API key found"), "AI 로그인이 만료됐거나 연결되지 않았어요. 설정에서 다시 로그인해 주세요."],
   [new TypeError("Failed to fetch"), "인터넷 연결을 확인하고 다시 시도해 주세요."],
   [new Error("400: Invalid tools schema"), "AI가 요청을 처리하지 못했어요. 잠시 뒤 다시 시도해 주세요."],
+  [Object.assign(new Error("Pi 에이전트 실행 실패: bun 이 필요합니다. oh-my-pi 제공자 로그인/전송은 Bun 에서만 로드됩니다."), { status: 500 }), "AI 실행 환경을 쓸 수 없어요. Bun 런타임이 설치되지 않았거나 시작되지 않았습니다."],
+  [Object.assign(new Error("oh-my-pi worker 409"), { status: 409 }), "AI 실행 환경을 쓸 수 없어요. Bun 런타임이 설치되지 않았거나 시작되지 않았습니다."],
   [new SmallTaskError("선택한 대상만 고칠 수 있어요."), "선택한 대상만 고칠 수 있어요."],
 ])("작은 일이 실패하면 내부 오류 대신 대응하는 안내를 표시한다 (%s)", (error, message) => {
   expect(smallTaskErrorMessage(error)).toBe(message);

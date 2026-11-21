@@ -1,29 +1,16 @@
 import { test, expect } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 
+import { EVENT_DOCK_ID, eventDockProject, openEventDockFixture } from "./eventAiDockFixture";
 test("event button uses shared assistant, reviews locally, applies once and undoes", async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/?blankProject=1");
-  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60000 });
-  const { target, switchId } = await page.evaluate(async () => {
-    const { createStarterBlankProject } = await import("/src/project/defaults.ts");
-    const { store } = await import("/src/project/store.ts");
-    const project = createStarterBlankProject();
-    const mapId = project.startMapId;
-    const tilesetId = project.maps[mapId].tilesetId;
-    project.tilesets = { [tilesetId]: project.tilesets[tilesetId] };
-    const target = { mapId, eventId: "shared-assist-event", pageId: "shared-assist-page" };
-    const original = [{ kind: "text" as const, body: "기존 인사입니다." }];
-    const basePage = { id: target.pageId, name: "인사", conditions: [], graphic: {}, trigger: { kind: "action" as const },
-      priority: "same" as const, movement: { type: "fixed" as const, speed: 3, frequency: 3 }, commands: original };
-    project.maps[mapId].events.push({ id: target.eventId, name: "안내인", x: 3, y: 3, trigger: { kind: "action" }, commands: original,
-      pages: [basePage, { ...structuredClone(basePage), id: "untouched-page", name: "보존할 페이지" }] });
-    store.replaceProject(project);
-    return { target, switchId: project.switches[0].id };
-  });
+  const target = EVENT_DOCK_ID;
   const { mapId } = target;
-  const original = [{ kind: "text", body: "기존 인사입니다." }];
+  const original = [{ kind: "text", body: "기존 인사입니다." }] as const;
+  const project = eventDockProject(original, { name: "안내인", secondPage: true });
+  const switchId = project.switches[0].id;
+  await openEventDockFixture(page, project);
   const setSwitch = { kind: "setSwitch", switchId, value: true };
   const fork = { kind: "fork", condition: { kind: "switch", switchId, value: true }, then: [setSwitch], else: [] };
   const generated = [...original, setSwitch];
@@ -66,10 +53,6 @@ test("event button uses shared assistant, reviews locally, applies once and undo
       choices: [{ message: { role: "assistant", content, ...(tool_calls ? { tool_calls } : {}) }, finish_reason: tool_calls ? "tool_calls" : "stop" }],
     }) });
   });
-  await page.evaluate(async target => {
-    const { openEventEditorModal } = await import("/src/editor/panels/eventEditor/modal.ts");
-    openEventEditorModal(target.mapId, target.eventId);
-  }, target);
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible();
   await editor.getByTestId("event-command-quick-ai").click();
@@ -104,7 +87,7 @@ test("event button uses shared assistant, reviews locally, applies once and undo
   // A second request stalls inside the real generator; cancellation must settle without a draft.
   writerRound = 0;
   pauseGenerator = true;
-  await editor.getByTestId("event-command-quick-ai").click();
+  await expect(editor.getByTestId("ai-event-input")).toBeVisible();
   await editor.getByTestId("ai-event-generate").click();
   await expect.poll(() => generatorPaused, { timeout: 60000 }).toBe(true);
   await editor.getByTestId("ai-event-stop").click();

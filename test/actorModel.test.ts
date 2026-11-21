@@ -24,6 +24,7 @@ describe("RM2K3 actor model", () => {
     expect(actor.critical).toEqual({ enabled: true, chanceDenominator: 30 });
     expect(actor.learnedSkills).toEqual([{ level: 1, skillId: DEFAULT_SKILL_ID }]);
     expect(actor.initialEquipment.weapon).toBe(DEFAULT_EQUIPMENT_ID);
+    expect(actor.nickname).toBe("");
     expect(actor.stateRates["state_death"]).toBe("C");
     expect(actor.elementRates.sword).toBe("C");
     expect(actor.parameterCurves.maxHp).toHaveLength(99);
@@ -42,6 +43,7 @@ describe("RM2K3 actor model", () => {
 
     expect(actor.initialLevel).toBe(1);
     expect(actor.maxLevel).toBe(99);
+    expect(actor.nickname).toBe("");
     expect(actor.learnedSkills).toEqual([{ level: 1, skillId: DEFAULT_SKILL_ID }]);
     expect(actor.critical.chanceDenominator).toBe(30);
     expect(actor.options.dualWield).toBe(false);

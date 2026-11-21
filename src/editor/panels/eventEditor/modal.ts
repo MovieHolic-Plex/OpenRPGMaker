@@ -29,7 +29,7 @@ import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { renderEventIdReadout } from "./eventIdReadout";
 import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
-import { clearEventAiLiveDock, focusEventAiDockInOpenEditor } from "./aiAssist";
+import { clearEventAiLiveDock, collapseFocusedEventAiAssist, focusEventAiDockInOpenEditor } from "./aiAssist";
 import { clearEventAiDockOpenRequest, requestEventAiDockOpen } from "./aiDockOpenRequest";
 import {
   openActiveEventCommandPicker,
@@ -46,6 +46,7 @@ import {
 } from "./validationBell";
 import { finishCommandListMount } from "./commandList";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
+import { clearEventPageDeletionHistory } from "./pageDeleteHistory";
 import { clearCommandInspector, setCommandInspectorHost, setCommandSelectionListener } from "./commandInspector";
 import { resetEventViewSession } from "./storyboardView";
 import { installEventEditorCustomSelects } from "./customSelect";
@@ -167,6 +168,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   // 그래픽/얼굴 피커는 이 모달 안에서 열린다 — 여는 순간이 아니라 지금 받아 둔다.
   void warmEditorPickerAssets();
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+  clearEventPageDeletionHistory(request.mapId, request.eventId);
   // 리스너를 먼저 떼고 비운다 — 지난 렌더의 툴바를 다시 계산하려 들지 않게.
   setCommandSelectionListener(undefined);
   clearCommandInspector();
@@ -304,7 +306,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     // modalStack removes its entry before calling us, even if closing is declined.
     unregisterModal(backdrop);
     registerModal(backdrop, requestModalEscape);
-    if (exitWindowFullscreen()) {
+    if (collapseFocusedEventAiAssist() || exitWindowFullscreen()) {
       return;
     }
     requestClose();
@@ -487,6 +489,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+    clearEventPageDeletionHistory(request.mapId, request.eventId);
     clearEventAiLiveDock();
     // 예약은 "태어날 때 한 번" 소비된다. 도크가 그려지기 전에 편집기가 닫혔다면(본문 렌더가
     // 던졌거나 즉시 닫힘) 예약이 남아, 훗날 같은 이벤트를 열 때 도크가 저절로 펼쳐진다.
@@ -779,7 +782,9 @@ function renderModalFooter(
         class: "event-editor-footer-leading",
         children: [
           footerButton("이벤트 삭제", "event-delete", () => {
-            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+            void requestEditorEventDeletion(request.mapId, request.eventId).then((deleted) => {
+              if (deleted) close(true);
+            });
           }, false, "ghost"),
           el("span", {
             class: "event-editor-remote-status",

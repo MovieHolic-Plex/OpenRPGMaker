@@ -30,7 +30,7 @@ import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { toast } from "@/util/toast";
-import { renderEventAiAssist } from "./aiAssist";
+import { eventAiStagedCommands, renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
@@ -65,6 +65,14 @@ import {
   showCommandInspector,
 } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
+import {
+  canRedoEventPageDeletion,
+  canUndoEventPageDeletion,
+  pageDeletionIsNewerThanCommands,
+  pageDeletionRedoSeq,
+  redoEventPageDeletion,
+  undoEventPageDeletion,
+} from "./pageDeleteHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { defaultInsertionPath, describeInsertionPath } from "./commandInspector";
 import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
@@ -260,7 +268,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
-  // AI 초안은 별도 모달에만 그린다. 적용 전에는 저작 명령 목록을 유지한다.
+  // AI 초안과 저작 명령은 같은 명령 영역을 공유한다.
   const stagedHost = el("div", {
     class: "cmd-staged-host",
     dataset: { testid: "ai-event-staged-host" },
@@ -269,6 +277,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-page-flow-host",
     dataset: { testid: "event-page-flow-host" },
   });
+  let reviewingAiDraft = false;
   let currentMode: StoryboardMode = storyboardMode === "preview" ? "list" : storyboardMode;
   // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
   // 곧바로 편집 모달을 열어서, 기본 보기인 스토리에서는 오른쪽 「선택한 명령」 칼럼이
@@ -337,20 +346,21 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-editor-command-count" },
   });
   const refreshCommandCount = (): void => {
-    const count = totalCommandCount(activePage.commands);
+    const draft = reviewingAiDraft ? eventAiStagedCommands(mapId, eventId, activePage.id) : null;
+    const count = totalCommandCount(draft ?? activePage.commands);
     commandCount.textContent = `${count}개`;
-    commandCount.setAttribute("aria-label", `작성한 명령 ${count}개, 분기 안 명령 포함`);
+    commandCount.setAttribute("aria-label", `${draft ? "적용 예정 명령" : "작성한 명령"} ${count}개, 분기 안 명령 포함`);
   };
   refreshCommandCount();
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
-    const isStoryboard = currentMode === "storyboard";
-    const isFlow = currentMode === "flow";
+    const isStoryboard = !reviewingAiDraft && currentMode === "storyboard";
+    const isFlow = !reviewingAiDraft && currentMode === "flow";
     refreshCommandCount();
     setCommandSelectionSurface(section);
-    if (!isStoryboard && !isFlow) ensureCommandList();
-    cmdList.hidden = isStoryboard || isFlow;
+    if (!reviewingAiDraft && !isStoryboard && !isFlow) ensureCommandList();
+    cmdList.hidden = reviewingAiDraft || isStoryboard || isFlow;
     if (!cmdList.hidden) resumeCommandListMount(cmdList);
     storyboardEl.hidden = !isStoryboard;
     flowHost.hidden = !isFlow;
@@ -435,7 +445,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     cmdList,
     selectionPath: selectedCommandPath,
     stagedHost,
-    refreshListVisibility: () => applyViewMode(),
+    refreshListVisibility: (reviewing) => {
+      if (reviewingAiDraft === reviewing) {
+        if (reviewing) refreshCommandCount();
+        return;
+      }
+      reviewingAiDraft = reviewing;
+      applyViewMode();
+    },
     replaceAll: (commands) => commandHistory.replaceAll(commands),
   });
   const commandToolbar = renderCommandToolbar({
@@ -451,7 +468,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     storyboardEl: () => storyboardEl,
   });
   // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
-  syncToolbarState = commandToolbar.sync;
+  syncToolbarState = () => {
+    for (const tool of commandToolbar.element.children) {
+      if (!(tool instanceof HTMLElement) || tool.classList.contains("event-editor-command-aux-group")) continue;
+      tool.inert = reviewingAiDraft;
+    }
+    commandToolbar.sync();
+  };
   syncListMount = () => {
     searchSurfaces.delete(cmdList);
     if (currentMode === "list") commandToolbar.sync();
@@ -472,13 +495,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       dataset: { testid: "event-script-canvas" },
       children: [
         commandToolbar.element,
+        aiAssist,
+        stagedHost,
         storyboardHost,
         flowHost,
         cmdList,
       ],
     }),
-    // 열기 버튼은 툴바에 있고, 작성기와 초안은 별도 모달에서 표시한다.
-    aiAssist,
   );
 
   const workbench = el("div", {
@@ -827,6 +850,13 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     applySearch();
   });
 
+  const canUndoEditorStep = (): boolean =>
+    commandHistory.canUndo() || canUndoEventPageDeletion(mapId, eventId);
+  const canRedoEditorStep = (): boolean =>
+    commandHistory.canRedo() || canRedoEventPageDeletion(mapId, eventId);
+  const undoEditorStep = (): void => undoMixedEditorStep(mapId, eventId, commandHistory);
+  const redoEditorStep = (): void => redoMixedEditorStep(mapId, eventId, commandHistory);
+
   const element = el("div", {
     class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
@@ -839,8 +869,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
         class: "event-editor-command-search-field",
         children: [commandSearch, searchClear, searchCount],
       }),
-      toolbarButton("undo", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-      toolbarButton("redo", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
+      toolbarButton("undo", "되돌리기", "event-command-toolbar-undo", () => undoEditorStep(), !canUndoEditorStep()),
+      toolbarButton("redo", "다시 실행", "event-command-toolbar-redo", () => redoEditorStep(), !canRedoEditorStep()),
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
@@ -850,8 +880,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   const syncHistoryButtons = (): void => {
     const undo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-undo"]');
     const redo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-redo"]');
-    if (undo) setDisabled(undo, !commandHistory.canUndo());
-    if (redo) setDisabled(redo, !commandHistory.canRedo());
+    if (undo) setDisabled(undo, !canUndoEditorStep());
+    if (redo) setDisabled(redo, !canRedoEditorStep());
   };
   return {
     element,
@@ -865,12 +895,12 @@ function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
   const aiButton = aiDock ? toolbarButton("spark", "AI로 명령 만들기", "event-command-quick-ai") : null;
   if (aiDock && aiButton) {
+    aiButton.setAttribute("aria-controls", aiDock.id);
     const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
     syncAiExpanded();
     aiDock.addEventListener("toggle", syncAiExpanded);
     aiButton.addEventListener("click", () => {
       aiDock.open = !aiDock.open;
-
     });
   }
   return el("div", {
@@ -1020,18 +1050,40 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
 function pageCommandHistory(mapId: MapId, eventId: string, pageId: string): CommandToolbarHistory {
   return createCommandToolbarHistory({
     key: `${mapId}:${eventId}:${pageId}`,
+    editScope: { mapId, eventId },
     immutableSnapshots: true,
     readCommands: () => activePageCommands(mapId, eventId, pageId),
     replaceCommands: commands => replaceEventPageCommands(mapId, eventId, pageId, commands),
   });
 }
 
+function undoMixedEditorStep(mapId: MapId, eventId: string, history: CommandToolbarHistory | null): void {
+  const commandSeq = history?.undoSeq() ?? 0;
+  if (pageDeletionIsNewerThanCommands(mapId, eventId, commandSeq) && undoEventPageDeletion(mapId, eventId)) return;
+  if (history?.canUndo()) {
+    history.undo();
+    return;
+  }
+  undoEventPageDeletion(mapId, eventId);
+}
+
+function redoMixedEditorStep(mapId: MapId, eventId: string, history: CommandToolbarHistory | null): void {
+  const pageSeq = pageDeletionRedoSeq(mapId, eventId);
+  const commandSeq = history?.redoSeq() ?? 0;
+  // 되돌린 순서의 역이다. 더 작은 순서가 나중에 되돌린 단계라 먼저 다시 실행한다.
+  if (pageSeq > 0 && (commandSeq === 0 || pageSeq < commandSeq)) {
+    redoEventPageDeletion(mapId, eventId);
+    return;
+  }
+  if (history?.canRedo()) history.redo();
+  else redoEventPageDeletion(mapId, eventId);
+}
+
 export function undoActiveEventCommands(mapId: MapId, eventId: string, redo = false): void {
   const pageId = activePageIdOf(mapId, eventId);
-  if (!pageId) return;
-  const history = pageCommandHistory(mapId, eventId, pageId);
-  if (redo) history.redo();
-  else history.undo();
+  const history = pageId ? pageCommandHistory(mapId, eventId, pageId) : null;
+  if (redo) redoMixedEditorStep(mapId, eventId, history);
+  else undoMixedEditorStep(mapId, eventId, history);
 }
 
 function activePageCommands(mapId: MapId, eventId: string, pageId: string): Command[] {
