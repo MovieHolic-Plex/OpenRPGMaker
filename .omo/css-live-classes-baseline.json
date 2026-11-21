@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-11-19T11:59:55.813Z",
+ "ranAt": "2026-11-21T03:26:25.791Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -11,7 +11,7 @@
   },
   {
    "path": "test/fixtures/eventEditorShellSurface.baseline.json",
-   "added": 302
+   "added": 301
   },
   {
    "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
@@ -1079,157 +1079,79 @@
   },
   "ai-event-assist": {
    "props": [
-    "align-items",
     "background",
     "border",
     "border-bottom",
     "border-radius",
-    "border-top",
-    "box-shadow",
     "color",
     "cursor",
     "display",
-    "flex",
-    "flex-direction",
     "gap",
-    "grid-template-columns",
-    "inset",
-    "justify-content",
-    "left",
     "margin",
-    "margin-top",
-    "max-height",
     "min-height",
-    "overflow",
-    "padding",
-    "position",
-    "top",
-    "transform",
-    "width",
-    "z-index"
+    "min-width"
    ],
    "decls": [
-    "align-items:center",
-    "background:rgb(15 23 42 / 48%)",
     "background:var(--bg-raised)",
-    "background:var(--bg-surface)",
     "border-bottom:1px solid var(--border-subtle)",
-    "border-radius:12px",
     "border-radius:6px",
-    "border-top:1px solid var(--border-default)",
-    "border:0",
+    "border-radius:var(--radius-m)",
     "border:1px solid var(--border-default)",
-    "box-shadow:0 20px 70px rgb(0 0 0 / 24%)",
     "color:var(--text-1)",
     "cursor:progress",
     "display:flex",
-    "display:grid",
     "display:none",
-    "flex-direction:column",
-    "flex:0 0 auto",
-    "gap:18px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-columns:minmax(260px, .8fr) minmax(0, 1.2fr)",
-    "inset:0",
-    "justify-content:center",
-    "left:50%",
-    "margin-top:0",
-    "margin:0",
-    "max-height:calc(100dvh - 80px)",
-    "min-height:0",
-    "overflow:auto",
-    "padding:20px",
-    "padding:24px",
-    "position:fixed",
-    "top:50%",
-    "transform:rotate(180deg)",
-    "transform:translate(-50%, -50%)",
-    "width:min(980px, calc(100vw - 48px))",
-    "z-index:20"
+    "gap:var(--space-2)",
+    "margin:6px 12px 8px",
+    "min-height:34px",
+    "min-width:0"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-list-4.css"
    ]
   },
   "ai-event-assist-body": {
    "props": [
-    "background",
-    "border",
-    "border-radius",
-    "box-shadow",
     "display",
-    "flex-direction",
     "gap",
-    "grid-template-columns",
-    "left",
-    "max-height",
-    "min-height",
-    "overflow",
-    "padding",
-    "position",
-    "top",
-    "transform",
-    "width"
+    "min-width",
+    "padding"
    ],
    "decls": [
-    "background:var(--bg-surface)",
-    "border-radius:12px",
-    "border:1px solid var(--border-default)",
-    "box-shadow:0 20px 70px rgb(0 0 0 / 24%)",
-    "display:flex",
     "display:grid",
-    "flex-direction:column",
-    "gap:18px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-columns:minmax(260px, .8fr) minmax(0, 1.2fr)",
-    "left:50%",
-    "max-height:calc(100dvh - 80px)",
-    "min-height:0",
-    "overflow:auto",
-    "padding:0",
-    "padding:20px",
-    "position:fixed",
-    "top:50%",
-    "transform:translate(-50%, -50%)",
-    "width:min(980px, calc(100vw - 48px))"
+    "gap:8px",
+    "min-width:0",
+    "padding:8px 12px 10px"
    ],
    "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-list-3.css"
    ]
   },
   "ai-event-assist-summary": {
    "props": [
     "background",
     "border-bottom",
+    "border-radius",
     "color",
-    "cursor",
     "display",
     "flex",
+    "font-size",
     "gap",
     "min-height",
-    "min-width",
-    "transform",
-    "transition",
-    "user-select"
+    "min-width"
    ],
    "decls": [
     "background:var(--bg-hover)",
     "border-bottom:1px solid var(--border-subtle)",
+    "border-radius:var(--radius-s)",
     "color:var(--text-1)",
-    "color:var(--text-2)",
-    "cursor:pointer",
     "display:flex",
-    "flex:0 0 auto",
     "flex:1 1 auto",
+    "font-size:12px",
     "gap:var(--space-2)",
     "min-height:34px",
-    "min-width:0",
-    "transform:rotate(180deg)",
-    "transition:background var(--transition-fast), color var(--transition-fast)",
-    "user-select:none"
+    "min-width:0"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
@@ -1272,6 +1194,7 @@
     "cursor:default",
     "cursor:pointer",
     "display:inline-flex",
+    "display:none",
     "font-weight:600",
     "font:700 12px/1 var(--font-ui)",
     "gap:6px",
@@ -1292,41 +1215,18 @@
   "ai-event-caret": {
    "props": [
     "color",
+    "display",
     "flex",
-    "font-size",
-    "line-height",
-    "transform",
-    "transition"
+    "transform"
    ],
    "decls": [
-    "color:var(--text-3)",
+    "color:var(--text-2)",
+    "display:flex",
     "flex:0 0 auto",
-    "font-size:10px",
-    "line-height:1",
-    "transform:rotate(180deg)",
-    "transition:transform var(--transition-fast)"
+    "transform:rotate(180deg)"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-compose": {
-   "props": [
-    "display",
-    "flex-direction",
-    "gap",
-    "padding"
-   ],
-   "decls": [
-    "display:flex",
-    "flex-direction:column",
-    "gap:7px",
-    "padding:0",
-    "padding:11px 14px 12px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-workbench.css"
    ]
   },
   "ai-event-example": {
@@ -1351,7 +1251,7 @@
     "background:var(--control-bg-hover)",
     "border-color:var(--accent-border)",
     "border-radius:4px",
-    "border-radius:999px",
+    "border-radius:var(--radius-s)",
     "border:1px solid transparent",
     "border:1px solid var(--border-default)",
     "color:var(--text-1)",
@@ -1359,11 +1259,11 @@
     "cursor:pointer",
     "font-size:12px",
     "font-weight:500",
-    "font:600 11px/1 var(--font-ui)",
+    "font:600 12px/1 var(--font-ui)",
     "height:24px",
     "min-height:24px",
     "padding:0 8px",
-    "padding:5px 9px",
+    "padding:3px 8px",
     "transition:background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast)",
     "white-space:nowrap"
    ],
@@ -1376,26 +1276,33 @@
   "ai-event-examples": {
    "props": [
     "display",
-    "flex",
-    "gap"
+    "flex-wrap",
+    "gap",
+    "min-width"
    ],
    "decls": [
     "display:flex",
-    "flex:0 0 auto",
-    "gap:5px"
+    "flex-wrap:wrap",
+    "gap:5px",
+    "min-width:0"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
    ]
   },
-  "ai-event-generate": {
+  "ai-event-feedback": {
    "props": [
-    "flex",
-    "margin-left"
+    "align-items",
+    "display",
+    "gap",
+    "min-width"
    ],
    "decls": [
-    "flex:0 0 auto",
-    "margin-left:auto"
+    "align-items:baseline",
+    "display:flex",
+    "display:none",
+    "gap:6px",
+    "min-width:0"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
@@ -1404,17 +1311,15 @@
   "ai-event-generate-row": {
    "props": [
     "align-items",
-    "column-gap",
     "display",
     "flex-wrap",
-    "row-gap"
+    "gap"
    ],
    "decls": [
     "align-items:center",
-    "column-gap:var(--space-2)",
     "display:flex",
     "flex-wrap:wrap",
-    "row-gap:6px"
+    "gap:6px var(--space-2)"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
@@ -1423,19 +1328,17 @@
   "ai-event-hintrow": {
    "props": [
     "align-items",
-    "column-gap",
     "display",
     "flex-wrap",
-    "justify-content",
-    "row-gap"
+    "gap",
+    "justify-content"
    ],
    "decls": [
     "align-items:center",
-    "column-gap:var(--space-2)",
     "display:flex",
     "flex-wrap:wrap",
-    "justify-content:space-between",
-    "row-gap:5px"
+    "gap:6px var(--space-2)",
+    "justify-content:space-between"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
@@ -1466,11 +1369,10 @@
     "border:1px solid var(--border-default)",
     "box-sizing:border-box",
     "color:var(--text-1)",
-    "color:var(--text-3)",
+    "color:var(--text-2)",
     "cursor:progress",
     "font:500 13px/1.65 var(--font-ui)",
     "max-height:140px",
-    "min-height:160px",
     "min-height:66px",
     "outline:2px solid var(--accent-muted)",
     "padding:9px 11px",
@@ -1479,8 +1381,7 @@
    ],
    "sheets": [
     "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-list-4.css"
    ]
   },
   "ai-event-kbd": {
@@ -1505,74 +1406,45 @@
     "src/styles/event/command-list-4.css"
    ]
   },
-  "ai-event-modal-header": {
-   "props": [
-    "align-items",
-    "display",
-    "font-size",
-    "gap",
-    "grid-column",
-    "justify-content",
-    "margin"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:flex",
-    "font-size:19px",
-    "gap:12px",
-    "grid-column:1 / -1",
-    "justify-content:space-between",
-    "margin:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-workbench.css"
-   ]
-  },
   "ai-event-preview-actions": {
    "props": [
     "display",
-    "flex",
     "gap",
-    "justify-content",
-    "margin-left",
-    "margin-top",
-    "padding"
+    "margin-left"
    ],
    "decls": [
     "display:flex",
     "display:none",
-    "flex:0 0 auto",
     "gap:var(--space-2)",
-    "justify-content:flex-end",
-    "margin-left:auto",
-    "margin-top:auto",
-    "padding:0"
+    "margin-left:auto"
    ],
    "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-list-3.css"
    ]
   },
-  "ai-event-prompt-help": {
+  "ai-event-progress": {
    "props": [
+    "align-items",
     "color",
+    "display",
+    "flex",
     "font",
-    "font-size",
-    "margin",
+    "gap",
     "min-width"
    ],
    "decls": [
-    "color:var(--text-2)",
-    "color:var(--text-3)",
-    "font-size:12px",
-    "font:400 11px/1.5 var(--font-ui)",
-    "margin:0",
+    "align-items:baseline",
+    "align-items:center",
+    "color:var(--accent)",
+    "display:flex",
+    "display:none",
+    "flex:0 0 auto",
+    "font:600 12px/1.5 var(--font-ui)",
+    "gap:6px",
     "min-width:0"
    ],
    "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
+    "src/styles/event/command-list-3.css"
    ]
   },
   "ai-event-prompt-label": {
@@ -1599,71 +1471,35 @@
     "align-items",
     "border-top",
     "display",
-    "flex-direction",
     "flex-wrap",
     "gap",
-    "min-height",
-    "min-width",
-    "padding"
-   ],
-   "decls": [
-    "align-items:center",
-    "border-top:1px solid var(--border-subtle)",
-    "display:flex",
-    "display:none",
-    "flex-direction:column",
-    "flex-direction:row",
-    "flex-wrap:wrap",
-    "gap:12px",
-    "gap:6px var(--space-3)",
-    "min-height:0",
-    "min-width:0",
-    "padding:0",
-    "padding:8px 14px 10px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-workbench.css"
-   ]
-  },
-  "ai-event-result-header": {
-   "props": [
-    "align-items",
-    "display",
-    "flex",
-    "flex-direction",
-    "flex-wrap",
-    "gap",
-    "justify-content",
-    "min-width",
-    "padding"
+    "padding-top"
    ],
    "decls": [
     "align-items:baseline",
-    "align-items:flex-start",
+    "border-top:1px solid var(--border-subtle)",
     "display:flex",
-    "flex-direction:column",
+    "display:none",
     "flex-wrap:wrap",
-    "flex:1 1 320px",
     "gap:2px var(--space-2)",
-    "gap:6px",
-    "justify-content:flex-start",
-    "min-width:0",
-    "padding:0"
+    "padding-top:6px"
    ],
    "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-list-3.css"
    ]
   },
   "ai-event-result-meta": {
    "props": [
     "color",
-    "font"
+    "font",
+    "min-width",
+    "overflow-wrap"
    ],
    "decls": [
-    "color:var(--text-3)",
-    "font:400 11px/1.4 var(--font-ui)"
+    "color:var(--text-2)",
+    "font:400 12px/1.5 var(--font-ui)",
+    "min-width:0",
+    "overflow-wrap:anywhere"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
@@ -1677,7 +1513,7 @@
    ],
    "decls": [
     "color:var(--text-1)",
-    "font:700 12px/1.4 var(--font-ui)",
+    "font:700 13px/1.4 var(--font-ui)",
     "margin:0"
    ],
    "sheets": [
@@ -1691,8 +1527,6 @@
     "border-radius",
     "border-top-color",
     "box-sizing",
-    "display",
-    "flex",
     "height",
     "width"
    ],
@@ -1700,12 +1534,9 @@
     "animation:ai-event-spin 0.8s linear infinite",
     "animation:none",
     "border-radius:50%",
-    "border-top-color:var(--on-accent)",
-    "border:2px solid color-mix(in srgb, var(--on-accent) 45%, transparent)",
+    "border-top-color:var(--accent)",
+    "border:2px solid var(--accent-border)",
     "box-sizing:border-box",
-    "display:inline-block",
-    "display:none",
-    "flex:0 0 auto",
     "height:12px",
     "width:12px"
    ],
@@ -1715,26 +1546,22 @@
   },
   "ai-event-status": {
    "props": [
-    "border-left",
     "color",
-    "flex",
-    "flex-basis",
+    "display",
     "font",
     "min-width",
     "overflow-wrap",
-    "padding-left"
+    "white-space"
    ],
    "decls": [
-    "border-left:1px solid var(--border-subtle)",
     "color:var(--accent)",
     "color:var(--danger)",
     "color:var(--text-2)",
-    "flex-basis:0",
-    "flex:1 1 120px",
-    "font:400 11px/1.5 var(--font-ui)",
+    "display:none",
+    "font:400 12px/1.5 var(--font-ui)",
     "min-width:0",
     "overflow-wrap:anywhere",
-    "padding-left:9px"
+    "white-space:pre-line"
    ],
    "sheets": [
     "src/styles/event/command-list-3.css"
@@ -1743,23 +1570,17 @@
   "ai-event-target": {
    "props": [
     "color",
-    "flex",
     "font",
     "font-size",
-    "max-width",
-    "overflow",
-    "text-overflow",
-    "white-space"
+    "min-width",
+    "overflow-wrap"
    ],
    "decls": [
     "color:var(--text-2)",
-    "flex:0 0 auto",
     "font-size:12px",
-    "font:600 11px/1.4 var(--font-ui)",
-    "max-width:100%",
-    "overflow:hidden",
-    "text-overflow:ellipsis",
-    "white-space:nowrap"
+    "font:400 12px/1.5 var(--font-ui)",
+    "min-width:0",
+    "overflow-wrap:anywhere"
    ],
    "sheets": [
     "src/styles/event/command-forms/forms-6.css",
@@ -3326,6 +3147,7 @@
     "position",
     "right",
     "top",
+    "transform",
     "transition",
     "z-index"
    ],
@@ -3336,12 +3158,14 @@
     "border-radius:4px",
     "border:1px solid var(--border)",
     "color:var(--text, unset)",
+    "cursor:not-allowed",
     "cursor:pointer",
     "display:flex",
     "font-size:11px",
     "gap:2px",
     "margin-left:auto",
     "opacity:0",
+    "opacity:0.4",
     "opacity:1",
     "outline-offset:2px",
     "outline:2px solid var(--accent)",
@@ -3349,6 +3173,7 @@
     "position:absolute",
     "right:6px",
     "top:6px",
+    "transform:none",
     "transition:none",
     "transition:opacity 0.12s",
     "z-index:1"
@@ -3891,6 +3716,7 @@
     "text-align",
     "text-overflow",
     "top",
+    "transform",
     "transition",
     "user-select",
     "white-space",
@@ -4058,6 +3884,7 @@
     "min-width:50px",
     "min-width:52px",
     "opacity:0",
+    "opacity:0.4",
     "opacity:0.5",
     "opacity:0.6",
     "opacity:1",
@@ -4089,6 +3916,7 @@
     "top:-1px",
     "top:2px",
     "top:6px",
+    "transform:none",
     "transition:border-color 0.12s, background 0.12s, box-shadow 0.12s",
     "transition:none",
     "transition:opacity 0.12s",
@@ -4130,6 +3958,7 @@
     "min-width",
     "opacity",
     "overflow",
+    "overflow-wrap",
     "text-decoration",
     "text-overflow",
     "text-transform",
@@ -4142,6 +3971,7 @@
     "color:var(--text-2)",
     "display:-webkit-box",
     "flex:0 1 auto",
+    "flex:1 1 100px",
     "flex:1 1 auto",
     "font-size:12px",
     "font-size:14px",
@@ -4153,6 +3983,7 @@
     "margin:0 3px -3px 1px",
     "min-width:0",
     "opacity:0.7",
+    "overflow-wrap:anywhere",
     "overflow:hidden",
     "overflow:visible",
     "text-decoration:line-through",
@@ -4768,25 +4599,18 @@
    "props": [
     "display",
     "flex-direction",
-    "max-height",
     "min-height",
-    "min-width",
-    "overflow",
-    "overflow-y"
+    "min-width"
    ],
    "decls": [
     "display:flex",
     "display:none",
     "flex-direction:column",
-    "max-height:48vh",
     "min-height:0",
-    "min-width:0",
-    "overflow-y:auto",
-    "overflow:auto"
+    "min-width:0"
    ],
    "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-list-3.css"
    ]
   },
   "cmd-step": {
@@ -8703,6 +8527,7 @@
     "color",
     "display",
     "font",
+    "font-size",
     "letter-spacing",
     "margin-left",
     "padding",
@@ -8716,6 +8541,7 @@
     "border-color:color-mix(in srgb, var(--success) 45%, transparent)",
     "border-color:var(--event-modern-border)",
     "border-radius:999px",
+    "border-radius:var(--radius-s)",
     "border:1px solid color-mix(in srgb, var(--event-modern-accent) 28%, var(--event-modern-border))",
     "color:var(--accent)",
     "color:var(--danger)",
@@ -8724,6 +8550,7 @@
     "color:var(--text-2)",
     "color:var(--text-3)",
     "display:none",
+    "font-size:12px",
     "font:600 10px/1 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
     "letter-spacing:0.02em",
     "margin-left:2px",
@@ -10145,11 +9972,13 @@
     "border-width",
     "box-shadow",
     "color",
+    "cursor",
     "display",
     "font",
     "justify-content",
     "min-height",
     "min-width",
+    "opacity",
     "outline",
     "outline-offset",
     "padding",
@@ -10175,14 +10004,17 @@
     "box-shadow:inset 0 1px 2px var(--shadow-pop)",
     "color:var(--text, var(--text-1))",
     "color:var(--text-inverse, var(--text-1))",
+    "cursor:not-allowed",
     "display:inline-flex",
     "font:650 13px/18px inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
     "justify-content:center",
     "min-height:32px",
     "min-width:76px",
+    "opacity:0.4",
     "outline-offset:2px",
     "outline:2px solid var(--accent, var(--accent-border))",
     "padding:6px 12px",
+    "transform:none",
     "transform:translatey(1px)",
     "transition:background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease"
    ],
@@ -14811,7 +14643,8 @@
     "src/styles/event/command-forms/forms-4.css",
     "src/styles/event/command-forms/forms-6.css",
     "src/styles/event/settings-rail.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
+    "src/styles/event/subdialogs/dialogs-5.css",
+    "src/styles/shell/dialogs/ai-settings-modal.css"
    ]
   },
   "event-custom-select-chevron": {
@@ -14850,25 +14683,40 @@
   },
   "event-custom-select-native": {
    "props": [
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "font",
     "height",
     "inset",
     "margin",
+    "min-width",
     "opacity",
+    "padding",
     "pointer-events",
     "position",
     "width"
    ],
    "decls": [
+    "background:var(--bg-inset)",
+    "border-radius:var(--radius-s)",
+    "border:1px solid var(--border-default)",
+    "color:var(--text-1)",
+    "font:inherit",
     "height:100%",
     "inset:0",
     "margin:0",
+    "min-width:0",
     "opacity:0",
+    "padding:5px 8px",
     "pointer-events:none",
     "position:absolute",
     "width:100%"
    ],
    "sheets": [
-    "src/styles/overrides.css"
+    "src/styles/overrides.css",
+    "src/styles/shell/dialogs/ai-settings-modal.css"
    ]
   },
   "event-custom-select-trigger": {
@@ -14991,7 +14839,8 @@
    "sheets": [
     "src/styles/event/command-forms/forms-4.css",
     "src/styles/event/settings-rail.css",
-    "src/styles/event/subdialogs/dialogs-4.css"
+    "src/styles/event/subdialogs/dialogs-4.css",
+    "src/styles/shell/dialogs/ai-settings-modal.css"
    ]
   },
   "event-editor": {
@@ -16288,11 +16137,8 @@
   "event-editor-command-focused": {
    "props": [
     "--event-editor-settings-track",
-    "align-items",
     "background",
-    "border",
     "border-left",
-    "border-radius",
     "box-shadow",
     "container",
     "display",
@@ -16306,12 +16152,8 @@
     "grid-template-columns",
     "grid-template-rows",
     "height",
-    "inset",
-    "justify-content",
     "justify-self",
-    "left",
     "margin",
-    "margin-top",
     "max-height",
     "min-height",
     "min-width",
@@ -16325,15 +16167,8 @@
    ],
    "decls": [
     "--event-editor-settings-track:288px",
-    "align-items:center",
-    "align-items:flex-start",
-    "background:rgb(15 23 42 / 48%)",
     "background:var(--bg-surface)",
     "border-left:1px solid var(--border-default)",
-    "border-radius:12px",
-    "border:0",
-    "border:1px solid var(--border-default)",
-    "box-shadow:0 20px 70px rgb(0 0 0 / 24%)",
     "box-shadow:none",
     "container:evt-command-column / inline-size",
     "display:block",
@@ -16342,16 +16177,10 @@
     "display:none",
     "flex-direction:column",
     "flex-wrap:nowrap",
-    "flex-wrap:wrap",
     "font-size:16px",
-    "font-size:19px",
     "font-weight:600",
     "gap:0",
-    "gap:12px",
-    "gap:18px",
-    "gap:6px",
     "grid-column:1",
-    "grid-column:1 / -1",
     "grid-column:2",
     "grid-column:3",
     "grid-column:4",
@@ -16362,25 +16191,15 @@
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
-    "grid-template-columns:minmax(260px, .8fr) minmax(0, 1.2fr)",
     "grid-template-rows:auto auto auto",
     "grid-template-rows:minmax(0, 1fr)",
     "height:auto",
-    "inset:0",
-    "justify-content:center",
-    "justify-content:flex-end",
-    "justify-content:space-between",
     "justify-self:stretch",
-    "left:50%",
-    "margin-top:auto",
     "margin:0",
     "margin:0 0 12px",
     "max-height:200px",
-    "max-height:48vh",
-    "max-height:calc(100dvh - 80px)",
     "max-height:none",
     "min-height:0",
-    "min-height:160px",
     "min-height:240px",
     "min-height:320px",
     "min-height:44px",
@@ -16392,19 +16211,12 @@
     "padding:10px",
     "padding:12px",
     "padding:12px 0",
-    "padding:20px",
-    "padding:24px",
-    "position:fixed",
     "position:static",
     "position:sticky",
     "top:0",
-    "top:50%",
     "transform:none",
-    "transform:translate(-50%, -50%)",
     "width:6px",
     "width:auto",
-    "width:min(980px, calc(100vw - 48px))",
-    "z-index:20",
     "z-index:3"
    ],
    "sheets": [
@@ -16729,6 +16541,7 @@
     "max-width",
     "min-height",
     "min-width",
+    "opacity",
     "order",
     "overflow",
     "padding",
@@ -16785,6 +16598,7 @@
     "min-width:72px",
     "min-width:84px",
     "min-width:96px",
+    "opacity:0.55",
     "order:0",
     "order:1",
     "order:4",
@@ -25232,6 +25046,7 @@
     "src/styles/database/growth-tree.css",
     "src/styles/database/modern/factions.css",
     "src/styles/database/modern/troops.css",
+    "src/styles/database/overview-dashboard.css",
     "src/styles/database/spatial-shell.css",
     "src/styles/database/system-studio.css",
     "src/styles/database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css",
@@ -25559,6 +25374,7 @@
     "font-size:11px",
     "height:32px",
     "min-height:40px",
+    "opacity:0.55",
     "opacity:0.7",
     "place-items:center",
     "text-align:center",
@@ -25575,7 +25391,8 @@
     "src/styles/editor/agent-mode.css",
     "src/styles/event/pages.css",
     "src/styles/event/previews/command-preview-3.css",
-    "src/styles/runtime/pixelWindows.css"
+    "src/styles/runtime/pixelWindows.css",
+    "src/styles/shell/dialogs/project-folder-picker.css"
    ]
   },
   "is-open": {
@@ -33692,6 +33509,8 @@
  },
  "unstyled": [
   "actor-m2-preview-body",
+  "ai-event-elapsed",
+  "ai-event-generate",
   "ai-event-generate-label",
   "battle-processing-source-slot",
   "battle-processing-variable-hint",
