@@ -272,8 +272,8 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     announceEventEditorClosed({ mapId: request.mapId, eventId: request.eventId, saved: saved === true });
   };
   const requestClose = (): void => {
-    // 포인터로 닫으면 바깥 pointerdown 이 ⋯ 메뉴를 먼저 접는다. Enter/Space 는 그 단계가
-    // 없어서, 메뉴가 맨 위 층인 채로는 닫기가 그냥 돌아간다.
+    // 포인터는 바깥 pointerdown이 메뉴의 open만 먼저 끈다. toggle이 오기 전에는 층이 남는다.
+    // Enter/Space는 그 pointerdown이 없다. 둘 다 층을 바로 걷고 닫는다.
     dismissTopDetailsLayer(backdrop);
     if (closed || closeGuardOpen || minimized || !isTopModal(backdrop)) return;
     flushPendingModalField(backdrop);
@@ -1022,11 +1022,12 @@ function withConfirmShortcut(button: HTMLButtonElement): HTMLButtonElement {
   return button;
 }
 
-/** 열린 `<details>` 가 모달 맨 위면 접는다. 도움말·확인 창처럼 다른 층은 건드리지 않는다. */
+/** 맨 위 층이 이 창의 `<details>` 메뉴면 바로 걷는다. open이 이미 꺼져 있어도 포함한다.
+ *  도움말·확인 창처럼 다른 층은 건드리지 않는다. */
 function dismissTopDetailsLayer(root: HTMLElement): void {
   for (let guard = 0; guard < 8; guard += 1) {
     let top: HTMLDetailsElement | null = null;
-    for (const node of root.querySelectorAll("details[open]")) {
+    for (const node of root.querySelectorAll("details")) {
       if (node instanceof HTMLDetailsElement && isTopModal(node)) {
         top = node;
         break;
