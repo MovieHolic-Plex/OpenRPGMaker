@@ -209,6 +209,18 @@
         "h_straight",
         "v_straight"
       ]
+    },
+    {
+      "id": "city_prom_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "h_straight",
+        "v_straight"
+      ]
     }
   ]
 }
