@@ -58,6 +58,32 @@ function ownedRegularFile(file: string): boolean {
   }
 }
 
+/** 임시 파일에 쓰고 이름을 바꾼다. 이번 시도가 만든 파일만, 이름 바꾸기가 실패했을 때만 지운다. */
+export function commitOwnedCacheFile(target: string, bytes: Uint8Array): string | null {
+  const partial = `${target}.${process.pid}.${Date.now()}.part`;
+  const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0);
+  let fd: number | undefined;
+  let created = false;
+  let renamed = false;
+  try {
+    fd = openSync(partial, flags, 0o600);
+    created = true;
+    writeFileSync(fd, bytes);
+    closeSync(fd);
+    fd = undefined;
+    renameSync(partial, target);
+    renamed = true;
+    return ownedRegularFile(target) ? target : null;
+  } finally {
+    if (fd !== undefined) {
+      try { closeSync(fd); } catch { /* 이미 닫힌 서술자 */ }
+    }
+    if (created && !renamed) {
+      try { unlinkSync(partial); } catch { /* 옮기기 전에 지울 임시 파일 */ }
+    }
+  }
+}
+
 /**
  * 곡을 사용자 캐시에 확보하고 경로를 돌려준다. 받지 못하거나 해시가 다르면 null(→ 404, 재생만 조용히 빠진다).
  * 같은 곡을 동시에 여러 번 요청해도 한 번만 받는다. 심볼릭 링크와 다른 계정의 캐시는 돌려주지 않는다.
@@ -83,26 +109,7 @@ export function ensureCachedTrack(track: Track, cacheDir: string, fetchImpl: typ
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== "ENOENT") return null;
       }
-      const partial = `${target}.${process.pid}.${Date.now()}.part`;
-      const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0);
-      let fd: number | undefined;
-      let renamed = false;
-      try {
-        fd = openSync(partial, flags, 0o600);
-        writeFileSync(fd, bytes);
-        closeSync(fd);
-        fd = undefined;
-        renameSync(partial, target);
-        renamed = true;
-        return ownedRegularFile(target) ? target : null;
-      } finally {
-        if (fd !== undefined) {
-          try { closeSync(fd); } catch { /* 이미 닫힌 서술자 */ }
-        }
-        if (!renamed) {
-          try { unlinkSync(partial); } catch { /* 만들기 전에 실패한 임시 파일 */ }
-        }
-      }
+      return commitOwnedCacheFile(target, bytes);
     } catch {
       return null;
     } finally {

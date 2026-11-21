@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
-import { lstatSync, mkdtempSync, mkdirSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { lstatSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, expect, it } from "vitest";
-import { cacheDirectoryAccepted, ensureCachedTrack } from "../electron/main/bgmOnDemand";
+import { afterEach, expect, it, vi } from "vitest";
+import { cacheDirectoryAccepted, commitOwnedCacheFile, ensureCachedTrack } from "../electron/main/bgmOnDemand";
 
 const roots: string[] = [];
 const track = { fileName: "rtp-fld-001-test.mp3", bytes: 4, sha256: "abcd" };
@@ -58,3 +58,41 @@ it("drops the temporary file when a cache write cannot finish", async () => {
   expect(await ensureCachedTrack(trackInMissingDir, root, async () => new Response(body))).toBeNull();
   expect(readdirSync(root).filter((name) => name.endsWith(".part"))).toEqual([]);
 });
+
+function readyTrack(bytes: Uint8Array): { fileName: string; bytes: number; sha256: string } {
+  return { fileName: "fresh.mp3", bytes: bytes.byteLength, sha256: createHash("sha256").update(bytes).digest("hex") };
+}
+
+function responseFor(bytes: Uint8Array): typeof fetch {
+  const body = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  return async () => new Response(body);
+}
+
+it("keeps a temporary file that this attempt did not create", async () => {
+  const root = mkdtempSync(join(tmpdir(), "bgm-cache-"));
+  roots.push(root);
+  const now = 1_700_000_000_000;
+  vi.spyOn(Date, "now").mockReturnValue(now);
+  try {
+    const bytes = new Uint8Array([7, 7, 7, 7]);
+    const track = readyTrack(bytes);
+    const partial = `${join(root, track.fileName)}.${process.pid}.${now}.part`;
+    writeFileSync(partial, "keep");
+    expect(await ensureCachedTrack(track, root, responseFor(bytes))).toBeNull();
+    expect(readFileSync(partial, "utf8")).toBe("keep");
+  } finally {
+    vi.restoreAllMocks();
+  }
+});
+
+it("removes the temporary file when the finished name is a directory", () => {
+  const root = mkdtempSync(join(tmpdir(), "bgm-cache-"));
+  roots.push(root);
+  const target = join(root, "track.mp3");
+  mkdirSync(target);
+  writeFileSync(join(target, "keep.txt"), "keep");
+  expect(() => commitOwnedCacheFile(target, new Uint8Array([8, 8, 8, 8]))).toThrow();
+  expect(readdirSync(root).filter((name) => name.includes(".part"))).toEqual([]);
+  expect(readFileSync(join(target, "keep.txt"), "utf8")).toBe("keep");
+});
+
