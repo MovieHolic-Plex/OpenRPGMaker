@@ -4,17 +4,18 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import {
-  clampMapSize,
+  inspectMapCreateInput,
+  mapCreateInputOk,
   resolveMapCreateDefaults,
   type MapCreatePreset,
   type MapCreateRequest,
+  type MapDimensionIssue,
 } from "@/project/mapCreateSpec";
-import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
+import { MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
-import { toast } from "@/util/toast";
 import { openWorldAtlasCreateDialog } from './worldAtlasCreateDialog';
 import { WORLDMAP_AUTHORING_ID } from '@/project/defaults/worldmapAuthoring';
 
@@ -61,6 +62,30 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
       appendTreeParentOptions(parent, project.mapTree, project.maps, 0);
       parent.value = spec.parentId;
 
+      const error = el("div", {
+        class: "map-create-error",
+        attrs: { role: "alert", id: "map-create-error" },
+        dataset: { testid: "map-create-error" },
+      });
+      error.hidden = true;
+      const described = (input: HTMLInputElement): void => {
+        input.setAttribute("aria-describedby", "map-create-error");
+      };
+      described(name);
+      described(width);
+      described(height);
+
+      const showIssues = (): boolean => {
+        const issues = inspectMapCreateInput({ name: name.value, width: width.value, height: height.value });
+        const lines = mapCreateIssueLines(issues);
+        error.replaceChildren(...lines.map((line) => el("p", { text: line })));
+        error.hidden = lines.length === 0;
+        name.setAttribute("aria-invalid", issues.nameBlank ? "true" : "false");
+        width.setAttribute("aria-invalid", issues.width ? "true" : "false");
+        height.setAttribute("aria-invalid", issues.height ? "true" : "false");
+        return mapCreateInputOk(issues);
+      };
+
       const applyPreset = (preset: MapCreatePreset): void => {
         spec = resolveMapCreateDefaults(store.getCurrent(), {
           parentId: parent.value as MapId | "",
@@ -70,6 +95,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         width.value = String(spec.width);
         height.value = String(spec.height);
         tileset.value = spec.tilesetId;
+        showIssues();
       };
 
       // 시작 모양은 하나만 고른다 — 고른 것이 눌린 상태(aria-pressed)로 보여야 무엇이 적용됐는지 안다.
@@ -98,21 +124,22 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         presets.append(presetButton(`map-create-preset-${value}`, label, title, () => applyPreset(value), spec.preset === value));
       }
       presets.append(presetButton("map-create-worldmap-blank", "빈 월드맵", "월드맵 그림판의 48×36 맵",
-        () => { applyPreset("blank"); tileset.value = WORLDMAP_AUTHORING_ID; width.value = "48"; height.value = "36"; }, false));
+        () => { applyPreset("blank"); tileset.value = WORLDMAP_AUTHORING_ID; width.value = "48"; height.value = "36"; showIssues(); }, false));
 
       const submit = (): void => {
-        // 상한 초과는 조용히 줄이지 않고 여기서 거부한다 — 입력 max 속성은 직접 입력·붙여넣기로
-        // 넘길 수 있어서 값만 클램프하면 요청과 다른 크기의 맵이 말없이 생겼다(OPRN-OUT-018).
-        const requestedWidth = Number(width.value);
-        const requestedHeight = Number(height.value);
-        if (exceedsMapDimensionLimit(requestedWidth, requestedHeight)) {
-          toast(mapSizeLimitMessage(), "error");
+        // 상한·하한·빈 이름은 조용히 바꾸지 않는다. min/max 속성은 붙여넣기와 음수를 막지 못하고,
+        // 값만 클램프하면 -5×2 가 4×4 「새 맵」으로 말없이 생겼다.
+        if (!showIssues()) {
+          const issues = inspectMapCreateInput({ name: name.value, width: width.value, height: height.value });
+          if (issues.nameBlank) name.focus();
+          else if (issues.width) width.focus();
+          else height.focus();
           return;
         }
         const id = createMapFromSpec({
-          name: name.value,
-          width: clampMapSize(requestedWidth, spec.width),
-          height: clampMapSize(requestedHeight, spec.height),
+          name: name.value.trim(),
+          width: Number(width.value),
+          height: Number(height.value),
           tilesetId: tileset.value,
           parentId: parent.value as MapId | "",
           preset: spec.preset,
@@ -127,6 +154,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
           presets,
           field("이름", name),
           el("div", { class: "map-create-size", children: [field("가로", width), el("span", { class: "map-create-times", text: "×", attrs: { "aria-hidden": "true" } }), field("높이", height)] }),
+          error,
           field("타일 그림판", tileset),
           field("상위 맵", parent),
           el("p", {
@@ -160,6 +188,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
           ] }),
         ] }),
       );
+      for (const input of [name, width, height]) input.addEventListener("input", () => { showIssues(); });
       name.focus();
       name.select();
     },
@@ -203,4 +232,31 @@ function appendTreeParentOptions(
 
 function field(label: string, control: HTMLElement): HTMLElement {
   return el("label", { class: "map-create-field", children: [el("span", { text: label }), control] });
+}
+
+const NAME_REQUIRED = "이름을 비웠습니다. 빈 이름 대신 「새 맵」으로 만들지 않습니다. 맵 이름을 입력하세요.";
+const NO_SILENT_SIZE = "다른 크기로 바꿔 넣지 않습니다.";
+
+/** 대화창에 그대로 보여줄 문장. 비어 있으면 지금 입력으로 맵을 만들어도 된다. */
+export function mapCreateIssueLines(issues: ReturnType<typeof inspectMapCreateInput>): readonly string[] {
+  const lines: string[] = [];
+  if (issues.nameBlank) lines.push(NAME_REQUIRED);
+  if (issues.width) lines.push(dimensionLine("가로", issues.width));
+  if (issues.height) lines.push(dimensionLine("높이", issues.height));
+  if (issues.width || issues.height) lines.push(NO_SILENT_SIZE);
+  if (issues.width?.kind === "too-big" || issues.height?.kind === "too-big") lines.push(mapSizeLimitMessage());
+  return lines;
+}
+
+function dimensionLine(axis: "가로" | "높이", issue: MapDimensionIssue): string {
+  if (axis === "가로") {
+    if (issue.kind === "empty") return "가로가 비어 있습니다.";
+    if (issue.kind === "not-integer") return `가로 「${issue.raw}」는 정수가 아닙니다.`;
+    if (issue.kind === "too-small") return `가로 ${issue.value}칸은 4칸보다 작습니다.`;
+    return `가로 ${issue.value}칸은 최대 ${MAX_TOOL_MAP_DIMENSION}칸을 넘습니다.`;
+  }
+  if (issue.kind === "empty") return "높이가 비어 있습니다.";
+  if (issue.kind === "not-integer") return `높이 「${issue.raw}」는 정수가 아닙니다.`;
+  if (issue.kind === "too-small") return `높이 ${issue.value}칸은 4칸보다 작습니다.`;
+  return `높이 ${issue.value}칸은 최대 ${MAX_TOOL_MAP_DIMENSION}칸을 넘습니다.`;
 }

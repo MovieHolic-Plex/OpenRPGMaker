@@ -432,7 +432,7 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
         if (!fresh || (fresh.width === w && fresh.height === h)) return;
         if ((w < fresh.width || h < fresh.height) && !await showConfirm({
           title: "맵 크기 줄이기",
-          message: `${fresh.width} × ${fresh.height} → ${w} × ${h}칸으로 줄입니다. 범위 밖 타일은 삭제되고 이벤트와 시작 위치는 안쪽으로 이동합니다.`,
+          message: `${fresh.width} × ${fresh.height} → ${w} × ${h}칸으로 줄입니다. 범위 밖 타일과 레이어는 잘리고 이벤트와 시작 위치는 안쪽으로 이동합니다. Ctrl+Z로 원래 크기와 잘린 내용을 되돌릴 수 있습니다.`,
           confirmLabel: "크기 줄이기", danger: true,
         })) return;
         resizeMap(map.id, w, h);
@@ -444,7 +444,7 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   }));
   section.append(fieldRow("크기 (가로 × 세로)", sizeLine));
 
-  section.append(el("p", { class: "map-props-hint", text: `가로·세로 각각 4~${MAX_TOOL_MAP_DIMENSION}칸. 크기를 줄이면 범위 밖 타일이 삭제됩니다.` }));
+  section.append(el("p", { class: "map-props-hint", text: `가로·세로 각각 4~${MAX_TOOL_MAP_DIMENSION}칸. 크기를 줄이면 범위 밖 타일과 레이어는 잘리고 이벤트와 시작 위치는 안쪽으로 이동합니다. Ctrl+Z로 원래 크기와 잘린 타일·레이어·이벤트 위치를 되돌릴 수 있습니다.` }));
 
   // 시작 위치
   const selection = editorState.get().selection;
