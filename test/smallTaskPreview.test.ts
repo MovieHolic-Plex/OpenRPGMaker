@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { readSmallTaskPreviewPreference, writeSmallTaskPreviewPreference } from "@/editor/smallTask/previewPreference";
@@ -15,10 +15,23 @@ vi.mock("@/editor/smallTask/run", () => ({
   },
 }));
 
+// 제출 핸들러는 history·plainSummary·run 을 그 자리에서 동적 import 한다.
+// 콜드 로드가 vi.waitFor 기본 1초보다 길다(실측: import 1058ms, 그 뒤 복제·명세).
+// 기다리는 동안 이벤트 루프가 비어 있어 제한 시각에 버튼이 아직 없다.
+// 여기서 먼저 평가해 두면 제출 안의 import 는 이미 끝난 모듈이라 마이크로태스크로 끝난다.
+beforeAll(async () => {
+  await Promise.all([
+    import("@/editor/smallTask/history"),
+    import("@/editor/smallTask/plainSummary"),
+    import("@/editor/smallTask/run"),
+  ]);
+});
+
 beforeEach(() => localStorage.clear());
 
 afterEach(() => {
-  button(document.body, "닫기")?.click();
+  // 작업 중에는 머리 버튼이 「취소」라 「닫기」만 찾으면 요청이 살아 다음 테스트의 프로젝트 교체와 겹친다.
+  document.querySelector<HTMLButtonElement>(".small-task header button")?.click();
   document.body.replaceChildren();
 });
 
