@@ -192,7 +192,9 @@
         "selected-tile-",
         "sidebar-map-",
         "sidebar-layer-",
-        "zoom-stepper-"
+        "zoom-stepper-",
+        "image-generation-notice-",
+        "persistence-mode-banner-"
       ],
       "roots": [
         ".editor-layout"

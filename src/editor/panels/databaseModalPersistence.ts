@@ -14,9 +14,9 @@ export async function applyDatabaseChanges(writeStatus: WriteStatus): Promise<bo
         return true;
       case "saved-local":
         if (result.written === false) {
-          // 오류는 한 곳(상태 줄)에만 쓴다 — 토스트를 함께 띄우면 같은 실패가 두 번 보이고 토스트가 결정 띠를
-          // 가렸다(J-p2-power-user-01). 편집은 이 세션 메모리에 남아 있으므로 보존하는 길(내보내기)을 알린다.
-          writeStatus({ text: "임시 세션이라 파일에 기록하지 않았습니다. 보존하려면 프로젝트를 내보내세요.", kind: "error" });
+          // 이 탭만의 세션은 실패가 아니다. 빨간 「저장 실패」로 칠하면 다시 누르면 저장될 것처럼 보인다.
+          // 토스트는 띄우지 않는다 — 같은 안내가 상태 줄과 겹쳐 결정 띠를 가렸다(J-p2-power-user-01).
+          writeStatus({ text: "이 탭에만 있어요. 저장되지 않습니다.", kind: "info" });
           return false;
         }
         writeStatus({ text: "적용했습니다. 브라우저에 저장했습니다. 닫아도 안전합니다.", kind: "ok" });
