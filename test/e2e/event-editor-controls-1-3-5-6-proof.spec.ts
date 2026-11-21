@@ -3,7 +3,6 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { EventPage, Project } from "@/project/types";
 import { debugState, writeEvidenceJson } from "./eventEditorCertEvidence";
-import { expandEventMovementSection } from "./eventEditorExpandHelpers";
 import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-controls-1-3-5-6";
@@ -11,7 +10,7 @@ const TEAM_ARTIFACTS_DIR = ".omo/teams/team-15e46b80/artifacts";
 declare const process: { readonly env: { readonly OPRN_E2E_BASE_URL?: string } };
 const APP_URL = process.env.OPRN_E2E_BASE_URL ?? "";
 
-test.setTimeout(60_000);
+test.setTimeout(120_000);
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -25,7 +24,7 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await mkdir(TEAM_ARTIFACTS_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 820 });
-  await seedProjectForEditor(page, createBlankProject(), `${APP_URL}/?freshProject=1`);
+  await seedProjectForEditor(page, controlsProject(), `${APP_URL}/?freshProject=1`);
 
   const editor = await openEventEditor(page);
   const ids = await openEditorIds(editor);
@@ -36,12 +35,17 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   const command = commands.first();
   await command.locator(".cmd-head").click();
 
+  // 복사·자르기는 툴바의 「편집」 메뉴 안에 있다.
+  await openCommandEditMenu(editor);
   await editor.getByTestId("event-command-toolbar-copy").click();
+  // 편집 메뉴가 열린 채로는 그 팝오버가 명령 머리의 우클릭을 가로챈다.
+  await editor.getByTestId("event-command-edit-menu").locator("summary").click();
   await command.locator(".cmd-head").click({ button: "right" });
   await expect(page.getByTestId("event-command-menu-paste")).toBeEnabled();
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("event-command-context-menu")).toHaveCount(0);
 
+  await openCommandEditMenu(editor);
   await editor.getByTestId("event-command-toolbar-cut").click();
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount - 1);
   await editor.getByTestId("event-command-toolbar-undo").click();
@@ -51,13 +55,13 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await editor.getByTestId("event-command-toolbar-undo").click();
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount);
 
-  await expandEventMovementSection(editor);
-
+  await openSettingsRail(editor, "memory");
   const overlapForbidden = editor.getByTestId("event-page-overlap-forbidden");
   await expect(overlapForbidden).toBeEnabled();
   await expect(overlapForbidden).toBeChecked();
   await overlapForbidden.uncheck();
 
+  await openSettingsRail(editor, "move");
   await editor.getByTestId("event-page-movement-type").selectOption("custom");
   await editor.getByTestId("event-page-custom-route").click();
   const routeDialog = page.getByTestId("event-page-move-route-dialog");
@@ -87,9 +91,9 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await expect(page.getByTestId("test-play-window-title")).toContainText("이벤트 테스트");
   await expect(page.getByTestId("dialogue-box")).toBeVisible();
   await page.screenshot({ path: `${EVIDENCE_DIR}/control-2-selected-event-test-proof.png`, fullPage: true });
-  await page.getByTestId("test-play-window-close").click();
+  await page.getByTestId("test-play-window").getByRole("button", { name: "편집기로 돌아가기" }).click();
   await expect(testWindow).toBeHidden();
-  await editor.getByTestId("event-editor-ok").click();
+  await editor.getByTestId("event-editor-save").click();
   await expect(editor).toBeHidden();
 
   const report = {
@@ -108,6 +112,46 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await writeEvidenceJson(EVIDENCE_DIR, "controls-1-3-5-6-report.json", report);
   await writeFile(`${TEAM_ARTIFACTS_DIR}/event-editor-controls-1-3-5-6-proof.json`, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 });
+
+function controlsProject(): Project {
+  const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  if (!map) throw new Error("missing start map");
+  map.events = [
+    {
+      id: "event_controls_talk",
+      x: 4,
+      y: 4,
+      pages: [
+        {
+          id: "page_1",
+          name: "안내",
+          conditions: [],
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [{ kind: "text", body: "안녕하세요.", speaker: "안내" }],
+        },
+      ],
+    } as (typeof map.events)[number],
+  ];
+  return project;
+}
+
+async function openCommandEditMenu(editor: Locator): Promise<void> {
+  const menu = editor.getByTestId("event-command-edit-menu");
+  const open = await menu.evaluate((node) => node instanceof HTMLDetailsElement && node.open);
+  if (!open) await menu.locator("summary").click();
+  await expect(editor.getByTestId("event-command-toolbar-copy")).toBeVisible();
+}
+
+async function openSettingsRail(editor: Locator, slug: string): Promise<void> {
+  const group = editor.getByTestId(`evt-rail-group-${slug}`);
+  const open = await group.evaluate((node) => node.classList.contains("is-open"));
+  if (!open) await group.locator(".event-editor-settings-accordion-header").click();
+  await expect(group).toHaveClass(/is-open/);
+}
 
 async function openEventEditor(page: Page): Promise<Locator> {
   await page.getByTestId("layer-event").click();

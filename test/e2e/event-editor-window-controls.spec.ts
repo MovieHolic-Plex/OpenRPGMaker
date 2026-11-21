@@ -74,9 +74,9 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("app-confirm-modal")).toHaveCount(0);
     await page.getByTestId("layer-lower").click();
-    await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
+    await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-checked", "true");
     await page.keyboard.press("F7");
-    await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-current", "true");
+    await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-checked", "true");
     await expect(modal).toBeHidden();
     await page.screenshot({ path: testInfo.outputPath("minimized.png") });
     await restore.press("Enter");
