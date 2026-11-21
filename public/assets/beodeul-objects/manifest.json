@@ -169,6 +169,21 @@
       "id": "city_workshops",
       "labelKo": "생활·작업장",
       "order": 340
+    },
+    {
+      "id": "city_laundry",
+      "labelKo": "세탁방·빨래",
+      "order": 350
+    },
+    {
+      "id": "city_maintenance",
+      "labelKo": "도시 설비·정비",
+      "order": 360
+    },
+    {
+      "id": "city_fish_market",
+      "labelKo": "항구·수산시장",
+      "order": 370
     }
   ],
   "sets": [
