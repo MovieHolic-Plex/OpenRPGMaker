@@ -925,7 +925,7 @@
 
 .event-editor .event-editor-command-tools-menu {
   order: 3;
-  position: static;
+  position: relative;
 }
 
 .event-editor .event-editor-command-tools-summary {
@@ -938,12 +938,18 @@
   line-height: 14px;
 }
 
+/* 열린 도구 메뉴는 툴바 다음 줄 전체를 쓴다. 절대 위치로 띄우면 명령 목록을 가린다. */
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar > .event-editor-command-tools-menu[open] {
+  flex: 1 0 100%;
+}
+
+/* 도구 패널은 프리셋과 템플릿을 한 면에 담는다. 툴바 아래로 겹치면 명령 목록을 가린다.
+   흐름 안에 두어 목록이 그 아래로 밀리게 한다. */
 .event-editor .event-editor-command-tools-popover {
-  position: absolute;
-  z-index: 18;
-  top: calc(100% + 5px);
-  right: 0;
+  position: static;
+  z-index: 1;
   width: min(620px, 100%);
+  margin-top: 5px;
   padding: 8px;
   background: var(--mk-raised);
   border: 1px solid var(--mk-line);

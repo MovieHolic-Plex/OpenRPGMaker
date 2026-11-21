@@ -57,7 +57,9 @@ export async function dismissDialogue(page: Page): Promise<void> {
 
 export async function openEventEditor(page: Page, eventId: string): Promise<void> {
   await page.getByTestId("layer-event").click();
-  await page.getByTestId("tool-event").click();
+  // 이벤트 레이어 라디오가 도구를 겸한다. 옛 `tool-event` 버튼은 없다.
+  const visibleEventTool = page.locator('[data-testid="tool-event"]:visible').first();
+  if ((await visibleEventTool.count()) > 0) await visibleEventTool.click();
   await page.getByTestId(`event-list-row-${eventId}`).click();
   await page.getByTestId("event-editor-open").click();
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
@@ -68,15 +70,40 @@ export async function dispatchChange(locator: Locator): Promise<void> {
 }
 
 export async function debugState(page: Page): Promise<DebugState> {
-  const text = await page.getByTestId("project-export-json").textContent();
+  const text = await readProjectExportJson(page);
   if (!text) throw new Error("missing project export");
   const parsed: unknown = JSON.parse(text);
   if (!isDebugState(parsed)) throw new Error("invalid project export");
   return parsed;
 }
 
+/**
+ * 프로젝트 미러의 `textContent` 는 메인 월드에만 걸린 getter 다. Playwright 의
+ * `locator.textContent()` 는 유틸리티 월드에서 읽어 항상 빈 문자열이다.
+ * getter 가 만드는 문서에는 타일셋 사전(~78MB)이 들어 있고, 그걸 그대로 넘기면
+ * CDP 가 브라우저를 닫으므로 1MB 를 넘는 타일셋은 여기서 빼고 돌려준다.
+ */
+export async function readProjectExportJson(page: Page): Promise<string> {
+  await expect(page.getByTestId("project-export-json")).toBeAttached();
+  return page.getByTestId("project-export-json").evaluate((node) => {
+    const raw = node.textContent ?? "";
+    if (!raw) return "";
+    const parsed = JSON.parse(raw) as { project?: { tilesets?: Record<string, unknown> } };
+    const tilesets = parsed.project?.tilesets;
+    if (tilesets) {
+      for (const [id, tileset] of Object.entries(tilesets)) {
+        const size = JSON.stringify(tileset)?.length ?? 0;
+        if (size > 1_000_000) delete tilesets[id];
+      }
+    }
+    return JSON.stringify(parsed);
+  });
+}
+
 export async function runtimeState(page: Page): Promise<RuntimeState> {
-  const text = await page.getByTestId("runtime-state-json").textContent();
+  // textContent 는 읽는 순간에만 스냅샷을 만드는 메인 월드 getter 다.
+  // locator.textContent() 는 유틸리티 월드라 빈 폴백 "{}" 만 본다.
+  const text = await page.getByTestId("runtime-state-json").evaluate((node) => node.textContent ?? "");
   if (!text) throw new Error("missing runtime state");
   const parsed: unknown = JSON.parse(text);
   if (!isRuntimeState(parsed)) throw new Error("invalid runtime state");

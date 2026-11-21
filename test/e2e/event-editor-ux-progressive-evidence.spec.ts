@@ -2,8 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
-import { openEventEditor, screenshotEvidence } from "./eventEditorCertEvidence";
-import { expandEventConditions, expandEventMovementSection } from "./eventEditorExpandHelpers";
+import { screenshotEvidence } from "./eventEditorCertEvidence";
 import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-ux-progressive";
@@ -56,28 +55,32 @@ async function modalShot(page: Page, name: string): Promise<void> {
 
 async function defaultMetrics(page: Page): Promise<Record<string, unknown>> {
   return page.evaluate(() => {
-    const q = (s: string) => document.querySelector(s) as HTMLDetailsElement | HTMLElement | null;
-    const conditions = q('[data-testid="event-classic-conditions"]') as HTMLDetailsElement | null;
-    const movement = q('[data-testid="event-classic-movement-section"]') as HTMLDetailsElement | null;
-    const movementBody = movement?.querySelector(".event-collapsible-body");
+    const q = (s: string) => document.querySelector(s) as HTMLElement | null;
+    const railOpen = (slug: string) =>
+      q(`[data-testid="evt-rail-group-${slug}"]`)?.classList.contains("is-open") ?? false;
+    const shown = (node: Element | null) => node instanceof HTMLElement && node.getClientRects().length > 0;
+    const movement = q('[data-testid="evt-rail-group-move"]');
     return {
-      conditionsOpen: conditions?.open ?? null,
-      movementOpen: movement?.open ?? null,
+      conditionsOpen: railOpen("when"),
+      movementOpen: railOpen("move"),
       hasGraphic: !!q('[data-testid="event-classic-graphic"]'),
       hasBottomLeft: !!q('[data-testid="event-page-bottom-left"]'),
       hasBottomRight: !!q('[data-testid="event-page-bottom-right"]'),
       badgeText:
         q('[data-testid="event-condition-summary-badges"]')?.textContent ??
         q('[data-testid="event-condition-summary-empty"]')?.textContent ??
+        q('[data-testid="evt-rail-meta-when"]')?.textContent ??
         null,
       hasTriggerSelect: !!q('[data-testid="event-page-trigger-select"]'),
-      triggerInsideMovement: !!movementBody?.querySelector('[data-testid="event-page-trigger-select"]'),
+      triggerInsideMovement: !!movement?.querySelector('[data-testid="event-page-trigger-select"]'),
       hasCharacterIdField: !!q('[data-testid="event-character-id-field"]'),
       hasCharacterIdInput: !!q('[data-testid="event-character-id-input"]'),
       hasCharacterConnect: !!q('[data-testid="event-character-id-connect"]'),
+      characterConnectVisible: shown(q('[data-testid="event-character-id-connect"]')),
       characterIdInTopStrip: !!q('.event-editor-top-strip [data-testid="event-character-id-field"]'),
+      characterIdInNpcGroup: !!q('[data-testid="evt-rail-group-npc"] [data-testid="event-character-id-field"]'),
       hasFriendshipRequiresChar: !!q('[data-testid="event-page-friendship-requires-character-id"]'),
-      movementSummaryText: movement?.querySelector("summary")?.textContent ?? null,
+      movementSummaryText: q('[data-testid="evt-rail-meta-move"]')?.textContent ?? null,
       auxLabels: Array.from(
         document.querySelectorAll('[data-testid="event-editor-aux-tools"] .event-aux-chip-label')
       ).map((n) => n.textContent?.trim() ?? ""),
@@ -148,29 +151,34 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   expect(metrics.hasTriggerSelect).toBe(true);
   expect(metrics.triggerInsideMovement).toBe(false);
   expect(metrics.hasCharacterIdField).toBe(true);
-  expect(metrics.hasCharacterIdInput).toBe(true);
-  expect(metrics.hasCharacterConnect).toBe(false);
-  expect(metrics.characterIdInTopStrip).toBe(true);
+  // 연결 전에는 텍스트 입력이 없다. 연결 버튼은 「NPC와 일정」을 열기 전에는 보이지 않는다.
+  expect(metrics.hasCharacterIdInput).toBe(false);
+  expect(metrics.hasCharacterConnect).toBe(true);
+  expect(metrics.characterConnectVisible).toBe(false);
+  expect(metrics.characterIdInTopStrip).toBe(false);
+  expect(metrics.characterIdInNpcGroup).toBe(true);
   expect(metrics.hasFriendshipRequiresChar).toBe(false);
-  expect(String(metrics.badgeText ?? "")).toMatch(/ON|OFF|sw_|셀프/i);
+  expect(String(metrics.badgeText ?? "")).toMatch(/켜짐|꺼짐|sw_|기억/);
   expect(String(metrics.badgeText ?? "")).not.toBe("스위치");
 
-  // 2) Expand conditions
+  // 2) 등장 조건은 레일에서 펼치지 않고 창으로 연다.
   const modal = page.getByTestId("event-editor-modal");
-  await modal.getByTestId("event-classic-conditions").locator("summary.event-collapsible-summary").click({ force: true });
+  await modal.getByTestId("evt-rail-group-when").locator(".event-editor-settings-accordion-header").click();
+  await expect(page.getByTestId("event-condition-modal")).toBeVisible();
   await page.waitForTimeout(250);
   await screenshotEvidence(page, EVIDENCE_DIR, "02-conditions-expanded.png");
   await modalShot(page, "02b-modal-only-conditions-open.png");
+  await page.getByTestId("event-condition-modal-done").click();
+  await expect(page.getByTestId("event-condition-modal")).toBeHidden();
 
-  // 3) Collapse conditions, expand movement
-  await modal.getByTestId("event-classic-conditions").locator("summary.event-collapsible-summary").click({ force: true });
-  await modal.getByTestId("event-classic-movement-section").locator("summary.event-collapsible-summary").click({ force: true });
+  // 3) 움직임 레일
+  await modal.getByTestId("evt-rail-group-move").locator(".event-editor-settings-accordion-header").click();
+  await expect(modal.getByTestId("event-page-movement-type")).toBeVisible();
   await page.waitForTimeout(250);
   await screenshotEvidence(page, EVIDENCE_DIR, "03-movement-expanded.png");
   await modalShot(page, "03b-modal-only-movement-open.png");
 
-  // 4) Page preview view open
-  await modal.getByTestId("event-view-toggle-preview").click({ force: true });
+  // 4) 미리보기는 보기 세그먼트가 아니라 오른쪽 열이다. 세그먼트는 목록·스토리·플로우만 남았다.
   await expect(modal.getByTestId("event-page-preview")).toBeVisible();
   await screenshotEvidence(page, EVIDENCE_DIR, "04-page-preview-open.png");
   await modalShot(page, "04b-modal-only-page-preview.png");
@@ -184,9 +192,10 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   await modalShot(page, "05b-modal-only-aux-flow.png");
   await modal.getByTestId("event-view-toggle-storyboard").click({ force: true });
 
-  // 6) AI chip
+  // 6) AI 도크는 툴바 버튼으로 연다. 접힌 details 요약은 화면에 없다.
   const ai = modal.getByTestId("ai-event-assist");
-  await ai.locator("summary").click({ force: true });
+  await modal.getByTestId("event-command-quick-ai").click();
+  await expect(ai).toHaveJSProperty("open", true);
   await page.waitForTimeout(250);
   await screenshotEvidence(page, EVIDENCE_DIR, "06-aux-ai-open.png");
   await modalShot(page, "06b-modal-only-aux-ai.png");

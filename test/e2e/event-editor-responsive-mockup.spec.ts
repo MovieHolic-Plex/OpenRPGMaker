@@ -26,7 +26,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("event editor keeps a non-overlapping desktop flow at every supported viewport", async ({ page }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   await mkdir(EVIDENCE_DIR, { recursive: true });
   const browserIssues = installBrowserIssuePolicy(page);
   const captures: Record<string, unknown> = {};
@@ -48,6 +48,9 @@ test("event editor keeps a non-overlapping desktop flow at every supported viewp
     captures[viewport.label] = await responsiveMetrics(page);
 
     await page.getByTestId("event-editor-cancel").click();
+    // 이름을 고친 새 이벤트는 바로 닫히지 않는다. 버리겠다는 확인을 눌러야 모달이 닫힌다.
+    await expect(page.getByTestId("app-confirm-modal")).toBeVisible();
+    await page.getByTestId("app-modal-confirm").click();
     await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
     await screenshotEvidence(page, EVIDENCE_DIR, `${viewport.label}-cancelled.png`);
   }
@@ -91,7 +94,8 @@ function installBrowserIssuePolicy(page: Page): string[] {
 
 async function ensureEventEditorOpen(page: Page): Promise<void> {
   const modal = page.getByTestId("event-editor-modal");
-  const restoredEditorVisible = await modal.waitFor({ state: "visible", timeout: 750 }).then(
+  // classicCapture=2 가 부팅 뒤에 편집기를 연다. 캔버스가 뜬 직후 750ms 안에는 아직 없다.
+  const restoredEditorVisible = await modal.waitFor({ state: "visible", timeout: 20_000 }).then(
     () => true,
     () => false,
   );

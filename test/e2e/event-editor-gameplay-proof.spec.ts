@@ -2,12 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, rm } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { defaultDatabase } from "@/project/defaults/defaultDatabase";
-import { openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText } from "./eventEditorCertEvidence";
+import { openEventEditor, readProjectExportJson, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText } from "./eventEditorCertEvidence";
 import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-gameplay-proof";
-const PASSABLE = { up: true, down: true, left: true, right: true };
+const GRASS_TILE = 737;
 const SCREENSHOTS = [
   "01-editor-text-create-popup.png",
   "02-editor-text-edit-same-popup.png",
@@ -74,9 +74,13 @@ test("event editor popups produce real gameplay direction route and frequency pr
   await expect.poll(async () => (await playerDirection(page))).toBe("right");
   await screenshot(page, "05-play-transfer-direction-right.png");
 
-  await expect.poll(async () => (await runtimeState(page)).movers.ev_route?.activeMove?.dir ?? null, { timeout: 8_000 }).toBe("right");
+  // 빈도 6 경로는 한 걸음이 80ms 라, 방향 폴링이 시작되기 전에 오른쪽·아래·왼쪽이 끝난다.
+  // 도착 칸이 그 세 걸음의 결과다.
+  await expect.poll(async () => {
+    const event = (await runtimeState(page)).events.ev_route;
+    return event ? `${event.x},${event.y}` : "";
+  }, { timeout: 8_000 }).toBe("4,3");
   await screenshot(page, "06-play-custom-route-right.png");
-  await expect.poll(async () => (await runtimeState(page)).movers.ev_route?.activeMove?.dir ?? null, { timeout: 8_000 }).toBe("down");
   await screenshot(page, "07-play-custom-route-down.png");
 
   const beforeFrequency = await runtimeState(page);
@@ -122,7 +126,8 @@ test("event editor popups produce real gameplay direction route and frequency pr
 });
 
 async function authorAndEditTextCommand(page: Page): Promise<void> {
-  await page.getByTestId("event-command-empty-line").dblclick();
+  // 빈 줄은 클릭으로 피커를 연다. 더블클릭의 두 번째 클릭이 방금 연 피커를 다시 닫는다.
+  await page.getByTestId("event-command-empty-line").click();
   const picker = page.getByTestId("event-command-picker");
   await expect(picker).toBeVisible();
   await picker.getByTestId("command-picker-add-text").click();
@@ -144,7 +149,7 @@ async function authorAndEditTextCommand(page: Page): Promise<void> {
 }
 
 async function authorTransferCommand(page: Page): Promise<void> {
-  await page.getByTestId("event-command-empty-line").dblclick();
+  await page.getByTestId("event-command-empty-line").click();
   const picker = page.getByTestId("event-command-picker");
   await picker.getByTestId("event-command-picker-tab-1").click();
   await picker.getByTestId("command-picker-add-transfer").click();
@@ -230,7 +235,7 @@ async function frequencySample(page: Page, durationMs: number): Promise<Frequenc
 }
 
 async function projectExport(page: Page): Promise<{ readonly project: Project }> {
-  const text = await page.getByTestId("project-export-json").textContent();
+  const text = await readProjectExportJson(page);
   if (!text) throw new Error("missing project export");
   return JSON.parse(text) as { readonly project: Project };
 }
@@ -266,19 +271,7 @@ function gameplayProofProject(): Project {
     meta: { title: "Event Editor Gameplay Proof", author: "e2e", terms: { gold: "G" } },
     assets: { sprites: {}, uploaded: {} },
     resourceProfiles: [],
-    tilesets: {
-      tiles_default: {
-        id: "tiles_default",
-        name: "Proof tileset",
-        image: { type: "bundled", id: "tex_tiles_default" },
-        tileSize: 16,
-        tilesPerRow: 8,
-        count: 8,
-        passability: Array.from({ length: 8 }, () => PASSABLE),
-        priority: ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
-        terrain: Array.from({ length: 8 }, () => 0),
-      },
-    },
+    tilesets: {},
     switches: [],
     variables: [],
     commonEvents: [],
@@ -291,9 +284,9 @@ function gameplayProofProject(): Project {
         name: "Popup Start",
         width: 8,
         height: 6,
-        tilesetId: "tiles_default",
+        tilesetId: "beodeul_city",
         tileSize: 16,
-        lowerTiles: Array.from({ length: 48 }, () => 0),
+        lowerTiles: Array.from({ length: 48 }, () => GRASS_TILE),
         upperTiles: Array.from({ length: 48 }, () => -1),
         events: [
           event("ev_text", 2, 1, [eventPage("text_page", { trigger: { kind: "action" }, priority: "same", commands: [] })]),
@@ -305,9 +298,9 @@ function gameplayProofProject(): Project {
         name: "Route Proof",
         width: 12,
         height: 9,
-        tilesetId: "tiles_default",
+        tilesetId: "beodeul_city",
         tileSize: 16,
-        lowerTiles: Array.from({ length: 108 }, () => 0),
+        lowerTiles: Array.from({ length: 108 }, () => GRASS_TILE),
         upperTiles: Array.from({ length: 108 }, () => -1),
         events: [
           event("ev_route", 4, 2, [eventPage("route_page", { movement: { type: "custom", speed: 3, frequency: 6, route: { repeat: false, moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "down" }, { kind: "move", dir: "left" }] } } })]),
