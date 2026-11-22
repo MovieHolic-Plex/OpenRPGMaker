@@ -33,12 +33,12 @@ export function hillPresetCells(map: Size, at: Point): number[] {
   return out;
 }
 
-/** 강: 맵 위 끝에서 아래 끝까지 폭 3칸, 누른 칸을 지나며 완만하게 굽는다. */
+/** 강: 맵 위 끝에서 아래 끝까지 폭 2칸(다리 한 칸 길이와 같아 그대로 다리를 놓을 수 있다), 누른 칸을 지나며 완만하게 굽는다. */
 export function riverPresetCells(map: Size, at: Point): number[] {
   const out: number[] = [];
   for (let y = 0; y < map.height; y++) {
     const cx = at.x + Math.round(Math.sin((y - at.y) / 3));
-    for (let x = cx - 1; x <= cx + 1; x++) if (inside(map, x, y)) out.push(y * map.width + x);
+    for (let x = cx; x <= cx + 1; x++) if (inside(map, x, y)) out.push(y * map.width + x);
   }
   return out;
 }
