@@ -333,9 +333,14 @@ export function setStartPos(x: number, y: number): void {
 }
 
 // 맵의 타일셋 변경(chipset 분리).
+/**
+ * 칩셋 바꾸기는 맵 기록 한 단계다(F1). 기록 없이 바꾸면 다음 Ctrl+Z 가 바로 앞 지형 획의 시작 상태(옛 칩셋)를
+ * 복원해, 칩셋과 함께 그 획까지 지웠다.
+ */
 export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
   if (!allowMapMutation(mapId)) return;
-  store.update((p) => {
+  const label = `칩셋 변경 · ${store.getCurrent().tilesets[tilesetId]?.name ?? tilesetId}`;
+  recordMapEditIfChanged(mapId, () => store.update((p) => {
     const m = p.maps[mapId];
     const tileset = p.tilesets[tilesetId];
     if (m && tileset) {
@@ -346,7 +351,7 @@ export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
         editorState.set({ activePaletteStamp: null, selectedTile: 0 });
       }
     }
-  }, { scope: "map", mapId });
+  }, { scope: "map", mapId }), { label });
 }
 
 export function setMapEncounterTable(mapId: MapId, entries: EncounterTableEntry[]): void {
