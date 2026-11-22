@@ -5,6 +5,7 @@ import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { findBundledImageAsset } from "@/assets/bundled";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { HARNESS_MONSTER_RESOURCE_IDS } from "@/assets/harnessMonsterArt";
+import { EMERALD_SPECIES_V4_RESOURCE_IDS } from "@/assets/emeraldSpeciesV4Art";
 import { listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
 import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
@@ -82,7 +83,7 @@ function monsterIds(): ReadonlySet<string> {
       && !retiredGeneratedMonsters.has(a.resourceId)).map(a => a.resourceId),
     ...builtinGeneratedResourceIds().filter(id => id.startsWith("generated-enemy-") && !retiredGeneratedMonsters.has(id)),
     ...EASYRPG_MONSTER_ASSETS.map(a => a.id), ...SCARLOXY_MONSTER_ASSETS.map(a => a.id),
-    ...HARNESS_MONSTER_RESOURCE_IDS,
+    ...HARNESS_MONSTER_RESOURCE_IDS, ...EMERALD_SPECIES_V4_RESOURCE_IDS,
   ].filter(Boolean));
 }
 let uploadDependency: Project["assets"]["uploaded"] | undefined;

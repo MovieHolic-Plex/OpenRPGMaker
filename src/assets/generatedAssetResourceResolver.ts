@@ -29,6 +29,7 @@ import { resolveFallenMirrorCharsetUrl } from "./fallenMirrorCharsets";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { resolveHarnessMonsterCharsetUrl, resolveHarnessMonsterUrl } from "./harnessMonsterArt";
+import { resolveEmeraldSpeciesV4Url } from "./emeraldSpeciesV4Art";
 import { resolveOgaBackdropAssetUrl } from "./ogaBackdropAssets";
 import { resolveOgaCraftpixAssetUrl } from "./ogaCraftpixBackgrounds";
 import { resolveOprnPanoramaAssetUrl } from "./oprnPanoramas";
@@ -286,6 +287,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     // 몬스터 수집 하네스가 사람이 고른 종 그림(앞·뒤). 번들에 없으면 null 이라 아래 해석기로 넘어간다.
     resolveHarnessMonsterUrl(resourceId) ??
     resolveHarnessMonsterCharsetUrl(resourceId) ??
+    resolveEmeraldSpeciesV4Url(resourceId) ??
     resolveGeneratedEffectAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??
     resolveOprnMonsterCharsetUrl(resourceId) ??

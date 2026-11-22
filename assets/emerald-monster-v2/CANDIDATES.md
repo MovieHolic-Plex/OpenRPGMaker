@@ -1,8 +1,12 @@
 # Monster artwork review
 
 Current review: `candidates-v4/`,120 final CLI PNGs for the existing60 species.
-Status: **pending human selection**. The user requested `후보 그림부터 더 수정`.
-These files are review resources, not registered production sprites or defaults.
+Status: **installed as an optional editor pack (2026-11-22)**. The owner asked to put
+them to use ("에메랄드 몬스터는 좀 알아서 .. 넣고"). All 120 PNGs are copied to
+`public/assets/emerald-monster/species-v4/` and registered as bundled monster resources
+`emerald-v4-<species>-<front|back>` (`src/assets/emeraldSpeciesV4Art.ts`). Campaign species
+keep the monster-collect-species bundle art (user pass, round 6, 2026-10-20); this pack does
+not replace it. These files remain the review record.
 
 - `candidates-v2/`: rejected initial review baseline.
 - `candidates-v3/`: intermediate revision; superseded by revision4.
