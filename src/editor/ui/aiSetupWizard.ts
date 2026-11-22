@@ -14,12 +14,15 @@ export interface WizardEnvironment {
   readonly expired?: "chatgpt" | "google";
 }
 
+export type PasteKeyResult = { readonly ok: true } | { readonly ok: false; readonly reason: string };
+
 export interface WizardDeps extends TeamApplyDeps {
   readonly detect: () => Promise<WizardEnvironment>;
   readonly login: (service: "chatgpt" | "google" | "claude") => Promise<boolean>;
   readonly install: (cli: "claude" | "codex") => Promise<boolean>;
   readonly copy: (text: string) => Promise<void>;
-  readonly pasteKey: (service: WizardService, key: string) => Promise<boolean>;
+  /** providerId 는 wizardKeyProviders 의 id. 실패하면 사람 말 이유를 돌려준다. */
+  readonly pasteKey: (providerId: string, key: string) => Promise<PasteKeyResult>;
   readonly onDone: (connected: boolean) => void;
 }
 
@@ -39,6 +42,9 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
   let notice: WizardViewState["notice"];
   let failure: string | undefined;
   let keyEntry = false;
+  let keyProvider = "openrouter";
+  /** 실패해도 입력칸이 비지 않게 붙여 넣은 키를 메모리에만 들고 있는다. 저장하지 않는다. */
+  let keyDraft = "";
   let copied = false;
   let picking = false;
   let runId = 0;
@@ -56,12 +62,12 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
       claudeInstalledNotSignedIn: env?.claudeInstalledNotSignedIn ?? false,
       ...(env?.expired ? { expired: env.expired } : {}),
       ...(picking ? { picking } : {}),
-      ...(chosen ? { chosen } : {}),
+      ...(chosen ? { chosen, keyProvider } : {}),
       ...(failure ? { failure } : {}),
       ...(copied ? { copied } : {}),
     };
     const screen = wizardScreen(inputs);
-    const state: WizardViewState = { screen, ...(busy ? { busy } : {}), ...(notice ? { notice } : {}), ...(keyEntry ? { keyEntry: { service: chosen ?? "key" } } : {}), ...(copied ? { copied } : {}) };
+    const state: WizardViewState = { screen, ...(busy ? { busy } : {}), ...(notice ? { notice } : {}), ...(keyEntry ? { keyEntry: { service: chosen ?? "key", value: keyDraft } } : {}), ...(copied ? { copied } : {}) };
     host.replaceChildren(renderAiSetupWizard(state, { onAction: (action, keyText) => void handle(action, keyText) }));
   };
 
@@ -109,13 +115,20 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
         failure = undefined;
         notice = undefined;
         keyEntry = chosen === "deepseek";
+        keyDraft = "";
+        paint();
+        return;
+      case "pick-key-provider":
+        keyProvider = action.arg ?? keyProvider;
+        if (keyText !== undefined) keyDraft = keyText;
+        failure = undefined;
         paint();
         return;
       case "back":
         if (busy) { runId++; busy = undefined; }
         copied = false;
         picking = true;
-        chosen = undefined; failure = undefined; notice = undefined; keyEntry = false;
+        chosen = undefined; failure = undefined; notice = undefined; keyEntry = false; keyDraft = "";
         paint();
         return;
       case "login-chatgpt":
@@ -164,12 +177,20 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
         });
         return;
       case "paste-key": {
-        const service: WizardService = (action.arg as WizardService | undefined) ?? chosen ?? "deepseek";
-        if (!keyText) { chosen = service; keyEntry = true; paint(); return; }
+        const provider = action.arg ?? keyProvider;
+        keyProvider = provider;
+        if (keyText === undefined) {
+          const entering = keyEntry;
+          chosen = chosen ?? "deepseek"; keyEntry = true;
+          failure = entering ? "키를 붙여 넣어 주세요." : undefined;
+          paint();
+          return;
+        }
+        keyDraft = keyText;
         await run("키를 확인하고 있어요…", async () => {
-          const ok = await deps.pasteKey(service, keyText);
-          if (ok) { deps.onDone(true); return; }
-          failure = "이 키로는 연결되지 않았어요. 키를 다시 복사해 붙여 넣어 주세요.";
+          const result = await deps.pasteKey(provider, keyText);
+          if (result.ok) { keyDraft = ""; deps.onDone(true); return; }
+          failure = result.reason;
         });
         return;
       }

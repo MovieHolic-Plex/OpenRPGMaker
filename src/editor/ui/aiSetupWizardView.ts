@@ -16,13 +16,14 @@ export const AI_SETUP_WIZARD_TESTIDS = {
   busy: "ai-setup-wizard-busy",
   manual: "ai-setup-wizard-manual",
   alert: "ai-setup-wizard-alert",
+  keyLink: "ai-setup-wizard-key-link",
 } as const;
 
 export interface WizardViewState {
   readonly screen: WizardScreen;
   readonly busy?: string;
   readonly notice?: { readonly tone: "ok" | "error"; readonly text: string };
-  readonly keyEntry?: { readonly service: string };
+  readonly keyEntry?: { readonly service: string; readonly value?: string };
   readonly copied?: boolean;
 }
 
@@ -35,10 +36,10 @@ const SERVICE_MARK: Readonly<Record<WizardService, string>> = { chatgpt: "G", cl
 function actionButton(action: WizardAction, kind: "primary" | "choice" | "link", testid: string, onClick: () => void, disabled: boolean): HTMLButtonElement {
   const button = el("button", {
     class: `app-modal-wizard-button app-modal-wizard-${kind}`,
-    attrs: { type: "button" },
+    attrs: { type: "button", ...(action.selected !== undefined ? { "aria-pressed": String(action.selected) } : {}) },
     dataset: { testid, action: action.id, ...(action.arg ? { arg: action.arg } : {}) },
   });
-  if (kind === "choice" && action.arg && action.arg in SERVICE_MARK) {
+  if (kind === "choice" && action.selected === undefined && action.arg && action.arg in SERVICE_MARK) {
     button.append(el("span", { class: "app-modal-wizard-mark is-small", dataset: { service: action.arg }, text: SERVICE_MARK[action.arg as WizardService], attrs: { "aria-hidden": "true" } }));
   }
   const text = el("span", { class: "app-modal-wizard-button-text" });
@@ -66,7 +67,7 @@ export function renderAiSetupWizard(state: WizardViewState, handlers: WizardView
   const keyInput = state.keyEntry
     ? (el("input", {
       class: "app-modal-wizard-key",
-      attrs: { type: "password", autocomplete: "off", spellcheck: "false", placeholder: "여기에 붙여 넣기", "aria-label": "키" },
+      attrs: { type: "password", autocomplete: "off", spellcheck: "false", placeholder: "여기에 붙여 넣기", "aria-label": "키", ...(state.keyEntry?.value ? { value: state.keyEntry.value } : {}) },
       dataset: { testid: AI_SETUP_WIZARD_TESTIDS.keyInput },
     }) as HTMLInputElement)
     : undefined;
@@ -74,7 +75,6 @@ export function renderAiSetupWizard(state: WizardViewState, handlers: WizardView
   const fire = (action: WizardAction) => () => {
     if (busy && action.id !== "later" && action.id !== "back") return;
     handlers.onAction(action, keyInput?.value.trim() || undefined);
-    if (keyInput && action.id === "paste-key") keyInput.value = "";
   };
   const copy = (command: string) => () => handlers.onAction({ id: "copy-command", label: "복사", arg: command });
 
@@ -94,13 +94,21 @@ export function renderAiSetupWizard(state: WizardViewState, handlers: WizardView
   }
 
   if (screen.command) children.push(commandBox(screen.command, Boolean(state.copied), screen.primary?.id === "copy-command" ? undefined : copy(screen.command.command)));
-  if (keyInput) children.push(keyInput);
 
   if (screen.choices.length) {
     children.push(el("div", {
-      class: "app-modal-wizard-choices",
+      class: `app-modal-wizard-choices${screen.choices.some((choice) => choice.selected !== undefined) ? " is-chips" : ""}`,
       attrs: { role: "group", "aria-label": "AI 고르기" },
       children: screen.choices.map((choice) => actionButton(choice, "choice", AI_SETUP_WIZARD_TESTIDS.choice, fire(choice), busy)),
+    }));
+  }
+
+  if (keyInput) children.push(keyInput);
+  if (screen.keyLink) {
+    children.push(el("a", {
+      class: "app-modal-wizard-keylink", text: `${screen.keyLink.label} ↗`,
+      attrs: { href: screen.keyLink.url, target: "_blank", rel: "noopener noreferrer" },
+      dataset: { testid: AI_SETUP_WIZARD_TESTIDS.keyLink },
     }));
   }
 
