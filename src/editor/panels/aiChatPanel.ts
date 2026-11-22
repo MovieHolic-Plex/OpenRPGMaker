@@ -6,7 +6,7 @@ import { createAiReferenceView } from "@/editor/aiReferenceView";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
-import { describeAiFailure, mountAiFailureActions, mountAssistantErrorDetail } from "./assistantErrorDetail";
+import { aiFailureTitle, describeAiFailure, mountAiFailureActions, mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { createActivityToolbar } from "./aiActivityView";
 import { checkEventCommandScope } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
@@ -2634,7 +2634,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       reportTransportHealth(false, 429, reason);
       setStatus(quotaStatusLine(quotaProvider));
     }
-    const bubble = appendBubble("system", `지시를 해석하지 못했습니다. ${quotaProvider ? failure.summary.replace("이 AI 계정의", `${quotaProvider} 연결의`) : failure.summary}`);
+    // 한도·로그인·네트워크는 원인이 이미 문장이다 — 「지시를 해석하지 못했습니다」 를 앞에 붙이면 원인이 아닌 것처럼 읽힌다.
+    const cause = quotaProvider ? failure.summary.replace("이 AI 계정의", `${quotaProvider} 연결의`) : failure.summary;
+    const bubble = appendBubble("system", failure.kind === "other" ? `지시를 해석하지 못했습니다. ${cause}` : cause);
     mountAiFailureActions(bubble, {
       failure,
       onRetry: () => {
@@ -2762,10 +2764,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
         // unhandled error 로 잡았고 사용자에게는 아무 표시도 남지 않았다).
         runSurface.turnBusy = false;
-        finishWorkCard({ ok: false, message: "지시 해석 실패" });
+        const reason = error instanceof Error ? error.message : String(error);
+        finishWorkCard({ ok: false, message: aiFailureTitle(describeAiFailure(reason).kind) });
         refreshSendEnabled();
         setStatus("대기");
-        const reason = error instanceof Error ? error.message : String(error);
         void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
         appendIntentFailure(reason, shown);
         return;

@@ -112,6 +112,14 @@ export type AiFailureSummary = {
   readonly raw: string | null;
 };
 
+/** 작업 카드·말풍선 제목 — 401/429/오프라인을 모두 「지시 해석 실패」 로 부르지 않는다. */
+export function aiFailureTitle(kind: AiFailureKind): string {
+  if (kind === "quota") return "사용 한도 초과";
+  if (kind === "auth") return "연결이 끊김";
+  if (kind === "network") return "연결 서비스에 닿지 못함";
+  return "지시 해석 실패";
+}
+
 const QUOTA = /\b429\b|RESOURCE_EXHAUSTED|quota|rate.?limit|한도/i;
 const AUTH = /\b40[13]\b|unauthori[sz]ed|forbidden|not (?:logged|signed) in|invalid[_ ]grant|(?:invalid|missing|no) api[ _-]key|api[ _-]key.{0,25}(?:required|not (?:found|set))|로그인|인증|API 키가 설정되지/i;
 const NETWORK = /failed to fetch|network|ECONN|ETIMEDOUT|\b50[0-4]\b|네트워크|연결이 끊겼|닿지 못|timeout|시간 초과/i;
@@ -127,7 +135,7 @@ export function isAiRuntimeUnavailable(reason: string): boolean {
 
 /** 「Resets in 67h25m0s」·「retry after 30s」 같은 꼬리에서 남은 시간을 초로 읽는다. */
 export function parseResetSeconds(raw: string): number | null {
-  const reset = /resets?\s+in\s+((?:\d+\s*[dhms]\s*)+)/i.exec(raw) ?? /retry\s+after\s+((?:\d+\s*[dhms]?\s*)+)/i.exec(raw);
+  const reset = /resets?\s+in\s+((?:\d+\s*[dhms]\s*)+)/i.exec(raw) ?? /retry[\s_-]*after[\s:=]+((?:\d+\s*[dhms]?\s*)+)/i.exec(raw);
   if (!reset) return null;
   let seconds = 0;
   let matched = false;
@@ -144,10 +152,10 @@ export function parseResetSeconds(raw: string): number | null {
 export function formatWaitKo(seconds: number): string {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.max(1, Math.round((seconds % 3600) / 60));
+  const minutes = Math.round((seconds % 3600) / 60);
   if (days > 0) return hours > 0 ? `${days}일 ${hours}시간` : `${days}일`;
   if (hours > 0) return `${hours}시간 ${minutes % 60 === 0 ? "" : `${minutes % 60}분`}`.trim();
-  return `${minutes}분`;
+  return `${Math.max(1, minutes)}분`;
 }
 
 /**

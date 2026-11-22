@@ -12912,6 +12912,7 @@
 "지시 내용을 입력하세요.":"Enter your instruction.",
 "지시 내용이 비어 있습니다.":"The instruction is empty.",
 "지시 수정":"Edit instruction",
+"연결 서비스에 닿지 못함":"Could not reach the connection service",
 "지시 해석 실패":"Failed to interpret the instruction",
 "지시(선택) — 예: 왕도 멸망만 3문단":"Instruction (optional): e.g., only 3 paragraphs about the fall of the capital",
 "지시: {0}":"Instruction: {0}",
