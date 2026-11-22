@@ -169,6 +169,7 @@ describe("기본값 / 컨텍스트 창", () => {
   it("Given 알려진 모델 When 해석 Then 기본 창보다 크다", () => {
     expect(resolveContextWindow("gemini-3.7-flash")).toBeGreaterThan(DEFAULT_CONTEXT_WINDOW);
     expect(resolveContextWindow("cpen/gpt-5-6-luna")).toBeGreaterThan(DEFAULT_CONTEXT_WINDOW);
+    expect(resolveContextWindow("xai/grok-4.7")).toBe(500_000);
   });
 });
 

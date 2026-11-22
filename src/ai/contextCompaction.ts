@@ -79,6 +79,7 @@ const CONTEXT_WINDOW_BY_MODEL_PREFIX: ReadonlyArray<readonly [string, number]> =
   ["gpt-daybreak", 400_000],
   ["codex", 400_000],
   ["claude-", 200_000],
+  ["grok-4.7", 500_000],
   ["grok-", 256_000],
   ["kimi", 262_144],
   ["glm-", 200_000],
