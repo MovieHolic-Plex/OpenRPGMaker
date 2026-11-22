@@ -28,11 +28,10 @@ export async function fetchProviderUsage(providerId: string): Promise<ProviderUs
 }
 
 export function renderAiQuotaChip(openSettings: () => void): { readonly element: HTMLElement; readonly dispose: () => void } {
-  const providerName = el("span", { class: "ai-quota-chip-provider" });
-  const modelName = el("span", { class: "ai-quota-chip-model" });
-  const name = el("span", { class: "ai-quota-chip-name", children: [providerName, modelName] });
+  const name = el("span", { class: "ai-quota-chip-name", dataset: { part: "provider" } });
+  const modelName = el("span", { class: "ai-quota-chip-name", dataset: { part: "model" } });
   const value = el("span", { class: "ai-quota-chip-value" });
-  const label = el("span", { class: "ai-quota-chip-label", dataset: { testid: "ai-quota-chip-label" }, children: [name, value] });
+  const label = el("span", { class: "ai-quota-chip-label", dataset: { testid: "ai-quota-chip-label" }, children: [name, modelName, value] });
   const button = el("button", {
     class: "ai-quota-chip",
     attrs: { type: "button" },
@@ -54,7 +53,7 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
     // 지금 쓰는 모델도 머리줄에서 바로 보인다. 연결이 안 됐을 땐 모델이 뜻이 없으니 제공자만 둔다.
     const model = status.kind === "ready" || status.limited ? activeModelId(loadAiConfig()).trim() : "";
     const modelLabel = model ? modelDisplayName(model) : "";
-    providerName.textContent = status.providerLabel;
+    name.textContent = status.providerLabel;
     modelName.textContent = modelLabel;
     value.textContent = tail;
     const detail = status.kind === "ready" || status.limited ? usageDetail(current) : status.title;

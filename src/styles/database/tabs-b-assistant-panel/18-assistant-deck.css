@@ -905,33 +905,11 @@ html[data-ai-render="off"] {
   white-space: nowrap;
 }
 
-/* 좁으면 연결 이름만 줄인다 — 남은 한도 값(「남음 63%」·「알 수 없음」)은 잘리면 칩의 뜻이 사라진다. 600px 이하 화면은 아래 미디어 규칙이 모델 이름을 지키고 값이 줄어든다. */
+/* 좁으면 연결 이름만 줄인다 — 남은 한도 값(「남음 63%」·「알 수 없음」)은 잘리면 칩의 뜻이 사라진다. */
 .ai-quota-chip-name {
-  display: inline-flex;
   min-width: 2.5em;
   overflow: hidden;
-}
-
-.ai-quota-chip-provider {
-  min-width: 0;
-  overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.ai-quota-chip-provider:has(+ .ai-quota-chip-model:not(:empty)) {
-  flex: none;
-}
-
-/* 모델 이름이 길면 이쪽이 말줄임으로 줄어든다(제공자·한도 값은 유지). 좁은 화면에서는 제공자를 숨기고 모델만 남긴다. */
-.ai-quota-chip-model {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ai-quota-chip-model:not(:empty)::before {
-  content: " · ";
-  white-space: pre;
 }
 
 .ai-quota-chip-value {
@@ -941,28 +919,6 @@ html[data-ai-render="off"] {
 .ai-quota-chip-value::before {
   content: "·";
   margin: 0 4px;
-}
-
-@media (max-width: 600px) {
-  .ai-quota-chip-provider:has(+ .ai-quota-chip-model:not(:empty)) {
-    display: none;
-  }
-
-  .ai-quota-chip-model:not(:empty)::before {
-    content: none;
-  }
-
-  /* 좁은 화면: 모델 이름은 온전히 두고 한도 값 쪽이 먼저 말줄임으로 줄어든다. */
-  .ai-quota-chip-name:has(.ai-quota-chip-model:not(:empty)) {
-    flex: none;
-  }
-
-  .ai-quota-chip-value {
-    flex: 0 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 .ai-quota-chip-dot {
@@ -990,4 +946,36 @@ html[data-ai-render="off"] {
 .ai-quota-chip[data-kind="offline"] .ai-quota-chip-dot,
 .ai-quota-chip[data-kind="error"] .ai-quota-chip-dot {
   background: var(--danger);
+}
+
+/* 지금 쓰는 모델 이름: 「제공자 · 모델」 두 조각이 같은 name 클래스를 쓰고 data-part 로 가른다. 모델이 비면 제공자만 보인다. */
+.ai-quota-chip-name[data-part="model"]:not(:empty)::before {
+  content: "·";
+  margin: 0 4px;
+}
+
+.ai-quota-chip-name[data-part="provider"]:has(+ .ai-quota-chip-name[data-part="model"]:not(:empty)) {
+  flex: none;
+}
+
+/* 좁은 화면(600px 이하): 제공자를 숨기고 모델 이름만 온전히 둔다. 줄어드는 쪽은 한도 값이다. */
+@media (max-width: 600px) {
+  .ai-quota-chip-name[data-part="provider"]:has(+ .ai-quota-chip-name[data-part="model"]:not(:empty)) {
+    display: none;
+  }
+
+  .ai-quota-chip-name[data-part="model"]:not(:empty) {
+    flex: none;
+  }
+
+  .ai-quota-chip-name[data-part="model"]:not(:empty)::before {
+    content: none;
+  }
+
+  .ai-quota-chip-value {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
