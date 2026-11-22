@@ -116,6 +116,10 @@ export const OPENAI_COMPAT_PRESETS: readonly OpenAiCompatPreset[] = [
   { id: "vllm", label: "vLLM", name: "vLLM", baseUrl: "http://127.0.0.1:8000/v1", hint: "도구 호출은 서버를 --enable-auto-tool-choice 로 띄워야 해요." },
   { id: "openrouter", label: "OpenRouter", name: "OpenRouter", baseUrl: "https://openrouter.ai/api/v1", hint: "OpenRouter 키가 필요해요.", reasoningMode: "field" },
   { id: "openai", label: "OpenAI", name: "OpenAI", baseUrl: "https://api.openai.com/v1", hint: "OpenAI API 키가 필요해요.", reasoningMode: "field" },
+  // xAI: https://docs.x.ai/developers/models/grok-4.7 (2026-11-22 확인) — 모델 ID grok-4.7, 컨텍스트 500,000, 함수 호출·구조화 출력·이미지 입력 지원.
+  // 추론 강도는 reasoning_effort 필드로 보낸다(field, OpenAI·OpenRouter 프리셋과 같다): 이 모델은 low·medium·high·xhigh 를 받는다(기본 high).
+  { id: "xai", label: "xAI Grok", name: "xAI Grok", baseUrl: "https://api.x.ai/v1", hint: "xAI API 키(console.x.ai)가 필요해요. grok-4.7 은 도구 호출과 이미지 입력을 지원해요.",
+    suggestedModel: "grok-4.7", reasoningMode: "field", supportsImages: true, imageModels: ["grok-4.7"] },
 ];
 
 // ── 빠른 연결(editor/panels/aiQuickConnect.ts) ───────────────────────────────

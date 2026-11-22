@@ -1,0 +1,47 @@
+{
+  "authMode": "chatgpt",
+  "providerId": "openai-compat:xai-grok",
+  "model": "grok-4.7",
+  "liteModel": "grok-4.7",
+  "reasoningEffort": "high",
+  "autonomyLevel": "balanced",
+  "roleModels": {
+    "deep": {
+      "provider": "openai-compat:xai-grok",
+      "model": "grok-4.7",
+      "thinkingLevel": "high"
+    },
+    "build": {
+      "provider": "openai-compat:xai-grok",
+      "model": "grok-4.7",
+      "thinkingLevel": "high"
+    },
+    "writer": {
+      "provider": "openai-compat:xai-grok",
+      "model": "grok-4.7",
+      "thinkingLevel": "high"
+    },
+    "vision": {
+      "provider": "openai-compat:xai-grok",
+      "model": "grok-4.7",
+      "thinkingLevel": "high"
+    }
+  },
+  "pixelModel": {
+    "provider": "openai-compat:xai-grok",
+    "model": "grok-4.7",
+    "thinkingLevel": "high"
+  },
+  "ultrabrainProviderId": "openai-compat:xai-grok",
+  "ultrabrainModel": "grok-4.7",
+  "ultrabrainReasoningEffort": "high",
+  "modelSelectionOverrides": {
+    "ultrabrain": true,
+    "vision": true,
+    "writer": true,
+    "deep": true,
+    "build": true,
+    "pixel": true
+  },
+  "roleModelsPolicyVersion": 1
+}
