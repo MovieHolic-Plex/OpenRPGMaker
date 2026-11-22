@@ -184,6 +184,11 @@
       "id": "city_fish_market",
       "labelKo": "항구·수산시장",
       "order": 370
+    },
+    {
+      "id": "city_beach",
+      "labelKo": "해변·물놀이",
+      "order": 380
     }
   ],
   "sets": [
@@ -372,6 +377,90 @@
         "t_n",
         "t_s",
         "v_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_bamboo_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_block_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_brick_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "corner",
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_chainlink_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_flowerbed_edge",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_hedge",
+      "role": "fence",
+      "requiredPieces": [
+        "corner",
+        "end_round",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_iron_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_low_stone_wall",
+      "role": "wall",
+      "requiredPieces": [
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_hedge_wood_fence",
+      "role": "fence",
+      "requiredPieces": [
+        "gate",
+        "h_straight"
+      ]
+    },
+    {
+      "id": "city_stair_handrail",
+      "role": "fence",
+      "requiredPieces": [
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_stair_overpass_rail",
+      "role": "fence",
+      "requiredPieces": [
+        "corner",
+        "h_straight"
       ]
     }
   ]
