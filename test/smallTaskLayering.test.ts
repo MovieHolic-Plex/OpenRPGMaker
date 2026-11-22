@@ -61,5 +61,13 @@ describe("small-task layering", () => {
   it("keeps the ownership list exempt from unit id strings", () => {
     const source = "export const id = \"02-cmd-flow\";\n";
     expect(problemsInSource(source, "src/editor/smallTask/primitives/ownership.ts")).toEqual([]);
+    expect(problemsInSource(source, "src\\editor\\smallTask\\primitives\\ownership.ts")).toEqual([]);
+  });
+
+  it("sees a unit id after division that follows a member named of", () => {
+    const source = "const ratio = counts.of / weights[\"02-cmd-flow\"] / 2;\n";
+    expect(problemsInSource(source, rel)).toEqual([
+      `${rel}:1: names a numbered unit`,
+    ]);
   });
 });

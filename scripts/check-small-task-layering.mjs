@@ -31,7 +31,7 @@ function isIdentChar(char) {
 /** @param {string} source @param {string} rel @returns {string[]} */
 export function problemsInSource(source, rel) {
   const problems = [];
-  const skipIds = SKIP_ID_FILES.has(rel);
+  const skipIds = SKIP_ID_FILES.has(rel.replaceAll("\\", "/"));
   let i = 0;
   let line = 1;
   let exprAllowed = true;
@@ -213,7 +213,10 @@ export function problemsInSource(source, rel) {
       i++;
       while (i < source.length && isIdentChar(source[i])) i++;
       const word = source.slice(start, i);
-      if ((word === "import" || word === "from") && (start === 0 || source[start - 1] !== ".")) {
+      let previous = start - 1;
+      while (previous >= 0 && " \t\r\n\f".includes(source[previous])) previous--;
+      const memberName = source[previous] === ".";
+      if ((word === "import" || word === "from") && !memberName) {
         const spec = peekSpecifier(i, line);
         if (spec) {
           noteImport(spec.value, wordLine);
@@ -223,7 +226,7 @@ export function problemsInSource(source, rel) {
           continue;
         }
       }
-      exprAllowed = EXPR_KW.has(word);
+      exprAllowed = !memberName && EXPR_KW.has(word);
       continue;
     }
     if ("=+-*%!~?:,;([{&|^<>".includes(c)) { exprAllowed = true; i++; continue; }
