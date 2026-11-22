@@ -105,6 +105,8 @@ export interface EditorState {
   terrainBrush: "height" | "surface" | "river" | "group" | "land" | TerrainDesignTool;
   terrainLand: import("./terrainLandBrush").TerrainLand;
   terrainLandSize: import("./terrainLandBrush").TerrainLandSize;
+  /** 「땅 올리기」「땅 내리기」 — 끌기 첫 칸보다 한 층(2단) 높게·낮게 맞춘다. null 이면 terrainLand 그대로. */
+  terrainLandStep: "raise" | "lower" | null;
   terrainLandRect: { mapId: string; start: { x: number; y: number }; end: { x: number; y: number } } | null;
   terrainDesignOpen: boolean;
   terrainSymmetry: TerrainSymmetry;
@@ -195,6 +197,7 @@ class EditorStateStore {
     terrainBrush: "land",
     terrainLand: 2,
     terrainLandSize: 3,
+    terrainLandStep: null,
     terrainLandRect: null,
     terrainDesignOpen: false,
     terrainSymmetry: "none",
@@ -394,7 +397,7 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "reliefTopGrass",
   "reliefDoodad",
   "reliefDoodadOpen",
-  "terrainBrush", "terrainLand", "terrainLandSize", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
+  "terrainBrush", "terrainLand", "terrainLandSize", "terrainLandStep", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
   "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
   "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
   "terrainFeatureId", "terrainDragPoint", "terrainFinishMethod", "terrainFinishPasses",

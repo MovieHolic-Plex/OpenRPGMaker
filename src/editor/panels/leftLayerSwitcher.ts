@@ -51,11 +51,10 @@ export function makeLeftLayerSwitcher(state: Pick<EditorState, "layer" | "tool">
   const reliefLabel = uiLabel("layerRelief");
   const relief = el("button", {
     class: "left-layer-btn header-relief-brush",
-    attrs: { type: "button", title: `${reliefLabel} 붓 — 언덕·절벽 지형 편집`, "aria-pressed": "false" },
+    attrs: { type: "button", title: `${reliefLabel} — 언덕·물·길·숲 만들기`, "aria-pressed": "false" },
     dataset: { testid: "layer-relief", sidebarLayer: "relief" },
     children: [
       el("span", { class: "left-layer-btn-label", text: reliefLabel }),
-      el("span", { class: "visually-hidden", text: " 붓" }),
     ],
     on: { click: () => {
       selectSwitcherKey(editorState.get().tool === "relief" ? editorState.get().layer : "relief");

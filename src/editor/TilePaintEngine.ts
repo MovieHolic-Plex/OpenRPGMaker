@@ -32,7 +32,7 @@ import { findReliefDoodad } from "@/editor/reliefDoodads";
 import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
 import { groupAt } from "./terrainClusters";
 import { paintTerrainBrush } from "./terrainBrush";
-import { landBrushCells, landRectCells, paintLandCells, terrainLandLabel, type TerrainLand } from "./terrainLandBrush";
+import { landBrushCells, landRectCells, landStepTarget, paintLandCells, terrainLandLabel, type TerrainLand } from "./terrainLandBrush";
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
@@ -348,7 +348,10 @@ export class TilePaintEngine {
       if (firstStrokeTile) {
         this.stopReliefGrowth();
         this.terrainLast = null;
-        this.landStrokeLand = ptr.button === 2 || ptr.rightButtonDown() ? 0 : state.terrainLand;
+        const right = ptr.button === 2 || ptr.rightButtonDown();
+        this.landStrokeLand = state.terrainLandStep
+          ? landStepTarget(map, pick, right ? (state.terrainLandStep === "raise" ? "lower" : "raise") : state.terrainLandStep)
+          : right ? 0 : state.terrainLand;
         this.landStrokeRect = state.terrainLandSize === "rect" || pointerShiftKey(ptr);
       }
       if (this.landStrokeRect) {

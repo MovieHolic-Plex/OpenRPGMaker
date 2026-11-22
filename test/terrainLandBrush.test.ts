@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { landBrushCells, landRectCells, paintLandCells } from "@/editor/terrainLandBrush";
+import { landBrushCells, landRectCells, landStepTarget, paintLandCells } from "@/editor/terrainLandBrush";
 
 function current() {
   const project = store.getCurrent();
@@ -40,5 +40,21 @@ describe("땅 칸 붓", () => {
     paintLandCells(map.id, landBrushCells(map, { x: 1, y: 1 }, 3), 4, true);
     expect(current().relief!.levels[map.width + 1]).toBe(0);
     expect(current().relief!.levels[map.width + 2]).toBe(4);
+  });
+
+  it("땅 올리기·내리기는 누른 칸보다 한 층 위·아래를 목표로 고른다(물→낮은 땅→높은 땅→더 높은 땅)", () => {
+    const map = current();
+    paintLandCells(map.id, [0], "water", true);
+    paintLandCells(map.id, [2], 2, true);
+    paintLandCells(map.id, [3], 4, true);
+    const m = current();
+    expect(landStepTarget(m, { x: 0, y: 0 }, "raise")).toBe(0);
+    expect(landStepTarget(m, { x: 1, y: 0 }, "raise")).toBe(2);
+    expect(landStepTarget(m, { x: 2, y: 0 }, "raise")).toBe(4);
+    expect(landStepTarget(m, { x: 3, y: 0 }, "raise")).toBe(4);
+    expect(landStepTarget(m, { x: 3, y: 0 }, "lower")).toBe(2);
+    expect(landStepTarget(m, { x: 2, y: 0 }, "lower")).toBe(0);
+    expect(landStepTarget(m, { x: 1, y: 0 }, "lower")).toBe(0);
+    expect(landStepTarget(m, { x: 0, y: 0 }, "lower")).toBe("water");
   });
 });
