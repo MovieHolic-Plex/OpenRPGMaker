@@ -494,7 +494,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       }),
       el("div", {
         class: "ai-composer-actions-trail",
-        children: [options.statusGroup, spendChip, options.sendButton, options.abortButton],
+        children: [options.statusGroup, options.sendButton, options.abortButton],
       }),
     ],
   });
@@ -521,6 +521,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       ...(teamMenu ? [teamMenu.root] : []),
       ...(options.contextMeterPopover ? [options.contextMeterPopover] : []),
       composer,
+      // 사용량은 입력창 밖의 작은 메타 줄이다 — 칩 줄과 같은 행에 두면 좁은 폭에서 겹쳤다.
+      spendChip,
     ],
   });
 
