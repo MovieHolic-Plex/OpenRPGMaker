@@ -87,9 +87,17 @@ export function buildReliefOps(spec: ReliefOpsSpec, base?: HeightGrid): { h: Hei
       case "mountain": case "ridge": {
         const path = o.op === "mountain" ? [o.at] : o.path, top = o.op === "mountain" ? o.peak : o.h;
         const sl = o.slope || 2, wd = o.op === "ridge" ? (o.width || 1) / 2 : 0, r = o.rough ?? 0.3;
+        // 지형 리뷰 F6: 거리에 작은 노이즈만 더하면 단마다 같은 간격의 동심 고리(등고선)가 된다.
+        // 낮은 주파수로 좌표를 비틀고(윤곽 흔들기), 비탈 간격을 자리마다 바꿔(한쪽은 가파르고 한쪽은 완만) 고리 간격을 깨뜨린다.
+        const wx = vnoise(W, H, 7, seed * 41 + n * 3), wy = vnoise(W, H, 7, seed * 43 + n * 5), sp = vnoise(W, H, 9, seed * 47 + n * 11);
+        const warp = (0.6 + r) * sl * 2, phase = (hsh3(seed, n, 97) % 628) / 100;
         for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-          const d = Math.max(0, segDist(x, y, path) - wd) + (nz(x, y) - 0.5) * r * sl * 3;
-          const v = top - Math.floor(Math.max(0, d) / sl);
+          const px = x + (wx(x, y) - 0.5) * warp, py = y + (wy(x, y) - 0.5) * warp;
+          // 봉우리 둘레로 세 갈래 굴곡(능선·골) — 노이즈가 우연히 고를 때도 고리 간격이 방향마다 달라진다.
+          const lobe = o.op === "mountain" ? 0.5 + 0.5 * Math.sin(3 * Math.atan2(py - o.at[1], px - o.at[0]) + phase) : sp(x, y);
+          const step = sl * (0.6 + 0.7 * (0.55 * lobe + 0.45 * sp(x, y)));
+          const d = Math.max(0, segDist(px, py, path) - wd) + (nz(x, y) - 0.5) * r * sl * 3;
+          const v = top - Math.floor(Math.max(0, d) / step);
           if (v > 0) put(x, y, v, "max");
         }
         break;

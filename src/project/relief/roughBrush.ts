@@ -58,7 +58,7 @@ export function roughReliefStroke(r: ReliefData, cx: number, cy: number, mode: R
   const R = Math.max(1, opts.radius);
   if (mode === "smooth" || mode === "rough") return brushRelief(r, cx, cy, mode, { radius: R });
   const cap = clamp(opts.cap), base = clamp(opts.base), peak = clamp(opts.peak);
-  const span = Math.abs(peak - base) * TIER_WIDTH + TIER_WIDTH;
+  const span = Math.ceil(Math.abs(peak - base) * TIER_WIDTH * 1.5) + TIER_WIDTH;
   const reach = Math.ceil(R * 1.3) + span;
   let changed = false;
   for (let y = cy - reach; y <= cy + reach; y++) {
@@ -68,7 +68,10 @@ export function roughReliefStroke(r: ReliefData, cx: number, cy: number, mode: R
       // 덩이 모양: 거리에 노이즈를 곱해 원이 아니라 울퉁불퉁한 덩이로.
       const d = Math.hypot(x - cx, y - cy) * (0.8 + 0.45 * reliefValueNoise(x + 31, y + 17, 5, 11));
       const out = Math.max(0, d - R);
-      const tier = out <= 0 ? 0 : Math.ceil((out + 1.2 * reliefValueNoise(x + 77, y + 5, 5, 23)) / TIER_WIDTH);
+      // 지형 리뷰 F6: 비탈 폭이 어디서나 3칸이면 단마다 같은 간격의 팔각 고리(등고선)가 된다.
+      // 낮은 주파수 노이즈로 폭을 자리마다 1.5~4.5칸으로 바꿔 한쪽은 가파르고 한쪽은 완만하게 한다.
+      const tierWidth = TIER_WIDTH * (0.5 + reliefValueNoise(x + 203, y + 97, 9, 41));
+      const tier = out <= 0 ? 0 : Math.ceil((out + 1.2 * reliefValueNoise(x + 77, y + 5, 5, 23)) / tierWidth);
       const drop = reliefValueNoise(x + 140, y + 60, 11, 37) > CLIFF_NOISE ? 2 : 1;
       let v = c;
       if (mode === "raise" || mode === "mountain") {

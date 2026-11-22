@@ -443,7 +443,7 @@ export class TilePaintEngine {
   }
 
   private applyRoughAt(rough: ReliefRoughStroke, x: number, y: number): void {
-    const reach = Math.ceil(rough.radius * 1.3) + Math.abs(rough.peak - this.reliefStrokeBase) * 3 + 3;
+    const reach = Math.ceil(rough.radius * 1.3) + Math.ceil(Math.abs(rough.peak - this.reliefStrokeBase) * 4.5) + 3;
     rough.box = {
       x0: Math.min(rough.box.x0, x - reach), y0: Math.min(rough.box.y0, y - reach),
       x1: Math.max(rough.box.x1, x + reach), y1: Math.max(rough.box.y1, y + reach),
