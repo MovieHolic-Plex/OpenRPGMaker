@@ -107,7 +107,7 @@ export interface EditorState {
   terrainLandSize: import("./terrainLandBrush").TerrainLandSize;
   /** 「땅 올리기」「땅 내리기」 — 끌기 첫 칸보다 한 층(2단) 높게·낮게 맞춘다. null 이면 terrainLand 그대로. */
   terrainLandStep: "raise" | "lower" | null;
-  /** 「한 번에」 프리셋 붓 — 고른 동안 맵 클릭 한 번이 언덕·강·오솛길 하나를 깔다. */
+  /** 「한 번에」 프리셋 붓 — 고른 동안 맵 클릭 한 번이 언덕·강·오솔길 하나를 깐다. */
   terrainPreset: import("./terrainPresets").TerrainPreset | null;
   terrainLandRect: { mapId: string; start: { x: number; y: number }; end: { x: number; y: number } } | null;
   terrainDesignOpen: boolean;

@@ -19,12 +19,12 @@ const GUIDES: readonly Guide[] = [
     id: "start", title: "만드는 순서",
     intro: "큰 지형을 먼저 잡고, 걸어 다닐 길을 연결한 뒤 건물과 소품을 놓으세요.",
     steps: [
-      { icon: "height", title: "1. 지형의 높낮이 잡기", text: "지형 → 높이 올리기나 산으로 언덕을 만들고, 평탄으로 윗면을 고르세요. 다듬기로 가장자리를 정리합니다. 크기는 S~XL, Shift는 작은 정밀 붓입니다." },
-      { icon: "doodad", title: "2. 오르내릴 경사로 연결", text: "지형지물 → 경사로를 고르고 절벽 가장자리에 대세요. 초록 미리보기면 배치할 수 있습니다. 폭 2·4·6칸을 고를 수 있고, 연결할 수 없으면 이유가 표시됩니다." },
-      { icon: "river", title: "3. 물과 바닥 칠하기", text: "강은 끌어서 그리고, 표면으로 풀·흙·돌을 칠하세요. 큰 호수는 지형 설계 → 호수·해안에서 외곽을 찍고 적용합니다." },
-      { icon: "house", title: "4. 길과 마을 놓기", text: "도로를 끌어 기존 길과 연결하고 집을 드래그해 크기를 정하세요. 나무·바위는 지형지물에서 군집으로 배치합니다. 마지막에 통행 미리보기로 길이 이어졌는지 확인하세요." },
+      { icon: "height", title: "1. 언덕 만들기", text: "도구에서 땅 올리기를 고르고 맵에서 끌세요. 한 획이 한 층이고, 오른쪽 버튼은 땅 내리기입니다. 붓 크기는 1·3·5·7칸, [ ] 로 바꿉니다. 한 번에 → 언덕 하나는 경사로까지 한 번에 놓습니다." },
+      { icon: "doodad", title: "2. 오르내릴 경사로 연결", text: "경사로 붙이기를 누르고 낮은 땅 가장자리를 클릭하세요. 끌면 폭을 정합니다. 연결할 수 없으면 이유가 표시됩니다." },
+      { icon: "river", title: "3. 물·길·숲", text: "물·길은 끌어서 그리고, 숲은 누를 때마다 나무 무리를 심습니다. 지우개는 평평한 풀밭으로 돌립니다. 한 번에 → 강 하나·오솔길도 있습니다." },
+      { icon: "house", title: "4. 통행 확인과 고급", text: "통행 보기를 켜서 초록(걸어서 닿음)과 빨강(못 닿음)을 확인하세요. 산·골짜기·바닥 칠·집·설계 같은 세부 도구는 「고급」을 펼치면 있습니다." },
     ],
-    note: "아래 줄은 도구 선택, 그 위는 현재 도구의 설정입니다. 아이콘에 잠시 마우스를 두거나 키보드로 초점을 옮기면 이름이 보입니다.",
+    note: "위는 기본 도구(땅 올리기·땅 내리기·물·길·숲·지우개), 아래 「고급」은 세부 도구입니다. 틀리면 Ctrl+Z.",
   },
   {
     id: "land", title: "높이·물·숲",
@@ -76,7 +76,7 @@ export function openTerrainHelpModal(opener: HTMLElement): () => void {
     children: [el("section", { class: "help-modal-window terrain-help-window", attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "terrain-help-title" }, children: [
       el("header", { class: "help-modal-titlebar", children: [el("div", { class: "help-modal-titles", children: [el("h2", { text: "지형 만들기", attrs: { id: "terrain-help-title" } }), el("p", { class: "help-modal-subtitle", text: "언덕부터 마을까지 · 도구와 만드는 순서" })] }), closeButton] }),
       nav, body,
-      el("footer", { class: "help-modal-footer", children: [el("span", { class: "terrain-help-shortcuts", text: "Shift 정밀 붓 · Enter 적용 · Esc 취소 · Ctrl+Z 되돌리기" })] }),
+      el("footer", { class: "help-modal-footer", children: [el("span", { class: "terrain-help-shortcuts", text: "[ ] 붓 크기 · Shift+끌기 사각형 · Enter 적용 · Esc 취소 · Ctrl+Z 되돌리기" })] }),
     ] })],
   });
   const show = (guide: Guide): void => {

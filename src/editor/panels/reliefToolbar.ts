@@ -67,6 +67,14 @@ const STYLE_LABELS: Readonly<Record<string, string>> = {
 };
 
 
+const TERRAIN_GUIDE_KEY = "oprn.terrainGuide.v1";
+function terrainGuideSeen(): boolean {
+  try { return globalThis.localStorage?.getItem(TERRAIN_GUIDE_KEY) === "seen"; } catch { return false; }
+}
+function markTerrainGuideSeen(): void {
+  try { globalThis.localStorage?.setItem(TERRAIN_GUIDE_KEY, "seen"); } catch { /* 저장소를 못 쓰면 이번 창에서만 닫힌다 */ }
+}
+
 /** 패널 맨 위 기본 도구(땅 올리기·땅 내리기·물·길·숲·지우개). */
 type MainTerrainTool = "raise" | "lower" | "water" | "road" | "forest" | "erase";
 
@@ -414,7 +422,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     mainButtons.set(tool.id, button);
     mainGrid.append(button);
   }
-  // 한 번에: 프리셋을 고르고 맵을 한 번 누르면 언덕 하나·강 하나·오솛길이 깔린다(terrainPresets.ts).
+  // 한 번에: 프리셋을 고르고 맵을 한 번 누르면 언덕 하나·강 하나·오솔길이 깔린다(terrainPresets.ts).
   const presetButtons = new Map<TerrainPreset, HTMLButtonElement>();
   const presetRow = el("div", { class: "relief-preset-row", attrs: { role: "group", "aria-label": "한 번에" } });
   for (const preset of TERRAIN_PRESETS) {
@@ -591,6 +599,25 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       }),
     ],
   });
+  // 처음 열 때만 보이는 3단계 안내 카드. 화면을 덮는 코치 마크가 아니라 패널 안 글이고, 닫으면 다시 뜨지 않는다.
+  const guide = el("section", {
+    class: "relief-first-guide", dataset: { testid: "terrain-first-guide" },
+    attrs: { "aria-label": "지형 처음 쓰기" },
+    children: [
+      el("b", { text: "처음이세요? 세 단계면 됩니다" }),
+      el("ol", { children: [
+        el("li", { text: "아래 도구에서 「땅 올리기」를 고릅니다" }),
+        el("li", { text: "맵에서 끌면 언덕이 생깁니다" }),
+        el("li", { text: "「경사로 붙이기」로 오를 길을 냅니다. 틀리면 Ctrl+Z" }),
+      ] }),
+      el("button", {
+        class: "btn relief-first-guide-close", text: "알겠어요",
+        attrs: { type: "button" }, dataset: { testid: "terrain-first-guide-close" },
+        on: { click: () => { guide.hidden = true; markTerrainGuideSeen(); } },
+      }),
+    ],
+  });
+  guide.hidden = terrainGuideSeen();
   // 고급: 처음 쓰는 사람에게 필요 없는 도구는 접어 둔다. 닫힌 채 시작하고, 열린 상태는 패널이 살아 있는 동안 유지한다.
   const advancedSection = el("details", {
     class: "relief-advanced", dataset: { testid: "terrain-advanced" },
@@ -609,6 +636,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     children: [
       sideHeader,
       el("p", { class: "relief-side-description", text: "도구를 고르고 맵에서 끌면 절벽과 물가는 저절로 생깁니다." }),
+      guide,
       mainTools,
       rampQuickAction,
       reachRow,
