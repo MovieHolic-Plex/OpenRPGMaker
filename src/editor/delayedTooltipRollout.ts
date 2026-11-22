@@ -19,7 +19,7 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "나무 고르기", name: "나무·바위 무리 고르기", testid: "terrain-tool-group" },
   { label: "집", name: "집", testid: "terrain-tool-house" },
   { label: "길", name: "길", testid: "terrain-tool-road" },
-  { label: "경사로·나무·다리", name: "경사로·나무·다리 고르기 (D)", testid: "relief-doodad-toggle" },
+  { label: "경사로·다리", name: "경사로·다리·나무·바위 고르기 (D)", testid: "relief-doodad-toggle" },
   { label: "지형 설계", name: "지형 설계", testid: "terrain-design-toggle" },
   { label: "통행 보기", name: "통행 미리보기", testid: "terrain-reachability" },
   { label: "도움말", name: "지형 도움말", testid: "terrain-help-toggle" },
