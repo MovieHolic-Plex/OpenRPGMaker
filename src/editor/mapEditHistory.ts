@@ -5,6 +5,7 @@ import { hasChangedWorkingEventDraft, store, type ProjectChangeAnnotation, type 
 import { canWriteTeamProject } from "@/project/teamAccess";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { jsonEqual } from "@/util/structuralJson";
+import { reliefChangedCells, type ReliefChangeCell } from "@/project/relief/changes";
 import { applyProjectDocumentPatch, type ProjectDocumentPatch } from "@/project/persistence/core/projectPatch";
 
 const MAX_HISTORY = 50;
@@ -312,12 +313,26 @@ function applyHistoryJump(snapshots: readonly HistorySnapshot[], commit: (before
   return applied;
 }
 
-/** Only dense base-layer edits qualify. Every other map shape uses full restoration. */
-function restoredTileCells(current: GameMap | undefined, restored: GameMap): ProjectChangeCell[] | undefined {
+type RestoredCells = { readonly cells: ProjectChangeCell[]; readonly reliefCells?: readonly ReliefChangeCell[] };
+
+/**
+ * Only dense base-layer and height edits qualify. Every other map shape uses full restoration.
+ * 지형 리뷰 F8: 높이 붓 획을 되돌리면 store.replace 가 relief 를 맵 전체 다시 굽기해 120×120 에서 2초 멈춘다.
+ * 높이만(같은 양식) 달라진 칸은 붓 획과 같은 부분 갱신(reliefCells)으로 돌려놓는다.
+ */
+function restoredTileCells(current: GameMap | undefined, restored: GameMap): RestoredCells | undefined {
   if (!current || current.width !== restored.width || current.height !== restored.height) return undefined;
-  const { lowerTiles: lowerBefore, upperTiles: upperBefore, ...beforeRest } = current;
-  const { lowerTiles: lowerAfter, upperTiles: upperAfter, ...afterRest } = restored;
+  const { lowerTiles: lowerBefore, upperTiles: upperBefore, relief: reliefBefore, ...beforeRest } = current;
+  const { lowerTiles: lowerAfter, upperTiles: upperAfter, relief: reliefAfter, ...afterRest } = restored;
   if (!jsonEqual(beforeRest, afterRest)) return undefined;
+  let reliefCells: ReliefChangeCell[] | undefined;
+  if (!jsonEqual(reliefBefore, reliefAfter)) {
+    const { levels: _a, ramps: _b, wallDecor: _c, ...reliefRestBefore } = reliefBefore ?? { levels: [] };
+    const { levels: _d, ramps: _e, wallDecor: _f, ...reliefRestAfter } = reliefAfter ?? { levels: [] };
+    if (reliefBefore && reliefAfter && !jsonEqual(reliefRestBefore, reliefRestAfter)) return undefined;
+    reliefCells = reliefChangedCells(reliefBefore, reliefAfter, restored.width, restored.height);
+    if (!reliefCells?.length) return undefined;
+  }
   const cells: ProjectChangeCell[] = [];
   for (const [layer, before, after] of [
     ["lower", lowerBefore, lowerAfter],
@@ -331,7 +346,8 @@ function restoredTileCells(current: GameMap | undefined, restored: GameMap): Pro
       if (cells.length > 4096) return undefined;
     }
   }
-  return cells.length ? cells : undefined;
+  if (reliefCells) return { cells, reliefCells };
+  return cells.length ? { cells } : undefined;
 }
 
 function replaceWithSnapshot(snapshot: HistorySnapshot): void {
@@ -340,11 +356,12 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
   // A vaulted draft may restore an event during replacement, so it needs the
   // full project notification. Locked terrain also retains the existing restore
   // semantics rather than passing through painting's lock enforcement.
-  const cells = snapshot.kind === "map" && !snapshot.beforeTilesets
+  const restored = snapshot.kind === "map" && !snapshot.beforeTilesets
     && !map?.terrainDesign?.lockedCells?.length && !hasEventDraftVaultEntries()
     ? restoredTileCells(map, snapshot.before)
     : undefined;
-  if (cells && snapshot.kind === "map") {
+  if (restored && snapshot.kind === "map") {
+    const { cells, reliefCells } = restored;
     // Copy-on-write tile adoption keeps unrelated maps and persistence baselines
     // intact, and emits the same cell descriptor as the original paint stroke.
     store.updateMapTiles(snapshot.mapId, draft => {
@@ -353,7 +370,11 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
         if (cell.layer === "lower") draft.lowerTiles[index] = snapshot.before.lowerTiles[index];
         else draft.upperTiles[index] = snapshot.before.upperTiles[index];
       }
-    }, { cells });
+      if (reliefCells) {
+        if (snapshot.before.relief) draft.relief = structuredClone(snapshot.before.relief);
+        else delete draft.relief;
+      }
+    }, reliefCells ? { cells, relief: true, reliefCells } : { cells });
     return;
   }
   store.replace(applySnapshotToProject(current, snapshot));
