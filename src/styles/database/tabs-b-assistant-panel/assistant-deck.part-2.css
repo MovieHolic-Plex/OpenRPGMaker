@@ -376,19 +376,27 @@
   border-radius: 10px;
 }
 
+/* 지난 턴 머리는 버튼 상자가 아니라 한 줄 요약 머리다 — 회색 바탕 없이 글자(▸ 요청 요약)만, 길면 말줄임.
+   펼친 뒤의 왼쪽 선은 09-ux-polish-density.css 가 그린다. */
 .ai-chat-log .ai-turn-group-toggle {
-  background: var(--bg-inset);
+  background: transparent;
   border: 0;
-  border-radius: 10px;
-  color: var(--text-2);
-  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  border-radius: 0;
+  color: var(--text-3);
+  font-size: calc(12px * var(--ai-font-scale, 1));
   font-weight: 500;
-  padding: 8px 12px;
+  overflow: hidden;
+  padding: 4px 2px;
   text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.ai-chat-log .ai-turn-group-toggle:hover {
+.ai-chat-log .ai-turn-group-toggle:hover,
+.ai-chat-log .ai-turn-group-toggle:focus-visible {
+  background: transparent;
   color: var(--text-1);
+  text-decoration: underline;
 }
 
 /* 날짜 구분선 */
