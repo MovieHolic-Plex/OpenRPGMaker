@@ -55,6 +55,7 @@ import {
 import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting, MapBgsSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
+import { tilesetSwitchImpact, tilesetSwitchMessage, tilesetSwitchNeedsConfirm } from "@/editor/tilesetSwitchImpact";
 import { toast } from "@/util/toast";
 
 function roleLabel(role: MapRole): string {
@@ -364,8 +365,24 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
     attrs: { "aria-label": `${map.name} 타일 그림판` },
     dataset: { testid: "map-props-tileset-select" },
     on: {
-      change: (e: Event) => {
-        setMapTileset(map.id, (e.target as HTMLSelectElement).value);
+      change: async (e: Event) => {
+        const select = e.target as HTMLSelectElement;
+        const project = store.getCurrent();
+        const fresh = project.maps[map.id];
+        const next = project.tilesets[select.value];
+        if (!fresh || !next) return;
+        const impact = tilesetSwitchImpact(fresh, project.tilesets[fresh.tilesetId], next);
+        if (tilesetSwitchNeedsConfirm(impact) && !await showConfirm({
+          title: "칩셋을 바꿀까요?",
+          message: tilesetSwitchMessage(impact, next.name ?? next.id),
+          confirmLabel: "바꾸기",
+          danger: true,
+        })) {
+          select.value = fresh.tilesetId;
+          select.dispatchEvent(new Event("input"));
+          return;
+        }
+        setMapTileset(map.id, next.id);
       },
     },
   }) as HTMLSelectElement;
