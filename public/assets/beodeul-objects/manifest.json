@@ -189,6 +189,56 @@
       "id": "city_beach",
       "labelKo": "해변·물놀이",
       "order": 380
+    },
+    {
+      "id": "city_arcade",
+      "labelKo": "오락실·노래방",
+      "order": 390
+    },
+    {
+      "id": "city_books",
+      "labelKo": "서점·신문 가판대",
+      "order": 400
+    },
+    {
+      "id": "city_hair",
+      "labelKo": "이발소·미용실",
+      "order": 410
+    },
+    {
+      "id": "city_food",
+      "labelKo": "라멘집·포장마차·이자카야",
+      "order": 420
+    },
+    {
+      "id": "city_optical",
+      "labelKo": "안경점·시계점",
+      "order": 430
+    },
+    {
+      "id": "city_electronics",
+      "labelKo": "휴대폰·전자제품 매장",
+      "order": 440
+    },
+    {
+      "id": "city_repairs",
+      "labelKo": "수선집·정비소",
+      "order": 450
+    },
+    {
+      "id": "city_toys",
+      "labelKo": "장난감·문구점",
+      "order": 460
+    },
+    {
+      "id": "city_wedding",
+      "labelKo": "결혼식장",
+      "order": 470
+    },
+    {
+      "id": "city_recycling_center",
+      "labelKo": "재활용 센터",
+      "order": 480
     }
   ],
   "sets": [
@@ -405,7 +455,8 @@
       "id": "city_hedge_chainlink_fence",
       "role": "fence",
       "requiredPieces": [
-        "h_straight"
+        "h_straight",
+        "corner"
       ]
     },
     {
@@ -429,7 +480,8 @@
       "id": "city_hedge_iron_fence",
       "role": "fence",
       "requiredPieces": [
-        "h_straight"
+        "h_straight",
+        "post"
       ]
     },
     {
@@ -461,6 +513,22 @@
       "requiredPieces": [
         "corner",
         "h_straight"
+      ]
+    },
+    {
+      "id": "city_manho_drain_channel",
+      "role": "terrain",
+      "requiredPieces": [
+        "corner",
+        "h_straight",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "city_rivbr_weir",
+      "role": "water",
+      "requiredPieces": [
+        "gate_small"
       ]
     }
   ]
