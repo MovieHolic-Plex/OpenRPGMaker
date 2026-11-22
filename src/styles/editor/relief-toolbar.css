@@ -44,6 +44,10 @@
 .relief-preset:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default)); }
 .relief-preset.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); }
 .relief-preset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* 처음 열 때만 보이는 3단계 안내(패널 안 글, 닫으면 끝) */
+.relief-first-guide { display: grid; gap: 6px; padding: 10px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border-default)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised)); font: 500 12px/1.4 var(--font-ui); color: var(--text-1); }
+.relief-first-guide ol { margin: 0; padding-left: 18px; display: grid; gap: 2px; word-break: keep-all; }
+.relief-first-guide-close { justify-self: end; }
 /* 통행 보기 + 항상 보이는 범례 */
 .relief-reach-row { display: grid; gap: 6px; }
 .relief-reach-toggle { display: inline-flex; align-items: center; gap: 6px; justify-self: start; }
