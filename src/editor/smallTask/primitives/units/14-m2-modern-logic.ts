@@ -5,12 +5,20 @@ import { EventCommandEditError, eventCommandHash, insertEventCommand, updateEven
 import type { M2CommandFields } from "@/project/types";
 import { commandListAt, insertAtIndex, koreanSentence, scopedPage, updateScopedPage } from "../core/helpers";
 import { PrimitiveError, STALE_COMMAND_LIST } from "../errors";
+import type { SmallTaskUnitHost } from "../host";
 import type { PrimitiveContext, SmallTaskPrimitive } from "../types";
 import { PRIMITIVES as movementPrimitives } from "./09-cmd-move-system";
 import { ROWS, type ModernLogicRow } from "./14-m2-modern-logic/rows";
 import { validateRecordEdit } from "./14-m2-modern-logic/recordReferences";
 
 export const UNIT = "14-m2-modern-logic";
+
+export const host: SmallTaskUnitHost = {
+  onM2CommandDelete(ctx, commandId, list, index, command) {
+    if (command.kind !== "m2Command") return;
+    validateRecordEdit(ctx, commandId, list, index, command, undefined);
+  },
+};
 
 const insertIndex: JsonSchema = { type: "integer", minimum: 0, description: "추가할 위치입니다. 첫 줄은 0이고, 생략하면 목록 끝에 넣습니다." };
 const branchPathSchema: JsonSchema = { type: "array", items: { type: "integer" }, description: "분기 안의 줄이면 이벤트를 읽을 때 받은 분기 경로를 입력합니다." };

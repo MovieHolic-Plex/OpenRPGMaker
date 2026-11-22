@@ -222,7 +222,13 @@ it.each([
   };
   const primitive = PRIMITIVES.find(entry => entry.id === id)!;
   const scope = primitive.scope({ project, target: mapTarget(project) }, { record: selectedId });
-  expect(scope).toEqual({ kind: "projectArea", area, ids: [selectedId] });
+  const bound = {
+    "switch.rename": { fields: ["name"] },
+    "variable.rename": { fields: ["name"] },
+    "ending.update": { fields: ["name", "priority", "conditions"] },
+    "ending.remove": { remove: true },
+  } as const;
+  expect(scope).toEqual({ kind: "projectArea", area, ids: [selectedId], ...bound[id] });
   const records = project[area];
   const outside = { ...project, [area]: records.map(row => row.id === selectedId ? row : { ...row, name: "다른 변경" }) };
   expect(checkSmallTaskScope(project, outside, scope)).toMatchObject({ ok: false });

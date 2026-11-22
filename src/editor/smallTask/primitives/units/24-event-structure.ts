@@ -314,6 +314,16 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       }
       return replaceEvents(ctx.project, map, [...map.events, event]);
     },
+    reviseRegionBaseline(baseline, applied, before, mapId) {
+      const previousIds = new Set(before.maps[mapId].events.map(event => event.id));
+      const added = applied.maps[mapId].events.find(event => !previousIds.has(event.id));
+      if (!added) return baseline;
+      const map = baseline.maps[mapId];
+      return {
+        ...baseline,
+        maps: { ...baseline.maps, [mapId]: { ...map, events: [...map.events, structuredClone(added)] } },
+      };
+    },
   },
   {
     id: "event.page.add", unit: UNIT, title: "페이지 추가", covers: { tools: ["add_event_page"] },

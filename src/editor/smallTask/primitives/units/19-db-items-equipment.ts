@@ -142,7 +142,7 @@ function scopeFor(ctx: PrimitiveContext, collection: Collection, edit: Edit, arg
   return {
     kind: "dbEntries",
     entries: edit === "create" || implicitSlot ? [] : [{ collection, id }],
-    ...(createsRow ? { create: { collection, max: 1 } } : {}),
+    ...(createsRow ? { create: { collection, max: 1, ...(implicitSlot ? { ids: [id] } : {}) } } : {}),
     ...(edit === "delete" ? { remove: true } : {}),
   };
 }

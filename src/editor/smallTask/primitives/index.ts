@@ -1,5 +1,6 @@
 import type { SmallTaskPrimitive } from "./types";
 import { CORE_PRIMITIVES } from "./core/commands";
+import { collectSmallTaskHost } from "./host";
 import * as unit01 from "./units/01-cmd-dialogue";
 import * as unit02 from "./units/02-cmd-flow";
 import * as unit03 from "./units/03-cmd-switch-var";
@@ -41,4 +42,5 @@ export const PRIMITIVE_UNITS = [
 
 export const PRIMITIVES: readonly SmallTaskPrimitive[] = [...CORE_PRIMITIVES, ...PRIMITIVE_UNITS.flatMap<SmallTaskPrimitive>(unit => unit.PRIMITIVES)];
 
-export const commandDeletionGuard = unit02.assertFlowCommandDeletion;
+export const smallTaskHost = collectSmallTaskHost(PRIMITIVE_UNITS);
+export const commandDeletionGuard = smallTaskHost.commandDeletionGuard;

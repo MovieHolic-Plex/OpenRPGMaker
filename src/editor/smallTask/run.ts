@@ -6,9 +6,9 @@ import { editorState } from "@/editor/editorState";
 import { commitChangeset } from "@/editor/tools/changeset";
 import type { Project } from "@/project/types";
 import {
-  LOCATION_DELETION_DRAFT_REFUSAL, MAP_REMOVAL_DRAFT_REFUSAL, MAP_REMOVAL_REFERENCE_REFUSAL,
   SAVE_QUEST_EVENT_FIRST, SELECT_EVENT_PAGE, STALE_COMMAND_LIST,
 } from "./primitives/errors";
+import { smallTaskHost } from "./primitives";
 import { SMALL_TASK_SCOPE_REFUSAL } from "./tools";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
@@ -36,19 +36,12 @@ export async function runSmallTask(before: Project, target: SmallTaskTarget, req
   }, { signal });
   signal.throwIfAborted();
   if (!result.smallTask) throw new Error("Pi worker did not acknowledge the small-task scope");
-  const savedMapRefusal = result.stoppedEarly?.startsWith(MAP_REMOVAL_REFERENCE_REFUSAL);
-  const mapDraftRefusal = live && result.stoppedEarly?.startsWith(MAP_REMOVAL_DRAFT_REFUSAL);
-  const locationRefusal = live && result.stoppedEarly?.startsWith(LOCATION_DELETION_DRAFT_REFUSAL) ? result.stoppedEarly : undefined;
-  if (target.kind === "map" && (savedMapRefusal || mapDraftRefusal || locationRefusal)) {
-    const { locationDeletionDraftError, mapRemovalDraftError, mapRemovalReferenceError } = await import("./primitives/units/23-map-structure/maps");
-    signal.throwIfAborted();
-    // The worker appends the location ID after its explanation. Rebuild the visible message from the local draft.
-    const locationId = locationRefusal?.match(/\n([\s\S]+)$/u)?.[1];
-    const message = savedMapRefusal ? mapRemovalReferenceError(before, target.mapId)
-      : mapDraftRefusal && live ? mapRemovalDraftError(before, target.mapId, live)
-      : locationId && locationDeletionDraftError(before, target.mapId, locationId, live);
-    if (message) throw new SmallTaskError(message);
-  }
+  signal.throwIfAborted();
+  // The worker appends a location id after its explanation. Units rebuild the visible message from the local draft.
+  const explained = result.stoppedEarly
+    ? smallTaskHost.explainRefusal({ stoppedEarly: result.stoppedEarly, before, target, live })
+    : undefined;
+  if (explained) throw new SmallTaskError(explained);
   if (result.stoppedEarly?.split("\n", 1)[0] === SAVE_QUEST_EVENT_FIRST) throw new SmallTaskError(SAVE_QUEST_EVENT_FIRST);
   if (result.stoppedEarly && (result.smallTaskPrimitiveRefused || result.stoppedEarly === SMALL_TASK_SCOPE_REFUSAL
     || result.stoppedEarly === STALE_COMMAND_LIST || result.stoppedEarly === SELECT_EVENT_PAGE)) {

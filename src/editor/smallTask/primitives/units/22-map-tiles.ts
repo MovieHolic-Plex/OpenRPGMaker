@@ -78,6 +78,10 @@ function primitive(
   return { id, unit: UNIT, title, covers: { tools: [tool] }, targets: ["map"], args, scope, describe, apply };
 }
 
+function withReferenceGate(primitive: SmallTaskPrimitive): SmallTaskPrimitive {
+  return { ...primitive, referenceGateTool: "paint_tiles" };
+}
+
 function userError(cause: unknown, message: string): never {
   if (cause instanceof ToolError) throw new PrimitiveError(message);
   throw cause;
@@ -313,10 +317,10 @@ function shift(ctx: PrimitiveContext, args: Record<string, unknown>) {
 }
 
 export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
-  primitive("map.tile.paint", "paint_tiles", "타일 칠하기",
+  withReferenceGate(primitive("map.tile.paint", "paint_tiles", "타일 칠하기",
     schema({ ...coords, tile, layer: paintLayer, referencePurpose }, ["x", "y", "tile"]),
     () => "지정한 칸에 타일을 칠해요.",
-    (ctx, args) => paint(ctx, args, paintCell(ctx, args).rect), paintCell),
+    (ctx, args) => paint(ctx, args, paintCell(ctx, args).rect), paintCell)),
   primitive("map.tile.erase", "tile_erase", "타일 지우기",
     schema({ layer: choice(["1", "2", "3", "4", "shadow", "all"],
       "기본은 3층과 4층이에요. 1은 바닥을 채우고 2층을 지워요. 3은 3층과 4층을 지워요. shadow는 그림자, all은 바닥 복원과 나머지 층 지우기예요.") }, []),
@@ -327,9 +331,9 @@ export const PRIMITIVES: readonly SmallTaskPrimitive[] = [
       return args.layer === "2" || args.layer === "4" ? `선택한 영역의 ${args.layer}층 타일을 지워요.`
         : "선택한 영역의 3층과 4층 타일을 지워요.";
     }, erase),
-  primitive("map.region.fill", "fill_region", "영역 채우기",
+  withReferenceGate(primitive("map.region.fill", "fill_region", "영역 채우기",
     schema({ tile, layer: paintLayer, referencePurpose }, ["tile"]),
-    () => "선택한 영역을 같은 타일로 채워요.", (ctx, args) => paint(ctx, args)),
+    () => "선택한 영역을 같은 타일로 채워요.", (ctx, args) => paint(ctx, args))),
   primitive("map.object.stamp", "stamp_object", "물건 찍기",
     schema({ objectId: { type: "string", minLength: 1, description: "현재 맵 타일셋에서 고른 물건의 식별자예요." }, ...coords }, ["objectId"]),
     () => "선택한 영역에 물건을 놓아요.", stamp, stampScope),

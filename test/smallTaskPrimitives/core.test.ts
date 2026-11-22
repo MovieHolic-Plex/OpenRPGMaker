@@ -2,6 +2,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { CORE_PRIMITIVES } from "@/editor/smallTask/primitives/core/commands";
+import { PRIMITIVES as equipmentPrimitives } from "@/editor/smallTask/primitives/units/19-db-items-equipment";
 import { eventName, insertAtIndex, koreanSentence, mapName, recordName } from "@/editor/smallTask/primitives/core/helpers";
 import { primitiveScope } from "@/editor/smallTask/primitives/core/scope";
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
@@ -202,11 +203,12 @@ it("자료집 범위를 호스트의 레코드에 고정하고 기본 장비 칸
   delete before.database.equipmentSlots;
   const target = { kind: "dbEntry", collection: "equipmentSlots", id: "weapon", label: "무기" } as const;
   const ctx = { project: before, target };
-  const update = { ...CORE_PRIMITIVES[0]!, id: "db.equipmentSlots.update",
-    scope: () => ({ kind: "dbEntries", entries: [], create: { collection: "equipmentSlots", max: 1 } } as const) };
-  expect(primitiveScope(ctx, update, { label: "무기 손" })).toMatchObject({ create: { ids: ["weapon"] } });
+  const update = equipmentPrimitives.find(row => row.id === "db.equipmentSlots.update")!;
+  expect(primitiveScope(ctx, update, { label: "무기 손" })).toMatchObject({
+    create: { collection: "equipmentSlots", max: 1, ids: ["weapon"] },
+  });
   before.database.equipmentSlots = [{ id: "weapon", label: "무기" }];
-  expect(primitiveScope(ctx, update, { label: "무기 손" })).toMatchObject({ create: { ids: ["weapon"] } });
+  expect(primitiveScope(ctx, update, { label: "무기 손" }).create).toBeUndefined();
   const wrongRow = { ...update, scope: () => ({ kind: "dbRemove", collection: "equipmentSlots", id: "helmet" } as const) };
   expect(() => primitiveScope(ctx, wrongRow, {})).toThrow(/선택한 자료집 항목/u);
 });

@@ -566,7 +566,10 @@ function setReward(project: Project, quest: AnyQuestDef, args: Args): QuestDef {
 }
 
 function primitive(id: string, title: string, spec: Pick<SmallTaskPrimitive, "args" | "describe" | "apply" | "scope" | "hidden">): SmallTaskPrimitive {
-  return { id, unit: UNIT, title, covers: { tools: [id] }, targets: ["map", "event"], ...spec };
+  return {
+    id, unit: UNIT, title, covers: { tools: [id] }, targets: ["map", "event"], ...spec,
+    reviseRegionBaseline: (baseline, applied) => ({ ...baseline, quests: applied.quests }),
+  };
 }
 
 const objectiveFields = { label: LABEL, switchId: SWITCH, objective: OBJECTIVE };

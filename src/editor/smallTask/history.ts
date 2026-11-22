@@ -7,11 +7,7 @@ import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { PrimitiveError } from "./primitives/errors";
-import { assertActorClassDraftChanges } from "./primitives/units/17-db-actors-classes";
-import { assertUnit20DraftReferences } from "./primitives/units/20-db-enemies-troops/references";
-import { mapRemovalDraftError } from "./primitives/units/23-map-structure/maps";
-import { assertProjectDataDraftReferences } from "./primitives/units/28-project-data";
-import { refuseReferencedRemoval } from "./primitives/units/30-common-events/validation";
+import { smallTaskHost } from "./primitives";
 import { SmallTaskError, type SmallTaskTarget } from "./target";
 
 function withEvent(project: Project, mapId: string, event: GameEvent): Project {
@@ -54,12 +50,14 @@ function draftReferencesNewDatabaseRows(live: Project, before: Project, after: P
 export function commitSmallTask(live: Project, before: Project, after: Project, target: SmallTaskTarget) {
   if (store.getCurrent() !== live) throw new SmallTaskError("작업 중 프로젝트가 바뀌었어요. 다시 요청해 주세요.");
   if (jsonEqual(before, after)) return null;
-  if (target.kind === "map") assertProjectDataDraftReferences(live, before, after);
+  for (const check of smallTaskHost.beforeCommonEvents) check(live, before, after, target);
   if (before.commonEvents !== after.commonEvents) {
     const remaining = new Set(after.commonEvents.map(event => event.id));
     try {
       for (const event of before.commonEvents) {
-        if (!remaining.has(event.id)) refuseReferencedRemoval(after, event.id, live);
+        if (!remaining.has(event.id)) {
+          for (const check of smallTaskHost.onRemovedCommonEvent) check(after, event.id, live);
+        }
       }
     } catch (error) {
       if (error instanceof PrimitiveError) throw new SmallTaskError(error.message);
@@ -68,7 +66,9 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
   }
   if (target.kind === "dbEntry") {
     const { collection, id } = target;
-    if (before !== live) assertActorClassDraftChanges(before, after, collection, id, live);
+    if (before !== live) {
+      for (const check of smallTaskHost.beforeDbEntryGuards) check(before, after, target, live);
+    }
     // The worker saw saved events. Keep publication from breaking or redirecting open draft references.
     if (draftReferencesNewDatabaseRows(live, before, after, collection)) {
       throw new SmallTaskError("열린 이벤트가 새 항목과 같은 식별자를 쓰고 있어요. 이벤트의 연결을 먼저 확인해 주세요.");
@@ -78,7 +78,9 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
       && removedDatabaseReference(before, after, [{ collection, id }], live)) {
       throw new SmallTaskError("이벤트 편집에서 쓰는 자료집 항목은 삭제할 수 없어요. 열린 이벤트의 연결을 확인해 주세요.");
     }
-    if (live !== before) assertUnit20DraftReferences(before, after, live, target);
+    if (live !== before) {
+      for (const check of smallTaskHost.afterDbEntryGuards) check(before, after, live, target);
+    }
   }
   const event = target.kind === "event" ? live.maps[target.mapId].events.find(e => e.id === target.eventId) : undefined;
   let proposal = after;
@@ -92,8 +94,10 @@ export function commitSmallTask(live: Project, before: Project, after: Project, 
   }
   const mapId = target.kind === "dbEntry" ? undefined : target.mapId;
   if (target.kind === "map" && !after.maps[target.mapId]) {
-    const error = mapRemovalDraftError(before, target.mapId, live);
-    if (error) throw new SmallTaskError(error);
+    for (const explain of smallTaskHost.onRemovedMap) {
+      const error = explain(before, target.mapId, live);
+      if (error) throw new SmallTaskError(error);
+    }
   }
   const afterEvents = mapId ? new Map(after.maps[mapId]?.events.map(event => [event.id, event])) : null;
   const refreshCleanEventDrafts = mapId ? before.maps[mapId].events

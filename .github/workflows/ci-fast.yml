@@ -195,6 +195,10 @@ jobs:
       - name: 배럴 수출 계약
         run: npm run gates:barrel
 
+      # 작은 일 코어가 번호 유닛을 다시 import 하거나 유닛 id 로 분기하지 못하게 한다.
+      - name: 작은 일 코어·유닛 계층
+        run: npm run gates:small-task-layering
+
       # self-hosted 분기는 포크 PR 과 pull_request_target 을 호스티드로 보내는 식에서만 허용한다.
       - name: 러너 선택 계약
         run: npm run gates:self-hosted
