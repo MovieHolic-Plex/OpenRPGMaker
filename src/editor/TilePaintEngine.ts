@@ -33,6 +33,7 @@ import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPla
 import { groupAt } from "./terrainClusters";
 import { paintTerrainBrush } from "./terrainBrush";
 import { landBrushCells, landRectCells, landStepTarget, paintLandCells, terrainLandLabel, type TerrainLand } from "./terrainLandBrush";
+import { applyTerrainPreset, TERRAIN_PRESETS } from "./terrainPresets";
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
@@ -341,6 +342,14 @@ export class TilePaintEngine {
       } else {
         const group=groupAt(map,pick.x,pick.y);
         editorState.set({terrainSelectedGroup:group?{mapId:mid,id:group.id,x:pick.x,y:pick.y}:null});
+      }
+      return;
+    }
+    if (state.terrainBrush === "land" && !state.reliefDoodad && state.terrainPreset) {
+      const preset = TERRAIN_PRESETS.find((entry) => entry.id === state.terrainPreset);
+      if (firstStrokeTile && preset && !(ptr.button === 2 || ptr.rightButtonDown())) {
+        this.stopReliefGrowth();
+        this.applyStrokeEdit(mid, () => { applyTerrainPreset(mid, preset.id, pick, state.reliefTopGrass); }, { label: `한 번에 · ${preset.label}` });
       }
       return;
     }

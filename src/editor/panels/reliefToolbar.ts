@@ -32,6 +32,7 @@ import { openMapPropertiesDialog } from "./mapPropertiesDialog";
 import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
 import { selectSidebarLayer } from "./leftLayerSwitcher";
+import { TERRAIN_PRESETS, type TerrainPreset } from "../terrainPresets";
 import { brushSizePatch, TERRAIN_BRUSH_SIZES, TERRAIN_LAND_SIZES, TERRAIN_LANDS, terrainLandLabel, type TerrainLand, type TerrainLandSize } from "../terrainLandBrush";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
@@ -336,7 +337,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   const landButtons = new Map<TerrainLand, HTMLButtonElement>();
   const landSizeButtons = new Map<TerrainLandSize, HTMLButtonElement>();
   const pickLand = (land: TerrainLand): void => editorState.set({
-    terrainBrush: "land", terrainLand: land, terrainLandStep: null, reliefDoodad: null, reliefDoodadOpen: false, reliefBridgeStart: null,
+    terrainBrush: "land", terrainLand: land, terrainLandStep: null, terrainPreset: null, reliefDoodad: null, reliefDoodadOpen: false, reliefBridgeStart: null,
     terrainDesignOpen: false, terrainPoints: null, terrainHouseDrag: null, terrainVisionPreview: false,
   });
   const landSwatches = el("div", { class: "relief-land-swatches", attrs: { role: "group", "aria-label": "땅 칸" } });
@@ -389,7 +390,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     { id: "erase", label: "지우개", help: "끌면 평평한 풀밭으로 돌아간다 · 물도 마른다", icon: "eraser" },
   ];
   const pickMainTool = (tool: MainTerrainTool): void => {
-    const clear = { reliefDoodadOpen: false, reliefBridgeStart: null, terrainDesignOpen: false, terrainPoints: null, terrainHouseDrag: null, terrainVisionPreview: false, terrainMoveGroup: false } as const;
+    const clear = { reliefDoodadOpen: false, reliefBridgeStart: null, terrainDesignOpen: false, terrainPoints: null, terrainHouseDrag: null, terrainVisionPreview: false, terrainMoveGroup: false, terrainPreset: null } as const;
     if (tool === "road") { selectTerrainDesignTool("road"); editorState.set({ ...clear, reliefDoodad: null, terrainRoadDrag: true }); return; }
     if (tool === "forest") {
       const tree = treeDoodad();
@@ -413,9 +414,29 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     mainButtons.set(tool.id, button);
     mainGrid.append(button);
   }
+  // 한 번에: 프리셋을 고르고 맵을 한 번 누르면 언덕 하나·강 하나·오솛길이 깔린다(terrainPresets.ts).
+  const presetButtons = new Map<TerrainPreset, HTMLButtonElement>();
+  const presetRow = el("div", { class: "relief-preset-row", attrs: { role: "group", "aria-label": "한 번에" } });
+  for (const preset of TERRAIN_PRESETS) {
+    const button = el("button", {
+      class: "relief-preset", text: preset.label,
+      attrs: { type: "button", "aria-pressed": "false", title: `${preset.label} · ${preset.help} · Esc: 그만` },
+      dataset: { testid: `terrain-preset-${preset.id}` },
+      on: { click: () => editorState.set({
+        terrainPreset: editorState.get().terrainPreset === preset.id ? null : preset.id, terrainBrush: "land", terrainLandStep: null, reliefDoodad: null,
+        reliefDoodadOpen: false, reliefBridgeStart: null, terrainDesignOpen: false, terrainPoints: null, terrainHouseDrag: null, terrainVisionPreview: false,
+      }) },
+    }) as HTMLButtonElement;
+    presetButtons.set(preset.id, button);
+    presetRow.append(button);
+  }
   const mainTools = el("section", {
     class: "relief-main-palette", dataset: { testid: "terrain-main-tools" },
-    children: [el("h4", { class: "relief-side-subtitle", text: "도구" }), mainGrid, el("h4", { class: "relief-side-subtitle", text: "붓 크기" }), landSizes],
+    children: [
+      el("h4", { class: "relief-side-subtitle", text: "도구" }), mainGrid,
+      el("h4", { class: "relief-side-subtitle", text: "붓 크기" }), landSizes,
+      el("h4", { class: "relief-side-subtitle", text: "한 번에" }), presetRow,
+    ],
   });
   const landPalette = el("section", {
     class: "relief-land-palette", dataset: { testid: "terrain-land-palette" },
@@ -630,14 +651,16 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     const framed = !!state.currentMapId && store.getCurrent().maps[state.currentMapId]?.terrainDesign?.frameLock === true;
     frameLock.classList.toggle("is-active", framed); frameLock.setAttribute("aria-pressed", String(framed));
     frameLock.textContent = framed ? "땅 모양 잠김 (조수만 막음)" : "땅 모양 잠금 (조수만)";
-    const stepTool: MainTerrainTool | null = state.reliefDoodad
+    const presetOn = landMode && state.terrainPreset ? state.terrainPreset : null;
+    for (const [id, button] of presetButtons) { const on = id === presetOn; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
+    const stepTool: MainTerrainTool | null = presetOn ? null : state.reliefDoodad
       ? (reliefDoodadCatalog(currentMapAndTileset().tileset).find((d) => d.id === state.reliefDoodad)?.tab === "tree" ? "forest" : null)
       : state.terrainBrush === "road" ? "road"
       : landMode ? (state.terrainLandStep ?? (state.terrainLand === "water" ? "water" : state.terrainLand === 0 ? "erase" : null))
       : null;
     for (const [tool, button] of mainButtons) { const on = tool === stepTool; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     mainButtons.get("forest")!.disabled = !treeDoodad();
-    for (const [land, button] of landButtons) { const on = landMode && !state.terrainLandStep && land === state.terrainLand; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
+    for (const [land, button] of landButtons) { const on = landMode && !presetOn && !state.terrainLandStep && land === state.terrainLand; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     for (const [size, button] of landSizeButtons) { const on = size === state.terrainLandSize; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     for(const [value,b] of terrainButtons){const on=value===state.terrainBrush&&!state.reliefDoodad;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}
     const heightMode=state.terrainBrush==="height"&&!state.reliefDoodad;
@@ -693,7 +716,10 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
           : `${picked.label} · 캔버스에서 배치 위치를 고르세요`
       : `지형 · ${MODE_LABEL[state.reliefMode]} · ${MODES.find(([mode]) => mode === state.reliefMode)?.[2] ?? "캔버스에서 드래그"} · 우클릭: ${rightButtonLabel(state.reliefMode)} · Shift: 정밀 붓`;
     if(state.reliefBridgeStart?.mapId===state.currentMapId)hint.textContent="첫 둑 선택됨 — 같은 줄의 반대편 둑을 누른다 · Esc: 시작점 취소";
-    if (landMode && state.terrainLandStep) {
+    if (presetOn) {
+      const preset = TERRAIN_PRESETS.find((entry) => entry.id === presetOn)!;
+      hint.textContent = `한 번에 · ${preset.label} · ${preset.help} · 맵을 한 번 누르세요 · Esc: 그만`;
+    } else if (landMode && state.terrainLandStep) {
       const size = state.terrainLandSize === "rect" ? "사각형" : `${state.terrainLandSize}×${state.terrainLandSize}`;
       hint.textContent = state.terrainLandStep === "raise"
         ? `땅 올리기 · 누른 칸보다 한 층 높게 · 붓 ${size} · 오른쪽 버튼: 땅 내리기 · Shift+끌기: 사각형`
@@ -753,7 +779,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       return;
     }
     if (event.key !== "Escape") return;
-    if (state.terrainHouseDrag) editorState.set({ terrainHouseDrag: null });
+    if (state.terrainPreset) editorState.set({ terrainPreset: null });
+    else if (state.terrainHouseDrag) editorState.set({ terrainHouseDrag: null });
     else if (document.querySelector('[data-testid="delayed-tooltip"]')) hideDelayedTooltip();
     else if (state.reliefBridgeStart) editorState.set({ reliefBridgeStart: null });
     else if (state.terrainMoveGroup || state.terrainSelectedGroup) editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null});
