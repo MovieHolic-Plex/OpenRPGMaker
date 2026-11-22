@@ -282,7 +282,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   style.append(el("option", { value: "", text: "흙벽(기본)" }));
   for (const key of Object.keys(RELIEF_STYLES)) style.append(el("option", { value: key, text: STYLE_LABELS[key] ?? key }));
   const doodadButton = el("button", {
-    class: "relief-bar-icon relief-bar-labeled-action", children: [terrainToolbarIcon("doodad"), el("span", { class: "relief-bar-action-label", text: "경사로·나무·다리" })],
+    class: "relief-bar-icon relief-bar-labeled-action", children: [terrainToolbarIcon("doodad"), el("span", { class: "relief-bar-action-label", text: "경사로·다리" })],
     attrs: { type: "button", title: "계단·경사로·벽면·나무·바위·다리를 고른다 (D)", "aria-pressed": "false", "aria-haspopup": "dialog", "aria-controls": "relief-doodad-popup", "aria-expanded": "false" },
     dataset: { testid: "relief-doodad-toggle" },
     on: { click: () => {
@@ -313,7 +313,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     editorState.set({terrainSelectedGroup:null,terrainMoveGroup:false});
   }}}) as HTMLButtonElement;
   let optionsOpen = false;
-  const advanced = el("div", { class: "relief-bar-advanced", children: [grass, style, material, moveGroup, deleteGroup] });
+  const advanced = el("div", { class: "relief-bar-advanced", children: [grass, style, moveGroup, deleteGroup] });
   const optionsToggle = el("button", {
     class: "relief-bar-icon relief-bar-options-toggle",
     text: "옵션",
@@ -321,11 +321,18 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     dataset: { testid: "relief-options-toggle" },
     on: { click: () => { optionsOpen = !optionsOpen; sync(editorState.get()); } },
   }) as HTMLButtonElement;
-  const reachable=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon("reachable"), el("span", { class: "relief-side-tool-label", text: "통행" })],attrs:{type:"button","aria-label":"통행 미리보기","aria-pressed":"false",title:"시작 지점에서 닿는 땅은 초록, 닿지 못하는 땅은 붉게 표시한다"},dataset:{testid:"terrain-reachability"},on:{click:()=>editorState.set({terrainReachability:!editorState.get().terrainReachability})}}) as HTMLButtonElement;
+  const reachable=el("button",{class:"relief-bar-toggle relief-reach-toggle",children:[terrainToolbarIcon("reachable"), el("span", { text: "통행 보기" })],attrs:{type:"button","aria-label":"통행 보기","aria-pressed":"false",title:"시작 위치에서 걸어서 닿는 땅과 못 닿는 땅을 맵에 칠한다"},dataset:{testid:"terrain-reachability"},on:{click:()=>editorState.set({terrainReachability:!editorState.get().terrainReachability})}}) as HTMLButtonElement;
+  // 통행 범례는 항상 보인다 — 색의 뜻을 툴팁에만 두면 없는 것과 같다(지형 리뷰 F13). 색은 editSceneRender 통행 덧칠과 같다.
+  const reachLegend = el("div", { class: "relief-reach-legend", dataset: { testid: "terrain-reach-legend" }, children: [
+    el("span", { class: "relief-reach-key is-ok", text: "걸어서 닿음" }),
+    el("span", { class: "relief-reach-key is-bad", text: "못 닿음" }),
+    el("small", { text: "시작 위치 기준 · 언덕은 경사로가 있어야 오른다" }),
+  ] });
+  const reachRow = el("section", { class: "relief-reach-row", children: [reachable, reachLegend] });
   const designButton = el("button", { class: "relief-bar-icon relief-bar-labeled-action", children: [terrainToolbarIcon("design"), el("span", { class: "relief-bar-action-label", text: "설계" })], attrs: { type: "button", "aria-label": "지형 설계", "aria-pressed": "false", "aria-expanded": "false", "aria-controls": "terrain-design-panel" }, dataset: { testid: "terrain-design-toggle" }, on: { click: () => { const s = editorState.get(); if (!s.terrainDesignOpen && !isTerrainDesignTool(s.terrainBrush)) selectTerrainDesignTool("contour"); else editorState.set({ terrainDesignOpen: !s.terrainDesignOpen, reliefDoodadOpen: false }); } } }) as HTMLButtonElement;
   let closeHelp: (() => void) | undefined;
   const helpButton = el("button", { class: "relief-bar-icon relief-bar-help", children: [terrainToolbarIcon("help"), el("span", { class: "relief-side-tool-label", text: "도움말" })], attrs: { type: "button", "aria-label": "지형 도움말", "aria-haspopup": "dialog" }, dataset: { testid: "terrain-help-toggle" }, on: { click: () => { closeHelp = openTerrainHelpModal(helpButton); } } });
-  const context = el("div", { class: "relief-bar relief-bar-context", attrs: { role: "group", "aria-label": "선택한 지형 도구 설정" }, dataset: { testid: "terrain-tool-options" }, children: [modes, level, optionsToggle, advanced] });
+  const context = el("div", { class: "relief-bar relief-bar-context", attrs: { role: "group", "aria-label": "선택한 지형 도구 설정" }, dataset: { testid: "terrain-tool-options" }, children: [modes, level, material, optionsToggle, advanced] });
   const landButtons = new Map<TerrainLand, HTMLButtonElement>();
   const landSizeButtons = new Map<TerrainLandSize, HTMLButtonElement>();
   const pickLand = (land: TerrainLand): void => editorState.set({
@@ -357,8 +364,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     landSizes.append(button);
   }
   const frameLock = el("button", {
-    class: "relief-bar-toggle relief-frame-lock", text: "땅 모양 잠금",
-    attrs: { type: "button", "aria-pressed": "false", title: "높이·절벽·물은 그대로, 위에 짓기만" },
+    class: "relief-bar-toggle relief-frame-lock", text: "땅 모양 잠금 (조수만)",
+    attrs: { type: "button", "aria-pressed": "false", title: "조수(AI)가 높이·절벽·물 깊이를 바꾸지 못하게 막는다. 내 붓과 타일 칠하기는 그대로 된다." },
     dataset: { testid: "terrain-frame-lock" },
     on: { click: () => {
       const { mapId } = currentMapAndTileset();
@@ -452,7 +459,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     class: "relief-bar",
     attrs: { role: "toolbar", "aria-label": "지형 도구" },
     dataset: { testid: "relief-brush-controls" },
-    children: [terrainTools, sep(), doodadButton, designButton, reachable, el("button", {
+    children: [terrainTools, sep(), doodadButton, designButton, el("button", {
       class: "relief-bar-icon", children: [terrainToolbarIcon("sun"), el("span", { class: "relief-side-tool-label", text: "광원" })],
       attrs: { type: "button", "aria-label": "태양과 그림자", title: "태양 방향·고도와 지형 그림자 설정", "aria-haspopup": "dialog" },
       dataset: { testid: "terrain-sunlight-settings" },
@@ -563,6 +570,17 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       }),
     ],
   });
+  // 고급: 처음 쓰는 사람에게 필요 없는 도구는 접어 둔다. 닫힌 채 시작하고, 열린 상태는 패널이 살아 있는 동안 유지한다.
+  const advancedSection = el("details", {
+    class: "relief-advanced", dataset: { testid: "terrain-advanced" },
+    children: [
+      el("summary", { dataset: { testid: "terrain-advanced-toggle" }, children: [el("b", { text: "고급" }), el("small", { text: "높이 붓·바닥 칠·절벽 모양·집·설계·땅 모양 잠금" })] }),
+      landPalette,
+      context,
+      el("h4", { class: "relief-side-subtitle", text: "세부 도구" }),
+      bar,
+    ],
+  });
   const sidePanel = el("section", {
     class: "relief-side-panel",
     attrs: { "aria-label": "지형" },
@@ -571,11 +589,9 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       sideHeader,
       el("p", { class: "relief-side-description", text: "도구를 고르고 맵에서 끌면 절벽과 물가는 저절로 생깁니다." }),
       mainTools,
-      landPalette,
       rampQuickAction,
-      context,
-      el("h4", { class: "relief-side-subtitle", text: "세부 도구" }),
-      bar,
+      reachRow,
+      advancedSection,
     ],
   });
   installDelayedTooltips(sidePanel);
@@ -613,7 +629,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     const landMode = state.terrainBrush === "land" && !state.reliefDoodad;
     const framed = !!state.currentMapId && store.getCurrent().maps[state.currentMapId]?.terrainDesign?.frameLock === true;
     frameLock.classList.toggle("is-active", framed); frameLock.setAttribute("aria-pressed", String(framed));
-    frameLock.textContent = framed ? "땅 모양 잠김 — 위에 짓기만" : "땅 모양 잠금";
+    frameLock.textContent = framed ? "땅 모양 잠김 (조수만 막음)" : "땅 모양 잠금 (조수만)";
     const stepTool: MainTerrainTool | null = state.reliefDoodad
       ? (reliefDoodadCatalog(currentMapAndTileset().tileset).find((d) => d.id === state.reliefDoodad)?.tab === "tree" ? "forest" : null)
       : state.terrainBrush === "road" ? "road"

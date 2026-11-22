@@ -35,6 +35,24 @@
 .relief-land-palette .relief-side-subtitle { margin: 0; }
 /* 기본 도구 6개 — 3열 격자, 아이콘 위·이름 아래. 낱말은 줄바꿈하되 한 글자씩 끊지 않는다. */
 .relief-main-palette { display: grid; gap: 8px; }
+/* 통행 보기 + 항상 보이는 범례 */
+.relief-reach-row { display: grid; gap: 6px; }
+.relief-reach-toggle { display: inline-flex; align-items: center; gap: 6px; justify-self: start; }
+.relief-reach-toggle svg { width: 16px; height: 16px; }
+.relief-reach-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--text-2); font: 500 12px/1.3 var(--font-ui); }
+.relief-reach-key { display: inline-flex; align-items: center; gap: 5px; }
+.relief-reach-key::before { content: ""; width: 11px; height: 11px; border-radius: 3px; background: var(--success); }
+.relief-reach-key.is-bad::before { background: var(--danger); }
+.relief-reach-legend small { flex-basis: 100%; font-size: 11px; }
+/* 고급(접힘) */
+.relief-advanced { border-top: 1px solid var(--border-default); padding-top: 8px; }
+.relief-advanced > summary { display: flex; flex-direction: column; gap: 2px; cursor: pointer; list-style-position: inside; font: 600 13px/1.3 var(--font-ui); }
+.relief-advanced > summary::-webkit-details-marker { display: none; }
+.relief-advanced > summary > b::before { content: "▸ "; color: var(--text-2); }
+.relief-advanced[open] > summary > b::before { content: "▾ "; }
+.relief-advanced > summary small { color: var(--text-2); font-weight: 500; font-size: 11px; }
+.relief-advanced[open] > summary { margin-bottom: 10px; }
+.relief-advanced > * + * { margin-top: 10px; }
 .relief-main-palette > .relief-side-subtitle { margin: 4px 0 0; }
 .relief-main-tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .relief-main-tool {
@@ -177,10 +195,10 @@
 .relief-side-panel .relief-bar-mode-label { display: inline; max-width: 100%; text-align: center; white-space: normal; word-break: keep-all; }
 .relief-side-panel .relief-bar-options-toggle { align-self: flex-start; }
 .relief-side-panel .relief-bar-advanced { border-left: 0; border-top: 1px solid var(--border-default, #dfe2ea); padding: 10px 0 0; }
-.relief-side-panel > [data-testid="relief-brush-controls"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; max-width: none; padding: 8px 0 0; border: 0; border-top: 1px solid var(--border-default, #dfe2ea); border-radius: 0; box-shadow: none; background: transparent; }
-.relief-side-panel > [data-testid="relief-brush-controls"] > .relief-bar-group { display: contents; }
-.relief-side-panel > [data-testid="relief-brush-controls"] .relief-bar-sep { display: none; }
-.relief-side-panel > [data-testid="relief-brush-controls"] .relief-bar-icon { width: 100%; height: 54px; flex-direction: column; gap: 3px; }
+.relief-side-panel .relief-advanced > [data-testid="relief-brush-controls"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; max-width: none; padding: 8px 0 0; border: 0; border-top: 1px solid var(--border-default, #dfe2ea); border-radius: 0; box-shadow: none; background: transparent; }
+.relief-side-panel .relief-advanced > [data-testid="relief-brush-controls"] > .relief-bar-group { display: contents; }
+.relief-side-panel .relief-advanced > [data-testid="relief-brush-controls"] .relief-bar-sep { display: none; }
+.relief-side-panel .relief-advanced > [data-testid="relief-brush-controls"] .relief-bar-icon { width: 100%; height: 54px; flex-direction: column; gap: 3px; }
 .relief-side-panel .relief-side-tool-label, .relief-side-panel .relief-bar-action-label { display: inline; font-size: 10px; line-height: 1; white-space: nowrap; }
 
 /* 안내 한 줄 + 막대를 아래 가운데에 쌓는다. 오른쪽 아래 조수 ✦ 단추(약 56px)를 피해 양옆 72px 를 비우고,

@@ -2187,6 +2187,8 @@ export class EditScene extends PhaserRuntime.Scene {
 
   /** 포인터 아래 테두리 띠. 맵 안이거나 띠 밖이면 null. */
   private mapEdgeAxesAt(ptr: Phaser.Input.Pointer): MapEdgeGrowAxes | null {
+    // 지형 도구 중에는 테두리 띠가 획을 가로채지 않는다 — 맵 끝 칸을 칠하다 맵이 커지는 일을 막는다(지형 리뷰 F15).
+    if (editorState.get().tool === "relief") return null;
     const mapId = this.mapId();
     const map = mapId ? store.getCurrent().maps[mapId] : undefined;
     const camera = this.cameras?.main;
