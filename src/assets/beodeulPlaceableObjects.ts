@@ -55,7 +55,7 @@ export function parseBeodeulObjectCatalog(catalogInput: unknown, manifestInput: 
     if (ids.has(id)) throw new Error(`Duplicate Beodeul object id: ${id}`);
     ids.add(id);
     if (!groupIds.has(group)) throw new Error(`${id}: unknown Beodeul object group ${group}`);
-    if (/_[rv]\d+$/u.test(id) || sourceFile.replace(/(?:_[rv]\d+)?\.png$/u, "") !== id) {
+    if (/_(?:[rv]\d+|hq\d*)$/u.test(id) || sourceFile.replace(/(?:_(?:[rv]\d+|hq\d*))?\.png$/u, "") !== id) {
       throw new Error(`${id}: sourceFile must match the base object id`);
     }
     if (widthTiles !== Math.ceil(widthPx / BEODEUL_OBJECT_TILE_SIZE) || heightTiles !== Math.ceil(heightPx / BEODEUL_OBJECT_TILE_SIZE)) {
