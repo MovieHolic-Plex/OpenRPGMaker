@@ -124,6 +124,11 @@
 /* 좁은 패널(280px)에서 머리의 이름·맵 이름이 오른쪽 행동 버튼 밑으로 넘치지 않게 자른다 — 맵 이름이 먼저 말줄임된다. */
 .ai-chat-panel.is-workspace .ai-deck-rail-who { overflow: hidden; }
 .ai-chat-panel.is-workspace .ai-deck-rail-name { flex: none; }
+/* 머리줄은 연결 칩 하나와 도구 줄이다. 상태 점·「조수」·맵 이름 덩어리는 칩과 같은 자리를 다퉈 점과 말줄임 조각만 남았다
+   (좁은 패널 실측: 이름 상자가 칩과 14x13px 겹침). 진행 상태는 머리줄 테두리(data-ai-state)와 대화 속 카드가 말한다. */
+.ai-chat-panel.is-workspace .ai-deck-rail-who,
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-who { display: none; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions { margin-left: auto; }
 /* 덮개 모드의 좁은 패널(≤300px)에서는 「로그」 글자를 접고 아이콘만 둔다(접근 이름 「AI 로그 추출」은 그대로) — 머리 이름 「조수」가 잘리지 않게 자리를 낸다. */
 @media (max-width: 999.98px) {
   .ai-chat-panel.is-workspace .ai-workspace-log-trigger > span { display: none; }
