@@ -3148,6 +3148,8 @@
 "계획을 세우는 중":"Creating a plan",
 "계획을 세웠어요":"Plan created",
 "고급":"Advanced",
+"고급: 직접 입력":"Advanced: enter manually",
+"기본 주소, API 키, 모델을 직접 넣어요":"Enter the base URL, API key and model yourself",
 "고급 (실행 로그)":"Advanced (execution log)",
 "고급 · 파일 이름 직접 넣기":"Advanced · Enter file name directly",
 "고급 · 판타지":"Ornate · Fantasy",
