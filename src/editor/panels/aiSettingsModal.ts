@@ -1218,10 +1218,21 @@ export function renderAiSettingsForm(options: {
           authSettings.element, modelConnectionHint, alignAccountButton,
           el("div", { class: "ai-settings-connection-actions", children: [connectionSummary, connectionCheckButton] }),
         ]),
-        quickConnectSection,
         settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(OpenRouter 등)", [compatSettings.element]),
         ...(localPrograms ? [localPrograms.element] : []),
         ...(options.onContinue ? [el("div", { class: "ai-config-actions", children: [continueButton] })] : []),
+      ] }),
+    ],
+  });
+
+  // 기본 주소·키·모델을 직접 넣는 폼은 「빠른 연결」 아래 접힌 고급으로 둔다(대부분은 키 하나로 끝난다).
+  const directAdvanced = el("details", {
+    class: "ai-settings-alternatives",
+    dataset: { testid: "ai-settings-direct-advanced" },
+    children: [
+      el("summary", { class: "ai-settings-row", children: [rowCopy("고급: 직접 입력", "기본 주소, API 키, 모델을 직접 넣어요"), chevron()] }),
+      el("div", { class: "ai-settings-alternative-body", children: [
+        settingsSection("openai-direct", "OpenAI 호환 API (직접 입력)", "기본 주소, API 키, 모델을 넣으면 조수가 그 서버를 씁니다.", [directSettings.element]),
       ] }),
     ],
   });
@@ -1284,8 +1295,8 @@ export function renderAiSettingsForm(options: {
 
   const panes = {
     connection: settingsPane("connection", [
-      hero, accountRow, accountChecking, accountCheckError, qualitySection, primaryFeedback, disconnectError,
-      settingsSection("openai-direct", "OpenAI 호환 API (직접 입력)", "기본 주소, API 키, 모델을 넣으면 조수가 그 서버를 씁니다.", [directSettings.element]),
+      quickConnectSection, hero, accountRow, accountChecking, accountCheckError, qualitySection, primaryFeedback, disconnectError,
+      directAdvanced,
       alternatives,
     ]),
     behavior: settingsPane("behavior", [
