@@ -947,3 +947,35 @@ html[data-ai-render="off"] {
 .ai-quota-chip[data-kind="error"] .ai-quota-chip-dot {
   background: var(--danger);
 }
+
+/* 지금 쓰는 모델 이름: 「제공자 · 모델」 두 조각이 같은 name 클래스를 쓰고 data-part 로 가른다. 모델이 비면 제공자만 보인다. */
+.ai-quota-chip-name[data-part="model"]:not(:empty)::before {
+  content: "·";
+  margin: 0 4px;
+}
+
+.ai-quota-chip-name[data-part="provider"]:has(+ .ai-quota-chip-name[data-part="model"]:not(:empty)) {
+  flex: none;
+}
+
+/* 좁은 화면(600px 이하): 제공자를 숨기고 모델 이름만 온전히 둔다. 줄어드는 쪽은 한도 값이다. */
+@media (max-width: 600px) {
+  .ai-quota-chip-name[data-part="provider"]:has(+ .ai-quota-chip-name[data-part="model"]:not(:empty)) {
+    display: none;
+  }
+
+  .ai-quota-chip-name[data-part="model"]:not(:empty) {
+    flex: none;
+  }
+
+  .ai-quota-chip-name[data-part="model"]:not(:empty)::before {
+    content: none;
+  }
+
+  .ai-quota-chip-value {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

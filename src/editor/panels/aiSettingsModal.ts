@@ -1109,7 +1109,12 @@ export function renderAiSettingsForm(options: {
       : current?.caption ?? "고급에서 역할별로 직접 골랐어요.";
     const executionModel = liteModel.input.value.trim();
     const planningModel = brainModel.input.value.trim();
-    execution.value.textContent = settingsModelName(executionModel);
+    // 「진행」 행은 계획·실행·시공 세 칸을 묶는다 — 한 칸만 바꿔도 요약이 따라오게 셋을 다 본다.
+    const buildModel = specialistControls.find(control => control.role === "build")!.field.input.value.trim() || executionModel;
+    const [planningName, executionName, buildName] = [planningModel, executionModel, buildModel].map(settingsModelName) as [string, string, string];
+    execution.value.textContent = planningName === executionName && executionName === buildName ? executionName
+      : buildName === executionName ? `계획 ${planningName} · 실행 ${executionName}`
+        : `계획 ${planningName} · 실행 ${executionName} · 시공 ${buildName}`;
     const reviewer = roleMatrix.advisorModel();
     advisor.value.textContent = reviewer === "off" ? "끔" : settingsModelName(reviewer?.model ?? executionModel);
     vision.value.textContent = settingsModelName(specialistControls.find(control => control.role === "vision")!.field.input.value.trim());

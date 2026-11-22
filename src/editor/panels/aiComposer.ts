@@ -1,5 +1,7 @@
 import { PI_APPLY_MODES, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
-import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
+import { AI_CONFIG_CHANGED_EVENT, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
+import { modelDisplayName } from "@/ai/modelDisplayName";
+import { activeModelId, quickModelOptions } from "@/ai/quickModelSwitch";
 // editor/panels/aiComposer.ts
 // 컴포저 셸 — 텍스트 영역 + 고정 액션 행 한 줄 + 팝오버 4종. 세로 버튼 열은 없다.
 //
@@ -148,6 +150,8 @@ export interface ComposerOptions {
   };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
+  /** 작업 설정 팝오버의 「모델」 목록에서 하나를 골랐다. 주지 않으면 목록을 만들지 않는다. */
+  readonly onModelPick?: (model: string) => void;
   /** 모델명을 누르면 AI 설정으로 간다. 없으면 칩은 글자만 남는다. */
   readonly onModelClick?: () => void;
   /** Pi 팀 토글 — 팀은 경로가 아니라 Pi 루프의 실행 모드다(executionRoute.ts 머리말). 저장은 호출자가 맡는다. */
@@ -395,6 +399,22 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       children: [el("span", { text: title }), control, el("small", { text: hint })],
     });
   };
+  // 모델 한 번에 바꾸기 — 지금 제공자의 모델 목록. 역할별 세부 설정은 AI 설정의 고급에 남는다.
+  const modelSelect = options.onModelPick ? el("select", {
+    class: "ai-composer-effort-select", attrs: { "aria-label": "모델" }, dataset: { testid: "ai-composer-model-select" },
+  }) as HTMLSelectElement : null;
+  const syncModelSelect = (): void => {
+    if (!modelSelect) return;
+    const config = loadAiConfig();
+    const active = activeModelId(config);
+    modelSelect.replaceChildren(...quickModelOptions(config).map(id => el("option", { attrs: { value: id }, text: modelDisplayName(id) })));
+    modelSelect.value = active;
+  };
+  if (modelSelect) {
+    syncModelSelect();
+    modelSelect.addEventListener("change", () => { options.onModelPick?.(modelSelect.value); syncModelSelect(); });
+    window.addEventListener(AI_CONFIG_CHANGED_EVENT, syncModelSelect);
+  }
   const settingsPopover = el("div", {
     class: "ai-composer-popover ai-chat-settings",
     attrs: { role: "dialog", "aria-label": "작업 설정" },
@@ -402,6 +422,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("strong", { text: "작업 설정" }),
       el("small", { text: "다음에 보내는 요청부터 사용합니다." }),
+      ...(modelSelect ? [settingRow("모델", "지금 연결한 AI의 모델을 바로 바꿔요. 역할별 설정은 AI 설정의 고급에 있어요.", modelSelect)] : []),
       ...(autonomySelect ? [settingRow("일하는 방식", "질문만 할지, 직접 작업을 맡길지 · 오른쪽일수록 더 오래 깊게 일해요.", autonomySelect)] : []),
       settingRow("변경 적용 방식", "결과를 바로 반영하거나 확인 후 적용합니다.", applyModeSelect),
       ...(teamToggle ? [settingRow("작업 인원", "혼자 또는 팀으로 · 작업량과 검토도 설정합니다.", teamToggle)] : []),
