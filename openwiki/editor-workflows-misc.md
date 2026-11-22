@@ -436,6 +436,8 @@ browser setup and separate exported-player evidence.
 3. **풀밭 꾸밈은 마지막.** 남은 맨 풀밭 칸 수에 비례(작은 나무 70칸·덤불 45칸·꽃관목 768 90칸·돌 29/537 60칸당 하나), 둘레 1칸 비움.
 실측(seed 21, dense): 10×8 물 0·소품 0, 20×16 연못 28칸·돌 2, 40×30 개울 133칸·작은 나무 6·덤불 13·돌 14·숨은 길 4곳. 합본 마을 경로(`plantForestComposition`) 결과는 바뀌지 않는다(같은 seed 해시 동일).
 
+> 2026-11-22 확인(지형 리뷰 F16): 아래 문단과 위 문단의 「DB 생성 규칙 저작값을 따른다」는 지금 참이 아니다. `forestBandDepth`·`coniferCountFor` 등은 호출처가 없고 생성 규칙 탭도 없다. [세계 생성 규칙](world-generation-rules.md) 「현재 상태」.
+
 **PR #355 생성 규칙과의 우선순위.** `src/project/worldGenRules.ts` 와 DB 「세계 → 생성 규칙」 탭은 우회하거나 복제하지 않는다. `forestBandDepth` 는 숲 밴드 기하를, `coniferGap`/`broadleafGap` 과 `*Naturalness` 는 수종별 배치 성질을 계속 정한다. `requirements.forestDensity` 가 있으면 이번 요청이 **COUNT와 PACKING**을 이기며, enum을 생략한 요청은 `coniferCountFor`/`broadleafCountFor` 를 포함한 저작 기본값으로 돌아간다. 계약은 `test/forestDensityPriority.test.ts` 의 «모델 density enum이 저작 기본값을 이긴다»다.
 
 `village/decor.ts` 는 `edgeTrees==="dense"` 일 때만 이 축을 탄다. 그 산포의 area 는 숲 밴드가 아니라 **마을 전역**이라 밀도를 그대로 쓰면 집·길 사이까지 메워지므로 `INTERIOR_TREE_SHARE`(0.25) 로 지분만 갖고, 진짜 두꺼운 밴드는 terrainPass 가 채운다(실측: 전역에 밀도를 그대로 밀었을 때 50×50 시공이 1.6s → 107s). `edgeTrees==="conifer"` 는 숲 요청이 아니므로 옛 개수를 유지한다.

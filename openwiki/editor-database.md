@@ -1104,6 +1104,8 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 
 ## '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
 
+> 2026-11-22 확인: 이 탭(`databaseWorldGenView.ts`)은 지금 저장소에 없다. 저장 필드만 남아 있다 — [세계 생성 규칙](world-generation-rules.md) 맨 위 「현재 상태」.
+
 - `맵` 그룹 첫 탭 `생성 규칙` (`worldGen`, testid `db-tab-world-gen`) 은 `project.system.worldGen` 을 저작한다. 강 띠 두께·호수 지름·수면 모양·숲 깊이·나무 밀도·간격·길 재료·광장 자리, 그리고 "이 말이 나오면 이 지형" 낱말 규칙이 전부 이 한 탭에 있다.
 - 값을 만지면 실제 칩셋 타일로 그린 미리보기가 즉시 갱신된다. 미리보기는 시공기와 **같은 함수**(`buildTerrainConstraintMasks` / `cellsInFillShape` / 나무 수 헬퍼)를 쓴다 — 미리보기 전용 근사식을 넣지 마라. 예시 프리셋 카드도 같은 렌더러로 그린 썸네일이다.
 - 낱말 규칙은 낱말 목록 + 제외 낱말 + 지형 칩이다. **정규식·코드 입력을 넣지 마라** — 초보 저자가 대상이고 자연어까지만 허용하는 것이 설계 전제다.

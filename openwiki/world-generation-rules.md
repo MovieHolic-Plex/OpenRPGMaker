@@ -1,5 +1,12 @@
 # 세계 생성 규칙 (DB 「맵 → 생성 규칙」 탭)
 
+> **현재 상태 (2026-11-22, 지형 리뷰 F16): 저장·검증만 남았고 읽는 생성기가 없다.**
+> 아래 표의 `databaseWorldGenView.ts`·`worldGenPreview.ts`·`worldGenPresets.ts`·`villageTerrainPass.ts`·`test/worldGenRules.test.ts` 는 저장소에 없다.
+> `project.system.worldGen` 은 기존 저장본을 잃지 않도록 `databaseRecordModel.ts`(`normalizeWorldGenRulesForStorage`)와
+> `shapeDatabaseFields.ts` 가 보존·검증만 한다. `resolveWorldGenRules`·`riverBandDepth`·`lakeDiameter`·`coniferCountFor` 등 계산 헬퍼는
+> 호출처가 0이다. 이 값을 바꿔도 조수가 까는 물·숲·길은 바뀌지 않는다. 다시 잇기 전에는 조수 문구·문서에서 이 탭을 가리키지 마라.
+> 아래는 연결돼 있던 때의 설계 기록이다.
+
 AI 가 마을을 깔 때 쓰는 **물·숲·길 수치와 낱말 판정**을 프로젝트 데이터로 끌어낸 층이다.
 전에는 이 숫자들이 `villageTerrainPass.ts` 안의 상수였고, 저자가 "호수를 더 크게" 를
 원하면 코드를 고쳐야 했다.

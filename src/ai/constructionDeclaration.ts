@@ -9,7 +9,7 @@
 // 페이로드)는 이 결과를 "코드가 아는 사실"로 흘려보내고, 계층마다 같은 숫자를 쓴다.
 //
 // 경계: 문장을 읽지 않는다 — 선언자가 옮긴 값만 정합화한다. 크기어(큰/작은)만 선언 계층이 소유하고,
-// 지형어(「강촌」→강)는 기존대로 DB 「세계 → 생성 규칙」(@/project/worldGenRules)이 소유한다.
+// 지형어(「강촌」→강) 판정은 여기서 하지 않는다. @/project/worldGenRules 의 낱말 규칙은 저장만 되고 읽는 생성기가 없다(지형 리뷰 F16).
 // 슬롯·여백 계수는 village 시공기 실측(16×16에 집 1채+길이 빡빡 — src/editor/tools/authorVillageSupport.ts)과 같다.
 
 import { isVillageMorphology, type VillageMorphology } from "@/editor/tools/village/morphologyTypes";
