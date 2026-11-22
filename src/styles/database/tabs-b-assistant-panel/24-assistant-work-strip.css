@@ -175,6 +175,20 @@ body:has(.ai-chat-panel:not(.is-collapsed)) .ai-work-strip {
 }
 .ai-work-inline-spinner { align-items: center; color: var(--gold-deep); display: inline-flex; flex: none; }
 .ai-work-inline-spinner .ai-deck-icon { animation: ai-work-card-spin 1.6s linear infinite; }
+/* 진행 중은 대화 흐름 안 한 줄이다 — 「시계 작업 중 0:03 · 하는 일 …… 중지」. 알약 테두리·따로 떠 있는 줄·테두리 칭 버튼을 두지 않는다.
+   결과·실패 카드는 이 규칙을 타지 않는다(data-state="running" 만). */
+.ai-work-inline[data-state="running"] { align-items: center; display: flex; flex-wrap: wrap; gap: 0 8px; }
+.ai-work-inline[data-state="running"] > .ai-work-inline-head { background: transparent; border: 0; flex: 0 1 auto; order: 0; padding: 0; }
+.ai-work-inline[data-state="running"] > .ai-work-inline-now { color: var(--text-3); flex: 1 1 0; margin: 0; min-width: 0; order: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-work-inline[data-state="running"] > .ai-work-inline-now::before { content: "·"; margin-right: 8px; }
+.ai-work-inline[data-state="running"] > .ai-work-inline-actions { flex: 0 0 auto; margin: 0 0 0 auto; order: 2; }
+.ai-work-inline[data-state="running"] > .ai-work-inline-actions button { background: transparent; border: 0; color: var(--text-2); padding: 2px 4px; }
+.ai-work-inline[data-state="running"] > .ai-work-inline-actions button:hover { color: var(--danger); }
+.ai-work-inline[data-state="running"] > :is(.ai-activity-view, .ai-work-inline-board, details, [data-activity-board]) { flex: 0 0 100%; order: 3; }
+/* 상태가 아무 말도 더하지 않는 평소 종료(변경 없음·응답 끝·목표 미평가)와 진행 중에는 입력창 위에 혼자 떠 있지 않게 감춘다.
+   세 축은 data-* 로 기계가 계속 읽는다. */
+.ai-run-outcome[data-delivery="no-change"][data-execution="response-final"][data-goal="unassessed"] { display: none; }
+.ai-chat-panel:has(.ai-work-inline[data-state="running"]) .ai-run-outcome { display: none; }
 .ai-work-inline[data-state="done"] .ai-work-inline-spinner,
 .ai-work-inline[data-state="failed"] .ai-work-inline-spinner { color: var(--success); animation: none; }
 @keyframes ai-work-card-spin { to { transform: rotate(360deg); } }
