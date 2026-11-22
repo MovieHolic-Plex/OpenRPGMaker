@@ -73,6 +73,7 @@ import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
+import { configWithQuickModel } from "@/ai/quickModelSwitch";
 import { isAutonomyLevel, loadAiConfig, reportTransportHealth, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { quotaStatusLine } from "@/ai/providerQuota";
@@ -3621,6 +3622,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
     modelLabel: modelChipLabel(),
+    onModelPick: (model) => applyComposerEffortConfig(configWithQuickModel(loadAiConfig(), model)),
     onModelClick: () => openAiSettings("first"),
   });
   // 바로 깔기 설정은 우클릭 드래그 바와 공유한다(stampPlaceMode) — 어느 쪽에서 켜도 양쪽 토글이 같이 선다.

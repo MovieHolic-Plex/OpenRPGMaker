@@ -7,6 +7,8 @@
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { AI_CONFIG_CHANGED_EVENT, AI_TRANSPORT_HEALTH_EVENT, loadAiConfig } from "@/ai/llmClient";
+import { modelDisplayName } from "@/ai/modelDisplayName";
+import { activeModelId } from "@/ai/quickModelSwitch";
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { usageChipSuffix, usageDetail, type ProviderUsageSnapshot } from "@/ai/providerQuota";
 import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
@@ -26,7 +28,9 @@ export async function fetchProviderUsage(providerId: string): Promise<ProviderUs
 }
 
 export function renderAiQuotaChip(openSettings: () => void): { readonly element: HTMLElement; readonly dispose: () => void } {
-  const name = el("span", { class: "ai-quota-chip-name" });
+  const providerName = el("span", { class: "ai-quota-chip-provider" });
+  const modelName = el("span", { class: "ai-quota-chip-model" });
+  const name = el("span", { class: "ai-quota-chip-name", children: [providerName, modelName] });
   const value = el("span", { class: "ai-quota-chip-value" });
   const label = el("span", { class: "ai-quota-chip-label", dataset: { testid: "ai-quota-chip-label" }, children: [name, value] });
   const button = el("button", {
@@ -47,11 +51,15 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
     button.dataset.kind = kind;
     const current = usage && usageFor === status.providerId ? usage : null;
     const tail = status.limited ? "사용 한도 초과" : status.kind === "ready" ? usageChipSuffix(current) : status.label.replace(status.providerLabel, "").trim();
-    name.textContent = status.providerLabel;
+    // 지금 쓰는 모델도 머리줄에서 바로 보인다. 연결이 안 됐을 땐 모델이 뜻이 없으니 제공자만 둔다.
+    const model = status.kind === "ready" || status.limited ? activeModelId(loadAiConfig()).trim() : "";
+    const modelLabel = model ? modelDisplayName(model) : "";
+    providerName.textContent = status.providerLabel;
+    modelName.textContent = modelLabel;
     value.textContent = tail;
     const detail = status.kind === "ready" || status.limited ? usageDetail(current) : status.title;
-    button.title = `${status.limited ? status.title : status.providerLabel} — ${detail} — 누르면 AI 설정에서 다른 연결을 고를 수 있어요.`;
-    button.setAttribute("aria-label", `${status.providerLabel} · ${tail} — AI 설정 열기`);
+    button.title = `${status.limited ? status.title : status.providerLabel}${modelLabel ? ` · ${modelLabel}` : ""} — ${detail} — 누르면 AI 설정에서 다른 연결을 고를 수 있어요.`;
+    button.setAttribute("aria-label", `${status.providerLabel}${modelLabel ? ` · ${modelLabel}` : ""} · ${tail} — AI 설정 열기`);
   };
 
   const refreshUsage = (force: boolean): void => {

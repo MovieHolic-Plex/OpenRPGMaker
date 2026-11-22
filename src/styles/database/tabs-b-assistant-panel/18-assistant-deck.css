@@ -905,11 +905,33 @@ html[data-ai-render="off"] {
   white-space: nowrap;
 }
 
-/* 좁으면 연결 이름만 줄인다 — 남은 한도 값(「남음 63%」·「알 수 없음」)은 잘리면 칩의 뜻이 사라진다. */
+/* 좁으면 연결 이름만 줄인다 — 남은 한도 값(「남음 63%」·「알 수 없음」)은 잘리면 칩의 뜻이 사라진다. 600px 이하 화면은 아래 미디어 규칙이 모델 이름을 지키고 값이 줄어든다. */
 .ai-quota-chip-name {
+  display: inline-flex;
   min-width: 2.5em;
   overflow: hidden;
+}
+
+.ai-quota-chip-provider {
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.ai-quota-chip-provider:has(+ .ai-quota-chip-model:not(:empty)) {
+  flex: none;
+}
+
+/* 모델 이름이 길면 이쪽이 말줄임으로 줄어든다(제공자·한도 값은 유지). 좁은 화면에서는 제공자를 숨기고 모델만 남긴다. */
+.ai-quota-chip-model {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-quota-chip-model:not(:empty)::before {
+  content: " · ";
+  white-space: pre;
 }
 
 .ai-quota-chip-value {
@@ -919,6 +941,28 @@ html[data-ai-render="off"] {
 .ai-quota-chip-value::before {
   content: "·";
   margin: 0 4px;
+}
+
+@media (max-width: 600px) {
+  .ai-quota-chip-provider:has(+ .ai-quota-chip-model:not(:empty)) {
+    display: none;
+  }
+
+  .ai-quota-chip-model:not(:empty)::before {
+    content: none;
+  }
+
+  /* 좁은 화면: 모델 이름은 온전히 두고 한도 값 쪽이 먼저 말줄임으로 줄어든다. */
+  .ai-quota-chip-name:has(.ai-quota-chip-model:not(:empty)) {
+    flex: none;
+  }
+
+  .ai-quota-chip-value {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .ai-quota-chip-dot {
