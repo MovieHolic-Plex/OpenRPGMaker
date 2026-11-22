@@ -428,6 +428,24 @@
     background: var(--bg-hover);
     border-color: var(--accent-border);
   }
+  .app-modal-wizard-choice[aria-pressed="true"] {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+  }
+  .app-modal-wizard-choices.is-chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .app-modal-wizard-choices.is-chips .app-modal-wizard-choice {
+    border-radius: 999px;
+    min-height: 36px;
+    padding: 4px 14px;
+  }
+  .app-modal-wizard-keylink {
+    color: var(--accent);
+    font-size: 13px;
+    text-decoration: underline;
+  }
   .app-modal-wizard-button-text {
     display: flex;
     flex-direction: column;

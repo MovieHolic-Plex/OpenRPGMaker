@@ -1,5 +1,6 @@
 import type { TeamPlan } from "./teamPlan.ts";
 import { planEvidence, routeName } from "./teamPlanText.ts";
+import { WIZARD_KEY_PROVIDERS, wizardKeyProvider } from "./wizardKeyProviders.ts";
 
 // 첫 실행 AI 설정 마법사의 화면 모델 (2026-11-05 개편, lane ai-setup-ui).
 // 원칙: 화면마다 카드 한 장 — 무엇을 찾았는지 / 누르면 무엇이 되는지 한 문장, 주 버튼 하나.
@@ -32,6 +33,8 @@ export interface WizardInputs {
   /** 사용자가 「다른 AI 쓰기」를 눌러 찾은 결과 대신 서비스 목록을 보고 있다. */
   readonly picking?: boolean;
   readonly chosen?: WizardService;
+  /** 키 붙여 넣기 화면에서 고른 제공자 id(wizardKeyProviders). */
+  readonly keyProvider?: string;
   readonly failure?: string;
   /** 설치 명령을 복사했다 — 다음 할 일은 「다시 확인」 이다. */
   readonly copied?: boolean;
@@ -50,6 +53,7 @@ export type WizardActionId =
   | "recheck"
   | "back"
   | "paste-key"
+  | "pick-key-provider"
   | "advanced"
   | "later";
 
@@ -59,6 +63,8 @@ export interface WizardAction {
   readonly arg?: string;
   /** 버튼 아래 한 줄 설명. 서비스 고르기 화면에서 「무엇이 필요한지」를 미리 알린다. */
   readonly hint?: string;
+  /** 고르는 칩일 때 지금 골라져 있는지. 정의돼 있으면 칩으로 그린다. */
+  readonly selected?: boolean;
 }
 
 export type WizardScreenId = "finding" | "ready" | "key-found" | "expired" | "choose" | "service" | "help";
@@ -90,6 +96,8 @@ export interface WizardScreen {
   /** 본문에 그대로 보이는 명령 상자(앱이 대신 설치할 수 없을 때만). */
   readonly command?: InstallGuide;
   readonly details?: WizardDetails;
+  /** 「키 받기」 링크 — 키를 만드는 제공자 페이지. */
+  readonly keyLink?: { readonly label: string; readonly url: string };
 }
 
 export const SERVICE_LABEL: Readonly<Record<WizardService, string>> = {
@@ -264,14 +272,15 @@ function serviceScreen(input: WizardInputs, service: WizardService): WizardScree
       secondary: [BACK, LATER],
     };
   }
+  const provider = wizardKeyProvider(input.keyProvider);
   return {
     id: "service",
-    service: "deepseek",
     title: "키 붙여 넣기",
-    body: "DeepSeek 사이트에서 받은 키를 아래 칸에 붙여 넣어 주세요. 키는 이 컴퓨터에만 저장돼요.",
+    body: `${provider.label}에서 받은 키를 아래 칸에 붙여 넣어 주세요. 키는 이 컴퓨터에만 저장돼요.`,
     ...alert,
-    primary: { id: "paste-key", label: "시작하기", arg: "deepseek" },
-    choices: [],
+    primary: { id: "paste-key", label: "시작하기", arg: provider.id },
+    choices: WIZARD_KEY_PROVIDERS.map((row) => ({ id: "pick-key-provider" as const, label: row.label, arg: row.id, selected: row.id === provider.id })),
+    keyLink: { label: `${provider.label}에서 키 받기`, url: provider.keyUrl },
     secondary: [BACK, LATER],
   };
 }

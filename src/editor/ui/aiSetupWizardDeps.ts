@@ -1,17 +1,16 @@
-import { adoptKeySource, fetchChatGptAuthStatus, fetchKeySources, hasUsableCompanionCredential, startChatGptLogin, setCompanionEnvScan } from "@/ai/chatgptOAuthClient";
+import { ChatGptCompanionResponseError, ChatGptCompanionUnreachableError, adoptKeySource, fetchChatGptAuthStatus, fetchKeySources, hasUsableCompanionCredential, startChatGptLogin, setCompanionEnvScan } from "@/ai/chatgptOAuthClient";
 import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { configForProviderSelection } from "@/ai/providerSelection";
 import { saveAssistantEngine } from "@/ai/localCliEngine";
 import { CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID, configForPlanAccount, type DetectedAccount } from "@/ai/planDefaults";
 import { KEY_ROUTES } from "@/ai/keyRoutes";
-import { TEAM_MODELS } from "@/ai/teamScoreboard";
 import type { DetectedKey } from "@/ai/teamPlan";
 import { saveTeamLead } from "@/ai/teamLeadStore";
-import type { WizardService } from "@/ai/setupWizardModel";
+import { wizardKeyProvider } from "@/ai/wizardKeyProviders";
 import { createLocalAgentsApi, localAgentsEnabled, type LocalCliStatus } from "@/start/settings/localAgents";
 import { getAiConnectionStatus, refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
-import type { WizardDeps, WizardEnvironment } from "./aiSetupWizard";
+import type { PasteKeyResult, WizardDeps, WizardEnvironment } from "./aiSetupWizard";
 
 const LOGIN_POLL_MS = 2000;
 const LOGIN_WINDOW_MS = 5 * 60_000;
@@ -82,6 +81,13 @@ async function loginAndWait(providerId: string, open: (url: string) => void): Pr
   return false;
 }
 
+/** 서버가 준 실패 코드를 사람 말 한두 문장으로. 서버 문구(message)가 이미 쉬운 말이면 뒤에 그대로 붙인다. */
+function keyFailureReason(label: string, code: string, message: string): string {
+  if (code === "auth") return `키가 거절됐어요(401). 앞뒤 공백 없이 다시 복사했는지, ${label}에서 받은 키가 맞는지 확인해 주세요.`;
+  if (code === "server") return `${label} 서버가 지금 응답하지 못해요. 잠시 뒤 다시 눌러 주세요.${message ? ` (${message})` : ""}`;
+  return message || "연결하지 못했어요. 키를 확인하고 다시 눌러 주세요.";
+}
+
 export function realWizardDeps(onDone: (connected: boolean) => void): WizardDeps {
   const openWindow = (url: string): void => {
     if (typeof window !== "undefined" && typeof window.open === "function") window.open(url, "_blank", "noopener,noreferrer");
@@ -97,14 +103,25 @@ export function realWizardDeps(onDone: (connected: boolean) => void): WizardDeps
     },
     install: async (cli) => (await createLocalAgentsApi().install(cli).catch(() => ({ ok: false, code: "failed", message: "" }))).ok,
     copy: async (text) => { await navigator.clipboard?.writeText(text); },
-    pasteKey: async (service: WizardService, key: string) => {
-      if (service !== "deepseek") return false;
+    pasteKey: async (providerId, key): Promise<PasteKeyResult> => {
+      const provider = wizardKeyProvider(providerId);
       const { connectOpenAiCompatEndpoint } = await import("@/ai/chatgptOAuthClient");
-      const route = KEY_ROUTES.deepseek;
-      const result = await connectOpenAiCompatEndpoint({ kind: "custom", baseUrl: route.baseUrl, apiKey: key, model: route.models.deepseek ?? TEAM_MODELS.deepseek.id }).catch(() => undefined);
-      if (!result?.ok || !result.endpoint) return false;
-      saveAiConfig(configForProviderSelection(loadAiConfig(), result.endpoint.id));
-      return connectedNow();
+      try {
+        const result = await connectOpenAiCompatEndpoint({
+          kind: provider.kind, apiKey: key, model: provider.model,
+          ...(provider.kind === "custom" ? { baseUrl: provider.baseUrl, name: provider.label } : {}),
+          ...(provider.reasoningMode ? { reasoningMode: provider.reasoningMode } : {}),
+          ...(provider.supportsImages ? { supportsImages: true } : {}),
+          ...(provider.imageModels ? { imageModels: provider.imageModels } : {}),
+        });
+        if (!result.ok || !result.endpoint) return { ok: false, reason: keyFailureReason(provider.label, result.code, result.message) };
+        saveAiConfig(configForProviderSelection(loadAiConfig(), result.endpoint.id));
+        return (await connectedNow()) ? { ok: true } : { ok: false, reason: "키는 맞았지만 연결 상태를 확인하지 못했어요. 「시작하기」를 한 번 더 눌러 주세요." };
+      } catch (error) {
+        if (error instanceof ChatGptCompanionResponseError && error.serverMessage) return { ok: false, reason: error.serverMessage };
+        if (error instanceof ChatGptCompanionUnreachableError) return { ok: false, reason: "연결 서비스에 닿지 못했어요. 인터넷이 연결돼 있는지 확인하고, 앱을 다시 켠 뒤 눌러 주세요." };
+        return { ok: false, reason: "연결하지 못했어요. 잠시 뒤 다시 눌러 주세요." };
+      }
     },
     adoptKey: async (sourceId, modelId) => {
       void modelId;
