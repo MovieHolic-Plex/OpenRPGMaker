@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T15:49:16.894Z",
+  "generatedAt": "2026-11-22T16:54:09.672Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -1178,6 +1178,11 @@
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore:hover|ai-collapsed-restore",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore|ai-collapsed-restore",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-undo:not([hidden])|ai-collapsed-undo",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-quota-chip-label|ai-quota-chip-label",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-quota-chip-name[data-part=\"model\"]:not(:empty)::before|ai-quota-chip-name",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-quota-chip-name[data-part=\"model\"]:not(:empty)|ai-quota-chip-name",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-quota-chip-name[data-part=\"provider\"]:has(+ .ai-quota-chip-name[data-part=\"model\"]:not(:empty))|ai-quota-chip-name",
+    "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-quota-chip-value|ai-quota-chip-value",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-deck-rail-actions .ai-composer-menu-btn.ai-context-meter|ai-context-meter",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-lock-action:focus-visible|ai-lock-action",
     "R2|database/tabs-b-assistant-panel/18-assistant-deck.css|.ai-lock-action:hover|ai-lock-action",
