@@ -135,7 +135,7 @@ const GROUP_BALANCE: Readonly<Record<string, DatabaseAiSuggestion>> = {
   party: { id: "balance", label: "성장 밸런스", prompt: "주인공·직업·스킬의 성장 곡선이 서로 맞는지 점검하고 어긋난 값을 고쳐줘" },
   battle: { id: "balance", label: "난이도·상태·속성 점검", prompt: "선택한 몬스터를 중반 난이도에 맞춰 스탯·보상을 조정하고 속성 상성표와 상태 효과 중 과한 것을 찾아줘" },
   life: { id: "balance", label: "생활 루프 점검", prompt: "농사·제작·채집 데이터의 보상 순환이 막히는 곳을 찾아줘" },
-  world: { id: "balance", label: "세계 규칙 점검", prompt: "생성 규칙과 타일셋 설정에서 서로 충돌하는 값을 찾아줘" },
+  world: { id: "balance", label: "타일셋 점검", prompt: "타일셋 설정에서 서로 충돌하거나 빠진 값을 찾아줘" },
   system: { id: "balance", label: "게임 설정 점검", prompt: "게임 설정·메뉴·오프닝·용어와 스위치·변수 연결에서 어긋난 구성을 찾아줘" },
 };
 

@@ -27,7 +27,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor event authoring: `openwiki/editor-event-authoring.md`, `openwiki/editor-event-commands.md`, `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
    - 직업 승급·스킬 트리: `openwiki/growth-trees.md`
-   - World generation rules (authored water/forest/road numbers + natural-language keyword rules): `openwiki/world-generation-rules.md`
+   - World generation rules (stored `system.worldGen` water/forest/road numbers + keyword rules; as of 2026-11-22 no tab or generator reads them, storage/validation only): `openwiki/world-generation-rules.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`, `openwiki/ai-context-compaction.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 세계 지도 이동 구조 6종(실제 필드·문·해금·M 지도·핀·공용 자료·정본): `openwiki/worldmap-navigation-structures.md`

@@ -131,7 +131,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor observability — mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피: `openwiki/editor-observability.md` (read before adding an editing feature or debugging "방금 뭘 했더니 이렇게 됐다")
    - Editor event authoring: `openwiki/editor-event-authoring.md` + `openwiki/editor-event-commands.md` + `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
-   - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
+   - 세계 생성 규칙 (물·숲·길 수치와 낱말 판정의 저장 필드 `system.worldGen` — 2026-11-22 현재 탭·생성기 연결 없음, 저장·검증만): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
    - 던전 주제 열넷 (조수 `author_dungeon` 의 숲·늪·피라미드·마법탑·마계·얼음 등 종류, 배치 가족 linear/hub/loop/vertical, 주제 장치 lever·bridge·teleporter·minecart·iceslide·sandpit, 게임 참고 inspiration, 주제 적, 새 그림 키트 이름 `bd-pick-dungeon-theme-*`): `openwiki/dungeon-themes.md`
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
