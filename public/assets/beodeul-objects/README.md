@@ -9,10 +9,10 @@
 3. 저장소 루트에서 카탈로그 검사를 실행한다.
 
    ```sh
-   OPRN_LOCAL_TESTS=1 npm run test:unit -- test/beodeulPlaceableObjects.test.ts
+   OPRN_LOCAL_TESTS=1 npm run test:unit -- test/beodeulPlaceableObjectsCatalog.test.ts
    ```
 
-검사는 PNG와 항목의 일대일 대응, 고유 ID, 실제 픽셀 크기, 16px 칸의 투명 영역과 통행표, 그룹 참조와 세트의 필수 조각을 확인한다.
+검사는 기물 PNG와 항목의 일대일 대응, 고유 ID, 실제 픽셀 크기, 16px 칸의 투명 영역과 통행표, 그룹 참조와 세트의 필수 조각을 확인한다. 기존 도로·점자블록처럼 바닥을 덮는 PNG는 통행표가 모두 `.`인 경우 불투명해도 된다. 하이픈이 들어간 참고 이미지는 별도로 보관하는 배치 예시다.
 
 | 필드 | 값 |
 | --- | --- |
