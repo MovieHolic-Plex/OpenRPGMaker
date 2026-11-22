@@ -26,7 +26,7 @@ import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { store } from "@/project/store";
 import { stairApproachProblem } from "@/project/stairs/placement";
 import type { MapId, TilesetDef } from "@/project/types";
-import { reliefInverseMode } from "@/editor/reliefBrushMode";
+import { reliefHistoryLabel, reliefInverseMode } from "@/editor/reliefBrushMode";
 import { paintRoughRelief, tidyReliefStroke } from "@/editor/reliefActions";
 import { findReliefDoodad } from "@/editor/reliefDoodads";
 import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
@@ -414,7 +414,7 @@ export class TilePaintEngine {
         : state.reliefLevel;
       this.applyStrokeEdit(mid, () => {
         for (const p of symmetricPoints({x,y},state.terrainSymmetry,map.width,map.height)) paintRelief(mid, p.x, p.y, reliefMode, { radius: Math.max(1, state.brushSize - 1), level, flattenTo: base, topGrass: state.reliefTopGrass });
-      });
+      }, { label: reliefHistoryLabel(reliefMode, this.reliefStrokeInverted) });
       return;
     }
     if (firstStrokeTile) {
@@ -449,7 +449,7 @@ export class TilePaintEngine {
       for (const p of symmetricPoints({x,y},editorState.get().terrainSymmetry,map.width,map.height)) paintRoughRelief(rough.mapId, p.x, p.y, rough.mode, {
         radius: rough.radius, base: this.reliefStrokeBase, peak: rough.peak, cap: rough.cap, topGrass,
       });
-    });
+    }, { label: reliefHistoryLabel(rough.mode, this.reliefStrokeInverted) });
   }
 
   /** 누르고 있는 동안 봉우리(올리기)·바닥(내리기)을 한 단씩 — 상한·0단에서 멈춘다. */
