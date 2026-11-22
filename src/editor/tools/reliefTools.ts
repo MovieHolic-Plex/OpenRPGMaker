@@ -12,6 +12,7 @@ import { buildReliefOps, RELIEF_OPS_SPEC, type ReliefOpsSpec } from "@/project/r
 import { gridFromRelief, reliefFromGrid, RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import type { GameMap, TilesetDef } from "@/project/types";
 import { requireMap } from "./mapHelpers";
+import { reliefAccess } from "./reliefAccess";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const SCULPT_EXAMPLE = {
@@ -100,11 +101,13 @@ const sculptRelief: ToolDefinition = {
     map.relief = carryReliefExtras(args.reset === true ? (map.relief?.style ? { ...emptyRelief(map.width, map.height), style: map.relief.style } : undefined) : map.relief, reliefFromGrid(h));
     if (reliefIsFlat(map.relief)) delete map.relief;
     const check = checkRelief(h, map.relief?.style);
-    const warnings = log.length ? log : undefined;
+    const access = reliefAccess(draft, map);
+    const warnings = [...log, ...(access && access.unreachableHigh > 0 ? [access.text] : [])];
     return {
-      summary: `${map.name} 높이 ${ops.length}개 op 적용 — 가려진 칸 ${check.hidden}, 규칙에 깎인 칸 ${check.cut}`,
-      ...(warnings ? { warnings } : {}),
-      data: { check: check.text, maxLevel: RELIEF_MAX_LEVEL },
+      summary: `${map.name} 높이 ${ops.length}개 op 적용 — 가려진 칸 ${check.hidden}, 규칙에 깎인 칸 ${check.cut}`
+        + (access ? `, 도달 못 하는 높은 땅 ${access.unreachableHigh}칸` : ""),
+      ...(warnings.length ? { warnings } : {}),
+      data: { check: access ? `${check.text}\n${access.text}` : check.text, maxLevel: RELIEF_MAX_LEVEL, ...(access ? { access } : {}) },
     };
   },
 };
@@ -113,7 +116,7 @@ const checkReliefTool: ToolDefinition = {
   name: "check_relief",
   description:
     "맵 절벽 높이를 검사한다 — 렌더 규칙에 깎인 칸(1칸 폭 돌기·홈), 남쪽 땅에 가려 안 보이는 구역(바닥·바로 남쪽 높이 포함), "
-    + "12칸 이상 일직선 벽(자로 그은 듯 보임)을 글로 돌려준다. 고칠 방향 제안이 붙는다.",
+    + "12칸 이상 일직선 벽(자로 그은 듯 보임), 출발점에서 걸어 닿지 못하는 높은 땅(경사로 없는 단)과 그 땅에 놓을 수 있는 place_terrain_ramp 자리를 글로 돌려준다. 고칠 방향 제안이 붙는다.",
   mode: "read",
   domains: ["map", "tile"],
   invalidArgsExample: { mapId: "map_1" },
@@ -121,9 +124,12 @@ const checkReliefTool: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const check = checkRelief(reliefGrid(map), map.relief?.style);
+    const access = reliefAccess(draft, map);
     return {
-      summary: `${map.name} 높이 검사 — 가려진 칸 ${check.hidden}, 깎인 칸 ${check.cut}`,
-      data: { text: check.text, hidden: check.hidden, cut: check.cut, hiddenRegions: check.hiddenRegions },
+      summary: `${map.name} 높이 검사 — 가려진 칸 ${check.hidden}, 깎인 칸 ${check.cut}`
+        + (access ? `, 도달 못 하는 높은 땅 ${access.unreachableHigh}칸` : ""),
+      data: { text: access ? `${check.text}\n${access.text}` : check.text, hidden: check.hidden, cut: check.cut, hiddenRegions: check.hiddenRegions,
+        ...(access ? { unreachableHigh: access.unreachableHigh, unreachableRegions: access.regions, accessStart: access.start } : {}) },
     };
   },
 };
