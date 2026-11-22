@@ -52,8 +52,8 @@ source expands mechanically to a complete grid, with no shape generation or twee
 ## EasyRPG RTP bundled object charsets
 
 - Files:
-  - `easyrpg-charset-object1.png` from `CharSet/Object1.png`
-  - `easyrpg-charset-object2.png` from `CharSet/Object2.png`
+  - `easyrpg/charset/Object1.png` from `CharSet/Object1.png`
+  - `easyrpg/charset/Object2.png` from `CharSet/Object2.png`
 - Repository: https://github.com/EasyRPG/RTP
 - License: Creative Commons Attribution 4.0 International for EasyRPG RTP materials
 - Upstream asset attribution:
@@ -553,4 +553,10 @@ No image-generation output and no third-party art other than the Scarloxy chip b
 
 - Files: the 739 placeable PNGs in [the Beodeul catalog](beodeul-objects/catalog.json): 610 that passed the 2026-11-21 버들항-grade re-audit (52 connecting tiles from #4877, plus 169 + 134 + 255 standalone city props) and 129 base placeable props from #4849. Each entry records the approved source filename. The existing Beodeul reference illustrations are under `beodeul-object-references/`.
 - Artwork: OPRN Studio · ChatGPT dots, in the Beodeul style.
+- License: OPRN-GAME ([OPRN Game Use License](../../ASSET-LICENSE.md)).
+
+## Emerald monster species art v4
+
+- Files: `emerald-monster/species-v4/<species>-front.png` and `-back.png`, 60 species x 2 sides (112x112, transparent). Listed in `src/assets/emeraldSpeciesV4.json`.
+- Artwork: original OPRN generated artwork (built-in image generation, then the monster-collect-species pixel pipeline), not ripped game sprites. Prompts, sources and per-image provenance: `assets/emerald-monster-v2/` (`monster-revision4-generation.json`, `candidates-v4/index.json`, `candidates-v4/pair-provenance.json`).
 - License: OPRN-GAME ([OPRN Game Use License](../../ASSET-LICENSE.md)).

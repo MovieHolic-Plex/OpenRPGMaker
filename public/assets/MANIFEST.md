@@ -12,16 +12,6 @@ light from top-left.
 
 ---
 
-## tiles_default.png
-- **치수**: 256×32 (8 타일 × 1행, 타일당 32px)
-- **용도**: 게임 타일셋. 인덱스 0~7 순서:
-  - 0: grass / 1: water / 2: wall / 3: path
-  - 4: floor / 5: sand / 6: tree / 7: stairs
-- **버전 히스토리**:
-  - v1 (2026-06-18): 최초 생성. 일관된 팔레트, seam 없음. 단 tree/stairs가 너무 희박(시각 진단 3/10, 2/10).
-  - v2 (2026-06-18): 전체 재생성. tree(명확한 갈색 trunk + 3단계 음영의 큰 둥근 canopy)와 stairs(깊이 있는 3-4단 계단, wall과 회색 톤 일치)를 풍부하게 개선. 진단 tree/stairs 각 9/10.
-- **정밀수정 시 참고**: 타일 경계 anti-aliasing 금지. 인덱스 순서 절대 변경 금지(코드가 `TILE` 상수로 매핑).
-
 ## dialogue-frame.png
 - **치수**: 64×64 (9-slice용, 슬라이스 16px)
 - **용도**: 대사창 프레임 테두리. CSS `border-image`로 사용. 코너 장식 + 반복 가능한 가장자리 + 반투명 어두운 중앙.
@@ -50,7 +40,7 @@ light from top-left.
 - **라이선스**: EasyRPG RTP materials are Creative Commons Attribution 4.0 International. Upstream attribution for `ChipSet/Exterior.png`: JasonPerry, CC0, https://finalbossblues.itch.io/
 - **주의**: Enterbrain/RPG Maker 원본 RTP가 아니라 EasyRPG의 자유 대체 리소스다. 라이선스/저작자 표기는 `public/assets/ATTRIBUTION.md`와 `vendor/easyrpg-rtp/` 문서를 유지한다.
 
-## easyrpg-chipset-*.png / easyrpg-charset-object*.png
+## easyrpg-chipset-*.png / easyrpg/charset/Object*.png
 - **치수**:
   - ChipSet: 480x256, 16px tile, RPG Maker 2000/2003 ChipSet compatible.
   - CharSet Object: 288x256, 24x32 frames, RPG Maker 2000/2003 CharSet compatible.
@@ -60,7 +50,7 @@ light from top-left.
   - `easyrpg-chipset-ship.png`: ship deck and nautical structures.
   - `easyrpg-chipset-world.png`, `easyrpg-chipset-retro-world.png`: overworld terrain and world-map objects.
   - `easyrpg-chipset-retro-exterior.png`: alternate exterior village/building/object style.
-  - `easyrpg-charset-object1.png`, `easyrpg-charset-object2.png`: event-object sprites; use these for real door/chest/sign objects instead of forcing every door into ChipSet tiles.
+  - `easyrpg/charset/Object1.png`, `easyrpg/charset/Object2.png`: event-object sprites; use these for real door/chest/sign objects instead of forcing every door into ChipSet tiles.
 - **출처/라이선스**: EasyRPG RTP. See `public/assets/ATTRIBUTION.md` and `vendor/easyrpg-rtp/AUTHORS.md`.
 
 ## easyrpg/chipset/*.png

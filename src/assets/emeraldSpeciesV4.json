@@ -1,0 +1,245 @@
+{
+ "_doc": "에메랄드 몬스터 v4 종 그림 60종(앞·뒤, 112×112 투명, 잉크 64px 이하, 16색 이하). 원본 후보와 생성 기록은 assets/emerald-monster-v2/(CANDIDATES.md, candidates-v4/index.json). 캠페인 종 그림은 바꾸지 않고, 편집기 몬스터 그림 목록에서 고를 수 있는 번들 그림으로만 싣는다.",
+ "species": [
+  {
+   "id": "abyssail",
+   "name": "심해돛룡"
+  },
+  {
+   "id": "astralhart",
+   "name": "별가지사슴"
+  },
+  {
+   "id": "atollclamp",
+   "name": "환초집게"
+  },
+  {
+   "id": "beaconmoth",
+   "name": "봉화나방"
+  },
+  {
+   "id": "brambleboar",
+   "name": "덤불멧"
+  },
+  {
+   "id": "briartusk",
+   "name": "가시엄니"
+  },
+  {
+   "id": "brinewyrm",
+   "name": "소금비룡"
+  },
+  {
+   "id": "brookraft",
+   "name": "뗏목랑"
+  },
+  {
+   "id": "coalbit",
+   "name": "숯비늘"
+  },
+  {
+   "id": "coilcrest",
+   "name": "코일볏"
+  },
+  {
+   "id": "coralpin",
+   "name": "산호집"
+  },
+  {
+   "id": "craghoof",
+   "name": "절벽굽"
+  },
+  {
+   "id": "curlfin",
+   "name": "돌돌해마"
+  },
+  {
+   "id": "dozemite",
+   "name": "졸음사마"
+  },
+  {
+   "id": "dunestalk",
+   "name": "사구꼬리"
+  },
+  {
+   "id": "faultdigger",
+   "name": "단층발"
+  },
+  {
+   "id": "fenstrider",
+   "name": "습지걸음"
+  },
+  {
+   "id": "flurrykit",
+   "name": "눈송냥"
+  },
+  {
+   "id": "frondhare",
+   "name": "잎귀토"
+  },
+  {
+   "id": "furnscale",
+   "name": "용광비늘"
+  },
+  {
+   "id": "galecrest",
+   "name": "돌풍깃"
+  },
+  {
+   "id": "glaciermane",
+   "name": "빙하갈기"
+  },
+  {
+   "id": "gritnose",
+   "name": "자갈코"
+  },
+  {
+   "id": "grovewarden",
+   "name": "숲지기토"
+  },
+  {
+   "id": "gustchick",
+   "name": "바람삐"
+  },
+  {
+   "id": "hushdoll",
+   "name": "고요인형"
+  },
+  {
+   "id": "kilnclaw",
+   "name": "가마발"
+  },
+  {
+   "id": "lanternwing",
+   "name": "등불나방"
+  },
+  {
+   "id": "lunavane",
+   "name": "달빛가오리"
+  },
+  {
+   "id": "marshcrown",
+   "name": "습지왕관"
+  },
+  {
+   "id": "miragespike",
+   "name": "신기루침"
+  },
+  {
+   "id": "miretail",
+   "name": "늪꼬리"
+  },
+  {
+   "id": "mistralheron",
+   "name": "안개왜가리"
+  },
+  {
+   "id": "oraclemantis",
+   "name": "예지사마"
+  },
+  {
+   "id": "orchardant",
+   "name": "과수장수"
+  },
+  {
+   "id": "pebblekid",
+   "name": "조약양"
+  },
+  {
+   "id": "pipbug",
+   "name": "씨앗충"
+  },
+  {
+   "id": "podback",
+   "name": "콩등충"
+  },
+  {
+   "id": "reedpeep",
+   "name": "갈대삐"
+  },
+  {
+   "id": "reefguard",
+   "name": "암초방패"
+  },
+  {
+   "id": "relicarab",
+   "name": "유적장수"
+  },
+  {
+   "id": "ribbonwing",
+   "name": "리본날개"
+  },
+  {
+   "id": "ridgehorn",
+   "name": "능선뿔"
+  },
+  {
+   "id": "rimepelt",
+   "name": "서리털"
+  },
+  {
+   "id": "rivulet",
+   "name": "여울랑"
+  },
+  {
+   "id": "rootpig",
+   "name": "뿌리꿀"
+  },
+  {
+   "id": "sandnip",
+   "name": "모래집게"
+  },
+  {
+   "id": "solmane",
+   "name": "해갈기사자"
+  },
+  {
+   "id": "spriglet",
+   "name": "새싹토"
+  },
+  {
+   "id": "stormskink",
+   "name": "폭풍도마"
+  },
+  {
+   "id": "threadimp",
+   "name": "실꼬마"
+  },
+  {
+   "id": "thundercairn",
+   "name": "천뢰산양"
+  },
+  {
+   "id": "tidekeeper",
+   "name": "조수지기"
+  },
+  {
+   "id": "trancescythe",
+   "name": "몽환낫"
+  },
+  {
+   "id": "tunnelpaw",
+   "name": "굴손"
+  },
+  {
+   "id": "veilmaster",
+   "name": "장막인형"
+  },
+  {
+   "id": "venomfrill",
+   "name": "독주름"
+  },
+  {
+   "id": "wickworm",
+   "name": "심지충"
+  },
+  {
+   "id": "winterquill",
+   "name": "설월학"
+  },
+  {
+   "id": "zaptoe",
+   "name": "톡발도마"
+  }
+ ]
+}
