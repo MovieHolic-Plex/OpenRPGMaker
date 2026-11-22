@@ -13,6 +13,7 @@ import { beodeulGroundReferences } from './beodeulGround';
 import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
 import {ensureBeodeulOrganic} from './beodeulOrganic';
+import { ensureBeodeulPlaceableObjects } from "./beodeulPlaceableObjects";
 import {stampBeodeulKitUse} from './beodeulKitUse';
 import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
 import {beodeulMassingHostReferences,ensureBeodeulMassing} from './beodeulMassing';
@@ -129,6 +130,12 @@ export function beodeulCityBundledReferenceDocuments(): TilesetReferenceCategory
 
 /** Independent copy of the shipped tileset, born with its reference documents. */
 export function createBeodeulCityTileset(): TilesetDef {
+  const tileset = createBeodeulCityBase();
+  ensureBeodeulPlaceableObjects(tileset);
+  return tileset;
+}
+
+function createBeodeulCityBase(): TilesetDef {
   const tileset:TilesetDef = {
     id: BEODEUL_CITY_ID,
     name: data().name,
@@ -243,7 +250,7 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: Relocati
     const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked, !theme2Blocked);
     return mergeShippedKits(tileset, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked, !theme2Blocked) || extended || farm || familyFixed || !!moved;
   }
-  const fresh = createBeodeulCityTileset();
+  const fresh = createBeodeulCityBase();
   tileset.count = fresh.count;
   tileset.tilesPerRow = fresh.tilesPerRow;
   tileset.passability = fresh.passability;

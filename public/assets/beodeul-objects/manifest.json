@@ -1,6 +1,41 @@
 {
   "groups": [
     {
+      "id": "nature",
+      "labelKo": "자연",
+      "order": 10
+    },
+    {
+      "id": "indoor",
+      "labelKo": "실내 가구",
+      "order": 20
+    },
+    {
+      "id": "harbor",
+      "labelKo": "항구·부두",
+      "order": 30
+    },
+    {
+      "id": "market",
+      "labelKo": "시장·상점",
+      "order": 40
+    },
+    {
+      "id": "village",
+      "labelKo": "농가·마을 생활",
+      "order": 50
+    },
+    {
+      "id": "structures",
+      "labelKo": "구조물 세트",
+      "order": 60
+    },
+    {
+      "id": "outdoor",
+      "labelKo": "야외·기타 소품",
+      "order": 70
+    },
+    {
       "id": "city",
       "labelKo": "현대 도시",
       "order": 80
@@ -122,6 +157,43 @@
     }
   ],
   "sets": [
+    {
+      "id": "hedge",
+      "role": "fence",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "gate_h",
+        "h_straight",
+        "t_n",
+        "t_s",
+        "v_straight"
+      ]
+    },
+    {
+      "id": "dock",
+      "role": "water",
+      "requiredPieces": [
+        "corner_ne",
+        "corner_nw",
+        "corner_se",
+        "corner_sw",
+        "end_e",
+        "end_n",
+        "end_s",
+        "end_w",
+        "h_straight",
+        "mooring_h",
+        "mooring_v",
+        "v_straight"
+      ]
+    },
     {
       "id": "city_apt_curb_bed",
       "role": "fence",

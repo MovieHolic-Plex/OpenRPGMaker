@@ -1,5 +1,11 @@
 # 버들항 v6·v7 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
 
+## 기본 기물 카탈로그
+
+새 프로젝트와 불러온 버들항 칩셋 맵의 왼쪽 **기물**에서 분류별 묶음을 펼쳐 찍거나 한국어 이름·ID·태그로 검색한다. 조수는 `list_tileset_objects({mapId, query:"버들항 기본 기물"})`의 id·크기·태그를 보고 `stamp_tileset_object`로 놓는다. `list_spatial_designs({kind:"object"})`와 `stamp_object`도 같은 구조 킷을 쓴다.
+
+`public/assets/beodeul-objects/catalog.json`이 독립 PNG, 이름, 팔레트 그룹, 통행표, 검색 태그, 세트 소속, 출처의 정본이다. 같은 폴더의 `manifest.json`은 그룹 이름과 순서, 세트별 필수 조각을 정한다. `src/project/defaults/beodeulPlaceableObjects.ts`에서 투명 빈 칸을 제외한 그림을 기존 버들항 칩셋 끝에 이식하고, 이미 저장한 칸은 같은 원본 그림을 찾아 재사용한다. 추가 절차는 [기물 README](../public/assets/beodeul-objects/README.md)에 있다.
+
 ## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 
 버들항 v6 는 「손 도트 원본」만으로 이루어진 시트가 아니다. 파이프라인(`scripts/content/lib/city_v6/` 의 city6·terrain·pz·pn·pj·pk)이
@@ -1162,7 +1168,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **기존 사본**: `ensureBeodeulCityTileset` → `relocateLocalTail`(이식 꼬리를 128 뒤로) + `extendPickedParts`(칸 표) + `mergeShippedKits`(`bd-obj-` 는 번들 소유 접두사). 주제 2 꼬리를 못 받는 사본(프로젝트 없이 부른 경우)은 이 킷·참고문서도 받지 않는다. 참고문서는 `ensureBeodeulCityReferences`(칸이 있을 때만).
 - **옛 저장본 검사**: `npx tsx scripts/content/check-bundle-save-compat.mts ~/z-project/assistant-fable-runs --limit 40` — 저장본 40개 중 열리던 38개 모두 통과(나머지 2개는 굽기 전에도 「folded project row … sha256」 으로 안 열린다).
   이 검사가 **공방 칸 번호 충돌**을 잡았다(저장본 r1-fantasy, 맵 한 칸이 나무 → 공방 그림): 시트가 128칸 자라 이식 꼬리가 밀리면, 떼어 둔 공방 칸의 옛 번호 자리에 다른 이식 칸이 앉고, 다시 붙일 때 «옛 번호 → 새 번호» 가 그 칸까지 바꿨다. `detachWorkshopTiles(tileset, project)` 가 떼는 동안 맵의 공방 칸을 보관 번호로 비켜 두게 고쳤다(`openwiki/harnesses/map-objects.md` 「번호 이주」).
-- **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-objects`(생성 `bun scripts/content/prepare-beodeul-objects-references.mts`, 출처 `tiledata/beodeul-objects/`, 그림 `public/assets/beodeul-objects/`) — 킷 사전·실행 순서·16종을 모두 쓴 22×15 조립 예제의 네 층 배열(실제 놓기 도구 출력)·정상/오류 그림 4종(`wrong-layer`·`walk-blocked`·`entrance-blocked`·`kit-incomplete`, 실제로 변조해 검출)·검사 범위.
+- **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-objects`(생성 `bun scripts/content/prepare-beodeul-objects-references.mts`, 출처 `tiledata/beodeul-objects/`, 그림 `public/assets/beodeul-object-references/`) — 킷 사전·실행 순서·16종을 모두 쓴 22×15 조립 예제의 네 층 배열(실제 놓기 도구 출력)·정상/오류 그림 4종(`wrong-layer`·`walk-blocked`·`entrance-blocked`·`kit-incomplete`, 실제로 변조해 검출)·검사 범위.
 - **탐침(모델 없음)**: `bun scripts/content/beodeul-objects/probe.mts <저장된 프로젝트 폴더> <outDir> [맵 id]` — 새 프로젝트·기존 저장본 사본(정규화 → 저장 → 다시 열기, 맵 그림 지문 동일), 낱말마다 `list_tileset_objects`·v2 `draw_object` 가 무엇을 이르는지, v2 `place_object` 로 16종 놓기(막힌 칸이 선언과 같은지·입구 판독), 1배 합성 그림.
 - **남은 것 / 하지 않은 것**: 널빤지 길 모퉁이·끝은 한 방향뿐이다. 마을 bbox 목록(`bboxVillageCatalog`)과 빈 땅 채우기에는 실리지 않는다(이름으로 부를 때만 놓인다). 동굴 입구는 들판 한가운데 서면 돌 움집처럼 보인다 — 절벽·숲 가장자리에 붙여야 한다. 그림에 바닥 그림자가 없다(버들항 나무·집은 있다). 이야기마다 다른 이름(«잠든 별», «수로 지도»)은 킷 낱말에 없으면 닿지 않는다.
 

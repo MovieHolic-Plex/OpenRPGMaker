@@ -5,7 +5,7 @@
 // 하는 일(tiledata/AI-REFERENCE-CONTRACT.md): 정확한 사전(킷 id·칸 번호·층·통행) · 실행 순서 · 조립 예제 한 장면의 네 층 전체 배열 ·
 // 원본 해상도 그림 · 정상/오류 나란한 그림(실제로 변조해 검출) · 자동 좌표 검사와 그 범위.
 // 장면은 손으로 칸을 찍지 않고 실제 놓기 도구(stamp_tileset_object)로 놓는다 — 문서의 배열은 도구가 낸 그대로다.
-// 쓰는 것: tiledata/beodeul-objects/{README.md,references.json,example.json,*.png}(정본) · public/assets/beodeul-objects/*.png(128색 학습 사본) ·
+// 쓰는 것: tiledata/beodeul-objects/{README.md,references.json,example.json,*.png}(정본) · public/assets/beodeul-object-references/*.png(128색 학습 사본) ·
 //          src/assets/beodeulCityReferences.json(용도 beodeul-objects 를 넣거나 바꾼다, 문서·그림 id 는 bd-obj- 머리라 번들 소유).
 // 그림은 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 · 변형은 fable-variety-beodeul-2026-11-12 · 새 종류는 fable-objects100-beodeul-2026-11-14 · 마을 종류별 기물은 fable-objects300-beodeul-2026-11-14 (굽기: scripts/content/beodeul-objects/bake.py).
 import fs from "node:fs";
@@ -21,7 +21,7 @@ import type { GameMap, Project, StructureKitDef } from "../../src/project/types"
 import { renderMapPng } from "../qa-game/render.mts";
 import catalog from "../../tiledata/beodeul-objects/catalog.json";
 
-const ROOT = "tiledata/beodeul-objects", PUB = "public/assets/beodeul-objects", REFS = "src/assets/beodeulCityReferences.json";
+const ROOT = "tiledata/beodeul-objects", PUB = "public/assets/beodeul-object-references", REFS = "src/assets/beodeulCityReferences.json";
 fs.mkdirSync(PUB, { recursive: true });
 const GRASS = 737, T = 16;
 const base = createBlankProject() as Project;
@@ -748,7 +748,7 @@ fs.writeFileSync(`${ROOT}/example.json`, JSON.stringify({ map: { id: scene.id, w
   variants: { map: { id: variantScene.id, width: VW, height: VH, upperTiles: variantScene.upperTiles }, placed: vPlaced, errors: vErrors },
   news: { map: { id: newScene.id, width: NW, height: NH, lowerTiles: newScene.lowerTiles, upperTiles: newScene.upperTiles }, placed: nPlaced, walk: N_WALK, errors: nErrors },
   kinds: { map: { id: kindScene.id, width: KW, height: KH, lowerTiles: kindScene.lowerTiles, upperTiles: kindScene.upperTiles }, placed: kPlaced, blocks: kBlocks, walk: K_WALK, errors: kErrors } }, null, 1) + "\n");
-const img = (file: string) => `/assets/beodeul-objects/${file}`;
+const img = (file: string) => `/assets/beodeul-object-references/${file}`;
 const category = {
   id: "beodeul-objects", name: "버들항 · 이야기 기물과 새 종류 기물(샘·입구·제단·널빤지 길 · 살림·물 위·바위·묘지 · 마을 종류별 벌)",
   description: `이야기가 부르는 기물 16종, 종류별 변형 ${VARIANTS.length}종, 새 종류 ${NEWS.length}종(마을 살림·물가와 물 위·농장·숲 바닥·절벽 바위·유적과 묘지 — 물 위 것은 물 칸 위에만, 징검돌은 밟고 건넌다)(bd-obj-*, 칸 ${catalog.base}~): 킷 사전·층·통행, 놓는 순서(입구 접근칸·물 위 널빤지 길), 16종을 모두 쓴 조립 예제 배열, 우물·벤치·이정표 등 ${families.length}종류의 다른 그림(원본 킷 id 로 놓으면 게임마다 하나를 고른다), 마을 종류 ${KIND_ORDER.length - 1}개의 생업 장면 벌과 공통 기물 ${KINDS.length}종(킷 태그 kind:<종류 id> — 한 벌을 한 자리에 모아 놓는다), 정상/오류 그림. 3/4 관문 미통과 — 오너 면제 그림.`,
