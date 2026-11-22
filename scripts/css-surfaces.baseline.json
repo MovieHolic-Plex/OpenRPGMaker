@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T16:54:09.672Z",
+  "generatedAt": "2026-11-22T17:12:15.685Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -1092,6 +1092,8 @@
     "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|.ai-turn-group-toggle|ai-turn-group-toggle",
     "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|.ai-turn-group.is-collapsed > .ai-turn-group-body|ai-turn-group",
     "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|.ai-turn-group.is-collapsed > .ai-turn-group-body|ai-turn-group-body",
+    "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|.ai-turn-group:not(.is-collapsed) > .ai-turn-group-body|ai-turn-group",
+    "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|.ai-turn-group:not(.is-collapsed) > .ai-turn-group-body|ai-turn-group-body",
     "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|.ai-turn-group|ai-turn-group",
     "R2|database/tabs-b-assistant-panel/09-ux-polish-density.css|body.ai-panel-docked|ai-panel-docked",
     "R2|database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css|.ai-command-attachment.ai-chat-doc|ai-command-attachment",

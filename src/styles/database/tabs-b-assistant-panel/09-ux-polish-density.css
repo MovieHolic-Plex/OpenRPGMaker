@@ -191,6 +191,11 @@
 .ai-turn-group.is-collapsed > .ai-turn-group-body {
   display: none;
 }
+/* 펼친 지난 턴은 왼쪽 선으로 위의 요약 머리에 속함을 보인다. */
+.ai-turn-group:not(.is-collapsed) > .ai-turn-group-body {
+  border-left: 2px solid var(--border-subtle);
+  padding-left: 10px;
+}
 
 /* 이전 턴 그룹은 어느 뷰에서도 보인다 — 오버레이에서 숨기던 규칙은 오버레이가 사이드
    전용이 된 뒤 죽은 규칙이었다(assistant-rising-overlay.css 의 같은 정리 참조).
