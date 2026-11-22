@@ -26,4 +26,40 @@ describe("small-task layering", () => {
     const source = "// import \"../units/02-cmd-flow\"\n/* from \"../units/03-cmd-switch-var\" */\nconst x = 1;\n";
     expect(problemsInSource(source, rel)).toEqual([]);
   });
+
+  it("sees an import after a slash-star inside a regular expression", () => {
+    const source = "const separator = /[/*]/;\nimport \"../units/02-cmd-flow\";\n";
+    expect(problemsInSource(source, rel)).toEqual([
+      `${rel}:2: imports a unit module (../units/02-cmd-flow)`,
+    ]);
+  });
+
+  it("sees a unit id in a constant template literal", () => {
+    const source = "if (unit === `02-cmd-flow`) handle();\n";
+    expect(problemsInSource(source, rel)).toEqual([
+      `${rel}:1: names a numbered unit`,
+    ]);
+  });
+
+  it("sees a dynamic import of a constant template specifier", () => {
+    const source = "await import(`../units/02-cmd-flow`);\n";
+    expect(problemsInSource(source, rel)).toEqual([
+      `${rel}:1: imports a unit module (../units/02-cmd-flow)`,
+    ]);
+  });
+
+  it("does not treat an interpolated template as a constant unit import", () => {
+    const source = "await import(`../units/${name}`);\n";
+    expect(problemsInSource(source, rel)).toEqual([]);
+  });
+
+  it("does not treat import text inside a string as a module import", () => {
+    const source = "const example = 'import \"../units/02-cmd-flow\"';\n";
+    expect(problemsInSource(source, rel)).toEqual([]);
+  });
+
+  it("keeps the ownership list exempt from unit id strings", () => {
+    const source = "export const id = \"02-cmd-flow\";\n";
+    expect(problemsInSource(source, "src/editor/smallTask/primitives/ownership.ts")).toEqual([]);
+  });
 });
