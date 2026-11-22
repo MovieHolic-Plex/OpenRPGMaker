@@ -12,7 +12,7 @@ import { findReliefDoodad, RELIEF_DOODAD_HOVER_EVENT, type ReliefDoodadHoverDeta
 import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
 import { groupAt } from "./terrainClusters";
 import { terrainBrushPoints } from "./terrainBrush";
-import { landBrushCells } from "./terrainLandBrush";
+import { landBrushCells, landStepTarget, TERRAIN_LANDS } from "./terrainLandBrush";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { cellLift, reliefLiftField, reliefPickCell, reliefReadSignature as reliefSignature } from "@/project/relief/screen";
 import { isTerrainDesignTool } from "./terrainDesignActions";
@@ -48,6 +48,13 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
     } else if (state.terrainBrush === "stamp" && !state.terrainStampCapture) {
       const stamp=store.getCurrent().terrainStamps?.find(s=>s.id===state.terrainStampId);
       if(stamp){const plan=planTerrainStamp(map,tileset,stamp,pick,state.terrainStampRotation,state.terrainStampMirror);for(const i of plan.indices)draw(i%map.width,Math.floor(i/map.width),plan.ok?0x2f9e44:0xe03131);}
+    } else if (state.terrainBrush === "road" && state.terrainRoadDrag && !(state.terrainPoints?.mapId === map.id && state.terrainPoints.points.length)) {
+      // 길을 끌기 전에도 붓 폭만큼 미리 보인다.
+      const r = Math.floor(state.terrainWidth / 2);
+      for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+        const x = pick.x + dx, y = pick.y + dy;
+        if (x >= 0 && y >= 0 && x < map.width && y < map.height) draw(x, y, 0xc49a62);
+      }
     } else {
       const pending=state.terrainPoints?.mapId===map.id?state.terrainPoints.points:[],shape=state.terrainAreaShape;
       for(const variant of symmetryVariants(state.terrainSymmetry,map.width,map.height)){
@@ -72,9 +79,13 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
   if (state.terrainBrush === "land" && !doodad) {
     if (state.terrainLandRect || state.terrainLandSize === "rect") return;
     const lift = map.relief ? reliefLiftField(map.relief) : null;
+    // 결과 미리보기: 놓일 땅의 색(물 파랑·낮은 땅 풀·높은 땅 흙…)으로 붓 칸을 칠한다. 땅 올리기·내리기는 누른 칸 기준 목표.
+    const inside = pick.x >= 0 && pick.y >= 0 && pick.x < map.width && pick.y < map.height;
+    const target = state.terrainLandStep && inside ? landStepTarget(map, pick, state.terrainLandStep) : state.terrainLand;
+    const color = Number.parseInt((TERRAIN_LANDS.find((entry) => entry.land === target)?.color ?? "#ffffff").slice(1), 16);
     for (const center of symmetricPoints(pick, state.terrainSymmetry, map.width, map.height)) for (const i of landBrushCells(map, center, state.terrainLandSize)) {
       const x = i % map.width, y = Math.floor(i / map.width);
-      spec.layer.add(spec.scene.add.rectangle(x * tileSize, (y - (lift ? cellLift(lift, x, y) : 0)) * tileSize, tileSize, tileSize, 0xffffff, .12).setOrigin(0, 0).setStrokeStyle(1, 0xffffff, .9));
+      spec.layer.add(spec.scene.add.rectangle(x * tileSize, (y - (lift ? cellLift(lift, x, y) : 0)) * tileSize, tileSize, tileSize, color, .35).setOrigin(0, 0).setStrokeStyle(1, 0xffffff, .9));
     }
     return;
   }
@@ -147,7 +158,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
     reliefSignature(store.getCurrent().maps[spec.mapId]?.relief),
     ...(state.tool === "relief"
-      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainLand, state.terrainLandSize, JSON.stringify(state.terrainLandRect), state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
+      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainLand, state.terrainLandStep ?? "", state.terrainLandSize, JSON.stringify(state.terrainLandRect), state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
       : []),
   ].join("|");
 }

@@ -111,7 +111,7 @@ try {
   assert(await page.getByTestId('terrain-help-toggle').evaluate(n => n === document.activeElement), 'Opener focus not restored');
   await page.getByTestId('terrain-tool-height').click();
   await film.caption('높이 · 산 붓으로 능선을 그리고 평탄 붓으로 윗면 정리');
-  await page.getByTestId('relief-mode-mountain').click(); await page.getByTestId('relief-size-M').click();
+  await page.getByTestId('relief-mode-mountain').click(); await page.getByTestId('terrain-land-size-5').click();
   await drag([[13, 11], [17, 11], [21, 11]]);
   await page.getByTestId('relief-mode-flatten').click();
   await drag([[17, 11], [19, 11]]);
@@ -122,7 +122,7 @@ try {
   await drag([[5, 22], [14, 22], [25, 22]]);
   proof.road = await page.evaluate(() => { const p = window.__oprnEditorStore.getCurrent(); return p.maps[p.startMapId].terrainDesign?.features?.filter(f => f.tool === 'road').length ?? 0; });
   assert(proof.road === 1, 'Road icon did not produce road feature');
-  await page.getByTestId('terrain-tool-river').click(); await page.getByTestId('terrain-width').selectOption('3');
+  await page.getByTestId('terrain-tool-river').click(); await page.getByTestId('terrain-land-size-3').click();
   await drag([[31, 5], [31, 15], [31, 25]]); await shot('07-terrain-result');
   await page.getByTestId('terrain-reachability').click();
   assert(await page.getByTestId('terrain-reachability').getAttribute('aria-pressed') === 'true', 'Reachability state missing');

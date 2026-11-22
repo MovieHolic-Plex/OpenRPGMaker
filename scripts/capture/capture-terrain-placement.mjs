@@ -76,7 +76,7 @@ try {
   const heights=await page.evaluate(()=>{const p=window.__oprnEditorStore.getCurrent();return JSON.stringify(p.maps[p.startMapId].relief.levels);});
   await clickCell(16,14);
   findings.surfaceHeightUnchanged=await page.evaluate(before=>{const p=window.__oprnEditorStore.getCurrent();return JSON.stringify(p.maps[p.startMapId].relief.levels)===before;},heights);
-  await page.getByTestId("terrain-tool-river").click();await page.getByTestId("terrain-width").selectOption("5");
+  await page.getByTestId("terrain-tool-river").click();await page.getByTestId("terrain-land-size-5").click();
   for(let y=9;y<=25;y++)await clickCell(7,y);
   await page.getByTestId("relief-doodad-toggle").click();await page.getByTestId("relief-doodad-tab-tree").click();
   if(findings.contracts.propId){

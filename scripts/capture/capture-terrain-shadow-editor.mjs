@@ -22,7 +22,7 @@ try{
  await page.getByTestId('layer-relief').first().click();await page.getByTestId('editor-zoom-stepper').click();await page.getByTestId('editor-zoom-0.5').click();await idle();captureStart=Date.now()-started;
  await caption('실제 에디터 · 높이 붓 지형과 도로 · 태양 '+snapshot().maps.shadow_receivers.sunlight.altitude+'°');await shot('01-height-and-road');
  await openSun();await sunNumber('altitude',45);await saved(m=>m.sunlight.altitude===45);await page.keyboard.press('Escape');await idle();
- await page.getByTestId('terrain-tool-height').click();await page.getByTestId('relief-mode-set').click();await page.getByTestId('relief-size-M').click();
+ await page.getByTestId('terrain-tool-height').click();await page.getByTestId('relief-mode-set').click();await page.getByTestId('terrain-land-size-5').click();
  for(let i=0;i<14;i++){const level=parseInt(await page.getByTestId('relief-level-value').textContent(),10);if(level===6)break;await page.getByTestId(level<6?'relief-level-up':'relief-level-down').click();}
  const oldBuilds=(await page.evaluate(()=>window.__oprnEditSunlightStats())).builds;
  const at=await page.evaluate(()=>window.__oprnEditWorldToClient(8.5*16,9.5*16));await caption('높이 붓으로 새 고지를 세우기 · 그림자 자동 갱신');await page.mouse.click(at.x,at.y,{delay:120});

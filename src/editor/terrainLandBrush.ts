@@ -14,7 +14,8 @@ import { terrainMaterialTile } from "./terrainMaterials";
 
 /** 땅 칸 — 숫자는 높이 단(1단 = 절벽 1칸), "water" 는 물. */
 export type TerrainLand = 0 | 2 | 4 | "water";
-export type TerrainLandSize = 1 | 3 | 5 | "rect";
+export type TerrainBrushSize = 1 | 3 | 5 | 7;
+export type TerrainLandSize = TerrainBrushSize | "rect";
 
 export const TERRAIN_LANDS: readonly { readonly land: TerrainLand; readonly label: string; readonly key: string; readonly color: string }[] = [
   { land: "water", label: "물", key: "1", color: "#3f86c9" },
@@ -22,7 +23,13 @@ export const TERRAIN_LANDS: readonly { readonly land: TerrainLand; readonly labe
   { land: 2, label: "높은 땅", key: "3", color: "#a7864f" },
   { land: 4, label: "더 높은 땅", key: "4", color: "#d9c48c" },
 ];
-export const TERRAIN_LAND_SIZES: readonly TerrainLandSize[] = [1, 3, 5, "rect"];
+export const TERRAIN_BRUSH_SIZES: readonly TerrainBrushSize[] = [1, 3, 5, 7];
+export const TERRAIN_LAND_SIZES: readonly TerrainLandSize[] = [...TERRAIN_BRUSH_SIZES, "rect"];
+
+/** 붓 크기 한 체계 — 칸 수 하나가 땅 붓·길/강/바닥 칠 폭·높이 붓과 나무 반지름(S·M·L)을 함께 정한다. */
+export function brushSizePatch(size: TerrainBrushSize): { terrainLandSize: TerrainBrushSize; terrainWidth: number; reliefRoughSize: "S" | "M" | "L" } {
+  return { terrainLandSize: size, terrainWidth: size, reliefRoughSize: size <= 3 ? "S" : size === 5 ? "M" : "L" };
+}
 
 export const terrainLandLabel = (land: TerrainLand): string => TERRAIN_LANDS.find((entry) => entry.land === land)?.label ?? String(land);
 
@@ -41,7 +48,7 @@ export function landStepTarget(map: Pick<GameMap, "width" | "height" | "relief" 
 
 type Point = { readonly x: number; readonly y: number };
 
-export function landBrushCells(map: Pick<GameMap, "width" | "height">, center: Point, size: 1 | 3 | 5): number[] {
+export function landBrushCells(map: Pick<GameMap, "width" | "height">, center: Point, size: TerrainBrushSize): number[] {
   const out: number[] = [], r = (size - 1) / 2;
   for (let y = center.y - r; y <= center.y + r; y++) for (let x = center.x - r; x <= center.x + r; x++) {
     if (x >= 0 && y >= 0 && x < map.width && y < map.height) out.push(y * map.width + x);
