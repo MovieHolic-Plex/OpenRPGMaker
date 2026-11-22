@@ -107,7 +107,7 @@ try {
 
   await caption("③ 강 · 드래그로 물길 그리기");
   await clickTool("terrain-tool-river");
-  await page.getByTestId("terrain-width").selectOption("5");
+  await page.getByTestId("terrain-land-size-5").click();
   const riverStart = await pointAt(7, 9), riverEnd = await pointAt(7, 25);
   await page.mouse.move(riverStart.x, riverStart.y, { steps: 10 });
   await settle(300);

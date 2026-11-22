@@ -18,7 +18,6 @@ import {
 } from "@/editor/reliefDoodads";
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import { reliefIsFlat } from "@/project/relief/edit";
-import { RELIEF_ROUGH_RADII, type ReliefRoughSize } from "@/project/relief/roughBrush";
 import { RELIEF_STYLES } from "@/project/relief/styles";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { store } from "@/project/store";
@@ -33,7 +32,7 @@ import { openMapPropertiesDialog } from "./mapPropertiesDialog";
 import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
 import { selectSidebarLayer } from "./leftLayerSwitcher";
-import { TERRAIN_LAND_SIZES, TERRAIN_LANDS, terrainLandLabel, type TerrainLand, type TerrainLandSize } from "../terrainLandBrush";
+import { brushSizePatch, TERRAIN_BRUSH_SIZES, TERRAIN_LAND_SIZES, TERRAIN_LANDS, terrainLandLabel, type TerrainLand, type TerrainLandSize } from "../terrainLandBrush";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
   ["raise", "올리기", "누르고 있으면 계속 쌓인다", '<path d="M4 18h16M7 14l5-8 5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
@@ -66,7 +65,6 @@ const STYLE_LABELS: Readonly<Record<string, string>> = {
   elf: "엘프", gothic: "고딕", holy: "신전", steampunk: "증기", dwarf: "드워프", blight: "마른 땅", crystal: "수정 절벽",
 };
 
-const SIZES: readonly ReliefRoughSize[] = ["S", "M", "L", "XL"];
 
 /** 패널 맨 위 기본 도구(땅 올리기·땅 내리기·물·길·숲·지우개). */
 type MainTerrainTool = "raise" | "lower" | "water" | "road" | "forest" | "erase";
@@ -250,18 +248,6 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     modes.append(button);
     attachReliefExample(button, mode, label, help);
   }
-  const sizes = el("div", { class: "relief-bar-group", attrs: { role: "group", "aria-label": "높낮이 붓 크기" } });
-  const sizeButtons = new Map<ReliefRoughSize, HTMLButtonElement>();
-  for (const size of SIZES) {
-    const button = el("button", {
-      class: "relief-bar-size", text: size,
-      attrs: { type: "button", title: `붓 반지름 ${RELIEF_ROUGH_RADII[size]}칸`, "aria-pressed": "false" },
-      dataset: { testid: `relief-size-${size}` },
-      on: { click: () => editorState.set({ reliefRoughSize: size }) },
-    }) as HTMLButtonElement;
-    sizeButtons.set(size, button);
-    sizes.append(button);
-  }
   const levelValue = el("b", { class: "relief-bar-level-value", dataset: { testid: "relief-level-value" } });
   const levelLabel = el("span", { class: "relief-bar-level-label", dataset: { testid: "relief-level-label" }, text: "최대 단" });
   const level = el("div", {
@@ -318,8 +304,6 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   }
   const material=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면 재질"},dataset:{testid:"terrain-material"},on:{change:e=>editorState.set({terrainMaterial:(e.target as HTMLSelectElement).value as "grass"|"dirt"|"stone"})}}) as HTMLSelectElement;
   for(const key of ["grass","dirt","stone"] as const)material.append(el("option",{value:key,text:MATERIAL_LABEL[key]}));
-  const brushWidth=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면·강 붓 폭"},dataset:{testid:"terrain-width"},on:{change:e=>editorState.set({terrainWidth:Number((e.target as HTMLSelectElement).value)})}}) as HTMLSelectElement;
-  for(const width of [1,3,5,7])brushWidth.append(el("option",{value:String(width),text:`폭 ${width}칸`}));
   const moveGroup=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon("move")],attrs:{type:"button","aria-label":"군집 옮기기","aria-pressed":"false"},dataset:{testid:"terrain-group-move"},on:{click:()=>editorState.set({terrainMoveGroup:true})}}) as HTMLButtonElement;
   const deleteGroup=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon("delete")],attrs:{type:"button","aria-label":"군집 지우기"},dataset:{testid:"terrain-group-delete"},on:{click:()=>{
     const selection=editorState.get().terrainSelectedGroup;if(!selection)return;
@@ -329,7 +313,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     editorState.set({terrainSelectedGroup:null,terrainMoveGroup:false});
   }}}) as HTMLButtonElement;
   let optionsOpen = false;
-  const advanced = el("div", { class: "relief-bar-advanced", children: [grass, style, material, brushWidth, moveGroup, deleteGroup] });
+  const advanced = el("div", { class: "relief-bar-advanced", children: [grass, style, material, moveGroup, deleteGroup] });
   const optionsToggle = el("button", {
     class: "relief-bar-icon relief-bar-options-toggle",
     text: "옵션",
@@ -341,7 +325,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   const designButton = el("button", { class: "relief-bar-icon relief-bar-labeled-action", children: [terrainToolbarIcon("design"), el("span", { class: "relief-bar-action-label", text: "설계" })], attrs: { type: "button", "aria-label": "지형 설계", "aria-pressed": "false", "aria-expanded": "false", "aria-controls": "terrain-design-panel" }, dataset: { testid: "terrain-design-toggle" }, on: { click: () => { const s = editorState.get(); if (!s.terrainDesignOpen && !isTerrainDesignTool(s.terrainBrush)) selectTerrainDesignTool("contour"); else editorState.set({ terrainDesignOpen: !s.terrainDesignOpen, reliefDoodadOpen: false }); } } }) as HTMLButtonElement;
   let closeHelp: (() => void) | undefined;
   const helpButton = el("button", { class: "relief-bar-icon relief-bar-help", children: [terrainToolbarIcon("help"), el("span", { class: "relief-side-tool-label", text: "도움말" })], attrs: { type: "button", "aria-label": "지형 도움말", "aria-haspopup": "dialog" }, dataset: { testid: "terrain-help-toggle" }, on: { click: () => { closeHelp = openTerrainHelpModal(helpButton); } } });
-  const context = el("div", { class: "relief-bar relief-bar-context", attrs: { role: "group", "aria-label": "선택한 지형 도구 설정" }, dataset: { testid: "terrain-tool-options" }, children: [modes, sizes, level, optionsToggle, advanced] });
+  const context = el("div", { class: "relief-bar relief-bar-context", attrs: { role: "group", "aria-label": "선택한 지형 도구 설정" }, dataset: { testid: "terrain-tool-options" }, children: [modes, level, optionsToggle, advanced] });
   const landButtons = new Map<TerrainLand, HTMLButtonElement>();
   const landSizeButtons = new Map<TerrainLandSize, HTMLButtonElement>();
   const pickLand = (land: TerrainLand): void => editorState.set({
@@ -360,13 +344,14 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     landButtons.set(land, button);
     landSwatches.append(button);
   }
-  const landSizes = el("div", { class: "relief-land-sizes", attrs: { role: "group", "aria-label": "땅 칸 붓 크기" } });
+  // 붓 크기는 한 체계(1·3·5·7칸)다. 땅·물·지우개 붓, 길·강·바닥 칠 폭, 높이 붓·나무 반지름이 모두 이 값을 따른다.
+  const landSizes = el("div", { class: "relief-land-sizes", attrs: { role: "group", "aria-label": "붓 크기" } });
   for (const size of TERRAIN_LAND_SIZES) {
     const button = el("button", {
       class: "relief-bar-size", text: size === "rect" ? "사각형" : String(size),
-      attrs: { type: "button", "aria-pressed": "false", title: size === "rect" ? "끌어서 사각형 하나를 한 번에 (Shift+끌기와 같다)" : `${size}×${size}칸 붓 · [ ] 로 바꾼다` },
+      attrs: { type: "button", "aria-pressed": "false", title: size === "rect" ? "끌어서 사각형 하나를 한 번에 (Shift+끌기와 같다)" : `붓 크기 ${size}칸 · [ ] 로 바꾼다` },
       dataset: { testid: `terrain-land-size-${size}` },
-      on: { click: () => editorState.set({ terrainLandSize: size, ...(editorState.get().terrainBrush === "land" ? {} : { terrainBrush: "land" as const, reliefDoodad: null }) }) },
+      on: { click: () => editorState.set(size === "rect" ? { terrainLandSize: "rect" } : brushSizePatch(size)) },
     }) as HTMLButtonElement;
     landSizeButtons.set(size, button);
     landSizes.append(button);
@@ -423,11 +408,11 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   }
   const mainTools = el("section", {
     class: "relief-main-palette", dataset: { testid: "terrain-main-tools" },
-    children: [el("h4", { class: "relief-side-subtitle", text: "도구" }), mainGrid],
+    children: [el("h4", { class: "relief-side-subtitle", text: "도구" }), mainGrid, el("h4", { class: "relief-side-subtitle", text: "붓 크기" }), landSizes],
   });
   const landPalette = el("section", {
     class: "relief-land-palette", dataset: { testid: "terrain-land-palette" },
-    children: [el("h4", { class: "relief-side-subtitle", text: "땅 높이 고르기" }), landSwatches, landSizes, frameLock],
+    children: [el("h4", { class: "relief-side-subtitle", text: "땅 높이 고르기" }), landSwatches, frameLock],
   });
   const rampQuickAction = el("button", {
     class: "relief-ramp-quick-action",
@@ -637,7 +622,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     for (const [tool, button] of mainButtons) { const on = tool === stepTool; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     mainButtons.get("forest")!.disabled = !treeDoodad();
     for (const [land, button] of landButtons) { const on = landMode && !state.terrainLandStep && land === state.terrainLand; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
-    for (const [size, button] of landSizeButtons) { const on = landMode && size === state.terrainLandSize; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
+    for (const [size, button] of landSizeButtons) { const on = size === state.terrainLandSize; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     for(const [value,b] of terrainButtons){const on=value===state.terrainBrush&&!state.reliefDoodad;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}
     const heightMode=state.terrainBrush==="height"&&!state.reliefDoodad;
     modes.hidden=level.hidden=grass.hidden=style.hidden=!heightMode;
@@ -645,9 +630,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     optionsToggle.classList.toggle("is-active", optionsOpen);
     optionsToggle.setAttribute("aria-expanded", String(optionsOpen));
     advanced.hidden = !optionsOpen;
-    const pickedTab = state.reliefDoodad ? reliefDoodadCatalog(currentMapAndTileset().tileset).find(d => d.id === state.reliefDoodad)?.tab : undefined;
-    sizes.hidden=!(heightMode||pickedTab === "tree"||pickedTab === "rock");
-    material.hidden=state.terrainBrush!=="surface";brushWidth.hidden=state.terrainBrush!=="surface"&&state.terrainBrush!=="river";
+    material.hidden=state.terrainBrush!=="surface";
     moveGroup.hidden=deleteGroup.hidden=state.terrainBrush!=="group";
     const selection=state.terrainSelectedGroup;
     const selectedExists=!!selection&&selection.mapId===editorState.get().currentMapId&&!!store.getCurrent().maps[selection.mapId]?.doodadGroups?.some(g=>g.id===selection.id);
@@ -655,16 +638,11 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     moveGroup.classList.toggle("is-active",state.terrainMoveGroup);
     moveGroup.setAttribute("aria-pressed",String(state.terrainMoveGroup));
     context.hidden = false;
-    material.value=state.terrainMaterial;brushWidth.value=String(state.terrainWidth);rampWidth.value=String(state.reliefRampWidth);density.value=String(state.reliefClusterDensity);
+    material.value=state.terrainMaterial;rampWidth.value=String(state.reliefRampWidth);density.value=String(state.reliefClusterDensity);
     clusterToggle.setAttribute("aria-pressed",String(state.reliefClusterEnabled));clusterToggle.classList.toggle("is-active",state.reliefClusterEnabled);
     reachable.setAttribute("aria-pressed",String(state.terrainReachability));reachable.classList.toggle("is-active",state.terrainReachability);
     for (const [mode, button] of modeButtons) {
       const on = mode === state.reliefMode && !state.reliefDoodad;
-      button.classList.toggle("is-active", on);
-      button.setAttribute("aria-pressed", String(on));
-    }
-    for (const [size, button] of sizeButtons) {
-      const on = size === state.reliefRoughSize;
       button.classList.toggle("is-active", on);
       button.setAttribute("aria-pressed", String(on));
     }
@@ -746,8 +724,10 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       const land = TERRAIN_LANDS.find((entry) => event.code === `Digit${entry.key}`);
       if (land) { event.preventDefault(); pickLand(land.land); return; }
       if (event.code === "BracketLeft" || event.code === "BracketRight") {
-        const at = TERRAIN_LAND_SIZES.indexOf(state.terrainLandSize), next = TERRAIN_LAND_SIZES[Math.max(0, Math.min(TERRAIN_LAND_SIZES.length - 1, at + (event.code === "BracketLeft" ? -1 : 1)))]!;
-        event.preventDefault(); editorState.set({ terrainLandSize: next }); return;
+        const current = state.terrainLandSize === "rect" ? state.terrainWidth : state.terrainLandSize;
+        const at = Math.max(0, TERRAIN_BRUSH_SIZES.indexOf(current as typeof TERRAIN_BRUSH_SIZES[number]));
+        const next = TERRAIN_BRUSH_SIZES[Math.max(0, Math.min(TERRAIN_BRUSH_SIZES.length - 1, at + (event.code === "BracketLeft" ? -1 : 1)))]!;
+        event.preventDefault(); editorState.set(brushSizePatch(next)); return;
       }
     }
     if (event.code === "KeyD" && !event.ctrlKey && !event.metaKey && !event.altKey) {

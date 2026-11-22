@@ -37,7 +37,7 @@ try{
   proof.styles.push({style,savedRevision:saved.revision});
   await page.keyboard.press('Control+z');await waitSaved(s=>s.sha.ramps_four===proof.before.sha.ramps_four);await page.waitForTimeout(500);
  }
- await page.getByTestId('terrain-tool-surface').click();await page.getByTestId('terrain-width').selectOption('1');await page.getByTestId('terrain-material').selectOption('stone');
+ await page.getByTestId('terrain-tool-surface').click();await page.getByTestId('terrain-land-size-1').click();await page.getByTestId('terrain-material').selectOption('stone');
  const p=await page.evaluate(()=>window.__oprnEditWorldToClient(7.5*16,2.5*16));
  const clip={x:Math.floor(p.x-24),y:Math.floor(p.y-24),width:48,height:48};
  await page.mouse.move(1400,50);await page.waitForTimeout(500);const before=await page.screenshot({clip});

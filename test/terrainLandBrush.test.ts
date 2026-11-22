@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { landBrushCells, landRectCells, landStepTarget, paintLandCells } from "@/editor/terrainLandBrush";
+import { brushSizePatch, landBrushCells, landRectCells, landStepTarget, paintLandCells } from "@/editor/terrainLandBrush";
 
 function current() {
   const project = store.getCurrent();
@@ -56,5 +56,14 @@ describe("땅 칸 붓", () => {
     expect(landStepTarget(m, { x: 2, y: 0 }, "lower")).toBe(0);
     expect(landStepTarget(m, { x: 1, y: 0 }, "lower")).toBe(0);
     expect(landStepTarget(m, { x: 0, y: 0 }, "lower")).toBe("water");
+  });
+
+  it("붓 크기 하나가 땅 붓·폭·높이 붓 크기를 함께 정한다(7칸 = 49칸 정사각)", () => {
+    const map = current();
+    expect(landBrushCells(map, { x: 10, y: 7 }, 7)).toHaveLength(49);
+    expect(brushSizePatch(1)).toEqual({ terrainLandSize: 1, terrainWidth: 1, reliefRoughSize: "S" });
+    expect(brushSizePatch(3).reliefRoughSize).toBe("S");
+    expect(brushSizePatch(5)).toEqual({ terrainLandSize: 5, terrainWidth: 5, reliefRoughSize: "M" });
+    expect(brushSizePatch(7).reliefRoughSize).toBe("L");
   });
 });

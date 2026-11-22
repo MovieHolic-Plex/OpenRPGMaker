@@ -190,7 +190,7 @@ class EditorStateStore {
     brushSize: 1,
     reliefMode: "raise",
     reliefLevel: 4,
-    reliefRoughSize: "M",
+    reliefRoughSize: "S",
     reliefTopGrass: true,
     reliefDoodad: null,
     reliefDoodadOpen: false,

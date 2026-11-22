@@ -73,7 +73,7 @@ try {
 
   await selectMap('ramps_four');
   await page.getByTestId('terrain-design-close').click(); await page.getByTestId('layer-lower').click(); await page.getByTestId('layer-relief').first().click();
-  await page.getByTestId('terrain-tool-surface').click(); await page.getByTestId('terrain-width').selectOption('1'); await page.getByTestId('terrain-material').selectOption('stone');
+  await page.getByTestId('terrain-tool-surface').click(); await page.getByTestId('terrain-land-size-1').click(); await page.getByTestId('terrain-material').selectOption('stone');
   await page.waitForTimeout(1000); const p = await point(7, 7, 3);
   const clip = { x: Math.floor(p.x - 24), y: Math.floor(p.y - 24), width: 48, height: 48 };
   const baseline = await page.screenshot({ clip });
